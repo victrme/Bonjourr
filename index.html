@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TodayWeather Startpage</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="src/styles/style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="src/scripts/script.js"></script>
+</head>
+
+<body>
+
+	<div class="background"></div>
+
+	<div class="showSettings">
+		<button>Settings</button>
+	</div>
+
+	<div class="settings">
+		<div class="addlink">
+			<h5>Quick Links</h5>
+			<div class="param">
+				<input type="text" name="title" placeholder="title">
+				<input type="url" name="url" placeholder="url">
+				<button class="submitlink">Add</button>
+			</div>
+			
+		</div>
+		<div class="change_weather">
+			<h5>Weather</h5>
+			<div class="param">
+				<input type="text" name="city" placeholder="city">
+				<button class="submitw_city">Change city</button>
+			</div>
+			<div class="param">
+				<button class="submitw_metric">Metric</button>
+				<button class="submitw_imperial">Imperial</button>
+			</div>
+			
+			<!-- <input type="text" name="w_api" placeholder="api">
+			<button class="submitw_city">Change API</button> -->
+		</div>
+	</div>
+	
+
+
+	<div class="time">
+		<div class="time-container">
+			<div id="clock"></div>
+		</div>
+
+		<div class="date">
+			<span></span>
+		</div>
+	</div>
+
+	<div class="main">
+		<h3 class="greetings"></h3>
+
+		<div class="weather">
+			<p class="w_description">Weather is loading, please wait.</p>
+
+			<div class="w_widget">
+				<img src="" class="w_icon">
+				<div class="w_widget_text">
+					<span class="w_temp"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="linkblocks">
+		<!-- Lui c'est un bloc completement inutile, juste la pour faire écrire les idiots -->
+		<div class='block dummythicc' style="display: none;">
+			<button class='remove' onlclick='removeblock(index)'>&times;</button>
+			<a href='url'>title</a>
+		<div>
+	</div>
+
+</body>
+</html>
