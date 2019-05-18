@@ -86,7 +86,7 @@ function appendblock(title, url, index) {
 
 	var googleIconUrl = "https://www.google.com/s2/favicons?domain=" + getdomainroot(url);
 
-	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + googleIconUrl + "'><p>" + title + "</p><button class='remove' onclick='removeblock(" + index + ")'>&times;</button></a><div>";
+	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + googleIconUrl + "'><p>" + title + "</p></a><button class='remove' onclick='removeblock(" + index + ")'>&times;</button><div>";
 
 	$(".linkblocks").append(b);
 }
@@ -322,18 +322,18 @@ function showRemoveLink() {
 	var remTimeout;
 
 	//utilise on pour le dom rajouté après le document.load
-	$(".linkblocks").on("mouseenter", ".block a", function(e) {
+	$(".linkblocks").on("mouseenter", ".block", function(e) {
 
 		remTimeout = setTimeout(function() {
-			//console.log(e.currentTarget.children[2]);
-			e.currentTarget.children[2].setAttribute("style", "display: block");
+			console.log(e.currentTarget.children[1]);
+			e.currentTarget.children[1].setAttribute("style", "display: block");
 		}, 500);
 	});
 
-	$(".linkblocks").on("mouseleave", ".block a", function(e) {
+	$(".linkblocks").on("mouseleave", ".block", function(e) {
 
 		clearTimeout(remTimeout);
-		e.currentTarget.children[2].setAttribute("style", "display: none");
+		e.currentTarget.children[1].setAttribute("style", "display: none");
 	});
 }
 
