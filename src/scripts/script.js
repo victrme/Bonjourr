@@ -316,12 +316,40 @@ function weather() {
 }
 
 
+//affiche le bouton pour suppr le link
+function showRemoveLink() {
+
+	var remTimeout;
+
+	//utilise on pour le dom rajouté après le document.load
+	$(".linkblocks").on("mouseenter", ".block a", function(e) {
+
+		remTimeout = setTimeout(function() {
+			//console.log(e.currentTarget.children[2]);
+			e.currentTarget.children[2].setAttribute("style", "display: block");
+		}, 500);
+	});
+
+	$(".linkblocks").on("mouseleave", ".block a", function(e) {
+
+		clearTimeout(remTimeout);
+		e.currentTarget.children[2].setAttribute("style", "display: none");
+	});
+}
+
+
+//affiche les settings (temporaire)
 $(".showSettings button").click(function() {
 	$(".settings").toggle();
 });
 
 
+
+
+
 $(document).ready(function() {
+
+	showRemoveLink();
 	initblocks();
 	weather();
 	date();
