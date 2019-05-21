@@ -39,7 +39,7 @@ p, h3 {
 	position: fixed;
 	width: 100vw;
 	height: 100vh;
-	background-image: url('../images/background.jpg');
+	background-color: #222;
 	background-size: cover;
 	background-position: center center;
 
@@ -77,6 +77,13 @@ p, h3 {
 .settings h5 {
 	font-size: 1.2em;
 	margin: 1rem 0;
+}
+
+.settings .change_background .bg_preview {
+	width: 10em;
+	padding: .5em;
+	border: 2px dashed white;
+	border-radius: 4px;
 }
 
 .settings input {
@@ -132,7 +139,7 @@ p, h3 {
 }
 
 .w_widget_text {
-	font-size: 2em;
+	font-size: 3em;
 }
 
 
@@ -150,6 +157,7 @@ p, h3 {
 }
 
 .block {
+	position: relative;
 	display: inline-block;
 	margin: 1em;
 }
@@ -175,5 +183,15 @@ p, h3 {
 }
 
 .block .remove {
-	display: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 2em;
+	height: 2em;
+	opacity: 0;
+	border: none;
+	border-radius: 100%;
+	background: rgba(12,12,12,.5);
+	font-weight: bold;
+	cursor: pointer;
 }
