@@ -1,0 +1,22 @@
+{
+
+  "manifest_version": 2,
+  "name": "Today Weather",
+  "version": "1.0",
+
+  "description": "lol",
+  "homepage_url": "https://github.com",
+  "icons": {
+    "700": "src/icons/weather/day/lightrain.png"
+  },
+
+  "chrome_url_overrides" : {
+    "newtab": "index.html"
+  },
+
+  "browser_action": {
+    "default_icon": "src/icons/weather/day/lightrain.png",
+    "default_title": "Today Weather",
+    "default_popup": "settings.html"
+  }
+}

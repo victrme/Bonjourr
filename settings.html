@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<div class="settings">
+			<div class="change_background">
+				<h5>background</h5>
+				<div class="param">
+					<div>
+						<span>Url: </span>
+						<input type="file" name="background_file">
+					</div>
+					<div>
+						<span>Preview: </span>
+						<img src="" class="bg_preview">
+					</div>
+					<div>
+						<span>Blur: </span>
+						<input type="range" name="background_blur" min="0" max="50" value="25" step="5">
+					</div>
+				</div>
+			</div>
+
+			<div class="addlink">
+				<h5>Quick Links</h5>
+				<div class="param">
+					<input type="text" name="title" placeholder="title">
+					<input type="url" name="url" placeholder="url">
+					<button class="submitlink">Add</button>
+				</div>
+				
+			</div>
+			<div class="change_weather">
+				<h5>Weather</h5>
+				<div class="param">
+					<input type="text" name="city" placeholder="city">
+					<button class="submitw_city">Change city</button>
+				</div>
+				<div class="param">
+					<button class="submitw_metric">Metric</button>
+					<button class="submitw_imperial">Imperial</button>
+				</div>
+				
+				<!-- <input type="text" name="w_api" placeholder="api">
+				<button class="submitw_city">Change API</button> -->
+			</div>
+		</div>
+	</body>
+</html>
