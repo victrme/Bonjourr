@@ -21,13 +21,15 @@
 
 body, button {
 	margin: 0;
-	background-color: black;
     cursor: default;
+    background: #666;
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
 	font-family: sf_pro_displaythin;
+	font-size: 18px;
 	text-align: center;
+
 }
 
 p, h3 {
@@ -39,7 +41,7 @@ p, h3 {
 	position: fixed;
 	width: 100vw;
 	height: 100vh;
-	background-color: #222;
+	background-color: #eee;
 	background-size: cover;
 	background-position: center center;
 
@@ -72,11 +74,17 @@ p, h3 {
 	display: none;
 	text-align: left;
 	padding: 1em;
+	position: fixed;
+	left: 2em;
+	background: rgba(22, 22, 22, 0.9) none repeat scroll 0% 0%;
+	border-radius: 4px;
+	z-index: 2;
 }
 
 .settings h5 {
 	font-size: 1.2em;
 	margin: 1rem 0;
+	text-decoration: underline;
 }
 
 .settings .change_background .bg_preview {
@@ -84,6 +92,15 @@ p, h3 {
 	padding: .5em;
 	border: 2px dashed white;
 	border-radius: 4px;
+}
+
+.settings .change_background div {
+	display: flex;
+	align-items: center;
+}
+
+.settings .change_background div > * {
+	margin: .5em;
 }
 
 .settings input {
@@ -97,6 +114,7 @@ p, h3 {
 
 .settings .param {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 }
 
@@ -165,6 +183,7 @@ p, h3 {
 .block img {
 	padding: 1em;
 	width: 3em;
+	height: 3em;
 	border-radius: 4px;
 	background: white;
 }

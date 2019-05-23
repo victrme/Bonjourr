@@ -11,7 +11,8 @@ function clock() {
 	m = checkTime(m);
 
 	$('#clock').text(h + ":" + m);
-	var t = setTimeout(clock, 999);
+
+	var t = setTimeout(clock, 1000);
 }
 
 
@@ -63,7 +64,8 @@ function storage(state, title, url) {
 			return JSON.parse(localStorage.links);
 		}
 		else {
-			return false;
+			//retourne des sites de base pour faire beau
+			return [["Youtube", "https://youtube.com"], ["Wikipedia", "https://Wikipedia.org"], ["Twitter", "https://twitter.com"], ["Reddit", "https://reddit.com"], ["victor-azevedo.me", "https://victor-azevedo.me"]];
 		}
 		
 	}
@@ -88,9 +90,9 @@ function storage(state, title, url) {
 //rajoute l'html d'un bloc avec toute ses valeurs et events
 function appendblock(title, url, index) {
 
-	function getdomainroot(url) {
+	function getdomainroot(str) {
 		var a = document.createElement('a');
-		a.href = url;
+		a.href = str;
 		return a.hostname;
 	}
 
@@ -176,7 +178,13 @@ function showRemoveLink() {
 	});
 }
 
-
+function filterUrl(str) {
+	if (str.startsWith("http") || str.startsWith("https")) {
+		return str;
+	} else {
+		return 	"http://" + str;
+	}
+}
 
 //quand on rajoute un link
 //append avec le titre, l'url ET l'index du bloc
@@ -184,7 +192,7 @@ function showRemoveLink() {
 //remet a zero les inputs
 $(".submitlink").click(function() {
 	var title = $(".addlink input[name='title'").val();
-	var url = $(".addlink input[name='url'").val();
+	var url = filterUrl($(".addlink input[name='url'").val());
 
 	appendblock(title, url, storage("get").length);
 
@@ -227,6 +235,10 @@ function date() {
 
 
 function weather() {
+
+	//init la meteo avant que l'api charge
+	var l = localStorage.wLastState;
+	(l ? dataHandling(JSON.parse(l)) : "");
 
 
 	//si le soleil est levé, renvoi jour
@@ -291,10 +303,15 @@ function weather() {
 		
 
 		//pour l'icone
-		var dOrN = dayOrNight(data.sys.sunset, data.sys.sunrise);
-		var wId = imgId(data.weather[0].id);
+		var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
+		var weather_id = imgId(data.weather[0].id);
+ 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
 
-		$(".w_icon").attr("src", "src/icons/weather/" + dOrN + "/" + wId + ".png");
+		$(".w_icon").attr("src", icon_src);
+
+
+		//sauvegarde la derniere meteo
+		localStorage.wLastState = JSON.stringify(data);
 	}
 
 
@@ -410,7 +427,7 @@ function initBackground() {
 	var ls = localStorage.background;
 
 	if (ls) {
-		$('.change_background .bg_preview').attr("src", );
+		$('.change_background .bg_preview').attr("src", ls);
 		$('.background').css("background-image", 'url(' + ls + ')');
 
 		bg_blur(localStorage.background_blur);
