@@ -15,6 +15,7 @@
 
 .showSettings button {
 	font-size: 1em;
+	height: 58px;
 	margin: .5em;
 	padding: .5em;
 	border: none;
