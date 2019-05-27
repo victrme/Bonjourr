@@ -469,6 +469,7 @@ $(".change_background input[name='background_blur']").change(function() {
 
 //affiche les settings (temporaire)
 $(".showSettings button").click(function() {
+	$(this).toggleClass("shown");
 	$(".settings").toggleClass("shown");
 	$(".interface").toggleClass("pushed");
 });

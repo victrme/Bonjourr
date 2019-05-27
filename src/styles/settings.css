@@ -20,13 +20,14 @@
 	border: none;
 	border-radius: 8px;
 	color: white;
-	background-color: #888;
+	background-color: transparent;
 	cursor: pointer;
 }
 
-.showSettings button:hover {
-	background: #555;
-}
+.showSettings button:hover {background: #777;}
+
+.showSettings button.shown {background: #aaa;}
+.showSettings button.shown:hover {background: #777;}
 
 
 .showSettings button img {
@@ -47,6 +48,7 @@
 	z-index: 2;
 	width: 20em;
 	height: 100vh;
+	overflow-y: auto;
 	background-color: #efeff4;
 
 	font-family: sf_pro_textregular!important;
@@ -346,7 +348,7 @@ input:checked + .slider:before {
 }
 
 .change_weather {
-	margin-bottom: 1.6em;
+	margin-bottom: 6em;
 }
 
 .units {
