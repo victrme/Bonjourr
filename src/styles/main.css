@@ -94,10 +94,6 @@ p, h3 {
 	font-size: 1.5em;
 }
 
-.main {
-	padding-top: 4em;
-}
-
 .greetings {
 	font-size: 3em;
 	padding-bottom: 0.3em;
@@ -131,7 +127,6 @@ p, h3 {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	padding: 2em;
 }
 
 .block {
