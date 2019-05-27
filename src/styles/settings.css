@@ -24,10 +24,11 @@
 	cursor: pointer;
 }
 
-.showSettings button:hover {background: #777;}
+.showSettings button:hover {background: #777}
 
-.showSettings button.shown {background: #aaa;}
-.showSettings button.shown:hover {background: #777;}
+.showSettings button.shown {background: #aaa}
+.showSettings button.shown img {transform: rotate(45deg)}
+.showSettings button.shown:hover {background: #777}
 
 
 .showSettings button img {
@@ -143,6 +144,7 @@ h1 {
 .custom_bg, .blur {
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 }
 
 .custom_bg {
@@ -151,15 +153,6 @@ h1 {
 
 .custom_bg input {
 	width: 76.8%;
-}
-
-.blur input {
-	width: 63%;
-}
-
-.blur span {
-	width: 33%;
-	padding-right: 3%;
 }
 
 	/* Inputs */
@@ -173,13 +166,9 @@ input::-moz-focus-outer {
 }
 
 input[type="range"] { 
-    margin: auto;
-    -webkit-appearance: none;
-    position: relative;
 
-    height: 27px;
+    position: relative;
     cursor: pointer;
-    border-radius: 0;
 }
 
 /* Chrome & Safari */
@@ -353,13 +342,5 @@ input:checked + .slider:before {
 
 .units {
 	display: flex;
-	align-items: center;
-}
-
-.units div {;
-	margin-left: 47%;
-}
-
-.units span, .blur span {
-	padding-bottom: 0px;
+	justify-content: space-between;
 }
