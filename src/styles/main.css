@@ -110,9 +110,9 @@ p, h3 {
 }
 
 .block img {
-	padding: 1em;
-	width: 3em;
-	height: 3em;
+	padding: .3em;
+	width: 4.4em;
+	height: 4.4em;
 	border-radius: 4px;
 	background: white;
 }
@@ -132,14 +132,27 @@ p, h3 {
 
 .block .remove {
 	position: absolute;
-	top: 0;
-	right: 0;
-	width: 2em;
-	height: 2em;
+	top: -10px;
+	left: -12px;
+	height: 30px;
+	width: 30px;
 	opacity: 0;
 	border: none;
 	border-radius: 100%;
-	background: rgba(12,12,12,.5);
-	font-weight: bold;
+	background: #ffffff;
 	cursor: pointer;
+	box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
+}
+
+.remove img {
+	height: .9em;
+	width: .9em;
+	position:absolute;
+	top: 50%;
+	left:50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+
+	
 }
