@@ -3,10 +3,14 @@
 <head>
 	<title>TodayWeather Startpage</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="src/styles/style.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="src/styles/main.css">
+	<link rel="stylesheet" href="src/styles/settings.css">
+
 	<script src="src/scripts/jquery-3.4.1.min.js"></script>
 	<script src="src/scripts/script.js" defer></script>
+
 </head>
 
 <body>
@@ -14,54 +18,73 @@
 	<div class="background"></div>
 
 	<div class="showSettings">
-		<button>Settings</button>
+		<button>⚙️ Settings</button>
 	</div>
 
 	<div class="settings">
-		<div class="change_background">
-			<h5>Background</h5>
+
+		<div class="title">
+			<h1>Settings</h1>
+		</div>
+
+		<div class="change_background">          
+			<h5 class="subtitle">Background</h5>
 			<div class="param">
-				<div>
-					<span>Url: </span>
-					<input type="file" name="background_file">
+				<div class="bac">
+					<span>Choose background</span>
+					<div class="choosable_backgrounds">
+						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
+						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
+						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
+						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
+					</div>
+					<hr>
+					<span>Custom background</span>
+					<div class="custom_bg">
+						<input type="file" name="background_file">
+						<img src="" class="bg_preview">
+					</div>
 				</div>
-				<div>
-					<span>Preview: </span>
-					<img src="" class="bg_preview">
-				</div>
-				<div>
-					<span>Blur: </span>
-					<input type="range" name="background_blur" min="0" max="50" value="25" step="5">
+				
+				<hr>
+
+				<div class="blur">
+					<span>Blur intensity</span>
+					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
 			</div>
 		</div>
 
 		<div class="addlink">
-			<h5>Quick Links</h5>
+			<h5 class="subtitle">Quick Links</h5>
 			<div class="param">
-				<input type="text" name="title" placeholder="title">
-				<input type="url" name="url" placeholder="url">
+				<input type="text" name="title" placeholder="Title">
+				<input type="url" name="url" placeholder="URL">
 				<button class="submitlink">Add</button>
 			</div>
-			
 		</div>
+
 		<div class="change_weather">
-			<h5>Weather</h5>
+			<h5 class="subtitle">Weather</h5>
 			<div class="param">
-				<input type="text" name="city" placeholder="city">
+				<input type="text" name="city" placeholder="City">
 				<button class="submitw_city">Change city</button>
+
+				<hr>
+
+				<div class="units">
+					<span>Imperial units</span>
+					<div>
+						<label class="switch">
+							<input type="checkbox">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
 			</div>
-			<div class="param">
-				<button class="submitw_metric">Metric</button>
-				<button class="submitw_imperial">Imperial</button>
-			</div>
-			
-			<!-- <input type="text" name="w_api" placeholder="api">
-			<button class="submitw_city">Change API</button> -->
 		</div>
 	</div>
 	
-
 
 	<div class="time">
 		<div class="time-container">
