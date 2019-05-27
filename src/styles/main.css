@@ -19,7 +19,7 @@
 	transition: all .2s;
 }
 
-body, button {
+body, .showSettings button {
 	margin: 0;
     cursor: default;
     background: #666;
@@ -29,7 +29,6 @@ body, button {
 	font-family: sf_pro_displaythin;
 	font-size: 18px;
 	text-align: center;
-
 }
 
 p, h3 {
@@ -49,73 +48,15 @@ p, h3 {
 	transform: scale(1.1); 
 }
 
-.showSettings {
-	text-align: left;
-}
-
-.showSettings button,
-.settings button {
-	font-size: 1.2em;
-	margin: .5em;
-	padding: .3em;
-	border: none;
-	border-radius: 2px;
-	background: transparent;
-	color: white;
-	cursor: pointer;
-}
-
-.showSettings button:hover,
-.settings button:hover {
-	background: rgba(12,12,12,.5);
-}
-
-.settings {
-	display: none;
-	text-align: left;
-	padding: 1em;
-	position: fixed;
-	left: 2em;
-	background: rgba(22, 22, 22, 0.9) none repeat scroll 0% 0%;
-	border-radius: 4px;
-	z-index: 2;
-}
-
-.settings h5 {
-	font-size: 1.2em;
-	margin: 1rem 0;
-	text-decoration: underline;
-}
-
-.settings .change_background .bg_preview {
-	width: 10em;
-	padding: .5em;
-	border: 2px dashed white;
-	border-radius: 4px;
-}
-
-.settings .change_background div {
+.interface {
+	height: 100vh;
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+	justify-content: space-around;
 }
 
-.settings .change_background div > * {
-	margin: .5em;
-}
-
-.settings input {
-	height: 1em;
-	margin: .5em;
-	padding: .5em;
-	background: rgba(240,240,240,.5);
-	border: none;
-	border-radius: 4px;
-}
-
-.settings .param {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
+.pushed {
+	margin-left: -20em;
 }
 
 
@@ -125,10 +66,6 @@ p, h3 {
 
 .date {
 	font-size: 1.5em;
-}
-
-.main {
-	padding-top: 4em;
 }
 
 .greetings {
@@ -160,18 +97,10 @@ p, h3 {
 	font-size: 3em;
 }
 
-
-
-
-
-
-
-
 .linkblocks {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	padding: 2em;
 }
 
 .block {

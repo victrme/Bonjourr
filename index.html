@@ -18,7 +18,7 @@
 	<div class="background"></div>
 
 	<div class="showSettings">
-		<button>⚙️ Settings</button>
+		<button><img src="src/images/gear.png"></button>
 	</div>
 
 	<div class="settings">
@@ -31,15 +31,28 @@
 			<h5 class="subtitle">Background</h5>
 			<div class="param">
 				<div class="bac">
-					<span>Choose background</span>
+					<span class="span">Choose background</span>
 					<div class="choosable_backgrounds">
-						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
-						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
-						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
-						<a href="#"> <div class="imgpreview" id="bg1"></div> </a>
+
+						<div class="imgpreview">
+							<img src="src/images/avi-richards-beach.jpg">
+						</div>
+
+						<div class="imgpreview">
+							<img src="src/images/tyler-casey-landscape.jpg">
+						</div>
+
+						<div class="imgpreview">
+							<img src="src/images/ios12wallpaper.jpg">
+						</div>
+
+						<div class="imgpreview">
+							<img src="src/images/tahoe-beetschen-ferns.jpg">
+						</div>
+
 					</div>
 					<hr>
-					<span>Custom background</span>
+					<span class="span">Custom background</span>
 					<div class="custom_bg">
 						<input type="file" name="background_file">
 						<img src="" class="bg_preview">
@@ -49,7 +62,7 @@
 				<hr>
 
 				<div class="blur">
-					<span>Blur intensity</span>
+					<span class="span">Blur intensity</span>
 					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
 			</div>
@@ -73,11 +86,11 @@
 				<hr>
 
 				<div class="units">
-					<span>Imperial units</span>
+					<span class="span">Imperial units</span>
 					<div>
 						<label class="switch">
 							<input type="checkbox">
-							<span class="slider round"></span>
+							<span class="slider round span"></span>
 						</label>
 					</div>
 				</div>
@@ -85,35 +98,34 @@
 		</div>
 	</div>
 	
+	<div class="interface">
+		<div class="time">
+			<div class="time-container">
+				<div id="clock"></div>
+			</div>
 
-	<div class="time">
-		<div class="time-container">
-			<div id="clock"></div>
+			<div class="date">
+				<span></span>
+			</div>
 		</div>
 
-		<div class="date">
-			<span></span>
-		</div>
-	</div>
+		<div class="main">
+			<h3 class="greetings"></h3>
 
-	<div class="main">
-		<h3 class="greetings"></h3>
+			<div class="weather">
+				<p class="w_description">Weather is loading, please wait.</p>
 
-		<div class="weather">
-			<p class="w_description">Weather is loading, please wait.</p>
-
-			<div class="w_widget">
-				<img src="" class="w_icon">
-				<div class="w_widget_text">
-					<span class="w_temp"></span>
+				<div class="w_widget">
+					<img src="" class="w_icon">
+					<div class="w_widget_text">
+						<span class="w_temp"></span>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-
-
-	<div class="linkblocks">
+		<div class="linkblocks">
+		</div>
 	</div>
 
 </body>

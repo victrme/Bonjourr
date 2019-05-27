@@ -360,20 +360,18 @@ function weather() {
 		localStorage.wCity = city;
 	});
 
-	//on choisi metric
+
 	//req la meteo avec metric et l'enregistre
-	$(".submitw_metric").click(function() {
+	$(".units input").change(function() {
 
-		weatherRequest(localStorage.wCity, "metric");
-		localStorage.wUnit = "metric";
-	});
+		if ($(".units input").is(":checked")) {
+			var unit = "imperial";
+		} else {
+			var unit = "metric";
+		}
 
-	//on choisi imperial
-	//req la meteo avec imperial et l'enregistre
-	$(".submitw_imperial").click(function() {
-
-		weatherRequest(localStorage.wCity, "imperial");
-		localStorage.wUnit = "imperial";
+		weatherRequest(localStorage.wCity, unit);
+		localStorage.wUnit = unit;
 	});
 
 
@@ -421,13 +419,31 @@ function renderImage(file) {
 	reader.readAsDataURL(file);
 }
 
+// handle input changes
+$(".change_background input[name='background_file']").change(function() {
+
+	renderImage(this.files[0]);
+});
+
+
+
+
 
 function initBackground() {
 
 	var ls = localStorage.background;
 
+	//si le background est custom
+	//change le bg_preview et le background meme
+	//sinon utilise celui de base
 	if (ls) {
-		$('.change_background .bg_preview').attr("src", ls);
+
+		//si c'est en base64 (donc custom)
+		if (ls.startsWith("data")) {
+			$('.change_background .bg_preview').attr("src", ls);
+		}
+
+
 		$('.background').css("background-image", 'url(' + ls + ')');
 
 		bg_blur(localStorage.background_blur);
@@ -438,18 +454,11 @@ function initBackground() {
 	}
 }
 
+
 function bg_blur(val) {
 	$('.background').css("filter", 'blur(' + val + 'px)');
 	localStorage.background_blur = val;
 }
-
-
-
-// handle input changes
-$(".change_background input[name='background_file']").change(function() {
-
-	renderImage(this.files[0]);
-});
 
 // handle input changes
 $(".change_background input[name='background_blur']").change(function() {
@@ -458,15 +467,43 @@ $(".change_background input[name='background_blur']").change(function() {
 });
 
 
-
-
-
-
-
 //affiche les settings (temporaire)
 $(".showSettings button").click(function() {
-	$(".settings").toggle();
+	$(".settings").toggleClass("shown");
+	$(".interface").toggleClass("pushed");
 });
+
+
+//pour preview le default background
+$(".imgpreview img").mouseenter(function() {
+
+	var source = this.attributes.src.value;
+	$(".background").css("background-image", "url('" + source + "')");
+});
+
+
+//pour arreter de preview le default background
+$(".imgpreview img").mouseleave(function() {
+
+	initBackground();
+});
+
+
+//pour choisir un default background
+$(".imgpreview img").click(function() {
+
+	var source = this.attributes.src.value;
+	$(".background").css("background-image", "url('" + source + "')");
+	localStorage.background = source;
+});
+
+
+
+
+
+
+
+
 
 
 
