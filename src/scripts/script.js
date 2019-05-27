@@ -65,7 +65,7 @@ function storage(state, title, url) {
 		}
 		else {
 			//retourne des sites de base pour faire beau
-			return [["Youtube", "https://youtube.com"], ["Wikipedia", "https://Wikipedia.org"], ["Twitter", "https://twitter.com"], ["Reddit", "https://reddit.com"], ["victor-azevedo.me", "https://victor-azevedo.me"]];
+			return [["Youtube", "https://youtube.com"], ["Wikipedia", "https://Wikipedia.org"], ["Startpage", "https://www.startpage.com/"], ["Reddit", "https://reddit.com"], ["victor-azevedo.me", "https://victor-azevedo.me"]];
 		}
 		
 	}
@@ -96,9 +96,9 @@ function appendblock(title, url, index) {
 		return a.hostname;
 	}
 
-	var googleIconUrl = "https://www.google.com/s2/favicons?domain=" + getdomainroot(url);
+	var bestIconUrl = "https://besticon-demo.herokuapp.com/icon?url=" + getdomainroot(url) + "&size=80..120..200";
 
-	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + googleIconUrl + "'><p>" + title + "</p></a><button class='remove'>&times;</button><div>";
+	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'><p>" + title + "</p></a><button class='remove'><img src='src/images/x.png'</button><div>";
 
 	$(".linkblocks").append(b);
 }
