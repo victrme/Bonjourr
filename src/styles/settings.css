@@ -6,25 +6,65 @@
 	font-style: normal;
 }
 
+.showSettings {
+	position:absolute;
+	bottom: .7em;
+	right: .7em;
+	z-index: 3;
+}
+
+.showSettings button {
+	font-size: 1em;
+	margin: .5em;
+	padding: .5em;
+	border: none;
+	border-radius: 8px;
+	color: white;
+	background-color: #888;
+	cursor: pointer;
+}
+
+.showSettings button:hover {
+	background: #555;
+}
+
+
+.showSettings button img {
+	width: 40px;
+}
+
+ .showSettings button img, .w_icon {
+	-webkit-filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
+ }
+
+
+
 .settings {
-	display: block;
-	border-radius: 2em;
-	overflow: hidden;
+	position: fixed;
+	right: -20em;
+	bottom: 0;
+	z-index: 2;
 	width: 20em;
-	height: 42em;
+	height: 100vh;
 	background-color: #efeff4;
 
 	font-family: sf_pro_textregular!important;
-	text-shadow: initial;
-	font-size: initial;
-	text-align: initial;
-	color: initial;
+	text-shadow: none;
+	text-align: left;
+	color: #222;
+
+	-webkit-box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
+	box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
+}
+
+.settings.shown {
+	right: 0;
 }
 
 hr {
-	border-top: 0;
-	border-right: 0;
-	border-left: 0;
+	border: none;
 	border-bottom: 1px solid #c8c7cc;
 	margin-top: .5em;
 	margin-bottom: .5em;
@@ -45,15 +85,11 @@ h1 {
 	background-color : #ffffff;
 	border-top: 1px solid #c8c7cc;
 	border-bottom: 1px solid #c8c7cc;
-	padding-top: 0.5em;
-	padding-bottom: 0.5em;
+	padding: .5em 0;
 }
 
 .subtitle {
-	margin-top: 2em;
-	margin-bottom: .5em;
-	margin-right: 1.3em;
-	margin-left: 1.3em;
+	margin: 1em 1.3em;
 	color: #6d6d72;
 	text-transform: uppercase;
 	font-family: sf_pro_displaythin;
@@ -70,20 +106,30 @@ h1 {
 	background-color : #ffffff;
 	border-top: 1px solid #c8c7cc;
 	border-bottom: 1px solid #c8c7cc;
-	padding-right: 1.3em;
-	padding-left: 1.3em;
-	padding-top: .5em;
-	padding-bottom: .5em;
+	padding: .5em 1.3em;
 }
 
 	/* Background section */
 
 .imgpreview, .bg_preview {
+	overflow: hidden;
 	width: 60px;
 	height: 80px;
 	background-size: cover;
 	background-position: center center;
 	display: inline-block;
+}
+
+.imgpreview img {
+	cursor: pointer;
+	height: 80px;
+}
+
+.imgpreview img:hover {opacity: .8}
+.imgpreview img:active {opacity: .6}
+
+.selected {
+	border: 1px solid blue;
 }
 
 .choosable_backgrounds {
@@ -92,21 +138,6 @@ h1 {
 	margin-bottom: 1em;
 }
 
-#bg1 {
-	background-image: url('src/images/tyler-casey-landscape.jpg');
-}
-
-#bg2 {
-	background-image: url('src/images/ios12wallpaper');
-}
-
-#bg3 {
-	background-image: url('src/images/tahoe-beetschen-ferns');
-}
-
-#bg4 {
-	background-image: url('src/images/avi-richards-beach.jpg');
-}
 
 .custom_bg, .blur {
 	display: flex;
@@ -133,13 +164,11 @@ h1 {
 	/* Inputs */
 
 input:active, input:focus, a:hover, a:active, a:focus {
-	outline: 0!important;
 	border: 0!important;
 }
 
 input::-moz-focus-outer { 
 	border: 0!important;
-	outline: 0!important;
 }
 
 input[type="range"] { 
