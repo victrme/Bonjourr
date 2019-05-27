@@ -93,19 +93,19 @@ h1 {
 }
 
 #bg1 {
-	background-image: url('src/images/tyler-casey-landscape.jpg');
+	background-image: url('../images/tyler-casey-landscape.jpg');
 }
 
 #bg2 {
-	background-image: url('src/images/ios12wallpaper');
+	background-image: url('../images/ios12wallpaper.jpg');
 }
 
 #bg3 {
-	background-image: url('src/images/tahoe-beetschen-ferns');
+	background-image: url('../images/tahoe-beetschen-ferns.jpg');
 }
 
 #bg4 {
-	background-image: url('src/images/avi-richards-beach.jpg');
+	background-image: url('../images/avi-richards-beach.jpg');
 }
 
 .custom_bg, .blur {
