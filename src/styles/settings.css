@@ -110,6 +110,10 @@ h1 {
 	padding-top: .5em;
 }
 
+.choose_language .span {
+	padding-bottom: 0px;
+}
+
 .param {
 	background-color : #ffffff;
 	border-top: 1px solid #c8c7cc;
