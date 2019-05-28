@@ -106,6 +106,10 @@ h1 {
 	padding-bottom: .5em;		
 }
 
+.units .span {
+	padding-top: .5em;
+}
+
 .param {
 	background-color : #ffffff;
 	border-top: 1px solid #c8c7cc;
@@ -368,7 +372,7 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.units {
+.units, .choose_language {
 	display: flex;
 	justify-content: space-between;
 }
