@@ -328,8 +328,8 @@ function weather() {
 			+ unit
 			+ '&appid='
 			+ api
-			+ '&lang='
-			+ navigator.language, true);
+			/*+ '&lang='
+			+ navigator.language, true*/);
 
 		request_w.onload = function() {
 			
@@ -441,6 +441,7 @@ function initBackground() {
 		//si c'est en base64 (donc custom)
 		if (ls.startsWith("data")) {
 			$('.change_background .bg_preview').attr("src", ls);
+			$('.change_background .bg_preview').css("visibility", "visible");
 		}
 
 
@@ -449,6 +450,7 @@ function initBackground() {
 		bg_blur(localStorage.background_blur);
 		
 	} else {
+		$('.change_background .bg_preview').css("visibility", "visible");
 		$('.change_background .bg_preview').attr("src", "src/images/background.jpg");
 		$('.background').css("background-image", 'url("src/images/background.jpg")');
 	}
@@ -489,9 +491,13 @@ $(".imgpreview img").mouseleave(function() {
 	initBackground();
 });
 
-
+var th;
 //pour choisir un default background
 $(".imgpreview img").click(function() {
+
+
+	$(".imgpreview").removeClass("selected");
+	th = $(this)[0].parentElement.setAttribute("class", "imgpreview selected");
 
 	var source = this.attributes.src.value;
 	$(".background").css("background-image", "url('" + source + "')");

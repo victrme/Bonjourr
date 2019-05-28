@@ -117,23 +117,35 @@ h1 {
 
 .imgpreview, .bg_preview {
 	overflow: hidden;
-	width: 60px;
 	height: 80px;
+	width: 60px;
+	border-radius: 4px;
 	background-size: cover;
 	background-position: center center;
 	display: inline-block;
+	transition: border 0s, opacity .2s;
 }
 
 .imgpreview img {
-	cursor: pointer;
 	height: 80px;
+	cursor: pointer;
+	box-sizing: content-box;
 }
 
-.imgpreview img:hover {opacity: .8}
-.imgpreview img:active {opacity: .6}
+.imgpreview:hover {
+	border: 2px solid #007aff;
+	width: 56px;
+	height: 76px;
+}
+.imgpreview:active {
+	border: 2px solid #007aff;
+}
 
 .selected {
-	border: 1px solid blue;
+	border: 2px solid #007aff;
+	width: 56px;
+	height: 76px;
+	opacity: .8;
 }
 
 .choosable_backgrounds {
@@ -153,7 +165,11 @@ h1 {
 }
 
 .custom_bg input {
-	width: 76.8%;
+	width: calc(100% - 70px);
+}
+
+.custom_bg img {
+	visibility: hidden;
 }
 
 	/* Inputs */
@@ -252,13 +268,27 @@ input[type="range"]::-ms-thumb {
     display: none;
 }
 
-input[type="text"], input[type="url"] {
+input[name="title"],
+input[name="url"],
+input[name="city"] {
 	border-radius: 8.5px;
 	border: 0;
 	background-color: #e3e3e5;
 	height: 2.35em;
-	padding-left: 6px;
-	width: 39%;
+	padding-left: .5em;
+	margin-bottom: .5em;
+}
+
+input[name="title"] {
+	width: calc(100% - .5em);
+}
+
+input[name="url"] {
+	width: calc(100% - 5em);
+}
+
+.addlink button {
+	width: 4em;
 }
 
 ::placeholder {
@@ -332,10 +362,6 @@ input:checked + .slider:before {
 }
 
 	/*Weather section*/
-
-.change_weather .param input {
-	width: 67%;
-}
 
 .change_weather {
 	margin-bottom: 6em;
