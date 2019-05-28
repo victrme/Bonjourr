@@ -31,6 +31,25 @@ body, .showSettings button {
 	text-align: center;
 }
 
+@media screen and (min-width: 3000px) {
+	body {font-size: 20px}
+}
+
+@media screen and (min-width: 2100px) {
+	body {font-size: 18px}
+}
+
+@media screen and (max-width: 1400px) {
+	body {font-size: 15px}
+}
+
+@media screen and (max-width: 700px) {
+	body {font-size: 14px}
+}
+
+
+
+
 p, h3 {
 	margin: 0;
 }
