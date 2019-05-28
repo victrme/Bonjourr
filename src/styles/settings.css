@@ -15,7 +15,7 @@
 
 .showSettings button {
 	font-size: 1em;
-	height: 58px;
+	height: 56px;
 	margin: .5em;
 	padding: .5em;
 	border: none;
@@ -110,7 +110,7 @@ h1 {
 	background-color : #ffffff;
 	border-top: 1px solid #c8c7cc;
 	border-bottom: 1px solid #c8c7cc;
-	padding: .5em 1.3em;
+	padding: .75em 1.3em;
 }
 
 	/* Background section */
@@ -183,7 +183,6 @@ input::-moz-focus-outer {
 }
 
 input[type="range"] { 
-
     position: relative;
     cursor: pointer;
 }
@@ -284,11 +283,17 @@ input[name="title"] {
 }
 
 input[name="url"] {
-	width: calc(100% - 5em);
+	width: calc(100% - .5em);
 }
 
 .addlink button {
-	width: 4em;
+	width: 40%;
+	margin-left: 30%;
+	margin-right: 30%
+}
+
+.change_weather .param input {
+	width: 67%;
 }
 
 ::placeholder {
@@ -363,11 +368,23 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.change_weather {
-	margin-bottom: 6em;
-}
-
 .units {
 	display: flex;
 	justify-content: space-between;
+}
+
+.signature {
+	padding-right: .5em;
+	padding-left: .5em;
+	margin-top: 2em;
+	text-align: center;
+	position: relative;
+	bottom: 10px;
+	color: #6d6d72;
+	font-size: .8em;
+}
+
+.signature a {
+	text-decoration: none;
+	color: #007aff;
 }
