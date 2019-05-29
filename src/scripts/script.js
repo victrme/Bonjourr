@@ -218,7 +218,9 @@ function date() {
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date span").text(days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()]);
+	$(".date .jour").text(days[d.getDay()]);
+	$(".date .chiffre").text(d.getDate());
+	$(".date .mois").text(months[d.getMonth()]);
 }
 
 
@@ -234,10 +236,11 @@ function date() {
 
 
 
-function weather() {
+function weather(changelang) {
 
 	//init la meteo avant que l'api charge
 	var l = localStorage.wLastState;
+	var lang = (changelang ? changelang : localStorage.lang);
 	(l ? dataHandling(JSON.parse(l)) : "");
 
 
@@ -296,11 +299,9 @@ function weather() {
 
 
 		//pour la description et temperature
-
-		var desc = '<span>' + data.weather[0].description + '</span>. It is <span class="w_temp"></span> currently.'
-		$(".w_description").html(desc);
-		$(".w_temp").text(Math.floor(data.main.temp) + '°');
-		
+		$(".w_desc_meteo").text(data.weather[0].description + ". ");
+		$(".w_desc_temp").text(Math.floor(data.main.temp) + '° ');
+	
 
 		//pour l'icone
 		var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
@@ -328,8 +329,8 @@ function weather() {
 			+ unit
 			+ '&appid='
 			+ api
-			/*+ '&lang='
-			+ navigator.language, true*/);
+			+ '&lang='
+			+ lang, true);
 
 		request_w.onload = function() {
 			
@@ -510,15 +511,38 @@ $(".imgpreview img").click(function() {
 
 
 // Signature aléatoire
-$(document).ready(function() {
-    var quotes = new Array("<p>Made in France with ❤️<br> by <a href='https://victor-azevedo.me/'>Victor Azevedo</a> & <a href='https://tahoe.be'>Tahoe Beetschen</a></p>", "<p>Made in France with ❤️<br> by <a href='https://tahoe.be'>Tahoe Beetschen</a> & <a href='https://victor-azevedo.me/'>Victor Azevedo</a></p>");
-    var randno = Math.floor(Math.random()*(quotes.length));
-    $('.signature').append(quotes[randno]);
-    console.log(randno);
-});
+function signature() {
+	var v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
+	var t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>";
+
+    var r = Math.floor(Math.random() * 2);
+
+    if (r % 2 === 0) {
+    	$('.signature .rand').append(v + " & " + t);
+	} else {
+		$('.signature .rand').append(t + " & " + v);
+	}
+}
+	
 
 
+function traduction() {
+	var translator = $('body').translate({lang: "en", t: dict});
+	
+	//init
+	translator.lang(localStorage.lang);
+	$(".lang").value = localStorage.lang;
 
+
+	//selection de langue
+	//localStorage + weather update + body trad
+	$(".lang").change(function() {
+		
+		localStorage.lang = this.value;
+		translator.lang(this.value);
+		weather(this.value);
+	});
+}
 
 
 
@@ -531,4 +555,6 @@ $(document).ready(function() {
 	date();
 	clock();
 	greetings();
+	signature();
+	traduction();
 });

@@ -300,10 +300,6 @@ input[name="url"] {
 	margin-right: 30%
 }
 
-.change_weather .param input {
-	width: 67%;
-}
-
 ::placeholder {
 	color: #8c8d8e;
 	opacity: 1;

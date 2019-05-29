@@ -9,8 +9,9 @@
 	<link rel="stylesheet" href="src/styles/settings.css">
 
 	<script src="src/scripts/jquery-3.4.1.min.js"></script>
+	<script src="src/scripts/translate.min.js"></script>
+	<script src="src/scripts/lang.js" defer></script>
 	<script src="src/scripts/script.js" defer></script>
-	<script src="src/scripts/lang.js"></script>
 
 </head>
 
@@ -25,14 +26,14 @@
 	<div class="settings">
 
 		<div class="title">
-			<h1>Settings</h1>
+			<h1 class="trn">Settings</h1>
 		</div>
 
 		<div class="change_background">          
-			<h5 class="subtitle">Background</h5>
+			<h5 class="subtitle trn">Background</h5>
 			<div class="param">
 				<div class="bac">
-					<span class="span">Choose background</span>
+					<span class="span trn">Choose background</span>
 					<div class="choosable_backgrounds">
 
 						<div class="imgpreview">
@@ -53,7 +54,7 @@
 
 					</div>
 					<hr>
-					<span class="span">Custom background</span>
+					<span class="span trn">Custom background</span>
 					<div class="custom_bg">
 						<input type="file" name="background_file">
 						<img src="" class="bg_preview">
@@ -63,31 +64,31 @@
 				<hr>
 
 				<div class="blur">
-					<span class="span">Blur intensity</span>
+					<span class="span trn">Blur intensity</span>
 					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
 			</div>
 		</div>
 
 		<div class="addlink">
-			<h5 class="subtitle">Quick Links</h5>
+			<h5 class="subtitle trn">Quick Links</h5>
 			<div class="param">
 				<input type="text" name="title" placeholder="Title">
 				<input type="url" name="url" placeholder="URL">
-				<button class="submitlink">Add</button>
+				<button class="submitlink trn">Add</button>
 			</div>
 		</div>
 
 		<div class="change_weather">
-			<h5 class="subtitle">Weather</h5>
+			<h5 class="subtitle trn">Weather</h5>
 			<div class="param">
 				<input type="text" name="city" placeholder="City">
-				<button class="submitw_city">Change city</button>
+				<button class="submitw_city trn">Change city</button>
 
 				<hr>
 
 				<div class="units">
-					<span class="span">Imperial units</span>
+					<span class="span trn">Imperial units</span>
 					<div>
 						<label class="switch">
 							<input type="checkbox">
@@ -100,19 +101,25 @@
 		</div>
 
 		<div class="lang_section">
-			<h5 class="subtitle">Language</h5>
+			<h5 class="subtitle trn">Language</h5>
 			<div class="param">
 				<div class="choose_language">
-					<span class="span">Choose language</span>
+					<span class="span trn">Choose language</span>
 					<select class="lang">
-						<option value="en">English</option>
-						<option value="fr">Français</option>
+						<option value="en" class="trn">English</option>
+						<option value="fr" class="trn">Français</option>
 					</select>
 				</div>
 			</div>
 		</div>
 
-		<div class="signature"></div>
+		<div class="signature">
+			<p class="trn">Made in France with ❤️</p>
+			<p>
+				<span class="trn">by</span>
+				<span class="rand"></span>
+			</p>
+			</div>
 
 	</div>
 	
@@ -123,20 +130,27 @@
 			</div>
 
 			<div class="date">
-				<span></span>
+				<span class="trn jour"></span>
+				<span class="trn chiffre"></span>
+				<span class="trn mois"></span>
 			</div>
 		</div>
 
 		<div class="main">
-			<h3 class="greetings"></h3>
+			<h3 class="greetings trn"></h3>
 
 			<div class="weather">
-				<p class="w_description">Weather is loading, please wait.</p>
+				<p>
+					<span class="trn w_desc_meteo"></span>
+					<span class="trn">It is </span>
+					<span class="trn w_desc_temp"></span>
+					<span class="trn">currently.</span>
+				</p>
 
 				<div class="w_widget">
 					<img src="" class="w_icon">
 					<div class="w_widget_text">
-						<span class="w_temp"></span>
+						<span class="w_desc_temp"></span>
 					</div>
 				</div>
 			</div>
