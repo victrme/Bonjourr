@@ -1,4 +1,7 @@
 var dict = {
+  "New Tab": {
+    fr: "Nouvel onglet"
+  },
   "Settings": {
     fr: "Réglages"
   },

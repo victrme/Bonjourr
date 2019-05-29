@@ -527,7 +527,7 @@ function signature() {
 
 
 function traduction() {
-	var translator = $('body').translate({lang: "en", t: dict});
+	var translator = $('html').translate({lang: "en", t: dict});
 	
 	//init
 	translator.lang(localStorage.lang);

@@ -380,7 +380,7 @@ input:checked + .slider:before {
 .signature {
 	padding-right: .5em;
 	padding-left: .5em;
-	margin-top: 2em;
+	margin-top: 5em;
 	text-align: center;
 	position: relative;
 	bottom: 10px;
