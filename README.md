@@ -1,5 +1,5 @@
 
-# TodayWeather
+# Bonjourr
 iOS 12 styled startpage
 
 Welcomes you, informs about the weather and lets you add links to quickly access your favorite websites.
