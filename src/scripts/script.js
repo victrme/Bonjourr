@@ -395,6 +395,11 @@ function weather(changelang) {
 
 	//affiche la ville dans l'input de ville
 	$(".change_weather input[name='city']").val(localStorage.wCity);
+
+	//check imperial
+	if (localStorage.wUnit === "imperial") {
+		$(".switch input").checked = true;
+	}
 }
 
 

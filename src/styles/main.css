@@ -22,7 +22,7 @@
 body, .showSettings button {
 	margin: 0;
     cursor: default;
-    background: #666;
+    background: #222;
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
