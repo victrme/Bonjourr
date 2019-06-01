@@ -37,7 +37,6 @@
 }
 
  .showSettings button img, .w_icon {
-	-webkit-filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
 	filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
  }
 
@@ -58,8 +57,6 @@
 	text-align: left;
 	color: #222;
 
-	-webkit-box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
 	box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
 }
 
@@ -238,8 +235,6 @@ input[type="range"]::-ms-thumb {
     border-radius: 50px;
     border: 0;
 
-    -webkit-box-shadow: 0px 1px 3px 1.5px #b8b8b8;
-	-moz-box-shadow: 0px 1px 3px 1.5px #b8b8b8;
 	box-shadow: 0px 1px 3px 1.5px #b8b8b8;
 }
 
@@ -301,8 +296,9 @@ input[name="url"] {
 }
 
 ::placeholder {
-	color: #8c8d8e;
+	color: #7c7d7e;
 	opacity: 1;
+	text-transform: capitalize;
 }
 
 button {
@@ -350,10 +346,7 @@ button {
 	-webkit-transition: .4s;
 	transition: .4s;
 	border-radius: 50%;
-
-	-webkit-box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
-	-moz-box-shadow:    0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
-	box-shadow:         0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
+	box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
 }
 
 input:checked + .slider {
@@ -365,8 +358,6 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-	-webkit-transform: translateX(22px);
-	-ms-transform: translateX(22px);
 	transform: translateX(22px);
 }
 

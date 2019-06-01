@@ -102,13 +102,6 @@ function appendblock(title, url, index) {
 	var b = "<div class='block'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'></a></div><p>" + title + "</p></div>";
 
 	$(".linkblocks").append(b);
-	
-	//ajoute l'opacité comme transition
-	var lastChild = $(".linkblocks div:last-child")[0];
-
-	setTimeout(function() {
-		$(lastChild).css("opacity", 1);
-	},100);
 }
 
 //initialise les blocs en fonction du storage
@@ -146,7 +139,7 @@ function showRemoveLink() {
 		remTimeout = setTimeout(function() {
 
 			var block = e.currentTarget;
-			$(block).find(".remove").css("opacity", "1");
+			$(block).find(".remove").addClass("visible");
 
 			canRemove = true;
 
@@ -158,7 +151,7 @@ function showRemoveLink() {
 		clearTimeout(remTimeout);
 
 		var block = e.currentTarget;
-		$(block).find(".remove").css("opacity", "0");
+		$(block).find(".remove").removeClass("visible");
 
 		canRemove = false;
 	});
@@ -170,7 +163,7 @@ function showRemoveLink() {
 
 		//enleve le html du block
 		var block = $(".linkblocks")[0].children[i];
-		$(block).css("opacity", 0);
+		$(block).addClass("removed");
 		
 		setTimeout(function() {
 			$(block).remove();
@@ -206,20 +199,39 @@ function filterUrl(str) {
 	}
 }
 
-//quand on rajoute un link
+
 //append avec le titre, l'url ET l'index du bloc
 //rajoute ces données au storage
 //remet a zero les inputs
-$(".submitlink").click(function() {
+function linkSubmission() {
+
 	var title = $(".addlink input[name='title'").val();
 	var url = filterUrl($(".addlink input[name='url'").val());
+	var index = storage("get").length;
 
-	appendblock(title, url, storage("get").length);
+	appendblock(title, url, index);
 
 	storage("save", title, url);
 
 	$(".addlink input[name='title'").val("");
 	$(".addlink input[name='url'").val("");
+}
+
+$('.addlink input[name="url"]').on('keypress', function(e) {
+
+		if(e.which === 13){
+			//disable
+			$(this).attr("disabled", "disabled");
+
+			linkSubmission();
+			
+			//reenable
+			$(this).removeAttr("disabled");
+		}
+	});
+
+$(".submitlink").click(function() {
+	linkSubmission();
 });
 
 
@@ -362,7 +374,7 @@ function weather(changelang) {
 				dataHandling(data);					
 
 			} else {
-				console.log('error');
+				console.log(request_w.status);
 			}
 		}
 
@@ -370,15 +382,35 @@ function weather(changelang) {
 	}
 	
 
-
-
 	//quand on accepte la nouvelle ville
 	//req la meteo avec la ville et l'enregistre
-	$(".submitw_city").click(function() {
-		var city = $(".change_weather input[name='city']").val();
+	function updateWeatherCity() {
+		var city = $(".change_weather input[name='city']");
+		var val = city.val();
 
-		weatherRequest(city, localStorage.wUnit);
-		localStorage.wCity = city;
+		weatherRequest(val, localStorage.wUnit);
+		localStorage.wCity = val;
+		city.attr("placeholder", val);
+		city.val("");
+		city.blur();
+	}
+
+	
+	$(".submitw_city").click(function() {
+		updateWeatherCity();
+	});
+
+	$('.change_weather input[name="city"]').on('keypress', function(e) {
+
+		if(e.which === 13){
+			//disable
+			$(this).attr("disabled", "disabled");
+
+			updateWeatherCity();
+			
+			//reenable
+			$(this).removeAttr("disabled");
+		}
 	});
 
 
@@ -414,10 +446,10 @@ function weather(changelang) {
 	}
 
 	//affiche la ville dans l'input de ville
-	$(".change_weather input[name='city']").val(localStorage.wCity);
+	$(".change_weather input[name='city']").attr("placeholder", localStorage.wCity);
 
 	//check imperial
-	if (localStorage.wUnit === "imperial") {
+	if (u && u === "imperial") {
 		$(".switch input").checked = true;
 	}
 }
