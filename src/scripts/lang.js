@@ -41,17 +41,17 @@ var dict = {
   "by": {
     fr: "par"
   },
-  "Good morning": {
-    fr: "Bonne matinée"
+  "Good Morning": {
+    fr: "Bonne Matinée"
   },
   "Good Afternoon": {
-    fr: "Bonne après midi"
+    fr: "Bonne Après-midi"
   },
-  "Good evening": {
-    fr: "Bonne soirée"
+  "Good Evening": {
+    fr: "Bonne Soirée"
   },
-  "Good night": {
-    fr: "Bonne nuit"
+  "Good Night": {
+    fr: "Bonne Nuit"
   },
   "It is ": {
     fr: "Il fait "
