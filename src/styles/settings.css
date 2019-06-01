@@ -7,7 +7,7 @@
 }
 
 .showSettings {
-	position:absolute;
+	position: fixed;
 	bottom: .7em;
 	right: .7em;
 	z-index: 3;
