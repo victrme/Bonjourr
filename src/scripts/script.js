@@ -98,9 +98,17 @@ function appendblock(title, url, index) {
 
 	var bestIconUrl = "https://besticon-demo.herokuapp.com/icon?url=" + getdomainroot(url) + "&size=80..120..200";
 
-	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'><p>" + title + "</p></a><button class='remove'><img src='src/images/x.png'</button><div>";
+	//le DOM du block
+	var b = "<div class='block'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'></a></div><p>" + title + "</p></div>";
 
 	$(".linkblocks").append(b);
+	
+	//ajoute l'opacité comme transition
+	var lastChild = $(".linkblocks div:last-child")[0];
+
+	setTimeout(function() {
+		$(lastChild).css("opacity", 1);
+	},100);
 }
 
 //initialise les blocs en fonction du storage
@@ -136,16 +144,22 @@ function showRemoveLink() {
 	$(".linkblocks").on("mouseenter", ".block", function(e) {
 
 		remTimeout = setTimeout(function() {
-			//console.log(e.currentTarget.children[1]);
-			e.currentTarget.children[1].setAttribute("style", "opacity: 1");
+
+			var block = e.currentTarget;
+			$(block).find(".remove").css("opacity", "1");
+
 			canRemove = true;
+
 		}, 500);
 	});
 
 	$(".linkblocks").on("mouseleave", ".block", function(e) {
 
 		clearTimeout(remTimeout);
-		e.currentTarget.children[1].setAttribute("style", "opacity: 0");
+
+		var block = e.currentTarget;
+		$(block).find(".remove").css("opacity", "0");
+
 		canRemove = false;
 	});
 
@@ -155,7 +169,13 @@ function showRemoveLink() {
 	function removeblock(i) {
 
 		//enleve le html du block
-		$(".linkblocks")[0].children[i].remove();
+		var block = $(".linkblocks")[0].children[i];
+		$(block).css("opacity", 0);
+		
+		setTimeout(function() {
+			$(block).remove();
+		}, 200);
+		
 		
 		//coupe en 2 et concat sans le link a remove
 		function ejectIntruder(arr) {
@@ -173,7 +193,7 @@ function showRemoveLink() {
 	//prend l'index du parent du .remove clické
 	$(".linkblocks").on("click", ".remove", function() {
 		
-		var index = $(".block").index(this.parentElement);
+		var index = $(this).parent().parent().index();
 		(canRemove ? removeblock(index) : "");
 	});
 }
@@ -429,6 +449,7 @@ function renderImage(file) {
 $(".change_background input[name='background_file']").change(function() {
 
 	renderImage(this.files[0]);
+	console.log(this.files);
 });
 
 
