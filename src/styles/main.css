@@ -209,9 +209,10 @@ p, h3 {
 	}
 }
 
-.block.wiggly {
+.block:hover {
 	animation-name: wiggle;
 	animation-iteration-count: infinite;
 	transform-origin: 50% 10%;
+	animation-delay: 1s;
 	animation-duration: .25s;
 }
