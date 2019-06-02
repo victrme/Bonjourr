@@ -99,7 +99,7 @@ function appendblock(title, url, index) {
 	var bestIconUrl = "https://besticon-demo.herokuapp.com/icon?url=" + getdomainroot(url) + "&size=80..120..200";
 
 	//le DOM du block
-	var b = "<div class='block_parent'><div class='block'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'></a></div><p>" + title + "</p></div></div>";
+	var b = "<div class='block_parent'><div class='block' source='" + url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + bestIconUrl + "'></div><p>" + title + "</p></div></div>";
 
 	$(".linkblocks").append(b);
 }
@@ -134,26 +134,37 @@ function showRemoveLink() {
 	var canRemove = false;
 
 	//utilise on pour le dom rajouté après le document.load
-	$(".linkblocks").on("mouseenter", ".block", function(e) {
+	$(".linkblocks").on("mousedown", ".block", function(e) {
 
 		remTimeout = setTimeout(function() {
 
-			var block = e.currentTarget;
-			$(block).find(".remove").addClass("visible");
+			$(".block").find(".remove").addClass("visible");
+			$(".block").addClass("wiggly");
 
 			canRemove = true;
 
 		}, 1000);
 	});
 
-	$(".linkblocks").on("mouseleave", ".block", function(e) {
+	$(".linkblocks").mouseleave(function(e) {
 
 		clearTimeout(remTimeout);
 
-		var block = e.currentTarget;
-		$(block).find(".remove").removeClass("visible");
+		$(".block").find(".remove").removeClass("visible");
+		$(".block").removeClass("wiggly");
 
 		canRemove = false;
+	});
+
+
+	$(".linkblocks").on("click", ".block", function(e) {
+
+		clearTimeout(remTimeout);
+
+		if (canRemove === false) {
+			console.log($(this).attr("source"));
+			window.location = $(this).attr("source");
+		}
 	});
 
 
