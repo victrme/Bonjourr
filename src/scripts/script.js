@@ -129,29 +129,59 @@ function initblocks() {
 //affiche le bouton pour suppr le link
 function showRemoveLink() {
 
+	//envoie l'url du a dans un href temporaire
+	//ou inversement
+	function hrefHandling(state) {
+		$(".block a").each(function() {
+			
+			if (state === "disable") {
+				var h = $(this).attr("href");
+				$(this).attr("hreftemp", h);
+				$(this).removeAttr("href");
+			}
+			if (state === "enable") {
+				var h = $(this).attr("hreftemp");
+				$(this).attr("href", h);
+				$(this).removeAttr("hreftemp");
+			}
+		});
+	}
 
 	var remTimeout;
 	var canRemove = false;
 
-	//utilise on pour le dom rajouté après le document.load
-	$(".linkblocks").on("mouseenter", ".block", function(e) {
 
+	//utilise on pour le dom rajouté après le document.load
+	//si la souris appuie sur un block
+	$(".linkblocks").on("mousedown", ".block", function(e) {
+
+		//enleve le href, rejoute les classes
+		//focus linkblocks et active le remove
 		remTimeout = setTimeout(function() {
 
-			var block = e.currentTarget;
-			$(block).find(".remove").addClass("visible");
+			hrefHandling("disable");
+
+			$(".block").find(".remove").addClass("visible");
+			$(".block").addClass("wiggly");
+			$(".linkblocks").focus();
 
 			canRemove = true;
 
 		}, 1000);
 	});
 
-	$(".linkblocks").on("mouseleave", ".block", function(e) {
+	//si linkblocks perd le focus
+	$(".linkblocks").on("focusout", ".block", function(e) {
 
+		//enleve le timeout si <1000ms
+		//rajoute le href, enleve les classes
+		//désactive le remove
 		clearTimeout(remTimeout);
 
-		var block = e.currentTarget;
-		$(block).find(".remove").removeClass("visible");
+		hrefHandling("enable");
+
+		$(".block").find(".remove").removeClass("visible");
+		$(".block").removeClass("wiggly");
 
 		canRemove = false;
 	});
