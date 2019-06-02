@@ -99,7 +99,7 @@ function appendblock(title, url, index) {
 	var bestIconUrl = "https://besticon-demo.herokuapp.com/icon?url=" + getdomainroot(url) + "&size=80..120..200";
 
 	//le DOM du block
-	var b = "<div class='block'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'></a></div><p>" + title + "</p></div>";
+	var b = "<div class='block_parent'><div class='block'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><a href='" + url + "'><img class='l_icon' src='" + bestIconUrl + "'></a></div><p>" + title + "</p></div></div>";
 
 	$(".linkblocks").append(b);
 }
@@ -143,7 +143,7 @@ function showRemoveLink() {
 
 			canRemove = true;
 
-		}, 500);
+		}, 1000);
 	});
 
 	$(".linkblocks").on("mouseleave", ".block", function(e) {
@@ -186,7 +186,7 @@ function showRemoveLink() {
 	//prend l'index du parent du .remove clické
 	$(".linkblocks").on("click", ".remove", function() {
 		
-		var index = $(this).parent().parent().index();
+		var index = $(this).parent().parent().parent().index();
 		(canRemove ? removeblock(index) : "");
 	});
 }
