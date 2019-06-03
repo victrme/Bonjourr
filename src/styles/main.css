@@ -26,25 +26,9 @@ body, .showSettings button {
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
-	font-family: sf_pro_displaythin;
+	font-family: sf_pro_displaylight;
 	font-size: 16px;
 	text-align: center;
-}
-
-@media screen and (min-width: 3000px) {
-	body {font-size: 20px}
-}
-
-@media screen and (min-width: 2100px) {
-	body {font-size: 18px}
-}
-
-@media screen and (max-width: 1400px) {
-	body {font-size: 15px}
-}
-
-@media screen and (max-width: 700px) {
-	body {font-size: 14px}
 }
 
 
@@ -75,6 +59,10 @@ p, h3 {
 	justify-content: space-around;
 }
 
+.interface > div {
+	padding: 2em;
+}
+
 .pushed {
 	margin-left: -20em;
 }
@@ -90,15 +78,12 @@ p, h3 {
 
 .greetings {
 	font-size: 3em;
+	font-weight: lighter;
 	padding-bottom: 0.3em;
 }
 
 .weather p {
 	font-size: 1.5em;
-}
-
-.w_desc_meteo {
-	text-transform: capitalize;
 }
 
 .w_widget {
@@ -150,7 +135,7 @@ p, h3 {
 	cursor: pointer;
 }
 .block_parent .l_icon_wrap:hover {
-	border: 4px solid #007aff;
+	border: .3em solid #007aff;
 }
 
 .block_parent a {
@@ -214,4 +199,27 @@ p, h3 {
 	animation-iteration-count: infinite;
 	transform-origin: 50% 10%;
 	animation-duration: .25s;
+}
+
+
+
+
+
+
+@media screen and (min-width: 3000px) {
+	body {font-size: 20px}
+}
+
+@media screen and (min-width: 2100px) {
+	body {font-size: 18px}
+}
+
+@media screen and (max-width: 1400px) {
+	body {font-size: 15px}
+}
+
+@media screen and (max-width: 700px) {
+	body {font-size: 14px}
+	div.interface {height: calc(100vh - 6em);margin: 3em 0;}
+	div.interface > div {padding: 1em 0;}
 }

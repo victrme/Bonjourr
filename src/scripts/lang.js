@@ -53,11 +53,14 @@ var dict = {
   "Good Night": {
     fr: "Bonne Nuit"
   },
-  "It is ": {
-    fr: "Il fait "
+  "It is currently": {
+    fr: "Il fait actuellement"
   },
-  "currently.": {
-    fr: "actuellement."
+  "A high of": {
+    fr: "Avec une maximale de"
+  },
+  "today.": {
+    fr: "aujourd'hui."
   },
   "Monday": {
     fr: "Lundi"
@@ -121,11 +124,5 @@ var dict = {
   },
   "Choose language": {
     fr: "Choix de la langue "
-  },
-  "The highest will be": {
-    fr: "La plus haute température sera de"
-  },
-  "today.": {
-    fr: "aujourd'hui."
   }
 }
