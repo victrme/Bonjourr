@@ -120,6 +120,12 @@ var dict = {
     fr: "Langue"
   },
   "Choose language": {
-    fr: "Choix de la langue"
+    fr: "Choix de la langue "
+  },
+  "The highest will be": {
+    fr: "La plus haute température sera de"
+  },
+  "today.": {
+    fr: "aujourd'hui."
   }
 }
