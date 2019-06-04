@@ -40,10 +40,9 @@ p, h3 {
 	position: fixed;
 	width: 100vw;
 	height: 100vh;
-	background-color: #eee;
+	background-color: #222;
 	background-size: cover;
 	background-position: center center;
-	background-image: url('../images/background.jpg');
 
 	filter: blur(30px);
 	transform: scale(1.1); 
@@ -102,7 +101,7 @@ div.linkblocks {
 	justify-content: center;
 	max-width: 900px;
 	margin: 0 auto;
-	padding: 1em 3em;
+	padding: 1em 2em;
 }
 
 .block_parent {

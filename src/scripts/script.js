@@ -49,7 +49,9 @@ function greetings() {
 
 
 
-
+/*
+LIENS FAVORIS
+*/
 
 
 
@@ -259,9 +261,9 @@ $(".submitlink").click(function() {
 
 
 
-
-
-
+/*
+DATE
+*/
 
 
 
@@ -282,12 +284,9 @@ function date() {
 
 
 
-
-
-
-
-
-
+/*
+METEO
+*/
 
 
 
@@ -503,7 +502,44 @@ function weather(changelang) {
 
 
 
+/* 
+BACKGROUND
+*/
 
+
+function initBackground() {
+
+	var bg = localStorage.bg;
+	var bg_type = localStorage.bg_type;
+	var bg_blur = localStorage.bg_blur;
+
+	
+	//default = les images pré définies
+	if (bg_type === "default") {
+
+		$('.background').css("background-image", 'url(' + bg + ')');
+	}
+	//custom c'est avec le RenderFile
+	else if (bg_type === "custom") {
+
+		$('.change_background .bg_preview').css("visibility", "visible");
+		$('.change_background .bg_preview').attr("src", "url(" + bg + ")");
+		$('.background').css("background-image", "url(" + bg + ")");
+	}
+	//dynamic ajoute simplement l'url unsplash
+	else if (bg_type === "dynamic") {
+
+		$(".background").css("background-image", "url('https://source.unsplash.com/collection/4933370/1920x1200/daily')");
+		$("div.dynamic_bg input").prop("checked", true);
+	}
+	//sans rien l'image de base est utilisé
+	else {
+		$('.background').css("background-image", 'url("src/images/background.jpg")');
+	}
+
+	//ensuite on blur
+	blurThis(localStorage.bg_blur);
+}
 
 
 // render the image in our view
@@ -515,73 +551,36 @@ function renderImage(file) {
 	// inject an image with the src url
 	reader.onload = function(event) {
 		url = event.target.result
-		localStorage.background = url;
+		localStorage.bg = url;
+		localStorage.bg_type = "custom";
 		$('.change_background .bg_preview').attr("src", url);
-		$('.background').css("background-image", 'url(' + localStorage.background + ')');
+		$('.background').css("background-image", 'url(' + url + ')');
 	}
 
 	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
 }
 
+
+function blurThis(val) {
+	$('.background').css("filter", 'blur(' + val + 'px)');
+	localStorage.bg_blur = val;
+}
+
+
 // handle input changes
 $(".change_background input[name='background_file']").change(function() {
 
 	renderImage(this.files[0]);
-	console.log(this.files);
 });
 
 
-
-
-
-function initBackground() {
-
-	var ls = localStorage.background;
-
-	//si le background est custom
-	//change le bg_preview et le background meme
-	//sinon utilise celui de base
-	if (ls) {
-
-		//si c'est en base64 (donc custom)
-		if (ls.startsWith("data")) {
-			$('.change_background .bg_preview').attr("src", ls);
-			$('.change_background .bg_preview').css("visibility", "visible");
-		}
-
-
-		$('.background').css("background-image", 'url(' + ls + ')');
-
-		bg_blur(localStorage.background_blur);
-		
-	} else {
-		$('.change_background .bg_preview').css("visibility", "visible");
-		$('.change_background .bg_preview').attr("src", "src/images/background.jpg");
-		$('.background').css("background-image", 'url("src/images/background.jpg")');
-	}
-}
-
-
-function bg_blur(val) {
-	$('.background').css("filter", 'blur(' + val + 'px)');
-	localStorage.background_blur = val;
-}
 
 // handle input changes
 $(".change_background input[name='background_blur']").change(function() {
 
-	bg_blur(this.value);
+	blurThis(this.value);
 });
-
-
-//affiche les settings (temporaire)
-$(".showSettings button").click(function() {
-	$(this).toggleClass("shown");
-	$(".settings").toggleClass("shown");
-	$(".interface").toggleClass("pushed");
-});
-
 
 //pour preview le default background
 $(".imgpreview img").mouseenter(function() {
@@ -597,22 +596,57 @@ $(".imgpreview img").mouseleave(function() {
 	initBackground();
 });
 
-var th;
+
+
 //pour choisir un default background
+var th;
 $(".imgpreview img").click(function() {
 
-
+	//enleve selected a tout le monde et l'ajoute au bon
 	$(".imgpreview").removeClass("selected");
 	th = $(this)[0].parentElement.setAttribute("class", "imgpreview selected");
 
+	//prend le src de la preview et l'applique au background
 	var source = this.attributes.src.value;
 	$(".background").css("background-image", "url('" + source + "')");
-	localStorage.background = source;
+
+	//sauve la source et 
+	localStorage.bg = source;
+	localStorage.bg_type = "default";
+});
+
+
+//quand on active le bg dynamique
+$("div.dynamic_bg input").change(function() {
+
+	if (this.checked) {
+
+		$(".background").css("background-image", "url('https://source.unsplash.com/collection/4933370/1920x1200/daily')");
+		localStorage.bg_type = "dynamic";
+
+	} else {
+
+		$(".background").css("background-image", 'url("src/images/background.jpg")');
+		localStorage.bg_type = "default";
+	}
 });
 
 
 
 
+
+
+
+
+
+
+
+//affiche les settings
+$(".showSettings button").click(function() {
+	$(this).toggleClass("shown");
+	$(".settings").toggleClass("shown");
+	$(".interface").toggleClass("pushed");
+});
 
 
 // Signature aléatoire
