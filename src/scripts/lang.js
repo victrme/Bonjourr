@@ -14,6 +14,12 @@ var dict = {
   "Custom background": {
     fr: "Arrière plan personnalisé"
   },
+  "Dynamic backgrounds": {
+    fr: "Arrière plan dynamique"
+  },
+  "Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.": {
+    fr: "Activez cette option pour que votre arrière plan change chaque jour via la sélection de l'équipe Bonjourr."
+  },
   "Blur intensity": {
     fr: "Intensité du flou"
   },
