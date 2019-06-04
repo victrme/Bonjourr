@@ -31,9 +31,6 @@ body, .showSettings button {
 	text-align: center;
 }
 
-
-
-
 p, h3 {
 	margin: 0;
 }
@@ -69,6 +66,7 @@ p, h3 {
 
 
 #clock {
+	font-family: sf_pro_displaythin;
 	font-size: 6em;
 }
 
@@ -201,7 +199,16 @@ p, h3 {
 	animation-duration: .25s;
 }
 
-
+@keyframes keyframes2 {
+	0% {
+		transform: rotate(1deg);
+		animation-timing-function: ease-in;
+	}
+	50% {
+		transform: rotate(-1.5deg);
+		animation-timing-function: ease-out;
+	}
+}
 
 
 
