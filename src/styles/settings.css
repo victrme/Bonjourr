@@ -383,3 +383,9 @@ input:checked + .slider:before {
 	text-decoration: none;
 	color: #007aff;
 }
+
+#rdv_website {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
