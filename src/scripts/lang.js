@@ -56,7 +56,7 @@ var dict = {
   "It is currently": {
     fr: "Il fait actuellement"
   },
-  "The high will be": {
+  "with a high of": {
     fr: "avec une maximale de"
   },
   "today.": {

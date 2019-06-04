@@ -56,10 +56,6 @@ p, h3 {
 	justify-content: space-around;
 }
 
-.interface > div {
-	padding: 2em;
-}
-
 .pushed {
 	margin-left: -20em;
 }
@@ -80,11 +76,11 @@ p, h3 {
 	padding-bottom: 0.3em;
 }
 
-.weather p {
+.weather div {
 	font-size: 1.5em;
 }
 
-.w_widget {
+div.w_widget {
 	display: flex;
 	height: 100px;
 	justify-content: center;
@@ -96,16 +92,17 @@ p, h3 {
 	padding-right: 10px;
 }
 
-.w_widget_text {
-	font-size: 3em;
+div.w_widget_text {
+	font-size: 3rem;
 }
 
-.linkblocks {
+div.linkblocks {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	max-width: 900px;
 	margin: 0 auto;
+	padding: 1em 3em;
 }
 
 .block_parent {
@@ -227,6 +224,5 @@ p, h3 {
 
 @media screen and (max-width: 700px) {
 	body {font-size: 14px}
-	div.interface {height: calc(100vh - 6em);margin: 3em 0;}
-	div.interface > div {padding: 1em 0;}
+	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
 }

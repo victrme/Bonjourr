@@ -142,8 +142,6 @@ function showRemoveLink() {
 	//j'appuie sur le block pour afficher le remove
 	$(".linkblocks").on(eventEnter, ".block", function() {
 
-		console.log(eventEnter);
-
 		remTimeout = setTimeout(function() {
 
 			$(".block").find(".remove").addClass("visible");
@@ -346,36 +344,41 @@ function weather(changelang) {
 		else if (id === 803 || id === 804) {
 			return "brokenclouds"
 		}
-		else {
-			console.log(id);
-		}
-	}
-
-	function maxTempMorningOnly(source) {
-		
-		//si c'est l'après midi, on enleve la partie temp max
-		var date = new Date();
-		
-		if (date.getHours() < 12) {
-			
-			$(".w_desc_temp_max").text(Math.floor(source.main.temp_max) + "°");
-		} else {
-			$(".hightemp").empty();
-		}
 	}
 
 
 	function dataHandling(data) {
 
-
 		//pour la description et temperature
 		//Rajoute une majuscule à la description
 		var meteoStr = data.weather[0].description;
 		meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1);
+		$(".w_desc_meteo").text(meteoStr + ".");
 
-		$(".w_desc_meteo").text(meteoStr);
-		$(".w_desc_temp").text(Math.floor(data.main.temp));
-		maxTempMorningOnly(data);
+
+
+		//si c'est l'après midi (apres 13h), on enleve la partie temp max
+		var dtemp, wtemp;
+		var date = new Date();
+		if (date.getHours() < 13) {
+
+			//temp de desc et temp de widget sont pareil
+			dtemp = wtemp = Math.floor(data.main.temp) + "°";
+			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");
+
+			
+		} else {
+
+			//temp de desc devient temp de widget + un point
+			//on vide la catégorie temp max
+			wtemp = Math.floor(data.main.temp) + "°";
+			dtemp = wtemp + ".";
+			$("div.hightemp").empty();
+
+		}
+
+		$(".w_desc_temp").text(dtemp);
+		$(".w_widget_temp").text(wtemp);
 
 	
 
