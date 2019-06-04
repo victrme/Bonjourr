@@ -42,13 +42,13 @@ var dict = {
     fr: "par"
   },
   "Good Morning": {
-    fr: "Bonne Matinée"
+    fr: "Bonjour"
   },
   "Good Afternoon": {
     fr: "Bonne Après-midi"
   },
   "Good Evening": {
-    fr: "Bonne Soirée"
+    fr: "Bonsoir"
   },
   "Good Night": {
     fr: "Bonne Nuit"
@@ -56,8 +56,8 @@ var dict = {
   "It is currently": {
     fr: "Il fait actuellement"
   },
-  "A high of": {
-    fr: "Avec une maximale de"
+  "The high will be": {
+    fr: "avec une maximale de"
   },
   "today.": {
     fr: "aujourd'hui."
@@ -123,6 +123,15 @@ var dict = {
     fr: "Langue"
   },
   "Choose language": {
-    fr: "Choix de la langue "
+    fr: "Choix de la langue"
+  },
+  "Visit": {
+    fr: "Rendez-vous sur"
+  },
+  "&nbsp;our website&nbsp;": {
+    fr: "&nbsp;notre site Internet"
+  },
+  "for infos and donations": {
+    fr: "pour en savoir plus ou faire un don"
   }
 }
