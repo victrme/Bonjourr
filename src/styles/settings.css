@@ -97,13 +97,18 @@ h1 {
 	letter-spacing: 0.04em;
 }
 
+.help_sentence {
+	margin-top: 0.5em;
+	font-size: 0.8em;
+}
+
 .span {
 	display: block;
 	font-size: 0.9em;
 	padding-bottom: .5em;		
 }
 
-.units .span {
+.units .span, .dynamic_bg .span {
 	padding-top: .5em;
 }
 
@@ -363,7 +368,7 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.units, .choose_language {
+.units, .choose_language, .dynamic_bg {
 	display: flex;
 	justify-content: space-between;
 }
