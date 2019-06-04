@@ -1,29 +1,14 @@
 	"manifest_version": 2,
 	"name": "Bonjourr Startpage",
+	"short_name": "Bonjourr",
 	"version": "1.0",
 	"description": "Bonjourr is a customizable startpage for the new tabs and windows of your browser. It's inspired by the looks of iOS and is meant to be both beautiful and practical.",
 	"author": "Victor Azevedo and Tahoe Beetschen",
+	"homepage_url": "https://github.com/victorazevedo-me/Bonjourr"
+
 	"icons": {
 	    "120": "favicon.png",
   	},
-
-  	"background": {
-	    "scripts": ["src/scripts/jquery-3.4.1.min.js", "script.js"],
-	    "page": "index.html"
- 	 },
-
-  	"browser_action": {
-	    "default_icon": {
-	      "120": "favicon.png"
-    	},
-	    "default_title": "Bonjourr Startpage",
-	 },
-
-	"permissions": [
-	    "tabs",
-	    "activeTab",
-	    "storage"
-  	],
 
 	"chrome_url_overrides" : {
 		"newtab": "index.html"
