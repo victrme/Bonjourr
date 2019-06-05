@@ -394,3 +394,67 @@ input:checked + .slider:before {
 	flex-wrap: wrap;
 	justify-content: center;
 }
+
+
+
+/* Dark mode
+
+.settings {
+	background-color: black;
+}
+
+hr {
+	border-bottom: 1px solid #3f3f41;
+}
+
+.subtitle {
+	color: #929294;
+	font-family: sf_pro_displaylight;
+}
+
+.param {
+	background-color : #1c1c1e;
+	color: white;
+	border-top: 1px solid #3f3f41;
+	border-bottom: 1px solid #3f3f41;
+}
+
+input[name="title"],
+input[name="url"],
+input[name="city"] {
+	background-color: #39383d;
+	color: white;
+}
+
+input[type="range"] {
+	background-color: #1c1c1e;
+}
+
+.title {
+	background-color : #1c1c1e;
+	color: white;
+	border-top: 0;
+	border-bottom:0;
+}
+
+::-moz-range-thumb {
+	box-shadow:none;
+}
+
+::placeholder {
+	color: #929294;
+}
+
+button {
+	background-color: #1c1c1e;
+}
+
+.slider {
+	background-color: #39383d;
+}
+
+.signature {
+	color: #929294;
+}
+
+*/
