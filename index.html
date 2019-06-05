@@ -30,8 +30,17 @@
 			<h1 class="trn">Settings</h1>
 		</div>
 
+		<div class="addlink">
+			<h5 class="subtitle trn">Quick Links</h5>
+			<div class="param">
+				<input type="text" name="title" placeholder="Title">
+				<input type="url" name="url" placeholder="URL">
+				<button class="submitlink trn">Add</button>
+			</div>
+		</div>
+
 		<div class="change_background">          
-			<h5 class="subtitle trn">Background</h5>
+			<h5 class="subtitle trn">Visuals</h5>
 			<div class="param">
 				<div class="bac">
 					<span class="span trn">Choose background</span>
@@ -85,15 +94,17 @@
 					<span class="span trn">Blur intensity</span>
 					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
-			</div>
-		</div>
 
-		<div class="addlink">
-			<h5 class="subtitle trn">Quick Links</h5>
-			<div class="param">
-				<input type="text" name="title" placeholder="Title">
-				<input type="url" name="url" placeholder="URL">
-				<button class="submitlink trn">Add</button>
+				<hr>
+
+				<div class="dark_mode_option">
+					<span class="span trn">Dark mode</span>
+					<select class="lang">
+						<option value="auto" class="trn">Only at night</option>
+						<option value="enable" class="trn">Enable</option>
+						<option value="disable" class="trn">Disable</option>
+					</select>
+				</div>
 			</div>
 		</div>
 
