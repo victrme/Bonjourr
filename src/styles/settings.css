@@ -112,7 +112,7 @@ h1 {
 	padding-top: .5em;
 }
 
-.choose_language .span, .blur .span, .dark_mode_option .span, .activate_searchbar .span, #choose_browser .span {
+.choose_language .span, .blur .span, .dark_mode_option .span, .activate_searchbar .span, #choose_searchengine .span {
 	padding-bottom: 0px;
 }
 
@@ -368,7 +368,7 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_browser {
+.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_seachengine {
 	display: flex;
 	justify-content: space-between;
 }
