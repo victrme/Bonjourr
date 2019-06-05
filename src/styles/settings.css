@@ -368,7 +368,7 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_seachengine {
+.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_searchengine {
 	display: flex;
 	justify-content: space-between;
 }
