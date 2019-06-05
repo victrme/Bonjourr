@@ -105,14 +105,14 @@ h1 {
 .span {
 	display: block;
 	font-size: 0.9em;
-	padding-bottom: .5em;		
+	padding-bottom: .5em;	
 }
 
-.units .span, .dynamic_bg .span {
+.units .span, .dynamic_bg .span, .activate_searchbar .span  {
 	padding-top: .5em;
 }
 
-.choose_language .span, .blur .span, .dark_mode_option .span {
+.choose_language .span, .blur .span, .dark_mode_option .span, .activate_searchbar .span, #choose_browser .span {
 	padding-bottom: 0px;
 }
 
@@ -368,7 +368,7 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.units, .choose_language, .dynamic_bg, .dark_mode_option {
+.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_browser {
 	display: flex;
 	justify-content: space-between;
 }
