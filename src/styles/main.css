@@ -95,6 +95,24 @@ div.w_widget_text {
 	font-size: 3rem;
 }
 
+/* Searchbar section */
+
+#searchbar_section {
+	align-self: stretch;
+}
+
+.searchbar {
+	opacity: 0.9;
+	font-size: 1.5em;
+	height: 50px;
+	width: 500px;
+	border: 0;
+	border-radius: 4px;
+	padding-left: 1em;
+}
+
+
+
 div.linkblocks {
 	display: flex;
 	flex-wrap: wrap;
