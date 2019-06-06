@@ -46,6 +46,18 @@ function greetings() {
 
 
 
+function deleteBrowserStorage() {
+	browser.storage.local.clear().then(() => {
+		console.log("bien supprimé");
+	});
+}
+
+function getBrowserStorage() {
+	browser.storage.local.get().then((data) => {
+		console.log(data);
+	});
+}
+
 
 
 
@@ -55,42 +67,33 @@ LIENS FAVORIS
 
 
 
-//localStorage handling basique
-//get retourne le LS parsed
-//save push le l'objet a sauvegarder dans la liste
-//remove est dans une autre fonction (pk je sais pas)
-function storage(state, title, url) {
-	if (state === "get") {
+//initialise les blocs en fonction du storage
+//utilise simplement une boucle de appendBlock
+function initblocks() {
 
-		if (localStorage.links) {
-			return JSON.parse(localStorage.links);
+	$(".linkblocks").empty();
+
+	browser.storage.local.get().then((data) => {
+
+		var lnk = data.links;
+
+		if (lnk) {
+
+			for (var i = 0; i < lnk.length; i++) {
+				appendblock(lnk[i].title, lnk[i].url);
+			}
+
+		} else {
+
+			//faire le truc de présentation des blocks
 		}
-		else {
-			//retourne des sites de base pour faire beau
-			return [["Youtube", "https://youtube.com"], ["Wikipedia", "https://Wikipedia.org"], ["Startpage", "https://www.startpage.com/"], ["Reddit", "https://reddit.com"], ["victor-azevedo.me", "https://victor-azevedo.me"]];
-		}
+
 		
-	}
-
-	if (state === "save") {
-
-		if (localStorage.links) {
-			var arr = JSON.parse(localStorage.links);
-
-			var topush = [title, url];
-			arr.push(topush);
-
-			localStorage.links = JSON.stringify(arr);
-		}
-		else {
-			localStorage.links = JSON.stringify([[title, url]]);
-		}
-	}
+	});
 }
 
-
 //rajoute l'html d'un bloc avec toute ses valeurs et events
-function appendblock(title, url, index) {
+function appendblock(title, url) {
 
 	function getdomainroot(str) {
 		var a = document.createElement('a');
@@ -106,22 +109,6 @@ function appendblock(title, url, index) {
 	$(".linkblocks").append(b);
 }
 
-//initialise les blocs en fonction du storage
-//utilise simplement une boucle de appendBlock
-function initblocks() {
-
-	$(".linkblocks").empty();
-
-	var links = storage("get");
-
-	if (links) {
-
-		for (var i = 0; i < links.length; i++) {
-		
-			appendblock(links[i][0], links[i][1], i);
-		}
-	}
-}
 
 
 
@@ -133,25 +120,29 @@ function showRemoveLink() {
 
 	var remTimeout;
 	var canRemove = false;
+	var mobile = mobilecheck();
 
 	//si mobile, un simple hover ative le remove
 	//sinon il faut appuyer sur le block
-	var eventEnter = (mobilecheck() ? "hover" : "mousedown");
-	var eventLeave = (mobilecheck() ? "focusout" : "mouseleave");
+	var eventEnter = (mobile ? "contextmenu" : "mousedown");
+	var eventLeave = (mobile ? "mouseleave" : "mouseleave");
 
 	
 
 	//j'appuie sur le block pour afficher le remove
 	$(".linkblocks").on(eventEnter, ".block", function() {
 
+		var time = (mobile ? 0 : 1000)
+
 		remTimeout = setTimeout(function() {
 
 			$(".block").find(".remove").addClass("visible");
 			$(".block").addClass("wiggly");
+			$(this).focus();
 
 			canRemove = true;
 
-		}, 1000);
+		}, time);
 	});
 
 	//je sors de la zone de linkblocks pour enlever le remove
@@ -182,25 +173,26 @@ function showRemoveLink() {
 
 	function removeblock(i) {
 
-		//enleve le html du block
-		var block = $(".linkblocks")[0].children[i];
-		$(block).addClass("removed");
-		
-		setTimeout(function() {
-			$(block).remove();
-		}, 200);
-		
-		
-		//coupe en 2 et concat sans le link a remove
-		function ejectIntruder(arr) {
-			var temp0 = arr.slice(i + 1);
-			var temp1 = links.slice(0, i);
+		browser.storage.local.get().then((data) => {
 
-			return temp1.concat(temp0);
-		}
-		
-		var links = storage("get");
-		localStorage.links = JSON.stringify(ejectIntruder(links));
+			//enleve le html du block
+			var block = $(".linkblocks")[0].children[i];
+			$(block).addClass("removed");
+			
+			setTimeout(function() {
+				$(block).remove();
+			}, 200);
+			
+			
+			//coupe en 2 et concat sans le link a remove
+			function ejectIntruder(arr) {
+				
+				return arr.slice(0, i).concat(arr.slice(i + 1));
+			}
+			
+			var links = data.links;
+			browser.storage.local.set({"links": ejectIntruder(links)});
+		});
 	}
 
 
@@ -222,23 +214,42 @@ function filterUrl(str) {
 }
 
 
-//append avec le titre, l'url ET l'index du bloc
-//rajoute ces données au storage
-//remet a zero les inputs
+
 function linkSubmission() {
 
-	var title = $(".addlink input[name='title'").val();
-	var url = filterUrl($(".addlink input[name='url'").val());
-	var index = storage("get").length;
+	browser.storage.local.get().then((data) => {
 
-	if (url.length > 0) {
-		appendblock(title, url, index);
+		//append avec le titre, l'url ET l'index du bloc
+		var title = $(".addlink input[name='title'").val();
+		var url = filterUrl($(".addlink input[name='url'").val());
 
-		storage("save", title, url);
+		if (url.length > 0) {
 
-		$(".addlink input[name='title'").val("");
-		$(".addlink input[name='url'").val("");
-	}
+			appendblock(title, url);
+
+			//creer un array de link
+			var links = [{
+				title: title,
+				url: url
+			}];
+
+			//ajoute au debut de l'array les anciens links
+			if (data.links) {
+				for (var i = 0; i < data.links.length; i++) {
+					links.unshift(data.links[i])
+				}
+			}
+			
+			browser.storage.local.set({links});
+
+			//remet a zero les inputs
+			$(".addlink input[name='title'").val("");
+			$(".addlink input[name='url'").val("");
+		}
+
+	});
+
+	
 	
 }
 
@@ -395,7 +406,7 @@ function weather(changelang) {
 
 
 	//Je préfère isoler la request et utiliser une autre fonction plus haute pour modifier les données
-	function weatherRequest(city, unit, api) {
+	function weatherRequest(city, unit) {
 
 		//a changer
 		api = '7c541caef5fc7467fc7267e2f75649a9';
@@ -434,11 +445,16 @@ function weather(changelang) {
 		var city = $(".change_weather input[name='city']");
 		var val = city.val();
 
-		weatherRequest(val, localStorage.wUnit);
-		localStorage.wCity = val;
-		city.attr("placeholder", val);
-		city.val("");
-		city.blur();
+		browser.storage.local.get().then((data) => {
+
+			weatherRequest(val, data.weather_unit);
+			
+			browser.storage.local.set({"weather_city": val});
+
+			city.attr("placeholder", val);
+			city.val("");
+			city.blur();
+		});
 	}
 
 	
@@ -469,8 +485,12 @@ function weather(changelang) {
 			var unit = "metric";
 		}
 
-		weatherRequest(localStorage.wCity, unit);
-		localStorage.wUnit = unit;
+		browser.storage.local.get().then((data) => {
+
+			weatherRequest(data.weather_city, unit);
+			browser.storage.local.set({"weather_unit": val});
+		});
+		
 	});
 
 
@@ -478,26 +498,31 @@ function weather(changelang) {
 	//initialise a Paris + Metric
 	//si le storage existe, lance avec le storage
 
-	var c = localStorage.wCity;
-	var u = localStorage.wUnit;
+	browser.storage.local.get().then((data) => {
 
-	if (!c) {
-		weatherRequest("Paris", "metric");
+		var city = data.weather_city;
+		var unit = data.weather_unit;
 
-		localStorage.wCity = "paris";
-		localStorage.wUnit = "metric";
-	}
-	else {
-		weatherRequest(c, u);
-	}
+		if (!city) {
+			weatherRequest("Paris", "metric");
 
-	//affiche la ville dans l'input de ville
-	$(".change_weather input[name='city']").attr("placeholder", localStorage.wCity);
+			browser.storage.local.set({"weather_city": "paris"});
+			browser.storage.local.set({"weather_unit": "metric"});
+		}
+		else {
+			weatherRequest(city, unit);
+		}
 
-	//check imperial
-	if (u && u === "imperial") {
-		$(".switch input").checked = true;
-	}
+		//affiche la ville dans l'input de ville
+		$(".change_weather input[name='city']").attr("placeholder", city);
+
+		//check imperial
+		if (unit && unit === "imperial") {
+			$(".switch input").checked = true;
+		}
+	});
+
+	
 }
 
 
@@ -509,36 +534,40 @@ BACKGROUND
 
 function initBackground() {
 
-	var bg = localStorage.bg;
-	var bg_type = localStorage.bg_type;
-	var bg_blur = localStorage.bg_blur;
+	browser.storage.local.get().then((data) => {
 
+		var image = data.background_image;
+		var type = data.background_type;
+		var blur = data.background_blur;
+
+		
+		//default = les images pré définies
+		if (type === "default") {
+
+			$('.background').css("background-image", 'url(' + image + ')');
+		}
+		//custom c'est avec le RenderFile
+		else if (type === "custom") {
+
+			$('.change_background .bg_preview').css("visibility", "visible");
+			$('.change_background .bg_preview').attr("src", "url('" + image + "')");
+			$('.background').css("background-image", "url('" + image + "')");
+		}
+		//dynamic ajoute simplement l'url unsplash
+		else if (type === "dynamic") {
+
+			$(".background").css("background-image", "url('" + image + "')");
+			$("div.dynamic_bg input").prop("checked", true);
+		}
+		//sans rien l'image de base est utilisé
+		else {
+			$('.background').css("background-image", 'url("src/images/background.jpg")');
+		}
+
+		//ensuite on blur
+		blurThis(data.background_blur);
+	});
 	
-	//default = les images pré définies
-	if (bg_type === "default") {
-
-		$('.background').css("background-image", 'url(' + bg + ')');
-	}
-	//custom c'est avec le RenderFile
-	else if (bg_type === "custom") {
-
-		$('.change_background .bg_preview').css("visibility", "visible");
-		$('.change_background .bg_preview').attr("src", "url(" + bg + ")");
-		$('.background').css("background-image", "url(" + bg + ")");
-	}
-	//dynamic ajoute simplement l'url unsplash
-	else if (bg_type === "dynamic") {
-
-		$(".background").css("background-image", "url('https://source.unsplash.com/collection/4933370/1920x1200/daily')");
-		$("div.dynamic_bg input").prop("checked", true);
-	}
-	//sans rien l'image de base est utilisé
-	else {
-		$('.background').css("background-image", 'url("src/images/background.jpg")');
-	}
-
-	//ensuite on blur
-	blurThis(localStorage.bg_blur);
 }
 
 
@@ -550,11 +579,19 @@ function renderImage(file) {
 
 	// inject an image with the src url
 	reader.onload = function(event) {
-		url = event.target.result
-		localStorage.bg = url;
-		localStorage.bg_type = "custom";
+		url = event.target.result;
+
+		/*var background_image = url;
+		var background_type = "custom";*/
+
+		browser.storage.local.set({"background_image": url});
+		browser.storage.local.set({"background_type": "custom"});
+
 		$('.change_background .bg_preview').attr("src", url);
 		$('.background').css("background-image", 'url(' + url + ')');
+
+		//enleve le dynamic si jamais
+		$("div.dynamic_bg input").prop("checked", false);
 	}
 
 	// when the file is read it triggers the onload event above.
@@ -564,7 +601,8 @@ function renderImage(file) {
 
 function blurThis(val) {
 	$('.background').css("filter", 'blur(' + val + 'px)');
-	localStorage.bg_blur = val;
+	
+	browser.storage.local.set({"background_blur": val});
 }
 
 
@@ -602,6 +640,9 @@ $(".imgpreview img").mouseleave(function() {
 var th;
 $(".imgpreview img").click(function() {
 
+	//enleve le dynamic si jamais
+	$("div.dynamic_bg input").prop("checked", false);
+
 	//enleve selected a tout le monde et l'ajoute au bon
 	$(".imgpreview").removeClass("selected");
 	th = $(this)[0].parentElement.setAttribute("class", "imgpreview selected");
@@ -610,9 +651,10 @@ $(".imgpreview img").click(function() {
 	var source = this.attributes.src.value;
 	$(".background").css("background-image", "url('" + source + "')");
 
-	//sauve la source et 
-	localStorage.bg = source;
-	localStorage.bg_type = "default";
+	//sauve la source
+
+	browser.storage.local.set({"background_image": source});
+	browser.storage.local.set({"background_type": "default"});
 });
 
 
@@ -621,13 +663,18 @@ $("div.dynamic_bg input").change(function() {
 
 	if (this.checked) {
 
-		$(".background").css("background-image", "url('https://source.unsplash.com/collection/4933370/1920x1200/daily')");
-		localStorage.bg_type = "dynamic";
+		var unsplash = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
+
+		$(".background").css("background-image", "url('" + unsplash + "')");
+
+		browser.storage.local.set({"background_image": unsplash});
+		browser.storage.local.set({"background_type": "dynamic"});
 
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		localStorage.bg_type = "default";
+		
+		browser.storage.local.set({"background_type": "default"});
 	}
 });
 
@@ -649,14 +696,19 @@ $(".showSettings button").click(function() {
 });
 
 
+
+
+
+
+
+
+
 // Signature aléatoire
 function signature() {
 	var v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
 	var t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>";
 
-    var r = Math.floor(Math.random() * 2);
-
-    if (r % 2 === 0) {
+    if (Math.random() > 0.5) {
     	$('.signature .rand').append(v + " & " + t);
 	} else {
 		$('.signature .rand').append(t + " & " + v);
@@ -668,18 +720,21 @@ function signature() {
 function traduction() {
 	var translator = $('html').translate({lang: "en", t: dict});
 	
-	//init
-	translator.lang(localStorage.lang);
-	$(".lang").value = localStorage.lang;
+	browser.storage.local.get().then((data) => {
+
+		//init
+		translator.lang(data.lang);
+		$(".lang").value = data.lang;
 
 
-	//selection de langue
-	//localStorage + weather update + body trad
-	$(".lang").change(function() {
-		
-		localStorage.lang = this.value;
-		translator.lang(this.value);
-		weather(this.value);
+		//selection de langue
+		//localStorage + weather update + body trad
+		$(".lang").change(function() {
+			
+			browser.storage.local.set({"lang": this.value});
+			translator.lang(this.value);
+			weather(this.value);
+		});
 	});
 }
 
