@@ -30,8 +30,17 @@
 			<h1 class="trn">Settings</h1>
 		</div>
 
+		<div class="addlink">
+			<h5 class="subtitle trn">Quick Links</h5>
+			<div class="param">
+				<input type="text" name="title" placeholder="Title">
+				<input type="url" name="url" placeholder="URL">
+				<button class="submitlink trn">Add</button>
+			</div>
+		</div>
+
 		<div class="change_background">          
-			<h5 class="subtitle trn">Background</h5>
+			<h5 class="subtitle trn">Visuals</h5>
 			<div class="param">
 				<div class="bac">
 					<span class="span trn">Choose background</span>
@@ -85,15 +94,17 @@
 					<span class="span trn">Blur intensity</span>
 					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
-			</div>
-		</div>
 
-		<div class="addlink">
-			<h5 class="subtitle trn">Quick Links</h5>
-			<div class="param">
-				<input type="text" name="title" placeholder="Title">
-				<input type="text" name="url" placeholder="URL">
-				<button class="submitlink trn">Add</button>
+				<hr>
+
+				<div class="dark_mode_option">
+					<span class="span trn">Dark mode</span>
+					<select class="theme">
+						<option value="auto" class="trn">Only at night</option>
+						<option value="enable" class="trn">Enable</option>
+						<option value="disable" class="trn">Disable</option>
+					</select>
+				</div>
 			</div>
 		</div>
 
@@ -117,6 +128,39 @@
 				</div>
 			</div>
 		</div>
+
+		<div id="searchbar_option">
+			<h5 class="subtitle trn">Search bar</h5>
+			<div class="param">
+				<div class="activate_searchbar">
+					<span class="span trn">Activate</span>
+						<div>
+							<label class="switch">
+								<input type="checkbox">
+								<span class="slider round span"></span>
+							</label>
+						</div>
+				</div>
+				<hr>
+				<div id="choose_searchengine">
+					<span class="span trn"Search engine</span>
+					<select class="lang">
+						<option value="auto" class="trn">Startpage</option>
+						<option value="enable" class="trn">DuckDuckGo</option>
+						<option value="disable" class="trn">Google</option>
+						<option value="disable" class="trn">Yahoo</option>
+						<option value="disable" class="trn">Bing</option>
+					</select>
+				</div>
+			</div>
+
+			
+			
+			
+
+		</div>
+
+		
 
 		<div class="lang_section">
 			<h5 class="subtitle trn">Language</h5>
@@ -185,6 +229,12 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		
+		<div id="searchbar_section">
+			<form action="https://www.google.com/search" method="GET" autocomplete="off">
+				<input class="searchbar" type="text" name="q" placeholder="Search"></input>
+			</form>
 		</div>
 
 		<div class="linkblocks">

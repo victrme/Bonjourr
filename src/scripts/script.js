@@ -488,7 +488,7 @@ function weather(changelang) {
 		browser.storage.local.get().then((data) => {
 
 			weatherRequest(data.weather_city, unit);
-			browser.storage.local.set({"weather_unit": val});
+			browser.storage.local.set({"weather_unit": unit});
 		});
 		
 	});
@@ -683,6 +683,75 @@ $("div.dynamic_bg input").change(function() {
 
 
 
+function darkmode(choix) {
+
+	//darkmode automatique
+	function auto() {
+		var date = new Date();
+		if (date.getHours() < 8 && date.getHours() > 20) {
+			$("body").addClass("dark");
+		} else {
+			$("body").removeClass("dark");
+		}
+	}
+
+	function initDarkMode() {
+
+		browser.storage.local.get().then((data) => {
+
+			var dd = (data.dark ? data.dark : "disable");
+
+			if (dd === "enable") {
+				$("body").addClass("dark");
+			}
+
+			if (dd === "disable") {
+				$("body").removeClass("dark");
+			}
+
+			if (dd === "auto") {
+				auto();
+			}
+
+			$(".dark_mode_option select.theme").val(dd);
+		});
+		
+	}
+
+
+	function changeDarkMode() {
+		if (choix === "enable") {
+			$("body").addClass("dark");
+			browser.storage.local.set({"dark": "enable"});
+		}
+
+		if (choix === "disable") {
+			$("body").removeClass("dark");
+			browser.storage.local.set({"dark": "disable"});
+		}
+
+		if (choix === "auto") {
+
+			//prend l'heure et ajoute la classe si nuit
+			auto();
+			browser.storage.local.set({"dark": "auto"});
+		}
+	}
+
+	if (choix) {
+		changeDarkMode();
+	} else {
+		initDarkMode();
+	}
+}
+
+$(".dark_mode_option select.theme").change(function() {
+	darkmode(this.value);
+});
+
+
+
+
 
 
 
@@ -761,4 +830,5 @@ $(document).ready(function() {
 	greetings();
 	signature();
 	traduction();
+	darkmode();
 });

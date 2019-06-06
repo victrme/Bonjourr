@@ -105,14 +105,14 @@ h1 {
 .span {
 	display: block;
 	font-size: 0.9em;
-	padding-bottom: .5em;		
+	padding-bottom: .5em;	
 }
 
-.units .span, .dynamic_bg .span {
+.units .span, .dynamic_bg .span, .activate_searchbar .span  {
 	padding-top: .5em;
 }
 
-.choose_language .span {
+.choose_language .span, .blur .span, .dark_mode_option .span, .activate_searchbar .span, #choose_searchengine .span {
 	padding-bottom: 0px;
 }
 
@@ -368,7 +368,7 @@ input:checked + .slider:before {
 
 	/*Weather section*/
 
-.units, .choose_language, .dynamic_bg {
+.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_searchengine {
 	display: flex;
 	justify-content: space-between;
 }
@@ -393,4 +393,66 @@ input:checked + .slider:before {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
+}
+
+
+
+/*Dark mode*/
+
+body.dark .settings {
+	background-color: black;
+}
+
+body.dark hr {
+	border-bottom: 1px solid #3f3f41;
+}
+
+body.dark .subtitle {
+	color: #929294;
+	font-family: sf_pro_displaylight;
+}
+
+body.dark .param {
+	background-color : #1c1c1e;
+	color: white;
+	border-top: 1px solid #3f3f41;
+	border-bottom: 1px solid #3f3f41;
+}
+
+body.dark input[name="title"],
+body.dark input[name="url"],
+body.dark input[name="city"] {
+	background-color: #39383d;
+	color: white;
+}
+
+body.dark input[type="range"] {
+	background-color: #1c1c1e;
+}
+
+body.dark .title {
+	background-color : #1c1c1e;
+	color: white;
+	border-top: 0;
+	border-bottom:0;
+}
+
+body.dark ::-moz-range-thumb {
+	box-shadow:none;
+}
+
+body.dark ::placeholder {
+	color: #929294;
+}
+
+body.dark button {
+	background-color: #1c1c1e;
+}
+
+body.dark .slider {
+	background-color: #39383d;
+}
+
+body.dark .signature {
+	color: #929294;
 }
