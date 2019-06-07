@@ -304,8 +304,13 @@ METEO
 function weather(changelang) {
 
 	//init la meteo avant que l'api charge
+	//choisi la lang dans le storage si elle est changé
+	var lang;
+	browser.storage.local.get().then((data) => {
+		lang = (changelang ? changelang : data.lang);
+	});
+	
 	var l = localStorage.wLastState;
-	var lang = (changelang ? changelang : localStorage.lang);
 	(l ? dataHandling(JSON.parse(l)) : "");
 
 
@@ -550,7 +555,7 @@ function initBackground() {
 		else if (type === "custom") {
 
 			$('.change_background .bg_preview').css("visibility", "visible");
-			$('.change_background .bg_preview').attr("src", "url('" + image + "')");
+			$('.change_background .custom_bg_preview').attr("src", image);
 			$('.background').css("background-image", "url('" + image + "')");
 		}
 		//dynamic ajoute simplement l'url unsplash
@@ -587,7 +592,7 @@ function renderImage(file) {
 		browser.storage.local.set({"background_image": url});
 		browser.storage.local.set({"background_type": "custom"});
 
-		$('.change_background .bg_preview').attr("src", url);
+		$('.change_background .custom_bg_preview').attr("src", url);
 		$('.background').css("background-image", 'url(' + url + ')');
 
 		//enleve le dynamic si jamais
@@ -687,8 +692,17 @@ function darkmode(choix) {
 
 	//darkmode automatique
 	function auto() {
-		var date = new Date();
-		if (date.getHours() < 8 && date.getHours() > 20) {
+
+		var wAPI = JSON.parse(localStorage.wLastState);
+		var sunrise = new Date(wAPI.sys.sunrise * 1000);
+		var sunset = new Date(wAPI.sys.sunset * 1000);
+		var hr = new Date();
+
+		sunrise = sunrise.getHours() + 1;
+		sunset = sunset.getHours() + 1;
+		hr = hr.getHours();
+
+		if (hr < sunrise || hr > sunset) {
 			$("body").addClass("dark");
 		} else {
 			$("body").removeClass("dark");

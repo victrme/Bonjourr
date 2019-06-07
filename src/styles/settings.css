@@ -27,7 +27,7 @@
 
 .showSettings button:hover {background: #777}
 
-.showSettings button.shown {background: #aaa}
+.showSettings button.shown {background: #aaa;}
 .showSettings button.shown img {transform: rotate(45deg)}
 .showSettings button.shown:hover {background: #777}
 
@@ -125,7 +125,7 @@ h1 {
 
 	/* Background section */
 
-.imgpreview, .bg_preview {
+.imgpreview, .bg_preview, .custom_bg_preview {
 	overflow: hidden;
 	height: 80px;
 	width: 60px;
@@ -451,6 +451,10 @@ body.dark button {
 
 body.dark .slider {
 	background-color: #39383d;
+}
+
+body.dark input:checked + .slider {
+	background-color: #79685d;
 }
 
 body.dark .signature {
