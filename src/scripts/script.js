@@ -610,8 +610,8 @@ function blurThis(val) {
 
 		var isDark = $("body").attr("class");
 		
-		if (isDark === undefined) {
-			$('.background').css("filter", 'blur(' + val + 'px) brightness(70%)');
+		if (isDark === "dark") {
+			$('.background').css("filter", 'blur(' + val + 'px) brightness(75%)');
 		} else {
 			$('.background').css("filter", 'blur(' + val + 'px)');
 		}
@@ -708,7 +708,7 @@ function darkmode(choix) {
 
 		if (add) {
 			$("body").addClass("dark");
-			$(".background").css("filter", bgfilter + " brightness(70%)");
+			$(".background").css("filter", bgfilter + " brightness(75%)");
 		} else {
 			$("body").removeClass("dark");
 			$(".background").css("filter", "blur(" + bgblur + "px)");

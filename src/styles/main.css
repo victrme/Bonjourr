@@ -22,7 +22,6 @@
 /*pour le fade in*/
 body {
 	opacity: 0;
-	/*background-color: #fff;*/
 }
 
 body, .showSettings button {
@@ -250,4 +249,12 @@ div.linkblocks {
 @media screen and (max-width: 700px) {
 	body {font-size: 14px}
 	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
+}
+
+
+
+/*dark mode */
+
+body.dark {
+	background-color: #111;
 }
