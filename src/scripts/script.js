@@ -1,3 +1,20 @@
+
+//c'est juste pour debug le storage
+function deleteBrowserStorage() {
+	browser.storage.local.clear().then(() => {
+		console.log("bien supprimé");
+	});
+}
+
+//c'est juste pour debug le storage
+function getBrowserStorage() {
+	browser.storage.local.get().then((data) => {
+		console.log(data);
+	});
+}
+
+
+
 function clock() {
 	
 	function checkTime(i) {
@@ -46,21 +63,6 @@ function greetings() {
 
 
 
-function deleteBrowserStorage() {
-	browser.storage.local.clear().then(() => {
-		console.log("bien supprimé");
-	});
-}
-
-function getBrowserStorage() {
-	browser.storage.local.get().then((data) => {
-		console.log(data);
-	});
-}
-
-
-
-
 /*
 LIENS FAVORIS
 */
@@ -87,8 +89,6 @@ function initblocks() {
 
 			//faire le truc de présentation des blocks
 		}
-
-		
 	});
 }
 
@@ -570,6 +570,7 @@ function initBackground() {
 		}
 
 		//ensuite on blur
+		$("input[name='background_blur']").val(data.background_blur);
 		blurThis(data.background_blur);
 	});
 	
@@ -605,15 +606,22 @@ function renderImage(file) {
 
 
 function blurThis(val) {
-	$('.background').css("filter", 'blur(' + val + 'px)');
-	
-	browser.storage.local.set({"background_blur": val});
+
+
+		var isDark = $("body").attr("class");
+		
+		if (isDark === undefined) {
+			$('.background').css("filter", 'blur(' + val + 'px) brightness(70%)');
+		} else {
+			$('.background').css("filter", 'blur(' + val + 'px)');
+		}
+
+		browser.storage.local.set({"background_blur": val});
 }
 
 
 // handle input changes
 $(".change_background input[name='background_file']").change(function() {
-
 	renderImage(this.files[0]);
 });
 
@@ -621,7 +629,6 @@ $(".change_background input[name='background_file']").change(function() {
 
 // handle input changes
 $(".change_background input[name='background_blur']").change(function() {
-
 	blurThis(this.value);
 });
 
@@ -690,6 +697,24 @@ $("div.dynamic_bg input").change(function() {
 
 function darkmode(choix) {
 
+	
+
+	function applyDark(add) {
+
+		//prend le filter du background
+		//pour appliquer les 80% brightness en sérénité
+		var bgfilter = $(".background").css("filter");
+		var bgblur = $("input[name='background_blur']").val();
+
+		if (add) {
+			$("body").addClass("dark");
+			$(".background").css("filter", bgfilter + " brightness(70%)");
+		} else {
+			$("body").removeClass("dark");
+			$(".background").css("filter", "blur(" + bgblur + "px)");
+		}
+	}
+
 	//darkmode automatique
 	function auto() {
 
@@ -703,9 +728,9 @@ function darkmode(choix) {
 		hr = hr.getHours();
 
 		if (hr < sunrise || hr > sunset) {
-			$("body").addClass("dark");
+			applyDark(true);
 		} else {
-			$("body").removeClass("dark");
+			applyDark(false);
 		}
 	}
 
@@ -716,11 +741,11 @@ function darkmode(choix) {
 			var dd = (data.dark ? data.dark : "disable");
 
 			if (dd === "enable") {
-				$("body").addClass("dark");
+				applyDark(true);
 			}
 
 			if (dd === "disable") {
-				$("body").removeClass("dark");
+				applyDark(false);
 			}
 
 			if (dd === "auto") {
@@ -735,12 +760,12 @@ function darkmode(choix) {
 
 	function changeDarkMode() {
 		if (choix === "enable") {
-			$("body").addClass("dark");
+			applyDark(true);
 			browser.storage.local.set({"dark": "enable"});
 		}
 
 		if (choix === "disable") {
-			$("body").removeClass("dark");
+			applyDark(false);
 			browser.storage.local.set({"dark": "disable"});
 		}
 

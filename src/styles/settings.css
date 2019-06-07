@@ -185,11 +185,11 @@ h1 {
 	/* Inputs */
 
 input:active, input:focus, a:hover, a:active, a:focus {
-	border: 0!important;
+	border: 0;
 }
 
 input::-moz-focus-outer { 
-	border: 0!important;
+	border: 0;
 }
 
 input[type="range"] { 
@@ -403,10 +403,6 @@ input:checked + .slider:before {
 
 
 /*Dark mode*/
-
-body.dark .background {
-	filter: brightness(80%)!important;
-}
 
 body.dark .settings {
 	background-color: black;

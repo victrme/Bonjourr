@@ -54,10 +54,6 @@ p, h3 {
 	transform: scale(1.1); 
 }
 
-.dark_overlay {
-	
-}
-
 .interface {
 	height: 100vh;
 	display: flex;
