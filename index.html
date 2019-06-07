@@ -8,9 +8,11 @@
 	<link rel="stylesheet" href="src/styles/main.css">
 	<link rel="stylesheet" href="src/styles/settings.css">
 
+	<script src="src/scripts/fade.js"></script>
 	<script src="src/scripts/jquery-3.4.1.min.js"></script>
 	<script src="src/scripts/translate.min.js"></script>
-	<script src="src/scripts/lang.js" defer></script>
+	<script src="src/scripts/lang.js"></script>
+	
 	<script src="src/scripts/script.js" defer></script>
 
 	<link rel="icon" href="favicon.png" />
@@ -84,7 +86,7 @@
 					<span class="span trn">Custom background</span>
 					<div class="custom_bg">
 						<input type="file" name="background_file">
-						<img src="" class="bg_preview">
+						<img src="" class="custom_bg_preview">
 					</div>
 				</div>
 				
@@ -99,7 +101,7 @@
 
 				<div class="dark_mode_option">
 					<span class="span trn">Dark mode</span>
-					<select class="lang">
+					<select class="theme">
 						<option value="auto" class="trn">Only at night</option>
 						<option value="enable" class="trn">Enable</option>
 						<option value="disable" class="trn">Disable</option>
@@ -143,7 +145,7 @@
 				</div>
 				<hr>
 				<div id="choose_searchengine">
-					<span class="span trn"Search engine</span>
+					<span class="span trn">Search engine</span>
 					<select class="lang">
 						<option value="auto" class="trn">Startpage</option>
 						<option value="enable" class="trn">DuckDuckGo</option>

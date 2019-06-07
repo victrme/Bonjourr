@@ -19,10 +19,15 @@
 	transition: all .2s;
 }
 
+/*pour le fade in*/
+body {
+	opacity: 0;
+	/*background-color: #fff;*/
+}
+
 body, .showSettings button {
 	margin: 0;
     cursor: default;
-    background: #222;
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
@@ -36,6 +41,7 @@ p, h3 {
 }
 
 .background {
+	transition: none;
 	z-index: -1;
 	position: fixed;
 	width: 100vw;
@@ -55,7 +61,7 @@ p, h3 {
 	justify-content: space-around;
 }
 
-.pushed {
+.interface.pushed {
 	margin-left: -20em;
 }
 
@@ -72,7 +78,7 @@ p, h3 {
 .greetings {
 	font-size: 3em;
 	font-weight: lighter;
-	padding-bottom: 0.3em;
+	/*padding-bottom: 0.3em;*/
 }
 
 .weather div {
@@ -98,6 +104,8 @@ div.w_widget_text {
 /* Searchbar section */
 
 #searchbar_section {
+	/*a enlever*/
+	display: none;
 	align-self: stretch;
 }
 

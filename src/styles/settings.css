@@ -27,7 +27,7 @@
 
 .showSettings button:hover {background: #777}
 
-.showSettings button.shown {background: #aaa}
+.showSettings button.shown {background: #aaa;}
 .showSettings button.shown img {transform: rotate(45deg)}
 .showSettings button.shown:hover {background: #777}
 
@@ -67,8 +67,8 @@
 hr {
 	border: none;
 	border-bottom: 1px solid #c8c7cc;
-	margin-top: .5em;
-	margin-bottom: .5em;
+	margin-top: .75em;
+	margin-bottom: .75em;
 	margin-right: -1.3em;
 	display: block;
 }
@@ -125,7 +125,7 @@ h1 {
 
 	/* Background section */
 
-.imgpreview, .bg_preview {
+.imgpreview, .bg_preview, .custom_bg_preview {
 	overflow: hidden;
 	height: 80px;
 	width: 60px;
@@ -185,11 +185,11 @@ h1 {
 	/* Inputs */
 
 input:active, input:focus, a:hover, a:active, a:focus {
-	border: 0!important;
+	border: 0;
 }
 
 input::-moz-focus-outer { 
-	border: 0!important;
+	border: 0;
 }
 
 input[type="range"] { 
@@ -283,15 +283,19 @@ input[name="city"] {
 	background-color: #e3e3e5;
 	height: 2.35em;
 	padding-left: .5em;
+}
+
+input[name="title"],
+input[name="url"] {
 	margin-bottom: .5em;
 }
 
-input[name="title"] {
+input[name="title"], input[name="url"] {
 	width: calc(100% - .5em);
 }
 
-input[name="url"] {
-	width: calc(100% - .5em);
+input[name="city"] {
+	width: 65%;
 }
 
 .addlink button {
@@ -377,6 +381,7 @@ input:checked + .slider:before {
 	padding-right: .5em;
 	padding-left: .5em;
 	margin-top: 5em;
+	padding-bottom: 3em;
 	text-align: center;
 	position: relative;
 	bottom: 10px;
@@ -397,64 +402,66 @@ input:checked + .slider:before {
 
 
 
-/* Dark mode
+/*Dark mode*/
 
-.settings {
+body.dark .settings {
 	background-color: black;
 }
 
-hr {
+body.dark hr {
 	border-bottom: 1px solid #3f3f41;
 }
 
-.subtitle {
+body.dark .subtitle {
 	color: #929294;
 	font-family: sf_pro_displaylight;
 }
 
-.param {
+body.dark .param {
 	background-color : #1c1c1e;
 	color: white;
 	border-top: 1px solid #3f3f41;
 	border-bottom: 1px solid #3f3f41;
 }
 
-input[name="title"],
-input[name="url"],
-input[name="city"] {
+body.dark input[name="title"],
+body.dark input[name="url"],
+body.dark input[name="city"] {
 	background-color: #39383d;
 	color: white;
 }
 
-input[type="range"] {
+body.dark input[type="range"] {
 	background-color: #1c1c1e;
 }
 
-.title {
+body.dark .title {
 	background-color : #1c1c1e;
 	color: white;
 	border-top: 0;
 	border-bottom:0;
 }
 
-::-moz-range-thumb {
+body.dark ::-moz-range-thumb {
 	box-shadow:none;
 }
 
-::placeholder {
+body.dark ::placeholder {
 	color: #929294;
 }
 
-button {
+body.dark button {
 	background-color: #1c1c1e;
 }
 
-.slider {
+body.dark .slider {
 	background-color: #39383d;
 }
 
-.signature {
-	color: #929294;
+body.dark input:checked + .slider {
+	background-color: #4bd663;
 }
 
-*/
+body.dark .signature {
+	color: #929294;
+}
