@@ -19,10 +19,15 @@
 	transition: all .2s;
 }
 
+/*pour le fade in*/
+body {
+	opacity: 0;
+	/*background-color: #fff;*/
+}
+
 body, .showSettings button {
 	margin: 0;
     cursor: default;
-    background: #222;
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
