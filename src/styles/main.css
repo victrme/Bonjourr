@@ -36,6 +36,7 @@ p, h3 {
 }
 
 .background {
+	transition: none;
 	z-index: -1;
 	position: fixed;
 	width: 100vw;
