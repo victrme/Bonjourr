@@ -795,6 +795,47 @@ $(".dark_mode_option select.theme").change(function() {
 
 
 
+// Active ou désactive la search bar
+$(".activate_searchbar input").change(function() {
+		if ($(".activate_searchbar input").is(":checked")) {
+			$("#searchbar_container").css("display", "block");
+		}
+
+		else {
+			$("#searchbar_container").css("display", "none");
+		}
+});
+
+// Change le moteur de recherche de la search bar selon le select .choose_search
+$(".choose_search").change(function() {
+	if (this.value === "s_startpage") {
+		$("#searchbar_container form").attr("action", 'https://www.startpage.com/do/dsearch?query=');
+		$(".searchbar").attr("placeholder", 'Search Startpage');
+	}
+	else if (this.value === "s_ddg") {
+		$("#searchbar_container form").attr("action", 'https://duckduckgo.com/?q=');
+		$(".searchbar").attr("placeholder", 'Search DuckDuckGo');
+	}
+	else if (this.value === "s_google") {
+		$("#searchbar_container form").attr("action", 'https://www.google.com/search');
+		$(".searchbar").attr("placeholder", 'Search Google');
+	}
+	else if (this.value === "s_yahoo") {
+		$("#searchbar_container form").attr("action", 'https://search.yahoo.com/search?p=');
+		$(".searchbar").attr("placeholder", 'Search Yahoo');
+	}
+	else if (this.value === "s_bing") {
+		$("#searchbar_container form").attr("action", 'https://www.bing.com/search?q=');
+		$(".searchbar").attr("placeholder", 'Search Bing');
+	}
+});
+
+
+
+
+
+
+
 
 //affiche les settings
 $(".showSettings button").click(function() {
