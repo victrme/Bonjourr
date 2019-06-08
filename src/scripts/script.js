@@ -798,11 +798,12 @@ $(".dark_mode_option select.theme").change(function() {
 // Active ou désactive la search bar
 $(".activate_searchbar input").change(function() {
 		if ($(".activate_searchbar input").is(":checked")) {
-			$("#searchbar_container").css("display", "block");
+			$("#searchbar_container, #searchbar_option hr, #choose_searchengine").css("display", "block");
+			$("#choose_searchengine").css("display", "flex");
 		}
 
 		else {
-			$("#searchbar_container").css("display", "none");
+			$("#searchbar_container, #searchbar_option hr, #choose_searchengine").css("display", "none");
 		}
 });
 
@@ -815,6 +816,10 @@ $(".choose_search").change(function() {
 	else if (this.value === "s_ddg") {
 		$("#searchbar_container form").attr("action", 'https://duckduckgo.com/?q=');
 		$(".searchbar").attr("placeholder", 'Search DuckDuckGo');
+	}
+	else if (this.value === "s_ecosia") {
+		$("#searchbar_container form").attr("action", 'https://www.ecosia.org/search?q=');
+		$(".searchbar").attr("placeholder", 'Search Ecoisa');
 	}
 	else if (this.value === "s_google") {
 		$("#searchbar_container form").attr("action", 'https://www.google.com/search');
