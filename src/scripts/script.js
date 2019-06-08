@@ -819,7 +819,7 @@ $(".choose_search").change(function() {
 	}
 	else if (this.value === "s_ecosia") {
 		$("#searchbar_container form").attr("action", 'https://www.ecosia.org/search?q=');
-		$(".searchbar").attr("placeholder", 'Search Ecoisa');
+		$(".searchbar").attr("placeholder", 'Search Ecosia');
 	}
 	else if (this.value === "s_google") {
 		$("#searchbar_container form").attr("action", 'https://www.google.com/search');
