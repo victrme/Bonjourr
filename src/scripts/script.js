@@ -50,7 +50,10 @@ $(".dismiss_popup").click(function(){
 
 
 
-
+// Pour défiler les popups
+$(".next_popup").click(function(){
+	$(".popup_line").css("margin-left", "-=550px");
+});
 
 
 
