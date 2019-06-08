@@ -27,10 +27,13 @@
 			<div class="popup_line">
 				<div class="popup popup1">
 					<img src="src/images/bonjourrpopup.png">
-					<p>Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.<br><br>
-					If you'd like to help us, suggest ideas or report bugs, you can head to <a href="https://bonjourr.fr">our website</a>.<br><br>Feel free to customize your page in the settings via the bottom right corner's icon. Click on the <b>Next</b> button to learn the basics of using Bonjourr.</p><br>
-					<div class="choose_language_popup">
-						<p class="popup_language_p trn"><b>Choose language</b></p>
+
+						<p>Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.</p>
+
+						<p>If you'd like to help us, suggest ideas or report bugs, you can head to <a href="https://bonjourr.fr">our website</a>. Feel free to customize your page in the settings via the bottom right corner's icon. Click on the <code>Next</code> button to learn the basics of using Bonjourr.</p>
+
+						<div class="choose_language_popup">
+						<p class="popup_language_p trn"><b>Language</b></p>
 						<select class="lang">
 							<option value="en" class="trn">English</option>
 							<option value="fr" class="trn">Français</option>
@@ -43,27 +46,38 @@
 					<video autoplay="autoplay" loop="loop" muted="muted">
 						<source type="video/mp4" src="src/videos/popup_quicklink.mp4">
 					</video>
-					<p>You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click <b>Add</b>, it will appear under the weather widget.<br><br>If you want to get rid of a link, just click on it, hold and the delete icon will appear.</p>
-					
+					<p>You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click <code>Add</code>, it will appear under the weather widget.</p>
+					<p>Hold your mouse for a second on any link to enter remove mode.</p>
 				</div>
 				<div class="popup popup3">
-					<h1 class="popup_title">Setting up the weather</h1>
-					<p>By default, Bonjourr's weather is taken from Paris. Since there's a fairly low probability of you living there, you can easily change it. Just type in the name of the city you want the weather of and click <b>Change city</b>. The weather's location will be updated automatically.</p>
+					<h1 class="popup_title">Weather</h1>
+					<p>By default, Bonjourr's weather is taken from Paris. Type in the name of the city you want the weather of and click <code>Change city</code></p>
 				</div>
 				<div class="popup popup4">
-					<h1 class="popup_title">Choosing a background</h1>
-					<p>There are three ways of choosing a background in Bonjourr. The <b>Choose background</b> option lets your choose from our default selection. The <b>Dynamic background</b> option will change your background automatically every day and picks them randomly from a regularly updated selection. And thirdly, the <b>Custom Background</b> option will let your choose an image from your local computer.</p>
+					<h1 class="popup_title">Backgrounds</h1>
+					<p>There are three ways of choosing a background in Bonjourr.</p>
+					<p>The <code>Choose background</code> option lets your choose from our default selection.</p>
+					<p>The <code>Dynamic background</code> option will change your background automatically every day and picks them randomly from a regularly updated selection.</p>
+					<p>And thirdly, the <code>Custom Background</code> option will let your choose an image from your local computer.</p>
 				</div>
 				<div class="popup popup5">
-					<h1 class="popup_title">Configuring the search bar</h1>
-					<p>If you want, you can activate a search bar that will appear under the weather widget and will let you search the web. Once you activate it, you can choose your favorite search engine from a wide variety.</p>
+					<h1 class="popup_title">Search bar</h1>
+					<p>If you want, you can activate a search bar.</p>
+					<p>You can choose your favorite search engine from a wide variety.</p>
 				</div>
 
 			</div>
 
 			<div class="popup_buttons">
-				<button class="dismiss_popup" onclick="DismissPopup()">Dismiss tutorial</button>
-				<button class="next_popup" onclick="NextPopup()">Next</button>
+				<button class="previous_popup">Dismiss</button>
+				<div class="counter">
+					<span>●</span>
+					<span>●</span>
+					<span>●</span>
+					<span>●</span>
+					<span>●</span>
+				</div>
+				<button class="next_popup">Learn more</button>
 			</div>
 		</div>
 	</div>

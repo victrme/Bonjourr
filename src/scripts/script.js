@@ -15,6 +15,93 @@ function getBrowserStorage() {
 
 
 
+
+
+
+
+
+function introduction() {
+
+	// L'animation est là mais fonctionne pas bien. Il faudrait mettre un display: none; une fois que la transition est terminée mais je trouve pas comment faire
+
+	//$(".dismiss_popup").click(function(){
+	//	$("#start_popup").css("opacity", "0");
+	//	$(".popup_window").css("margin-top", "2300px");
+	//});
+
+	//la marge des popups en pourcentages
+	var margin = 0; 
+	//init le premier counter avec le style actif
+	var premier = $("div.counter span:first-child")[0];
+	$(premier).addClass("actif");
+
+
+	// Start popup
+	function dismiss() {
+		$("#start_popup").css("opacity", 0);
+		setTimeout(function() {
+			$("#start_popup").remove();
+		}, 200);
+	}
+
+	function countPopup(c) {
+		//prend le span qui correspond au margin / 100
+		var elem = $("div.counter")[0].children[c / 100];
+
+		//change le style de tous par defaut
+		//puis l'element choisi
+		$("div.counter span").removeClass("actif");
+		$(elem).addClass("actif");
+	}
+
+
+	//event different pour chaque slide
+	//le numero du slide = margin / 100
+	//ici quand on recule
+	$(".previous_popup").click(function() {
+
+		if (margin === 0) {
+			dismiss();
+		}
+		if (margin === 100) {
+			$(".previous_popup").text("Dismiss");
+			$(".next_popup").text("Learn more");
+		}
+		if (margin === 400) {
+			$(".next_popup").text("Next");
+		}
+
+		margin -= 100;
+		countPopup(margin);
+		$(".popup_line").css("margin-left", "-" + margin + "%");
+	});
+
+	//ici quand on avance
+	$(".next_popup").click(function(){
+		
+		margin += 100;
+
+		if (margin === 500) {
+			dismiss();
+		}
+		if (margin === 100) {
+			$(".previous_popup").text("Back");
+			$(".next_popup").text("Next");
+		}
+		if (margin === 400) {
+			$(".next_popup").text("All set !");
+		}
+
+		countPopup(margin);
+		$(".popup_line").css("margin-left", "-" + margin + "%");
+	});
+
+}
+
+
+
+
+
 function clock() {
 	
 	function checkTime(i) {
@@ -31,30 +118,6 @@ function clock() {
 
 	var t = setTimeout(clock, 1000);
 }
-
-
-// Start popup
-
-// En attendant ça fonctione mais pas d'animation
-
-$(".dismiss_popup").click(function(){
-	$("#start_popup").remove();
-});
-
-// L'animation est là mais fonctionne pas bien. Il faudrait mettre un display: none; une fois que la transition est terminée mais je trouve pas comment faire
-
-//$(".dismiss_popup").click(function(){
-//	$("#start_popup").css("opacity", "0");
-//	$(".popup_window").css("margin-top", "2300px");
-//});
-
-
-
-// Pour défiler les popups
-$(".next_popup").click(function(){
-	$(".popup_line").css("margin-left", "-=550px");
-});
-
 
 
 function greetings() {
@@ -995,6 +1058,7 @@ function mobilecheck() {
 
 
 $(document).ready(function() {
+	introduction();
 	initBackground();
 	showRemoveLink();
 	initblocks();

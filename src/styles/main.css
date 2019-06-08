@@ -39,6 +39,10 @@ p, h3 {
 	margin: 0;
 }
 
+select {
+	padding: .2em;
+}
+
 .background {
 	transition: none;
 	z-index: -1;
@@ -53,8 +57,15 @@ p, h3 {
 	transform: scale(1.1); 
 }
 
+
+
+
+
+/*POPUP*/
+
 #start_popup {
-	transition: all .5s ease-in;
+	transition: margin .5s ease-in;
+	transition: opacity .2s ease-in;
 	z-index: 10;
 	position: absolute;
 	width: 100%;
@@ -66,25 +77,24 @@ p, h3 {
 }
 
 .popup_window {
-	overflow: hidden;
-	transition: all .5s ease-in;
-	width: 500px;
+	overflow-x: hidden;
+	transition: opacity .2s ease-in;
+	transition: margin .5s ease-in;
+	width: 600px;
+	max-width: calc(100% - 2em);
 	height: auto;
-	padding: 50px;
-	border-radius: 30px;
+	border-radius: 8px;
 	background-color: white;
 }
 
 .popup_line {
-	width: 3000px;
-	height: 650px;
+	display: flex;
+	width: 500%;
 }
 
 .popup {
-	margin-right: 50px;
-	display: inline-block;
-	float: left;
-	width: 500px;
+	width: 100%;
+	padding: 2em;
 }
 
 .popup_title {
@@ -95,7 +105,7 @@ p, h3 {
 }
 
 .popup img, .popup video {
-	width: 100%;
+	width: 50%;
 	padding-bottom: 1.5em;
 }
 
@@ -104,6 +114,8 @@ p, h3 {
 	text-shadow: none;
 	font-size: 25px;
 	color: black;
+	margin: 1em 0;
+	line-height: 1.5em;
 }
 
 .popup p a {
@@ -111,39 +123,59 @@ p, h3 {
 	color: #007aff;
 }
 
+.popup code {
+	font-size: .9em;
+	color: #007aff;
+	border: 1px solid #007aff;
+	border-radius: 4px;
+	padding: .1em .4em;
+	margin: 0 .1em;
+}
+
 .choose_language_popup {
 	display: flex;
-	justify-content: center;
-}
-
-.choose_language_popup select {
-	margin-top: 8px;
-}
-
-.popup_language_p {
-	width: 40%;
+	justify-content: space-around;
+	align-items: center;
+	width: 50%;
+	margin: auto;
 }
 
 .popup_buttons {
-	padding-top: 1em;
-	width: 100%;
+	padding: 2em;
 	display: flex;
 	justify-content: space-around;
+	align-items: center;
 }
 
 .popup_buttons button {
-	height: 70px;
-	width: 125px;
+	height: 50px;
+	width: 130px;
 
 	background-color: #007aff;
 	color: white;
 	font-size: 20px;
-	border-radius: 15px;
+	border-radius: 8px;
 }
 
 .popup_buttons button:hover {
 	filter: brightness(0.9);
 }
+
+.popup_buttons .counter span {
+	color: #ccc;
+	text-shadow: none;
+	font-size: 2em;
+}
+
+.popup_buttons .counter span.actif {
+	color: #007aff;
+}
+
+/*POPUP*/
+
+
+
+
 
 .interface {
 	height: 100vh;
