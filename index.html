@@ -138,7 +138,7 @@
 					<span class="span trn">Activate</span>
 						<div>
 							<label class="switch">
-								<input type="checkbox">
+								<input id="sbcheck" type="checkbox">
 								<span class="slider round span"></span>
 							</label>
 						</div>
@@ -146,20 +146,15 @@
 				<hr>
 				<div id="choose_searchengine">
 					<span class="span trn">Search engine</span>
-					<select class="lang">
-						<option value="auto" class="trn">Startpage</option>
-						<option value="enable" class="trn">DuckDuckGo</option>
-						<option value="disable" class="trn">Google</option>
-						<option value="disable" class="trn">Yahoo</option>
-						<option value="disable" class="trn">Bing</option>
+					<select class="choose_search">
+						<option value="s_startpage" class="trn">Startpage</option>
+						<option value="s_ddg" class="trn">DuckDuckGo</option>
+						<option value="s_google" class="trn">Google</option>
+						<option value="s_yahoo" class="trn">Yahoo</option>
+						<option value="s_bing" class="trn">Bing</option>
 					</select>
 				</div>
 			</div>
-
-			
-			
-			
-
 		</div>
 
 		
@@ -233,9 +228,9 @@
 			</div>
 		</div>
 		
-		<div id="searchbar_section">
-			<form action="https://www.google.com/search" method="GET" autocomplete="off">
-				<input class="searchbar" type="text" name="q" placeholder="Search"></input>
+		<div id="searchbar_container">
+			<form action="" method="GET" autocomplete="off">
+				<input class="searchbar" type="text" name="q" placeholder=""></input>
 			</form>
 		</div>
 
