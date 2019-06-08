@@ -295,7 +295,7 @@ input[name="title"], input[name="url"] {
 }
 
 input[name="city"] {
-	width: 65%;
+	width: 60%;
 }
 
 .addlink button {
