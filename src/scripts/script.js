@@ -708,9 +708,11 @@ function darkmode(choix) {
 
 		if (add) {
 			$("body").addClass("dark");
+			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_d.jpg');
 			$(".background").css("filter", bgfilter + " brightness(75%)");
 		} else {
 			$("body").removeClass("dark");
+			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_l.jpg');
 			$(".background").css("filter", "blur(" + bgblur + "px)");
 		}
 	}
