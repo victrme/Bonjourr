@@ -102,6 +102,11 @@ div.w_widget_text {
 
 /* Searchbar section */
 
+.searchbar_container {
+	display: none;
+	opacity: 0;
+}
+
 #searchbar_section {
 	/*a enlever*/
 	display: none;

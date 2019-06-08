@@ -697,7 +697,32 @@ $("div.dynamic_bg input").change(function() {
 
 function darkmode(choix) {
 
-	
+
+	function isIOSwallpaper(dark) {
+
+		var bgsrc = $(".background").css("background-image");
+		var lb =  'src/images/ios13wallpaper_l.jpg';
+		var db = 'src/images/ios13wallpaper_d.jpg';
+
+		if (dark) {
+
+			$("#ios_wallpaper img").attr("src", db);
+
+			if (bgsrc.includes(lb)) {
+				$(".background").css("background-image", "url(" + db + ")");
+				browser.storage.local.set({"background_image": db});
+			}
+
+		} else {
+
+			$("#ios_wallpaper img").attr("src", lb);
+
+			if (bgsrc.includes(db)) {
+				$(".background").css("background-image", "url(" + lb + ")");
+				browser.storage.local.set({"background_image": lb});
+			}
+		}
+	}
 
 	function applyDark(add) {
 
@@ -708,12 +733,15 @@ function darkmode(choix) {
 
 		if (add) {
 			$("body").addClass("dark");
-			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_d.jpg');
 			$(".background").css("filter", bgfilter + " brightness(75%)");
+
+			isIOSwallpaper(true);
 		} else {
 			$("body").removeClass("dark");
 			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_l.jpg');
 			$(".background").css("filter", "blur(" + bgblur + "px)");
+
+			isIOSwallpaper(false);
 		}
 	}
 
@@ -794,48 +822,91 @@ $(".dark_mode_option select.theme").change(function() {
 
 
 
+function searchbar() {
 
+	function activate(isItActivatedIDontKnowTBF) {
 
+		if (isItActivatedIDontKnowTBF) {
 
-// Active ou désactive la search bar
-$(".activate_searchbar input").change(function() {
-		if ($(".activate_searchbar input").is(":checked")) {
-			$("#searchbar_container, #searchbar_option hr, #choose_searchengine").css("display", "block");
-			$("#choose_searchengine").css("display", "flex");
+			browser.storage.local.set({"searchbar": true});
+
+			//pour animer un peu
+			$(".searchbar_container").css("display", "block");
+			$(".searchbar_container").css("opacity", 1);
+			
+		} else {
+
+			browser.storage.local.set({"searchbar": false});
+
+			//pour animer un peu
+			$(".searchbar_container").css("opacity", 0);
+			setTimeout(function() {
+				$(".searchbar_container").css("display", "none");
+			}, 200);
+		}
+	}
+
+	function chooseSearchEngine(engine) {
+		if (engine === "s_startpage") {
+			$(".searchbar_container form").attr("action", 'https://www.startpage.com/do/dsearch?query=');
+			$(".searchbar").attr("placeholder", 'Search Startpage');
+		}
+		else if (engine === "s_ddg") {
+			$(".searchbar_container form").attr("action", 'https://duckduckgo.com/?q=');
+			$(".searchbar").attr("placeholder", 'Search DuckDuckGo');
+		}
+		else if (engine === "s_ecosia") {
+			$(".searchbar_container form").attr("action", 'https://www.ecosia.org/search?q=');
+			$(".searchbar").attr("placeholder", 'Search Ecosia');
+		}
+		else if (engine === "s_google") {
+			$(".searchbar_container form").attr("action", 'https://www.google.com/search');
+			$(".searchbar").attr("placeholder", 'Search Google');
+		}
+		else if (engine === "s_yahoo") {
+			$(".searchbar_container form").attr("action", 'https://search.yahoo.com/search?p=');
+			$(".searchbar").attr("placeholder", 'Search Yahoo');
+		}
+		else if (engine === "s_bing") {
+			$(".searchbar_container form").attr("action", 'https://www.bing.com/search?q=');
+			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		else {
-			$("#searchbar_container, #searchbar_option hr, #choose_searchengine").css("display", "none");
-		}
-});
+		browser.storage.local.set({"searchbar_engine": engine});
 
-// Change le moteur de recherche de la search bar selon le select .choose_search
-$(".choose_search").change(function() {
-	if (this.value === "s_startpage") {
-		$("#searchbar_container form").attr("action", 'https://www.startpage.com/do/dsearch?query=');
-		$(".searchbar").attr("placeholder", 'Search Startpage');
 	}
-	else if (this.value === "s_ddg") {
-		$("#searchbar_container form").attr("action", 'https://duckduckgo.com/?q=');
-		$(".searchbar").attr("placeholder", 'Search DuckDuckGo');
-	}
-	else if (this.value === "s_ecosia") {
-		$("#searchbar_container form").attr("action", 'https://www.ecosia.org/search?q=');
-		$(".searchbar").attr("placeholder", 'Search Ecosia');
-	}
-	else if (this.value === "s_google") {
-		$("#searchbar_container form").attr("action", 'https://www.google.com/search');
-		$(".searchbar").attr("placeholder", 'Search Google');
-	}
-	else if (this.value === "s_yahoo") {
-		$("#searchbar_container form").attr("action", 'https://search.yahoo.com/search?p=');
-		$(".searchbar").attr("placeholder", 'Search Yahoo');
-	}
-	else if (this.value === "s_bing") {
-		$("#searchbar_container form").attr("action", 'https://www.bing.com/search?q=');
-		$(".searchbar").attr("placeholder", 'Search Bing');
-	}
-});
+
+	//init
+	browser.storage.local.get().then((data) => {
+
+		if (data.searchbar) {
+
+			//display + checkbox checked
+			activate(true);
+			$(".activate_searchbar input").value = true;
+
+			if (data.searchbar_engine) {
+				chooseSearchEngine(data.searchbar_engine);
+				$(".choose_search").value = data.searchbar_engine;
+			} else {
+				chooseSearchEngine("s_startpage");
+			}
+		}
+	});
+
+	// Active ou désactive la search bar
+	$(".activate_searchbar input").change(function() {
+		activate($(this).is(":checked"));
+	});
+
+
+	// Change le moteur de recherche de la search bar selon le select .choose_search
+	$(".choose_search").change(function() {
+		chooseSearchEngine(this.value);
+	});
+}
+
+
 
 
 
@@ -918,4 +989,5 @@ $(document).ready(function() {
 	signature();
 	traduction();
 	darkmode();
+	searchbar();
 });
