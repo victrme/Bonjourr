@@ -66,38 +66,83 @@ p, h3 {
 }
 
 .popup_window {
+	overflow: hidden;
 	transition: all .5s ease-in;
-	display: flex;
-	align-content: space-around;
-	flex-wrap: wrap;
-	width: 30em;
-	height: 50em;
-	padding: 3em;
+	width: 500px;
+	height: auto;
+	padding: 50px;
 	border-radius: 30px;
 	background-color: white;
 }
 
-.popup_window p {
+.popup_line {
+	width: 3000px;
+	height: 650px;
+}
+
+.popup {
+	margin-right: 50px;
+	display: inline-block;
+	float: left;
+	width: 500px;
+}
+
+.popup_title {
+	color: black;
+	font-size: 2em;
+	text-shadow: none;
+	padding-bottom: 1em;
+}
+
+.popup img, .popup video {
+	width: 100%;
+	padding-bottom: 1.5em;
+}
+
+.popup p {
 	text-align: justify;
 	text-shadow: none;
 	font-size: 25px;
 	color: black;
 }
 
-.popup_window p a {
+.popup p a {
 	text-decoration: none;
 	color: #007aff;
 }
 
-.popup_window button {
+.choose_language_popup {
+	display: flex;
+	justify-content: center;
+}
+
+.choose_language_popup select {
+	margin-top: 8px;
+}
+
+.popup_language_p {
+	width: 40%;
+}
+
+.popup_buttons {
+	padding-top: 1em;
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
+}
+
+.popup_buttons button {
 	height: 70px;
-	width: 50%;
-	margin-left: 25%;
-	margin-right: 25%;
+	width: 125px;
+
 	background-color: #007aff;
 	color: white;
 	font-size: 20px;
 	border-radius: 15px;
+}
+
+.popup_buttons button:hover {
+	filter: brightness(0.9);
 }
 
 .interface {
