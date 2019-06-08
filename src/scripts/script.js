@@ -33,7 +33,20 @@ function clock() {
 }
 
 
+// Start popup
 
+// En attendant ça fonctione mais pas d'animation
+
+$(".dismiss_popup").click(function(){
+	$("#start_popup").remove();
+});
+
+// L'animation est là mais fonctionne pas bien. Il faudrait mettre un display: none; une fois que la transition est terminée mais je trouve pas comment faire
+
+//$(".dismiss_popup").click(function(){
+//	$("#start_popup").css("opacity", "0");
+//	$(".popup_window").css("margin-top", "2300px");
+//});
 
 
 
