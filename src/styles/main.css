@@ -22,11 +22,14 @@
 /*pour le fade in*/
 body {
 	opacity: 0;
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 body, .showSettings button {
 	margin: 0;
-    cursor: default;
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
@@ -169,11 +172,11 @@ div.linkblocks {
 	position: relative;
 	border-radius: 4px;
 	background: white;
-	border: .3em solid white;
+	border: .2em solid white;
 	cursor: pointer;
 }
 .block_parent .l_icon_wrap:hover {
-	border: .3em solid #007aff;
+	border: .2em solid #007aff;
 }
 
 .block_parent a {
@@ -253,22 +256,7 @@ div.linkblocks {
 
 
 
-@media screen and (min-width: 3000px) {
-	body {font-size: 20px}
-}
 
-@media screen and (min-width: 2100px) {
-	body {font-size: 18px}
-}
-
-@media screen and (max-width: 1400px) {
-	body {font-size: 15px}
-}
-
-@media screen and (max-width: 700px) {
-	body {font-size: 14px}
-	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
-}
 
 
 
@@ -319,8 +307,12 @@ div.linkblocks {
 	text-shadow: none;
 }
 
-.popup3 .popup_title {
+.popup3 .popup_title  {
 	margin-bottom: 1em;
+}
+
+.popup3 .popup_param {
+	margin-bottom: 2em;
 }
 
 .popup_span {
@@ -331,6 +323,7 @@ div.linkblocks {
 
 .popup .w_widget {
 	margin: auto;
+	margin-top: 2em;
 	color: white;
 	width: 200px;
 	border-radius: 10px;
@@ -342,8 +335,17 @@ div.linkblocks {
 	width: 75%;
 }
 
+.popup2 .center .linkblocks {
+	padding-bottom: 0;
+}
+
+.popup2 .center .linkblocks .block_parent .block p {
+	margin: 0;
+}
+
 .popup4 .popup_param {
 	width: 50%;
+	margin-bottom: 2em;
 }
 
 .bonjourr_logo {
@@ -353,7 +355,7 @@ div.linkblocks {
 .popup p {
 	text-align: justify;
 	text-shadow: none;
-	font-size: 25px;
+	font-size: 22px;
 	color: black;
 	margin: 1em 0;
 	line-height: 1.5em;
@@ -415,7 +417,7 @@ div.linkblocks {
 }
 
 .popup_buttons button:hover {
-	filter: brightness(0.9);
+	filter: brightness(1.1);
 }
 
 .popup_buttons .counter span {
@@ -430,7 +432,7 @@ div.linkblocks {
 
 .popup_searchbar, .popup_searchbar:focus {
 	border: 2px solid #b8b8b8;
-	margin-top: 1em;
+	margin-top: 2em;
 }
 
 /*POPUP*/
@@ -451,4 +453,62 @@ body.dark .popup p, body.dark .popup_title, body.dark .popup_span {
 
 body.dark .popup_buttons button {
 	background-color: #007aff;
+}
+
+
+@media screen and (min-width: 3000px) {
+	body {font-size: 20px}
+}
+
+@media screen and (min-width: 2100px) {
+	body {font-size: 18px}
+}
+
+@media screen and (max-width: 1400px) {
+	body {font-size: 15px}
+
+	.popup p {
+		font-size: 17px; ;
+	}
+}
+
+@media screen and (max-height: 700px) {
+	#clock {
+		font-size: 5em;
+	}
+
+	.greetings {
+		font-size: 2.25em;
+	}
+
+	.weather:nth-child(1) {
+		font-size: 1em;
+	}
+
+	.date {
+		font-size: 1.25em;
+	}
+
+	.w_widget_temp { font-size: 2.5rem; }
+
+	.w_icon { height: 45px; }
+
+	.searchbar {
+		width: 300px;
+		height: 40px;
+	}
+
+	.block_parent .l_icon_wrap {
+		width: 3.5em;
+		height: 3.5em;
+	}
+
+	.bonjourr_logo {
+		width: 50%;
+	}
+}
+
+@media screen and (max-width: 700px) {
+	body {font-size: 14px}
+	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
 }
