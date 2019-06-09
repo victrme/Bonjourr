@@ -304,6 +304,7 @@ div.linkblocks {
 
 .popup_line {
 	display: flex;
+	align-items: center;
 	width: 500%;
 }
 
