@@ -9,10 +9,9 @@
 	<link rel="stylesheet" href="src/styles/settings.css">
 
 	<script src="src/scripts/fade.js"></script>
-	<script src="src/scripts/jquery-3.4.1.min.js"></script>
-	<script src="src/scripts/translate.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<script src="src/scripts/lang.js"></script>
-	
+	<script src="src/scripts/translate.min.js"></script>
 	<script src="src/scripts/script.js" defer></script>
 
 	<link rel="icon" href="favicon.png" />
@@ -52,6 +51,8 @@
 				<div class="popup popup3">
 					<h1 class="popup_title">Weather</h1>
 					<p>By default, Bonjourr's weather is taken from Paris. Type in the name of the city you want the weather of and click <code>Change city</code></p>
+					<p>With your permission, Bonjourr can setup the weather based on your location.</p>
+					<button class="intro_weather">Yes please</button>
 				</div>
 				<div class="popup popup4">
 					<h1 class="popup_title">Backgrounds</h1>
@@ -126,8 +127,8 @@
 					</div>
 					<hr>
 
-					<div class="dynamic_bg">
-						<span class="span trn">Dynamic backgrounds</span>
+					<div class="dynamic_bg wrapper">
+						<span class="trn">Dynamic backgrounds</span>
 
 						<div>
 							<label class="switch">
@@ -142,7 +143,7 @@
 
 					<p class="help_sentence trn">Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.</p>
 					<hr>
-					<span class="span trn">Custom background</span>
+					<span class="trn">Custom background</span>
 					<div class="custom_bg">
 						<input type="file" name="background_file">
 						<img src="" class="custom_bg_preview">
@@ -152,14 +153,14 @@
 				<hr>
 
 				<div class="blur">
-					<span class="span trn">Blur intensity</span>
+					<span class="trn">Blur intensity</span>
 					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
 
 				<hr>
 
-				<div class="dark_mode_option">
-					<span class="span trn">Dark mode</span>
+				<div class="dark_mode_option wrapper">
+					<span class="trn">Dark mode</span>
 					<select class="theme">
 						<option value="auto" class="trn">Only at night</option>
 						<option value="enable" class="trn">Enable</option>
@@ -172,20 +173,32 @@
 		<div class="change_weather">
 			<h5 class="subtitle trn">Weather</h5>
 			<div class="param">
-				<input type="text" name="city" placeholder="City">
-				<button class="submitw_city trn">Change city</button>
 
-				<hr>
-
-				<div class="units">
-					<span class="span trn">Imperial units</span>
+				<div class="city">
+					<input type="text" name="city" placeholder="City">
+					<button class="submitw_city trn">Change city</button>
+				</div>
+				
+				<div class="w_auto wrapper">
+					<span class="trn">Geolocation</span>
 					<div>
 						<label class="switch">
 							<input type="checkbox">
 							<span class="slider round span"></span>
 						</label>
 					</div>
-					
+				</div>
+
+				<hr>
+
+				<div class="units wrapper">
+					<span class="trn">Imperial units</span>
+					<div>
+						<label class="switch">
+							<input type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -193,8 +206,8 @@
 		<div id="searchbar_option">
 			<h5 class="subtitle trn">Search bar</h5>
 			<div class="param">
-				<div class="activate_searchbar">
-					<span class="span trn">Activate</span>
+				<div class="activate_searchbar wrapper">
+					<span class="trn">Activate</span>
 						<div>
 							<label class="switch">
 								<input id="sbcheck" type="checkbox">
@@ -203,8 +216,8 @@
 						</div>
 				</div>
 				<hr>
-				<div id="choose_searchengine">
-					<span class="span trn">Search engine</span>
+				<div id="choose_searchengine" class="wrapper">
+					<span class="trn">Search engine</span>
 					<select class="choose_search">
 						<option value="s_startpage" class="trn">Startpage</option>
 						<option value="s_ddg" class="trn">DuckDuckGo</option>
@@ -222,8 +235,8 @@
 		<div class="lang_section">
 			<h5 class="subtitle trn">Language</h5>
 			<div class="param">
-				<div class="choose_language">
-					<span class="span trn">Choose language</span>
+				<div class="choose_language wrapper">
+					<span class="trn">Choose language</span>
 					<select class="lang">
 						<option value="en" class="trn">English</option>
 						<option value="fr" class="trn">Français</option>

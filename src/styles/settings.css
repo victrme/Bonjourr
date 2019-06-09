@@ -102,18 +102,9 @@ h1 {
 	font-size: 0.8em;
 }
 
-.span {
-	display: block;
+.settings span {
 	font-size: 0.9em;
-	padding-bottom: .5em;	
-}
-
-.units .span, .dynamic_bg .span, .activate_searchbar .span  {
-	padding-top: .5em;
-}
-
-.choose_language .span, .blur .span, .dark_mode_option .span, .activate_searchbar .span, #choose_searchengine .span {
-	padding-bottom: 0px;
+	padding-bottom: .5em;
 }
 
 .param {
@@ -121,6 +112,12 @@ h1 {
 	border-top: 1px solid #c8c7cc;
 	border-bottom: 1px solid #c8c7cc;
 	padding: .75em 1.3em;
+}
+
+.settings .wrapper {
+	display: flex;
+	align-items: end;
+	justify-content: space-between;
 }
 
 	/* Background section */
@@ -161,7 +158,7 @@ h1 {
 .choosable_backgrounds {
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 1em;
+	margin: 1em 0;
 }
 
 .custom_bg, .blur {
@@ -370,21 +367,19 @@ input:checked + .slider:before {
 	transform: translateX(22px);
 }
 
-	/*Weather section*/
+/*weather*/
 
-.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_searchengine {
-	display: flex;
-	justify-content: space-between;
+.change_weather .city {
+	margin-bottom: .5em;
 }
 
+
+
+/*bottom*/
+
 .signature {
-	padding-right: .5em;
-	padding-left: .5em;
-	margin-top: 5em;
-	padding-bottom: 3em;
+	padding: 3em .5em 1em .5em;
 	text-align: center;
-	position: relative;
-	bottom: 10px;
 	color: #6d6d72;
 	font-size: .8em;
 }

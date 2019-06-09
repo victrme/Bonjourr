@@ -14,20 +14,28 @@ function getBrowserStorage() {
 }
 
 
+$(".intro_weather").click(function() {
 
-
-
+});
 
 
 
 function introduction() {
 
-	// L'animation est là mais fonctionne pas bien. Il faudrait mettre un display: none; une fois que la transition est terminée mais je trouve pas comment faire
 
-	//$(".dismiss_popup").click(function(){
-	//	$("#start_popup").css("opacity", "0");
-	//	$(".popup_window").css("margin-top", "2300px");
-	//});
+	browser.storage.local.get().then((data) => {
+
+		if (!data.isIntroduced) {
+			$("#start_popup").css("display", "flex");
+		} else {
+			$("#start_popup").remove();
+		}
+
+		//change le pour "false" pour debug la popup
+		browser.storage.local.set({"isIntroduced": true});
+	});
+
+
 
 	//la marge des popups en pourcentages
 	var margin = 0; 
@@ -374,11 +382,16 @@ function date() {
 
 
 
+
+
+
+
+
+
+
 /*
 METEO
 */
-
-
 
 function weather(changelang) {
 
@@ -388,9 +401,6 @@ function weather(changelang) {
 	browser.storage.local.get().then((data) => {
 		lang = (changelang ? changelang : data.lang);
 	});
-	
-	var l = localStorage.wLastState;
-	(l ? dataHandling(JSON.parse(l)) : "");
 
 
 	//si le soleil est levé, renvoi jour
@@ -485,25 +495,27 @@ function weather(changelang) {
 
 
 		//sauvegarde la derniere meteo
-		localStorage.wLastState = JSON.stringify(data);
+		localStorage.wLastState = btoa(JSON.stringify(data));
 	}
 
 
 	//Je préfère isoler la request et utiliser une autre fonction plus haute pour modifier les données
-	function weatherRequest(city, unit) {
+	function weatherRequest(location, unit, auto) {
 
 		//a changer
-		api = '7c541caef5fc7467fc7267e2f75649a9';
+		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=7c541caef5fc7467fc7267e2f75649a9';
+
+		//auto, utilise l'array location [lat, lon]
+		if (auto) {
+			url += "&lat=" + location[0] + "&lon=" + location[1];
+		} else {
+			url += "&q=" + location;
+		}
+
+		url += '&units=' + unit + '&lang=' + lang;
 
 		var request_w = new XMLHttpRequest();
-		request_w.open('GET', 'https://api.openweathermap.org/data/2.5/weather?q='
-			+ city
-			+ '&units='
-			+ unit
-			+ '&appid='
-			+ api
-			+ '&lang='
-			+ lang, true);
+		request_w.open('GET', url, true);
 
 		request_w.onload = function() {
 			
@@ -512,7 +524,7 @@ function weather(changelang) {
 			if (request_w.status >= 200 && request_w.status < 400) {
 
 				//la réponse est utilisé dans la fonction plus haute
-				dataHandling(data);					
+				dataHandling(data);				
 
 			} else {
 				console.log(request_w.status);
@@ -521,7 +533,85 @@ function weather(changelang) {
 
 		request_w.send();
 	}
-	
+
+
+	function bandwidthSaver() {
+
+		var lastCall = localStorage.wlastCall;
+		var lastState = JSON.parse(atob(localStorage.wLastState));
+		var now = new Date().getTime();
+
+		if (lastCall) {
+
+			//si weather est vieux d'une heure (3600000)
+			//faire une requete, sinon prendre le lastState
+			if (now > lastCall + 3600000) {
+				initOnStartup();
+			} else {
+				dataHandling(lastState);
+				buttonInit();
+			}
+
+		} else {
+
+			//si c'est le premier call, requete + lastCall = now
+			initOnStartup();
+			localStorage.wlastCall = now;
+		}
+	}
+
+	function initOnStartup() {
+
+		browser.storage.local.get().then((data) => {
+
+			var city = data.weather_city;
+			var unit = data.weather_unit;
+			var geol = data.weather_geol;
+
+			//initialise a Paris + Metric
+			//si le storage existe, lance avec le storage
+			if (!city || !geol) {
+				weatherRequest("Paris", "metric");
+
+				browser.storage.local.set({"weather_city": "paris"});
+				browser.storage.local.set({"weather_unit": "metric"});
+			}
+			else if (!geol) {
+				weatherRequest(city, unit);
+			}
+			else {
+				weatherRequest(geol, unit, true);
+			}
+
+			buttonInit();
+		});
+	}
+
+	function buttonInit() {
+
+		browser.storage.local.get().then((data) => {
+
+			var city = data.weather_city;
+			var unit = data.weather_unit;
+			var geol = data.weather_geol;
+
+			//affiche la ville dans l'input de ville
+			$(".change_weather input[name='city']").attr("placeholder", city);
+
+			//check imperial
+			if (unit && unit === "imperial") {
+				$(".switch input").checked = true;
+			}
+
+			//check geolocalisation
+			//enleve city
+			if (geol) {
+				$(".w_auto input").checked = true;
+				$(".change_weather .city").css("display", "none");
+			}
+		});
+	}
+
 
 	//quand on accepte la nouvelle ville
 	//req la meteo avec la ville et l'enregistre
@@ -540,8 +630,11 @@ function weather(changelang) {
 			city.blur();
 		});
 	}
-
 	
+
+
+	//TOUT LES EVENTS
+
 	$(".submitw_city").click(function() {
 		updateWeatherCity();
 	});
@@ -571,43 +664,49 @@ function weather(changelang) {
 
 		browser.storage.local.get().then((data) => {
 
-			weatherRequest(data.weather_city, unit);
+			if (data.weather_geol) {
+				weatherRequest(data.weather_geol, unit, true);
+			} else {
+				weatherRequest(data.weather_city, unit);
+			}
+			
 			browser.storage.local.set({"weather_unit": unit});
 		});
 		
 	});
 
 
+	//automatise la meteo
+	//demande la geoloc et enleve l'option city
+	$(".w_auto input").change(function() {
 
-	//initialise a Paris + Metric
-	//si le storage existe, lance avec le storage
+		if ($(this).is(":checked")) {
 
-	browser.storage.local.get().then((data) => {
+			navigator.geolocation.getCurrentPosition((pos) => {
 
-		var city = data.weather_city;
-		var unit = data.weather_unit;
+				var position = [pos.coords.latitude, pos.coords.longitude];
+				browser.storage.local.set({"weather_geol": position});
 
-		if (!city) {
-			weatherRequest("Paris", "metric");
+				$(".change_weather .city").css("display", "none");
 
-			browser.storage.local.set({"weather_city": "paris"});
-			browser.storage.local.set({"weather_unit": "metric"});
-		}
-		else {
-			weatherRequest(city, unit);
-		}
+				initOnStartup();
+			});
 
-		//affiche la ville dans l'input de ville
-		$(".change_weather input[name='city']").attr("placeholder", city);
+		} else {
 
-		//check imperial
-		if (unit && unit === "imperial") {
-			$(".switch input").checked = true;
+			browser.storage.local.remove("weather_geol");
+			$(".change_weather .city").css("display", "block");
 		}
 	});
 
-	
+
+	bandwidthSaver();
 }
+
+
+
+
+
 
 
 
@@ -827,7 +926,7 @@ function darkmode(choix) {
 	//darkmode automatique
 	function auto() {
 
-		var wAPI = JSON.parse(localStorage.wLastState);
+		var wAPI = JSON.parse(atob(localStorage.wLastState));
 		var sunrise = new Date(wAPI.sys.sunrise * 1000);
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
@@ -903,9 +1002,9 @@ $(".dark_mode_option select.theme").change(function() {
 
 function searchbar() {
 
-	function activate(isItActivatedIDontKnowTBF) {
+	function activate(activated) {
 
-		if (isItActivatedIDontKnowTBF) {
+		if (activated) {
 
 			browser.storage.local.set({"searchbar": true});
 

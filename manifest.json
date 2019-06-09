@@ -16,7 +16,8 @@
 	},
 
 	"permissions": [
-		"storage",
-		"unlimitedStorage"
-	]
+		"storage"
+	],
+
+	"content_security_policy": "script-src 'self' https://code.jquery.com/jquery-3.4.1.min.js; object-src 'self'"
 }
