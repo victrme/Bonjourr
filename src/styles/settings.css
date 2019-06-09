@@ -108,6 +108,10 @@ h1 {
 	padding-bottom: .5em;	
 }
 
+.selector_span {
+	margin-top: 4px;
+}
+
 .units .span, .dynamic_bg .span, .activate_searchbar .span  {
 	padding-top: .5em;
 }
