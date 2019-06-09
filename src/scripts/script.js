@@ -65,7 +65,7 @@ function introduction() {
 		}
 		if (margin === 100) {
 			$(".previous_popup").text("Dismiss");
-			$(".next_popup").text("Learn more");
+			$(".next_popup").text("Begin");
 		}
 		if (margin === 400) {
 			$(".next_popup").text("Next");
@@ -812,6 +812,7 @@ function darkmode(choix) {
 
 		if (add) {
 			$("body").addClass("dark");
+			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
 			$(".background").css("filter", bgfilter + " brightness(75%)");
 
 			isIOSwallpaper(true);
@@ -819,6 +820,7 @@ function darkmode(choix) {
 			$("body").removeClass("dark");
 			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_l.jpg');
 			$(".background").css("filter", "blur(" + bgblur + "px)");
+			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
 
 			isIOSwallpaper(false);
 		}
