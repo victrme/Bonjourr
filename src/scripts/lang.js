@@ -139,5 +139,95 @@ var dict = {
   },
   "for infos and donations": {
     fr: "pour en savoir plus ou faire un don"
+  },
+  "Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.": {
+    fr: "Merci d'avoir installé Bonjourr, nous espérons qu'il vous plaira. Votre nouvelle page d'accueil apparaitra chaque fois que vous ouvrez un nouvel onglet ou une nouvelle fenêtre."
+  },
+  "If you'd like to help us, suggest ideas or report bugs, you can head to ": {
+    fr: "Si vous souhaitez nous aider, suggérer des idées ou reporter des bugs, vous pouvez visiter "
+  },
+  "our website": {
+    fr: "notre site Internet"
+  },
+  ". Feel free to customize your page in the settings via the bottom right corner's icon. Click on the ": {
+    fr: ". Vous êtes libre de personnaliser votre page en accédant aux réglages via l'icône en bas à droite. Cliquez sur le bouton "
+  },
+  " button to set up Bonjourr and learn the basics.": {
+    fr: "pour configurer Bonjourr et en apprendre les bases."
+  },
+  "Begin": {
+    fr: "Commencer"
+  },
+  " button to set up Bonjourr and learn the basics.": {
+    fr: " pour configurer Bonjourr et en apprendre les bases."
+  },
+  "Language": {
+    fr: "Langue"
+  },
+  "Adding your links": {
+    fr: "Ajout de favoris"
+  },
+  "You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click ": {
+    fr: "Vous pouvez facilement ajouter des liens vers vos sites favoris. Il suffit d'entrer le titre de votre site, son URL, de cliquer sur "
+  },
+  ", it will appear under the weather widget. If you want to get rid of a link, just press it for a second and the delete icon will appear.": {
+    fr: " et il apparaitra directement sous le widget Météo. Un clic long sur l'icône vous apportera la possibilité de supprimer vos favoris."
+  },
+  "By default, Bonjourr's weather is taken from Paris. You can change it by typing in the name of the city you want the weather of and click ": {
+    fr: "Par défaut, Bonjourr se base à Paris pour sa météo. Vous pouvez changer cela en saisissant le nom de la ville dont vous souhaitez recevoir la météo et en cliquant sur "
+  },
+  "Change city": {
+    fr: "Changer la ville "
+  },
+  "You can also change the temperature's unit.": {
+    fr: "Vous pouvez également changer l'unité de température."
+  },
+  "Visuals": {
+    fr: "Affichage"
+  },
+  "You can choose a background from our selection below. To put a custom background or a dynamic background, you can visit the Settings.": {
+    fr: "Vous pouvez choisir un arrière-plan parmi la sélection ci-dessous. Pour mettre un arrière-plan personnalisé ou dynamique, vous pouvez visiter les Réglages."
+  },
+  "A dark mode is also available.": {
+    fr: "Un mode sombre est également disponible."
+  },
+  "Dark mode": {
+    fr: "Mode sombre"
+  },
+  "Only at night": {
+    fr: "Seulement la nuit"
+  },
+  "Enable": {
+    fr: "Activer"
+  },
+  "Disable": {
+    fr: "Désactiver"
+  },
+  "Search bar": {
+    fr: "Barre de recherche"
+  },
+  "If you want, you can add a search bar and choose your favorite search engine.": {
+    fr: "Si vous le souhaitez, vous pouvez ajouter une barre de recherche et choisir votre moteur de recherche favori."
+  },
+  "Search engine": {
+    fr: "Moteur de recherche"
+  },
+  "Activate": {
+    fr: "Activer"
+  },
+  "Dismiss": {
+    fr: "Ignorer"
+  },
+  "Begin": {
+    fr: "Commencer"
+  },
+  "Activate": {
+    fr: "Activer"
+  },
+  "Activate": {
+    fr: "Activer"
+  },
+  "Activate": {
+    fr: "Activer"
   }
 }
