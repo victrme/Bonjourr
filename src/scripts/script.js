@@ -21,8 +21,10 @@ function introduction() {
 
 		if (!data.isIntroduced) {
 			$("#start_popup").css("display", "flex");
+			$(".interface .linkblocks").css("opacity", 0);
 		} else {
 			$("#start_popup").remove();
+			$(".interface .linkblocks").css("opacity", 1);
 		}
 
 		//change le pour "false" pour debug la popup
@@ -40,10 +42,17 @@ function introduction() {
 
 	// Start popup
 	function dismiss() {
-		$("#start_popup").css("opacity", 0);
+
+		$("#start_popup").css("background-color", 'rgba(0, 0, 0, 0)');
+		$(".popup_window").css("margin-top", "200%");
+
+		//les links modifié en intro sont réinitialisés
+		initblocks();
+		
 		setTimeout(function() {
 			$("#start_popup").remove();
-		}, 200);
+			$(".interface .linkblocks").css("opacity", 1);
+		}, 400);
 	}
 
 	function countPopup(c) {
@@ -62,20 +71,23 @@ function introduction() {
 	//ici quand on recule
 	$(".previous_popup").click(function() {
 
+		margin -= 100;
+
 		if (margin === 0) {
-			dismiss();
-		}
-		if (margin === 100) {
 			$(".previous_popup").text("Dismiss");
-			$(".next_popup").text("Learn more");
+			$(".next_popup").text("Begin");
 		}
-		if (margin === 400) {
+
+		if (margin === 300) {
 			$(".next_popup").text("Next");
 		}
 
-		margin -= 100;
-		countPopup(margin);
-		$(".popup_line").css("margin-left", "-" + margin + "%");
+		if (margin === -100) {
+			dismiss();
+		} else {
+			countPopup(margin);
+			$(".popup_line").css("margin-left", "-" + margin + "%");
+		}	
 	});
 
 	//ici quand on avance
@@ -83,19 +95,22 @@ function introduction() {
 		
 		margin += 100;
 
-		if (margin === 500) {
-			dismiss();
-		}
 		if (margin === 100) {
 			$(".previous_popup").text("Back");
 			$(".next_popup").text("Next");
 		}
+
 		if (margin === 400) {
 			$(".next_popup").text("All set !");
 		}
 
-		countPopup(margin);
-		$(".popup_line").css("margin-left", "-" + margin + "%");
+		if (margin === 500) {
+			dismiss();
+		}
+		else {
+			countPopup(margin);
+			$(".popup_line").css("margin-left", "-" + margin + "%");
+		}
 	});
 
 }
@@ -273,10 +288,6 @@ function showRemoveLink() {
 	});
 }
 
-
-
-
-
 function linkSubmission() {
 
 	function filterUrl(str) {
@@ -344,11 +355,11 @@ function linkSubmission() {
 	}
 }
 
-$('.addlink input[name="title"]').on('keypress', function(e) {
+$('input[name="title"]').on('keypress', function(e) {
 	if (e.which === 13) linkSubmission();
 });
 
-$('.addlink input[name="url"]').on('keypress', function(e) {
+$('input[name="url"]').on('keypress', function(e) {
 	if (e.which === 13) linkSubmission();
 });
 
@@ -913,11 +924,13 @@ function darkmode(choix) {
 
 		if (add) {
 			$("body").addClass("dark");
+			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
 			$(".background").css("filter", bgfilter + " brightness(75%)");
 
 			isIOSwallpaper(true);
 		} else {
 			$("body").removeClass("dark");
+			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
 			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_l.jpg');
 			$(".background").css("filter", "blur(" + bgblur + "px)");
 
@@ -962,7 +975,7 @@ function darkmode(choix) {
 				auto();
 			}
 
-			$(".dark_mode_option select.theme").val(dd);
+			$(".darkmode select.theme").val(dd);
 		});
 		
 	}
@@ -994,7 +1007,7 @@ function darkmode(choix) {
 	}
 }
 
-$(".dark_mode_option select.theme").change(function() {
+$(".darkmode select.theme").change(function() {
 	darkmode(this.value);
 });
 
@@ -1100,6 +1113,13 @@ $(".showSettings button").click(function() {
 	$(this).toggleClass("shown");
 	$(".settings").toggleClass("shown");
 	$(".interface").toggleClass("pushed");
+});
+
+$(".interface").click(function() {
+	if ($("div.settings").hasClass("shown")) {
+		$(".settings").removeClass("shown");
+		$(".interface").removeClass("pushed");
+	}
 });
 
 

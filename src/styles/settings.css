@@ -107,6 +107,10 @@ h1 {
 	padding-bottom: .5em;
 }
 
+.selector_span {
+	margin-top: 4px;
+}
+
 .param {
 	background-color : #ffffff;
 	border-top: 1px solid #c8c7cc;
@@ -291,14 +295,9 @@ input[name="title"], input[name="url"] {
 	width: calc(100% - .5em);
 }
 
-input[name="city"] {
-	width: 60%;
-}
-
 .addlink button {
-	width: 40%;
-	margin-left: 30%;
-	margin-right: 30%
+	display: block;
+	margin: auto;
 }
 
 ::placeholder {
@@ -311,6 +310,7 @@ button {
 	border:0;
 	background-color: #fff;
 	color: #007aff;
+	margin: auto;
 	cursor: pointer;
 }
 
@@ -367,12 +367,12 @@ input:checked + .slider:before {
 	transform: translateX(22px);
 }
 
-/*weather*/
+/* weather */
 
-.change_weather .city {
+.settings .city {
+	display: flex;
 	margin-bottom: .5em;
 }
-
 
 
 /*bottom*/
@@ -448,6 +448,11 @@ body.dark ::placeholder {
 body.dark button {
 	background-color: #1c1c1e;
 }
+
+body.dark .showSettings button {background-color: transparent;}
+body.dark .showSettings button:hover {background-color: #3c3c3e;}
+body.dark .showSettings button.shown {background-color: #1c1c1e;}
+body.dark .showSettings button.shown:hover {background-color: #3c3c3e;}
 
 body.dark .slider {
 	background-color: #39383d;

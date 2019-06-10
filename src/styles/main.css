@@ -22,6 +22,10 @@
 /*pour le fade in*/
 body {
 	opacity: 0;
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 }
 
 body, .showSettings button {
@@ -41,6 +45,7 @@ p, h3 {
 
 select {
 	padding: .5em;
+	cursor: pointer;
 }
 
 .background {
@@ -56,126 +61,6 @@ select {
 	filter: blur(30px);
 	transform: scale(1.1); 
 }
-
-
-
-
-
-/*POPUP*/
-
-#start_popup {
-	transition: margin .5s ease-in;
-	transition: opacity .2s ease-in;
-	z-index: 10;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, .6);
-	display: none;
-	justify-content: center;
-	align-items: center;
-}
-
-.popup_window {
-	overflow-x: hidden;
-	transition: opacity .2s ease-in;
-	transition: margin .5s ease-in;
-	width: 600px;
-	max-width: calc(100% - 2em);
-	height: auto;
-	border-radius: 8px;
-	background-color: white;
-}
-
-.popup_line {
-	display: flex;
-	width: 500%;
-}
-
-.popup {
-	width: 100%;
-	padding: 2em;
-}
-
-.popup_title {
-	color: black;
-	font-size: 2em;
-	text-shadow: none;
-	padding-bottom: 1em;
-}
-
-.popup img, .popup video {
-	width: 50%;
-	padding-bottom: 1.5em;
-}
-
-.popup p {
-	text-align: justify;
-	text-shadow: none;
-	font-size: 25px;
-	color: black;
-	margin: 1em 0;
-	line-height: 1.5em;
-}
-
-.popup p a {
-	text-decoration: none;
-	color: #007aff;
-}
-
-.popup code {
-	font-size: .9em;
-	color: #007aff;
-	border: 1px solid #007aff;
-	border-radius: 4px;
-	padding: .1em .4em;
-	margin: 0 .1em;
-}
-
-.choose_language_popup {
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	width: 50%;
-	margin: auto;
-}
-
-.popup_buttons {
-	padding: 2em;
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-}
-
-.popup_buttons button {
-	height: 50px;
-	width: 130px;
-
-	background-color: #007aff;
-	color: white;
-	font-size: 20px;
-	border-radius: 8px;
-}
-
-.popup_buttons button:hover {
-	filter: brightness(0.9);
-}
-
-.popup_buttons .counter span {
-	color: #ccc;
-	text-shadow: none;
-	font-size: 2em;
-}
-
-.popup_buttons .counter span.actif {
-	color: #007aff;
-}
-
-/*POPUP*/
-
-
-
-
 
 .interface {
 	height: 100vh;
@@ -238,7 +123,7 @@ div.w_widget_text {
 }
 
 .searchbar {
-	opacity: 0.9;
+	opacity: 0.75;
 	font-size: 1.5em;
 	height: 50px;
 	width: 500px;
@@ -247,6 +132,9 @@ div.w_widget_text {
 	padding-left: 1em;
 }
 
+.searchbar:focus {
+	opacity: 1;
+}
 
 
 div.linkblocks {
@@ -279,11 +167,11 @@ div.linkblocks {
 	position: relative;
 	border-radius: 4px;
 	background: white;
-	border: .3em solid white;
+	border: .2em solid white;
 	cursor: pointer;
 }
 .block_parent .l_icon_wrap:hover {
-	border: .3em solid #007aff;
+	border: .2em solid #007aff;
 }
 
 .block_parent a {
@@ -362,6 +250,232 @@ div.linkblocks {
 
 
 
+/*POPUP*/
+
+#start_popup {
+	transition: all .4s ease-in;
+	z-index: 10;
+	overflow: hidden;
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, .6);
+	
+	justify-content: center;
+	align-items: center;
+
+	color: #222;
+	text-shadow: none;
+}
+
+.popup_window {
+	overflow-x: hidden;
+	transition: margin .4s ease-in;
+	width: 600px;
+	max-width: calc(100% - 2em);
+	height: auto;
+	border-radius: 8px;
+	background-color: white;
+}
+
+.popup_line {
+	display: flex;
+	width: 500%;
+	align-items: flex-start;
+	transition: margin .3s;
+}
+
+.popup {
+	width: 100%;
+	padding: 2em;
+}
+
+.popup .wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: auto;
+}
+
+.popup .wrapper > * {
+	margin: 0 2em;
+}
+
+.popup h1 {
+	color: black;
+	font-size: 2em;
+	text-shadow: none;
+	margin-bottom: 2em;
+}
+
+
+.popup p {
+	text-align: justify;
+	text-shadow: none;
+	font-size: 22px;
+	color: black;
+	margin: 1em 0;
+	line-height: 1.5em;
+}
+
+.popup span {
+	font-size: 22px;
+}
+
+.popup p a {
+	text-decoration: none;
+	color: #007aff;
+}
+
+.popup code {
+	font-family: sf_pro_displaylight;
+	font-size: .9em;
+	color: #007aff;
+	border: 1px solid #007aff;
+	border-radius: 4px;
+	padding: .1em .4em;
+	margin: 0 .1em;
+}
+
+.popup input[name="title"],
+.popup input[name="url"],
+.popup input[name="city"] {
+	font-size: 1.1em;
+}
+
+.popup_param {
+	margin: 2em auto;
+	width: 75%;
+}
+
+.popup1 .wrapper {
+	margin: 2em 0;
+}
+
+.popup2 .linkblocks {
+	padding-bottom: 0;
+}
+
+.popup2 .linkblocks .block_parent .block p {
+	text-align: center;
+	margin: 0;
+}
+
+
+/*le weather*/
+
+.popup .city {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 1em;
+}
+
+.popup_param.change_weather .wrapper {
+	justify-content: space-between;
+	max-width: 300px;
+}
+
+.popup .weather .w_widget {
+	margin-top: 1em;
+}
+
+.popup .weather .w_widget {
+	margin-top: 1em;
+}
+.popup .weather .w_icon {
+	padding: .5em;
+	border-radius: 8px;
+	background-color: #222;
+	filter: none;
+}
+
+.popup .weather span.w_widget_temp {
+	padding: 1rem;
+	font-size: 3rem;
+}
+
+/*en vrai*/
+
+
+
+.popup4 .backgrounds {
+	width: 50%;
+}
+
+.bonjourr_logo {
+	width: 75%;
+}
+
+.popup .submitlink,
+.popup .submitw_city {
+	font-size: 1.1em;
+	margin: .5em auto;
+}
+
+.popup .submitw_city {
+	margin: .5em;
+}
+
+.popup_searchbar,
+.popup_searchbar:focus {
+	border: 2px solid #b8b8b8;
+	margin-top: 2em;
+}
+
+.popup_buttons button {
+	height: 50px;
+	width: 130px;
+
+	background-color: #007aff;
+	color: white;
+	font-size: 20px;
+	border-radius: 8px;
+}
+
+.popup_buttons {
+	padding: 0 2em 2em 2em;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.popup_buttons button:hover {
+	filter: brightness(1.1);
+}
+
+.popup_buttons .counter span {
+	color: #ccc;
+	text-shadow: none;
+	font-size: 2em;
+}
+
+.popup_buttons .counter span.actif {
+	color: #007aff;
+}
+
+/*POPUP*/
+
+
+/*dark mode */
+
+body.dark,
+body.dark .popup, 
+body.dark .popup_window,
+body.dark .popup .weather .w_icon {
+	background-color: #1c1c1e;
+}
+
+body.dark .popup p,
+body.dark .popup h1,
+body.dark .popup span {
+	color: white;
+}
+
+body.dark .popup_buttons button {
+	background-color: #007aff;
+}
+
 
 @media screen and (min-width: 3000px) {
 	body {font-size: 20px}
@@ -373,17 +487,50 @@ div.linkblocks {
 
 @media screen and (max-width: 1400px) {
 	body {font-size: 15px}
+
+	.popup p,
+	.popup span {
+		font-size: 17px;
+	}
+}
+
+@media screen and (max-height: 700px) {
+	#clock {
+		font-size: 5em;
+	}
+
+	.greetings {
+		font-size: 2.25em;
+	}
+
+	.weather:nth-child(1) {
+		font-size: 1em;
+	}
+
+	.date {
+		font-size: 1.25em;
+	}
+
+	.w_widget_temp { font-size: 2.5rem; }
+
+	.w_icon { height: 45px; }
+
+	.searchbar {
+		width: 300px;
+		height: 40px;
+	}
+
+	.block_parent .l_icon_wrap {
+		width: 3.5em;
+		height: 3.5em;
+	}
+
+	.bonjourr_logo {
+		width: 50%;
+	}
 }
 
 @media screen and (max-width: 700px) {
 	body {font-size: 14px}
 	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
-}
-
-
-
-/*dark mode */
-
-body.dark {
-	background-color: #111;
 }
