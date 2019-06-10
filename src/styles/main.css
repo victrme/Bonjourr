@@ -263,6 +263,7 @@ div.linkblocks {
 #start_popup {
 	transition: margin .5s ease-in;
 	transition: opacity .2s ease-in;
+	overflow-y: hidden;
 	transition: background-color .4s ease-in;
 	z-index: 10;
 	position: absolute;
