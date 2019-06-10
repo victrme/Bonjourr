@@ -45,8 +45,8 @@
 					<div>
 						<p><span class="trn">You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click </span><code class="trn">Add</code><span class="trn">, it will appear under the weather widget. If you want to get rid of a link, just press it for a second and the delete icon will appear.</span></p>
 						<div class="popup_param addlink">
-							<input type="text" name="title" placeholder="Title">
-							<input type="text" name="url" placeholder="URL">
+							<input type="text" name="title" placeholder="YouTube">
+							<input type="text" name="url" placeholder="https://youtube.com/feed/subscriptions">
 							<button class="submitlink trn">Add</button>
 						</div>
 						
@@ -59,40 +59,43 @@
 				<div class="popup popup3">
 					<h1 class="trn">Weather</h1>
 
-					<p>
-						<span class="trn">Bonjourr's weather defaults to Paris. Change it by typing in the name of your city and click</span> <code class="trn">Change city</code>,
-						<span class="trn">or select</span> <code class="trn">Automatic</code>
-						<span class="trn">to set the weather based on your geolocation</span>.
-						<span class="trn">You can also change the measure unit</span>.
+					<p class="trn">Bonjourr's weather defaults to Paris. Activate geolocation and the weather will be automatically updated according to the city you're in. You can also enter a city manually and change the measure unit.</p>
 					</p>
 
 					<div class="popup_param change_weather">
-						<div class="city">
-							<input type="text" name="city" placeholder="City">
-							<button class="submitw_city trn">Change city</button>
-						</div>
-						
 						<div class="w_auto wrapper">
-							<span class="trn">Automatic</span>
+							<span class="trn">Geolocation</span>
+
 							<div>
 								<label class="switch">
 									<input type="checkbox">
 									<span class="slider round span"></span>
 								</label>
 							</div>
+								
 						</div>
 
-						<hr>
 
-						<div class="units wrapper">
-							<span class="trn">Imperial units</span>
-							<div>
-								<label class="switch">
-									<input type="checkbox">
-									<span class="slider round span"></span>
-								</label>
+							
+							<div class="city">
+								<hr>
+								<input type="text" name="city" placeholder="City">
+								<button class="submitw_city trn">Change city</button>
 							</div>
-						</div>
+							
+							
+
+							<hr>
+
+							<div class="units wrapper">
+								<span class="trn">Imperial units</span>
+								<div>
+									<label class="switch">
+										<input type="checkbox">
+										<span class="slider round span"></span>
+									</label>
+								</div>
+							</div>
 					</div>
 
 					<div class="weather">
@@ -274,9 +277,6 @@
 								<span class="slider round span"></span>
 							</label>
 						</div>
-
-
-
 					</div>
 
 					<p class="help_sentence trn">Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.</p>
@@ -312,20 +312,28 @@
 			<h5 class="subtitle trn">Weather</h5>
 			<div class="param">
 
-				<div class="city">
-					<input type="text" name="city" placeholder="City">
-					<button class="submitw_city trn">Change city</button>
-				</div>
-				
 				<div class="w_auto wrapper">
 					<span class="trn">Geolocation</span>
+
 					<div>
 						<label class="switch">
 							<input type="checkbox">
 							<span class="slider round span"></span>
 						</label>
 					</div>
+					
 				</div>
+
+
+				
+				<div class="city">
+					<hr>
+					<input type="text" name="city" placeholder="City">
+					<button class="submitw_city trn">Change city</button>
+					<p class="help_sentence trn">Use this option if you don't want to enable geolocation.</p>
+				</div>
+				
+				
 
 				<hr>
 

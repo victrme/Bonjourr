@@ -9,7 +9,7 @@ var dict = {
     fr: "Arrière plan"
   },
   "Choose background": {
-    fr: "Choisir l'arrière plan"
+    fr: "Choisir l'arrière-plan"
   },
   "Custom background": {
     fr: "Arrière plan personnalisé"
@@ -18,7 +18,7 @@ var dict = {
     fr: "Arrière plan dynamique"
   },
   "Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.": {
-    fr: "Activez cette option pour que votre arrière plan change chaque jour via la sélection de l'équipe Bonjourr."
+    fr: "Activez cette option pour que votre arrière-plan change chaque jour via la sélection de l'équipe Bonjourr."
   },
   "Blur intensity": {
     fr: "Intensité du flou"
@@ -141,7 +141,7 @@ var dict = {
     fr: "pour en savoir plus ou faire un don"
   },
   "Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.": {
-    fr: "Merci d'avoir installé Bonjourr, nous espérons qu'il vous plaira. Votre nouvelle page d'accueil apparaitra chaque fois que vous ouvrez un nouvel onglet ou une nouvelle fenêtre."
+    fr: "Merci d'avoir installé Bonjourr, nous espérons qu'il vous plaira. Votre nouvelle page d'accueil apparaîtra chaque fois que vous ouvrez un nouvel onglet ou une nouvelle fenêtre."
   },
   "If you'd like to help us, suggest ideas or report bugs, you can head to ": {
     fr: "Si vous souhaitez nous aider, suggérer des idées ou reporter des bugs, vous pouvez visiter "
@@ -153,13 +153,10 @@ var dict = {
     fr: ". Vous êtes libre de personnaliser votre page en accédant aux réglages via l'icône en bas à droite. Cliquez sur le bouton "
   },
   " button to set up Bonjourr and learn the basics.": {
-    fr: "pour configurer Bonjourr et en apprendre les bases."
+    fr: " pour configurer Bonjourr et en apprendre les bases."
   },
   "Begin": {
     fr: "Commencer"
-  },
-  " button to set up Bonjourr and learn the basics.": {
-    fr: " pour configurer Bonjourr et en apprendre les bases."
   },
   "Language": {
     fr: "Langue"
@@ -171,10 +168,10 @@ var dict = {
     fr: "Vous pouvez facilement ajouter des liens vers vos sites favoris. Il suffit d'entrer le titre de votre site, son URL, de cliquer sur "
   },
   ", it will appear under the weather widget. If you want to get rid of a link, just press it for a second and the delete icon will appear.": {
-    fr: " et il apparaitra directement sous le widget Météo. Un clic long sur l'icône vous apportera la possibilité de supprimer vos favoris."
+    fr: " et il apparaîtra directement sous le widget Météo. Un clic long sur l'icône vous apportera la possibilité de supprimer vos favoris."
   },
-  "Bonjourr's weather defaults to Paris. Change it by typing in the name of your city and click": {
-    fr: "La météo de Bonjourr s'initialise à Paris. Modifiez-la en ajoutant le nom de votre ville et appuyez"
+  "Bonjourr's weather defaults to Paris. Activate geolocation and the weather will be automatically updated according to the city you're in. You can also enter a city manually and change the measure unit.": {
+    fr: "La météo de Bonjourr s'initialise à Paris. Vous pouvez activer la géolocalisation et elle se mettra automatiquement à jour selon la ville où vous vous trouvez. Vous pouvez également entrer une ville manuellement et changer l'unité de mesure."
   },
   "Change city": {
     fr: "Changer la ville"
@@ -230,11 +227,11 @@ var dict = {
   "Begin": {
     fr: "Commencer"
   },
-  "Activate": {
-    fr: "Activer"
+  "Use this option if you don't want to enable geolocation.": {
+    fr: "Utilisez cette option si vous ne souhaitez pas activer la géolocalisation."
   },
-  "Activate": {
-    fr: "Activer"
+  "Geolocation": {
+    fr: "Géolocalisation"
   },
   "Activate": {
     fr: "Activer"

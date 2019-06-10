@@ -282,7 +282,7 @@ div.linkblocks {
 .popup_line {
 	display: flex;
 	width: 500%;
-	align-items: flex-start;
+	align-items: center;
 	transition: margin .3s;
 }
 
@@ -302,11 +302,14 @@ div.linkblocks {
 	margin: 0 2em;
 }
 
+.popup3 .wrapper > * {
+	margin: 0;
+}
+
 .popup h1 {
 	color: black;
 	font-size: 2em;
 	text-shadow: none;
-	margin-bottom: 2em;
 }
 
 
@@ -321,6 +324,11 @@ div.linkblocks {
 
 .popup span {
 	font-size: 22px;
+}
+
+.popup #choose_searchengine span {
+	margin: 0;
+	margin-left: 30px;
 }
 
 .popup p a {
@@ -342,6 +350,10 @@ div.linkblocks {
 .popup input[name="url"],
 .popup input[name="city"] {
 	font-size: 1.1em;
+}
+
+.popup input[name="url"]::placeholder {
+	text-transform: lowercase;
 }
 
 .popup_param {

@@ -367,14 +367,6 @@ input:checked + .slider:before {
 	transform: translateX(22px);
 }
 
-/* weather */
-
-.settings .city {
-	display: flex;
-	margin-bottom: .5em;
-}
-
-
 /*bottom*/
 
 .signature {

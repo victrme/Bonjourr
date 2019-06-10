@@ -101,7 +101,7 @@ function introduction() {
 		}
 
 		if (margin === 400) {
-			$(".next_popup").text("All set !");
+			$(".next_popup").text("All set!");
 		}
 
 		if (margin === 500) {
@@ -1024,13 +1024,14 @@ function searchbar() {
 			browser.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
-			$(".searchbar_container").css("display", "block");
+			$(".searchbar_container, .settings #searchbar_option .param hr").css("display", "block");
+			$(".settings #choose_searchengine").css("display", 'flex');
 			$(".searchbar_container").css("opacity", 1);
 			
 		} else {
 
 			browser.storage.local.set({"searchbar": false});
-
+			$(".settings #choose_searchengine, .settings #searchbar_option .param hr").css("display", "none");
 			//pour animer un peu
 			$(".searchbar_container").css("opacity", 0);
 			setTimeout(function() {
