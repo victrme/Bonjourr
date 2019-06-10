@@ -30,6 +30,7 @@ body {
 
 body, .showSettings button {
 	margin: 0;
+    cursor: default;
     color: white;
     text-shadow: 0 1px 15px rgba(0,0,0,0.5);
 
@@ -43,8 +44,8 @@ p, h3 {
 }
 
 select {
-	cursor: pointer;
 	padding: .5em;
+	cursor: pointer;
 }
 
 .background {
@@ -60,14 +61,6 @@ select {
 	filter: blur(30px);
 	transform: scale(1.1); 
 }
-
-
-
-
-
-
-
-
 
 .interface {
 	height: 100vh;
@@ -142,6 +135,7 @@ div.w_widget_text {
 .searchbar:focus {
 	opacity: 1;
 }
+
 
 div.linkblocks {
 	display: flex;
@@ -256,28 +250,27 @@ div.linkblocks {
 
 
 
-
-
 /*POPUP*/
 
 #start_popup {
-	transition: margin .5s ease-in;
-	transition: opacity .2s ease-in;
-	overflow-y: hidden;
-	transition: background-color .4s ease-in;
+	transition: all .4s ease-in;
 	z-index: 10;
+	overflow: hidden;
+	display: none;
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, .6);
-	display: flex;
+	
 	justify-content: center;
 	align-items: center;
+
+	color: #222;
+	text-shadow: none;
 }
 
 .popup_window {
 	overflow-x: hidden;
-	transition: opacity .2s ease-in;
 	transition: margin .4s ease-in;
 	width: 600px;
 	max-width: calc(100% - 2em);
@@ -288,8 +281,9 @@ div.linkblocks {
 
 .popup_line {
 	display: flex;
-	align-items: center;
 	width: 500%;
+	align-items: flex-start;
+	transition: margin .3s;
 }
 
 .popup {
@@ -297,56 +291,24 @@ div.linkblocks {
 	padding: 2em;
 }
 
-.popup_title {
+.popup .wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: auto;
+}
+
+.popup .wrapper > * {
+	margin: 0 2em;
+}
+
+.popup h1 {
 	color: black;
 	font-size: 2em;
 	text-shadow: none;
-}
-
-.popup3 .popup_title  {
-	margin-bottom: 1em;
-}
-
-.popup3 .popup_param {
 	margin-bottom: 2em;
 }
 
-.popup_span {
-	color: black;
-	text-shadow: none;
-	font-size: 1.1em;
-}
-
-.popup .w_widget {
-	margin: auto;
-	margin-top: 2em;
-	color: white;
-	width: 200px;
-	border-radius: 10px;
-	background-color: black;
-}
-
-.popup_param {
-	margin: auto;
-	width: 75%;
-}
-
-.popup2 .center .linkblocks {
-	padding-bottom: 0;
-}
-
-.popup2 .center .linkblocks .block_parent .block p {
-	margin: 0;
-}
-
-.popup4 .popup_param {
-	width: 50%;
-	margin-bottom: 2em;
-}
-
-.bonjourr_logo {
-	width: 75%;
-}
 
 .popup p {
 	text-align: justify;
@@ -357,18 +319,13 @@ div.linkblocks {
 	line-height: 1.5em;
 }
 
+.popup span {
+	font-size: 22px;
+}
+
 .popup p a {
 	text-decoration: none;
 	color: #007aff;
-}
-
-.popup input[name="title"], .popup input[name="url"], .popup input[name="city"] {
-	font-size: 1.1em;
-}
-
-.popup .submitlink, .popup .submitw_city {
-	font-size: 1.1em;
-	margin-top: .4em;
 }
 
 .popup code {
@@ -381,25 +338,89 @@ div.linkblocks {
 	margin: 0 .1em;
 }
 
-.choose_language_popup {
+.popup input[name="title"],
+.popup input[name="url"],
+.popup input[name="city"] {
+	font-size: 1.1em;
+}
+
+.popup_param {
+	margin: 2em auto;
+	width: 75%;
+}
+
+.popup1 .wrapper {
+	margin: 2em 0;
+}
+
+.popup2 .linkblocks {
+	padding-bottom: 0;
+}
+
+.popup2 .linkblocks .block_parent .block p {
+	text-align: center;
+	margin: 0;
+}
+
+
+/*le weather*/
+
+.popup .city {
 	display: flex;
-	justify-content: space-around;
-	align-items: center;
+	justify-content: center;
+	margin-bottom: 1em;
+}
+
+.popup_param.change_weather .wrapper {
+	justify-content: space-between;
+	max-width: 300px;
+}
+
+.popup .weather .w_widget {
+	margin-top: 1em;
+}
+
+.popup .weather .w_widget {
+	margin-top: 1em;
+}
+.popup .weather .w_icon {
+	padding: .5em;
+	border-radius: 8px;
+	background-color: #222;
+	filter: none;
+}
+
+.popup .weather span.w_widget_temp {
+	padding: 1rem;
+	font-size: 3rem;
+}
+
+/*en vrai*/
+
+
+
+.popup4 .backgrounds {
 	width: 50%;
-	margin: auto;
 }
 
-.choose_language_popup select {
-	margin-top: .7em;
+.bonjourr_logo {
+	width: 75%;
 }
 
-.popup_buttons {
-	padding-right: 2em;
-	padding-left: 2em;
-	padding-bottom: 2em;
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
+.popup .submitlink,
+.popup .submitw_city {
+	font-size: 1.1em;
+	margin: .5em auto;
+}
+
+.popup .submitw_city {
+	margin: .5em;
+}
+
+.popup_searchbar,
+.popup_searchbar:focus {
+	border: 2px solid #b8b8b8;
+	margin-top: 2em;
 }
 
 .popup_buttons button {
@@ -410,6 +431,13 @@ div.linkblocks {
 	color: white;
 	font-size: 20px;
 	border-radius: 8px;
+}
+
+.popup_buttons {
+	padding: 0 2em 2em 2em;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
 }
 
 .popup_buttons button:hover {
@@ -426,24 +454,21 @@ div.linkblocks {
 	color: #007aff;
 }
 
-.popup_searchbar, .popup_searchbar:focus {
-	border: 2px solid #b8b8b8;
-	margin-top: 2em;
-}
-
 /*POPUP*/
+
 
 /*dark mode */
 
-body.dark {
+body.dark,
+body.dark .popup, 
+body.dark .popup_window,
+body.dark .popup .weather .w_icon {
 	background-color: #1c1c1e;
 }
 
-body.dark .popup, body.dark .popup_buttons,  body.dark .popup_window {
-	background-color: #1c1c1e;
-}
-
-body.dark .popup p, body.dark .popup_title, body.dark .popup_span {
+body.dark .popup p,
+body.dark .popup h1,
+body.dark .popup span {
 	color: white;
 }
 
@@ -463,8 +488,9 @@ body.dark .popup_buttons button {
 @media screen and (max-width: 1400px) {
 	body {font-size: 15px}
 
-	.popup p {
-		font-size: 17px; ;
+	.popup p,
+	.popup span {
+		font-size: 17px;
 	}
 }
 

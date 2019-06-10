@@ -4,15 +4,14 @@
 	<title class="trn">New Tab</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="src/styles/settings.css">
+
 	<link rel="stylesheet" href="src/styles/main.css">
-	
+	<link rel="stylesheet" href="src/styles/settings.css">
 
 	<script src="src/scripts/fade.js"></script>
-	<script src="src/scripts/jquery-3.4.1.min.js"></script>
-	<script src="src/scripts/translate.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<script src="src/scripts/lang.js"></script>
-	
+	<script src="src/scripts/translate.min.js"></script>
 	<script src="src/scripts/script.js" defer></script>
 
 	<link rel="icon" href="favicon.png" />
@@ -28,12 +27,12 @@
 				<div class="popup popup1">
 					<img class="bonjourr_logo" src="src/images/bonjourrpopup.png">
 
-						<p class="trn">Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.</p>
+					<p class="trn">Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.</p>
 
-						<p><span class="trn">If you'd like to help us, suggest ideas or report bugs, you can head to </span><a href="https://bonjourr.fr" class="trn">our website</a><span class="trn">. Feel free to customize your page in the settings via the bottom right corner's icon. Click on the </span><code class="trn">Begin</code><span class="trn"> button to set up Bonjourr and learn the basics.</span></p>
+					<p><span class="trn">If you'd like to help us, suggest ideas or report bugs, you can head to </span><a href="https://bonjourr.fr" class="trn">our website</a><span class="trn">. Feel free to customize your page in the settings via the bottom right corner's icon. Click on the </span><code class="trn">Begin</code><span class="trn"> button to set up Bonjourr and learn the basics.</span></p>
 
-						<div class="choose_language_popup">
-						<p class="popup_language_p"><b class="trn">Language</b></p>
+					<div class="wrapper">
+						<p><b class="trn">Language</b></p>
 						<select class="lang">
 							<option value="en" class="trn">English</option>
 							<option value="fr" class="trn">Français</option>
@@ -42,12 +41,12 @@
 				</div>
 
 				<div class="popup popup2">
-					<div class="center">
-						<h1 class="popup_title trn">Adding your links</h1>
+					<h1 class="trn">Adding your links</h1>
+					<div>
 						<p><span class="trn">You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click </span><code class="trn">Add</code><span class="trn">, it will appear under the weather widget. If you want to get rid of a link, just press it for a second and the delete icon will appear.</span></p>
-						<div class="popup_param">
+						<div class="popup_param addlink">
 							<input type="text" name="title" placeholder="Title">
-							<input type="url" name="url" placeholder="URL">
+							<input type="text" name="url" placeholder="URL">
 							<button class="submitlink trn">Add</button>
 						</div>
 						
@@ -58,40 +57,71 @@
 					
 				</div>
 				<div class="popup popup3">
-					<h1 class="popup_title trn">Weather</h1>
-					<div class="popup_param">
-						<input type="text" name="city" placeholder="City">
-						<button class="submitw_city trn">Change city</button>
+					<h1 class="trn">Weather</h1>
 
-						<hr>
+					<p>
+						<span class="trn">Bonjourr's weather defaults to Paris. Change it by typing in the name of your city and click</span> <code class="trn">Change city</code>,
+						<span class="trn">or select</span> <code class="trn">Automatic</code>
+						<span class="trn">to set the weather based on your geolocation</span>.
+						<span class="trn">You can also change the measure unit</span>.
+					</p>
 
-						<div class="units">
-							<span class="span popup_span trn">Imperial units</span>
+					<div class="popup_param change_weather">
+						<div class="city">
+							<input type="text" name="city" placeholder="City">
+							<button class="submitw_city trn">Change city</button>
+						</div>
+						
+						<div class="w_auto wrapper">
+							<span class="trn">Automatic</span>
 							<div>
 								<label class="switch">
 									<input type="checkbox">
 									<span class="slider round span"></span>
 								</label>
 							</div>
-							
+						</div>
+
+						<hr>
+
+						<div class="units wrapper">
+							<span class="trn">Imperial units</span>
+							<div>
+								<label class="switch">
+									<input type="checkbox">
+									<span class="slider round span"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="weather">
+						<div>
+							<span class="w_desc_meteo"></span>
+							<span class="trn">It is currently</span>
+							<span class="w_desc_temp"></span>
+						</div>
+						<div class="hightemp">
+							<span class="trn">with a high of</span>
+							<span class="w_desc_temp_max"></span>
+							<span class="trn">today.</span>
 						</div>
 
 
-					</div>
-					<p><span class="trn">By default, Bonjourr's weather is taken from Paris. You can change it by typing in the name of the city you want the weather of and click </span><code class="trn">Change city</code>. <span class="trn">You can also change the temperature's unit.</span></p>
-
-					<div class="w_widget">
-						<img src="" class="w_icon">
-						<div class="w_widget_text">
-							<span class="w_widget_temp"></span>
+						<div class="w_widget">
+							<img src="" class="w_icon">
+							<div class="w_widget_text">
+								<span class="w_widget_temp"></span>
+							</div>
 						</div>
 					</div>
 				</div>
+
 				<div class="popup popup4">
 					<h1 class="popup_title trn">Visuals</h1>
 					<p class="trn">You can choose a background from our selection below. To put a custom background or a dynamic background, you can visit the Settings.</p>
 
-					<div class="popup_param">
+					<div class="popup_param backgrounds">
 						<span class="span popup_span trn">Choose background</span>
 						<div class="choosable_backgrounds">
 
@@ -115,15 +145,16 @@
 					
 					</div>
 
-					<p class="trn">A dark mode is also available.</p>
-					
 					<div class="popup_param">
-						<div class="dark_mode_option">
-							<span class="span popup_span trn">Dark mode</span>
+
+						<p class="trn">A dark mode is also available.</p>
+
+						<div class="darkmode wrapper">
+							<span class="trn">Dark mode</span>
 							<select class="theme">
 								<option value="auto" class="trn">Only at night</option>
-								<option value="enable" class="trn">Enable</option>
-								<option value="disable" class="trn">Disable</option>
+								<option value="enable" class="trn">Enabled</option>
+								<option value="disable" class="trn">Disabled</option>
 							</select>
 						</div>
 					</div>
@@ -134,8 +165,8 @@
 					<p class="trn">If you want, you can add a search bar and choose your favorite search engine.</p>
 
 					<div class="popup_param">
-						<div class="activate_searchbar">
-							<span class="span popup_span trn">Activate</span>
+						<div class="activate_searchbar wrapper">
+							<span class="trn">Activate</span>
 							<div>
 								<label class="switch">
 									<input id="sbcheck" type="checkbox">
@@ -144,8 +175,8 @@
 							</div>
 						</div>
 						<hr>
-						<div id="choose_searchengine">
-							<span class="span popup_span trn">Search engine</span>
+						<div id="choose_searchengine" class="wrapper">
+							<span class="trn">Search engine</span>
 							<select class="choose_search">
 								<option value="s_startpage" class="trn">Startpage</option>
 								<option value="s_ddg" class="trn">DuckDuckGo</option>
@@ -180,6 +211,15 @@
 		</div>
 	</div>
 
+
+
+
+
+
+
+
+
+
 	<div class="showSettings">
 		<button><img src="src/images/gear.png"></button>
 	</div>
@@ -194,7 +234,7 @@
 			<h5 class="subtitle trn">Quick Links</h5>
 			<div class="param">
 				<input type="text" name="title" placeholder="Title">
-				<input type="url" name="url" placeholder="URL">
+				<input type="text" name="url" placeholder="URL">
 				<button class="submitlink trn">Add</button>
 			</div>
 		</div>
@@ -225,8 +265,8 @@
 					</div>
 					<hr>
 
-					<div class="dynamic_bg">
-						<span class="span trn">Dynamic backgrounds</span>
+					<div class="dynamic_bg wrapper">
+						<span class="trn">Dynamic backgrounds</span>
 
 						<div>
 							<label class="switch">
@@ -241,7 +281,7 @@
 
 					<p class="help_sentence trn">Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.</p>
 					<hr>
-					<span class="span trn">Custom background</span>
+					<span class="trn">Custom background</span>
 					<div class="custom_bg">
 						<input type="file" name="background_file">
 						<img src="" class="custom_bg_preview">
@@ -251,18 +291,18 @@
 				<hr>
 
 				<div class="blur">
-					<span class="span trn">Blur intensity</span>
+					<span class="trn">Blur intensity</span>
 					<input type="range" name="background_blur" min="0" max="50" value="25" step="1">
 				</div>
 
 				<hr>
 
-				<div class="dark_mode_option">
-					<span class="span selector_span trn">Dark mode</span>
+				<div class="darkmode wrapper">
+					<span class="trn selector_span">Dark mode</span>
 					<select class="theme">
 						<option value="auto" class="trn">Only at night</option>
-						<option value="enable" class="trn">Enable</option>
-						<option value="disable" class="trn">Disable</option>
+						<option value="enable" class="trn">Enabled</option>
+						<option value="disable" class="trn">Disabled</option>
 					</select>
 				</div>
 			</div>
@@ -271,20 +311,32 @@
 		<div class="change_weather">
 			<h5 class="subtitle trn">Weather</h5>
 			<div class="param">
-				<input type="text" name="city" placeholder="City">
-				<button class="submitw_city trn">Change city</button>
 
-				<hr>
-
-				<div class="units">
-					<span class="span trn">Imperial units</span>
+				<div class="city">
+					<input type="text" name="city" placeholder="City">
+					<button class="submitw_city trn">Change city</button>
+				</div>
+				
+				<div class="w_auto wrapper">
+					<span class="trn">Geolocation</span>
 					<div>
 						<label class="switch">
 							<input type="checkbox">
 							<span class="slider round span"></span>
 						</label>
 					</div>
-					
+				</div>
+
+				<hr>
+
+				<div class="units wrapper">
+					<span class="trn">Imperial units</span>
+					<div>
+						<label class="switch">
+							<input type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -292,18 +344,18 @@
 		<div id="searchbar_option">
 			<h5 class="subtitle trn">Search bar</h5>
 			<div class="param">
-				<div class="activate_searchbar">
-					<span class="span trn">Activate</span>
-						<div>
-							<label class="switch">
-								<input id="sbcheck" type="checkbox">
-								<span class="slider round span"></span>
-							</label>
-						</div>
+				<div class="activate_searchbar wrapper">
+					<span class="trn">Activate</span>
+					<div>
+						<label class="switch">
+							<input id="sbcheck" type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
 				</div>
 				<hr>
-				<div id="choose_searchengine">
-					<span class="span selector_span trn">Search engine</span>
+				<div id="choose_searchengine" class="wrapper">
+					<span class="trn selector_span">Search engine</span>
 					<select class="choose_search">
 						<option value="s_startpage" class="trn">Startpage</option>
 						<option value="s_ddg" class="trn">DuckDuckGo</option>
@@ -321,8 +373,8 @@
 		<div class="lang_section">
 			<h5 class="subtitle trn">Language</h5>
 			<div class="param">
-				<div class="choose_language">
-					<span class="span selector_span trn">Choose language</span>
+				<div class="choose_language wrapper">
+					<span class="trn selector_span">Choose language</span>
 					<select class="lang">
 						<option value="en" class="trn">English</option>
 						<option value="fr" class="trn">Français</option>
@@ -344,10 +396,13 @@
 				<p class="trn">for infos and donations</p>
 			</div>
 		</div>
-
-
 	</div>
 	
+
+
+
+
+
 	<div class="interface">
 		<div class="time">
 			<div class="time-container">

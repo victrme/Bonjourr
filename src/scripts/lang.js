@@ -173,14 +173,23 @@ var dict = {
   ", it will appear under the weather widget. If you want to get rid of a link, just press it for a second and the delete icon will appear.": {
     fr: " et il apparaitra directement sous le widget Météo. Un clic long sur l'icône vous apportera la possibilité de supprimer vos favoris."
   },
-  "By default, Bonjourr's weather is taken from Paris. You can change it by typing in the name of the city you want the weather of and click ": {
-    fr: "Par défaut, Bonjourr se base à Paris pour sa météo. Vous pouvez changer cela en saisissant le nom de la ville dont vous souhaitez recevoir la météo et en cliquant sur "
+  "Bonjourr's weather defaults to Paris. Change it by typing in the name of your city and click": {
+    fr: "La météo de Bonjourr s'initialise à Paris. Modifiez-la en ajoutant le nom de votre ville et appuyez"
   },
   "Change city": {
-    fr: "Changer la ville "
+    fr: "Changer la ville"
   },
-  "You can also change the temperature's unit.": {
-    fr: "Vous pouvez également changer l'unité de température."
+  "or select": {
+    fr: "ou selectionnez"
+  },
+  "Automatic": {
+    fr: "Automatique"
+  },
+  "to set the weather based on your geolocation": {
+    fr: "pour avoir la météo par rapport à votre localisation"
+  },
+  "You can also change the measure unit": {
+    fr: "Vous pouvez également changer l'unité de mesure"
   },
   "Visuals": {
     fr: "Affichage"
@@ -197,11 +206,11 @@ var dict = {
   "Only at night": {
     fr: "Seulement la nuit"
   },
-  "Enable": {
-    fr: "Activer"
+  "Enabled": {
+    fr: "Activé"
   },
-  "Disable": {
-    fr: "Désactiver"
+  "Disabled": {
+    fr: "Désactivé"
   },
   "Search bar": {
     fr: "Barre de recherche"

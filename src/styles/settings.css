@@ -102,22 +102,13 @@ h1 {
 	font-size: 0.8em;
 }
 
-.span {
-	display: block;
+.settings span {
 	font-size: 0.9em;
-	padding-bottom: .5em;	
+	padding-bottom: .5em;
 }
 
 .selector_span {
 	margin-top: 4px;
-}
-
-.units .span, .dynamic_bg .span, .activate_searchbar .span  {
-	padding-top: .5em;
-}
-
-.choose_language .span, .blur .span, .dark_mode_option .span, .activate_searchbar .span, #choose_searchengine .span {
-	padding-bottom: 0px;
 }
 
 .param {
@@ -125,6 +116,12 @@ h1 {
 	border-top: 1px solid #c8c7cc;
 	border-bottom: 1px solid #c8c7cc;
 	padding: .75em 1.3em;
+}
+
+.settings .wrapper {
+	display: flex;
+	align-items: end;
+	justify-content: space-between;
 }
 
 	/* Background section */
@@ -165,7 +162,7 @@ h1 {
 .choosable_backgrounds {
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 1em;
+	margin: 1em 0;
 }
 
 .custom_bg, .blur {
@@ -298,14 +295,9 @@ input[name="title"], input[name="url"] {
 	width: calc(100% - .5em);
 }
 
-input[name="city"] {
-	width: 60%;
-}
-
 .addlink button {
-	width: 40%;
-	margin-left: 30%;
-	margin-right: 30%
+	display: block;
+	margin: auto;
 }
 
 ::placeholder {
@@ -318,6 +310,7 @@ button {
 	border:0;
 	background-color: #fff;
 	color: #007aff;
+	margin: auto;
 	cursor: pointer;
 }
 
@@ -374,21 +367,19 @@ input:checked + .slider:before {
 	transform: translateX(22px);
 }
 
-	/*Weather section*/
+/* weather */
 
-.units, .choose_language, .dynamic_bg, .dark_mode_option, .activate_searchbar, #choose_searchengine {
+.settings .city {
 	display: flex;
-	justify-content: space-between;
+	margin-bottom: .5em;
 }
 
+
+/*bottom*/
+
 .signature {
-	padding-right: .5em;
-	padding-left: .5em;
-	margin-top: 5em;
-	padding-bottom: 3em;
+	padding: 3em .5em 1em .5em;
 	text-align: center;
-	position: relative;
-	bottom: 10px;
 	color: #6d6d72;
 	font-size: .8em;
 }
@@ -457,6 +448,11 @@ body.dark ::placeholder {
 body.dark button {
 	background-color: #1c1c1e;
 }
+
+body.dark .showSettings button {background-color: transparent;}
+body.dark .showSettings button:hover {background-color: #3c3c3e;}
+body.dark .showSettings button.shown {background-color: #1c1c1e;}
+body.dark .showSettings button.shown:hover {background-color: #3c3c3e;}
 
 body.dark .slider {
 	background-color: #39383d;
