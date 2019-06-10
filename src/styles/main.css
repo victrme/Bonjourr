@@ -43,6 +43,7 @@ p, h3 {
 }
 
 select {
+	cursor: pointer;
 	padding: .5em;
 }
 
