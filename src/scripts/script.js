@@ -22,13 +22,6 @@ function getBrowserStorage() {
 
 function introduction() {
 
-	// L'animation est là mais fonctionne pas bien. Il faudrait mettre un display: none; une fois que la transition est terminée mais je trouve pas comment faire
-
-	//$(".dismiss_popup").click(function(){
-	//	$("#start_popup").css("opacity", "0");
-	//	$(".popup_window").css("margin-top", "2300px");
-	//});
-
 	//la marge des popups en pourcentages
 	var margin = 0; 
 	//init le premier counter avec le style actif
@@ -38,10 +31,11 @@ function introduction() {
 
 	// Start popup
 	function dismiss() {
-		$("#start_popup").css("opacity", 0);
+		$("#start_popup").css("background-color", 'rgba(0, 0, 0, 0)');
+		$(".popup_window").css("margin-top", "2300px");
 		setTimeout(function() {
 			$("#start_popup").remove();
-		}, 200);
+		}, 400);
 	}
 
 	function countPopup(c) {
