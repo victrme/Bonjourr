@@ -258,18 +258,12 @@ div.linkblocks {
 
 
 
-
-
-
-
-
-
-
 /*POPUP*/
 
 #start_popup {
 	transition: margin .5s ease-in;
 	transition: opacity .2s ease-in;
+	transition: background-color .4s ease-in;
 	z-index: 10;
 	position: absolute;
 	width: 100%;
@@ -283,7 +277,7 @@ div.linkblocks {
 .popup_window {
 	overflow-x: hidden;
 	transition: opacity .2s ease-in;
-	transition: margin .5s ease-in;
+	transition: margin .4s ease-in;
 	width: 600px;
 	max-width: calc(100% - 2em);
 	height: auto;
