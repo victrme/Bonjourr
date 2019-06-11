@@ -27,8 +27,7 @@ function introduction() {
 			$(".interface .linkblocks").css("opacity", 1);
 		}
 
-		//change le pour "false" pour debug la popup
-		browser.storage.local.set({"isIntroduced": true});
+		
 	});
 
 
@@ -43,7 +42,7 @@ function introduction() {
 	// Start popup
 	function dismiss() {
 
-		$("#start_popup").css("background-color", 'rgba(0, 0, 0, 0)');
+		$("#start_popup").css("background-color", 'transparent');
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
@@ -53,6 +52,9 @@ function introduction() {
 			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1);
 		}, 400);
+
+		//mettre ça en false dans la console pour debug la popup
+		browser.storage.local.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -167,7 +169,7 @@ LIENS FAVORIS
 
 
 //initialise les blocs en fonction du storage
-//utilise simplement une boucle de appendBlock
+//utilise simplement une boucle de appendbglock
 function initblocks() {
 
 	$(".linkblocks").empty();
@@ -177,14 +179,14 @@ function initblocks() {
 		if (data.links) {
 
 			for (var i = 0; i < data.links.length; i++) {
-				appendblock(data.links[i]);
+				appendbglock(data.links[i]);
 			}
 		}
 	});
 }
 
 //rajoute l'html d'un bloc avec toute ses valeurs et events
-function appendblock(arr) {
+function appendbglock(arr) {
 
 	//le DOM du block
 	var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
@@ -346,7 +348,7 @@ function linkSubmission() {
 
 	if (url.length > 0) {
 
-		appendblock(links);
+		appendbglock(links);
 		saveLink(links);
 
 		//remet a zero les inputs
@@ -601,14 +603,19 @@ function weather(changelang) {
 
 			//check imperial
 			if (req.unit && req.unit === "imperial") {
-				$(".switch input").checked = true;
+				$(".units input")[0].checked = true;
+			} else {
+				$(".units input")[0].checked = false;
 			}
 
 			//check geolocalisation
 			//enleve city
 			if (req.geol) {
-				$(".w_auto input").checked = true;
+				$(".w_auto input")[0].checked = true;
 				$(".change_weather .city").css("display", "none");
+			} else {
+				$(".w_auto input")[0].checked = false;
+				$(".change_weather .city").css("display", "block");
 			}
 		});
 	}
@@ -616,7 +623,7 @@ function weather(changelang) {
 	function updateCity() {
 
 		var city = $(".change_weather input[name='city']");
-		req.city = city[0].value;
+		req.city = encodeURI(city[0].value);
  		
 		browser.storage.local.get().then((data) => {
 
@@ -682,6 +689,7 @@ function weather(changelang) {
 		updateUnit(this);
 	});
 
+
 	$(".w_auto input").change(function() {
 		updateLocation(this);
 	});
@@ -689,6 +697,16 @@ function weather(changelang) {
 	$(".lang").change(function() {
 		req.lang = this.value;
 		weatherRequest(req);
+	});
+
+
+	//popup checkboxes enables settings checkboxes
+	$(".popup .units input").change(function() {
+		$(".settings .units input")[0].checked = $(this)[0].checked;
+	});
+
+	$(".popup .w_auto input").change(function() {
+		$(".settings .w_auto input")[0].checked = $(this)[0].checked;
 	});
 
 
@@ -823,42 +841,81 @@ $(".change_background input[name='background_blur']").change(function() {
 	blurThis(this.value);
 });
 
-//pour preview le default background
-$(".imgpreview img").mouseenter(function() {
-
-	var source = this.attributes.src.value;
-	$(".background").css("background-image", "url('" + source + "')");
-});
 
 
-//pour arreter de preview le default background
-$(".imgpreview img").mouseleave(function() {
+function defaultBg() {
 
-	initBackground();
-});
+	var bgTimeout, clone;
+
+	//clone le background quand on entre dans choosable background
+	//met le preview au clone
+	//rend le 1er bg à 0 opacité pour avoir une transition
+	//suppr le 2e bg quand on sort
+	//timeout de 300 pour pas que ça se fasse accidentellement
+
+	$(".choosable_backgrounds").mouseenter(function() {
+
+		clone = $(".background").clone();
+		$(clone).attr("class", "background tempbackground");
+		$("body").prepend($(clone));
+	});
+
+	//pour preview le default background
+	$(".imgpreview img").mouseenter(function() {
+
+		var source = this.attributes.src.value;
+
+		bgTimeout = setTimeout(function() {
+			
+			$(".tempbackground").css("background-image", "url('" + source + "')");
+			$(".background").not(".tempbackground").css("opacity", 0);
+
+		}, 300);
+	});
 
 
+	//pour arreter de preview le default background
+	$(".imgpreview img").mouseleave(function() {
 
-//pour choisir un default background
-var th;
-$(".imgpreview img").click(function() {
+		clearTimeout(bgTimeout);
+	});
 
-	//enleve le dynamic si jamais
-	$("div.dynamic_bg input").prop("checked", false);
+	
 
-	//enleve selected a tout le monde et l'ajoute au bon
-	$(".imgpreview").removeClass("selected");
-	th = $(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+	$(".choosable_backgrounds").mouseleave(function() {
+		clearTimeout(bgTimeout);
+		
+		
+		$(".background").css("opacity", 1);
 
-	//prend le src de la preview et l'applique au background
-	var source = this.attributes.src.value;
-	$(".background").css("background-image", "url('" + source + "')");
+		setTimeout(function() {
+			$(".tempbackground").remove();
+		}, 200);
+	});
 
-	//sauve la source
 
-	browser.storage.local.set({"background_image": source});
-	browser.storage.local.set({"background_type": "default"});
-});
+	//pour choisir un default background
+	$(".imgpreview img").click(function() {
+
+		//enleve le dynamic si jamais
+		$("div.dynamic_bg input").prop("checked", false);
+
+		//enleve selected a tout le monde et l'ajoute au bon
+		$(".imgpreview").removeClass("selected");
+		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+
+		//prend le src de la preview et l'applique au background
+		var source = this.attributes.src.value;
+		$(".background").css("background-image", "url('" + source + "')");
+
+		//sauve la source
+
+		browser.storage.local.set({"background_image": source});
+		browser.storage.local.set({"background_type": "default"});
+	});
+}
+
+defaultBg();
 
 
 //quand on active le bg dynamique
@@ -892,62 +949,75 @@ function darkmode(choix) {
 	function isIOSwallpaper(dark) {
 
 		var bgsrc = $(".background").css("background-image");
-		var lb =  'src/images/ios13wallpaper_l.jpg';
-		var db = 'src/images/ios13wallpaper_d.jpg';
+		var lbg =  'src/images/ios13wallpaper_l.jpg';
+		var dbg = 'src/images/ios13wallpaper_d.jpg';
 
 		if (dark) {
 
-			$("#ios_wallpaper img").attr("src", db);
+			$("#ios_wallpaper img").attr("src", dbg);
 
-			if (bgsrc.includes(lb)) {
-				$(".background").css("background-image", "url(" + db + ")");
-				browser.storage.local.set({"background_image": db});
+			if (bgsrc.includes(lbg)) {
+				$(".background").css("background-image", "url(" + dbg + ")");
+				browser.storage.local.set({"background_image": dbg});
 			}
 
 		} else {
 
-			$("#ios_wallpaper img").attr("src", lb);
+			$("#ios_wallpaper img").attr("src", lbg);
 
-			if (bgsrc.includes(db)) {
-				$(".background").css("background-image", "url(" + lb + ")");
-				browser.storage.local.set({"background_image": lb});
+			if (bgsrc.includes(dbg)) {
+				$(".background").css("background-image", "url(" + lbg + ")");
+				browser.storage.local.set({"background_image": lbg});
 			}
 		}
+	}
+
+	function addBlur(dark) {
+
+		browser.storage.local.get().then((data) => {
+
+			if (dark) {
+				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
+			} else {
+				$(".background").css("filter", "blur(" + data.background_blur + "px)");
+			}
+			
+		});
 	}
 
 	function applyDark(add) {
 
 		//prend le filter du background
-		//pour appliquer les 80% brightness en sérénité
-		var bgfilter = $(".background").css("filter");
-		var bgblur = $("input[name='background_blur']").val();
+		//pour appliquer les 75% brightness en sérénité
 
 		if (add) {
+
 			$("body").addClass("dark");
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
-			$(".background").css("filter", bgfilter + " brightness(75%)");
 
 			isIOSwallpaper(true);
+			addBlur(true);
+
 		} else {
+
 			$("body").removeClass("dark");
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
-			$("#ios_wallpaper img").attr("src", 'src/images/ios13wallpaper_l.jpg');
-			$(".background").css("filter", "blur(" + bgblur + "px)");
-
+		
 			isIOSwallpaper(false);
+			addBlur(true);
 		}
 	}
 
-	//darkmode automatique
-	function auto() {
+	function auto(blur) {
 
 		var wAPI = JSON.parse(atob(localStorage.wLastState));
+		console.log(wAPI);
 		var sunrise = new Date(wAPI.sys.sunrise * 1000);
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
 
-		sunrise = sunrise.getHours() + 1;
-		sunset = sunset.getHours() + 1;
+		sunrise = sunrise.getHours() + 2;
+		sunset = sunset.getHours() + 2;
 		hr = hr.getHours();
 
 		if (hr < sunrise || hr > sunset) {
@@ -976,28 +1046,30 @@ function darkmode(choix) {
 			}
 
 			$(".darkmode select.theme").val(dd);
-		});
-		
+		});		
 	}
 
-
 	function changeDarkMode() {
-		if (choix === "enable") {
-			applyDark(true);
-			browser.storage.local.set({"dark": "enable"});
-		}
 
-		if (choix === "disable") {
-			applyDark(false);
-			browser.storage.local.set({"dark": "disable"});
-		}
+		browser.storage.local.get().then((data) => {
 
-		if (choix === "auto") {
+			if (choix === "enable") {
+				applyDark(true);
+				browser.storage.local.set({"dark": "enable"});
+			}
 
-			//prend l'heure et ajoute la classe si nuit
-			auto();
-			browser.storage.local.set({"dark": "auto"});
-		}
+			if (choix === "disable") {
+				applyDark(false);
+				browser.storage.local.set({"dark": "disable"});
+			}
+
+			if (choix === "auto") {
+
+				//prend l'heure et ajoute la classe si nuit
+				auto();
+				browser.storage.local.set({"dark": "auto"});
+			}
+		});
 	}
 
 	if (choix) {
@@ -1024,15 +1096,16 @@ function searchbar() {
 			browser.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
-			$(".searchbar_container, .settings #searchbar_option .param hr").css("display", "block");
-			$(".settings #choose_searchengine").css("display", 'flex');
+			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
+			$("#choose_searchengine").css("display", 'flex');
 			$(".searchbar_container").css("opacity", 1);
 			
 		} else {
 
 			browser.storage.local.set({"searchbar": false});
-			$(".settings #choose_searchengine, .settings #searchbar_option .param hr").css("display", "none");
+
 			//pour animer un peu
+			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
 			$(".searchbar_container").css("opacity", 0);
 			setTimeout(function() {
 				$(".searchbar_container").css("display", "none");
@@ -1080,17 +1153,31 @@ function searchbar() {
 			$(".activate_searchbar input").value = true;
 
 			if (data.searchbar_engine) {
+
 				chooseSearchEngine(data.searchbar_engine);
 				$(".choose_search").value = data.searchbar_engine;
+
 			} else {
 				chooseSearchEngine("s_startpage");
 			}
+		} else {
+			activate(false);
 		}
 	});
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
 		activate($(this).is(":checked"));
+	});
+
+	$(".popup .activate_searchbar input").change(function() {
+
+		var check = $(this)[0].checked;
+
+		if (check) {
+			$("#searchbar_option input")[0].checked = true;
+			$(".settings #choose_searchengine").css("display", 'flex');
+		}
 	});
 
 
@@ -1111,13 +1198,18 @@ function searchbar() {
 
 //affiche les settings
 $(".showSettings button").click(function() {
+
 	$(this).toggleClass("shown");
 	$(".settings").toggleClass("shown");
 	$(".interface").toggleClass("pushed");
 });
 
+//si settings ouvert, le ferme
 $(".interface").click(function() {
+
 	if ($("div.settings").hasClass("shown")) {
+
+		$(".showSettings button").toggleClass("shown");
 		$(".settings").removeClass("shown");
 		$(".interface").removeClass("pushed");
 	}
@@ -1161,6 +1253,10 @@ function traduction() {
 			browser.storage.local.set({"lang": this.value});
 			translator.lang(this.value);
 		});
+
+		$(".popup .lang").change(function() {
+			$(".settings .lang")[0].value = $(this)[0].value;
+		});
 	});
 }
 
@@ -1178,16 +1274,20 @@ function mobilecheck() {
 
 
 $(document).ready(function() {
-	introduction();
+
 	initBackground();
-	showRemoveLink();
-	initblocks();
+	darkmode();
+
 	weather();
 	date();
 	clock();
+	initblocks();
+	showRemoveLink();
+	searchbar();
+
 	greetings();
 	signature();
+
 	traduction();
-	darkmode();
-	searchbar();
+	introduction();
 });

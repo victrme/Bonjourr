@@ -162,7 +162,7 @@ h1 {
 .choosable_backgrounds {
 	display: flex;
 	justify-content: space-between;
-	margin: 1em 0;
+	padding: 1em 0 .5em 0;
 }
 
 .custom_bg, .blur {
