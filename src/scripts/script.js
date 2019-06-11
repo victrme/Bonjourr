@@ -734,6 +734,9 @@ function renderImage(file) {
 
 		//enleve le dynamic si jamais
 		$("div.dynamic_bg input").prop("checked", false);
+
+		//enleve la selection default bg si jamais
+		$(".imgpreview").removeClass("selected");
 	}
 
 	// when the file is read it triggers the onload event above.
@@ -851,6 +854,9 @@ $("div.dynamic_bg input").change(function() {
 		browser.storage.local.set({"background_image": unsplash});
 		browser.storage.local.set({"background_type": "dynamic"});
 
+		//enleve la selection default bg si jamais
+		$(".imgpreview").removeClass("selected");
+
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
@@ -932,8 +938,8 @@ function darkmode(choix) {
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
 
-		sunrise = sunrise.getHours() + 2;
-		sunset = sunset.getHours() + 1;
+		sunrise = sunrise.getHours() + 1;
+		sunset = sunset.getHours();
 		hr = hr.getHours();
 
 		if (hr < sunrise || hr > sunset) {
@@ -995,6 +1001,10 @@ function darkmode(choix) {
 
 $(".darkmode select.theme").change(function() {
 	darkmode(this.value);
+});
+
+$(".popup .darkmode select.theme").change(function() {
+	$(".settings .darkmode select.theme")[0].value = this.value;
 });
 
 
@@ -1195,7 +1205,7 @@ function actualizeStartupOptions() {
 
 		//dynamic background
 		if (data.background_type === "dynamic") {
-			$(".dynamic_bg .input")[0].checked = true;
+			$(".dynamic_bg input")[0].checked = true;
 		}
 
 
