@@ -933,7 +933,7 @@ function darkmode(choix) {
 		var hr = new Date();
 
 		sunrise = sunrise.getHours() + 2;
-		sunset = sunset.getHours() + 2;
+		sunset = sunset.getHours() + 1;
 		hr = hr.getHours();
 
 		if (hr < sunrise || hr > sunset) {
@@ -1200,7 +1200,12 @@ function actualizeStartupOptions() {
 
 
 		//dark mode input
-		$(".darkmode select.theme").val(data.dark);
+		if (data.dark) {
+			$(".darkmode select.theme").val(data.dark);
+		} else {
+			$(".darkmode select.theme").val("disable");
+		}
+		
 
 		
 		//weather city input
