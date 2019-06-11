@@ -204,12 +204,6 @@ function appendbglock(arr) {
 	$(".linkblocks").append(b);
 }
 
-
-
-
-
-
-
 //affiche le bouton pour suppr le link
 function showRemoveLink() {
 
@@ -385,8 +379,6 @@ $(".submitlink").click(function() {
 DATE
 */
 
-
-
 function date() {
 	var d = new Date();
 	d.getDay();
@@ -399,26 +391,6 @@ function date() {
 	$(".date .chiffre").text(d.getDate());
 	$(".date .mois").text(months[d.getMonth()]);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -616,29 +588,6 @@ function weather(changelang) {
 				initWeather();
 				localStorage.wlastCall = now;
 			}
-
-			
-			//init buttons
-
-			//affiche la ville dans l'input de ville
-			$(".change_weather input[name='city']").attr("placeholder", req.city);
-
-			//check imperial
-			if (req.unit && req.unit === "imperial") {
-				$(".units input")[0].checked = true;
-			} else {
-				$(".units input")[0].checked = false;
-			}
-
-			//check geolocalisation
-			//enleve city
-			if (req.geol) {
-				$(".w_auto input")[0].checked = true;
-				$(".change_weather .city").css("display", "none");
-			} else {
-				$(".w_auto input")[0].checked = false;
-				$(".change_weather .city").css("display", "block");
-			}
 		});
 	}
 
@@ -739,33 +688,6 @@ function weather(changelang) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* 
 BACKGROUND
 */
@@ -778,40 +700,24 @@ function initBackground() {
 		var image = data.background_image;
 		var type = data.background_type;
 		var blur = data.background_blur;
-
 		
-		//default = les images pré définies
-		if (type === "default") {
-
+		//type un peu useless, mais c'est un ancetre alors je le garde ok
+		if (type) {
 			$('.background').css("background-image", 'url(' + image + ')');
-		}
-		//custom c'est avec le RenderFile
-		else if (type === "custom") {
-
-			$('.change_background .bg_preview').css("visibility", "visible");
-			$('.change_background .custom_bg_preview').attr("src", image);
-			$('.background').css("background-image", "url('" + image + "')");
-		}
-		//dynamic ajoute simplement l'url unsplash
-		else if (type === "dynamic") {
-
-			$(".background").css("background-image", "url('" + image + "')");
-			$("div.dynamic_bg input").prop("checked", true);
-		}
-		//sans rien l'image de base est utilisé
-		else {
+		} else {
+			//sans rien l'image de base est utilisé
 			$('.background').css("background-image", 'url("src/images/background.jpg")');
 		}
 
 		//ensuite on blur
 		$("input[name='background_blur']").val(data.background_blur);
 		blurThis(data.background_blur);
-	});
-	
+	});	
 }
 
 
 // render the image in our view
+// ces commentaire anglais ne veulent pas dire que j'ai copié collé ok
 function renderImage(file) {
 
 	// generate a new FileReader object
@@ -821,13 +727,9 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		/*var background_image = url;
-		var background_type = "custom";*/
-
 		browser.storage.local.set({"background_image": url});
 		browser.storage.local.set({"background_type": "custom"});
 
-		$('.change_background .custom_bg_preview').attr("src", url);
 		$('.background').css("background-image", 'url(' + url + ')');
 
 		//enleve le dynamic si jamais
@@ -859,27 +761,19 @@ $(".change_background input[name='background_file']").change(function() {
 	renderImage(this.files[0]);
 });
 
-
-
 // handle input changes
 $(".change_background input[name='background_blur']").change(function() {
 	blurThis(this.value);
 });
 
 
-
 function defaultBg() {
 
 	var bgTimeout, clone;
 
-	//clone le background quand on entre dans choosable background
-	//met le preview au clone
-	//rend le 1er bg à 0 opacité pour avoir une transition
-	//suppr le 2e bg quand on sort
-	//timeout de 300 pour pas que ça se fasse accidentellement
-
 	$(".choosable_backgrounds").mouseenter(function() {
 
+		//clone le background quand on entre dans choosable background
 		clone = $(".background").clone();
 		$(clone).attr("class", "background tempbackground");
 		$("body").prepend($(clone));
@@ -888,10 +782,14 @@ function defaultBg() {
 	//pour preview le default background
 	$(".imgpreview img").mouseenter(function() {
 
+
 		var source = this.attributes.src.value;
 
 		bgTimeout = setTimeout(function() {
-			
+
+			//met le preview au clone
+			//timeout de 300 pour pas que ça se fasse accidentellement
+			//rend le 1er bg à 0 opacité pour avoir une transition
 			$(".tempbackground").css("background-image", "url('" + source + "')");
 			$(".background").not(".tempbackground").css("opacity", 0);
 
@@ -901,18 +799,16 @@ function defaultBg() {
 
 	//pour arreter de preview le default background
 	$(".imgpreview img").mouseleave(function() {
-
 		clearTimeout(bgTimeout);
 	});
 
 	
-
 	$(".choosable_backgrounds").mouseleave(function() {
 		clearTimeout(bgTimeout);
 		
-		
+		//reaffiche le premier bg
+		//suppr le 2e bg quand on sort
 		$(".background").css("opacity", 1);
-
 		setTimeout(function() {
 			$(".tempbackground").remove();
 		}, 200);
@@ -958,7 +854,6 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		
 		browser.storage.local.set({"background_type": "default"});
 	}
 });
@@ -1065,8 +960,6 @@ function darkmode(choix) {
 			if (dd === "auto") {
 				auto();
 			}
-
-			$(".darkmode select.theme").val(dd);
 		});		
 	}
 
@@ -1169,15 +1062,11 @@ function searchbar() {
 
 		if (data.searchbar) {
 
-			//display + checkbox checked
+			//display
 			activate(true);
-			$(".activate_searchbar input").value = true;
 
 			if (data.searchbar_engine) {
-
 				chooseSearchEngine(data.searchbar_engine);
-				$(".choose_search").value = data.searchbar_engine;
-
 			} else {
 				chooseSearchEngine("s_startpage");
 			}
@@ -1265,8 +1154,6 @@ function traduction() {
 
 		//init
 		translator.lang(data.lang);
-		$(".lang").value = data.lang;
-
 
 		//selection de langue
 		//localStorage + weather update + body trad
@@ -1287,6 +1174,85 @@ function traduction() {
 
 
 
+function actualizeStartupOptions() {
+
+	browser.storage.local.get().then((data) => {
+
+
+		//default background 
+		$(".choosable_backgrounds .imgpreview img").each(function() {
+
+			//compare l'url des preview avec celle du background
+			var previewURL = $(this).attr("src");
+			var bgURL = $(".background").css("background-image");
+
+			//si l'url du bg inclu l'url de la preview, selectionne le
+			if (bgURL.includes(previewURL)) {
+				$(this).parent().addClass("selected");
+			}
+		});
+
+
+		//dynamic background
+		if (data.background_type === "dynamic") {
+			$(".dynamic_bg .input")[0].checked = true;
+		}
+
+
+		//dark mode input
+		$(".darkmode select.theme").val(data.dark);
+
+		
+		//weather city input
+		if (data.weather_city) {
+			$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
+		} else {
+			$(".change_weather input[name='city']").attr("placeholder", "Paris");
+		}
+		
+
+		//check geolocalisation
+		//enleve city
+		if (data.weather_geol) {
+			$(".w_auto input")[0].checked = true;
+			$(".change_weather .city").css("display", "none");
+		} else {
+			$(".w_auto input")[0].checked = false;
+			$(".change_weather .city").css("display", "block");
+		}
+
+		//check imperial
+		if (data.weather_unit && data.weather_unit === "imperial") {
+			$(".units input")[0].checked = true;
+		} else {
+			$(".units input")[0].checked = false;
+		}
+
+		
+		//searchbar switch et select
+		$(".activate_searchbar input")[0].value = data.searchbar;
+
+		if (data.searchbar_engine) {
+			$(".choose_search")[0].value = data.searchbar_engine;
+		} else {
+			$(".choose_search")[0].value = "s_startpage";
+		}
+		
+
+		//langue
+		if (data.lang) {
+			$(".lang")[0].value = data.lang;
+		} else {
+			$(".lang")[0].value = "en";
+		}
+		
+	});
+			
+}
+
+
+
+
 
 function mobilecheck() {
   var check = false;
@@ -1299,19 +1265,24 @@ function mobilecheck() {
 
 $(document).ready(function() {
 
+	//very first
 	initBackground();
 	darkmode();
 
-	weather();
-	date();
+	//sur la page principale
 	clock();
+	date();
+	greetings();
+	weather();
+	searchbar();
 	initblocks();
 	showRemoveLink();
-	searchbar();
 
-	greetings();
+	//moins important, load après
 	signature();
-
-	traduction();
 	introduction();
+	actualizeStartupOptions();
+
+	//toujours en dernier que tout le DOM soit chargé
+	traduction();
 });

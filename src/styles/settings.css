@@ -172,18 +172,16 @@ h1 {
 }
 
 .custom_bg {
-	margin-bottom: 1em;
+	margin: 1em 0 1.5em 0;
 }
 
 .custom_bg input {
-	width: calc(100% - 70px);
+	text-align: center;
 }
 
-.custom_bg img {
-	visibility: hidden;
-}
 
-	/* Inputs */
+
+/* Inputs */
 
 input:active, input:focus, a:hover, a:active, a:focus {
 	border: 0;
