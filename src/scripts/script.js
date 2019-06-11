@@ -14,8 +14,10 @@ function getBrowserStorage() {
 }
 
 
-function introduction() {
+//obligé :((
+var popupButtonLang = 1;
 
+function introduction() {
 
 	browser.storage.local.get().then((data) => {
 
@@ -26,8 +28,6 @@ function introduction() {
 			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1);
 		}
-
-		
 	});
 
 
@@ -67,21 +67,25 @@ function introduction() {
 		$(elem).addClass("actif");
 	}
 
+	var dict = [
+		["Ignorer", "Commencer", "Retour", "Suivant", "Prêt!"],
+		["Dismiss", "Begin", "Back", "Next", "All set!"]
+	];
 
-	//event different pour chaque slide
-	//le numero du slide = margin / 100
-	//ici quand on recule
-	$(".previous_popup").click(function() {
+	function previous(lang) {
 
+		//event different pour chaque slide
+		//le numero du slide = margin / 100
+		//ici quand on recule
 		margin -= 100;
 
 		if (margin === 0) {
-			$(".previous_popup").text("Dismiss");
-			$(".next_popup").text("Begin");
+			$(".previous_popup").text(dict[lang][0]);
+			$(".next_popup").text(dict[lang][1]);
 		}
 
 		if (margin === 300) {
-			$(".next_popup").text("Next");
+			$(".next_popup").text(dict[lang][3]);
 		}
 
 		if (margin === -100) {
@@ -89,21 +93,20 @@ function introduction() {
 		} else {
 			countPopup(margin);
 			$(".popup_line").css("margin-left", "-" + margin + "%");
-		}	
-	});
+		}
+	}
 
-	//ici quand on avance
-	$(".next_popup").click(function(){
-		
+	function next(lang) {
+
 		margin += 100;
 
 		if (margin === 100) {
-			$(".previous_popup").text("Back");
-			$(".next_popup").text("Next");
+			$(".previous_popup").text(dict[lang][2]);
+			$(".next_popup").text(dict[lang][3]);
 		}
 
 		if (margin === 400) {
-			$(".next_popup").text("All set!");
+			$(".next_popup").text(dict[lang][4]);
 		}
 
 		if (margin === 500) {
@@ -113,8 +116,15 @@ function introduction() {
 			countPopup(margin);
 			$(".popup_line").css("margin-left", "-" + margin + "%");
 		}
+	}
+
+	$(".previous_popup").click(function() {
+		previous(popupButtonLang);
 	});
 
+	$(".next_popup").click(function(){
+		next(popupButtonLang);
+	});
 }
 
 
@@ -419,7 +429,7 @@ METEO
 function weather(changelang) {
 
 	//init la requete;
-	var req;
+	var req, recursive;
 	
 	function dataHandling(data) {
 
@@ -522,7 +532,7 @@ function weather(changelang) {
 		if (arg.geol) {
 			url += "&lat=" + arg.geol[0] + "&lon=" + arg.geol[1];
 		} else {
-			url += "&q=" + arg.city;
+			url += "&q=" + encodeURI(arg.city);
 		}
 
 		url += '&units=' + arg.unit + '&lang=' + arg.lang;
@@ -542,14 +552,33 @@ function weather(changelang) {
 
 				//sauvegarde la derniere meteo
 				localStorage.wLastState = btoa(JSON.stringify(data));
+				recursive = false;
 
 			} else {
-				console.log(request_w.status);
+
+				//si la météo bug, initialise à paris + metric
+				//utilise un "switch recursif" pour que la fonction s'appelle pas à l'infini
+				if (recursive !== true) {
+
+					initWeather();
+					recursive = true;
+				}
 			}
 		}
+
 		request_w.send();
 	}
 
+	function initWeather() {
+		req.city = "Paris";
+		req.unit = "metric";
+
+		weatherRequest(req);
+
+		browser.storage.local.set({"weather_city": "Paris"});
+		browser.storage.local.set({"weather_unit": "metric"});
+	}
+ 
 	function apply() {
 
 		browser.storage.local.get().then((data) => {
@@ -584,14 +613,7 @@ function weather(changelang) {
 
 				//initialise a Paris + Metric
 				//c'est le premier call, requete + lastCall = now
-
-				req.city = "Paris";
-				req.unit = "metric";
-
-				weatherRequest(req);
-
-				browser.storage.local.set({"weather_city": "Paris"});
-				browser.storage.local.set({"weather_unit": "metric"});
+				initWeather();
 				localStorage.wlastCall = now;
 			}
 
@@ -623,7 +645,9 @@ function weather(changelang) {
 	function updateCity() {
 
 		var city = $(".change_weather input[name='city']");
-		req.city = encodeURI(city[0].value);
+		req.city = city[0].value;
+
+		if (req.city.length < 2) req.city = "Paris";
  		
 		browser.storage.local.get().then((data) => {
 
@@ -669,6 +693,7 @@ function weather(changelang) {
 		} else {
 
 			browser.storage.local.remove("weather_geol");
+			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
 	}
@@ -987,9 +1012,6 @@ function darkmode(choix) {
 
 	function applyDark(add) {
 
-		//prend le filter du background
-		//pour appliquer les 75% brightness en sérénité
-
 		if (add) {
 
 			$("body").addClass("dark");
@@ -1004,14 +1026,13 @@ function darkmode(choix) {
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
 		
 			isIOSwallpaper(false);
-			addBlur(true);
+			addBlur(false);
 		}
 	}
 
 	function auto(blur) {
 
 		var wAPI = JSON.parse(atob(localStorage.wLastState));
-		console.log(wAPI);
 		var sunrise = new Date(wAPI.sys.sunrise * 1000);
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
@@ -1256,6 +1277,9 @@ function traduction() {
 
 		$(".popup .lang").change(function() {
 			$(".settings .lang")[0].value = $(this)[0].value;
+
+			//oua chui fatigué la
+			popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
 		});
 	});
 }

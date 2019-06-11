@@ -167,8 +167,11 @@ var dict = {
   "You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click ": {
     fr: "Vous pouvez facilement ajouter des liens vers vos sites favoris. Il suffit d'entrer le titre de votre site, son URL, de cliquer sur "
   },
-  ", it will appear under the weather widget. If you want to get rid of a link, just press it for a second and the delete icon will appear.": {
-    fr: " et il apparaîtra directement sous le widget Météo. Un clic long sur l'icône vous apportera la possibilité de supprimer vos favoris."
+  ", it will appear under the weather widget.": {
+    fr: " et il apparaîtra directement sous le widget Météo."
+  },
+  "To get rid of a link, press it for a second and the delete icon will appear.": {
+    fr:  "Pour supprimer des favoris, appuyez longuement (1s) sur celui-ci pour activer la suppression"
   },
   "Bonjourr's weather defaults to Paris. Activate geolocation and the weather will be automatically updated according to the city you're in. You can also enter a city manually and change the measure unit.": {
     fr: "La météo de Bonjourr s'initialise à Paris. Vous pouvez activer la géolocalisation et elle se mettra automatiquement à jour selon la ville où vous vous trouvez. Vous pouvez également entrer une ville manuellement et changer l'unité de mesure."
