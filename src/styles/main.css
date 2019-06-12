@@ -285,7 +285,7 @@ div.linkblocks {
 
 .popup_line {
 	display: flex;
-	width: 500%;
+	width: 600%;
 	align-items: center;
 	transition: margin .3s;
 }
@@ -376,6 +376,10 @@ div.linkblocks {
 .popup2 .linkblocks .block_parent .block p {
 	text-align: center;
 	margin: 0;
+}
+
+.popup6 img {
+	width: 100%;
 }
 
 

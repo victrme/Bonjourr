@@ -149,8 +149,8 @@ var dict = {
   "our website": {
     fr: "notre site Internet"
   },
-  ". Feel free to customize your page in the settings via the bottom right corner's icon. Click on the ": {
-    fr: ". Vous êtes libre de personnaliser votre page en accédant aux réglages via l'icône en bas à droite. Cliquez sur le bouton "
+  ". Click on the ": {
+    fr: ". Cliquez sur le bouton "
   },
   " button to set up Bonjourr and learn the basics.": {
     fr: " pour configurer Bonjourr et en apprendre les bases."
@@ -238,6 +238,12 @@ var dict = {
   },
   "Activate": {
     fr: "Activer"
+  },
+  "You can delete the Quick Links after a long press on the icons.": {
+    fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes."
+  },
+  "You now know the basics of using Bonjourr. Don't forget that you can go further in the customization by visiting the Settings with the icon in the bottom right corner of the window.": {
+    fr: "Bonjourr a bien été configuré. N'oubliez pas que vous pouvez aller plus loin dans la personnalisation en visitant les Réglages via l'icône en bas à droite de la fenêtre."
   },
   "You can delete the Quick Links after a long press on the icons.": {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes."
