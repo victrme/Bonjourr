@@ -1,16 +1,12 @@
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	browser.storage.local.clear().then(() => {
-		localStorage.clear();
-	});
+	localStorage.clear();
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	browser.storage.local.get().then((data) => {
-		console.log(data);
-	});
+	console.log(localStorage)
 }
 
 
@@ -19,16 +15,15 @@ var popupButtonLang = 1;
 
 function introduction() {
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 		
-		if (!data.isIntroduced) {
-			$("#start_popup").css("display", "flex");
-			$(".interface .linkblocks").css("opacity", 0);
-		} else {
-			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1);
-		}
-	});
+	if (!data.isIntroduced) {
+		$("#start_popup").css("display", "flex");
+		$(".interface .linkblocks").css("opacity", 0);
+	} else {
+		$("#start_popup").remove();
+		$(".interface .linkblocks").css("opacity", 1);
+	}
 
 	//la marge des popups en pourcentages
 	var margin = 0; 
@@ -52,7 +47,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		browser.storage.local.set({"isIntroduced": true});
+		localStorage.isIntroduced = true;
 	}
 
 	function countPopup(c) {
@@ -182,15 +177,15 @@ function initblocks() {
 
 	$(".linkblocks").empty();
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
+	var lslinks = (data.links ? JSON.parse(data.links) : "");
 
-		if (data.links) {
+	if (lslinks) {
 
-			for (var i = 0; i < data.links.length; i++) {
-				appendbglock(data.links[i]);
-			}
+		for (var i = 0; i < lslinks.length; i++) {
+			appendbglock(lslinks[i]);
 		}
-	});
+	}
 }
 
 //rajoute l'html d'un bloc avec toute ses valeurs et events
@@ -260,7 +255,8 @@ function showRemoveLink() {
 
 	function removeblock(i) {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		var lslinks = (data.links ? JSON.parse(data.links) : "");
 
 			//enleve le html du block
 			var block = $(".linkblocks")[0].children[i];
@@ -277,9 +273,8 @@ function showRemoveLink() {
 				return arr.slice(0, i).concat(arr.slice(i + 1));
 			}
 			
-			var links = data.links;
-			browser.storage.local.set({"links": ejectIntruder(links)});
-		});
+			var links = lslinks;
+			localStorage.links = JSON.stringify(ejectIntruder(links));
 	}
 
 
@@ -317,23 +312,22 @@ function linkSubmission() {
 
 	function saveLink(lll) {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		var lslinks = (data.links ? JSON.parse(data.links) : "");
+		var arr = [];
 
-			var arr = [];
+		//array est tout les links + le nouveau
+		if (lslinks) {
 
-			//array est tout les links + le nouveau
-			if (data.links) {
+			arr = lslinks;
+			arr.push(lll);
 
-				arr = data.links;
-				arr.push(lll);
-
-			//array est seulement le link
-			} else {
-				arr.push(lll);
-			}
-			
-			browser.storage.local.set({"links": arr});
-		});
+		//array est seulement le link
+		} else {
+			arr.push(lll);
+		}
+		
+		localStorage.links = JSON.stringify(arr);
 	}
 
 	
@@ -540,72 +534,69 @@ function weather(changelang) {
 	}
 
 	function initWeather() {
+
 		req.city = "Paris";
 		req.unit = "metric";
 
 		weatherRequest(req);
 
-		browser.storage.local.set({"weather_city": "Paris"});
-		browser.storage.local.set({"weather_unit": "metric"});
+		localStorage.weather_city = "Paris";
+		localStorage.weather_unit = "metric";
 	}
  
 	function apply() {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		req = {
+			city: data.weather_city,
+			unit: data.weather_unit,
+			geol: data.weather_geol,
+			lang: data.lang
+		};
 
-			req = {
-				city: data.weather_city,
-				unit: data.weather_unit,
-				geol: data.weather_geol,
-				lang: data.lang
-			};
+		var lastCall = localStorage.wlastCall;
+		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
+		var now = new Date().getTime();
 
-			var lastCall = localStorage.wlastCall;
-			var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
-			var now = new Date().getTime();
+		if (lastCall) {
 
-			if (lastCall) {
+			//si weather est vieux d'une heure (3600000)
+			//faire une requete
+			if (now > lastCall + 3600000) {
+				
+				weatherRequest(req);
 
-				//si weather est vieux d'une heure (3600000)
-				//faire une requete
-				if (now > lastCall + 3600000) {
-					
-					weatherRequest(req);
-
-				//sinon on saute la requete et on prend le lastState
-				} else {
-
-					dataHandling(JSON.parse(lastState));
-
-				}
-
+			//sinon on saute la requete et on prend le lastState
 			} else {
 
-				//initialise a Paris + Metric
-				//c'est le premier call, requete + lastCall = now
-				initWeather();
-				localStorage.wlastCall = now;
+				dataHandling(JSON.parse(lastState));
+
 			}
-		});
+
+		} else {
+
+			//initialise a Paris + Metric
+			//c'est le premier call, requete + lastCall = now
+			initWeather();
+			localStorage.wlastCall = now;
+		}
 	}
 
 	function updateCity() {
 
+		var data = localStorage;
 		var city = $(".change_weather input[name='city']");
 		req.city = city[0].value;
 
 		if (req.city.length < 2) req.city = "Paris";
  		
-		browser.storage.local.get().then((data) => {
+		weatherRequest(req);
+		
+		localStorage.weather_city = req.city;
 
-			weatherRequest(req);
-			
-			browser.storage.local.set({"weather_city": req.city});
-
-			city.attr("placeholder", req.city);
-			city.val("");
-			city.blur();
-		});
+		city.attr("placeholder", req.city);
+		city.val("");
+		city.blur();
 	}
 
 	function updateUnit(that) {
@@ -618,7 +609,7 @@ function weather(changelang) {
 
 		weatherRequest(req);
 		
-		browser.storage.local.set({"weather_unit": req.unit});
+		localStorage.weather_unit = req.unit;
 	}
 
 	//automatise la meteo
@@ -630,7 +621,7 @@ function weather(changelang) {
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				browser.storage.local.set({"weather_geol": req.geol});
+				localStorage.weather_geol = req.geol;
 
 				weatherRequest(req);
 
@@ -639,7 +630,7 @@ function weather(changelang) {
 
 		} else {
 
-			browser.storage.local.remove("weather_geol");
+			localStorage.remove("weather_geol");
 			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
@@ -693,24 +684,22 @@ BACKGROUND
 
 function initBackground() {
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
+	var image = data.background_image;
+	var type = data.background_type;
+	var blur = data.background_blur;
+	
+	//type un peu useless, mais c'est un ancetre alors je le garde ok
+	if (type) {
+		$('.background').css("background-image", 'url(' + image + ')');
+	} else {
+		//sans rien l'image de base est utilisé
+		$('.background').css("background-image", 'url("src/images/background.jpg")');
+	}
 
-		var image = data.background_image;
-		var type = data.background_type;
-		var blur = data.background_blur;
-		
-		//type un peu useless, mais c'est un ancetre alors je le garde ok
-		if (type) {
-			$('.background').css("background-image", 'url(' + image + ')');
-		} else {
-			//sans rien l'image de base est utilisé
-			$('.background').css("background-image", 'url("src/images/background.jpg")');
-		}
-
-		//ensuite on blur
-		$("input[name='background_blur']").val(data.background_blur);
-		blurThis(data.background_blur);
-	});	
+	//ensuite on blur
+	$("input[name='background_blur']").val(data.background_blur);
+	blurThis(data.background_blur);
 }
 
 
@@ -725,8 +714,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		browser.storage.local.set({"background_image": url});
-		browser.storage.local.set({"background_type": "custom"});
+		localStorage.background_image = "url";
+		localStorage.background_type = "custom";
 
 		$('.background').css("background-image", 'url(' + url + ')');
 
@@ -753,7 +742,7 @@ function blurThis(val) {
 			$('.background').css("filter", 'blur(' + val + 'px)');
 		}
 
-		browser.storage.local.set({"background_blur": val});
+		localStorage.background_blur = val;
 }
 
 
@@ -832,8 +821,8 @@ function defaultBg() {
 
 		//sauve la source
 
-		browser.storage.local.set({"background_image": source});
-		browser.storage.local.set({"background_type": "default"});
+		localStorage.background_image = source;
+		localStorage.background_type = "default";
 	});
 }
 
@@ -849,8 +838,8 @@ $("div.dynamic_bg input").change(function() {
 
 		$(".background").css("background-image", "url('" + unsplash + "')");
 
-		browser.storage.local.set({"background_image": unsplash});
-		browser.storage.local.set({"background_type": "dynamic"});
+		localStorage.background_image = unsplash;
+		localStorage.background_type = "dynamic";
 
 		//enleve la selection default bg si jamais
 		$(".imgpreview").removeClass("selected");
@@ -858,7 +847,7 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		browser.storage.local.set({"background_type": "default"});
+		localStorage.background_type = "default";
 	}
 });
 
@@ -882,7 +871,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(lbg)) {
 				$(".background").css("background-image", "url(" + dbg + ")");
-				browser.storage.local.set({"background_image": dbg});
+				localStorage.background_image = dbg;
 			}
 
 		} else {
@@ -891,22 +880,20 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(dbg)) {
 				$(".background").css("background-image", "url(" + lbg + ")");
-				browser.storage.local.set({"background_image": lbg});
+				localStorage.background_image = lbg;
 			}
 		}
 	}
 
 	function addBlur(dark) {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
 
-			if (dark) {
-				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
-			} else {
-				$(".background").css("filter", "blur(" + data.background_blur + "px)");
-			}
-			
-		});
+		if (dark) {
+			$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
+		} else {
+			$(".background").css("filter", "blur(" + data.background_blur + "px)");
+		}
 	}
 
 	function applyDark(add) {
@@ -949,45 +936,42 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		var dd = (data.dark ? data.dark : "disable");
 
-			var dd = (data.dark ? data.dark : "disable");
+		if (dd === "enable") {
+			applyDark(true);
+		}
 
-			if (dd === "enable") {
-				applyDark(true);
-			}
+		if (dd === "disable") {
+			applyDark(false);
+		}
 
-			if (dd === "disable") {
-				applyDark(false);
-			}
-
-			if (dd === "auto") {
-				auto();
-			}
-		});		
+		if (dd === "auto") {
+			auto();
+		}
 	}
 
 	function changeDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
 
-			if (choix === "enable") {
-				applyDark(true);
-				browser.storage.local.set({"dark": "enable"});
-			}
+		if (choix === "enable") {
+			applyDark(true);
+			localStorage.dark = "enable";
+		}
 
-			if (choix === "disable") {
-				applyDark(false);
-				browser.storage.local.set({"dark": "disable"});
-			}
+		if (choix === "disable") {
+			applyDark(false);
+			localStorage.dark = "disable";
+		}
 
-			if (choix === "auto") {
+		if (choix === "auto") {
 
-				//prend l'heure et ajoute la classe si nuit
-				auto();
-				browser.storage.local.set({"dark": "auto"});
-			}
-		});
+			//prend l'heure et ajoute la classe si nuit
+			auto();
+			localStorage.dark = "auto";
+		}
 	}
 
 	if (choix) {
@@ -1015,7 +999,7 @@ function searchbar() {
 
 		if (activated) {
 
-			browser.storage.local.set({"searchbar": true});
+			localStorage.searchbar = true;
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1024,7 +1008,7 @@ function searchbar() {
 			
 		} else {
 
-			browser.storage.local.set({"searchbar": false});
+			localStorage.searchbar = false;
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1061,27 +1045,26 @@ function searchbar() {
 			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		browser.storage.local.set({"searchbar_engine": engine});
+		localStorage.searchbar_engine = engine;
 
 	}
 
 	//init
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 
-		if (data.searchbar) {
+	if (data.searchbar) {
 
-			//display
-			activate(true);
+		//display
+		activate(true);
 
-			if (data.searchbar_engine) {
-				chooseSearchEngine(data.searchbar_engine);
-			} else {
-				chooseSearchEngine("s_startpage");
-			}
+		if (data.searchbar_engine) {
+			chooseSearchEngine(data.searchbar_engine);
 		} else {
-			activate(false);
+			chooseSearchEngine("s_startpage");
 		}
-	});
+	} else {
+		activate(false);
+	}
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
@@ -1158,24 +1141,23 @@ function signature() {
 function traduction() {
 	var translator = $('html').translate({lang: "en", t: dict});
 	
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 
-		//init
-		translator.lang(data.lang);
+	//init
+	translator.lang(data.lang);
 
-		//selection de langue
-		//localStorage + weather update + body trad
-		$(".lang").change(function() {
-			browser.storage.local.set({"lang": this.value});
-			translator.lang(this.value);
-		});
+	//selection de langue
+	//localStorage + weather update + body trad
+	$(".lang").change(function() {
+		localStorage.lang = this.value;
+		translator.lang(this.value);
+	});
 
-		$(".popup .lang").change(function() {
-			$(".settings .lang")[0].value = $(this)[0].value;
+	$(".popup .lang").change(function() {
+		$(".settings .lang")[0].value = $(this)[0].value;
 
-			//oua chui fatigué la
-			popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
-		});
+		//oua chui fatigué la
+		popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
 	});
 }
 
@@ -1184,85 +1166,80 @@ function traduction() {
 
 function actualizeStartupOptions() {
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 
+	//default background 
+	$(".choosable_backgrounds .imgpreview img").each(function() {
 
-		//default background 
-		$(".choosable_backgrounds .imgpreview img").each(function() {
+		//compare l'url des preview avec celle du background
+		var previewURL = $(this).attr("src");
+		var bgURL = $(".background").css("background-image");
 
-			//compare l'url des preview avec celle du background
-			var previewURL = $(this).attr("src");
-			var bgURL = $(".background").css("background-image");
-
-			//si l'url du bg inclu l'url de la preview, selectionne le
-			if (bgURL.includes(previewURL)) {
-				$(this).parent().addClass("selected");
-			}
-		});
-
-
-		//dynamic background
-		if (data.background_type === "dynamic") {
-			$(".dynamic_bg input")[0].checked = true;
+		//si l'url du bg inclu l'url de la preview, selectionne le
+		if (bgURL.includes(previewURL)) {
+			$(this).parent().addClass("selected");
 		}
-
-
-		//dark mode input
-		if (data.dark) {
-			$(".darkmode select.theme").val(data.dark);
-		} else {
-			$(".darkmode select.theme").val("disable");
-		}
-		
-
-		
-		//weather city input
-		if (data.weather_city) {
-			$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
-		} else {
-			$(".change_weather input[name='city']").attr("placeholder", "Paris");
-		}
-		
-
-		//check geolocalisation
-		//enleve city
-		if (data.weather_geol) {
-			$(".w_auto input")[0].checked = true;
-			$(".change_weather .city").css("display", "none");
-		} else {
-			$(".w_auto input")[0].checked = false;
-			$(".change_weather .city").css("display", "block");
-		}
-
-		//check imperial
-		if (data.weather_unit && data.weather_unit === "imperial") {
-			$(".units input")[0].checked = true;
-		} else {
-			$(".units input")[0].checked = false;
-		}
-
-		
-		//searchbar switch et select
-		$(".activate_searchbar input")[0].value = data.searchbar;
-
-		if (data.searchbar_engine) {
-			$(".choose_search")[0].value = data.searchbar_engine;
-		} else {
-			$(".choose_search")[0].value = "s_startpage";
-		}
-		
-
-		//langue
-		if (data.lang) {
-			$(".lang")[0].value = data.lang;
-		} else {
-			$(".lang")[0].value = "en";
-		}
-		
 	});
-			
-}
 
+
+	//dynamic background
+	if (data.background_type === "dynamic") {
+		$(".dynamic_bg input")[0].checked = true;
+	}
+
+
+	//dark mode input
+	if (data.dark) {
+		$(".darkmode select.theme").val(data.dark);
+	} else {
+		$(".darkmode select.theme").val("disable");
+	}
+	
+
+	
+	//weather city input
+	if (data.weather_city) {
+		$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
+	} else {
+		$(".change_weather input[name='city']").attr("placeholder", "Paris");
+	}
+	
+
+	//check geolocalisation
+	//enleve city
+	if (data.weather_geol) {
+		$(".w_auto input")[0].checked = true;
+		$(".change_weather .city").css("display", "none");
+	} else {
+		$(".w_auto input")[0].checked = false;
+		$(".change_weather .city").css("display", "block");
+	}
+
+	//check imperial
+	if (data.weather_unit && data.weather_unit === "imperial") {
+		$(".units input")[0].checked = true;
+	} else {
+		$(".units input")[0].checked = false;
+	}
+
+	
+	//searchbar switch et select
+	$(".activate_searchbar input")[0].value = data.searchbar;
+
+	if (data.searchbar_engine) {
+		$(".choose_search")[0].value = data.searchbar_engine;
+	} else {
+		$(".choose_search")[0].value = "s_startpage";
+	}
+	
+
+	//langue
+	if (data.lang) {
+		$(".lang")[0].value = data.lang;
+	} else {
+		$(".lang")[0].value = "en";
+	}
+}
 
 
 

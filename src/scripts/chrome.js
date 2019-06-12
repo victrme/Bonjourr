@@ -1,14 +1,14 @@
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	browser.storage.local.clear().then(() => {
+	chrome.storage.local.clear().then(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -19,7 +19,7 @@ var popupButtonLang = 1;
 
 function introduction() {
 
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 		
 		if (!data.isIntroduced) {
 			$("#start_popup").css("display", "flex");
@@ -52,7 +52,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		browser.storage.local.set({"isIntroduced": true});
+		chrome.storage.local.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -182,7 +182,7 @@ function initblocks() {
 
 	$(".linkblocks").empty();
 
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		if (data.links) {
 
@@ -260,7 +260,7 @@ function showRemoveLink() {
 
 	function removeblock(i) {
 
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			//enleve le html du block
 			var block = $(".linkblocks")[0].children[i];
@@ -278,7 +278,7 @@ function showRemoveLink() {
 			}
 			
 			var links = data.links;
-			browser.storage.local.set({"links": ejectIntruder(links)});
+			chrome.storage.local.set({"links": ejectIntruder(links)});
 		});
 	}
 
@@ -317,7 +317,7 @@ function linkSubmission() {
 
 	function saveLink(lll) {
 
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			var arr = [];
 
@@ -332,7 +332,7 @@ function linkSubmission() {
 				arr.push(lll);
 			}
 			
-			browser.storage.local.set({"links": arr});
+			chrome.storage.local.set({"links": arr});
 		});
 	}
 
@@ -545,13 +545,13 @@ function weather(changelang) {
 
 		weatherRequest(req);
 
-		browser.storage.local.set({"weather_city": "Paris"});
-		browser.storage.local.set({"weather_unit": "metric"});
+		chrome.storage.local.set({"weather_city": "Paris"});
+		chrome.storage.local.set({"weather_unit": "metric"});
 	}
  
 	function apply() {
 
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			req = {
 				city: data.weather_city,
@@ -596,11 +596,11 @@ function weather(changelang) {
 
 		if (req.city.length < 2) req.city = "Paris";
  		
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			weatherRequest(req);
 			
-			browser.storage.local.set({"weather_city": req.city});
+			chrome.storage.local.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
 			city.val("");
@@ -618,7 +618,7 @@ function weather(changelang) {
 
 		weatherRequest(req);
 		
-		browser.storage.local.set({"weather_unit": req.unit});
+		chrome.storage.local.set({"weather_unit": req.unit});
 	}
 
 	//automatise la meteo
@@ -630,7 +630,7 @@ function weather(changelang) {
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				browser.storage.local.set({"weather_geol": req.geol});
+				chrome.storage.local.set({"weather_geol": req.geol});
 
 				weatherRequest(req);
 
@@ -639,7 +639,7 @@ function weather(changelang) {
 
 		} else {
 
-			browser.storage.local.remove("weather_geol");
+			chrome.storage.local.remove("weather_geol");
 			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
@@ -693,7 +693,7 @@ BACKGROUND
 
 function initBackground() {
 
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		var image = data.background_image;
 		var type = data.background_type;
@@ -725,8 +725,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		browser.storage.local.set({"background_image": url});
-		browser.storage.local.set({"background_type": "custom"});
+		chrome.storage.local.set({"background_image": url});
+		chrome.storage.local.set({"background_type": "custom"});
 
 		$('.background').css("background-image", 'url(' + url + ')');
 
@@ -753,7 +753,7 @@ function blurThis(val) {
 			$('.background').css("filter", 'blur(' + val + 'px)');
 		}
 
-		browser.storage.local.set({"background_blur": val});
+		chrome.storage.local.set({"background_blur": val});
 }
 
 
@@ -832,8 +832,8 @@ function defaultBg() {
 
 		//sauve la source
 
-		browser.storage.local.set({"background_image": source});
-		browser.storage.local.set({"background_type": "default"});
+		chrome.storage.local.set({"background_image": source});
+		chrome.storage.local.set({"background_type": "default"});
 	});
 }
 
@@ -849,8 +849,8 @@ $("div.dynamic_bg input").change(function() {
 
 		$(".background").css("background-image", "url('" + unsplash + "')");
 
-		browser.storage.local.set({"background_image": unsplash});
-		browser.storage.local.set({"background_type": "dynamic"});
+		chrome.storage.local.set({"background_image": unsplash});
+		chrome.storage.local.set({"background_type": "dynamic"});
 
 		//enleve la selection default bg si jamais
 		$(".imgpreview").removeClass("selected");
@@ -858,7 +858,7 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		browser.storage.local.set({"background_type": "default"});
+		chrome.storage.local.set({"background_type": "default"});
 	}
 });
 
@@ -882,7 +882,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(lbg)) {
 				$(".background").css("background-image", "url(" + dbg + ")");
-				browser.storage.local.set({"background_image": dbg});
+				chrome.storage.local.set({"background_image": dbg});
 			}
 
 		} else {
@@ -891,14 +891,14 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(dbg)) {
 				$(".background").css("background-image", "url(" + lbg + ")");
-				browser.storage.local.set({"background_image": lbg});
+				chrome.storage.local.set({"background_image": lbg});
 			}
 		}
 	}
 
 	function addBlur(dark) {
 
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			if (dark) {
 				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
@@ -949,7 +949,7 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -969,23 +969,23 @@ function darkmode(choix) {
 
 	function changeDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			if (choix === "enable") {
 				applyDark(true);
-				browser.storage.local.set({"dark": "enable"});
+				chrome.storage.local.set({"dark": "enable"});
 			}
 
 			if (choix === "disable") {
 				applyDark(false);
-				browser.storage.local.set({"dark": "disable"});
+				chrome.storage.local.set({"dark": "disable"});
 			}
 
 			if (choix === "auto") {
 
 				//prend l'heure et ajoute la classe si nuit
 				auto();
-				browser.storage.local.set({"dark": "auto"});
+				chrome.storage.local.set({"dark": "auto"});
 			}
 		});
 	}
@@ -1015,7 +1015,7 @@ function searchbar() {
 
 		if (activated) {
 
-			browser.storage.local.set({"searchbar": true});
+			chrome.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1024,7 +1024,7 @@ function searchbar() {
 			
 		} else {
 
-			browser.storage.local.set({"searchbar": false});
+			chrome.storage.local.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1061,12 +1061,12 @@ function searchbar() {
 			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		browser.storage.local.set({"searchbar_engine": engine});
+		chrome.storage.local.set({"searchbar_engine": engine});
 
 	}
 
 	//init
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		if (data.searchbar) {
 
@@ -1158,7 +1158,7 @@ function signature() {
 function traduction() {
 	var translator = $('html').translate({lang: "en", t: dict});
 	
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		//init
 		translator.lang(data.lang);
@@ -1166,7 +1166,7 @@ function traduction() {
 		//selection de langue
 		//localStorage + weather update + body trad
 		$(".lang").change(function() {
-			browser.storage.local.set({"lang": this.value});
+			chrome.storage.local.set({"lang": this.value});
 			translator.lang(this.value);
 		});
 
@@ -1184,7 +1184,7 @@ function traduction() {
 
 function actualizeStartupOptions() {
 
-	browser.storage.local.get().then((data) => {
+	chrome.storage.local.get(null, (data) => {
 
 
 		//default background 
