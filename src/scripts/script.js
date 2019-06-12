@@ -103,11 +103,11 @@ function introduction() {
 			$(".next_popup").text(dict[lang][3]);
 		}
 
-		if (margin === 400) {
+		if (margin === 500) {
 			$(".next_popup").text(dict[lang][4]);
 		}
 
-		if (margin === 500) {
+		if (margin === 600) {
 			dismiss();
 		}
 		else {
@@ -177,7 +177,7 @@ LIENS FAVORIS
 
 
 //initialise les blocs en fonction du storage
-//utilise simplement une boucle de appendbglock
+//utilise simplement une boucle de appendblock
 function initblocks() {
 
 	$(".linkblocks").empty();
@@ -187,14 +187,14 @@ function initblocks() {
 		if (data.links) {
 
 			for (var i = 0; i < data.links.length; i++) {
-				appendbglock(data.links[i]);
+				appendblock(data.links[i]);
 			}
 		}
 	});
 }
 
 //rajoute l'html d'un bloc avec toute ses valeurs et events
-function appendbglock(arr) {
+function appendblock(arr) {
 
 	//le DOM du block
 	var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
@@ -295,14 +295,17 @@ function showRemoveLink() {
 function linkSubmission() {
 
 	function filterUrl(str) {
-		if (str.startsWith("http") || str.startsWith("https")) {
-			return str;
+
+		var toSend = str;
+
+		if (!str.startsWith("http://") || !str.startsWith("https://")) {
+			toSend = "http://" + str;
 		}
-		else if (str.startsWith("file")) {
-			return str;
-		}
-		else {
-			return 	"http://" + str;
+
+		if (str.length > 3) {
+			return toSend;
+		} else {
+			return "Not working";
 		}
 	}
 
@@ -348,9 +351,9 @@ function linkSubmission() {
 		icon: fetchIcon(url)
 	};
 
-	if (url.length > 0) {
+	if (url !== "Not working") {
 
-		appendbglock(links);
+		appendblock(links);
 		saveLink(links);
 
 		//remet a zero les inputs

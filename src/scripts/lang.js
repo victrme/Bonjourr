@@ -247,5 +247,8 @@ var dict = {
   },
   "You can delete the Quick Links after a long press on the icons.": {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes."
+  },
+  "Almost done!": {
+    fr: "Nous y sommes presque !"
   }
 }
