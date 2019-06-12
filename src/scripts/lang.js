@@ -171,7 +171,7 @@ var dict = {
     fr: " et il apparaîtra directement sous le widget Météo."
   },
   "To get rid of a link, press it for a second and the delete icon will appear.": {
-    fr:  "Pour supprimer des favoris, appuyez longuement (1s) sur celui-ci pour activer la suppression"
+    fr:  "Pour supprimer un favoris, effectuez un clic pronlongé sur celui-ci pour activer la suppression."
   },
   "Bonjourr's weather defaults to Paris. Activate geolocation and the weather will be automatically updated according to the city you're in. You can also enter a city manually and change the measure unit.": {
     fr: "La météo de Bonjourr s'initialise à Paris. Vous pouvez activer la géolocalisation et elle se mettra automatiquement à jour selon la ville où vous vous trouvez. Vous pouvez également entrer une ville manuellement et changer l'unité de mesure."
@@ -238,5 +238,8 @@ var dict = {
   },
   "Activate": {
     fr: "Activer"
+  },
+  "You can delete the Quick Links after a long press on the icons.": {
+    fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes."
   }
 }

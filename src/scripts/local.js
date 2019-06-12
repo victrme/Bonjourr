@@ -61,7 +61,7 @@ function introduction() {
 	}
 
 	var dict = [
-		["Ignorer", "Commencer", "Retour", "Suivant", "Prêt!"],
+		["Ignorer", "Commencer", "Retour", "Suivant", "Prêt !"],
 		["Dismiss", "Begin", "Back", "Next", "All set!"]
 	];
 
@@ -694,7 +694,7 @@ function initBackground() {
 		$('.background').css("background-image", 'url(' + image + ')');
 	} else {
 		//sans rien l'image de base est utilisé
-		$('.background').css("background-image", 'url("src/images/background.jpg")');
+		$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
 	}
 
 	//ensuite on blur

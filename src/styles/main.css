@@ -58,7 +58,7 @@ select {
 	background-position: center center;
 
 	filter: blur(30px);
-	transform: scale(1.1); 
+	transform: scale(1.25); 
 }
 
 .interface {
@@ -169,8 +169,13 @@ div.linkblocks {
 	border: .2em solid white;
 	cursor: pointer;
 }
+
 .block_parent .l_icon_wrap:hover {
 	border: .2em solid #007aff;
+}
+
+.block_parent .l_icon_wrap:active {
+	filter: brightness(0.75);
 }
 
 .block_parent a {
@@ -376,20 +381,25 @@ div.linkblocks {
 
 /*le weather*/
 
-.popup .city {
-	display: flex;
-	margin: .5em auto;
-}
+
 
 .popup .submitw_city {
 	margin: .5em;
 	white-space: nowrap;
 }
 
+.popup hr {
+	margin-right: 0;
+}
+
 .popup_param.change_weather .wrapper,
 .popup .city {
 	justify-content: space-between;
 	max-width: 300px;
+}
+
+.popup .city {
+	max-width: none;
 }
 
 .popup .weather .w_widget {
