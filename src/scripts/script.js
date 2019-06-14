@@ -44,7 +44,7 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
-		initblocks();
+		quickLinks();
 		
 		setTimeout(function() {
 			$("#start_popup").remove();
@@ -176,203 +176,283 @@ LIENS FAVORIS
 */
 
 
-//initialise les blocs en fonction du storage
-//utilise simplement une boucle de appendblock
-function initblocks() {
+function quickLinks() {
 
-	$(".linkblocks").empty();
+	var stillActive, oldURL;
 
-	browser.storage.local.get().then((data) => {
+	//initialise les blocs en fonction du storage
+	//utilise simplement une boucle de appendblock
+	function initblocks() {
 
-		if (data.links) {
-
-			for (var i = 0; i < data.links.length; i++) {
-				appendblock(data.links[i]);
-			}
-		}
-	});
-}
-
-//rajoute l'html d'un bloc avec toute ses valeurs et events
-function appendblock(arr) {
-
-	//le DOM du block
-	var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
-
-	$(".linkblocks").append(b);
-}
-
-//affiche le bouton pour suppr le link
-function showRemoveLink() {
-
-	var remTimeout;
-	var canRemove = false;
-	var mobile = mobilecheck();
-
-	//si mobile, un simple hover ative le remove
-	//sinon il faut appuyer sur le block
-	var eventEnter = (mobile ? "contextmenu" : "mousedown");
-	var eventLeave = (mobile ? "mouseleave" : "mouseleave");
-
-	
-
-	//j'appuie sur le block pour afficher le remove
-	$(".linkblocks").on(eventEnter, ".block", function() {
-
-		var time = (mobile ? 0 : 1000);
-
-		remTimeout = setTimeout(function() {
-
-			$(".block").find(".remove").addClass("visible");
-			$(".block").addClass("wiggly");
-			$(this).focus();
-
-			canRemove = true;
-
-		}, time);
-	});
-
-	//je sors de la zone de linkblocks pour enlever le remove
-	$(".linkblocks").on(eventLeave, function() {
-
-		clearTimeout(remTimeout);
-
-		$(".block").find(".remove").removeClass("visible");
-		$(".block").removeClass("wiggly");
-
-		canRemove = false;
-	});
-
-
-	//c'est l'event qui active le block comme un lien <a>
-	//je l'ai mis la à cause du clearTimeout
-	$(".linkblocks").on("click", ".block", function(e) {
-
-		clearTimeout(remTimeout);
-
-		if (canRemove === false) {
-			window.location = $(this).attr("source");
-		}
-	});
-
-
-
-
-	function removeblock(i) {
+		$(".linkblocks").empty();
 
 		browser.storage.local.get().then((data) => {
 
-			//enleve le html du block
-			var block = $(".linkblocks")[0].children[i];
-			$(block).addClass("removed");
-			
-			setTimeout(function() {
-				$(block).remove();
-			}, 200);
-			
-			
-			//coupe en 2 et concat sans le link a remove
-			function ejectIntruder(arr) {
-				
-				return arr.slice(0, i).concat(arr.slice(i + 1));
-			}
-			
-			var links = data.links;
-			browser.storage.local.set({"links": ejectIntruder(links)});
-		});
-	}
-
-
-	//event de suppression de block
-	//prend l'index du parent du .remove clické
-	$(".linkblocks").on("click", ".remove", function() {
-		
-		var index = $(this).parent().parent().parent().index();
-		(canRemove ? removeblock(index) : "");
-	});
-}
-
-function linkSubmission() {
-
-	function filterUrl(str) {
-
-		var toSend = str;
-
-		if (!str.startsWith("http://") || !str.startsWith("https://")) {
-			toSend = "http://" + str;
-		}
-
-		if (str.length > 3) {
-			return toSend;
-		} else {
-			return "Not working";
-		}
-	}
-
-	function fetchIcon(str) {
-
-		var a = document.createElement('a');
-		a.href = str;
-		var hostname = a.hostname;
-
-		return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
-	}
-
-	function saveLink(lll) {
-
-		browser.storage.local.get().then((data) => {
-
-			var arr = [];
-
-			//array est tout les links + le nouveau
 			if (data.links) {
 
-				arr = data.links;
-				arr.push(lll);
-
-			//array est seulement le link
-			} else {
-				arr.push(lll);
+				for (var i = 0; i < data.links.length; i++) {
+					appendblock(data.links[i]);
+				}
 			}
-			
-			browser.storage.local.set({"links": arr});
 		});
 	}
 
-	
+	//rajoute l'html d'un bloc avec toute ses valeurs et events
+	function appendblock(arr) {
 
-	//append avec le titre, l'url ET l'index du bloc
-	var title = $(".addlink input[name='title'").val();
-	var url = filterUrl($(".addlink input[name='url'").val());
-	var array = [];
-	var links = {
-		title: title,
-		url: url,
-		icon: fetchIcon(url)
-	};
+		//le DOM du block
+		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
 
-	if (url !== "Not working") {
-
-		appendblock(links);
-		saveLink(links);
-
-		//remet a zero les inputs
-		$(".addlink input[name='title'").val("");
-		$(".addlink input[name='url'").val("");
+		$(".linkblocks").append(b);
 	}
+
+	//affiche le bouton pour suppr le link
+	function showRemoveLink() {
+
+		var remTimeout;
+		var canRemove = false;
+		var mobile = mobilecheck();
+
+		//si mobile, un simple hover ative le remove
+		//sinon il faut appuyer sur le block
+		var eventEnter = (mobile ? "contextmenu" : "mousedown");
+		var eventLeave = (mobile ? "mouseleave" : "mouseleave");
+
+		
+
+		//j'appuie sur le block pour afficher le remove
+		$(".linkblocks").on(eventEnter, ".block", function() {
+
+			var time = (mobile ? 0 : 1000);
+
+			remTimeout = setTimeout(function() {
+
+				$(".block").find(".remove").addClass("visible");
+				$(".block").addClass("wiggly");
+				$(this).focus();
+
+				canRemove = true;
+
+			}, time);
+		});
+
+		//je sors de la zone de linkblocks pour enlever le remove
+		$(".linkblocks").on(eventLeave, function() {
+
+			clearTimeout(remTimeout);
+
+			$(".block").find(".remove").removeClass("visible");
+			$(".block").removeClass("wiggly");
+
+			canRemove = false;
+		});
+
+
+		//c'est l'event qui active le block comme un lien <a>
+		//je l'ai mis la à cause du clearTimeout
+		$(".linkblocks").on("click", ".block", function(e) {
+
+			clearTimeout(remTimeout);
+
+			if (canRemove === false) {
+				window.location = $(this).attr("source");
+			}
+		});
+
+
+
+
+		function removeblock(i) {
+
+			browser.storage.local.get().then((data) => {
+
+				//si on supprime un block quand la limite est atteinte
+				//réactive les inputs
+				if (data.links.length === 16) {
+
+					var input = $("input[name='url']");
+					$(input).each(function() {
+						$(this).attr("placeholder", "URL");
+						$(this).removeAttr("disabled");
+					});
+				}
+
+				//enleve le html du block
+				var block = $(".linkblocks")[0].children[i];
+				$(block).addClass("removed");
+				
+				setTimeout(function() {
+					$(block).remove();
+				}, 200);
+				
+				
+				//coupe en 2 et concat sans le link a remove
+				function ejectIntruder(arr) {
+					
+					return arr.slice(0, i).concat(arr.slice(i + 1));
+				}
+				
+				var links = data.links;
+				browser.storage.local.set({"links": ejectIntruder(links)});
+			});
+		}
+
+
+		//event de suppression de block
+		//prend l'index du parent du .remove clické
+		$(".linkblocks").on("click", ".remove", function() {
+			
+			var index = $(this).parent().parent().parent().index();
+			(canRemove ? removeblock(index) : "");
+		});
+	}
+
+
+	function linkSubmission() {
+
+		function submissionError(str) {
+
+			oldURL = str;
+			var input = $("input[name='url']");
+
+			//affiche le texte d'erreur
+			$("p.wrongURL").css("display", "block");
+			$("p.wrongURL").css("opacity", 1);
+
+			//l'enleve si le user modifie l'input
+			$(input).keypress(function() {
+
+				if ($(this).val() !== oldURL) {
+					$("p.wrongURL").css("opacity", 0);
+					setTimeout(function() {
+						$("p.wrongURL").css("display", "none");
+					}, 200);
+				}
+			});
+		}
+
+		function filterUrl(str) {
+
+			var regHTTP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
+			var regVal = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+
+			//premier regex pour savoir si c'est http
+			if (!str.match(regHTTP)) {
+				str = "http://" + str;
+			}
+
+			//deuxieme pour savoir si il est valide (avec http)
+			if (str.match(regVal)) {
+				return str.match(regVal)[0];
+			} else {
+				return false;
+			}
+		}
+
+		function fetchIcon(str) {
+
+			//prend le domaine de n'importe quelle url
+			var a = document.createElement('a');
+			a.href = str;
+			var hostname = a.hostname;
+
+			return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
+		}
+
+		function saveLink(lll) {
+
+			var full = false;
+
+			browser.storage.local.get().then((data) => {
+
+				var arr = [];
+
+				//array est tout les links + le nouveau
+				if (data.links) {
+
+					if (data.links.length < 16) {
+
+						arr = data.links;
+						arr.push(lll);
+
+					} else {
+						full = true;
+					}
+
+				//array est seulement le link
+				} else {
+					arr.push(lll);
+				}
+				
+				if (!full) {
+					browser.storage.local.set({"links": arr});
+					appendblock(links);
+				} else {
+
+					//desactive tout les input url (fonctionne pour popup du coup)
+					var input = $("input[name='url']");
+					$(input).each(function() {
+						$(this).attr("placeholder", "Quick Links full");
+						$(this).attr("disabled", "disabled");
+					});
+				}
+			});
+
+		}
+
+		//append avec le titre, l'url ET l'index du bloc
+		var title = $(".addlink input[name='title']").val();
+		var url = $(".addlink input[name='url']").val();
+		var filtered = filterUrl(url);
+
+		//si l'url filtré est juste
+		if (filtered) {
+			//et l'input n'a pas été activé ya -1s
+			if (!stillActive) {
+
+				var links = {
+					title: title,
+					url: filtered,
+					icon: fetchIcon(filtered)
+				}
+
+				saveLink(links);
+
+				//remet a zero les inputs
+				$(".addlink input[name='title']").val("");
+				$(".addlink input[name='url']").val("");
+			}	
+		} else {
+			submissionError(url);
+		}
+	}
+
+	function slow() {
+		stillActive = setTimeout(function() {
+			clearTimeout(stillActive);
+			stillActive = false;
+		}, 1000);
+	}
+
+	$('input[name="title"]').on('keypress', function(e) {
+		if (e.which === 13) linkSubmission();
+		slow();
+	});
+
+	$('input[name="url"]').on('keypress', function(e) {
+		if (e.which === 13) linkSubmission();
+		slow();
+	});
+
+	$(".submitlink").click(function() {
+		linkSubmission();
+		slow();
+	});
+
+	initblocks();
+	showRemoveLink();
 }
 
-$('input[name="title"]').on('keypress', function(e) {
-	if (e.which === 13) linkSubmission();
-});
-
-$('input[name="url"]').on('keypress', function(e) {
-	if (e.which === 13) linkSubmission();
-});
-
-$(".submitlink").click(function() {
-	linkSubmission();
-});
 
 
 
@@ -1291,8 +1371,7 @@ $(document).ready(function() {
 	greetings();
 	weather();
 	searchbar();
-	initblocks();
-	showRemoveLink();
+	quickLinks();
 
 	//moins important, load après
 	signature();

@@ -239,6 +239,9 @@ var dict = {
   "Activate": {
     fr: "Activer"
   },
+  "Incorrect URL": {
+    fr: "URL incorrecte"
+  },
   "You can delete the Quick Links after a long press on the icons.": {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes."
   },
