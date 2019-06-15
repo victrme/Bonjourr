@@ -1,10 +1,9 @@
 function fade() {
 
-	document.body.style.transition = "opacity .2s";
-
 	setTimeout(function() {	
-		document.body.style.opacity = 1;
-	}, 150);
+		document.getElementsByClassName('background')[0].style.opacity = 1;
+		document.getElementsByClassName('weather')[0].style.opacity = 1;
+	}, 100);
 }
 
 window.onload = fade;

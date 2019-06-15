@@ -21,7 +21,6 @@
 
 /*pour le fade in*/
 body {
-	opacity: 0;
 	cursor: default;
 	user-select: none;
 	-moz-user-select: none;
@@ -49,6 +48,7 @@ select {
 }
 
 .background {
+	opacity: 0;
 	z-index: -1;
 	position: fixed;
 	width: 100vw;
@@ -62,16 +62,15 @@ select {
 }
 
 .interface {
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-around;
+	min-height: 100vh;
 }
-
 .interface.pushed {
 	margin-left: -20em;
 }
 
+.time {
+	padding: 3em 0;
+}
 
 #clock {
 	font-family: sf_pro_displaythin;
@@ -82,10 +81,17 @@ select {
 	font-size: 1.5em;
 }
 
+.main {
+	padding: 3em 0;
+}
+
 .greetings {
 	font-size: 3em;
 	font-weight: lighter;
-	/*padding-bottom: 0.3em;*/
+}
+
+.weather {
+	opacity: 0;
 }
 
 .weather div {
@@ -114,6 +120,7 @@ div.w_widget_text {
 	display: none;
 	opacity: 0;
 	width: 100%;
+	padding: 2em 0;
 }
 
 .searchbar {
@@ -138,7 +145,7 @@ div.linkblocks {
 	justify-content: center;
 	max-width: 900px;
 	margin: 0 auto;
-	padding: 1em 2em;
+	padding: 2em;
 }
 
 .block_parent {
@@ -180,10 +187,11 @@ div.linkblocks {
 	text-decoration: none;
 }
 
-.block_parent p {
-	display: inline-block;
+.block_parent span {
+	display: block;
 	margin: .5em 0;
-	max-width: 6em;
+	max-width: 10em;
+	word-wrap: break-word;
 }
 
 .block_parent button.remove {

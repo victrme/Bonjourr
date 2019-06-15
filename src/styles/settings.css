@@ -289,7 +289,8 @@ input[name="title"], input[name="url"] {
 	width: calc(100% - .5em);
 }
 
-p.wrongURL {
+p.wrongURL,
+p.wrongCity {
 	display: none;
 	opacity: 0;
 	margin: 0 .5em .5em .5em;

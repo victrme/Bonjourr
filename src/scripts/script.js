@@ -1,10 +1,9 @@
 
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
+const TITLE_LIMIT = 42;
 const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
-
-
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -150,7 +149,7 @@ function clock() {
 
 	$('#clock').text(h + ":" + m);
 
-	var t = setTimeout(clock, 1000);
+	var t = setTimeout(clock, 5000);
 }
 
 
@@ -208,7 +207,7 @@ function quickLinks() {
 	function appendblock(arr) {
 
 		//le DOM du block
-		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
+		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div></div>";
 
 		$(".linkblocks").append(b);
 	}
@@ -417,6 +416,9 @@ function quickLinks() {
 		var url = $(".addlink input[name='url']").val();
 		var filtered = filterUrl(url);
 
+		//Titre trop long, on rajoute "...""
+		if (title.length > TITLE_LIMIT) title = title.slice(0, TITLE_LIMIT) + "...";
+
 		//si l'url filtré est juste
 		if (filtered) {
 			//et l'input n'a pas été activé ya -1s
@@ -485,7 +487,7 @@ METEO
 function weather(changelang) {
 
 	//init la requete;
-	var req, recursive, stillActive = false;
+	var req, stillActive = false;
 	
 	function dataHandling(data) {
 
@@ -608,17 +610,12 @@ function weather(changelang) {
 
 				//sauvegarde la derniere meteo
 				localStorage.wLastState = btoa(JSON.stringify(data));
-				recursive = false;
+
+				$("p.wrongCity").css("opacity", 0);
+				return true;
 
 			} else {
-
-				//si la météo bug, initialise à paris + metric
-				//utilise un "switch recursif" pour que la fonction s'appelle pas à l'infini
-				if (recursive !== true) {
-
-					initWeather();
-					recursive = true;
-				}
+				submissionError(arg.city);
 			}
 		}
 
@@ -675,17 +672,38 @@ function weather(changelang) {
 		});
 	}
 
+	function submissionError(str) {
+
+			oldCity = str;
+			var input = $(".change_weather input[name='city']");
+
+			//affiche le texte d'erreur
+			$("p.wrongCity").css("display", "block");
+			$("p.wrongCity").css("opacity", 1);
+
+			//l'enleve si le user modifie l'input
+			$(input).keyup(function() {
+
+				if ($(this).val() !== oldCity) {
+					$("p.wrongCity").css("opacity", 0);
+					setTimeout(function() {
+						$("p.wrongCity").css("display", "none");
+					}, 200);
+				}
+			});
+	}
+
 	function updateCity() {
 
 		var city = $(".change_weather input[name='city']");
 		req.city = city[0].value;
 
-		if (req.city.length < 2) req.city = "Paris";
+		if (req.city.length < 2) return "";
  		
 		browser.storage.local.get().then((data) => {
 
-			weatherRequest(req);
-			
+			 weatherRequest(req);
+
 			browser.storage.local.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
@@ -1228,8 +1246,12 @@ function searchbar() {
 $(".showSettings button").click(function() {
 
 	$(this).toggleClass("shown");
+	
+	$(".settings").css("display", "block");
 	$(".settings").toggleClass("shown");
 	$(".interface").toggleClass("pushed");
+
+
 });
 
 //si settings ouvert, le ferme
