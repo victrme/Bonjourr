@@ -1,7 +1,14 @@
 
+const INPUT_PAUSE = 700;
+const BLOCK_LIMIT = 16;
+const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
+const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
+
+
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.local.clear().then(() => {
+	browser.storage.local.clear().then(() => {
 		localStorage.clear();
 	});
 }
@@ -44,7 +51,7 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
-		initblocks();
+		quickLinks();
 		
 		setTimeout(function() {
 			$("#start_popup").remove();
@@ -82,7 +89,7 @@ function introduction() {
 			$(".next_popup").text(dict[lang][1]);
 		}
 
-		if (margin === 300) {
+		if (margin === 400) {
 			$(".next_popup").text(dict[lang][3]);
 		}
 
@@ -103,11 +110,11 @@ function introduction() {
 			$(".next_popup").text(dict[lang][3]);
 		}
 
-		if (margin === 400) {
+		if (margin === 500) {
 			$(".next_popup").text(dict[lang][4]);
 		}
 
-		if (margin === 500) {
+		if (margin === 600) {
 			dismiss();
 		}
 		else {
@@ -176,200 +183,279 @@ LIENS FAVORIS
 */
 
 
-//initialise les blocs en fonction du storage
-//utilise simplement une boucle de appendbglock
-function initblocks() {
+function quickLinks() {
 
-	$(".linkblocks").empty();
+	var stillActive = false, oldURL = false;
 
-	chrome.storage.local.get(null, (data) => {
+	//initialise les blocs en fonction du storage
+	//utilise simplement une boucle de appendblock
+	function initblocks() {
 
-		if (data.links) {
-
-			for (var i = 0; i < data.links.length; i++) {
-				appendbglock(data.links[i]);
-			}
-		}
-	});
-}
-
-//rajoute l'html d'un bloc avec toute ses valeurs et events
-function appendbglock(arr) {
-
-	//le DOM du block
-	var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
-
-	$(".linkblocks").append(b);
-}
-
-//affiche le bouton pour suppr le link
-function showRemoveLink() {
-
-	var remTimeout;
-	var canRemove = false;
-	var mobile = mobilecheck();
-
-	//si mobile, un simple hover ative le remove
-	//sinon il faut appuyer sur le block
-	var eventEnter = (mobile ? "contextmenu" : "mousedown");
-	var eventLeave = (mobile ? "mouseleave" : "mouseleave");
-
-	
-
-	//j'appuie sur le block pour afficher le remove
-	$(".linkblocks").on(eventEnter, ".block", function() {
-
-		var time = (mobile ? 0 : 1000);
-
-		remTimeout = setTimeout(function() {
-
-			$(".block").find(".remove").addClass("visible");
-			$(".block").addClass("wiggly");
-			$(this).focus();
-
-			canRemove = true;
-
-		}, time);
-	});
-
-	//je sors de la zone de linkblocks pour enlever le remove
-	$(".linkblocks").on(eventLeave, function() {
-
-		clearTimeout(remTimeout);
-
-		$(".block").find(".remove").removeClass("visible");
-		$(".block").removeClass("wiggly");
-
-		canRemove = false;
-	});
-
-
-	//c'est l'event qui active le block comme un lien <a>
-	//je l'ai mis la à cause du clearTimeout
-	$(".linkblocks").on("click", ".block", function(e) {
-
-		clearTimeout(remTimeout);
-
-		if (canRemove === false) {
-			window.location = $(this).attr("source");
-		}
-	});
-
-
-
-
-	function removeblock(i) {
+		$(".linkblocks").empty();
 
 		chrome.storage.local.get(null, (data) => {
 
-			//enleve le html du block
-			var block = $(".linkblocks")[0].children[i];
-			$(block).addClass("removed");
-			
-			setTimeout(function() {
-				$(block).remove();
-			}, 200);
-			
-			
-			//coupe en 2 et concat sans le link a remove
-			function ejectIntruder(arr) {
-				
-				return arr.slice(0, i).concat(arr.slice(i + 1));
-			}
-			
-			var links = data.links;
-			chrome.storage.local.set({"links": ejectIntruder(links)});
-		});
-	}
-
-
-	//event de suppression de block
-	//prend l'index du parent du .remove clické
-	$(".linkblocks").on("click", ".remove", function() {
-		
-		var index = $(this).parent().parent().parent().index();
-		(canRemove ? removeblock(index) : "");
-	});
-}
-
-function linkSubmission() {
-
-	function filterUrl(str) {
-		if (str.startsWith("http") || str.startsWith("https")) {
-			return str;
-		}
-		else if (str.startsWith("file")) {
-			return str;
-		}
-		else {
-			return 	"http://" + str;
-		}
-	}
-
-	function fetchIcon(str) {
-
-		var a = document.createElement('a');
-		a.href = str;
-		var hostname = a.hostname;
-
-		return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
-	}
-
-	function saveLink(lll) {
-
-		chrome.storage.local.get(null, (data) => {
-
-			var arr = [];
-
-			//array est tout les links + le nouveau
 			if (data.links) {
 
-				arr = data.links;
-				arr.push(lll);
-
-			//array est seulement le link
-			} else {
-				arr.push(lll);
+				for (var i = 0; i < data.links.length; i++) {
+					appendblock(data.links[i]);
+				}
 			}
-			
-			chrome.storage.local.set({"links": arr});
 		});
 	}
 
-	
+	//rajoute l'html d'un bloc avec toute ses valeurs et events
+	function appendblock(arr) {
 
-	//append avec le titre, l'url ET l'index du bloc
-	var title = $(".addlink input[name='title'").val();
-	var url = filterUrl($(".addlink input[name='url'").val());
-	var array = [];
-	var links = {
-		title: title,
-		url: url,
-		icon: fetchIcon(url)
-	};
+		//le DOM du block
+		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
 
-	if (url.length > 0) {
-
-		appendbglock(links);
-		saveLink(links);
-
-		//remet a zero les inputs
-		$(".addlink input[name='title'").val("");
-		$(".addlink input[name='url'").val("");
+		$(".linkblocks").append(b);
 	}
+
+	//affiche le bouton pour suppr le link
+	function showRemoveLink() {
+
+		var remTimeout;
+		var canRemove = false;
+		var mobile = mobilecheck();
+
+		//si mobile, un simple hover ative le remove
+		//sinon il faut appuyer sur le block
+		var eventEnter = (mobile ? "contextmenu" : "mousedown");
+		var eventLeave = (mobile ? "mouseleave" : "mouseleave");
+
+		
+
+		//j'appuie sur le block pour afficher le remove
+		$(".linkblocks").on(eventEnter, ".block", function() {
+
+			var time = (mobile ? 0 : 1000);
+
+			remTimeout = setTimeout(function() {
+
+				$(".block").find(".remove").addClass("visible");
+				$(".block").addClass("wiggly");
+				$(this).focus();
+
+				canRemove = true;
+
+			}, time);
+		});
+
+		//je sors de la zone de linkblocks pour enlever le remove
+		$(".linkblocks").on(eventLeave, function() {
+
+			clearTimeout(remTimeout);
+
+			$(".block").find(".remove").removeClass("visible");
+			$(".block").removeClass("wiggly");
+
+			canRemove = false;
+		});
+
+
+		//c'est l'event qui active le block comme un lien <a>
+		//je l'ai mis la à cause du clearTimeout
+		$(".linkblocks").on("click", ".block", function(e) {
+
+			clearTimeout(remTimeout);
+
+			if (canRemove === false) {
+				window.location = $(this).attr("source");
+			}
+		});
+
+
+
+
+		function removeblock(i) {
+
+			chrome.storage.local.get(null, (data) => {
+
+				//si on supprime un block quand la limite est atteinte
+				//réactive les inputs
+				if (data.links.length === BLOCK_LIMIT) {
+
+					var input = $("input[name='url']");
+					$(input).each(function() {
+						$(this).attr("placeholder", "URL");
+						$(this).removeAttr("disabled");
+					});
+				}
+
+				//enleve le html du block
+				var block = $(".linkblocks")[0].children[i];
+				$(block).addClass("removed");
+				
+				setTimeout(function() {
+					$(block).remove();
+				}, 200);
+				
+				
+				//coupe en 2 et concat sans le link a remove
+				function ejectIntruder(arr) {
+					
+					return arr.slice(0, i).concat(arr.slice(i + 1));
+				}
+				
+				var links = data.links;
+				chrome.storage.local.set({"links": ejectIntruder(links)});
+			});
+		}
+
+
+		//event de suppression de block
+		//prend l'index du parent du .remove clické
+		$(".linkblocks").on("click", ".remove", function() {
+			
+			var index = $(this).parent().parent().parent().index();
+			(canRemove ? removeblock(index) : "");
+		});
+	}
+
+	function slow() {
+		stillActive = setTimeout(function() {
+			clearTimeout(stillActive);
+			stillActive = false;
+		}, INPUT_PAUSE);
+	}
+
+	function linkSubmission() {
+
+		function submissionError(str) {
+
+			oldURL = str;
+			var input = $("input[name='url']");
+
+			//affiche le texte d'erreur
+			$("p.wrongURL").css("display", "block");
+			$("p.wrongURL").css("opacity", 1);
+
+			//l'enleve si le user modifie l'input
+			$(input).keypress(function() {
+
+				if ($(this).val() !== oldURL) {
+					$("p.wrongURL").css("opacity", 0);
+					setTimeout(function() {
+						$("p.wrongURL").css("display", "none");
+					}, 200);
+				}
+			});
+		}
+
+		function filterUrl(str) {
+
+			var regHTTP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
+			var regVal = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+
+			//premier regex pour savoir si c'est http
+			if (!str.match(regHTTP)) {
+				str = "http://" + str;
+			}
+
+			//deuxieme pour savoir si il est valide (avec http)
+			if (str.match(regVal)) {
+				return str.match(regVal)[0];
+			} else {
+				return false;
+			}
+		}
+
+		function fetchIcon(str) {
+
+			//prend le domaine de n'importe quelle url
+			var a = document.createElement('a');
+			a.href = str;
+			var hostname = a.hostname;
+
+			return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
+		}
+
+		function saveLink(lll) {
+
+			var full = false;
+
+			chrome.storage.local.get(null, (data) => {
+
+				var arr = [];
+
+				//array est tout les links + le nouveau
+				if (data.links) {
+
+					if (data.links.length < BLOCK_LIMIT - 1) {
+
+						arr = data.links;
+						arr.push(lll);
+
+					} else {
+						full = true;
+					}
+
+				//array est seulement le link
+				} else {
+					arr.push(lll);
+				}
+				
+				if (!full) {
+					chrome.storage.local.set({"links": arr});
+					appendblock(links);
+				} else {
+
+					//desactive tout les input url (fonctionne pour popup du coup)
+					var input = $("input[name='url']");
+					$(input).each(function() {
+						$(this).attr("placeholder", "Quick Links full");
+						$(this).attr("disabled", "disabled");
+					});
+				}
+			});
+		}
+
+		//append avec le titre, l'url ET l'index du bloc
+		var title = $(".addlink input[name='title']").val();
+		var url = $(".addlink input[name='url']").val();
+		var filtered = filterUrl(url);
+
+		//si l'url filtré est juste
+		if (filtered) {
+			//et l'input n'a pas été activé ya -1s
+			if (!stillActive) {
+
+				var links = {
+					title: title,
+					url: filtered,
+					icon: fetchIcon(filtered)
+				}
+
+				saveLink(links);
+				slow();
+
+				//remet a zero les inputs
+				$(".addlink input[name='title']").val("");
+				$(".addlink input[name='url']").val("");
+			}	
+		} else {
+			submissionError(url);
+		}
+	}
+
+	$('input[name="title"]').on('keypress', function(e) {
+		if (e.which === 13) linkSubmission();
+	});
+
+	$('input[name="url"]').on('keypress', function(e) {
+		if (e.which === 13) linkSubmission();
+	});
+
+	$(".submitlink").click(function() {
+		linkSubmission();
+	});
+
+	initblocks();
+	showRemoveLink();
 }
 
-$('input[name="title"]').on('keypress', function(e) {
-	if (e.which === 13) linkSubmission();
-});
-
-$('input[name="url"]').on('keypress', function(e) {
-	if (e.which === 13) linkSubmission();
-});
-
-$(".submitlink").click(function() {
-	linkSubmission();
-});
 
 
 
@@ -399,7 +485,7 @@ METEO
 function weather(changelang) {
 
 	//init la requete;
-	var req, recursive;
+	var req, recursive, stillActive = false;
 	
 	function dataHandling(data) {
 
@@ -496,7 +582,7 @@ function weather(changelang) {
 	function weatherRequest(arg) {
 
 		//a changer
-		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=7c541caef5fc7467fc7267e2f75649a9';
+		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + WEATHER_API_KEY;
 
 		//auto, utilise l'array location [lat, lon]
 		if (arg.geol) {
@@ -639,36 +725,63 @@ function weather(changelang) {
 
 		} else {
 
-			chrome.storage.local.remove("weather_geol");
+			browser.storage.local.remove("weather_geol");
 			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
 	}
-	
 
+	function slow(that) {
+
+		$(that).attr("disabled", "");
+
+		stillActive = setTimeout(function() {
+
+			$(that).removeAttr("disabled");
+
+			clearTimeout(stillActive);
+			stillActive = false;
+		}, INPUT_PAUSE);
+	}
 
 	//TOUT LES EVENTS
 
 	$(".submitw_city").click(function() {
-		updateCity();
+		if (!stillActive) {
+			updateCity();
+			slow(this);
+		}
+		
 	});
 
 	$('.change_weather input[name="city"]').on('keypress', function(e) {
-		if (e.which === 13) updateCity();
+		if (!stillActive && e.which === 13) {
+			updateCity();
+			slow(this);
+		}
 	});
 
 	$(".units input").change(function() {
-		updateUnit(this);
+		if (!stillActive) {
+			updateUnit(this);
+			slow(this);
+		}
 	});
 
 
 	$(".w_auto input").change(function() {
-		updateLocation(this);
+		if (!stillActive) {
+			updateLocation(this);
+			slow(this);
+		}
 	});
 
 	$(".lang").change(function() {
-		req.lang = this.value;
-		weatherRequest(req);
+		if (!stillActive) {
+			req.lang = this.value;
+			weatherRequest(req);
+			slow(this);
+		}
 	});
 
 
@@ -845,11 +958,9 @@ $("div.dynamic_bg input").change(function() {
 
 	if (this.checked) {
 
-		var unsplash = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
+		$(".background").css("background-image", "url('" + UNSPLASH + "')");
 
-		$(".background").css("background-image", "url('" + unsplash + "')");
-
-		chrome.storage.local.set({"background_image": unsplash});
+		chrome.storage.local.set({"background_image": UNSPLASH});
 		chrome.storage.local.set({"background_type": "dynamic"});
 
 		//enleve la selection default bg si jamais
@@ -868,7 +979,6 @@ $("div.dynamic_bg input").change(function() {
 
 
 function darkmode(choix) {
-
 
 	function isIOSwallpaper(dark) {
 
@@ -1243,7 +1353,7 @@ function actualizeStartupOptions() {
 
 		
 		//searchbar switch et select
-		$(".activate_searchbar input")[0].value = data.searchbar;
+		$(".activate_searchbar input")[0].checked = data.searchbar;
 
 		if (data.searchbar_engine) {
 			$(".choose_search")[0].value = data.searchbar_engine;
@@ -1268,9 +1378,9 @@ function actualizeStartupOptions() {
 
 
 function mobilecheck() {
-  var check = false;
-  (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
-  return check;
+	var check = false;
+	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+	return check;
 };
 
 
@@ -1288,8 +1398,7 @@ $(document).ready(function() {
 	greetings();
 	weather();
 	searchbar();
-	initblocks();
-	showRemoveLink();
+	quickLinks();
 
 	//moins important, load après
 	signature();

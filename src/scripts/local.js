@@ -1,12 +1,23 @@
 
+const INPUT_PAUSE = 700;
+const BLOCK_LIMIT = 16;
+const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
+const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
+
+
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	localStorage.clear();
+	browser.storage.local.clear().then(() => {
+		localStorage.clear();
+	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	console.log(localStorage)
+	browser.storage.local.get().then((data) => {
+		console.log(data);
+	});
 }
 
 
@@ -15,15 +26,16 @@ var popupButtonLang = 1;
 
 function introduction() {
 
-	var data = localStorage;
+	browser.storage.local.get().then((data) => {
 		
-	if (!data.isIntroduced) {
-		$("#start_popup").css("display", "flex");
-		$(".interface .linkblocks").css("opacity", 0);
-	} else {
-		$("#start_popup").remove();
-		$(".interface .linkblocks").css("opacity", 1);
-	}
+		if (!data.isIntroduced) {
+			$("#start_popup").css("display", "flex");
+			$(".interface .linkblocks").css("opacity", 0);
+		} else {
+			$("#start_popup").remove();
+			$(".interface .linkblocks").css("opacity", 1);
+		}
+	});
 
 	//la marge des popups en pourcentages
 	var margin = 0; 
@@ -39,7 +51,7 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
-		initblocks();
+		quickLinks();
 		
 		setTimeout(function() {
 			$("#start_popup").remove();
@@ -47,7 +59,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		localStorage.isIntroduced = true;
+		browser.storage.local.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -77,7 +89,7 @@ function introduction() {
 			$(".next_popup").text(dict[lang][1]);
 		}
 
-		if (margin === 300) {
+		if (margin === 400) {
 			$(".next_popup").text(dict[lang][3]);
 		}
 
@@ -98,11 +110,11 @@ function introduction() {
 			$(".next_popup").text(dict[lang][3]);
 		}
 
-		if (margin === 400) {
+		if (margin === 500) {
 			$(".next_popup").text(dict[lang][4]);
 		}
 
-		if (margin === 500) {
+		if (margin === 600) {
 			dismiss();
 		}
 		else {
@@ -171,199 +183,279 @@ LIENS FAVORIS
 */
 
 
-//initialise les blocs en fonction du storage
-//utilise simplement une boucle de appendbglock
-function initblocks() {
+function quickLinks() {
 
-	$(".linkblocks").empty();
+	var stillActive = false, oldURL = false;
 
-	var data = localStorage;
-	var lslinks = (data.links ? JSON.parse(data.links) : "");
+	//initialise les blocs en fonction du storage
+	//utilise simplement une boucle de appendblock
+	function initblocks() {
 
-	if (lslinks) {
+		$(".linkblocks").empty();
 
-		for (var i = 0; i < lslinks.length; i++) {
-			appendbglock(lslinks[i]);
-		}
-	}
-}
+		browser.storage.local.get().then((data) => {
 
-//rajoute l'html d'un bloc avec toute ses valeurs et events
-function appendbglock(arr) {
+			if (data.links) {
 
-	//le DOM du block
-	var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
-
-	$(".linkblocks").append(b);
-}
-
-//affiche le bouton pour suppr le link
-function showRemoveLink() {
-
-	var remTimeout;
-	var canRemove = false;
-	var mobile = mobilecheck();
-
-	//si mobile, un simple hover ative le remove
-	//sinon il faut appuyer sur le block
-	var eventEnter = (mobile ? "contextmenu" : "mousedown");
-	var eventLeave = (mobile ? "mouseleave" : "mouseleave");
-
-	
-
-	//j'appuie sur le block pour afficher le remove
-	$(".linkblocks").on(eventEnter, ".block", function() {
-
-		var time = (mobile ? 0 : 1000);
-
-		remTimeout = setTimeout(function() {
-
-			$(".block").find(".remove").addClass("visible");
-			$(".block").addClass("wiggly");
-			$(this).focus();
-
-			canRemove = true;
-
-		}, time);
-	});
-
-	//je sors de la zone de linkblocks pour enlever le remove
-	$(".linkblocks").on(eventLeave, function() {
-
-		clearTimeout(remTimeout);
-
-		$(".block").find(".remove").removeClass("visible");
-		$(".block").removeClass("wiggly");
-
-		canRemove = false;
-	});
-
-
-	//c'est l'event qui active le block comme un lien <a>
-	//je l'ai mis la à cause du clearTimeout
-	$(".linkblocks").on("click", ".block", function(e) {
-
-		clearTimeout(remTimeout);
-
-		if (canRemove === false) {
-			window.location = $(this).attr("source");
-		}
-	});
-
-
-
-
-	function removeblock(i) {
-
-		var data = localStorage;
-		var lslinks = (data.links ? JSON.parse(data.links) : "");
-
-			//enleve le html du block
-			var block = $(".linkblocks")[0].children[i];
-			$(block).addClass("removed");
-			
-			setTimeout(function() {
-				$(block).remove();
-			}, 200);
-			
-			
-			//coupe en 2 et concat sans le link a remove
-			function ejectIntruder(arr) {
-				
-				return arr.slice(0, i).concat(arr.slice(i + 1));
+				for (var i = 0; i < data.links.length; i++) {
+					appendblock(data.links[i]);
+				}
 			}
+		});
+	}
+
+	//rajoute l'html d'un bloc avec toute ses valeurs et events
+	function appendblock(arr) {
+
+		//le DOM du block
+		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
+
+		$(".linkblocks").append(b);
+	}
+
+	//affiche le bouton pour suppr le link
+	function showRemoveLink() {
+
+		var remTimeout;
+		var canRemove = false;
+		var mobile = mobilecheck();
+
+		//si mobile, un simple hover ative le remove
+		//sinon il faut appuyer sur le block
+		var eventEnter = (mobile ? "contextmenu" : "mousedown");
+		var eventLeave = (mobile ? "mouseleave" : "mouseleave");
+
+		
+
+		//j'appuie sur le block pour afficher le remove
+		$(".linkblocks").on(eventEnter, ".block", function() {
+
+			var time = (mobile ? 0 : 1000);
+
+			remTimeout = setTimeout(function() {
+
+				$(".block").find(".remove").addClass("visible");
+				$(".block").addClass("wiggly");
+				$(this).focus();
+
+				canRemove = true;
+
+			}, time);
+		});
+
+		//je sors de la zone de linkblocks pour enlever le remove
+		$(".linkblocks").on(eventLeave, function() {
+
+			clearTimeout(remTimeout);
+
+			$(".block").find(".remove").removeClass("visible");
+			$(".block").removeClass("wiggly");
+
+			canRemove = false;
+		});
+
+
+		//c'est l'event qui active le block comme un lien <a>
+		//je l'ai mis la à cause du clearTimeout
+		$(".linkblocks").on("click", ".block", function(e) {
+
+			clearTimeout(remTimeout);
+
+			if (canRemove === false) {
+				window.location = $(this).attr("source");
+			}
+		});
+
+
+
+
+		function removeblock(i) {
+
+			browser.storage.local.get().then((data) => {
+
+				//si on supprime un block quand la limite est atteinte
+				//réactive les inputs
+				if (data.links.length === BLOCK_LIMIT) {
+
+					var input = $("input[name='url']");
+					$(input).each(function() {
+						$(this).attr("placeholder", "URL");
+						$(this).removeAttr("disabled");
+					});
+				}
+
+				//enleve le html du block
+				var block = $(".linkblocks")[0].children[i];
+				$(block).addClass("removed");
+				
+				setTimeout(function() {
+					$(block).remove();
+				}, 200);
+				
+				
+				//coupe en 2 et concat sans le link a remove
+				function ejectIntruder(arr) {
+					
+					return arr.slice(0, i).concat(arr.slice(i + 1));
+				}
+				
+				var links = data.links;
+				browser.storage.local.set({"links": ejectIntruder(links)});
+			});
+		}
+
+
+		//event de suppression de block
+		//prend l'index du parent du .remove clické
+		$(".linkblocks").on("click", ".remove", function() {
 			
-			var links = lslinks;
-			localStorage.links = JSON.stringify(ejectIntruder(links));
+			var index = $(this).parent().parent().parent().index();
+			(canRemove ? removeblock(index) : "");
+		});
 	}
 
-
-	//event de suppression de block
-	//prend l'index du parent du .remove clické
-	$(".linkblocks").on("click", ".remove", function() {
-		
-		var index = $(this).parent().parent().parent().index();
-		(canRemove ? removeblock(index) : "");
-	});
-}
-
-function linkSubmission() {
-
-	function filterUrl(str) {
-		if (str.startsWith("http") || str.startsWith("https")) {
-			return str;
-		}
-		else if (str.startsWith("file")) {
-			return str;
-		}
-		else {
-			return 	"http://" + str;
-		}
+	function slow() {
+		stillActive = setTimeout(function() {
+			clearTimeout(stillActive);
+			stillActive = false;
+		}, INPUT_PAUSE);
 	}
 
-	function fetchIcon(str) {
+	function linkSubmission() {
 
-		var a = document.createElement('a');
-		a.href = str;
-		var hostname = a.hostname;
+		function submissionError(str) {
 
-		return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
-	}
+			oldURL = str;
+			var input = $("input[name='url']");
 
-	function saveLink(lll) {
+			//affiche le texte d'erreur
+			$("p.wrongURL").css("display", "block");
+			$("p.wrongURL").css("opacity", 1);
 
-		var data = localStorage;
-		var lslinks = (data.links ? JSON.parse(data.links) : "");
-		var arr = [];
+			//l'enleve si le user modifie l'input
+			$(input).keypress(function() {
 
-		//array est tout les links + le nouveau
-		if (lslinks) {
+				if ($(this).val() !== oldURL) {
+					$("p.wrongURL").css("opacity", 0);
+					setTimeout(function() {
+						$("p.wrongURL").css("display", "none");
+					}, 200);
+				}
+			});
+		}
 
-			arr = lslinks;
-			arr.push(lll);
+		function filterUrl(str) {
 
-		//array est seulement le link
+			var regHTTP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
+			var regVal = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+
+			//premier regex pour savoir si c'est http
+			if (!str.match(regHTTP)) {
+				str = "http://" + str;
+			}
+
+			//deuxieme pour savoir si il est valide (avec http)
+			if (str.match(regVal)) {
+				return str.match(regVal)[0];
+			} else {
+				return false;
+			}
+		}
+
+		function fetchIcon(str) {
+
+			//prend le domaine de n'importe quelle url
+			var a = document.createElement('a');
+			a.href = str;
+			var hostname = a.hostname;
+
+			return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
+		}
+
+		function saveLink(lll) {
+
+			var full = false;
+
+			browser.storage.local.get().then((data) => {
+
+				var arr = [];
+
+				//array est tout les links + le nouveau
+				if (data.links) {
+
+					if (data.links.length < BLOCK_LIMIT - 1) {
+
+						arr = data.links;
+						arr.push(lll);
+
+					} else {
+						full = true;
+					}
+
+				//array est seulement le link
+				} else {
+					arr.push(lll);
+				}
+				
+				if (!full) {
+					browser.storage.local.set({"links": arr});
+					appendblock(links);
+				} else {
+
+					//desactive tout les input url (fonctionne pour popup du coup)
+					var input = $("input[name='url']");
+					$(input).each(function() {
+						$(this).attr("placeholder", "Quick Links full");
+						$(this).attr("disabled", "disabled");
+					});
+				}
+			});
+		}
+
+		//append avec le titre, l'url ET l'index du bloc
+		var title = $(".addlink input[name='title']").val();
+		var url = $(".addlink input[name='url']").val();
+		var filtered = filterUrl(url);
+
+		//si l'url filtré est juste
+		if (filtered) {
+			//et l'input n'a pas été activé ya -1s
+			if (!stillActive) {
+
+				var links = {
+					title: title,
+					url: filtered,
+					icon: fetchIcon(filtered)
+				}
+
+				saveLink(links);
+				slow();
+
+				//remet a zero les inputs
+				$(".addlink input[name='title']").val("");
+				$(".addlink input[name='url']").val("");
+			}	
 		} else {
-			arr.push(lll);
+			submissionError(url);
 		}
-		
-		localStorage.links = JSON.stringify(arr);
 	}
 
-	
+	$('input[name="title"]').on('keypress', function(e) {
+		if (e.which === 13) linkSubmission();
+	});
 
-	//append avec le titre, l'url ET l'index du bloc
-	var title = $(".addlink input[name='title'").val();
-	var url = filterUrl($(".addlink input[name='url'").val());
-	var array = [];
-	var links = {
-		title: title,
-		url: url,
-		icon: fetchIcon(url)
-	};
+	$('input[name="url"]').on('keypress', function(e) {
+		if (e.which === 13) linkSubmission();
+	});
 
-	if (url.length > 0) {
+	$(".submitlink").click(function() {
+		linkSubmission();
+	});
 
-		appendbglock(links);
-		saveLink(links);
-
-		//remet a zero les inputs
-		$(".addlink input[name='title'").val("");
-		$(".addlink input[name='url'").val("");
-	}
+	initblocks();
+	showRemoveLink();
 }
 
-$('input[name="title"]').on('keypress', function(e) {
-	if (e.which === 13) linkSubmission();
-});
-
-$('input[name="url"]').on('keypress', function(e) {
-	if (e.which === 13) linkSubmission();
-});
-
-$(".submitlink").click(function() {
-	linkSubmission();
-});
 
 
 
@@ -393,7 +485,7 @@ METEO
 function weather(changelang) {
 
 	//init la requete;
-	var req, recursive;
+	var req, recursive, stillActive = false;
 	
 	function dataHandling(data) {
 
@@ -490,7 +582,7 @@ function weather(changelang) {
 	function weatherRequest(arg) {
 
 		//a changer
-		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=7c541caef5fc7467fc7267e2f75649a9';
+		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + WEATHER_API_KEY;
 
 		//auto, utilise l'array location [lat, lon]
 		if (arg.geol) {
@@ -534,69 +626,72 @@ function weather(changelang) {
 	}
 
 	function initWeather() {
-
 		req.city = "Paris";
 		req.unit = "metric";
 
 		weatherRequest(req);
 
-		localStorage.weather_city = "Paris";
-		localStorage.weather_unit = "metric";
+		browser.storage.local.set({"weather_city": "Paris"});
+		browser.storage.local.set({"weather_unit": "metric"});
 	}
  
 	function apply() {
 
-		var data = localStorage;
-		req = {
-			city: data.weather_city,
-			unit: data.weather_unit,
-			geol: data.weather_geol,
-			lang: data.lang
-		};
+		browser.storage.local.get().then((data) => {
 
-		var lastCall = localStorage.wlastCall;
-		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
-		var now = new Date().getTime();
+			req = {
+				city: data.weather_city,
+				unit: data.weather_unit,
+				geol: data.weather_geol,
+				lang: data.lang
+			};
 
-		if (lastCall) {
+			var lastCall = localStorage.wlastCall;
+			var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
+			var now = new Date().getTime();
 
-			//si weather est vieux d'une heure (3600000)
-			//faire une requete
-			if (now > lastCall + 3600000) {
-				
-				weatherRequest(req);
+			if (lastCall) {
 
-			//sinon on saute la requete et on prend le lastState
+				//si weather est vieux d'une heure (3600000)
+				//faire une requete
+				if (now > lastCall + 3600000) {
+					
+					weatherRequest(req);
+
+				//sinon on saute la requete et on prend le lastState
+				} else {
+
+					dataHandling(JSON.parse(lastState));
+
+				}
+
 			} else {
 
-				dataHandling(JSON.parse(lastState));
-
+				//initialise a Paris + Metric
+				//c'est le premier call, requete + lastCall = now
+				initWeather();
+				localStorage.wlastCall = now;
 			}
-
-		} else {
-
-			//initialise a Paris + Metric
-			//c'est le premier call, requete + lastCall = now
-			initWeather();
-			localStorage.wlastCall = now;
-		}
+		});
 	}
 
 	function updateCity() {
 
-		var data = localStorage;
 		var city = $(".change_weather input[name='city']");
 		req.city = city[0].value;
 
 		if (req.city.length < 2) req.city = "Paris";
  		
-		weatherRequest(req);
-		
-		localStorage.weather_city = req.city;
+		browser.storage.local.get().then((data) => {
 
-		city.attr("placeholder", req.city);
-		city.val("");
-		city.blur();
+			weatherRequest(req);
+			
+			browser.storage.local.set({"weather_city": req.city});
+
+			city.attr("placeholder", req.city);
+			city.val("");
+			city.blur();
+		});
 	}
 
 	function updateUnit(that) {
@@ -609,7 +704,7 @@ function weather(changelang) {
 
 		weatherRequest(req);
 		
-		localStorage.weather_unit = req.unit;
+		browser.storage.local.set({"weather_unit": req.unit});
 	}
 
 	//automatise la meteo
@@ -621,7 +716,7 @@ function weather(changelang) {
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				localStorage.weather_geol = req.geol;
+				browser.storage.local.set({"weather_geol": req.geol});
 
 				weatherRequest(req);
 
@@ -630,36 +725,63 @@ function weather(changelang) {
 
 		} else {
 
-			localStorage.remove("weather_geol");
+			browser.storage.local.remove("weather_geol");
 			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
 	}
-	
 
+	function slow(that) {
+
+		$(that).attr("disabled", "");
+
+		stillActive = setTimeout(function() {
+
+			$(that).removeAttr("disabled");
+
+			clearTimeout(stillActive);
+			stillActive = false;
+		}, INPUT_PAUSE);
+	}
 
 	//TOUT LES EVENTS
 
 	$(".submitw_city").click(function() {
-		updateCity();
+		if (!stillActive) {
+			updateCity();
+			slow(this);
+		}
+		
 	});
 
 	$('.change_weather input[name="city"]').on('keypress', function(e) {
-		if (e.which === 13) updateCity();
+		if (!stillActive && e.which === 13) {
+			updateCity();
+			slow(this);
+		}
 	});
 
 	$(".units input").change(function() {
-		updateUnit(this);
+		if (!stillActive) {
+			updateUnit(this);
+			slow(this);
+		}
 	});
 
 
 	$(".w_auto input").change(function() {
-		updateLocation(this);
+		if (!stillActive) {
+			updateLocation(this);
+			slow(this);
+		}
 	});
 
 	$(".lang").change(function() {
-		req.lang = this.value;
-		weatherRequest(req);
+		if (!stillActive) {
+			req.lang = this.value;
+			weatherRequest(req);
+			slow(this);
+		}
 	});
 
 
@@ -684,22 +806,24 @@ BACKGROUND
 
 function initBackground() {
 
-	var data = localStorage;
-	var image = data.background_image;
-	var type = data.background_type;
-	var blur = data.background_blur;
-	
-	//type un peu useless, mais c'est un ancetre alors je le garde ok
-	if (type) {
-		$('.background').css("background-image", 'url(' + image + ')');
-	} else {
-		//sans rien l'image de base est utilisé
-		$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
-	}
+	browser.storage.local.get().then((data) => {
 
-	//ensuite on blur
-	$("input[name='background_blur']").val(data.background_blur);
-	blurThis(data.background_blur);
+		var image = data.background_image;
+		var type = data.background_type;
+		var blur = data.background_blur;
+		
+		//type un peu useless, mais c'est un ancetre alors je le garde ok
+		if (type) {
+			$('.background').css("background-image", 'url(' + image + ')');
+		} else {
+			//sans rien l'image de base est utilisé
+			$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
+		}
+
+		//ensuite on blur
+		$("input[name='background_blur']").val(data.background_blur);
+		blurThis(data.background_blur);
+	});	
 }
 
 
@@ -714,8 +838,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		localStorage.background_image = "url";
-		localStorage.background_type = "custom";
+		browser.storage.local.set({"background_image": url});
+		browser.storage.local.set({"background_type": "custom"});
 
 		$('.background').css("background-image", 'url(' + url + ')');
 
@@ -742,7 +866,7 @@ function blurThis(val) {
 			$('.background').css("filter", 'blur(' + val + 'px)');
 		}
 
-		localStorage.background_blur = val;
+		browser.storage.local.set({"background_blur": val});
 }
 
 
@@ -821,8 +945,8 @@ function defaultBg() {
 
 		//sauve la source
 
-		localStorage.background_image = source;
-		localStorage.background_type = "default";
+		browser.storage.local.set({"background_image": source});
+		browser.storage.local.set({"background_type": "default"});
 	});
 }
 
@@ -834,12 +958,10 @@ $("div.dynamic_bg input").change(function() {
 
 	if (this.checked) {
 
-		var unsplash = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
+		$(".background").css("background-image", "url('" + UNSPLASH + "')");
 
-		$(".background").css("background-image", "url('" + unsplash + "')");
-
-		localStorage.background_image = unsplash;
-		localStorage.background_type = "dynamic";
+		browser.storage.local.set({"background_image": UNSPLASH});
+		browser.storage.local.set({"background_type": "dynamic"});
 
 		//enleve la selection default bg si jamais
 		$(".imgpreview").removeClass("selected");
@@ -847,7 +969,7 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		localStorage.background_type = "default";
+		browser.storage.local.set({"background_type": "default"});
 	}
 });
 
@@ -857,7 +979,6 @@ $("div.dynamic_bg input").change(function() {
 
 
 function darkmode(choix) {
-
 
 	function isIOSwallpaper(dark) {
 
@@ -871,7 +992,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(lbg)) {
 				$(".background").css("background-image", "url(" + dbg + ")");
-				localStorage.background_image = dbg;
+				browser.storage.local.set({"background_image": dbg});
 			}
 
 		} else {
@@ -880,20 +1001,22 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(dbg)) {
 				$(".background").css("background-image", "url(" + lbg + ")");
-				localStorage.background_image = lbg;
+				browser.storage.local.set({"background_image": lbg});
 			}
 		}
 	}
 
 	function addBlur(dark) {
 
-		var data = localStorage;
+		browser.storage.local.get().then((data) => {
 
-		if (dark) {
-			$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
-		} else {
-			$(".background").css("filter", "blur(" + data.background_blur + "px)");
-		}
+			if (dark) {
+				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
+			} else {
+				$(".background").css("filter", "blur(" + data.background_blur + "px)");
+			}
+			
+		});
 	}
 
 	function applyDark(add) {
@@ -936,42 +1059,45 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		var data = localStorage;
-		var dd = (data.dark ? data.dark : "disable");
+		browser.storage.local.get().then((data) => {
 
-		if (dd === "enable") {
-			applyDark(true);
-		}
+			var dd = (data.dark ? data.dark : "disable");
 
-		if (dd === "disable") {
-			applyDark(false);
-		}
+			if (dd === "enable") {
+				applyDark(true);
+			}
 
-		if (dd === "auto") {
-			auto();
-		}
+			if (dd === "disable") {
+				applyDark(false);
+			}
+
+			if (dd === "auto") {
+				auto();
+			}
+		});		
 	}
 
 	function changeDarkMode() {
 
-		var data = localStorage;
+		browser.storage.local.get().then((data) => {
 
-		if (choix === "enable") {
-			applyDark(true);
-			localStorage.dark = "enable";
-		}
+			if (choix === "enable") {
+				applyDark(true);
+				browser.storage.local.set({"dark": "enable"});
+			}
 
-		if (choix === "disable") {
-			applyDark(false);
-			localStorage.dark = "disable";
-		}
+			if (choix === "disable") {
+				applyDark(false);
+				browser.storage.local.set({"dark": "disable"});
+			}
 
-		if (choix === "auto") {
+			if (choix === "auto") {
 
-			//prend l'heure et ajoute la classe si nuit
-			auto();
-			localStorage.dark = "auto";
-		}
+				//prend l'heure et ajoute la classe si nuit
+				auto();
+				browser.storage.local.set({"dark": "auto"});
+			}
+		});
 	}
 
 	if (choix) {
@@ -999,7 +1125,7 @@ function searchbar() {
 
 		if (activated) {
 
-			localStorage.searchbar = true;
+			browser.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1008,7 +1134,7 @@ function searchbar() {
 			
 		} else {
 
-			localStorage.searchbar = false;
+			browser.storage.local.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1045,26 +1171,27 @@ function searchbar() {
 			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		localStorage.searchbar_engine = engine;
+		browser.storage.local.set({"searchbar_engine": engine});
 
 	}
 
 	//init
-	var data = localStorage;
+	browser.storage.local.get().then((data) => {
 
-	if (data.searchbar) {
+		if (data.searchbar) {
 
-		//display
-		activate(true);
+			//display
+			activate(true);
 
-		if (data.searchbar_engine) {
-			chooseSearchEngine(data.searchbar_engine);
+			if (data.searchbar_engine) {
+				chooseSearchEngine(data.searchbar_engine);
+			} else {
+				chooseSearchEngine("s_startpage");
+			}
 		} else {
-			chooseSearchEngine("s_startpage");
+			activate(false);
 		}
-	} else {
-		activate(false);
-	}
+	});
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
@@ -1141,23 +1268,24 @@ function signature() {
 function traduction() {
 	var translator = $('html').translate({lang: "en", t: dict});
 	
-	var data = localStorage;
+	browser.storage.local.get().then((data) => {
 
-	//init
-	translator.lang(data.lang);
+		//init
+		translator.lang(data.lang);
 
-	//selection de langue
-	//localStorage + weather update + body trad
-	$(".lang").change(function() {
-		localStorage.lang = this.value;
-		translator.lang(this.value);
-	});
+		//selection de langue
+		//localStorage + weather update + body trad
+		$(".lang").change(function() {
+			browser.storage.local.set({"lang": this.value});
+			translator.lang(this.value);
+		});
 
-	$(".popup .lang").change(function() {
-		$(".settings .lang")[0].value = $(this)[0].value;
+		$(".popup .lang").change(function() {
+			$(".settings .lang")[0].value = $(this)[0].value;
 
-		//oua chui fatigué la
-		popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
+			//oua chui fatigué la
+			popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
+		});
 	});
 }
 
@@ -1166,88 +1294,93 @@ function traduction() {
 
 function actualizeStartupOptions() {
 
-	var data = localStorage;
+	browser.storage.local.get().then((data) => {
 
-	//default background 
-	$(".choosable_backgrounds .imgpreview img").each(function() {
 
-		//compare l'url des preview avec celle du background
-		var previewURL = $(this).attr("src");
-		var bgURL = $(".background").css("background-image");
+		//default background 
+		$(".choosable_backgrounds .imgpreview img").each(function() {
 
-		//si l'url du bg inclu l'url de la preview, selectionne le
-		if (bgURL.includes(previewURL)) {
-			$(this).parent().addClass("selected");
+			//compare l'url des preview avec celle du background
+			var previewURL = $(this).attr("src");
+			var bgURL = $(".background").css("background-image");
+
+			//si l'url du bg inclu l'url de la preview, selectionne le
+			if (bgURL.includes(previewURL)) {
+				$(this).parent().addClass("selected");
+			}
+		});
+
+
+		//dynamic background
+		if (data.background_type === "dynamic") {
+			$(".dynamic_bg input")[0].checked = true;
 		}
+
+
+		//dark mode input
+		if (data.dark) {
+			$(".darkmode select.theme").val(data.dark);
+		} else {
+			$(".darkmode select.theme").val("disable");
+		}
+		
+
+		
+		//weather city input
+		if (data.weather_city) {
+			$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
+		} else {
+			$(".change_weather input[name='city']").attr("placeholder", "Paris");
+		}
+		
+
+		//check geolocalisation
+		//enleve city
+		if (data.weather_geol) {
+			$(".w_auto input")[0].checked = true;
+			$(".change_weather .city").css("display", "none");
+		} else {
+			$(".w_auto input")[0].checked = false;
+			$(".change_weather .city").css("display", "block");
+		}
+
+		//check imperial
+		if (data.weather_unit && data.weather_unit === "imperial") {
+			$(".units input")[0].checked = true;
+		} else {
+			$(".units input")[0].checked = false;
+		}
+
+		
+		//searchbar switch et select
+		$(".activate_searchbar input")[0].checked = data.searchbar;
+
+		if (data.searchbar_engine) {
+			$(".choose_search")[0].value = data.searchbar_engine;
+		} else {
+			$(".choose_search")[0].value = "s_startpage";
+		}
+		
+
+		//langue
+		if (data.lang) {
+			$(".lang")[0].value = data.lang;
+		} else {
+			$(".lang")[0].value = "en";
+		}
+		
 	});
-
-
-	//dynamic background
-	if (data.background_type === "dynamic") {
-		$(".dynamic_bg input")[0].checked = true;
-	}
-
-
-	//dark mode input
-	if (data.dark) {
-		$(".darkmode select.theme").val(data.dark);
-	} else {
-		$(".darkmode select.theme").val("disable");
-	}
-	
-
-	
-	//weather city input
-	if (data.weather_city) {
-		$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
-	} else {
-		$(".change_weather input[name='city']").attr("placeholder", "Paris");
-	}
-	
-
-	//check geolocalisation
-	//enleve city
-	if (data.weather_geol) {
-		$(".w_auto input")[0].checked = true;
-		$(".change_weather .city").css("display", "none");
-	} else {
-		$(".w_auto input")[0].checked = false;
-		$(".change_weather .city").css("display", "block");
-	}
-
-	//check imperial
-	if (data.weather_unit && data.weather_unit === "imperial") {
-		$(".units input")[0].checked = true;
-	} else {
-		$(".units input")[0].checked = false;
-	}
-
-	
-	//searchbar switch et select
-	$(".activate_searchbar input")[0].value = data.searchbar;
-
-	if (data.searchbar_engine) {
-		$(".choose_search")[0].value = data.searchbar_engine;
-	} else {
-		$(".choose_search")[0].value = "s_startpage";
-	}
-	
-
-	//langue
-	if (data.lang) {
-		$(".lang")[0].value = data.lang;
-	} else {
-		$(".lang")[0].value = "en";
-	}
+			
 }
 
 
 
 
+
 function mobilecheck() {
-  var check = false;
-  (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
-  return check;
+	var check = false;
+	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+	return check;
 };
 
 
@@ -1265,8 +1398,7 @@ $(document).ready(function() {
 	greetings();
 	weather();
 	searchbar();
-	initblocks();
-	showRemoveLink();
+	quickLinks();
 
 	//moins important, load après
 	signature();
