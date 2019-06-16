@@ -1,10 +1,11 @@
 
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
+const TITLE_LIMIT = 42;
 const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
-
-
+const DATE = new Date();
+const HOURS = DATE.getHours();
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -143,19 +144,18 @@ function clock() {
 		return i;
 	}
 
-	var today = new Date();
-	var h = today.getHours();
-	var m = today.getMinutes();
+	var h = new Date().getHours();
+	var m = new Date().getMinutes();
 	m = checkTime(m);
 
 	$('#clock').text(h + ":" + m);
 
-	var t = setTimeout(clock, 1000);
+	var t = setTimeout(clock, 5000);
 }
 
 
 function greetings() {
-	var h = new Date().getHours();
+	var h = DATE.getHours();
 	var m;
 
 	if (h >= 6 && h < 12) {
@@ -208,7 +208,7 @@ function quickLinks() {
 	function appendblock(arr) {
 
 		//le DOM du block
-		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><p>" + arr.title + "</p></div></div>";
+		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div></div>";
 
 		$(".linkblocks").append(b);
 	}
@@ -417,6 +417,9 @@ function quickLinks() {
 		var url = $(".addlink input[name='url']").val();
 		var filtered = filterUrl(url);
 
+		//Titre trop long, on rajoute "...""
+		if (title.length > TITLE_LIMIT) title = title.slice(0, TITLE_LIMIT) + "...";
+
 		//si l'url filtré est juste
 		if (filtered) {
 			//et l'input n'a pas été activé ya -1s
@@ -464,16 +467,14 @@ DATE
 */
 
 function date() {
-	var d = new Date();
-	d.getDay();
 
 	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date .jour").text(days[d.getDay()]);
-	$(".date .chiffre").text(d.getDate());
-	$(".date .mois").text(months[d.getMonth()]);
+	$(".date .jour").text(days[DATE.getDay()]);
+	$(".date .chiffre").text(DATE.getDate());
+	$(".date .mois").text(months[DATE.getMonth()]);
 }
 
 
@@ -485,7 +486,7 @@ METEO
 function weather(changelang) {
 
 	//init la requete;
-	var req, recursive, stillActive = false;
+	var req, stillActive = false;
 	
 	function dataHandling(data) {
 
@@ -494,9 +495,8 @@ function weather(changelang) {
 		function dayOrNight(sunset, sunrise) {
 			var ss = new Date(sunset * 1000);
 			var sr = new Date(sunrise * 1000);
-			var n = new Date();
 
-			if (n.getHours() > sr.getHours() && n.getHours() < ss.getHours()) {
+			if (HOURS > sr.getHours() && HOURS < ss.getHours()) {
 				return "day";
 			}
 			else {
@@ -547,36 +547,40 @@ function weather(changelang) {
 
 		//si c'est l'après midi (apres 12h), on enleve la partie temp max
 		var dtemp, wtemp;
-		var date = new Date();
 
-		if (date.getHours() < 12) {
+		if (HOURS < 12) {
 
 			//temp de desc et temp de widget sont pareil
-			dtemp = wtemp = Math.floor(data.main.temp) + "°";
-			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");
 
-			
+			dtemp = wtemp = Math.floor(data.main.temp) + "°";
+			$("div.hightemp").css("display", "block");
+			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");		
 		} else {
 
 			//temp de desc devient temp de widget + un point
 			//on vide la catégorie temp max
 			wtemp = Math.floor(data.main.temp) + "°";
 			dtemp = wtemp + ".";
-			$("div.hightemp").empty();
-
 		}
 
 		$(".w_desc_temp").text(dtemp);
 		$(".w_widget_temp").text(wtemp);
+		
+		if (data.icon) {
 
-	
+			$(".w_icon").attr("src", data.icon);
+			
+		} else {
+			//pour l'icone
+			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
+			var weather_id = imgId(data.weather[0].id);
+	 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
+	 		$(".w_icon").attr("src", icon_src);
 
-		//pour l'icone
-		var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
-		var weather_id = imgId(data.weather[0].id);
- 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
-
-		$(".w_icon").attr("src", icon_src);
+	 		//sauv l'icone dans wLastState
+	 		data.icon = icon_src;
+	 		localStorage.wLastState = btoa(JSON.stringify(data));
+		}
 	}
 
 	function weatherRequest(arg) {
@@ -608,17 +612,12 @@ function weather(changelang) {
 
 				//sauvegarde la derniere meteo
 				localStorage.wLastState = btoa(JSON.stringify(data));
-				recursive = false;
+
+				$("p.wrongCity").css("opacity", 0);
+				return true;
 
 			} else {
-
-				//si la météo bug, initialise à paris + metric
-				//utilise un "switch recursif" pour que la fonction s'appelle pas à l'infini
-				if (recursive !== true) {
-
-					initWeather();
-					recursive = true;
-				}
+				submissionError(arg.city);
 			}
 		}
 
@@ -637,6 +636,12 @@ function weather(changelang) {
  
 	function apply() {
 
+		var now = DATE.getTime();
+		var lastCall = localStorage.wlastCall;
+		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
+
+		dataHandling(JSON.parse(lastState));
+
 		browser.storage.local.get().then((data) => {
 
 			req = {
@@ -646,9 +651,7 @@ function weather(changelang) {
 				lang: data.lang
 			};
 
-			var lastCall = localStorage.wlastCall;
-			var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
-			var now = new Date().getTime();
+			
 
 			if (lastCall) {
 
@@ -657,12 +660,6 @@ function weather(changelang) {
 				if (now > lastCall + 3600000) {
 					
 					weatherRequest(req);
-
-				//sinon on saute la requete et on prend le lastState
-				} else {
-
-					dataHandling(JSON.parse(lastState));
-
 				}
 
 			} else {
@@ -675,17 +672,38 @@ function weather(changelang) {
 		});
 	}
 
+	function submissionError(str) {
+
+			oldCity = str;
+			var input = $(".change_weather input[name='city']");
+
+			//affiche le texte d'erreur
+			$("p.wrongCity").css("display", "block");
+			$("p.wrongCity").css("opacity", 1);
+
+			//l'enleve si le user modifie l'input
+			$(input).keyup(function() {
+
+				if ($(this).val() !== oldCity) {
+					$("p.wrongCity").css("opacity", 0);
+					setTimeout(function() {
+						$("p.wrongCity").css("display", "none");
+					}, 200);
+				}
+			});
+	}
+
 	function updateCity() {
 
 		var city = $(".change_weather input[name='city']");
 		req.city = city[0].value;
 
-		if (req.city.length < 2) req.city = "Paris";
+		if (req.city.length < 2) return "";
  		
 		browser.storage.local.get().then((data) => {
 
-			weatherRequest(req);
-			
+			 weatherRequest(req);
+
 			browser.storage.local.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
@@ -1228,8 +1246,12 @@ function searchbar() {
 $(".showSettings button").click(function() {
 
 	$(this).toggleClass("shown");
+	
+	$(".settings").css("display", "block");
 	$(".settings").toggleClass("shown");
 	$(".interface").toggleClass("pushed");
+
+
 });
 
 //si settings ouvert, le ferme

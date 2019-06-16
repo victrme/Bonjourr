@@ -25,6 +25,12 @@ body {
 	user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
+	animation: fade .5s;
+}
+
+@keyframes fade {
+	from {opacity: 0;}
+	to {opacity: 1;}
 }
 
 body, .showSettings button {
@@ -48,7 +54,6 @@ select {
 }
 
 .background {
-	opacity: 0;
 	z-index: -1;
 	position: fixed;
 	width: 100vw;
@@ -90,12 +95,12 @@ select {
 	font-weight: lighter;
 }
 
-.weather {
-	opacity: 0;
-}
-
 .weather div {
 	font-size: 1.5em;
+}
+
+.weather .hightemp {
+	display: none;
 }
 
 div.w_widget {
@@ -107,6 +112,7 @@ div.w_widget {
 
 .w_icon {
 	height: 60px;
+	width: 60px;
 	padding-right: 10px;
 }
 

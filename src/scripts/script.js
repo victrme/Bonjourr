@@ -4,6 +4,8 @@ const BLOCK_LIMIT = 16;
 const TITLE_LIMIT = 42;
 const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
+const DATE = new Date();
+const HOURS = DATE.getHours();
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -142,9 +144,8 @@ function clock() {
 		return i;
 	}
 
-	var today = new Date();
-	var h = today.getHours();
-	var m = today.getMinutes();
+	var h = new Date().getHours();
+	var m = new Date().getMinutes();
 	m = checkTime(m);
 
 	$('#clock').text(h + ":" + m);
@@ -154,7 +155,7 @@ function clock() {
 
 
 function greetings() {
-	var h = new Date().getHours();
+	var h = DATE.getHours();
 	var m;
 
 	if (h >= 6 && h < 12) {
@@ -466,16 +467,14 @@ DATE
 */
 
 function date() {
-	var d = new Date();
-	d.getDay();
 
 	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date .jour").text(days[d.getDay()]);
-	$(".date .chiffre").text(d.getDate());
-	$(".date .mois").text(months[d.getMonth()]);
+	$(".date .jour").text(days[DATE.getDay()]);
+	$(".date .chiffre").text(DATE.getDate());
+	$(".date .mois").text(months[DATE.getMonth()]);
 }
 
 
@@ -496,9 +495,8 @@ function weather(changelang) {
 		function dayOrNight(sunset, sunrise) {
 			var ss = new Date(sunset * 1000);
 			var sr = new Date(sunrise * 1000);
-			var n = new Date();
 
-			if (n.getHours() > sr.getHours() && n.getHours() < ss.getHours()) {
+			if (HOURS > sr.getHours() && HOURS < ss.getHours()) {
 				return "day";
 			}
 			else {
@@ -549,36 +547,40 @@ function weather(changelang) {
 
 		//si c'est l'après midi (apres 12h), on enleve la partie temp max
 		var dtemp, wtemp;
-		var date = new Date();
 
-		if (date.getHours() < 12) {
+		if (HOURS < 12) {
 
 			//temp de desc et temp de widget sont pareil
-			dtemp = wtemp = Math.floor(data.main.temp) + "°";
-			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");
 
-			
+			dtemp = wtemp = Math.floor(data.main.temp) + "°";
+			$("div.hightemp").css("display", "block");
+			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");		
 		} else {
 
 			//temp de desc devient temp de widget + un point
 			//on vide la catégorie temp max
 			wtemp = Math.floor(data.main.temp) + "°";
 			dtemp = wtemp + ".";
-			$("div.hightemp").empty();
-
 		}
 
 		$(".w_desc_temp").text(dtemp);
 		$(".w_widget_temp").text(wtemp);
+		
+		if (data.icon) {
 
-	
+			$(".w_icon").attr("src", data.icon);
+			
+		} else {
+			//pour l'icone
+			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
+			var weather_id = imgId(data.weather[0].id);
+	 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
+	 		$(".w_icon").attr("src", icon_src);
 
-		//pour l'icone
-		var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
-		var weather_id = imgId(data.weather[0].id);
- 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
-
-		$(".w_icon").attr("src", icon_src);
+	 		//sauv l'icone dans wLastState
+	 		data.icon = icon_src;
+	 		localStorage.wLastState = btoa(JSON.stringify(data));
+		}
 	}
 
 	function weatherRequest(arg) {
@@ -634,6 +636,12 @@ function weather(changelang) {
  
 	function apply() {
 
+		var now = DATE.getTime();
+		var lastCall = localStorage.wlastCall;
+		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
+
+		dataHandling(JSON.parse(lastState));
+
 		browser.storage.local.get().then((data) => {
 
 			req = {
@@ -643,9 +651,7 @@ function weather(changelang) {
 				lang: data.lang
 			};
 
-			var lastCall = localStorage.wlastCall;
-			var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
-			var now = new Date().getTime();
+			
 
 			if (lastCall) {
 
@@ -654,12 +660,6 @@ function weather(changelang) {
 				if (now > lastCall + 3600000) {
 					
 					weatherRequest(req);
-
-				//sinon on saute la requete et on prend le lastState
-				} else {
-
-					dataHandling(JSON.parse(lastState));
-
 				}
 
 			} else {

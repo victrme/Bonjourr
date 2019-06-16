@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr Page d'Accueil",
+		"description": "nom de l'extension"
+	},
+	"extensionDesc": {
+		"message": "Bonjourr est une page d'accueil customisable pour votre naviguateur. Le style s'inspire d'iOS et est conçu pour être à la fois beau et pratique.",
+		"description": "description de l'extension"
+	}
+}
