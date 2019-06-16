@@ -113,6 +113,7 @@ div.w_widget {
 .w_icon {
 	height: 60px;
 	width: 60px;
+	border: none;
 	padding-right: 10px;
 }
 

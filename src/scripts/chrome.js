@@ -9,14 +9,14 @@ const HOURS = DATE.getHours();
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	browser.storage.local.clear().then(() => {
+	chrome.storage.sync.clear().then(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -27,7 +27,7 @@ var popupButtonLang = 1;
 
 function introduction() {
 
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 		
 		if (!data.isIntroduced) {
 			$("#start_popup").css("display", "flex");
@@ -60,7 +60,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		chrome.storage.local.set({"isIntroduced": true});
+		chrome.storage.sync.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -193,7 +193,7 @@ function quickLinks() {
 
 		$(".linkblocks").empty();
 
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.sync.get(null, (data) => {
 
 			if (data.links) {
 
@@ -271,7 +271,7 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			chrome.storage.local.get(null, (data) => {
+			chrome.storage.sync.get(null, (data) => {
 
 				//si on supprime un block quand la limite est atteinte
 				//réactive les inputs
@@ -300,7 +300,7 @@ function quickLinks() {
 				}
 				
 				var links = data.links;
-				chrome.storage.local.set({"links": ejectIntruder(links)});
+				chrome.storage.sync.set({"links": ejectIntruder(links)});
 			});
 		}
 
@@ -376,7 +376,7 @@ function quickLinks() {
 
 			var full = false;
 
-			chrome.storage.local.get(null, (data) => {
+			chrome.storage.sync.get(null, (data) => {
 
 				var arr = [];
 
@@ -398,7 +398,7 @@ function quickLinks() {
 				}
 				
 				if (!full) {
-					chrome.storage.local.set({"links": arr});
+					chrome.storage.sync.set({"links": arr});
 					appendblock(links);
 				} else {
 
@@ -630,8 +630,8 @@ function weather(changelang) {
 
 		weatherRequest(req);
 
-		chrome.storage.local.set({"weather_city": "Paris"});
-		chrome.storage.local.set({"weather_unit": "metric"});
+		chrome.storage.sync.set({"weather_city": "Paris"});
+		chrome.storage.sync.set({"weather_unit": "metric"});
 	}
  
 	function apply() {
@@ -640,9 +640,9 @@ function weather(changelang) {
 		var lastCall = localStorage.wlastCall;
 		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
 
-		dataHandling(JSON.parse(lastState));
+		if (lastState) dataHandling(JSON.parse(lastState));
 
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.sync.get(null, (data) => {
 
 			req = {
 				city: data.weather_city,
@@ -700,11 +700,11 @@ function weather(changelang) {
 
 		if (req.city.length < 2) return "";
  		
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.sync.get(null, (data) => {
 
 			 weatherRequest(req);
 
-			chrome.storage.local.set({"weather_city": req.city});
+			chrome.storage.sync.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
 			city.val("");
@@ -722,7 +722,7 @@ function weather(changelang) {
 
 		weatherRequest(req);
 		
-		chrome.storage.local.set({"weather_unit": req.unit});
+		chrome.storage.sync.set({"weather_unit": req.unit});
 	}
 
 	//automatise la meteo
@@ -734,7 +734,7 @@ function weather(changelang) {
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				chrome.storage.local.set({"weather_geol": req.geol});
+				chrome.storage.sync.set({"weather_geol": req.geol});
 
 				weatherRequest(req);
 
@@ -824,7 +824,7 @@ BACKGROUND
 
 function initBackground() {
 
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 
 		var image = data.background_image;
 		var type = data.background_type;
@@ -856,8 +856,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		chrome.storage.local.set({"background_image": url});
-		chrome.storage.local.set({"background_type": "custom"});
+		chrome.storage.sync.set({"background_image": url});
+		chrome.storage.sync.set({"background_type": "custom"});
 
 		$('.background').css("background-image", 'url(' + url + ')');
 
@@ -884,7 +884,7 @@ function blurThis(val) {
 			$('.background').css("filter", 'blur(' + val + 'px)');
 		}
 
-		chrome.storage.local.set({"background_blur": val});
+		chrome.storage.sync.set({"background_blur": val});
 }
 
 
@@ -963,8 +963,8 @@ function defaultBg() {
 
 		//sauve la source
 
-		chrome.storage.local.set({"background_image": source});
-		chrome.storage.local.set({"background_type": "default"});
+		chrome.storage.sync.set({"background_image": source});
+		chrome.storage.sync.set({"background_type": "default"});
 	});
 }
 
@@ -978,8 +978,8 @@ $("div.dynamic_bg input").change(function() {
 
 		$(".background").css("background-image", "url('" + UNSPLASH + "')");
 
-		chrome.storage.local.set({"background_image": UNSPLASH});
-		chrome.storage.local.set({"background_type": "dynamic"});
+		chrome.storage.sync.set({"background_image": UNSPLASH});
+		chrome.storage.sync.set({"background_type": "dynamic"});
 
 		//enleve la selection default bg si jamais
 		$(".imgpreview").removeClass("selected");
@@ -987,7 +987,7 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		chrome.storage.local.set({"background_type": "default"});
+		chrome.storage.sync.set({"background_type": "default"});
 	}
 });
 
@@ -1010,7 +1010,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(lbg)) {
 				$(".background").css("background-image", "url(" + dbg + ")");
-				chrome.storage.local.set({"background_image": dbg});
+				chrome.storage.sync.set({"background_image": dbg});
 			}
 
 		} else {
@@ -1019,14 +1019,14 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(dbg)) {
 				$(".background").css("background-image", "url(" + lbg + ")");
-				chrome.storage.local.set({"background_image": lbg});
+				chrome.storage.sync.set({"background_image": lbg});
 			}
 		}
 	}
 
 	function addBlur(dark) {
 
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.sync.get(null, (data) => {
 
 			if (dark) {
 				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
@@ -1077,7 +1077,7 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.sync.get(null, (data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1097,23 +1097,23 @@ function darkmode(choix) {
 
 	function changeDarkMode() {
 
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.sync.get(null, (data) => {
 
 			if (choix === "enable") {
 				applyDark(true);
-				chrome.storage.local.set({"dark": "enable"});
+				chrome.storage.sync.set({"dark": "enable"});
 			}
 
 			if (choix === "disable") {
 				applyDark(false);
-				chrome.storage.local.set({"dark": "disable"});
+				chrome.storage.sync.set({"dark": "disable"});
 			}
 
 			if (choix === "auto") {
 
 				//prend l'heure et ajoute la classe si nuit
 				auto();
-				chrome.storage.local.set({"dark": "auto"});
+				chrome.storage.sync.set({"dark": "auto"});
 			}
 		});
 	}
@@ -1143,7 +1143,7 @@ function searchbar() {
 
 		if (activated) {
 
-			chrome.storage.local.set({"searchbar": true});
+			chrome.storage.sync.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1152,7 +1152,7 @@ function searchbar() {
 			
 		} else {
 
-			chrome.storage.local.set({"searchbar": false});
+			chrome.storage.sync.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1189,12 +1189,12 @@ function searchbar() {
 			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		chrome.storage.local.set({"searchbar_engine": engine});
+		chrome.storage.sync.set({"searchbar_engine": engine});
 
 	}
 
 	//init
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 
 		if (data.searchbar) {
 
@@ -1290,7 +1290,7 @@ function signature() {
 function traduction() {
 	var translator = $('html').translate({lang: "en", t: dict});
 	
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 
 		//init
 		translator.lang(data.lang);
@@ -1298,7 +1298,7 @@ function traduction() {
 		//selection de langue
 		//localStorage + weather update + body trad
 		$(".lang").change(function() {
-			chrome.storage.local.set({"lang": this.value});
+			chrome.storage.sync.set({"lang": this.value});
 			translator.lang(this.value);
 		});
 
@@ -1316,7 +1316,7 @@ function traduction() {
 
 function actualizeStartupOptions() {
 
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 
 
 		//default background 

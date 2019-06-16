@@ -640,7 +640,7 @@ function weather(changelang) {
 		var lastCall = localStorage.wlastCall;
 		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
 
-		dataHandling(JSON.parse(lastState));
+		if (lastState) dataHandling(JSON.parse(lastState));
 
 		browser.storage.local.get().then((data) => {
 
