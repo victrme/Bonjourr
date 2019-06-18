@@ -14,6 +14,7 @@
 
 	<div class="background"></div>
 	
+	<!-- Popup section -->
 	<div id="start_popup">
 		<div class="popup_window">
 			<div class="popup_line">
@@ -43,13 +44,11 @@
 							<p class="trn wrongURL">Incorrect URL</p>
 							<button class="submitlink trn">Add</button>
 						</div>
-						
-						
+					
 						<div class="linkblocks"></div>
 					</div>
-
-					
 				</div>
+
 				<div class="popup popup3">
 					<h1 class="trn">Weather</h1>
 
@@ -59,37 +58,31 @@
 					<div class="popup_param change_weather">
 						<div class="w_auto wrapper">
 							<span class="trn">Geolocation</span>
-
 							<div>
 								<label class="switch">
 									<input type="checkbox">
 									<span class="slider round span"></span>
 								</label>
 							</div>
-								
 						</div>
 
+						<div class="city">
+							<input type="text" name="city" placeholder="City">
+							<button class="submitw_city trn">Change city</button>
+							<p class="trn wrongCity">City not recognized</p>
+						</div>
 
-							
-							<div class="city">
-								<input type="text" name="city" placeholder="City">
-								<button class="submitw_city trn">Change city</button>
-								<p class="trn wrongCity">City not recognized</p>
+						<hr>
+
+						<div class="units wrapper">
+							<span class="trn">Imperial units</span>
+							<div>
+								<label class="switch">
+									<input type="checkbox">
+									<span class="slider round span"></span>
+								</label>
 							</div>
-							
-							
-
-							<hr>
-
-							<div class="units wrapper">
-								<span class="trn">Imperial units</span>
-								<div>
-									<label class="switch">
-										<input type="checkbox">
-										<span class="slider round span"></span>
-									</label>
-								</div>
-							</div>
+						</div>
 					</div>
 
 					<div class="weather">
@@ -98,12 +91,12 @@
 							<span class="trn">It is currently</span>
 							<span class="w_desc_temp"></span>
 						</div>
+
 						<div class="hightemp">
 							<span class="trn">with a high of</span>
 							<span class="w_desc_temp_max"></span>
 							<span class="trn">today.</span>
 						</div>
-
 
 						<div class="w_widget">
 							<img src="" class="w_icon">
@@ -121,31 +114,15 @@
 					<div class="popup_param backgrounds">
 						<span class="span popup_span trn">Choose background</span>
 						<div class="choosable_backgrounds">
-
-							<div class="imgpreview">
-								<img src="src/images/avi-richards-beach.jpg">
-							</div>
-
-							<div class="imgpreview">
-								<img src="src/images/tyler-casey-landscape.jpg">
-							</div>
-
-							<div class="imgpreview">
-								<img src="src/images/tahoe-beetschen-ferns.jpg">
-							</div>
-
-							<div class="imgpreview" id="ios_wallpaper">
-								<img src="src/images/ios13wallpaper_l.jpg" >
-							</div>
-
+							<div class="imgpreview"> <img src="src/images/avi-richards-beach.jpg"> </div>
+							<div class="imgpreview"> <img src="src/images/tyler-casey-landscape.jpg"> </div>
+							<div class="imgpreview"> <img src="src/images/tahoe-beetschen-ferns.jpg"> </div>
+							<div class="imgpreview" id="ios_wallpaper"> <img src="src/images/ios13wallpaper_l.jpg" > </div>
 						</div>
-					
 					</div>
 
 					<div class="popup_param">
-
 						<p class="trn">A dark mode is also available.</p>
-
 						<div class="darkmode wrapper">
 							<span class="trn">Dark mode</span>
 							<select class="theme">
@@ -155,8 +132,8 @@
 							</select>
 						</div>
 					</div>
-
 				</div>
+
 				<div class="popup popup5">
 					<h1 class="popup_title trn">Search bar</h1>
 					<p class="trn">If you want, you can add a search bar and choose your favorite search engine.</p>
@@ -171,7 +148,9 @@
 								</label>
 							</div>
 						</div>
+
 						<hr>
+
 						<div id="choose_searchengine" class="wrapper">
 							<span class="trn">Search engine</span>
 							<select class="choose_search">
@@ -194,10 +173,9 @@
 
 				<div class="popup popup6">
 					<h1 class="popup_title trn">Almost done!</h1>
-					<p class="trn">You now know the basics of using Bonjourr. Don't forget that you can go further in the customization by visiting the Settings with the icon in the bottom right corner of the window.</p>
+					<p class="trn">You now know the basics of using Bonjourr. Don't forget that you can go further into customization by visiting the Settings with the icon in the bottom right corner of the window.</p>
 					<img src="src/images/settings.gif">
 				</div>
-
 			</div>
 
 			<div class="popup_buttons">
@@ -215,24 +193,14 @@
 		</div>
 	</div>
 
-
-
-
-
-
-
-
-
-
+	<!-- Settings section -->
 	<div class="showSettings">
 		<button><img src="src/images/gear.png"></button>
 	</div>
 
 	<div class="settings">
 
-		<div class="title">
-			<h1 class="trn">Settings</h1>
-		</div>
+		<div class="title"> <h1 class="trn">Settings</h1> </div>
 
 		<div class="addlink">
 			<h5 class="subtitle trn">Quick Links</h5>
@@ -241,7 +209,7 @@
 				<input type="text" name="url" placeholder="URL">
 				<p class="trn wrongURL">Incorrect URL</p>
 				<button class="submitlink trn">Add</button>
-					<p class="help_sentence trn">You can delete the Quick Links after a long press on the icons.</p>
+				<p class="help_sentence trn">You can delete the Quick Links after a long press on the icons.</p>
 			</div>
 		</div>
 
@@ -251,29 +219,16 @@
 				<div class="bac">
 					<span class="span trn">Choose background</span>
 					<div class="choosable_backgrounds">
-
-						<div class="imgpreview">
-							<img src="src/images/avi-richards-beach.jpg">
-						</div>
-
-						<div class="imgpreview">
-							<img src="src/images/tyler-casey-landscape.jpg">
-						</div>
-
-						<div class="imgpreview">
-							<img src="src/images/tahoe-beetschen-ferns.jpg">
-						</div>
-
-						<div class="imgpreview" id="ios_wallpaper">
-							<img src="src/images/ios13wallpaper_l.jpg" >
-						</div>
-
+						<div class="imgpreview"> <img src="src/images/avi-richards-beach.jpg"> </div>
+						<div class="imgpreview"> <img src="src/images/tyler-casey-landscape.jpg"> </div>
+						<div class="imgpreview"> <img src="src/images/tahoe-beetschen-ferns.jpg"> </div>
+						<div class="imgpreview" id="ios_wallpaper"> <img src="src/images/ios13wallpaper_l.jpg" > </div>
 					</div>
+
 					<hr>
 
 					<div class="dynamic_bg wrapper">
 						<span class="trn">Dynamic backgrounds</span>
-
 						<div>
 							<label class="switch">
 								<input type="checkbox">
@@ -283,7 +238,9 @@
 					</div>
 
 					<p class="help_sentence trn">Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.</p>
+					
 					<hr>
+
 					<span class="trn">Custom background</span>
 					<div class="custom_bg">
 						<input type="file" name="background_file">
@@ -313,31 +270,26 @@
 		<div class="change_weather">
 			<h5 class="subtitle trn">Weather</h5>
 			<div class="param">
-
 				<div class="w_auto wrapper">
 					<span class="trn">Geolocation</span>
-
 					<div>
 						<label class="switch">
 							<input type="checkbox">
 							<span class="slider round span"></span>
 						</label>
 					</div>
-					
 				</div>
 
-
-				
 				<div class="city">
+
 					<hr>
+
 					<input type="text" name="city" placeholder="City">
 					<button class="submitw_city trn">Change city</button>
 					<p class="trn wrongCity">City not recognized</p>
 					<p class="help_sentence trn">Use this option if you don't want to enable geolocation.</p>
 				</div>
 				
-				
-
 				<hr>
 
 				<div class="units wrapper">
@@ -364,7 +316,9 @@
 						</label>
 					</div>
 				</div>
+
 				<hr>
+
 				<div id="choose_searchengine" class="wrapper">
 					<span class="trn selector_span">Search engine</span>
 					<select class="choose_search">
@@ -378,8 +332,6 @@
 				</div>
 			</div>
 		</div>
-
-		
 
 		<div class="lang_section">
 			<h5 class="subtitle trn">Language</h5>
@@ -409,11 +361,7 @@
 		</div>
 	</div>
 	
-
-
-
-
-
+	<!-- Main interface section -->
 	<div class="interface">
 		<div class="time">
 			<div class="time-container">
@@ -429,20 +377,18 @@
 
 		<div class="main">
 			<h3 class="greetings trn"></h3>
-
 			<div class="weather">
-
 				<div>
 					<span class="w_desc_meteo"></span>
 					<span class="trn">It is currently</span>
 					<span class="w_desc_temp"></span>
 				</div>
+
 				<div class="hightemp">
 					<span class="trn">with a high of</span>
 					<span class="w_desc_temp_max"></span>
 					<span class="trn">today.</span>
 				</div>
-
 
 				<div class="w_widget">
 					<img src="" class="w_icon">
@@ -459,8 +405,7 @@
 			</form>
 		</div>
 
-		<div class="linkblocks">
-		</div>
+		<div class="linkblocks"></div>
 	</div>
 
 	<script src="src/scripts/jquery-3.4.1.slim.min.js"></script>

@@ -51,13 +51,13 @@ var dict = {
     fr: "Bonjour"
   },
   "Good Afternoon": {
-    fr: "Bonne Après-midi"
+    fr: "Bon après-midi"
   },
   "Good Evening": {
     fr: "Bonsoir"
   },
   "Good Night": {
-    fr: "Bonne Nuit"
+    fr: "Bonne nuit"
   },
   "It is currently": {
     fr: "Il fait actuellement"
@@ -248,7 +248,7 @@ var dict = {
   "You can delete the Quick Links after a long press on the icons.": {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes."
   },
-  "You now know the basics of using Bonjourr. Don't forget that you can go further in the customization by visiting the Settings with the icon in the bottom right corner of the window.": {
+  "You now know the basics of using Bonjourr. Don't forget that you can go further into customization by visiting the Settings with the icon in the bottom right corner of the window.": {
     fr: "Bonjourr a bien été configuré. N'oubliez pas que vous pouvez aller plus loin dans la personnalisation en visitant les Réglages via l'icône en bas à droite de la fenêtre."
   },
   "You can delete the Quick Links after a long press on the icons.": {

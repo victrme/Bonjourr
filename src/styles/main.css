@@ -26,6 +26,7 @@ body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	animation: fade .5s;
+	background-color: #222;
 }
 
 @keyframes fade {
