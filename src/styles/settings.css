@@ -14,13 +14,12 @@
 }
 
 .showSettings button {
-	font-size: 1em;
-	height: 56px;
+	height: 3.5em;
+	width: 3.5em;
 	margin: .5em;
 	padding: .5em;
 	border: none;
 	border-radius: 8px;
-	color: white;
 	background-color: transparent;
 	cursor: pointer;
 }
@@ -33,7 +32,7 @@
 
 
 .showSettings button img {
-	width: 40px;
+	width: 2.5em;
 }
 
  .showSettings button img, .w_icon {
@@ -97,9 +96,16 @@ h1 {
 	letter-spacing: 0.04em;
 }
 
-.help_sentence {
+.help_sentence, p.wrongURL, p.wrongCity {
 	margin-top: 0.5em;
 	font-size: 0.8em;
+}
+
+p.wrongURL,
+p.wrongCity {
+	display: none;
+	opacity: 0;
+	color: red;
 }
 
 .settings span {
@@ -289,15 +295,6 @@ input[name="title"], input[name="url"] {
 	width: calc(100% - .5em);
 }
 
-p.wrongURL,
-p.wrongCity {
-	display: none;
-	opacity: 0;
-	margin: 0 .5em .5em .5em;
-	color: red;
-}
-
-
 .addlink button {
 	display: block;
 	margin: auto;
@@ -393,7 +390,17 @@ select.lang {transition: none}
 	padding-bottom: 6em;
 }
 
+@media screen and (max-height: 550px) {
+	.showSettings button {
+		height: 2.5em;
+		width: 2.5em;
+	}
 
+	.showSettings button img {
+		height: 1.5em;
+		width: 1.5em;
+	}
+}
 
 /*Dark mode*/
 
