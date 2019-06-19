@@ -1069,19 +1069,6 @@ function darkmode(choix) {
 		}
 	}
 
-	function addBlur(dark) {
-
-		browser.storage.local.get().then((data) => {
-
-			if (dark) {
-				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
-			} else {
-				$(".background").css("filter", "blur(" + data.background_blur + "px)");
-			}
-			
-		});
-	}
-
 	function applyDark(add) {
 
 		if (add) {
@@ -1090,7 +1077,6 @@ function darkmode(choix) {
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
 
 			isIOSwallpaper(true);
-			addBlur(true);
 
 		} else {
 
@@ -1098,7 +1084,6 @@ function darkmode(choix) {
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
 		
 			isIOSwallpaper(false);
-			addBlur(false);
 		}
 	}
 

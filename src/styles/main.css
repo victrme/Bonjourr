@@ -510,6 +510,10 @@ body.dark .popup .weather .w_icon {
 	background-color: #1c1c1e;
 }
 
+body.dark .background {
+	opacity: .75;
+}
+
 body.dark .popup p,
 body.dark .popup h1,
 body.dark .popup span {
