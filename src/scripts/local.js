@@ -6,37 +6,53 @@ const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
 const HOURS = DATE.getHours();
+var translator = $('html').translate({lang: "en", t: dict});
 
-//c'est juste pour debug le storage
-function deleteBrowserStorage() {
-	browser.storage.local.clear().then(() => {
-		localStorage.clear();
+
+function tradThis(str) {
+
+	translator.lang(localStorage.lang);
+	return translator.get(str);
+}
+
+function initTrad() {
+
+	var data = localStorage;
+
+	//init
+	translator.lang(data.lang);
+
+	//selection de langue
+	//localStorage + weather update + body trad
+	$(".lang").change(function() {
+		localStorage.lang = this.value;
+		translator.lang(this.value);
+
+		date();
+		greetings();
+	});
+
+	$(".popup .lang").change(function() {
+		$(".settings .lang")[0].value = $(this)[0].value;
 	});
 }
 
-//c'est juste pour debug le storage
-function getBrowserStorage() {
-	browser.storage.local.get().then((data) => {
-		console.log(data);
-	});
-}
 
 
-//obligé :((
-var popupButtonLang = 1;
+
+
 
 function introduction() {
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 		
-		if (!data.isIntroduced) {
-			$("#start_popup").css("display", "flex");
-			$(".interface .linkblocks").css("opacity", 0);
-		} else {
-			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1);
-		}
-	});
+	if (!data.isIntroduced) {
+		$("#start_popup").css("display", "flex");
+		$(".interface .linkblocks").css("opacity", 0);
+	} else {
+		$("#start_popup").remove();
+		$(".interface .linkblocks").css("opacity", 1);
+	}
 
 	//la marge des popups en pourcentages
 	var margin = 0; 
@@ -59,8 +75,7 @@ function introduction() {
 			$(".interface .linkblocks").css("opacity", 1);
 		}, 400);
 
-		//mettre ça en false dans la console pour debug la popup
-		browser.storage.local.set({"isIntroduced": true});
+		localStorage.isIntroduced = true;
 	}
 
 	function countPopup(c) {
@@ -73,26 +88,43 @@ function introduction() {
 		$(elem).addClass("actif");
 	}
 
-	var dict = [
-		["Ignorer", "Commencer", "Retour", "Suivant", "Prêt !"],
-		["Dismiss", "Begin", "Back", "Next", "All set!"]
-	];
+	function btnLang(margin, state) {
 
-	function previous(lang) {
+		if (state === "pre") {
+			if (margin === 0) {
+				$(".previous_popup").text(tradThis("Dismiss"));
+				$(".next_popup").text(tradThis("Begin"));
+			}
+
+			if (margin === 400) {
+				$(".next_popup").text(tradThis("Next"));
+			}
+		}
+
+		if (state === "nxt") {
+			if (margin === 100) {
+				$(".previous_popup").text(tradThis("Back"));
+				$(".next_popup").text(tradThis("Next"));
+			}
+
+			if (margin === 500) {
+				$(".next_popup").text(tradThis("All set!"));
+			}
+		}
+
+		if (state === "lng") {
+			$(".previous_popup").text(tradThis("Dismiss"));
+			$(".next_popup").text(tradThis("Begin"));
+		}
+	}
+
+	function previous() {
 
 		//event different pour chaque slide
 		//le numero du slide = margin / 100
 		//ici quand on recule
 		margin -= 100;
-
-		if (margin === 0) {
-			$(".previous_popup").text(dict[lang][0]);
-			$(".next_popup").text(dict[lang][1]);
-		}
-
-		if (margin === 400) {
-			$(".next_popup").text(dict[lang][3]);
-		}
+		btnLang(margin, "pre");
 
 		if (margin === -100) {
 			dismiss();
@@ -105,15 +137,7 @@ function introduction() {
 	function next(lang) {
 
 		margin += 100;
-
-		if (margin === 100) {
-			$(".previous_popup").text(dict[lang][2]);
-			$(".next_popup").text(dict[lang][3]);
-		}
-
-		if (margin === 500) {
-			$(".next_popup").text(dict[lang][4]);
-		}
+		btnLang(margin, "nxt");
 
 		if (margin === 600) {
 			dismiss();
@@ -125,16 +149,18 @@ function introduction() {
 	}
 
 	$(".previous_popup").click(function() {
-		previous(popupButtonLang);
+		previous();
 	});
 
 	$(".next_popup").click(function(){
-		next(popupButtonLang);
+		next();
+	});
+
+	$(".popup .lang").change(function() {
+		localStorage.lang = this.value;
+		btnLang(null, "lng");
 	});
 }
-
-
-
 
 
 function clock() {
@@ -154,26 +180,36 @@ function clock() {
 }
 
 
+function date() {
+
+	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
+	$(".date .jour").text(tradThis(days[DATE.getDay()]));
+	$(".date .chiffre").text(tradThis(DATE.getDate()));
+	$(".date .mois").text(tradThis(months[DATE.getMonth()]));
+}
+
 function greetings() {
 	var h = DATE.getHours();
 	var m;
 
 	if (h >= 6 && h < 12) {
-		m = 'Good Morning'; 
+		m = tradThis('Good Morning'); 
 
 	} else if (h >= 12 && h < 17) {
-		m = 'Good Afternoon';
+		m = tradThis('Good Afternoon');
 
 	} else if (h >= 17 && h < 23) {
-		m = 'Good Evening';
+		m = tradThis('Good Evening');
 
 	} else if (h >= 23 && h < 6) {
-		m = 'Good Night';
+		m = tradThis('Good Night');
 	}
 
-	$('.greetings').append(m);
+	$('.greetings').text(m);
 }
-
 
 
 
@@ -193,15 +229,15 @@ function quickLinks() {
 
 		$(".linkblocks").empty();
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		var dataLinks = (data.links ? JSON.parse(data.links) : "");
 
-			if (data.links) {
+		if (dataLinks) {
 
-				for (var i = 0; i < data.links.length; i++) {
-					appendblock(data.links[i]);
-				}
+			for (var i = 0; i < dataLinks.length; i++) {
+				appendblock(dataLinks[i]);
 			}
-		});
+		}
 	}
 
 	//rajoute l'html d'un bloc avec toute ses valeurs et events
@@ -271,37 +307,36 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			browser.storage.local.get().then((data) => {
+			var data = localStorage;
+			var dataLinks = JSON.parse(data.links)
 
-				//si on supprime un block quand la limite est atteinte
-				//réactive les inputs
-				if (data.links.length === BLOCK_LIMIT) {
+			//si on supprime un block quand la limite est atteinte
+			//réactive les inputs
+			if (dataLinks.length === BLOCK_LIMIT) {
 
-					var input = $("input[name='url']");
-					$(input).each(function() {
-						$(this).attr("placeholder", "URL");
-						$(this).removeAttr("disabled");
-					});
-				}
+				var input = $("input[name='url']");
+				$(input).each(function() {
+					$(this).attr("placeholder", "URL");
+					$(this).removeAttr("disabled");
+				});
+			}
 
-				//enleve le html du block
-				var block = $(".linkblocks")[0].children[i];
-				$(block).addClass("removed");
+			//enleve le html du block
+			var block = $(".linkblocks")[0].children[i];
+			$(block).addClass("removed");
+			
+			setTimeout(function() {
+				$(block).remove();
+			}, 200);
+			
+			
+			//coupe en 2 et concat sans le link a remove
+			function ejectIntruder(arr) {
 				
-				setTimeout(function() {
-					$(block).remove();
-				}, 200);
-				
-				
-				//coupe en 2 et concat sans le link a remove
-				function ejectIntruder(arr) {
-					
-					return arr.slice(0, i).concat(arr.slice(i + 1));
-				}
-				
-				var links = data.links;
-				browser.storage.local.set({"links": ejectIntruder(links)});
-			});
+				return arr.slice(0, i).concat(arr.slice(i + 1));
+			}
+			
+			localStorage.links = JSON.stringify(ejectIntruder(dataLinks));
 		}
 
 
@@ -376,40 +411,39 @@ function quickLinks() {
 
 			var full = false;
 
-			browser.storage.local.get().then((data) => {
+			var data = localStorage;
+			var dataLinks = (data.links ? JSON.parse(data.links) : "");
+			var arr = [];
 
-				var arr = [];
+			//array est tout les links + le nouveau
+			if (dataLinks) {
 
-				//array est tout les links + le nouveau
-				if (data.links) {
+				if (dataLinks.length < BLOCK_LIMIT - 1) {
 
-					if (data.links.length < BLOCK_LIMIT - 1) {
-
-						arr = data.links;
-						arr.push(lll);
-
-					} else {
-						full = true;
-					}
-
-				//array est seulement le link
-				} else {
+					arr = dataLinks;
 					arr.push(lll);
-				}
-				
-				if (!full) {
-					browser.storage.local.set({"links": arr});
-					appendblock(links);
-				} else {
 
-					//desactive tout les input url (fonctionne pour popup du coup)
-					var input = $("input[name='url']");
-					$(input).each(function() {
-						$(this).attr("placeholder", "Quick Links full");
-						$(this).attr("disabled", "disabled");
-					});
+				} else {
+					full = true;
 				}
-			});
+
+			//array est seulement le link
+			} else {
+				arr.push(lll);
+			}
+			
+			if (!full) {
+				localStorage.links = JSON.stringify(arr);
+				appendblock(links);
+			} else {
+
+				//desactive tout les input url (fonctionne pour popup du coup)
+				var input = $("input[name='url']");
+				$(input).each(function() {
+					$(this).attr("placeholder", "Quick Links full");
+					$(this).attr("disabled", "disabled");
+				});
+			}
 		}
 
 		//append avec le titre, l'url ET l'index du bloc
@@ -461,21 +495,6 @@ function quickLinks() {
 
 
 
-
-/*
-DATE
-*/
-
-function date() {
-
-	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date .jour").text(days[DATE.getDay()]);
-	$(".date .chiffre").text(DATE.getDate());
-	$(".date .mois").text(months[DATE.getMonth()]);
-}
 
 
 
@@ -581,6 +600,8 @@ function weather(changelang) {
 	 		data.icon = icon_src;
 	 		localStorage.wLastState = btoa(JSON.stringify(data));
 		}
+
+		$(".w_icon").css("opacity", 1);
 	}
 
 	function weatherRequest(arg) {
@@ -630,8 +651,8 @@ function weather(changelang) {
 
 		weatherRequest(req);
 
-		browser.storage.local.set({"weather_city": "Paris"});
-		browser.storage.local.set({"weather_unit": "metric"});
+		localStorage.weather_city = "Paris";
+		localStorage.weather_unit = "metric";
 	}
  
 	function apply() {
@@ -640,36 +661,32 @@ function weather(changelang) {
 		var lastCall = localStorage.wlastCall;
 		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
 
-		dataHandling(JSON.parse(lastState));
+		if (lastState) dataHandling(JSON.parse(lastState));
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		req = {
+			city: data.weather_city,
+			unit: data.weather_unit,
+			geol: data.weather_geol,
+			lang: data.lang
+		};
 
-			req = {
-				city: data.weather_city,
-				unit: data.weather_unit,
-				geol: data.weather_geol,
-				lang: data.lang
-			};
+		if (lastCall) {
 
-			
-
-			if (lastCall) {
-
-				//si weather est vieux d'une heure (3600000)
-				//faire une requete
-				if (now > lastCall + 3600000) {
-					
-					weatherRequest(req);
-				}
-
-			} else {
-
-				//initialise a Paris + Metric
-				//c'est le premier call, requete + lastCall = now
-				initWeather();
-				localStorage.wlastCall = now;
+			//si weather est vieux d'une heure (3600000)
+			//faire une requete
+			if (now > lastCall + 3600000) {
+				
+				weatherRequest(req);
 			}
-		});
+
+		} else {
+
+			//initialise a Paris + Metric
+			//c'est le premier call, requete + lastCall = now
+			initWeather();
+			localStorage.wlastCall = now;
+		}
 	}
 
 	function submissionError(str) {
@@ -700,16 +717,15 @@ function weather(changelang) {
 
 		if (req.city.length < 2) return "";
  		
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
 
-			 weatherRequest(req);
+		weatherRequest(req);
 
-			browser.storage.local.set({"weather_city": req.city});
+		localStorage.weather_city = req.city;
 
-			city.attr("placeholder", req.city);
-			city.val("");
-			city.blur();
-		});
+		city.attr("placeholder", req.city);
+		city.val("");
+		city.blur();
 	}
 
 	function updateUnit(that) {
@@ -722,7 +738,7 @@ function weather(changelang) {
 
 		weatherRequest(req);
 		
-		browser.storage.local.set({"weather_unit": req.unit});
+		localStorage.weather_unit = req.unit;
 	}
 
 	//automatise la meteo
@@ -734,7 +750,7 @@ function weather(changelang) {
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				browser.storage.local.set({"weather_geol": req.geol});
+				localStorage.weather_geol = req.geol;
 
 				weatherRequest(req);
 
@@ -824,24 +840,27 @@ BACKGROUND
 
 function initBackground() {
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
+	var image = data.background_image;
+	var type = data.background_type;
+	var blur = data.background_blur;
+	
+	//type un peu useless, mais c'est un ancetre alors je le garde ok
+	if (type) {
+		$('.background').css("background-image", 'url(' + image + ')');
+	} else {
+		//sans rien l'image de base est utilisé
+		$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
+		blurThis(25);
+	}
 
-		var image = data.background_image;
-		var type = data.background_type;
-		var blur = data.background_blur;
-		
-		//type un peu useless, mais c'est un ancetre alors je le garde ok
-		if (type) {
-			$('.background').css("background-image", 'url(' + image + ')');
-		} else {
-			//sans rien l'image de base est utilisé
-			$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
-		}
+	//ensuite on blur
+	$("input[name='background_blur']").val(data.background_blur);
+	blurThis(data.background_blur);
 
-		//ensuite on blur
-		$("input[name='background_blur']").val(data.background_blur);
-		blurThis(data.background_blur);
-	});	
+	setTimeout(function() {
+		$(".background").css("transition", "filter .2s");
+	}, 200);
 }
 
 
@@ -856,8 +875,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		browser.storage.local.set({"background_image": url});
-		browser.storage.local.set({"background_type": "custom"});
+		localStorage.background_image = url;
+		localStorage.background_type = "custom";
 
 		$('.background').css("background-image", 'url(' + url + ')');
 
@@ -875,16 +894,15 @@ function renderImage(file) {
 
 function blurThis(val) {
 
+	var isDark = $("body").attr("class");
+	
+	if (val > 0) {
+		$('.background').css("filter", 'blur(' + val + 'px)');
+	} else {
+		$('.background').css("filter", '');
+	}
 
-		var isDark = $("body").attr("class");
-		
-		if (isDark === "dark") {
-			$('.background').css("filter", 'blur(' + val + 'px) brightness(75%)');
-		} else {
-			$('.background').css("filter", 'blur(' + val + 'px)');
-		}
-
-		browser.storage.local.set({"background_blur": val});
+	localStorage.background_blur = val;
 }
 
 
@@ -963,8 +981,8 @@ function defaultBg() {
 
 		//sauve la source
 
-		browser.storage.local.set({"background_image": source});
-		browser.storage.local.set({"background_type": "default"});
+		localStorage.background_image = source;
+		localStorage.background_type = "default";
 	});
 }
 
@@ -978,8 +996,8 @@ $("div.dynamic_bg input").change(function() {
 
 		$(".background").css("background-image", "url('" + UNSPLASH + "')");
 
-		browser.storage.local.set({"background_image": UNSPLASH});
-		browser.storage.local.set({"background_type": "dynamic"});
+		localStorage.background_image = UNSPLASH;
+		localStorage.background_type = "dynamic";
 
 		//enleve la selection default bg si jamais
 		$(".imgpreview").removeClass("selected");
@@ -987,7 +1005,7 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		browser.storage.local.set({"background_type": "default"});
+		localStorage.background_type = "default";
 	}
 });
 
@@ -1010,7 +1028,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(lbg)) {
 				$(".background").css("background-image", "url(" + dbg + ")");
-				browser.storage.local.set({"background_image": dbg});
+				localStorage.background_image = dbg;
 			}
 
 		} else {
@@ -1019,22 +1037,9 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(dbg)) {
 				$(".background").css("background-image", "url(" + lbg + ")");
-				browser.storage.local.set({"background_image": lbg});
+				localStorage.background_image = lbg;
 			}
 		}
-	}
-
-	function addBlur(dark) {
-
-		browser.storage.local.get().then((data) => {
-
-			if (dark) {
-				$(".background").css("filter", "blur(" + data.background_blur + "px) brightness(75%)");
-			} else {
-				$(".background").css("filter", "blur(" + data.background_blur + "px)");
-			}
-			
-		});
 	}
 
 	function applyDark(add) {
@@ -1045,7 +1050,6 @@ function darkmode(choix) {
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
 
 			isIOSwallpaper(true);
-			addBlur(true);
 
 		} else {
 
@@ -1053,7 +1057,6 @@ function darkmode(choix) {
 			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
 		
 			isIOSwallpaper(false);
-			addBlur(false);
 		}
 	}
 
@@ -1077,45 +1080,42 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
+		var dd = (data.dark ? data.dark : "disable");
 
-			var dd = (data.dark ? data.dark : "disable");
+		if (dd === "enable") {
+			applyDark(true);
+		}
 
-			if (dd === "enable") {
-				applyDark(true);
-			}
+		if (dd === "disable") {
+			applyDark(false);
+		}
 
-			if (dd === "disable") {
-				applyDark(false);
-			}
-
-			if (dd === "auto") {
-				auto();
-			}
-		});		
+		if (dd === "auto") {
+			auto();
+		}	
 	}
 
 	function changeDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		var data = localStorage;
 
-			if (choix === "enable") {
-				applyDark(true);
-				browser.storage.local.set({"dark": "enable"});
-			}
+		if (choix === "enable") {
+			applyDark(true);
+			localStorage.dark = "enable";
+		}
 
-			if (choix === "disable") {
-				applyDark(false);
-				browser.storage.local.set({"dark": "disable"});
-			}
+		if (choix === "disable") {
+			applyDark(false);
+			localStorage.dark = "disable";
+		}
 
-			if (choix === "auto") {
+		if (choix === "auto") {
 
-				//prend l'heure et ajoute la classe si nuit
-				auto();
-				browser.storage.local.set({"dark": "auto"});
-			}
-		});
+			//prend l'heure et ajoute la classe si nuit
+			auto();
+			localStorage.dark = "auto";
+		}
 	}
 
 	if (choix) {
@@ -1143,7 +1143,7 @@ function searchbar() {
 
 		if (activated) {
 
-			browser.storage.local.set({"searchbar": true});
+			localStorage.searchbar = true;
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1152,7 +1152,7 @@ function searchbar() {
 			
 		} else {
 
-			browser.storage.local.set({"searchbar": false});
+			localStorage.searchbar = false;
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1189,27 +1189,26 @@ function searchbar() {
 			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		browser.storage.local.set({"searchbar_engine": engine});
+		localStorage.searchbar_engine = engine;
 
 	}
 
 	//init
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 
-		if (data.searchbar) {
+	if (data.searchbar) {
 
-			//display
-			activate(true);
+		//display
+		activate(true);
 
-			if (data.searchbar_engine) {
-				chooseSearchEngine(data.searchbar_engine);
-			} else {
-				chooseSearchEngine("s_startpage");
-			}
+		if (data.searchbar_engine) {
+			chooseSearchEngine(data.searchbar_engine);
 		} else {
-			activate(false);
+			chooseSearchEngine("s_startpage");
 		}
-	});
+	} else {
+		activate(false);
+	}
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
@@ -1284,115 +1283,84 @@ function signature() {
 		$('.signature .rand').append(t + " & " + v);
 	}
 }
-	
-
-
-function traduction() {
-	var translator = $('html').translate({lang: "en", t: dict});
-	
-	browser.storage.local.get().then((data) => {
-
-		//init
-		translator.lang(data.lang);
-
-		//selection de langue
-		//localStorage + weather update + body trad
-		$(".lang").change(function() {
-			browser.storage.local.set({"lang": this.value});
-			translator.lang(this.value);
-		});
-
-		$(".popup .lang").change(function() {
-			$(".settings .lang")[0].value = $(this)[0].value;
-
-			//oua chui fatigué la
-			popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
-		});
-	});
-}
-
-
 
 
 function actualizeStartupOptions() {
 
-	browser.storage.local.get().then((data) => {
+	var data = localStorage;
 
 
-		//default background 
-		$(".choosable_backgrounds .imgpreview img").each(function() {
+	//default background 
+	$(".choosable_backgrounds .imgpreview img").each(function() {
 
-			//compare l'url des preview avec celle du background
-			var previewURL = $(this).attr("src");
-			var bgURL = $(".background").css("background-image");
+		//compare l'url des preview avec celle du background
+		var previewURL = $(this).attr("src");
+		var bgURL = $(".background").css("background-image");
 
-			//si l'url du bg inclu l'url de la preview, selectionne le
-			if (bgURL.includes(previewURL)) {
-				$(this).parent().addClass("selected");
-			}
-		});
-
-
-		//dynamic background
-		if (data.background_type === "dynamic") {
-			$(".dynamic_bg input")[0].checked = true;
+		//si l'url du bg inclu l'url de la preview, selectionne le
+		if (bgURL.includes(previewURL)) {
+			$(this).parent().addClass("selected");
 		}
-
-
-		//dark mode input
-		if (data.dark) {
-			$(".darkmode select.theme").val(data.dark);
-		} else {
-			$(".darkmode select.theme").val("disable");
-		}
-		
-
-		
-		//weather city input
-		if (data.weather_city) {
-			$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
-		} else {
-			$(".change_weather input[name='city']").attr("placeholder", "Paris");
-		}
-		
-
-		//check geolocalisation
-		//enleve city
-		if (data.weather_geol) {
-			$(".w_auto input")[0].checked = true;
-			$(".change_weather .city").css("display", "none");
-		} else {
-			$(".w_auto input")[0].checked = false;
-			$(".change_weather .city").css("display", "block");
-		}
-
-		//check imperial
-		if (data.weather_unit && data.weather_unit === "imperial") {
-			$(".units input")[0].checked = true;
-		} else {
-			$(".units input")[0].checked = false;
-		}
-
-		
-		//searchbar switch et select
-		$(".activate_searchbar input")[0].checked = data.searchbar;
-
-		if (data.searchbar_engine) {
-			$(".choose_search")[0].value = data.searchbar_engine;
-		} else {
-			$(".choose_search")[0].value = "s_startpage";
-		}
-		
-
-		//langue
-		if (data.lang) {
-			$(".lang")[0].value = data.lang;
-		} else {
-			$(".lang")[0].value = "en";
-		}
-		
 	});
-			
+
+
+	//dynamic background
+	if (data.background_type === "dynamic") {
+		$(".dynamic_bg input")[0].checked = true;
+	}
+
+
+	//dark mode input
+	if (data.dark) {
+		$(".darkmode select.theme").val(data.dark);
+	} else {
+		$(".darkmode select.theme").val("disable");
+	}
+	
+
+	
+	//weather city input
+	if (data.weather_city) {
+		$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
+	} else {
+		$(".change_weather input[name='city']").attr("placeholder", "Paris");
+	}
+	
+
+	//check geolocalisation
+	//enleve city
+	if (data.weather_geol) {
+		$(".w_auto input")[0].checked = true;
+		$(".change_weather .city").css("display", "none");
+	} else {
+		$(".w_auto input")[0].checked = false;
+		$(".change_weather .city").css("display", "block");
+	}
+
+	//check imperial
+	if (data.weather_unit && data.weather_unit === "imperial") {
+		$(".units input")[0].checked = true;
+	} else {
+		$(".units input")[0].checked = false;
+	}
+
+	
+	//searchbar switch et select
+	$(".activate_searchbar input")[0].checked = data.searchbar;
+
+	if (data.searchbar_engine) {
+		$(".choose_search")[0].value = data.searchbar_engine;
+	} else {
+		$(".choose_search")[0].value = "s_startpage";
+	}
+	
+
+	//langue
+	if (data.lang) {
+		$(".lang")[0].value = data.lang;
+	} else {
+		$(".lang")[0].value = "en";
+	}			
 }
 
 
@@ -1410,6 +1378,8 @@ function mobilecheck() {
 
 $(document).ready(function() {
 
+	initTrad();
+
 	//very first
 	initBackground();
 	darkmode();
@@ -1426,7 +1396,4 @@ $(document).ready(function() {
 	signature();
 	introduction();
 	actualizeStartupOptions();
-
-	//toujours en dernier que tout le DOM soit chargé
-	traduction();
 });

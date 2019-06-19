@@ -921,15 +921,15 @@ function renderImage(file) {
 
 function blurThis(val) {
 
-		var isDark = $("body").attr("class");
-		
-		if (isDark === "dark") {
-			$('.background').css("filter", 'blur(' + val + 'px) brightness(75%)');
-		} else {
-			$('.background').css("filter", 'blur(' + val + 'px)');
-		}
+	var isDark = $("body").attr("class");
+	
+	if (val > 0) {
+		$('.background').css("filter", 'blur(' + val + 'px)');
+	} else {
+		$('.background').css("filter", '');
+	}
 
-		browser.storage.local.set({"background_blur": val});
+	browser.storage.local.set({"background_blur": val});
 }
 
 
