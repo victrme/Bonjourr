@@ -62,9 +62,8 @@ select {
 	background-color: #222;
 	background-size: cover;
 	background-position: center center;
-
-	filter: blur(30px);
 	transform: scale(1.25); 
+	transition: filter 0s;
 }
 
 .interface {

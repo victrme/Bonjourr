@@ -877,11 +877,16 @@ function initBackground() {
 		} else {
 			//sans rien l'image de base est utilisé
 			$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
+			blurThis(25);
 		}
 
 		//ensuite on blur
 		$("input[name='background_blur']").val(data.background_blur);
 		blurThis(data.background_blur);
+
+		setTimeout(function() {
+			$(".background").css("transition", "filter .2s");
+		}, 200);
 	});	
 }
 
@@ -915,7 +920,6 @@ function renderImage(file) {
 
 
 function blurThis(val) {
-
 
 		var isDark = $("body").attr("class");
 		
