@@ -6,6 +6,7 @@ const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
 const HOURS = DATE.getHours();
+var translator = $('html').translate({lang: "en", t: dict});
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -22,8 +23,40 @@ function getBrowserStorage() {
 }
 
 
-//obligé :((
-var popupButtonLang = 1;
+function tradThis(str) {
+
+	translator.lang(localStorage.lang);
+	return translator.get(str);
+}
+
+function initTrad() {
+
+	browser.storage.local.get().then((data) => {
+
+		//init
+		translator.lang(data.lang);
+
+		//selection de langue
+		//localStorage + weather update + body trad
+		$(".lang").change(function() {
+			browser.storage.local.set({"lang": this.value});
+			localStorage.lang = this.value;
+			translator.lang(this.value);
+
+			date();
+			greetings();
+		});
+
+		$(".popup .lang").change(function() {
+			$(".settings .lang")[0].value = $(this)[0].value;
+		});
+	});
+}
+
+
+
+
+
 
 function introduction() {
 
@@ -73,26 +106,43 @@ function introduction() {
 		$(elem).addClass("actif");
 	}
 
-	var dict = [
-		["Ignorer", "Commencer", "Retour", "Suivant", "Prêt !"],
-		["Dismiss", "Begin", "Back", "Next", "All set!"]
-	];
+	function btnLang(margin, state) {
 
-	function previous(lang) {
+		if (state === "pre") {
+			if (margin === 0) {
+				$(".previous_popup").text(tradThis("Dismiss"));
+				$(".next_popup").text(tradThis("Begin"));
+			}
+
+			if (margin === 400) {
+				$(".next_popup").text(tradThis("Next"));
+			}
+		}
+
+		if (state === "nxt") {
+			if (margin === 100) {
+				$(".previous_popup").text(tradThis("Back"));
+				$(".next_popup").text(tradThis("Next"));
+			}
+
+			if (margin === 500) {
+				$(".next_popup").text(tradThis("All set!"));
+			}
+		}
+
+		if (state === "lng") {
+			$(".previous_popup").text(tradThis("Dismiss"));
+			$(".next_popup").text(tradThis("Begin"));
+		}
+	}
+
+	function previous() {
 
 		//event different pour chaque slide
 		//le numero du slide = margin / 100
 		//ici quand on recule
 		margin -= 100;
-
-		if (margin === 0) {
-			$(".previous_popup").text(dict[lang][0]);
-			$(".next_popup").text(dict[lang][1]);
-		}
-
-		if (margin === 400) {
-			$(".next_popup").text(dict[lang][3]);
-		}
+		btnLang(margin, "pre");
 
 		if (margin === -100) {
 			dismiss();
@@ -105,15 +155,7 @@ function introduction() {
 	function next(lang) {
 
 		margin += 100;
-
-		if (margin === 100) {
-			$(".previous_popup").text(dict[lang][2]);
-			$(".next_popup").text(dict[lang][3]);
-		}
-
-		if (margin === 500) {
-			$(".next_popup").text(dict[lang][4]);
-		}
+		btnLang(margin, "nxt");
 
 		if (margin === 600) {
 			dismiss();
@@ -125,16 +167,18 @@ function introduction() {
 	}
 
 	$(".previous_popup").click(function() {
-		previous(popupButtonLang);
+		previous();
 	});
 
 	$(".next_popup").click(function(){
-		next(popupButtonLang);
+		next();
+	});
+
+	$(".popup .lang").change(function() {
+		localStorage.lang = this.value;
+		btnLang(null, "lng");
 	});
 }
-
-
-
 
 
 function clock() {
@@ -154,26 +198,36 @@ function clock() {
 }
 
 
+function date() {
+
+	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
+	$(".date .jour").text(tradThis(days[DATE.getDay()]));
+	$(".date .chiffre").text(tradThis(DATE.getDate()));
+	$(".date .mois").text(tradThis(months[DATE.getMonth()]));
+}
+
 function greetings() {
 	var h = DATE.getHours();
 	var m;
 
 	if (h >= 6 && h < 12) {
-		m = 'Good Morning'; 
+		m = tradThis('Good Morning'); 
 
 	} else if (h >= 12 && h < 17) {
-		m = 'Good Afternoon';
+		m = tradThis('Good Afternoon');
 
 	} else if (h >= 17 && h < 23) {
-		m = 'Good Evening';
+		m = tradThis('Good Evening');
 
 	} else if (h >= 23 && h < 6) {
-		m = 'Good Night';
+		m = tradThis('Good Night');
 	}
 
-	$('.greetings').append(m);
+	$('.greetings').text(m);
 }
-
 
 
 
@@ -462,21 +516,6 @@ function quickLinks() {
 
 
 
-/*
-DATE
-*/
-
-function date() {
-
-	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date .jour").text(days[DATE.getDay()]);
-	$(".date .chiffre").text(DATE.getDate());
-	$(".date .mois").text(months[DATE.getMonth()]);
-}
-
 
 
 /*
@@ -581,6 +620,8 @@ function weather(changelang) {
 	 		data.icon = icon_src;
 	 		localStorage.wLastState = btoa(JSON.stringify(data));
 		}
+
+		$(".w_icon").css("opacity", 1);
 	}
 
 	function weatherRequest(arg) {
@@ -1284,34 +1325,6 @@ function signature() {
 		$('.signature .rand').append(t + " & " + v);
 	}
 }
-	
-
-
-function traduction() {
-	var translator = $('html').translate({lang: "en", t: dict});
-	
-	browser.storage.local.get().then((data) => {
-
-		//init
-		translator.lang(data.lang);
-
-		//selection de langue
-		//localStorage + weather update + body trad
-		$(".lang").change(function() {
-			browser.storage.local.set({"lang": this.value});
-			translator.lang(this.value);
-		});
-
-		$(".popup .lang").change(function() {
-			$(".settings .lang")[0].value = $(this)[0].value;
-
-			//oua chui fatigué la
-			popupButtonLang = ($(this)[0].value === "en" ? 1 : 0);
-		});
-	});
-}
-
-
 
 
 function actualizeStartupOptions() {
@@ -1410,6 +1423,8 @@ function mobilecheck() {
 
 $(document).ready(function() {
 
+	initTrad();
+
 	//very first
 	initBackground();
 	darkmode();
@@ -1426,7 +1441,4 @@ $(document).ready(function() {
 	signature();
 	introduction();
 	actualizeStartupOptions();
-
-	//toujours en dernier que tout le DOM soit chargé
-	traduction();
 });

@@ -370,6 +370,8 @@ input:checked + .slider:before {
 	transform: translateX(22px);
 }
 
+select.lang {transition: none}
+
 /*bottom*/
 
 .signature {

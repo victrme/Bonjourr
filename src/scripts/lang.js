@@ -197,7 +197,7 @@ var dict = {
   "Visuals": {
     fr: "Affichage"
   },
-  "You can choose a background from our selection below. To put a custom background or a dynamic background, you can visit the Settings.": {
+  "You can choose a background from our selection below. To put a custom background, a dynamic background or adjust the blur intensity, you can visit the Settings.": {
     fr: "Vous pouvez choisir un arrière-plan parmi la sélection ci-dessous. Pour mettre un arrière-plan personnalisé ou dynamique, vous pouvez visiter les Réglages."
   },
   "A dark mode is also available.": {
@@ -256,5 +256,20 @@ var dict = {
   },
   "Almost done!": {
     fr: "Nous y sommes presque !"
+  },
+  "Dismiss": {
+    fr: "Ignorer"
+  },
+  "Begin": {
+    fr: "Commencer"
+  },
+  "Back": {
+    fr: "Retour"
+  },
+  "Next": {
+    fr: "Suivant"
+  },
+  "All set!": {
+    fr: "Prêt !"
   }
 }

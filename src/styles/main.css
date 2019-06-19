@@ -25,7 +25,7 @@ body {
 	user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-	animation: fade .5s;
+	animation: fade .3s;
 	background-color: #222;
 }
 
@@ -69,6 +69,12 @@ select {
 
 .interface {
 	min-height: 100vh;
+	/*min-height: calc(100vh - 5em);
+	padding-bottom: 5em;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;*/
+
 }
 .interface.pushed {
 	margin-left: -20em;
@@ -112,6 +118,7 @@ div.w_widget {
 }
 
 .w_icon {
+	opacity: 0;
 	height: 60px;
 	width: 60px;
 	border: none;
