@@ -925,8 +925,10 @@ function blurThis(val) {
 	
 	if (val > 0) {
 		$('.background').css("filter", 'blur(' + val + 'px)');
+		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
 	} else {
 		$('.background').css("filter", '');
+		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
 	}
 
 	chrome.storage.sync.set({"background_blur": val});

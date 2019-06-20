@@ -55,12 +55,11 @@
 	text-shadow: none;
 	text-align: left;
 	color: #222;
-
-	box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
 }
 
 .settings.shown {
 	right: 0;
+	box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
 }
 
 hr {

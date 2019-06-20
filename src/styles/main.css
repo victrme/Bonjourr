@@ -15,6 +15,17 @@
     font-style: normal;
 }
 
+
+
+
+
+
+
+
+
+
+
+
 * {
 	transition: all .2s;
 }
@@ -525,21 +536,6 @@ body.dark .popup_buttons button {
 }
 
 
-@media screen and (min-width: 3000px) {
-	body {font-size: 20px}
-}
-
-
-@media screen and (max-width: 1400px) {
-	body {font-size: 15px}
-
-	.popup p,
-	.popup span {
-		font-size: 17px;
-	}
-}
-
-
 @media screen and (max-width: 700px) {
 	body {font-size: 14px}
 	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
@@ -697,6 +693,6 @@ body.dark .popup_buttons button {
 	}
 
 	.searchbar_container {
-		padding: 2em 0;
+		padding: 5em 0;
 	}
 }
