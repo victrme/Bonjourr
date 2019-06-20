@@ -15,17 +15,6 @@
     font-style: normal;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 * {
 	transition: all .2s;
 }
@@ -666,14 +655,6 @@ body.dark .popup_buttons button {
 	.searchbar_container,
 	.linkblocks {
 		padding: 3em 0;
-	}
-}
-
-@media screen and (min-height: 900px) {
-
-	.time,
-	.main {
-		padding: 4em 0;
 	}
 }
 
