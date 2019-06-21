@@ -7,6 +7,28 @@ const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily
 const DATE = new Date();
 const HOURS = DATE.getHours();
 var translator = $('html').translate({lang: "en", t: dict});
+const START_LINKS = [
+	{
+		"title": "Unsplash",
+		"url": "https://unsplash.com/",
+		"icon": "https://besticon-demo.herokuapp.com/icon?url=unsplash.com&size=80"
+	},
+	{
+		"title": "YouTube",
+		"url": "https://youtube.com",
+		"icon": "https://besticon-demo.herokuapp.com/icon?url=youtube.com&size=80"
+	},
+	{
+		"title": "Bonjourr",
+		"url": "https://bonjourr.fr",
+		"icon": "https://besticon-demo.herokuapp.com/icon?url=bonjourr.fr&size=80"
+	},
+	{
+		"title": "Wikipédia",
+		"url": "http://wikipedia.org",
+		"icon": "https://besticon-demo.herokuapp.com/icon?url=wikipedia.org&size=80"
+	}
+];
 
 
 function tradThis(str) {
@@ -49,6 +71,10 @@ function introduction() {
 	if (!data.isIntroduced) {
 		$("#start_popup").css("display", "flex");
 		$(".interface .linkblocks").css("opacity", 0);
+
+		localStorage.links = JSON.stringify(START_LINKS);
+		quickLinks();
+
 	} else {
 		$("#start_popup").remove();
 		$(".interface .linkblocks").css("opacity", 1);
@@ -473,7 +499,7 @@ function quickLinks() {
 				$(".addlink input[name='url']").val("");
 			}	
 		} else {
-			submissionError(url);
+			if (url.length > 0) submissionError(url);
 		}
 	}
 
@@ -848,15 +874,16 @@ function initBackground() {
 	//type un peu useless, mais c'est un ancetre alors je le garde ok
 	if (type) {
 		$('.background').css("background-image", 'url(' + image + ')');
+
+		//ensuite on blur
+		$("input[name='background_blur']").val(data.background_blur);
+		blurThis(data.background_blur);
 	} else {
+
 		//sans rien l'image de base est utilisé
 		$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
 		blurThis(25);
 	}
-
-	//ensuite on blur
-	$("input[name='background_blur']").val(data.background_blur);
-	blurThis(data.background_blur);
 
 	setTimeout(function() {
 		$(".background").css("transition", "filter .2s");

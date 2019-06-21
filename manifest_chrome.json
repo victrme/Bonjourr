@@ -2,10 +2,10 @@
 	"manifest_version": 2,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.0.4",
+	"version": "1",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
-	"homepage_url": "https://github.com/victorazevedo-me/Bonjourr",
+	"homepage_url": "https://bonjourr.fr",
 	"default_locale": "en",
 
 	"icons": {
@@ -17,10 +17,16 @@
 	},
 
 	"chrome_settings_overrides" : {
-		"homepage": "index.html"
+		"homepage": "https://victor-azevedo.me/redirect"
+	},
+
+	"background": {
+		"scripts": ["src/scripts/background.js"]
 	},
 
 	"permissions": [
+		"webRequest",
+		"*://bonjourr.fr/*",
 		"storage"
 	]
 }

@@ -33,14 +33,14 @@ const START_LINKS = [
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	browser.storage.local.clear().then(() => {
+	browser.storage.sync.clear().then(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	browser.storage.local.get().then((data) => {
+	browser.storage.sync.get().then((data) => {
 		console.log(data);
 	});
 }
@@ -54,7 +54,7 @@ function tradThis(str) {
 
 function initTrad() {
 
-	browser.storage.local.get().then((data) => {
+	browser.storage.sync.get().then((data) => {
 
 		//init
 		translator.lang(data.lang);
@@ -62,7 +62,7 @@ function initTrad() {
 		//selection de langue
 		//localStorage + weather update + body trad
 		$(".lang").change(function() {
-			browser.storage.local.set({"lang": this.value});
+			browser.storage.sync.set({"lang": this.value});
 			localStorage.lang = this.value;
 			translator.lang(this.value);
 
@@ -83,7 +83,7 @@ function initTrad() {
 
 function introduction() {
 
-	browser.storage.local.get().then((data) => {
+	browser.storage.sync.get().then((data) => {
 		
 		if (!data.isIntroduced) {
 			$("#start_popup").css("display", "flex");
@@ -91,7 +91,7 @@ function introduction() {
 
 			
 
-			browser.storage.local.set({"links": START_LINKS});
+			browser.storage.sync.set({"links": START_LINKS});
 			quickLinks();
 
 		} else {
@@ -122,7 +122,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		browser.storage.local.set({"isIntroduced": true});
+		browser.storage.sync.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -276,7 +276,7 @@ function quickLinks() {
 
 		$(".linkblocks").empty();
 
-		browser.storage.local.get().then((data) => {
+		browser.storage.sync.get().then((data) => {
 
 			if (data.links) {
 
@@ -354,7 +354,7 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			browser.storage.local.get().then((data) => {
+			browser.storage.sync.get().then((data) => {
 
 				//si on supprime un block quand la limite est atteinte
 				//réactive les inputs
@@ -383,7 +383,7 @@ function quickLinks() {
 				}
 				
 				var links = data.links;
-				browser.storage.local.set({"links": ejectIntruder(links)});
+				browser.storage.sync.set({"links": ejectIntruder(links)});
 			});
 		}
 
@@ -459,7 +459,7 @@ function quickLinks() {
 
 			var full = false;
 
-			browser.storage.local.get().then((data) => {
+			browser.storage.sync.get().then((data) => {
 
 				var arr = [];
 
@@ -481,7 +481,7 @@ function quickLinks() {
 				}
 				
 				if (!full) {
-					browser.storage.local.set({"links": arr});
+					browser.storage.sync.set({"links": arr});
 					appendblock(links);
 				} else {
 
@@ -700,8 +700,8 @@ function weather(changelang) {
 
 		weatherRequest(req);
 
-		browser.storage.local.set({"weather_city": "Paris"});
-		browser.storage.local.set({"weather_unit": "metric"});
+		browser.storage.sync.set({"weather_city": "Paris"});
+		browser.storage.sync.set({"weather_unit": "metric"});
 	}
  
 	function apply() {
@@ -712,7 +712,7 @@ function weather(changelang) {
 
 		if (lastState) dataHandling(JSON.parse(lastState));
 
-		browser.storage.local.get().then((data) => {
+		browser.storage.sync.get().then((data) => {
 
 			req = {
 				city: data.weather_city,
@@ -770,11 +770,11 @@ function weather(changelang) {
 
 		if (req.city.length < 2) return "";
  		
-		browser.storage.local.get().then((data) => {
+		browser.storage.sync.get().then((data) => {
 
 			 weatherRequest(req);
 
-			browser.storage.local.set({"weather_city": req.city});
+			browser.storage.sync.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
 			city.val("");
@@ -792,7 +792,7 @@ function weather(changelang) {
 
 		weatherRequest(req);
 		
-		browser.storage.local.set({"weather_unit": req.unit});
+		browser.storage.sync.set({"weather_unit": req.unit});
 	}
 
 	//automatise la meteo
@@ -804,7 +804,7 @@ function weather(changelang) {
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				browser.storage.local.set({"weather_geol": req.geol});
+				browser.storage.sync.set({"weather_geol": req.geol});
 
 				weatherRequest(req);
 
@@ -813,7 +813,7 @@ function weather(changelang) {
 
 		} else {
 
-			browser.storage.local.remove("weather_geol");
+			browser.storage.sync.remove("weather_geol");
 			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
@@ -894,7 +894,7 @@ BACKGROUND
 
 function initBackground() {
 
-	browser.storage.local.get().then((data) => {
+	browser.storage.sync.get().then((data) => {
 
 		var image = data.background_image;
 		var type = data.background_type;
@@ -932,8 +932,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		browser.storage.local.set({"background_image": url});
-		browser.storage.local.set({"background_type": "custom"});
+		browser.storage.sync.set({"background_image": url});
+		browser.storage.sync.set({"background_type": "custom"});
 
 		$('.background').css("background-image", 'url(' + url + ')');
 
@@ -961,7 +961,7 @@ function blurThis(val) {
 		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
 	}
 
-	browser.storage.local.set({"background_blur": val});
+	browser.storage.sync.set({"background_blur": val});
 }
 
 
@@ -1040,8 +1040,8 @@ function defaultBg() {
 
 		//sauve la source
 
-		browser.storage.local.set({"background_image": source});
-		browser.storage.local.set({"background_type": "default"});
+		browser.storage.sync.set({"background_image": source});
+		browser.storage.sync.set({"background_type": "default"});
 	});
 }
 
@@ -1055,8 +1055,8 @@ $("div.dynamic_bg input").change(function() {
 
 		$(".background").css("background-image", "url('" + UNSPLASH + "')");
 
-		browser.storage.local.set({"background_image": UNSPLASH});
-		browser.storage.local.set({"background_type": "dynamic"});
+		browser.storage.sync.set({"background_image": UNSPLASH});
+		browser.storage.sync.set({"background_type": "dynamic"});
 
 		//enleve la selection default bg si jamais
 		$(".imgpreview").removeClass("selected");
@@ -1064,7 +1064,7 @@ $("div.dynamic_bg input").change(function() {
 	} else {
 
 		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		browser.storage.local.set({"background_type": "default"});
+		browser.storage.sync.set({"background_type": "default"});
 	}
 });
 
@@ -1087,7 +1087,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(lbg)) {
 				$(".background").css("background-image", "url(" + dbg + ")");
-				browser.storage.local.set({"background_image": dbg});
+				browser.storage.sync.set({"background_image": dbg});
 			}
 
 		} else {
@@ -1096,7 +1096,7 @@ function darkmode(choix) {
 
 			if (bgsrc.includes(dbg)) {
 				$(".background").css("background-image", "url(" + lbg + ")");
-				browser.storage.local.set({"background_image": lbg});
+				browser.storage.sync.set({"background_image": lbg});
 			}
 		}
 	}
@@ -1139,7 +1139,7 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		browser.storage.sync.get().then((data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1159,23 +1159,23 @@ function darkmode(choix) {
 
 	function changeDarkMode() {
 
-		browser.storage.local.get().then((data) => {
+		browser.storage.sync.get().then((data) => {
 
 			if (choix === "enable") {
 				applyDark(true);
-				browser.storage.local.set({"dark": "enable"});
+				browser.storage.sync.set({"dark": "enable"});
 			}
 
 			if (choix === "disable") {
 				applyDark(false);
-				browser.storage.local.set({"dark": "disable"});
+				browser.storage.sync.set({"dark": "disable"});
 			}
 
 			if (choix === "auto") {
 
 				//prend l'heure et ajoute la classe si nuit
 				auto();
-				browser.storage.local.set({"dark": "auto"});
+				browser.storage.sync.set({"dark": "auto"});
 			}
 		});
 	}
@@ -1205,7 +1205,7 @@ function searchbar() {
 
 		if (activated) {
 
-			browser.storage.local.set({"searchbar": true});
+			browser.storage.sync.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1214,7 +1214,7 @@ function searchbar() {
 			
 		} else {
 
-			browser.storage.local.set({"searchbar": false});
+			browser.storage.sync.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1251,12 +1251,12 @@ function searchbar() {
 			$(".searchbar").attr("placeholder", 'Search Bing');
 		}
 
-		browser.storage.local.set({"searchbar_engine": engine});
+		browser.storage.sync.set({"searchbar_engine": engine});
 
 	}
 
 	//init
-	browser.storage.local.get().then((data) => {
+	browser.storage.sync.get().then((data) => {
 
 		if (data.searchbar) {
 
@@ -1350,7 +1350,7 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	browser.storage.local.get().then((data) => {
+	browser.storage.sync.get().then((data) => {
 
 
 		//default background 
