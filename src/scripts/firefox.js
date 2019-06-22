@@ -1,5 +1,6 @@
 
 var translator = $('html').translate({lang: "en", t: dict});
+var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
 const TITLE_LIMIT = 42;
@@ -45,6 +46,19 @@ function getBrowserStorage() {
 	});
 }
 
+function slow(that) {
+
+	$(that).attr("disabled", "");
+
+	stillActive = setTimeout(function() {
+
+		$(that).removeAttr("disabled");
+
+		clearTimeout(stillActive);
+		stillActive = false;
+	}, INPUT_PAUSE);
+}
+
 
 function tradThis(str) {
 
@@ -75,10 +89,6 @@ function initTrad() {
 		});
 	});
 }
-
-
-
-
 
 
 function introduction() {
@@ -258,13 +268,9 @@ function greetings() {
 	$('.greetings').text(m);
 }
 
-
-
-
 /*
 LIENS FAVORIS
 */
-
 
 function quickLinks() {
 
@@ -306,35 +312,48 @@ function quickLinks() {
 		//si mobile, un simple hover ative le remove
 		//sinon il faut appuyer sur le block
 		var eventEnter = (mobile ? "contextmenu" : "mousedown");
-		var eventLeave = (mobile ? "mouseleave" : "mouseleave");
 
-		
+		function displaywiggle() {
 
-		//j'appuie sur le block pour afficher le remove
-		$(".linkblocks").on(eventEnter, ".block", function() {
+			$(".block").find(".remove").addClass("visible");
+			$(".block").addClass("wiggly");
+			$(this).focus();
 
-			var time = (mobile ? 0 : 1000);
+			canRemove = true;	
+		}
 
-			remTimeout = setTimeout(function() {
-
-				$(".block").find(".remove").addClass("visible");
-				$(".block").addClass("wiggly");
-				$(this).focus();
-
-				canRemove = true;
-
-			}, time);
-		});
-
-		//je sors de la zone de linkblocks pour enlever le remove
-		$(".linkblocks").on(eventLeave, function() {
-
+		function stopwiggle() {
 			clearTimeout(remTimeout);
 
 			$(".block").find(".remove").removeClass("visible");
 			$(".block").removeClass("wiggly");
 
 			canRemove = false;
+		}
+
+		//j'appuie sur le block pour afficher le remove
+		$(".linkblocks").on("mousedown", ".block", function() {
+
+			remTimeout = setTimeout(function() {
+				displaywiggle();
+			}, 800);
+		});
+
+		//click droit pour afficher le remove
+		$(".linkblocks").on("contextmenu", ".block", function(event) {
+
+			event.preventDefault();
+			displaywiggle();
+		});
+
+		//je sors de la zone de linkblocks pour enlever le remove
+		$(document).bind("mousedown", function (e) {
+
+			// If the clicked element is not the menu
+			if (!$(e.target).parents(".linkblocks").length > 0) {
+
+				stopwiggle();
+			}
 		});
 
 
@@ -395,13 +414,6 @@ function quickLinks() {
 			var index = $(this).parent().parent().parent().index();
 			(canRemove ? removeblock(index) : "");
 		});
-	}
-
-	function slow() {
-		stillActive = setTimeout(function() {
-			clearTimeout(stillActive);
-			stillActive = false;
-		}, INPUT_PAUSE);
 	}
 
 	function linkSubmission() {
@@ -515,7 +527,7 @@ function quickLinks() {
 				}
 
 				saveLink(links);
-				slow();
+				slow($(".addlink input[name='url']"));
 
 				//remet a zero les inputs
 				$(".addlink input[name='title']").val("");
@@ -542,11 +554,6 @@ function quickLinks() {
 	showRemoveLink();
 }
 
-
-
-
-
-
 /*
 METEO
 */
@@ -554,7 +561,7 @@ METEO
 function weather(changelang) {
 
 	//init la requete;
-	var req, stillActive = false;
+	var req;
 	
 	function dataHandling(data) {
 
@@ -801,6 +808,8 @@ function weather(changelang) {
 
 		if ($(that).is(":checked")) {
 
+			$(that).attr("disabled", "");
+
 			navigator.geolocation.getCurrentPosition((pos) => {
 
 				req.geol = [pos.coords.latitude, pos.coords.longitude];
@@ -809,6 +818,13 @@ function weather(changelang) {
 				weatherRequest(req);
 
 				$(".change_weather .city").css("display", "none");
+				$(that).removeAttr("disabled");
+				
+			}, (refused) => {
+
+				//désactive geolocation if refused
+				$(that)[0].checked = false;
+				$(that).removeAttr("disabled");
 			});
 
 		} else {
@@ -817,19 +833,6 @@ function weather(changelang) {
 			req.geol = false;
 			$(".change_weather .city").css("display", "block");
 		}
-	}
-
-	function slow(that) {
-
-		$(that).attr("disabled", "");
-
-		stillActive = setTimeout(function() {
-
-			$(that).removeAttr("disabled");
-
-			clearTimeout(stillActive);
-			stillActive = false;
-		}, INPUT_PAUSE);
 	}
 
 	//TOUT LES EVENTS
@@ -860,7 +863,6 @@ function weather(changelang) {
 	$(".w_auto input").change(function() {
 		if (!stillActive) {
 			updateLocation(this);
-			slow(this);
 		}
 	});
 
@@ -978,29 +980,18 @@ $(".change_background input[name='background_blur']").change(function() {
 
 function defaultBg() {
 
-	var bgTimeout, clone;
-
-	$(".choosable_backgrounds").mouseenter(function() {
-
-		//clone le background quand on entre dans choosable background
-		clone = $(".background").clone();
-		$(clone).attr("class", "background tempbackground");
-		$("body").prepend($(clone));
-	});
+	var bgTimeout, oldbg;
 
 	//pour preview le default background
 	$(".imgpreview img").mouseenter(function() {
 
-
 		var source = this.attributes.src.value;
-
+		oldbg = $(".background").css("background-image");
 		bgTimeout = setTimeout(function() {
 
-			//met le preview au clone
 			//timeout de 300 pour pas que ça se fasse accidentellement
-			//rend le 1er bg à 0 opacité pour avoir une transition
-			$(".tempbackground").css("background-image", "url('" + source + "')");
-			$(".background").not(".tempbackground").css("opacity", 0);
+			//prend le src de la preview et l'applique au background
+			$(".background").css("background-image", "url('" + source + "')");
 
 		}, 300);
 	});
@@ -1009,23 +1000,18 @@ function defaultBg() {
 	//pour arreter de preview le default background
 	$(".imgpreview img").mouseleave(function() {
 		clearTimeout(bgTimeout);
+		$(".background").css("background-image", oldbg);
 	});
-
-	
-	$(".choosable_backgrounds").mouseleave(function() {
-		clearTimeout(bgTimeout);
-		
-		//reaffiche le premier bg
-		//suppr le 2e bg quand on sort
-		$(".background").css("opacity", 1);
-		setTimeout(function() {
-			$(".tempbackground").remove();
-		}, 200);
-	});
-
 
 	//pour choisir un default background
 	$(".imgpreview img").click(function() {
+
+		//prend le src de la preview et l'applique au background
+		var source = this.attributes.src.value;
+		$(".background").css("background-image", "url('" + source + "')");
+
+		clearTimeout(bgTimeout);
+		oldbg = source;
 
 		//enleve le dynamic si jamais
 		$("div.dynamic_bg input").prop("checked", false);
@@ -1034,12 +1020,7 @@ function defaultBg() {
 		$(".imgpreview").removeClass("selected");
 		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
 
-		//prend le src de la preview et l'applique au background
-		var source = this.attributes.src.value;
-		$(".background").css("background-image", "url('" + source + "')");
-
 		//sauve la source
-
 		browser.storage.sync.set({"background_image": source});
 		browser.storage.sync.set({"background_type": "default"});
 	});
@@ -1275,7 +1256,11 @@ function searchbar() {
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
-		activate($(this).is(":checked"));
+
+		if (!stillActive) {
+			activate($(this).is(":checked"));
+		}
+		slow(this);
 	});
 
 	$(".popup .activate_searchbar input").change(function() {
