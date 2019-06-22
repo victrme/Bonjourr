@@ -1172,7 +1172,7 @@ function searchbar() {
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
 			$("#choose_searchengine").css("display", 'flex');
 			$(".searchbar_container").css("opacity", 1);
-			
+
 		} else {
 
 			localStorage.searchbar = false;
@@ -1223,6 +1223,7 @@ function searchbar() {
 
 		//display
 		activate(true);
+		$("input.searchbar").focus();
 
 		if (data.searchbar_engine) {
 			chooseSearchEngine(data.searchbar_engine);

@@ -1243,6 +1243,7 @@ function searchbar() {
 
 			//display
 			activate(true);
+			$("input.searchbar").focus();
 
 			if (data.searchbar_engine) {
 				chooseSearchEngine(data.searchbar_engine);
