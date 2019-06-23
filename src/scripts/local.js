@@ -31,6 +31,50 @@ const START_LINKS = [
 	}
 ];
 
+// function adapt_bg() {
+// 	var pixelRatio = window.devicePixelRatio;
+// 	var windowHeight = $(window).height();
+
+// 	function standard() {
+			
+// 		if (0 < windowHeight && windowHeight < 800) {
+
+// 		}
+
+// 		else if (800 < windowHeight && windowHeight < 1080) {
+
+// 		}
+
+// 		else if (windowHeight > 1080) {
+
+// 		}
+// 	}
+
+// 	function retina() {
+// 		if (0 < windowHeight && windowHeight < 800) {
+
+// 		}
+
+// 		else if (800 < windowHeight && windowHeight < 1080) {
+
+// 		}
+
+// 		else if (windowHeight > 1080) {
+
+// 		}
+// 	}
+
+// 	if (pixelRatio === 1) {
+// 		standard();
+// 	}
+
+// 	else {
+// 		retina();
+// 	}
+// }
+
+ 
+
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -992,7 +1036,51 @@ function defaultBg() {
 
 		//prend le src de la preview et l'applique au background
 		var source = this.attributes.src.value;
-		$(".background").css("background-image", "url('" + source + "')");
+
+		function adapt_bg() {
+			var pixelRatio = window.devicePixelRatio;
+			var windowHeight = $(window).height();
+
+			function standard() {
+					
+				if (0 < windowHeight && windowHeight < 800) {
+					$(".background").css("background-image", "url('" + source - ".jpg" + "_1x_0-800.jpg')");
+				}
+
+				else if (800 < windowHeight && windowHeight < 1080) {
+					$(".background").css("background-image", "url('" + source - ".jpg" + "_1x_800-1080.jpg')");
+				}
+
+				else if (windowHeight > 1080) {
+					$(".background").css("background-image", "url('" + source - ".jpg" + "_1x_+1080.jpg')");
+				}
+			}
+
+			function retina() {
+					
+				if (0 < windowHeight && windowHeight < 800) {
+					$(".background").css("background-image", "url('" + source - ".jpg" + "_2x_0-800.jpg')");
+				}
+
+				else if (800 < windowHeight && windowHeight < 1080) {
+					$(".background").css("background-image", "url('" + source - ".jpg" + "_2x_800-1080.jpg')");
+				}
+
+				else if (windowHeight > 1080) {
+					$(".background").css("background-image", "url('" + source - ".jpg" + "_2x_+1080.jpg')");
+				}
+			}
+
+			if (pixelRatio === 1) {
+				standard();
+			}
+
+			else {
+				retina();
+			}
+		}
+
+		adapt_bg();
 
 		clearTimeout(bgTimeout);
 		oldbg = source;
@@ -1408,9 +1496,11 @@ $(document).ready(function() {
 
 	initTrad();
 
+
 	//very first
 	initBackground();
 	darkmode();
+	
 
 	//sur la page principale
 	clock();
