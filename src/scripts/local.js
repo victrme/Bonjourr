@@ -31,50 +31,6 @@ const START_LINKS = [
 	}
 ];
 
-// function adapt_bg() {
-// 	var pixelRatio = window.devicePixelRatio;
-// 	var windowHeight = $(window).height();
-
-// 	function standard() {
-			
-// 		if (0 < windowHeight && windowHeight < 800) {
-
-// 		}
-
-// 		else if (800 < windowHeight && windowHeight < 1080) {
-
-// 		}
-
-// 		else if (windowHeight > 1080) {
-
-// 		}
-// 	}
-
-// 	function retina() {
-// 		if (0 < windowHeight && windowHeight < 800) {
-
-// 		}
-
-// 		else if (800 < windowHeight && windowHeight < 1080) {
-
-// 		}
-
-// 		else if (windowHeight > 1080) {
-
-// 		}
-// 	}
-
-// 	if (pixelRatio === 1) {
-// 		standard();
-// 	}
-
-// 	else {
-// 		retina();
-// 	}
-// }
-
- 
-
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -254,8 +210,7 @@ function introduction() {
 	});
 }
 
-
-function clock() {
+function clock24() {
 	
 	function checkTime(i) {
 		if (i < 10) {i = "0" + i};
@@ -268,9 +223,30 @@ function clock() {
 
 	$('#clock').text(h + ":" + m);
 
-	var t = setTimeout(clock, 5000);
+	var t = setTimeout(clock24, 5000);
 }
 
+function clock12() {
+	var now = new Date();
+	var hour = now.getHours();
+	var min = now.getMinutes();
+
+	if (min < 10) {
+		min = "0" + min;
+	}
+
+	if (hour > 12) {
+		hour = hour - 12;
+	}  
+
+	if(hour===0){ 
+		hour=12;
+	}
+	
+	$('#clock').text(hour + ":" + min);
+
+	var t = setTimeout(clock12, 5000);
+}
 
 function date() {
 
@@ -290,10 +266,10 @@ function greetings() {
 	if (h >= 6 && h < 12) {
 		m = tradThis('Good Morning'); 
 
-	} else if (h >= 12 && h < 17) {
+	} else if (h >= 12 && h < 18) {
 		m = tradThis('Good Afternoon');
 
-	} else if (h >= 17 && h < 23) {
+	} else if (h >= 18 && h < 23) {
 		m = tradThis('Good Evening');
 
 	} else if (h >= 23 && h < 6) {
@@ -1079,87 +1055,6 @@ function defaultBg() {
 defaultBg();
 
 
-// function defaultBg() {
-
-// 	var bgTimeout, oldbg;
-
-// 	//pour preview le default background
-// 	$(".imgpreview img").mouseenter(function() {
-
-// 		var source = this.attributes.src.value;
-// 		oldbg = $(".background").css("background-image");
-// 		bgTimeout = setTimeout(function() {
-
-// 			//timeout de 300 pour pas que ça se fasse accidentellement
-// 			//prend le src de la preview et l'applique au background
-// 			$(".background").css("background-image", "url('" + source + "')");
-
-// 		}, 300);
-// 	});
-
-
-// 	//pour arreter de preview le default background
-// 	$(".imgpreview img").mouseleave(function() {
-// 		clearTimeout(bgTimeout);
-// 		$(".background").css("background-image", oldbg);
-// 	});
-
-// 	//pour choisir un default background
-// 	$(".imgpreview img").click(function() {
-
-// 		//prend le src de la preview et l'applique au background
-// 		var source = this.attributes.src.value;
-
-
-
-// 		function optimizedBgURL() {
-
-// 		      var pixelRatio = window.devicePixelRatio;
-// 		      var windowHeight = $(window).height();
-// 		      var res = pixelRatio * windowHeight;
-// 		      console.log(res);
-// 		      //découpe le ".jpg"
-// 		      var url = source.slice(0, source.length - 4);
-
-// 		      if (res > 1200) {
-// 					 url += "_large";
-// 				}
-
-// 		      return url + ".jpg";
-
-// 		    }
-
-// 		    $(".background").css("background-image", "url('" + optimizedBgURL() + "')");
-
-
-// 		    optimizedBgURL();
-
-
-
-
-
-
-
-
-
-// 		clearTimeout(bgTimeout);
-// 		oldbg = source;
-
-// 		//enleve le dynamic si jamais
-// 		$("div.dynamic_bg input").prop("checked", false);
-
-// 		//enleve selected a tout le monde et l'ajoute au bon
-// 		$(".imgpreview").removeClass("selected");
-// 		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
-
-// 		//sauve la source
-// 		localStorage.background_image = source});
-// 		localStorage.background_type = "default";
-// 	}
-
-// defaultBg();
-
-
 //quand on active le bg dynamique
 $("div.dynamic_bg input").change(function() {
 
@@ -1410,6 +1305,24 @@ function searchbar() {
 
 
 
+// Active ou désactive la search bar
+	$(".12hour input").change(function() {
+
+		if (!stillActive) {
+			activate($(this).is(":checked"));
+		}
+		slow(this);
+	});
+
+	$(".popup .activate_searchbar input").change(function() {
+
+		var check = $(this)[0].checked;
+
+		if (check) {
+			$("#searchbar_option input")[0].checked = true;
+			$(".settings #choose_searchengine").css("display", 'flex');
+		}
+	});
 
 
 
@@ -1563,7 +1476,7 @@ $(document).ready(function() {
 	
 
 	//sur la page principale
-	clock();
+	clock24();
 	date();
 	greetings();
 	weather();

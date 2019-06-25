@@ -271,5 +271,11 @@ var dict = {
   },
   "All set!": {
     fr: "Prêt !"
+  },
+  "Clock": {
+    fr: "Horloge"
+  },
+  "12-Hour Time": {
+    fr: "Affichage 12h"
   }
 }
