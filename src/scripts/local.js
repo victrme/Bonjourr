@@ -1006,6 +1006,12 @@ $(".change_background input[name='background_blur']").change(function() {
 });
 
 
+
+
+
+
+
+
 function defaultBg() {
 
 	var bgTimeout, oldbg;
@@ -1037,67 +1043,121 @@ function defaultBg() {
 		//prend le src de la preview et l'applique au background
 		var source = this.attributes.src.value;
 
-		function adapt_bg() {
+		function optimizedBgURL() {
+
 			var pixelRatio = window.devicePixelRatio;
 			var windowHeight = $(window).height();
+			var res = pixelRatio * windowHeight;
+			//découpe le ".jpg"
+			var url = source.slice(0, source.length - 4);
 
-			function standard() {
-					
-				if (0 < windowHeight && windowHeight < 800) {
-					$(".background").css("background-image", "url('" + source - ".jpg" + "_1x_0-800.jpg')");
-				}
-
-				else if (800 < windowHeight && windowHeight < 1080) {
-					$(".background").css("background-image", "url('" + source - ".jpg" + "_1x_800-1080.jpg')");
-				}
-
-				else if (windowHeight > 1080) {
-					$(".background").css("background-image", "url('" + source - ".jpg" + "_1x_+1080.jpg')");
-				}
+			if (res > 1200) {
+				url += "_large";
 			}
 
-			function retina() {
-					
-				if (0 < windowHeight && windowHeight < 800) {
-					$(".background").css("background-image", "url('" + source - ".jpg" + "_2x_0-800.jpg')");
-				}
-
-				else if (800 < windowHeight && windowHeight < 1080) {
-					$(".background").css("background-image", "url('" + source - ".jpg" + "_2x_800-1080.jpg')");
-				}
-
-				else if (windowHeight > 1080) {
-					$(".background").css("background-image", "url('" + source - ".jpg" + "_2x_+1080.jpg')");
-				}
-			}
-
-			if (pixelRatio === 1) {
-				standard();
-			}
-
-			else {
-				retina();
-			}
+			return url + ".jpg";
 		}
 
-		adapt_bg();
+    $(".background").css("background-image", "url('" + optimizedBgURL() + "')");
 
-		clearTimeout(bgTimeout);
-		oldbg = source;
 
-		//enleve le dynamic si jamais
-		$("div.dynamic_bg input").prop("checked", false);
+	clearTimeout(bgTimeout);
+	oldbg = source;
 
-		//enleve selected a tout le monde et l'ajoute au bon
-		$(".imgpreview").removeClass("selected");
-		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+	//enleve le dynamic si jamais
+	$("div.dynamic_bg input").prop("checked", false);
 
-		//sauve la source
-		localStorage.background_image = source});
-		localStorage.background_type = "default";
-	}
+	//enleve selected a tout le monde et l'ajoute au bon
+	$(".imgpreview").removeClass("selected");
+	$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+
+	//sauve la source
+	localStorage.background_image = source});
+	localStorage.background_type = "default";
+}
 
 defaultBg();
+
+
+// function defaultBg() {
+
+// 	var bgTimeout, oldbg;
+
+// 	//pour preview le default background
+// 	$(".imgpreview img").mouseenter(function() {
+
+// 		var source = this.attributes.src.value;
+// 		oldbg = $(".background").css("background-image");
+// 		bgTimeout = setTimeout(function() {
+
+// 			//timeout de 300 pour pas que ça se fasse accidentellement
+// 			//prend le src de la preview et l'applique au background
+// 			$(".background").css("background-image", "url('" + source + "')");
+
+// 		}, 300);
+// 	});
+
+
+// 	//pour arreter de preview le default background
+// 	$(".imgpreview img").mouseleave(function() {
+// 		clearTimeout(bgTimeout);
+// 		$(".background").css("background-image", oldbg);
+// 	});
+
+// 	//pour choisir un default background
+// 	$(".imgpreview img").click(function() {
+
+// 		//prend le src de la preview et l'applique au background
+// 		var source = this.attributes.src.value;
+
+
+
+// 		function optimizedBgURL() {
+
+// 		      var pixelRatio = window.devicePixelRatio;
+// 		      var windowHeight = $(window).height();
+// 		      var res = pixelRatio * windowHeight;
+// 		      console.log(res);
+// 		      //découpe le ".jpg"
+// 		      var url = source.slice(0, source.length - 4);
+
+// 		      if (res > 1200) {
+// 					 url += "_large";
+// 				}
+
+// 		      return url + ".jpg";
+
+// 		    }
+
+// 		    $(".background").css("background-image", "url('" + optimizedBgURL() + "')");
+
+
+// 		    optimizedBgURL();
+
+
+
+
+
+
+
+
+
+// 		clearTimeout(bgTimeout);
+// 		oldbg = source;
+
+// 		//enleve le dynamic si jamais
+// 		$("div.dynamic_bg input").prop("checked", false);
+
+// 		//enleve selected a tout le monde et l'ajoute au bon
+// 		$(".imgpreview").removeClass("selected");
+// 		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+
+// 		//sauve la source
+// 		localStorage.background_image = source});
+// 		localStorage.background_type = "default";
+// 	}
+
+// defaultBg();
 
 
 //quand on active le bg dynamique

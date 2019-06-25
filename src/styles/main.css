@@ -62,7 +62,7 @@ select {
 	background-color: #222;
 	background-size: cover;
 	background-position: center center;
-	transform: scale(1.25); 
+	transform: scale(1.1); 
 	transition: filter 0s;
 }
 
