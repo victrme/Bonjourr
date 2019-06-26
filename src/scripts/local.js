@@ -725,8 +725,17 @@ function weather() {
 		//enleve les millisecondes
 		var now = Math.floor(DATE.getTime() / 1000);
 		var lastCall = parseInt(localStorage.wlastCall);
-		var lastState = (localStorage.wLastState ? localStorage.wLastState : undefined);
+		var lastState = localStorage.wLastState;
 		var data = localStorage;
+
+		//1.0.7 --> 1.1.0 bug corrigé
+		try {
+			lastState = JSON.parse(lastState);
+		} catch {
+			lastCall = undefined;
+			lastState = "";
+		}
+
 		req = {
 			city: data.weather_city,
 			unit: data.weather_unit,
@@ -743,7 +752,7 @@ function weather() {
 				weatherRequest(req);
 				localStorage.wlastCall = now;
 			} else {
-				dataHandling(JSON.parse(lastState));
+				dataHandling(lastState);
 			}
 
 		} else {

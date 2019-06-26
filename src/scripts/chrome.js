@@ -33,7 +33,7 @@ const START_LINKS = [
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.sync.clear().then(() => {
+	chrome.storage.sync.clear(() => {
 		localStorage.clear();
 	});
 }
@@ -735,9 +735,15 @@ function weather() {
 		//enleve les millisecondes
 		var now = Math.floor(DATE.getTime() / 1000);
 		var lastCall = parseInt(localStorage.wlastCall);
-		var lastState = (localStorage.wLastState ? localStorage.wLastState : undefined);
+		var lastState = localStorage.wLastState;
 
-		//if (lastState) dataHandling(JSON.parse(lastState));
+		//1.0.7 --> 1.1.0 bug corrigé
+		try {
+			lastState = JSON.parse(lastState);
+		} catch {
+			lastCall = undefined;
+			lastState = "";
+		}
 
 		chrome.storage.sync.get(null, (data) => {
 
@@ -757,7 +763,7 @@ function weather() {
 					weatherRequest(req);
 					localStorage.wlastCall = now;
 				} else {
-					dataHandling(JSON.parse(lastState));
+					dataHandling(lastState);
 				}
 
 			} else {
