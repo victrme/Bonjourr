@@ -179,8 +179,8 @@ var dict = {
   "Change city": {
     fr: "Changer la ville"
   },
-  "City not recognized": {
-    fr: "Cette ville n'est pas reconnue"
+  "There was a problem": {
+    fr: "Il y a eu un problème"
   },
   "or select": {
     fr: "ou selectionnez"
@@ -271,5 +271,29 @@ var dict = {
   },
   "All set!": {
     fr: "Prêt !"
+  },
+  "Clock": {
+    fr: "Horloge"
+  },
+  "12-Hour Time": {
+    fr: "Affichage 12h"
+  },
+  "Search Startpage": {
+    fr: "Rechercher sur Startpage"
+  },
+  "Search Ecosia": {
+    fr: "Rechercher sur Ecosia"
+  },
+  "Search DuckDuckGo": {
+    fr: "Rechercher sur DuckDuckGo"
+  },
+  "Search Google": {
+    fr: "Rechercher sur Google"
+  },
+  "Search Yahoo": {
+    fr: "Rechercher sur Yahoo"
+  },
+  "Search Bing": {
+    fr: "Rechercher sur Bing"
   }
 }

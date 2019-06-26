@@ -62,7 +62,7 @@ select {
 	background-color: #222;
 	background-size: cover;
 	background-position: center center;
-	transform: scale(1.25); 
+	transform: scale(1.1); 
 	transition: filter 0s;
 }
 
@@ -146,6 +146,10 @@ div.w_widget_text {
 	border: 0;
 	border-radius: 4px;
 	padding-left: 1em;
+}
+
+.searchbar::placeholder {
+	text-transform: none;
 }
 
 .searchbar:focus {

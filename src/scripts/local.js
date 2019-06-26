@@ -31,7 +31,6 @@ const START_LINKS = [
 	}
 ];
 
-
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	localStorage.clear();
@@ -54,7 +53,6 @@ function slow(that) {
 		stillActive = false;
 	}, INPUT_PAUSE);
 }
-
 
 function tradThis(str) {
 
@@ -83,7 +81,6 @@ function initTrad() {
 		$(".settings .lang")[0].value = $(this)[0].value;
 	});
 }
-
 
 function introduction() {
 
@@ -210,23 +207,53 @@ function introduction() {
 	});
 }
 
-
 function clock() {
-	
-	function checkTime(i) {
-		if (i < 10) {i = "0" + i};
-		return i;
+
+	var data = localStorage;
+	var timesup;
+
+	function start() {
+
+		function fixSmallMinutes(i) {
+			if (i < 10) {i = "0" + i};
+			return i;
+		}
+
+		function is12hours(x) {
+
+			if (x > 12) x -= 12; 
+			if (x === 0) x = 12;
+
+			return x;
+		}
+
+		var h = new Date().getHours();
+		var m = new Date().getMinutes();
+		m = fixSmallMinutes(m);
+
+		if (parseInt(data.clockformat) === 12) h = is12hours(h);
+
+		$('#clock').text(h + ":" + m);
+
+		timesup = setTimeout(start, 5000);
 	}
 
-	var h = new Date().getHours();
-	var m = new Date().getMinutes();
-	m = checkTime(m);
 
-	$('#clock').text(h + ":" + m);
+	//settings event
+	$(".12hour input").change(function() {
+		if ($(this)[0].checked) {
+			localStorage.clockformat = 12;
+			clearTimeout(timesup);
+			start();
+		} else {
+			localStorage.clockformat = 24;
+			clearTimeout(timesup);
+			start();
+		}
+	});
 
-	var t = setTimeout(clock, 5000);
+	start();
 }
-
 
 function date() {
 
@@ -258,10 +285,6 @@ function greetings() {
 
 	$('.greetings').text(m);
 }
-
-/*
-LIENS FAVORIS
-*/
 
 function quickLinks() {
 
@@ -338,7 +361,7 @@ function quickLinks() {
 		});
 
 		//je sors de la zone de linkblocks pour enlever le remove
-		$(document).bind("mousedown", function (e) {
+		$(document).bind("mousedown", function(e) {
 
 			// If the clicked element is not the menu
 			if (!$(e.target).parents(".linkblocks").length > 0) {
@@ -543,11 +566,7 @@ function quickLinks() {
 	showRemoveLink();
 }
 
-/*
-METEO
-*/
-
-function weather(changelang) {
+function weather() {
 
 	//init la requete;
 	var req;
@@ -643,7 +662,7 @@ function weather(changelang) {
 
 	 		//sauv l'icone dans wLastState
 	 		data.icon = icon_src;
-	 		localStorage.wLastState = btoa(JSON.stringify(data));
+	 		localStorage.wLastState = JSON.stringify(data);
 		}
 
 		$(".w_icon").css("opacity", 1);
@@ -654,9 +673,10 @@ function weather(changelang) {
 		//a changer
 		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + WEATHER_API_KEY;
 
-		//auto, utilise l'array location [lat, lon]
-		if (arg.geol) {
-			url += "&lat=" + arg.geol[0] + "&lon=" + arg.geol[1];
+		//si il y a latitude et longitude
+		//sinon bien encoder le nom de la ville pour que ça marche
+		if (arg.geol_lat && arg.geol_long) {
+			url += "&lat=" + arg.geol_lat + "&lon=" + arg.geol_long;
 		} else {
 			url += "&q=" + encodeURI(arg.city);
 		}
@@ -677,7 +697,7 @@ function weather(changelang) {
 				dataHandling(data);
 
 				//sauvegarde la derniere meteo
-				localStorage.wLastState = btoa(JSON.stringify(data));
+				localStorage.wLastState = JSON.stringify(data);
 
 				$("p.wrongCity").css("opacity", 0);
 				return true;
@@ -702,29 +722,28 @@ function weather(changelang) {
  
 	function apply() {
 
-		var now = DATE.getTime();
-		var lastCall = localStorage.wlastCall;
-		var lastState = (localStorage.wLastState ? atob(localStorage.wLastState) : undefined);
-
-		if (lastState) dataHandling(JSON.parse(lastState));
-
+		//enleve les millisecondes
+		var now = Math.floor(DATE.getTime() / 1000);
+		var lastCall = parseInt(localStorage.wlastCall);
+		var lastState = (localStorage.wLastState ? localStorage.wLastState : undefined);
 		var data = localStorage;
 		req = {
 			city: data.weather_city,
 			unit: data.weather_unit,
-			geol: data.weather_geol,
+			geol_lat: data.weather_geol_lat,
+			geol_long: data.weather_geol_long,
 			lang: data.lang
 		};
 
-		
-
 		if (lastCall) {
 
-			//si weather est vieux d'une heure (3600000)
-			//faire une requete
-			if (now > lastCall + 3600000) {
-				
+			//si weather est vieux d'une demi heure (1800s)
+			//faire une requete et update le lastcall
+			if (now > lastCall + 1800) {
 				weatherRequest(req);
+				localStorage.wlastCall = now;
+			} else {
+				dataHandling(JSON.parse(lastState));
 			}
 
 		} else {
@@ -798,8 +817,10 @@ function weather(changelang) {
 
 			navigator.geolocation.getCurrentPosition((pos) => {
 
-				req.geol = [pos.coords.latitude, pos.coords.longitude];
-				localStorage.weather_geol = req.geol;
+				req.geol_lat = pos.coords.latitude
+				req.geol_long = pos.coords.longitude;
+				localStorage.weather_geol_lat = req.geol_lat;
+				localStorage.weather_geol_long = req.geol_long;
 
 				weatherRequest(req);
 
@@ -811,12 +832,15 @@ function weather(changelang) {
 				//désactive geolocation if refused
 				$(that)[0].checked = false;
 				$(that).removeAttr("disabled");
+				
+				if (!req.city) initWeather();
 			});
 
 		} else {
 
-			localStorage.removeItem("weather_geol");
-			req.geol = false;
+			localStorage.removeItem("weather_geol_lat");
+			localStorage.removeItem("weather_geol_long");
+			req.geol_lat, req.geol_long = false;
 			$(".change_weather .city").css("display", "block");
 		}
 	}
@@ -856,6 +880,7 @@ function weather(changelang) {
 		if (!stillActive) {
 			req.lang = this.value;
 			weatherRequest(req);
+			searchbar();
 			slow(this);
 		}
 	});
@@ -875,10 +900,25 @@ function weather(changelang) {
 }
 
 
-/* 
-BACKGROUND
-*/
+function optimizedBgURL(source) {
 
+	//découpe le ".jpg"
+	var url = source.slice(0, source.length - 4);
+	var res = window.devicePixelRatio * screen.height;
+
+	url += (res > 1200 ? "_large.jpg" : ".jpg");
+
+	return url;
+}
+
+//pour rendre le code plus leger
+function imgBackground(val) {
+	if (val) {
+		$(".background").css("background-image", "url(" + val + ")");
+	} else {
+		return $(".background").css("background-image");
+	}
+}
 
 function initBackground() {
 
@@ -889,7 +929,9 @@ function initBackground() {
 	
 	//type un peu useless, mais c'est un ancetre alors je le garde ok
 	if (data.background_image) {
-		$('.background').css("background-image", 'url(' + image + ')');
+
+		if (type === "default") image = optimizedBgURL(image);
+		imgBackground(image);
 
 		//ensuite on blur
 		$("input[name='background_blur']").val(data.background_blur);
@@ -897,7 +939,7 @@ function initBackground() {
 	} else {
 
 		//sans rien l'image de base est utilisé
-		$('.background').css("background-image", 'url("src/images/avi-richards-beach.jpg")');
+		imgBackground(optimizedBgURL("src/images/avi-richards-beach.jpg"));
 		blurThis(25);
 	}
 
@@ -921,7 +963,7 @@ function renderImage(file) {
 		localStorage.background_image = url;
 		localStorage.background_type = "custom";
 
-		$('.background').css("background-image", 'url(' + url + ')');
+		imgBackground(url);
 
 		//enleve le dynamic si jamais
 		$("div.dynamic_bg input").prop("checked", false);
@@ -967,24 +1009,30 @@ function defaultBg() {
 	var bgTimeout, oldbg;
 
 	//pour preview le default background
+	$(".imgpreview").mouseenter(function() {
+		oldbg = imgBackground().slice(4, imgBackground().length - 1);
+	});
+
+	//pour preview le default background
 	$(".imgpreview img").mouseenter(function() {
 
 		var source = this.attributes.src.value;
-		oldbg = $(".background").css("background-image");
 		bgTimeout = setTimeout(function() {
 
 			//timeout de 300 pour pas que ça se fasse accidentellement
 			//prend le src de la preview et l'applique au background
-			$(".background").css("background-image", "url('" + source + "')");
+			imgBackground(source);
 
 		}, 300);
 	});
 
 
 	//pour arreter de preview le default background
-	$(".imgpreview img").mouseleave(function() {
+	$(".imgpreview").mouseleave(function() {
 		clearTimeout(bgTimeout);
-		$(".background").css("background-image", oldbg);
+
+		console.log(oldbg);
+		imgBackground(oldbg);
 	});
 
 	//pour choisir un default background
@@ -992,7 +1040,9 @@ function defaultBg() {
 
 		//prend le src de la preview et l'applique au background
 		var source = this.attributes.src.value;
-		$(".background").css("background-image", "url('" + source + "')");
+
+	    imgBackground(optimizedBgURL(source));
+
 
 		clearTimeout(bgTimeout);
 		oldbg = source;
@@ -1005,34 +1055,50 @@ function defaultBg() {
 		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
 
 		//sauve la source
-		localStorage.background_image = source});
+		localStorage.background_image = source;
 		localStorage.background_type = "default";
-	}
+	});
+}
+
+function dynamicBackground() {
+
+	//quand on active le bg dynamique
+	$("div.dynamic_bg input").change(function() {
+
+		if (this.checked) {
+
+			//set un previous background si le user choisi de désactiver ce parametre
+			localStorage.previous_image = localStorage.background_image;
+			localStorage.previous_type = localStorage.background_type;
+
+			imgBackground(UNSPLASH);
+
+			localStorage.background_image = UNSPLASH;
+			localStorage.background_type = "dynamic";
+
+			//enleve la selection default bg si jamais
+			$(".imgpreview").removeClass("selected");
+
+		} else {
+
+			//mes yeux
+			//previous background devient actuel
+			if (localStorage.previous_image !== "undefined") {
+				imgBackground(localStorage.previous_image);
+				localStorage.background_image = localStorage.previous_image;
+				localStorage.background_type = localStorage.previous_type;
+			} else {
+				localStorage.background_image = optimizedBgURL("src/images/avi-richards-beach.jpg");
+				localStorage.background_type = "default";
+				imgBackground(optimizedBgURL("src/images/avi-richards-beach.jpg"));
+				blurThis(25);
+			}
+		}
+	});
+}
 
 defaultBg();
-
-
-//quand on active le bg dynamique
-$("div.dynamic_bg input").change(function() {
-
-	if (this.checked) {
-
-		$(".background").css("background-image", "url('" + UNSPLASH + "')");
-
-		localStorage.background_image = UNSPLASH;
-		localStorage.background_type = "dynamic";
-
-		//enleve la selection default bg si jamais
-		$(".imgpreview").removeClass("selected");
-
-	} else {
-
-		$(".background").css("background-image", 'url("src/images/background.jpg")');
-		localStorage.background_type = "default";
-	}
-});
-
-
+dynamicBackground();
 
 
 
@@ -1041,7 +1107,7 @@ function darkmode(choix) {
 
 	function isIOSwallpaper(dark) {
 
-		var bgsrc = $(".background").css("background-image");
+		var bgsrc = imgBackground();
 		var lbg =  'src/images/ios13wallpaper_l.jpg';
 		var dbg = 'src/images/ios13wallpaper_d.jpg';
 
@@ -1050,7 +1116,7 @@ function darkmode(choix) {
 			$("#ios_wallpaper img").attr("src", dbg);
 
 			if (bgsrc.includes(lbg)) {
-				$(".background").css("background-image", "url(" + dbg + ")");
+				imgBackground(dbg);
 				localStorage.background_image = dbg;
 			}
 
@@ -1059,7 +1125,7 @@ function darkmode(choix) {
 			$("#ios_wallpaper img").attr("src", lbg);
 
 			if (bgsrc.includes(dbg)) {
-				$(".background").css("background-image", "url(" + lbg + ")");
+				imgBackground(lbg);
 				localStorage.background_image = lbg;
 			}
 		}
@@ -1085,7 +1151,7 @@ function darkmode(choix) {
 
 	function auto(blur) {
 
-		var wAPI = JSON.parse(atob(localStorage.wLastState));
+		var wAPI = JSON.parse(localStorage.wLastState);
 		var sunrise = new Date(wAPI.sys.sunrise * 1000);
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
@@ -1156,10 +1222,7 @@ $(".popup .darkmode select.theme").change(function() {
 	$(".settings .darkmode select.theme")[0].value = this.value;
 });
 
-
-
-
-
+//searchbar
 function searchbar() {
 
 	function activate(activated) {
@@ -1186,34 +1249,21 @@ function searchbar() {
 		}
 	}
 
-	function chooseSearchEngine(engine) {
-		if (engine === "s_startpage") {
-			$(".searchbar_container form").attr("action", 'https://www.startpage.com/do/dsearch?query=');
-			$(".searchbar").attr("placeholder", 'Search Startpage');
-		}
-		else if (engine === "s_ddg") {
-			$(".searchbar_container form").attr("action", 'https://duckduckgo.com/?q=');
-			$(".searchbar").attr("placeholder", 'Search DuckDuckGo');
-		}
-		else if (engine === "s_ecosia") {
-			$(".searchbar_container form").attr("action", 'https://www.ecosia.org/search?q=');
-			$(".searchbar").attr("placeholder", 'Search Ecosia');
-		}
-		else if (engine === "s_google") {
-			$(".searchbar_container form").attr("action", 'https://www.google.com/search');
-			$(".searchbar").attr("placeholder", 'Search Google');
-		}
-		else if (engine === "s_yahoo") {
-			$(".searchbar_container form").attr("action", 'https://search.yahoo.com/search?p=');
-			$(".searchbar").attr("placeholder", 'Search Yahoo');
-		}
-		else if (engine === "s_bing") {
-			$(".searchbar_container form").attr("action", 'https://www.bing.com/search?q=');
-			$(".searchbar").attr("placeholder", 'Search Bing');
+	function chooseSearchEngine(choice) {
+
+		var engines = {
+			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", tradThis("Search Startpage")],
+			"s_ddg" : ["https://duckduckgo.com/?q=", tradThis("Search DuckDuckGo")],
+			"s_ecosia" : ["https://www.ecosia.org/search?q=", tradThis("Search Ecosia")],
+			"s_google" : ["https://www.google.com/search", tradThis("Search Google")],
+			"s_yahoo" : ["https://search.yahoo.com/search?p=", tradThis("Search Yahoo")],
+			"s_bing" : ["https://www.bing.com/search?q=", tradThis("Search Bing")]
 		}
 
-		localStorage.searchbar_engine = engine;
+		$(".searchbar_container form").attr("action", engines[choice][0]);
+		$(".searchbar").attr("placeholder", engines[choice][1]);
 
+		localStorage.searchbar_engine = choice;
 	}
 
 	//init
@@ -1260,46 +1310,6 @@ function searchbar() {
 	});
 }
 
-
-
-
-
-
-
-
-
-
-//affiche les settings
-$(".showSettings button").click(function() {
-
-	$(this).toggleClass("shown");
-	
-	$(".settings").css("display", "block");
-	$(".settings").toggleClass("shown");
-	$(".interface").toggleClass("pushed");
-
-
-});
-
-//si settings ouvert, le ferme
-$(".interface").click(function() {
-
-	if ($("div.settings").hasClass("shown")) {
-
-		$(".showSettings button").toggleClass("shown");
-		$(".settings").removeClass("shown");
-		$(".interface").removeClass("pushed");
-	}
-});
-
-
-
-
-
-
-
-
-
 // Signature aléatoire
 function signature() {
 	var v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
@@ -1312,11 +1322,9 @@ function signature() {
 	}
 }
 
-
 function actualizeStartupOptions() {
 
 	var data = localStorage;
-
 
 	//default background 
 	$(".choosable_backgrounds .imgpreview img").each(function() {
@@ -1357,7 +1365,7 @@ function actualizeStartupOptions() {
 
 	//check geolocalisation
 	//enleve city
-	if (data.weather_geol) {
+	if (data.weather_geol_lat && data.weather_geol_long) {
 		$(".w_auto input")[0].checked = true;
 		$(".change_weather .city").css("display", "none");
 	} else {
@@ -1382,6 +1390,12 @@ function actualizeStartupOptions() {
 		$(".choose_search")[0].value = "s_startpage";
 	}
 	
+	//clock
+	if (parseInt(data.clockformat) === 12) {
+		$(".12hour input")[0].checked = true;
+	} else {
+		$(".12hour input")[0].checked = false;
+	}
 
 	//langue
 	if (data.lang) {
@@ -1391,18 +1405,33 @@ function actualizeStartupOptions() {
 	}			
 }
 
-
-
-
-
 function mobilecheck() {
 	var check = false;
 	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
 	return check;
-};
+}
 
 
+//affiche les settings
+$(".showSettings button").click(function() {
 
+	$(this).toggleClass("shown");
+	
+	$(".settings").css("display", "block");
+	$(".settings").toggleClass("shown");
+	$(".interface").toggleClass("pushed");
+});
+
+//si settings ouvert, le ferme
+$(".interface").click(function() {
+
+	if ($("div.settings").hasClass("shown")) {
+
+		$(".showSettings button").toggleClass("shown");
+		$(".settings").removeClass("shown");
+		$(".interface").removeClass("pushed");
+	}
+});
 
 $(document).ready(function() {
 
@@ -1411,7 +1440,7 @@ $(document).ready(function() {
 	//very first
 	initBackground();
 	darkmode();
-
+	
 	//sur la page principale
 	clock();
 	date();
