@@ -54,6 +54,10 @@ select {
 	cursor: pointer;
 }
 
+input, textarea, select, a, button {
+	outline: none;
+}
+
 .background {
 	z-index: -1;
 	position: fixed;

@@ -39,8 +39,6 @@
 	filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
  }
 
-
-
 .settings {
 	position: fixed;
 	right: -20em;
@@ -109,11 +107,6 @@ p.wrongCity {
 
 .settings span {
 	font-size: 0.9em;
-	padding-bottom: .5em;
-}
-
-.selector_span {
-	margin-top: 4px;
 }
 
 .param {
@@ -125,7 +118,7 @@ p.wrongCity {
 
 .settings .wrapper {
 	display: flex;
-	align-items: end;
+	align-items: center;
 	justify-content: space-between;
 }
 
@@ -180,10 +173,6 @@ p.wrongCity {
 	margin: 1em 0 1.5em 0;
 }
 
-
-
-/* Inputs */
-
 input:active, input:focus, a:hover, a:active, a:focus {
 	border: 0;
 }
@@ -192,28 +181,26 @@ input::-moz-focus-outer {
 	border: 0;
 }
 
-input[type="range"] { 
-    position: relative;
-    cursor: pointer;
+/* Slider */
+
+.range {
+	-webkit-appearance:none;
+	position: relative;
+	height: 2px;
+	background: #b4b4b4;
+	cursor:pointer;
+	border-radius:1.5rem
 }
 
-/* Chrome & Safari */
-::-webkit-slider-runnable-track {
-    background: #b4b4b4;
-    border-radius: 50px;
-    height: 2px;
-}
-
-::-webkit-slider-thumb {
-    -webkit-appearance: none;
+/* Chrome, Opera & Safari */
+.range::-webkit-slider-thumb {
+	-webkit-appearance:none; 
     background: #fff;
     height: 20px;
     width: 20px;
     border-radius: 50px;
     border: 0;
-    box-shadow: 0px 1px 3px 1.5px #b8b8b8;
-
-    margin: -9px; /* alignment fix */
+	box-shadow: 0px 1px 3px 1.5px #b8b8b8;
 }
 
 input[type="range"]::-ms-thumb {
