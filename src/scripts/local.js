@@ -31,6 +31,35 @@ const START_LINKS = [
 	}
 ];
 
+function textContrast() {
+	var sourceImage = new Image();
+	sourceImage.src = $(".background").css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
+
+	console.log(sourceImage); 
+
+	var colorThief = new ColorThief();
+
+	$(window).load(function() {
+	  var color = colorThief.getColor(sourceImage);
+
+	  var red = ((color[0])*2)
+	  var green = (color[1])
+	  var blue = (color[2])
+
+	  var overall = ((red*0.299) + (green*0.587) + (blue*0.114))
+	  console.log(overall);
+	  if (overall > 293) {
+	  	$("body").css("color", "#222");
+	  	$("body").css("text-shadow", "none");
+
+	  } else {
+	  	$("body").css("color", "white");
+	  }
+
+	});
+}
+
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	localStorage.clear();
@@ -955,6 +984,8 @@ function initBackground() {
 	setTimeout(function() {
 		$(".background").css("transition", "filter .2s");
 	}, 200);
+
+	textContrast();
 }
 
 
@@ -983,6 +1014,8 @@ function renderImage(file) {
 
 	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
+
+	textContrast();
 }
 
 
@@ -1066,7 +1099,10 @@ function defaultBg() {
 		//sauve la source
 		localStorage.background_image = source;
 		localStorage.background_type = "default";
+
 	});
+
+
 }
 
 function dynamicBackground() {
@@ -1449,6 +1485,7 @@ $(document).ready(function() {
 	//very first
 	initBackground();
 	darkmode();
+	// textContrast();
 	
 	//sur la page principale
 	clock();
