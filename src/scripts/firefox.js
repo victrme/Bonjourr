@@ -105,8 +105,15 @@ function introduction() {
 			quickLinks();
 
 		} else {
+
+			
 			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1);
+
+			if (data.welcomeback) {
+				alert("Welcome back :)");
+				browser.storage.local.remove("welcomeback");
+			}
 		}
 	});
 

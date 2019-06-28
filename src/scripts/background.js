@@ -11,15 +11,35 @@
 	}
 );*/
 
-function fin() {
-	browser.tabs.create({
-		url:"../../index.html"
+function intro() {
+
+	browser.storage.local.get().then((data) => {
+
+		if (data.isIntroduced === true) {
+
+			browser.storage.local.set({"welcomeback": true});
+		}
+
+		browser.tabs.create({
+			url:"../../index.html"
+		});
 	});
 }
 
-browser.management.onUninstalled.addListener(fin);
-var lol = browser.management.onUninstalled.hasListener(fin);
+browser.management.onInstalled.addListener(intro);
 
-lol.then((rep) => {
-	console.log(rep);
-})
+
+/*
+
+function fin() {
+
+	browser.tabs.create({
+		url:"https://bonjourr.fr#contact"
+	});
+}
+
+browser.management.onUninstalled.addListener((info) => {
+	console.log(info.name + " was uninstalled");
+});
+
+console.log(browser.management.onUninstalled.hasListener(fin));*/
