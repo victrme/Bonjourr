@@ -1,7 +1,6 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/victorazevedo-me/Bonjourr/master/src/images/bonjourrpopup.png" width="50%"></img>
 </p>
-<p align="center"><strong>iOS 12 styled startpage</strong></p>
 
 
 Bonjourr is a new home page for your Internet browser, inspired by the looks of iOS' Bedtime option.
@@ -19,8 +18,8 @@ Bonjourr is available in both english and french.
 ## Todo
 
 - [ ] text contrast
-- [ ] background makeover
-- [ ] optimized bg sticky
+- [x] background makeover
+- [x] optimized bg sticky
 - [ ] Welcome and goodbye pages
 - [ ] quick links hover border average color ?
 - [ ] credit Unsplash photographs

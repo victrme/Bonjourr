@@ -37,7 +37,13 @@ function textContrast() {
 
 	console.log(sourceImage); 
 
-	var colorThief = new ColorThief();
+	try {
+		var colorThief = new ColorThief();
+	} catch(e) {
+		console.log(e);
+	}
+	
+	console.log(colorThief);
 
 	$(window).load(function() {
 	  var color = colorThief.getColor(sourceImage);

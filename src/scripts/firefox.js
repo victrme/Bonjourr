@@ -33,14 +33,14 @@ const START_LINKS = [
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	browser.storage.sync.clear().then(() => {
+	browser.storage.local.clear().then(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	browser.storage.sync.get().then((data) => {
+	browser.storage.local.get().then((data) => {
 		console.log(data);
 	});
 }
@@ -66,7 +66,7 @@ function tradThis(str) {
 
 function initTrad() {
 
-	browser.storage.sync.get().then((data) => {
+	browser.storage.local.get().then((data) => {
 
 		//init
 		translator.lang(data.lang);
@@ -74,7 +74,7 @@ function initTrad() {
 		//selection de langue
 		//localStorage + weather update + body trad
 		$(".lang").change(function() {
-			browser.storage.sync.set({"lang": this.value});
+			browser.storage.local.set({"lang": this.value});
 			localStorage.lang = this.value;
 			translator.lang(this.value);
 
@@ -90,15 +90,18 @@ function initTrad() {
 
 function introduction() {
 
-	browser.storage.sync.get().then((data) => {
+	browser.storage.local.get().then((data) => {
 		
 		if (!data.isIntroduced) {
+
+			//mettre ça en false dans la console pour debug la popup
+			browser.storage.local.set({"isIntroduced": true});
+
+
 			$("#start_popup").css("display", "flex");
 			$(".interface .linkblocks").css("opacity", 0);
 
-			
-
-			browser.storage.sync.set({"links": START_LINKS});
+			browser.storage.local.set({"links": START_LINKS});
 			quickLinks();
 
 		} else {
@@ -127,9 +130,6 @@ function introduction() {
 			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1);
 		}, 400);
-
-		//mettre ça en false dans la console pour debug la popup
-		browser.storage.sync.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -218,9 +218,9 @@ function introduction() {
 
 function clock() {
 
-	var timesup;
+	var timesup, format;
 
-	function start(format) {
+	function start() {
 
 		function fixSmallMinutes(i) {
 			if (i < 10) {i = "0" + i};
@@ -246,22 +246,31 @@ function clock() {
 		timesup = setTimeout(start, 5000);
 	}
 
+
 	//settings event
 	$(".12hour input").change(function() {
+
+		//change le format 
 		if ($(this)[0].checked) {
-			localStorage.clockformat = 12;
-			browser.storage.sync.set({"clockformat": 12});
+
+			format = 12;
 			clearTimeout(timesup);
-			start(12);
+			start();
+
 		} else {
-			localStorage.clockformat = 24;
-			browser.storage.sync.set({"clockformat": 24});
+
+			format = 24;
 			clearTimeout(timesup);
-			start(24);
+			start();
 		}
+
+		//enregistre partout suivant le format
+		browser.storage.local.set({"clockformat": format});
+		localStorage.clockformat = format;
 	});
 
-	start(parseInt(localStorage.clockformat));
+	format = parseInt(localStorage.clockformat);
+	start();
 }
 
 function date() {
@@ -305,7 +314,7 @@ function quickLinks() {
 
 		$(".linkblocks").empty();
 
-		browser.storage.sync.get().then((data) => {
+		browser.storage.local.get().then((data) => {
 
 			if (data.links) {
 
@@ -396,7 +405,7 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			browser.storage.sync.get().then((data) => {
+			browser.storage.local.get().then((data) => {
 
 				//si on supprime un block quand la limite est atteinte
 				//réactive les inputs
@@ -425,7 +434,7 @@ function quickLinks() {
 				}
 				
 				var links = data.links;
-				browser.storage.sync.set({"links": ejectIntruder(links)});
+				browser.storage.local.set({"links": ejectIntruder(links)});
 			});
 		}
 
@@ -494,7 +503,7 @@ function quickLinks() {
 
 			var full = false;
 
-			browser.storage.sync.get().then((data) => {
+			browser.storage.local.get().then((data) => {
 
 				var arr = [];
 
@@ -516,7 +525,7 @@ function quickLinks() {
 				}
 				
 				if (!full) {
-					browser.storage.sync.set({"links": arr});
+					browser.storage.local.set({"links": arr});
 					appendblock(links);
 				} else {
 
@@ -726,8 +735,8 @@ function weather() {
 
 		weatherRequest(req);
 
-		browser.storage.sync.set({"weather_city": "Paris"});
-		browser.storage.sync.set({"weather_unit": "metric"});
+		browser.storage.local.set({"weather_city": "Paris"});
+		browser.storage.local.set({"weather_unit": "metric"});
 	}
  
 	function apply() {
@@ -745,7 +754,7 @@ function weather() {
 			lastState = "";
 		}
 
-		browser.storage.sync.get().then((data) => {
+		browser.storage.local.get().then((data) => {
 
 			req = {
 				city: data.weather_city,
@@ -804,11 +813,11 @@ function weather() {
 
 		if (req.city.length < 2) return "";
  		
-		browser.storage.sync.get().then((data) => {
+		browser.storage.local.get().then((data) => {
 
 			weatherRequest(req);
 
-			browser.storage.sync.set({"weather_city": req.city});
+			browser.storage.local.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
 			city.val("");
@@ -826,7 +835,7 @@ function weather() {
 
 		weatherRequest(req);
 		
-		browser.storage.sync.set({"weather_unit": req.unit});
+		browser.storage.local.set({"weather_unit": req.unit});
 	}
 
 	//automatise la meteo
@@ -841,8 +850,8 @@ function weather() {
 
 				req.geol_lat = pos.coords.latitude
 				req.geol_long = pos.coords.longitude;
-				browser.storage.sync.set({"weather_geol_lat": req.geol_lat});
-				browser.storage.sync.set({"weather_geol_long": req.geol_long});
+				browser.storage.local.set({"weather_geol_lat": req.geol_lat});
+				browser.storage.local.set({"weather_geol_long": req.geol_long});
 
 				weatherRequest(req);
 
@@ -860,8 +869,8 @@ function weather() {
 
 		} else {
 
-			browser.storage.sync.remove("weather_geol_lat");
-			browser.storage.sync.remove("weather_geol_long");
+			browser.storage.local.remove("weather_geol_lat");
+			browser.storage.local.remove("weather_geol_long");
 			req.geol_lat, req.geol_long = false;
 			$(".change_weather .city").css("display", "block");
 		}
@@ -921,6 +930,39 @@ function weather() {
 	apply();
 }
 
+
+
+/*function textContrast() {
+	var sourceImage = new Image();
+	sourceImage.src = $(".background").css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
+
+	$(window).load(function() {
+
+
+		try {
+			var colorThief = new ColorThief();
+		} catch(e) {
+			console.log(e);
+		}
+
+		var color = colorThief.getColor(sourceImage);
+
+		var red = ((color[0])*2)
+		var green = (color[1])
+		var blue = (color[2])
+
+		var overall = ((red*0.299) + (green*0.587) + (blue*0.114))
+
+		console.log(overall)
+
+		if (overall > 293) {
+			$("body").addClass("contrast")
+		} else {
+			$("body").removeClass("contrast")
+		}
+	});
+}*/
+
 function optimizedBgURL(source) {
 
 	//découpe le ".jpg"
@@ -932,7 +974,6 @@ function optimizedBgURL(source) {
 	return url;
 }
 
-//pour rendre le code plus leger
 function imgBackground(val) {
 	if (val) {
 		$(".background").css("background-image", "url(" + val + ")");
@@ -941,30 +982,61 @@ function imgBackground(val) {
 	}
 }
 
+function blurThis(val) {
+
+	var isDark = $("body").attr("class");
+	
+	if (val > 0) {
+		$('.background').css("filter", 'blur(' + val + 'px)');
+		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
+	} else {
+		$('.background').css("filter", '');
+		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
+	}
+
+	browser.storage.local.set({"background_blur": val});
+}
+
+function applyBackground(src, type, blur) {
+
+	//enleve les inputs selectionnés suivent le type
+	if (type === "default") {
+		src = optimizedBgURL(src);
+
+		$("div.dynamic_bg input").prop("checked", false);
+		$("input[name='background_file']")[0].value = "";
+	}
+	else if (type === "custom") {
+		$("div.dynamic_bg input").prop("checked", false);
+		$(".imgpreview").removeClass("selected");
+	}
+	else if (type === "dynamic") {
+		$("input[name='background_file']")[0].value = "";
+		$(".imgpreview").removeClass("selected");
+	}
+
+	imgBackground(src);
+	if (blur) blurThis(blur);
+	/*textContrast();*/
+}
+
 function initBackground() {
 
-	browser.storage.sync.get().then((data) => {
+	browser.storage.local.get().then((data) => {
 
-		var image = data.background_image;
-		var type = data.background_type;
-		var blur = data.background_blur;
-		
-		//type un peu useless, mais c'est un ancetre alors je le garde ok
 		if (data.background_image) {
 
-			if (type === "default") image = optimizedBgURL(image);
-			imgBackground(image);
-
-			//ensuite on blur
+			//blur input à la bonne range
 			$("input[name='background_blur']").val(data.background_blur);
-			blurThis(data.background_blur);
+			applyBackground(data.background_image, data.background_type, data.background_blur)
+			
 		} else {
 
 			//sans rien l'image de base est utilisé
-			imgBackground(optimizedBgURL("src/images/avi-richards-beach.jpg"));
-			blurThis(25);
+			applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
 		}
 
+		//remet les transitions du blur
 		setTimeout(function() {
 			$(".background").css("transition", "filter .2s");
 		}, 200);
@@ -982,37 +1054,118 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		browser.storage.sync.set({"background_image": url});
-		browser.storage.sync.set({"background_type": "custom"});
+		browser.storage.local.set({"background_image": url});
+		browser.storage.local.set({"background_type": "custom"});
 
-		$('.background').css("background-image", 'url(' + url + ')');
-
-		//enleve le dynamic si jamais
-		$("div.dynamic_bg input").prop("checked", false);
-
-		//enleve la selection default bg si jamais
-		$(".imgpreview").removeClass("selected");
+		applyBackground(url, "custom");
 	}
 
 	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
 }
 
+function defaultBg() {
 
-function blurThis(val) {
+	var bgTimeout, oldbg;
 
-	var isDark = $("body").attr("class");
-	
-	if (val > 0) {
-		$('.background').css("filter", 'blur(' + val + 'px)');
-		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
-	} else {
-		$('.background').css("filter", '');
-		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
-	}
+	//pour preview le default background
+	$(".choosable_backgrounds").mouseenter(function() {
+		oldbg = imgBackground().slice(4, imgBackground().length - 1);
+	});
 
-	browser.storage.sync.set({"background_blur": val});
+	//pour arreter de preview le default background
+	$(".choosable_backgrounds").mouseleave(function() {
+		clearTimeout(bgTimeout);
+		imgBackground(oldbg);
+	});
+
+	//pour preview le default background
+	$(".imgpreview img").mouseenter(function() {
+
+		if (bgTimeout) clearTimeout(bgTimeout);
+
+		var source = this.attributes.src.value;
+		bgTimeout = setTimeout(function() {
+
+			//timeout de 300 pour pas que ça se fasse accidentellement
+			//prend le src de la preview et l'applique au background
+			imgBackground(source);
+
+		}, 300);
+	});
+
+	$(".imgpreview img").mouseleave(function() {
+		clearTimeout(bgTimeout);
+	});
+
+
+	//pour choisir un default background
+	$(".imgpreview img").click(function() {
+
+		//prend le src de la preview et l'applique au background
+		var source = this.attributes.src.value;
+
+	    applyBackground(source, "default");
+
+		clearTimeout(bgTimeout);
+		oldbg = source;
+
+		//enleve selected a tout le monde et l'ajoute au bon
+		$(".imgpreview").removeClass("selected");
+		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+
+		browser.storage.local.set({"background_image": source});
+		browser.storage.local.set({"background_type": "default"});
+	});
 }
+
+function dynamicBackground() {
+
+	$("div.dynamic_bg input").change(function() {
+
+		browser.storage.local.get().then((data) => {
+
+			if (this.checked) {
+
+				//set un previous background si le user choisi de désactiver ce parametre
+				browser.storage.local.set({"previous_image": data.background_image});
+				browser.storage.local.set({"previous_type": data.background_type});
+
+				applyBackground(UNSPLASH, "dynamic");
+
+				browser.storage.local.set({"background_image": UNSPLASH});
+				browser.storage.local.set({"background_type": "dynamic"});
+
+				//enleve la selection default bg si jamais
+				$(".imgpreview").removeClass("selected");
+
+			} else {
+
+				if (data.previous_image) {
+					//previous background devient actuel
+					applyBackground(data.previous_image, data.previous_type);
+
+					browser.storage.local.set({"background_image": data.previous_image});
+					browser.storage.local.set({"background_type": data.previous_type});
+
+					//supprime pour faire de la place en cas de custom bg
+					browser.storage.local.remove("previous_image");
+					browser.storage.local.remove("previous_type");
+
+				} else {
+					//default bg
+					applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
+
+					browser.storage.local.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
+					browser.storage.local.set({"background_type": "default"});
+				}
+			}
+		});
+	});
+}
+
+defaultBg();
+dynamicBackground();
 
 
 // handle input changes
@@ -1026,104 +1179,9 @@ $(".change_background input[name='background_blur']").change(function() {
 });
 
 
-function defaultBg() {
-
-	var bgTimeout, oldbg;
-
-	//pour preview le default background
-	$(".imgpreview").mouseenter(function() {
-		oldbg = imgBackground().slice(4, imgBackground().length - 1);
-	});
-
-	//pour preview le default background
-	$(".imgpreview img").mouseenter(function() {
-
-		var source = this.attributes.src.value;
-		bgTimeout = setTimeout(function() {
-
-			//timeout de 300 pour pas que ça se fasse accidentellement
-			//prend le src de la preview et l'applique au background
-			imgBackground(source);
-
-		}, 300);
-	});
 
 
-	//pour arreter de preview le default background
-	$(".imgpreview").mouseleave(function() {
-		clearTimeout(bgTimeout);
 
-		console.log(oldbg);
-		imgBackground(oldbg);
-	});
-
-	//pour choisir un default background
-	$(".imgpreview img").click(function() {
-
-		//prend le src de la preview et l'applique au background
-		var source = this.attributes.src.value;
-
-	    imgBackground(optimizedBgURL(source));
-
-
-		clearTimeout(bgTimeout);
-		oldbg = source;
-
-		//enleve le dynamic si jamais
-		$("div.dynamic_bg input").prop("checked", false);
-
-		//enleve selected a tout le monde et l'ajoute au bon
-		$(".imgpreview").removeClass("selected");
-		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
-
-		//sauve la source
-		browser.storage.sync.set({"background_image": source});
-		browser.storage.sync.set({"background_type": "default"});
-	});
-}
-
-function dynamicBackground() {
-
-	browser.storage.sync.get().then((data) => {
-
-		//quand on active le bg dynamique
-		$("div.dynamic_bg input").change(function() {
-
-			if (this.checked) {
-
-				//set un previous background si le user choisi de désactiver ce parametre
-				browser.storage.sync.set({"previous_image": data.background_image});
-				browser.storage.sync.set({"previous_type": data.background_type});
-
-				imgBackground(UNSPLASH);
-
-				browser.storage.sync.set({"background_image": UNSPLASH});
-				browser.storage.sync.set({"background_type": "dynamic"});
-
-				//enleve la selection default bg si jamais
-				$(".imgpreview").removeClass("selected");
-
-			} else {
-
-				//mes yeux
-				//previous background devient actuel
-				if (data.previous_image !== "undefined") {
-					imgBackground(data.previous_image);
-					browser.storage.sync.set({"background_image": data.previous_image});
-					browser.storage.sync.set({"background_type": data.previous_type});
-				} else {
-					browser.storage.sync.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
-					browser.storage.sync.set({"background_type": "default"});
-					imgBackground(optimizedBgURL("src/images/avi-richards-beach.jpg"));
-					blurThis(25);
-				}
-			}
-		});
-	});	
-}
-
-defaultBg();
-dynamicBackground();
 
 function darkmode(choix) {
 
@@ -1138,8 +1196,8 @@ function darkmode(choix) {
 			$("#ios_wallpaper img").attr("src", dbg);
 
 			if (bgsrc.includes(lbg)) {
-				imgBackground(dbg);
-				browser.storage.sync.set({"background_image": dbg});
+				applyBackground(dbg, "default");
+				browser.storage.local.set({"background_image": dbg});
 			}
 
 		} else {
@@ -1147,8 +1205,8 @@ function darkmode(choix) {
 			$("#ios_wallpaper img").attr("src", lbg);
 
 			if (bgsrc.includes(dbg)) {
-				imgBackground(lbg);
-				browser.storage.sync.set({"background_image": lbg});
+				applyBackground(lbg, "default");
+				browser.storage.local.set({"background_image": lbg});
 			}
 		}
 	}
@@ -1191,7 +1249,7 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		browser.storage.sync.get().then((data) => {
+		browser.storage.local.get().then((data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1211,23 +1269,23 @@ function darkmode(choix) {
 
 	function changeDarkMode() {
 
-		browser.storage.sync.get().then((data) => {
+		browser.storage.local.get().then((data) => {
 
 			if (choix === "enable") {
 				applyDark(true);
-				browser.storage.sync.set({"dark": "enable"});
+				browser.storage.local.set({"dark": "enable"});
 			}
 
 			if (choix === "disable") {
 				applyDark(false);
-				browser.storage.sync.set({"dark": "disable"});
+				browser.storage.local.set({"dark": "disable"});
 			}
 
 			if (choix === "auto") {
 
 				//prend l'heure et ajoute la classe si nuit
 				auto();
-				browser.storage.sync.set({"dark": "auto"});
+				browser.storage.local.set({"dark": "auto"});
 			}
 		});
 	}
@@ -1254,7 +1312,7 @@ function searchbar() {
 
 		if (activated) {
 
-			browser.storage.sync.set({"searchbar": true});
+			browser.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1263,7 +1321,7 @@ function searchbar() {
 			
 		} else {
 
-			browser.storage.sync.set({"searchbar": false});
+			browser.storage.local.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1288,11 +1346,11 @@ function searchbar() {
 		$(".searchbar_container form").attr("action", engines[choice][0]);
 		$(".searchbar").attr("placeholder", engines[choice][1]);
 
-		browser.storage.sync.set({"searchbar_engine": choice});
+		browser.storage.local.set({"searchbar_engine": choice});
 	}
 
 	//init
-	browser.storage.sync.get().then((data) => {
+	browser.storage.local.get().then((data) => {
 
 		if (data.searchbar) {
 
@@ -1350,7 +1408,7 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	browser.storage.sync.get().then((data) => {
+	browser.storage.local.get().then((data) => {
 
 
 		//default background 
@@ -1420,6 +1478,7 @@ function actualizeStartupOptions() {
 		//clock
 		if (data.clockformat === 12) {
 			$(".12hour input")[0].checked = true;
+			localStorage.clockformat = 12;
 		} else {
 			$(".12hour input")[0].checked = false;
 		}

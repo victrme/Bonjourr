@@ -20,7 +20,12 @@
 		"homepage": "index.html"
 	},
 
+	"background": {
+		"scripts": ["src/scripts/background.js"]
+	},
+
 	"permissions": [
-		"storage"
+		"storage",
+		"management"
 	]
 }
