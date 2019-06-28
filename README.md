@@ -22,4 +22,5 @@ Bonjourr is available in both english and french.
 - [x] optimized bg sticky
 - [ ] Welcome and goodbye pages
 - [ ] quick links hover border average color ?
-- [ ] credit Unsplash photographs
+- [x] credit Unsplash photographs
+- [ ] Faster dynamic backgrounds with credit/location
