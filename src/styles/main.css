@@ -279,6 +279,18 @@ div.linkblocks {
 }
 
 
+.welcomeback {
+	display: none;
+	position: absolute;
+	max-width: 50%;
+	left: 25%;
+	top: 40%;
+	padding: 2em;
+	background-color: #fff;
+	z-index: 3;
+	color: #222;
+}
+
 
 /*POPUP*/
 

@@ -90,13 +90,28 @@ function initTrad() {
 
 function introduction() {
 
+	function welcomeback(storage) {
+
+		//regarde si le storage déclare un welcome back
+		//si oui on affiche welcome back et le supprime
+
+		if (storage.welcomeback) {
+			$(".welcomeback").css("display", "block");
+			browser.storage.local.remove("welcomeback");
+		}
+
+		//$(this).parent() à changer en .welcomeback si jamais
+		$(".welcomeback button").click(function() {
+			$(this).parent().css("opacity", 0);
+			setTimeout(function() {
+				$(this).parent().remove();
+			}, 200);
+		});
+	}
+
 	browser.storage.local.get().then((data) => {
 		
 		if (!data.isIntroduced) {
-
-			//mettre ça en false dans la console pour debug la popup
-			browser.storage.local.set({"isIntroduced": true});
-
 
 			$("#start_popup").css("display", "flex");
 			$(".interface .linkblocks").css("opacity", 0);
@@ -105,15 +120,11 @@ function introduction() {
 			quickLinks();
 
 		} else {
-
 			
 			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1);
 
-			if (data.welcomeback) {
-				alert("Welcome back :)");
-				browser.storage.local.remove("welcomeback");
-			}
+			welcomeback(data);
 		}
 	});
 
@@ -137,6 +148,9 @@ function introduction() {
 			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1);
 		}, 400);
+
+		//mettre ça en false dans la console pour debug la popup
+		browser.storage.local.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -936,39 +950,6 @@ function weather() {
 
 	apply();
 }
-
-
-
-/*function textContrast() {
-	var sourceImage = new Image();
-	sourceImage.src = $(".background").css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
-
-	$(window).load(function() {
-
-
-		try {
-			var colorThief = new ColorThief();
-		} catch(e) {
-			console.log(e);
-		}
-
-		var color = colorThief.getColor(sourceImage);
-
-		var red = ((color[0])*2)
-		var green = (color[1])
-		var blue = (color[2])
-
-		var overall = ((red*0.299) + (green*0.587) + (blue*0.114))
-
-		console.log(overall)
-
-		if (overall > 293) {
-			$("body").addClass("contrast")
-		} else {
-			$("body").removeClass("contrast")
-		}
-	});
-}*/
 
 function optimizedBgURL(source) {
 

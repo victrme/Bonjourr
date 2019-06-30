@@ -31,40 +31,6 @@ const START_LINKS = [
 	}
 ];
 
-function textContrast() {
-	var sourceImage = new Image();
-	sourceImage.src = $(".background").css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
-
-	console.log(sourceImage); 
-
-	try {
-		var colorThief = new ColorThief();
-	} catch(e) {
-		console.log(e);
-	}
-	
-	console.log(colorThief);
-
-	$(window).load(function() {
-	  var color = colorThief.getColor(sourceImage);
-
-	  var red = ((color[0])*2)
-	  var green = (color[1])
-	  var blue = (color[2])
-
-	  var overall = ((red*0.299) + (green*0.587) + (blue*0.114))
-	  console.log(overall);
-	  if (overall > 293) {
-	  	$("body").css("color", "#222");
-	  	$("body").css("text-shadow", "none");
-
-	  } else {
-	  	$("body").css("color", "white");
-	  }
-
-	});
-}
-
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {

@@ -26,20 +26,29 @@ function intro() {
 	});
 }
 
-browser.management.onInstalled.addListener(intro);
-
-
-/*
-
 function fin() {
 
-	browser.tabs.create({
-		url:"https://bonjourr.fr#contact"
+	browser.storage.local.get().then((data) => {
+
+		var url =  "https://bonjourr.fr/";
+
+		if (data.lang === "fr") {
+			url += "fr/goodbye";
+		} else {
+			url += "goodbye";
+		}
+
+		browser.runtime.setUninstallURL(url);
 	});
+
+	
 }
 
-browser.management.onUninstalled.addListener((info) => {
-	console.log(info.name + " was uninstalled");
-});
+function alertUpdate() {
+	browser.storage.local.set({"hasupdate": true});
+	console.log("Please update Bonjourr !");
+}
 
-console.log(browser.management.onUninstalled.hasListener(fin));*/
+browser.runtime.onUpdateAvailable.addListener(alertUpdate);
+browser.management.onInstalled.addListener(intro);
+fin();
