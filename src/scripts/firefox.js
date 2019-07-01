@@ -698,7 +698,7 @@ function weather() {
 			//pour l'icone
 			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
 			var weather_id = imgId(data.weather[0].id);
-	 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
+	 		var icon_src = "src/images/weather/" + d_n + "/" + weather_id + ".png";
 	 		$(".w_icon").attr("src", icon_src);
 
 	 		//sauv l'icone dans wLastState
@@ -951,17 +951,6 @@ function weather() {
 	apply();
 }
 
-function optimizedBgURL(source) {
-
-	//découpe le ".jpg"
-	var url = source.slice(0, source.length - 4);
-	var res = window.devicePixelRatio * screen.height;
-
-	url += (res > 1200 ? "_large.jpg" : ".jpg");
-
-	return url;
-}
-
 function imgBackground(val) {
 	if (val) {
 		$(".background").css("background-image", "url(" + val + ")");
@@ -970,26 +959,40 @@ function imgBackground(val) {
 	}
 }
 
-function blurThis(val) {
+function optimizedBgURL(source, blur) {
 
-	var isDark = $("body").attr("class");
-	
-	if (val > 0) {
-		$('.background').css("filter", 'blur(' + val + 'px)');
-		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
-	} else {
-		$('.background').css("filter", '');
-		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
+	//remplace le répertoire de l'image
+	//en fonction du blur et du ratio pixel
+	//from le repertoire actuel à celui voulu
+	var dirFrom, dirTo;
+
+	if (parseInt(blur) > 0) {
+
+		dirFrom = "default";
+		dirTo = "blur";
+
+	} else if (parseInt(blur) === 0) {
+
+		dirFrom = "blur";
+		dirTo = "default";
 	}
 
-	browser.storage.local.set({"background_blur": val});
+	var res = window.devicePixelRatio * screen.height;
+	if (res > 1200 && source.includes("/default/")) {
+		
+		dirFrom = "default";
+		dirTo = "large";
+	}
+
+	source = source.replace(dirFrom, dirTo);
+	return source;
 }
 
 function applyBackground(src, type, blur) {
 
 	//enleve les inputs selectionnés suivent le type
 	if (type === "default") {
-		src = optimizedBgURL(src);
+		src = optimizedBgURL(src, blur);
 
 		$("div.dynamic_bg input").prop("checked", false);
 		$("input[name='background_file']")[0].value = "";
@@ -1005,7 +1008,6 @@ function applyBackground(src, type, blur) {
 
 	imgBackground(src);
 	if (blur) blurThis(blur);
-	/*textContrast();*/
 }
 
 function initBackground() {
@@ -1016,12 +1018,12 @@ function initBackground() {
 
 			//blur input à la bonne range
 			$("input[name='background_blur']").val(data.background_blur);
-			applyBackground(data.background_image, data.background_type, data.background_blur)
+			applyBackground(data.background_image, data.background_type, data.background_blur);
 			
 		} else {
 
 			//sans rien l'image de base est utilisé
-			applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
+			applyBackground("src/images/backgrounds/blur/avi-richards-beach.jpg", "default", 25);
 		}
 
 		//remet les transitions du blur
@@ -1073,6 +1075,8 @@ function defaultBg() {
 		if (bgTimeout) clearTimeout(bgTimeout);
 
 		var source = this.attributes.src.value;
+		source = source.replace("blur", "default");
+
 		bgTimeout = setTimeout(function() {
 
 			//timeout de 300 pour pas que ça se fasse accidentellement
@@ -1092,6 +1096,7 @@ function defaultBg() {
 
 		//prend le src de la preview et l'applique au background
 		var source = this.attributes.src.value;
+		source = source.replace("blur", "default");
 
 	    applyBackground(source, "default");
 
@@ -1100,7 +1105,9 @@ function defaultBg() {
 
 		//enleve selected a tout le monde et l'ajoute au bon
 		$(".imgpreview").removeClass("selected");
-		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+		//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
+		var tempAttr = $(this)[0].parentElement.getAttribute("class");
+		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
 
 		browser.storage.local.set({"background_image": source});
 		browser.storage.local.set({"background_type": "default"});
@@ -1152,6 +1159,28 @@ function dynamicBackground() {
 	});
 }
 
+function blurThis(val, choosing) {
+
+	var isDark = $("body").attr("class");
+	var url = imgBackground().slice(4, imgBackground().length - 1);
+	
+	if (val > 0) {
+		$('.background').css("filter", 'blur(' + val + 'px)');
+		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
+
+		if (choosing) imgBackground(optimizedBgURL(url, val));
+
+	} else {
+
+		$('.background').css("filter", '');
+		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
+
+		if (choosing) imgBackground(optimizedBgURL(url, val));
+	}
+
+	browser.storage.local.set({"background_blur": val});
+}
+
 defaultBg();
 dynamicBackground();
 
@@ -1163,7 +1192,7 @@ $(".change_background input[name='background_file']").change(function() {
 
 // handle input changes
 $(".change_background input[name='background_blur']").change(function() {
-	blurThis(this.value);
+	blurThis(this.value, true);
 });
 
 
@@ -1175,27 +1204,28 @@ function darkmode(choix) {
 
 	function isIOSwallpaper(dark) {
 
-		var bgsrc = $(".background").css("background-image");
-		var lbg =  'src/images/ios13wallpaper_l.jpg';
-		var dbg = 'src/images/ios13wallpaper_d.jpg';
+		//défini les parametres a changer en fonction du theme
+		var modeurl, actual, urltouse;
 
 		if (dark) {
 
-			$("#ios_wallpaper img").attr("src", dbg);
-
-			if (bgsrc.includes(lbg)) {
-				applyBackground(dbg, "default");
-				browser.storage.local.set({"background_image": dbg});
-			}
+			modeurl = "ios13_dark";
+			actual = "ios13_light";
+			urltouse = 'src/images/backgrounds/default/ios13_dark.jpg';
 
 		} else {
+			
+			modeurl = "ios13_light";
+			actual = "ios13_dark";
+			urltouse = 'src/images/backgrounds/default/ios13_light.jpg';
+		}
 
-			$("#ios_wallpaper img").attr("src", lbg);
+		//et les applique ici
+		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/blur/" + modeurl + ".jpg");
 
-			if (bgsrc.includes(dbg)) {
-				applyBackground(lbg, "default");
-				browser.storage.local.set({"background_image": lbg});
-			}
+		if (imgBackground().includes(actual)) {
+			applyBackground(optimizedBgURL(urltouse), "default");
+			browser.storage.local.set({"background_image": optimizedBgURL(urltouse)});
 		}
 	}
 
@@ -1204,22 +1234,20 @@ function darkmode(choix) {
 		if (add) {
 
 			$("body").addClass("dark");
-			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
-
+			$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
 			isIOSwallpaper(true);
 
 		} else {
 
 			$("body").removeClass("dark");
-			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
-		
+			$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
 			isIOSwallpaper(false);
 		}
 	}
 
 	function auto(blur) {
 
-		var wAPI = JSON.parse(atob(localStorage.wLastState));
+		var wAPI = JSON.parse(localStorage.wLastState);
 		var sunrise = new Date(wAPI.sys.sunrise * 1000);
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
