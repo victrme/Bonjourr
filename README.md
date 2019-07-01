@@ -19,5 +19,6 @@ Bonjourr is available in both english and french.
 
 - [x] credit Unsplash photographs
 - [x] Welcome and goodbye pages
+- [ ] Fix popup for small res
 - [ ] Style Welcome back
 - [ ] Faster dynamic backgrounds with credit/location
