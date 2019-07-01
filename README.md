@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/victorazevedo-me/Bonjourr/master/src/images/bonjourrpopup.png" width="50%"></img>
+  <img src="https://raw.githubusercontent.com/victorazevedo-me/Bonjourr/master/src/images/popup/bonjourrpopup.png" width="50%"></img>
 </p>
 
 
@@ -17,8 +17,7 @@ Bonjourr is available in both english and french.
 
 ## Todo
 
-- [x] background makeover
-- [x] optimized bg sticky
 - [x] credit Unsplash photographs
-- [ ] Welcome and goodbye pages
+- [x] Welcome and goodbye pages
+- [ ] Style Welcome back
 - [ ] Faster dynamic backgrounds with credit/location
