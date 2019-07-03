@@ -96,16 +96,21 @@ function introduction() {
 		//si oui on affiche welcome back et le supprime
 
 		if (storage.welcomeback) {
-			$(".welcomeback").css("display", "block");
-			browser.storage.local.remove("welcomeback");
+			$(".welcomeback_wrapper").css("display", "flex");
+			browser.storage.local.remove(".welcomeback_wrapper");
 		}
 
 		//$(this).parent() à changer en .welcomeback si jamais
 		$(".welcomeback button").click(function() {
-			$(this).parent().css("opacity", 0);
+
+
+			$(".welcomeback_wrapper").css("background-color", 'transparent');
+			$(".welcomeback").css("margin-top", "200%");
+			
 			setTimeout(function() {
-				$(this).parent().remove();
-			}, 200);
+				$(".welcomeback_wrapper").remove();
+			}, 400);
+
 		});
 	}
 
@@ -114,7 +119,7 @@ function introduction() {
 		if (!data.isIntroduced) {
 
 			$("#start_popup").css("display", "flex");
-			$(".interface .linkblocks").css("opacity", 0);
+			$(".interface .linkblocks").css("display", 'none');
 
 			browser.storage.local.set({"links": START_LINKS});
 			quickLinks();
@@ -122,7 +127,7 @@ function introduction() {
 		} else {
 			
 			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1);
+			$(".interface .linkblocks").css("display", 'flex');
 
 			welcomeback(data);
 		}

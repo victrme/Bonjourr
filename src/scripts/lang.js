@@ -296,4 +296,16 @@ var dict = {
   "Search Bing": {
     fr: "Rechercher sur Bing"
   }
+  ,
+  "Welcome back 😊": {
+    fr: "Bon retour 😊"
+  }
+  ,
+  "We've kept your settings so you don't have to redo everything again.": {
+    fr: "Nous avons gardé vos réglages pour vous éviter d'avoir à tout refaire."
+  }
+  ,
+  "Close": {
+    fr: "Fermer"
+  }
 }

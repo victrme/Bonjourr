@@ -11,14 +11,32 @@ While this startpage is minimal and beautiful, it is also thought out to be prac
 * Weather based on your location
 * Quick links to your favorite websites
 * Dark mode
-* And more..
+* And more...
 
 Bonjourr is available in both english and french.
 
+## Install
+
+<p align="center">Head to [bonjourr.fr](https://bonjourr.fr).</p>
+
 ## Todo
 
-- [x] credit Unsplash photographs
 - [x] Welcome and goodbye pages
-- [ ] Fix popup for small res
-- [ ] Style Welcome back
-- [ ] Faster dynamic backgrounds with credit/location
+- [x] Style Welcome back
+- [ ] Finalize Welcome back
+- [ ] Open new tab when installed
+
+
+## Known issues to fix
+
+- [ ] Faster dynamic backgrounds
+- [ ] On large res when default backgrounds are selected, they are displayed on the right size on click but go back to default size when cursor moves away
+- [ ] Better popup for small res
+- [ ] Blur cursor sometimes get back to default when refreshed
+- [ ] Blured background images don't always activate when needed
+- [ ] On the Firefox version, the local path appears in the search bar when a new window is opened
+
+## Features for the future
+
+- [ ] Dynamic backgrounds with credits and locations
+- [ ] Personalized CSS settings
