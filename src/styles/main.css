@@ -278,6 +278,7 @@ div.linkblocks {
 	}
 }
 
+
 .welcomeback_wrapper {
 	position: absolute;
 	overflow: hidden;
@@ -292,25 +293,31 @@ div.linkblocks {
 
 .welcomeback {
 	transition: all .4s ease-in;
-	width: 600px;
+	width: 300px;
 	max-width: calc(100% - 2em);
 	height: auto;
-	padding: 2em;
+	padding: 1.4em;
 	background-color: #fff;
 	z-index: 3;
 	color: #222;
 	border-radius: 8px;
 }
 
+.welcomeback h1 {
+    color: black;
+    font-size: 1.5em;
+    text-shadow: none;
+}
+
 .welcomeback  p {
-	font-size: 22px;
+	font-size: 18px;
 	color: black;
-	margin: 1.5em 0;
+	margin: .8em 0;
 	line-height: 1.5em;
 }
 
 .welcomeback  button {
-	font-size: 22px;
+	font-size: 18px;
 }
 
 /*POPUP*/
@@ -369,7 +376,7 @@ div.linkblocks {
 	margin: 0;
 }
 
-.popup h1, .welcomeback h1 {
+.popup h1 {
 	color: black;
 	font-size: 2em;
 	text-shadow: none;
@@ -570,42 +577,6 @@ body.dark .popup_buttons button {
 	body {font-size: 14px}
 	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
 }
-
-/*@media screen and (max-height: 700px) {
-	#clock {
-		font-size: 5em;
-	}
-
-	.greetings {
-		font-size: 2.25em;
-	}
-
-	.weather:nth-child(1) {
-		font-size: 1em;
-	}
-
-	.date {
-		font-size: 1.25em;
-	}
-
-	.w_widget_temp { font-size: 2.5rem; }
-
-	.w_icon { height: 45px; }
-
-	.searchbar {
-		width: 300px;
-		height: 40px;
-	}
-
-	.block_parent .l_icon_wrap {
-		width: 3.5em;
-		height: 3.5em;
-	}
-
-	.bonjourr_logo {
-		width: 50%;
-	}
-}*/
 
 @media screen and (max-height: 550px) {
 

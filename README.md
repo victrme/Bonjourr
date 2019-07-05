@@ -17,7 +17,7 @@ Bonjourr is available in both english and french.
 
 ## Install
 
-<p align="center">Head to [bonjourr.fr](https://bonjourr.fr).</p>
+<p align="center">Head to <a href="https://bonjourr.fr">bonjourr.fr</a></p>
 
 ## Todo
 
@@ -31,7 +31,7 @@ Bonjourr is available in both english and french.
 
 - [ ] Faster dynamic backgrounds
 - [ ] On large res when default backgrounds are selected, they are displayed on the right size on click but go back to default size when cursor moves away
-- [ ] Better popup for small res
+- [x] Better popup for small res
 - [ ] Blur cursor sometimes get back to default when refreshed
 - [ ] Blured background images don't always activate when needed
 - [ ] On the Firefox version, the local path appears in the search bar when a new window is opened
