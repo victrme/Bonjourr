@@ -97,7 +97,7 @@ function introduction() {
 
 		if (storage.welcomeback) {
 			$(".welcomeback_wrapper").css("display", "flex");
-			browser.storage.local.remove(".welcomeback_wrapper");
+			browser.storage.local.remove("welcomeback");
 		}
 
 		//$(this).parent() à changer en .welcomeback si jamais
@@ -780,6 +780,8 @@ function weather() {
 			lastState = "";
 		}
 
+		dataHandling(lastState);
+
 		browser.storage.local.get().then((data) => {
 
 			req = {
@@ -1080,13 +1082,12 @@ function defaultBg() {
 		if (bgTimeout) clearTimeout(bgTimeout);
 
 		var source = this.attributes.src.value;
-		source = source.replace("blur", "default");
 
 		bgTimeout = setTimeout(function() {
 
 			//timeout de 300 pour pas que ça se fasse accidentellement
 			//prend le src de la preview et l'applique au background
-			imgBackground(source);
+			imgBackground(optimizedBgURL(source));
 
 		}, 300);
 	});
@@ -1101,9 +1102,8 @@ function defaultBg() {
 
 		//prend le src de la preview et l'applique au background
 		var source = this.attributes.src.value;
-		source = source.replace("blur", "default");
 
-	    applyBackground(source, "default");
+	    applyBackground(optimizedBgURL(source), "default");
 
 		clearTimeout(bgTimeout);
 		oldbg = source;

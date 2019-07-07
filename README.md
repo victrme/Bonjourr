@@ -24,16 +24,16 @@ Bonjourr is available in both english and french.
 - [x] Welcome and goodbye pages
 - [x] Style Welcome back
 - [ ] Finalize Welcome back
-- [ ] Open new tab when installed
+- [x] Open new tab when installed
 
 
 ## Known issues to fix
 
 - [ ] Faster dynamic backgrounds
-- [ ] On large res when default backgrounds are selected, they are displayed on the right size on click but go back to default size when cursor moves away
+- [x] On large res when default backgrounds are selected, they are displayed on the right size on click but go back to default size when cursor moves away
 - [x] Better popup for small res
-- [ ] Blur cursor sometimes get back to default when refreshed
-- [ ] Blured background images don't always activate when needed
+- [x] Blur cursor sometimes get back to default when refreshed
+- [x] Blured background images don't always activate when needed
 - [ ] On the Firefox version, the local path appears in the search bar when a new window is opened
 
 ## Features for the future
