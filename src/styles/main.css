@@ -72,12 +72,6 @@ input, textarea, select, a, button {
 
 .interface {
 	min-height: 100vh;
-	/*min-height: calc(100vh - 5em);
-	padding-bottom: 5em;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-around;*/
-
 }
 .interface.pushed {
 	margin-left: -20em;
@@ -289,6 +283,7 @@ div.linkblocks {
 	height: 100%;
 	background-color: rgba(0, 0, 0, .6);
 	text-shadow: none;
+	z-index: 99;
 }
 
 .welcomeback {

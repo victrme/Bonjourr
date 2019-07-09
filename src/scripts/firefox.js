@@ -100,17 +100,17 @@ function introduction() {
 			browser.storage.local.remove("welcomeback");
 		}
 
-		//$(this).parent() à changer en .welcomeback si jamais
-		$(".welcomeback button").click(function() {
-
-
+		function remWelcome() {
 			$(".welcomeback_wrapper").css("background-color", 'transparent');
 			$(".welcomeback").css("margin-top", "200%");
 			
 			setTimeout(function() {
 				$(".welcomeback_wrapper").remove();
 			}, 400);
+		}
 
+		$(".welcomeback button").click(function() {
+			remWelcome();
 		});
 	}
 
@@ -120,9 +120,6 @@ function introduction() {
 
 			$("#start_popup").css("display", "flex");
 			$(".interface .linkblocks").css("display", 'none');
-
-			browser.storage.local.set({"links": START_LINKS});
-			quickLinks();
 
 		} else {
 			
@@ -147,6 +144,7 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
+		$(".interface .linkblocks").css("display", 'flex');
 		quickLinks();
 		
 		setTimeout(function() {
@@ -183,6 +181,8 @@ function introduction() {
 
 		if (state === "nxt") {
 			if (margin === 100) {
+				browser.storage.local.set({"links": START_LINKS});
+				quickLinks();
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
 			}
@@ -780,7 +780,7 @@ function weather() {
 			lastState = "";
 		}
 
-		dataHandling(lastState);
+		if (lastState) dataHandling(lastState);
 
 		browser.storage.local.get().then((data) => {
 
@@ -973,12 +973,12 @@ function optimizedBgURL(source, blur) {
 	//from le repertoire actuel à celui voulu
 	var dirFrom, dirTo;
 
-	if (parseInt(blur) > 0) {
+	if (parseInt(blur) > 5) {
 
 		dirFrom = "default";
 		dirTo = "blur";
 
-	} else if (parseInt(blur) === 0) {
+	} else if (parseInt(blur) < 5 || blur === "none") {
 
 		dirFrom = "blur";
 		dirTo = "default";
@@ -1081,13 +1081,14 @@ function defaultBg() {
 
 		if (bgTimeout) clearTimeout(bgTimeout);
 
-		var source = this.attributes.src.value;
+		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
+		var source = optimizedBgURL(this.attributes.src.value, blur);
 
 		bgTimeout = setTimeout(function() {
 
 			//timeout de 300 pour pas que ça se fasse accidentellement
 			//prend le src de la preview et l'applique au background
-			imgBackground(optimizedBgURL(source));
+			imgBackground(source);
 
 		}, 300);
 	});
@@ -1101,9 +1102,10 @@ function defaultBg() {
 	$(".imgpreview img").click(function() {
 
 		//prend le src de la preview et l'applique au background
-		var source = this.attributes.src.value;
+		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
+		var source = optimizedBgURL(this.attributes.src.value, blur);
 
-	    applyBackground(optimizedBgURL(source), "default");
+	    applyBackground(source, "default");
 
 		clearTimeout(bgTimeout);
 		oldbg = source;
