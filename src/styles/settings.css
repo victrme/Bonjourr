@@ -417,10 +417,6 @@ body.dark input[name="city"] {
 	color: white;
 }
 
-body.dark input[type="range"] {
-	background-color: #1c1c1e;
-}
-
 body.dark .title {
 	background-color : #1c1c1e;
 	color: white;
