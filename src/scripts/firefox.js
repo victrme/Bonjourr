@@ -975,7 +975,13 @@ function optimizedBgURL(source, blur) {
 
 	if (parseInt(blur) > 5) {
 
-		dirFrom = "default";
+		if (source.includes("/default/")) {
+			dirFrom = "default";
+		}
+		else if (source.includes("/large/")) {
+			dirFrom = "large";
+		}
+		
 		dirTo = "blur";
 
 	} else if (parseInt(blur) < 5 || blur === "none") {
