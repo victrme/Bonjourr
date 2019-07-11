@@ -972,6 +972,7 @@ function optimizedBgURL(source, blur) {
 	//en fonction du blur et du ratio pixel
 	//from le repertoire actuel à celui voulu
 	var dirFrom, dirTo;
+	var res = window.devicePixelRatio * screen.height;
 
 	if (parseInt(blur) > 5) {
 
@@ -987,15 +988,22 @@ function optimizedBgURL(source, blur) {
 	} else if (parseInt(blur) < 5 || blur === "none") {
 
 		dirFrom = "blur";
-		dirTo = "default";
+
+		if (res > 950) {	
+			dirTo = "large";
+		} else {
+			dirTo = "default";
+		}
 	}
 
-	var res = window.devicePixelRatio * screen.height;
-	if (res > 1200 && source.includes("/default/")) {
+	if (res > 950 && source.includes("/default/")) {
 		
 		dirFrom = "default";
 		dirTo = "large";
 	}
+
+	
+	
 
 	source = source.replace(dirFrom, dirTo);
 	return source;
