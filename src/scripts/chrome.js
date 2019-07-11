@@ -33,7 +33,7 @@ const START_LINKS = [
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.sync.clear(() => {
+	chrome.storage.sync.clear().then(() => {
 		localStorage.clear();
 	});
 }
@@ -90,20 +90,43 @@ function initTrad() {
 
 function introduction() {
 
+	function welcomeback(storage) {
+
+		//regarde si le storage déclare un welcome back
+		//si oui on affiche welcome back et le supprime
+
+		if (storage.welcomeback) {
+			$(".welcomeback_wrapper").css("display", "flex");
+			chrome.storage.sync.remove("welcomeback");
+		}
+
+		function remWelcome() {
+			$(".welcomeback_wrapper").css("background-color", 'transparent');
+			$(".welcomeback").css("margin-top", "200%");
+			
+			setTimeout(function() {
+				$(".welcomeback_wrapper").remove();
+			}, 400);
+		}
+
+		$(".welcomeback button").click(function() {
+			remWelcome();
+		});
+	}
+
 	chrome.storage.sync.get(null, (data) => {
 		
 		if (!data.isIntroduced) {
+
 			$("#start_popup").css("display", "flex");
-			$(".interface .linkblocks").css("opacity", 0);
-
-			
-
-			chrome.storage.sync.set({"links": START_LINKS});
-			quickLinks();
+			$(".interface .linkblocks").css("display", 'none');
 
 		} else {
+			
 			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1);
+			$(".interface .linkblocks").css("display", 'flex');
+
+			welcomeback(data);
 		}
 	});
 
@@ -121,6 +144,7 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
+		$(".interface .linkblocks").css("display", 'flex');
 		quickLinks();
 		
 		setTimeout(function() {
@@ -157,6 +181,8 @@ function introduction() {
 
 		if (state === "nxt") {
 			if (margin === 100) {
+				chrome.storage.sync.set({"links": START_LINKS});
+				quickLinks();
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
 			}
@@ -218,9 +244,9 @@ function introduction() {
 
 function clock() {
 
-	var timesup;
+	var timesup, format;
 
-	function start(format) {
+	function start() {
 
 		function fixSmallMinutes(i) {
 			if (i < 10) {i = "0" + i};
@@ -246,22 +272,31 @@ function clock() {
 		timesup = setTimeout(start, 5000);
 	}
 
+
 	//settings event
 	$(".12hour input").change(function() {
+
+		//change le format 
 		if ($(this)[0].checked) {
-			localStorage.clockformat = 12;
-			chrome.storage.sync.set({"clockformat": 12});
+
+			format = 12;
 			clearTimeout(timesup);
-			start(12);
+			start();
+
 		} else {
-			localStorage.clockformat = 24;
-			chrome.storage.sync.set({"clockformat": 24});
+
+			format = 24;
 			clearTimeout(timesup);
-			start(24);
+			start();
 		}
+
+		//enregistre partout suivant le format
+		chrome.storage.sync.set({"clockformat": format});
+		localStorage.clockformat = format;
 	});
 
-	start(parseInt(localStorage.clockformat));
+	format = parseInt(localStorage.clockformat);
+	start();
 }
 
 function date() {
@@ -320,7 +355,7 @@ function quickLinks() {
 	function appendblock(arr) {
 
 		//le DOM du block
-		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div></div>";
+		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div></div>";
 
 		$(".linkblocks").append(b);
 	}
@@ -668,7 +703,7 @@ function weather() {
 			//pour l'icone
 			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
 			var weather_id = imgId(data.weather[0].id);
-	 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
+	 		var icon_src = "src/images/weather/" + d_n + "/" + weather_id + ".png";
 	 		$(".w_icon").attr("src", icon_src);
 
 	 		//sauv l'icone dans wLastState
@@ -744,6 +779,8 @@ function weather() {
 			lastCall = undefined;
 			lastState = "";
 		}
+
+		if (lastState) dataHandling(lastState);
 
 		chrome.storage.sync.get(null, (data) => {
 
@@ -921,18 +958,6 @@ function weather() {
 	apply();
 }
 
-function optimizedBgURL(source) {
-
-	//découpe le ".jpg"
-	var url = source.slice(0, source.length - 4);
-	var res = window.devicePixelRatio * screen.height;
-
-	url += (res > 1200 ? "_large.jpg" : ".jpg");
-
-	return url;
-}
-
-//pour rendre le code plus leger
 function imgBackground(val) {
 	if (val) {
 		$(".background").css("background-image", "url(" + val + ")");
@@ -941,30 +966,88 @@ function imgBackground(val) {
 	}
 }
 
+function optimizedBgURL(source, blur) {
+
+	//remplace le répertoire de l'image
+	//en fonction du blur et du ratio pixel
+	//from le repertoire actuel à celui voulu
+	var dirFrom, dirTo;
+	var res = window.devicePixelRatio * screen.height;
+
+	if (parseInt(blur) > 5) {
+
+		if (source.includes("/default/")) {
+			dirFrom = "default";
+		}
+		else if (source.includes("/large/")) {
+			dirFrom = "large";
+		}
+		
+		dirTo = "blur";
+
+	} else if (parseInt(blur) < 5 || blur === "none") {
+
+		dirFrom = "blur";
+
+		if (res > 950) {	
+			dirTo = "large";
+		} else {
+			dirTo = "default";
+		}
+	}
+
+	if (res > 950 && source.includes("/default/")) {
+		
+		dirFrom = "default";
+		dirTo = "large";
+	}
+
+	
+	
+
+	source = source.replace(dirFrom, dirTo);
+	return source;
+}
+
+function applyBackground(src, type, blur) {
+
+	//enleve les inputs selectionnés suivent le type
+	if (type === "default") {
+		src = optimizedBgURL(src, blur);
+
+		$("div.dynamic_bg input").prop("checked", false);
+		$("input[name='background_file']")[0].value = "";
+	}
+	else if (type === "custom") {
+		$("div.dynamic_bg input").prop("checked", false);
+		$(".imgpreview").removeClass("selected");
+	}
+	else if (type === "dynamic") {
+		$("input[name='background_file']")[0].value = "";
+		$(".imgpreview").removeClass("selected");
+	}
+
+	imgBackground(src);
+	if (blur) blurThis(blur);
+}
+
 function initBackground() {
 
 	chrome.storage.sync.get(null, (data) => {
 
-		var image = data.background_image;
-		var type = data.background_type;
-		var blur = data.background_blur;
-		
-		//type un peu useless, mais c'est un ancetre alors je le garde ok
 		if (data.background_image) {
 
-			if (type === "default") image = optimizedBgURL(image);
-			imgBackground(image);
-
-			//ensuite on blur
+			//blur input à la bonne range
 			$("input[name='background_blur']").val(data.background_blur);
-			blurThis(data.background_blur);
+			applyBackground(data.background_image, data.background_type, data.background_blur);
+			
 		} else {
 
 			//sans rien l'image de base est utilisé
-			imgBackground(optimizedBgURL("src/images/avi-richards-beach.jpg"));
-			blurThis(25);
+			applyBackground("src/images/backgrounds/blur/avi-richards-beach.jpg", "default", 25);
 		}
 
+		//remet les transitions du blur
 		setTimeout(function() {
 			$(".background").css("transition", "filter .2s");
 		}, 200);
@@ -985,60 +1068,36 @@ function renderImage(file) {
 		chrome.storage.sync.set({"background_image": url});
 		chrome.storage.sync.set({"background_type": "custom"});
 
-		$('.background').css("background-image", 'url(' + url + ')');
-
-		//enleve le dynamic si jamais
-		$("div.dynamic_bg input").prop("checked", false);
-
-		//enleve la selection default bg si jamais
-		$(".imgpreview").removeClass("selected");
+		applyBackground(url, "custom");
 	}
 
 	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
 }
 
-
-function blurThis(val) {
-
-	var isDark = $("body").attr("class");
-	
-	if (val > 0) {
-		$('.background').css("filter", 'blur(' + val + 'px)');
-		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
-	} else {
-		$('.background').css("filter", '');
-		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
-	}
-
-	chrome.storage.sync.set({"background_blur": val});
-}
-
-
-// handle input changes
-$(".change_background input[name='background_file']").change(function() {
-	renderImage(this.files[0]);
-});
-
-// handle input changes
-$(".change_background input[name='background_blur']").change(function() {
-	blurThis(this.value);
-});
-
-
 function defaultBg() {
 
 	var bgTimeout, oldbg;
 
 	//pour preview le default background
-	$(".imgpreview").mouseenter(function() {
+	$(".choosable_backgrounds").mouseenter(function() {
 		oldbg = imgBackground().slice(4, imgBackground().length - 1);
+	});
+
+	//pour arreter de preview le default background
+	$(".choosable_backgrounds").mouseleave(function() {
+		clearTimeout(bgTimeout);
+		imgBackground(oldbg);
 	});
 
 	//pour preview le default background
 	$(".imgpreview img").mouseenter(function() {
 
-		var source = this.attributes.src.value;
+		if (bgTimeout) clearTimeout(bgTimeout);
+
+		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
+		var source = optimizedBgURL(this.attributes.src.value, blur);
+
 		bgTimeout = setTimeout(function() {
 
 			//timeout de 300 pour pas que ça se fasse accidentellement
@@ -1048,35 +1107,29 @@ function defaultBg() {
 		}, 300);
 	});
 
-
-	//pour arreter de preview le default background
-	$(".imgpreview").mouseleave(function() {
+	$(".imgpreview img").mouseleave(function() {
 		clearTimeout(bgTimeout);
-
-		console.log(oldbg);
-		imgBackground(oldbg);
 	});
+
 
 	//pour choisir un default background
 	$(".imgpreview img").click(function() {
 
 		//prend le src de la preview et l'applique au background
-		var source = this.attributes.src.value;
+		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
+		var source = optimizedBgURL(this.attributes.src.value, blur);
 
-	    imgBackground(optimizedBgURL(source));
-
+	    applyBackground(source, "default");
 
 		clearTimeout(bgTimeout);
 		oldbg = source;
 
-		//enleve le dynamic si jamais
-		$("div.dynamic_bg input").prop("checked", false);
-
 		//enleve selected a tout le monde et l'ajoute au bon
 		$(".imgpreview").removeClass("selected");
-		$(this)[0].parentElement.setAttribute("class", "imgpreview selected");
+		//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
+		var tempAttr = $(this)[0].parentElement.getAttribute("class");
+		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
 
-		//sauve la source
 		chrome.storage.sync.set({"background_image": source});
 		chrome.storage.sync.set({"background_type": "default"});
 	});
@@ -1084,10 +1137,9 @@ function defaultBg() {
 
 function dynamicBackground() {
 
-	chrome.storage.sync.get(null, (data) => {
+	$("div.dynamic_bg input").change(function() {
 
-		//quand on active le bg dynamique
-		$("div.dynamic_bg input").change(function() {
+		chrome.storage.sync.get(null, (data) => {
 
 			if (this.checked) {
 
@@ -1095,7 +1147,7 @@ function dynamicBackground() {
 				chrome.storage.sync.set({"previous_image": data.background_image});
 				chrome.storage.sync.set({"previous_type": data.background_type});
 
-				imgBackground(UNSPLASH);
+				applyBackground(UNSPLASH, "dynamic");
 
 				chrome.storage.sync.set({"background_image": UNSPLASH});
 				chrome.storage.sync.set({"background_type": "dynamic"});
@@ -1105,51 +1157,96 @@ function dynamicBackground() {
 
 			} else {
 
-				//mes yeux
-				//previous background devient actuel
-				if (data.previous_image !== "undefined") {
-					imgBackground(data.previous_image);
+				if (data.previous_image) {
+					//previous background devient actuel
+					applyBackground(data.previous_image, data.previous_type);
+
 					chrome.storage.sync.set({"background_image": data.previous_image});
 					chrome.storage.sync.set({"background_type": data.previous_type});
+
+					//supprime pour faire de la place en cas de custom bg
+					chrome.storage.sync.remove("previous_image");
+					chrome.storage.sync.remove("previous_type");
+
 				} else {
+					//default bg
+					applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
+
 					chrome.storage.sync.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
 					chrome.storage.sync.set({"background_type": "default"});
-					imgBackground(optimizedBgURL("src/images/avi-richards-beach.jpg"));
-					blurThis(25);
 				}
 			}
 		});
-	});	
+	});
+}
+
+function blurThis(val, choosing) {
+
+	var isDark = $("body").attr("class");
+	var url = imgBackground().slice(4, imgBackground().length - 1);
+	
+	if (val > 0) {
+		$('.background').css("filter", 'blur(' + val + 'px)');
+		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
+
+		if (choosing) imgBackground(optimizedBgURL(url, val));
+
+	} else {
+
+		$('.background').css("filter", '');
+		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
+
+		if (choosing) imgBackground(optimizedBgURL(url, val));
+	}
+
+	chrome.storage.sync.set({"background_blur": val});
 }
 
 defaultBg();
 dynamicBackground();
 
+
+// handle input changes
+$(".change_background input[name='background_file']").change(function() {
+	renderImage(this.files[0]);
+});
+
+// handle input changes
+$(".change_background input[name='background_blur']").change(function() {
+	blurThis(this.value, true);
+});
+
+
+
+
+
+
 function darkmode(choix) {
 
 	function isIOSwallpaper(dark) {
 
-		var bgsrc = $(".background").css("background-image");
-		var lbg =  'src/images/ios13wallpaper_l.jpg';
-		var dbg = 'src/images/ios13wallpaper_d.jpg';
+		//défini les parametres a changer en fonction du theme
+		var modeurl, actual, urltouse;
 
 		if (dark) {
 
-			$("#ios_wallpaper img").attr("src", dbg);
-
-			if (bgsrc.includes(lbg)) {
-				imgBackground(dbg);
-				chrome.storage.sync.set({"background_image": dbg});
-			}
+			modeurl = "ios13_dark";
+			actual = "ios13_light";
+			urltouse = 'src/images/backgrounds/default/ios13_dark.jpg';
 
 		} else {
+			
+			modeurl = "ios13_light";
+			actual = "ios13_dark";
+			urltouse = 'src/images/backgrounds/default/ios13_light.jpg';
+		}
 
-			$("#ios_wallpaper img").attr("src", lbg);
+		//et les applique ici
+		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/blur/" + modeurl + ".jpg");
 
-			if (bgsrc.includes(dbg)) {
-				imgBackground(lbg);
-				chrome.storage.sync.set({"background_image": lbg});
-			}
+		if (imgBackground().includes(actual)) {
+			applyBackground(optimizedBgURL(urltouse), "default");
+			chrome.storage.sync.set({"background_image": optimizedBgURL(urltouse)});
 		}
 	}
 
@@ -1158,22 +1255,20 @@ function darkmode(choix) {
 		if (add) {
 
 			$("body").addClass("dark");
-			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup_d.png');
-
+			$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
 			isIOSwallpaper(true);
 
 		} else {
 
 			$("body").removeClass("dark");
-			$(".bonjourr_logo").attr("src", 'src/images/bonjourrpopup.png');
-		
+			$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
 			isIOSwallpaper(false);
 		}
 	}
 
 	function auto(blur) {
 
-		var wAPI = JSON.parse(atob(localStorage.wLastState));
+		var wAPI = JSON.parse(localStorage.wLastState);
 		var sunrise = new Date(wAPI.sys.sunrise * 1000);
 		var sunset = new Date(wAPI.sys.sunset * 1000);
 		var hr = new Date();
@@ -1420,6 +1515,7 @@ function actualizeStartupOptions() {
 		//clock
 		if (data.clockformat === 12) {
 			$(".12hour input")[0].checked = true;
+			localStorage.clockformat = 12;
 		} else {
 			$(".12hour input")[0].checked = false;
 		}
