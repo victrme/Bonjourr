@@ -543,13 +543,13 @@ div.linkblocks {
 
 /*POPUP*/
 
-
 /*dark mode */
 
 body.dark,
 body.dark .popup, 
 body.dark .popup_window,
-body.dark .popup .weather .w_icon {
+body.dark .popup .weather .w_icon,
+body.dark .welcomeback {
 	background-color: #1c1c1e;
 }
 
@@ -559,7 +559,9 @@ body.dark .background {
 
 body.dark .popup p,
 body.dark .popup h1,
-body.dark .popup span {
+body.dark .popup span,
+body.dark .welcomeback  p,
+body.dark .welcomeback  h1 {
 	color: white;
 }
 
