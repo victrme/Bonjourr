@@ -71,14 +71,13 @@ input, textarea, select, a, button {
 }
 
 .interface {
-	min-height: 100vh;
+	min-height: 95vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
 }
 .interface.pushed {
 	margin-left: -20em;
-}
-
-.time {
-	padding: 3em 0;
 }
 
 #clock {
@@ -90,8 +89,11 @@ input, textarea, select, a, button {
 	font-size: 1.5em;
 }
 
-.main {
-	padding: 3em 0;
+.main,
+.time,
+.searchbar_container,
+.linkblocks {
+	padding: 2em 0;
 }
 
 .greetings {
@@ -129,16 +131,34 @@ div.w_widget_text {
 /* Searchbar section */
 
 .searchbar_container {
-	display: none;
+	visibility: hidden;
 	opacity: 0;
+	height: 2px;
 	width: 100%;
+	padding: 0;
+}
+
+.searchbar_container.shown {
+	visibility: visible;
+	opacity: 1;
 	padding: 2em 0;
+	height: 52px;
+}
+
+.searchbar_container.shown .searchbar {
+	height: 50px;
+}
+
+.searchbar_container.hidden {
+	visibility: hidden;
+	opacity: 0;
+	padding: 0;
+	height: 2px;
 }
 
 .searchbar {
 	opacity: 0.8;
 	font-size: 1.5em;
-	height: 50px;
 	width: calc(100% - 2em);
 	max-width: 500px;
 	border: 0;
@@ -162,6 +182,7 @@ div.linkblocks {
 	max-width: 900px;
 	margin: 0 auto;
 	padding: 2em;
+	min-height: 8em;
 }
 
 .block_parent {
@@ -567,137 +588,4 @@ body.dark .welcomeback  h1 {
 
 body.dark .popup_buttons button {
 	background-color: #007aff;
-}
-
-
-@media screen and (max-width: 700px) {
-	body {font-size: 14px}
-	div.interface {height: calc(100vh - 6em);margin: 1em 0 5em 0;}
-}
-
-@media screen and (max-height: 550px) {
-
-	.time,
-	.main {
-		font-size: .7em;
-		padding: 1em 0;
-	}
-
-	.w_icon {
-		height: 50px;
-		width: 50px;
-	}
-
-	div.w_widget {
-		height: 70px;
-	}
-
-	.searchbar_container {
-		padding: 1em 0;
-	}
-
-	.searchbar {
-		height: 35px;
-		max-width: 350px;
-		font-size: 1em;
-	}
-}
-
-@media screen and (min-height: 550px) {
-	
-	.main {
-		padding: 1em 0;
-	}
-
-
-	.searchbar_container {
-		padding: 1.5em 0;
-	}
-
-	.searchbar {
-		height: 40px;
-		max-width: 400px;
-		font-size: 1.2em;
-	}
-}
-
-@media screen and (max-height: 750px) {
-
-	.time,
-	.main {
-		font-size: .8em;
-	}
-
-	div.w_widget {
-		height: 80px;
-	}
-
-	.w_icon {
-		height: 60px;
-		width: 60px;
-	}
-
-	.block_parent .l_icon_wrap {
-	    width: 3.3em;
-	    height: 3.3em;
-	}
-
-	.block_parent button.remove {
-		height: 25px;
-		width: 25px;
-	}
-
-	.remove img {
-		width: .7em;
-		height: .7em;
-	}
-
-	.searchbar {
-		height: 40px;
-		max-width: 400px;
-		font-size: 1.2em;
-	}
-}
-
-@media screen and (min-height: 750px) {
-	.main,
-	.searchbar_container,
-	.linkblocks {
-		padding: 3em 0;
-	}
-}
-
-@media screen and (max-height: 801px) {
-	.popup p, .popup span {
-		font-size: 19px;
-		line-height: 1.3em;
-	}
-
-	.popup .linkblocks {
-		padding-top: 0px;
-	}
-
-	.addLink {
-		margin: 1em auto;
-	}
-}
-
-@media screen and (min-height: 1100px) {
-
-	.time,
-	.main {
-		padding: 6em 0;
-	}
-}
-
-@media screen and (min-height: 1250px) {
-
-	.time,
-	.main {
-		padding: 7em 0;
-	}
-
-	.searchbar_container {
-		padding: 5em 0;
-	}
 }

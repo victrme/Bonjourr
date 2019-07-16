@@ -33,14 +33,14 @@ const START_LINKS = [
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.sync.clear().then(() => {
+	chrome.storage.local.clear().then(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -66,7 +66,7 @@ function tradThis(str) {
 
 function initTrad() {
 
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		//init
 		translator.lang(data.lang);
@@ -74,7 +74,7 @@ function initTrad() {
 		//selection de langue
 		//localStorage + weather update + body trad
 		$(".lang").change(function() {
-			chrome.storage.sync.set({"lang": this.value});
+			chrome.storage.local.set({"lang": this.value});
 			localStorage.lang = this.value;
 			translator.lang(this.value);
 
@@ -97,7 +97,7 @@ function introduction() {
 
 		if (storage.welcomeback) {
 			$(".welcomeback_wrapper").css("display", "flex");
-			chrome.storage.sync.remove("welcomeback");
+			chrome.storage.local.remove("welcomeback");
 		}
 
 		function remWelcome() {
@@ -114,7 +114,7 @@ function introduction() {
 		});
 	}
 
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 		
 		if (!data.isIntroduced) {
 
@@ -153,7 +153,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		chrome.storage.sync.set({"isIntroduced": true});
+		chrome.storage.local.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -181,7 +181,7 @@ function introduction() {
 
 		if (state === "nxt") {
 			if (margin === 100) {
-				chrome.storage.sync.set({"links": START_LINKS});
+				chrome.storage.local.set({"links": START_LINKS});
 				quickLinks();
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
@@ -291,7 +291,7 @@ function clock() {
 		}
 
 		//enregistre partout suivant le format
-		chrome.storage.sync.set({"clockformat": format});
+		chrome.storage.local.set({"clockformat": format});
 		localStorage.clockformat = format;
 	});
 
@@ -340,7 +340,7 @@ function quickLinks() {
 
 		$(".linkblocks").empty();
 
-		chrome.storage.sync.get(null, (data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			if (data.links) {
 
@@ -431,7 +431,7 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			chrome.storage.sync.get(null, (data) => {
+			chrome.storage.local.get(null, (data) => {
 
 				//si on supprime un block quand la limite est atteinte
 				//réactive les inputs
@@ -460,7 +460,7 @@ function quickLinks() {
 				}
 				
 				var links = data.links;
-				chrome.storage.sync.set({"links": ejectIntruder(links)});
+				chrome.storage.local.set({"links": ejectIntruder(links)});
 			});
 		}
 
@@ -529,7 +529,7 @@ function quickLinks() {
 
 			var full = false;
 
-			chrome.storage.sync.get(null, (data) => {
+			chrome.storage.local.get(null, (data) => {
 
 				var arr = [];
 
@@ -551,7 +551,7 @@ function quickLinks() {
 				}
 				
 				if (!full) {
-					chrome.storage.sync.set({"links": arr});
+					chrome.storage.local.set({"links": arr});
 					appendblock(links);
 				} else {
 
@@ -761,8 +761,8 @@ function weather() {
 
 		weatherRequest(req);
 
-		chrome.storage.sync.set({"weather_city": "Paris"});
-		chrome.storage.sync.set({"weather_unit": "metric"});
+		chrome.storage.local.set({"weather_city": "Paris"});
+		chrome.storage.local.set({"weather_unit": "metric"});
 	}
  
 	function apply() {
@@ -782,7 +782,7 @@ function weather() {
 
 		if (lastState) dataHandling(lastState);
 
-		chrome.storage.sync.get(null, (data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			req = {
 				city: data.weather_city,
@@ -841,11 +841,11 @@ function weather() {
 
 		if (req.city.length < 2) return "";
  		
-		chrome.storage.sync.get(null, (data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			weatherRequest(req);
 
-			chrome.storage.sync.set({"weather_city": req.city});
+			chrome.storage.local.set({"weather_city": req.city});
 
 			city.attr("placeholder", req.city);
 			city.val("");
@@ -863,7 +863,7 @@ function weather() {
 
 		weatherRequest(req);
 		
-		chrome.storage.sync.set({"weather_unit": req.unit});
+		chrome.storage.local.set({"weather_unit": req.unit});
 	}
 
 	//automatise la meteo
@@ -878,8 +878,8 @@ function weather() {
 
 				req.geol_lat = pos.coords.latitude
 				req.geol_long = pos.coords.longitude;
-				chrome.storage.sync.set({"weather_geol_lat": req.geol_lat});
-				chrome.storage.sync.set({"weather_geol_long": req.geol_long});
+				chrome.storage.local.set({"weather_geol_lat": req.geol_lat});
+				chrome.storage.local.set({"weather_geol_long": req.geol_long});
 
 				weatherRequest(req);
 
@@ -897,8 +897,8 @@ function weather() {
 
 		} else {
 
-			chrome.storage.sync.remove("weather_geol_lat");
-			chrome.storage.sync.remove("weather_geol_long");
+			chrome.storage.local.remove("weather_geol_lat");
+			chrome.storage.local.remove("weather_geol_long");
 			req.geol_lat, req.geol_long = false;
 			$(".change_weather .city").css("display", "block");
 		}
@@ -1033,7 +1033,7 @@ function applyBackground(src, type, blur) {
 
 function initBackground() {
 
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		if (data.background_image) {
 
@@ -1065,8 +1065,8 @@ function renderImage(file) {
 	reader.onload = function(event) {
 		url = event.target.result;
 
-		chrome.storage.sync.set({"background_image": url});
-		chrome.storage.sync.set({"background_type": "custom"});
+		chrome.storage.local.set({"background_image": url});
+		chrome.storage.local.set({"background_type": "custom"});
 
 		applyBackground(url, "custom");
 	}
@@ -1130,8 +1130,8 @@ function defaultBg() {
 		var tempAttr = $(this)[0].parentElement.getAttribute("class");
 		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
 
-		chrome.storage.sync.set({"background_image": source});
-		chrome.storage.sync.set({"background_type": "default"});
+		chrome.storage.local.set({"background_image": source});
+		chrome.storage.local.set({"background_type": "default"});
 	});
 }
 
@@ -1139,18 +1139,18 @@ function dynamicBackground() {
 
 	$("div.dynamic_bg input").change(function() {
 
-		chrome.storage.sync.get(null, (data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			if (this.checked) {
 
 				//set un previous background si le user choisi de désactiver ce parametre
-				chrome.storage.sync.set({"previous_image": data.background_image});
-				chrome.storage.sync.set({"previous_type": data.background_type});
+				chrome.storage.local.set({"previous_image": data.background_image});
+				chrome.storage.local.set({"previous_type": data.background_type});
 
 				applyBackground(UNSPLASH, "dynamic");
 
-				chrome.storage.sync.set({"background_image": UNSPLASH});
-				chrome.storage.sync.set({"background_type": "dynamic"});
+				chrome.storage.local.set({"background_image": UNSPLASH});
+				chrome.storage.local.set({"background_type": "dynamic"});
 
 				//enleve la selection default bg si jamais
 				$(".imgpreview").removeClass("selected");
@@ -1161,19 +1161,19 @@ function dynamicBackground() {
 					//previous background devient actuel
 					applyBackground(data.previous_image, data.previous_type);
 
-					chrome.storage.sync.set({"background_image": data.previous_image});
-					chrome.storage.sync.set({"background_type": data.previous_type});
+					chrome.storage.local.set({"background_image": data.previous_image});
+					chrome.storage.local.set({"background_type": data.previous_type});
 
 					//supprime pour faire de la place en cas de custom bg
-					chrome.storage.sync.remove("previous_image");
-					chrome.storage.sync.remove("previous_type");
+					chrome.storage.local.remove("previous_image");
+					chrome.storage.local.remove("previous_type");
 
 				} else {
 					//default bg
 					applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
 
-					chrome.storage.sync.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
-					chrome.storage.sync.set({"background_type": "default"});
+					chrome.storage.local.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
+					chrome.storage.local.set({"background_type": "default"});
 				}
 			}
 		});
@@ -1199,7 +1199,7 @@ function blurThis(val, choosing) {
 		if (choosing) imgBackground(optimizedBgURL(url, val));
 	}
 
-	chrome.storage.sync.set({"background_blur": val});
+	chrome.storage.local.set({"background_blur": val});
 }
 
 defaultBg();
@@ -1246,7 +1246,7 @@ function darkmode(choix) {
 
 		if (imgBackground().includes(actual)) {
 			applyBackground(optimizedBgURL(urltouse), "default");
-			chrome.storage.sync.set({"background_image": optimizedBgURL(urltouse)});
+			chrome.storage.local.set({"background_image": optimizedBgURL(urltouse)});
 		}
 	}
 
@@ -1286,7 +1286,7 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		chrome.storage.sync.get(null, (data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1306,23 +1306,23 @@ function darkmode(choix) {
 
 	function changeDarkMode() {
 
-		chrome.storage.sync.get(null, (data) => {
+		chrome.storage.local.get(null, (data) => {
 
 			if (choix === "enable") {
 				applyDark(true);
-				chrome.storage.sync.set({"dark": "enable"});
+				chrome.storage.local.set({"dark": "enable"});
 			}
 
 			if (choix === "disable") {
 				applyDark(false);
-				chrome.storage.sync.set({"dark": "disable"});
+				chrome.storage.local.set({"dark": "disable"});
 			}
 
 			if (choix === "auto") {
 
 				//prend l'heure et ajoute la classe si nuit
 				auto();
-				chrome.storage.sync.set({"dark": "auto"});
+				chrome.storage.local.set({"dark": "auto"});
 			}
 		});
 	}
@@ -1349,7 +1349,7 @@ function searchbar() {
 
 		if (activated) {
 
-			chrome.storage.sync.set({"searchbar": true});
+			chrome.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
@@ -1358,7 +1358,7 @@ function searchbar() {
 			
 		} else {
 
-			chrome.storage.sync.set({"searchbar": false});
+			chrome.storage.local.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1383,11 +1383,11 @@ function searchbar() {
 		$(".searchbar_container form").attr("action", engines[choice][0]);
 		$(".searchbar").attr("placeholder", engines[choice][1]);
 
-		chrome.storage.sync.set({"searchbar_engine": choice});
+		chrome.storage.local.set({"searchbar_engine": choice});
 	}
 
 	//init
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 
 		if (data.searchbar) {
 
@@ -1445,7 +1445,7 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 
 
 		//default background 

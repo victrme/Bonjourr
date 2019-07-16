@@ -17,16 +17,17 @@
 	},
 
 	"chrome_settings_overrides" : {
-		"homepage": "https://bonjourr.fr"
+		"homepage": "https://bonjourr.fr/redirect"
 	},
 
 	"background": {
-		"scripts": ["src/scripts/background.js"]
+		"scripts": ["src/scripts/background_chrome.js"]
 	},
 
 	"permissions": [
 		"webRequest",
 		"*://bonjourr.fr/*",
-		"storage"
+		"storage",
+		"management"
 	]
 }

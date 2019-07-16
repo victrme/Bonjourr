@@ -1352,9 +1352,10 @@ function searchbar() {
 			browser.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
-			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
+			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
 			$("#choose_searchengine").css("display", 'flex');
-			$(".searchbar_container").css("opacity", 1);
+			$(".searchbar_container").addClass("shown");
+			$(".searchbar_container").removeClass("hidden");
 			
 		} else {
 
@@ -1362,10 +1363,8 @@ function searchbar() {
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
-			$(".searchbar_container").css("opacity", 0);
-			setTimeout(function() {
-				$(".searchbar_container").css("display", "none");
-			}, 200);
+			$(".searchbar_container").addClass("hidden");
+			$(".searchbar_container").removeClass("shown");
 		}
 	}
 
@@ -1565,20 +1564,14 @@ $(".interface").click(function() {
 $(document).ready(function() {
 
 	initTrad();
-
-	//very first
 	initBackground();
 	darkmode();
-
-	//sur la page principale
 	clock();
 	date();
 	greetings();
 	weather();
 	searchbar();
 	quickLinks();
-
-	//moins important, load après
 	signature();
 	introduction();
 	actualizeStartupOptions();

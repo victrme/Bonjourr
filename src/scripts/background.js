@@ -1,54 +1,37 @@
 
-//thank you iChrome
-chrome.webRequest.onBeforeRequest.addListener(
-	function() {
-		return {
-			redirectUrl: "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
-		};
-	},
-	{
-		urls: ["https://bonjourr.fr/redirect"]
-	}
-);
+function intro(infolistener) {
 
-function intro() {
+	browser.management.getSelf().then((infoself) => {
 
-	browser.storage.local.get().then((data) => {
+		//check si l'ext installé est la meme que bonjourr
+		if (infoself.id === infolistener.id) {
 
-		if (data.isIntroduced === true) {
+			browser.storage.local.get().then((data) => {
 
-			browser.storage.local.set({"welcomeback": true});
+				//si l'intro a deja été dismiss alors welcome back
+				if (data.isIntroduced === true) browser.storage.local.set({"welcomeback": true});
+
+				chrome.tabs.create({
+					url:"../../index.html"
+				});
+			});
 		}
-
-		browser.tabs.create({
-			url:"../../index.html"
-		});
-	});
+	});	
 }
 
-function fin() {
-
-	browser.storage.local.get().then((data) => {
-
-		var url =  "https://bonjourr.fr/";
-
-		if (data.lang === "fr") {
-			url += "fr/goodbye";
-		} else {
-			url += "goodbye";
-		}
-
-		browser.runtime.setUninstallURL(url);
-	});
-
-	
-}
-
-function alertUpdate() {
-	browser.storage.local.set({"hasupdate": true});
-	console.log("Please update Bonjourr !");
-}
-
-browser.runtime.onUpdateAvailable.addListener(alertUpdate);
+//appelle intro à chaque install
 browser.management.onInstalled.addListener(intro);
-fin();
+
+
+browser.storage.local.get().then((data) => {
+
+	var url =  "https://bonjourr.fr/";
+
+	if (data.lang === "fr") {
+		url += "fr/goodbye";
+	} else {
+		url += "goodbye";
+	}
+
+	browser.runtime.setUninstallURL(url);
+});
