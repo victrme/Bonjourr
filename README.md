@@ -23,7 +23,7 @@ Bonjourr is available in both english and french.
 
 - [x] Welcome and goodbye pages
 - [x] Style Welcome back
-- [ ] Finalize Welcome back
+- [x] Finalize Welcome back
 - [x] Open new tab when installed
 
 

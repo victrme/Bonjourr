@@ -294,6 +294,26 @@ div.linkblocks {
 }
 
 
+
+
+div.credit {
+	position: fixed;
+	bottom: 1em;
+	left: 1em;
+}
+
+div.credit a {
+	color: #fff;
+	opacity: 0;
+}
+
+
+
+
+
+
+/*welcome back */
+
 .welcomeback_wrapper {
 	position: absolute;
 	overflow: hidden;

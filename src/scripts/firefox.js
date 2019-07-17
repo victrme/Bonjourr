@@ -28,8 +28,44 @@ const START_LINKS = [
 		"title": "Wikipédia",
 		"url": "http://wikipedia.org",
 		"icon": "https://besticon-demo.herokuapp.com/icon?url=wikipedia.org&size=80"
-	}
-];
+	}];
+const CREDITS = [
+	{
+		"title": "Santa Monica",
+		"artist": "Avi Richards",
+		"url": "https://unsplash.com/photos/KCgADeYejng",
+		"id": "avi-richards-beach"
+	},
+	{
+		"title": "Waimea Canyon",
+		"artist": "Tyler Casey",
+		"url": "https://unsplash.com/photos/zMyZrfcLXQE",
+		"id": "tyler-casey-landscape"
+	},
+	{
+		"title": "Fern",
+		"artist": "Tahoe Beetschen",
+		"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
+		"id": "tahoe-beetschen-ferns"
+	},
+	{
+		"title": "iOS 13 light wallpaper",
+		"artist": "Apple",
+		"url": "https://www.apple.com/ios/ios-13-preview/",
+		"id": "ios13_light"
+	},
+	{
+		"title": "iOS 13 dark wallpaper",
+		"artist": "Apple",
+		"url": "https://www.apple.com/ios/ios-13-preview/",
+		"id": "ios13_dark"
+	},
+	{
+		"title": "Unsplash Collection",
+		"artist": "lots of artists",
+		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
+		"id": "unsplash.com"
+	}];
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -958,6 +994,24 @@ function weather() {
 	apply();
 }
 
+function imgCredits(src, type) {
+
+	if (type === "custom") {
+		$("div.credit a").css("opacity", 0);
+	}
+
+	for (var i = 0; i < CREDITS.length; i++) {
+
+		if (src.includes(CREDITS[i].id)) {
+			$("div.credit a").attr("href", CREDITS[i].url);
+			$("div.credit a").text(CREDITS[i].title + ", " + CREDITS[i].artist);
+			$("div.credit a").css("opacity", 1);
+
+			return true;
+		}
+	}
+}
+
 function imgBackground(val) {
 	if (val) {
 		$(".background").css("background-image", "url(" + val + ")");
@@ -1027,6 +1081,7 @@ function applyBackground(src, type, blur) {
 		$(".imgpreview").removeClass("selected");
 	}
 
+	imgCredits(src, type);
 	imgBackground(src);
 	if (blur) blurThis(blur);
 }
@@ -1103,6 +1158,7 @@ function defaultBg() {
 			//timeout de 300 pour pas que ça se fasse accidentellement
 			//prend le src de la preview et l'applique au background
 			imgBackground(source);
+			imgCredits(source);
 
 		}, 300);
 	});
