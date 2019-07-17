@@ -303,10 +303,15 @@ div.credit {
 }
 
 div.credit a {
-	color: #fff;
+	color: #fff9;
 	opacity: 0;
+	text-decoration: none;
+	font-size: .8em;
 }
 
+div.credit a:hover {
+	color: #fffb;
+}
 
 
 
