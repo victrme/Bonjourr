@@ -155,13 +155,13 @@ function introduction() {
 		if (!data.isIntroduced) {
 
 			$("#start_popup").css("display", "flex");
-			$(".interface .linkblocks").css("display", 'none');
 
 		} else {
 			
 			$("#start_popup").remove();
-			$(".interface .linkblocks").css("display", 'flex');
 
+			if (data.links.length > 0) $(".interface .linkblocks").css("display", 'flex');
+			
 			welcomeback(data);
 		}
 	});
@@ -485,7 +485,10 @@ function quickLinks() {
 				$(block).addClass("removed");
 				
 				setTimeout(function() {
+
 					$(block).remove();
+					//enleve linkblocks si il n'y a plus de links
+					if (data.links.length === 1) $(".interface .linkblocks").css("display", 'none');
 				}, 200);
 				
 				
@@ -570,7 +573,7 @@ function quickLinks() {
 				var arr = [];
 
 				//array est tout les links + le nouveau
-				if (data.links) {
+				if (data.links.length > 0) {
 
 					if (data.links.length < BLOCK_LIMIT - 1) {
 
@@ -584,6 +587,7 @@ function quickLinks() {
 				//array est seulement le link
 				} else {
 					arr.push(lll);
+					$(".linkblocks").css("display", "flex");
 				}
 				
 				if (!full) {

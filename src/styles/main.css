@@ -176,7 +176,7 @@ div.w_widget_text {
 
 
 div.linkblocks {
-	display: flex;
+	display: none;
 	flex-wrap: wrap;
 	justify-content: center;
 	max-width: 900px;
