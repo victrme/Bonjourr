@@ -160,7 +160,7 @@ function introduction() {
 			
 			$("#start_popup").remove();
 
-			if (data.links.length > 0) $(".interface .linkblocks").css("display", 'flex');
+			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("display", 'flex');
 			
 			welcomeback(data);
 		}
@@ -180,12 +180,14 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
-		$(".interface .linkblocks").css("display", 'flex');
-		quickLinks();
+		if ($(".popup .linkblocks").css("display") === "flex") {
+			$(".interface .linkblocks").css("display", 'flex');
+			quickLinks();
+		}
 		
 		setTimeout(function() {
 			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1);
+			$(".interface .linkblocks").css("opacity", 1)
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
@@ -217,8 +219,11 @@ function introduction() {
 
 		if (state === "nxt") {
 			if (margin === 100) {
+
 				browser.storage.local.set({"links": START_LINKS});
+				$(".popup .linkblocks").css("display", "flex");
 				quickLinks();
+
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
 			}
@@ -573,7 +578,7 @@ function quickLinks() {
 				var arr = [];
 
 				//array est tout les links + le nouveau
-				if (data.links.length > 0) {
+				if (data.links && data.links.length > 0) {
 
 					if (data.links.length < BLOCK_LIMIT - 1) {
 
@@ -1463,6 +1468,11 @@ function searchbar() {
 			activate(false);
 		}
 	});
+
+	/*setTimeout(function() {
+		$(".searchbar_container").css("transition", "all .2s");
+	}, 200);*/
+	
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
