@@ -28,8 +28,44 @@ const START_LINKS = [
 		"title": "Wikipédia",
 		"url": "http://wikipedia.org",
 		"icon": "https://besticon-demo.herokuapp.com/icon?url=wikipedia.org&size=80"
-	}
-];
+	}];
+const CREDITS = [
+	{
+		"title": "Santa Monica",
+		"artist": "Avi Richards",
+		"url": "https://unsplash.com/photos/KCgADeYejng",
+		"id": "avi-richards-beach"
+	},
+	{
+		"title": "Waimea Canyon",
+		"artist": "Tyler Casey",
+		"url": "https://unsplash.com/photos/zMyZrfcLXQE",
+		"id": "tyler-casey-landscape"
+	},
+	{
+		"title": "Fern",
+		"artist": "Tahoe Beetschen",
+		"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
+		"id": "tahoe-beetschen-ferns"
+	},
+	{
+		"title": "iOS 13 light wallpaper",
+		"artist": "Apple",
+		"url": "https://www.apple.com/ios/ios-13-preview/",
+		"id": "ios13_light"
+	},
+	{
+		"title": "iOS 13 dark wallpaper",
+		"artist": "Apple",
+		"url": "https://www.apple.com/ios/ios-13-preview/",
+		"id": "ios13_dark"
+	},
+	{
+		"title": "Unsplash Collection",
+		"artist": "lots of artists",
+		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
+		"id": "unsplash.com"
+	}];
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -119,13 +155,13 @@ function introduction() {
 		if (!data.isIntroduced) {
 
 			$("#start_popup").css("display", "flex");
-			$(".interface .linkblocks").css("display", 'none');
 
 		} else {
 			
 			$("#start_popup").remove();
-			$(".interface .linkblocks").css("display", 'flex');
 
+			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("display", 'flex');
+			
 			welcomeback(data);
 		}
 	});
@@ -144,12 +180,14 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
-		$(".interface .linkblocks").css("display", 'flex');
-		quickLinks();
+		if ($(".popup .linkblocks").css("display") === "flex") {
+			$(".interface .linkblocks").css("display", 'flex');
+			quickLinks();
+		}
 		
 		setTimeout(function() {
 			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1);
+			$(".interface .linkblocks").css("opacity", 1)
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
@@ -181,8 +219,11 @@ function introduction() {
 
 		if (state === "nxt") {
 			if (margin === 100) {
+
 				chrome.storage.local.set({"links": START_LINKS});
+				$(".popup .linkblocks").css("display", "flex");
 				quickLinks();
+
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
 			}
@@ -449,7 +490,10 @@ function quickLinks() {
 				$(block).addClass("removed");
 				
 				setTimeout(function() {
+
 					$(block).remove();
+					//enleve linkblocks si il n'y a plus de links
+					if (data.links.length === 1) $(".interface .linkblocks").css("display", 'none');
 				}, 200);
 				
 				
@@ -534,7 +578,7 @@ function quickLinks() {
 				var arr = [];
 
 				//array est tout les links + le nouveau
-				if (data.links) {
+				if (data.links && data.links.length > 0) {
 
 					if (data.links.length < BLOCK_LIMIT - 1) {
 
@@ -548,6 +592,7 @@ function quickLinks() {
 				//array est seulement le link
 				} else {
 					arr.push(lll);
+					$(".linkblocks").css("display", "flex");
 				}
 				
 				if (!full) {
@@ -958,6 +1003,24 @@ function weather() {
 	apply();
 }
 
+function imgCredits(src, type) {
+
+	if (type === "custom") {
+		$("div.credit a").css("opacity", 0);
+	}
+
+	for (var i = 0; i < CREDITS.length; i++) {
+
+		if (src.includes(CREDITS[i].id)) {
+			$("div.credit a").attr("href", CREDITS[i].url);
+			$("div.credit a").text(CREDITS[i].title + ", " + CREDITS[i].artist);
+			$("div.credit a").css("opacity", 1);
+
+			return true;
+		}
+	}
+}
+
 function imgBackground(val) {
 	if (val) {
 		$(".background").css("background-image", "url(" + val + ")");
@@ -1027,6 +1090,7 @@ function applyBackground(src, type, blur) {
 		$(".imgpreview").removeClass("selected");
 	}
 
+	imgCredits(src, type);
 	imgBackground(src);
 	if (blur) blurThis(blur);
 }
@@ -1103,6 +1167,7 @@ function defaultBg() {
 			//timeout de 300 pour pas que ça se fasse accidentellement
 			//prend le src de la preview et l'applique au background
 			imgBackground(source);
+			imgCredits(source);
 
 		}, 300);
 	});
@@ -1352,9 +1417,10 @@ function searchbar() {
 			chrome.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
-			$("#searchbar_option .param hr, .popup5 hr, .searchbar_container").css("display", "block");
+			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
 			$("#choose_searchengine").css("display", 'flex');
-			$(".searchbar_container").css("opacity", 1);
+			$(".searchbar_container").addClass("shown");
+			$(".searchbar_container").removeClass("hidden");
 			
 		} else {
 
@@ -1362,10 +1428,8 @@ function searchbar() {
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
-			$(".searchbar_container").css("opacity", 0);
-			setTimeout(function() {
-				$(".searchbar_container").css("display", "none");
-			}, 200);
+			$(".searchbar_container").addClass("hidden");
+			$(".searchbar_container").removeClass("shown");
 		}
 	}
 
@@ -1404,6 +1468,11 @@ function searchbar() {
 			activate(false);
 		}
 	});
+
+	/*setTimeout(function() {
+		$(".searchbar_container").css("transition", "all .2s");
+	}, 200);*/
+	
 
 	// Active ou désactive la search bar
 	$(".activate_searchbar input").change(function() {
@@ -1565,20 +1634,14 @@ $(".interface").click(function() {
 $(document).ready(function() {
 
 	initTrad();
-
-	//very first
 	initBackground();
 	darkmode();
-
-	//sur la page principale
 	clock();
 	date();
 	greetings();
 	weather();
 	searchbar();
 	quickLinks();
-
-	//moins important, load après
 	signature();
 	introduction();
 	actualizeStartupOptions();

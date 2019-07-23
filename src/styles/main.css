@@ -25,7 +25,8 @@ body {
 	user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-	animation: fade .3s;
+	opacity: 0;
+	animation: fade .1s ease-in forwards;
 	background-color: #222;
 }
 
@@ -75,6 +76,8 @@ input, textarea, select, a, button {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
+	opacity: 0;
+	animation: fade .1s ease-in .07s forwards;
 }
 .interface.pushed {
 	margin-left: -20em;
@@ -142,8 +145,8 @@ div.w_widget_text {
 .searchbar_container.shown {
 	visibility: visible;
 	opacity: 1;
-	padding: 2em 0;
 	height: 52px;
+	padding: 2em 0;
 }
 
 .searchbar_container.hidden {
@@ -624,7 +627,7 @@ body.dark .popup_buttons button {
 		height: 70px;
 	}
 
-	.searchbar_container {
+	.searchbar_container.shown {
 		padding: 1em 0;
 	}
 
@@ -639,10 +642,6 @@ body.dark .popup_buttons button {
 
 	.main {
 		padding: 1em 0;
-	}
-
-	.searchbar_container {
-		padding: 1.5em 0;
 	}
 
 	.searchbar {
@@ -689,7 +688,6 @@ body.dark .popup_buttons button {
 	}
 
 	.main,
-	.searchbar_container,
 	div.linkblocks {
 		padding: 1em 0;
 	}

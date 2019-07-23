@@ -11,21 +11,24 @@ chrome.webRequest.onBeforeRequest.addListener(
 	}
 );
 
-function intro() {
+function intro(infolistener) {
 
-	chrome.storage.local.get(null, (data) => {
+	chrome.management.getSelf().then((infoself) => {
 
-		if (data.isIntroduced === true) {
+		//check si l'ext installé est la meme que bonjourr
+		if (infoself.id === infolistener.id) {
 
-			chrome.storage.local.set({"welcomeback": true});
+			chrome.storage.local.get().then((data) => {
+
+				//si l'intro a deja été dismiss alors welcome back
+				if (data.isIntroduced === true) chrome.storage.local.set({"welcomeback": true});
+
+				chrome.tabs.create({
+					url:"chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
+				});
+			});
 		}
-
-		chrome.tabs.create({
-			url:"chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
-		});
-	});
-
-	console.log("installed")
+	});	
 }
 
 function fin() {
@@ -41,18 +44,9 @@ function fin() {
 		}
 
 		chrome.runtime.setUninstallURL(url);
-	});
-
-	
+	});	
 }
 
-chrome.management.onInstalled.addListener(function(info) {
-	intro();
-});
+chrome.management.onInstalled.addListener(intro);
 
-/*fin();
-intro();*/
-
-chrome.management.onEnabled.addListener(function() {
-	console.log("is enabled");
-});
+fin();
