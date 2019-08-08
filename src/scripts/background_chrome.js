@@ -18,10 +18,10 @@ function intro(infolistener) {
 		//check si l'ext installé est la meme que bonjourr
 		if (infoself.id === infolistener.id) {
 
-			chrome.storage.local.get().then((data) => {
+			chrome.storage.sync.get().then((data) => {
 
 				//si l'intro a deja été dismiss alors welcome back
-				if (data.isIntroduced === true) chrome.storage.local.set({"welcomeback": true});
+				if (data.isIntroduced === true) chrome.storage.sync.set({"welcomeback": true});
 
 				chrome.tabs.create({
 					url:"chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
@@ -33,7 +33,7 @@ function intro(infolistener) {
 
 function fin() {
 
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 
 		var url =  "https://bonjourr.fr/";
 

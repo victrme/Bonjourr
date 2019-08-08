@@ -6,10 +6,10 @@ function intro(infolistener) {
 		//check si l'ext installé est la meme que bonjourr
 		if (infoself.id === infolistener.id) {
 
-			browser.storage.local.get().then((data) => {
+			browser.storage.sync.get().then((data) => {
 
 				//si l'intro a deja été dismiss alors welcome back
-				if (data.isIntroduced === true) browser.storage.local.set({"welcomeback": true});
+				if (data.isIntroduced === true) browser.storage.sync.set({"welcomeback": true});
 
 				chrome.tabs.create({
 					url:"../../index.html"
@@ -23,7 +23,7 @@ function intro(infolistener) {
 browser.management.onInstalled.addListener(intro);
 
 
-browser.storage.local.get().then((data) => {
+browser.storage.sync.get().then((data) => {
 
 	var url =  "https://bonjourr.fr/";
 
