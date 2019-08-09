@@ -72,7 +72,7 @@ input, textarea, select, a, button {
 }
 
 .interface {
-	min-height: 95vh;
+	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
@@ -669,8 +669,8 @@ body.dark .popup_buttons button {
 	}
 
 	.block_parent .l_icon_wrap {
-	    width: 3.3em;
-	    height: 3.3em;
+	    width: 2.5em;
+	    height: 2.5em;
 	}
 
 	.block_parent button.remove {
@@ -694,7 +694,6 @@ body.dark .popup_buttons button {
 
 	.popup p, .popup span {
 		font-size: 19px;
-		line-height: 1.3em;
 	}
 
 	.popup .linkblocks {
