@@ -156,6 +156,10 @@ div.w_widget_text {
 	height: 2px;
 }
 
+.searchbar_container.removed {
+	display: none;
+}
+
 .searchbar {
 	opacity: 0.8;
 	font-size: 1.5em;
@@ -177,7 +181,8 @@ div.w_widget_text {
 
 
 div.linkblocks {
-	display: none;
+	visibility: hidden;
+	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	max-width: 900px;

@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.3.0",
+	"version": "1.3.1",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"homepage_url": "https://bonjourr.fr",
@@ -28,6 +28,8 @@
 		"webRequest",
 		"*://bonjourr.fr/*",
 		"storage",
-		"management"
+		"unlimitedStorage",
+		"management",
+		"geolocation"
 	]
 }

@@ -21,15 +21,27 @@ Bonjourr is available in both english and french.
 
 ## Todo
 
-- [ ] Open new tab when installed / Welcome back on chrome
+- [x] Open new tab when installed / Welcome back on chrome
+- [x] searchbar not displayed
 
 ## Known issues to fix
 
-- [ ] Faster dynamic backgrounds
-- [ ] Custom searchbar focus on homepage
+- [x] Custom searchbar focus on homepage
+- [ ] geolocation hot weather on chrome
 - [ ] On Firefox, remove local path from search bar on homepage
 
 ## Features for the future
 
-- [ ] Dynamic backgrounds with credits and locations
+- [ ] Faster dynamic backgrounds with credits and locations
 - [ ] Personalized CSS settings
+
+## Built with
+
+* [Jquery 3.4.1 Slim](https://code.jquery.com/jquery-3.4.1.slim.min.js)
+* [Translate.js](https://github.com/tinoni/translate.js) - translation tool by Tinoni
+* [JScompress minifier](https://jscompress.com/) - Used to compress translate.js
+
+## Authors
+
+* **Tahoe Beetschen** - [portfolio](https://tahoe.be) - [Tahoooe](https://github.com/Tahoooe)
+* **Victor Azevedo** - [portfolio](https://victor-azevedo.me) - [victorazevedo-me](https://github.com/victorazevedo-me)
