@@ -160,7 +160,7 @@ function introduction() {
 			
 			$("#start_popup").remove();
 
-			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("display", 'flex');
+			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
 			
 			welcomeback(data);
 		}
@@ -180,8 +180,8 @@ function introduction() {
 		$(".popup_window").css("margin-top", "200%");
 
 		//les links modifié en intro sont réinitialisés
-		if ($(".popup .linkblocks").css("display") === "flex") {
-			$(".interface .linkblocks").css("display", 'flex');
+		if ($(".popup .linkblocks").css("visibility") === "visible") {
+			$(".interface .linkblocks").css("visibility", 'visible');
 			quickLinks();
 		}
 		
@@ -221,7 +221,7 @@ function introduction() {
 			if (margin === 100) {
 
 				chrome.storage.local.set({"links": START_LINKS});
-				$(".popup .linkblocks").css("display", "flex");
+				$(".popup .linkblocks").css("visibility", "visible");
 				quickLinks();
 
 				$(".previous_popup").text(tradThis("Back"));
@@ -495,7 +495,7 @@ function quickLinks() {
 					//enleve linkblocks si il n'y a plus de links
 					if (data.links.length === 1) {
 						$(".interface .linkblocks").css("visibility", "hidden");
-						searchbarFlexControl(data.searchbar, data.links);
+						searchbarFlexControl(data.searchbar, 0);
 					}
 				}, 200);
 				
@@ -596,7 +596,7 @@ function quickLinks() {
 				} else {
 					arr.push(lll);
 					$(".linkblocks").css("visibility", "visible");
-					searchbarFlexControl(data.searchbar, data.links);
+					searchbarFlexControl(data.searchbar, 1);
 				}
 				
 				if (!full) {
@@ -1117,9 +1117,10 @@ function initBackground() {
 	});	
 }
 
-// render the image in our view
-// ces commentaire anglais ne veulent pas dire que j'ai copié collé ok
 function renderImage(file) {
+
+	// render the image in our view
+	// ces commentaire anglais ne veulent pas dire que j'ai copié collé ok
 
 	// generate a new FileReader object
 	var reader = new FileReader();
@@ -1402,11 +1403,11 @@ $(".popup .darkmode select.theme").change(function() {
 	$(".settings .darkmode select.theme")[0].value = this.value;
 });
 
-function searchbarFlexControl(activated, links) {
+function searchbarFlexControl(activated, linkslength) {
 
 	var dom = $(".searchbar_container");
 
-	if (links && links.length > 0) {
+	if (linkslength > 0) {
 
 		if (activated) {
 
@@ -1448,7 +1449,7 @@ function searchbar() {
 			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
 			$("#choose_searchengine").css("display", 'flex');
 			
-			searchbarFlexControl(activated, links);
+			searchbarFlexControl(activated, (links ? links.length : 0));
 			
 		} else {
 
@@ -1457,7 +1458,7 @@ function searchbar() {
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
 			
-			searchbarFlexControl(activated, links);
+			searchbarFlexControl(activated, (links ? links.length : 0));
 		}
 	}
 
@@ -1605,7 +1606,7 @@ function actualizeStartupOptions() {
 
 		setTimeout(() => {
 			if (data.searchbar) $("input.searchbar").focus();
-		}, 200);
+		}, 100);
 		
 
 		if (data.searchbar_engine) {
