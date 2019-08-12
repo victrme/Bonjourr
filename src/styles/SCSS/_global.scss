@@ -1,0 +1,66 @@
+@font-face {
+	font-family: 'sf_pro_textregular';
+	src: url('../../fonts/sf-pro-text-regular-webfont.woff2') format('woff2'),
+	url('../../fonts/sf-pro-text-regular-webfont.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: 'sf_pro_displaylight';
+    src: url('../../fonts/sf-pro-display-light-webfont.woff2') format('woff2'),
+         url('../../fonts/sf-pro-display-light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'sf_pro_displaythin';
+    src: url('../../fonts/sf-pro-display-thin-webfont.woff2') format('woff2'),
+         url('../../fonts/sf-pro-display-thin-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+$textRegular : sf_pro_textregular;
+$displayLight : sf_pro_displaylight;
+$displayThin : sf_pro_displaythin;
+
+body {
+	overflow-x: hidden;
+	margin: 0;
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	opacity: 1;
+	background-color: #222;
+    color: white;
+    font-family: $displayLight;
+	font-size: 16px;
+	text-align: center;
+	animation: fade .3s ease-in forwards;
+
+	p, h3 {
+		margin: 0;
+	}
+
+	hr {
+	    border: none;
+	    border-bottom: 1px solid #c8c7cc;
+	    margin-top: .75em;
+	    margin-bottom: .75em;
+	    margin-right: -1.3em;
+	    display: block;
+	}
+
+	select {
+		padding: .5em;
+		cursor: pointer;
+	}
+
+	input, textarea, select, a, button {
+		outline: none;
+	}
+}

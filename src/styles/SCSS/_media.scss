@@ -1,0 +1,283 @@
+// dark mode
+body.dark {
+	#start_popup .popup_window {
+		background-color: #1c1c1e;
+		
+		.popup_line {
+			p, h1, span {
+				color: white;
+			}
+
+			button {
+				background-color: #1c1c1e;
+			}
+
+			.weather .w_icon {
+				background-color: #1c1c1e;
+			}
+		}
+	}
+	.welcomeback {
+		background-color: #1c1c1e;
+	}
+
+	.background {
+		opacity: .75;
+	}
+
+	.welcomeback  p, .welcomeback  h1 {
+		color: white;
+	}
+
+	.settings {
+		background-color: black;
+	}
+
+	hr {
+		border-bottom: 1px solid #3f3f41;
+	}
+
+	.title {
+		background-color : #1c1c1e;
+		color: white;
+		border-top: 0;
+		border-bottom:0;
+	}
+
+	.subtitle {
+		color: #929294;
+		font-family: sf_pro_displaylight;
+	}
+
+	.param {
+		background-color : #1c1c1e;
+		color: white;
+		border-top: 1px solid #3f3f41;
+		border-bottom: 1px solid #3f3f41;
+	}
+
+	.settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+		background-color: #39383d;
+		color: white;
+	}
+
+	::-moz-range-thumb {
+		box-shadow:none;
+	}
+
+	::placeholder {
+		color: #929294;
+	}
+
+	button {
+		background-color: #1c1c1e;
+	}
+
+	.showSettings button {
+		background-color: transparent;
+
+		&:hover {
+			background-color: #3c3c3e;
+		}
+
+		&.shown {
+			background-color: #1c1c1e;
+
+			&:hover {
+				background-color: #3c3c3e;
+			}
+		}
+	}
+
+	.slider {
+		background-color: #39383d;
+	}
+
+	input:checked + .slider {
+		background-color: #4bd663;
+	}
+
+	.signature {
+		color: #929294;
+	}
+}
+
+// dark mode avec le système
+body.autodark {
+	@media (prefers-color-scheme: dark) {
+		#start_popup .popup_window {
+			background-color: #1c1c1e;
+
+			.popup_line {
+				p, h1, span {
+					color: white;
+				}
+
+				button {
+					background-color: #1c1c1e;
+				}
+
+				.weather .w_icon {
+					background-color: #1c1c1e;
+				}
+			}
+		}
+
+		.welcomeback {
+			background-color: #1c1c1e;
+		}
+
+		.background {
+			opacity: .75;
+		}
+
+		.welcomeback  p, .welcomeback  h1 {
+			color: white;
+		}
+
+		.settings {
+			background-color: black;
+		}
+
+		hr {
+			border-bottom: 1px solid #3f3f41;
+		}
+
+		.title {
+			background-color : #1c1c1e;
+			color: white;
+			border-top: 0;
+			border-bottom:0;
+		}
+
+		.subtitle {
+			color: #929294;
+			font-family: sf_pro_displaylight;
+		}
+
+		.param {
+			background-color : #1c1c1e;
+			color: white;
+			border-top: 1px solid #3f3f41;
+			border-bottom: 1px solid #3f3f41;
+		}
+
+		.settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+			background-color: #39383d;
+			color: white;
+		}
+
+		::-moz-range-thumb {
+			box-shadow:none;
+		}
+
+		::placeholder {
+			color: #929294;
+		}
+
+		button {
+			background-color: #1c1c1e;
+		}
+
+		.showSettings button {
+			background-color: transparent;
+
+			&:hover {
+				background-color: #3c3c3e;
+			}
+
+			&.shown {
+				background-color: #1c1c1e;
+
+				&:hover {
+					background-color: #3c3c3e;
+				}
+			}
+		}
+
+		.slider {
+			background-color: #39383d;
+		}
+
+		input:checked + .slider {
+			background-color: #4bd663;
+		}
+
+		.signature {
+			color: #929294;
+		}
+	}
+}
+
+@media screen and (max-height: 650px) {
+	.interface {
+		font-size: .7em;
+
+		.time .shadow {
+			width: 39em;
+		}
+
+		.main {
+			.shadow {
+				width: 39em;
+			}
+
+			.weather .w_widget {
+				height: 70px;
+
+				.w_icon {
+					width: 35px;
+					height: 35px;
+				}
+			}
+		}
+
+		.searchbar_container {
+			.searchbar {
+				max-width: 300px;
+				height: 35px;
+			}
+
+			&.shown {
+				padding: 0;
+			}
+		}
+
+		.linkblocks .block_parent button.remove {
+			height: 25px;
+			width: 25px;
+
+			img {
+				width: .7em;
+				height: .7em;
+			}
+		}
+	}
+
+	.showSettings button {
+		height: 2.5em;
+		width: 2.5em;
+
+		img {
+			height: 1.5em;
+			width: 1.5em;
+		}
+	}
+
+	.settings {
+		font-size: .9em;
+		
+		.param .bac .choosable_backgrounds .imgpreview {
+			width: 54px;
+		
+			&:hover {
+				width: 50px;
+			}
+
+			&.selected {
+				width: 50px;
+			}
+		}
+	}
+}
+ 

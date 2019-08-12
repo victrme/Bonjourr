@@ -5,8 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<link rel="stylesheet" href="src/styles/main.css">
-	<link rel="stylesheet" href="src/styles/settings.css">
+	<link rel="stylesheet" href="src/styles/css/style.css">
 	<link rel="icon" href="favicon.png" />
 </head>
 
@@ -27,6 +26,7 @@
 	<div id="start_popup">
 		<div class="popup_window">
 			<div class="popup_line">
+
 				<div class="popup popup1">
 					<img class="bonjourr_logo" src="src/images/popup/bonjourrpopup.png">
 
@@ -78,8 +78,9 @@
 						<div class="city">
 							<input type="text" name="city" placeholder="City">
 							<button class="submitw_city trn">Change city</button>
-							<p class="trn wrongCity">There was a problem</p>
+							
 						</div>
+						<p class="trn wrongCity">There was a problem</p>
 
 						<hr>
 
@@ -95,7 +96,7 @@
 					</div>
 
 					<div class="weather">
-						<div>
+						<div class="w_desc_container">
 							<span class="w_desc_meteo"></span>
 							<span class="trn">It is currently</span>
 							<span class="w_desc_temp"></span>
@@ -113,7 +114,7 @@
 								<span class="w_widget_temp"></span>
 							</div>
 						</div>
-					</div>
+					</div> 
 				</div>
 
 				<div class="popup popup4">
@@ -145,6 +146,7 @@
 							<span class="trn">Dark mode</span>
 							<select class="theme">
 								<option value="auto" class="trn">Only at night</option>
+								<option value="autoSystem" class="trn">With the system</option>
 								<option value="enable" class="trn">Enabled</option>
 								<option value="disable" class="trn">Disabled</option>
 							</select>
@@ -155,7 +157,7 @@
 				<div class="popup popup5">
 					<h1 class="popup_title trn">Search bar</h1>
 					<p class="trn">If you want, you can add a search bar and choose your favorite search engine.</p>
-
+	
 					<div class="popup_param">
 						<div class="activate_searchbar wrapper">
 							<span class="trn">Activate</span>
@@ -168,7 +170,7 @@
 						</div>
 
 						<hr>
-
+						
 						<div id="choose_searchengine" class="wrapper">
 							<span class="trn">Search engine</span>
 							<select class="choose_search">
@@ -192,7 +194,9 @@
 				<div class="popup popup6">
 					<h1 class="popup_title trn">Almost done!</h1>
 					<p class="trn">You now know the basics of using Bonjourr. Don't forget that you can go further into customization by visiting the Settings with the icon in the bottom right corner of the window.</p>
-					<img src="src/images/popup/settings.gif">
+  					<video autoplay loop>
+					    <source src="src/images/popup/settings.mp4"type="video/mp4">
+					</video>
 				</div>
 			</div>
 
@@ -286,6 +290,7 @@
 					<span class="trn selector_span">Dark mode</span>
 					<select class="theme">
 						<option value="auto" class="trn">Only at night</option>
+						<option value="autoSystem" class="trn">With the system</option>
 						<option value="enable" class="trn">Enabled</option>
 						<option value="disable" class="trn">Disabled</option>
 					</select>
@@ -405,6 +410,7 @@
 	<!-- Main interface section -->
 	<div class="interface">
 		<div class="time">
+			<img src="src/images/shadow.png" class="shadow">
 			<div class="time-container">
 				<div id="clock"></div>
 			</div>
@@ -417,9 +423,10 @@
 		</div>
 
 		<div class="main">
+			<img src="src/images/shadow.png" class="shadow">
 			<h3 class="greetings"></h3>
 			<div class="weather">
-				<div>
+				<div class="w_desc_container">
 					<span class="w_desc_meteo"></span>
 					<span class="trn">It is currently</span>
 					<span class="w_desc_temp"></span>

@@ -1,4 +1,3 @@
-
 var translator = $('html').translate({lang: "en", t: dict});
 var stillActive = false;
 const INPUT_PAUSE = 700;
@@ -1252,14 +1251,14 @@ function blurThis(val, choosing) {
 	
 	if (val > 0) {
 		$('.background').css("filter", 'blur(' + val + 'px)');
-		$('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
+		// $('body, .showSettings button').css("text-shadow", '0 1px 15px rgba(0,0,0,0.5)');
 
 		if (choosing) imgBackground(optimizedBgURL(url, val));
 
 	} else {
 
 		$('.background').css("filter", '');
-		$('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
+		// $('body, .showSettings button').css("text-shadow", '0 0px 20px rgba(0,0,0,0.9)');
 
 		if (choosing) imgBackground(optimizedBgURL(url, val));
 	}
@@ -1605,8 +1604,8 @@ function actualizeStartupOptions() {
 		$(".activate_searchbar input")[0].checked = data.searchbar;
 
 		setTimeout(() => {
-			if (data.searchbar) $("input.searchbar").focus();
-		}, 100);
+	      if (data.searchbar) $(".interface input.searchbar").focus();
+	    }, 100);
 		
 
 		if (data.searchbar_engine) {

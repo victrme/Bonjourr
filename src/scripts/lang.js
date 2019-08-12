@@ -209,6 +209,9 @@ var dict = {
   "Only at night": {
     fr: "Seulement la nuit"
   },
+  "With the system": {
+    fr: "Avec le système"
+  },
   "Enabled": {
     fr: "Activé"
   },
