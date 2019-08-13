@@ -209,6 +209,23 @@ body.autodark {
 	}
 }
 
+@media screen and (max-height: 950px) {
+	.interface {
+		font-size: .8em;
+
+		.searchbar_container {
+			.searchbar {
+				max-width: 400px;
+				height: 40px;
+			}
+
+			&.shown {
+				padding: 0;
+			}
+		}
+	}
+}
+
 @media screen and (max-height: 650px) {
 	.interface {
 		font-size: .7em;
@@ -276,6 +293,69 @@ body.autodark {
 
 			&.selected {
 				width: 50px;
+			}
+		}
+	}
+}
+
+@media screen and (max-height: 800px) {
+	// #start_popup .popup_window .popup_line .popup2 div .linkblocks .block_parent button.remove
+
+	#start_popup .popup_window {
+		.popup_line .popup {
+			padding: 1.5em;
+
+			p, span, p code {
+				font-size: 17px;
+				line-height: 1.7em;
+			}
+
+			.popup_param {
+				margin: 1em auto;
+
+				input, button {
+					font-size: 15px;
+				}
+			}
+
+			&.popup2 div .linkblocks .block_parent {
+				font-size: .7em;
+
+				button.remove.visible {
+					height: 25px;
+					width: 25px;
+
+					img {
+						width: .7em;
+						height: .7em;
+					}
+				}
+			}
+
+			&.popup3 .weather .w_widget {
+				height: 50px;
+			}
+
+			&.popup5 .searchbar_container {
+				.searchbar {
+					max-width: 300px;
+					height: 35px;
+					font-size: 17px;
+				}
+
+				&.shown {
+					padding: 0;
+				}
+			}
+		}
+
+		.popup_buttons {
+			padding: 0 1em 1em 1em;
+
+			button {
+				height: 35px;
+				width: 110px;
+				font-size: 17px;
 			}
 		}
 	}

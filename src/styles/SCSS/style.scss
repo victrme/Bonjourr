@@ -30,7 +30,7 @@
 		align-items: center;
 		margin-right: auto;
 		margin-left: auto;
-		width: 20em;
+		width: 14em;
 
 		.shadow {
 			z-index: -1;
@@ -102,6 +102,7 @@
 	bottom: 1em;
 	left: 1em;
 	text-shadow: 0 1px 5px rgba(0,0,0,.2);
+	transition: all .2s;
 
 	a {
 		color: #fff9;
@@ -159,6 +160,7 @@
 	}
 }
 
+$popupText : 22px;
 #start_popup {
 	transition: all .4s ease-in;
 	z-index: 10;
@@ -201,7 +203,7 @@
 				p {
 					text-align: justify;
 					text-shadow: none;
-					font-size: 22px;
+					font-size: $popupText;
 					color: black;
 					margin: 1em 0;
 					line-height: 1.5em;
@@ -213,7 +215,7 @@
 
 					code {
 						font-family: sf_pro_displaylight;
-						font-size: .9em;
+						font-size: $popupText;
 						color: #007aff;
 						border: 1px solid #007aff;
 						border-radius: 4px;
@@ -223,7 +225,7 @@
 				}
 
 				span {
-					font-size: 22px;
+					font-size: $popupText;
 				}
 
 				.submitlink, .submitw_city {
@@ -360,6 +362,10 @@
 			.popup5 {
 				@include settingsBase();
 				@include searchbar();
+
+				.searchbar_container form .searchbar {
+					background-color: white;
+				}
 			}
 
 			.popup6 {
