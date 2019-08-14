@@ -12,7 +12,6 @@
          url('../../fonts/sf-pro-display-light-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -40,7 +39,7 @@ body {
     font-family: $displayLight;
 	font-size: 16px;
 	text-align: center;
-	animation: fade .3s ease-in forwards;
+	animation: fade .2s ease-in forwards;
 
 	p, h3 {
 		margin: 0;

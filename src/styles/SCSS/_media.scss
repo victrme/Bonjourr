@@ -209,23 +209,6 @@ body.autodark {
 	}
 }
 
-@media screen and (max-height: 950px) {
-	.interface {
-		font-size: .8em;
-
-		.searchbar_container {
-			.searchbar {
-				max-width: 400px;
-				height: 40px;
-			}
-
-			&.shown {
-				padding: 0;
-			}
-		}
-	}
-}
-
 @media screen and (max-height: 650px) {
 	.interface {
 		font-size: .7em;
@@ -257,6 +240,7 @@ body.autodark {
 
 			&.shown {
 				padding: 0;
+				height: 35px;
 			}
 		}
 
@@ -299,8 +283,6 @@ body.autodark {
 }
 
 @media screen and (max-height: 800px) {
-	// #start_popup .popup_window .popup_line .popup2 div .linkblocks .block_parent button.remove
-
 	#start_popup .popup_window {
 		.popup_line .popup {
 			padding: 1.5em;
@@ -345,6 +327,7 @@ body.autodark {
 
 				&.shown {
 					padding: 0;
+					height: 35px;
 				}
 			}
 		}
@@ -360,4 +343,20 @@ body.autodark {
 		}
 	}
 }
- 
+
+@media screen and (min-height: 650px) and (max-height: 950px) {
+	.interface {
+		font-size: .8em;
+
+		.searchbar_container {
+			.searchbar {
+				max-width: 400px;
+				height: 40px;
+			}
+
+			&.shown {
+				padding: 0;
+			}
+		}
+	}
+}

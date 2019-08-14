@@ -30,7 +30,7 @@
 		align-items: center;
 		margin-right: auto;
 		margin-left: auto;
-		width: 14em;
+		max-width: 14em;
 
 		.shadow {
 			z-index: -1;
@@ -56,7 +56,7 @@
 
 	.main {
 		display: flex;
-		width: 25em;
+		max-width: 30em;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: center;
