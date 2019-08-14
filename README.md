@@ -21,13 +21,13 @@ Bonjourr is available in both english and french.
 
 ## Todo
 
-- [x] Open new tab when installed / Welcome back on chrome
-- [x] searchbar not displayed
+- [ ] linkblocks min-height
+- [ ] System dark mode iOS13 background
 
 ## Known issues to fix
 
 - [x] Custom searchbar focus on homepage
-- [ ] geolocation hot weather on chrome
+- [x] geolocation hot weather on chrome
 - [ ] On Firefox, remove local path from search bar on homepage
 
 ## Features for the future
