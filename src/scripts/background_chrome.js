@@ -15,10 +15,10 @@ function intro(info) {
 
 	if (info.reason === "install") {
 
-		chrome.storage.local.get("isIntroduced", (isIntroduced) => {
+		chrome.storage.sync.get("isIntroduced", (isIntroduced) => {
 
 			//si l'intro a deja été dismiss alors welcome back
-			if (isIntroduced === true) chrome.storage.local.set({"welcomeback": true});
+			if (isIntroduced === true) chrome.storage.sync.set({"welcomeback": true});
 
 			chrome.tabs.create({
 				url: "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
@@ -29,7 +29,7 @@ function intro(info) {
 
 function fin() {
 
-	chrome.storage.local.get("lang", (lang) => {
+	chrome.storage.sync.get("lang", (lang) => {
 
 		var url =  "https://bonjourr.fr/";
 
