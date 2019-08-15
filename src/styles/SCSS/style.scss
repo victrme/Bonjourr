@@ -25,12 +25,11 @@
 
 	.time {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		margin-right: auto;
 		margin-left: auto;
-		max-width: 14em;
 
 		.shadow {
 			z-index: -1;
@@ -56,8 +55,7 @@
 
 	.main {
 		display: flex;
-		max-width: 30em;
-		flex-wrap: wrap;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		margin-right: auto;

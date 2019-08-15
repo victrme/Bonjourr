@@ -1517,6 +1517,7 @@ function searchbar() {
 		var engines = {
 			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", tradThis("Search Startpage")],
 			"s_ddg" : ["https://duckduckgo.com/?q=", tradThis("Search DuckDuckGo")],
+			"s_qwant" : ["https://www.qwant.com/?q=", tradThis("Search Qwant")],
 			"s_ecosia" : ["https://www.ecosia.org/search?q=", tradThis("Search Ecosia")],
 			"s_google" : ["https://www.google.com/search", tradThis("Search Google")],
 			"s_yahoo" : ["https://search.yahoo.com/search?p=", tradThis("Search Yahoo")],

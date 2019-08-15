@@ -105,7 +105,6 @@ body input,body textarea,body select,body a,body button{
     align-items:center;
     margin-right:auto;
     margin-left:auto;
-    max-width:14em
 }
 .interface .time .shadow{
     z-index:-1;
@@ -126,7 +125,6 @@ body input,body textarea,body select,body a,body button{
 .interface .main{
     display:flex;
     flex-direction: column;
-    max-width:30em;
     align-items:center;
     justify-content:center;
     margin-right:auto;
