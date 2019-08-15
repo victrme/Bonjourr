@@ -593,8 +593,10 @@ function quickLinks() {
 			}
 			
 			if (!full) {
-				localStorage.links = arr;
-				appendblock(arr);
+
+				localStorage.links = JSON.stringify(arr);
+				appendblock(lll);
+
 			} else {
 
 				//desactive tout les input url (fonctionne pour popup du coup)
