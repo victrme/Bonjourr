@@ -3,7 +3,7 @@ var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
 const TITLE_LIMIT = 42;
-const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
+const WEATHER_API_KEY = "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=";
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
 const HOURS = DATE.getHours();
@@ -351,23 +351,23 @@ function date() {
 }
 
 function greetings() {
-	var h = DATE.getHours();
-	var m;
+	let h = DATE.getHours();
+	let message;
 
-	if (h >= 6 && h < 12) {
-		m = tradThis('Good Morning'); 
+	if (h < 0 || h > 23)
+		return;
 
+	if (h >= 0 && h < 6) {
+		message = tradThis('Good Night');
+	} else if (h >= 6 && h < 12) {
+		message = tradThis('Good Morning');
 	} else if (h >= 12 && h < 17) {
-		m = tradThis('Good Afternoon');
-
+		message = tradThis('Good Afternoon');
 	} else if (h >= 17 && h < 23) {
-		m = tradThis('Good Evening');
-
-	} else if (h >= 23 && h < 6) {
-		m = tradThis('Good Night');
+		message = tradThis('Good Evening');
 	}
 
-	$('.greetings').text(m);
+	$('.greetings').text(message);
 }
 
 function quickLinks() {
@@ -547,6 +547,10 @@ function quickLinks() {
 
 			var regHTTP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
 			var regVal = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+
+			if (str.startsWith("about:") || str.startsWith("chrome://")) {
+				return str;
+			}
 
 			//premier regex pour savoir si c'est http
 			if (!str.match(regHTTP)) {
@@ -765,7 +769,7 @@ function weather() {
 	function weatherRequest(arg) {
 
 		//a changer
-		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + WEATHER_API_KEY;
+		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + atob(WEATHER_API_KEY);
 
 		//auto, utilise l'array location [lat, lon]
 		if (arg.geol_lat && arg.geol_long) {
@@ -1109,6 +1113,7 @@ function initBackground() {
 
 		//si custom, faire le blob
 		if (data.background_type === "custom") {
+			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
 				applyBackground(blob(data.background_blob), type, blur);
 			});	
@@ -1160,7 +1165,7 @@ function blob(donnee, set) {
 
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
-		chrome.storage.local.set({"background_blob": base});
+		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
 		chrome.storage.sync.set({"background_image": blobUrl});
 		chrome.storage.sync.set({"background_type": "custom"});
 
@@ -1723,6 +1728,16 @@ $(".interface").click(function() {
 		$(".interface").removeClass("pushed");
 	}
 });
+
+//autofocus
+$(document).keydown(function(e) {
+
+	if ($(".searchbar_container").hasClass("shown") && !$(".settings").hasClass("shown")) {
+		$(".interface input.searchbar").focus();
+	}
+	
+})
+
 
 
 $(document).ready(function() {

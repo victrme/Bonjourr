@@ -21,8 +21,12 @@ Bonjourr is available in both english and french.
 
 ## Todo
 
-- [ ] linkblocks min-height
 - [ ] System dark mode iOS13 background
+- [ ] Add languages
+- [ ] About:config links
+- [ ] Regex plus permissif pour les links
+- [ ] Fix popup overflow sur small res
+- [ ] local blob bug
 
 ## Known issues to fix
 

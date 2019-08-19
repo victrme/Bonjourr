@@ -1534,7 +1534,7 @@ function searchbar() {
 	var data = localStorage;
 	var storagelinks = (data.links ? JSON.parse(data.links) : null);
 
-	if (data.searchbar) {
+	if (data.searchbar === "true") {
 
 		//display
 		activate(true, storagelinks);
@@ -1648,7 +1648,7 @@ function actualizeStartupOptions() {
 
 	
 	//searchbar switch et select
-	$(".activate_searchbar input")[0].checked = data.searchbar;
+	$(".activate_searchbar input")[0].checked = (data.searchbar === "true" ? true : false);
 
 	setTimeout(() => {
       if (data.searchbar) $(".interface input.searchbar").focus();
@@ -1707,6 +1707,15 @@ $(".interface").click(function() {
 		$(".interface").removeClass("pushed");
 	}
 });
+
+//autofocus
+$(document).keydown(function(e) {
+
+	if ($(".searchbar_container").hasClass("shown") && !($(".settings").hasClass("shown"))) {
+		$(".interface input.searchbar").focus();
+	}
+	
+})
 
 
 $(document).ready(function() {
