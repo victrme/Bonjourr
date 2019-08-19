@@ -2,10 +2,9 @@
 	"manifest_version": 2,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.3.2",
+	"version": "1.4.0",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
-	"homepage_url": "https://bonjourr.fr",
 	"default_locale": "en",
 
 	"icons": {
@@ -16,15 +15,13 @@
 		"newtab": "index.html"
 	},
 
-	"chrome_settings_overrides" : {
-		"homepage": "index.html"
-	},
-
+	"offline_enabled": true,
 	"background": {
-		"scripts": ["src/scripts/background.js"]
+		"scripts": ["src/scripts/background_chrome.js"]
 	},
 
 	"permissions": [
+		"webRequest",
 		"storage",
 		"unlimitedStorage",
 		"management",

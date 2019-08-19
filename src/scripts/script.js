@@ -545,27 +545,28 @@ function quickLinks() {
 
 		function filterUrl(str) {
 
-			var regHTTP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
-			var regVal = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+			var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
+			//config ne marche pas
 			if (str.startsWith("about:") || str.startsWith("chrome://")) {
-				return str;
+				return false;
 			}
 
 			//premier regex pour savoir si c'est http
-			if (!str.match(regHTTP)) {
+			if (!str.match(reg)) {
 				str = "http://" + str;
 			}
 
 			//deuxieme pour savoir si il est valide (avec http)
-			if (str.match(regVal)) {
-				return str.match(regVal)[0];
+			if (str.match(reg)) {
+				return str.match(reg)[0];
 			} else {
 				return false;
 			}
 		}
 
 		function fetchIcon(str) {
+
 
 			//prend le domaine de n'importe quelle url
 			var a = document.createElement('a');
@@ -827,7 +828,7 @@ function weather() {
 		//1.0.7 --> 1.1.0 bug corrigé
 		try {
 			lastState = JSON.parse(lastState);
-		} catch {
+		} catch(err) {
 			lastCall = undefined;
 			lastState = "";
 		}

@@ -344,23 +344,23 @@ function date() {
 }
 
 function greetings() {
-	var h = DATE.getHours();
-	var m;
+	let h = DATE.getHours();
+	let message;
 
-	if (h >= 6 && h < 12) {
-		m = tradThis('Good Morning'); 
+	if (h < 0 || h > 23)
+		return;
 
+	if (h >= 0 && h < 6) {
+		message = tradThis('Good Night');
+	} else if (h >= 6 && h < 12) {
+		message = tradThis('Good Morning');
 	} else if (h >= 12 && h < 17) {
-		m = tradThis('Good Afternoon');
-
+		message = tradThis('Good Afternoon');
 	} else if (h >= 17 && h < 23) {
-		m = tradThis('Good Evening');
-
-	} else if (h >= 23 && h < 6) {
-		m = tradThis('Good Night');
+		message = tradThis('Good Evening');
 	}
 
-	$('.greetings').text(m);
+	$('.greetings').text(message);
 }
 
 function quickLinks() {
@@ -538,17 +538,21 @@ function quickLinks() {
 
 		function filterUrl(str) {
 
-			var regHTTP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gm;
-			var regVal = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+			var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+
+			//config ne marche pas
+			if (str.startsWith("about:") || str.startsWith("chrome://")) {
+				return false;
+			}
 
 			//premier regex pour savoir si c'est http
-			if (!str.match(regHTTP)) {
+			if (!str.match(reg)) {
 				str = "http://" + str;
 			}
 
 			//deuxieme pour savoir si il est valide (avec http)
-			if (str.match(regVal)) {
-				return str.match(regVal)[0];
+			if (str.match(reg)) {
+				return str.match(reg)[0];
 			} else {
 				return false;
 			}
@@ -819,7 +823,7 @@ function weather() {
 		//1.0.7 --> 1.1.0 bug corrigé
 		try {
 			lastState = JSON.parse(lastState);
-		} catch {
+		} catch(err) {
 			lastCall = undefined;
 			lastState = "";
 		}
@@ -1101,8 +1105,8 @@ function initBackground() {
 	//si custom, faire le blob
 	if (data.background_type === "custom") {
 		
-		var blob = (data.background_blob ? JSON.parse(data.background_blob) : console.log("pas de blob"));
-		applyBackground(blob(), type, blur);
+		var bblob = (data.background_blob ? blob(JSON.parse(data.background_blob)) : image);
+		applyBackground(bblob, type, blur);
 
 	} else {
 
