@@ -3,7 +3,7 @@ var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
 const TITLE_LIMIT = 42;
-const WEATHER_API_KEY = "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=";
+const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
 const HOURS = DATE.getHours();
@@ -66,16 +66,22 @@ const CREDITS = [
 		"id": "unsplash.com"
 	}];
 
+var ccode = [{"Code": "AF", "Name": "Afghanistan"},{"Code": "AX", "Name": "\u00c5land Islands"},{"Code": "AL", "Name": "Albania"},{"Code": "DZ", "Name": "Algeria"},{"Code": "AS", "Name": "American Samoa"},{"Code": "AD", "Name": "Andorra"},{"Code": "AO", "Name": "Angola"},{"Code": "AI", "Name": "Anguilla"},{"Code": "AQ", "Name": "Antarctica"},{"Code": "AG", "Name": "Antigua and Barbuda"},{"Code": "AR", "Name": "Argentina"},{"Code": "AM", "Name": "Armenia"},{"Code": "AW", "Name": "Aruba"},{"Code": "AU", "Name": "Australia"},{"Code": "AT", "Name": "Austria"},{"Code": "AZ", "Name": "Azerbaijan"},{"Code": "BS", "Name": "Bahamas"},{"Code": "BH", "Name": "Bahrain"},{"Code": "BD", "Name": "Bangladesh"},{"Code": "BB", "Name": "Barbados"},{"Code": "BY", "Name": "Belarus"},{"Code": "BE", "Name": "Belgium"},{"Code": "BZ", "Name": "Belize"},{"Code": "BJ", "Name": "Benin"},{"Code": "BM", "Name": "Bermuda"},{"Code": "BT", "Name": "Bhutan"},{"Code": "BO", "Name": "Bolivia, Plurinational State of"},{"Code": "BQ", "Name": "Bonaire, Sint Eustatius and Saba"},{"Code": "BA", "Name": "Bosnia and Herzegovina"},{"Code": "BW", "Name": "Botswana"},{"Code": "BV", "Name": "Bouvet Island"},{"Code": "BR", "Name": "Brazil"},{"Code": "IO", "Name": "British Indian Ocean Territory"},{"Code": "BN", "Name": "Brunei Darussalam"},{"Code": "BG", "Name": "Bulgaria"},{"Code": "BF", "Name": "Burkina Faso"},{"Code": "BI", "Name": "Burundi"},{"Code": "KH", "Name": "Cambodia"},{"Code": "CM", "Name": "Cameroon"},{"Code": "CA", "Name": "Canada"},{"Code": "CV", "Name": "Cape Verde"},{"Code": "KY", "Name": "Cayman Islands"},{"Code": "CF", "Name": "Central African Republic"},{"Code": "TD", "Name": "Chad"},{"Code": "CL", "Name": "Chile"},{"Code": "CN", "Name": "China"},{"Code": "CX", "Name": "Christmas Island"},{"Code": "CC", "Name": "Cocos (Keeling) Islands"},{"Code": "CO", "Name": "Colombia"},{"Code": "KM", "Name": "Comoros"},{"Code": "CG", "Name": "Congo"},{"Code": "CD", "Name": "Congo, the Democratic Republic of the"},{"Code": "CK", "Name": "Cook Islands"},{"Code": "CR", "Name": "Costa Rica"},{"Code": "CI", "Name": "C\u00f4te d'Ivoire"},{"Code": "HR", "Name": "Croatia"},{"Code": "CU", "Name": "Cuba"},{"Code": "CW", "Name": "Cura\u00e7ao"},{"Code": "CY", "Name": "Cyprus"},{"Code": "CZ", "Name": "Czech Republic"},{"Code": "DK", "Name": "Denmark"},{"Code": "DJ", "Name": "Djibouti"},{"Code": "DM", "Name": "Dominica"},{"Code": "DO", "Name": "Dominican Republic"},{"Code": "EC", "Name": "Ecuador"},{"Code": "EG", "Name": "Egypt"},{"Code": "SV", "Name": "El Salvador"},{"Code": "GQ", "Name": "Equatorial Guinea"},{"Code": "ER", "Name": "Eritrea"},{"Code": "EE", "Name": "Estonia"},{"Code": "ET", "Name": "Ethiopia"},{"Code": "FK", "Name": "Falkland Islands (Malvinas)"},{"Code": "FO", "Name": "Faroe Islands"},{"Code": "FJ", "Name": "Fiji"},{"Code": "FI", "Name": "Finland"},{"Code": "FR", "Name": "France"},{"Code": "GF", "Name": "French Guiana"},{"Code": "PF", "Name": "French Polynesia"},{"Code": "TF", "Name": "French Southern Territories"},{"Code": "GA", "Name": "Gabon"},{"Code": "GM", "Name": "Gambia"},{"Code": "GE", "Name": "Georgia"},{"Code": "DE", "Name": "Germany"},{"Code": "GH", "Name": "Ghana"},{"Code": "GI", "Name": "Gibraltar"},{"Code": "GR", "Name": "Greece"},{"Code": "GL", "Name": "Greenland"},{"Code": "GD", "Name": "Grenada"},{"Code": "GP", "Name": "Guadeloupe"},{"Code": "GU", "Name": "Guam"},{"Code": "GT", "Name": "Guatemala"},{"Code": "GG", "Name": "Guernsey"},{"Code": "GN", "Name": "Guinea"},{"Code": "GW", "Name": "Guinea-Bissau"},{"Code": "GY", "Name": "Guyana"},{"Code": "HT", "Name": "Haiti"},{"Code": "HM", "Name": "Heard Island and McDonald Islands"},{"Code": "VA", "Name": "Holy See (Vatican City State)"},{"Code": "HN", "Name": "Honduras"},{"Code": "HK", "Name": "Hong Kong"},{"Code": "HU", "Name": "Hungary"},{"Code": "IS", "Name": "Iceland"},{"Code": "IN", "Name": "India"},{"Code": "ID", "Name": "Indonesia"},{"Code": "IR", "Name": "Iran, Islamic Republic of"},{"Code": "IQ", "Name": "Iraq"},{"Code": "IE", "Name": "Ireland"},{"Code": "IM", "Name": "Isle of Man"},{"Code": "IL", "Name": "Israel"},{"Code": "IT", "Name": "Italy"},{"Code": "JM", "Name": "Jamaica"},{"Code": "JP", "Name": "Japan"},{"Code": "JE", "Name": "Jersey"},{"Code": "JO", "Name": "Jordan"},{"Code": "KZ", "Name": "Kazakhstan"},{"Code": "KE", "Name": "Kenya"},{"Code": "KI", "Name": "Kiribati"},{"Code": "KP", "Name": "Korea, Democratic People's Republic of"},{"Code": "KR", "Name": "Korea, Republic of"},{"Code": "KW", "Name": "Kuwait"},{"Code": "KG", "Name": "Kyrgyzstan"},{"Code": "LA", "Name": "Lao People's Democratic Republic"},{"Code": "LV", "Name": "Latvia"},{"Code": "LB", "Name": "Lebanon"},{"Code": "LS", "Name": "Lesotho"},{"Code": "LR", "Name": "Liberia"},{"Code": "LY", "Name": "Libya"},{"Code": "LI", "Name": "Liechtenstein"},{"Code": "LT", "Name": "Lithuania"},{"Code": "LU", "Name": "Luxembourg"},{"Code": "MO", "Name": "Macao"},{"Code": "MK", "Name": "Macedonia, the Former Yugoslav Republic of"},{"Code": "MG", "Name": "Madagascar"},{"Code": "MW", "Name": "Malawi"},{"Code": "MY", "Name": "Malaysia"},{"Code": "MV", "Name": "Maldives"},{"Code": "ML", "Name": "Mali"},{"Code": "MT", "Name": "Malta"},{"Code": "MH", "Name": "Marshall Islands"},{"Code": "MQ", "Name": "Martinique"},{"Code": "MR", "Name": "Mauritania"},{"Code": "MU", "Name": "Mauritius"},{"Code": "YT", "Name": "Mayotte"},{"Code": "MX", "Name": "Mexico"},{"Code": "FM", "Name": "Micronesia, Federated States of"},{"Code": "MD", "Name": "Moldova, Republic of"},{"Code": "MC", "Name": "Monaco"},{"Code": "MN", "Name": "Mongolia"},{"Code": "ME", "Name": "Montenegro"},{"Code": "MS", "Name": "Montserrat"},{"Code": "MA", "Name": "Morocco"},{"Code": "MZ", "Name": "Mozambique"},{"Code": "MM", "Name": "Myanmar"},{"Code": "NA", "Name": "Namibia"},{"Code": "NR", "Name": "Nauru"},{"Code": "NP", "Name": "Nepal"},{"Code": "NL", "Name": "Netherlands"},{"Code": "NC", "Name": "New Caledonia"},{"Code": "NZ", "Name": "New Zealand"},{"Code": "NI", "Name": "Nicaragua"},{"Code": "NE", "Name": "Niger"},{"Code": "NG", "Name": "Nigeria"},{"Code": "NU", "Name": "Niue"},{"Code": "NF", "Name": "Norfolk Island"},{"Code": "MP", "Name": "Northern Mariana Islands"},{"Code": "NO", "Name": "Norway"},{"Code": "OM", "Name": "Oman"},{"Code": "PK", "Name": "Pakistan"},{"Code": "PW", "Name": "Palau"},{"Code": "PS", "Name": "Palestine, State of"},{"Code": "PA", "Name": "Panama"},{"Code": "PG", "Name": "Papua New Guinea"},{"Code": "PY", "Name": "Paraguay"},{"Code": "PE", "Name": "Peru"},{"Code": "PH", "Name": "Philippines"},{"Code": "PN", "Name": "Pitcairn"},{"Code": "PL", "Name": "Poland"},{"Code": "PT", "Name": "Portugal"},{"Code": "PR", "Name": "Puerto Rico"},{"Code": "QA", "Name": "Qatar"},{"Code": "RE", "Name": "R\u00e9union"},{"Code": "RO", "Name": "Romania"},{"Code": "RU", "Name": "Russian Federation"},{"Code": "RW", "Name": "Rwanda"},{"Code": "BL", "Name": "Saint Barth\u00e9lemy"},{"Code": "SH", "Name": "Saint Helena, Ascension and Tristan da Cunha"},{"Code": "KN", "Name": "Saint Kitts and Nevis"},{"Code": "LC", "Name": "Saint Lucia"},{"Code": "MF", "Name": "Saint Martin (French part)"},{"Code": "PM", "Name": "Saint Pierre and Miquelon"},{"Code": "VC", "Name": "Saint Vincent and the Grenadines"},{"Code": "WS", "Name": "Samoa"},{"Code": "SM", "Name": "San Marino"},{"Code": "ST", "Name": "Sao Tome and Principe"},{"Code": "SA", "Name": "Saudi Arabia"},{"Code": "SN", "Name": "Senegal"},{"Code": "RS", "Name": "Serbia"},{"Code": "SC", "Name": "Seychelles"},{"Code": "SL", "Name": "Sierra Leone"},{"Code": "SG", "Name": "Singapore"},{"Code": "SX", "Name": "Sint Maarten (Dutch part)"},{"Code": "SK", "Name": "Slovakia"},{"Code": "SI", "Name": "Slovenia"},{"Code": "SB", "Name": "Solomon Islands"},{"Code": "SO", "Name": "Somalia"},{"Code": "ZA", "Name": "South Africa"},{"Code": "GS", "Name": "South Georgia and the South Sandwich Islands"},{"Code": "SS", "Name": "South Sudan"},{"Code": "ES", "Name": "Spain"},{"Code": "LK", "Name": "Sri Lanka"},{"Code": "SD", "Name": "Sudan"},{"Code": "SR", "Name": "Suriname"},{"Code": "SJ", "Name": "Svalbard and Jan Mayen"},{"Code": "SZ", "Name": "Swaziland"},{"Code": "SE", "Name": "Sweden"},{"Code": "CH", "Name": "Switzerland"},{"Code": "SY", "Name": "Syrian Arab Republic"},{"Code": "TW", "Name": "Taiwan, Province of China"},{"Code": "TJ", "Name": "Tajikistan"},{"Code": "TZ", "Name": "Tanzania, United Republic of"},{"Code": "TH", "Name": "Thailand"},{"Code": "TL", "Name": "Timor-Leste"},{"Code": "TG", "Name": "Togo"},{"Code": "TK", "Name": "Tokelau"},{"Code": "TO", "Name": "Tonga"},{"Code": "TT", "Name": "Trinidad and Tobago"},{"Code": "TN", "Name": "Tunisia"},{"Code": "TR", "Name": "Turkey"},{"Code": "TM", "Name": "Turkmenistan"},{"Code": "TC", "Name": "Turks and Caicos Islands"},{"Code": "TV", "Name": "Tuvalu"},{"Code": "UG", "Name": "Uganda"},{"Code": "UA", "Name": "Ukraine"},{"Code": "AE", "Name": "United Arab Emirates"},{"Code": "GB", "Name": "United Kingdom"},{"Code": "US", "Name": "United States"},{"Code": "UM", "Name": "United States Minor Outlying Islands"},{"Code": "UY", "Name": "Uruguay"},{"Code": "UZ", "Name": "Uzbekistan"},{"Code": "VU", "Name": "Vanuatu"},{"Code": "VE", "Name": "Venezuela, Bolivarian Republic of"},{"Code": "VN", "Name": "Viet Nam"},{"Code": "VG", "Name": "Virgin Islands, British"},{"Code": "VI", "Name": "Virgin Islands, U.S."},{"Code": "WF", "Name": "Wallis and Futuna"},{"Code": "EH", "Name": "Western Sahara"},{"Code": "YE", "Name": "Yemen"},{"Code": "ZM", "Name": "Zambia"},{"Code": "ZW", "Name": "Zimbabwe"}];
+
+for (var i = 0; i < ccode.length; i++) {
+	$("select.countrycode").append('<option value="' + ccode[i].Code + '" class="trn">' + ccode[i].Name + '</option>');
+}
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.sync.clear(() => {
+	chrome.storage.local.clear(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.local.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -101,7 +107,7 @@ function tradThis(str) {
 
 function initTrad() {
 
-	chrome.storage.sync.get("lang", (lang) => {
+	chrome.storage.local.get("lang", (lang) => {
 
 		//init
 		translator.lang(lang);
@@ -109,7 +115,7 @@ function initTrad() {
 		//selection de langue
 		//localStorage + weather update + body trad
 		$(".lang").change(function() {
-			chrome.storage.sync.set({"lang": this.value});
+			chrome.storage.local.set({"lang": this.value});
 			localStorage.lang = this.value;
 			translator.lang(this.value);
 
@@ -132,7 +138,7 @@ function introduction() {
 
 		if (iswelcomed) {
 			$(".welcomeback_wrapper").css("display", "flex");
-			chrome.storage.sync.remove("welcomeback");
+			chrome.storage.local.remove("welcomeback");
 		}
 
 		function remWelcome() {
@@ -149,15 +155,16 @@ function introduction() {
 		});
 	}
 
-	chrome.storage.sync.get(["isIntroduced", "welcomeback", "links"], (data) => {
+	chrome.storage.local.get(["isIntroduced", "welcomeback", "links"], (data) => {
 		
 		if (!data.isIntroduced) {
 
 			$("#start_popup").css("display", "flex");
+			chrome.storage.local.set({"links": START_LINKS});
 
 		} else {
 			
-			$("#start_popup").remove();
+			$("#start_popup").css("display", "none");
 
 			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
 			
@@ -185,12 +192,12 @@ function introduction() {
 		}
 		
 		setTimeout(function() {
-			$("#start_popup").remove();
+			$("#start_popup").css("display", "none");
 			$(".interface .linkblocks").css("opacity", 1)
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		chrome.storage.sync.set({"isIntroduced": true});
+		chrome.storage.local.set({"isIntroduced": true});
 	}
 
 	function countPopup(c) {
@@ -219,12 +226,15 @@ function introduction() {
 		if (state === "nxt") {
 			if (margin === 100) {
 
-				chrome.storage.sync.set({"links": START_LINKS});
 				$(".popup .linkblocks").css("visibility", "visible");
 				quickLinks();
 
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
+			}
+
+			if (margin === 200) {
+				quickLinks();
 			}
 
 			if (margin === 500) {
@@ -331,7 +341,7 @@ function clock() {
 		}
 
 		//enregistre partout suivant le format
-		chrome.storage.sync.set({"clockformat": format});
+		chrome.storage.local.set({"clockformat": format});
 		localStorage.clockformat = format;
 	});
 
@@ -380,7 +390,7 @@ function quickLinks() {
 
 		$(".linkblocks").empty();
 
-		chrome.storage.sync.get("links", (data) => {
+		chrome.storage.local.get("links", (data) => {
 
 			if (data.links) {
 
@@ -471,7 +481,7 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			chrome.storage.sync.get(["links", "searchbar"], (data) => {
+			chrome.storage.local.get(["links", "searchbar"], (data) => {
 
 				//si on supprime un block quand la limite est atteinte
 				//réactive les inputs
@@ -506,7 +516,7 @@ function quickLinks() {
 				}
 				
 				var links = data.links;
-				chrome.storage.sync.set({"links": ejectIntruder(links)});
+				chrome.storage.local.set({"links": ejectIntruder(links)});
 			});
 		}
 
@@ -580,7 +590,7 @@ function quickLinks() {
 
 			var full = false;
 
-			chrome.storage.sync.get(["links", "searchbar"], (data) => {
+			chrome.storage.local.get(["links", "searchbar"], (data) => {
 
 				var arr = [];
 
@@ -604,7 +614,7 @@ function quickLinks() {
 				}
 				
 				if (!full) {
-					chrome.storage.sync.set({"links": arr});
+					chrome.storage.local.set({"links": arr});
 					appendblock(links);
 				} else {
 
@@ -667,9 +677,192 @@ function quickLinks() {
 
 function weather() {
 
-	//init la requete;
-	var req;
-	
+	function cacheControl() {
+
+		chrome.storage.local.get(["weather", "lang"], (data) => {
+
+			var now = Math.floor(DATE.getTime() / 1000);
+			var param = (data.weather ? data.weather : "");
+			var lastCall = parseInt(localStorage.lastCall);
+
+			if (lastCall) {
+
+				
+				//si weather est vieux d'une demi heure (1800s)
+				//faire une requete et update le lastcall
+				if (now > lastCall + 1800) {
+
+					request(param, "current");
+					localStorage.lastCall = now;
+
+				} else {
+
+					dataHandling(param.lastState);
+				}
+
+				//high ici
+				if (data.weather.fcDay && data.weather.fcDay === (new Date).getDay()) {
+					$(".w_desc_temp_max").text(data.weather.fcHigh + "°");
+				} else {
+					request(data.weather, "forecast");
+				}
+
+			} else {
+
+				//initialise a Paris + Metric
+				//c'est le premier call, requete + lastCall = now
+				initWeather();
+				localStorage.lastCall = now;
+			}
+
+
+		});
+	}
+
+	function initWeather() {
+
+		navigator.geolocation.getCurrentPosition((pos) => {
+
+			var param = {
+				unit: "metric",
+				location: []
+			};
+
+			//update le parametre de location
+			param.location.push(pos.coords.latitude, pos.coords.longitude);
+			chrome.storage.local.set({"weather": param});
+
+			//update le setting
+			$(".w_auto input")[0].checked = true;
+			$(".change_weather .city").css("display", "none");
+			$(".w_auto input").removeAttr("disabled");
+
+			chrome.storage.local.set({"weather": param});
+
+			request(param, "current");
+			request(param, "forecast");
+			
+		}, (refused) => {
+
+			var param = {
+				city: "Paris",
+				ccode: "FR",
+				location: false,
+				unit: "metric"
+			};
+
+			//désactive geolocation if refused
+			$(".w_auto input")[0].checked = false;
+			$(".w_auto input").removeAttr("disabled");
+
+			chrome.storage.local.set({"weather": param});
+
+			request(param, "current");
+			request(param, "forecast");
+		});
+	}
+
+	function request(arg, wCat) {
+
+		function urlControl(arg, forecast) {
+
+			var url = 'https://api.openweathermap.org/data/2.5/';
+
+
+			if (forecast)
+				url += "forecast?appid=" + atob(WEATHER_API_KEY[0]);
+			else
+				url += "weather?appid=" + atob(WEATHER_API_KEY[1]);
+
+
+			//auto, utilise l'array location [lat, lon]
+			if (arg.location) {
+				url += "&lat=" + arg.location[0] + "&lon=" + arg.location[1];
+			} else {
+				url += "&q=" + encodeURI(arg.city) + "," + arg.ccode;
+			}
+
+			url += '&units=' + arg.unit + '&lang=' + localStorage.lang;
+
+			return url;
+		}
+
+		function weatherResponse(parameters, response) {
+
+			//sauvegarder la derniere meteo
+			var param = parameters;
+			param.lastState = response;
+			chrome.storage.local.set({"weather": param});
+
+			//la réponse est utilisé dans la fonction plus haute
+			dataHandling(response);
+		}
+
+		function forecastResponse(parameters, response) {
+
+			function findHighTemps(d) {
+			
+				var i = 0;
+				var newDay = new Date(d.list[0].dt_txt).getDay();
+				var currentDay = newDay;
+				var arr = [];
+				
+
+				//compare la date toute les 3h (list[i])
+				//si meme journée, rajouter temp max a la liste
+
+				while (currentDay == newDay && i < 10) {
+
+					newDay = new Date(d.list[i].dt_txt).getDay();
+					arr.push(d.list[i].main.temp_max);
+
+					i += 1;
+				}
+
+				var high = Math.floor(Math.max(...arr));
+
+				//renvoie high
+				return [high, currentDay];
+			}
+
+			var fc = findHighTemps(response);
+
+			//sauvegarder la derniere meteo
+			var param = parameters;
+			param.fcHigh = fc[0];
+			param.fcDay = fc[1];
+			chrome.storage.local.set({"weather": param});
+
+			$(".w_desc_temp_max").text(param.fcHigh + "°");
+		}
+
+		var url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
+
+		var request_w = new XMLHttpRequest();
+		request_w.open('GET', url, true);
+
+		request_w.onload = function() {
+			
+			var resp = JSON.parse(this.response);
+
+			if (request_w.status >= 200 && request_w.status < 400) {
+
+				if (wCat === "current") {
+					weatherResponse(arg, resp);
+				}
+				else if (wCat === "forecast") {
+					forecastResponse(arg, resp);
+				}
+
+			} else {
+
+				submissionError(resp.message);
+			}
+		}
+
+		request_w.send();
+	}	
+
 	function dataHandling(data) {
 
 		//si le soleil est levé, renvoi jour
@@ -718,7 +911,6 @@ function weather() {
 			}
 		}
 
-
 		//pour la description et temperature
 		//Rajoute une majuscule à la description
 		var meteoStr = data.weather[0].description;
@@ -733,10 +925,9 @@ function weather() {
 		if (HOURS < 12) {
 
 			//temp de desc et temp de widget sont pareil
-
 			dtemp = wtemp = Math.floor(data.main.temp) + "°";
 			$("div.hightemp").css("display", "block");
-			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");		
+
 		} else {
 
 			//temp de desc devient temp de widget + un point
@@ -760,201 +951,117 @@ function weather() {
 	 		$(".w_icon").attr("src", icon_src);
 
 	 		//sauv l'icone dans wLastState
-	 		data.icon = icon_src;
-	 		localStorage.wLastState = JSON.stringify(data);
+	 		//data.icon = icon_src;
+	 		//localStorage.wLastState = JSON.stringify(data);
 		}
 
 		$(".w_icon").css("opacity", 1);
 	}
 
-	function weatherRequest(arg) {
+	function submissionError(error) {
 
-		//a changer
-		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + atob(WEATHER_API_KEY);
+		var input = $(".change_weather input[name='city']");
 
-		//auto, utilise l'array location [lat, lon]
-		if (arg.geol_lat && arg.geol_long) {
-			url += "&lat=" + arg.geol_lat + "&lon=" + arg.geol_long;
-		} else {
-			url += "&q=" + encodeURI(arg.city);
-		}
+		//affiche le texte d'erreur
+		$("p.wrongCity").text(error);
+		$("p.wrongCity").css("display", "block");
+		$("p.wrongCity").css("opacity", 1);
 
-		url += '&units=' + arg.unit + '&lang=' + arg.lang;
+		//l'enleve si le user modifie l'input
+		$(input).keydown(function() {
 
-
-		var request_w = new XMLHttpRequest();
-		request_w.open('GET', url, true);
-
-		request_w.onload = function() {
-			
-			var data = JSON.parse(this.response);
-
-			if (request_w.status >= 200 && request_w.status < 400) {
-
-				//la réponse est utilisé dans la fonction plus haute
-				dataHandling(data);
-
-				//sauvegarde la derniere meteo
-				localStorage.wLastState = JSON.stringify(data);
-
-				$("p.wrongCity").css("opacity", 0);
-				return true;
-
-			} else {
-				submissionError(arg.city);
-			}
-		}
-
-		request_w.send();
-	}
-
-	function initWeather() {
-		req.city = "Paris";
-		req.unit = "metric";
-
-		weatherRequest(req);
-
-		chrome.storage.sync.set({"weather_city": "Paris"});
-		chrome.storage.sync.set({"weather_unit": "metric"});
-	}
- 
-	function apply() {
-
-		//enleve les millisecondes
-		var now = Math.floor(DATE.getTime() / 1000);
-		var lastCall = parseInt(localStorage.wlastCall);
-		var lastState = localStorage.wLastState;
-
-		//1.0.7 --> 1.1.0 bug corrigé
-		try {
-			lastState = JSON.parse(lastState);
-		} catch(err) {
-			lastCall = undefined;
-			lastState = "";
-		}
-
-		if (lastState) dataHandling(lastState);
-
-		let store = ["weather_city", "weather_unit", "weather_geol_lat", "data.weather_geol_long", "lang"];
-		chrome.storage.sync.get(store, (data) => {
-
-			req = {
-				city: data.weather_city,
-				unit: data.weather_unit,
-				geol_lat: data.weather_geol_lat,
-				geol_long: data.weather_geol_long,
-				lang: data.lang
-			};
-
-			if (lastCall) {
-
-				//si weather est vieux d'une demi heure (1800s)
-				//faire une requete et update le lastcall
-				if (now > lastCall + 1800) {
-					weatherRequest(req);
-					localStorage.wlastCall = now;
-				} else {
-					dataHandling(lastState);
-				}
-
-			} else {
-
-				//initialise a Paris + Metric
-				//c'est le premier call, requete + lastCall = now
-				initWeather();
-				localStorage.wlastCall = now;
-			}
+			$("p.wrongCity").css("opacity", 0);
+			setTimeout(function() {
+				$("p.wrongCity").css("display", "none");
+			}, 200);
 		});
-	}
-
-	function submissionError(str) {
-
-			oldCity = str;
-			var input = $(".change_weather input[name='city']");
-
-			//affiche le texte d'erreur
-			$("p.wrongCity").css("display", "block");
-			$("p.wrongCity").css("opacity", 1);
-
-			//l'enleve si le user modifie l'input
-			$(input).keyup(function() {
-
-				if ($(this).val() !== oldCity) {
-					$("p.wrongCity").css("opacity", 0);
-					setTimeout(function() {
-						$("p.wrongCity").css("display", "none");
-					}, 200);
-				}
-			});
 	}
 
 	function updateCity() {
 
-		var city = $(".change_weather input[name='city']");
-		req.city = city[0].value;
+		chrome.storage.local.get(["weather"], (data) => {
 
-		if (req.city.length < 2) return "";
+			var param = data.weather;
 
-		weatherRequest(req);
+			var city = $(".change_weather input[name='city']");
+			param.ccode = $(".countrycode")[0].value;
+			param.city = city[0].value;
 
-		chrome.storage.sync.set({"weather_city": req.city});
+			if (param.city.length < 2) return false;
 
-		city.attr("placeholder", req.city);
-		city.val("");
-		city.blur();
+			request(param, "current");
+			request(param, "forecast");
+
+			city.attr("placeholder", param.city);
+			city.val("");
+			city.blur();
+
+			chrome.storage.local.set({"weather": param});
+		});	
 	}
 
 	function updateUnit(that) {
 
-		if ($(that).is(":checked")) {
-			req.unit = "imperial";
-		} else {
-			req.unit = "metric";
-		}
+		chrome.storage.local.get(["weather"], (data) => {
 
-		weatherRequest(req);
-		
-		chrome.storage.sync.set({"weather_unit": req.unit});
+			var param = data.weather;
+
+			if ($(that).is(":checked")) {
+				param.unit = "imperial";
+			} else {
+				param.unit = "metric";
+			}
+
+			request(param, "current");
+			request(param, "forecast");
+			
+			chrome.storage.local.set({"weather": param});
+		});
 	}
 
-	//automatise la meteo
-	//demande la geoloc et enleve l'option city
 	function updateLocation(that) {
 
-		if ($(that).is(":checked")) {
+		chrome.storage.local.get(["weather"], (data) => {
 
-			$(that).attr("disabled", "");
+			var param = data.weather;
+			param.location = [];
 
-			navigator.geolocation.getCurrentPosition((pos) => {
+			if ($(that).is(":checked")) {
 
-				req.geol_lat = pos.coords.latitude
-				req.geol_long = pos.coords.longitude;
-				chrome.storage.sync.set({"weather_geol_lat": req.geol_lat});
-				chrome.storage.sync.set({"weather_geol_long": req.geol_long});
+				$(that).attr("disabled", "");
 
-				weatherRequest(req);
+				navigator.geolocation.getCurrentPosition((pos) => {
 
-				$(".change_weather .city").css("display", "none");
-				$(that).removeAttr("disabled");
-				
-			}, (refused) => {
+					//update le parametre de location
+					param.location.push(pos.coords.latitude, pos.coords.longitude);
+					chrome.storage.local.set({"weather": param});
 
-				//désactive geolocation if refused
-				$(that)[0].checked = false;
-				$(that).removeAttr("disabled");
+					//request la meteo
+					request(param, "current");
+					request(param, "forecast");
 
-				if (!req.city) initWeather();
-			});
+					//update le setting
+					$(".change_weather .city").css("display", "none");
+					$(that).removeAttr("disabled");
+					
+				}, (refused) => {
 
-		} else {
+					//désactive geolocation if refused
+					$(that)[0].checked = false;
+					$(that).removeAttr("disabled");
 
-			chrome.storage.sync.remove("weather_geol_lat");
-			chrome.storage.sync.remove("weather_geol_long");
-			req.geol_lat, req.geol_long = false;
-			$(".change_weather .city").css("display", "block");
+					if (!param.city) initWeather();
+				});
 
-			weatherRequest(req);
-		}
+			} else {
+
+				param.location = false;
+				chrome.storage.local.set({"weather": param});
+
+				$(".change_weather .city").css("display", "block");
+				weatherRequest(param);
+			}
+		});
 	}
 
 	//TOUT LES EVENTS
@@ -990,10 +1097,14 @@ function weather() {
 
 	$(".lang").change(function() {
 		if (!stillActive) {
-			req.lang = this.value;
-			weatherRequest(req);
-			searchbar();
-			slow(this);
+
+			chrome.storage.local.get("weather", (data) => {
+
+				request(data.weather, "current");
+				request(data.weather, "forecast");
+				searchbar();
+				slow(this);
+			});		
 		}
 	});
 
@@ -1008,7 +1119,7 @@ function weather() {
 	});
 
 
-	apply();
+	cacheControl();
 }
 
 function imgCredits(src, type) {
@@ -1105,7 +1216,7 @@ function applyBackground(src, type, blur) {
 
 function initBackground() {
 
-	chrome.storage.sync.get(["background_image", "background_type", "background_blur", "background_blob"], (data) => {
+	chrome.storage.local.get(["background_image", "background_type", "background_blur", "background_blob"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
 		var image = (data.background_image ? data.background_image : "src/images/backgrounds/blur/avi-richards-beach.jpg");
@@ -1167,8 +1278,8 @@ function blob(donnee, set) {
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
 		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
-		chrome.storage.sync.set({"background_image": blobUrl});
-		chrome.storage.sync.set({"background_type": "custom"});
+		chrome.storage.local.set({"background_image": blobUrl});
+		chrome.storage.local.set({"background_type": "custom"});
 
 	}
 
@@ -1249,8 +1360,8 @@ function defaultBg() {
 		var tempAttr = $(this)[0].parentElement.getAttribute("class");
 		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
 
-		chrome.storage.sync.set({"background_image": source});
-		chrome.storage.sync.set({"background_type": "default"});
+		chrome.storage.local.set({"background_image": source});
+		chrome.storage.local.set({"background_type": "default"});
 	});
 }
 
@@ -1258,18 +1369,18 @@ function dynamicBackground() {
 
 	$("div.dynamic_bg input").change(function() {
 
-		chrome.storage.sync.get(["background_image", "background_type", "background_blur"], (data) => {
+		chrome.storage.local.get(["background_image", "background_type", "background_blur"], (data) => {
 
 			if (this.checked) {
 
 				//set un previous background si le user choisi de désactiver ce parametre
-				chrome.storage.sync.set({"previous_image": data.background_image});
-				chrome.storage.sync.set({"previous_type": data.background_type});
+				chrome.storage.local.set({"previous_image": data.background_image});
+				chrome.storage.local.set({"previous_type": data.background_type});
 
 				applyBackground(UNSPLASH, "dynamic");
 
-				chrome.storage.sync.set({"background_image": UNSPLASH});
-				chrome.storage.sync.set({"background_type": "dynamic"});
+				chrome.storage.local.set({"background_image": UNSPLASH});
+				chrome.storage.local.set({"background_type": "dynamic"});
 
 				//enleve la selection default bg si jamais
 				$(".imgpreview").removeClass("selected");
@@ -1280,19 +1391,19 @@ function dynamicBackground() {
 					//previous background devient actuel
 					applyBackground(data.previous_image, data.previous_type);
 
-					chrome.storage.sync.set({"background_image": data.previous_image});
-					chrome.storage.sync.set({"background_type": data.previous_type});
+					chrome.storage.local.set({"background_image": data.previous_image});
+					chrome.storage.local.set({"background_type": data.previous_type});
 
 					//supprime pour faire de la place en cas de custom bg
-					chrome.storage.sync.remove("previous_image");
-					chrome.storage.sync.remove("previous_type");
+					chrome.storage.local.remove("previous_image");
+					chrome.storage.local.remove("previous_type");
 
 				} else {
 					//default bg
 					applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
 
-					chrome.storage.sync.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
-					chrome.storage.sync.set({"background_type": "default"});
+					chrome.storage.local.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
+					chrome.storage.local.set({"background_type": "default"});
 				}
 			}
 		});
@@ -1315,7 +1426,7 @@ function blurThis(val, choosing) {
 		if (choosing) imgBackground(optimizedBgURL(url, val));
 	}
 
-	chrome.storage.sync.set({"background_blur": val});
+	chrome.storage.local.set({"background_blur": val});
 }
 
 defaultBg();
@@ -1358,7 +1469,7 @@ function darkmode(choix) {
 
 		if (imgBackground().includes(actual)) {
 			applyBackground(optimizedBgURL(urltouse), "default");
-			chrome.storage.sync.set({"background_image": optimizedBgURL(urltouse)});
+			chrome.storage.local.set({"background_image": optimizedBgURL(urltouse)});
 		}
 	}
 
@@ -1408,7 +1519,7 @@ function darkmode(choix) {
 
 	function initDarkMode() {
 
-		chrome.storage.sync.get("dark", (data) => {
+		chrome.storage.local.get("dark", (data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1434,23 +1545,23 @@ function darkmode(choix) {
 
 		if (choix === "enable") {
 			applyDark(true);
-			chrome.storage.sync.set({"dark": "enable"});
+			chrome.storage.local.set({"dark": "enable"});
 		}
 
 		if (choix === "disable") {
 			applyDark(false);
-			chrome.storage.sync.set({"dark": "disable"});
+			chrome.storage.local.set({"dark": "disable"});
 		}
 
 		if (choix === "auto") {
 
 			//prend l'heure et ajoute la classe si nuit
 			auto();
-			chrome.storage.sync.set({"dark": "auto"});
+			chrome.storage.local.set({"dark": "auto"});
 		}
 
 		if (choix === "system") {
-			chrome.storage.sync.set({"dark": "system"});
+			chrome.storage.local.set({"dark": "system"});
 			applyDark(true, true);
 		}
 	}
@@ -1510,17 +1621,18 @@ function searchbar() {
 
 		if (activated) {
 
-			chrome.storage.sync.set({"searchbar": true});
+			chrome.storage.local.set({"searchbar": true});
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
-			$("#choose_searchengine").css("display", 'flex');
+			$(".settings #choose_searchengine").css("display", 'flex');
+			$(".popup #choose_searchengine").css("display", 'flex');
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
 			
 		} else {
 
-			chrome.storage.sync.set({"searchbar": false});
+			chrome.storage.local.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
@@ -1544,11 +1656,11 @@ function searchbar() {
 		$(".searchbar_container form").attr("action", engines[choice][0]);
 		$(".searchbar").attr("placeholder", engines[choice][1]);
 
-		chrome.storage.sync.set({"searchbar_engine": choice});
+		chrome.storage.local.set({"searchbar_engine": choice});
 	}
 
 	//init
-	chrome.storage.sync.get(["searchbar", "searchbar_engine", "links"], (data) => {
+	chrome.storage.local.get(["searchbar", "searchbar_engine", "links"], (data) => {
 
 		if (data.searchbar) {
 
@@ -1607,9 +1719,11 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	let store = ["background_type", "dark", "weather_city", "weather_geol_lat", "weather_geol_long", "weather_unit", "searchbar", "searchbar_engine", "clockformat", "lang"];
+	let store = ["background_type", "dark", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
-	chrome.storage.sync.get(store, (data) => {
+	chrome.storage.local.get(store, (data) => {
+
+
 
 		//default background 
 		$(".choosable_backgrounds .imgpreview img").each(function() {
@@ -1627,47 +1741,53 @@ function actualizeStartupOptions() {
 
 		//dynamic background
 		if (data.background_type === "dynamic") {
-			$(".dynamic_bg input")[0].checked = true;
+			$(".dynamic_bg input").prop("checked", true);
 		}
-
 
 		//dark mode input
 		if (data.dark) {
-			$(".darkmode select.theme").val(data.dark);
+			$(".darkmode select.theme").prop("value", data.dark);
 		} else {
-			$(".darkmode select.theme").val("disable");
+			$(".darkmode select.theme").prop("value", "disable");
 		}
 		
-
 		
 		//weather city input
-		if (data.weather_city) {
-			$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
+		if (data.weather.city) {
+			$(".change_weather input[name='city']").attr("placeholder", data.weather.city);
 		} else {
-			$(".change_weather input[name='city']").attr("placeholder", "Paris");
+			$(".change_weather input[name='city']").attr("placeholder", "City");
 		}
-		
+
+
+		if (data.weather.ccode) {
+			$(".change_weather select.countrycode").attr("placeholder", data.weather.ccode);
+		} else {
+			$(".change_weather select.countrycode").prop("value", "US");
+		}
 
 		//check geolocalisation
 		//enleve city
-		if (data.weather_geol_lat && data.weather_geol_long) {
-			$(".w_auto input")[0].checked = true;
-			$(".change_weather .city").css("display", "none");
+		if (data.weather.location) {
+
+			$(".w_auto input").prop("checked", true);
+			$("div.city").css("display", "none");
+
 		} else {
-			$(".w_auto input")[0].checked = false;
-			$(".change_weather .city").css("display", "block");
+
+			$(".w_auto input").prop("checked", false);
 		}
 
 		//check imperial
-		if (data.weather_unit && data.weather_unit === "imperial") {
-			$(".units input")[0].checked = true;
+		if (data.weather.unit && data.weather.unit === "imperial") {
+			$(".units input").prop("checked", true);
 		} else {
-			$(".units input")[0].checked = false;
+			$(".units input").prop("checked", false);
 		}
 
 		
 		//searchbar switch et select
-		$(".activate_searchbar input")[0].checked = data.searchbar;
+		$(".activate_searchbar input").prop("checked", data.searchbar);
 
 		setTimeout(() => {
 	      if (data.searchbar) $(".interface input.searchbar").focus();
@@ -1675,30 +1795,31 @@ function actualizeStartupOptions() {
 		
 
 		if (data.searchbar_engine) {
-			$(".choose_search")[0].value = data.searchbar_engine;
+			$(".choose_search").prop("value", data.searchbar_engine);
 		} else {
-			$(".choose_search")[0].value = "s_startpage";
+			$(".choose_search").prop("value", "s_startpage");
 		}
 
 
 		//clock
 		if (data.clockformat === 12) {
-			$(".12hour input")[0].checked = true;
+			$(".12hour input").prop("checked", true);
 			localStorage.clockformat = 12;
 		} else {
-			$(".12hour input")[0].checked = false;
+			$(".12hour input").prop("checked", false);
 		}
 			
 
 		//langue
 		if (data.lang) {
-			$(".lang")[0].value = data.lang;
+			$(".lang").prop("value", data.lang);
 		} else {
-			$(".lang")[0].value = "en";
+			$(".lang").prop("value", "en");
 		}
+
 		
-	});
-			
+		
+	});			
 }
 
 function mobilecheck() {
@@ -1733,10 +1854,12 @@ $(".interface").click(function() {
 //autofocus
 $(document).keydown(function(e) {
 
-	if ($(".searchbar_container").hasClass("shown") && !$(".settings").hasClass("shown")) {
+	if ($(".searchbar_container").hasClass("shown")
+		&& !$(".settings").hasClass("shown")
+		&& $("#start_popup").css("display") === "none") {
+		
 		$(".interface input.searchbar").focus();
 	}
-	
 })
 
 

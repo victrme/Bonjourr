@@ -1852,3 +1852,16 @@ body.dark .signature{
     }
 }
  
+
+
+input[name="city"] {
+    width: 40%;
+}
+select.countrycode {
+    width: 50%;
+}
+button.submitw_city {
+    width: 100%;
+    text-align: center;
+    margin-top: 1em;
+}

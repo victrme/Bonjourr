@@ -24,7 +24,8 @@ Bonjourr is available in both english and french.
 - [ ] System dark mode iOS13 background
 - [ ] Add languages
 - [ ] About:config links
-- [ ] Regex plus permissif pour les links
+- [ ] ip links
+- [x] Regex plus permissif pour les links
 - [ ] Fix popup overflow sur small res
 - [ ] local blob bug
 
