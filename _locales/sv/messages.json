@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr Startsida",
+		"description": "tilläggets namn"
+	},
+	"extensionDesc": {
+		"message": "Förbättra ditt surfande med Bonjourr, en vacker, anpassningsbar och snabb startsida inspirerad av IOS.",
+		"description": "tilläggets beskrivning"
+	}
+}
