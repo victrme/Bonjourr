@@ -1878,7 +1878,7 @@ $(document).keydown(function(e) {
 
 	if ($(".searchbar_container").hasClass("shown")
 		&& !$(".settings").hasClass("shown")
-		&& $("#start_popup").css("display") === "none") {
+		&& $("#start_popup").show().length === 0) {
 
 		$(".interface input.searchbar").focus();
 	}
