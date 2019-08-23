@@ -358,7 +358,7 @@ body input,body textarea,body select,body a,body button{
     display:none;
     opacity:0;
     color:red;
-    margin-top:0.5em;
+    margin: 0.5em;
     font-size:0.8em
 }
 .welcomeback_wrapper .switch{
@@ -1375,7 +1375,7 @@ body input,body textarea,body select,body a,body button{
     display:none;
     opacity:0;
     color:red;
-    margin-top:0.5em;
+    margin: 0.5em 0;
     font-size:0.8em
 }
 .settings .switch{
@@ -1549,11 +1549,12 @@ body input,body textarea,body select,body a,body button{
     display:block;
     margin:auto
 }
-.settings .custom_bg{
-    margin:1em 0 1.5em 0;
-    display:flex;
-    align-items:center;
-    justify-content:space-between
+.settings .custom_bg input {
+    border: 1px solid #c8c7cc;
+    border-radius: 8px;
+    padding: .5em;
+    margin: 1em 0;
+    cursor: pointer;
 }
 .settings .blur{
     display:flex;
@@ -1607,8 +1608,11 @@ body.dark .welcomeback p,body.dark .welcomeback h1{
 body.dark .settings{
     background-color:black
 }
-body.dark hr{
+body.dark hr {
     border-bottom:1px solid #3f3f41
+}
+body.dark .settings .custom_bg input {
+    border-color: #3f3f41;
 }
 body.dark .title{
     background-color:#1c1c1e;
@@ -1864,4 +1868,11 @@ button.submitw_city {
     width: 100%;
     text-align: center;
     margin-top: 1em;
+}
+
+
+.hiddenlink {
+    height: 0;
+    width: 0;
+    visibility: hidden;
 }

@@ -66,12 +66,6 @@ const CREDITS = [
 		"id": "unsplash.com"
 	}];
 
-var ccode = [{"Code": "AF", "Name": "Afghanistan"},{"Code": "AX", "Name": "\u00c5land Islands"},{"Code": "AL", "Name": "Albania"},{"Code": "DZ", "Name": "Algeria"},{"Code": "AS", "Name": "American Samoa"},{"Code": "AD", "Name": "Andorra"},{"Code": "AO", "Name": "Angola"},{"Code": "AI", "Name": "Anguilla"},{"Code": "AQ", "Name": "Antarctica"},{"Code": "AG", "Name": "Antigua and Barbuda"},{"Code": "AR", "Name": "Argentina"},{"Code": "AM", "Name": "Armenia"},{"Code": "AW", "Name": "Aruba"},{"Code": "AU", "Name": "Australia"},{"Code": "AT", "Name": "Austria"},{"Code": "AZ", "Name": "Azerbaijan"},{"Code": "BS", "Name": "Bahamas"},{"Code": "BH", "Name": "Bahrain"},{"Code": "BD", "Name": "Bangladesh"},{"Code": "BB", "Name": "Barbados"},{"Code": "BY", "Name": "Belarus"},{"Code": "BE", "Name": "Belgium"},{"Code": "BZ", "Name": "Belize"},{"Code": "BJ", "Name": "Benin"},{"Code": "BM", "Name": "Bermuda"},{"Code": "BT", "Name": "Bhutan"},{"Code": "BO", "Name": "Bolivia, Plurinational State of"},{"Code": "BQ", "Name": "Bonaire, Sint Eustatius and Saba"},{"Code": "BA", "Name": "Bosnia and Herzegovina"},{"Code": "BW", "Name": "Botswana"},{"Code": "BV", "Name": "Bouvet Island"},{"Code": "BR", "Name": "Brazil"},{"Code": "IO", "Name": "British Indian Ocean Territory"},{"Code": "BN", "Name": "Brunei Darussalam"},{"Code": "BG", "Name": "Bulgaria"},{"Code": "BF", "Name": "Burkina Faso"},{"Code": "BI", "Name": "Burundi"},{"Code": "KH", "Name": "Cambodia"},{"Code": "CM", "Name": "Cameroon"},{"Code": "CA", "Name": "Canada"},{"Code": "CV", "Name": "Cape Verde"},{"Code": "KY", "Name": "Cayman Islands"},{"Code": "CF", "Name": "Central African Republic"},{"Code": "TD", "Name": "Chad"},{"Code": "CL", "Name": "Chile"},{"Code": "CN", "Name": "China"},{"Code": "CX", "Name": "Christmas Island"},{"Code": "CC", "Name": "Cocos (Keeling) Islands"},{"Code": "CO", "Name": "Colombia"},{"Code": "KM", "Name": "Comoros"},{"Code": "CG", "Name": "Congo"},{"Code": "CD", "Name": "Congo, the Democratic Republic of the"},{"Code": "CK", "Name": "Cook Islands"},{"Code": "CR", "Name": "Costa Rica"},{"Code": "CI", "Name": "C\u00f4te d'Ivoire"},{"Code": "HR", "Name": "Croatia"},{"Code": "CU", "Name": "Cuba"},{"Code": "CW", "Name": "Cura\u00e7ao"},{"Code": "CY", "Name": "Cyprus"},{"Code": "CZ", "Name": "Czech Republic"},{"Code": "DK", "Name": "Denmark"},{"Code": "DJ", "Name": "Djibouti"},{"Code": "DM", "Name": "Dominica"},{"Code": "DO", "Name": "Dominican Republic"},{"Code": "EC", "Name": "Ecuador"},{"Code": "EG", "Name": "Egypt"},{"Code": "SV", "Name": "El Salvador"},{"Code": "GQ", "Name": "Equatorial Guinea"},{"Code": "ER", "Name": "Eritrea"},{"Code": "EE", "Name": "Estonia"},{"Code": "ET", "Name": "Ethiopia"},{"Code": "FK", "Name": "Falkland Islands (Malvinas)"},{"Code": "FO", "Name": "Faroe Islands"},{"Code": "FJ", "Name": "Fiji"},{"Code": "FI", "Name": "Finland"},{"Code": "FR", "Name": "France"},{"Code": "GF", "Name": "French Guiana"},{"Code": "PF", "Name": "French Polynesia"},{"Code": "TF", "Name": "French Southern Territories"},{"Code": "GA", "Name": "Gabon"},{"Code": "GM", "Name": "Gambia"},{"Code": "GE", "Name": "Georgia"},{"Code": "DE", "Name": "Germany"},{"Code": "GH", "Name": "Ghana"},{"Code": "GI", "Name": "Gibraltar"},{"Code": "GR", "Name": "Greece"},{"Code": "GL", "Name": "Greenland"},{"Code": "GD", "Name": "Grenada"},{"Code": "GP", "Name": "Guadeloupe"},{"Code": "GU", "Name": "Guam"},{"Code": "GT", "Name": "Guatemala"},{"Code": "GG", "Name": "Guernsey"},{"Code": "GN", "Name": "Guinea"},{"Code": "GW", "Name": "Guinea-Bissau"},{"Code": "GY", "Name": "Guyana"},{"Code": "HT", "Name": "Haiti"},{"Code": "HM", "Name": "Heard Island and McDonald Islands"},{"Code": "VA", "Name": "Holy See (Vatican City State)"},{"Code": "HN", "Name": "Honduras"},{"Code": "HK", "Name": "Hong Kong"},{"Code": "HU", "Name": "Hungary"},{"Code": "IS", "Name": "Iceland"},{"Code": "IN", "Name": "India"},{"Code": "ID", "Name": "Indonesia"},{"Code": "IR", "Name": "Iran, Islamic Republic of"},{"Code": "IQ", "Name": "Iraq"},{"Code": "IE", "Name": "Ireland"},{"Code": "IM", "Name": "Isle of Man"},{"Code": "IL", "Name": "Israel"},{"Code": "IT", "Name": "Italy"},{"Code": "JM", "Name": "Jamaica"},{"Code": "JP", "Name": "Japan"},{"Code": "JE", "Name": "Jersey"},{"Code": "JO", "Name": "Jordan"},{"Code": "KZ", "Name": "Kazakhstan"},{"Code": "KE", "Name": "Kenya"},{"Code": "KI", "Name": "Kiribati"},{"Code": "KP", "Name": "Korea, Democratic People's Republic of"},{"Code": "KR", "Name": "Korea, Republic of"},{"Code": "KW", "Name": "Kuwait"},{"Code": "KG", "Name": "Kyrgyzstan"},{"Code": "LA", "Name": "Lao People's Democratic Republic"},{"Code": "LV", "Name": "Latvia"},{"Code": "LB", "Name": "Lebanon"},{"Code": "LS", "Name": "Lesotho"},{"Code": "LR", "Name": "Liberia"},{"Code": "LY", "Name": "Libya"},{"Code": "LI", "Name": "Liechtenstein"},{"Code": "LT", "Name": "Lithuania"},{"Code": "LU", "Name": "Luxembourg"},{"Code": "MO", "Name": "Macao"},{"Code": "MK", "Name": "Macedonia, the Former Yugoslav Republic of"},{"Code": "MG", "Name": "Madagascar"},{"Code": "MW", "Name": "Malawi"},{"Code": "MY", "Name": "Malaysia"},{"Code": "MV", "Name": "Maldives"},{"Code": "ML", "Name": "Mali"},{"Code": "MT", "Name": "Malta"},{"Code": "MH", "Name": "Marshall Islands"},{"Code": "MQ", "Name": "Martinique"},{"Code": "MR", "Name": "Mauritania"},{"Code": "MU", "Name": "Mauritius"},{"Code": "YT", "Name": "Mayotte"},{"Code": "MX", "Name": "Mexico"},{"Code": "FM", "Name": "Micronesia, Federated States of"},{"Code": "MD", "Name": "Moldova, Republic of"},{"Code": "MC", "Name": "Monaco"},{"Code": "MN", "Name": "Mongolia"},{"Code": "ME", "Name": "Montenegro"},{"Code": "MS", "Name": "Montserrat"},{"Code": "MA", "Name": "Morocco"},{"Code": "MZ", "Name": "Mozambique"},{"Code": "MM", "Name": "Myanmar"},{"Code": "NA", "Name": "Namibia"},{"Code": "NR", "Name": "Nauru"},{"Code": "NP", "Name": "Nepal"},{"Code": "NL", "Name": "Netherlands"},{"Code": "NC", "Name": "New Caledonia"},{"Code": "NZ", "Name": "New Zealand"},{"Code": "NI", "Name": "Nicaragua"},{"Code": "NE", "Name": "Niger"},{"Code": "NG", "Name": "Nigeria"},{"Code": "NU", "Name": "Niue"},{"Code": "NF", "Name": "Norfolk Island"},{"Code": "MP", "Name": "Northern Mariana Islands"},{"Code": "NO", "Name": "Norway"},{"Code": "OM", "Name": "Oman"},{"Code": "PK", "Name": "Pakistan"},{"Code": "PW", "Name": "Palau"},{"Code": "PS", "Name": "Palestine, State of"},{"Code": "PA", "Name": "Panama"},{"Code": "PG", "Name": "Papua New Guinea"},{"Code": "PY", "Name": "Paraguay"},{"Code": "PE", "Name": "Peru"},{"Code": "PH", "Name": "Philippines"},{"Code": "PN", "Name": "Pitcairn"},{"Code": "PL", "Name": "Poland"},{"Code": "PT", "Name": "Portugal"},{"Code": "PR", "Name": "Puerto Rico"},{"Code": "QA", "Name": "Qatar"},{"Code": "RE", "Name": "R\u00e9union"},{"Code": "RO", "Name": "Romania"},{"Code": "RU", "Name": "Russian Federation"},{"Code": "RW", "Name": "Rwanda"},{"Code": "BL", "Name": "Saint Barth\u00e9lemy"},{"Code": "SH", "Name": "Saint Helena, Ascension and Tristan da Cunha"},{"Code": "KN", "Name": "Saint Kitts and Nevis"},{"Code": "LC", "Name": "Saint Lucia"},{"Code": "MF", "Name": "Saint Martin (French part)"},{"Code": "PM", "Name": "Saint Pierre and Miquelon"},{"Code": "VC", "Name": "Saint Vincent and the Grenadines"},{"Code": "WS", "Name": "Samoa"},{"Code": "SM", "Name": "San Marino"},{"Code": "ST", "Name": "Sao Tome and Principe"},{"Code": "SA", "Name": "Saudi Arabia"},{"Code": "SN", "Name": "Senegal"},{"Code": "RS", "Name": "Serbia"},{"Code": "SC", "Name": "Seychelles"},{"Code": "SL", "Name": "Sierra Leone"},{"Code": "SG", "Name": "Singapore"},{"Code": "SX", "Name": "Sint Maarten (Dutch part)"},{"Code": "SK", "Name": "Slovakia"},{"Code": "SI", "Name": "Slovenia"},{"Code": "SB", "Name": "Solomon Islands"},{"Code": "SO", "Name": "Somalia"},{"Code": "ZA", "Name": "South Africa"},{"Code": "GS", "Name": "South Georgia and the South Sandwich Islands"},{"Code": "SS", "Name": "South Sudan"},{"Code": "ES", "Name": "Spain"},{"Code": "LK", "Name": "Sri Lanka"},{"Code": "SD", "Name": "Sudan"},{"Code": "SR", "Name": "Suriname"},{"Code": "SJ", "Name": "Svalbard and Jan Mayen"},{"Code": "SZ", "Name": "Swaziland"},{"Code": "SE", "Name": "Sweden"},{"Code": "CH", "Name": "Switzerland"},{"Code": "SY", "Name": "Syrian Arab Republic"},{"Code": "TW", "Name": "Taiwan, Province of China"},{"Code": "TJ", "Name": "Tajikistan"},{"Code": "TZ", "Name": "Tanzania, United Republic of"},{"Code": "TH", "Name": "Thailand"},{"Code": "TL", "Name": "Timor-Leste"},{"Code": "TG", "Name": "Togo"},{"Code": "TK", "Name": "Tokelau"},{"Code": "TO", "Name": "Tonga"},{"Code": "TT", "Name": "Trinidad and Tobago"},{"Code": "TN", "Name": "Tunisia"},{"Code": "TR", "Name": "Turkey"},{"Code": "TM", "Name": "Turkmenistan"},{"Code": "TC", "Name": "Turks and Caicos Islands"},{"Code": "TV", "Name": "Tuvalu"},{"Code": "UG", "Name": "Uganda"},{"Code": "UA", "Name": "Ukraine"},{"Code": "AE", "Name": "United Arab Emirates"},{"Code": "GB", "Name": "United Kingdom"},{"Code": "US", "Name": "United States"},{"Code": "UM", "Name": "United States Minor Outlying Islands"},{"Code": "UY", "Name": "Uruguay"},{"Code": "UZ", "Name": "Uzbekistan"},{"Code": "VU", "Name": "Vanuatu"},{"Code": "VE", "Name": "Venezuela, Bolivarian Republic of"},{"Code": "VN", "Name": "Viet Nam"},{"Code": "VG", "Name": "Virgin Islands, British"},{"Code": "VI", "Name": "Virgin Islands, U.S."},{"Code": "WF", "Name": "Wallis and Futuna"},{"Code": "EH", "Name": "Western Sahara"},{"Code": "YE", "Name": "Yemen"},{"Code": "ZM", "Name": "Zambia"},{"Code": "ZW", "Name": "Zimbabwe"}];
-
-for (var i = 0; i < ccode.length; i++) {
-	$("select.countrycode").append('<option value="' + ccode[i].Code + '" class="trn">' + ccode[i].Name + '</option>');
-}
-
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.local.clear(() => {
@@ -164,7 +158,7 @@ function introduction() {
 
 		} else {
 			
-			$("#start_popup").css("display", "none");
+			$("#start_popup").remove();
 
 			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
 			
@@ -192,7 +186,7 @@ function introduction() {
 		}
 		
 		setTimeout(function() {
-			$("#start_popup").css("display", "none");
+			$("#start_popup").remove();
 			$(".interface .linkblocks").css("opacity", 1)
 		}, 400);
 
@@ -389,8 +383,11 @@ function quickLinks() {
 	function initblocks() {
 
 		$(".linkblocks").empty();
+		$(".linkblocks").append('<a href="" class="hiddenlink"></a>');
 
-		chrome.storage.local.get("links", (data) => {
+		chrome.storage.local.get(["linknewtab", "links"], (data) => {
+
+			(data.linknewtab ? $(".hiddenlink").attr("target", "_blank") : "");
 
 			if (data.links) {
 
@@ -439,14 +436,6 @@ function quickLinks() {
 			canRemove = false;
 		}
 
-		//j'appuie sur le block pour afficher le remove
-		$(".linkblocks").on("mousedown", ".block", function() {
-
-			remTimeout = setTimeout(function() {
-				displaywiggle();
-			}, 800);
-		});
-
 		//click droit pour afficher le remove
 		$(".linkblocks").on("contextmenu", ".block", function(event) {
 
@@ -463,21 +452,6 @@ function quickLinks() {
 				stopwiggle();
 			}
 		});
-
-
-		//c'est l'event qui active le block comme un lien <a>
-		//je l'ai mis la à cause du clearTimeout
-		$(".linkblocks").on("click", ".block", function(e) {
-
-			clearTimeout(remTimeout);
-
-			if (canRemove === false) {
-				window.location = $(this).attr("source");
-			}
-		});
-
-
-
 
 		function removeblock(i) {
 
@@ -532,34 +506,36 @@ function quickLinks() {
 
 	function linkSubmission() {
 
-		function submissionError(str) {
+		function submissionError(erreur) {
 
-			oldURL = str;
 			var input = $("input[name='url']");
 
 			//affiche le texte d'erreur
+			$("p.wrongURL").text(erreur[1]);
 			$("p.wrongURL").css("display", "block");
 			$("p.wrongURL").css("opacity", 1);
-
-			//l'enleve si le user modifie l'input
-			$(input).keypress(function() {
-
-				if ($(this).val() !== oldURL) {
-					$("p.wrongURL").css("opacity", 0);
-					setTimeout(function() {
-						$("p.wrongURL").css("display", "none");
-					}, 200);
-				}
-			});
+			
+			setTimeout(function() {
+				$("p.wrongURL").css("display", "none");
+			}, 2000);		
 		}
 
 		function filterUrl(str) {
 
+			var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([-a-zA-Z0-9@:%._\+~#=]{2,256})$/;
 			var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
 			//config ne marche pas
 			if (str.startsWith("about:") || str.startsWith("chrome://")) {
-				return false;
+				return [str, "Bonjourr doesn't have permissions to access browser urls"];
+			}
+
+			if (str.startsWith("file://")) {
+				return str;
+			}
+
+			if (str.match(ipReg)) {
+				return "http://" + str.match(ipReg)[0];
 			}
 
 			//premier regex pour savoir si c'est http
@@ -571,7 +547,7 @@ function quickLinks() {
 			if (str.match(reg)) {
 				return str.match(reg)[0];
 			} else {
-				return false;
+				return [str, "URL not valid"];
 			}
 		}
 
@@ -637,7 +613,9 @@ function quickLinks() {
 		if (title.length > TITLE_LIMIT) title = title.slice(0, TITLE_LIMIT) + "...";
 
 		//si l'url filtré est juste
-		if (filtered) {
+		if (typeof(filtered) !== "object" && filtered) {
+
+
 			//et l'input n'a pas été activé ya -1s
 			if (!stillActive) {
 
@@ -653,10 +631,34 @@ function quickLinks() {
 				//remet a zero les inputs
 				$(".addlink input[name='title']").val("");
 				$(".addlink input[name='url']").val("");
-			}	
+			}
+
 		} else {
-			if (url.length > 0) submissionError(url);
+			if (url.length > 0) submissionError(filtered);
 		}
+	}
+
+	function openlink(that, e) {
+
+		if (e.originalEvent.which === 3 || $(".block").hasClass("wiggly")) return false;
+
+		chrome.storage.local.get("linknewtab", (data) => {
+
+			$(".hiddenlink").attr("href", $(that).attr("source"));
+
+
+			if (data.linknewtab) {
+				$(".hiddenlink").attr("target", "_blank");
+			} else {
+
+				if (e.originalEvent.which === 2)
+					$(".hiddenlink").attr("target", "_blank");
+				else 
+					$(".hiddenlink").attr("target", "_self");
+			}
+
+			$(".hiddenlink")[0].click();
+		});
 	}
 
 	$('input[name="title"]').on('keypress', function(e) {
@@ -669,6 +671,21 @@ function quickLinks() {
 
 	$(".submitlink").click(function() {
 		linkSubmission();
+	});
+
+	$(".linkblocks").on("mousedown", ".block", function(e) {
+		openlink(this, e);
+	});
+
+	$(".linknewtab input").change(function() {
+
+		if ($(this).prop("checked")) {
+			chrome.storage.local.set({"linknewtab": true});
+			$(".hiddenlink").attr("target", "_blank");
+		} else {
+			chrome.storage.local.set({"linknewtab": false});
+			$(".hiddenlink").attr("target", "_self");
+		}
 	});
 
 	initblocks();
@@ -733,7 +750,7 @@ function weather() {
 			chrome.storage.local.set({"weather": param});
 
 			//update le setting
-			$(".w_auto input")[0].checked = true;
+			$(".w_auto input").prop("checked", true);
 			$(".change_weather .city").css("display", "none");
 			$(".w_auto input").removeAttr("disabled");
 
@@ -752,7 +769,7 @@ function weather() {
 			};
 
 			//désactive geolocation if refused
-			$(".w_auto input")[0].checked = false;
+			$(".w_auto input").prop("checked", false)
 			$(".w_auto input").removeAttr("disabled");
 
 			chrome.storage.local.set({"weather": param});
@@ -1047,7 +1064,7 @@ function weather() {
 				}, (refused) => {
 
 					//désactive geolocation if refused
-					$(that)[0].checked = false;
+					$(that).prop("checked", false);
 					$(that).removeAttr("disabled");
 
 					if (!param.city) initWeather();
@@ -1719,7 +1736,7 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	let store = ["background_type", "dark", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
+	let store = ["background_type", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
 	chrome.storage.local.get(store, (data) => {
 
@@ -1749,6 +1766,13 @@ function actualizeStartupOptions() {
 			$(".darkmode select.theme").prop("value", data.dark);
 		} else {
 			$(".darkmode select.theme").prop("value", "disable");
+		}
+
+
+		if (data.linknewtab) {
+			$(".linknewtab input").prop("checked", true)
+		} else {
+			$(".linknewtab input").prop("checked", false)
 		}
 		
 		
@@ -1857,7 +1881,7 @@ $(document).keydown(function(e) {
 	if ($(".searchbar_container").hasClass("shown")
 		&& !$(".settings").hasClass("shown")
 		&& $("#start_popup").css("display") === "none") {
-		
+
 		$(".interface input.searchbar").focus();
 	}
 })
