@@ -22,12 +22,13 @@ Bonjourr is available in both english and french.
 ## Todo
 
 - [ ] System dark mode iOS13 background
-- [ ] Add languages
-- [ ] About:config links
-- [ ] ip links
+- [x] Add languages
+- [x] About:config links (rip)
+- [x] ip links
 - [x] Regex plus permissif pour les links
 - [ ] Fix popup overflow sur small res
 - [ ] local blob bug
+- [ ] Investigate blur on chrome
 
 ## Known issues to fix
 

@@ -463,7 +463,6 @@ function quickLinks() {
 
 					var input = $("input[name='url']");
 					$(input).each(function() {
-						$(this).attr("placeholder", "URL");
 						$(this).removeAttr("disabled");
 					});
 				}
@@ -482,15 +481,14 @@ function quickLinks() {
 					}
 				}, 200);
 				
-				
 				//coupe en 2 et concat sans le link a remove
 				function ejectIntruder(arr) {
 					
-					return arr.slice(0, i).concat(arr.slice(i + 1));
+					let l = (arr.length === 1 ? [] : arr.slice(0, i).concat(arr.slice(i + 1)));
+					return l;
 				}
-				
-				var links = data.links;
-				chrome.storage.local.set({"links": ejectIntruder(links)});
+
+				chrome.storage.local.set({"links": ejectIntruder(data.links)});
 			});
 		}
 
@@ -522,7 +520,7 @@ function quickLinks() {
 
 		function filterUrl(str) {
 
-			var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([-a-zA-Z0-9@:%._\+~#=]{2,256})$/;
+			var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
 			var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
 			//config ne marche pas
@@ -597,8 +595,8 @@ function quickLinks() {
 					//desactive tout les input url (fonctionne pour popup du coup)
 					var input = $("input[name='url']");
 					$(input).each(function() {
-						$(this).attr("placeholder", "Quick Links full");
 						$(this).attr("disabled", "disabled");
+						submissionError([input.prop("value"), "No more than 16 links"]);
 					});
 				}
 			});
