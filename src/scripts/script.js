@@ -385,9 +385,7 @@ function quickLinks() {
 		$(".linkblocks").empty();
 		$(".linkblocks").append('<a href="" class="hiddenlink"></a>');
 
-		chrome.storage.local.get(["linknewtab", "links"], (data) => {
-
-			(data.linknewtab ? $(".hiddenlink").attr("target", "_blank") : "");
+		chrome.storage.local.get("links", (data) => {
 
 			if (data.links) {
 
@@ -642,20 +640,22 @@ function quickLinks() {
 
 		chrome.storage.local.get("linknewtab", (data) => {
 
-			$(".hiddenlink").attr("href", $(that).attr("source"));
-
-
 			if (data.linknewtab) {
-				$(".hiddenlink").attr("target", "_blank");
+				chrome.tabs.create({
+					url: $(that).attr("source")
+				});
 			} else {
 
-				if (e.originalEvent.which === 2)
-					$(".hiddenlink").attr("target", "_blank");
-				else 
+				if (e.originalEvent.which === 2) {
+					chrome.tabs.create({
+						url: $(that).attr("source")
+					});
+				} else {
+					$(".hiddenlink").attr("href", $(that).attr("source"));
 					$(".hiddenlink").attr("target", "_self");
-			}
-
-			$(".hiddenlink")[0].click();
+					$(".hiddenlink")[0].click();
+				}
+			}	
 		});
 	}
 
