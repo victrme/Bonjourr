@@ -69,6 +69,13 @@ var dict = {
     nl: "Voeg toe",
     pl: "Dodaj"
   },
+  "Open in new tab by default": {
+    fr: "Ouvrir dans un nouvel onglet par défaut"
+    //The following languages need to be added:
+    //sv: "",
+    // nl: "",
+    // pl: ""
+  },
   "Weather": {
     fr: "Météo",
     sv: "Väder",
@@ -345,11 +352,12 @@ var dict = {
     nl: "Om snelkoppelingen te verwijderen, druk voor een seconde en dan op het verwijder icoontje.",
     pl: "Aby usunąć zakładkę, kliknij i przytrzymaj ją, aby umożliwić usunięcie."
   },
-  "Bonjourr's weather defaults to Paris. Activate geolocation and the weather will be automatically updated according to the city you're in. You can also enter a city manually and change the measure unit.": {
-    fr: "La météo de Bonjourr s'initialise à Paris. Vous pouvez activer la géolocalisation et elle se mettra automatiquement à jour selon la ville où vous vous trouvez. Vous pouvez également entrer une ville manuellement et changer l'unité de mesure.",
-    sv: "Bonjourrs väder är inställt på Paris per standard. Aktivera geolocaation så kommer vädret att automatiskt uppdateras till den stad du befinnder dej i. Du kan även manuellt lägga till en stand och byta måttenhet.",
-    nl: "Bonjourr’s weer widget staat automatisch op Parijs. Activeer locaties en het weer wordt automatisch geupdate naar uw huidige locatie. U kunt ook een plaats handmatig invoeren en de temperatuur eenheid veranderen.",
-    pl: "Pogoda Bonjourr jest domyśnie ustawiona na Paryż. Możesz włączyć geolokalizację, która automatycznie aktualizuje się w zależności od miasta, w którym się znajdujesz. Możesz także wprowadzić miasto ręcznie i zmienić jednostkę miary."
+  "Thanks to geolocation, the weather will be automatically updated according to the city you're in. You can also change the location manually and choose your measure unit.": {
+    fr: "Grâce à la géolocalisation, la météo se met à jour automatiquement selon la ville dans laquelle vous vous trouvez. Vous pouvez également choisir votre ville manuellement et changer votre unité de mesure."
+    // The following languages need to be redone:
+    // sv: "Bonjourrs väder är inställt på Paris per standard. Aktivera geolocaation så kommer vädret att automatiskt uppdateras till den stad du befinnder dej i. Du kan även manuellt lägga till en stand och byta måttenhet.",
+    // nl: "Bonjourr’s weer widget staat automatisch op Parijs. Activeer locaties en het weer wordt automatisch geupdate naar uw huidige locatie. U kunt ook een plaats handmatig invoeren en de temperatuur eenheid veranderen.",
+    // pl: "Pogoda Bonjourr jest domyśnie ustawiona na Paryż. Możesz włączyć geolokalizację, która automatycznie aktualizuje się w zależności od miasta, w którym się znajdujesz. Możesz także wprowadzić miasto ręcznie i zmienić jednostkę miary."
   },
   "Change city": {
     fr: "Changer la ville",
@@ -483,11 +491,12 @@ var dict = {
     nl: "Foutieve URL",
     pl: "Niepoprawny URL"
   },
-  "You can delete the Quick Links after a long press on the icons.": {
-    fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes.",
-    sv: "Du kan radera Snabblänkar efter ett långt tryck på ikonerna.",
-    nl: "U kunt de snelkoppelingen verwijderen na een lange druk op de iconen.",
-    pl: "Możesz usunąć Ulubione Witryny po długim naciśnięciu ikon."
+  "You can delete the Quick Links after a right click on the icons.": {
+    fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes."
+    // The following sentences need to be reworked:
+    // sv: "Du kan radera Snabblänkar efter ett långt tryck på ikonerna.",
+    // nl: "U kunt de snelkoppelingen verwijderen na een lange druk op de iconen.",
+    // pl: "Możesz usunąć Ulubione Witryny po długim naciśnięciu ikon."
   },
   "You now know the basics of using Bonjourr. Don't forget that you can go further into customization by visiting the Settings with the icon in the bottom right corner of the window.": {
     fr: "Bonjourr a bien été configuré. N'oubliez pas que vous pouvez aller plus loin dans la personnalisation en visitant les Réglages via l'icône en bas à droite de la fenêtre.",
