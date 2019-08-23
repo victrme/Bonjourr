@@ -641,16 +641,20 @@ function quickLinks() {
 		chrome.storage.local.get("linknewtab", (data) => {
 
 			if (data.linknewtab) {
+
 				chrome.tabs.create({
 					url: $(that).attr("source")
 				});
+
 			} else {
 
 				if (e.originalEvent.which === 2) {
 					chrome.tabs.create({
 						url: $(that).attr("source")
 					});
+
 				} else {
+
 					$(".hiddenlink").attr("href", $(that).attr("source"));
 					$(".hiddenlink").attr("target", "_self");
 					$(".hiddenlink")[0].click();
@@ -671,7 +675,7 @@ function quickLinks() {
 		linkSubmission();
 	});
 
-	$(".linkblocks").on("mousedown", ".block", function(e) {
+	$(".linkblocks").on("mouseup", ".block", function(e) {
 		openlink(this, e);
 	});
 
@@ -1139,7 +1143,7 @@ function weather() {
 
 function imgCredits(src, type) {
 
-	if (type === "custom") {
+	if (type === "custom" || type === "dynamic") {
 		$("div.credit a").css("opacity", 0);
 	}
 
@@ -1163,55 +1167,10 @@ function imgBackground(val) {
 	}
 }
 
-function optimizedBgURL(source, blur) {
-
-	//remplace le répertoire de l'image
-	//en fonction du blur et du ratio pixel
-	//from le repertoire actuel à celui voulu
-	var dirFrom, dirTo;
-	var res = window.devicePixelRatio * screen.height;
-
-	if (parseInt(blur) > 5) {
-
-		if (source.includes("/default/")) {
-			dirFrom = "default";
-		}
-		else if (source.includes("/large/")) {
-			dirFrom = "large";
-		}
-		
-		dirTo = "blur";
-
-	} else if (parseInt(blur) < 5 || blur === "none") {
-
-		dirFrom = "blur";
-
-		if (res > 950) {	
-			dirTo = "large";
-		} else {
-			dirTo = "default";
-		}
-	}
-
-	if (res > 950 && source.includes("/default/")) {
-		
-		dirFrom = "default";
-		dirTo = "large";
-	}
-
-	
-	
-
-	source = source.replace(dirFrom, dirTo);
-	return source;
-}
-
 function applyBackground(src, type, blur) {
 
 	//enleve les inputs selectionnés suivent le type
 	if (type === "default") {
-		src = optimizedBgURL(src, blur);
-
 		$("div.dynamic_bg input").prop("checked", false);
 		$("input[name='background_file']")[0].value = "";
 	}
@@ -1234,20 +1193,21 @@ function initBackground() {
 	chrome.storage.local.get(["background_image", "background_type", "background_blur", "background_blob"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
-		var image = (data.background_image ? data.background_image : "src/images/backgrounds/blur/avi-richards-beach.jpg");
+		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
 		var type = (data.background_type ? data.background_type : "default");
-		var blur = (data.background_blur ? data.background_blur : 25);
+		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
 
 		//si custom, faire le blob
 		if (data.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
-				applyBackground(blob(data.background_blob), type, blur);
+				applyBackground(blob(data.background_blob), type);
 			});	
 		} else {
 			applyBackground(image, type, blur);
 		}
 		
+		blurThis(blur, true);
 
 		//remet les transitions du blur
 		setTimeout(function() {
@@ -1339,15 +1299,14 @@ function defaultBg() {
 
 		if (bgTimeout) clearTimeout(bgTimeout);
 
-		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
-		var source = optimizedBgURL(this.attributes.src.value, blur);
+		var blur = parseInt($(".background").css("filter"));
+		var src = $(this).prop("src");
 
 		bgTimeout = setTimeout(function() {
 
 			//timeout de 300 pour pas que ça se fasse accidentellement
 			//prend le src de la preview et l'applique au background
-			imgBackground(source);
-			imgCredits(source);
+			applyBackground(src, "default", blur);
 
 		}, 300);
 	});
@@ -1361,13 +1320,12 @@ function defaultBg() {
 	$(".imgpreview img").click(function() {
 
 		//prend le src de la preview et l'applique au background
-		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
-		var source = optimizedBgURL(this.attributes.src.value, blur);
+		var blur = parseInt($(".background").css("filter"));
 
-	    applyBackground(source, "default");
+	    applyBackground($(this).prop("src"), "default", blur);
 
 		clearTimeout(bgTimeout);
-		oldbg = source;
+		oldbg = $(this).prop("src");
 
 		//enleve selected a tout le monde et l'ajoute au bon
 		$(".imgpreview").removeClass("selected");
@@ -1375,7 +1333,7 @@ function defaultBg() {
 		var tempAttr = $(this)[0].parentElement.getAttribute("class");
 		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
 
-		chrome.storage.local.set({"background_image": source});
+		chrome.storage.local.set({"background_image": $(this).prop("src")});
 		chrome.storage.local.set({"background_type": "default"});
 	});
 }
@@ -1425,23 +1383,19 @@ function dynamicBackground() {
 	});
 }
 
-function blurThis(val, choosing) {
+function blurThis(val, init) {
 
 	var isDark = $("body").attr("class");
 	var url = imgBackground().slice(4, imgBackground().length - 1);
 	
 	if (val > 0) {
-
 		$('.background').css("filter", 'blur(' + val + 'px)');
-		if (choosing) imgBackground(optimizedBgURL(url, val));
-
 	} else {
-
 		$('.background').css("filter", '');
-		if (choosing) imgBackground(optimizedBgURL(url, val));
 	}
 
-	chrome.storage.local.set({"background_blur": val});
+	if (!init) chrome.storage.local.set({"background_blur": parseInt(val)});
+	else $(".blur input").prop("value", val);
 }
 
 defaultBg();
@@ -1455,7 +1409,7 @@ $(".change_background input[name='background_file']").change(function() {
 
 // handle input changes
 $(".change_background input[name='background_blur']").change(function() {
-	blurThis(this.value, true);
+	blurThis(this.value);
 });
 
 
@@ -1470,20 +1424,20 @@ function darkmode(choix) {
 
 			modeurl = "ios13_dark";
 			actual = "ios13_light";
-			urltouse = 'src/images/backgrounds/default/ios13_dark.jpg';
+			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
 
 		} else {
 			
 			modeurl = "ios13_light";
 			actual = "ios13_dark";
-			urltouse = 'src/images/backgrounds/default/ios13_light.jpg';
+			urltouse = 'src/images/backgrounds/ios13_light.jpg';
 		}
 
 		//et les applique ici
-		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/blur/" + modeurl + ".jpg");
+		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/" + modeurl + ".jpg");
 
 		if (imgBackground().includes(actual)) {
-			applyBackground(optimizedBgURL(urltouse), "default");
+			applyBackground(urltouse, "default");
 			chrome.storage.local.set({"background_image": optimizedBgURL(urltouse)});
 		}
 	}
