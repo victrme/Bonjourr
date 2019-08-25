@@ -24,6 +24,13 @@ var dict = {
     pl: "Tło",
     es: ""
   },
+  "Disable this may improve performances.": {
+    fr: "Désactiver cette option peut améliorer les performances.",
+    // sv: "",
+    // nl: "",
+    // pl: "",
+    es: ""
+  },
   "Choose background": {
     fr: "Choisir l'arrière-plan",
     sv: "Välj bakgrund",
@@ -45,7 +52,7 @@ var dict = {
     pl: "Dynamiczne tła",
     es: ""
   },
-  "Activate this option to see your background automatically change everyday with beautiful ones curated by the Bonjourr team.": {
+  "Backgrounds selected by the Bonjourr Team that change daily.": {
     fr: "Activez cette option pour que votre arrière-plan change chaque jour via la sélection de l'équipe Bonjourr.",
     sv: "Aktivera denna inställning om du vill att din bakgrund ska automatiskt bytas ut varje dag med vackra bakgrunder utvalda av Bonjourr gänget.",
     nl: "Activeer deze optie om uw achtergrond dagelijks automatisch te veranderen gemaakt door de Bonjourr team.",
@@ -572,7 +579,7 @@ var dict = {
     pl: "Niepoprawny URL",
     es: ""
   },
-  "You can delete the Quick Links after a right click on the icons.": {
+  "Delete the Quick Links after a right click on the icons.": {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes.",
     // The following sentences need to be reworked:
     // sv: "Du kan radera Snabblänkar efter ett långt tryck på ikonerna.",

@@ -65,7 +65,7 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
-const CHANGELOG = ["New in 1.4.1", "<li>Fixed this</li><li>Fixed that</li><li>Fixed this again</li>"];
+const CHANGELOG = ["New in 1.4.1", "<h1>New features</h1><li>This is new</li><li>Also this</li><h1>Bug fixes</h1><li>Fixed this again</li>"];
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
