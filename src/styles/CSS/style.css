@@ -94,7 +94,7 @@ body input,body textarea,body select,body a,body button{
     flex-direction:column;
     justify-content:space-around;
     opacity:0;
-    animation:fade .15s ease-in .1s forwards;
+    animation:fade .06s ease-in .08s forwards;
     transition:margin .2s;
     text-shadow:0 1px 5px rgba(0,0,0,0.2)
 }
@@ -111,6 +111,7 @@ body input,body textarea,body select,body a,body button{
     position:absolute;
     overflow:hidden;
     width:43em;
+    max-width: 100%;
     opacity:.4;
     margin:auto;
     margin-top:30px
@@ -134,6 +135,7 @@ body input,body textarea,body select,body a,body button{
     z-index:-1;
     position:absolute;
     width:55em;
+    max-width: 100%;
     opacity:.4;
     overflow:hidden
 }
@@ -497,7 +499,7 @@ body input,body textarea,body select,body a,body button{
 #start_popup{
     transition:all .4s ease-in;
     z-index:10;
-    overflow:hidden;
+    overflow-x:hidden;
     display:none;
     position:absolute;
     width:100%;

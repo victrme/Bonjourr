@@ -108,8 +108,8 @@ function initTrad() {
 
 	} else {
 
-		chrome.storage.local.get("lang", (lang) => {
-			translator.lang(data.lang);
+		chrome.storage.local.get("lang", (data) => {
+			if (data.lang) translator.lang(data.lang);
 		});
 	}
 	
