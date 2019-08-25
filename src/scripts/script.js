@@ -65,6 +65,7 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
+const CHANGELOG = ["New in 1.4.1", "<li>Fixed this</li><li>Fixed that</li><li>Fixed this again</li>"];
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -101,39 +102,35 @@ function tradThis(str) {
 
 function initTrad() {
 
-	chrome.storage.local.get("lang", (lang) => {
+	if (localStorage.lang) {
 
-		//init
-		translator.lang(lang);
+		translator.lang(localStorage.lang);
 
-		//selection de langue
-		//localStorage + weather update + body trad
-		$(".lang").change(function() {
-			chrome.storage.local.set({"lang": this.value});
-			localStorage.lang = this.value;
-			translator.lang(this.value);
+	} else {
 
-			date();
-			greetings();
+		chrome.storage.local.get("lang", (lang) => {
+			translator.lang(data.lang);
 		});
+	}
+	
 
-		$(".popup .lang").change(function() {
-			$(".settings .lang")[0].value = $(this)[0].value;
-		});
+	$(".lang").change(function() {
+		chrome.storage.local.set({"lang": this.value});
+		localStorage.lang = this.value;
+		translator.lang(this.value);
+
+		date();
+		greetings();
+	});
+
+	$(".popup .lang").change(function() {
+		$(".settings .lang")[0].value = $(this)[0].value;
 	});
 }
 
 function introduction() {
 
-	function welcomeback(iswelcomed) {
-
-		//regarde si le storage déclare un welcome back
-		//si oui on affiche welcome back et le supprime
-
-		if (iswelcomed) {
-			$(".welcomeback_wrapper").css("display", "flex");
-			chrome.storage.local.remove("welcomeback");
-		}
+	function welcomeback(boot) {
 
 		function remWelcome() {
 			$(".welcomeback_wrapper").css("background-color", 'transparent');
@@ -144,25 +141,36 @@ function introduction() {
 			}, 400);
 		}
 
+		if (boot === "updated") {
+			$(".welcomeback h1").text(CHANGELOG[0]);
+			$(".welcomeback p").empty();
+			$(".welcomeback p").append(CHANGELOG[1]);
+		}
+
+		$(".welcomeback_wrapper").css("display", "flex");
+		chrome.storage.local.set({"boot": "introduced"});
+
 		$(".welcomeback button").click(function() {
 			remWelcome();
 		});
 	}
 
-	chrome.storage.local.get(["isIntroduced", "welcomeback", "links"], (data) => {
+	chrome.storage.local.get(["boot", "links"], (data) => {
 		
-		if (!data.isIntroduced) {
+		if (!data.boot) {
 
 			$("#start_popup").css("display", "flex");
 			chrome.storage.local.set({"links": START_LINKS});
 
 		} else {
-			
+
 			$("#start_popup").remove();
 
-			if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
+			if (data.boot === "welcomeback" || data.boot === "updated") {
 			
-			welcomeback(data.welcomeback);
+				if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
+				welcomeback(data.boot);
+			}
 		}
 	});
 
@@ -191,7 +199,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		chrome.storage.local.set({"isIntroduced": true});
+		chrome.storage.local.set({"boot": "introduced"});
 	}
 
 	function countPopup(c) {
@@ -225,10 +233,6 @@ function introduction() {
 
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
-			}
-
-			if (margin === 200) {
-				quickLinks();
 			}
 
 			if (margin === 500) {
@@ -410,11 +414,6 @@ function quickLinks() {
 
 		var remTimeout;
 		var canRemove = false;
-		var mobile = mobilecheck();
-
-		//si mobile, un simple hover ative le remove
-		//sinon il faut appuyer sur le block
-		var eventEnter = (mobile ? "contextmenu" : "mousedown");
 
 		function displaywiggle() {
 
@@ -455,9 +454,34 @@ function quickLinks() {
 
 			chrome.storage.local.get(["links", "searchbar"], (data) => {
 
+				function ejectIntruder(arr) {
+
+					if (arr.length === 1) {
+						return []
+					}
+
+					if (i === 0) {
+
+						arr.shift();
+						return arr;
+					}
+					else if (i === arr.length) {
+
+						arr.pop();
+						return arr;
+					}
+					else {
+
+						arr.splice(i - 1, 1);
+						return arr;
+					}
+				}
+
+				var linkRemd = ejectIntruder(data.links);
+
 				//si on supprime un block quand la limite est atteinte
 				//réactive les inputs
-				if (data.links.length === BLOCK_LIMIT) {
+				if (linkRemd.length === BLOCK_LIMIT - 1) {
 
 					var input = $("input[name='url']");
 					$(input).each(function() {
@@ -473,27 +497,20 @@ function quickLinks() {
 
 					$(block).remove();
 					//enleve linkblocks si il n'y a plus de links
-					if (data.links.length === 1) {
+					if (linkRemd.length === 0) {
 						$(".interface .linkblocks").css("visibility", "hidden");
 						searchbarFlexControl(data.searchbar, 0);
 					}
 				}, 200);
-				
-				//coupe en 2 et concat sans le link a remove
-				function ejectIntruder(arr) {
-					
-					let l = (arr.length === 1 ? [] : arr.slice(0, i).concat(arr.slice(i + 1)));
-					return l;
-				}
 
-				chrome.storage.local.set({"links": ejectIntruder(data.links)});
+				chrome.storage.local.set({"links": linkRemd});
 			});
 		}
 
 
 		//event de suppression de block
 		//prend l'index du parent du .remove clické
-		$(".linkblocks").on("click", ".remove", function() {
+		$(".linkblocks").off("click").on("click", ".remove", function() {
 			
 			var index = $(this).parent().parent().parent().index();
 			(canRemove ? removeblock(index) : "");
@@ -649,6 +666,8 @@ function quickLinks() {
 			} else {
 
 				if (e.originalEvent.which === 2) {
+
+					console.log("hewwo")
 					chrome.tabs.create({
 						url: $(that).attr("source")
 					});
@@ -675,7 +694,8 @@ function quickLinks() {
 		linkSubmission();
 	});
 
-	$(".linkblocks").on("mouseup", ".block", function(e) {
+	$(".interface .linkblocks").off("mouseup").on("mouseup", ".block", function(e) {
+
 		openlink(this, e);
 	});
 
@@ -702,17 +722,15 @@ function weather() {
 
 			var now = Math.floor(DATE.getTime() / 1000);
 			var param = (data.weather ? data.weather : "");
-			var lastCall = parseInt(localStorage.lastCall);
 
-			if (lastCall) {
+			if (data.weather && data.weather.lastCall) {
 
 				
 				//si weather est vieux d'une demi heure (1800s)
 				//faire une requete et update le lastcall
-				if (now > lastCall + 1800) {
+				if (now > data.weather.lastCall + 1800) {
 
 					request(param, "current");
-					localStorage.lastCall = now;
 
 				} else {
 
@@ -720,7 +738,7 @@ function weather() {
 				}
 
 				//high ici
-				if (data.weather.fcDay && data.weather.fcDay === (new Date).getDay()) {
+				if (data.weather && data.weather.fcDay === (new Date).getDay()) {
 					$(".w_desc_temp_max").text(data.weather.fcHigh + "°");
 				} else {
 					request(data.weather, "forecast");
@@ -731,7 +749,6 @@ function weather() {
 				//initialise a Paris + Metric
 				//c'est le premier call, requete + lastCall = now
 				initWeather();
-				localStorage.lastCall = now;
 			}
 
 
@@ -809,8 +826,10 @@ function weather() {
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
+			var now = Math.floor(DATE.getTime() / 1000);
 			var param = parameters;
 			param.lastState = response;
+			param.lastCall = now;
 			chrome.storage.local.set({"weather": param});
 
 			//la réponse est utilisé dans la fonction plus haute
@@ -874,7 +893,6 @@ function weather() {
 				}
 
 			} else {
-
 				submissionError(resp.message);
 			}
 		}
@@ -1187,10 +1205,10 @@ function applyBackground(src, type, blur) {
 	imgBackground(src);
 	if (blur) blurThis(blur);
 }
-
+ 
 function initBackground() {
 
-	chrome.storage.local.get(["background_image", "background_type", "background_blur", "background_blob"], (data) => {
+	chrome.storage.local.get(["background_image", "background_type", "background_blur"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
 		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
@@ -1203,7 +1221,11 @@ function initBackground() {
 			chrome.storage.local.get("background_blob", (data) => {
 				applyBackground(blob(data.background_blob), type);
 			});	
-		} else {
+		} 
+		else if (data.background_type === "dynamic") {
+			dynamicBackground("init")
+		}
+		else {
 			applyBackground(image, type, blur);
 		}
 		
@@ -1337,50 +1359,43 @@ function defaultBg() {
 		chrome.storage.local.set({"background_type": "default"});
 	});
 }
+defaultBg();
 
-function dynamicBackground() {
+function dynamicBackground(state, input) {
 
-	$("div.dynamic_bg input").change(function() {
+	function apply(condition, init) {
 
-		chrome.storage.local.get(["background_image", "background_type", "background_blur"], (data) => {
+		chrome.storage.local.get(["background_image", "background_type", "dynamic"], (data) => {
 
-			if (this.checked) {
+			if (condition) {
 
-				//set un previous background si le user choisi de désactiver ce parametre
-				chrome.storage.local.set({"previous_image": data.background_image});
-				chrome.storage.local.set({"previous_type": data.background_type});
+				if (!init) {
+					//set un previous background si le user choisi de désactiver ce parametre
+					chrome.storage.local.set({"dynamic": true});
+					chrome.storage.local.set({"background_type": "dynamic"});
+				}
 
 				applyBackground(UNSPLASH, "dynamic");
-
-				chrome.storage.local.set({"background_image": UNSPLASH});
-				chrome.storage.local.set({"background_type": "dynamic"});
 
 				//enleve la selection default bg si jamais
 				$(".imgpreview").removeClass("selected");
 
 			} else {
 
-				if (data.previous_image) {
-					//previous background devient actuel
-					applyBackground(data.previous_image, data.previous_type);
-
-					chrome.storage.local.set({"background_image": data.previous_image});
-					chrome.storage.local.set({"background_type": data.previous_type});
-
-					//supprime pour faire de la place en cas de custom bg
-					chrome.storage.local.remove("previous_image");
-					chrome.storage.local.remove("previous_type");
-
-				} else {
-					//default bg
-					applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
-
-					chrome.storage.local.set({"background_image": optimizedBgURL("src/images/avi-richards-beach.jpg")});
-					chrome.storage.local.set({"background_type": "default"});
-				}
+				chrome.storage.local.set({"dynamic": false});
+				chrome.storage.local.set({"background_type": false});
+				applyBackground(data.background_image, false);
 			}
-		});
-	});
+		});	
+	}
+
+	
+	if (state === "init") {
+		apply(true, true);
+	} else {
+		apply(input)
+	}
+	
 }
 
 function blurThis(val, init) {
@@ -1398,9 +1413,9 @@ function blurThis(val, init) {
 	else $(".blur input").prop("value", val);
 }
 
-defaultBg();
-dynamicBackground();
-
+$("div.dynamic_bg input").change(function() {
+	dynamicBackground("change", this.checked)
+});
 
 // handle input changes
 $(".change_background input[name='background_file']").change(function() {
@@ -1437,8 +1452,9 @@ function darkmode(choix) {
 		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/" + modeurl + ".jpg");
 
 		if (imgBackground().includes(actual)) {
+
 			applyBackground(urltouse, "default");
-			chrome.storage.local.set({"background_image": optimizedBgURL(urltouse)});
+			chrome.storage.local.set({"background_image": urltouse});
 		}
 	}
 
@@ -1588,9 +1604,7 @@ function searchbar() {
 
 		//visibility hidden seulement si linkblocks est vide
 
-		if (activated) {
-
-			chrome.storage.local.set({"searchbar": true});
+		if (activated) {	
 
 			//pour animer un peu
 			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
@@ -1598,32 +1612,50 @@ function searchbar() {
 			$(".popup #choose_searchengine").css("display", 'flex');
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
+
+			chrome.storage.local.set({"searchbar": true});
 			
 		} else {
-
-			chrome.storage.local.set({"searchbar": false});
 
 			//pour animer un peu
 			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
+
+			chrome.storage.local.set({"searchbar": false});
 		}
 	}
 
 	function chooseSearchEngine(choice) {
 
 		var engines = {
-			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", tradThis("Search Startpage")],
-			"s_ddg" : ["https://duckduckgo.com/?q=", tradThis("Search DuckDuckGo")],
-			"s_qwant" : ["https://www.qwant.com/?q=", tradThis("Search Qwant")],
-			"s_ecosia" : ["https://www.ecosia.org/search?q=", tradThis("Search Ecosia")],
-			"s_google" : ["https://www.google.com/search", tradThis("Search Google")],
-			"s_yahoo" : ["https://search.yahoo.com/search?p=", tradThis("Search Yahoo")],
-			"s_bing" : ["https://www.bing.com/search?q=", tradThis("Search Bing")]
+			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", "Startpage"],
+			"s_ddg" : ["https://duckduckgo.com/?q=", "DuckDuckGo"],
+			"s_qwant" : ["https://www.qwant.com/?q=", "Qwant"],
+			"s_ecosia" : ["https://www.ecosia.org/search?q=", "Ecosia"],
+			"s_google" : ["https://www.google.com/search", "Google"],
+			"s_yahoo" : ["https://search.yahoo.com/search?p=", "Yahoo"],
+			"s_bing" : ["https://www.bing.com/search?q=", "Bing"]
+		}
+
+		var trad = {
+			en: "Search",
+			fr: "Rechercher sur",
+			sv: "Sök med",
+			nl: "Zoek op",
+			pl: "Szukaj z"
+		}
+
+		var placeholder = "";
+
+		if (localStorage.lang) {
+			placeholder = trad[localStorage.lang] + " " + engines[choice][1];
+		} else {
+			placeholder = trad["en"] + " " + engines[choice][1];
 		}
 
 		$(".searchbar_container form").attr("action", engines[choice][0]);
-		$(".searchbar").attr("placeholder", engines[choice][1]);
+		$(".searchbar").attr("placeholder", placeholder);
 
 		chrome.storage.local.set({"searchbar_engine": choice});
 	}
@@ -1729,14 +1761,14 @@ function actualizeStartupOptions() {
 		
 		
 		//weather city input
-		if (data.weather.city) {
+		if (data.weather && data.weather.city) {
 			$(".change_weather input[name='city']").attr("placeholder", data.weather.city);
 		} else {
 			$(".change_weather input[name='city']").attr("placeholder", "City");
 		}
 
 
-		if (data.weather.ccode) {
+		if (data.weather && data.weather.ccode) {
 			$(".change_weather select.countrycode").attr("placeholder", data.weather.ccode);
 		} else {
 			$(".change_weather select.countrycode").prop("value", "US");
@@ -1744,7 +1776,7 @@ function actualizeStartupOptions() {
 
 		//check geolocalisation
 		//enleve city
-		if (data.weather.location) {
+		if (data.weather && data.weather.location) {
 
 			$(".w_auto input").prop("checked", true);
 			$("div.city").css("display", "none");
@@ -1755,7 +1787,7 @@ function actualizeStartupOptions() {
 		}
 
 		//check imperial
-		if (data.weather.unit && data.weather.unit === "imperial") {
+		if (data.weather && data.weather.unit === "imperial") {
 			$(".units input").prop("checked", true);
 		} else {
 			$(".units input").prop("checked", false);
@@ -1841,7 +1873,6 @@ $(document).keydown(function(e) {
 
 
 $(document).ready(function() {
-
 	initTrad();
 	initBackground();
 	darkmode();

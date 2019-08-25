@@ -94,7 +94,7 @@ body input,body textarea,body select,body a,body button{
     flex-direction:column;
     justify-content:space-around;
     opacity:0;
-    animation:fade .1s ease-in .07s forwards;
+    animation:fade .15s ease-in .1s forwards;
     transition:margin .2s;
     text-shadow:0 1px 5px rgba(0,0,0,0.2)
 }

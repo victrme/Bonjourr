@@ -1,20 +1,3 @@
-
-function intro(info) {
-
-	if (info.reason === "install") {
-
-		chrome.storage.sync.get("isIntroduced", (isIntroduced) => {
-
-			//si l'intro a deja été dismiss alors welcome back
-			if (isIntroduced === true) chrome.storage.sync.set({"welcomeback": true});
-
-			chrome.tabs.create({
-				url: "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
-			});
-		});
-	}
-}
-
 function fin() {
 
 	chrome.storage.sync.get("lang", (lang) => {
@@ -31,5 +14,31 @@ function fin() {
 	});
 }
 
-chrome.runtime.onInstalled.addListener(intro);
+function intro(install) {
+
+	//console.log(install)
+
+	chrome.management.getSelf((infoself) => {
+
+		chrome.storage.local.get("boot", (b) => {
+
+			if (b.boot) {
+
+				if (install.reason === "update") chrome.storage.local.set({"boot": "updated"});
+				else chrome.storage.local.set({"boot": "welcomeback"});
+
+			}
+
+			chrome.tabs.create({
+				url: "chrome-extension://" + chrome.i18n.getMessage("@@extension_id") + "/index.html"
+			});
+		});
+	});	
+}
+
+chrome.runtime.onInstalled.addListener(intro)
+
+
+
+
 fin();

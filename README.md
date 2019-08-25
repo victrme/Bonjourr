@@ -21,19 +21,11 @@ Bonjourr is available in English, French, Swedish, Dutch and Polish.
 ## Todo
 
 - [ ] System dark mode iOS13 background
-- [x] Add languages
-- [x] About:config links (rip)
-- [x] ip links
 - [x] Regex plus permissif pour les links
 - [ ] Fix popup overflow sur small res
-- [ ] local blob bug
+- [ ] sync blob bug
 - [ ] Investigate blur on chrome
 - [ ] Improve the Quick Link's favicon system
-
-## Known issues to fix
-
-- [x] Custom searchbar focus on homepage
-- [x] geolocation hot weather on chrome
 - [ ] On Firefox, remove local path from search bar on homepage
 
 ## Features for the future
