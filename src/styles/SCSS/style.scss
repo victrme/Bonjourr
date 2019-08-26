@@ -549,6 +549,13 @@ $popupText : 22px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		padding: .5em;
+	    border: 1px solid #c8c7cc;
+	    border-radius: 4px;
+	}
+
+	.choosable_backgrounds {
+		padding: 1em 0;
 	}
 	
 	.blur {

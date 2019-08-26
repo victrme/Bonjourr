@@ -65,18 +65,18 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
-const CHANGELOG = ["New in 1.4.1", "<h1>New features</h1><li>This is new</li><li>Also this</li><h1>Bug fixes</h1><li>Fixed this again</li>"];
+const CHANGELOG = ["New in 1.4.1", "<h1>New features</h1><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and long links</li><li>Now in Swedish, Dutch and Polish</li><li>Online version usable on mobile</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.local.clear(() => {
+	chrome.storage.sync.clear(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -108,14 +108,14 @@ function initTrad() {
 
 	} else {
 
-		chrome.storage.local.get("lang", (data) => {
+		chrome.storage.sync.get("lang", (data) => {
 			if (data.lang) translator.lang(data.lang);
 		});
 	}
 	
 
 	$(".lang").change(function() {
-		chrome.storage.local.set({"lang": this.value});
+		chrome.storage.sync.set({"lang": this.value});
 		localStorage.lang = this.value;
 		translator.lang(this.value);
 
@@ -142,25 +142,25 @@ function introduction() {
 		}
 
 		if (boot === "updated") {
+			$(".welcomeback").addClass("update");
 			$(".welcomeback h1").text(CHANGELOG[0]);
 			$(".welcomeback p").empty();
 			$(".welcomeback p").append(CHANGELOG[1]);
 		}
 
 		$(".welcomeback_wrapper").css("display", "flex");
-		chrome.storage.local.set({"boot": "introduced"});
+		chrome.storage.sync.set({"boot": "introduced"});
 
 		$(".welcomeback button").click(function() {
 			remWelcome();
 		});
 	}
 
-	chrome.storage.local.get(["boot", "links"], (data) => {
+	chrome.storage.sync.get(["boot", "links"], (data) => {
 		
 		if (!data.boot) {
 
 			$("#start_popup").css("display", "flex");
-			chrome.storage.local.set({"links": START_LINKS});
 
 		} else {
 
@@ -176,6 +176,7 @@ function introduction() {
 
 	//la marge des popups en pourcentages
 	var margin = 0; 
+	var QLinit = false;
 	//init le premier counter avec le style actif
 	var premier = $("div.counter span:first-child")[0];
 	$(premier).addClass("actif");
@@ -199,7 +200,7 @@ function introduction() {
 		}, 400);
 
 		//mettre ça en false dans la console pour debug la popup
-		chrome.storage.local.set({"boot": "introduced"});
+		chrome.storage.sync.set({"boot": "introduced"});
 	}
 
 	function countPopup(c) {
@@ -229,7 +230,12 @@ function introduction() {
 			if (margin === 100) {
 
 				$(".popup .linkblocks").css("visibility", "visible");
-				quickLinks();
+
+				if (!QLinit) {
+					chrome.storage.sync.set({"links": START_LINKS});
+					quickLinks();
+					QLinit = true;
+				}
 
 				$(".previous_popup").text(tradThis("Back"));
 				$(".next_popup").text(tradThis("Next"));
@@ -339,7 +345,7 @@ function clock() {
 		}
 
 		//enregistre partout suivant le format
-		chrome.storage.local.set({"clockformat": format});
+		chrome.storage.sync.set({"clockformat": format});
 		localStorage.clockformat = format;
 	});
 
@@ -389,7 +395,7 @@ function quickLinks() {
 		$(".linkblocks").empty();
 		$(".linkblocks").append('<a href="" class="hiddenlink"></a>');
 
-		chrome.storage.local.get("links", (data) => {
+		chrome.storage.sync.get("links", (data) => {
 
 			if (data.links) {
 
@@ -452,7 +458,7 @@ function quickLinks() {
 
 		function removeblock(i) {
 
-			chrome.storage.local.get(["links", "searchbar"], (data) => {
+			chrome.storage.sync.get(["links", "searchbar"], (data) => {
 
 				function ejectIntruder(arr) {
 
@@ -503,7 +509,7 @@ function quickLinks() {
 					}
 				}, 200);
 
-				chrome.storage.local.set({"links": linkRemd});
+				chrome.storage.sync.set({"links": linkRemd});
 			});
 		}
 
@@ -579,7 +585,7 @@ function quickLinks() {
 
 			var full = false;
 
-			chrome.storage.local.get(["links", "searchbar"], (data) => {
+			chrome.storage.sync.get(["links", "searchbar"], (data) => {
 
 				var arr = [];
 
@@ -603,7 +609,7 @@ function quickLinks() {
 				}
 				
 				if (!full) {
-					chrome.storage.local.set({"links": arr});
+					chrome.storage.sync.set({"links": arr});
 					appendblock(links);
 				} else {
 
@@ -655,7 +661,7 @@ function quickLinks() {
 
 		if (e.originalEvent.which === 3 || $(".block").hasClass("wiggly")) return false;
 
-		chrome.storage.local.get("linknewtab", (data) => {
+		chrome.storage.sync.get("linknewtab", (data) => {
 
 			if (data.linknewtab) {
 
@@ -702,10 +708,10 @@ function quickLinks() {
 	$(".linknewtab input").change(function() {
 
 		if ($(this).prop("checked")) {
-			chrome.storage.local.set({"linknewtab": true});
+			chrome.storage.sync.set({"linknewtab": true});
 			$(".hiddenlink").attr("target", "_blank");
 		} else {
-			chrome.storage.local.set({"linknewtab": false});
+			chrome.storage.sync.set({"linknewtab": false});
 			$(".hiddenlink").attr("target", "_self");
 		}
 	});
@@ -718,7 +724,7 @@ function weather() {
 
 	function cacheControl() {
 
-		chrome.storage.local.get(["weather", "lang"], (data) => {
+		chrome.storage.sync.get(["weather", "lang"], (data) => {
 
 			var now = Math.floor(DATE.getTime() / 1000);
 			var param = (data.weather ? data.weather : "");
@@ -757,41 +763,40 @@ function weather() {
 
 	function initWeather() {
 
+		var param = {
+			city: "Paris",
+			ccode: "FR",
+			location: false,
+			unit: "metric"
+		};
+
 		navigator.geolocation.getCurrentPosition((pos) => {
 
-			var param = {
-				unit: "metric",
-				location: []
-			};
+			param.location = [];
 
 			//update le parametre de location
 			param.location.push(pos.coords.latitude, pos.coords.longitude);
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			//update le setting
 			$(".w_auto input").prop("checked", true);
 			$(".change_weather .city").css("display", "none");
 			$(".w_auto input").removeAttr("disabled");
 
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			request(param, "current");
 			request(param, "forecast");
 			
 		}, (refused) => {
 
-			var param = {
-				city: "Paris",
-				ccode: "FR",
-				location: false,
-				unit: "metric"
-			};
+			param.location = false;
 
 			//désactive geolocation if refused
 			$(".w_auto input").prop("checked", false)
 			$(".w_auto input").removeAttr("disabled");
 
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			request(param, "current");
 			request(param, "forecast");
@@ -830,7 +835,7 @@ function weather() {
 			var param = parameters;
 			param.lastState = response;
 			param.lastCall = now;
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			//la réponse est utilisé dans la fonction plus haute
 			dataHandling(response);
@@ -869,7 +874,7 @@ function weather() {
 			var param = parameters;
 			param.fcHigh = fc[0];
 			param.fcDay = fc[1];
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			$(".w_desc_temp_max").text(param.fcHigh + "°");
 		}
@@ -1016,7 +1021,7 @@ function weather() {
 
 	function updateCity() {
 
-		chrome.storage.local.get(["weather"], (data) => {
+		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 
@@ -1033,13 +1038,13 @@ function weather() {
 			city.val("");
 			city.blur();
 
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 		});	
 	}
 
 	function updateUnit(that) {
 
-		chrome.storage.local.get(["weather"], (data) => {
+		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 
@@ -1052,13 +1057,13 @@ function weather() {
 			request(param, "current");
 			request(param, "forecast");
 			
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 		});
 	}
 
 	function updateLocation(that) {
 
-		chrome.storage.local.get(["weather"], (data) => {
+		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 			param.location = [];
@@ -1071,7 +1076,7 @@ function weather() {
 
 					//update le parametre de location
 					param.location.push(pos.coords.latitude, pos.coords.longitude);
-					chrome.storage.local.set({"weather": param});
+					chrome.storage.sync.set({"weather": param});
 
 					//request la meteo
 					request(param, "current");
@@ -1092,11 +1097,16 @@ function weather() {
 
 			} else {
 
-				param.location = false;
-				chrome.storage.local.set({"weather": param});
+				$(".change_weather .city").css("display", "flex");
 
-				$(".change_weather .city").css("display", "block");
-				weatherRequest(param);
+				$("input[name='city']").attr("placeholder", param.city);
+				$(".countrycode").prop("value", param.ccode);
+
+				param.location = false;
+				chrome.storage.sync.set({"weather": param});
+				
+				request(param, "current");
+				request(param, "forecast");
 			}
 		});
 	}
@@ -1135,7 +1145,7 @@ function weather() {
 	$(".lang").change(function() {
 		if (!stillActive) {
 
-			chrome.storage.local.get("weather", (data) => {
+			chrome.storage.sync.get("weather", (data) => {
 
 				request(data.weather, "current");
 				request(data.weather, "forecast");
@@ -1167,7 +1177,7 @@ function imgCredits(src, type) {
 
 	for (var i = 0; i < CREDITS.length; i++) {
 
-		if (src.includes(CREDITS[i].id)) {
+		if (src && src.includes(CREDITS[i].id)) {
 			$("div.credit a").attr("href", CREDITS[i].url);
 			$("div.credit a").text(CREDITS[i].title + ", " + CREDITS[i].artist);
 			$("div.credit a").css("opacity", 1);
@@ -1200,15 +1210,14 @@ function applyBackground(src, type, blur) {
 		$("input[name='background_file']")[0].value = "";
 		$(".imgpreview").removeClass("selected");
 	}
-
-	imgCredits(src, type);
+	
 	imgBackground(src);
 	if (blur) blurThis(blur);
 }
  
 function initBackground() {
 
-	chrome.storage.local.get(["background_image", "background_type", "background_blur"], (data) => {
+	chrome.storage.sync.get(["background_image", "background_type", "background_blur"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
 		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
@@ -1229,6 +1238,7 @@ function initBackground() {
 			applyBackground(image, type, blur);
 		}
 		
+		imgCredits(image, type);
 		blurThis(blur, true);
 
 		//remet les transitions du blur
@@ -1275,8 +1285,8 @@ function blob(donnee, set) {
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
 		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
-		chrome.storage.local.set({"background_image": blobUrl});
-		chrome.storage.local.set({"background_type": "custom"});
+		chrome.storage.sync.set({"background_image": blobUrl});
+		chrome.storage.sync.set({"background_type": "custom"});
 
 	}
 
@@ -1343,11 +1353,13 @@ function defaultBg() {
 
 		//prend le src de la preview et l'applique au background
 		var blur = parseInt($(".background").css("filter"));
+		var src = $(this).prop("src");
 
-	    applyBackground($(this).prop("src"), "default", blur);
+	    applyBackground(src, "default", blur);
+	    imgCredits(src, "default");
 
 		clearTimeout(bgTimeout);
-		oldbg = $(this).prop("src");
+		oldbg = src;
 
 		//enleve selected a tout le monde et l'ajoute au bon
 		$(".imgpreview").removeClass("selected");
@@ -1355,8 +1367,8 @@ function defaultBg() {
 		var tempAttr = $(this)[0].parentElement.getAttribute("class");
 		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
 
-		chrome.storage.local.set({"background_image": $(this).prop("src")});
-		chrome.storage.local.set({"background_type": "default"});
+		chrome.storage.sync.set({"background_image": src});
+		chrome.storage.sync.set({"background_type": "default"});
 	});
 }
 defaultBg();
@@ -1365,26 +1377,30 @@ function dynamicBackground(state, input) {
 
 	function apply(condition, init) {
 
-		chrome.storage.local.get(["background_image", "background_type", "dynamic"], (data) => {
+		chrome.storage.sync.get(["background_image", "background_type", "dynamic", "previous_type"], (data) => {
 
 			if (condition) {
 
 				if (!init) {
 					//set un previous background si le user choisi de désactiver ce parametre
-					chrome.storage.local.set({"dynamic": true});
-					chrome.storage.local.set({"background_type": "dynamic"});
+					chrome.storage.sync.set({"previous_type": data.background_type});
+					chrome.storage.sync.set({"dynamic": true});
+					chrome.storage.sync.set({"background_type": "dynamic"});
 				}
 
 				applyBackground(UNSPLASH, "dynamic");
+				imgCredits(UNSPLASH, "dynamic");
 
 				//enleve la selection default bg si jamais
 				$(".imgpreview").removeClass("selected");
 
 			} else {
 
-				chrome.storage.local.set({"dynamic": false});
-				chrome.storage.local.set({"background_type": false});
-				applyBackground(data.background_image, false);
+				chrome.storage.sync.set({"dynamic": false});
+				chrome.storage.sync.set({"background_type": data.previous_type});
+
+				initBackground();
+				imgCredits(data.background_image, data.background_type);
 			}
 		});	
 	}
@@ -1394,8 +1410,7 @@ function dynamicBackground(state, input) {
 		apply(true, true);
 	} else {
 		apply(input)
-	}
-	
+	}	
 }
 
 function blurThis(val, init) {
@@ -1409,7 +1424,7 @@ function blurThis(val, init) {
 		$('.background').css("filter", '');
 	}
 
-	if (!init) chrome.storage.local.set({"background_blur": parseInt(val)});
+	if (!init) chrome.storage.sync.set({"background_blur": parseInt(val)});
 	else $(".blur input").prop("value", val);
 }
 
@@ -1454,7 +1469,7 @@ function darkmode(choix) {
 		if (imgBackground().includes(actual)) {
 
 			applyBackground(urltouse, "default");
-			chrome.storage.local.set({"background_image": urltouse});
+			chrome.storage.sync.set({"background_image": urltouse});
 		}
 	}
 
@@ -1484,27 +1499,30 @@ function darkmode(choix) {
 		}
 	}
 
-	function auto(blur) {
+	function auto(weather) {
 
-		var wAPI = JSON.parse(localStorage.wLastState);
-		var sunrise = new Date(wAPI.sys.sunrise * 1000);
-		var sunset = new Date(wAPI.sys.sunset * 1000);
-		var hr = new Date();
+		chrome.storage.sync.get("weather", (data) => {
 
-		sunrise = sunrise.getHours() + 1;
-		sunset = sunset.getHours();
-		hr = hr.getHours();
+			var ls = data.weather.lastState;
+			var sunrise = new Date(ls.sys.sunrise * 1000);
+			var sunset = new Date(ls.sys.sunset * 1000);
+			var hr = new Date();
 
-		if (hr < sunrise || hr > sunset) {
-			applyDark(true);
-		} else {
-			applyDark(false);
-		}
+			sunrise = sunrise.getHours() + 1;
+			sunset = sunset.getHours();
+			hr = hr.getHours();
+
+			if (hr < sunrise || hr > sunset) {
+				applyDark(true);
+			} else {
+				applyDark(false);
+			}
+		});
 	}
 
 	function initDarkMode() {
 
-		chrome.storage.local.get("dark", (data) => {
+		chrome.storage.sync.get("dark", (data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1530,23 +1548,23 @@ function darkmode(choix) {
 
 		if (choix === "enable") {
 			applyDark(true);
-			chrome.storage.local.set({"dark": "enable"});
+			chrome.storage.sync.set({"dark": "enable"});
 		}
 
 		if (choix === "disable") {
 			applyDark(false);
-			chrome.storage.local.set({"dark": "disable"});
+			chrome.storage.sync.set({"dark": "disable"});
 		}
 
 		if (choix === "auto") {
 
 			//prend l'heure et ajoute la classe si nuit
 			auto();
-			chrome.storage.local.set({"dark": "auto"});
+			chrome.storage.sync.set({"dark": "auto"});
 		}
 
 		if (choix === "system") {
-			chrome.storage.local.set({"dark": "system"});
+			chrome.storage.sync.set({"dark": "system"});
 			applyDark(true, true);
 		}
 	}
@@ -1613,7 +1631,7 @@ function searchbar() {
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
 
-			chrome.storage.local.set({"searchbar": true});
+			chrome.storage.sync.set({"searchbar": true});
 			
 		} else {
 
@@ -1622,7 +1640,7 @@ function searchbar() {
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
 
-			chrome.storage.local.set({"searchbar": false});
+			chrome.storage.sync.set({"searchbar": false});
 		}
 	}
 
@@ -1657,11 +1675,11 @@ function searchbar() {
 		$(".searchbar_container form").attr("action", engines[choice][0]);
 		$(".searchbar").attr("placeholder", placeholder);
 
-		chrome.storage.local.set({"searchbar_engine": choice});
+		chrome.storage.sync.set({"searchbar_engine": choice});
 	}
 
 	//init
-	chrome.storage.local.get(["searchbar", "searchbar_engine", "links"], (data) => {
+	chrome.storage.sync.get(["searchbar", "searchbar_engine", "links"], (data) => {
 
 		if (data.searchbar) {
 
@@ -1722,7 +1740,7 @@ function actualizeStartupOptions() {
 
 	let store = ["background_type", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
-	chrome.storage.local.get(store, (data) => {
+	chrome.storage.sync.get(store, (data) => {
 
 
 
@@ -1769,7 +1787,7 @@ function actualizeStartupOptions() {
 
 
 		if (data.weather && data.weather.ccode) {
-			$(".change_weather select.countrycode").attr("placeholder", data.weather.ccode);
+			$(".change_weather select.countrycode").prop("value", data.weather.ccode);
 		} else {
 			$(".change_weather select.countrycode").prop("value", "US");
 		}
@@ -1885,4 +1903,6 @@ $(document).ready(function() {
 	signature();
 	introduction();
 	actualizeStartupOptions();
+
+	$("body").css("animation", "fade .15s ease-in forwards");
 });

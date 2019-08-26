@@ -1,0 +1,62 @@
+body.dark .settings .custom_bg {
+	border-color: #3f3f41;
+}
+
+.settings .city .wrapper {
+	display: inline-block;
+	width: 100%;
+}
+
+.settings .city .wrapper div {
+	display: flex;
+	width: 100%;
+}
+
+.city input {
+	width: 50%;
+	margin-right: .5em;
+}
+
+.city select {
+	width: 50%;
+}
+
+.settings .city button {
+	margin: 1em auto 0 auto;
+}
+
+.popup  .city button {
+	width: 50%;
+}
+
+.settings .wrapper > span {
+	margin-right: 1em;
+}
+
+
+#start_popup .popup_window .popup_line .popup {
+	padding: 2em 0;
+}
+#start_popup .popup_window .popup_line .popup p {
+	padding: 0 2em;
+}
+
+.welcomeback.update {
+	width: 450px;
+	color: #333;
+}
+
+.welcomeback.update p {
+	text-align: left;
+	padding: 0 2em;
+}
+
+.welcomeback.update li {
+	list-style-type: none;
+}
+
+.welcomeback.update li::before {
+  content: "\2022 ";
+  padding: 0 1em;
+  color: #bbb;
+}

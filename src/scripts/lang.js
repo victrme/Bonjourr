@@ -417,8 +417,8 @@ var dict = {
     pl: "Aby usunąć zakładkę, kliknij i przytrzymaj ją, aby umożliwić usunięcie.",
     es: ""
   },
-  "Thanks to geolocation, the weather will be automatically updated according to the city you're in. You can also change the location manually and choose your measure unit.": {
-    fr: "Grâce à la géolocalisation, la météo se met à jour automatiquement selon la ville dans laquelle vous vous trouvez. Vous pouvez également choisir votre ville manuellement et changer votre unité de mesure.",
+  "The weather will be automatically updated according to your geolocation. You can manually change the location and change measure units.": {
+    fr: "La météo se met à jour automatiquement selon votre géolocalisation. Vous pouvez également choisir votre ville manuellement et changer l'unité de mesure.",
     // The following languages need to be redone:
     // sv: "Bonjourrs väder är inställt på Paris per standard. Aktivera geolocaation så kommer vädret att automatiskt uppdateras till den stad du befinnder dej i. Du kan även manuellt lägga till en stand och byta måttenhet.",
     // nl: "Bonjourr’s weer widget staat automatisch op Parijs. Activeer locaties en het weer wordt automatisch geupdate naar uw huidige locatie. U kunt ook een plaats handmatig invoeren en de temperatuur eenheid veranderen.",
