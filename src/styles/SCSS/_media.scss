@@ -17,6 +17,7 @@ body.dark {
 			}
 		}
 	}
+	
 	.welcomeback {
 		background-color: #1c1c1e;
 	}
@@ -31,6 +32,10 @@ body.dark {
 
 	.settings {
 		background-color: black;
+
+		.custom_bg {
+			border-color: #3f3f41;
+		}
 	}
 
 	hr {
@@ -93,6 +98,10 @@ body.dark {
 		background-color: #39383d;
 	}
 
+	.range::-webkit-slider-thumb {
+		box-shadow: none;
+	}
+
 	input:checked + .slider {
 		background-color: #4bd663;
 	}
@@ -137,6 +146,10 @@ body.autodark {
 
 		.settings {
 			background-color: black;
+
+			.custom_bg {
+				border-color: #3f3f41;
+			}
 		}
 
 		hr {
@@ -197,6 +210,10 @@ body.autodark {
 
 		.slider {
 			background-color: #39383d;
+		}
+
+		.range::-webkit-slider-thumb {
+			box-shadow: none;
 		}
 
 		input:checked + .slider {

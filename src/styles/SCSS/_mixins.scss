@@ -215,6 +215,8 @@
 }
 
 @mixin settingsBase {
+	select { height: 2.35em; }
+	
 	input:active, input:focus, a:hover, a:active, a:focus {
 		border: 0;
 	}

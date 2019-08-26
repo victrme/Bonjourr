@@ -287,6 +287,8 @@ body {
   /* Chrome, Opera & Safari */
   /* Firefox */
   /*Edge*/ }
+  .welcomeback_wrapper select {
+    height: 2.35em; }
   .welcomeback_wrapper input:active, .welcomeback_wrapper input:focus, .welcomeback_wrapper a:hover, .welcomeback_wrapper a:active, .welcomeback_wrapper a:focus {
     border: 0; }
   .welcomeback_wrapper input::placeholder {
@@ -426,6 +428,18 @@ body {
         font-size: 1em; }
     .welcomeback_wrapper .welcomeback button {
       font-size: 18px; }
+    .welcomeback_wrapper .welcomeback .update {
+      width: 450px;
+      color: #333; }
+      .welcomeback_wrapper .welcomeback .update p {
+        text-align: left;
+        padding: 0 2em; }
+      .welcomeback_wrapper .welcomeback .update li {
+        list-style-type: none; }
+        .welcomeback_wrapper .welcomeback .update li:before {
+          content: "\2022 ";
+          padding: 0 1em;
+          color: #bbb; }
 
 #start_popup {
   transition: all .4s ease-in;
@@ -455,7 +469,7 @@ body {
       transition: margin .3s; }
       #start_popup .popup_window .popup_line .popup {
         width: 100%;
-        padding: 2em; }
+        padding: 2em 0; }
         #start_popup .popup_window .popup_line .popup h1 {
           color: black;
           font-size: 2em;
@@ -466,7 +480,8 @@ body {
           font-size: 22px;
           color: black;
           margin: 1em 0;
-          line-height: 1.5em; }
+          line-height: 1.5em;
+          padding: 0 2em; }
           #start_popup .popup_window .popup_line .popup p a {
             text-decoration: none;
             color: #007aff; }
@@ -507,6 +522,8 @@ body {
         /* Chrome, Opera & Safari */
         /* Firefox */
         /*Edge*/ }
+        #start_popup .popup_window .popup_line .popup2 select {
+          height: 2.35em; }
         #start_popup .popup_window .popup_line .popup2 input:active, #start_popup .popup_window .popup_line .popup2 input:focus, #start_popup .popup_window .popup_line .popup2 a:hover, #start_popup .popup_window .popup_line .popup2 a:active, #start_popup .popup_window .popup_line .popup2 a:focus {
           border: 0; }
         #start_popup .popup_window .popup_line .popup2 input::placeholder {
@@ -710,6 +727,8 @@ body {
         /* Chrome, Opera & Safari */
         /* Firefox */
         /*Edge*/ }
+        #start_popup .popup_window .popup_line .popup3 select {
+          height: 2.35em; }
         #start_popup .popup_window .popup_line .popup3 input:active, #start_popup .popup_window .popup_line .popup3 input:focus, #start_popup .popup_window .popup_line .popup3 a:hover, #start_popup .popup_window .popup_line .popup3 a:active, #start_popup .popup_window .popup_line .popup3 a:focus {
           border: 0; }
         #start_popup .popup_window .popup_line .popup3 input::placeholder {
@@ -835,6 +854,8 @@ body {
           align-items: center;
           width: 100%;
           justify-content: space-between; }
+          #start_popup .popup_window .popup_line .popup3 .city > * {
+            width: 30%; }
           #start_popup .popup_window .popup_line .popup3 .city button {
             margin: 0; }
         #start_popup .popup_window .popup_line .popup3 .units {
@@ -902,6 +923,8 @@ body {
         /* Chrome, Opera & Safari */
         /* Firefox */
         /*Edge*/ }
+        #start_popup .popup_window .popup_line .popup5 select {
+          height: 2.35em; }
         #start_popup .popup_window .popup_line .popup5 input:active, #start_popup .popup_window .popup_line .popup5 input:focus, #start_popup .popup_window .popup_line .popup5 a:hover, #start_popup .popup_window .popup_line .popup5 a:active, #start_popup .popup_window .popup_line .popup5 a:focus {
           border: 0; }
         #start_popup .popup_window .popup_line .popup5 input::placeholder {
@@ -1151,6 +1174,8 @@ body {
   .settings .help_sentence {
     margin-top: 0.5em;
     font-size: 0.8em; }
+  .settings select {
+    height: 2.35em; }
   .settings input:active, .settings input:focus, .settings a:hover, .settings a:active, .settings a:focus {
     border: 0; }
   .settings input::placeholder {
@@ -1165,8 +1190,6 @@ body {
     background-color: #e3e3e5;
     height: 2.35em;
     padding-left: .5em; }
-  .settings input[name="city"] {
-    margin-bottom: 1em;}
   .settings button {
     border: 0;
     background-color: #fff;
@@ -1292,7 +1315,7 @@ body {
   .settings .choosable_backgrounds {
     display: flex;
     justify-content: space-between;
-    padding: 1em 0; }
+    padding: 1em 0 .5em 0; }
     .settings .choosable_backgrounds .imgpreview {
       overflow: hidden;
       height: 80px;
@@ -1321,15 +1344,35 @@ body {
   .settings .addlink button {
     display: block;
     margin: auto; }
+  .settings .choosable_backgrounds {
+    padding: 1em 0; }
   .settings .custom_bg {
     margin: 1em 0 1.5em 0;
     display: flex;
     align-items: center;
-    justify-content: space-between; }
+    justify-content: space-between;
+    padding: .5em;
+    border: 1px solid #c8c7cc;
+    border-radius: 4px; }
   .settings .blur {
     display: flex;
     align-items: center;
     justify-content: space-between; }
+  .settings .city .wrapper {
+    display: inline-block;
+    width: 100%; }
+    .settings .city .wrapper div {
+      display: flex;
+      width: 100%; }
+    .settings .city .wrapper input {
+      width: 50%;
+      margin-right: .5em; }
+    .settings .city .wrapper select {
+      width: 50%;
+      display: flex;
+      align-self: center; }
+    .settings .city .wrapper button {
+      margin: 1em auto 0 auto; }
   .settings select.lang {
     transition: none; }
   .settings .signature {
@@ -1369,6 +1412,8 @@ body.dark .welcomeback p, body.dark .welcomeback h1 {
 
 body.dark .settings {
   background-color: black; }
+  body.dark .settings .custom_bg {
+    border-color: #3f3f41; }
 
 body.dark hr {
   border-bottom: 1px solid #3f3f41; }
@@ -1414,6 +1459,9 @@ body.dark .showSettings button {
 body.dark .slider {
   background-color: #39383d; }
 
+body.dark .range::-webkit-slider-thumb {
+  box-shadow: none; }
+
 body.dark input:checked + .slider {
   background-color: #4bd663; }
 
@@ -1437,6 +1485,8 @@ body.dark .signature {
     color: white; }
   body.autodark .settings {
     background-color: black; }
+    body.autodark .settings .custom_bg {
+      border-color: #3f3f41; }
   body.autodark hr {
     border-bottom: 1px solid #3f3f41; }
   body.autodark .title {
@@ -1471,6 +1521,8 @@ body.dark .signature {
         background-color: #3c3c3e; }
   body.autodark .slider {
     background-color: #39383d; }
+  body.autodark .range::-webkit-slider-thumb {
+    box-shadow: none; }
   body.autodark input:checked + .slider {
     background-color: #4bd663; }
   body.autodark .signature {
