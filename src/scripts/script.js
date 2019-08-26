@@ -1097,7 +1097,7 @@ function weather() {
 
 			} else {
 
-				$(".change_weather .city").css("display", "block");
+				$(".change_weather .city").css("display", "flex");
 
 				$("input[name='city']").attr("placeholder", param.city);
 				$(".countrycode").prop("value", param.ccode);

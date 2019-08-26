@@ -1358,21 +1358,23 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between; }
-  .settings .city .wrapper {
-    display: inline-block;
-    width: 100%; }
-    .settings .city .wrapper div {
-      display: flex;
+  .settings .city {
+    flex-direction: column; }
+    .settings .city .wrapper {
+      display: inline-block;
       width: 100%; }
-    .settings .city .wrapper input {
-      width: 50%;
-      margin-right: .5em; }
-    .settings .city .wrapper select {
-      width: 50%;
-      display: flex;
-      align-self: center; }
-    .settings .city .wrapper button {
-      margin: 1em auto 0 auto; }
+      .settings .city .wrapper div {
+        display: flex;
+        width: 100%; }
+      .settings .city .wrapper input {
+        width: 50%;
+        margin-right: .5em; }
+      .settings .city .wrapper select {
+        width: 50%;
+        display: flex;
+        align-self: center; }
+      .settings .city .wrapper button {
+        margin: 1em auto 0 auto; }
   .settings select.lang {
     transition: none; }
   .settings .signature {
