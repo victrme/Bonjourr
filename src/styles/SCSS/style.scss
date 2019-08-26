@@ -78,7 +78,6 @@
 	}
 
 	@include searchbar();
-
 	@include linkBlocks();
 
 	div.linkblocks {
@@ -159,6 +158,26 @@
 		button {
 			font-size: 18px;
 		}
+
+		.update {
+			width: 450px;
+			color: #333;
+
+			p {
+				text-align: left;
+				padding: 0 2em;
+			}
+
+			li {
+				list-style-type: none;
+
+				&:before {
+					content: "\2022 ";
+					padding: 0 1em;
+					color: #bbb;
+				}
+			}
+		}
 	}
 }
 
@@ -194,7 +213,7 @@ $popupText : 22px;
 
 			.popup {
 				width: 100%;
-				padding: 2em;
+				padding: 2em 0;
 
 				h1 {
 					color: black;
@@ -209,6 +228,7 @@ $popupText : 22px;
 					color: black;
 					margin: 1em 0;
 					line-height: 1.5em;
+					padding: 0 2em;
 
 					a {
 						text-decoration: none;
@@ -318,6 +338,10 @@ $popupText : 22px;
 					align-items: center;
 					width: 100%;
 					justify-content: space-between;
+
+					> * {
+						width: 30%;
+					}
 
 					button {
 						margin: 0;
@@ -501,7 +525,6 @@ $popupText : 22px;
 
 	@include settingsBase();
 
-
 	.title {
 		background-color : #ffffff;
 		border-top: 1px solid #c8c7cc;
@@ -544,6 +567,10 @@ $popupText : 22px;
 		}
 	}
 
+	.choosable_backgrounds {
+		padding: 1em 0;
+	}
+
 	.custom_bg {
 		margin: 1em 0 1.5em 0;
 		display: flex;
@@ -553,16 +580,42 @@ $popupText : 22px;
 	    border: 1px solid #c8c7cc;
 	    border-radius: 4px;
 	}
-
-	.choosable_backgrounds {
-		padding: 1em 0;
-	}
 	
 	.blur {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+	}
 
+	.city {
+		.wrapper {
+			display: inline-block;
+			width: 100%;
+
+			// > span {
+			// 	margin-right: 1em;
+			// }
+
+			div {
+				display: flex;
+				width: 100%;
+			}
+
+			input {
+				width: 50%;
+				margin-right: .5em;
+			}
+
+			select {
+				width: 50%;
+				display: flex;
+				align-self: center;
+			}
+
+			button {
+				margin: 1em auto 0 auto;
+			}
+		}
 	}
 
 	select.lang {transition: none;}
