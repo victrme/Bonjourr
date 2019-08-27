@@ -56,3 +56,4 @@ Bonjourr is available in English, French, Swedish, Dutch and Polish.
 * **Swedish translation** · [Benjamin Horn](https://benjaminhorn.io/) · [GitHub](https://github.com/beije)
 * **Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
 * **Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92)
+* **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
