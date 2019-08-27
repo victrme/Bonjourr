@@ -65,7 +65,17 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
-const CHANGELOG = ["New in 1.4.1", "<h1>New features</h1><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and long links</li><li>Now in Swedish, Dutch and Polish</li><li>Online version usable on mobile</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];
+const CHANGELOG = ["New in 1.5", "<h1>New features</h1><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and long links</li><li>Now in Swedish, Dutch and Polish</li><li>Online version usable on mobile</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];
+
+
+//jS steuplé
+function id(name) {
+	return document.getElementById(name);
+}
+function cl(name) {
+	return document.getElementsByClassName(name);
+}
+
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
@@ -321,17 +331,17 @@ function clock() {
 
 		if (format === 12) h = is12hours(h);
 
-		$('#clock').text(h + ":" + m);
+		id('clock').innerHTML = h + ":" + m;
 
 		timesup = setTimeout(start, 5000);
 	}
 
 
 	//settings event
-	$(".12hour input").change(function() {
+	$("#settings .12hour input").change(function() {
 
 		//change le format 
-		if ($(this)[0].checked) {
+		if (this.checked) {
 
 			format = 12;
 			clearTimeout(timesup);
@@ -1189,9 +1199,9 @@ function imgCredits(src, type) {
 
 function imgBackground(val) {
 	if (val) {
-		$(".background").css("background-image", "url(" + val + ")");
+		$("#background").css("background-image", "url(" + val + ")");
 	} else {
-		return $(".background").css("background-image");
+		return $("#background").css("background-image");
 	}
 }
 
@@ -1243,7 +1253,7 @@ function initBackground() {
 
 		//remet les transitions du blur
 		setTimeout(function() {
-			$(".background").css("transition", "filter .2s");
+			$("#background").css("transition", "filter .2s");
 		}, 200);
 	});	
 }
@@ -1331,7 +1341,7 @@ function defaultBg() {
 
 		if (bgTimeout) clearTimeout(bgTimeout);
 
-		var blur = parseInt($(".background").css("filter"));
+		var blur = parseInt($("#background").css("filter"));
 		var src = $(this).prop("src");
 
 		bgTimeout = setTimeout(function() {
@@ -1352,7 +1362,7 @@ function defaultBg() {
 	$(".imgpreview img").click(function() {
 
 		//prend le src de la preview et l'applique au background
-		var blur = parseInt($(".background").css("filter"));
+		var blur = parseInt($("#background").css("filter"));
 		var src = $(this).prop("src");
 
 	    applyBackground(src, "default", blur);
@@ -1419,9 +1429,9 @@ function blurThis(val, init) {
 	var url = imgBackground().slice(4, imgBackground().length - 1);
 	
 	if (val > 0) {
-		$('.background').css("filter", 'blur(' + val + 'px)');
+		$('#background').css("filter", 'blur(' + val + 'px)');
 	} else {
-		$('.background').css("filter", '');
+		$('#background').css("filter", '');
 	}
 
 	if (!init) chrome.storage.sync.set({"background_blur": parseInt(val)});
@@ -1749,7 +1759,7 @@ function actualizeStartupOptions() {
 
 			//compare l'url des preview avec celle du background
 			var previewURL = $(this).attr("src");
-			var bgURL = $(".background").css("background-image");
+			var bgURL = $("#background").css("background-image");
 
 			//si l'url du bg inclu l'url de la preview, selectionne le
 			if (bgURL.includes(previewURL)) {
@@ -1892,7 +1902,6 @@ $(document).keydown(function(e) {
 
 $(document).ready(function() {
 	initTrad();
-	initBackground();
 	darkmode();
 	clock();
 	date();
@@ -1903,6 +1912,7 @@ $(document).ready(function() {
 	signature();
 	introduction();
 	actualizeStartupOptions();
+	initBackground();
 
 	$("body").css("animation", "fade .15s ease-in forwards");
 });

@@ -1,7 +1,7 @@
 @import 'global';
 @import 'mixins';
 
-.background {
+#background {
 	z-index: -1;
 	position: fixed;
 	width: 100vw;
@@ -158,24 +158,25 @@
 		button {
 			font-size: 18px;
 		}
+	}
 
-		.update {
-			width: 450px;
-			color: #333;
+	.welcomeback.update {
 
-			p {
-				text-align: left;
-				padding: 0 2em;
-			}
+		width: 450px;
+		color: #333;
 
-			li {
-				list-style-type: none;
+		p {
+			text-align: left;
+			padding: 0 2em;
+		}
 
-				&:before {
-					content: "\2022 ";
-					padding: 0 1em;
-					color: #bbb;
-				}
+		li {
+			list-style-type: none;
+
+			&:before {
+				content: "\2022 ";
+				padding: 0 1em;
+				color: #bbb;
 			}
 		}
 	}
@@ -594,10 +595,6 @@ $popupText : 22px;
 			display: inline-block;
 			width: 100%;
 
-			// > span {
-			// 	margin-right: 1em;
-			// }
-
 			div {
 				display: flex;
 				width: 100%;
@@ -617,6 +614,10 @@ $popupText : 22px;
 			button {
 				margin: 1em auto 0 auto;
 			}
+		}
+
+		.wrapper > span {
+			margin-right: 1em;
 		}
 	}
 

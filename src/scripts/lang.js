@@ -61,7 +61,7 @@ var dict = {
     es: ""
   },
   "Daily backgrounds selected by Bonjourr.": {
-    fr: "Activez cette option pour que votre arrière-plan change chaque jour via la sélection de l'équipe Bonjourr.",
+    fr: "Arrière-plans journaliers selectionné par Bonjourr.",
     sv: "Aktivera denna inställning om du vill att din bakgrund ska automatiskt bytas ut varje dag med vackra bakgrunder utvalda av Bonjourr gänget.",
     nl: "Activeer deze optie om uw achtergrond dagelijks automatisch te veranderen gemaakt door de Bonjourr team.",
     pl: "Aktywuj tę opcję by codziennie móc oglądać piękne, atomatycznie  zmieniające się tło, wyselekcjonowane przez zespół Bonjourr.",
