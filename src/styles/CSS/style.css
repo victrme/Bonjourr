@@ -428,15 +428,15 @@ body {
         font-size: 1em; }
     .welcomeback_wrapper .welcomeback button {
       font-size: 18px; }
-    .welcomeback_wrapper .welcomeback .update {
+    .welcomeback_wrapper .welcomeback.update {
       width: 450px;
       color: #333; }
-      .welcomeback_wrapper .welcomeback .update p {
+      .welcomeback_wrapper .welcomeback.update p {
         text-align: left;
         padding: 0 2em; }
-      .welcomeback_wrapper .welcomeback .update li {
+      .welcomeback_wrapper .welcomeback.update li {
         list-style-type: none; }
-        .welcomeback_wrapper .welcomeback .update li:before {
+        .welcomeback_wrapper .welcomeback.update li:before {
           content: "\2022 ";
           padding: 0 1em;
           color: #bbb; }
@@ -1312,6 +1312,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between; }
+  .settings .wrapper > span {
+    margin-right: 1em }
   .settings .choosable_backgrounds {
     display: flex;
     justify-content: space-between;

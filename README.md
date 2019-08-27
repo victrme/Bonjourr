@@ -22,9 +22,9 @@ Bonjourr is available in English, French, Swedish, Dutch and Polish.
 
 - [ ] System dark mode iOS13 background
 - [x] Regex plus permissif pour les links
-- [ ] Fix popup overflow sur small res
-- [ ] sync blob bug
-- [ ] Investigate blur on chrome
+- [x] Fix popup overflow sur small res
+- [x] sync blob bug
+- [x] Investigate blur on chrome
 - [ ] Improve the Quick Link's favicon system
 - [ ] On Firefox, remove local path from search bar on homepage
 
@@ -34,7 +34,7 @@ Bonjourr is available in English, French, Swedish, Dutch and Polish.
 - [ ] Customizable dynamic backgrounds
 - [ ] Personalized CSS settings
 - [ ] Rearrangeable quick links
-- [ ] Changelog popup when updated
+- [x] Changelog popup when updated
 - [ ] Analog clock
 - [ ] Motivational quotes
 - [ ] Mobile web app

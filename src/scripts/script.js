@@ -65,35 +65,15 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
-const CHANGELOG = ["New in 1.4.1", "<h1>New features</h1><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and long links</li><li>Now in Swedish, Dutch and Polish</li><li>Online version usable on mobile</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];
+const CHANGELOG = ["New in 1.5", "<h1>New features</h1><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and long links</li><li>Now in Swedish, Dutch and Polish</li><li>Online version usable on mobile</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];
 
 
 //jS steuplé
 function id(name) {
 	return document.getElementById(name);
 }
-
-//choisir les classes facilement
-function cl(name, i) {
-
-	if (i) return document.getElementsByClassName(name)[i];
-
-
-	name = name.split(", ");
-
-	if (name.length > 1) {
-
-		var e = document.getElementsByClassName(name[0])[0];
-		
-		for (var j = 1; j < name.length; j++) {
-			e = e.getElementsByClassName(name[j])[0]
-		}
-
-		return e;
-
-	} else {
-		return document.getElementsByClassName(name)[0];
-	}
+function cl(name) {
+	return document.getElementsByClassName(name);
 }
 
 
