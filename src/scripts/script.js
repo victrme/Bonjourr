@@ -378,20 +378,17 @@ function greetings() {
 	let h = DATE.getHours();
 	let message;
 
-	if (h < 0 || h > 23)
-		return;
-
-	if (h >= 0 && h < 6) {
-		message = tradThis('Good Night');
-	} else if (h >= 6 && h < 12) {
+	if (h < 12) {
 		message = tradThis('Good Morning');
-	} else if (h >= 12 && h < 17) {
+	} else if (h < 18) {
 		message = tradThis('Good Afternoon');
-	} else if (h >= 17 && h < 23) {
+	} else if (h < 23) {
 		message = tradThis('Good Evening');
+	} else {
+		message = tradThis('Good Night');
 	}
 
-	$('.greetings').text(message);
+	id("greetings").innerText = message;
 }
 
 function quickLinks() {
