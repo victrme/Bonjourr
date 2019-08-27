@@ -69,7 +69,7 @@ body {
     transform: rotate(-1.5deg);
     animation-timing-function: ease-out; } }
 
-.background {
+#background {
   z-index: -1;
   position: fixed;
   width: 100vw;
@@ -915,7 +915,7 @@ body {
             width: 56px;
             height: 76px;
             opacity: .8; }
-      #start_popup .popup_window .popup_line .popup4 .backgrounds {
+      #start_popup .popup_window .popup_line .popup4 #backgrounds {
         width: 50%; }
       #start_popup .popup_window .popup_line .popup5 {
         /* Switch */
@@ -1404,7 +1404,7 @@ body.dark #start_popup .popup_window {
 body.dark .welcomeback {
   background-color: #1c1c1e; }
 
-body.dark .background {
+body.dark #background {
   opacity: .75; }
 
 body.dark .welcomeback p, body.dark .welcomeback h1 {
@@ -1479,7 +1479,7 @@ body.dark .signature {
       background-color: #1c1c1e; }
   body.autodark .welcomeback {
     background-color: #1c1c1e; }
-  body.autodark .background {
+  body.autodark #background {
     opacity: .75; }
   body.autodark .welcomeback p, body.autodark .welcomeback h1 {
     color: white; }

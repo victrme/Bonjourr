@@ -5,12 +5,12 @@ function intro(install) {
 
 	chrome.management.getSelf((infoself) => {
 
-		chrome.storage.local.get("boot", (b) => {
+		chrome.storage.sync.get("boot", (b) => {
 
 			if (b.boot) {
 
-				if (install.reason === "update") chrome.storage.local.set({"boot": "updated"});
-				else chrome.storage.local.set({"boot": "welcomeback"});
+				if (install.reason === "update") chrome.storage.sync.set({"boot": "updated"});
+				else chrome.storage.sync.set({"boot": "welcomeback"});
 
 			}
 
@@ -24,7 +24,7 @@ function intro(install) {
 chrome.runtime.onInstalled.addListener(intro)
 
 
-chrome.storage.local.get("lang", (lang) => {
+chrome.storage.sync.get("lang", (lang) => {
 
 	var url =  "https://bonjourr.fr/";
 

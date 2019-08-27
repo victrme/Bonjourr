@@ -20,12 +20,12 @@ function intro(install) {
 
 	chrome.management.getSelf((infoself) => {
 
-		chrome.storage.local.get("boot", (b) => {
+		chrome.storage.sync.get("boot", (b) => {
 
 			if (b.boot) {
 
-				if (install.reason === "update") chrome.storage.local.set({"boot": "updated"});
-				else chrome.storage.local.set({"boot": "welcomeback"});
+				if (install.reason === "update") chrome.storage.sync.set({"boot": "updated"});
+				else chrome.storage.sync.set({"boot": "welcomeback"});
 
 			}
 
