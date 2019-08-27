@@ -341,7 +341,7 @@ function clock() {
 	$("#settings .12hour input").change(function() {
 
 		//change le format 
-		if (this.checked) {
+		if ($(this).prop("checked")) {
 
 			format = 12;
 			clearTimeout(timesup);
@@ -1671,7 +1671,8 @@ function searchbar() {
 			fr: "Rechercher sur",
 			sv: "Sök med",
 			nl: "Zoek op",
-			pl: "Szukaj z"
+			pl: "Szukaj z",
+			ru: "Поиск в"
 		}
 
 		var placeholder = "";
