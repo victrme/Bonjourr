@@ -588,6 +588,8 @@ $popupText : 22px;
 	}
 
 	.city {
+		flex-direction: column;
+		
 		.wrapper {
 			display: inline-block;
 			width: 100%;
