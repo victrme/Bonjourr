@@ -1,0 +1,1 @@
+["1.5.1", "<h1>New features</h1><li>Now in Swedish, Dutch, Polish and Russian</li><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and longer links</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];

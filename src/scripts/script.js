@@ -65,7 +65,7 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
-const CHANGELOG = ["New in 1.5", "<h1>New features</h1><li>Now in Swedish, Dutch, Polish and Russian</li><li>Searchbar autofocuses anywhere</li><li>Open links in new tabs !</li><li>Add local IP and longer links</li><h1>Bug fixes</h1><li>Weather now accurate</li><li>Geolocation stays on</li><li>Chrome performance improvements</li><li>Stability improvements</li>"];
+const CHANGELOG = ["1.5.1", "<h1>Bug fixes</h1><li>Greetings works at night</li><li>Link reset fixed</li>"];
 
 
 //jS steuplé
@@ -378,7 +378,7 @@ function greetings() {
 	let h = DATE.getHours();
 	let message;
 
-	if (h < 12) {
+	if (h > 6 && h < 12) {
 		message = tradThis('Good Morning');
 	} else if (h < 18) {
 		message = tradThis('Good Afternoon');
