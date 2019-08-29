@@ -138,7 +138,7 @@ function initTrad() {
 	});
 }
 
-function introduction() {
+/*function introduction() {
 
 	function welcomeback(boot) {
 
@@ -304,7 +304,7 @@ function introduction() {
 		localStorage.lang = this.value;
 		btnLang(null, "lng");
 	});
-}
+}*/
 
 function clock() {
 
@@ -1908,7 +1908,7 @@ $(document).ready(function() {
 	searchbar();
 	quickLinks();
 	signature();
-	introduction();
+	//introduction();
 	actualizeStartupOptions();
 	initBackground();
 

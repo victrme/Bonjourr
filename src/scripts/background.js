@@ -1,4 +1,4 @@
-
+/*
 function intro(install) {
 
 	//console.log(install)
@@ -21,7 +21,7 @@ function intro(install) {
 	});	
 }
 
-chrome.runtime.onInstalled.addListener(intro)
+chrome.runtime.onInstalled.addListener(intro)*/
 
 
 chrome.storage.sync.get("lang", (lang) => {
@@ -29,9 +29,9 @@ chrome.storage.sync.get("lang", (lang) => {
 	var url =  "https://bonjourr.fr/";
 
 	if (lang === "fr") {
-		url += "fr/goodbye";
+		url += "fr/goodbye_firefox";
 	} else {
-		url += "goodbye";
+		url += "goodbye_firefox";
 	}
 
 	chrome.runtime.setUninstallURL(url);

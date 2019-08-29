@@ -5,15 +5,15 @@ function fin() {
 		var url =  "https://bonjourr.fr/";
 
 		if (lang === "fr") {
-			url += "fr/goodbye";
+			url += "fr/goodbye_chrome";
 		} else {
-			url += "goodbye";
+			url += "goodbye_chrome";
 		}
 
 		chrome.runtime.setUninstallURL(url);
 	});
 }
-
+/*
 function intro(install) {
 
 	//console.log(install)
@@ -36,9 +36,6 @@ function intro(install) {
 	});	
 }
 
-chrome.runtime.onInstalled.addListener(intro)
-
-
-
+chrome.runtime.onInstalled.addListener(intro)*/
 
 fin();
