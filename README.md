@@ -12,11 +12,16 @@ While this startpage is minimal and beautiful, it is also thought out to be prac
 * Dark mode
 * And more...
 
-Bonjourr is available in English, French, Swedish, Dutch and Polish.
+Bonjourr is available in English, French, Swedish, Dutch, Polish, Russian and Chinese.
 
 ## Install
 
-<p align="center">Head to <a href="https://bonjourr.fr">bonjourr.fr</a></p>
+* Download for [Chrome, Brave and Opera](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
+* Download for [Firefox Desktop](https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/)
+* Official Sarafi version currently in the works. [Use on Safari](https://bonjourr.fr/#useinsafari)
+* [Try Bonjourr Online](https://online.bonjourr.fr)
+
+If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjourr.fr#contact)
 
 ## Todo
 
