@@ -1632,7 +1632,7 @@ function searchbar() {
 		if (activated) {	
 
 			//pour animer un peu
-			//$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
+			$("#searchbar_option .param hr").css("display", "block");
 			$(".settings #choose_searchengine").css("display", 'flex');
 			//$(".popup #choose_searchengine").css("display", 'flex');
 			
