@@ -62,3 +62,4 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
 * **Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92)
 * **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
+* **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)

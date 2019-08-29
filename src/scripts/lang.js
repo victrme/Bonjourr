@@ -2,6 +2,7 @@
 // Dutch translation by Osman Temiz · u/MANllAC
 // Polish translation by Mateusz K · u/DiVine92
 // Russian translation by OemDef · u/OemDef
+// Simplified chinese translation by Shuhuai Cao · github.com/csh980717
 
 var dict = {
   "New Tab": {
