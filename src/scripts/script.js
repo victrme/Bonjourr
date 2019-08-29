@@ -133,9 +133,9 @@ function initTrad() {
 		greetings();
 	});
 
-	$(".popup .lang").change(function() {
+	/*$(".popup .lang").change(function() {
 		$(".settings .lang")[0].value = $(this)[0].value;
-	});
+	});*/
 }
 
 /*function introduction() {
@@ -1164,13 +1164,13 @@ function weather() {
 
 
 	//popup checkboxes enables settings checkboxes
-	$(".popup .units input").change(function() {
+	/*$(".popup .units input").change(function() {
 		$(".settings .units input")[0].checked = $(this)[0].checked;
 	});
 
 	$(".popup .w_auto input").change(function() {
 		$(".settings .w_auto input")[0].checked = $(this)[0].checked;
-	});
+	});*/
 
 
 	cacheControl();
@@ -1493,7 +1493,7 @@ function darkmode(choix) {
 
 				$("body").addClass("dark");
 				$("body").removeClass("autodark");
-				$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
+				//$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
 				isIOSwallpaper(true);
 			}
 
@@ -1501,7 +1501,7 @@ function darkmode(choix) {
 
 			$("body").removeClass("dark");
 			$("body").removeClass("autodark");
-			$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
+			//$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
 			isIOSwallpaper(false);
 		}
 	}
@@ -1587,9 +1587,9 @@ $(".darkmode select.theme").change(function() {
 	darkmode(this.value);
 });
 
-$(".popup .darkmode select.theme").change(function() {
+/*$(".popup .darkmode select.theme").change(function() {
 	$(".settings .darkmode select.theme")[0].value = this.value;
-});
+});*/
 
 function searchbarFlexControl(activated, linkslength) {
 
@@ -1632,9 +1632,9 @@ function searchbar() {
 		if (activated) {	
 
 			//pour animer un peu
-			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
+			//$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
 			$(".settings #choose_searchengine").css("display", 'flex');
-			$(".popup #choose_searchengine").css("display", 'flex');
+			//$(".popup #choose_searchengine").css("display", 'flex');
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
 
@@ -1643,7 +1643,7 @@ function searchbar() {
 		} else {
 
 			//pour animer un peu
-			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
+			$("#choose_searchengine, #searchbar_option hr").css("display", "none");
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
 
@@ -1715,7 +1715,7 @@ function searchbar() {
 		slow(this);
 	});
 
-	$(".popup .activate_searchbar input").change(function() {
+	/*$(".popup .activate_searchbar input").change(function() {
 
 		var check = $(this)[0].checked;
 
@@ -1723,7 +1723,7 @@ function searchbar() {
 			$("#searchbar_option input")[0].checked = true;
 			$(".settings #choose_searchengine").css("display", 'flex');
 		}
-	});
+	});*/
 
 
 	// Change le moteur de recherche de la search bar selon le select .choose_search
@@ -1890,7 +1890,7 @@ $(document).keydown(function(e) {
 
 	if ($(".searchbar_container").hasClass("shown")
 		&& !$(".settings").hasClass("shown")
-		&& $("#start_popup").show().length === 0) {
+		/*&& $("#start_popup").show().length === 0*/) {
 
 		$(".interface input.searchbar").focus();
 	}
