@@ -1669,7 +1669,8 @@ function searchbar() {
 			sv: "Sök med",
 			nl: "Zoek op",
 			pl: "Szukaj z",
-			ru: "Поиск в"
+			ru: "Поиск в",
+			zh_CN: "搜索"
 		}
 
 		var placeholder = "";
