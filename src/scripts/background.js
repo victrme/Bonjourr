@@ -1,38 +1,17 @@
-/*
-function intro(install) {
+function fin() {
 
-	//console.log(install)
+	chrome.storage.sync.get("lang", (lang) => {
 
-	chrome.management.getSelf((infoself) => {
+		var url =  "https://bonjourr.fr/";
 
-		chrome.storage.sync.get("boot", (b) => {
+		if (lang === "fr") {
+			url += "fr/goodbye_firefox";
+		} else {
+			url += "goodbye_firefox";
+		}
 
-			if (b.boot) {
-
-				if (install.reason === "update") chrome.storage.sync.set({"boot": "updated"});
-				else chrome.storage.sync.set({"boot": "welcomeback"});
-
-			}
-
-			chrome.tabs.create({
-				url:"../../index.html"
-			});
-		});
-	});	
+		chrome.runtime.setUninstallURL(url);
+	});
 }
 
-chrome.runtime.onInstalled.addListener(intro)*/
-
-
-chrome.storage.sync.get("lang", (lang) => {
-
-	var url =  "https://bonjourr.fr/";
-
-	if (lang === "fr") {
-		url += "fr/goodbye_firefox";
-	} else {
-		url += "goodbye_firefox";
-	}
-
-	chrome.runtime.setUninstallURL(url);
-});
+fin();
