@@ -1388,8 +1388,6 @@ body {
       text-decoration: none;
       color: #007aff; }
     .settings .signature #rdv_website {
-      display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       padding-bottom: 6em; }
   .settings.shown {

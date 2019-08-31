@@ -370,7 +370,7 @@ function date() {
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
 	$(".date .jour").text(tradThis(days[DATE.getDay()]));
-	$(".date .chiffre").text(tradThis(DATE.getDate()));
+	$(".date .chiffre").text(DATE.getDate());
 	$(".date .mois").text(tradThis(months[DATE.getMonth()]));
 }
 
@@ -380,9 +380,9 @@ function greetings() {
 
 	if (h > 6 && h < 12) {
 		message = tradThis('Good Morning');
-	} else if (h < 18) {
+	} else if (h >= 12 && h < 18) {
 		message = tradThis('Good Afternoon');
-	} else if (h < 23) {
+	} else if (h >= 18 && h <= 23) {
 		message = tradThis('Good Evening');
 	} else {
 		message = tradThis('Good Night');
