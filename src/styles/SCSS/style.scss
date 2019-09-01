@@ -13,7 +13,7 @@
 	transition: filter 0s;
 }
 
-.interface {
+#interface {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -103,7 +103,6 @@
 
 	a {
 		color: #fff9;
-		opacity: 0;
 		text-decoration: none;
 		font-size: .8em;
 
@@ -370,10 +369,12 @@ $popupText : 22px;
 					}
 
 					.w_icon {
+						opacity: 0;
 						padding: .5em;
 						border-radius: 8px;
 						background-color: #222;
 						filter: none;
+						transition: opacity .1s
 					}
 				}
 			}
@@ -390,7 +391,7 @@ $popupText : 22px;
 				@include settingsBase();
 				@include searchbar();
 
-				.searchbar_container form .searchbar {
+				#sb_container form #searchbar {
 					background-color: white;
 				}
 			}
@@ -441,7 +442,7 @@ $popupText : 22px;
 	}
 }
 
-.showSettings {
+#showSettings {
 	position: fixed;
 	bottom: .7em;
 	right: .7em;
@@ -482,7 +483,7 @@ $popupText : 22px;
 	}
 }
 
-.settings {
+#settings {
 	position: fixed;
 	right: -20em;
 	bottom: 0;
@@ -635,8 +636,14 @@ $popupText : 22px;
 		}
 
 		#rdv_website {
+			display: flex;
+			flex-wrap: wrap;
 			justify-content: center;
 			padding-bottom: 6em;
+
+			a.trn {
+				margin: 0 .3em;
+			}
 		}
 	}
 

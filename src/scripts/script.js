@@ -1926,5 +1926,5 @@ $(document).ready(function() {
 	actualizeStartupOptions();
 	initBackground();
 
-	$("body").css("animation", "fade .15s ease-in forwards");
+	$("body").css("animation", "fade .1s ease-in forwards");
 });
