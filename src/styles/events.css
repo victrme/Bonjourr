@@ -1,0 +1,44 @@
+@keyframes remWB {
+	from {
+		margin-top: 0;
+	}
+
+	to {
+		margin-top: 100%;
+		display: none;
+	}
+}
+
+@keyframes remWBW {
+	from {
+		background-color: rgba(0, 0, 0, 0.6);
+	}
+
+	to {
+		background-color: transparent;
+		display: none;
+	}
+}
+
+#i_bgfile {
+	overflow: hidden;
+}
+
+#credit.hidden {
+	opacity: 0;
+}
+
+#sett_city.hidden,
+#linkblocks.hidden,
+#choose_searchengine.hidden {
+	display: none;
+}
+
+#temp_max_wrap.shown,
+#choose_searchengine.shown {
+	display: block;
+}
+
+#interface #widget.shown {
+	opacity: 1;
+}

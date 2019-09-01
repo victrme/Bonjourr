@@ -75,6 +75,15 @@ function id(name) {
 function cl(name) {
 	return document.getElementsByClassName(name);
 }
+function tg(name) {
+	return document.getElementsbyTagName(name);
+}
+function getCl(that) {
+	return that.getAttribute("class");
+}
+function setClass(that, val) {
+	that.setAttribute("class", val);
+}
 
 
 //c'est juste pour debug le storage
@@ -1189,29 +1198,32 @@ function weather() {
 	cacheControl();
 }
 
+
+//fait
 function imgCredits(src, type) {
 
 	if (type === "custom" || type === "dynamic") {
-		$("div.credit a").css("opacity", 0);
+		id("credit").setAttribute("class", "visible");
 	}
 
 	for (var i = 0; i < CREDITS.length; i++) {
 
 		if (src && src.includes(CREDITS[i].id)) {
-			$("div.credit a").attr("href", CREDITS[i].url);
-			$("div.credit a").text(CREDITS[i].title + ", " + CREDITS[i].artist);
-			$("div.credit a").css("opacity", 1);
+			id("credit").setAttribute("href", CREDITS[i].url);
+			id("credit").innerText = CREDITS[i].title + ", " + CREDITS[i].artist;
+			id("credit").removeAttribute("class");
 
 			return true;
 		}
 	}
 }
 
+//fait
 function imgBackground(val) {
 	if (val) {
-		$("#background").css("background-image", "url(" + val + ")");
+		id("background").style.backgroundImage = "url(" + val + ")";
 	} else {
-		return $("#background").css("background-image");
+		return id("background").style.backgroundImage;
 	}
 }
 
@@ -1219,22 +1231,22 @@ function applyBackground(src, type, blur) {
 
 	//enleve les inputs selectionnés suivent le type
 	if (type === "default") {
-		$("div.dynamic_bg input").prop("checked", false);
-		$("input[name='background_file']")[0].value = "";
+		id("i_dynamic").checked = false;
+		id("i_bgfile").value = "";
 	}
 	else if (type === "custom") {
-		$("div.dynamic_bg input").prop("checked", false);
-		$(".imgpreview").removeClass("selected");
+		id("i_dynamic").checked = false;
+		remSelectedPreview();
 	}
 	else if (type === "dynamic") {
-		$("input[name='background_file']")[0].value = "";
-		$(".imgpreview").removeClass("selected");
+		remSelectedPreview();
 	}
 	
 	imgBackground(src);
 	if (blur) blurThis(blur);
 }
  
+//fait
 function initBackground() {
 
 	chrome.storage.sync.get(["background_image", "background_type", "background_blur"], (data) => {
@@ -1247,12 +1259,12 @@ function initBackground() {
 		//si custom, faire le blob
 		if (data.background_type === "custom") {
 			//reste local !!!!
-			chrome.storage.local.get("background_blob", (data) => {
+			chrome.storage.sync.get("background_blob", (data) => {
 				applyBackground(blob(data.background_blob), type);
 			});	
 		} 
 		else if (data.background_type === "dynamic") {
-			dynamicBackground("init")
+			dynamicBackground()
 		}
 		else {
 			applyBackground(image, type, blur);
@@ -1263,11 +1275,12 @@ function initBackground() {
 
 		//remet les transitions du blur
 		setTimeout(function() {
-			$("#background").css("transition", "filter .2s");
+			id("background").style.transition = "filter .2s";
 		}, 200);
 	});	
 }
 
+//fait
 function blob(donnee, set) {
 
 	//fonction compliqué qui créer un blob à partir d'un base64
@@ -1304,7 +1317,7 @@ function blob(donnee, set) {
 
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
-		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
+		chrome.storage.sync.set({"background_blob": base}); //reste local !!!!
 		chrome.storage.sync.set({"background_image": blobUrl});
 		chrome.storage.sync.set({"background_type": "custom"});
 
@@ -1313,6 +1326,7 @@ function blob(donnee, set) {
 	return blobUrl;
 }
 
+//fait
 function renderImage(file) {
 
 	// render the image in our view
@@ -1331,67 +1345,81 @@ function renderImage(file) {
 	reader.readAsDataURL(file);
 }
 
+//fait
 function defaultBg() {
 
 	var bgTimeout, oldbg;
 
-	//pour preview le default background
-	$(".choosable_backgrounds").mouseenter(function() {
+	id("default_background").onmouseenter = function() {
 		oldbg = imgBackground().slice(4, imgBackground().length - 1);
-	});
+	}
 
-	//pour arreter de preview le default background
-	$(".choosable_backgrounds").mouseleave(function() {
+	id("default_background").onmouseleave = function() {
 		clearTimeout(bgTimeout);
 		imgBackground(oldbg);
-	});
+	}
 
-	//pour preview le default background
-	$(".imgpreview img").mouseenter(function() {
+	function imgEvent(state, that) {
 
-		if (bgTimeout) clearTimeout(bgTimeout);
+		if (state === "enter") {
+			if (bgTimeout) clearTimeout(bgTimeout);
 
-		var blur = parseInt($("#background").css("filter"));
-		var src = $(this).prop("src");
+			var src = that.children[0].getAttribute("src");
 
-		bgTimeout = setTimeout(function() {
+			bgTimeout = setTimeout(function() {
 
-			//timeout de 300 pour pas que ça se fasse accidentellement
+				//timeout de 300 pour pas que ça se fasse accidentellement
+				//prend le src de la preview et l'applique au background
+				applyBackground(src, "default");
+
+			}, 300);
+
+		} else if (state === "leave") {
+
+			clearTimeout(bgTimeout);
+
+		} else if (state === "mouseup") {
+
 			//prend le src de la preview et l'applique au background
-			applyBackground(src, "default", blur);
+			var src = that.children[0].getAttribute("src");
 
-		}, 300);
-	});
+		    applyBackground(src, "default");
+		    imgCredits(src, "default");
 
-	$(".imgpreview img").mouseleave(function() {
-		clearTimeout(bgTimeout);
-	});
+			clearTimeout(bgTimeout);
+			oldbg = src;
 
+			//enleve selected a tout le monde et l'ajoute au bon
+			remSelectedPreview();
+			//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
+			var tempAttr = that.getAttribute("class");
+			that.setAttribute("class", tempAttr + " selected");
 
-	//pour choisir un default background
-	$(".imgpreview img").click(function() {
+			chrome.storage.sync.set({"background_image": src});
+			chrome.storage.sync.set({"background_type": "default"});
+		}
+	}
 
-		//prend le src de la preview et l'applique au background
-		var blur = parseInt($("#background").css("filter"));
-		var src = $(this).prop("src");
+	var imgs = cl("imgpreview");
+	for (var i = 0; i < imgs.length; i++) {
 
-	    applyBackground(src, "default", blur);
-	    imgCredits(src, "default");
-
-		clearTimeout(bgTimeout);
-		oldbg = src;
-
-		//enleve selected a tout le monde et l'ajoute au bon
-		$(".imgpreview").removeClass("selected");
-		//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
-		var tempAttr = $(this)[0].parentElement.getAttribute("class");
-		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
-
-		chrome.storage.sync.set({"background_image": src});
-		chrome.storage.sync.set({"background_type": "default"});
-	});
+		imgs[i].onmouseenter = function() {imgEvent("enter", this)}
+		imgs[i].onmouseleave = function() {imgEvent("leave", this)}
+		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
+	}
 }
+
 defaultBg();
+
+//fait
+function remSelectedPreview() {
+	let a = cl("imgpreview");
+	for (var i = 0; i < a.length; i++) {
+
+		if (a[i].classList[1] === "selected")
+			a[i].setAttribute("class", "imgpreview")
+	}
+}
 
 function dynamicBackground(state, input) {
 
@@ -1412,7 +1440,7 @@ function dynamicBackground(state, input) {
 				imgCredits(UNSPLASH, "dynamic");
 
 				//enleve la selection default bg si jamais
-				$(".imgpreview").removeClass("selected");
+				remSelectedPreview();
 
 			} else {
 
@@ -1433,38 +1461,39 @@ function dynamicBackground(state, input) {
 	}	
 }
 
+//fait
 function blurThis(val, init) {
 
-	var isDark = $("body").attr("class");
+	var isDark = document.body.getAttribute("class");
 	var url = imgBackground().slice(4, imgBackground().length - 1);
 	
 	if (val > 0) {
-		$('#background').css("filter", 'blur(' + val + 'px)');
+		id('background').style.filter = 'blur(' + val + 'px)';
 	} else {
-		$('#background').css("filter", '');
+		id('background').style.filter = '';
 	}
 
 	if (!init) chrome.storage.sync.set({"background_blur": parseInt(val)});
-	else $(".blur input").prop("value", val);
+	else id("i_blur").value = val;
 }
 
-$("div.dynamic_bg input").change(function() {
+id("i_dynamic").onchange = function() {
 	dynamicBackground("change", this.checked)
-});
+};
 
-// handle input changes
-$(".change_background input[name='background_file']").change(function() {
+id("i_bgfile").onchange = function() {
 	renderImage(this.files[0]);
-});
+};
 
-// handle input changes
-$(".change_background input[name='background_blur']").change(function() {
+id("i_blur").onchange = function() {
 	blurThis(this.value);
-});
+};
 
 
+//fait
 function darkmode(choix) {
 
+	//fait
 	function isIOSwallpaper(dark) {
 
 		//défini les parametres a changer en fonction du theme
@@ -1484,7 +1513,7 @@ function darkmode(choix) {
 		}
 
 		//et les applique ici
-		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/" + modeurl + ".jpg");
+		id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
 
 		if (imgBackground().includes(actual)) {
 
@@ -1493,32 +1522,31 @@ function darkmode(choix) {
 		}
 	}
 
+	//fait
 	function applyDark(add, system) {
 
 		if (add) {
 
 			if (system) {
 
-				$("body").addClass("autodark");
-				$("body").removeClass("dark");
+				document.body.setAttribute("class", "autodark");
 
 			} else {
 
-				$("body").addClass("dark");
-				$("body").removeClass("autodark");
+				document.body.setAttribute("class", "dark");
 				//$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
 				isIOSwallpaper(true);
 			}
 
 		} else {
 
-			$("body").removeClass("dark");
-			$("body").removeClass("autodark");
+			document.body.removeAttribute("class");
 			//$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
 			isIOSwallpaper(false);
 		}
 	}
 
+	//fait
 	function auto(weather) {
 
 		chrome.storage.sync.get("weather", (data) => {
@@ -1540,6 +1568,7 @@ function darkmode(choix) {
 		});
 	}
 
+	//fait
 	function initDarkMode() {
 
 		chrome.storage.sync.get("dark", (data) => {
@@ -1564,6 +1593,7 @@ function darkmode(choix) {
 		});		
 	}
 
+	//fait
 	function changeDarkMode() {
 
 		if (choix === "enable") {
@@ -1596,70 +1626,49 @@ function darkmode(choix) {
 	}
 }
 
-$(".darkmode select.theme").change(function() {
-	darkmode(this.value);
-});
+id("i_dark").onchange = function() {
+	darkmode(this.value)
+}
 
-/*$(".popup .darkmode select.theme").change(function() {
-	$(".settings .darkmode select.theme")[0].value = this.value;
-});*/
-
+//fait
 function searchbarFlexControl(activated, linkslength) {
-
-	var dom = $(".searchbar_container");
 
 	if (linkslength > 0) {
 
-		if (activated) {
-
-			dom.addClass("shown");
-			dom.removeClass("removed");
-
-		} else {
-
-			dom.addClass("removed");
-			dom.removeClass("shown");
-		}
+		if (activated)
+			id("sb_container").setAttribute("class", "shown");
+		else
+			id("sb_container").setAttribute("class", "removed");
 		
 	} else {
 
-		if (activated) {
-
-			dom.addClass("shown");
-			dom.removeClass("removed");
-
-		} else {
-
-			dom.addClass("removed");
-			dom.removeClass("shown");
-		}
+		if (activated)
+			id("sb_container").setAttribute("class", "shown");
+		else
+			id("sb_container").setAttribute("class", "removed");
 	}
 }
 
 function searchbar() {
 
+	//fait
 	function activate(activated, links) {
 
 		//visibility hidden seulement si linkblocks est vide
 
 		if (activated) {	
 
-			//pour animer un peu
-			$("#searchbar_option .param hr").css("display", "block");
-			$(".settings #choose_searchengine").css("display", 'flex');
-			//$(".popup #choose_searchengine").css("display", 'flex');
-			
-			searchbarFlexControl(activated, (links ? links.length : 0));
+			id("choose_searchengine").setAttribute("class", "shown");
 
+			searchbarFlexControl(activated, (links ? links.length : 0));
 			chrome.storage.sync.set({"searchbar": true});
 			
 		} else {
 
 			//pour animer un peu
-			$("#choose_searchengine, #searchbar_option hr").css("display", "none");
+			id("choose_searchengine").setAttribute("class", "hidden");
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
-
 			chrome.storage.sync.set({"searchbar": false});
 		}
 	}
@@ -1694,12 +1703,13 @@ function searchbar() {
 			placeholder = trad["en"] + " " + engines[choice][1];
 		}
 
-		$(".searchbar_container form").attr("action", engines[choice][0]);
-		$(".searchbar").attr("placeholder", placeholder);
+		id("sb_form").setAttribute("action", engines[choice][0]);
+		id("searchbar").setAttribute("placeholder", placeholder);
 
 		chrome.storage.sync.set({"searchbar_engine": choice});
 	}
 
+	
 	//init
 	chrome.storage.sync.get(["searchbar", "searchbar_engine", "links"], (data) => {
 
@@ -1721,41 +1731,28 @@ function searchbar() {
 	
 
 	// Active ou désactive la search bar
-	$(".activate_searchbar input").change(function() {
+	id("i_sb").onchange = function() {
 
 		if (!stillActive) {
-			activate($(this).is(":checked"));
+			activate(this.checked);
 		}
 		slow(this);
-	});
-
-	/*$(".popup .activate_searchbar input").change(function() {
-
-		var check = $(this)[0].checked;
-
-		if (check) {
-			$("#searchbar_option input")[0].checked = true;
-			$(".settings #choose_searchengine").css("display", 'flex');
-		}
-	});*/
-
+	}
 
 	// Change le moteur de recherche de la search bar selon le select .choose_search
-	$(".choose_search").change(function() {
+	id("i_sbengine").onchange = function() {
 		chooseSearchEngine(this.value);
-	});
+	}
 }
 
 // Signature aléatoire
 function signature() {
 	var v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
 	var t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>";
+	var e = document.createElement("span");
 
-    if (Math.random() > 0.5) {
-    	$('.signature .rand').append(v + " & " + t);
-	} else {
-		$('.signature .rand').append(t + " & " + v);
-	}
+	e.innerHTML = (Math.random() > 0.5 ? (v + " & " + t) : (t + " & " + v));
+	id("rand").appendChild(e);
 }
 
 function actualizeStartupOptions() {
@@ -1764,110 +1761,109 @@ function actualizeStartupOptions() {
 
 	chrome.storage.sync.get(store, (data) => {
 
+		if (data.linknewtab) {
+			id("i_linknewtab").checked = true;
+		} else {
+			id("i_linknewtab").checked = false;
+		}
 
+		//default background
 
-		//default background 
-		$(".choosable_backgrounds .imgpreview img").each(function() {
+		var imgs = cl("imgpreview");
+		var bgURL = id("background").style.backgroundImage;
+		var previewURL = "";	
 
-			//compare l'url des preview avec celle du background
-			var previewURL = $(this).attr("src");
-			var bgURL = $("#background").css("background-image");
+		for (var i = 0; i < imgs.length; i++) {
+			
+			previewURL = imgs[i].children[0].getAttribute("src");
 
-			//si l'url du bg inclu l'url de la preview, selectionne le
 			if (bgURL.includes(previewURL)) {
-				$(this).parent().addClass("selected");
+				imgs[i].setAttribute("class", "imgpreview selected");
 			}
-		});
+		}
 
 
 		//dynamic background
 		if (data.background_type === "dynamic") {
-			$(".dynamic_bg input").prop("checked", true);
+			id("i_dynamic").checked = true;
 		}
 
 		//dark mode input
 		if (data.dark) {
-			$(".darkmode select.theme").prop("value", data.dark);
+			id("i_dark").value = data.dark;
 		} else {
-			$(".darkmode select.theme").prop("value", "disable");
-		}
-
-
-		if (data.linknewtab) {
-			$(".linknewtab input").prop("checked", true)
-		} else {
-			$(".linknewtab input").prop("checked", false)
+			id("i_dark").value = "disable";
 		}
 		
 		
 		//weather city input
 		if (data.weather && data.weather.city) {
-			$(".change_weather input[name='city']").attr("placeholder", data.weather.city);
+			id("i_city").setAttribute("placeholder", data.weather.city);
 		} else {
-			$(".change_weather input[name='city']").attr("placeholder", "City");
+			id("i_city").setAttribute("placeholder", "City");
 		}
 
 
 		if (data.weather && data.weather.ccode) {
-			$(".change_weather select.countrycode").prop("value", data.weather.ccode);
+			id("i_ccode").value = data.weather.ccode;
 		} else {
-			$(".change_weather select.countrycode").prop("value", "US");
+			id("i_ccode").value = "US";
 		}
 
 		//check geolocalisation
 		//enleve city
 		if (data.weather && data.weather.location) {
 
-			$(".w_auto input").prop("checked", true);
-			$("div.city").css("display", "none");
+			id("i_geol").checked = true;
+			id("sett_city").setAttribute("class", "city hidden");
 
 		} else {
 
-			$(".w_auto input").prop("checked", false);
+			id("i_geol").checked = false;
 		}
 
 		//check imperial
 		if (data.weather && data.weather.unit === "imperial") {
-			$(".units input").prop("checked", true);
+			id("i_units").checked = true;
 		} else {
-			$(".units input").prop("checked", false);
+			id("i_units").checked = false;
 		}
 
 		
 		//searchbar switch et select
-		$(".activate_searchbar input").prop("checked", data.searchbar);
-
-		setTimeout(() => {
-	      if (data.searchbar) $(".interface input.searchbar").focus();
-	    }, 100);
+		if (data.searchbar) {
+			id("i_sb").checked = true;
+			setTimeout(() => {
+		    	id("searchbar").focus();
+		    }, 100);
+		} else {
+			id("i_sb").checked = false;
+		}	
 		
 
 		if (data.searchbar_engine) {
-			$(".choose_search").prop("value", data.searchbar_engine);
+			id("i_sbengine").value = data.searchbar_engine;
 		} else {
-			$(".choose_search").prop("value", "s_startpage");
+			id("i_sbengine").value = "s_startpage";
 		}
 
 
 		//clock
 		if (data.clockformat === 12) {
-			$(".12hour input").prop("checked", true);
+			id("i_ampm").checked = true;
 			localStorage.clockformat = 12;
 		} else {
-			$(".12hour input").prop("checked", false);
+			id("i_ampm").checked = false;
 		}
 			
 
 		//langue
-		if (data.lang) {
-			$(".lang").prop("value", data.lang);
+		if (localStorage.lang) {
+			id("i_lang").value = localStorage.lang;
 		} else {
-			$(".lang").prop("value", "en");
+			id("i_lang").value = "en";
 		}
-
-		
-		
-	});			
+	});		
 }
 
 function mobilecheck() {
@@ -1877,36 +1873,43 @@ function mobilecheck() {
 }
 
 //affiche les settings
-$(".showSettings button").click(function() {
+id("showSettings").onmouseup = function() {
 
-	$(this).toggleClass("shown");
-	
-	$(".settings").css("display", "block");
-	$(".settings").toggleClass("shown");
-	$(".interface").toggleClass("pushed");
+	if (this.children[0].getAttribute("class") === "shown") {
 
-
-});
+		setClass(this.children[0], "");
+		setClass(id("settings"), "");
+		setClass(id("interface"), "");
+	} else {
+		setClass(this.children[0], "shown");
+		setClass(id("settings"), "shown");
+		setClass(id("interface"), "pushed");
+	}
+}
 
 //si settings ouvert, le ferme
-$(".interface").click(function() {
+id("interface").onmouseup = function(e) {
 
-	if ($("div.settings").hasClass("shown")) {
-
-		$(".showSettings button").toggleClass("shown");
-		$(".settings").removeClass("shown");
-		$(".interface").removeClass("pushed");
+	for (var i = 0; i < e.path.length; i++) {
+		if (e.path[i].id === "linkblocks") return false;
 	}
-});
+
+	if (id("settings").getAttribute("class") === "shown") {
+
+		setClass(id("showSettings").children[0], "");
+		setClass(id("settings"), "");
+		setClass(id("interface"), "");
+	}
+}
 
 //autofocus
 $(document).keydown(function(e) {
 
-	if ($(".searchbar_container").hasClass("shown")
-		&& !$(".settings").hasClass("shown")
+	if ($("#sb_container").hasClass("shown")
+		&& !$("#settings").hasClass("shown")
 		/*&& $("#start_popup").show().length === 0*/) {
 
-		$(".interface input.searchbar").focus();
+		$("#searchbar").focus();
 	}
 })
 
@@ -1926,5 +1929,5 @@ $(document).ready(function() {
 	actualizeStartupOptions();
 	initBackground();
 
-	$("body").css("animation", "fade .1s ease-in forwards");
+	document.body.style.animation = "fade .1s ease-in forwards";
 });
