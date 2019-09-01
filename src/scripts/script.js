@@ -577,17 +577,6 @@ function quickLinks() {
 			}
 		}
 
-		function fetchIcon(str) {
-
-
-			//prend le domaine de n'importe quelle url
-			var a = document.createElement('a');
-			a.href = str;
-			var hostname = a.hostname;
-
-			return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
-		}
-
 		function saveLink(lll) {
 
 			var full = false;
@@ -648,15 +637,39 @@ function quickLinks() {
 				var links = {
 					title: title,
 					url: filtered,
-					icon: fetchIcon(filtered)
+					icon: ""
 				}
 
-				saveLink(links);
-				slow($(".addlink input[name='url']"));
+				//prend le domaine de n'importe quelle url
+				var a = document.createElement('a');
+				a.href = filtered;
+				var hostname = a.hostname;
 
-				//remet a zero les inputs
-				$(".addlink input[name='title']").val("");
-				$(".addlink input[name='url']").val("");
+				var req = new XMLHttpRequest();
+				req.open('GET', "http://favicongrabber.com/api/grab/" + hostname, true);
+
+				req.onload = function() {
+					
+					var resp = JSON.parse(this.response);
+
+					if (req.status >= 200 && req.status < 400) {
+
+						console.log(resp)
+
+						links.icon = resp.icons[1].src;
+						saveLink(links);
+						slow($(".addlink input[name='url']"));
+
+						//remet a zero les inputs
+						$(".addlink input[name='title']").val("");
+						$(".addlink input[name='url']").val("");
+
+					} else {
+						submissionError(resp.message);
+					}
+				}
+
+				req.send();
 			}
 
 		} else {
