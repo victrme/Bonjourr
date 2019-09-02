@@ -141,180 +141,9 @@ function initTrad() {
 		date();
 		greetings();
 	});
-
-	/*$(".popup .lang").change(function() {
-		$(".settings .lang")[0].value = $(this)[0].value;
-	});*/
 }
 
-/*function introduction() {
-
-	function welcomeback(boot) {
-
-		function remWelcome() {
-			$(".welcomeback_wrapper").css("background-color", 'transparent');
-			$(".welcomeback").css("margin-top", "200%");
-			
-			setTimeout(function() {
-				$(".welcomeback_wrapper").remove();
-			}, 400);
-		}
-
-		if (boot === "updated") {
-			$(".welcomeback").addClass("update");
-			$(".welcomeback h1").text(CHANGELOG[0]);
-			$(".welcomeback p").empty();
-			$(".welcomeback p").append(CHANGELOG[1]);
-		}
-
-		$(".welcomeback_wrapper").css("display", "flex");
-		chrome.storage.sync.set({"boot": "introduced"});
-
-		$(".welcomeback button").click(function() {
-			remWelcome();
-		});
-	}
-
-	chrome.storage.sync.get(["boot", "links"], (data) => {
-		
-		if (!data.boot) {
-
-			$("#start_popup").css("display", "flex");
-
-		} else {
-
-			$("#start_popup").remove();
-
-			if (data.boot === "welcomeback" || data.boot === "updated") {
-			
-				if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
-				welcomeback(data.boot);
-			}
-		}
-	});
-
-	//la marge des popups en pourcentages
-	var margin = 0; 
-	var QLinit = false;
-	//init le premier counter avec le style actif
-	var premier = $("div.counter span:first-child")[0];
-	$(premier).addClass("actif");
-
-
-	// Start popup
-	function dismiss() {
-
-		$("#start_popup").css("background-color", 'transparent');
-		$(".popup_window").css("margin-top", "200%");
-
-		//les links modifié en intro sont réinitialisés
-		if ($(".popup .linkblocks").css("visibility") === "visible") {
-			$(".interface .linkblocks").css("visibility", 'visible');
-			quickLinks();
-		}
-		
-		setTimeout(function() {
-			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1)
-		}, 400);
-
-		//mettre ça en false dans la console pour debug la popup
-		chrome.storage.sync.set({"boot": "introduced"});
-	}
-
-	function countPopup(c) {
-		//prend le span qui correspond au margin / 100
-		var elem = $("div.counter")[0].children[c / 100];
-
-		//change le style de tous par defaut
-		//puis l'element choisi
-		$("div.counter span").removeClass("actif");
-		$(elem).addClass("actif");
-	}
-
-	function btnLang(margin, state) {
-
-		if (state === "pre") {
-			if (margin === 0) {
-				$(".previous_popup").text(tradThis("Dismiss"));
-				$(".next_popup").text(tradThis("Begin"));
-			}
-
-			if (margin === 400) {
-				$(".next_popup").text(tradThis("Next"));
-			}
-		}
-
-		if (state === "nxt") {
-			if (margin === 100) {
-
-				$(".popup .linkblocks").css("visibility", "visible");
-
-				if (!QLinit) {
-					chrome.storage.sync.set({"links": START_LINKS});
-					quickLinks();
-					QLinit = true;
-				}
-
-				$(".previous_popup").text(tradThis("Back"));
-				$(".next_popup").text(tradThis("Next"));
-			}
-
-			if (margin === 500) {
-				$(".next_popup").text(tradThis("All set!"));
-			}
-		}
-
-		if (state === "lng") {
-			$(".previous_popup").text(tradThis("Dismiss"));
-			$(".next_popup").text(tradThis("Begin"));
-		}
-	}
-
-	function previous() {
-
-		//event different pour chaque slide
-		//le numero du slide = margin / 100
-		//ici quand on recule
-		margin -= 100;
-		btnLang(margin, "pre");
-
-		if (margin === -100) {
-			dismiss();
-		} else {
-			countPopup(margin);
-			$(".popup_line").css("margin-left", "-" + margin + "%");
-		}
-	}
-
-	function next(lang) {
-
-		margin += 100;
-		btnLang(margin, "nxt");
-
-		if (margin === 600) {
-			dismiss();
-		}
-		else {
-			countPopup(margin);
-			$(".popup_line").css("margin-left", "-" + margin + "%");
-		}
-	}
-
-	$(".previous_popup").click(function() {
-		previous();
-	});
-
-	$(".next_popup").click(function(){
-		next();
-	});
-
-	$(".popup .lang").change(function() {
-		localStorage.lang = this.value;
-		btnLang(null, "lng");
-	});
-}*/
-
+//fait
 function clock() {
 
 	var timesup, format;
@@ -347,10 +176,10 @@ function clock() {
 
 
 	//settings event
-	$("#settings .12hour input").change(function() {
+	id("i_ampm").onchange = function() {
 
 		//change le format 
-		if ($(this).prop("checked")) {
+		if (this.checked) {
 
 			format = 12;
 			clearTimeout(timesup);
@@ -366,23 +195,25 @@ function clock() {
 		//enregistre partout suivant le format
 		chrome.storage.sync.set({"clockformat": format});
 		localStorage.clockformat = format;
-	});
+	}
 
 	format = parseInt(localStorage.clockformat);
 	start();
 }
 
+//fait
 function date() {
 
 	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date .jour").text(tradThis(days[DATE.getDay()]));
-	$(".date .chiffre").text(DATE.getDate());
-	$(".date .mois").text(tradThis(months[DATE.getMonth()]));
+	id("jour").innerText = tradThis(days[DATE.getDay()]);
+	id("chiffre").innerText = DATE.getDate();
+	id("mois").innerText = tradThis(months[DATE.getMonth()]);
 }
 
+//fait
 function greetings() {
 	let h = DATE.getHours();
 	let message;
@@ -663,15 +494,20 @@ function quickLinks() {
 
 					if (req.status >= 200 && req.status < 400) {
 
-						console.log(resp)
+						for (var i = 0; i < resp.icons.length; i++) {
+							
+							if (resp.icons[i].src.includes("android-chrome")) {
+								links.icon = resp.icons[i].src;
+							}
+						}
 
-						links.icon = resp.icons[1].src;
+						if (links.icon === "") links.icon = resp.icons[0].src;
 						saveLink(links);
-						slow($(".addlink input[name='url']"));
+						slow(id("i_url"));
 
 						//remet a zero les inputs
-						$(".addlink input[name='title']").val("");
-						$(".addlink input[name='url']").val("");
+						id("i_title").value = "";
+						id("i_url").value = "";
 
 					} else {
 						submissionError(resp.message);
@@ -1202,8 +1038,12 @@ function weather() {
 //fait
 function imgCredits(src, type) {
 
-	if (type === "custom" || type === "dynamic") {
+	if (type === "default" || type === "dynamic") {
 		id("credit").setAttribute("class", "visible");
+	}
+	if (type === "custom") {
+		id("credit").setAttribute("class", "hidden");
+		return false;
 	}
 
 	for (var i = 0; i < CREDITS.length; i++) {
@@ -1237,6 +1077,7 @@ function applyBackground(src, type, blur) {
 	else if (type === "custom") {
 		id("i_dynamic").checked = false;
 		remSelectedPreview();
+		imgCredits(null, type);
 	}
 	else if (type === "dynamic") {
 		remSelectedPreview();
@@ -1259,12 +1100,12 @@ function initBackground() {
 		//si custom, faire le blob
 		if (data.background_type === "custom") {
 			//reste local !!!!
-			chrome.storage.sync.get("background_blob", (data) => {
+			chrome.storage.local.get("background_blob", (data) => {
 				applyBackground(blob(data.background_blob), type);
 			});	
 		} 
 		else if (data.background_type === "dynamic") {
-			dynamicBackground()
+			dynamicBackground("init")
 		}
 		else {
 			applyBackground(image, type, blur);
@@ -1317,7 +1158,7 @@ function blob(donnee, set) {
 
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
-		chrome.storage.sync.set({"background_blob": base}); //reste local !!!!
+		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
 		chrome.storage.sync.set({"background_image": blobUrl});
 		chrome.storage.sync.set({"background_type": "custom"});
 
@@ -1359,18 +1200,25 @@ function defaultBg() {
 		imgBackground(oldbg);
 	}
 
+	function getSource(that) {
+		var src = that.children[0].getAttribute("src");
+		if (id("i_retina").checked) src = src.replace("/backgrounds/", "/backgrounds/4k/");
+
+		return src
+	}
+
 	function imgEvent(state, that) {
 
 		if (state === "enter") {
 			if (bgTimeout) clearTimeout(bgTimeout);
 
-			var src = that.children[0].getAttribute("src");
+			var src = getSource(that);
 
 			bgTimeout = setTimeout(function() {
 
 				//timeout de 300 pour pas que ça se fasse accidentellement
 				//prend le src de la preview et l'applique au background
-				applyBackground(src, "default");
+				imgBackground(src);
 
 			}, 300);
 
@@ -1380,8 +1228,7 @@ function defaultBg() {
 
 		} else if (state === "mouseup") {
 
-			//prend le src de la preview et l'applique au background
-			var src = that.children[0].getAttribute("src");
+			var src = getSource(that);
 
 		    applyBackground(src, "default");
 		    imgCredits(src, "default");
@@ -1408,8 +1255,25 @@ function defaultBg() {
 		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
 	}
 }
-
 defaultBg();
+
+//fait
+function retina(check) {
+
+	var b = id("background").style.backgroundImage.slice(4, imgBackground().length - 1);
+
+	if (!check && b.includes("/4k")) {
+		b = b.replace("/4k", "");
+		imgBackground(b);
+		chrome.storage.sync.set({"retina": false});
+	}
+
+	if (check && !b.includes("/4k")) {
+		b = b.replace("backgrounds/", "backgrounds/4k/");
+		imgBackground(b);
+		chrome.storage.sync.set({"retina": true});
+	}
+}
 
 //fait
 function remSelectedPreview() {
@@ -1475,6 +1339,10 @@ function blurThis(val, init) {
 
 	if (!init) chrome.storage.sync.set({"background_blur": parseInt(val)});
 	else id("i_blur").value = val;
+}
+
+id("i_retina").onchange = function() {
+	retina(this.checked)
 }
 
 id("i_dynamic").onchange = function() {
@@ -1757,7 +1625,7 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	let store = ["background_type", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
+	let store = ["background_type", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
 	chrome.storage.sync.get(store, (data) => {
 
@@ -1782,6 +1650,11 @@ function actualizeStartupOptions() {
 			}
 		}
 
+		if (data.retina) {
+			id("i_retina").checked = true;
+		} else {
+			id("i_retina").checked = false;
+		}
 
 		//dynamic background
 		if (data.background_type === "dynamic") {
