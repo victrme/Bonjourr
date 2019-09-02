@@ -419,6 +419,12 @@ function quickLinks() {
 
 		function saveLink(lll) {
 
+			slow(id("i_url"));
+
+			//remet a zero les inputs
+			id("i_title").value = "";
+			id("i_url").value = "";
+
 			var full = false;
 
 			chrome.storage.sync.get(["links", "searchbar"], (data) => {
@@ -459,6 +465,33 @@ function quickLinks() {
 			});
 		}
 
+		function filterIcon(json) {
+			console.log(json);
+			var s = 0;
+			var a, b = 0;
+
+			for (var i = 0; i < json.icons.length; i++) {	
+
+				if (json.icons[i].sizes) {
+
+					a = parseInt(json.icons[i].sizes);
+
+					if (a > b) {
+						s = i;
+						b = a;
+					}
+
+					console.log(b);
+					console.log(s);
+
+				} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
+					return json.icons[i].src;
+				}
+			}
+
+			return json.icons[s].src;
+		}
+
 		//append avec le titre, l'url ET l'index du bloc
 		var title = $(".addlink input[name='title']").val();
 		var url = $(".addlink input[name='url']").val();
@@ -494,23 +527,15 @@ function quickLinks() {
 
 					if (req.status >= 200 && req.status < 400) {
 
-						for (var i = 0; i < resp.icons.length; i++) {
-							
-							if (resp.icons[i].src.includes("android-chrome")) {
-								links.icon = resp.icons[i].src;
-							}
-						}
-
-						if (links.icon === "") links.icon = resp.icons[0].src;
+					
+						links.icon = filterIcon(resp);
 						saveLink(links);
-						slow(id("i_url"));
-
-						//remet a zero les inputs
-						id("i_title").value = "";
-						id("i_url").value = "";
+						
 
 					} else {
-						submissionError(resp.message);
+
+						links.icon = "src/images/weather/night/showerrain.png";
+						saveLink(links);
 					}
 				}
 
@@ -585,8 +610,11 @@ function quickLinks() {
 	showRemoveLink();
 }
 
+
+//fait
 function weather() {
 
+	//fait
 	function cacheControl() {
 
 		chrome.storage.sync.get(["weather", "lang"], (data) => {
@@ -610,7 +638,7 @@ function weather() {
 
 				//high ici
 				if (data.weather && data.weather.fcDay === (new Date).getDay()) {
-					$(".w_desc_temp_max").text(data.weather.fcHigh + "°");
+					id("temp_max").innerText = data.weather.fcHigh + "°";
 				} else {
 					request(data.weather, "forecast");
 				}
@@ -626,6 +654,7 @@ function weather() {
 		});
 	}
 
+	//fait
 	function initWeather() {
 
 		var param = {
@@ -644,9 +673,12 @@ function weather() {
 			chrome.storage.sync.set({"weather": param});
 
 			//update le setting
-			$(".w_auto input").prop("checked", true);
-			$(".change_weather .city").css("display", "none");
-			$(".w_auto input").removeAttr("disabled");
+			//$(".w_auto input").prop("checked", true);
+			//$(".change_weather .city").css("display", "none");
+			//$(".w_auto input").removeAttr("disabled");
+			id("i_geol").checked = true;
+			id("i_geol").removeAttribute("disabled");
+			id("sett_city").setAttribute("class", "city hidden");
 
 			chrome.storage.sync.set({"weather": param});
 
@@ -658,8 +690,8 @@ function weather() {
 			param.location = false;
 
 			//désactive geolocation if refused
-			$(".w_auto input").prop("checked", false)
-			$(".w_auto input").removeAttr("disabled");
+			id("i_geol").checked = false;
+			id("i_geol").removeAttribute("disabled");
 
 			chrome.storage.sync.set({"weather": param});
 
@@ -668,8 +700,10 @@ function weather() {
 		});
 	}
 
+	//fait
 	function request(arg, wCat) {
 
+		//fait
 		function urlControl(arg, forecast) {
 
 			var url = 'https://api.openweathermap.org/data/2.5/';
@@ -693,6 +727,7 @@ function weather() {
 			return url;
 		}
 
+		//fait
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
@@ -706,6 +741,7 @@ function weather() {
 			dataHandling(response);
 		}
 
+		//fait
 		function forecastResponse(parameters, response) {
 
 			function findHighTemps(d) {
@@ -741,7 +777,7 @@ function weather() {
 			param.fcDay = fc[1];
 			chrome.storage.sync.set({"weather": param});
 
-			$(".w_desc_temp_max").text(param.fcHigh + "°");
+			id("temp_max").innerText = param.fcHigh + "°";
 		}
 
 		var url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
@@ -770,6 +806,7 @@ function weather() {
 		request_w.send();
 	}	
 
+	//fait
 	function dataHandling(data) {
 
 		//si le soleil est levé, renvoi jour
@@ -822,8 +859,7 @@ function weather() {
 		//Rajoute une majuscule à la description
 		var meteoStr = data.weather[0].description;
 		meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1);
-		$(".w_desc_meteo").text(meteoStr + ".");
-
+		id("desc").innerText = meteoStr + ".";
 
 
 		//si c'est l'après midi (apres 12h), on enleve la partie temp max
@@ -833,7 +869,7 @@ function weather() {
 
 			//temp de desc et temp de widget sont pareil
 			dtemp = wtemp = Math.floor(data.main.temp) + "°";
-			$("div.hightemp").css("display", "block");
+			id("temp_max_wrap").setAttribute("class", "hightemp shown");
 
 		} else {
 
@@ -843,77 +879,79 @@ function weather() {
 			dtemp = wtemp + ".";
 		}
 
-		$(".w_desc_temp").text(dtemp);
-		$(".w_widget_temp").text(wtemp);
+		id("temp").innerText = dtemp;
+		id("widget_temp").innerText = wtemp;
 		
 		if (data.icon) {
 
-			$(".w_icon").attr("src", data.icon);
+			id("widget").setAttribute("src", data.icon);
 			
 		} else {
 			//pour l'icone
 			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
 			var weather_id = imgId(data.weather[0].id);
 	 		var icon_src = "src/images/weather/" + d_n + "/" + weather_id + ".png";
-	 		$(".w_icon").attr("src", icon_src);
+	 		id("widget").setAttribute("src", icon_src);
 
 	 		//sauv l'icone dans wLastState
 	 		//data.icon = icon_src;
 	 		//localStorage.wLastState = JSON.stringify(data);
 		}
 
-		$(".w_icon").css("opacity", 1);
+		id("widget").setAttribute("class", "w_icon shown");
 	}
 
+	//fait
 	function submissionError(error) {
 
 		var input = $(".change_weather input[name='city']");
 
 		//affiche le texte d'erreur
-		$("p.wrongCity").text(error);
-		$("p.wrongCity").css("display", "block");
-		$("p.wrongCity").css("opacity", 1);
+		id("wrongCity").innerText = error;
+		id("wrongCity").style.display = "block";
+		id("wrongCity").style.opacity = 1;
 
 		//l'enleve si le user modifie l'input
-		$(input).keydown(function() {
+		id("i_city").onkeydown = function() {
 
-			$("p.wrongCity").css("opacity", 0);
+			id("wrongCity").style.opacity = 0;
 			setTimeout(function() {
-				$("p.wrongCity").css("display", "none");
+				id("wrongCity").style.display = "none";
 			}, 200);
-		});
+		}
 	}
 
+	//fait
 	function updateCity() {
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 
-			var city = $(".change_weather input[name='city']");
-			param.ccode = $(".countrycode")[0].value;
-			param.city = city[0].value;
+			param.ccode = id("i_ccode").value;
+			param.city = id("i_city").value;
 
 			if (param.city.length < 2) return false;
 
 			request(param, "current");
 			request(param, "forecast");
 
-			city.attr("placeholder", param.city);
-			city.val("");
-			city.blur();
+			id("i_city").setAttribute("placeholder", param.city);
+			id("i_city").value = "";
+			id("i_city").blur();
 
 			chrome.storage.sync.set({"weather": param});
 		});	
 	}
 
+	//fait
 	function updateUnit(that) {
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 
-			if ($(that).is(":checked")) {
+			if (that.checked) {
 				param.unit = "imperial";
 			} else {
 				param.unit = "metric";
@@ -926,6 +964,7 @@ function weather() {
 		});
 	}
 
+	//fait
 	function updateLocation(that) {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -933,9 +972,9 @@ function weather() {
 			var param = data.weather;
 			param.location = [];
 
-			if ($(that).is(":checked")) {
+			if (that.checked) {
 
-				$(that).attr("disabled", "");
+				that.setAttribute("disabled", "");
 
 				navigator.geolocation.getCurrentPosition((pos) => {
 
@@ -948,24 +987,24 @@ function weather() {
 					request(param, "forecast");
 
 					//update le setting
-					$(".change_weather .city").css("display", "none");
-					$(that).removeAttr("disabled");
+					id("sett_city").setAttribute("class", "city hidden");
+					that.removeAttribute("disabled");
 					
 				}, (refused) => {
 
 					//désactive geolocation if refused
-					$(that).prop("checked", false);
-					$(that).removeAttr("disabled");
+					that.checked = false
+					that.removeAttribute("disabled");
 
 					if (!param.city) initWeather();
 				});
 
 			} else {
 
-				$(".change_weather .city").css("display", "flex");
+				id("sett_city").setAttribute("class", "city");
 
-				$("input[name='city']").attr("placeholder", param.city);
-				$(".countrycode").prop("value", param.ccode);
+				id("i_city").setAttribute("placeholder", param.city);
+				id("i_ccode").value = param.ccode;
 
 				param.location = false;
 				chrome.storage.sync.set({"weather": param});
@@ -978,38 +1017,35 @@ function weather() {
 
 	//TOUT LES EVENTS
 
-	$(".submitw_city").click(function() {
+	id("b_city").onmouseup = function() {
 		if (!stillActive) {
 			updateCity();
 			slow(this);
 		}
-		
-	});
+	}
 
-	$('.change_weather input[name="city"]').on('keypress', function(e) {
+	id("i_city").onkeypress = function(e) {
 		if (!stillActive && e.which === 13) {
 			updateCity();
 			slow(this);
 		}
-	});
+	}
 
-	$(".units input").change(function() {
+	id("i_units").onchange = function() {
 		if (!stillActive) {
 			updateUnit(this);
 			slow(this);
 		}
-	});
+	}
 
-
-	$(".w_auto input").change(function() {
+	id("i_geol").onchange = function() {
 		if (!stillActive) {
 			updateLocation(this);
 		}
-	});
+	}
 
-	$(".lang").change(function() {
+	id("i_lang").onchange = function() {
 		if (!stillActive) {
-
 			chrome.storage.sync.get("weather", (data) => {
 
 				request(data.weather, "current");
@@ -1018,22 +1054,10 @@ function weather() {
 				slow(this);
 			});		
 		}
-	});
-
-
-	//popup checkboxes enables settings checkboxes
-	/*$(".popup .units input").change(function() {
-		$(".settings .units input")[0].checked = $(this)[0].checked;
-	});
-
-	$(".popup .w_auto input").change(function() {
-		$(".settings .w_auto input")[0].checked = $(this)[0].checked;
-	});*/
-
+	}
 
 	cacheControl();
 }
-
 
 //fait
 function imgCredits(src, type) {
@@ -1203,6 +1227,7 @@ function defaultBg() {
 	function getSource(that) {
 		var src = that.children[0].getAttribute("src");
 		if (id("i_retina").checked) src = src.replace("/backgrounds/", "/backgrounds/4k/");
+		if (!id("i_retina").checked) src = src.replace("/4k", "");
 
 		return src
 	}

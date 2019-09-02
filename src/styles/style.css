@@ -84,8 +84,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  opacity: 0;
-  animation: fade .1s ease-in .07s forwards;
+  /*opacity: 0;
+  animation: fade .1s ease-in .07s forwards;*/
   transition: margin .2s;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); }
   #interface .time {
@@ -1379,7 +1379,7 @@ body {
   #settings select.lang {
     transition: none; }
   #settings .signature {
-    padding: 3em .5em 1em .5em;
+    padding: 2em 1em;
     text-align: center;
     color: #6d6d72;
     font-size: .8em; }
@@ -1387,10 +1387,11 @@ body {
       text-decoration: none;
       color: #007aff; }
     #settings .signature #rdv_website {
-      display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      padding-bottom: 6em; }
+      padding-bottom: 4em; }
+      #settings .signature #rdv_website span {
+        font-size: 1em;
+      }
       #settings .signature #rdv_website a.trn {
         margin: 0 .3em; }
   #settings.shown {

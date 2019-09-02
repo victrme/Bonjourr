@@ -636,10 +636,12 @@ $popupText : 22px;
 		}
 
 		#rdv_website {
-			display: flex;
-			flex-wrap: wrap;
 			justify-content: center;
 			padding-bottom: 6em;
+
+			span {
+				font-size: 1em;
+			}
 
 			a.trn {
 				margin: 0 .3em;
