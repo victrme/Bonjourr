@@ -76,8 +76,7 @@ body {
   background-color: #222;
   background-size: cover;
   background-position: center center;
-  transform: scale(1.1);
-  transition: filter 0s; }
+  transform: scale(1.1); }
 
 #interface {
   min-height: 100vh;

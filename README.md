@@ -30,7 +30,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - [x] Fix popup overflow sur small res
 - [x] sync blob bug
 - [x] Investigate blur on chrome
-- [ ] Improve the Quick Link's favicon system
+- [x] Improve the Quick Link's favicon system
 - [ ] On Firefox, remove local path from search bar on homepage
 
 ## Features for the future
@@ -63,3 +63,10 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92)
 * **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
+
+## Changelogs
+
+**v1.5.5**
+
+- New Favicon API
+- 4k / Retina option

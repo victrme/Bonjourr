@@ -243,8 +243,13 @@ function quickLinks() {
 		$(".linkblocks").append('<a href="" class="hiddenlink"></a>');
 
 		chrome.storage.sync.get("links", (data) => {
+	
+			if (data.links.length > 0) {
 
-			if (data.links) {
+				//1.6 fix
+				if (data.links[0].icon.includes("https://besticon-demo.herokuapp.com")) {
+					oldFaviconFix();
+				}
 
 				for (var i = 0; i < data.links.length; i++) {
 					appendblock(data.links[i]);
@@ -370,6 +375,80 @@ function quickLinks() {
 		});
 	}
 
+	function oldFaviconFix() {
+
+		var str = "";
+		var linkarray = {};
+		chrome.storage.sync.get("links", (data) => {
+
+			linkarray = data.links;
+
+			for (var i = 0; i < data.links.length; i++) {
+
+				
+				link = data.links[i];
+
+				str = link.icon;
+				str = str.replace("https://besticon-demo.herokuapp.com/icon?url=", "");
+				str = str.replace("&size=80", "");
+				//console.log(str);
+
+				iconReq(str, link, i);
+			}
+
+			console.log(linkarray)
+			chrome.storage.sync.set({"links": linkarray});
+		})
+
+		function iconReq(hostname, link, index) {
+			var req = new XMLHttpRequest();
+			req.open('GET', "http://favicongrabber.com/api/grab/" + hostname, false);
+
+			req.onload = function() {
+				
+				var resp = JSON.parse(this.response);
+
+				if (req.status >= 200 && req.status < 400) {
+
+					linkarray[index].icon = filterIcon(resp);
+
+				} else {
+
+					linkarray[index].icon = "src/images/weather/day/brokenclouds.png";
+				}
+			}
+
+			req.send();
+		}
+	}
+
+	function filterIcon(json) {
+		//console.log(json);
+		var s = 0;
+		var a, b = 0;
+
+		for (var i = 0; i < json.icons.length; i++) {	
+
+			if (json.icons[i].sizes) {
+
+				a = parseInt(json.icons[i].sizes);
+
+				if (a > b) {
+					s = i;
+					b = a;
+				}
+
+				//console.log(b);
+				//console.log(s);
+
+			} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
+				return json.icons[i].src;
+			}
+		}
+
+		return json.icons[s].src;
+	}
+
 	function linkSubmission() {
 
 		function submissionError(erreur) {
@@ -465,33 +544,6 @@ function quickLinks() {
 			});
 		}
 
-		function filterIcon(json) {
-			console.log(json);
-			var s = 0;
-			var a, b = 0;
-
-			for (var i = 0; i < json.icons.length; i++) {	
-
-				if (json.icons[i].sizes) {
-
-					a = parseInt(json.icons[i].sizes);
-
-					if (a > b) {
-						s = i;
-						b = a;
-					}
-
-					console.log(b);
-					console.log(s);
-
-				} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
-					return json.icons[i].src;
-				}
-			}
-
-			return json.icons[s].src;
-		}
-
 		//append avec le titre, l'url ET l'index du bloc
 		var title = $(".addlink input[name='title']").val();
 		var url = $(".addlink input[name='url']").val();
@@ -534,7 +586,7 @@ function quickLinks() {
 
 					} else {
 
-						links.icon = "src/images/weather/night/showerrain.png";
+						links.icon = "src/images/weather/day/brokenclouds.png";
 						saveLink(links);
 					}
 				}
@@ -1132,7 +1184,7 @@ function initBackground() {
 			dynamicBackground("init")
 		}
 		else {
-			applyBackground(image, type, blur);
+			applyBackground(image, type);
 		}
 		
 		imgCredits(image, type);
@@ -1141,7 +1193,7 @@ function initBackground() {
 		//remet les transitions du blur
 		setTimeout(function() {
 			id("background").style.transition = "filter .2s";
-		}, 200);
+		}, 500);
 	});	
 }
 
@@ -1290,12 +1342,14 @@ function retina(check) {
 	if (!check && b.includes("/4k")) {
 		b = b.replace("/4k", "");
 		imgBackground(b);
+		chrome.storage.sync.set({"background_image": b});
 		chrome.storage.sync.set({"retina": false});
 	}
 
 	if (check && !b.includes("/4k")) {
 		b = b.replace("backgrounds/", "backgrounds/4k/");
 		imgBackground(b);
+		chrome.storage.sync.set({"background_image": b});
 		chrome.storage.sync.set({"retina": true});
 	}
 }
@@ -1352,9 +1406,6 @@ function dynamicBackground(state, input) {
 
 //fait
 function blurThis(val, init) {
-
-	var isDark = document.body.getAttribute("class");
-	var url = imgBackground().slice(4, imgBackground().length - 1);
 	
 	if (val > 0) {
 		id('background').style.filter = 'blur(' + val + 'px)';
