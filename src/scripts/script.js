@@ -11,22 +11,22 @@ const START_LINKS = [
 	{
 		"title": "Unsplash",
 		"url": "https://unsplash.com/",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=unsplash.com&size=80"
+		"icon": "https://besticon.herokuapp.com/icon?url=unsplash.com&size=80"
 	},
 	{
 		"title": "YouTube",
 		"url": "https://youtube.com",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=youtube.com&size=80"
+		"icon": "https://besticon.herokuapp.com/icon?url=youtube.com&size=80"
 	},
 	{
 		"title": "Bonjourr",
 		"url": "https://bonjourr.fr",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=bonjourr.fr&size=80"
+		"icon": "https://besticon.herokuapp.com/icon?url=bonjourr.fr&size=80"
 	},
 	{
 		"title": "Wikipédia",
 		"url": "http://wikipedia.org",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=wikipedia.org&size=80"
+		"icon": "https://besticon.herokuapp.com/icon?url=wikipedia.org&size=80"
 	}];
 const CREDITS = [
 	{
