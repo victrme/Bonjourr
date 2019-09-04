@@ -22,10 +22,8 @@
 	},
 
 	"permissions": [
-		"webRequest",
 		"storage",
 		"unlimitedStorage",
-		"management",
 		"geolocation"
 	]
 }

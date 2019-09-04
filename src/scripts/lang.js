@@ -35,11 +35,11 @@ var dict = {
   "Disable this may improve performances.": {
     fr: "Désactiver cette option peut améliorer les performances.",
     zh_CN: "禁用此项可提高性能。",
-    // sv: "",
-    // nl: "",
-    // pl: "",
-    // ru: "",
-    // es: ""
+    sv: "Disable this may improve performances.",
+    nl: "Disable this may improve performances.",
+    pl: "Disable this may improve performances.",
+    ru: "Disable this may improve performances.",
+    es: "Disable this may improve performances."
   },
   "Choose background": {
     fr: "Choisir l'arrière-plan",
@@ -86,7 +86,7 @@ var dict = {
     zh_CN: "模糊度",
     es: ""
   },
-  "Quick Links": {
+  "QUICK LINKS": {
     fr: "Liens favoris",
     sv: "Snabblänkar",
     nl: "Snelle links",
@@ -117,13 +117,13 @@ var dict = {
     fr: "Ouvrir dans un nouvel onglet par défaut",
     zh_CN: "默认在新标签页打开链接",
     //The following languages need to be added:
-    //sv: "",
-    // nl: "",
-    // pl: "",
-    // ru: "",
-    // es: ""
+    sv: "Open in new tab by default",
+    nl: "Open in new tab by default",
+    pl: "Open in new tab by default",
+    ru: "Open in new tab by default",
+    es: "Open in new tab by default"
   },
-  "Weather": {
+  "WEATHER": {
     fr: "Météo",
     sv: "Väder",
     nl: "Weer",
@@ -402,7 +402,7 @@ var dict = {
     zh_CN: "12月",
     es: ""
   },
-  "Language": {
+  "LANGUAGE": {
     fr: "Langue",
     sv: "Språk",
     nl: "Taal",
@@ -601,7 +601,7 @@ var dict = {
     zh_CN: "您也可以更改计量单位",
     es: ""
   },
-  "Visuals": {
+  "VISUALS": {
     fr: "Affichage",
     sv: "Visuella",
     nl: "Vormgeving",
@@ -673,7 +673,7 @@ var dict = {
     zh_CN: "关闭",
     es: ""
   },
-  "Search bar": {
+  "SEARCH BAR": {
     fr: "Barre de recherche",
     sv: "Sökruta",
     nl: "Zoek balk",
@@ -749,11 +749,11 @@ var dict = {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes.",
     zh_CN: "右键点击网站图标以删除快速链接。",
     // The following sentences need to be reworked:
-    // sv: "Du kan radera Snabblänkar efter ett långt tryck på ikonerna.",
-    // nl: "U kunt de snelkoppelingen verwijderen na een lange druk op de iconen.",
-    // pl: "Możesz usunąć Ulubione Witryny po długim naciśnięciu ikon.",
-    // ru: "Вы можете удалить закладку, зажав её иконку.",
-    // es: ""
+    sv: "Right click on the icons to delete a Quick Link.",
+    nl: "Right click on the icons to delete a Quick Link.",
+    pl: "Right click on the icons to delete a Quick Link.",
+    ru: "Right click on the icons to delete a Quick Link.",
+    es: ""
   },
   "You now know the basics of using Bonjourr. Don't forget that you can go further into customization by visiting the Settings with the icon in the bottom right corner of the window.": {
     fr: "Bonjourr a bien été configuré. N'oubliez pas que vous pouvez aller plus loin dans la personnalisation en visitant les Réglages via l'icône en bas à droite de la fenêtre.",
@@ -763,16 +763,6 @@ var dict = {
     ru: "Вы настроили базовые функции Bonjourr. В дальнейшем вы сможете настроить Bonjourr под себя, нажав на значок настроек в правом нижнем углу окна.",
     zh_CN: "您已经了解了 Bonjorr 的基本用法。如果您要进一步自定义，可以点击窗口右下角的图标以访问设置。",
     es: ""
-  },
-  "You can delete the Quick Links after a long press on the icons.": {
-    fr: "Vous pouvez supprimer les favoris en effectuant un clic prolongé sur une de leurs icônes.",
-    zh_CN: "您可以长按图标来删除快速链接。",
-    // The following sentences need to be reworked:
-    // sv: "Du kan radera Snabblänkar efter ett långt tryck på ikonerna.",
-    // nl: "U kunt uw snelkoppelingen verwijderen na een lange druk op de iconen.",
-    // pl: "Możesz usunąć Ulubione Witryny po długim naciśnięciu ikon.",
-    // ru: "",
-    // es: ""
   },
   "Almost done!": {
     fr: "Nous y sommes presque !",
@@ -810,7 +800,7 @@ var dict = {
     zh_CN: "设置完成！",
     es: ""
   },
-  "Clock": {
+  "CLOCK": {
     fr: "Horloge",
     sv: "Klocka",
     nl: "Klok",

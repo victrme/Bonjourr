@@ -1,4 +1,4 @@
-var translator = $('html').translate({lang: "en", t: dict});
+//var translator = $('html').translate({lang: "en", t: dict});
 var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
@@ -65,7 +65,6 @@ const CREDITS = [
 		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
 		"id": "unsplash.com"
 	}];
-const CHANGELOG = ["1.5.1", "<h1>Bug fixes</h1><li>Greetings works at night</li><li>Link reset fixed</li>"];
 
 
 //jS steuplé
@@ -115,32 +114,19 @@ function slow(that) {
 
 function tradThis(str) {
 
-	translator.lang(localStorage.lang);
-	return translator.get(str);
+	var lang = localStorage.lang;
+
+	return (lang === "en" ? str : dict[str][localStorage.lang]);
+
+	/*translator.lang(localStorage.lang);
+	return translator.get(str);*/
 }
 
-function initTrad() {
+id("i_lang").onchange = function() {
 
-	if (localStorage.lang) {
-
-		translator.lang(localStorage.lang);
-
-	} else {
-
-		chrome.storage.sync.get("lang", (data) => {
-			if (data.lang) translator.lang(data.lang);
-		});
-	}
-	
-
-	$(".lang").change(function() {
-		chrome.storage.sync.set({"lang": this.value});
-		localStorage.lang = this.value;
-		translator.lang(this.value);
-
-		date();
-		greetings();
-	});
+	chrome.storage.sync.set({"lang": this.value});
+	localStorage.lang = this.value;
+	console.log("????")
 }
 
 //fait
@@ -169,7 +155,7 @@ function clock() {
 
 		if (format === 12) h = is12hours(h);
 
-		id('clock').innerHTML = h + ":" + m;
+		id('clock').innerText = h + ":" + m;
 
 		timesup = setTimeout(start, 5000);
 	}
@@ -1100,6 +1086,7 @@ function weather() {
 		if (!stillActive) {
 			chrome.storage.sync.get("weather", (data) => {
 
+				localStorage.lang = this.value;
 				request(data.weather, "current");
 				request(data.weather, "forecast");
 				searchbar();
@@ -1865,7 +1852,7 @@ $(document).keydown(function(e) {
 
 
 $(document).ready(function() {
-	initTrad();
+	//initTrad();
 	darkmode();
 	clock();
 	date();
