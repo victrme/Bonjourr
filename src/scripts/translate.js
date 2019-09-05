@@ -1,21 +1,24 @@
-var trns = document.getElementsByClassName('trn');
-var local = localStorage.lang;
-var dom = []
 
+function traduction() {
 
+	let trns = document.getElementsByClassName('trn');
+	let local = localStorage.lang;
+	let dom = []
 
-if (local && local !== "en") {
+	if (local && local !== "en") {
 
-	for (var i = 0; i < trns.length; i++) {
+		for (let k = 0; k < trns.length; k++) {
 
-		/*console.log(i)
-		console.log(dict[trns[i].innerText])*/
+			/*console.log(k)
+			console.log(dict[trns[k].innerText])*/
 
-		dom.push(dict[trns[i].innerText][localStorage.lang])
-	}
-		
-	for (var i = 0; i < trns.length; i++) {
-		trns[i].innerText = dom[i]
+			dom.push(dict[trns[k].innerText][localStorage.lang])
+		}
+			
+		for (let i = 0; i < trns.length; i++) {
+			trns[i].innerText = dom[i]
+		}
 	}
 }
 
+traduction()

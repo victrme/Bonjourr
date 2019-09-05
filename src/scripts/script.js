@@ -116,17 +116,11 @@ function tradThis(str) {
 
 	var lang = localStorage.lang;
 
-	return (lang === "en" ? str : dict[str][localStorage.lang]);
-
-	/*translator.lang(localStorage.lang);
-	return translator.get(str);*/
-}
-
-id("i_lang").onchange = function() {
-
-	chrome.storage.sync.set({"lang": this.value});
-	localStorage.lang = this.value;
-	console.log("????")
+	if (!lang || lang === "en") {
+		return str
+	} else {
+		return dict[str][localStorage.lang]
+	}
 }
 
 //fait
@@ -230,7 +224,7 @@ function quickLinks() {
 
 		chrome.storage.sync.get("links", (data) => {
 	
-			if (data.links.length > 0) {
+			if (data.links && data.links.length > 0) {
 
 				//1.6 fix
 				if (data.links[0].icon.includes("https://besticon-demo.herokuapp.com")) {
@@ -1087,10 +1081,10 @@ function weather() {
 			chrome.storage.sync.get("weather", (data) => {
 
 				localStorage.lang = this.value;
-				request(data.weather, "current");
-				request(data.weather, "forecast");
-				searchbar();
-				slow(this);
+				chrome.storage.sync.set({"lang": this.value});
+				//request(data.weather, "current");
+				//request(data.weather, "forecast");
+				location.reload()
 			});		
 		}
 	}
