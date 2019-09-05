@@ -1,18 +1,18 @@
 @font-face {
   font-family: 'sf_pro_textregular';
-  src: url("../fonts/sf-pro-text-regular-webfont.woff2") format("woff2"), url("../fonts/sf-pro-text-regular-webfont.woff") format("woff");
+  src: url("../../fonts/sf-pro-text-regular-webfont.woff2") format("woff2"), url("../../fonts/sf-pro-text-regular-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal; }
 
 @font-face {
   font-family: 'sf_pro_displaylight';
-  src: url("../fonts/sf-pro-display-light-webfont.woff2") format("woff2"), url("../fonts/sf-pro-display-light-webfont.woff") format("woff");
+  src: url("../../fonts/sf-pro-display-light-webfont.woff2") format("woff2"), url("../../fonts/sf-pro-display-light-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal; }
 
 @font-face {
   font-family: 'sf_pro_displaythin';
-  src: url("../fonts/sf-pro-display-thin-webfont.woff2") format("woff2"), url("../fonts/sf-pro-display-thin-webfont.woff") format("woff");
+  src: url("../../fonts/sf-pro-display-thin-webfont.woff2") format("woff2"), url("../../fonts/sf-pro-display-thin-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal; }
 
@@ -23,12 +23,13 @@ body {
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
-  opacity: 0;
+  opacity: 1;
   background-color: #222;
   color: white;
-  font-family: sf_pro_displaylight, Segoe UI;
+  font-family: sf_pro_displaylight;
   font-size: 16px;
-  text-align: center; }
+  text-align: center;
+  animation: fade .2s ease-in forwards; }
   body p, body h3 {
     margin: 0; }
   body hr {
@@ -76,15 +77,16 @@ body {
   background-color: #222;
   background-size: cover;
   background-position: center center;
-  transform: scale(1.1); }
+  transform: scale(1.1);
+  transition: filter 0s; }
 
 #interface {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  /*opacity: 0;
-  animation: fade .1s ease-in .07s forwards;*/
+  opacity: 0;
+  animation: fade .1s ease-in .07s forwards;
   transition: margin .2s;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); }
   #interface .time {
@@ -137,18 +139,17 @@ body {
         height: 60px;
         width: 60px;
         border: none;
-        padding-right: 10px;
-        transition: opacity .1s }
+        padding-right: 10px; }
       #interface .main .weather .w_widget .w_widget_text {
         font-size: 2em; }
-  #interface #sb_container {
+  #interface .searchbar_container {
     visibility: hidden;
     opacity: 0;
     height: 2px;
     width: 100%;
     padding: 0;
     transition: none; }
-    #interface #sb_container #searchbar {
+    #interface .searchbar_container .searchbar {
       opacity: 0.8;
       font-size: 1.5em;
       color: rgba(0, 0, 0, 0.6);
@@ -160,25 +161,25 @@ body {
       border-radius: 4px;
       padding-left: 1em;
       transition: all .2s; }
-      #interface #sb_container #searchbar:focus {
+      #interface .searchbar_container .searchbar:focus {
         opacity: 1;
         border-radius: 1em; }
-    #interface #sb_container #searchbar::placeholder {
+    #interface .searchbar_container .searchbar::placeholder {
       text-transform: none;
       opacity: 1; }
-    #interface #sb_container .popup_searchbar, #interface #sb_container .popup_searchbar:focus {
+    #interface .searchbar_container .popup_searchbar, #interface .searchbar_container .popup_searchbar:focus {
       border: 2px solid #b8b8b8;
       margin-top: 2em; }
-    #interface #sb_container.shown {
+    #interface .searchbar_container.shown {
       visibility: visible;
       opacity: 1;
       height: 52px; }
-    #interface #sb_container.hidden {
+    #interface .searchbar_container.hidden {
       visibility: hidden;
       opacity: 0;
       padding: 0;
       height: 2px; }
-    #interface #sb_container.removed {
+    #interface .searchbar_container.removed {
       display: none; }
   #interface .linkblocks {
     visibility: visible;
@@ -426,18 +427,18 @@ body {
         font-size: 1em; }
     .welcomeback_wrapper .welcomeback button {
       font-size: 18px; }
-    .welcomeback_wrapper .welcomeback.update {
-      width: 450px;
-      color: #333; }
-      .welcomeback_wrapper .welcomeback.update p {
-        text-align: left;
-        padding: 0 2em; }
-      .welcomeback_wrapper .welcomeback.update li {
-        list-style-type: none; }
-        .welcomeback_wrapper .welcomeback.update li:before {
-          content: "\2022 ";
-          padding: 0 1em;
-          color: #bbb; }
+  .welcomeback_wrapper .welcomeback.update {
+    width: 450px;
+    color: #333; }
+    .welcomeback_wrapper .welcomeback.update p {
+      text-align: left;
+      padding: 0 2em; }
+    .welcomeback_wrapper .welcomeback.update li {
+      list-style-type: none; }
+      .welcomeback_wrapper .welcomeback.update li:before {
+        content: "\2022 ";
+        padding: 0 1em;
+        color: #bbb; }
 
 #start_popup {
   transition: all .4s ease-in;
@@ -883,10 +884,12 @@ body {
             padding: 1rem;
             font-size: 3rem; }
         #start_popup .popup_window .popup_line .popup3 .weather .w_icon {
+          opacity: 0;
           padding: .5em;
           border-radius: 8px;
           background-color: #222;
-          filter: none; }
+          filter: none;
+          transition: opacity .1s; }
       #start_popup .popup_window .popup_line .popup4 .choosable_backgrounds {
         display: flex;
         justify-content: space-between;
@@ -913,7 +916,7 @@ body {
             width: 56px;
             height: 76px;
             opacity: .8; }
-      #start_popup .popup_window .popup_line .popup4 #backgrounds {
+      #start_popup .popup_window .popup_line .popup4 .backgrounds {
         width: 50%; }
       #start_popup .popup_window .popup_line .popup5 {
         /* Switch */
@@ -1039,14 +1042,14 @@ body {
           border: none; }
         #start_popup .popup_window .popup_line .popup5 ::-ms-tooltip {
           display: none; }
-        #start_popup .popup_window .popup_line .popup5 #sb_container {
+        #start_popup .popup_window .popup_line .popup5 .searchbar_container {
           visibility: hidden;
           opacity: 0;
           height: 2px;
           width: 100%;
           padding: 0;
           transition: none; }
-          #start_popup .popup_window .popup_line .popup5 #sb_container #searchbar {
+          #start_popup .popup_window .popup_line .popup5 .searchbar_container .searchbar {
             opacity: 0.8;
             font-size: 1.5em;
             color: rgba(0, 0, 0, 0.6);
@@ -1058,25 +1061,25 @@ body {
             border-radius: 4px;
             padding-left: 1em;
             transition: all .2s; }
-            #start_popup .popup_window .popup_line .popup5 #sb_container #searchbar:focus {
+            #start_popup .popup_window .popup_line .popup5 .searchbar_container .searchbar:focus {
               opacity: 1;
               border-radius: 1em; }
-          #start_popup .popup_window .popup_line .popup5 #sb_container #searchbar::placeholder {
+          #start_popup .popup_window .popup_line .popup5 .searchbar_container .searchbar::placeholder {
             text-transform: none;
             opacity: 1; }
-          #start_popup .popup_window .popup_line .popup5 #sb_container .popup_searchbar, #start_popup .popup_window .popup_line .popup5 #sb_container .popup_searchbar:focus {
+          #start_popup .popup_window .popup_line .popup5 .searchbar_container .popup_searchbar, #start_popup .popup_window .popup_line .popup5 .searchbar_container .popup_searchbar:focus {
             border: 2px solid #b8b8b8;
             margin-top: 2em; }
-          #start_popup .popup_window .popup_line .popup5 #sb_container.shown {
+          #start_popup .popup_window .popup_line .popup5 .searchbar_container.shown {
             visibility: visible;
             opacity: 1;
             height: 52px; }
-          #start_popup .popup_window .popup_line .popup5 #sb_container.hidden {
+          #start_popup .popup_window .popup_line .popup5 .searchbar_container.hidden {
             visibility: hidden;
             opacity: 0;
             padding: 0;
             height: 2px; }
-          #start_popup .popup_window .popup_line .popup5 #sb_container.removed {
+          #start_popup .popup_window .popup_line .popup5 .searchbar_container.removed {
             display: none; }
         #start_popup .popup_window .popup_line .popup5 #sb_container form #searchbar {
           background-color: white; }
@@ -1145,7 +1148,7 @@ body {
   height: 100vh;
   overflow-y: auto;
   background-color: #efeff4;
-  font-family: sf_pro_textregular, Segoe UI;
+  font-family: sf_pro_textregular;
   text-shadow: none;
   text-align: left;
   color: #222;
@@ -1310,8 +1313,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between; }
-  #settings .wrapper > span {
-    margin-right: 1em }
   #settings .choosable_backgrounds {
     display: flex;
     justify-content: space-between;
@@ -1375,10 +1376,12 @@ body {
         align-self: center; }
       #settings .city .wrapper button {
         margin: 1em auto 0 auto; }
+    #settings .city .wrapper > span {
+      margin-right: 1em; }
   #settings select.lang {
     transition: none; }
   #settings .signature {
-    padding: 2em 1em;
+    padding: 3em .5em 1em .5em;
     text-align: center;
     color: #6d6d72;
     font-size: .8em; }
@@ -1387,10 +1390,9 @@ body {
       color: #007aff; }
     #settings .signature #rdv_website {
       justify-content: center;
-      padding-bottom: 4em; }
+      padding-bottom: 2em; }
       #settings .signature #rdv_website span {
-        font-size: 1em;
-      }
+        font-size: 1em; }
       #settings .signature #rdv_website a.trn {
         margin: 0 .3em; }
   #settings.shown {
@@ -1409,37 +1411,37 @@ body.dark #start_popup .popup_window {
 body.dark .welcomeback {
   background-color: #1c1c1e; }
 
-body.dark #background {
+body.dark .background {
   opacity: .75; }
 
 body.dark .welcomeback p, body.dark .welcomeback h1 {
   color: white; }
 
-body.dark #settings {
+body.dark .settings {
   background-color: black; }
-  body.dark #settings .custom_bg {
+  body.dark .settings .custom_bg {
     border-color: #3f3f41; }
 
-body.dark #settings hr {
+body.dark hr {
   border-bottom: 1px solid #3f3f41; }
 
-body.dark #settings .title {
+body.dark .title {
   background-color: #1c1c1e;
   color: white;
   border-top: 0;
   border-bottom: 0; }
 
-body.dark #settings .subtitle {
+body.dark .subtitle {
   color: #929294;
   font-family: sf_pro_displaylight; }
 
-body.dark #settings .param {
+body.dark .param {
   background-color: #1c1c1e;
   color: white;
   border-top: 1px solid #3f3f41;
   border-bottom: 1px solid #3f3f41; }
 
-body.dark #settings input[type="text"], body.dark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.dark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+body.dark .settings input[type="text"], body.dark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.dark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
   background-color: #39383d;
   color: white; }
 
@@ -1449,16 +1451,16 @@ body.dark ::-moz-range-thumb {
 body.dark ::placeholder {
   color: #929294; }
 
-body.dark #settings button {
+body.dark button {
   background-color: #1c1c1e; }
 
-body.dark #showSettings button {
+body.dark .showSettings button {
   background-color: transparent; }
-  body.dark #showSettings button:hover {
+  body.dark .showSettings button:hover {
     background-color: #3c3c3e; }
-  body.dark #showSettings button.shown {
+  body.dark .showSettings button.shown {
     background-color: #1c1c1e; }
-    body.dark #showSettings button.shown:hover {
+    body.dark .showSettings button.shown:hover {
       background-color: #3c3c3e; }
 
 body.dark .slider {
@@ -1484,13 +1486,13 @@ body.dark .signature {
       background-color: #1c1c1e; }
   body.autodark .welcomeback {
     background-color: #1c1c1e; }
-  body.autodark #background {
+  body.autodark .background {
     opacity: .75; }
   body.autodark .welcomeback p, body.autodark .welcomeback h1 {
     color: white; }
-  body.autodark #settings {
+  body.autodark .settings {
     background-color: black; }
-    body.autodark #settings .custom_bg {
+    body.autodark .settings .custom_bg {
       border-color: #3f3f41; }
   body.autodark hr {
     border-bottom: 1px solid #3f3f41; }
@@ -1507,7 +1509,7 @@ body.dark .signature {
     color: white;
     border-top: 1px solid #3f3f41;
     border-bottom: 1px solid #3f3f41; }
-  body.autodark #settings input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+  body.autodark .settings input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
     background-color: #39383d;
     color: white; }
   body.autodark ::-moz-range-thumb {
@@ -1516,13 +1518,13 @@ body.dark .signature {
     color: #929294; }
   body.autodark button {
     background-color: #1c1c1e; }
-  body.autodark #showSettings button {
+  body.autodark .showSettings button {
     background-color: transparent; }
-    body.autodark #showSettings button:hover {
+    body.autodark .showSettings button:hover {
       background-color: #3c3c3e; }
-    body.autodark #showSettings button.shown {
+    body.autodark .showSettings button.shown {
       background-color: #1c1c1e; }
-      body.autodark #showSettings button.shown:hover {
+      body.autodark .showSettings button.shown:hover {
         background-color: #3c3c3e; }
   body.autodark .slider {
     background-color: #39383d; }
@@ -1534,42 +1536,42 @@ body.dark .signature {
     color: #929294; } }
 
 @media screen and (max-height: 650px) {
-  #interface {
+  .interface {
     font-size: .7em; }
-    #interface .time .shadow {
+    .interface .time .shadow {
       width: 39em; }
-    #interface .main .shadow {
+    .interface .main .shadow {
       width: 39em; }
-    #interface .main .weather .w_widget {
+    .interface .main .weather .w_widget {
       height: 70px; }
-      #interface .main .weather .w_widget .w_icon {
+      .interface .main .weather .w_widget .w_icon {
         width: 35px;
         height: 35px; }
-    #interface #sb_container #searchbar {
+    .interface .searchbar_container .searchbar {
       max-width: 300px;
       height: 35px; }
-    #interface #sb_container.shown {
+    .interface .searchbar_container.shown {
       padding: 0;
       height: 35px; }
-    #interface .linkblocks .block_parent button.remove {
+    .interface .linkblocks .block_parent button.remove {
       height: 25px;
       width: 25px; }
-      #interface .linkblocks .block_parent button.remove img {
+      .interface .linkblocks .block_parent button.remove img {
         width: .7em;
         height: .7em; }
-  #showSettings button {
+  .showSettings button {
     height: 2.5em;
     width: 2.5em; }
-    #showSettings button img {
+    .showSettings button img {
       height: 1.5em;
       width: 1.5em; }
-  #settings {
+  .settings {
     font-size: .9em; }
-    #settings .param .bac .choosable_backgrounds .imgpreview {
+    .settings .param .bac .choosable_backgrounds .imgpreview {
       width: 54px; }
-      #settings .param .bac .choosable_backgrounds .imgpreview:hover {
+      .settings .param .bac .choosable_backgrounds .imgpreview:hover {
         width: 50px; }
-      #settings .param .bac .choosable_backgrounds .imgpreview.selected {
+      .settings .param .bac .choosable_backgrounds .imgpreview.selected {
         width: 50px; } }
 
 @media screen and (max-height: 800px) {
@@ -1592,11 +1594,11 @@ body.dark .signature {
           height: .7em; }
     #start_popup .popup_window .popup_line .popup.popup3 .weather .w_widget {
       height: 50px; }
-    #start_popup .popup_window .popup_line .popup.popup5 #sb_container #searchbar {
+    #start_popup .popup_window .popup_line .popup.popup5 .searchbar_container .searchbar {
       max-width: 300px;
       height: 35px;
       font-size: 17px; }
-    #start_popup .popup_window .popup_line .popup.popup5 #sb_container.shown {
+    #start_popup .popup_window .popup_line .popup.popup5 .searchbar_container.shown {
       padding: 0;
       height: 35px; }
   #start_popup .popup_window .popup_buttons {
@@ -1607,10 +1609,10 @@ body.dark .signature {
       font-size: 17px; } }
 
 @media screen and (min-height: 650px) and (max-height: 950px) {
-  #interface {
+  .interface {
     font-size: .8em; }
-    #interface #sb_container #searchbar {
+    .interface .searchbar_container .searchbar {
       max-width: 400px;
       height: 40px; }
-    #interface #sb_container.shown {
+    .interface .searchbar_container.shown {
       padding: 0; } }
