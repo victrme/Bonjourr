@@ -59,7 +59,7 @@
 }
 
 @mixin searchbar {
-	.searchbar_container {
+	#sb_container {
 		visibility: hidden;
 		opacity: 0;
 		height: 2px;
@@ -67,7 +67,7 @@
 		padding: 0;
 		transition: none;
 
-		.searchbar {
+		#searchbar {
 			opacity: 0.8;
 			font-size: 1.5em;
 			color: rgba(0,0,0,0.6);
@@ -87,7 +87,7 @@
 		}
 		
 		// Pourquoi &:placeholder ne fonctionne pas ? Personne ne sait.
-		.searchbar::placeholder {
+		#searchbar::placeholder {
 			text-transform: none;
 			opacity: 1;
 		}
@@ -247,7 +247,7 @@
 		cursor: pointer;
 	}
 
-	p.wrongURL, p.wrongCity {
+	p.wrongURL, p#wrongCity {
 		display: none;
 		opacity: 0;
 		color: red;
@@ -270,10 +270,6 @@
 
 		input:checked + .slider {
 			background-color: #4bd663;
-		}
-
-		input:focus + .slider {
-			box-shadow: 0 0 1px #2196F3;
 		}
 
 		input:checked + .slider:before {

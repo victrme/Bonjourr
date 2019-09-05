@@ -22,7 +22,7 @@ body.dark {
 		background-color: #1c1c1e;
 	}
 
-	.background {
+	#background {
 		opacity: .75;
 	}
 
@@ -30,7 +30,7 @@ body.dark {
 		color: white;
 	}
 
-	.settings {
+	#settings {
 		background-color: black;
 
 		.custom_bg {
@@ -61,7 +61,7 @@ body.dark {
 		border-bottom: 1px solid #3f3f41;
 	}
 
-	.settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+	#settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
 		background-color: #39383d;
 		color: white;
 	}
@@ -78,7 +78,7 @@ body.dark {
 		background-color: #1c1c1e;
 	}
 
-	.showSettings button {
+	#showSettings button {
 		background-color: transparent;
 
 		&:hover {
@@ -136,7 +136,7 @@ body.autodark {
 			background-color: #1c1c1e;
 		}
 
-		.background {
+		#background {
 			opacity: .75;
 		}
 
@@ -144,7 +144,7 @@ body.autodark {
 			color: white;
 		}
 
-		.settings {
+		#settings {
 			background-color: black;
 
 			.custom_bg {
@@ -175,7 +175,7 @@ body.autodark {
 			border-bottom: 1px solid #3f3f41;
 		}
 
-		.settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+		#settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
 			background-color: #39383d;
 			color: white;
 		}
@@ -192,7 +192,7 @@ body.autodark {
 			background-color: #1c1c1e;
 		}
 
-		.showSettings button {
+		#showSettings button {
 			background-color: transparent;
 
 			&:hover {
@@ -227,7 +227,7 @@ body.autodark {
 }
 
 @media screen and (max-height: 650px) {
-	.interface {
+	#interface {
 		font-size: .7em;
 
 		.time .shadow {
@@ -249,8 +249,8 @@ body.autodark {
 			}
 		}
 
-		.searchbar_container {
-			.searchbar {
+		#sb_container {
+			#searchbar {
 				max-width: 300px;
 				height: 35px;
 			}
@@ -272,7 +272,7 @@ body.autodark {
 		}
 	}
 
-	.showSettings button {
+	#showSettings button {
 		height: 2.5em;
 		width: 2.5em;
 
@@ -282,7 +282,7 @@ body.autodark {
 		}
 	}
 
-	.settings {
+	#settings {
 		font-size: .9em;
 		
 		.param .bac .choosable_backgrounds .imgpreview {
@@ -335,8 +335,8 @@ body.autodark {
 				height: 50px;
 			}
 
-			&.popup5 .searchbar_container {
-				.searchbar {
+			&.popup5 #sb_container {
+				#searchbar {
 					max-width: 300px;
 					height: 35px;
 					font-size: 17px;
@@ -362,11 +362,11 @@ body.autodark {
 }
 
 @media screen and (min-height: 650px) and (max-height: 950px) {
-	.interface {
+	#interface {
 		font-size: .8em;
 
-		.searchbar_container {
-			.searchbar {
+		#sb_container {
+			#searchbar {
 				max-width: 400px;
 				height: 40px;
 			}

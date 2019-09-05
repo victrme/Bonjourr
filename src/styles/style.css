@@ -122,7 +122,7 @@ body {
       width: 55em;
       opacity: .4;
       overflow: hidden; }
-    #interface .main .greetings {
+    #interface .main #greetings {
       font-size: 3em;
       font-weight: lighter; }
     #interface .main .weather .w_desc_container, #interface .main .weather .hightemp {
@@ -142,14 +142,14 @@ body {
         padding-right: 10px; }
       #interface .main .weather .w_widget .w_widget_text {
         font-size: 2em; }
-  #interface .searchbar_container {
+  #interface #sb_container {
     visibility: hidden;
     opacity: 0;
     height: 2px;
     width: 100%;
     padding: 0;
     transition: none; }
-    #interface .searchbar_container .searchbar {
+    #interface #sb_container #searchbar {
       opacity: 0.8;
       font-size: 1.5em;
       color: rgba(0, 0, 0, 0.6);
@@ -161,25 +161,25 @@ body {
       border-radius: 4px;
       padding-left: 1em;
       transition: all .2s; }
-      #interface .searchbar_container .searchbar:focus {
+      #interface #sb_container #searchbar:focus {
         opacity: 1;
         border-radius: 1em; }
-    #interface .searchbar_container .searchbar::placeholder {
+    #interface #sb_container #searchbar::placeholder {
       text-transform: none;
       opacity: 1; }
-    #interface .searchbar_container .popup_searchbar, #interface .searchbar_container .popup_searchbar:focus {
+    #interface #sb_container .popup_searchbar, #interface #sb_container .popup_searchbar:focus {
       border: 2px solid #b8b8b8;
       margin-top: 2em; }
-    #interface .searchbar_container.shown {
+    #interface #sb_container.shown {
       visibility: visible;
       opacity: 1;
       height: 52px; }
-    #interface .searchbar_container.hidden {
+    #interface #sb_container.hidden {
       visibility: hidden;
       opacity: 0;
       padding: 0;
       height: 2px; }
-    #interface .searchbar_container.removed {
+    #interface #sb_container.removed {
       display: none; }
   #interface .linkblocks {
     visibility: visible;
@@ -308,7 +308,7 @@ body {
     color: #007aff;
     margin: auto;
     cursor: pointer; }
-  .welcomeback_wrapper p.wrongURL, .welcomeback_wrapper p.wrongCity {
+  .welcomeback_wrapper p.wrongURL, .welcomeback_wrapper p#wrongCity {
     display: none;
     opacity: 0;
     color: red;
@@ -325,8 +325,6 @@ body {
       height: 0; }
     .welcomeback_wrapper .switch input:checked + .slider {
       background-color: #4bd663; }
-    .welcomeback_wrapper .switch input:focus + .slider {
-      box-shadow: 0 0 1px #2196F3; }
     .welcomeback_wrapper .switch input:checked + .slider:before {
       transform: translateX(22px); }
     .welcomeback_wrapper .switch .slider {
@@ -543,7 +541,7 @@ body {
           color: #007aff;
           margin: auto;
           cursor: pointer; }
-        #start_popup .popup_window .popup_line .popup2 p.wrongURL, #start_popup .popup_window .popup_line .popup2 p.wrongCity {
+        #start_popup .popup_window .popup_line .popup2 p.wrongURL, #start_popup .popup_window .popup_line .popup2 p#wrongCity {
           display: none;
           opacity: 0;
           color: red;
@@ -560,8 +558,6 @@ body {
             height: 0; }
           #start_popup .popup_window .popup_line .popup2 .switch input:checked + .slider {
             background-color: #4bd663; }
-          #start_popup .popup_window .popup_line .popup2 .switch input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3; }
           #start_popup .popup_window .popup_line .popup2 .switch input:checked + .slider:before {
             transform: translateX(22px); }
           #start_popup .popup_window .popup_line .popup2 .switch .slider {
@@ -748,7 +744,7 @@ body {
           color: #007aff;
           margin: auto;
           cursor: pointer; }
-        #start_popup .popup_window .popup_line .popup3 p.wrongURL, #start_popup .popup_window .popup_line .popup3 p.wrongCity {
+        #start_popup .popup_window .popup_line .popup3 p.wrongURL, #start_popup .popup_window .popup_line .popup3 p#wrongCity {
           display: none;
           opacity: 0;
           color: red;
@@ -765,8 +761,6 @@ body {
             height: 0; }
           #start_popup .popup_window .popup_line .popup3 .switch input:checked + .slider {
             background-color: #4bd663; }
-          #start_popup .popup_window .popup_line .popup3 .switch input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3; }
           #start_popup .popup_window .popup_line .popup3 .switch input:checked + .slider:before {
             transform: translateX(22px); }
           #start_popup .popup_window .popup_line .popup3 .switch .slider {
@@ -848,14 +842,14 @@ body {
           justify-content: space-between; }
           #start_popup .popup_window .popup_line .popup3 .w_auto > * {
             margin: 0; }
-        #start_popup .popup_window .popup_line .popup3 .city {
+        #start_popup .popup_window .popup_line .popup3 #sett_city {
           display: flex;
           align-items: center;
           width: 100%;
           justify-content: space-between; }
-          #start_popup .popup_window .popup_line .popup3 .city > * {
+          #start_popup .popup_window .popup_line .popup3 #sett_city > * {
             width: 30%; }
-          #start_popup .popup_window .popup_line .popup3 .city button {
+          #start_popup .popup_window .popup_line .popup3 #sett_city button {
             margin: 0; }
         #start_popup .popup_window .popup_line .popup3 .units {
           justify-content: space-between; }
@@ -946,7 +940,7 @@ body {
           color: #007aff;
           margin: auto;
           cursor: pointer; }
-        #start_popup .popup_window .popup_line .popup5 p.wrongURL, #start_popup .popup_window .popup_line .popup5 p.wrongCity {
+        #start_popup .popup_window .popup_line .popup5 p.wrongURL, #start_popup .popup_window .popup_line .popup5 p#wrongCity {
           display: none;
           opacity: 0;
           color: red;
@@ -963,8 +957,6 @@ body {
             height: 0; }
           #start_popup .popup_window .popup_line .popup5 .switch input:checked + .slider {
             background-color: #4bd663; }
-          #start_popup .popup_window .popup_line .popup5 .switch input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3; }
           #start_popup .popup_window .popup_line .popup5 .switch input:checked + .slider:before {
             transform: translateX(22px); }
           #start_popup .popup_window .popup_line .popup5 .switch .slider {
@@ -1042,14 +1034,14 @@ body {
           border: none; }
         #start_popup .popup_window .popup_line .popup5 ::-ms-tooltip {
           display: none; }
-        #start_popup .popup_window .popup_line .popup5 .searchbar_container {
+        #start_popup .popup_window .popup_line .popup5 #sb_container {
           visibility: hidden;
           opacity: 0;
           height: 2px;
           width: 100%;
           padding: 0;
           transition: none; }
-          #start_popup .popup_window .popup_line .popup5 .searchbar_container .searchbar {
+          #start_popup .popup_window .popup_line .popup5 #sb_container #searchbar {
             opacity: 0.8;
             font-size: 1.5em;
             color: rgba(0, 0, 0, 0.6);
@@ -1061,25 +1053,25 @@ body {
             border-radius: 4px;
             padding-left: 1em;
             transition: all .2s; }
-            #start_popup .popup_window .popup_line .popup5 .searchbar_container .searchbar:focus {
+            #start_popup .popup_window .popup_line .popup5 #sb_container #searchbar:focus {
               opacity: 1;
               border-radius: 1em; }
-          #start_popup .popup_window .popup_line .popup5 .searchbar_container .searchbar::placeholder {
+          #start_popup .popup_window .popup_line .popup5 #sb_container #searchbar::placeholder {
             text-transform: none;
             opacity: 1; }
-          #start_popup .popup_window .popup_line .popup5 .searchbar_container .popup_searchbar, #start_popup .popup_window .popup_line .popup5 .searchbar_container .popup_searchbar:focus {
+          #start_popup .popup_window .popup_line .popup5 #sb_container .popup_searchbar, #start_popup .popup_window .popup_line .popup5 #sb_container .popup_searchbar:focus {
             border: 2px solid #b8b8b8;
             margin-top: 2em; }
-          #start_popup .popup_window .popup_line .popup5 .searchbar_container.shown {
+          #start_popup .popup_window .popup_line .popup5 #sb_container.shown {
             visibility: visible;
             opacity: 1;
             height: 52px; }
-          #start_popup .popup_window .popup_line .popup5 .searchbar_container.hidden {
+          #start_popup .popup_window .popup_line .popup5 #sb_container.hidden {
             visibility: hidden;
             opacity: 0;
             padding: 0;
             height: 2px; }
-          #start_popup .popup_window .popup_line .popup5 .searchbar_container.removed {
+          #start_popup .popup_window .popup_line .popup5 #sb_container.removed {
             display: none; }
         #start_popup .popup_window .popup_line .popup5 #sb_container form #searchbar {
           background-color: white; }
@@ -1197,7 +1189,7 @@ body {
     color: #007aff;
     margin: auto;
     cursor: pointer; }
-  #settings p.wrongURL, #settings p.wrongCity {
+  #settings p.wrongURL, #settings p#wrongCity {
     display: none;
     opacity: 0;
     color: red;
@@ -1214,8 +1206,6 @@ body {
       height: 0; }
     #settings .switch input:checked + .slider {
       background-color: #4bd663; }
-    #settings .switch input:focus + .slider {
-      box-shadow: 0 0 1px #2196F3; }
     #settings .switch input:checked + .slider:before {
       transform: translateX(22px); }
     #settings .switch .slider {
@@ -1359,24 +1349,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between; }
-  #settings .city {
+  #settings #sett_city {
     flex-direction: column; }
-    #settings .city .wrapper {
+    #settings #sett_city .wrapper {
       display: inline-block;
       width: 100%; }
-      #settings .city .wrapper div {
+      #settings #sett_city .wrapper div {
         display: flex;
         width: 100%; }
-      #settings .city .wrapper input {
+      #settings #sett_city .wrapper input {
         width: 50%;
         margin-right: .5em; }
-      #settings .city .wrapper select {
+      #settings #sett_city .wrapper select {
         width: 50%;
         display: flex;
         align-self: center; }
-      #settings .city .wrapper button {
+      #settings #sett_city .wrapper button {
         margin: 1em auto 0 auto; }
-    #settings .city .wrapper > span {
+    #settings #sett_city .wrapper > span {
       margin-right: 1em; }
   #settings select.lang {
     transition: none; }
@@ -1411,15 +1401,15 @@ body.dark #start_popup .popup_window {
 body.dark .welcomeback {
   background-color: #1c1c1e; }
 
-body.dark .background {
+body.dark #background {
   opacity: .75; }
 
 body.dark .welcomeback p, body.dark .welcomeback h1 {
   color: white; }
 
-body.dark .settings {
+body.dark #settings {
   background-color: black; }
-  body.dark .settings .custom_bg {
+  body.dark #settings .custom_bg {
     border-color: #3f3f41; }
 
 body.dark hr {
@@ -1441,7 +1431,7 @@ body.dark .param {
   border-top: 1px solid #3f3f41;
   border-bottom: 1px solid #3f3f41; }
 
-body.dark .settings input[type="text"], body.dark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.dark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+body.dark #settings input[type="text"], body.dark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.dark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
   background-color: #39383d;
   color: white; }
 
@@ -1454,13 +1444,13 @@ body.dark ::placeholder {
 body.dark button {
   background-color: #1c1c1e; }
 
-body.dark .showSettings button {
+body.dark #showSettings button {
   background-color: transparent; }
-  body.dark .showSettings button:hover {
+  body.dark #showSettings button:hover {
     background-color: #3c3c3e; }
-  body.dark .showSettings button.shown {
+  body.dark #showSettings button.shown {
     background-color: #1c1c1e; }
-    body.dark .showSettings button.shown:hover {
+    body.dark #showSettings button.shown:hover {
       background-color: #3c3c3e; }
 
 body.dark .slider {
@@ -1486,13 +1476,13 @@ body.dark .signature {
       background-color: #1c1c1e; }
   body.autodark .welcomeback {
     background-color: #1c1c1e; }
-  body.autodark .background {
+  body.autodark #background {
     opacity: .75; }
   body.autodark .welcomeback p, body.autodark .welcomeback h1 {
     color: white; }
-  body.autodark .settings {
+  body.autodark #settings {
     background-color: black; }
-    body.autodark .settings .custom_bg {
+    body.autodark #settings .custom_bg {
       border-color: #3f3f41; }
   body.autodark hr {
     border-bottom: 1px solid #3f3f41; }
@@ -1509,7 +1499,7 @@ body.dark .signature {
     color: white;
     border-top: 1px solid #3f3f41;
     border-bottom: 1px solid #3f3f41; }
-  body.autodark .settings input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+  body.autodark #settings input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
     background-color: #39383d;
     color: white; }
   body.autodark ::-moz-range-thumb {
@@ -1518,13 +1508,13 @@ body.dark .signature {
     color: #929294; }
   body.autodark button {
     background-color: #1c1c1e; }
-  body.autodark .showSettings button {
+  body.autodark #showSettings button {
     background-color: transparent; }
-    body.autodark .showSettings button:hover {
+    body.autodark #showSettings button:hover {
       background-color: #3c3c3e; }
-    body.autodark .showSettings button.shown {
+    body.autodark #showSettings button.shown {
       background-color: #1c1c1e; }
-      body.autodark .showSettings button.shown:hover {
+      body.autodark #showSettings button.shown:hover {
         background-color: #3c3c3e; }
   body.autodark .slider {
     background-color: #39383d; }
@@ -1536,42 +1526,42 @@ body.dark .signature {
     color: #929294; } }
 
 @media screen and (max-height: 650px) {
-  .interface {
+  #interface {
     font-size: .7em; }
-    .interface .time .shadow {
+    #interface .time .shadow {
       width: 39em; }
-    .interface .main .shadow {
+    #interface .main .shadow {
       width: 39em; }
-    .interface .main .weather .w_widget {
+    #interface .main .weather .w_widget {
       height: 70px; }
-      .interface .main .weather .w_widget .w_icon {
+      #interface .main .weather .w_widget .w_icon {
         width: 35px;
         height: 35px; }
-    .interface .searchbar_container .searchbar {
+    #interface #sb_container #searchbar {
       max-width: 300px;
       height: 35px; }
-    .interface .searchbar_container.shown {
+    #interface #sb_container.shown {
       padding: 0;
       height: 35px; }
-    .interface .linkblocks .block_parent button.remove {
+    #interface .linkblocks .block_parent button.remove {
       height: 25px;
       width: 25px; }
-      .interface .linkblocks .block_parent button.remove img {
+      #interface .linkblocks .block_parent button.remove img {
         width: .7em;
         height: .7em; }
-  .showSettings button {
+  #showSettings button {
     height: 2.5em;
     width: 2.5em; }
-    .showSettings button img {
+    #showSettings button img {
       height: 1.5em;
       width: 1.5em; }
-  .settings {
+  #settings {
     font-size: .9em; }
-    .settings .param .bac .choosable_backgrounds .imgpreview {
+    #settings .param .bac .choosable_backgrounds .imgpreview {
       width: 54px; }
-      .settings .param .bac .choosable_backgrounds .imgpreview:hover {
+      #settings .param .bac .choosable_backgrounds .imgpreview:hover {
         width: 50px; }
-      .settings .param .bac .choosable_backgrounds .imgpreview.selected {
+      #settings .param .bac .choosable_backgrounds .imgpreview.selected {
         width: 50px; } }
 
 @media screen and (max-height: 800px) {
@@ -1594,11 +1584,11 @@ body.dark .signature {
           height: .7em; }
     #start_popup .popup_window .popup_line .popup.popup3 .weather .w_widget {
       height: 50px; }
-    #start_popup .popup_window .popup_line .popup.popup5 .searchbar_container .searchbar {
+    #start_popup .popup_window .popup_line .popup.popup5 #sb_container #searchbar {
       max-width: 300px;
       height: 35px;
       font-size: 17px; }
-    #start_popup .popup_window .popup_line .popup.popup5 .searchbar_container.shown {
+    #start_popup .popup_window .popup_line .popup.popup5 #sb_container.shown {
       padding: 0;
       height: 35px; }
   #start_popup .popup_window .popup_buttons {
@@ -1609,10 +1599,10 @@ body.dark .signature {
       font-size: 17px; } }
 
 @media screen and (min-height: 650px) and (max-height: 950px) {
-  .interface {
+  #interface {
     font-size: .8em; }
-    .interface .searchbar_container .searchbar {
+    #interface #sb_container #searchbar {
       max-width: 400px;
       height: 40px; }
-    .interface .searchbar_container.shown {
+    #interface #sb_container.shown {
       padding: 0; } }

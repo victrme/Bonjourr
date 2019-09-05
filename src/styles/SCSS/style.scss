@@ -69,7 +69,7 @@
 			overflow: hidden;
 		}
 
-		.greetings {
+		#greetings {
 			font-size: 3em;
 			font-weight: lighter;
 		}
@@ -333,7 +333,7 @@ $popupText : 22px;
 					}
 				}
 
-				.city {
+				#sett_city {
 					display: flex;
 					align-items: center;
 					width: 100%;
@@ -589,7 +589,7 @@ $popupText : 22px;
 		justify-content: space-between;
 	}
 
-	.city {
+	#sett_city {
 		flex-direction: column;
 		
 		.wrapper {
