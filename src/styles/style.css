@@ -1411,38 +1411,38 @@ body.dark #settings {
   background-color: black; }
   body.dark #settings .custom_bg {
     border-color: #3f3f41; }
-
-body.dark hr {
-  border-bottom: 1px solid #3f3f41; }
-
-body.dark .title {
-  background-color: #1c1c1e;
-  color: white;
-  border-top: 0;
-  border-bottom: 0; }
-
-body.dark .subtitle {
-  color: #929294;
-  font-family: sf_pro_displaylight; }
-
-body.dark .param {
-  background-color: #1c1c1e;
-  color: white;
-  border-top: 1px solid #3f3f41;
-  border-bottom: 1px solid #3f3f41; }
-
-body.dark #settings input[type="text"], body.dark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.dark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
-  background-color: #39383d;
-  color: white; }
-
-body.dark ::-moz-range-thumb {
-  box-shadow: none; }
-
-body.dark ::placeholder {
-  color: #929294; }
-
-body.dark button {
-  background-color: #1c1c1e; }
+  body.dark #settings .title {
+    background-color: #1c1c1e;
+    color: white;
+    border-top: 0;
+    border-bottom: 0; }
+  body.dark #settings .subtitle {
+    color: #929294;
+    font-family: sf_pro_displaylight; }
+  body.dark #settings .param {
+    background-color: #1c1c1e;
+    color: white;
+    border-top: 1px solid #3f3f41;
+    border-bottom: 1px solid #3f3f41; }
+  body.dark #settings hr {
+    border-bottom: 1px solid #3f3f41; }
+  body.dark #settings input[type="text"], body.dark #settings #start_popup .popup_window .popup_line .popup2 input[type="text"], body.dark #settings #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+    background-color: #39383d;
+    color: white; }
+  body.dark #settings ::-moz-range-thumb {
+    box-shadow: none; }
+  body.dark #settings ::placeholder {
+    color: #929294; }
+  body.dark #settings button {
+    background-color: #1c1c1e; }
+  body.dark #settings .slider {
+    background-color: #39383d; }
+  body.dark #settings .range::-webkit-slider-thumb {
+    box-shadow: none; }
+  body.dark #settings input:checked + .slider {
+    background-color: #4bd663; }
+  body.dark #settings .signature {
+    color: #929294; }
 
 body.dark #showSettings button {
   background-color: transparent; }
@@ -1452,18 +1452,6 @@ body.dark #showSettings button {
     background-color: #1c1c1e; }
     body.dark #showSettings button.shown:hover {
       background-color: #3c3c3e; }
-
-body.dark .slider {
-  background-color: #39383d; }
-
-body.dark .range::-webkit-slider-thumb {
-  box-shadow: none; }
-
-body.dark input:checked + .slider {
-  background-color: #4bd663; }
-
-body.dark .signature {
-  color: #929294; }
 
 @media (prefers-color-scheme: dark) {
   body.autodark #start_popup .popup_window {
@@ -1484,30 +1472,38 @@ body.dark .signature {
     background-color: black; }
     body.autodark #settings .custom_bg {
       border-color: #3f3f41; }
-  body.autodark hr {
-    border-bottom: 1px solid #3f3f41; }
-  body.autodark .title {
-    background-color: #1c1c1e;
-    color: white;
-    border-top: 0;
-    border-bottom: 0; }
-  body.autodark .subtitle {
-    color: #929294;
-    font-family: sf_pro_displaylight; }
-  body.autodark .param {
-    background-color: #1c1c1e;
-    color: white;
-    border-top: 1px solid #3f3f41;
-    border-bottom: 1px solid #3f3f41; }
-  body.autodark #settings input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #start_popup .popup_window .popup_line .popup3 input[type="text"] {
-    background-color: #39383d;
-    color: white; }
-  body.autodark ::-moz-range-thumb {
-    box-shadow: none; }
-  body.autodark ::placeholder {
-    color: #929294; }
-  body.autodark button {
-    background-color: #1c1c1e; }
+    body.autodark #settings .title {
+      background-color: #1c1c1e;
+      color: white;
+      border-top: 0;
+      border-bottom: 0; }
+    body.autodark #settings .subtitle {
+      color: #929294;
+      font-family: sf_pro_displaylight; }
+    body.autodark #settings .param {
+      background-color: #1c1c1e;
+      color: white;
+      border-top: 1px solid #3f3f41;
+      border-bottom: 1px solid #3f3f41; }
+    body.autodark #settings hr {
+      border-bottom: 1px solid #3f3f41; }
+    body.autodark #settings input[type="text"], body.autodark #settings #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #settings #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+      background-color: #39383d;
+      color: white; }
+    body.autodark #settings ::-moz-range-thumb {
+      box-shadow: none; }
+    body.autodark #settings ::placeholder {
+      color: #929294; }
+    body.autodark #settings button {
+      background-color: #1c1c1e; }
+    body.autodark #settings .slider {
+      background-color: #39383d; }
+    body.autodark #settings .range::-webkit-slider-thumb {
+      box-shadow: none; }
+    body.autodark #settings input:checked + .slider {
+      background-color: #4bd663; }
+    body.autodark #settings .signature {
+      color: #929294; }
   body.autodark #showSettings button {
     background-color: transparent; }
     body.autodark #showSettings button:hover {
@@ -1515,15 +1511,7 @@ body.dark .signature {
     body.autodark #showSettings button.shown {
       background-color: #1c1c1e; }
       body.autodark #showSettings button.shown:hover {
-        background-color: #3c3c3e; }
-  body.autodark .slider {
-    background-color: #39383d; }
-  body.autodark .range::-webkit-slider-thumb {
-    box-shadow: none; }
-  body.autodark input:checked + .slider {
-    background-color: #4bd663; }
-  body.autodark .signature {
-    color: #929294; } }
+        background-color: #3c3c3e; } }
 
 @media screen and (max-height: 650px) {
   #interface {

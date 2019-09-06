@@ -36,46 +36,62 @@ body.dark {
 		.custom_bg {
 			border-color: #3f3f41;
 		}
-	}
 
-	hr {
-		border-bottom: 1px solid #3f3f41;
-	}
+		.title {
+			background-color : #1c1c1e;
+			color: white;
+			border-top: 0;
+			border-bottom:0;
+		}
 
-	.title {
-		background-color : #1c1c1e;
-		color: white;
-		border-top: 0;
-		border-bottom:0;
-	}
+		.subtitle {
+			color: #929294;
+			font-family: sf_pro_displaylight;
+		}
 
-	.subtitle {
-		color: #929294;
-		font-family: sf_pro_displaylight;
-	}
+		.param {
+			background-color : #1c1c1e;
+			color: white;
+			border-top: 1px solid #3f3f41;
+			border-bottom: 1px solid #3f3f41;
+		}
 
-	.param {
-		background-color : #1c1c1e;
-		color: white;
-		border-top: 1px solid #3f3f41;
-		border-bottom: 1px solid #3f3f41;
-	}
+		hr {
+			border-bottom: 1px solid #3f3f41;
+		}
 
-	#settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
-		background-color: #39383d;
-		color: white;
-	}
+		input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+			background-color: #39383d;
+			color: white;
+		}
 
-	::-moz-range-thumb {
-		box-shadow:none;
-	}
+		::-moz-range-thumb {
+			box-shadow:none;
+		}
 
-	::placeholder {
-		color: #929294;
-	}
+		::placeholder {
+			color: #929294;
+		}
 
-	button {
-		background-color: #1c1c1e;
+		button {
+			background-color: #1c1c1e;
+		}
+
+		.slider {
+			background-color: #39383d;
+		}
+
+		.range::-webkit-slider-thumb {
+			box-shadow: none;
+		}
+
+		input:checked + .slider {
+			background-color: #4bd663;
+		}
+
+		.signature {
+			color: #929294;
+		}
 	}
 
 	#showSettings button {
@@ -93,67 +109,46 @@ body.dark {
 			}
 		}
 	}
-
-	.slider {
-		background-color: #39383d;
-	}
-
-	.range::-webkit-slider-thumb {
-		box-shadow: none;
-	}
-
-	input:checked + .slider {
-		background-color: #4bd663;
-	}
-
-	.signature {
-		color: #929294;
-	}
 }
 
 // dark mode avec le système
 body.autodark {
 	@media (prefers-color-scheme: dark) {
 		#start_popup .popup_window {
-			background-color: #1c1c1e;
+		background-color: #1c1c1e;
+		
+		.popup_line {
+			p, h1, span {
+				color: white;
+			}
 
-			.popup_line {
-				p, h1, span {
-					color: white;
-				}
+			button {
+				background-color: #1c1c1e;
+			}
 
-				button {
-					background-color: #1c1c1e;
-				}
-
-				.weather .w_icon {
-					background-color: #1c1c1e;
-				}
+			.weather .w_icon {
+				background-color: #1c1c1e;
 			}
 		}
+	}
+	
+	.welcomeback {
+		background-color: #1c1c1e;
+	}
 
-		.welcomeback {
-			background-color: #1c1c1e;
-		}
+	#background {
+		opacity: .75;
+	}
 
-		#background {
-			opacity: .75;
-		}
+	.welcomeback  p, .welcomeback  h1 {
+		color: white;
+	}
 
-		.welcomeback  p, .welcomeback  h1 {
-			color: white;
-		}
+	#settings {
+		background-color: black;
 
-		#settings {
-			background-color: black;
-
-			.custom_bg {
-				border-color: #3f3f41;
-			}
-		}
-
-		hr {
-			border-bottom: 1px solid #3f3f41;
+		.custom_bg {
+			border-color: #3f3f41;
 		}
 
 		.title {
@@ -175,7 +170,11 @@ body.autodark {
 			border-bottom: 1px solid #3f3f41;
 		}
 
-		#settings input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+		hr {
+			border-bottom: 1px solid #3f3f41;
+		}
+
+		input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
 			background-color: #39383d;
 			color: white;
 		}
@@ -190,22 +189,6 @@ body.autodark {
 
 		button {
 			background-color: #1c1c1e;
-		}
-
-		#showSettings button {
-			background-color: transparent;
-
-			&:hover {
-				background-color: #3c3c3e;
-			}
-
-			&.shown {
-				background-color: #1c1c1e;
-
-				&:hover {
-					background-color: #3c3c3e;
-				}
-			}
 		}
 
 		.slider {
@@ -223,6 +206,23 @@ body.autodark {
 		.signature {
 			color: #929294;
 		}
+	}
+
+	#showSettings button {
+		background-color: transparent;
+
+		&:hover {
+			background-color: #3c3c3e;
+		}
+
+		&.shown {
+			background-color: #1c1c1e;
+
+			&:hover {
+				background-color: #3c3c3e;
+			}
+		}
+	}
 	}
 }
 
