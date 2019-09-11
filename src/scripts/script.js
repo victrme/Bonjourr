@@ -213,17 +213,17 @@ function greetings() {
 
 function quickLinks() {
 
-	var stillActive = false, oldURL = false;
+	var stillActive = false
+	var oldURL = false;
+	var remTimeout;
+	var canRemove = false;
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
 	function initblocks() {
 
-		$(".linkblocks").empty();
-		$(".linkblocks").append('<a href="" class="hiddenlink"></a>');
-
 		chrome.storage.sync.get("links", (data) => {
-	
+
 			if (data.links && data.links.length > 0) {
 
 				//1.6 fix
@@ -236,122 +236,151 @@ function quickLinks() {
 				}
 			}
 		});
+
+		id("interface").onmousedown = function stopwiggle(e) {
+
+			var blc = cl("block");
+
+			//si c'est wiggly, accepte de le déwiggler
+			if (blc && blc[0].getAttribute("class") === "block wiggly") {
+
+				var isStoppable = true;
+
+				for (var i = 0; i < e.path.length; i++) {
+					if (e.path[i].id === "linkblocks") isStoppable = false;
+				}
+
+				if (isStoppable) wiggle(this, false);
+			}
+		}
 	}
 
 	//rajoute l'html d'un bloc avec toute ses valeurs et events
 	function appendblock(arr) {
 
 		//le DOM du block
-		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div></div>";
+		var b = "<div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div>";
 
-		$(".linkblocks").append(b);
+		var block_parent = document.createElement('div');
+		block_parent.setAttribute("class", "block_parent");
+		block_parent.innerHTML = b;
+
+		id("linkblocks").appendChild(block_parent);
+
+		addEvents(id("linkblocks").lastElementChild);
 	}
 
-	//affiche le bouton pour suppr le link
-	function showRemoveLink() {
+	//fait
+	function addEvents(elem) {
 
-		var remTimeout;
-		var canRemove = false;
+		//wow
+		var remove = elem.firstElementChild.firstElementChild.firstElementChild;
 
-		function displaywiggle() {
-
-			$(".block").find(".remove").addClass("visible");
-			$(".block").addClass("wiggly");
-			$(this).focus();
-
-			canRemove = true;	
+		elem.oncontextmenu = function startwiggle(e) {
+			event.preventDefault();
+			wiggle(this, true);
 		}
 
-		function stopwiggle() {
-			clearTimeout(remTimeout);
+		elem.onmouseup = function test(e) {
+			openlink(this, e);
+		}
 
-			$(".block").find(".remove").removeClass("visible");
-			$(".block").removeClass("wiggly");
+		remove.onmouseup = function remBlock(e) {
+			removeblock(this, e)
+		}
+	}
 
+	//fait
+	function wiggle(that, on) {
+
+		//console.log(that)
+		//console.log(on)
+
+		var bl = cl("block");
+
+		if (on) {
+			for (var i = 0; i < bl.length; i++) {
+				bl[i].setAttribute("class", "block wiggly");
+				bl[i].children[0].children[0].setAttribute("class", "remove visible");
+			}
+			canRemove = true;
+		} else {
+			for (var i = 0; i < bl.length; i++) {
+				bl[i].setAttribute("class", "block");
+				bl[i].children[0].children[0].setAttribute("class", "remove");
+			}
 			canRemove = false;
 		}
+	}
 
-		//click droit pour afficher le remove
-		$(".linkblocks").on("contextmenu", ".block", function(event) {
+	//fait
+	function removeblock(that, e) {
 
-			event.preventDefault();
-			displaywiggle();
-		});
+		console.log(that);
+		var bp = that.parentElement.parentElement.parentElement;
+		var sibling = bp;
+		var count = -2;
 
-		//je sors de la zone de linkblocks pour enlever le remove
-		$(document).bind("mousedown", function (e) {
+		while (sibling.id !== "hiddenlink" || count === 16) {
 
-			// If the clicked element is not the menu
-			if (!$(e.target).parents(".linkblocks").length > 0) {
-
-				stopwiggle();
-			}
-		});
-
-		function removeblock(i) {
-
-			chrome.storage.sync.get(["links", "searchbar"], (data) => {
-
-				function ejectIntruder(arr) {
-
-					if (arr.length === 1) {
-						return []
-					}
-
-					if (i === 0) {
-
-						arr.shift();
-						return arr;
-					}
-					else if (i === arr.length) {
-
-						arr.pop();
-						return arr;
-					}
-					else {
-
-						arr.splice(i - 1, 1);
-						return arr;
-					}
-				}
-
-				var linkRemd = ejectIntruder(data.links);
-
-				//si on supprime un block quand la limite est atteinte
-				//réactive les inputs
-				if (linkRemd.length === BLOCK_LIMIT - 1) {
-
-					var input = $("input[name='url']");
-					$(input).each(function() {
-						$(this).removeAttr("disabled");
-					});
-				}
-
-				//enleve le html du block
-				var block = $(".linkblocks")[0].children[i];
-				$(block).addClass("removed");
-				
-				setTimeout(function() {
-
-					$(block).remove();
-					//enleve linkblocks si il n'y a plus de links
-					if (linkRemd.length === 0) {
-						$(".interface .linkblocks").css("visibility", "hidden");
-						searchbarFlexControl(data.searchbar, 0);
-					}
-				}, 200);
-
-				chrome.storage.sync.set({"links": linkRemd});
-			});
+			sibling = sibling.previousSibling;
+			count++;
 		}
 
+		console.log(count);
 
-		//event de suppression de block
-		//prend l'index du parent du .remove clické
-		$(".linkblocks").off("click").on("click", ".remove", function() {
+		chrome.storage.sync.get(["links", "searchbar"], (data) => {
+
+			function ejectIntruder(arr) {
+
+				console.log(count)
+
+				if (arr.length === 1) {
+					return []
+				}
+
+				if (count === 0) {
+
+					arr.shift();
+					return arr;
+				}
+				else if (count === arr.length) {
+
+					arr.pop();
+					return arr;
+				}
+				else {
+
+					arr.splice(count, 1);
+					return arr;
+				}
+			}
+
+			var linkRemd = ejectIntruder(data.links);
+
+			//si on supprime un block quand la limite est atteinte
+			//réactive les inputs
+			if (linkRemd.length === BLOCK_LIMIT - 1) {
+
+				id("i_url").removeAttribute("disabled");
+			}
+
+			//enleve le html du block
+			var block_parent = id("linkblocks").children[count + 1];
+			block_parent.setAttribute("class", "block_parent removed");
 			
-			var index = $(this).parent().parent().parent().index();
-			(canRemove ? removeblock(index) : "");
+			setTimeout(function() {
+
+				id("linkblocks").removeChild(block_parent);
+
+				//enleve linkblocks si il n'y a plus de links
+				if (linkRemd.length === 0) {
+					id("linkblocks").style.visibility = "hidden";
+					searchbarFlexControl(data.searchbar, 0);
+				}
+			}, 200);
+
+			chrome.storage.sync.set({"links": linkRemd});
 		});
 	}
 
@@ -426,22 +455,24 @@ function quickLinks() {
 			}
 		}
 
-		return json.icons[s].src;
+		if (json.icons.length === 0) {
+			return "https://besticon.herokuapp.com/icon?url=" + json.domain + "&size=80"
+		} else {
+			return json.icons[s].src;
+		}
 	}
 
 	function linkSubmission() {
 
 		function submissionError(erreur) {
 
-			var input = $("input[name='url']");
-
 			//affiche le texte d'erreur
-			$("p.wrongURL").text(erreur[1]);
-			$("p.wrongURL").css("display", "block");
-			$("p.wrongURL").css("opacity", 1);
+			id("wrongURL").innerText = erreur[1];
+			id("wrongURL").style.display = "block";
+			id("wrongURL").style.opacity = 1;
 			
 			setTimeout(function() {
-				$("p.wrongURL").css("display", "none");
+				id("wrongURL").style.display = "none";
 			}, 2000);		
 		}
 
@@ -514,19 +545,16 @@ function quickLinks() {
 					appendblock(links);
 				} else {
 
-					//desactive tout les input url (fonctionne pour popup du coup)
-					var input = $("input[name='url']");
-					$(input).each(function() {
-						$(this).attr("disabled", "disabled");
-						submissionError([input.prop("value"), "No more than 16 links"]);
-					});
+					//desactive tout les input url
+					id("i_url").setAttribute("disabled", "disabled");
+					submissionError([id("i_url").value, "No more than 16 links"]);
 				}
 			});
 		}
 
 		//append avec le titre, l'url ET l'index du bloc
-		var title = $(".addlink input[name='title']").val();
-		var url = $(".addlink input[name='url']").val();
+		var title = id("i_title").value;
+		var url = id("i_url").value;
 		var filtered = filterUrl(url);
 
 		//Titre trop long, on rajoute "...""
@@ -566,12 +594,18 @@ function quickLinks() {
 
 					} else {
 
-						links.icon = "src/images/weather/day/brokenclouds.png";
+						links.icon = "https://besticon.herokuapp.com/icon?url=" + hostname + "&size=80";
 						saveLink(links);
 					}
 				}
 
-				req.send();
+				if (window.navigator.onLine) {
+					req.send();
+				} else {
+					links.icon = "https://besticon.herokuapp.com/icon?url=" + hostname + "&size=80";
+					saveLink(links);
+				}
+				
 			}
 
 		} else {
@@ -581,65 +615,60 @@ function quickLinks() {
 
 	function openlink(that, e) {
 
-		if (e.originalEvent.which === 3 || $(".block").hasClass("wiggly")) return false;
+		var source = that.children[0].getAttribute("source");
+
+		if (canRemove || e.which === 3 || that.children[0].getAttribute("class") === "block wiggly") return false;
 
 		chrome.storage.sync.get("linknewtab", (data) => {
 
 			if (data.linknewtab) {
 
 				chrome.tabs.create({
-					url: $(that).attr("source")
+					url: source
 				});
 
 			} else {
 
-				if (e.originalEvent.which === 2) {
+				if (e.which === 2) {
 
-					console.log("hewwo")
 					chrome.tabs.create({
-						url: $(that).attr("source")
+						url: source
 					});
 
 				} else {
 
-					$(".hiddenlink").attr("href", $(that).attr("source"));
-					$(".hiddenlink").attr("target", "_self");
-					$(".hiddenlink")[0].click();
+					id("hiddenlink").setAttribute("href", source);
+					id("hiddenlink").setAttribute("target", "_self");
+					id("hiddenlink").click();
 				}
 			}	
 		});
 	}
 
-	$('input[name="title"]').on('keypress', function(e) {
+	id("i_title").onkeypress = function(e) {
 		if (e.which === 13) linkSubmission();
-	});
+	}
 
-	$('input[name="url"]').on('keypress', function(e) {
+	id("i_url").onkeypress = function(e) {
 		if (e.which === 13) linkSubmission();
-	});
+	}
 
-	$(".submitlink").click(function() {
+	id("submitlink").onmouseup = function() {
 		linkSubmission();
-	});
+	}
 
-	$(".interface .linkblocks").off("mouseup").on("mouseup", ".block", function(e) {
+	id("i_linknewtab").onchange = function() {
 
-		openlink(this, e);
-	});
-
-	$(".linknewtab input").change(function() {
-
-		if ($(this).prop("checked")) {
+		if (this.checked) {
 			chrome.storage.sync.set({"linknewtab": true});
-			$(".hiddenlink").attr("target", "_blank");
+			id("hiddenlink").setAttribute("target", "_blank");
 		} else {
 			chrome.storage.sync.set({"linknewtab": false});
-			$(".hiddenlink").attr("target", "_self");
+			id("hiddenlink").setAttribute("target", "_blank");
 		}
-	});
+	}
 
 	initblocks();
-	showRemoveLink();
 }
 
 
@@ -1833,19 +1862,18 @@ id("interface").onmouseup = function(e) {
 }
 
 //autofocus
-$(document).keydown(function(e) {
+document.onkeydown = function(e) {
 
-	if ($("#sb_container").hasClass("shown")
-		&& !$("#settings").hasClass("shown")
-		/*&& $("#start_popup").show().length === 0*/) {
+	if (id("sb_container").getAttribute("class") === "shown"
+		&& id("settings").getAttribute("class") !== "shown") {
 
-		$("#searchbar").focus();
+		id("searchbar").focus();
 	}
-})
+}
 
 
 
-$(document).ready(function() {
+window.onload = function() {
 	//initTrad();
 	darkmode();
 	clock();
@@ -1860,4 +1888,4 @@ $(document).ready(function() {
 	initBackground();
 
 	document.body.style.animation = "fade .1s ease-in forwards";
-});
+}
