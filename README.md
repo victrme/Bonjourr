@@ -31,7 +31,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - [x] sync blob bug
 - [x] Investigate blur on chrome
 - [x] Improve the Quick Link's favicon system
-- [ ] On Firefox, remove local path from search bar on homepage
+- [ ] Firefox force time zone
 
 ## Features for the future
 

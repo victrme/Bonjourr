@@ -1,4 +1,3 @@
-//var translator = $('html').translate({lang: "en", t: dict});
 var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
@@ -101,11 +100,11 @@ function getBrowserStorage() {
 
 function slow(that) {
 
-	$(that).attr("disabled", "");
+	that.setAttribute("disabled", "");
 
 	stillActive = setTimeout(function() {
 
-		$(that).removeAttr("disabled");
+		that.removeAttribute("disabled");
 
 		clearTimeout(stillActive);
 		stillActive = false;
@@ -125,6 +124,11 @@ function tradThis(str) {
 
 //fait
 function clock() {
+
+	//pour gerer timezone
+	//prendre le timezone du weather
+	//le diviser par 60 * 60
+	//rajouter le résultat à l'heure actuelle
 
 	var timesup, format;
 
@@ -228,11 +232,11 @@ function quickLinks() {
 
 				//1.6 fix
 				if (data.links[0].icon.includes("https://besticon-demo.herokuapp.com")) {
-					oldFaviconFix();
+					//oldFaviconFix();
 				}
 
 				for (var i = 0; i < data.links.length; i++) {
-					appendblock(data.links[i]);
+					appendblock(data.links[i], i, data.links);
 				}
 			}
 		});
@@ -255,22 +259,30 @@ function quickLinks() {
 		}
 	}
 
-	//rajoute l'html d'un bloc avec toute ses valeurs et events
-	function appendblock(arr) {
+	function appendblock(arr, index, links) {
+
+		//console.log(arr)
+		var icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
 
 		//le DOM du block
-		var b = "<div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div>";
+		var b = "<div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + icon + "'></div><span>" + arr.title + "</span></div>";
 
+		//ajoute un wrap
 		var block_parent = document.createElement('div');
 		block_parent.setAttribute("class", "block_parent");
 		block_parent.innerHTML = b;
 
+		//l'ajoute au dom
 		id("linkblocks").appendChild(block_parent);
 
+		//met les events au dernier elem rajouté
 		addEvents(id("linkblocks").lastElementChild);
+
+		//si online et l'icon charge, en rechercher une
+		if (window.navigator.onLine && icon === "src/images/loading.gif")
+			addIcon(id("linkblocks").lastElementChild, arr, index, links);
 	}
 
-	//fait
 	function addEvents(elem) {
 
 		//wow
@@ -290,7 +302,6 @@ function quickLinks() {
 		}
 	}
 
-	//fait
 	function wiggle(that, on) {
 
 		//console.log(that)
@@ -313,7 +324,6 @@ function quickLinks() {
 		}
 	}
 
-	//fait
 	function removeblock(that, e) {
 
 		console.log(that);
@@ -384,82 +394,73 @@ function quickLinks() {
 		});
 	}
 
-	function oldFaviconFix() {
+	function addIcon(elem, arr, index, links) {
 
-		var str = "";
-		var linkarray = {};
-		chrome.storage.sync.get("links", (data) => {
+		function faviconXHR(url) {
 
-			linkarray = data.links;
+			return new Promise(function(resolve, reject) {
 
-			for (var i = 0; i < data.links.length; i++) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', url, true);
 
-				
-				link = data.links[i];
+				xhr.onload = function() {
 
-				str = link.icon;
-				str = str.replace("https://besticon-demo.herokuapp.com/icon?url=", "");
-				str = str.replace("&size=80", "");
-				//console.log(str);
+					if (xhr.status >= 200 && xhr.status < 400) {
+						resolve(JSON.parse(this.response))
+					}
+				}
 
-				iconReq(str, link, i);
+				xhr.onerror = reject;
+				xhr.send()
+			})
+		}
+
+		function filterIcon(json) {
+			//prend le json de favicongrabber et garde la meilleure
+
+			var s = 0;
+			var a, b = 0;
+
+			//garde la favicon la plus grande
+			for (var i = 0; i < json.icons.length; i++) {	
+
+				if (json.icons[i].sizes) {
+
+					a = parseInt(json.icons[i].sizes);
+
+					if (a > b) {
+						s = i;
+						b = a;
+					}
+
+				//si il y a une icone android ou apple, la prendre direct
+				} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
+					return json.icons[i].src;
+				}
 			}
 
-			console.log(linkarray)
-			chrome.storage.sync.set({"links": linkarray});
+			//si l'url n'a pas d'icones, utiliser besticon
+			if (json.icons.length === 0) {
+				return "https://besticon.herokuapp.com/icon?url=" + json.domain + "&size=80"
+			} else {
+				return json.icons[s].src;
+			}
+		}
+
+		//prend le domaine de n'importe quelle url
+		var a = document.createElement('a');
+		a.href = arr.url;
+		var hostname = a.hostname;
+
+		faviconXHR("http://favicongrabber.com/api/grab/" + hostname).then((icon) => {
+
+			var img = elem.firstElementChild.firstElementChild.children[1];
+			var icn = filterIcon(icon);
+			img.src = icn;
+
+			links[index].icon = icn;
+			chrome.storage.sync.set({"links": links});
 		})
-
-		function iconReq(hostname, link, index) {
-			var req = new XMLHttpRequest();
-			req.open('GET', "http://favicongrabber.com/api/grab/" + hostname, false);
-
-			req.onload = function() {
-				
-				var resp = JSON.parse(this.response);
-
-				if (req.status >= 200 && req.status < 400) {
-
-					linkarray[index].icon = filterIcon(resp);
-
-				} else {
-
-					linkarray[index].icon = "src/images/weather/day/brokenclouds.png";
-				}
-			}
-
-			req.send();
-		}
-	}
-
-	function filterIcon(json) {
-		//console.log(json);
-		var s = 0;
-		var a, b = 0;
-
-		for (var i = 0; i < json.icons.length; i++) {	
-
-			if (json.icons[i].sizes) {
-
-				a = parseInt(json.icons[i].sizes);
-
-				if (a > b) {
-					s = i;
-					b = a;
-				}
-
-				//console.log(b);
-				//console.log(s);
-
-			} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
-				return json.icons[i].src;
-			}
-		}
-
-		if (json.icons.length === 0) {
-			return "https://besticon.herokuapp.com/icon?url=" + json.domain + "&size=80"
-		} else {
-			return json.icons[s].src;
-		}
 	}
 
 	function linkSubmission() {
@@ -478,8 +479,9 @@ function quickLinks() {
 
 		function filterUrl(str) {
 
-			var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
-			var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+			//var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
+			//var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+			var reg = new RegExp("^(http|https)://", "i");
 
 			//config ne marche pas
 			if (str.startsWith("about:") || str.startsWith("chrome://")) {
@@ -490,10 +492,6 @@ function quickLinks() {
 				return str;
 			}
 
-			if (str.match(ipReg)) {
-				return "http://" + str.match(ipReg)[0];
-			}
-
 			//premier regex pour savoir si c'est http
 			if (!str.match(reg)) {
 				str = "http://" + str;
@@ -501,7 +499,7 @@ function quickLinks() {
 
 			//deuxieme pour savoir si il est valide (avec http)
 			if (str.match(reg)) {
-				return str.match(reg)[0];
+				return str.match(reg).input;
 			} else {
 				return [str, "URL not valid"];
 			}
@@ -536,13 +534,15 @@ function quickLinks() {
 				//array est seulement le link
 				} else {
 					arr.push(lll);
-					$(".linkblocks").css("visibility", "visible");
+					id("linkblocks").style.visiblility = "visible";
 					searchbarFlexControl(data.searchbar, 1);
 				}
 				
+				//si les blocks sont moins que 16
 				if (!full) {
 					chrome.storage.sync.set({"links": arr});
-					appendblock(links);
+					//console.log(lll);
+					appendblock(lll, arr.length - 1, arr);
 				} else {
 
 					//desactive tout les input url
@@ -573,39 +573,7 @@ function quickLinks() {
 					icon: ""
 				}
 
-				//prend le domaine de n'importe quelle url
-				var a = document.createElement('a');
-				a.href = filtered;
-				var hostname = a.hostname;
-
-				var req = new XMLHttpRequest();
-				req.open('GET', "http://favicongrabber.com/api/grab/" + hostname, true);
-
-				req.onload = function() {
-					
-					var resp = JSON.parse(this.response);
-
-					if (req.status >= 200 && req.status < 400) {
-
-					
-						links.icon = filterIcon(resp);
-						saveLink(links);
-						
-
-					} else {
-
-						links.icon = "https://besticon.herokuapp.com/icon?url=" + hostname + "&size=80";
-						saveLink(links);
-					}
-				}
-
-				if (window.navigator.onLine) {
-					req.send();
-				} else {
-					links.icon = "https://besticon.herokuapp.com/icon?url=" + hostname + "&size=80";
-					saveLink(links);
-				}
-				
+				saveLink(links);
 			}
 
 		} else {
@@ -733,10 +701,6 @@ function weather() {
 			param.location.push(pos.coords.latitude, pos.coords.longitude);
 			chrome.storage.sync.set({"weather": param});
 
-			//update le setting
-			//$(".w_auto input").prop("checked", true);
-			//$(".change_weather .city").css("display", "none");
-			//$(".w_auto input").removeAttr("disabled");
 			id("i_geol").checked = true;
 			id("i_geol").removeAttribute("disabled");
 			id("sett_city").setAttribute("class", "city hidden");
@@ -964,8 +928,6 @@ function weather() {
 
 	//fait
 	function submissionError(error) {
-
-		var input = $(".change_weather input[name='city']");
 
 		//affiche le texte d'erreur
 		id("wrongCity").innerText = error;
@@ -1488,14 +1450,12 @@ function darkmode(choix) {
 			} else {
 
 				document.body.setAttribute("class", "dark");
-				//$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
 				isIOSwallpaper(true);
 			}
 
 		} else {
 
 			document.body.removeAttribute("class");
-			//$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
 			isIOSwallpaper(false);
 		}
 	}
@@ -1850,7 +1810,7 @@ id("showSettings").onmouseup = function() {
 id("interface").onmouseup = function(e) {
 
 	for (var i = 0; i < e.path.length; i++) {
-		if (e.path[i].id === "linkblocks") return false;
+		if (e.path && e.path[i].id === "linkblocks") return false;
 	}
 
 	if (id("settings").getAttribute("class") === "shown") {
@@ -1874,7 +1834,6 @@ document.onkeydown = function(e) {
 
 
 window.onload = function() {
-	//initTrad();
 	darkmode();
 	clock();
 	date();
@@ -1889,3 +1848,53 @@ window.onload = function() {
 
 	document.body.style.animation = "fade .1s ease-in forwards";
 }
+
+
+
+
+/*	function oldFaviconFix() {
+
+	var str = "";
+	var linkarray = {};
+	chrome.storage.sync.get("links", (data) => {
+
+		linkarray = data.links;
+
+		for (var i = 0; i < data.links.length; i++) {
+
+			
+			link = data.links[i];
+
+			str = link.icon;
+			str = str.replace("https://besticon-demo.herokuapp.com/icon?url=", "");
+			str = str.replace("&size=80", "");
+			//console.log(str);
+
+			iconReq(str, link, i);
+		}
+
+		console.log(linkarray)
+		chrome.storage.sync.set({"links": linkarray});
+	})
+
+	function iconReq(hostname, link, index) {
+		var req = new XMLHttpRequest();
+		req.open('GET', "http://favicongrabber.com/api/grab/" + hostname, false);
+
+		req.onload = function() {
+			
+			var resp = JSON.parse(this.response);
+
+			if (req.status >= 200 && req.status < 400) {
+
+				linkarray[index].icon = filterIcon(resp);
+
+			} else {
+
+				linkarray[index].icon = "src/images/weather/day/brokenclouds.png";
+			}
+		}
+
+		req.send();
+	}
+}*/
