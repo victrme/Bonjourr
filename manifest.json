@@ -5,10 +5,10 @@
 	"version": "1.6.0",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
+	"homepage_url": "https://bonjourr.fr",
 	"default_locale": "en",
 
 	"icons": {
-		"128": "chromeicon.png",
 	    "120": "favicon.png"
   	},
 
@@ -16,9 +16,12 @@
 		"newtab": "index.html"
 	},
 
-	"offline_enabled": true,
+	"chrome_settings_overrides" : {
+		"homepage": "index.html"
+	},
+
 	"background": {
-		"scripts": ["src/scripts/background_chrome.js"]
+		"scripts": ["src/scripts/background.js"]
 	},
 
 	"permissions": [
