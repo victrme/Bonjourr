@@ -1114,7 +1114,7 @@ function initBackground() {
 	//si storage existe, utiliser storage, sinon default
 	var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
 	var type = (data.background_type ? data.background_type : "default");
-	var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
+	var blur = (Number.isInteger(parseInt(data.background_blur)) ? data.background_blur : 25);
 
 	//si custom, faire le blob
 	if (data.background_type === "custom") {
@@ -1346,7 +1346,7 @@ function blurThis(val, init) {
 		id('background').style.filter = '';
 	}
 
-	if (!init) storage("background_blur", parseInt(val));
+	if (!init) storage("background_blur", val);
 	else id("i_blur").value = val;
 }
 
