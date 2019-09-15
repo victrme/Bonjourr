@@ -23,7 +23,8 @@ id("i_dark").onchange = function() {
 id("i_lang").onchange = function() {
 	localStorage.lang = this.value;
 	sessionStorage.lang = this.value;
-	chrome.storage.local.set({"lang": this.value});
+
+	if (!localStorage.data) chrome.storage.local.set({"lang": this.value});
 
 	location.reload();
 }

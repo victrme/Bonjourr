@@ -467,7 +467,7 @@ function quickLinks() {
 		a.href = arr.url;
 		var hostname = a.hostname;
 
-		faviconXHR("http://favicongrabber.com/api/grab/" + hostname).then((icon) => {
+		faviconXHR("https://favicongrabber.com/api/grab/" + hostname).then((icon) => {
 
 			var img = elem.firstElementChild.firstElementChild.children[1];
 			var icn = filterIcon(icon);

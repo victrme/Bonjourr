@@ -1,33 +1,11 @@
-var translator = $('html').translate({lang: "en", t: dict});
 var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
 const TITLE_LIMIT = 42;
-const WEATHER_API_KEY = "7c541caef5fc7467fc7267e2f75649a9";
+const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
 const HOURS = DATE.getHours();
-const START_LINKS = [
-	{
-		"title": "Unsplash",
-		"url": "https://unsplash.com/",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=unsplash.com&size=80"
-	},
-	{
-		"title": "YouTube",
-		"url": "https://youtube.com",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=youtube.com&size=80"
-	},
-	{
-		"title": "Bonjourr",
-		"url": "https://bonjourr.fr",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=bonjourr.fr&size=80"
-	},
-	{
-		"title": "Wikipédia",
-		"url": "http://wikipedia.org",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=wikipedia.org&size=80"
-	}];
 const CREDITS = [
 	{
 		"title": "Santa Monica",
@@ -66,6 +44,43 @@ const CREDITS = [
 		"id": "unsplash.com"
 	}];
 
+
+function id(name) {
+	return document.getElementById(name);
+}
+function cl(name) {
+	return document.getElementsByClassName(name);
+}
+function tg(name) {
+	return document.getElementsbyTagName(name);
+}
+function getCl(that) {
+	return that.getAttribute("class");
+}
+function setClass(that, val) {
+	that.setAttribute("class", val);
+}
+
+function storage(cat, val) {
+
+	if (localStorage.data) {
+		var data = JSON.parse(localStorage.data);
+	} else {
+		var data = {};
+	}
+
+	if (cat) {
+
+		if (val) {
+
+			data[cat] = val;
+			localStorage.data = JSON.stringify(data);
+
+		} else return data[cat];
+	} else return data;
+}
+
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	localStorage.clear();
@@ -78,205 +93,56 @@ function getBrowserStorage() {
 
 function slow(that) {
 
-	$(that).attr("disabled", "");
+	that.setAttribute("disabled", "");
 
 	stillActive = setTimeout(function() {
 
-		$(that).removeAttr("disabled");
+		that.removeAttribute("disabled");
 
 		clearTimeout(stillActive);
 		stillActive = false;
 	}, INPUT_PAUSE);
 }
 
+function traduction() {
+
+	let trns = document.getElementsByClassName('trn');
+	let local = localStorage.lang;
+	let dom = [];
+
+	if (local && local !== "en") {
+
+		for (let k = 0; k < trns.length; k++) {
+
+			/*console.log(k)
+			console.log(dict[trns[k].innerText])*/
+
+			dom.push(dict[trns[k].innerText][localStorage.lang])
+		}
+			
+		for (let i = 0; i < trns.length; i++) {
+			trns[i].innerText = dom[i]
+		}
+	}
+}
+
 function tradThis(str) {
 
-	translator.lang(localStorage.lang);
-	return translator.get(str);
-}
+	var lang = localStorage.lang;
 
-function initTrad() {
-
-	var data = localStorage;
-
-	//init
-	translator.lang(data.lang);
-
-	//selection de langue
-	//localStorage + weather update + body trad
-	$(".lang").change(function() {
-
-		localStorage.lang = this.value;
-		translator.lang(this.value);
-
-		date();
-		greetings();
-	});
-
-	$(".popup .lang").change(function() {
-		$(".settings .lang")[0].value = $(this)[0].value;
-	});
-}
-
-function introduction() {
-
-	function welcomeback(iswelcomed) {
-
-		//regarde si le storage déclare un welcome back
-		//si oui on affiche welcome back et le supprime
-
-		if (iswelcomed) {
-			$(".welcomeback_wrapper").css("display", "flex");
-			localStorage.removeItem("welcomeback");
-		}
-
-		function remWelcome() {
-			$(".welcomeback_wrapper").css("background-color", 'transparent');
-			$(".welcomeback").css("margin-top", "200%");
-			
-			setTimeout(function() {
-				$(".welcomeback_wrapper").remove();
-			}, 400);
-		}
-
-		$(".welcomeback button").click(function() {
-			remWelcome();
-		});
-	}
-
-	var data = localStorage;
-		
-	if (!data.isIntroduced) {
-
-		$("#start_popup").css("display", "flex");
-
+	if (!lang || lang === "en") {
+		return str
 	} else {
-		
-		$("#start_popup").remove();
-
-		if (data.links && data.links.length > 0) $(".interface .linkblocks").css("visibility", "visible");
-		
-		welcomeback(data.welcomeback);
+		return dict[str][localStorage.lang]
 	}
-
-	//la marge des popups en pourcentages
-	var margin = 0; 
-	//init le premier counter avec le style actif
-	var premier = $("div.counter span:first-child")[0];
-	$(premier).addClass("actif");
-
-
-	// Start popup
-	function dismiss() {
-
-		$("#start_popup").css("background-color", 'transparent');
-		$(".popup_window").css("margin-top", "200%");
-
-		//les links modifié en intro sont réinitialisés
-		if ($(".popup .linkblocks").css("visibility") === "visible") {
-			$(".interface .linkblocks").css("visibility", 'visible');
-			quickLinks();
-		}
-		
-		setTimeout(function() {
-			$("#start_popup").remove();
-			$(".interface .linkblocks").css("opacity", 1)
-		}, 400);
-
-		//mettre ça en false dans la console pour debug la popup
-		localStorage.isIntroduced = true;
-	}
-
-	function countPopup(c) {
-		//prend le span qui correspond au margin / 100
-		var elem = $("div.counter")[0].children[c / 100];
-
-		//change le style de tous par defaut
-		//puis l'element choisi
-		$("div.counter span").removeClass("actif");
-		$(elem).addClass("actif");
-	}
-
-	function btnLang(margin, state) {
-
-		if (state === "pre") {
-			if (margin === 0) {
-				$(".previous_popup").text(tradThis("Dismiss"));
-				$(".next_popup").text(tradThis("Begin"));
-			}
-
-			if (margin === 400) {
-				$(".next_popup").text(tradThis("Next"));
-			}
-		}
-
-		if (state === "nxt") {
-			if (margin === 100) {
-
-				localStorage.links = JSON.stringify(START_LINKS);
-				$(".popup .linkblocks").css("visibility", "visible");
-				quickLinks();
-
-				$(".previous_popup").text(tradThis("Back"));
-				$(".next_popup").text(tradThis("Next"));
-			}
-
-			if (margin === 500) {
-				$(".next_popup").text(tradThis("All set!"));
-			}
-		}
-
-		if (state === "lng") {
-			$(".previous_popup").text(tradThis("Dismiss"));
-			$(".next_popup").text(tradThis("Begin"));
-		}
-	}
-
-	function previous() {
-
-		//event different pour chaque slide
-		//le numero du slide = margin / 100
-		//ici quand on recule
-		margin -= 100;
-		btnLang(margin, "pre");
-
-		if (margin === -100) {
-			dismiss();
-		} else {
-			countPopup(margin);
-			$(".popup_line").css("margin-left", "-" + margin + "%");
-		}
-	}
-
-	function next(lang) {
-
-		margin += 100;
-		btnLang(margin, "nxt");
-
-		if (margin === 600) {
-			dismiss();
-		}
-		else {
-			countPopup(margin);
-			$(".popup_line").css("margin-left", "-" + margin + "%");
-		}
-	}
-
-	$(".previous_popup").click(function() {
-		previous();
-	});
-
-	$(".next_popup").click(function(){
-		next();
-	});
-
-	$(".popup .lang").change(function() {
-		localStorage.lang = this.value;
-		btnLang(null, "lng");
-	});
 }
 
 function clock() {
+
+	//pour gerer timezone
+	//prendre le timezone du weather
+	//le diviser par 60 * 60
+	//rajouter le résultat à l'heure actuelle
 
 	var timesup, format;
 
@@ -301,17 +167,17 @@ function clock() {
 
 		if (format === 12) h = is12hours(h);
 
-		$('#clock').text(h + ":" + m);
+		id('clock').innerText = h + ":" + m;
 
 		timesup = setTimeout(start, 5000);
 	}
 
 
 	//settings event
-	$(".12hour input").change(function() {
+	id("i_ampm").onchange = function() {
 
 		//change le format 
-		if ($(this)[0].checked) {
+		if (this.checked) {
 
 			format = 12;
 			clearTimeout(timesup);
@@ -325,8 +191,9 @@ function clock() {
 		}
 
 		//enregistre partout suivant le format
+		storage("clockformat", format);
 		localStorage.clockformat = format;
-	});
+	}
 
 	format = parseInt(localStorage.clockformat);
 	start();
@@ -338,211 +205,298 @@ function date() {
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	$(".date .jour").text(tradThis(days[DATE.getDay()]));
-	$(".date .chiffre").text(tradThis(DATE.getDate()));
-	$(".date .mois").text(tradThis(months[DATE.getMonth()]));
+	id("jour").innerText = tradThis(days[DATE.getDay()]);
+	id("chiffre").innerText = DATE.getDate();
+	id("mois").innerText = tradThis(months[DATE.getMonth()]);
 }
 
 function greetings() {
 	let h = DATE.getHours();
 	let message;
 
-	if (h < 0 || h > 23)
-		return;
-
-	if (h >= 0 && h < 6) {
-		message = tradThis('Good Night');
-	} else if (h >= 6 && h < 12) {
+	if (h > 6 && h < 12) {
 		message = tradThis('Good Morning');
-	} else if (h >= 12 && h < 17) {
+	} else if (h >= 12 && h < 18) {
 		message = tradThis('Good Afternoon');
-	} else if (h >= 17 && h < 23) {
+	} else if (h >= 18 && h <= 23) {
 		message = tradThis('Good Evening');
+	} else {
+		message = tradThis('Good Night');
 	}
 
-	$('.greetings').text(message);
+	id("greetings").innerText = message;
 }
 
 function quickLinks() {
 
-	var stillActive = false, oldURL = false;
+	var stillActive = false;
+	var canRemove = false;
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
 	function initblocks() {
 
-		$(".linkblocks").empty();
+		var data = storage();
 
-		var data = localStorage;
-		var links = (data.links ? JSON.parse(data.links) : "");
+		if (data.links && data.links.length > 0) {
 
-		if (links) {
+			//1.6 fix
+			//if (data.links[0].icon.includes("https://besticon-demo.herokuapp.com")) {
+				//oldFaviconFix();
+			//}
 
-			for (var i = 0; i < links.length; i++) {
-				appendblock(links[i]);
+			for (var i = 0; i < data.links.length; i++) {
+				appendblock(data.links[i], i, data.links);
+			}
+		}
+
+		id("interface").onmousedown = function stopwiggle(e) {
+
+			//si c'est wiggly, accepte de le déwiggler
+			if (canRemove) {
+
+				var isStoppable = true;
+				var parent = e.target;
+
+				while (parent !== null) {
+
+					//console.log(parent);
+					parent = parent.parentElement;
+					if (parent && parent.id === "linkblocks") isStoppable = false;
+				}
+
+				if (isStoppable) wiggle(this, false);
 			}
 		}
 	}
 
-	//rajoute l'html d'un bloc avec toute ses valeurs et events
-	function appendblock(arr) {
+	function appendblock(arr, index, links) {
+
+		//console.log(arr)
+		var icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
 
 		//le DOM du block
-		var b = "<div class='block_parent'><div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + arr.icon + "'></div><span>" + arr.title + "</span></div></div>";
+		var b = "<div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + icon + "'></div><span>" + arr.title + "</span></div>";
 
-		$(".linkblocks").append(b);
+		//ajoute un wrap
+		var block_parent = document.createElement('div');
+		block_parent.setAttribute("class", "block_parent");
+		block_parent.innerHTML = b;
+
+		//l'ajoute au dom
+		id("linkblocks").appendChild(block_parent);
+
+		//met les events au dernier elem rajouté
+		addEvents(id("linkblocks").lastElementChild);
+
+		//si online et l'icon charge, en rechercher une
+		if (window.navigator.onLine && icon === "src/images/loading.gif")
+			addIcon(id("linkblocks").lastElementChild, arr, index, links);
 	}
 
-	//affiche le bouton pour suppr le link
-	function showRemoveLink() {
+	function addEvents(elem) {
 
-		var remTimeout;
-		var canRemove = false;
-		var mobile = mobilecheck();
+		//wow
+		var remove = elem.firstElementChild.firstElementChild.firstElementChild;
 
-		//si mobile, un simple hover ative le remove
-		//sinon il faut appuyer sur le block
-		var eventEnter = (mobile ? "contextmenu" : "mousedown");
-
-		function displaywiggle() {
-
-			$(".block").find(".remove").addClass("visible");
-			$(".block").addClass("wiggly");
-			$(this).focus();
-
-			canRemove = true;	
+		elem.oncontextmenu = function startwiggle(e) {
+			event.preventDefault();
+			wiggle(this, true);
 		}
 
-		function stopwiggle() {
-			clearTimeout(remTimeout);
+		elem.onmouseup = function test(e) {
+			openlink(this, e);
+		}
 
-			$(".block").find(".remove").removeClass("visible");
-			$(".block").removeClass("wiggly");
+		remove.onmouseup = function remBlock(e) {
+			removeblock(this, e)
+		}
+	}
 
+	function wiggle(that, on) {
+
+		/*console.log(that)
+		console.log(on)*/
+
+		var bl = cl("block");
+
+		if (on) {
+			for (var i = 0; i < bl.length; i++) {
+				bl[i].setAttribute("class", "block wiggly");
+				bl[i].children[0].children[0].setAttribute("class", "remove visible");
+			}
+			canRemove = true;
+		} else {
+			for (var i = 0; i < bl.length; i++) {
+				bl[i].setAttribute("class", "block");
+				bl[i].children[0].children[0].setAttribute("class", "remove");
+			}
 			canRemove = false;
 		}
+	}
 
-		//j'appuie sur le block pour afficher le remove
-		$(".linkblocks").on("mousedown", ".block", function() {
+	function removeblock(that, e) {
 
-			remTimeout = setTimeout(function() {
-				displaywiggle();
-			}, 800);
-		});
+		//console.log(that);
+		var bp = that.parentElement.parentElement.parentElement;
+		var sibling = bp;
+		var count = -2;
 
-		//click droit pour afficher le remove
-		$(".linkblocks").on("contextmenu", ".block", function(event) {
+		//trouve l'index avec le nombre d'elements dans linkblocks
+		while (sibling.id !== "hiddenlink" || count === 16) {
 
-			event.preventDefault();
-			displaywiggle();
-		});
-
-		//je sors de la zone de linkblocks pour enlever le remove
-		$(document).bind("mousedown", function (e) {
-
-			// If the clicked element is not the menu
-			if (!$(e.target).parents(".linkblocks").length > 0) {
-
-				stopwiggle();
-			}
-		});
-
-
-		//c'est l'event qui active le block comme un lien <a>
-		//je l'ai mis la à cause du clearTimeout
-		$(".linkblocks").on("click", ".block", function(e) {
-
-			clearTimeout(remTimeout);
-
-			if (canRemove === false) {
-				window.location = $(this).attr("source");
-			}
-		});
-
-
-
-
-		function removeblock(i) {
-
-			var data = localStorage;
-			var storagelinks = (data.links ? JSON.parse(data.links) : null);
-
-			//si on supprime un block quand la limite est atteinte
-			//réactive les inputs
-			if (storagelinks.length === BLOCK_LIMIT) {
-
-				var input = $("input[name='url']");
-				$(input).each(function() {
-					$(this).attr("placeholder", "URL");
-					$(this).removeAttr("disabled");
-				});
-			}
-
-			//enleve le html du block
-			var block = $(".linkblocks")[0].children[i];
-			$(block).addClass("removed");
-			
-			setTimeout(function() {
-
-				$(block).remove();
-				//enleve linkblocks si il n'y a plus de links
-				if (storagelinks.length === 1) {
-					$(".interface .linkblocks").css("visibility", "hidden");
-					searchbarFlexControl(data.searchbar, 0);
-				}
-			}, 200);
-			
-			
-			//coupe en 2 et concat sans le link a remove
-			function ejectIntruder(arr) {
-				
-				return arr.slice(0, i).concat(arr.slice(i + 1));
-			}
-			
-			var links = storagelinks;
-			localStorage.links = JSON.stringify(ejectIntruder(links));
+			sibling = sibling.previousSibling;
+			count++;
 		}
 
+		var data = storage();
 
-		//event de suppression de block
-		//prend l'index du parent du .remove clické
-		$(".linkblocks").on("click", ".remove", function() {
-			
-			var index = $(this).parent().parent().parent().index();
-			(canRemove ? removeblock(index) : "");
-		});
+		function ejectIntruder(arr) {
+
+			if (arr.length === 1) {
+				return []
+			}
+
+			if (count === 0) {
+
+				arr.shift();
+				return arr;
+			}
+			else if (count === arr.length) {
+
+				arr.pop();
+				return arr;
+			}
+			else {
+
+				arr.splice(count, 1);
+				return arr;
+			}
+		}
+
+		var linkRemd = ejectIntruder(data.links);
+
+		//si on supprime un block quand la limite est atteinte
+		//réactive les inputs
+		if (linkRemd.length === BLOCK_LIMIT - 1) {
+
+			id("i_url").removeAttribute("disabled");
+		}
+
+		//enleve le html du block
+		var block_parent = id("linkblocks").children[count + 1];
+		block_parent.setAttribute("class", "block_parent removed");
+		
+		setTimeout(function() {
+
+			id("linkblocks").removeChild(block_parent);
+
+			//enleve linkblocks si il n'y a plus de links
+			if (linkRemd.length === 0) {
+				id("linkblocks").style.visibility = "hidden";
+				searchbarFlexControl(data.searchbar, 0);
+			}
+		}, 200);
+
+		storage("links", linkRemd);
+	}
+
+	function addIcon(elem, arr, index, links) {
+
+		function faviconXHR(url) {
+
+			return new Promise(function(resolve, reject) {
+
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', url, true);
+
+				xhr.onload = function() {
+
+					if (xhr.status >= 200 && xhr.status < 400) {
+						resolve(JSON.parse(this.response))
+					}
+				}
+
+				xhr.onerror = reject;
+				xhr.send()
+			})
+		}
+
+		function filterIcon(json) {
+			//prend le json de favicongrabber et garde la meilleure
+
+			var s = 0;
+			var a, b = 0;
+
+			//garde la favicon la plus grande
+			for (var i = 0; i < json.icons.length; i++) {	
+
+				if (json.icons[i].sizes) {
+
+					a = parseInt(json.icons[i].sizes);
+
+					if (a > b) {
+						s = i;
+						b = a;
+					}
+
+				//si il y a une icone android ou apple, la prendre direct
+				} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
+					return json.icons[i].src;
+				}
+			}
+
+			//si l'url n'a pas d'icones, utiliser besticon
+			if (json.icons.length === 0) {
+				return "https://besticon.herokuapp.com/icon?url=" + json.domain + "&size=80"
+			} else {
+				return json.icons[s].src;
+			}
+		}
+
+		//prend le domaine de n'importe quelle url
+		var a = document.createElement('a');
+		a.href = arr.url;
+		var hostname = a.hostname;
+
+		faviconXHR("https://favicongrabber.com/api/grab/" + hostname).then((icon) => {
+
+			var img = elem.firstElementChild.firstElementChild.children[1];
+			var icn = filterIcon(icon);
+			img.src = icn;
+
+			links[index].icon = icn;
+			storage("links", links);
+		})
 	}
 
 	function linkSubmission() {
 
-		function submissionError(str) {
-
-			oldURL = str;
-			var input = $("input[name='url']");
+		function submissionError(erreur) {
 
 			//affiche le texte d'erreur
-			$("p.wrongURL").css("display", "block");
-			$("p.wrongURL").css("opacity", 1);
-
-			//l'enleve si le user modifie l'input
-			$(input).keypress(function() {
-
-				if ($(this).val() !== oldURL) {
-					$("p.wrongURL").css("opacity", 0);
-					setTimeout(function() {
-						$("p.wrongURL").css("display", "none");
-					}, 200);
-				}
-			});
+			id("wrongURL").innerText = erreur[1];
+			id("wrongURL").style.display = "block";
+			id("wrongURL").style.opacity = 1;
+			
+			setTimeout(function() {
+				id("wrongURL").style.display = "none";
+			}, 2000);		
 		}
 
 		function filterUrl(str) {
 
-			var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+			//var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
+			//var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+			var reg = new RegExp("^(http|https)://", "i");
 
 			//config ne marche pas
 			if (str.startsWith("about:") || str.startsWith("chrome://")) {
-				return false;
+				return [str, "Bonjourr doesn't have permissions to access browser urls"];
+			}
+
+			if (str.startsWith("file://")) {
+				return str;
 			}
 
 			//premier regex pour savoir si c'est http
@@ -552,37 +506,30 @@ function quickLinks() {
 
 			//deuxieme pour savoir si il est valide (avec http)
 			if (str.match(reg)) {
-				return str.match(reg)[0];
+				return str.match(reg).input;
 			} else {
-				return false;
+				return [str, "URL not valid"];
 			}
-		}
-
-		function fetchIcon(str) {
-
-			//prend le domaine de n'importe quelle url
-			var a = document.createElement('a');
-			a.href = str;
-			var hostname = a.hostname;
-
-			return "https://besticon-demo.herokuapp.com/icon?url=" + hostname + "&size=80";
 		}
 
 		function saveLink(lll) {
 
+			slow(id("i_url"));
+
+			//remet a zero les inputs
+			id("i_title").value = "";
+			id("i_url").value = "";
+
 			var full = false;
-
-			var data = localStorage;
-			var storagelinks = (data.links ? JSON.parse(data.links) : null);
-
+			var data = storage();
 			var arr = [];
 
 			//array est tout les links + le nouveau
-			if (storagelinks && storagelinks.length > 0) {
+			if (data.links && data.links.length > 0) {
 
-				if (storagelinks.length < BLOCK_LIMIT - 1) {
+				if (data.links.length < BLOCK_LIMIT - 1) {
 
-					arr = storagelinks;
+					arr = data.links;
 					arr.push(lll);
 
 				} else {
@@ -592,78 +539,300 @@ function quickLinks() {
 			//array est seulement le link
 			} else {
 				arr.push(lll);
-				$(".linkblocks").css("visibility", "visible");
+				id("linkblocks").style.visibility = "visible";
 				searchbarFlexControl(data.searchbar, 1);
 			}
 			
+			//si les blocks sont moins que 16
 			if (!full) {
-
-				localStorage.links = JSON.stringify(arr);
-				appendblock(lll);
-
+				storage("links", arr);
+				//console.log(lll);
+				appendblock(lll, arr.length - 1, arr);
 			} else {
 
-				//desactive tout les input url (fonctionne pour popup du coup)
-				var input = $("input[name='url']");
-				$(input).each(function() {
-					$(this).attr("placeholder", "Quick Links full");
-					$(this).attr("disabled", "disabled");
-				});
+				//desactive tout les input url
+				id("i_url").setAttribute("disabled", "disabled");
+				submissionError([id("i_url").value, "No more than 16 links"]);
 			}
 		}
 
 		//append avec le titre, l'url ET l'index du bloc
-		var title = $(".addlink input[name='title']").val();
-		var url = $(".addlink input[name='url']").val();
+		var title = id("i_title").value;
+		var url = id("i_url").value;
 		var filtered = filterUrl(url);
 
 		//Titre trop long, on rajoute "...""
 		if (title.length > TITLE_LIMIT) title = title.slice(0, TITLE_LIMIT) + "...";
 
 		//si l'url filtré est juste
-		if (filtered) {
+		if (typeof(filtered) !== "object" && filtered) {
+
+
 			//et l'input n'a pas été activé ya -1s
 			if (!stillActive) {
 
 				var links = {
 					title: title,
 					url: filtered,
-					icon: fetchIcon(filtered)
+					icon: ""
 				}
 
 				saveLink(links);
-				slow($(".addlink input[name='url']"));
+			}
 
-				//remet a zero les inputs
-				$(".addlink input[name='title']").val("");
-				$(".addlink input[name='url']").val("");
-			}	
 		} else {
-			if (url.length > 0) submissionError(url);
+			if (url.length > 0) submissionError(filtered);
 		}
 	}
 
-	$('input[name="title"]').on('keypress', function(e) {
-		if (e.which === 13) linkSubmission();
-	});
+	function openlink(that, e) {
 
-	$('input[name="url"]').on('keypress', function(e) {
-		if (e.which === 13) linkSubmission();
-	});
+		if (canRemove) {
 
-	$(".submitlink").click(function() {
+			var source = that.children[0].getAttribute("source");
+			var data = storage();
+
+			if (e.which === 3 || that.children[0].getAttribute("class") === "block wiggly") return false;
+
+			if (data.linknewtab) {
+
+				chrome.tabs.create({
+					url: source
+				});
+
+			} else {
+
+				if (e.which === 2) {
+
+					chrome.tabs.create({
+						url: source
+					});
+
+				} else {
+
+					id("hiddenlink").setAttribute("href", source);
+					id("hiddenlink").setAttribute("target", "_self");
+					id("hiddenlink").click();
+				}
+			}
+		}
+	}
+
+	id("i_title").onkeypress = function(e) {
+		if (e.which === 13) linkSubmission();
+	}
+
+	id("i_url").onkeypress = function(e) {
+		if (e.which === 13) linkSubmission();
+	}
+
+	id("submitlink").onmouseup = function() {
 		linkSubmission();
-	});
+	}
+
+	id("i_linknewtab").onchange = function() {
+
+		if (this.checked) {
+			storage("linknewtab", true);
+			id("hiddenlink").setAttribute("target", "_blank");
+		} else {
+			storage("linknewtab", false);
+			id("hiddenlink").setAttribute("target", "_blank");
+		}
+	}
 
 	initblocks();
-	showRemoveLink();
 }
 
 function weather() {
 
-	//init la requete;
-	var req;
+	function cacheControl() {
+
+		var data = storage();
+		var now = Math.floor(DATE.getTime() / 1000);
+		var param = (data.weather ? data.weather : "");
+
+		if (data.weather && data.weather.lastCall) {
+
+			
+			//si weather est vieux d'une demi heure (1800s)
+			//ou si on change de lang
+			//faire une requete et update le lastcall
+			if (sessionStorage.lang || now > data.weather.lastCall + 1800) {
+
+				request(param, "current");
+
+				//si la langue a été changé, suppr
+				if (sessionStorage.lang) sessionStorage.removeItem("lang");
+
+			} else {
+
+				dataHandling(param.lastState);
+			}
+
+			//high ici
+			if (data.weather && data.weather.fcDay === (new Date).getDay()) {
+				id("temp_max").innerText = data.weather.fcHigh + "°";
+			} else {
+				request(data.weather, "forecast");
+			}
+
+		} else {
+
+			//initialise a Paris + Metric
+			//c'est le premier call, requete + lastCall = now
+			initWeather();
+		}
+	}
+
 	
+	function initWeather() {
+
+		var param = {
+			city: "Paris",
+			ccode: "FR",
+			location: false,
+			unit: "metric"
+		};
+
+		navigator.geolocation.getCurrentPosition((pos) => {
+
+			param.location = [];
+
+			//update le parametre de location
+			param.location.push(pos.coords.latitude, pos.coords.longitude);
+			storage("weather", param);
+
+			id("i_geol").checked = true;
+			id("i_geol").removeAttribute("disabled");
+			id("sett_city").setAttribute("class", "city hidden");
+
+			storage("weather", param);
+
+			request(param, "current");
+			request(param, "forecast");
+			
+		}, (refused) => {
+
+			param.location = false;
+
+			//désactive geolocation if refused
+			id("i_geol").checked = false;
+			id("i_geol").removeAttribute("disabled");
+
+			storage("weather", param);
+
+			request(param, "current");
+			request(param, "forecast");
+		});
+	}
+
+	
+	function request(arg, wCat) {
+
+		
+		function urlControl(arg, forecast) {
+
+			var url = 'https://api.openweathermap.org/data/2.5/';
+
+
+			if (forecast)
+				url += "forecast?appid=" + atob(WEATHER_API_KEY[0]);
+			else
+				url += "weather?appid=" + atob(WEATHER_API_KEY[1]);
+
+
+			//auto, utilise l'array location [lat, lon]
+			if (arg.location) {
+				url += "&lat=" + arg.location[0] + "&lon=" + arg.location[1];
+			} else {
+				url += "&q=" + encodeURI(arg.city) + "," + arg.ccode;
+			}
+
+			url += '&units=' + arg.unit + '&lang=' + localStorage.lang;
+
+			return url;
+		}
+
+		
+		function weatherResponse(parameters, response) {
+
+			//sauvegarder la derniere meteo
+			var now = Math.floor(DATE.getTime() / 1000);
+			var param = parameters;
+			param.lastState = response;
+			param.lastCall = now;
+			storage("weather", param);
+
+			//la réponse est utilisé dans la fonction plus haute
+			dataHandling(response);
+		}
+
+		
+		function forecastResponse(parameters, response) {
+
+			function findHighTemps(d) {
+			
+				var i = 0;
+				var newDay = new Date(d.list[0].dt_txt).getDay();
+				var currentDay = newDay;
+				var arr = [];
+				
+
+				//compare la date toute les 3h (list[i])
+				//si meme journée, rajouter temp max a la liste
+
+				while (currentDay == newDay && i < 10) {
+
+					newDay = new Date(d.list[i].dt_txt).getDay();
+					arr.push(d.list[i].main.temp_max);
+
+					i += 1;
+				}
+
+				var high = Math.floor(Math.max(...arr));
+
+				//renvoie high
+				return [high, currentDay];
+			}
+
+			var fc = findHighTemps(response);
+
+			//sauvegarder la derniere meteo
+			var param = parameters;
+			param.fcHigh = fc[0];
+			param.fcDay = fc[1];
+			storage("weather", param);
+
+			id("temp_max").innerText = param.fcHigh + "°";
+		}
+
+		var url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
+
+		var request_w = new XMLHttpRequest();
+		request_w.open('GET', url, true);
+
+		request_w.onload = function() {
+			
+			var resp = JSON.parse(this.response);
+
+			if (request_w.status >= 200 && request_w.status < 400) {
+
+				if (wCat === "current") {
+					weatherResponse(arg, resp);
+				}
+				else if (wCat === "forecast") {
+					forecastResponse(arg, resp);
+				}
+
+			} else {
+				submissionError(resp.message);
+			}
+		}
+
+		request_w.send();
+	}	
+
 	function dataHandling(data) {
 
 		//si le soleil est levé, renvoi jour
@@ -712,13 +881,11 @@ function weather() {
 			}
 		}
 
-
 		//pour la description et temperature
 		//Rajoute une majuscule à la description
 		var meteoStr = data.weather[0].description;
 		meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1);
-		$(".w_desc_meteo").text(meteoStr + ".");
-
+		id("desc").innerText = meteoStr + ".";
 
 
 		//si c'est l'après midi (apres 12h), on enleve la partie temp max
@@ -727,10 +894,8 @@ function weather() {
 		if (HOURS < 12) {
 
 			//temp de desc et temp de widget sont pareil
-
 			dtemp = wtemp = Math.floor(data.main.temp) + "°";
-			$("div.hightemp").css("display", "block");
-			$(".w_desc_temp_max").text(Math.floor(data.main.temp_max) + "°");
+			id("temp_max_wrap").setAttribute("class", "hightemp shown");
 
 		} else {
 
@@ -740,282 +905,174 @@ function weather() {
 			dtemp = wtemp + ".";
 		}
 
-		$(".w_desc_temp").text(dtemp);
-		$(".w_widget_temp").text(wtemp);
+		id("temp").innerText = dtemp;
+		id("widget_temp").innerText = wtemp;
 		
 		if (data.icon) {
 
-			$(".w_icon").attr("src", data.icon);
+			id("widget").setAttribute("src", data.icon);
 			
 		} else {
 			//pour l'icone
 			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
 			var weather_id = imgId(data.weather[0].id);
 	 		var icon_src = "src/images/weather/" + d_n + "/" + weather_id + ".png";
-	 		$(".w_icon").attr("src", icon_src);
-
-	 		//sauv l'icone dans wLastState
-	 		data.icon = icon_src;
-	 		localStorage.wLastState = JSON.stringify(data);
+	 		id("widget").setAttribute("src", icon_src);
 		}
 
-		$(".w_icon").css("opacity", 1);
+		id("widget").setAttribute("class", "w_icon shown");
 	}
 
-	function weatherRequest(arg) {
+	function submissionError(error) {
 
-		//a changer
-		var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + WEATHER_API_KEY;
+		//affiche le texte d'erreur
+		id("wrongCity").innerText = error;
+		id("wrongCity").style.display = "block";
+		id("wrongCity").style.opacity = 1;
 
-		//auto, utilise l'array location [lat, lon]
-		if (arg.geol_lat && arg.geol_long) {
-			url += "&lat=" + arg.geol_lat + "&lon=" + arg.geol_long;
-		} else {
-			url += "&q=" + encodeURI(arg.city);
+		//l'enleve si le user modifie l'input
+		id("i_city").onkeydown = function() {
+
+			id("wrongCity").style.opacity = 0;
+			setTimeout(function() {
+				id("wrongCity").style.display = "none";
+			}, 200);
 		}
-
-		url += '&units=' + arg.unit + '&lang=' + arg.lang;
-
-
-		var request_w = new XMLHttpRequest();
-		request_w.open('GET', url, true);
-
-		request_w.onload = function() {
-			
-			var data = JSON.parse(this.response);
-
-			if (request_w.status >= 200 && request_w.status < 400) {
-
-				//la réponse est utilisé dans la fonction plus haute
-				dataHandling(data);
-
-				//sauvegarde la derniere meteo
-				localStorage.wLastState = JSON.stringify(data);
-
-				$("p.wrongCity").css("opacity", 0);
-				return true;
-
-			} else {
-				submissionError(arg.city);
-			}
-		}
-
-		request_w.send();
-	}
-
-	function initWeather() {
-		req.city = "Paris";
-		req.unit = "metric";
-
-		weatherRequest(req);
-
-		localStorage.weather_city = "Paris";
-		localStorage.weather_unit = "metric";
-	}
- 
-	function apply() {
-
-		//enleve les millisecondes
-		var now = Math.floor(DATE.getTime() / 1000);
-		var lastCall = parseInt(localStorage.wlastCall);
-		var lastState = localStorage.wLastState;
-
-		//1.0.7 --> 1.1.0 bug corrigé
-		try {
-			lastState = JSON.parse(lastState);
-		} catch(err) {
-			lastCall = undefined;
-			lastState = "";
-		}
-
-		if (lastState) dataHandling(lastState);
-
-		var data = localStorage;
-
-		req = {
-			city: data.weather_city,
-			unit: data.weather_unit,
-			geol_lat: data.weather_geol_lat,
-			geol_long: data.weather_geol_long,
-			lang: data.lang
-		};
-
-		if (lastCall) {
-
-			//si weather est vieux d'une demi heure (1800s)
-			//faire une requete et update le lastcall
-			if (now > lastCall + 1800) {
-				weatherRequest(req);
-				localStorage.wlastCall = now;
-			} else {
-				dataHandling(lastState);
-			}
-
-		} else {
-
-			//initialise a Paris + Metric
-			//c'est le premier call, requete + lastCall = now
-			initWeather();
-			localStorage.wlastCall = now;
-		}
-	}
-
-	function submissionError(str) {
-
-			oldCity = str;
-			var input = $(".change_weather input[name='city']");
-
-			//affiche le texte d'erreur
-			$("p.wrongCity").css("display", "block");
-			$("p.wrongCity").css("opacity", 1);
-
-			//l'enleve si le user modifie l'input
-			$(input).keyup(function() {
-
-				if ($(this).val() !== oldCity) {
-					$("p.wrongCity").css("opacity", 0);
-					setTimeout(function() {
-						$("p.wrongCity").css("display", "none");
-					}, 200);
-				}
-			});
 	}
 
 	function updateCity() {
 
-		var city = $(".change_weather input[name='city']");
-		req.city = city[0].value;
+		var data = storage();
+		var param = data.weather;
 
-		if (req.city.length < 2) return "";
+		param.ccode = id("i_ccode").value;
+		param.city = id("i_city").value;
 
-		weatherRequest(req);
+		if (param.city.length < 2) return false;
 
-		localStorage.weather_city = req.city;
+		request(param, "current");
+		request(param, "forecast");
 
-		city.attr("placeholder", req.city);
-		city.val("");
-		city.blur();
+		id("i_city").setAttribute("placeholder", param.city);
+		id("i_city").value = "";
+		id("i_city").blur();
+
+		storage("weather", param);	
 	}
 
 	function updateUnit(that) {
 
-		if ($(that).is(":checked")) {
-			req.unit = "imperial";
+		var data = storage();
+		var param = data.weather;
+
+		if (that.checked) {
+			param.unit = "imperial";
 		} else {
-			req.unit = "metric";
+			param.unit = "metric";
 		}
 
-		weatherRequest(req);
+		request(param, "current");
+		request(param, "forecast");
 		
-		localStorage.weather_unit = req.unit;
+		storage("weather", param);
 	}
 
-	//automatise la meteo
-	//demande la geoloc et enleve l'option city
 	function updateLocation(that) {
 
-		if ($(that).is(":checked")) {
+		var data = storage();
+		var param = data.weather;
+		param.location = [];
 
-			$(that).attr("disabled", "");
+		if (that.checked) {
+
+			that.setAttribute("disabled", "");
 
 			navigator.geolocation.getCurrentPosition((pos) => {
 
-				req.geol_lat = pos.coords.latitude
-				req.geol_long = pos.coords.longitude;
-				localStorage.weather_geol_lat = req.geol_lat;
-				localStorage.weather_geol_long = req.geol_long;
+				//update le parametre de location
+				param.location.push(pos.coords.latitude, pos.coords.longitude);
+				storage("weather", param);
 
-				weatherRequest(req);
+				//request la meteo
+				request(param, "current");
+				request(param, "forecast");
 
-				$(".change_weather .city").css("display", "none");
-				$(that).removeAttr("disabled");
+				//update le setting
+				id("sett_city").setAttribute("class", "city hidden");
+				that.removeAttribute("disabled");
 				
 			}, (refused) => {
 
 				//désactive geolocation if refused
-				$(that)[0].checked = false;
-				$(that).removeAttr("disabled");
+				that.checked = false
+				that.removeAttribute("disabled");
 
-				if (!req.city) initWeather();
+				if (!param.city) initWeather();
 			});
 
 		} else {
 
-			localStorage.removeItem("weather_geol_lat");
-			localStorage.removeItem("weather_geol_long");
-			req.geol_lat, req.geol_long = false;
-			$(".change_weather .city").css("display", "block");
+			id("sett_city").setAttribute("class", "city");
 
-			weatherRequest(req);
+			id("i_city").setAttribute("placeholder", param.city);
+			id("i_ccode").value = param.ccode;
+
+			param.location = false;
+			storage("weather", param);
+			
+			request(param, "current");
+			request(param, "forecast");
 		}
 	}
 
 	//TOUT LES EVENTS
 
-	$(".submitw_city").click(function() {
+	id("b_city").onmouseup = function() {
 		if (!stillActive) {
 			updateCity();
 			slow(this);
 		}
-		
-	});
+	}
 
-	$('.change_weather input[name="city"]').on('keypress', function(e) {
+	id("i_city").onkeypress = function(e) {
 		if (!stillActive && e.which === 13) {
 			updateCity();
 			slow(this);
 		}
-	});
+	}
 
-	$(".units input").change(function() {
+	id("i_units").onchange = function() {
 		if (!stillActive) {
 			updateUnit(this);
 			slow(this);
 		}
-	});
+	}
 
-
-	$(".w_auto input").change(function() {
+	id("i_geol").onchange = function() {
 		if (!stillActive) {
 			updateLocation(this);
 		}
-	});
+	}
 
-	$(".lang").change(function() {
-		if (!stillActive) {
-			req.lang = this.value;
-			weatherRequest(req);
-			searchbar();
-			slow(this);
-		}
-	});
-
-
-	//popup checkboxes enables settings checkboxes
-	$(".popup .units input").change(function() {
-		$(".settings .units input")[0].checked = $(this)[0].checked;
-	});
-
-	$(".popup .w_auto input").change(function() {
-		$(".settings .w_auto input")[0].checked = $(this)[0].checked;
-	});
-
-
-	apply();
+	cacheControl();
 }
 
 function imgCredits(src, type) {
 
+	if (type === "default" || type === "dynamic") {
+		id("credit").setAttribute("class", "visible");
+	}
 	if (type === "custom") {
-		$("div.credit a").css("opacity", 0);
+		id("credit").setAttribute("class", "hidden");
+		return false;
 	}
 
 	for (var i = 0; i < CREDITS.length; i++) {
 
-		if (src.includes(CREDITS[i].id)) {
-			$("div.credit a").attr("href", CREDITS[i].url);
-			$("div.credit a").text(CREDITS[i].title + ", " + CREDITS[i].artist);
-			$("div.credit a").css("opacity", 1);
+		if (src && src.includes(CREDITS[i].id)) {
+			id("credit").setAttribute("href", CREDITS[i].url);
+			id("credit").innerText = CREDITS[i].title + ", " + CREDITS[i].artist;
+			id("credit").removeAttribute("class");
 
 			return true;
 		}
@@ -1024,100 +1081,60 @@ function imgCredits(src, type) {
 
 function imgBackground(val) {
 	if (val) {
-		$(".background").css("background-image", "url(" + val + ")");
+		id("background").style.backgroundImage = "url(" + val + ")";
 	} else {
-		return $(".background").css("background-image");
+		return id("background").style.backgroundImage;
 	}
-}
-
-function optimizedBgURL(source, blur) {
-
-	//remplace le répertoire de l'image
-	//en fonction du blur et du ratio pixel
-	//from le repertoire actuel à celui voulu
-	var dirFrom, dirTo;
-	var res = window.devicePixelRatio * screen.height;
-
-	if (parseInt(blur) > 5) {
-
-		if (source.includes("/default/")) {
-			dirFrom = "default";
-		}
-		else if (source.includes("/large/")) {
-			dirFrom = "large";
-		}
-		
-		dirTo = "blur";
-
-	} else if (parseInt(blur) < 5 || blur === "none") {
-
-		dirFrom = "blur";
-
-		if (res > 950) {	
-			dirTo = "large";
-		} else {
-			dirTo = "default";
-		}
-	}
-
-	if (res > 950 && source.includes("/default/")) {
-		
-		dirFrom = "default";
-		dirTo = "large";
-	}
-
-	source = source.replace(dirFrom, dirTo);
-	return source;
 }
 
 function applyBackground(src, type, blur) {
 
 	//enleve les inputs selectionnés suivent le type
 	if (type === "default") {
-		src = optimizedBgURL(src, blur);
-
-		$("div.dynamic_bg input").prop("checked", false);
-		$("input[name='background_file']")[0].value = "";
+		id("i_dynamic").checked = false;
+		id("i_bgfile").value = "";
 	}
 	else if (type === "custom") {
-		$("div.dynamic_bg input").prop("checked", false);
-		$(".imgpreview").removeClass("selected");
+		id("i_dynamic").checked = false;
+		remSelectedPreview();
+		imgCredits(null, type);
 	}
 	else if (type === "dynamic") {
-		$("input[name='background_file']")[0].value = "";
-		$(".imgpreview").removeClass("selected");
+		remSelectedPreview();
 	}
-
-	imgCredits(src, type);
+	
 	imgBackground(src);
 	if (blur) blurThis(blur);
 }
-
+ 
 function initBackground() {
 
-	var data = localStorage;
+	var data = storage();
 
 	//si storage existe, utiliser storage, sinon default
-	var image = (data.background_image ? data.background_image : "src/images/backgrounds/blur/avi-richards-beach.jpg");
+	var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
 	var type = (data.background_type ? data.background_type : "default");
-	var blur = (data.background_blur ? data.background_blur : 25);
+	var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
 
 	//si custom, faire le blob
 	if (data.background_type === "custom") {
-		
-		var bblob = (data.background_blob ? blob(JSON.parse(data.background_blob)) : image);
-		applyBackground(bblob, type, blur);
-
-	} else {
-
-		applyBackground(image, type, blur);
+		//reste local !!!!
+		applyBackground(blob(data.background_blob), type);	
+	} 
+	else if (data.background_type === "dynamic") {
+		dynamicBackground("init")
+	}
+	else {
+		applyBackground(image, type);
 	}
 	
+	imgCredits(image, type);
+	blurThis(blur, true);
 
 	//remet les transitions du blur
 	setTimeout(function() {
-		$(".background").css("transition", "filter .2s");
-	}, 200);	
+		id("background").style.transition = "filter .2s";
+	}, 500);
 }
 
 function blob(donnee, set) {
@@ -1156,9 +1173,10 @@ function blob(donnee, set) {
 
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
-		localStorage.background_blob = JSON.stringify(base);
-		localStorage.background_image = blobUrl;
-		localStorage.background_type = "custom";
+		storage("background_blob", base); //reste local !!!!
+		storage("background_image", blobUrl);
+		storage("background_type", "custom");
+
 	}
 
 	return blobUrl;
@@ -1186,144 +1204,155 @@ function defaultBg() {
 
 	var bgTimeout, oldbg;
 
-	//pour preview le default background
-	$(".choosable_backgrounds").mouseenter(function() {
+	id("default_background").onmouseenter = function() {
 		oldbg = imgBackground().slice(4, imgBackground().length - 1);
-	});
+	}
 
-	//pour arreter de preview le default background
-	$(".choosable_backgrounds").mouseleave(function() {
+	id("default_background").onmouseleave = function() {
 		clearTimeout(bgTimeout);
 		imgBackground(oldbg);
-	});
+	}
 
-	//pour preview le default background
-	$(".imgpreview img").mouseenter(function() {
+	function getSource(that) {
+		var src = that.children[0].getAttribute("src");
+		if (id("i_retina").checked) src = src.replace("/backgrounds/", "/backgrounds/4k/");
+		if (!id("i_retina").checked) src = src.replace("/4k", "");
 
-		if (bgTimeout) clearTimeout(bgTimeout);
+		return src
+	}
 
-		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
-		var source = optimizedBgURL(this.attributes.src.value, blur);
+	function imgEvent(state, that) {
 
-		bgTimeout = setTimeout(function() {
+		if (state === "enter") {
+			if (bgTimeout) clearTimeout(bgTimeout);
 
-			//timeout de 300 pour pas que ça se fasse accidentellement
-			//prend le src de la preview et l'applique au background
-			imgBackground(source);
-			imgCredits(source);
+			var src = getSource(that);
 
-		}, 300);
-	});
+			bgTimeout = setTimeout(function() {
 
-	$(".imgpreview img").mouseleave(function() {
-		clearTimeout(bgTimeout);
-	});
+				//timeout de 300 pour pas que ça se fasse accidentellement
+				//prend le src de la preview et l'applique au background
+				imgBackground(src);
 
+			}, 300);
 
-	//pour choisir un default background
-	$(".imgpreview img").click(function() {
+		} else if (state === "leave") {
 
-		//prend le src de la preview et l'applique au background
-		var blur = $(".background").css("filter").replace("blur(", "").replace("px)", "");
-		var source = optimizedBgURL(this.attributes.src.value, blur);
+			clearTimeout(bgTimeout);
 
-	    applyBackground(source, "default");
+		} else if (state === "mouseup") {
 
-		clearTimeout(bgTimeout);
-		oldbg = source;
+			var src = getSource(that);
 
-		//enleve selected a tout le monde et l'ajoute au bon
-		$(".imgpreview").removeClass("selected");
-		//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
-		var tempAttr = $(this)[0].parentElement.getAttribute("class");
-		$(this)[0].parentElement.setAttribute("class", tempAttr + " selected");
+		    applyBackground(src, "default");
+		    imgCredits(src, "default");
 
-		localStorage.background_image = source;
-		localStorage.background_type = "default";
-	});
+			clearTimeout(bgTimeout);
+			oldbg = src;
+
+			//enleve selected a tout le monde et l'ajoute au bon
+			remSelectedPreview();
+			//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
+			var tempAttr = that.getAttribute("class");
+			that.setAttribute("class", tempAttr + " selected");
+
+			storage("background_image", src);
+			storage("background_type", "default");
+		}
+	}
+
+	var imgs = cl("imgpreview");
+	for (var i = 0; i < imgs.length; i++) {
+
+		imgs[i].onmouseenter = function() {imgEvent("enter", this)}
+		imgs[i].onmouseleave = function() {imgEvent("leave", this)}
+		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
+	}
+}
+defaultBg();
+
+function retina(check) {
+
+	var b = id("background").style.backgroundImage.slice(4, imgBackground().length - 1);
+
+	if (!check && b.includes("/4k")) {
+		b = b.replace("/4k", "");
+		imgBackground(b);
+		storage("background_image", b);
+		storage("retina", false);
+	}
+
+	if (check && !b.includes("/4k")) {
+		b = b.replace("backgrounds/", "backgrounds/4k/");
+		imgBackground(b);
+		storage("background_image", b);
+		storage("retina", true);
+	}
 }
 
-function dynamicBackground() {
+function remSelectedPreview() {
+	let a = cl("imgpreview");
+	for (var i = 0; i < a.length; i++) {
 
-	$("div.dynamic_bg input").change(function() {
+		if (a[i].classList[1] === "selected")
+			a[i].setAttribute("class", "imgpreview")
+	}
+}
 
-	var data = localStorage;
+function dynamicBackground(state, input) {
 
-		if (this.checked) {
+	function apply(condition, init) {
 
-			//set un previous background si le user choisi de désactiver ce parametre
-			localStorage.previous_image = data.background_image;
-			localStorage.previous_type = data.background_type;
+		var data = storage();
+
+		if (condition) {
+
+			if (!init) {
+				//set un previous background si le user choisi de désactiver ce parametre
+				storage("previous_type", data.background_type);
+				storage("dynamic", true);
+				storage("background_type", "dynamic");
+			}
 
 			applyBackground(UNSPLASH, "dynamic");
-
-			localStorage.background_image = UNSPLASH;
-			localStorage.background_type = "dynamic";
+			imgCredits(UNSPLASH, "dynamic");
 
 			//enleve la selection default bg si jamais
-			$(".imgpreview").removeClass("selected");
+			remSelectedPreview();
 
 		} else {
 
-			if (data.previous_image) {
-				//previous background devient actuel
-				applyBackground(data.previous_image, data.previous_type);
+			storage("dynamic", false);
+			storage("background_type", data.previous_type);
 
-				localStorage.background_image = data.previous_image;
-				localStorage.background_type = data.previous_type;
-
-				//supprime pour faire de la place en cas de custom bg
-				localStorage.removeItem("previous_image");
-				localStorage.removeItem("previous_type");
-
-			} else {
-				//default bg
-				applyBackground("src/images/avi-richards-beach.jpg", "default", 25);
-
-				localStorage.background_image = optimizedBgURL("src/images/avi-richards-beach.jpg");
-				localStorage.background_type = "default";
-			}
-		}
-	});
-}
-
-function blurThis(val, choosing) {
-
-	var isDark = $("body").attr("class");
-	var url = imgBackground().slice(4, imgBackground().length - 1);
-	val = parseInt(val);
-
-	if (val > 0) {
-
-		$('.background').css("filter", 'blur(' + val + 'px)');
-		if (choosing) imgBackground(optimizedBgURL(url, val));
-
-	} else {
-
-		$('.background').css("filter", '');
-		if (choosing) imgBackground(optimizedBgURL(url, val));
+			initBackground();
+			imgCredits(data.background_image, data.background_type);
+		}	
 	}
 
-	localStorage.background_blur = val;
+	
+	if (state === "init") {
+		apply(true, true);
+	} else {
+		apply(input)
+	}	
 }
 
-defaultBg();
-dynamicBackground();
+function blurThis(val, init) {
+	
+	if (val > 0) {
+		id('background').style.filter = 'blur(' + val + 'px)';
+	} else {
+		id('background').style.filter = '';
+	}
 
-
-// handle input changes
-$(".change_background input[name='background_file']").change(function() {
-	renderImage(this.files[0]);
-});
-
-// handle input changes
-$(".change_background input[name='background_blur']").change(function() {
-	blurThis(this.value, true);
-});
-
+	if (!init) storage("background_blur", parseInt(val));
+	else id("i_blur").value = val;
+}
 
 function darkmode(choix) {
 
+	
 	function isIOSwallpaper(dark) {
 
 		//défini les parametres a changer en fonction du theme
@@ -1333,55 +1362,55 @@ function darkmode(choix) {
 
 			modeurl = "ios13_dark";
 			actual = "ios13_light";
-			urltouse = 'src/images/backgrounds/default/ios13_dark.jpg';
+			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
 
 		} else {
 			
 			modeurl = "ios13_light";
 			actual = "ios13_dark";
-			urltouse = 'src/images/backgrounds/default/ios13_light.jpg';
+			urltouse = 'src/images/backgrounds/ios13_light.jpg';
 		}
 
 		//et les applique ici
-		$(".ios_wallpaper img").attr("src", "src/images/backgrounds/blur/" + modeurl + ".jpg");
+		id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
 
 		if (imgBackground().includes(actual)) {
-			applyBackground(optimizedBgURL(urltouse), "default");
-			localStorage.background_image = optimizedBgURL(urltouse);
+
+			applyBackground(urltouse, "default");
+			storage("background_image", urltouse);
 		}
 	}
 
+	
 	function applyDark(add, system) {
 
 		if (add) {
 
 			if (system) {
 
-				$("body").addClass("autodark");
-				$("body").removeClass("dark");
+				document.body.setAttribute("class", "autodark");
 
 			} else {
 
-				$("body").addClass("dark");
-				$("body").removeClass("autodark");
-				$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup_d.png');
+				document.body.setAttribute("class", "dark");
 				isIOSwallpaper(true);
 			}
 
 		} else {
 
-			$("body").removeClass("dark");
-			$("body").removeClass("autodark");
-			$(".bonjourr_logo").attr("src", 'src/images/popup/bonjourrpopup.png');
+			document.body.removeAttribute("class");
 			isIOSwallpaper(false);
 		}
 	}
 
-	function auto(blur) {
+	
+	function auto(weather) {
 
-		var wAPI = JSON.parse(localStorage.wLastState);
-		var sunrise = new Date(wAPI.sys.sunrise * 1000);
-		var sunset = new Date(wAPI.sys.sunset * 1000);
+		var data = storage();
+
+		var ls = data.weather.lastState;
+		var sunrise = new Date(ls.sys.sunrise * 1000);
+		var sunset = new Date(ls.sys.sunset * 1000);
 		var hr = new Date();
 
 		sunrise = sunrise.getHours() + 1;
@@ -1395,9 +1424,11 @@ function darkmode(choix) {
 		}
 	}
 
+	
 	function initDarkMode() {
 
-		var data = localStorage;
+		var data = storage();
+
 		var dd = (data.dark ? data.dark : "disable");
 
 		if (dd === "enable") {
@@ -1417,27 +1448,28 @@ function darkmode(choix) {
 		}	
 	}
 
+	
 	function changeDarkMode() {
 
 		if (choix === "enable") {
 			applyDark(true);
-			localStorage.dark = "enable";
+			storage("dark", "enable");
 		}
 
 		if (choix === "disable") {
 			applyDark(false);
-			localStorage.dark = "disable";
+			storage("dark", "disable");
 		}
 
 		if (choix === "auto") {
 
 			//prend l'heure et ajoute la classe si nuit
 			auto();
-			localStorage.dark = "auto";
+			storage("dark", "auto");
 		}
 
 		if (choix === "system") {
-			localStorage.dark = "system";
+			storage("dark", "system");
 			applyDark(true, true);
 		}
 	}
@@ -1449,99 +1481,97 @@ function darkmode(choix) {
 	}
 }
 
-$(".darkmode select.theme").change(function() {
-	darkmode(this.value);
-});
-
-$(".popup .darkmode select.theme").change(function() {
-	$(".settings .darkmode select.theme")[0].value = this.value;
-});
-
 function searchbarFlexControl(activated, linkslength) {
-
-	var dom = $(".searchbar_container");
 
 	if (linkslength > 0) {
 
-		if (activated) {
-
-			dom.addClass("shown");
-			dom.removeClass("removed");
-
-		} else {
-
-			dom.addClass("removed");
-			dom.removeClass("shown");
-		}
+		if (activated)
+			id("sb_container").setAttribute("class", "shown");
+		else
+			id("sb_container").setAttribute("class", "removed");
 		
 	} else {
 
-		if (activated) {
-
-			dom.addClass("shown");
-			dom.removeClass("removed");
-
-		} else {
-
-			dom.addClass("removed");
-			dom.removeClass("shown");
-		}
+		if (activated)
+			id("sb_container").setAttribute("class", "shown");
+		else
+			id("sb_container").setAttribute("class", "removed");
 	}
 }
 
 function searchbar() {
 
+	
 	function activate(activated, links) {
 
 		//visibility hidden seulement si linkblocks est vide
 
-		if (activated) {
+		var data = storage();
 
-			localStorage.searchbar = true;
+		if (activated) {	
 
-			//pour animer un peu
-			$("#searchbar_option .param hr, .popup5 hr").css("display", "block");
-			$("#choose_searchengine").css("display", 'flex');
-			
+			id("choose_searchengine").setAttribute("class", "shown");
+
 			searchbarFlexControl(activated, (links ? links.length : 0));
+			data.searchbar = true;
 			
 		} else {
 
-			localStorage.searchbar = false;
-
 			//pour animer un peu
-			$("#choose_searchengine, #searchbar_option hr, .popup5 hr").css("display", "none");
+			id("choose_searchengine").setAttribute("class", "hidden");
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
+			data.searchbar = false;
 		}
+
+		localStorage.data = JSON.stringify(data);
 	}
 
 	function chooseSearchEngine(choice) {
 
 		var engines = {
-			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", tradThis("Search Startpage")],
-			"s_ddg" : ["https://duckduckgo.com/?q=", tradThis("Search DuckDuckGo")],
-			"s_qwant" : ["https://www.qwant.com/?q=", tradThis("Search Qwant")],
-			"s_ecosia" : ["https://www.ecosia.org/search?q=", tradThis("Search Ecosia")],
-			"s_google" : ["https://www.google.com/search", tradThis("Search Google")],
-			"s_yahoo" : ["https://search.yahoo.com/search?p=", tradThis("Search Yahoo")],
-			"s_bing" : ["https://www.bing.com/search?q=", tradThis("Search Bing")]
+			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", "Startpage"],
+			"s_ddg" : ["https://duckduckgo.com/?q=", "DuckDuckGo"],
+			"s_qwant" : ["https://www.qwant.com/?q=", "Qwant"],
+			"s_ecosia" : ["https://www.ecosia.org/search?q=", "Ecosia"],
+			"s_google" : ["https://www.google.com/search", "Google"],
+			"s_yahoo" : ["https://search.yahoo.com/search?p=", "Yahoo"],
+			"s_bing" : ["https://www.bing.com/search?q=", "Bing"]
 		}
 
-		$(".searchbar_container form").attr("action", engines[choice][0]);
-		$(".searchbar").attr("placeholder", engines[choice][1]);
+		var trad = {
+			en: "Search",
+			fr: "Rechercher sur",
+			sv: "Sök med",
+			nl: "Zoek op",
+			pl: "Szukaj z",
+			ru: "Поиск в",
+			zh_CN: "搜索"
+		}
 
-		localStorage.searchbar_engine = choice;
+		var placeholder = "";
+
+		if (localStorage.lang) {
+			placeholder = trad[localStorage.lang] + " " + engines[choice][1];
+		} else {
+			placeholder = trad["en"] + " " + engines[choice][1];
+		}
+
+		id("sb_form").setAttribute("action", engines[choice][0]);
+		id("searchbar").setAttribute("placeholder", placeholder);
+
+		data.searchbar_engine = choice;
+		localStorage.data = JSON.stringify(data);
 	}
 
+	
 	//init
-	var data = localStorage;
-	var storagelinks = (data.links ? JSON.parse(data.links) : null);
+	var data = storage();
 
-	if (data.searchbar === "true") {
+	if (data.searchbar) {
 
 		//display
-		activate(true, storagelinks);
+		activate(true, data.links);
 
 		if (data.searchbar_engine) {
 			chooseSearchEngine(data.searchbar_engine);
@@ -1550,137 +1580,146 @@ function searchbar() {
 		}
 
 	} else {
-		activate(false, storagelinks);
+		activate(false, data.links);
 	}
 
-
 	// Active ou désactive la search bar
-	$(".activate_searchbar input").change(function() {
+	id("i_sb").onchange = function() {
 
 		if (!stillActive) {
-			activate($(this).is(":checked"));
+			activate(this.checked);
 		}
 		slow(this);
-	});
-
-	$(".popup .activate_searchbar input").change(function() {
-
-		var check = $(this)[0].checked;
-
-		if (check) {
-			$("#searchbar_option input")[0].checked = true;
-			$(".settings #choose_searchengine").css("display", 'flex');
-		}
-	});
-
+	}
 
 	// Change le moteur de recherche de la search bar selon le select .choose_search
-	$(".choose_search").change(function() {
+	id("i_sbengine").onchange = function() {
 		chooseSearchEngine(this.value);
-	});
+	}
 }
 
 // Signature aléatoire
 function signature() {
 	var v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
 	var t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>";
+	var e = document.createElement("span");
 
-    if (Math.random() > 0.5) {
-    	$('.signature .rand').append(v + " & " + t);
-	} else {
-		$('.signature .rand').append(t + " & " + v);
-	}
+	e.innerHTML = (Math.random() > 0.5 ? (v + " & " + t) : (t + " & " + v));
+	id("rand").appendChild(e);
 }
 
+//localized
 function actualizeStartupOptions() {
 
-	var data = localStorage;
+	let data = JSON.parse(localStorage.data);
 
-	//default background 
-	$(".choosable_backgrounds .imgpreview img").each(function() {
+	if (data.linknewtab) {
+		id("i_linknewtab").checked = true;
+	} else {
+		id("i_linknewtab").checked = false;
+	}
 
-		//compare l'url des preview avec celle du background
-		var previewURL = $(this).attr("src");
-		var bgURL = $(".background").css("background-image");
+	//default background
 
-		//si l'url du bg inclu l'url de la preview, selectionne le
+	var imgs = cl("imgpreview");
+	var bgURL = id("background").style.backgroundImage;
+	var previewURL = "";	
+
+	for (var i = 0; i < imgs.length; i++) {
+		
+		previewURL = imgs[i].children[0].getAttribute("src");
+
 		if (bgURL.includes(previewURL)) {
-			$(this).parent().addClass("selected");
+			imgs[i].setAttribute("class", "imgpreview selected");
 		}
-	});
+	}
 
+	if (data.retina) {
+		id("i_retina").checked = true;
+	} else {
+		id("i_retina").checked = false;
+	}
 
 	//dynamic background
 	if (data.background_type === "dynamic") {
-		$(".dynamic_bg input")[0].checked = true;
+		id("i_dynamic").checked = true;
 	}
-
 
 	//dark mode input
 	if (data.dark) {
-		$(".darkmode select.theme").val(data.dark);
+		id("i_dark").value = data.dark;
 	} else {
-		$(".darkmode select.theme").val("disable");
+		id("i_dark").value = "disable";
 	}
 	
-
 	
 	//weather city input
-	if (data.weather_city) {
-		$(".change_weather input[name='city']").attr("placeholder", data.weather_city);
+	if (data.weather && data.weather.city) {
+		id("i_city").setAttribute("placeholder", data.weather.city);
 	} else {
-		$(".change_weather input[name='city']").attr("placeholder", "Paris");
+		id("i_city").setAttribute("placeholder", "City");
 	}
-	
+
+
+	if (data.weather && data.weather.ccode) {
+		id("i_ccode").value = data.weather.ccode;
+	} else {
+		id("i_ccode").value = "US";
+	}
 
 	//check geolocalisation
 	//enleve city
-	if (data.weather_geol_lat && data.weather_geol_long) {
-		$(".w_auto input")[0].checked = true;
-		$(".change_weather .city").css("display", "none");
+	if (data.weather && data.weather.location) {
+
+		id("i_geol").checked = true;
+		id("sett_city").setAttribute("class", "city hidden");
+
 	} else {
-		$(".w_auto input")[0].checked = false;
-		$(".change_weather .city").css("display", "block");
+
+		id("i_geol").checked = false;
 	}
 
 	//check imperial
-	if (data.weather_unit && data.weather_unit === "imperial") {
-		$(".units input")[0].checked = true;
+	if (data.weather && data.weather.unit === "imperial") {
+		id("i_units").checked = true;
 	} else {
-		$(".units input")[0].checked = false;
+		id("i_units").checked = false;
 	}
 
 	
 	//searchbar switch et select
-	$(".activate_searchbar input")[0].checked = (data.searchbar === "true" ? true : false);
-
-	setTimeout(() => {
-      if (data.searchbar) $(".interface input.searchbar").focus();
-    }, 100);
+	if (data.searchbar) {
+		id("i_sb").checked = true;
+		setTimeout(() => {
+	    	id("searchbar").focus();
+	    }, 100);
+	} else {
+		id("i_sb").checked = false;
+	}	
 	
 
 	if (data.searchbar_engine) {
-		$(".choose_search")[0].value = data.searchbar_engine;
+		id("i_sbengine").value = data.searchbar_engine;
 	} else {
-		$(".choose_search")[0].value = "s_startpage";
+		id("i_sbengine").value = "s_startpage";
 	}
 
 
 	//clock
 	if (data.clockformat === 12) {
-		$(".12hour input")[0].checked = true;
+		id("i_ampm").checked = true;
 		localStorage.clockformat = 12;
 	} else {
-		$(".12hour input")[0].checked = false;
+		id("i_ampm").checked = false;
 	}
 		
 
 	//langue
-	if (data.lang) {
-		$(".lang")[0].value = data.lang;
+	if (localStorage.lang) {
+		id("i_lang").value = localStorage.lang;
 	} else {
-		$(".lang")[0].value = "en";
-	}			
+		id("i_lang").value = "en";
+	}	
 }
 
 function mobilecheck() {
@@ -1689,43 +1728,8 @@ function mobilecheck() {
 	return check;
 }
 
-//affiche les settings
-$(".showSettings button").click(function() {
-
-	$(this).toggleClass("shown");
-	
-	$(".settings").css("display", "block");
-	$(".settings").toggleClass("shown");
-	$(".interface").toggleClass("pushed");
-
-
-});
-
-//si settings ouvert, le ferme
-$(".interface").click(function() {
-
-	if ($("div.settings").hasClass("shown")) {
-
-		$(".showSettings button").toggleClass("shown");
-		$(".settings").removeClass("shown");
-		$(".interface").removeClass("pushed");
-	}
-});
-
-//autofocus
-$(document).keydown(function(e) {
-
-	if ($(".searchbar_container").hasClass("shown") && !($(".settings").hasClass("shown"))) {
-		$(".interface input.searchbar").focus();
-	}
-	
-})
-
-
-$(document).ready(function() {
-
-	initTrad();
-	initBackground();
+window.onload = function() {
+	traduction();
 	darkmode();
 	clock();
 	date();
@@ -1734,6 +1738,8 @@ $(document).ready(function() {
 	searchbar();
 	quickLinks();
 	signature();
-	introduction();
 	actualizeStartupOptions();
-});
+	initBackground();
+
+	document.body.style.animation = "fade .1s ease-in forwards";
+}
