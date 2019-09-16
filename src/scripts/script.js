@@ -1,7 +1,6 @@
 var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
-const TITLE_LIMIT = 42;
 const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
@@ -95,7 +94,7 @@ function slow(that) {
 
 	that.setAttribute("disabled", "");
 
-	stillActive = setTimeout(function() {
+	stillActive = setTimeout(() => {
 
 		that.removeAttribute("disabled");
 
@@ -107,20 +106,17 @@ function slow(that) {
 function traduction() {
 
 	let trns = document.getElementsByClassName('trn');
-	let local = localStorage.lang;
+	let local = localStorage.lang || "en";
 	let dom = [];
 
-	if (local && local !== "en") {
+	if (local !== "en") {
 
 		for (let k = 0; k < trns.length; k++) {
-
-			/*console.log(k)
-			console.log(dict[trns[k].innerText])*/
 
 			dom.push(dict[trns[k].innerText][localStorage.lang])
 		}
 			
-		for (let i = 0; i < trns.length; i++) {
+		for (let i in trns) {
 			trns[i].innerText = dom[i]
 		}
 	}
@@ -128,13 +124,9 @@ function traduction() {
 
 function tradThis(str) {
 
-	var lang = localStorage.lang;
+	let lang = localStorage.lang || "en";
 
-	if (!lang || lang === "en") {
-		return str
-	} else {
-		return dict[str][localStorage.lang]
-	}
+	return (lang === "en" ? str : dict[str][localStorage.lang])
 }
 
 function clock() {
@@ -144,26 +136,16 @@ function clock() {
 	//le diviser par 60 * 60
 	//rajouter le résultat à l'heure actuelle
 
-	var timesup, format;
+	let timesup, format;
 
 	function start() {
 
-		function fixSmallMinutes(i) {
-			if (i < 10) {i = "0" + i};
-			return i;
-		}
+		fixSmallMinutes = min => (min < 10 ? "0" + min : min);
 
-		function is12hours(x) {
+		is12hours = hour => (hour > 12 ? hour -= 12 : (hour === 0 ? hour = 12 : hour));
 
-			if (x > 12) x -= 12; 
-			if (x === 0) x = 12;
-
-			return x;
-		}
-
-		var h = new Date().getHours();
-		var m = new Date().getMinutes();
-		m = fixSmallMinutes(m);
+		let h = new Date().getHours();
+		let m = fixSmallMinutes(new Date().getMinutes());
 
 		if (format === 12) h = is12hours(h);
 
@@ -201,8 +183,8 @@ function clock() {
 
 function date() {
 
-	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+	const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
 	id("jour").innerText = tradThis(days[DATE.getDay()]);
@@ -229,8 +211,7 @@ function greetings() {
 
 function quickLinks() {
 
-	var stillActive = false;
-	var canRemove = false;
+	let stillActive = false, canRemove = false;
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
@@ -238,15 +219,17 @@ function quickLinks() {
 
 		chrome.storage.sync.get("links", (data) => {
 
-			if (data.links && data.links.length > 0) {
+			let array = data.links || false;
+
+			if (array) {
 
 				//1.6 fix
 				//if (data.links[0].icon.includes("https://besticon-demo.herokuapp.com")) {
 					//oldFaviconFix();
 				//}
 
-				for (var i = 0; i < data.links.length; i++) {
-					appendblock(data.links[i], i, data.links);
+				for (let i in array) {
+					appendblock(array[i], i, array);
 				}
 			}
 		});
@@ -256,13 +239,13 @@ function quickLinks() {
 			//si c'est wiggly, accepte de le déwiggler
 			if (canRemove) {
 
-				var isStoppable = true;
-				var parent = e.target;
+				let isStoppable = true;
+				let parent = e.target;
 
 				while (parent !== null) {
 
 					//console.log(parent);
-					parent = parent.parentElement;
+					parent = parent.parentElement ;
 					if (parent && parent.id === "linkblocks") isStoppable = false;
 				}
 
@@ -274,13 +257,13 @@ function quickLinks() {
 	function appendblock(arr, index, links) {
 
 		//console.log(arr)
-		var icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
+		let icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
 
 		//le DOM du block
-		var b = "<div class='block' source='" + arr.url + "'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='" + icon + "'></div><span>" + arr.title + "</span></div>";
+		let b = `<div class='block' source='${arr.url}'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='${icon}'></div><span>${arr.title}</span></div>`;
 
 		//ajoute un wrap
-		var block_parent = document.createElement('div');
+		let block_parent = document.createElement('div');
 		block_parent.setAttribute("class", "block_parent");
 		block_parent.innerHTML = b;
 
@@ -298,18 +281,18 @@ function quickLinks() {
 	function addEvents(elem) {
 
 		//wow
-		var remove = elem.firstElementChild.firstElementChild.firstElementChild;
+		let remove = elem.firstElementChild.firstElementChild.firstElementChild;
 
-		elem.oncontextmenu = function startwiggle(e) {
+		elem.oncontextmenu = function(e) {
 			event.preventDefault();
 			wiggle(this, true);
 		}
 
-		elem.onmouseup = function test(e) {
+		elem.onmouseup = function(e) {
 			openlink(this, e);
 		}
 
-		remove.onmouseup = function remBlock(e) {
+		remove.onmouseup = function(e) {
 			removeblock(this, e)
 		}
 	}
@@ -319,16 +302,16 @@ function quickLinks() {
 		/*console.log(that)
 		console.log(on)*/
 
-		var bl = cl("block");
+		let bl = cl("block");
 
 		if (on) {
-			for (var i = 0; i < bl.length; i++) {
+			for (let i = 0; i < bl.length; i++) {
 				bl[i].setAttribute("class", "block wiggly");
 				bl[i].children[0].children[0].setAttribute("class", "remove visible");
 			}
 			canRemove = true;
 		} else {
-			for (var i = 0; i < bl.length; i++) {
+			for (let i = 0; i < bl.length; i++) {
 				bl[i].setAttribute("class", "block");
 				bl[i].children[0].children[0].setAttribute("class", "remove");
 			}
@@ -490,7 +473,7 @@ function quickLinks() {
 
 			//var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
 			//var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-			var reg = new RegExp("^(http|https)://", "i");
+			let reg = new RegExp("^(http|https)://", "i");
 
 			//config ne marche pas
 			if (str.startsWith("about:") || str.startsWith("chrome://")) {
@@ -522,11 +505,11 @@ function quickLinks() {
 			id("i_title").value = "";
 			id("i_url").value = "";
 
-			var full = false;
+			let full = false;
 
 			chrome.storage.sync.get(["links", "searchbar"], (data) => {
 
-				var arr = [];
+				let arr = [];
 
 				//array est tout les links + le nouveau
 				if (data.links && data.links.length > 0) {
@@ -561,29 +544,21 @@ function quickLinks() {
 			});
 		}
 
+		titleControl = t => (t.length > 42 ? t.slice(0, 42) + "..." : t);
+
 		//append avec le titre, l'url ET l'index du bloc
-		var title = id("i_title").value;
-		var url = id("i_url").value;
-		var filtered = filterUrl(url);
 
-		//Titre trop long, on rajoute "...""
-		if (title.length > TITLE_LIMIT) title = title.slice(0, TITLE_LIMIT) + "...";
-
+		let links = {
+			title: titleControl(id("i_title").value),
+			url: filterUrl(id("i_url").value),
+			icon: ""
+		}
+		
 		//si l'url filtré est juste
-		if (typeof(filtered) !== "object" && filtered) {
-
+		if (typeof(links.url) !== "object" && links.url) {
 
 			//et l'input n'a pas été activé ya -1s
-			if (!stillActive) {
-
-				var links = {
-					title: title,
-					url: filtered,
-					icon: ""
-				}
-
-				saveLink(links);
-			}
+			if (!stillActive) saveLink(links);
 
 		} else {
 			if (url.length > 0) submissionError(filtered);
@@ -592,11 +567,12 @@ function quickLinks() {
 
 	function openlink(that, e) {
 
-		if (canRemove) {
+		if (!canRemove) {
 
-			var source = that.children[0].getAttribute("source");
+			let source = that.children[0].getAttribute("source");
+			let wiggly = that.children[0].getAttribute("class") === "block wiggly";
 
-			if (e.which === 3 || that.children[0].getAttribute("class") === "block wiggly") return false;
+			if (e.which === 3 || wiggly) return false;
 
 			chrome.storage.sync.get("linknewtab", (data) => {
 
@@ -657,8 +633,8 @@ function weather() {
 
 		chrome.storage.sync.get(["weather", "lang"], (data) => {
 
-			var now = Math.floor(DATE.getTime() / 1000);
-			var param = (data.weather ? data.weather : "");
+			let now = Math.floor(DATE.getTime() / 1000);
+			let param = (data.weather ? data.weather : "");
 
 			if (data.weather && data.weather.lastCall) {
 
@@ -691,8 +667,6 @@ function weather() {
 				//c'est le premier call, requete + lastCall = now
 				initWeather();
 			}
-
-
 		});
 	}
 
@@ -755,12 +729,12 @@ function weather() {
 
 			//auto, utilise l'array location [lat, lon]
 			if (arg.location) {
-				url += "&lat=" + arg.location[0] + "&lon=" + arg.location[1];
+				url += `&lat=${arg.location[0]}&lon=${arg.location[1]}`;
 			} else {
-				url += "&q=" + encodeURI(arg.city) + "," + arg.ccode;
+				url += `&q=${encodeURI(arg.city)},${arg.ccode}`;
 			}
 
-			url += '&units=' + arg.unit + '&lang=' + localStorage.lang;
+			url += `&units=${arg.unit}&lang=${localStorage.lang}`;
 
 			return url;
 		}
@@ -850,58 +824,46 @@ function weather() {
 		//si le soleil est levé, renvoi jour
 		//le renvoie correspond au nom du répertoire des icones jour / nuit
 		function dayOrNight(sunset, sunrise) {
-			var ss = new Date(sunset * 1000);
-			var sr = new Date(sunrise * 1000);
+			let ss = new Date(sunset * 1000);
+			let sr = new Date(sunrise * 1000);
 
-			if (HOURS > sr.getHours() && HOURS < ss.getHours()) {
-				return "day";
-			}
-			else {
-				return "night";
-			}
+			return (HOURS > sr.getHours() && HOURS < ss.getHours() ? "day" : "night")
 		}
 
 		//prend l'id de la météo et renvoie une description
 		//correspond au nom de l'icone (+ .png)
-		function imgId(id) {
-			if (id >= 200 && id <= 232) {
-				return "thunderstorm"
-			} 
-			else if (id >= 300 && id <= 321) {
-				return "showerrain"
+		function imgId(c) {
+
+			let temp, codes = {
+				"thunderstorm": 200,
+				"lightdrizzle": 300,
+				"showerdrizzle": 302,
+				"lightrain": 500,
+				"showerrain": 502,
+				"snow": 602,
+				"mist": 701,
+				"clearsky": 800,
+				"fewclouds": 801,
+				"brokenclouds": 803
+			}	
+
+			for(let key in codes) {
+
+				if (c >= codes[key]) temp = key;
 			}
-			else if (id === 500 || id === 501) {
-				return "lightrain"
-			}
-			else if (id >= 502 && id <= 531) {
-				return "showerrain"
-			}
-			else if (id >= 602 && id <= 622) {
-				return "snow"
-			}
-			else if (id >= 701 && id <= 781) {
-				return "mist"
-			}
-			else if (id === 800) {
-				return "clearsky"
-			}
-			else if (id === 801 || id === 802) {
-				return "fewclouds"
-			}
-			else if (id === 803 || id === 804) {
-				return "brokenclouds"
-			}
+
+			return temp || "clearsky";
 		}
 
 		//pour la description et temperature
 		//Rajoute une majuscule à la description
-		var meteoStr = data.weather[0].description;
+		let meteoStr = data.weather[0].description;
 		meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1);
 		id("desc").innerText = meteoStr + ".";
 
 
 		//si c'est l'après midi (apres 12h), on enleve la partie temp max
-		var dtemp, wtemp;
+		let dtemp, wtemp;
 
 		if (HOURS < 12) {
 
@@ -926,14 +888,10 @@ function weather() {
 			
 		} else {
 			//pour l'icone
-			var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
-			var weather_id = imgId(data.weather[0].id);
-	 		var icon_src = "src/images/weather/" + d_n + "/" + weather_id + ".png";
+			let d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
+			let weather_id = imgId(data.weather[0].id);
+	 		let icon_src = `src/images/weather/${d_n}/${weather_id}.png`;
 	 		id("widget").setAttribute("src", icon_src);
-
-	 		//sauv l'icone dans wLastState
-	 		//data.icon = icon_src;
-	 		//localStorage.wLastState = JSON.stringify(data);
 		}
 
 		id("widget").setAttribute("class", "w_icon shown");
@@ -962,7 +920,7 @@ function weather() {
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
-			var param = data.weather;
+			let param = data.weather;
 
 			param.ccode = id("i_ccode").value;
 			param.city = id("i_city").value;
@@ -985,7 +943,7 @@ function weather() {
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
-			var param = data.weather;
+			let param = data.weather;
 
 			if (that.checked) {
 				param.unit = "imperial";
@@ -1005,7 +963,7 @@ function weather() {
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
-			var param = data.weather;
+			let param = data.weather;
 			param.location = [];
 
 			if (that.checked) {
@@ -1093,7 +1051,7 @@ function imgCredits(src, type) {
 		return false;
 	}
 
-	for (var i = 0; i < CREDITS.length; i++) {
+	for (let i in CREDITS) {
 
 		if (src && src.includes(CREDITS[i].id)) {
 			id("credit").setAttribute("href", CREDITS[i].url);
@@ -1106,11 +1064,8 @@ function imgCredits(src, type) {
 }
 
 function imgBackground(val) {
-	if (val) {
-		id("background").style.backgroundImage = "url(" + val + ")";
-	} else {
-		return id("background").style.backgroundImage;
-	}
+	if (val) id("background").style.backgroundImage = `url(${val})`;
+	else return id("background").style.backgroundImage;
 }
 
 function applyBackground(src, type, blur) {
@@ -1231,7 +1186,7 @@ function renderImage(file) {
 
 function defaultBg() {
 
-	var bgTimeout, oldbg;
+	let bgTimeout, oldbg;
 
 	id("default_background").onmouseenter = function() {
 		oldbg = imgBackground().slice(4, imgBackground().length - 1);
@@ -1243,7 +1198,7 @@ function defaultBg() {
 	}
 
 	function getSource(that) {
-		var src = that.children[0].getAttribute("src");
+		let src = that.children[0].getAttribute("src");
 		if (id("i_retina").checked) src = src.replace("/backgrounds/", "/backgrounds/4k/");
 		if (!id("i_retina").checked) src = src.replace("/4k", "");
 
@@ -1255,7 +1210,7 @@ function defaultBg() {
 		if (state === "enter") {
 			if (bgTimeout) clearTimeout(bgTimeout);
 
-			var src = getSource(that);
+			let src = getSource(that);
 
 			bgTimeout = setTimeout(function() {
 
@@ -1321,6 +1276,7 @@ function retina(check) {
 
 function remSelectedPreview() {
 	let a = cl("imgpreview");
+
 	for (var i = 0; i < a.length; i++) {
 
 		if (a[i].classList[1] === "selected")
@@ -1370,13 +1326,9 @@ function dynamicBackground(state, input) {
 
 function blurThis(val, init) {
 	
-	if (val > 0) {
-		id('background').style.filter = 'blur(' + val + 'px)';
-	} else {
-		id('background').style.filter = '';
-	}
+	id('background').style.filter = val > 0 ? `blur(${val}px)` : ``;
 
-	if (!init) chrome.storage.sync.set({"background_blur": parseInt(val)});
+	if (!init) chrome.storage.sync.set({"background_blur": +val});
 	else id("i_blur").value = val;
 }
 
