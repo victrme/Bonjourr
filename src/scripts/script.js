@@ -72,12 +72,6 @@ function id(name) {
 function cl(name) {
 	return document.getElementsByClassName(name);
 }
-function tg(name) {
-	return document.getElementsbyTagName(name);
-}
-function getCl(that) {
-	return that.getAttribute("class");
-}
 function setClass(that, val) {
 	that.setAttribute("class", val);
 }
@@ -85,14 +79,14 @@ function setClass(that, val) {
 
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.local.clear(() => {
+	chrome.storage.sync.clear(() => {
 		localStorage.clear();
 	});
 }
 
 //c'est juste pour debug le storage
 function getBrowserStorage() {
-	chrome.storage.local.get(null, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -197,7 +191,7 @@ function clock() {
 		}
 
 		//enregistre partout suivant le format
-		chrome.storage.local.set({"clockformat": format});
+		chrome.storage.sync.set({"clockformat": format});
 		localStorage.clockformat = format;
 	}
 
@@ -242,7 +236,7 @@ function quickLinks() {
 	//utilise simplement une boucle de appendblock
 	function initblocks() {
 
-		chrome.storage.local.get("links", (data) => {
+		chrome.storage.sync.get("links", (data) => {
 
 			if (data.links && data.links.length > 0) {
 
@@ -356,7 +350,7 @@ function quickLinks() {
 			count++;
 		}
 
-		chrome.storage.local.get(["links", "searchbar"], (data) => {
+		chrome.storage.sync.get(["links", "searchbar"], (data) => {
 
 			function ejectIntruder(arr) {
 
@@ -405,7 +399,7 @@ function quickLinks() {
 				}
 			}, 200);
 
-			chrome.storage.local.set({"links": linkRemd});
+			chrome.storage.sync.set({"links": linkRemd});
 		});
 	}
 
@@ -474,7 +468,7 @@ function quickLinks() {
 			img.src = icn;
 
 			links[index].icon = icn;
-			chrome.storage.local.set({"links": links});
+			chrome.storage.sync.set({"links": links});
 		})
 	}
 
@@ -530,7 +524,7 @@ function quickLinks() {
 
 			var full = false;
 
-			chrome.storage.local.get(["links", "searchbar"], (data) => {
+			chrome.storage.sync.get(["links", "searchbar"], (data) => {
 
 				var arr = [];
 
@@ -555,7 +549,7 @@ function quickLinks() {
 				
 				//si les blocks sont moins que 16
 				if (!full) {
-					chrome.storage.local.set({"links": arr});
+					chrome.storage.sync.set({"links": arr});
 					//console.log(lll);
 					appendblock(lll, arr.length - 1, arr);
 				} else {
@@ -604,7 +598,7 @@ function quickLinks() {
 
 			if (e.which === 3 || that.children[0].getAttribute("class") === "block wiggly") return false;
 
-			chrome.storage.local.get("linknewtab", (data) => {
+			chrome.storage.sync.get("linknewtab", (data) => {
 
 				if (data.linknewtab) {
 
@@ -646,10 +640,10 @@ function quickLinks() {
 	id("i_linknewtab").onchange = function() {
 
 		if (this.checked) {
-			chrome.storage.local.set({"linknewtab": true});
+			chrome.storage.sync.set({"linknewtab": true});
 			id("hiddenlink").setAttribute("target", "_blank");
 		} else {
-			chrome.storage.local.set({"linknewtab": false});
+			chrome.storage.sync.set({"linknewtab": false});
 			id("hiddenlink").setAttribute("target", "_blank");
 		}
 	}
@@ -661,7 +655,7 @@ function weather() {
 
 	function cacheControl() {
 
-		chrome.storage.local.get(["weather", "lang"], (data) => {
+		chrome.storage.sync.get(["weather", "lang"], (data) => {
 
 			var now = Math.floor(DATE.getTime() / 1000);
 			var param = (data.weather ? data.weather : "");
@@ -718,13 +712,13 @@ function weather() {
 
 			//update le parametre de location
 			param.location.push(pos.coords.latitude, pos.coords.longitude);
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			id("i_geol").checked = true;
 			id("i_geol").removeAttribute("disabled");
 			id("sett_city").setAttribute("class", "city hidden");
 
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			request(param, "current");
 			request(param, "forecast");
@@ -737,7 +731,7 @@ function weather() {
 			id("i_geol").checked = false;
 			id("i_geol").removeAttribute("disabled");
 
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			request(param, "current");
 			request(param, "forecast");
@@ -779,7 +773,7 @@ function weather() {
 			var param = parameters;
 			param.lastState = response;
 			param.lastCall = now;
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			//la réponse est utilisé dans la fonction plus haute
 			dataHandling(response);
@@ -819,7 +813,7 @@ function weather() {
 			var param = parameters;
 			param.fcHigh = fc[0];
 			param.fcDay = fc[1];
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 
 			id("temp_max").innerText = param.fcHigh + "°";
 		}
@@ -966,7 +960,7 @@ function weather() {
 	
 	function updateCity() {
 
-		chrome.storage.local.get(["weather"], (data) => {
+		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 
@@ -982,14 +976,14 @@ function weather() {
 			id("i_city").value = "";
 			id("i_city").blur();
 
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 		});	
 	}
 
 	
 	function updateUnit(that) {
 
-		chrome.storage.local.get(["weather"], (data) => {
+		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 
@@ -1002,14 +996,14 @@ function weather() {
 			request(param, "current");
 			request(param, "forecast");
 			
-			chrome.storage.local.set({"weather": param});
+			chrome.storage.sync.set({"weather": param});
 		});
 	}
 
 	
 	function updateLocation(that) {
 
-		chrome.storage.local.get(["weather"], (data) => {
+		chrome.storage.sync.get(["weather"], (data) => {
 
 			var param = data.weather;
 			param.location = [];
@@ -1022,7 +1016,7 @@ function weather() {
 
 					//update le parametre de location
 					param.location.push(pos.coords.latitude, pos.coords.longitude);
-					chrome.storage.local.set({"weather": param});
+					chrome.storage.sync.set({"weather": param});
 
 					//request la meteo
 					request(param, "current");
@@ -1049,7 +1043,7 @@ function weather() {
 				id("i_ccode").value = param.ccode;
 
 				param.location = false;
-				chrome.storage.local.set({"weather": param});
+				chrome.storage.sync.set({"weather": param});
 				
 				request(param, "current");
 				request(param, "forecast");
@@ -1141,7 +1135,7 @@ function applyBackground(src, type, blur) {
  
 function initBackground() {
 
-	chrome.storage.local.get(["background_image", "background_type", "background_blur"], (data) => {
+	chrome.storage.sync.get(["background_image", "background_type", "background_blur"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
 		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
@@ -1209,8 +1203,8 @@ function blob(donnee, set) {
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
 		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
-		chrome.storage.local.set({"background_image": blobUrl});
-		chrome.storage.local.set({"background_type": "custom"});
+		chrome.storage.sync.set({"background_image": blobUrl});
+		chrome.storage.sync.set({"background_type": "custom"});
 
 	}
 
@@ -1291,8 +1285,8 @@ function defaultBg() {
 			var tempAttr = that.getAttribute("class");
 			that.setAttribute("class", tempAttr + " selected");
 
-			chrome.storage.local.set({"background_image": src});
-			chrome.storage.local.set({"background_type": "default"});
+			chrome.storage.sync.set({"background_image": src});
+			chrome.storage.sync.set({"background_type": "default"});
 		}
 	}
 
@@ -1313,15 +1307,15 @@ function retina(check) {
 	if (!check && b.includes("/4k")) {
 		b = b.replace("/4k", "");
 		imgBackground(b);
-		chrome.storage.local.set({"background_image": b});
-		chrome.storage.local.set({"retina": false});
+		chrome.storage.sync.set({"background_image": b});
+		chrome.storage.sync.set({"retina": false});
 	}
 
 	if (check && !b.includes("/4k")) {
 		b = b.replace("backgrounds/", "backgrounds/4k/");
 		imgBackground(b);
-		chrome.storage.local.set({"background_image": b});
-		chrome.storage.local.set({"retina": true});
+		chrome.storage.sync.set({"background_image": b});
+		chrome.storage.sync.set({"retina": true});
 	}
 }
 
@@ -1338,15 +1332,15 @@ function dynamicBackground(state, input) {
 
 	function apply(condition, init) {
 
-		chrome.storage.local.get(["background_image", "background_type", "dynamic", "previous_type"], (data) => {
+		chrome.storage.sync.get(["background_image", "background_type", "dynamic", "previous_type"], (data) => {
 
 			if (condition) {
 
 				if (!init) {
 					//set un previous background si le user choisi de désactiver ce parametre
-					chrome.storage.local.set({"previous_type": data.background_type});
-					chrome.storage.local.set({"dynamic": true});
-					chrome.storage.local.set({"background_type": "dynamic"});
+					chrome.storage.sync.set({"previous_type": data.background_type});
+					chrome.storage.sync.set({"dynamic": true});
+					chrome.storage.sync.set({"background_type": "dynamic"});
 				}
 
 				applyBackground(UNSPLASH, "dynamic");
@@ -1357,8 +1351,8 @@ function dynamicBackground(state, input) {
 
 			} else {
 
-				chrome.storage.local.set({"dynamic": false});
-				chrome.storage.local.set({"background_type": data.previous_type});
+				chrome.storage.sync.set({"dynamic": false});
+				chrome.storage.sync.set({"background_type": data.previous_type});
 
 				initBackground();
 				imgCredits(data.background_image, data.background_type);
@@ -1382,7 +1376,7 @@ function blurThis(val, init) {
 		id('background').style.filter = '';
 	}
 
-	if (!init) chrome.storage.local.set({"background_blur": parseInt(val)});
+	if (!init) chrome.storage.sync.set({"background_blur": parseInt(val)});
 	else id("i_blur").value = val;
 }
 
@@ -1413,7 +1407,7 @@ function darkmode(choix) {
 		if (imgBackground().includes(actual)) {
 
 			applyBackground(urltouse, "default");
-			chrome.storage.local.set({"background_image": urltouse});
+			chrome.storage.sync.set({"background_image": urltouse});
 		}
 	}
 
@@ -1442,7 +1436,7 @@ function darkmode(choix) {
 	
 	function auto(weather) {
 
-		chrome.storage.local.get("weather", (data) => {
+		chrome.storage.sync.get("weather", (data) => {
 
 			var ls = data.weather.lastState;
 			var sunrise = new Date(ls.sys.sunrise * 1000);
@@ -1464,7 +1458,7 @@ function darkmode(choix) {
 	
 	function initDarkMode() {
 
-		chrome.storage.local.get("dark", (data) => {
+		chrome.storage.sync.get("dark", (data) => {
 
 			var dd = (data.dark ? data.dark : "disable");
 
@@ -1491,23 +1485,23 @@ function darkmode(choix) {
 
 		if (choix === "enable") {
 			applyDark(true);
-			chrome.storage.local.set({"dark": "enable"});
+			chrome.storage.sync.set({"dark": "enable"});
 		}
 
 		if (choix === "disable") {
 			applyDark(false);
-			chrome.storage.local.set({"dark": "disable"});
+			chrome.storage.sync.set({"dark": "disable"});
 		}
 
 		if (choix === "auto") {
 
 			//prend l'heure et ajoute la classe si nuit
 			auto();
-			chrome.storage.local.set({"dark": "auto"});
+			chrome.storage.sync.set({"dark": "auto"});
 		}
 
 		if (choix === "system") {
-			chrome.storage.local.set({"dark": "system"});
+			chrome.storage.sync.set({"dark": "system"});
 			applyDark(true, true);
 		}
 	}
@@ -1549,7 +1543,7 @@ function searchbar() {
 			id("choose_searchengine").setAttribute("class", "shown");
 
 			searchbarFlexControl(activated, (links ? links.length : 0));
-			chrome.storage.local.set({"searchbar": true});
+			chrome.storage.sync.set({"searchbar": true});
 			
 		} else {
 
@@ -1557,7 +1551,7 @@ function searchbar() {
 			id("choose_searchengine").setAttribute("class", "hidden");
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
-			chrome.storage.local.set({"searchbar": false});
+			chrome.storage.sync.set({"searchbar": false});
 		}
 	}
 
@@ -1594,12 +1588,12 @@ function searchbar() {
 		id("sb_form").setAttribute("action", engines[choice][0]);
 		id("searchbar").setAttribute("placeholder", placeholder);
 
-		chrome.storage.local.set({"searchbar_engine": choice});
+		chrome.storage.sync.set({"searchbar_engine": choice});
 	}
 
 	
 	//init
-	chrome.storage.local.get(["searchbar", "searchbar_engine", "links"], (data) => {
+	chrome.storage.sync.get(["searchbar", "searchbar_engine", "links"], (data) => {
 
 		if (data.searchbar) {
 
@@ -1647,7 +1641,7 @@ function actualizeStartupOptions() {
 
 	let store = ["background_type", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
-	chrome.storage.local.get(store, (data) => {
+	chrome.storage.sync.get(store, (data) => {
 
 		if (data.linknewtab) {
 			id("i_linknewtab").checked = true;
@@ -1781,53 +1775,3 @@ window.onload = function() {
 
 	document.body.style.animation = "fade .1s ease-in forwards";
 }
-
-
-
-
-/*	function oldFaviconFix() {
-
-	var str = "";
-	var linkarray = {};
-	chrome.storage.local.get("links", (data) => {
-
-		linkarray = data.links;
-
-		for (var i = 0; i < data.links.length; i++) {
-
-			
-			link = data.links[i];
-
-			str = link.icon;
-			str = str.replace("https://besticon-demo.herokuapp.com/icon?url=", "");
-			str = str.replace("&size=80", "");
-			//console.log(str);
-
-			iconReq(str, link, i);
-		}
-
-		console.log(linkarray)
-		chrome.storage.local.set({"links": linkarray});
-	})
-
-	function iconReq(hostname, link, index) {
-		var req = new XMLHttpRequest();
-		req.open('GET', "http://favicongrabber.com/api/grab/" + hostname, false);
-
-		req.onload = function() {
-			
-			var resp = JSON.parse(this.response);
-
-			if (req.status >= 200 && req.status < 400) {
-
-				linkarray[index].icon = filterIcon(resp);
-
-			} else {
-
-				linkarray[index].icon = "src/images/weather/day/brokenclouds.png";
-			}
-		}
-
-		req.send();
-	}
-}*/

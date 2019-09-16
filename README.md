@@ -26,11 +26,6 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 ## Todo
 
 - [ ] System dark mode iOS13 background
-- [x] Regex plus permissif pour les links
-- [x] Fix popup overflow sur small res
-- [x] sync blob bug
-- [x] Investigate blur on chrome
-- [x] Improve the Quick Link's favicon system
 - [ ] Firefox force time zone
 
 ## Features for the future
@@ -39,7 +34,6 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - [ ] Customizable dynamic backgrounds
 - [ ] Personalized CSS settings
 - [ ] Rearrangeable quick links
-- [x] Changelog popup when updated
 - [ ] Analog clock
 - [ ] Motivational quotes
 - [ ] Mobile web app
@@ -47,9 +41,8 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 
 ## Built with
 
-* [Jquery 3.4.1 Slim](https://code.jquery.com/jquery-3.4.1.slim.min.js)
-* [Translate.js](https://github.com/tinoni/translate.js) · translation tool by Tinoni
-* [JScompress minifier](https://jscompress.com/) · Used to compress translate.js
+* Styled with [Sass](https://sass-lang.com/guide)
+* Our tiny hands
 
 ## Authors
 
@@ -65,6 +58,12 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 
 ## Changelogs
+
+**v1.6.0**
+
+- Massive performance boost
+- Quick Links improved
+- Less permissions on firefox
 
 **v1.5.5**
 

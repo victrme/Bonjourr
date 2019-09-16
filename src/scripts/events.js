@@ -24,7 +24,8 @@ id("i_lang").onchange = function() {
 	localStorage.lang = this.value;
 	sessionStorage.lang = this.value;
 
-	if (!localStorage.data) chrome.storage.local.set({"lang": this.value});
+	//si local n'est pas utilisé, sync la langue
+	if (!localStorage.data) chrome.storage.sync.set({"lang": this.value});
 
 	location.reload();
 }

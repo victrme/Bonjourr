@@ -1,17 +1,8 @@
-function fin() {
 
-	chrome.storage.sync.get("lang", (lang) => {
+chrome.storage.sync.get("lang", (lang) => {
 
-		var url =  "https://bonjourr.fr/";
+	let url = "https://bonjourr.fr/" + (lang === "fr" ? "fr/" : "");
+	url += (navigator.userAgent.includes("Chrome") ? "goodbye_chrome" : "goodbye_firefox");
 
-		if (lang === "fr") {
-			url += "fr/goodbye_firefox";
-		} else {
-			url += "goodbye_firefox";
-		}
-
-		chrome.runtime.setUninstallURL(url);
-	});
-}
-
-fin();
+	chrome.runtime.setUninstallURL(url);
+});
