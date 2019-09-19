@@ -1,3 +1,5 @@
+//gpg signed commit test
+
 var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
