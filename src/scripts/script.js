@@ -1,4 +1,4 @@
-//gpg signed commit test
+//gpg signed commit test again
 
 var stillActive = false;
 const INPUT_PAUSE = 700;
