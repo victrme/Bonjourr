@@ -1019,6 +1019,8 @@ function imgCredits(src, type) {
 
 	if (type === "dynamic") return false;
 
+	id("onUnsplash").style.visibility = "hidden";
+
 	for (var i = 0; i < CREDITS.length; i++) {
 
 		if (src && src.includes(CREDITS[i].id)) {
@@ -1256,6 +1258,7 @@ function unsplash() {
 	function credit(d) {
 
 		//console.log(d);
+		id("onUnsplash").style.visibility = "visible";
 
 		let loc = "";
 

@@ -26,7 +26,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 ## Todo
 
 - [ ] System dark mode iOS13 background
-- [ ] Firefox force time zone
+- [ ] Unsplash 4k
 
 ## Features for the future
 
