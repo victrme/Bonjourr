@@ -1,12 +1,25 @@
+id("i_dynamic").onchange = function() {
 
+	if (this.checked) {
+		chrome.storage.sync.set({"background_type": "dynamic"});
+		unsplash()
+	} else {
+		chrome.storage.sync.get(["previous_type"], (data) => {
+
+			if (data.previous_type && data.previous_type !== "dynamic") {
+				chrome.storage.sync.set({"background_type": data.previous_type});
+			} else {
+				chrome.storage.sync.set({"background_type": "default"});
+			}
+			
+			initBackground();
+		});
+	}
+}
 
 id("i_retina").onchange = function() {
 	retina(this.checked)
 }
-
-id("i_dynamic").onchange = function() {
-	dynamicBackground("change", this.checked)
-};
 
 id("i_bgfile").onchange = function() {
 	renderImage(this.files[0]);

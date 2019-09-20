@@ -4,30 +4,8 @@ var stillActive = false;
 const INPUT_PAUSE = 700;
 const BLOCK_LIMIT = 16;
 const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
-const UNSPLASH = "https://source.unsplash.com/collection/4933370/1920x1200/daily";
 const DATE = new Date();
 const HOURS = DATE.getHours();
-const START_LINKS = [
-	{
-		"title": "Unsplash",
-		"url": "https://unsplash.com/",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=unsplash.com&size=80"
-	},
-	{
-		"title": "YouTube",
-		"url": "https://youtube.com",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=youtube.com&size=80"
-	},
-	{
-		"title": "Bonjourr",
-		"url": "https://bonjourr.fr",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=bonjourr.fr&size=80"
-	},
-	{
-		"title": "Wikipédia",
-		"url": "http://wikipedia.org",
-		"icon": "https://besticon-demo.herokuapp.com/icon?url=wikipedia.org&size=80"
-	}];
 const CREDITS = [
 	{
 		"title": "Santa Monica",
@@ -1107,7 +1085,7 @@ function initBackground() {
 			});	
 		} 
 		else if (data.background_type === "dynamic") {
-			dynamicBackground("init")
+			unsplash()
 		}
 		else {
 			applyBackground(image, type);
@@ -1257,6 +1235,98 @@ function defaultBg() {
 }
 defaultBg();
 
+function unsplash() {
+
+	function cacheControl() {
+
+		chrome.storage.sync.get(["dynamic", "background_type"], (data) => {
+
+			chrome.storage.sync.set({"previous_type": data.background_type});
+
+			if (data.dynamic) {
+
+				if (data.dynamic.day === (new Date).getDay()) {
+
+					setBackground(data.dynamic)
+					credit(data.dynamic)
+
+				} else {
+
+					req();
+				}
+				
+			} else {
+
+				req();
+			}
+		});
+	}
+
+	function setBackground(d) {
+		id("background").style.backgroundImage = `url(${d.url})`;
+	}
+
+	function credit(d) {
+
+		//console.log(d);
+
+		let loc = "";
+
+		if (d.city) {
+			loc = d.city;
+
+			if (d.country) loc += ", " + d.country;
+			loc += " - "
+
+		} else {
+			if (d.country) {
+				loc = d.country + " - "
+			} else {
+				loc = "Photo - "
+			}
+		}
+
+		id("location").innerText = loc;
+		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
+		id("artist").innerText = d.name;
+		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
+	}
+
+	function req() {
+
+		let request_w = new XMLHttpRequest();
+		request_w.open('GET', "https://victor-azevedo.me/unsplash/2786f7a309d17172078081484aa0b8e4cda32ae6", true);
+
+		request_w.onload = function() {
+			
+			let resp = JSON.parse(this.response);
+
+			if (request_w.status >= 200 && request_w.status < 400) {
+
+				//console.log(this.response)
+
+				let dynamic = {
+					day: (new Date).getDay(),
+					url: resp.urls.regular,
+					link: resp.links.html,
+					username: resp.user.username,
+					name: resp.user.name,
+					city: resp.location.city,
+					country: resp.location.country
+				}
+
+				chrome.storage.sync.set({"dynamic": dynamic});
+
+				setBackground(dynamic);
+				credit(dynamic);
+			}
+		}
+		request_w.send();
+	}
+	
+	cacheControl()
+}
+
 function retina(check) {
 
 	var b = id("background").style.backgroundImage.slice(4, imgBackground().length - 1);
@@ -1284,46 +1354,6 @@ function remSelectedPreview() {
 		if (a[i].classList[1] === "selected")
 			a[i].setAttribute("class", "imgpreview")
 	}
-}
-
-function dynamicBackground(state, input) {
-
-	function apply(condition, init) {
-
-		chrome.storage.sync.get(["background_image", "background_type", "dynamic", "previous_type"], (data) => {
-
-			if (condition) {
-
-				if (!init) {
-					//set un previous background si le user choisi de désactiver ce parametre
-					chrome.storage.sync.set({"previous_type": data.background_type});
-					chrome.storage.sync.set({"dynamic": true});
-					chrome.storage.sync.set({"background_type": "dynamic"});
-				}
-
-				applyBackground(UNSPLASH, "dynamic");
-				imgCredits(UNSPLASH, "dynamic");
-
-				//enleve la selection default bg si jamais
-				remSelectedPreview();
-
-			} else {
-
-				chrome.storage.sync.set({"dynamic": false});
-				chrome.storage.sync.set({"background_type": data.previous_type});
-
-				initBackground();
-				imgCredits(data.background_image, data.background_type);
-			}
-		});	
-	}
-
-	
-	if (state === "init") {
-		apply(true, true);
-	} else {
-		apply(input)
-	}	
 }
 
 function blurThis(val, init) {
