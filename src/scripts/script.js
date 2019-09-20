@@ -36,12 +36,6 @@ const CREDITS = [
 		"artist": "Apple",
 		"url": "https://www.apple.com/ios/ios-13-preview/",
 		"id": "ios13_dark"
-	},
-	{
-		"title": "Unsplash Collection",
-		"artist": "lots of artists",
-		"url": "https://unsplash.com/collections/4933370/bonjourr-backgrounds",
-		"id": "unsplash.com"
 	}];
 
 
@@ -1023,20 +1017,14 @@ function weather() {
 
 function imgCredits(src, type) {
 
-	if (type === "default" || type === "dynamic") {
-		id("credit").setAttribute("class", "visible");
-	}
-	if (type === "custom") {
-		id("credit").setAttribute("class", "hidden");
-		return false;
-	}
+	if (type === "dynamic") return false;
 
-	for (let i in CREDITS) {
+	for (var i = 0; i < CREDITS.length; i++) {
 
 		if (src && src.includes(CREDITS[i].id)) {
-			id("credit").setAttribute("href", CREDITS[i].url);
-			id("credit").innerText = CREDITS[i].title + ", " + CREDITS[i].artist;
-			id("credit").removeAttribute("class");
+			id("location").setAttribute("href", CREDITS[i].url);
+			id("location").innerText = CREDITS[i].title + " - ";
+			id("artist").innerText = CREDITS[i].artist;
 
 			return true;
 		}
@@ -1058,7 +1046,6 @@ function applyBackground(src, type, blur) {
 	else if (type === "custom") {
 		id("i_dynamic").checked = false;
 		remSelectedPreview();
-		imgCredits(null, type);
 	}
 	else if (type === "dynamic") {
 		remSelectedPreview();
