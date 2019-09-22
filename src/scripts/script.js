@@ -81,7 +81,10 @@ function traduction() {
 
 		for (let k = 0; k < trns.length; k++) {
 
-			dom.push(dict[trns[k].innerText][localStorage.lang])
+			if (dict[trns[k].innerText])
+				dom.push(dict[trns[k].innerText][localStorage.lang]);
+			else {
+				return false;
 		}
 			
 		for (let i in trns) {
