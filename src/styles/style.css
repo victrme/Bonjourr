@@ -120,7 +120,6 @@ body {
     #interface .main .shadow {
       z-index: -1;
       position: absolute;
-      max-width: 100%;
       width: 55em;
       opacity: .4;
       overflow: hidden; }
@@ -637,10 +636,10 @@ body {
           border: none; }
         #start_popup .popup_window .popup_line .popup2 ::-ms-tooltip {
           display: none; }
-        #start_popup .popup_window .popup_line .popup2 .addlink input[type="text"] {
+        #start_popup .popup_window .popup_line .popup2 #quicklinksSett input[type="text"] {
           margin-bottom: .5em;
           width: calc(100% - .5em); }
-        #start_popup .popup_window .popup_line .popup2 .addlink button {
+        #start_popup .popup_window .popup_line .popup2 #quicklinksSett button {
           display: block;
           margin: auto; }
         #start_popup .popup_window .popup_line .popup2 input[name="url"]::placeholder {
@@ -1290,7 +1289,7 @@ body {
     border-top: 1px solid #c8c7cc;
     border-bottom: 1px solid #c8c7cc;
     padding: .5em 0; }
-  #settings .subtitle {
+  #settings .paramTitle {
     margin: 1em 1.3em;
     color: #6d6d72;
     text-transform: uppercase;
@@ -1331,15 +1330,15 @@ body {
         width: 56px;
         height: 76px;
         opacity: .8; }
-  #settings .addlink input[type="text"] {
+  #settings #quicklinksSett input[type="text"] {
     margin-bottom: .5em;
     width: calc(100% - .5em); }
-  #settings .addlink button {
+  #settings #quicklinksSett button {
     display: block;
     margin: auto; }
   #settings .choosable_backgrounds {
     padding: 1em 0; }
-  #settings .custom_bg {
+  #settings .custom_zone {
     margin: 1em 0 1.5em 0;
     display: flex;
     align-items: center;
@@ -1412,14 +1411,14 @@ body.dark .welcomeback p, body.dark .welcomeback h1 {
 
 body.dark #settings {
   background-color: black; }
-  body.dark #settings .custom_bg {
+  body.dark #settings .custom_zone {
     border-color: #3f3f41; }
   body.dark #settings .title {
     background-color: #1c1c1e;
     color: white;
     border-top: 0;
     border-bottom: 0; }
-  body.dark #settings .subtitle {
+  body.dark #settings .paramTitle {
     color: #929294;
     font-family: sf_pro_displaylight; }
   body.dark #settings .param {
@@ -1473,14 +1472,14 @@ body.dark #showSettings button {
     color: white; }
   body.autodark #settings {
     background-color: black; }
-    body.autodark #settings .custom_bg {
+    body.autodark #settings .custom_zone {
       border-color: #3f3f41; }
     body.autodark #settings .title {
       background-color: #1c1c1e;
       color: white;
       border-top: 0;
       border-bottom: 0; }
-    body.autodark #settings .subtitle {
+    body.autodark #settings .paramTitle {
       color: #929294;
       font-family: sf_pro_displaylight; }
     body.autodark #settings .param {

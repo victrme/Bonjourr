@@ -292,7 +292,7 @@ $popupText : 22px;
 			.popup2 {
 				@include settingsBase();
 
-				.addlink {
+				#quicklinksSett {
 					input[type="text"] {
 						margin-bottom: .5em;
 						width: calc(100% - .5em);
@@ -535,7 +535,7 @@ $popupText : 22px;
 		padding: .5em 0;
 	}
 
-	.subtitle {
+	.paramTitle {
 		margin: 1em 1.3em;
 		color: #6d6d72;
 		text-transform: uppercase;
@@ -558,7 +558,7 @@ $popupText : 22px;
 
 	@include chooseBackground();
 
-	.addlink {
+	#quicklinksSett {
 		input[type="text"] {
 			margin-bottom: .5em;
 			width: calc(100% - .5em);
@@ -574,7 +574,7 @@ $popupText : 22px;
 		padding: 1em 0;
 	}
 
-	.custom_bg {
+	.custom_zone {
 		margin: 1em 0 1.5em 0;
 		display: flex;
 		align-items: center;

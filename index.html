@@ -19,19 +19,23 @@
 		<button><img src="src/images/icons/gear.png"></button>
 	</div>
 
-	<div id="settings" class="settings">
+	<div id="settings">
 
-		<div class="title"> <h1 class="trn">Settings</h1> </div>
+		<div class="title">
+			<h1 class="trn">Settings</h1>
+		</div>
 
-		<div class="addlink">
-			<h5 class="subtitle trn">Quick Links</h5>
+		<div id="quicklinksSett">
+			<h5 class="paramTitle trn">Quick Links</h5>
 			<div class="param">
-				<input id="i_title" type="text" name="title" placeholder="Title">
-				<input id="i_url" type="text" name="url" placeholder="URL">
-				<p id="wrongURL" class="trn wrongURL">Incorrect URL</p>
-				<button id="submitlink" class="submitlink trn">Add</button>
-				<p class="help_sentence trn">Right click on the icons to delete a Quick Link.</p>
-
+				<div>
+					<input id="i_title" type="text" name="title" placeholder="Title">
+					<input id="i_url" type="text" name="url" placeholder="URL">
+					<p id="wrongURL" class="trn wrongURL">Incorrect URL</p>
+					<button id="submitlink" class="submitlink trn">Add</button>
+					<p class="help_sentence trn">Right click on the icons to delete a Quick Link.</p>
+				</div>
+		
 				<hr>
 
 				<div class="linknewtab wrapper">
@@ -46,11 +50,11 @@
 			</div>
 		</div>
 
-		<div class="change_background">          
-			<h5 class="subtitle trn">Visuals</h5>
+		<div id="visualsSett">          
+			<h5 class="paramTitle trn">Visuals</h5>
 
 			<div class="param">
-				<div class="background wrapper">
+				<div class="wrapper">
 					<span class="trn selector_span">Background type</span>
 					<select id="i_background" class="theme">
 						<option value="default" class="trn">Default</option>
@@ -61,7 +65,7 @@
 
 				<hr>
 				
-				<div id="default_background">
+				<div id="default_bg">
 					<span class="span trn">Choose background</span>
 					<div  class="choosable_backgrounds">
 						<div class="imgpreview">
@@ -79,9 +83,9 @@
 					</div>
 				</div>
 
-				<div class="wrapper" id="dynamic_bg">
-					<span class="trn">Refresh rate</span>
-					<select id="i_background" class="theme">
+				<div id="dynamic_bg" class="wrapper" >
+					<span class="trn">Frequency</span>
+					<select id="i_background" >  
 						<option value="default" class="trn">Every hour</option>
 						<option value="dynamic" class="trn">Every day</option>
 						<option value="custom" class="trn">Every week</option>
@@ -90,20 +94,8 @@
 
 				<div id="custom_bg">
 					<span class="trn">Custom background</span>
-					<div class="custom_bg">
+					<div class="custom_zone">
 						<input id="i_bgfile" type="file" name="background_file">
-					</div>
-				</div>
-
-				<hr>
-
-				<div class="4k_bg wrapper">
-					<span>4K / Retina</span>
-					<div>
-						<label class="switch">
-							<input id="i_retina" type="checkbox">
-							<span class="slider round span"></span>
-						</label>
 					</div>
 				</div>
 				
@@ -123,6 +115,20 @@
 
 				<hr>
 
+				<div class="performance_bg wrapper">
+					<span>Performance mode</span>
+					<div>
+						<label class="switch">
+							<input id="i_performance" type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
+				</div>
+
+				<p class="help_sentence trn">Use lighter images.</p>
+
+				<hr>
+
 				<div class="darkmode wrapper">
 					<span class="trn selector_span">Dark mode</span>
 					<select id="i_dark" class="theme">
@@ -136,7 +142,7 @@
 		</div>
 
 		<div class="change_background">          
-			<h5 class="subtitle trn">Visuals</h5>
+			<h5 class="paramTitle trn">Visuals</h5>
 			<div class="param">
 				<div class="bac">
 					<span class="span trn">Choose background</span>
@@ -215,8 +221,8 @@
 			</div>
 		</div>
 
-		<div class="change_weather">
-			<h5 class="subtitle trn">Weather</h5>
+		<div id="weatherSett">
+			<h5 class="paramTitle trn">Weather</h5>
 			<div class="param">
 				<div class="w_auto wrapper">
 					<span class="trn">Geolocation</span>
@@ -228,7 +234,7 @@
 					</div>
 				</div>
 
-				<div id="sett_city" class="city">
+				<div id="sett_city">
 
 					<hr>
 
@@ -510,8 +516,8 @@
 			</div>
 		</div>
 
-		<div id="searchbar_option">
-			<h5 class="subtitle trn">Search bar</h5>
+		<div id="searchbarSett">
+			<h5 class="paramTitle trn">Search bar</h5>
 			<div class="param">
 				<div class="activate_searchbar wrapper">
 					<span class="trn">Activate</span>
@@ -543,8 +549,8 @@
 			</div>
 		</div>
 
-		<div id="general_option">
-			<h5 class="subtitle trn">General</h5>
+		<div id="searchbarSett">
+			<h5 class="paramTitle trn">General</h5>
 			<div class="param">
 				<div class="12hour wrapper">
 					<span class="trn">12-Hour Time</span>
@@ -574,7 +580,7 @@
 		</div>
 
 	<!-- 	<div id="clock_option">
-			<h5 class="subtitle trn">Clock</h5>
+			<h5 class="paramTitle trn">Clock</h5>
 			<div class="param">
 				<div class="12hour wrapper">
 					<span class="trn">12-Hour Time</span>
@@ -589,7 +595,7 @@
 		</div>
 
 		<div class="lang_section">
-			<h5 class="subtitle trn">Language</h5>
+			<h5 class="paramTitle trn">Language</h5>
 			<div class="param">
 				<div class="choose_language wrapper">
 					<span class="trn selector_span">Choose language</span>
