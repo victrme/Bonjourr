@@ -12,7 +12,7 @@ var dict = {
     pl: "Nowa Karta",
     ru: "Новая вкладка",
     zh_CN: "新标签页",
-    es: ""
+    sk: ""
   },
   "Settings": {
     fr: "Réglages",
@@ -21,7 +21,7 @@ var dict = {
     pl: "Ustawienia",
     ru: "Настройки",
     zh_CN: "设置",
-    es: ""
+    sk: ""
   },
   "Background": {
     fr: "Arrière plan",
@@ -30,7 +30,7 @@ var dict = {
     pl: "Tło",
     ru: "Фон страницы",
     zh_CN: "背景",
-    es: ""
+    sk: ""
   },
   "Disable this may improve performances.": {
     fr: "Désactiver cette option peut améliorer les performances.",
@@ -39,7 +39,7 @@ var dict = {
     nl: "Disable this may improve performances.",
     pl: "Disable this may improve performances.",
     ru: "Disable this may improve performances.",
-    es: "Disable this may improve performances."
+    sk: "Disable this may improve performances."
   },
   "Choose background": {
     fr: "Choisir l'arrière-plan",
@@ -48,7 +48,7 @@ var dict = {
     pl: "Wybierz tło",
     ru: "Выберите фон",
     zh_CN: "选择背景",
-    es: ""
+    sk: ""
   },
   "Custom background": {
     fr: "Arrière plan personnalisé",
@@ -57,7 +57,7 @@ var dict = {
     pl: "Niestandardowe tło",
     ru: "Свой фон",
     zh_CN: "自定义背景",
-    es: ""
+    sk: ""
   },
   "Dynamic backgrounds": {
     fr: "Arrière plan dynamique",
@@ -66,7 +66,7 @@ var dict = {
     pl: "Dynamiczne tła",
     ru: "Динамический фон",
     zh_CN: "动态背景",
-    es: ""
+    sk: ""
   },
   "Daily backgrounds selected by Bonjourr.": {
     fr: "Arrière-plans journaliers selectionné par Bonjourr.",
@@ -75,7 +75,7 @@ var dict = {
     pl: "Aktywuj tę opcję by codziennie móc oglądać piękne, atomatycznie  zmieniające się tło, wyselekcjonowane przez zespół Bonjourr.",
     ru: "При включении этой опции фон страницы будет каждый день меняться автоматически на один из фонов, специально отобранных командой Bonjourr. ",
     zh_CN: "由 Bonjourr 精选的每日背景。",
-    es: ""
+    sk: ""
   },
   "Blur intensity": {
     fr: "Intensité du flou",
@@ -84,7 +84,7 @@ var dict = {
     pl: "Intensywnośc rozmycia",
     ru: "Степень размытия фона",
     zh_CN: "模糊度",
-    es: ""
+    sk: ""
   },
   "QUICK LINKS": {
     fr: "Liens favoris",
@@ -93,7 +93,7 @@ var dict = {
     pl: "Ulubione Witryny",
     ru: "Закладки",
     zh_CN: "快速链接",
-    es: ""
+    sk: ""
   },
   "Title": {
     fr: "Titre",
@@ -102,7 +102,7 @@ var dict = {
     pl: "Tytuł",
     ru: "Имя",
     zh_CN: "标题",
-    es: ""
+    sk: ""
   },
   "Add": {
     fr: "Ajouter",
@@ -111,7 +111,7 @@ var dict = {
     pl: "Dodaj",
     ru: "Добавить",
     zh_CN: "添加",
-    es: ""
+    sk: ""
   },
   "Open in new tab by default": {
     fr: "Ouvrir dans un nouvel onglet par défaut",
@@ -121,7 +121,7 @@ var dict = {
     nl: "Open in new tab by default",
     pl: "Open in new tab by default",
     ru: "Open in new tab by default",
-    es: "Open in new tab by default"
+    sk: "Open in new tab by default"
   },
   "WEATHER": {
     fr: "Météo",
@@ -130,7 +130,7 @@ var dict = {
     pl: "Pogoda",
     ru: "Погода",
     zh_CN: "天气",
-    es: ""
+    sk: ""
   },
   "Change city": {
     fr: "Changer la ville",
@@ -139,7 +139,7 @@ var dict = {
     pl: "Zmień miasto",
     ru: "Сменить город",
     zh_CN: "更改城市",
-    es: ""
+    sk: ""
   },
   "Imperial units": {
     fr: "Unités impériales",
@@ -148,7 +148,7 @@ var dict = {
     pl: "Jednostki Imperialne",
     ru: "Использовать Фаренгейты",
     zh_CN: "英制单位",
-    es: ""
+    sk: ""
   },
   "Made in France with ❤️": {
     fr: "Fabriqué en France avec ❤️",
@@ -157,7 +157,7 @@ var dict = {
     pl: "Stworzone we Francji z ❤️",
     ru: "Сделано во франции с ❤️",
     zh_CN: "源自法国 匠❤️打造",
-    es: ""
+    sk: ""
   },
   "by": {
     fr: "par",
@@ -166,7 +166,7 @@ var dict = {
     pl: "przez",
     ru: "Разработчики:",
     zh_CN: "由",
-    es: ""
+    sk: ""
   },
   "Good Morning": {
     fr: "Bonjour",
@@ -175,7 +175,7 @@ var dict = {
     pl: "Dzień Dobry",
     ru: "Доброе утро!",
     zh_CN: "早上好",
-    es: ""
+    sk: ""
   },
   "Good Afternoon": {
     fr: "Bon après-midi",
@@ -184,7 +184,7 @@ var dict = {
     pl: "Miłego Popołudia",
     ru: "Добрый день!",
     zh_CN: "下午好",
-    es: ""
+    sk: ""
   },
   "Good Evening": {
     fr: "Bonsoir",
@@ -193,7 +193,7 @@ var dict = {
     pl: "Dobry wieczór",
     ru: "Добрый вечер!",
     zh_CN: "晚上好",
-    es: ""
+    sk: ""
   },
   "Good Night": {
     fr: "Bonne nuit",
@@ -202,7 +202,7 @@ var dict = {
     pl: "Dobrej Nocy",
     ru: "Доброй ночи!",
     zh_CN: "晚安",
-    es: ""
+    sk: ""
   },
   "It is currently": {
     fr: "Il fait actuellement",
@@ -211,7 +211,7 @@ var dict = {
     pl: "Jest obecnie",
     ru: "Сейчас",
     zh_CN: "现在气温",
-    es: ""
+    sk: ""
   },
   "with a high of": {
     fr: "avec une maximale de",
@@ -220,7 +220,7 @@ var dict = {
     pl: "z maksymalnie",
     ru: "максимальная температура воздуха сегодня",
     zh_CN: "最高气温",
-    es: ""
+    sk: ""
   },
   "today.": {
     fr: "aujourd'hui.",
@@ -229,7 +229,7 @@ var dict = {
     pl: "dzisiaj",
     ru: "",
     zh_CN: ", 以上是今日天气.",
-    es: ""
+    sk: ""
   },
   "Monday": {
     fr: "Lundi",
@@ -238,7 +238,7 @@ var dict = {
     pl: "Poniedziałek",
     ru: "Понедельник,",
     zh_CN: "星期一",
-    es: ""
+    sk: ""
   },
   "Tuesday": {
     fr: "Mardi",
@@ -247,7 +247,7 @@ var dict = {
     pl: "Wtorek",
     ru: "Вторник,",
     zh_CN: "星期二",
-    es: ""
+    sk: ""
   },
   "Wednesday": {
     fr: "Mercredi",
@@ -256,7 +256,7 @@ var dict = {
     pl: "Środa",
     ru: "Среда,",
     zh_CN: "星期三",
-    es: ""
+    sk: ""
   },
   "Thursday": {
     fr: "Jeudi",
@@ -265,7 +265,7 @@ var dict = {
     pl: "Czwartek",
     ru: "Четверг,",
     zh_CN: "星期四",
-    es: ""
+    sk: ""
   },
   "Friday": {
     fr: "Vendredi",
@@ -274,7 +274,7 @@ var dict = {
     pl: "Piątek",
     ru: "Пятница,",
     zh_CN: "星期五",
-    es: ""
+    sk: ""
   },
   "Saturday": {
     fr: "Samedi",
@@ -283,7 +283,7 @@ var dict = {
     pl: "Sobota",
     ru: "Суббота,",
     zh_CN: "星期六",
-    es: ""
+    sk: ""
   },
   "Sunday": {
     fr: "Dimanche",
@@ -292,7 +292,7 @@ var dict = {
     pl: "Niedziela",
     ru: "Воскресенье,",
     zh_CN: "星期日",
-    es: ""
+    sk: ""
   },
   "January": {
     fr: "Janvier",
@@ -301,7 +301,7 @@ var dict = {
     pl: "Styczeń",
     ru: "января",
     zh_CN: "1月",
-    es: ""
+    sk: ""
   },
   "February": {
     fr: "Février",
@@ -310,7 +310,7 @@ var dict = {
     pl: "Luty",
     ru: "февраля",
     zh_CN: "2月",
-    es: ""
+    sk: ""
   },
   "March": {
     fr: "Mars",
@@ -319,7 +319,7 @@ var dict = {
     pl: "Marzec",
     ru: "марта",
     zh_CN: "3月",
-    es: ""
+    sk: ""
   },
   "April": {
     fr: "Avril",
@@ -328,7 +328,7 @@ var dict = {
     pl: "Kwiecień",
     ru: "апреля",
     zh_CN: "4月",
-    es: ""
+    sk: ""
   },
   "May": {
     fr: "Mai",
@@ -337,7 +337,7 @@ var dict = {
     pl: "Maj",
     ru: "мая",
     zh_CN: "5月",
-    es: ""
+    sk: ""
   },
   "June": {
     fr: "Juin",
@@ -346,7 +346,7 @@ var dict = {
     pl: "Czerwiec",
     ru: "июня",
     zh_CN: "6月",
-    es: ""
+    sk: ""
   },
   "July": {
     fr: "Juillet",
@@ -355,7 +355,7 @@ var dict = {
     pl: "Lipiec",
     ru: "июля",
     zh_CN: "7月",
-    es: ""
+    sk: ""
   },
   "August": {
     fr: "Août",
@@ -364,7 +364,7 @@ var dict = {
     pl: "Sierpień",
     ru: "августа",
     zh_CN: "8月",
-    es: ""
+    sk: ""
   },
   "September": {
     fr: "Septembre",
@@ -373,7 +373,7 @@ var dict = {
     pl: "Wrzesień",
     ru: "сентября",
     zh_CN: "9月",
-    es: ""
+    sk: ""
   },
   "October": {
     fr: "Octobre",
@@ -382,7 +382,7 @@ var dict = {
     pl: "Październik",
     ru: "октября",
     zh_CN: "10月",
-    es: ""
+    sk: ""
   },
   "November": {
     fr: "Novembre",
@@ -391,7 +391,7 @@ var dict = {
     pl: "Listopad",
     ru: "ноября",
     zh_CN: "11月",
-    es: ""
+    sk: ""
   },
   "December": {
     fr: "Décembre",
@@ -400,7 +400,7 @@ var dict = {
     pl: "Grudzień",
     ru: "декабря",
     zh_CN: "12月",
-    es: ""
+    sk: ""
   },
   "LANGUAGE": {
     fr: "Langue",
@@ -409,7 +409,7 @@ var dict = {
     pl: "Język",
     ru: "Язык",
     zh_CN: "语言",
-    es: ""
+    sk: ""
   },
   "Choose language": {
     fr: "Choix de la langue",
@@ -418,7 +418,7 @@ var dict = {
     pl: "Wybierz Język",
     ru: "Выберите язык",
     zh_CN: "选择语言",
-    es: ""
+    sk: ""
   },
   "Visit": {
     fr: "Rendez-vous sur",
@@ -427,7 +427,7 @@ var dict = {
     pl: "Do zobaczenia na",
     ru: "Посетите",
     zh_CN: "访问",
-    es: ""
+    sk: ""
   },
   "&nbsp;our website&nbsp;": {
     fr: "&nbsp;notre site Internet",
@@ -436,7 +436,7 @@ var dict = {
     pl: "&nbsp;nasza strona&nbsp;",
     ru: "&nbsp;наш сайт&nbsp;",
     zh_CN: "&nbsp;我们的网站&nbsp;",
-    es: ""
+    sk: ""
   },
   "for infos and donations": {
     fr: "pour en savoir plus ou faire un don",
@@ -445,7 +445,7 @@ var dict = {
     pl: "aby dowiedzieć się więcej lub przekazać darowiznę",
     ru: "чтобы узнать больше или поддержать разработчиков",
     zh_CN: "以获取更多资讯，或向我们捐款",
-    es: ""
+    sk: ""
   },
   "Thank you for installing Bonjourr, we hope you'll love it. Your new startpage will now appear every time you open a new window or tab.": {
     fr: "Merci d'avoir installé Bonjourr, nous espérons qu'il vous plaira. Votre nouvelle page d'accueil apparaîtra chaque fois que vous ouvrez un nouvel onglet ou une nouvelle fenêtre.",
@@ -454,7 +454,7 @@ var dict = {
     pl: "Dziękujemy za zainstalowanie Bonjourr, mamy nadzieję, że Ci się spodoba. Twoja nowa strona startowa będzie się teraz pojawiać za każdym razem, gdy otworzysz nowe okno lub kartę.",
     ru: "Благодарим вас за установку Bonjourr. Мы надеемся, что Bonjourr вам понравится. Ваша новая стартовая страница теперь будет появляться каждый раз при открытии нового окна или вкладки.",
     zh_CN: "感谢您安装 Bonjorr，我们希望您会爱上它。每次打开新窗口或标签，您都能看到您的新主页。",
-    es: ""
+    sk: ""
   },
   "If you'd like to help us, suggest ideas or report bugs, you can head to ": {
     fr: "Si vous souhaitez nous aider, suggérer des idées ou reporter des bugs, vous pouvez visiter ",
@@ -463,7 +463,7 @@ var dict = {
     pl: "Jeśli chcesz nam pomóc, zasugerować pomysły lub zgłaszać błędy, możesz udać się do ",
     ru: "Если вы хотите нам помочь, предложить идею или сообщить о багах – посетите",
     zh_CN: "如果您想提供帮助，提出建议或汇报错误，可以前往",
-    es: ""
+    sk: ""
   },
   "our website": {
     fr: "notre site Internet",
@@ -472,7 +472,7 @@ var dict = {
     pl: "nasza strona",
     ru: "наш сайт",
     zh_CN: "我们的网站",
-    es: ""
+    sk: ""
   },
   ". Click on the ": {
     fr: ". Cliquez sur le bouton ",
@@ -481,7 +481,7 @@ var dict = {
     pl: ". Kliknij na przycisk",
     ru: ". Нажмите на кнопку",
     zh_CN: "。点击",
-    es: ""
+    sk: ""
   },
   " button to set up Bonjourr and learn the basics.": {
     fr: " pour configurer Bonjourr et en apprendre les bases.",
@@ -490,7 +490,7 @@ var dict = {
     pl: " przycisk by skonfigurować Bonjourr i nauczyć się podstaw.",
     ru: " для настройки и знакомства с базовыми функциями Bonjourr.",
     zh_CN: "按钮来设置 Bonjorr 及学习基本操作。",
-    es: ""
+    sk: ""
   },
   "Begin": {
     fr: "Commencer",
@@ -499,7 +499,7 @@ var dict = {
     pl: "Zaczynamy",
     ru: "Начать",
     zh_CN: "开始",
-    es: ""
+    sk: ""
   },
   "Adding your links": {
     fr: "Ajout de favoris",
@@ -508,7 +508,7 @@ var dict = {
     pl: "Dodaj swoje linki",
     ru: "Добавьте свои закладки",
     zh_CN: "添加您的链接",
-    es: ""
+    sk: ""
   },
   "You can add an easy access to your favorite websites in the Quick Links settings. Just type your site's title, its URL and click ": {
     fr: "Vous pouvez facilement ajouter des liens vers vos sites favoris. Il suffit d'entrer le titre de votre site, son URL, de cliquer sur ",
@@ -517,7 +517,7 @@ var dict = {
     pl: "Możesz łatwo dodawać linki do swoich ulubionych stron. Po prostu wpisz tytuł swojej witryny, jej adres URL, kliknij ",
     ru: "Вы можете добавить закладки для своих любимых сайтов в настройках закладок. Просто введите название закладки, адрес сайта, и нажмите на",
     zh_CN: "您可以在快速链接设置中添加喜爱的网站以便迅速访问。只需输入网站的标题和网址，再点击",
-    es: ""
+    sk: ""
   },
   ", it will appear under the weather widget.": {
     fr: " et il apparaîtra directement sous le widget Météo.",
@@ -526,7 +526,7 @@ var dict = {
     pl: " pojawi się pod widżetem pogody.",
     ru: " и она появится прямо под виджетом погоды.",
     zh_CN: "，它会出现在天气小部件下方。",
-    es: ""
+    sk: ""
   },
   "To get rid of a link, press it for a second and the delete icon will appear.": {
     fr:  "Pour supprimer un favoris, effectuez un clic prolongé sur celui-ci pour activer la suppression.",
@@ -535,7 +535,7 @@ var dict = {
     pl: "Aby usunąć zakładkę, kliknij i przytrzymaj ją, aby umożliwić usunięcie.",
     ru: "Чтобы удалить закладку, зажмите её иконку. В верхнем левом углу появится кнопка удаления.",
     zh_CN: "要删除链接，请右键点击该链接，然后删除按钮将会出现。",
-    es: ""
+    sk: ""
   },
   "The weather will be automatically updated according to your geolocation. You can manually change the location and change measure units.": {
     fr: "La météo se met à jour automatiquement selon votre géolocalisation. Vous pouvez également choisir votre ville manuellement et changer l'unité de mesure.",
@@ -545,7 +545,7 @@ var dict = {
     // nl: "Bonjourr’s weer widget staat automatisch op Parijs. Activeer locaties en het weer wordt automatisch geupdate naar uw huidige locatie. U kunt ook een plaats handmatig invoeren en de temperatuur eenheid veranderen.",
     // pl: "Pogoda Bonjourr jest domyśnie ustawiona na Paryż. Możesz włączyć geolokalizację, która automatycznie aktualizuje się w zależności od miasta, w którym się znajdujesz. Możesz także wprowadzić miasto ręcznie i zmienić jednostkę miary.",
     // ru: "",
-    // es: ""
+    sk: ""
   },
   "Change city": {
     fr: "Changer la ville",
@@ -554,7 +554,7 @@ var dict = {
     pl: "Zmień miasto",
     ru: "Сменить город",
     zh_CN: "更改城市",
-    es: ""
+    sk: ""
   },
   "There was a problem": {
     fr: "Il y a eu un problème",
@@ -563,7 +563,7 @@ var dict = {
     pl: "Wystąpił problem",
     ru: "Возникла проблема",
     zh_CN: "出现错误",
-    es: ""
+    sk: ""
   },
   "or select": {
     fr: "ou selectionnez",
@@ -572,7 +572,7 @@ var dict = {
     pl: "lub wybierz",
     ru: "или выберите",
     zh_CN: "或者选择",
-    es: ""
+    sk: ""
   },
   "Automatic": {
     fr: "Automatique",
@@ -581,7 +581,7 @@ var dict = {
     pl: "Automatycznie",
     ru: "Автоматически",
     zh_CN: "自动设置",
-    es: ""
+    sk: ""
   },
   "to set the weather based on your geolocation": {
     fr: "pour avoir la météo par rapport à votre localisation",
@@ -590,7 +590,7 @@ var dict = {
     pl: "aby ustawić pogodę na podstawie geolokalizacji",
     ru: "чтобы видеть погоду для вашего местоположения.",
     zh_CN: "来根据您的地理位置获取天气信息",
-    es: ""
+    sk: ""
   },
   "You can also change the measure unit": {
     fr: "Vous pouvez également changer l'unité de mesure",
@@ -599,7 +599,7 @@ var dict = {
     pl: "Możesz także zmienić jednostkę miary",
     ru: "Вы также можете сменить единицы измерения",
     zh_CN: "您也可以更改计量单位",
-    es: ""
+    sk: ""
   },
   "VISUALS": {
     fr: "Affichage",
@@ -608,7 +608,7 @@ var dict = {
     pl: "Wygląd",
     ru: "Внешний вид",
     zh_CN: "外观",
-    es: ""
+    sk: ""
   },
   "You can choose a background from our selection below. To put a custom background, a dynamic background or adjust the blur intensity, you can visit the Settings.": {
     fr: "Vous pouvez choisir un arrière-plan parmi la sélection ci-dessous. Pour mettre un arrière-plan personnalisé ou dynamique, vous pouvez visiter les Réglages.",
@@ -617,7 +617,7 @@ var dict = {
     pl: "Możesz używać tła z wybranych poniżej. Aby umieścić spersonalizowane lub dynamiczne tło, możesz przejść do Ustawień.",
     ru: "Вы можете выбрать фон страницы из предложенных ниже. Поставить свой фон, динамический фон или поменять степень его размытия вы можете в настройках.",
     zh_CN: "您可以选择下方我们精心挑选的背景。也可以访问设置以使用自定义背景或动态背景，以及调整模糊度。",
-    es: ""
+    sk: ""
   },
   "A dark mode is also available.": {
     fr: "Un mode sombre est également disponible.",
@@ -626,7 +626,7 @@ var dict = {
     pl: "Tryb ciemny jest również dostępny",
     ru: "Кроме того, у Bonjourr есть и тёмная тема.",
     zh_CN: "我们也提供黑暗模式供您使用。",
-    es: ""
+    sk: ""
   },
   "Dark mode": {
     fr: "Mode sombre",
@@ -635,7 +635,7 @@ var dict = {
     pl: "Tryb ciemny",
     ru: "Тёмная тема",
     zh_CN: "黑暗模式",
-    es: ""
+    sk: ""
   },
   "Only at night": {
     fr: "Seulement la nuit",
@@ -644,7 +644,7 @@ var dict = {
     pl: "Tylko w nocy",
     ru: "Только ночью",
     zh_CN: "只在夜间开启",
-    es: ""
+    sk: ""
   },
   "With the system": {
     fr: "Avec le système",
@@ -653,7 +653,7 @@ var dict = {
     pl: "Razem z systemem",
     ru: "Вместе с системой",
     zh_CN: "跟随系统设置",
-    es: ""
+    sk: ""
   },
   "Enabled": {
     fr: "Activé",
@@ -662,7 +662,7 @@ var dict = {
     pl: "Włączony",
     ru: "Включена",
     zh_CN: "开启",
-    es: ""
+    sk: ""
   },
   "Disabled": {
     fr: "Désactivé",
@@ -671,7 +671,7 @@ var dict = {
     pl: "Wyłączony",
     ru: "Выключена",
     zh_CN: "关闭",
-    es: ""
+    sk: ""
   },
   "SEARCH BAR": {
     fr: "Barre de recherche",
@@ -680,7 +680,7 @@ var dict = {
     pl: "Pasek wyszukiwania",
     ru: "Строка поиска",
     zh_CN: "搜索框",
-    es: ""
+    sk: ""
   },
   "If you want, you can add a search bar and choose your favorite search engine.": {
     fr: "Si vous le souhaitez, vous pouvez ajouter une barre de recherche et choisir votre moteur de recherche favori.",
@@ -689,7 +689,7 @@ var dict = {
     pl: "Jeśli chcesz, możesz dodać pasek wyszukiwania i wybrać swoją ulubioną wyszukiwarkę.",
     ru: "По желанию вы можете добавить строку поиска и выбрать любимую поисковую систему.",
     zh_CN: "如果需要的话，您可以添加一个搜索框并选择您喜欢的搜索引擎。",
-    es: ""
+    sk: ""
   },
   "Search engine": {
     fr: "Moteur de recherche",
@@ -698,7 +698,7 @@ var dict = {
     pl: "Wyszukiwarka",
     ru: "Поисковая система",
     zh_CN: "搜索引擎",
-    es: ""
+    sk: ""
   },
   "Activate": {
     fr: "Activer",
@@ -707,7 +707,7 @@ var dict = {
     pl: "Aktywować", // unsure
     ru: "позволять", // unsure
     zh_CN: "启用",
-    es: ""
+    sk: ""
   },
   "Dismiss": {
     fr: "Ignorer",
@@ -716,7 +716,7 @@ var dict = {
     pl: "Rozwiać", // unsure
     ru: "отклонить", // unsure
     zh_CN: "忽略",
-    es: ""
+    sk: ""
   },
   "Use this option if you don't want to enable geolocation.": {
     fr: "Utilisez cette option si vous ne souhaitez pas activer la géolocalisation.",
@@ -725,7 +725,7 @@ var dict = {
     pl: "Użyj tej opcji jesli nie chcesz włączyć geolokalizacji.",
     ru: "Если вы не хотите включать геолокацию – воспользуйтесь этой опцией.",
     zh_CN: "如果不想根据您的位置自动设置天气，请使用该选项。",
-    es: ""
+    sk: ""
   },
   "Geolocation": {
     fr: "Géolocalisation",
@@ -734,7 +734,7 @@ var dict = {
     pl: "Geolokalizacja",
     ru: "Геолокация",
     zh_CN: "使用我的位置",
-    es: ""
+    sk: ""
   },
   "Incorrect URL": {
     fr: "URL incorrecte",
@@ -743,7 +743,7 @@ var dict = {
     pl: "Niepoprawny URL",
     ru: "Недопустимая ссылка",
     zh_CN: "URL 不正确",
-    es: ""
+    sk: ""
   },
   "Right click on the icons to delete a Quick Link.": {
     fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes.",
@@ -753,7 +753,7 @@ var dict = {
     nl: "Right click on the icons to delete a Quick Link.",
     pl: "Right click on the icons to delete a Quick Link.",
     ru: "Right click on the icons to delete a Quick Link.",
-    es: ""
+    sk: ""
   },
   "You now know the basics of using Bonjourr. Don't forget that you can go further into customization by visiting the Settings with the icon in the bottom right corner of the window.": {
     fr: "Bonjourr a bien été configuré. N'oubliez pas que vous pouvez aller plus loin dans la personnalisation en visitant les Réglages via l'icône en bas à droite de la fenêtre.",
@@ -762,7 +762,7 @@ var dict = {
     pl: "Znasz już podstawy używania Bonjourr. Pamiętaj, że możesz personalizować przechodząć dalej do Ustawień poprzez ikonę w prawym dolnym rogu okna.",
     ru: "Вы настроили базовые функции Bonjourr. В дальнейшем вы сможете настроить Bonjourr под себя, нажав на значок настроек в правом нижнем углу окна.",
     zh_CN: "您已经了解了 Bonjorr 的基本用法。如果您要进一步自定义，可以点击窗口右下角的图标以访问设置。",
-    es: ""
+    sk: ""
   },
   "Almost done!": {
     fr: "Nous y sommes presque !",
@@ -771,7 +771,7 @@ var dict = {
     pl: "Prawie gotowe!",
     ru: "Почти готово!",
     zh_CN: "就快好了！",
-    es: ""
+    sk: ""
   },
   "Back": {
     fr: "Retour",
@@ -780,7 +780,7 @@ var dict = {
     pl: "Poprzedni",
     ru: "Назад",
     zh_CN: "返回",
-    es: ""
+    sk: ""
   },
   "Next": {
     fr: "Suivant",
@@ -789,7 +789,7 @@ var dict = {
     pl: "Nastepny",
     ru: "Далее",
     zh_CN: "下一步",
-    es: ""
+    sk: ""
   },
   "All set!": {
     fr: "Prêt !",
@@ -798,7 +798,7 @@ var dict = {
     pl: "Wszystko gotowe!",
     ru: "Всё готово!",
     zh_CN: "设置完成！",
-    es: ""
+    sk: ""
   },
   "CLOCK": {
     fr: "Horloge",
@@ -807,7 +807,7 @@ var dict = {
     pl: "Zegar",
     ru: "Часы",
     zh_CN: "时钟",
-    es: ""
+    sk: ""
   },
   "12-Hour Time": {
     fr: "Affichage 12h",
@@ -816,7 +816,7 @@ var dict = {
     pl: "Czas 12-godzinny",
     ru: "12-часовой формат времени",
     zh_CN: "12小时制",
-    es: ""
+    sk: ""
   },
   "Search Startpage": {
     fr: "Rechercher sur Startpage",
@@ -825,7 +825,7 @@ var dict = {
     pl: " Szukaj z Startpage",
     ru: "Поиск в Startpage",
     zh_CN: "搜索 Startpage",
-    es: ""
+    sk: ""
   },
   "Search Ecosia": {
     fr: "Rechercher sur Ecosia",
@@ -834,7 +834,7 @@ var dict = {
     pl: "Szukaj z Ecosia",
     ru: "Поиск в Ecosia",
     zh_CN: "搜索 Ecosia",
-    es: ""
+    sk: ""
   },
   "Search DuckDuckGo": {
     fr: "Rechercher sur DuckDuckGo",
@@ -843,7 +843,7 @@ var dict = {
     pl: "Szukaj z DuckDuckGo",
     ru: "Поиск в DuckDuckGo",
     zh_CN: "搜索 DuckDuckGo",
-    es: ""
+    sk: ""
   },
   "Search Google": {
     fr: "Rechercher sur Google",
@@ -852,7 +852,7 @@ var dict = {
     pl: "Szukaj z Google",
     ru: "Поиск в Google",
     zh_CN: "搜索 Google",
-    es: ""
+    sk: ""
   },
   "Search Yahoo": {
     fr: "Rechercher sur Yahoo",
@@ -861,7 +861,7 @@ var dict = {
     pl: "Szukaj z Yahoo",
     ru: "Поиск в Yahoo",
     zh_CN: "搜索 Yahoo",
-    es: ""
+    sk: ""
   },
   "Search Bing": {
     fr: "Rechercher sur Bing",
@@ -870,7 +870,7 @@ var dict = {
     pl: "Szukaj z Bing",
     ru: "Поиск в Bing",
     zh_CN: "搜索 Bing",
-    es: ""
+    sk: ""
   },
   "Welcome back 😊": {
     fr: "Bon retour 😊",
@@ -879,7 +879,7 @@ var dict = {
     pl: "Witaj ponownie 😊",
     ru: "С возвращением 😊",
     zh_CN: "欢迎回来 😊",
-    es: ""
+    sk: ""
   },
   "We've kept your settings so you don't have to redo everything again.": {
     fr: "Nous avons gardé vos réglages pour vous éviter d'avoir à tout refaire.",
@@ -888,7 +888,7 @@ var dict = {
     pl: "Zachowaliśmy Twoje ustawienia, aby uniknąć konieczności ponownego wykonywania wszystkiego.",
     ru: "Мы сохранили ваши настройки, чтобы вам не пришлось всё делать заново.",
     zh_CN: "我们已经保留了您的设置，您无需再从头再来。",
-    es: ""
+    sk: ""
   },
   "Close": {
     fr: "Fermer",
@@ -897,6 +897,6 @@ var dict = {
     pl: "Zamknij",
     ru: "Закрыть",
     zh_CN: "关闭",
-    es: ""
+    sk: ""
   }
 }

@@ -35,14 +35,103 @@
 				<hr>
 
 				<div class="linknewtab wrapper">
-						<span class="trn">Open in new tab by default</span>
-						<div>
-							<label class="switch">
-								<input id="i_linknewtab" type="checkbox">
-								<span class="slider round span"></span>
-							</label>
+					<span class="trn">Open in new tab by default</span>
+					<div>
+						<label class="switch">
+							<input id="i_linknewtab" type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="change_background">          
+			<h5 class="subtitle trn">Visuals</h5>
+
+			<div class="param">
+				<div class="background wrapper">
+					<span class="trn selector_span">Background type</span>
+					<select id="i_background" class="theme">
+						<option value="default" class="trn">Default</option>
+						<option value="dynamic" class="trn">Dynamic</option>
+						<option value="custom" class="trn">Custom</option>
+					</select>
+				</div>
+
+				<hr>
+				
+				<div id="default_background">
+					<span class="span trn">Choose background</span>
+					<div  class="choosable_backgrounds">
+						<div class="imgpreview">
+							<img src="src/images/backgrounds/avi-richards-beach.jpg"/>
+						</div>
+						<div class="imgpreview">
+							<img src="src/images/backgrounds/tyler-casey-landscape.jpg"/>
+						</div>
+						<div class="imgpreview">
+							<img src="src/images/backgrounds/tahoe-beetschen-ferns.jpg"/>
+						</div>
+						<div id="ios_wallpaper" class="imgpreview">
+							<img src="src/images/backgrounds/ios13_light.jpg" />
 						</div>
 					</div>
+				</div>
+
+				<div class="wrapper" id="dynamic_bg">
+					<span class="trn">Refresh rate</span>
+					<select id="i_background" class="theme">
+						<option value="default" class="trn">Every hour</option>
+						<option value="dynamic" class="trn">Every day</option>
+						<option value="custom" class="trn">Every week</option>
+					</select>
+				</div>
+
+				<div id="custom_bg">
+					<span class="trn">Custom background</span>
+					<div class="custom_bg">
+						<input id="i_bgfile" type="file" name="background_file">
+					</div>
+				</div>
+
+				<hr>
+
+				<div class="4k_bg wrapper">
+					<span>4K / Retina</span>
+					<div>
+						<label class="switch">
+							<input id="i_retina" type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
+				</div>
+				
+				<hr>
+
+				<div class="blur">
+					<span class="trn">Blur intensity</span>
+					<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="25" step="1">
+				</div>
+				
+				<hr>
+
+				<div class="brightness">
+					<span class="trn">Brightness</span>
+					<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value="1" step=".01">
+				</div>
+
+				<hr>
+
+				<div class="darkmode wrapper">
+					<span class="trn selector_span">Dark mode</span>
+					<select id="i_dark" class="theme">
+						<option value="auto" class="trn">Only at night</option>
+						<option value="system" class="trn">With the system</option>
+						<option value="enable" class="trn">Enabled</option>
+						<option value="disable" class="trn">Disabled</option>
+					</select>
+				</div>
 			</div>
 		</div>
 
@@ -454,7 +543,37 @@
 			</div>
 		</div>
 
-		<div id="clock_option">
+		<div id="general_option">
+			<h5 class="subtitle trn">General</h5>
+			<div class="param">
+				<div class="12hour wrapper">
+					<span class="trn">12-Hour Time</span>
+					<div>
+						<label class="switch">
+							<input id="i_ampm" type="checkbox">
+							<span class="slider round span"></span>
+						</label>
+					</div>
+				</div>
+
+				<hr>
+
+				<div class="choose_language wrapper">
+					<span class="trn selector_span">Choose language</span>
+					<select id="i_lang" class="lang">
+						<option value="en">English</option>
+						<option value="fr">Français</option>
+						<option value="sv">Svenska</option>
+						<option value="pl">Polskie</option>
+						<option value="nl">Nederlandse</option>
+						<option value="ru">Русский</option>
+						<option value="zh_CN">简体中文</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+	<!-- 	<div id="clock_option">
 			<h5 class="subtitle trn">Clock</h5>
 			<div class="param">
 				<div class="12hour wrapper">
@@ -485,7 +604,7 @@
 					</select>
 				</div>
 			</div>
-		</div>
+		</div> -->
 
 		<div class="signature">
 			<p class="trn">Made in France with ❤️</p>
