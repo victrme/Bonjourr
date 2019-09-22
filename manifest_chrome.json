@@ -22,7 +22,7 @@
 	},
 
 	"permissions": [
-		"https://victor-azevedo.me/*",
+		"https://victor-azevedo.me/unsplash/*",
 		"storage",
 		"unlimitedStorage",
 		"geolocation"
