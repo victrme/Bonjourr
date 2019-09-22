@@ -113,336 +113,6 @@
 	}
 }
 
-.welcomeback_wrapper {
-	position: absolute;
-	overflow: hidden;
-	display: none;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, .6);
-	text-shadow: none;
-	z-index: 99;
-	transition: background-color .4s ease-in;
-	@include settingsBase();
-
-	.welcomeback {
-		transition: margin .4s ease-in;
-		width: 300px;
-		max-width: calc(100% - 2em);
-		height: auto;
-		padding: 1.4em;
-		background-color: #fff;
-		z-index: 3;
-		color: #222;
-		border-radius: 8px;
-
-		h1 {
-		    color: black;
-		    font-size: 1.5em;
-		    text-shadow: none;
-		}
-
-		p {
-			font-size: 18px;
-			color: black;
-			margin: .8em 0;
-			line-height: 1.5em;
-
-			h1 {
-				font-size: 1em;
-			}
-		}
-
-		button {
-			font-size: 18px;
-		}
-	}
-
-	.welcomeback.update {
-
-		width: 450px;
-		color: #333;
-
-		p {
-			text-align: left;
-			padding: 0 2em;
-		}
-
-		li {
-			list-style-type: none;
-
-			&:before {
-				content: "\2022 ";
-				padding: 0 1em;
-				color: #bbb;
-			}
-		}
-	}
-}
-
-$popupText : 22px;
-#start_popup {
-	transition: all .4s ease-in;
-	z-index: 10;
-	overflow: hidden;
-	display: none;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, .6);
-	justify-content: center;
-	align-items: center;
-	color: #222;
-	text-shadow: none;
-
-	.popup_window {
-		overflow-x: hidden;
-		transition: margin .4s ease-in;
-		width: 600px;
-		max-width: calc(100% - 2em);
-		height: auto;
-		border-radius: 8px;
-		background-color: white;
-
-		.popup_line {
-			display: flex;
-			width: 600%;
-			align-items: center;
-			transition: margin .3s;
-
-			.popup {
-				width: 100%;
-				padding: 2em 0;
-
-				h1 {
-					color: black;
-					font-size: 2em;
-					text-shadow: none;
-				}
-
-				p {
-					text-align: justify;
-					text-shadow: none;
-					font-size: $popupText;
-					color: black;
-					margin: 1em 0;
-					line-height: 1.5em;
-					padding: 0 2em;
-
-					a {
-						text-decoration: none;
-						color: #007aff;
-					}
-
-					code {
-						font-family: sf_pro_displaylight;
-						font-size: $popupText;
-						color: #007aff;
-						border: 1px solid #007aff;
-						border-radius: 4px;
-						padding: .1em .4em;
-						margin: 0 .1em;
-					}
-				}
-
-				span {
-					font-size: $popupText;
-				}
-
-				.submitlink, .submitw_city {
-					font-size: 1.1em;
-				}
-
-				.wrapper {
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					margin: auto;
-
-					> * {
-						margin: 0 2em;
-					}
-				}
-
-				input[name="title"],
-				input[name="url"],
-				input[name="city"] {
-					font-size: 1.1em;
-				}
-
-				.popup_param {
-					margin: 2em auto;
-					width: 75%;
-
-					> * {
-						margin-top: .5em;
-						margin-bottom: .5em;
-					}
-				}
-			}
-
-			.popup1 {
-				img {
-					width: 75%;
-				}
-			}
-
-			.popup2 {
-				@include settingsBase();
-
-				#quicklinksSett {
-					input[type="text"] {
-						margin-bottom: .5em;
-						width: calc(100% - .5em);
-					}
-
-					button {
-						display: block;
-						margin: auto;
-					}
-				}
-				
-				input[name="url"]::placeholder {
-					text-transform: lowercase;
-				}
-
-				div {
-					@include linkBlocks();
-
-					.linkblocks {
-						padding-bottom: 0px;
-						padding-top: 0px;
-						// visibility: visible;
-
-						.block_parent .block span {
-							text-shadow: 0;
-						}
-					}
-				}
-			}
-
-			.popup3 {
-				@include settingsBase();
-
-				.w_auto {
-					justify-content: space-between;
-
-					> * {
-						margin: 0;
-					}
-				}
-
-				#sett_city {
-					display: flex;
-					align-items: center;
-					width: 100%;
-					justify-content: space-between;
-
-					> * {
-						width: 30%;
-					}
-
-					button {
-						margin: 0;
-					}
-				}
-
-				.units {
-					justify-content: space-between;
-
-					> * {
-						margin: 0;
-					}
-				}
-
-				@include weather();
-
-				.weather {
-					.w_widget {
-						margin-top: 1em;
-
-						.w_widget_temp {
-							padding: 1rem;
-							font-size: 3rem;
-						}
-					}
-
-					.w_icon {
-						opacity: 0;
-						padding: .5em;
-						border-radius: 8px;
-						background-color: #222;
-						filter: none;
-						transition: opacity .1s
-					}
-				}
-			}
-
-			.popup4 {
-				@include chooseBackground();
-
-				.backgrounds {
-					width: 50%;
-				}
-			}
-
-			.popup5 {
-				@include settingsBase();
-				@include searchbar();
-
-				#sb_container form #searchbar {
-					background-color: white;
-				}
-			}
-
-			.popup6 {
-				video {
-					width: 80%;
-					border-radius: 4px;
-				}
-			}
-		}
-		
-		.popup_buttons {
-			padding: 0 2em 2em 2em;
-			display: flex;
-			justify-content: space-around;
-			align-items: center;
-
-			button {
-				height: 50px;
-				width: 130px;
-				background-color: #007aff;
-				color: white;
-				border: 0;
-				cursor: pointer;
-				font-size: 20px;
-				border-radius: 8px;
-
-				&:hover {
-					filter: brightness(1.1);
-				}
-
-				&:active {
-					filter: brightness(1.3);
-				}
-			}
-
-			.counter span {
-				color: #ccc;
-				text-shadow: none;
-				font-size: 2em;
-
-				&.actif {
-					color: #007aff;
-				}
-			}
-		}
-	}
-}
-
 #showSettings {
 	position: fixed;
 	bottom: .7em;
@@ -519,6 +189,7 @@ $popupText : 22px;
 
 	span {
 		font-size: 0.9em;
+		line-height: 34px;
 	}
 
 	.help_sentence {
@@ -535,7 +206,7 @@ $popupText : 22px;
 		padding: .5em 0;
 	}
 
-	.paramTitle {
+	h5 {
 		margin: 1em 1.3em;
 		color: #6d6d72;
 		text-transform: uppercase;
@@ -558,7 +229,7 @@ $popupText : 22px;
 
 	@include chooseBackground();
 
-	#quicklinksSett {
+	.link_input_wrap {
 		input[type="text"] {
 			margin-bottom: .5em;
 			width: calc(100% - .5em);
@@ -570,7 +241,15 @@ $popupText : 22px;
 		}
 	}
 
-	.choosable_backgrounds {
+	#default, #dynamic, #custom {
+		display: none;
+	}
+
+	#dynamic {
+		padding: 1em 0;
+	}
+
+	#default > div {
 		padding: 1em 0;
 	}
 

@@ -1,33 +1,8 @@
 // dark mode
 body.dark {
-	#start_popup .popup_window {
-		background-color: #1c1c1e;
-		
-		.popup_line {
-			p, h1, span {
-				color: white;
-			}
 
-			button {
-				background-color: #1c1c1e;
-			}
-
-			.weather .w_icon {
-				background-color: #1c1c1e;
-			}
-		}
-	}
-	
-	.welcomeback {
-		background-color: #1c1c1e;
-	}
-
-	#background {
-		opacity: .75;
-	}
-
-	.welcomeback  p, .welcomeback  h1 {
-		color: white;
+	#interface {
+		color: #eee;
 	}
 
 	#settings {
@@ -113,31 +88,10 @@ body.dark {
 
 // dark mode avec le système
 body.autodark {
-	@media (prefers-color-scheme: dark) {
-		#start_popup .popup_window {
-		background-color: #1c1c1e;
-		
-		.popup_line {
-			p, h1, span {
-				color: white;
-			}
 
-			button {
-				background-color: #1c1c1e;
-			}
 
-			.weather .w_icon {
-				background-color: #1c1c1e;
-			}
-		}
-	}
-	
-	.welcomeback {
-		background-color: #1c1c1e;
-	}
-
-	#background {
-		opacity: .75;
+	#interface {
+		color: #eee;
 	}
 
 	.welcomeback  p, .welcomeback  h1 {

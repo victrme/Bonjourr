@@ -1036,19 +1036,6 @@ function imgBackground(val) {
 }
 
 function applyBackground(src, type) {
-
-	//enleve les inputs selectionnés suivent le type
-	if (type === "default") {
-		id("i_dynamic").checked = false;
-		id("i_bgfile").value = "";
-	}
-	else if (type === "custom") {
-		id("i_dynamic").checked = false;
-		remSelectedPreview();
-	}
-	else if (type === "dynamic") {
-		remSelectedPreview();
-	}
 	
 	imgBackground(src);
 }
@@ -1077,6 +1064,7 @@ function initBackground() {
 			applyBackground(image, type);
 		}
 		
+		selectBackgroundType(type);
 		imgCredits(image, type);
 		filter("init", [blur, bright]);
 
@@ -1085,6 +1073,19 @@ function initBackground() {
 			id("background").style.transition = "filter .2s";
 		}, 500);
 	});	
+}
+
+function selectBackgroundType(cat) {
+
+	id("default").style.display = "none";
+	id("dynamic").style.display = "none";
+	id("custom").style.display = "none";
+
+	id(cat).style.display = "block";
+}
+
+id("i_type").onchange = function() {
+	selectBackgroundType(this.value)
 }
 
 function setblob(donnee, set) {
@@ -1154,11 +1155,11 @@ function defaultBg() {
 
 	let bgTimeout, oldbg;
 
-	id("default_background").onmouseenter = function() {
+	id("default").onmouseenter = function() {
 		oldbg = imgBackground().slice(4, imgBackground().length - 1);
 	}
 
-	id("default_background").onmouseleave = function() {
+	id("default").onmouseleave = function() {
 		clearTimeout(bgTimeout);
 		imgBackground(oldbg);
 	}
@@ -1311,25 +1312,6 @@ function unsplash() {
 	}
 	
 	cacheControl()
-}
-
-function retina(check) {
-
-	var b = id("background").style.backgroundImage.slice(4, imgBackground().length - 1);
-
-	if (!check && b.includes("/4k")) {
-		b = b.replace("/4k", "");
-		imgBackground(b);
-		chrome.storage.sync.set({"background_image": b});
-		chrome.storage.sync.set({"retina": false});
-	}
-
-	if (check && !b.includes("/4k")) {
-		b = b.replace("backgrounds/", "backgrounds/4k/");
-		imgBackground(b);
-		chrome.storage.sync.set({"background_image": b});
-		chrome.storage.sync.set({"retina": true});
-	}
 }
 
 function remSelectedPreview() {
@@ -1549,7 +1531,7 @@ function searchbar() {
 		}
 
 		var trad = {
-			en: "Search",
+			en: "Search on",
 			fr: "Rechercher sur",
 			sv: "Sök med",
 			nl: "Zoek op",
@@ -1640,13 +1622,6 @@ function actualizeStartupOptions() {
 				imgs[i].setAttribute("class", "imgpreview selected");
 			}
 		}
-
-		//is in 4k
-		id("i_retina").checked = (data.retina ? true : false);
-
-		//dynamic background
-		id("i_dynamic").checked = (data.background_type === "dynamic" ? true : false);
-
 
 		//blur
 		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);

@@ -21,18 +21,18 @@
 
 	<div id="settings">
 
-		<div class="title">
+		<!-- <div class="title">
 			<h1 class="trn">Settings</h1>
 		</div>
-
-		<div id="quicklinksSett">
-			<h5 class="paramTitle trn">Quick Links</h5>
+ -->
+		<div>
+			<h5 class="trn">Quick Links</h5>
 			<div class="param">
-				<div>
+				<div class="link_input_wrap">
 					<input id="i_title" type="text" name="title" placeholder="Title">
 					<input id="i_url" type="text" name="url" placeholder="URL">
-					<p id="wrongURL" class="trn wrongURL">Incorrect URL</p>
-					<button id="submitlink" class="submitlink trn">Add</button>
+					<p id="wrongURL" class="trn">Incorrect URL</p>
+					<button id="submitlink" class="trn">Add</button>
 					<p class="help_sentence trn">Right click on the icons to delete a Quick Link.</p>
 				</div>
 		
@@ -50,24 +50,21 @@
 			</div>
 		</div>
 
-		<div id="visualsSett">          
-			<h5 class="paramTitle trn">Visuals</h5>
+		<div>          
+			<h5 class="trn">Visuals</h5>
 
 			<div class="param">
 				<div class="wrapper">
 					<span class="trn selector_span">Background type</span>
-					<select id="i_background" class="theme">
+					<select id="i_type" class="theme">
 						<option value="default" class="trn">Default</option>
 						<option value="dynamic" class="trn">Dynamic</option>
 						<option value="custom" class="trn">Custom</option>
 					</select>
 				</div>
 
-				<hr>
-				
-				<div id="default_bg">
-					<span class="span trn">Choose background</span>
-					<div  class="choosable_backgrounds">
+				<div id="default">
+					<div>
 						<div class="imgpreview">
 							<img src="src/images/backgrounds/avi-richards-beach.jpg"/>
 						</div>
@@ -83,34 +80,21 @@
 					</div>
 				</div>
 
-				<div id="dynamic_bg" class="wrapper" >
-					<span class="trn">Frequency</span>
-					<select id="i_background" >  
-						<option value="default" class="trn">Every hour</option>
-						<option value="dynamic" class="trn">Every day</option>
-						<option value="custom" class="trn">Every week</option>
-					</select>
-				</div>
-
-				<div id="custom_bg">
-					<span class="trn">Custom background</span>
-					<div class="custom_zone">
-						<input id="i_bgfile" type="file" name="background_file">
+				<div id="dynamic">
+					<div class="wrapper">
+						<span class="trn">Frequency</span>
+						<select id="i_freq">
+							<option value="default" class="trn">Every hour</option>
+							<option value="dynamic" class="trn">Every day</option>
+							<option value="custom" class="trn">Every week</option>
+						</select>
 					</div>
 				</div>
 				
-				<hr>
-
-				<div class="blur">
-					<span class="trn">Blur intensity</span>
-					<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="25" step="1">
-				</div>
-				
-				<hr>
-
-				<div class="brightness">
-					<span class="trn">Brightness</span>
-					<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value="1" step=".01">
+				<div id="custom">
+					<div class="custom_zone">
+						<input id="i_bgfile" type="file" name="background_file">
+					</div>
 				</div>
 
 				<hr>
@@ -125,75 +109,11 @@
 					</div>
 				</div>
 
-				<p class="help_sentence trn">Use lighter images.</p>
-
 				<hr>
 
-				<div class="darkmode wrapper">
-					<span class="trn selector_span">Dark mode</span>
-					<select id="i_dark" class="theme">
-						<option value="auto" class="trn">Only at night</option>
-						<option value="system" class="trn">With the system</option>
-						<option value="enable" class="trn">Enabled</option>
-						<option value="disable" class="trn">Disabled</option>
-					</select>
-				</div>
-			</div>
-		</div>
+				<!-- <p class="help_sentence trn">Use lighter images.</p> -->
 
-		<div class="change_background">          
-			<h5 class="paramTitle trn">Visuals</h5>
-			<div class="param">
-				<div class="bac">
-					<span class="span trn">Choose background</span>
-					<div id="default_background" class="choosable_backgrounds">
-						<div class="imgpreview">
-							<img src="src/images/backgrounds/avi-richards-beach.jpg"/>
-						</div>
-						<div class="imgpreview">
-							<img src="src/images/backgrounds/tyler-casey-landscape.jpg"/>
-						</div>
-						<div class="imgpreview">
-							<img src="src/images/backgrounds/tahoe-beetschen-ferns.jpg"/>
-						</div>
-						<div id="ios_wallpaper" class="imgpreview">
-							<img src="src/images/backgrounds/ios13_light.jpg" />
-						</div>
-					</div>
-
-					<div class="4k_bg wrapper">
-						<span>4K / Retina</span>
-						<div>
-							<label class="switch">
-								<input id="i_retina" type="checkbox">
-								<span class="slider round span"></span>
-							</label>
-						</div>
-					</div>
-
-					<hr>
-
-					<div class="dynamic_bg wrapper">
-						<span class="trn">Dynamic backgrounds</span>
-						<div>
-							<label class="switch">
-								<input id="i_dynamic" type="checkbox">
-								<span class="slider round span"></span>
-							</label>
-						</div>
-					</div>
-
-					<p class="help_sentence trn">Daily backgrounds selected by Bonjourr.</p>
-					
-					<hr>
-
-					<span class="trn">Custom background</span>
-					<div class="custom_bg">
-						<input id="i_bgfile" type="file" name="background_file">
-					</div>
-				</div>
 				
-				<hr>
 
 				<div class="blur">
 					<span class="trn">Blur intensity</span>
@@ -221,8 +141,8 @@
 			</div>
 		</div>
 
-		<div id="weatherSett">
-			<h5 class="paramTitle trn">Weather</h5>
+		<div>
+			<h5 class="trn">Weather</h5>
 			<div class="param">
 				<div class="w_auto wrapper">
 					<span class="trn">Geolocation</span>
@@ -516,8 +436,8 @@
 			</div>
 		</div>
 
-		<div id="searchbarSett">
-			<h5 class="paramTitle trn">Search bar</h5>
+		<div>
+			<h5 class="trn">Search bar</h5>
 			<div class="param">
 				<div class="activate_searchbar wrapper">
 					<span class="trn">Activate</span>
@@ -549,8 +469,8 @@
 			</div>
 		</div>
 
-		<div id="searchbarSett">
-			<h5 class="paramTitle trn">General</h5>
+		<div>
+			<h5 class="trn">General</h5>
 			<div class="param">
 				<div class="12hour wrapper">
 					<span class="trn">12-Hour Time</span>
@@ -578,39 +498,6 @@
 				</div>
 			</div>
 		</div>
-
-	<!-- 	<div id="clock_option">
-			<h5 class="paramTitle trn">Clock</h5>
-			<div class="param">
-				<div class="12hour wrapper">
-					<span class="trn">12-Hour Time</span>
-					<div>
-						<label class="switch">
-							<input id="i_ampm" type="checkbox">
-							<span class="slider round span"></span>
-						</label>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="lang_section">
-			<h5 class="paramTitle trn">Language</h5>
-			<div class="param">
-				<div class="choose_language wrapper">
-					<span class="trn selector_span">Choose language</span>
-					<select id="i_lang" class="lang">
-						<option value="en">English</option>
-						<option value="fr">Français</option>
-						<option value="sv">Svenska</option>
-						<option value="pl">Polskie</option>
-						<option value="nl">Nederlandse</option>
-						<option value="ru">Русский</option>
-						<option value="zh_CN">简体中文</option>
-					</select>
-				</div>
-			</div>
-		</div> -->
 
 		<div class="signature">
 			<p class="trn">Made in France with ❤️</p>
@@ -669,7 +556,7 @@
 		
 		<div id="sb_container">
 			<form id="sb_form" action="" method="GET" autocomplete="off">
-				<input id="searchbar" type="text" name="q" placeholder="Search Startpage"></input>
+				<input id="searchbar" type="text" name="q" placeholder="Search on Startpage"></input>
 			</form>
 		</div>
 

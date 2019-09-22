@@ -1,4 +1,4 @@
-id("i_dynamic").onchange = function() {
+/*id("i_dynamic").onchange = function() {
 
 	if (this.checked) {
 		chrome.storage.sync.set({"background_type": "dynamic"});
@@ -15,11 +15,11 @@ id("i_dynamic").onchange = function() {
 			initBackground();
 		});
 	}
-}
-
+}*/
+/*
 id("i_retina").onchange = function() {
 	retina(this.checked)
-}
+}*/
 
 id("i_bgfile").onchange = function(e) {
 	renderImage(this.files[0]);
