@@ -83,7 +83,7 @@ function traduction() {
 
 			if (dict[trns[k].innerText])
 				dom.push(dict[trns[k].innerText][localStorage.lang]);
-			else {
+			else
 				return false;
 		}
 			
