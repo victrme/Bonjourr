@@ -1347,7 +1347,8 @@ body {
     padding: .5em;
     border: 1px solid #c8c7cc;
     border-radius: 4px; }
-  #settings .blur {
+  #settings .blur,
+  #settings .brightness {
     display: flex;
     align-items: center;
     justify-content: space-between; }

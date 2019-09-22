@@ -39,15 +39,9 @@ const CREDITS = [
 	}];
 
 
-function id(name) {
-	return document.getElementById(name);
-}
-function cl(name) {
-	return document.getElementsByClassName(name);
-}
-function setClass(that, val) {
-	that.setAttribute("class", val);
-}
+id = name => document.getElementById(name);
+cl = name => document.getElementsByClassName(name);
+setClass = (that, val) => that.setAttribute("class", val);
 
 
 //c'est juste pour debug le storage
@@ -1038,7 +1032,7 @@ function imgBackground(val) {
 	else return id("background").style.backgroundImage;
 }
 
-function applyBackground(src, type, blur) {
+function applyBackground(src, type) {
 
 	//enleve les inputs selectionnés suivent le type
 	if (type === "default") {
@@ -1054,23 +1048,23 @@ function applyBackground(src, type, blur) {
 	}
 	
 	imgBackground(src);
-	if (blur) blurThis(blur);
 }
  
 function initBackground() {
 
-	chrome.storage.sync.get(["background_image", "background_type", "background_blur"], (data) => {
+	chrome.storage.sync.get(["background_image", "background_type", "background_blur", "background_bright"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
 		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
 		var type = (data.background_type ? data.background_type : "default");
 		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
+		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
 
 		//si custom, faire le blob
 		if (data.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
-				applyBackground(blob(data.background_blob), type);
+				applyBackground(setblob(data.background_blob), type);
 			});	
 		} 
 		else if (data.background_type === "dynamic") {
@@ -1081,7 +1075,7 @@ function initBackground() {
 		}
 		
 		imgCredits(image, type);
-		blurThis(blur, true);
+		filter("init", [blur, bright]);
 
 		//remet les transitions du blur
 		setTimeout(function() {
@@ -1090,7 +1084,7 @@ function initBackground() {
 	});	
 }
 
-function blob(donnee, set) {
+function setblob(donnee, set) {
 
 	//fonction compliqué qui créer un blob à partir d'un base64
 	const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
@@ -1146,7 +1140,7 @@ function renderImage(file) {
 	// inject an image with the src url
 	reader.onload = function(event) {
 
-		applyBackground(blob(event.target.result, true), "custom");
+		applyBackground(setblob(event.target.result, true), "custom"); // resized image url
 	}
 
 	// when the file is read it triggers the onload event above.
@@ -1222,7 +1216,6 @@ function defaultBg() {
 		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
 	}
 }
-defaultBg();
 
 function unsplash() {
 
@@ -1346,12 +1339,23 @@ function remSelectedPreview() {
 	}
 }
 
-function blurThis(val, init) {
-	
-	id('background').style.filter = val > 0 ? `blur(${val}px)` : ``;
+function filter(cat, val) {
 
-	if (!init) chrome.storage.sync.set({"background_blur": +val});
-	else id("i_blur").value = val;
+	if (cat === "init") {
+		id('background').style.filter = `blur(${val[0]}px) brightness(${val[1]})`;
+	}
+
+	if (cat === "blur") {
+		let brightness = id("i_bright").value;
+		id('background').style.filter = `blur(${val}px) brightness(${brightness})`;
+		chrome.storage.sync.set({"background_blur": +val})
+	}
+
+	if (cat === "bright") {
+		let blur = id("i_blur").value;
+		id('background').style.filter = `blur(${blur}px) brightness(${val})`;
+		chrome.storage.sync.set({"background_bright": +val});
+	}
 }
 
 function darkmode(choix) {
@@ -1613,18 +1617,14 @@ function signature() {
 
 function actualizeStartupOptions() {
 
-	let store = ["background_type", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
+	let store = ["background_type", "background_blur", "background_bright", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
-	chrome.storage.sync.get(store, (data) => {
+	chrome.storage.sync.get(null, (data) => {
 
-		if (data.linknewtab) {
-			id("i_linknewtab").checked = true;
-		} else {
-			id("i_linknewtab").checked = false;
-		}
+		//open in new tab
+		id("i_linknewtab").checked = (data.linknewtab ? true : false);
 
 		//default background
-
 		var imgs = cl("imgpreview");
 		var bgURL = id("background").style.backgroundImage;
 		var previewURL = "";	
@@ -1638,25 +1638,25 @@ function actualizeStartupOptions() {
 			}
 		}
 
-		if (data.retina) {
-			id("i_retina").checked = true;
-		} else {
-			id("i_retina").checked = false;
-		}
+		//is in 4k
+		id("i_retina").checked = (data.retina ? true : false);
 
 		//dynamic background
-		if (data.background_type === "dynamic") {
-			id("i_dynamic").checked = true;
-		}
+		id("i_dynamic").checked = (data.background_type === "dynamic" ? true : false);
+
+
+		//blur
+		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
+
+
+		//brightness
+		id("i_bright").value = (data.background_bright !== undefined ? data.background_bright : 1);
+
 
 		//dark mode input
-		if (data.dark) {
-			id("i_dark").value = data.dark;
-		} else {
-			id("i_dark").value = "disable";
-		}
+		id("i_dark").value = (data.dark ? data.dark : "disable");
 		
-		
+
 		//weather city input
 		if (data.weather && data.weather.city) {
 			id("i_city").setAttribute("placeholder", data.weather.city);
@@ -1701,12 +1701,8 @@ function actualizeStartupOptions() {
 			id("i_sb").checked = false;
 		}	
 		
-
-		if (data.searchbar_engine) {
-			id("i_sbengine").value = data.searchbar_engine;
-		} else {
-			id("i_sbengine").value = "s_startpage";
-		}
+		//search engine
+		id("i_sbengine").value = (data.searchbar_engine ? data.searchbar_engine : "s_startpage");
 
 
 		//clock
@@ -1719,11 +1715,7 @@ function actualizeStartupOptions() {
 			
 
 		//langue
-		if (localStorage.lang) {
-			id("i_lang").value = localStorage.lang;
-		} else {
-			id("i_lang").value = "en";
-		}
+		id("i_lang").value = (localStorage.lang ? localStorage.lang : "en");
 	});		
 }
 
@@ -1734,18 +1726,18 @@ function mobilecheck() {
 }
 
 
-window.onload = function() {
-	traduction();
-	darkmode();
-	clock();
-	date();
-	greetings();
-	weather();
-	searchbar();
-	quickLinks();
-	signature();
-	actualizeStartupOptions();
-	initBackground();
 
-	document.body.style.animation = "fade .1s ease-in forwards";
-}
+traduction();
+darkmode();
+clock();
+date();
+greetings();
+weather();
+searchbar();
+quickLinks();
+signature();
+actualizeStartupOptions();
+defaultBg();
+initBackground();
+
+document.body.style.animation = "fade .1s ease-in forwards";

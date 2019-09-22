@@ -21,12 +21,16 @@ id("i_retina").onchange = function() {
 	retina(this.checked)
 }
 
-id("i_bgfile").onchange = function() {
+id("i_bgfile").onchange = function(e) {
 	renderImage(this.files[0]);
 };
 
 id("i_blur").onchange = function() {
-	blurThis(this.value);
+	filter("blur", this.value);
+};
+
+id("i_bright").onchange = function() {
+	filter("bright", this.value);
 };
 
 id("i_dark").onchange = function() {
