@@ -12,7 +12,7 @@ While this startpage is minimal and beautiful, it is also thought out to be prac
 * Dark mode
 * And more...
 
-Bonjourr is available in English, French, Swedish, Dutch, Polish, Russian and Chinese.
+Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Brazil), Russian and Chinese.
 
 ## Install
 
@@ -56,7 +56,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92)
 * **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
-
+* **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://www.reddit.com/user/adilsonfsantos)
 ## Changelogs
 
 **v1.6.0**
