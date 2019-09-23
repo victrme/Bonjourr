@@ -86,7 +86,7 @@ function traduction() {
 			else
 				return false;
 		}
-			
+
 		for (let i in trns) {
 			trns[i].innerText = dom[i]
 		}
@@ -334,7 +334,7 @@ function quickLinks(event, that) {
 			//enleve le html du block
 			var block_parent = id("linkblocks").children[count + 1];
 			block_parent.setAttribute("class", "block_parent removed");
-			
+
 			setTimeout(function() {
 
 				id("linkblocks").removeChild(block_parent);
@@ -378,7 +378,7 @@ function quickLinks(event, that) {
 			var a, b = 0;
 
 			//garde la favicon la plus grande
-			for (var i = 0; i < json.icons.length; i++) {	
+			for (var i = 0; i < json.icons.length; i++) {
 
 				if (json.icons[i].sizes) {
 
@@ -427,10 +427,10 @@ function quickLinks(event, that) {
 			id("wrongURL").innerText = erreur[1];
 			id("wrongURL").style.display = "block";
 			id("wrongURL").style.opacity = 1;
-			
+
 			setTimeout(function() {
 				id("wrongURL").style.display = "none";
-			}, 2000);		
+			}, 2000);
 		}
 
 		function filterUrl(str) {
@@ -493,7 +493,7 @@ function quickLinks(event, that) {
 					id("linkblocks").style.visibility = "visible";
 					searchbarFlexControl(data.searchbar, 1);
 				}
-				
+
 				//si les blocks sont moins que 16
 				if (!full) {
 					chrome.storage.sync.set({"links": arr});
@@ -517,7 +517,7 @@ function quickLinks(event, that) {
 			url: filterUrl(id("i_url").value),
 			icon: ""
 		}
-		
+
 		//si l'url filtré est juste
 		if (typeof(links.url) !== "object" && links.url) {
 
@@ -560,7 +560,7 @@ function quickLinks(event, that) {
 						id("hiddenlink").setAttribute("target", "_self");
 						id("hiddenlink").click();
 					}
-				}	
+				}
 			});
 		}
 	}
@@ -596,7 +596,7 @@ function weather(event, that) {
 
 			if (data.weather && data.weather.lastCall) {
 
-				
+
 				//si weather est vieux d'une demi heure (1800s)
 				//ou si on change de lang
 				//faire une requete et update le lastcall
@@ -629,7 +629,7 @@ function weather(event, that) {
 		});
 	}
 
-	
+
 	function initWeather() {
 
 		var param = {
@@ -655,7 +655,7 @@ function weather(event, that) {
 
 			request(param, "current");
 			request(param, "forecast");
-			
+
 		}, (refused) => {
 
 			param.location = false;
@@ -671,10 +671,10 @@ function weather(event, that) {
 		});
 	}
 
-	
+
 	function request(arg, wCat) {
 
-		
+
 		function urlControl(arg, forecast) {
 
 			var url = 'https://api.openweathermap.org/data/2.5/';
@@ -698,7 +698,7 @@ function weather(event, that) {
 			return url;
 		}
 
-		
+
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
@@ -712,16 +712,16 @@ function weather(event, that) {
 			dataHandling(response);
 		}
 
-		
+
 		function forecastResponse(parameters, response) {
 
 			function findHighTemps(d) {
-			
+
 				var i = 0;
 				var newDay = new Date(d.list[0].dt_txt).getDay();
 				var currentDay = newDay;
 				var arr = [];
-				
+
 
 				//compare la date toute les 3h (list[i])
 				//si meme journée, rajouter temp max a la liste
@@ -757,7 +757,7 @@ function weather(event, that) {
 		request_w.open('GET', url, true);
 
 		request_w.onload = function() {
-			
+
 			var resp = JSON.parse(this.response);
 
 			if (request_w.status >= 200 && request_w.status < 400) {
@@ -775,9 +775,9 @@ function weather(event, that) {
 		}
 
 		request_w.send();
-	}	
+	}
 
-	
+
 	function dataHandling(data) {
 
 		function getIcon() {
@@ -805,7 +805,7 @@ function weather(event, that) {
 					"clearsky": 800,
 					"fewclouds": 801,
 					"brokenclouds": 803
-				}	
+				}
 
 				for(let key in codes) {
 
@@ -864,7 +864,7 @@ function weather(event, that) {
 		getIcon();
 	}
 
-	
+
 	function submissionError(error) {
 
 		//affiche le texte d'erreur
@@ -882,7 +882,7 @@ function weather(event, that) {
 		}
 	}
 
-	
+
 	function updateCity() {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -902,10 +902,10 @@ function weather(event, that) {
 			id("i_city").blur();
 
 			chrome.storage.sync.set({"weather": param});
-		});	
+		});
 	}
 
-	
+
 	function updateUnit(that) {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -920,12 +920,12 @@ function weather(event, that) {
 
 			request(param, "current");
 			request(param, "forecast");
-			
+
 			chrome.storage.sync.set({"weather": param});
 		});
 	}
 
-	
+
 	function updateLocation(that) {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -950,7 +950,7 @@ function weather(event, that) {
 					//update le setting
 					id("sett_city").setAttribute("class", "city hidden");
 					that.removeAttribute("disabled");
-					
+
 				}, (refused) => {
 
 					//désactive geolocation if refused
@@ -969,7 +969,7 @@ function weather(event, that) {
 
 				param.location = false;
 				chrome.storage.sync.set({"weather": param});
-				
+
 				request(param, "current");
 				request(param, "forecast");
 			}
@@ -1020,10 +1020,10 @@ function imgBackground(val) {
 		img.onload = load;
 		img.src = val;
 		img.remove();
-	} 
+	}
 	else return id("background").style.backgroundImage;
 }
- 
+
 function initBackground() {
 
 	chrome.storage.sync.get(["background_image", "background_type", "background_blur", "background_bright"], (data) => {
@@ -1039,14 +1039,14 @@ function initBackground() {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
 				imgBackground(setblob(data.background_blob), type);
-			});	
-		} 
+			});
+		}
 		else if (data.background_type === "dynamic") {
 			unsplash()
 		}
 		else {
 
-			imgBackground(image)	
+			imgBackground(image)
 		}
 
 		imgCredits(image, type);
@@ -1056,7 +1056,7 @@ function initBackground() {
 		setTimeout(function() {
 			id("background").style.transition = "filter .2s";
 		}, 50);
-	});	
+	});
 }
 
 function setblob(donnee, set) {
@@ -1141,7 +1141,7 @@ function unsplash() {
 
 					req();
 				}
-				
+
 			} else {
 
 				req();
@@ -1186,7 +1186,7 @@ function unsplash() {
 		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}`, true);
 
 		xhr.onload = function() {
-			
+
 			let resp = JSON.parse(this.response);
 
 			if (xhr.status >= 200 && xhr.status < 400) {
@@ -1211,7 +1211,7 @@ function unsplash() {
 		}
 		xhr.send();
 	}
-	
+
 	cacheControl()
 }
 
@@ -1246,7 +1246,7 @@ function filter(cat, val) {
 
 function darkmode(choix) {
 
-	
+
 	function isIOSwallpaper(dark) {
 
 		//défini les parametres a changer en fonction du theme
@@ -1259,7 +1259,7 @@ function darkmode(choix) {
 			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
 
 		} else {
-			
+
 			modeurl = "ios13_light";
 			actual = "ios13_dark";
 			urltouse = 'src/images/backgrounds/ios13_light.jpg';
@@ -1269,7 +1269,7 @@ function darkmode(choix) {
 		if (id("settings")) {
 			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
 		}
-		
+
 		if (imgBackground().includes(actual)) {
 
 			imgBackground(urltouse, "default");
@@ -1277,7 +1277,7 @@ function darkmode(choix) {
 		}
 	}
 
-	
+
 	function applyDark(add, system) {
 
 		if (add) {
@@ -1299,7 +1299,7 @@ function darkmode(choix) {
 		}
 	}
 
-	
+
 	function auto(weather) {
 
 		chrome.storage.sync.get("weather", (data) => {
@@ -1321,7 +1321,7 @@ function darkmode(choix) {
 		});
 	}
 
-	
+
 	function initDarkMode() {
 
 		chrome.storage.sync.get("dark", (data) => {
@@ -1343,10 +1343,10 @@ function darkmode(choix) {
 			if (dd === "system") {
 				applyDark(true, true);
 			}
-		});		
+		});
 	}
 
-	
+
 	function changeDarkMode() {
 
 		if (choix === "enable") {
@@ -1387,7 +1387,7 @@ function searchbarFlexControl(activated, linkslength) {
 			id("sb_container").setAttribute("class", "shown");
 		else
 			id("sb_container").setAttribute("class", "removed");
-		
+
 	} else {
 
 		if (activated)
@@ -1400,21 +1400,21 @@ function searchbarFlexControl(activated, linkslength) {
 function searchbar(event, that) {
 
 
-	
+
 	function activate(activated, links, init) {
 
-		if (activated) {	
+		if (activated) {
 
 			if(!init) id("choose_searchengine").setAttribute("class", "shown");
 
 			searchbarFlexControl(activated, (links ? links.length : 0));
 			chrome.storage.sync.set({"searchbar": true});
-			
+
 		} else {
 
 			//pour animer un peu
 			if(!init) id("choose_searchengine").setAttribute("class", "hidden");
-			
+
 			searchbarFlexControl(activated, (links ? links.length : 0));
 			chrome.storage.sync.set({"searchbar": false});
 		}
@@ -1438,6 +1438,7 @@ function searchbar(event, that) {
 			sv: "Sök med",
 			nl: "Zoek op",
 			pl: "Szukaj z",
+			pt_BR: "Pesquisar em"
 			ru: "Поиск в",
 			zh_CN: "搜索"
 		}
@@ -1476,7 +1477,7 @@ function searchbar(event, that) {
 			}
 		});
 	}
-	
+
 
 	if (event === "searchbar") activate(that.checked);
 	else if (event === "engine") chooseSearchEngine(that.value);
