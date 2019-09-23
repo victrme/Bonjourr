@@ -28,8 +28,7 @@ body {
   color: white;
   font-family: sf_pro_displaylight;
   font-size: 16px;
-  text-align: center;
-  animation: fade .2s ease-in forwards; }
+  text-align: center; }
   body p, body h3 {
     margin: 0; }
   body hr {
@@ -74,11 +73,11 @@ body {
   position: fixed;
   width: 100vw;
   height: 100vh;
+  opacity: 1;
   background-color: #222;
   background-size: cover;
   background-position: center center;
-  transform: scale(1.1);
-  transition: filter 0s; }
+  animation: fade .2s ease-in .02s forwards; }
 
 #interface {
   min-height: 100vh;
@@ -86,7 +85,7 @@ body {
   flex-direction: column;
   justify-content: space-around;
   opacity: 0;
-  animation: fade .1s ease-in .07s forwards;
+  animation: fade .05s ease-in .05s forwards;
   transition: margin .2s;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); }
   #interface .time {
