@@ -146,7 +146,6 @@ function clock(that) {
 }
 
 function date() {
-
 	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -155,7 +154,7 @@ function date() {
 	id("chiffre").innerText = DATE.getDate();
 	id("mois").innerText = tradThis(months[DATE.getMonth()]);
 }
-
+	
 function greetings() {
 	let h = DATE.getHours();
 	let message;
@@ -263,21 +262,18 @@ function quickLinks(event, that) {
 
 	function wiggle(that, on) {
 
-		/*console.log(that)
-		console.log(on)*/
-
 		let bl = cl("block");
 
 		if (on) {
 			for (let i = 0; i < bl.length; i++) {
 				bl[i].setAttribute("class", "block wiggly");
-				bl[i].children[0].children[0].setAttribute("class", "remove visible");
+				bl[i].children[0].children[0].setAttribute("class", "remove shown");
 			}
 			canRemove = true;
 		} else {
 			for (let i = 0; i < bl.length; i++) {
 				bl[i].setAttribute("class", "block");
-				bl[i].children[0].children[0].setAttribute("class", "remove");
+				bl[i].children[0].children[0].setAttribute("class", "remove hidden");
 			}
 			canRemove = false;
 		}
@@ -1152,27 +1148,20 @@ function unsplash(data, freq) {
 
 		if (data) {
 
-			console.log(data)
-
-			id("background").style.backgroundImage = `url(${data.url})`;
+			imgBackground(data.url);
 			credit(data);
 
 		} else {
 
-			chrome.storage.sync.get(["dynamic", "background_type"], (data) => {
+			chrome.storage.sync.get("dynamic", (data) => {
 
 				//chrome.storage.sync.set({"previous_type": data.background_type});
 
+				if (data.dynamic /*&& respecte la frequence*/) {
 
+					imgBackground(data.dynamic.url);
+					credit(dynamic.dynamic);
 
-				if (data.dynamic) {
-
-					/*if (data.dynamic.freq) {*/
-
-						id("background").style.backgroundImage = `url(${data.dynamic.url})`;
-						credit(dynamic.dynamic);
-
-					/*} else req();*/	
 				} else req();
 			});
 		}
@@ -1182,22 +1171,13 @@ function unsplash(data, freq) {
 
 		//console.log(d);
 		id("onUnsplash").style.visibility = "visible";
+		id("credit").setAttribute("class", "shown");
 
 		let loc = "";
 
-		if (d && d.city) {
-			loc = d.city;
-
-			if (d.country) loc += ", " + d.country;
-			loc += " - "
-
-		} else {
-			if (d.country) {
-				loc = d.country + " - "
-			} else {
-				loc = "Photo - "
-			}
-		}
+		if (d.city && d.country) loc = `${d.city}, ${d.country} - `;
+		else if (d.country) loc = `${d.country} - `;
+		else loc = "Photo - ";
 
 		id("location").innerText = loc;
 		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
@@ -1424,8 +1404,6 @@ function searchbarFlexControl(activated, linkslength) {
 
 function searchbar(event, that) {
 
-
-	
 	function activate(activated, links, init) {
 
 		if (activated) {	
@@ -1524,16 +1502,15 @@ function mobilecheck() {
 	return check;
 }
 
-window.onload = function() {
-	traduction();
-	darkmode();
-	clock();
-	date();
-	greetings();
-	weather();
-	searchbar();
-	quickLinks();
-	initBackground();
 
-	id("background").style.animation =  "fade .2s ease-in .02s forwards";
-}
+initBackground();
+traduction();
+clock();
+date();
+greetings();
+darkmode();
+weather();
+searchbar();
+quickLinks();
+
+id("background").style.animation =  "fade .2s ease-in .02s forwards";

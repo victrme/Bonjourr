@@ -20,6 +20,38 @@
 	}
 }
 
+@keyframes showRemove {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+		cursor: pointer;
+	}
+}
+
+@keyframes hideRemove {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+		display: none;
+		cursor: default;
+	}
+}
+
+#interface .linkblocks .block_parent button.remove.hidden {
+	animation: hideRemove .1s ease-in forwards;
+}
+
+#interface .linkblocks .block_parent button.remove.shown {
+	display: block;
+	animation: showRemove .1s ease-in forwards;
+}
+
 #i_bgfile {
 	overflow: hidden;
 }
@@ -42,3 +74,4 @@
 #interface #widget.shown {
 	opacity: 1;
 }
+

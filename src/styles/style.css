@@ -85,7 +85,7 @@ body {
   flex-direction: column;
   justify-content: space-around;
   opacity: 0;
-  animation: fade .05s ease-in .05s forwards;
+  animation: fade .04s ease-in forwards;
   transition: margin .2s;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); }
   #interface .time {
@@ -222,11 +222,11 @@ body {
         animation-duration: .25s; }
       #interface .linkblocks .block_parent button.remove {
         position: absolute;
+        display: none;
         top: -1.2em;
         left: -1.2em;
         height: 30px;
         width: 30px;
-        opacity: 0;
         border: 0;
         border-radius: 100%;
         background: #ffffff;
@@ -242,8 +242,7 @@ body {
           left: 50%;
           transform: translate(-50%, -50%); }
         #interface .linkblocks .block_parent button.remove.visible {
-          cursor: pointer;
-          opacity: 1; }
+          cursor: pointer; }
         #interface .linkblocks .block_parent button.remove:hover {
           background: #bbb; }
       #interface .linkblocks .block_parent.removed {
