@@ -26,7 +26,7 @@ function defaultBg() {
 	let bgTimeout, oldbg;
 
 	id("default").onmouseenter = function() {
-		oldbg = imgBackground().slice(4, imgBackground().length - 1);
+		oldbg = id("background").style.backgroundImage.slice(5, imgBackground().length - 2);
 	}
 
 	id("default").onmouseleave = function() {
@@ -34,20 +34,13 @@ function defaultBg() {
 		imgBackground(oldbg);
 	}
 
-	function getSource(that) {
-		let src = that.children[0].getAttribute("src");
-		if (id("i_retina").checked) src = src.replace("/backgrounds/", "/backgrounds/4k/");
-		if (!id("i_retina").checked) src = src.replace("/4k", "");
-
-		return src
-	}
-
 	function imgEvent(state, that) {
 
 		if (state === "enter") {
+
 			if (bgTimeout) clearTimeout(bgTimeout);
 
-			let src = getSource(that);
+			let src = that.children[0].getAttribute("src");
 
 			bgTimeout = setTimeout(function() {
 
@@ -63,9 +56,9 @@ function defaultBg() {
 
 		} else if (state === "mouseup") {
 
-			var src = getSource(that);
+			var src = that.children[0].getAttribute("src");
 
-		    imgBackground(src, "default");
+		    imgBackground(src);
 		    imgCredits(src, "default");
 
 			clearTimeout(bgTimeout);
@@ -77,6 +70,7 @@ function defaultBg() {
 			var tempAttr = that.getAttribute("class");
 			that.setAttribute("class", tempAttr + " selected");
 
+			chrome.storage.sync.set({"last_default": src});
 			chrome.storage.sync.set({"background_image": src});
 			chrome.storage.sync.set({"background_type": "default"});
 		}
@@ -102,7 +96,15 @@ function selectBackgroundType(cat) {
 	if (cat === "dynamic") {
 		chrome.storage.sync.set({"background_type": "dynamic"});
 		unsplash()
-	} else {
+	}
+	else if (cat === "custom") {
+
+		chrome.storage.sync.set({"background_type": "custom"});
+		chrome.storage.local.get("background_blob", (data) => {
+			imgBackground(setblob(data.background_blob));
+			imgCredits(null, "custom");
+		});	
+
 		/*chrome.storage.sync.get(["previous_type"], (data) => {
 
 			if (data.previous_type && data.previous_type !== "dynamic") {
@@ -114,10 +116,18 @@ function selectBackgroundType(cat) {
 			initBackground();
 		});*/
 	}
+	else if (cat === "default") {
+		chrome.storage.sync.set({"background_type": "default"});
+		chrome.storage.sync.get("last_default", (data) => {
+			imgBackground(data.last_default);
+			imgCredits(data.last_default, "default");
+		});
+	}
 }
 
 function settingsEvents() {
 
+	//quick links
 	id("i_title").onkeypress = function(e) {
 		quickLinks("input", e)
 	}
@@ -134,29 +144,14 @@ function settingsEvents() {
 		quickLinks("linknewtab", this)
 	}
 
-	id("i_ampm").onchange = function() {
-		clock(this)
-	}
-
-	id("b_city").onmouseup = function() {
-		if (!stillActive) weather("city", this);
-	}
-
-	id("i_city").onkeypress = function(e) {
-		if (!stillActive && e.which === 13) weather("city", this)
-	}
-
-	id("i_units").onchange = function() {
-		if (!stillActive) weather("units", this)
-	}
-
-	id("i_geol").onchange = function() {
-		if (!stillActive) weather("geol", this)
-	}
-
+	//visuals
 	id("i_type").onchange = function() {
 		selectBackgroundType(this.value)
 	}
+
+	/*id("i_freq").onchange = function() {
+		unsplash(this.value);
+	}*/
 
 	id("i_bgfile").onchange = function(e) {
 		renderImage(this.files[0]);
@@ -174,6 +169,24 @@ function settingsEvents() {
 		darkmode(this.value)
 	}
 
+	//weather
+	id("b_city").onmouseup = function() {
+		if (!stillActive) weather("city", this);
+	}
+
+	id("i_city").onkeypress = function(e) {
+		if (!stillActive && e.which === 13) weather("city", this)
+	}
+
+	id("i_units").onchange = function() {
+		if (!stillActive) weather("units", this)
+	}
+
+	id("i_geol").onchange = function() {
+		if (!stillActive) weather("geol", this)
+	}
+	
+	//searchbar
 	id("i_sb").onchange = function() {
 
 		if (!stillActive) searchbar("searchbar", this);
@@ -182,6 +195,11 @@ function settingsEvents() {
 
 	id("i_sbengine").onchange = function() {
 		searchbar("engine", this)
+	}
+
+	//general
+	id("i_ampm").onchange = function() {
+		clock(this)
 	}
 
 	id("i_lang").onchange = function() {
@@ -216,6 +234,14 @@ function actualizeStartupOptions() {
 			if (bgURL.includes(previewURL)) {
 				imgs[i].setAttribute("class", "imgpreview selected");
 			}
+		}
+
+		if (data.background_type !== undefined) {
+			id("i_type").value = data.background_type;
+			id(data.background_type).style.display = "block";
+		} else {
+			id("i_type").value = "default";
+			id("default").style.display = "block";
 		}
 
 		//blur
@@ -295,15 +321,16 @@ function actualizeStartupOptions() {
 	});		
 }
 
-id("showSettings").onmouseup = function() {
+function settings() {
+	settingsEvents();
+	actualizeStartupOptions();
+	signature();
+	defaultBg();
+}
 
-	function settings() {
-		settingsEvents();
-		actualizeStartupOptions();
-		signature();
-		defaultBg();
-		selectBackgroundType("default");
-	}
+
+
+id("showSettings").onmousedown = function() {
 
 	function init() {
 		let node = document.createElement("div");
@@ -316,13 +343,6 @@ id("showSettings").onmouseup = function() {
 					node.id = "settings";
 					node.innerHTML = this.responseText;
 					document.body.appendChild(node);
-
-					setTimeout(function() {
-						setClass(that.children[0], "shown");
-						setClass(id("settings"), "shown");
-						setClass(id("interface"), "pushed");
-						settings();
-					}, 50)
 				}
 			}
 		}
@@ -331,7 +351,16 @@ id("showSettings").onmouseup = function() {
 		xhttp.send();
 	}
 
+	if (!id("settings")) {
+		init();
+		setTimeout(settings, 20);
+	}
+}
+
+id("showSettings").onmouseup = function() {
+
 	let that = this;
+
 
 	if (id("settings")) {
 
@@ -344,14 +373,6 @@ id("showSettings").onmouseup = function() {
 			setClass(id("settings"), "shown");
 			setClass(id("interface"), "pushed");
 		}
-
-		/*setTimeout(function() {
-			id("settings").remove();
-		}, 200)*/
-
-	} else {
-
-		init();
 	}
 }
 
@@ -368,15 +389,11 @@ id("interface").onmouseup = function(e) {
 		if (parent && parent.id === "linkblocks") return false;
 	}
 
-	if (id("settings").getAttribute("class") === "shown") {
+	if (id("settings") && id("settings").getAttribute("class") === "shown") {
 
 		setClass(id("showSettings").children[0], "");
 		setClass(id("settings"), "");
 		setClass(id("interface"), "");
-
-		setTimeout(function() {
-			id("settings").remove()
-		}, 200)
 	}
 }
 
