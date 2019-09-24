@@ -26,16 +26,10 @@ const CREDITS = [
 		"id": "tahoe-beetschen-ferns"
 	},
 	{
-		"title": "iOS 13 light wallpaper",
+		"title": "iOS 13 wallpaper",
 		"artist": "Apple",
 		"url": "https://www.apple.com/ios/ios-13-preview/",
 		"id": "ios13_light"
-	},
-	{
-		"title": "iOS 13 dark wallpaper",
-		"artist": "Apple",
-		"url": "https://www.apple.com/ios/ios-13-preview/",
-		"id": "ios13_dark"
 	}];
 
 
@@ -54,6 +48,12 @@ function deleteBrowserStorage() {
 //c'est juste pour debug le storage
 function getBrowserStorage() {
 	chrome.storage.sync.get(null, (data) => {
+		console.log(data);
+	});
+}
+//c'est juste pour debug le storage
+function getBlob() {
+	chrome.storage.local.get(null, (data) => {
 		console.log(data);
 	});
 }
@@ -647,10 +647,6 @@ function weather(event, that) {
 			param.location.push(pos.coords.latitude, pos.coords.longitude);
 			chrome.storage.sync.set({"weather": param});
 
-			//id("i_geol").checked = true;
-			//id("i_geol").removeAttribute("disabled");
-			//id("sett_city").setAttribute("class", "city hidden");
-
 			chrome.storage.sync.set({"weather": param});
 
 			request(param, "current");
@@ -659,10 +655,6 @@ function weather(event, that) {
 		}, (refused) => {
 
 			param.location = false;
-
-			//désactive geolocation if refused
-			//id("i_geol").checked = false;
-			//id("i_geol").removeAttribute("disabled");
 
 			chrome.storage.sync.set({"weather": param});
 
@@ -997,6 +989,19 @@ function imgCredits(src, type) {
 
 	if (type === "dynamic") return false;
 
+	if (type === "custom") {
+		id("credit").setAttribute("class", "hidden");
+		setTimeout(function() {
+			id("credit").style.display = "none";
+		}, 200)
+	} else {
+		id("credit").style.display = "block";
+		setTimeout(function() {
+			id("credit").removeAttribute("class");
+		}, 20)
+		
+	}
+
 	id("onUnsplash").style.visibility = "hidden";
 
 	for (var i = 0; i < CREDITS.length; i++) {
@@ -1026,10 +1031,10 @@ function imgBackground(val) {
  
 function initBackground() {
 
-	chrome.storage.sync.get(["background_image", "background_type", "background_blur", "background_bright"], (data) => {
+	chrome.storage.sync.get(["dynamic", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
 
 		//si storage existe, utiliser storage, sinon default
-		var image = (data.background_image ? data.background_image : "src/images/backgrounds/4k/avi-richards-beach.jpg");
+		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
 		var type = (data.background_type ? data.background_type : "default");
 		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
 		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
@@ -1038,11 +1043,11 @@ function initBackground() {
 		if (data.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
-				imgBackground(setblob(data.background_blob), type);
+				imgBackground(setblob(data.background_blob));
 			});	
 		} 
 		else if (data.background_type === "dynamic") {
-			unsplash()
+			unsplash(data.dynamic)
 		}
 		else {
 
@@ -1115,42 +1120,62 @@ function renderImage(file) {
 	// inject an image with the src url
 	reader.onload = function(event) {
 
-		imgBackground(setblob(event.target.result, true), "custom"); // resized image url
+		imgBackground(setblob(event.target.result, true)); // resized image url
 	}
 
 	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
 }
 
-function unsplash() {
+function unsplash(data, freq) {
+
+	function getWeek() {
+		const today = new Date();
+		const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+		const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+		return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+	}
+
+	function dynamicFrequence(d) {
+
+		let f;
+
+		if (freq === "hour") f = (new Date).getHour();
+		else if (freq === "day") f = (new Date).getDay();
+		else if (freq === "week") f = getWeek();
+
+
+		chrome.storage.sync.set({})
+	}
 
 	function cacheControl() {
 
-		chrome.storage.sync.get(["dynamic", "background_type"], (data) => {
+		if (data) {
 
-			chrome.storage.sync.set({"previous_type": data.background_type});
+			console.log(data)
 
-			if (data.dynamic) {
+			id("background").style.backgroundImage = `url(${data.url})`;
+			credit(data);
 
-				if (data.dynamic.day === (new Date).getDay()) {
+		} else {
 
-					setBackground(data.dynamic)
-					credit(data.dynamic)
+			chrome.storage.sync.get(["dynamic", "background_type"], (data) => {
 
-				} else {
+				//chrome.storage.sync.set({"previous_type": data.background_type});
 
-					req();
-				}
-				
-			} else {
 
-				req();
-			}
-		});
-	}
 
-	function setBackground(d) {
-		id("background").style.backgroundImage = `url(${d.url})`;
+				if (data.dynamic) {
+
+					/*if (data.dynamic.freq) {*/
+
+						id("background").style.backgroundImage = `url(${data.dynamic.url})`;
+						credit(dynamic.dynamic);
+
+					/*} else req();*/	
+				} else req();
+			});
+		}
 	}
 
 	function credit(d) {
@@ -1160,7 +1185,7 @@ function unsplash() {
 
 		let loc = "";
 
-		if (d.city) {
+		if (d && d.city) {
 			loc = d.city;
 
 			if (d.country) loc += ", " + d.country;
@@ -1180,7 +1205,7 @@ function unsplash() {
 		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
 	}
 
-	function req() {
+	function req(freq) {
 
 		let xhr = new XMLHttpRequest();
 		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}`, true);
@@ -1194,7 +1219,7 @@ function unsplash() {
 				//console.log(this.response)
 
 				let dynamic = {
-					day: (new Date).getDay(),
+					freq: (new Date).getDay(),
 					url: resp.urls.full,
 					link: resp.links.html,
 					username: resp.user.username,
@@ -1205,7 +1230,7 @@ function unsplash() {
 
 				chrome.storage.sync.set({"dynamic": dynamic});
 
-				setBackground(dynamic);
+				id("background").style.backgroundImage = `url(${dynamic.url})`;
 				credit(dynamic);
 			}
 		}
@@ -1499,15 +1524,16 @@ function mobilecheck() {
 	return check;
 }
 
+window.onload = function() {
+	traduction();
+	darkmode();
+	clock();
+	date();
+	greetings();
+	weather();
+	searchbar();
+	quickLinks();
+	initBackground();
 
-traduction();
-darkmode();
-clock();
-date();
-greetings();
-weather();
-searchbar();
-quickLinks();
-initBackground();
-
-//document.body.style.animation = "fade .0s ease-in forwards";
+	id("background").style.animation =  "fade .2s ease-in .02s forwards";
+}

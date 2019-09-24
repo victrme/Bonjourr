@@ -24,7 +24,7 @@ body {
   -moz-user-select: none;
   -webkit-user-select: none;
   opacity: 1;
-  background-color: #222;
+  background-color: #000;
   color: white;
   font-family: sf_pro_displaylight;
   font-size: 16px;
@@ -74,10 +74,10 @@ body {
   width: 100vw;
   height: 100vh;
   opacity: 1;
-  background-color: #222;
+  transform: scale(1.1);
+  background-color: #000;
   background-size: cover;
-  background-position: center center;
-  animation: fade .2s ease-in .02s forwards; }
+  background-position: center center; }
 
 #interface {
   min-height: 100vh;
@@ -256,18 +256,18 @@ body {
   #interface.pushed {
     margin-left: -20em; }
 
-.credit {
+#credit {
   position: fixed;
   bottom: 1em;
   left: 1em;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
   transition: all .2s; }
-  .credit a {
+  #credit a {
     color: #fff9;
     text-decoration: none;
     font-size: .8em; }
-    .credit a:hover {
-      color: #fffb; }
+    #credit a:hover {
+      color: #fffe; }
 
 #showSettings {
   position: fixed;
