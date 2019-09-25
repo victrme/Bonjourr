@@ -144,6 +144,7 @@ body {
         font-size: 2em; }
   #interface #sb_container {
     visibility: hidden;
+    display: none;
     opacity: 0;
     height: 2px;
     width: 100%;
@@ -171,6 +172,7 @@ body {
       border: 2px solid #b8b8b8;
       margin-top: 2em; }
     #interface #sb_container.shown {
+      display: block;
       visibility: visible;
       opacity: 1;
       height: 52px; }

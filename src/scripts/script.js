@@ -1126,7 +1126,7 @@ function renderImage(file) {
 	reader.readAsDataURL(file);
 }
 
-function unsplash(data, freq) {
+function unsplash(data, freq, origin) {
 
 	function freqControl(state, every, last) {
 
@@ -1181,9 +1181,13 @@ function unsplash(data, freq) {
 					//le time est plus loin que la derniere image
 					if (freqControl("get", frqArr.every, frqArr.last)) {
 
+						//si on passe au type dynamic, afficher le dernier
+						if (origin === "i_type") imgBackground(data.dynamic.url);
+						
 						frqArr.last = freqControl("set", frqArr.every);
 						
 					} else {
+
 						imgBackground(data.dynamic.url);
 						credit(data.dynamic);
 					}
