@@ -1128,23 +1128,23 @@ function renderImage(file) {
 
 function unsplash(data, freq) {
 
-	function getNowFreq(every) {
+	function freqControl(state, every, last) {
 
-		function getWeek() {
-			const today = new Date();
-			const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-			const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-			return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+		const d = new Date;
+		if (state === "set") return d.getTime();
+
+		if (state === "get") {
+
+			let calcLast = 0;
+			let today = d.getTime();
+
+			if (every === "hour") calcLast = last + 3600 * 1000;
+			else if (every === "day") calcLast = last + 86400 * 1000;
+			else if (every === "pause") calcLast = 10**13 - 1; //le jour de la fin du monde lmao
+
+			//retourne le today superieur au calculated last
+			return (today > calcLast);
 		}
-
-		let f;
-
-		if (every === "hour") f = (new Date).getHours();
-		else if (every === "day") f = (new Date).getDay();
-		else if (every === "week") f = getWeek();
-		else f = false;
-
-		return f;
 	}
 
 	function cacheControl() {
@@ -1153,11 +1153,11 @@ function unsplash(data, freq) {
 		if (data && freq) {
 
 			//si il est l'heure de changer d'image
-			if (getNowFreq(freq.every) > freq.last) {
+			if (freqControl("get", freq.every, freq.last)) {
 				req();
 
 				//le last devient le present
-				freq.last = getNowFreq(freq.every);
+				freq.last = freqControl("set", freq.every);
 				chrome.storage.sync.set({"dynamic_freq": freq});
 			}
 			else {
@@ -1173,22 +1173,22 @@ function unsplash(data, freq) {
 				if (data.dynamic) {
 
 					//si unsplash est appelé avec freq, il vient de l'event
-					let frequence = {
+					let frqArr = {
 						every: (freq ? freq : data.dynamic_freq.every),
 						last: data.dynamic_freq.last
-					}	
+					}
 
 					//le time est plus loin que la derniere image
-					if (getNowFreq(frequence.every) > frequence.last) {
+					if (freqControl("get", frqArr.every, frqArr.last)) {
 
-						req();
-						frequence.last = getNowFreq(frequence.every);
-						chrome.storage.sync.set({"dynamic_freq": frequence});
+						frqArr.last = freqControl("set", frqArr.every);
 						
 					} else {
 						imgBackground(data.dynamic.url);
 						credit(data.dynamic);
 					}
+
+					chrome.storage.sync.set({"dynamic_freq": frqArr});
 					
 
 				//premiere fois dynamic
@@ -1196,7 +1196,7 @@ function unsplash(data, freq) {
 					
 					let f = {
 						every: "hour",
-						last: getNowFreq("hour")
+						last: freqControl("set", "hour")
 					}
 
 					chrome.storage.sync.set({"dynamic_freq": f});
