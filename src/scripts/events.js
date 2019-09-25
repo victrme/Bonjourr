@@ -95,7 +95,7 @@ function selectBackgroundType(cat) {
 
 	if (cat === "dynamic") {
 		chrome.storage.sync.set({"background_type": "dynamic"});
-		unsplash()
+		unsplash(null, null, "i_type")
 	}
 	else if (cat === "custom") {
 
@@ -105,16 +105,6 @@ function selectBackgroundType(cat) {
 			imgCredits(null, "custom");
 		});	
 
-		/*chrome.storage.sync.get(["previous_type"], (data) => {
-
-			if (data.previous_type && data.previous_type !== "dynamic") {
-				chrome.storage.sync.set({"background_type": data.previous_type});
-			} else {
-				chrome.storage.sync.set({"background_type": "default"});
-			}
-			
-			initBackground();
-		});*/
 	}
 	else if (cat === "default") {
 		chrome.storage.sync.set({"background_type": "default"});
