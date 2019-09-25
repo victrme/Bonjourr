@@ -11,7 +11,7 @@ function askfordict() {
       sv: "Ny flik",
       nl: "Nieuw tabblad",
       pl: "Nowa Karta",
-      pt: "Nova Aba",
+      pt_BR: "Nova Aba",
       ru: "Новая вкладка",
       zh_CN: "新标签页",
       sk: ""
@@ -21,7 +21,7 @@ function askfordict() {
       sv: "Inställningar",
       nl: "Instellingen",
       pl: "Ustawienia",
-      pt: "Configurações",
+      pt_BR: "Configurações",
       ru: "Настройки",
       zh_CN: "设置",
       sk: ""
@@ -31,7 +31,7 @@ function askfordict() {
       sv: "Background type",
       nl: "Background type",
       pl: "Background type",
-      pt: "Tipo de background",
+      pt_BR: "Tipo de background",
       ru: "Background type",
       zh_CN: "Background type",
       sk: ""
@@ -41,7 +41,7 @@ function askfordict() {
       sv: "Oskärpans intensitet",
       nl: "Intensiviteit van het blur effect",
       pl: "Intensywnośc rozmycia",
-      pt: "Intensidade do desfoque",
+      pt_BR: "Intensidade do desfoque",
       ru: "Степень размытия фона",
       zh_CN: "模糊度",
       sk: ""
@@ -51,7 +51,7 @@ function askfordict() {
       sv: "Snabblänkar",
       nl: "Snelle links",
       pl: "Ulubione Witryny",
-      pt: "Links Rápidos",
+      pt_BR: "Links Rápidos",
       ru: "Закладки",
       zh_CN: "快速链接",
       sk: ""
@@ -61,7 +61,7 @@ function askfordict() {
       sv: "Titel",
       nl: "Titel",
       pl: "Tytuł",
-      pt: "Títulos",
+      pt_BR: "Títulos",
       ru: "Имя",
       zh_CN: "标题",
       sk: ""
@@ -71,7 +71,7 @@ function askfordict() {
       sv: "Lägg till",
       nl: "Voeg toe",
       pl: "Dodaj",
-      pt: "Adicionar",
+      pt_BR: "Adicionar",
       ru: "Добавить",
       zh_CN: "添加",
       sk: ""
@@ -83,7 +83,7 @@ function askfordict() {
       sv: "Open in new tab by default",
       nl: "Open in new tab by default",
       pl: "Open in new tab by default",
-      pt: "Abrir em nova aba por padrão",
+      pt_BR: "Abrir em nova aba por padrão",
       ru: "Open in new tab by default",
       sk: "Open in new tab by default"
     },
@@ -92,7 +92,7 @@ function askfordict() {
       sv: "Väder",
       nl: "Weer",
       pl: "Pogoda",
-      pt: "Tempo",
+      pt_BR: "Tempo",
       ru: "Погода",
       zh_CN: "天气",
       sk: ""
@@ -102,7 +102,7 @@ function askfordict() {
       sv: "Byt stad",
       nl: "Verander locatie",
       pl: "Zmień miasto",
-      pt: "Mudar cidade",
+      pt_BR: "Mudar cidade",
       ru: "Сменить город",
       zh_CN: "更改城市",
       sk: ""
@@ -112,7 +112,7 @@ function askfordict() {
       sv: "Imperial enheter",
       nl: "Empirische eenheden",
       pl: "Jednostki Imperialne",
-      pt: "Unidades imperiais",
+      pt_BR: "Unidades imperiais",
       ru: "Использовать Фаренгейты",
       zh_CN: "英制单位",
       sk: ""
@@ -122,7 +122,7 @@ function askfordict() {
       sv: "Tillverkad i frankrike med ❤️",
       nl: "Gemaakt in Frankrijk ❤️",
       pl: "Stworzone we Francji z ❤️",
-      pt: "Feito na França com ❤️",
+      pt_BR: "Feito na França com ❤️",
       ru: "Сделано во франции с ❤️",
       zh_CN: "源自法国 匠❤️打造",
       sk: ""
