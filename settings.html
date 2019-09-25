@@ -11,7 +11,7 @@
 				<button id="submitlink" class="trn">Add</button>
 				<p class="help_sentence trn">Right click on the icons to delete a Quick Link.</p>
 			</div>
-
+	
 			<hr>
 
 			<div class="linknewtab wrapper">
@@ -26,7 +26,7 @@
 		</div>
 	</div>
 
-	<div>
+	<div>          
 		<h5 class="trn">Visuals</h5>
 
 		<div class="param">
@@ -60,13 +60,14 @@
 				<div class="wrapper">
 					<span class="trn">Frequency</span>
 					<select id="i_freq">
+						<option value="tabs" class="trn">Every tab</option>
 						<option value="hour" class="trn">Every hour</option>
 						<option value="day" class="trn">Every day</option>
-						<option value="week" class="trn">Every week</option>
+						<option value="pause" class="trn">Pause</option>
 					</select>
 				</div>
 			</div>
-
+			
 			<div id="custom">
 				<div class="custom_zone">
 					<input id="i_bgfile" type="file" name="background_file">
@@ -89,13 +90,13 @@
 
 			<!-- <p class="help_sentence trn">Use lighter images.</p> -->
 
-
+			
 
 			<div class="blur">
 				<span class="trn">Blur intensity</span>
 				<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="25" step="1">
 			</div>
-
+			
 			<hr>
 
 			<div class="brightness">
@@ -391,13 +392,13 @@
 					</div>
 					<p id="wrongCity" class="trn wrongCity">There was a problem</p>
 					<div>
-						<button id="b_city" class="submitw_city trn">Change city</button>
-					</div>
+						<button id="b_city" class="submitw_city trn">Change city</button>	
+					</div>	
 				</div>
-
+				
 				<p class="help_sentence trn">Use this option if you don't want to enable geolocation.</p>
 			</div>
-
+			
 			<hr>
 
 			<div class="units wrapper">
@@ -467,7 +468,7 @@
 					<option value="fr">Français</option>
 					<option value="sv">Svenska</option>
 					<option value="pl">Polskie</option>
-					<option value="pt_BR">Português (Brasil)</option>
+					<option value="pt_BR">Português</option>
 					<option value="nl">Nederlandse</option>
 					<option value="ru">Русский</option>
 					<option value="zh_CN">简体中文</option>
