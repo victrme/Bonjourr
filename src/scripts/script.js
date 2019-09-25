@@ -1479,6 +1479,7 @@ function searchbar(event, that) {
 			sv: "Sök med",
 			nl: "Zoek op",
 			pl: "Szukaj z",
+			pt_BR: "Pesquisar em",
 			ru: "Поиск в",
 			zh_CN: "搜索"
 		}
