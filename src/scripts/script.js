@@ -1,8 +1,6 @@
 //gpg signed commit test again
 
 var stillActive = false;
-const INPUT_PAUSE = 700;
-const BLOCK_LIMIT = 16;
 const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 const DATE = new Date();
 const HOURS = DATE.getHours();
@@ -68,7 +66,7 @@ function slow(that) {
 
 		clearTimeout(stillActive);
 		stillActive = false;
-	}, INPUT_PAUSE);
+	}, 700);
 }
 
 function traduction() {
@@ -76,6 +74,7 @@ function traduction() {
 	let trns = document.getElementsByClassName('trn');
 	let local = localStorage.lang || "en";
 	let dom = [];
+	let dict = askfordict();
 
 	if (local !== "en") {
 
@@ -86,7 +85,7 @@ function traduction() {
 			else
 				return false;
 		}
-
+			
 		for (let i in trns) {
 			trns[i].innerText = dom[i]
 		}
@@ -95,6 +94,7 @@ function traduction() {
 
 function tradThis(str) {
 
+	let dict = askfordict();
 	let lang = localStorage.lang || "en";
 
 	return (lang === "en" ? str : dict[str][localStorage.lang])
@@ -154,7 +154,7 @@ function date() {
 	id("chiffre").innerText = DATE.getDate();
 	id("mois").innerText = tradThis(months[DATE.getMonth()]);
 }
-
+	
 function greetings() {
 	let h = DATE.getHours();
 	let message;
@@ -322,7 +322,7 @@ function quickLinks(event, that) {
 
 			//si on supprime un block quand la limite est atteinte
 			//réactive les inputs
-			if (linkRemd.length === BLOCK_LIMIT - 1) {
+			if (linkRemd.length === 16 - 1) {
 
 				id("i_url").removeAttribute("disabled");
 			}
@@ -330,7 +330,7 @@ function quickLinks(event, that) {
 			//enleve le html du block
 			var block_parent = id("linkblocks").children[count + 1];
 			block_parent.setAttribute("class", "block_parent removed");
-
+			
 			setTimeout(function() {
 
 				id("linkblocks").removeChild(block_parent);
@@ -374,7 +374,7 @@ function quickLinks(event, that) {
 			var a, b = 0;
 
 			//garde la favicon la plus grande
-			for (var i = 0; i < json.icons.length; i++) {
+			for (var i = 0; i < json.icons.length; i++) {	
 
 				if (json.icons[i].sizes) {
 
@@ -423,10 +423,10 @@ function quickLinks(event, that) {
 			id("wrongURL").innerText = erreur[1];
 			id("wrongURL").style.display = "block";
 			id("wrongURL").style.opacity = 1;
-
+			
 			setTimeout(function() {
 				id("wrongURL").style.display = "none";
-			}, 2000);
+			}, 2000);		
 		}
 
 		function filterUrl(str) {
@@ -474,7 +474,7 @@ function quickLinks(event, that) {
 				//array est tout les links + le nouveau
 				if (data.links && data.links.length > 0) {
 
-					if (data.links.length < BLOCK_LIMIT - 1) {
+					if (data.links.length < 16 - 1) {
 
 						arr = data.links;
 						arr.push(lll);
@@ -489,7 +489,7 @@ function quickLinks(event, that) {
 					id("linkblocks").style.visibility = "visible";
 					searchbarFlexControl(data.searchbar, 1);
 				}
-
+				
 				//si les blocks sont moins que 16
 				if (!full) {
 					chrome.storage.sync.set({"links": arr});
@@ -513,7 +513,7 @@ function quickLinks(event, that) {
 			url: filterUrl(id("i_url").value),
 			icon: ""
 		}
-
+		
 		//si l'url filtré est juste
 		if (typeof(links.url) !== "object" && links.url) {
 
@@ -556,7 +556,7 @@ function quickLinks(event, that) {
 						id("hiddenlink").setAttribute("target", "_self");
 						id("hiddenlink").click();
 					}
-				}
+				}	
 			});
 		}
 	}
@@ -592,7 +592,7 @@ function weather(event, that) {
 
 			if (data.weather && data.weather.lastCall) {
 
-
+				
 				//si weather est vieux d'une demi heure (1800s)
 				//ou si on change de lang
 				//faire une requete et update le lastcall
@@ -625,7 +625,7 @@ function weather(event, that) {
 		});
 	}
 
-
+	
 	function initWeather() {
 
 		var param = {
@@ -647,7 +647,7 @@ function weather(event, that) {
 
 			request(param, "current");
 			request(param, "forecast");
-
+			
 		}, (refused) => {
 
 			param.location = false;
@@ -659,10 +659,10 @@ function weather(event, that) {
 		});
 	}
 
-
+	
 	function request(arg, wCat) {
 
-
+		
 		function urlControl(arg, forecast) {
 
 			var url = 'https://api.openweathermap.org/data/2.5/';
@@ -686,7 +686,7 @@ function weather(event, that) {
 			return url;
 		}
 
-
+		
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
@@ -700,16 +700,16 @@ function weather(event, that) {
 			dataHandling(response);
 		}
 
-
+		
 		function forecastResponse(parameters, response) {
 
 			function findHighTemps(d) {
-
+			
 				var i = 0;
 				var newDay = new Date(d.list[0].dt_txt).getDay();
 				var currentDay = newDay;
 				var arr = [];
-
+				
 
 				//compare la date toute les 3h (list[i])
 				//si meme journée, rajouter temp max a la liste
@@ -745,7 +745,7 @@ function weather(event, that) {
 		request_w.open('GET', url, true);
 
 		request_w.onload = function() {
-
+			
 			var resp = JSON.parse(this.response);
 
 			if (request_w.status >= 200 && request_w.status < 400) {
@@ -763,9 +763,9 @@ function weather(event, that) {
 		}
 
 		request_w.send();
-	}
+	}	
 
-
+	
 	function dataHandling(data) {
 
 		function getIcon() {
@@ -793,7 +793,7 @@ function weather(event, that) {
 					"clearsky": 800,
 					"fewclouds": 801,
 					"brokenclouds": 803
-				}
+				}	
 
 				for(let key in codes) {
 
@@ -852,7 +852,7 @@ function weather(event, that) {
 		getIcon();
 	}
 
-
+	
 	function submissionError(error) {
 
 		//affiche le texte d'erreur
@@ -870,7 +870,7 @@ function weather(event, that) {
 		}
 	}
 
-
+	
 	function updateCity() {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -890,10 +890,10 @@ function weather(event, that) {
 			id("i_city").blur();
 
 			chrome.storage.sync.set({"weather": param});
-		});
+		});	
 	}
 
-
+	
 	function updateUnit(that) {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -908,12 +908,12 @@ function weather(event, that) {
 
 			request(param, "current");
 			request(param, "forecast");
-
+			
 			chrome.storage.sync.set({"weather": param});
 		});
 	}
 
-
+	
 	function updateLocation(that) {
 
 		chrome.storage.sync.get(["weather"], (data) => {
@@ -938,7 +938,7 @@ function weather(event, that) {
 					//update le setting
 					id("sett_city").setAttribute("class", "city hidden");
 					that.removeAttribute("disabled");
-
+					
 				}, (refused) => {
 
 					//désactive geolocation if refused
@@ -957,7 +957,7 @@ function weather(event, that) {
 
 				param.location = false;
 				chrome.storage.sync.set({"weather": param});
-
+				
 				request(param, "current");
 				request(param, "forecast");
 			}
@@ -995,7 +995,7 @@ function imgCredits(src, type) {
 		setTimeout(function() {
 			id("credit").removeAttribute("class");
 		}, 20)
-
+		
 	}
 
 	id("onUnsplash").style.visibility = "hidden";
@@ -1021,21 +1021,17 @@ function imgBackground(val) {
 		img.onload = load;
 		img.src = val;
 		img.remove();
-	}
+	} 
 	else return id("background").style.backgroundImage;
 }
-
+ 
 function initBackground() {
 
-	chrome.storage.sync.get(["dynamic", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
+	chrome.storage.sync.get(["dynamic", "dynamic_freq", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
 
-		//si storage existe, utiliser storage, sinon default
-		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
-		var type = (data.background_type ? data.background_type : "default");
-		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
-		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
+		let type = data.background_type || "default";
+		let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
 
-		//si custom, faire le blob
 		if (data.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
@@ -1043,21 +1039,28 @@ function initBackground() {
 			});
 		}
 		else if (data.background_type === "dynamic") {
-			unsplash(data.dynamic)
-		}
-		else {
+
+			unsplash(data.dynamic, data.dynamic_freq)
+
+		} else {
 
 			imgBackground(image)
 		}
 
+
+		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
+		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
+
 		imgCredits(image, type);
 		filter("init", [blur, bright]);
+
+		id("background").style.animation =  "fade .15s ease-in forwards";
 
 		//remet les transitions du blur
 		setTimeout(function() {
 			id("background").style.transition = "filter .2s";
 		}, 50);
-	});
+	});	
 }
 
 function setblob(donnee, set) {
@@ -1125,73 +1128,91 @@ function renderImage(file) {
 
 function unsplash(data, freq) {
 
-	function getWeek() {
-		const today = new Date();
-		const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-		const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-		return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-	}
+	function freqControl(state, every, last) {
 
-	function dynamicFrequence(d) {
+		const d = new Date;
+		if (state === "set") return d.getTime();
 
-		let f;
+		if (state === "get") {
 
-		if (freq === "hour") f = (new Date).getHour();
-		else if (freq === "day") f = (new Date).getDay();
-		else if (freq === "week") f = getWeek();
+			let calcLast = 0;
+			let today = d.getTime();
 
+			if (every === "hour") calcLast = last + 3600 * 1000;
+			else if (every === "day") calcLast = last + 86400 * 1000;
+			else if (every === "pause") calcLast = 10**13 - 1; //le jour de la fin du monde lmao
 
-		chrome.storage.sync.set({})
+			//retourne le today superieur au calculated last
+			return (today > calcLast);
+		}
 	}
 
 	function cacheControl() {
 
-		if (data) {
+		//si ça vient d'init
+		if (data && freq) {
 
-			imgBackground(data.url);
-			credit(data);
+			//si il est l'heure de changer d'image
+			if (freqControl("get", freq.every, freq.last)) {
+				req();
+
+				//le last devient le present
+				freq.last = freqControl("set", freq.every);
+				chrome.storage.sync.set({"dynamic_freq": freq});
+			}
+			else {
+				imgBackground(data.url);
+				credit(data);
+			}
 
 		} else {
 
-			chrome.storage.sync.get("dynamic", (data) => {
+			//ça vient d'un event, on a pas de data
+			chrome.storage.sync.get(["dynamic", "dynamic_freq"], (data) => {
 
-				//chrome.storage.sync.set({"previous_type": data.background_type});
+				if (data.dynamic) {
 
-				if (data.dynamic /*&& respecte la frequence*/) {
+					//si unsplash est appelé avec freq, il vient de l'event
+					let frqArr = {
+						every: (freq ? freq : data.dynamic_freq.every),
+						last: data.dynamic_freq.last
+					}
 
-					imgBackground(data.dynamic.url);
-					credit(dynamic.dynamic);
+					//le time est plus loin que la derniere image
+					if (freqControl("get", frqArr.every, frqArr.last)) {
 
-				} else req();
+						frqArr.last = freqControl("set", frqArr.every);
+						
+					} else {
+						imgBackground(data.dynamic.url);
+						credit(data.dynamic);
+					}
+
+					chrome.storage.sync.set({"dynamic_freq": frqArr});
+					
+
+				//premiere fois dynamic
+				} else {
+					
+					let f = {
+						every: "hour",
+						last: freqControl("set", "hour")
+					}
+
+					chrome.storage.sync.set({"dynamic_freq": f});
+					req();
+				} 
 			});
 		}
 	}
 
-	function credit(d) {
-
-		//console.log(d);
-		id("onUnsplash").style.visibility = "visible";
-		id("credit").setAttribute("class", "shown");
-
-		let loc = "";
-
-		if (d.city && d.country) loc = `${d.city}, ${d.country} - `;
-		else if (d.country) loc = `${d.country} - `;
-		else loc = "Photo - ";
-
-		id("location").innerText = loc;
-		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
-		id("artist").innerText = d.name;
-		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
-	}
-
-	function req(freq) {
+	function req() {
 
 		let xhr = new XMLHttpRequest();
 		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}`, true);
 
 		xhr.onload = function() {
-
+			
 			let resp = JSON.parse(this.response);
 
 			if (xhr.status >= 200 && xhr.status < 400) {
@@ -1199,7 +1220,6 @@ function unsplash(data, freq) {
 				//console.log(this.response)
 
 				let dynamic = {
-					freq: (new Date).getDay(),
 					url: resp.urls.full,
 					link: resp.links.html,
 					username: resp.user.username,
@@ -1210,13 +1230,31 @@ function unsplash(data, freq) {
 
 				chrome.storage.sync.set({"dynamic": dynamic});
 
-				id("background").style.backgroundImage = `url(${dynamic.url})`;
+				imgBackground(dynamic.url);
 				credit(dynamic);
 			}
 		}
 		xhr.send();
 	}
 
+	function credit(d) {
+
+		//console.log(d);
+		id("onUnsplash").style.visibility = "visible";
+		id("credit").setAttribute("class", "shown");
+
+		let loc = "";
+
+		if (d.city !== null && d.country !== null) loc = `${d.city}, ${d.country} - `;
+		else if (d.country !== null) loc = `${d.country} - `;
+		else loc = "Photo - ";
+
+		id("location").innerText = loc;
+		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
+		id("artist").innerText = d.name;
+		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
+	}
+	
 	cacheControl()
 }
 
@@ -1251,7 +1289,7 @@ function filter(cat, val) {
 
 function darkmode(choix) {
 
-
+	
 	function isIOSwallpaper(dark) {
 
 		//défini les parametres a changer en fonction du theme
@@ -1264,7 +1302,7 @@ function darkmode(choix) {
 			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
 
 		} else {
-
+			
 			modeurl = "ios13_light";
 			actual = "ios13_dark";
 			urltouse = 'src/images/backgrounds/ios13_light.jpg';
@@ -1274,7 +1312,7 @@ function darkmode(choix) {
 		if (id("settings")) {
 			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
 		}
-
+		
 		if (imgBackground().includes(actual)) {
 
 			imgBackground(urltouse, "default");
@@ -1282,7 +1320,7 @@ function darkmode(choix) {
 		}
 	}
 
-
+	
 	function applyDark(add, system) {
 
 		if (add) {
@@ -1304,7 +1342,7 @@ function darkmode(choix) {
 		}
 	}
 
-
+	
 	function auto(weather) {
 
 		chrome.storage.sync.get("weather", (data) => {
@@ -1326,7 +1364,7 @@ function darkmode(choix) {
 		});
 	}
 
-
+	
 	function initDarkMode() {
 
 		chrome.storage.sync.get("dark", (data) => {
@@ -1348,10 +1386,10 @@ function darkmode(choix) {
 			if (dd === "system") {
 				applyDark(true, true);
 			}
-		});
+		});		
 	}
 
-
+	
 	function changeDarkMode() {
 
 		if (choix === "enable") {
@@ -1392,7 +1430,7 @@ function searchbarFlexControl(activated, linkslength) {
 			id("sb_container").setAttribute("class", "shown");
 		else
 			id("sb_container").setAttribute("class", "removed");
-
+		
 	} else {
 
 		if (activated)
@@ -1406,18 +1444,18 @@ function searchbar(event, that) {
 
 	function activate(activated, links, init) {
 
-		if (activated) {
+		if (activated) {	
 
 			if(!init) id("choose_searchengine").setAttribute("class", "shown");
 
 			searchbarFlexControl(activated, (links ? links.length : 0));
 			chrome.storage.sync.set({"searchbar": true});
-
+			
 		} else {
 
 			//pour animer un peu
 			if(!init) id("choose_searchengine").setAttribute("class", "hidden");
-
+			
 			searchbarFlexControl(activated, (links ? links.length : 0));
 			chrome.storage.sync.set({"searchbar": false});
 		}
@@ -1441,7 +1479,7 @@ function searchbar(event, that) {
 			sv: "Sök med",
 			nl: "Zoek op",
 			pl: "Szukaj z",
-			pt_BR: "Pesquisar em"
+			pt_BR: "Pesquisar em",
 			ru: "Поиск в",
 			zh_CN: "搜索"
 		}
@@ -1480,7 +1518,7 @@ function searchbar(event, that) {
 			}
 		});
 	}
-
+	
 
 	if (event === "searchbar") activate(that.checked);
 	else if (event === "engine") chooseSearchEngine(that.value);
@@ -1513,5 +1551,3 @@ darkmode();
 weather();
 searchbar();
 quickLinks();
-
-id("background").style.animation =  "fade .2s ease-in .02s forwards";
