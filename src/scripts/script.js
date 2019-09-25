@@ -1,8 +1,6 @@
 //gpg signed commit test again
 
 var stillActive = false;
-const INPUT_PAUSE = 700;
-const BLOCK_LIMIT = 16;
 const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 const DATE = new Date();
 const HOURS = DATE.getHours();
@@ -68,7 +66,7 @@ function slow(that) {
 
 		clearTimeout(stillActive);
 		stillActive = false;
-	}, INPUT_PAUSE);
+	}, 700);
 }
 
 function traduction() {
@@ -76,6 +74,7 @@ function traduction() {
 	let trns = document.getElementsByClassName('trn');
 	let local = localStorage.lang || "en";
 	let dom = [];
+	let dict = askfordict();
 
 	if (local !== "en") {
 
@@ -95,6 +94,7 @@ function traduction() {
 
 function tradThis(str) {
 
+	let dict = askfordict();
 	let lang = localStorage.lang || "en";
 
 	return (lang === "en" ? str : dict[str][localStorage.lang])
@@ -322,7 +322,7 @@ function quickLinks(event, that) {
 
 			//si on supprime un block quand la limite est atteinte
 			//réactive les inputs
-			if (linkRemd.length === BLOCK_LIMIT - 1) {
+			if (linkRemd.length === 16 - 1) {
 
 				id("i_url").removeAttribute("disabled");
 			}
@@ -474,7 +474,7 @@ function quickLinks(event, that) {
 				//array est tout les links + le nouveau
 				if (data.links && data.links.length > 0) {
 
-					if (data.links.length < BLOCK_LIMIT - 1) {
+					if (data.links.length < 16 - 1) {
 
 						arr = data.links;
 						arr.push(lll);
@@ -1027,31 +1027,34 @@ function imgBackground(val) {
  
 function initBackground() {
 
-	chrome.storage.sync.get(["dynamic", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
+	chrome.storage.sync.get(["dynamic", "dynamic_freq", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
 
-		//si storage existe, utiliser storage, sinon default
-		var image = (data.background_image ? data.background_image : "src/images/backgrounds/avi-richards-beach.jpg");
-		var type = (data.background_type ? data.background_type : "default");
-		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
-		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
+		let type = data.background_type || "default";
+		let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
 
-		//si custom, faire le blob
 		if (data.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
 				imgBackground(setblob(data.background_blob));
-			});	
-		} 
+			});
+		}
 		else if (data.background_type === "dynamic") {
-			unsplash(data.dynamic)
-		}
-		else {
 
-			imgBackground(image)	
+			unsplash(data.dynamic, data.dynamic_freq)
+
+		} else {
+
+			imgBackground(image)
 		}
+
+
+		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
+		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
 
 		imgCredits(image, type);
 		filter("init", [blur, bright]);
+
+		id("background").style.animation =  "fade .15s ease-in forwards";
 
 		//remet les transitions du blur
 		setTimeout(function() {
@@ -1125,67 +1128,85 @@ function renderImage(file) {
 
 function unsplash(data, freq) {
 
-	function getWeek() {
-		const today = new Date();
-		const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-		const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-		return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-	}
+	function getNowFreq(every) {
 
-	function dynamicFrequence(d) {
+		function getWeek() {
+			const today = new Date();
+			const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+			const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+			return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+		}
 
 		let f;
 
-		if (freq === "hour") f = (new Date).getHour();
-		else if (freq === "day") f = (new Date).getDay();
-		else if (freq === "week") f = getWeek();
+		if (every === "hour") f = (new Date).getHours();
+		else if (every === "day") f = (new Date).getDay();
+		else if (every === "week") f = getWeek();
+		else f = false;
 
-
-		chrome.storage.sync.set({})
+		return f;
 	}
 
 	function cacheControl() {
 
-		if (data) {
+		//si ça vient d'init
+		if (data && freq) {
 
-			imgBackground(data.url);
-			credit(data);
+			//si il est l'heure de changer d'image
+			if (getNowFreq(freq.every) > freq.last) {
+				req();
+
+				//le last devient le present
+				freq.last = getNowFreq(freq.every);
+				chrome.storage.sync.set({"dynamic_freq": freq});
+			}
+			else {
+				imgBackground(data.url);
+				credit(data);
+			}
 
 		} else {
 
-			chrome.storage.sync.get("dynamic", (data) => {
+			//ça vient d'un event, on a pas de data
+			chrome.storage.sync.get(["dynamic", "dynamic_freq"], (data) => {
 
-				//chrome.storage.sync.set({"previous_type": data.background_type});
+				if (data.dynamic) {
 
-				if (data.dynamic /*&& respecte la frequence*/) {
+					//si unsplash est appelé avec freq, il vient de l'event
+					let frequence = {
+						every: (freq ? freq : data.dynamic_freq.every),
+						last: data.dynamic_freq.last
+					}	
 
-					imgBackground(data.dynamic.url);
-					credit(dynamic.dynamic);
+					//le time est plus loin que la derniere image
+					if (getNowFreq(frequence.every) > frequence.last) {
 
-				} else req();
+						req();
+						frequence.last = getNowFreq(frequence.every);
+						chrome.storage.sync.set({"dynamic_freq": frequence});
+						
+					} else {
+						imgBackground(data.dynamic.url);
+						credit(data.dynamic);
+					}
+					
+
+				//premiere fois dynamic
+				} else {
+					
+					let f = {
+						every: "hour",
+						last: getNowFreq("hour")
+					}
+
+					chrome.storage.sync.set({"dynamic_freq": f});
+					req();
+				} 
 			});
 		}
 	}
 
-	function credit(d) {
-
-		//console.log(d);
-		id("onUnsplash").style.visibility = "visible";
-		id("credit").setAttribute("class", "shown");
-
-		let loc = "";
-
-		if (d.city && d.country) loc = `${d.city}, ${d.country} - `;
-		else if (d.country) loc = `${d.country} - `;
-		else loc = "Photo - ";
-
-		id("location").innerText = loc;
-		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
-		id("artist").innerText = d.name;
-		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
-	}
-
-	function req(freq) {
+	function req() {
 
 		let xhr = new XMLHttpRequest();
 		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}`, true);
@@ -1199,7 +1220,6 @@ function unsplash(data, freq) {
 				//console.log(this.response)
 
 				let dynamic = {
-					freq: (new Date).getDay(),
 					url: resp.urls.full,
 					link: resp.links.html,
 					username: resp.user.username,
@@ -1210,11 +1230,29 @@ function unsplash(data, freq) {
 
 				chrome.storage.sync.set({"dynamic": dynamic});
 
-				id("background").style.backgroundImage = `url(${dynamic.url})`;
+				imgBackground(dynamic.url);
 				credit(dynamic);
 			}
 		}
 		xhr.send();
+	}
+
+	function credit(d) {
+
+		//console.log(d);
+		id("onUnsplash").style.visibility = "visible";
+		id("credit").setAttribute("class", "shown");
+
+		let loc = "";
+
+		if (d.city !== null && d.country !== null) loc = `${d.city}, ${d.country} - `;
+		else if (d.country !== null) loc = `${d.country} - `;
+		else loc = "Photo - ";
+
+		id("location").innerText = loc;
+		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
+		id("artist").innerText = d.name;
+		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
 	}
 	
 	cacheControl()
@@ -1512,5 +1550,3 @@ darkmode();
 weather();
 searchbar();
 quickLinks();
-
-id("background").style.animation =  "fade .2s ease-in .02s forwards";

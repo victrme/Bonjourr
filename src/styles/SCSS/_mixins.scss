@@ -98,6 +98,7 @@
 		}
 
 		&.shown {
+			display: block;
 			visibility: visible;
 			opacity: 1;
 			height: 52px;

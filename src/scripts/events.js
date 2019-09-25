@@ -149,9 +149,9 @@ function settingsEvents() {
 		selectBackgroundType(this.value)
 	}
 
-	/*id("i_freq").onchange = function() {
-		unsplash(this.value);
-	}*/
+	id("i_freq").onchange = function() {
+		unsplash(null, this.value);
+	}
 
 	id("i_bgfile").onchange = function(e) {
 		renderImage(this.files[0]);
@@ -215,7 +215,7 @@ function settingsEvents() {
 
 function actualizeStartupOptions() {
 
-	let store = ["background_type", "background_blur", "background_bright", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
+	let store = ["dynamic_freq", "background_type", "background_blur", "background_bright", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
 
 	chrome.storage.sync.get(null, (data) => {
 
@@ -243,6 +243,8 @@ function actualizeStartupOptions() {
 			id("i_type").value = "default";
 			id("default").style.display = "block";
 		}
+
+		id("i_freq").value = (data.dynamic_freq ? data.dynamic_freq.every : "hour");
 
 		//blur
 		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
