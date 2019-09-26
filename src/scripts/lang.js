@@ -3,6 +3,7 @@
 // Polish translation by Mateusz K · u/DiVine92
 // Russian translation by OemDef · u/OemDef
 // Simplified chinese translation by Shuhuai Cao · github.com/csh980717
+// Slovak translation by Roman Bartík
 
 function askfordict() {
   return {
@@ -14,7 +15,7 @@ function askfordict() {
       pt_BR: "Nova Aba",
       ru: "Новая вкладка",
       zh_CN: "新标签页",
-      sk: ""
+      sk: "Nová karta"
     },
     "Settings": {
       fr: "Réglages",
@@ -24,7 +25,7 @@ function askfordict() {
       pt_BR: "Configurações",
       ru: "Настройки",
       zh_CN: "设置",
-      sk: ""
+      sk: "Nastavenia"
     },
     "Background type": {
       fr: "Type d'arrière-plan",
@@ -34,7 +35,7 @@ function askfordict() {
       pt_BR: "Tipo de background",
       ru: "Background type",
       zh_CN: "Background type",
-      sk: ""
+      sk: "Pozadie"
     },
     "Blur intensity": {
       fr: "Intensité du flou",
@@ -44,7 +45,7 @@ function askfordict() {
       pt_BR: "Intensidade do desfoque",
       ru: "Степень размытия фона",
       zh_CN: "模糊度",
-      sk: ""
+      sk: "Intenzita rozmazania"
     },
     "QUICK LINKS": {
       fr: "Liens favoris",
@@ -54,7 +55,7 @@ function askfordict() {
       pt_BR: "Links Rápidos",
       ru: "Закладки",
       zh_CN: "快速链接",
-      sk: ""
+      sk: "RÝCHLA NAVIGÁCIA"
     },
     "Title": {
       fr: "Titre",
@@ -64,7 +65,7 @@ function askfordict() {
       pt_BR: "Títulos",
       ru: "Имя",
       zh_CN: "标题",
-      sk: ""
+      sk: "Názov"
     },
     "Add": {
       fr: "Ajouter",
@@ -74,7 +75,7 @@ function askfordict() {
       pt_BR: "Adicionar",
       ru: "Добавить",
       zh_CN: "添加",
-      sk: ""
+      sk: "Pridať"
     },
     "Open in new tab by default": {
       fr: "Ouvrir dans un nouvel onglet par défaut",
@@ -85,7 +86,7 @@ function askfordict() {
       pl: "Open in new tab by default",
       pt_BR: "Abrir em nova aba por padrão",
       ru: "Open in new tab by default",
-      sk: "Open in new tab by default"
+      sk: "Predvolene otvoriť v novej karte"
     },
     "WEATHER": {
       fr: "Météo",
@@ -95,7 +96,7 @@ function askfordict() {
       pt_BR: "Tempo",
       ru: "Погода",
       zh_CN: "天气",
-      sk: ""
+      sk: "POČASIE"
     },
     "Change city": {
       fr: "Changer la ville",
@@ -105,7 +106,7 @@ function askfordict() {
       pt_BR: "Mudar cidade",
       ru: "Сменить город",
       zh_CN: "更改城市",
-      sk: ""
+      sk: "Zmeniť mesto"
     },
     "Imperial units": {
       fr: "Unités impériales",
@@ -115,7 +116,7 @@ function askfordict() {
       pt_BR: "Unidades imperiais",
       ru: "Использовать Фаренгейты",
       zh_CN: "英制单位",
-      sk: ""
+      sk: "Imperiálne jednotky"
     },
     "Made in France with ❤️": {
       fr: "Fabriqué en France avec ❤️",
@@ -125,7 +126,7 @@ function askfordict() {
       pt_BR: "Feito na França com ❤️",
       ru: "Сделано во франции с ❤️",
       zh_CN: "源自法国 匠❤️打造",
-      sk: ""
+      sk: "Spravené vo Francúzsku s ❤️"
     },
     "by": {
       fr: "par",
@@ -135,7 +136,7 @@ function askfordict() {
       pt_BR: "por",
       ru: "Разработчики:",
       zh_CN: "由",
-      sk: ""
+      sk: "od"
     },
     "Good Morning": {
       fr: "Bonjour",
@@ -145,7 +146,7 @@ function askfordict() {
       pt_BR: "Bom Dia",
       ru: "Доброе утро!",
       zh_CN: "早上好",
-      sk: ""
+      sk: "Dobré ráno"
     },
     "Good Afternoon": {
       fr: "Bon après-midi",
@@ -155,7 +156,7 @@ function askfordict() {
       pt_BR: "Boa Tarde",
       ru: "Добрый день!",
       zh_CN: "下午好",
-      sk: ""
+      sk: "Dobrý deň"
     },
     "Good Evening": {
       fr: "Bonsoir",
@@ -165,7 +166,7 @@ function askfordict() {
       pt_BR: "Boa noite",
       ru: "Добрый вечер!",
       zh_CN: "晚上好",
-      sk: ""
+      sk: "Dobrý večer"
     },
     "Good Night": {
       fr: "Bonne nuit",
@@ -175,7 +176,7 @@ function askfordict() {
       pt_BR: "Boa noite",
       ru: "Доброй ночи!",
       zh_CN: "晚安",
-      sk: ""
+      sk: "Dobrú noc"
     },
     "It is currently": {
       fr: "Il fait actuellement",
@@ -185,7 +186,7 @@ function askfordict() {
       pt_BR: "Está atualmente",
       ru: "Сейчас",
       zh_CN: "现在气温",
-      sk: ""
+      sk: "Momentálne je"
     },
     "with a high of": {
       fr: "avec une maximale de",
@@ -195,7 +196,7 @@ function askfordict() {
       pt_BR: "com máxima de",
       ru: "максимальная температура воздуха сегодня",
       zh_CN: "最高气温",
-      sk: ""
+      sk: "z maximálnych"
     },
     "today.": {
       fr: "aujourd'hui.",
@@ -205,7 +206,7 @@ function askfordict() {
       pt_BR: "hoje.",
       ru: "",
       zh_CN: ", 以上是今日天气.",
-      sk: ""
+      sk: "dnes."
     },
     "Monday": {
       fr: "Lundi",
@@ -215,7 +216,7 @@ function askfordict() {
       pt_BR: "Segunda",
       ru: "Понедельник,",
       zh_CN: "星期一",
-      sk: ""
+      sk: "Pondelok"
     },
     "Tuesday": {
       fr: "Mardi",
@@ -225,7 +226,7 @@ function askfordict() {
       pt_BR: "Terça",
       ru: "Вторник,",
       zh_CN: "星期二",
-      sk: ""
+      sk: "Utorok"
     },
     "Wednesday": {
       fr: "Mercredi",
@@ -235,7 +236,7 @@ function askfordict() {
       pt_BR: "Quarta",
       ru: "Среда,",
       zh_CN: "星期三",
-      sk: ""
+      sk: "Streda"
     },
     "Thursday": {
       fr: "Jeudi",
@@ -245,7 +246,7 @@ function askfordict() {
       pt_BR: "Quinta",
       ru: "Четверг,",
       zh_CN: "星期四",
-      sk: ""
+      sk: "Štvrtok"
     },
     "Friday": {
       fr: "Vendredi",
@@ -255,7 +256,7 @@ function askfordict() {
       pt_BR: "Sexta",
       ru: "Пятница,",
       zh_CN: "星期五",
-      sk: ""
+      sk: "Piatok"
     },
     "Saturday": {
       fr: "Samedi",
@@ -265,7 +266,7 @@ function askfordict() {
       pt_BR: "Sábado",
       ru: "Суббота,",
       zh_CN: "星期六",
-      sk: ""
+      sk: "Sobota"
     },
     "Sunday": {
       fr: "Dimanche",
@@ -275,7 +276,7 @@ function askfordict() {
       pt_BR: "Domingo",
       ru: "Воскресенье,",
       zh_CN: "星期日",
-      sk: ""
+      sk: "Nedeľa"
     },
     "January": {
       fr: "Janvier",
@@ -285,7 +286,7 @@ function askfordict() {
       pt_BR: "Janeiro",
       ru: "января",
       zh_CN: "1月",
-      sk: ""
+      sk: "Január"
     },
     "February": {
       fr: "Février",
@@ -295,7 +296,7 @@ function askfordict() {
       pt_BR: "Fevereiro",
       ru: "февраля",
       zh_CN: "2月",
-      sk: ""
+      sk: "Február"
     },
     "March": {
       fr: "Mars",
@@ -305,7 +306,7 @@ function askfordict() {
       pt_BR: "Março",
       ru: "марта",
       zh_CN: "3月",
-      sk: ""
+      sk: "Marec"
     },
     "April": {
       fr: "Avril",
@@ -315,7 +316,7 @@ function askfordict() {
       pt_BR: "Abril",
       ru: "апреля",
       zh_CN: "4月",
-      sk: ""
+      sk: "Apríl"
     },
     "May": {
       fr: "Mai",
@@ -325,7 +326,7 @@ function askfordict() {
       pt_BR: "Maio",
       ru: "мая",
       zh_CN: "5月",
-      sk: ""
+      sk: "Máj"
     },
     "June": {
       fr: "Juin",
@@ -335,7 +336,7 @@ function askfordict() {
       pt_BR: "Junho",
       ru: "июня",
       zh_CN: "6月",
-      sk: ""
+      sk: "Jún"
     },
     "July": {
       fr: "Juillet",
@@ -345,7 +346,7 @@ function askfordict() {
       pt_BR: "Julho",
       ru: "июля",
       zh_CN: "7月",
-      sk: ""
+      sk: "Júl"
     },
     "August": {
       fr: "Août",
@@ -355,7 +356,7 @@ function askfordict() {
       pt_BR: "Agosto",
       ru: "августа",
       zh_CN: "8月",
-      sk: ""
+      sk: "August"
     },
     "September": {
       fr: "Septembre",
@@ -365,7 +366,7 @@ function askfordict() {
       pt_BR: "Setembro",
       ru: "сентября",
       zh_CN: "9月",
-      sk: ""
+      sk: "Spetember"
     },
     "October": {
       fr: "Octobre",
@@ -375,7 +376,7 @@ function askfordict() {
       pt_BR: "Outubro",
       ru: "октября",
       zh_CN: "10月",
-      sk: ""
+      sk: "Október"
     },
     "November": {
       fr: "Novembre",
@@ -385,7 +386,7 @@ function askfordict() {
       pt_BR: "Novembro",
       ru: "ноября",
       zh_CN: "11月",
-      sk: ""
+      sk: "November"
     },
     "December": {
       fr: "Décembre",
@@ -395,7 +396,7 @@ function askfordict() {
       pt_BR: "Dezembro",
       ru: "декабря",
       zh_CN: "12月",
-      sk: ""
+      sk: "December"
     },
     "LANGUAGE": {
       fr: "Langue",
@@ -405,7 +406,7 @@ function askfordict() {
       pt_BR: "Idioma",
       ru: "Язык",
       zh_CN: "语言",
-      sk: ""
+      sk: "JAZYK"
     },
     "Choose language": {
       fr: "Choix de la langue",
@@ -415,7 +416,7 @@ function askfordict() {
       pt_BR: "Escolha o idioma",
       ru: "Выберите язык",
       zh_CN: "选择语言",
-      sk: ""
+      sk: "Vybrať jazyk"
     },
     "Visit": {
       fr: "Rendez-vous sur",
@@ -425,27 +426,7 @@ function askfordict() {
       pt_BR: "Veja",
       ru: "Посетите",
       zh_CN: "访问",
-      sk: ""
-    },
-    "&nbsp;our website&nbsp;": {
-      fr: "&nbsp;notre site Internet",
-      sv: "&nbsp;vår hemsida",
-      nl: "&nbsp;onze website",
-      pl: "&nbsp;nasza strona&nbsp;",
-      pt_BR: "&nbsp;nosso site&nbsp;",
-      ru: "&nbsp;наш сайт&nbsp;",
-      zh_CN: "&nbsp;我们的网站&nbsp;",
-      sk: ""
-    },
-    "for infos and donations": {
-      fr: "pour en savoir plus ou faire un don",
-      sv: "för mera information och donationer",
-      nl: "Voor informatie en donaties",
-      pl: "aby dowiedzieć się więcej lub przekazać darowiznę",
-      pt_BR: "para mais informações e doações",
-      ru: "чтобы узнать больше или поддержать разработчиков",
-      zh_CN: "以获取更多资讯，或向我们捐款",
-      sk: ""
+      sk: "Navštívte"
     },
     "our website": {
       fr: "notre site Internet",
@@ -455,7 +436,17 @@ function askfordict() {
       pt_BR: "nosso site",
       ru: "наш сайт",
       zh_CN: "我们的网站",
-      sk: ""
+      sk: "našu webstránku"
+    },
+    "for infos and donations": {
+      fr: "pour en savoir plus ou faire un don",
+      sv: "för mera information och donationer",
+      nl: "Voor informatie en donaties",
+      pl: "aby dowiedzieć się więcej lub przekazać darowiznę",
+      pt_BR: "para mais informações e doações",
+      ru: "чтобы узнать больше или поддержать разработчиков",
+      zh_CN: "以获取更多资讯，或向我们捐款",
+      sk: "pre informácie a dary"
     },
     "Change city": {
       fr: "Changer la ville",
@@ -465,7 +456,7 @@ function askfordict() {
       pt_BR: "Mudar cidade",
       ru: "Сменить город",
       zh_CN: "更改城市",
-      sk: ""
+      sk: "Zmeniť mesto"
     },
     "There was a problem": {
       fr: "Il y a eu un problème",
@@ -475,7 +466,7 @@ function askfordict() {
       pt_BR: "Houve um problema",
       ru: "Возникла проблема",
       zh_CN: "出现错误",
-      sk: ""
+      sk: "Nastal problém"
     },
     "or select": {
       fr: "ou selectionnez",
@@ -485,7 +476,7 @@ function askfordict() {
       pt_BR: "ou selecione",
       ru: "или выберите",
       zh_CN: "或者选择",
-      sk: ""
+      sk: "alebo vyberte"
     },
     "Automatic": {
       fr: "Automatique",
@@ -495,7 +486,7 @@ function askfordict() {
       pt_BR: "Automático",
       ru: "Автоматически",
       zh_CN: "自动设置",
-      sk: ""
+      sk: "Automatické"
     },
     "VISUALS": {
       fr: "Affichage",
@@ -505,7 +496,7 @@ function askfordict() {
       pt_BR: "Visuais",
       ru: "Внешний вид",
       zh_CN: "外观",
-      sk: ""
+      sk: "VZHĽAD"
     },
     "Dark mode": {
       fr: "Mode sombre",
@@ -515,7 +506,7 @@ function askfordict() {
       pt_BR: "Modo noturno",
       ru: "Тёмная тема",
       zh_CN: "黑暗模式",
-      sk: ""
+      sk: "Tmavý režim"
     },
     "Only at night": {
       fr: "Seulement la nuit",
@@ -525,7 +516,7 @@ function askfordict() {
       pt_BR: "Apenas de noite",
       ru: "Только ночью",
       zh_CN: "只在夜间开启",
-      sk: ""
+      sk: "Len v noci"
     },
     "With the system": {
       fr: "Avec le système",
@@ -535,7 +526,7 @@ function askfordict() {
       pt_BR: "De acordo com o sistema",
       ru: "Вместе с системой",
       zh_CN: "跟随系统设置",
-      sk: ""
+      sk: "Podľa systému"
     },
     "Enabled": {
       fr: "Activé",
@@ -545,7 +536,7 @@ function askfordict() {
       pt_BR: "Ativado",
       ru: "Включена",
       zh_CN: "开启",
-      sk: ""
+      sk: "Zapnuté"
     },
     "Disabled": {
       fr: "Désactivé",
@@ -555,7 +546,7 @@ function askfordict() {
       pt_BR: "Desativado",
       ru: "Выключена",
       zh_CN: "关闭",
-      sk: ""
+      sk: "Vypnuté"
     },
     "SEARCH BAR": {
       fr: "Barre de recherche",
@@ -565,7 +556,7 @@ function askfordict() {
       pt_BR: "Barra de pesquisa",
       ru: "Строка поиска",
       zh_CN: "搜索框",
-      sk: ""
+      sk: "VYHĽADÁVACÍ PANEL"
     },
     "Search engine": {
       fr: "Moteur de recherche",
@@ -575,7 +566,7 @@ function askfordict() {
       pt_BR: "Buscadores",
       ru: "Поисковая система",
       zh_CN: "搜索引擎",
-      sk: ""
+      sk: "Vyhľadávač"
     },
     "Activate": {
       fr: "Activer",
@@ -585,7 +576,7 @@ function askfordict() {
       pt_BR: "Ativar",
       ru: "позволять", // unsure
       zh_CN: "启用",
-      sk: ""
+      sk: "Aktivovať"
     },
     "Use this option if you don't want to enable geolocation.": {
       fr: "Utilisez cette option si vous ne souhaitez pas activer la géolocalisation.",
@@ -595,7 +586,7 @@ function askfordict() {
       pt_BR: "Use esta opção se você não quer ativar a geolocalização",
       ru: "Если вы не хотите включать геолокацию – воспользуйтесь этой опцией.",
       zh_CN: "如果不想根据您的位置自动设置天气，请使用该选项。",
-      sk: ""
+      sk: "Túto možnosť použite, ak nechcete povoliť geolokáciu."
     },
     "Geolocation": {
       fr: "Géolocalisation",
@@ -605,7 +596,7 @@ function askfordict() {
       pt_BR: "Geolocalização",
       ru: "Геолокация",
       zh_CN: "使用我的位置",
-      sk: ""
+      sk: "Geolokácia"
     },
     "Incorrect URL": {
       fr: "URL incorrecte",
@@ -615,7 +606,7 @@ function askfordict() {
       pt_BR: "URL incorreta",
       ru: "Недопустимая ссылка",
       zh_CN: "URL 不正确",
-      sk: ""
+      sk: "Nesprávna URL"
     },
     "Right click on the icons to delete a Quick Link.": {
       fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes.",
@@ -626,7 +617,7 @@ function askfordict() {
       pl: "Right click on the icons to delete a Quick Link.",
       pt_BR: "Clique com o botão direito nos ícones para deletar um Link Rápido",
       ru: "Right click on the icons to delete a Quick Link.",
-      sk: ""
+      sk: "Kliknutím pravým tlačidlom myši na ikony vymažete rýchly odkaz."
     },
     "CLOCK": {
       fr: "Horloge",
@@ -636,7 +627,7 @@ function askfordict() {
       pt_BR: "Relógio",
       ru: "Часы",
       zh_CN: "时钟",
-      sk: ""
+      sk: "HODINY"
     },
     "12-Hour Time": {
       fr: "Affichage 12h",
@@ -646,7 +637,7 @@ function askfordict() {
       pt_BR: "Formato de 12 horas",
       ru: "12-часовой формат времени",
       zh_CN: "12小时制",
-      sk: ""
+      sk: "12-hodinový čas"
     },
     "Search on Startpage": {
       fr: "Rechercher sur Startpage",
@@ -656,7 +647,7 @@ function askfordict() {
       pt_BR: "Buscar no Startpage",
       ru: "Поиск в Startpage",
       zh_CN: "搜索 Startpage",
-      sk: ""
+      sk: "Vyhľadávanie Startpage"
     },
     "Search on Ecosia": {
       fr: "Rechercher sur Ecosia",
@@ -666,7 +657,7 @@ function askfordict() {
       pt_BR: "Buscar no Ecosia",
       ru: "Поиск в Ecosia",
       zh_CN: "搜索 Ecosia",
-      sk: ""
+      sk: "Vyhľadávanie Ecosia"
     },
     "Search on DuckDuckGo": {
       fr: "Rechercher sur DuckDuckGo",
@@ -676,7 +667,7 @@ function askfordict() {
       pt_BR: "Buscar no DuckDuckGo",
       ru: "Поиск в DuckDuckGo",
       zh_CN: "搜索 DuckDuckGo",
-      sk: ""
+      sk: "Vyhľadávanie DuckDuckGo"
     },
     "Search on Google": {
       fr: "Rechercher sur Google",
@@ -686,7 +677,7 @@ function askfordict() {
       pt_BR: "Buscar no Google",
       ru: "Поиск в Google",
       zh_CN: "搜索 Google",
-      sk: ""
+      sk: "Vyhľadávanie Google"
     },
     "Search on Yahoo": {
       fr: "Rechercher sur Yahoo",
@@ -696,7 +687,7 @@ function askfordict() {
       pt_BR: "Buscar no Yahoo",
       ru: "Поиск в Yahoo",
       zh_CN: "搜索 Yahoo",
-      sk: ""
+      sk: "Vyhľadávanie Yahoo"
     },
     "Search on Bing": {
       fr: "Rechercher sur Bing",
@@ -706,7 +697,7 @@ function askfordict() {
       pt_BR: "Buscar no Bing",
       ru: "Поиск в Bing",
       zh_CN: "搜索 Bing",
-      sk: ""
+      sk: "Vyhľadávanie Bing"
     }
   }
 }

@@ -57,13 +57,25 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 * **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://www.reddit.com/user/adilsonfsantos)
+* **Slovak translation ** · Roman Bartík
+
 ## Changelogs
+
+**v1.7.0**
+
+- Massive performance boost at opening
+- Dynamic Backgrounds are now preloaded, a lot quicker and credited
+- Ability to change Dynamic Backgrounds hourly, daily and weekly
+- Visuals settings overall
+- General tab in the Settings
+- High resolution backgrounds are now activated by default, the 4K switch is replaced by a Performance mode switch
+- Slovak translation thanks to Roman Bartík
 
 **v1.6.0**
 
 - Massive performance boost
 - Quick Links improved
-- Less permissions on firefox
+- Less permissions on Firefox
 
 **v1.5.5**
 
