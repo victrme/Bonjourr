@@ -95,7 +95,7 @@ function selectBackgroundType(cat) {
 
 	if (cat === "dynamic") {
 		chrome.storage.sync.set({"background_type": "dynamic"});
-		unsplash(null, null, "i_type")
+		unsplash()
 	}
 	else if (cat === "custom") {
 
