@@ -26,7 +26,6 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 ## Todo
 
 - [ ] System dark mode iOS13 background
-- [ ] Unsplash 4k
 
 ## Features for the future
 
@@ -57,13 +56,26 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 * **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
+* **Slovak translation** · Roman Bartík
+
 ## Changelogs
+
+**v1.7.0**
+
+- Massive performance on startup
+- Dynamic Backgrounds are now preloaded, a lot quicker and credited
+- Ability to change Dynamic Backgrounds every tabs, hourly, daily or pause
+- Visuals settings overall
+- General tab in the Settings
+- High resolution backgrounds are now activated by default <!--the 4K switch is replaced by a Performance mode switch-->
+- Slovak translation thanks to Roman Bartík
+- Brazilian portugese translation thanks to Adilson Santos
 
 **v1.6.0**
 
 - Massive performance boost
 - Quick Links improved
-- Less permissions on firefox
+- Less permissions on Firefox
 
 **v1.5.5**
 

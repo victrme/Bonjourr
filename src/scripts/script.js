@@ -1027,7 +1027,7 @@ function imgBackground(val) {
  
 function initBackground() {
 
-	chrome.storage.sync.get(["dynamic", "dynamic_freq", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
+	chrome.storage.sync.get(["dynamic", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
 
 		let type = data.background_type || "default";
 		let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
@@ -1040,7 +1040,7 @@ function initBackground() {
 		}
 		else if (data.background_type === "dynamic") {
 
-			unsplash(data.dynamic, data.dynamic_freq)
+			unsplash(data.dynamic)
 
 		} else {
 
@@ -1126,12 +1126,53 @@ function renderImage(file) {
 	reader.readAsDataURL(file);
 }
 
-function unsplash(data, freq, origin) {
+function unsplash(data, event) {
+
+	if (data) cacheControl(data);
+	else {
+
+		chrome.storage.sync.get("dynamic", (storage) => {
+
+			//si on change la frequence, juste changer la freq
+			if (event) {
+				storage.dynamic.every = event;
+				chrome.storage.sync.set({"dynamic": storage.dynamic});
+				return true;
+			}
+
+			if (storage.dynamic) {
+				cacheControl(storage.dynamic)
+			} else {
+				let initDyn = {
+					current: {
+						url: "",
+						link: "",
+						username: "",
+						name: "",
+						city: "",
+						country: ""
+					},
+					next: {
+						url: "",
+						link: "",
+						username: "",
+						name: "",
+						city: "",
+						country: "",
+					},
+					every: "hour",
+					time: 0
+				}
+
+				cacheControl(initDyn)
+			}
+		});
+	}
 
 	function freqControl(state, every, last) {
 
 		const d = new Date;
-		if (state === "set") return d.getTime();
+		if (state === "set") return (every === "tabs" ? 0 : d.getTime());
 
 		if (state === "get") {
 
@@ -1147,73 +1188,39 @@ function unsplash(data, freq, origin) {
 		}
 	}
 
-	function cacheControl() {
+	function cacheControl(d) {
 
-		//si ça vient d'init
-		if (data && freq) {
+		//as t on besoin d'une nouvelle image ?
+		let needNewImage = freqControl("get", d.every, d.time);
+		if (needNewImage) {
 
-			//si il est l'heure de changer d'image
-			if (freqControl("get", freq.every, freq.last)) {
-				req();
+			//sauvegarde le nouveau temps
+			d.time = freqControl("set", d.every);
 
-				//le last devient le present
-				freq.last = freqControl("set", freq.every);
-				chrome.storage.sync.set({"dynamic_freq": freq});
+			//si next n'existe pas, init
+			if (d.next.url === "") {
+
+				req("current", d, true);
+
+			//sinon prendre l'image preloaded (next)
+			} else {
+
+				imgBackground(d.next.url);
+				credit(d.next);
+				req("current", d, false);
 			}
-			else {
-				imgBackground(data.url);
-				credit(data);
-			}
 
+		//pas besoin d'image, simplement current
 		} else {
-
-			//ça vient d'un event, on a pas de data
-			chrome.storage.sync.get(["dynamic", "dynamic_freq"], (data) => {
-
-				if (data.dynamic) {
-
-					//si unsplash est appelé avec freq, il vient de l'event
-					let frqArr = {
-						every: (freq ? freq : data.dynamic_freq.every),
-						last: data.dynamic_freq.last
-					}
-
-					//le time est plus loin que la derniere image
-					if (freqControl("get", frqArr.every, frqArr.last)) {
-
-						//si on passe au type dynamic, afficher le dernier
-						if (origin === "i_type") imgBackground(data.dynamic.url);
-						
-						frqArr.last = freqControl("set", frqArr.every);
-						
-					} else {
-
-						imgBackground(data.dynamic.url);
-						credit(data.dynamic);
-					}
-
-					chrome.storage.sync.set({"dynamic_freq": frqArr});
-					
-
-				//premiere fois dynamic
-				} else {
-					
-					let f = {
-						every: "hour",
-						last: freqControl("set", "hour")
-					}
-
-					chrome.storage.sync.set({"dynamic_freq": f});
-					req();
-				} 
-			});
+			imgBackground(d.current.url);
+			credit(d.current);
 		}
 	}
 
-	function req() {
+	function req(which, d, init) {
 
 		let xhr = new XMLHttpRequest();
-		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}`, true);
+		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}/`, true);
 
 		xhr.onload = function() {
 			
@@ -1221,10 +1228,10 @@ function unsplash(data, freq, origin) {
 
 			if (xhr.status >= 200 && xhr.status < 400) {
 
-				//console.log(this.response)
+				let screenWidth = window.devicePixelRatio * screen.width;
 
-				let dynamic = {
-					url: resp.urls.full,
+				resp = {
+					url: resp.urls.raw +`&w=${screenWidth}&fm=jpg&q=70`,
 					link: resp.links.html,
 					username: resp.user.username,
 					name: resp.user.name,
@@ -1232,10 +1239,27 @@ function unsplash(data, freq, origin) {
 					country: resp.location.country
 				}
 
-				chrome.storage.sync.set({"dynamic": dynamic});
+				if (init) {
 
-				imgBackground(dynamic.url);
-				credit(dynamic);
+					//si init, fait 2 req (current, next) et save sur la 2e
+					if (which === "current") {
+						d.current = resp;
+						imgBackground(d.current.url);
+						credit(d.current);
+						req("next", d, true);
+					}
+					else if (which === "next") {
+						d.next = resp;
+						chrome.storage.sync.set({"dynamic": d});
+					}
+
+				//si next existe, current devient next et next devient la requete
+				} else {
+
+					d.current = d.next;
+					d.next = resp;
+					chrome.storage.sync.set({"dynamic": d});
+				}
 			}
 		}
 		xhr.send();
@@ -1258,8 +1282,6 @@ function unsplash(data, freq, origin) {
 		id("artist").innerText = d.name;
 		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
 	}
-	
-	cacheControl()
 }
 
 function remSelectedPreview() {
