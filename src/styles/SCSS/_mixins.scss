@@ -61,6 +61,7 @@
 @mixin searchbar {
 	#sb_container {
 		visibility: hidden;
+		display: none;
 		opacity: 0;
 		height: 2px;
 		width: 100%;
@@ -180,7 +181,6 @@
 				left: -1.2em;
 				height: 30px;
 				width: 30px;
-				opacity: 0;
 				border: 0;
 				border-radius: 100%;
 				background: #ffffff;
@@ -200,7 +200,6 @@
 
 				&.visible {
 					cursor: pointer;
-					opacity: 1;
 				}
 
 				&:hover {
@@ -249,7 +248,7 @@
 		cursor: pointer;
 	}
 
-	p.wrongURL, p#wrongCity {
+	p#wrongURL, p#wrongCity {
 		display: none;
 		opacity: 0;
 		color: red;
@@ -388,38 +387,43 @@
 }
 
 @mixin chooseBackground {
-	.choosable_backgrounds {
+	#default {
 		display: flex;
 		justify-content: space-between;
 		padding: 1em 0 .5em 0;
 
-		.imgpreview {
-			overflow: hidden;
-			height: 80px;
-			width: 60px;
-			border-radius: 4px;
-			background-size: cover;
-			background-position: center center;
-			display: inline-block;
-			transition: border 0s, opacity .2s;
-		
-			img {
+		> div {
+			display: flex;
+    		justify-content: space-between;
+
+    		.imgpreview {
+				overflow: hidden;
 				height: 80px;
-				cursor: pointer;
-				box-sizing: content-box;
-			}
+				width: 60px;
+				border-radius: 4px;
+				background-size: cover;
+				background-position: center center;
+				display: inline-block;
+				transition: border 0s, opacity .2s;
+			
+				img {
+					height: 80px;
+					cursor: pointer;
+					box-sizing: content-box;
+				}
 
-			&:hover {
-				border: 2px solid #007aff;
-				width: 56px;
-				height: 76px;
-			}
+				&:hover {
+					border: 2px solid #007aff;
+					width: 56px;
+					height: 76px;
+				}
 
-			&.selected {
-				border: 2px solid #007aff;
-				width: 56px;
-				height: 76px;
-				opacity: .8;
+				&.selected {
+					border: 2px solid #007aff;
+					width: 56px;
+					height: 76px;
+					opacity: .8;
+				}
 			}
 		}
 	}
