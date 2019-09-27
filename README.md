@@ -69,6 +69,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - General tab in the Settings
 - High resolution backgrounds are now activated by default <!--the 4K switch is replaced by a Performance mode switch-->
 - Slovak translation thanks to Roman Bartík
+- Brazilian portugese translation thanks to Adilson Santos
 
 **v1.6.0**
 
