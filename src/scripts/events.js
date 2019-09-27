@@ -1,25 +1,3 @@
-/*id("i_dynamic").onchange = function() {
-
-	if (this.checked) {
-		chrome.storage.sync.set({"background_type": "dynamic"});
-		unsplash()
-	} else {
-		chrome.storage.sync.get(["previous_type"], (data) => {
-
-			if (data.previous_type && data.previous_type !== "dynamic") {
-				chrome.storage.sync.set({"background_type": data.previous_type});
-			} else {
-				chrome.storage.sync.set({"background_type": "default"});
-			}
-			
-			initBackground();
-		});
-	}
-}*/
-/*
-id("i_retina").onchange = function() {
-	retina(this.checked)
-}*/
 
 function defaultBg() {
 
@@ -234,7 +212,7 @@ function actualizeStartupOptions() {
 			id("default").style.display = "block";
 		}
 
-		id("i_freq").value = (data.dynamic_freq ? data.dynamic_freq.every : "hour");
+		id("i_freq").value = (data.dynamic.every ? data.dynamic.every : "hour");
 
 		//blur
 		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
@@ -335,6 +313,8 @@ id("showSettings").onmousedown = function() {
 					node.id = "settings";
 					node.innerHTML = this.responseText;
 					document.body.appendChild(node);
+					settings();
+					traduction(true);
 				}
 			}
 		}
@@ -345,7 +325,6 @@ id("showSettings").onmousedown = function() {
 
 	if (!id("settings")) {
 		init();
-		setTimeout(settings, 20);
 	}
 }
 

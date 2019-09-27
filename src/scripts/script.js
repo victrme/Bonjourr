@@ -1,35 +1,8 @@
 //gpg signed commit test again
 
 var stillActive = false;
-const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 const DATE = new Date();
 const HOURS = DATE.getHours();
-const CREDITS = [
-	{
-		"title": "Santa Monica",
-		"artist": "Avi Richards",
-		"url": "https://unsplash.com/photos/KCgADeYejng",
-		"id": "avi-richards-beach"
-	},
-	{
-		"title": "Waimea Canyon",
-		"artist": "Tyler Casey",
-		"url": "https://unsplash.com/photos/zMyZrfcLXQE",
-		"id": "tyler-casey-landscape"
-	},
-	{
-		"title": "Fern",
-		"artist": "Tahoe Beetschen",
-		"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
-		"id": "tahoe-beetschen-ferns"
-	},
-	{
-		"title": "iOS 13 wallpaper",
-		"artist": "Apple",
-		"url": "https://www.apple.com/ios/ios-13-preview/",
-		"id": "ios13_light"
-	}];
-
 
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
@@ -69,9 +42,9 @@ function slow(that) {
 	}, 700);
 }
 
-function traduction() {
+function traduction(ofSettings) {
 
-	let trns = document.getElementsByClassName('trn');
+	let trns = (ofSettings ? id("settings").querySelectorAll('.trn') : document.querySelectorAll('.trn'));
 	let local = localStorage.lang || "en";
 	let dom = [];
 	let dict = askfordict();
@@ -80,10 +53,11 @@ function traduction() {
 
 		for (let k = 0; k < trns.length; k++) {
 
+			//trouve la traduction, sinon laisse le text original
 			if (dict[trns[k].innerText])
 				dom.push(dict[trns[k].innerText][localStorage.lang]);
 			else
-				return false;
+				dom.push(trns[k].innerText);
 		}
 			
 		for (let i in trns) {
@@ -583,6 +557,8 @@ function quickLinks(event, that) {
 
 function weather(event, that) {
 
+	const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
+
 	function cacheControl() {
 
 		chrome.storage.sync.get(["weather", "lang"], (data) => {
@@ -983,6 +959,32 @@ function weather(event, that) {
 
 function imgCredits(src, type) {
 
+	const credits = [
+	{
+		"title": "Santa Monica",
+		"artist": "Avi Richards",
+		"url": "https://unsplash.com/photos/KCgADeYejng",
+		"id": "avi-richards-beach"
+	},
+	{
+		"title": "Waimea Canyon",
+		"artist": "Tyler Casey",
+		"url": "https://unsplash.com/photos/zMyZrfcLXQE",
+		"id": "tyler-casey-landscape"
+	},
+	{
+		"title": "Fern",
+		"artist": "Tahoe Beetschen",
+		"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
+		"id": "tahoe-beetschen-ferns"
+	},
+	{
+		"title": "iOS 13 wallpaper",
+		"artist": "Apple",
+		"url": "https://www.apple.com/ios/ios-13-preview/",
+		"id": "ios13"
+	}];
+
 	if (type === "dynamic") return false;
 
 	if (type === "custom") {
@@ -992,20 +994,17 @@ function imgCredits(src, type) {
 		}, 200)
 	} else {
 		id("credit").style.display = "block";
-		setTimeout(function() {
-			id("credit").removeAttribute("class");
-		}, 20)
-		
+		setTimeout(() => {id("credit").removeAttribute("class")}, 20);
 	}
 
 	id("onUnsplash").style.visibility = "hidden";
 
-	for (var i = 0; i < CREDITS.length; i++) {
+	for (var i = 0; i < credits.length; i++) {
 
-		if (src && src.includes(CREDITS[i].id)) {
-			id("location").setAttribute("href", CREDITS[i].url);
-			id("location").innerText = CREDITS[i].title + " - ";
-			id("artist").innerText = CREDITS[i].artist;
+		if (src && src.includes(credits[i].id)) {
+			id("location").setAttribute("href", credits[i].url);
+			id("location").innerText = credits[i].title + " - ";
+			id("artist").innerText = credits[i].artist;
 
 			return true;
 		}
@@ -1268,7 +1267,7 @@ function unsplash(data, event) {
 	function credit(d) {
 
 		//console.log(d);
-		id("onUnsplash").style.visibility = "visible";
+		id("onUnsplash").setAttribute("class", "shown");
 		id("credit").setAttribute("class", "shown");
 
 		let loc = "";
