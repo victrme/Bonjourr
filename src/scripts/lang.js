@@ -3,6 +3,7 @@
 // Polish translation by Mateusz K · u/DiVine92
 // Russian translation by OemDef · u/OemDef
 // Simplified chinese translation by Shuhuai Cao · github.com/csh980717
+// Brazilian translation bty Adilson Santos · github.com/adilsonfsantos
 // Slovak translation by Roman Bartík
 
 function askfordict() {
@@ -107,7 +108,7 @@ function askfordict() {
       sv: "Default",
       nl: "Default",
       pl: "Default",
-      pt_BR: "Default",
+      pt_BR: "Padrão",
       ru: "Default",
       zh_CN: "Default",
       sk: "Default"
@@ -117,7 +118,7 @@ function askfordict() {
       sv: "Dynamic",
       nl: "Dynamic",
       pl: "Dynamic",
-      pt_BR: "Dynamic",
+      pt_BR: "Dinâmico",
       ru: "Dynamic",
       zh_CN: "Dynamic",
       sk: "Dynamic"
@@ -127,7 +128,7 @@ function askfordict() {
       sv: "Custom",
       nl: "Custom",
       pl: "Custom",
-      pt_BR: "Custom",
+      pt_BR: "Personalizado",
       ru: "Custom",
       zh_CN: "Custom",
       sk: "Custom"
@@ -137,7 +138,7 @@ function askfordict() {
       sv: "Frequency",
       nl: "Frequency",
       pl: "Frequency",
-      pt_BR: "Frequency",
+      pt_BR: "Frequencia",
       ru: "Frequency",
       zh_CN: "Frequency",
       sk: "Frequency"
@@ -147,7 +148,7 @@ function askfordict() {
       sv: "Every tab",
       nl: "Every tab",
       pl: "Every tab",
-      pt_BR: "Every tab",
+      pt_BR: "A cada aba",
       ru: "Every tab",
       zh_CN: "Every tab",
       sk: "Every tab"
@@ -157,7 +158,7 @@ function askfordict() {
       sv: "Every hour",
       nl: "Every hour",
       pl: "Every hour",
-      pt_BR: "Every hour",
+      pt_BR: "A cada hora",
       ru: "Every hour",
       zh_CN: "Every hour",
       sk: "Every hour"
@@ -167,7 +168,7 @@ function askfordict() {
       sv: "Every day",
       nl: "Every day",
       pl: "Every day",
-      pt_BR: "Every day",
+      pt_BR: "A cada dia",
       ru: "Every day",
       zh_CN: "Every day",
       sk: "Every day"
@@ -177,7 +178,7 @@ function askfordict() {
       sv: "Pause",
       nl: "Pause",
       pl: "Pause",
-      pt_BR: "Pause",
+      pt_BR: "Parar",
       ru: "Pause",
       zh_CN: "Pause",
       sk: "Pause"
@@ -187,7 +188,7 @@ function askfordict() {
       sv: "Performance mode",
       nl: "Performance mode",
       pl: "Performance mode",
-      pt_BR: "Performance mode",
+      pt_BR: "Modo de performance",
       ru: "Performance mode",
       zh_CN: "Performance mode",
       sk: "Performance mode"
@@ -207,7 +208,7 @@ function askfordict() {
       sv: "Brightness",
       nl: "Brightness",
       pl: "Brightness",
-      pt_BR: "Brightness",
+      pt_BR: "Brilho",
       ru: "Brightness",
       zh_CN: "Brightness",
       sk: "Brightness"
@@ -417,7 +418,7 @@ function askfordict() {
       sv: "General",
       nl: "General",
       pl: "General",
-      pt_BR: "General",
+      pt_BR: "Geral",
       ru: "General",
       zh_CN: "General",
       sk: "General"
@@ -732,7 +733,7 @@ function askfordict() {
       sv: "Det är just nu",
       nl: "Het is nu",
       pl: "Jest obecnie",
-      pt_BR: "Está atualmente",
+      pt_BR: "Atualmente está",
       ru: "Сейчас",
       zh_CN: "现在气温",
       sk: "Momentálne je"
@@ -779,11 +780,11 @@ function askfordict() {
       sv: "Titel",
       nl: "Titel",
       pl: "Tytuł",
-      pt_BR: "Títulos",
+      pt_BR: "Título",
       ru: "Имя",
       zh_CN: "标题",
       sk: "Názov"
-    }, 
+    },
     "LANGUAGE": {
       fr: "Langue",
       sv: "Språk",
