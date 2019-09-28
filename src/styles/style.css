@@ -471,35 +471,35 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between; }
-  #settings #dynamic {
-    padding: 1em 0 .5em 0;
-  }
-  #settings #default > div {
+  #settings #default {
     display: flex;
     justify-content: space-between;
     padding: 1em 0 .5em 0; }
-    #settings #default .imgpreview {
-      overflow: hidden;
-      height: 80px;
-      width: 60px;
-      border-radius: 4px;
-      background-size: cover;
-      background-position: center center;
-      display: inline-block;
-      transition: border 0s, opacity .2s; }
-      #settings #default .imgpreview img {
+    #settings #default > div {
+      display: flex;
+      justify-content: space-between; }
+      #settings #default > div .imgpreview {
+        overflow: hidden;
         height: 80px;
-        cursor: pointer;
-        box-sizing: content-box; }
-      #settings #default .imgpreview:hover {
-        border: 2px solid #007aff;
-        width: 56px;
-        height: 76px; }
-      #settings #default .imgpreview.selected {
-        border: 2px solid #007aff;
-        width: 56px;
-        height: 76px;
-        opacity: .8; }
+        width: 60px;
+        border-radius: 4px;
+        background-size: cover;
+        background-position: center center;
+        display: inline-block;
+        transition: border 0s, opacity .2s; }
+        #settings #default > div .imgpreview img {
+          height: 80px;
+          cursor: pointer;
+          box-sizing: content-box; }
+        #settings #default > div .imgpreview:hover {
+          border: 2px solid #007aff;
+          width: 56px;
+          height: 76px; }
+        #settings #default > div .imgpreview.selected {
+          border: 2px solid #007aff;
+          width: 56px;
+          height: 76px;
+          opacity: .8; }
   #settings .link_input_wrap input[type="text"] {
     margin-bottom: .5em;
     width: calc(100% - .5em); }
@@ -508,6 +508,8 @@ body {
     margin: auto; }
   #settings #default, #settings #dynamic, #settings #custom {
     display: none; }
+  #settings #dynamic {
+    padding: 1em 0 .5em 0; }
   #settings #default > div {
     padding: 1em 0; }
   #settings .custom_zone {
@@ -548,38 +550,20 @@ body {
     padding: 3em .5em 1em .5em;
     text-align: center;
     color: #6d6d72;
-    font-size: .8em; }
+    font-size: 0.8em !important; }
     #settings .signature a {
       text-decoration: none;
       color: #007aff; }
     #settings .signature #rdv_website {
       justify-content: center;
       padding-bottom: 2em; }
-      #settings .signature #rdv_website span {
-        font-size: 1em; }
-      #settings .signature #rdv_website a.trn {
-        margin: 0 .3em; }
   #settings.shown {
     right: 0;
     box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5); }
 
-body.dark #start_popup .popup_window {
-  background-color: #1c1c1e; }
-  body.dark #start_popup .popup_window .popup_line p, body.dark #start_popup .popup_window .popup_line h1, body.dark #start_popup .popup_window .popup_line span {
-    color: white; }
-  body.dark #start_popup .popup_window .popup_line button {
-    background-color: #1c1c1e; }
-  body.dark #start_popup .popup_window .popup_line .weather .w_icon {
-    background-color: #1c1c1e; }
-
-body.dark .welcomeback {
-  background-color: #1c1c1e; }
-
-body.dark .welcomeback p, body.dark .welcomeback h1 {
-  color: white; }
-
 body.dark #interface {
-  color: #eee;}
+  color: #eee; }
+
 body.dark #settings {
   background-color: black; }
   body.dark #settings .custom_zone {
@@ -589,7 +573,7 @@ body.dark #settings {
     color: white;
     border-top: 0;
     border-bottom: 0; }
-  body.dark #settings h5 {
+  body.dark #settings .paramTitle {
     color: #929294;
     font-family: sf_pro_displaylight; }
   body.dark #settings .param {
@@ -626,65 +610,57 @@ body.dark #showSettings button {
     body.dark #showSettings button.shown:hover {
       background-color: #3c3c3e; }
 
-@media (prefers-color-scheme: dark) {
-  body.dark #interface {
-    color: #eee;}
-  body.autodark #start_popup .popup_window {
-    background-color: #1c1c1e; }
-    body.autodark #start_popup .popup_window .popup_line p, body.autodark #start_popup .popup_window .popup_line h1, body.autodark #start_popup .popup_window .popup_line span {
-      color: white; }
-    body.autodark #start_popup .popup_window .popup_line button {
-      background-color: #1c1c1e; }
-    body.autodark #start_popup .popup_window .popup_line .weather .w_icon {
-      background-color: #1c1c1e; }
-  body.autodark .welcomeback {
-    background-color: #1c1c1e; }
-  body.autodark .welcomeback p, body.autodark .welcomeback h1 {
+body.autodark #interface {
+  color: #eee; }
+
+body.autodark .welcomeback p, body.autodark .welcomeback h1 {
+  color: white; }
+
+body.autodark #settings {
+  background-color: black; }
+  body.autodark #settings .custom_zone {
+    border-color: #3f3f41; }
+  body.autodark #settings .title {
+    background-color: #1c1c1e;
+    color: white;
+    border-top: 0;
+    border-bottom: 0; }
+  body.autodark #settings .paramTitle {
+    color: #929294;
+    font-family: sf_pro_displaylight; }
+  body.autodark #settings .param {
+    background-color: #1c1c1e;
+    color: white;
+    border-top: 1px solid #3f3f41;
+    border-bottom: 1px solid #3f3f41; }
+  body.autodark #settings hr {
+    border-bottom: 1px solid #3f3f41; }
+  body.autodark #settings input[type="text"], body.autodark #settings #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #settings #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+    background-color: #39383d;
     color: white; }
-  body.autodark #settings {
-    background-color: black; }
-    body.autodark #settings .custom_zone {
-      border-color: #3f3f41; }
-    body.autodark #settings .title {
-      background-color: #1c1c1e;
-      color: white;
-      border-top: 0;
-      border-bottom: 0; }
-    body.autodark #settings h5 {
-      color: #929294;
-      font-family: sf_pro_displaylight; }
-    body.autodark #settings .param {
-      background-color: #1c1c1e;
-      color: white;
-      border-top: 1px solid #3f3f41;
-      border-bottom: 1px solid #3f3f41; }
-    body.autodark #settings hr {
-      border-bottom: 1px solid #3f3f41; }
-    body.autodark #settings input[type="text"], body.autodark #settings #start_popup .popup_window .popup_line .popup2 input[type="text"], body.autodark #settings #start_popup .popup_window .popup_line .popup3 input[type="text"] {
-      background-color: #39383d;
-      color: white; }
-    body.autodark #settings ::-moz-range-thumb {
-      box-shadow: none; }
-    body.autodark #settings ::placeholder {
-      color: #929294; }
-    body.autodark #settings button {
-      background-color: #1c1c1e; }
-    body.autodark #settings .slider {
-      background-color: #39383d; }
-    body.autodark #settings .range::-webkit-slider-thumb {
-      box-shadow: none; }
-    body.autodark #settings input:checked + .slider {
-      background-color: #4bd663; }
-    body.autodark #settings .signature {
-      color: #929294; }
-  body.autodark #showSettings button {
-    background-color: transparent; }
-    body.autodark #showSettings button:hover {
+  body.autodark #settings ::-moz-range-thumb {
+    box-shadow: none; }
+  body.autodark #settings ::placeholder {
+    color: #929294; }
+  body.autodark #settings button {
+    background-color: #1c1c1e; }
+  body.autodark #settings .slider {
+    background-color: #39383d; }
+  body.autodark #settings .range::-webkit-slider-thumb {
+    box-shadow: none; }
+  body.autodark #settings input:checked + .slider {
+    background-color: #4bd663; }
+  body.autodark #settings .signature {
+    color: #929294; }
+
+body.autodark #showSettings button {
+  background-color: transparent; }
+  body.autodark #showSettings button:hover {
+    background-color: #3c3c3e; }
+  body.autodark #showSettings button.shown {
+    background-color: #1c1c1e; }
+    body.autodark #showSettings button.shown:hover {
       background-color: #3c3c3e; }
-    body.autodark #showSettings button.shown {
-      background-color: #1c1c1e; }
-      body.autodark #showSettings button.shown:hover {
-        background-color: #3c3c3e; } }
 
 @media screen and (max-height: 650px) {
   #interface {

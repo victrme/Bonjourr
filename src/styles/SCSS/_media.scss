@@ -177,7 +177,6 @@ body.autodark {
 			}
 		}
 	}
-	}
 }
 
 @media screen and (max-height: 650px) {
@@ -239,7 +238,7 @@ body.autodark {
 	#settings {
 		font-size: .9em;
 		
-		.param .bac .choosable_backgrounds .imgpreview {
+		.param .bac #default .imgpreview {
 			width: 54px;
 		
 			&:hover {

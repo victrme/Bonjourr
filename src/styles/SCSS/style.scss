@@ -6,11 +6,11 @@
 	position: fixed;
 	width: 100vw;
 	height: 100vh;
-	background-color: #222;
+	opacity: 1;
+	transform: scale(1.1); 
+	background-color: #000;
 	background-size: cover;
 	background-position: center center;
-	transform: scale(1.1); 
-	transition: filter 0s;
 }
 
 #interface {
@@ -19,7 +19,7 @@
 	flex-direction: column;
 	justify-content: space-around;
 	opacity: 0;
-	animation: fade .04s ease-inforwards;
+	animation: fade .04s ease-in forwards;;
 	transition: margin .2s;
 	text-shadow: 0 1px 5px rgba(0,0,0,.2);
 
@@ -82,7 +82,6 @@
 	@include linkBlocks();
 
 	div.linkblocks {
-	// 	visibility: hidden;
 		padding: 0;
 
 		.block_parent .block span {
@@ -246,7 +245,7 @@
 	}
 
 	#dynamic {
-		padding: 1em 0;
+		padding: 1em 0 .5em 0;
 	}
 
 	#default > div {
@@ -309,24 +308,21 @@
 		padding: 3em .5em 1em .5em;
 		text-align: center;
 		color: #6d6d72;
-		font-size: .8em;
+		font-size: .8em!important;
 
 		a {
 			text-decoration: none;
 			color: #007aff;
 		}
 
+
 		#rdv_website {
 			justify-content: center;
 			padding-bottom: 2em;
 
-			span {
-				font-size: 1em;
-			}
-
-			a.trn {
-				margin: 0 .3em;
-			}
+			// span {
+			// 	font-size: 1em;
+			// }
 		}
 	}
 

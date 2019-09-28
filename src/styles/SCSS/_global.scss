@@ -34,12 +34,11 @@ body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	opacity: 1;
-	background-color: #222;
+	background-color: #000;
     color: white;
     font-family: $displayLight;
 	font-size: 16px;
 	text-align: center;
-	animation: fade .2s ease-in forwards;
 
 	p, h3 {
 		margin: 0;
