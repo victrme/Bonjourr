@@ -29,11 +29,11 @@
 
 @mixin weather {
 	.weather{
-		.w_desc_container, .hightemp {
+		.w_desc_container, #temp_max_wrap {
 			font-size: 1.5em;
 		}
 
-		.hightemp {
+		#temp_max_wrap {
 			display: none;
 		}
 

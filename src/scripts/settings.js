@@ -336,13 +336,13 @@ id("showSettings").onmouseup = function() {
 	if (id("settings")) {
 
 		if (id("settings").getAttribute("class") === "shown") {
-			setClass(that.children[0], "");
-			setClass(id("settings"), "");
-			setClass(id("interface"), "");
+			attr(that.children[0], "");
+			attr(id("settings"), "");
+			attr(id("interface"), "");
 		} else {
-			setClass(that.children[0], "shown");
-			setClass(id("settings"), "shown");
-			setClass(id("interface"), "pushed");
+			attr(that.children[0], "shown");
+			attr(id("settings"), "shown");
+			attr(id("interface"), "pushed");
 		}
 	}
 }
@@ -362,9 +362,9 @@ id("interface").onmouseup = function(e) {
 
 	if (id("settings") && id("settings").getAttribute("class") === "shown") {
 
-		setClass(id("showSettings").children[0], "");
-		setClass(id("settings"), "");
-		setClass(id("interface"), "");
+		attr(id("showSettings").children[0], "");
+		attr(id("settings"), "");
+		attr(id("interface"), "");
 	}
 }
 

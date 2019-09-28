@@ -108,6 +108,7 @@
 
 		&:hover {
 			color: #fffe;
+			transition: all .1s;
 		}
 	}
 }
@@ -188,7 +189,6 @@
 
 	span {
 		font-size: 0.9em;
-		line-height: 34px;
 	}
 
 	.help_sentence {
@@ -264,6 +264,7 @@
 	
 	.blur,
 	.brightness {
+		min-height: 34px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;

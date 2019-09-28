@@ -1,12 +1,10 @@
 //gpg signed commit test again
 
 var stillActive = false;
-const DATE = new Date();
-const HOURS = DATE.getHours();
 
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
-setClass = (that, val) => that.setAttribute("class", val);
+attr = (that, val) => that.setAttribute("class", val);
 
 
 //c'est juste pour debug le storage
@@ -120,17 +118,18 @@ function clock(that) {
 }
 
 function date() {
+	const date = new Date();
 	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	id("jour").innerText = tradThis(days[DATE.getDay()]);
-	id("chiffre").innerText = DATE.getDate();
-	id("mois").innerText = tradThis(months[DATE.getMonth()]);
+	id("jour").innerText = tradThis(days[date.getDay()]);
+	id("chiffre").innerText = date.getDate();
+	id("mois").innerText = tradThis(months[date.getMonth()]);
 }
 	
 function greetings() {
-	let h = DATE.getHours();
+	let h = (new Date()).getHours();
 	let message;
 
 	if (h > 6 && h < 12) {
@@ -197,7 +196,7 @@ function quickLinks(event, that) {
 		let icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
 
 		//le DOM du block
-		let b = `<div class='block' source='${arr.url}'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='${icon}'></div><span>${arr.title}</span></div>`;
+		let b = `<div class='block' source='${arr.url}'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='${icon}' draggable='false'></div><span>${arr.title}</span></div>`;
 
 		//ajoute un wrap
 		let block_parent = document.createElement('div');
@@ -563,7 +562,7 @@ function weather(event, that) {
 
 		chrome.storage.sync.get(["weather", "lang"], (data) => {
 
-			let now = Math.floor(DATE.getTime() / 1000);
+			let now = Math.floor((new Date()).getTime() / 1000);
 			let param = (data.weather ? data.weather : "");
 
 			if (data.weather && data.weather.lastCall) {
@@ -666,7 +665,7 @@ function weather(event, that) {
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
-			var now = Math.floor(DATE.getTime() / 1000);
+			var now = Math.floor((new Date()).getTime() / 1000);
 			var param = parameters;
 			param.lastState = response;
 			param.lastCall = now;
@@ -744,6 +743,8 @@ function weather(event, that) {
 	
 	function dataHandling(data) {
 
+		let hour = (new Date).getHours();
+
 		function getIcon() {
 			//si le soleil est levé, renvoi jour
 			//le renvoie correspond au nom du répertoire des icones jour / nuit
@@ -751,7 +752,7 @@ function weather(event, that) {
 				let ss = new Date(sunset * 1000);
 				let sr = new Date(sunrise * 1000);
 
-				return (HOURS > sr.getHours() && HOURS < ss.getHours() ? "day" : "night")
+				return (hour > sr.getHours() && hour < ss.getHours() ? "day" : "night")
 			}
 
 			//prend l'id de la météo et renvoie une description
@@ -784,10 +785,6 @@ function weather(event, that) {
 	 		let icon_src = `src/images/weather/${d_n}/${weather_id}.png`;
 	 		id("widget").setAttribute("src", icon_src);
 	 		id("widget").setAttribute("class", "w_icon shown");
-
-	 		return new Promise(resolve => {
-				resolve(true)
-			})
 		}
 
 		function getDescription() {
@@ -802,7 +799,7 @@ function weather(event, that) {
 			//si c'est l'après midi (apres 12h), on enleve la partie temp max
 			let dtemp, wtemp;
 
-			if (HOURS < 12) {
+			if (hour < 12) {
 
 				//temp de desc et temp de widget sont pareil
 				dtemp = wtemp = Math.floor(data.main.temp) + "°";
@@ -818,10 +815,6 @@ function weather(event, that) {
 
 			id("temp").innerText = dtemp;
 			id("widget_temp").innerText = wtemp;
-
-			return new Promise(resolve => {
-				resolve(true)
-			})
 		}
 
 		getDescription();
@@ -959,54 +952,48 @@ function weather(event, that) {
 
 function imgCredits(src, type) {
 
-	const credits = [
-	{
-		"title": "Santa Monica",
-		"artist": "Avi Richards",
-		"url": "https://unsplash.com/photos/KCgADeYejng",
-		"id": "avi-richards-beach"
-	},
-	{
-		"title": "Waimea Canyon",
-		"artist": "Tyler Casey",
-		"url": "https://unsplash.com/photos/zMyZrfcLXQE",
-		"id": "tyler-casey-landscape"
-	},
-	{
-		"title": "Fern",
-		"artist": "Tahoe Beetschen",
-		"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
-		"id": "tahoe-beetschen-ferns"
-	},
-	{
-		"title": "iOS 13 wallpaper",
-		"artist": "Apple",
-		"url": "https://www.apple.com/ios/ios-13-preview/",
-		"id": "ios13"
-	}];
-
-	if (type === "dynamic") return false;
-
-	if (type === "custom") {
-		id("credit").setAttribute("class", "hidden");
-		setTimeout(function() {
-			id("credit").style.display = "none";
-		}, 200)
+	if (type === "dynamic") {
+		attr(id("onUnsplash"), "shown");
+		id("location").innerText = src.location.text;
+		id("location").setAttribute("href", src.location.url);
+		id("artist").innerText = src.artist.text;
+		id("artist").setAttribute("href", src.artist.url);
 	} else {
-		id("credit").style.display = "block";
-		setTimeout(() => {id("credit").removeAttribute("class")}, 20);
+		if (type === "default") attr(id("onUnsplash"), "hidden")
 	}
 
-	id("onUnsplash").style.visibility = "hidden";
+	if (type === "custom") attr(id("credit"), "hidden");
+	else attr(id("credit"), "shown");
 
-	for (var i = 0; i < credits.length; i++) {
+	if (type === "default") {
 
-		if (src && src.includes(credits[i].id)) {
-			id("location").setAttribute("href", credits[i].url);
-			id("location").innerText = credits[i].title + " - ";
-			id("artist").innerText = credits[i].artist;
+		const credits = [
+			{"title": "Santa Monica",
+				"artist": "Avi Richards",
+				"url": "https://unsplash.com/photos/KCgADeYejng",
+				"id": "avi-richards-beach"},
+			{"title": "Waimea Canyon",
+				"artist": "Tyler Casey",
+				"url": "https://unsplash.com/photos/zMyZrfcLXQE",
+				"id": "tyler-casey-landscape"},
+			{"title": "Fern",
+				"artist": "Tahoe Beetschen",
+				"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
+				"id": "tahoe-beetschen-ferns"},
+			{"title": "iOS 13 wallpaper",
+				"artist": "Apple",
+				"url": "https://www.apple.com/ios/ios-13-preview/",
+				"id": "ios13"}];
 
-			return true;
+		for (let i in credits) {
+
+			if (src && src.includes(credits[i].id)) {
+				id("location").setAttribute("href", credits[i].url);
+				id("location").innerText = credits[i].title + " - ";
+				id("artist").innerText = credits[i].artist;
+
+				return true;
+			}
 		}
 	}
 }
@@ -1036,6 +1023,7 @@ function initBackground() {
 			chrome.storage.local.get("background_blob", (data) => {
 				imgBackground(setblob(data.background_blob));
 			});
+			imgCredits(null, type);
 		}
 		else if (data.background_type === "dynamic") {
 
@@ -1044,13 +1032,13 @@ function initBackground() {
 		} else {
 
 			imgBackground(image)
+			imgCredits(image, type)
 		}
 
 
 		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
 		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
 
-		imgCredits(image, type);
 		filter("init", [blur, bright]);
 
 		id("background").style.animation =  "fade .15s ease-in forwards";
@@ -1266,20 +1254,24 @@ function unsplash(data, event) {
 
 	function credit(d) {
 
-		//console.log(d);
-		id("onUnsplash").setAttribute("class", "shown");
-		id("credit").setAttribute("class", "shown");
-
 		let loc = "";
 
 		if (d.city !== null && d.country !== null) loc = `${d.city}, ${d.country} - `;
 		else if (d.country !== null) loc = `${d.country} - `;
 		else loc = "Photo - ";
 
-		id("location").innerText = loc;
-		id("location").setAttribute("href", `${d.link}?utm_source=Bonjourr&utm_medium=referral`);
-		id("artist").innerText = d.name;
-		id("artist").setAttribute("href", `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`);
+		let infos = {
+			location: {
+				text: loc,
+				url: `${d.link}?utm_source=Bonjourr&utm_medium=referral`
+			},
+			artist: {
+				text: d.name, 
+				url: `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`
+			}
+		}
+
+		imgCredits(infos, "dynamic");
 	}
 }
 
@@ -1452,16 +1444,16 @@ function searchbarFlexControl(activated, linkslength) {
 	if (linkslength > 0) {
 
 		if (activated)
-			id("sb_container").setAttribute("class", "shown");
+			attr(id("sb_container"), "shown");
 		else
-			id("sb_container").setAttribute("class", "removed");
+			attr(id("sb_container"), "removed");
 		
 	} else {
 
 		if (activated)
-			id("sb_container").setAttribute("class", "shown");
+			attr(id("sb_container"), "shown");
 		else
-			id("sb_container").setAttribute("class", "removed");
+			attr(id("sb_container"), "removed");
 	}
 }
 
