@@ -159,11 +159,6 @@ function quickLinks(event, that) {
 
 			if (array) {
 
-				//1.6 fix
-				//if (data.links[0].icon.includes("https://besticon-demo.herokuapp.com")) {
-					//oldFaviconFix();
-				//}
-
 				for (let i in array) {
 					appendblock(array[i], i, array);
 				}
@@ -173,7 +168,7 @@ function quickLinks(event, that) {
 		id("interface").onmousedown = function stopwiggle(e) {
 
 			//si c'est wiggly, accepte de le déwiggler
-			if (canRemove) {
+			if (canRemove || cl("block")[0].getAttribute("class") === "block wiggly") {
 
 				let isStoppable = true;
 				let parent = e.target;
@@ -330,9 +325,10 @@ function quickLinks(event, that) {
 
 				xhr.onload = function() {
 
-					if (xhr.status >= 200 && xhr.status < 400) {
-						resolve(JSON.parse(this.response))
-					}
+					if (xhr.status >= 200 && xhr.status < 400)
+						resolve(JSON.parse(this.response));
+					else
+						resolve(null);
 				}
 
 				xhr.onerror = reject;
@@ -342,6 +338,13 @@ function quickLinks(event, that) {
 
 		function filterIcon(json) {
 			//prend le json de favicongrabber et garde la meilleure
+
+			//si le xhr est cassé, prend une des deux icones
+			if (json === null) {
+				let path = "src/images/icons/";
+				path += (Math.random() > .5 ? "orange.png" : "yellow.png");
+				return path;
+			}
 
 			var s = 0;
 			var a, b = 0;

@@ -298,8 +298,6 @@ function settings() {
 	defaultBg();
 }
 
-
-
 id("showSettings").onmousedown = function() {
 
 	function init() {
