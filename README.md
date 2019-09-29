@@ -25,8 +25,6 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 
 ## Todo
 
-- [ ] System dark mode iOS13 background
-
 ## Features for the future
 
 - [ ] Faster dynamic backgrounds with credits and locations
