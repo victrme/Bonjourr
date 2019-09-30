@@ -14,17 +14,15 @@ function deleteBrowserStorage() {
 	});
 }
 
-//c'est juste pour debug le storage
-function getBrowserStorage() {
+function settingsExport() {
 	chrome.storage.sync.get(null, (data) => {
-		console.log(data);
+		console.log("Save your settings somewhere");
+		console.log(btoa(JSON.stringify(data)));
 	});
 }
-//c'est juste pour debug le storage
-function getBlob() {
-	chrome.storage.local.get(null, (data) => {
-		console.log(data);
-	});
+
+function settingsImport(data) {
+	chrome.storage.sync.set(JSON.parse(atob(data)));
 }
 
 function slow(that) {
@@ -1118,7 +1116,7 @@ function renderImage(file) {
 
 function unsplash(data, event) {
 
-	if (data) cacheControl(data);
+	if (data && data !== true) cacheControl(data);
 	else {
 
 		chrome.storage.sync.get("dynamic", (storage) => {
@@ -1130,7 +1128,7 @@ function unsplash(data, event) {
 				return true;
 			}
 
-			if (storage.dynamic) {
+			if (storage.dynamic && storage.dynamic !== true) {
 				cacheControl(storage.dynamic)
 			} else {
 				let initDyn = {
@@ -1307,141 +1305,6 @@ function filter(cat, val) {
 	}
 }
 
-function darkmode(choix) {
-
-	
-	function isIOSwallpaper(dark) {
-
-		//défini les parametres a changer en fonction du theme
-		var modeurl, actual, urltouse;
-
-		if (dark) {
-
-			modeurl = "ios13_dark";
-			actual = "ios13_light";
-			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
-
-		} else {
-			
-			modeurl = "ios13_light";
-			actual = "ios13_dark";
-			urltouse = 'src/images/backgrounds/ios13_light.jpg';
-		}
-
-		//et les applique ici
-		if (id("settings")) {
-			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
-		}
-		
-		if (imgBackground().includes(actual)) {
-
-			imgBackground(urltouse, "default");
-			chrome.storage.sync.set({"background_image": urltouse});
-		}
-	}
-
-	
-	function applyDark(add, system) {
-
-		if (add) {
-
-			if (system) {
-
-				document.body.setAttribute("class", "autodark");
-
-			} else {
-
-				document.body.setAttribute("class", "dark");
-				isIOSwallpaper(true);
-			}
-
-		} else {
-
-			document.body.removeAttribute("class");
-			isIOSwallpaper(false);
-		}
-	}
-
-	
-	function auto(weather) {
-
-		chrome.storage.sync.get("weather", (data) => {
-
-			var ls = data.weather.lastState;
-			var sunrise = new Date(ls.sys.sunrise * 1000);
-			var sunset = new Date(ls.sys.sunset * 1000);
-			var hr = new Date();
-
-			sunrise = sunrise.getHours() + 1;
-			sunset = sunset.getHours();
-			hr = hr.getHours();
-
-			if (hr < sunrise || hr > sunset) {
-				applyDark(true);
-			} else {
-				applyDark(false);
-			}
-		});
-	}
-
-	
-	function initDarkMode() {
-
-		chrome.storage.sync.get("dark", (data) => {
-
-			var dd = (data.dark ? data.dark : "disable");
-
-			if (dd === "enable") {
-				applyDark(true);
-			}
-
-			if (dd === "disable") {
-				applyDark(false);
-			}
-
-			if (dd === "auto") {
-				auto();
-			}
-
-			if (dd === "system") {
-				applyDark(true, true);
-			}
-		});		
-	}
-
-	
-	function changeDarkMode() {
-
-		if (choix === "enable") {
-			applyDark(true);
-			chrome.storage.sync.set({"dark": "enable"});
-		}
-
-		if (choix === "disable") {
-			applyDark(false);
-			chrome.storage.sync.set({"dark": "disable"});
-		}
-
-		if (choix === "auto") {
-
-			//prend l'heure et ajoute la classe si nuit
-			auto();
-			chrome.storage.sync.set({"dark": "auto"});
-		}
-
-		if (choix === "system") {
-			chrome.storage.sync.set({"dark": "system"});
-			applyDark(true, true);
-		}
-	}
-
-	if (choix) {
-		changeDarkMode();
-	} else {
-		initDarkMode();
-	}
-}
-
 function searchbarFlexControl(activated, linkslength) {
 
 	if (linkslength > 0) {
@@ -1567,7 +1430,9 @@ traduction();
 clock();
 date();
 greetings();
-darkmode();
 weather();
 searchbar();
 quickLinks();
+
+
+// chrome.storage.sync.set({"dynamic": true});
