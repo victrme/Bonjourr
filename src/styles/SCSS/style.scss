@@ -306,24 +306,49 @@
 	select.lang {transition: none;}
 
 	.signature {
-		padding: 3em .5em 1em .5em;
-		text-align: center;
+		padding: 3em 1.3em 1em 1.3em;
+		text-align: left;
 		color: #6d6d72;
-		font-size: .8em!important;
+		font-size: 13px;
+
+		span {
+			font-size: 13px;
+		}
 
 		a {
 			text-decoration: none;
-			color: #007aff;
+			color: $blue;
 		}
 
+		p {
+			margin: 0;
+		}
 
 		#rdv_website {
-			justify-content: center;
+			justify-content: left;
 			padding-bottom: 2em;
+			margin-top: 2em;
 
-			// span {
-			// 	font-size: 1em;
-			// }
+			> a {
+				margin-top: 1em;
+			}
+
+			.socialIcons {
+				width: 6em;
+				margin-top: 1em;
+				margin-bottom: 2em;
+				display: flex;
+				justify-content: space-between;
+
+				a {
+					display:flex;
+					align-items: center;
+
+					img {
+						width: 1.5em;
+					}
+				}	
+			}
 		}
 	}
 

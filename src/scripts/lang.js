@@ -433,8 +433,8 @@ function askfordict() {
       zh_CN: "12小时制",
       sk: "12-hodinový čas"
     },
-    "Choose language": {
-      fr: "Choix de la langue",
+    "Language": {
+      fr: "Langue",
       sv: "Välj språk",
       nl: "Kies een taal",
       pl: "Wybierz Język",
