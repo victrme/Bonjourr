@@ -165,20 +165,24 @@ function quickLinks(event, that) {
 
 		id("interface").onmousedown = function stopwiggle(e) {
 
-			//si c'est wiggly, accepte de le déwiggler
-			if (canRemove || cl("block")[0].getAttribute("class") === "block wiggly") {
+			let block = cl("block")[0];
 
-				let isStoppable = true;
-				let parent = e.target;
+			if (block) {
+				//si c'est wiggly, accepte de le déwiggler
+				if (canRemove || cl("block")[0].getAttribute("class") === "block wiggly") {
 
-				while (parent !== null) {
+					let isStoppable = true;
+					let parent = e.target;
 
-					//console.log(parent);
-					parent = parent.parentElement ;
-					if (parent && parent.id === "linkblocks") isStoppable = false;
+					while (parent !== null) {
+
+						//console.log(parent);
+						parent = parent.parentElement ;
+						if (parent && parent.id === "linkblocks") isStoppable = false;
+					}
+
+					if (isStoppable) wiggle(this, false);
 				}
-
-				if (isStoppable) wiggle(this, false);
 			}
 		}
 	}
