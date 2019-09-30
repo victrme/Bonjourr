@@ -42,11 +42,9 @@
 			margin-top: 30px;
 		}
 
-		.time-container {
-			#clock {
-				font-family: sf_pro_displaythin;
-				font-size: 6em;
-			}
+		.time-container #clock {
+			font-family: sf_pro_displaythin;
+			font-size: 6em;
 		}
 
 		.date {
@@ -324,38 +322,33 @@
 			margin: 0;
 		}
 
-		.version {
-			text-align: center;
-		}
-
-		#rand {
-			margin-top: 1em
-		}
-
-		#rdv_website {
-			justify-content: left;
-			padding-bottom: 2em;
-			margin-top: 2em;
-
-			> a {
-				margin-top: 1em;
-			}
+		.firstblock {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 1.5em;
 
 			.socialIcons {
-				width: 6em;
-				margin-top: 2em;
-				margin-bottom: 2em;
+				width: 8em;
 				display: flex;
 				justify-content: space-between;
 
 				a {
-					display:flex;
+					display: flex;
 					align-items: center;
 
 					img {
-						width: 1.5em;
+						width: 1.25em;
 					}
 				}	
+			}
+		}
+
+		#rdv_website {
+			padding-bottom: 6em;
+			margin-top: 1.5em;
+
+			> a {
+				margin-top: 1em;
 			}
 		}
 	}

@@ -559,27 +559,24 @@ body {
       color: #007aff; }
     #settings .signature p {
       margin: 0; }
-    #settings .signature .version {
-      text-align: center; }
-    #settings .signature #rand {
-      margin-top: 1em; }
-    #settings .signature #rdv_website {
-      justify-content: left;
-      padding-bottom: 2em;
-      margin-top: 2em; }
-      #settings .signature #rdv_website > a {
-        margin-top: 1em; }
-      #settings .signature #rdv_website .socialIcons {
-        width: 6em;
-        margin-top: 2em;
-        margin-bottom: 2em;
+    #settings .signature .firstblock {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5em; }
+      #settings .signature .firstblock .socialIcons {
+        width: 8em;
         display: flex;
         justify-content: space-between; }
-        #settings .signature #rdv_website .socialIcons a {
+        #settings .signature .firstblock .socialIcons a {
           display: flex;
           align-items: center; }
-          #settings .signature #rdv_website .socialIcons a img {
-            width: 1.5em; }
+          #settings .signature .firstblock .socialIcons a img {
+            width: 1.25em; }
+    #settings .signature #rdv_website {
+      padding-bottom: 6em;
+      margin-top: 1.5em; }
+      #settings .signature #rdv_website > a {
+        margin-top: 1em; }
   #settings.shown {
     right: 0;
     box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5); }
