@@ -559,6 +559,10 @@ body {
       color: #007aff; }
     #settings .signature p {
       margin: 0; }
+    #settings .signature .version {
+      text-align: center; }
+    #settings .signature #rand {
+      margin-top: 1em; }
     #settings .signature #rdv_website {
       justify-content: left;
       padding-bottom: 2em;
@@ -567,7 +571,7 @@ body {
         margin-top: 1em; }
       #settings .signature #rdv_website .socialIcons {
         width: 6em;
-        margin-top: 1em;
+        margin-top: 2em;
         margin-bottom: 2em;
         display: flex;
         justify-content: space-between; }

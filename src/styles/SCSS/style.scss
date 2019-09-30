@@ -324,6 +324,14 @@
 			margin: 0;
 		}
 
+		.version {
+			text-align: center;
+		}
+
+		#rand {
+			margin-top: 1em
+		}
+
 		#rdv_website {
 			justify-content: left;
 			padding-bottom: 2em;
@@ -335,7 +343,7 @@
 
 			.socialIcons {
 				width: 6em;
-				margin-top: 1em;
+				margin-top: 2em;
 				margin-bottom: 2em;
 				display: flex;
 				justify-content: space-between;
