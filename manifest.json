@@ -5,24 +5,27 @@
 	"version": "1.7.0",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
+	"homepage_url": "https://bonjourr.fr",
 	"default_locale": "en",
 
 	"icons": {
-		"128": "chromeicon.png",
-	    "120": "favicon.png"
+	    "120": "src/images/icons/favicon.png"
   	},
 
 	"chrome_url_overrides" : {
 		"newtab": "index.html"
 	},
 
-	"offline_enabled": true,
+	"chrome_settings_overrides" : {
+		"homepage": "index.html"
+	},
+
 	"background": {
 		"scripts": ["src/scripts/background.js"]
 	},
 
 	"permissions": [
-		"https://victor-azevedo.me/*",
+		"https://victor-azevedo.me/unsplash/*",
 		"storage",
 		"unlimitedStorage",
 		"geolocation"

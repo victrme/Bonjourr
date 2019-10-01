@@ -8,8 +8,8 @@
 	"default_locale": "en",
 
 	"icons": {
-		"128": "chromeicon.png",
-	    "120": "favicon.png"
+		"128": "src/images/icons/chromeicon.png",
+	    "120": "src/images/icons/favicon.png"
   	},
 
 	"chrome_url_overrides" : {
@@ -22,7 +22,7 @@
 	},
 
 	"permissions": [
-		"https://victor-azevedo.me/unsplash/*",
+		"https://victor-azevedo.me/*",
 		"storage",
 		"unlimitedStorage",
 		"geolocation"
