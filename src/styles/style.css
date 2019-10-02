@@ -568,7 +568,7 @@ body {
         #settings .signature .firstblock .socialIcons a {
           display: flex;
           align-items: center; }
-          #settings .signature .firstblock .socialIcons a img {
+          #settings .signature .firstblock .socialIcons a svg {
             width: 1.25em; }
     #settings .signature #rdv_website {
       padding-bottom: 6em;
