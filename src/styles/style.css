@@ -127,8 +127,6 @@ body {
       font-weight: lighter; }
     #interface .main .weather .w_desc_container, #interface .main .weather #temp_max_wrap {
       font-size: 1.5em; }
-    #interface .main .weather #temp_max_wrap {
-      display: none; }
     #interface .main .weather .w_widget {
       display: flex;
       height: 100px;

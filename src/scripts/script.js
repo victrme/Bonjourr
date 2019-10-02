@@ -1,10 +1,11 @@
-//gpg signed commit test again
-
 var stillActive = false;
 
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
 attr = (that, val) => that.setAttribute("class", val);
+
+//cache rapidement temp max pour eviter que ça saccade
+if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
 
 
 //c'est juste pour debug le storage
@@ -814,7 +815,6 @@ function weather(event, that) {
 
 				//temp de desc et temp de widget sont pareil
 				dtemp = wtemp = Math.floor(data.main.temp) + "°";
-				id("temp_max_wrap").setAttribute("class", "hightemp shown");
 
 			} else {
 
