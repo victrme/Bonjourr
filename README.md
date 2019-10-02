@@ -80,6 +80,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - Ability to change Dynamic Backgrounds every tabs, hourly, daily or pause
 - Visuals settings overall
 - General tab in the Settings
+- Footer settings overall
 - High resolution backgrounds are now activated by default <!--the 4K switch is replaced by a Performance mode switch-->
 - Slovak translation thanks to Roman Bartík
 - Brazilian portugese translation thanks to Adilson Santos
