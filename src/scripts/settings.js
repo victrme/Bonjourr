@@ -306,13 +306,14 @@ function settingsEvents() {
 	}
 
 	id("i_lang").onchange = function() {
+
 		localStorage.lang = this.value;
 		sessionStorage.lang = this.value;
-
 		//si local n'est pas utilisé, sync la langue
 		if (!localStorage.data) chrome.storage.sync.set({"lang": this.value});
 
-		location.reload();
+		//s'assure que le localStorage a bien changé
+		if (localStorage.lang) location.reload();
 	}
 }
 
@@ -422,7 +423,7 @@ function actualizeStartupOptions() {
 			
 
 		//langue
-		id("i_lang").value = (localStorage.lang ? localStorage.lang : "en");
+		id("i_lang").value = localStorage.lang || "en";
 	});		
 }
 

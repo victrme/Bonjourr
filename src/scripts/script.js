@@ -14,6 +14,12 @@ function deleteBrowserStorage() {
 	});
 }
 
+function getBrowserStorage() {
+	chrome.storage.sync.get(null, (data) => {
+		console.log(data);
+	});
+}
+
 function settingsExport() {
 	chrome.storage.sync.get(null, (data) => {
 		console.log("Save your settings somewhere");
@@ -1211,8 +1217,10 @@ function unsplash(data, event) {
 
 	function req(which, d, init) {
 
+		obf = n => (n===0?atob("aHR0cHM6Ly9hcGkudW5zcGxhc2guY29tL3Bob3Rvcy9yYW5kb20/Y29sbGVjdGlvbnM9NDkzMzM3MA=="):atob("MzY4NmMxMjIyMWQyOWNhOGY3OTQ3Yzk0NTQyMDI1ZDc2MGE4ZTBkNDkwMDdlYzcwZmEyYzRiOWY5ZDM3N2IxZA=="));
 		let xhr = new XMLHttpRequest();
-		xhr.open('GET', `https://victor-azevedo.me/unsplash/${atob("Mjc4NmY3YTMwOWQxNzE3MjA3ODA4MTQ4NGFhMGI4ZTRjZGEzMmFlNg==")}/`, true);
+		xhr.open('GET', obf(0), true);
+		xhr.setRequestHeader('Authorization',`Client-ID ${obf(1)}`);
 
 		xhr.onload = function() {
 			
