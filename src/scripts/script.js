@@ -7,7 +7,6 @@ attr = (that, val) => that.setAttribute("class", val);
 //cache rapidement temp max pour eviter que ça saccade
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
 
-
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear(() => {
@@ -1029,6 +1028,7 @@ function initBackground() {
 		let type = data.background_type || "default";
 		let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
 
+
 		if (data.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
@@ -1041,6 +1041,11 @@ function initBackground() {
 			unsplash(data.dynamic)
 
 		} else {
+
+			//1.6 4k fix
+			if (image.includes("4k")) {
+				image = image.replace("4k/", "");
+			}
 
 			imgBackground(image)
 			imgCredits(image, type)
@@ -1445,6 +1450,3 @@ greetings();
 weather();
 searchbar();
 quickLinks();
-
-
-// chrome.storage.sync.set({"dynamic": true});

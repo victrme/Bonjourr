@@ -18,23 +18,32 @@ Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Br
 
 * Download for [Chrome, Brave and Opera](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
 * Download for [Firefox Desktop](https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/)
-* Official Sarafi version currently in the works. [Use on Safari](https://bonjourr.fr/#useinsafari)
+* Official Safari version currently in the works. [Use on Safari](https://bonjourr.fr/#useinsafari)
 * [Try Bonjourr Online](https://online.bonjourr.fr)
 
 If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjourr.fr#contact)
 
 ## Todo
 
-## Features for the future
+## Features for the future (free)
 
-- [ ] Faster dynamic backgrounds with credits and locations
-- [ ] Customizable dynamic backgrounds
-- [ ] Personalized CSS settings
+- [x] Faster dynamic backgrounds with credits and locations
+- [ ] Bonjourr calls you by your name
 - [ ] Rearrangeable quick links
-- [ ] Analog clock
 - [ ] Motivational quotes
 - [ ] Mobile web app
+
+## Features for the future (pro)
+
+- [ ] Analog clock
+- [ ] Custom dynamic backgrounds
+- [ ] Custom CSS 
 - [ ] Custom icons for quick links
+- [ ] Custom fonts
+- [ ] Custom and premade themes
+- [ ] Rearrangeable interface
+- [ ] Early access to new features
+
 
 ## Built with
 
@@ -57,6 +66,12 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Slovak translation** · Roman Bartík
 
 ## Changelogs
+
+**v1.7.1**
+
+- Removed unsplash permissions from https://victor-azevedo.me
+- Windows lang select fix
+- 4k background error fix
 
 **v1.7.0**
 

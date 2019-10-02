@@ -153,7 +153,7 @@ function defaultBg() {
 
 			if (bgTimeout) clearTimeout(bgTimeout);
 
-			let src = that.children[0].getAttribute("src");
+			let src = "/src/images/backgrounds/" + that.getAttribute("source");
 
 			bgTimeout = setTimeout(function() {
 
@@ -169,7 +169,7 @@ function defaultBg() {
 
 		} else if (state === "mouseup") {
 
-			var src = that.children[0].getAttribute("src");
+			var src = "/src/images/backgrounds/" + that.getAttribute("source");
 
 		    imgBackground(src);
 		    imgCredits(src, "default");
@@ -218,13 +218,6 @@ function selectBackgroundType(cat) {
 			imgCredits(null, "custom");
 		});	
 
-	}
-	else if (cat === "default") {
-		chrome.storage.sync.set({"background_type": "default"});
-		chrome.storage.sync.get("last_default", (data) => {
-			imgBackground(data.last_default);
-			imgCredits(data.last_default, "default");
-		});
 	}
 }
 
@@ -481,7 +474,6 @@ id("showSettings").onmouseup = function() {
 		}
 	}
 }
-
 
 //si settings ouvert, le ferme
 id("interface").onmouseup = function(e) {

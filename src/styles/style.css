@@ -562,7 +562,7 @@ body {
       justify-content: space-between;
       margin-bottom: 1.5em; }
       #settings .signature .firstblock .socialIcons {
-        width: 8em;
+        width: 6em;
         display: flex;
         justify-content: space-between; }
         #settings .signature .firstblock .socialIcons a {
