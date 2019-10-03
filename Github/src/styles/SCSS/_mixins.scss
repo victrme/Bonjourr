@@ -1,0 +1,428 @@
+$blue: #007aff;
+
+/*pour le fade in*/
+@keyframes fade {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+
+/*Wiggle animation*/
+@keyframes wiggle {
+	0% {
+		transform: rotate(-1.5deg);
+		animation-timing-function: ease-in;
+	}
+	50% {
+		transform: rotate(2deg);
+		animation-timing-function: ease-out;
+	}
+}
+
+@keyframes keyframes2 {
+	0% {
+		transform: rotate(1deg);
+		animation-timing-function: ease-in;
+	}
+	50% {
+		transform: rotate(-1.5deg);
+		animation-timing-function: ease-out;
+	}
+}
+
+@mixin weather {
+	.weather{
+		.w_desc_container, #temp_max_wrap {
+			font-size: 1.5em;
+		}
+
+		.w_widget {
+			display: flex;
+			height: 100px;
+			justify-content: center;
+			align-items: center;
+
+			.w_icon {
+				opacity: 0;
+				height: 60px;
+				width: 60px;
+				border: none;
+				padding-right: 10px;
+			}
+
+			.w_widget_text {
+				font-size: 2em;
+			}
+		}
+	}
+}
+
+@mixin searchbar {
+	#sb_container {
+		visibility: hidden;
+		display: none;
+		opacity: 0;
+		height: 2px;
+		width: 100%;
+		padding: 0;
+		transition: none;
+
+		#searchbar {
+			opacity: 0.8;
+			font-size: 1.5em;
+			color: rgba(0,0,0,0.6);
+			width: calc(100% - 2em);
+			max-width: 500px;
+			border: 0;
+			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+			height: 50px;
+			border-radius: 4px;
+			padding-left: 1em;
+			transition: all .2s;
+
+			&:focus {
+				opacity: 1;
+				border-radius: 1em;
+			}
+		}
+		
+		// Pourquoi &:placeholder ne fonctionne pas ? Personne ne sait.
+		#searchbar::placeholder {
+			text-transform: none;
+			opacity: 1;
+		}
+
+		.popup_searchbar, .popup_searchbar:focus {
+			border: 2px solid #b8b8b8;
+			margin-top: 2em;
+		}
+
+		&.shown {
+			display: block;
+			visibility: visible;
+			opacity: 1;
+			height: 52px;
+		}
+
+		&.hidden {
+			visibility: hidden;
+			opacity: 0;
+			padding: 0;
+			height: 2px;
+		}
+
+		&.removed {
+			display: none;
+		}
+	}	
+}
+
+@mixin linkBlocks {
+	.linkblocks {
+		visibility: visible;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 2em;
+		min-height: 8em;
+
+		.block_parent {
+			position: relative;
+			margin: 1em;
+			transition: all .2s ease-in;
+
+			.block {
+				.l_icon_wrap {
+					width: 4.4em;
+					height: 4.4em;
+					margin: auto;
+					position: relative;
+					border-radius: 4px;
+					background: white;
+					border: .2em solid white;
+					cursor: pointer;
+					transition: border .05s ease-in;
+
+					.l_icon {
+						width: 100%;
+					}
+
+					&:hover {
+						border: .2em solid #007aff;
+					}
+
+					&:active {
+						filter: brightness(0.75);
+					}
+				}
+
+				span {
+					display: block;
+					margin: .5em 0;
+					max-width: 10em;
+					word-wrap: break-word;
+				}
+
+				&.wiggly {
+					animation-name: wiggle;
+					animation-iteration-count: infinite;
+					transform-origin: 50% 10%;
+					animation-duration: .25s;
+				}
+			}
+
+			button.remove {
+				position: absolute;
+				display: none;
+				top: -1.2em;
+				left: -1.2em;
+				height: 30px;
+				width: 30px;
+				border: 0;
+				border-radius: 100%;
+				background: #ffffff;
+				box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
+				z-index: 3;
+				cursor: default;
+				transition: all .1s;
+
+				img {
+					height: .9em;
+					width: .9em;
+					position:absolute;
+					top: 50%;
+					left:50%;
+					transform: translate(-50%, -50%);
+				}
+
+				&.visible {
+					cursor: pointer;
+				}
+
+				&:hover {
+					background: #bbb;
+				}
+			}
+
+			&.removed {
+				transform: scale(0);
+				opacity: 0;
+			}
+		}
+	}
+}
+
+@mixin settingsBase {
+	select { height: 2.35em; }
+	
+	input:active, input:focus, a:hover, a:active, a:focus {
+		border: 0;
+	}
+
+	input::placeholder {
+		color: #7c7d7e;
+		opacity: 1;
+		text-transform: capitalize;
+	}
+
+	input::-moz-focus-outer { 
+		border: 0;
+	}
+
+	input[type="text"] {
+		border-radius: 8.5px;
+		border: 0;
+		background-color: #e3e3e5;
+		height: 2.35em;
+		padding-left: .5em;
+	}
+
+	button {
+		border:0;
+		background-color: #fff;
+		color: #007aff;
+		margin: auto;
+		cursor: pointer;
+	}
+
+	p#wrongURL, p#wrongCity {
+		display: none;
+		opacity: 0;
+		color: red;
+		margin-top: 0.5em;
+		font-size: 0.8em;
+	}
+
+	/* Switch */
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 56px;
+		height: 34px;
+
+		input { 
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+		input:checked + .slider {
+			background-color: #4bd663;
+		}
+
+		input:checked + .slider:before {
+			transform: translateX(22px);
+		}
+
+		.slider {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #ccc;
+			-webkit-transition: .4s;
+			transition: .4s;
+			border-radius: 34px;
+
+			&:before {
+				position: absolute;
+				content: "";
+				height: 28px;
+				width: 28px;
+				left: 3px;
+				bottom: 3px;
+				background-color: white;
+				-webkit-transition: .4s;
+				transition: .4s;
+				border-radius: 50%;
+				box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
+			}
+		}
+	}
+
+	/* Slider */
+	.range {
+		-webkit-appearance:none;
+		position: relative;
+		height: 2px;
+		background: #b4b4b4;
+		cursor:pointer;
+		border-radius:1.5rem
+	}
+
+	/* Chrome, Opera & Safari */
+	.range::-webkit-slider-thumb {
+		-webkit-appearance:none; 
+	    background: #fff;
+	    height: 20px;
+	    width: 20px;
+	    border-radius: 50px;
+	    border: 0;
+		box-shadow: 0px 1px 3px 1.5px #b8b8b8;
+	}
+
+	input[type="range"]::-ms-thumb {
+		margin: 0; /* Resets margin in Edge since it supports -webkit-slider-thumb as well */
+	}
+
+	/* Firefox */
+	::-moz-range-track {
+	    height: 2px;
+	    border-radius: 50px;
+	    background: #b4b4b4;
+	}
+
+	::-moz-range-progress {
+		background-color: #0078fb;
+		height: 2px;
+		border-radius: 50px;
+	}
+
+	::-moz-range-thumb {
+	    background: #fff;
+	    height: 20px;
+	    width: 20px;
+	    border-radius: 50px;
+	    border: 0;
+
+		box-shadow: 0px 1px 3px 1.5px #b8b8b8;
+	}
+
+	/*Edge*/
+	::-ms-fill-lower { 
+	    background: dodgerblue;
+	}
+
+	::-ms-thumb { 
+	    background: #fff;
+	    border: 2px solid #999;
+	    height: 40px;
+	    width: 20px;
+	    box-sizing: border-box;
+	}
+
+	::-ms-ticks-after { 
+	    display: none; 
+	}
+
+	::-ms-ticks-before { 
+	    display: none; 
+	}
+
+	::-ms-track { 
+	    background: #ddd;
+	    color: transparent;
+	    height: 40px;
+	    border: none;
+	}
+
+	::-ms-tooltip { 
+	    display: none;
+	}
+}
+
+@mixin chooseBackground {
+	#default {
+		display: flex;
+		justify-content: space-between;
+		padding: 1em 0 .5em 0;
+
+		> div {
+			display: flex;
+    		justify-content: space-between;
+
+    		.imgpreview {
+				overflow: hidden;
+				height: 80px;
+				width: 60px;
+				border-radius: 4px;
+				background-size: cover;
+				background-position: center center;
+				display: inline-block;
+				transition: border 0s, opacity .2s;
+			
+				img {
+					height: 80px;
+					cursor: pointer;
+					box-sizing: content-box;
+				}
+
+				&:hover {
+					border: 2px solid #007aff;
+					width: 56px;
+					height: 76px;
+				}
+
+				&.selected {
+					border: 2px solid #007aff;
+					width: 56px;
+					height: 76px;
+					opacity: .8;
+				}
+			}
+		}
+	}
+}
