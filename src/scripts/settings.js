@@ -341,7 +341,7 @@ function actualizeStartupOptions() {
 			id("default").style.display = "block";
 		}
 
-		id("i_freq").value = (data.dynamic.every ? data.dynamic.every : "hour");
+		id("i_freq").value = (data.dynamic ? (data.dynamic.every ? data.dynamic.every : "hour") : "hour");
 
 		//blur
 		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
