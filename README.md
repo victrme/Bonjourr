@@ -64,6 +64,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 * **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
 * **Slovak translation** · Roman Bartík
+* **German translation**  · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 
 ## Changelogs
 
