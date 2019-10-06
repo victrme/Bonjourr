@@ -1,25 +1,3 @@
-@keyframes remWB {
-	from {
-		margin-top: 0;
-	}
-
-	to {
-		margin-top: 100%;
-		display: none;
-	}
-}
-
-@keyframes remWBW {
-	from {
-		background-color: rgba(0, 0, 0, 0.6);
-	}
-
-	to {
-		background-color: transparent;
-		display: none;
-	}
-}
-
 @keyframes showRemove {
 	from {
 		opacity: 0;
@@ -66,7 +44,7 @@
 	display: none;
 }
 
-#temp_max_wrap.shown,
+#interface .main .weather #temp_max_wrap.shown,
 #choose_searchengine.shown {
 	display: block;
 }
@@ -75,3 +53,16 @@
 	opacity: 1;
 }
 
+#onUnsplash.shown {
+	display: inline;
+}
+
+#onUnsplash.hidden {
+	display: none;
+}
+
+#settings #exp_wrapper,
+#settings #reset_wrapper,
+#settings #imp_wrapper {
+	margin: .5em 0;
+}

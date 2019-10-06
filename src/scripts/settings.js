@@ -1,4 +1,139 @@
 
+function darkmode(choix) {
+
+	
+	function isIOSwallpaper(dark) {
+
+		//défini les parametres a changer en fonction du theme
+		var modeurl, actual, urltouse;
+
+		if (dark) {
+
+			modeurl = "ios13_dark";
+			actual = "ios13_light";
+			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
+
+		} else {
+			
+			modeurl = "ios13_light";
+			actual = "ios13_dark";
+			urltouse = 'src/images/backgrounds/ios13_light.jpg';
+		}
+
+		//et les applique ici
+		if (id("settings")) {
+			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
+		}
+		
+		if (imgBackground().includes(actual)) {
+
+			imgBackground(urltouse, "default");
+			chrome.storage.sync.set({"background_image": urltouse});
+		}
+	}
+
+	
+	function applyDark(add, system) {
+
+		if (add) {
+
+			if (system) {
+
+				document.body.setAttribute("class", "autodark");
+
+			} else {
+
+				document.body.setAttribute("class", "dark");
+				isIOSwallpaper(true);
+			}
+
+		} else {
+
+			document.body.removeAttribute("class");
+			isIOSwallpaper(false);
+		}
+	}
+
+	
+	function auto(weather) {
+
+		chrome.storage.sync.get("weather", (data) => {
+
+			var ls = data.weather.lastState;
+			var sunrise = new Date(ls.sys.sunrise * 1000);
+			var sunset = new Date(ls.sys.sunset * 1000);
+			var hr = new Date();
+
+			sunrise = sunrise.getHours() + 1;
+			sunset = sunset.getHours();
+			hr = hr.getHours();
+
+			if (hr < sunrise || hr > sunset) {
+				applyDark(true);
+			} else {
+				applyDark(false);
+			}
+		});
+	}
+
+	
+	function initDarkMode() {
+
+		chrome.storage.sync.get("dark", (data) => {
+
+			var dd = (data.dark ? data.dark : "disable");
+
+			if (dd === "enable") {
+				applyDark(true);
+			}
+
+			if (dd === "disable") {
+				applyDark(false);
+			}
+
+			if (dd === "auto") {
+				auto();
+			}
+
+			if (dd === "system") {
+				applyDark(true, true);
+			}
+		});		
+	}
+
+	
+	function changeDarkMode() {
+
+		if (choix === "enable") {
+			applyDark(true);
+			chrome.storage.sync.set({"dark": "enable"});
+		}
+
+		if (choix === "disable") {
+			applyDark(false);
+			chrome.storage.sync.set({"dark": "disable"});
+		}
+
+		if (choix === "auto") {
+
+			//prend l'heure et ajoute la classe si nuit
+			auto();
+			chrome.storage.sync.set({"dark": "auto"});
+		}
+
+		if (choix === "system") {
+			chrome.storage.sync.set({"dark": "system"});
+			applyDark(true, true);
+		}
+	}
+
+	if (choix) {
+		changeDarkMode();
+	} else {
+		initDarkMode();
+	}
+}
+
 function defaultBg() {
 
 	let bgTimeout, oldbg;
@@ -18,7 +153,7 @@ function defaultBg() {
 
 			if (bgTimeout) clearTimeout(bgTimeout);
 
-			let src = that.children[0].getAttribute("src");
+			let src = "/src/images/backgrounds/" + that.getAttribute("source");
 
 			bgTimeout = setTimeout(function() {
 
@@ -34,7 +169,7 @@ function defaultBg() {
 
 		} else if (state === "mouseup") {
 
-			var src = that.children[0].getAttribute("src");
+			var src = "/src/images/backgrounds/" + that.getAttribute("source");
 
 		    imgBackground(src);
 		    imgCredits(src, "default");
@@ -79,17 +214,12 @@ function selectBackgroundType(cat) {
 
 		chrome.storage.sync.set({"background_type": "custom"});
 		chrome.storage.local.get("background_blob", (data) => {
-			imgBackground(setblob(data.background_blob));
+			if (data.background_blob) {
+				imgBackground(setblob(data.background_blob));
+			}
 			imgCredits(null, "custom");
 		});	
 
-	}
-	else if (cat === "default") {
-		chrome.storage.sync.set({"background_type": "default"});
-		chrome.storage.sync.get("last_default", (data) => {
-			imgBackground(data.last_default);
-			imgCredits(data.last_default, "default");
-		});
 	}
 }
 
@@ -171,13 +301,35 @@ function settingsEvents() {
 	}
 
 	id("i_lang").onchange = function() {
+
 		localStorage.lang = this.value;
 		sessionStorage.lang = this.value;
-
 		//si local n'est pas utilisé, sync la langue
 		if (!localStorage.data) chrome.storage.sync.set({"lang": this.value});
 
-		location.reload();
+		//s'assure que le localStorage a bien changé
+		if (localStorage.lang) location.reload();
+	}
+
+
+	id("submitReset").onclick = function() {
+		importExport("reset");
+	}
+
+	id("submitExport").onclick = function() {
+		importExport("exp", true);
+	}
+
+	id("submitImport").onclick = function() {
+		importExport("imp", true);
+	}
+
+	id("i_import").onkeypress = function(e) {
+		if (e.which === 13) importExport("imp", true);
+	}
+
+	id("i_export").onfocus = function() {
+		importExport("exp")
 	}
 }
 
@@ -212,7 +364,7 @@ function actualizeStartupOptions() {
 			id("default").style.display = "block";
 		}
 
-		id("i_freq").value = (data.dynamic.every ? data.dynamic.every : "hour");
+		id("i_freq").value = (data.dynamic ? (data.dynamic.every ? data.dynamic.every : "hour") : "hour");
 
 		//blur
 		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
@@ -287,18 +439,79 @@ function actualizeStartupOptions() {
 			
 
 		//langue
-		id("i_lang").value = (localStorage.lang ? localStorage.lang : "en");
+		id("i_lang").value = localStorage.lang || "en";
 	});		
 }
 
+function importExport(select, isEvent) {
+
+	if (select === "exp") {
+
+		let input = id("i_export");
+
+		chrome.storage.sync.get(null, (data) => {
+			input.value = JSON.stringify(data);
+
+			if (isEvent) {
+				input.select();
+				document.execCommand("copy");
+				id("submitExport").innerText = "Copied";
+			}
+		});
+	}
+
+	else if (select === "imp") {
+
+		if (isEvent) {
+
+			let val = id("i_import").value;
+
+			if (val.length > 0) {
+
+				let data;
+
+				try {
+
+					data = JSON.parse(val);
+					chrome.storage.sync.set(data);
+					setTimeout(function() {
+						location.reload();
+					}, 20);
+
+				} catch(e) {
+					alert(e);
+				}
+			}
+		}
+	}
+
+	else if (select === "reset") {
+
+		let input = id("submitReset");
+
+		if (!input.hasAttribute("sure")) {
+
+			input.innerText = "Are you sure ?";
+			input.setAttribute("sure", "");
+
+		} else {
+
+			deleteBrowserStorage();
+			setTimeout(function() {
+				location.reload();
+			}, 20);
+		}
+	}
+}
+
 function settings() {
+	darkmode();
 	settingsEvents();
 	actualizeStartupOptions();
 	signature();
 	defaultBg();
+	importExport("exp");
 }
-
-
 
 id("showSettings").onmousedown = function() {
 
@@ -336,17 +549,16 @@ id("showSettings").onmouseup = function() {
 	if (id("settings")) {
 
 		if (id("settings").getAttribute("class") === "shown") {
-			setClass(that.children[0], "");
-			setClass(id("settings"), "");
-			setClass(id("interface"), "");
+			attr(that.children[0], "");
+			attr(id("settings"), "");
+			attr(id("interface"), "");
 		} else {
-			setClass(that.children[0], "shown");
-			setClass(id("settings"), "shown");
-			setClass(id("interface"), "pushed");
+			attr(that.children[0], "shown");
+			attr(id("settings"), "shown");
+			attr(id("interface"), "pushed");
 		}
 	}
 }
-
 
 //si settings ouvert, le ferme
 id("interface").onmouseup = function(e) {
@@ -362,17 +574,19 @@ id("interface").onmouseup = function(e) {
 
 	if (id("settings") && id("settings").getAttribute("class") === "shown") {
 
-		setClass(id("showSettings").children[0], "");
-		setClass(id("settings"), "");
-		setClass(id("interface"), "");
+		attr(id("showSettings").children[0], "");
+		attr(id("settings"), "");
+		attr(id("interface"), "");
 	}
 }
 
 //autofocus
 document.onkeydown = function(e) {
 
-	if (id("sb_container").getAttribute("class") === "shown"
-		&& id("settings").getAttribute("class") !== "shown") {
+	let searchbar = (id("sb_container") ? id("sb_container").getAttribute("class") === "shown" : false);
+	let settings = (id("settings") ? (id("settings").getAttribute("class") === "shown") : false);
+
+	if (searchbar && !settings) {
 
 		id("searchbar").focus();
 	}

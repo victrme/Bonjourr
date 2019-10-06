@@ -2,14 +2,14 @@
 	"manifest_version": 2,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.7.0",
+	"version": "1.7.2",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"homepage_url": "https://bonjourr.fr",
 	"default_locale": "en",
 
 	"icons": {
-	    "120": "favicon.png"
+	    "120": "src/images/icons/favicon.png"
   	},
 
 	"chrome_url_overrides" : {
@@ -25,7 +25,6 @@
 	},
 
 	"permissions": [
-		"https://victor-azevedo.me/unsplash/*",
 		"storage",
 		"unlimitedStorage",
 		"geolocation"

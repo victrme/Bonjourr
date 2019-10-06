@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/victorazevedo-me/Bonjourr/master/src/images/popup/bonjourrpopup.png" width="50%"></img>
+  <img src="https://raw.githubusercontent.com/victorazevedo-me/Bonjourr/master/src/images/bonjourr.png" width="50%"></img>
 </p>
 
 Bonjourr is a new home page for your Internet browser, inspired by the looks of iOS' Bedtime option.
@@ -18,25 +18,18 @@ Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Br
 
 * Download for [Chrome, Brave and Opera](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
 * Download for [Firefox Desktop](https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/)
-* Official Sarafi version currently in the works. [Use on Safari](https://bonjourr.fr/#useinsafari)
+* Official Safari version currently in the works. [Use on Safari](https://bonjourr.fr/#useinsafari)
 * [Try Bonjourr Online](https://online.bonjourr.fr)
 
 If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjourr.fr#contact)
 
 ## Todo
 
-- [ ] System dark mode iOS13 background
-
-## Features for the future
-
-- [ ] Faster dynamic backgrounds with credits and locations
-- [ ] Customizable dynamic backgrounds
-- [ ] Personalized CSS settings
+- [x] Faster dynamic backgrounds with credits and locations
+- [ ] Bonjourr calls you by your name
 - [ ] Rearrangeable quick links
-- [ ] Analog clock
 - [ ] Motivational quotes
 - [ ] Mobile web app
-- [ ] Custom icons for quick links
 
 ## Built with
 
@@ -57,8 +50,22 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 * **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
 * **Slovak translation** · Roman Bartík
+* **German translation**  · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 
 ## Changelogs
+
+**v1.7.2**
+
+- German translation
+- Chrome: Browser icon + new tab on install
+- Import / Export Settings
+- Searchbar autofocus fix
+
+**v1.7.1**
+
+- Removed unsplash permissions from https://victor-azevedo.me
+- Windows lang select fix
+- 4k background error fix
 
 **v1.7.0**
 
@@ -67,6 +74,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - Ability to change Dynamic Backgrounds every tabs, hourly, daily or pause
 - Visuals settings overall
 - General tab in the Settings
+- Footer settings overall
 - High resolution backgrounds are now activated by default <!--the 4K switch is replaced by a Performance mode switch-->
 - Slovak translation thanks to Roman Bartík
 - Brazilian portugese translation thanks to Adilson Santos
