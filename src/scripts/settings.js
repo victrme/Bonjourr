@@ -214,7 +214,9 @@ function selectBackgroundType(cat) {
 
 		chrome.storage.sync.set({"background_type": "custom"});
 		chrome.storage.local.get("background_blob", (data) => {
-			imgBackground(setblob(data.background_blob));
+			if (data.background_blob) {
+				imgBackground(setblob(data.background_blob));
+			}
 			imgCredits(null, "custom");
 		});	
 
