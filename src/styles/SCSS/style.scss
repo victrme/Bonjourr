@@ -231,27 +231,22 @@
 			margin-bottom: .5em;
 			width: calc(100% - .5em);
 		}
-
-		button {
-			display: block;
-			margin: auto;
-		}
 	}
 
 	#default, #dynamic, #custom {
 		display: none;
 	}
 
-	#dynamic {
-		padding: 1em 0 .5em 0;
-	}
+	// #dynamic {
+	// 	padding: 1em 0 .5em 0;
+	// }
 
-	#default > div {
-		padding: 1em 0;
-	}
+	// #default > div {
+	// 	padding: 1em 0;
+	// }
 
 	.custom_zone {
-		margin: 1em 0 1.5em 0;
+		margin: 1em 0 1em 0;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -290,15 +285,15 @@
 				display: flex;
 				align-self: center;
 			}
-
-			button {
-				margin: 1em auto 0 auto;
-			}
 		}
 
 		.wrapper > span {
 			margin-right: 1em;
 		}
+	}
+
+	#submitReset {
+		margin: auto;
 	}
 
 	select.lang {transition: none;}

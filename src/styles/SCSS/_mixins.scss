@@ -1,4 +1,6 @@
 $blue: #007aff;
+$green: #4bd663;
+$inputGrey: #e3e3e5;
 
 /*pour le fade in*/
 @keyframes fade {
@@ -149,7 +151,7 @@ $blue: #007aff;
 					}
 
 					&:hover {
-						border: .2em solid #007aff;
+						border: .2em solid $blue;
 					}
 
 					&:active {
@@ -226,7 +228,6 @@ $blue: #007aff;
 	input::placeholder {
 		color: #7c7d7e;
 		opacity: 1;
-		text-transform: capitalize;
 	}
 
 	input::-moz-focus-outer { 
@@ -236,7 +237,7 @@ $blue: #007aff;
 	input[type="text"] {
 		border-radius: 8.5px;
 		border: 0;
-		background-color: #e3e3e5;
+		background-color: $inputGrey;
 		height: 2.35em;
 		padding-left: .5em;
 	}
@@ -244,9 +245,14 @@ $blue: #007aff;
 	button {
 		border:0;
 		background-color: #fff;
-		color: #007aff;
-		margin: auto;
+		color: $blue;
 		cursor: pointer;
+		font-size: 13.5px;
+	}
+
+	.centeredButton {
+		display: block;
+		margin: 1em auto 0 auto;
 	}
 
 	p#wrongURL, p#wrongCity {
@@ -271,7 +277,7 @@ $blue: #007aff;
 		}
 
 		input:checked + .slider {
-			background-color: #4bd663;
+			background-color: $green;
 		}
 
 		input:checked + .slider:before {
@@ -391,7 +397,7 @@ $blue: #007aff;
 	#default {
 		display: flex;
 		justify-content: space-between;
-		padding: 1em 0 .5em 0;
+		padding: .5em 0 .5em 0;
 
 		> div {
 			display: flex;
@@ -414,13 +420,13 @@ $blue: #007aff;
 				}
 
 				&:hover {
-					border: 2px solid #007aff;
+					border: 2px solid $blue;
 					width: 56px;
 					height: 76px;
 				}
 
 				&.selected {
-					border: 2px solid #007aff;
+					border: 2px solid $blue;
 					width: 56px;
 					height: 76px;
 					opacity: .8;

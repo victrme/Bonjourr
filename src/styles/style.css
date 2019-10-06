@@ -207,7 +207,7 @@ body {
         #interface .linkblocks .block_parent .block .l_icon_wrap .l_icon {
           width: 100%; }
         #interface .linkblocks .block_parent .block .l_icon_wrap:hover {
-          border: .2em solid #007aff; }
+          border: 0.2em solid #007aff; }
         #interface .linkblocks .block_parent .block .l_icon_wrap:active {
           filter: brightness(0.75); }
       #interface .linkblocks .block_parent .block span {
@@ -340,8 +340,7 @@ body {
     border: 0; }
   #settings input::placeholder {
     color: #7c7d7e;
-    opacity: 1;
-    text-transform: capitalize; }
+    opacity: 1; }
   #settings input::-moz-focus-outer {
     border: 0; }
   #settings input[type="text"] {
@@ -354,8 +353,11 @@ body {
     border: 0;
     background-color: #fff;
     color: #007aff;
-    margin: auto;
-    cursor: pointer; }
+    cursor: pointer;
+    font-size: 13.5px; }
+  #settings .centeredButton {
+    display: block;
+    margin: 1em auto 0 auto; }
   #settings p#wrongURL, #settings p#wrongCity {
     display: none;
     opacity: 0;
@@ -473,7 +475,7 @@ body {
   #settings #default {
     display: flex;
     justify-content: space-between;
-    padding: 1em 0 .5em 0; }
+    padding: .5em 0 .5em 0; }
     #settings #default > div {
       display: flex;
       justify-content: space-between; }
@@ -502,17 +504,10 @@ body {
   #settings .link_input_wrap input[type="text"] {
     margin-bottom: .5em;
     width: calc(100% - .5em); }
-  #settings .link_input_wrap button {
-    display: block;
-    margin: auto; }
   #settings #default, #settings #dynamic, #settings #custom {
     display: none; }
-  #settings #dynamic {
-    padding: 1em 0 .5em 0; }
-  #settings #default > div {
-    padding: 1em 0; }
   #settings .custom_zone {
-    margin: 1em 0 1.5em 0;
+    margin: 1em 0 1em 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -540,10 +535,10 @@ body {
         width: 50%;
         display: flex;
         align-self: center; }
-      #settings #sett_city .wrapper button {
-        margin: 1em auto 0 auto; }
     #settings #sett_city .wrapper > span {
       margin-right: 1em; }
+  #settings #submitReset {
+    margin: auto; }
   #settings select.lang {
     transition: none; }
   #settings .signature {

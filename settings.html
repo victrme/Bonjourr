@@ -6,7 +6,7 @@
 			<input id="i_title" type="text" name="title" placeholder="Title">
 			<input id="i_url" type="text" name="url" placeholder="URL">
 			<p id="wrongURL" class="trn">Incorrect URL</p>
-			<button id="submitlink" class="trn">Add</button>
+			<button id="submitlink" class="trn centeredButton">Add</button>
 			<p class="help_sentence trn">Right click on the icons to delete a Quick Link.</p>
 		</div>
 
@@ -36,6 +36,8 @@
 				<option value="custom" class="trn">Custom</option>
 			</select>
 		</div>
+
+		<hr>
 
 		<div id="default">
 			<div>
@@ -373,9 +375,7 @@
 					</select>
 				</div>
 				<p id="wrongCity" class="trn wrongCity">There was a problem</p>
-				<div>
-					<button id="b_city" class="submitw_city trn">Change city</button>	
-				</div>	
+				<button id="b_city" class="submitw_city centeredButton trn">Change city</button>	
 			</div>
 			
 			<p class="help_sentence trn">Use this option if you don't want to enable geolocation.</p>
@@ -458,9 +458,32 @@
 				<option value="de">Deutsch</option>
 			</select>
 		</div>
+	</div>
+</div>
+
+<div>
+	<h5 class="trn">Settings management</h5>
+	<div class="param">
+
+		<div class="imp_wrapper wrapper">
+			<input id="i_import" type="text" name="Import" placeholder="Paste import code">
+			<button id="submitImport" class="trn">Import</button>
+		</div>
 
 		<hr>
 
+		<div id="exp_wrapper" class="wrapper">
+			<input readonly id="i_export" type="text" name="export" placeholder="Export code">
+			<button id="submitImport" class="trn">Copy export code</button>
+		</div>
+
+		<hr>
+
+		<div id="reset_wrapper" class="wrapper">
+			<button id="submitReset" class="trn">Reset settings</button>
+		</div>
+
+<!-- 
 		<div class="wrapper">
 			<span class="trn">Settings</span>
 
@@ -472,18 +495,18 @@
 		</div>
 
 		<div id="exp_wrapper" class="wrapper">
-			<input id="i_export" type="text" name="export" placeholder="Current settings were here">
+			<input id="i_export" type="text" name="Import" placeholder="Paste settings here">
 		</div>
 
 		<div id="imp_wrapper" class="wrapper">
-			<input id="i_import" type="text" name="import" placeholder="Paste settings here">
+			<input id="i_import" type="text" name="Import" placeholder="Paste settings here">
 			<button id="submitImport" class="trn">Accept</button>
 		</div>
 
 		<div id="reset_wrapper" class="wrapper">
 			<span>Reset to default ?</span>
 			<button id="submitReset" class="trn">Yes</button>
-		</div>
+		</div> -->
 	</div>
 </div>
 
