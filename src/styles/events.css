@@ -64,12 +64,5 @@
 #settings #exp_wrapper,
 #settings #reset_wrapper,
 #settings #imp_wrapper {
-	margin: 1em 0;
-}
-#settings #reset_wrapper,
-#settings #exp_wrapper {
-	display: none;
-}
-#settings #exp_wrapper input {
-	width: 100%;
+	margin: .5em 0;
 }

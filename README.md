@@ -59,6 +59,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 - German translation
 - Chrome: Browser icon + new tab on install
 - Import / Export Settings
+- Searchbar autofocus fix
 
 **v1.7.1**
 

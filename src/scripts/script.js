@@ -35,12 +35,13 @@ function slow(that) {
 
 function traduction(ofSettings) {
 
-	let trns = (ofSettings ? id("settings").querySelectorAll('.trn') : document.querySelectorAll('.trn'));
 	let local = localStorage.lang || "en";
-	let dom = [];
-	let dict = askfordict();
 
 	if (local !== "en") {
+
+		let trns = (ofSettings ? id("settings").querySelectorAll('.trn') : document.querySelectorAll('.trn'));
+		let dom = [];
+		let dict = askfordict();
 
 		for (let k = 0; k < trns.length; k++) {
 

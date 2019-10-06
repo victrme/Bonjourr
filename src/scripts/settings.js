@@ -309,15 +309,13 @@ function settingsEvents() {
 		if (localStorage.lang) location.reload();
 	}
 
-	id("i_impexp").onchange = function() {
-		importExport(this.value)
-	}
 
 	id("submitReset").onclick = function() {
-		deleteBrowserStorage();
-		setTimeout(function() {
-			location.reload();
-		}, 20);
+		importExport("reset");
+	}
+
+	id("submitExport").onclick = function() {
+		importExport("exp", true);
 	}
 
 	id("submitImport").onclick = function() {
@@ -326,6 +324,10 @@ function settingsEvents() {
 
 	id("i_import").onkeypress = function(e) {
 		if (e.which === 13) importExport("imp", true);
+	}
+
+	id("i_export").onfocus = function() {
+		importExport("exp")
 	}
 }
 
@@ -443,21 +445,20 @@ function importExport(select, isEvent) {
 
 	if (select === "exp") {
 
-		id("reset_wrapper").style.display = "none";
-		id("imp_wrapper").style.display = "none";
-		id("exp_wrapper").style.display = "flex";
+		let input = id("i_export");
 
 		chrome.storage.sync.get(null, (data) => {
-			id("i_export").value = JSON.stringify(data);
-			id("i_export").select();
-		});
-		
-	}
-	else if (select === "imp") {
+			input.value = JSON.stringify(data);
 
-		id("reset_wrapper").style.display = "none";
-		id("exp_wrapper").style.display = "none";
-		id("imp_wrapper").style.display = "flex";
+			if (isEvent) {
+				input.select();
+				document.execCommand("copy");
+				id("submitExport").innerText = "Copied";
+			}
+		});
+	}
+
+	else if (select === "imp") {
 
 		if (isEvent) {
 
@@ -481,11 +482,23 @@ function importExport(select, isEvent) {
 			}
 		}
 	}
-	else if (select === "res") {
 
-		id("exp_wrapper").style.display = "none";
-		id("imp_wrapper").style.display = "none";
-		id("reset_wrapper").style.display = "flex";
+	else if (select === "reset") {
+
+		let input = id("submitReset");
+
+		if (!input.hasAttribute("sure")) {
+
+			input.innerText = "Are you sure ?";
+			input.setAttribute("sure", "");
+
+		} else {
+
+			deleteBrowserStorage();
+			setTimeout(function() {
+				location.reload();
+			}, 20);
+		}
 	}
 }
 
@@ -495,7 +508,7 @@ function settings() {
 	actualizeStartupOptions();
 	signature();
 	defaultBg();
-	importExport("imp");
+	importExport("exp");
 }
 
 id("showSettings").onmousedown = function() {
@@ -568,8 +581,10 @@ id("interface").onmouseup = function(e) {
 //autofocus
 document.onkeydown = function(e) {
 
-	if (id("sb_container").getAttribute("class") === "shown"
-		&& id("settings").getAttribute("class") !== "shown") {
+	let searchbar = (id("sb_container") ? id("sb_container").getAttribute("class") === "shown" : false);
+	let settings = (id("settings") ? (id("settings").getAttribute("class") === "shown") : false);
+
+	if (searchbar && !settings) {
 
 		id("searchbar").focus();
 	}
