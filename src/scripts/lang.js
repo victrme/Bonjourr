@@ -7,6 +7,17 @@
 // Slovak translation by Roman Bartík
 // German translation by Bernhard Wittmann · https://bernhardwittmann.com
 
+// base
+// fr: "",
+// sv: "",
+// nl: "",
+// pl: "",
+// pt_BR: "",
+// ru: "",
+// zh_CN: "",
+// sk: "",
+// de:
+
 function askfordict() {
   return {
     "New Tab": {
@@ -487,6 +498,39 @@ function askfordict() {
       sk: "Vybrať jazyk",
       de: "Sprache"
     },
+    "Import": {
+      fr: "Importer",
+      sv: "Import",
+      nl: "Import",
+      pl: "Import",
+      pt_BR: "Import",
+      ru: "Import",
+      zh_CN: "Import",
+      sk: "Import",
+      de: "Import"
+    },
+    "Copy export code": {
+      fr: "Copier le code d'export",
+      sv: "Copy export code",
+      nl: "Copy export code",
+      pl: "Copy export code",
+      pt_BR: "Copy export code",
+      ru: "Copy export code",
+      zh_CN: "Copy export code",
+      sk: "Copy export code",
+      de: "Copy export code"
+    },
+    "Reset settings": {
+      fr: "Réinitialiser les réglages",
+      sv: "Reset settings",
+      nl: "Reset settings",
+      pl: "Reset settings",
+      pt_BR: "Reset settings",
+      ru: "Reset settings",
+      zh_CN: "Reset settings",
+      sk: "Reset settings",
+      de: "Reset settings"
+    },
     "Made in France with ❤️": {
       fr: "Fabriqué en France avec ❤️",
       sv: "Tillverkad i frankrike med ❤️",
@@ -496,7 +540,7 @@ function askfordict() {
       ru: "Сделано во франции с ❤️",
       zh_CN: "源自法国 匠❤️打造",
       sk: "Spravené vo Francúzsku s ❤️",
-      de: "Gemacht in Deutschland mit ❤️"
+      de: "Gemacht in Frankreich mit ❤️"
     },
     "by": {
       fr: "par",
