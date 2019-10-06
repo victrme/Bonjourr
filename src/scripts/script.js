@@ -20,17 +20,6 @@ function getBrowserStorage() {
 	});
 }
 
-function settingsExport() {
-	chrome.storage.sync.get(null, (data) => {
-		console.log("Save your settings somewhere");
-		console.log(btoa(JSON.stringify(data)));
-	});
-}
-
-function settingsImport(data) {
-	chrome.storage.sync.set(JSON.parse(atob(data)));
-}
-
 function slow(that) {
 
 	that.setAttribute("disabled", "");

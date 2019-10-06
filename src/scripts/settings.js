@@ -448,7 +448,7 @@ function importExport(select, isEvent) {
 		id("exp_wrapper").style.display = "flex";
 
 		chrome.storage.sync.get(null, (data) => {
-			id("i_export").value = btoa(JSON.stringify(data));
+			id("i_export").value = JSON.stringify(data);
 			id("i_export").select();
 		});
 		
@@ -464,10 +464,20 @@ function importExport(select, isEvent) {
 			let val = id("i_import").value;
 
 			if (val.length > 0) {
-				chrome.storage.sync.set(JSON.parse(atob(val)));
-				setTimeout(function() {
-					location.reload();
-				}, 20);
+
+				let data;
+
+				try {
+
+					data = JSON.parse(val);
+					chrome.storage.sync.set();
+					setTimeout(function() {
+						location.reload();
+					}, 20);
+
+				} catch(e) {
+					alert(e);
+				}
 			}
 		}
 	}
