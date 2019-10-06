@@ -308,6 +308,25 @@ function settingsEvents() {
 		//s'assure que le localStorage a bien changé
 		if (localStorage.lang) location.reload();
 	}
+
+	id("i_impexp").onchange = function() {
+		importExport(this.value)
+	}
+
+	id("submitReset").onclick = function() {
+		deleteBrowserStorage();
+		setTimeout(function() {
+			location.reload();
+		}, 20);
+	}
+
+	id("submitImport").onclick = function() {
+		importExport("imp", true);
+	}
+
+	id("i_import").onkeypress = function(e) {
+		if (e.which === 13) importExport("imp", true);
+	}
 }
 
 function actualizeStartupOptions() {
@@ -420,12 +439,53 @@ function actualizeStartupOptions() {
 	});		
 }
 
+function importExport(select, isEvent) {
+
+	if (select === "exp") {
+
+		id("reset_wrapper").style.display = "none";
+		id("imp_wrapper").style.display = "none";
+		id("exp_wrapper").style.display = "flex";
+
+		chrome.storage.sync.get(null, (data) => {
+			id("i_export").value = btoa(JSON.stringify(data));
+			id("i_export").select();
+		});
+		
+	}
+	else if (select === "imp") {
+
+		id("reset_wrapper").style.display = "none";
+		id("exp_wrapper").style.display = "none";
+		id("imp_wrapper").style.display = "flex";
+
+		if (isEvent) {
+
+			let val = id("i_import").value;
+
+			if (val.length > 0) {
+				chrome.storage.sync.set(JSON.parse(atob(val)));
+				setTimeout(function() {
+					location.reload();
+				}, 20);
+			}
+		}
+	}
+	else if (select === "res") {
+
+		id("exp_wrapper").style.display = "none";
+		id("imp_wrapper").style.display = "none";
+		id("reset_wrapper").style.display = "flex";
+	}
+}
+
 function settings() {
 	darkmode();
 	settingsEvents();
 	actualizeStartupOptions();
 	signature();
 	defaultBg();
+	importExport("imp");
 }
 
 id("showSettings").onmousedown = function() {

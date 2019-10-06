@@ -215,7 +215,7 @@ $blue: #007aff;
 
 @mixin settingsBase {
 	select {
-		max-width: 120px;
+		width: 120px;
 		height: 2.35em;
 	}
 	

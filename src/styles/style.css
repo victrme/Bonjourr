@@ -334,7 +334,7 @@ body {
     margin-top: 0.5em;
     font-size: 0.8em; }
   #settings select {
-    max-width: 120px;
+    width: 120px;
     height: 2.35em; }
   #settings input:active, #settings input:focus, #settings a:hover, #settings a:active, #settings a:focus {
     border: 0; }
