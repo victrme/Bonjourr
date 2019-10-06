@@ -470,7 +470,7 @@ function importExport(select, isEvent) {
 				try {
 
 					data = JSON.parse(val);
-					chrome.storage.sync.set();
+					chrome.storage.sync.set(data);
 					setTimeout(function() {
 						location.reload();
 					}, 20);
