@@ -25,25 +25,11 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 
 ## Todo
 
-## Features for the future (free)
-
 - [x] Faster dynamic backgrounds with credits and locations
 - [ ] Bonjourr calls you by your name
 - [ ] Rearrangeable quick links
 - [ ] Motivational quotes
 - [ ] Mobile web app
-
-## Features for the future (pro)
-
-- [ ] Analog clock
-- [ ] Custom dynamic backgrounds
-- [ ] Custom CSS 
-- [ ] Custom icons for quick links
-- [ ] Custom fonts
-- [ ] Custom and premade themes
-- [ ] Rearrangeable interface
-- [ ] Early access to new features
-
 
 ## Built with
 
@@ -67,6 +53,12 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **German translation**  · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 
 ## Changelogs
+
+**v1.7.2**
+
+- German translation
+- Chrome: Browser icon + new tab on install
+- Import / Export Settings
 
 **v1.7.1**
 

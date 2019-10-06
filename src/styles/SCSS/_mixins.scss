@@ -214,7 +214,10 @@ $blue: #007aff;
 }
 
 @mixin settingsBase {
-	select { height: 2.35em; }
+	select {
+		max-width: 120px;
+		height: 2.35em;
+	}
 	
 	input:active, input:focus, a:hover, a:active, a:focus {
 		border: 0;
