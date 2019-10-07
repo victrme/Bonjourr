@@ -1354,33 +1354,16 @@ function searchbar(event, that) {
 	function chooseSearchEngine(choice) {
 
 		var engines = {
-			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", "Startpage"],
-			"s_ddg" : ["https://duckduckgo.com/?q=", "DuckDuckGo"],
-			"s_qwant" : ["https://www.qwant.com/?q=", "Qwant"],
-			"s_ecosia" : ["https://www.ecosia.org/search?q=", "Ecosia"],
-			"s_google" : ["https://www.google.com/search", "Google"],
-			"s_yahoo" : ["https://search.yahoo.com/search?p=", "Yahoo"],
-			"s_bing" : ["https://www.bing.com/search?q=", "Bing"]
+			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", "Search on Startpage"],
+			"s_ddg" : ["https://duckduckgo.com/?q=", "Search on DuckDuckGo"],
+			"s_qwant" : ["https://www.qwant.com/?q=", "Search on Qwant"],
+			"s_ecosia" : ["https://www.ecosia.org/search?q=", "Search on Ecosia"],
+			"s_google" : ["https://www.google.com/search", "Search on Google"],
+			"s_yahoo" : ["https://search.yahoo.com/search?p=", "Search on Yahoo"],
+			"s_bing" : ["https://www.bing.com/search?q=", "Search on Bing"]
 		}
 
-		var trad = {
-			en: "Search on",
-			fr: "Rechercher sur",
-			sv: "Sök med",
-			nl: "Zoek op",
-			pl: "Szukaj z",
-			pt_BR: "Pesquisar em",
-			ru: "Поиск в",
-			zh_CN: "搜索"
-		}
-
-		var placeholder = "";
-
-		if (localStorage.lang) {
-			placeholder = trad[localStorage.lang] + " " + engines[choice][1];
-		} else {
-			placeholder = trad["en"] + " " + engines[choice][1];
-		}
+		var placeholder = tradThis(engines[choice][1]);
 
 		id("sb_form").setAttribute("action", engines[choice][0]);
 		id("searchbar").setAttribute("placeholder", placeholder);
