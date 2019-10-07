@@ -708,11 +708,11 @@ body.autodark #showSettings button {
       width: 1.5em; }
   #settings {
     font-size: .9em; }
-    #settings .param .bac #default .imgpreview {
+    #settings .param #default .imgpreview {
       width: 54px; }
-      #settings .param .bac #default .imgpreview:hover {
+      #settings .param #default .imgpreview:hover {
         width: 50px; }
-      #settings .param .bac #default .imgpreview.selected {
+      #settings .param #default .imgpreview.selected {
         width: 50px; } }
 
 @media screen and (max-height: 800px) {

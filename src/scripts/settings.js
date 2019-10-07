@@ -213,6 +213,8 @@ function selectBackgroundType(cat) {
 	else if (cat === "custom") {
 
 		chrome.storage.sync.set({"background_type": "custom"});
+
+		//reste local !!!
 		chrome.storage.local.get("background_blob", (data) => {
 			if (data.background_blob) {
 				imgBackground(setblob(data.background_blob));
@@ -440,6 +442,13 @@ function actualizeStartupOptions() {
 
 		//langue
 		id("i_lang").value = localStorage.lang || "en";
+
+
+		//firefox export
+		if(!navigator.userAgent.includes("Chrome")) {
+			id("submitExport").style.display = "none";
+			id("i_export").style.width = "100%";
+		}
 	});		
 }
 
@@ -447,15 +456,22 @@ function importExport(select, isEvent) {
 
 	if (select === "exp") {
 
-		let input = id("i_export");
+		const input = id("i_export");
+		const isOnChrome = (navigator.userAgent.includes("Chrome"));
 
 		chrome.storage.sync.get(null, (data) => {
 			input.value = JSON.stringify(data);
 
 			if (isEvent) {
+
 				input.select();
-				document.execCommand("copy");
-				id("submitExport").innerText = "Copied";
+
+				//doesn't work on firefox for security reason
+				//don't want to add permissions just for this
+				if (isOnChrome) {
+					document.execCommand("copy");
+					id("submitExport").innerText = tradThis("Copied");
+				}
 			}
 		});
 	}

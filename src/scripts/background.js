@@ -7,13 +7,7 @@ function newTab() {
 }
 
 function goodbye() {
-
-	let url = "https://bonjourr.fr/";
-
-	//url += (navigator.languages[0] === "fr" ? "fr/" : "");
-	url += (isOnChrome ? "goodbye_chrome" : "goodbye_firefox");
-
-	return url
+	return "https://bonjourr.fr/" + (isOnChrome ? "goodbye_chrome" : "goodbye_firefox");
 }
 
 const isOnChrome = (navigator.userAgent.includes("Chrome"));

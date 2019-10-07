@@ -509,16 +509,27 @@ function askfordict() {
       sk: "Import",
       de: "Import"
     },
-    "Copy export code": {
-      fr: "Copier le code d'export",
-      sv: "Copy export code",
-      nl: "Copy export code",
-      pl: "Copy export code",
-      pt_BR: "Copiar código exportado",
-      ru: "Copy export code",
-      zh_CN: "Copy export code",
-      sk: "Copy export code",
-      de: "Copy export code"
+    "Export": {
+      fr: "Exporter",
+      sv: "Export",
+      nl: "Export",
+      pl: "Export",
+      pt_BR: "Exportar",
+      ru: "Export",
+      zh_CN: "Export",
+      sk: "Export",
+      de: "Export"
+    },
+    "Copied": {
+      fr: "Copié",
+      sv: "Copied",
+      nl: "Copied",
+      pl: "Copied",
+      pt_BR: "Copiados",
+      ru: "Copied",
+      zh_CN: "Copied",
+      sk: "Copied",
+      de: "Copied"
     },
     "Reset settings": {
       fr: "Réinitialiser les réglages",
@@ -530,6 +541,17 @@ function askfordict() {
       zh_CN: "Reset settings",
       sk: "Reset settings",
       de: "Reset settings"
+    },
+    "Are you sure ?": {
+      fr: "Etes vous sûr ?",
+      sv: "Are you sure ?",
+      nl: "Are you sure ?",
+      pl: "Are you sure ?",
+      pt_BR: "Are you sure ?",
+      ru: "Are you sure ?",
+      zh_CN: "Are you sure ?",
+      sk: "Are you sure ?",
+      de: "Are you sure ?"
     },
     "Made in France with ❤️": {
       fr: "Fabriqué en France avec ❤️",
@@ -585,6 +607,39 @@ function askfordict() {
       zh_CN: "以获取更多资讯，或向我们捐款",
       sk: "pre informácie a dary",
       de: "für Informationen und Spenden"
+    },
+    "Consider": {
+      fr: "N'hésitez pas",
+      sv: "Consider",
+      nl: "Consider",
+      pl: "Consider",
+      pt_BR: "Consider",
+      ru: "Consider",
+      zh_CN: "Consider",
+      sk: "Consider",
+      de: "Consider"
+    },
+    "donating": {
+      fr: "faire un don",
+      sv: "donating",
+      nl: "donating",
+      pl: "donating",
+      pt_BR: "donating",
+      ru: "donating",
+      zh_CN: "donating",
+      sk: "donating",
+      de: "donating"
+    },
+    "if you love Bonjourr": {
+      fr: "si vous aimez Bonjourr",
+      sv: "if you love Bonjourr",
+      nl: "if you love Bonjourr",
+      pl: "if you love Bonjourr",
+      pt_BR: "if you love Bonjourr",
+      ru: "if you love Bonjourr",
+      zh_CN: "if you love Bonjourr",
+      sk: "if you love Bonjourr",
+      de: "if you love Bonjourr"
     },
 
     //settings
