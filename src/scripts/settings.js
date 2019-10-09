@@ -1,4 +1,3 @@
-
 function darkmode(choix) {
 
 	
@@ -226,6 +225,18 @@ function selectBackgroundType(cat) {
 }
 
 function settingsEvents() {
+
+	// file input animation
+	let custom = id("i_bgfile");
+	let customStyle = id("fileContainer");
+
+	custom.addEventListener("dragenter", function(){
+	  customStyle.classList.add("dragover");
+	});
+
+	custom.addEventListener("dragleave", function(){
+	  customStyle.classList.remove("dragover");
+	});
 
 	//quick links
 	id("i_title").onkeypress = function(e) {

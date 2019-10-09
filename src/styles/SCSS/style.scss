@@ -1,6 +1,9 @@
 @import 'global';
 @import 'mixins';
 
+
+
+
 #background {
 	z-index: -1;
 	position: fixed;
@@ -92,6 +95,91 @@
 	}
 }
 
+.edit_linkContainer {
+	position: absolute;
+	display: flex;
+	height: 100vh;
+	width: 100%;
+
+	#edit_link {
+		align-self: center;
+		margin: auto;
+		width: 300px;
+		padding: 1.5em;
+		z-index: 3;
+		background: $settingsGrey;
+		color: #333;
+		border-radius: 15px;
+
+		h4 {
+			text-align: left;
+			margin: 1.5em 0px .5em 0px;
+			padding: 0px;
+		}
+
+		input[type="text"], input[type="url"] {
+			border: 0px;
+			height: 1em;
+			width: 100%;
+			font-size: 1em;
+			padding: 1em;
+			box-sizing: border-box;
+			border-radius: 9px;
+		}
+
+		.linkOptions {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			margin-top: 1.5em;
+
+			button {
+				width: 45%;
+				height: 40px;
+				color: white;
+				background-color: $blue;
+				border: 0px;
+				border-radius: 9px;
+				font-size: .9em;
+				padding: .6em;
+				cursor: pointer;
+				transition: opacity .1s ease-in;
+
+				&:hover {
+					opacity: .8;
+				}
+
+				&:active {
+					opacity: .6;
+				}
+			}
+		}
+
+		#close {
+			display: block;
+			background-color: transparent;
+			border: 0px;
+			cursor: pointer;
+			text-align: left;
+			padding: 0;
+			transition: opacity .1s ease-in;
+
+			svg {
+				width: 2em;
+			}
+
+			&:hover {
+				opacity: .8;
+			}
+
+			&:active {
+				opacity: .6;
+			}
+		}
+	}
+}
+
+
 #credit {
 	position: fixed;
 	bottom: 1em;
@@ -160,7 +248,7 @@
 	width: 20em;
 	height: 100vh;
 	overflow-y: auto;
-	background-color: #efeff4;
+	background-color: $settingsGrey;
 	font-family: sf_pro_textregular;
 	text-shadow: none;
 	text-align: left;
@@ -237,22 +325,45 @@
 		display: none;
 	}
 
-	// #dynamic {
-	// 	padding: 1em 0 .5em 0;
-	// }
+	#fileContainer {
+	    overflow: hidden;
+	    position: relative;
+	    display: block;
+	    width: 100%;
+	    border-radius: 9px;
+	    border: 1px solid $blue;
+	    padding: .8em;
+	    box-sizing: border-box;
+	    transition: background-color .1s ease-in;
 
-	// #default > div {
-	// 	padding: 1em 0;
-	// }
+	    p {
+	    	width: 100%;
+	    	text-align: center;
+	    	transition: color .05s ease-in;
+	    	font-size: .9em;
+	    	cursor: pointer;
+	    }
 
-	.custom_zone {
-		margin: 1em 0 1em 0;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: .5em;
-	    border: 1px solid #c8c7cc;
-	    border-radius: 4px;
+	    input[type="file"] {
+	    	display: block;
+		    min-height: 100%;
+		    min-width: 100%;
+		    opacity: 0;
+		    padding: 1em;
+		    position: absolute;
+		    left: 0;
+		    top: 0;
+		    cursor: pointer;
+		    background-color: green;
+	    }
+
+	    &.dragover {
+	    	background-color: $blue;
+
+	    	p {
+	    		color: white;
+	    	}
+	    }
 	}
 	
 	.blur,
