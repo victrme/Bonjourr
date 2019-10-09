@@ -232,17 +232,56 @@ function quickLinks(event, that) {
 		id("edit_link").style.display = "none";
 	}
 
-	function editlink(that) {
+	id("e_submit").onclick = function() {
+		editlink(null, parseInt(id("edit_link").getAttribute("index")))
+	}
 
-		let index = findLinkIndex(that, true);
+	function editlink(that, i) {
 
-		id("edit_link").style.display = "block";
-		id("edit_link").setAttribute("index", index);
+		function controlIcon(old) {
+			let iconurl = id("e_iconurl");
+			let iconfile = id("e_iconfile");
 
-		chrome.storage.sync.get("links", (data) => {
-			id("e_title").value = data.links[index].title;
-			id("e_url").value = data.links[index].url;
-		});
+			if (iconurl.value !== "") {
+				return iconurl.value;
+			}
+			else if (iconfile.value !== "") {
+				//sauvegarder le blob du file somewhere
+				return old;
+			}
+			else {
+				return old;
+			}
+		}
+
+		if (i || i === 0) {
+
+			chrome.storage.sync.get("links", (data) => {
+				let allLinks = data.links;
+				let element = {
+					title: id("e_title").value,
+					url: id("e_url").value,
+					icon: controlIcon(data.links[i].icon)
+				}
+
+				allLinks[i] = element;
+				chrome.storage.sync.set({"links": allLinks});
+				id("edit_link").style.display = "none";
+			});
+
+		} else {
+
+			let index = findLinkIndex(that, true);
+
+			id("edit_link").style.display = "block";
+			id("edit_link").setAttribute("index", index);
+
+			chrome.storage.sync.get("links", (data) => {
+				id("e_title").value = data.links[index].title;
+				id("e_url").value = data.links[index].url;
+				id("e_iconurl").placeholder = data.links[index].icon;
+			});
+		}
 	}
 
 	function wiggle(that, on) {
