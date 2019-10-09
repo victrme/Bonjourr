@@ -238,6 +238,10 @@ function settingsEvents() {
 	  customStyle.classList.remove("dragover");
 	});
 
+	custom.addEventListener("drop", function(){
+	  customStyle.classList.remove("dragover");
+	});
+
 	//quick links
 	id("i_title").onkeypress = function(e) {
 		quickLinks("input", e)
