@@ -4,6 +4,31 @@ id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
 attr = (that, val) => that.setAttribute("class", val);
 
+function storage(cat, val) {
+
+	if (localStorage.data) {
+		var data = JSON.parse(localStorage.data);
+	} else {
+		var data = {};
+	}
+
+	if (cat) {
+
+		if (val) {
+
+			data[cat] = val;
+			localStorage.data = JSON.stringify(data);
+
+		} else return data[cat];
+	} else return data;
+}
+
+var stillActive = false;
+
+id = name => document.getElementById(name);
+cl = name => document.getElementsByClassName(name);
+attr = (that, val) => that.setAttribute("class", val);
+
 //cache rapidement temp max pour eviter que ça saccade
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
 
@@ -100,7 +125,7 @@ function clock(that) {
 		start();
 
 		//enregistre partout suivant le format
-		chrome.storage.sync.set({"clockformat": format});
+		storage("clockformat", format);
 		localStorage.clockformat = format;
 	}
 
@@ -147,17 +172,16 @@ function quickLinks(event, that) {
 	//utilise simplement une boucle de appendblock
 	function initblocks() {
 
-		chrome.storage.sync.get("links", (data) => {
+		var data = storage();
 
-			let array = data.links || false;
+		let array = data.links || false;
 
-			if (array) {
+		if (array) {
 
-				for (let i in array) {
-					appendblock(array[i], i, array);
-				}
+			for (let i in array) {
+				appendblock(array[i], i, array);
 			}
-		});
+		}
 
 		id("interface").onmousedown = function stopwiggle(e) {
 
@@ -214,8 +238,7 @@ function quickLinks(event, that) {
 
 		elem.oncontextmenu = function(e) {
 			e.preventDefault();
-			editlink(this);
-			//wiggle(this, true);
+			wiggle(this, true);
 		}
 
 		elem.onmouseup = function(e) {
@@ -225,24 +248,6 @@ function quickLinks(event, that) {
 		remove.onmouseup = function(e) {
 			removeblock(this, e)
 		}
-	}
-
-	id("e_delete").onclick = function() {
-		removeblock(parseInt(id("edit_link").getAttribute("index")));
-		id("edit_link").style.display = "none";
-	}
-
-	function editlink(that) {
-
-		let index = findLinkIndex(that, true);
-
-		id("edit_link").style.display = "block";
-		id("edit_link").setAttribute("index", index);
-
-		chrome.storage.sync.get("links", (data) => {
-			id("e_title").value = data.links[index].title;
-			id("e_url").value = data.links[index].url;
-		});
 	}
 
 	function wiggle(that, on) {
@@ -264,76 +269,70 @@ function quickLinks(event, that) {
 		}
 	}
 
-	function findLinkIndex(that, isEdit) {
+	function removeblock(that, e) {
+
+		console.log(that);
 		var bp = that.parentElement.parentElement.parentElement;
-		var sibling = (isEdit ? that : bp);
-		var index = -2;
+		var sibling = bp;
+		var count = -2;
 
 		//trouve l'index avec le nombre d'elements dans linkblocks
-		while (sibling.id !== "hiddenlink" || index === 16) {
+		while (sibling.id !== "hiddenlink" || count === 16) {
 
 			sibling = sibling.previousSibling;
-			index++;
+			count++;
 		}
 
-		return index;
-	}
+		var data = storage();
 
-	function removeblock(index) {
+		function ejectIntruder(arr) {
 
-		let count = index;
-
-		chrome.storage.sync.get(["links", "searchbar"], (data) => {
-
-			function ejectIntruder(arr) {
-
-				if (arr.length === 1) {
-					return []
-				}
-
-				if (count === 0) {
-
-					arr.shift();
-					return arr;
-				}
-				else if (count === arr.length) {
-
-					arr.pop();
-					return arr;
-				}
-				else {
-
-					arr.splice(count, 1);
-					return arr;
-				}
+			if (arr.length === 1) {
+				return []
 			}
 
-			var linkRemd = ejectIntruder(data.links);
+			if (count === 0) {
 
-			//si on supprime un block quand la limite est atteinte
-			//réactive les inputs
-			if (linkRemd.length === 16 - 1) {
-
-				id("i_url").removeAttribute("disabled");
+				arr.shift();
+				return arr;
 			}
+			else if (count === arr.length) {
 
-			//enleve le html du block
-			var block_parent = id("linkblocks").children[count + 1];
-			block_parent.setAttribute("class", "block_parent removed");
-			
-			setTimeout(function() {
+				arr.pop();
+				return arr;
+			}
+			else {
 
-				id("linkblocks").removeChild(block_parent);
+				arr.splice(count, 1);
+				return arr;
+			}
+		}
 
-				//enleve linkblocks si il n'y a plus de links
-				if (linkRemd.length === 0) {
-					id("linkblocks").style.visibility = "hidden";
-					searchbarFlexControl(data.searchbar, 0);
-				}
-			}, 200);
+		var linkRemd = ejectIntruder(data.links);
 
-			chrome.storage.sync.set({"links": linkRemd});
-		});
+		//si on supprime un block quand la limite est atteinte
+		//réactive les inputs
+		if (linkRemd.length === 16 - 1) {
+
+			id("i_url").removeAttribute("disabled");
+		}
+
+		//enleve le html du block
+		var block_parent = id("linkblocks").children[count + 1];
+		block_parent.setAttribute("class", "block_parent removed");
+		
+		setTimeout(function() {
+
+			id("linkblocks").removeChild(block_parent);
+
+			//enleve linkblocks si il n'y a plus de links
+			if (linkRemd.length === 0) {
+				id("linkblocks").style.visibility = "hidden";
+				searchbarFlexControl(data.searchbar, 0);
+			}
+		}, 200);
+
+		storage("links", linkRemd);
 	}
 
 	function addIcon(elem, arr, index, links) {
@@ -409,7 +408,7 @@ function quickLinks(event, that) {
 			img.src = icn;
 
 			links[index].icon = icn;
-			chrome.storage.sync.set({"links": links});
+			storage("links", links);
 		})
 	}
 
@@ -464,42 +463,39 @@ function quickLinks(event, that) {
 			id("i_url").value = "";
 
 			let full = false;
+			const data = storage();
+			let arr = [];
 
-			chrome.storage.sync.get(["links", "searchbar"], (data) => {
+			//array est tout les links + le nouveau
+			if (data.links && data.links.length > 0) {
 
-				let arr = [];
+				if (data.links.length < 16 - 1) {
 
-				//array est tout les links + le nouveau
-				if (data.links && data.links.length > 0) {
-
-					if (data.links.length < 16 - 1) {
-
-						arr = data.links;
-						arr.push(lll);
-
-					} else {
-						full = true;
-					}
-
-				//array est seulement le link
-				} else {
+					arr = data.links;
 					arr.push(lll);
-					id("linkblocks").style.visibility = "visible";
-					searchbarFlexControl(data.searchbar, 1);
-				}
-				
-				//si les blocks sont moins que 16
-				if (!full) {
-					chrome.storage.sync.set({"links": arr});
-					//console.log(lll);
-					appendblock(lll, arr.length - 1, arr);
-				} else {
 
-					//desactive tout les input url
-					id("i_url").setAttribute("disabled", "disabled");
-					submissionError([id("i_url").value, "No more than 16 links"]);
+				} else {
+					full = true;
 				}
-			});
+
+			//array est seulement le link
+			} else {
+				arr.push(lll);
+				id("linkblocks").style.visibility = "visible";
+				searchbarFlexControl(data.searchbar, 1);
+			}
+			
+			//si les blocks sont moins que 16
+			if (!full) {
+				storage("links", arr);
+				//console.log(lll);
+				appendblock(lll, arr.length - 1, arr);
+			} else {
+
+				//desactive tout les input url
+				id("i_url").setAttribute("disabled", "disabled");
+				submissionError([id("i_url").value, "No more than 16 links"]);
+			}
 		}
 
 		titleControl = t => (t.length > 42 ? t.slice(0, 42) + "..." : t);
@@ -532,9 +528,17 @@ function quickLinks(event, that) {
 
 			if (e.which === 3 || wiggly) return false;
 
-			chrome.storage.sync.get("linknewtab", (data) => {
+			const data = storage();
 
-				if (data.linknewtab) {
+			if (data.linknewtab) {
+
+				chrome.tabs.create({
+					url: source
+				});
+
+			} else {
+
+				if (e.which === 2) {
 
 					chrome.tabs.create({
 						url: source
@@ -542,20 +546,11 @@ function quickLinks(event, that) {
 
 				} else {
 
-					if (e.which === 2) {
-
-						chrome.tabs.create({
-							url: source
-						});
-
-					} else {
-
-						id("hiddenlink").setAttribute("href", source);
-						id("hiddenlink").setAttribute("target", "_self");
-						id("hiddenlink").click();
-					}
-				}	
-			});
+					id("hiddenlink").setAttribute("href", source);
+					id("hiddenlink").setAttribute("target", "_self");
+					id("hiddenlink").click();
+				}
+			}
 		}
 	}
 
@@ -567,10 +562,10 @@ function quickLinks(event, that) {
 	}
 	else if (event === "linknewtab") {
 		if (that.checked) {
-			chrome.storage.sync.set({"linknewtab": true});
+			storage("linknewtab", true);
 			id("hiddenlink").setAttribute("target", "_blank");
 		} else {
-			chrome.storage.sync.set({"linknewtab": false});
+			storage("linknewtab", false);
 			id("hiddenlink").setAttribute("target", "_blank");
 		}
 	}
@@ -585,44 +580,42 @@ function weather(event, that) {
 
 	function cacheControl() {
 
-		chrome.storage.sync.get(["weather", "lang"], (data) => {
+		const data = storage();
+		let now = Math.floor((new Date()).getTime() / 1000);
+		let param = (data.weather ? data.weather : "");
 
-			let now = Math.floor((new Date()).getTime() / 1000);
-			let param = (data.weather ? data.weather : "");
+		if (data.weather && data.weather.lastCall) {
 
-			if (data.weather && data.weather.lastCall) {
+			
+			//si weather est vieux d'une demi heure (1800s)
+			//ou si on change de lang
+			//faire une requete et update le lastcall
+			if (sessionStorage.lang || now > data.weather.lastCall + 1800) {
 
-				
-				//si weather est vieux d'une demi heure (1800s)
-				//ou si on change de lang
-				//faire une requete et update le lastcall
-				if (sessionStorage.lang || now > data.weather.lastCall + 1800) {
+				dataHandling(param.lastState);
+				request(param, "current");
 
-					dataHandling(param.lastState);
-					request(param, "current");
-
-					//si la langue a été changé, suppr
-					if (sessionStorage.lang) sessionStorage.removeItem("lang");
-
-				} else {
-
-					dataHandling(param.lastState);
-				}
-
-				//high ici
-				if (data.weather && data.weather.fcDay === (new Date).getDay()) {
-					id("temp_max").innerText = data.weather.fcHigh + "°";
-				} else {
-					request(data.weather, "forecast");
-				}
+				//si la langue a été changé, suppr
+				if (sessionStorage.lang) sessionStorage.removeItem("lang");
 
 			} else {
 
-				//initialise a Paris + Metric
-				//c'est le premier call, requete + lastCall = now
-				initWeather();
+				dataHandling(param.lastState);
 			}
-		});
+
+			//high ici
+			if (data.weather && data.weather.fcDay === (new Date).getDay()) {
+				id("temp_max").innerText = data.weather.fcHigh + "°";
+			} else {
+				request(data.weather, "forecast");
+			}
+
+		} else {
+
+			//initialise a Paris + Metric
+			//c'est le premier call, requete + lastCall = now
+			initWeather();
+		}
 	}
 
 	
@@ -641,9 +634,9 @@ function weather(event, that) {
 
 			//update le parametre de location
 			param.location.push(pos.coords.latitude, pos.coords.longitude);
-			chrome.storage.sync.set({"weather": param});
+			storage("weather", param);
 
-			chrome.storage.sync.set({"weather": param});
+			storage("weather", param);
 
 			request(param, "current");
 			request(param, "forecast");
@@ -652,7 +645,7 @@ function weather(event, that) {
 
 			param.location = false;
 
-			chrome.storage.sync.set({"weather": param});
+			storage("weather", param);
 
 			request(param, "current");
 			request(param, "forecast");
@@ -694,7 +687,7 @@ function weather(event, that) {
 			var param = parameters;
 			param.lastState = response;
 			param.lastCall = now;
-			chrome.storage.sync.set({"weather": param});
+			storage("weather", param);
 
 			//la réponse est utilisé dans la fonction plus haute
 			dataHandling(response);
@@ -734,7 +727,7 @@ function weather(event, that) {
 			var param = parameters;
 			param.fcHigh = fc[0];
 			param.fcDay = fc[1];
-			chrome.storage.sync.set({"weather": param});
+			storage("weather", param);
 
 			id("temp_max").innerText = param.fcHigh + "°";
 		}
@@ -866,7 +859,7 @@ function weather(event, that) {
 	
 	function updateCity() {
 
-		chrome.storage.sync.get(["weather"], (data) => {
+		const data = storage();
 
 			let param = data.weather;
 
@@ -882,79 +875,74 @@ function weather(event, that) {
 			id("i_city").value = "";
 			id("i_city").blur();
 
-			chrome.storage.sync.set({"weather": param});
-		});	
+			storage("weather", param);
 	}
 
 	
 	function updateUnit(that) {
 
-		chrome.storage.sync.get(["weather"], (data) => {
+		const data = storage();
+		let param = data.weather;
 
-			let param = data.weather;
+		if (that.checked) {
+			param.unit = "imperial";
+		} else {
+			param.unit = "metric";
+		}
 
-			if (that.checked) {
-				param.unit = "imperial";
-			} else {
-				param.unit = "metric";
-			}
-
-			request(param, "current");
-			request(param, "forecast");
-			
-			chrome.storage.sync.set({"weather": param});
-		});
+		request(param, "current");
+		request(param, "forecast");
+		
+		storage("weather", param);
 	}
 
 	
 	function updateLocation(that) {
 
-		chrome.storage.sync.get(["weather"], (data) => {
+		const data = storage();
+		let param = data.weather;
+		param.location = [];
 
-			let param = data.weather;
-			param.location = [];
+		if (that.checked) {
 
-			if (that.checked) {
+			that.setAttribute("disabled", "");
 
-				that.setAttribute("disabled", "");
+			navigator.geolocation.getCurrentPosition((pos) => {
 
-				navigator.geolocation.getCurrentPosition((pos) => {
+				//update le parametre de location
+				param.location.push(pos.coords.latitude, pos.coords.longitude);
+				storage("weather", param);
 
-					//update le parametre de location
-					param.location.push(pos.coords.latitude, pos.coords.longitude);
-					chrome.storage.sync.set({"weather": param});
-
-					//request la meteo
-					request(param, "current");
-					request(param, "forecast");
-
-					//update le setting
-					id("sett_city").setAttribute("class", "city hidden");
-					that.removeAttribute("disabled");
-					
-				}, (refused) => {
-
-					//désactive geolocation if refused
-					that.checked = false
-					that.removeAttribute("disabled");
-
-					if (!param.city) initWeather();
-				});
-
-			} else {
-
-				id("sett_city").setAttribute("class", "city");
-
-				id("i_city").setAttribute("placeholder", param.city);
-				id("i_ccode").value = param.ccode;
-
-				param.location = false;
-				chrome.storage.sync.set({"weather": param});
-				
+				//request la meteo
 				request(param, "current");
 				request(param, "forecast");
-			}
-		});
+
+				//update le setting
+				id("sett_city").setAttribute("class", "city hidden");
+				that.removeAttribute("disabled");
+				
+			}, (refused) => {
+
+				//désactive geolocation if refused
+				that.checked = false
+				that.removeAttribute("disabled");
+
+				if (!param.city) initWeather();
+			});
+
+		} else {
+
+			id("sett_city").setAttribute("class", "city");
+
+			id("i_city").setAttribute("placeholder", param.city);
+			id("i_ccode").value = param.ccode;
+
+			param.location = false;
+			storage("weather", param);
+			
+			request(param, "current");
+			request(param, "forecast");
+		}
 	}
 
 	//TOUT LES EVENTS
@@ -1037,47 +1025,43 @@ function imgBackground(val) {
  
 function initBackground() {
 
-	chrome.storage.sync.get(["dynamic", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
+	const data = storage();
+	let type = data.background_type || "default";
+	let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
 
-		let type = data.background_type || "default";
-		let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
 
+	if (data.background_type === "custom") {
+		//reste local !!!!
+		imgBackground(setblob(localStorage.background_blob));
+		imgCredits(null, type);
+	}
+	else if (data.background_type === "dynamic") {
 
-		if (data.background_type === "custom") {
-			//reste local !!!!
-			chrome.storage.local.get("background_blob", (data) => {
-				imgBackground(setblob(data.background_blob));
-			});
-			imgCredits(null, type);
-		}
-		else if (data.background_type === "dynamic") {
+		unsplash(data.dynamic)
 
-			unsplash(data.dynamic)
+	} else {
 
-		} else {
-
-			//1.6 4k fix
-			if (image.includes("4k")) {
-				image = image.replace("4k/", "");
-			}
-
-			imgBackground(image)
-			imgCredits(image, type)
+		//1.6 4k fix
+		if (image.includes("4k")) {
+			image = image.replace("4k/", "");
 		}
 
+		imgBackground(image)
+		imgCredits(image, type)
+	}
 
-		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
-		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
 
-		filter("init", [blur, bright]);
+	var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
+	var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
 
-		id("background").style.animation =  "fade .15s ease-in forwards";
+	filter("init", [blur, bright]);
 
-		//remet les transitions du blur
-		setTimeout(function() {
-			id("background").style.transition = "filter .2s";
-		}, 50);
-	});	
+	id("background").style.animation =  "fade .15s ease-in forwards";
+
+	//remet les transitions du blur
+	setTimeout(function() {
+		id("background").style.transition = "filter .2s";
+	}, 50);	
 }
 
 function setblob(donnee, set) {
@@ -1116,9 +1100,9 @@ function setblob(donnee, set) {
 
 		//enregistre l'url et applique le bg
 		//blob est local pour avoir plus de place
-		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
-		chrome.storage.sync.set({"background_image": blobUrl});
-		chrome.storage.sync.set({"background_type": "custom"});
+		localStorage.background_blob = base; //reste local !!!!
+		storage("background_image", blobUrl);
+		storage("background_type", "custom");
 
 	}
 
@@ -1148,42 +1132,41 @@ function unsplash(data, event) {
 	if (data && data !== true) cacheControl(data);
 	else {
 
-		chrome.storage.sync.get("dynamic", (storage) => {
+		const data = storage();
 
-			//si on change la frequence, juste changer la freq
-			if (event) {
-				storage.dynamic.every = event;
-				chrome.storage.sync.set({"dynamic": storage.dynamic});
-				return true;
+		//si on change la frequence, juste changer la freq
+		if (event) {
+			storage.dynamic.every = event;
+			storage("dynamic", storage.dynamic);
+			return true;
+		}
+
+		if (storage.dynamic && storage.dynamic !== true) {
+			cacheControl(storage.dynamic)
+		} else {
+			let initDyn = {
+				current: {
+					url: "",
+					link: "",
+					username: "",
+					name: "",
+					city: "",
+					country: ""
+				},
+				next: {
+					url: "",
+					link: "",
+					username: "",
+					name: "",
+					city: "",
+					country: "",
+				},
+				every: "hour",
+				time: 0
 			}
 
-			if (storage.dynamic && storage.dynamic !== true) {
-				cacheControl(storage.dynamic)
-			} else {
-				let initDyn = {
-					current: {
-						url: "",
-						link: "",
-						username: "",
-						name: "",
-						city: "",
-						country: ""
-					},
-					next: {
-						url: "",
-						link: "",
-						username: "",
-						name: "",
-						city: "",
-						country: "",
-					},
-					every: "hour",
-					time: 0
-				}
-
-				cacheControl(initDyn)
-			}
-		});
+			cacheControl(initDyn)
+		}
 	}
 
 	function freqControl(state, every, last) {
@@ -1269,7 +1252,7 @@ function unsplash(data, event) {
 					}
 					else if (which === "next") {
 						d.next = resp;
-						chrome.storage.sync.set({"dynamic": d});
+						storage("dynamic", d);
 					}
 
 				//si next existe, current devient next et next devient la requete
@@ -1277,7 +1260,7 @@ function unsplash(data, event) {
 
 					d.current = d.next;
 					d.next = resp;
-					chrome.storage.sync.set({"dynamic": d});
+					storage("dynamic", d);
 				}
 			}
 		}
@@ -1326,13 +1309,13 @@ function filter(cat, val) {
 	if (cat === "blur") {
 		let brightness = id("i_bright").value;
 		id('background').style.filter = `blur(${val}px) brightness(${brightness})`;
-		chrome.storage.sync.set({"background_blur": +val})
+		storage("background_blur", +val)
 	}
 
 	if (cat === "bright") {
 		let blur = id("i_blur").value;
 		id('background').style.filter = `blur(${blur}px) brightness(${val})`;
-		chrome.storage.sync.set({"background_bright": +val});
+		storage("background_bright", +val)
 	}
 }
 
@@ -1363,7 +1346,7 @@ function searchbar(event, that) {
 			if(!init) id("choose_searchengine").setAttribute("class", "shown");
 
 			searchbarFlexControl(activated, (links ? links.length : 0));
-			chrome.storage.sync.set({"searchbar": true});
+			storage("searchbar", true);
 			
 		} else {
 
@@ -1371,7 +1354,7 @@ function searchbar(event, that) {
 			if(!init) id("choose_searchengine").setAttribute("class", "hidden");
 			
 			searchbarFlexControl(activated, (links ? links.length : 0));
-			chrome.storage.sync.set({"searchbar": false});
+			storage("searchbar", false);
 		}
 	}
 
@@ -1392,28 +1375,27 @@ function searchbar(event, that) {
 		id("sb_form").setAttribute("action", engines[choice][0]);
 		id("searchbar").setAttribute("placeholder", placeholder);
 
-		chrome.storage.sync.set({"searchbar_engine": choice});
+		storage("searchbar_engine", choice);
 	}
 
 	function init() {
 
-		chrome.storage.sync.get(["searchbar", "searchbar_engine", "links"], (data) => {
+		const data = storage();
 
-			if (data.searchbar) {
+		if (data.searchbar) {
 
-				//display
-				activate(true, data.links, true);
+			//display
+			activate(true, data.links, true);
 
-				if (data.searchbar_engine) {
-					chooseSearchEngine(data.searchbar_engine);
-				} else {
-					chooseSearchEngine("s_startpage");
-				}
-
+			if (data.searchbar_engine) {
+				chooseSearchEngine(data.searchbar_engine);
 			} else {
-				activate(false, data.links, true);
+				chooseSearchEngine("s_startpage");
 			}
-		});
+
+		} else {
+			activate(false, data.links, true);
+		}
 	}
 	
 
@@ -1436,6 +1418,608 @@ function mobilecheck() {
 	var check = false;
 	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
 	return check;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//settings
+
+
+function darkmode(choix) {
+
+	
+	function isIOSwallpaper(dark) {
+
+		//défini les parametres a changer en fonction du theme
+		var modeurl, actual, urltouse;
+
+		if (dark) {
+
+			modeurl = "ios13_dark";
+			actual = "ios13_light";
+			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
+
+		} else {
+			
+			modeurl = "ios13_light";
+			actual = "ios13_dark";
+			urltouse = 'src/images/backgrounds/ios13_light.jpg';
+		}
+
+		//et les applique ici
+		if (id("settings")) {
+			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
+		}
+		
+		if (imgBackground().includes(actual)) {
+
+			imgBackground(urltouse, "default");
+			storage("background_image", urltouse);
+		}
+	}
+
+	
+	function applyDark(add, system) {
+
+		if (add) {
+
+			if (system) {
+
+				document.body.setAttribute("class", "autodark");
+
+			} else {
+
+				document.body.setAttribute("class", "dark");
+				isIOSwallpaper(true);
+			}
+
+		} else {
+
+			document.body.removeAttribute("class");
+			isIOSwallpaper(false);
+		}
+	}
+
+	
+	function auto(weather) {
+
+		const data = storage();
+		let ls = data.weather.lastState;
+		let sunrise = new Date(ls.sys.sunrise * 1000);
+		let sunset = new Date(ls.sys.sunset * 1000);
+		let hr = new Date();
+
+		sunrise = sunrise.getHours() + 1;
+		sunset = sunset.getHours();
+		hr = hr.getHours();
+
+		if (hr < sunrise || hr > sunset) {
+			applyDark(true);
+		} else {
+			applyDark(false);
+		}
+	}
+
+	
+	function initDarkMode() {
+
+		const data = storage();
+		var dd = (data.dark ? data.dark : "disable");
+
+		if (dd === "enable") {
+			applyDark(true);
+		}
+
+		if (dd === "disable") {
+			applyDark(false);
+		}
+
+		if (dd === "auto") {
+			auto();
+		}
+
+		if (dd === "system") {
+			applyDark(true, true);
+		}	
+	}
+
+	
+	function changeDarkMode() {
+
+		if (choix === "enable") {
+			applyDark(true);
+			storage("dark", "enable");
+		}
+
+		if (choix === "disable") {
+			applyDark(false);
+			storage("dark", "disable");
+		}
+
+		if (choix === "auto") {
+
+			//prend l'heure et ajoute la classe si nuit
+			auto();
+			storage("dark", "auto");
+		}
+
+		if (choix === "system") {
+			storage("dark", "system");
+			applyDark(true, true);
+		}
+	}
+
+	if (choix) {
+		changeDarkMode();
+	} else {
+		initDarkMode();
+	}
+}
+
+function defaultBg() {
+
+	let bgTimeout, oldbg;
+
+	id("default").onmouseenter = function() {
+		oldbg = id("background").style.backgroundImage.slice(5, imgBackground().length - 2);
+	}
+
+	id("default").onmouseleave = function() {
+		clearTimeout(bgTimeout);
+		imgBackground(oldbg);
+	}
+
+	function imgEvent(state, that) {
+
+		if (state === "enter") {
+
+			if (bgTimeout) clearTimeout(bgTimeout);
+
+			let src = "/src/images/backgrounds/" + that.getAttribute("source");
+
+			bgTimeout = setTimeout(function() {
+
+				//timeout de 300 pour pas que ça se fasse accidentellement
+				//prend le src de la preview et l'applique au background
+				imgBackground(src);
+
+			}, 300);
+
+		} else if (state === "leave") {
+
+			clearTimeout(bgTimeout);
+
+		} else if (state === "mouseup") {
+
+			var src = "/src/images/backgrounds/" + that.getAttribute("source");
+
+		    imgBackground(src);
+		    imgCredits(src, "default");
+
+			clearTimeout(bgTimeout);
+			oldbg = src;
+
+			//enleve selected a tout le monde et l'ajoute au bon
+			remSelectedPreview();
+			//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
+			var tempAttr = that.getAttribute("class");
+			that.setAttribute("class", tempAttr + " selected");
+
+			storage("last_default", src);
+			storage("background_image", src);
+			storage("background_type", "default");
+		}
+	}
+
+	var imgs = cl("imgpreview");
+	for (var i = 0; i < imgs.length; i++) {
+
+		imgs[i].onmouseenter = function() {imgEvent("enter", this)}
+		imgs[i].onmouseleave = function() {imgEvent("leave", this)}
+		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
+	}
+}
+
+function selectBackgroundType(cat) {
+
+	id("default").style.display = "none";
+	id("dynamic").style.display = "none";
+	id("custom").style.display = "none";
+
+	id(cat).style.display = "block";
+
+	if (cat === "dynamic") {
+		storage("background_type", "dynamic");
+		unsplash()
+	}
+	else if (cat === "custom") {
+
+		storage("background_type", "custom");
+
+		//reste local !!!
+		if (localStorage.background_blob) {
+			imgBackground(setblob(localStorage.background_blob));
+		}
+		imgCredits(null, "custom");
+	}
+}
+
+function settingsEvents() {
+
+	//quick links
+	id("i_title").onkeypress = function(e) {
+		quickLinks("input", e)
+	}
+
+	id("i_url").onkeypress = function(e) {
+		quickLinks("input", e)
+	}
+
+	id("submitlink").onmouseup = function() {
+		quickLinks("button", this)
+	}
+
+	id("i_linknewtab").onchange = function() {
+		quickLinks("linknewtab", this)
+	}
+
+	//visuals
+	id("i_type").onchange = function() {
+		selectBackgroundType(this.value)
+	}
+
+	id("i_freq").onchange = function() {
+		unsplash(null, this.value);
+	}
+
+	id("i_bgfile").onchange = function(e) {
+		renderImage(this.files[0]);
+	};
+
+	id("i_blur").onchange = function() {
+		filter("blur", this.value);
+	};
+
+	id("i_bright").onchange = function() {
+		filter("bright", this.value);
+	};
+
+	id("i_dark").onchange = function() {
+		darkmode(this.value)
+	}
+
+	//weather
+	id("b_city").onmouseup = function() {
+		if (!stillActive) weather("city", this);
+	}
+
+	id("i_city").onkeypress = function(e) {
+		if (!stillActive && e.which === 13) weather("city", this)
+	}
+
+	id("i_units").onchange = function() {
+		if (!stillActive) weather("units", this)
+	}
+
+	id("i_geol").onchange = function() {
+		if (!stillActive) weather("geol", this)
+	}
+	
+	//searchbar
+	id("i_sb").onchange = function() {
+
+		if (!stillActive) searchbar("searchbar", this);
+		slow(this);
+	}
+
+	id("i_sbengine").onchange = function() {
+		searchbar("engine", this)
+	}
+
+	//general
+	id("i_ampm").onchange = function() {
+		clock(this)
+	}
+
+	id("i_lang").onchange = function() {
+
+		localStorage.lang = this.value;
+		sessionStorage.lang = this.value;
+		//si local n'est pas utilisé, sync la langue
+		if (!localStorage.data) storage("lang", this.value);
+
+		//s'assure que le localStorage a bien changé
+		if (localStorage.lang) location.reload();
+	}
+
+
+	id("submitReset").onclick = function() {
+		importExport("reset");
+	}
+
+	id("submitExport").onclick = function() {
+		importExport("exp", true);
+	}
+
+	id("submitImport").onclick = function() {
+		importExport("imp", true);
+	}
+
+	id("i_import").onkeypress = function(e) {
+		if (e.which === 13) importExport("imp", true);
+	}
+
+	id("i_export").onfocus = function() {
+		importExport("exp")
+	}
+}
+
+function actualizeStartupOptions() {
+
+	const data = storage();
+
+	//open in new tab
+	id("i_linknewtab").checked = (data.linknewtab ? true : false);
+
+	//default background
+	var imgs = cl("imgpreview");
+	var bgURL = id("background").style.backgroundImage;
+	var previewURL = "";	
+
+	for (var i = 0; i < imgs.length; i++) {
+		
+		previewURL = imgs[i].children[0].getAttribute("src");
+
+		if (bgURL.includes(previewURL)) {
+			imgs[i].setAttribute("class", "imgpreview selected");
+		}
+	}
+
+	if (data.background_type !== undefined) {
+		id("i_type").value = data.background_type;
+		id(data.background_type).style.display = "block";
+	} else {
+		id("i_type").value = "default";
+		id("default").style.display = "block";
+	}
+
+	id("i_freq").value = (data.dynamic ? (data.dynamic.every ? data.dynamic.every : "hour") : "hour");
+
+	//blur
+	id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
+
+
+	//brightness
+	id("i_bright").value = (data.background_bright !== undefined ? data.background_bright : 1);
+
+
+	//dark mode input
+	id("i_dark").value = (data.dark ? data.dark : "disable");
+	
+
+	//weather city input
+	if (data.weather && data.weather.city) {
+		id("i_city").setAttribute("placeholder", data.weather.city);
+	} else {
+		id("i_city").setAttribute("placeholder", "City");
+	}
+
+
+	if (data.weather && data.weather.ccode) {
+		id("i_ccode").value = data.weather.ccode;
+	} else {
+		id("i_ccode").value = "US";
+	}
+
+	//check geolocalisation
+	//enleve city
+	if (data.weather && data.weather.location) {
+
+		id("i_geol").checked = true;
+		id("sett_city").setAttribute("class", "city hidden");
+
+	} else {
+
+		id("i_geol").checked = false;
+	}
+
+	//check imperial
+	if (data.weather && data.weather.unit === "imperial") {
+		id("i_units").checked = true;
+	} else {
+		id("i_units").checked = false;
+	}
+
+	
+	//searchbar switch et select
+	if (data.searchbar) {
+		id("i_sb").checked = true;
+		id("choose_searchengine").setAttribute("class", "shown");
+		setTimeout(() => {
+	    	id("searchbar").focus();
+	    }, 100);
+	} else {
+		id("i_sb").checked = false;
+		id("choose_searchengine").setAttribute("class", "hidden");
+	}	
+	
+	//search engine
+	id("i_sbengine").value = (data.searchbar_engine ? data.searchbar_engine : "s_startpage");
+
+
+
+	//clock
+	if (data.clockformat === 12) {
+		id("i_ampm").checked = true;
+		localStorage.clockformat = 12;
+	} else {
+		id("i_ampm").checked = false;
+	}
+
+	//langue
+	id("i_lang").value = localStorage.lang || "en";
+
+
+	//firefox export
+	if(!navigator.userAgent.includes("Chrome")) {
+		id("submitExport").style.display = "none";
+		id("i_export").style.width = "100%";
+	}	
+}
+
+function importExport(select, isEvent) {
+
+	if (select === "exp") {
+
+		const input = id("i_export");
+		const isOnChrome = (navigator.userAgent.includes("Chrome"));
+		const data = storage();
+
+		input.value = JSON.stringify(data);
+
+		if (isEvent) {
+
+			input.select();
+
+			//doesn't work on firefox for security reason
+			//don't want to add permissions just for this
+			if (isOnChrome) {
+				document.execCommand("copy");
+				id("submitExport").innerText = tradThis("Copied");
+			}
+		}
+	}
+
+	else if (select === "imp") {
+
+		if (isEvent) {
+
+			let val = id("i_import").value;
+
+			if (val.length > 0) {
+
+				let data;
+
+				try {
+
+					data = JSON.parse(val);
+					localStorage.data = data;
+					setTimeout(function() {
+						location.reload();
+					}, 20);
+
+				} catch(e) {
+					alert(e);
+				}
+			}
+		}
+	}
+
+	else if (select === "reset") {
+
+		let input = id("submitReset");
+
+		if (!input.hasAttribute("sure")) {
+
+			input.innerText = "Are you sure ?";
+			input.setAttribute("sure", "");
+
+		} else {
+
+			deleteBrowserStorage();
+			setTimeout(function() {
+				location.reload();
+			}, 20);
+		}
+	}
+}
+
+function settings() {
+	darkmode();
+	settingsEvents();
+	actualizeStartupOptions();
+	signature();
+	defaultBg();
+	importExport("exp");
+}
+
+id("showSettings").onmousedown = function() {
+
+	function init() {
+		let node = document.createElement("div");
+		node.id = "settings";
+		node.innerHTML = settingsHTML;
+		document.body.appendChild(node);
+		settings();
+		traduction(true);
+	}
+
+	if (!id("settings")) {
+		init();
+	}
+}
+
+id("showSettings").onmouseup = function() {
+
+	let that = this;
+
+
+	if (id("settings")) {
+
+		if (id("settings").getAttribute("class") === "shown") {
+			attr(that.children[0], "");
+			attr(id("settings"), "");
+			attr(id("interface"), "");
+		} else {
+			attr(that.children[0], "shown");
+			attr(id("settings"), "shown");
+			attr(id("interface"), "pushed");
+		}
+	}
+}
+
+//si settings ouvert, le ferme
+id("interface").onmouseup = function(e) {
+
+	//cherche le parent du click jusqu'a trouver linkblocks
+	var parent = e.target;
+	while (parent !== null) {
+
+		//console.log(parent);
+		parent = parent.parentElement;
+		if (parent && parent.id === "linkblocks") return false;
+	}
+
+	if (id("settings") && id("settings").getAttribute("class") === "shown") {
+
+		attr(id("showSettings").children[0], "");
+		attr(id("settings"), "");
+		attr(id("interface"), "");
+	}
+}
+
+//autofocus
+document.onkeydown = function(e) {
+
+	let searchbar = (id("sb_container") ? id("sb_container").getAttribute("class") === "shown" : false);
+	let settings = (id("settings") ? (id("settings").getAttribute("class") === "shown") : false);
+
+	if (searchbar && !settings) {
+
+		id("searchbar").focus();
+	}
 }
 
 

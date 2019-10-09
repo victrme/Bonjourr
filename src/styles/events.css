@@ -60,3 +60,14 @@
 #onUnsplash.hidden {
 	display: none;
 }
+
+#edit_link {
+	display: none;
+	width: 100%;
+	position: absolute;
+	top: 15vh;
+	text-align: center;
+	z-index: 3;
+	background: #fff;
+	color: #333;
+}
