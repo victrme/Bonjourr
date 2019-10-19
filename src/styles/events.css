@@ -61,3 +61,61 @@
 	display: none;
 }
 
+
+.edit_linkContainer #edit_link {
+	background: #fff;
+	font-family: sf_pro_textregular;
+	border-radius: 10px;
+	box-shadow: 1px 2px 25px #2229;
+}
+
+#edit_link #close {
+	font-family: sf_pro_textregular;
+	font-size: .9em;
+	color: #007aff;
+	margin-bottom: 2em;
+}
+
+.edit_linkContainer #edit_link input[type="text"],
+.edit_linkContainer #edit_link input[type="url"] {
+	font-size: .9em;
+	background: #e3e3e5;
+	border-radius: 8px;
+	height: 2.35em;
+	margin: .3em 0;
+	transition: background .2s;
+}
+
+.edit_linkContainer #edit_link input[type="text"]:active,
+.edit_linkContainer #edit_link input[type="url"]:active {
+	background: #d3d3d5;
+	transition: background .2s;
+}
+
+#l_iconfile {
+	position: relative;
+    width: 100%;
+    display: block;
+	padding: 1em 0;
+	opacity: .8;
+	font-size: .9em;
+}
+
+#e_iconfile {
+	opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 25%;
+    width: 50%;
+    height: 4em;
+    cursor: pointer;
+}
+
+.edit_linkContainer #edit_link .linkOptions button {
+	background: transparent;
+	color: #007aff;
+}
+
+.edit_linkContainer #edit_link .linkOptions #e_delete {
+	color: red;
+}
