@@ -214,12 +214,20 @@ function quickLinks(event, that) {
 
 		elem.oncontextmenu = function(e) {
 			e.preventDefault();
-			editlink(this);
-			//wiggle(this, true);
 		}
 
 		elem.onmouseup = function(e) {
-			openlink(this, e);
+
+			if (e.which === 3) {
+				editlink(this);
+			} else {
+				openlink(this, e);
+			}
+		}
+
+		elem.onmousedown = function(e) {
+
+			if (e.which === 3) id("edit_link").style.display = "block";
 		}
 
 		remove.onmouseup = function(e) {
@@ -234,6 +242,14 @@ function quickLinks(event, that) {
 
 	id("e_submit").onclick = function() {
 		editlink(null, parseInt(id("edit_link").getAttribute("index")))
+	}
+
+	id("e_close").onmouseup = function() {
+		id("edit_link").style.display = "none";
+	}
+
+	id("e_close").onmousedown = function() {
+		id("edit_link").style.opacity = 0;
 	}
 
 	function editlink(that, i) {
@@ -254,6 +270,7 @@ function quickLinks(event, that) {
 			}
 		}
 
+		//i is the quick link index here
 		if (i || i === 0) {
 
 			chrome.storage.sync.get("links", (data) => {
@@ -273,7 +290,7 @@ function quickLinks(event, that) {
 
 			let index = findLinkIndex(that, true);
 
-			id("edit_link").style.display = "block";
+			id("edit_link").style.opacity = 1;
 			id("edit_link").setAttribute("index", index);
 
 			chrome.storage.sync.get("links", (data) => {
@@ -281,25 +298,6 @@ function quickLinks(event, that) {
 				id("e_url").value = data.links[index].url;
 				id("e_iconurl").placeholder = data.links[index].icon;
 			});
-		}
-	}
-
-	function wiggle(that, on) {
-
-		let bl = cl("block");
-
-		if (on) {
-			for (let i = 0; i < bl.length; i++) {
-				bl[i].setAttribute("class", "block wiggly");
-				bl[i].children[0].children[0].setAttribute("class", "remove shown");
-			}
-			canRemove = true;
-		} else {
-			for (let i = 0; i < bl.length; i++) {
-				bl[i].setAttribute("class", "block");
-				bl[i].children[0].children[0].setAttribute("class", "remove hidden");
-			}
-			canRemove = false;
 		}
 	}
 

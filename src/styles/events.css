@@ -63,13 +63,16 @@
 
 
 .edit_linkContainer #edit_link {
+	opacity: 0;	
+	display: none;
 	background: #fff;
 	font-family: sf_pro_textregular;
 	border-radius: 10px;
 	box-shadow: 1px 2px 25px #2229;
+	transition: opacity .1s;
 }
 
-#edit_link #close {
+#edit_link #e_close {
 	font-family: sf_pro_textregular;
 	font-size: .9em;
 	color: #007aff;

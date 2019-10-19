@@ -301,7 +301,7 @@ body {
           opacity: .8; }
         .edit_linkContainer #edit_link .linkOptions button:active {
           opacity: .6; }
-    .edit_linkContainer #edit_link #close {
+    .edit_linkContainer #edit_link #e_close {
       display: block;
       background-color: transparent;
       border: 0px;
@@ -309,11 +309,11 @@ body {
       text-align: left;
       padding: 0;
       transition: opacity .1s ease-in; }
-      .edit_linkContainer #edit_link #close svg {
+      .edit_linkContainer #edit_link #e_close svg {
         width: 2em; }
-      .edit_linkContainer #edit_link #close:hover {
+      .edit_linkContainer #edit_link #e_close:hover {
         opacity: .8; }
-      .edit_linkContainer #edit_link #close:active {
+      .edit_linkContainer #edit_link #e_close:active {
         opacity: .6; }
 
 #credit {
