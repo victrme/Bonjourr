@@ -166,7 +166,7 @@ function quickLinks(event, that) {
 		let icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
 
 		//le DOM du block
-		let b = `<div class='block' source='${arr.url}'><div class='l_icon_wrap'><button class='remove'><img src='src/images/icons/x.png' /></button><img class='l_icon' src='${icon}' draggable='false'></div><span>${arr.title}</span></div>`;
+		let b = `<div class='block' source='${arr.url}'><div class='l_icon_wrap'><img class='l_icon' src='${icon}' draggable='false'></div><span>${arr.title}</span></div>`;
 
 		//ajoute un wrap
 		let block_parent = document.createElement('div');
@@ -194,16 +194,7 @@ function quickLinks(event, that) {
 		}
 
 		elem.onmouseup = function(e) {
-
-			if (e.which === 3) {
-				editlink(this);
-			} else {
-				openlink(this, e);
-			}
-		}
-
-		remove.onmouseup = function(e) {
-			removeblock(this, e)
+			(e.which === 3 ? editlink(this) : openlink(this, e));
 		}
 	}
 
@@ -256,6 +247,14 @@ function quickLinks(event, that) {
 			}
 		}
 
+		function updateLinkHTML(newElem) {
+			let block = id("linkblocks").children[i + 1];
+
+			block.children[0].setAttribute("source", newElem.url);
+			block.children[0].lastChild.innerText = newElem.title;
+			block.querySelector("img").src = newElem.icon;
+		}
+
 		//i is the quick link index here
 		if (i || i === 0) {
 
@@ -268,6 +267,7 @@ function quickLinks(event, that) {
 				}
 
 				allLinks[i] = element;
+				updateLinkHTML(element);
 				chrome.storage.sync.set({"links": allLinks});
 			});
 
@@ -426,7 +426,7 @@ function quickLinks(event, that) {
 
 		faviconXHR("https://favicongrabber.com/api/grab/" + hostname).then((icon) => {
 
-			var img = elem.firstElementChild.firstElementChild.children[1];
+			var img = elem.querySelector("img");
 			var icn = filterIcon(icon);
 			img.src = icn;
 
@@ -437,18 +437,6 @@ function quickLinks(event, that) {
 
 	function linkSubmission() {
 
-		function submissionError(erreur) {
-
-			//affiche le texte d'erreur
-			id("wrongURL").innerText = erreur[1];
-			id("wrongURL").style.display = "block";
-			id("wrongURL").style.opacity = 1;
-			
-			setTimeout(function() {
-				id("wrongURL").style.display = "none";
-			}, 2000);		
-		}
-
 		function filterUrl(str) {
 
 			//var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
@@ -457,7 +445,7 @@ function quickLinks(event, that) {
 
 			//config ne marche pas
 			if (str.startsWith("about:") || str.startsWith("chrome://")) {
-				return [str, "Bonjourr doesn't have permissions to access browser urls"];
+				return false;
 			}
 
 			if (str.startsWith("file://")) {
@@ -473,7 +461,7 @@ function quickLinks(event, that) {
 			if (str.match(reg)) {
 				return str.match(reg).input;
 			} else {
-				return [str, "URL not valid"];
+				return false;
 			}
 		}
 
@@ -513,13 +501,11 @@ function quickLinks(event, that) {
 				//si les blocks sont moins que 16
 				if (!full) {
 					chrome.storage.sync.set({"links": arr});
-					//console.log(lll);
 					appendblock(lll, arr.length - 1, arr);
 				} else {
 
 					//desactive tout les input url
 					id("i_url").setAttribute("disabled", "disabled");
-					submissionError([id("i_url").value, "No more than 16 links"]);
 				}
 			});
 		}
@@ -535,13 +521,10 @@ function quickLinks(event, that) {
 		}
 		
 		//si l'url filtré est juste
-		if (typeof(links.url) !== "object" && links.url) {
+		if (links.url && id("i_url").value.length > 2) {
 
 			//et l'input n'a pas été activé ya -1s
 			if (!stillActive) saveLink(links);
-
-		} else {
-			if (url.length > 0) submissionError(filtered);
 		}
 	}
 

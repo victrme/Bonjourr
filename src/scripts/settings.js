@@ -574,7 +574,8 @@ id("showSettings").onmousedown = function() {
 id("showSettings").onmouseup = function() {
 
 	let that = this;
-
+	let edit = id("edit_linkContainer");
+	let editClass = edit.getAttribute("class");
 
 	if (id("settings")) {
 
@@ -582,10 +583,15 @@ id("showSettings").onmouseup = function() {
 			attr(that.children[0], "");
 			attr(id("settings"), "");
 			attr(id("interface"), "");
+
+			if (editClass === "shown pushed") attr(edit, "shown");
+			
 		} else {
 			attr(that.children[0], "shown");
 			attr(id("settings"), "shown");
 			attr(id("interface"), "pushed");
+			
+			if (editClass === "shown") attr(edit, "shown pushed");
 		}
 	}
 }
@@ -607,6 +613,10 @@ id("interface").onmouseup = function(e) {
 		attr(id("showSettings").children[0], "");
 		attr(id("settings"), "");
 		attr(id("interface"), "");
+
+		let edit = id("edit_linkContainer");
+		let editClass = edit.getAttribute("class");
+		if (editClass === "shown pushed") attr(edit, "shown");
 	}
 }
 

@@ -63,6 +63,13 @@
 
 #edit_linkContainer.shown {
 	display: flex;
+	right: 0;
+	transition: right .2s;
+}
+
+#edit_linkContainer.pushed {
+	right: 10em;
+	transition: right .2s;
 }
 
 #edit_linkContainer #edit_link {
@@ -94,8 +101,8 @@
 	transition: background .2s;
 }
 
-#edit_linkContainer #edit_link input[type="text"]:active,
-#edit_linkContainer #edit_link input[type="url"]:active {
+#edit_linkContainer #edit_link input[type="text"]:focus,
+#edit_linkContainer #edit_link input[type="url"]:focus {
 	background: #d3d3d5;
 	transition: background .2s;
 }
@@ -143,7 +150,7 @@
 	transition: background .1s;
 }
 
-#edit_link .empty_input:active {
+#edit_link .empty_input:focus {
 	background: #999;
 	transition: background .1s;
 }
@@ -177,7 +184,20 @@ body.autodark #edit_linkContainer #edit_link input[type="url"] {
     color: white;
 }
 
+body.dark #edit_linkContainer #edit_link input[type="text"]:focus,
+body.dark #edit_linkContainer #edit_link input[type="url"]:focus,
+body.autodark #edit_linkContainer #edit_link input[type="text"]:focus,
+body.autodark #edit_linkContainer #edit_link input[type="url"]:focus {
+	background-color: #2c2c2f;
+    color: white;
+}
+
 body.dark #edit_link .empty_input,
 body.autodark #edit_link .empty_input {
 	background-color: #2c2c2e;
+}
+
+body.dark #edit_link .empty_input:focus,
+body.autodark #edit_link .empty_input:focus {
+	background-color: #222227;
 }
