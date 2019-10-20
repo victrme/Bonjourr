@@ -61,15 +61,19 @@
 	display: none;
 }
 
+#edit_linkContainer.shown {
+	display: flex;
+}
 
-.edit_linkContainer #edit_link {
-	opacity: 0;	
-	display: none;
+#edit_linkContainer #edit_link {
 	background: #fff;
 	font-family: sf_pro_textregular;
 	border-radius: 10px;
 	box-shadow: 1px 2px 25px #2229;
-	transition: opacity .1s;
+}
+
+#edit_linkContainer #edit_link > div {
+	position: relative;
 }
 
 #edit_link #e_close {
@@ -79,18 +83,19 @@
 	margin-bottom: 2em;
 }
 
-.edit_linkContainer #edit_link input[type="text"],
-.edit_linkContainer #edit_link input[type="url"] {
+#edit_linkContainer #edit_link input[type="text"],
+#edit_linkContainer #edit_link input[type="url"] {
 	font-size: .9em;
 	background: #e3e3e5;
 	border-radius: 8px;
 	height: 2.35em;
 	margin: .3em 0;
+	padding-right: 2.5em;
 	transition: background .2s;
 }
 
-.edit_linkContainer #edit_link input[type="text"]:active,
-.edit_linkContainer #edit_link input[type="url"]:active {
+#edit_linkContainer #edit_link input[type="text"]:active,
+#edit_linkContainer #edit_link input[type="url"]:active {
 	background: #d3d3d5;
 	transition: background .2s;
 }
@@ -114,11 +119,65 @@
     cursor: pointer;
 }
 
-.edit_linkContainer #edit_link .linkOptions button {
+#edit_linkContainer #edit_link .linkOptions button {
 	background: transparent;
 	color: #007aff;
 }
 
-.edit_linkContainer #edit_link .linkOptions #e_delete {
+#edit_linkContainer #edit_link .linkOptions #e_delete {
 	color: red;
+}
+
+
+#edit_link .empty_input {
+	position: absolute;
+    top: 1em;
+    right: .8em;
+	width: 1.2em;
+	height: 1.2em;
+	padding: 0;
+	border: none;
+	border-radius: 100%;
+	background: #bbb;
+	cursor: pointer;
+	transition: background .1s;
+}
+
+#edit_link .empty_input:active {
+	background: #999;
+	transition: background .1s;
+}
+
+#edit_link .empty_input img {
+	width: .6em;
+	height: .6em;
+	filter: brightness(2);
+}
+
+#edit_link .empty_input.hidden {
+	cursor: default;
+	opacity: 0;
+	transition: opacity .1s;
+}
+
+
+
+
+body.dark #edit_linkContainer #edit_link,
+body.autodark #edit_linkContainer #edit_link {
+    background-color: #1c1c1e;
+    color: white;
+}
+
+body.dark #edit_linkContainer #edit_link input[type="text"],
+body.dark #edit_linkContainer #edit_link input[type="url"],
+body.autodark #edit_linkContainer #edit_link input[type="text"],
+body.autodark #edit_linkContainer #edit_link input[type="url"] {
+	background-color: #39383d;
+    color: white;
+}
+
+body.dark #edit_link .empty_input,
+body.autodark #edit_link .empty_input {
+	background-color: #2c2c2e;
 }

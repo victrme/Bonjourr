@@ -536,7 +536,6 @@ function importExport(select, isEvent) {
 }
 
 function settings() {
-	darkmode();
 	settingsEvents();
 	actualizeStartupOptions();
 	signature();

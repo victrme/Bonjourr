@@ -158,29 +158,6 @@ function quickLinks(event, that) {
 				}
 			}
 		});
-
-		id("interface").onmousedown = function stopwiggle(e) {
-
-			let block = cl("block")[0];
-
-			if (block) {
-				//si c'est wiggly, accepte de le déwiggler
-				if (canRemove || cl("block")[0].getAttribute("class") === "block wiggly") {
-
-					let isStoppable = true;
-					let parent = e.target;
-
-					while (parent !== null) {
-
-						//console.log(parent);
-						parent = parent.parentElement ;
-						if (parent && parent.id === "linkblocks") isStoppable = false;
-					}
-
-					if (isStoppable) wiggle(this, false);
-				}
-			}
-		}
 	}
 
 	function appendblock(arr, index, links) {
@@ -225,11 +202,6 @@ function quickLinks(event, that) {
 			}
 		}
 
-		elem.onmousedown = function(e) {
-
-			if (e.which === 3) id("edit_link").style.display = "block";
-		}
-
 		remove.onmouseup = function(e) {
 			removeblock(this, e)
 		}
@@ -237,20 +209,34 @@ function quickLinks(event, that) {
 
 	id("e_delete").onclick = function() {
 		removeblock(parseInt(id("edit_link").getAttribute("index")));
-		id("edit_link").style.display = "none";
+		attr(id("edit_linkContainer"), "");
 	}
 
 	id("e_submit").onclick = function() {
 		editlink(null, parseInt(id("edit_link").getAttribute("index")))
+		attr(id("edit_linkContainer"), "");
 	}
 
 	id("e_close").onmouseup = function() {
-		id("edit_link").style.display = "none";
+		attr(id("edit_linkContainer"), "");
 	}
 
-	id("e_close").onmousedown = function() {
-		id("edit_link").style.opacity = 0;
+	id("re_title").onmouseup = function() {
+		id("e_title").value = "";
+		//attr(this, "empty_input hidden");
 	}
+
+	id("re_url").onmouseup = function() {
+		id("e_url").value = "";
+		//attr(this, "empty_input hidden");
+	}
+
+	id("re_iconurl").onmouseup = function() {
+		id("e_iconurl").value = "";
+		//attr(this, "empty_input hidden");
+	}
+
+
 
 	function editlink(that, i) {
 
@@ -283,20 +269,19 @@ function quickLinks(event, that) {
 
 				allLinks[i] = element;
 				chrome.storage.sync.set({"links": allLinks});
-				id("edit_link").style.display = "none";
 			});
 
 		} else {
 
 			let index = findLinkIndex(that, true);
 
-			id("edit_link").style.opacity = 1;
+			attr(id("edit_linkContainer"), "shown");
 			id("edit_link").setAttribute("index", index);
 
 			chrome.storage.sync.get("links", (data) => {
 				id("e_title").value = data.links[index].title;
 				id("e_url").value = data.links[index].url;
-				id("e_iconurl").placeholder = data.links[index].icon;
+				id("e_iconurl").value = data.links[index].icon;
 			});
 		}
 	}
@@ -562,16 +547,19 @@ function quickLinks(event, that) {
 
 	function openlink(that, e) {
 
-		if (!canRemove) {
+		let source = that.children[0].getAttribute("source");
 
-			let source = that.children[0].getAttribute("source");
-			let wiggly = that.children[0].getAttribute("class") === "block wiggly";
+		chrome.storage.sync.get("linknewtab", (data) => {
 
-			if (e.which === 3 || wiggly) return false;
+			if (data.linknewtab) {
 
-			chrome.storage.sync.get("linknewtab", (data) => {
+				chrome.tabs.create({
+					url: source
+				});
 
-				if (data.linknewtab) {
+			} else {
+
+				if (e.which === 2) {
 
 					chrome.tabs.create({
 						url: source
@@ -579,21 +567,12 @@ function quickLinks(event, that) {
 
 				} else {
 
-					if (e.which === 2) {
-
-						chrome.tabs.create({
-							url: source
-						});
-
-					} else {
-
-						id("hiddenlink").setAttribute("href", source);
-						id("hiddenlink").setAttribute("target", "_self");
-						id("hiddenlink").click();
-					}
-				}	
-			});
-		}
+					id("hiddenlink").setAttribute("href", source);
+					id("hiddenlink").setAttribute("target", "_self");
+					id("hiddenlink").click();
+				}
+			}	
+		});
 	}
 
 	if (event === "input") {
@@ -1373,6 +1352,141 @@ function filter(cat, val) {
 	}
 }
 
+function darkmode(choix) {
+
+	
+	function isIOSwallpaper(dark) {
+
+		//défini les parametres a changer en fonction du theme
+		var modeurl, actual, urltouse;
+
+		if (dark) {
+
+			modeurl = "ios13_dark";
+			actual = "ios13_light";
+			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
+
+		} else {
+			
+			modeurl = "ios13_light";
+			actual = "ios13_dark";
+			urltouse = 'src/images/backgrounds/ios13_light.jpg';
+		}
+
+		//et les applique ici
+		if (id("settings")) {
+			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
+		}
+		
+		if (imgBackground().includes(actual)) {
+
+			imgBackground(urltouse, "default");
+			chrome.storage.sync.set({"background_image": urltouse});
+		}
+	}
+
+	
+	function applyDark(add, system) {
+
+		if (add) {
+
+			if (system) {
+
+				document.body.setAttribute("class", "autodark");
+
+			} else {
+
+				document.body.setAttribute("class", "dark");
+				isIOSwallpaper(true);
+			}
+
+		} else {
+
+			document.body.removeAttribute("class");
+			isIOSwallpaper(false);
+		}
+	}
+
+	
+	function auto(weather) {
+
+		chrome.storage.sync.get("weather", (data) => {
+
+			var ls = data.weather.lastState;
+			var sunrise = new Date(ls.sys.sunrise * 1000);
+			var sunset = new Date(ls.sys.sunset * 1000);
+			var hr = new Date();
+
+			sunrise = sunrise.getHours() + 1;
+			sunset = sunset.getHours();
+			hr = hr.getHours();
+
+			if (hr < sunrise || hr > sunset) {
+				applyDark(true);
+			} else {
+				applyDark(false);
+			}
+		});
+	}
+
+	
+	function initDarkMode() {
+
+		chrome.storage.sync.get("dark", (data) => {
+
+			var dd = (data.dark ? data.dark : "disable");
+
+			if (dd === "enable") {
+				applyDark(true);
+			}
+
+			if (dd === "disable") {
+				applyDark(false);
+			}
+
+			if (dd === "auto") {
+				auto();
+			}
+
+			if (dd === "system") {
+				applyDark(true, true);
+			}
+		});		
+	}
+
+	
+	function changeDarkMode() {
+
+		if (choix === "enable") {
+			applyDark(true);
+			chrome.storage.sync.set({"dark": "enable"});
+		}
+
+		if (choix === "disable") {
+			applyDark(false);
+			chrome.storage.sync.set({"dark": "disable"});
+		}
+
+		if (choix === "auto") {
+
+			//prend l'heure et ajoute la classe si nuit
+			auto();
+			chrome.storage.sync.set({"dark": "auto"});
+		}
+
+		if (choix === "system") {
+			chrome.storage.sync.set({"dark": "system"});
+			applyDark(true, true);
+		}
+	}
+
+	if (choix) {
+		changeDarkMode();
+	} else {
+		initDarkMode();
+	}
+}
+
 function searchbarFlexControl(activated, linkslength) {
 
 	if (linkslength > 0) {
@@ -1484,3 +1598,4 @@ greetings();
 weather();
 searchbar();
 quickLinks();
+darkmode();

@@ -15,7 +15,7 @@
 <body>
 
 
-	<div class="edit_linkContainer">
+	<div id="edit_linkContainer">
 		<div id="edit_link">
 
 			<button id="e_close">cancel</button>
@@ -23,20 +23,31 @@
 			<div>
 				<!-- <h4>Title</h4> -->
 				<input id="e_title" type="text" name="e_title" placeholder="Title">
+				<button class="empty_input" id="re_title">
+					<img src="src/images/icons/x.png" draggable="false">
+				</button>
 			</div>
 			<div>
 				<!-- <h4>URL</h4> -->
 				<input id="e_url" type="text" name="e_url" placeholder="Link">
+				<button class="empty_input" id="re_url">
+					<img src="src/images/icons/x.png" draggable="false">
+				</button>
 			</div>
 			<div>
 				<!-- <h4>Icon</h4> -->
 				<input id="e_iconurl" type="url" name="e_iconurl" placeholder="Icon">
-				<label id="l_iconfile">
-					<p>Drop icon here</p>
-					<input id="e_iconfile" type="file" name="e_iconfile">
-				</label>
-				
+				<button class="empty_input" id="re_iconurl">
+					<img src="src/images/icons/x.png" draggable="false">
+				</button>
 			</div>
+			<label id="l_iconfile">
+				<p>Drop your icon here</p>
+				<input id="e_iconfile" type="file" name="e_iconfile">
+			</label>
+
+
+
 			<div class="linkOptions">
 				<button id="e_delete">Delete Quick Link</button>
 				<button id="e_submit">Apply changes</button>

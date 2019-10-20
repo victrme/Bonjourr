@@ -255,12 +255,12 @@ body {
   #interface.pushed {
     margin-left: -20em; }
 
-.edit_linkContainer {
+#edit_linkContainer {
   position: absolute;
-  display: flex;
+  display: none;
   height: 100vh;
   width: 100%; }
-  .edit_linkContainer #edit_link {
+  #edit_linkContainer #edit_link {
     align-self: center;
     margin: auto;
     width: 300px;
@@ -269,11 +269,11 @@ body {
     background: #f2f2f7;
     color: #333;
     border-radius: 15px; }
-    .edit_linkContainer #edit_link h4 {
+    #edit_linkContainer #edit_link h4 {
       text-align: left;
       margin: 1.5em 0px .5em 0px;
       padding: 0px; }
-    .edit_linkContainer #edit_link input[type="text"], .edit_linkContainer #edit_link input[type="url"] {
+    #edit_linkContainer #edit_link input[type="text"], #edit_linkContainer #edit_link input[type="url"] {
       border: 0px;
       height: 1em;
       width: 100%;
@@ -281,12 +281,12 @@ body {
       padding: 1em;
       box-sizing: border-box;
       border-radius: 9px; }
-    .edit_linkContainer #edit_link .linkOptions {
+    #edit_linkContainer #edit_link .linkOptions {
       display: flex;
       justify-content: space-between;
       width: 100%;
       margin-top: 1.5em; }
-      .edit_linkContainer #edit_link .linkOptions button {
+      #edit_linkContainer #edit_link .linkOptions button {
         width: 45%;
         height: 40px;
         color: white;
@@ -297,11 +297,11 @@ body {
         padding: .6em;
         cursor: pointer;
         transition: opacity .1s ease-in; }
-        .edit_linkContainer #edit_link .linkOptions button:hover {
+        #edit_linkContainer #edit_link .linkOptions button:hover {
           opacity: .8; }
-        .edit_linkContainer #edit_link .linkOptions button:active {
+        #edit_linkContainer #edit_link .linkOptions button:active {
           opacity: .6; }
-    .edit_linkContainer #edit_link #e_close {
+    #edit_linkContainer #edit_link #e_close {
       display: block;
       background-color: transparent;
       border: 0px;
@@ -309,11 +309,11 @@ body {
       text-align: left;
       padding: 0;
       transition: opacity .1s ease-in; }
-      .edit_linkContainer #edit_link #e_close svg {
+      #edit_linkContainer #edit_link #e_close svg {
         width: 2em; }
-      .edit_linkContainer #edit_link #e_close:hover {
+      #edit_linkContainer #edit_link #e_close:hover {
         opacity: .8; }
-      .edit_linkContainer #edit_link #e_close:active {
+      #edit_linkContainer #edit_link #e_close:active {
         opacity: .6; }
 
 #credit {
