@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr",
+		"description": "nome dell'estensione"
+	},
+	"extensionDesc": {
+		"message": "Migliora la tua esperienza di navigazione con Bonjourr, una bellissima pagina iniziale, leggera e personalizzabile ispirata ad iOS.",
+		"description": "descrizione dell'estensione"
+	}
+}

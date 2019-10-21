@@ -51,6 +51,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
 * **Slovak translation** · Roman Bartík
 * **German translation**  · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
+* **Italian translation**  · Trazalca · [GitHub](https://github.com/Trazalca)
 
 ## Changelogs
 
