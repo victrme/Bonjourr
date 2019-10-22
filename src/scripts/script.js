@@ -186,46 +186,61 @@ function quickLinks(event, that) {
 
 	function addEvents(elem) {
 
-		//wow
-		let remove = elem.firstElementChild.firstElementChild.firstElementChild;
-
 		elem.oncontextmenu = function(e) {
 			e.preventDefault();
 		}
 
 		elem.onmouseup = function(e) {
+
+			removeLinkSelection();
 			(e.which === 3 ? editlink(this) : openlink(this, e));
 		}
 	}
 
+	//enleve les selections d'edit
+	const removeLinkSelection = x => (id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")}));
+
+
 	id("e_delete").onclick = function() {
+		removeLinkSelection();
 		removeblock(parseInt(id("edit_link").getAttribute("index")));
 		attr(id("edit_linkContainer"), "");
 	}
 
 	id("e_submit").onclick = function() {
+		removeLinkSelection();
 		editlink(null, parseInt(id("edit_link").getAttribute("index")))
 		attr(id("edit_linkContainer"), "");
 	}
 
 	id("e_close").onmouseup = function() {
+		removeLinkSelection();
 		attr(id("edit_linkContainer"), "");
 	}
 
 	id("re_title").onmouseup = function() {
 		id("e_title").value = "";
-		//attr(this, "empty_input hidden");
 	}
 
 	id("re_url").onmouseup = function() {
 		id("e_url").value = "";
-		//attr(this, "empty_input hidden");
 	}
 
 	id("re_iconurl").onmouseup = function() {
 		id("e_iconurl").value = "";
-		//attr(this, "empty_input hidden");
 	}
+
+	id("e_iconfile").onchange = function(e) {
+
+		let reader = new FileReader();
+		let file = this.files[0];
+
+		// inject an image with the src url
+		reader.onload = function(event) {
+		}
+
+		reader.readAsDataURL(file);
+	};
 
 
 
@@ -274,6 +289,9 @@ function quickLinks(event, that) {
 		} else {
 
 			let index = findLinkIndex(that, true);
+			let liconwrap = that.querySelector(".l_icon_wrap");
+
+			attr(liconwrap, "l_icon_wrap selected");
 
 			attr(id("edit_linkContainer"), "shown");
 			id("edit_link").setAttribute("index", index);
