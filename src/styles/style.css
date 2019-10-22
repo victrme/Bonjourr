@@ -520,10 +520,11 @@ body {
     border-bottom: 1px solid #c8c7cc;
     padding: .5em 0; }
   #settings h5 {
-    margin: 1em 1.3em;
+    margin: 1.5em 1.3em 1em 1.3em;
     color: #6d6d72;
     text-transform: uppercase;
-    font-family: sf_pro_displaythin;
+    font-family: sf_pro_textregular;
+    font-weight: lighter;
     letter-spacing: 0.04em; }
   #settings .param {
     background-color: #ffffff;
