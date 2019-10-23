@@ -673,7 +673,7 @@ function askfordict() {
       zh_CN: "Consider",
       sk: "Consider",
       de: "Consider",
-      it: "Considera"
+      it: "Considera di"
     },
     "donating": {
       fr: "faire un don",
@@ -1014,7 +1014,7 @@ function askfordict() {
       zh_CN: ", 以上是今日天气.",
       sk: "dnes.",
       de: "heute.",
-      it: "Oggi"
+      it: "oggi"
     },
 
 
