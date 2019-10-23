@@ -142,6 +142,7 @@ function greetings() {
 function quickLinks(event, that) {
 
 	let stillActive = false, canRemove = false;
+	let dragged, hovered, current;
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
@@ -166,11 +167,12 @@ function quickLinks(event, that) {
 		let icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
 
 		//le DOM du block
-		let b = `<div class='block' source='${arr.url}'><div class='l_icon_wrap'><img class='l_icon' src='${icon}' draggable='false'></div><span>${arr.title}</span></div>`;
+		let b = `<div class='block' draggable="false" source='${arr.url}'><div class='l_icon_wrap' draggable="false"><img class='l_icon' src='${icon}' draggable="false"></div><span>${arr.title}</span></div>`;
 
 		//ajoute un wrap
 		let block_parent = document.createElement('div');
 		block_parent.setAttribute("class", "block_parent");
+		block_parent.setAttribute("draggable", "true");
 		block_parent.innerHTML = b;
 
 		//l'ajoute au dom
@@ -185,6 +187,44 @@ function quickLinks(event, that) {
 	}
 
 	function addEvents(elem) {
+
+		elem.ondragstart = function(e) {
+
+			chrome.storage.sync.get("links", (data) => {
+
+				let i = findLinkIndex(this, true);
+				dragged = [elem, data.links[i], i];
+			});
+		}
+
+		elem.ondragenter = function(e) {
+
+			chrome.storage.sync.get("links", (data) => {
+
+				let i = findLinkIndex(this, true);
+				hovered = [elem, data.links[i], i];
+			});
+		}
+
+		elem.ondragend = function(e) {
+
+			chrome.storage.sync.get("links", (data) => {
+
+				//changes html blocks
+				current = hovered[0].innerHTML;
+				hovered[0].innerHTML = dragged[0].innerHTML;
+				dragged[0].innerHTML = current;
+
+
+				//changes link storage
+				let allLinks = data.links;
+
+				allLinks[dragged[2]] = hovered[1];
+				allLinks[hovered[2]] = dragged[1];
+
+				chrome.storage.sync.set({"links": allLinks});
+			});		
+		}
 
 		elem.oncontextmenu = function(e) {
 			e.preventDefault();
@@ -305,7 +345,7 @@ function quickLinks(event, that) {
 	}
 
 	function findLinkIndex(that, isEdit) {
-		var bp = that.parentElement.parentElement.parentElement;
+		var bp = (isEdit ? "" : that.parentElement.parentElement.parentElement);
 		var sibling = (isEdit ? that : bp);
 		var index = -2;
 
