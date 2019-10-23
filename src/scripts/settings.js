@@ -244,11 +244,11 @@ function settingsEvents() {
 
 	//quick links
 	id("i_title").onkeypress = function(e) {
-		quickLinks("input", e)
+		if (e.which === 13) quickLinks("input", e)
 	}
 
 	id("i_url").onkeypress = function(e) {
-		quickLinks("input", e)
+		if (e.which === 13) quickLinks("input", e)
 	}
 
 	id("submitlink").onmouseup = function() {

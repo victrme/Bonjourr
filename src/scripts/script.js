@@ -139,10 +139,15 @@ function greetings() {
 	id("greetings").innerText = message;
 }
 
+
+
 function quickLinks(event, that) {
 
-	let stillActive = false, canRemove = false;
-	let dragged, hovered, current;
+	//only on init
+	if(!event && !that) {
+		let dragged, hovered, current;
+		let stillActive = false;
+	}
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
@@ -188,42 +193,47 @@ function quickLinks(event, that) {
 
 	function addEvents(elem) {
 
-		elem.ondragstart = function(e) {
+		function handleDrag(is, that) {
 
 			chrome.storage.sync.get("links", (data) => {
 
-				let i = findLinkIndex(this, true);
-				dragged = [elem, data.links[i], i];
-			});
+				if (is === "start") {
+					let i = findLinkIndex(that, true);
+					dragged = [elem, data.links[i], i];
+				}
+				else if (is === "enter") {
+					let i = findLinkIndex(that, true);
+					hovered = [elem, data.links[i], i];
+				}
+				else if (is === "end") {
+
+					//changes html blocks
+					current = hovered[0].innerHTML;
+					hovered[0].innerHTML = dragged[0].innerHTML;
+					dragged[0].innerHTML = current;
+
+
+					//changes link storage
+					let allLinks = data.links;
+
+					allLinks[dragged[2]] = hovered[1];
+					allLinks[hovered[2]] = dragged[1];
+
+					chrome.storage.sync.set({"links": allLinks});
+				}	
+			});	
+		}
+
+		elem.ondragstart = function(e) {
+			handleDrag("start", this)
 		}
 
 		elem.ondragenter = function(e) {
-
-			chrome.storage.sync.get("links", (data) => {
-
-				let i = findLinkIndex(this, true);
-				hovered = [elem, data.links[i], i];
-			});
+			handleDrag("enter", this)
 		}
 
 		elem.ondragend = function(e) {
-
-			chrome.storage.sync.get("links", (data) => {
-
-				//changes html blocks
-				current = hovered[0].innerHTML;
-				hovered[0].innerHTML = dragged[0].innerHTML;
-				dragged[0].innerHTML = current;
-
-
-				//changes link storage
-				let allLinks = data.links;
-
-				allLinks[dragged[2]] = hovered[1];
-				allLinks[hovered[2]] = dragged[1];
-
-				chrome.storage.sync.set({"links": allLinks});
-			});		
+			handleDrag("end", this)	
 		}
 
 		elem.oncontextmenu = function(e) {
