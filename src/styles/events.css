@@ -175,6 +175,7 @@
 
 #interface .linkblocks .block_parent .block .l_icon_wrap.selected {
 	border: 0.2em solid #007aff;
+	filter: brightness(0.75);
 }
 
 

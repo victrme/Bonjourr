@@ -196,6 +196,7 @@ body {
       margin: 1em;
       transition: all .2s ease-in; }
       #interface .linkblocks .block_parent .block .l_icon_wrap {
+        overflow: hidden;
         width: 4.4em;
         height: 4.4em;
         margin: auto;
@@ -204,13 +205,15 @@ body {
         background: white;
         border: .2em solid white;
         cursor: pointer;
-        transition: border .05s ease-in; }
+        transition: border-color .1s, filter .1s }
         #interface .linkblocks .block_parent .block .l_icon_wrap .l_icon {
           width: 100%; }
         #interface .linkblocks .block_parent .block .l_icon_wrap:hover {
-          border: 0.2em solid #007aff; }
+          border: 0.2em solid #007aff;
+          transition: border-color .1s; }
         #interface .linkblocks .block_parent .block .l_icon_wrap:active {
-          filter: brightness(0.75); }
+          filter: brightness(0.75);
+          transition: border-color .1s, filter .1s; }
       #interface .linkblocks .block_parent .block span {
         display: block;
         margin: .5em 0;

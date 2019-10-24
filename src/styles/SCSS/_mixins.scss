@@ -137,6 +137,7 @@ $settingsGrey: #f2f2f7;
 
 			.block {
 				.l_icon_wrap {
+					overflow: hidden;
 					width: 4.4em;
 					height: 4.4em;
 					margin: auto;
@@ -145,7 +146,7 @@ $settingsGrey: #f2f2f7;
 					background: white;
 					border: .2em solid white;
 					cursor: pointer;
-					transition: border .05s ease-in;
+					transition: border-color .1s, filter .1s;
 
 					.l_icon {
 						width: 100%;
@@ -153,10 +154,12 @@ $settingsGrey: #f2f2f7;
 
 					&:hover {
 						border: .2em solid $blue;
+						transition: border-color .1s;
 					}
 
 					&:active {
 						filter: brightness(0.75);
+						transition: border-color .1s, filter .1s;
 					}
 				}
 

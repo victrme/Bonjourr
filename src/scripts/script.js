@@ -225,15 +225,21 @@ function quickLinks(event, that) {
 		}
 
 		elem.ondragstart = function(e) {
+			//e.preventDefault();
+			e.dataTransfer.setData("text/plain", e.target.id);
+			e.currentTarget.style.cursor = "pointer";
 			handleDrag("start", this)
 		}
 
 		elem.ondragenter = function(e) {
+			e.preventDefault();
 			handleDrag("enter", this)
 		}
 
 		elem.ondragend = function(e) {
-			handleDrag("end", this)	
+			e.preventDefault();
+
+			handleDrag("end", this)
 		}
 
 		elem.oncontextmenu = function(e) {
@@ -282,14 +288,7 @@ function quickLinks(event, that) {
 
 	id("e_iconfile").onchange = function(e) {
 
-		let reader = new FileReader();
-		let file = this.files[0];
-
-		// inject an image with the src url
-		reader.onload = function(event) {
-		}
-
-		reader.readAsDataURL(file);
+		renderImage(this.files[0], "edit");
 	};
 
 
@@ -1147,9 +1146,8 @@ function initBackground() {
 	});	
 }
 
-function setblob(donnee, set) {
+function setblob(donnee, reader) {
 
-	//fonction compliqué qui créer un blob à partir d'un base64
 	const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 		const byteCharacters = atob(b64Data);
 		const byteArrays = [];
@@ -1171,7 +1169,7 @@ function setblob(donnee, set) {
 	}
 
 	//découpe les données du file en [contentType, base64data]
-	let base = (set ? donnee.split(",") : donnee);
+	let base = (reader ? donnee.split(",") : donnee);
 	let contentType = base[0].replace("data:", "").replace(";base64", "");
 	let b64Data = base[1];
 
@@ -1179,34 +1177,38 @@ function setblob(donnee, set) {
 	let blob = b64toBlob(b64Data, contentType);
 	let blobUrl = URL.createObjectURL(blob);
 
-	if (set) {
-
-		//enregistre l'url et applique le bg
-		//blob est local pour avoir plus de place
-		chrome.storage.local.set({"background_blob": base}); //reste local !!!!
-		chrome.storage.sync.set({"background_image": blobUrl});
-		chrome.storage.sync.set({"background_type": "custom"});
-
-	}
-
-	return blobUrl;
+	return (reader ? [base, blobUrl] : blobUrl);
 }
 
-function renderImage(file) {
+function renderImage(file, is) {
 
-	// render the image in our view
-	// ces commentaire anglais ne veulent pas dire que j'ai copié collé ok
-
-	// generate a new FileReader object
-	var reader = new FileReader();
-
-	// inject an image with the src url
+	let reader = new FileReader();
 	reader.onload = function(event) {
 
-		imgBackground(setblob(event.target.result, true)); // resized image url
+		let result = event.target.result;
+		let blobArray = setblob(result, true);
+
+		if (is === "change") {
+
+			imgBackground(blobArray[1]);
+
+			chrome.storage.local.set({"background_blob": blobArray[0]}); //reste local !!!!
+			chrome.storage.sync.set({"background_image": blobArray[1]});
+			chrome.storage.sync.set({"background_type": "custom"});
+
+		}
+		else if (is === "edit") {
+
+			chrome.storage.local.set({"icon_blob": blobArray[0]}); //reste local !!!!
+			chrome.storage.sync.set({"icon_image": blobArray[1]});
+
+			//set icon
+			let index = parseInt(id("edit_link").getAttribute("index"));
+			cl("block_parent")[index].querySelector("img").src = blobArray[1];
+		}
+		
 	}
 
-	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
 }
 

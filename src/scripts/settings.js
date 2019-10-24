@@ -269,7 +269,7 @@ function settingsEvents() {
 	}
 
 	id("i_bgfile").onchange = function(e) {
-		renderImage(this.files[0]);
+		renderImage(this.files[0], "change");
 	};
 
 	id("i_blur").onchange = function() {
