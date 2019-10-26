@@ -603,9 +603,14 @@ id("interface").onmouseup = function(e) {
 	var parent = e.target;
 	while (parent !== null) {
 
-		//console.log(parent);
 		parent = parent.parentElement;
 		if (parent && parent.id === "linkblocks") return false;
+	}
+
+	//close edit container on interface click
+	if (id("edit_linkContainer").getAttribute("class") === "shown") {
+		attr(id("edit_linkContainer"), "");
+		id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
 	}
 
 	if (id("settings") && id("settings").getAttribute("class") === "shown") {

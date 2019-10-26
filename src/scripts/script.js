@@ -139,8 +139,6 @@ function greetings() {
 	id("greetings").innerText = message;
 }
 
-
-
 function quickLinks(event, that) {
 
 	//only on init
