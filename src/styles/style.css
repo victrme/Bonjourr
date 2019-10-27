@@ -328,8 +328,7 @@ body {
   transition: all .2s; }
   #credit a {
     color: #fff9;
-    text-decoration: none;
-    font-size: .8em; }
+    text-decoration: none; }
     #credit a:hover {
       color: #fffe;
       transition: all .1s; }
