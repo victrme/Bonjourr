@@ -3,6 +3,7 @@ var stillActive = false;
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
 attr = (that, val) => that.setAttribute("class", val);
+has = (that, val) => id(that) && id(that).getAttribute("class", val) ? true : false;
 
 //cache rapidement temp max pour eviter que ça saccade
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
@@ -147,6 +148,9 @@ function quickLinks(event, that) {
 		let stillActive = false;
 	}
 
+	//enleve les selections d'edit
+	const removeLinkSelection = x => (id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")}));
+
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
 	function initblocks() {
@@ -236,7 +240,6 @@ function quickLinks(event, that) {
 
 		elem.ondragend = function(e) {
 			e.preventDefault();
-
 			handleDrag("end", this)
 		}
 
@@ -251,62 +254,51 @@ function quickLinks(event, that) {
 		}
 	}
 
-	//enleve les selections d'edit
-	const removeLinkSelection = x => (id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")}));
+	function editEvents() {
+		id("e_delete").onclick = function() {
+			removeLinkSelection();
+			removeblock(parseInt(id("edit_link").getAttribute("index")));
+			attr(id("edit_linkContainer"), "");
+		}
 
+		id("e_submit").onclick = function() {
+			removeLinkSelection();
+			editlink(null, parseInt(id("edit_link").getAttribute("index")))
+			attr(id("edit_linkContainer"), "");
+		}
 
-	id("e_delete").onclick = function() {
-		removeLinkSelection();
-		removeblock(parseInt(id("edit_link").getAttribute("index")));
-		attr(id("edit_linkContainer"), "");
+		id("e_close").onmouseup = function() {
+			removeLinkSelection();
+			attr(id("edit_linkContainer"), "");
+		}
+
+		id("re_title").onmouseup = function() {
+			id("e_title").value = "";
+		}
+
+		id("re_url").onmouseup = function() {
+			id("e_url").value = "";
+		}
+
+		id("re_iconurl").onmouseup = function() {
+			id("e_iconurl").value = "";
+		}
+
+		//id("e_iconfile").onchange = function(e) {
+			//plus tard
+		//};
 	}
 
-	id("e_submit").onclick = function() {
-		removeLinkSelection();
-		editlink(null, parseInt(id("edit_link").getAttribute("index")))
-		attr(id("edit_linkContainer"), "");
-	}
-
-	id("e_close").onmouseup = function() {
-		removeLinkSelection();
-		attr(id("edit_linkContainer"), "");
-	}
-
-	id("re_title").onmouseup = function() {
-		id("e_title").value = "";
-	}
-
-	id("re_url").onmouseup = function() {
-		id("e_url").value = "";
-	}
-
-	id("re_iconurl").onmouseup = function() {
-		id("e_iconurl").value = "";
-	}
-
-	id("e_iconfile").onchange = function(e) {
-
-		renderImage(this.files[0], "edit");
-	};
-
-
-
-	function editlink(that, i) {
+	function editlink(that, i, customIcon) {
 
 		function controlIcon(old) {
 			let iconurl = id("e_iconurl");
 			let iconfile = id("e_iconfile");
 
-			if (iconurl.value !== "") {
+			if (iconurl.value !== "")
 				return iconurl.value;
-			}
-			else if (iconfile.value !== "") {
-				//sauvegarder le blob du file somewhere
+			else
 				return old;
-			}
-			else {
-				return old;
-			}
 		}
 
 		function updateLinkHTML(newElem) {
@@ -340,7 +332,14 @@ function quickLinks(event, that) {
 
 			attr(liconwrap, "l_icon_wrap selected");
 
-			attr(id("edit_linkContainer"), "shown");
+
+			if (has("settings", "shown"))
+				attr(id("edit_linkContainer"), "shown pushed");
+			else
+				attr(id("edit_linkContainer"), "shown");
+
+
+
 			id("edit_link").setAttribute("index", index);
 
 			chrome.storage.sync.get("links", (data) => {
@@ -640,6 +639,7 @@ function quickLinks(event, that) {
 	}
 	else {
 		initblocks();
+		editEvents();
 	}
 }
 
@@ -1195,16 +1195,6 @@ function renderImage(file, is) {
 			chrome.storage.sync.set({"background_type": "custom"});
 
 		}
-		else if (is === "edit") {
-
-			chrome.storage.local.set({"icon_blob": blobArray[0]}); //reste local !!!!
-			chrome.storage.sync.set({"icon_image": blobArray[1]});
-
-			//set icon
-			let index = parseInt(id("edit_link").getAttribute("index"));
-			cl("block_parent")[index].querySelector("img").src = blobArray[1];
-		}
-		
 	}
 
 	reader.readAsDataURL(file);

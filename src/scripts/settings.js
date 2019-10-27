@@ -1,6 +1,5 @@
 function darkmode(choix) {
 
-	
 	function isIOSwallpaper(dark) {
 
 		//défini les parametres a changer en fonction du theme
@@ -31,7 +30,6 @@ function darkmode(choix) {
 		}
 	}
 
-	
 	function applyDark(add, system) {
 
 		if (add) {
@@ -53,7 +51,6 @@ function darkmode(choix) {
 		}
 	}
 
-	
 	function auto(weather) {
 
 		chrome.storage.sync.get("weather", (data) => {
@@ -74,7 +71,6 @@ function darkmode(choix) {
 			}
 		});
 	}
-
 	
 	function initDarkMode() {
 
@@ -100,7 +96,6 @@ function darkmode(choix) {
 		});		
 	}
 
-	
 	function changeDarkMode() {
 
 		if (choix === "enable") {
@@ -577,22 +572,19 @@ id("showSettings").onmouseup = function() {
 	let edit = id("edit_linkContainer");
 	let editClass = edit.getAttribute("class");
 
-	if (id("settings")) {
+	if (has("settings", "shown")) {
+		attr(that.children[0], "");
+		attr(id("settings"), "");
+		attr(id("interface"), "");
 
-		if (id("settings").getAttribute("class") === "shown") {
-			attr(that.children[0], "");
-			attr(id("settings"), "");
-			attr(id("interface"), "");
-
-			if (editClass === "shown pushed") attr(edit, "shown");
-			
-		} else {
-			attr(that.children[0], "shown");
-			attr(id("settings"), "shown");
-			attr(id("interface"), "pushed");
-			
-			if (editClass === "shown") attr(edit, "shown pushed");
-		}
+		if (editClass === "shown pushed") attr(edit, "shown");
+		
+	} else {
+		attr(that.children[0], "shown");
+		attr(id("settings"), "shown");
+		attr(id("interface"), "pushed");
+		
+		if (editClass === "shown") attr(edit, "shown pushed");
 	}
 }
 
@@ -608,12 +600,12 @@ id("interface").onmouseup = function(e) {
 	}
 
 	//close edit container on interface click
-	if (id("edit_linkContainer").getAttribute("class") === "shown") {
+	if (has("edit_linkContainer", "shown")) {
 		attr(id("edit_linkContainer"), "");
 		id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
 	}
 
-	if (id("settings") && id("settings").getAttribute("class") === "shown") {
+	if (has("settings", "shown")) {
 
 		attr(id("showSettings").children[0], "");
 		attr(id("settings"), "");
