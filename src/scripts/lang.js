@@ -130,7 +130,7 @@ function askfordict() {
       pl: "Rodzaj tła",
       pt_BR: "Tipo de background",
       ru: "Background type",
-      zh_CN: "Background type",
+      zh_CN: "背景类型",
       sk: "Pozadie",
       de: "Hintergrund Typ",
       it: "Tipo di sfondo"
@@ -142,7 +142,7 @@ function askfordict() {
       pl: "Domyślne",
       pt_BR: "Padrão",
       ru: "Default",
-      zh_CN: "Default",
+      zh_CN: "默认",
       sk: "Default",
       de: "Standard",
       it: "Default"
@@ -154,7 +154,7 @@ function askfordict() {
       pl: "Dynamiczne",
       pt_BR: "Dinâmico",
       ru: "Dynamic",
-      zh_CN: "Dynamic",
+      zh_CN: "动态",
       sk: "Dynamic",
       de: "Dynamisch",
       it: "Dinamico"
@@ -166,7 +166,7 @@ function askfordict() {
       pl: "Użytkownika",
       pt_BR: "Personalizado",
       ru: "Custom",
-      zh_CN: "Custom",
+      zh_CN: "自定义",
       sk: "Custom",
       de: "Benutzerdefiniert",
       it: "Personalizzato"
@@ -178,7 +178,7 @@ function askfordict() {
       pl: "Częstotliwość",
       pt_BR: "Frequencia",
       ru: "Frequency",
-      zh_CN: "Frequency",
+      zh_CN: "背景切换频率",
       sk: "Frequency",
       de: "Häufigkeit",
       it: "Frequenza"
@@ -190,7 +190,7 @@ function askfordict() {
       pl: "Co zakładkę",
       pt_BR: "A cada aba",
       ru: "Every tab",
-      zh_CN: "Every tab",
+      zh_CN: "每次新建标签页",
       sk: "Every tab",
       de: "Jedes Tab",
       it: "Ogni scheda"
@@ -202,7 +202,7 @@ function askfordict() {
       pl: "Co godzinę",
       pt_BR: "A cada hora",
       ru: "Every hour",
-      zh_CN: "Every hour",
+      zh_CN: "每小时",
       sk: "Every hour",
       de: "Jede Stunde",
       it: "Ogni ora"
@@ -214,7 +214,7 @@ function askfordict() {
       pl: "Codziennie",
       pt_BR: "A cada dia",
       ru: "Every day",
-      zh_CN: "Every day",
+      zh_CN: "每天",
       sk: "Every day",
       de: "Jeden Tag",
       it: "Ogni giorno"
@@ -226,7 +226,7 @@ function askfordict() {
       pl: "Pauza",
       pt_BR: "Parar",
       ru: "Pause",
-      zh_CN: "Pause",
+      zh_CN: "不切换",
       sk: "Pause",
       de: "Pause",
       it: "Pausa"
@@ -238,7 +238,7 @@ function askfordict() {
       pl: "Tryb wydajny",
       pt_BR: "Modo de performance",
       ru: "Performance mode",
-      zh_CN: "Performance mode",
+      zh_CN: "性能模式",
       sk: "Performance mode",
       de: "Leistungsmodus",
       it: "Performance mode"
@@ -262,7 +262,7 @@ function askfordict() {
       pl: "Jasność",
       pt_BR: "Brilho",
       ru: "Brightness",
-      zh_CN: "Brightness",
+      zh_CN: "亮度",
       sk: "Brightness",
       de: "Helligkeit",
       it: "Luminosità"
@@ -514,7 +514,7 @@ function askfordict() {
       pl: "Ogólne",
       pt_BR: "Geral",
       ru: "General",
-      zh_CN: "General",
+      zh_CN: "通用",
       sk: "General",
       de: "Allgemein",
       it: "Generale"
@@ -550,7 +550,7 @@ function askfordict() {
       pl: "Import",
       pt_BR: "Importar",
       ru: "Import",
-      zh_CN: "Import",
+      zh_CN: "导入设置",
       sk: "Import",
       de: "Import",
       it: "Importare"
@@ -562,7 +562,7 @@ function askfordict() {
       pl: "Eksport",
       pt_BR: "Exportar",
       ru: "Export",
-      zh_CN: "Export",
+      zh_CN: "导出设置",
       sk: "Export",
       de: "Export",
       it: "Esportare"
@@ -574,7 +574,7 @@ function askfordict() {
       pl: "Skopiowano",
       pt_BR: "Copiados",
       ru: "Copied",
-      zh_CN: "Copied",
+      zh_CN: "已复制",
       sk: "Copied",
       de: "Copied",
       it: "Copiato"
@@ -586,7 +586,7 @@ function askfordict() {
       pl: "Przywróć ustawienia domyślne",
       pt_BR: "Restaurar configurações",
       ru: "Reset settings",
-      zh_CN: "Reset settings",
+      zh_CN: "还原设置",
       sk: "Reset settings",
       de: "Reset settings",
       it: "Impostazioni iniziali"
@@ -598,7 +598,7 @@ function askfordict() {
       pl: "Czy jesteś pewien ?",
       pt_BR: "Você tem certeza?",
       ru: "Are you sure ?",
-      zh_CN: "Are you sure ?",
+      zh_CN: "确定还原设置吗?",
       sk: "Are you sure ?",
       de: "Are you sure ?",
       it: "Sei sicuro ?"
@@ -670,7 +670,7 @@ function askfordict() {
       pl: "Rozważ",
       pt_BR: "Considere",
       ru: "Consider",
-      zh_CN: "Consider",
+      zh_CN: "您可以考虑",
       sk: "Consider",
       de: "Consider",
       it: "Considera di"
@@ -682,7 +682,7 @@ function askfordict() {
       pl: "przekazanie darowizny",
       pt_BR: "doar",
       ru: "donating",
-      zh_CN: "donating",
+      zh_CN: "向我们捐款",
       sk: "donating",
       de: "donating",
       it: "fare una donazione"
@@ -694,7 +694,7 @@ function askfordict() {
       pl: "jeśli kochasz Bonjourr",
       pt_BR: "se você ama o Bonjourr",
       ru: "if you love Bonjourr",
-      zh_CN: "if you love Bonjourr",
+      zh_CN: "来支持 Bonjourr",
       sk: "if you love Bonjourr",
       de: "if you love Bonjourr",
       it: "se ami Bonjourr"
