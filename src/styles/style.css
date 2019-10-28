@@ -39,7 +39,6 @@ body {
     margin-right: -1.3em;
     display: block; }
   body select {
-    padding: .5em;
     cursor: pointer; }
   body input, body textarea, body select, body a, body button {
     outline: none; }
@@ -205,7 +204,7 @@ body {
         background: white;
         border: .2em solid white;
         cursor: pointer;
-        transition: border-color .1s, filter .1s }
+        transition: border-color .1s, filter .1s; }
         #interface .linkblocks .block_parent .block .l_icon_wrap .l_icon {
           width: 100%; }
         #interface .linkblocks .block_parent .block .l_icon_wrap:hover {

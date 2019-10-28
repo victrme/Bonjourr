@@ -9,6 +9,7 @@
 // Italian translation by Trazalca · github.com/Trazalca
 
 // base
+// "": {
 // fr: "",
 // sv: "",
 // nl: "",
@@ -19,6 +20,7 @@
 // sk: "",
 // de: "",
 // it: "",
+// },
 
 function askfordict() {
   return {
@@ -231,18 +233,6 @@ function askfordict() {
       de: "Pause",
       it: "Pausa"
     },
-    "Performance mode": {
-      fr: "Mode Performance",
-      sv: "Performance mode",
-      nl: "Performance mode",
-      pl: "Tryb wydajny",
-      pt_BR: "Modo de performance",
-      ru: "Performance mode",
-      zh_CN: "性能模式",
-      sk: "Performance mode",
-      de: "Leistungsmodus",
-      it: "Performance mode"
-    },
     "Blur intensity": {
       fr: "Intensité du flou",
       sv: "Oskärpans intensitet",
@@ -326,6 +316,18 @@ function askfordict() {
       sk: "Vypnuté",
       de: "Deaktiviert",
       it: "Disabilitato"
+    },
+    "Upload background here": {
+      fr: "Insérez votre arrière-plan",
+      sv: "",
+      nl: "",
+      pl: "",
+      pt_BR: "",
+      ru: "",
+      zh_CN: "",
+      sk: "",
+      de: "",
+      it: "",
     },
     "WEATHER": {
       fr: "Météo",
@@ -543,6 +545,18 @@ function askfordict() {
       de: "Sprache",
       it: "Lingua"
     },
+    "SETTINGS MANAGEMENT": {
+      fr: "GESTION DES RÉGLAGES"
+      // sv: "",
+      // nl: "",
+      // pl: "",
+      // pt_BR: "",
+      // ru: "",
+      // zh_CN: "",
+      // sk: "",
+      // de: "",
+      // it: "",
+    },
     "Import": {
       fr: "Importer",
       sv: "Import",
@@ -701,6 +715,46 @@ function askfordict() {
     },
 
     //settings
+
+    // edit links
+
+    "Cancel": {
+      fr: "Annuler"
+      // sv: "",
+      // nl: "",
+      // pl: "",
+      // pt_BR: "",
+      // ru: "",
+      // zh_CN: "",
+      // sk: "",
+      // de: "",
+      // it: "",
+    },
+    "Delete Quick Link": {
+      fr: "Supprimer"
+      // sv: "",
+      // nl: "",
+      // pl: "",
+      // pt_BR: "",
+      // ru: "",
+      // zh_CN: "",
+      // sk: "",
+      // de: "",
+      // it: "",
+    },
+    "Apply changes": {
+      fr: "Appliquer"
+      // sv: "",
+      // nl: "",
+      // pl: "",
+      // pt_BR: "",
+      // ru: "",
+      // zh_CN: "",
+      // sk: "",
+      // de: "",
+      // it: "",
+    },
+
 
     //interface
 

@@ -138,28 +138,24 @@
 
 
 #edit_link .empty_input {
+	width: 1em;
+	height: 1em;
 	position: absolute;
-    top: 1em;
-    right: .8em;
-	width: 1.2em;
-	height: 1.2em;
+	top: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	right: .4em;
+	
 	padding: 0;
 	border: none;
-	border-radius: 100%;
-	background: #bbb;
 	cursor: pointer;
 	transition: background .1s;
 }
 
-#edit_link .empty_input:focus {
-	background: #999;
-	transition: background .1s;
-}
-
-#edit_link .empty_input img {
-	width: .6em;
-	height: .6em;
-	filter: brightness(2);
+#edit_link .empty_input:active {
+	filter: brightness(.75);
+	transition: all .1s;
 }
 
 #edit_link .empty_input.hidden {
@@ -167,9 +163,6 @@
 	opacity: 0;
 	transition: opacity .1s;
 }
-
-
-
 
 
 
