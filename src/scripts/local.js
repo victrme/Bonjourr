@@ -240,6 +240,18 @@ function quickLinks(event, that) {
 			}
 		}
 
+		let img = elem.querySelector("img");
+
+		img.oncontextmenu = function(e) {
+			e.preventDefault();
+			editlink(elem);
+			return false
+		}
+		img.onmousedown = function(e) {
+			e.preventDefault();
+			return false
+		}
+
 		elem.ondragstart = function(e) {
 			//e.preventDefault();
 			e.dataTransfer.setData("text/plain", e.target.id);
