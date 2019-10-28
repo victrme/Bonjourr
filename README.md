@@ -27,7 +27,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 
 - [x] Faster dynamic backgrounds with credits and locations
 - [ ] Bonjourr calls you by your name
-- [ ] Rearrangeable quick links
+- [x] Rearrangeable quick links
 - [ ] Motivational quotes
 - [ ] Mobile web app
 
@@ -54,6 +54,12 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 * **Italian translation**  · Trazalca · [GitHub](https://github.com/Trazalca)
 
 ## Changelogs
+
+
+**v1.8.0**
+- Rearrangeable Quick Links
+- Quick Links editing menu
+- Italian translation 
 
 **v1.7.2**
 
