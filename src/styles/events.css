@@ -204,10 +204,10 @@ body.autodark #edit_linkContainer #edit_link input[type="url"]:focus {
 
 body.dark #edit_link .empty_input,
 body.autodark #edit_link .empty_input {
-	background-color: #2c2c2e;
+	filter: brightness(.7);
 }
 
-body.dark #edit_link .empty_input:focus,
-body.autodark #edit_link .empty_input:focus {
-	background-color: #222227;
+body.dark #edit_link .empty_input:active,
+body.autodark #edit_link .empty_input:active {
+	filter: brightness(.6);
 }
