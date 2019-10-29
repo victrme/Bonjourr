@@ -111,7 +111,7 @@ function askfordict() {
       ru: "Open in new tab by default",
       sk: "Predvolene otvoriť v novej karte",
       de: "Standardmäßig in einem neuen Tab öffnen",
-      it: "Aprire in una nuova scheda per default"
+      it: "Apri in una nuova scheda come impostazione predefinita"
     },
     "VISUALS": {
       fr: "Affichage",
@@ -147,7 +147,7 @@ function askfordict() {
       zh_CN: "默认",
       sk: "Default",
       de: "Standard",
-      it: "Default"
+      it: "Predefinito"
     },
     "Dynamic": {
       fr: "Dynamique",
@@ -555,7 +555,7 @@ function askfordict() {
       zh_CN: "SETTINGS MANAGEMENT",
       sk: "SETTINGS MANAGEMENT",
       de: "SETTINGS MANAGEMENT",
-      it: "SETTINGS MANAGEMENT",
+      it: "GESTIONE DELLE IMPOSTAZIONI",
     },
     "Import": {
       fr: "Importer",
@@ -728,7 +728,7 @@ function askfordict() {
       zh_CN: "Cancel",
       sk: "Cancel",
       de: "Cancel",
-      it: "Cancel",
+      it: "Annulla",
     },
     "Delete Quick Link": {
       fr: "Supprimer",
@@ -740,7 +740,7 @@ function askfordict() {
       zh_CN: "Delete Quick Link",
       sk: "Delete Quick Link",
       de: "Delete Quick Link",
-      it: "Delete Quick Link",
+      it: "Elimina",
     },
     "Apply changes": {
       fr: "Appliquer",
@@ -752,7 +752,7 @@ function askfordict() {
       zh_CN: "Apply changes",
       sk: "Apply changes",
       de: "Apply changes",
-      it: "Apply changes",
+      it: "Applica modifiche",
     },
 
 
@@ -1020,7 +1020,7 @@ function askfordict() {
       zh_CN: "晚上好",
       sk: "Dobrý večer",
       de: "Guten Abend",
-      it: "Buona sera"
+      it: "Buonasera"
     },
     "Good Night": {
       fr: "Bonne nuit",
@@ -1032,7 +1032,7 @@ function askfordict() {
       zh_CN: "晚安",
       sk: "Dobrú noc",
       de: "Gute Nacht",
-      it: "Buona notte"
+      it: "Buonanotte"
     },
     "It is currently": {
       fr: "Il fait actuellement",

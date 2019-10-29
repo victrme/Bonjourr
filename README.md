@@ -12,7 +12,7 @@ While this startpage is minimal and beautiful, it is also thought out to be prac
 * Dark mode
 * And more...
 
-Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Brazil), Russian and Chinese.
+Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Brazil), Italian, Russian and Chinese.
 
 ## Install
 
