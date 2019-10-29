@@ -735,7 +735,7 @@ function askfordict() {
       sv: "Delete Quick Link",
       nl: "Delete Quick Link",
       pl: "Delete Quick Link",
-      pt_BR: "Deletar Quick Link",
+      pt_BR: "Deletar Links Rápidos",
       ru: "Delete Quick Link",
       zh_CN: "Delete Quick Link",
       sk: "Delete Quick Link",
