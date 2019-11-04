@@ -177,9 +177,21 @@ function settingsEvents() {
 		searchbar("engine", this)
 	}
 
+
+
+
 	//general
+	id("i_usdate").onchange = function() {
+		localStorage.usdate = (this.checked ? true : false);
+		date();
+	}
+
 	id("i_ampm").onchange = function() {
-		clock(this)
+		clock(this, "clock format")
+	}
+
+	id("i_timezone").onchange = function() {
+		clock(this, "timezone")
 	}
 
 	id("i_lang").onchange = function() {

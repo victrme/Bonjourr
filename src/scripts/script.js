@@ -67,22 +67,57 @@ function tradThis(str) {
 	return (lang === "en" ? str : dict[str][localStorage.lang])
 }
 
-function clock(that) {
+function clock(that, is) {
 
 	//pour gerer timezone
 	//prendre le timezone du weather
 	//le diviser par 60 * 60
 	//rajouter le résultat à l'heure actuelle
 
-	var format;
+	let format, timezone;
 
 	function start() {
 
-		fixSmallMinutes = min => (min < 10 ? "0" + min : min);
+		function fixSmallMinutes(min) {
 
-		is12hours = hour => (hour > 12 ? hour -= 12 : (hour === 0 ? hour = 12 : hour));
+			min = min < 10 ? "0" + min : min;
+			return min
+		}
 
-		let h = new Date().getHours();
+		function timezoneControl(tz, hour) {
+
+			if (tz === "auto" || !tz) {
+
+				return hour
+
+			} else {
+
+				let d = new Date;
+				let offset = d.getTimezoneOffset();
+				let utc = hour + (offset / 60);
+				let setTime = (utc + parseInt(tz)) % 24;
+
+				console.log("Without offset: ", utc);
+				console.log("With offset: ", setTime);
+
+				return setTime;
+			}
+		}
+
+		function is12hours(hour) {
+
+			if (hour > 12)
+				hour -= 12;
+			else
+				if (hour === 0)
+					hour = 12;
+				else
+					hour;
+
+			return hour
+		}
+		
+		let h = timezoneControl(timezone, new Date().getHours());
 		let m = fixSmallMinutes(new Date().getMinutes());
 
 		if (format === 12) h = is12hours(h);
@@ -92,22 +127,34 @@ function clock(that) {
 		sessionStorage.timesup = setTimeout(start, 5000);
 	}
 
-	function change(twelve) {
+	function change(that) {
 
 		clearTimeout(sessionStorage.timesup);
 
-		format = (twelve ? 12 : 24);
+		if (is === "clock format") {
 
-		start();
+			format = (that.checked ? 12 : 24);
 
-		//enregistre partout suivant le format
-		chrome.storage.sync.set({"clockformat": format});
-		localStorage.clockformat = format;
+			//enregistre partout suivant le format
+			chrome.storage.sync.set({"clockformat": format});
+			localStorage.clockformat = format;
+
+		} else {
+
+			timezone = that.value;
+
+			//enregistre partout suivant le timezone
+			chrome.storage.sync.set({"timezone": timezone});
+			localStorage.timezone = timezone;
+		}
+
+		start();	
 	}
 
-	if (that) change(that.checked);
+	if (that) change(that);
 	else {
-		format = parseInt(localStorage.clockformat);
+		format = parseInt(localStorage.clockformat) || 24;
+		timezone = parseInt(localStorage.timezone) || "auto";
 		start();
 	}
 }
@@ -117,10 +164,19 @@ function date() {
 	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
-	id("jour").innerText = tradThis(days[date.getDay()]);
-	id("chiffre").innerText = date.getDate();
-	id("mois").innerText = tradThis(months[date.getMonth()]);
+
+	if (localStorage.usdate === "true") {
+
+		id("jour").innerText = tradThis(days[date.getDay()]) + ",";
+		id("chiffre").innerText = tradThis(months[date.getMonth()]);
+		id("mois").innerText = date.getDate();
+
+	} else {
+
+		id("jour").innerText = tradThis(days[date.getDay()]);
+		id("chiffre").innerText = date.getDate();
+		id("mois").innerText = tradThis(months[date.getMonth()]);
+	}
 }
 	
 function greetings() {
