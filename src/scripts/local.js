@@ -21,7 +21,9 @@ function storage(cat, val) {
 
 		if (val || val === 0) {
 
-			data[cat] = val;
+			if (cat === "import") data = val;
+			else data[cat] = val;
+			
 			localStorage.data = JSON.stringify(data);
 
 		} else return data[cat];
@@ -617,25 +619,22 @@ function quickLinks(event, that) {
 
 		if (data.linknewtab) {
 
-			chrome.tabs.create({
-				url: source
-			});
+			id("hiddenlink").setAttribute("target", "_blank");
 
 		} else {
 
 			if (e.which === 2) {
 
-				chrome.tabs.create({
-					url: source
-				});
+				id("hiddenlink").setAttribute("target", "_blank");
 
 			} else {
-
-				id("hiddenlink").setAttribute("href", source);
+				
 				id("hiddenlink").setAttribute("target", "_self");
-				id("hiddenlink").click();
 			}
 		}
+
+		id("hiddenlink").setAttribute("href", source);
+		id("hiddenlink").click();
 	}
 
 	if (event === "input") {
@@ -1105,10 +1104,8 @@ function initBackground() {
 
 
 	if (data.background_type === "custom") {
-		//reste local !!!!
-		chrome.storage.local.get("background_blob", (data) => {
-			imgBackground(setblob(data.background_blob));
-		});
+		
+		imgBackground(setblob(localStorage.background_blob));
 		imgCredits(null, type);
 	}
 	else if (data.background_type === "dynamic") {
@@ -1624,7 +1621,7 @@ function defaultBg() {
 
 			if (bgTimeout) clearTimeout(bgTimeout);
 
-			let src = "/src/images/backgrounds/" + that.getAttribute("source");
+			let src = "src/images/backgrounds/" + that.getAttribute("source");
 
 			bgTimeout = setTimeout(function() {
 
@@ -1640,7 +1637,7 @@ function defaultBg() {
 
 		} else if (state === "mouseup") {
 
-			var src = "/src/images/backgrounds/" + that.getAttribute("source");
+			var src = "src/images/backgrounds/" + that.getAttribute("source");
 
 		    imgBackground(src);
 		    imgCredits(src, "default");
@@ -1966,8 +1963,7 @@ function importExport(select, isEvent) {
 
 				try {
 
-					data = JSON.parse(val);
-					chrome.storage.sync.set(data);
+					storage("import", JSON.parse(val));
 					setTimeout(function() {
 						location.reload();
 					}, 20);
