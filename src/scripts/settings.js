@@ -182,7 +182,11 @@ function settingsEvents() {
 
 	//general
 	id("i_usdate").onchange = function() {
-		localStorage.usdate = (this.checked ? true : false);
+
+		let rep = (this.checked ? true : false);
+
+		localStorage.usdate = rep;
+		chrome.storage.sync.set({"usdate": rep});
 		date();
 	}
 
@@ -323,6 +327,14 @@ function actualizeStartupOptions() {
 
 
 
+		//US Date
+		if (data.usdate) {
+			id("i_usdate").checked = true;
+		} else {
+			id("i_usdate").checked = false;
+		}
+
+
 		//clock
 		if (data.clockformat === 12) {
 			id("i_ampm").checked = true;
@@ -330,7 +342,15 @@ function actualizeStartupOptions() {
 		} else {
 			id("i_ampm").checked = false;
 		}
-			
+
+
+		//timezone
+		if (data.timezone) {
+			id("i_timezone").value = data.timezone;
+		} else {
+			id("i_timezone").value = "auto";
+		}
+
 
 		//langue
 		id("i_lang").value = localStorage.lang || "en";
