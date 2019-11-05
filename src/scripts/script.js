@@ -148,11 +148,11 @@ function clock(that, is) {
 			localStorage.timezone = timezone;
 		}
 
-		start();	
+		start();
 	}
 
 	format = parseInt(localStorage.clockformat) || 24;
-	timezone = parseInt(localStorage.timezone);
+	timezone = (localStorage.timezone === "auto" ? localStorage.timezone : parseInt(localStorage.timezone));
 
 	if (that) change(that);
 	else start();
