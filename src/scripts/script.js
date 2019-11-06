@@ -305,7 +305,7 @@ function quickLinks(event, that) {
 		elem.onmouseup = function(e) {
 
 			removeLinkSelection();
-			(e.which === 3 ? editlink(this) : openlink(this, e));
+			(e.which === 3 ? editlink(this) : (!has("settings", "shown") ? openlink(this, e) : ""));
 		}
 	}
 
