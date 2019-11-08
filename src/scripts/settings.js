@@ -231,125 +231,74 @@ function settingsEvents() {
 	}
 }
 
-function actualizeStartupOptions() {
-
-	let store = ["dynamic_freq", "background_type", "background_blur", "background_bright", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
+function initParams() {
 
 	chrome.storage.sync.get(null, (data) => {
 
-		//open in new tab
-		id("i_linknewtab").checked = (data.linknewtab ? true : false);
+		initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base));
+		initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
+		isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
 
-		//default background
-		var imgs = cl("imgpreview");
-		var bgURL = id("background").style.backgroundImage;
-		var previewURL = "";	
-
-		for (var i = 0; i < imgs.length; i++) {
+		initInput("i_type", data.background_type, "default");
+		initInput("i_blur", data.background_blur, 25);
+		initInput("i_bright", data.background_bright, 1);
+		initInput("i_dark", data.dark, "disable");
+		initInput("i_sbengine", data.searchbar_engine, "s_startpage");
+		initInput("i_timezone", data.timezone, "auto");
+		initInput("i_freq", isThereData("dynamic", "every"), "hour");
+		initInput("i_ccode", isThereData("weather", "ccode"), "US");
 			
-			previewURL = imgs[i].children[0].getAttribute("src");
+		initCheckbox("i_geol", isThereData("weather", "location"));
+		initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"));
+		initCheckbox("i_linknewtab", data.linknewtab);
+		initCheckbox("i_sb", data.searchbar);
+		initCheckbox("i_usdate", data.usdate);
+		initCheckbox("i_ampm", (data.clockformat === 12));
 
-			if (bgURL.includes(previewURL)) {
-				imgs[i].setAttribute("class", "imgpreview selected");
-			}
-		}
-
+		
+		//bg
 		if (data.background_type !== undefined) {
-			id("i_type").value = data.background_type;
+
 			id(data.background_type).style.display = "block";
+
+			if (data.background_type === "default") {
+
+				for (let e of cl("imgpreview")) {
+					if (data.background_image.includes(e.getAttribute("source"))) {
+						attr(e, "imgpreview selected")
+					}
+				}
+			}
+
 		} else {
-			id("i_type").value = "default";
 			id("default").style.display = "block";
 		}
 
-		id("i_freq").value = (data.dynamic ? (data.dynamic.every ? data.dynamic.every : "hour") : "hour");
 
-		//blur
-		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
+		if (data.weather) {
 
-
-		//brightness
-		id("i_bright").value = (data.background_bright !== undefined ? data.background_bright : 1);
+			let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
+			id("i_city").setAttribute("placeholder", cityPlaceholder);
 
 
-		//dark mode input
-		id("i_dark").value = (data.dark ? data.dark : "disable");
+			if (data.weather.location) id("sett_city").setAttribute("class", "city hidden");
+		}
 		
 
-		//weather city input
-		if (data.weather && data.weather.city) {
-			id("i_city").setAttribute("placeholder", data.weather.city);
-		} else {
-			id("i_city").setAttribute("placeholder", "City");
-		}
-
-
-		if (data.weather && data.weather.ccode) {
-			id("i_ccode").value = data.weather.ccode;
-		} else {
-			id("i_ccode").value = "US";
-		}
-
-		//check geolocalisation
-		//enleve city
-		if (data.weather && data.weather.location) {
-
-			id("i_geol").checked = true;
-			id("sett_city").setAttribute("class", "city hidden");
-
-		} else {
-
-			id("i_geol").checked = false;
-		}
-
-		//check imperial
-		if (data.weather && data.weather.unit === "imperial") {
-			id("i_units").checked = true;
-		} else {
-			id("i_units").checked = false;
-		}
-
 		
-		//searchbar switch et select
+		//searchbar display settings 
 		if (data.searchbar) {
-			id("i_sb").checked = true;
 			id("choose_searchengine").setAttribute("class", "shown");
 			setTimeout(() => {
 		    	id("searchbar").focus();
 		    }, 100);
 		} else {
-			id("i_sb").checked = false;
 			id("choose_searchengine").setAttribute("class", "hidden");
-		}	
-		
-		//search engine
-		id("i_sbengine").value = (data.searchbar_engine ? data.searchbar_engine : "s_startpage");
-
-
-
-		//US Date
-		if (data.usdate) {
-			id("i_usdate").checked = true;
-		} else {
-			id("i_usdate").checked = false;
 		}
 
 
-		//clock
-		if (data.clockformat === 12) {
-			id("i_ampm").checked = true;
-			localStorage.clockformat = 12;
-		} else {
-			id("i_ampm").checked = false;
-		}
-
-
-		//timezone
-		if (data.timezone) {
-			id("i_timezone").value = data.timezone;
-		} else {
-			id("i_timezone").value = "auto";
-		}
+		//clock format localstorage control
+		if (data.clockformat === 12) localStorage.clockformat = 12;
 
 
 		//langue
@@ -434,7 +383,7 @@ function importExport(select, isEvent) {
 
 function settings() {
 	settingsEvents();
-	actualizeStartupOptions();
+	initParams();
 	signature();
 	defaultBg();
 	importExport("exp");
@@ -535,8 +484,8 @@ id("interface").onmouseup = function(e) {
 //autofocus
 document.onkeydown = function(e) {
 
-	let searchbar = (id("sb_container") ? id("sb_container").getAttribute("class") === "shown" : false);
-	let settings = (id("settings") ? (id("settings").getAttribute("class") === "shown") : false);
+	let searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
+	let settings = (id("settings") ? has("settings", "shown") : false);
 
 	if (searchbar && !settings) {
 

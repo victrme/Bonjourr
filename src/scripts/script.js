@@ -86,7 +86,7 @@ function clock(that, is) {
 
 		function timezoneControl(tz, hour) {
 
-			if (tz === "auto" || tz === undefined) {
+			if (tz === "auto" || tz === NaN) {
 
 				return hour
 
@@ -96,9 +96,6 @@ function clock(that, is) {
 				let offset = d.getTimezoneOffset();
 				let utc = hour + (offset / 60);
 				let setTime = (utc + parseInt(tz)) % 24;
-
-				/*console.log("Without offset: ", utc);
-				console.log("With offset: ", setTime);*/
 
 				return setTime;
 			}
@@ -152,7 +149,9 @@ function clock(that, is) {
 	}
 
 	format = parseInt(localStorage.clockformat) || 24;
-	timezone = (localStorage.timezone === "auto" ? localStorage.timezone : parseInt(localStorage.timezone));
+
+	let lstz = localStorage.timezone;
+	timezone = (lstz ? (lstz === "auto" ? "auto" : parseInt(lstz)) : "auto");
 
 	if (that) change(that);
 	else start();
