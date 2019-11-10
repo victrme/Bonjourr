@@ -254,6 +254,7 @@ function initParams() {
 		initCheckbox("i_sb", data.searchbar);
 		initCheckbox("i_usdate", data.usdate);
 		initCheckbox("i_ampm", (data.clockformat === 12));
+		initCheckbox("i_showicon", data.showIcon);
 
 		
 		//bg
@@ -289,9 +290,6 @@ function initParams() {
 		//searchbar display settings 
 		if (data.searchbar) {
 			id("choose_searchengine").setAttribute("class", "shown");
-			setTimeout(() => {
-		    	id("searchbar").focus();
-		    }, 100);
 		} else {
 			id("choose_searchengine").setAttribute("class", "hidden");
 		}
@@ -522,7 +520,7 @@ function checkifpro() {
 			i.style.display = "block";
 		}
 
-		function customCss() {
+		function customCss(data) {
 
 			const cssEditor = id("cssEditor");
 
@@ -552,6 +550,21 @@ function checkifpro() {
 			}*/
 		}
 
-		customCss();
+		function showIcon(data) {
+
+			if (data !== undefined && data === false) {
+				id("w_icon").style.display = "none";
+			}
+
+			id("i_showicon").onchange = function() {
+				id("w_icon").style.display = (this.checked ? "flex" : "none");
+				chrome.storage.sync.set({"showIcon": this.checked});
+			}
+		}
+
+		chrome.storage.sync.get(["customCss", "showIcon"], (data) => {
+			customCss(data.customCss);
+			showIcon(data.showIcon);
+		})
 	}
 }
