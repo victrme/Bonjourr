@@ -518,12 +518,6 @@ function checkifpro() {
 
 	function proFunctions() {
 
-		console.log("You unlocked the full potential of Bonjourr");
-
-		for (let i of cl("pro")) {
-			i.style.display = "block";
-		}
-
 		function customCss(data) {
 			
 			const cssEditor = id("cssEditor");
@@ -555,19 +549,63 @@ function checkifpro() {
 
 		function showIcon(data) {
 
-			if (data !== undefined && data === false) {
-				id("w_icon").style.display = "none";
+			function setDisplay (val) {
+				id("w_icon").style.display = val
 			}
 
+			if (data !== undefined && data === false) setDisplay(data);
+
 			id("i_showicon").onchange = function() {
-				id("w_icon").style.display = (this.checked ? "flex" : "none");
+				setDisplay(this.checked ? "flex" : "none");
 				chrome.storage.sync.set({"showIcon": this.checked});
 			}
+		}
+
+		function linksrow(data) {
+
+			function setRows(val) {
+
+				function getWidth(count) {
+
+					let width, margin, total = 0;
+					let blocks = cl("block_parent");
+
+					for (let i = 0; i < count; i++) {
+
+						width = parseInt(getComputedStyle(blocks[i]).width) +1;
+						margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
+
+						console.log(total)
+						
+						total += width + margin * 2;
+					}
+
+					return total
+				}
+
+				id("e_row").innerText = val;
+				id("linkblocks").style.width = getWidth(val) + "px";
+			}
+
+			if (data !== undefined) setRows(data);
+
+			id("i_row").onchange = function() {
+
+				setRows(this.value);
+				chrome.storage.sync.set({"linksrow": val});
+			}
+		}
+
+		for (let i of cl("pro")) {
+			i.style.display = "block";
 		}
 
 		chrome.storage.sync.get(["customCss", "showIcon"], (data) => {
 			customCss(data.customCss);
 			showIcon(data.showIcon);
-		})
+			linksrow(data.linksrow);
+		});
+
+		console.log("You unlocked the full potential of Bonjourr");
 	}
 }

@@ -193,7 +193,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    max-width: 900px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 2em;
     min-height: 8em; }
