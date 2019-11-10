@@ -141,11 +141,11 @@ function settingsEvents() {
 		renderImage(this.files[0], "change");
 	};
 
-	id("i_blur").onchange = function() {
+	id("i_blur").oninput = function() {
 		filter("blur", this.value);
 	};
 
-	id("i_bright").onchange = function() {
+	id("i_bright").oninput = function() {
 		filter("bright", this.value);
 	};
 
@@ -594,7 +594,7 @@ function checkifpro() {
 
 			if (data !== undefined) setRows(data);
 
-			id("i_row").onchange = function() {
+			id("i_row").oninput = function() {
 
 				setRows(this.value);
 				chrome.storage.sync.set({"linksrow": this.value});
