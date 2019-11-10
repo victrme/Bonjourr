@@ -387,6 +387,7 @@ function settings() {
 	signature();
 	defaultBg();
 	importExport("exp");
+	checkifpro();
 }
 
 function showSettings(e, that) {
@@ -490,5 +491,67 @@ document.onkeydown = function(e) {
 	if (searchbar && !settings) {
 
 		id("searchbar").focus();
+	}
+}
+
+
+
+
+function checkifpro() {
+
+	async function encode(message) {
+		const msgBuffer = new TextEncoder('utf-8').encode(message);
+		const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+		return hashHex;
+	}
+
+	encode(localStorage.login).then((a) => {
+		((a === atob("OGYyNGFjMDRkYjhlNDk5ZjQ2ZDM2NzJiNGZhZDYxM2VlYzY4MTlhYmVlYTU4YTdmNDlhYmIyMWRhOWM0ZjI5ZA==")) ?
+			proFunctions() :
+			console.log("You have the free version of Bonjourr"));
+	});
+
+
+	function proFunctions() {
+
+		console.log("You unlocked the full potential of Bonjourr");
+
+		for (let i of cl("pro")) {
+			i.style.display = "block";
+		}
+
+		function customCss() {
+
+			const cssEditor = id("cssEditor");
+
+			function addCss() {
+				css = cssEditor.value;
+				document.getElementById("styles").innerHTML = css;
+			}
+
+			addCss();
+			cssEditor.oninput = () => addCss();
+
+			// Active l'indentation (philipnewcomer.net)
+			/*cssEditor.onkeydown = function(e) {
+
+				if (e.keyCode === 9) {
+
+					let selectionStartPos = this.selectionStart;
+					let selectionEndPos   = this.selectionEnd;
+					let oldContent        = this.value;
+
+					this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
+
+					this.selectionStart = this.selectionEnd = selectionStartPos + 1;
+
+					e.preventDefault();
+				}
+			}*/
+		}
+
+		customCss();
 	}
 }

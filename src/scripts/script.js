@@ -1174,11 +1174,6 @@ function initBackground() {
 
 		} else {
 
-			//1.6 4k fix
-			if (image.includes("4k")) {
-				image = image.replace("4k/", "");
-			}
-
 			imgBackground(image)
 			imgCredits(image, type)
 		}
@@ -1430,20 +1425,23 @@ function remSelectedPreview() {
 
 function filter(cat, val) {
 
-	if (cat === "init") {
-		id('background').style.filter = `blur(${val[0]}px) brightness(${val[1]})`;
-	}
+	switch (cat) {
 
-	if (cat === "blur") {
-		let brightness = id("i_bright").value;
-		id('background').style.filter = `blur(${val}px) brightness(${brightness})`;
-		chrome.storage.sync.set({"background_blur": +val})
-	}
+		case "init":
+			id('background').style.filter = `blur(${val[0]}px) brightness(${val[1]})`;
+			break;
 
-	if (cat === "bright") {
-		let blur = id("i_blur").value;
-		id('background').style.filter = `blur(${blur}px) brightness(${val})`;
-		chrome.storage.sync.set({"background_bright": +val});
+		case "blur":
+			let brightness = id("i_bright").value;
+			id('background').style.filter = `blur(${val}px) brightness(${brightness})`;
+			chrome.storage.sync.set({"background_blur": +val});
+			break;
+
+		case "bright":
+			let blur = id("i_blur").value;
+			id('background').style.filter = `blur(${blur}px) brightness(${val})`;
+			chrome.storage.sync.set({"background_bright": +val});
+			break;
 	}
 }
 
@@ -1523,81 +1521,43 @@ function darkmode(choix) {
 			}
 		});
 	}
-
 	
-	function initDarkMode() {
+	function darkModeSwitch(val, isChange) {
 
-		chrome.storage.sync.get("dark", (data) => {
-
-			var dd = (data.dark ? data.dark : "disable");
-
-			if (dd === "enable") {
+		switch (val) {
+			case "enable":
 				applyDark(true);
-			}
+				if (isChange) chrome.storage.sync.set({"dark": "enable"});
+				break;
 
-			if (dd === "disable") {
-				applyDark(false);
-			}
-
-			if (dd === "auto") {
+			case "auto":
 				auto();
-			}
+				if (isChange) chrome.storage.sync.set({"dark": "auto"});
+				break;
 
-			if (dd === "system") {
+			case "system":
 				applyDark(true, true);
-			}
-		});		
-	}
+				if (isChange) chrome.storage.sync.set({"dark": "system"});
+				break;
 
-	
-	function changeDarkMode() {
-
-		if (choix === "enable") {
-			applyDark(true);
-			chrome.storage.sync.set({"dark": "enable"});
-		}
-
-		if (choix === "disable") {
-			applyDark(false);
-			chrome.storage.sync.set({"dark": "disable"});
-		}
-
-		if (choix === "auto") {
-
-			//prend l'heure et ajoute la classe si nuit
-			auto();
-			chrome.storage.sync.set({"dark": "auto"});
-		}
-
-		if (choix === "system") {
-			chrome.storage.sync.set({"dark": "system"});
-			applyDark(true, true);
+			default:
+				applyDark(false);
+				if (isChange) chrome.storage.sync.set({"dark": "disable"});
 		}
 	}
 
-	if (choix) {
-		changeDarkMode();
-	} else {
-		initDarkMode();
-	}
+	if (choix) darkModeSwitch(choix, true);
+	else {
+		chrome.storage.sync.get("dark", (data) => {
+			darkModeSwitch(data.dark);
+		});
+	}	
 }
 
 function searchbarFlexControl(activated, linkslength) {
 
-	if (linkslength > 0) {
-
-		if (activated)
-			attr(id("sb_container"), "shown");
-		else
-			attr(id("sb_container"), "removed");
-		
-	} else {
-
-		if (activated)
-			attr(id("sb_container"), "shown");
-		else
-			attr(id("sb_container"), "removed");
-	}
+	let state = (activated ? "shown" : "removed");
+	attr(id("sb_container"), state);
 }
 
 function searchbar(event, that) {
