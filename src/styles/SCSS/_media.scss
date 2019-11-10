@@ -1,8 +1,31 @@
-// dark mode
-body.dark {
-
+@mixin darkCss {
 	#interface {
 		color: #eee;
+	}
+
+	#edit_linkContainer {
+		#edit_link {
+			background-color: #1c1c1e;
+			color: white;
+
+			input[type="text"], input[type="url"] {
+				background-color: #39383d;
+				color: white;
+
+				&:focus {
+					background-color: #2c2c2f;
+    				color: white;
+				}
+			}
+
+			.empty_input {
+				filter: brightness(.7);
+
+				&:active {
+					filter: brightness(.6);
+				}
+			}
+		}
 	}
 
 	#settings {
@@ -86,97 +109,9 @@ body.dark {
 	}
 }
 
-// dark mode avec le système
-body.autodark {
-
-
-	#interface {
-		color: #eee;
-	}
-
-	.welcomeback  p, .welcomeback  h1 {
-		color: white;
-	}
-
-	#settings {
-		background-color: black;
-
-		.custom_zone {
-			border-color: #3f3f41;
-		}
-
-		.title {
-			background-color : #1c1c1e;
-			color: white;
-			border-top: 0;
-			border-bottom:0;
-		}
-
-		.paramTitle {
-			color: #929294;
-			font-family: sf_pro_displaylight;
-		}
-
-		.param {
-			background-color : #1c1c1e;
-			color: white;
-			border-top: 1px solid #3f3f41;
-			border-bottom: 1px solid #3f3f41;
-		}
-
-		hr {
-			border-bottom: 1px solid #3f3f41;
-		}
-
-		input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
-			background-color: #39383d;
-			color: white;
-		}
-
-		::-moz-range-thumb {
-			box-shadow:none;
-		}
-
-		::placeholder {
-			color: #929294;
-		}
-
-		button {
-			background-color: #1c1c1e;
-		}
-
-		.slider {
-			background-color: #39383d;
-		}
-
-		.range::-webkit-slider-thumb {
-			box-shadow: none;
-		}
-
-		input:checked + .slider {
-			background-color: #4bd663;
-		}
-
-		.signature {
-			color: #929294;
-		}
-	}
-
-	#showSettings button {
-		background-color: transparent;
-
-		&:hover {
-			background-color: #3c3c3e;
-		}
-
-		&.shown {
-			background-color: #1c1c1e;
-
-			&:hover {
-				background-color: #3c3c3e;
-			}
-		}
-	}
+// dark mode
+body.dark, body.autodark {
+	@include darkCss(); 
 }
 
 @media screen and (max-height: 650px) {

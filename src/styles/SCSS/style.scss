@@ -1,9 +1,6 @@
 @import 'global';
 @import 'mixins';
 
-
-
-
 #background {
 	z-index: -1;
 	position: fixed;
@@ -77,6 +74,10 @@
 			font-weight: lighter;
 		}
 
+		.weather #temp_max_wrap.shown {
+			display: block;
+		}
+
 		@include weather();
 	}
 
@@ -86,9 +87,22 @@
 	div.linkblocks {
 		padding: 0;
 
-		.block_parent .block span {
-			text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+		.block_parent .block {
+			span {
+				text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+			}
+
+			.l_icon_wrap.selected {
+				border: 0.2em solid #007aff;
+				filter: brightness(0.75);
+			}
 		}
+
+		@include hidden();
+	}
+
+	#widget.shown {
+		opacity: 1;
 	}
 	
 	&.pushed {
@@ -111,12 +125,63 @@
 		background: $settingsGrey;
 		color: #333;
 		border-radius: 15px;
+		background: #fff;
+		font-family: sf_pro_textregular;
+		border-radius: 10px;
+		box-shadow: 1px 2px 25px rgba(34,34,34,.6);
+
+		> div {
+			position: relative;
+		}
 
 		h4 {
 			text-align: left;
 			margin: 1.5em 0px .5em 0px;
 			padding: 0px;
 		}
+
+		.empty_input {
+			width: 1em;
+			height: 1em;
+			position: absolute;
+			top: 50%;
+			-webkit-transform: translate(-50%, -50%);
+			-ms-transform: translate(-50%, -50%);
+			transform: translate(-50%, -50%);
+			right: .4em;
+			
+			padding: 0;
+			border: none;
+			cursor: pointer;
+			transition: background .1s;
+
+			@include hidden();
+
+			&:active {
+				filter: brightness(.75);
+				transition: all .1s;
+			}
+		}
+
+		#l_iconfile {
+			position: relative;
+		    width: 100%;
+		    display: block;
+			padding: 1em 0;
+			opacity: .8;
+			font-size: .9em;
+		}
+
+		#e_iconfile {
+			opacity: 0;
+		    position: absolute;
+		    top: 0;
+		    left: 25%;
+		    width: 50%;
+		    height: 4em;
+		    cursor: pointer;
+		}
+
 
 		input[type="text"], input[type="url"] {
 			border: 0px;
@@ -126,6 +191,18 @@
 			padding: 1em;
 			box-sizing: border-box;
 			border-radius: 9px;
+			font-size: .9em;
+			background: #e3e3e5;
+			border-radius: 8px;
+			height: 2.35em;
+			margin: .3em 0;
+			padding-right: 2.5em;
+			transition: background .2s;
+
+			&:focus {
+				background: #d3d3d5;
+				transition: background .2s;
+			}
 		}
 
 		.linkOptions {
@@ -137,14 +214,18 @@
 			button {
 				width: 45%;
 				height: 40px;
-				color: white;
-				background-color: $blue;
+				color: $blue;
+				background-color: transparent;
 				border: 0px;
 				border-radius: 9px;
 				font-size: .9em;
 				padding: .6em;
 				cursor: pointer;
 				transition: opacity .1s ease-in;
+
+				&#e_delete {
+					color: red;
+				}
 
 				&:hover {
 					opacity: .8;
@@ -164,6 +245,10 @@
 			text-align: left;
 			padding: 0;
 			transition: opacity .1s ease-in;
+			font-family: sf_pro_textregular;
+			font-size: .9em;
+			color: #007aff;
+			margin-bottom: 2em;
 
 			svg {
 				width: 2em;
@@ -177,6 +262,25 @@
 				opacity: .6;
 			}
 		}
+	}
+
+	#onUnsplash {
+		&.shown {
+			display: inline;
+		}
+
+		@include hidden();
+	}
+
+	&.shown {
+		display: flex;
+		right: 0;
+		transition: right .2s;
+	}
+
+	&.pushed {
+		right: 10em;
+		transition: right .2s;
 	}
 }
 
@@ -197,6 +301,10 @@
 			color: #fffe;
 			transition: all .1s;
 		}
+	}
+
+	&.hidden {
+		opacity: 0;
 	}
 }
 
@@ -274,6 +382,15 @@
 		font-size: 1em;
 	}
 
+	h5 {
+		margin: 1.5em 1.3em 1em 1.3em;
+		color: #6d6d72;
+		text-transform: uppercase;
+		font-family: sf_pro_textregular;
+		font-weight: lighter;
+		letter-spacing: 0.04em;
+	}
+
 	span {
 		font-size: 0.9em;
 	}
@@ -290,15 +407,6 @@
 		border-top: 1px solid #c8c7cc;
 		border-bottom: 1px solid #c8c7cc;
 		padding: .5em 0;
-	}
-
-	h5 {
-		margin: 1.5em 1.3em 1em 1.3em;
-		color: #6d6d72;
-		text-transform: uppercase;
-		font-family: sf_pro_textregular;
-		font-weight: lighter;
-		letter-spacing: 0.04em;
 	}
 
 	.param {
@@ -346,8 +454,9 @@
 	    	cursor: pointer;
 	    }
 
-	    input[type="file"] {
+	    #i_bgfile {
 	    	display: block;
+	    	overflow: hidden;
 		    min-height: 100%;
 		    min-width: 100%;
 		    opacity: 0;
@@ -376,6 +485,14 @@
 		justify-content: space-between;
 	}
 
+	#choose_searchengine {
+		&.shown {
+			display: block;
+		}
+
+		@include hidden();
+	}
+	
 	#sett_city {
 		flex-direction: column;
 		
@@ -403,6 +520,8 @@
 		.wrapper > span {
 			margin-right: 1em;
 		}
+
+		@include hidden();
 	}
 
 	#submitReset {
@@ -410,6 +529,17 @@
 	}
 
 	select.lang {transition: none;}
+
+	#cssEditor {
+		width: 100%;
+		min-height: 4em;
+		resize: vertical;
+		border-radius: 8.5px;
+		padding: .5em 0 0 .5em;
+		vertical-align: top;
+		background-color: #e3e3e5;
+		border: 0px;
+	}
 
 	.signature {
 		padding: 3em 1.3em 1em 1.3em;

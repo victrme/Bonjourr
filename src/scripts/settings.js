@@ -1,3 +1,7 @@
+
+
+
+
 function defaultBg() {
 
 	let bgTimeout, oldbg;
@@ -521,7 +525,7 @@ function checkifpro() {
 		}
 
 		function customCss(data) {
-
+			
 			const cssEditor = id("cssEditor");
 
 			function addCss() {
@@ -533,10 +537,9 @@ function checkifpro() {
 			cssEditor.oninput = () => addCss();
 
 			// Active l'indentation (philipnewcomer.net)
-			/*cssEditor.onkeydown = function(e) {
+			cssEditor.onkeydown = function(e) {
 
 				if (e.keyCode === 9) {
-
 					let selectionStartPos = this.selectionStart;
 					let selectionEndPos   = this.selectionEnd;
 					let oldContent        = this.value;
@@ -547,7 +550,7 @@ function checkifpro() {
 
 					e.preventDefault();
 				}
-			}*/
+			}
 		}
 
 		function showIcon(data) {

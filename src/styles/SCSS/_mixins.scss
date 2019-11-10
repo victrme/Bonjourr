@@ -3,6 +3,15 @@ $green: #4bd663;
 $inputGrey: #e3e3e5;
 $settingsGrey: #f2f2f7;
 
+@mixin hidden {
+	&.hidden {
+		display: none;
+		cursor: default;
+		opacity: 0;
+		transition: opacity .1s;
+	}
+}
+
 /*pour le fade in*/
 @keyframes fade {
 	from {opacity: 0;}
@@ -33,7 +42,7 @@ $settingsGrey: #f2f2f7;
 }
 
 @mixin weather {
-	.weather{
+	.weather {
 		.w_desc_container, #temp_max_wrap {
 			font-size: 1.5em;
 		}
@@ -55,6 +64,8 @@ $settingsGrey: #f2f2f7;
 			.w_widget_text {
 				font-size: 2em;
 			}
+
+			@include hidden();	
 		}
 	}
 }
