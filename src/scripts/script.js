@@ -21,6 +21,15 @@ function getBrowserStorage() {
 	});
 }
 
+function slowRange(tosave) {
+	//timeout avant de save pour éviter la surcharge d'instructions de storage
+	clearTimeout(stillActive);
+	stillActive = setTimeout(function() {
+		console.log(tosave);
+		chrome.storage.sync.set(tosave);
+	}, 150);
+}
+
 function slow(that) {
 
 	that.setAttribute("disabled", "");
@@ -1185,11 +1194,6 @@ function initBackground() {
 		filter("init", [blur, bright]);
 
 		id("background").style.animation =  "fade .15s ease-in forwards";
-
-		//remet les transitions du blur
-		setTimeout(function() {
-			id("background").style.transition = "filter .2s";
-		}, 50);
 	});	
 }
 
@@ -1434,19 +1438,16 @@ function filter(cat, val) {
 		case "blur":
 			let brightness = id("i_bright").value;
 			id('background').style.filter = `blur(${val}px) brightness(${brightness})`;
-			chrome.storage.sync.set({"background_blur": +val});
 			break;
 
 		case "bright":
 			let blur = id("i_blur").value;
 			id('background').style.filter = `blur(${blur}px) brightness(${val})`;
-			chrome.storage.sync.set({"background_bright": +val});
 			break;
 	}
 }
 
 function darkmode(choix) {
-
 	
 	function isIOSwallpaper(dark) {
 

@@ -143,10 +143,12 @@ function settingsEvents() {
 
 	id("i_blur").oninput = function() {
 		filter("blur", this.value);
+		slowRange({"background_blur": parseInt(this.value)});
 	};
 
 	id("i_bright").oninput = function() {
 		filter("bright", this.value);
+		slowRange({"background_bright": parseFloat(this.value)});
 	};
 
 	id("i_dark").onchange = function() {
@@ -246,12 +248,13 @@ function initParams() {
 		initInput("i_type", data.background_type, "default");
 		initInput("i_blur", data.background_blur, 25);
 		initInput("i_bright", data.background_bright, 1);
+		initInput("i_row", data.linksrow, 8);
 		initInput("i_dark", data.dark, "disable");
 		initInput("i_sbengine", data.searchbar_engine, "s_startpage");
 		initInput("i_timezone", data.timezone, "auto");
 		initInput("i_freq", isThereData("dynamic", "every"), "hour");
 		initInput("i_ccode", isThereData("weather", "ccode"), "US");
-			
+
 		initCheckbox("i_geol", isThereData("weather", "location"));
 		initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"));
 		initCheckbox("i_linknewtab", data.linknewtab);
@@ -565,12 +568,12 @@ function checkifpro() {
 
 			function setRows(val) {
 
-				function getWidth(count) {
+				function getWidth(val) {
 
 					let width, margin, total = 0;
 					let blocks = cl("block_parent");
 
-					for (let i = 0; i < count; i++) {
+					for (let i = 0; i < val; i++) {
 
 						if (i >= blocks.length) {
 							width = 96;
@@ -580,7 +583,7 @@ function checkifpro() {
 							margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
 						}
 
-						console.log(total)
+						//console.log(total)
 						
 						total += width + margin * 2;
 					}
@@ -597,7 +600,7 @@ function checkifpro() {
 			id("i_row").oninput = function() {
 
 				setRows(this.value);
-				chrome.storage.sync.set({"linksrow": this.value});
+				slowRange({"linksrow": parseInt(this.value)});
 			}
 		}
 
@@ -605,7 +608,7 @@ function checkifpro() {
 			i.style.display = "block";
 		}
 
-		chrome.storage.sync.get(["customCss", "showIcon"], (data) => {
+		chrome.storage.sync.get(["customCss", "showIcon", "linksrow"], (data) => {
 			customCss(data.customCss);
 			showIcon(data.showIcon);
 			linksrow(data.linksrow);
