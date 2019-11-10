@@ -572,8 +572,13 @@ function checkifpro() {
 
 					for (let i = 0; i < count; i++) {
 
-						width = parseInt(getComputedStyle(blocks[i]).width) +1;
-						margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
+						if (i >= blocks.length) {
+							width = 96;
+							margin = 16;
+						} else {
+							width = parseInt(getComputedStyle(blocks[i]).width) +1;
+							margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
+						}
 
 						console.log(total)
 						
@@ -592,7 +597,7 @@ function checkifpro() {
 			id("i_row").onchange = function() {
 
 				setRows(this.value);
-				chrome.storage.sync.set({"linksrow": val});
+				chrome.storage.sync.set({"linksrow": this.value});
 			}
 		}
 
