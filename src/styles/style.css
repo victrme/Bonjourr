@@ -95,7 +95,7 @@ body {
     margin-right: auto;
     margin-left: auto;
     transition: opacity .2s; }
-    #interface #time #shadow {
+    #interface #time .shadow {
       z-index: -1;
       position: absolute;
       overflow: hidden;
@@ -117,9 +117,9 @@ body {
     margin-right: auto;
     margin-left: auto;
     transition: opacity .2s; }
-    #interface #main #weather #widget.shown {
+    #interface #main #weather #w_icon #widget.shown {
       opacity: 1; }
-    #interface #main #shadow {
+    #interface #main .shadow {
       z-index: -1;
       position: absolute;
       width: 55em;
@@ -139,7 +139,7 @@ body {
       justify-content: center;
       align-items: center; }
       #interface #main #weather #w_icon #widget {
-        opacity: 1;
+        opacity: 0;
         height: 60px;
         width: 60px;
         border: none;
@@ -856,9 +856,9 @@ body.dark #showSettings button, body.autodark #showSettings button {
 @media screen and (max-height: 650px) {
   #interface {
     font-size: .7em; }
-    #interface #time #shadow {
+    #interface #time .shadow {
       width: 39em; }
-    #interface #main #shadow {
+    #interface #main .shadow {
       width: 39em; }
     #interface #main #weather #w_icon {
       height: 70px; }

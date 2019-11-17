@@ -118,12 +118,12 @@ body.dark, body.autodark {
 	#interface {
 		font-size: .7em;
 
-		#time #shadow {
+		#time .shadow {
 			width: 39em;
 		}
 
 		#main {
-			#shadow {
+			.shadow {
 				width: 39em;
 			}
 
