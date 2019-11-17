@@ -149,7 +149,7 @@ body.dark, body.autodark {
 			}
 		}
 
-		.linkblocks .block_parent button.remove {
+		#linkblocks .block_parent button.remove {
 			height: 25px;
 			width: 25px;
 
@@ -205,7 +205,7 @@ body.dark, body.autodark {
 				}
 			}
 
-			&.popup2 div .linkblocks .block_parent {
+			&.popup2 div #linkblocks .block_parent {
 				font-size: .7em;
 
 				button.remove.visible {

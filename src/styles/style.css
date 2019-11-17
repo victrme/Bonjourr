@@ -188,7 +188,7 @@ body {
       height: 2px; }
     #interface #sb_container.removed {
       display: none; }
-  #interface .linkblocks {
+  #interface #linkblocks {
     visibility: visible;
     display: flex;
     flex-wrap: wrap;
@@ -197,11 +197,11 @@ body {
     margin: 0 auto;
     padding: 2em;
     min-height: 8em; }
-    #interface .linkblocks .block_parent {
+    #interface #linkblocks .block_parent {
       position: relative;
       margin: 1em;
       transition: all .2s ease-in; }
-      #interface .linkblocks .block_parent .block .l_icon_wrap {
+      #interface #linkblocks .block_parent .block .l_icon_wrap {
         overflow: hidden;
         width: 4.4em;
         height: 4.4em;
@@ -212,25 +212,25 @@ body {
         border: .2em solid white;
         cursor: pointer;
         transition: border-color .1s, filter .1s; }
-        #interface .linkblocks .block_parent .block .l_icon_wrap .l_icon {
+        #interface #linkblocks .block_parent .block .l_icon_wrap .l_icon {
           width: 100%; }
-        #interface .linkblocks .block_parent .block .l_icon_wrap:hover {
+        #interface #linkblocks .block_parent .block .l_icon_wrap:hover {
           border: 0.2em solid #007aff;
           transition: border-color .1s; }
-        #interface .linkblocks .block_parent .block .l_icon_wrap:active {
+        #interface #linkblocks .block_parent .block .l_icon_wrap:active {
           filter: brightness(0.75);
           transition: border-color .1s, filter .1s; }
-      #interface .linkblocks .block_parent .block span {
+      #interface #linkblocks .block_parent .block span {
         display: block;
         margin: .5em 0;
         max-width: 10em;
         word-wrap: break-word; }
-      #interface .linkblocks .block_parent .block.wiggly {
+      #interface #linkblocks .block_parent .block.wiggly {
         animation-name: wiggle;
         animation-iteration-count: infinite;
         transform-origin: 50% 10%;
         animation-duration: .25s; }
-      #interface .linkblocks .block_parent button.remove {
+      #interface #linkblocks .block_parent button.remove {
         position: absolute;
         display: none;
         top: -1.2em;
@@ -244,28 +244,28 @@ body {
         z-index: 3;
         cursor: default;
         transition: all .1s; }
-        #interface .linkblocks .block_parent button.remove img {
+        #interface #linkblocks .block_parent button.remove img {
           height: .9em;
           width: .9em;
           position: absolute;
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%); }
-        #interface .linkblocks .block_parent button.remove.visible {
+        #interface #linkblocks .block_parent button.remove.visible {
           cursor: pointer; }
-        #interface .linkblocks .block_parent button.remove:hover {
+        #interface #linkblocks .block_parent button.remove:hover {
           background: #bbb; }
-      #interface .linkblocks .block_parent.removed {
+      #interface #linkblocks .block_parent.removed {
         transform: scale(0);
         opacity: 0; }
-  #interface div.linkblocks {
+  #interface div#linkblocks {
     padding: 0; }
-    #interface div.linkblocks .block_parent .block span {
+    #interface div#linkblocks .block_parent .block span {
       text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5); }
-    #interface div.linkblocks .block_parent .block .l_icon_wrap.selected {
+    #interface div#linkblocks .block_parent .block .l_icon_wrap.selected {
       border: 0.2em solid #007aff;
       filter: brightness(0.75); }
-    #interface div.linkblocks.hidden {
+    #interface div#linkblocks.hidden {
       display: none;
       cursor: default;
       opacity: 0;
@@ -856,10 +856,10 @@ body.dark #showSettings button, body.autodark #showSettings button {
     #interface #sb_container.shown {
       padding: 0;
       height: 35px; }
-    #interface .linkblocks .block_parent button.remove {
+    #interface #linkblocks .block_parent button.remove {
       height: 25px;
       width: 25px; }
-      #interface .linkblocks .block_parent button.remove img {
+      #interface #linkblocks .block_parent button.remove img {
         width: .7em;
         height: .7em; }
   #showSettings button {
@@ -887,12 +887,12 @@ body.dark #showSettings button, body.autodark #showSettings button {
       margin: 1em auto; }
       #start_popup .popup_window .popup_line .popup .popup_param input, #start_popup .popup_window .popup_line .popup .popup_param button {
         font-size: 15px; }
-    #start_popup .popup_window .popup_line .popup.popup2 div .linkblocks .block_parent {
+    #start_popup .popup_window .popup_line .popup.popup2 div #linkblocks .block_parent {
       font-size: .7em; }
-      #start_popup .popup_window .popup_line .popup.popup2 div .linkblocks .block_parent button.remove.visible {
+      #start_popup .popup_window .popup_line .popup.popup2 div #linkblocks .block_parent button.remove.visible {
         height: 25px;
         width: 25px; }
-        #start_popup .popup_window .popup_line .popup.popup2 div .linkblocks .block_parent button.remove.visible img {
+        #start_popup .popup_window .popup_line .popup.popup2 div #linkblocks .block_parent button.remove.visible img {
           width: .7em;
           height: .7em; }
     #start_popup .popup_window .popup_line .popup.popup3 .weather .w_widget {

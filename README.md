@@ -56,7 +56,14 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 ## Changelogs
 
 
+**v1.8.1**
+
+- Timezone Control
+- US Date Format
+- No distraction Mode
+
 **v1.8.0**
+
 - Rearrangeable Quick Links
 - Quick Links editing menu
 - Italian translation 

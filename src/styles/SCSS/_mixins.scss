@@ -131,7 +131,7 @@ $settingsGrey: #f2f2f7;
 }
 
 @mixin linkBlocks {
-	.linkblocks {
+	#linkblocks {
 		visibility: visible;
 		display: flex;
 		flex-wrap: wrap;

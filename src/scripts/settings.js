@@ -1,7 +1,3 @@
-
-
-
-
 function defaultBg() {
 
 	let bgTimeout, oldbg;

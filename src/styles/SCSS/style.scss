@@ -84,7 +84,7 @@
 	@include searchbar();
 	@include linkBlocks();
 
-	div.linkblocks {
+	div#linkblocks {
 		padding: 0;
 
 		.block_parent .block {

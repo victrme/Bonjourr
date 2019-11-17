@@ -11,7 +11,6 @@
 #interface.distract .main,
 #interface.distract #sb_container,
 #interface.distract #linkblocks {
-	/*visibility: hidden;*/
 	opacity: 0;
 	transition: opacity .2s;
 }
