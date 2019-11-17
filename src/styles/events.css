@@ -1,3 +1,30 @@
 #settings .pro {
 	display: none;
 }
+
+#interface .main,
+#interface .time {
+	transition: opacity .2s;
+}
+
+#interface.distract #credit,
+#interface.distract .main,
+#interface.distract #sb_container,
+#interface.distract #linkblocks {
+	/*visibility: hidden;*/
+	opacity: 0;
+	transition: opacity .2s;
+}
+
+#interface.distract .time {
+	opacity: .8
+}
+
+#showSettings.distract {
+	opacity: 0;
+	transition: opacity .1s;
+}
+#showSettings.distract:hover {
+	opacity: 1;
+	transition: opacity .1s;
+}

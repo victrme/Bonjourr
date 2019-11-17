@@ -1,4 +1,5 @@
-var stillActive = false;
+let stillActive = false;
+let rangeActive = false;
 
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
@@ -23,9 +24,9 @@ function getBrowserStorage() {
 
 function slowRange(tosave) {
 	//timeout avant de save pour éviter la surcharge d'instructions de storage
-	clearTimeout(stillActive);
-	stillActive = setTimeout(function() {
-		console.log(tosave);
+	clearTimeout(rangeActive);
+	rangeActive = setTimeout(function() {
+		//console.log(tosave);
 		chrome.storage.sync.set(tosave);
 	}, 150);
 }
@@ -1555,6 +1556,45 @@ function darkmode(choix) {
 	}	
 }
 
+
+function distractMode(that) {
+
+	function apply(on) {
+
+		let ui = id("interface");
+		let uiClass = ui.getAttribute("class");
+
+		if (on) {
+			attr(ui, (uiClass === "pushed" ? "pushed distract" : "distract"));
+			attr(id("showSettings"), "distract");
+		} else {
+			attr(ui, (uiClass === "pushed distract" ? "pushed" : ""));
+			attr(id("showSettings"), "");
+		}
+	}
+
+	//change event
+	if (that || that === false) {
+		apply(that.checked);
+		chrome.storage.sync.set({"distract": that.checked});
+		localStorage.distract = that.checked;
+		return true;
+	}
+
+	//init
+	let localDist = (localStorage.distract === "true" ? true : false);
+
+	if (localDist) {
+		apply(localDist);
+	} else {
+		chrome.storage.sync.get("distract", (data) => {
+			apply(data.distract);
+		});
+	}
+}
+
+
+
 function searchbarFlexControl(activated, linkslength) {
 
 	let state = (activated ? "shown" : "removed");
@@ -1655,3 +1695,4 @@ weather();
 searchbar();
 quickLinks();
 darkmode();
+distractMode();

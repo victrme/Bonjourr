@@ -155,6 +155,10 @@ function settingsEvents() {
 		darkmode(this.value)
 	}
 
+	id("i_distract").onchange = function() {
+		distractMode(this);
+	}
+
 	//weather
 	id("b_city").onmouseup = function() {
 		if (!stillActive) weather("city", this);
@@ -257,6 +261,7 @@ function initParams() {
 
 		initCheckbox("i_geol", isThereData("weather", "location"));
 		initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"));
+		initCheckbox("i_distract", data.distract);
 		initCheckbox("i_linknewtab", data.linknewtab);
 		initCheckbox("i_sb", data.searchbar);
 		initCheckbox("i_usdate", data.usdate);
@@ -386,15 +391,6 @@ function importExport(select, isEvent) {
 	}
 }
 
-function settings() {
-	settingsEvents();
-	initParams();
-	signature();
-	defaultBg();
-	importExport("exp");
-	checkifpro();
-}
-
 function showSettings(e, that) {
 
 	if (e.type === "mousedown") {
@@ -430,17 +426,21 @@ function showSettings(e, that) {
 		let edit = id("edit_linkContainer");
 		let editClass = edit.getAttribute("class");
 
+		let ui = id("interface");
+		let uiClass = id("interface").getAttribute("class");
+
+
 		if (has("settings", "shown")) {
 			attr(that.children[0], "");
 			attr(id("settings"), "");
-			attr(id("interface"), "");
+			attr(id("interface"), (uiClass === "pushed distract" ? "distract" : ""));
 
 			if (editClass === "shown pushed") attr(edit, "shown");
 			
 		} else {
 			attr(that.children[0], "shown");
 			attr(id("settings"), "shown");
-			attr(id("interface"), "pushed");
+			attr(id("interface"), (uiClass === "distract" ? "pushed distract" : "pushed"));
 			
 			if (editClass === "shown") attr(edit, "shown pushed");
 		}
@@ -464,12 +464,15 @@ function showInterface(e) {
 
 	if (has("settings", "shown")) {
 
-		attr(id("showSettings").children[0], "");
-		attr(id("settings"), "");
-		attr(id("interface"), "");
-
 		let edit = id("edit_linkContainer");
 		let editClass = edit.getAttribute("class");
+		let ui = id("interface");
+		let uiClass = id("interface").getAttribute("class");
+
+		attr(id("showSettings").children[0], "");
+		attr(id("settings"), "");
+		attr(id("interface"), (uiClass === "pushed distract" ? "distract" : ""));
+
 		if (editClass === "shown pushed") attr(edit, "shown");
 	}
 }
@@ -500,7 +503,14 @@ document.onkeydown = function(e) {
 }
 
 
-
+function settings() {
+	settingsEvents();
+	initParams();
+	signature();
+	defaultBg();
+	importExport("exp");
+	checkifpro();
+}
 
 function checkifpro() {
 
@@ -531,10 +541,12 @@ function checkifpro() {
 			}
 
 			addCss();
-			cssEditor.oninput = () => addCss();
+			cssEditor.onchange = () => addCss();
 
 			// Active l'indentation (philipnewcomer.net)
 			cssEditor.onkeydown = function(e) {
+
+				console.log(e.keycode);
 
 				if (e.keyCode === 9) {
 					let selectionStartPos = this.selectionStart;

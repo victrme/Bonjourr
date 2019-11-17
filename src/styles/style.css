@@ -417,7 +417,7 @@ body {
   #credit a {
     color: #fff9;
     text-decoration: none;
-    font-size: .8em; }
+    font-size: .9em; }
     #credit a:hover {
       color: #fffe;
       transition: all .1s; }
@@ -426,13 +426,12 @@ body {
 
 #showSettings {
   position: fixed;
-  bottom: .7em;
-  right: .7em;
+  bottom: 1.3em;
+  right: 1.3em;
   z-index: 3; }
   #showSettings button {
     height: 3.5em;
     width: 3.5em;
-    margin: .5em;
     padding: .5em;
     border: none;
     border-radius: 8px;
@@ -912,7 +911,7 @@ body.dark #showSettings button, body.autodark #showSettings button {
       width: 110px;
       font-size: 17px; } }
 
-@media screen and (min-height: 650px) and (max-height: 950px) {
+@media screen and (min-height: 650px) and (max-height: 1050px) {
   #interface {
     font-size: .8em; }
     #interface #sb_container #searchbar {
