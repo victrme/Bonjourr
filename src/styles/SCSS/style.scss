@@ -23,7 +23,7 @@
 	transition: margin .2s;
 	text-shadow: 0 1px 5px rgba(0,0,0,.2);
 
-	.time {
+	#time {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -52,13 +52,17 @@
 		}
 	}
 
-	.main {
+	#main {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		margin-right: auto;
 		margin-left: auto;
+
+		#weather #widget.shown {
+			opacity: 1;
+		}
 
 		.shadow {
 			z-index: -1;
@@ -74,7 +78,7 @@
 			font-weight: lighter;
 		}
 
-		.weather #temp_max_wrap.shown {
+		#weather #temp_max_wrap.shown {
 			display: block;
 		}
 
@@ -99,10 +103,6 @@
 		}
 
 		@include hidden();
-	}
-
-	#widget.shown {
-		opacity: 1;
 	}
 	
 	&.pushed {

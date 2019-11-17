@@ -2,20 +2,20 @@
 	display: none;
 }
 
-#interface .main,
-#interface .time {
+#interface #main,
+#interface #time {
 	transition: opacity .2s;
 }
 
 #interface.distract #credit,
-#interface.distract .main,
+#interface.distract #main,
 #interface.distract #sb_container,
 #interface.distract #linkblocks {
 	opacity: 0;
 	transition: opacity .2s;
 }
 
-#interface.distract .time {
+#interface.distract #time {
 	opacity: .8
 }
 

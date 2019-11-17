@@ -42,7 +42,7 @@ $settingsGrey: #f2f2f7;
 }
 
 @mixin weather {
-	.weather {
+	#weather {
 		.w_desc_container, #temp_max_wrap {
 			font-size: 1.5em;
 		}
@@ -53,12 +53,13 @@ $settingsGrey: #f2f2f7;
 			justify-content: center;
 			align-items: center;
 
-			.w_icon {
+			#widget {
 				opacity: 0;
 				height: 60px;
 				width: 60px;
 				border: none;
 				padding-right: 10px;
+				transition: opacity .1s;
 			}
 
 			.w_widget_text {

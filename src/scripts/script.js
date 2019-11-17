@@ -937,7 +937,7 @@ function weather(event, that) {
 			let weather_id = imgId(data.weather[0].id);
 	 		let icon_src = `src/images/weather/${d_n}/${weather_id}.png`;
 	 		id("widget").setAttribute("src", icon_src);
-	 		id("widget").setAttribute("class", "w_icon shown");
+	 		id("widget").setAttribute("class", "shown");
 		}
 
 		function getDescription() {

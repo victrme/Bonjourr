@@ -118,16 +118,16 @@ body.dark, body.autodark {
 	#interface {
 		font-size: .7em;
 
-		.time .shadow {
+		#time .shadow {
 			width: 39em;
 		}
 
-		.main {
+		#main {
 			.shadow {
 				width: 39em;
 			}
 
-			.weather .w_widget {
+			#weather .w_widget {
 				height: 70px;
 
 				.w_icon {
@@ -219,7 +219,7 @@ body.dark, body.autodark {
 				}
 			}
 
-			&.popup3 .weather .w_widget {
+			&.popup3 #weather .w_widget {
 				height: 50px;
 			}
 
