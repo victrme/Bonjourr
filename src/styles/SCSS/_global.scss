@@ -26,6 +26,16 @@ $textRegular : sf_pro_textregular;
 $displayLight : sf_pro_displaylight;
 $displayThin : sf_pro_displaythin;
 
+$purewhite: white;
+$pureblack: black;
+
+$blue: #007aff;
+$green: #4bd663;
+$inputGrey: #e3e3e5;
+$settingsGrey: #f2f2f7;
+$borderGrey: #c8c7cc;
+
+
 body {
 	overflow-x: hidden;
 	margin: 0;
@@ -34,8 +44,8 @@ body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	opacity: 1;
-	background-color: #000;
-    color: white;
+	background-color: $pureblack;
+    color: $purewhite;
     font-family: $displayLight;
 	font-size: 1em;
 	text-align: center;
@@ -46,7 +56,7 @@ body {
 
 	hr {
 	    border: none;
-	    border-bottom: 1px solid #c8c7cc;
+	    border-bottom: 1px solid $borderGrey;
 	    margin-top: .75em;
 	    margin-bottom: .75em;
 	    margin-right: -1.3em;

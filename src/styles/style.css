@@ -3,16 +3,19 @@
   src: url("../fonts/sf-pro-text-regular-webfont.woff2") format("woff2"), url("../fonts/sf-pro-text-regular-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal; }
+
 @font-face {
   font-family: 'sf_pro_displaylight';
   src: url("../fonts/sf-pro-display-light-webfont.woff2") format("woff2"), url("../fonts/sf-pro-display-light-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal; }
+
 @font-face {
   font-family: 'sf_pro_displaythin';
   src: url("../fonts/sf-pro-display-thin-webfont.woff2") format("woff2"), url("../fonts/sf-pro-display-thin-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal; }
+
 body {
   overflow-x: hidden;
   margin: 0;
@@ -21,7 +24,7 @@ body {
   -moz-user-select: none;
   -webkit-user-select: none;
   opacity: 1;
-  background-color: #000;
+  background-color: black;
   color: white;
   font-family: sf_pro_displaylight;
   font-size: 1em;
@@ -46,6 +49,7 @@ body {
     opacity: 0; }
   to {
     opacity: 1; } }
+
 /*Wiggle animation*/
 @keyframes wiggle {
   0% {
@@ -54,6 +58,7 @@ body {
   50% {
     transform: rotate(2deg);
     animation-timing-function: ease-out; } }
+
 @keyframes keyframes2 {
   0% {
     transform: rotate(1deg);
@@ -61,6 +66,7 @@ body {
   50% {
     transform: rotate(-1.5deg);
     animation-timing-function: ease-out; } }
+
 #background {
   z-index: -1;
   position: fixed;
@@ -87,8 +93,9 @@ body {
     justify-content: center;
     align-items: center;
     margin-right: auto;
-    margin-left: auto; }
-    #interface #time .shadow {
+    margin-left: auto;
+    transition: opacity .2s; }
+    #interface #time #shadow {
       z-index: -1;
       position: absolute;
       overflow: hidden;
@@ -100,7 +107,7 @@ body {
     #interface #time .time-container #clock {
       font-family: sf_pro_displaythin;
       font-size: 6em; }
-    #interface #time .date {
+    #interface #time #date {
       font-size: 1.5em; }
   #interface #main {
     display: flex;
@@ -108,8 +115,11 @@ body {
     align-items: center;
     justify-content: center;
     margin-right: auto;
-    margin-left: auto; }
-    #interface #main .shadow {
+    margin-left: auto;
+    transition: opacity .2s; }
+    #interface #main #weather #widget.shown {
+      opacity: 1; }
+    #interface #main #shadow {
       z-index: -1;
       position: absolute;
       width: 55em;
@@ -123,21 +133,21 @@ body {
       display: block; }
     #interface #main #weather .w_desc_container, #interface #main #weather #temp_max_wrap {
       font-size: 1.5em; }
-    #interface #main #weather .w_widget {
+    #interface #main #weather #w_icon {
       display: flex;
       height: 100px;
       justify-content: center;
       align-items: center; }
-      #interface #main #weather .w_widget #widget {
-        opacity: 0;
+      #interface #main #weather #w_icon #widget {
+        opacity: 1;
         height: 60px;
         width: 60px;
         border: none;
         padding-right: 10px;
         transition: opacity .1s; }
-      #interface #main #weather .w_widget .w_widget_text {
+      #interface #main #weather #w_icon #w_widget_text {
         font-size: 2em; }
-      #interface #main #weather .w_widget.hidden {
+      #interface #main #weather #w_icon.hidden {
         display: none;
         cursor: default;
         opacity: 0;
@@ -204,7 +214,7 @@ body {
         position: relative;
         border-radius: 4px;
         background: white;
-        border: .2em solid white;
+        border: 0.2em solid white;
         cursor: pointer;
         transition: border-color .1s, filter .1s; }
         #interface #linkblocks .block_parent .block .l_icon_wrap .l_icon {
@@ -265,10 +275,13 @@ body {
       cursor: default;
       opacity: 0;
       transition: opacity .1s; }
-  #interface #main #weather #widget.shown {
-    opacity: 1; }
   #interface.pushed {
     margin-left: -20em; }
+  #interface.distract #time {
+    opacity: .8; }
+  #interface.distract #credit, #interface.distract #main, #interface.distract #sb_container, #interface.distract #linkblocks {
+    opacity: 0;
+    transition: opacity .2s; }
 
 #edit_linkContainer {
   position: absolute;
@@ -284,7 +297,7 @@ body {
     background: #f2f2f7;
     color: #333;
     border-radius: 15px;
-    background: #fff;
+    background: white;
     font-family: sf_pro_textregular;
     border-radius: 10px;
     box-shadow: 1px 2px 25px rgba(34, 34, 34, 0.6); }
@@ -446,6 +459,12 @@ body {
       width: 2.5em;
       filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
       transition: transform .2s; }
+  #showSettings.distract {
+    opacity: 0;
+    transition: opacity .1s; }
+    #showSettings.distract:hover {
+      opacity: 1;
+      transition: opacity .1s; }
 
 #settings {
   position: fixed;
@@ -460,7 +479,12 @@ body {
   text-shadow: none;
   text-align: left;
   color: #222;
-  transition: right .2s; }
+  transition: right .2s;
+  /* Switch */
+  /* Slider */
+  /* Chrome, Opera & Safari */
+  /* Firefox */
+  /*Edge*/ }
   #settings hr {
     border: none;
     border-bottom: 1px solid #c8c7cc;
@@ -575,7 +599,7 @@ body {
     border-radius: 50px;
     background: #b4b4b4; }
   #settings ::-moz-range-progress {
-    background-color: #0078fb;
+    background-color: #007aff;
     height: 2px;
     border-radius: 50px; }
   #settings ::-moz-range-thumb {
@@ -678,8 +702,7 @@ body {
       position: absolute;
       left: 0;
       top: 0;
-      cursor: pointer;
-      background-color: green; }
+      cursor: pointer; }
     #settings #fileContainer.dragover {
       background-color: #007aff; }
       #settings #fileContainer.dragover p {
@@ -756,7 +779,8 @@ body {
           display: flex;
           align-items: center; }
           #settings .signature .firstblock .socialIcons a svg {
-            width: 1.25em; }
+            width: 1.25em;
+            fill: #007aff; }
     #settings .signature #rdv_website {
       padding-bottom: 6em;
       margin-top: 1.5em; }
@@ -768,6 +792,7 @@ body {
 
 body.dark #interface, body.autodark #interface {
   color: #eee; }
+
 body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link {
   background-color: #1c1c1e;
   color: white; }
@@ -781,6 +806,7 @@ body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edi
     filter: brightness(0.7); }
     body.dark #edit_linkContainer #edit_link .empty_input:active, body.autodark #edit_linkContainer #edit_link .empty_input:active {
       filter: brightness(0.6); }
+
 body.dark #settings, body.autodark #settings {
   background-color: black; }
   body.dark #settings .custom_zone, body.autodark #settings .custom_zone {
@@ -817,6 +843,7 @@ body.dark #settings, body.autodark #settings {
     background-color: #4bd663; }
   body.dark #settings .signature, body.autodark #settings .signature {
     color: #929294; }
+
 body.dark #showSettings button, body.autodark #showSettings button {
   background-color: transparent; }
   body.dark #showSettings button:hover, body.autodark #showSettings button:hover {
@@ -829,13 +856,13 @@ body.dark #showSettings button, body.autodark #showSettings button {
 @media screen and (max-height: 650px) {
   #interface {
     font-size: .7em; }
-    #interface #time .shadow {
+    #interface #time #shadow {
       width: 39em; }
-    #interface #main .shadow {
+    #interface #main #shadow {
       width: 39em; }
-    #interface #main #weather .w_widget {
+    #interface #main #weather #w_icon {
       height: 70px; }
-      #interface #main #weather .w_widget #widget {
+      #interface #main #weather #w_icon #widget {
         width: 35px;
         height: 35px; }
     #interface #sb_container #searchbar {
@@ -850,14 +877,12 @@ body.dark #showSettings button, body.autodark #showSettings button {
       #interface #linkblocks .block_parent button.remove img {
         width: .7em;
         height: .7em; }
-
   #showSettings button {
     height: 2.5em;
     width: 2.5em; }
     #showSettings button img {
       height: 1.5em;
       width: 1.5em; }
-
   #settings {
     font-size: .9em; }
     #settings .param #default .imgpreview {
@@ -866,39 +891,7 @@ body.dark #showSettings button, body.autodark #showSettings button {
         width: 50px; }
       #settings .param #default .imgpreview.selected {
         width: 50px; } }
-@media screen and (max-height: 800px) {
-  #start_popup .popup_window .popup_line .popup {
-    padding: 1.5em; }
-    #start_popup .popup_window .popup_line .popup p, #start_popup .popup_window .popup_line .popup span, #start_popup .popup_window .popup_line .popup p code {
-      font-size: 17px;
-      line-height: 1.7em; }
-    #start_popup .popup_window .popup_line .popup .popup_param {
-      margin: 1em auto; }
-      #start_popup .popup_window .popup_line .popup .popup_param input, #start_popup .popup_window .popup_line .popup .popup_param button {
-        font-size: 15px; }
-    #start_popup .popup_window .popup_line .popup.popup2 div #linkblocks .block_parent {
-      font-size: .7em; }
-      #start_popup .popup_window .popup_line .popup.popup2 div #linkblocks .block_parent button.remove.visible {
-        height: 25px;
-        width: 25px; }
-        #start_popup .popup_window .popup_line .popup.popup2 div #linkblocks .block_parent button.remove.visible img {
-          width: .7em;
-          height: .7em; }
-    #start_popup .popup_window .popup_line .popup.popup3 #weather .w_widget {
-      height: 50px; }
-    #start_popup .popup_window .popup_line .popup.popup5 #sb_container #searchbar {
-      max-width: 300px;
-      height: 35px;
-      font-size: 17px; }
-    #start_popup .popup_window .popup_line .popup.popup5 #sb_container.shown {
-      padding: 0;
-      height: 35px; }
-  #start_popup .popup_window .popup_buttons {
-    padding: 0 1em 1em 1em; }
-    #start_popup .popup_window .popup_buttons button {
-      height: 35px;
-      width: 110px;
-      font-size: 17px; } }
+
 @media screen and (min-height: 650px) and (max-height: 1050px) {
   #interface {
     font-size: .8em; }

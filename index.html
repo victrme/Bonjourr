@@ -35,7 +35,6 @@
 			</div>
 
 
-
 			<div class="linkOptions">
 				<button id="e_delete" class="trn">Delete Quick Link</button>
 				<button id="e_submit" class="trn">Apply changes</button>
@@ -51,12 +50,12 @@
 	
 	<div id="interface">
 		<div id="time">
-			<img src="src/images/shadow.png" class="shadow" draggable="false" defer>
+			<img src="src/images/shadow.png" id="shadow" draggable="false" defer>
 			<div class="time-container">
 				<div id="clock"></div>
 			</div>
 
-			<div class="date">
+			<div id="date">
 				<span id="jour"></span>
 				<span id="chiffre"></span>
 				<span id="mois"></span>
@@ -64,25 +63,25 @@
 		</div>
 
 		<div id="main">
-			<img src="src/images/shadow.png" class="shadow" draggable="false" defer>
+			<img src="src/images/shadow.png" id="shadow" draggable="false" defer>
 			<h3 id="greetings"></h3>
 			<div id="weather">
 				<div class="w_desc_container">
-					<span id="desc" class="w_desc_meteo"></span>
+					<span id="desc"></span>
 					<span class="trn">It is currently</span>
-					<span id="temp" class="w_desc_temp"></span>
+					<span id="temp"></span>
 				</div>
 
-				<div id="temp_max_wrap" class="hightemp">
+				<div id="temp_max_wrap">
 					<span class="trn">with a high of</span>
-					<span id="temp_max" class="w_desc_temp_max"></span>
+					<span id="temp_max"></span>
 					<span class="trn">today.</span>
 				</div>
 
-				<div id="w_icon" class="w_widget">
-					<img src="" id="widget" class="w_icon" draggable="false">
-					<div class="w_widget_text">
-						<span id="widget_temp" class="w_widget_temp"></span>
+				<div id="w_icon">
+					<img src="" id="widget" draggable="false">
+					<div id="w_widget_text">
+						<span id="widget_temp"></span>
 					</div>
 				</div>
 			</div>

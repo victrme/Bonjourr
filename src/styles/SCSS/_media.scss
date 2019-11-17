@@ -6,15 +6,15 @@
 	#edit_linkContainer {
 		#edit_link {
 			background-color: #1c1c1e;
-			color: white;
+			color: $purewhite;
 
 			input[type="text"], input[type="url"] {
 				background-color: #39383d;
-				color: white;
+				color: $purewhite;
 
 				&:focus {
 					background-color: #2c2c2f;
-    				color: white;
+    				color: $purewhite;
 				}
 			}
 
@@ -29,7 +29,7 @@
 	}
 
 	#settings {
-		background-color: black;
+		background-color: $pureblack;
 
 		.custom_zone {
 			border-color: #3f3f41;
@@ -37,7 +37,7 @@
 
 		.title {
 			background-color : #1c1c1e;
-			color: white;
+			color: $purewhite;
 			border-top: 0;
 			border-bottom:0;
 		}
@@ -49,7 +49,7 @@
 
 		.param {
 			background-color : #1c1c1e;
-			color: white;
+			color: $purewhite;
 			border-top: 1px solid #3f3f41;
 			border-bottom: 1px solid #3f3f41;
 		}
@@ -60,7 +60,7 @@
 
 		input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
 			background-color: #39383d;
-			color: white;
+			color: $purewhite;
 		}
 
 		::-moz-range-thumb {
@@ -84,7 +84,7 @@
 		}
 
 		input:checked + .slider {
-			background-color: #4bd663;
+			background-color: $green;
 		}
 
 		.signature {
@@ -118,19 +118,19 @@ body.dark, body.autodark {
 	#interface {
 		font-size: .7em;
 
-		#time .shadow {
+		#time #shadow {
 			width: 39em;
 		}
 
 		#main {
-			.shadow {
+			#shadow {
 				width: 39em;
 			}
 
-			#weather .w_widget {
+			#weather #w_icon {
 				height: 70px;
 
-				.w_icon {
+				#widget {
 					width: 35px;
 					height: 35px;
 				}
@@ -188,65 +188,65 @@ body.dark, body.autodark {
 }
 
 @media screen and (max-height: 800px) {
-	#start_popup .popup_window {
-		.popup_line .popup {
-			padding: 1.5em;
+	// #start_popup .popup_window {
+	// 	.popup_line .popup {
+	// 		padding: 1.5em;
 
-			p, span, p code {
-				font-size: 17px;
-				line-height: 1.7em;
-			}
+	// 		p, span, p code {
+	// 			font-size: 17px;
+	// 			line-height: 1.7em;
+	// 		}
 
-			.popup_param {
-				margin: 1em auto;
+	// 		.popup_param {
+	// 			margin: 1em auto;
 
-				input, button {
-					font-size: 15px;
-				}
-			}
+	// 			input, button {
+	// 				font-size: 15px;
+	// 			}
+	// 		}
 
-			&.popup2 div #linkblocks .block_parent {
-				font-size: .7em;
+	// 		&.popup2 div #linkblocks .block_parent {
+	// 			font-size: .7em;
 
-				button.remove.visible {
-					height: 25px;
-					width: 25px;
+	// 			button.remove.visible {
+	// 				height: 25px;
+	// 				width: 25px;
 
-					img {
-						width: .7em;
-						height: .7em;
-					}
-				}
-			}
+	// 				img {
+	// 					width: .7em;
+	// 					height: .7em;
+	// 				}
+	// 			}
+	// 		}
 
-			&.popup3 #weather .w_widget {
-				height: 50px;
-			}
+	// 		&.popup3 #weather #w_widget {
+	// 			height: 50px;
+	// 		}
 
-			&.popup5 #sb_container {
-				#searchbar {
-					max-width: 300px;
-					height: 35px;
-					font-size: 17px;
-				}
+	// 		&.popup5 #sb_container {
+	// 			#searchbar {
+	// 				max-width: 300px;
+	// 				height: 35px;
+	// 				font-size: 17px;
+	// 			}
 
-				&.shown {
-					padding: 0;
-					height: 35px;
-				}
-			}
-		}
+	// 			&.shown {
+	// 				padding: 0;
+	// 				height: 35px;
+	// 			}
+	// 		}
+	// 	}
 
-		.popup_buttons {
-			padding: 0 1em 1em 1em;
+	// 	.popup_buttons {
+	// 		padding: 0 1em 1em 1em;
 
-			button {
-				height: 35px;
-				width: 110px;
-				font-size: 17px;
-			}
-		}
-	}
+	// 		button {
+	// 			height: 35px;
+	// 			width: 110px;
+	// 			font-size: 17px;
+	// 		}
+	// 	}
+	// }
 }
 
 @media screen and (min-height: 650px) and (max-height: 1050px) {

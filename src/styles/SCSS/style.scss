@@ -30,8 +30,9 @@
 		align-items: center;
 		margin-right: auto;
 		margin-left: auto;
+		transition: opacity .2s;
 
-		.shadow {
+		#shadow {
 			z-index: -1;
 			position: absolute;
 			overflow: hidden;
@@ -47,7 +48,7 @@
 			font-size: 6em;
 		}
 
-		.date {
+		#date {
 			font-size: 1.5em;
 		}
 	}
@@ -59,12 +60,13 @@
 		justify-content: center;
 		margin-right: auto;
 		margin-left: auto;
+		transition: opacity .2s;
 
 		#weather #widget.shown {
 			opacity: 1;
 		}
 
-		.shadow {
+		#shadow {
 			z-index: -1;
 			position: absolute;
 			width: 55em;
@@ -97,7 +99,7 @@
 			}
 
 			.l_icon_wrap.selected {
-				border: 0.2em solid #007aff;
+				border: 0.2em solid $blue;
 				filter: brightness(0.75);
 			}
 		}
@@ -108,6 +110,18 @@
 	&.pushed {
 		margin-left: -20em;
 	}
+
+	&.distract {
+		#time {
+			opacity: .8;
+		}
+
+		#credit, #main, #sb_container, #linkblocks {
+			opacity: 0;
+			transition: opacity .2s;
+		}
+	}
+		
 }
 
 #edit_linkContainer {
@@ -125,7 +139,7 @@
 		background: $settingsGrey;
 		color: #333;
 		border-radius: 15px;
-		background: #fff;
+		background: $purewhite;
 		font-family: sf_pro_textregular;
 		border-radius: 10px;
 		box-shadow: 1px 2px 25px rgba(34,34,34,.6);
@@ -192,7 +206,7 @@
 			box-sizing: border-box;
 			border-radius: 9px;
 			font-size: .9em;
-			background: #e3e3e5;
+			background: $inputGrey;
 			border-radius: 8px;
 			height: 2.35em;
 			margin: .3em 0;
@@ -247,7 +261,7 @@
 			transition: opacity .1s ease-in;
 			font-family: sf_pro_textregular;
 			font-size: .9em;
-			color: #007aff;
+			color: $blue;
 			margin-bottom: 2em;
 
 			svg {
@@ -347,6 +361,16 @@
 			transition: transform .2s;
 		}
 	}
+
+	&.distract {
+		opacity: 0;
+		transition: opacity .1s;
+
+		&:hover {
+			opacity: 1;
+			transition: opacity .1s;
+		}
+	}
 }
 
 #settings {
@@ -366,7 +390,7 @@
 
 	hr {
 		border: none;
-		border-bottom: 1px solid #c8c7cc;
+		border-bottom: 1px solid $borderGrey;
 		margin-top: .75em;
 		margin-bottom: .75em;
 		margin-right: -1.3em;
@@ -404,15 +428,15 @@
 
 	.title {
 		background-color : #ffffff;
-		border-top: 1px solid #c8c7cc;
-		border-bottom: 1px solid #c8c7cc;
+		border-top: 1px solid $borderGrey;
+		border-bottom: 1px solid $borderGrey;
 		padding: .5em 0;
 	}
 
 	.param {
 		background-color : #ffffff;
-		border-top: 1px solid #c8c7cc;
-		border-bottom: 1px solid #c8c7cc;
+		border-top: 1px solid $borderGrey;
+		border-bottom: 1px solid $borderGrey;
 		padding: .75em 1.3em;
 	}
 
@@ -465,14 +489,13 @@
 		    left: 0;
 		    top: 0;
 		    cursor: pointer;
-		    background-color: green;
 	    }
 
 	    &.dragover {
 	    	background-color: $blue;
 
 	    	p {
-	    		color: white;
+	    		color: $purewhite;
 	    	}
 	    }
 	}
@@ -537,7 +560,7 @@
 		border-radius: 8.5px;
 		padding: .5em 0 0 .5em;
 		vertical-align: top;
-		background-color: #e3e3e5;
+		background-color: $inputGrey;
 		border: 0px;
 	}
 
@@ -576,6 +599,7 @@
 
 					svg {
 						width: 1.25em;
+						fill: $blue;
 					}
 				}	
 			}
