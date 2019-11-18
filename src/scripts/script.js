@@ -204,7 +204,7 @@ function greetings() {
 	id("greetings").innerText = message;
 }
 
-function quickLinks(event, that) {
+function quickLinks(event, that, initStorage) {
 
 	//only on init
 	if(!event && !that) {
@@ -217,19 +217,16 @@ function quickLinks(event, that) {
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	function initblocks() {
+	function initblocks(storage) {
 
-		chrome.storage.sync.get("links", (data) => {
+		let array = storage.links || false;
 
-			let array = data.links || false;
+		if (array) {
 
-			if (array) {
-
-				for (let i in array) {
-					appendblock(array[i], i, array);
-				}
+			for (let i in array) {
+				appendblock(array[i], i, array);
 			}
-		});
+		}
 	}
 
 	function appendblock(arr, index, links) {
@@ -702,55 +699,52 @@ function quickLinks(event, that) {
 		}
 	}
 	else {
-		initblocks();
+		initblocks(initStorage);
 		editEvents();
 	}
 }
 
-function weather(event, that) {
+function weather(event, that, initStorage) {
 
 	const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 
-	function cacheControl() {
+	function cacheControl(storage) {
 
-		chrome.storage.sync.get(["weather", "lang"], (data) => {
+		let now = Math.floor((new Date()).getTime() / 1000);
+		let param = (storage.weather ? storage.weather : "");
 
-			let now = Math.floor((new Date()).getTime() / 1000);
-			let param = (data.weather ? data.weather : "");
+		if (storage.weather && storage.weather.lastCall) {
 
-			if (data.weather && data.weather.lastCall) {
+			
+			//si weather est vieux d'une demi heure (1800s)
+			//ou si on change de lang
+			//faire une requete et update le lastcall
+			if (sessionStorage.lang || now > storage.weather.lastCall + 1800) {
 
-				
-				//si weather est vieux d'une demi heure (1800s)
-				//ou si on change de lang
-				//faire une requete et update le lastcall
-				if (sessionStorage.lang || now > data.weather.lastCall + 1800) {
+				dataHandling(param.lastState);
+				request(param, "current");
 
-					dataHandling(param.lastState);
-					request(param, "current");
-
-					//si la langue a été changé, suppr
-					if (sessionStorage.lang) sessionStorage.removeItem("lang");
-
-				} else {
-
-					dataHandling(param.lastState);
-				}
-
-				//high ici
-				if (data.weather && data.weather.fcDay === (new Date).getDay()) {
-					id("temp_max").innerText = data.weather.fcHigh + "°";
-				} else {
-					request(data.weather, "forecast");
-				}
+				//si la langue a été changé, suppr
+				if (sessionStorage.lang) sessionStorage.removeItem("lang");
 
 			} else {
 
-				//initialise a Paris + Metric
-				//c'est le premier call, requete + lastCall = now
-				initWeather();
+				dataHandling(param.lastState);
 			}
-		});
+
+			//high ici
+			if (storage.weather && storage.weather.fcDay === (new Date).getDay()) {
+				id("temp_max").innerText = storage.weather.fcHigh + "°";
+			} else {
+				request(storage.weather, "forecast");
+			}
+
+		} else {
+
+			//initialise a Paris + Metric
+			//c'est le premier call, requete + lastCall = now
+			initWeather();
+		}
 	}
 
 	
@@ -1098,7 +1092,7 @@ function weather(event, that) {
 		updateLocation(that);
 	}
 	else {
-		cacheControl();
+		cacheControl(initStorage);
 	}
 }
 
@@ -1163,24 +1157,21 @@ function imgBackground(val) {
 	else return id("background").style.backgroundImage;
 }
  
-function initBackground() {
+function initBackground(storage) {
 
-	chrome.storage.sync.get(["dynamic", "background_image", "background_type", "background_blur", "background_bright"], (data) => {
+		let type = storage.background_type || "default";
+		let image = storage.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
 
-		let type = data.background_type || "default";
-		let image = data.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
-
-
-		if (data.background_type === "custom") {
+		if (storage.background_type === "custom") {
 			//reste local !!!!
 			chrome.storage.local.get("background_blob", (data) => {
 				imgBackground(setblob(data.background_blob));
 			});
 			imgCredits(null, type);
 		}
-		else if (data.background_type === "dynamic") {
+		else if (storage.background_type === "dynamic") {
 
-			unsplash(data.dynamic)
+			unsplash(storage.dynamic)
 
 		} else {
 
@@ -1189,13 +1180,12 @@ function initBackground() {
 		}
 
 
-		var blur = (Number.isInteger(data.background_blur) ? data.background_blur : 25);
-		var bright = (!isNaN(data.background_bright) ? data.background_bright : 1);
+		var blur = (Number.isInteger(storage.background_blur) ? storage.background_blur : 25);
+		var bright = (!isNaN(storage.background_bright) ? storage.background_bright : 1);
 
 		filter("init", [blur, bright]);
 
 		id("background").style.animation =  "fade .15s ease-in forwards";
-	});	
 }
 
 function setblob(donnee, reader) {
@@ -1448,7 +1438,7 @@ function filter(cat, val) {
 	}
 }
 
-function darkmode(choix) {
+function darkmode(choix, initStorage) {
 	
 	function isIOSwallpaper(dark) {
 
@@ -1549,13 +1539,8 @@ function darkmode(choix) {
 	}
 
 	if (choix) darkModeSwitch(choix, true);
-	else {
-		chrome.storage.sync.get("dark", (data) => {
-			darkModeSwitch(data.dark);
-		});
-	}	
+	else darkModeSwitch(initStorage.dark);	
 }
-
 
 function distractMode(that) {
 
@@ -1593,15 +1578,13 @@ function distractMode(that) {
 	}
 }
 
-
-
 function searchbarFlexControl(activated, linkslength) {
 
 	let state = (activated ? "shown" : "removed");
 	attr(id("sb_container"), state);
 }
 
-function searchbar(event, that) {
+function searchbar(event, that, initStorage) {
 
 	function activate(activated, links, init) {
 
@@ -1642,31 +1625,28 @@ function searchbar(event, that) {
 		chrome.storage.sync.set({"searchbar_engine": choice});
 	}
 
-	function init() {
+	function init(storage) {
 
-		chrome.storage.sync.get(["searchbar", "searchbar_engine", "links"], (data) => {
+		if (storage.searchbar) {
 
-			if (data.searchbar) {
+			//display
+			activate(true, storage.links, true);
 
-				//display
-				activate(true, data.links, true);
-
-				if (data.searchbar_engine) {
-					chooseSearchEngine(data.searchbar_engine);
-				} else {
-					chooseSearchEngine("s_startpage");
-				}
-
+			if (storage.searchbar_engine) {
+				chooseSearchEngine(storage.searchbar_engine);
 			} else {
-				activate(false, data.links, true);
+				chooseSearchEngine("s_startpage");
 			}
-		});
+
+		} else {
+			activate(false, storage.links, true);
+		}
 	}
 	
 
 	if (event === "searchbar") activate(that.checked);
 	else if (event === "engine") chooseSearchEngine(that.value);
-	else init();
+	else init(initStorage);
 }
 
 // Signature aléatoire
@@ -1686,13 +1666,18 @@ function mobilecheck() {
 }
 
 
-initBackground();
-traduction();
-clock();
-date();
-greetings();
-weather();
-searchbar();
-quickLinks();
-darkmode();
-distractMode();
+
+chrome.storage.sync.get(["weather", "lang", "dynamic", "background_image", "background_type", "background_blur", "background_bright", "searchbar", "searchbar_engine", "links", "dark"], (data) => {
+	
+	traduction();
+	clock();
+	date();
+	greetings();
+	distractMode();
+	darkmode(null, data);
+	initBackground(data);
+	weather(null, null, data);
+	quickLinks(null, null, data);
+	searchbar(null, null, data);
+});
+
