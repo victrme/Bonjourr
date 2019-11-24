@@ -67,13 +67,18 @@ body {
     transform: rotate(-1.5deg);
     animation-timing-function: ease-out; } }
 
-#background {
+#background_overlay {
   z-index: -1;
   position: fixed;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
-  opacity: 1;
   transform: scale(1.1);
+}
+
+#background {
+  position: relative;
+  width: 100%;
+  height: 100%;
   background-color: #000;
   background-size: cover;
   background-position: center center; }
@@ -84,7 +89,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  transition: margin .2s;
+  transition: transform .2s;
+  will-change: transform;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); }
   #interface #time {
     display: flex;
@@ -271,8 +277,8 @@ body {
       cursor: default;
       opacity: 0;
       transition: opacity .1s; }
-  #interface.pushed {
-    margin-left: -20em; }
+  /*#interface.pushed {
+    margin-left: -20em; }*/
   #interface.distract #time {
     opacity: .8; }
   #interface.distract #credit, #interface.distract #main, #interface.distract #sb_container, #interface.distract #linkblocks {
@@ -406,11 +412,11 @@ body {
     transition: opacity .1s; }
   #edit_linkContainer.shown {
     display: flex;
-    right: 0;
-    transition: right .2s; }
-  #edit_linkContainer.pushed {
+    /*right: 0;*/
+    transition: transform .2s; }
+  /*#edit_linkContainer.pushed {
     right: 10em;
-    transition: right .2s; }
+    transition: right .2s; }*/
 
 #credit {
   position: fixed;
@@ -475,12 +481,8 @@ body {
   text-shadow: none;
   text-align: left;
   color: #222;
-  transition: right .2s;
-  /* Switch */
-  /* Slider */
-  /* Chrome, Opera & Safari */
-  /* Firefox */
-  /*Edge*/ }
+  transition: transform .2s;
+  will-change: transform; }
   #settings hr {
     border: none;
     border-bottom: 1px solid #c8c7cc;
@@ -782,9 +784,9 @@ body {
       margin-top: 1.5em; }
       #settings .signature #rdv_website > a {
         margin-top: 1em; }
-  #settings.shown {
+  /*#settings.shown {
     right: 0;
-    box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5); }
+    box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5); }*/
 
 body.dark #interface, body.autodark #interface {
   color: #eee; }

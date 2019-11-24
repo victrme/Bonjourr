@@ -752,7 +752,7 @@ function weather(event, that, initStorage) {
 	
 	function initWeather() {
 
-		var param = {
+		let param = {
 			city: "Paris",
 			ccode: "FR",
 			location: false,
@@ -789,7 +789,7 @@ function weather(event, that, initStorage) {
 		
 		function urlControl(arg, forecast) {
 
-			var url = 'https://api.openweathermap.org/data/2.5/';
+			let url = 'https://api.openweathermap.org/data/2.5/';
 
 
 			if (forecast)
@@ -814,8 +814,8 @@ function weather(event, that, initStorage) {
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
-			var now = Math.floor((new Date()).getTime() / 1000);
-			var param = parameters;
+			let now = Math.floor((new Date()).getTime() / 1000);
+			let param = parameters;
 			param.lastState = response;
 			param.lastCall = now;
 			chrome.storage.sync.set({"weather": param});
@@ -829,10 +829,10 @@ function weather(event, that, initStorage) {
 
 			function findHighTemps(d) {
 			
-				var i = 0;
-				var newDay = new Date(d.list[0].dt_txt).getDay();
-				var currentDay = newDay;
-				var arr = [];
+				let i = 0;
+				let newDay = new Date(d.list[0].dt_txt).getDay();
+				let currentDay = newDay;
+				let arr = [];
 				
 
 				//compare la date toute les 3h (list[i])
@@ -846,16 +846,16 @@ function weather(event, that, initStorage) {
 					i += 1;
 				}
 
-				var high = Math.floor(Math.max(...arr));
+				let high = Math.floor(Math.max(...arr));
 
 				//renvoie high
 				return [high, currentDay];
 			}
 
-			var fc = findHighTemps(response);
+			let fc = findHighTemps(response);
 
 			//sauvegarder la derniere meteo
-			var param = parameters;
+			let param = parameters;
 			param.fcHigh = fc[0];
 			param.fcDay = fc[1];
 			chrome.storage.sync.set({"weather": param});
@@ -863,14 +863,14 @@ function weather(event, that, initStorage) {
 			id("temp_max").innerText = param.fcHigh + "°";
 		}
 
-		var url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
+		let url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
 
-		var request_w = new XMLHttpRequest();
+		let request_w = new XMLHttpRequest();
 		request_w.open('GET', url, true);
 
 		request_w.onload = function() {
 			
-			var resp = JSON.parse(this.response);
+			let resp = JSON.parse(this.response);
 
 			if (request_w.status >= 200 && request_w.status < 400) {
 
@@ -1150,11 +1150,15 @@ function imgBackground(val) {
 
 	if (val) {
 		let img = new Image;
-		let load = () => id("background").style.backgroundImage = `url(${val})`;
+		let load = function() {
+			id("background").style.backgroundImage = `url(${val})`;
+			id("background_overlay").style.animation =  "fade .2s ease-in forwards";
+		}
 
 		img.onload = load;
 		img.src = val;
 		img.remove();
+		
 	} 
 	else return id("background").style.backgroundImage;
 }
@@ -1182,12 +1186,10 @@ function initBackground(storage) {
 		}
 
 
-		var blur = (Number.isInteger(storage.background_blur) ? storage.background_blur : 25);
-		var bright = (!isNaN(storage.background_bright) ? storage.background_bright : 1);
+		let blur = (Number.isInteger(storage.background_blur) ? storage.background_blur : 25);
+		let bright = (!isNaN(storage.background_bright) ? storage.background_bright : 1);
 
 		filter("init", [blur, bright]);
-
-		id("background").style.animation =  "fade .15s ease-in forwards";
 }
 
 function setblob(donnee, reader) {
@@ -1422,22 +1424,24 @@ function remSelectedPreview() {
 
 function filter(cat, val) {
 
+	let result = "";
+
 	switch (cat) {
 
 		case "init":
-			id('background').style.filter = `blur(${val[0]}px) brightness(${val[1]})`;
+			result = `blur(${val[0]}px) brightness(${val[1]})`;
 			break;
 
 		case "blur":
-			let brightness = id("i_bright").value;
-			id('background').style.filter = `blur(${val}px) brightness(${brightness})`;
+			result = `blur(${val}px) brightness(${id("i_bright").value})`;
 			break;
 
 		case "bright":
-			let blur = id("i_blur").value;
-			id('background').style.filter = `blur(${blur}px) brightness(${val})`;
+			result = `blur(${id("i_blur").value}px) brightness(${val})`;
 			break;
 	}
+
+	id('background').style.filter = result;
 }
 
 function darkmode(choix, initStorage) {

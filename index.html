@@ -14,41 +14,39 @@
 </head>
 
 <body>
-
-	<div id="showSettings" class="distract">
-		<button><img src="src/images/icons/gear.png"></button>
+	
+	<div id="background_overlay">
+		<div id="background"></div>
 	</div>
-
-
-	<div id="edit_linkContainer">
-		<div id="edit_link">
-
-			<button id="e_close" class="trn">Cancel</button>
-
-			<div>
-				<input id="e_title" type="text" name="e_title" placeholder="Title">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_title">
-			</div>
-			<div>
-				<input id="e_url" type="text" name="e_url" placeholder="Link">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_url">
-			</div>
-			<div>
-				<input id="e_iconurl" type="url" name="e_iconurl" placeholder="Icon">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_iconurl">
-			</div>
-
-
-			<div class="linkOptions">
-				<button id="e_delete" class="trn">Delete Quick Link</button>
-				<button id="e_submit" class="trn">Apply changes</button>
-			</div>
-		</div>
-	</div>
-
-	<div id="background"></div>
 	
 	<div id="interface" class="distract">
+
+		<div id="edit_linkContainer">
+			<div id="edit_link">
+
+				<button id="e_close" class="trn">Cancel</button>
+
+				<div>
+					<input id="e_title" type="text" name="e_title" placeholder="Title">
+					<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_title">
+				</div>
+				<div>
+					<input id="e_url" type="text" name="e_url" placeholder="Link">
+					<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_url">
+				</div>
+				<div>
+					<input id="e_iconurl" type="url" name="e_iconurl" placeholder="Icon">
+					<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_iconurl">
+				</div>
+
+
+				<div class="linkOptions">
+					<button id="e_delete" class="trn">Delete Quick Link</button>
+					<button id="e_submit" class="trn">Apply changes</button>
+				</div>
+			</div>
+		</div>
+		
 		<div id="time">
 			<img src="src/images/shadow.png" class="shadow" draggable="false" defer>
 			<div class="time-container">
@@ -96,12 +94,16 @@
 		<div id="linkblocks">
 			<a href="" id="hiddenlink"></a>
 		</div>
+	</div>
 
-		<div id="credit" class="hidden">
-			<a id="location" href=""></a>
-			<a id="artist" href=""></a>
-			<a id="onUnsplash" href="https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral"> on Unsplash</a>
-		</div>
+	<div id="credit" class="hidden">
+		<a id="location" href=""></a>
+		<a id="artist" href=""></a>
+		<a id="onUnsplash" href="https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral"> on Unsplash</a>
+	</div>
+
+	<div id="showSettings" class="distract">
+		<button><img src="src/images/icons/gear.png"></button>
 	</div>
 
 	<script src="src/scripts/lang.js"></script>

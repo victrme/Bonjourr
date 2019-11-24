@@ -34,3 +34,14 @@
 #interface #sb_container.shown #searchbar:focus {
 	opacity: 1;
 }
+
+
+#interface.pushed {
+	-webkit-transform: translateX(-10em);
+	transform: translateX(-10em);
+}
+
+#settings.shown {
+	-webkit-transform: translateX(-100%);
+	transform: translateX(-100%);
+}
