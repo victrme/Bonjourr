@@ -500,12 +500,16 @@ document.onkeydown = function(e) {
 
 
 function settings() {
-	settingsEvents();
+
 	initParams();
-	signature();
-	defaultBg();
-	importExport("exp");
-	checkifpro();
+
+	setTimeout(function() {
+		settingsEvents();
+		signature();
+		defaultBg();
+		//importExport("exp");
+		//checkifpro();
+	}, 200);
 }
 
 function checkifpro() {

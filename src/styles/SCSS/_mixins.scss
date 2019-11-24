@@ -77,7 +77,7 @@
 		transition: none;
 
 		#searchbar {
-			opacity: 0.8;
+			opacity: 0;
 			font-size: 1.5em;
 			color: rgba(0,0,0,0.6);
 			width: calc(100% - 2em);
@@ -109,13 +109,11 @@
 		&.shown {
 			display: block;
 			visibility: visible;
-			opacity: 1;
 			height: 52px;
 		}
 
 		&.hidden {
 			visibility: hidden;
-			opacity: 0;
 			padding: 0;
 			height: 2px;
 		}

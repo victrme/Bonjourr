@@ -18,8 +18,6 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	opacity: 0;
-	animation: fade .04s ease-in forwards;;
 	transition: margin .2s;
 	text-shadow: 0 1px 5px rgba(0,0,0,.2);
 
@@ -30,7 +28,7 @@
 		align-items: center;
 		margin-right: auto;
 		margin-left: auto;
-		transition: opacity .2s;
+		transition: opacity .1s;
 
 		.shadow {
 			z-index: -1;
@@ -60,7 +58,7 @@
 		justify-content: center;
 		margin-right: auto;
 		margin-left: auto;
-		transition: opacity .2s;
+		transition: opacity .1s;
 
 		#weather #widget.shown {
 			opacity: 1;
@@ -116,9 +114,9 @@
 			opacity: .8;
 		}
 
-		#credit, #main, #sb_container, #linkblocks {
+		#credit, #main, #linkblocks {
 			opacity: 0;
-			transition: opacity .2s;
+			transition: opacity .1s;
 		}
 	}
 		

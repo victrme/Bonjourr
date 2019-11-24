@@ -1,3 +1,36 @@
 #settings .pro {
 	display: none;
 }
+
+
+#interface.distract #linkblocks,
+#interface.distract #sb_container,
+#showSettings.distract {
+	opacity: 0;
+	transition: opacity .1s;
+}
+
+#interface #linkblocks,
+#sb_container,
+#showSettings {
+	transition: opacity .1s;
+}
+
+
+
+
+
+@keyframes sbfade {
+  from {
+    opacity: 0; }
+  to {
+    opacity: .8; } }
+
+#interface #sb_container.shown #searchbar {
+	animation: sbfade .08s ease-in .0s 1 normal;
+	opacity: .8;
+}
+
+#interface #sb_container.shown #searchbar:focus {
+	opacity: 1;
+}

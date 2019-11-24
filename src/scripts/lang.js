@@ -509,6 +509,18 @@ function askfordict() {
       de: "Mit Bing suchen",
       it: "Cerca su Bing"
     },
+    "Search on Qwant": {
+      fr: "Rechercher sur Qwant",
+      sv: "Sök med Qwant",
+      nl: "Zoek op Qwant",
+      pl: "Szukaj z Qwant",
+      pt_BR: "Buscar no Qwant",
+      ru: "Поиск в Qwant",
+      zh_CN: "搜索 Qwant",
+      sk: "Vyhľadávanie Qwant",
+      de: "Mit Qwant suchen",
+      it: "Cerca su Qwant"
+    },
     "GENERAL": {
       fr: "Général",
       sv: "General",

@@ -79,12 +79,11 @@ body {
   background-position: center center; }
 
 #interface {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  opacity: 0;
-  animation: fade .04s ease-in forwards;
   transition: margin .2s;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); }
   #interface #time {
@@ -94,7 +93,7 @@ body {
     align-items: center;
     margin-right: auto;
     margin-left: auto;
-    transition: opacity .2s; }
+    transition: opacity .1s; }
     #interface #time .shadow {
       z-index: -1;
       position: absolute;
@@ -116,7 +115,7 @@ body {
     justify-content: center;
     margin-right: auto;
     margin-left: auto;
-    transition: opacity .2s; }
+    transition: opacity .1s; }
     #interface #main #weather #w_icon #widget.shown {
       opacity: 1; }
     #interface #main .shadow {
@@ -155,13 +154,11 @@ body {
   #interface #sb_container {
     visibility: hidden;
     display: none;
-    opacity: 0;
     height: 2px;
     width: 100%;
-    padding: 0;
-    transition: none; }
+    padding: 0; }
     #interface #sb_container #searchbar {
-      opacity: 0.8;
+      opacity: 0;
       font-size: 1.5em;
       color: rgba(0, 0, 0, 0.6);
       width: calc(100% - 2em);
@@ -184,7 +181,6 @@ body {
     #interface #sb_container.shown {
       display: block;
       visibility: visible;
-      opacity: 1;
       height: 52px; }
     #interface #sb_container.hidden {
       visibility: hidden;

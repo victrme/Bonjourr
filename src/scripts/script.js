@@ -373,6 +373,8 @@ function quickLinks(event, that, initStorage) {
 		//i is the quick link index here
 		if (i || i === 0) {
 
+
+
 			chrome.storage.sync.get("links", (data) => {
 				let allLinks = data.links;
 				let element = {
@@ -1542,7 +1544,7 @@ function darkmode(choix, initStorage) {
 	else darkModeSwitch(initStorage.dark);	
 }
 
-function distractMode(that) {
+function distractMode(that, initStorage) {
 
 	function apply(on) {
 
@@ -1572,9 +1574,7 @@ function distractMode(that) {
 	if (localDist) {
 		apply(localDist);
 	} else {
-		chrome.storage.sync.get("distract", (data) => {
-			apply(data.distract);
-		});
+		apply(initStorage);
 	}
 }
 
@@ -1584,30 +1584,21 @@ function searchbarFlexControl(activated, linkslength) {
 	attr(id("sb_container"), state);
 }
 
-function searchbar(event, that, initStorage) {
+function searchbar(event, that, storage) {
 
-	function activate(activated, links, init) {
+	function display(value, init) {
 
-		if (activated) {	
+		id("sb_container").setAttribute("class", (value ? "shown" : "hidden"));
 
-			if(!init) id("choose_searchengine").setAttribute("class", "shown");
-
-			searchbarFlexControl(activated, (links ? links.length : 0));
-			chrome.storage.sync.set({"searchbar": true});
-			
-		} else {
-
-			//pour animer un peu
-			if(!init) id("choose_searchengine").setAttribute("class", "hidden");
-			
-			searchbarFlexControl(activated, (links ? links.length : 0));
-			chrome.storage.sync.set({"searchbar": false});
+		if(!init) {
+			chrome.storage.sync.set({"searchbar": value});
+			id("choose_searchengine").setAttribute("class", (value ? "shown" : "hidden"));
 		}
 	}
 
-	function chooseSearchEngine(choice) {
+	function engine(value, init) {
 
-		var engines = {
+		let engines = {
 			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", "Search on Startpage"],
 			"s_ddg" : ["https://duckduckgo.com/?q=", "Search on DuckDuckGo"],
 			"s_qwant" : ["https://www.qwant.com/?q=", "Search on Qwant"],
@@ -1617,36 +1608,26 @@ function searchbar(event, that, initStorage) {
 			"s_bing" : ["https://www.bing.com/search?q=", "Search on Bing"]
 		}
 
-		var placeholder = tradThis(engines[choice][1]);
+		id("sb_form").setAttribute("action", engines[value][0]);
+		id("searchbar").setAttribute("placeholder", tradThis(engines[value][1]));
 
-		id("sb_form").setAttribute("action", engines[choice][0]);
-		id("searchbar").setAttribute("placeholder", placeholder);
-
-		chrome.storage.sync.set({"searchbar_engine": choice});
+		if(!init) chrome.storage.sync.set({"searchbar_engine": value});
 	}
 
-	function init(storage) {
+	if (event) {
 
-		if (storage.searchbar) {
+		(event === "searchbar" ? display(that.checked) : engine(that.value))
 
-			//display
-			activate(true, storage.links, true);
+	//init
+	} else {
 
-			if (storage.searchbar_engine) {
-				chooseSearchEngine(storage.searchbar_engine);
-			} else {
-				chooseSearchEngine("s_startpage");
-			}
+		let searchbar = storage.searchbar || false;
+		let searchengine = storage.searchbar_engine || "s_startpage";
 
-		} else {
-			activate(false, storage.links, true);
-		}
+		//display
+		display(searchbar, true);
+		engine(searchengine, true);
 	}
-	
-
-	if (event === "searchbar") activate(that.checked);
-	else if (event === "engine") chooseSearchEngine(that.value);
-	else init(initStorage);
 }
 
 // Signature aléatoire
@@ -1665,19 +1646,18 @@ function mobilecheck() {
 	return check;
 }
 
-
-
-chrome.storage.sync.get(["weather", "lang", "dynamic", "background_image", "background_type", "background_blur", "background_bright", "searchbar", "searchbar_engine", "links", "dark"], (data) => {
+chrome.storage.sync.get(["weather", "lang", "dynamic", "background_image", "background_type", "background_blur", "background_bright", "searchbar", "searchbar_engine", "links", "dark", "distract"], (data) => {
 	
 	traduction();
 	clock();
 	date();
 	greetings();
-	distractMode();
+	distractMode(null, data.distract);
 	darkmode(null, data);
 	initBackground(data);
 	weather(null, null, data);
 	quickLinks(null, null, data);
 	searchbar(null, null, data);
-});
 
+	if (mobilecheck()) id("interface").style.height = `calc(${window.innerHeight}px`;
+});
