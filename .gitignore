@@ -6,3 +6,6 @@ src/.DS_Store
 config.codekit3
 .DS_Store
 .directory
+
+node_modules/
+package-lock.json

@@ -1152,7 +1152,7 @@ function imgBackground(val) {
 		let img = new Image;
 		let load = function() {
 			id("background").style.backgroundImage = `url(${val})`;
-			id("background_overlay").style.animation =  "fade .2s ease-in forwards";
+			id("background_overlay").style.animation =  "fade .1s ease-in forwards";
 		}
 
 		img.onload = load;

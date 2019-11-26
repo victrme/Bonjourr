@@ -1,0 +1,33 @@
+{
+  "name": "bonjourr",
+  "version": "1.8.2",
+  "description": "iOS styled startpage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victorazevedo-me/Bonjourr.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/victorazevedo-me/Bonjourr/issues"
+  },
+  "homepage": "https://bonjourr.fr",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-minify": "^0.5.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "cssnano": "^4.1.10",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-babel-minify": "^0.5.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5"
+  }
+}
