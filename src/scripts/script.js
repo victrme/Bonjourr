@@ -188,20 +188,15 @@ function date() {
 }
 	
 function greetings() {
-	let h = (new Date()).getHours();
+	const h = (new Date()).getHours();
 	let message;
 
-	if (h > 6 && h < 12) {
-		message = tradThis('Good Morning');
-	} else if (h >= 12 && h < 18) {
-		message = tradThis('Good Afternoon');
-	} else if (h >= 18 && h <= 23) {
-		message = tradThis('Good Evening');
-	} else {
-		message = tradThis('Good Night');
-	}
+	if (h > 6 && h < 12) message = "Good Morning";
+	else if (h >= 12 && h < 18) message = "Good Afternoon";
+	else if (h >= 18 && h <= 23) message = "Good Evening";
+	else message = "Good Night";
 
-	id("greetings").innerText = message;
+	id("greetings").innerText = tradThis(message);
 }
 
 function quickLinks(event, that, initStorage) {
@@ -657,7 +652,8 @@ function quickLinks(event, that, initStorage) {
 
 	function openlink(that, e) {
 
-		let source = that.children[0].getAttribute("source");
+		const source = that.children[0].getAttribute("source");
+		const a_hiddenlink = id("hiddenlink");
 
 		chrome.storage.sync.get("linknewtab", (data) => {
 
@@ -677,28 +673,23 @@ function quickLinks(event, that, initStorage) {
 
 				} else {
 
-					id("hiddenlink").setAttribute("href", source);
-					id("hiddenlink").setAttribute("target", "_self");
-					id("hiddenlink").click();
+					a_hiddenlink.setAttribute("href", source);
+					a_hiddenlink.setAttribute("target", "_self");
+					a_hiddenlink.click();
 				}
 			}	
 		});
 	}
 
-	if (event === "input") {
-		if (that.which === 13) linkSubmission();
-	}
-	else if (event === "button") {
-		linkSubmission();
-	}
+	//TOUT LES EVENTS, else init
+
+	if (event === "input" && that.which === 13) linkSubmission();
+
+	else if (event === "button") linkSubmission();
+
 	else if (event === "linknewtab") {
-		if (that.checked) {
-			chrome.storage.sync.set({"linknewtab": true});
-			id("hiddenlink").setAttribute("target", "_blank");
-		} else {
-			chrome.storage.sync.set({"linknewtab": false});
-			id("hiddenlink").setAttribute("target", "_blank");
-		}
+		chrome.storage.sync.set({"linknewtab": (that.checked ? true : false)});
+		id("hiddenlink").setAttribute("target", "_blank");
 	}
 	else {
 		initblocks(initStorage);
@@ -707,8 +698,6 @@ function quickLinks(event, that, initStorage) {
 }
 
 function weather(event, that, initStorage) {
-
-	const WEATHER_API_KEY = ["YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=", "Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=", "N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
 
 	function cacheControl(storage) {
 
@@ -749,7 +738,6 @@ function weather(event, that, initStorage) {
 		}
 	}
 
-	
 	function initWeather() {
 
 		let param = {
@@ -782,7 +770,6 @@ function weather(event, that, initStorage) {
 			request(param, "forecast");
 		});
 	}
-
 	
 	function request(arg, wCat) {
 
@@ -888,7 +875,6 @@ function weather(event, that, initStorage) {
 
 		request_w.send();
 	}	
-
 	
 	function dataHandling(data) {
 
@@ -968,7 +954,6 @@ function weather(event, that, initStorage) {
 		getDescription();
 		getIcon();
 	}
-
 	
 	function submissionError(error) {
 
@@ -986,36 +971,39 @@ function weather(event, that, initStorage) {
 			}, 200);
 		}
 	}
-
 	
+
 	function updateCity() {
+
+		slow(that);
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
-			let param = data.weather;
+			const param = data.weather;
 
-			param.ccode = id("i_ccode").value;
-			param.city = id("i_city").value;
+			param.ccode = i_ccode.value;
+			param.city = i_city.value;
 
 			if (param.city.length < 2) return false;
 
 			request(param, "current");
 			request(param, "forecast");
 
-			id("i_city").setAttribute("placeholder", param.city);
-			id("i_city").value = "";
-			id("i_city").blur();
+			i_city.setAttribute("placeholder", param.city);
+			i_city.value = "";
+			i_city.blur();
 
 			chrome.storage.sync.set({"weather": param});
 		});	
 	}
 
-	
 	function updateUnit(that) {
+
+		slow(that);
 
 		chrome.storage.sync.get(["weather"], (data) => {
 
-			let param = data.weather;
+			const param = data.weather;
 
 			if (that.checked) {
 				param.unit = "imperial";
@@ -1029,13 +1017,14 @@ function weather(event, that, initStorage) {
 			chrome.storage.sync.set({"weather": param});
 		});
 	}
-
 	
 	function updateLocation(that) {
 
+		slow(that);
+
 		chrome.storage.sync.get(["weather"], (data) => {
 
-			let param = data.weather;
+			const param = data.weather;
 			param.location = [];
 
 			if (that.checked) {
@@ -1053,7 +1042,7 @@ function weather(event, that, initStorage) {
 					request(param, "forecast");
 
 					//update le setting
-					id("sett_city").setAttribute("class", "city hidden");
+					sett_city.setAttribute("class", "city hidden");
 					that.removeAttribute("disabled");
 					
 				}, (refused) => {
@@ -1067,10 +1056,10 @@ function weather(event, that, initStorage) {
 
 			} else {
 
-				id("sett_city").setAttribute("class", "city");
+				sett_city.setAttribute("class", "city");
 
-				id("i_city").setAttribute("placeholder", param.city);
-				id("i_ccode").value = param.ccode;
+				i_city.setAttribute("placeholder", param.city);
+				i_ccode.value = param.ccode;
 
 				param.location = false;
 				chrome.storage.sync.set({"weather": param});
@@ -1081,37 +1070,53 @@ function weather(event, that, initStorage) {
 		});
 	}
 
-	//TOUT LES EVENTS
-	if (event === "city") {
-		updateCity();
-		slow(that);
-	}
-	else if (event === "units") {
-		updateUnit(that);
-		slow(that);
-	}
-	else if (event === "geol") {
-		updateLocation(that);
-	}
-	else {
-		cacheControl(initStorage);
+	const WEATHER_API_KEY = [
+	"YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=",
+	"Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=",
+	"N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
+	const i_city = id("i_city");
+	const i_ccode = id("i_ccode");
+	const sett_city = id("sett_city");
+
+	//TOUT LES EVENTS, default c'est init
+	switch(event) {
+
+		case "city":
+			updateCity();
+			break;
+
+		case "units":
+			updateUnit(that);
+			break;
+
+		case "geol":
+			updateLocation(that);
+			break;
+
+		default:
+			cacheControl(initStorage);
 	}
 }
 
 function imgCredits(src, type) {
 
+	const location = id("location");
+	const artist = id("artist");
+	const credit = id("credit");
+	const onUnsplash = id("onUnsplash");
+
 	if (type === "dynamic") {
-		attr(id("onUnsplash"), "shown");
-		id("location").innerText = src.location.text;
-		id("location").setAttribute("href", src.location.url);
-		id("artist").innerText = src.artist.text;
-		id("artist").setAttribute("href", src.artist.url);
+		attr(onUnsplash, "shown");
+		location.innerText = src.location.text;
+		location.setAttribute("href", src.location.url);
+		artist.innerText = src.artist.text;
+		artist.setAttribute("href", src.artist.url);
 	} else {
-		if (type === "default") attr(id("onUnsplash"), "hidden")
+		if (type === "default") attr(onUnsplash, "hidden")
 	}
 
-	if (type === "custom") attr(id("credit"), "hidden");
-	else attr(id("credit"), "shown");
+	if (type === "custom") attr(credit, "hidden");
+	else attr(credit, "shown");
 
 	if (type === "default") {
 
@@ -1136,9 +1141,9 @@ function imgCredits(src, type) {
 		for (let i in credits) {
 
 			if (src && src.includes(credits[i].id)) {
-				id("location").setAttribute("href", credits[i].url);
-				id("location").innerText = credits[i].title + " - ";
-				id("artist").innerText = credits[i].artist;
+				location.setAttribute("href", credits[i].url);
+				location.innerText = credits[i].title + " - ";
+				artist.innerText = credits[i].artist;
 
 				return true;
 			}
@@ -1146,7 +1151,7 @@ function imgCredits(src, type) {
 	}
 }
 
-function imgBackground(val) {
+function imgBackground(val, nodisplay) {
 
 	if (val) {
 		let img = new Image;
@@ -1155,7 +1160,7 @@ function imgBackground(val) {
 			id("background_overlay").style.animation =  "fade .1s ease-in forwards";
 		}
 
-		img.onload = load;
+		img.onload = (nodisplay ? "" : load);
 		img.src = val;
 		img.remove();
 		
@@ -1378,10 +1383,12 @@ function unsplash(data, event) {
 					}
 
 				//si next existe, current devient next et next devient la requete
+				//preload la prochaine image (sans l'afficher)
 				} else {
 
 					d.current = d.next;
 					d.next = resp;
+					imgBackground(d.next.url, "nodisplay");
 					chrome.storage.sync.set({"dynamic": d});
 				}
 			}
@@ -1650,7 +1657,7 @@ function mobilecheck() {
 	return check;
 }
 
-chrome.storage.sync.get(["weather", "lang", "dynamic", "background_image", "background_type", "background_blur", "background_bright", "searchbar", "searchbar_engine", "links", "dark", "distract"], (data) => {
+chrome.storage.sync.get(null, (data) => {
 	
 	traduction();
 	clock();
