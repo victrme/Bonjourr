@@ -444,12 +444,15 @@ function showSettings(e, that) {
 } 
 
 function showInterface(e) {
+
 	//cherche le parent du click jusqu'a trouver linkblocks
-	var parent = e.target;
+	//seulement si click droit, quitter la fct
+	let parent = e.target;
+
 	while (parent !== null) {
 
 		parent = parent.parentElement;
-		if (parent && parent.id === "linkblocks") return false;
+		if (parent && parent.id === "linkblocks" && e.which === 3) return false;
 	}
 
 	//close edit container on interface click

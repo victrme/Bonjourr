@@ -22,9 +22,19 @@
 
 @keyframes sbfade {
   from {
-    opacity: 0; }
+    opacity: 0;}
   to {
-    opacity: .8; } }
+    opacity: .8;}
+}
+
+@keyframes editfade {
+  from {
+    opacity: 0;}
+  to {
+    opacity: 1;
+    display: flex;
+    }
+}
 
 #interface #sb_container.shown #searchbar {
 	animation: sbfade .08s ease-in .0s 1 normal;
@@ -36,7 +46,8 @@
 }
 
 
-#interface.pushed {
+#interface.pushed,
+#edit_linkContainer.pushed {
 	-webkit-transform: translateX(-10em);
 	transform: translateX(-10em);
 }
@@ -44,4 +55,19 @@
 #settings.shown {
 	-webkit-transform: translateX(-100%);
 	transform: translateX(-100%);
+}
+
+
+#edit_linkContainer {
+	position: fixed;
+	height: auto;
+	width: auto;
+	margin: auto;
+	top: 35%;
+	left: calc(50% - 150px);
+	z-index: 1;
+}
+
+#edit_linkContainer.shown {
+	animation: editfade .1s forwards;
 }

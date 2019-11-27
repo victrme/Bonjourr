@@ -425,7 +425,7 @@ function askfordict() {
       de: "Suchmaschine",
       it: "Motore di ricerca"
     },
-    "Activate": {
+    "Enable": {
       fr: "Activer",
       sv: "Aktivera",
       nl: "Activeren", // unsure
