@@ -1451,108 +1451,56 @@ function filter(cat, val) {
 	id('background').style.filter = result;
 }
 
-function darkmode(choix, initStorage) {
-	
-	function isIOSwallpaper(dark) {
+function darkmode(choice, initStorage) {
 
-		//défini les parametres a changer en fonction du theme
-		var modeurl, actual, urltouse;
+	function apply(state) {
 
-		if (dark) {
+		function auto(wdata) {
 
-			modeurl = "ios13_dark";
-			actual = "ios13_light";
-			urltouse = 'src/images/backgrounds/ios13_dark.jpg';
+			//compare current hour with weather sunset / sunrise
 
-		} else {
-			
-			modeurl = "ios13_light";
-			actual = "ios13_dark";
-			urltouse = 'src/images/backgrounds/ios13_light.jpg';
+			const ls = wdata.lastState;
+			const sunrise = new Date(ls.sys.sunrise * 1000).getHours();
+			const sunset = new Date(ls.sys.sunset * 1000).getHours();
+			const hr = (new Date()).getHours();
+
+			return (hr < sunrise || hr > sunset ? "dark" : "");
 		}
 
-		//et les applique ici
-		if (id("settings")) {
-			id("ios_wallpaper").children[0].setAttribute("src", "src/images/backgrounds/" + modeurl + ".jpg");
-		}
-		
-		if (imgBackground().includes(actual)) {
+		//uses chromesync data on startup, sessionsStorage on change
 
-			imgBackground(urltouse, "default");
-			chrome.storage.sync.set({"background_image": urltouse});
-		}
-	}
+		const weather = (initStorage ? initStorage.weather : JSON.parse(sessionStorage.data).weather);
+		let bodyClass;
 
-	
-	function applyDark(add, system) {
+		//dark mode is defines by the body class
 
-		if (add) {
-
-			if (system) {
-
-				document.body.setAttribute("class", "autodark");
-
-			} else {
-
-				document.body.setAttribute("class", "dark");
-				isIOSwallpaper(true);
-			}
-
-		} else {
-
-			document.body.removeAttribute("class");
-			isIOSwallpaper(false);
-		}
-	}
-
-	
-	function auto(weather) {
-
-		chrome.storage.sync.get("weather", (data) => {
-
-			var ls = data.weather.lastState;
-			var sunrise = new Date(ls.sys.sunrise * 1000);
-			var sunset = new Date(ls.sys.sunset * 1000);
-			var hr = new Date();
-
-			sunrise = sunrise.getHours() + 1;
-			sunset = sunset.getHours();
-			hr = hr.getHours();
-
-			if (hr < sunrise || hr > sunset) {
-				applyDark(true);
-			} else {
-				applyDark(false);
-			}
-		});
-	}
-	
-	function darkModeSwitch(val, isChange) {
-
-		switch (val) {
-			case "enable":
-				applyDark(true);
-				if (isChange) chrome.storage.sync.set({"dark": "enable"});
+		switch (state) {
+			case "system": 
+				bodyClass = "autodark";
 				break;
 
-			case "auto":
-				auto();
-				if (isChange) chrome.storage.sync.set({"dark": "auto"});
+			case "auto": 
+				bodyClass = auto(weather);
 				break;
-
-			case "system":
-				applyDark(true, true);
-				if (isChange) chrome.storage.sync.set({"dark": "system"});
+				
+			case "enable": 
+				bodyClass = "dark";
 				break;
-
-			default:
-				applyDark(false);
-				if (isChange) chrome.storage.sync.set({"dark": "disable"});
+				
+			default: 
+				bodyClass = "";		
 		}
-	}
 
-	if (choix) darkModeSwitch(choix, true);
-	else darkModeSwitch(initStorage.dark);	
+		document.body.setAttribute("class", bodyClass);
+	}
+	
+	//apply class, save if event
+	if (choice) {
+		apply(choice, true);
+		chrome.storage.sync.set({"dark": choice});
+	} else {
+		apply(initStorage.dark)
+	}
 }
 
 function distractMode(that, initStorage) {
@@ -1671,4 +1619,6 @@ chrome.storage.sync.get(null, (data) => {
 	searchbar(null, null, data);
 
 	if (mobilecheck()) id("interface").style.height = `calc(${window.innerHeight}px`;
+
+	sessionStorage.data = JSON.stringify(data);
 });
