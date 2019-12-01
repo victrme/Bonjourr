@@ -510,7 +510,7 @@ function settings() {
 		signature();
 		defaultBg();
 		//importExport("exp");
-		//checkifpro();
+		checkifpro();
 	}, 200);
 }
 
@@ -618,14 +618,54 @@ function checkifpro() {
 			}
 		}
 
+		function greeting(data) {
+
+			const text = id("greetings").innerText;
+			let pause;
+
+			function apply(val) {
+
+				//greeting is classic text + , + custom greet
+				id("greetings").innerText = `${text}, ${val}`;
+
+				//input empty removes ,
+				if (val === "") id("greetings").innerText = text;
+			}
+
+			function event(val) {
+
+				//reset save timeout
+				if (pause) clearTimeout(pause);
+
+				apply(val);
+				
+				//wait long enough to save to storage
+				pause = setTimeout(function() {
+					console.log("save");
+					chrome.storage.sync.set({"greeting": val});
+				}, 500);
+			}
+
+			//init
+			if (data !== undefined) {
+				id("i_greeting").value = data;
+				apply(data);
+			}
+
+			id("i_greeting").oninput = function() {
+				event(this.value)
+			}
+		} 
+
 		for (let i of cl("pro")) {
 			i.style.display = "block";
 		}
 
-		chrome.storage.sync.get(["customCss", "showIcon", "linksrow"], (data) => {
+		chrome.storage.sync.get(["customCss", "showIcon", "linksrow", "greeting"], (data) => {
 			customCss(data.customCss);
 			showIcon(data.showIcon);
 			linksrow(data.linksrow);
+			greeting(data.greeting);
 		});
 
 		console.log("You unlocked the full potential of Bonjourr");
