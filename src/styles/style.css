@@ -481,7 +481,7 @@ body {
   text-shadow: none;
   text-align: left;
   color: #222;
-  transition: transform .2s;
+  transition: transform .2s, background .1s;
   will-change: transform; }
   #settings hr {
     border: none;
@@ -635,7 +635,8 @@ body {
     background-color: #ffffff;
     border-top: 1px solid #c8c7cc;
     border-bottom: 1px solid #c8c7cc;
-    padding: .75em 1.3em; }
+    padding: .75em 1.3em;
+    transition: background .1s; }
   #settings .wrapper {
     display: flex;
     align-items: center;

@@ -378,7 +378,8 @@
 	text-shadow: none;
 	text-align: left;
 	color: #222;
-	transition: right .2s;
+	transition: transform .2s, background .1s;
+	will-change: transform;
 
 	hr {
 		border: none;
@@ -430,6 +431,7 @@
 		border-top: 1px solid $borderGrey;
 		border-bottom: 1px solid $borderGrey;
 		padding: .75em 1.3em;
+		transition: background .1s;
 	}
 
 	.wrapper {
