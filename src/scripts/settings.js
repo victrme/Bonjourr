@@ -535,63 +535,100 @@ function checkifpro() {
 
 		function customFont(data) {
 
+			function setFont(family, weight, size, init) {
+
+				function getWeightText(val) {
+
+					switch (parseInt(val)) {
+
+						case 100:
+						case 200:
+							return "Thin";
+							break;
+
+						case 300:
+							return "Light";
+							break;
+
+						case 400:
+							return "Regular";
+							break;
+
+						case 500:
+							return "Medium";
+							break;
+
+						case 600:
+						case 700:
+							return "Bold";
+							break;
+
+						case 800:
+							return "Black";
+							break;
+
+						default:
+							return "Auto"
+					}
+				}
+
+				function saveFont() {
+
+					const font = {
+						family: id("i_customfont").value,
+						weight: id("i_weight").value,
+						size: id("i_size").value
+					}
+
+					chrome.storage.sync.set({"font": font});
+				}
+
+				if (family || weight) id("fontlink").href = `https://fonts.googleapis.com/css?family=${family}:${weight}`;
+
+				if (size) {
+					id("e_size").innerText = size;
+					id("interface").style.fontSize = size + "px";
+				}
+
+				if (weight) {
+					id("e_weight").innerText = getWeightText(weight);
+					document.body.style.fontWeight = weight;
+				}
+
+				if (family) {
+					document.body.style.fontFamily = family;
+					id("clock").style.fontFamily = family;
+				}
+
+				//init les inputs, sinon on les save
+				if (init) {
+					id("i_customfont").value = family;
+					id("i_weight").value = weight;
+					id("i_size").value = size;
+				} else {
+					saveFont();
+				}
+			}
+
 			id("i_customfont").oninput = function() {
 
-				id("fontlink").href = "https://fonts.googleapis.com/css?family=" + this.value;
-
-				document.body.style.fontFamily = this.value;
-				id("settings").style.fontFamily = this.value;
-				id("clock").style.fontFamily = this.value;
+				const linkurl =  + this.value + ":400";
+				setFont(this.value, null, null);
 			}
 
 			id("i_weight").oninput = function() {
 
-				let val = parseInt(this.value);
-				let valtext;
+				const family = id("i_customfont").value;
 
-				switch (val) {
-
-					case 100:
-					case 200:
-						valtext = "Thin";
-						break;
-
-					case 300:
-						valtext = "Light";
-						break;
-
-					case 400:
-						valtext = "Regular";
-						break;
-
-					case 500:
-						valtext = "Medium";
-						break;
-
-					case 600:
-					case 700:
-						valtext = "Bold";
-						break;
-
-					case 800:
-						valtext = "Black";
-						break;
-
-					default:
-						valtext = "Auto"
-				}
-
-				document.body.style.fontWeight = val;
-				id("settings").style.fontWeight = val;
-				id("e_weight").innerText = valtext;
+				setFont(family, this.value, null);
 			}
 
 			id("i_size").oninput = function() {
-				
-				document.body.style.fontSize = this.value;
-				id("settings").style.fontSize = this.value;
-				id("e_size").innerText = this.value;
+
+				setFont(null, null, this.value);
 			}
+
+			if (data) setFont(data.family, data.weight, data.size, true);
 		}
 
 		function customCss(data) {
@@ -722,8 +759,8 @@ function checkifpro() {
 			i.style.display = "block";
 		}
 
-		chrome.storage.sync.get(["customCss", "showIcon", "linksrow", "greeting"], (data) => {
-			customFont();
+		chrome.storage.sync.get(["font", "customCss", "showIcon", "linksrow", "greeting"], (data) => {
+			customFont(data.font);
 			customCss(data.customCss);
 			showIcon(data.showIcon);
 			linksrow(data.linksrow);

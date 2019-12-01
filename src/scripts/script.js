@@ -546,7 +546,7 @@ function quickLinks(event, that, initStorage) {
 		a.href = arr.url;
 		var hostname = a.hostname;
 
-		faviconXHR("https://favicongrabber.com/api/grab/" + hostname).then((icon) => {
+		faviconXHR("http://favicongrabber.com/api/grab/" + hostname).then((icon) => {
 
 			var img = elem.querySelector("img");
 			var icn = filterIcon(icon);
