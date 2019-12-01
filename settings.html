@@ -544,7 +544,7 @@
 			</select>
 		</div>
 
-		<div class="pro">
+		<div class="">
 
 			<hr>
 
@@ -552,17 +552,53 @@
 				<span class="trn">Greeting</span>
 				<input type="text" name="greeting" id="i_greeting" placeholder="Name">
 			</div>
-		</div>
-
-		<div class="pro">
 
 			<hr>
 
-			<div>
+			<div class="wrapper">
 				<span class="trn">Custom CSS</span>
 				<br />
 				<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
 			</div>
+		</div>
+	</div>
+</div>
+
+<div class="pro">
+	<h5 class="trn">Custom Font</h5>
+	<div class="param">
+		<div class="wrapper">
+			<span class="trn">Font type</span>
+			<input id="i_customfont" list="fonts" type="text" name="customfont" placeholder="Font">
+			<datalist id="fonts">
+				<option value="Roboto">
+				<option value="Montserrat">
+				<option value="Merriweather">
+				<option value="Open Sans">
+				<option value="Lato">
+				<option value="Oswald">
+				<option value="Raleway">
+				<option value="Playfair Display">
+				<option value="Noto Sans">
+				<option value="Ubuntu">
+				<option value="Fira Sans">
+			</datalist>
+		</div>
+
+		<hr>
+
+		<div class="wrapper">
+			<span class="trn">Weight</span>
+			<input id="i_weight" type="range" class="range" name="fontweight" min="0" max="800" step="100" value="0">
+			<span id="e_weight">Auto</span>
+		</div>
+
+		<hr>
+
+		<div class="wrapper">
+			<span class="trn">Size</span>
+			<input id="i_size" type="range" class="range" name="fontsize" min="9" max="26" value="14">
+			<span id="e_size">Auto</span>
 		</div>
 	</div>
 </div>

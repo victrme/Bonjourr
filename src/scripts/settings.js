@@ -533,6 +533,67 @@ function checkifpro() {
 
 	function proFunctions() {
 
+		function customFont(data) {
+
+			id("i_customfont").oninput = function() {
+
+				id("fontlink").href = "https://fonts.googleapis.com/css?family=" + this.value;
+
+				document.body.style.fontFamily = this.value;
+				id("settings").style.fontFamily = this.value;
+				id("clock").style.fontFamily = this.value;
+			}
+
+			id("i_weight").oninput = function() {
+
+				let val = parseInt(this.value);
+				let valtext;
+
+				switch (val) {
+
+					case 100:
+					case 200:
+						valtext = "Thin";
+						break;
+
+					case 300:
+						valtext = "Light";
+						break;
+
+					case 400:
+						valtext = "Regular";
+						break;
+
+					case 500:
+						valtext = "Medium";
+						break;
+
+					case 600:
+					case 700:
+						valtext = "Bold";
+						break;
+
+					case 800:
+						valtext = "Black";
+						break;
+
+					default:
+						valtext = "Auto"
+				}
+
+				document.body.style.fontWeight = val;
+				id("settings").style.fontWeight = val;
+				id("e_weight").innerText = valtext;
+			}
+
+			id("i_size").oninput = function() {
+				
+				document.body.style.fontSize = this.value;
+				id("settings").style.fontSize = this.value;
+				id("e_size").innerText = this.value;
+			}
+		}
+
 		function customCss(data) {
 			
 			const cssEditor = id("cssEditor");
@@ -662,6 +723,7 @@ function checkifpro() {
 		}
 
 		chrome.storage.sync.get(["customCss", "showIcon", "linksrow", "greeting"], (data) => {
+			customFont();
 			customCss(data.customCss);
 			showIcon(data.showIcon);
 			linksrow(data.linksrow);

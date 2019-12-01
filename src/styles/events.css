@@ -71,3 +71,12 @@
 #edit_linkContainer.shown {
 	animation: editfade .1s forwards;
 }
+
+
+
+
+/* custom font size, width */
+
+#e_weight, #e_size {
+	width: 50px;
+}
