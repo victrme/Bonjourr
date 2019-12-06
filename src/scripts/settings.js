@@ -92,8 +92,9 @@ function selectBackgroundType(cat) {
 function settingsEvents() {
 
 	// file input animation
-	let custom = id("i_bgfile");
-	let customStyle = id("fileContainer");
+	const custom = id("i_bgfile");
+	const customStyle = id("fileContainer");
+	let fontObj = {};
 
 	custom.addEventListener("dragenter", function(){
 	  customStyle.classList.add("dragover");
@@ -235,6 +236,32 @@ function settingsEvents() {
 	id("i_export").onfocus = function() {
 		importExport("exp")
 	}
+
+
+	//pro functions events
+
+	id("i_customfont").oninput = function() {
+
+		fontObj = {family: this.value, weight: null, size: null};
+		customFont(null, fontObj);
+	}
+
+	id("i_weight").oninput = function() {
+
+		fontObj = {family: null, weight: this.value, size: null};
+		customFont(null, fontObj);
+	}
+
+	id("i_size").oninput = function() {
+
+		fontObj = {family: null, weight: null, size: this.value};
+		customFont(null, fontObj);
+	}
+
+
+	id("i_greeting").oninput = function() {
+		greeting(null, this.value);
+	}
 }
 
 function initParams() {
@@ -262,7 +289,6 @@ function initParams() {
 	initCheckbox("i_sb", data.searchbar);
 	initCheckbox("i_usdate", data.usdate);
 	initCheckbox("i_ampm", (data.clockformat === 12));
-	initCheckbox("i_showicon", data.showIcon);
 
 	
 	//bg
@@ -509,10 +535,13 @@ function settings() {
 		settingsEvents();
 		signature();
 		defaultBg();
-		//importExport("exp");
 		checkifpro();
 	}, 200);
 }
+
+
+
+
 
 function checkifpro() {
 
@@ -533,7 +562,7 @@ function checkifpro() {
 
 	function proFunctions() {
 
-		function customFont(data) {
+		function customFont(data, evnt) {
 
 			function setFont(family, weight, size, init) {
 
@@ -583,7 +612,7 @@ function checkifpro() {
 					chrome.storage.sync.set({"font": font});
 				}
 
-				if (family || weight) id("fontlink").href = `https://fonts.googleapis.com/css?family=${family}:${weight}`;
+				if (family || weight) id("fontlink").href = `https://fonts.googleapis.com/css?family=${(family ? family : id("i_customfont").value)}:${weight}`;
 
 				if (size) {
 					id("e_size").innerText = size;
@@ -610,25 +639,8 @@ function checkifpro() {
 				}
 			}
 
-			id("i_customfont").oninput = function() {
-
-				const linkurl =  + this.value + ":400";
-				setFont(this.value, null, null);
-			}
-
-			id("i_weight").oninput = function() {
-
-				const family = id("i_customfont").value;
-
-				setFont(family, this.value, null);
-			}
-
-			id("i_size").oninput = function() {
-
-				setFont(null, null, this.value);
-			}
-
 			if (data) setFont(data.family, data.weight, data.size, true);
+			if (evnt) setFont(evnt.family, evnt.weight, evnt.size);
 		}
 
 		function customCss(data) {
@@ -659,20 +671,6 @@ function checkifpro() {
 
 					e.preventDefault();
 				}
-			}
-		}
-
-		function showIcon(data) {
-
-			function setDisplay (val) {
-				id("w_icon").style.display = val
-			}
-
-			if (data !== undefined && data === false) setDisplay(data);
-
-			id("i_showicon").onchange = function() {
-				setDisplay(this.checked ? "flex" : "none");
-				chrome.storage.sync.set({"showIcon": this.checked});
 			}
 		}
 
@@ -716,7 +714,7 @@ function checkifpro() {
 			}
 		}
 
-		function greeting(data) {
+		function greeting(data, evnt) {
 
 			const text = id("greetings").innerText;
 			let pause;
@@ -730,7 +728,7 @@ function checkifpro() {
 				if (val === "") id("greetings").innerText = text;
 			}
 
-			function event(val) {
+			function setEvent(val) {
 
 				//reset save timeout
 				if (pause) clearTimeout(pause);
@@ -746,23 +744,20 @@ function checkifpro() {
 
 			//init
 			if (data !== undefined) {
-				id("i_greeting").value = data;
+				//id("i_greeting").value = data;
 				apply(data);
 			}
 
-			id("i_greeting").oninput = function() {
-				event(this.value)
-			}
-		} 
+			if (evnt) setEvent(evnt);
+		}
 
 		for (let i of cl("pro")) {
 			i.style.display = "block";
 		}
 
-		chrome.storage.sync.get(["font", "customCss", "showIcon", "linksrow", "greeting"], (data) => {
+		chrome.storage.sync.get(["font", "customCss", "linksrow", "greeting"], (data) => {
 			customFont(data.font);
 			customCss(data.customCss);
-			showIcon(data.showIcon);
 			linksrow(data.linksrow);
 			greeting(data.greeting);
 		});

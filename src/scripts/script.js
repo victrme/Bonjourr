@@ -1233,11 +1233,12 @@ function setblob(donnee, reader) {
 
 function renderImage(file, is) {
 
-	let reader = new FileReader();
+	const reader = new FileReader();
 	reader.onload = function(event) {
 
-		let result = event.target.result;
-		let blobArray = setblob(result, true);
+		const result = event.target.result;
+		const blobArray = setblob(result, true);
+
 
 		if (is === "change") {
 
@@ -1618,7 +1619,11 @@ chrome.storage.sync.get(null, (data) => {
 	quickLinks(null, null, data);
 	searchbar(null, null, data);
 
+	//test pour webapp
 	if (mobilecheck()) id("interface").style.height = `calc(${window.innerHeight}px`;
 
+	//met le storage dans le sessionstorage
+	//pour que les settings y accede plus facilement
 	sessionStorage.data = JSON.stringify(data);
 });
+
