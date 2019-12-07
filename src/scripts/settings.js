@@ -156,6 +156,10 @@ function settingsEvents() {
 		distractMode(this);
 	}
 
+	id("i_analog").onchange = function() {
+		document.getElementById("clock").style.display = "none";
+	}
+
 	//weather
 	id("b_city").onmouseup = function() {
 		if (!stillActive) weather("city", this);

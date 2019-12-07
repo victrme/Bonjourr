@@ -167,6 +167,37 @@ function clock(that, is) {
 	else start();
 }
 
+
+
+
+
+function analogClock() {
+	// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
+	let clockH = document.getElementById('hours');
+	let clockM = document.getElementById('minutes');
+	let clockS = document.getElementById('seconds');
+
+	function time() {     
+	  let d = new Date(),
+	      s = d.getSeconds() * 6,
+	      m = d.getMinutes() * 6 + (s / 60),
+	      h = d.getHours() % 12 / 12 * 360 + (m / 12);
+
+	    clockH.style.transform = "rotate("+h+"deg)";
+	    clockM.style.transform = "rotate("+m+"deg)";  
+	    clockS.style.transform = "rotate("+s+"deg)";  
+	}
+
+	let clock = setInterval(time, 1000);
+
+	time();
+}
+analogClock();
+
+
+
+
+
 function date() {
 	const date = new Date();
 	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];

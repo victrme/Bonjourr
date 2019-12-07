@@ -1,24 +1,32 @@
 @import 'global';
-@import 'mixins';
 
-#background {
+#background_overlay {
 	z-index: -1;
 	position: fixed;
-	width: 100vw;
+	width: 100%;
 	height: 100vh;
-	opacity: 1;
-	transform: scale(1.1); 
-	background-color: #000;
-	background-size: cover;
-	background-position: center center;
+	transform: scale(1.1);
+
+	#background {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		background-color: #000;
+		background-size: cover;
+		background-position: center center;
+	}
+
 }
 
+
 #interface {
+	position: relative;
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
 	transition: transform .2s;
+	will-change: transform;
 	text-shadow: 0 1px 5px rgba(0,0,0,.2);
 
 	#time {
@@ -41,9 +49,60 @@
 			margin-top: 30px;
 		}
 
-		.time-container #clock {
-			font-family: sf_pro_displaythin;
-			font-size: 6em;
+		.time-container {
+			#clock {
+				font-family: sf_pro_displaythin;
+				font-size: 6em;
+			}
+
+			#analogClock {
+				border: 0.2em solid white;
+				border-radius: 100%;
+				height: 8em;
+				position: relative;
+				margin: auto auto 2em auto;
+				width: 8em;
+				box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+
+				span {
+					background: white;
+					border-radius: 20px;
+					bottom: 50%;
+					display: block;
+					width: 0.2em;
+					left: 50%;
+					margin-left: -0.1em;
+					position: absolute;
+					transform-origin: bottom center;
+					box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+				}
+
+				#hours {
+					height: 30%;
+				}
+
+				#minutes {
+					height: 45%;
+				}
+
+				#seconds {
+					height: 45%;
+					width: .1em;
+					margin-left: -0.05em;
+				}
+				
+				#center {
+					position: absolute;
+					z-index: 5;
+					width: .4em;
+					height: .4em;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					background-color: white;
+					border-radius: 100px;
+				}
+			}
 		}
 
 		#date {
@@ -60,7 +119,7 @@
 		margin-left: auto;
 		transition: opacity .1s;
 
-		#weather #widget.shown {
+		#weather #w_icon #widget.shown {
 			opacity: 1;
 		}
 
@@ -104,10 +163,6 @@
 
 		@include hidden();
 	}
-	
-	/*&.pushed {
-		margin-left: -20em;
-	}*/
 
 	&.distract {
 		#time {
