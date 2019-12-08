@@ -157,7 +157,31 @@ function settingsEvents() {
 	}
 
 	id("i_analog").onchange = function() {
-		document.getElementById("clock").style.display = "none";
+
+		const numeric = id("clock");
+		const analog = id("analogClock");
+
+		if (this.checked) {
+			attr(numeric, "hidden");
+			attr(analog, "");
+		} else {
+			attr(numeric, "");
+			attr(analog, "hidden");
+		}
+
+		chrome.storage.sync.set({analog: this.checked});
+	}
+
+	id("i_seconds").onchange = function() {
+
+		if (this.checked) {
+			localStorage.seconds = true;
+			id("analogSeconds").style.display = "block";
+
+		} else {
+			localStorage.seconds = false;
+			id("analogSeconds").style.display = "none";
+		}
 	}
 
 	//weather

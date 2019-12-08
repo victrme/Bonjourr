@@ -84,11 +84,11 @@ function clock(that, is) {
 	//le diviser par 60 * 60
 	//rajouter le résultat à l'heure actuelle
 
-	let format, timezone;
+	let format, seconds, timezone;
 
 	function start() {
 
-		function fixSmallMinutes(min) {
+		function fixunits(min) {
 
 			min = min < 10 ? "0" + min : min;
 			return min
@@ -123,15 +123,27 @@ function clock(that, is) {
 
 			return hour
 		}
+
+		const date = new Date();
 		
-		let h = timezoneControl(timezone, new Date().getHours());
-		let m = fixSmallMinutes(new Date().getMinutes());
+		let h = timezoneControl(timezone, date.getHours());
+		let m = fixunits(date.getMinutes());
+		let s = fixunits(date.getSeconds());
+		let clock, refreshrate;
 
 		if (format === 12) h = is12hours(h);
 
-		id('clock').innerText = h + ":" + m;
+		if (seconds) {
+			clock = `${h}:${m}:${s}`;
+			refreshrate = 1000;
+		} else {
+			clock = `${h}:${m}`;
+			refreshrate = 5000;
+		}
 
-		sessionStorage.timesup = setTimeout(start, 5000);
+		id('clock').innerText = clock;
+
+		sessionStorage.timesup = setTimeout(start, refreshrate);
 	}
 
 	function change(that) {
@@ -159,23 +171,19 @@ function clock(that, is) {
 	}
 
 	format = parseInt(localStorage.clockformat) || 24;
-
-	let lstz = localStorage.timezone;
-	timezone = (lstz ? (lstz === "auto" ? "auto" : parseInt(lstz)) : "auto");
+	seconds = (localStorage.seconds === "true" ? true : false);
+	timezone = (localStorage.timezone ? (localStorage.timezone === "auto" ? "auto" : parseInt(localStorage.timezone)) : "auto");
 
 	if (that) change(that);
 	else start();
 }
 
 
-
-
-
 function analogClock() {
 	// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
 	let clockH = document.getElementById('hours');
 	let clockM = document.getElementById('minutes');
-	let clockS = document.getElementById('seconds');
+	let clockS = document.getElementById('analogSeconds');
 
 	function time() {     
 	  let d = new Date(),
