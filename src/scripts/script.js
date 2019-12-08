@@ -148,12 +148,17 @@ function newClock(eventObj, init) {
 
 		function analog(timearray) {
 
+			function rotation(that, val) {
+
+				that.style.transition = (init || val === 0 ? "none" : "transform .1s");
+				that.style.transform = `rotate(${parseInt(val)}deg)`;
+			}
+
 			// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
 			let s = timearray[2] * 6,
 				m = timearray[1] * 6 + (s / 60),
 				h = timearray[0] % 12 / 12 * 360 + (m / 12);
 
-			const rotation = (that, val) => that.style.transform = `rotate(${parseInt(val)}deg)`;
 
 			//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
 			if (true || timearray[2] === 0) rotation(id('minutes'), m);
@@ -163,9 +168,15 @@ function newClock(eventObj, init) {
 		    if (clock.seconds) rotation(id('analogSeconds'), s);
 
 			//fix 0deg transition
+
 		}
 
-		clock.analog ? analog(time()) : numerical(time());
+		//timezone control
+		//analog control
+		const array = time();
+
+		array[0] = timezone(clock.timezone, array[0]);
+		clock.analog ? analog(array) : numerical(array);
 	}
 
 	function startClock() {

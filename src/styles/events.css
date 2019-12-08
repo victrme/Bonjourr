@@ -91,7 +91,3 @@
 #clock.hidden {
 	display: none;
 }
-
-#analogClock span {
-	transition: transform .08s;
-}

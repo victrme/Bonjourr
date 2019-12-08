@@ -173,7 +173,7 @@ function settingsEvents() {
 	}
 
 	id("i_timezone").onchange = function() {
-		newClock({param: "timezone", value: this.checked});
+		newClock({param: "timezone", value: this.value});
 	}
 
 	id("i_usdate").onchange = function() {
@@ -291,7 +291,7 @@ function initParams() {
 	initInput("i_row", data.linksrow, 8);
 	initInput("i_dark", data.dark, "disable");
 	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
-	initInput("i_timezone", data.timezone, "auto");
+	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
 	initInput("i_freq", isThereData("dynamic", "every"), "hour");
 	initInput("i_ccode", isThereData("weather", "ccode"), "US");
 
