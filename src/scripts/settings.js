@@ -156,32 +156,33 @@ function settingsEvents() {
 		distractMode(this);
 	}
 
+
+
+	//Time and date
+
 	id("i_analog").onchange = function() {
-
-		const numeric = id("clock");
-		const analog = id("analogClock");
-
-		if (this.checked) {
-			attr(numeric, "hidden");
-			attr(analog, "");
-		} else {
-			attr(numeric, "");
-			attr(analog, "hidden");
-		}
-
-		chrome.storage.sync.set({analog: this.checked});
+		newClock({param: "analog", value: this.checked});
 	}
 
 	id("i_seconds").onchange = function() {
+		newClock({param: "seconds", value: this.checked});
+	}
 
-		if (this.checked) {
-			localStorage.seconds = true;
-			id("analogSeconds").style.display = "block";
+	id("i_ampm").onchange = function() {
+		newClock({param: "ampm", value: this.checked});
+	}
 
-		} else {
-			localStorage.seconds = false;
-			id("analogSeconds").style.display = "none";
-		}
+	id("i_timezone").onchange = function() {
+		newClock({param: "timezone", value: this.checked});
+	}
+
+	id("i_usdate").onchange = function() {
+
+		let rep = (this.checked ? true : false);
+
+		localStorage.usdate = rep;
+		chrome.storage.sync.set({"usdate": rep});
+		date();
 	}
 
 	//weather
@@ -216,22 +217,6 @@ function settingsEvents() {
 
 
 	//general
-	id("i_usdate").onchange = function() {
-
-		let rep = (this.checked ? true : false);
-
-		localStorage.usdate = rep;
-		chrome.storage.sync.set({"usdate": rep});
-		date();
-	}
-
-	id("i_ampm").onchange = function() {
-		clock(this, "clock format")
-	}
-
-	id("i_timezone").onchange = function() {
-		clock(this, "timezone")
-	}
 
 	id("i_lang").onchange = function() {
 
@@ -316,7 +301,9 @@ function initParams() {
 	initCheckbox("i_linknewtab", data.linknewtab);
 	initCheckbox("i_sb", data.searchbar);
 	initCheckbox("i_usdate", data.usdate);
-	initCheckbox("i_ampm", (data.clockformat === 12));
+	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
+	initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
+	initCheckbox("i_analog", isThereData("clock", "analog"), false);
 
 	
 	//bg

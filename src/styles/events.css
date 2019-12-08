@@ -87,6 +87,7 @@
 /*Analog clock*/
 
 #analogClock.hidden,
+#interface #time #analogClock #analogSeconds.hidden,
 #clock.hidden {
 	display: none;
 }

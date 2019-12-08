@@ -173,7 +173,7 @@ body input, body textarea, body select, body a, body button {
   height: 45%;
 }
 
-#interface #time .time-container #analogClock #seconds {
+#interface #time .time-container #analogClock #analogSeconds {
   height: 45%;
   width: .1em;
   margin-left: -0.05em;

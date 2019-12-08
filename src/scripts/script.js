@@ -1,5 +1,6 @@
 let stillActive = false;
 let rangeActive = false;
+let lazyClockInterval = 0;
 
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
@@ -77,133 +78,141 @@ function tradThis(str) {
 	return (lang === "en" ? str : dict[str][localStorage.lang])
 }
 
-function clock(that, is) {
+function newClock(eventObj, init) {
 
-	//pour gerer timezone
-	//prendre le timezone du weather
-	//le diviser par 60 * 60
-	//rajouter le résultat à l'heure actuelle
+	function displayControl() {
 
-	let format, seconds, timezone;
+		const numeric = id('clock');
+		const analog = id('analogClock');
+		const analSec = id('analogSeconds');
 
-	function start() {
+		//cache celle qui n'est pas choisi
+		attr((clock.analog ? numeric : analog), "hidden");
+		attr((clock.analog ? analog : numeric), "");
 
-		function fixunits(min) {
+		//cache l'aiguille des secondes
+		if (!clock.seconds && clock.analog) attr(analSec, "hidden");
+		else attr(analSec, "");
+	}
 
-			min = min < 10 ? "0" + min : min;
-			return min
+	function main() {
+
+		//retourne une liste [heure, minutes, secondes]
+		function time() {
+			const date = new Date();
+			return [date.getHours(), date.getMinutes(), date.getSeconds()]
 		}
 
-		function timezoneControl(tz, hour) {
+		//besoin pour numerique et analogue
+		function timezone(timezone, hour) {
 
-			if (tz === "auto" || tz === NaN) {
-
-				return hour
-
-			} else {
+			if (timezone === "auto" || timezone === NaN) return hour;
+			else {
 
 				let d = new Date;
 				let offset = d.getTimezoneOffset();
 				let utc = hour + (offset / 60);
-				let setTime = (utc + parseInt(tz)) % 24;
+				let setTime = (utc + parseInt(timezone)) % 24;
 
 				return setTime;
 			}
 		}
-
-		function is12hours(hour) {
-
-			if (hour > 12)
-				hour -= 12;
-			else
-				if (hour === 0)
-					hour = 12;
-				else
-					hour;
-
-			return hour
-		}
-
-		const date = new Date();
 		
-		let h = timezoneControl(timezone, date.getHours());
-		let m = fixunits(date.getMinutes());
-		let s = fixunits(date.getSeconds());
-		let clock, refreshrate;
+		function numerical(timearray) {
 
-		if (format === 12) h = is12hours(h);
+			//seul numerique a besoin du ampm
+			function toAmpm(val) {
 
-		if (seconds) {
-			clock = `${h}:${m}:${s}`;
-			refreshrate = 1000;
-		} else {
-			clock = `${h}:${m}`;
-			refreshrate = 5000;
+				if (val > 12)
+					val -= 12;
+				else
+					if (val === 0)
+						val = 12;
+					else
+						val;
+
+				return val
+			}
+
+			function fixunits(val) {
+				val = (val < 10 ? "0" + val : val);
+				return val
+			}
+
+			let h = clock.ampm ? toAmpm(timearray[0]) : timearray[0],
+				m = fixunits(timearray[1]),
+				s = fixunits(timearray[2]);
+
+			id('clock').innerText = clock.seconds ? `${h}:${m}:${s}` : `${h}:${m}`;
 		}
 
-		id('clock').innerText = clock;
+		function analog(timearray) {
 
-		sessionStorage.timesup = setTimeout(start, refreshrate);
-	}
+			// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
+			let s = timearray[2] * 6,
+				m = timearray[1] * 6 + (s / 60),
+				h = timearray[0] % 12 / 12 * 360 + (m / 12);
 
-	function change(that) {
+			const rotation = (that, val) => that.style.transform = `rotate(${parseInt(val)}deg)`;
 
-		clearTimeout(sessionStorage.timesup);
+			//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
+			if (true || timearray[2] === 0) rotation(id('minutes'), m);
+			if (true || timearray[1] === 0) rotation(id('hours'), h);
+		    
+		    //tourne pas les secondes si pas de seconds
+		    if (clock.seconds) rotation(id('analogSeconds'), s);
 
-		if (is === "clock format") {
-
-			format = (that.checked ? 12 : 24);
-
-			//enregistre partout suivant le format
-			chrome.storage.sync.set({"clockformat": format});
-			localStorage.clockformat = format;
-
-		} else {
-
-			timezone = that.value;
-
-			//enregistre partout suivant le timezone
-			chrome.storage.sync.set({"timezone": timezone});
-			localStorage.timezone = timezone;
+			//fix 0deg transition
 		}
 
-		start();
+		clock.analog ? analog(time()) : numerical(time());
 	}
 
-	format = parseInt(localStorage.clockformat) || 24;
-	seconds = (localStorage.seconds === "true" ? true : false);
-	timezone = (localStorage.timezone ? (localStorage.timezone === "auto" ? "auto" : parseInt(localStorage.timezone)) : "auto");
+	function startClock() {
+		//stops multiple intervals
+		clearInterval(lazyClockInterval);
 
-	if (that) change(that);
-	else start();
-}
-
-
-function analogClock() {
-	// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
-	let clockH = document.getElementById('hours');
-	let clockM = document.getElementById('minutes');
-	let clockS = document.getElementById('analogSeconds');
-
-	function time() {     
-	  let d = new Date(),
-	      s = d.getSeconds() * 6,
-	      m = d.getMinutes() * 6 + (s / 60),
-	      h = d.getHours() % 12 / 12 * 360 + (m / 12);
-
-	    clockH.style.transform = "rotate("+h+"deg)";
-	    clockM.style.transform = "rotate("+m+"deg)";  
-	    clockS.style.transform = "rotate("+s+"deg)";  
+		displayControl();
+		main();
+		lazyClockInterval = setInterval(main, 1000);
 	}
 
-	let clock = setInterval(time, 1000);
+	//controle très stricte de clock comme vous pouvez le voir
+	//(je sais que je peux faire mieux)
+	let clock;
 
-	time();
+	if (init) {
+
+		clock = {
+			analog: init.analog || false,
+			seconds: init.seconds || false,
+			ampm: init.ampm || false,
+			timezone: init.timezone || "auto"
+		}
+
+		startClock();
+
+	} else {
+
+		chrome.storage.sync.get("clock", (data) => {
+
+			clock = {
+				analog: (data.clock ? data.clock.analog : false),
+				seconds: (data.clock ? data.clock.seconds : false),
+				ampm: (data.clock ? data.clock.ampm : false),
+				timezone: (data.clock ? data.clock.timezone : "auto")
+			}
+
+			//if event change of clock parameters
+			if (eventObj) {
+				clock[eventObj.param] = eventObj.value;
+				chrome.storage.sync.set({clock: clock});
+			}
+
+			startClock();
+		});
+	}
 }
-analogClock();
-
-
-
 
 
 function date() {
@@ -1648,7 +1657,7 @@ function mobilecheck() {
 chrome.storage.sync.get(null, (data) => {
 	
 	traduction();
-	clock();
+	newClock(null, data.clock);
 	date();
 	greetings();
 	distractMode(null, data.distract);
