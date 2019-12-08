@@ -150,7 +150,7 @@ function newClock(eventObj, init) {
 
 			function rotation(that, val) {
 
-				that.style.transition = (init || val === 0 ? "none" : "transform .1s");
+				that.style.transition = (lazyClockInterval === 0 || val === 0 ? "none" : "transform .1s");
 				that.style.transform = `rotate(${parseInt(val)}deg)`;
 			}
 
