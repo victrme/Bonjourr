@@ -637,8 +637,9 @@ body input, body textarea, body select, body a, body button {
 
 #showSettings {
   position: fixed;
-  bottom: 1.3em;
-  right: 1.3em;
+  bottom: 0;
+  right: 0;
+  padding: 0 1em 1em 0;
   z-index: 3;
 }
 

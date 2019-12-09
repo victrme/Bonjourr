@@ -150,14 +150,21 @@ function newClock(eventObj, init) {
 
 			function rotation(that, val) {
 
-				that.style.transition = (lazyClockInterval === 0 || val === 0 ? "none" : "transform .1s");
-				that.style.transform = `rotate(${parseInt(val)}deg)`;
+				const spancss = that.style;
+
+				if (lazyClockInterval === 0 || val === 0) {
+					spancss.transition = "none";
+				} else {
+					if (spancss.transition === "none 0s ease 0s") spancss.transition = "transform .1s";
+				}
+
+				spancss.transform = `rotate(${parseInt(val)}deg)`;
 			}
 
 			// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
 			let s = timearray[2] * 6,
-				m = timearray[1] * 6 + (s / 60),
-				h = timearray[0] % 12 / 12 * 360 + (m / 12);
+				m = timearray[1] * 6,// + (s / 60),
+				h = timearray[0] * 30;//% 12 / 12 * 360 + (m / 12);
 
 
 			//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
