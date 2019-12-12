@@ -23,6 +23,12 @@ function getBrowserStorage() {
 	});
 }
 
+function getLocalStorage() {
+	chrome.storage.local.get(null, (data) => {
+		console.log(data);
+	});
+}
+
 function slowRange(tosave) {
 	//timeout avant de save pour éviter la surcharge d'instructions de storage
 	clearTimeout(rangeActive);
@@ -1241,9 +1247,7 @@ function initBackground(storage) {
 
 		if (storage.background_type === "custom") {
 			//reste local !!!!
-			chrome.storage.local.get("background_blob", (data) => {
-				imgBackground(setblob(data.background_blob));
-			});
+			customBackground(null, "init");
 			imgCredits(null, type);
 		}
 		else if (storage.background_type === "dynamic") {
@@ -1263,7 +1267,197 @@ function initBackground(storage) {
 		filter("init", [blur, bright]);
 }
 
-function setblob(donnee, reader) {
+function customBackground(event, init) {
+
+	const domfile = document.getElementById("bgfile");
+	const domrange = document.getElementById("i_quality");
+	const domvalue = document.getElementById("e_quality");
+	const dombg = document.getElementById("background");
+	const dombgtnwrap = document.getElementById("bg_tn_wrap");
+	const domthumbnail = document.getElementsByClassName('thumbnail');
+
+	const changeImgIndex = i => (dombg.setAttribute("index", i));
+
+	function callFile(e) {
+
+		//envoie le fichier choisi à la compression
+		//puis sauvegarde le fichier complet
+
+		const fileName = e.target.files[0].name;
+		const reader = new FileReader();
+		
+		reader.onload = event => {
+
+			const result = event.target.result;
+
+			//background
+			compress(result, "new");
+			compress(result, "thumbnail");
+
+			console.log(result);
+
+			chrome.storage.local.set({custom: result});
+		};
+
+		reader.readAsDataURL(e.target.files[0]);
+	}
+
+	//3
+	function compress(e, state) {
+		//prend l'image complete en arg
+
+		const img = new Image();
+			
+		img.onload = () => {
+
+			const size = domrange ? domrange.value : .5;
+			const elem = document.createElement('canvas');
+			const ctx = elem.getContext('2d');
+
+			//canvas proportionné à l'image
+
+			//rétréci suivant le taux de compression
+			//si thumbnail, toujours 100px
+			const height = (state === "thumbnail" ? 100 : img.height * parseFloat(size)); 
+			const scaleFactor = height / img.height;
+			elem.width = img.width * scaleFactor;
+			elem.height = height;
+			
+			//dessine l'image proportionné
+			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height);
+
+			//renvoie le base64
+			const data = ctx.canvas.toDataURL(img);
+
+			
+			if (state === "thumbnail") {
+
+				//controle les thumbnails
+				addThumbnails(data, 0);//fullImage.length - 1);
+
+			} else {
+
+				//new image loaded from filereader sets image index 
+				if (state === "new") changeImgIndex(0);//fullImage.length - 1);
+
+				//affiche l'image
+				imgBackground(data);
+				console.log("data size: ", data.length);
+			}
+		}
+
+		img.src = e;
+	}
+
+	//4
+	function addThumbnails(data, index) {
+
+		//créer une tag html en plus + remove button
+
+		const div = document.createElement('div');
+		const i = document.createElement('img');
+		const rem = document.createElement('button');
+
+		div.setAttribute("class", "thumbnail");
+		div.setAttribute("index", index);
+		rem.setAttribute("class", "hidden");
+		rem.innerText = "✕";
+		i.src = data;
+
+		div.appendChild(i);
+		div.appendChild(rem);
+
+		dombgtnwrap.appendChild(div);
+
+
+		//events
+		const getParentIndex = that => parseInt(that.parentElement.getAttribute("index"));
+		const getIndex = that => parseInt(that.getAttribute("index"));
+
+		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute("class", (show ? "shown" : "hidden"));
+		
+
+		//displays / hides remove button
+		div.onmouseenter = function() {
+			removeControl(true, getIndex(this));
+		}
+		div.onmouseleave = function() {
+			removeControl(false, getIndex(this));
+		}
+
+		//6
+		/*i.onmouseup = function() {
+
+			//affiche l'image voulu
+			//lui injecte le bon index
+
+			const index = getParentIndex(this);
+
+			compress(fullImage[index]);
+			changeImgIndex(index);
+		}
+
+		//7
+		rem.onmouseup = function() {
+
+			const index = getParentIndex(this);
+
+			console.log(index);
+
+			//removes thumbnail
+			domthumbnail[index].remove();
+
+			//rewrite all thumbs indexes
+			for (let i = 0; i < domthumbnail.length; i++) {
+				domthumbnail[i].setAttribute("index", i);
+			}
+
+			//deletes thumbnail from storage
+			//concat  [0, index] à [index + 1, fin]
+			let arr = fullImage;
+			fullImage = arr.slice(null, index).concat(arr.slice(index +1));
+		}*/
+	}
+
+	if (event) {
+
+		if (event.cat === "quality") {
+
+			//affiche le taux de compression
+			id("e_quality").innerText = (event.value * 100) + "%";
+
+			chrome.storage.local.get("custom", (data) => {
+
+				//si une image a été load, l'utilise la dernière sauvegardé
+				if (data.custom) {
+
+				//cherche si l'image a été choisi à partir des thumbnails
+				//l'event des thumbnails mettent l'index comme attribute 
+
+				//const index = domimg.getAttribute("index");
+				//compress(fullImage[(index ? index : fullImage.length - 1)]);
+					
+					compress(data.custom);
+				}
+			})
+		}
+
+		else if (event.cat === "bgfile") {
+			callFile(event.value);
+		}
+	}
+
+	if (init) {
+		chrome.storage.local.get("custom", (data) => {
+			compress(data.custom)	
+		});
+	}
+}
+
+customBackground();
+
+
+function setblob(donnee) {
 
 	const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 		const byteCharacters = atob(b64Data);
@@ -1286,7 +1480,7 @@ function setblob(donnee, reader) {
 	}
 
 	//découpe les données du file en [contentType, base64data]
-	let base = (reader ? donnee.split(",") : donnee);
+	let base = donnee.split(",");
 	let contentType = base[0].replace("data:", "").replace(";base64", "");
 	let b64Data = base[1];
 
@@ -1294,7 +1488,7 @@ function setblob(donnee, reader) {
 	let blob = b64toBlob(b64Data, contentType);
 	let blobUrl = URL.createObjectURL(blob);
 
-	return (reader ? [base, blobUrl] : blobUrl);
+	return blobUrl;
 }
 
 function renderImage(file, is) {

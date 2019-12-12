@@ -134,9 +134,18 @@ function settingsEvents() {
 		unsplash(null, this.value);
 	}
 
+
+	//custom bg
+
 	id("i_bgfile").onchange = function(e) {
-		renderImage(this.files[0], "change");
-	};
+		customBackground({cat: "bgfile", value: e})
+	}
+
+	id("i_quality").oninput = function() {
+		customBackground({cat: "quality", value: this.value})
+	}
+
+
 
 	id("i_blur").oninput = function() {
 		filter("blur", this.value);
@@ -248,32 +257,6 @@ function settingsEvents() {
 
 	id("i_export").onfocus = function() {
 		importExport("exp")
-	}
-
-
-	//pro functions events
-
-	id("i_customfont").oninput = function() {
-
-		fontObj = {family: this.value, weight: null, size: null};
-		customFont(null, fontObj);
-	}
-
-	id("i_weight").oninput = function() {
-
-		fontObj = {family: null, weight: this.value, size: null};
-		customFont(null, fontObj);
-	}
-
-	id("i_size").oninput = function() {
-
-		fontObj = {family: null, weight: null, size: this.value};
-		customFont(null, fontObj);
-	}
-
-
-	id("i_greeting").oninput = function() {
-		greeting(null, this.value);
 	}
 }
 
@@ -516,6 +499,7 @@ function showInterface(e) {
 	}
 }
 
+
 id("showSettings").onmousedown = function(e) {
 	showSettings(e)
 }
@@ -531,6 +515,16 @@ id("interface").onmouseup = function(e) {
 
 //autofocus
 document.onkeydown = function(e) {
+
+	//press escape to show settings
+	if (e.code = "Escape") {
+		showSettings({type: "mousedown"});
+
+		setTimeout(() => {
+			showSettings({type: "mouseup"}, id("showSettings"))
+		}, 100);
+	}
+
 
 	let searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
 	let settings = (id("settings") ? has("settings", "shown") : false);
@@ -668,22 +662,29 @@ function checkifpro() {
 			}
 
 			addCss();
-			cssEditor.onchange = () => addCss();
+			cssEditor.oninput = () => addCss();
 
 			// Active l'indentation (philipnewcomer.net)
-			cssEditor.onkeydown = function(e) {
+			cssEditor.onkeypress = function(e) {
 
-				console.log(e.keycode);
+				console.log(e);
 
-				if (e.keyCode === 9) {
-					let selectionStartPos = this.selectionStart;
+				if (e.key === "{") {
+
+					this.value = this.value + `{\r  \r}`;
+
+					console.log(this.selectionStart);
+
+					this.selectionStart = this.selectionStart - 2;
+					this.selectionEnd = this.selectionEnd - 2;
+
+					/*let selectionStartPos = this.selectionStart;
 					let selectionEndPos   = this.selectionEnd;
 					let oldContent        = this.value;
 
 					this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
 
-					this.selectionStart = this.selectionEnd = selectionStartPos + 1;
-
+					this.selectionStart = this.selectionEnd = selectionStartPos + 1;*/
 					e.preventDefault();
 				}
 			}
@@ -765,6 +766,29 @@ function checkifpro() {
 
 			if (evnt) setEvent(evnt);
 		}
+
+		id("i_customfont").oninput = function() {
+
+			fontObj = {family: this.value, weight: null, size: null};
+			customFont(null, fontObj);
+		}
+
+		id("i_weight").oninput = function() {
+
+			fontObj = {family: null, weight: this.value, size: null};
+			customFont(null, fontObj);
+		}
+
+		id("i_size").oninput = function() {
+
+			fontObj = {family: null, weight: null, size: this.value};
+			customFont(null, fontObj);
+		}
+
+		id("i_greeting").oninput = function() {
+			greeting(null, this.value);
+		}
+
 
 		for (let i of cl("pro")) {
 			i.style.display = "block";
