@@ -602,6 +602,7 @@ function checkifpro() {
 							break;
 
 						case 800:
+						case 900:
 							return "Black";
 							break;
 
@@ -621,13 +622,10 @@ function checkifpro() {
 					chrome.storage.sync.set({"font": font});
 				}
 
-				if (family || weight) id("fontlink").href = `https://fonts.googleapis.com/css?family=${(family ? family : id("i_customfont").value)}:${weight}`;
+				const fontlink = id("fontlink");
 
-				if (size) {
-					id("e_size").innerText = size;
-					dominterface.style.fontSize = size + "px";
-				}
-
+				if (family || weight) fontlink.href = `https://fonts.googleapis.com/css?family=${(family ? family : id("i_customfont").value)}:100,300,400,500,700,900`;
+				
 				if (weight) {
 					id("e_weight").innerText = getWeightText(weight);
 					document.body.style.fontWeight = weight;
@@ -637,6 +635,12 @@ function checkifpro() {
 					document.body.style.fontFamily = family;
 					id("clock").style.fontFamily = family;
 				}
+
+				if (size) {
+					id("e_size").innerText = size;
+					dominterface.style.fontSize = size + "px";
+				}
+
 
 				//init les inputs, sinon on les save
 				if (init) {

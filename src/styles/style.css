@@ -220,7 +220,7 @@ body input, body textarea, body select, body a, body button {
 
 #interface #main #greetings {
   font-size: 3em;
-  font-weight: lighter;
+  font-weight: inherit;
 }
 
 #interface #main #weather #temp_max_wrap.shown {
