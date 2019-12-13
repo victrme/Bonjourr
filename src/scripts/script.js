@@ -1246,8 +1246,9 @@ function initBackground(storage) {
 
 		} else {
 
-			imgBackground(image)
-			imgCredits(image, type)
+			imgBackground(image);
+			imgCredits(image, type);
+			unsplash(null, null, true); //on startup
 		}
 
 
@@ -1284,8 +1285,6 @@ function customBackground(event, init) {
 			compress(result, "new");
 			compress(result, "thumbnail");
 
-			console.log(result);
-
 			chrome.storage.local.set({custom: result});
 		};
 
@@ -1300,7 +1299,7 @@ function customBackground(event, init) {
 			
 		img.onload = () => {
 
-			const size = domrange ? domrange.value : .5;
+			const size = domrange ? domrange.value : 1;
 			const elem = document.createElement('canvas');
 			const ctx = elem.getContext('2d');
 
@@ -1331,7 +1330,7 @@ function customBackground(event, init) {
 				if (state === "new") changeImgIndex(0);//fullImage.length - 1);
 
 				//affiche l'image
-				imgBackground(data);
+				imgBackground(setblob(data));
 				console.log("data size: ", data.length);
 			}
 		}
@@ -1504,48 +1503,10 @@ function renderImage(file, is) {
 	reader.readAsDataURL(file);
 }
 
-function unsplash(data, event) {
+function unsplash(data, event, startup) {
 
-	if (data && data !== true) cacheControl(data);
-	else {
-
-		chrome.storage.sync.get("dynamic", (storage) => {
-
-			//si on change la frequence, juste changer la freq
-			if (event) {
-				storage.dynamic.every = event;
-				chrome.storage.sync.set({"dynamic": storage.dynamic});
-				return true;
-			}
-
-			if (storage.dynamic && storage.dynamic !== true) {
-				cacheControl(storage.dynamic)
-			} else {
-				let initDyn = {
-					current: {
-						url: "",
-						link: "",
-						username: "",
-						name: "",
-						city: "",
-						country: ""
-					},
-					next: {
-						url: "",
-						link: "",
-						username: "",
-						name: "",
-						city: "",
-						country: "",
-					},
-					every: "hour",
-					time: 0
-				}
-
-				cacheControl(initDyn)
-			}
-		});
-	}
+	//on startup nothing is displayed
+	const loadbackground = url => (startup ? imgBackground(url, "nodisplay") : imgBackground(url));
 
 	function freqControl(state, every, last) {
 
@@ -1583,14 +1544,14 @@ function unsplash(data, event) {
 			//sinon prendre l'image preloaded (next)
 			} else {
 
-				imgBackground(d.next.url);
+				loadbackground(d.next.url);
 				credit(d.next);
 				req("current", d, false);
 			}
 
 		//pas besoin d'image, simplement current
 		} else {
-			imgBackground(d.current.url);
+			loadbackground(d.current.url);
 			credit(d.current);
 		}
 	}
@@ -1624,7 +1585,7 @@ function unsplash(data, event) {
 					//si init, fait 2 req (current, next) et save sur la 2e
 					if (which === "current") {
 						d.current = resp;
-						imgBackground(d.current.url);
+						loadbackground(d.current.url);
 						credit(d.current);
 						req("next", d, true);
 					}
@@ -1667,6 +1628,47 @@ function unsplash(data, event) {
 		}
 
 		imgCredits(infos, "dynamic");
+	}
+
+	if (data && data !== true) cacheControl(data);
+	else {
+
+		chrome.storage.sync.get("dynamic", (storage) => {
+
+			//si on change la frequence, juste changer la freq
+			if (event) {
+				storage.dynamic.every = event;
+				chrome.storage.sync.set({"dynamic": storage.dynamic});
+				return true;
+			}
+
+			if (storage.dynamic && storage.dynamic !== true) {
+				cacheControl(storage.dynamic)
+			} else {
+				let initDyn = {
+					current: {
+						url: "",
+						link: "",
+						username: "",
+						name: "",
+						city: "",
+						country: ""
+					},
+					next: {
+						url: "",
+						link: "",
+						username: "",
+						name: "",
+						city: "",
+						country: "",
+					},
+					every: "hour",
+					time: 0
+				}
+
+				cacheControl(initDyn)
+			}
+		});
 	}
 }
 
