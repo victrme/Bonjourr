@@ -1,11 +1,13 @@
-let stillActive = false;
-let rangeActive = false;
-let lazyClockInterval = 0;
-
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
 attr = (that, val) => that.setAttribute("class", val);
 has = (that, val) => id(that) && id(that).getAttribute("class", val) ? true : false;
+
+let stillActive = false;
+let rangeActive = false;
+let lazyClockInterval = 0;
+const domlinkblocks = id("linkblocks");
+const dominterface = id("interface");
 
 //cache rapidement temp max pour eviter que ça saccade
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
@@ -280,7 +282,7 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	//enleve les selections d'edit
-	const removeLinkSelection = x => (id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")}));
+	const removeLinkSelection = x => (domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")}));
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
@@ -311,14 +313,14 @@ function quickLinks(event, that, initStorage) {
 		block_parent.innerHTML = b;
 
 		//l'ajoute au dom
-		id("linkblocks").appendChild(block_parent);
+		domlinkblocks.appendChild(block_parent);
 
 		//met les events au dernier elem rajouté
-		addEvents(id("linkblocks").lastElementChild);
+		addEvents(domlinkblocks.lastElementChild);
 
 		//si online et l'icon charge, en rechercher une
 		if (window.navigator.onLine && icon === "src/images/loading.gif")
-			addIcon(id("linkblocks").lastElementChild, arr, index, links);
+			addIcon(domlinkblocks.lastElementChild, arr, index, links);
 	}
 
 	function addEvents(elem) {
@@ -327,14 +329,12 @@ function quickLinks(event, that, initStorage) {
 
 			chrome.storage.sync.get("links", (data) => {
 
-				if (is === "start") {
-					let i = findLinkIndex(that, true);
-					dragged = [elem, data.links[i], i];
-				}
-				else if (is === "enter") {
-					let i = findLinkIndex(that, true);
-					hovered = [elem, data.links[i], i];
-				}
+				const i = findindex(that);
+
+				if (is === "start") dragged = [elem, data.links[i], i];
+
+				else if (is === "enter") hovered = [elem, data.links[i], i];
+
 				else if (is === "end") {
 
 					//changes html blocks
@@ -411,10 +411,6 @@ function quickLinks(event, that, initStorage) {
 		id("re_iconurl").onmouseup = function() {
 			id("e_iconurl").value = "";
 		}
-
-		//id("e_iconfile").onchange = function(e) {
-			//plus tard
-		//};
 	}
 
 	function editlink(that, i, customIcon) {
@@ -430,17 +426,15 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		function updateLinkHTML(newElem) {
-			let block = id("linkblocks").children[i + 1];
+			let block = domlinkblocks.children[i + 1];
 
 			block.children[0].setAttribute("source", newElem.url);
 			block.children[0].lastChild.innerText = newElem.title;
 			block.querySelector("img").src = newElem.icon;
 		}
 
-		//i is the quick link index here
+		//edit est visible
 		if (i || i === 0) {
-
-
 
 			chrome.storage.sync.get("links", (data) => {
 				let allLinks = data.links;
@@ -455,10 +449,11 @@ function quickLinks(event, that, initStorage) {
 				chrome.storage.sync.set({"links": allLinks});
 			});
 
+		//affiche edit avec le bon index
 		} else {
 
-			let index = findLinkIndex(that, true);
-			let liconwrap = that.querySelector(".l_icon_wrap");
+			const index = findindex(that);
+			const liconwrap = that.querySelector(".l_icon_wrap");
 
 			attr(liconwrap, "l_icon_wrap selected");
 
@@ -480,19 +475,14 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	function findLinkIndex(that, isEdit) {
-		var bp = (isEdit ? "" : that.parentElement.parentElement.parentElement);
-		var sibling = (isEdit ? that : bp);
-		var index = -2;
+	function findindex(that) {
 
-		//trouve l'index avec le nombre d'elements dans linkblocks
-		while (sibling.id !== "hiddenlink" || index === 16) {
+		//passe la liste des blocks, s'arrete si that correspond
+		//renvoie le nombre de loop pour l'atteindre
 
-			sibling = sibling.previousSibling;
-			index++;
-		}
+		const list = domlinkblocks.children;
 
-		return index;
+		for (let i = 0; i < list.length; i++) if (that === list[i]) return i-1
 	}
 
 	function removeblock(index) {
@@ -534,16 +524,16 @@ function quickLinks(event, that, initStorage) {
 			}
 
 			//enleve le html du block
-			var block_parent = id("linkblocks").children[count + 1];
+			var block_parent = domlinkblocks.children[count + 1];
 			block_parent.setAttribute("class", "block_parent removed");
 			
 			setTimeout(function() {
 
-				id("linkblocks").removeChild(block_parent);
+				domlinkblocks.removeChild(block_parent);
 
 				//enleve linkblocks si il n'y a plus de links
 				if (linkRemd.length === 0) {
-					id("linkblocks").style.visibility = "hidden";
+					domlinkblocks.style.visibility = "hidden";
 					searchbarFlexControl(data.searchbar, 0);
 				}
 			}, 200);
@@ -688,7 +678,7 @@ function quickLinks(event, that, initStorage) {
 				//array est seulement le link
 				} else {
 					arr.push(lll);
-					id("linkblocks").style.visibility = "visible";
+					domlinkblocks.style.visibility = "visible";
 					searchbarFlexControl(data.searchbar, 1);
 				}
 				
@@ -1768,7 +1758,7 @@ function distractMode(that, initStorage) {
 
 	function apply(on) {
 
-		let ui = id("interface");
+		let ui = dominterface;
 		let uiClass = ui.getAttribute("class");
 
 		if (on) {
@@ -1880,7 +1870,7 @@ chrome.storage.sync.get(null, (data) => {
 	searchbar(null, null, data);
 
 	//test pour webapp
-	if (mobilecheck()) id("interface").style.height = `calc(${window.innerHeight}px`;
+	if (mobilecheck()) dominterface.style.height = `calc(${window.innerHeight}px`;
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement

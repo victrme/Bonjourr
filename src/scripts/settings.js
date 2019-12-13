@@ -445,21 +445,21 @@ function showSettings(e, that) {
 		let edit = id("edit_linkContainer");
 		let editClass = edit.getAttribute("class");
 
-		let ui = id("interface");
-		let uiClass = id("interface").getAttribute("class");
+		let ui = dominterface;
+		let uiClass = dominterface.getAttribute("class");
 
 
 		if (has("settings", "shown")) {
 			attr(that.children[0], "");
 			attr(id("settings"), "");
-			attr(id("interface"), (uiClass === "pushed distract" ? "distract" : ""));
+			attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
 
 			if (editClass === "shown pushed") attr(edit, "shown");
 			
 		} else {
 			attr(that.children[0], "shown");
 			attr(id("settings"), "shown");
-			attr(id("interface"), (uiClass === "distract" ? "pushed distract" : "pushed"));
+			attr(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
 			
 			if (editClass === "shown") attr(edit, "shown pushed");
 		}
@@ -481,19 +481,19 @@ function showInterface(e) {
 	//close edit container on interface click
 	if (has("edit_linkContainer", "shown")) {
 		attr(id("edit_linkContainer"), "");
-		id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
+		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
 	}
 
 	if (has("settings", "shown")) {
 
 		let edit = id("edit_linkContainer");
 		let editClass = edit.getAttribute("class");
-		let ui = id("interface");
-		let uiClass = id("interface").getAttribute("class");
+		let ui = dominterface;
+		let uiClass = dominterface.getAttribute("class");
 
 		attr(id("showSettings").children[0], "");
 		attr(id("settings"), "");
-		attr(id("interface"), (uiClass === "pushed distract" ? "distract" : ""));
+		attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
 
 		if (editClass === "shown pushed") attr(edit, "shown");
 	}
@@ -509,7 +509,7 @@ id("showSettings").onmouseup = function(e) {
 }
 
 //si settings ouvert, le ferme
-id("interface").onmouseup = function(e) {
+dominterface.onmouseup = function(e) {
 	showInterface(e)
 }
 
@@ -517,7 +517,7 @@ id("interface").onmouseup = function(e) {
 document.onkeydown = function(e) {
 
 	//press escape to show settings
-	if (e.code = "Escape") {
+	if (e.code === "Escape") {
 		showSettings({type: "mousedown"});
 
 		setTimeout(() => {
@@ -554,6 +554,8 @@ function settings() {
 
 function checkifpro() {
 
+	const hash = "OGYyNGFjMDRkYjhlNDk5ZjQ2ZDM2NzJiNGZhZDYxM2VlYzY4MTlhYmVlYTU4YTdmNDlhYmIyMWRhOWM0ZjI5ZA==";
+
 	async function encode(message) {
 		const msgBuffer = new TextEncoder('utf-8').encode(message);
 		const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -563,9 +565,7 @@ function checkifpro() {
 	}
 
 	encode(localStorage.login).then((a) => {
-		((a === atob("OGYyNGFjMDRkYjhlNDk5ZjQ2ZDM2NzJiNGZhZDYxM2VlYzY4MTlhYmVlYTU4YTdmNDlhYmIyMWRhOWM0ZjI5ZA==")) ?
-			proFunctions() :
-			console.log("You have the free version of Bonjourr"));
+		if (a === atob(hash)) proFunctions()
 	});
 
 
@@ -625,7 +625,7 @@ function checkifpro() {
 
 				if (size) {
 					id("e_size").innerText = size;
-					id("interface").style.fontSize = size + "px";
+					dominterface.style.fontSize = size + "px";
 				}
 
 				if (weight) {
@@ -718,7 +718,7 @@ function checkifpro() {
 				}
 
 				id("e_row").innerText = val;
-				id("linkblocks").style.width = getWidth(val) + "px";
+				domlinkblocks.style.width = getWidth(val) + "px";
 			}
 
 			if (data !== undefined) setRows(data);
