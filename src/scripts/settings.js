@@ -798,6 +798,11 @@ function checkifpro() {
 			i.style.display = "block";
 		}
 
+		// pour que ce soit pas trop sale le temps qu'on refasse le CSS
+		for (let i of cl("proflex")) {
+			i.style.display = "flex";
+		}
+
 		chrome.storage.sync.get(["font", "customCss", "linksrow", "greeting"], (data) => {
 			customFont(data.font);
 			customCss(data.customCss);

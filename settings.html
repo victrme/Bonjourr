@@ -139,7 +139,7 @@
 	<h5 class="trn">Time & Date</h5>
 
 	<div class="param">
-		<div class="analog wrapper pro">
+		<div class="analog wrapper proflex">
 			<span class="trn">Analog clock</span>
 			<div>
 				<label class="switch">
@@ -151,7 +151,7 @@
 
 		<hr class="pro">
 
-		<div class="seconds wrapper pro">
+		<div class="seconds wrapper proflex">
 			<span class="trn">Display Seconds</span>
 			<div>
 				<label class="switch">
@@ -188,7 +188,7 @@
 		<hr />
 
 		<div class="wrapper">
-			<span class="trn selector_span">Time Zone</span>
+			<span class="trn selector_span">Time zone</span>
 			<select id="i_timezone" class="">
 				<option value="auto">Automatic</option>
 				<option value="-10">UTC/HST -10 (Honolulu)</option>
@@ -510,6 +510,47 @@
 	</div>
 </div>
 
+<div class="pro">
+	<h5 class="trn">Quotes</h5>
+	<div class="param">
+		<div class="activate_quotes wrapper">
+			<span class="trn">Enable</span>
+			<div>
+				<label class="switch">
+					<input id="i_quotes" type="checkbox">
+					<span class="slider round span"></span>
+				</label>
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="wrapper">
+			<span class="trn">Quote type</span>
+			<select id="i_quoteType" class="choose_search">
+				<option value="inspi">Inspirational</option>
+				<option value="jokes">Jokes</option>
+				<option value="inspirobot">Inspirobot</option>
+				<option value="all">All of the above</option>
+			</select>
+		</div>
+
+		<hr>
+
+		<div class="wrapper">
+			<span class="trn">Frequency</span>
+			<select id="i_freq">
+				<option value="tabs" class="trn">Every tab</option>
+				<option value="hour" class="trn">Every hour</option>
+				<option value="day" class="trn">Every day</option>
+				<option value="pause" class="trn">Pause</option>
+			</select>
+		</div>
+
+
+	</div>
+</div>
+
 <div>
 	<h5 class="trn">Search bar</h5>
 	<div class="param">
@@ -538,47 +579,6 @@
 					<option value="s_yahoo">Yahoo</option>
 					<option value="s_bing">Bing</option>
 				</select>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div>
-	<h5 class="trn">General</h5>
-	<div class="param">
-
-		<div class="choose_language wrapper">
-			<span class="trn selector_span">Language</span>
-			<select id="i_lang" class="lang">
-				<option value="en">English</option>
-				<option value="fr">Français</option>
-				<option value="sk">Slovenský</option>
-				<option value="sv">Svenska</option>
-				<option value="pl">Polski</option>
-				<option value="pt_BR">Português (Brasil)</option>
-				<option value="nl">Nederlandse</option>
-				<option value="ru">Русский</option>
-				<option value="zh_CN">简体中文</option>
-				<option value="de">Deutsch</option>
-				<option value="it">Italiano</option>
-			</select>
-		</div>
-
-		<div class="pro">
-
-			<hr>
-
-			<div class="wrapper">
-				<span class="trn">Greeting</span>
-				<input type="text" name="greeting" id="i_greeting" placeholder="Name">
-			</div>
-
-			<hr>
-
-			<div class="wrapper">
-				<span class="trn">Custom CSS</span>
-				<br />
-				<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
 			</div>
 		</div>
 	</div>
@@ -619,6 +619,47 @@
 			<span class="trn">Size</span>
 			<input id="i_size" type="range" class="range" name="fontsize" min="9" max="26" value="12">
 			<span id="e_size">12</span>
+		</div>
+	</div>
+</div>
+
+<div>
+	<h5 class="trn">General</h5>
+	<div class="param">
+
+		<div class="choose_language wrapper">
+			<span class="trn selector_span">Language</span>
+			<select id="i_lang" class="lang">
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+				<option value="sk">Slovenský</option>
+				<option value="sv">Svenska</option>
+				<option value="pl">Polski</option>
+				<option value="pt_BR">Português (Brasil)</option>
+				<option value="nl">Nederlandse</option>
+				<option value="ru">Русский</option>
+				<option value="zh_CN">简体中文</option>
+				<option value="de">Deutsch</option>
+				<option value="it">Italiano</option>
+			</select>
+		</div>
+
+		<div class="pro">
+
+			<hr>
+
+			<div class="wrapper">
+				<span class="trn">Greeting</span>
+				<input type="text" name="greeting" id="i_greeting" placeholder="Name">
+			</div>
+
+			<hr>
+
+			<div class="wrapper">
+				<span class="trn">CSS</span>
+				<br />
+				<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
+			</div>
 		</div>
 	</div>
 </div>

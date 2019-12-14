@@ -1842,6 +1842,29 @@ function searchbar(event, that, storage) {
 	}
 }
 
+function quoting() {
+	let motiQuotes = ['If we had no winter, the spring would not be so pleasant: if we did not sometimes taste of adversity, prosperity would not be so welcome.',
+		'Prosperity makes friends, adversity tries them',
+		'Virtue is not left to stand alone. He who practices it will have neighbors.',
+		'Fear cuts deeper than swords'];
+
+	function randomQuote(quoteType) {
+		let RandomNumber = Math.floor(Math.random()*quoteType.length);
+		let quote = quoteType[RandomNumber]
+
+		return quote;
+	}
+
+	document.getElementById('quote').innerHTML = randomQuote(motiQuotes);
+}
+
+
+
+
+
+
+
+
 // Signature aléatoire
 function signature() {
 	var v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
@@ -1869,6 +1892,7 @@ chrome.storage.sync.get(null, (data) => {
 	initBackground(data);
 	weather(null, null, data);
 	quickLinks(null, null, data);
+	quoting();
 	searchbar(null, null, data);
 
 	//test pour webapp

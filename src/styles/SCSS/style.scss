@@ -85,7 +85,7 @@
 					height: 45%;
 				}
 
-				#seconds {
+				#analogSeconds {
 					height: 45%;
 					width: .1em;
 					margin-left: -0.05em;
@@ -383,7 +383,6 @@
 		padding: .5em;
 		border: none;
 		border-radius: 8px;
-		font-size: 16px;
 		background-color: transparent;
 		cursor: pointer;
 
@@ -404,7 +403,7 @@
 		}
 
 		img {
-			width: 2.5em;
+			width: 27px;
 			filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
 			transition: transform .2s;
 		}
@@ -612,6 +611,7 @@
 		vertical-align: top;
 		background-color: $inputGrey;
 		border: 0px;
+		margin-left: 10px;
 	}
 
 	.signature {

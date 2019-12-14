@@ -1,6 +1,7 @@
-#settings .pro {
+#settings .pro, #settings .proflex {
 	display: none;
 }
+
 
 
 #interface.distract #time,

@@ -650,7 +650,6 @@ body input, body textarea, body select, body a, body button {
   padding: .5em;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
   background-color: transparent;
   cursor: pointer;
 }
@@ -672,7 +671,7 @@ body input, body textarea, body select, body a, body button {
 }
 
 #showSettings button img {
-  width: 2.5em;
+  width: 27px;
   filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
   transition: transform .2s;
 }
@@ -1104,6 +1103,7 @@ body input, body textarea, body select, body a, body button {
   vertical-align: top;
   background-color: #e3e3e5;
   border: 0px;
+  margin-left: 10px;
 }
 
 #settings .signature {
@@ -1298,12 +1298,12 @@ body.dark #showSettings button.shown:hover, body.autodark #showSettings button.s
     height: .7em;
   }
   #showSettings button {
-    height: 2.5em;
-    width: 2.5em;
+    height: 28px;
+    width: 28px;
   }
   #showSettings button img {
-    height: 1.5em;
-    width: 1.5em;
+    height: 18.5px;
+    width: 18.5px;
   }
   #settings {
     font-size: .9em;
