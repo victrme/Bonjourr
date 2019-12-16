@@ -138,12 +138,12 @@ function settingsEvents() {
 	//custom bg
 
 	id("i_bgfile").onchange = function(e) {
-		customBackground({cat: "bgfile", value: e})
-	}
+		renderImage(this.files[0], "change");
+	};
 
-	id("i_quality").oninput = function() {
+	/*id("i_quality").oninput = function() {
 		customBackground({cat: "quality", value: this.value})
-	}
+	}*/
 
 
 
