@@ -1,5 +1,18 @@
+
+
 ## Changelogs
 
+**v1.8.3**
+
+- Better dynamic backgrounds preload
+- Smaller settings icon
+- Fixed an issue that prevented Quick Links to be edited
+
+**v1.8.2**
+
+- Performance boost on low end hardware
+- Improved overall animations
+- Faster "each tab" dynamic backgrounds
 
 **v1.8.1**
 
@@ -12,6 +25,8 @@
 - Rearrangeable Quick Links
 - Quick Links editing menu
 - Italian translation 
+
+<br />
 
 **v1.7.2**
 
@@ -38,11 +53,15 @@
 - Slovak translation thanks to Roman Bartík
 - Brazilian portugese translation thanks to Adilson Santos
 
+<br />
+
 **v1.6.0**
 
 - Massive performance boost
 - Quick Links improved
 - Less permissions on Firefox
+
+<br />
 
 **v1.5.5**
 

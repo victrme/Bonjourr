@@ -14,32 +14,33 @@ While this startpage is minimal and beautiful, it is also thought out to be prac
 
 Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Brazil), Italian, Russian and Chinese.
 
+<br />
+
 ## Install
 
-* Download for [Chrome, Brave and Opera](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
+* Download for [Chrome and Brave](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
 * Download for [Firefox Desktop](https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/)
-* Official Safari version currently in the works. [Use on Safari](https://bonjourr.fr/#useinsafari)
+* No official Safari version currently. [Use on Safari](https://bonjourr.fr/#useinsafari)
 * [Try Bonjourr Online](https://online.bonjourr.fr)
 
 If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjourr.fr#contact)
 
-## Todo
-
-- [x] Faster dynamic backgrounds with credits and locations
-- [ ] Bonjourr calls you by your name
-- [x] Rearrangeable quick links
-- [ ] Motivational quotes
-- [ ] Mobile web app
+<br />
 
 ## Built with
 
 * Styled with [Sass](https://sass-lang.com/guide)
+* Releases bundled with Gulp, [see dependencies](https://github.com/victorazevedo-me/Bonjourr/network/dependencies)
 * Our tiny hands
+
+<br />
 
 ## Authors
 
 * **Tahoe Beetschen** · [portfolio](https://tahoe.be) · [GitHub](https://github.com/Tahoooe)
 * **Victor Azevedo** · [portfolio](https://victor-azevedo.me) · [GitHub](https://github.com/victorazevedo-me)
+
+<br />
 
 ## Contributors and translations
 
