@@ -3,6 +3,7 @@ cl = name => document.getElementsByClassName(name);
 attr = (that, val) => that.setAttribute("class", val);
 has = (that, val) => id(that) && id(that).getAttribute("class", val) ? true : false;
 
+let db = null;
 let stillActive = false;
 let rangeActive = false;
 let lazyClockInterval = 0;
@@ -240,7 +241,6 @@ function newClock(eventObj, init) {
 	}
 }
 
-
 function date() {
 	const date = new Date();
 	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -260,7 +260,7 @@ function date() {
 		id("mois").innerText = tradThis(months[date.getMonth()]);
 	}
 }
-	
+
 function greetings() {
 	const h = (new Date()).getHours();
 	let message;
@@ -1229,7 +1229,7 @@ function imgBackground(val) {
 	} 
 	else return id("background").style.backgroundImage;
 }
- 
+
 function initBackground(storage) {
 
 		let type = storage.background_type || "default";
@@ -1704,7 +1704,73 @@ function mobilecheck() {
 	return check;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const firstReq = window.indexedDB.open("Bonjourr", 2)
+
+firstReq.onsuccess = e => db = e.target.result
+firstReq.onupgradeneeded = e => e.target.result.createObjectStore("settings")
+
+function storage(obj) {
+
+	//only key is defined, log val
+	//if callback, use it with val
+	if (!obj.delete && !obj.save) {
+		db.transaction("settings")
+		.objectStore("settings")
+		.get(obj.key)
+		.onsuccess = function(e) {
+
+			if (obj.callback) 
+				obj.callback(e.target.result)
+			else console.log(e.target.result)
+		}
+	}
+
+	//remove a object
+	else if (obj.delete) 
+		db.transaction(["settings"], "readwrite")
+		.objectStore("settings")
+		.delete(obj.key)
+
+	//add an object (it has value)
+	else if (obj.value || obj.save) 
+		db.transaction(["settings"], "readwrite")
+		.objectStore("settings")
+		.put(obj.value, obj.key)
+}
+
+
+
 chrome.storage.sync.get(null, (data) => {
+
+	let obj = {}
+
+	setTimeout(() => {
+		for (elem in data) {
+
+			obj = {save: true, key: elem, value: data[elem]};
+			storage(obj);
+			console.log(obj)
+		}
+	}, 100)
+	
+
+
+
 	
 	traduction();
 	newClock(null, data.clock);
@@ -1725,4 +1791,3 @@ chrome.storage.sync.get(null, (data) => {
 	//pour que les settings y accede plus facilement
 	sessionStorage.data = JSON.stringify(data);
 });
-

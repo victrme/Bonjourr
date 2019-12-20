@@ -3,12 +3,6 @@ const concat = require('gulp-concat');
 const minify = require('gulp-babel-minify');
 const htmlmin = require('gulp-htmlmin');
 const csso = require('gulp-csso');
-const autoprefixer = require('gulp-autoprefixer');
-
-/*const sass = require('gulp-sass');
-const postcss = require('gulp-postcss');
-const sourcemaps = require('gulp-sourcemaps');
-*/
 
 const path = {
     scss: ["src/styles/scss/_global.scss", "src/styles/scss/_media.scss", "src/styles/scss/_mixins.scss", "src/styles/scss/style.scss"],
