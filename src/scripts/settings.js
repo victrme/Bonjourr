@@ -210,6 +210,14 @@ function settingsEvents() {
 	id("i_geol").onchange = function() {
 		if (!stillActive) weather("geol", this)
 	}
+
+
+	//quotes
+	id("i_quotes").onchange = function() {
+		quoting(this.checked)
+	}
+
+
 	
 	//searchbar
 	id("i_sb").onchange = function() {
@@ -287,6 +295,7 @@ function initParams() {
 	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
 	initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
 	initCheckbox("i_analog", isThereData("clock", "analog"), false);
+	initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
 
 	
 	//bg

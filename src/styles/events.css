@@ -151,3 +151,25 @@
 
 #bg_tn_wrap .thumbnail button.hidden {opacity: 0}
 #bg_tn_wrap .thumbnail button.shown {opacity: 1}
+
+
+
+
+/*quote quick style*/
+
+#quotes_container {
+	display: none;
+	max-width: 70%;
+	width: 500px;
+	margin: 0 auto;
+	font-size: 1.5em;
+}
+
+#quotes_container.shown {
+	display: block;
+}
+
+#quoteAuthor {
+	color: #bbb;
+	font-size: .9em;
+}
