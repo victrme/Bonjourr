@@ -1,4 +1,13 @@
-#settings .pro, #settings .proflex {
+#settings .pro,
+#settings .proflex,
+#analogClock.hidden,
+#interface #time #analogClock #analogSeconds.hidden,
+#clock.hidden,
+#time-container.hidden,
+#date.hidden,
+#greetings.hidden,
+#weather_desc.hidden,
+#w_icon.hidden {
 	display: none;
 }
 
@@ -84,16 +93,6 @@
 }
 
 
-
-/*Analog clock*/
-
-#analogClock.hidden,
-#interface #time #analogClock #analogSeconds.hidden,
-#clock.hidden {
-	display: none;
-}
-
-
 /*custom background*/
 
 #custom_thumbnail {
@@ -172,4 +171,20 @@
 #quoteAuthor {
 	color: #bbb;
 	font-size: .9em;
+}
+
+
+
+
+/*hide elems*/
+
+#hideelem {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#hideelem button {
+	width: 50%;
+    text-align: left;
+    padding: .5em;
 }

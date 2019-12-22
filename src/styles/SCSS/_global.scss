@@ -114,7 +114,7 @@ body {
 
 @mixin weather {
 	#weather {
-		.w_desc_container, #temp_max_wrap {
+		#weather_desc {
 			font-size: 1.5em;
 		}
 
@@ -216,7 +216,6 @@ body {
 		.block_parent {
 			position: relative;
 			margin: 1em;
-			transition: all .2s ease-in;
 
 			.block {
 				.l_icon_wrap {

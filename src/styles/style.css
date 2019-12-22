@@ -137,12 +137,12 @@ body input, body textarea, body select, body a, body button {
   margin-top: 30px;
 }
 
-#interface #time .time-container #clock {
+#interface #time #time-container #clock {
   font-family: sf_pro_displaythin;
   font-size: 6em;
 }
 
-#interface #time .time-container #analogClock {
+#interface #time #time-container #analogClock {
   border: 0.2em solid white;
   border-radius: 100%;
   height: 8em;
@@ -152,7 +152,7 @@ body input, body textarea, body select, body a, body button {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
-#interface #time .time-container #analogClock span {
+#interface #time #time-container #analogClock span {
   background: white;
   border-radius: 20px;
   bottom: 50%;
@@ -165,21 +165,21 @@ body input, body textarea, body select, body a, body button {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
-#interface #time .time-container #analogClock #hours {
+#interface #time #time-container #analogClock #hours {
   height: 30%;
 }
 
-#interface #time .time-container #analogClock #minutes {
+#interface #time #time-container #analogClock #minutes {
   height: 45%;
 }
 
-#interface #time .time-container #analogClock #analogSeconds {
+#interface #time #time-container #analogClock #analogSeconds {
   height: 45%;
   width: .1em;
   margin-left: -0.05em;
 }
 
-#interface #time .time-container #analogClock #center {
+#interface #time #time-container #analogClock #center {
   position: absolute;
   z-index: 5;
   width: .4em;
@@ -227,7 +227,7 @@ body input, body textarea, body select, body a, body button {
   display: block;
 }
 
-#interface #main #weather .w_desc_container, #interface #main #weather #temp_max_wrap {
+#interface #main #weather #weather_desc {
   font-size: 1.5em;
 }
 
@@ -327,7 +327,6 @@ body input, body textarea, body select, body a, body button {
 #interface #linkblocks .block_parent {
   position: relative;
   margin: 1em;
-  transition: all .2s ease-in;
 }
 
 #interface #linkblocks .block_parent .block .l_icon_wrap {
@@ -1166,7 +1165,7 @@ body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edi
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"] {
+body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"], body.autodark #settings #cssEditor, body.dark #settings #cssEditor {
   background-color: #39383d;
   color: white;
 }

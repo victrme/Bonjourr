@@ -210,14 +210,6 @@ function settingsEvents() {
 	id("i_geol").onchange = function() {
 		if (!stillActive) weather("geol", this)
 	}
-
-
-	//quotes
-	id("i_quotes").onchange = function() {
-		quoting(this.checked)
-	}
-
-
 	
 	//searchbar
 	id("i_sb").onchange = function() {
@@ -279,7 +271,6 @@ function initParams() {
 	initInput("i_type", data.background_type, "default");
 	initInput("i_blur", data.background_blur, 25);
 	initInput("i_bright", data.background_bright, 1);
-	initInput("i_row", data.linksrow, 8);
 	initInput("i_dark", data.dark, "disable");
 	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
 	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
@@ -293,9 +284,24 @@ function initParams() {
 	initCheckbox("i_sb", data.searchbar);
 	initCheckbox("i_usdate", data.usdate);
 	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
-	initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
-	initCheckbox("i_analog", isThereData("clock", "analog"), false);
-	initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
+	
+
+	if (sessionStorage.pro = "true") {
+
+		initInput("i_row", data.linksrow, 8);
+		initInput("i_customfont", isThereData("font", "family"), false);
+		initInput("i_weight", isThereData("font", "weight"), "auto");
+		initInput("i_size", isThereData("font", "size"), "auto");
+		initInput("i_greeting", data.greeting, "");
+		initInput("cssEditor", data.css, "");
+		
+		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
+		initCheckbox("i_analog", isThereData("clock", "analog"), false);
+		initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
+
+		id("e_weight").innerText = (isThereData("font", "weight") ? isThereData("font", "weight") : "Regular");
+		id("e_size").innerText = (isThereData("font", "size") ? isThereData("font", "size") : "Auto");
+	}
 
 	
 	//bg
@@ -553,272 +559,56 @@ function settings() {
 		settingsEvents();
 		signature();
 		defaultBg();
-		checkifpro();
+		if (sessionStorage.pro = "true") proEvents(); //init events
 	}, 200);
 }
 
 
+function proEvents() {
 
+	let fontObj = {}
 
-
-function checkifpro() {
-
-	const hash = "OGYyNGFjMDRkYjhlNDk5ZjQ2ZDM2NzJiNGZhZDYxM2VlYzY4MTlhYmVlYTU4YTdmNDlhYmIyMWRhOWM0ZjI5ZA==";
-
-	async function encode(message) {
-		const msgBuffer = new TextEncoder('utf-8').encode(message);
-		const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-		return hashHex;
+	id("i_customfont").oninput = function() {
+		fontObj = {family: this.value, weight: null, size: null};
+		proFunctions({which: "font", event: fontObj});
 	}
 
-	encode(localStorage.login).then((a) => {
-		if (a === atob(hash)) proFunctions()
-	});
-
-
-	function proFunctions() {
-
-		function customFont(data, evnt) {
-
-			function setFont(family, weight, size, init) {
-
-				function getWeightText(val) {
-
-					switch (parseInt(val)) {
-
-						case 100:
-						case 200:
-							return "Thin";
-							break;
-
-						case 300:
-							return "Light";
-							break;
-
-						case 400:
-							return "Regular";
-							break;
-
-						case 500:
-							return "Medium";
-							break;
-
-						case 600:
-						case 700:
-							return "Bold";
-							break;
-
-						case 800:
-						case 900:
-							return "Black";
-							break;
-
-						default:
-							return "Auto"
-					}
-				}
-
-				function saveFont() {
-
-					const font = {
-						family: id("i_customfont").value,
-						weight: id("i_weight").value,
-						size: id("i_size").value
-					}
-
-					chrome.storage.sync.set({"font": font});
-				}
-
-				const fontlink = id("fontlink");
-
-				if (family || weight) fontlink.href = `https://fonts.googleapis.com/css?family=${(family ? family : id("i_customfont").value)}:100,300,400,500,700,900`;
-				
-				if (weight) {
-					id("e_weight").innerText = getWeightText(weight);
-					document.body.style.fontWeight = weight;
-				}
-
-				if (family) {
-					document.body.style.fontFamily = family;
-					id("clock").style.fontFamily = family;
-				}
-
-				if (size) {
-					id("e_size").innerText = size;
-					dominterface.style.fontSize = size + "px";
-				}
-
-
-				//init les inputs, sinon on les save
-				if (init) {
-					id("i_customfont").value = family;
-					id("i_weight").value = weight;
-					id("i_size").value = size;
-				} else {
-					saveFont();
-				}
-			}
-
-			if (data) setFont(data.family, data.weight, data.size, true);
-			if (evnt) setFont(evnt.family, evnt.weight, evnt.size);
-		}
-
-		function customCss(data) {
-			
-			const cssEditor = id("cssEditor");
-
-			function addCss() {
-				css = cssEditor.value;
-				document.getElementById("styles").innerHTML = css;
-			}
-
-			addCss();
-			cssEditor.oninput = () => addCss();
-
-			// Active l'indentation (philipnewcomer.net)
-			cssEditor.onkeypress = function(e) {
-
-				console.log(e);
-
-				if (e.key === "{") {
-
-					this.value = this.value + `{\r  \r}`;
-
-					console.log(this.selectionStart);
-
-					this.selectionStart = this.selectionStart - 2;
-					this.selectionEnd = this.selectionEnd - 2;
-
-					/*let selectionStartPos = this.selectionStart;
-					let selectionEndPos   = this.selectionEnd;
-					let oldContent        = this.value;
-
-					this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
-
-					this.selectionStart = this.selectionEnd = selectionStartPos + 1;*/
-					e.preventDefault();
-				}
-			}
-		}
-
-		function linksrow(data) {
-
-			function setRows(val) {
-
-				function getWidth(val) {
-
-					let width, margin, total = 0;
-					let blocks = cl("block_parent");
-
-					for (let i = 0; i < val; i++) {
-
-						if (i >= blocks.length) {
-							width = 96;
-							margin = 16;
-						} else {
-							width = parseInt(getComputedStyle(blocks[i]).width) +1;
-							margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
-						}
-
-						//console.log(total)
-						
-						total += width + margin * 2;
-					}
-
-					return total
-				}
-
-				id("e_row").innerText = val;
-				domlinkblocks.style.width = getWidth(val) + "px";
-			}
-
-			if (data !== undefined) setRows(data);
-
-			id("i_row").oninput = function() {
-
-				setRows(this.value);
-				slowRange({"linksrow": parseInt(this.value)});
-			}
-		}
-
-		function greeting(data, evnt) {
-
-			const text = id("greetings").innerText;
-			let pause;
-
-			function apply(val) {
-
-				//greeting is classic text + , + custom greet
-				id("greetings").innerText = `${text}, ${val}`;
-
-				//input empty removes ,
-				if (val === "") id("greetings").innerText = text;
-			}
-
-			function setEvent(val) {
-
-				//reset save timeout
-				if (pause) clearTimeout(pause);
-
-				apply(val);
-				
-				//wait long enough to save to storage
-				pause = setTimeout(function() {
-					console.log("save");
-					chrome.storage.sync.set({"greeting": val});
-				}, 500);
-			}
-
-			//init
-			if (data !== undefined) {
-				//id("i_greeting").value = data;
-				apply(data);
-			}
-
-			if (evnt) setEvent(evnt);
-		}
-
-		id("i_customfont").oninput = function() {
-
-			fontObj = {family: this.value, weight: null, size: null};
-			customFont(null, fontObj);
-		}
-
-		id("i_weight").oninput = function() {
-
-			fontObj = {family: null, weight: this.value, size: null};
-			customFont(null, fontObj);
-		}
-
-		id("i_size").oninput = function() {
-
-			fontObj = {family: null, weight: null, size: this.value};
-			customFont(null, fontObj);
-		}
-
-		id("i_greeting").oninput = function() {
-			greeting(null, this.value);
-		}
-
-
-		for (let i of cl("pro")) {
-			i.style.display = "block";
-		}
-
-		// pour que ce soit pas trop sale le temps qu'on refasse le CSS
-		for (let i of cl("proflex")) {
-			i.style.display = "flex";
-		}
-
-		chrome.storage.sync.get(["font", "customCss", "linksrow", "greeting"], (data) => {
-			customFont(data.font);
-			customCss(data.customCss);
-			linksrow(data.linksrow);
-			greeting(data.greeting);
-		});
-
-		console.log("You unlocked the full potential of Bonjourr");
+	id("i_weight").oninput = function() {
+		id("e_weight").innerText = this.value;
+		fontObj = {family: null, weight: this.value, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_size").oninput = function() {
+		id("e_size").innerText = this.value;
+		fontObj = {family: null, weight: null, size: this.value};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_row").oninput = function() {
+		proFunctions({which: "row", event: this.value})
+	}
+
+	id("i_greeting").oninput = function() {
+		proFunctions({which: "greet", event: this.value})
+	}
+
+	id("i_quotes").onchange = function() {
+		proFunctions({which: "quote", event: this.checked});
+	}
+
+	id("cssEditor").onkeypress = function(e) {
+		let data = {e: e, that: this};
+		proFunctions({which: "css", event: data})
+	}
+
+
+	for (let i of cl("pro")) {
+		i.style.display = "block";
+	}
+
+	// pour que ce soit pas trop sale le temps qu'on refasse le CSS
+	for (let i of cl("proflex")) {
+		i.style.display = "flex";
 	}
 }

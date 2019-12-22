@@ -1422,7 +1422,7 @@ function unsplash(data, event, startup) {
 						d.current = d.next;
 						d.next = resp;
 						chrome.storage.sync.set({"dynamic": d});
-						console.log("loaded")
+						//console.log("loaded")
 					});
 					
 				}
@@ -1665,149 +1665,6 @@ function searchbar(event, that, storage) {
 	}
 }
 
-function quoting(event, initStorage) {
-
-	function displayText(obj) {
-
-		id('quote').innerText = obj.main;
-		id('quoteAuthor').innerText = "- " + obj.author;
-		attr(id("quotes_container"), obj.enabled ? "shown" : "");
-	}
-
-	function requestQuote() {
-		/*let xhr = new XMLHttpRequest();
-		xhr.withCredentials = true;
-
-		xhr.addEventListener("readystatechange", function () {
-			if (this.readyState === this.DONE) {
-				
-				let r = this.responseText;
-
-				let respObj = {
-					main: r.contents.quotes[0].quote,
-					author: r.contents.quotes[0].author,
-					last: Date.now()
-				}
-
-				console.log(r);
-				displayText(respObj);
-			}
-		});
-
-		xhr.open("POST", 'https://quotes.rest/qod');
-		xhr.setRequestHeader("Accept", "application/json");
-
-		xhr.send();*/
-
-		//On va faire comme si la requete marchait
-
-		let r = {
-			"success": {
-				"total": 1
-			},
-			"contents": {
-				"quotes": [
-				{
-					"quote": "Do not worry if you have built your castles in the air. They are where they should be. Now put the foundations under them.",
-					"length": "122",
-					"author": "Henry David Thoreau",
-					"tags": [
-						"dreams",
-						"inspire",
-						"worry"
-					],
-					"category": "inspire",
-					"date": "2016-11-21",
-					"title": "Inspiring Quote of the day",
-					"background": "https://theysaidso.com/img/bgs/man_on_the_mountain.jpg",
-					"id": "mYpH8syTM8rf8KFORoAJmQeF"
-				}]
-			}
-		}
-
-		let respObj = {
-			enabled: true,
-			main: r.contents.quotes[0].quote,
-			author: r.contents.quotes[0].author,
-			last: Date.now()
-		}
-
-		console.log(r);
-		displayText(respObj);
-		chrome.storage.sync.set({quote: respObj});
-	}
-
-	function storageControl(obj) {
-
-		if (!obj) {
-
-			//first time quoting
-			requestQuote();
-		
-		} else {
-			//theres a storage
-
-			if (Date.now() > obj.last + 1000*60*60) {
-				//storage older than an hour
-				requestQuote()
-			}
-			else {
-				//storage too young, use storage
-				displayText(obj);
-			}
-		}
-	}
-
-	if (initStorage) {
-
-		storageControl(initStorage)
-
-	} else {
-
-		chrome.storage.sync.get(null, (data) => {
-
-			if (event !== null) {
-
-				if (event === true) {
-					data.quote.enabled = true;
-					storageControl(data.quote);
-				}
-				else if (event === false) {
-					data.quote.enabled = false;
-				}
-
-				//show/hides container
-				//save to storage
-				attr(id("quotes_container"), event ? "shown" : "");
-				chrome.storage.sync.set({quote: data.quote});
-
-			} else {
-
-				storageControl(data.quote);
-			}
-		})
-	}
-
-
-
-
-	/*let motiQuotes = ['If we had no winter, the spring would not be so pleasant: if we did not sometimes taste of adversity, prosperity would not be so welcome.',
-		'Prosperity makes friends, adversity tries them',
-		'Virtue is not left to stand alone. He who practices it will have neighbors.',
-		'Fear cuts deeper than swords'];
-
-	function randomQuote(quoteType) {
-		let RandomNumber = Math.floor(Math.random()*quoteType.length);
-		let quote = quoteType[RandomNumber]
-
-		return quote;
-	}
-
-	id('quote').innerText = randomQuote(motiQuotes);*/
-}
-
-
-
 
 // Signature aléatoire
 function signature() {
@@ -1860,8 +1717,400 @@ function storage(obj) {
 		.put(obj.value, obj.key)
 }
 
+function proFunctions(obj) {
+
+	function customFont(data, evnt) {
+
+		function setFont(family, weight, size, is) {
+
+			function getWeightText(val) {
+
+				switch (parseInt(val)) {
+
+					case 100:
+					case 200:
+						return "Thin";
+						break;
+
+					case 300:
+						return "Light";
+						break;
+
+					case 400:
+						return "Regular";
+						break;
+
+					case 500:
+						return "Medium";
+						break;
+
+					case 600:
+					case 700:
+						return "Bold";
+						break;
+
+					case 800:
+					case 900:
+						return "Black";
+						break;
+
+					default:
+						return "Auto"
+				}
+			}
+
+			function saveFont() {
+
+				const font = {
+					family: id("i_customfont").value,
+					weight: id("i_weight").value,
+					size: id("i_size").value
+				}
+
+				chrome.storage.sync.set({"font": font});
+			}
+
+			if (has("settings", "shown")) {
+				const fontlink = id("fontlink");
+				const famInput = id("i_customfont").value;
+
+				family = (family ? family : (famInput !== "" ? famInput : false));
+			}
+			
+
+			if (family || weight) fontlink.href = `https://fonts.googleapis.com/css?family=${family}:100,300,400,500,700,900`;
+			
+			if (weight) {
+				//id("e_weight").innerText = getWeightText(weight);
+				document.body.style.fontWeight = weight;
+			}
+
+			if (family) {
+				document.body.style.fontFamily = family;
+				id("clock").style.fontFamily = family;
+			}
+
+			if (size) {
+				//id("e_size").innerText = size;
+				dominterface.style.fontSize = size + "px";
+			}
+
+			if (is === "event") saveFont()
+		}
+
+		if (data) setFont(data.family, data.weight, data.size)
+		if (evnt) setFont(evnt.family, evnt.weight, evnt.size, "event")
+	}
+
+	function customCss(data, event) {
+		
+		const styleHead = id("styles");
+
+		// Active l'indentation
+		function syntaxControl(e, that) {
+
+			if (e.key === "{") {
+
+				that.value = that.value + `{\r  \r}`;
+
+				that.selectionStart = that.selectionStart - 2;
+				that.selectionEnd = that.selectionEnd - 2;
+
+				e.preventDefault();
+
+				/*let selectionStartPos = this.selectionStart;
+				let selectionEndPos   = this.selectionEnd;
+				let oldContent        = this.value;
+
+				//console.log(that.selectionStart);
+
+				this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
+
+				this.selectionStart = this.selectionEnd = selectionStartPos + 1;*/
+			}
+		}
+
+		if (data) {
+			styleHead.innerText = data;
+		}
+
+		if (event) {
+
+			const e = event.e;
+			const that = event.that;
+			syntaxControl(e, that);
+
+			setTimeout(() => {
+				const val = id("cssEditor").value;
+				styleHead.innerText = val;
+				chrome.storage.sync.set({css: val})
+			}, 200)
+		}
+	}
+
+	function linksrow(data, event) {
+
+		function setRows(val) {
+
+			function getWidth(val) {
+
+				let width, margin, total = 0;
+				let blocks = cl("block_parent");
+
+				for (let i = 0; i < val; i++) {
+
+					if (i >= blocks.length) {
+						width = 96;
+						margin = 16;
+					} else {
+						width = parseInt(getComputedStyle(blocks[i]).width) +1;
+						margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
+					}
+
+					//console.log(total)
+					
+					total += width + margin * 2;
+				}
+
+				return total
+			}
+
+			
+			domlinkblocks.style.width = getWidth(val) + "px";
+		}
+
+		if (data !== undefined) setRows(data);
+
+		if (event) {
+			id("e_row").innerText = event;
+			setRows(event);
+			slowRange({"linksrow": parseInt(event)});
+		}
+	}
+
+	function greeting(data, event) {
+
+		let text = id("greetings").innerText;
+		let pause;
+
+		function apply(val) {
+
+			//greeting is classic text + , + custom greet
+			id("greetings").innerText = `${text}, ${val}`;
+
+			//input empty removes ,
+			if (val === "") id("greetings").innerText = text;
+		}
+
+		function setEvent(val) {
+
+			//remove last input from greetings
+			text = text.slice(0, text.indexOf(",")); 
+			apply(val);
+
+			//reset save timeout
+			//wait long enough to save to storage
+			if (pause) clearTimeout(pause); 
+			
+			pause = setTimeout(function() {
+				console.log("save");
+				chrome.storage.sync.set({"greeting": val});
+			}, 500);
+		}
+
+		//init
+		if (data !== undefined) apply(data)
+		if (event) setEvent(event)
+	}
+
+	function quoting(data, event) {
+
+		function displayText(obj) {
+
+			id('quote').innerText = obj.main;
+			id('quoteAuthor').innerText = "- " + obj.author;
+			attr(id("quotes_container"), obj.enabled ? "shown" : "");
+		}
+
+		function requestQuote() {
+			/*let xhr = new XMLHttpRequest();
+			xhr.withCredentials = true;
+
+			xhr.addEventListener("readystatechange", function () {
+				if (this.readyState === this.DONE) {
+					
+					let r = this.responseText;
+
+					let respObj = {
+						main: r.contents.quotes[0].quote,
+						author: r.contents.quotes[0].author,
+						last: Date.now()
+					}
+
+					console.log(r);
+					displayText(respObj);
+				}
+			});
+
+			xhr.open("POST", 'https://quotes.rest/qod');
+			xhr.setRequestHeader("Accept", "application/json");
+
+			xhr.send();*/
+
+			//On va faire comme si la requete marchait
+
+			let r = {
+				"success": {
+					"total": 1
+				},
+				"contents": {
+					"quotes": [
+					{
+						"quote": "Do not worry if you have built your castles in the air. They are where they should be. Now put the foundations under them.",
+						"length": "122",
+						"author": "Henry David Thoreau",
+						"tags": [
+							"dreams",
+							"inspire",
+							"worry"
+						],
+						"category": "inspire",
+						"date": "2016-11-21",
+						"title": "Inspiring Quote of the day",
+						"background": "https://theysaidso.com/img/bgs/man_on_the_mountain.jpg",
+						"id": "mYpH8syTM8rf8KFORoAJmQeF"
+					}]
+				}
+			}
+
+			let respObj = {
+				enabled: true,
+				main: r.contents.quotes[0].quote,
+				author: r.contents.quotes[0].author,
+				last: Date.now()
+			}
+
+			console.log(r);
+			displayText(respObj);
+			chrome.storage.sync.set({quote: respObj});
+		}
+
+		function storageControl(obj) {
+
+			if (!obj) {
+
+				//first time quoting
+				requestQuote();
+			
+			} else {
+				//theres a storage
+
+				if (Date.now() > obj.last + 1000*60*60) {
+					//storage older than an hour
+					requestQuote()
+				}
+				else {
+					//storage too young, use storage
+					displayText(obj);
+				}
+			}
+		}
+
+		if (data) storageControl(data)
+
+		else {
+
+			chrome.storage.sync.get(null, (sync) => {
+
+				if (event !== null) {
+
+					if (event === true) {
+						sync.quote.enabled = true;
+						storageControl(sync.quote);
+					}
+					else if (event === false) {
+						sync.quote.enabled = false;
+					}
+
+					//show/hides container
+					//save to storage
+					attr(id("quotes_container"), event ? "shown" : "");
+					chrome.storage.sync.set({quote: sync.quote});
+
+				} else {
+
+					storageControl(sync.quote);
+				}
+			})
+		}
 
 
+
+
+		/*let motiQuotes = ['If we had no winter, the spring would not be so pleasant: if we did not sometimes taste of adversity, prosperity would not be so welcome.',
+			'Prosperity makes friends, adversity tries them',
+			'Virtue is not left to stand alone. He who practices it will have neighbors.',
+			'Fear cuts deeper than swords'];
+
+		function randomQuote(quoteType) {
+			let RandomNumber = Math.floor(Math.random()*quoteType.length);
+			let quote = quoteType[RandomNumber]
+
+			return quote;
+		}
+
+		id('quote').innerText = randomQuote(motiQuotes);*/
+	}
+
+	switch (obj.which) {
+		case "font":
+		customFont(obj.data, obj.event)
+		break
+
+		case "css":
+		customCss(obj.data, obj.event)
+		break
+
+		case "row":
+		linksrow(obj.data, obj.event)
+		break
+
+		case "greet":
+		greeting(obj.data, obj.event)
+		break
+
+		case "quote":
+		quoting(obj.data, obj.event)
+	}
+}
+
+function checkifpro(data) {
+
+	const hash = "OGYyNGFjMDRkYjhlNDk5ZjQ2ZDM2NzJiNGZhZDYxM2VlYzY4MTlhYmVlYTU4YTdmNDlhYmIyMWRhOWM0ZjI5ZA==";
+
+	async function encode(message) {
+		const msgBuffer = new TextEncoder('utf-8').encode(message);
+		const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+		return hashHex;
+	}
+
+	encode(localStorage.login).then((a) => {
+		if (a === atob(hash)) {
+					
+			proFunctions({which: "font", data: data.font})
+			proFunctions({which: "css", data: data.css})
+			proFunctions({which: "row", data: data.linksrow})
+			proFunctions({which: "greet", data: data.greeting})
+			proFunctions({which: "quote", data: data.quote})
+
+			sessionStorage.pro = "true"
+		}
+	})
+}
+
+//comme un onload, sans le onload
 chrome.storage.sync.get(null, (data) => {
 
 	traduction();
@@ -1873,8 +2122,9 @@ chrome.storage.sync.get(null, (data) => {
 	initBackground(data);
 	weather(null, null, data);
 	quickLinks(null, null, data);
-	quoting(null, data.quote);
 	searchbar(null, null, data);
+
+	checkifpro(data) //init profunctions
 
 	//test pour webapp
 	if (mobilecheck()) dominterface.style.height = `calc(${window.innerHeight}px`;
