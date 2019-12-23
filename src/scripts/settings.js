@@ -589,7 +589,7 @@ function proEvents() {
 		proFunctions({which: "row", event: this.value})
 	}
 
-	id("i_greeting").oninput = function() {
+	id("i_greeting").onkeyup = function() {
 		proFunctions({which: "greet", event: this.value})
 	}
 

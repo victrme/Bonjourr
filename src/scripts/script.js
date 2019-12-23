@@ -1900,12 +1900,16 @@ function proFunctions(obj) {
 
 			//input empty removes ,
 			if (val === "") id("greetings").innerText = text;
+			console.log(text)
+			console.log(val)
 		}
 
 		function setEvent(val) {
 
+			const virgule = text.indexOf(",");
+
 			//remove last input from greetings
-			text = text.slice(0, text.indexOf(",")); 
+			text = text.slice(0, (virgule === -1 ? text.length : virgule)); 
 			apply(val);
 
 			//reset save timeout
@@ -1913,14 +1917,13 @@ function proFunctions(obj) {
 			if (pause) clearTimeout(pause); 
 			
 			pause = setTimeout(function() {
-				console.log("save");
 				chrome.storage.sync.set({"greeting": val});
-			}, 500);
+			}, 1200);
 		}
 
 		//init
 		if (data !== undefined) apply(data)
-		if (event) setEvent(event)
+		if (event !== undefined) setEvent(event)
 	}
 
 	function quoting(data, event) {
@@ -2020,13 +2023,19 @@ function proFunctions(obj) {
 
 		else {
 
-			chrome.storage.sync.get(null, (sync) => {
+			chrome.storage.sync.get("quote", (sync) => {
 
 				if (event !== null) {
 
 					if (event === true) {
-						sync.quote.enabled = true;
-						storageControl(sync.quote);
+
+						if (sync.quote) {
+							sync.quote.enabled = true;
+							storageControl(sync.quote);
+						} else {
+							storageControl(null);
+						}
+						
 					}
 					else if (event === false) {
 						sync.quote.enabled = false;
