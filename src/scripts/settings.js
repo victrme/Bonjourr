@@ -603,6 +603,29 @@ function proEvents() {
 	}
 
 
+	for(e of id("hideelem").children) {
+
+		e.onmouseup = function() {
+			showHideElem(this.getAttribute("data"))
+		}
+	}
+
+	function showHideElem(elem) {
+
+		if (has(elem, "hidden")) {
+			attr(id(elem), "");
+		}
+		else {
+			attr(id(elem), "hidden");
+		}
+	}
+
+
+
+
+
+
+
 	for (let i of cl("pro")) {
 		i.style.display = "block";
 	}

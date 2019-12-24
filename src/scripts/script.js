@@ -1876,8 +1876,8 @@ function proFunctions(obj) {
 
 			//input empty removes ,
 			if (val === "") id("greetings").innerText = text;
-			console.log(text)
-			console.log(val)
+			//console.log(text)
+			//console.log(val)
 		}
 
 		function setEvent(val) {

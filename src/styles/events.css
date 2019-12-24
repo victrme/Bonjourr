@@ -1,13 +1,7 @@
 #settings .pro,
 #settings .proflex,
 #analogClock.hidden,
-#interface #time #analogClock #analogSeconds.hidden,
-#clock.hidden,
-#time-container.hidden,
-#date.hidden,
-#greetings.hidden,
-#weather_desc.hidden,
-#w_icon.hidden {
+#interface #time #analogClock #analogSeconds.hidden {
 	display: none;
 }
 
@@ -16,7 +10,13 @@
 #interface.distract #time,
 #interface.distract #linkblocks,
 #interface.distract #sb_container,
-#showSettings.distract {
+#showSettings.distract,
+#clock.hidden,
+#time-container.hidden,
+#date.hidden,
+#greetings.hidden,
+#weather_desc.hidden,
+#w_icon.hidden {
 	opacity: 0;
 	transition: opacity .1s;
 }
