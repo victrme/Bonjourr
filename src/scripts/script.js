@@ -1851,32 +1851,8 @@ function proFunctions(obj) {
 	function linksrow(data, event) {
 
 		function setRows(val) {
-
-			function getWidth(val) {
-
-				let width, margin, total = 0;
-				let blocks = cl("block_parent");
-
-				for (let i = 0; i < val; i++) {
-
-					if (i >= blocks.length) {
-						width = 96;
-						margin = 16;
-					} else {
-						width = parseInt(getComputedStyle(blocks[i]).width) +1;
-						margin = parseInt(getComputedStyle(blocks[i]).margin) +1;
-					}
-
-					//console.log(total)
-					
-					total += width + margin * 2;
-				}
-
-				return total
-			}
-
 			
-			domlinkblocks.style.width = getWidth(val) + "px";
+			domlinkblocks.style.width = `${val*7}em`;
 		}
 
 		if (data !== undefined) setRows(data);

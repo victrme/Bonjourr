@@ -359,7 +359,7 @@ body input, body textarea, body select, body a, body button {
 #interface #linkblocks .block_parent .block span {
   display: block;
   margin: .5em 0;
-  max-width: 10em;
+  max-width: 5em;
   word-wrap: break-word;
 }
 
