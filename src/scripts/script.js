@@ -2047,6 +2047,54 @@ function proFunctions(obj) {
 		id('quote').innerText = randomQuote(motiQuotes);*/
 	}
 
+	//CETTE FONCTION EST ATROCE, QU'ON ME CREVE LES YEUX
+	function hideElem(data, elem) {
+
+		function eventControl() {
+
+			const classType = (elem === "showSettings" ? "distract" : "hidden")
+			const hiddenTest = a => has(a, classType)
+
+			//pricipale, toggle elements hidden / ""
+			if (hiddenTest(elem)) attr(id(elem), "")
+			else attr(id(elem), classType)
+
+			//time block hidden control
+			if (elem === "time-container" || elem === "date") {
+
+				const allHidden = hiddenTest("time-container") && hiddenTest("date")
+				attr(id("time"), (allHidden ? "hidden" : ""))
+			}
+
+			//main block (weather) hidden control
+			else if (elem === "greetings" || elem === "weather_desc" || elem === "w_icon") {
+
+				const allHidden = hiddenTest("greetings") && hiddenTest("weather_desc") && hiddenTest("w_icon")
+				attr(id("main"), (allHidden ? "hidden" : ""))
+			}
+
+			chrome.storage.sync.get("hide", (sync) => {
+
+				if (sync.hide) sync.hide[elem] = !hiddenTest(elem);
+				else sync.hide = {}
+				
+				console.log(sync.hide);
+
+				chrome.storage.sync.set({hide: sync.hide});
+			})
+		}
+
+		function initiation() {
+
+			for (dom in data) {
+				if (data[dom] === false) attr(id(dom), "hidden");
+			}
+		}
+
+		if (data !== undefined) initiation()
+		if (elem !== undefined) eventControl()
+	}
+
 	switch (obj.which) {
 		case "font":
 		customFont(obj.data, obj.event)
@@ -2066,6 +2114,10 @@ function proFunctions(obj) {
 
 		case "quote":
 		quoting(obj.data, obj.event)
+		break
+
+		case "hide":
+		hideElem(obj.data, obj.event)
 	}
 }
 
@@ -2089,6 +2141,7 @@ function checkifpro(data) {
 			proFunctions({which: "row", data: data.linksrow})
 			proFunctions({which: "greet", data: data.greeting})
 			proFunctions({which: "quote", data: data.quote})
+			proFunctions({which: "hide", data: data.hide})
 
 			sessionStorage.pro = "true"
 		}

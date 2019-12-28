@@ -1,7 +1,9 @@
 #settings .pro,
 #settings .proflex,
 #analogClock.hidden,
-#interface #time #analogClock #analogSeconds.hidden {
+#interface #time #analogClock #analogSeconds.hidden,
+#interface #time.hidden,
+#interface #main.hidden {
 	display: none;
 }
 
