@@ -117,6 +117,7 @@
 	display: flex;
 	align-items: center;
 	padding: 1em 0;
+	overflow: auto;
 }
 
 #bg_tn_wrap img {

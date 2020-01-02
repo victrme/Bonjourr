@@ -299,6 +299,7 @@ function initParams() {
 		initCheckbox("i_analog", isThereData("clock", "analog"), false);
 		initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
 
+		id("e_row").innerText = (data.linksrow ? data.linksrow : "8");
 		id("e_weight").innerText = (isThereData("font", "weight") ? isThereData("font", "weight") : "Regular");
 		id("e_size").innerText = (isThereData("font", "size") ? isThereData("font", "size") : "Auto");
 	}
@@ -321,6 +322,18 @@ function initParams() {
 	} else {
 		id("default").style.display = "block";
 	}
+
+
+	chrome.storage.local.get(["custom"], (data) => {
+
+		let cleanData;
+				
+		for (var i = 0; i < data.custom.length; i++) {
+			cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
+			addThumbnails(cleanData, i)
+		}
+	})
+
 
 
 	if (data.weather) {
