@@ -1939,24 +1939,27 @@ function proFunctions(obj) {
 
 				family = (family ? family : (famInput !== "" ? famInput : false));
 			}
-			
-
-			if (family || weight) fontlink.href = `https://fonts.googleapis.com/css?family=${family}:100,300,400,500,700,900`;
-			
-			if (weight) {
-				//id("e_weight").innerText = getWeightText(weight);
-				document.body.style.fontWeight = weight;
-			}
 
 			if (family) {
-				document.body.style.fontFamily = family;
-				id("clock").style.fontFamily = family;
-			}
 
-			if (size) {
-				//id("e_size").innerText = size;
-				dominterface.style.fontSize = size + "px";
+				const url = `https://fonts.googleapis.com/css?family=${family}:100,300,400,500,700,900`;
+
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						fontlink.href = url
+
+						document.body.style.fontFamily = family;
+						id("clock").style.fontFamily = family;
+					}
+				};
+				xhttp.open("GET", url, true);
+				xhttp.send();
 			}
+			
+			if (weight) document.body.style.fontWeight = weight;
+
+			if (size) dominterface.style.fontSize = size + "px";
 
 			if (is === "event") saveFont()
 		}

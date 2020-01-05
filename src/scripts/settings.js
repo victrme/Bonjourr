@@ -323,7 +323,7 @@ function initParams() {
 		id("default").style.display = "block";
 	}
 
-
+	//ajoute les thumbnails au custom background
 	chrome.storage.local.get(["custom"], (data) => {
 
 		let cleanData;
