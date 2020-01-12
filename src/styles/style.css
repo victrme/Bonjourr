@@ -359,7 +359,7 @@ body input, body textarea, body select, body a, body button {
 #interface #linkblocks .block_parent .block span {
   display: block;
   margin: .5em 0;
-  max-width: 5em;
+  max-width: 10em;
   word-wrap: break-word;
 }
 
@@ -1132,7 +1132,7 @@ body input, body textarea, body select, body a, body button {
 }
 
 #settings .signature .firstblock .socialIcons {
-  width: 6em;
+  width: 7em;
   display: flex;
   justify-content: space-between;
 }
@@ -1165,12 +1165,12 @@ body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edi
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"], body.autodark #settings #cssEditor, body.dark #settings #cssEditor {
+body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.dark #edit_linkContainer #edit_link #cssEditor, body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link #cssEditor {
   background-color: #39383d;
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus {
+body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.dark #edit_linkContainer #edit_link #cssEditor:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link #cssEditor:focus {
   background-color: #2c2c2f;
   color: white;
 }
