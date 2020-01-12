@@ -34,6 +34,7 @@ $green: #4bd663;
 $inputGrey: #e3e3e5;
 $settingsGrey: #f2f2f7;
 $borderGrey: #c8c7cc;
+$blackish: #222;
 
 
 body {
@@ -109,6 +110,78 @@ body {
 	50% {
 		transform: rotate(-1.5deg);
 		animation-timing-function: ease-out;
+	}
+}
+
+@mixin hoverButton {
+	&:hover {
+		filter: brightness(110%);
+	}
+
+	&:active {
+		filter: brightness(85%);
+	}
+}
+
+@mixin popup {
+	#popup {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		left: -25em;
+		bottom: 4em;
+		padding: 1em;
+		max-width: 25em;
+		background-color: $purewhite;
+		border-radius: 0 10px 10px 0;
+		opacity: .6;
+		transition: transform .5s ease;
+		box-sizing: border-box;
+		will-change: transform;
+
+		span {
+			max-width: 20em;
+			text-align: left;
+			color: $blackish;
+		}
+
+		.go {
+			background-color: $blue;
+			text-decoration: none;
+			color: $purewhite;
+			border: 0;
+			border-radius: 5px;
+			padding: 6px 10px;
+			font-size: 1.1em;
+			cursor: pointer;
+			transition: 0.1s;
+			margin-left: .5em;
+			@include hoverButton();
+		}
+
+		img {
+			height: 1.2em;
+			margin-left: 1.5em;
+			cursor: pointer;
+			@include hoverButton();
+		}
+
+		&:hover {
+			opacity: 1;
+			transition: opacity .1s;
+		}
+
+		&.shown {
+			transform: translateX(100%);
+		}
+
+		&.justShown {
+			opacity: 1;
+		}
+
+		&.removed {
+			display: none;
+		}
 	}
 }
 

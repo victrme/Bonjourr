@@ -369,6 +369,8 @@
 	}
 }
 
+@include popup();
+
 #showSettings {
 	position: fixed;
 	bottom: 0;
@@ -432,7 +434,7 @@
 	font-family: sf_pro_textregular;
 	text-shadow: none;
 	text-align: left;
-	color: #222;
+	color: $blackish;
 	transition: transform .2s, background .1s;
 	will-change: transform;
 

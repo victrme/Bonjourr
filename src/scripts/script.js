@@ -2297,9 +2297,27 @@ function checkifpro(data) {
 	})
 }
 
+function showPopup() {
+	let popup = id("popup");
+	let closePopup = id("closePopup");
+	
+	popup.classList.add("shown");
+
+	function justShown() {
+		popup.classList.remove("justShown");
+	}
+
+	setTimeout(justShown, 5000);
+
+	closePopup.onclick = function() {
+		popup.classList.add("removed");
+	}
+}
+
 //comme un onload, sans le onload
 chrome.storage.sync.get(null, (data) => {
 
+	
 	traduction();
 	newClock(null, data.clock);
 	date();
@@ -2311,10 +2329,13 @@ chrome.storage.sync.get(null, (data) => {
 	quickLinks(null, null, data);
 	searchbar(null, null, data);
 
+
 	checkifpro(data) //init profunctions
 
 	//test pour webapp
 	if (mobilecheck()) dominterface.style.height = `calc(${window.innerHeight}px`;
+
+	showPopup();
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement

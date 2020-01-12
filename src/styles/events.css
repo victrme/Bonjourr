@@ -102,10 +102,10 @@
 }
 
 #settings #fileContainer {
-	border: none;
+/*	border: none;
 	padding: 0;
 	margin: 1em 1em 1em 0;
-	font-size: .8em;
+	font-size: .8em;*/
 	opacity: .8;
 }
 
@@ -116,7 +116,7 @@
 #bg_tn_wrap {
 	display: flex;
 	align-items: center;
-	padding: 1em 0;
+	/*padding: 1em 0;*/
 	overflow: auto;
 }
 

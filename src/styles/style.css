@@ -634,6 +634,80 @@ body input, body textarea, body select, body a, body button {
   opacity: 0;
 }
 
+#popup {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  left: -25em;
+  bottom: 4em;
+  padding: 1em;
+  max-width: 25em;
+  background-color: white;
+  border-radius: 0 10px 10px 0;
+  opacity: .6;
+  transition: transform .5s ease;
+  box-sizing: border-box;
+  will-change: transform;
+}
+
+#popup span {
+  max-width: 20em;
+  text-align: left;
+  color: #222;
+}
+
+#popup .go {
+  background-color: #007aff;
+  text-decoration: none;
+  color: white;
+  border: 0;
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: 0.1s;
+  margin-left: .5em;
+}
+
+#popup .go:hover {
+  filter: brightness(110%);
+}
+
+#popup .go:active {
+  filter: brightness(85%);
+}
+
+#popup img {
+  height: 1.2em;
+  margin-left: 1.5em;
+  cursor: pointer;
+}
+
+#popup img:hover {
+  filter: brightness(110%);
+}
+
+#popup img:active {
+  filter: brightness(85%);
+}
+
+#popup:hover {
+  opacity: 1;
+  transition: opacity .1s;
+}
+
+#popup.shown {
+  transform: translateX(100%);
+}
+
+#popup.justShown {
+  opacity: 1;
+}
+
+#popup.removed {
+  display: none;
+}
+
 #showSettings {
   position: fixed;
   bottom: 0;
