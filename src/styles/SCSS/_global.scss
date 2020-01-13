@@ -123,47 +123,67 @@ body {
 	}
 }
 
+@mixin allCentered {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 @mixin popup {
 	#popup {
 		position: absolute;
-		display: flex;
-		align-items: center;
-		left: -25em;
+		left: -32em;
 		bottom: 4em;
 		padding: 1em;
-		max-width: 25em;
+		max-width: 32em;
 		background-color: $purewhite;
 		border-radius: 0 10px 10px 0;
 		opacity: .6;
 		transition: transform .5s ease;
 		box-sizing: border-box;
 		will-change: transform;
+		@include allCentered();
+
+		.choices {
+			@include allCentered();
+			justify-content: space-between;
+			width: 12em;
+			margin-left: 1em;
+
+			> * {
+				box-sizing: border-box;
+				border-radius: 5px;
+				transition: .1s;
+				cursor: pointer;
+				font-size: 1.1em;
+				height: 36px;
+				text-decoration: none;
+				@include hoverButton();
+			}
+
+			#go {
+				background-color: $blue;
+				color: $purewhite;
+				border: 0;
+				width: 45px;
+				@include allCentered();
+			}
+
+			#later {
+				color: $blue;
+				border: 2px solid $blue;
+				width: 70px;
+			}
+
+			img {
+				height: 1.2em;
+			}
+		}
 
 		span {
 			max-width: 20em;
 			text-align: left;
 			color: $blackish;
-		}
-
-		.go {
-			background-color: $blue;
-			text-decoration: none;
-			color: $purewhite;
-			border: 0;
-			border-radius: 5px;
-			padding: 6px 10px;
-			font-size: 1.1em;
-			cursor: pointer;
-			transition: 0.1s;
-			margin-left: .5em;
-			@include hoverButton();
-		}
-
-		img {
-			height: 1.2em;
-			margin-left: 1.5em;
-			cursor: pointer;
-			@include hoverButton();
 		}
 
 		&:hover {

@@ -2307,7 +2307,7 @@ function showPopup() {
 		popup.classList.remove("justShown");
 	}
 
-	setTimeout(justShown, 5000);
+	setTimeout(justShown, 2500);
 
 	closePopup.onclick = function() {
 		popup.classList.add("removed");

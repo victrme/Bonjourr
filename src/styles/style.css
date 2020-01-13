@@ -636,59 +636,72 @@ body input, body textarea, body select, body a, body button {
 
 #popup {
   position: absolute;
-  display: flex;
-  align-items: center;
-  left: -25em;
+  left: -32em;
   bottom: 4em;
   padding: 1em;
-  max-width: 25em;
+  max-width: 32em;
   background-color: white;
   border-radius: 0 10px 10px 0;
   opacity: .6;
   transition: transform .5s ease;
   box-sizing: border-box;
   will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#popup .choices {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-between;
+  width: 12em;
+  margin-left: 1em;
+}
+
+#popup .choices > * {
+  box-sizing: border-box;
+  border-radius: 5px;
+  transition: .1s;
+  cursor: pointer;
+  font-size: 1.1em;
+  height: 36px;
+  text-decoration: none;
+}
+
+#popup .choices > *:hover {
+  filter: brightness(110%);
+}
+
+#popup .choices > *:active {
+  filter: brightness(85%);
+}
+
+#popup .choices #go {
+  background-color: #007aff;
+  color: white;
+  border: 0;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#popup .choices #later {
+  color: #007aff;
+  border: 2px solid #007aff;
+  width: 70px;
+}
+
+#popup .choices img {
+  height: 1.2em;
 }
 
 #popup span {
   max-width: 20em;
   text-align: left;
   color: #222;
-}
-
-#popup .go {
-  background-color: #007aff;
-  text-decoration: none;
-  color: white;
-  border: 0;
-  border-radius: 5px;
-  padding: 6px 10px;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: 0.1s;
-  margin-left: .5em;
-}
-
-#popup .go:hover {
-  filter: brightness(110%);
-}
-
-#popup .go:active {
-  filter: brightness(85%);
-}
-
-#popup img {
-  height: 1.2em;
-  margin-left: 1.5em;
-  cursor: pointer;
-}
-
-#popup img:hover {
-  filter: brightness(110%);
-}
-
-#popup img:active {
-  filter: brightness(85%);
 }
 
 #popup:hover {
