@@ -2297,20 +2297,26 @@ function checkifpro(data) {
 	})
 }
 
-function showPopup() {
-	let popup = id("popup");
-	let closePopup = id("closePopup");
-	
-	popup.classList.add("shown");
+function showPopup(data) {
 
-	function justShown() {
-		popup.classList.remove("justShown");
-	}
+	//si elle n'a pas été déjà suppr
+	if (data !== true) {
 
-	setTimeout(justShown, 2500);
+		let popup = id("popup");
+		let closePopup = id("closePopup");
 
-	closePopup.onclick = function() {
-		popup.classList.add("removed");
+		//attendre avant d'afficher
+		setTimeout(function() {
+			popup.classList.add("shown");
+		}, 2000)
+
+		//baisse opacity après 2,5s
+		//setTimeout(() => {popup.classList.remove("justShown")}, 2500);
+
+		closePopup.onclick = function() {
+			popup.classList.add("removed");
+			chrome.storage.sync.set({popupRemoved: true});
+		}
 	}
 }
 
@@ -2335,7 +2341,7 @@ chrome.storage.sync.get(null, (data) => {
 	//test pour webapp
 	if (mobilecheck()) dominterface.style.height = `calc(${window.innerHeight}px`;
 
-	showPopup();
+	showPopup(data.popupRemoved);
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement

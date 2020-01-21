@@ -58,7 +58,7 @@
 			border-bottom: 1px solid #3f3f41;
 		}
 
-		input[type="text"], #start_popup .popup_window .popup_line .popup2 input[type="text"], #start_popup .popup_window .popup_line .popup3 input[type="text"] {
+		input[type="text"] {
 			background-color: #39383d;
 			color: $purewhite;
 		}
@@ -185,68 +185,6 @@ body.dark, body.autodark {
 			}
 		}
 	}
-}
-
-@media screen and (max-height: 800px) {
-	// #start_popup .popup_window {
-	// 	.popup_line .popup {
-	// 		padding: 1.5em;
-
-	// 		p, span, p code {
-	// 			font-size: 17px;
-	// 			line-height: 1.7em;
-	// 		}
-
-	// 		.popup_param {
-	// 			margin: 1em auto;
-
-	// 			input, button {
-	// 				font-size: 15px;
-	// 			}
-	// 		}
-
-	// 		&.popup2 div #linkblocks .block_parent {
-	// 			font-size: .7em;
-
-	// 			button.remove.visible {
-	// 				height: 25px;
-	// 				width: 25px;
-
-	// 				img {
-	// 					width: .7em;
-	// 					height: .7em;
-	// 				}
-	// 			}
-	// 		}
-
-	// 		&.popup3 #weather #w_widget {
-	// 			height: 50px;
-	// 		}
-
-	// 		&.popup5 #sb_container {
-	// 			#searchbar {
-	// 				max-width: 300px;
-	// 				height: 35px;
-	// 				font-size: 17px;
-	// 			}
-
-	// 			&.shown {
-	// 				padding: 0;
-	// 				height: 35px;
-	// 			}
-	// 		}
-	// 	}
-
-	// 	.popup_buttons {
-	// 		padding: 0 1em 1em 1em;
-
-	// 		button {
-	// 			height: 35px;
-	// 			width: 110px;
-	// 			font-size: 17px;
-	// 		}
-	// 	}
-	// }
 }
 
 @media screen and (min-height: 650px) and (max-height: 1050px) {

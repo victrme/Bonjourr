@@ -132,14 +132,13 @@ body {
 @mixin popup {
 	#popup {
 		position: absolute;
-		left: -32em;
+		left: 0;
 		bottom: 4em;
 		padding: 1em;
-		max-width: 32em;
 		background-color: $purewhite;
 		border-radius: 0 10px 10px 0;
 		opacity: .6;
-		transition: transform .5s ease;
+		transform: translateX(-100%);
 		box-sizing: border-box;
 		will-change: transform;
 		@include allCentered();
@@ -147,7 +146,6 @@ body {
 		.choices {
 			@include allCentered();
 			justify-content: space-between;
-			width: 12em;
 			margin-left: 1em;
 
 			> * {
@@ -165,7 +163,8 @@ body {
 				background-color: $blue;
 				color: $purewhite;
 				border: 0;
-				width: 45px;
+				width: 80px;
+				margin-right: 1em;
 				@include allCentered();
 			}
 
@@ -192,7 +191,8 @@ body {
 		}
 
 		&.shown {
-			transform: translateX(100%);
+			transform: translateX(0);
+			transition: transform .4s ease;
 		}
 
 		&.justShown {
@@ -200,7 +200,8 @@ body {
 		}
 
 		&.removed {
-			display: none;
+			transform: translateX(-100%);
+			transition: transform .4s ease;
 		}
 	}
 }
