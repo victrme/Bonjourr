@@ -1077,13 +1077,14 @@ body input, body textarea, body select, body a, body button {
 }
 
 #settings #fileContainer {
-  overflow: hidden;
-  position: relative;
   display: block;
-  width: 100%;
+  width: 130px;
+  height: 100px;
+  position: relative;
   border-radius: 9px;
+  /*overflow: hidden;
   border: 1px solid #007aff;
-  padding: .8em;
+  padding: .8em;*/
   box-sizing: border-box;
   transition: background-color .1s ease-in;
 }
@@ -1099,22 +1100,14 @@ body input, body textarea, body select, body a, body button {
 #settings #fileContainer #i_bgfile {
   display: block;
   overflow: hidden;
-  min-height: 100%;
-  min-width: 100%;
   opacity: 0;
-  padding: 1em;
+  /*padding: 1em;*/
+  height: 100px;
+  width: 100%;
   position: absolute;
   left: 0;
   top: 0;
   cursor: pointer;
-}
-
-#settings #fileContainer.dragover {
-  background-color: #007aff;
-}
-
-#settings #fileContainer.dragover p {
-  color: white;
 }
 
 #settings .blur,

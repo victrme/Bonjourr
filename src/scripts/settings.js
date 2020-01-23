@@ -286,7 +286,7 @@ function initParams() {
 	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
 	
 
-	if (sessionStorage.pro = "true") {
+	if (sessionStorage.pro === "true") {
 
 		initInput("i_row", data.linksrow, 8);
 		initInput("i_customfont", isThereData("font", "family"), false);
@@ -572,7 +572,7 @@ function settings() {
 		settingsEvents();
 		signature();
 		defaultBg();
-		if (sessionStorage.pro = "true") proEvents(); //init events
+		if (sessionStorage.pro === "true") proEvents(); //init events
 	}, 200);
 }
 

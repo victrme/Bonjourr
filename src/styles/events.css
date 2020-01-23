@@ -102,11 +102,33 @@
 }
 
 #settings #fileContainer {
-/*	border: none;
-	padding: 0;
-	margin: 1em 1em 1em 0;
-	font-size: .8em;*/
-	opacity: .8;
+	border: 1px solid transparent;
+	padding: 1em;
+	margin-right: 1em;
+	border: 1px dashed #ccc;
+}
+
+#settings #fileContainer.dragover,
+#settings #fileContainer:hover {
+  border: 1px dashed #ccc;
+  background: #f4f4f4;
+}
+#settings #fileContainer:active {
+  border: 1px dashed #aaa;
+  background: #e8e8e8; 
+}
+body.dark #settings #fileContainer.dragover,
+body.dark #settings #fileContainer:hover,
+body.autodark #settings #fileContainer.dragover,
+body.autodark #settings #fileContainer:hover {
+  border: 1px dashed #ccc;
+  background: #2a2a2b;
+}
+
+body.dark #settings #fileContainer:active,
+body.autodark #settings #fileContainer:active {
+  border: 1px dashed #aaa;
+  background: #2f2f30; 
 }
 
 
@@ -116,7 +138,7 @@
 #bg_tn_wrap {
 	display: flex;
 	align-items: center;
-	/*padding: 1em 0;*/
+	padding: 1em 0 .5em 0;
 	overflow: auto;
 }
 
@@ -125,7 +147,7 @@
 }
 
 #bg_tn_wrap .thumbnail {
-	margin: 0 1em;
+	margin-right: 1em;
 	position: relative;
 	cursor: pointer;
 	filter: grayscale(.8);
@@ -153,6 +175,17 @@
 
 #bg_tn_wrap .thumbnail button.hidden {opacity: 0}
 #bg_tn_wrap .thumbnail button.shown {opacity: 1}
+
+
+#bg_tn_wrap::-webkit-scrollbar {height: 6px;}
+#bg_tn_wrap::-webkit-scrollbar-track {background: #ccc;border-radius: 4px;}
+#bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;border-radius: 4px;}
+
+body.dark #bg_tn_wrap::-webkit-scrollbar-track {background: #39383d;}
+body.dark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
+body.autodark #bg_tn_wrap::-webkit-scrollbar-track {background: #39383d;}
+body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
+
 
 
 

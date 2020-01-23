@@ -1427,6 +1427,7 @@ function addThumbnails(data, index) {
 	const i = document.createElement('img');
 	const rem = document.createElement('button');
 	const wrap = document.getElementById('bg_tn_wrap');
+	const upload = document.getElementById('i_bgfile');
 
 	div.setAttribute("class", "thumbnail");
 	div.setAttribute("index", index);
@@ -1436,7 +1437,7 @@ function addThumbnails(data, index) {
 
 	div.appendChild(i);
 	div.appendChild(rem);
-	wrap.appendChild(div);
+	wrap.append(div)//, wrap.children[0]);
 
 	//events
 	const getParentIndex = that => parseInt(that.parentElement.getAttribute("index"));
@@ -2283,6 +2284,7 @@ function checkifpro(data) {
 	}
 
 	encode(localStorage.login).then((a) => {
+		
 		if (a === atob(hash)) {
 					
 			proFunctions({which: "font", data: data.font})
