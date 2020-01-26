@@ -457,7 +457,6 @@ body input, body textarea, body select, body a, body button {
   background: white;
   font-family: sf_pro_textregular;
   border-radius: 10px;
-  box-shadow: 1px 2px 25px rgba(34, 34, 34, 0.6);
 }
 
 #edit_linkContainer #edit_link > div {

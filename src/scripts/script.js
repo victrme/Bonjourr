@@ -15,23 +15,9 @@ const dominterface = id("interface");
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
 
 //c'est juste pour debug le storage
-function deleteBrowserStorage() {
-	chrome.storage.sync.clear(() => {
-		localStorage.clear();
-	});
-}
-
-function getBrowserStorage() {
-	chrome.storage.sync.get(null, (data) => {
-		console.log(data);
-	});
-}
-
-function getLocalStorage() {
-	chrome.storage.local.get(null, (data) => {
-		console.log(data);
-	});
-}
+function deleteBrowserStorage() {chrome.storage.sync.clear(() => {localStorage.clear()})}
+function getBrowserStorage() {chrome.storage.sync.get(null, (data) => {console.log(data)})}
+function getLocalStorage() {chrome.storage.local.get(null, (data) => {console.log(data)})}
 
 function slowRange(tosave) {
 	//timeout avant de save pour éviter la surcharge d'instructions de storage
@@ -374,6 +360,7 @@ function quickLinks(event, that, initStorage) {
 
 		elem.oncontextmenu = function(e) {
 			e.preventDefault();
+			if(mobilecheck) editlink(this);
 		}
 
 		elem.onmouseup = function(e) {

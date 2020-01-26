@@ -74,10 +74,7 @@
 #edit_linkContainer {
 	position: fixed;
 	height: auto;
-	width: auto;
-	margin: auto;
 	top: 35%;
-	left: calc(50% - 150px);
 	z-index: 1;
 }
 
