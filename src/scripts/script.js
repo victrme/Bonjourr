@@ -7,6 +7,7 @@ let db = null;
 let stillActive = false;
 let rangeActive = false;
 let lazyClockInterval = 0;
+const domshowsettings = id("showSettings");
 const domlinkblocks = id("linkblocks");
 const dominterface = id("interface");
 
@@ -1858,7 +1859,7 @@ function searchbar(event, that, storage) {
 	} else {
 
 		let searchbar = storage.searchbar || false;
-		let searchengine = storage.searchbar_engine || "s_startpage";
+		let searchengine = storage.searchbar_engine || "s_google";
 
 		//display
 		display(searchbar, true);

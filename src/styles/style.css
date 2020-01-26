@@ -886,6 +886,7 @@ body input, body textarea, body select, body a, body button {
   display: inline-block;
   width: 56px;
   height: 34px;
+  margin-left: 1em;
 }
 
 #settings .switch input {

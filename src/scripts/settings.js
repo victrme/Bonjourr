@@ -438,60 +438,76 @@ function importExport(select, isEvent) {
 	}
 }
 
-function showSettings(e, that) {
+function showSettings() {
 
-	if (e.type === "mousedown") {
+	function display() {
+		const edit = id("edit_linkContainer");
+		const editClass = edit.getAttribute("class");
 
-		function init() {
-			let node = document.createElement("div");
-			let xhttp = new XMLHttpRequest();
-			
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4) {
-					if (this.status == 200) {
-
-						node.id = "settings";
-						node.innerHTML = this.responseText;
-						document.body.appendChild(node);
-						settings();
-						traduction(true);
-					}
-				}
-			}
-
-			xhttp.open("GET", "/settings.html", true);
-			xhttp.send();
-		}
-
-		if (!id("settings")) {
-			init();
-		}
-	}
-
-	if (e.type === "mouseup") {
-
-		let edit = id("edit_linkContainer");
-		let editClass = edit.getAttribute("class");
-
-		let ui = dominterface;
-		let uiClass = dominterface.getAttribute("class");
+		const ui = dominterface;
+		const uiClass = dominterface.getAttribute("class");
 
 
 		if (has("settings", "shown")) {
-			attr(that.children[0], "");
+			attr(domshowsettings.children[0], "");
 			attr(id("settings"), "");
 			attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
 
 			if (editClass === "shown pushed") attr(edit, "shown");
 			
 		} else {
-			attr(that.children[0], "shown");
+			attr(domshowsettings.children[0], "shown");
 			attr(id("settings"), "shown");
 			attr(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
 			
 			if (editClass === "shown") attr(edit, "shown pushed");
 		}
 	}
+
+	function functions() {
+
+		if (sessionStorage.pro === "true") {
+			for (let i of cl("pro")) i.style.display = "block";
+			for (let i of cl("proflex")) i.style.display = "flex";
+		}
+
+		initParams();
+		
+
+		setTimeout(function() {
+			settingsEvents();
+			signature();
+			defaultBg();
+			if (sessionStorage.pro === "true") proEvents();
+		}, 200);
+
+		traduction(true)
+		display()
+	}
+
+	function init() {
+		let node = document.createElement("div");
+		let xhttp = new XMLHttpRequest();
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4) {
+				if (this.status == 200) {
+
+					node.id = "settings";
+					node.innerHTML = this.responseText;
+					document.body.appendChild(node);
+
+					functions()
+				}
+			}
+		}
+
+		xhttp.open("GET", "/settings.html", true);
+		xhttp.send();
+	}
+
+	if (!id("settings")) init()
+	else display()
 } 
 
 function showInterface(e) {
@@ -528,54 +544,20 @@ function showInterface(e) {
 }
 
 
-id("showSettings").onmousedown = function(e) {
-	showSettings(e)
-}
+domshowsettings.onmouseup = function() {showSettings()}
+dominterface.onmouseup = function(e) {showInterface(e)}
 
-id("showSettings").onmouseup = function(e) {
-	showSettings(e, this)
-}
-
-//si settings ouvert, le ferme
-dominterface.onmouseup = function(e) {
-	showInterface(e)
-}
-
-//autofocus
 document.onkeydown = function(e) {
 
-	//press escape to show settings
-	if (e.code === "Escape") {
-		showSettings({type: "mousedown"});
-
-		setTimeout(() => {
-			showSettings({type: "mouseup"}, id("showSettings"))
-		}, 100);
-	}
-
-
+	//focus la searchbar si elle existe et les settings sont fermé
 	let searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
 	let settings = (id("settings") ? has("settings", "shown") : false);
 
-	if (searchbar && !settings) {
+	if (searchbar && !settings) id("searchbar").focus()
 
-		id("searchbar").focus();
-	}
+	//press escape to show settings
+	if (e.code === "Escape") showSettings()
 }
-
-
-function settings() {
-
-	initParams();
-
-	setTimeout(function() {
-		settingsEvents();
-		signature();
-		defaultBg();
-		if (sessionStorage.pro === "true") proEvents(); //init events
-	}, 200);
-}
-
 
 function proEvents() {
 
@@ -621,16 +603,5 @@ function proEvents() {
 		e.onmouseup = function() {
 			proFunctions({which: "hide", event: this.getAttribute("data")})
 		}
-	}
-
-
-
-	for (let i of cl("pro")) {
-		i.style.display = "block";
-	}
-
-	// pour que ce soit pas trop sale le temps qu'on refasse le CSS
-	for (let i of cl("proflex")) {
-		i.style.display = "flex";
 	}
 }
