@@ -2251,7 +2251,7 @@ function proFunctions(obj) {
 		break
 
 		case "quote":
-		quoting(obj.data, obj.event)
+		//quoting(obj.data, obj.event)
 		break
 
 		case "hide":
@@ -2300,9 +2300,6 @@ function showPopup(data) {
 			popup.classList.add("shown");
 		}, 2000)
 
-		//baisse opacity après 2,5s
-		//setTimeout(() => {popup.classList.remove("justShown")}, 2500);
-
 		closePopup.onclick = function() {
 			popup.classList.add("removed");
 			chrome.storage.sync.set({popupRemoved: true});
@@ -2325,51 +2322,32 @@ chrome.storage.sync.get(null, (data) => {
 	quickLinks(null, null, data);
 	searchbar(null, null, data);
 
+	//init profunctions
+	checkifpro(data)
 
-	checkifpro(data) //init profunctions
-
-	//test pour webapp
-	if (mobilecheck()) dominterface.style.height = `calc(${window.innerHeight}px`;
-
+	//review popup
 	showPopup(data.popupRemoved);
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement
 	sessionStorage.data = JSON.stringify(data);
-});
 
 
+	if (mobilecheck()) {
 
-/*const firstReq = window.indexedDB.open("Bonjourr", 2)
+		//blocks interface height
+		//defines credits & showsettings position from top
 
-firstReq.onsuccess = e => db = e.target.result
-firstReq.onupgradeneeded = e => e.target.result.createObjectStore("settings")
+		let show = id("showSettings");
+		let cred = id("credit");
+		let heit = window.innerHeight;
 
-function storage(obj) {
+		show.style.bottom = "auto";
+		cred.style.bottom = "auto";
 
-	//only key is defined, log val
-	//if callback, use it with val
-	if (!obj.delete && !obj.save) {
-		db.transaction("settings")
-		.objectStore("settings")
-		.get(obj.key)
-		.onsuccess = function(e) {
-
-			if (obj.callback) 
-				obj.callback(e.target.result)
-			else console.log(e.target.result)
-		}
+		dominterface.style.height = `${heit}px`;
+		show.style.padding = 0;
+		show.style.top = `${heit - show.children[0].offsetHeight - 12}px`;
+		cred.style.top = `${heit - cred.offsetHeight - 12}px`;
 	}
-
-	//remove a object
-	else if (obj.delete) 
-		db.transaction(["settings"], "readwrite")
-		.objectStore("settings")
-		.delete(obj.key)
-
-	//add an object (it has value)
-	else if (obj.value || obj.save) 
-		db.transaction(["settings"], "readwrite")
-		.objectStore("settings")
-		.put(obj.value, obj.key)
-}*/
+});
