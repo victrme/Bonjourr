@@ -67,26 +67,10 @@ function selectBackgroundType(cat) {
 	id("default").style.display = "none";
 	id("dynamic").style.display = "none";
 	id("custom").style.display = "none";
-
 	id(cat).style.display = "block";
 
-	if (cat === "dynamic") {
-		chrome.storage.sync.set({"background_type": "dynamic"});
-		unsplash()
-	}
-	else if (cat === "custom") {
-
-		chrome.storage.sync.set({"background_type": "custom"});
-
-		//reste local !!!
-		chrome.storage.local.get("background_blob", (data) => {
-			if (data.background_blob) {
-				imgBackground(setblob(data.background_blob));
-			}
-			imgCredits(null, "custom");
-		});	
-
-	}
+	if (cat === "dynamic") unsplash()
+	chrome.storage.sync.set({"background_type": cat});
 }
 
 function settingsEvents() {
@@ -334,25 +318,17 @@ function initParams() {
 		}
 	})
 
-
-
+	//weather settings
 	if (data.weather) {
 
 		let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
 		id("i_city").setAttribute("placeholder", cityPlaceholder);
 
-
 		if (data.weather.location) id("sett_city").setAttribute("class", "city hidden");
 	}
 	
-
-	
 	//searchbar display settings 
-	if (data.searchbar) {
-		id("choose_searchengine").setAttribute("class", "shown");
-	} else {
-		id("choose_searchengine").setAttribute("class", "hidden");
-	}
+	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
 
 
 	//clock format localstorage control
@@ -443,10 +419,7 @@ function showSettings() {
 	function display() {
 		const edit = id("edit_linkContainer");
 		const editClass = edit.getAttribute("class");
-
-		const ui = dominterface;
 		const uiClass = dominterface.getAttribute("class");
-
 
 		if (has("settings", "shown")) {
 			attr(domshowsettings.children[0], "");
@@ -471,18 +444,15 @@ function showSettings() {
 			for (let i of cl("proflex")) i.style.display = "flex";
 		}
 
-		initParams();
-		
-
-		setTimeout(function() {
-			settingsEvents();
-			signature();
-			defaultBg();
-			if (sessionStorage.pro === "true") proEvents();
-		}, 200);
-
+		initParams()
 		traduction(true)
-		display()
+		setTimeout(() => (display()), 10)
+		setTimeout(function() {
+			settingsEvents()
+			signature()
+			defaultBg()
+			if (sessionStorage.pro === "true") proEvents()
+		}, 100)
 	}
 
 	function init() {
@@ -542,7 +512,6 @@ function showInterface(e) {
 		if (editClass === "shown pushed") attr(edit, "shown");
 	}
 }
-
 
 domshowsettings.onmouseup = function() {showSettings()}
 dominterface.onmouseup = function(e) {showInterface(e)}

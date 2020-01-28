@@ -1220,21 +1220,6 @@ function imgBackground(val) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function initBackground(storage) {
 
 	let type = storage.background_type || "default";
@@ -1245,10 +1230,6 @@ function initBackground(storage) {
 
 		//reste local !!!!
 		chrome.storage.local.get(["custom", "customIndex"], (data) => {
-			
-			/*for(a of data.custom) {
-				compress(a, "thumbnail")
-			}*/
 
 			if (data.customIndex >= 0) {
 				const cleanData = data.custom[data.customIndex].replace("data:image/jpeg;base64,", ""); //used for blob
@@ -1484,24 +1465,6 @@ function addThumbnails(data, index) {
 		if (index <= currentIndex) chrome.storage.local.set({customIndex: parseInt(currentIndex) - 1});
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function unsplash(data, event, startup) {
