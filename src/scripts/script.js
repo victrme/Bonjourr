@@ -1777,36 +1777,73 @@ function searchbar(event, that, storage) {
 
 		id("sb_container").setAttribute("class", (value ? "shown" : "hidden"));
 
+		id("searchbar").onkeyup = function(e) {
+			if (e.which === 13) window.location = localisation(this.value)
+		}
+
 		if(!init) {
 			chrome.storage.sync.set({"searchbar": value});
 			id("choose_searchengine").setAttribute("class", (value ? "shown" : "hidden"));
 		}
 	}
 
-	function engine(value, init) {
+	function localisation(q) {
+		
+		let response = "";
+		const lang = localStorage.lang || "en";
+		const engine = localStorage.engine || "s_google";
 
-		let engines = {
-			"s_startpage" : ["https://www.startpage.com/do/dsearch?query=", "Search on Startpage"],
-			"s_ddg" : ["https://duckduckgo.com/?q=", "Search on DuckDuckGo"],
-			"s_qwant" : ["https://www.qwant.com/?q=", "Search on Qwant"],
-			"s_ecosia" : ["https://www.ecosia.org/search?q=", "Search on Ecosia"],
-			"s_google" : ["https://www.google.com/search", "Search on Google"],
-			"s_yahoo" : ["https://search.yahoo.com/search?p=", "Search on Yahoo"],
-			"s_bing" : ["https://www.bing.com/search?q=", "Search on Bing"]
+		//les const l_[engine] sont dans lang.js
+
+		switch (engine) {
+			case "s_ddg":
+				response = "https://duckduckgo.com/?q=" + q + l_ddg[lang]
+				break
+			case "s_google":
+				response = "https://www.google" + l_google[lang] + q
+				break
+			case "s_startpage":
+				response = "https://www.startpage.com/do/dsearch?query=" + q + l_startpage[lang]
+				break
+			case "s_qwant":
+				response = "https://www.qwant.com/?q=" + q + l_qwant[lang]
+				break
+			case "s_yahoo":
+				response = "https://" + l_yahoo[lang] + q
+				break
+			case "s_bing":
+				response = "https://www.bing.com/search?q=" + q
+				break
+			case "s_ecosia":
+				response = "https://www.ecosia.org/search?q=" + q
+				break
+
 		}
 
-		id("sb_form").setAttribute("action", engines[value][0]);
-		id("searchbar").setAttribute("placeholder", tradThis(engines[value][1]));
-
-		if(!init) chrome.storage.sync.set({"searchbar_engine": value});
+		return response
 	}
 
-	if (event) {
+	function engine(value, init) {
 
-		(event === "searchbar" ? display(that.checked) : engine(that.value))
+		const names = {
+			"s_startpage" : "Startpage",
+			"s_ddg" : "DuckDuckGo",
+			"s_qwant" : "Qwant",
+			"s_ecosia" : "Ecosia",
+			"s_google" : "Google",
+			"s_yahoo" : "Yahoo",
+			"s_bing" : "Bing"
+		}
+
+		id("searchbar").setAttribute("placeholder", tradThis("Search on " + names[value]));
+		if(!init) chrome.storage.sync.set({"searchbar_engine": value});
+		localStorage.engine = value;
+	}
+
+	if (event) (event === "searchbar" ? display(that.checked) : engine(that.value));
 
 	//init
-	} else {
+	else {
 
 		let searchbar = storage.searchbar || false;
 		let searchengine = storage.searchbar_engine || "s_google";
