@@ -221,3 +221,11 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
     text-align: left;
     padding: .5em;
 }
+
+
+
+/* sbparam needs it lol*/
+#settings #i_sbparams {
+	width: calc(100% - 2em);
+	margin-left: 2em;
+}
