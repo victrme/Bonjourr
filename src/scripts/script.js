@@ -2304,22 +2304,22 @@ function checkifpro(data) {
 
 function showPopup(data) {
 
-	//si elle n'a pas été déjà suppr
-	if (data !== true) {
+	//s'affiche après 10 tabs
+	if (data > 10) {
 
-		let popup = id("popup");
-		let closePopup = id("closePopup");
+		let popup = id("popup"),
+			closePopup = id("closePopup");
 
 		//attendre avant d'afficher
-		setTimeout(function() {
-			popup.classList.add("shown");
-		}, 2000)
+		setTimeout(function() {popup.classList.add("shown")}, 2000)
 
 		closePopup.onclick = function() {
-			popup.classList.add("removed");
-			chrome.storage.sync.set({popupRemoved: true});
+			popup.classList.add("removed")
+			chrome.storage.sync.set({reviewPopup: "removed"})
 		}
 	}
+	else if (typeof(data) === "number") chrome.storage.sync.set({reviewPopup: data + 1})
+	else if (data !== "removed") chrome.storage.sync.set({reviewPopup: 0})
 }
 
 //comme un onload, sans le onload
@@ -2341,7 +2341,7 @@ chrome.storage.sync.get(null, (data) => {
 	checkifpro(data)
 
 	//review popup
-	showPopup(data.popupRemoved);
+	showPopup(data.reviewPopup);
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement
