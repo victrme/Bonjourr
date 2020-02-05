@@ -11,6 +11,12 @@ const domshowsettings = id("showSettings");
 const domlinkblocks = id("linkblocks");
 const dominterface = id("interface");
 
+//safe font for different alphabet
+if (localStorage.lang === "ru" || localStorage.lang === "sk")
+	id("styles").innerText = `
+		body, #settings, #settings h5 {font-family: Helvetica, Calibri}
+	`;
+
 //cache rapidement temp max pour eviter que ça saccade
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
 
