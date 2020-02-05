@@ -65,18 +65,6 @@ body input, body textarea, body select, body a, body button {
   }
 }
 
-/*Wiggle animation*/
-@keyframes wiggle {
-  0% {
-    transform: rotate(-1.5deg);
-    animation-timing-function: ease-in;
-  }
-  50% {
-    transform: rotate(2deg);
-    animation-timing-function: ease-out;
-  }
-}
-
 @keyframes keyframes2 {
   0% {
     transform: rotate(1deg);
@@ -327,6 +315,7 @@ body input, body textarea, body select, body a, body button {
 #interface #linkblocks .block_parent {
   position: relative;
   margin: 1em;
+  width: 5em;
 }
 
 #interface #linkblocks .block_parent .block .l_icon_wrap {
@@ -359,15 +348,8 @@ body input, body textarea, body select, body a, body button {
 #interface #linkblocks .block_parent .block span {
   display: block;
   margin: .5em 0;
-  max-width: 10em;
+  width: 100%;
   word-wrap: break-word;
-}
-
-#interface #linkblocks .block_parent .block.wiggly {
-  animation-name: wiggle;
-  animation-iteration-count: infinite;
-  transform-origin: 50% 10%;
-  animation-duration: .25s;
 }
 
 #interface #linkblocks .block_parent button.remove {

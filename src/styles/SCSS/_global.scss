@@ -310,6 +310,7 @@ body {
 		.block_parent {
 			position: relative;
 			margin: 1em;
+			width: 5em;
 
 			.block {
 				.l_icon_wrap {
@@ -342,7 +343,7 @@ body {
 				span {
 					display: block;
 					margin: .5em 0;
-					max-width: 10em;
+					width: 100%;
 					word-wrap: break-word;
 				}
 

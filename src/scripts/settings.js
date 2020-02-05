@@ -519,10 +519,11 @@ dominterface.onmouseup = function(e) {showInterface(e)}
 document.onkeydown = function(e) {
 
 	//focus la searchbar si elle existe et les settings sont fermé
-	let searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
-	let settings = (id("settings") ? has("settings", "shown") : false);
+	const searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
+	const settings = (id("settings") ? has("settings", "shown") : false);
+	const edit = has("edit_linkContainer", "shown");
 
-	if (searchbar && !settings) id("searchbar").focus()
+	if (searchbar && !settings && !edit) id("searchbar").focus()
 
 	//press escape to show settings
 	if (e.code === "Escape") showSettings()
