@@ -7,6 +7,7 @@ let db = null;
 let stillActive = false;
 let rangeActive = false;
 let lazyClockInterval = 0;
+const randomseed = Math.floor(Math.random() * 30) + 1;
 const domshowsettings = id("showSettings");
 const domlinkblocks = id("linkblocks");
 const dominterface = id("interface");
@@ -25,23 +26,26 @@ function deleteBrowserStorage() {chrome.storage.sync.clear(() => {localStorage.c
 function getBrowserStorage() {chrome.storage.sync.get(null, (data) => {console.log(data)})}
 function getLocalStorage() {chrome.storage.local.get(null, (data) => {console.log(data)})}
 
+//cache un peu mieux les données dans le storage
+function localEnc(input, enc=true) {
+	const a = input.split("")
+	let n = ""
+	for (let i in a) n += String.fromCharCode(a[i].charCodeAt() + (enc ? randomseed : -randomseed))
+	return n
+}
+
 function slowRange(tosave) {
 	//timeout avant de save pour éviter la surcharge d'instructions de storage
 	clearTimeout(rangeActive);
 	rangeActive = setTimeout(function() {
-		//console.log(tosave);
 		chrome.storage.sync.set(tosave);
 	}, 150);
 }
 
 function slow(that) {
-
 	that.setAttribute("disabled", "");
-
 	stillActive = setTimeout(() => {
-
 		that.removeAttribute("disabled");
-
 		clearTimeout(stillActive);
 		stillActive = false;
 	}, 700);
@@ -53,9 +57,9 @@ function traduction(ofSettings) {
 
 	if (local !== "en") {
 
-		let trns = (ofSettings ? id("settings").querySelectorAll('.trn') : document.querySelectorAll('.trn'));
-		let dom = [];
-		let dict = askfordict();
+		let trns = (ofSettings ? id("settings").querySelectorAll('.trn') : document.querySelectorAll('.trn')),
+			dom = [],
+			dict = askfordict();
 
 		for (let k = 0; k < trns.length; k++) {
 
@@ -66,16 +70,14 @@ function traduction(ofSettings) {
 				dom.push(trns[k].innerText);
 		}
 			
-		for (let i in trns) {
-			trns[i].innerText = dom[i]
-		}
+		for (let i in trns) trns[i].innerText = dom[i]
 	}
 }
 
 function tradThis(str) {
 
-	let dict = askfordict();
-	let lang = localStorage.lang || "en";
+	let dict = askfordict(),
+		lang = localStorage.lang || "en";
 
 	return (lang === "en" ? str : dict[str][localStorage.lang])
 }
@@ -84,9 +86,9 @@ function newClock(eventObj, init) {
 
 	function displayControl() {
 
-		const numeric = id('clock');
-		const analog = id('analogClock');
-		const analSec = id('analogSeconds');
+		const numeric = id('clock'),
+			analog = id('analogClock'),
+			analSec = id('analogSeconds');
 
 		//cache celle qui n'est pas choisi
 		attr((clock.analog ? numeric : analog), "hidden");
@@ -1156,10 +1158,10 @@ function weather(event, that, initStorage) {
 
 function imgCredits(src, type) {
 
-	const location = id("location");
-	const artist = id("artist");
-	const credit = id("credit");
-	const onUnsplash = id("onUnsplash");
+	const location = id("location"),
+		artist = id("artist"),
+		credit = id("credit"),
+		onUnsplash = id("onUnsplash");
 
 	if (type === "dynamic") {
 		attr(onUnsplash, "shown");
@@ -2343,7 +2345,7 @@ chrome.storage.sync.get(null, (data) => {
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement
-	sessionStorage.data = JSON.stringify(data);
+	sessionStorage.data = localEnc(JSON.stringify(data));
 
 
 	if (mobilecheck()) {

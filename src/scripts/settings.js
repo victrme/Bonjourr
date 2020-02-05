@@ -246,7 +246,7 @@ function settingsEvents() {
 
 function initParams() {
 
-	const data = JSON.parse(sessionStorage.data);
+	const data = JSON.parse(localEnc(sessionStorage.data, false));
 
 	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base));
 	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
