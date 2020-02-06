@@ -528,10 +528,8 @@ function quickLinks(event, that, initStorage) {
 				domlinkblocks.removeChild(block_parent);
 
 				//enleve linkblocks si il n'y a plus de links
-				if (linkRemd.length === 0) {
+				if (linkRemd.length === 0)
 					domlinkblocks.style.visibility = "hidden";
-					searchbarFlexControl(data.searchbar, 0);
-				}
 			}, 200);
 
 			chrome.storage.sync.set({"links": linkRemd});
@@ -675,7 +673,6 @@ function quickLinks(event, that, initStorage) {
 				} else {
 					arr.push(lll);
 					domlinkblocks.style.visibility = "visible";
-					searchbarFlexControl(data.searchbar, 1);
 				}
 				
 				//si les blocks sont moins que 16
@@ -1226,8 +1223,6 @@ function imgBackground(val) {
 	else return id("background").style.backgroundImage;
 }
 
-
-
 function initBackground(storage) {
 
 	let type = storage.background_type || "default";
@@ -1441,12 +1436,6 @@ function addThumbnails(data, index) {
 		compress(fullImage[index]);
 		changeImgIndex(index);
 		chrome.storage.local.set({customIndex: index});
-
-		console.log(index)
-
-		chrome.storage.local.get("customIndex", (local) => {
-			console.log(local.customIndex)
-		})
 	}
 
 	//7
@@ -1617,7 +1606,7 @@ function unsplash(data, event, startup) {
 			}
 		}
 
-		imgCredits(infos, "dynamic");
+		if(!startup) imgCredits(infos, "dynamic");
 	}
 
 	if (data && data !== true) cacheControl(data);
@@ -1712,7 +1701,7 @@ function darkmode(choice, initStorage) {
 
 		//uses chromesync data on startup, sessionsStorage on change
 
-		const weather = (initStorage ? initStorage.weather : JSON.parse(sessionStorage.data).weather);
+		const weather = (initStorage ? initStorage.weather : localEnc(sessionStorage.data, false).weather);
 		let bodyClass;
 
 		//dark mode is defines by the body class
@@ -1778,12 +1767,6 @@ function distractMode(that, initStorage) {
 	} else {
 		apply(initStorage);
 	}
-}
-
-function searchbarFlexControl(activated, linkslength) {
-
-	let state = (activated ? "shown" : "removed");
-	attr(id("sb_container"), state);
 }
 
 function searchbar(event, that, storage) {

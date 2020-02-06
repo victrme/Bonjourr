@@ -70,6 +70,7 @@ function selectBackgroundType(cat) {
 	id(cat).style.display = "block";
 
 	if (cat === "dynamic") unsplash()
+
 	chrome.storage.sync.set({"background_type": cat});
 }
 
@@ -316,6 +317,8 @@ function initParams() {
 			cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
 			addThumbnails(cleanData, i)
 		}
+
+		fullImage = data.custom
 	})
 
 	//weather settings
