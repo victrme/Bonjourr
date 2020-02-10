@@ -113,6 +113,18 @@ function askfordict() {
       de: "Standardmäßig in einem neuen Tab öffnen",
       it: "Apri in una nuova scheda come impostazione predefinita"
     },
+    "Links per row": {
+      fr: "Liens par ligne",
+      sv: "",
+      nl: "",
+      pl: "",
+      pt_BR: "",
+      ru: "",
+      zh_CN: "",
+      sk: "",
+      de: "",
+      it: ""
+    },
     "VISUALS": {
       fr: "Affichage",
       sv: "Visuella",
@@ -329,6 +341,30 @@ function askfordict() {
       de: "Upload background here",
       it: "Upload background here",
     },
+    "Analog clock": {
+      fr: "Horloge analogue",
+      sv: "Analog clock",
+      nl: "Analog clock",
+      pl: "Analog clock",
+      pt_BR: "Analog clock",
+      ru: "Analog clock",
+      zh_CN: "Analog clock",
+      sk: "Analog clock",
+      de: "Analog clock",
+      it: "Analog clock"
+    },
+    "No distractions": {
+      fr: "Mode concentration",
+      sv: "No distractions",
+      nl: "No distractions",
+      pl: "No distractions",
+      pt_BR: "No distractions",
+      ru: "No distractions",
+      zh_CN: "No distractions",
+      sk: "No distractions",
+      de: "No distractions",
+      it: "No distractions"
+    },
     "WEATHER": {
       fr: "Météo",
       sv: "Väder",
@@ -425,7 +461,7 @@ function askfordict() {
       de: "Suchmaschine",
       it: "Motore di ricerca"
     },
-    "Activate": {
+    "Enable": {
       fr: "Activer",
       sv: "Aktivera",
       nl: "Activeren", // unsure
@@ -509,6 +545,18 @@ function askfordict() {
       de: "Mit Bing suchen",
       it: "Cerca su Bing"
     },
+    "Search on Qwant": {
+      fr: "Rechercher sur Qwant",
+      sv: "Sök med Qwant",
+      nl: "Zoek op Qwant",
+      pl: "Szukaj z Qwant",
+      pt_BR: "Buscar no Qwant",
+      ru: "Поиск в Qwant",
+      zh_CN: "搜索 Qwant",
+      sk: "Vyhľadávanie Qwant",
+      de: "Mit Qwant suchen",
+      it: "Cerca su Qwant"
+    },
     "GENERAL": {
       fr: "Général",
       sv: "General",
@@ -520,6 +568,18 @@ function askfordict() {
       sk: "General",
       de: "Allgemein",
       it: "Generale"
+    },
+    "US Date Format": {
+      fr: "Date américaine",
+      sv: "US Date Format",
+      nl: "US Date Format",
+      pl: "US Date Format",
+      pt_BR: "US Date Format",
+      ru: "US Date Format",
+      zh_CN: "US Date Format",
+      sk: "US Date Format",
+      de: "US Date Format",
+      it: "US Date Format"
     },
     "12-Hour Time": {
       fr: "Affichage 12h",
@@ -533,6 +593,18 @@ function askfordict() {
       de: "12-Stunden Uhrzeit",
       it: "Sistema orario a 12 ore"
     },
+    "Time Zone": {
+      fr: "Fuseau horaire",
+      sv: "Time Zone",
+      nl: "Time Zone",
+      pl: "Time Zone",
+      pt_BR: "Time Zone",
+      ru: "Time Zone",
+      zh_CN: "Time Zone",
+      sk: "Time Zone",
+      de: "Time Zone",
+      it: "Time Zone"
+    },
     "Language": {
       fr: "Langue",
       sv: "Välj språk",
@@ -544,6 +616,78 @@ function askfordict() {
       sk: "Vybrať jazyk",
       de: "Sprache",
       it: "Lingua"
+    },
+    "Greeting": {
+      fr: "Nom",
+      sv: "Greeting",
+      nl: "Greeting",
+      pl: "Greeting",
+      pt_BR: "Greeting",
+      ru: "Greeting",
+      zh_CN: "Greeting",
+      sk: "Greeting",
+      de: "Greeting",
+      it: "Greeting",
+    },
+    "Custom CSS": {
+      fr: "CSS personnalisé",
+      sv: "Custom CSS",
+      nl: "Custom CSS",
+      pl: "Custom CSS",
+      pt_BR: "Custom CSS",
+      ru: "Custom CSS",
+      zh_CN: "Custom CSS",
+      sk: "Custom CSS",
+      de: "Custom CSS",
+      it: "Custom CSS",
+    },
+    "Custom Font": {
+      fr: "Police personnalisée",
+      sv: "Custom Font",
+      nl: "Custom Font",
+      pl: "Custom Font",
+      pt_BR: "Custom Font",
+      ru: "Custom Font",
+      zh_CN: "Custom Font",
+      sk: "Custom Font",
+      de: "Custom Font",
+      it: "Custom Font",
+    },
+    "Font family": {
+      fr: "Police",
+      sv: "Font family",
+      nl: "Font family",
+      pl: "Font family",
+      pt_BR: "Font family",
+      ru: "Font family",
+      zh_CN: "Font family",
+      sk: "Font family",
+      de: "Font family",
+      it: "Font family",
+    },
+    "Weight": {
+      fr: "Épaisseur",
+      sv: "Weight",
+      nl: "Weight",
+      pl: "Weight",
+      pt_BR: "Weight",
+      ru: "Weight",
+      zh_CN: "Weight",
+      sk: "Weight",
+      de: "Weight",
+      it: "Weight",
+    },
+    "Size": {
+      fr: "Taille",
+      sv: "Size",
+      nl: "Size",
+      pl: "Size",
+      pt_BR: "Size",
+      ru: "Size",
+      zh_CN: "Size",
+      sk: "Size",
+      de: "Size",
+      it: "Size",
     },
     "SETTINGS MANAGEMENT": {
       fr: "GESTION DES RÉGLAGES",
@@ -1114,4 +1258,79 @@ function askfordict() {
       it: "Lingua"
     }
   }
+}
+
+const l_google = {
+  'fr': ".fr/search?q=",
+  'en': ".com/search?q=",
+  'ru': ".ru/search?q=",
+  'pl': ".pl/search?q=",
+  'pt_BR': ".com.br/search?q=",
+  'sv': ".se/search?q=",
+  'sl': ".sl/search?q=",
+  'nl': ".nl/search?q=",
+  'zh_CN': ".tw/search?q=",
+  'sk': ".sk/search?q=",
+  'de': ".de/search?q=",
+  'it': ".it/search?q="
+}
+
+const l_ddg = {
+  'fr': "&kl=fr-fr",
+  'en': "&kl=en-US",
+  'ru': "&kl=ru-ru",
+  'pl': "&kl=pl-pl",
+  'pt_BR': "&kl=br-pt",
+  'sv': "&kl=se-se",
+  'sl': "&kl=sl-sl",
+  'nl': "&kl=nl-nl",
+  'zh_CN': "&kl=cn-zh",
+  'sk': "&kl=sk-sk",
+  'de': "&kl=de-de",
+  'it': "&kl=it-it"
+}
+
+const l_startpage = {
+  'fr': "&language=francais",
+  'en': "&language=engish",
+  'ru': "&language=russian",
+  'pl': "&language=polski",
+  'pt_BR': "&language=br-pt",
+  'sv': "&language=svenska",
+  'sl': "&language=sl-sl",
+  'nl': "&language=nl-nl",
+  'zh_CN': "&language=cn-zh",
+  'sk': "&language=sk-sk",
+  'de': "&language=de-de",
+  'it': "&language=italiano"
+}
+
+const l_qwant = {
+  'fr': "&r=FR&sr=fr",
+  'en': "&r=US&sr=en",
+  'ru': "&r=RU&sr=ru",
+  'pl': "&r=PL&sr=pl",
+  'pt_BR': "&r=BR&sr=pt",
+  'sv': "&r=SE&sr=sv",
+  'sl': "&r=SL&sr=sl",
+  'nl': "&r=NL&sr=nl",
+  'zh_CN': "&r=SG&sr=en",
+  'sk': "&r=en&sr=en",
+  'de': "&r=DE&sr=de",
+  'it': "&r=IT&sr=it"
+}
+
+const l_yahoo = {
+  'fr': "fr.search.yahoo.com/search?q=",
+  'en': "search.yahoo.com/search?q=",
+  'ru': "ru.search.yahoo.com/search?q=",
+  'pl': "pl.search.yahoo.com/search?q=",
+  'pt_BR': "br.search.yahoo.com/search?q=",
+  'sv': "se.search.yahoo.com/search?q=",
+  'sl': "sl.search.yahoo.com/search?q=",
+  'nl': "nl.search.yahoo.com/search?q=",
+  'zh_CN': "search.yahoo.com/search?q=",
+  'sk': "search.yahoo.com/search?q=",
+  'de': "de.search.yahoo.com/search?q=",
+  'it': "it.search.yahoo.com/search?q="
 }

@@ -10,10 +10,15 @@
 	<link rel="preload" href="src/fonts/sf-pro-display-light-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 	<link rel="preload" href="src/fonts/sf-pro-display-thin-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 	<link rel="icon" href="src/images/icons/favicon.png" />
+	<link rel="stylesheet" href=""  id="fontlink">
+	<style type="text/css" id="styles"></style>
 </head>
 
 <body>
-
+	
+	<div id="background_overlay">
+		<div id="background"></div>
+	</div>
 
 	<div id="edit_linkContainer">
 		<div id="edit_link">
@@ -21,28 +26,17 @@
 			<button id="e_close" class="trn">Cancel</button>
 
 			<div>
-				<!-- <h4>Title</h4> -->
 				<input id="e_title" type="text" name="e_title" placeholder="Title">
-
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_title">
+				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_title" draggable="false">
 			</div>
 			<div>
-				<!-- <h4>URL</h4> -->
 				<input id="e_url" type="text" name="e_url" placeholder="Link">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_url">
-
+				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_url" draggable="false">
 			</div>
 			<div>
-				<!-- <h4>Icon</h4> -->
 				<input id="e_iconurl" type="url" name="e_iconurl" placeholder="Icon">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_iconurl">
-
-			</div><!-- 
-			<label id="l_iconfile">
-				<p>Drop your icon here</p>
-				<input id="e_iconfile" type="file" name="e_iconfile">
-			</label> -->
-
+				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_iconurl" draggable="false">
+			</div>
 
 
 			<div class="linkOptions">
@@ -51,73 +45,93 @@
 			</div>
 		</div>
 	</div>
-
-	<div id="background"></div>
-
-	<div id="showSettings" class="showSettings">
-		<button><img src="src/images/icons/gear.png"></button>
-	</div>
 	
-	<div id="interface" class="interface">
-		<div class="time">
-			<img src="src/images/shadow.png" class="shadow" draggable="false" defer>
-			<div class="time-container">
+	<div id="interface" class="distract">
+		
+		<div id="time">
+			<img src="src/images/shadow.png" class="shadow" draggable="false">
+			<div id="time-container">
 				<div id="clock"></div>
+
+				<div id="analogClock">
+					<div id="center"></div>
+					<span id="hours"></span>
+					<span id="minutes"></span>
+					<span id="analogSeconds"></span>
+				</div>
 			</div>
 
-			<div class="date">
-				<span id="jour" class="jour"></span>
-				<span id="chiffre" class="chiffre"></span>
-				<span id="mois" class="mois"></span>
+			<div id="date">
+				<span id="jour"></span>
+				<span id="chiffre"></span>
+				<span id="mois"></span>
 			</div>
 		</div>
 
-		<div class="main">
-			<img src="src/images/shadow.png" class="shadow" draggable="false" defer>
-			<h3 id="greetings" class="greetings"></h3>
-			<div id="weather" class="weather">
-				<div class="w_desc_container">
-					<span id="desc" class="w_desc_meteo"></span>
-					<span class="trn">It is currently</span>
-					<span id="temp" class="w_desc_temp"></span>
+		<div id="main">
+			<img src="src/images/shadow.png" class="shadow" draggable="false">
+			<h3 id="greetings"></h3>
+			<div id="weather">
+				<div id="weather_desc">
+					<div>
+						<span id="desc"></span>
+						<span class="trn">It is currently</span>
+						<span id="temp"></span>
+					</div>
+					<div id="temp_max_wrap">
+						<span class="trn">with a high of</span>
+						<span id="temp_max"></span>
+						<span class="trn">today.</span>
+					</div>
 				</div>
+				
 
-				<div id="temp_max_wrap" class="hightemp">
-					<span class="trn">with a high of</span>
-					<span id="temp_max" class="w_desc_temp_max"></span>
-					<span class="trn">today.</span>
-				</div>
-
-				<div class="w_widget">
-					<img src="" id="widget" class="w_icon" draggable="false">
-					<div class="w_widget_text">
-						<span id="widget_temp" class="w_widget_temp"></span>
+				<div id="w_icon">
+					<img src="" id="widget" draggable="false">
+					<div id="w_widget_text">
+						<span id="widget_temp"></span>
 					</div>
 				</div>
 			</div>
 		</div>
 		
 		<div id="sb_container">
-			<form id="sb_form" action="" method="GET" autocomplete="off">
-				<input id="searchbar" type="text" name="q" placeholder="Search on Startpage"></input>
-			</form>
+			<input id="searchbar" type="text" name="q" placeholder="Search on Google"></input>
 		</div>
 
-		<div id="linkblocks" class="linkblocks">
-			<a href="" id="hiddenlink" class="hiddenlink"></a>
+		<div id="quotes_container">
+			<p id="quote">Si tu tournes autour d'un arbre assez vite tu peux te faire l'amour aux fesses</p>
+			<i id="quoteAuthor">- Albert Einstein</i>
 		</div>
 
-		<div id="credit" class="hidden">
-			<a id="location" href=""></a>
-			<a id="artist" href=""></a>
-			<a id="onUnsplash" href="https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral"> on Unsplash</a>
+		<div id="linkblocks">
+			<a href="" id="hiddenlink"></a>
 		</div>
 	</div>
 
-	
+	<div id="popup" class="justShown">
+		<span>You love using Bonjourr? Consider giving us a review, that would help a lot! 😇</span>
+
+		<div class="choices">
+			<a href="https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews" target="_blank" id="go">Go</a>
+			<!-- <button id="later">Later</button> -->
+			<img src="src/images/icons/close.svg" draggable="false" id="closePopup">
+		</div>
+		
+	</div>
+
+	<div id="credit" class="hidden">
+		<a id="location" href=""></a>
+		<a id="artist" href=""></a>
+		<a id="onUnsplash" href="https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral"> on Unsplash</a>
+	</div>
+
+	<div id="showSettings" class="distract">
+		<button><img src="src/images/icons/gear.png" draggable="false"></button>
+	</div>
 
 	<script src="src/scripts/lang.js"></script>
 	<script src="src/scripts/script.js"></script>
-	<script src="src/scripts/settings.js"></script>
+	<script src="src/scripts/settings.js" defer></script>
 </body>
 </html>

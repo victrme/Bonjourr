@@ -67,33 +67,19 @@ function selectBackgroundType(cat) {
 	id("default").style.display = "none";
 	id("dynamic").style.display = "none";
 	id("custom").style.display = "none";
-
 	id(cat).style.display = "block";
 
-	if (cat === "dynamic") {
-		chrome.storage.sync.set({"background_type": "dynamic"});
-		unsplash()
-	}
-	else if (cat === "custom") {
+	if (cat === "dynamic") unsplash()
 
-		chrome.storage.sync.set({"background_type": "custom"});
-
-		//reste local !!!
-		chrome.storage.local.get("background_blob", (data) => {
-			if (data.background_blob) {
-				imgBackground(setblob(data.background_blob));
-			}
-			imgCredits(null, "custom");
-		});	
-
-	}
+	chrome.storage.sync.set({"background_type": cat});
 }
 
 function settingsEvents() {
 
 	// file input animation
-	let custom = id("i_bgfile");
-	let customStyle = id("fileContainer");
+	const custom = id("i_bgfile");
+	const customStyle = id("fileContainer");
+	let fontObj = {};
 
 	custom.addEventListener("dragenter", function(){
 	  customStyle.classList.add("dragover");
@@ -133,20 +119,64 @@ function settingsEvents() {
 		unsplash(null, this.value);
 	}
 
+
+	//custom bg
+
 	id("i_bgfile").onchange = function(e) {
 		renderImage(this.files[0], "change");
 	};
 
-	id("i_blur").onchange = function() {
+	/*id("i_quality").oninput = function() {
+		customBackground({cat: "quality", value: this.value})
+	}*/
+
+
+
+	id("i_blur").oninput = function() {
 		filter("blur", this.value);
+		slowRange({"background_blur": parseInt(this.value)});
 	};
 
-	id("i_bright").onchange = function() {
+	id("i_bright").oninput = function() {
 		filter("bright", this.value);
+		slowRange({"background_bright": parseFloat(this.value)});
 	};
 
 	id("i_dark").onchange = function() {
 		darkmode(this.value)
+	}
+
+	id("i_distract").onchange = function() {
+		distractMode(this);
+	}
+
+
+
+	//Time and date
+
+	id("i_analog").onchange = function() {
+		newClock({param: "analog", value: this.checked});
+	}
+
+	id("i_seconds").onchange = function() {
+		newClock({param: "seconds", value: this.checked});
+	}
+
+	id("i_ampm").onchange = function() {
+		newClock({param: "ampm", value: this.checked});
+	}
+
+	id("i_timezone").onchange = function() {
+		newClock({param: "timezone", value: this.value});
+	}
+
+	id("i_usdate").onchange = function() {
+
+		let rep = (this.checked ? true : false);
+
+		localStorage.usdate = rep;
+		chrome.storage.sync.set({"usdate": rep});
+		date();
 	}
 
 	//weather
@@ -181,22 +211,6 @@ function settingsEvents() {
 
 
 	//general
-	id("i_usdate").onchange = function() {
-
-		let rep = (this.checked ? true : false);
-
-		localStorage.usdate = rep;
-		chrome.storage.sync.set({"usdate": rep});
-		date();
-	}
-
-	id("i_ampm").onchange = function() {
-		clock(this, "clock format")
-	}
-
-	id("i_timezone").onchange = function() {
-		clock(this, "timezone")
-	}
 
 	id("i_lang").onchange = function() {
 
@@ -231,137 +245,108 @@ function settingsEvents() {
 	}
 }
 
-function actualizeStartupOptions() {
+function initParams() {
 
-	let store = ["dynamic_freq", "background_type", "background_blur", "background_bright", "retina", "dark", "linknewtab", "weather", "searchbar", "searchbar_engine", "clockformat", "lang"];
+	const data = JSON.parse(localEnc(sessionStorage.data, false));
 
-	chrome.storage.sync.get(null, (data) => {
+	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base));
+	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
+	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
 
-		//open in new tab
-		id("i_linknewtab").checked = (data.linknewtab ? true : false);
+	initInput("i_type", data.background_type, "default");
+	initInput("i_blur", data.background_blur, 25);
+	initInput("i_bright", data.background_bright, 1);
+	initInput("i_dark", data.dark, "disable");
+	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
+	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
+	initInput("i_freq", isThereData("dynamic", "every"), "hour");
+	initInput("i_ccode", isThereData("weather", "ccode"), "US");
 
-		//default background
-		var imgs = cl("imgpreview");
-		var bgURL = id("background").style.backgroundImage;
-		var previewURL = "";	
+	initCheckbox("i_geol", isThereData("weather", "location"));
+	initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"));
+	initCheckbox("i_distract", data.distract);
+	initCheckbox("i_linknewtab", data.linknewtab);
+	initCheckbox("i_sb", data.searchbar);
+	initCheckbox("i_usdate", data.usdate);
+	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
+	
 
-		for (var i = 0; i < imgs.length; i++) {
-			
-			previewURL = imgs[i].children[0].getAttribute("src");
+	if (sessionStorage.pro === "true") {
 
-			if (bgURL.includes(previewURL)) {
-				imgs[i].setAttribute("class", "imgpreview selected");
+		initInput("i_row", data.linksrow, 8);
+		initInput("i_customfont", isThereData("font", "family"), false);
+		initInput("i_weight", isThereData("font", "weight"), "auto");
+		initInput("i_size", isThereData("font", "size"), "auto");
+		initInput("i_greeting", data.greeting, "");
+		initInput("cssEditor", data.css, "");
+		
+		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
+		initCheckbox("i_analog", isThereData("clock", "analog"), false);
+		initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
+
+		id("e_row").innerText = (data.linksrow ? data.linksrow : "8");
+		id("e_weight").innerText = (isThereData("font", "weight") ? isThereData("font", "weight") : "Regular");
+		id("e_size").innerText = (isThereData("font", "size") ? isThereData("font", "size") : "Auto");
+	}
+
+	
+	//bg
+	if (data.background_type !== undefined) {
+
+		id(data.background_type).style.display = "block";
+
+		if (data.background_type === "default") {
+
+			for (let e of cl("imgpreview")) {
+				if (data.background_image.includes(e.getAttribute("source"))) {
+					attr(e, "imgpreview selected")
+				}
 			}
 		}
 
-		if (data.background_type !== undefined) {
-			id("i_type").value = data.background_type;
-			id(data.background_type).style.display = "block";
-		} else {
-			id("i_type").value = "default";
-			id("default").style.display = "block";
+	} else {
+		id("default").style.display = "block";
+	}
+
+	//ajoute les thumbnails au custom background
+	chrome.storage.local.get(["custom"], (data) => {
+
+		let cleanData;
+				
+		for (var i = 0; i < data.custom.length; i++) {
+			cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
+			addThumbnails(cleanData, i)
 		}
 
-		id("i_freq").value = (data.dynamic ? (data.dynamic.every ? data.dynamic.every : "hour") : "hour");
+		fullImage = data.custom
+	})
 
-		//blur
-		id("i_blur").value = (data.background_blur !== undefined ? data.background_blur : 25);
+	//weather settings
+	if (data.weather) {
 
+		let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
+		id("i_city").setAttribute("placeholder", cityPlaceholder);
 
-		//brightness
-		id("i_bright").value = (data.background_bright !== undefined ? data.background_bright : 1);
-
-
-		//dark mode input
-		id("i_dark").value = (data.dark ? data.dark : "disable");
-		
-
-		//weather city input
-		if (data.weather && data.weather.city) {
-			id("i_city").setAttribute("placeholder", data.weather.city);
-		} else {
-			id("i_city").setAttribute("placeholder", "City");
-		}
+		if (data.weather.location) id("sett_city").setAttribute("class", "city hidden");
+	}
+	
+	//searchbar display settings 
+	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
 
 
-		if (data.weather && data.weather.ccode) {
-			id("i_ccode").value = data.weather.ccode;
-		} else {
-			id("i_ccode").value = "US";
-		}
-
-		//check geolocalisation
-		//enleve city
-		if (data.weather && data.weather.location) {
-
-			id("i_geol").checked = true;
-			id("sett_city").setAttribute("class", "city hidden");
-
-		} else {
-
-			id("i_geol").checked = false;
-		}
-
-		//check imperial
-		if (data.weather && data.weather.unit === "imperial") {
-			id("i_units").checked = true;
-		} else {
-			id("i_units").checked = false;
-		}
-
-		
-		//searchbar switch et select
-		if (data.searchbar) {
-			id("i_sb").checked = true;
-			id("choose_searchengine").setAttribute("class", "shown");
-			setTimeout(() => {
-		    	id("searchbar").focus();
-		    }, 100);
-		} else {
-			id("i_sb").checked = false;
-			id("choose_searchengine").setAttribute("class", "hidden");
-		}	
-		
-		//search engine
-		id("i_sbengine").value = (data.searchbar_engine ? data.searchbar_engine : "s_startpage");
+	//clock format localstorage control
+	if (data.clockformat === 12) localStorage.clockformat = 12;
 
 
-
-		//US Date
-		if (data.usdate) {
-			id("i_usdate").checked = true;
-		} else {
-			id("i_usdate").checked = false;
-		}
+	//langue
+	id("i_lang").value = localStorage.lang || "en";
 
 
-		//clock
-		if (data.clockformat === 12) {
-			id("i_ampm").checked = true;
-			localStorage.clockformat = 12;
-		} else {
-			id("i_ampm").checked = false;
-		}
-
-
-		//timezone
-		if (data.timezone) {
-			id("i_timezone").value = data.timezone;
-		} else {
-			id("i_timezone").value = "auto";
-		}
-
-
-		//langue
-		id("i_lang").value = localStorage.lang || "en";
-
-
-		//firefox export
-		if(!navigator.userAgent.includes("Chrome")) {
-			id("submitExport").style.display = "none";
-			id("i_export").style.width = "100%";
-		}
-	});		
+	//firefox export
+	if(!navigator.userAgent.includes("Chrome")) {
+		id("submitExport").style.display = "none";
+		id("i_export").style.width = "100%";
+	}	
 }
 
 function importExport(select, isEvent) {
@@ -432,114 +417,164 @@ function importExport(select, isEvent) {
 	}
 }
 
-function settings() {
-	settingsEvents();
-	actualizeStartupOptions();
-	signature();
-	defaultBg();
-	importExport("exp");
-}
+function showSettings() {
 
-function showSettings(e, that) {
-
-	if (e.type === "mousedown") {
-
-		function init() {
-			let node = document.createElement("div");
-			let xhttp = new XMLHttpRequest();
-			
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4) {
-					if (this.status == 200) {
-
-						node.id = "settings";
-						node.innerHTML = this.responseText;
-						document.body.appendChild(node);
-						settings();
-						traduction(true);
-					}
-				}
-			}
-
-			xhttp.open("GET", "/settings.html", true);
-			xhttp.send();
-		}
-
-		if (!id("settings")) {
-			init();
-		}
-	}
-
-	if (e.type === "mouseup") {
-
-		let edit = id("edit_linkContainer");
-		let editClass = edit.getAttribute("class");
+	function display() {
+		const edit = id("edit_linkContainer");
+		const editClass = edit.getAttribute("class");
+		const uiClass = dominterface.getAttribute("class");
 
 		if (has("settings", "shown")) {
-			attr(that.children[0], "");
+			attr(domshowsettings.children[0], "");
 			attr(id("settings"), "");
-			attr(id("interface"), "");
+			attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
 
 			if (editClass === "shown pushed") attr(edit, "shown");
 			
 		} else {
-			attr(that.children[0], "shown");
+			attr(domshowsettings.children[0], "shown");
 			attr(id("settings"), "shown");
-			attr(id("interface"), "pushed");
+			attr(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
 			
 			if (editClass === "shown") attr(edit, "shown pushed");
 		}
 	}
+
+	function functions() {
+
+		if (sessionStorage.pro === "true") {
+			for (let i of cl("pro")) i.style.display = "block";
+			for (let i of cl("proflex")) i.style.display = "flex";
+		}
+
+		initParams()
+		traduction(true)
+		setTimeout(() => (display()), 10)
+		setTimeout(function() {
+			settingsEvents()
+			signature()
+			defaultBg()
+			if (sessionStorage.pro === "true") proEvents()
+		}, 100)
+	}
+
+	function init() {
+		let node = document.createElement("div");
+		let xhttp = new XMLHttpRequest();
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4) {
+				if (this.status == 200) {
+
+					node.id = "settings";
+					node.innerHTML = this.responseText;
+					document.body.appendChild(node);
+
+					functions()
+				}
+			}
+		}
+
+		xhttp.open("GET", "/settings.html", true);
+		xhttp.send();
+	}
+
+	if (!id("settings")) init()
+	else display()
 } 
 
 function showInterface(e) {
+
 	//cherche le parent du click jusqu'a trouver linkblocks
-	var parent = e.target;
+	//seulement si click droit, quitter la fct
+	let parent = e.target;
+
 	while (parent !== null) {
 
 		parent = parent.parentElement;
-		if (parent && parent.id === "linkblocks") return false;
+		if (parent && parent.id === "linkblocks" && e.which === 3) return false;
 	}
 
 	//close edit container on interface click
 	if (has("edit_linkContainer", "shown")) {
 		attr(id("edit_linkContainer"), "");
-		id("linkblocks").querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
+		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
 	}
 
 	if (has("settings", "shown")) {
 
-		attr(id("showSettings").children[0], "");
-		attr(id("settings"), "");
-		attr(id("interface"), "");
-
 		let edit = id("edit_linkContainer");
 		let editClass = edit.getAttribute("class");
+		let ui = dominterface;
+		let uiClass = dominterface.getAttribute("class");
+
+		attr(id("showSettings").children[0], "");
+		attr(id("settings"), "");
+		attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+
 		if (editClass === "shown pushed") attr(edit, "shown");
 	}
 }
 
-id("showSettings").onmousedown = function(e) {
-	showSettings(e)
-}
+domshowsettings.onmouseup = function() {showSettings()}
+dominterface.onmouseup = function(e) {showInterface(e)}
 
-id("showSettings").onmouseup = function(e) {
-	showSettings(e, this)
-}
-
-//si settings ouvert, le ferme
-id("interface").onmouseup = function(e) {
-	showInterface(e)
-}
-
-//autofocus
 document.onkeydown = function(e) {
 
-	let searchbar = (id("sb_container") ? id("sb_container").getAttribute("class") === "shown" : false);
-	let settings = (id("settings") ? (id("settings").getAttribute("class") === "shown") : false);
+	//focus la searchbar si elle existe et les settings sont fermé
+	const searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
+	const settings = (id("settings") ? has("settings", "shown") : false);
+	const edit = has("edit_linkContainer", "shown");
 
-	if (searchbar && !settings) {
+	if (searchbar && !settings && !edit) id("searchbar").focus()
 
-		id("searchbar").focus();
+	//press escape to show settings
+	if (e.code === "Escape") showSettings()
+}
+
+function proEvents() {
+
+	let fontObj = {}
+
+	id("i_customfont").oninput = function() {
+		fontObj = {family: this.value, weight: null, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_weight").oninput = function() {
+		id("e_weight").innerText = this.value;
+		fontObj = {family: null, weight: this.value, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_size").oninput = function() {
+		id("e_size").innerText = this.value;
+		fontObj = {family: null, weight: null, size: this.value};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_row").oninput = function() {
+		proFunctions({which: "row", event: this.value})
+	}
+
+	id("i_greeting").onkeyup = function() {
+		proFunctions({which: "greet", event: this.value})
+	}
+
+	id("i_quotes").onchange = function() {
+		proFunctions({which: "quote", event: this.checked});
+	}
+
+	id("cssEditor").onkeypress = function(e) {
+		let data = {e: e, that: this};
+		proFunctions({which: "css", event: data})
+	}
+
+
+	for(e of id("hideelem").children) {
+
+		e.onmouseup = function() {
+			proFunctions({which: "hide", event: this.getAttribute("data")})
+		}
 	}
 }
