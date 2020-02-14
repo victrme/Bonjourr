@@ -617,30 +617,24 @@ function quickLinks(event, that, initStorage) {
 
 		function filterUrl(str) {
 
-			//var ipReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[-a-zA-Z0-9@:%._\+~#=]{2,256})?$/;
-			//var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 			let reg = new RegExp("^(http|https)://", "i");
 
 			//config ne marche pas
-			if (str.startsWith("about:") || str.startsWith("chrome://")) {
-				return false;
-			}
+			if (str.startsWith("about:") || str.startsWith("chrome://"))
+				return false
 
-			if (str.startsWith("file://")) {
-				return str;
-			}
+			if (str.startsWith("file://"))
+				return str
 
 			//premier regex pour savoir si c'est http
-			if (!str.match(reg)) {
-				str = "http://" + str;
-			}
+			if (!str.match(reg))
+				str = "http://" + str
 
 			//deuxieme pour savoir si il est valide (avec http)
-			if (str.match(reg)) {
+			if (str.match(reg))
 				return str.match(reg).input;
-			} else {
+			else
 				return false;
-			}
 		}
 
 		function saveLink(lll) {
@@ -808,8 +802,6 @@ function weather(event, that, initStorage) {
 
 			//update le parametre de location
 			param.location.push(pos.coords.latitude, pos.coords.longitude);
-			chrome.storage.sync.set({"weather": param});
-
 			chrome.storage.sync.set({"weather": param});
 
 			request(param, "current");
@@ -2303,6 +2295,7 @@ function showPopup(data) {
 	}
 	else if (typeof(data) === "number") chrome.storage.sync.set({reviewPopup: data + 1})
 	else if (data !== "removed") chrome.storage.sync.set({reviewPopup: 0})
+	else if (data === "removed") document.body.removeChild(popup)
 }
 
 //comme un onload, sans le onload
