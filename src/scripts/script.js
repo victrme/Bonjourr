@@ -118,6 +118,8 @@ function newClock(eventObj, init) {
 				let utc = hour + (offset / 60);
 				let setTime = (utc + parseInt(timezone)) % 24;
 
+				if (setTime < 0) setTime = 24 + setTime;
+
 				return setTime;
 			}
 		}
