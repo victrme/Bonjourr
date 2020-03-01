@@ -1,70 +1,5 @@
-function defaultBg() {
-
-	let bgTimeout, oldbg;
-
-	id("default").onmouseenter = function() {
-		oldbg = id("background").style.backgroundImage.slice(5, imgBackground().length - 2);
-	}
-
-	id("default").onmouseleave = function() {
-		clearTimeout(bgTimeout);
-		imgBackground(oldbg);
-	}
-
-	function imgEvent(state, that) {
-
-		if (state === "enter") {
-
-			if (bgTimeout) clearTimeout(bgTimeout);
-
-			let src = "/src/images/backgrounds/" + that.getAttribute("source");
-
-			bgTimeout = setTimeout(function() {
-
-				//timeout de 300 pour pas que ça se fasse accidentellement
-				//prend le src de la preview et l'applique au background
-				imgBackground(src);
-
-			}, 300);
-
-		} else if (state === "leave") {
-
-			clearTimeout(bgTimeout);
-
-		} else if (state === "mouseup") {
-
-			var src = "/src/images/backgrounds/" + that.getAttribute("source");
-
-		    imgBackground(src);
-		    imgCredits(src, "default");
-
-			clearTimeout(bgTimeout);
-			oldbg = src;
-
-			//enleve selected a tout le monde et l'ajoute au bon
-			remSelectedPreview();
-			//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
-			var tempAttr = that.getAttribute("class");
-			that.setAttribute("class", tempAttr + " selected");
-
-			chrome.storage.sync.set({"last_default": src});
-			chrome.storage.sync.set({"background_image": src});
-			chrome.storage.sync.set({"background_type": "default"});
-		}
-	}
-
-	var imgs = cl("imgpreview");
-	for (var i = 0; i < imgs.length; i++) {
-
-		imgs[i].onmouseenter = function() {imgEvent("enter", this)}
-		imgs[i].onmouseleave = function() {imgEvent("leave", this)}
-		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
-	}
-}
-
 function selectBackgroundType(cat) {
 
-	id("default").style.display = "none";
 	id("dynamic").style.display = "none";
 	id("custom").style.display = "none";
 	id(cat).style.display = "block";
@@ -253,7 +188,6 @@ function initParams() {
 	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
 	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
 
-	initInput("i_type", data.background_type, "default");
 	initInput("i_blur", data.background_blur, 25);
 	initInput("i_bright", data.background_bright, 1);
 	initInput("i_dark", data.dark, "disable");
@@ -291,22 +225,11 @@ function initParams() {
 
 	
 	//bg
-	if (data.background_type !== undefined) {
-
+	if (data.background_type !== undefined)
 		id(data.background_type).style.display = "block";
-
-		if (data.background_type === "default") {
-
-			for (let e of cl("imgpreview")) {
-				if (data.background_image.includes(e.getAttribute("source"))) {
-					attr(e, "imgpreview selected")
-				}
-			}
-		}
-
-	} else {
-		id("default").style.display = "block";
-	}
+	else
+		id("dynamic").style.display = "block";
+	
 
 	//ajoute les thumbnails au custom background
 	chrome.storage.local.get(["custom"], (data) => {
@@ -453,7 +376,6 @@ function showSettings() {
 		setTimeout(function() {
 			settingsEvents()
 			signature()
-			defaultBg()
 			if (sessionStorage.pro === "true") proEvents()
 		}, 100)
 	}

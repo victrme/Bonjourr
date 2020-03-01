@@ -1160,44 +1160,10 @@ function imgCredits(src, type) {
 		location.setAttribute("href", src.location.url);
 		artist.innerText = src.artist.text;
 		artist.setAttribute("href", src.artist.url);
-	} else {
-		if (type === "default") attr(onUnsplash, "hidden")
 	}
 
 	if (type === "custom") attr(credit, "hidden");
 	else attr(credit, "shown");
-
-	if (type === "default") {
-
-		const credits = [
-			{"title": "Santa Monica",
-				"artist": "Avi Richards",
-				"url": "https://unsplash.com/photos/KCgADeYejng",
-				"id": "avi-richards-beach"},
-			{"title": "Waimea Canyon",
-				"artist": "Tyler Casey",
-				"url": "https://unsplash.com/photos/zMyZrfcLXQE",
-				"id": "tyler-casey-landscape"},
-			{"title": "Fern",
-				"artist": "Tahoe Beetschen",
-				"url": "https://unsplash.com/photos/Tlw9fp2Z-8g",
-				"id": "tahoe-beetschen-ferns"},
-			{"title": "iOS 13 wallpaper",
-				"artist": "Apple",
-				"url": "https://www.apple.com/ios/ios-13-preview/",
-				"id": "ios13"}];
-
-		for (let i in credits) {
-
-			if (src && src.includes(credits[i].id)) {
-				location.setAttribute("href", credits[i].url);
-				location.innerText = credits[i].title + " - ";
-				artist.innerText = credits[i].artist;
-
-				return true;
-			}
-		}
-	}
 }
 
 function imgBackground(val) {
@@ -1219,11 +1185,10 @@ function imgBackground(val) {
 
 function initBackground(storage) {
 
-	let type = storage.background_type || "default";
-	let image = storage.background_image || "src/images/backgrounds/avi-richards-beach.jpg";
+	let type = storage.background_type || "dynamic";
+	let image = storage.background_image || "";
 
-	if (storage.background_type === "custom") {
-
+	if (type === "custom") {
 
 		//reste local !!!!
 		chrome.storage.local.get(["custom", "customIndex"], (data) => {
@@ -1244,10 +1209,8 @@ function initBackground(storage) {
 		})
 		
 		imgCredits(null, type);
-
-
 	}
-	else if (storage.background_type === "dynamic") {
+	else if (type === "dynamic") {
 
 		unsplash(storage.dynamic)
 
@@ -2284,16 +2247,19 @@ function showPopup(data) {
 	//s'affiche après 10 tabs
 	if (data > 10) {
 
-		let popup = id("popup"),
-			closePopup = id("closePopup");
+		const popup = id("popup")
+		const closePopup = id("closePopup")
+		const go = id("go")
+		const close = function() {
+			popup.classList.add("removed")
+			chrome.storage.sync.set({reviewPopup: "removed"})
+		}
 
 		//attendre avant d'afficher
 		setTimeout(function() {popup.classList.add("shown")}, 2000)
 
-		closePopup.onclick = function() {
-			popup.classList.add("removed")
-			chrome.storage.sync.set({reviewPopup: "removed"})
-		}
+		closePopup.onclick = close
+		go.onclick = close
 	}
 	else if (typeof(data) === "number") chrome.storage.sync.set({reviewPopup: data + 1})
 	else if (data !== "removed") chrome.storage.sync.set({reviewPopup: 0})
