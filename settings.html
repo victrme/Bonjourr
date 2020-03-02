@@ -4,12 +4,13 @@
 	<div class="param">
 		<div class="link_input_wrap">
 			<input id="i_title" type="text" name="title" placeholder="Title">
-			<input id="i_url" type="text" name="url" placeholder="URL">
-			<p id="wrongURL" class="trn">Incorrect URL</p>
-			<button id="submitlink" class="trn centeredButton">Add Quick link</button>
-
-			<li class="help_sentence trn">Right click on the icons to Edit</li>
-			<li class="help_sentence trn">Drag and drop icons to rearrange</li>
+			<div style="display: flex; align-items: center;">
+				<input id="i_url" type="text" name="url" placeholder="URL">
+				<button id="submitlink" class="trn centeredButton">Add</button>
+			</div>
+			
+			<!-- <li class="help_sentence trn">Right click on the icons to Edit</li>
+			<li class="help_sentence trn">Drag and drop icons to rearrange</li> -->
 		</div>
 
 		<hr>
@@ -46,6 +47,7 @@
 			<select id="i_type" class="theme">
 				<option value="dynamic" class="trn">Dynamic</option>
 				<option value="custom" class="trn">Custom</option>
+				<option value="unicolor" class="trn">Couleur Unie</option>
 			</select>
 		</div>
 
@@ -78,6 +80,17 @@
 				<input id="i_quality" type="range" class="range" name="quality" min="0.1" max="1" step="0.1" value="1">
 				<span id="e_quality">100%</span>
 			</div> -->
+		</div>
+
+		<div id="unicolor">
+			
+			<div id="palette"></div>
+
+			<div>
+				<div id="colorpreview"></div>
+				<input id="hexa" type="text" name="">	
+			</div>
+
 		</div>
 
 		<hr>	

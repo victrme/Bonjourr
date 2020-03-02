@@ -1213,8 +1213,8 @@ function initBackground(storage) {
 	else if (type === "dynamic") {
 
 		unsplash(storage.dynamic)
-
-	} else {
+	}
+	else {
 
 		imgBackground(image);
 		imgCredits(image, type);

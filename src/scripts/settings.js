@@ -2,9 +2,97 @@ function selectBackgroundType(cat) {
 
 	id("dynamic").style.display = "none";
 	id("custom").style.display = "none";
+	id("unicolor").style.display = "none";
 	id(cat).style.display = "block";
 
 	if (cat === "dynamic") unsplash()
+	else if (cat === "unicolor") {
+
+		// Canvas implementation for modern browsers
+		const preview = document.getElementById("colorpreview")
+		const input = document.getElementById("hexa")
+		var canvas = document.createElement('canvas');
+		var ctx = canvas.getContext('2d');
+
+		var drawFunc = function (width, height, type) {
+			canvas.width = width;
+			canvas.height = height;
+
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			var hGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+			var vGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+
+			hGrad.addColorStop(0 / 6, '#F00');
+			hGrad.addColorStop(1 / 6, '#FF0');
+			hGrad.addColorStop(2 / 6, '#0F0');
+			hGrad.addColorStop(3 / 6, '#0FF');
+			hGrad.addColorStop(4 / 6, '#00F');
+			hGrad.addColorStop(5 / 6, '#F0F');
+			hGrad.addColorStop(6 / 6, '#F00');
+
+			ctx.fillStyle = hGrad;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+			vGrad.addColorStop(1, 'rgba(0,0,0,1)');
+			
+			ctx.fillStyle = vGrad;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		};
+
+		drawFunc(128, 64);
+		let rgba = [0, 0, 0];
+		
+		canvas.onmouseover = function() {
+
+			this.onmousemove = function(e) {
+
+				if (true) {}
+
+				let h = (e.offsetY * 4);
+				let w = e.offsetX;
+				let wcat = Math.floor(w / 21); //cat is 21px wide
+
+				//module en 7 categories, et multiplie jusqua 255
+				let modulated = (w % 21) * 12;
+
+				//red
+				if (wcat === 0) rgba = [255, modulated, 0]; 
+				//yellow
+				else if (wcat === 1) rgba = [255 - modulated, 255, 0]; 
+				//green
+				else if (wcat === 2) rgba = [0, 255, modulated]; 
+				//indigo
+				else if (wcat === 3) rgba = [0, 255 - modulated, 255]; 
+				//blue
+				else if (wcat === 4) rgba = [modulated, 0, 255];
+				//purple
+				else if (wcat === 5) rgba = [255, 0, 255 - modulated];
+				//lastred
+				else if (wcat === 6) rgba = [255, 0, 0];
+				
+
+				const negativeControl = a => (a < 0 ? 0 : a);
+
+
+				let colors = 'rgb('
+					+ negativeControl(rgba[0] - h) + ', '
+					+ negativeControl(rgba[1] - h) + ', '
+					+ negativeControl(rgba[2] - h) + ')';
+
+				colorpreview.style.background = colors;
+				input.value = colors;
+			} 
+
+			this.onmouseup = function(e) {
+				console.log(rgba, "as been chosen")
+				document.body.style.background = input.value;
+			}
+		}
+
+		document.getElementById('palette').appendChild(canvas)
+	}
 
 	chrome.storage.sync.set({"background_type": cat});
 }

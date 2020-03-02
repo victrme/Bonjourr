@@ -30,6 +30,13 @@
 }
 
 
+#settings #dynamic,
+#settings #custom,
+#settings #unicolor {
+	display: none;
+}
+
+
 
 
 
@@ -228,4 +235,22 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 #settings #i_sbparams {
 	width: calc(100% - 2em);
 	margin-left: 2em;
+}
+
+
+
+
+
+/* Uni Color */
+
+#colorpreview {
+	width: 128px;
+	height: 32px;
+}
+
+#hexa {
+	margin-top: 5px;
+	width: 128px;
+	border: none;
+	background: #eee;
 }
