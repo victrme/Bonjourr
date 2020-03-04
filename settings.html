@@ -3,10 +3,13 @@
 	<h5 class="trn">Quick Links</h5>
 	<div class="param">
 		<div class="link_input_wrap">
-			<input id="i_title" type="text" name="title" placeholder="Title">
+			
 			<div style="display: flex; align-items: center;">
-				<input id="i_url" type="text" name="url" placeholder="URL">
-				<button id="submitlink" class="trn centeredButton">Add</button>
+				<div>
+					<input id="i_title" type="text" name="title" placeholder="Title">
+					<input id="i_url" type="text" name="url" placeholder="URL">
+				</div>
+				<button id="submitlink" class="trn">Add</button>
 			</div>
 			
 			<!-- <li class="help_sentence trn">Right click on the icons to Edit</li>
@@ -32,7 +35,6 @@
 			<div class="wrapper">
 				<span class="trn">Links per row</span>
 				<input id="i_row" type="range" class="range" name="i_row" min="2" max="12" step="1" value="8">
-				<span id="e_row">8</span>
 			</div>
 		</div>
 	</div>
@@ -95,14 +97,14 @@
 
 		<hr>	
 
-		<div class="blur">
+		<div class="wrapper">
 			<span class="trn">Blur intensity</span>
 			<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="25" step="1">
 		</div>
 		
 		<hr>
 
-		<div class="brightness">
+		<div class="wrapper">
 			<span class="trn">Brightness</span>
 			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value="1" step=".01">
 		</div>
@@ -525,7 +527,7 @@
 	</div>
 </div>
 
-<div class="pro">
+<!-- <div class="pro">
 	<h5 class="trn">Quotes</h5>
 	<div class="param">
 		<div class="activate_quotes wrapper">
@@ -564,7 +566,7 @@
 
 
 	</div>
-</div>
+</div> -->
 
 <div>
 	<h5 class="trn">Search bar</h5>
@@ -634,7 +636,6 @@
 		<div class="wrapper">
 			<span class="trn">Weight</span>
 			<input id="i_weight" type="range" class="range" name="fontweight" min="100" max="800" step="100" value="400">
-			<span id="e_weight">Regular</span>
 		</div>
 
 		<hr>
@@ -642,9 +643,13 @@
 		<div class="wrapper">
 			<span class="trn">Size</span>
 			<input id="i_size" type="range" class="range" name="fontsize" min="9" max="26" value="12">
-			<span id="e_size">12</span>
 		</div>
 	</div>
+</div>
+
+<div class="pro">
+	<h5 class="trn">Custom Style</h5>
+	<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
 </div>
 
 <div>
@@ -676,24 +681,12 @@
 				<span class="trn">Greeting</span>
 				<input type="text" name="greeting" id="i_greeting" placeholder="Name" maxlength="32">
 			</div>
-
-			<hr>
-
-			<div class="wrapper">
-				<span class="trn">CSS</span>
-				<br />
-				<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
-			</div>
 		</div>
-	</div>
-</div>
 
-<div>
-	<h5 class="trn">Settings management</h5>
-	<div class="param">
+		<hr>
 
 		<div id="imp_wrapper" class="wrapper">
-			<input id="i_import" type="text" name="Import" placeholder="Paste import code">
+			<input id="i_import" type="text" name="Import" placeholder="Paste settings code">
 			<button id="submitImport" class="trn">Import</button>
 		</div>
 
@@ -710,9 +703,6 @@
 			<button id="submitReset" class="trn">Reset settings</button>
 		</div>
 	</div>
-</div>
-
-<div class="pro">
 </div>
 
 <div class="signature">

@@ -304,11 +304,9 @@ function initParams() {
 		
 		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
 		initCheckbox("i_analog", isThereData("clock", "analog"), false);
-		initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
+		/*initCheckbox("i_quotes", isThereData("quote", "enabled"), false);*/
 
-		id("e_row").innerText = (data.linksrow ? data.linksrow : "8");
-		id("e_weight").innerText = (isThereData("font", "weight") ? isThereData("font", "weight") : "Regular");
-		id("e_size").innerText = (isThereData("font", "size") ? isThereData("font", "size") : "Auto");
+		/*id("e_row").innerText = (data.linksrow ? data.linksrow : "8");*/
 	}
 
 	
@@ -552,13 +550,11 @@ function proEvents() {
 	}
 
 	id("i_weight").oninput = function() {
-		id("e_weight").innerText = this.value;
 		fontObj = {family: null, weight: this.value, size: null};
 		proFunctions({which: "font", event: fontObj});
 	}
 
 	id("i_size").oninput = function() {
-		id("e_size").innerText = this.value;
 		fontObj = {family: null, weight: null, size: this.value};
 		proFunctions({which: "font", event: fontObj});
 	}
@@ -571,9 +567,9 @@ function proEvents() {
 		proFunctions({which: "greet", event: this.value})
 	}
 
-	id("i_quotes").onchange = function() {
+	/*id("i_quotes").onchange = function() {
 		proFunctions({which: "quote", event: this.checked});
-	}
+	}*/
 
 	id("cssEditor").onkeypress = function(e) {
 		let data = {e: e, that: this};

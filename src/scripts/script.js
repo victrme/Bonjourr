@@ -1193,19 +1193,30 @@ function initBackground(storage) {
 		//reste local !!!!
 		chrome.storage.local.get(["custom", "customIndex"], (data) => {
 
-			if (data.customIndex >= 0) {
-				const cleanData = data.custom[data.customIndex].replace("data:image/jpeg;base64,", ""); //used for blob
-				imgBackground(b64toBlobUrl(cleanData));
-			} else {
-				const cleanData = data.custom[0].replace("data:image/jpeg;base64,", "");
-				imgBackground(b64toBlobUrl(cleanData));
-			}
+			//if no custom background available
+			//choose dynamic
+			if (!data.custom || data.custom.length === 0) {
 
-			changeImgIndex(data.customIndex);
-			
-			for (var i = 0; i < data.custom.length; i++) {
-				fullImage.push(data.custom[i])
+				unsplash(storage.dynamic)
+				chrome.storage.sync.set({background_type: "dynamic"})
+
+			} else {
+
+				if (data.customIndex >= 0) {
+					const cleanData = data.custom[data.customIndex].replace("data:image/jpeg;base64,", ""); //used for blob
+					imgBackground(b64toBlobUrl(cleanData));
+				} else {
+					const cleanData = data.custom[0].replace("data:image/jpeg;base64,", "");
+					imgBackground(b64toBlobUrl(cleanData));
+				}
+
+				changeImgIndex(data.customIndex);
+				
+				for (var i = 0; i < data.custom.length; i++) {
+					fullImage.push(data.custom[i])
+				}
 			}
+			
 		})
 		
 		imgCredits(null, type);
@@ -1968,7 +1979,7 @@ function proFunctions(obj) {
 		if (data !== undefined) setRows(data);
 
 		if (event) {
-			id("e_row").innerText = event;
+			//id("e_row").innerText = event;
 			setRows(event);
 			slowRange({"linksrow": parseInt(event)});
 		}
@@ -1986,8 +1997,6 @@ function proFunctions(obj) {
 
 			//input empty removes ,
 			if (val === "") id("greetings").innerText = text;
-			//console.log(text)
-			//console.log(val)
 		}
 
 		function setEvent(val) {

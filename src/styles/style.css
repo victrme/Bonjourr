@@ -1006,6 +1006,7 @@ body input, body textarea, body select, body a, body button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 34px;
 }
 
 #settings #default {
@@ -1092,14 +1093,6 @@ body input, body textarea, body select, body a, body button {
   cursor: pointer;
 }
 
-#settings .blur,
-#settings .brightness {
-  min-height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 #settings #choose_searchengine.shown {
   display: block;
 }
@@ -1156,15 +1149,11 @@ body input, body textarea, body select, body a, body button {
 }
 
 #settings #cssEditor {
-  width: 100%;
+  width: calc(100% - 2.6em);
   min-height: 4em;
   resize: vertical;
-  border-radius: 8.5px;
-  padding: .5em 0 0 .5em;
-  vertical-align: top;
-  background-color: #e3e3e5;
-  border: 0px;
-  margin-left: 10px;
+  padding: 1em 1.3em;
+  border: none;
 }
 
 #settings .signature {
@@ -1222,17 +1211,17 @@ body.dark #interface, body.autodark #interface {
   color: #eee;
 }
 
-body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link, body.dark #popup, body.autodark #popup, body.dark #popup span, body.autodark #popup span {
+body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link, body.dark #popup, body.autodark #popup, body.dark #popup span, body.autodark #popup span, #cssEditor {
   background-color: #1c1c1e;
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.dark #edit_linkContainer #edit_link #cssEditor, body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link #cssEditor {
+body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"] {
   background-color: #39383d;
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.dark #edit_linkContainer #edit_link #cssEditor:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link #cssEditor:focus {
+body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, #cssEditor:focus {
   background-color: #2c2c2f;
   color: white;
 }

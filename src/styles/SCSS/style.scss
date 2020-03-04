@@ -494,6 +494,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		min-height: 34px;
 	}
 
 	@include chooseBackground();
@@ -549,14 +550,6 @@
 	    	}
 	    }
 	}
-	
-	.blur,
-	.brightness {
-		min-height: 34px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
 
 	#choose_searchengine {
 		&.shown {
@@ -604,15 +597,11 @@
 	select.lang {transition: none;}
 
 	#cssEditor {
-		width: 100%;
+		width: calc(100% - 2.6em);
 		min-height: 4em;
 		resize: vertical;
-		border-radius: 8.5px;
-		padding: .5em 0 0 .5em;
-		vertical-align: top;
-		background-color: $inputGrey;
-		border: 0px;
-		margin-left: 10px;
+		padding: 1em 1.3em;
+		border: none;
 	}
 
 	.signature {

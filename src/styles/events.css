@@ -99,6 +99,14 @@
 }
 
 
+
+/* submitlink button */
+
+#submitlink {
+	margin-left: 1em;
+}
+
+
 /*custom background*/
 
 #custom_thumbnail {
@@ -134,9 +142,6 @@ body.autodark #settings #fileContainer:active {
   border: 1px dashed #aaa;
   background: #2f2f30; 
 }
-
-
-#settings .quality {min-height: 34px}
 
 
 #bg_tn_wrap {
@@ -194,6 +199,23 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 
 
 
+
+
+/* custom font input sizes */
+
+#i_customfont,
+#i_weight,
+#i_size {
+	width: 150px;
+}
+
+
+
+
+
+
+
+
 /*quote quick style*/
 
 #quotes_container {
@@ -236,9 +258,6 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 	width: calc(100% - 2em);
 	margin-left: 2em;
 }
-
-
-
 
 
 /* Uni Color */
