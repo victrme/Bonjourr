@@ -2149,52 +2149,65 @@ function proFunctions(obj) {
 		}
 	}
 
-	//CETTE FONCTION EST ATROCE, QU'ON ME CREVE LES YEUX
-	function hideElem(data, elem) {
+	function hideElem(data, e) {
 
-		function eventControl() {
+		//fait rien a l'init
 
-			const classType = (elem === "showSettings" ? "distract" : "hidden")
-			const hiddenTest = a => has(a, classType)
+		if (e === undefined) return false
 
-			//pricipale, toggle elements hidden / ""
-			if (hiddenTest(elem)) attr(id(elem), "")
-			else attr(id(elem), classType)
 
-			//time block hidden control
-			if (elem === "time-container" || elem === "date") {
-
-				const allHidden = hiddenTest("time-container") && hiddenTest("date")
-				attr(id("time"), (allHidden ? "hidden" : ""))
-			}
-
-			//main block (weather) hidden control
-			else if (elem === "greetings" || elem === "weather_desc" || elem === "w_icon") {
-
-				const allHidden = hiddenTest("greetings") && hiddenTest("weather_desc") && hiddenTest("w_icon")
-				attr(id("main"), (allHidden ? "hidden" : ""))
-			}
-
-			chrome.storage.sync.get("hide", (sync) => {
-
-				if (sync.hide) sync.hide[elem] = !hiddenTest(elem);
-				else sync.hide = {}
-				
-				console.log(sync.hide);
-
-				chrome.storage.sync.set({hide: sync.hide});
-			})
+		const obj = {
+			parent: e.parentElement,
+			dom: id(e.getAttribute('data')),
+			src: e.getAttribute('data'),
+			not: e.getAttribute('class') !== "clicked" //le toggle
 		}
 
-		function initiation() {
+		const css = (obj.not ? "none" : "flex");
+		let toggleWrap = true;
+		
 
-			for (dom in data) {
-				if (data[dom] === false) attr(id(dom), "hidden");
-			}
+		//toggle l'opacité du dom concerné
+
+		attr(e, (obj.not ? "clicked" : ""))
+		obj.dom.style.opacity = (obj.not ? "0" : "1")
+
+
+		
+		//sort tout les boutons de la categorie pour pouvoir suppr le wrap
+
+		if (obj.not) {
+
+			const all = obj.parent.querySelectorAll("button")
+
+			for (let r of all)
+				if (r.getAttribute('class') !== "clicked")
+					toggleWrap = false;
 		}
 
-		if (data !== undefined) initiation()
-		if (elem !== undefined) eventControl()
+
+		//toogle les wrap en fonctions du bouton cliqué
+
+		if (toggleWrap) {
+
+			switch (obj.src) {
+				case "time-container":
+				case "date":
+					id("time").style.display = css
+					break
+
+				case "greetings":
+				case "weather_desc":
+				case "w_icon":
+					id("main").style.display = css
+					break
+
+				case "linkblocks":
+					obj.dom.style.display = css
+					break
+
+			}
+		}
 	}
 
 	switch (obj.which) {

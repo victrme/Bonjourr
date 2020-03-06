@@ -241,15 +241,27 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 /*hide elems*/
 
 #hideelem {
+	margin-top: 1em;
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: column;
+	justify-content: center;
+}
+
+#hideelem > div {
+	border: 1px solid white;
+    border-radius: 8px;
+    margin: .5em auto;
 }
 
 #hideelem button {
-	width: 50%;
     text-align: left;
-    padding: .5em;
+    color: white;
+    margin: .5em .2em;
+    text-align: center;
+    font-size: small;
 }
+
+#hideelem button.clicked {opacity: .5}
 
 
 

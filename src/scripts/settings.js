@@ -577,10 +577,10 @@ function proEvents() {
 	}
 
 
-	for(e of id("hideelem").children) {
+	for(e of id("hideelem").querySelectorAll("button")) {
 
 		e.onmouseup = function() {
-			proFunctions({which: "hide", event: this.getAttribute("data")})
+			proFunctions({which: "hide", event: this})
 		}
 	}
 }
