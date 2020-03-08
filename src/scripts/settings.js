@@ -305,6 +305,15 @@ function initParams() {
 		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
 		initCheckbox("i_analog", isThereData("clock", "analog"), false);
 		/*initCheckbox("i_quotes", isThereData("quote", "enabled"), false);*/
+
+
+		//hide elems
+		const all = id("hideelem").querySelectorAll("button")
+
+		for (var i = 0; i < all.length; i++)
+			if (all[i].getAttribute("data") === data.hide[i])
+				proFunctions({which: "hide", event: all[i], sett: true})
+		
 	}
 
 	

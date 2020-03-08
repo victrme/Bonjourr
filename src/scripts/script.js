@@ -2149,90 +2149,134 @@ function proFunctions(obj) {
 		}
 	}
 
-	function hideElem(data, e) {
+	function hideElem(data, e, settingsinit) {
 
-		if (e === undefined) return false
+		let object = {}
 
+		if (e === undefined) {
 
-		let obj = {
-			parent: e.parentElement,
-			dom: id(e.getAttribute('data')),
-			src: e.getAttribute('data'),
-			not: e.getAttribute('class') !== "clicked" //le toggle
+			for (let d of data) {
+
+				//le nouveau
+				object = {
+					dom: id(d),
+					src: d,
+					not: true
+				}
+
+				principale(object)
+			}
+
+		} else {
+
+			//object qu'on connait
+			object = {
+				parent: e.parentElement,
+				dom: id(e.getAttribute('data')),
+				src: e.getAttribute('data'),
+				not: e.getAttribute('class') !== "clicked" //le toggle
+			}
+
+			principale(object)
+			eventStorage()
 		}
-		let toggleWrap = true;
-		let toggleFunc = function(elem) {
 
-			if (obj.not) {
+		function principale(objet) {
 
-				id(elem).style.display = "none"
-				attr(obj.parent, "allhidden")
+			let toggleWrap = true;
+			let toggleWrapFunc = function(elem) {
 
-			} else {
+				id(elem).style.display = (objet.not ? "none" : "flex")
+				if (e!==undefined) attr(objet.parent, (objet.not ? "allhidden" : ""))
+			}
+			
 
-				id(elem).style.display = "flex"
-				attr(obj.parent, "")
+			//toggle l'opacité du dom concerné
+
+			if (e !== undefined) attr(e, (objet.not ? "clicked" : ""))
+			objet.dom.style.opacity = (objet.not ? "0" : "1")
+
+
+			//si event
+			//si un bouton n'est pas cliqué dans une catégorie
+			//ne pas toggle le wrap
+			if (objet.not && !data) {
+
+				let all = objet.parent.querySelectorAll("button")
+
+				for (let r of all)
+					if (r.getAttribute('class') !== "clicked")
+						toggleWrap = false;
+			}
+
+			//si init
+			//si tout n'est pas caché dans une catégorie
+			//ne pas toggle le wrap
+			else if (data) {
+
+				//wtf is this
+
+				if (objet.src === "time-container"
+					|| objet.src === "date")
+
+					if (!data.includes("time-container")
+						|| !data.includes("date"))
+
+						toggleWrap = false
+
+				
+				if (objet.src === "greetings"
+					|| objet.src === "weather_desc"
+					|| objet.src === "w_icon")
+
+					if (!data.includes("greetings")
+						|| !data.includes("weather_desc")
+						|| !data.includes("w_icon"))
+
+						toggleWrap = false
+			}
+
+
+			//toogle les wrap en fonctions du bouton cliqué
+
+			if (toggleWrap) {
+
+				switch (objet.src) {
+					case "time-container":
+					case "date":
+						toggleWrapFunc("time")
+						break
+
+					case "greetings":
+					case "weather_desc":
+					case "w_icon":
+						toggleWrapFunc("main")
+						break
+
+					/*case "linkblocks":
+						toggleWrapFunc("linkblocks")
+						break*/
+
+				}
 			}
 		}
-		
 
-		//toggle l'opacité du dom concerné
+		function eventStorage() {
+			//c'est un event, on store
+			if (e !== undefined && !settingsinit) {
 
-		attr(e, (obj.not ? "clicked" : ""))
-		obj.dom.style.opacity = (obj.not ? "0" : "1")
+				//parse through les dom a masquer, les sauvegarde
+				//liste de {id du dom a masquer, button a init}
 
+				let all = id("hideelem").querySelectorAll("button");
+				let toStore = []
 
-		
-		//sort tout les boutons de la categorie pour pouvoir suppr le wrap
+				for (let r of all)
+					if (r.getAttribute("class") === "clicked")
+						toStore.push(r.getAttribute('data'))
 
-		if (obj.not) {
-
-			let all = obj.parent.querySelectorAll("button")
-
-			for (let r of all)
-				if (r.getAttribute('class') !== "clicked")
-					toggleWrap = false;
-		}
-
-
-		//toogle les wrap en fonctions du bouton cliqué
-
-		if (toggleWrap) {
-
-			switch (obj.src) {
-				case "time-container":
-				case "date":
-					toggleFunc("time")
-					break
-
-				case "greetings":
-				case "weather_desc":
-				case "w_icon":
-					toggleFunc("main")
-					break
-
-				/*case "linkblocks":
-					toggleFunc("linkblocks")
-					break*/
-
+				chrome.storage.sync.set({hide: toStore})
 			}
-		}
-
-
-		//c'est un event, on store
-		if (e !== undefined) {
-
-			//parse through les dom a masquer, les sauvegarde
-			//liste de {id du dom a masquer, button a init}
-
-			let all = id("hideelem").querySelectorAll("button");
-			let toStore = []
-
-			for (let r of all)
-				if (r.getAttribute("class") === "clicked")
-					toStore.push(r.getAttribute('data'))
-
-			chrome.storage.sync.set({hide: toStore})
 		}
 	}
 
@@ -2258,7 +2302,7 @@ function proFunctions(obj) {
 			break
 
 		case "hide":
-			hideElem(obj.data, obj.event)
+			hideElem(obj.data, obj.event, obj.sett)
 			break
 	}
 }
