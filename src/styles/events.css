@@ -261,6 +261,10 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
     font-size: small;
 }
 
+#hideelem button,
+#hideelem > div {transition: all .1s}
+
+#hideelem > div.allhidden {border: 1px solid #777;}
 #hideelem button.clicked {opacity: .5}
 
 

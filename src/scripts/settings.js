@@ -305,8 +305,6 @@ function initParams() {
 		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
 		initCheckbox("i_analog", isThereData("clock", "analog"), false);
 		/*initCheckbox("i_quotes", isThereData("quote", "enabled"), false);*/
-
-		/*id("e_row").innerText = (data.linksrow ? data.linksrow : "8");*/
 	}
 
 	

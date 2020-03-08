@@ -2151,20 +2151,29 @@ function proFunctions(obj) {
 
 	function hideElem(data, e) {
 
-		//fait rien a l'init
-
 		if (e === undefined) return false
 
 
-		const obj = {
+		let obj = {
 			parent: e.parentElement,
 			dom: id(e.getAttribute('data')),
 			src: e.getAttribute('data'),
 			not: e.getAttribute('class') !== "clicked" //le toggle
 		}
-
-		const css = (obj.not ? "none" : "flex");
 		let toggleWrap = true;
+		let toggleFunc = function(elem) {
+
+			if (obj.not) {
+
+				id(elem).style.display = "none"
+				attr(obj.parent, "allhidden")
+
+			} else {
+
+				id(elem).style.display = "flex"
+				attr(obj.parent, "")
+			}
+		}
 		
 
 		//toggle l'opacité du dom concerné
@@ -2178,7 +2187,7 @@ function proFunctions(obj) {
 
 		if (obj.not) {
 
-			const all = obj.parent.querySelectorAll("button")
+			let all = obj.parent.querySelectorAll("button")
 
 			for (let r of all)
 				if (r.getAttribute('class') !== "clicked")
@@ -2193,46 +2202,64 @@ function proFunctions(obj) {
 			switch (obj.src) {
 				case "time-container":
 				case "date":
-					id("time").style.display = css
+					toggleFunc("time")
 					break
 
 				case "greetings":
 				case "weather_desc":
 				case "w_icon":
-					id("main").style.display = css
+					toggleFunc("main")
 					break
 
-				case "linkblocks":
-					obj.dom.style.display = css
-					break
+				/*case "linkblocks":
+					toggleFunc("linkblocks")
+					break*/
 
 			}
+		}
+
+
+		//c'est un event, on store
+		if (e !== undefined) {
+
+			//parse through les dom a masquer, les sauvegarde
+			//liste de {id du dom a masquer, button a init}
+
+			let all = id("hideelem").querySelectorAll("button");
+			let toStore = []
+
+			for (let r of all)
+				if (r.getAttribute("class") === "clicked")
+					toStore.push(r.getAttribute('data'))
+
+			chrome.storage.sync.set({hide: toStore})
 		}
 	}
 
 	switch (obj.which) {
 		case "font":
-		customFont(obj.data, obj.event)
-		break
+			customFont(obj.data, obj.event)
+			break
 
 		case "css":
-		customCss(obj.data, obj.event)
-		break
+			customCss(obj.data, obj.event)
+			break
 
 		case "row":
-		linksrow(obj.data, obj.event)
-		break
+			linksrow(obj.data, obj.event)
+			break
 
 		case "greet":
-		greeting(obj.data, obj.event)
-		break
+			greeting(obj.data, obj.event)
+			break
 
 		case "quote":
-		//quoting(obj.data, obj.event)
-		break
+			quoting(obj.data, obj.event)
+			break
 
 		case "hide":
-		hideElem(obj.data, obj.event)
+			hideElem(obj.data, obj.event)
+			break
 	}
 }
 
@@ -2251,13 +2278,13 @@ function checkifpro(data) {
 	encode(localStorage.login).then((a) => {
 		
 		if (a === atob(hash)) {
-					
+			
+			proFunctions({which: "hide", data: data.hide})	
 			proFunctions({which: "font", data: data.font})
 			proFunctions({which: "css", data: data.css})
 			proFunctions({which: "row", data: data.linksrow})
 			proFunctions({which: "greet", data: data.greeting})
-			proFunctions({which: "quote", data: data.quote})
-			proFunctions({which: "hide", data: data.hide})
+			//proFunctions({which: "quote", data: data.quote})	
 
 			sessionStorage.pro = "true"
 		}
