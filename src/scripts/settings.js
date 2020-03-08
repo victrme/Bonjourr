@@ -310,10 +310,13 @@ function initParams() {
 		//hide elems
 		const all = id("hideelem").querySelectorAll("button")
 
-		for (var i = 0; i < all.length; i++)
-			if (all[i].getAttribute("data") === data.hide[i])
-				proFunctions({which: "hide", event: all[i], sett: true})
-		
+		//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
+
+		for (let a of all) 
+			for (let b of data.hide) 
+				if (a.getAttribute("data") === b)
+					proFunctions({which: "hide", event: a, sett: true})
+
 	}
 
 	
