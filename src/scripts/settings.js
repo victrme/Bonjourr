@@ -188,6 +188,7 @@ function initParams() {
 	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
 	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
 
+	initInput("i_type", data.background_type, "dynamic");
 	initInput("i_blur", data.background_blur, 15);
 	initInput("i_bright", data.background_bright, .7);
 	initInput("i_dark", data.dark, "disable");
@@ -240,17 +241,23 @@ function initParams() {
 	
 
 	//ajoute les thumbnails au custom background
-	chrome.storage.local.get(["custom"], (data) => {
 
-		let cleanData;
-				
-		for (var i = 0; i < data.custom.length; i++) {
-			cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
-			addThumbnails(cleanData, i)
-		}
+	setTimeout(function() {
+		chrome.storage.local.get(["custom"], (data) => {
 
-		fullImage = data.custom
-	})
+			let cleanData;
+					
+			for (var i = 0; i < data.custom.length; i++) {
+				cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
+				addThumbnails(cleanData, i)
+			}
+
+			fullImage = data.custom
+
+			id("custom").style.opacity = 1
+		})
+	}, 200)
+	
 	
 
 	//weather settings

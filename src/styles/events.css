@@ -19,7 +19,8 @@
 #greetings.hidden,
 #weather_desc.hidden,
 #w_icon.hidden,
-#weather_desc > div {
+#weather_desc > div,
+#custom {
 	opacity: 0;
 	transition: opacity .1s;
 }

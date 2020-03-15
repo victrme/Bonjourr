@@ -2172,10 +2172,6 @@ function proFunctions(obj) {
 			greeting(obj.data, obj.event)
 			break
 
-		case "quote":
-			quoting(obj.data, obj.event)
-			break
-
 		case "hide":
 			hideElem(obj.data, obj.event, obj.sett)
 			break
@@ -2202,11 +2198,12 @@ function checkifpro(data) {
 			proFunctions({which: "font", data: data.font})
 			proFunctions({which: "css", data: data.css})
 			proFunctions({which: "row", data: data.linksrow})
-			proFunctions({which: "greet", data: data.greeting})
-			//proFunctions({which: "quote", data: data.quote})	
+			proFunctions({which: "greet", data: data.greeting})	
 
 			sessionStorage.pro = "true"
-		}
+		} else
+			sessionStorage.removeItem("pro")
+		
 	})
 }
 
@@ -2250,7 +2247,7 @@ chrome.storage.sync.get(null, (data) => {
 	searchbar(null, null, data);
 
 	//init profunctions
-	checkifpro(data)
+	//checkifpro(data)
 
 	//review popup
 	showPopup(data.reviewPopup);
