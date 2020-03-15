@@ -4,16 +4,13 @@
 	<div class="param">
 		<div class="link_input_wrap">
 			
-			<div style="display: flex; align-items: center;">
+			<div>
 				<div>
 					<input id="i_title" type="text" name="title" placeholder="Title">
 					<input id="i_url" type="text" name="url" placeholder="URL">
 				</div>
 				<button id="submitlink" class="trn">Add</button>
 			</div>
-			
-			<!-- <li class="help_sentence trn">Right click on the icons to Edit</li>
-			<li class="help_sentence trn">Drag and drop icons to rearrange</li> -->
 		</div>
 
 		<hr>
@@ -49,7 +46,6 @@
 			<select id="i_type" class="theme">
 				<option value="dynamic" class="trn">Dynamic</option>
 				<option value="custom" class="trn">Custom</option>
-				<option value="unicolor" class="trn">Couleur Unie</option>
 			</select>
 		</div>
 
@@ -74,39 +70,20 @@
 					<input id="i_bgfile" type="file" name="background_file">
 				</label>
 			</div>
-
-			<!-- <hr class="pro" />
-
-			<div class="quality wrapper pro">
-				<span class="trn">Quality</span>
-				<input id="i_quality" type="range" class="range" name="quality" min="0.1" max="1" step="0.1" value="1">
-				<span id="e_quality">100%</span>
-			</div> -->
-		</div>
-
-		<div id="unicolor">
-			
-			<div id="palette"></div>
-
-			<div>
-				<div id="colorpreview"></div>
-				<input id="hexa" type="text" name="">	
-			</div>
-
 		</div>
 
 		<hr>	
 
 		<div class="wrapper">
 			<span class="trn">Blur intensity</span>
-			<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="25" step="1">
+			<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="0" step="1">
 		</div>
 		
 		<hr>
 
 		<div class="wrapper">
 			<span class="trn">Brightness</span>
-			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value="1" step=".01">
+			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value=".7" step=".01">
 		</div>
 
 		<hr>
@@ -534,47 +511,6 @@
 		</div>
 	</div>
 </div>
-
-<!-- <div class="pro">
-	<h5 class="trn">Quotes</h5>
-	<div class="param">
-		<div class="activate_quotes wrapper">
-			<span class="trn">Enable</span>
-			<div>
-				<label class="switch">
-					<input id="i_quotes" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
-		<hr>
-
-		<div class="wrapper">
-			<span class="trn">Quote type</span>
-			<select disabled="" id="i_quoteType" class="choose_search">
-				<option value="inspi">Inspirational</option>
-				<option value="jokes">Jokes</option>
-				<option value="inspirobot">Inspirobot</option>
-				<option value="all">All of the above</option>
-			</select>
-		</div>
-
-		<hr>
-
-		<div class="wrapper">
-			<span class="trn">Frequency</span>
-			<select disabled="" id="i_quoteFreq">
-				<option value="tabs" class="trn">Every tab</option>
-				<option value="hour" class="trn">Every hour</option>
-				<option value="day" class="trn">Every day</option>
-				<option value="pause" class="trn">Pause</option>
-			</select>
-		</div>
-
-
-	</div>
-</div> -->
 
 <div>
 	<h5 class="trn">Search bar</h5>

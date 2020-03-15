@@ -1211,7 +1211,7 @@ body.dark #interface, body.autodark #interface {
   color: #eee;
 }
 
-body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link, body.dark #popup, body.autodark #popup, body.dark #popup span, body.autodark #popup span, #cssEditor {
+body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link, body.dark #popup, body.autodark #popup, body.dark #popup span, body.autodark #popup span, body.dark #cssEditor, body.autodark #cssEditor {
   background-color: #1c1c1e;
   color: white;
 }
@@ -1221,7 +1221,7 @@ body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_lin
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, #cssEditor:focus {
+body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, body.dark #cssEditor:focus, body.autodark #cssEditor:focus {
   background-color: #2c2c2f;
   color: white;
 }

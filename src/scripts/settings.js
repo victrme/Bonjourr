@@ -2,97 +2,9 @@ function selectBackgroundType(cat) {
 
 	id("dynamic").style.display = "none";
 	id("custom").style.display = "none";
-	id("unicolor").style.display = "none";
 	id(cat).style.display = "block";
 
 	if (cat === "dynamic") unsplash()
-	else if (cat === "unicolor") {
-
-		// Canvas implementation for modern browsers
-		const preview = document.getElementById("colorpreview")
-		const input = document.getElementById("hexa")
-		var canvas = document.createElement('canvas');
-		var ctx = canvas.getContext('2d');
-
-		var drawFunc = function (width, height, type) {
-			canvas.width = width;
-			canvas.height = height;
-
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-			var hGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-			var vGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-
-			hGrad.addColorStop(0 / 6, '#F00');
-			hGrad.addColorStop(1 / 6, '#FF0');
-			hGrad.addColorStop(2 / 6, '#0F0');
-			hGrad.addColorStop(3 / 6, '#0FF');
-			hGrad.addColorStop(4 / 6, '#00F');
-			hGrad.addColorStop(5 / 6, '#F0F');
-			hGrad.addColorStop(6 / 6, '#F00');
-
-			ctx.fillStyle = hGrad;
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-			vGrad.addColorStop(0, 'rgba(0,0,0,0)');
-			vGrad.addColorStop(1, 'rgba(0,0,0,1)');
-			
-			ctx.fillStyle = vGrad;
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-		};
-
-		drawFunc(128, 64);
-		let rgba = [0, 0, 0];
-		
-		canvas.onmouseover = function() {
-
-			this.onmousemove = function(e) {
-
-				if (true) {}
-
-				let h = (e.offsetY * 4);
-				let w = e.offsetX;
-				let wcat = Math.floor(w / 21); //cat is 21px wide
-
-				//module en 7 categories, et multiplie jusqua 255
-				let modulated = (w % 21) * 12;
-
-				//red
-				if (wcat === 0) rgba = [255, modulated, 0]; 
-				//yellow
-				else if (wcat === 1) rgba = [255 - modulated, 255, 0]; 
-				//green
-				else if (wcat === 2) rgba = [0, 255, modulated]; 
-				//indigo
-				else if (wcat === 3) rgba = [0, 255 - modulated, 255]; 
-				//blue
-				else if (wcat === 4) rgba = [modulated, 0, 255];
-				//purple
-				else if (wcat === 5) rgba = [255, 0, 255 - modulated];
-				//lastred
-				else if (wcat === 6) rgba = [255, 0, 0];
-				
-
-				const negativeControl = a => (a < 0 ? 0 : a);
-
-
-				let colors = 'rgb('
-					+ negativeControl(rgba[0] - h) + ', '
-					+ negativeControl(rgba[1] - h) + ', '
-					+ negativeControl(rgba[2] - h) + ')';
-
-				colorpreview.style.background = colors;
-				input.value = colors;
-			} 
-
-			this.onmouseup = function(e) {
-				console.log(rgba, "as been chosen")
-				document.body.style.background = input.value;
-			}
-		}
-
-		document.getElementById('palette').appendChild(canvas)
-	}
 
 	chrome.storage.sync.set({"background_type": cat});
 }
@@ -276,8 +188,8 @@ function initParams() {
 	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
 	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
 
-	initInput("i_blur", data.background_blur, 25);
-	initInput("i_bright", data.background_bright, 1);
+	initInput("i_blur", data.background_blur, 15);
+	initInput("i_bright", data.background_bright, .7);
 	initInput("i_dark", data.dark, "disable");
 	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
 	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
@@ -296,15 +208,14 @@ function initParams() {
 	if (sessionStorage.pro === "true") {
 
 		initInput("i_row", data.linksrow, 8);
-		initInput("i_customfont", isThereData("font", "family"), false);
-		initInput("i_weight", isThereData("font", "weight"), "auto");
-		initInput("i_size", isThereData("font", "size"), "auto");
+		initInput("i_customfont", isThereData("font", "family"), "");
+		initInput("i_weight", isThereData("font", "weight"), 400);
+		initInput("i_size", isThereData("font", "size"), 12);
 		initInput("i_greeting", data.greeting, "");
 		initInput("cssEditor", data.css, "");
 		
 		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
 		initCheckbox("i_analog", isThereData("clock", "analog"), false);
-		/*initCheckbox("i_quotes", isThereData("quote", "enabled"), false);*/
 
 
 		//hide elems
@@ -312,10 +223,11 @@ function initParams() {
 
 		//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
 
-		for (let a of all) 
-			for (let b of data.hide) 
-				if (a.getAttribute("data") === b)
-					proFunctions({which: "hide", event: a, sett: true})
+		if (data.hide)
+			for (let a of all) 
+				for (let b of data.hide) 
+					if (a.getAttribute("data") === b)
+						proFunctions({which: "hide", event: a, sett: true})
 
 	}
 
@@ -339,6 +251,7 @@ function initParams() {
 
 		fullImage = data.custom
 	})
+	
 
 	//weather settings
 	if (data.weather) {
@@ -346,8 +259,15 @@ function initParams() {
 		let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
 		id("i_city").setAttribute("placeholder", cityPlaceholder);
 
-		if (data.weather.location) id("sett_city").setAttribute("class", "city hidden");
+		if (data.weather.location)
+			id("sett_city").setAttribute("class", "city hidden")
+
+	} else {
+		id("sett_city").setAttribute("class", "city hidden")
+		id("i_geol").checked = true
 	}
+		
+	
 	
 	//searchbar display settings 
 	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
@@ -576,10 +496,6 @@ function proEvents() {
 	id("i_greeting").onkeyup = function() {
 		proFunctions({which: "greet", event: this.value})
 	}
-
-	/*id("i_quotes").onchange = function() {
-		proFunctions({which: "quote", event: this.checked});
-	}*/
 
 	id("cssEditor").onkeypress = function(e) {
 		let data = {e: e, that: this};

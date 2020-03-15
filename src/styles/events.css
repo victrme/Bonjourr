@@ -18,7 +18,8 @@
 #date.hidden,
 #greetings.hidden,
 #weather_desc.hidden,
-#w_icon.hidden {
+#w_icon.hidden,
+#weather_desc > div {
 	opacity: 0;
 	transition: opacity .1s;
 }
@@ -100,7 +101,12 @@
 
 
 
-/* submitlink button */
+/* submitlink */
+
+.link_input_wrap > div {
+	display: flex;
+	align-items: center;
+}
 
 #submitlink {
 	margin-left: 1em;
@@ -213,31 +219,6 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 
 
 
-
-
-
-/*quote quick style*/
-
-#quotes_container {
-	display: none;
-	max-width: 70%;
-	width: 500px;
-	margin: 0 auto;
-	font-size: 1.5em;
-}
-
-#quotes_container.shown {
-	display: block;
-}
-
-#quoteAuthor {
-	color: #bbb;
-	font-size: .9em;
-}
-
-
-
-
 /*hide elems*/
 
 #hideelem {
@@ -248,18 +229,19 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 }
 
 #hideelem > div {
-	border: 1px solid white;
+	border: 1px solid #4d4d52;
     border-radius: 8px;
     margin: .5em auto;
 }
 
 #hideelem button {
     text-align: left;
-    color: white;
+    color: #4d4d52;
     margin: .5em .2em;
     text-align: center;
     font-size: small;
 }
+
 
 #hideelem button,
 #hideelem > div {transition: all .1s}
@@ -268,24 +250,16 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 #hideelem button.clicked {opacity: .5}
 
 
+body.dark #hideelem button,
+body.autodark #hideelem button {color: white}
+
+body.dark #hideelem > div,
+body.autodark #hideelem > div {border: 1px solid white}
+
 
 /* sbparam needs it lol*/
+
 #settings #i_sbparams {
 	width: calc(100% - 2em);
 	margin-left: 2em;
-}
-
-
-/* Uni Color */
-
-#colorpreview {
-	width: 128px;
-	height: 32px;
-}
-
-#hexa {
-	margin-top: 5px;
-	width: 128px;
-	border: none;
-	background: #eee;
 }

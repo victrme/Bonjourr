@@ -750,6 +750,10 @@ function quickLinks(event, that, initStorage) {
 
 function weather(event, that, initStorage) {
 
+	const dom_temp_max = id("temp_max")
+	const dom_temp_max_wrap = id("temp_max_wrap")
+	const dom_first_desc = id("weather_desc").children[0]
+
 	function cacheControl(storage) {
 
 		let now = Math.floor((new Date()).getTime() / 1000);
@@ -769,17 +773,19 @@ function weather(event, that, initStorage) {
 				//si la langue a été changé, suppr
 				if (sessionStorage.lang) sessionStorage.removeItem("lang");
 
-			} else {
-
+			} else
 				dataHandling(param.lastState);
-			}
+			
 
 			//high ici
 			if (storage.weather && storage.weather.fcDay === (new Date).getDay()) {
-				id("temp_max").innerText = storage.weather.fcHigh + "°";
-			} else {
+
+				dom_temp_max.innerText = storage.weather.fcHigh + "°"
+				dom_temp_max_wrap.style.opacity = 1
+
+			} else
 				request(storage.weather, "forecast");
-			}
+			
 
 		} else {
 
@@ -864,12 +870,11 @@ function weather(event, that, initStorage) {
 		function forecastResponse(parameters, response) {
 
 			function findHighTemps(d) {
-			
+				
 				let i = 0;
 				let newDay = new Date(d.list[0].dt_txt).getDay();
 				let currentDay = newDay;
-				let arr = [];
-				
+				let arr = [];			
 
 				//compare la date toute les 3h (list[i])
 				//si meme journée, rajouter temp max a la liste
@@ -896,7 +901,8 @@ function weather(event, that, initStorage) {
 			param.fcDay = fc[1];
 			chrome.storage.sync.set({"weather": param});
 
-			id("temp_max").innerText = param.fcHigh + "°";
+			dom_temp_max.innerText = param.fcHigh + "°";
+			dom_temp_max_wrap.style.opacity = 1;
 		}
 
 		let url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
@@ -996,8 +1002,9 @@ function weather(event, that, initStorage) {
 				dtemp = wtemp + ".";
 			}
 
-			id("temp").innerText = dtemp;
-			id("widget_temp").innerText = wtemp;
+			id("temp").innerText = dtemp
+			id("widget_temp").innerText = wtemp
+			dom_first_desc.style.opacity = 1
 		}
 
 		getDescription();
@@ -1006,17 +1013,19 @@ function weather(event, that, initStorage) {
 	
 	function submissionError(error) {
 
+		const dom_wrongCity = id("wrongCity")
+
 		//affiche le texte d'erreur
-		id("wrongCity").innerText = error;
-		id("wrongCity").style.display = "block";
-		id("wrongCity").style.opacity = 1;
+		dom_wrongCity.innerText = error;
+		dom_wrongCity.style.display = "block";
+		dom_wrongCity.style.opacity = 1;
 
 		//l'enleve si le user modifie l'input
 		id("i_city").onkeydown = function() {
 
-			id("wrongCity").style.opacity = 0;
+			dom_wrongCity.style.opacity = 0;
 			setTimeout(function() {
-				id("wrongCity").style.display = "none";
+				dom_wrongCity.style.display = "none";
 			}, 200);
 		}
 	}
@@ -1186,7 +1195,6 @@ function imgBackground(val) {
 function initBackground(storage) {
 
 	let type = storage.background_type || "dynamic";
-	let image = storage.background_image || "";
 
 	if (type === "custom") {
 
@@ -1202,39 +1210,31 @@ function initBackground(storage) {
 
 			} else {
 
-				if (data.customIndex >= 0) {
-					const cleanData = data.custom[data.customIndex].replace("data:image/jpeg;base64,", ""); //used for blob
-					imgBackground(b64toBlobUrl(cleanData));
-				} else {
-					const cleanData = data.custom[0].replace("data:image/jpeg;base64,", "");
-					imgBackground(b64toBlobUrl(cleanData));
-				}
+				//apply chosen custom background
 
+				const cleanData = (data.customIndex >= 0 ?
+					data.custom[data.customIndex].replace("data:image/jpeg;base64,", "")
+					: data.custom[0].replace("data:image/jpeg;base64,", ""))
+
+				imgBackground(b64toBlobUrl(cleanData));
 				changeImgIndex(data.customIndex);
 				
-				for (var i = 0; i < data.custom.length; i++) {
+				for (var i = 0; i < data.custom.length; i++)
 					fullImage.push(data.custom[i])
-				}
 			}
-			
 		})
 		
 		imgCredits(null, type);
 	}
-	else if (type === "dynamic") {
-
+	else if (type === "dynamic")
 		unsplash(storage.dynamic)
-	}
-	else {
 
-		imgBackground(image);
-		imgCredits(image, type);
+	else
 		unsplash(null, null, true); //on startup
-	}
 
 
-	let blur = (Number.isInteger(storage.background_blur) ? storage.background_blur : 25);
-	let bright = (!isNaN(storage.background_bright) ? storage.background_bright : 1);
+	let blur = (Number.isInteger(storage.background_blur) ? storage.background_blur : 15);
+	let bright = (!isNaN(storage.background_bright) ? storage.background_bright : .7);
 
 	filter("init", [blur, bright]);
 }
@@ -2021,139 +2021,14 @@ function proFunctions(obj) {
 		if (event !== undefined) setEvent(event)
 	}
 
-	function quoting(data, event) {
-
-		function displayText(obj) {
-
-			id('quote').innerText = obj.main;
-			id('quoteAuthor').innerText = "- " + obj.author;
-			attr(id("quotes_container"), obj.enabled ? "shown" : "");
-		}
-
-		function requestQuote() {
-			/*let xhr = new XMLHttpRequest();
-			xhr.withCredentials = true;
-
-			xhr.addEventListener("readystatechange", function () {
-				if (this.readyState === this.DONE) {
-					
-					let r = this.responseText;
-
-					let respObj = {
-						main: r.contents.quotes[0].quote,
-						author: r.contents.quotes[0].author,
-						last: Date.now()
-					}
-
-					console.log(r);
-					displayText(respObj);
-				}
-			});
-
-			xhr.open("POST", 'https://quotes.rest/qod');
-			xhr.setRequestHeader("Accept", "application/json");
-
-			xhr.send();*/
-
-			//On va faire comme si la requete marchait
-
-			let r = {
-				"success": {
-					"total": 1
-				},
-				"contents": {
-					"quotes": [
-					{
-						"quote": "Do not worry if you have built your castles in the air. They are where they should be. Now put the foundations under them.",
-						"length": "122",
-						"author": "Henry David Thoreau",
-						"tags": [
-							"dreams",
-							"inspire",
-							"worry"
-						],
-						"category": "inspire",
-						"date": "2016-11-21",
-						"title": "Inspiring Quote of the day",
-						"background": "https://theysaidso.com/img/bgs/man_on_the_mountain.jpg",
-						"id": "mYpH8syTM8rf8KFORoAJmQeF"
-					}]
-				}
-			}
-
-			let respObj = {
-				enabled: true,
-				main: r.contents.quotes[0].quote,
-				author: r.contents.quotes[0].author,
-				last: Date.now()
-			}
-
-			console.log(r);
-			displayText(respObj);
-			chrome.storage.sync.set({quote: respObj});
-		}
-
-		function storageControl(obj) {
-
-			if (!obj) {
-
-				//first time quoting
-				requestQuote();
-			
-			} else {
-				//theres a storage
-
-				if (Date.now() > obj.last + 1000*60*60) {
-					//storage older than an hour
-					requestQuote()
-				}
-				else {
-					//storage too young, use storage
-					displayText(obj);
-				}
-			}
-		}
-
-		if (data) storageControl(data)
-
-		else {
-
-			chrome.storage.sync.get("quote", (sync) => {
-
-				if (event !== null) {
-
-					if (event === true) {
-
-						if (sync.quote) {
-							sync.quote.enabled = true;
-							storageControl(sync.quote);
-						} else {
-							storageControl(null);
-						}
-						
-					}
-					else if (event === false) {
-						sync.quote.enabled = false;
-					}
-
-					//show/hides container
-					//save to storage
-					attr(id("quotes_container"), event ? "shown" : "");
-					chrome.storage.sync.set({quote: sync.quote});
-
-				} else {
-
-					storageControl(sync.quote);
-				}
-			})
-		}
-	}
-
 	function hideElem(data, e, settingsinit) {
 
 		let object = {}
 
 		if (e === undefined) {
+
+			//quit on first startup
+			if (!data) return false
 
 			for (let d of data) {
 
