@@ -295,11 +295,12 @@
 				}
 
 				&:hover {
-					opacity: .8;
+					text-decoration: underline;
 				}
 
 				&:active {
-					opacity: .6;
+					text-decoration: underline;
+					opacity: .8;
 				}
 			}
 		}
@@ -322,11 +323,12 @@
 			}
 
 			&:hover {
-				opacity: .8;
+				text-decoration: underline;
 			}
 
 			&:active {
-				opacity: .6;
+				text-decoration: underline;
+				opacity: .8;
 			}
 		}
 	}
@@ -654,11 +656,6 @@
 			}
 		}
 	}
-
-	/*&.shown {
-		right: 0;
-		box-shadow: 0px 1px 40px 1.5px rgba(0, 0, 0, 0.5);
-	}*/
 }
 
 @import 'media';

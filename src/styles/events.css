@@ -113,6 +113,11 @@
 	margin-left: 1em;
 }
 
+#settings a:hover,
+#settings button:hover {
+  text-decoration: underline
+}
+
 
 /*custom background*/
 

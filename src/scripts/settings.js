@@ -106,12 +106,7 @@ function settingsEvents() {
 	}
 
 	id("i_usdate").onchange = function() {
-
-		let rep = (this.checked ? true : false);
-
-		localStorage.usdate = rep;
-		chrome.storage.sync.set({"usdate": rep});
-		date();
+		date(true, this.checked)
 	}
 
 	//weather
@@ -149,13 +144,13 @@ function settingsEvents() {
 
 	id("i_lang").onchange = function() {
 
-		localStorage.lang = this.value;
-		sessionStorage.lang = this.value;
-		//si local n'est pas utilisé, sync la langue
-		if (!localStorage.data) chrome.storage.sync.set({"lang": this.value});
+		chrome.storage.sync.set({"lang": this.value});
 
-		//s'assure que le localStorage a bien changé
-		if (localStorage.lang) location.reload();
+		//session pour le weather
+		sessionStorage.lang = this.value;
+
+		if (sessionStorage.lang)
+			location.reload()
 	}
 
 
@@ -182,7 +177,7 @@ function settingsEvents() {
 
 function initParams() {
 
-	const data = JSON.parse(localEnc(sessionStorage.data, false));
+	const data = JSON.parse(localEnc(disposableData, false));
 
 	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base));
 	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
@@ -206,7 +201,7 @@ function initParams() {
 	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
 	
 
-	if (sessionStorage.pro === "true") {
+	if (isPro) {
 
 		initInput("i_row", data.linksrow, 8);
 		initInput("i_customfont", isThereData("font", "family"), "");
@@ -279,13 +274,8 @@ function initParams() {
 	//searchbar display settings 
 	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
 
-
-	//clock format localstorage control
-	if (data.clockformat === 12) localStorage.clockformat = 12;
-
-
 	//langue
-	id("i_lang").value = localStorage.lang || "en";
+	id("i_lang").value = data.lang || "en";
 
 
 	//firefox export
@@ -371,24 +361,24 @@ function showSettings() {
 		const uiClass = dominterface.getAttribute("class");
 
 		if (has("settings", "shown")) {
-			attr(domshowsettings.children[0], "");
-			attr(id("settings"), "");
-			attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+			clas(domshowsettings.children[0], "");
+			clas(id("settings"), "");
+			clas(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
 
-			if (editClass === "shown pushed") attr(edit, "shown");
+			if (editClass === "shown pushed") clas(edit, "shown");
 			
 		} else {
-			attr(domshowsettings.children[0], "shown");
-			attr(id("settings"), "shown");
-			attr(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
+			clas(domshowsettings.children[0], "shown");
+			clas(id("settings"), "shown");
+			clas(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
 			
-			if (editClass === "shown") attr(edit, "shown pushed");
+			if (editClass === "shown") clas(edit, "shown pushed");
 		}
 	}
 
 	function functions() {
 
-		if (sessionStorage.pro === "true") {
+		if (isPro) {
 			for (let i of cl("pro")) i.style.display = "block";
 			for (let i of cl("proflex")) i.style.display = "flex";
 		}
@@ -399,7 +389,7 @@ function showSettings() {
 		setTimeout(function() {
 			settingsEvents()
 			signature()
-			if (sessionStorage.pro === "true") proEvents()
+			if (isPro) proEvents()
 		}, 100)
 	}
 
@@ -442,8 +432,8 @@ function showInterface(e) {
 
 	//close edit container on interface click
 	if (has("edit_linkContainer", "shown")) {
-		attr(id("edit_linkContainer"), "");
-		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
+		clas(id("edit_linkContainer"), "");
+		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {clas(e, "l_icon_wrap")})
 	}
 
 	if (has("settings", "shown")) {
@@ -453,11 +443,11 @@ function showInterface(e) {
 		let ui = dominterface;
 		let uiClass = dominterface.getAttribute("class");
 
-		attr(id("showSettings").children[0], "");
-		attr(id("settings"), "");
-		attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+		clas(id("showSettings").children[0], "");
+		clas(id("settings"), "");
+		clas(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
 
-		if (editClass === "shown pushed") attr(edit, "shown");
+		if (editClass === "shown pushed") clas(edit, "shown");
 	}
 }
 

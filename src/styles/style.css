@@ -266,7 +266,7 @@ body input, body textarea, body select, body a, body button {
   height: 50px;
   border-radius: 4px;
   padding-left: 1em;
-  transition: all .2s;
+  transition: border-radius .15s, opacity .1s;
 }
 
 #interface #sb_container #searchbar:focus {
@@ -544,11 +544,12 @@ body input, body textarea, body select, body a, body button {
 }
 
 #edit_linkContainer #edit_link .linkOptions button:hover {
-  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #edit_link .linkOptions button:active {
-  opacity: .6;
+  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #edit_link #e_close {
@@ -570,11 +571,12 @@ body input, body textarea, body select, body a, body button {
 }
 
 #edit_linkContainer #edit_link #e_close:hover {
-  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #edit_link #e_close:active {
-  opacity: .6;
+  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #onUnsplash.shown {

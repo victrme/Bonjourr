@@ -1,23 +1,20 @@
 id = name => document.getElementById(name);
 cl = name => document.getElementsByClassName(name);
-attr = (that, val) => that.setAttribute("class", val);
+clas = (that, val) => that.setAttribute("class", val);
 has = (that, val) => id(that) && id(that).getAttribute("class", val) ? true : false;
 
-let db = null;
-let stillActive = false;
-let rangeActive = false;
-let lazyClockInterval = 0;
-const randomseed = Math.floor(Math.random() * 30) + 1;
-const domshowsettings = id("showSettings");
-const domlinkblocks = id("linkblocks");
-const dominterface = id("interface");
-const mobilecheck = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false);
-
-//safe font for different alphabet
-if (localStorage.lang === "ru" || localStorage.lang === "sk")
-	id("styles").innerText = `
-		body, #settings, #settings h5 {font-family: Helvetica, Calibri}
-	`;
+let disposableData = {},
+	isPro = false,
+	langue = "en",
+	stillActive = false,
+	rangeActive = false,
+	lazyClockInterval = 0
+const randomseed = Math.floor(Math.random() * 30) + 1,
+	domshowsettings = id("showSettings"),
+	domlinkblocks = id("linkblocks"),
+	dominterface = id("interface"),
+	dict = askfordict(),
+	mobilecheck = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false)
 
 //cache rapidement temp max pour eviter que ça saccade
 if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
@@ -27,11 +24,14 @@ function deleteBrowserStorage() {chrome.storage.sync.clear(() => {localStorage.c
 function getBrowserStorage() {chrome.storage.sync.get(null, (data) => {console.log(data)})}
 function getLocalStorage() {chrome.storage.local.get(null, (data) => {console.log(data)})}
 
+//pour bonjourr pro
+function setPremiumCode(str) {chrome.storage.sync.set({login: btoa(str)})}
+
 //cache un peu mieux les données dans le storage
-function localEnc(input, enc=true) {
-	const a = input.split("")
-	let n = ""
-	for (let i in a) n += String.fromCharCode(a[i].charCodeAt() + (enc ? randomseed : -randomseed))
+function localEnc(input="no", enc=true) {
+	let a = input.split(""), n = ""
+	for (let i in a)
+		n += String.fromCharCode(a[i].charCodeAt() + (enc ? randomseed : -randomseed))
 	return n
 }
 
@@ -52,21 +52,25 @@ function slow(that) {
 	}, 700);
 }
 
-function traduction(ofSettings) {
+function traduction(ofSettings, initStorage) {
 
-	let local = localStorage.lang || "en";
+	let trns, dom = []
 
-	if (local !== "en") {
+	if (ofSettings) {
+		langue = JSON.parse(localEnc(disposableData, false)).lang
+		trns = id("settings").querySelectorAll('.trn')
+	} else {
+		langue = initStorage
+		trns = document.querySelectorAll('.trn')
+	}
 
-		let trns = (ofSettings ? id("settings").querySelectorAll('.trn') : document.querySelectorAll('.trn')),
-			dom = [],
-			dict = askfordict();
+	if (langue !== "en") {
 
 		for (let k = 0; k < trns.length; k++) {
 
 			//trouve la traduction, sinon laisse le text original
 			if (dict[trns[k].innerText])
-				dom.push(dict[trns[k].innerText][localStorage.lang]);
+				dom.push(dict[trns[k].innerText][langue]);
 			else
 				dom.push(trns[k].innerText);
 		}
@@ -76,11 +80,7 @@ function traduction(ofSettings) {
 }
 
 function tradThis(str) {
-
-	let dict = askfordict(),
-		lang = localStorage.lang || "en";
-
-	return (lang === "en" ? str : dict[str][localStorage.lang])
+	return (langue === "en" ? str : dict[str][langue])
 }
 
 function newClock(eventObj, init) {
@@ -92,12 +92,12 @@ function newClock(eventObj, init) {
 			analSec = id('analogSeconds');
 
 		//cache celle qui n'est pas choisi
-		attr((clock.analog ? numeric : analog), "hidden");
-		attr((clock.analog ? analog : numeric), "");
+		clas((clock.analog ? numeric : analog), "hidden");
+		clas((clock.analog ? analog : numeric), "");
 
 		//cache l'aiguille des secondes
-		if (!clock.seconds && clock.analog) attr(analSec, "hidden");
-		else attr(analSec, "");
+		if (!clock.seconds && clock.analog) clas(analSec, "hidden");
+		else clas(analSec, "");
 	}
 
 	function main() {
@@ -236,13 +236,13 @@ function newClock(eventObj, init) {
 	}
 }
 
-function date() {
+function date(event, usdate) {
 	const date = new Date();
 	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 
-	if (localStorage.usdate === "true") {
+	if (usdate) {
 
 		id("jour").innerText = tradThis(days[date.getDay()]) + ",";
 		id("chiffre").innerText = tradThis(months[date.getMonth()]);
@@ -254,6 +254,9 @@ function date() {
 		id("chiffre").innerText = date.getDate();
 		id("mois").innerText = tradThis(months[date.getMonth()]);
 	}
+
+	if (event)
+		chrome.storage.sync.set({"usdate": usdate})
 }
 
 function greetings() {
@@ -277,7 +280,7 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	//enleve les selections d'edit
-	const removeLinkSelection = x => (domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")}));
+	const removeLinkSelection = x => (domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {clas(e, "l_icon_wrap")}));
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
@@ -382,18 +385,18 @@ function quickLinks(event, that, initStorage) {
 		id("e_delete").onclick = function() {
 			removeLinkSelection();
 			removeblock(parseInt(id("edit_link").getAttribute("index")));
-			attr(id("edit_linkContainer"), "");
+			clas(id("edit_linkContainer"), "");
 		}
 
 		id("e_submit").onclick = function() {
 			removeLinkSelection();
 			editlink(null, parseInt(id("edit_link").getAttribute("index")))
-			attr(id("edit_linkContainer"), "");
+			clas(id("edit_linkContainer"), "");
 		}
 
 		id("e_close").onmouseup = function() {
 			removeLinkSelection();
-			attr(id("edit_linkContainer"), "");
+			clas(id("edit_linkContainer"), "");
 		}
 
 		id("re_title").onmouseup = function() {
@@ -451,13 +454,13 @@ function quickLinks(event, that, initStorage) {
 			const index = findindex(that);
 			const liconwrap = that.querySelector(".l_icon_wrap");
 
-			attr(liconwrap, "l_icon_wrap selected");
+			clas(liconwrap, "l_icon_wrap selected");
 
 
 			if (has("settings", "shown"))
-				attr(id("edit_linkContainer"), "shown pushed");
+				clas(id("edit_linkContainer"), "shown pushed");
 			else
-				attr(id("edit_linkContainer"), "shown");
+				clas(id("edit_linkContainer"), "shown");
 
 
 
@@ -845,7 +848,7 @@ function weather(event, that, initStorage) {
 				url += `&q=${encodeURI(arg.city)},${arg.ccode}`;
 			}
 
-			url += `&units=${arg.unit}&lang=${localStorage.lang}`;
+			url += `&units=${arg.unit}&lang=${initStorage.lang}`;
 
 			return url;
 		}
@@ -1011,21 +1014,10 @@ function weather(event, that, initStorage) {
 	
 	function submissionError(error) {
 
-		const dom_wrongCity = id("wrongCity")
+		const city = id("i_city")
 
-		//affiche le texte d'erreur
-		dom_wrongCity.innerText = error;
-		dom_wrongCity.style.display = "block";
-		dom_wrongCity.style.opacity = 1;
-
-		//l'enleve si le user modifie l'input
-		id("i_city").onkeydown = function() {
-
-			dom_wrongCity.style.opacity = 0;
-			setTimeout(function() {
-				dom_wrongCity.style.display = "none";
-			}, 200);
-		}
+		city.value = ""
+		city.setAttribute("placeholder", "city not found")
 	}
 	
 
@@ -1162,15 +1154,15 @@ function imgCredits(src, type) {
 		onUnsplash = id("onUnsplash");
 
 	if (type === "dynamic") {
-		attr(onUnsplash, "shown");
+		clas(onUnsplash, "shown");
 		location.innerText = src.location.text;
 		location.setAttribute("href", src.location.url);
 		artist.innerText = src.artist.text;
 		artist.setAttribute("href", src.artist.url);
 	}
 
-	if (type === "custom") attr(credit, "hidden");
-	else attr(credit, "shown");
+	if (type === "custom") clas(credit, "hidden");
+	else clas(credit, "shown");
 }
 
 function imgBackground(val) {
@@ -1709,11 +1701,11 @@ function distractMode(that, initStorage) {
 		let uiClass = ui.getAttribute("class");
 
 		if (on) {
-			attr(ui, (uiClass === "pushed" ? "pushed distract" : "distract"));
-			attr(id("showSettings"), "distract");
+			clas(ui, (uiClass === "pushed" ? "pushed distract" : "distract"));
+			clas(id("showSettings"), "distract");
 		} else {
-			attr(ui, (uiClass === "pushed distract" ? "pushed" : ""));
-			attr(id("showSettings"), "");
+			clas(ui, (uiClass === "pushed distract" ? "pushed" : ""));
+			clas(id("showSettings"), "");
 		}
 	}
 
@@ -1753,9 +1745,9 @@ function searchbar(event, that, storage) {
 
 	function localisation(q) {
 		
-		let response = "";
-		const lang = localStorage.lang || "en";
-		const engine = localStorage.engine || "s_google";
+		let response = "",
+			lang = storage.lang || "en",
+			engine = storage.searchbar_engine || "s_google"
 
 		//les const l_[engine] sont dans lang.js
 
@@ -1801,7 +1793,6 @@ function searchbar(event, that, storage) {
 
 		id("searchbar").setAttribute("placeholder", tradThis("Search on " + names[value]));
 		if(!init) chrome.storage.sync.set({"searchbar_engine": value});
-		localStorage.engine = value;
 	}
 
 	if (event) (event === "searchbar" ? display(that.checked) : engine(that.value));
@@ -1826,7 +1817,6 @@ function signature() {
 	e.innerHTML = Math.random() > 0.5 ? ` ${v} & ${t}` : ` ${t} & ${v}`;
 	id("rand").appendChild(e);
 }
-
 
 function showPopup(data) {
 
@@ -2056,13 +2046,13 @@ function proFunctions(obj) {
 			let toggleWrapFunc = function(elem) {
 
 				id(elem).style.display = (objet.not ? "none" : "flex")
-				if (e!==undefined) attr(objet.parent, (objet.not ? "allhidden" : ""))
+				if (e!==undefined) clas(objet.parent, (objet.not ? "allhidden" : ""))
 			}
 			
 
 			//toggle l'opacité du dom concerné
 
-			if (e !== undefined) attr(e, (objet.not ? "clicked" : ""))
+			if (e !== undefined) clas(e, (objet.not ? "clicked" : ""))
 			objet.dom.style.opacity = (objet.not ? "0" : "1")
 
 
@@ -2184,9 +2174,11 @@ function checkifpro(data) {
 		return hashHex;
 	}
 
-	encode(localStorage.login).then((a) => {
+	encode(atob(data.login)).then((a) => {
 		
 		if (a === atob(hash)) {
+
+			isPro = true
 			
 			proFunctions({which: "hide", data: data.hide})	
 			proFunctions({which: "font", data: data.font})
@@ -2194,20 +2186,19 @@ function checkifpro(data) {
 			proFunctions({which: "row", data: data.linksrow})
 			proFunctions({which: "greet", data: data.greeting})	
 
-			sessionStorage.pro = "true"
-		} else
-			sessionStorage.removeItem("pro")
-		
+		}
 	})
 }
 
 //comme un onload, sans le onload
 chrome.storage.sync.get(null, (data) => {
 
-	
-	traduction()
-	date()
+	//pour que les settings y accede plus facilement
+	disposableData = localEnc(JSON.stringify(data))
+
+	traduction(null, data.lang)
 	greetings()
+	date(null, data.usdate)
 	newClock(null, data.clock)
 	distractMode(null, data.distract)
 	darkmode(null, data)
@@ -2218,12 +2209,12 @@ chrome.storage.sync.get(null, (data) => {
 	showPopup(data.reviewPopup)
 
 	//init profunctions
-	checkifpro(data)
+	if (data.login) checkifpro(data)
 
-	//met le storage dans le sessionstorage
-	//pour que les settings y accede plus facilement
-	sessionStorage.data = localEnc(JSON.stringify(data));
-
+	//safe font for different alphabet
+	if (data.lang === "ru" || data.lang === "sk")
+		id("styles").innerText = `
+			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`
 
 	if (mobilecheck) {
 

@@ -115,15 +115,15 @@ function askfordict() {
     },
     "Links per row": {
       fr: "Liens par ligne",
-      sv: "",
-      nl: "",
-      pl: "",
+      sv: "Links per row",
+      nl: "Links per row",
+      pl: "Links per row",
       pt_BR: "Links por linha",
-      ru: "",
-      zh_CN: "",
-      sk: "",
-      de: "",
-      it: ""
+      ru: "Links per row",
+      zh_CN: "Links per row",
+      sk: "Links per row",
+      de: "Links per row",
+      it: "Links per row"
     },
     "VISUALS": {
       fr: "Affichage",
