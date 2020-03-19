@@ -1887,7 +1887,7 @@ function proFunctions(obj) {
 				fetch(url)
 				.then(response => response.text())
 				.then(text => {
-					text = text.replace(/(\r\n|\n|\r| )/gm,"")
+					text = text.replace(/(\r\n|\n|\r|  )/gm,"")
 					applyFont(text)
 					saveFont(text)
 				})
