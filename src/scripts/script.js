@@ -11,6 +11,7 @@ const randomseed = Math.floor(Math.random() * 30) + 1;
 const domshowsettings = id("showSettings");
 const domlinkblocks = id("linkblocks");
 const dominterface = id("interface");
+const mobilecheck = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false);
 
 //safe font for different alphabet
 if (localStorage.lang === "ru" || localStorage.lang === "sk")
@@ -181,7 +182,6 @@ function newClock(eventObj, init) {
 		    if (clock.seconds) rotation(id('analogSeconds'), s);
 
 			//fix 0deg transition
-
 		}
 
 		//timezone control
@@ -205,18 +205,7 @@ function newClock(eventObj, init) {
 	//(je sais que je peux faire mieux)
 	let clock;
 
-	if (init) {
-
-		clock = {
-			analog: init.analog || false,
-			seconds: init.seconds || false,
-			ampm: init.ampm || false,
-			timezone: init.timezone || "auto"
-		}
-
-		startClock();
-
-	} else {
+	if (eventObj) {
 
 		chrome.storage.sync.get("clock", (data) => {
 
@@ -227,14 +216,23 @@ function newClock(eventObj, init) {
 				timezone: (data.clock ? data.clock.timezone : "auto")
 			}
 
-			//if event change of clock parameters
-			if (eventObj) {
-				clock[eventObj.param] = eventObj.value;
-				chrome.storage.sync.set({clock: clock});
-			}
+			//event change of clock parameters
+			clock[eventObj.param] = eventObj.value
+			chrome.storage.sync.set({clock: clock})
 
-			startClock();
+			startClock()
 		});
+
+	} else {
+
+		clock = {
+			analog: (init ? init.analog : false),
+			seconds: (init ? init.seconds : false),
+			ampm: (init ? init.ampm : false),
+			timezone: (init ? init.timezone : "auto")
+		}
+
+		startClock()
 	}
 }
 
@@ -1829,98 +1827,94 @@ function signature() {
 	id("rand").appendChild(e);
 }
 
-function mobilecheck() {
-	let check = false;
-	(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
-	return check;
+
+function showPopup(data) {
+
+	//s'affiche après 10 tabs
+	if (data > 10) {
+
+		const popup = id("popup")
+		const closePopup = id("closePopup")
+		const go = id("go")
+		const close = function() {
+			popup.classList.add("removed")
+			chrome.storage.sync.set({reviewPopup: "removed"})
+		}
+
+		//attendre avant d'afficher
+		setTimeout(function() {popup.classList.add("shown")}, 2000)
+
+		closePopup.onclick = close
+		go.onclick = close
+	}
+	else if (typeof(data) === "number") chrome.storage.sync.set({reviewPopup: data + 1})
+	else if (data !== "removed") chrome.storage.sync.set({reviewPopup: 0})
+	else if (data === "removed") document.body.removeChild(popup)
 }
 
 function proFunctions(obj) {
 
-	function customFont(data, evnt) {
+	function customFont(data, event) {
 
-		function setFont(family, weight, size, is) {
+		function setFont(f, is) {
 
-			function getWeightText(val) {
-
-				switch (parseInt(val)) {
-
-					case 100:
-					case 200:
-						return "Thin";
-						break;
-
-					case 300:
-						return "Light";
-						break;
-
-					case 400:
-						return "Regular";
-						break;
-
-					case 500:
-						return "Medium";
-						break;
-
-					case 600:
-					case 700:
-						return "Bold";
-						break;
-
-					case 800:
-					case 900:
-						return "Black";
-						break;
-
-					default:
-						return "Auto"
-				}
-			}
-
-			function saveFont() {
+			function saveFont(text) {
 
 				const font = {
 					family: id("i_customfont").value,
 					weight: id("i_weight").value,
-					size: id("i_size").value
+					size: id("i_size").value,
+					str: (text ? text : id("fontstyle").innerText)
 				}
 
 				chrome.storage.sync.set({"font": font});
 			}
 
-			if (has("settings", "shown")) {
-				const fontlink = id("fontlink");
-				const famInput = id("i_customfont").value;
+			function applyFont(text) {
 
-				family = (family ? family : (famInput !== "" ? famInput : false));
+				if (f.str || text)
+					id("fontstyle").innerText = (text ? text : f.str)
+
+				if (f.family) {
+					document.body.style.fontFamily = f.family;
+					id("clock").style.fontFamily = f.family;
+				}
+				
+				if (f.weight)
+					document.body.style.fontWeight = f.weight;
+
+				if (f.size)
+					dominterface.style.fontSize = f.size + "px";
 			}
 
-			if (family) {
+			//si on change la famille
+			if (is === "event" && (f.family !== null || f.weight !== null)) {
 
-				const url = `https://fonts.googleapis.com/css?family=${family}:100,300,400,500,700,900`;
+				let family = id("i_customfont").value,
+					weight = (":" + f.weight) || "",
+					url = `https://fonts.googleapis.com/css?family=${family}${weight}`
 
-				let xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function() {
-					if (this.readyState == 4 && this.status == 200) {
-						fontlink.href = url
+				fetch(url)
+				.then(response => response.text())
+				.then(text => {
+					text = text.replace(/(\r\n|\n|\r| )/gm,"")
+					applyFont(text)
+					saveFont(text)
+				})
 
-						document.body.style.fontFamily = family;
-						id("clock").style.fontFamily = family;
-					}
-				};
-				xhttp.open("GET", url, true);
-				xhttp.send();
-			}
-			
-			if (weight) document.body.style.fontWeight = weight;
+			//si on change autre chose que la famille
+			} else if (is === "event") {
+				saveFont()
+				applyFont()
 
-			if (size) dominterface.style.fontSize = size + "px";
-
-			if (is === "event") saveFont()
+			//si ça n'est pas un event
+			} else
+				applyFont()
 		}
 
-		if (data) setFont(data.family, data.weight, data.size)
-		if (evnt) setFont(evnt.family, evnt.weight, evnt.size, "event")
+		//init
+		if (data) setFont(data)
+		if (event) setFont(event, "event")
 	}
 
 	function customCss(data, event) {
@@ -2207,57 +2201,31 @@ function checkifpro(data) {
 	})
 }
 
-function showPopup(data) {
-
-	//s'affiche après 10 tabs
-	if (data > 10) {
-
-		const popup = id("popup")
-		const closePopup = id("closePopup")
-		const go = id("go")
-		const close = function() {
-			popup.classList.add("removed")
-			chrome.storage.sync.set({reviewPopup: "removed"})
-		}
-
-		//attendre avant d'afficher
-		setTimeout(function() {popup.classList.add("shown")}, 2000)
-
-		closePopup.onclick = close
-		go.onclick = close
-	}
-	else if (typeof(data) === "number") chrome.storage.sync.set({reviewPopup: data + 1})
-	else if (data !== "removed") chrome.storage.sync.set({reviewPopup: 0})
-	else if (data === "removed") document.body.removeChild(popup)
-}
-
 //comme un onload, sans le onload
 chrome.storage.sync.get(null, (data) => {
 
 	
-	traduction();
-	newClock(null, data.clock);
-	date();
-	greetings();
-	distractMode(null, data.distract);
-	darkmode(null, data);
-	initBackground(data);
-	weather(null, null, data);
-	quickLinks(null, null, data);
-	searchbar(null, null, data);
+	traduction()
+	date()
+	greetings()
+	newClock(null, data.clock)
+	distractMode(null, data.distract)
+	darkmode(null, data)
+	initBackground(data)
+	weather(null, null, data)
+	quickLinks(null, null, data)
+	searchbar(null, null, data)
+	showPopup(data.reviewPopup)
 
 	//init profunctions
-	//checkifpro(data)
-
-	//review popup
-	showPopup(data.reviewPopup);
+	checkifpro(data)
 
 	//met le storage dans le sessionstorage
 	//pour que les settings y accede plus facilement
 	sessionStorage.data = localEnc(JSON.stringify(data));
 
 
-	if (mobilecheck()) {
+	if (mobilecheck) {
 
 		//blocks interface height
 		//defines credits & showsettings position from top
