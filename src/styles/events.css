@@ -248,19 +248,18 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
     font-size: small;
 }
 
-
-#hideelem button,
-#hideelem > div {transition: all .1s}
-
-#hideelem > div.allhidden {border: 1px solid #777;}
-#hideelem button.clicked {opacity: .5}
-
-
 body.dark #hideelem button,
 body.autodark #hideelem button {color: white}
 
 body.dark #hideelem > div,
 body.autodark #hideelem > div {border: 1px solid white}
+
+
+#settings #hideelem button,
+#settings #hideelem > div {transition: all .1s}
+
+#settings #hideelem > div.allhidden {border: 1px solid #777;}
+#settings #hideelem button.clicked {opacity: .5}
 
 
 /* sbparam needs it lol*/

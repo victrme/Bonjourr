@@ -57,10 +57,10 @@ function traduction(ofSettings, initStorage) {
 	let trns, dom = []
 
 	if (ofSettings) {
-		langue = JSON.parse(localEnc(disposableData, false)).lang
+		langue = JSON.parse(localEnc(disposableData, false)).lang || "en"
 		trns = id("settings").querySelectorAll('.trn')
 	} else {
-		langue = initStorage
+		langue = initStorage || "en"
 		trns = document.querySelectorAll('.trn')
 	}
 
@@ -751,9 +751,9 @@ function quickLinks(event, that, initStorage) {
 
 function weather(event, that, initStorage) {
 
-	const dom_temp_max = id("temp_max")
-	const dom_temp_max_wrap = id("temp_max_wrap")
-	const dom_first_desc = id("weather_desc").children[0]
+	const dom_temp_max = id("temp_max"),
+		dom_temp_max_wrap = id("temp_max_wrap"),
+		dom_first_desc = id("weather_desc").children[0]
 
 	function cacheControl(storage) {
 
@@ -848,7 +848,7 @@ function weather(event, that, initStorage) {
 				url += `&q=${encodeURI(arg.city)},${arg.ccode}`;
 			}
 
-			url += `&units=${arg.unit}&lang=${initStorage.lang}`;
+			url += `&units=${arg.unit}&lang=${langue}`;
 
 			return url;
 		}
@@ -1184,33 +1184,52 @@ function imgBackground(val) {
 
 function initBackground(storage) {
 
+	function loadCustom(d) {
+
+		const index = (d.customIndex >= 0 ? d.customIndex : 0),
+			cleanData = d.custom[index].replace("data:image/jpeg;base64,", "")
+
+		imgBackground(b64toBlobUrl(cleanData));
+		changeImgIndex(d.customIndex);
+		
+		for (var i = 0; i < d.custom.length; i++)
+			fullImage.push(d.custom[i])
+	}
+
 	let type = storage.background_type || "dynamic";
 
 	if (type === "custom") {
 
 		//reste local !!!!
-		chrome.storage.local.get(["custom", "customIndex"], (data) => {
+		chrome.storage.local.get(null, (data) => {
+
+			//1.8.3 -> 1.9 data transfer
+			if (data.background_blob) {
+
+				const blob = data.background_blob
+				const old = [blob[0] + "," + blob[1]]
+					
+				loadCustom({
+					custom: old,
+					customIndex: 0
+				})
+
+				chrome.storage.local.set({custom: old})
+				chrome.storage.local.set({customIndex: 0})
+
+				chrome.storage.local.remove("background_blob")
+			}
 
 			//if no custom background available
 			//choose dynamic
-			if (!data.custom || data.custom.length === 0) {
+			else if (!data.custom || data.custom.length === 0) {
 
 				unsplash(storage.dynamic)
 				chrome.storage.sync.set({background_type: "dynamic"})
 
+			//apply chosen custom background
 			} else {
-
-				//apply chosen custom background
-
-				const cleanData = (data.customIndex >= 0 ?
-					data.custom[data.customIndex].replace("data:image/jpeg;base64,", "")
-					: data.custom[0].replace("data:image/jpeg;base64,", ""))
-
-				imgBackground(b64toBlobUrl(cleanData));
-				changeImgIndex(data.customIndex);
-				
-				for (var i = 0; i < data.custom.length; i++)
-					fullImage.push(data.custom[i])
+				loadCustom(data)
 			}
 		})
 		
@@ -1268,6 +1287,7 @@ const domimg = id('background');
 const domthumbnail = document.getElementsByClassName('thumbnail');
 
 function b64toBlobUrl(a,b="",c=512){const d=atob(a),e=[];for(let f=0;f<d.length;f+=c){const a=d.slice(f,f+c),b=Array(a.length);for(let c=0;c<a.length;c++)b[c]=a.charCodeAt(c);const g=new Uint8Array(b);e.push(g)}const f=new Blob(e,{type:b}),g=URL.createObjectURL(f);return g}
+
 function changeImgIndex(i) {domimg.setAttribute("index", i)}
 
 function renderImage(file, is) {
@@ -1284,9 +1304,6 @@ function renderImage(file, is) {
 
 			compress(result, "thumbnail");
 			compress(result, "new");
-
-			//let blobArray = setblob(result, true);
-			//imgBackground(blobArray[1]);
 		}
 	}
 
@@ -1606,16 +1623,6 @@ function unsplash(data, event, startup) {
 				cacheControl(initDyn)
 			}
 		});
-	}
-}
-
-function remSelectedPreview() {
-	let a = cl("imgpreview");
-
-	for (var i = 0; i < a.length; i++) {
-
-		if (a[i].classList[1] === "selected")
-			a[i].setAttribute("class", "imgpreview")
 	}
 }
 
@@ -2212,25 +2219,13 @@ chrome.storage.sync.get(null, (data) => {
 	if (data.login) checkifpro(data)
 
 	//safe font for different alphabet
-	if (data.lang === "ru" || data.lang === "sk")
+	/*if (data.lang === "ru" || data.lang === "sk")
 		id("styles").innerText = `
-			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`
+			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`*/
 
 	if (mobilecheck) {
 
-		//blocks interface height
-		//defines credits & showsettings position from top
-
-		let show = id("showSettings");
-		let cred = id("credit");
-		let heit = window.innerHeight;
-
-		show.style.bottom = "auto";
-		cred.style.bottom = "auto";
-
-		dominterface.style.height = `${heit}px`;
-		show.style.padding = 0;
-		show.style.top = `${heit - show.children[0].offsetHeight - 12}px`;
-		cred.style.top = `${heit - cred.offsetHeight - 12}px`;
+		dominterface.style.minHeight = "90vh"
+		dominterface.style.padding = "0 0 10vh 0"
 	}
 });
