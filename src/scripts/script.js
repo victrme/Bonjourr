@@ -1017,7 +1017,7 @@ function weather(event, that, initStorage) {
 		const city = id("i_city")
 
 		city.value = ""
-		city.setAttribute("placeholder", "city not found")
+		city.setAttribute("placeholder", tradThis("City not found"))
 	}
 	
 
@@ -1090,7 +1090,7 @@ function weather(event, that, initStorage) {
 					request(param, "forecast");
 
 					//update le setting
-					sett_city.setAttribute("class", "city hidden");
+					clas(sett_city, "city hidden");
 					that.removeAttribute("disabled");
 					
 				}, (refused) => {
@@ -1104,7 +1104,7 @@ function weather(event, that, initStorage) {
 
 			} else {
 
-				sett_city.setAttribute("class", "city");
+				clas(sett_city, "city");
 
 				i_city.setAttribute("placeholder", param.city);
 				i_ccode.value = param.ccode;
@@ -1376,8 +1376,8 @@ function addThumbnails(data, index) {
 	const wrap = document.getElementById('bg_tn_wrap');
 	const upload = document.getElementById('i_bgfile');
 
-	div.setAttribute("class", "thumbnail");
 	div.setAttribute("index", index);
+	div.setAttribute("class", "thumbnail");
 	rem.setAttribute("class", "hidden");
 	rem.innerText = "✕";
 	i.src = b64toBlobUrl(data);

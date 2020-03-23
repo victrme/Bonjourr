@@ -63,6 +63,18 @@ function askfordict() {
       de: "Quick Links",
       it: "Collegamenti rapidi"
     },
+    "Name": {
+      fr: "Nom",
+      sv: "Namn",
+      nl: "Naam",
+      pl: "Nazwa",
+      pt_BR: "Nome",
+      ru: "название",
+      zh_CN: "名称",
+      sk: "názov",
+      de: "Name",
+      it: "nome"
+    },
     "Add": {
       fr: "Ajouter",
       sv: "Lägg till",
@@ -74,31 +86,6 @@ function askfordict() {
       sk: "Pridať",
       de: "Hinzufügen",
       it: "Aggiungere"
-    },
-    "Incorrect URL": {
-      fr: "URL incorrecte",
-      sv: "Felaktig adress",
-      nl: "Foutieve URL",
-      pl: "Niepoprawny URL",
-      pt_BR: "URL incorreta",
-      ru: "Недопустимая ссылка",
-      zh_CN: "URL 不正确",
-      sk: "Nesprávna URL",
-      de: "Ungültige URL",
-      it: "URL non corretto"
-    },
-    "Right click on the icons to delete a Quick Link.": {
-      fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes.",
-      zh_CN: "右键点击网站图标以删除快速链接。",
-      // The following sentences need to be reworked:
-      sv: "Right click on the icons to delete a Quick Link.",
-      nl: "Right click on the icons to delete a Quick Link.",
-      pl: "Naciśnij prawy przycisk myszy aby usunąć Ulubioną witrynę.",
-      pt_BR: "Clique com o botão direito nos ícones para deletar um Link Rápido",
-      ru: "Right click on the icons to delete a Quick Link.",
-      sk: "Kliknutím pravým tlačidlom myši na ikony vymažete rýchly odkaz.",
-      de: "Rechtsklick auf die icons um einen Quick Link zu löschen",
-      it: "Tasto destro sull'icona per eliminare un Collegamento rapido"
     },
     "Open in new tab by default": {
       fr: "Ouvrir dans un nouvel onglet par défaut",
@@ -388,6 +375,18 @@ function askfordict() {
       sk: "Geolokácia",
       de: "Geolokalisierung",
       it: "Geolocalizzazione"
+    },
+    "City not found": {
+      fr: "Ville non trouvé",
+      sv: "Staden hittades inte",
+      nl: "Stad niet gevonden",
+      pl: "Zmień miasto",
+      pt_BR: "Cidade não encontrada",
+      ru: "Город не найден",
+      zh_CN: "找不到城市",
+      sk: "Mesto nenájdené",
+      de: "Stadt nicht gefunden",
+      it: "Città non trovata"
     },
     "Change city": {
       fr: "Changer la ville",
@@ -737,16 +736,40 @@ function askfordict() {
       de: "Copied",
       it: "Copiato"
     },
+    "Import code": {
+      fr: "Importer le code",
+      sv: "Importera kod",
+      nl: "Code importeren",
+      pl: "Kod importu",
+      pt_BR: "Código de importação",
+      ru: "Код импорта",
+      zh_CN: "导入代码",
+      sk: "Importovať kód",
+      de: "Code importieren",
+      it: "Codice di importazione",
+    },
+    "Export code": {
+      fr: "Code d'exportation",
+      sv: "exportkod",
+      nl: "export code",
+      pl: "kod eksportowy",
+      pt_BR: "código de exportação",
+      ru: "экспортный код",
+      zh_CN: "导入代码",
+      sk: "vývozný kód",
+      de: "Exportcode",
+      it: "codice di esportazione",
+    },
     "Reset settings": {
       fr: "Réinitialiser les réglages",
-      sv: "Reset settings",
-      nl: "Reset settings",
+      sv: "Återställ inställningar",
+      nl: "Reset instellingen",
       pl: "Przywróć ustawienia domyślne",
-      pt_BR: "Restaurar configurações",
-      ru: "Reset settings",
-      zh_CN: "还原设置",
-      sk: "Reset settings",
-      de: "Reset settings",
+      pt_BR: "Redefinir as configurações",
+      ru: "Сбросить настройки",
+      zh_CN: "重新设置",
+      sk: "Obnoviť nastavenia",
+      de: "Einstellungen zurücksetzen",
       it: "Impostazioni iniziali"
     },
     "Are you sure ?": {

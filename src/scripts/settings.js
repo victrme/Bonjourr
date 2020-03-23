@@ -4,9 +4,30 @@ function selectBackgroundType(cat) {
 	id("custom").style.display = "none";
 	id(cat).style.display = "block";
 
-	if (cat === "dynamic") unsplash()
+	if (cat === "dynamic")
+		unsplash()
+	else if (cat === "custom")
+		displayCustomBackgrounds()
 
 	chrome.storage.sync.set({"background_type": cat});
+}
+
+function displayCustomBackgrounds() {
+	chrome.storage.local.get(["custom"], (data) => {
+
+		if (data !== undefined) {
+			let cleanData;
+					
+			for (var i = 0; i < data.custom.length; i++) {
+				cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
+				addThumbnails(cleanData, i)
+			}
+
+			fullImage = data.custom
+
+			id("custom").style.opacity = 1
+		}
+	})
 }
 
 function settingsEvents() {
@@ -227,6 +248,12 @@ function initParams() {
 
 	}
 
+
+	//input translation
+	id("i_title").setAttribute("placeholder", tradThis("Name"))
+	id("i_import").setAttribute("placeholder", tradThis("Import code"))
+	id("i_export").setAttribute("placeholder", tradThis("Export code"))
+
 	
 	//bg
 	if (data.background_type !== undefined)
@@ -237,21 +264,9 @@ function initParams() {
 
 	//ajoute les thumbnails au custom background
 
-	setTimeout(function() {
-		chrome.storage.local.get(["custom"], (data) => {
-
-			let cleanData;
-					
-			for (var i = 0; i < data.custom.length; i++) {
-				cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
-				addThumbnails(cleanData, i)
-			}
-
-			fullImage = data.custom
-
-			id("custom").style.opacity = 1
-		})
-	}, 200)
+	if (data.background_type === "custom")
+		setTimeout(displayCustomBackgrounds(), 200)
+	
 	
 	
 
