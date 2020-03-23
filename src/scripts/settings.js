@@ -4,7 +4,7 @@ function selectBackgroundType(cat) {
 	id("custom").style.display = "none";
 	id(cat).style.display = "block";
 
-	if (cat === "dynamic")
+	if (cat === "dynamic" || cat === "default")
 		unsplash()
 	else if (cat === "custom")
 		displayCustomThumbnails()
@@ -260,16 +260,25 @@ function initParams() {
 
 	
 	//bg
-	if (data.background_type !== undefined)
-		id(data.background_type).style.display = "block";
-	else
-		id("dynamic").style.display = "block";
+	if (data.background_type === "dynamic") {
+		id("dynamic").style.display = "block"
+	}
+	else if (data.background_type === "custom") {
+		id("custom").style.display = "block"
+		displayCustomThumbnails()
+	}
+	else if (data.background_type === "default") {
+		id("dynamic").style.display = "block"
+		id("i_type").value = "dynamic"
+		chrome.storage.sync.set({background_type: "dynamic"})
+	}
+		
 	
 
 	//ajoute les thumbnails au custom background
 
 	if (data.background_type === "custom")
-		displayCustomThumbnails()
+		
 	
 	
 	

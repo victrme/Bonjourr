@@ -1230,7 +1230,7 @@ function initBackground(storage) {
 		
 		imgCredits(null, type);
 	}
-	else if (type === "dynamic")
+	else if (type === "dynamic" || type === "default")
 		unsplash(storage.dynamic)
 
 	else
@@ -2202,6 +2202,13 @@ function checkifpro(data) {
 
 //comme un onload, sans le onload
 chrome.storage.sync.get(null, (data) => {
+
+	//1.8.3 -> 1.9 data transfer
+	if (localStorage.lang) {
+		data.lang = localStorage.lang
+		chrome.storage.sync.set({lang: localStorage.lang})
+		localStorage.removeItem("lang")
+	}
 
 	//pour que les settings y accede plus facilement
 	disposableData = localEnc(JSON.stringify(data))
