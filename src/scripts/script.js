@@ -566,7 +566,7 @@ function quickLinks(event, that, initStorage) {
 
 			//si le xhr est cassé, prend l'icone bonjourr
 			if (json === null)
-				return "src/images/icons/favicon"
+				return "src/images/icons/favicon.png"
 
 			var s = 0;
 			var a, b = 0;

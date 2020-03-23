@@ -2,6 +2,18 @@
 
 ## Changelogs
 
+**v1.9.0**
+
+- Added review popup
+- Dynamic backgrounds by default
+- Different unsplash collections for day & night
+- Infinite number of custom backrounds !
+- Searchbar internationalisation
+- Increased privacy for stored local data
+- Various fixes, style changes & performance boosts
+
+<br />
+
 **v1.8.3**
 
 - Better dynamic backgrounds preload

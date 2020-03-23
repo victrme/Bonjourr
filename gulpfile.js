@@ -27,7 +27,6 @@ function scssTask(){
 
 function cssTask(){
     return src(path.css)
-        /*.pipe(autoprefixer())*/
         .pipe(csso())
         .pipe(concat('style.css'))
         .pipe(dest("release/src/styles")
