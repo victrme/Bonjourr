@@ -19,8 +19,7 @@
 #greetings.hidden,
 #weather_desc.hidden,
 #w_icon.hidden,
-#weather_desc > div,
-#custom {
+#weather_desc > div {
 	opacity: 0;
 	transition: opacity .1s;
 }
@@ -194,6 +193,7 @@ body.autodark #settings #fileContainer:active {
 	transition: opacity .2s;
 }
 
+#bg_tn_wrap .thumbnail button:hover {text-decoration: none;}
 #bg_tn_wrap .thumbnail button.hidden {opacity: 0}
 #bg_tn_wrap .thumbnail button.shown {opacity: 1}
 
@@ -201,6 +201,8 @@ body.autodark #settings #fileContainer:active {
 #bg_tn_wrap::-webkit-scrollbar {height: 6px;}
 #bg_tn_wrap::-webkit-scrollbar-track {background: #ccc;border-radius: 4px;}
 #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;border-radius: 4px;}
+
+body.dark #bg_tn_wrap .thumbnail button {color: white;}
 
 body.dark #bg_tn_wrap::-webkit-scrollbar-track {background: #39383d;}
 body.dark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}

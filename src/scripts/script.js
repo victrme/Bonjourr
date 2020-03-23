@@ -564,12 +564,9 @@ function quickLinks(event, that, initStorage) {
 		function filterIcon(json) {
 			//prend le json de favicongrabber et garde la meilleure
 
-			//si le xhr est cassé, prend une des deux icones
-			if (json === null) {
-				let path = "src/images/icons/";
-				path += (Math.random() > .5 ? "orange.png" : "yellow.png");
-				return path;
-			}
+			//si le xhr est cassé, prend l'icone bonjourr
+			if (json === null)
+				return "src/images/icons/favicon"
 
 			var s = 0;
 			var a, b = 0;
@@ -1191,9 +1188,6 @@ function initBackground(storage) {
 
 		imgBackground(b64toBlobUrl(cleanData));
 		changeImgIndex(d.customIndex);
-		
-		for (var i = 0; i < d.custom.length; i++)
-			fullImage.push(d.custom[i])
 	}
 
 	let type = storage.background_type || "dynamic";
@@ -1216,6 +1210,7 @@ function initBackground(storage) {
 
 				chrome.storage.local.set({custom: old})
 				chrome.storage.local.set({customIndex: 0})
+				chrome.storage.local.set({customThumbnails: old})	
 
 				chrome.storage.local.remove("background_blob")
 			}
@@ -1282,9 +1277,10 @@ function setblob(donnee, reader) {
 	return (reader ? [base, blobUrl] : blobUrl);
 }
 
-let fullImage = [];
-const domimg = id('background');
-const domthumbnail = document.getElementsByClassName('thumbnail');
+let fullImage = []
+let fullThumbnails = []
+const domimg = id('background')
+const domthumbnail = document.getElementsByClassName('thumbnail')
 
 function b64toBlobUrl(a,b="",c=512){const d=atob(a),e=[];for(let f=0;f<d.length;f+=c){const a=d.slice(f,f+c),b=Array(a.length);for(let c=0;c<a.length;c++)b[c]=a.charCodeAt(c);const g=new Uint8Array(b);e.push(g)}const f=new Blob(e,{type:b}),g=URL.createObjectURL(f);return g}
 
@@ -1345,6 +1341,9 @@ function compress(e, state) {
 
 			//controle les thumbnails
 			addThumbnails(cleanData, fullImage.length - 1);
+
+			fullThumbnails.push(cleanData)
+			chrome.storage.local.set({customThumbnails: fullThumbnails})
 
 		} else {
 
@@ -1429,12 +1428,16 @@ function addThumbnails(data, index) {
 
 		//deletes thumbnail from storage
 		//concat  [0, index] à [index + 1, fin]
-		let arr = fullImage;
-		fullImage = arr.slice(null, index).concat(arr.slice(index +1));
+		const deleteArrItem = arr => arr.slice(null, index).concat(arr.slice(index +1))
+		
+		fullImage = deleteArrItem(fullImage)
 		chrome.storage.local.set({custom: fullImage})
 
+		fullThumbnails = deleteArrItem(fullThumbnails)
+		chrome.storage.local.set({customThumbnails: fullThumbnails})
+
 		//celui a suppr plus petit que l'actuel, baisse son index
-		if (index <= currentIndex) chrome.storage.local.set({customIndex: parseInt(currentIndex) - 1});
+		if (index <= currentIndex) chrome.storage.local.set({customIndex: currentIndex - 1});
 	}
 }
 
