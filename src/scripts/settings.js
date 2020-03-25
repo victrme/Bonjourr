@@ -260,7 +260,7 @@ function initParams() {
 
 	
 	//bg
-	if (data.background_type === "dynamic") {
+	if (data.background_type === "dynamic" || Object.keys(data).length === 0) {
 		id("dynamic").style.display = "block"
 	}
 	else if (data.background_type === "custom") {
@@ -272,19 +272,9 @@ function initParams() {
 		id("i_type").value = "dynamic"
 		chrome.storage.sync.set({background_type: "dynamic"})
 	}
-		
-	
-
-	//ajoute les thumbnails au custom background
-
-	if (data.background_type === "custom")
-		
-	
-	
-	
 
 	//weather settings
-	if (data.weather) {
+	if (data.weather && Object.keys(data).length > 0) {
 
 		let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
 		id("i_city").setAttribute("placeholder", cityPlaceholder);
