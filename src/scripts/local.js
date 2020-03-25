@@ -1183,18 +1183,17 @@ function imgBackground(val) {
 }
 
 //fait ?
-function initBackground(storage) {
+function initBackground(initStorage) {
 
 	function loadCustom(d) {
 
-		const index = (d.customIndex >= 0 ? d.customIndex : 0),
-			cleanData = d.custom[index].replace("data:image/jpeg;base64,", "")
+		const cleanData = d.custom.replace("data:image/jpeg;base64,", "")
 
 		imgBackground(b64toBlobUrl(cleanData));
 		changeImgIndex(d.customIndex);
 	}
 
-	let type = storage.background_type || "dynamic";
+	let type = initStorage.background_type || "dynamic";
 
 	if (type === "custom") {
 
@@ -1206,29 +1205,11 @@ function initBackground(storage) {
 			customThumbnails: localStorage.customThumbnails
 		}
 
-		//1.8.3 -> 1.9 data transfer
-		if (data.background_blob) {
-
-			const blob = data.background_blob
-			const old = [blob[0] + "," + blob[1]]
-				
-			loadCustom({
-				custom: old,
-				customIndex: 0
-			})
-
-			localStorage.custom = old
-			localStorage.customIndex = 0
-			localStorage.customThumbnails = old
-
-			localStorage.removeItem("background_blob")
-		}
-
 		//if no custom background available
 		//choose dynamic
-		else if (data.custom === undefined) {
+		if (data.custom === undefined) {
 
-			unsplash(storage.dynamic)
+			unsplash(initStorage.dynamic)
 			storage("background_type", "dynamic")
 
 		//apply chosen custom background
@@ -1239,14 +1220,14 @@ function initBackground(storage) {
 		imgCredits(null, type)
 	}
 	else if (type === "dynamic" || type === "default")
-		unsplash(storage.dynamic)
+		unsplash(initStorage.dynamic)
 
 	else
 		unsplash(null, null, true); //on startup
 
 
-	let blur = (storage.background_blur ? storage.background_blur : 15);
-	let bright = (storage.background_bright ? storage.background_bright : .7);
+	let blur = (initStorage.background_blur ? initStorage.background_blur : 15);
+	let bright = (initStorage.background_bright ? initStorage.background_bright : .7);
 
 	filter("init", [blur, bright]);
 }
@@ -1302,15 +1283,24 @@ function renderImage(file, is) {
 	let reader = new FileReader();
 	reader.onload = function(event) {
 
-		let result = event.target.result;
+		let result = event.target.result
+		let usable = true
 		
 		if (is === "change") {
 
-			fullImage.push(result);
-			localStorage.custom = fullImage
+			fullImage = result
 
-			compress(result, "thumbnail");
-			compress(result, "new");
+			try {
+				localStorage.custom = fullImage
+			} catch(e) {
+				alert("- Image must be max 4Mo\n- 2Mo or less for better performance")
+				usable = false
+			}
+
+			if (usable) {
+				compress(result, "thumbnail");
+				compress(result, "new");
+			}
 		}
 	}
 
@@ -1351,21 +1341,19 @@ function compress(e, state) {
 		if (state === "thumbnail") {
 
 			//controle les thumbnails
-			addThumbnails(cleanData, fullImage.length - 1);
+			addThumbnails(cleanData, 0);
 
-			fullThumbnails.push(cleanData)
+			fullThumbnails = cleanData
 			localStorage.customThumbnails = fullThumbnails
 
 		} else {
 
 			//new image loaded from filereader sets image index 
 			if (state === "new") {
-				changeImgIndex(fullImage.length - 1);
+				changeImgIndex(0);
 				//save l'index
-				localStorage.customIndex = fullImage.length - 1
+				localStorage.customIndex = 0
 			}
-
-			
 
 			//affiche l'image
 			imgBackground(b64toBlobUrl(cleanData));
@@ -1418,7 +1406,7 @@ function addThumbnails(data, index) {
 
 		const index = getParentIndex(this);
 
-		compress(fullImage[index]);
+		compress(fullImage);
 		changeImgIndex(index);
 		localStorage.customIndex = index
 	}
@@ -1426,30 +1414,14 @@ function addThumbnails(data, index) {
 	//7
 	rem.onmouseup = function() {
 
-		const index = getParentIndex(this);
-		let currentIndex = id('background').getAttribute("index");
-
 		//removes thumbnail
-		domthumbnail[index].remove();
+		domthumbnail[0].remove();
 
-		//rewrite all thumbs indexes
-		for (let i = 0; i < domthumbnail.length; i++) {
-			domthumbnail[i].setAttribute("index", i);
-		}
+		localStorage.removeItem("custom")
+		localStorage.removeItem("customIndex")
+		localStorage.removeItem("customThumbnails")
 
-		//deletes thumbnail from storage
-		//concat  [0, index] à [index + 1, fin]
-		const deleteArrItem = arr => arr.slice(null, index).concat(arr.slice(index +1))
-		
-		fullImage = deleteArrItem(fullImage)
-		localStorage.custom = fullImage
-
-		fullThumbnails = deleteArrItem(fullThumbnails)
-		localStorage.customThumbnails = fullThumbnails
-
-		//celui a suppr plus petit que l'actuel, baisse son index
-		if (index <= currentIndex)
-			localStorage.customIndex = currentIndex - 1
+		storage("background_type", "dynamic")
 	}
 }
 
@@ -1932,14 +1904,9 @@ function displayCustomThumbnails() {
 	const data = localStorage.customThumbnails
 
 	if (data !== undefined) {
-
-		let cleanData
-		let thumbs = data
-				
-		for (var i = 0; i < thumbs.length; i++) {
-			cleanData = thumbs[i].replace("data:image/jpeg;base64,", ""); //used for blob
-			addThumbnails(cleanData, i)
-		}
+		
+		let cleanData = data.replace("data:image/jpeg;base64,", ""); //used for blob
+		addThumbnails(cleanData, 0)
 
 		fullThumbnails = data.customThumbnails
 
@@ -2122,8 +2089,8 @@ function initParams() {
 	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
 
 	initInput("i_type", data.background_type, "dynamic");
-	initInput("i_blur", parseFloat(data.background_blur), 15);
-	initInput("i_bright", parseFloat(data.background_bright), .7);
+	initInput("i_blur", data.background_blur, 15);
+	initInput("i_bright", data.background_bright, .7);
 	initInput("i_dark", data.dark, "disable");
 	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
 	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
@@ -2137,33 +2104,6 @@ function initParams() {
 	initCheckbox("i_sb", data.searchbar);
 	initCheckbox("i_usdate", data.usdate);
 	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
-	
-
-	if (isPro) {
-
-		initInput("i_row", data.linksrow, 8);
-		initInput("i_customfont", isThereData("font", "family"), "");
-		initInput("i_weight", isThereData("font", "weight"), 400);
-		initInput("i_size", isThereData("font", "size"), 12);
-		initInput("i_greeting", data.greeting, "");
-		initInput("cssEditor", data.css, "");
-		
-		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
-		initCheckbox("i_analog", isThereData("clock", "analog"), false);
-
-
-		//hide elems
-		const all = id("hideelem").querySelectorAll("button")
-
-		//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
-
-		if (data.hide)
-			for (let a of all) 
-				for (let b of data.hide) 
-					if (a.getAttribute("data") === b)
-						proFunctions({which: "hide", event: a, sett: true})
-
-	}
 
 
 	//input translation
@@ -2254,7 +2194,7 @@ function importExport(select, isEvent) {
 				try {
 
 					data = JSON.parse(val)
-					storage(data)
+					storage("import", data)
 					setTimeout(function() {location.reload()}, 20);
 
 				} catch(e) {
