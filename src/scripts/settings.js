@@ -222,6 +222,43 @@ function settingsEvents() {
 	id("i_export").onfocus = function() {
 		importExport("exp")
 	}
+
+
+	id("i_customfont").oninput = function() {
+		fontObj = {family: this.value, weight: null, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_weight").oninput = function() {
+		fontObj = {family: null, weight: this.value, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_size").oninput = function() {
+		fontObj = {family: null, weight: null, size: this.value};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_row").oninput = function() {
+		proFunctions({which: "row", event: this.value})
+	}
+
+	id("i_greeting").onkeyup = function() {
+		proFunctions({which: "greet", event: this.value})
+	}
+
+	id("cssEditor").onkeypress = function(e) {
+		let data = {e: e, that: this};
+		proFunctions({which: "css", event: data})
+	}
+
+
+	for(e of id("hideelem").querySelectorAll("button")) {
+
+		e.onmouseup = function() {
+			proFunctions({which: "hide", event: this})
+		}
+	}
 }
 
 function initParams() {
@@ -236,7 +273,7 @@ function initParams() {
 	initInput("i_blur", data.background_blur, 15)
 	initInput("i_bright", data.background_bright, .7)
 	initInput("i_dark", data.dark, "disable")
-	initInput("i_sbengine", data.searchbar_engine, "s_startpage")
+	initInput("i_sbengine", data.searchbar_engine, "s_google")
 	initInput("i_timezone", isThereData("clock", "timezone"), "auto")
 	initInput("i_freq", isThereData("dynamic", "every"), "hour")
 	initInput("i_ccode", isThereData("weather", "ccode"), "US")
@@ -261,7 +298,6 @@ function initParams() {
 	const all = id("hideelem").querySelectorAll("button")
 
 	//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
-
 	if (data.hide)
 		for (let a of all) 
 			for (let b of data.hide) 
@@ -420,7 +456,6 @@ function showSettings() {
 			showall()
 			settingsEvents()
 			signature()
-			proEvents()
 		}, 10)
 	}
 
@@ -496,45 +531,4 @@ document.onkeydown = function(e) {
 
 	//press escape to show settings
 	if (e.code === "Escape") showSettings()
-}
-
-function proEvents() {
-
-	let fontObj = {}
-
-	id("i_customfont").oninput = function() {
-		fontObj = {family: this.value, weight: null, size: null};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_weight").oninput = function() {
-		fontObj = {family: null, weight: this.value, size: null};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_size").oninput = function() {
-		fontObj = {family: null, weight: null, size: this.value};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_row").oninput = function() {
-		proFunctions({which: "row", event: this.value})
-	}
-
-	id("i_greeting").onkeyup = function() {
-		proFunctions({which: "greet", event: this.value})
-	}
-
-	id("cssEditor").onkeypress = function(e) {
-		let data = {e: e, that: this};
-		proFunctions({which: "css", event: data})
-	}
-
-
-	for(e of id("hideelem").querySelectorAll("button")) {
-
-		e.onmouseup = function() {
-			proFunctions({which: "hide", event: this})
-		}
-	}
 }
