@@ -1703,40 +1703,6 @@ function darkmode(choice, initStorage) {
 	}
 }
 
-function distractMode(that, initStorage) {
-
-	function apply(on) {
-
-		let ui = dominterface;
-		let uiClass = ui.getAttribute("class");
-
-		if (on) {
-			clas(ui, (uiClass === "pushed" ? "pushed distract" : "distract"));
-			clas(id("showSettings"), "distract");
-		} else {
-			clas(ui, (uiClass === "pushed distract" ? "pushed" : ""));
-			clas(id("showSettings"), "");
-		}
-	}
-
-	//change event
-	if (that || that === false) {
-		apply(that.checked);
-		chrome.storage.sync.set({"distract": that.checked});
-		localStorage.distract = that.checked;
-		return true;
-	}
-
-	//init
-	let localDist = (localStorage.distract === "true" ? true : false);
-
-	if (localDist) {
-		apply(localDist);
-	} else {
-		apply(initStorage);
-	}
-}
-
 function searchbar(event, that, storage) {
 
 	function display(value, init) {
@@ -2172,34 +2138,6 @@ function proFunctions(obj) {
 	}
 }
 
-function checkifpro(data) {
-
-	const hash = "OGYyNGFjMDRkYjhlNDk5ZjQ2ZDM2NzJiNGZhZDYxM2VlYzY4MTlhYmVlYTU4YTdmNDlhYmIyMWRhOWM0ZjI5ZA==";
-
-	async function encode(message) {
-		const msgBuffer = new TextEncoder('utf-8').encode(message);
-		const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-		return hashHex;
-	}
-
-	encode(atob(data.login)).then((a) => {
-		
-		if (a === atob(hash)) {
-
-			isPro = true
-			
-			proFunctions({which: "hide", data: data.hide})	
-			proFunctions({which: "font", data: data.font})
-			proFunctions({which: "css", data: data.css})
-			proFunctions({which: "row", data: data.linksrow})
-			proFunctions({which: "greet", data: data.greeting})	
-
-		}
-	})
-}
-
 //comme un onload, sans le onload
 chrome.storage.sync.get(null, (data) => {
 
@@ -2217,7 +2155,6 @@ chrome.storage.sync.get(null, (data) => {
 	greetings()
 	date(null, data.usdate)
 	newClock(null, data.clock)
-	distractMode(null, data.distract)
 	darkmode(null, data)
 	initBackground(data)
 	weather(null, null, data)
@@ -2226,7 +2163,14 @@ chrome.storage.sync.get(null, (data) => {
 	showPopup(data.reviewPopup)
 
 	//init profunctions
-	if (data.login) checkifpro(data)
+	proFunctions({which: "hide", data: data.hide})	
+	proFunctions({which: "font", data: data.font})
+	proFunctions({which: "css", data: data.css})
+	proFunctions({which: "row", data: data.linksrow})
+	proFunctions({which: "greet", data: data.greeting})	
+
+	clas(dominterface, "")
+	clas(domshowsettings, "")
 
 	//safe font for different alphabet
 	/*if (data.lang === "ru" || data.lang === "sk")

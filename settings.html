@@ -1,4 +1,38 @@
+<div>
+	<h5 class="trn">General</h5>
+	<div class="param">
 
+		<div class="showall wrapper">
+			<span class="trn">Show all settings</span>
+			<div>
+				<label class="switch">
+					<input id="i_showall" type="checkbox">
+					<span class="slider round span"></span>
+				</label>
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="choose_language wrapper">
+			<span class="trn selector_span">Language</span>
+			<select id="i_lang" class="lang">
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+				<option value="sk">Slovenský</option>
+				<option value="sv">Svenska</option>
+				<option value="pl">Polski</option>
+				<option value="pt_BR">Português (Brasil)</option>
+				<option value="nl">Nederlandse</option>
+				<option value="ru">Русский</option>
+				<option value="zh_CN">简体中文</option>
+				<option value="de">Deutsch</option>
+				<option value="it">Italiano</option>
+			</select>
+		</div>
+		
+	</div>
+</div>
 <div>
 	<h5 class="trn">Quick Links</h5>
 	<div class="param">
@@ -13,19 +47,21 @@
 			</div>
 		</div>
 
-		<hr>
-
-		<div class="linknewtab wrapper">
-			<span class="trn">Open in new tab by default</span>
-			<div>
-				<label class="switch">
-					<input id="i_linknewtab" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
 		<div class="pro">
+
+			<hr>
+
+			<div class="linknewtab wrapper">
+				<span class="trn">Open in new tab by default</span>
+				<div>
+					<label class="switch">
+						<input id="i_linknewtab" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
+			</div>
+
+		
 
 			<hr>
 			
@@ -98,19 +134,14 @@
 			</select>
 		</div>
 
-		<hr>
-
-		<div class="distractions wrapper">
-			<span class="trn">No distractions</span>
-			<div>
-				<label class="switch">
-					<input id="i_distract" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
 		<div class="pro">
+
+			<hr>
+
+			<div class="wrapper">
+				<span class="trn">Greeting</span>
+				<input type="text" name="greeting" id="i_greeting" placeholder="Name" maxlength="32">
+			</div>
 
 			<hr>
 
@@ -133,6 +164,8 @@
 					<button data="showSettings">Settings Icon</button>
 				</div>
 			</div>
+
+			
 		</div>
 	</div>
 </div>
@@ -141,29 +174,44 @@
 	<h5 class="trn">Time & Date</h5>
 
 	<div class="param">
-		<div class="analog wrapper proflex">
-			<span class="trn">Analog clock</span>
-			<div>
-				<label class="switch">
-					<input id="i_analog" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
+
+		<div class="pro">
+			<div class="analog wrapper">
+				<span class="trn">Analog clock</span>
+				<div>
+					<label class="switch">
+						<input id="i_analog" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
 			</div>
-		</div>
 
-		<hr class="pro">
+			<hr>
 
-		<div class="seconds wrapper proflex">
-			<span class="trn">Display Seconds</span>
-			<div>
-				<label class="switch">
-					<input id="i_seconds" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
+			<div class="seconds wrapper">
+				<span class="trn">Display Seconds</span>
+				<div>
+					<label class="switch">
+						<input id="i_seconds" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
 			</div>
-		</div>
 
-		<hr id="h_ampm" class="pro">
+			<hr>
+
+			<div class="wrapper">
+				<span class="trn">US Date Format</span>
+				<div>
+					<label class="switch">
+						<input id="i_usdate" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
+			</div>
+
+			<hr>
+		</div>
 
 		<div id="w_ampm" class="12hour wrapper">
 			<span class="trn">12-Hour Time</span>
@@ -176,18 +224,6 @@
 		</div>
 
 		<hr>
-
-		<div class="wrapper">
-			<span class="trn">US Date Format</span>
-			<div>
-				<label class="switch">
-					<input id="i_usdate" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
-		<hr />
 
 		<div class="wrapper">
 			<span class="trn selector_span">Time zone</span>
@@ -596,55 +632,29 @@
 	<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
 </div>
 
-<div>
-	<h5 class="trn">General</h5>
-	<div class="param">
+<div class="pro">
+	<div>
+		<h5 class="trn">Settings</h5>
+		<div class="param">
 
-		<div class="choose_language wrapper">
-			<span class="trn selector_span">Language</span>
-			<select id="i_lang" class="lang">
-				<option value="en">English</option>
-				<option value="fr">Français</option>
-				<option value="sk">Slovenský</option>
-				<option value="sv">Svenska</option>
-				<option value="pl">Polski</option>
-				<option value="pt_BR">Português (Brasil)</option>
-				<option value="nl">Nederlandse</option>
-				<option value="ru">Русский</option>
-				<option value="zh_CN">简体中文</option>
-				<option value="de">Deutsch</option>
-				<option value="it">Italiano</option>
-			</select>
-		</div>
-
-		<div class="pro">
+			<div id="imp_wrapper" class="wrapper">
+				<input id="i_import" type="text" name="Import" placeholder="Paste settings code">
+				<button id="submitImport" class="trn">Import</button>
+			</div>
 
 			<hr>
 
-			<div class="wrapper">
-				<span class="trn">Greeting</span>
-				<input type="text" name="greeting" id="i_greeting" placeholder="Name" maxlength="32">
+			<div id="exp_wrapper" class="wrapper">
+				<input readonly id="i_export" type="text" name="export" placeholder="Click to show export code">
+				<button id="submitExport" class="trn">Export</button>
 			</div>
-		</div>
 
-		<hr>
+			<hr>
 
-		<div id="imp_wrapper" class="wrapper">
-			<input id="i_import" type="text" name="Import" placeholder="Paste settings code">
-			<button id="submitImport" class="trn">Import</button>
-		</div>
+			<div id="reset_wrapper" class="wrapper">
+				<button id="submitReset" class="trn">Reset settings</button>
+			</div>
 
-		<hr>
-
-		<div id="exp_wrapper" class="wrapper">
-			<input readonly id="i_export" type="text" name="export" placeholder="Click to show export code">
-			<button id="submitExport" class="trn">Export</button>
-		</div>
-
-		<hr>
-
-		<div id="reset_wrapper" class="wrapper">
-			<button id="submitReset" class="trn">Reset settings</button>
 		</div>
 	</div>
 </div>

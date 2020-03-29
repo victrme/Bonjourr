@@ -1,5 +1,3 @@
-#settings .pro,
-#settings .proflex,
 #clock.hidden,
 #analogClock.hidden,
 #interface #time #analogClock #analogSeconds.hidden,
@@ -38,7 +36,13 @@
 }
 
 
-
+#settings .pro {
+	max-height: 0;
+	overflow: hidden;
+}
+#settings .pro.shown {
+	max-height: 350px;
+}
 
 
 @keyframes sbfade {

@@ -34,6 +34,35 @@ function displayCustomThumbnails() {
 	})
 }
 
+function showall(that) {
+
+	const change = (ev) => {
+		for (let d of cl("pro"))
+			clas(d, ev ? "pro shown" : "pro")
+	}
+
+	const addtransitions = (dom, css) => {
+		for (let d of cl(dom))
+			d.style.transition = css
+	}
+
+	//event
+	if (that !== undefined) {
+
+		change(that)
+		chrome.storage.sync.set({showall: that})
+
+	//init
+	} else {
+
+		const data = JSON.parse(localEnc(disposableData, false))
+		change(data.showall)
+
+		//add transitions
+		addtransitions("pro", "max-height .2s")
+	}
+}
+
 function settingsEvents() {
 
 	// file input animation
@@ -52,6 +81,24 @@ function settingsEvents() {
 	custom.addEventListener("drop", function(){
 	  customStyle.classList.remove("dragover");
 	});
+
+
+	//general
+
+	id("i_showall").onchange = function() {
+		showall(this.checked)
+	}
+
+	id("i_lang").onchange = function() {
+
+		chrome.storage.sync.set({"lang": this.value});
+
+		//session pour le weather
+		sessionStorage.lang = this.value;
+
+		if (sessionStorage.lang)
+			location.reload()
+	}
 
 	//quick links
 	id("i_title").onkeypress = function(e) {
@@ -86,11 +133,6 @@ function settingsEvents() {
 		renderImage(this.files[0], "change");
 	};
 
-	/*id("i_quality").oninput = function() {
-		customBackground({cat: "quality", value: this.value})
-	}*/
-
-
 
 	id("i_blur").oninput = function() {
 		filter("blur", this.value);
@@ -104,10 +146,6 @@ function settingsEvents() {
 
 	id("i_dark").onchange = function() {
 		darkmode(this.value)
-	}
-
-	id("i_distract").onchange = function() {
-		distractMode(this);
 	}
 
 
@@ -163,21 +201,7 @@ function settingsEvents() {
 	}
 
 
-
-
-	//general
-
-	id("i_lang").onchange = function() {
-
-		chrome.storage.sync.set({"lang": this.value});
-
-		//session pour le weather
-		sessionStorage.lang = this.value;
-
-		if (sessionStorage.lang)
-			location.reload()
-	}
-
+	//settings
 
 	id("submitReset").onclick = function() {
 		importExport("reset");
@@ -202,55 +226,47 @@ function settingsEvents() {
 
 function initParams() {
 
-	const data = JSON.parse(localEnc(disposableData, false));
+	const data = JSON.parse(localEnc(disposableData, false))
 
-	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base));
-	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
-	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
+	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base))
+	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false))
+	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
-	initInput("i_type", data.background_type, "dynamic");
-	initInput("i_blur", data.background_blur, 15);
-	initInput("i_bright", data.background_bright, .7);
-	initInput("i_dark", data.dark, "disable");
-	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
-	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
-	initInput("i_freq", isThereData("dynamic", "every"), "hour");
-	initInput("i_ccode", isThereData("weather", "ccode"), "US");
+	initInput("i_type", data.background_type, "dynamic")
+	initInput("i_blur", data.background_blur, 15)
+	initInput("i_bright", data.background_bright, .7)
+	initInput("i_dark", data.dark, "disable")
+	initInput("i_sbengine", data.searchbar_engine, "s_startpage")
+	initInput("i_timezone", isThereData("clock", "timezone"), "auto")
+	initInput("i_freq", isThereData("dynamic", "every"), "hour")
+	initInput("i_ccode", isThereData("weather", "ccode"), "US")
+	initInput("i_row", data.linksrow, 8)
+	initInput("i_customfont", isThereData("font", "family"), "")
+	initInput("i_weight", isThereData("font", "weight"), 400)
+	initInput("i_size", isThereData("font", "size"), 12)
+	initInput("i_greeting", data.greeting, "")
+	initInput("cssEditor", data.css, "")
 
-	initCheckbox("i_geol", isThereData("weather", "location"));
-	initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"));
-	initCheckbox("i_distract", data.distract);
-	initCheckbox("i_linknewtab", data.linknewtab);
-	initCheckbox("i_sb", data.searchbar);
-	initCheckbox("i_usdate", data.usdate);
-	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
-	
+	initCheckbox("i_showall", data.showall)
+	initCheckbox("i_geol", isThereData("weather", "location"))
+	initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"))
+	initCheckbox("i_linknewtab", data.linknewtab)
+	initCheckbox("i_sb", data.searchbar)
+	initCheckbox("i_usdate", data.usdate)
+	initCheckbox("i_ampm", isThereData("clock", "ampm"), false)
+	initCheckbox("i_seconds", isThereData("clock", "seconds"), false)
+	initCheckbox("i_analog", isThereData("clock", "analog"), false)
 
-	if (isPro) {
+	//hide elems
+	const all = id("hideelem").querySelectorAll("button")
 
-		initInput("i_row", data.linksrow, 8);
-		initInput("i_customfont", isThereData("font", "family"), "");
-		initInput("i_weight", isThereData("font", "weight"), 400);
-		initInput("i_size", isThereData("font", "size"), 12);
-		initInput("i_greeting", data.greeting, "");
-		initInput("cssEditor", data.css, "");
-		
-		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
-		initCheckbox("i_analog", isThereData("clock", "analog"), false);
+	//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
 
-
-		//hide elems
-		const all = id("hideelem").querySelectorAll("button")
-
-		//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
-
-		if (data.hide)
-			for (let a of all) 
-				for (let b of data.hide) 
-					if (a.getAttribute("data") === b)
-						proFunctions({which: "hide", event: a, sett: true})
-
-	}
+	if (data.hide)
+		for (let a of all) 
+			for (let b of data.hide) 
+				if (a.getAttribute("data") === b)
+					proFunctions({which: "hide", event: a, sett: true})
 
 
 	//input translation
@@ -260,7 +276,9 @@ function initParams() {
 
 	
 	//bg
-	if (data.background_type === "dynamic" || Object.keys(data).length === 0) {
+	if (data.background_type === "dynamic"
+		|| Object.keys(data).length === 0
+		|| data.background_type === undefined) {
 		id("dynamic").style.display = "block"
 	}
 	else if (data.background_type === "custom") {
@@ -300,7 +318,7 @@ function initParams() {
 	if(!navigator.userAgent.includes("Chrome")) {
 		id("submitExport").style.display = "none";
 		id("i_export").style.width = "100%";
-	}	
+	}
 }
 
 function importExport(select, isEvent) {
@@ -376,19 +394,18 @@ function showSettings() {
 	function display() {
 		const edit = id("edit_linkContainer");
 		const editClass = edit.getAttribute("class");
-		const uiClass = dominterface.getAttribute("class");
 
 		if (has("settings", "shown")) {
 			clas(domshowsettings.children[0], "");
 			clas(id("settings"), "");
-			clas(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+			clas(dominterface, "");
 
 			if (editClass === "shown pushed") clas(edit, "shown");
 			
 		} else {
 			clas(domshowsettings.children[0], "shown");
 			clas(id("settings"), "shown");
-			clas(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
+			clas(dominterface, "pushed");
 			
 			if (editClass === "shown") clas(edit, "shown pushed");
 		}
@@ -396,19 +413,15 @@ function showSettings() {
 
 	function functions() {
 
-		if (isPro) {
-			for (let i of cl("pro")) i.style.display = "block";
-			for (let i of cl("proflex")) i.style.display = "flex";
-		}
-
 		initParams()
 		traduction(true)
-		setTimeout(() => (display()), 10)
 		setTimeout(function() {
+			display()
+			showall()
 			settingsEvents()
 			signature()
-			if (isPro) proEvents()
-		}, 100)
+			proEvents()
+		}, 10)
 	}
 
 	function init() {
@@ -463,7 +476,7 @@ function showInterface(e) {
 
 		clas(id("showSettings").children[0], "");
 		clas(id("settings"), "");
-		clas(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+		clas(dominterface, "");
 
 		if (editClass === "shown pushed") clas(edit, "shown");
 	}
