@@ -2,6 +2,20 @@
 
 ## Changelogs
 
+**v1.9.1**
+
+- Added all previously hidden features !
+Select show all settings to view them
+
+- Bonjourr greetings
+- Hide interface elements
+- Analog clock
+- display seconds
+- Custom font, size and weight
+- Custom CSS
+- Select number of quick links rows 
+
+
 **v1.9.0**
 
 - Added review popup
