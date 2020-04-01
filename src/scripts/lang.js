@@ -51,6 +51,18 @@ function askfordict() {
       de: "Einstellungen",
       it: "Impostazioni"
     },
+    "Show all settings": {
+      fr: "Afficher tous les réglages",
+      sv: "Show all settings",
+      nl: "Show all settings",
+      pl: "Show all settings",
+      pt_BR: "Show all settings",
+      ru: "Show all settings",
+      zh_CN: "Show all settings",
+      sk: "Show all settings",
+      de: "Show all settings",
+      it: "Show all settings"
+    },
     "QUICK LINKS": {
       fr: "Liens favoris",
       sv: "Snabblänkar",
@@ -185,7 +197,7 @@ function askfordict() {
       it: "Frequenza"
     },
     "Every tab": {
-      fr: "chaque onglet",
+      fr: "Chaque onglet",
       sv: "Every tab",
       nl: "Every tab",
       pl: "Co zakładkę",
@@ -197,7 +209,7 @@ function askfordict() {
       it: "Ogni scheda"
     },
     "Every hour": {
-      fr: "chaque heure",
+      fr: "Chaque heure",
       sv: "Every hour",
       nl: "Every hour",
       pl: "Co godzinę",
@@ -209,7 +221,7 @@ function askfordict() {
       it: "Ogni ora"
     },
     "Every day": {
-      fr: "chaque jour",
+      fr: "Chaque jour",
       sv: "Every day",
       nl: "Every day",
       pl: "Codziennie",
@@ -316,6 +328,102 @@ function askfordict() {
       de: "Deaktiviert",
       it: "Disabilitato"
     },
+    "Hide elements": {
+      fr: "Cacher des éléments",
+      sv: "Hide elements",
+      nl: "Hide elements",
+      pl: "Hide elements",
+      pt_BR: "Hide elements",
+      ru: "Hide elements",
+      zh_CN: "Hide elements",
+      sk: "Hide elements",
+      de: "Hide elements",
+      it: "Hide elements"
+    },
+    "Clock": {
+      fr: "Horloge",
+      sv: "Clock",
+      nl: "Clock",
+      pl: "Clock",
+      pt_BR: "Clock",
+      ru: "Clock",
+      zh_CN: "Clock",
+      sk: "Clock",
+      de: "Clock",
+      it: "Clock"
+    },
+    "Date": {
+      fr: "Date",
+      sv: "Date",
+      nl: "Date",
+      pl: "Date",
+      pt_BR: "Date",
+      ru: "Date",
+      zh_CN: "Date",
+      sk: "Date",
+      de: "Date",
+      it: "Date"
+    },
+    "Greetings": {
+      fr: "Horloge",
+      sv: "Greetings",
+      nl: "Greetings",
+      pl: "Greetings",
+      pt_BR: "Greetings",
+      ru: "Greetings",
+      zh_CN: "Greetings",
+      sk: "Greetings",
+      de: "Greetings",
+      it: "Greetings"
+    },
+    "Weather": {
+      fr: "Météo",
+      sv: "Weather",
+      nl: "Weather",
+      pl: "Weather",
+      pt_BR: "Weather",
+      ru: "Weather",
+      zh_CN: "Weather",
+      sk: "Weather",
+      de: "Weather",
+      it: "Weather"
+    },
+    "Icon": {
+      fr: "Icône",
+      sv: "Icon",
+      nl: "Icon",
+      pl: "Icon",
+      pt_BR: "Icon",
+      ru: "Icon",
+      zh_CN: "Icon",
+      sk: "Icon",
+      de: "Icon",
+      it: "Icon"
+    },
+    "Quick Links": {
+      fr: "Liens favoris",
+      sv: "Quick Links",
+      nl: "Quick Links",
+      pl: "Quick Links",
+      pt_BR: "Quick Links",
+      ru: "Quick Links",
+      zh_CN: "Quick Links",
+      sk: "Quick Links",
+      de: "Quick Links",
+      it: "Quick Links"
+    },
+    "Settings icon": {
+      fr: "Icône réglages",
+      sv: "Settings icon",
+      nl: "Settings icon",
+      pl: "Settings icon",
+      pt_BR: "Settings icon",
+      ru: "Settings icon",
+      zh_CN: "Settings icon",
+      sk: "Settings icon",
+      de: "Settings icon",
+      it: "Settings icon"
+    },
     "Upload background here": {
       fr: "Insérez votre arrière-plan",
       sv: "Upload background here",
@@ -339,6 +447,18 @@ function askfordict() {
       sk: "Analog clock",
       de: "Analog clock",
       it: "Analog clock"
+    },
+    "Display seconds": {
+      fr: "Afficher les secondes",
+      sv: "Display seconds",
+      nl: "Display seconds",
+      pl: "Display seconds",
+      pt_BR: "Display seconds",
+      ru: "Display seconds",
+      zh_CN: "Display seconds",
+      sk: "Display seconds",
+      de: "Display seconds",
+      it: "Display seconds"
     },
     "No distractions": {
       fr: "Mode concentration",
@@ -556,6 +676,54 @@ function askfordict() {
       de: "Mit Qwant suchen",
       it: "Cerca su Qwant"
     },
+    "TIME & DATE": {
+      fr: "Date & heure",
+      sv: "TIME & DATE",
+      nl: "TIME & DATE",
+      pl: "TIME & DATE",
+      pt_BR: "TIME & DATE",
+      ru: "TIME & DATE",
+      zh_CN: "TIME & DATE",
+      sk: "TIME & DATE",
+      de: "TIME & DATE",
+      it: "TIME & DATE"
+    },
+    "CUSTOM FONT": {
+      fr: "Police personnalisée",
+      sv: "Custom FONT",
+      nl: "Custom FONT",
+      pl: "Custom FONT",
+      pt_BR: "Custom FONT",
+      ru: "Custom FONT",
+      zh_CN: "Custom FONT",
+      sk: "Custom FONT",
+      de: "Custom FONT",
+      it: "Custom FONT"
+    },
+    "CUSTOM STYLE": {
+      fr: "Style personnalisé",
+      sv: "Custom Style",
+      nl: "Custom Style",
+      pl: "Custom Style",
+      pt_BR: "Custom Style",
+      ru: "Custom Style",
+      zh_CN: "Custom Style",
+      sk: "Custom Style",
+      de: "Custom Style",
+      it: "Custom Style"
+    },
+    "Type in your custom CSS": {
+      fr: "Entrez vous CSS personnalisé",
+      sv: "Type in your custom CSS",
+      nl: "Type in your custom CSS",
+      pl: "Type in your custom CSS",
+      pt_BR: "Type in your custom CSS",
+      ru: "Type in your custom CSS",
+      zh_CN: "Type in your custom CSS",
+      sk: "Type in your custom CSS",
+      de: "Type in your custom CSS",
+      it: "Type in your custom CSS"
+    },
     "GENERAL": {
       fr: "Général",
       sv: "General",
@@ -592,7 +760,7 @@ function askfordict() {
       de: "12-Stunden Uhrzeit",
       it: "Sistema orario a 12 ore"
     },
-    "Time Zone": {
+    "Time zone": {
       fr: "Fuseau horaire",
       sv: "Time Zone",
       nl: "Time Zone",
