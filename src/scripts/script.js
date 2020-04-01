@@ -54,34 +54,16 @@ function slow(that) {
 
 function traduction(ofSettings, initStorage) {
 
-	let trns, dom = []
+	let trns = (ofSettings ? id("settings") : document).querySelectorAll('.trn')
+		langue = (ofSettings ? JSON.parse(localEnc(disposableData, false)).lang || "en" : initStorage || "en")
 
-	if (ofSettings) {
-		langue = JSON.parse(localEnc(disposableData, false)).lang || "en"
-		trns = id("settings").querySelectorAll('.trn')
-	} else {
-		langue = initStorage || "en"
-		trns = document.querySelectorAll('.trn')
-	}
-
-	if (langue !== "en") {
-
-		for (let k = 0; k < trns.length; k++) {
-
-			//trouve la traduction, sinon laisse le text original
-			if (dict[trns[k].innerText])
-				dom.push(dict[trns[k].innerText][langue]);
-			else
-				dom.push(trns[k].innerText);
-		}
-			
-		for (let i in trns) trns[i].innerText = dom[i]
-	}
+	if (langue !== "en")
+		trns.forEach(t =>	dict[t.innerText] ? t.innerText = dict[t.innerText][langue] : "")
 }
 
-function tradThis(str) {
-	return (langue === "en" ? str : dict[str][langue])
-}
+const tradThis = str => (
+	(langue === "en" ? str : dict[str][langue])
+)
 
 function newClock(eventObj, init) {
 
@@ -124,7 +106,7 @@ function newClock(eventObj, init) {
 				return setTime;
 			}
 		}
-		
+
 		function numerical(timearray) {
 
 			//seul numerique a besoin du ampm
@@ -177,7 +159,7 @@ function newClock(eventObj, init) {
 			//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
 			if (true || timearray[2] === 0) rotation(id('minutes'), m);
 			if (true || timearray[1] === 0) rotation(id('hours'), h);
-		    
+
 		    //tourne pas les secondes si pas de seconds
 		    if (clock.seconds) rotation(id('analogSeconds'), s);
 
@@ -280,7 +262,11 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	//enleve les selections d'edit
-	const removeLinkSelection = x => (domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {clas(e, "l_icon_wrap")}));
+	const removeLinkSelection = x => (domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(
+		function(e) {
+			clas(e, "l_icon_wrap")
+		})
+	);
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
@@ -288,21 +274,24 @@ function quickLinks(event, that, initStorage) {
 
 		let array = storage.links || false;
 
-		if (array) {
-
-			for (let i in array) {
-				appendblock(array[i], i, array);
-			}
-		}
+		if (array)
+			array.map((a, i) => (appendblock(a, i, array)))
 	}
 
 	function appendblock(arr, index, links) {
 
-		//console.log(arr)
-		let icon = (arr.icon.length > 0 ? arr.icon : "src/images/loading.gif");
+		let {icon, title, url} = arr
+
+		icon = (icon.length > 0 ? icon : "src/images/loading.gif");
 
 		//le DOM du block
-		let b = `<div class='block' draggable="false" source='${arr.url}'><div class='l_icon_wrap' draggable="false"><img class='l_icon' src='${icon}' draggable="false"></div><span>${arr.title}</span></div>`;
+		let b =
+		`<div class='block' draggable="false" source='${url}'>
+			<div class='l_icon_wrap' draggable="false">
+				<img class='l_icon' src='${icon}' draggable="false">
+			</div>
+			<span>${title}</span>
+		</div>`;
 
 		//ajoute un wrap
 		let block_parent = document.createElement('div');
@@ -329,9 +318,11 @@ function quickLinks(event, that, initStorage) {
 
 				const i = findindex(that);
 
-				if (is === "start") dragged = [elem, data.links[i], i];
+				if (is === "start")
+					dragged = [elem, data.links[i], i];
 
-				else if (is === "enter") hovered = [elem, data.links[i], i];
+				else if (is === "enter")
+					hovered = [elem, data.links[i], i];
 
 				else if (is === "end") {
 
@@ -348,8 +339,8 @@ function quickLinks(event, that, initStorage) {
 					allLinks[hovered[2]] = dragged[1];
 
 					chrome.storage.sync.set({"links": allLinks});
-				}	
-			});	
+				}
+			});
 		}
 
 		elem.ondragstart = function(e) {
@@ -481,7 +472,8 @@ function quickLinks(event, that, initStorage) {
 
 		const list = domlinkblocks.children;
 
-		for (let i = 0; i < list.length; i++) if (that === list[i]) return i-1
+		for (let i = 0; i < list.length; i++)
+			if (that === list[i]) return i-1
 	}
 
 	function removeblock(index) {
@@ -492,40 +484,30 @@ function quickLinks(event, that, initStorage) {
 
 			function ejectIntruder(arr) {
 
-				if (arr.length === 1) {
-					return []
-				}
+				if (arr.length === 1)	return []
 
-				if (count === 0) {
+				if (count === 0)
+					arr.shift()
+				else if (count === arr.length)
+					arr.pop()
+				else
+					arr.splice(count, 1)
 
-					arr.shift();
-					return arr;
-				}
-				else if (count === arr.length) {
-
-					arr.pop();
-					return arr;
-				}
-				else {
-
-					arr.splice(count, 1);
-					return arr;
-				}
+				return arr
 			}
 
 			var linkRemd = ejectIntruder(data.links);
 
 			//si on supprime un block quand la limite est atteinte
 			//réactive les inputs
-			if (linkRemd.length === 16 - 1) {
+			if (linkRemd.length === 16 - 1)
+				id("i_url").removeAttribute("disabled")
 
-				id("i_url").removeAttribute("disabled");
-			}
 
 			//enleve le html du block
 			var block_parent = domlinkblocks.children[count + 1];
 			block_parent.setAttribute("class", "block_parent removed");
-			
+
 			setTimeout(function() {
 
 				domlinkblocks.removeChild(block_parent);
@@ -572,7 +554,7 @@ function quickLinks(event, that, initStorage) {
 			var a, b = 0;
 
 			//garde la favicon la plus grande
-			for (var i = 0; i < json.icons.length; i++) {	
+			for (var i = 0; i < json.icons.length; i++) {
 
 				if (json.icons[i].sizes) {
 
@@ -668,7 +650,7 @@ function quickLinks(event, that, initStorage) {
 					arr.push(lll);
 					domlinkblocks.style.visibility = "visible";
 				}
-				
+
 				//si les blocks sont moins que 16
 				if (!full) {
 					chrome.storage.sync.set({"links": arr});
@@ -690,7 +672,7 @@ function quickLinks(event, that, initStorage) {
 			url: filterUrl(id("i_url").value),
 			icon: ""
 		}
-		
+
 		//si l'url filtré est juste
 		if (links.url && id("i_url").value.length > 2) {
 
@@ -726,7 +708,7 @@ function quickLinks(event, that, initStorage) {
 					a_hiddenlink.setAttribute("target", "_self");
 					a_hiddenlink.click();
 				}
-			}	
+			}
 		});
 	}
 
@@ -759,7 +741,7 @@ function weather(event, that, initStorage) {
 
 		if (storage.weather && storage.weather.lastCall) {
 
-			
+
 			//si weather est vieux d'une demi heure (1800s)
 			//ou si on change de lang
 			//faire une requete et update le lastcall
@@ -773,7 +755,7 @@ function weather(event, that, initStorage) {
 
 			} else
 				dataHandling(param.lastState);
-			
+
 
 			//high ici
 			if (storage.weather && storage.weather.fcDay === (new Date).getDay()) {
@@ -783,7 +765,7 @@ function weather(event, that, initStorage) {
 
 			} else
 				request(storage.weather, "forecast");
-			
+
 
 		} else {
 
@@ -812,7 +794,7 @@ function weather(event, that, initStorage) {
 
 			request(param, "current");
 			request(param, "forecast");
-			
+
 		}, (refused) => {
 
 			param.location = false;
@@ -823,10 +805,10 @@ function weather(event, that, initStorage) {
 			request(param, "forecast");
 		});
 	}
-	
+
 	function request(arg, wCat) {
 
-		
+
 		function urlControl(arg, forecast) {
 
 			let url = 'https://api.openweathermap.org/data/2.5/';
@@ -850,7 +832,7 @@ function weather(event, that, initStorage) {
 			return url;
 		}
 
-		
+
 		function weatherResponse(parameters, response) {
 
 			//sauvegarder la derniere meteo
@@ -864,15 +846,15 @@ function weather(event, that, initStorage) {
 			dataHandling(response);
 		}
 
-		
+
 		function forecastResponse(parameters, response) {
 
 			function findHighTemps(d) {
-				
+
 				let i = 0;
 				let newDay = new Date(d.list[0].dt_txt).getDay();
 				let currentDay = newDay;
-				let arr = [];			
+				let arr = [];
 
 				//compare la date toute les 3h (list[i])
 				//si meme journée, rajouter temp max a la liste
@@ -909,7 +891,7 @@ function weather(event, that, initStorage) {
 		request_w.open('GET', url, true);
 
 		request_w.onload = function() {
-			
+
 			let resp = JSON.parse(this.response);
 
 			if (request_w.status >= 200 && request_w.status < 400) {
@@ -927,8 +909,8 @@ function weather(event, that, initStorage) {
 		}
 
 		request_w.send();
-	}	
-	
+	}
+
 	function dataHandling(data) {
 
 		let hour = (new Date).getHours();
@@ -958,7 +940,7 @@ function weather(event, that, initStorage) {
 					"clearsky": 800,
 					"fewclouds": 801,
 					"brokenclouds": 803
-				}	
+				}
 
 				for(let key in codes) {
 
@@ -1008,7 +990,7 @@ function weather(event, that, initStorage) {
 		getDescription();
 		getIcon();
 	}
-	
+
 	function submissionError(error) {
 
 		const city = id("i_city")
@@ -1016,7 +998,7 @@ function weather(event, that, initStorage) {
 		city.value = ""
 		city.setAttribute("placeholder", tradThis("City not found"))
 	}
-	
+
 
 	function updateCity() {
 
@@ -1039,7 +1021,7 @@ function weather(event, that, initStorage) {
 			i_city.blur();
 
 			chrome.storage.sync.set({"weather": param});
-		});	
+		});
 	}
 
 	function updateUnit(that) {
@@ -1058,11 +1040,11 @@ function weather(event, that, initStorage) {
 
 			request(param, "current");
 			request(param, "forecast");
-			
+
 			chrome.storage.sync.set({"weather": param});
 		});
 	}
-	
+
 	function updateLocation(that) {
 
 		slow(that);
@@ -1089,7 +1071,7 @@ function weather(event, that, initStorage) {
 					//update le setting
 					clas(sett_city, "city hidden");
 					that.removeAttribute("disabled");
-					
+
 				}, (refused) => {
 
 					//désactive geolocation if refused
@@ -1108,7 +1090,7 @@ function weather(event, that, initStorage) {
 
 				param.location = false;
 				chrome.storage.sync.set({"weather": param});
-				
+
 				request(param, "current");
 				request(param, "forecast");
 			}
@@ -1174,8 +1156,8 @@ function imgBackground(val) {
 
 		img.src = val;
 		img.remove();
-		
-	} 
+
+	}
 	else return id("background").style.backgroundImage;
 }
 
@@ -1202,7 +1184,7 @@ function initBackground(storage) {
 
 				const blob = data.background_blob
 				const old = [blob[0] + "," + blob[1]]
-					
+
 				loadCustom({
 					custom: old,
 					customIndex: 0
@@ -1210,7 +1192,7 @@ function initBackground(storage) {
 
 				chrome.storage.local.set({custom: old})
 				chrome.storage.local.set({customIndex: 0})
-				chrome.storage.local.set({customThumbnails: old})	
+				chrome.storage.local.set({customThumbnails: old})
 
 				chrome.storage.local.remove("background_blob")
 			}
@@ -1227,7 +1209,7 @@ function initBackground(storage) {
 				loadCustom(data)
 			}
 		})
-		
+
 		imgCredits(null, type);
 	}
 	else if (type === "dynamic" || type === "default")
@@ -1292,7 +1274,7 @@ function renderImage(file, is) {
 	reader.onload = function(event) {
 
 		let result = event.target.result;
-		
+
 		if (is === "change") {
 
 			fullImage.push(result);
@@ -1311,7 +1293,7 @@ function compress(e, state) {
 	//prend l'image complete en arg
 
 	const img = new Image();
-		
+
 	img.onload = () => {
 
 		//const size = document.getElementById('range').value;
@@ -1322,13 +1304,13 @@ function compress(e, state) {
 
 		//rétréci suivant le taux de compression
 		//si thumbnail, toujours 100px
-		const height = (state === "thumbnail" ? 100 : img.height * 1);//parseFloat(size)); 
+		const height = (state === "thumbnail" ? 100 : img.height * 1);//parseFloat(size));
 		const scaleFactor = height / img.height;
 		elem.width = img.width * scaleFactor;
 		elem.height = height;
 
-		
-		
+
+
 		//dessine l'image proportionné
 		ctx.drawImage(img, 0, 0, img.width * scaleFactor, height);
 
@@ -1336,7 +1318,7 @@ function compress(e, state) {
 		const data = ctx.canvas.toDataURL(img);
 		const cleanData = data.replace("data:image/png;base64,", ""); //used for blob
 
-		
+
 		if (state === "thumbnail") {
 
 			//controle les thumbnails
@@ -1347,14 +1329,14 @@ function compress(e, state) {
 
 		} else {
 
-			//new image loaded from filereader sets image index 
+			//new image loaded from filereader sets image index
 			if (state === "new") {
 				changeImgIndex(fullImage.length - 1);
 				//save l'index
 				chrome.storage.local.set({customIndex: fullImage.length - 1});
 			}
 
-			
+
 
 			//affiche l'image
 			imgBackground(b64toBlobUrl(cleanData));
@@ -1368,7 +1350,7 @@ function compress(e, state) {
 function addThumbnails(data, index) {
 
 	//créer une tag html en plus + remove button
-	
+
 	const div = document.createElement('div');
 	const i = document.createElement('img');
 	const rem = document.createElement('button');
@@ -1389,7 +1371,7 @@ function addThumbnails(data, index) {
 	const getParentIndex = that => parseInt(that.parentElement.getAttribute("index"));
 	const getIndex = that => parseInt(that.getAttribute("index"));
 	const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute("class", (show ? "shown" : "hidden"));
-	
+
 
 	//displays / hides remove button
 	div.onmouseenter = function() {
@@ -1429,7 +1411,7 @@ function addThumbnails(data, index) {
 		//deletes thumbnail from storage
 		//concat  [0, index] à [index + 1, fin]
 		const deleteArrItem = arr => arr.slice(null, index).concat(arr.slice(index +1))
-		
+
 		fullImage = deleteArrItem(fullImage)
 		chrome.storage.local.set({custom: fullImage})
 
@@ -1518,7 +1500,7 @@ function unsplash(data, event, startup) {
 		xhr.setRequestHeader('Authorization',`Client-ID ${obf(1)}`);
 
 		xhr.onload = function() {
-			
+
 			let resp = JSON.parse(this.response);
 
 			if (xhr.status >= 200 && xhr.status < 400) {
@@ -1558,7 +1540,7 @@ function unsplash(data, event, startup) {
 						chrome.storage.sync.set({"dynamic": d});
 						//console.log("loaded")
 					});
-					
+
 				}
 			}
 		}
@@ -1579,7 +1561,7 @@ function unsplash(data, event, startup) {
 				url: `${d.link}?utm_source=Bonjourr&utm_medium=referral`
 			},
 			artist: {
-				text: d.name, 
+				text: d.name,
 				url: `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`
 			}
 		}
@@ -1675,25 +1657,25 @@ function darkmode(choice, initStorage) {
 		//dark mode is defines by the body class
 
 		switch (state) {
-			case "system": 
+			case "system":
 				bodyClass = "autodark";
 				break;
 
-			case "auto": 
+			case "auto":
 				bodyClass = auto(weather);
 				break;
-				
-			case "enable": 
+
+			case "enable":
 				bodyClass = "dark";
 				break;
-				
-			default: 
-				bodyClass = "";		
+
+			default:
+				bodyClass = "";
 		}
 
 		document.body.setAttribute("class", bodyClass);
 	}
-	
+
 	//apply class, save if event
 	if (choice) {
 		apply(choice, true);
@@ -1720,7 +1702,7 @@ function searchbar(event, that, storage) {
 	}
 
 	function localisation(q) {
-		
+
 		let response = "",
 			lang = storage.lang || "en",
 			engine = storage.searchbar_engine || "s_google"
@@ -1845,7 +1827,7 @@ function proFunctions(obj) {
 					document.body.style.fontFamily = f.family;
 					id("clock").style.fontFamily = f.family;
 				}
-				
+
 				if (f.weight)
 					document.body.style.fontWeight = f.weight;
 
@@ -1884,7 +1866,7 @@ function proFunctions(obj) {
 	}
 
 	function customCss(data, event) {
-		
+
 		const styleHead = id("styles");
 
 		// Active l'indentation
@@ -1932,7 +1914,7 @@ function proFunctions(obj) {
 	function linksrow(data, event) {
 
 		function setRows(val) {
-			
+
 			domlinkblocks.style.width = `${val*7}em`;
 		}
 
@@ -1964,13 +1946,13 @@ function proFunctions(obj) {
 			const virgule = text.indexOf(",");
 
 			//remove last input from greetings
-			text = text.slice(0, (virgule === -1 ? text.length : virgule)); 
+			text = text.slice(0, (virgule === -1 ? text.length : virgule));
 			apply(val);
 
 			//reset save timeout
 			//wait long enough to save to storage
-			if (pause) clearTimeout(pause); 
-			
+			if (pause) clearTimeout(pause);
+
 			pause = setTimeout(function() {
 				chrome.storage.sync.set({"greeting": val});
 			}, 1200);
@@ -2024,7 +2006,7 @@ function proFunctions(obj) {
 				id(elem).style.display = (objet.not ? "none" : "flex")
 				if (e!==undefined) clas(objet.parent, (objet.not ? "allhidden" : ""))
 			}
-			
+
 
 			//toggle l'opacité du dom concerné
 
@@ -2059,7 +2041,7 @@ function proFunctions(obj) {
 
 						toggleWrap = false
 
-				
+
 				if (objet.src === "greetings"
 					|| objet.src === "weather_desc"
 					|| objet.src === "w_icon")
@@ -2163,11 +2145,11 @@ chrome.storage.sync.get(null, (data) => {
 	showPopup(data.reviewPopup)
 
 	//init profunctions
-	proFunctions({which: "hide", data: data.hide})	
+	proFunctions({which: "hide", data: data.hide})
 	proFunctions({which: "font", data: data.font})
 	proFunctions({which: "css", data: data.css})
 	proFunctions({which: "row", data: data.linksrow})
-	proFunctions({which: "greet", data: data.greeting})	
+	proFunctions({which: "greet", data: data.greeting})
 
 	clas(dominterface, "")
 	clas(domshowsettings, "")
