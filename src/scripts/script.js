@@ -405,22 +405,19 @@ function quickLinks(event, that, initStorage) {
 
 	function editlink(that, i, customIcon) {
 
-		function controlIcon(old) {
-			let iconurl = id("e_iconurl");
-			let iconfile = id("e_iconfile");
+		const e_title = id("e_title")
+		const e_url = id("e_url")
+		const e_iconurl = id("e_iconurl")
 
-			if (iconurl.value !== "")
-				return iconurl.value;
-			else
-				return old;
-		}
+		const controlIcon = old => (
+			e_iconurl.value !== "" ? e_iconurl.value : old)
 
-		function updateLinkHTML(newElem) {
+		const updateLinkHTML = ({title, url, icon}) => {
 			let block = domlinkblocks.children[i + 1];
 
-			block.children[0].setAttribute("source", newElem.url);
-			block.children[0].lastChild.innerText = newElem.title;
-			block.querySelector("img").src = newElem.icon;
+			block.children[0].setAttribute("source", url);
+			block.children[0].lastChild.innerText = title;
+			block.querySelector("img").src = icon;
 		}
 
 		//edit est visible
@@ -429,8 +426,8 @@ function quickLinks(event, that, initStorage) {
 			chrome.storage.sync.get("links", (data) => {
 				let allLinks = data.links;
 				let element = {
-					title: id("e_title").value,
-					url: id("e_url").value,
+					title: e_title.value,
+					url: e_url.value,
 					icon: controlIcon(data.links[i].icon)
 				}
 
@@ -458,9 +455,15 @@ function quickLinks(event, that, initStorage) {
 			id("edit_link").setAttribute("index", index);
 
 			chrome.storage.sync.get("links", (data) => {
-				id("e_title").value = data.links[index].title;
-				id("e_url").value = data.links[index].url;
-				id("e_iconurl").value = data.links[index].icon;
+
+				const {title, url, icon} = data.links[index]
+
+				e_title.setAttribute("placeholder", tradThis("Title"))
+				e_iconurl.setAttribute("placeholder", tradThis("Icon"))
+
+				e_title.value = title
+				e_url.value = url
+				e_iconurl.value = icon
 			});
 		}
 	}
@@ -1895,6 +1898,7 @@ function proFunctions(obj) {
 
 		if (data) {
 			styleHead.innerText = data;
+
 		}
 
 		if (event) {

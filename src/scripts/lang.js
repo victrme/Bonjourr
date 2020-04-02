@@ -39,7 +39,7 @@ function askfordict() {
 
     //settings
 
-    "Settings": {
+    "SETTINGS": {
       fr: "Réglages",
       sv: "Inställningar",
       nl: "Instellingen",
@@ -448,7 +448,7 @@ function askfordict() {
       de: "Analog clock",
       it: "Analog clock"
     },
-    "Display seconds": {
+    "Display Seconds": {
       fr: "Afficher les secondes",
       sv: "Display seconds",
       nl: "Display seconds",
@@ -460,17 +460,17 @@ function askfordict() {
       de: "Display seconds",
       it: "Display seconds"
     },
-    "No distractions": {
-      fr: "Mode concentration",
-      sv: "No distractions",
-      nl: "No distractions",
-      pl: "No distractions",
-      pt_BR: "Sem distrações",
-      ru: "No distractions",
-      zh_CN: "No distractions",
-      sk: "No distractions",
-      de: "No distractions",
-      it: "No distractions"
+    "Automatic": {
+      fr: "Automatique",
+      sv: "Automatic",
+      nl: "Automatic",
+      pl: "Automatic",
+      pt_BR: "Automatic",
+      ru: "Automatic",
+      zh_CN: "Automatic",
+      sk: "Automatic",
+      de: "Automatic",
+      it: "Automatic"
     },
     "WEATHER": {
       fr: "Météo",
@@ -699,6 +699,18 @@ function askfordict() {
       sk: "Custom FONT",
       de: "Custom FONT",
       it: "Custom FONT"
+    },
+    "Any Google fonts": {
+      fr: "Toutes Google fonts",
+      sv: "Any Google fonts",
+      nl: "Any Google fonts",
+      pl: "Any Google fonts",
+      pt_BR: "Any Google fonts",
+      ru: "Any Google fonts",
+      zh_CN: "Any Google fonts",
+      sk: "Any Google fonts",
+      de: "Any Google fonts",
+      it: "Any Google fonts"
     },
     "CUSTOM STYLE": {
       fr: "Style personnalisé",

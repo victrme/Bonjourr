@@ -19,7 +19,7 @@ function displayCustomThumbnails() {
 
 			let cleanData
 			let thumbs = data.customThumbnails
-					
+
 			for (var i = 0; i < thumbs.length; i++) {
 				cleanData = thumbs[i].replace("data:image/jpeg;base64,", ""); //used for blob
 				addThumbnails(cleanData, i)
@@ -188,7 +188,7 @@ function settingsEvents() {
 	id("i_geol").onchange = function() {
 		if (!stillActive) weather("geol", this)
 	}
-	
+
 	//searchbar
 	id("i_sb").onchange = function() {
 
@@ -299,18 +299,21 @@ function initParams() {
 
 	//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
 	if (data.hide)
-		for (let a of all) 
-			for (let b of data.hide) 
+		for (let a of all)
+			for (let b of data.hide)
 				if (a.getAttribute("data") === b)
 					proFunctions({which: "hide", event: a, sett: true})
 
 
 	//input translation
 	id("i_title").setAttribute("placeholder", tradThis("Name"))
+	id("i_greeting").setAttribute("placeholder", tradThis("Name"))
 	id("i_import").setAttribute("placeholder", tradThis("Import code"))
 	id("i_export").setAttribute("placeholder", tradThis("Export code"))
+	id("i_customfont").setAttribute("placeholder", tradThis("Any Google fonts"))
+	id("cssEditor").setAttribute("placeholder", tradThis("Type in your custom CSS"))
 
-	
+
 	//bg
 	if (data.background_type === "dynamic"
 		|| Object.keys(data).length === 0
@@ -340,10 +343,10 @@ function initParams() {
 		id("sett_city").setAttribute("class", "city hidden")
 		id("i_geol").checked = true
 	}
-		
-	
-	
-	//searchbar display settings 
+
+
+
+	//searchbar display settings
 	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
 
 	//langue
@@ -437,12 +440,12 @@ function showSettings() {
 			clas(dominterface, "");
 
 			if (editClass === "shown pushed") clas(edit, "shown");
-			
+
 		} else {
 			clas(domshowsettings.children[0], "shown");
 			clas(id("settings"), "shown");
 			clas(dominterface, "pushed");
-			
+
 			if (editClass === "shown") clas(edit, "shown pushed");
 		}
 	}
@@ -462,7 +465,7 @@ function showSettings() {
 	function init() {
 		let node = document.createElement("div");
 		let xhttp = new XMLHttpRequest();
-		
+
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
@@ -482,7 +485,7 @@ function showSettings() {
 
 	if (!id("settings")) init()
 	else display()
-} 
+}
 
 function showInterface(e) {
 
