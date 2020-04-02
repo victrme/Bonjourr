@@ -1060,6 +1060,18 @@ function askfordict() {
       de: "if you love Bonjourr",
       it: "se ami Bonjourr"
     },
+    "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇": {
+      fr: "Vous adorez utiliser Bonjourr ? Pensez à nous noter, ça serait super! 😇",
+      sv: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      nl: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      pl: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      pt_BR: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      ru: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      zh_CN: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      sk: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      de: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      it: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇"
+    },
 
     //settings
 
