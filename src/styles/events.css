@@ -197,6 +197,8 @@ body.autodark #settings #cssEditor:focus::placeholder {
 }
 
 #settings #fileContainer {
+	min-width: 120px;
+	margin-right: 1em;
 	border: 1px solid transparent;
 	padding: 1em;
 	border: 1px dashed #ccc;

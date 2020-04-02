@@ -1166,13 +1166,14 @@ function imgBackground(val) {
 
 function initBackground(storage) {
 
-	function loadCustom(d) {
+	function loadCustom({custom, customIndex}) {
 
-		const index = (d.customIndex >= 0 ? d.customIndex : 0),
-			cleanData = d.custom[index].replace("data:image/jpeg;base64,", "")
+		const index = (customIndex >= 0 ? customIndex : 0)
+		const chosen = custom[index]
+		const cleanData = chosen.slice(chosen.indexOf(",") + 1, chosen.length)
 
 		imgBackground(b64toBlobUrl(cleanData));
-		changeImgIndex(d.customIndex);
+		changeImgIndex(customIndex);
 	}
 
 	let type = storage.background_type || "dynamic";
@@ -1267,7 +1268,22 @@ let fullThumbnails = []
 const domimg = id('background')
 const domthumbnail = document.getElementsByClassName('thumbnail')
 
-function b64toBlobUrl(a,b="",c=512){const d=atob(a),e=[];for(let f=0;f<d.length;f+=c){const a=d.slice(f,f+c),b=Array(a.length);for(let c=0;c<a.length;c++)b[c]=a.charCodeAt(c);const g=new Uint8Array(b);e.push(g)}const f=new Blob(e,{type:b}),g=URL.createObjectURL(f);return g}
+function b64toBlobUrl(a, b = "", c = 512) {
+    const d = atob(a),
+        e = [];
+    for (let f = 0; f < d.length; f += c) {
+        const a = d.slice(f, f + c),
+            b = Array(a.length);
+        for (let c = 0; c < a.length; c++) b[c] = a.charCodeAt(c);
+        const g = new Uint8Array(b);
+        e.push(g)
+    }
+    const f = new Blob(e, {
+            type: b
+        }),
+        g = URL.createObjectURL(f);
+    return g
+}
 
 function changeImgIndex(i) {domimg.setAttribute("index", i)}
 
@@ -1291,7 +1307,6 @@ function renderImage(file, is) {
 	reader.readAsDataURL(file);
 }
 
-//3
 function compress(e, state) {
 	//prend l'image complete en arg
 
@@ -1312,15 +1327,14 @@ function compress(e, state) {
 		elem.width = img.width * scaleFactor;
 		elem.height = height;
 
-
-
 		//dessine l'image proportionné
 		ctx.drawImage(img, 0, 0, img.width * scaleFactor, height);
 
 		//renvoie le base64
 		const data = ctx.canvas.toDataURL(img);
-		const cleanData = data.replace("data:image/png;base64,", ""); //used for blob
+		const cleanData = data.slice(data.indexOf(",") + 1, data.length) //used for blob
 
+		console.log(cleanData)
 
 		if (state === "thumbnail") {
 
@@ -1339,8 +1353,6 @@ function compress(e, state) {
 				chrome.storage.local.set({customIndex: fullImage.length - 1});
 			}
 
-
-
 			//affiche l'image
 			imgBackground(b64toBlobUrl(cleanData));
 		}
@@ -1349,7 +1361,6 @@ function compress(e, state) {
 	img.src = e;
 }
 
-//4
 function addThumbnails(data, index) {
 
 	//créer une tag html en plus + remove button
@@ -1425,7 +1436,6 @@ function addThumbnails(data, index) {
 		if (index <= currentIndex) chrome.storage.local.set({customIndex: currentIndex - 1});
 	}
 }
-
 
 function unsplash(data, event, startup) {
 
@@ -1783,7 +1793,7 @@ function showPopup(data) {
 
 	id("go").setAttribute("href", (navigator.userAgent.includes("Chrome")
 	? "https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews"
-	: "https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/")) 
+	: "https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/"))
 
 	//s'affiche après 10 tabs
 	if (data > 10) {

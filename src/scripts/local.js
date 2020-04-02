@@ -1191,12 +1191,13 @@ function imgBackground(val) {
 //fait ?
 function initBackground(initStorage) {
 
-	function loadCustom(d) {
+	function loadCustom({custom, customIndex}) {
 
-		const cleanData = d.custom.replace("data:image/jpeg;base64,", "")
-
-		imgBackground(b64toBlobUrl(cleanData));
-		changeImgIndex(d.customIndex);
+		imgBackground(b64toBlobUrl(
+			custom.slice(custom.indexOf(",") + 1, custom.length)
+		));
+		
+		changeImgIndex(customIndex);
 	}
 
 	let type = initStorage.background_type || "dynamic";
@@ -1279,7 +1280,22 @@ let fullThumbnails = []
 const domimg = id('background')
 const domthumbnail = document.getElementsByClassName('thumbnail')
 
-function b64toBlobUrl(a,b="",c=512){const d=atob(a),e=[];for(let f=0;f<d.length;f+=c){const a=d.slice(f,f+c),b=Array(a.length);for(let c=0;c<a.length;c++)b[c]=a.charCodeAt(c);const g=new Uint8Array(b);e.push(g)}const f=new Blob(e,{type:b}),g=URL.createObjectURL(f);return g}
+function b64toBlobUrl(a, b = "", c = 512) {
+    const d = atob(a),
+        e = [];
+    for (let f = 0; f < d.length; f += c) {
+        const a = d.slice(f, f + c),
+            b = Array(a.length);
+        for (let c = 0; c < a.length; c++) b[c] = a.charCodeAt(c);
+        const g = new Uint8Array(b);
+        e.push(g)
+    }
+    const f = new Blob(e, {
+            type: b
+        }),
+        g = URL.createObjectURL(f);
+    return g
+}
 
 function changeImgIndex(i) {domimg.setAttribute("index", i)}
 
@@ -1341,7 +1357,7 @@ function compress(e, state) {
 
 		//renvoie le base64
 		const data = ctx.canvas.toDataURL(img);
-		const cleanData = data.replace("data:image/png;base64,", ""); //used for blob
+		const cleanData = data.slice(data.indexOf(",") + 1, data.length)
 
 
 		if (state === "thumbnail") {
@@ -1794,6 +1810,10 @@ function signature() {
 
 //fait
 function showPopup(data) {
+
+	id("go").setAttribute("href", (navigator.userAgent.includes("Chrome")
+	? "https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews"
+	: "https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/"))
 
 	//s'affiche après 10 tabs
 	if (data > 10) {
