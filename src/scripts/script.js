@@ -1781,6 +1781,10 @@ function signature() {
 
 function showPopup(data) {
 
+	id("go").setAttribute("href", (navigator.userAgent.includes("Chrome")
+	? "https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews"
+	: "https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/")) 
+
 	//s'affiche après 10 tabs
 	if (data > 10) {
 
