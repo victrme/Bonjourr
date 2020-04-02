@@ -2,18 +2,23 @@
 
 ## Changelogs
 
+**v1.9.2**
+
+- Bonjourr now supports any image types
+- Fixed review redirection
+- Added animations
+- Added translations
+
 **v1.9.1**
 
 - Added all previously hidden features !
-Select show all settings to view them
-
 - Bonjourr greetings
 - Hide interface elements
 - Analog clock
 - display seconds
 - Custom font, size and weight
 - Custom CSS
-- Select number of quick links rows 
+- Select number of quick links rows
 
 
 **v1.9.0**
@@ -50,7 +55,7 @@ Select show all settings to view them
 
 - Rearrangeable Quick Links
 - Quick Links editing menu
-- Italian translation 
+- Italian translation
 
 <br />
 
