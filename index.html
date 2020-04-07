@@ -5,17 +5,21 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<link rel="stylesheet" href="src/styles/style.css">
-	<link rel="stylesheet" href="src/styles/events.css">
+	<link rel="icon" href="src/images/icons/favicon.png" />
+
 	<link rel="preload" href="src/fonts/sf-pro-display-light-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 	<link rel="preload" href="src/fonts/sf-pro-display-thin-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-	<link rel="icon" href="src/images/icons/favicon.png" />
-	<link rel="stylesheet" href=""  id="fontlink">
+
+	<link rel="stylesheet" href="src/styles/style.css">
+	<link rel="stylesheet" href="src/styles/events.css">
+	<!-- <link rel="stylesheet" href="src/styles/style.css"> -->
+
 	<style type="text/css" id="styles"></style>
+	<style type="text/css" id="fontstyle"></style>
 </head>
 
 <body>
-	
+
 	<div id="background_overlay">
 		<div id="background"></div>
 	</div>
@@ -45,12 +49,13 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="interface" class="distract">
-		
+
 		<div id="time">
 			<img src="src/images/shadow.png" class="shadow" draggable="false">
 			<div id="time-container">
+
 				<div id="clock"></div>
 
 				<div id="analogClock">
@@ -84,7 +89,7 @@
 						<span class="trn">today.</span>
 					</div>
 				</div>
-				
+
 
 				<div id="w_icon">
 					<img src="" id="widget" draggable="false">
@@ -94,14 +99,9 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div id="sb_container">
 			<input id="searchbar" type="text" name="q" placeholder="Search on Google"></input>
-		</div>
-
-		<div id="quotes_container">
-			<p id="quote">Si tu tournes autour d'un arbre assez vite tu peux te faire l'amour aux fesses</p>
-			<i id="quoteAuthor">- Albert Einstein</i>
 		</div>
 
 		<div id="linkblocks">
@@ -110,14 +110,13 @@
 	</div>
 
 	<div id="popup" class="justShown">
-		<span>You love using Bonjourr? Consider giving us a review, that would help a lot! 😇</span>
+		<span class="trn">You love using Bonjourr? Consider giving us a review, that would help a lot! 😇</span>
 
 		<div class="choices">
-			<a href="https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews" target="_blank" id="go">Go</a>
-			<!-- <button id="later">Later</button> -->
+			<a href="" target="_blank" id="go">Go</a>
 			<img src="src/images/icons/close.svg" draggable="false" id="closePopup">
 		</div>
-		
+
 	</div>
 
 	<div id="credit" class="hidden">
@@ -130,8 +129,13 @@
 		<button><img src="src/images/icons/gear.png" draggable="false"></button>
 	</div>
 
+
 	<script src="src/scripts/lang.js"></script>
+
 	<script src="src/scripts/script.js"></script>
 	<script src="src/scripts/settings.js" defer></script>
+
+	<!-- <script src="src/scripts/local.js"></script>
+	<script src="src/scripts/main.js"></script> -->
 </body>
 </html>

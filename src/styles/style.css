@@ -1,20 +1,20 @@
 @font-face {
   font-family: 'sf_pro_textregular';
-  src: url("../fonts/sf-pro-text-regular-webfont.woff2") format("woff2"), url("../fonts/sf-pro-text-regular-webfont.woff") format("woff");
+  src: url("/src/fonts/sf-pro-text-regular-webfont.woff2") format("woff2"), url("/src/fonts/sf-pro-text-regular-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'sf_pro_displaylight';
-  src: url("../fonts/sf-pro-display-light-webfont.woff2") format("woff2"), url("../fonts/sf-pro-display-light-webfont.woff") format("woff");
+  src: url("/src/fonts/sf-pro-display-light-webfont.woff2") format("woff2"), url("/src/fonts/sf-pro-display-light-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'sf_pro_displaythin';
-  src: url("../fonts/sf-pro-display-thin-webfont.woff2") format("woff2"), url("../fonts/sf-pro-display-thin-webfont.woff") format("woff");
+  src: url("/src/fonts/sf-pro-display-thin-webfont.woff2") format("woff2"), url("/src/fonts/sf-pro-display-thin-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -266,7 +266,7 @@ body input, body textarea, body select, body a, body button {
   height: 50px;
   border-radius: 4px;
   padding-left: 1em;
-  transition: all .2s;
+  transition: border-radius .15s, opacity .1s;
 }
 
 #interface #sb_container #searchbar:focus {
@@ -544,11 +544,12 @@ body input, body textarea, body select, body a, body button {
 }
 
 #edit_linkContainer #edit_link .linkOptions button:hover {
-  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #edit_link .linkOptions button:active {
-  opacity: .6;
+  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #edit_link #e_close {
@@ -570,11 +571,12 @@ body input, body textarea, body select, body a, body button {
 }
 
 #edit_linkContainer #edit_link #e_close:hover {
-  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #edit_link #e_close:active {
-  opacity: .6;
+  opacity: .8;
+  text-decoration: underline;
 }
 
 #edit_linkContainer #onUnsplash.shown {
@@ -1006,6 +1008,7 @@ body input, body textarea, body select, body a, body button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 34px;
 }
 
 #settings #default {
@@ -1092,14 +1095,6 @@ body input, body textarea, body select, body a, body button {
   cursor: pointer;
 }
 
-#settings .blur,
-#settings .brightness {
-  min-height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 #settings #choose_searchengine.shown {
   display: block;
 }
@@ -1156,15 +1151,11 @@ body input, body textarea, body select, body a, body button {
 }
 
 #settings #cssEditor {
-  width: 100%;
+  width: calc(100% - 2.6em);
   min-height: 4em;
   resize: vertical;
-  border-radius: 8.5px;
-  padding: .5em 0 0 .5em;
-  vertical-align: top;
-  background-color: #e3e3e5;
-  border: 0px;
-  margin-left: 10px;
+  padding: 1em 1.3em;
+  border: none;
 }
 
 #settings .signature {
@@ -1222,17 +1213,17 @@ body.dark #interface, body.autodark #interface {
   color: #eee;
 }
 
-body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link, body.dark #popup, body.autodark #popup, body.dark #popup span, body.autodark #popup span {
+body.dark #edit_linkContainer #edit_link, body.autodark #edit_linkContainer #edit_link, body.dark #popup, body.autodark #popup, body.dark #popup span, body.autodark #popup span, body.dark #cssEditor, body.autodark #cssEditor {
   background-color: #1c1c1e;
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.dark #edit_linkContainer #edit_link #cssEditor, body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link #cssEditor {
+body.dark #edit_linkContainer #edit_link input[type="text"], body.dark #edit_linkContainer #edit_link input[type="url"], body.autodark #edit_linkContainer #edit_link input[type="text"], body.autodark #edit_linkContainer #edit_link input[type="url"] {
   background-color: #39383d;
   color: white;
 }
 
-body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.dark #edit_linkContainer #edit_link #cssEditor:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link #cssEditor:focus {
+body.dark #edit_linkContainer #edit_link input[type="text"]:focus, body.dark #edit_linkContainer #edit_link input[type="url"]:focus, body.autodark #edit_linkContainer #edit_link input[type="text"]:focus, body.autodark #edit_linkContainer #edit_link input[type="url"]:focus, body.dark #cssEditor:focus, body.autodark #cssEditor:focus {
   background-color: #2c2c2f;
   color: white;
 }

@@ -1,5 +1,3 @@
-#settings .pro,
-#settings .proflex,
 #clock.hidden,
 #analogClock.hidden,
 #interface #time #analogClock #analogSeconds.hidden,
@@ -18,7 +16,8 @@
 #date.hidden,
 #greetings.hidden,
 #weather_desc.hidden,
-#w_icon.hidden {
+#w_icon.hidden,
+#weather_desc > div {
 	opacity: 0;
 	transition: opacity .1s;
 }
@@ -30,7 +29,20 @@
 }
 
 
+#settings #dynamic,
+#settings #custom,
+#settings #unicolor {
+	display: none;
+}
 
+
+#settings .pro {
+	max-height: 0;
+	overflow: hidden;
+}
+#settings .pro.shown {
+	max-height: 350px;
+}
 
 
 @keyframes sbfade {
@@ -57,6 +69,74 @@
 #interface #sb_container.shown #searchbar:focus {
 	opacity: 1;
 }
+
+
+
+/* More animations */
+
+#settings input[type="text"],
+#settings input[type="url"] {
+  transition: background .1s;
+}
+
+/* More animations */
+
+	/*base transitions */
+
+#settings .slider,
+#settings input:checked + .slider,
+#settings #cssEditor {
+	transition: background .1s;
+}
+
+	/* focus - hover */
+
+#settings input[type="text"]:focus,
+#settings input[type="url"]:focus {
+  background: #d3d3d5;
+  transition: background .2s;
+}
+
+#settings .slider:hover {
+	background: #bbb;
+  transition: background .2s;
+}
+
+#settings #cssEditor:focus::placeholder {
+	color: #333;
+  transition: color .2s;
+}
+
+	/* dark - autodark */
+
+#settings input:checked + .slider:hover,
+body.dark #settings input:checked + .slider:hover,
+body.autodark #settings input:checked + .slider:hover {
+	background: #40b354;
+	transition: background .2s;
+}
+
+body.autodark #settings input[type="text"]:focus,
+body.autodark #settings input[type="url"]:focus,
+body.dark #settings input[type="text"]:focus,
+body.dark #settings input[type="url"]:focus {
+	background-color: #2c2c2f;
+  color: white;
+}
+
+body.dark #settings .slider:hover,
+body.autodark #settings .slider:hover {
+	background-color: #2c2c2f;
+}
+
+body.dark #settings #cssEditor:focus::placeholder,
+body.autodark #settings #cssEditor:focus::placeholder {
+	color: #ddd;
+  transition: color .2s;
+}
+
+
+
 
 
 #interface.pushed,
@@ -92,6 +172,24 @@
 }
 
 
+
+/* submitlink */
+
+.link_input_wrap > div {
+	display: flex;
+	align-items: center;
+}
+
+#submitlink {
+	margin-left: 1em;
+}
+
+#settings a:hover,
+#settings button:hover {
+  text-decoration: underline
+}
+
+
 /*custom background*/
 
 #custom_thumbnail {
@@ -99,9 +197,10 @@
 }
 
 #settings #fileContainer {
+	min-width: 120px;
+	margin-right: 1em;
 	border: 1px solid transparent;
 	padding: 1em;
-	margin-right: 1em;
 	border: 1px dashed #ccc;
 }
 
@@ -112,7 +211,7 @@
 }
 #settings #fileContainer:active {
   border: 1px dashed #aaa;
-  background: #e8e8e8; 
+  background: #e8e8e8;
 }
 body.dark #settings #fileContainer.dragover,
 body.dark #settings #fileContainer:hover,
@@ -125,11 +224,8 @@ body.autodark #settings #fileContainer:hover {
 body.dark #settings #fileContainer:active,
 body.autodark #settings #fileContainer:active {
   border: 1px dashed #aaa;
-  background: #2f2f30; 
+  background: #2f2f30;
 }
-
-
-#settings .quality {min-height: 34px}
 
 
 #bg_tn_wrap {
@@ -170,6 +266,7 @@ body.autodark #settings #fileContainer:active {
 	transition: opacity .2s;
 }
 
+#bg_tn_wrap .thumbnail button:hover {text-decoration: none;}
 #bg_tn_wrap .thumbnail button.hidden {opacity: 0}
 #bg_tn_wrap .thumbnail button.shown {opacity: 1}
 
@@ -177,6 +274,8 @@ body.autodark #settings #fileContainer:active {
 #bg_tn_wrap::-webkit-scrollbar {height: 6px;}
 #bg_tn_wrap::-webkit-scrollbar-track {background: #ccc;border-radius: 4px;}
 #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;border-radius: 4px;}
+
+body.dark #bg_tn_wrap .thumbnail button {color: white;}
 
 body.dark #bg_tn_wrap::-webkit-scrollbar-track {background: #39383d;}
 body.dark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
@@ -187,24 +286,16 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 
 
 
-/*quote quick style*/
 
-#quotes_container {
-	display: none;
-	max-width: 70%;
-	width: 500px;
-	margin: 0 auto;
-	font-size: 1.5em;
+
+/* custom font input sizes */
+
+#i_customfont,
+#i_weight,
+#i_size {
+	width: 150px;
 }
 
-#quotes_container.shown {
-	display: block;
-}
-
-#quoteAuthor {
-	color: #bbb;
-	font-size: .9em;
-}
 
 
 
@@ -212,19 +303,42 @@ body.autodark #bg_tn_wrap::-webkit-scrollbar-thumb {background: #666;}
 /*hide elems*/
 
 #hideelem {
+	margin-top: 1em;
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: column;
+	justify-content: center;
+}
+
+#hideelem > div {
+	border: 1px solid #4d4d52;
+    border-radius: 8px;
+    margin: .5em auto;
 }
 
 #hideelem button {
-	width: 50%;
     text-align: left;
-    padding: .5em;
+    color: #4d4d52;
+    margin: .5em .2em;
+    text-align: center;
+    font-size: small;
 }
 
+body.dark #hideelem button,
+body.autodark #hideelem button {color: white}
+
+body.dark #hideelem > div,
+body.autodark #hideelem > div {border: 1px solid white}
+
+
+#settings #hideelem button,
+#settings #hideelem > div {transition: all .1s}
+
+#settings #hideelem > div.allhidden {border: 1px solid #777;}
+#settings #hideelem button.clicked {opacity: .5}
 
 
 /* sbparam needs it lol*/
+
 #settings #i_sbparams {
 	width: calc(100% - 2em);
 	margin-left: 2em;
