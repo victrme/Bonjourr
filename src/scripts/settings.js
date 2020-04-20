@@ -1,77 +1,66 @@
-function defaultBg() {
-
-	let bgTimeout, oldbg;
-
-	id("default").onmouseenter = function() {
-		oldbg = id("background").style.backgroundImage.slice(5, imgBackground().length - 2);
-	}
-
-	id("default").onmouseleave = function() {
-		clearTimeout(bgTimeout);
-		imgBackground(oldbg);
-	}
-
-	function imgEvent(state, that) {
-
-		if (state === "enter") {
-
-			if (bgTimeout) clearTimeout(bgTimeout);
-
-			let src = "/src/images/backgrounds/" + that.getAttribute("source");
-
-			bgTimeout = setTimeout(function() {
-
-				//timeout de 300 pour pas que ça se fasse accidentellement
-				//prend le src de la preview et l'applique au background
-				imgBackground(src);
-
-			}, 300);
-
-		} else if (state === "leave") {
-
-			clearTimeout(bgTimeout);
-
-		} else if (state === "mouseup") {
-
-			var src = "/src/images/backgrounds/" + that.getAttribute("source");
-
-		    imgBackground(src);
-		    imgCredits(src, "default");
-
-			clearTimeout(bgTimeout);
-			oldbg = src;
-
-			//enleve selected a tout le monde et l'ajoute au bon
-			remSelectedPreview();
-			//ici prend les attr actuels et rajoute selected après (pour ioswallpaper)
-			var tempAttr = that.getAttribute("class");
-			that.setAttribute("class", tempAttr + " selected");
-
-			chrome.storage.sync.set({"last_default": src});
-			chrome.storage.sync.set({"background_image": src});
-			chrome.storage.sync.set({"background_type": "default"});
-		}
-	}
-
-	var imgs = cl("imgpreview");
-	for (var i = 0; i < imgs.length; i++) {
-
-		imgs[i].onmouseenter = function() {imgEvent("enter", this)}
-		imgs[i].onmouseleave = function() {imgEvent("leave", this)}
-		imgs[i].onmouseup = function() {imgEvent("mouseup", this)}
-	}
-}
-
 function selectBackgroundType(cat) {
 
-	id("default").style.display = "none";
 	id("dynamic").style.display = "none";
 	id("custom").style.display = "none";
 	id(cat).style.display = "block";
 
-	if (cat === "dynamic") unsplash()
+	if (cat === "dynamic" || cat === "default")
+		unsplash()
+	else if (cat === "custom")
+		displayCustomThumbnails()
 
 	chrome.storage.sync.set({"background_type": cat});
+}
+
+function displayCustomThumbnails() {
+	chrome.storage.local.get("customThumbnails", (data) => {
+
+		if (data !== undefined) {
+
+			let cleanData
+			let thumbs = data.customThumbnails
+
+			for (var i = 0; i < thumbs.length; i++) {
+				cleanData = thumbs[i].replace("data:image/jpeg;base64,", ""); //used for blob
+				addThumbnails(cleanData, i)
+			}
+
+			fullThumbnails = data.customThumbnails
+
+			setTimeout(function() {
+				chrome.storage.local.get("custom", (data) => {fullImage = data.custom})
+			}, 200)
+		}
+	})
+}
+
+function showall(that) {
+
+	const change = (ev) => {
+		for (let d of cl("pro"))
+			clas(d, ev ? "pro shown" : "pro")
+	}
+
+	const addtransitions = (dom, css) => {
+		for (let d of cl(dom))
+			d.style.transition = css
+	}
+
+	//event
+	if (that !== undefined) {
+
+		change(that)
+		chrome.storage.sync.set({showall: that})
+
+	//init
+	} else {
+
+		const data = JSON.parse(localEnc(disposableData, false))
+		change(data.showall)
+
+		//add transitions
+		addtransitions("pro", "max-height .2s")
+	}
 }
 
 function settingsEvents() {
@@ -92,6 +81,24 @@ function settingsEvents() {
 	custom.addEventListener("drop", function(){
 	  customStyle.classList.remove("dragover");
 	});
+
+
+	//general
+
+	id("i_showall").onchange = function() {
+		showall(this.checked)
+	}
+
+	id("i_lang").onchange = function() {
+
+		chrome.storage.sync.set({"lang": this.value});
+
+		//session pour le weather
+		sessionStorage.lang = this.value;
+
+		if (sessionStorage.lang)
+			location.reload()
+	}
 
 	//quick links
 	id("i_title").onkeypress = function(e) {
@@ -126,11 +133,6 @@ function settingsEvents() {
 		renderImage(this.files[0], "change");
 	};
 
-	/*id("i_quality").oninput = function() {
-		customBackground({cat: "quality", value: this.value})
-	}*/
-
-
 
 	id("i_blur").oninput = function() {
 		filter("blur", this.value);
@@ -144,10 +146,6 @@ function settingsEvents() {
 
 	id("i_dark").onchange = function() {
 		darkmode(this.value)
-	}
-
-	id("i_distract").onchange = function() {
-		distractMode(this);
 	}
 
 
@@ -171,12 +169,7 @@ function settingsEvents() {
 	}
 
 	id("i_usdate").onchange = function() {
-
-		let rep = (this.checked ? true : false);
-
-		localStorage.usdate = rep;
-		chrome.storage.sync.set({"usdate": rep});
-		date();
+		date(true, this.checked)
 	}
 
 	//weather
@@ -195,7 +188,7 @@ function settingsEvents() {
 	id("i_geol").onchange = function() {
 		if (!stillActive) weather("geol", this)
 	}
-	
+
 	//searchbar
 	id("i_sb").onchange = function() {
 
@@ -208,21 +201,7 @@ function settingsEvents() {
 	}
 
 
-
-
-	//general
-
-	id("i_lang").onchange = function() {
-
-		localStorage.lang = this.value;
-		sessionStorage.lang = this.value;
-		//si local n'est pas utilisé, sync la langue
-		if (!localStorage.data) chrome.storage.sync.set({"lang": this.value});
-
-		//s'assure que le localStorage a bien changé
-		if (localStorage.lang) location.reload();
-	}
-
+	//settings
 
 	id("submitReset").onclick = function() {
 		importExport("reset");
@@ -243,110 +222,142 @@ function settingsEvents() {
 	id("i_export").onfocus = function() {
 		importExport("exp")
 	}
+
+
+	id("i_customfont").oninput = function() {
+		fontObj = {family: this.value, weight: null, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_weight").oninput = function() {
+		fontObj = {family: null, weight: this.value, size: null};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_size").oninput = function() {
+		fontObj = {family: null, weight: null, size: this.value};
+		proFunctions({which: "font", event: fontObj});
+	}
+
+	id("i_row").oninput = function() {
+		proFunctions({which: "row", event: this.value})
+	}
+
+	id("i_greeting").onkeyup = function() {
+		proFunctions({which: "greet", event: this.value})
+	}
+
+	id("cssEditor").onkeypress = function(e) {
+		let data = {e: e, that: this};
+		proFunctions({which: "css", event: data})
+	}
+
+
+	for(e of id("hideelem").querySelectorAll("button")) {
+
+		e.onmouseup = function() {
+			proFunctions({which: "hide", event: this})
+		}
+	}
 }
 
 function initParams() {
 
-	const data = JSON.parse(localEnc(sessionStorage.data, false));
+	const data = JSON.parse(localEnc(disposableData, false))
 
-	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base));
-	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false));
-	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined);
+	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base))
+	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false))
+	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
-	initInput("i_type", data.background_type, "default");
-	initInput("i_blur", data.background_blur, 25);
-	initInput("i_bright", data.background_bright, 1);
-	initInput("i_dark", data.dark, "disable");
-	initInput("i_sbengine", data.searchbar_engine, "s_startpage");
-	initInput("i_timezone", isThereData("clock", "timezone"), "auto");
-	initInput("i_freq", isThereData("dynamic", "every"), "hour");
-	initInput("i_ccode", isThereData("weather", "ccode"), "US");
+	initInput("i_type", data.background_type, "dynamic")
+	initInput("i_blur", data.background_blur, 15)
+	initInput("i_bright", data.background_bright, .7)
+	initInput("i_dark", data.dark, "disable")
+	initInput("i_sbengine", data.searchbar_engine, "s_google")
+	initInput("i_timezone", isThereData("clock", "timezone"), "auto")
+	initInput("i_freq", isThereData("dynamic", "every"), "hour")
+	initInput("i_ccode", isThereData("weather", "ccode"), "US")
+	initInput("i_row", data.linksrow, 8)
+	initInput("i_customfont", isThereData("font", "family"), "")
+	initInput("i_weight", isThereData("font", "weight"), 400)
+	initInput("i_size", isThereData("font", "size"), 12)
+	initInput("i_greeting", data.greeting, "")
+	initInput("cssEditor", data.css, "")
 
-	initCheckbox("i_geol", isThereData("weather", "location"));
-	initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"));
-	initCheckbox("i_distract", data.distract);
-	initCheckbox("i_linknewtab", data.linknewtab);
-	initCheckbox("i_sb", data.searchbar);
-	initCheckbox("i_usdate", data.usdate);
-	initCheckbox("i_ampm", isThereData("clock", "ampm"), false);
-	
+	initCheckbox("i_showall", data.showall)
+	initCheckbox("i_geol", isThereData("weather", "location"))
+	initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"))
+	initCheckbox("i_linknewtab", data.linknewtab)
+	initCheckbox("i_sb", data.searchbar)
+	initCheckbox("i_usdate", data.usdate)
+	initCheckbox("i_ampm", isThereData("clock", "ampm"), false)
+	initCheckbox("i_seconds", isThereData("clock", "seconds"), false)
+	initCheckbox("i_analog", isThereData("clock", "analog"), false)
 
-	if (sessionStorage.pro === "true") {
+	//hide elems
+	const all = id("hideelem").querySelectorAll("button")
 
-		initInput("i_row", data.linksrow, 8);
-		initInput("i_customfont", isThereData("font", "family"), false);
-		initInput("i_weight", isThereData("font", "weight"), "auto");
-		initInput("i_size", isThereData("font", "size"), "auto");
-		initInput("i_greeting", data.greeting, "");
-		initInput("cssEditor", data.css, "");
-		
-		initCheckbox("i_seconds", isThereData("clock", "seconds"), false);
-		initCheckbox("i_analog", isThereData("clock", "analog"), false);
-		initCheckbox("i_quotes", isThereData("quote", "enabled"), false);
+	//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
+	if (data.hide)
+		for (let a of all)
+			for (let b of data.hide)
+				if (a.getAttribute("data") === b)
+					proFunctions({which: "hide", event: a, sett: true})
 
-		id("e_row").innerText = (data.linksrow ? data.linksrow : "8");
-		id("e_weight").innerText = (isThereData("font", "weight") ? isThereData("font", "weight") : "Regular");
-		id("e_size").innerText = (isThereData("font", "size") ? isThereData("font", "size") : "Auto");
-	}
 
-	
+	//input translation
+	id("i_title").setAttribute("placeholder", tradThis("Name"))
+	id("i_greeting").setAttribute("placeholder", tradThis("Name"))
+	id("i_import").setAttribute("placeholder", tradThis("Import code"))
+	id("i_export").setAttribute("placeholder", tradThis("Export code"))
+	id("i_customfont").setAttribute("placeholder", tradThis("Any Google fonts"))
+	id("cssEditor").setAttribute("placeholder", tradThis("Type in your custom CSS"))
+
+
 	//bg
-	if (data.background_type !== undefined) {
-
-		id(data.background_type).style.display = "block";
-
-		if (data.background_type === "default") {
-
-			for (let e of cl("imgpreview")) {
-				if (data.background_image.includes(e.getAttribute("source"))) {
-					attr(e, "imgpreview selected")
-				}
-			}
-		}
-
-	} else {
-		id("default").style.display = "block";
+	if (data.background_type === "dynamic"
+		|| Object.keys(data).length === 0
+		|| data.background_type === undefined) {
+		id("dynamic").style.display = "block"
 	}
-
-	//ajoute les thumbnails au custom background
-	chrome.storage.local.get(["custom"], (data) => {
-
-		let cleanData;
-				
-		for (var i = 0; i < data.custom.length; i++) {
-			cleanData = data.custom[i].replace("data:image/jpeg;base64,", ""); //used for blob
-			addThumbnails(cleanData, i)
-		}
-
-		fullImage = data.custom
-	})
+	else if (data.background_type === "custom") {
+		id("custom").style.display = "block"
+		displayCustomThumbnails()
+	}
+	else if (data.background_type === "default") {
+		id("dynamic").style.display = "block"
+		id("i_type").value = "dynamic"
+		chrome.storage.sync.set({background_type: "dynamic"})
+	}
 
 	//weather settings
-	if (data.weather) {
+	if (data.weather && Object.keys(data).length > 0) {
 
 		let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
 		id("i_city").setAttribute("placeholder", cityPlaceholder);
 
-		if (data.weather.location) id("sett_city").setAttribute("class", "city hidden");
+		if (data.weather.location)
+			id("sett_city").setAttribute("class", "city hidden")
+
+	} else {
+		id("sett_city").setAttribute("class", "city hidden")
+		id("i_geol").checked = true
 	}
-	
-	//searchbar display settings 
+
+
+
+	//searchbar display settings
 	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
 
-
-	//clock format localstorage control
-	if (data.clockformat === 12) localStorage.clockformat = 12;
-
-
 	//langue
-	id("i_lang").value = localStorage.lang || "en";
+	id("i_lang").value = data.lang || "en";
 
 
 	//firefox export
 	if(!navigator.userAgent.includes("Chrome")) {
 		id("submitExport").style.display = "none";
 		id("i_export").style.width = "100%";
-	}	
+	}
 }
 
 function importExport(select, isEvent) {
@@ -422,46 +433,39 @@ function showSettings() {
 	function display() {
 		const edit = id("edit_linkContainer");
 		const editClass = edit.getAttribute("class");
-		const uiClass = dominterface.getAttribute("class");
 
 		if (has("settings", "shown")) {
-			attr(domshowsettings.children[0], "");
-			attr(id("settings"), "");
-			attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+			clas(domshowsettings.children[0], "");
+			clas(id("settings"), "");
+			clas(dominterface, "");
 
-			if (editClass === "shown pushed") attr(edit, "shown");
-			
+			if (editClass === "shown pushed") clas(edit, "shown");
+
 		} else {
-			attr(domshowsettings.children[0], "shown");
-			attr(id("settings"), "shown");
-			attr(dominterface, (uiClass === "distract" ? "pushed distract" : "pushed"));
-			
-			if (editClass === "shown") attr(edit, "shown pushed");
+			clas(domshowsettings.children[0], "shown");
+			clas(id("settings"), "shown");
+			clas(dominterface, "pushed");
+
+			if (editClass === "shown") clas(edit, "shown pushed");
 		}
 	}
 
 	function functions() {
 
-		if (sessionStorage.pro === "true") {
-			for (let i of cl("pro")) i.style.display = "block";
-			for (let i of cl("proflex")) i.style.display = "flex";
-		}
-
 		initParams()
 		traduction(true)
-		setTimeout(() => (display()), 10)
 		setTimeout(function() {
+			display()
+			showall()
 			settingsEvents()
 			signature()
-			defaultBg()
-			if (sessionStorage.pro === "true") proEvents()
-		}, 100)
+		}, 10)
 	}
 
 	function init() {
 		let node = document.createElement("div");
 		let xhttp = new XMLHttpRequest();
-		
+
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4) {
 				if (this.status == 200) {
@@ -481,7 +485,7 @@ function showSettings() {
 
 	if (!id("settings")) init()
 	else display()
-} 
+}
 
 function showInterface(e) {
 
@@ -497,8 +501,8 @@ function showInterface(e) {
 
 	//close edit container on interface click
 	if (has("edit_linkContainer", "shown")) {
-		attr(id("edit_linkContainer"), "");
-		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {attr(e, "l_icon_wrap")})
+		clas(id("edit_linkContainer"), "");
+		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {clas(e, "l_icon_wrap")})
 	}
 
 	if (has("settings", "shown")) {
@@ -508,11 +512,11 @@ function showInterface(e) {
 		let ui = dominterface;
 		let uiClass = dominterface.getAttribute("class");
 
-		attr(id("showSettings").children[0], "");
-		attr(id("settings"), "");
-		attr(dominterface, (uiClass === "pushed distract" ? "distract" : ""));
+		clas(id("showSettings").children[0], "");
+		clas(id("settings"), "");
+		clas(dominterface, "");
 
-		if (editClass === "shown pushed") attr(edit, "shown");
+		if (editClass === "shown pushed") clas(edit, "shown");
 	}
 }
 
@@ -530,51 +534,4 @@ document.onkeydown = function(e) {
 
 	//press escape to show settings
 	if (e.code === "Escape") showSettings()
-}
-
-function proEvents() {
-
-	let fontObj = {}
-
-	id("i_customfont").oninput = function() {
-		fontObj = {family: this.value, weight: null, size: null};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_weight").oninput = function() {
-		id("e_weight").innerText = this.value;
-		fontObj = {family: null, weight: this.value, size: null};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_size").oninput = function() {
-		id("e_size").innerText = this.value;
-		fontObj = {family: null, weight: null, size: this.value};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_row").oninput = function() {
-		proFunctions({which: "row", event: this.value})
-	}
-
-	id("i_greeting").onkeyup = function() {
-		proFunctions({which: "greet", event: this.value})
-	}
-
-	id("i_quotes").onchange = function() {
-		proFunctions({which: "quote", event: this.checked});
-	}
-
-	id("cssEditor").onkeypress = function(e) {
-		let data = {e: e, that: this};
-		proFunctions({which: "css", event: data})
-	}
-
-
-	for(e of id("hideelem").children) {
-
-		e.onmouseup = function() {
-			proFunctions({which: "hide", event: this.getAttribute("data")})
-		}
-	}
 }

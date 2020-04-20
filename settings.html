@@ -1,37 +1,73 @@
-
 <div>
-	<h5 class="trn">Quick Links</h5>
+	<h5 class="trn">General</h5>
 	<div class="param">
-		<div class="link_input_wrap">
-			<input id="i_title" type="text" name="title" placeholder="Title">
-			<input id="i_url" type="text" name="url" placeholder="URL">
-			<p id="wrongURL" class="trn">Incorrect URL</p>
-			<button id="submitlink" class="trn centeredButton">Add Quick link</button>
 
-			<li class="help_sentence trn">Right click on the icons to Edit</li>
-			<li class="help_sentence trn">Drag and drop icons to rearrange</li>
+		<div class="showall wrapper">
+			<span class="trn">Show all settings</span>
+			<div>
+				<label class="switch">
+					<input id="i_showall" type="checkbox">
+					<span class="slider round span"></span>
+				</label>
+			</div>
 		</div>
 
 		<hr>
 
-		<div class="linknewtab wrapper">
-			<span class="trn">Open in new tab by default</span>
+		<div class="choose_language wrapper">
+			<span class="trn selector_span">Language</span>
+			<select id="i_lang" class="lang">
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+				<option value="sk">Slovenský</option>
+				<option value="sv">Svenska</option>
+				<option value="pl">Polski</option>
+				<option value="pt_BR">Português (Brasil)</option>
+				<option value="nl">Nederlandse</option>
+				<option value="ru">Русский</option>
+				<option value="zh_CN">简体中文</option>
+				<option value="de">Deutsch</option>
+				<option value="it">Italiano</option>
+			</select>
+		</div>
+
+	</div>
+</div>
+<div>
+	<h5 class="trn">Quick Links</h5>
+	<div class="param">
+		<div class="link_input_wrap">
+
 			<div>
-				<label class="switch">
-					<input id="i_linknewtab" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
+				<div>
+					<input id="i_title" type="text" name="title" placeholder="Name">
+					<input id="i_url" type="text" name="url" placeholder="URL">
+				</div>
+				<button id="submitlink" class="trn">Add</button>
 			</div>
 		</div>
 
 		<div class="pro">
 
 			<hr>
-			
+
+			<div class="linknewtab wrapper">
+				<span class="trn">Open in new tab by default</span>
+				<div>
+					<label class="switch">
+						<input id="i_linknewtab" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
+			</div>
+
+
+
+			<hr>
+
 			<div class="wrapper">
 				<span class="trn">Links per row</span>
 				<input id="i_row" type="range" class="range" name="i_row" min="2" max="12" step="1" value="8">
-				<span id="e_row">8</span>
 			</div>
 		</div>
 	</div>
@@ -44,30 +80,12 @@
 		<div class="wrapper">
 			<span class="trn selector_span">Background type</span>
 			<select id="i_type" class="theme">
-				<option value="default" class="trn">Default</option>
 				<option value="dynamic" class="trn">Dynamic</option>
 				<option value="custom" class="trn">Custom</option>
 			</select>
 		</div>
 
 		<hr>
-
-		<div id="default">
-			<div>
-				<div source="avi-richards-beach.jpg" class="imgpreview">
-					<img src="src/images/backgrounds/thumbnails/avi-richards-beach_mini.jpg" />
-				</div>
-				<div source="tyler-casey-landscape.jpg" class="imgpreview">
-					<img src="src/images/backgrounds/thumbnails/tyler-casey-landscape_mini.jpg"/>
-				</div>
-				<div source="tahoe-beetschen-ferns.jpg" class="imgpreview">
-					<img src="src/images/backgrounds/thumbnails/tahoe-beetschen-ferns_mini.jpg"/>
-				</div>
-				<div source="ios13.jpg" class="imgpreview">
-					<img src="src/images/backgrounds/thumbnails/ios13_mini.jpg"/>
-				</div>
-			</div>
-		</div>
 
 		<div id="dynamic">
 			<div class="wrapper">
@@ -80,7 +98,7 @@
 				</select>
 			</div>
 		</div>
-		
+
 		<div id="custom">
 			<div id="bg_tn_wrap">
 				<label id="fileContainer">
@@ -88,28 +106,20 @@
 					<input id="i_bgfile" type="file" name="background_file">
 				</label>
 			</div>
-
-			<!-- <hr class="pro" />
-
-			<div class="quality wrapper pro">
-				<span class="trn">Quality</span>
-				<input id="i_quality" type="range" class="range" name="quality" min="0.1" max="1" step="0.1" value="1">
-				<span id="e_quality">100%</span>
-			</div> -->
 		</div>
 
-		<hr>	
-
-		<div class="blur">
-			<span class="trn">Blur intensity</span>
-			<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="25" step="1">
-		</div>
-		
 		<hr>
 
-		<div class="brightness">
+		<div class="wrapper">
+			<span class="trn">Blur intensity</span>
+			<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="0" step="1">
+		</div>
+
+		<hr>
+
+		<div class="wrapper">
 			<span class="trn">Brightness</span>
-			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value="1" step=".01">
+			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value=".7" step=".01">
 		</div>
 
 		<hr>
@@ -124,33 +134,38 @@
 			</select>
 		</div>
 
-		<hr>
-
-		<div class="distractions wrapper">
-			<span class="trn">No distractions</span>
-			<div>
-				<label class="switch">
-					<input id="i_distract" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
 		<div class="pro">
+
+			<hr>
+
+			<div class="wrapper">
+				<span class="trn">Greeting</span>
+				<input type="text" name="greeting" id="i_greeting" placeholder="Name" maxlength="32">
+			</div>
 
 			<hr>
 
 			<span class="trn">Hide elements</span>
 
 			<div id="hideelem">
-				<button data="time-container">Clock</button>
-				<button data="date">Date</button>
-				<button data="greetings">Greetings</button>
-				<button data="weather_desc">Weather</button>
-				<button data="w_icon">Weather Icon</button>
-				<button data="linkblocks">Links</button>
-				<button data="showSettings">Settings Icon</button>
+				<div>
+					<button data="time-container" class="trn">Clock</button>
+					<button data="date" class="trn">Date</button>
+				</div>
+				<div>
+					<button data="greetings" class="trn">Greetings</button>
+					<button data="weather_desc" class="trn">Weather</button>
+					<button data="w_icon" class="trn">Icon</button>
+				</div>
+				<div>
+					<button data="linkblocks" class="trn">Quick Links</button>
+				</div>
+				<div>
+					<button data="showSettings" class="trn">Settings icon</button>
+				</div>
 			</div>
+
+
 		</div>
 	</div>
 </div>
@@ -159,29 +174,44 @@
 	<h5 class="trn">Time & Date</h5>
 
 	<div class="param">
-		<div class="analog wrapper proflex">
-			<span class="trn">Analog clock</span>
-			<div>
-				<label class="switch">
-					<input id="i_analog" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
+
+		<div class="pro">
+			<div class="analog wrapper">
+				<span class="trn">Analog clock</span>
+				<div>
+					<label class="switch">
+						<input id="i_analog" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
 			</div>
-		</div>
 
-		<hr class="pro">
+			<hr>
 
-		<div class="seconds wrapper proflex">
-			<span class="trn">Display Seconds</span>
-			<div>
-				<label class="switch">
-					<input id="i_seconds" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
+			<div class="seconds wrapper">
+				<span class="trn">Display Seconds</span>
+				<div>
+					<label class="switch">
+						<input id="i_seconds" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
 			</div>
-		</div>
 
-		<hr id="h_ampm" class="pro">
+			<hr>
+
+			<div class="wrapper">
+				<span class="trn">US Date Format</span>
+				<div>
+					<label class="switch">
+						<input id="i_usdate" type="checkbox">
+						<span class="slider round span"></span>
+					</label>
+				</div>
+			</div>
+
+			<hr>
+		</div>
 
 		<div id="w_ampm" class="12hour wrapper">
 			<span class="trn">12-Hour Time</span>
@@ -196,21 +226,9 @@
 		<hr>
 
 		<div class="wrapper">
-			<span class="trn">US Date Format</span>
-			<div>
-				<label class="switch">
-					<input id="i_usdate" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
 			<span class="trn selector_span">Time zone</span>
 			<select id="i_timezone" class="">
-				<option value="auto">Automatic</option>
+				<option value="auto" class="trn">Automatic</option>
 				<option value="-10">UTC/HST -10 (Honolulu)</option>
 				<option value="-9">UTC/AKST -9 (Ancorage)</option>
 				<option value="-8">UTC/PST -8 (Vancouver, Los Angeles)</option>
@@ -510,12 +528,12 @@
 					</select>
 				</div>
 				<p id="wrongCity" class="trn wrongCity">There was a problem</p>
-				<button id="b_city" class="submitw_city centeredButton trn">Change city</button>	
+				<button id="b_city" class="submitw_city centeredButton trn">Change city</button>
 			</div>
-			
+
 			<p class="help_sentence trn">Use this option if you don't want to enable geolocation.</p>
 		</div>
-		
+
 		<hr>
 
 		<div class="units wrapper">
@@ -527,47 +545,6 @@
 				</label>
 			</div>
 		</div>
-	</div>
-</div>
-
-<div class="pro">
-	<h5 class="trn">Quotes</h5>
-	<div class="param">
-		<div class="activate_quotes wrapper">
-			<span class="trn">Enable</span>
-			<div>
-				<label class="switch">
-					<input id="i_quotes" type="checkbox">
-					<span class="slider round span"></span>
-				</label>
-			</div>
-		</div>
-
-		<hr>
-
-		<div class="wrapper">
-			<span class="trn">Quote type</span>
-			<select disabled="" id="i_quoteType" class="choose_search">
-				<option value="inspi">Inspirational</option>
-				<option value="jokes">Jokes</option>
-				<option value="inspirobot">Inspirobot</option>
-				<option value="all">All of the above</option>
-			</select>
-		</div>
-
-		<hr>
-
-		<div class="wrapper">
-			<span class="trn">Frequency</span>
-			<select disabled="" id="i_quoteFreq">
-				<option value="tabs" class="trn">Every tab</option>
-				<option value="hour" class="trn">Every hour</option>
-				<option value="day" class="trn">Every day</option>
-				<option value="pause" class="trn">Pause</option>
-			</select>
-		</div>
-
-
 	</div>
 </div>
 
@@ -601,14 +578,14 @@
 				</select>
 			</div>
 
-			<div class="pro">
+			<!-- <div class="pro">
 				<hr>
 
 				<div class="wrapper">
 					<span class="trn">Parameters</span>
 					<input type="text" name="sbparams" id="i_sbparams" placeholder="&l=en">
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </div>
@@ -639,7 +616,6 @@
 		<div class="wrapper">
 			<span class="trn">Weight</span>
 			<input id="i_weight" type="range" class="range" name="fontweight" min="100" max="800" step="100" value="400">
-			<span id="e_weight">Regular</span>
 		</div>
 
 		<hr>
@@ -647,82 +623,45 @@
 		<div class="wrapper">
 			<span class="trn">Size</span>
 			<input id="i_size" type="range" class="range" name="fontsize" min="9" max="26" value="12">
-			<span id="e_size">12</span>
-		</div>
-	</div>
-</div>
-
-<div>
-	<h5 class="trn">General</h5>
-	<div class="param">
-
-		<div class="choose_language wrapper">
-			<span class="trn selector_span">Language</span>
-			<select id="i_lang" class="lang">
-				<option value="en">English</option>
-				<option value="fr">Français</option>
-				<option value="sk">Slovenský</option>
-				<option value="sv">Svenska</option>
-				<option value="pl">Polski</option>
-				<option value="pt_BR">Português (Brasil)</option>
-				<option value="nl">Nederlandse</option>
-				<option value="ru">Русский</option>
-				<option value="zh_CN">简体中文</option>
-				<option value="de">Deutsch</option>
-				<option value="it">Italiano</option>
-			</select>
-		</div>
-
-		<div class="pro">
-
-			<hr>
-
-			<div class="wrapper">
-				<span class="trn">Greeting</span>
-				<input type="text" name="greeting" id="i_greeting" placeholder="Name" maxlength="32">
-			</div>
-
-			<hr>
-
-			<div class="wrapper">
-				<span class="trn">CSS</span>
-				<br />
-				<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div>
-	<h5 class="trn">Settings management</h5>
-	<div class="param">
-
-		<div id="imp_wrapper" class="wrapper">
-			<input id="i_import" type="text" name="Import" placeholder="Paste import code">
-			<button id="submitImport" class="trn">Import</button>
-		</div>
-
-		<hr>
-
-		<div id="exp_wrapper" class="wrapper">
-			<input readonly id="i_export" type="text" name="export" placeholder="Click to show export code">
-			<button id="submitExport" class="trn">Export</button>
-		</div>
-
-		<hr>
-
-		<div id="reset_wrapper" class="wrapper">
-			<button id="submitReset" class="trn">Reset settings</button>
 		</div>
 	</div>
 </div>
 
 <div class="pro">
+	<h5 class="trn">Custom Style</h5>
+	<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
+</div>
+
+<div class="pro">
+	<div>
+		<h5 class="trn">Settings</h5>
+		<div class="param">
+
+			<div id="imp_wrapper" class="wrapper">
+				<input id="i_import" type="text" name="Import" placeholder="Paste settings code">
+				<button id="submitImport" class="trn">Import</button>
+			</div>
+
+			<hr>
+
+			<div id="exp_wrapper" class="wrapper">
+				<input readonly id="i_export" type="text" name="export" placeholder="Click to show export code">
+				<button id="submitExport" class="trn">Export</button>
+			</div>
+
+			<hr>
+
+			<div id="reset_wrapper" class="wrapper">
+				<button id="submitReset" class="trn">Reset settings</button>
+			</div>
+
+		</div>
+	</div>
 </div>
 
 <div class="signature">
 	<div class="firstblock">
-		<p class="version">Bonjourr <a href="https://bonjourr.fr/history">1.9.0</a></p>
+		<p class="version">Bonjourr <a href="https://bonjourr.fr/history">1.9.2</a></p>
 
 		<div class="socialIcons">
 			<a href="https://bonjourr.fr" title="Bonjourr's website">
@@ -751,12 +690,12 @@
 			</a>
 		</div>
 	</div>
-	
+
 	<p class="trn">Made in France with ❤️</p>
 	<p id="rand">
 		<span class="trn">by</span>
 	</p>
-	
+
 	<div id="rdv_website">
 		<p>
 			<span class="trn">Consider</span> <a href="https://bonjourr.fr/#donate" class="trn">donating</a> <span class="trn">if you love Bonjourr</span> 😊

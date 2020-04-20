@@ -2,6 +2,37 @@
 
 ## Changelogs
 
+**v1.9.2**
+
+- Bonjourr now supports any image types
+- Fixed review redirection
+- Added animations
+- Added translations
+
+**v1.9.1**
+
+- Added all previously hidden features !
+- Bonjourr greetings
+- Hide interface elements
+- Analog clock
+- display seconds
+- Custom font, size and weight
+- Custom CSS
+- Select number of quick links rows
+
+
+**v1.9.0**
+
+- Added review popup
+- Dynamic backgrounds by default
+- Different unsplash collections for day & night
+- Infinite number of custom backrounds !
+- Searchbar internationalisation
+- Increased privacy for stored local data
+- Various fixes, style changes & performance boosts
+
+<br />
+
 **v1.8.3**
 
 - Better dynamic backgrounds preload
@@ -24,7 +55,7 @@
 
 - Rearrangeable Quick Links
 - Quick Links editing menu
-- Italian translation 
+- Italian translation
 
 <br />
 

@@ -39,7 +39,7 @@ function askfordict() {
 
     //settings
 
-    "Settings": {
+    "SETTINGS": {
       fr: "Réglages",
       sv: "Inställningar",
       nl: "Instellingen",
@@ -50,6 +50,18 @@ function askfordict() {
       sk: "Nastavenia",
       de: "Einstellungen",
       it: "Impostazioni"
+    },
+    "Show all settings": {
+      fr: "Afficher tous les réglages",
+      sv: "Show all settings",
+      nl: "Show all settings",
+      pl: "Show all settings",
+      pt_BR: "Show all settings",
+      ru: "Show all settings",
+      zh_CN: "Show all settings",
+      sk: "Show all settings",
+      de: "Show all settings",
+      it: "Show all settings"
     },
     "QUICK LINKS": {
       fr: "Liens favoris",
@@ -63,6 +75,18 @@ function askfordict() {
       de: "Quick Links",
       it: "Collegamenti rapidi"
     },
+    "Name": {
+      fr: "Nom",
+      sv: "Namn",
+      nl: "Naam",
+      pl: "Nazwa",
+      pt_BR: "Nome",
+      ru: "название",
+      zh_CN: "名称",
+      sk: "názov",
+      de: "Name",
+      it: "nome"
+    },
     "Add": {
       fr: "Ajouter",
       sv: "Lägg till",
@@ -74,31 +98,6 @@ function askfordict() {
       sk: "Pridať",
       de: "Hinzufügen",
       it: "Aggiungere"
-    },
-    "Incorrect URL": {
-      fr: "URL incorrecte",
-      sv: "Felaktig adress",
-      nl: "Foutieve URL",
-      pl: "Niepoprawny URL",
-      pt_BR: "URL incorreta",
-      ru: "Недопустимая ссылка",
-      zh_CN: "URL 不正确",
-      sk: "Nesprávna URL",
-      de: "Ungültige URL",
-      it: "URL non corretto"
-    },
-    "Right click on the icons to delete a Quick Link.": {
-      fr: "Vous pouvez supprimer les favoris en effectuant un clic droit sur les icônes.",
-      zh_CN: "右键点击网站图标以删除快速链接。",
-      // The following sentences need to be reworked:
-      sv: "Right click on the icons to delete a Quick Link.",
-      nl: "Right click on the icons to delete a Quick Link.",
-      pl: "Naciśnij prawy przycisk myszy aby usunąć Ulubioną witrynę.",
-      pt_BR: "Clique com o botão direito nos ícones para deletar um Link Rápido",
-      ru: "Right click on the icons to delete a Quick Link.",
-      sk: "Kliknutím pravým tlačidlom myši na ikony vymažete rýchly odkaz.",
-      de: "Rechtsklick auf die icons um einen Quick Link zu löschen",
-      it: "Tasto destro sull'icona per eliminare un Collegamento rapido"
     },
     "Open in new tab by default": {
       fr: "Ouvrir dans un nouvel onglet par défaut",
@@ -115,15 +114,15 @@ function askfordict() {
     },
     "Links per row": {
       fr: "Liens par ligne",
-      sv: "",
-      nl: "",
-      pl: "",
+      sv: "Links per row",
+      nl: "Links per row",
+      pl: "Links per row",
       pt_BR: "Links por linha",
-      ru: "",
-      zh_CN: "",
-      sk: "",
-      de: "",
-      it: ""
+      ru: "Links per row",
+      zh_CN: "Links per row",
+      sk: "Links per row",
+      de: "Links per row",
+      it: "Links per row"
     },
     "VISUALS": {
       fr: "Affichage",
@@ -190,7 +189,7 @@ function askfordict() {
       sv: "Frequency",
       nl: "Frequency",
       pl: "Częstotliwość",
-      pt_BR: "Frequencia",
+      pt_BR: "Frequência",
       ru: "Frequency",
       zh_CN: "背景切换频率",
       sk: "Frequency",
@@ -198,7 +197,7 @@ function askfordict() {
       it: "Frequenza"
     },
     "Every tab": {
-      fr: "chaque onglet",
+      fr: "Chaque onglet",
       sv: "Every tab",
       nl: "Every tab",
       pl: "Co zakładkę",
@@ -210,7 +209,7 @@ function askfordict() {
       it: "Ogni scheda"
     },
     "Every hour": {
-      fr: "chaque heure",
+      fr: "Chaque heure",
       sv: "Every hour",
       nl: "Every hour",
       pl: "Co godzinę",
@@ -222,7 +221,7 @@ function askfordict() {
       it: "Ogni ora"
     },
     "Every day": {
-      fr: "chaque jour",
+      fr: "Chaque jour",
       sv: "Every day",
       nl: "Every day",
       pl: "Codziennie",
@@ -329,6 +328,102 @@ function askfordict() {
       de: "Deaktiviert",
       it: "Disabilitato"
     },
+    "Hide elements": {
+      fr: "Cacher des éléments",
+      sv: "Hide elements",
+      nl: "Hide elements",
+      pl: "Hide elements",
+      pt_BR: "Esconder elementos",
+      ru: "Hide elements",
+      zh_CN: "Hide elements",
+      sk: "Hide elements",
+      de: "Hide elements",
+      it: "Hide elements"
+    },
+    "Clock": {
+      fr: "Horloge",
+      sv: "Clock",
+      nl: "Clock",
+      pl: "Clock",
+      pt_BR: "Relógio",
+      ru: "Clock",
+      zh_CN: "Clock",
+      sk: "Clock",
+      de: "Clock",
+      it: "Clock"
+    },
+    "Date": {
+      fr: "Date",
+      sv: "Date",
+      nl: "Date",
+      pl: "Date",
+      pt_BR: "Data",
+      ru: "Date",
+      zh_CN: "Date",
+      sk: "Date",
+      de: "Date",
+      it: "Date"
+    },
+    "Greetings": {
+      fr: "Horloge",
+      sv: "Greetings",
+      nl: "Greetings",
+      pl: "Greetings",
+      pt_BR: "Cumprimentos",
+      ru: "Greetings",
+      zh_CN: "Greetings",
+      sk: "Greetings",
+      de: "Greetings",
+      it: "Greetings"
+    },
+    "Weather": {
+      fr: "Météo",
+      sv: "Weather",
+      nl: "Weather",
+      pl: "Weather",
+      pt_BR: "Tempo",
+      ru: "Weather",
+      zh_CN: "Weather",
+      sk: "Weather",
+      de: "Weather",
+      it: "Weather"
+    },
+    "Icon": {
+      fr: "Icône",
+      sv: "Icon",
+      nl: "Icon",
+      pl: "Icon",
+      pt_BR: "Ícone",
+      ru: "Icon",
+      zh_CN: "Icon",
+      sk: "Icon",
+      de: "Icon",
+      it: "Icon"
+    },
+    "Quick Links": {
+      fr: "Liens favoris",
+      sv: "Quick Links",
+      nl: "Quick Links",
+      pl: "Quick Links",
+      pt_BR: "Links Rápidos",
+      ru: "Quick Links",
+      zh_CN: "Quick Links",
+      sk: "Quick Links",
+      de: "Quick Links",
+      it: "Quick Links"
+    },
+    "Settings icon": {
+      fr: "Icône réglages",
+      sv: "Settings icon",
+      nl: "Settings icon",
+      pl: "Settings icon",
+      pt_BR: "Settings icon",
+      ru: "Settings icon",
+      zh_CN: "Settings icon",
+      sk: "Settings icon",
+      de: "Settings icon",
+      it: "Settings icon"
+    },
     "Upload background here": {
       fr: "Insérez votre arrière-plan",
       sv: "Upload background here",
@@ -353,17 +448,29 @@ function askfordict() {
       de: "Analog clock",
       it: "Analog clock"
     },
-    "No distractions": {
-      fr: "Mode concentration",
-      sv: "No distractions",
-      nl: "No distractions",
-      pl: "No distractions",
-      pt_BR: "Sem distrações",
-      ru: "No distractions",
-      zh_CN: "No distractions",
-      sk: "No distractions",
-      de: "No distractions",
-      it: "No distractions"
+    "Display Seconds": {
+      fr: "Afficher les secondes",
+      sv: "Display seconds",
+      nl: "Display seconds",
+      pl: "Display seconds",
+      pt_BR: "Mostrar segundos",
+      ru: "Display seconds",
+      zh_CN: "Display seconds",
+      sk: "Display seconds",
+      de: "Display seconds",
+      it: "Display seconds"
+    },
+    "Automatic": {
+      fr: "Automatique",
+      sv: "Automatic",
+      nl: "Automatic",
+      pl: "Automatic",
+      pt_BR: "Automático",
+      ru: "Automatic",
+      zh_CN: "Automatic",
+      sk: "Automatic",
+      de: "Automatic",
+      it: "Automatic"
     },
     "WEATHER": {
       fr: "Météo",
@@ -388,6 +495,18 @@ function askfordict() {
       sk: "Geolokácia",
       de: "Geolokalisierung",
       it: "Geolocalizzazione"
+    },
+    "City not found": {
+      fr: "Ville non trouvé",
+      sv: "Staden hittades inte",
+      nl: "Stad niet gevonden",
+      pl: "Zmień miasto",
+      pt_BR: "Cidade não encontrada",
+      ru: "Город не найден",
+      zh_CN: "找不到城市",
+      sk: "Mesto nenájdené",
+      de: "Stadt nicht gefunden",
+      it: "Città non trovata"
     },
     "Change city": {
       fr: "Changer la ville",
@@ -557,6 +676,66 @@ function askfordict() {
       de: "Mit Qwant suchen",
       it: "Cerca su Qwant"
     },
+    "TIME & DATE": {
+      fr: "Date & heure",
+      sv: "TIME & DATE",
+      nl: "TIME & DATE",
+      pl: "TIME & DATE",
+      pt_BR: "DATA & HORA",
+      ru: "TIME & DATE",
+      zh_CN: "TIME & DATE",
+      sk: "TIME & DATE",
+      de: "TIME & DATE",
+      it: "TIME & DATE"
+    },
+    "CUSTOM FONT": {
+      fr: "Police personnalisée",
+      sv: "Custom FONT",
+      nl: "Custom FONT",
+      pl: "Custom FONT",
+      pt_BR: "Fonte personalizada",
+      ru: "Custom FONT",
+      zh_CN: "Custom FONT",
+      sk: "Custom FONT",
+      de: "Custom FONT",
+      it: "Custom FONT"
+    },
+    "Any Google fonts": {
+      fr: "Toutes Google fonts",
+      sv: "Any Google fonts",
+      nl: "Any Google fonts",
+      pl: "Any Google fonts",
+      pt_BR: "Qualquer Google Fonts",
+      ru: "Any Google fonts",
+      zh_CN: "Any Google fonts",
+      sk: "Any Google fonts",
+      de: "Any Google fonts",
+      it: "Any Google fonts"
+    },
+    "CUSTOM STYLE": {
+      fr: "Style personnalisé",
+      sv: "Custom Style",
+      nl: "Custom Style",
+      pl: "Custom Style",
+      pt_BR: "Estilo personalizado",
+      ru: "Custom Style",
+      zh_CN: "Custom Style",
+      sk: "Custom Style",
+      de: "Custom Style",
+      it: "Custom Style"
+    },
+    "Type in your custom CSS": {
+      fr: "Entrez vous CSS personnalisé",
+      sv: "Type in your custom CSS",
+      nl: "Type in your custom CSS",
+      pl: "Type in your custom CSS",
+      pt_BR: "Insira seu CSS personalizado",
+      ru: "Type in your custom CSS",
+      zh_CN: "Type in your custom CSS",
+      sk: "Type in your custom CSS",
+      de: "Type in your custom CSS",
+      it: "Type in your custom CSS"
+    },
     "GENERAL": {
       fr: "Général",
       sv: "General",
@@ -593,7 +772,7 @@ function askfordict() {
       de: "12-Stunden Uhrzeit",
       it: "Sistema orario a 12 ore"
     },
-    "Time Zone": {
+    "Time zone": {
       fr: "Fuseau horaire",
       sv: "Time Zone",
       nl: "Time Zone",
@@ -622,7 +801,7 @@ function askfordict() {
       sv: "Greeting",
       nl: "Greeting",
       pl: "Greeting",
-      pt_BR: "Greeting",
+      pt_BR: "Cumprimento",
       ru: "Greeting",
       zh_CN: "Greeting",
       sk: "Greeting",
@@ -658,7 +837,7 @@ function askfordict() {
       sv: "Font family",
       nl: "Font family",
       pl: "Font family",
-      pt_BR: "Fonte",
+      pt_BR: "Família de fontes",
       ru: "Font family",
       zh_CN: "Font family",
       sk: "Font family",
@@ -730,23 +909,47 @@ function askfordict() {
       sv: "Copied",
       nl: "Copied",
       pl: "Skopiowano",
-      pt_BR: "Copiados",
+      pt_BR: "Copiado",
       ru: "Copied",
       zh_CN: "已复制",
       sk: "Copied",
       de: "Copied",
       it: "Copiato"
     },
+    "Import code": {
+      fr: "Importer le code",
+      sv: "Importera kod",
+      nl: "Code importeren",
+      pl: "Kod importu",
+      pt_BR: "Importar código",
+      ru: "Код импорта",
+      zh_CN: "导入代码",
+      sk: "Importovať kód",
+      de: "Code importieren",
+      it: "Codice di importazione",
+    },
+    "Export code": {
+      fr: "Code d'exportation",
+      sv: "exportkod",
+      nl: "export code",
+      pl: "kod eksportowy",
+      pt_BR: "Exportar código",
+      ru: "экспортный код",
+      zh_CN: "导入代码",
+      sk: "vývozný kód",
+      de: "Exportcode",
+      it: "codice di esportazione",
+    },
     "Reset settings": {
       fr: "Réinitialiser les réglages",
-      sv: "Reset settings",
-      nl: "Reset settings",
+      sv: "Återställ inställningar",
+      nl: "Reset instellingen",
       pl: "Przywróć ustawienia domyślne",
-      pt_BR: "Restaurar configurações",
-      ru: "Reset settings",
-      zh_CN: "还原设置",
-      sk: "Reset settings",
-      de: "Reset settings",
+      pt_BR: "Redefinir as configurações",
+      ru: "Сбросить настройки",
+      zh_CN: "重新设置",
+      sk: "Obnoviť nastavenia",
+      de: "Einstellungen zurücksetzen",
       it: "Impostazioni iniziali"
     },
     "Are you sure ?": {
@@ -856,6 +1059,18 @@ function askfordict() {
       sk: "if you love Bonjourr",
       de: "if you love Bonjourr",
       it: "se ami Bonjourr"
+    },
+    "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇": {
+      fr: "Vous adorez utiliser Bonjourr ? Pensez à nous noter, ça serait super! 😇",
+      sv: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      nl: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      pl: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      pt_BR: "Se você gosta de usar o Bonjourr? Considere nos avaliar, isso ajudaria muito! 😇",
+      ru: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      zh_CN: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      sk: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      de: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇",
+      it: "You love using Bonjourr? Consider giving us a review, that would help a lot! 😇"
     },
 
     //settings
