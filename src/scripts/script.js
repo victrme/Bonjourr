@@ -1346,12 +1346,12 @@ function unsplash(data, event, startup) {
 
 	function req(which, d, init) {
 		function dayCollections() {
+			const collections = require('./collections')
 			const h = new Date().getHours()
-			if (h > 10 && h < 18) return '4933370'
-			//day
-			else if (h > 7 && h < 21) return '9489922'
-			//evening-noon
-			else return '9489906' //night
+			const h_day = h > 10 && h < 18
+			const h_noon = h > 7 && h < 21
+
+			return h_day ? collections.day : h_noon ? collections.noon : collections.night
 		}
 
 		obf = (n) =>
@@ -1610,7 +1610,7 @@ function searchbar(event, that, storage) {
 }
 
 function signature() {
-	let v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>"
+	let v = "<a href='https://victr.me/'>Victor Azevedo</a>"
 	let t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>"
 	let e = document.createElement('span')
 
