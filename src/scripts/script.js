@@ -1346,7 +1346,6 @@ function unsplash(data, event, startup) {
 
 	function req(which, d, init) {
 		function dayCollections() {
-			const collections = require('./collections')
 			const h = new Date().getHours()
 			const h_day = h > 10 && h < 18
 			const h_noon = h > 7 && h < 21

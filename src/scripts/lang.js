@@ -21,7 +21,7 @@
 // sk: "",
 // de: "",
 // it: "",
-// es_ES: "",
+// es: "",
 // no: ""}
 
 function askfordict() {
@@ -37,7 +37,7 @@ function askfordict() {
 			sk: 'Nová karta',
 			de: 'Neues Tab',
 			it: 'Nuova scheda',
-			es_ES: 'Nueva Pestaña',
+			es: 'Nueva Pestaña',
 			no: '',
 		},
 
@@ -54,7 +54,7 @@ function askfordict() {
 			sk: 'Nastavenia',
 			de: 'Einstellungen',
 			it: 'Impostazioni',
-			es_ES: 'Configuración',
+			es: 'Configuración',
 			no: '',
 		},
 		'Show all settings': {
@@ -68,7 +68,7 @@ function askfordict() {
 			sk: 'Show all settings',
 			de: 'Show all settings',
 			it: 'Show all settings',
-			es_ES: 'Mostrar todos los ajustes',
+			es: 'Mostrar todos los ajustes',
 			no: '',
 		},
 		'QUICK LINKS': {
@@ -82,7 +82,7 @@ function askfordict() {
 			sk: 'RÝCHLA NAVIGÁCIA',
 			de: 'Quick Links',
 			it: 'Collegamenti rapidi',
-			es_ES: 'Enlaces favoritos',
+			es: 'Enlaces favoritos',
 			no: '',
 		},
 		Name: {
@@ -96,7 +96,7 @@ function askfordict() {
 			sk: 'názov',
 			de: 'Name',
 			it: 'nome',
-			es_ES: 'Nombre',
+			es: 'Nombre',
 			no: '',
 		},
 		Add: {
@@ -110,7 +110,7 @@ function askfordict() {
 			sk: 'Pridať',
 			de: 'Hinzufügen',
 			it: 'Aggiungere',
-			es_ES: 'Añadir',
+			es: 'Añadir',
 			no: '',
 		},
 		'Open in new tab by default': {
@@ -125,7 +125,7 @@ function askfordict() {
 			sk: 'Predvolene otvoriť v novej karte',
 			de: 'Standardmäßig in einem neuen Tab öffnen',
 			it: 'Apri in una nuova scheda come impostazione predefinita',
-			es_ES: 'Abrir en una nueva pestaña por defecto',
+			es: 'Abrir en una nueva pestaña por defecto',
 			no: '',
 		},
 		'Links per row': {
@@ -139,7 +139,7 @@ function askfordict() {
 			sk: 'Links per row',
 			de: 'Links per row',
 			it: 'Links per row',
-			es_ES: 'Enlaces por fila',
+			es: 'Enlaces por fila',
 			no: '',
 		},
 		VISUALS: {
@@ -153,7 +153,7 @@ function askfordict() {
 			sk: 'VZHĽAD',
 			de: 'Bilder',
 			it: 'Visualizzazione',
-			es_ES: 'Visualización',
+			es: 'Visualización',
 			no: '',
 		},
 		'Background type': {
@@ -167,7 +167,7 @@ function askfordict() {
 			sk: 'Pozadie',
 			de: 'Hintergrund Typ',
 			it: 'Tipo di sfondo',
-			es_ES: 'Tipo de fondo',
+			es: 'Tipo de fondo',
 			no: '',
 		},
 		Default: {
@@ -181,7 +181,7 @@ function askfordict() {
 			sk: 'Default',
 			de: 'Standard',
 			it: 'Predefinito',
-			es_ES: 'Por Defecto',
+			es: 'Por Defecto',
 			no: '',
 		},
 		Dynamic: {
@@ -195,7 +195,7 @@ function askfordict() {
 			sk: 'Dynamic',
 			de: 'Dynamisch',
 			it: 'Dinamico',
-			es_ES: 'Dinámico',
+			es: 'Dinámico',
 			no: '',
 		},
 		Custom: {
@@ -209,7 +209,7 @@ function askfordict() {
 			sk: 'Custom',
 			de: 'Benutzerdefiniert',
 			it: 'Personalizzato',
-			es_ES: 'Personalizado',
+			es: 'Personalizado',
 			no: '',
 		},
 		Frequency: {
@@ -223,7 +223,7 @@ function askfordict() {
 			sk: 'Frequency',
 			de: 'Häufigkeit',
 			it: 'Frequenza',
-			es_ES: 'Frequencia',
+			es: 'Frequencia',
 			no: '',
 		},
 		'Every tab': {
@@ -237,7 +237,7 @@ function askfordict() {
 			sk: 'Every tab',
 			de: 'Jedes Tab',
 			it: 'Ogni scheda',
-			es_ES: 'Cada Pestaña',
+			es: 'Cada Pestaña',
 			no: '',
 		},
 		'Every hour': {
@@ -251,7 +251,7 @@ function askfordict() {
 			sk: 'Every hour',
 			de: 'Jede Stunde',
 			it: 'Ogni ora',
-			es_ES: 'Cada hora',
+			es: 'Cada hora',
 			no: '',
 		},
 		'Every day': {
@@ -265,7 +265,7 @@ function askfordict() {
 			sk: 'Every day',
 			de: 'Jeden Tag',
 			it: 'Ogni giorno',
-			es_ES: 'Cada día',
+			es: 'Cada día',
 			no: '',
 		},
 		Pause: {
@@ -279,7 +279,7 @@ function askfordict() {
 			sk: 'Pause',
 			de: 'Pause',
 			it: 'Pausa',
-			es_ES: 'Pausa',
+			es: 'Pausa',
 			no: '',
 		},
 		'Blur intensity': {
@@ -293,7 +293,7 @@ function askfordict() {
 			sk: 'Intenzita rozmazania',
 			de: 'Weichzeichner Stärke',
 			it: 'Intensità della sfocatura',
-			es_ES: 'Intensidad de desenfoque',
+			es: 'Intensidad de desenfoque',
 			no: '',
 		},
 		Brightness: {
@@ -307,7 +307,7 @@ function askfordict() {
 			sk: 'Brightness',
 			de: 'Helligkeit',
 			it: 'Luminosità',
-			es_ES: 'Brillo',
+			es: 'Brillo',
 			no: '',
 		},
 		'Dark mode': {
@@ -321,7 +321,7 @@ function askfordict() {
 			sk: 'Tmavý režim',
 			de: 'Dunkelmodus',
 			it: 'Modalità notturna',
-			es_ES: 'Modo Oscuro',
+			es: 'Modo Oscuro',
 			no: '',
 		},
 		'Only at night': {
@@ -335,7 +335,7 @@ function askfordict() {
 			sk: 'Len v noci',
 			de: 'Nur Nachts',
 			it: 'Solo di notte',
-			es_ES: 'Sólo de noche',
+			es: 'Sólo de noche',
 			no: '',
 		},
 		'With the system': {
@@ -349,7 +349,7 @@ function askfordict() {
 			sk: 'Podľa systému',
 			de: 'Wie in den Systemeinstellungen',
 			it: 'Sistema',
-			es_ES: 'Sistema',
+			es: 'Sistema',
 			no: '',
 		},
 		Enabled: {
@@ -363,7 +363,7 @@ function askfordict() {
 			sk: 'Zapnuté',
 			de: 'Aktiviert',
 			it: 'Abilitato',
-			es_ES: 'Activado',
+			es: 'Activado',
 			no: '',
 		},
 		Disabled: {
@@ -377,7 +377,7 @@ function askfordict() {
 			sk: 'Vypnuté',
 			de: 'Deaktiviert',
 			it: 'Disabilitato',
-			es_ES: 'Desactivado',
+			es: 'Desactivado',
 			no: '',
 		},
 		'Hide elements': {
@@ -391,7 +391,7 @@ function askfordict() {
 			sk: 'Hide elements',
 			de: 'Hide elements',
 			it: 'Hide elements',
-			es_ES: 'Esconder elementos',
+			es: 'Esconder elementos',
 			no: '',
 		},
 		Clock: {
@@ -405,7 +405,7 @@ function askfordict() {
 			sk: 'Clock',
 			de: 'Clock',
 			it: 'Clock',
-			es_ES: 'Reloj',
+			es: 'Reloj',
 			no: '',
 		},
 		Date: {
@@ -419,7 +419,7 @@ function askfordict() {
 			sk: 'Date',
 			de: 'Date',
 			it: 'Date',
-			es_ES: 'Fecha',
+			es: 'Fecha',
 			no: '',
 		},
 		Greetings: {
@@ -433,7 +433,7 @@ function askfordict() {
 			sk: 'Greetings',
 			de: 'Greetings',
 			it: 'Greetings',
-			es_ES: 'Saludos',
+			es: 'Saludos',
 			no: '',
 		},
 		Weather: {
@@ -447,7 +447,7 @@ function askfordict() {
 			sk: 'Weather',
 			de: 'Weather',
 			it: 'Weather',
-			es_ES: 'Tiempo',
+			es: 'Tiempo',
 			no: '',
 		},
 		Icon: {
@@ -461,7 +461,7 @@ function askfordict() {
 			sk: 'Icon',
 			de: 'Icon',
 			it: 'Icon',
-			es_ES: 'Icono',
+			es: 'Icono',
 			no: '',
 		},
 		'Quick Links': {
@@ -475,7 +475,7 @@ function askfordict() {
 			sk: 'Quick Links',
 			de: 'Quick Links',
 			it: 'Quick Links',
-			es_ES: 'Enlaces favoritos',
+			es: 'Enlaces favoritos',
 			no: '',
 		},
 		'Settings icon': {
@@ -489,7 +489,7 @@ function askfordict() {
 			sk: 'Settings icon',
 			de: 'Settings icon',
 			it: 'Settings icon',
-			es_ES: 'Configuración icono',
+			es: 'Configuración icono',
 			no: '',
 		},
 		'Upload background here': {
@@ -503,7 +503,7 @@ function askfordict() {
 			sk: 'Upload background here',
 			de: 'Upload background here',
 			it: 'Upload background here',
-			es_ES: 'Suba el fondo aquí',
+			es: 'Suba el fondo aquí',
 			no: '',
 		},
 		'Analog clock': {
@@ -517,7 +517,7 @@ function askfordict() {
 			sk: 'Analog clock',
 			de: 'Analog clock',
 			it: 'Analog clock',
-			es_ES: 'Reloj Analógico',
+			es: 'Reloj Analógico',
 			no: '',
 		},
 		'Display Seconds': {
@@ -531,7 +531,7 @@ function askfordict() {
 			sk: 'Display seconds',
 			de: 'Display seconds',
 			it: 'Display seconds',
-			es_ES: 'Mostrar los segundos',
+			es: 'Mostrar los segundos',
 			no: '',
 		},
 		Automatic: {
@@ -545,7 +545,7 @@ function askfordict() {
 			sk: 'Automatic',
 			de: 'Automatic',
 			it: 'Automatic',
-			es_ES: 'Automático',
+			es: 'Automático',
 			no: '',
 		},
 		WEATHER: {
@@ -559,7 +559,7 @@ function askfordict() {
 			sk: 'POČASIE',
 			de: 'Wetter',
 			it: 'Meteo',
-			es_ES: 'Tiempo',
+			es: 'Tiempo',
 			no: '',
 		},
 		Geolocation: {
@@ -573,7 +573,7 @@ function askfordict() {
 			sk: 'Geolokácia',
 			de: 'Geolokalisierung',
 			it: 'Geolocalizzazione',
-			es_ES: 'Geolocalización',
+			es: 'Geolocalización',
 			no: '',
 		},
 		'City not found': {
@@ -587,7 +587,7 @@ function askfordict() {
 			sk: 'Mesto nenájdené',
 			de: 'Stadt nicht gefunden',
 			it: 'Città non trovata',
-			es_ES: 'Ciudad no encontrada',
+			es: 'Ciudad no encontrada',
 			no: '',
 		},
 		'Change city': {
@@ -601,7 +601,7 @@ function askfordict() {
 			sk: 'Zmeniť mesto',
 			de: 'Stadt ändern',
 			it: 'Cambia città',
-			es_ES: 'Cambiar ciudad',
+			es: 'Cambiar ciudad',
 			no: '',
 		},
 		"Use this option if you don't want to enable geolocation.": {
@@ -615,7 +615,7 @@ function askfordict() {
 			sk: 'Túto možnosť použite, ak nechcete povoliť geolokáciu.',
 			de: 'Diese Option wählen, wenn du die Geolokalisierung nicht aktivieren willst',
 			it: 'Usa questa opzione se non vuoi abilitare la geolocalizzazione',
-			es_ES: 'Usa esta opción si no quieres habilitar la geolocalización',
+			es: 'Usa esta opción si no quieres habilitar la geolocalización',
 			no: '',
 		},
 		'There was a problem': {
@@ -629,7 +629,7 @@ function askfordict() {
 			sk: 'Nastal problém',
 			de: 'Ein Problem ist aufgetreten',
 			it: "C'è stato un problema",
-			es_ES: 'Hubo un problema',
+			es: 'Hubo un problema',
 			no: '',
 		},
 		'Imperial units': {
@@ -643,7 +643,7 @@ function askfordict() {
 			sk: 'Imperiálne jednotky',
 			de: 'Imperiale Maßeinheiten',
 			it: 'Sistema imperiale',
-			es_ES: 'Sistema imperial',
+			es: 'Sistema imperial',
 			no: '',
 		},
 		'SEARCH BAR': {
@@ -657,7 +657,7 @@ function askfordict() {
 			sk: 'VYHĽADÁVACÍ PANEL',
 			de: 'Suchleiste',
 			it: 'Barra di ricerca',
-			es_ES: 'Barra de búsqueda',
+			es: 'Barra de búsqueda',
 			no: '',
 		},
 		'Search engine': {
@@ -671,7 +671,7 @@ function askfordict() {
 			sk: 'Vyhľadávač',
 			de: 'Suchmaschine',
 			it: 'Motore di ricerca',
-			es_ES: 'Motor de búsqueda',
+			es: 'Motor de búsqueda',
 			no: '',
 		},
 		Enable: {
@@ -685,7 +685,7 @@ function askfordict() {
 			sk: 'Aktivovať',
 			de: 'Aktivieren',
 			it: 'Abilita',
-			es_ES: 'Activar',
+			es: 'Activar',
 			no: '',
 		},
 		'Search on Startpage': {
@@ -699,7 +699,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie Startpage',
 			de: 'Auf der Startseite suchen',
 			it: 'Cerca su Startpage',
-			es_ES: 'Buscar en la página de inicio',
+			es: 'Buscar en la página de inicio',
 			no: '',
 		},
 		'Search on Ecosia': {
@@ -713,7 +713,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie Ecosia',
 			de: 'Mit Ecosia suchen',
 			it: 'Cerca su Ecosia',
-			es_ES: 'Buscar en Ecosia',
+			es: 'Buscar en Ecosia',
 			no: '',
 		},
 		'Search on DuckDuckGo': {
@@ -727,7 +727,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie DuckDuckGo',
 			de: 'Mit DuckDuckGo suchen',
 			it: 'Cerca su DuckDuckGo',
-			es_ES: 'Buscar en DuckDuckGo',
+			es: 'Buscar en DuckDuckGo',
 			no: '',
 		},
 		'Search on Google': {
@@ -741,7 +741,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie Google',
 			de: 'Mit Google suchen',
 			it: 'Cerca su Google',
-			es_ES: 'Buscar en Google',
+			es: 'Buscar en Google',
 			no: '',
 		},
 		'Search on Yahoo': {
@@ -755,7 +755,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie Yahoo',
 			de: 'Mit Yahoo suchen',
 			it: 'Cerca su Yahoo',
-			es_ES: 'Buscar en Yahoo',
+			es: 'Buscar en Yahoo',
 			no: '',
 		},
 		'Search on Bing': {
@@ -769,7 +769,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie Bing',
 			de: 'Mit Bing suchen',
 			it: 'Cerca su Bing',
-			es_ES: 'Buscar en Bing',
+			es: 'Buscar en Bing',
 			no: '',
 		},
 		'Search on Qwant': {
@@ -783,7 +783,7 @@ function askfordict() {
 			sk: 'Vyhľadávanie Qwant',
 			de: 'Mit Qwant suchen',
 			it: 'Cerca su Qwant',
-			es_ES: 'Buscar en Qwant',
+			es: 'Buscar en Qwant',
 			no: '',
 		},
 		'TIME & DATE': {
@@ -797,7 +797,7 @@ function askfordict() {
 			sk: 'TIME & DATE',
 			de: 'TIME & DATE',
 			it: 'TIME & DATE',
-			es_ES: 'Fecha & hora',
+			es: 'Fecha & hora',
 			no: '',
 		},
 		'CUSTOM FONT': {
@@ -811,7 +811,7 @@ function askfordict() {
 			sk: 'Custom FONT',
 			de: 'Custom FONT',
 			it: 'Custom FONT',
-			es_ES: 'Fuente personalizada',
+			es: 'Fuente personalizada',
 			no: '',
 		},
 		'Any Google fonts': {
@@ -825,7 +825,7 @@ function askfordict() {
 			sk: 'Any Google fonts',
 			de: 'Any Google fonts',
 			it: 'Any Google fonts',
-			es_ES: 'Cualquier fuente de Google',
+			es: 'Cualquier fuente de Google',
 			no: '',
 		},
 		'CUSTOM STYLE': {
@@ -839,7 +839,7 @@ function askfordict() {
 			sk: 'Custom Style',
 			de: 'Custom Style',
 			it: 'Custom Style',
-			es_ES: 'Estilo personalizado',
+			es: 'Estilo personalizado',
 			no: '',
 		},
 		'Type in your custom CSS': {
@@ -853,7 +853,7 @@ function askfordict() {
 			sk: 'Type in your custom CSS',
 			de: 'Type in your custom CSS',
 			it: 'Type in your custom CSS',
-			es_ES: 'Escribe aquí tu CSS personalizado',
+			es: 'Escribe aquí tu CSS personalizado',
 			no: '',
 		},
 		GENERAL: {
@@ -867,7 +867,7 @@ function askfordict() {
 			sk: 'General',
 			de: 'Allgemein',
 			it: 'Generale',
-			es_ES: 'General',
+			es: 'General',
 			no: '',
 		},
 		'US Date Format': {
@@ -881,7 +881,7 @@ function askfordict() {
 			sk: 'US Date Format',
 			de: 'US Date Format',
 			it: 'US Date Format',
-			es_ES: 'Formato de fecha americano',
+			es: 'Formato de fecha americano',
 			no: '',
 		},
 		'12-Hour Time': {
@@ -895,7 +895,7 @@ function askfordict() {
 			sk: '12-hodinový čas',
 			de: '12-Stunden Uhrzeit',
 			it: 'Sistema orario a 12 ore',
-			es_ES: 'Sistema horario de 12 horas',
+			es: 'Sistema horario de 12 horas',
 			no: '',
 		},
 		'Time zone': {
@@ -909,7 +909,7 @@ function askfordict() {
 			sk: 'Time Zone',
 			de: 'Time Zone',
 			it: 'Time Zone',
-			es_ES: 'Huso horario',
+			es: 'Huso horario',
 			no: '',
 		},
 		Language: {
@@ -923,7 +923,7 @@ function askfordict() {
 			sk: 'Vybrať jazyk',
 			de: 'Sprache',
 			it: 'Lingua',
-			es_ES: 'Lenguaje o idioma',
+			es: 'Lenguaje o idioma',
 			no: '',
 		},
 		Greeting: {
@@ -937,7 +937,7 @@ function askfordict() {
 			sk: 'Greeting',
 			de: 'Greeting',
 			it: 'Greeting',
-			es_ES: 'Saludo',
+			es: 'Saludo',
 			no: '',
 		},
 		'Custom CSS': {
@@ -951,7 +951,7 @@ function askfordict() {
 			sk: 'Custom CSS',
 			de: 'Custom CSS',
 			it: 'Custom CSS',
-			es_ES: 'CSS personalizado',
+			es: 'CSS personalizado',
 			no: '',
 		},
 		'Custom Font': {
@@ -965,7 +965,7 @@ function askfordict() {
 			sk: 'Custom Font',
 			de: 'Custom Font',
 			it: 'Custom Font',
-			es_ES: 'Fuente personalizada',
+			es: 'Fuente personalizada',
 			no: '',
 		},
 		'Font family': {
@@ -979,7 +979,7 @@ function askfordict() {
 			sk: 'Font family',
 			de: 'Font family',
 			it: 'Font family',
-			es_ES: 'Fuente',
+			es: 'Fuente',
 			no: '',
 		},
 		Weight: {
@@ -993,7 +993,7 @@ function askfordict() {
 			sk: 'Weight',
 			de: 'Weight',
 			it: 'Weight',
-			es_ES: 'Peso',
+			es: 'Peso',
 			no: '',
 		},
 		Size: {
@@ -1007,7 +1007,7 @@ function askfordict() {
 			sk: 'Size',
 			de: 'Size',
 			it: 'Size',
-			es_ES: 'Tamaño',
+			es: 'Tamaño',
 			no: '',
 		},
 		'SETTINGS MANAGEMENT': {
@@ -1021,7 +1021,7 @@ function askfordict() {
 			sk: 'SETTINGS MANAGEMENT',
 			de: 'SETTINGS MANAGEMENT',
 			it: 'GESTIONE DELLE IMPOSTAZIONI',
-			es_ES: 'GESTIÓN DE AJUSTES',
+			es: 'GESTIÓN DE AJUSTES',
 			no: '',
 		},
 		Import: {
@@ -1035,7 +1035,7 @@ function askfordict() {
 			sk: 'Import',
 			de: 'Import',
 			it: 'Importare',
-			es_ES: 'Importar',
+			es: 'Importar',
 			no: '',
 		},
 		Export: {
@@ -1049,7 +1049,7 @@ function askfordict() {
 			sk: 'Export',
 			de: 'Export',
 			it: 'Esportare',
-			es_ES: 'Exportar',
+			es: 'Exportar',
 			no: '',
 		},
 		Copied: {
@@ -1063,7 +1063,7 @@ function askfordict() {
 			sk: 'Copied',
 			de: 'Copied',
 			it: 'Copiato',
-			es_ES: 'Copiado',
+			es: 'Copiado',
 			no: '',
 		},
 		'Import code': {
@@ -1077,7 +1077,7 @@ function askfordict() {
 			sk: 'Importovať kód',
 			de: 'Code importieren',
 			it: 'Codice di importazione',
-			es_ES: 'Importar código',
+			es: 'Importar código',
 			no: '',
 		},
 		'Export code': {
@@ -1091,7 +1091,7 @@ function askfordict() {
 			sk: 'vývozný kód',
 			de: 'Exportcode',
 			it: 'codice di esportazione',
-			es_ES: 'Exportar código',
+			es: 'Exportar código',
 			no: '',
 		},
 		'Reset settings': {
@@ -1105,7 +1105,7 @@ function askfordict() {
 			sk: 'Obnoviť nastavenia',
 			de: 'Einstellungen zurücksetzen',
 			it: 'Impostazioni iniziali',
-			es_ES: 'Restablecer configuración',
+			es: 'Restablecer configuración',
 			no: '',
 		},
 		'Are you sure ?': {
@@ -1119,7 +1119,7 @@ function askfordict() {
 			sk: 'Are you sure ?',
 			de: 'Are you sure ?',
 			it: 'Sei sicuro ?',
-			es_ES: '¿Estás seguro?',
+			es: '¿Estás seguro?',
 			no: '',
 		},
 		'Made in France with ❤️': {
@@ -1133,7 +1133,7 @@ function askfordict() {
 			sk: 'Spravené vo Francúzsku s ❤️',
 			de: 'Gemacht in Frankreich mit ❤️',
 			it: 'Fatto in Francia con ❤️',
-			es_ES: 'Hecho en Francia con ❤️',
+			es: 'Hecho en Francia con ❤️',
 			no: '',
 		},
 		by: {
@@ -1147,7 +1147,7 @@ function askfordict() {
 			sk: 'od',
 			de: 'von',
 			it: 'Da',
-			es_ES: 'por',
+			es: 'por',
 			no: '',
 		},
 		Visit: {
@@ -1161,7 +1161,7 @@ function askfordict() {
 			sk: 'Navštívte',
 			de: 'Besuche',
 			it: 'Visita',
-			es_ES: 'Visitar',
+			es: 'Visitar',
 			no: '',
 		},
 		'our website': {
@@ -1175,7 +1175,7 @@ function askfordict() {
 			sk: 'našu webstránku',
 			de: 'unsere Website',
 			it: 'il nostro sito internet',
-			es_ES: 'nuestra página web',
+			es: 'nuestra página web',
 			no: '',
 		},
 		'for infos and donations': {
@@ -1189,7 +1189,7 @@ function askfordict() {
 			sk: 'pre informácie a dary',
 			de: 'für Informationen und Spenden',
 			it: 'per info e donazioni',
-			es_ES: 'para más información y donaciones',
+			es: 'para más información y donaciones',
 			no: '',
 		},
 		Consider: {
@@ -1203,7 +1203,7 @@ function askfordict() {
 			sk: 'Consider',
 			de: 'Consider',
 			it: 'Considera di',
-			es_ES: 'Considere',
+			es: 'Considere',
 			no: '',
 		},
 		donating: {
@@ -1217,7 +1217,7 @@ function askfordict() {
 			sk: 'donating',
 			de: 'donating',
 			it: 'fare una donazione',
-			es_ES: 'hacer una donación',
+			es: 'hacer una donación',
 			no: '',
 		},
 		'if you love Bonjourr': {
@@ -1231,7 +1231,7 @@ function askfordict() {
 			sk: 'if you love Bonjourr',
 			de: 'if you love Bonjourr',
 			it: 'se ami Bonjourr',
-			es_ES: 'si amas Bonjourr',
+			es: 'si amas Bonjourr',
 			no: '',
 		},
 		'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇': {
@@ -1245,7 +1245,7 @@ function askfordict() {
 			sk: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 			de: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 			it: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
-			es_ES: '¿Te gusta Bonjourr? ¡Considera escribir una reseña, nos ayudaría mucho! 😇',
+			es: '¿Te gusta Bonjourr? ¡Considera escribir una reseña, nos ayudaría mucho! 😇',
 			no: '',
 		},
 
@@ -1264,7 +1264,7 @@ function askfordict() {
 			sk: 'Cancel',
 			de: 'Cancel',
 			it: 'Annulla',
-			es_ES: 'Cancelar',
+			es: 'Cancelar',
 			no: '',
 		},
 		'Delete Quick Link': {
@@ -1278,7 +1278,7 @@ function askfordict() {
 			sk: 'Delete Quick Link',
 			de: 'Delete Quick Link',
 			it: 'Elimina',
-			es_ES: 'Eliminar',
+			es: 'Eliminar',
 			no: '',
 		},
 		'Apply changes': {
@@ -1292,7 +1292,7 @@ function askfordict() {
 			sk: 'Apply changes',
 			de: 'Apply changes',
 			it: 'Applica modifiche',
-			es_ES: 'Aplicar cambios',
+			es: 'Aplicar cambios',
 			no: '',
 		},
 
@@ -1309,7 +1309,7 @@ function askfordict() {
 			sk: 'Pondelok',
 			de: 'Montag',
 			it: 'Lunedì',
-			es_ES: 'Lunes',
+			es: 'Lunes',
 			no: '',
 		},
 		Tuesday: {
@@ -1323,7 +1323,7 @@ function askfordict() {
 			sk: 'Utorok',
 			de: 'Dienstag',
 			it: 'Martedì',
-			es_ES: 'Martes',
+			es: 'Martes',
 			no: '',
 		},
 		Wednesday: {
@@ -1337,7 +1337,7 @@ function askfordict() {
 			sk: 'Streda',
 			de: 'Mittwoch',
 			it: 'Mercoledì',
-			es_ES: 'Miércoles',
+			es: 'Miércoles',
 			no: '',
 		},
 		Thursday: {
@@ -1351,7 +1351,7 @@ function askfordict() {
 			sk: 'Štvrtok',
 			de: 'Donnerstag',
 			it: 'Giovedì',
-			es_ES: 'Jueves',
+			es: 'Jueves',
 			no: '',
 		},
 		Friday: {
@@ -1365,7 +1365,7 @@ function askfordict() {
 			sk: 'Piatok',
 			de: 'Freitag',
 			it: 'Venerdì',
-			es_ES: 'Viernes',
+			es: 'Viernes',
 			no: '',
 		},
 		Saturday: {
@@ -1379,7 +1379,7 @@ function askfordict() {
 			sk: 'Sobota',
 			de: 'Samstag',
 			it: 'Sabato',
-			es_ES: 'Sábado',
+			es: 'Sábado',
 			no: '',
 		},
 		Sunday: {
@@ -1393,7 +1393,7 @@ function askfordict() {
 			sk: 'Nedeľa',
 			de: 'Sonntag',
 			it: 'Domenica',
-			es_ES: 'Domingo',
+			es: 'Domingo',
 			no: '',
 		},
 		January: {
@@ -1407,7 +1407,7 @@ function askfordict() {
 			sk: 'Január',
 			de: 'Januar',
 			it: 'Gennaio',
-			es_ES: 'Enero',
+			es: 'Enero',
 			no: '',
 		},
 		February: {
@@ -1421,7 +1421,7 @@ function askfordict() {
 			sk: 'Február',
 			de: 'Februar',
 			it: 'Febbraio',
-			es_ES: 'Febrero',
+			es: 'Febrero',
 			no: '',
 		},
 		March: {
@@ -1435,7 +1435,7 @@ function askfordict() {
 			sk: 'Marec',
 			de: 'März',
 			it: 'Marzo',
-			es_ES: 'Marzo',
+			es: 'Marzo',
 			no: '',
 		},
 		April: {
@@ -1449,7 +1449,7 @@ function askfordict() {
 			sk: 'Apríl',
 			de: 'April',
 			it: 'Aprile',
-			es_ES: 'Abril',
+			es: 'Abril',
 			no: '',
 		},
 		May: {
@@ -1463,7 +1463,7 @@ function askfordict() {
 			sk: 'Máj',
 			de: 'Mai',
 			it: 'Maggio',
-			es_ES: 'Mayo',
+			es: 'Mayo',
 			no: '',
 		},
 		June: {
@@ -1477,7 +1477,7 @@ function askfordict() {
 			sk: 'Jún',
 			de: 'Juni',
 			it: 'Giugno',
-			es_ES: 'Junio',
+			es: 'Junio',
 			no: '',
 		},
 		July: {
@@ -1491,7 +1491,7 @@ function askfordict() {
 			sk: 'Júl',
 			de: 'Juli',
 			it: 'Luglio',
-			es_ES: 'Julio',
+			es: 'Julio',
 			no: '',
 		},
 		August: {
@@ -1505,7 +1505,7 @@ function askfordict() {
 			sk: 'August',
 			de: 'August',
 			it: 'Agosto',
-			es_ES: 'Agosto',
+			es: 'Agosto',
 			no: '',
 		},
 		September: {
@@ -1519,7 +1519,7 @@ function askfordict() {
 			sk: 'Spetember',
 			de: 'September',
 			it: 'Settembre',
-			es_ES: 'Septiembre',
+			es: 'Septiembre',
 			no: '',
 		},
 		October: {
@@ -1533,7 +1533,7 @@ function askfordict() {
 			sk: 'Október',
 			de: 'Oktober',
 			it: 'Ottobre',
-			es_ES: 'Octubre',
+			es: 'Octubre',
 			no: '',
 		},
 		November: {
@@ -1547,7 +1547,7 @@ function askfordict() {
 			sk: 'November',
 			de: 'November',
 			it: 'Novembre',
-			es_ES: 'Noviembre',
+			es: 'Noviembre',
 			no: '',
 		},
 		December: {
@@ -1561,7 +1561,7 @@ function askfordict() {
 			sk: 'December',
 			de: 'Dezember',
 			it: 'Dicembre',
-			es_ES: 'Diciembre',
+			es: 'Diciembre',
 			no: '',
 		},
 		'Good Morning': {
@@ -1575,7 +1575,7 @@ function askfordict() {
 			sk: 'Dobré ráno',
 			de: 'Guten Morgen',
 			it: 'Buongiorno',
-			es_ES: 'Buenos días',
+			es: 'Buenos días',
 			no: '',
 		},
 		'Good Afternoon': {
@@ -1589,7 +1589,7 @@ function askfordict() {
 			sk: 'Dobrý deň',
 			de: 'Guten Nachmittag',
 			it: 'Buon pomeriggio',
-			es_ES: 'Buenas tardes',
+			es: 'Buenas tardes',
 			no: '',
 		},
 		'Good Evening': {
@@ -1603,7 +1603,7 @@ function askfordict() {
 			sk: 'Dobrý večer',
 			de: 'Guten Abend',
 			it: 'Buonasera',
-			es_ES: 'Buenas noches',
+			es: 'Buenas noches',
 			no: '',
 		},
 		'Good Night': {
@@ -1617,7 +1617,7 @@ function askfordict() {
 			sk: 'Dobrú noc',
 			de: 'Gute Nacht',
 			it: 'Buonanotte',
-			es_ES: 'Buenas noches',
+			es: 'Buenas noches',
 			no: '',
 		},
 		'It is currently': {
@@ -1631,7 +1631,7 @@ function askfordict() {
 			sk: 'Momentálne je',
 			de: 'Es ist derzeit',
 			it: 'Ci sono',
-			es_ES: 'Actualmente está',
+			es: 'Actualmente está',
 			no: '',
 		},
 		'with a high of': {
@@ -1645,7 +1645,7 @@ function askfordict() {
 			sk: 'z maximálnych',
 			de: 'mit maximal',
 			it: 'con una massima di',
-			es_ES: 'con un máximo de',
+			es: 'con un máximo de',
 			no: '',
 		},
 		'today.': {
@@ -1659,7 +1659,7 @@ function askfordict() {
 			sk: 'dnes.',
 			de: 'heute.',
 			it: 'oggi',
-			es_ES: 'hoy.',
+			es: 'hoy.',
 			no: '',
 		},
 
@@ -1676,7 +1676,7 @@ function askfordict() {
 			sk: 'Automatické',
 			de: 'Automatisch',
 			it: 'Automatico',
-			es_ES: 'Automático',
+			es: 'Automático',
 			no: '',
 		},
 		Title: {
@@ -1690,7 +1690,7 @@ function askfordict() {
 			sk: 'Názov',
 			de: 'Titel',
 			it: 'Titolo',
-			es_ES: 'Título',
+			es: 'Título',
 			no: '',
 		},
 		LANGUAGE: {
@@ -1704,7 +1704,7 @@ function askfordict() {
 			sk: 'JAZYK',
 			de: 'Sprache',
 			it: 'Lingua',
-			es_ES: 'Idioma',
+			es: 'Idioma',
 		},
 	}
 }
@@ -1722,7 +1722,7 @@ const l_google = {
 	sk: '.sk/search?q=',
 	de: '.de/search?q=',
 	it: '.it/search?q=',
-	es_ES: '.es/search?q=',
+	es: '.es/search?q=',
 	no: '.no/search?q=',
 }
 
@@ -1739,7 +1739,7 @@ const l_ddg = {
 	sk: '&kl=sk-sk',
 	de: '&kl=de-de',
 	it: '&kl=it-it',
-	es_ES: '&kl=es-es',
+	es: '&kl=es-es',
 	no: '&kl=no-no',
 }
 
@@ -1756,7 +1756,7 @@ const l_startpage = {
 	sk: '&language=sk-sk',
 	de: '&language=de-de',
 	it: '&language=italiano',
-	es_ES: '&language=es-es',
+	es: '&language=es-es',
 	no: '&language=norsk',
 }
 
@@ -1773,7 +1773,7 @@ const l_qwant = {
 	sk: '&r=en&sr=en',
 	de: '&r=DE&sr=de',
 	it: '&r=IT&sr=it',
-	es_ES: '&r=ES&sr=es',
+	es: '&r=ES&sr=es',
 	no: '&r=NO&sr=nb',
 }
 
@@ -1790,5 +1790,5 @@ const l_yahoo = {
 	sk: 'search.yahoo.com/search?q=',
 	de: 'de.search.yahoo.com/search?q=',
 	it: 'it.search.yahoo.com/search?q=',
-	es_ES: 'es.search.yahoo.com/search?q=',
+	es: 'es.search.yahoo.com/search?q=',
 }
