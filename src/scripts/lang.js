@@ -54,7 +54,6 @@ function askfordict() {
 			sk: 'Nastavenia',
 			de: 'Einstellungen',
 			it: 'Impostazioni',
-
 			es_ES: 'Configuración',
 			no: '',
 		},
