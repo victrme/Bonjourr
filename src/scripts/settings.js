@@ -1,3 +1,12 @@
+function signature() {
+	let v = "<a href='https://victr.me/'>Victor Azevedo</a>"
+	let t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>"
+	let e = document.createElement('span')
+
+	e.innerHTML = Math.random() > 0.5 ? ` ${v} & ${t}` : ` ${t} & ${v}`
+	id('rand').appendChild(e)
+}
+
 function selectBackgroundType(cat) {
 	id('dynamic').style.display = 'none'
 	id('custom').style.display = 'none'
