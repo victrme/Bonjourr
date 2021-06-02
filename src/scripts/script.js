@@ -24,6 +24,14 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 //cache rapidement temp max pour eviter que ça saccade
 if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
 
+function isNotEmpty(object) {
+	if (typeof object === 'object') {
+		if (Object.entries(object).length > 0) return true
+	}
+
+	return false
+}
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear(() => {
@@ -543,12 +551,8 @@ function quickLinks(event, that, initStorage) {
 				}
 			}
 
-			//si l'url n'a pas d'icones, utiliser besticon
-			if (json.icons.length === 0) {
-				return 'https://besticon.herokuapp.com/icon?url=' + json.domain + '&size=80'
-			} else {
-				return json.icons[s].src
-			}
+			if (json.length === 0) return 'src/images/icons/favicon.png'
+			else return json.icons[s].src
 		}
 
 		//prend le domaine de n'importe quelle url
@@ -556,13 +560,15 @@ function quickLinks(event, that, initStorage) {
 		a.href = arr.url
 		var hostname = a.hostname
 
-		faviconXHR('http://favicongrabber.com/api/grab/' + hostname).then((icon) => {
-			var img = elem.querySelector('img')
-			var icn = filterIcon(icon)
-			img.src = icn
+		faviconXHR('http://grab-favicons.herokuapp.com/api/v1/grab-favicons/?url=' + hostname).then((res) => {
+			if (res.type !== 'error') {
+				var img = elem.querySelector('img')
+				var icn = filterIcon(res)
+				img.src = icn
 
-			links[index].icon = icn
-			chrome.storage.sync.set({ links: links })
+				links[index].icon = icn
+				chrome.storage.sync.set({ links: links })
+			}
 		})
 	}
 
@@ -1075,10 +1081,10 @@ function initBackground(storage) {
 
 	if (type === 'custom') {
 		//reste local !!!!
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.local.get(null, (localChrome) => {
 			//1.8.3 -> 1.9 data transfer
-			if (data.background_blob) {
-				const blob = data.background_blob
+			if (localChrome.background_blob) {
+				const blob = localChrome.background_blob
 				const old = [blob[0] + ',' + blob[1]]
 
 				loadCustom({
@@ -1091,17 +1097,13 @@ function initBackground(storage) {
 				chrome.storage.local.set({ customThumbnails: old })
 
 				chrome.storage.local.remove('background_blob')
-			}
-
-			//if no custom background available
-			//choose dynamic
-			else if (!data.custom || data.custom.length === 0) {
-				unsplash(storage.dynamic)
+			} else if (!isNotEmpty(localChrome)) {
+				//if no custom background available: dynamic
+				unsplash(storage)
 				chrome.storage.sync.set({ background_type: 'dynamic' })
-
-				//apply chosen custom background
 			} else {
-				loadCustom(data)
+				//apply chosen custom background
+				loadCustom(localChrome)
 			}
 		})
 
@@ -1216,8 +1218,6 @@ function compress(e, state) {
 		const data = ctx.canvas.toDataURL(img)
 		const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
 
-		console.log(cleanData)
-
 		if (state === 'thumbnail') {
 			//controle les thumbnails
 			addThumbnails(cleanData, fullImage.length - 1)
@@ -1315,11 +1315,6 @@ function addThumbnails(data, index) {
 function unsplash(data, event, startup) {
 	//on startup nothing is displayed
 	const loadbackground = (url) => (startup ? noDisplayImgLoad(url) : imgBackground(url))
-
-	// getBrowserStorage((res) => {
-	// 	console.log(new Date(res.weather.lastState.sys.sunset * 1000))
-	// 	console.log(new Date(res.weather.lastState.sys.sunrise * 1000))
-	// })
 
 	function noDisplayImgLoad(val, callback) {
 		let img = new Image()
@@ -1463,8 +1458,9 @@ function unsplash(data, event, startup) {
 		if (!startup) imgCredits(infos, 'dynamic')
 	}
 
-	if (data && data.length > 0) cacheControl(data.dynamic, data.weather)
-	else {
+	if (isNotEmpty(data)) {
+		cacheControl(data.dynamic, data.weather)
+	} else {
 		chrome.storage.sync.get(['dynamic', 'weather'], (storage) => {
 			//si on change la frequence, juste changer la freq
 			if (event) {
@@ -1473,7 +1469,7 @@ function unsplash(data, event, startup) {
 				return true
 			}
 
-			if (storage.dynamic && storage.dynamic.length > 0) {
+			if (isNotEmpty(storage.dynamic)) {
 				cacheControl(storage.dynamic, storage.weather)
 			} else {
 				let initDyn = {
@@ -1749,8 +1745,6 @@ function proFunctions(obj) {
 				let selectionEndPos   = this.selectionEnd;
 				let oldContent        = this.value;
 
-				//console.log(that.selectionStart);
-
 				this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
 
 				this.selectionStart = this.selectionEnd = selectionStartPos + 1;*/
@@ -1900,10 +1894,6 @@ function proFunctions(obj) {
 					case 'w_icon':
 						toggleWrapFunc('main')
 						break
-
-					/*case "linkblocks":
-						toggleWrapFunc("linkblocks")
-						break*/
 				}
 			}
 		}
