@@ -8,13 +8,17 @@ let disposableData = {},
 	langue = 'en',
 	stillActive = false,
 	rangeActive = false,
-	lazyClockInterval = 0
+	lazyClockInterval = 0,
+	fullImage = [],
+	fullThumbnails = []
 const randomseed = Math.floor(Math.random() * 30) + 1,
 	domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks'),
 	dominterface = id('interface'),
 	dict = askfordict(),
-	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
+	domimg = id('background'),
+	domthumbnail = cl('thumbnail')
+mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
 
 //cache rapidement temp max pour eviter que ça saccade
 if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
@@ -25,12 +29,14 @@ function deleteBrowserStorage() {
 		localStorage.clear()
 	})
 }
+
 function getBrowserStorage(callback) {
 	chrome.storage.sync.get(null, (data) => {
 		if (callback) callback(data)
 		else console.log(data)
 	})
 }
+
 function getLocalStorage() {
 	chrome.storage.local.get(null, (data) => {
 		console.log(data)
@@ -74,7 +80,10 @@ function traduction(ofSettings, initStorage) {
 	if (langue !== 'en') trns.forEach((t) => (dict[t.innerText] ? (t.innerText = dict[t.innerText][langue]) : ''))
 }
 
-const tradThis = (str) => (langue === 'en' ? str : dict[str][langue])
+function tradThis(str) {
+	if (langue === 'en') return str
+	else return dict[str][langue]
+}
 
 function newClock(eventObj, init) {
 	function displayControl() {
@@ -1138,11 +1147,6 @@ function setblob(donnee, reader) {
 	return reader ? [base, blobUrl] : blobUrl
 }
 
-let fullImage = []
-let fullThumbnails = []
-const domimg = id('background')
-const domthumbnail = document.getElementsByClassName('thumbnail')
-
 function b64toBlobUrl(a, b = '', c = 512) {
 	const d = atob(a),
 		e = []
@@ -1368,13 +1372,12 @@ function unsplash(data, event, startup) {
 		// if clock is + /- 60 min around sunrise/set
 		function chooseCollection() {
 			if (weather) {
-				const minutator = (unix) => unix.getHours() * 60 + unix.getMinutes()
+				const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
 				const { sunset, sunrise } = weather.lastState.sys,
-					now = Date.now(),
 					minsunrise = minutator(new Date(sunrise * 1000)),
 					minsunset = minutator(new Date(sunset * 1000)),
-					sunnow = minutator(now)
+					sunnow = minutator(new Date())
 
 				if (sunnow >= 0 && sunnow <= minsunrise - 60) return collections.night
 				else if (sunnow <= minsunrise + 60) return collections.noon
@@ -1455,7 +1458,7 @@ function unsplash(data, event, startup) {
 		if (!startup) imgCredits(infos, 'dynamic')
 	}
 
-	if (data.length > 0) cacheControl(data.dynamic, data.weather)
+	if (data && data.length > 0) cacheControl(data.dynamic, data.weather)
 	else {
 		chrome.storage.sync.get(['dynamic', 'weather'], (storage) => {
 			//si on change la frequence, juste changer la freq
@@ -1465,7 +1468,7 @@ function unsplash(data, event, startup) {
 				return true
 			}
 
-			if (storage.dynamic !== undefined) {
+			if (storage.dynamic && storage.dynamic.length > 0) {
 				cacheControl(storage.dynamic, storage.weather)
 			} else {
 				let initDyn = {
