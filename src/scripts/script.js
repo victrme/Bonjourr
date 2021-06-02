@@ -25,9 +25,10 @@ function deleteBrowserStorage() {
 		localStorage.clear()
 	})
 }
-function getBrowserStorage() {
+function getBrowserStorage(callback) {
 	chrome.storage.sync.get(null, (data) => {
-		console.log(data)
+		if (callback) callback(data)
+		else console.log(data)
 	})
 }
 function getLocalStorage() {
@@ -893,7 +894,7 @@ function weather(event, that, initStorage) {
 	function updateCity() {
 		slow(that)
 
-		chrome.storage.sync.get(['weather'], (data) => {
+		chrome.storage.sync.get('weather', (data) => {
 			const param = data.weather
 
 			param.ccode = i_ccode.value
@@ -908,7 +909,9 @@ function weather(event, that, initStorage) {
 			i_city.value = ''
 			i_city.blur()
 
-			chrome.storage.sync.set({ weather: param })
+			chrome.storage.sync.set({
+				weather: param,
+			})
 		})
 	}
 
@@ -934,7 +937,7 @@ function weather(event, that, initStorage) {
 	function updateLocation(that) {
 		slow(that)
 
-		chrome.storage.sync.get(['weather'], (data) => {
+		chrome.storage.sync.get('weather', (data) => {
 			const param = data.weather
 			param.location = []
 
@@ -945,7 +948,10 @@ function weather(event, that, initStorage) {
 					(pos) => {
 						//update le parametre de location
 						param.location.push(pos.coords.latitude, pos.coords.longitude)
-						chrome.storage.sync.set({ weather: param })
+
+						chrome.storage.sync.set({
+							weather: param,
+						})
 
 						//request la meteo
 						request(param, 'current')
@@ -970,7 +976,10 @@ function weather(event, that, initStorage) {
 				i_ccode.value = param.ccode
 
 				param.location = false
-				chrome.storage.sync.set({ weather: param })
+
+				chrome.storage.sync.set({
+					weather: param,
+				})
 
 				request(param, 'current')
 				request(param, 'forecast')
@@ -1083,8 +1092,12 @@ function initBackground(storage) {
 		})
 
 		imgCredits(null, type)
-	} else if (type === 'dynamic' || type === 'default') unsplash(storage.dynamic)
-	else unsplash(null, null, true) //on startup
+	} else if (type === 'dynamic' || type === 'default') {
+		unsplash(storage)
+	} else {
+		//on startup
+		unsplash(null, null, true)
+	}
 
 	let blur = Number.isInteger(storage.background_blur) ? storage.background_blur : 15
 	let bright = !isNaN(storage.background_bright) ? storage.background_bright : 0.7
@@ -1294,6 +1307,11 @@ function unsplash(data, event, startup) {
 	//on startup nothing is displayed
 	const loadbackground = (url) => (startup ? noDisplayImgLoad(url) : imgBackground(url))
 
+	// getBrowserStorage((res) => {
+	// 	console.log(new Date(res.weather.lastState.sys.sunset * 1000))
+	// 	console.log(new Date(res.weather.lastState.sys.sunrise * 1000))
+	// })
+
 	function noDisplayImgLoad(val, callback) {
 		let img = new Image()
 
@@ -1319,38 +1337,52 @@ function unsplash(data, event, startup) {
 		}
 	}
 
-	function cacheControl(d) {
+	function cacheControl(dynamic, weather) {
 		//as t on besoin d'une nouvelle image ?
-		let needNewImage = freqControl('get', d.every, d.time)
+		let needNewImage = freqControl('get', dynamic.every, dynamic.time)
 		if (needNewImage) {
 			//sauvegarde le nouveau temps
-			d.time = freqControl('set', d.every)
+			dynamic.time = freqControl('set', dynamic.every)
 
 			//si next n'existe pas, init
-			if (d.next.url === '') {
-				req('current', d, true)
+			if (dynamic.next.url === '') {
+				req('current', dynamic, weather, true)
 
 				//sinon prendre l'image preloaded (next)
 			} else {
-				loadbackground(d.next.url)
-				credit(d.next)
-				req('current', d, false)
+				loadbackground(dynamic.next.url)
+				credit(dynamic.next)
+				req('current', dynamic, weather, false)
 			}
 
 			//pas besoin d'image, simplement current
 		} else {
-			loadbackground(d.current.url)
-			credit(d.current)
+			loadbackground(dynamic.current.url)
+			credit(dynamic.current)
 		}
 	}
 
-	function req(which, d, init) {
-		function dayCollections() {
-			const h = new Date().getHours()
-			const h_day = h > 10 && h < 18
-			const h_noon = h > 7 && h < 21
+	function req(which, dynamic, weather, init) {
+		//
+		// Transition day and night with noon & evening collections
+		// if clock is + /- 60 min around sunrise/set
+		function chooseCollection() {
+			if (weather) {
+				const minutator = (unix) => unix.getHours() * 60 + unix.getMinutes()
 
-			return h_day ? collections.day : h_noon ? collections.noon : collections.night
+				const { sunset, sunrise } = weather.lastState.sys,
+					now = Date.now(),
+					minsunrise = minutator(new Date(sunrise * 1000)),
+					minsunset = minutator(new Date(sunset * 1000)),
+					sunnow = minutator(now)
+
+				if (sunnow >= 0 && sunnow <= minsunrise - 60) return collections.night
+				else if (sunnow <= minsunrise + 60) return collections.noon
+				else if (sunnow <= minsunset - 60) return collections.day
+				else if (sunnow <= minsunset + 60) return collections.evening
+				else if (sunnow >= minsunset + 60) return collections.night
+				else return collections.day
+			} else return collections.day
 		}
 
 		obf = (n) =>
@@ -1358,7 +1390,7 @@ function unsplash(data, event, startup) {
 				? atob('aHR0cHM6Ly9hcGkudW5zcGxhc2guY29tL3Bob3Rvcy9yYW5kb20/Y29sbGVjdGlvbnM9')
 				: atob('MzY4NmMxMjIyMWQyOWNhOGY3OTQ3Yzk0NTQyMDI1ZDc2MGE4ZTBkNDkwMDdlYzcwZmEyYzRiOWY5ZDM3N2IxZA==')
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', obf(0) + dayCollections(), true)
+		xhr.open('GET', obf(0) + chooseCollection(), true)
 		xhr.setRequestHeader('Authorization', `Client-ID ${obf(1)}`)
 
 		xhr.onload = function () {
@@ -1379,23 +1411,22 @@ function unsplash(data, event, startup) {
 				if (init) {
 					//si init, fait 2 req (current, next) et save sur la 2e
 					if (which === 'current') {
-						d.current = resp
-						loadbackground(d.current.url)
-						credit(d.current)
-						req('next', d, true)
+						dynamic.current = resp
+						loadbackground(dynamic.current.url)
+						credit(dynamic.current)
+						req('next', dynamic, weather, true)
 					} else if (which === 'next') {
-						d.next = resp
-						chrome.storage.sync.set({ dynamic: d })
+						dynamic.next = resp
+						chrome.storage.sync.set({ dynamic: dynamic })
 					}
 
 					//si next existe, current devient next et next devient la requete
 					//preload la prochaine image (sans l'afficher)
 				} else {
 					noDisplayImgLoad(resp.url, () => {
-						d.current = d.next
-						d.next = resp
-						chrome.storage.sync.set({ dynamic: d })
-						//console.log("loaded")
+						dynamic.current = dynamic.next
+						dynamic.next = resp
+						chrome.storage.sync.set({ dynamic: dynamic })
 					})
 				}
 			}
@@ -1424,9 +1455,9 @@ function unsplash(data, event, startup) {
 		if (!startup) imgCredits(infos, 'dynamic')
 	}
 
-	if (data && data !== true) cacheControl(data)
+	if (data.length > 0) cacheControl(data.dynamic, data.weather)
 	else {
-		chrome.storage.sync.get('dynamic', (storage) => {
+		chrome.storage.sync.get(['dynamic', 'weather'], (storage) => {
 			//si on change la frequence, juste changer la freq
 			if (event) {
 				storage.dynamic.every = event
@@ -1434,8 +1465,8 @@ function unsplash(data, event, startup) {
 				return true
 			}
 
-			if (storage.dynamic && storage.dynamic !== true) {
-				cacheControl(storage.dynamic)
+			if (storage.dynamic !== undefined) {
+				cacheControl(storage.dynamic, storage.weather)
 			} else {
 				let initDyn = {
 					current: {
@@ -1606,15 +1637,6 @@ function searchbar(event, that, storage) {
 		display(searchbar, true)
 		engine(searchengine, true)
 	}
-}
-
-function signature() {
-	let v = "<a href='https://victr.me/'>Victor Azevedo</a>"
-	let t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>"
-	let e = document.createElement('span')
-
-	e.innerHTML = Math.random() > 0.5 ? ` ${v} & ${t}` : ` ${t} & ${v}`
-	id('rand').appendChild(e)
 }
 
 function showPopup(data) {
