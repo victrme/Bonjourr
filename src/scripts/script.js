@@ -17,8 +17,9 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	dominterface = id('interface'),
 	dict = askfordict(),
 	domimg = id('background'),
-	domthumbnail = cl('thumbnail')
-mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
+	domthumbnail = cl('thumbnail'),
+	domclock = id('clock'),
+	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
 
 //cache rapidement temp max pour eviter que ça saccade
 if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
@@ -134,14 +135,18 @@ function newClock(eventObj, init) {
 
 			function fixunits(val) {
 				val = val < 10 ? '0' + val : val
-				return val
+				return val.toString()
 			}
 
 			let h = clock.ampm ? toAmpm(timearray[0]) : timearray[0],
 				m = fixunits(timearray[1]),
 				s = fixunits(timearray[2])
 
-			id('clock').innerText = clock.seconds ? `${h}:${m}:${s}` : `${h}:${m}`
+			if (clock.seconds) {
+				domclock.innerText = `${h}:${m}:${s}`
+			} else if (domclock.innerText.length === 0 || s === '00') {
+				domclock.innerText = `${h}:${m}`
+			}
 		}
 
 		function analog(timearray) {
