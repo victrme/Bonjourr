@@ -23,5 +23,8 @@
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^4.0.1",
     "gulp-htmlmin": "^5.0.1"
+  },
+  "dependencies": {
+    "gulp-rename": "^2.0.0"
   }
 }
