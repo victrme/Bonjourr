@@ -39,7 +39,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 ## Built with
 
 -   Styled with [Sass](https://sass-lang.com/guide)
--   Scripts in pure Javascript
+-   Scripts with pure Js
 -   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
 -   Our tiny hands
 
