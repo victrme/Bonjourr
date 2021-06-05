@@ -510,66 +510,72 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function addIcon(elem, arr, index, links) {
-		function faviconXHR(url) {
-			return new Promise(function (resolve, reject) {
-				var xhr = new XMLHttpRequest()
-				xhr.open('GET', url, true)
+		// function faviconXHR(url) {
+		// 	return new Promise(function (resolve, reject) {
+		// 		var xhr = new XMLHttpRequest()
+		// 		xhr.open('GET', url, true)
 
-				xhr.onload = function () {
-					if (xhr.status >= 200 && xhr.status < 400) resolve(JSON.parse(this.response))
-					else resolve(null)
-				}
+		// 		xhr.onload = function () {
+		// 			if (xhr.status >= 200 && xhr.status < 400) resolve(JSON.parse(this.response))
+		// 			else resolve(null)
+		// 		}
 
-				xhr.onerror = reject
-				xhr.send()
-			})
-		}
+		// 		xhr.onerror = reject
+		// 		xhr.send()
+		// 	})
+		// }
 
-		function filterIcon(json) {
-			//prend le json de favicongrabber et garde la meilleure
+		// function filterIcon(json) {
+		// 	//prend le json de favicongrabber et garde la meilleure
 
-			//si le xhr est cassé, prend l'icone bonjourr
-			if (json === null) return 'src/assets/images/icons/favicon.png'
+		// 	//si le xhr est cassé, prend l'icone bonjourr
+		// 	if (json === null) return 'src/assets/images/icons/favicon.png'
 
-			var s = 0
-			var a,
-				b = 0
+		// 	var s = 0
+		// 	var a,
+		// 		b = 0
 
-			//garde la favicon la plus grande
-			for (var i = 0; i < json.icons.length; i++) {
-				if (json.icons[i].sizes) {
-					a = parseInt(json.icons[i].sizes)
+		// 	//garde la favicon la plus grande
+		// 	for (var i = 0; i < json.icons.length; i++) {
+		// 		if (json.icons[i].sizes) {
+		// 			a = parseInt(json.icons[i].sizes)
 
-					if (a > b) {
-						s = i
-						b = a
-					}
+		// 			if (a > b) {
+		// 				s = i
+		// 				b = a
+		// 			}
 
-					//si il y a une icone android ou apple, la prendre direct
-				} else if (json.icons[i].src.includes('android-chrome') || json.icons[i].src.includes('apple-touch')) {
-					return json.icons[i].src
-				}
-			}
+		// 			//si il y a une icone android ou apple, la prendre direct
+		// 		} else if (json.icons[i].src.includes('android-chrome') || json.icons[i].src.includes('apple-touch')) {
+		// 			return json.icons[i].src
+		// 		}
+		// 	}
 
-			if (json.length === 0) return 'src/assets/images/icons/favicon.png'
-			else return json.icons[s].src
-		}
+		// 	if (json.length === 0) return 'src/assets/images/icons/favicon.png'
+		// 	else return json.icons[s].src
+		// }
+
+		// faviconXHR('http://grab-favicons.herokuapp.com/api/v1/grab-favicons/?url=' + hostname).then((res) => {
+		// 	if (res.type !== 'error') {
+		// 		var img = elem.querySelector('img')
+		// 		var icn = filterIcon(res)
+		// 		img.src = icn
+
+		// 		links[index].icon = icn
+		// 		chrome.storage.sync.set({ links: links })
+		// 	}
+		// })
+
 
 		//prend le domaine de n'importe quelle url
 		var a = document.createElement('a')
 		a.href = arr.url
 		var hostname = a.hostname
-
-		faviconXHR('http://grab-favicons.herokuapp.com/api/v1/grab-favicons/?url=' + hostname).then((res) => {
-			if (res.type !== 'error') {
-				var img = elem.querySelector('img')
-				var icn = filterIcon(res)
-				img.src = icn
-
-				links[index].icon = icn
-				chrome.storage.sync.set({ links: links })
-			}
-		})
+		
+		// fetch l'icône et l'ajoute
+		var img = elem.querySelector('img')
+		var icn = 'https://api.faviconkit.com/' + hostname + '/144'
+		img.src = icn
 	}
 
 	function linkSubmission() {
