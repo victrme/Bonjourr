@@ -12,7 +12,7 @@ While this startpage is minimal and beautiful, it is also thought out to be prac
 -   Dark mode
 -   And more...
 
-Bonjourr is available in English, French, Swedish, Dutch, Polish, Portuguese (Brazil), Italian, Russian and Chinese.
+Bonjourr is available in English, French, Spanish, Swedish, Dutch, Polish, Portuguese (Brazil), Italian, Russian and Chinese.
 
 <br />
 
@@ -30,6 +30,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 ## Built with
 
 -   Styled with [Sass](https://sass-lang.com/guide)
+-   Scripts in pure Javascript
 -   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
 -   Our tiny hands
 
