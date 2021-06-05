@@ -8,11 +8,11 @@
 	"default_locale": "en",
 
 	"icons": {
-		"128": "src/images/icons/chromeicon.png",
-	    "120": "src/images/icons/favicon.png"
-  	},
+		"128": "src/assets/images/icons/chromeicon.png",
+		"120": "src/assets/images/icons/favicon.png"
+	},
 
-	"chrome_url_overrides" : {
+	"chrome_url_overrides": {
 		"newtab": "index.html"
 	},
 
@@ -27,9 +27,5 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"permissions": [
-		"storage",
-		"unlimitedStorage",
-		"geolocation"
-	]
+	"permissions": ["storage", "unlimitedStorage", "geolocation"]
 }

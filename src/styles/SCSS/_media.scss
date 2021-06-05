@@ -8,21 +8,23 @@
 			background-color: #1c1c1e;
 			color: $purewhite;
 
-			input[type="text"], input[type="url"], #cssEditor {
+			input[type='text'],
+			input[type='url'],
+			#cssEditor {
 				background-color: #39383d;
 				color: $purewhite;
 
 				&:focus {
 					background-color: #2c2c2f;
-    				color: $purewhite;
+					color: $purewhite;
 				}
 			}
 
 			.empty_input {
-				filter: brightness(.7);
+				filter: brightness(0.7);
 
 				&:active {
-					filter: brightness(.6);
+					filter: brightness(0.6);
 				}
 			}
 		}
@@ -36,10 +38,10 @@
 		}
 
 		.title {
-			background-color : #1c1c1e;
+			background-color: #1c1c1e;
 			color: $purewhite;
 			border-top: 0;
-			border-bottom:0;
+			border-bottom: 0;
 		}
 
 		.paramTitle {
@@ -48,7 +50,7 @@
 		}
 
 		.param {
-			background-color : #1c1c1e;
+			background-color: #1c1c1e;
 			color: $purewhite;
 			border-top: 1px solid #3f3f41;
 			border-bottom: 1px solid #3f3f41;
@@ -58,13 +60,13 @@
 			border-bottom: 1px solid #3f3f41;
 		}
 
-		input[type="text"] {
+		input[type='text'] {
 			background-color: #39383d;
 			color: $purewhite;
 		}
 
 		::-moz-range-thumb {
-			box-shadow:none;
+			box-shadow: none;
 		}
 
 		::placeholder {
@@ -110,13 +112,14 @@
 }
 
 // dark mode
-body.dark, body.autodark {
-	@include darkCss(); 
+body.dark,
+body.autodark {
+	@include darkCss();
 }
 
 @media screen and (max-height: 650px) {
 	#interface {
-		font-size: .7em;
+		font-size: 0.7em;
 
 		#time .shadow {
 			width: 39em;
@@ -154,8 +157,8 @@ body.dark, body.autodark {
 			width: 25px;
 
 			img {
-				width: .7em;
-				height: .7em;
+				width: 0.7em;
+				height: 0.7em;
 			}
 		}
 	}
@@ -171,11 +174,11 @@ body.dark, body.autodark {
 	}
 
 	#settings {
-		font-size: .9em;
-		
+		font-size: 0.9em;
+
 		.param #default .imgpreview {
 			width: 54px;
-		
+
 			&:hover {
 				width: 50px;
 			}
@@ -189,7 +192,7 @@ body.dark, body.autodark {
 
 @media screen and (min-height: 650px) and (max-height: 1050px) {
 	#interface {
-		font-size: .8em;
+		font-size: 0.8em;
 
 		#sb_container {
 			#searchbar {

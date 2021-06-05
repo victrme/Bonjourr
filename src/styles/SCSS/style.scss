@@ -15,9 +15,7 @@
 		background-size: cover;
 		background-position: center center;
 	}
-
 }
-
 
 #interface {
 	position: relative;
@@ -25,9 +23,9 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	transition: transform .2s;
+	transition: transform 0.2s;
 	will-change: transform;
-	text-shadow: 0 1px 5px rgba(0,0,0,.2);
+	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 
 	#time {
 		display: flex;
@@ -36,7 +34,7 @@
 		align-items: center;
 		margin-right: auto;
 		margin-left: auto;
-		transition: opacity .1s;
+		transition: opacity 0.1s;
 
 		.shadow {
 			z-index: -1;
@@ -44,7 +42,7 @@
 			overflow: hidden;
 			max-width: 100%;
 			width: 43em;
-			opacity: .4;
+			opacity: 0.4;
 			margin: auto;
 			margin-top: 30px;
 		}
@@ -87,15 +85,15 @@
 
 				#analogSeconds {
 					height: 45%;
-					width: .1em;
+					width: 0.1em;
 					margin-left: -0.05em;
 				}
-				
+
 				#center {
 					position: absolute;
 					z-index: 5;
-					width: .4em;
-					height: .4em;
+					width: 0.4em;
+					height: 0.4em;
 					top: 50%;
 					left: 50%;
 					transform: translate(-50%, -50%);
@@ -117,7 +115,7 @@
 		justify-content: center;
 		margin-right: auto;
 		margin-left: auto;
-		transition: opacity .1s;
+		transition: opacity 0.1s;
 
 		#weather #w_icon #widget.shown {
 			opacity: 1;
@@ -128,7 +126,7 @@
 			position: absolute;
 			width: 55em;
 			max-width: 100%;
-			opacity: .4;
+			opacity: 0.4;
 			overflow: hidden;
 		}
 
@@ -166,15 +164,16 @@
 
 	&.distract {
 		#time {
-			opacity: .8;
+			opacity: 0.8;
 		}
 
-		#credit, #main, #linkblocks {
+		#credit,
+		#main,
+		#linkblocks {
 			opacity: 0;
-			transition: opacity .1s;
+			transition: opacity 0.1s;
 		}
 	}
-		
 }
 
 #edit_linkContainer {
@@ -182,7 +181,7 @@
 	display: none;
 	height: 100vh;
 	width: 100%;
-	transition: transform .2s;
+	transition: transform 0.2s;
 
 	#edit_link {
 		align-self: center;
@@ -203,7 +202,7 @@
 
 		h4 {
 			text-align: left;
-			margin: 1.5em 0px .5em 0px;
+			margin: 1.5em 0px 0.5em 0px;
 			padding: 0px;
 		}
 
@@ -215,42 +214,42 @@
 			-webkit-transform: translate(-50%, -50%);
 			-ms-transform: translate(-50%, -50%);
 			transform: translate(-50%, -50%);
-			right: .4em;
-			
+			right: 0.4em;
+
 			padding: 0;
 			border: none;
 			cursor: pointer;
-			transition: background .1s;
+			transition: background 0.1s;
 
 			@include hidden();
 
 			&:active {
-				filter: brightness(.75);
-				transition: all .1s;
+				filter: brightness(0.75);
+				transition: all 0.1s;
 			}
 		}
 
 		#l_iconfile {
 			position: relative;
-		    width: 100%;
-		    display: block;
+			width: 100%;
+			display: block;
 			padding: 1em 0;
-			opacity: .8;
-			font-size: .9em;
+			opacity: 0.8;
+			font-size: 0.9em;
 		}
 
 		#e_iconfile {
 			opacity: 0;
-		    position: absolute;
-		    top: 0;
-		    left: 25%;
-		    width: 50%;
-		    height: 4em;
-		    cursor: pointer;
+			position: absolute;
+			top: 0;
+			left: 25%;
+			width: 50%;
+			height: 4em;
+			cursor: pointer;
 		}
 
-
-		input[type="text"], input[type="url"] {
+		input[type='text'],
+		input[type='url'] {
 			border: 0px;
 			height: 1em;
 			width: 100%;
@@ -258,17 +257,17 @@
 			padding: 1em;
 			box-sizing: border-box;
 			border-radius: 9px;
-			font-size: .9em;
+			font-size: 0.9em;
 			background: $inputGrey;
 			border-radius: 8px;
 			height: 2.35em;
-			margin: .3em 0;
+			margin: 0.3em 0;
 			padding-right: 2.5em;
-			transition: background .2s;
+			transition: background 0.2s;
 
 			&:focus {
 				background: #d3d3d5;
-				transition: background .2s;
+				transition: background 0.2s;
 			}
 		}
 
@@ -285,10 +284,10 @@
 				background-color: transparent;
 				border: 0px;
 				border-radius: 9px;
-				font-size: .9em;
-				padding: .6em;
+				font-size: 0.9em;
+				padding: 0.6em;
 				cursor: pointer;
-				transition: opacity .1s ease-in;
+				transition: opacity 0.1s ease-in;
 
 				&#e_delete {
 					color: red;
@@ -300,7 +299,7 @@
 
 				&:active {
 					text-decoration: underline;
-					opacity: .8;
+					opacity: 0.8;
 				}
 			}
 		}
@@ -312,9 +311,9 @@
 			cursor: pointer;
 			text-align: left;
 			padding: 0;
-			transition: opacity .1s ease-in;
+			transition: opacity 0.1s ease-in;
 			font-family: sf_pro_textregular;
-			font-size: .9em;
+			font-size: 0.9em;
 			color: $blue;
 			margin-bottom: 2em;
 
@@ -328,7 +327,7 @@
 
 			&:active {
 				text-decoration: underline;
-				opacity: .8;
+				opacity: 0.8;
 			}
 		}
 	}
@@ -346,22 +345,21 @@
 	}
 }
 
-
 #credit {
 	position: fixed;
 	bottom: 1em;
 	left: 1em;
-	text-shadow: 0 1px 5px rgba(0,0,0,.2);
-	transition: all .2s;
+	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+	transition: all 0.2s;
 
 	a {
 		color: #fff9;
 		text-decoration: none;
-		font-size: .9em;
+		font-size: 0.9em;
 
 		&:hover {
 			color: #fffe;
-			transition: all .1s;
+			transition: all 0.1s;
 		}
 	}
 
@@ -382,8 +380,8 @@
 	button {
 		height: 3.5em;
 		width: 3.5em;
-		margin: .5em;
-		padding: .5em;
+		margin: 0.5em;
+		padding: 0.5em;
 		border: none;
 		border-radius: 8px;
 		background-color: transparent;
@@ -397,28 +395,28 @@
 			background: #aaa;
 
 			img {
-				transform: rotate(45deg)
+				transform: rotate(45deg);
 			}
 
 			&:hover {
-				background: #777
+				background: #777;
 			}
 		}
 
 		img {
 			width: 27px;
 			filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
-			transition: transform .2s;
+			transition: transform 0.2s;
 		}
 	}
 
 	&.distract {
 		opacity: 0;
-		transition: opacity .1s;
+		transition: opacity 0.1s;
 
 		&:hover {
 			opacity: 1;
-			transition: opacity .1s;
+			transition: opacity 0.1s;
 		}
 	}
 }
@@ -436,19 +434,21 @@
 	text-shadow: none;
 	text-align: left;
 	color: $blackish;
-	transition: transform .2s, background .1s;
+	transition: transform 0.2s, background 0.1s;
 	will-change: transform;
 
 	hr {
 		border: none;
 		border-bottom: 1px solid $borderGrey;
-		margin-top: .75em;
-		margin-bottom: .75em;
+		margin-top: 0.75em;
+		margin-bottom: 0.75em;
 		margin-right: -1.3em;
 		display: block;
 	}
 
-	h1, h5, span {
+	h1,
+	h5,
+	span {
 		margin: 0;
 	}
 
@@ -478,18 +478,18 @@
 	@include settingsBase();
 
 	.title {
-		background-color : #ffffff;
+		background-color: #ffffff;
 		border-top: 1px solid $borderGrey;
 		border-bottom: 1px solid $borderGrey;
-		padding: .5em 0;
+		padding: 0.5em 0;
 	}
 
 	.param {
-		background-color : #ffffff;
+		background-color: #ffffff;
 		border-top: 1px solid $borderGrey;
 		border-bottom: 1px solid $borderGrey;
-		padding: .75em 1.3em;
-		transition: background .1s;
+		padding: 0.75em 1.3em;
+		transition: background 0.1s;
 	}
 
 	.wrapper {
@@ -502,55 +502,57 @@
 	@include chooseBackground();
 
 	.link_input_wrap {
-		input[type="text"] {
-			margin-bottom: .5em;
-			width: calc(100% - .5em);
+		input[type='text'] {
+			margin-bottom: 0.5em;
+			width: calc(100% - 0.5em);
 		}
 	}
 
-	#default, #dynamic, #custom {
+	#default,
+	#dynamic,
+	#custom {
 		display: none;
 	}
 
 	#fileContainer {
-	    overflow: hidden;
-	    position: relative;
-	    display: block;
-	    width: 100%;
-	    border-radius: 9px;
-	    border: 1px solid $blue;
-	    padding: .8em;
-	    box-sizing: border-box;
-	    transition: background-color .1s ease-in;
+		overflow: hidden;
+		position: relative;
+		display: block;
+		width: 100%;
+		border-radius: 9px;
+		border: 1px solid $blue;
+		padding: 0.8em;
+		box-sizing: border-box;
+		transition: background-color 0.1s ease-in;
 
-	    p {
-	    	width: 100%;
-	    	text-align: center;
-	    	transition: color .05s ease-in;
-	    	font-size: .9em;
-	    	cursor: pointer;
-	    }
+		p {
+			width: 100%;
+			text-align: center;
+			transition: color 0.05s ease-in;
+			font-size: 0.9em;
+			cursor: pointer;
+		}
 
-	    #i_bgfile {
-	    	display: block;
-	    	overflow: hidden;
-		    min-height: 100%;
-		    min-width: 100%;
-		    opacity: 0;
-		    padding: 1em;
-		    position: absolute;
-		    left: 0;
-		    top: 0;
-		    cursor: pointer;
-	    }
+		#i_bgfile {
+			display: block;
+			overflow: hidden;
+			min-height: 100%;
+			min-width: 100%;
+			opacity: 0;
+			padding: 1em;
+			position: absolute;
+			left: 0;
+			top: 0;
+			cursor: pointer;
+		}
 
-	    &.dragover {
-	    	background-color: $blue;
+		&.dragover {
+			background-color: $blue;
 
-	    	p {
-	    		color: $purewhite;
-	    	}
-	    }
+			p {
+				color: $purewhite;
+			}
+		}
 	}
 
 	#choose_searchengine {
@@ -560,10 +562,10 @@
 
 		@include hidden();
 	}
-	
+
 	#sett_city {
 		flex-direction: column;
-		
+
 		.wrapper {
 			display: inline-block;
 			width: 100%;
@@ -575,7 +577,7 @@
 
 			input {
 				width: 50%;
-				margin-right: .5em;
+				margin-right: 0.5em;
 			}
 
 			select {
@@ -596,7 +598,9 @@
 		margin: auto;
 	}
 
-	select.lang {transition: none;}
+	select.lang {
+		transition: none;
+	}
 
 	#cssEditor {
 		width: calc(100% - 2.6em);
@@ -643,7 +647,7 @@
 						width: 1.25em;
 						fill: $blue;
 					}
-				}	
+				}
 			}
 		}
 

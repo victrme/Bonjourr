@@ -300,7 +300,7 @@ function quickLinks(event, that, initStorage) {
 	function appendblock(arr, index, links) {
 		let { icon, title, url } = arr
 
-		icon = icon.length > 0 ? icon : 'src/images/loading.gif'
+		icon = icon.length > 0 ? icon : 'src/assets/images/loading.gif'
 
 		//le DOM du block
 		let b = `<div class='block' draggable="false" source='${url}'>
@@ -323,7 +323,7 @@ function quickLinks(event, that, initStorage) {
 		addEvents(domlinkblocks.lastElementChild)
 
 		//si online et l'icon charge, en rechercher une
-		if (window.navigator.onLine && icon === 'src/images/loading.gif')
+		if (window.navigator.onLine && icon === 'src/assets/images/loading.gif')
 			addIcon(domlinkblocks.lastElementChild, arr, index, links)
 	}
 
@@ -529,7 +529,7 @@ function quickLinks(event, that, initStorage) {
 			//prend le json de favicongrabber et garde la meilleure
 
 			//si le xhr est cassé, prend l'icone bonjourr
-			if (json === null) return 'src/images/icons/favicon.png'
+			if (json === null) return 'src/assets/images/icons/favicon.png'
 
 			var s = 0
 			var a,
@@ -551,7 +551,7 @@ function quickLinks(event, that, initStorage) {
 				}
 			}
 
-			if (json.length === 0) return 'src/images/icons/favicon.png'
+			if (json.length === 0) return 'src/assets/images/icons/favicon.png'
 			else return json.icons[s].src
 		}
 
@@ -870,7 +870,7 @@ function weather(event, that, initStorage) {
 
 			let d_n = dayOrNight(data.sys.sunset, data.sys.sunrise)
 			let weather_id = imgId(data.weather[0].id)
-			let icon_src = `src/images/weather/${d_n}/${weather_id}.png`
+			let icon_src = `src/assets/images/weather/${d_n}/${weather_id}.png`
 			id('widget').setAttribute('src', icon_src)
 			id('widget').setAttribute('class', 'shown')
 		}
