@@ -4,7 +4,10 @@
 	"description": "iOS styled startpage",
 	"main": "src/scripts/script.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build-chrome": "gulp chrome",
+		"build-firefox": "gulp firefox",
+		"build-local": "gulp local",
+		"scss": "node-sass -w src/styles/scss/ -o src/styles/"
 	},
 	"repository": {
 		"type": "git",
@@ -23,6 +26,7 @@
 		"gulp-concat": "^2.6.1",
 		"gulp-csso": "^4.0.1",
 		"gulp-htmlmin": "^5.0.1",
-		"gulp-rename": "^2.0.0"
+		"gulp-rename": "^2.0.0",
+		"node-sass": "^6.0.0"
 	}
 }

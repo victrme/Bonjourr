@@ -25,6 +25,15 @@ Bonjourr is available in English, French, Spanish, Swedish, Dutch, Polish, Portu
 
 If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjourr.fr#contact)
 
+### To fork Bonjourr
+
+-   `npm install`
+-   Rename `manifest-chrome.json` to `manifest.json`
+-   Go to chrome://extension, enable dev mode
+-   Load unpacked extension, select root folder
+-   `npm run scss` to watch sass files
+-   `npm run build-local` to bundle an offline version
+
 <br />
 
 ## Built with
