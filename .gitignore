@@ -1,11 +1,8 @@
-src/styles/.DS_Store
-src/images/weather/.DS_Store
-src/images/.DS_Store
-src/.DS_Store
+**/style.css
+**/.DS_Store
 config.codekit3
-.DS_Store
 .directory
 .vscode
-
+manifest.json
 node_modules/
-release
+release/
