@@ -142,7 +142,7 @@ function newClock(eventObj, init) {
 				m = fixunits(timearray[1]),
 				s = fixunits(timearray[2])
 
-			if (change || clock.seconds) {
+			if (clock.seconds) {
 				domclock.innerText = `${h}:${m}:${s}`
 			} else if (change || domclock.innerText.length === 0 || s === '00') {
 				domclock.innerText = `${h}:${m}`
