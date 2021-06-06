@@ -24,14 +24,6 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 //cache rapidement temp max pour eviter que ça saccade
 if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
 
-function isNotEmpty(object) {
-	if (typeof object === 'object') {
-		if (Object.entries(object).length > 0) return true
-	}
-
-	return false
-}
-
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear(() => {
@@ -410,7 +402,7 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	function editlink(that, i, customIcon) {
+	function editlink(that, i) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
@@ -509,73 +501,19 @@ function quickLinks(event, that, initStorage) {
 		})
 	}
 
-	function addIcon(elem, arr, index, links) {
-		// function faviconXHR(url) {
-		// 	return new Promise(function (resolve, reject) {
-		// 		var xhr = new XMLHttpRequest()
-		// 		xhr.open('GET', url, true)
-
-		// 		xhr.onload = function () {
-		// 			if (xhr.status >= 200 && xhr.status < 400) resolve(JSON.parse(this.response))
-		// 			else resolve(null)
-		// 		}
-
-		// 		xhr.onerror = reject
-		// 		xhr.send()
-		// 	})
-		// }
-
-		// function filterIcon(json) {
-		// 	//prend le json de favicongrabber et garde la meilleure
-
-		// 	//si le xhr est cassé, prend l'icone bonjourr
-		// 	if (json === null) return 'src/assets/images/icons/favicon.png'
-
-		// 	var s = 0
-		// 	var a,
-		// 		b = 0
-
-		// 	//garde la favicon la plus grande
-		// 	for (var i = 0; i < json.icons.length; i++) {
-		// 		if (json.icons[i].sizes) {
-		// 			a = parseInt(json.icons[i].sizes)
-
-		// 			if (a > b) {
-		// 				s = i
-		// 				b = a
-		// 			}
-
-		// 			//si il y a une icone android ou apple, la prendre direct
-		// 		} else if (json.icons[i].src.includes('android-chrome') || json.icons[i].src.includes('apple-touch')) {
-		// 			return json.icons[i].src
-		// 		}
-		// 	}
-
-		// 	if (json.length === 0) return 'src/assets/images/icons/favicon.png'
-		// 	else return json.icons[s].src
-		// }
-
-		// faviconXHR('http://grab-favicons.herokuapp.com/api/v1/grab-favicons/?url=' + hostname).then((res) => {
-		// 	if (res.type !== 'error') {
-		// 		var img = elem.querySelector('img')
-		// 		var icn = filterIcon(res)
-		// 		img.src = icn
-
-		// 		links[index].icon = icn
-		// 		chrome.storage.sync.set({ links: links })
-		// 	}
-		// })
-
-
+	function addIcon(elem, arr) {
 		//prend le domaine de n'importe quelle url
-		var a = document.createElement('a')
+		const a = document.createElement('a')
 		a.href = arr.url
-		var hostname = a.hostname
-		
+		const hostname = a.hostname
+
 		// fetch l'icône et l'ajoute
-		var img = elem.querySelector('img')
-		var icn = 'https://api.faviconkit.com/' + hostname + '/144'
-		img.src = icn
+		const img = new Image()
+		const url = 'https://api.faviconkit.com/' + hostname + '/144'
+
+		img.onload = () => (elem.querySelector('img').src = url)
+		img.src = url
+		img.remove()
 	}
 
 	function linkSubmission() {
@@ -1103,7 +1041,7 @@ function initBackground(storage) {
 				chrome.storage.local.set({ customThumbnails: old })
 
 				chrome.storage.local.remove('background_blob')
-			} else if (!isNotEmpty(localChrome)) {
+			} else if (localChrome === undefined) {
 				//if no custom background available: dynamic
 				unsplash(storage)
 				chrome.storage.sync.set({ background_type: 'dynamic' })
@@ -1464,9 +1402,7 @@ function unsplash(data, event, startup) {
 		if (!startup) imgCredits(infos, 'dynamic')
 	}
 
-	if (isNotEmpty(data)) {
-		cacheControl(data.dynamic, data.weather)
-	} else {
+	function actionFromStorage() {
 		chrome.storage.sync.get(['dynamic', 'weather'], (storage) => {
 			//si on change la frequence, juste changer la freq
 			if (event) {
@@ -1475,7 +1411,7 @@ function unsplash(data, event, startup) {
 				return true
 			}
 
-			if (isNotEmpty(storage.dynamic)) {
+			if (storage && storage.dynamic !== undefined) {
 				cacheControl(storage.dynamic, storage.weather)
 			} else {
 				let initDyn = {
@@ -1503,6 +1439,11 @@ function unsplash(data, event, startup) {
 			}
 		})
 	}
+
+	if (typeof data !== 'object') {
+		if (typeof data.dynamic !== 'object') cacheControl(data.dynamic, data.weather)
+		else actionFromStorage()
+	} else actionFromStorage()
 }
 
 function filter(cat, val) {
