@@ -35,7 +35,7 @@ function askfordict() {
 			ru: 'Новая вкладка',
 			zh_CN: '新标签页',
 			sk: 'Nová karta',
-			de: 'Neues Tab',
+			de: 'Neuer Tab',
 			it: 'Nuova scheda',
 			es: 'Nueva Pestaña',
 			no: '',
