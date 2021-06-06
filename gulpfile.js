@@ -1,9 +1,10 @@
-const { series, parallel, src, dest, watch } = require('gulp')
-const concat = require('gulp-concat')
-const minify = require('gulp-babel-minify')
-const htmlmin = require('gulp-htmlmin')
-const csso = require('gulp-csso')
-const rename = require('gulp-rename')
+const { series, parallel, src, dest } = require('gulp'),
+	concat = require('gulp-concat'),
+	minify = require('gulp-babel-minify'),
+	htmlmin = require('gulp-htmlmin'),
+	csso = require('gulp-csso'),
+	rename = require('gulp-rename'),
+	replace = require('gulp-replace')
 
 const path = {
 	scss: [
@@ -13,7 +14,12 @@ const path = {
 		'src/styles/scss/style.scss',
 	],
 	css: ['src/styles/style.css', 'src/styles/events.css'],
-	js: ['src/scripts/lang.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
+	js: ['src/scripts/lang.js', 'src/scripts/collections.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
+}
+
+const scripts = {
+	before: `<script src="src/scripts/lang.js"></script><script src="src/scripts/collections.js"></script><script src="src/scripts/script.js"></script><script src="src/scripts/settings.js" defer="defer"></script>`,
+	after: `<script src="src/scripts/main.js"></script>`,
 }
 
 function scssTask() {
@@ -22,11 +28,11 @@ function scssTask() {
 		.pipe(sass())
 		.pipe(sourcemaps.write('.'))
 		.pipe(concat('style.css'))
-		.pipe(dest('src/styles'))
+		.pipe(dest('release/src/styles/'))
 }
 
 function cssTask() {
-	return src(path.css).pipe(csso()).pipe(concat('style.css')).pipe(dest('release/src/styles'))
+	return src(path.css).pipe(csso()).pipe(concat('style.css')).pipe(dest('release/src/styles/'))
 }
 
 function htmlTask() {
@@ -37,6 +43,7 @@ function htmlTask() {
 				removeComments: true,
 			})
 		)
+		.pipe(replace(scripts.before, scripts.after))
 		.pipe(dest('release/'))
 }
 
@@ -53,19 +60,33 @@ function jsTask() {
 		.pipe(dest('release/src/scripts'))
 }
 
+function ressourcesTask() {
+	return src('src/assets/**').pipe(dest('release/src/assets'))
+}
+
 function manifestTask(which) {
 	return src(`manifest-${which}.json`).pipe(rename('manifest.json')).pipe(dest('release/'))
 }
 
-function watchTask() {
-	watch(
-		path.css,
-		parallel(scssTask, jsTask, htmlTask, () => manifestTask('chrome'))
-	)
+function localesTask() {
+	return src('_locales/**').pipe(dest('release/_locales/'))
 }
 
-exports.chrome = series(parallel(cssTask, jsTask, htmlTask, () => manifestTask('chrome')))
-exports.firefox = series(parallel(cssTask, jsTask, htmlTask, () => manifestTask('firefox')))
-exports.online = series(parallel(cssTask, jsTask, htmlTask))
+function addBackground() {
+	return src('src/scripts/background.js').pipe(dest('release/src/scripts'))
+}
 
-exports.watcher = watchTask
+const makeExtension = (which) => [
+	htmlTask,
+	cssTask,
+	jsTask,
+	localesTask,
+	addBackground,
+	ressourcesTask,
+	() => manifestTask(which),
+]
+const makeOnline = () => [cssTask, jsTask, ressourcesTask, htmlTask]
+
+exports.chrome = series(parallel(...makeExtension('chrome')))
+exports.firefox = series(parallel(...makeExtension('firefox')))
+exports.online = series(parallel(...makeOnline()))
