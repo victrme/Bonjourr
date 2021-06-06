@@ -101,7 +101,7 @@ function newClock(eventObj, init) {
 		else clas(analSec, '')
 	}
 
-	function main() {
+	function main(change) {
 		//retourne une liste [heure, minutes, secondes]
 		function time() {
 			const date = new Date()
@@ -142,9 +142,9 @@ function newClock(eventObj, init) {
 				m = fixunits(timearray[1]),
 				s = fixunits(timearray[2])
 
-			if (clock.seconds) {
+			if (change || clock.seconds) {
 				domclock.innerText = `${h}:${m}:${s}`
-			} else if (domclock.innerText.length === 0 || s === '00') {
+			} else if (change || domclock.innerText.length === 0 || s === '00') {
 				domclock.innerText = `${h}:${m}`
 			}
 		}
@@ -162,7 +162,6 @@ function newClock(eventObj, init) {
 				spancss.transform = `rotate(${parseInt(val)}deg)`
 			}
 
-			// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
 			let s = timearray[2] * 6,
 				m = timearray[1] * 6, // + (s / 60),
 				h = timearray[0] * 30 //% 12 / 12 * 360 + (m / 12);
@@ -173,8 +172,6 @@ function newClock(eventObj, init) {
 
 			//tourne pas les secondes si pas de seconds
 			if (clock.seconds) rotation(id('analogSeconds'), s)
-
-			//fix 0deg transition
 		}
 
 		//timezone control
@@ -185,12 +182,12 @@ function newClock(eventObj, init) {
 		clock.analog ? analog(array) : numerical(array)
 	}
 
-	function startClock() {
+	function startClock(change) {
 		//stops multiple intervals
 		clearInterval(lazyClockInterval)
 
 		displayControl()
-		main()
+		main(change)
 		lazyClockInterval = setInterval(main, 1000)
 	}
 
@@ -211,7 +208,7 @@ function newClock(eventObj, init) {
 			clock[eventObj.param] = eventObj.value
 			chrome.storage.sync.set({ clock: clock })
 
-			startClock()
+			startClock(true)
 		})
 	} else {
 		clock = {
@@ -221,7 +218,7 @@ function newClock(eventObj, init) {
 			timezone: init ? init.timezone : 'auto',
 		}
 
-		startClock()
+		startClock(true)
 	}
 }
 
