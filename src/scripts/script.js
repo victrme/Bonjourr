@@ -1542,7 +1542,7 @@ function searchbar(event, that, storage) {
 
 	function localisation(q) {
 		let response = '',
-			lang = storage.lang || 'en',
+			lang = storage ? storage.lang || 'en' : 'en',
 			engine = storage.searchbar_engine || 's_google'
 
 		//les const l_[engine] sont dans lang.js
