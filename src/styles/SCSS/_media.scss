@@ -60,7 +60,8 @@
 			border-bottom: 1px solid #3f3f41;
 		}
 
-		input[type='text'] {
+		input[type='text'],
+		#cssEditor {
 			background-color: #39383d;
 			color: $purewhite;
 		}
