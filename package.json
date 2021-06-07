@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "1.9.2",
+	"version": "1.9.3",
 	"description": "iOS styled startpage",
 	"main": "src/scripts/script.js",
 	"scripts": {
@@ -11,12 +11,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/victorazevedo-me/Bonjourr.git"
+		"url": "git+https://github.com/victrme/Bonjourr.git"
 	},
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/victorazevedo-me/Bonjourr/issues"
+		"url": "https://github.com/victrme/Bonjourr/issues"
 	},
 	"homepage": "https://bonjourr.fr",
 	"devDependencies": {
