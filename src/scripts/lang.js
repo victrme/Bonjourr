@@ -38,11 +38,8 @@ function askfordict() {
 			de: 'Neuer Tab',
 			it: 'Nuova scheda',
 			es: 'Nueva Pestaña',
-			no: '',
+			no: 'New Tab',
 		},
-
-		//settings
-
 		SETTINGS: {
 			fr: 'Réglages',
 			sv: 'Inställningar',
@@ -55,7 +52,7 @@ function askfordict() {
 			de: 'Einstellungen',
 			it: 'Impostazioni',
 			es: 'Configuración',
-			no: '',
+			no: 'SETTINGS',
 		},
 		'Show all settings': {
 			fr: 'Afficher tous les réglages',
@@ -69,7 +66,7 @@ function askfordict() {
 			de: 'Show all settings',
 			it: 'Show all settings',
 			es: 'Mostrar todos los ajustes',
-			no: '',
+			no: 'Show all settings',
 		},
 		'QUICK LINKS': {
 			fr: 'Liens favoris',
@@ -83,7 +80,7 @@ function askfordict() {
 			de: 'Quick Links',
 			it: 'Collegamenti rapidi',
 			es: 'Enlaces favoritos',
-			no: '',
+			no: 'QUICK LINKS',
 		},
 		Name: {
 			fr: 'Nom',
@@ -97,7 +94,7 @@ function askfordict() {
 			de: 'Name',
 			it: 'nome',
 			es: 'Nombre',
-			no: '',
+			no: 'Name',
 		},
 		Add: {
 			fr: 'Ajouter',
@@ -111,12 +108,11 @@ function askfordict() {
 			de: 'Hinzufügen',
 			it: 'Aggiungere',
 			es: 'Añadir',
-			no: '',
+			no: 'Add',
 		},
 		'Open in new tab by default': {
 			fr: 'Ouvrir dans un nouvel onglet par défaut',
 			zh_CN: '默认在新标签页打开链接',
-			//The following languages need to be added:
 			sv: 'Open in new tab by default',
 			nl: 'Open in new tab by default',
 			pl: 'Otwieraj domyślnie w nowej karcie',
@@ -126,7 +122,7 @@ function askfordict() {
 			de: 'Standardmäßig in einem neuen Tab öffnen',
 			it: 'Apri in una nuova scheda come impostazione predefinita',
 			es: 'Abrir en una nueva pestaña por defecto',
-			no: '',
+			no: 'Open in new tab by default',
 		},
 		'Links per row': {
 			fr: 'Liens par ligne',
@@ -140,7 +136,7 @@ function askfordict() {
 			de: 'Links per row',
 			it: 'Links per row',
 			es: 'Enlaces por fila',
-			no: '',
+			no: 'Links per row',
 		},
 		VISUALS: {
 			fr: 'Affichage',
@@ -154,7 +150,7 @@ function askfordict() {
 			de: 'Bilder',
 			it: 'Visualizzazione',
 			es: 'Visualización',
-			no: '',
+			no: 'VISUALS',
 		},
 		'Background type': {
 			fr: "Type d'arrière-plan",
@@ -168,7 +164,7 @@ function askfordict() {
 			de: 'Hintergrund Typ',
 			it: 'Tipo di sfondo',
 			es: 'Tipo de fondo',
-			no: '',
+			no: 'Background type',
 		},
 		Default: {
 			fr: 'Par défaut',
@@ -182,7 +178,7 @@ function askfordict() {
 			de: 'Standard',
 			it: 'Predefinito',
 			es: 'Por Defecto',
-			no: '',
+			no: 'Default',
 		},
 		Dynamic: {
 			fr: 'Dynamique',
@@ -196,7 +192,7 @@ function askfordict() {
 			de: 'Dynamisch',
 			it: 'Dinamico',
 			es: 'Dinámico',
-			no: '',
+			no: 'Dynamic',
 		},
 		Custom: {
 			fr: 'Personnalisé',
@@ -210,7 +206,7 @@ function askfordict() {
 			de: 'Benutzerdefiniert',
 			it: 'Personalizzato',
 			es: 'Personalizado',
-			no: '',
+			no: 'Custom',
 		},
 		Frequency: {
 			fr: 'Fréquence',
@@ -224,7 +220,7 @@ function askfordict() {
 			de: 'Häufigkeit',
 			it: 'Frequenza',
 			es: 'Frequencia',
-			no: '',
+			no: 'Frequency',
 		},
 		'Every tab': {
 			fr: 'Chaque onglet',
@@ -238,7 +234,7 @@ function askfordict() {
 			de: 'Jedes Tab',
 			it: 'Ogni scheda',
 			es: 'Cada Pestaña',
-			no: '',
+			no: 'Every tab',
 		},
 		'Every hour': {
 			fr: 'Chaque heure',
@@ -252,7 +248,7 @@ function askfordict() {
 			de: 'Jede Stunde',
 			it: 'Ogni ora',
 			es: 'Cada hora',
-			no: '',
+			no: 'Every hour',
 		},
 		'Every day': {
 			fr: 'Chaque jour',
@@ -266,7 +262,7 @@ function askfordict() {
 			de: 'Jeden Tag',
 			it: 'Ogni giorno',
 			es: 'Cada día',
-			no: '',
+			no: 'Every day',
 		},
 		Pause: {
 			fr: 'Pause',
@@ -280,7 +276,21 @@ function askfordict() {
 			de: 'Pause',
 			it: 'Pausa',
 			es: 'Pausa',
-			no: '',
+			no: 'Pause',
+		},
+		'Unsplash collection': {
+			fr: 'Collection Unsplash',
+			sv: 'Unsplash collection',
+			nl: 'Unsplash collection',
+			pl: 'Unsplash collection',
+			pt_BR: 'Unsplash collection',
+			ru: 'Unsplash collection',
+			zh_CN: 'Unsplash collection',
+			sk: 'Unsplash collection',
+			de: 'Unsplash collection',
+			it: 'Unsplash collection',
+			es: 'Unsplash collection',
+			no: 'Unsplash collection',
 		},
 		'Blur intensity': {
 			fr: 'Intensité du flou',
@@ -294,7 +304,7 @@ function askfordict() {
 			de: 'Weichzeichner Stärke',
 			it: 'Intensità della sfocatura',
 			es: 'Intensidad de desenfoque',
-			no: '',
+			no: 'Blur intensity',
 		},
 		Brightness: {
 			fr: 'Luminosité',
@@ -308,7 +318,7 @@ function askfordict() {
 			de: 'Helligkeit',
 			it: 'Luminosità',
 			es: 'Brillo',
-			no: '',
+			no: 'Brightness',
 		},
 		'Dark mode': {
 			fr: 'Mode sombre',
@@ -322,7 +332,7 @@ function askfordict() {
 			de: 'Dunkelmodus',
 			it: 'Modalità notturna',
 			es: 'Modo Oscuro',
-			no: '',
+			no: 'Dark mode',
 		},
 		'Only at night': {
 			fr: 'Seulement la nuit',
@@ -336,7 +346,7 @@ function askfordict() {
 			de: 'Nur Nachts',
 			it: 'Solo di notte',
 			es: 'Sólo de noche',
-			no: '',
+			no: 'Only at night',
 		},
 		'With the system': {
 			fr: 'Avec le système',
@@ -350,7 +360,7 @@ function askfordict() {
 			de: 'Wie in den Systemeinstellungen',
 			it: 'Sistema',
 			es: 'Sistema',
-			no: '',
+			no: 'With the system',
 		},
 		Enabled: {
 			fr: 'Activé',
@@ -364,7 +374,7 @@ function askfordict() {
 			de: 'Aktiviert',
 			it: 'Abilitato',
 			es: 'Activado',
-			no: '',
+			no: 'Enabled',
 		},
 		Disabled: {
 			fr: 'Désactivé',
@@ -378,7 +388,7 @@ function askfordict() {
 			de: 'Deaktiviert',
 			it: 'Disabilitato',
 			es: 'Desactivado',
-			no: '',
+			no: 'Disabled',
 		},
 		'Hide elements': {
 			fr: 'Cacher des éléments',
@@ -392,7 +402,7 @@ function askfordict() {
 			de: 'Hide elements',
 			it: 'Hide elements',
 			es: 'Esconder elementos',
-			no: '',
+			no: 'Hide elements',
 		},
 		Clock: {
 			fr: 'Horloge',
@@ -406,7 +416,7 @@ function askfordict() {
 			de: 'Clock',
 			it: 'Clock',
 			es: 'Reloj',
-			no: '',
+			no: 'Clock',
 		},
 		Date: {
 			fr: 'Date',
@@ -420,7 +430,7 @@ function askfordict() {
 			de: 'Date',
 			it: 'Date',
 			es: 'Fecha',
-			no: '',
+			no: 'Date',
 		},
 		Greetings: {
 			fr: 'Horloge',
@@ -434,7 +444,7 @@ function askfordict() {
 			de: 'Greetings',
 			it: 'Greetings',
 			es: 'Saludos',
-			no: '',
+			no: 'Greetings',
 		},
 		Weather: {
 			fr: 'Météo',
@@ -448,7 +458,7 @@ function askfordict() {
 			de: 'Weather',
 			it: 'Weather',
 			es: 'Tiempo',
-			no: '',
+			no: 'Weather',
 		},
 		Icon: {
 			fr: 'Icône',
@@ -462,7 +472,7 @@ function askfordict() {
 			de: 'Icon',
 			it: 'Icon',
 			es: 'Icono',
-			no: '',
+			no: 'Icon',
 		},
 		'Quick Links': {
 			fr: 'Liens favoris',
@@ -476,7 +486,7 @@ function askfordict() {
 			de: 'Quick Links',
 			it: 'Quick Links',
 			es: 'Enlaces favoritos',
-			no: '',
+			no: 'Quick Links',
 		},
 		'Settings icon': {
 			fr: 'Icône réglages',
@@ -490,7 +500,7 @@ function askfordict() {
 			de: 'Settings icon',
 			it: 'Settings icon',
 			es: 'Configuración icono',
-			no: '',
+			no: 'Settings icon',
 		},
 		'Upload background here': {
 			fr: 'Insérez votre arrière-plan',
@@ -504,7 +514,7 @@ function askfordict() {
 			de: 'Upload background here',
 			it: 'Upload background here',
 			es: 'Suba el fondo aquí',
-			no: '',
+			no: 'Upload background here',
 		},
 		'Analog clock': {
 			fr: 'Horloge analogue',
@@ -518,7 +528,7 @@ function askfordict() {
 			de: 'Analog clock',
 			it: 'Analog clock',
 			es: 'Reloj Analógico',
-			no: '',
+			no: 'Analog clock',
 		},
 		'Display Seconds': {
 			fr: 'Afficher les secondes',
@@ -532,21 +542,21 @@ function askfordict() {
 			de: 'Display seconds',
 			it: 'Display seconds',
 			es: 'Mostrar los segundos',
-			no: '',
+			no: 'Display Seconds',
 		},
 		Automatic: {
 			fr: 'Automatique',
-			sv: 'Automatic',
-			nl: 'Automatic',
-			pl: 'Automatic',
+			sv: 'Automatiskt',
+			nl: 'Automatisch ',
+			pl: 'Automatycznie',
 			pt_BR: 'Automático',
-			ru: 'Automatic',
-			zh_CN: 'Automatic',
-			sk: 'Automatic',
-			de: 'Automatic',
-			it: 'Automatic',
+			ru: 'Автоматически',
+			zh_CN: '自动设置',
+			sk: 'Automatické',
+			de: 'Automatisch',
+			it: 'Automatico',
 			es: 'Automático',
-			no: '',
+			no: 'Automatic',
 		},
 		WEATHER: {
 			fr: 'Météo',
@@ -560,7 +570,7 @@ function askfordict() {
 			de: 'Wetter',
 			it: 'Meteo',
 			es: 'Tiempo',
-			no: '',
+			no: 'WEATHER',
 		},
 		Geolocation: {
 			fr: 'Géolocalisation',
@@ -574,7 +584,7 @@ function askfordict() {
 			de: 'Geolokalisierung',
 			it: 'Geolocalizzazione',
 			es: 'Geolocalización',
-			no: '',
+			no: 'Geolocation',
 		},
 		'City not found': {
 			fr: 'Ville non trouvé',
@@ -588,7 +598,7 @@ function askfordict() {
 			de: 'Stadt nicht gefunden',
 			it: 'Città non trovata',
 			es: 'Ciudad no encontrada',
-			no: '',
+			no: 'City not found',
 		},
 		'Change city': {
 			fr: 'Changer la ville',
@@ -602,7 +612,7 @@ function askfordict() {
 			de: 'Stadt ändern',
 			it: 'Cambia città',
 			es: 'Cambiar ciudad',
-			no: '',
+			no: 'Change city',
 		},
 		"Use this option if you don't want to enable geolocation.": {
 			fr: 'Utilisez cette option si vous ne souhaitez pas activer la géolocalisation.',
@@ -616,7 +626,7 @@ function askfordict() {
 			de: 'Diese Option wählen, wenn du die Geolokalisierung nicht aktivieren willst',
 			it: 'Usa questa opzione se non vuoi abilitare la geolocalizzazione',
 			es: 'Usa esta opción si no quieres habilitar la geolocalización',
-			no: '',
+			no: "Use this option if you don't want to enable geolocation.",
 		},
 		'There was a problem': {
 			fr: 'Il y a eu un problème',
@@ -630,7 +640,7 @@ function askfordict() {
 			de: 'Ein Problem ist aufgetreten',
 			it: "C'è stato un problema",
 			es: 'Hubo un problema',
-			no: '',
+			no: 'There was a problem',
 		},
 		'Imperial units': {
 			fr: 'Unités impériales',
@@ -644,7 +654,7 @@ function askfordict() {
 			de: 'Imperiale Maßeinheiten',
 			it: 'Sistema imperiale',
 			es: 'Sistema imperial',
-			no: '',
+			no: 'Imperial units',
 		},
 		'SEARCH BAR': {
 			fr: 'Barre de recherche',
@@ -658,7 +668,7 @@ function askfordict() {
 			de: 'Suchleiste',
 			it: 'Barra di ricerca',
 			es: 'Barra de búsqueda',
-			no: '',
+			no: 'SEARCH BAR',
 		},
 		'Search engine': {
 			fr: 'Moteur de recherche',
@@ -672,21 +682,21 @@ function askfordict() {
 			de: 'Suchmaschine',
 			it: 'Motore di ricerca',
 			es: 'Motor de búsqueda',
-			no: '',
+			no: 'Search engine',
 		},
 		Enable: {
 			fr: 'Activer',
 			sv: 'Aktivera',
-			nl: 'Activeren', // unsure
-			pl: 'Aktywować', // unsure
+			nl: 'Activeren',
+			pl: 'Aktywować',
 			pt_BR: 'Ativar',
-			ru: 'позволять', // unsure
+			ru: 'позволять',
 			zh_CN: '启用',
 			sk: 'Aktivovať',
 			de: 'Aktivieren',
 			it: 'Abilita',
 			es: 'Activar',
-			no: '',
+			no: 'Enable',
 		},
 		'Search on Startpage': {
 			fr: 'Rechercher sur Startpage',
@@ -700,7 +710,7 @@ function askfordict() {
 			de: 'Auf der Startseite suchen',
 			it: 'Cerca su Startpage',
 			es: 'Buscar en la página de inicio',
-			no: '',
+			no: 'Search on Startpage',
 		},
 		'Search on Ecosia': {
 			fr: 'Rechercher sur Ecosia',
@@ -714,7 +724,7 @@ function askfordict() {
 			de: 'Mit Ecosia suchen',
 			it: 'Cerca su Ecosia',
 			es: 'Buscar en Ecosia',
-			no: '',
+			no: 'Search on Ecosia',
 		},
 		'Search on DuckDuckGo': {
 			fr: 'Rechercher sur DuckDuckGo',
@@ -728,7 +738,7 @@ function askfordict() {
 			de: 'Mit DuckDuckGo suchen',
 			it: 'Cerca su DuckDuckGo',
 			es: 'Buscar en DuckDuckGo',
-			no: '',
+			no: 'Search on DuckDuckGo',
 		},
 		'Search on Google': {
 			fr: 'Rechercher sur Google',
@@ -742,7 +752,7 @@ function askfordict() {
 			de: 'Mit Google suchen',
 			it: 'Cerca su Google',
 			es: 'Buscar en Google',
-			no: '',
+			no: 'Search on Google',
 		},
 		'Search on Yahoo': {
 			fr: 'Rechercher sur Yahoo',
@@ -756,7 +766,7 @@ function askfordict() {
 			de: 'Mit Yahoo suchen',
 			it: 'Cerca su Yahoo',
 			es: 'Buscar en Yahoo',
-			no: '',
+			no: 'Search on Yahoo',
 		},
 		'Search on Bing': {
 			fr: 'Rechercher sur Bing',
@@ -770,7 +780,7 @@ function askfordict() {
 			de: 'Mit Bing suchen',
 			it: 'Cerca su Bing',
 			es: 'Buscar en Bing',
-			no: '',
+			no: 'Search on Bing',
 		},
 		'Search on Qwant': {
 			fr: 'Rechercher sur Qwant',
@@ -784,7 +794,7 @@ function askfordict() {
 			de: 'Mit Qwant suchen',
 			it: 'Cerca su Qwant',
 			es: 'Buscar en Qwant',
-			no: '',
+			no: 'Search on Qwant',
 		},
 		'TIME & DATE': {
 			fr: 'Date & heure',
@@ -798,7 +808,7 @@ function askfordict() {
 			de: 'TIME & DATE',
 			it: 'TIME & DATE',
 			es: 'Fecha & hora',
-			no: '',
+			no: 'TIME & DATE',
 		},
 		'CUSTOM FONT': {
 			fr: 'Police personnalisée',
@@ -812,7 +822,7 @@ function askfordict() {
 			de: 'Custom FONT',
 			it: 'Custom FONT',
 			es: 'Fuente personalizada',
-			no: '',
+			no: 'CUSTOM FONT',
 		},
 		'Any Google fonts': {
 			fr: 'Toutes Google fonts',
@@ -826,7 +836,7 @@ function askfordict() {
 			de: 'Any Google fonts',
 			it: 'Any Google fonts',
 			es: 'Cualquier fuente de Google',
-			no: '',
+			no: 'Any Google fonts',
 		},
 		'CUSTOM STYLE': {
 			fr: 'Style personnalisé',
@@ -840,7 +850,7 @@ function askfordict() {
 			de: 'Custom Style',
 			it: 'Custom Style',
 			es: 'Estilo personalizado',
-			no: '',
+			no: 'CUSTOM STYLE',
 		},
 		'Type in your custom CSS': {
 			fr: 'Entrez vous CSS personnalisé',
@@ -854,7 +864,7 @@ function askfordict() {
 			de: 'Type in your custom CSS',
 			it: 'Type in your custom CSS',
 			es: 'Escribe aquí tu CSS personalizado',
-			no: '',
+			no: 'Type in your custom CSS',
 		},
 		GENERAL: {
 			fr: 'Général',
@@ -868,7 +878,7 @@ function askfordict() {
 			de: 'Allgemein',
 			it: 'Generale',
 			es: 'General',
-			no: '',
+			no: 'GENERAL',
 		},
 		'US Date Format': {
 			fr: 'Date américaine',
@@ -882,7 +892,7 @@ function askfordict() {
 			de: 'US Date Format',
 			it: 'US Date Format',
 			es: 'Formato de fecha americano',
-			no: '',
+			no: 'US Date Format',
 		},
 		'12-Hour Time': {
 			fr: 'Affichage 12h',
@@ -896,7 +906,7 @@ function askfordict() {
 			de: '12-Stunden Uhrzeit',
 			it: 'Sistema orario a 12 ore',
 			es: 'Sistema horario de 12 horas',
-			no: '',
+			no: '12-Hour Time',
 		},
 		'Time zone': {
 			fr: 'Fuseau horaire',
@@ -910,7 +920,7 @@ function askfordict() {
 			de: 'Time Zone',
 			it: 'Time Zone',
 			es: 'Huso horario',
-			no: '',
+			no: 'Time zone',
 		},
 		Language: {
 			fr: 'Langue',
@@ -924,7 +934,7 @@ function askfordict() {
 			de: 'Sprache',
 			it: 'Lingua',
 			es: 'Lenguaje o idioma',
-			no: '',
+			no: 'Language',
 		},
 		Greeting: {
 			fr: 'Nom',
@@ -938,7 +948,7 @@ function askfordict() {
 			de: 'Greeting',
 			it: 'Greeting',
 			es: 'Saludo',
-			no: '',
+			no: 'Greeting',
 		},
 		'Custom CSS': {
 			fr: 'CSS personnalisé',
@@ -952,7 +962,7 @@ function askfordict() {
 			de: 'Custom CSS',
 			it: 'Custom CSS',
 			es: 'CSS personalizado',
-			no: '',
+			no: 'Custom CSS',
 		},
 		'Custom Font': {
 			fr: 'Police personnalisée',
@@ -966,7 +976,7 @@ function askfordict() {
 			de: 'Custom Font',
 			it: 'Custom Font',
 			es: 'Fuente personalizada',
-			no: '',
+			no: 'Custom Font',
 		},
 		'Font family': {
 			fr: 'Police',
@@ -980,7 +990,7 @@ function askfordict() {
 			de: 'Font family',
 			it: 'Font family',
 			es: 'Fuente',
-			no: '',
+			no: 'Font family',
 		},
 		Weight: {
 			fr: 'Épaisseur',
@@ -994,7 +1004,7 @@ function askfordict() {
 			de: 'Weight',
 			it: 'Weight',
 			es: 'Peso',
-			no: '',
+			no: 'Weight',
 		},
 		Size: {
 			fr: 'Taille',
@@ -1008,7 +1018,7 @@ function askfordict() {
 			de: 'Size',
 			it: 'Size',
 			es: 'Tamaño',
-			no: '',
+			no: 'Size',
 		},
 		'SETTINGS MANAGEMENT': {
 			fr: 'GESTION DES RÉGLAGES',
@@ -1022,7 +1032,7 @@ function askfordict() {
 			de: 'SETTINGS MANAGEMENT',
 			it: 'GESTIONE DELLE IMPOSTAZIONI',
 			es: 'GESTIÓN DE AJUSTES',
-			no: '',
+			no: 'SETTINGS MANAGEMENT',
 		},
 		Import: {
 			fr: 'Importer',
@@ -1036,7 +1046,7 @@ function askfordict() {
 			de: 'Import',
 			it: 'Importare',
 			es: 'Importar',
-			no: '',
+			no: 'Import',
 		},
 		Export: {
 			fr: 'Exporter',
@@ -1050,7 +1060,7 @@ function askfordict() {
 			de: 'Export',
 			it: 'Esportare',
 			es: 'Exportar',
-			no: '',
+			no: 'Export',
 		},
 		Copied: {
 			fr: 'Copié',
@@ -1064,7 +1074,7 @@ function askfordict() {
 			de: 'Copied',
 			it: 'Copiato',
 			es: 'Copiado',
-			no: '',
+			no: 'Copied',
 		},
 		'Import code': {
 			fr: 'Importer le code',
@@ -1078,7 +1088,7 @@ function askfordict() {
 			de: 'Code importieren',
 			it: 'Codice di importazione',
 			es: 'Importar código',
-			no: '',
+			no: 'Import code',
 		},
 		'Export code': {
 			fr: "Code d'exportation",
@@ -1092,7 +1102,7 @@ function askfordict() {
 			de: 'Exportcode',
 			it: 'codice di esportazione',
 			es: 'Exportar código',
-			no: '',
+			no: 'Export code',
 		},
 		'Reset settings': {
 			fr: 'Réinitialiser les réglages',
@@ -1106,7 +1116,7 @@ function askfordict() {
 			de: 'Einstellungen zurücksetzen',
 			it: 'Impostazioni iniziali',
 			es: 'Restablecer configuración',
-			no: '',
+			no: 'Reset settings',
 		},
 		'Are you sure ?': {
 			fr: 'Etes vous sûr ?',
@@ -1120,7 +1130,7 @@ function askfordict() {
 			de: 'Are you sure ?',
 			it: 'Sei sicuro ?',
 			es: '¿Estás seguro?',
-			no: '',
+			no: 'Are you sure ?',
 		},
 		'Made in France with ❤️': {
 			fr: 'Fabriqué en France avec ❤️',
@@ -1134,7 +1144,7 @@ function askfordict() {
 			de: 'Gemacht in Frankreich mit ❤️',
 			it: 'Fatto in Francia con ❤️',
 			es: 'Hecho en Francia con ❤️',
-			no: '',
+			no: 'Made in France with ❤️',
 		},
 		by: {
 			fr: 'par',
@@ -1148,7 +1158,7 @@ function askfordict() {
 			de: 'von',
 			it: 'Da',
 			es: 'por',
-			no: '',
+			no: 'by',
 		},
 		Visit: {
 			fr: 'Rendez-vous sur',
@@ -1162,7 +1172,7 @@ function askfordict() {
 			de: 'Besuche',
 			it: 'Visita',
 			es: 'Visitar',
-			no: '',
+			no: 'Visit',
 		},
 		'our website': {
 			fr: 'notre site Internet',
@@ -1176,7 +1186,7 @@ function askfordict() {
 			de: 'unsere Website',
 			it: 'il nostro sito internet',
 			es: 'nuestra página web',
-			no: '',
+			no: 'our website',
 		},
 		'for infos and donations': {
 			fr: 'pour en savoir plus ou faire un don',
@@ -1190,7 +1200,7 @@ function askfordict() {
 			de: 'für Informationen und Spenden',
 			it: 'per info e donazioni',
 			es: 'para más información y donaciones',
-			no: '',
+			no: 'for infos and donations',
 		},
 		Consider: {
 			fr: "N'hésitez pas",
@@ -1204,7 +1214,7 @@ function askfordict() {
 			de: 'Consider',
 			it: 'Considera di',
 			es: 'Considere',
-			no: '',
+			no: 'Consider',
 		},
 		donating: {
 			fr: 'faire un don',
@@ -1218,7 +1228,7 @@ function askfordict() {
 			de: 'donating',
 			it: 'fare una donazione',
 			es: 'hacer una donación',
-			no: '',
+			no: 'donating',
 		},
 		'if you love Bonjourr': {
 			fr: 'si vous aimez Bonjourr',
@@ -1232,7 +1242,7 @@ function askfordict() {
 			de: 'if you love Bonjourr',
 			it: 'se ami Bonjourr',
 			es: 'si amas Bonjourr',
-			no: '',
+			no: 'if you love Bonjourr',
 		},
 		'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇': {
 			fr: 'Vous adorez utiliser Bonjourr ? Pensez à nous noter, ça serait super! 😇',
@@ -1246,13 +1256,8 @@ function askfordict() {
 			de: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 			it: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 			es: '¿Te gusta Bonjourr? ¡Considera escribir una reseña, nos ayudaría mucho! 😇',
-			no: '',
+			no: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 		},
-
-		//settings
-
-		// edit links
-
 		Cancel: {
 			fr: 'Annuler',
 			sv: 'Cancel',
@@ -1265,7 +1270,7 @@ function askfordict() {
 			de: 'Cancel',
 			it: 'Annulla',
 			es: 'Cancelar',
-			no: '',
+			no: 'Cancel',
 		},
 		'Delete Quick Link': {
 			fr: 'Supprimer',
@@ -1279,7 +1284,7 @@ function askfordict() {
 			de: 'Delete Quick Link',
 			it: 'Elimina',
 			es: 'Eliminar',
-			no: '',
+			no: 'Delete Quick Link',
 		},
 		'Apply changes': {
 			fr: 'Appliquer',
@@ -1293,11 +1298,8 @@ function askfordict() {
 			de: 'Apply changes',
 			it: 'Applica modifiche',
 			es: 'Aplicar cambios',
-			no: '',
+			no: 'Apply changes',
 		},
-
-		//interface
-
 		Monday: {
 			fr: 'Lundi',
 			sv: 'Måndag',
@@ -1310,7 +1312,7 @@ function askfordict() {
 			de: 'Montag',
 			it: 'Lunedì',
 			es: 'Lunes',
-			no: '',
+			no: 'Monday',
 		},
 		Tuesday: {
 			fr: 'Mardi',
@@ -1324,7 +1326,7 @@ function askfordict() {
 			de: 'Dienstag',
 			it: 'Martedì',
 			es: 'Martes',
-			no: '',
+			no: 'Tuesday',
 		},
 		Wednesday: {
 			fr: 'Mercredi',
@@ -1338,7 +1340,7 @@ function askfordict() {
 			de: 'Mittwoch',
 			it: 'Mercoledì',
 			es: 'Miércoles',
-			no: '',
+			no: 'Wednesday',
 		},
 		Thursday: {
 			fr: 'Jeudi',
@@ -1352,7 +1354,7 @@ function askfordict() {
 			de: 'Donnerstag',
 			it: 'Giovedì',
 			es: 'Jueves',
-			no: '',
+			no: 'Thursday',
 		},
 		Friday: {
 			fr: 'Vendredi',
@@ -1366,7 +1368,7 @@ function askfordict() {
 			de: 'Freitag',
 			it: 'Venerdì',
 			es: 'Viernes',
-			no: '',
+			no: 'Friday',
 		},
 		Saturday: {
 			fr: 'Samedi',
@@ -1380,7 +1382,7 @@ function askfordict() {
 			de: 'Samstag',
 			it: 'Sabato',
 			es: 'Sábado',
-			no: '',
+			no: 'Saturday',
 		},
 		Sunday: {
 			fr: 'Dimanche',
@@ -1394,7 +1396,7 @@ function askfordict() {
 			de: 'Sonntag',
 			it: 'Domenica',
 			es: 'Domingo',
-			no: '',
+			no: 'Sunday',
 		},
 		January: {
 			fr: 'Janvier',
@@ -1408,7 +1410,7 @@ function askfordict() {
 			de: 'Januar',
 			it: 'Gennaio',
 			es: 'Enero',
-			no: '',
+			no: 'January',
 		},
 		February: {
 			fr: 'Février',
@@ -1422,7 +1424,7 @@ function askfordict() {
 			de: 'Februar',
 			it: 'Febbraio',
 			es: 'Febrero',
-			no: '',
+			no: 'February',
 		},
 		March: {
 			fr: 'Mars',
@@ -1436,7 +1438,7 @@ function askfordict() {
 			de: 'März',
 			it: 'Marzo',
 			es: 'Marzo',
-			no: '',
+			no: 'March',
 		},
 		April: {
 			fr: 'Avril',
@@ -1450,7 +1452,7 @@ function askfordict() {
 			de: 'April',
 			it: 'Aprile',
 			es: 'Abril',
-			no: '',
+			no: 'April',
 		},
 		May: {
 			fr: 'Mai',
@@ -1464,7 +1466,7 @@ function askfordict() {
 			de: 'Mai',
 			it: 'Maggio',
 			es: 'Mayo',
-			no: '',
+			no: 'May',
 		},
 		June: {
 			fr: 'Juin',
@@ -1478,7 +1480,7 @@ function askfordict() {
 			de: 'Juni',
 			it: 'Giugno',
 			es: 'Junio',
-			no: '',
+			no: 'June',
 		},
 		July: {
 			fr: 'Juillet',
@@ -1492,7 +1494,7 @@ function askfordict() {
 			de: 'Juli',
 			it: 'Luglio',
 			es: 'Julio',
-			no: '',
+			no: 'July',
 		},
 		August: {
 			fr: 'Août',
@@ -1506,7 +1508,7 @@ function askfordict() {
 			de: 'August',
 			it: 'Agosto',
 			es: 'Agosto',
-			no: '',
+			no: 'August',
 		},
 		September: {
 			fr: 'Septembre',
@@ -1520,7 +1522,7 @@ function askfordict() {
 			de: 'September',
 			it: 'Settembre',
 			es: 'Septiembre',
-			no: '',
+			no: 'September',
 		},
 		October: {
 			fr: 'Octobre',
@@ -1534,7 +1536,7 @@ function askfordict() {
 			de: 'Oktober',
 			it: 'Ottobre',
 			es: 'Octubre',
-			no: '',
+			no: 'October',
 		},
 		November: {
 			fr: 'Novembre',
@@ -1548,7 +1550,7 @@ function askfordict() {
 			de: 'November',
 			it: 'Novembre',
 			es: 'Noviembre',
-			no: '',
+			no: 'November',
 		},
 		December: {
 			fr: 'Décembre',
@@ -1562,7 +1564,7 @@ function askfordict() {
 			de: 'Dezember',
 			it: 'Dicembre',
 			es: 'Diciembre',
-			no: '',
+			no: 'December',
 		},
 		'Good Morning': {
 			fr: 'Bonjour',
@@ -1576,7 +1578,7 @@ function askfordict() {
 			de: 'Guten Morgen',
 			it: 'Buongiorno',
 			es: 'Buenos días',
-			no: '',
+			no: 'Good Morning',
 		},
 		'Good Afternoon': {
 			fr: 'Bon après-midi',
@@ -1590,7 +1592,7 @@ function askfordict() {
 			de: 'Guten Nachmittag',
 			it: 'Buon pomeriggio',
 			es: 'Buenas tardes',
-			no: '',
+			no: 'Good Afternoon',
 		},
 		'Good Evening': {
 			fr: 'Bonsoir',
@@ -1604,7 +1606,7 @@ function askfordict() {
 			de: 'Guten Abend',
 			it: 'Buonasera',
 			es: 'Buenas noches',
-			no: '',
+			no: 'Good Evening',
 		},
 		'Good Night': {
 			fr: 'Bonne nuit',
@@ -1618,7 +1620,7 @@ function askfordict() {
 			de: 'Gute Nacht',
 			it: 'Buonanotte',
 			es: 'Buenas noches',
-			no: '',
+			no: 'Good Night',
 		},
 		'It is currently': {
 			fr: 'Il fait actuellement',
@@ -1632,7 +1634,7 @@ function askfordict() {
 			de: 'Es ist derzeit',
 			it: 'Ci sono',
 			es: 'Actualmente está',
-			no: '',
+			no: 'It is currently',
 		},
 		'with a high of': {
 			fr: 'avec une maximale de',
@@ -1646,7 +1648,7 @@ function askfordict() {
 			de: 'mit maximal',
 			it: 'con una massima di',
 			es: 'con un máximo de',
-			no: '',
+			no: 'with a high of',
 		},
 		'today.': {
 			fr: "aujourd'hui.",
@@ -1660,24 +1662,7 @@ function askfordict() {
 			de: 'heute.',
 			it: 'oggi',
 			es: 'hoy.',
-			no: '',
-		},
-
-		//OLD TRADS
-
-		Automatic: {
-			fr: 'Automatique',
-			sv: 'Automatiskt',
-			nl: 'Automatisch ',
-			pl: 'Automatycznie',
-			pt_BR: 'Automático',
-			ru: 'Автоматически',
-			zh_CN: '自动设置',
-			sk: 'Automatické',
-			de: 'Automatisch',
-			it: 'Automatico',
-			es: 'Automático',
-			no: '',
+			no: 'today.',
 		},
 		Title: {
 			fr: 'Titre',
@@ -1691,7 +1676,7 @@ function askfordict() {
 			de: 'Titel',
 			it: 'Titolo',
 			es: 'Título',
-			no: '',
+			no: 'Title',
 		},
 		LANGUAGE: {
 			fr: 'Langue',
@@ -1705,6 +1690,7 @@ function askfordict() {
 			de: 'Sprache',
 			it: 'Lingua',
 			es: 'Idioma',
+			no: 'LANGUAGE',
 		},
 	}
 }
