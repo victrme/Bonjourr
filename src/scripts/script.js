@@ -1024,7 +1024,7 @@ function initBackground(storage) {
 		//reste local !!!!
 		chrome.storage.local.get(null, (localChrome) => {
 			//1.8.3 -> 1.9 data transfer
-			if (localChrome.background_blob) {
+			if (localChrome.background_blob !== undefined) {
 				const blob = localChrome.background_blob
 				const old = [blob[0] + ',' + blob[1]]
 
@@ -1038,13 +1038,13 @@ function initBackground(storage) {
 				chrome.storage.local.set({ customThumbnails: old })
 
 				chrome.storage.local.remove('background_blob')
-			} else if (localChrome === undefined) {
+			} else if (Object.entries(localChrome).length > 0) {
+				//apply chosen custom background
+				loadCustom(localChrome)
+			} else {
 				//if no custom background available: dynamic
 				unsplash(storage)
 				chrome.storage.sync.set({ background_type: 'dynamic' })
-			} else {
-				//apply chosen custom background
-				loadCustom(localChrome)
 			}
 		})
 
@@ -1308,10 +1308,13 @@ function unsplash(data, event, startup) {
 	}
 
 	function req(which, dynamic, weather, init) {
-		//
-		// Transition day and night with noon & evening collections
-		// if clock is + /- 60 min around sunrise/set
 		function chooseCollection() {
+			// If collection isnt ''
+			if (dynamic.collection.length > 0) {
+				return dynamic.collection
+			}
+			// Transition day and night with noon & evening collections
+			// if clock is + /- 60 min around sunrise/set
 			if (weather) {
 				const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
@@ -1401,46 +1404,57 @@ function unsplash(data, event, startup) {
 
 	function actionFromStorage() {
 		chrome.storage.sync.get(['dynamic', 'weather'], (storage) => {
-			//si on change la frequence, juste changer la freq
-			if (event) {
-				storage.dynamic.every = event
+			//
+			// Dynamic events: freq & collection
+			if (typeof event === 'object') {
+				if (event.every !== undefined) {
+					storage.dynamic.every = event.every
+				} else if (event.collection !== undefined) {
+					// Removes next image from old collection data
+					storage.dynamic.next = initDynamic.next
+					storage.dynamic.time = initDynamic.time
+					storage.dynamic.collection = event.collection
+				}
+
 				chrome.storage.sync.set({ dynamic: storage.dynamic })
 				return true
 			}
 
-			if (storage && storage.dynamic !== undefined) {
-				cacheControl(storage.dynamic, storage.weather)
-			} else {
-				let initDyn = {
-					current: {
-						url: '',
-						link: '',
-						username: '',
-						name: '',
-						city: '',
-						country: '',
-					},
-					next: {
-						url: '',
-						link: '',
-						username: '',
-						name: '',
-						city: '',
-						country: '',
-					},
-					every: 'hour',
-					time: 0,
-				}
-
-				cacheControl(initDyn)
-			}
+			// No events, just look in storage or init
+			if (storage && storage.dynamic !== undefined) cacheControl(storage.dynamic, storage.weather)
+			else cacheControl(initDynamic)
 		})
 	}
 
-	if (typeof data !== 'object') {
-		if (typeof data.dynamic !== 'object') cacheControl(data.dynamic, data.weather)
+	const initDynamic = {
+		current: {
+			url: '',
+			link: '',
+			username: '',
+			name: '',
+			city: '',
+			country: '',
+		},
+		next: {
+			url: '',
+			link: '',
+			username: '',
+			name: '',
+			city: '',
+			country: '',
+		},
+		collection: '',
+		every: 'hour',
+		time: 0,
+	}
+
+	// No passed data, search in storage or init
+	if (data === null || data === undefined) actionFromStorage()
+	else {
+		// Data & dynamic exist
+		if (data.dynamic !== undefined) cacheControl(data.dynamic, data.weather)
 		else actionFromStorage()
-	} else actionFromStorage()
+	}
 }
 
 function filter(cat, val) {

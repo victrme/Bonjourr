@@ -20,7 +20,7 @@ function selectBackgroundType(cat) {
 
 function displayCustomThumbnails() {
 	chrome.storage.local.get('customThumbnails', (data) => {
-		if (data !== undefined) {
+		if (data.customThumbnails.length > 0) {
 			let cleanData
 			let thumbs = data.customThumbnails
 
@@ -120,7 +120,12 @@ function settingsEvents() {
 	}
 
 	id('i_freq').onchange = function () {
-		unsplash(null, this.value)
+		unsplash(null, { every: this.value })
+	}
+
+	id('i_collection').onchange = function () {
+		unsplash(null, { collection: this.value })
+		this.blur()
 	}
 
 	//custom bg
@@ -263,6 +268,7 @@ function initParams() {
 	initInput('i_sbengine', data.searchbar_engine, 's_google')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_freq', isThereData('dynamic', 'every'), 'hour')
+	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
 	initInput('i_row', data.linksrow, 8)
 	initInput('i_customfont', isThereData('font', 'family'), '')
