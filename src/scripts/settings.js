@@ -265,7 +265,7 @@ function initParams() {
 	initInput('i_blur', data.background_blur, 15)
 	initInput('i_bright', data.background_bright, 0.7)
 	initInput('i_dark', data.dark, 'disable')
-	initInput('i_sbengine', data.searchbar_engine, 's_google')
+	initInput('i_sbengine', data.searchbar_engine, 'google')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_freq', isThereData('dynamic', 'every'), 'hour')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')

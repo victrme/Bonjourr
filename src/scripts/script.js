@@ -1530,10 +1530,6 @@ function searchbar(event, that, storage) {
 	function display(value, init) {
 		id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-		id('searchbar').onkeyup = function (e) {
-			if (e.which === 13) window.location = localisation(this.value)
-		}
-
 		if (!init) {
 			chrome.storage.sync.set({ searchbar: value })
 			id('choose_searchengine').setAttribute('class', value ? 'shown' : 'hidden')
@@ -1543,57 +1539,38 @@ function searchbar(event, that, storage) {
 	function localisation(q) {
 		let response = '',
 			lang = storage ? storage.lang || 'en' : 'en',
-			engine = storage.searchbar_engine || 's_google'
+			engine = sessionStorage.engine
 
-		//les const l_[engine] sont dans lang.js
-
-		switch (engine) {
-			case 's_ddg':
-				response = 'https://duckduckgo.com/?q=' + q + l_ddg[lang]
-				break
-			case 's_google':
-				response = 'https://www.google' + l_google[lang] + q
-				break
-			case 's_startpage':
-				response = 'https://www.startpage.com/do/dsearch?query=' + q + l_startpage[lang]
-				break
-			case 's_qwant':
-				response = 'https://www.qwant.com/?q=' + q + l_qwant[lang]
-				break
-			case 's_yahoo':
-				response = 'https://' + l_yahoo[lang] + q
-				break
-			case 's_bing':
-				response = 'https://www.bing.com/search?q=' + q
-				break
-			case 's_ecosia':
-				response = 'https://www.ecosia.org/search?q=' + q
-				break
-		}
+		response = engineLocales[engine].base.replace('$locale$', engineLocales[engine][lang]).replace('$query$', q)
 
 		return response
 	}
 
 	function engine(value, init) {
 		const names = {
-			s_startpage: 'Startpage',
-			s_ddg: 'DuckDuckGo',
-			s_qwant: 'Qwant',
-			s_ecosia: 'Ecosia',
-			s_google: 'Google',
-			s_yahoo: 'Yahoo',
-			s_bing: 'Bing',
+			startpage: 'Startpage',
+			ddg: 'DuckDuckGo',
+			qwant: 'Qwant',
+			ecosia: 'Ecosia',
+			google: 'Google',
+			yahoo: 'Yahoo',
+			bing: 'Bing',
 		}
 
 		id('searchbar').setAttribute('placeholder', tradThis('Search on ' + names[value]))
 		if (!init) chrome.storage.sync.set({ searchbar_engine: value })
+		sessionStorage.engine = value
+	}
+
+	id('searchbar').onkeyup = function (e) {
+		if (e.which === 13) window.location = localisation(this.value)
 	}
 
 	if (event) event === 'searchbar' ? display(that.checked) : engine(that.value)
 	//init
 	else {
 		let searchbar = storage.searchbar || false
-		let searchengine = storage.searchbar_engine || 's_google'
+		let searchengine = storage.searchbar_engine || 'google'
 
 		//display
 		display(searchbar, true)
@@ -1653,7 +1630,7 @@ function proFunctions(obj) {
 					id('clock').style.fontFamily = f.family
 				}
 
-				if (f.weight) document.body.style.fontWeight = f.weight
+				if (f.weight) id('interface').style.fontWeight = f.weight
 
 				if (f.size) dominterface.style.fontSize = f.size + 'px'
 			}
