@@ -1586,6 +1586,9 @@ function searchbar(event, that, initStorage) {
 			case 's_ecosia':
 				response = 'https://www.ecosia.org/search?q=' + q
 				break
+			case 's_lilo':
+				response = 'https://search.lilo.org/?q=' + q
+				break
 		}
 
 		return response

@@ -1550,6 +1550,7 @@ function searchbar(event, that, storage) {
 			startpage: 'Startpage',
 			ddg: 'DuckDuckGo',
 			qwant: 'Qwant',
+			lilo: 'Lilo',
 			ecosia: 'Ecosia',
 			google: 'Google',
 			yahoo: 'Yahoo',
