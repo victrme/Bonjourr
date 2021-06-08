@@ -1562,11 +1562,23 @@ function searchbar(event, that, storage) {
 		sessionStorage.engine = value
 	}
 
-	id('searchbar').onkeyup = function (e) {
-		if (e.which === 13) window.location = localisation(this.value)
+	function setNewtab(value, init) {
+		if (!init) chrome.storage.sync.set({ searchbar_newtab: value })
+		sessionStorage.newtab = value
 	}
 
-	if (event) event === 'searchbar' ? display(that.checked) : engine(that.value)
+	id('searchbar').onkeyup = function (e) {
+		if (e.which === 13) {
+			if (sessionStorage.newtab === 'true') window.open(localisation(this.value), '_blank')
+			else window.location = localisation(this.value)
+		}
+	}
+
+	if (event) {
+		if (event === 'searchbar') display(that.checked)
+		if (event === 'engine') engine(that.value)
+		if (event === 'newtab') setNewtab(that.checked)
+	}
 	//init
 	else {
 		let searchbar = storage.searchbar || false
