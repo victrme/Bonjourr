@@ -1491,8 +1491,7 @@ function darkmode(choice, initStorage) {
 		}
 
 		//uses chromesync data on startup, sessionsStorage on change
-
-		const weather = initStorage ? initStorage.weather : localEnc(sessionStorage.data, false).weather
+		const weather = initStorage ? initStorage.weather : JSON.parse(localEnc(disposableData, false)).weather
 		let bodyClass
 
 		//dark mode is defines by the body class
