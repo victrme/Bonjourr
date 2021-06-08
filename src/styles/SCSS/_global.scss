@@ -247,7 +247,9 @@ body {
 		visibility: hidden;
 		display: none;
 		height: 2px;
-		width: 100%;
+		max-width: calc(100% - 2em);
+		width: 500px;
+		margin: 0 auto;
 		padding: 0;
 		transition: none;
 
@@ -255,18 +257,16 @@ body {
 			opacity: 0;
 			font-size: 1.5em;
 			color: rgba(0, 0, 0, 0.6);
-			width: calc(100% - 2em);
-			max-width: 500px;
+			width: calc(100% - 1em);
 			border: 0;
 			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 			height: 50px;
 			border-radius: 4px;
-			padding-left: 1em;
+			padding: 0 0 0 1em;
 			transition: border-radius 0.15s, opacity 0.1s;
 
 			&:focus {
 				opacity: 1;
-				border-radius: 1em;
 			}
 		}
 

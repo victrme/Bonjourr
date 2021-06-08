@@ -1581,12 +1581,14 @@ function searchbar(event, that, storage) {
 	}
 	//init
 	else {
-		let searchbar = storage.searchbar || false
-		let searchengine = storage.searchbar_engine || 'google'
+		const searchbar = storage.searchbar || false,
+			searchengine = storage.searchbar_engine || 'google',
+			searchbarnewtab = storage.searchbar_newtab || false
 
 		//display
 		display(searchbar, true)
 		engine(searchengine, true)
+		setNewtab(searchbarnewtab, true)
 	}
 }
 

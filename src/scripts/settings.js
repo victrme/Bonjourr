@@ -286,7 +286,7 @@ function initParams() {
 	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_sb', data.searchbar)
-	initCheckbox('i_sbnewtab', data.searchbar_newtab)
+	initCheckbox('i_sbnewtab', !!data.searchbar_newtab)
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
