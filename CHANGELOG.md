@@ -3,7 +3,8 @@
 **v1.9.3**
 
 -   Dedicated backgrounds for noons & evenings
--   Added custom Unsplash collections setting
+-   Added custom Unsplash collections option
+-   Added search opens in new tab option
 -   Added Spanish
 -   Fixed dead links
 -   Fixed styling issues
