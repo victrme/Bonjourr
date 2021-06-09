@@ -161,19 +161,6 @@
 
 		@include hidden();
 	}
-
-	&.distract {
-		#time {
-			opacity: 0.8;
-		}
-
-		#credit,
-		#main,
-		#linkblocks {
-			opacity: 0;
-			transition: opacity 0.1s;
-		}
-	}
 }
 
 #edit_linkContainer {
@@ -408,16 +395,6 @@
 			width: 27px;
 			filter: drop-shadow(0px 1px 15px rgba(0, 0, 0, 0.5));
 			transition: transform 0.2s;
-		}
-	}
-
-	&.distract {
-		opacity: 0;
-		transition: opacity 0.1s;
-
-		&:hover {
-			opacity: 1;
-			transition: opacity 0.1s;
 		}
 	}
 }
