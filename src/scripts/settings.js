@@ -223,7 +223,7 @@ function settingsEvents() {
 		importExport('exp')
 	}
 
-	id('i_customfont').oninput = function () {
+	id('i_customfont').onchange = function () {
 		fontObj = { family: this.value, weight: null, size: null }
 		proFunctions({ which: 'font', event: fontObj })
 	}
