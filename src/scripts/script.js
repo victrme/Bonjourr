@@ -619,6 +619,7 @@ function quickLinks(event, that, initStorage) {
 	} else {
 		initblocks(initStorage)
 		editEvents()
+		id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
 	}
 }
 
