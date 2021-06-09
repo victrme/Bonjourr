@@ -1822,6 +1822,8 @@ function proFunctions(obj) {
 			//quit on first startup
 			if (!data) return false
 
+			addAnimsToHideableElems()
+
 			for (let d of data) {
 				//le nouveau
 				object = {
@@ -1843,6 +1845,19 @@ function proFunctions(obj) {
 
 			principale(object)
 			eventStorage()
+		}
+
+		function addAnimsToHideableElems() {
+			const elemList = [
+				id('time-container'),
+				id('date'),
+				id('greetings'),
+				id('weather'),
+				id('weather_desc'),
+				id('w_icon'),
+			]
+
+			setTimeout(() => elemList.forEach((elem) => (elem.style.transition = 'opacity 0.2s')), 100)
 		}
 
 		function principale(objet) {
