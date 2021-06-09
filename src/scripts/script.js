@@ -1540,6 +1540,7 @@ function searchbar(event, that, storage) {
 			lang = storage ? storage.lang || 'en' : 'en',
 			engine = sessionStorage.engine
 
+		// engineLocales est dans lang.js
 		response = engineLocales[engine].base.replace('$locale$', engineLocales[engine][lang]).replace('$query$', q)
 
 		return response
