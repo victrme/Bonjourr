@@ -39,8 +39,8 @@
 		<div class="link_input_wrap">
 			<div>
 				<div>
-					<input id="i_title" type="text" name="title" placeholder="Name" />
-					<input id="i_url" type="text" name="url" placeholder="URL" />
+					<input id="i_title" type="text" name="title" autocomplete="off" placeholder="Name" />
+					<input id="i_url" type="text" name="url" autocomplete="off" placeholder="URL" />
 				</div>
 				<button id="submitlink" class="trn">Add</button>
 			</div>
@@ -99,7 +99,14 @@
 
 				<div class="wrapper">
 					<span class="trn" title="Add custom unsplash collection">Unsplash collection</span>
-					<input type="text" name="collection" id="i_collection" placeholder="4933370" maxlength="32" />
+					<input
+						type="text"
+						name="collection"
+						id="i_collection"
+						autocomplete="off"
+						placeholder="4933370"
+						maxlength="32"
+					/>
 				</div>
 			</div>
 		</div>
@@ -144,7 +151,7 @@
 
 			<div class="wrapper">
 				<span class="trn">Greeting</span>
-				<input type="text" name="greeting" id="i_greeting" placeholder="Name" maxlength="32" />
+				<input type="text" name="greeting" id="i_greeting" autocomplete="off" placeholder="Name" maxlength="32" />
 			</div>
 
 			<hr />
@@ -638,14 +645,21 @@
 		<h5 class="trn">Settings</h5>
 		<div class="param">
 			<div id="imp_wrapper" class="wrapper">
-				<input id="i_import" type="text" name="Import" placeholder="Paste settings code" />
+				<input id="i_import" type="text" name="Import" autocomplete="off" placeholder="Paste settings code" />
 				<button id="submitImport" class="trn">Import</button>
 			</div>
 
 			<hr />
 
 			<div id="exp_wrapper" class="wrapper">
-				<input readonly id="i_export" type="text" name="export" placeholder="Click to show export code" />
+				<input
+					readonly
+					id="i_export"
+					type="text"
+					name="export"
+					autocomplete="off"
+					placeholder="Click to show export code"
+				/>
 				<button id="submitExport" class="trn">Export</button>
 			</div>
 
