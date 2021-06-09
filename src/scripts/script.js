@@ -1983,8 +1983,8 @@ chrome.storage.sync.get(null, (data) => {
 	proFunctions({ which: 'row', data: data.linksrow })
 	proFunctions({ which: 'greet', data: data.greeting })
 
-	clas(dominterface, '')
-	clas(domshowsettings, '')
+	dominterface.style.opacity = '1'
+	domshowsettings.style.opacity = '1'
 
 	//safe font for different alphabet
 	/*if (data.lang === "ru" || data.lang === "sk")

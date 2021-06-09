@@ -23,8 +23,9 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	transition: transform 0.2s;
 	will-change: transform;
+	opacity: 0;
+	transition: opacity 0.1s 0.05s, transform 0.2s;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 
 	#time {
@@ -362,6 +363,7 @@
 	position: fixed;
 	bottom: 0;
 	right: 0;
+	opacity: 0;
 	padding: 0 1em 1em 0;
 	z-index: 3;
 
