@@ -1,5 +1,0 @@
-#settings .slider,
-#settings input:checked + .slider,
-#settings #cssEditor {
-	transition: background 0.1s;
-}
