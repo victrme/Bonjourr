@@ -17,6 +17,44 @@
 	}
 }
 
+// TO SORT START
+
+#clock.hidden,
+#analogClock.hidden,
+#interface #time #analogClock #analogSeconds.hidden,
+#interface #time.hidden,
+#interface #main.hidden {
+	display: none;
+}
+
+#time-container.hidden,
+#date.hidden,
+#greetings.hidden,
+#weather_desc.hidden,
+#w_icon.hidden {
+	opacity: 0;
+	transition: opacity 0.1s;
+}
+
+#interface #linkblocks,
+#sb_container,
+#showSettings {
+	transition: opacity 0.1s;
+}
+
+#interface.pushed,
+#edit_linkContainer.pushed {
+	-webkit-transform: translateX(-10em);
+	transform: translateX(-10em);
+}
+
+#settings.shown {
+	-webkit-transform: translateX(-100%);
+	transform: translateX(-100%);
+}
+
+// TO SORT END
+
 #interface {
 	position: relative;
 	min-height: 100vh;
@@ -165,12 +203,27 @@
 }
 
 #edit_linkContainer {
-	position: absolute;
+	position: fixed;
 	display: none;
 	top: 0;
 	height: 100vh;
 	width: 100%;
 	transition: transform 0.2s;
+	z-index: 1;
+
+	@keyframes editfade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+			display: flex;
+		}
+	}
+
+	&.shown {
+		animation: editfade 0.1s forwards;
+	}
 
 	#edit_link {
 		align-self: center;
@@ -252,11 +305,11 @@
 			height: 2.35em;
 			margin: 0.3em 0;
 			padding-right: 2.5em;
-			transition: background 0.2s;
+			transition: background 0.1s;
 
 			&:focus {
 				background: #d3d3d5;
-				transition: background 0.2s;
+				transition: background 0.1s;
 			}
 		}
 
@@ -417,6 +470,20 @@
 	transition: transform 0.2s, background 0.1s;
 	will-change: transform;
 
+	.pro {
+		max-height: 0;
+		overflow: hidden;
+
+		&.shown {
+			max-height: 350px;
+		}
+	}
+
+	a:hover,
+	button:hover {
+		text-decoration: underline;
+	}
+
 	hr {
 		border: none;
 		border-bottom: 1px solid $borderGrey;
@@ -479,12 +546,19 @@
 		min-height: 34px;
 	}
 
-	@include chooseBackground();
-
 	.link_input_wrap {
 		input[type='text'] {
 			margin-bottom: 0.5em;
 			width: calc(100% - 0.5em);
+		}
+
+		> div {
+			display: flex;
+			align-items: center;
+		}
+
+		#submitlink {
+			margin-left: 1em;
 		}
 	}
 
@@ -494,8 +568,8 @@
 		display: none;
 	}
 
-	#i_collection {
-		width: 100px;
+	#custom_thumbnail {
+		height: 100px;
 	}
 
 	#fileContainer {
@@ -503,9 +577,11 @@
 		position: relative;
 		display: block;
 		width: 100%;
+		min-width: 100px;
 		border-radius: 9px;
 		border: 1px solid $blue;
 		padding: 0.8em;
+		margin-right: 1em;
 		box-sizing: border-box;
 		transition: background-color 0.1s ease-in;
 
@@ -537,14 +613,110 @@
 				color: $purewhite;
 			}
 		}
+
+		&:active {
+			border: 1px dashed #aaa;
+			background: #e8e8e8;
+		}
 	}
 
-	#choose_searchengine {
-		&.shown {
-			display: block;
+	#bg_tn_wrap {
+		display: flex;
+		align-items: center;
+		padding: 1em 0 0.5em 0;
+		overflow: auto;
+
+		img {
+			height: 100px;
 		}
 
-		@include hidden();
+		.thumbnail {
+			margin-right: 1em;
+			position: relative;
+			cursor: pointer;
+			filter: grayscale(0.8);
+			transition: filter 0.2s;
+
+			&:hover {
+				filter: grayscale(0);
+			}
+
+			button {
+				position: absolute;
+				top: 5px;
+				left: 5px;
+				width: 25px;
+				height: 25px;
+				background: #fffc;
+				color: #333;
+				font-size: 10px;
+				border: none;
+				border-radius: 100%;
+				cursor: pointer;
+				transition: opacity 0.2s;
+
+				&:hover {
+					text-decoration: none;
+				}
+
+				&.hidden {
+					opacity: 0;
+				}
+
+				&.shown {
+					opacity: 1;
+				}
+			}
+		}
+
+		::-webkit-scrollbar {
+			height: 6px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: #ccc;
+			border-radius: 4px;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: #666;
+			border-radius: 4px;
+		}
+	}
+
+	#i_collection {
+		width: 100px;
+	}
+
+	// Hide elements
+
+	#hideelem {
+		margin-top: 1em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+
+		> div {
+			border: 1px solid #4d4d52;
+			border-radius: 8px;
+			margin: 0.5em auto;
+		}
+		button {
+			text-align: left;
+			color: #4d4d52;
+			margin: 0.5em 0.2em;
+			text-align: center;
+			font-size: small;
+		}
+
+		button,
+		> div {
+			transition: all 0.1s;
+		}
+
+		button.clicked {
+			opacity: 0.5;
+		}
 	}
 
 	#sett_city {
@@ -584,6 +756,22 @@
 
 	select.lang {
 		transition: none;
+	}
+
+	#i_sbparams {
+		width: calc(100% - 2em);
+		margin-left: 2em;
+	}
+
+	#i_customfont,
+	#i_weight,
+	#i_size {
+		width: 150px;
+	}
+
+	#e_weight,
+	#e_size {
+		width: 50px;
 	}
 
 	#cssEditor {

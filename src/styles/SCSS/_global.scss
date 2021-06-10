@@ -243,6 +243,23 @@ body {
 }
 
 @mixin searchbar {
+	#choose_searchengine {
+		&.shown {
+			display: block;
+		}
+
+		@include hidden();
+	}
+
+	@keyframes sbfade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 0.8;
+		}
+	}
+
 	#sb_container {
 		visibility: hidden;
 		display: none;
@@ -264,6 +281,8 @@ body {
 			border-radius: 4px;
 			padding: 0 0 0 1em;
 			transition: border-radius 0.15s, opacity 0.1s;
+			animation: sbfade 0.08s ease-in 0s 1 normal;
+			opacity: 0.8;
 
 			&:focus {
 				opacity: 1;
@@ -286,6 +305,10 @@ body {
 			display: block;
 			visibility: visible;
 			height: 52px;
+
+			#searchbar:focus {
+				opacity: 1;
+			}
 		}
 
 		&.hidden {
@@ -408,6 +431,12 @@ body {
 		height: 2.35em;
 	}
 
+	.slider,
+	input:checked + .slider,
+	#cssEditor {
+		transition: background 0.1s;
+	}
+
 	input:active,
 	input:focus,
 	a:hover,
@@ -431,6 +460,12 @@ body {
 		background-color: $inputGrey;
 		height: 2.35em;
 		padding-left: 0.5em;
+	}
+
+	input[type='text']:focus,
+	input[type='url']:focus {
+		background: #d3d3d5;
+		transition: background 0.2s;
 	}
 
 	button {
@@ -501,6 +536,11 @@ body {
 				transition: 0.4s;
 				border-radius: 50%;
 				box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
+			}
+
+			&:hover {
+				background: #bbb;
+				transition: background 0.2s;
 			}
 		}
 	}
@@ -583,48 +623,5 @@ body {
 
 	::-ms-tooltip {
 		display: none;
-	}
-}
-
-@mixin chooseBackground {
-	#default {
-		display: flex;
-		justify-content: space-between;
-		padding: 0.5em 0 0.5em 0;
-
-		> div {
-			display: flex;
-			justify-content: space-between;
-
-			.imgpreview {
-				overflow: hidden;
-				height: 80px;
-				width: 60px;
-				border-radius: 4px;
-				background-size: cover;
-				background-position: center center;
-				display: inline-block;
-				transition: border 0s, opacity 0.2s;
-
-				img {
-					height: 80px;
-					cursor: pointer;
-					box-sizing: content-box;
-				}
-
-				&:hover {
-					border: 2px solid $blue;
-					width: 56px;
-					height: 76px;
-				}
-
-				&.selected {
-					border: 2px solid $blue;
-					width: 56px;
-					height: 76px;
-					opacity: 0.8;
-				}
-			}
-		}
 	}
 }

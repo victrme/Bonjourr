@@ -37,6 +37,39 @@
 			border-color: #3f3f41;
 		}
 
+		// Background custom
+
+		#fileContainer.dragover,
+		#fileContainer:hover {
+			border: 1px dashed #ccc;
+			background: #2a2a2b;
+		}
+
+		#fileContainer:active,
+		#fileContainer:active {
+			border: 1px dashed #aaa;
+			background: #2f2f30;
+		}
+
+		#hideelem > div {
+			border: 1px solid white;
+
+			&.allhidden {
+				border: 1px solid #999;
+			}
+		}
+
+		#hideelem button,
+		#bg_tn_wrap .thumbnail button {
+			color: white;
+		}
+		#bg_tn_wrap::-webkit-scrollbar-track {
+			background: #39383d;
+		}
+		#bg_tn_wrap::-webkit-scrollbar-thumb {
+			background: #666;
+		}
+
 		.title {
 			background-color: #1c1c1e;
 			color: $purewhite;
@@ -61,9 +94,20 @@
 		}
 
 		input[type='text'],
+		input[type='url'],
 		#cssEditor {
 			background-color: #39383d;
 			color: $purewhite;
+
+			&:focus {
+				background-color: #2c2c2f;
+				color: white;
+
+				::placeholder {
+					color: #ddd;
+					transition: color 0.2s;
+				}
+			}
 		}
 
 		::-moz-range-thumb {
@@ -80,6 +124,10 @@
 
 		.slider {
 			background-color: #39383d;
+
+			&:hover {
+				background-color: #2c2c2f;
+			}
 		}
 
 		.range::-webkit-slider-thumb {
@@ -88,6 +136,11 @@
 
 		input:checked + .slider {
 			background-color: $green;
+
+			&:hover {
+				background: #40b354;
+				transition: background 0.2s;
+			}
 		}
 
 		.signature {
