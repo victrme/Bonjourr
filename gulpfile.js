@@ -7,13 +7,8 @@ const { series, parallel, src, dest } = require('gulp'),
 	replace = require('gulp-replace')
 
 const path = {
-	scss: [
-		'src/styles/scss/_global.scss',
-		'src/styles/scss/_media.scss',
-		'src/styles/scss/_mixins.scss',
-		'src/styles/scss/style.scss',
-	],
-	css: ['src/styles/style.css', 'src/styles/events.css'],
+	css: 'src/styles/style.css',
+	html: ['index.html', 'settings.html'],
 	js: ['src/scripts/lang.js', 'src/scripts/collections.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
 }
 
@@ -22,21 +17,12 @@ const scripts = {
 	after: `<script src="src/scripts/main.js"></script>`,
 }
 
-function scssTask() {
-	return src(path.scss)
-		.pipe(sourcemaps.init())
-		.pipe(sass())
-		.pipe(sourcemaps.write('.'))
-		.pipe(concat('style.css'))
-		.pipe(dest('release/src/styles/'))
-}
-
 function cssTask() {
-	return src(path.css).pipe(csso()).pipe(concat('style.css')).pipe(dest('release/src/styles/'))
+	return src(path.css).pipe(csso()).pipe(dest('release/src/styles/'))
 }
 
 function htmlTask() {
-	return src(['index.html', 'settings.html'])
+	return src(path.html)
 		.pipe(
 			htmlmin({
 				collapseWhitespace: true,
