@@ -1704,7 +1704,6 @@ function proFunctions(obj) {
 						//
 						// Cherche correspondante
 						const font = json.items.filter((font) => font.family.toUpperCase() === userFamily.toUpperCase())
-						const availableWeight = font[0].variants.filter((vari) => !vari.includes('italic'))
 
 						if (font.length > 0) {
 							//
@@ -1712,6 +1711,8 @@ function proFunctions(obj) {
 							const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${userWeight}`
 
 							// To prevent weight sliders from sending useless requests
+							const availableWeight = font[0].variants.filter((vari) => !vari.includes('italic'))
+
 							if (availableWeight.indexOf(userWeight) > -1) {
 								applyFont(url)
 								saveFont(url, availableWeight)
@@ -2006,9 +2007,14 @@ window.onload = function () {
 		clas(domshowsettings, '')
 
 		//safe font for different alphabet
-		/*if (data.lang === "ru" || data.lang === "sk")
-		id("styles").innerText = `
-			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`*/
+		if (data.lang === 'ru' || data.lang === 'sk') {
+			const safeFont = () =>
+				(id('styles').innerText = `
+			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
+
+			if (!data.font) safeFont()
+			else if (data.font.family === '') safeFont()
+		}
 
 		if (mobilecheck) {
 			dominterface.style.minHeight = '90vh'
