@@ -289,25 +289,37 @@
 		justify-content: center;
 
 		> div {
-			border: 1px solid #4d4d52;
-			border-radius: 8px;
+			border: 1px solid $blue;
+			@include radiusSettings();
 			margin: 0.5em auto;
+            display: flex;
+            overflow: hidden;
 		}
+        
 		button {
 			text-align: left;
-			color: #4d4d52;
-			margin: 0.5em 0.2em;
+			color: white;
 			text-align: center;
 			font-size: small;
-		}
+            background-color: $blue;
+            padding: 0.5em 0.5em;
+            opacity: 1;
+            transition: opacity .2s;
 
-		button,
-		> div {
+            &:hover {
+                text-decoration: none;
+                opacity: .8;
+            }
+
+		}
+        
+        button, > div {
 			transition: all 0.1s;
 		}
 
 		button.clicked {
-			opacity: 0.5;
+			background-color: white;
+            color: $blue;
 		}
 	}
 
@@ -378,13 +390,11 @@
 	}
 
 	.signature {
-		// padding: 3em 1.3em 1em 1.3em;
 		text-align: left;
 		color: #6d6d72;
 		font-size: 13px;
         margin: 2em 0;
         @include marginSettings();
-        
 
 		span {
 			font-size: 13px;
