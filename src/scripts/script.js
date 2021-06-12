@@ -267,14 +267,12 @@ function greetings() {
 }
 
 function quickLinks(event, that, initStorage) {
-	//only on init
-	if (!event && !that) {
-		let dragged, hovered, current
-		let stillActive = false
-	}
+	// Pour ne faire qu'un seul storage call
+	// [{ index: number, url: string }]
+	const linksFaviconsToUpdate = []
 
 	//enleve les selections d'edit
-	const removeLinkSelection = (x) =>
+	const removeLinkSelection = () =>
 		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
 			clas(e, 'l_icon_wrap')
 		})
@@ -283,14 +281,44 @@ function quickLinks(event, that, initStorage) {
 	//utilise simplement une boucle de appendblock
 	function initblocks(storage) {
 		let array = storage.links || false
-
 		if (array) array.map((a, i) => appendblock(a, i, array))
+	}
+
+	function addIcon(elem, arr, index, links) {
+		//prend le domaine de n'importe quelle url
+		const a = document.createElement('a')
+		a.href = arr.url
+		const hostname = a.hostname
+
+		// fetch l'icône et l'ajoute
+		const img = new Image()
+		const url = 'https://api.faviconkit.com/' + hostname + '/144'
+
+		img.onload = () => {
+			// Change to loaded favicon
+			elem.querySelector('img').src = url
+
+			// Save changes memory var
+			linksFaviconsToUpdate.push({ index, url })
+			const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
+
+			// Last to save ? Update storage
+			if (linksFaviconsToUpdate.length === howManyToSave.length) {
+				linksFaviconsToUpdate.forEach((link) => (links[link.index].icon = link.url))
+				chrome.storage.sync.set({ links: links })
+			}
+		}
+		img.src = url
+		img.remove()
 	}
 
 	function appendblock(arr, index, links) {
 		let { icon, title, url } = arr
 
-		icon = icon.length > 0 ? icon : 'src/assets/images/loading.gif'
+		// no icon ? + 1.9.2 dead favicons fix
+		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
+			icon = 'src/assets/images/loading.gif'
+		}
 
 		//le DOM du block
 		let b = `<div class='block' draggable="false" source='${url}'>
@@ -313,8 +341,8 @@ function quickLinks(event, that, initStorage) {
 		addEvents(domlinkblocks.lastElementChild)
 
 		//si online et l'icon charge, en rechercher une
-		if (window.navigator.onLine && icon === 'src/assets/images/loading.gif')
-			addIcon(domlinkblocks.lastElementChild, arr, index, links)
+		const imageLoading = icon === 'src/assets/images/loading.gif'
+		if (window.navigator.onLine && imageLoading) addIcon(domlinkblocks.lastElementChild, arr, index, links)
 	}
 
 	function addEvents(elem) {
@@ -405,8 +433,6 @@ function quickLinks(event, that, initStorage) {
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
 
-		const controlIcon = (old) => (e_iconurl.value !== '' ? e_iconurl.value : old)
-
 		const updateLinkHTML = ({ title, url, icon }) => {
 			let block = domlinkblocks.children[i + 1]
 
@@ -418,11 +444,11 @@ function quickLinks(event, that, initStorage) {
 		//edit est visible
 		if (i || i === 0) {
 			chrome.storage.sync.get('links', (data) => {
-				let allLinks = data.links
+				let allLinks = [...data.links]
 				let element = {
 					title: e_title.value,
 					url: e_url.value,
-					icon: controlIcon(data.links[i].icon),
+					icon: e_iconurl.value,
 				}
 
 				allLinks[i] = element
@@ -497,21 +523,6 @@ function quickLinks(event, that, initStorage) {
 
 			chrome.storage.sync.set({ links: linkRemd })
 		})
-	}
-
-	function addIcon(elem, arr) {
-		//prend le domaine de n'importe quelle url
-		const a = document.createElement('a')
-		a.href = arr.url
-		const hostname = a.hostname
-
-		// fetch l'icône et l'ajoute
-		const img = new Image()
-		const url = 'https://api.faviconkit.com/' + hostname + '/144'
-
-		img.onload = () => (elem.querySelector('img').src = url)
-		img.src = url
-		img.remove()
 	}
 
 	function linkSubmission() {
@@ -1953,46 +1964,55 @@ function proFunctions(obj) {
 	}
 }
 
-//comme un onload, sans le onload
-chrome.storage.sync.get(null, (data) => {
-	//1.8.3 -> 1.9 data transfer
-	if (localStorage.lang) {
-		data.lang = localStorage.lang
-		chrome.storage.sync.set({ lang: localStorage.lang })
-		localStorage.removeItem('lang')
-	}
+window.onload = function () {
+	chrome.storage.sync.get(null, (data) => {
+		//1.8.3 -> 1.9 data transfer
+		if (localStorage.lang) {
+			data.lang = localStorage.lang
+			chrome.storage.sync.set({ lang: localStorage.lang })
+			localStorage.removeItem('lang')
+		}
 
-	//pour que les settings y accede plus facilement
-	disposableData = localEnc(JSON.stringify(data))
+		//pour que les settings y accede plus facilement
+		disposableData = localEnc(JSON.stringify(data))
 
-	traduction(null, data.lang)
-	greetings()
-	date(null, data.usdate)
-	newClock(null, data.clock)
-	darkmode(null, data)
-	initBackground(data)
-	weather(null, null, data)
-	quickLinks(null, null, data)
-	searchbar(null, null, data)
-	showPopup(data.reviewPopup)
+		traduction(null, data.lang)
+		greetings()
+		date(null, data.usdate)
+		newClock(null, data.clock)
+		darkmode(null, data)
+		initBackground(data)
+		weather(null, null, data)
+		quickLinks(null, null, data)
+		searchbar(null, null, data)
+		showPopup(data.reviewPopup)
 
-	//init profunctions
-	proFunctions({ which: 'hide', data: data.hide })
-	proFunctions({ which: 'font', data: data.font })
-	proFunctions({ which: 'css', data: data.css })
-	proFunctions({ which: 'row', data: data.linksrow })
-	proFunctions({ which: 'greet', data: data.greeting })
+		//init profunctions
+		proFunctions({ which: 'hide', data: data.hide })
+		proFunctions({ which: 'font', data: data.font })
+		proFunctions({ which: 'css', data: data.css })
+		proFunctions({ which: 'row', data: data.linksrow })
+		proFunctions({ which: 'greet', data: data.greeting })
 
-	dominterface.style.opacity = '1'
-	domshowsettings.style.opacity = '1'
+		const dominterface = id('interface')
+		const domshowsettings = id('showSettings')
 
-	//safe font for different alphabet
-	/*if (data.lang === "ru" || data.lang === "sk")
+		// New way to show interface
+		dominterface.style.opacity = '1'
+		domshowsettings.style.opacity = '1'
+
+		// Old compatibility
+		clas(dominterface, '')
+		clas(domshowsettings, '')
+
+		//safe font for different alphabet
+		/*if (data.lang === "ru" || data.lang === "sk")
 		id("styles").innerText = `
 			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`*/
 
-	if (mobilecheck) {
-		dominterface.style.minHeight = '90vh'
-		dominterface.style.padding = '0 0 10vh 0'
-	}
-})
+		if (mobilecheck) {
+			dominterface.style.minHeight = '90vh'
+			dominterface.style.padding = '0 0 10vh 0'
+		}
+	})
+}
