@@ -85,8 +85,6 @@
 		.param {
 			background-color: #1c1c1e;
 			color: $purewhite;
-			border-top: 1px solid #3f3f41;
-			border-bottom: 1px solid #3f3f41;
 		}
 
 		hr {
@@ -220,6 +218,7 @@ body.autodark {
 	#showSettings button {
 		height: 28px;
 		width: 28px;
+		padding: unset;
 
 		img {
 			height: 18.5px;

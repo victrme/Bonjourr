@@ -135,6 +135,14 @@ body {
 	justify-content: center;
 }
 
+@mixin marginSettings {
+	margin-left: 21px; margin-right: 21px;
+}
+
+@mixin radiusSettings {
+	border-radius: 10px;
+}
+
 @mixin popup {
 	#popup {
 		position: absolute;
@@ -429,6 +437,7 @@ body {
 	select {
 		width: 120px;
 		height: 2.35em;
+		border-radius: 8.5px;
 	}
 
 	.slider,
@@ -553,6 +562,12 @@ body {
 		background: #b4b4b4;
 		cursor: pointer;
 		border-radius: 1.5rem;
+		opacity: 1;
+		transition: opacity 0.1s;
+		
+		&:hover {
+			opacity: .8;
+		}
 	}
 
 	/* Chrome, Opera & Safari */
