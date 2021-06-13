@@ -1,7 +1,7 @@
-id = (name) => document.getElementById(name)
-cl = (name) => document.getElementsByClassName(name)
-clas = (that, val) => that.setAttribute('class', val)
-has = (that, val) => (id(that) && id(that).getAttribute('class', val) ? true : false)
+const id = (name) => document.getElementById(name)
+const cl = (name) => document.getElementsByClassName(name)
+const clas = (that, val) => that.setAttribute('class', val)
+const has = (that, val) => (id(that) && id(that).getAttribute('class', val) ? true : false)
 
 let disposableData = {},
 	isPro = false,
@@ -1323,9 +1323,12 @@ function unsplash(data, event, startup) {
 	function req(which, dynamic, weather, init) {
 		function chooseCollection() {
 			// If collection isnt ''
-			if (dynamic.collection.length > 0) {
-				return dynamic.collection
+			if (dynamic.collection) {
+				if (dynamic.collection.length > 0) {
+					return dynamic.collection
+				}
 			}
+
 			// Transition day and night with noon & evening collections
 			// if clock is + /- 60 min around sunrise/set
 			if (weather) {
