@@ -32,6 +32,10 @@
 
 	#settings {
 		background-color: $pureblack;
+	
+		.titleContainer .tooltip {
+			background-color: $greyish;
+		}
 
 		.custom_zone {
 			border-color: #3f3f41;
@@ -262,5 +266,9 @@ body.autodark {
 	#settings {
 		right: -450px;
 		width: 450px;
+
+		.titleContainer .tooltip .tooltiptext {
+			width: 319px;
+		}
 	}
 }

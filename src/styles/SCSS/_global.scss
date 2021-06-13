@@ -34,6 +34,7 @@ $green: #4bd663;
 $inputGrey: #e3e3e5;
 $settingsGrey: #f2f2f7;
 $borderGrey: #c8c7cc;
+$greyish: #3a3a3a;
 $blackish: #222;
 
 body {
@@ -356,7 +357,7 @@ body {
 					height: 4.4em;
 					margin: auto;
 					position: relative;
-					border-radius: 4px;
+					border-radius: 10px;
 					background: $purewhite;
 					border: 0.2em solid $purewhite;
 					cursor: pointer;

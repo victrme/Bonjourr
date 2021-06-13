@@ -96,13 +96,54 @@
 		font-size: 1em;
 	}
 
-	h5 {
+
+	.titleContainer {
 		margin: 1.5em 3em 1em 3em;
 		color: #6d6d72;
-		text-transform: uppercase;
+		
 		font-family: sf_pro_textregular;
-		font-weight: lighter;
-		letter-spacing: 0.04em;
+		
+		
+		display: flex;
+		justify-content: space-between;
+
+		h5 {
+			text-transform: uppercase;
+			font-weight: lighter;
+			letter-spacing: 0.04em;
+		}
+
+		.tooltip {
+			background-color: $borderGrey;
+			color: white;
+			width: 20px;
+			height: 20px;
+			border-radius: 100%;
+			position: relative;
+
+			@include allCentered();
+
+			.tooltiptext {
+				visibility: hidden;
+				background-color: $greyish;
+				color: #fff;
+				border-radius: 6px;
+				padding: 5px 0;
+				position: absolute;
+				z-index: 1;
+				width: 220px;
+				box-shadow: 0px 1px 7px rgba(0, 0, 0, .3);
+				right: 25px; 
+				top: -7px;
+				text-align: justify;
+				padding: 7px;
+				box-sizing: border-box;
+			}
+
+			&:hover .tooltiptext {
+				visibility: visible;
+			}
+		}
 	}
 
 	span {
