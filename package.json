@@ -20,6 +20,7 @@
 	},
 	"homepage": "https://bonjourr.fr",
 	"devDependencies": {
+		"glob-parent": ">=5.1.2",
 		"gulp": "^4.0.2",
 		"gulp-babel": "^8.0.0",
 		"gulp-babel-minify": "^0.5.1",
@@ -28,6 +29,7 @@
 		"gulp-htmlmin": "^5.0.1",
 		"gulp-rename": "^2.0.0",
 		"gulp-replace": "^1.1.3",
-		"node-sass": "^6.0.0"
+		"node-sass": "^6.0.0",
+		"trim-newlines": ">=3.0.1"
 	}
 }
