@@ -215,17 +215,6 @@ body.autodark {
 		}
 	}
 
-	#showSettings button {
-		height: 28px;
-		width: 28px;
-		padding: unset;
-
-		img {
-			height: 18.5px;
-			width: 18.5px;
-		}
-	}
-
 	#settings {
 		font-size: 0.9em;
 
@@ -257,5 +246,21 @@ body.autodark {
 				padding: 0;
 			}
 		}
+	}
+}
+
+// mobile
+@media screen and (max-width: 500px) {
+	#settings {
+		right: -100%;
+		width: 100%;
+	}
+}
+
+// large laptop resolution and up
+@media screen and (min-width: 1279px) {
+	#settings {
+		right: -450px;
+		width: 450px;
 	}
 }
