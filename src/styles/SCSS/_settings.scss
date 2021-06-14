@@ -69,6 +69,10 @@
 		&.shown {
 			max-height: 350px;
 		}
+
+		&.shown.cssEditor {
+			max-height: 2000px;
+		}
 	}
 
 	a:hover,
@@ -96,14 +100,12 @@
 		font-size: 1em;
 	}
 
-
 	.titleContainer {
 		margin: 1.5em 3em 1em 3em;
 		color: #6d6d72;
-		
+
 		font-family: sf_pro_textregular;
-		
-		
+
 		display: flex;
 		justify-content: space-between;
 
@@ -132,8 +134,8 @@
 				position: absolute;
 				z-index: 1;
 				width: 220px;
-				box-shadow: 0px 1px 7px rgba(0, 0, 0, .3);
-				right: 25px; 
+				box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.3);
+				right: 25px;
 				top: -7px;
 				text-align: justify;
 				padding: 7px;
@@ -168,8 +170,8 @@
 		background-color: #ffffff;
 		padding: 0.75em 1.3em;
 		transition: background 0.1s;
-        @include radiusSettings();
-        @include marginSettings();
+		@include radiusSettings();
+		@include marginSettings();
 	}
 
 	.wrapper {
@@ -184,7 +186,9 @@
 			width: calc(100% - 0.5em);
 		}
 
-        #i_title { margin-bottom: 0.5em; }
+		#i_title {
+			margin-bottom: 0.5em;
+		}
 
 		> div {
 			display: flex;
@@ -334,34 +338,34 @@
 			border: 1px solid $blue;
 			@include radiusSettings();
 			margin: 0.5em auto;
-            display: flex;
-            overflow: hidden;
+			display: flex;
+			overflow: hidden;
 		}
-        
+
 		button {
 			text-align: left;
 			color: white;
 			text-align: center;
 			font-size: small;
-            background-color: $blue;
-            padding: 0.5em 0.5em;
-            opacity: 1;
-            transition: opacity .2s;
+			background-color: $blue;
+			padding: 0.5em 0.5em;
+			opacity: 1;
+			transition: opacity 0.2s;
 
-            &:hover {
-                text-decoration: none;
-                opacity: .8;
-            }
-
+			&:hover {
+				text-decoration: none;
+				opacity: 0.8;
+			}
 		}
-        
-        button, > div {
+
+		button,
+		> div {
 			transition: all 0.1s;
 		}
 
 		button.clicked {
 			background-color: white;
-            color: $blue;
+			color: $blue;
 		}
 	}
 
@@ -422,16 +426,17 @@
 
 	#cssEditor {
 		width: calc(100% - 42px);
-		min-height: 4em;
+		min-height: 100px;
 		resize: vertical;
 		border: none;
-        padding: 0.75em 1.3em;
-        box-sizing: border-box;
-        @include radiusSettings();
-        @include marginSettings();
+		padding: 0.75em 1.3em;
+		box-sizing: border-box;
+		@include radiusSettings();
+		@include marginSettings();
 	}
 
-	#imp_wrapper input, #exp_wrapper input {
+	#imp_wrapper input,
+	#exp_wrapper input {
 		width: 75%;
 	}
 
@@ -439,8 +444,8 @@
 		text-align: left;
 		color: #6d6d72;
 		font-size: 13px;
-        margin: 2em 0;
-        @include marginSettings();
+		margin: 2em 0;
+		@include marginSettings();
 
 		span {
 			font-size: 13px;

@@ -42,7 +42,10 @@ function displayCustomThumbnails() {
 
 function showall(that) {
 	const change = (ev) => {
-		for (let d of cl('pro')) clas(d, ev ? 'pro shown' : 'pro')
+		for (let dom of cl('pro')) {
+			if (ev) dom.classList.add('shown')
+			else dom.classList.remove('shown')
+		}
 	}
 
 	const addtransitions = (dom, css) => {
@@ -136,7 +139,7 @@ function settingsEvents() {
 
 	id('i_blur').oninput = function () {
 		filter('blur', this.value)
-		slowRange({ background_blur: parseInt(this.value) })
+		slowRange({ background_blur: parseFloat(this.value) })
 	}
 
 	id('i_bright').oninput = function () {
@@ -246,10 +249,15 @@ function settingsEvents() {
 		proFunctions({ which: 'greet', event: this.value })
 	}
 
-	id('cssEditor').onkeypress = function (e) {
-		let data = { e: e, that: this }
-		proFunctions({ which: 'css', event: data })
-	}
+	id('cssEditor').addEventListener('keydown', function (e) {
+		if (e.code === 'Tab') {
+			e.preventDefault()
+		}
+	})
+
+	id('cssEditor').addEventListener('keypress', function (e) {
+		proFunctions({ which: 'css', event: { e: e, that: this } })
+	})
 
 	for (e of id('hideelem').querySelectorAll('button')) {
 		e.onmouseup = function () {

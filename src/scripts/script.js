@@ -45,11 +45,6 @@ function getLocalStorage() {
 	})
 }
 
-//pour bonjourr pro
-function setPremiumCode(str) {
-	chrome.storage.sync.set({ login: btoa(str) })
-}
-
 //cache un peu mieux les données dans le storage
 function localEnc(input = 'no', enc = true) {
 	let a = input.split(''),
@@ -58,12 +53,12 @@ function localEnc(input = 'no', enc = true) {
 	return n
 }
 
-function slowRange(tosave) {
+function slowRange(tosave, time = 150) {
 	//timeout avant de save pour éviter la surcharge d'instructions de storage
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {
 		chrome.storage.sync.set(tosave)
-	}, 150)
+	}, time)
 }
 
 function slow(that) {
@@ -1069,10 +1064,10 @@ function initBackground(storage) {
 		unsplash(null, null, true)
 	}
 
-	let blur = Number.isInteger(storage.background_blur) ? storage.background_blur : 15
-	let bright = !isNaN(storage.background_bright) ? storage.background_bright : 0.7
+	const blur = storage.background_blur !== undefined ? storage.background_blur : 15
+	const bright = storage.background_bright !== undefined ? storage.background_bright : 0.7
 
-	filter('init', [blur, bright])
+	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
 
 function setblob(donnee, reader) {
@@ -1749,21 +1744,15 @@ function proFunctions(obj) {
 
 		// Active l'indentation
 		function syntaxControl(e, that) {
+			const cursorPosStart = that.selectionStart,
+				beforeCursor = that.value.slice(0, cursorPosStart),
+				afterCursor = that.value.slice(cursorPosStart + 1, that.value.length - 1)
+
 			if (e.key === '{') {
-				that.value = that.value + `{\r  \r}`
-
-				that.selectionStart = that.selectionStart - 2
-				that.selectionEnd = that.selectionEnd - 2
-
+				that.value = beforeCursor + `{\r  \r}` + afterCursor
+				that.selectionStart = cursorPosStart + 3
+				that.selectionEnd = cursorPosStart + 3
 				e.preventDefault()
-
-				/*let selectionStartPos = this.selectionStart;
-				let selectionEndPos   = this.selectionEnd;
-				let oldContent        = this.value;
-
-				this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
-
-				this.selectionStart = this.selectionEnd = selectionStartPos + 1;*/
 			}
 		}
 
@@ -1772,15 +1761,13 @@ function proFunctions(obj) {
 		}
 
 		if (event) {
-			const e = event.e
-			const that = event.that
-			syntaxControl(e, that)
+			//const e = event.e
+			// const that = event.that
+			// syntaxControl(e, that)
 
-			setTimeout(() => {
-				const val = id('cssEditor').value
-				styleHead.innerText = val
-				chrome.storage.sync.set({ css: val })
-			}, 200)
+			const val = id('cssEditor').value
+			styleHead.innerText = val
+			slowRange({ css: val }, 500)
 		}
 	}
 
@@ -1997,9 +1984,6 @@ window.onload = function () {
 		proFunctions({ which: 'css', data: data.css })
 		proFunctions({ which: 'row', data: data.linksrow })
 		proFunctions({ which: 'greet', data: data.greeting })
-
-		const dominterface = id('interface')
-		const domshowsettings = id('showSettings')
 
 		// New way to show interface
 		dominterface.style.opacity = '1'
