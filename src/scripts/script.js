@@ -1818,117 +1818,123 @@ function proFunctions(obj) {
 		if (event !== undefined) setEvent(event)
 	}
 
-	function hideElem(data, e, settingsinit) {
-		let object = {}
+	function hideElem(init, buttons, that) {
+		const IDsList = [
+			['time', ['time-container', 'date']],
+			['main', ['greetings', 'weather_desc', 'w_icon']],
+			['linkblocks', ['linkblocks']],
+			['showSettings', ['showSettings']],
+		]
 
-		if (e === undefined) {
-			//quit on first startup
-			if (!data) return false
+		// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
+		function getEventListPosition(that) {
+			return { row: parseInt(that.getAttribute('he_row')), col: parseInt(that.getAttribute('he_col')) }
+		}
 
-			addAnimsToHideableElems()
+		function toggleElement(dom, hide) {
+			if (hide) id(dom).classList.add('he_off')
+			else id(dom).classList.remove('he_off')
+		}
 
-			for (let d of data) {
-				//le nouveau
-				object = {
-					dom: id(d),
-					src: d,
-					not: true,
+		function isEverythingHidden(list, row) {
+			const filtered = list[row].filter((el) => el === 1)
+			return filtered.length === list[row].length
+		}
+
+		function initializeHiddenElements(list) {
+			list.forEach((row, row_i) => {
+				//
+				// Hide parents
+				if (isEverythingHidden(list, row_i)) {
+					toggleElement(IDsList[row_i][0], true)
 				}
 
-				principale(object)
-			}
-		} else {
-			//object qu'on connait
-			object = {
-				parent: e.parentElement,
-				dom: id(e.getAttribute('data')),
-				src: e.getAttribute('data'),
-				not: e.getAttribute('class') !== 'clicked', //le toggle
-			}
-
-			principale(object)
-			eventStorage()
+				//
+				// Hide children
+				row.forEach((child, child_i) => {
+					if (child === 1) toggleElement(IDsList[row_i][1][child_i], true)
+				})
+			})
 		}
 
-		function addAnimsToHideableElems() {
-			const elemList = [
-				id('time-container'),
-				id('date'),
-				id('greetings'),
-				id('weather'),
-				id('weather_desc'),
-				id('w_icon'),
-			]
+		function updateToNewData(list) {
+			if (list[0]) {
+				if (typeof list[0][0] === 'string') {
+					//
+					// Flattens and removes parent IDs
+					const childOnly = IDsList.flat().filter((row) => typeof row === 'object')
+					let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
 
-			setTimeout(() => elemList.forEach((elem) => (elem.style.transition = 'opacity 0.2s')), 100)
-		}
+					//
+					// Go through IDs list for every old hide elems
+					list.forEach((id) => {
+						childOnly.forEach((row, row_i) =>
+							row.forEach((col, col_i) => {
+								if (col === id) {
+									newHidden[row_i][col_i] = 1
+								}
+							})
+						)
+					})
 
-		function principale(objet) {
-			let toggleWrap = true
-			let toggleWrapFunc = function (elem) {
-				id(elem).style.display = objet.not ? 'none' : 'flex'
-				if (e !== undefined) clas(objet.parent, objet.not ? 'allhidden' : '')
-			}
-
-			//toggle l'opacité du dom concerné
-
-			if (e !== undefined) clas(e, objet.not ? 'clicked' : '')
-			objet.dom.style.opacity = objet.not ? '0' : '1'
-
-			//si event
-			//si un bouton n'est pas cliqué dans une catégorie
-			//ne pas toggle le wrap
-			if (objet.not && !data) {
-				let all = objet.parent.querySelectorAll('button')
-
-				for (let r of all) if (r.getAttribute('class') !== 'clicked') toggleWrap = false
-			}
-
-			//si init
-			//si tout n'est pas caché dans une catégorie
-			//ne pas toggle le wrap
-			else if (data) {
-				//wtf is this
-
-				if (objet.src === 'time-container' || objet.src === 'date')
-					if (!data.includes('time-container') || !data.includes('date')) toggleWrap = false
-
-				if (objet.src === 'greetings' || objet.src === 'weather_desc' || objet.src === 'w_icon')
-					if (!data.includes('greetings') || !data.includes('weather_desc') || !data.includes('w_icon'))
-						toggleWrap = false
-			}
-
-			//toogle les wrap en fonctions du bouton cliqué
-
-			if (toggleWrap) {
-				switch (objet.src) {
-					case 'time-container':
-					case 'date':
-						toggleWrapFunc('time')
-						break
-
-					case 'greetings':
-					case 'weather_desc':
-					case 'w_icon':
-						toggleWrapFunc('main')
-						break
+					chrome.storage.sync.set({ hide: newHidden })
+					return newHidden
 				}
+
+				// Is already updated
+				else return list
 			}
+
+			// Had nothing to hide
+			else return list
 		}
 
-		function eventStorage() {
-			//c'est un event, on store
-			if (e !== undefined && !settingsinit) {
-				//parse through les dom a masquer, les sauvegarde
-				//liste de {id du dom a masquer, button a init}
-
-				let all = id('hideelem').querySelectorAll('button')
-				let toStore = []
-
-				for (let r of all) if (r.getAttribute('class') === 'clicked') toStore.push(r.getAttribute('data'))
-
-				chrome.storage.sync.set({ hide: toStore })
+		// startup initialization
+		if (that === undefined && buttons === undefined) {
+			//
+			// first startup
+			if (!init) {
+				chrome.storage.sync.set({ hide: [[0, 0], [0, 0, 0], [0], [0]] })
+				return false
 			}
+
+			initializeHiddenElements(updateToNewData(init))
+		}
+
+		// Settings buttons initialization
+		else if (buttons !== undefined) {
+			chrome.storage.sync.get('hide', (data) => {
+				//
+				// 1.9.3 ==> 1.10.0
+				data.hide = updateToNewData(data.hide)
+
+				buttons.forEach((button) => {
+					const pos = getEventListPosition(button)
+					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
+				})
+			})
+		}
+
+		// Event
+		else {
+			chrome.storage.sync.get('hide', (data) => {
+				//
+				// 1.9.3 ==> 1.10.0
+				data.hide = updateToNewData(data.hide)
+
+				const pos = getEventListPosition(that)
+				const state = that.classList.contains('clicked')
+				const child = IDsList[pos.row][1][pos.col]
+				const parent = IDsList[pos.row][0]
+
+				// Update hidden list
+				data.hide[pos.row][pos.col] = state ? 1 : 0
+				chrome.storage.sync.set({ hide: data.hide })
+
+				// Toggle children and parent if needed
+				toggleElement(child, state)
+				toggleElement(parent, isEverythingHidden(data.hide, pos.row))
+			})
 		}
 	}
 
@@ -1950,7 +1956,7 @@ function proFunctions(obj) {
 			break
 
 		case 'hide':
-			hideElem(obj.data, obj.event, obj.sett)
+			hideElem(obj.data, obj.buttons, obj.event)
 			break
 	}
 }

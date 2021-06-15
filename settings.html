@@ -2,7 +2,7 @@
 	<div class="titleContainer">
 		<h5 class="trn">General</h5>
 	</div>
-	
+
 	<div class="param">
 		<div class="showall wrapper">
 			<span class="trn">Show all settings</span>
@@ -39,11 +39,14 @@
 <div>
 	<div class="titleContainer">
 		<h5 class="trn">Quick Links</h5>
-		<div class="tooltip">?
-			<span class="tooltiptext">Quick Links are bookmarks integrated into Bonjourr. You can edit your Quick Links by right clicking on their icon.</span>
+		<div class="tooltip">
+			?
+			<span class="tooltiptext"
+				>Quick Links are bookmarks integrated into Bonjourr. You can edit your Quick Links by right clicking on their
+				icon.</span
+			>
 		</div>
 	</div>
-	
 
 	<div class="param">
 		<div class="link_input_wrap">
@@ -80,7 +83,6 @@
 </div>
 
 <div>
-	
 	<div class="titleContainer">
 		<h5 class="trn">Visuals</h5>
 	</div>
@@ -173,19 +175,19 @@
 
 			<div id="hideelem">
 				<div>
-					<button data="time-container" class="trn">Clock</button>
-					<button data="date" class="trn">Date</button>
+					<button he_row="0" he_col="0" data="time-container" class="trn">Clock</button>
+					<button he_row="0" he_col="1" data="date" class="trn">Date</button>
 				</div>
 				<div>
-					<button data="greetings" class="trn">Greetings</button>
-					<button data="weather_desc" class="trn">Weather</button>
-					<button data="w_icon" class="trn">Icon</button>
+					<button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button>
+					<button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button>
+					<button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button>
 				</div>
 				<div>
-					<button data="linkblocks" class="trn">Quick Links</button>
+					<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
 				</div>
 				<div>
-					<button data="showSettings" class="trn">Settings icon</button>
+					<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
 				</div>
 			</div>
 		</div>
@@ -577,7 +579,7 @@
 	<div class="titleContainer">
 		<h5 class="trn">Search bar</h5>
 	</div>
-	
+
 	<div class="param">
 		<div class="activate_searchbar wrapper">
 			<span class="trn">Enable</span>
@@ -636,7 +638,7 @@
 	<div class="titleContainer">
 		<h5 class="trn">Custom Font</h5>
 	</div>
-	
+
 	<div class="param">
 		<div class="wrapper">
 			<span class="trn" title="You can type any google fonts">Font family</span>
@@ -663,7 +665,7 @@
 	<div class="titleContainer">
 		<h5 class="trn">Custom Style</h5>
 	</div>
-	
+
 	<textarea id="cssEditor" placeholder="Type in your custom CSS"></textarea>
 </div>
 
@@ -672,7 +674,7 @@
 		<div class="titleContainer">
 			<h5 class="trn">Settings</h5>
 		</div>
-		
+
 		<div class="param">
 			<div id="imp_wrapper" class="wrapper">
 				<input id="i_import" type="text" name="Import" autocomplete="off" placeholder="Paste settings code" />

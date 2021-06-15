@@ -259,11 +259,14 @@ function settingsEvents() {
 		proFunctions({ which: 'css', event: { e: e, that: this } })
 	})
 
-	for (e of id('hideelem').querySelectorAll('button')) {
-		e.onmouseup = function () {
-			proFunctions({ which: 'hide', event: this })
-		}
-	}
+	id('hideelem')
+		.querySelectorAll('button')
+		.forEach((elem) => {
+			elem.onmouseup = function () {
+				elem.classList.toggle('clicked')
+				proFunctions({ which: 'hide', event: this })
+			}
+		})
 }
 
 function initParams() {
@@ -301,12 +304,7 @@ function initParams() {
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
 	//hide elems
-	const all = id('hideelem').querySelectorAll('button')
-
-	//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
-	if (data.hide)
-		for (let a of all)
-			for (let b of data.hide) if (a.getAttribute('data') === b) proFunctions({ which: 'hide', event: a, sett: true })
+	proFunctions({ which: 'hide', buttons: document.querySelectorAll('#hideelem button') })
 
 	//input translation
 	id('i_title').setAttribute('placeholder', tradThis('Name'))
