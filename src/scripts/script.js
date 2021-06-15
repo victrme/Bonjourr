@@ -1597,8 +1597,10 @@ function searchbar(event, that, storage) {
 	//init
 	else {
 		const searchbar = storage.searchbar || false,
-			searchengine = storage.searchbar_engine || 'google',
+			searchengine = storage.searchbar_engine.replace('s_', '') || 'google',
 			searchbarnewtab = storage.searchbar_newtab || false
+
+		// replace('s_', '') is 1.9.2 ==> 1.9.3 lang breaking fix
 
 		//display
 		display(searchbar, true)
