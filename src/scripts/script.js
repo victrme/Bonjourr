@@ -1597,15 +1597,18 @@ function searchbar(event, that, storage) {
 	//init
 	else {
 		const searchbar = storage.searchbar || false,
-			searchengine = storage.searchbar_engine.replace('s_', '') || 'google',
+			searchengine = storage.searchbar_engine || 'google',
 			searchbarnewtab = storage.searchbar_newtab || false
-
-		// replace('s_', '') is 1.9.2 ==> 1.9.3 lang breaking fix
 
 		//display
 		display(searchbar, true)
-		engine(searchengine, true)
+		engine(searchengine.replace('s_', ''), true)
 		setNewtab(searchbarnewtab, true)
+
+		// 1.9.2 ==> 1.9.3 lang breaking fix
+		if (storage.searchbar_engine) {
+			chrome.storage.sync.set({ searchbar_engine: searchengine.replace('s_', '') })
+		}
 	}
 }
 
