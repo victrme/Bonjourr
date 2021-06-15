@@ -1490,10 +1490,13 @@ function filter(cat, val) {
 
 function darkmode(choice, initStorage) {
 	function apply(state) {
-		function auto(wdata) {
-			//compare current hour with weather sunset / sunrise
+		function auto(weather) {
+			if (weather === undefined) {
+				return 'autodark'
+			}
 
-			const ls = wdata.lastState
+			//compare current hour with weather sunset / sunrise
+			const ls = weather.lastState
 			const sunrise = new Date(ls.sys.sunrise * 1000).getHours()
 			const sunset = new Date(ls.sys.sunset * 1000).getHours()
 			const hr = new Date().getHours()
@@ -1521,7 +1524,7 @@ function darkmode(choice, initStorage) {
 				break
 
 			default:
-				bodyClass = ''
+				bodyClass = 'autodark'
 		}
 
 		document.body.setAttribute('class', bodyClass)
