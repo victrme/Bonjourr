@@ -1,7 +1,7 @@
 const id = (name) => document.getElementById(name)
 const cl = (name) => document.getElementsByClassName(name)
 const clas = (that, val) => that.setAttribute('class', val)
-const has = (that, val) => (id(that) && id(that).getAttribute('class', val) ? true : false)
+const has = (that, val) => (id(that) && id(that).getAttribute('class') === val ? true : false)
 
 let disposableData = {},
 	isPro = false,
@@ -344,6 +344,7 @@ function quickLinks(event, that, initStorage) {
 		function handleDrag(is, that) {
 			chrome.storage.sync.get('links', (data) => {
 				const i = findindex(that)
+				let hovered, dragged, current
 
 				if (is === 'start') dragged = [elem, data.links[i], i]
 				else if (is === 'enter') hovered = [elem, data.links[i], i]
@@ -575,7 +576,7 @@ function quickLinks(event, that, initStorage) {
 			})
 		}
 
-		titleControl = (t) => (t.length > 42 ? t.slice(0, 42) + '...' : t)
+		const titleControl = (t) => (t.length > 42 ? t.slice(0, 42) + '...' : t)
 
 		//append avec le titre, l'url ET l'index du bloc
 
@@ -666,14 +667,12 @@ function weather(event, that, initStorage) {
 		let param = {
 			city: 'Paris',
 			ccode: 'FR',
-			location: false,
+			location: [],
 			unit: 'metric',
 		}
 
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
-				param.location = []
-
 				//update le parametre de location
 				param.location.push(pos.coords.latitude, pos.coords.longitude)
 				chrome.storage.sync.set({ weather: param })
@@ -682,8 +681,6 @@ function weather(event, that, initStorage) {
 				request(param, 'forecast')
 			},
 			(refused) => {
-				param.location = false
-
 				chrome.storage.sync.set({ weather: param })
 
 				request(param, 'current')
@@ -1041,10 +1038,7 @@ function initBackground(storage) {
 					customIndex: 0,
 				})
 
-				chrome.storage.local.set({ custom: old })
-				chrome.storage.local.set({ customIndex: 0 })
-				chrome.storage.local.set({ customThumbnails: old })
-
+				chrome.storage.local.set({ custom: old, customIndex: 0, customThumbnails: old })
 				chrome.storage.local.remove('background_blob')
 			} else if (Object.entries(localChrome).length > 0) {
 				//apply chosen custom background
@@ -1236,7 +1230,7 @@ function addThumbnails(data, index) {
 	//7
 	rem.onmouseup = function () {
 		const index = getParentIndex(this)
-		let currentIndex = id('background').getAttribute('index')
+		let currentIndex = parseInt(id('background').getAttribute('index'))
 
 		//removes thumbnail
 		domthumbnail[index].remove()
@@ -1343,7 +1337,7 @@ function unsplash(data, event, startup) {
 			} else return collections.day
 		}
 
-		obf = (n) =>
+		const obf = (n) =>
 			n === 0
 				? atob('aHR0cHM6Ly9hcGkudW5zcGxhc2guY29tL3Bob3Rvcy9yYW5kb20/Y29sbGVjdGlvbnM9')
 				: atob('MzY4NmMxMjIyMWQyOWNhOGY3OTQ3Yzk0NTQyMDI1ZDc2MGE4ZTBkNDkwMDdlYzcwZmEyYzRiOWY5ZDM3N2IxZA==')
@@ -1613,7 +1607,11 @@ function searchbar(event, that, storage) {
 }
 
 function showPopup(data) {
-	id('go').setAttribute(
+	const popup = id('popup')
+	const closePopup = id('closePopup')
+	const go = id('go')
+
+	go.setAttribute(
 		'href',
 		navigator.userAgent.includes('Chrome')
 			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
@@ -1622,9 +1620,6 @@ function showPopup(data) {
 
 	//s'affiche après 10 tabs
 	if (data > 10) {
-		const popup = id('popup')
-		const closePopup = id('closePopup')
-		const go = id('go')
 		const close = function () {
 			popup.classList.add('removed')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })

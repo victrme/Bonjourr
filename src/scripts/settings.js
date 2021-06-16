@@ -275,9 +275,9 @@ function initParams() {
 	// 1.9.2 ==> 1.9.3 lang break fix
 	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
 
-	initInput = (dom, cat, base) => (id(dom).value = cat !== undefined ? cat : base)
-	initCheckbox = (dom, cat) => (id(dom).checked = cat ? true : false)
-	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
+	const initInput = (dom, cat, base) => (id(dom).value = cat !== undefined ? cat : base)
+	const initCheckbox = (dom, cat) => (id(dom).checked = cat ? true : false)
+	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_blur', data.background_blur, 15)
