@@ -646,9 +646,6 @@ function weather(event, that, initStorage) {
 			if (sessionStorage.lang || now > storage.weather.lastCall + 1800) {
 				dataHandling(param.lastState)
 				request(param, 'current')
-
-				//si la langue a été changé, suppr
-				if (sessionStorage.lang) sessionStorage.removeItem('lang')
 			} else dataHandling(param.lastState)
 
 			//high ici
@@ -1515,6 +1512,10 @@ function darkmode(choice, initStorage) {
 
 			case 'enable':
 				bodyClass = 'dark'
+				break
+
+			case 'disable':
+				bodyClass = ''
 				break
 
 			default:

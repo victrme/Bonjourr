@@ -481,8 +481,6 @@ function showInterface(e) {
 	if (has('settings', 'shown')) {
 		let edit = id('edit_linkContainer')
 		let editClass = edit.getAttribute('class')
-		let ui = dominterface
-		let uiClass = dominterface.getAttribute('class')
 
 		clas(id('showSettings').children[0], '')
 		clas(id('settings'), '')
@@ -490,6 +488,16 @@ function showInterface(e) {
 
 		if (editClass === 'shown pushed') clas(edit, 'shown')
 	}
+}
+
+//
+// Onload
+//
+
+//si la langue a été changé, suppr
+if (sessionStorage.lang) {
+	sessionStorage.removeItem('lang')
+	setTimeout(() => showSettings(), 20)
 }
 
 domshowsettings.onmouseup = function () {
