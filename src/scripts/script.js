@@ -1422,13 +1422,13 @@ function unsplash(data, event, startup) {
 					storage.dynamic.every = event.every
 				} else if (event.collection !== undefined) {
 					// Removes next image from old collection data
+					storage.dynamic.current = initDynamic.current
 					storage.dynamic.next = initDynamic.next
 					storage.dynamic.time = initDynamic.time
 					storage.dynamic.collection = event.collection
 				}
 
 				chrome.storage.sync.set({ dynamic: storage.dynamic })
-				return true
 			}
 
 			// No events, just look in storage or init
