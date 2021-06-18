@@ -31,8 +31,9 @@ $pureblack: black;
 
 $blue: #007aff;
 $green: #4bd663;
-$inputGrey: #e3e3e5;
 $settingsGrey: #f2f2f7;
+$inputGrey: #eaeaee;
+$focusedGrey: #dadade;
 $borderGrey: #c8c7cc;
 $greyish: #3a3a3a;
 $blackish: #222;
@@ -463,17 +464,24 @@ body {
 }
 
 @mixin settingsBase {
+	input[type='text'],
+	input[type='range'],
+	select {
+		width: 110px;
+	}
+
 	select {
 		width: 120px;
 		height: 2.35em;
 		border-radius: 8.5px;
+		padding-left: 10px;
 		border: 1px solid $borderGrey;
+		color: $blackish;
 	}
 
 	.slider,
-	input:checked + .slider,
-	#cssEditor {
-		transition: background 0.1s;
+	input:checked + .slider {
+		transition: background-color 0.1s;
 	}
 
 	input:active,
@@ -493,18 +501,20 @@ body {
 		border: 0;
 	}
 
-	input[type='text'] {
+	input[type='text'],
+	input[type='url'] {
+		padding-left: 10px;
 		border-radius: 8.5px;
 		border: 0;
-		background-color: $inputGrey;
 		height: 2.35em;
-		padding-left: 0.5em;
+		color: $blackish;
+		background-color: $inputGrey;
+		transition: background-color 0.2s;
 	}
 
 	input[type='text']:focus,
 	input[type='url']:focus {
-		background: #d3d3d5;
-		transition: background 0.2s;
+		background-color: $focusedGrey;
 	}
 
 	button {
@@ -558,7 +568,7 @@ body {
 			left: 0;
 			right: 0;
 			bottom: 0;
-			background-color: #ccc;
+			background-color: $inputGrey;
 			-webkit-transition: 0.4s;
 			transition: 0.4s;
 			border-radius: 34px;
@@ -578,7 +588,7 @@ body {
 			}
 
 			&:hover {
-				background: #bbb;
+				background: #ccc;
 				transition: background 0.2s;
 			}
 		}
@@ -589,16 +599,18 @@ body {
 		-webkit-appearance: none;
 		position: relative;
 		height: 2px;
-		background: #b4b4b4;
+		background: $focusedGrey;
 		cursor: pointer;
 		border-radius: 1.5rem;
 		opacity: 1;
-		transition: opacity 0.1s;
+		transition: background-color 0.1s;
 
 		&:hover {
-			opacity: 0.8;
+			background: $borderGrey;
 		}
 	}
+
+	$thumbShadow: 0px 1px 3px 1.5px #cccccc;
 
 	/* Chrome, Opera & Safari */
 	.range::-webkit-slider-thumb {
@@ -608,7 +620,7 @@ body {
 		width: 20px;
 		border-radius: 50px;
 		border: 0;
-		box-shadow: 0px 1px 3px 1.5px #b8b8b8;
+		box-shadow: $thumbShadow;
 	}
 
 	input[type='range']::-ms-thumb {
@@ -619,7 +631,7 @@ body {
 	::-moz-range-track {
 		height: 2px;
 		border-radius: 50px;
-		background: #b4b4b4;
+		background: $inputGrey;
 	}
 
 	::-moz-range-progress {
@@ -635,7 +647,7 @@ body {
 		border-radius: 50px;
 		border: 0;
 
-		box-shadow: 0px 1px 3px 1.5px #b8b8b8;
+		box-shadow: $thumbShadow;
 	}
 
 	/*Edge*/

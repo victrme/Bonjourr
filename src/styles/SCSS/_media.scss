@@ -56,10 +56,14 @@
 		}
 
 		#hideelem > div {
-			border: 1px solid white;
+			button {
+				color: #ccc;
+				background-color: #1c1c1e;
 
-			&.allhidden {
-				border: 1px solid #999;
+				&.clicked {
+					color: white;
+					background-color: #3f3f41;
+				}
 			}
 		}
 
@@ -110,6 +114,10 @@
 					transition: color 0.2s;
 				}
 			}
+		}
+
+		#cssEditor {
+			background-color: #1c1c1e;
 		}
 
 		::-moz-range-thumb {
@@ -267,8 +275,17 @@ body.autodark {
 		right: -450px;
 		width: 450px;
 
+		input[type='text'],
+		input[type='range'] {
+			width: 140px;
+		}
+
+		select {
+			width: 150px;
+		}
+
 		.titleContainer .tooltip .tooltiptext {
-			width: 319px;
+			width: 320px;
 		}
 
 		.signature {

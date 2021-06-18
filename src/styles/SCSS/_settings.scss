@@ -130,9 +130,9 @@
 				position: absolute;
 				visibility: hidden;
 				top: -7px;
-				right: 25px;
+				right: 35px;
 				padding: 10px;
-				width: 250px;
+				width: 230px;
 				border-radius: 6px;
 				font-size: 13px;
 				background-color: $greyish;
@@ -185,7 +185,7 @@
 
 	.link_input_wrap {
 		input[type='text'] {
-			width: calc(100% - 0.5em);
+			width: calc(100% - 10px);
 		}
 
 		#i_title {
@@ -324,35 +324,39 @@
 		}
 	}
 
-	#i_collection {
-		width: 100px;
-	}
-
 	// Hide elements
 
 	#hideelem {
-		margin-top: 1em;
+		margin: 1em auto 1em auto;
+		max-width: 250px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 
 		> div {
-			border: 1px solid $blue;
-			@include radiusSettings();
-			margin: 0.5em auto;
+			margin-top: 7px;
 			display: flex;
 			overflow: hidden;
 		}
 
 		button {
 			text-align: left;
-			color: white;
+			color: $borderGrey;
 			text-align: center;
 			font-size: small;
-			background-color: $blue;
-			padding: 0.5em 0.5em;
+			background-color: white;
+			margin-right: 5px;
+			width: 100%;
+			height: 2.35em;
 			opacity: 1;
 			transition: opacity 0.2s;
+
+			@include radiusSettings();
+
+			&.clicked {
+				background-color: $settingsGrey;
+				color: $blue;
+			}
 
 			&:hover {
 				text-decoration: none;
@@ -363,11 +367,6 @@
 		button,
 		> div {
 			transition: all 0.1s;
-		}
-
-		button.clicked {
-			background-color: white;
-			color: $blue;
 		}
 	}
 
@@ -415,12 +414,6 @@
 		margin-left: 2em;
 	}
 
-	#i_customfont,
-	#i_weight,
-	#i_size {
-		width: 150px;
-	}
-
 	#e_weight,
 	#e_size {
 		width: 50px;
@@ -433,13 +426,23 @@
 		border: none;
 		padding: 0.75em 1.3em;
 		box-sizing: border-box;
+		transition: background-color 0.2s;
 		@include radiusSettings();
 		@include marginSettings();
 	}
 
-	#imp_wrapper input,
-	#exp_wrapper input {
-		width: 75%;
+	#submitImport,
+	#submitExport {
+		margin-left: 1em;
+	}
+
+	#i_import {
+		margin-bottom: 0.5em;
+	}
+
+	#i_import,
+	#i_export {
+		width: 100%;
 	}
 
 	.signature {
