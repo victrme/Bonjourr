@@ -78,6 +78,33 @@ body {
 	}
 }
 
+@mixin animHide() {
+	@keyframes animHide {
+		0% {
+			opacity: auto;
+		}
+		99% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 0;
+			display: none;
+		}
+	}
+}
+
+@mixin animShow($display) {
+	@keyframes animShow {
+		0% {
+			display: $display;
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+}
+
 @mixin hidden {
 	&.hidden {
 		display: none;
@@ -137,7 +164,8 @@ body {
 }
 
 @mixin marginSettings {
-	margin-left: 21px; margin-right: 21px;
+	margin-left: 21px;
+	margin-right: 21px;
 }
 
 @mixin radiusSettings {
@@ -566,9 +594,9 @@ body {
 		border-radius: 1.5rem;
 		opacity: 1;
 		transition: opacity 0.1s;
-		
+
 		&:hover {
-			opacity: .8;
+			opacity: 0.8;
 		}
 	}
 

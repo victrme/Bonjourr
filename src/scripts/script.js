@@ -22,9 +22,6 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	domclock = id('clock'),
 	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
 
-//cache rapidement temp max pour eviter que ça saccade
-if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
-
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear(() => {
@@ -265,6 +262,7 @@ function quickLinks(event, that, initStorage) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	const linksFaviconsToUpdate = []
+	let hovered, dragged, current
 
 	//enleve les selections d'edit
 	const removeLinkSelection = () =>
@@ -344,7 +342,6 @@ function quickLinks(event, that, initStorage) {
 		function handleDrag(is, that) {
 			chrome.storage.sync.get('links', (data) => {
 				const i = findindex(that)
-				let hovered, dragged, current
 
 				if (is === 'start') dragged = [elem, data.links[i], i]
 				else if (is === 'enter') hovered = [elem, data.links[i], i]
@@ -354,7 +351,7 @@ function quickLinks(event, that, initStorage) {
 					hovered[0].innerHTML = dragged[0].innerHTML
 					dragged[0].innerHTML = current
 
-					//changes link storage
+					// Switches link storage
 					let allLinks = data.links
 
 					allLinks[dragged[2]] = hovered[1]
@@ -366,7 +363,6 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		elem.ondragstart = function (e) {
-			//e.preventDefault();
 			e.dataTransfer.setData('text/plain', e.target.id)
 			e.currentTarget.style.cursor = 'pointer'
 			handleDrag('start', this)
@@ -393,6 +389,17 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
+	function showDelIcon(input) {
+		const img = input.nextElementSibling
+		if (input.value === '') img.classList.remove('shown')
+		else img.classList.add('shown')
+	}
+
+	function emptyAndHideIcon(e) {
+		e.target.previousElementSibling.value = ''
+		e.target.classList.remove('shown')
+	}
+
 	function editEvents() {
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
@@ -408,20 +415,17 @@ function quickLinks(event, that, initStorage) {
 
 		id('e_close').onmouseup = function () {
 			removeLinkSelection()
-			clas(id('edit_linkContainer'), '')
+			id('edit_linkContainer').classList.add('hiding')
+			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), 400)
 		}
 
-		id('re_title').onmouseup = function () {
-			id('e_title').value = ''
-		}
+		id('re_title').onmouseup = (e) => emptyAndHideicon(e)
+		id('re_url').onmouseup = (e) => emptyAndHideicon(e)
+		id('re_iconurl').onmouseup = (e) => emptyAndHideicon(e)
 
-		id('re_url').onmouseup = function () {
-			id('e_url').value = ''
-		}
-
-		id('re_iconurl').onmouseup = function () {
-			id('e_iconurl').value = ''
-		}
+		id('e_title').onkeyup = (e) => showDelIcon(e.target)
+		id('e_url').onkeyup = (e) => showDelIcon(e.target)
+		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
 	}
 
 	function editlink(that, i) {
@@ -429,26 +433,25 @@ function quickLinks(event, that, initStorage) {
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
 
-		const updateLinkHTML = ({ title, url, icon }) => {
-			let block = domlinkblocks.children[i + 1]
-
-			block.children[0].setAttribute('source', url)
-			block.children[0].lastChild.innerText = title
-			block.querySelector('img').src = icon
-		}
-
 		//edit est visible
 		if (i || i === 0) {
 			chrome.storage.sync.get('links', (data) => {
 				let allLinks = [...data.links]
-				let element = {
-					title: e_title.value,
-					url: e_url.value,
-					icon: e_iconurl.value,
-				}
+				const block = domlinkblocks.children[i + 1]
+				const updated = { title: e_title.value, url: e_url.value, icon: e_iconurl.value }
 
-				allLinks[i] = element
-				updateLinkHTML(element)
+				// Update on interface
+				Object.entries(allLinks[i]).forEach(([key, val], j) => {
+					if (val !== updated[key]) {
+						if (key === 'title') block.querySelector('span').innerText = updated[key]
+						if (key === 'url') block.querySelector('.block').setAttribute('source', updated[key])
+						if (key === 'icon') block.querySelector('img').src = updated[key]
+
+						allLinks[i][key] = updated[key]
+					}
+				})
+
+				// Update in storage
 				chrome.storage.sync.set({ links: allLinks })
 			})
 
@@ -456,11 +459,11 @@ function quickLinks(event, that, initStorage) {
 		} else {
 			const index = findindex(that)
 			const liconwrap = that.querySelector('.l_icon_wrap')
+			const container = id('edit_linkContainer')
+			const openSettings = has('settings', 'shown')
 
 			clas(liconwrap, 'l_icon_wrap selected')
-
-			if (has('settings', 'shown')) clas(id('edit_linkContainer'), 'shown pushed')
-			else clas(id('edit_linkContainer'), 'shown')
+			clas(container, 'shown ' + (openSettings ? 'pushed' : ''))
 
 			id('edit_link').setAttribute('index', index)
 
@@ -473,6 +476,10 @@ function quickLinks(event, that, initStorage) {
 				e_title.value = title
 				e_url.value = url
 				e_iconurl.value = icon
+
+				showDelIcon(e_title)
+				showDelIcon(e_url)
+				showDelIcon(e_iconurl)
 			})
 		}
 	}
@@ -651,7 +658,7 @@ function weather(event, that, initStorage) {
 			//high ici
 			if (storage.weather && storage.weather.fcDay === new Date().getDay()) {
 				dom_temp_max.innerText = storage.weather.fcHigh + '°'
-				dom_temp_max_wrap.style.opacity = 1
+				dom_temp_max_wrap.classList.add('shown')
 			} else request(storage.weather, 'forecast')
 		} else {
 			//initialise a Paris + Metric
@@ -749,7 +756,8 @@ function weather(event, that, initStorage) {
 			chrome.storage.sync.set({ weather: param })
 
 			dom_temp_max.innerText = param.fcHigh + '°'
-			dom_temp_max_wrap.style.opacity = 1
+			dom_temp_max_wrap.classList.add('shown')
+			dom_temp_max_wrap.removeAttribute('style')
 		}
 
 		let url = wCat === 'current' ? urlControl(arg, false) : urlControl(arg, true)
@@ -815,7 +823,7 @@ function weather(event, that, initStorage) {
 			let weather_id = imgId(data.weather[0].id)
 			let icon_src = `src/assets/images/weather/${d_n}/${weather_id}.png`
 			id('widget').setAttribute('src', icon_src)
-			id('widget').setAttribute('class', 'shown')
+			id('widget').classList.add('shown')
 		}
 
 		function getDescription() {
@@ -840,7 +848,7 @@ function weather(event, that, initStorage) {
 
 			id('temp').innerText = dtemp
 			id('widget_temp').innerText = wtemp
-			dom_first_desc.style.opacity = 1
+			dom_first_desc.classList.add('shown')
 		}
 
 		getDescription()
@@ -958,6 +966,9 @@ function weather(event, that, initStorage) {
 	const i_city = id('i_city')
 	const i_ccode = id('i_ccode')
 	const sett_city = id('sett_city')
+
+	//cache rapidement temp max pour eviter que ça saccade
+	if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
 
 	//TOUT LES EVENTS, default c'est init
 	switch (event) {
@@ -1688,11 +1699,12 @@ function proFunctions(obj) {
 			}
 
 			//si on change la famille
-			if (is === 'event' && (f.family !== null || f.weight !== null)) {
+			if (is === 'event') {
 				const dom = id('i_customfont')
 				const userFamily = dom.value
 				const userWeight = f.weight === '400' ? 'regular' : f.weight || 'regular'
 
+				// Removes custom font
 				if (userFamily === '') {
 					saveFont()
 					removeFont()
@@ -1729,12 +1741,6 @@ function proFunctions(obj) {
 							dom.setAttribute('placeholder', 'No fonts matched')
 						}
 					})
-			} else if (is === 'event') {
-				//si on change autre chose que la famille
-				saveFont()
-				applyFont()
-
-				//si ça n'est pas un event
 			} else applyFont()
 		}
 

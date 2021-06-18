@@ -213,18 +213,14 @@
 		transform: translateX(-10em);
 	}
 
-	@keyframes editfade {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-			display: flex;
-		}
+	&.shown {
+		@include animShow('flex');
+		animation: animShow 0.2s forwards;
 	}
 
-	&.shown {
-		animation: editfade 0.1s forwards;
+	&.hiding {
+		@include animHide();
+		animation: animHide 0.3s forwards;
 	}
 
 	#edit_link {
@@ -251,25 +247,26 @@
 		}
 
 		.empty_input {
-			width: 1em;
-			height: 1em;
 			position: absolute;
 			top: 50%;
-			-webkit-transform: translate(-50%, -50%);
-			-ms-transform: translate(-50%, -50%);
-			transform: translate(-50%, -50%);
 			right: 0.4em;
-
+			width: 1em;
+			height: 1em;
 			padding: 0;
+			opacity: 0;
 			border: none;
-			cursor: pointer;
-			transition: background 0.1s;
+			cursor: text;
+			filter: brightness(1.1);
+			transform: translate(-50%, -50%);
+			transition: opacity 0.2s, filter 0.1s;
 
-			@include hidden();
+			&.shown {
+				opacity: 1;
+				cursor: pointer;
+			}
 
 			&:active {
-				filter: brightness(0.75);
-				transition: all 0.1s;
+				filter: brightness(1);
 			}
 		}
 
@@ -280,16 +277,6 @@
 			padding: 1em 0;
 			opacity: 0.8;
 			font-size: 0.9em;
-		}
-
-		#e_iconfile {
-			opacity: 0;
-			position: absolute;
-			top: 0;
-			left: 25%;
-			width: 50%;
-			height: 4em;
-			cursor: pointer;
 		}
 
 		input[type='text'],

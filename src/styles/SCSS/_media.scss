@@ -32,7 +32,7 @@
 
 	#settings {
 		background-color: $pureblack;
-	
+
 		.titleContainer .tooltip {
 			background-color: $greyish;
 		}
@@ -269,6 +269,10 @@ body.autodark {
 
 		.titleContainer .tooltip .tooltiptext {
 			width: 319px;
+		}
+
+		.signature {
+			padding: 4em;
 		}
 	}
 }

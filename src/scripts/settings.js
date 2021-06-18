@@ -408,20 +408,19 @@ function importExport(select, isEvent) {
 function showSettings() {
 	function display() {
 		const edit = id('edit_linkContainer')
-		const editClass = edit.getAttribute('class')
 
 		if (has('settings', 'shown')) {
 			clas(domshowsettings.children[0], '')
 			clas(id('settings'), '')
 			clas(dominterface, '')
 
-			if (editClass === 'shown pushed') clas(edit, 'shown')
+			edit.classList.remove('pushed')
 		} else {
 			clas(domshowsettings.children[0], 'shown')
 			clas(id('settings'), 'shown')
 			clas(dominterface, 'pushed')
 
-			if (editClass === 'shown') clas(edit, 'shown pushed')
+			edit.classList.add('pushed')
 		}
 	}
 
