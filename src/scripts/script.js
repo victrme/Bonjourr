@@ -11,7 +11,8 @@ let disposableData = {},
 	lazyClockInterval = 0,
 	fontList = [],
 	fullImage = [],
-	fullThumbnails = []
+	fullThumbnails = [],
+	googleFontList = {}
 const randomseed = Math.floor(Math.random() * 30) + 1,
 	domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks'),
@@ -1522,7 +1523,7 @@ function darkmode(choice, initStorage) {
 			const sunset = new Date(ls.sys.sunset * 1000).getHours()
 			const hr = new Date().getHours()
 
-			return hr < sunrise || hr > sunset ? 'dark' : ''
+			return hr <= sunrise || hr > sunset ? 'dark' : ''
 		}
 
 		//uses chromesync data on startup, sessionsStorage on change
@@ -1680,18 +1681,29 @@ function proFunctions(obj) {
 					url: cssURL || f.url,
 				}
 
-				chrome.storage.sync.set({ font: font })
+				return { font: font }
 			}
 
 			function applyFont(URL) {
 				//
-				//
-				function applyWeightAndSize() {
-					if (f.weight) id('interface').style.fontWeight = f.weight
-					if (f.size) dominterface.style.fontSize = f.size + 'px'
+				function applyWeight(weight) {
+					if (weight) id('interface').style.fontWeight = weight
+				}
+
+				function applySize(size) {
+					if (size) dominterface.style.fontSize = size + 'px'
+				}
+
+				// No need to fetch for size change
+				if (event) {
+					if (event.size) {
+						applySize(event.size)
+						return false
+					}
 				}
 
 				const url = f.url || URL
+
 				if (url) {
 					fetch(url)
 						.then((response) => response.text())
@@ -1704,10 +1716,12 @@ function proFunctions(obj) {
 								id('clock').style.fontFamily = f.family
 							}
 
-							applyWeightAndSize()
+							applyWeight(f.weight)
+							applySize(f.size)
 						})
 				} else {
-					applyWeightAndSize()
+					applyWeight(f.weight)
+					applySize(f.size)
 				}
 			}
 
@@ -1715,6 +1729,8 @@ function proFunctions(obj) {
 				id('fontstyle').innerText = ''
 				document.body.style.fontFamily = ''
 				id('clock').style.fontFamily = ''
+
+				slowRange(saveFont(), 200)
 			}
 
 			//si on change la famille
@@ -1723,43 +1739,48 @@ function proFunctions(obj) {
 				const userFamily = dom.value
 				const userWeight = f.weight === '400' ? 'regular' : f.weight || 'regular'
 
-				// Removes custom font
+				// If nothing, removes custom font
 				if (userFamily === '') {
-					saveFont()
 					removeFont()
 					return false
 				}
 
-				// Liste toute les fonts
-				fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk')
-					.then((response) => response.json())
-					.then((json) => {
-						//
-						// Cherche correspondante
-						const font = json.items.filter((font) => font.family.toUpperCase() === userFamily.toUpperCase())
+				function changeFontOptions(json) {
+					//
+					// Cherche correspondante
+					const font = json.items.filter((font) => font.family.toUpperCase() === userFamily.toUpperCase())
 
-						if (font.length > 0) {
-							//
-							// Envoie l'URL a apply et save
-							const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${userWeight}`
+					// One font has been found
+					if (font.length > 0) {
+						const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${userWeight}`
 
-							// To prevent weight sliders from sending useless requests
-							const availableWeight = font[0].variants.filter((vari) => !vari.includes('italic'))
+						// To prevent weight sliders from sending useless requests
+						const availableWeight = font[0].variants.filter((vari) => !vari.includes('italic'))
 
-							if (availableWeight.indexOf(userWeight) > -1) {
-								applyFont(url)
-								saveFont(url, availableWeight)
+						if (availableWeight.indexOf(userWeight) > -1) {
+							applyFont(url)
+							slowRange(saveFont(url, availableWeight), 200)
 
-								dom.blur()
-								dom.setAttribute('placeholder', 'Any Google fonts')
-							} else {
-								saveFont(null, availableWeight)
-							}
+							dom.blur()
+							dom.setAttribute('placeholder', 'Any Google fonts')
 						} else {
-							dom.value = ''
-							dom.setAttribute('placeholder', 'No fonts matched')
+							slowRange(saveFont(null, availableWeight), 200)
 						}
-					})
+					} else {
+						dom.value = ''
+						dom.setAttribute('placeholder', 'No fonts matched')
+					}
+				}
+
+				if (Object.entries(googleFontList).length === 0) {
+					// Liste toute les fonts
+					fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk')
+						.then((response) => response.json())
+						.then((json) => {
+							googleFontList = json
+							changeFontOptions(json)
+						})
+				} else changeFontOptions(googleFontList)
 			} else applyFont()
 		}
 

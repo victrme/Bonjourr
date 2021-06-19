@@ -239,17 +239,17 @@ function settingsEvents() {
 	}
 
 	id('i_customfont').onchange = function () {
-		fontObj = { family: this.value, weight: null, size: null }
+		fontObj = { family: this.value }
 		proFunctions({ which: 'font', event: fontObj })
 	}
 
 	id('i_weight').oninput = function () {
-		fontObj = { family: null, weight: this.value, size: null }
+		fontObj = { weight: this.value }
 		proFunctions({ which: 'font', event: fontObj })
 	}
 
 	id('i_size').oninput = function () {
-		fontObj = { family: null, weight: null, size: this.value }
+		fontObj = { size: this.value }
 		proFunctions({ which: 'font', event: fontObj })
 	}
 
