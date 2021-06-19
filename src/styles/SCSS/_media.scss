@@ -57,12 +57,12 @@
 
 		#hideelem > div {
 			button {
-				color: #ccc;
-				background-color: #1c1c1e;
+				color: white;
+				background-color: #3f3f41;
 
 				&.clicked {
-					color: white;
-					background-color: #3f3f41;
+					color: #ccc;
+					background-color: #1c1c1e;
 				}
 			}
 		}

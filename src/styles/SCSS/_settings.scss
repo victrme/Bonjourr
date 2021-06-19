@@ -341,10 +341,10 @@
 
 		button {
 			text-align: left;
-			color: $borderGrey;
+			background-color: $settingsGrey;
+			color: $blue;
 			text-align: center;
 			font-size: small;
-			background-color: white;
 			margin-right: 5px;
 			width: 100%;
 			height: 2.35em;
@@ -354,8 +354,8 @@
 			@include radiusSettings();
 
 			&.clicked {
-				background-color: $settingsGrey;
-				color: $blue;
+				color: $borderGrey;
+				background-color: white;
 			}
 
 			&:hover {
