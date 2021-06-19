@@ -31,3 +31,5 @@ if (localStorage.data && !localStorage.bonjourr) {
 	localStorage.bonjourr = atob(localStorage.data)
 	localStorage.removeItem('data')
 }
+
+// Ne pas oublier de mettre le storage pour les custom backgrounds

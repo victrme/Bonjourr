@@ -1022,49 +1022,68 @@ function imgBackground(val) {
 }
 
 function initBackground(storage) {
-	function loadCustom({ custom, customIndex }) {
-		const index = customIndex >= 0 ? customIndex : 0
-		const chosen = custom[index]
-		const cleanData = chosen.slice(chosen.indexOf(',') + 1, chosen.length)
+	//
+	function applyCustomBackground(backgrounds, index) {
+		const background = backgrounds[index]
 
-		imgBackground(b64toBlobUrl(cleanData))
-		changeImgIndex(customIndex)
+		if (background) {
+			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+			imgBackground(b64toBlobUrl(cleanData))
+			changeImgIndex(index)
+		}
 	}
 
-	let type = storage.background_type || 'dynamic'
+	function preventFromShowingTwice(index, max) {
+		const res = Math.floor(Math.random() * max)
+
+		return res === index ? (res + 1) % max : res
+	}
+
+	const type = storage.background_type || 'dynamic'
 
 	if (type === 'custom') {
-		//reste local !!!!
-		chrome.storage.local.get(null, (localChrome) => {
-			//1.8.3 -> 1.9 data transfer
-			if (localChrome.background_blob !== undefined) {
-				const blob = localChrome.background_blob
-				const old = [blob[0] + ',' + blob[1]]
+		chrome.storage.local.get(null, (storageLocal) => {
+			const customList = storageLocal.custom || []
 
-				loadCustom({
-					custom: old,
-					customIndex: 0,
-				})
+			if (customList.length > 0) {
+				//
+				// Slideshow or not, need index
+				const index = storageLocal.customIndex >= 0 ? storageLocal.customIndex : 0
 
-				chrome.storage.local.set({ custom: old, customIndex: 0, customThumbnails: old })
-				chrome.storage.local.remove('background_blob')
-			} else if (Object.entries(localChrome).length > 0) {
-				//apply chosen custom background
-				loadCustom(localChrome)
+				// Slideshow is activated
+				if (storage.custom_every) {
+					const freq = storage.custom_every
+					const last = storage.custom_time || 0
+					const rand = preventFromShowingTwice(index, customList.length)
+
+					// Need new Image
+					if (freqControl('get', freq, last)) {
+						applyCustomBackground(customList, rand)
+
+						// Updates time & index
+						chrome.storage.sync.set({ custom_time: freqControl('set', freq) })
+						chrome.storage.local.set({ customIndex: rand })
+						//
+					} else {
+						applyCustomBackground(customList, index)
+					}
+
+					// No slideshow or no data for it
+				} else {
+					applyCustomBackground(customList, index)
+				}
 			} else {
-				//if no custom background available: dynamic
+				// If no custom, change to dynamic
 				unsplash(storage)
 				chrome.storage.sync.set({ background_type: 'dynamic' })
 			}
 		})
 
+		// Removes credits
 		imgCredits(null, type)
-	} else if (type === 'dynamic' || type === 'default') {
-		unsplash(storage)
-	} else {
-		//on startup
-		unsplash(null, null, true)
-	}
+
+		// Not Custom, load dynamic
+	} else unsplash(storage)
 
 	const blur = storage.background_blur !== undefined ? storage.background_blur : 15
 	const bright = storage.background_bright !== undefined ? storage.background_bright : 0.7
@@ -1263,6 +1282,23 @@ function addThumbnails(data, index) {
 	}
 }
 
+function freqControl(state, every, last) {
+	const d = new Date()
+	if (state === 'set') return every === 'tabs' ? 0 : d.getTime()
+
+	if (state === 'get') {
+		let calcLast = 0
+		let today = d.getTime()
+
+		if (every === 'hour') calcLast = last + 3600 * 1000
+		else if (every === 'day') calcLast = last + 86400 * 1000
+		else if (every === 'pause') calcLast = 10 ** 13 - 1 //le jour de la fin du monde lmao
+
+		//bool
+		return today > calcLast
+	}
+}
+
 function unsplash(data, event, startup) {
 	//on startup nothing is displayed
 	const loadbackground = (url) => (startup ? noDisplayImgLoad(url) : imgBackground(url))
@@ -1275,25 +1311,8 @@ function unsplash(data, event, startup) {
 		img.remove()
 	}
 
-	function freqControl(state, every, last) {
-		const d = new Date()
-		if (state === 'set') return every === 'tabs' ? 0 : d.getTime()
-
-		if (state === 'get') {
-			let calcLast = 0
-			let today = d.getTime()
-
-			if (every === 'hour') calcLast = last + 3600 * 1000
-			else if (every === 'day') calcLast = last + 86400 * 1000
-			else if (every === 'pause') calcLast = 10 ** 13 - 1 //le jour de la fin du monde lmao
-
-			//retourne le today superieur au calculated last
-			return today > calcLast
-		}
-	}
-
 	function cacheControl(dynamic, weather) {
-		//as t on besoin d'une nouvelle image ?
+		//
 		let needNewImage = freqControl('get', dynamic.every, dynamic.time)
 		if (needNewImage) {
 			//sauvegarde le nouveau temps

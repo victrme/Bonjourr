@@ -7,13 +7,25 @@ function signature() {
 	id('rand').appendChild(e)
 }
 
+function changeCustomFreq(val) {
+	chrome.storage.sync.set({ custom_every: val })
+}
+
 function selectBackgroundType(cat) {
 	id('dynamic').style.display = 'none'
 	id('custom').style.display = 'none'
 	id(cat).style.display = 'block'
 
-	if (cat === 'dynamic' || cat === 'default') unsplash()
-	else if (cat === 'custom') displayCustomThumbnails()
+	// Applying functions
+	cat === 'custom' ? displayCustomThumbnails() : unsplash()
+
+	// Setting frequence
+	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
+		const c_every = data.custom_every || 'pause'
+		const d_every = data.dynamic.every || 'hour'
+
+		id('i_freq').value = cat === 'custom' ? c_every : d_every
+	})
 
 	chrome.storage.sync.set({ background_type: cat })
 }
@@ -96,7 +108,6 @@ function settingsEvents() {
 
 		//session pour le weather
 		sessionStorage.lang = this.value
-
 		if (sessionStorage.lang) location.reload()
 	}
 
@@ -123,7 +134,8 @@ function settingsEvents() {
 	}
 
 	id('i_freq').onchange = function () {
-		unsplash(null, { every: this.value })
+		if (id('i_type').value === 'custom') changeCustomFreq(this.value)
+		else unsplash(null, { every: this.value })
 	}
 
 	id('i_collection').onchange = function () {
@@ -272,20 +284,24 @@ function settingsEvents() {
 function initParams() {
 	const data = JSON.parse(localEnc(disposableData, false))
 
-	// 1.9.2 ==> 1.9.3 lang break fix
-	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
-
 	const initInput = (dom, cat, base) => (id(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (id(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
+	// 1.9.2 ==> 1.9.3 lang break fix
+	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
+
+	// 1.10.0 custom background slideshow
+	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
+	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
+
 	initInput('i_type', data.background_type, 'dynamic')
+	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
 	initInput('i_bright', data.background_bright, 0.7)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_sbengine', data.searchbar_engine, 'google')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
-	initInput('i_freq', isThereData('dynamic', 'every'), 'hour')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
 	initInput('i_row', data.linksrow, 8)
