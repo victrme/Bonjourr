@@ -14,7 +14,8 @@
 		border-radius: 8px;
 		background-color: transparent;
 		cursor: pointer;
-
+		background: #ffffff00;
+		transition: background .2s;
 		@include allCentered();
 
 		img {
@@ -25,10 +26,18 @@
 
 		&:hover {
 			background: #777;
+			@supports (backdrop-filter: none) {
+				background: rgba(255, 255, 255, 0.2);
+				backdrop-filter: blur(5px);
+			}
 		}
 
 		&.shown {
 			background: #aaa;
+			@supports (backdrop-filter: none) {
+				background: rgba(0, 0, 0, 0.3);
+				backdrop-filter: blur(5px);
+			}
 
 			img {
 				transform: rotate(45deg);
@@ -36,6 +45,10 @@
 
 			&:hover {
 				background: #777;
+				@supports (backdrop-filter: none) {
+					background: rgba(0, 0, 0, 0.5);
+					backdrop-filter: blur(5px);
+				}
 			}
 		}
 	}

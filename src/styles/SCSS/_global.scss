@@ -309,29 +309,40 @@ body {
 		transition: none;
 
 		#searchbar {
-			opacity: 0;
 			font-size: 1.5em;
-			color: rgba(0, 0, 0, 0.6);
+			color: #595959;
 			width: calc(100% - 1em);
 			border: 0;
 			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 			height: 50px;
-			border-radius: 4px;
+			border-radius: 10px;
 			padding: 0 0 0 1em;
-			transition: border-radius 0.15s, opacity 0.1s;
-			animation: sbfade 0.08s ease-in 0s 1 normal;
-			opacity: 0.8;
+			transition: background-color .2s;
+			opacity: .8;
+			@supports (backdrop-filter: none) {
+				background: rgba(255, 255, 255, 0.6);
+				backdrop-filter: blur(10px);
+				opacity: unset;
+			}
+
+			&::placeholder {
+				transition: opacity .2s;
+				text-transform: none;
+				opacity: .7;
+				color: #595959;
+			}
 
 			&:focus {
 				opacity: 1;
+				@supports (backdrop-filter: none) {
+					background: rgba(255, 255, 255, 0.8);
+				}
+				
+				&::placeholder {
+					opacity: 1;
+				}
 			}
-		}
-
-		// Pourquoi &:placeholder ne fonctionne pas ? Personne ne sait.
-		#searchbar::placeholder {
-			text-transform: none;
-			opacity: 1;
-		}
+		}		
 
 		.popup_searchbar,
 		.popup_searchbar:focus {
