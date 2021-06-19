@@ -204,6 +204,7 @@ function settingsEvents() {
 
 	//searchbar
 	id('i_sb').onchange = function () {
+		id('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
 		slow(this)
 	}
@@ -357,7 +358,7 @@ function initParams() {
 	}
 
 	//searchbar display settings
-	id('choose_searchengine').setAttribute('class', data.searchbar ? 'shown' : 'hidden')
+	data.searchbar ? id('searchbar_options').classList.toggle('shown') : ''
 
 	//langue
 	id('i_lang').value = data.lang || 'en'

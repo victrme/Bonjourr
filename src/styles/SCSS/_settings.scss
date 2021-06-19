@@ -409,9 +409,14 @@
 		transition: none;
 	}
 
-	#i_sbparams {
-		width: calc(100% - 2em);
-		margin-left: 2em;
+	#searchbar_options {
+		overflow: hidden;
+		max-height: 0;
+		transition: max-height 0.4s;
+
+		&.shown {
+			max-height: 118px;
+		}
 	}
 
 	#e_weight,
