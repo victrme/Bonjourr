@@ -176,10 +176,13 @@
 }
 
 // dark mode
-body.dark,
+body.dark {
+	@include darkCss();
+}
+
 body.autodark {
 	@media (prefers-color-scheme: dark) {
-		@include darkCss();
+		
 	}
 }
 
