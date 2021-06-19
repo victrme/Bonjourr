@@ -519,7 +519,7 @@ if (sessionStorage.lang) {
 domshowsettings.onmouseup = function () {
 	showSettings()
 }
-dominterface.onmouseup = function (e) {
+dominterface.onmousedown = function (e) {
 	showInterface(e)
 }
 

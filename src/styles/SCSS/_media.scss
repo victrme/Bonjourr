@@ -178,7 +178,9 @@
 // dark mode
 body.dark,
 body.autodark {
-	@include darkCss();
+	@media (prefers-color-scheme: dark) {
+		@include darkCss();
+	}
 }
 
 @media screen and (max-height: 650px) {

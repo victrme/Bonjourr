@@ -414,10 +414,18 @@ function quickLinks(event, that, initStorage) {
 			clas(id('edit_linkContainer'), '')
 		}
 
-		id('e_close').onmouseup = function () {
+		function closeEditLink() {
 			removeLinkSelection()
 			id('edit_linkContainer').classList.add('hiding')
 			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), 400)
+		}
+
+		// close on button
+		id('e_close').onmouseup = () => closeEditLink()
+
+		// close on outside click
+		id('edit_linkContainer').onmousedown =  (e) => {
+			if (e.target.id === 'edit_linkContainer') closeEditLink()
 		}
 
 		id('re_title').onmouseup = (e) => emptyAndHideicon(e)
