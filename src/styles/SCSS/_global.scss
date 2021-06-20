@@ -239,16 +239,35 @@ body {
 		padding: 1em;
 		background-color: $purewhite;
 		border-radius: 0 10px 10px 0;
-		opacity: 0.6;
 		transform: translateX(-100%);
 		box-sizing: border-box;
 		will-change: transform;
+		background: rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(10px);
+		transition: background .2s ease, transform 0.4s ease;
+		
 		@include allCentered();
 
+		&:hover {
+			background: rgba(255, 255, 255, .9);
+		}
+
+		&.shown {
+			transform: translateX(0);
+		}
+
+		&.removed {
+			transform: translateX(-100%);
+		}
+
 		.choices {
-			@include allCentered();
-			justify-content: space-between;
+			display: flex;
+			flex-direction: column;
 			margin-left: 1em;
+
+			a:nth-child(1) {
+				margin-bottom: .5em;
+			}
 
 			> * {
 				box-sizing: border-box;
@@ -261,49 +280,25 @@ body {
 				@include hoverButton();
 			}
 
-			#go {
+			a {
 				background-color: $blue;
 				color: $purewhite;
 				border: 0;
-				width: 80px;
+				width: auto;
 				margin-right: 1em;
+				padding: 0 10px;
 				@include allCentered();
 			}
+		}
 
-			#later {
-				color: $blue;
-				border: 2px solid $blue;
-				width: 70px;
-			}
-
-			img {
-				height: 1.2em;
-			}
+		#closePopup {
+			height: 1.2em;
 		}
 
 		span {
-			max-width: 20em;
-			text-align: left;
+			max-width: 200px;
+			text-align: justify;
 			color: $blackish;
-		}
-
-		&:hover {
-			opacity: 1;
-			transition: opacity 0.1s;
-		}
-
-		&.shown {
-			transform: translateX(0);
-			transition: transform 0.4s ease;
-		}
-
-		&.justShown {
-			opacity: 1;
-		}
-
-		&.removed {
-			transform: translateX(-100%);
-			transition: transform 0.4s ease;
 		}
 	}
 }
