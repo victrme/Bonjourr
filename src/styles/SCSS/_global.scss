@@ -356,24 +356,25 @@ body {
 		display: none;
 		height: 2px;
 		max-width: calc(100% - 2em);
-		width: 500px;
+		width: 400px;
 		margin: 0 auto;
 		padding: 0;
 		transition: none;
 
 		#searchbar {
-			font-size: 1.5em;
+			font-size: 1.3em;
 			color: #595959;
-			width: calc(100% - 1em);
+			width: calc(100% - 2em);
 			border: 0;
 			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 			height: 50px;
 			border-radius: 10px;
-			padding: 0 0 0 1em;
+			padding: 0 1em 0 1em;
 			transition: background-color 0.2s;
 			opacity: 0.8;
+			
 			@supports (backdrop-filter: none) {
-				background: rgba(255, 255, 255, 0.6);
+				background: rgba(255, 255, 255, 0.3);
 				backdrop-filter: blur(10px);
 				opacity: unset;
 			}
@@ -383,6 +384,11 @@ body {
 				text-transform: none;
 				opacity: 0.7;
 				color: #595959;
+
+				@supports (backdrop-filter: none) {
+					color: #ececec;
+					opacity: 1;
+				}
 			}
 
 			&:focus {
@@ -393,6 +399,9 @@ body {
 
 				&::placeholder {
 					opacity: 1;
+					@supports (backdrop-filter: none) {
+						color: #595959;
+					}
 				}
 			}
 		}

@@ -72,11 +72,16 @@
 				margin: auto auto 2em auto;
 				width: 8em;
 				box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+				@supports (backdrop-filter: none) {
+					background: rgba(255, 255, 255, 0.15);
+					backdrop-filter: blur(7px);
+				}
 
 				&.hidden {
 					display: none;
 				}
 
+				// aiguilles
 				span {
 					background: white;
 					border-radius: 20px;
@@ -88,38 +93,38 @@
 					position: absolute;
 					transform-origin: bottom center;
 					box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-				}
 
-				#hours {
-					height: 30%;
-				}
-
-				#minutes {
-					height: 45%;
-				}
-
-				#analogSeconds {
-					height: 45%;
-					width: 0.1em;
-					margin-left: -0.05em;
-					opacity: 0.8;
-					background-color: red;
-
-					&.hidden {
-						display: none;
+					&#center {
+						position: absolute;
+						z-index: 5;
+						width: 0.4em;
+						height: 0.4em;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+						background-color: white;
+						border-radius: 100px;
 					}
-				}
 
-				#center {
-					position: absolute;
-					z-index: 5;
-					width: 0.4em;
-					height: 0.4em;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-					background-color: white;
-					border-radius: 100px;
+					&#hours {
+						height: 30%;
+					}
+	
+					&#minutes {
+						height: 45%;
+					}
+	
+					&#analogSeconds {
+						height: 45%;
+						width: 0.1em;
+						margin-left: -0.05em;
+						opacity: 0.8;
+						background-color: red;
+	
+						&.hidden {
+							display: none;
+						}
+					}
 				}
 			}
 		}
