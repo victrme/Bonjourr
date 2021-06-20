@@ -1670,8 +1670,8 @@ function showPopup(data) {
 			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 	)
 
-	//s'affiche après 10 tabs
-	if (data > 10) {
+	//s'affiche après 30 tabs
+	if (data > 30) {
 		const close = function () {
 			popup.classList.add('removed')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
