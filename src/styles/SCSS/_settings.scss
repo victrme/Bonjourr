@@ -12,10 +12,9 @@
 		margin: 0.5em;
 		border: none;
 		border-radius: 8px;
-		background-color: transparent;
 		cursor: pointer;
-		background: #ffffff00;
-		transition: background .2s;
+		background-color: #ffffff00;
+		transition: background 0.2s;
 		@include allCentered();
 
 		img {
@@ -231,20 +230,16 @@
 		display: block;
 		width: 100%;
 		min-width: 100px;
-		border-radius: 9px;
-		border: 1px solid $blue;
-		padding: 0.8em;
+		background-color: $settingsGrey;
+		color: $blue;
+		font-size: 12.5px;
+		padding: 20px;
 		margin-right: 1em;
-		box-sizing: border-box;
-		transition: background-color 0.1s ease-in;
+		text-align: center;
+		cursor: pointer;
+		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 
-		p {
-			width: 100%;
-			text-align: center;
-			transition: color 0.05s ease-in;
-			font-size: 0.9em;
-			cursor: pointer;
-		}
+		@include radiusSettings();
 
 		#i_bgfile {
 			display: block;
@@ -259,17 +254,17 @@
 			cursor: pointer;
 		}
 
+		&:hover {
+			opacity: 0.8;
+		}
+
 		&.dragover {
 			background-color: $blue;
-
-			p {
-				color: $purewhite;
-			}
+			color: $purewhite;
 		}
 
 		&:active {
-			border: 1px dashed #aaa;
-			background: #e8e8e8;
+			background-color: $inputGrey;
 		}
 	}
 

@@ -424,7 +424,7 @@ function quickLinks(event, that, initStorage) {
 		id('e_close').onmouseup = () => closeEditLink()
 
 		// close on outside click
-		id('edit_linkContainer').onmousedown =  (e) => {
+		id('edit_linkContainer').onmousedown = (e) => {
 			if (e.target.id === 'edit_linkContainer') closeEditLink()
 		}
 
@@ -1226,7 +1226,6 @@ function addThumbnails(data, index) {
 	const i = document.createElement('img')
 	const rem = document.createElement('button')
 	const wrap = document.getElementById('bg_tn_wrap')
-	const upload = document.getElementById('i_bgfile')
 
 	div.setAttribute('index', index)
 	div.setAttribute('class', 'thumbnail')
@@ -1236,7 +1235,7 @@ function addThumbnails(data, index) {
 
 	div.appendChild(i)
 	div.appendChild(rem)
-	wrap.append(div) //, wrap.children[0]);
+	wrap.prepend(div)
 
 	//events
 	const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
@@ -1350,7 +1349,12 @@ function unsplash(data, event, startup) {
 			// If collection isnt ''
 			if (dynamic.collection) {
 				if (dynamic.collection.length > 0) {
-					return dynamic.collection
+					const list = dynamic.collection.split(',')
+
+					// Split text, take random element
+					if (list.length > 1) return list[Math.floor(Math.random() * list.length)].trim()
+					// Return single collection
+					else return dynamic.collection
 				}
 			}
 

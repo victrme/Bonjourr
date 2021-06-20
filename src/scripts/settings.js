@@ -36,7 +36,7 @@ function displayCustomThumbnails() {
 			let cleanData
 			let thumbs = data.customThumbnails
 
-			for (var i = 0; i < thumbs.length; i++) {
+			for (let i = thumbs.length - 1; i >= 0; i--) {
 				cleanData = thumbs[i].replace('data:image/jpeg;base64,', '') //used for blob
 				addThumbnails(cleanData, i)
 			}
