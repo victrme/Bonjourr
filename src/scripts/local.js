@@ -3,26 +3,27 @@
 // And maybe change import option
 
 const offlineStorage = {
-	get: (useless, callback) => {
-		const data = localStorage.bonjourr ? JSON.parse(localStorage.bonjourr) : {}
+	get: (which, callback) => {
+		const key = which === 'backgrounds' ? 'bonjourrBackgrounds' : 'bonjourr'
+		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
 		callback(data)
 	},
-	set: (prop) => {
-		offlineStorage.get(null, (data) => {
+	set: (prop, which) => {
+		offlineStorage.get(which, (data) => {
 			if (typeof prop === 'object') {
 				const [key, val] = Object.entries(prop)[0]
 
 				if (key === 'import') {
-					console.log(true)
 					data = val
 				} else data[key] = val
 
-				localStorage.bonjourr = JSON.stringify(data)
+				if (which === 'backgrounds') localStorage.bonjourrBackgrounds = JSON.stringify(data)
+				else localStorage.bonjourr = JSON.stringify(data)
 			}
 		})
 	},
-	log: () => offlineStorage.get(null, (data) => console.log(data)),
-	del: () => localStorage.removeItem('bonjourr'),
+	log: (isbg) => offlineStorage.get(isbg, (data) => console.log(data)),
+	del: () => localStorage.clear(),
 }
 
 // Compatibility with older local versions

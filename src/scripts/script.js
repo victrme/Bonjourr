@@ -23,6 +23,8 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	domclock = id('clock'),
 	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
 
+const errorMessage = (e) => prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, e.stack, e.line)
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear(() => {
@@ -2024,56 +2026,60 @@ function proFunctions(obj) {
 }
 
 window.onload = function () {
-	chrome.storage.sync.get(null, (data) => {
-		//1.8.3 -> 1.9 data transfer
-		if (localStorage.lang) {
-			data.lang = localStorage.lang
-			chrome.storage.sync.set({ lang: localStorage.lang })
-			localStorage.removeItem('lang')
-		}
+	try {
+		chrome.storage.sync.get(null, (data) => {
+			//1.8.3 -> 1.9 data transfer
+			if (localStorage.lang) {
+				data.lang = localStorage.lang
+				chrome.storage.sync.set({ lang: localStorage.lang })
+				localStorage.removeItem('lang')
+			}
 
-		//pour que les settings y accede plus facilement
-		disposableData = localEnc(JSON.stringify(data))
+			//pour que les settings y accede plus facilement
+			disposableData = localEnc(JSON.stringify(data))
 
-		traduction(null, data.lang)
-		greetings()
-		date(null, data.usdate)
-		newClock(null, data.clock)
-		darkmode(null, data)
-		initBackground(data)
-		weather(null, null, data)
-		quickLinks(null, null, data)
-		searchbar(null, null, data)
-		showPopup(data.reviewPopup)
+			traduction(null, data.lang)
+			greetings()
+			date(null, data.usdate)
+			newClock(null, data.clock)
+			darkmode(null, data)
+			initBackground(data)
+			weather(null, null, data)
+			quickLinks(null, null, data)
+			searchbar(null, null, data)
+			showPopup(data.reviewPopup)
 
-		//init profunctions
-		proFunctions({ which: 'hide', data: data.hide })
-		proFunctions({ which: 'font', data: data.font })
-		proFunctions({ which: 'css', data: data.css })
-		proFunctions({ which: 'row', data: data.linksrow })
-		proFunctions({ which: 'greet', data: data.greeting })
+			//init profunctions
+			proFunctions({ which: 'hide', data: data.hide })
+			proFunctions({ which: 'font', data: data.font })
+			proFunctions({ which: 'css', data: data.css })
+			proFunctions({ which: 'row', data: data.linksrow })
+			proFunctions({ which: 'greet', data: data.greeting })
 
-		// New way to show interface
-		dominterface.style.opacity = '1'
-		domshowsettings.style.opacity = '1'
+			// New way to show interface
+			dominterface.style.opacity = '1'
+			domshowsettings.style.opacity = '1'
 
-		// Old compatibility
-		clas(dominterface, '')
-		clas(domshowsettings, '')
+			// Old compatibility
+			clas(dominterface, '')
+			clas(domshowsettings, '')
 
-		//safe font for different alphabet
-		if (data.lang === 'ru' || data.lang === 'sk') {
-			const safeFont = () =>
-				(id('styles').innerText = `
+			//safe font for different alphabet
+			if (data.lang === 'ru' || data.lang === 'sk') {
+				const safeFont = () =>
+					(id('styles').innerText = `
 			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
 
-			if (!data.font) safeFont()
-			else if (data.font.family === '') safeFont()
-		}
+				if (!data.font) safeFont()
+				else if (data.font.family === '') safeFont()
+			}
 
-		if (mobilecheck) {
-			dominterface.style.minHeight = '90vh'
-			dominterface.style.padding = '0 0 10vh 0'
-		}
-	})
+			if (mobilecheck) {
+				dominterface.style.minHeight = '90vh'
+				dominterface.style.padding = '0 0 10vh 0'
+			}
+		})
+	} catch (error) {
+		errorMessage(error)
+	}
 }
