@@ -321,14 +321,14 @@ function quickLinks(event, that, initStorage) {
 			<div class='l_icon_wrap' draggable="false">
 				<img class='l_icon' src='${icon}' draggable="false">
 			</div>
-			<span>${title}</span>
+			${title ? '<span>' + title + '</span>' : ''}
 		</div>`
 
 		//ajoute un wrap
 		let block_parent = document.createElement('div')
-		block_parent.setAttribute('class', 'block_parent')
-		block_parent.setAttribute('draggable', 'true')
-		block_parent.innerHTML = b
+			block_parent.setAttribute('class', 'block_parent')
+			block_parent.setAttribute('draggable', 'true')
+			block_parent.innerHTML = b
 
 		//l'ajoute au dom
 		domlinkblocks.appendChild(block_parent)
@@ -454,7 +454,13 @@ function quickLinks(event, that, initStorage) {
 				// Update on interface
 				Object.entries(allLinks[i]).forEach(([key, val], j) => {
 					if (val !== updated[key]) {
-						if (key === 'title') block.querySelector('span').innerText = updated[key]
+						if (key === 'title') {
+							if (!block.querySelector('span')) {
+								block.querySelector('.l_icon_wrap').insertAdjacentHTML('afterEnd', '<span>' + updated[key] + '</span>')
+							} else {
+								block.querySelector('span').innerText = updated[key]
+							}
+						}
 						if (key === 'url') block.querySelector('.block').setAttribute('source', updated[key])
 						if (key === 'icon') block.querySelector('img').src = updated[key]
 
