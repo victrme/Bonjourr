@@ -82,14 +82,10 @@ body {
 @mixin animHide() {
 	@keyframes animHide {
 		0% {
-			opacity: auto;
-		}
-		99% {
-			opacity: 0;
+			opacity: 1;
 		}
 		100% {
 			opacity: 0;
-			display: none;
 		}
 	}
 }
@@ -171,6 +167,68 @@ body {
 
 @mixin radiusSettings {
 	border-radius: 10px;
+}
+
+@mixin hideElements {
+	#interface {
+		//
+		// Need flex-grow for default
+
+		#main,
+		#linkblocks,
+		#time {
+			flex-grow: 1;
+		}
+
+		//
+		// Add transitions
+
+		#main.he_anim,
+		#linkblocks.he_anim,
+		#time.he_anim {
+			transition: opacity 0.2s, flex-grow 0.4s 0.2s;
+		}
+
+		#time-container.he_anim,
+		#date.he_anim,
+		#weather_desc.he_anim,
+		#greetings.he_anim,
+		#w_icon.he_anim,
+		#showSettings.he_anim {
+			transition: opacity 0.4s;
+		}
+
+		//
+		// Parent blocks shrinks & hide
+
+		#main.he_hidden,
+		#linkblocks.he_hidden,
+		#time.he_hidden {
+			flex-grow: 0.000001;
+			opacity: 0;
+		}
+
+		//
+		// Children only hide
+
+		#time-container.he_hidden,
+		#date.he_hidden,
+		#weather_desc.he_hidden,
+		#greetings.he_hidden,
+		#w_icon.he_hidden {
+			opacity: 0;
+		}
+	}
+
+	#showSettings {
+		&.he_anim {
+			transition: opacity 0.4s;
+		}
+
+		&.he_hidden {
+			opacity: 0;
+		}
+	}
 }
 
 @mixin popup {
@@ -317,8 +375,8 @@ body {
 			height: 50px;
 			border-radius: 10px;
 			padding: 0 0 0 1em;
-			transition: background-color .2s;
-			opacity: .8;
+			transition: background-color 0.2s;
+			opacity: 0.8;
 			@supports (backdrop-filter: none) {
 				background: rgba(255, 255, 255, 0.6);
 				backdrop-filter: blur(10px);
@@ -326,9 +384,9 @@ body {
 			}
 
 			&::placeholder {
-				transition: opacity .2s;
+				transition: opacity 0.2s;
 				text-transform: none;
-				opacity: .7;
+				opacity: 0.7;
 				color: #595959;
 			}
 
@@ -337,12 +395,12 @@ body {
 				@supports (backdrop-filter: none) {
 					background: rgba(255, 255, 255, 0.8);
 				}
-				
+
 				&::placeholder {
 					opacity: 1;
 				}
 			}
-		}		
+		}
 
 		.popup_searchbar,
 		.popup_searchbar:focus {

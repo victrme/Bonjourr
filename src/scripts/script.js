@@ -1896,8 +1896,8 @@ function proFunctions(obj) {
 		}
 
 		function toggleElement(dom, hide) {
-			if (hide) id(dom).classList.add('he_off')
-			else id(dom).classList.remove('he_off')
+			if (hide) id(dom).classList.add('he_hidden')
+			else id(dom).classList.remove('he_hidden')
 		}
 
 		function isEverythingHidden(list, row) {
@@ -1905,18 +1905,21 @@ function proFunctions(obj) {
 			return filtered.length === list[row].length
 		}
 
-		function initializeHiddenElements(list) {
+		function initializeHiddenElements(list, animonly) {
 			list.forEach((row, row_i) => {
-				//
-				// Hide parents
-				if (isEverythingHidden(list, row_i)) {
-					toggleElement(IDsList[row_i][0], true)
-				}
+				const parent = IDsList[row_i][0]
 
-				//
+				animonly
+					? id(parent).classList.add('he_anim')
+					: isEverythingHidden(list, row_i)
+					? toggleElement(parent, true)
+					: ''
+
 				// Hide children
 				row.forEach((child, child_i) => {
-					if (child === 1) toggleElement(IDsList[row_i][1][child_i], true)
+					const childid = IDsList[row_i][1][child_i]
+
+					animonly ? id(childid).classList.add('he_anim') : child === 1 ? toggleElement(childid, true) : ''
 				})
 			})
 		}
@@ -1963,6 +1966,7 @@ function proFunctions(obj) {
 			}
 
 			initializeHiddenElements(updateToNewData(init))
+			setTimeout(() => initializeHiddenElements(init, true), 400)
 		}
 
 		// Settings buttons initialization
@@ -2058,11 +2062,6 @@ window.onload = function () {
 
 			// New way to show interface
 			dominterface.style.opacity = '1'
-			domshowsettings.style.opacity = '1'
-
-			// Old compatibility
-			clas(dominterface, '')
-			clas(domshowsettings, '')
 
 			//safe font for different alphabet
 			if (data.lang === 'ru' || data.lang === 'sk') {

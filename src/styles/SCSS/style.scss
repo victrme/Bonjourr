@@ -1,5 +1,7 @@
 @import 'global';
 
+@include hideElements;
+
 #background_overlay {
 	z-index: -1;
 	position: fixed;
@@ -16,33 +18,6 @@
 		background-position: center center;
 	}
 }
-
-// TO SORT START
-
-#clock.hidden,
-#analogClock.hidden,
-#interface #time #analogClock #analogSeconds.hidden,
-#interface #time.hidden,
-#interface #main.hidden {
-	display: none;
-}
-
-#time-container.hidden,
-#date.hidden,
-#greetings.hidden,
-#weather_desc.hidden,
-#w_icon.hidden {
-	opacity: 0;
-	transition: opacity 0.1s;
-}
-
-#interface #linkblocks,
-#sb_container,
-#showSettings {
-	transition: opacity 0.1s;
-}
-
-// TO SORT END
 
 #interface {
 	position: relative;
@@ -66,9 +41,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		margin-right: auto;
-		margin-left: auto;
-		transition: opacity 0.1s;
+		margin: 0 auto;
 
 		.shadow {
 			z-index: -1;
@@ -77,14 +50,17 @@
 			max-width: 100%;
 			width: 43em;
 			opacity: 0.4;
-			margin: auto;
-			margin-top: 30px;
+			margin: 30px auto 0 auto;
 		}
 
 		#time-container {
 			#clock {
 				font-family: sf_pro_displaythin;
 				font-size: 6em;
+
+				&.hidden {
+					display: none;
+				}
 			}
 
 			#analogClock {
@@ -95,6 +71,10 @@
 				margin: auto auto 2em auto;
 				width: 8em;
 				box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+
+				&.hidden {
+					display: none;
+				}
 
 				span {
 					background: white;
@@ -123,6 +103,10 @@
 					margin-left: -0.05em;
 					opacity: 0.8;
 					background-color: red;
+
+					&.hidden {
+						display: none;
+					}
 				}
 
 				#center {
