@@ -424,6 +424,14 @@
 		&.shown {
 			max-height: 118px;
 		}
+
+		#choose_searchengine {
+			&.shown {
+				display: block;
+			}
+	
+			@include hidden();
+		}
 	}
 
 	#e_weight,
