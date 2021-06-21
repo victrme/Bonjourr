@@ -326,9 +326,9 @@ function quickLinks(event, that, initStorage) {
 
 		//ajoute un wrap
 		let block_parent = document.createElement('div')
-			block_parent.setAttribute('class', 'block_parent')
-			block_parent.setAttribute('draggable', 'true')
-			block_parent.innerHTML = b
+		block_parent.setAttribute('class', 'block_parent')
+		block_parent.setAttribute('draggable', 'true')
+		block_parent.innerHTML = b
 
 		//l'ajoute au dom
 		domlinkblocks.appendChild(block_parent)
@@ -398,12 +398,18 @@ function quickLinks(event, that, initStorage) {
 		else img.classList.add('shown')
 	}
 
-	function emptyAndHideIcon(e) {
-		e.target.previousElementSibling.value = ''
-		e.target.classList.remove('shown')
-	}
-
 	function editEvents() {
+		function closeEditLink() {
+			removeLinkSelection()
+			id('edit_linkContainer').classList.add('hiding')
+			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), 400)
+		}
+
+		function emptyAndHideIcon(e) {
+			e.target.previousElementSibling.value = ''
+			e.target.classList.remove('shown')
+		}
+
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
@@ -416,12 +422,6 @@ function quickLinks(event, that, initStorage) {
 			clas(id('edit_linkContainer'), '')
 		}
 
-		function closeEditLink() {
-			removeLinkSelection()
-			id('edit_linkContainer').classList.add('hiding')
-			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), 400)
-		}
-
 		// close on button
 		id('e_close').onmouseup = () => closeEditLink()
 
@@ -430,9 +430,9 @@ function quickLinks(event, that, initStorage) {
 			if (e.target.id === 'edit_linkContainer') closeEditLink()
 		}
 
-		id('re_title').onmouseup = (e) => emptyAndHideicon(e)
-		id('re_url').onmouseup = (e) => emptyAndHideicon(e)
-		id('re_iconurl').onmouseup = (e) => emptyAndHideicon(e)
+		id('re_title').onmouseup = (e) => emptyAndHideIcon(e)
+		id('re_url').onmouseup = (e) => emptyAndHideIcon(e)
+		id('re_iconurl').onmouseup = (e) => emptyAndHideIcon(e)
 
 		id('e_title').onkeyup = (e) => showDelIcon(e.target)
 		id('e_url').onkeyup = (e) => showDelIcon(e.target)
@@ -456,7 +456,9 @@ function quickLinks(event, that, initStorage) {
 					if (val !== updated[key]) {
 						if (key === 'title') {
 							if (!block.querySelector('span')) {
-								block.querySelector('.l_icon_wrap').insertAdjacentHTML('afterEnd', '<span>' + updated[key] + '</span>')
+								block
+									.querySelector('.l_icon_wrap')
+									.insertAdjacentHTML('afterEnd', '<span>' + updated[key] + '</span>')
 							} else {
 								block.querySelector('span').innerText = updated[key]
 							}
