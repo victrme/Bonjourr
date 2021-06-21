@@ -2,14 +2,17 @@
   <img src="https://raw.githubusercontent.com/victrme/Bonjourr/master/src/assets/images/bonjourr.png" width="50%"></img>
 </p>
 
-Bonjourr is a new home page for your Internet browser, inspired by the looks of iOS' Bedtime option.
+Bonjourr is a home page for your Internet browser, inspired by the looks of iOS' Bedtime feature.
 
-While this startpage is minimal and beautiful, it is also thought out to be practical. Customizable, Bonjourr fits perfectly in your workflow, making you more productive. Here's some options:
+While this startpage is minimal and beautiful, it is also thought out to be practical. Customisable, Bonjourr fits perfectly in your workflow, making you more productive and serene. Here's some features:
 
--   Custom background
+-   Beautiful, minimal design
+-   Highly customisable
 -   Weather based on your location
 -   Quick links to your favorite websites
+-   Fast & smooth
 -   Dark mode
+-   Open source and respects your privacy
 -   And more...
 
 Bonjourr is available in English, French, Spanish, Swedish, Dutch, Polish, Portuguese (Brazil), Italian, Russian and Chinese.
