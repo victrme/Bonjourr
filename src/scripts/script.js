@@ -1006,6 +1006,11 @@ function weather(event, that, initStorage) {
 		default:
 			cacheControl(initStorage)
 	}
+
+	// Checks every 5 minutes if weather needs update
+	setTimeout(() => {
+		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => cacheControl(data)) : ''
+	}, 5 * 60 * 1000)
 }
 
 function imgCredits(src, type) {
