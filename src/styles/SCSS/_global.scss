@@ -111,30 +111,6 @@ body {
 	}
 }
 
-/*Wiggle animation*/
-@keyframes wiggle {
-	0% {
-		transform: rotate(-1.5deg);
-		animation-timing-function: ease-in;
-	}
-	50% {
-		transform: rotate(2deg);
-		animation-timing-function: ease-out;
-	}
-}
-
-
-
-@mixin hoverButton {
-	&:hover {
-		filter: brightness(110%);
-	}
-
-	&:active {
-		filter: brightness(85%);
-	}
-}
-
 @mixin allCentered {
 	display: flex;
 	align-items: center;

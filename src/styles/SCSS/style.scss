@@ -341,13 +341,6 @@
 					word-wrap: break-word;
 					text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 				}
-
-				&.wiggly {
-					animation-name: wiggle;
-					animation-iteration-count: infinite;
-					transform-origin: 50% 10%;
-					animation-duration: 0.25s;
-				}
 			}
 
 			button.remove {
@@ -389,12 +382,6 @@
 			}
 		}
 	}
-
-	// div#linkblocks {
-		
-
-		
-	// }
 }
 
 #edit_linkContainer {
@@ -637,7 +624,14 @@
 			font-size: 1.1em;
 			height: 36px;
 			text-decoration: none;
-			@include hoverButton();
+
+			&:hover {
+				filter: brightness(120%);
+			}
+		
+			&:active {
+				filter: brightness(85%);
+			}
 		}
 
 		a {

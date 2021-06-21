@@ -1,6 +1,12 @@
 @mixin darkCss {
 	#interface {
 		color: #eee;
+
+        #time #time-container #analogClock{
+            @supports (backdrop-filter: none) {
+                background: rgba(0, 0, 0, 0.25);
+            }
+        }
 	}
 
 	#edit_linkContainer {
@@ -69,7 +75,7 @@
 
 		#hideelem button,
 		#bg_tn_wrap .thumbnail button {
-			color: white;
+			color: $purewhite;
 		}
 		#bg_tn_wrap::-webkit-scrollbar-track {
 			background: #39383d;
@@ -84,6 +90,11 @@
 			border-top: 0;
 			border-bottom: 0;
 		}
+
+        select {
+            color: $purewhite;
+            background-color: $greyish;
+        }
 
 		.paramTitle {
 			color: #929294;
