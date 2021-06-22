@@ -123,8 +123,6 @@
 						width: 100%;
 						text-align: left;
 					}
-
-
 				}
 
 				// aiguilles
@@ -143,18 +141,18 @@
 					&#hours {
 						height: 30%;
 					}
-	
+
 					&#minutes {
 						height: 45%;
 					}
-	
+
 					&#analogSeconds {
 						height: 45%;
 						width: 0.1em;
 						margin-left: -0.05em;
 						opacity: 0.8;
 						background-color: red;
-	
+
 						&.hidden {
 							display: none;
 						}
@@ -204,13 +202,13 @@
 			#temp_max_wrap.shown {
 				display: block;
 			}
-	
+
 			#w_icon {
 				display: flex;
 				height: 100px;
 				justify-content: center;
 				align-items: center;
-	
+
 				#widget {
 					opacity: 0;
 					height: 60px;
@@ -219,17 +217,17 @@
 					padding-right: 10px;
 					transition: opacity 0.1s;
 				}
-	
+
 				#w_widget_text {
 					font-size: 2em;
 				}
-	
+
 				@include hidden();
 			}
 		}
 	}
 
-	// search bar 
+	// search bar
 	#sb_container {
 		visibility: hidden;
 		display: none;
@@ -251,7 +249,7 @@
 			padding: 0 1em 0 1em;
 			transition: background-color 0.2s;
 			opacity: 0.8;
-			
+
 			@supports (backdrop-filter: none) {
 				background: rgba(255, 255, 255, 0.3);
 				backdrop-filter: blur(10px);
@@ -321,11 +319,18 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
+		align-items: flex-start;
 		max-width: 100%;
 		margin: 0 auto;
 		padding: 2em;
 		min-height: 8em;
 		padding: 0;
+
+		#linkblocks_inner {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
 
 		@include hidden();
 
@@ -619,17 +624,17 @@
 	transform: translateX(-100%);
 	box-sizing: border-box;
 	will-change: transform;
-	transition: background .2s ease, transform 0.4s ease;
+	transition: background 0.2s ease, transform 0.4s ease;
 
 	@supports (backdrop-filter: none) {
 		background: rgba(255, 255, 255, 0.8);
 		backdrop-filter: blur(10px);
 	}
-	
+
 	@include allCentered();
 
 	&:hover {
-		background: rgba(255, 255, 255, .9);
+		background: rgba(255, 255, 255, 0.9);
 	}
 
 	&.shown {
@@ -646,7 +651,7 @@
 		margin-left: 1em;
 
 		a:nth-child(1) {
-			margin-bottom: .5em;
+			margin-bottom: 0.5em;
 		}
 
 		> * {
@@ -661,7 +666,7 @@
 			&:hover {
 				filter: brightness(120%);
 			}
-		
+
 			&:active {
 				filter: brightness(85%);
 			}
