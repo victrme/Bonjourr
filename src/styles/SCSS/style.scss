@@ -94,33 +94,31 @@
 					border-radius: 100px;
 				}
 
-				.number {
+				.numbers {
 					position: absolute;
 					display: block;
+					opacity: .6;
+					width: 100%;
 
-					&#top {
-						top: 5px;
-						width: 100%;
+					&.top {
+						top: 10px;
 						text-align: center;
 					}
 
-					&#right {
+					&.right {
 						top: 40%;
-						right: 5px;
-						width: 100%;
+						right: 10px;
 						text-align: right;
 					}
 
-					&#bottom {
-						bottom: 5px;
-						width: 100%;
+					&.bottom {
+						bottom: 10px;
 						text-align: center;
 					}
 
-					&#left {
+					&.left {
 						top: 40%;
-						left: 5px;
-						width: 100%;
+						left: 10px;
 						text-align: left;
 					}
 				}

@@ -149,15 +149,7 @@ function newClock(eventObj, init) {
 
 		function analog(timearray) {
 			function rotation(that, val) {
-				const spancss = that.style
-
-				if (lazyClockInterval === 0 || val === 0) {
-					spancss.transition = 'none'
-				} else {
-					if (spancss.transition === 'none 0s ease 0s') spancss.transition = 'transform .1s'
-				}
-
-				spancss.transform = `rotate(${parseInt(val)}deg)`
+				that.style.transform = `rotate(${parseInt(val)}deg)`
 			}
 
 			let s = timearray[2] * 6,
@@ -199,10 +191,7 @@ function newClock(eventObj, init) {
 			marks: ['│', '─', '│', '─']
 		}
 
-		id('top').innerText = chars[face][0]
-		id('right').innerText = chars[face][1]
-		id('bottom').innerText = chars[face][2]
-		id('left').innerText = chars[face][3]
+		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => mark.innerText = chars[face][i])
 	}
 
 	//controle très stricte de clock comme vous pouvez le voir
