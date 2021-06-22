@@ -319,12 +319,11 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		align-items: flex-start;
+		align-items: center;
 		max-width: 100%;
 		margin: 0 auto;
 		padding: 2em;
 		min-height: 8em;
-		padding: 0;
 
 		#linkblocks_inner {
 			display: flex;

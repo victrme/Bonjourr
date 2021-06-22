@@ -1636,7 +1636,7 @@ function searchbar(event, that, storage) {
 	}
 
 	id('searchbar').onkeyup = function (e) {
-		if (e.which === 13) {
+		if (e.key === 'Enter') {
 			if (sessionStorage.newtab === 'true') window.open(localisation(this.value), '_blank')
 			else window.location = localisation(this.value)
 		}

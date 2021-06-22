@@ -527,9 +527,9 @@ document.onkeydown = function (e) {
 	//focus la searchbar si elle existe et les settings sont fermé
 	const searchbar = id('sb_container') ? has('sb_container', 'shown') : false
 	const settings = id('settings') ? has('settings', 'shown') : false
-	const edit = has('edit_linkContainer', 'shown')
+	const noEdit = id('edit_linkContainer').style.display === 'none'
 
-	if (searchbar && !settings && !edit) id('searchbar').focus()
+	if (searchbar && !settings && noEdit) id('searchbar').focus()
 
 	//press escape to show settings
 	if (e.code === 'Escape') showSettings()
