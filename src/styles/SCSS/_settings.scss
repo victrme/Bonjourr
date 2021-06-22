@@ -377,6 +377,24 @@
 		}
 	}
 
+	#clockoptions {
+
+		#w_clockface,
+		#w_ampm {
+			opacity: 1;
+			min-height: 0;
+			max-height: 3em;
+			overflow: hidden;
+			transition: max-height .0s .2s, opacity .2s;
+		}
+
+		&.digital #w_clockface,
+		&.analog #w_ampm {
+			max-height: 0;
+			opacity: 0;
+		}
+	}
+
 	#sett_city {
 		flex-direction: column;
 

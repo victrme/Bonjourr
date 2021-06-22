@@ -82,6 +82,8 @@ function tradThis(str) {
 	else return dict[str][langue]
 }
 
+
+
 function newClock(eventObj, init) {
 	function displayControl() {
 		const numeric = id('clock'),
@@ -187,17 +189,43 @@ function newClock(eventObj, init) {
 		lazyClockInterval = setInterval(main, 1000)
 	}
 
+	function changeAnalogFace(face) {
+		//
+		// Clockwise
+		const chars = {
+			none: ['', '', '', ''],
+			number: ['12', '3', '6', '9'],
+			roman: ['XII', 'III', 'VI', 'IX'],
+			marks: ['│', '─', '│', '─']
+		}
+
+		id('top').innerText = chars[face][0]
+		id('right').innerText = chars[face][1]
+		id('bottom').innerText = chars[face][2]
+		id('left').innerText = chars[face][3]
+	}
+
 	//controle très stricte de clock comme vous pouvez le voir
 	//(je sais que je peux faire mieux)
-	let clock
+	let clock = {
+		analog: false,
+		seconds: false,
+		ampm: false,
+		timezone: 'auto',
+		face: 'none'
+	}
 
 	if (eventObj) {
 		chrome.storage.sync.get('clock', (data) => {
-			clock = {
-				analog: data.clock ? data.clock.analog : false,
-				seconds: data.clock ? data.clock.seconds : false,
-				ampm: data.clock ? data.clock.ampm : false,
-				timezone: data.clock ? data.clock.timezone : 'auto',
+
+			if (data.clock) {
+				clock = {
+					analog: data.clock.analog,
+					seconds: data.clock.seconds,
+					ampm: data.clock.ampm,
+					timezone: data.clock.timezone,
+					face: data.clock.face,
+				}
 			}
 
 			//event change of clock parameters
@@ -205,16 +233,21 @@ function newClock(eventObj, init) {
 			chrome.storage.sync.set({ clock: clock })
 
 			startClock(true)
+			changeAnalogFace(clock.face)
 		})
 	} else {
-		clock = {
-			analog: init ? init.analog : false,
-			seconds: init ? init.seconds : false,
-			ampm: init ? init.ampm : false,
-			timezone: init ? init.timezone : 'auto',
+		if (init) {
+			clock = {
+				analog: init.analog,
+				seconds: init.seconds,
+				ampm: init.ampm,
+				timezone: init.timezone,
+				face: init.face,
+			}
 		}
 
 		startClock(true)
+		changeAnalogFace(clock.face)
 	}
 }
 
@@ -1159,8 +1192,8 @@ function b64toBlobUrl(a, b = '', c = 512) {
 		e.push(g)
 	}
 	const f = new Blob(e, {
-			type: b,
-		}),
+		type: b,
+	}),
 		g = URL.createObjectURL(f)
 	return g
 }
@@ -1925,8 +1958,8 @@ function proFunctions(obj) {
 				animonly
 					? id(parent).classList.add('he_anim')
 					: isEverythingHidden(list, row_i)
-					? toggleElement(parent, true)
-					: ''
+						? toggleElement(parent, true)
+						: ''
 
 				// Hide children
 				row.forEach((child, child_i) => {
@@ -2079,7 +2112,7 @@ window.onload = function () {
 			//safe font for different alphabet
 			if (data.lang === 'ru' || data.lang === 'sk') {
 				const safeFont = () =>
-					(id('styles').innerText = `
+				(id('styles').innerText = `
 			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
 
 				if (!data.font) safeFont()

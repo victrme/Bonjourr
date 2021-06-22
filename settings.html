@@ -202,29 +202,41 @@
 	</div>
 
 	<div class="param">
-		<div class="pro">
-			<div class="analog wrapper">
-				<span class="trn">Analog clock</span>
-				<div>
-					<label class="switch">
-						<input id="i_analog" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
+		<div class="analog wrapper">
+			<span class="trn">Analog clock</span>
+			<div>
+				<label class="switch">
+					<input id="i_analog" type="checkbox" />
+					<span class="slider round span"></span>
+				</label>
 			</div>
+		</div>
 
+		<div id="clockoptions" class="pro digital">
 			<hr />
 
-			<div class="analog_numbers wrapper">
-				<span class="trn">Display numbers</span>
+			<div id="w_clockface" class="wrapper">
+				<span class="trn selector_span">Clock face</span>
+				<select id="i_clockface" class="">
+					<option value="none" class="trn">None</option>
+					<option value="number" class="trn">Numbers</option>
+					<option value="roman" class="trn">Romans</option>
+					<option value="marks" class="trn">Graduations</option>
+				</select>
+			</div>
+
+			<div id="w_ampm" class="wrapper">
+				<span class="trn">12-Hour Time</span>
 				<div>
 					<label class="switch">
-						<input id="i_analog_numbers" type="checkbox" />
+						<input id="i_ampm" type="checkbox" />
 						<span class="slider round span"></span>
 					</label>
 				</div>
 			</div>
+		</div>
 
+		<div class="pro">
 			<hr />
 
 			<div class="seconds wrapper">
@@ -248,48 +260,38 @@
 					</label>
 				</div>
 			</div>
+		</div>
 
+		<div class="pro">
 			<hr />
-		</div>
 
-		<div id="w_ampm" class="12hour wrapper">
-			<span class="trn">12-Hour Time</span>
-			<div>
-				<label class="switch">
-					<input id="i_ampm" type="checkbox" />
-					<span class="slider round span"></span>
-				</label>
+			<div class="wrapper">
+				<span class="trn selector_span">Time zone</span>
+				<select id="i_timezone" class="">
+					<option value="auto" class="trn">Automatic</option>
+					<option value="-10">UTC/HST -10 (Honolulu)</option>
+					<option value="-9">UTC/AKST -9 (Ancorage)</option>
+					<option value="-8">UTC/PST -8 (Vancouver, Los Angeles)</option>
+					<option value="-7">UTC/MST -7 (Phoenix)</option>
+					<option value="-6">UTC/CST -6 (Mexico, Houston)</option>
+					<option value="-5">UTC/EST -5 (Montreal, New York, Panama)</option>
+					<option value="-4">UTC/AST -4 (Halifax, Caracas)</option>
+					<option value="-3">UTC/CLST -3 (Sao Paulo, Santiago)</option>
+					<option value="0">UTC/GMT (London, Lisboa, Reykjavik)</option>
+					<option value="+1">UTC/CET +1 (Paris, Madrid, Amsterdam, Stockholm)</option>
+					<option value="+2">UTC/EET +2 (Helsinki, Bucharest, Athens, Cairo)</option>
+					<option value="+3">UTC/MSK +3 (Moscow, Istanbul)</option>
+					<option value="+4">UTC/AST +4 (Tehran, Doha)</option>
+					<option value="+5">UTC/PKT +5 (Karachi)</option>
+					<option value="+6">UTC/IST +6 (Mumbai)</option>
+					<option value="+7">UTC/ICT +7 (Bangkok, Jakarta)</option>
+					<option value="+8">UTC/CST +8 (Shanghai, Perth)</option>
+					<option value="+9">UTC/KST +9 (Seoul, Tokyo)</option>
+					<option value="+10">UTC/AEST +10 (Brisbane)</option>
+					<option value="+11">UTC/AEDT +11 (Canberra)</option>
+					<option value="+12">UTC/NZDT +12 (Wellington)</option>
+				</select>
 			</div>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<span class="trn selector_span">Time zone</span>
-			<select id="i_timezone" class="">
-				<option value="auto" class="trn">Automatic</option>
-				<option value="-10">UTC/HST -10 (Honolulu)</option>
-				<option value="-9">UTC/AKST -9 (Ancorage)</option>
-				<option value="-8">UTC/PST -8 (Vancouver, Los Angeles)</option>
-				<option value="-7">UTC/MST -7 (Phoenix)</option>
-				<option value="-6">UTC/CST -6 (Mexico, Houston)</option>
-				<option value="-5">UTC/EST -5 (Montreal, New York, Panama)</option>
-				<option value="-4">UTC/AST -4 (Halifax, Caracas)</option>
-				<option value="-3">UTC/CLST -3 (Sao Paulo, Santiago)</option>
-				<option value="0">UTC/GMT (London, Lisboa, Reykjavik)</option>
-				<option value="+1">UTC/CET +1 (Paris, Madrid, Amsterdam, Stockholm)</option>
-				<option value="+2">UTC/EET +2 (Helsinki, Bucharest, Athens, Cairo)</option>
-				<option value="+3">UTC/MSK +3 (Moscow, Istanbul)</option>
-				<option value="+4">UTC/AST +4 (Tehran, Doha)</option>
-				<option value="+5">UTC/PKT +5 (Karachi)</option>
-				<option value="+6">UTC/IST +6 (Mumbai)</option>
-				<option value="+7">UTC/ICT +7 (Bangkok, Jakarta)</option>
-				<option value="+8">UTC/CST +8 (Shanghai, Perth)</option>
-				<option value="+9">UTC/KST +9 (Seoul, Tokyo)</option>
-				<option value="+10">UTC/AEST +10 (Brisbane)</option>
-				<option value="+11">UTC/AEDT +11 (Canberra)</option>
-				<option value="+12">UTC/NZDT +12 (Wellington)</option>
-			</select>
 		</div>
 	</div>
 </div>

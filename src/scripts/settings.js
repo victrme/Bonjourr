@@ -79,6 +79,17 @@ function showall(that) {
 	}
 }
 
+function toggleClockOptions(analog) {
+	const optionsWrapper = id('clockoptions')
+	if (analog) {
+		optionsWrapper.classList.remove('digital')
+		optionsWrapper.classList.add('analog')
+	} else {
+		optionsWrapper.classList.remove('analog')
+		optionsWrapper.classList.add('digital')
+	}
+}
+
 function settingsEvents() {
 	// file input animation
 	const custom = id('i_bgfile')
@@ -167,10 +178,15 @@ function settingsEvents() {
 
 	id('i_analog').onchange = function () {
 		newClock({ param: 'analog', value: this.checked })
+		toggleClockOptions(this.checked)
 	}
 
 	id('i_seconds').onchange = function () {
 		newClock({ param: 'seconds', value: this.checked })
+	}
+
+	id('i_clockface').onchange = function () {
+		newClock({ param: 'face', value: this.value })
 	}
 
 	id('i_ampm').onchange = function () {
@@ -292,6 +308,8 @@ function initParams() {
 	// 1.9.2 ==> 1.9.3 lang break fix
 	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
 
+	if (data.clock) toggleClockOptions(data.clock.analog)
+
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
@@ -302,6 +320,7 @@ function initParams() {
 	initInput('i_bright', data.background_bright, 0.7)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_sbengine', data.searchbar_engine, 'google')
+	initInput('i_clockface', isThereData('clock', 'face'), 'roman')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
