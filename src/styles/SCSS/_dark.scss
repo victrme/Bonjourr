@@ -1,12 +1,13 @@
 @mixin darkCss {
 	#interface {
 		color: #eee;
+	}
 
-        #time #time-container #analogClock{
-            @supports (backdrop-filter: none) {
-                background: rgba(0, 0, 0, 0.25);
-            }
-        }
+	#interface #time #time-container #analogClock,
+	#popup {
+		@supports (backdrop-filter: none) {
+			background: rgba(0, 0, 0, 0.15);
+		}
 	}
 
 	#edit_linkContainer {
@@ -91,11 +92,11 @@
 			border-bottom: 0;
 		}
 
-        select {
-            color: $purewhite;
-            background-color: $greyish;
+		select {
+			color: $purewhite;
+			background-color: $greyish;
 			border-color: transparent;
-        }
+		}
 
 		.paramTitle {
 			color: #929294;

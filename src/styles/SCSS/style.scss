@@ -97,7 +97,7 @@
 				.numbers {
 					position: absolute;
 					display: block;
-					opacity: .6;
+					opacity: 0.6;
 					width: 100%;
 
 					&.top {
@@ -281,12 +281,6 @@
 					}
 				}
 			}
-		}
-
-		.popup_searchbar,
-		.popup_searchbar:focus {
-			border: 2px solid #b8b8b8;
-			margin-top: 2em;
 		}
 
 		&.shown {
@@ -612,82 +606,68 @@
 
 // review popup
 #popup {
+	@include allCentered();
+	justify-content: space-between;
+
 	position: absolute;
+	text-align: left;
 	left: 0;
-	bottom: 4em;
-	padding: 1em;
-	background-color: $purewhite;
+	bottom: 5vh;
+	padding: 1em 2em 1em 3em;
 	border-radius: 0 10px 10px 0;
-	transform: translateX(-100%);
 	box-sizing: border-box;
 	will-change: transform;
-	transition: background 0.2s ease, transform 0.4s ease;
+	transform: translateX(-100%);
+	transition: transform 1s;
 
 	@supports (backdrop-filter: none) {
-		background: rgba(255, 255, 255, 0.8);
+		background: #f2f2f744;
 		backdrop-filter: blur(10px);
-	}
-
-	@include allCentered();
-
-	&:hover {
-		background: rgba(255, 255, 255, 0.9);
 	}
 
 	&.shown {
 		transform: translateX(0);
 	}
 
-	&.removed {
-		transform: translateX(-100%);
+	span,
+	a {
+		max-width: 200px;
+		font-size: 15px;
 	}
 
 	.choices {
 		display: flex;
 		flex-direction: column;
-		margin-left: 1em;
-
-		a:nth-child(1) {
-			margin-bottom: 0.5em;
-		}
-
-		> * {
-			box-sizing: border-box;
-			border-radius: 5px;
-			transition: 0.1s;
-			cursor: pointer;
-			font-size: 1.1em;
-			height: 36px;
-			text-decoration: none;
-
-			&:hover {
-				filter: brightness(120%);
-			}
-
-			&:active {
-				filter: brightness(85%);
-			}
-		}
 
 		a {
+			text-decoration: none;
 			background-color: $blue;
 			color: $purewhite;
 			border: 0;
-			width: auto;
-			margin-right: 1em;
-			padding: 0 10px;
+			height: 30px;
+			padding: 0 20px;
+			margin: 3px 20px;
+			border-radius: 5px;
 			@include allCentered();
 		}
 	}
 
 	#closePopup {
-		height: 1.2em;
+		margin-left: 30px;
+		font-size: 30px;
+		cursor: pointer;
 	}
 
-	span {
-		max-width: 200px;
-		text-align: justify;
-		color: $blackish;
+	#closePopup,
+	a {
+		transition: filter 0.1s;
+		&:hover {
+			filter: brightness(90%);
+		}
+
+		&:active {
+			filter: brightness(80%);
+		}
 	}
 }
 

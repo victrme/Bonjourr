@@ -1732,7 +1732,7 @@ function showPopup(data) {
 	//s'affiche après 30 tabs
 	if (data > 30) {
 		const close = function () {
-			popup.classList.add('removed')
+			popup.classList.remove('shown')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
