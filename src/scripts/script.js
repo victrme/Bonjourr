@@ -222,7 +222,7 @@ function newClock(eventObj, init) {
 			marks: ['│', '─', '│', '─'],
 		}
 
-		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.innerText = chars[face][i]))
+		document.querySelectorAll('#analogClock .number').forEach((mark, i) => (mark.innerText = chars[face][i]))
 	}
 
 	//controle très stricte de clock comme vous pouvez le voir
