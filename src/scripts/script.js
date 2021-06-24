@@ -4,7 +4,6 @@ const clas = (that, val) => that.setAttribute('class', val)
 const has = (that, val) => (id(that) && id(that).getAttribute('class') === val ? true : false)
 
 let disposableData = {},
-	isPro = false,
 	langue = 'en',
 	stillActive = false,
 	rangeActive = false,
@@ -1749,349 +1748,321 @@ function showPopup(data) {
 	else if (data === 'removed') document.body.removeChild(popup)
 }
 
-function proFunctions(obj) {
-	function customFont(data, event) {
-		function setFont(f, is) {
-			function saveFont(cssURL, supportedWeights) {
-				const font = {
-					supportedWeights: supportedWeights || ['400'],
-					family: id('i_customfont').value,
-					weight: id('i_weight').value,
-					size: id('i_size').value,
-					url: cssURL || f.url,
-				}
-
-				return { font: font }
+function customFont(data, event) {
+	function setFont(f, is) {
+		function saveFont(cssURL, supportedWeights) {
+			const font = {
+				supportedWeights: supportedWeights || ['400'],
+				family: id('i_customfont').value,
+				weight: id('i_weight').value,
+				size: id('i_size').value,
+				url: cssURL || f.url,
 			}
 
-			function applyFont(URL) {
-				//
-				function applyWeight(weight) {
-					if (weight) id('interface').style.fontWeight = weight
-				}
+			return { font: font }
+		}
 
-				function applySize(size) {
-					if (size) dominterface.style.fontSize = size + 'px'
-				}
-
-				// No need to fetch for size change
-				if (event) {
-					if (event.size) {
-						applySize(event.size)
-						return false
-					}
-				}
-
-				const url = f.url || URL
-
-				if (url) {
-					fetch(url)
-						.then((response) => response.text())
-						.then((text) => {
-							text = text.replace(/(\r\n|\n|\r|  )/gm, '')
-							id('fontstyle').innerText = text ? text : f.str
-
-							if (f.family) {
-								document.body.style.fontFamily = f.family
-								id('clock').style.fontFamily = f.family
-							}
-
-							applyWeight(f.weight)
-							applySize(f.size)
-						})
-				} else {
-					applyWeight(f.weight)
-					applySize(f.size)
-				}
+		function applyFont(URL) {
+			//
+			function applyWeight(weight) {
+				if (weight) id('interface').style.fontWeight = weight
 			}
 
-			function removeFont() {
-				id('fontstyle').innerText = ''
-				document.body.style.fontFamily = ''
-				id('clock').style.fontFamily = ''
-
-				slowRange(saveFont(), 200)
+			function applySize(size) {
+				if (size) dominterface.style.fontSize = size + 'px'
 			}
 
-			//si on change la famille
-			if (is === 'event') {
-				const dom = id('i_customfont')
-				const userFamily = dom.value
-				const userWeight = f.weight === '400' ? 'regular' : f.weight || 'regular'
-
-				// If nothing, removes custom font
-				if (userFamily === '') {
-					removeFont()
+			// No need to fetch for size change
+			if (event) {
+				if (event.size) {
+					applySize(event.size)
 					return false
 				}
+			}
 
-				function changeFontOptions(json) {
-					//
-					// Cherche correspondante
-					const font = json.items.filter((font) => font.family.toUpperCase() === userFamily.toUpperCase())
+			const url = f.url || URL
 
-					// One font has been found
-					if (font.length > 0) {
-						const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${userWeight}`
+			if (url) {
+				fetch(url)
+					.then((response) => response.text())
+					.then((text) => {
+						text = text.replace(/(\r\n|\n|\r|  )/gm, '')
+						id('fontstyle').innerText = text ? text : f.str
 
-						// To prevent weight sliders from sending useless requests
-						const availableWeight = font[0].variants.filter((vari) => !vari.includes('italic'))
-
-						if (availableWeight.indexOf(userWeight) > -1) {
-							applyFont(url)
-							slowRange(saveFont(url, availableWeight), 200)
-
-							dom.blur()
-							dom.setAttribute('placeholder', 'Any Google fonts')
-						} else {
-							slowRange(saveFont(null, availableWeight), 200)
+						if (f.family) {
+							document.body.style.fontFamily = f.family
+							id('clock').style.fontFamily = f.family
 						}
-					} else {
-						dom.value = ''
-						dom.setAttribute('placeholder', 'No fonts matched')
-					}
-				}
 
-				if (Object.entries(googleFontList).length === 0) {
-					// Liste toute les fonts
-					fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk')
-						.then((response) => response.json())
-						.then((json) => {
-							googleFontList = json
-							changeFontOptions(json)
-						})
-				} else changeFontOptions(googleFontList)
-			} else applyFont()
-		}
-
-		//init
-		if (data) setFont(data)
-		if (event) setFont(event, 'event')
-	}
-
-	function customCss(data, event) {
-		const styleHead = id('styles')
-
-		// Active l'indentation
-		function syntaxControl(e, that) {
-			const cursorPosStart = that.selectionStart,
-				beforeCursor = that.value.slice(0, cursorPosStart),
-				afterCursor = that.value.slice(cursorPosStart + 1, that.value.length - 1)
-
-			if (e.key === '{') {
-				that.value = beforeCursor + `{\r  \r}` + afterCursor
-				that.selectionStart = cursorPosStart + 3
-				that.selectionEnd = cursorPosStart + 3
-				e.preventDefault()
-			}
-		}
-
-		if (data) {
-			styleHead.innerText = data
-		}
-
-		if (event) {
-			//const e = event.e
-			// const that = event.that
-			// syntaxControl(e, that)
-
-			const val = id('cssEditor').value
-			styleHead.innerText = val
-			slowRange({ css: val }, 500)
-		}
-	}
-
-	function linksrow(data, event) {
-		function setRows(val) {
-			domlinkblocks.style.width = `${val * 7}em`
-		}
-
-		if (data !== undefined) setRows(data)
-
-		if (event) {
-			//id("e_row").innerText = event;
-			setRows(event)
-			slowRange({ linksrow: parseInt(event) })
-		}
-	}
-
-	function greeting(data, event) {
-		let text = id('greetings').innerText
-		let pause
-
-		function apply(val) {
-			//greeting is classic text + , + custom greet
-			id('greetings').innerText = `${text}, ${val}`
-
-			//input empty removes ,
-			if (val === '') id('greetings').innerText = text
-		}
-
-		function setEvent(val) {
-			const virgule = text.indexOf(',')
-
-			//remove last input from greetings
-			text = text.slice(0, virgule === -1 ? text.length : virgule)
-			apply(val)
-
-			//reset save timeout
-			//wait long enough to save to storage
-			if (pause) clearTimeout(pause)
-
-			pause = setTimeout(function () {
-				chrome.storage.sync.set({ greeting: val })
-			}, 1200)
-		}
-
-		//init
-		if (data !== undefined) apply(data)
-		if (event !== undefined) setEvent(event)
-	}
-
-	function hideElem(init, buttons, that) {
-		const IDsList = [
-			['time', ['time-container', 'date']],
-			['main', ['greetings', 'weather_desc', 'w_icon']],
-			['linkblocks', ['linkblocks']],
-			['showSettings', ['showSettings']],
-		]
-
-		// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
-		function getEventListPosition(that) {
-			return { row: parseInt(that.getAttribute('he_row')), col: parseInt(that.getAttribute('he_col')) }
-		}
-
-		function toggleElement(dom, hide) {
-			if (hide) id(dom).classList.add('he_hidden')
-			else id(dom).classList.remove('he_hidden')
-		}
-
-		function isEverythingHidden(list, row) {
-			const filtered = list[row].filter((el) => el === 1)
-			return filtered.length === list[row].length
-		}
-
-		function initializeHiddenElements(list, animonly) {
-			list.forEach((row, row_i) => {
-				const parent = IDsList[row_i][0]
-
-				animonly
-					? id(parent).classList.add('he_anim')
-					: isEverythingHidden(list, row_i)
-					? toggleElement(parent, true)
-					: ''
-
-				// Hide children
-				row.forEach((child, child_i) => {
-					const childid = IDsList[row_i][1][child_i]
-
-					animonly ? id(childid).classList.add('he_anim') : child === 1 ? toggleElement(childid, true) : ''
-				})
-			})
-		}
-
-		function updateToNewData(list) {
-			if (list[0]) {
-				if (typeof list[0][0] === 'string') {
-					//
-					// Flattens and removes parent IDs
-					const childOnly = IDsList.flat().filter((row) => typeof row === 'object')
-					let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
-
-					//
-					// Go through IDs list for every old hide elems
-					list.forEach((id) => {
-						childOnly.forEach((row, row_i) =>
-							row.forEach((col, col_i) => {
-								if (col === id) {
-									newHidden[row_i][col_i] = 1
-								}
-							})
-						)
+						applyWeight(f.weight)
+						applySize(f.size)
 					})
-
-					chrome.storage.sync.set({ hide: newHidden })
-					return newHidden
-				}
-
-				// Is already updated
-				else return list
+			} else {
+				applyWeight(f.weight)
+				applySize(f.size)
 			}
-
-			// Had nothing to hide
-			else return list
 		}
 
-		// startup initialization
-		if (that === undefined && buttons === undefined) {
-			//
-			// first startup
-			if (!init) {
-				chrome.storage.sync.set({ hide: [[0, 0], [0, 0, 0], [0], [0]] })
+		function removeFont() {
+			id('fontstyle').innerText = ''
+			document.body.style.fontFamily = ''
+			id('clock').style.fontFamily = ''
+
+			slowRange(saveFont(), 200)
+		}
+
+		//si on change la famille
+		if (is === 'event') {
+			const dom = id('i_customfont')
+			const userFamily = dom.value
+			const userWeight = f.weight === '400' ? 'regular' : f.weight || 'regular'
+
+			// If nothing, removes custom font
+			if (userFamily === '') {
+				removeFont()
 				return false
 			}
 
-			initializeHiddenElements(updateToNewData(init))
-			setTimeout(() => initializeHiddenElements(init, true), 400)
-		}
-
-		// Settings buttons initialization
-		else if (buttons !== undefined) {
-			chrome.storage.sync.get('hide', (data) => {
+			function changeFontOptions(json) {
 				//
-				// 1.9.3 ==> 1.10.0
-				data.hide = updateToNewData(data.hide)
+				// Cherche correspondante
+				const font = json.items.filter((font) => font.family.toUpperCase() === userFamily.toUpperCase())
 
-				buttons.forEach((button) => {
-					const pos = getEventListPosition(button)
-					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
-				})
-			})
-		}
+				// One font has been found
+				if (font.length > 0) {
+					const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${userWeight}`
 
-		// Event
-		else {
-			chrome.storage.sync.get('hide', (data) => {
-				//
-				// 1.9.3 ==> 1.10.0
-				data.hide = updateToNewData(data.hide)
+					// To prevent weight sliders from sending useless requests
+					const availableWeight = font[0].variants.filter((vari) => !vari.includes('italic'))
 
-				const pos = getEventListPosition(that)
-				const state = that.classList.contains('clicked')
-				const child = IDsList[pos.row][1][pos.col]
-				const parent = IDsList[pos.row][0]
+					if (availableWeight.indexOf(userWeight) > -1) {
+						applyFont(url)
+						slowRange(saveFont(url, availableWeight), 200)
 
-				// Update hidden list
-				data.hide[pos.row][pos.col] = state ? 1 : 0
-				chrome.storage.sync.set({ hide: data.hide })
+						dom.blur()
+						dom.setAttribute('placeholder', 'Any Google fonts')
+					} else {
+						slowRange(saveFont(null, availableWeight), 200)
+					}
+				} else {
+					dom.value = ''
+					dom.setAttribute('placeholder', 'No fonts matched')
+				}
+			}
 
-				// Toggle children and parent if needed
-				toggleElement(child, state)
-				toggleElement(parent, isEverythingHidden(data.hide, pos.row))
-			})
+			if (Object.entries(googleFontList).length === 0) {
+				// Liste toute les fonts
+				fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk')
+					.then((response) => response.json())
+					.then((json) => {
+						googleFontList = json
+						changeFontOptions(json)
+					})
+			} else changeFontOptions(googleFontList)
+		} else applyFont()
+	}
+
+	//init
+	if (data) setFont(data)
+	if (event) setFont(event, 'event')
+}
+
+function customCss(data, event) {
+	const styleHead = id('styles')
+
+	// Active l'indentation
+	function syntaxControl(e, that) {
+		const cursorPosStart = that.selectionStart,
+			beforeCursor = that.value.slice(0, cursorPosStart),
+			afterCursor = that.value.slice(cursorPosStart + 1, that.value.length - 1)
+
+		if (e.key === '{') {
+			that.value = beforeCursor + `{\r  \r}` + afterCursor
+			that.selectionStart = cursorPosStart + 3
+			that.selectionEnd = cursorPosStart + 3
+			e.preventDefault()
 		}
 	}
 
-	switch (obj.which) {
-		case 'font':
-			customFont(obj.data, obj.event)
-			break
+	if (data) {
+		styleHead.innerText = data
+	}
 
-		case 'css':
-			customCss(obj.data, obj.event)
-			break
+	if (event) {
+		//const e = event.e
+		// const that = event.that
+		// syntaxControl(e, that)
 
-		case 'row':
-			linksrow(obj.data, obj.event)
-			break
+		const val = id('cssEditor').value
+		styleHead.innerText = val
+		slowRange({ css: val }, 500)
+	}
+}
 
-		case 'greet':
-			greeting(obj.data, obj.event)
-			break
+function linksrow(data, event) {
+	function setRows(val) {
+		domlinkblocks.style.width = `${val * 7}em`
+	}
 
-		case 'hide':
-			hideElem(obj.data, obj.buttons, obj.event)
-			break
+	if (data !== undefined) setRows(data)
+
+	if (event) {
+		//id("e_row").innerText = event;
+		setRows(event)
+		slowRange({ linksrow: parseInt(event) })
+	}
+}
+
+function greetingName(data, event) {
+	let text = id('greetings').innerText
+	let pause
+
+	function apply(val) {
+		//greeting is classic text + , + custom greet
+		id('greetings').innerText = `${text}, ${val}`
+
+		//input empty removes ,
+		if (val === '') id('greetings').innerText = text
+	}
+
+	function setEvent(val) {
+		const virgule = text.indexOf(',')
+
+		//remove last input from greetings
+		text = text.slice(0, virgule === -1 ? text.length : virgule)
+		apply(val)
+
+		//reset save timeout
+		//wait long enough to save to storage
+		if (pause) clearTimeout(pause)
+
+		pause = setTimeout(function () {
+			chrome.storage.sync.set({ greeting: val })
+		}, 1200)
+	}
+
+	//init
+	if (data !== undefined) apply(data)
+	if (event !== undefined) setEvent(event)
+}
+
+function hideElem(init, buttons, that) {
+	const IDsList = [
+		['time', ['time-container', 'date']],
+		['main', ['greetings', 'weather_desc', 'w_icon']],
+		['linkblocks', ['linkblocks']],
+		['showSettings', ['showSettings']],
+	]
+
+	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
+	function getEventListPosition(that) {
+		return { row: parseInt(that.getAttribute('he_row')), col: parseInt(that.getAttribute('he_col')) }
+	}
+
+	function toggleElement(dom, hide) {
+		if (hide) id(dom).classList.add('he_hidden')
+		else id(dom).classList.remove('he_hidden')
+	}
+
+	function isEverythingHidden(list, row) {
+		const filtered = list[row].filter((el) => el === 1)
+		return filtered.length === list[row].length
+	}
+
+	function initializeHiddenElements(list, animonly) {
+		list.forEach((row, row_i) => {
+			const parent = IDsList[row_i][0]
+
+			animonly ? id(parent).classList.add('he_anim') : isEverythingHidden(list, row_i) ? toggleElement(parent, true) : ''
+
+			// Hide children
+			row.forEach((child, child_i) => {
+				const childid = IDsList[row_i][1][child_i]
+
+				animonly ? id(childid).classList.add('he_anim') : child === 1 ? toggleElement(childid, true) : ''
+			})
+		})
+	}
+
+	function updateToNewData(list) {
+		if (list[0]) {
+			if (typeof list[0][0] === 'string') {
+				//
+				// Flattens and removes parent IDs
+				const childOnly = IDsList.flat().filter((row) => typeof row === 'object')
+				let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
+
+				//
+				// Go through IDs list for every old hide elems
+				list.forEach((id) => {
+					childOnly.forEach((row, row_i) =>
+						row.forEach((col, col_i) => {
+							if (col === id) {
+								newHidden[row_i][col_i] = 1
+							}
+						})
+					)
+				})
+
+				chrome.storage.sync.set({ hide: newHidden })
+				return newHidden
+			}
+
+			// Is already updated
+			else return list
+		}
+
+		// Had nothing to hide
+		else return list
+	}
+
+	// startup initialization
+	if (!that && !buttons) {
+		//
+		// first startup
+		if (!init) {
+			chrome.storage.sync.set({ hide: [[0, 0], [0, 0, 0], [0], [0]] })
+			return false
+		}
+
+		initializeHiddenElements(updateToNewData(init))
+		setTimeout(() => initializeHiddenElements(init, true), 400)
+	}
+
+	// Settings buttons initialization
+	else if (buttons) {
+		chrome.storage.sync.get('hide', (data) => {
+			//
+			// 1.9.3 ==> 1.10.0
+			data.hide = updateToNewData(data.hide)
+
+			buttons.forEach((button) => {
+				const pos = getEventListPosition(button)
+				if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
+			})
+		})
+	}
+
+	// Event
+	else {
+		chrome.storage.sync.get('hide', (data) => {
+			//
+			// 1.9.3 ==> 1.10.0
+			data.hide = updateToNewData(data.hide)
+
+			const pos = getEventListPosition(that)
+			const state = that.classList.contains('clicked')
+			const child = IDsList[pos.row][1][pos.col]
+			const parent = IDsList[pos.row][0]
+
+			// Update hidden list
+			data.hide[pos.row][pos.col] = state ? 1 : 0
+			chrome.storage.sync.set({ hide: data.hide })
+
+			// Toggle children and parent if needed
+			toggleElement(child, state)
+			toggleElement(parent, isEverythingHidden(data.hide, pos.row))
+		})
 	}
 }
 
@@ -2120,12 +2091,11 @@ window.onload = function () {
 			searchbar(null, null, data)
 			showPopup(data.reviewPopup)
 
-			//init profunctions
-			proFunctions({ which: 'hide', data: data.hide })
-			proFunctions({ which: 'font', data: data.font })
-			proFunctions({ which: 'css', data: data.css })
-			proFunctions({ which: 'row', data: data.linksrow })
-			proFunctions({ which: 'greet', data: data.greeting })
+			customFont(data.font)
+			customCss(data.css)
+			hideElem(data.hide)
+			linksrow(data.linksrow)
+			greetingName(data.greeting)
 
 			// New way to show interface
 			dominterface.style.opacity = '1'

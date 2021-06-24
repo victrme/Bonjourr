@@ -92,7 +92,6 @@ function settingsEvents() {
 	// file input animation
 	const custom = id('i_bgfile')
 	const customStyle = id('fileContainer')
-	let fontObj = {}
 
 	custom.addEventListener('dragenter', function () {
 		customStyle.classList.add('dragover')
@@ -254,26 +253,23 @@ function settingsEvents() {
 	}
 
 	id('i_customfont').onchange = function () {
-		fontObj = { family: this.value }
-		proFunctions({ which: 'font', event: fontObj })
+		customFont(null, { family: this.value })
 	}
 
 	id('i_weight').oninput = function () {
-		fontObj = { weight: this.value }
-		proFunctions({ which: 'font', event: fontObj })
+		customFont(null, { weight: this.value })
 	}
 
 	id('i_size').oninput = function () {
-		fontObj = { size: this.value }
-		proFunctions({ which: 'font', event: fontObj })
+		customFont(null, { size: this.value })
 	}
 
 	id('i_row').oninput = function () {
-		proFunctions({ which: 'row', event: this.value })
+		linksrow(null, this.value)
 	}
 
 	id('i_greeting').onkeyup = function () {
-		proFunctions({ which: 'greet', event: this.value })
+		greetingName(null, this.value)
 	}
 
 	id('cssEditor').addEventListener('keydown', function (e) {
@@ -283,7 +279,7 @@ function settingsEvents() {
 	})
 
 	id('cssEditor').addEventListener('keypress', function (e) {
-		proFunctions({ which: 'css', event: { e: e, that: this } })
+		customCss(null, { e: e, that: this })
 	})
 
 	id('hideelem')
@@ -291,7 +287,7 @@ function settingsEvents() {
 		.forEach((elem) => {
 			elem.onmouseup = function () {
 				elem.classList.toggle('clicked')
-				proFunctions({ which: 'hide', event: this })
+				hideElem(null, null, this)
 			}
 		})
 }
@@ -306,12 +302,11 @@ function initParams() {
 	// 1.9.2 ==> 1.9.3 lang break fix
 	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
 
-	if (data.clock) toggleClockOptions(data.clock.analog)
-
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
+	if (data.clock) toggleClockOptions(data.clock.analog)
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
@@ -341,7 +336,7 @@ function initParams() {
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
 	//hide elems
-	proFunctions({ which: 'hide', buttons: document.querySelectorAll('#hideelem button') })
+	hideElem(null, document.querySelectorAll('#hideelem button'), null)
 
 	//input translation
 	id('i_title').setAttribute('placeholder', tradThis('Name'))
