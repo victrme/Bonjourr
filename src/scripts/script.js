@@ -25,6 +25,40 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 
 const errorMessage = (e) => prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, e.stack, e.line)
 
+// lsOnlineStorage works exactly like chrome.storage
+// Just need to replace every chrome.storage
+// And maybe change import option
+
+const lsOnlineStorage = {
+	get: (which, callback) => {
+		const key = which === 'backgrounds' ? 'bonjourrBackgrounds' : 'bonjourr'
+		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
+		callback(data)
+	},
+	set: (prop) => {
+		lsOnlineStorage.get(null, (data) => {
+			if (typeof prop === 'object') {
+				const [key, val] = Object.entries(prop)[0]
+
+				if (key === 'import') data = val
+				else data[key] = val
+
+				localStorage.bonjourr = JSON.stringify(data)
+			}
+		})
+	},
+	bgset: (prop) => {
+		lsOnlineStorage.get('backgrounds', (data) => {
+			if (typeof prop === 'object') {
+				data[Object.entries(prop)[0][0]] = Object.entries(prop)[0][1]
+				localStorage.bonjourrBackgrounds = JSON.stringify(data)
+			}
+		})
+	},
+	log: (isbg) => lsOnlineStorage.get(isbg, (data) => console.log(data)),
+	del: () => localStorage.clear(),
+}
+
 //c'est juste pour debug le storage
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear(() => {
@@ -81,8 +115,6 @@ function tradThis(str) {
 	if (langue === 'en') return str
 	else return dict[str][langue]
 }
-
-
 
 function newClock(eventObj, init) {
 	function displayControl() {
@@ -188,10 +220,10 @@ function newClock(eventObj, init) {
 			none: ['', '', '', ''],
 			number: ['12', '3', '6', '9'],
 			roman: ['XII', 'III', 'VI', 'IX'],
-			marks: ['│', '─', '│', '─']
+			marks: ['│', '─', '│', '─'],
 		}
 
-		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => mark.innerText = chars[face][i])
+		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.innerText = chars[face][i]))
 	}
 
 	//controle très stricte de clock comme vous pouvez le voir
@@ -201,12 +233,11 @@ function newClock(eventObj, init) {
 		seconds: false,
 		ampm: false,
 		timezone: 'auto',
-		face: 'none'
+		face: 'none',
 	}
 
 	if (eventObj) {
 		chrome.storage.sync.get('clock', (data) => {
-
 			if (data.clock) {
 				clock = {
 					analog: data.clock.analog,
@@ -1181,8 +1212,8 @@ function b64toBlobUrl(a, b = '', c = 512) {
 		e.push(g)
 	}
 	const f = new Blob(e, {
-		type: b,
-	}),
+			type: b,
+		}),
 		g = URL.createObjectURL(f)
 	return g
 }
@@ -1947,8 +1978,8 @@ function proFunctions(obj) {
 				animonly
 					? id(parent).classList.add('he_anim')
 					: isEverythingHidden(list, row_i)
-						? toggleElement(parent, true)
-						: ''
+					? toggleElement(parent, true)
+					: ''
 
 				// Hide children
 				row.forEach((child, child_i) => {
@@ -2067,11 +2098,12 @@ function proFunctions(obj) {
 window.onload = function () {
 	try {
 		chrome.storage.sync.get(null, (data) => {
-			//1.8.3 -> 1.9 data transfer
-			if (localStorage.lang) {
-				data.lang = localStorage.lang
-				chrome.storage.sync.set({ lang: localStorage.lang })
-				localStorage.removeItem('lang')
+			//
+			// Compatibility with older local versions
+			// As it is now using "bonjourr" key
+			if (!chrome && localStorage.data && !localStorage.bonjourr) {
+				localStorage.bonjourr = atob(localStorage.data)
+				localStorage.removeItem('data')
 			}
 
 			//pour que les settings y accede plus facilement
@@ -2101,7 +2133,7 @@ window.onload = function () {
 			//safe font for different alphabet
 			if (data.lang === 'ru' || data.lang === 'sk') {
 				const safeFont = () =>
-				(id('styles').innerText = `
+					(id('styles').innerText = `
 			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
 
 				if (!data.font) safeFont()

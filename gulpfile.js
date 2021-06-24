@@ -12,16 +12,16 @@ const path = {
 	js: ['src/scripts/lang.js', 'src/scripts/collections.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
 }
 
-const scripts = {
-	before: `<script src="src/scripts/lang.js"></script><script src="src/scripts/collections.js"></script><script src="src/scripts/script.js"></script><script src="src/scripts/settings.js" defer="defer"></script>`,
-	after: `<script src="src/scripts/main.js"></script>`,
-}
-
 function cssTask() {
 	return src(path.css).pipe(csso()).pipe(dest('release/src/styles/'))
 }
 
 function htmlTask() {
+	const scripts = {
+		before: `<script src="src/scripts/lang.js"></script><script src="src/scripts/collections.js"></script><script src="src/scripts/script.js"></script><script src="src/scripts/settings.js" defer="defer"></script>`,
+		after: `<script src="src/scripts/main.js"></script>`,
+	}
+
 	return src(path.html)
 		.pipe(
 			htmlmin({
@@ -33,9 +33,23 @@ function htmlTask() {
 		.pipe(dest('release/'))
 }
 
-function jsTask() {
-	return src(path.js)
-		.pipe(concat('main.js'))
+function jsTask(online) {
+	const stream = src(path.js).pipe(concat('main.js'))
+
+	if (online) {
+		const storage = {
+			sync: ['chrome.storage.sync', 'lsOnlineStorage'],
+			bgget: ['chrome.storage.local.get(null,', 'lsOnlineStorage.get("backgrounds",'],
+			bgset: ['chrome.storage.local.set', 'lsOnlineStorage.bgset'],
+		}
+
+		stream
+			.pipe(replace(storage.sync[0], storage.sync[1]))
+			.pipe(replace(storage.bgget[0], storage.bgget[1]))
+			.pipe(replace(storage.bgset[0], storage.bgset[1]))
+	}
+
+	stream
 		.pipe(
 			minify({
 				mangle: {
@@ -44,6 +58,8 @@ function jsTask() {
 			})
 		)
 		.pipe(dest('release/src/scripts'))
+
+	return stream
 }
 
 function ressourcesTask() {
@@ -71,7 +87,7 @@ const makeExtension = (which) => [
 	ressourcesTask,
 	() => manifestTask(which),
 ]
-const makeOnline = () => [cssTask, jsTask, ressourcesTask, htmlTask]
+const makeOnline = () => [() => jsTask(true), cssTask, ressourcesTask, htmlTask]
 
 exports.chrome = series(parallel(...makeExtension('chrome')))
 exports.firefox = series(parallel(...makeExtension('firefox')))

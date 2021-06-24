@@ -31,7 +31,7 @@ function selectBackgroundType(cat) {
 }
 
 function displayCustomThumbnails() {
-	chrome.storage.local.get('customThumbnails', (data) => {
+	chrome.storage.local.get(null, (data) => {
 		if (data.customThumbnails.length > 0) {
 			let cleanData
 			let thumbs = data.customThumbnails
@@ -44,9 +44,7 @@ function displayCustomThumbnails() {
 			fullThumbnails = data.customThumbnails
 
 			setTimeout(function () {
-				chrome.storage.local.get('custom', (data) => {
-					fullImage = data.custom
-				})
+				fullImage = data.custom
 			}, 200)
 		}
 	})
@@ -463,7 +461,8 @@ function showSettings() {
 	function functions() {
 		initParams()
 		traduction(true)
-		setTimeout(function () {
+
+		setTimeout(() => {
 			display()
 			showall()
 			settingsEvents()
@@ -472,23 +471,16 @@ function showSettings() {
 	}
 
 	function init() {
-		let node = document.createElement('div')
-		let xhttp = new XMLHttpRequest()
+		fetch('settings.html').then((resp) =>
+			resp.text().then((text) => {
+				const dom = document.createElement('div')
+				dom.id = 'settings'
+				dom.innerHTML = text
+				document.body.appendChild(dom)
 
-		xhttp.onreadystatechange = function () {
-			if (this.readyState == 4) {
-				if (this.status == 200) {
-					node.id = 'settings'
-					node.innerHTML = this.responseText
-					document.body.appendChild(node)
-
-					functions()
-				}
-			}
-		}
-
-		xhttp.open('GET', '/settings.html', true)
-		xhttp.send()
+				functions()
+			})
+		)
 	}
 
 	if (!id('settings')) init()

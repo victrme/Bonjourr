@@ -6,7 +6,7 @@
 	"scripts": {
 		"build-chrome": "gulp chrome",
 		"build-firefox": "gulp firefox",
-		"build-local": "gulp local",
+		"build-online": "gulp online",
 		"scss": "node-sass -w src/styles/scss/ -o src/styles/"
 	},
 	"repository": {
