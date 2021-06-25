@@ -261,7 +261,7 @@ function settingsEvents() {
 	}
 
 	id('i_size').oninput = function () {
-		customFont(null, { size: this.value })
+		customSize(null, this.value)
 	}
 
 	id('i_row').oninput = function () {
@@ -337,6 +337,9 @@ function initParams() {
 
 	//hide elems
 	hideElem(null, document.querySelectorAll('#hideelem button'), null)
+
+	//Font weight
+	if (data.font) modifyWeightOptions(data.font.availWeights)
 
 	//input translation
 	id('i_title').setAttribute('placeholder', tradThis('Name'))

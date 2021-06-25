@@ -203,14 +203,14 @@
 
 			#w_icon {
 				display: flex;
-				height: 100px;
+				height: 5em;
 				justify-content: center;
 				align-items: center;
 
 				#widget {
 					opacity: 0;
-					height: 60px;
-					width: 60px;
+					height: 3em;
+					width: 3em;
 					border: none;
 					padding-right: 10px;
 					transition: opacity 0.1s;

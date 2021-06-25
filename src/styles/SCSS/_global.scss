@@ -67,7 +67,7 @@ body {
 	}
 
 	select {
-		cursor: pointer
+		cursor: pointer;
 	}
 
 	input,
@@ -161,7 +161,7 @@ body {
 		#main.he_hidden,
 		#linkblocks.he_hidden,
 		#time.he_hidden {
-			flex-grow: 0.000001;
+			flex-grow: 0;
 			opacity: 0;
 		}
 
@@ -320,7 +320,7 @@ body {
 	}
 
 	/* Slider */
-	.range {
+	input[type='range'] {
 		-webkit-appearance: none;
 		position: relative;
 		height: 2px;
@@ -338,7 +338,7 @@ body {
 	$thumbShadow: 0px 1px 3px 1.5px #cccccc;
 
 	/* Chrome, Opera & Safari */
-	.range::-webkit-slider-thumb {
+	input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		background: #fff;
 		height: 20px;

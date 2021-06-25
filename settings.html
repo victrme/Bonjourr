@@ -77,7 +77,7 @@
 
 				<div class="wrapper">
 					<span class="trn">Links per row</span>
-					<input id="i_row" type="range" class="range" name="i_row" min="2" max="12" step="1" value="8" />
+					<input id="i_row" type="range" name="i_row" min="2" max="12" step="1" value="8" />
 				</div>
 			</div>
 		</div>
@@ -141,7 +141,7 @@
 
 			<div class="wrapper">
 				<span class="trn">Blur intensity</span>
-				<input id="i_blur" type="range" class="range" name="background_blur" min="0" max="50" value="0" step="1" />
+				<input id="i_blur" type="range" name="background_blur" min="0" max="50" value="0" step="1" />
 			</div>
 
 			<hr />
@@ -672,14 +672,24 @@
 
 			<div class="wrapper">
 				<span class="trn">Weight</span>
-				<input id="i_weight" type="range" class="range" name="fontweight" min="100" max="900" step="100" value="400" />
+				<select id="i_weight">
+					<option value="100">Thin</option>
+					<option value="200">Extra Light</option>
+					<option value="300">Light</option>
+					<option value="400">Normal</option>
+					<option value="500">Medium</option>
+					<option value="600">Semi Bold</option>
+					<option value="700">Bold</option>
+					<option value="800">Extra Bold</option>
+					<option value="900">Black</option>
+				</select>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
 				<span class="trn">Size</span>
-				<input id="i_size" type="range" class="range" name="fontsize" min="9" max="26" value="12" />
+				<input id="i_size" type="range" name="fontsize" min="8" max="26" value="13" />
 			</div>
 		</div>
 	</div>

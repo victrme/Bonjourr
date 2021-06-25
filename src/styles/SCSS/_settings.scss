@@ -378,14 +378,13 @@
 	}
 
 	#clockoptions {
-
 		#w_clockface,
 		#w_ampm {
 			opacity: 1;
 			min-height: 0;
 			max-height: 3em;
 			overflow: hidden;
-			transition: max-height .0s .2s, opacity .2s;
+			transition: max-height 0s 0.2s, opacity 0.2s;
 		}
 
 		&.digital #w_clockface,
@@ -447,9 +446,17 @@
 			&.shown {
 				display: block;
 			}
-	
+
 			@include hidden();
 		}
+	}
+
+	#i_customfont {
+		text-transform: capitalize;
+	}
+
+	#i_weight option {
+		display: none;
 	}
 
 	#e_weight,
