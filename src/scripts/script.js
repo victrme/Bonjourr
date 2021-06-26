@@ -1065,6 +1065,48 @@ function weather(event, that, initStorage) {
 	}, 5 * 60 * 1000)
 }
 
+function initBackground(data) {
+	const type = data.background_type || 'dynamic'
+
+	if (type === 'custom') {
+		chrome.storage.local.get(null, (datalocal) => {
+			const customList = datalocal.custom || []
+
+			if (customList.length > 0) {
+				localBackgrounds({ local: datalocal, every: data.custom_every })
+			} else {
+				// If no custom, change to dynamic
+				unsplash(data)
+				chrome.storage.sync.set({ background_type: 'dynamic' })
+			}
+		})
+
+		// Removes credits
+		imgCredits(null, type)
+
+		// Not Custom, load dynamic
+	} else unsplash(data)
+
+	const blur = data.background_blur !== undefined ? data.background_blur : 15
+	const bright = data.background_bright !== undefined ? data.background_bright : 0.7
+
+	filter('init', [parseFloat(blur), parseFloat(bright)])
+}
+
+function imgBackground(val) {
+	if (val) {
+		let img = new Image()
+
+		img.onload = () => {
+			id('background').style.backgroundImage = `url(${val})`
+			id('background_overlay').style.animation = 'fade .1s ease-in forwards'
+		}
+
+		img.src = val
+		img.remove()
+	} else return id('background').style.backgroundImage
+}
+
 function imgCredits(src, type) {
 	const location = id('location'),
 		artist = id('artist'),
@@ -1083,280 +1125,6 @@ function imgCredits(src, type) {
 	else clas(credit, 'shown')
 }
 
-function imgBackground(val) {
-	if (val) {
-		let img = new Image()
-
-		img.onload = () => {
-			id('background').style.backgroundImage = `url(${val})`
-			id('background_overlay').style.animation = 'fade .1s ease-in forwards'
-		}
-
-		img.src = val
-		img.remove()
-	} else return id('background').style.backgroundImage
-}
-
-function initBackground(storage) {
-	//
-	function applyCustomBackground(backgrounds, index) {
-		const background = backgrounds[index]
-
-		if (background) {
-			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-			imgBackground(b64toBlobUrl(cleanData))
-			changeImgIndex(index)
-		}
-	}
-
-	function preventFromShowingTwice(index, max) {
-		const res = Math.floor(Math.random() * max)
-
-		return res === index ? (res + 1) % max : res
-	}
-
-	const type = storage.background_type || 'dynamic'
-
-	if (type === 'custom') {
-		chrome.storage.local.get(null, (storageLocal) => {
-			const customList = storageLocal.custom || []
-
-			if (customList.length > 0) {
-				//
-				// Slideshow or not, need index
-				const index = storageLocal.customIndex >= 0 ? storageLocal.customIndex : 0
-
-				// Slideshow is activated
-				if (storage.custom_every) {
-					const freq = storage.custom_every
-					const last = storage.custom_time || 0
-					const rand = preventFromShowingTwice(index, customList.length)
-
-					// Need new Image
-					if (freqControl('get', freq, last)) {
-						applyCustomBackground(customList, rand)
-
-						// Updates time & index
-						chrome.storage.sync.set({ custom_time: freqControl('set', freq) })
-						chrome.storage.local.set({ customIndex: rand })
-						//
-					} else {
-						applyCustomBackground(customList, index)
-					}
-
-					// No slideshow or no data for it
-				} else {
-					applyCustomBackground(customList, index)
-				}
-			} else {
-				// If no custom, change to dynamic
-				unsplash(storage)
-				chrome.storage.sync.set({ background_type: 'dynamic' })
-			}
-		})
-
-		// Removes credits
-		imgCredits(null, type)
-
-		// Not Custom, load dynamic
-	} else unsplash(storage)
-
-	const blur = storage.background_blur !== undefined ? storage.background_blur : 15
-	const bright = storage.background_bright !== undefined ? storage.background_bright : 0.7
-
-	filter('init', [parseFloat(blur), parseFloat(bright)])
-}
-
-function setblob(donnee, reader) {
-	const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
-		const byteCharacters = atob(b64Data)
-		const byteArrays = []
-
-		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-			const slice = byteCharacters.slice(offset, offset + sliceSize)
-
-			const byteNumbers = new Array(slice.length)
-			for (let i = 0; i < slice.length; i++) {
-				byteNumbers[i] = slice.charCodeAt(i)
-			}
-
-			const byteArray = new Uint8Array(byteNumbers)
-			byteArrays.push(byteArray)
-		}
-
-		const blob = new Blob(byteArrays, { type: contentType })
-		return blob
-	}
-
-	//découpe les données du file en [contentType, base64data]
-	let base = reader ? donnee.split(',') : donnee
-	let contentType = base[0].replace('data:', '').replace(';base64', '')
-	let b64Data = base[1]
-
-	//creer le blob et trouve l'url
-	let blob = b64toBlob(b64Data, contentType)
-	let blobUrl = URL.createObjectURL(blob)
-
-	return reader ? [base, blobUrl] : blobUrl
-}
-
-function b64toBlobUrl(a, b = '', c = 512) {
-	const d = atob(a),
-		e = []
-	for (let f = 0; f < d.length; f += c) {
-		const a = d.slice(f, f + c),
-			b = Array(a.length)
-		for (let c = 0; c < a.length; c++) b[c] = a.charCodeAt(c)
-		const g = new Uint8Array(b)
-		e.push(g)
-	}
-	const f = new Blob(e, {
-			type: b,
-		}),
-		g = URL.createObjectURL(f)
-	return g
-}
-
-function changeImgIndex(i) {
-	domimg.setAttribute('index', i)
-}
-
-function renderImage(file, is) {
-	let reader = new FileReader()
-	reader.onload = function (event) {
-		let result = event.target.result
-
-		if (is === 'change') {
-			fullImage.push(result)
-			chrome.storage.local.set({ custom: fullImage })
-
-			compress(result, 'thumbnail')
-			compress(result, 'new')
-		}
-	}
-
-	reader.readAsDataURL(file)
-}
-
-function compress(e, state) {
-	//prend l'image complete en arg
-
-	const img = new Image()
-
-	img.onload = () => {
-		//const size = document.getElementById('range').value;
-		const elem = document.createElement('canvas')
-		const ctx = elem.getContext('2d')
-
-		//canvas proportionné à l'image
-
-		//rétréci suivant le taux de compression
-		//si thumbnail, toujours 100px
-		const height = state === 'thumbnail' ? 100 : img.height * 1 //parseFloat(size));
-		const scaleFactor = height / img.height
-		elem.width = img.width * scaleFactor
-		elem.height = height
-
-		//dessine l'image proportionné
-		ctx.drawImage(img, 0, 0, img.width * scaleFactor, height)
-
-		//renvoie le base64
-		const data = ctx.canvas.toDataURL(img)
-		const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
-
-		if (state === 'thumbnail') {
-			//controle les thumbnails
-			addThumbnails(cleanData, fullImage.length - 1)
-
-			fullThumbnails.push(cleanData)
-			chrome.storage.local.set({ customThumbnails: fullThumbnails })
-		} else {
-			//new image loaded from filereader sets image index
-			if (state === 'new') {
-				changeImgIndex(fullImage.length - 1)
-				//save l'index
-				chrome.storage.local.set({ customIndex: fullImage.length - 1 })
-			}
-
-			//affiche l'image
-			imgBackground(b64toBlobUrl(cleanData))
-		}
-	}
-
-	img.src = e
-}
-
-function addThumbnails(data, index) {
-	//créer une tag html en plus + remove button
-
-	const div = document.createElement('div')
-	const i = document.createElement('img')
-	const rem = document.createElement('button')
-	const wrap = document.getElementById('bg_tn_wrap')
-
-	div.setAttribute('index', index)
-	div.setAttribute('class', 'thumbnail')
-	rem.setAttribute('class', 'hidden')
-	rem.innerText = '✕'
-	i.src = b64toBlobUrl(data)
-
-	div.appendChild(i)
-	div.appendChild(rem)
-	wrap.prepend(div)
-
-	//events
-	const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
-	const getIndex = (that) => parseInt(that.getAttribute('index'))
-	const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
-
-	//displays / hides remove button
-	div.onmouseenter = function () {
-		removeControl(true, getIndex(this))
-	}
-	div.onmouseleave = function () {
-		removeControl(false, getIndex(this))
-	}
-
-	//6
-	i.onmouseup = function () {
-		//affiche l'image voulu
-		//lui injecte le bon index
-
-		const index = getParentIndex(this)
-
-		compress(fullImage[index])
-		changeImgIndex(index)
-		chrome.storage.local.set({ customIndex: index })
-	}
-
-	//7
-	rem.onmouseup = function () {
-		const index = getParentIndex(this)
-		let currentIndex = parseInt(id('background').getAttribute('index'))
-
-		//removes thumbnail
-		domthumbnail[index].remove()
-
-		//rewrite all thumbs indexes
-		for (let i = 0; i < domthumbnail.length; i++) {
-			domthumbnail[i].setAttribute('index', i)
-		}
-
-		//deletes thumbnail from storage
-		//concat  [0, index] à [index + 1, fin]
-		const deleteArrItem = (arr) => arr.slice(null, index).concat(arr.slice(index + 1))
-
-		fullImage = deleteArrItem(fullImage)
-		chrome.storage.local.set({ custom: fullImage })
-
-		fullThumbnails = deleteArrItem(fullThumbnails)
-		chrome.storage.local.set({ customThumbnails: fullThumbnails })
-
-		//celui a suppr plus petit que l'actuel, baisse son index
-		if (index <= currentIndex) chrome.storage.local.set({ customIndex: currentIndex - 1 })
-	}
-}
-
 function freqControl(state, every, last) {
 	const d = new Date()
 	if (state === 'set') return every === 'tabs' ? 0 : d.getTime()
@@ -1371,6 +1139,262 @@ function freqControl(state, every, last) {
 
 		//bool
 		return today > calcLast
+	}
+}
+
+function localBackgrounds(init, thumbnail, newfile) {
+	function applyCustomBackground(backgrounds, index) {
+		const background = backgrounds[index]
+
+		if (background) {
+			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+			imgBackground(b64toBlobUrl(cleanData))
+			changeImgIndex(index)
+		}
+	}
+
+	function preventFromShowingTwice(index, max) {
+		const res = Math.floor(Math.random() * max)
+		return res === index ? (res + 1) % max : res
+	}
+
+	function b64toBlobUrl(a, b = '', c = 512) {
+		const d = atob(a),
+			e = []
+		for (let f = 0; f < d.length; f += c) {
+			const a = d.slice(f, f + c),
+				b = Array(a.length)
+			for (let c = 0; c < a.length; c++) b[c] = a.charCodeAt(c)
+			const g = new Uint8Array(b)
+			e.push(g)
+		}
+		const f = new Blob(e, {
+				type: b,
+			}),
+			g = URL.createObjectURL(f)
+		return g
+	}
+
+	function changeImgIndex(i) {
+		domimg.setAttribute('index', i)
+	}
+
+	function addNewImage() {
+		let reader = new FileReader()
+		reader.onload = function (event) {
+			let result = event.target.result
+
+			fullImage.push(result)
+
+			compress(result, 'thumbnail')
+			compress(result, 'new')
+
+			chrome.storage.local.get(null, (data) => {
+				const bumpedindex = data.custom.length
+
+				changeImgIndex(bumpedindex)
+				chrome.storage.local.set({ customIndex: bumpedindex })
+				chrome.storage.local.set({ custom: fullImage })
+
+				if (data.custom.length === 0) {
+					chrome.storage.sync.get('background_type', (data) => {
+						if (data.background_type === 'dynamic') chrome.storage.sync.set({ background_type: 'custom' })
+					})
+				}
+			})
+		}
+
+		reader.readAsDataURL(newfile)
+	}
+
+	function compress(e, state) {
+		//prend l'image complete en arg
+
+		const img = new Image()
+
+		img.onload = () => {
+			//const size = document.getElementById('range').value;
+			const elem = document.createElement('canvas')
+			const ctx = elem.getContext('2d')
+
+			//canvas proportionné à l'image
+
+			//rétréci suivant le taux de compression
+			//si thumbnail, toujours 100px
+			const height = state === 'thumbnail' ? 100 : img.height * 1 //parseFloat(size));
+			const scaleFactor = height / img.height
+			elem.width = img.width * scaleFactor
+			elem.height = height
+
+			//dessine l'image proportionné
+			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height)
+
+			//renvoie le base64
+			const data = ctx.canvas.toDataURL(img)
+			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
+
+			if (state === 'thumbnail') {
+				//controle les thumbnails
+				addThumbnails(cleanData, fullImage.length - 1)
+
+				fullThumbnails.push(cleanData)
+				chrome.storage.local.set({ customThumbnails: fullThumbnails })
+			} else {
+				//new image loaded from filereader sets image index
+				if (state === 'new') {
+					changeImgIndex(fullImage.length - 1)
+					//save l'index
+					chrome.storage.local.set({ customIndex: fullImage.length - 1 })
+				}
+
+				//affiche l'image
+				imgBackground(b64toBlobUrl(cleanData))
+			}
+		}
+
+		img.src = e
+	}
+
+	function addThumbnails(data, index) {
+		//créer une tag html en plus + remove button
+
+		const div = document.createElement('div')
+		const i = document.createElement('img')
+		const rem = document.createElement('button')
+		const wrap = document.getElementById('bg_tn_wrap')
+		const file = document.getElementById('fileContainer')
+
+		div.setAttribute('index', index)
+		div.setAttribute('class', 'thumbnail')
+		rem.setAttribute('class', 'hidden')
+		rem.innerText = '✕'
+		i.src = b64toBlobUrl(data)
+
+		div.appendChild(i)
+		div.appendChild(rem)
+		wrap.insertBefore(div, file)
+
+		//events
+		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
+		const getIndex = (that) => parseInt(that.getAttribute('index'))
+		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
+
+		//displays / hides remove button
+		div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
+		div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
+
+		i.onmouseup = (e) => {
+			if (e.button === 0) {
+				//affiche l'image voulu
+				//lui injecte le bon index
+				const index = getParentIndex(e.target)
+
+				compress(fullImage[index])
+				changeImgIndex(index)
+				chrome.storage.local.set({ customIndex: index })
+			}
+		}
+
+		rem.onmouseup = (e) => {
+			if (e.button === 0) {
+				const index = getParentIndex(e.target)
+				let currentIndex = parseInt(id('background').getAttribute('index'))
+
+				//removes thumbnail
+				domthumbnail[index].remove()
+
+				//rewrite all thumbs indexes
+				for (let i = 0; i < domthumbnail.length; i++) {
+					domthumbnail[i].setAttribute('index', i)
+				}
+
+				//deletes thumbnail from storage
+				//concat  [0, index] à [index + 1, fin]
+				const deleteArrItem = (arr) => arr.slice(null, index).concat(arr.slice(index + 1))
+
+				fullImage = deleteArrItem(fullImage)
+				chrome.storage.local.set({ custom: fullImage })
+
+				fullThumbnails = deleteArrItem(fullThumbnails)
+				chrome.storage.local.set({ customThumbnails: fullThumbnails })
+
+				//celui a suppr plus petit que l'actuel, baisse son index
+				if (index <= currentIndex) chrome.storage.local.set({ customIndex: currentIndex - 1 })
+
+				// Si derniere image des customs
+				if (fullImage.length === 0) {
+					unsplash()
+					chrome.storage.sync.set({ background_type: 'dynamic' })
+
+					// Sinon load une autre
+				} else {
+					compress(fullImage[currentIndex - 1] === undefined ? fullImage[currentIndex] : fullImage[currentIndex - 1])
+				}
+			}
+		}
+	}
+
+	function displayCustomThumbnails() {
+		const thumbnails = document.querySelectorAll('#bg_tn_wrap .thumbnail')
+
+		chrome.storage.local.get(null, (data) => {
+			if (data.customThumbnails.length > 0) {
+				if (thumbnails.length < data.customThumbnails.length) {
+					let cleanData
+					let thumbs = data.customThumbnails
+
+					thumbs.forEach((thumb, i) => {
+						cleanData = thumb.replace('data:image/jpeg;base64,', '') //used for blob
+						addThumbnails(cleanData, i)
+					})
+
+					fullThumbnails = data.customThumbnails
+
+					setTimeout(function () {
+						fullImage = data.custom
+					}, 200)
+				}
+			}
+		})
+	}
+
+	if (thumbnail) {
+		displayCustomThumbnails()
+		return true
+	}
+
+	if (newfile) {
+		addNewImage()
+		return true
+	}
+
+	// need all of saved stuff
+	const { local, every } = init
+
+	// Slideshow or not, need index
+	const index = local.customIndex >= 0 ? local.customIndex : 0
+	const customList = local.custom || []
+
+	// Slideshow is activated
+	if (every) {
+		const last = local.custom_time || 0
+		const rand = preventFromShowingTwice(index, customList.length)
+
+		// Need new Image
+		if (freqControl('get', every, last)) {
+			applyCustomBackground(customList, rand)
+
+			// Updates time & index
+			chrome.storage.sync.set({ custom_time: freqControl('set', every) })
+			chrome.storage.local.set({ customIndex: rand })
+			//
+		} else {
+			applyCustomBackground(customList, index)
+		}
+
+		// No slideshow or no data for it
+	} else {
+		applyCustomBackground(customList, index)
 	}
 }
 
@@ -2112,7 +2136,6 @@ window.onload = function () {
 			linksrow(data.linksrow)
 			greetingName(data.greeting)
 
-			// New way to show interface
 			dominterface.style.opacity = '1'
 
 			//safe font for different alphabet

@@ -17,7 +17,7 @@ function selectBackgroundType(cat) {
 	id(cat).style.display = 'block'
 
 	// Applying functions
-	cat === 'custom' ? displayCustomThumbnails() : unsplash()
+	cat === 'custom' ? localBackgrounds(null, true) : unsplash()
 
 	// Setting frequence
 	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
@@ -28,26 +28,6 @@ function selectBackgroundType(cat) {
 	})
 
 	chrome.storage.sync.set({ background_type: cat })
-}
-
-function displayCustomThumbnails() {
-	chrome.storage.local.get(null, (data) => {
-		if (data.customThumbnails.length > 0) {
-			let cleanData
-			let thumbs = data.customThumbnails
-
-			for (let i = thumbs.length - 1; i >= 0; i--) {
-				cleanData = thumbs[i].replace('data:image/jpeg;base64,', '') //used for blob
-				addThumbnails(cleanData, i)
-			}
-
-			fullThumbnails = data.customThumbnails
-
-			setTimeout(function () {
-				fullImage = data.custom
-			}, 200)
-		}
-	})
 }
 
 function showall(that) {
@@ -153,8 +133,8 @@ function settingsEvents() {
 
 	//custom bg
 
-	id('i_bgfile').onchange = function (e) {
-		renderImage(this.files[0], 'change')
+	id('i_bgfile').onchange = function () {
+		localBackgrounds(null, null, this.files[0])
 	}
 
 	id('i_blur').oninput = function () {
@@ -350,15 +330,11 @@ function initParams() {
 	id('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg
-	if (data.background_type === 'dynamic' || Object.keys(data).length === 0 || data.background_type === undefined) {
-		id('dynamic').style.display = 'block'
-	} else if (data.background_type === 'custom') {
+	if (data.background_type === 'custom') {
 		id('custom').style.display = 'block'
-		displayCustomThumbnails()
-	} else if (data.background_type === 'default') {
+		localBackgrounds(null, true)
+	} else {
 		id('dynamic').style.display = 'block'
-		id('i_type').value = 'dynamic'
-		chrome.storage.sync.set({ background_type: 'dynamic' })
 	}
 
 	//weather settings

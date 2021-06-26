@@ -50,6 +50,11 @@
 
 		// Background custom
 
+		#fileContainer {
+			background-color: #3a3a3a;
+			color: white;
+		}
+
 		#fileContainer.dragover,
 		#fileContainer:hover {
 			border: 1px dashed #ccc;
@@ -62,6 +67,7 @@
 			background: #2f2f30;
 		}
 
+		#bg_tn_wrap,
 		#hideelem > div {
 			button {
 				color: white;
