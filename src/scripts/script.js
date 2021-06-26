@@ -1221,7 +1221,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 			//rétréci suivant le taux de compression
 			//si thumbnail, toujours 100px
-			const height = state === 'thumbnail' ? 100 : img.height * 1 //parseFloat(size));
+			const height = state === 'thumbnail' ? 150 : img.height * 1 //parseFloat(size));
 			const scaleFactor = height / img.height
 			elem.width = img.width * scaleFactor
 			elem.height = height
