@@ -1732,14 +1732,11 @@ function showPopup(data) {
 	//s'affiche après 30 tabs
 	if (data > 30) {
 		const close = function () {
-			popup.classList.remove('shown')
+			popup.classList.replace('shown', 'removing')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
-		//attendre avant d'afficher
-		setTimeout(function () {
-			popup.classList.add('shown')
-		}, 2000)
+		popup.classList.add('shown')
 
 		closePopup.onclick = close
 		go.onclick = close

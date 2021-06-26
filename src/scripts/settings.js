@@ -313,7 +313,7 @@ function initParams() {
 	initInput('i_bright', data.background_bright, 0.7)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_sbengine', data.searchbar_engine, 'google')
-	initInput('i_clockface', isThereData('clock', 'face'), 'roman')
+	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
