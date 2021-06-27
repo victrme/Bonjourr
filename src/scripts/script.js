@@ -22,8 +22,6 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	domclock = id('clock'),
 	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
 
-const errorMessage = (e) => prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, e.stack, e.line)
-
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 // And maybe change import option
@@ -58,11 +56,10 @@ const lsOnlineStorage = {
 	del: () => localStorage.clear(),
 }
 
-//c'est juste pour debug le storage
 function deleteBrowserStorage() {
-	chrome.storage.sync.clear(() => {
-		localStorage.clear()
-	})
+	chrome.storage.sync.clear()
+	chrome.storage.local.clear()
+	localStorage.clear()
 }
 
 function getBrowserStorage(callback) {
@@ -724,6 +721,7 @@ function weather(event, that, initStorage) {
 			if (sessionStorage.lang || now > storage.weather.lastCall + 1800) {
 				dataHandling(param.lastState)
 				request(param, 'current')
+				sessionStorage.removeItem('lang')
 			} else dataHandling(param.lastState)
 
 			//high ici
@@ -1158,21 +1156,23 @@ function localBackgrounds(init, thumbnail, newfile) {
 		return res === index ? (res + 1) % max : res
 	}
 
-	function b64toBlobUrl(a, b = '', c = 512) {
-		const d = atob(a),
-			e = []
-		for (let f = 0; f < d.length; f += c) {
-			const a = d.slice(f, f + c),
-				b = Array(a.length)
-			for (let c = 0; c < a.length; c++) b[c] = a.charCodeAt(c)
-			const g = new Uint8Array(b)
-			e.push(g)
+	function b64toBlobUrl(b64Data, contentType = '', sliceSize = 512) {
+		const byteCharacters = atob(b64Data)
+		const byteArrays = []
+
+		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			const slice = byteCharacters.slice(offset, offset + sliceSize)
+
+			const byteNumbers = new Array(slice.length)
+
+			for (let i in slice) byteNumbers[i] = slice.charCodeAt(i)
+
+			const byteArray = new Uint8Array(byteNumbers)
+			byteArrays.push(byteArray)
 		}
-		const f = new Blob(e, {
-				type: b,
-			}),
-			g = URL.createObjectURL(f)
-		return g
+
+		const blob = new Blob(byteArrays, { type: contentType })
+		return URL.createObjectURL(blob)
 	}
 
 	function changeImgIndex(i) {
@@ -1190,13 +1190,14 @@ function localBackgrounds(init, thumbnail, newfile) {
 			compress(result, 'new')
 
 			chrome.storage.local.get(null, (data) => {
-				const bumpedindex = data.custom.length
+				const custom = data.custom ? data.custom : []
+				const bumpedindex = custom.length
 
 				changeImgIndex(bumpedindex)
 				chrome.storage.local.set({ customIndex: bumpedindex })
 				chrome.storage.local.set({ custom: fullImage })
 
-				if (data.custom.length === 0) {
+				if (custom.length === 0) {
 					chrome.storage.sync.get('background_type', (data) => {
 						if (data.background_type === 'dynamic') chrome.storage.sync.set({ background_type: 'custom' })
 					})
@@ -1338,7 +1339,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 		const thumbnails = document.querySelectorAll('#bg_tn_wrap .thumbnail')
 
 		chrome.storage.local.get(null, (data) => {
-			if (data.customThumbnails.length > 0) {
+			if (data.customThumbnails) {
 				if (thumbnails.length < data.customThumbnails.length) {
 					let cleanData
 					let thumbs = data.customThumbnails
@@ -1674,7 +1675,6 @@ function searchbar(event, that, storage) {
 
 		if (!init) {
 			chrome.storage.sync.set({ searchbar: value })
-			id('choose_searchengine').setAttribute('class', value ? 'shown' : 'hidden')
 		}
 	}
 
@@ -1772,9 +1772,17 @@ function showPopup(data) {
 function modifyWeightOptions(weights) {
 	const doms = document.querySelectorAll('#i_weight option')
 
+	// Pas de weights, 400
 	if (!weights) {
 		id('i_weight').value = '400'
 		weights = ['400']
+	}
+
+	// ya des weights, transforme regular en 400
+	else {
+		if (weights.includes('regular')) {
+			weights[weights.indexOf('regular')] = '400'
+		}
 	}
 
 	if (doms) {
@@ -1789,7 +1797,7 @@ function customSize(init, event) {
 	const apply = (size) => (dominterface.style.fontSize = size + 'px')
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
-			const font = data.font
+			let font = data.font || { family: '', weight: '400', size: 13 }
 			font.size = event
 			slowRange({ font: font }, 200)
 		})
@@ -1905,26 +1913,24 @@ function customFont(data, event) {
 	}
 }
 
-function customCss(data, event) {
+function customCss(init, event) {
 	const styleHead = id('styles')
 
 	// Active l'indentation
-	function syntaxControl(e, that) {
-		const cursorPosStart = that.selectionStart,
-			beforeCursor = that.value.slice(0, cursorPosStart),
-			afterCursor = that.value.slice(cursorPosStart + 1, that.value.length - 1)
+	// function syntaxControl(e, that) {
+	// 	const cursorPosStart = that.selectionStart,
+	// 		beforeCursor = that.value.slice(0, cursorPosStart),
+	// 		afterCursor = that.value.slice(cursorPosStart + 1, that.value.length - 1)
 
-		if (e.key === '{') {
-			that.value = beforeCursor + `{\r  \r}` + afterCursor
-			that.selectionStart = cursorPosStart + 3
-			that.selectionEnd = cursorPosStart + 3
-			e.preventDefault()
-		}
-	}
+	// 	if (e.key === '{') {
+	// 		that.value = beforeCursor + `{\r  \r}` + afterCursor
+	// 		that.selectionStart = cursorPosStart + 3
+	// 		that.selectionEnd = cursorPosStart + 3
+	// 		e.preventDefault()
+	// 	}
+	// }
 
-	if (data) {
-		styleHead.innerText = data
-	}
+	if (init) styleHead.innerText = init
 
 	if (event) {
 		//const e = event.e
@@ -2154,6 +2160,6 @@ window.onload = function () {
 			}
 		})
 	} catch (error) {
-		errorMessage(error)
+		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)
 	}
 }

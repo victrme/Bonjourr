@@ -258,7 +258,7 @@ function settingsEvents() {
 		}
 	})
 
-	id('cssEditor').addEventListener('keypress', function (e) {
+	id('cssEditor').addEventListener('keyup', function (e) {
 		customCss(null, { e: e, that: this })
 	})
 
@@ -300,7 +300,7 @@ function initParams() {
 	initInput('i_row', data.linksrow, 8)
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 400)
-	initInput('i_size', isThereData('font', 'size'), 12)
+	initInput('i_size', isThereData('font', 'size'), 13)
 	initInput('i_greeting', data.greeting, '')
 	initInput('cssEditor', data.css, '')
 
@@ -362,6 +362,35 @@ function initParams() {
 }
 
 function importExport(select, isEvent) {
+	//
+	function filterImports(data) {
+		let result = { ...data }
+
+		// Old blur was strings
+		if (typeof data.background_blur === 'string') {
+			result.background_blur = parseFloat(data.background_blur)
+		}
+
+		// 's_' before every search engines
+		if (data.searchbar_engine) {
+			result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+		}
+
+		// New collection key missing
+		if (data.dynamic)
+			if (!data.dynamic.collection) {
+				result.dynamic = { ...data.dynamic, collection: '' }
+			}
+
+		// Si il ne touche pas au vieux hide elem
+		if (data.hide)
+			if (data.hide.length === 0) {
+				result.hide = [[0, 0], [0, 0, 0], [0], [0]]
+			}
+
+		return result
+	}
+
 	if (select === 'exp') {
 		const input = id('i_export')
 		const isOnChrome = navigator.userAgent.includes('Chrome')
@@ -382,19 +411,16 @@ function importExport(select, isEvent) {
 		})
 	} else if (select === 'imp') {
 		if (isEvent) {
-			let val = id('i_import').value
+			const dom = id('i_import')
+			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
 
-			if (val.length > 0) {
-				let data
-
+			if (dom.value.length > 0) {
 				try {
-					data = JSON.parse(val)
-					chrome.storage.sync.set(data)
-					setTimeout(function () {
-						location.reload()
-					}, 20)
+					chrome.storage.sync.set(filterImports(JSON.parse(dom.value)), () => location.reload())
 				} catch (e) {
-					alert(e)
+					dom.value = ''
+					placeholder('Error in import code')
+					setTimeout(() => placeholder('Import code'), 2000)
 				}
 			}
 		}
@@ -495,9 +521,8 @@ function showInterface(e) {
 // Onload
 //
 
-//si la langue a été changé, suppr
+//si la langue a été changé
 if (sessionStorage.lang) {
-	sessionStorage.removeItem('lang')
 	setTimeout(() => showSettings(), 20)
 }
 

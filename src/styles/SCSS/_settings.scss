@@ -68,8 +68,8 @@
 	transition: transform 0.2s, background 0.1s;
 	will-change: transform;
 	top: 0;
-	-webkit-transform: translate3d(0,0,0);
-	transform: translate3d(0,0,0);
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -289,11 +289,11 @@
 			margin-right: 1em;
 			position: relative;
 			cursor: pointer;
-			filter: grayscale(0.9);
+			filter: grayscale(0.2);
 			transition: filter 0.2s;
 
 			&:hover {
-				filter: grayscale(0);
+				filter: grayscale(0) brightness(1.2);
 			}
 
 			button {
