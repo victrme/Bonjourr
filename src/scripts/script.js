@@ -706,13 +706,14 @@ function quickLinks(event, that, initStorage) {
 }
 
 function weather(event, that, initStorage) {
-	const dom_temp_max = id('temp_max'),
-		dom_temp_max_wrap = id('temp_max_wrap'),
-		dom_first_desc = id('weather_desc').children[0]
+	const tempMax = id('tempMax'),
+		maxWrap = id('forecastWrap'),
+		weatherDesc = id('weather_desc').children[0]
 
 	function cacheControl(storage) {
-		let now = Math.floor(new Date().getTime() / 1000)
-		let param = storage.weather ? storage.weather : ''
+		const date = new Date()
+		const now = Math.floor(date.getTime() / 1000)
+		const param = storage.weather ? storage.weather : ''
 
 		if (storage.weather && storage.weather.lastCall) {
 			//si weather est vieux d'une demi heure (1800s)
@@ -724,11 +725,11 @@ function weather(event, that, initStorage) {
 				sessionStorage.removeItem('lang')
 			} else dataHandling(param.lastState)
 
-			//high ici
-			if (storage.weather && storage.weather.fcDay === new Date().getDay()) {
-				dom_temp_max.innerText = storage.weather.fcHigh + '°'
-				dom_temp_max_wrap.classList.add('shown')
-			} else request(storage.weather, 'forecast')
+			// Forecast tout les 3h
+			if (storage.weather.forecastLastCall)
+				if (now > storage.weather.forecastLastCall + 10800) {
+					dataHandling(param, true)
+				} else request(storage.weather, 'forecast')
 		} else {
 			//initialise a Paris + Metric
 			//c'est le premier call, requete + lastCall = now
@@ -794,39 +795,35 @@ function weather(event, that, initStorage) {
 		}
 
 		function forecastResponse(parameters, response) {
-			function findHighTemps(d) {
-				let i = 0
-				let newDay = new Date(d.list[0].dt_txt).getDay()
-				let currentDay = newDay
-				let arr = []
+			function findHighTemps(forecast) {
+				const todayHour = thisdate.getHours()
+				let forecastDay = thisdate.getDate()
+				let tempMax = -99
 
-				//compare la date toute les 3h (list[i])
-				//si meme journée, rajouter temp max a la liste
-
-				while (currentDay == newDay && i < 10) {
-					newDay = new Date(d.list[i].dt_txt).getDay()
-					arr.push(d.list[i].main.temp_max)
-
-					i += 1
+				// Late evening forecast for tomorrow
+				if (todayHour > 18) {
+					const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
+					forecastDay = new Date(tomorrow).getDate()
 				}
 
-				let high = Math.floor(Math.max(...arr))
+				// Get the highest temp for the specified day
+				forecast.list.forEach((elem) => {
+					if (new Date(elem.dt * 1000).getDate() === forecastDay)
+						tempMax < elem.main.temp_max ? (tempMax = Math.round(elem.main.temp_max)) : ''
+				})
 
 				//renvoie high
-				return [high, currentDay]
+				return tempMax
 			}
 
-			let fc = findHighTemps(response)
-
 			//sauvegarder la derniere meteo
+			const thisdate = new Date()
 			let param = parameters
-			param.fcHigh = fc[0]
-			param.fcDay = fc[1]
+			param.fcHigh = findHighTemps(response)
+			param.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
 			chrome.storage.sync.set({ weather: param })
 
-			dom_temp_max.innerText = param.fcHigh + '°'
-			dom_temp_max_wrap.classList.add('shown')
-			dom_temp_max_wrap.removeAttribute('style')
+			dataHandling(param, true)
 		}
 
 		let url = wCat === 'current' ? urlControl(arg, false) : urlControl(arg, true)
@@ -851,8 +848,8 @@ function weather(event, that, initStorage) {
 		request_w.send()
 	}
 
-	function dataHandling(data) {
-		let hour = new Date().getHours()
+	function dataHandling(data, forecast) {
+		const hour = new Date().getHours()
 
 		function getIcon() {
 			//si le soleil est levé, renvoi jour
@@ -907,24 +904,36 @@ function weather(event, that, initStorage) {
 
 			if (hour < 12) {
 				//temp de desc et temp de widget sont pareil
-				dtemp = wtemp = Math.floor(data.main.temp) + '°'
+				dtemp = wtemp = Math.floor(data.main.feels_like) + '°'
 			} else {
 				//temp de desc devient temp de widget + un point
 				//on vide la catégorie temp max
-				wtemp = Math.floor(data.main.temp) + '°'
+				wtemp = Math.floor(data.main.feels_like) + '°'
 				dtemp = wtemp + '.'
 			}
 
 			id('temp').innerText = dtemp
 			id('widget_temp').innerText = wtemp
-			dom_first_desc.classList.add('shown')
+			weatherDesc.classList.add('shown')
 		}
 
-		getDescription()
-		getIcon()
+		function getMaxTemp() {
+			tempMax.innerText = `${data.fcHigh}°`
+			id('forecastTime').innerText = `${tradThis(hour > 21 ? 'tomorrow' : 'today')}.`
+
+			if (hour < 12 || hour > 21) maxWrap.classList.add('shown')
+			else maxWrap.classList.remove('shown')
+		}
+
+		if (forecast) {
+			getMaxTemp()
+		} else {
+			getDescription()
+			getIcon()
+		}
 	}
 
-	function submissionError(error) {
+	function submissionError() {
 		const city = id('i_city')
 
 		city.value = ''
@@ -1001,7 +1010,7 @@ function weather(event, that, initStorage) {
 						clas(sett_city, 'city hidden')
 						that.removeAttribute('disabled')
 					},
-					(refused) => {
+					() => {
 						//désactive geolocation if refused
 						that.checked = false
 						that.removeAttribute('disabled')
@@ -1035,9 +1044,6 @@ function weather(event, that, initStorage) {
 	const i_city = id('i_city')
 	const i_ccode = id('i_ccode')
 	const sett_city = id('sett_city')
-
-	//cache rapidement temp max pour eviter que ça saccade
-	if (new Date().getHours() >= 12) id('temp_max_wrap').style.display = 'none'
 
 	//TOUT LES EVENTS, default c'est init
 	switch (event) {

@@ -197,8 +197,12 @@
 				font-size: 1.5em;
 			}
 
-			#temp_max_wrap.shown {
-				display: block;
+			#forecastWrap {
+				display: none;
+
+				&.shown {
+					display: block;
+				}
 			}
 
 			#w_icon {

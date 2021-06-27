@@ -406,8 +406,16 @@
 
 	#sett_city {
 		flex-direction: column;
+		max-height: 50px;
+		overflow: hidden;
+		transition: max-Height 0.4s;
+
+		&.hidden {
+			max-height: 0;
+		}
 
 		.wrapper {
+			margin-top: 1em;
 			display: inline-block;
 			width: 100%;
 
@@ -418,7 +426,8 @@
 
 			input {
 				width: 50%;
-				margin-right: 0.5em;
+				margin-left: 0.5em;
+				text-transform: capitalize;
 			}
 
 			select {
@@ -427,12 +436,6 @@
 				align-self: center;
 			}
 		}
-
-		.wrapper > span {
-			margin-right: 1em;
-		}
-
-		@include hidden();
 	}
 
 	#submitReset {

@@ -101,11 +101,11 @@ function settingsEvents() {
 
 	//quick links
 	id('i_title').onkeypress = function (e) {
-		if (e.which === 13) quickLinks('input', e)
+		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
 	id('i_url').onkeypress = function (e) {
-		if (e.which === 13) quickLinks('input', e)
+		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
 	id('submitlink').onmouseup = function () {
@@ -179,12 +179,9 @@ function settingsEvents() {
 	}
 
 	//weather
-	id('b_city').onmouseup = function () {
-		if (!stillActive) weather('city', this)
-	}
 
 	id('i_city').onkeypress = function (e) {
-		if (!stillActive && e.which === 13) weather('city', this)
+		if (!stillActive && e.code === 'Enter') weather('city', this)
 	}
 
 	id('i_units').onchange = function () {
@@ -225,7 +222,7 @@ function settingsEvents() {
 	}
 
 	id('i_import').onkeypress = function (e) {
-		if (e.which === 13) importExport('imp', true)
+		if (e.code === 'Enter') importExport('imp', true)
 	}
 
 	id('i_export').onfocus = function () {
