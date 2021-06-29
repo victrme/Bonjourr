@@ -188,6 +188,32 @@ body {
 	}
 }
 
+@mixin allSettings {
+	.as {
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.4s;
+	}
+
+	/* prettier-ignore */
+	&.all,
+	&.all_init {
+		.as_link {max-height: 120px}
+		.as_collection {max-height: 70px}
+		.as_visuals {max-height: 300px}
+		.as_timedate {max-height: 260px}
+		.as_fonts {max-height: 240px}
+		.as_css {max-height: 2000px}
+		.as_impexp {max-height: 220px}
+	}
+
+	&.all_init {
+		.as {
+			transition: max-height 0s;
+		}
+	}
+}
+
 @mixin settingsBase {
 	input[type='text'],
 	input[type='range'],
@@ -202,23 +228,21 @@ body {
 		padding-left: 10px;
 		border: 1px solid $inputGrey;
 		color: $blackish;
-		
 
-
-		  @supports (-webkit-touch-callout: none) {
+		@supports (-webkit-touch-callout: none) {
 			-webkit-appearance: none;
 
 			// &:after {
 			// 	content: '';
 			// 	position: absolute;
-			// 	width: 0; 
-			// 	height: 0; 
+			// 	width: 0;
+			// 	height: 0;
 			// 	border-left: 20px solid transparent;
 			// 	border-right: 20px solid transparent;
-				
+
 			// 	border-top: 20px solid #f00;
 			// }
-		 }
+		}
 	}
 
 	.slider,
@@ -370,19 +394,19 @@ body {
 	}
 
 	/* Firefox */
-	::-moz-range-track {
+	&::-moz-range-track {
 		height: 2px;
 		border-radius: 50px;
 		background: $inputGrey;
 	}
 
-	::-moz-range-progress {
+	&::-moz-range-progress {
 		background-color: $blue;
 		height: 2px;
 		border-radius: 50px;
 	}
 
-	::-moz-range-thumb {
+	&::-moz-range-thumb {
 		background: #fff;
 		height: 20px;
 		width: 20px;
@@ -393,11 +417,11 @@ body {
 	}
 
 	/*Edge*/
-	::-ms-fill-lower {
+	&::-ms-fill-lower {
 		background: dodgerblue;
 	}
 
-	::-ms-thumb {
+	&::-ms-thumb {
 		background: #fff;
 		border: 2px solid #999;
 		height: 40px;
@@ -405,22 +429,42 @@ body {
 		box-sizing: border-box;
 	}
 
-	::-ms-ticks-after {
+	&::-ms-ticks-after {
 		display: none;
 	}
 
-	::-ms-ticks-before {
+	&::-ms-ticks-before {
 		display: none;
 	}
 
-	::-ms-track {
+	&::-ms-track {
 		background: #ddd;
 		color: transparent;
 		height: 40px;
 		border: none;
 	}
 
-	::-ms-tooltip {
+	&::-ms-tooltip {
 		display: none;
 	}
+
+	/* total width */
+	&::-webkit-scrollbar {
+		width: 15px;
+	}
+
+	&::-webkit-scrollbar-track {
+		box-shadow: inset 0 0 15px 15px transparent;
+		border: solid 3px transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		box-shadow: inset 0 0 15px 15px $borderGrey;
+		border: solid 3px transparent;
+		border-radius: 15px;
+	}
+
+	// &.scroll::-webkit-scrollbar-thumb {
+	// 	box-shadow: inset 0 0 15px 15px $borderGrey;
+	// }
 }

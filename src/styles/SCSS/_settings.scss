@@ -65,7 +65,7 @@
 	text-shadow: none;
 	text-align: left;
 	color: $blackish;
-	transition: transform 0.2s, background 0.1s;
+	transition: transform 0.2s, background-color 0.2s;
 	will-change: transform;
 	top: 0;
 	-webkit-transform: translate3d(0, 0, 0);
@@ -76,18 +76,7 @@
 		transform: translateX(-100%);
 	}
 
-	.pro {
-		max-height: 0;
-		overflow: hidden;
-
-		&.shown {
-			max-height: 350px;
-		}
-
-		&.shown.cssEditor {
-			max-height: 2000px;
-		}
-	}
+	@include allSettings();
 
 	a:hover,
 	button:hover {

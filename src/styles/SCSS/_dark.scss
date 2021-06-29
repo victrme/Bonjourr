@@ -175,6 +175,14 @@
 		.signature {
 			color: #929294;
 		}
+
+		&::-webkit-scrollbar-thumb {
+			box-shadow: inset 0 0 15px 15px #39383d;
+		}
+
+		// &.scroll::-webkit-scrollbar-thumb {
+		// 	box-shadow: inset 0 0 15px 15px #39383d;
+		// }
 	}
 
 	#showSettings button {

@@ -1,13 +1,23 @@
 const id = (name) => document.getElementById(name)
 const cl = (name) => document.getElementsByClassName(name)
-const clas = (that, val) => that.setAttribute('class', val)
-const has = (that, val) => (id(that) && id(that).getAttribute('class') === val ? true : false)
+const has = (that, val) => {
+	const dom = id(that)
+	if (dom !== null) {
+		const result = dom.getAttribute('class') || ''
+		return result.indexOf(val) === -1 ? false : true
+	} else return false
+}
+const clas = (dom, add, str) => {
+	if (add) dom.classList.add(str)
+	else dom.classList.remove(str)
+}
 
 let disposableData = {},
 	langue = 'en',
 	stillActive = false,
 	rangeActive = false,
 	lazyClockInterval = 0,
+	// settingsscroll = 0,
 	fontList = [],
 	fullImage = [],
 	fullThumbnails = [],
@@ -116,15 +126,14 @@ function newClock(eventObj, init) {
 	function displayControl() {
 		const numeric = id('clock'),
 			analog = id('analogClock'),
-			analSec = id('analogSeconds')
+			analogSec = id('analogSeconds')
 
 		//cache celle qui n'est pas choisi
-		clas(clock.analog ? numeric : analog, 'hidden')
-		clas(clock.analog ? analog : numeric, '')
+		clas(numeric, clock.analog, 'hidden')
+		clas(analog, !clock.analog, 'hidden')
 
 		//cache l'aiguille des secondes
-		if (!clock.seconds && clock.analog) clas(analSec, 'hidden')
-		else clas(analSec, '')
+		clas(analogSec, !clock.seconds && clock.analog, 'hidden')
 	}
 
 	function main(change) {
@@ -319,7 +328,7 @@ function quickLinks(event, that, initStorage) {
 	//enleve les selections d'edit
 	const removeLinkSelection = () =>
 		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
-			clas(e, 'l_icon_wrap')
+			clas(e, false, 'selected')
 		})
 
 	//initialise les blocs en fonction du storage
@@ -462,13 +471,13 @@ function quickLinks(event, that, initStorage) {
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
-			clas(id('edit_linkContainer'), '')
+			clas(id('edit_linkContainer'), false, 'shown')
 		}
 
 		id('e_submit').onclick = function () {
 			removeLinkSelection()
 			editlink(null, parseInt(id('edit_link').getAttribute('index')))
-			clas(id('edit_linkContainer'), '')
+			clas(id('edit_linkContainer'), false, 'shown')
 		}
 
 		// close on button
@@ -530,8 +539,9 @@ function quickLinks(event, that, initStorage) {
 			const container = id('edit_linkContainer')
 			const openSettings = has('settings', 'shown')
 
-			clas(liconwrap, 'l_icon_wrap selected')
-			clas(container, 'shown ' + (openSettings ? 'pushed' : ''))
+			clas(liconwrap, true, 'selected')
+			clas(container, true, 'shown')
+			clas(container, openSettings, 'pushed')
 
 			id('edit_link').setAttribute('index', index)
 
@@ -1007,7 +1017,7 @@ function weather(event, that, initStorage) {
 						request(param, 'forecast')
 
 						//update le setting
-						clas(sett_city, 'city hidden')
+						clas(sett_city, true, 'hidden')
 						that.removeAttribute('disabled')
 					},
 					() => {
@@ -1019,7 +1029,7 @@ function weather(event, that, initStorage) {
 					}
 				)
 			} else {
-				clas(sett_city, 'city')
+				clas(sett_city, false, 'hidden')
 
 				i_city.setAttribute('placeholder', param.city)
 				i_ccode.value = param.ccode
@@ -1118,15 +1128,15 @@ function imgCredits(src, type) {
 		onUnsplash = id('onUnsplash')
 
 	if (type === 'dynamic') {
-		clas(onUnsplash, 'shown')
+		clas(onUnsplash, true, 'shown')
 		location.innerText = src.location.text
 		location.setAttribute('href', src.location.url)
 		artist.innerText = src.artist.text
 		artist.setAttribute('href', src.artist.url)
 	}
 
-	if (type === 'custom') clas(credit, 'hidden')
-	else clas(credit, 'shown')
+	if (type === 'custom') clas(credit, true, 'hidden')
+	else clas(credit, false, 'hidden')
 }
 
 function freqControl(state, every, last) {

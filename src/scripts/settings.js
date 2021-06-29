@@ -30,30 +30,22 @@ function selectBackgroundType(cat) {
 	chrome.storage.sync.set({ background_type: cat })
 }
 
-function showall(that) {
-	const change = (ev) => {
-		for (let dom of cl('pro')) {
-			if (ev) dom.classList.add('shown')
-			else dom.classList.remove('shown')
+function showall(event) {
+	const displayAllSettings = (on, init) => {
+		if (init) {
+			clas(id('settings'), true, 'all_init')
+			setTimeout(() => id('settings').classList.replace('all_init', 'all'), 50)
+			return false
 		}
+
+		clas(id('settings'), on, 'all')
 	}
 
-	const addtransitions = (dom, css) => {
-		for (let d of cl(dom)) d.style.transition = css
-	}
-
-	//event
-	if (that !== undefined) {
-		change(that)
-		chrome.storage.sync.set({ showall: that })
-
-		//init
+	if (event !== undefined) {
+		displayAllSettings(event)
+		chrome.storage.sync.set({ showall: event })
 	} else {
-		const data = JSON.parse(localEnc(disposableData, false))
-		change(data.showall)
-
-		//add transitions
-		addtransitions('pro', 'max-height .2s')
+		displayAllSettings(JSON.parse(localEnc(disposableData, false)).showall, true)
 	}
 }
 
@@ -267,6 +259,15 @@ function settingsEvents() {
 				hideElem(null, null, this)
 			}
 		})
+
+	// id('settings').onscroll = function () {
+	// 	clearTimeout(scrolltimeout)
+	// 	has('settings', 'scroll') ? '' : clas(this, true, 'scroll')
+
+	// 	scrolltimeout = setTimeout(() => {
+	// 		clas(this, false, 'scroll')
+	// 	}, 400)
+	// }
 }
 
 function initParams() {
@@ -283,7 +284,6 @@ function initParams() {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
-	if (data.clock) toggleClockOptions(data.clock.analog)
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
@@ -318,6 +318,8 @@ function initParams() {
 	//Font weight
 	if (data.font) modifyWeightOptions(data.font.availWeights)
 
+	if (data.clock) toggleClockOptions(data.clock.analog)
+
 	//input translation
 	id('i_title').setAttribute('placeholder', tradThis('Name'))
 	id('i_greeting').setAttribute('placeholder', tradThis('Name'))
@@ -339,14 +341,14 @@ function initParams() {
 		let cityPlaceholder = data.weather.city ? data.weather.city : 'City'
 		id('i_city').setAttribute('placeholder', cityPlaceholder)
 
-		if (data.weather.location) id('sett_city').setAttribute('class', 'city hidden')
+		clas(id('sett_city'), data.weather.location, 'hidden')
 	} else {
-		id('sett_city').setAttribute('class', 'city hidden')
+		clas(id('sett_city'), true, 'hidden')
 		id('i_geol').checked = true
 	}
 
 	//searchbar display settings
-	data.searchbar ? id('searchbar_options').classList.toggle('shown') : ''
+	clas(id('searchbar_options'), data.searchbar, 'shown')
 
 	//langue
 	id('i_lang').value = data.lang || 'en'
@@ -439,20 +441,11 @@ function importExport(select, isEvent) {
 function showSettings() {
 	function display() {
 		const edit = id('edit_linkContainer')
+		const isShown = has('settings', 'shown')
 
-		if (has('settings', 'shown')) {
-			clas(domshowsettings.children[0], '')
-			clas(id('settings'), '')
-			clas(dominterface, '')
-
-			edit.classList.remove('pushed')
-		} else {
-			clas(domshowsettings.children[0], 'shown')
-			clas(id('settings'), 'shown')
-			clas(dominterface, 'pushed')
-
-			edit.classList.add('pushed')
-		}
+		clas(id('settings'), !isShown, 'shown')
+		clas(dominterface, !isShown, 'pushed')
+		clas(edit, !isShown, 'pushed')
 	}
 
 	function functions() {
@@ -496,9 +489,9 @@ function showInterface(e) {
 
 	//close edit container on interface click
 	if (has('edit_linkContainer', 'shown')) {
-		clas(id('edit_linkContainer'), '')
+		clas(id('edit_linkContainer'), false, 'shown')
 		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
-			clas(e, 'l_icon_wrap')
+			clas(e, false, 'selected')
 		})
 	}
 
@@ -506,11 +499,10 @@ function showInterface(e) {
 		let edit = id('edit_linkContainer')
 		let editClass = edit.getAttribute('class')
 
-		clas(id('showSettings').children[0], '')
-		clas(id('settings'), '')
-		clas(dominterface, '')
+		clas(id('settings'), false, 'shown')
+		clas(dominterface, false, 'pushed')
 
-		if (editClass === 'shown pushed') clas(edit, 'shown')
+		if (editClass.includes('pushed')) clas(edit, false, 'pushed')
 	}
 }
 
