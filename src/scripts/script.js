@@ -225,7 +225,7 @@ function newClock(eventObj, init) {
 		lazyClockInterval = setInterval(main, 1000)
 	}
 
-	function changeAnalogFace(face) {
+	function changeAnalogFace(face = 'none') {
 		//
 		// Clockwise
 		const chars = {
@@ -1509,18 +1509,20 @@ function unsplash(data, event, startup) {
 			n === 0
 				? atob('aHR0cHM6Ly9hcGkudW5zcGxhc2guY29tL3Bob3Rvcy9yYW5kb20/Y29sbGVjdGlvbnM9')
 				: atob('MzY4NmMxMjIyMWQyOWNhOGY3OTQ3Yzk0NTQyMDI1ZDc2MGE4ZTBkNDkwMDdlYzcwZmEyYzRiOWY5ZDM3N2IxZA==')
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', obf(0) + chooseCollection(), true)
-		xhr.setRequestHeader('Authorization', `Client-ID ${obf(1)}`)
 
-		xhr.onload = function () {
-			let resp = JSON.parse(this.response)
+		const url = obf(0) + chooseCollection() + '&count=5'
+		const header = new Headers()
+		header.append('Authorization', `Client-ID ${obf(1)}`)
+		header.append('Accept-Version', 'v1')
 
-			if (xhr.status >= 200 && xhr.status < 400) {
-				let screenWidth = window.devicePixelRatio * screen.width
+		fetch(url, { headers: header }).then((raw) =>
+			raw.json().then((resp) => {
+				console.log(resp)
+
+				resp = resp[0]
 
 				resp = {
-					url: resp.urls.raw + `&w=${screenWidth}&fm=jpg&q=80`,
+					url: resp.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
 					link: resp.links.html,
 					username: resp.user.username,
 					name: resp.user.name,
@@ -1549,9 +1551,8 @@ function unsplash(data, event, startup) {
 						chrome.storage.sync.set({ dynamic: dynamic })
 					})
 				}
-			}
-		}
-		xhr.send()
+			})
+		)
 	}
 
 	function credit(d) {

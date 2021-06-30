@@ -47,17 +47,17 @@ function jsTask(online) {
 			.pipe(replace(storage.sync[0], storage.sync[1]))
 			.pipe(replace(storage.bgget[0], storage.bgget[1]))
 			.pipe(replace(storage.bgset[0], storage.bgset[1]))
-	}
-
-	stream
-		.pipe(
+	} else {
+		stream.pipe(
 			minify({
 				mangle: {
 					keepClassName: true,
 				},
 			})
 		)
-		.pipe(dest('release/src/scripts'))
+	}
+
+	stream.pipe(dest('release/src/scripts'))
 
 	return stream
 }
