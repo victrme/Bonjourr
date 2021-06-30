@@ -12,6 +12,14 @@ const clas = (dom, add, str) => {
 	else dom.classList.remove(str)
 }
 
+const funcsOk = {
+	clock: false,
+	weatherdesc: false,
+	weatherhigh: false,
+	fonts: false,
+	links: false,
+}
+
 let disposableData = {},
 	langue = 'en',
 	stillActive = false,
@@ -21,7 +29,8 @@ let disposableData = {},
 	fontList = [],
 	fullImage = [],
 	fullThumbnails = [],
-	googleFontList = {}
+	googleFontList = {},
+	firstpaint = false
 const randomseed = Math.floor(Math.random() * 30) + 1,
 	domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks_inner'),
@@ -273,6 +282,7 @@ function newClock(eventObj, init) {
 
 		startClock(true)
 		changeAnalogFace(clock.face)
+		canDisplayInterface('clock')
 	}
 }
 
@@ -335,7 +345,10 @@ function quickLinks(event, that, initStorage) {
 	//utilise simplement une boucle de appendblock
 	function initblocks(storage) {
 		let array = storage.links || false
-		if (array) array.map((a, i) => appendblock(a, i, array))
+		if (array) {
+			array.map((a, i) => appendblock(a, i, array))
+			canDisplayInterface('links')
+		}
 	}
 
 	function addIcon(elem, arr, index, links) {
@@ -895,11 +908,16 @@ function weather(event, that, initStorage) {
 				return temp || 'clearsky'
 			}
 
+			//<img src="" id="widget" draggable="false">
+
+			const img = document.createElement('img')
 			let d_n = dayOrNight(data.sys.sunset, data.sys.sunrise)
 			let weather_id = imgId(data.weather[0].id)
-			let icon_src = `src/assets/images/weather/${d_n}/${weather_id}.png`
-			id('widget').setAttribute('src', icon_src)
-			id('widget').classList.add('shown')
+
+			img.id = 'widget'
+			img.setAttribute('draggable', 'false')
+			img.setAttribute('src', `src/assets/images/weather/${d_n}/${weather_id}.png`)
+			id('w_icon').prepend(img)
 		}
 
 		function getDescription() {
@@ -925,6 +943,9 @@ function weather(event, that, initStorage) {
 			id('temp').innerText = dtemp
 			id('widget_temp').innerText = wtemp
 			weatherDesc.classList.add('shown')
+			document.querySelector('#weather_desc .trn').style.opacity = 1
+
+			canDisplayInterface('weatherdesc')
 		}
 
 		function getMaxTemp() {
@@ -933,6 +954,9 @@ function weather(event, that, initStorage) {
 
 			if (hour < 12 || hour > 21) maxWrap.classList.add('shown')
 			else maxWrap.classList.remove('shown')
+			document.querySelector('#forecastWrap .trn').style.opacity = 1
+
+			canDisplayInterface('weatherhigh')
 		}
 
 		if (forecast) {
@@ -1500,7 +1524,7 @@ function unsplash(data, event, startup) {
 				let screenWidth = window.devicePixelRatio * screen.width
 
 				resp = {
-					url: resp.urls.raw + `&w=${screenWidth}&fm=jpg&q=70`,
+					url: resp.urls.raw + `&w=${screenWidth}&fm=jpg&q=80`,
 					link: resp.links.html,
 					username: resp.user.username,
 					name: resp.user.name,
@@ -1849,6 +1873,8 @@ function customFont(data, event) {
 				id('clock').style.fontFamily = family
 				dominterface.style.fontFamily = family
 				dominterface.style.fontWeight = weight
+
+				canDisplayInterface('fonts')
 			})
 	}
 
@@ -2126,6 +2152,15 @@ function hideElem(init, buttons, that) {
 	}
 }
 
+function canDisplayInterface(cat) {
+	funcsOk[cat] = true
+	const res = Object.values(funcsOk).filter((val) => val === true)
+	const keys = Object.keys(funcsOk)
+	console.log(keys.length, res)
+
+	if (res.length === keys.length) dominterface.style.opacity = '1'
+}
+
 window.onload = function () {
 	try {
 		chrome.storage.sync.get(null, (data) => {
@@ -2157,8 +2192,6 @@ window.onload = function () {
 			hideElem(data.hide)
 			linksrow(data.linksrow)
 			greetingName(data.greeting)
-
-			dominterface.style.opacity = '1'
 
 			//safe font for different alphabet
 			if (data.lang === 'ru' || data.lang === 'sk') {

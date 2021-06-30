@@ -29,7 +29,7 @@
 	will-change: transform;
 	opacity: 0;
 	overflow: hidden;
-	transition: opacity 0.1s 0.05s, transform 0.2s;
+	transition: opacity 0.15s, transform 0.2s;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 
 	&.pushed {
@@ -195,6 +195,10 @@
 		#weather {
 			#weather_desc {
 				font-size: 1.5em;
+
+				.trn {
+					opacity: 0;
+				}
 			}
 
 			#forecastWrap {
@@ -210,14 +214,13 @@
 				height: 5em;
 				justify-content: center;
 				align-items: center;
+				transition: opacity 0.2s;
 
 				#widget {
-					opacity: 0;
 					height: 3em;
 					width: 3em;
 					border: none;
 					padding-right: 10px;
-					transition: opacity 0.1s;
 				}
 
 				#w_widget_text {
