@@ -376,10 +376,17 @@ function importExport(select, isEvent) {
 		}
 
 		// New collection key missing
-		if (data.dynamic)
+		// Removes dynamics cache
+		if (data.dynamic) {
 			if (!data.dynamic.collection) {
 				result.dynamic = { ...data.dynamic, collection: '' }
 			}
+
+			// if (data.dynamic.next) data.dynamic.next = {}
+			// if (data.dynamic.every !== 'pause' && data.dynamic.current) data.dynamic.current = {}
+
+			// data.dynamic.time = 0
+		}
 
 		// Si il ne touche pas au vieux hide elem
 		if (data.hide)
@@ -395,6 +402,12 @@ function importExport(select, isEvent) {
 		const isOnChrome = navigator.userAgent.includes('Chrome')
 
 		chrome.storage.sync.get(null, (data) => {
+			//
+			// 1.9.3
+			// if (data.dynamic.every !== 'pause' && data.dynamic.current) data.dynamic.next = {}
+			// if (data.dynamic.next) data.dynamic.current = {}
+			// if (data.dynamic) data.dynamic.time = 0
+
 			input.value = JSON.stringify(data)
 
 			if (isEvent) {

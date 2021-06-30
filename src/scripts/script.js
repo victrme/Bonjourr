@@ -15,8 +15,6 @@ const clas = (dom, add, str) => {
 const funcsOk = {
 	clock: false,
 	weatherdesc: false,
-	weatherhigh: false,
-	fonts: false,
 	links: false,
 }
 
@@ -348,7 +346,7 @@ function quickLinks(event, that, initStorage) {
 		if (array) {
 			array.map((a, i) => appendblock(a, i, array))
 			canDisplayInterface('links')
-		}
+		} else canDisplayInterface('links')
 	}
 
 	function addIcon(elem, arr, index, links) {
@@ -908,16 +906,9 @@ function weather(event, that, initStorage) {
 				return temp || 'clearsky'
 			}
 
-			//<img src="" id="widget" draggable="false">
-
-			const img = document.createElement('img')
 			let d_n = dayOrNight(data.sys.sunset, data.sys.sunrise)
 			let weather_id = imgId(data.weather[0].id)
-
-			img.id = 'widget'
-			img.setAttribute('draggable', 'false')
-			img.setAttribute('src', `src/assets/images/weather/${d_n}/${weather_id}.png`)
-			id('w_icon').prepend(img)
+			id('widget').setAttribute('src', `src/assets/images/weather/${d_n}/${weather_id}.png`)
 		}
 
 		function getDescription() {
@@ -1078,6 +1069,11 @@ function weather(event, that, initStorage) {
 	const i_city = id('i_city')
 	const i_ccode = id('i_ccode')
 	const sett_city = id('sett_city')
+
+	const img = document.createElement('img')
+	img.id = 'widget'
+	img.setAttribute('draggable', 'false')
+	id('w_icon').prepend(img)
 
 	//TOUT LES EVENTS, default c'est init
 	switch (event) {
@@ -1917,7 +1913,9 @@ function customFont(data, event) {
 
 	// init
 	if (data) {
-		if (data.family && data.url) apply(data.url, data.family, data.weight || '400')
+		if (data.family && data.url) {
+			apply(data.url, data.family, data.weight || '400')
+		}
 	}
 
 	// event
@@ -2158,7 +2156,9 @@ function canDisplayInterface(cat) {
 	const keys = Object.keys(funcsOk)
 	const doms = [dominterface, domshowsettings, id('credit')]
 
-	if (res.length === keys.length) doms.forEach((dom) => dom.setAttribute('style', ''))
+	console.log(funcsOk)
+
+	if (res.length === keys.length) doms.forEach((dom) => (dom.style.opacity = '1'))
 }
 
 window.onload = function () {
@@ -2171,6 +2171,11 @@ window.onload = function () {
 				localStorage.bonjourr = atob(localStorage.data)
 				localStorage.removeItem('data')
 			}
+
+			const h = new Date().getHours()
+
+			if (data.font) data.font.family ? (funcsOk.fonts = false) : ''
+			if (h < 12 || h > 21) funcsOk.weatherhigh = false
 
 			//pour que les settings y accede plus facilement
 			disposableData = localEnc(JSON.stringify(data))
