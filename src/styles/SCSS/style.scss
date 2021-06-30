@@ -27,7 +27,6 @@
 	flex-direction: column;
 	justify-content: space-around;
 	will-change: transform;
-	opacity: 0;
 	overflow: hidden;
 	transition: opacity 0.15s, transform 0.2s;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
@@ -593,7 +592,7 @@
 	bottom: 1em;
 	left: 1em;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-	transition: all 0.2s;
+	transition: opacity 0.2s;
 
 	a {
 		color: #fff9;

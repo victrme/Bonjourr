@@ -2156,9 +2156,9 @@ function canDisplayInterface(cat) {
 	funcsOk[cat] = true
 	const res = Object.values(funcsOk).filter((val) => val === true)
 	const keys = Object.keys(funcsOk)
-	console.log(keys.length, res)
+	const doms = [dominterface, domshowsettings, id('credit')]
 
-	if (res.length === keys.length) dominterface.style.opacity = '1'
+	if (res.length === keys.length) doms.forEach((dom) => dom.setAttribute('style', ''))
 }
 
 window.onload = function () {
