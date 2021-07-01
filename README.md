@@ -26,7 +26,7 @@ Bonjourr is available in English, French, Spanish, Swedish, Dutch, Polish, Portu
 -   No official Safari version currently. [Use on Safari](https://bonjourr.fr/#useinsafari)
 -   [Try Bonjourr Online](https://online.bonjourr.fr)
 
-If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjourr.fr#contact)
+If you have trouble setting up Bonjourr, feel free to [contact us](https://t.me/BonjourrStartpage)
 
 ### Working on Bonjourr
 
@@ -38,12 +38,16 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 
 -   `npm run build-online` to build bonjourr's web version
 
+### Join us on Telegram
+
+You have ideas or bug reports? We got a Telegram group just for that. Feel free to [join us and say hi](https://t.me/BonjourrStartpage) :)
+
 <br />
 
 ## Built with
 
 -   Styled with [Sass](https://sass-lang.com/guide)
--   Scripts with pure Js
+-   Scripts with pure JS
 -   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
 -   Our tiny hands
 
@@ -53,6 +57,13 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://bonjo
 
 -   **Tahoe Beetschen** · [portfolio](https://tahoe.be) · [GitHub](https://github.com/Tahoooe)
 -   **Victor Azevedo** · [portfolio](https://victr.me) · [GitHub](https://github.com/victrme)
+
+<br />
+
+## Donate
+
+If you'd like to support Bonjourr (which would be greatly appreciated!), you can check out our [Ko-Fi page](https://ko-fi.com/bonjourr) and even [donate in crypto](https://commerce.coinbase.com/charges/Y2DYYZCG).
+
 
 <br />
 
