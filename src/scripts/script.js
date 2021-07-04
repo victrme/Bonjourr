@@ -37,7 +37,9 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	domimg = id('background'),
 	domthumbnail = cl('thumbnail'),
 	domclock = id('clock'),
-	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false
+	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false,
+	BonjourrAnimTime = 400,
+	loadtimeStart = performance.now()
 
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
@@ -341,12 +343,9 @@ function quickLinks(event, that, initStorage) {
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	function initblocks(storage) {
-		let array = storage.links || false
-		if (array) {
-			array.map((a, i) => appendblock(a, i, array))
-			canDisplayInterface('links')
-		} else canDisplayInterface('links')
+	function initblocks(links) {
+		if (links.length > 0) links.links.map((a, i) => appendblock(a, i, links))
+		canDisplayInterface('links')
 	}
 
 	function addIcon(elem, arr, index, links) {
@@ -471,7 +470,7 @@ function quickLinks(event, that, initStorage) {
 		function closeEditLink() {
 			removeLinkSelection()
 			id('edit_linkContainer').classList.add('hiding')
-			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), 400)
+			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), BonjourrAnimTime)
 		}
 
 		function emptyAndHideIcon(e) {
@@ -719,8 +718,10 @@ function quickLinks(event, that, initStorage) {
 	else if (event === 'linknewtab') {
 		chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
 		id('hiddenlink').setAttribute('target', '_blank')
-	} else {
-		initblocks(initStorage)
+	}
+
+	if (initStorage) {
+		initblocks(initStorage.links || [])
 		editEvents()
 		id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
 	}
@@ -747,10 +748,12 @@ function weather(event, that, initStorage) {
 			} else dataHandling(param.lastState)
 
 			// Forecast tout les 3h
-			if (storage.weather.forecastLastCall)
+			if (storage.weather.forecastLastCall) {
 				if (now > storage.weather.forecastLastCall + 10800) {
 					dataHandling(param, true)
-				} else request(storage.weather, 'forecast')
+					request(param, 'forecast')
+				} else dataHandling(param, true)
+			} else if (storage.weather.fcHigh) dataHandling(param, true)
 		} else {
 			//initialise a Paris + Metric
 			//c'est le premier call, requete + lastCall = now
@@ -1115,9 +1118,6 @@ function initBackground(data) {
 			}
 		})
 
-		// Removes credits
-		imgCredits(null, type)
-
 		// Not Custom, load dynamic
 	} else unsplash(data)
 
@@ -1132,31 +1132,13 @@ function imgBackground(val) {
 		let img = new Image()
 
 		img.onload = () => {
+			id('background_overlay').style.opacity = `1`
 			id('background').style.backgroundImage = `url(${val})`
-			id('background_overlay').style.animation = 'fade .1s ease-in forwards'
 		}
 
 		img.src = val
 		img.remove()
 	} else return id('background').style.backgroundImage
-}
-
-function imgCredits(src, type) {
-	const location = id('location'),
-		artist = id('artist'),
-		credit = id('credit'),
-		onUnsplash = id('onUnsplash')
-
-	if (type === 'dynamic') {
-		clas(onUnsplash, true, 'shown')
-		location.innerText = src.location.text
-		location.setAttribute('href', src.location.url)
-		artist.innerText = src.artist.text
-		artist.setAttribute('href', src.artist.url)
-	}
-
-	if (type === 'custom') clas(credit, true, 'hidden')
-	else clas(credit, false, 'hidden')
 }
 
 function freqControl(state, every, last) {
@@ -1240,6 +1222,8 @@ function localBackgrounds(init, thumbnail, newfile) {
 				}
 			})
 		}
+
+		id('background_overlay').style.opacity = '0'
 
 		reader.readAsDataURL(newfile)
 	}
@@ -1325,6 +1309,8 @@ function localBackgrounds(init, thumbnail, newfile) {
 				//affiche l'image voulu
 				//lui injecte le bon index
 				const index = getParentIndex(e.target)
+
+				id('background_overlay').style.opacity = `0`
 
 				compress(fullImage[index])
 				changeImgIndex(index)
@@ -1435,60 +1421,74 @@ function localBackgrounds(init, thumbnail, newfile) {
 	}
 }
 
-function unsplash(data, event, startup) {
-	//on startup nothing is displayed
-	const loadbackground = (url) => (startup ? noDisplayImgLoad(url) : imgBackground(url))
-
+function unsplash(init, event) {
 	function noDisplayImgLoad(val, callback) {
 		let img = new Image()
 
-		img.onload = callback
+		if (callback) img.onload = callback
 		img.src = val
 		img.remove()
 	}
 
-	function cacheControl(dynamic, weather) {
+	function imgCredits(image) {
 		//
-		let needNewImage = freqControl('get', dynamic.every, dynamic.time)
-		if (needNewImage) {
-			//sauvegarde le nouveau temps
-			dynamic.time = freqControl('set', dynamic.every)
+		const country = image.country || 'Photo'
+		const city = image.city ? image.city + ', ' : ''
 
-			//si next n'existe pas, init
-			if (dynamic.next.url === '') {
-				req('current', dynamic, weather, true)
+		const credits = [
+			{
+				text: city + country + ' - ',
+				url: `${image.link}?utm_source=Bonjourr&utm_medium=referral`,
+			},
+			{
+				text: image.name + ` `,
+				url: `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`,
+			},
+			{
+				text: tradThis('on Unsplash'),
+				url: 'https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral',
+			},
+		]
 
-				//sinon prendre l'image preloaded (next)
-			} else {
-				loadbackground(dynamic.next.url)
-				credit(dynamic.next)
-				req('current', dynamic, weather, false)
-			}
+		id('credit').textContent = ''
 
-			//pas besoin d'image, simplement current
-		} else {
-			loadbackground(dynamic.current.url)
-			credit(dynamic.current)
-		}
+		credits.forEach((elem) => {
+			const dom = document.createElement('a')
+			dom.innerText = elem.text
+			dom.href = elem.url
+			id('credit').appendChild(dom)
+		})
+
+		clas(id('credit'), true, 'shown')
 	}
 
-	function req(which, dynamic, weather, init) {
-		function chooseCollection() {
-			// If collection isnt ''
-			if (dynamic.collection) {
-				if (dynamic.collection.length > 0) {
-					const list = dynamic.collection.split(',')
+	function loadBackground(props) {
+		imgBackground(props.url)
+		imgCredits(props)
 
-					// Split text, take random element
-					if (list.length > 1) return list[Math.floor(Math.random() * list.length)].trim()
-					// Return single collection
-					else return dynamic.collection
-				}
+		console.log(props.color)
+	}
+
+	// 2
+	function cacheControl(dynamic, local) {
+		// 3
+		function chooseCollection() {
+			//
+			// Mutates collectionIds to match selected collection
+			function filterUserCollection(str) {
+				str = str.replace(` `, '')
+				collectionsIds.user = str
+				return 'user'
 			}
+
+			if (event && event.collection) {
+				if (event.collection.length > 0) return filterUserCollection(event.collection)
+			} else if (dynamic.collection.length > 0) return filterUserCollection(dynamic.collection)
 
 			// Transition day and night with noon & evening collections
 			// if clock is + /- 60 min around sunrise/set
-			if (weather) {
+			if (init && init.weather) {
+				const weather = init.weather
 				const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
 				const { sunset, sunrise } = weather.lastState.sys,
@@ -1496,138 +1496,183 @@ function unsplash(data, event, startup) {
 					minsunset = minutator(new Date(sunset * 1000)),
 					sunnow = minutator(new Date())
 
-				if (sunnow >= 0 && sunnow <= minsunrise - 60) return collections.night
-				else if (sunnow <= minsunrise + 60) return collections.noon
-				else if (sunnow <= minsunset - 60) return collections.day
-				else if (sunnow <= minsunset + 60) return collections.evening
-				else if (sunnow >= minsunset + 60) return collections.night
-				else return collections.day
-			} else return collections.day
+				if (sunnow >= 0 && sunnow <= minsunrise - 60) return 'night'
+				else if (sunnow <= minsunrise + 60) return 'noon'
+				else if (sunnow <= minsunset - 60) return 'day'
+				else if (sunnow <= minsunset + 60) return 'evening'
+				else if (sunnow >= minsunset + 60) return 'night'
+				else return 'day'
+			} else return 'day'
 		}
 
-		const obf = (n) =>
-			n === 0
-				? atob('aHR0cHM6Ly9hcGkudW5zcGxhc2guY29tL3Bob3Rvcy9yYW5kb20/Y29sbGVjdGlvbnM9')
-				: atob('MzY4NmMxMjIyMWQyOWNhOGY3OTQ3Yzk0NTQyMDI1ZDc2MGE4ZTBkNDkwMDdlYzcwZmEyYzRiOWY5ZDM3N2IxZA==')
+		// 4
+		function requestNewList(collection, callback) {
+			const header = new Headers()
+			const collecId = collectionsIds[collection] || collectionsIds.day
+			const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8&orientation=landscape`
+			header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
+			header.append('Accept-Version', 'v1')
 
-		const url = obf(0) + chooseCollection() + '&count=5'
-		const header = new Headers()
-		header.append('Authorization', `Client-ID ${obf(1)}`)
-		header.append('Accept-Version', 'v1')
+			fetch(url, { headers: header }).then((raw) =>
+				raw.json().then((imgArray) => {
+					const filteredList = []
 
-		fetch(url, { headers: header }).then((raw) =>
-			raw.json().then((resp) => {
-				console.log(resp)
-
-				resp = resp[0]
-
-				resp = {
-					url: resp.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
-					link: resp.links.html,
-					username: resp.user.username,
-					name: resp.user.name,
-					city: resp.location.city,
-					country: resp.location.country,
-				}
-
-				if (init) {
-					//si init, fait 2 req (current, next) et save sur la 2e
-					if (which === 'current') {
-						dynamic.current = resp
-						loadbackground(dynamic.current.url)
-						credit(dynamic.current)
-						req('next', dynamic, weather, true)
-					} else if (which === 'next') {
-						dynamic.next = resp
-						chrome.storage.sync.set({ dynamic: dynamic })
-					}
-
-					//si next existe, current devient next et next devient la requete
-					//preload la prochaine image (sans l'afficher)
-				} else {
-					noDisplayImgLoad(resp.url, () => {
-						dynamic.current = dynamic.next
-						dynamic.next = resp
-						chrome.storage.sync.set({ dynamic: dynamic })
+					imgArray.forEach((img) => {
+						filteredList.push({
+							url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
+							link: img.links.html,
+							username: img.user.username,
+							name: img.user.name,
+							city: img.location.city,
+							country: img.location.country,
+							color: img.color,
+						})
 					})
-				}
-			})
-		)
-	}
 
-	function credit(d) {
-		let loc = ''
-
-		if (d.city !== null && d.country !== null) loc = `${d.city}, ${d.country} - `
-		else if (d.country !== null) loc = `${d.country} - `
-		else loc = 'Photo - '
-
-		let infos = {
-			location: {
-				text: loc,
-				url: `${d.link}?utm_source=Bonjourr&utm_medium=referral`,
-			},
-			artist: {
-				text: d.name,
-				url: `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`,
-			},
+					callback(filteredList)
+				})
+			)
 		}
 
-		if (!startup) imgCredits(infos, 'dynamic')
-	}
+		const collectionName = chooseCollection()
+		let list = local[collectionName]
 
-	function actionFromStorage() {
-		chrome.storage.sync.get(['dynamic', 'weather'], (storage) => {
+		// Startup, nothing in cache
+		if (list.length === 0) {
+			requestNewList(collectionName, (newlist) => {
+				//
+				// Save List
+				local[collectionName] = newlist
+				chrome.storage.local.set({ dynamicCache: local })
+
+				loadBackground(newlist[0])
+
+				//preload first background
+				noDisplayImgLoad(newlist[1].url)
+			})
+
+			return true
+		}
+
+		// Test if same collection
+		if (collectionName === local.current) {
 			//
-			// Dynamic events: freq & collection
-			if (typeof event === 'object') {
-				if (event.every !== undefined) {
-					storage.dynamic.every = event.every
-				} else if (event.collection !== undefined) {
-					// Removes next image from old collection data
-					storage.dynamic.current = initDynamic.current
-					storage.dynamic.next = initDynamic.next
-					storage.dynamic.time = initDynamic.time
-					storage.dynamic.collection = event.collection
-				}
+			// Need new image
+			if (freqControl('get', dynamic.every, dynamic.time)) {
+				//
+				// removes previous image from list
+				list.shift()
 
-				chrome.storage.sync.set({ dynamic: storage.dynamic })
+				// Load new image
+				loadBackground(list[0])
+
+				// If end of cache, get & save new list
+				// Or only save bumped .at
+				if (list.length === 1)
+					requestNewList(collectionName, (newlist) => {
+						//
+						// Save newlist
+						list = list.concat(newlist)
+						local[collectionName] = list
+						chrome.storage.local.set({ dynamicCache: local })
+
+						// Preload third after newlist found
+						noDisplayImgLoad(list[1].url, () => {
+							local[collectionName] = list
+							chrome.storage.local.set({ dynamicCache: local })
+						})
+					})
+				//
+				// Preload third
+				else
+					noDisplayImgLoad(list[1].url, () => {
+						local[collectionName] = list
+						chrome.storage.local.set({ dynamicCache: local })
+					})
+
+				// Update time
+				if (dynamic.every !== 'tabs') {
+					dynamic.time = freqControl('set', dynamic.every)
+					chrome.storage.sync.set({ dynamic: dynamic })
+				}
 			}
 
-			// No events, just look in storage or init
-			if (storage && storage.dynamic !== undefined) cacheControl(storage.dynamic, storage.weather)
-			else cacheControl(initDynamic)
+			// No need for new, load the same image
+			else loadBackground(list[0])
+		}
+
+		// Collection has changed !
+		else {
+			//
+			// New collection already cached, get second image
+			// If not, get image from previous collection
+			if (list.length > 0) loadBackground(list[0])
+			else local[local.current][0]
+
+			// Save new collection
+			dynamic.time = freqControl('set', dynamic.every)
+			local.current = collectionName
+
+			chrome.storage.sync.set({ dynamic: dynamic })
+			chrome.storage.local.set({ dynamicCache: local })
+		}
+	}
+
+	const collectionsIds = {
+		noon: 'yDjgRh1iqkQ',
+		day: '4933370',
+		evening: '2nVzlQADDIE',
+		night: 'VI5sx2SDQUg',
+		user: '',
+	}
+
+	// 1
+	// Startup
+	if (init && init.dynamic) {
+		chrome.storage.local.get('dynamicCache', (local) => cacheControl(init.dynamic, local.dynamicCache))
+	}
+
+	// Settings event
+	else if (event) {
+		chrome.storage.sync.get('dynamic', (data) => {
+			//
+			// Saves corresponding event
+			if (event.every) data.dynamic.every = event.every
+
+			// Apply unsplash again for new collection
+			if (event.collection !== undefined) {
+				data.dynamic.collection = event.collection
+
+				chrome.storage.local.get('dynamicCache', (local) => {
+					//
+					// Resets previous user cache
+					local.dynamicCache.user = []
+					chrome.storage.local.set({ dynamicCache: local })
+
+					cacheControl(data.dynamic, local.dynamicCache)
+				})
+			}
+
+			chrome.storage.sync.set({ dynamic: data.dynamic })
 		})
 	}
 
-	const initDynamic = {
-		current: {
-			url: '',
-			link: '',
-			username: '',
-			name: '',
-			city: '',
-			country: '',
-		},
-		next: {
-			url: '',
-			link: '',
-			username: '',
-			name: '',
-			city: '',
-			country: '',
-		},
-		collection: '',
-		every: 'hour',
-		time: 0,
-	}
-
-	// No passed data, search in storage or init
-	if (data === null || data === undefined) actionFromStorage()
+	// First startup
 	else {
-		// Data & dynamic exist
-		if (data.dynamic !== undefined) cacheControl(data.dynamic, data.weather)
-		else actionFromStorage()
+		const sync = { every: 'tabs', time: 0, collection: '' },
+			local = {
+				current: 'day',
+				noon: [],
+				day: [],
+				evening: [],
+				night: [],
+				user: [],
+			}
+
+		chrome.storage.local.set({ dynamicCache: local })
+		chrome.storage.sync.set({ dynamic: sync })
+
+		cacheControl(sync, local)
 	}
 }
 
@@ -1957,20 +2002,6 @@ function customFont(data, event) {
 function customCss(init, event) {
 	const styleHead = id('styles')
 
-	// Active l'indentation
-	// function syntaxControl(e, that) {
-	// 	const cursorPosStart = that.selectionStart,
-	// 		beforeCursor = that.value.slice(0, cursorPosStart),
-	// 		afterCursor = that.value.slice(cursorPosStart + 1, that.value.length - 1)
-
-	// 	if (e.key === '{') {
-	// 		that.value = beforeCursor + `{\r  \r}` + afterCursor
-	// 		that.selectionStart = cursorPosStart + 3
-	// 		that.selectionEnd = cursorPosStart + 3
-	// 		e.preventDefault()
-	// 	}
-	// }
-
 	if (init) styleHead.innerText = init
 
 	if (event) {
@@ -2111,7 +2142,7 @@ function hideElem(init, buttons, that) {
 		}
 
 		initializeHiddenElements(updateToNewData(init))
-		setTimeout(() => initializeHiddenElements(init, true), 400)
+		setTimeout(() => initializeHiddenElements(init, true), BonjourrAnimTime)
 	}
 
 	// Settings buttons initialization
@@ -2155,11 +2186,21 @@ function canDisplayInterface(cat) {
 	funcsOk[cat] = true
 	const res = Object.values(funcsOk).filter((val) => val === true)
 	const keys = Object.keys(funcsOk)
-	const doms = [dominterface, domshowsettings, id('credit')]
 
-	console.log(funcsOk)
+	// Everything ready
+	// Progressive anim to max of Bonjourr animation time
+	if (res.length === keys.length) {
+		let loadtime = performance.now() - loadtimeStart
 
-	if (res.length === keys.length) doms.forEach((dom) => (dom.style.opacity = '1'))
+		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
+		if (loadtime < 30) loadtime = 0
+
+		dominterface.style.transition = `opacity ${loadtime}ms, transform .2s`
+		domshowsettings.style.transition = `opacity ${loadtime}ms`
+
+		dominterface.style.opacity = '1'
+		domshowsettings.style.opacity = '1'
+	}
 }
 
 window.onload = function () {
@@ -2175,7 +2216,8 @@ window.onload = function () {
 
 			const h = new Date().getHours()
 
-			if (data.font) data.font.family ? (funcsOk.fonts = false) : ''
+			// Can display interface added conditions
+			if (data.font) if (data.font.family && data.font.url) funcsOk.fonts = false
 			if (h < 12 || h > 21) funcsOk.weatherhigh = false
 
 			//pour que les settings y accede plus facilement

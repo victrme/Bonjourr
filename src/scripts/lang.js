@@ -1790,6 +1790,20 @@ function askfordict() {
 			es: 'Idioma',
 			no: 'LANGUAGE',
 		},
+		'on Unsplash': {
+			fr: 'sur Unsplash',
+			sv: 'on Unsplash',
+			nl: 'on Unsplash',
+			pl: 'on Unsplash',
+			pt_BR: 'on Unsplash',
+			ru: 'on Unsplash',
+			zh_CN: 'on Unsplash',
+			sk: 'on Unsplash',
+			de: 'on Unsplash',
+			it: 'on Unsplash',
+			es: 'on Unsplash',
+			no: 'on Unsplash',
+		},
 	}
 }
 

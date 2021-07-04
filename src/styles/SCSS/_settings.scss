@@ -4,7 +4,7 @@
 	right: 0;
 	padding: 0 1em 1em 0;
 	z-index: 3;
-	transition: opacity 0.2s;
+	transition-property: opacity;
 
 	button {
 		height: 3.5em;

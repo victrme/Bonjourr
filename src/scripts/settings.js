@@ -16,11 +16,19 @@ function selectBackgroundType(cat) {
 	id('custom').style.display = 'none'
 	id(cat).style.display = 'block'
 
-	// Applying functions
-	cat === 'custom' ? localBackgrounds(null, true) : unsplash()
-
-	// Setting frequence
 	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
+		//
+		// Applying functions
+		if (cat === 'custom') {
+			localBackgrounds(null, true)
+			clas(id('credit'), false, 'shown')
+		}
+		if (cat === 'dynamic') {
+			id('background_overlay').style.opacity = '0'
+			setTimeout(() => unsplash(data), BonjourrAnimTime)
+		}
+
+		// Setting frequence
 		const c_every = data.custom_every || 'pause'
 		const d_every = data.dynamic.every || 'hour'
 
@@ -92,11 +100,11 @@ function settingsEvents() {
 	}
 
 	//quick links
-	id('i_title').onkeypress = function (e) {
+	id('i_title').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
-	id('i_url').onkeypress = function (e) {
+	id('i_url').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
@@ -266,7 +274,7 @@ function settingsEvents() {
 
 	// 	scrolltimeout = setTimeout(() => {
 	// 		clas(this, false, 'scroll')
-	// 	}, 400)
+	// 	}, BonjourrAnimTime)
 	// }
 }
 
@@ -381,11 +389,6 @@ function importExport(select, isEvent) {
 			if (!data.dynamic.collection) {
 				result.dynamic = { ...data.dynamic, collection: '' }
 			}
-
-			// if (data.dynamic.next) data.dynamic.next = {}
-			// if (data.dynamic.every !== 'pause' && data.dynamic.current) data.dynamic.current = {}
-
-			// data.dynamic.time = 0
 		}
 
 		// Si il ne touche pas au vieux hide elem

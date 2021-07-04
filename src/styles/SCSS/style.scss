@@ -10,6 +10,9 @@
 	min-height: 100vh;
 	transform: scale(1.1);
 
+	opacity: 0;
+	transition: opacity 0.4s;
+
 	#background {
 		position: relative;
 		width: 100%;
@@ -28,7 +31,7 @@
 	justify-content: space-around;
 	will-change: transform;
 	overflow: hidden;
-	transition: opacity 0.15s, transform 0.2s;
+	transition-property: opacity, transform;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 
 	&.pushed {
@@ -591,8 +594,13 @@
 	position: fixed;
 	bottom: 1em;
 	left: 1em;
+	opacity: 0;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-	transition: opacity 0.2s;
+	transition: opacity 0.4s;
+
+	&.shown {
+		opacity: 1;
+	}
 
 	a {
 		color: #fff9;
@@ -603,10 +611,6 @@
 			color: #fffe;
 			transition: all 0.1s;
 		}
-	}
-
-	&.hidden {
-		opacity: 0;
 	}
 }
 
