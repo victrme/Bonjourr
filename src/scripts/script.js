@@ -344,7 +344,7 @@ function quickLinks(event, that, initStorage) {
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
 	function initblocks(links) {
-		if (links.length > 0) links.links.map((a, i) => appendblock(a, i, links))
+		if (links.length > 0) links.map((a, i) => appendblock(a, i, links))
 		canDisplayInterface('links')
 	}
 
@@ -1164,8 +1164,10 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 		if (background) {
 			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-			imgBackground(b64toBlobUrl(cleanData))
-			changeImgIndex(index)
+			b64toBlobUrl(cleanData, (bloburl) => {
+				imgBackground(bloburl)
+				changeImgIndex(index)
+			})
 		}
 	}
 
@@ -1174,23 +1176,10 @@ function localBackgrounds(init, thumbnail, newfile) {
 		return res === index ? (res + 1) % max : res
 	}
 
-	function b64toBlobUrl(b64Data, contentType = '', sliceSize = 512) {
-		const byteCharacters = atob(b64Data)
-		const byteArrays = []
-
-		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-			const slice = byteCharacters.slice(offset, offset + sliceSize)
-
-			const byteNumbers = new Array(slice.length)
-
-			for (let i in slice) byteNumbers[i] = slice.charCodeAt(i)
-
-			const byteArray = new Uint8Array(byteNumbers)
-			byteArrays.push(byteArray)
-		}
-
-		const blob = new Blob(byteArrays, { type: contentType })
-		return URL.createObjectURL(blob)
+	function b64toBlobUrl(b64Data, callback) {
+		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
+			res.blob().then((blob) => callback(URL.createObjectURL(blob)))
+		})
 	}
 
 	function changeImgIndex(i) {
@@ -1269,7 +1258,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 				}
 
 				//affiche l'image
-				imgBackground(b64toBlobUrl(cleanData))
+				b64toBlobUrl(cleanData, (bloburl) => imgBackground(bloburl))
 			}
 		}
 
@@ -1289,7 +1278,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 		div.setAttribute('class', 'thumbnail')
 		rem.setAttribute('class', 'hidden')
 		rem.innerText = '✕'
-		i.src = b64toBlobUrl(data)
+		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
 		div.appendChild(i)
 		div.appendChild(rem)
@@ -2216,21 +2205,20 @@ window.onload = function () {
 
 			const h = new Date().getHours()
 
+			//pour que les settings y accede plus facilement
+			disposableData = localEnc(JSON.stringify(data))
+
 			// Can display interface added conditions
 			if (data.font) if (data.font.family && data.font.url) funcsOk.fonts = false
 			if (h < 12 || h > 21) funcsOk.weatherhigh = false
 
-			//pour que les settings y accede plus facilement
-			disposableData = localEnc(JSON.stringify(data))
-
 			traduction(null, data.lang)
+			weather(null, null, data)
 			greetings()
 			date(null, data.usdate)
 			newClock(null, data.clock)
 			darkmode(null, data)
 			initBackground(data)
-			weather(null, null, data)
-			quickLinks(null, null, data)
 			searchbar(null, null, data)
 			showPopup(data.reviewPopup)
 
@@ -2238,7 +2226,10 @@ window.onload = function () {
 			customFont(data.font)
 			customCss(data.css)
 			hideElem(data.hide)
+
 			linksrow(data.linksrow)
+			quickLinks(null, null, data)
+
 			greetingName(data.greeting)
 
 			//safe font for different alphabet
