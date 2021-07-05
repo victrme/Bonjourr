@@ -18,9 +18,7 @@ const funcsOk = {
 	links: false,
 }
 
-let disposableData = {},
-	langue = 'en',
-	stillActive = false,
+let stillActive = false,
 	rangeActive = false,
 	lazyClockInterval = 0,
 	// settingsscroll = 0,
@@ -30,10 +28,10 @@ let disposableData = {},
 	googleFontList = {},
 	firstpaint = false
 const randomseed = Math.floor(Math.random() * 30) + 1,
+	dict = askfordict(),
 	domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks_inner'),
 	dominterface = id('interface'),
-	dict = askfordict(),
 	domimg = id('background'),
 	domthumbnail = cl('thumbnail'),
 	domclock = id('clock'),
@@ -119,16 +117,23 @@ function slow(that) {
 	}, 700)
 }
 
-function traduction(ofSettings, initStorage) {
-	let trns = (ofSettings ? id('settings') : document).querySelectorAll('.trn')
-	langue = ofSettings ? JSON.parse(localEnc(disposableData, false)).lang || 'en' : initStorage || 'en'
+function traduction(ofSettings, init) {
+	function traduis(lang) {
+		document.documentElement.setAttribute('lang', lang)
 
-	if (langue !== 'en') trns.forEach((t) => (dict[t.innerText] ? (t.innerText = dict[t.innerText][langue]) : ''))
+		if (lang !== 'en') {
+			const trns = (ofSettings ? id('settings') : document).querySelectorAll('.trn')
+			trns.forEach((t) => (dict[t.innerText] ? (t.innerText = dict[t.innerText][lang]) : ''))
+		}
+	}
+
+	if (init && !ofSettings) traduis(init)
+	else chrome.storage.sync.get('lang', (data) => traduis(data.lang))
 }
 
 function tradThis(str) {
-	if (langue === 'en') return str
-	else return dict[str][langue]
+	const lang = document.documentElement.getAttribute('lang')
+	return lang === 'en' ? str : dict[str][lang]
 }
 
 function newClock(eventObj, init) {
@@ -790,6 +795,7 @@ function weather(event, that, initStorage) {
 	function request(arg, wCat) {
 		function urlControl(arg, forecast) {
 			let url = 'https://api.openweathermap.org/data/2.5/'
+			const lang = document.documentElement.getAttribute('lang')
 
 			if (forecast) url += 'forecast?appid=' + atob(WEATHER_API_KEY[0])
 			else url += 'weather?appid=' + atob(WEATHER_API_KEY[1])
@@ -801,7 +807,7 @@ function weather(event, that, initStorage) {
 				url += `&q=${encodeURI(arg.city)},${arg.ccode}`
 			}
 
-			url += `&units=${arg.unit}&lang=${langue}`
+			url += `&units=${arg.unit}&lang=${lang}`
 
 			return url
 		}
@@ -1073,10 +1079,12 @@ function weather(event, that, initStorage) {
 	const i_ccode = id('i_ccode')
 	const sett_city = id('sett_city')
 
-	const img = document.createElement('img')
-	img.id = 'widget'
-	img.setAttribute('draggable', 'false')
-	id('w_icon').prepend(img)
+	if (!id('widget')) {
+		const img = document.createElement('img')
+		img.id = 'widget'
+		img.setAttribute('draggable', 'false')
+		id('w_icon').prepend(img)
+	}
 
 	//TOUT LES EVENTS, default c'est init
 	switch (event) {
@@ -1230,7 +1238,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 			//canvas proportionné à l'image
 
 			//rétréci suivant le taux de compression
-			//si thumbnail, toujours 100px
+			//si thumbnail, toujours 150px
 			const height = state === 'thumbnail' ? 150 : img.height * 1 //parseFloat(size));
 			const scaleFactor = height / img.height
 			elem.width = img.width * scaleFactor
@@ -1349,7 +1357,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 	function displayCustomThumbnails() {
 		const thumbnails = document.querySelectorAll('#bg_tn_wrap .thumbnail')
 
-		chrome.storage.local.get(null, (data) => {
+		chrome.storage.local.get('customThumbnails', (data) => {
 			if (data.customThumbnails) {
 				if (thumbnails.length < data.customThumbnails.length) {
 					let cleanData
@@ -1362,8 +1370,10 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 					fullThumbnails = data.customThumbnails
 
-					setTimeout(function () {
-						fullImage = data.custom
+					setTimeout(() => {
+						chrome.storage.local.get('custom', (data) => {
+							fullImage = data.custom
+						})
 					}, 200)
 				}
 			}
@@ -1685,12 +1695,12 @@ function filter(cat, val) {
 	id('background').style.filter = result
 }
 
-function darkmode(choice, initStorage) {
-	function apply(state) {
-		function auto(weather) {
-			if (weather === undefined) {
-				return 'autodark'
-			}
+function darkmode(choice, init) {
+	//
+	function apply(val, weather) {
+		//
+		function auto() {
+			if (weather === undefined) return 'autodark'
 
 			//compare current hour with weather sunset / sunrise
 			const ls = weather.lastState
@@ -1701,19 +1711,15 @@ function darkmode(choice, initStorage) {
 			return hr <= sunrise || hr > sunset ? 'dark' : ''
 		}
 
-		//uses chromesync data on startup, sessionsStorage on change
-		const weather = initStorage ? initStorage.weather : JSON.parse(localEnc(disposableData, false)).weather
 		let bodyClass
 
-		//dark mode is defines by the body class
-
-		switch (state) {
+		switch (val) {
 			case 'system':
 				bodyClass = 'autodark'
 				break
 
 			case 'auto':
-				bodyClass = auto(weather)
+				bodyClass = auto()
 				break
 
 			case 'enable':
@@ -1729,30 +1735,24 @@ function darkmode(choice, initStorage) {
 		}
 
 		document.body.setAttribute('class', bodyClass)
+		if (choice) chrome.storage.sync.set({ dark: choice })
 	}
 
-	//apply class, save if event
-	if (choice) {
-		apply(choice, true)
-		chrome.storage.sync.set({ dark: choice })
-	} else {
-		apply(initStorage.dark)
-	}
+	if (choice) chrome.storage.sync.get('weather', (data) => apply(choice, data.weather))
+	else apply(init.dark, init.weather)
 }
 
 function searchbar(event, that, storage) {
 	function display(value, init) {
 		id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-		if (!init) {
-			chrome.storage.sync.set({ searchbar: value })
-		}
+		if (!init) chrome.storage.sync.set({ searchbar: value })
 	}
 
 	function localisation(q) {
 		let response = '',
-			lang = storage ? storage.lang || 'en' : 'en',
-			engine = sessionStorage.engine
+			lang = document.documentElement.getAttribute('lang'),
+			engine = domsearchbar.getAttribute('engine')
 
 		// engineLocales est dans lang.js
 		response = engineLocales[engine].base.replace('$locale$', engineLocales[engine][lang]).replace('$query$', q)
@@ -1772,19 +1772,24 @@ function searchbar(event, that, storage) {
 			bing: 'Bing',
 		}
 
-		id('searchbar').setAttribute('placeholder', tradThis('Search on ' + names[value]))
 		if (!init) chrome.storage.sync.set({ searchbar_engine: value })
-		sessionStorage.engine = value
+
+		domsearchbar.setAttribute('placeholder', tradThis('Search on ' + names[value]))
+		domsearchbar.setAttribute('engine', value)
 	}
 
 	function setNewtab(value, init) {
 		if (!init) chrome.storage.sync.set({ searchbar_newtab: value })
-		sessionStorage.newtab = value
+		domsearchbar.setAttribute('newtab', value)
 	}
 
-	id('searchbar').onkeyup = function (e) {
+	const domsearchbar = id('searchbar')
+
+	domsearchbar.onkeyup = function (e) {
+		const isNewtab = e.target.getAttribute('newtab') === 'true'
+
 		if (e.key === 'Enter') {
-			if (sessionStorage.newtab === 'true') window.open(localisation(this.value), '_blank')
+			if (isNewtab) window.open(localisation(this.value), '_blank')
 			else window.location = localisation(this.value)
 		}
 	}
@@ -2204,9 +2209,6 @@ window.onload = function () {
 			}
 
 			const h = new Date().getHours()
-
-			//pour que les settings y accede plus facilement
-			disposableData = localEnc(JSON.stringify(data))
 
 			// Can display interface added conditions
 			if (data.font) if (data.font.family && data.font.url) funcsOk.fonts = false

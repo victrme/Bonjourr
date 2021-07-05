@@ -38,22 +38,18 @@ function selectBackgroundType(cat) {
 	chrome.storage.sync.set({ background_type: cat })
 }
 
-function showall(event) {
-	const displayAllSettings = (on, init) => {
-		if (init) {
-			clas(id('settings'), true, 'all_init')
-			setTimeout(() => id('settings').classList.replace('all_init', 'all'), 50)
-			return false
-		}
+function showall(val, event) {
+	const domsettings = id('settings')
 
-		clas(id('settings'), on, 'all')
-	}
-
-	if (event !== undefined) {
-		displayAllSettings(event)
-		chrome.storage.sync.set({ showall: event })
+	if (event) {
+		clas(id('settings'), val, 'all')
+		chrome.storage.sync.set({ showall: val })
 	} else {
-		displayAllSettings(JSON.parse(localEnc(disposableData, false)).showall, true)
+		clas(domsettings, val, 'all_init')
+		setTimeout(() => {
+			clas(domsettings, false, 'all_init')
+			clas(domsettings, val, 'all')
+		}, 50)
 	}
 }
 
@@ -88,7 +84,7 @@ function settingsEvents() {
 	//general
 
 	id('i_showall').onchange = function () {
-		showall(this.checked)
+		showall(this.checked, true)
 	}
 
 	id('i_lang').onchange = function () {
@@ -278,9 +274,7 @@ function settingsEvents() {
 	// }
 }
 
-function initParams() {
-	const data = JSON.parse(localEnc(disposableData, false))
-
+function initParams(data) {
 	const initInput = (dom, cat, base) => (id(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (id(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
@@ -465,15 +459,17 @@ function showSettings() {
 	}
 
 	function functions() {
-		initParams()
-		traduction(true)
+		chrome.storage.sync.get((data) => {
+			initParams(data)
+			traduction(true, data.lang)
 
-		setTimeout(() => {
-			display()
-			showall()
-			settingsEvents()
-			signature()
-		}, 10)
+			setTimeout(() => {
+				display()
+				showall(data.showall)
+				settingsEvents()
+				signature()
+			}, 10)
+		})
 	}
 
 	function init() {
@@ -531,12 +527,8 @@ if (sessionStorage.lang) {
 	setTimeout(() => showSettings(), 20)
 }
 
-domshowsettings.onmouseup = function () {
-	showSettings()
-}
-dominterface.onmousedown = function (e) {
-	showInterface(e)
-}
+domshowsettings.onmouseup = () => showSettings()
+dominterface.onmousedown = (e) => showInterface(e)
 
 document.onkeydown = function (e) {
 	//focus la searchbar si elle existe et les settings sont fermé
