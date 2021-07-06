@@ -196,8 +196,7 @@ body {
 	}
 
 	/* prettier-ignore */
-	&.all,
-	&.all_init {
+	&.all {
 		.as_link {max-height: 120px}
 		.as_collection {max-height: 70px}
 		.as_visuals {max-height: 300px}
@@ -207,7 +206,7 @@ body {
 		.as_impexp {max-height: 220px}
 	}
 
-	&.all_init {
+	&.init {
 		.as {
 			transition: max-height 0s;
 		}

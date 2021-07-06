@@ -77,6 +77,15 @@
 		transform: translateX(-100%);
 	}
 
+	&.init {
+		#sett_city,
+		#clockoptions #w_clockface,
+		#clockoptions #w_ampm,
+		#searchbar_options {
+			transition: max-Height 0s;
+		}
+	}
+
 	@include allSettings();
 
 	a:hover,

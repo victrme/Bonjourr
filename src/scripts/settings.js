@@ -39,18 +39,8 @@ function selectBackgroundType(cat) {
 }
 
 function showall(val, event) {
-	const domsettings = id('settings')
-
-	if (event) {
-		clas(id('settings'), val, 'all')
-		chrome.storage.sync.set({ showall: val })
-	} else {
-		clas(domsettings, val, 'all_init')
-		setTimeout(() => {
-			clas(domsettings, false, 'all_init')
-			clas(domsettings, val, 'all')
-		}, 50)
-	}
+	if (event) chrome.storage.sync.set({ showall: val })
+	clas(id('settings'), val, 'all')
 }
 
 function toggleClockOptions(analog) {
@@ -468,6 +458,8 @@ function showSettings() {
 				showall(data.showall)
 				settingsEvents()
 				signature()
+
+				setTimeout(() => clas(id('settings'), false, 'init'), 100)
 			}, 10)
 		})
 	}
@@ -478,6 +470,7 @@ function showSettings() {
 				const dom = document.createElement('div')
 				dom.id = 'settings'
 				dom.innerHTML = text
+				dom.setAttribute('class', 'init')
 				document.body.appendChild(dom)
 
 				functions()
