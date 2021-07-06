@@ -23,8 +23,6 @@ let stillActive = false,
 	lazyClockInterval = 0,
 	// settingsscroll = 0,
 	fontList = [],
-	fullImage = [],
-	fullThumbnails = [],
 	googleFontList = {},
 	firstpaint = false
 const randomseed = Math.floor(Math.random() * 30) + 1,
@@ -118,7 +116,7 @@ function slow(that) {
 }
 
 function traduction(ofSettings, init) {
-	function traduis(lang) {
+	function traduis(lang = 'en') {
 		document.documentElement.setAttribute('lang', lang)
 
 		if (lang !== 'en') {
@@ -132,7 +130,7 @@ function traduction(ofSettings, init) {
 }
 
 function tradThis(str) {
-	const lang = document.documentElement.getAttribute('lang')
+	const lang = document.documentElement.getAttribute('lang') || 'en'
 	return lang === 'en' ? str : dict[str][lang]
 }
 
@@ -1118,7 +1116,7 @@ function initBackground(data) {
 			const customList = datalocal.custom || []
 
 			if (customList.length > 0) {
-				localBackgrounds({ local: datalocal, every: data.custom_every })
+				localBackgrounds({ local: datalocal, every: data.custom_every, time: data.custom_time })
 			} else {
 				// If no custom, change to dynamic
 				unsplash(data)
@@ -1197,20 +1195,20 @@ function localBackgrounds(init, thumbnail, newfile) {
 	function addNewImage() {
 		let reader = new FileReader()
 		reader.onload = function (event) {
-			let result = event.target.result
-
-			fullImage.push(result)
+			const result = event.target.result
 
 			compress(result, 'thumbnail')
-			compress(result, 'new')
+			compress(result)
 
-			chrome.storage.local.get(null, (data) => {
+			chrome.storage.local.get(['custom'], (data) => {
 				const custom = data.custom ? data.custom : []
 				const bumpedindex = custom.length
 
+				custom.push(result)
+
 				changeImgIndex(bumpedindex)
 				chrome.storage.local.set({ customIndex: bumpedindex })
-				chrome.storage.local.set({ custom: fullImage })
+				chrome.storage.local.set({ custom: custom })
 
 				if (custom.length === 0) {
 					chrome.storage.sync.get('background_type', (data) => {
@@ -1219,7 +1217,6 @@ function localBackgrounds(init, thumbnail, newfile) {
 				}
 			})
 		}
-
 		id('background_overlay').style.opacity = '0'
 
 		reader.readAsDataURL(newfile)
@@ -1231,7 +1228,6 @@ function localBackgrounds(init, thumbnail, newfile) {
 		const img = new Image()
 
 		img.onload = () => {
-			//const size = document.getElementById('range').value;
 			const elem = document.createElement('canvas')
 			const ctx = elem.getContext('2d')
 
@@ -1239,7 +1235,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 			//rétréci suivant le taux de compression
 			//si thumbnail, toujours 150px
-			const height = state === 'thumbnail' ? 150 : img.height * 1 //parseFloat(size));
+			const height = state === 'thumbnail' ? 150 : img.height * 1
 			const scaleFactor = height / img.height
 			elem.width = img.width * scaleFactor
 			elem.height = height
@@ -1252,22 +1248,17 @@ function localBackgrounds(init, thumbnail, newfile) {
 			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
 
 			if (state === 'thumbnail') {
-				//controle les thumbnails
-				addThumbnails(cleanData, fullImage.length - 1)
+				chrome.storage.local.get('customThumbnails', (data) => {
+					const thumbs = data.customThumbnails || []
 
-				fullThumbnails.push(cleanData)
-				chrome.storage.local.set({ customThumbnails: fullThumbnails })
-			} else {
-				//new image loaded from filereader sets image index
-				if (state === 'new') {
-					changeImgIndex(fullImage.length - 1)
-					//save l'index
-					chrome.storage.local.set({ customIndex: fullImage.length - 1 })
-				}
-
-				//affiche l'image
-				b64toBlobUrl(cleanData, (bloburl) => imgBackground(bloburl))
-			}
+					thumbs.push(cleanData)
+					chrome.storage.local.set({ customThumbnails: thumbs })
+					addThumbnails(cleanData, thumbs.length - 1)
+				})
+			} else
+				b64toBlobUrl(cleanData, (bloburl) => {
+					imgBackground(bloburl)
+				})
 		}
 
 		img.src = e
@@ -1306,12 +1297,17 @@ function localBackgrounds(init, thumbnail, newfile) {
 				//affiche l'image voulu
 				//lui injecte le bon index
 				const index = getParentIndex(e.target)
+				const appliedIndex = parseInt(id('background').getAttribute('index'))
 
-				id('background_overlay').style.opacity = `0`
+				if (index !== appliedIndex) {
+					id('background_overlay').style.opacity = `0`
 
-				compress(fullImage[index])
-				changeImgIndex(index)
-				chrome.storage.local.set({ customIndex: index })
+					chrome.storage.local.get('custom', (data) => {
+						changeImgIndex(index)
+						chrome.storage.local.set({ customIndex: index })
+						compress(data.custom[index], 'thumbclick', index)
+					})
+				}
 			}
 		}
 
@@ -1324,32 +1320,31 @@ function localBackgrounds(init, thumbnail, newfile) {
 				domthumbnail[index].remove()
 
 				//rewrite all thumbs indexes
-				for (let i = 0; i < domthumbnail.length; i++) {
-					domthumbnail[i].setAttribute('index', i)
-				}
+				for (let i = 0; i < domthumbnail.length; i++) domthumbnail[i].setAttribute('index', i)
 
-				//deletes thumbnail from storage
-				//concat  [0, index] à [index + 1, fin]
-				const deleteArrItem = (arr) => arr.slice(null, index).concat(arr.slice(index + 1))
+				chrome.storage.local.get(['custom', 'customThumbnails'], (data) => {
+					//deletes thumbnail from storage
+					//concat  [0, index] à [index + 1, fin]
+					const deleteArrItem = (arr) => arr.slice(null, index).concat(arr.slice(index + 1))
 
-				fullImage = deleteArrItem(fullImage)
-				chrome.storage.local.set({ custom: fullImage })
+					data.custom = deleteArrItem(data.custom)
+					data.customThumbnails = deleteArrItem(data.customThumbnails)
 
-				fullThumbnails = deleteArrItem(fullThumbnails)
-				chrome.storage.local.set({ customThumbnails: fullThumbnails })
+					chrome.storage.local.set({ custom: data.custom })
+					chrome.storage.local.set({ customThumbnails: data.customThumbnails })
 
-				//celui a suppr plus petit que l'actuel, baisse son index
-				if (index <= currentIndex) chrome.storage.local.set({ customIndex: currentIndex - 1 })
-
-				// Si derniere image des customs
-				if (fullImage.length === 0) {
-					unsplash()
-					chrome.storage.sync.set({ background_type: 'dynamic' })
-
+					// Si derniere image des customs
+					if (data.custom.length === 0) {
+						chrome.storage.sync.set({ background_type: 'dynamic' })
+						unsplash()
+					}
 					// Sinon load une autre
-				} else {
-					compress(fullImage[currentIndex - 1] === undefined ? fullImage[currentIndex] : fullImage[currentIndex - 1])
-				}
+					else {
+						if (currentIndex === data.custom.length) currentIndex -= 1
+						compress(data.custom[currentIndex])
+						chrome.storage.local.set({ customIndex: data.custom })
+					}
+				})
 			}
 		}
 	}
@@ -1360,21 +1355,9 @@ function localBackgrounds(init, thumbnail, newfile) {
 		chrome.storage.local.get('customThumbnails', (data) => {
 			if (data.customThumbnails) {
 				if (thumbnails.length < data.customThumbnails.length) {
-					let cleanData
-					let thumbs = data.customThumbnails
-
-					thumbs.forEach((thumb, i) => {
-						cleanData = thumb.replace('data:image/jpeg;base64,', '') //used for blob
-						addThumbnails(cleanData, i)
-					})
-
-					fullThumbnails = data.customThumbnails
-
-					setTimeout(() => {
-						chrome.storage.local.get('custom', (data) => {
-							fullImage = data.custom
-						})
-					}, 200)
+					data.customThumbnails.forEach(
+						(thumb, i) => addThumbnails(thumb.replace('data:image/jpeg;base64,', ''), i) //used for blob
+					)
 				}
 			}
 		})
@@ -1391,7 +1374,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 	}
 
 	// need all of saved stuff
-	const { local, every } = init
+	const { local, every, time } = init
 
 	// Slideshow or not, need index
 	const index = local.customIndex >= 0 ? local.customIndex : 0
@@ -1399,11 +1382,10 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 	// Slideshow is activated
 	if (every) {
-		const last = local.custom_time || 0
 		const rand = preventFromShowingTwice(index, customList.length)
+		const needNewImage = freqControl('get', every, time || 0)
 
-		// Need new Image
-		if (freqControl('get', every, last)) {
+		if (needNewImage) {
 			applyCustomBackground(customList, rand)
 
 			// Updates time & index

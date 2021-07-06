@@ -7,10 +7,6 @@ function signature() {
 	id('rand').appendChild(e)
 }
 
-function changeCustomFreq(val) {
-	chrome.storage.sync.set({ custom_every: val })
-}
-
 function selectBackgroundType(cat) {
 	id('dynamic').style.display = 'none'
 	id('custom').style.display = 'none'
@@ -108,7 +104,7 @@ function settingsEvents() {
 	}
 
 	id('i_freq').onchange = function () {
-		if (id('i_type').value === 'custom') changeCustomFreq(this.value)
+		if (id('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
 		else unsplash(null, { every: this.value })
 	}
 

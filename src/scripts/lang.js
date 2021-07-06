@@ -517,7 +517,7 @@ function askfordict() {
 			no: 'Settings icon',
 		},
 		'Upload background here': {
-			fr: 'Insérez votre arrière-plan',
+			fr: 'Ajoutez votre arrière-plan',
 			sv: 'Upload background here',
 			nl: 'Upload background here',
 			pl: 'Upload background here',
