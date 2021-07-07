@@ -90,14 +90,6 @@ function getLocalStorage() {
 	})
 }
 
-//cache un peu mieux les données dans le storage
-function localEnc(input = 'no', enc = true) {
-	let a = input.split(''),
-		n = ''
-	for (let i in a) n += String.fromCharCode(a[i].charCodeAt() + (enc ? randomseed : -randomseed))
-	return n
-}
-
 function slowRange(tosave, time = 150) {
 	//timeout avant de save pour éviter la surcharge d'instructions de storage
 	clearTimeout(rangeActive)
@@ -1615,7 +1607,41 @@ function unsplash(init, event) {
 	// 1
 	// Startup
 	if (init && init.dynamic) {
-		chrome.storage.local.get('dynamicCache', (local) => cacheControl(init.dynamic, local.dynamicCache))
+		//
+		chrome.storage.local.get('dynamicCache', (local) => {
+			//
+			// 1.9.3 ==> 1.10.0 compatiility
+
+			if (local.dynamicCache === undefined) {
+				//
+				// Add local cache
+				local.dynamicCache = {
+					current: 'day',
+					noon: [],
+					day: [],
+					evening: [],
+					night: [],
+					user: [],
+				}
+
+				// inject saved background if pause
+				if (init.dynamic.current && init.dynamic.every === 'pause') {
+					local.dynamicCache.day = [init.dynamic.current, init.dynamic.next]
+				}
+
+				// data cleanup
+				if (init.dynamic.current) {
+					delete init.dynamic.current
+					delete init.dynamic.next
+
+					chrome.storage.sync.set({ dynamic: init.dynamic })
+				}
+
+				chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+			}
+
+			cacheControl(init.dynamic, local.dynamicCache)
+		})
 	}
 
 	// Settings event
