@@ -474,24 +474,29 @@
 		.empty_input {
 			position: absolute;
 			top: 50%;
-			right: 0.4em;
-			width: 1em;
-			height: 1em;
-			padding: 0;
+			right: 0em;
+			color: #444;
+			background-color: transparent;
+			border-radius: 100%;
+			font-size: 1em;
 			opacity: 0;
 			border: none;
 			cursor: text;
-			filter: brightness(1.1);
 			transform: translate(-50%, -50%);
-			transition: opacity 0.2s, filter 0.1s;
+			transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 
 			&.shown {
 				opacity: 1;
 				cursor: pointer;
 			}
 
+			&:hover {
+				background-color: #ddd;
+			}
+
 			&:active {
-				filter: brightness(1);
+				background-color: #ccc;
+				color: #222;
 			}
 		}
 

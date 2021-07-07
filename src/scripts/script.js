@@ -327,7 +327,7 @@ function greetings() {
 function quickLinks(event, that, initStorage) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
-	const linksFaviconsToUpdate = []
+	const favsToUpdate = []
 	let hovered, dragged, current
 
 	//enleve les selections d'edit
@@ -358,12 +358,12 @@ function quickLinks(event, that, initStorage) {
 			elem.querySelector('img').src = url
 
 			// Save changes memory var
-			linksFaviconsToUpdate.push({ index, url })
+			favsToUpdate.push({ index, url })
 			const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
 
 			// Last to save ? Update storage
-			if (linksFaviconsToUpdate.length === howManyToSave.length) {
-				linksFaviconsToUpdate.forEach((link) => (links[link.index].icon = link.url))
+			if (favsToUpdate.length === 1 || favsToUpdate.length === howManyToSave.length) {
+				favsToUpdate.forEach((link) => (links[link.index].icon = link.url))
 				chrome.storage.sync.set({ links: links })
 			}
 		}
