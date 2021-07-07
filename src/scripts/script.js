@@ -1325,6 +1325,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 				chrome.storage.local.get(['custom', 'customThumbnails'], (data) => {
 					//deletes thumbnail from storage
 					//concat  [0, index] à [index + 1, fin]
+
 					const deleteArrItem = (arr) => arr.slice(null, index).concat(arr.slice(index + 1))
 
 					data.custom = deleteArrItem(data.custom)
@@ -1333,6 +1334,11 @@ function localBackgrounds(init, thumbnail, newfile) {
 					chrome.storage.local.set({ custom: data.custom })
 					chrome.storage.local.set({ customThumbnails: data.customThumbnails })
 
+					if (currentIndex === data.custom.length) {
+						currentIndex -= 1
+						if (currentIndex >= 0) compress(data.custom[currentIndex])
+					}
+
 					// Si derniere image des customs
 					if (data.custom.length === 0) {
 						chrome.storage.sync.set({ background_type: 'dynamic' })
@@ -1340,7 +1346,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 					}
 					// Sinon load une autre
 					else {
-						if (currentIndex === data.custom.length) currentIndex -= 1
+						changeImgIndex(currentIndex)
 						compress(data.custom[currentIndex])
 						chrome.storage.local.set({ customIndex: data.custom })
 					}
@@ -1450,9 +1456,8 @@ function unsplash(init, event) {
 		console.log(props.color)
 	}
 
-	// 2
 	function cacheControl(dynamic, local) {
-		// 3
+		//
 		function chooseCollection() {
 			//
 			// Mutates collectionIds to match selected collection
@@ -1515,15 +1520,15 @@ function unsplash(init, event) {
 			)
 		}
 
-		const collectionName = chooseCollection()
-		let list = local[collectionName]
+		const foundCollection = chooseCollection()
+		let list = local[foundCollection]
 
 		// Startup, nothing in cache
 		if (list.length === 0) {
-			requestNewList(collectionName, (newlist) => {
+			requestNewList(foundCollection, (newlist) => {
 				//
 				// Save List
-				local[collectionName] = newlist
+				local[foundCollection] = newlist
 				chrome.storage.local.set({ dynamicCache: local })
 
 				loadBackground(newlist[0])
@@ -1535,11 +1540,11 @@ function unsplash(init, event) {
 			return true
 		}
 
-		// Test if same collection
-		if (collectionName === local.current) {
+		// Need new image
+		if (freqControl('get', dynamic.every, dynamic.time)) {
 			//
-			// Need new image
-			if (freqControl('get', dynamic.every, dynamic.time)) {
+			// Test if same collection
+			if (foundCollection === local.current) {
 				//
 				// removes previous image from list
 				list.shift()
@@ -1550,24 +1555,24 @@ function unsplash(init, event) {
 				// If end of cache, get & save new list
 				// Or only save bumped .at
 				if (list.length === 1)
-					requestNewList(collectionName, (newlist) => {
+					requestNewList(foundCollection, (newlist) => {
 						//
 						// Save newlist
 						list = list.concat(newlist)
-						local[collectionName] = list
+						local[foundCollection] = list
 						chrome.storage.local.set({ dynamicCache: local })
 
-						// Preload third after newlist found
+						// Preload second after newlist found
 						noDisplayImgLoad(list[1].url, () => {
-							local[collectionName] = list
+							local[foundCollection] = list
 							chrome.storage.local.set({ dynamicCache: local })
 						})
 					})
 				//
-				// Preload third
+				// Preload second
 				else
 					noDisplayImgLoad(list[1].url, () => {
-						local[collectionName] = list
+						local[foundCollection] = list
 						chrome.storage.local.set({ dynamicCache: local })
 					})
 
@@ -1578,25 +1583,25 @@ function unsplash(init, event) {
 				}
 			}
 
-			// No need for new, load the same image
-			else loadBackground(list[0])
+			// Collection has changed !
+			else {
+				//
+				// New collection already cached, get second image
+				// If not, get image from previous collection
+				if (list.length > 0) loadBackground(list[0])
+				else local[local.current][0]
+
+				// Save new collection
+				dynamic.time = freqControl('set', dynamic.every)
+				local.current = foundCollection
+
+				chrome.storage.sync.set({ dynamic: dynamic })
+				chrome.storage.local.set({ dynamicCache: local })
+			}
 		}
 
-		// Collection has changed !
-		else {
-			//
-			// New collection already cached, get second image
-			// If not, get image from previous collection
-			if (list.length > 0) loadBackground(list[0])
-			else local[local.current][0]
-
-			// Save new collection
-			dynamic.time = freqControl('set', dynamic.every)
-			local.current = collectionName
-
-			chrome.storage.sync.set({ dynamic: dynamic })
-			chrome.storage.local.set({ dynamicCache: local })
-		}
+		// No need for new, load the same image
+		else loadBackground(local[local.current][0])
 	}
 
 	const collectionsIds = {
@@ -1909,11 +1914,11 @@ function customFont(data, event) {
 	}
 
 	// Event only
-	function changeFamily(json) {
+	function changeFamily(json, family) {
 		//
 		// Cherche correspondante
 		const dom = id('i_customfont')
-		const font = json.items.filter((font) => font.family.toUpperCase() === dom.value.toUpperCase())
+		const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
 
 		// One font has been found
 		if (font.length > 0) {
@@ -1933,15 +1938,7 @@ function customFont(data, event) {
 		}
 	}
 
-	// init
-	if (data) {
-		if (data.family && data.url) {
-			apply(data.url, data.family, data.weight || '400')
-		}
-	}
-
-	// event
-	if (event) {
+	function triggerEvent(event) {
 		// If nothing, removes custom font
 		if (event.family === '') {
 			id('fontstyle').innerText = ''
@@ -1957,7 +1954,9 @@ function customFont(data, event) {
 
 		if (event.weight) {
 			chrome.storage.sync.get('font', (data) => changeWeight(event.weight, data.font))
-			return false
+
+			// condition for 1.9.3 compatibility
+			if (!event.family) return false
 		}
 
 		// If there is something
@@ -1967,12 +1966,25 @@ function customFont(data, event) {
 				.then((response) => response.json())
 				.then((json) => {
 					googleFontList = json
-					changeFamily(json)
+					changeFamily(json, event.family)
 				})
 		} else {
 			changeFamily(googleFontList)
 		}
 	}
+
+	// init
+	if (data) {
+		if (data.family && data.url) {
+			apply(data.url, data.family, data.weight || '400')
+		}
+
+		// 1.9.3 ==> 1.10.0
+		else if (data.family && !data.url) triggerEvent(data)
+	}
+
+	// event
+	if (event) triggerEvent(event)
 }
 
 function customCss(init, event) {
@@ -2158,14 +2170,10 @@ function hideElem(init, buttons, that) {
 	}
 }
 
-function canDisplayInterface(cat) {
-	funcsOk[cat] = true
-	const res = Object.values(funcsOk).filter((val) => val === true)
-	const keys = Object.keys(funcsOk)
-
-	// Everything ready
+function canDisplayInterface(cat, init) {
+	//
 	// Progressive anim to max of Bonjourr animation time
-	if (res.length === keys.length) {
+	function displayInterface() {
 		let loadtime = performance.now() - loadtimeStart
 
 		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
@@ -2176,6 +2184,34 @@ function canDisplayInterface(cat) {
 
 		dominterface.style.opacity = '1'
 		domshowsettings.style.opacity = '1'
+	}
+
+	// More conditions if user is using advanced features
+	if (init) {
+		const h = new Date().getHours()
+		if (init.font) if (init.font.family && init.font.url) funcsOk.fonts = false
+		if (h < 12 || h > 21) funcsOk.weatherhigh = false
+	}
+
+	// Check if all funcs are ready
+	else {
+		funcsOk[cat] = true
+		const res = Object.values(funcsOk).filter((val) => val === true)
+		const keys = Object.keys(funcsOk)
+
+		if (res.length === keys.length) displayInterface()
+	}
+}
+
+function safeFont(lang, font) {
+	//safe font for different alphabet
+	if (lang === 'ru' || lang === 'sk') {
+		const changeFont = () =>
+			(id('styles').innerText = `
+			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
+
+		if (!font) changeFont()
+		else if (font.family === '') changeFont()
 	}
 }
 
@@ -2190,11 +2226,7 @@ window.onload = function () {
 				localStorage.removeItem('data')
 			}
 
-			const h = new Date().getHours()
-
-			// Can display interface added conditions
-			if (data.font) if (data.font.family && data.font.url) funcsOk.fonts = false
-			if (h < 12 || h > 21) funcsOk.weatherhigh = false
+			canDisplayInterface(null, { font: data.font })
 
 			traduction(null, data.lang)
 			weather(null, null, data)
@@ -2213,23 +2245,9 @@ window.onload = function () {
 
 			linksrow(data.linksrow)
 			quickLinks(null, null, data)
-
 			greetingName(data.greeting)
 
-			//safe font for different alphabet
-			if (data.lang === 'ru' || data.lang === 'sk') {
-				const safeFont = () =>
-					(id('styles').innerText = `
-			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
-
-				if (!data.font) safeFont()
-				else if (data.font.family === '') safeFont()
-			}
-
-			if (mobilecheck) {
-				dominterface.style.minHeight = '90vh'
-				dominterface.style.padding = '0 0 10vh 0'
-			}
+			safeFont(data.lang, data.font)
 		})
 	} catch (error) {
 		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)
