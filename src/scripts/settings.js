@@ -133,6 +133,10 @@ function settingsEvents() {
 		darkmode(this.value)
 	}
 
+	id('i_greeting').onkeyup = function () {
+		greetings(this.value, true)
+	}
+
 	//Time and date
 
 	id('i_analog').onchange = function () {
@@ -225,10 +229,6 @@ function settingsEvents() {
 
 	id('i_row').oninput = function () {
 		linksrow(null, this.value)
-	}
-
-	id('i_greeting').onkeyup = function () {
-		greetingName(null, this.value)
 	}
 
 	id('cssEditor').addEventListener('keydown', function (e) {

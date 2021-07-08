@@ -26,7 +26,6 @@ let stillActive = false,
 	googleFontList = {},
 	firstpaint = false
 const randomseed = Math.floor(Math.random() * 30) + 1,
-	dict = askfordict(),
 	domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks_inner'),
 	dominterface = id('interface'),
@@ -71,23 +70,18 @@ const lsOnlineStorage = {
 	del: () => localStorage.clear(),
 }
 
+const logsync = (flat) => chrome.storage.sync.get(null, (data) => consolr(flat, data))
+const loglocal = (flat) => chrome.storage.local.get(null, (data) => consolr(flat, data))
+
 function deleteBrowserStorage() {
 	chrome.storage.sync.clear()
 	chrome.storage.local.clear()
 	localStorage.clear()
 }
 
-function getBrowserStorage(callback) {
-	chrome.storage.sync.get(null, (data) => {
-		if (callback) callback(data)
-		else console.log(data)
-	})
-}
-
-function getLocalStorage() {
-	chrome.storage.local.get(null, (data) => {
-		console.log(data)
-	})
+function consolr(flat, data) {
+	if (flat) console.log(data)
+	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
 }
 
 function slowRange(tosave, time = 150) {
@@ -108,12 +102,16 @@ function slow(that) {
 }
 
 function traduction(ofSettings, init) {
+	//
 	function traduis(lang = 'en') {
+		//
 		document.documentElement.setAttribute('lang', lang)
 
 		if (lang !== 'en') {
 			const trns = (ofSettings ? id('settings') : document).querySelectorAll('.trn')
-			trns.forEach((t) => (dict[t.innerText] ? (t.innerText = dict[t.innerText][lang]) : ''))
+			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
+
+			trns.forEach((trn) => changeText(trn, trn.textContent))
 		}
 	}
 
@@ -182,9 +180,9 @@ function newClock(eventObj, init) {
 				s = fixunits(timearray[2])
 
 			if (clock.seconds) {
-				domclock.innerText = `${h}:${m}:${s}`
-			} else if (change || domclock.innerText.length === 0 || s === '00') {
-				domclock.innerText = `${h}:${m}`
+				domclock.textContent = `${h}:${m}:${s}`
+			} else if (change || domclock.textContent.length === 0 || s === '00') {
+				domclock.textContent = `${h}:${m}`
 			}
 		}
 
@@ -232,7 +230,7 @@ function newClock(eventObj, init) {
 			marks: ['│', '─', '│', '─'],
 		}
 
-		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.innerText = chars[face][i]))
+		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.textContent = chars[face][i]))
 	}
 
 	//controle très stricte de clock comme vous pouvez le voir
@@ -282,46 +280,27 @@ function newClock(eventObj, init) {
 }
 
 function date(event, usdate) {
-	const date = new Date()
-	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-	const months = [
-		'January',
-		'February',
-		'March',
-		'April',
-		'May',
-		'June',
-		'July',
-		'August',
-		'September',
-		'October',
-		'November',
-		'December',
-	]
+	const date = new Date(),
+		jour = tradThis(days[date.getDay()]),
+		mois = tradThis(months[date.getMonth()]),
+		chiffre = date.getDate()
 
-	if (usdate) {
-		id('jour').innerText = tradThis(days[date.getDay()]) + ','
-		id('chiffre').innerText = tradThis(months[date.getMonth()])
-		id('mois').innerText = date.getDate()
-	} else {
-		id('jour').innerText = tradThis(days[date.getDay()])
-		id('chiffre').innerText = date.getDate()
-		id('mois').innerText = tradThis(months[date.getMonth()])
-	}
-
+	id('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
 	if (event) chrome.storage.sync.set({ usdate: usdate })
 }
 
-function greetings() {
+function greetings(name, isevent) {
 	const h = new Date().getHours()
-	let message
+	let greet
 
-	if (h > 6 && h < 12) message = 'Good Morning'
-	else if (h >= 12 && h < 18) message = 'Good Afternoon'
-	else if (h >= 18 && h <= 23) message = 'Good Evening'
-	else message = 'Good Night'
+	if (h > 6 && h < 12) greet = 'Good Morning'
+	else if (h >= 12 && h < 18) greet = 'Good Afternoon'
+	else if (h >= 18 && h <= 23) greet = 'Good Evening'
+	else greet = 'Good Night'
 
-	id('greetings').innerText = tradThis(message)
+	id('greetings').textContent = tradThis(greet) + (name ? `, ${name}` : '')
+
+	if (isevent) slowRange({ greeting: name }, 500)
 }
 
 function quickLinks(event, that, initStorage) {
@@ -380,28 +359,38 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		//le DOM du block
-		let b = `<div class='block' draggable="false" source='${url}'>
-			<div class='l_icon_wrap' draggable="false">
-				<img class='l_icon' src='${icon}' draggable="false">
-			</div>
-			${title ? '<span>' + title + '</span>' : ''}
-		</div>`
+		const lIcon = document.createElement('img')
+		const lIconWrap = document.createElement('div')
+		const blockTitle = document.createElement('span')
+		const block = document.createElement('div')
+		const block_parent = document.createElement('div')
 
-		//ajoute un wrap
-		let block_parent = document.createElement('div')
+		lIcon.className = 'l_icon'
+		lIcon.src = icon
+
+		lIconWrap.className = 'l_icon_wrap'
+		lIconWrap.appendChild(lIcon)
+
+		blockTitle.textContent = title
+
+		block.className = 'block'
+		block.setAttribute('source', url)
+		block.appendChild(lIconWrap)
+		title ? block.appendChild(blockTitle) : ''
+
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.setAttribute('draggable', 'true')
-		block_parent.innerHTML = b
+		block_parent.appendChild(block)
 
 		//l'ajoute au dom
 		domlinkblocks.appendChild(block_parent)
 
 		//met les events au dernier elem rajouté
-		addEvents(domlinkblocks.lastElementChild)
+		addEvents(block_parent)
 
 		//si online et l'icon charge, en rechercher une
 		const imageLoading = icon === 'src/assets/images/loading.gif'
-		if (window.navigator.onLine && imageLoading) addIcon(domlinkblocks.lastElementChild, arr, index, links)
+		if (window.navigator.onLine && imageLoading) addIcon(block_parent, arr, index, links)
 	}
 
 	function addEvents(elem) {
@@ -523,7 +512,7 @@ function quickLinks(event, that, initStorage) {
 									.querySelector('.l_icon_wrap')
 									.insertAdjacentHTML('afterEnd', '<span>' + updated[key] + '</span>')
 							} else {
-								block.querySelector('span').innerText = updated[key]
+								block.querySelector('span').textContent = updated[key]
 							}
 						}
 						if (key === 'url') block.querySelector('.block').setAttribute('source', updated[key])
@@ -717,8 +706,12 @@ function quickLinks(event, that, initStorage) {
 
 	if (initStorage) {
 		initblocks(initStorage.links || [])
-		editEvents()
-		id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
+
+		// No need to activate edit events asap
+		setTimeout(() => {
+			id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
+			editEvents()
+		}, 50)
 	}
 }
 
@@ -883,31 +876,42 @@ function weather(event, that, initStorage) {
 
 			//prend l'id de la météo et renvoie une description
 			//correspond au nom de l'icone (+ .png)
-			function imgId(c) {
-				let temp,
-					codes = {
-						thunderstorm: 200,
-						lightdrizzle: 300,
-						showerdrizzle: 302,
-						lightrain: 500,
-						showerrain: 502,
-						snow: 602,
-						mist: 701,
-						clearsky: 800,
-						fewclouds: 801,
-						brokenclouds: 803,
-					}
+			function imgId(weatherID) {
+				const codes = [
+					['thunderstorm', 200],
+					['lightdrizzle', 300],
+					['showerdrizzle', 302],
+					['lightrain', 500],
+					['showerrain', 502],
+					['snow', 602],
+					['mist', 701],
+					['clearsky', 800],
+					['fewclouds', 801],
+					['brokenclouds', 803],
+				]
 
-				for (let key in codes) {
-					if (c >= codes[key]) temp = key
-				}
+				let result = 'clearsky'
 
-				return temp || 'clearsky'
+				codes.forEach((code) => {
+					if (weatherID >= code[1]) result = code[0]
+				})
+
+				return result
 			}
 
-			let d_n = dayOrNight(data.sys.sunset, data.sys.sunrise)
-			let weather_id = imgId(data.weather[0].id)
-			id('widget').setAttribute('src', `src/assets/images/weather/${d_n}/${weather_id}.png`)
+			const widget = id('widget')
+			const src = `src/assets/images/weather/
+					${dayOrNight(data.sys.sunset, data.sys.sunrise)}/
+					${imgId(data.weather[0].id)}.png`
+
+			if (!widget) {
+				const img = document.createElement('img')
+				img.setAttribute('draggable', 'false')
+				img.setAttribute('src', src)
+				img.id = 'widget'
+
+				id('w_icon').prepend(img)
+			} else widget.setAttribute('src', src)
 		}
 
 		function getDescription() {
@@ -915,7 +919,7 @@ function weather(event, that, initStorage) {
 			//Rajoute une majuscule à la description
 			let meteoStr = data.weather[0].description
 			meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1)
-			id('desc').innerText = meteoStr + '.'
+			id('desc').textContent = meteoStr + '.'
 
 			//si c'est l'après midi (apres 12h), on enleve la partie temp max
 			let dtemp, wtemp
@@ -930,8 +934,8 @@ function weather(event, that, initStorage) {
 				dtemp = wtemp + '.'
 			}
 
-			id('temp').innerText = dtemp
-			id('widget_temp').innerText = wtemp
+			id('temp').textContent = dtemp
+			id('widget_temp').textContent = wtemp
 			weatherDesc.classList.add('shown')
 			document.querySelector('#weather_desc .trn').style.opacity = 1
 
@@ -939,8 +943,8 @@ function weather(event, that, initStorage) {
 		}
 
 		function getMaxTemp() {
-			tempMax.innerText = `${data.fcHigh}°`
-			id('forecastTime').innerText = `${tradThis(hour > 21 ? 'tomorrow' : 'today')}.`
+			tempMax.textContent = `${data.fcHigh}°`
+			id('forecastTime').textContent = `${tradThis(hour > 21 ? 'tomorrow' : 'today')}.`
 
 			if (hour < 12 || hour > 21) maxWrap.classList.add('shown')
 			else maxWrap.classList.remove('shown')
@@ -952,8 +956,8 @@ function weather(event, that, initStorage) {
 		if (forecast) {
 			getMaxTemp()
 		} else {
-			getDescription()
 			getIcon()
+			getDescription()
 		}
 	}
 
@@ -1068,13 +1072,6 @@ function weather(event, that, initStorage) {
 	const i_city = id('i_city')
 	const i_ccode = id('i_ccode')
 	const sett_city = id('sett_city')
-
-	if (!id('widget')) {
-		const img = document.createElement('img')
-		img.id = 'widget'
-		img.setAttribute('draggable', 'false')
-		id('w_icon').prepend(img)
-	}
 
 	//TOUT LES EVENTS, default c'est init
 	switch (event) {
@@ -1268,7 +1265,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
 		rem.setAttribute('class', 'hidden')
-		rem.innerText = '✕'
+		rem.textContent = '✕'
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
 		div.appendChild(i)
@@ -1433,7 +1430,7 @@ function unsplash(init, event) {
 
 		credits.forEach((elem) => {
 			const dom = document.createElement('a')
-			dom.innerText = elem.text
+			dom.textContent = elem.text
 			dom.href = elem.url
 			id('credit').appendChild(dom)
 		})
@@ -1445,7 +1442,7 @@ function unsplash(init, event) {
 		imgBackground(props.url)
 		imgCredits(props)
 
-		console.log(props.color)
+		// console.log(props.color)
 	}
 
 	function cacheControl(dynamic, local) {
@@ -1918,7 +1915,7 @@ function customFont(data, event) {
 			.then((response) => response.text())
 			.then((text) => {
 				text = text.replace(/(\r\n|\n|\r|  )/gm, '')
-				id('fontstyle').innerText = text
+				id('fontstyle').textContent = text
 				id('clock').style.fontFamily = family
 				dominterface.style.fontFamily = family
 				dominterface.style.fontWeight = weight
@@ -1967,7 +1964,7 @@ function customFont(data, event) {
 	function triggerEvent(event) {
 		// If nothing, removes custom font
 		if (event.family === '') {
-			id('fontstyle').innerText = ''
+			id('fontstyle').textContent = ''
 			dominterface.style.fontFamily = ''
 			dominterface.style.fontWeight = ''
 			id('clock').style.fontFamily = ''
@@ -2016,7 +2013,7 @@ function customFont(data, event) {
 function customCss(init, event) {
 	const styleHead = id('styles')
 
-	if (init) styleHead.innerText = init
+	if (init) styleHead.textContent = init
 
 	if (event) {
 		//const e = event.e
@@ -2024,7 +2021,7 @@ function customCss(init, event) {
 		// syntaxControl(e, that)
 
 		const val = id('cssEditor').value
-		styleHead.innerText = val
+		styleHead.textContent = val
 		slowRange({ css: val }, 500)
 	}
 }
@@ -2037,43 +2034,10 @@ function linksrow(data, event) {
 	if (data !== undefined) setRows(data)
 
 	if (event) {
-		//id("e_row").innerText = event;
+		//id("e_row").textContent = event;
 		setRows(event)
 		slowRange({ linksrow: parseInt(event) })
 	}
-}
-
-function greetingName(data, event) {
-	let text = id('greetings').innerText
-	let pause
-
-	function apply(val) {
-		//greeting is classic text + , + custom greet
-		id('greetings').innerText = `${text}, ${val}`
-
-		//input empty removes ,
-		if (val === '') id('greetings').innerText = text
-	}
-
-	function setEvent(val) {
-		const virgule = text.indexOf(',')
-
-		//remove last input from greetings
-		text = text.slice(0, virgule === -1 ? text.length : virgule)
-		apply(val)
-
-		//reset save timeout
-		//wait long enough to save to storage
-		if (pause) clearTimeout(pause)
-
-		pause = setTimeout(function () {
-			chrome.storage.sync.set({ greeting: val })
-		}, 1200)
-	}
-
-	//init
-	if (data !== undefined) apply(data)
-	if (event !== undefined) setEvent(event)
 }
 
 function hideElem(init, buttons, that) {
@@ -2222,10 +2186,10 @@ function canDisplayInterface(cat, init) {
 	// Check if all funcs are ready
 	else {
 		funcsOk[cat] = true
-		const res = Object.values(funcsOk).filter((val) => val === true)
-		const keys = Object.keys(funcsOk)
+		const entries = Object.entries(funcsOk)
+		const res = entries.filter((val) => val[1] === true)
 
-		if (res.length === keys.length) displayInterface()
+		if (res.length === entries.length) displayInterface()
 	}
 }
 
@@ -2233,7 +2197,7 @@ function safeFont(lang, font) {
 	//safe font for different alphabet
 	if (lang === 'ru' || lang === 'sk') {
 		const changeFont = () =>
-			(id('styles').innerText = `
+			(id('styles').textContent = `
 			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
 
 		if (!font) changeFont()
@@ -2241,40 +2205,40 @@ function safeFont(lang, font) {
 	}
 }
 
+function startup(data) {
+	//
+	// Compatibility with older local versions
+	// As it is now using "bonjourr" key
+	if (!chrome && localStorage.data && !localStorage.bonjourr) {
+		localStorage.bonjourr = atob(localStorage.data)
+		localStorage.removeItem('data')
+	}
+
+	canDisplayInterface(null, { font: data.font })
+	customFont(data.font)
+	traduction(null, data.lang)
+	weather(null, null, { weather: data.weather })
+	linksrow(data.linksrow)
+	quickLinks(null, null, data)
+	greetings(data.greeting)
+	date(null, data.usdate)
+	newClock(null, data.clock)
+	darkmode(null, data)
+	initBackground(data)
+	searchbar(null, null, data)
+	showPopup(data.reviewPopup)
+
+	customSize(data.font)
+
+	customCss(data.css)
+	hideElem(data.hide)
+
+	safeFont(data.lang, data.font)
+}
+
 window.onload = function () {
 	try {
-		chrome.storage.sync.get(null, (data) => {
-			//
-			// Compatibility with older local versions
-			// As it is now using "bonjourr" key
-			if (!chrome && localStorage.data && !localStorage.bonjourr) {
-				localStorage.bonjourr = atob(localStorage.data)
-				localStorage.removeItem('data')
-			}
-
-			canDisplayInterface(null, { font: data.font })
-
-			traduction(null, data.lang)
-			weather(null, null, data)
-			greetings()
-			date(null, data.usdate)
-			newClock(null, data.clock)
-			darkmode(null, data)
-			initBackground(data)
-			searchbar(null, null, data)
-			showPopup(data.reviewPopup)
-
-			customSize(data.font)
-			customFont(data.font)
-			customCss(data.css)
-			hideElem(data.hide)
-
-			linksrow(data.linksrow)
-			quickLinks(null, null, data)
-			greetingName(data.greeting)
-
-			safeFont(data.lang, data.font)
-		})
+		chrome.storage.sync.get(null, startup)
 	} catch (error) {
 		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)
 	}
