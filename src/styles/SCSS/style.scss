@@ -328,15 +328,24 @@
 		padding: 2em;
 		min-height: 8em;
 
+		@include hidden();
+
+		&.he_hidden {
+			#linkblocks_inner {
+				visibility: hidden;
+				transition: visibility 0s 0.4s;
+			}
+		}
+
 		#linkblocks_inner {
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
+			transition: visibility 0s 0s;
 		}
 
-		@include hidden();
-
 		.block_parent {
+			cursor: pointer;
 			position: relative;
 			margin: 1em;
 			width: 5em;
@@ -351,7 +360,6 @@
 					border-radius: 10px;
 					background: $purewhite;
 					border: 0.2em solid $purewhite;
-					cursor: pointer;
 					transition: border-color 0.1s, filter 0.1s;
 
 					.l_icon {

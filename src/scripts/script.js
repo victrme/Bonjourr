@@ -418,8 +418,8 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		elem.ondragstart = function (e) {
+			e.stopPropagation()
 			e.dataTransfer.setData('text/plain', e.target.id)
-			e.currentTarget.style.cursor = 'pointer'
 			handleDrag('start', this)
 		}
 
