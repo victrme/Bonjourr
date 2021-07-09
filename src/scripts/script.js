@@ -920,6 +920,7 @@ function weather(event, that, initStorage) {
 					${imgId(data.weather[0].id)}.png`
 
 			if (!widget) w_icon.innerHTML = `<img id="widget" src="${src}" draggable="false" />` + w_iconHTML
+			else widget.setAttribute('src', src)
 		}
 
 		function getDescription() {
@@ -1855,8 +1856,7 @@ function showPopup(data) {
 			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 	)
 
-	//s'affiche après 30 tabs
-	if (data > 30) {
+	function affiche() {
 		const close = function () {
 			popup.classList.replace('shown', 'removing')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
@@ -1866,7 +1866,11 @@ function showPopup(data) {
 
 		closePopup.onclick = close
 		go.onclick = close
-	} else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
+	}
+
+	//s'affiche après 30 tabs
+	if (data > 30) affiche()
+	else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
 	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
 	else if (data === 'removed') document.body.removeChild(popup)
 }
@@ -1980,10 +1984,10 @@ function customFont(data, event) {
 			modifyWeightOptions(availWeights)
 
 			dom.blur()
-			dom.setAttribute('placeholder', 'Any Google fonts')
+			dom.setAttribute('placeholder', tradThis('Any Google fonts'))
 		} else {
 			dom.value = ''
-			dom.setAttribute('placeholder', 'No fonts matched')
+			dom.setAttribute('placeholder', tradThis('No fonts matched'))
 		}
 	}
 
@@ -2018,7 +2022,7 @@ function customFont(data, event) {
 					changeFamily(json, event.family)
 				})
 		} else {
-			changeFamily(googleFontList)
+			changeFamily(googleFontList, event.family)
 		}
 	}
 
