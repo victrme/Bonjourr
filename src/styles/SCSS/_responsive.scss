@@ -84,6 +84,25 @@
 		right: -100%;
 		width: 100%;
 	}
+
+	#popup {
+		flex-wrap: wrap;
+		padding: 1em;
+		bottom: 15vh;
+		max-width: 90vw;
+
+		span, a {
+			max-width: unset;
+		}
+
+		.choices {
+			flex-direction: row;
+
+			a {
+				margin: 3px 8px;
+			}
+		}
+	}
 }
 
 // large laptop resolution and up
