@@ -350,37 +350,59 @@ function initParams(data) {
 
 function importExport(select, isEvent) {
 	//
-	function filterImports(data) {
-		let result = { ...data }
 
-		// Old blur was strings
-		if (typeof data.background_blur === 'string') {
-			result.background_blur = parseFloat(data.background_blur)
-		}
+	function importation() {
+		function filterImports(data) {
+			let result = { ...data }
 
-		// 's_' before every search engines
-		if (data.searchbar_engine) {
-			result.searchbar_engine = data.searchbar_engine.replace('s_', '')
-		}
-
-		// New collection key missing
-		// Removes dynamics cache
-		if (data.dynamic) {
-			if (!data.dynamic.collection) {
-				result.dynamic = { ...data.dynamic, collection: '' }
-			}
-		}
-
-		// Si il ne touche pas au vieux hide elem
-		if (data.hide)
-			if (data.hide.length === 0) {
-				result.hide = [[0, 0], [0, 0, 0], [0], [0]]
+			// Old blur was strings
+			if (typeof data.background_blur === 'string') {
+				result.background_blur = parseFloat(data.background_blur)
 			}
 
-		return result
+			// 's_' before every search engines
+			if (data.searchbar_engine) {
+				result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+			}
+
+			// New collection key missing
+			// Removes dynamics cache
+			if (data.dynamic) {
+				if (!data.dynamic.collection) {
+					result.dynamic = { ...data.dynamic, collection: '' }
+				}
+			}
+
+			// Si il ne touche pas au vieux hide elem
+			if (data.hide)
+				if (data.hide.length === 0) {
+					result.hide = [[0, 0], [0, 0, 0], [0], [0]]
+				}
+
+			return result
+		}
+		if (isEvent) {
+			const dom = id('i_import')
+			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+
+			if (dom.value.length > 0) {
+				try {
+					chrome.storage.sync.get(null, (data) => {
+						const imported = filterImports(JSON.parse(dom.value))
+						data = { ...data, ...imported }
+
+						chrome.storage.sync.set(data, () => location.reload())
+					})
+				} catch (e) {
+					dom.value = ''
+					placeholder('Error in import code')
+					setTimeout(() => placeholder('Import code'), 2000)
+				}
+			}
+		}
 	}
 
-	if (select === 'exp') {
+	function exportation() {
 		const input = id('i_export')
 		const isOnChrome = navigator.userAgent.includes('Chrome')
 
@@ -404,26 +426,13 @@ function importExport(select, isEvent) {
 				}
 			}
 		})
-	} else if (select === 'imp') {
-		if (isEvent) {
-			const dom = id('i_import')
-			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+	}
 
-			if (dom.value.length > 0) {
-				try {
-					chrome.storage.sync.set(filterImports(JSON.parse(dom.value)), () => location.reload())
-				} catch (e) {
-					dom.value = ''
-					placeholder('Error in import code')
-					setTimeout(() => placeholder('Import code'), 2000)
-				}
-			}
-		}
-	} else if (select === 'reset') {
+	function anihilation() {
 		let input = id('submitReset')
 
 		if (!input.hasAttribute('sure')) {
-			input.innerText = 'Are you sure ?'
+			input.innerText = 'Click again to confirm'
 			input.setAttribute('sure', '')
 		} else {
 			deleteBrowserStorage()
@@ -431,6 +440,18 @@ function importExport(select, isEvent) {
 				location.reload()
 			}, 20)
 		}
+	}
+
+	switch (select) {
+		case 'exp':
+			exportation()
+			break
+		case 'imp':
+			importation()
+			break
+		case 'reset':
+			anihilation()
+			break
 	}
 }
 

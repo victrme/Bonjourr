@@ -899,18 +899,13 @@ function weather(event, that, initStorage) {
 			}
 
 			const widget = id('widget')
+			const w_icon = id('w_icon')
+			const w_iconHTML = w_icon.innerHTML
 			const src = `src/assets/images/weather/
 					${dayOrNight(data.sys.sunset, data.sys.sunrise)}/
 					${imgId(data.weather[0].id)}.png`
 
-			if (!widget) {
-				const img = document.createElement('img')
-				img.setAttribute('draggable', 'false')
-				img.setAttribute('src', src)
-				img.id = 'widget'
-
-				id('w_icon').prepend(img)
-			} else widget.setAttribute('src', src)
+			if (!widget) w_icon.innerHTML = `<img id="widget" src="${src}" draggable="false" />` + w_iconHTML
 		}
 
 		function getDescription() {
@@ -1491,6 +1486,16 @@ function unsplash(init, event) {
 				raw.json().then((imgArray) => {
 					const filteredList = []
 
+					// console.log({
+					// 	url: imgArray.urls.raw + '&w=4000',
+					// 	link: imgArray.links.html,
+					// 	username: imgArray.user.username,
+					// 	name: imgArray.user.name,
+					// 	city: imgArray.location.city,
+					// 	country: imgArray.location.country,
+					// 	color: imgArray.color,
+					// })
+
 					imgArray.forEach((img) => {
 						filteredList.push({
 							url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
@@ -1600,6 +1605,16 @@ function unsplash(init, event) {
 		user: '',
 	}
 
+	const firstStartupImage = {
+		city: 'Santander',
+		color: '#0c4059',
+		country: 'Spain',
+		username: 'willianjusten',
+		name: 'Willian Justen de Vasconcellos',
+		link: 'https://unsplash.com/photos/8sHZE1CXG4w',
+		url: 'https://images.unsplash.com/photo-1519314885287-6040aee8e4ea?&w=' + screen.width * window.devicePixelRatio,
+	}
+
 	// 1
 	// Startup
 	if (init && init.dynamic) {
@@ -1671,7 +1686,7 @@ function unsplash(init, event) {
 			local = {
 				current: 'day',
 				noon: [],
-				day: [],
+				day: [{}, firstStartupImage],
 				evening: [],
 				night: [],
 				user: [],
