@@ -437,9 +437,10 @@ function importExport(select, isEvent) {
 function showSettings() {
 	function display() {
 		const edit = id('edit_linkContainer')
-		const isShown = has('settings', 'shown')
+		const settings = id('settings')
+		const isShown = has(settings, 'shown')
 
-		clas(id('settings'), !isShown, 'shown')
+		clas(settings, !isShown, 'shown')
 		clas(dominterface, !isShown, 'pushed')
 		clas(edit, !isShown, 'pushed')
 	}
@@ -482,6 +483,8 @@ function showInterface(e) {
 	//cherche le parent du click jusqu'a trouver linkblocks
 	//seulement si click droit, quitter la fct
 	let parent = e.target
+	const edit = id('edit_linkContainer')
+	const settings = id('settings')
 
 	while (parent !== null) {
 		parent = parent.parentElement
@@ -489,21 +492,16 @@ function showInterface(e) {
 	}
 
 	//close edit container on interface click
-	if (has('edit_linkContainer', 'shown')) {
-		clas(id('edit_linkContainer'), false, 'shown')
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
-			clas(e, false, 'selected')
-		})
+	if (has(edit, 'shown')) {
+		clas(edit, false, 'shown')
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
 	}
 
-	if (has('settings', 'shown')) {
-		let edit = id('edit_linkContainer')
-		let editClass = edit.getAttribute('class')
-
-		clas(id('settings'), false, 'shown')
+	if (has(settings, 'shown')) {
+		clas(settings, false, 'shown')
 		clas(dominterface, false, 'pushed')
 
-		if (editClass.includes('pushed')) clas(edit, false, 'pushed')
+		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
 	}
 }
 
@@ -519,14 +517,15 @@ if (sessionStorage.lang) {
 domshowsettings.onmouseup = () => showSettings()
 dominterface.onmousedown = (e) => showInterface(e)
 
-document.onkeydown = function (e) {
+document.onkeydown = () => {
 	//focus la searchbar si elle existe et les settings sont fermé
-	const searchbar = id('sb_container') ? has('sb_container', 'shown') : false
-	const settings = id('settings') ? has('settings', 'shown') : false
-	const noEdit = id('edit_linkContainer').style.display === 'none'
+	const searchbarOn = has(id('sb_container'), 'shown') === true
+	const noSettings = has(id('settings'), 'shown') === false
+	const noEdit = has(id('edit_linkContainer'), 'shown') === false
 
-	if (searchbar && !settings && noEdit) id('searchbar').focus()
+	if (searchbarOn && noSettings && noEdit) domsearchbar.focus()
+}
 
-	//press escape to show settings
+document.onkeyup = (e) => {
 	if (e.code === 'Escape') showSettings()
 }

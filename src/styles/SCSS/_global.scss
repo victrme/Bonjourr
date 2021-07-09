@@ -130,34 +130,39 @@ body {
 	#interface {
 		//
 		// Need flex-grow for default
+		&.init {
+			#main,
+			#linkblocks,
+			#sb_container,
+			#time,
+			#time-container,
+			#date,
+			#weather_desc,
+			#greetings,
+			#w_icon,
+			#showSettings {
+				transition: none;
+			}
+		}
 
 		#main,
-		#linkblocks,
-		#time {
+		#time,
+		#sb_container,
+		#linkblocks {
 			flex-grow: 1;
+			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
 		}
 
-		//
-		// Add transitions
-
-		#main.he_anim,
-		#linkblocks.he_anim,
-		#time.he_anim {
-			transition: opacity 0.2s, flex-grow 0.4s 0.2s;
-		}
-
-		#time-container.he_anim,
-		#date.he_anim,
-		#weather_desc.he_anim,
-		#greetings.he_anim,
-		#w_icon.he_anim,
-		#showSettings.he_anim {
+		#time-container,
+		#date,
+		#weather_desc,
+		#greetings,
+		#w_icon,
+		#showSettings {
 			transition: opacity 0.4s;
 		}
 
-		//
 		// Parent blocks shrinks & hide
-
 		#main.he_hidden,
 		#linkblocks.he_hidden,
 		#time.he_hidden {
@@ -165,9 +170,7 @@ body {
 			opacity: 0;
 		}
 
-		//
 		// Children only hide
-
 		#time-container.he_hidden,
 		#date.he_hidden,
 		#weather_desc.he_hidden,

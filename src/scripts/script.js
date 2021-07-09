@@ -1,12 +1,10 @@
 const id = (name) => document.getElementById(name)
 const cl = (name) => document.getElementsByClassName(name)
-const has = (that, val) => {
-	const dom = id(that)
-	if (dom !== null) {
-		const result = dom.getAttribute('class') || ''
-		return result.indexOf(val) === -1 ? false : true
-	} else return false
+const has = (dom, val) => {
+	if (dom && dom.classList) if (dom.classList.length > 0) return dom.classList.contains(val)
+	return false
 }
+
 const clas = (dom, add, str) => {
 	if (add) dom.classList.add(str)
 	else dom.classList.remove(str)
@@ -29,6 +27,7 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks_inner'),
 	dominterface = id('interface'),
+	domsearchbar = id('searchbar'),
 	domimg = id('background'),
 	domthumbnail = cl('thumbnail'),
 	domclock = id('clock'),
@@ -440,7 +439,7 @@ function quickLinks(event, that, initStorage) {
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
-			e.which === 3 ? editlink(this) : !has('settings', 'shown') ? openlink(this, e) : ''
+			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
 		}
 	}
 
@@ -531,7 +530,7 @@ function quickLinks(event, that, initStorage) {
 			const index = findindex(that)
 			const liconwrap = that.querySelector('.l_icon_wrap')
 			const container = id('edit_linkContainer')
-			const openSettings = has('settings', 'shown')
+			const openSettings = has(id('settings'), 'shown')
 
 			clas(liconwrap, true, 'selected')
 			clas(container, true, 'shown')
@@ -1793,8 +1792,6 @@ function searchbar(event, that, storage) {
 		domsearchbar.setAttribute('newtab', value)
 	}
 
-	const domsearchbar = id('searchbar')
-
 	domsearchbar.onkeyup = function (e) {
 		const isNewtab = e.target.getAttribute('newtab') === 'true'
 
@@ -2063,17 +2060,17 @@ function hideElem(init, buttons, that) {
 		return filtered.length === list[row].length
 	}
 
-	function initializeHiddenElements(list, animonly) {
+	function initializeHiddenElements(list) {
 		list.forEach((row, row_i) => {
 			const parent = IDsList[row_i][0]
 
-			animonly ? id(parent).classList.add('he_anim') : isEverythingHidden(list, row_i) ? toggleElement(parent, true) : ''
+			isEverythingHidden(list, row_i) ? toggleElement(parent, true) : ''
 
 			// Hide children
 			row.forEach((child, child_i) => {
 				const childid = IDsList[row_i][1][child_i]
 
-				animonly ? id(childid).classList.add('he_anim') : child === 1 ? toggleElement(childid, true) : ''
+				child === 1 ? toggleElement(childid, true) : ''
 			})
 		})
 	}
@@ -2120,7 +2117,6 @@ function hideElem(init, buttons, that) {
 		}
 
 		initializeHiddenElements(updateToNewData(init))
-		setTimeout(() => initializeHiddenElements(init, true), BonjourrAnimTime)
 	}
 
 	// Settings buttons initialization
@@ -2174,6 +2170,8 @@ function canDisplayInterface(cat, init) {
 
 		dominterface.style.opacity = '1'
 		domshowsettings.style.opacity = '1'
+
+		setTimeout(() => dominterface.classList.remove('init'), loadtime + 100)
 	}
 
 	// More conditions if user is using advanced features

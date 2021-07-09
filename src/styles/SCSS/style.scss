@@ -2,27 +2,6 @@
 
 @include hideElements;
 
-#background_overlay {
-	z-index: -1;
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	min-height: 100vh;
-	transform: scale(1.1);
-
-	opacity: 0;
-	transition: opacity 0.4s;
-
-	#background {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		background-color: #000;
-		background-size: cover;
-		background-position: center center;
-	}
-}
-
 #interface {
 	position: relative;
 	min-height: 100vh;
@@ -35,8 +14,43 @@
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 
 	&.pushed {
-		-webkit-transform: translateX(-10em);
-		transform: translateX(-10em);
+		#time,
+		#main,
+		#sb_container,
+		#linkblocks,
+		.shadow {
+			-webkit-transform: translateX(-100px);
+			transform: translateX(-100px);
+		}
+	}
+
+	&.init {
+		opacity: 0;
+	}
+
+	#background_overlay {
+		z-index: -1;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		min-height: 100vh;
+		transform: scale(1.1) translateX(0px);
+
+		opacity: 0;
+		transition: transform 0.2s, opacity 0.4s;
+
+		#background {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			background-color: #000;
+			background-size: cover;
+			background-position: center center;
+		}
+	}
+
+	.shadow {
+		display: none;
 	}
 
 	// clock & date
@@ -47,15 +61,15 @@
 		align-items: center;
 		margin: 0 auto;
 
-		.shadow {
-			z-index: -1;
-			position: absolute;
-			overflow: hidden;
-			max-width: 100%;
-			width: 43em;
-			opacity: 0.4;
-			margin: 30px auto 0 auto;
-		}
+		// .shadow {
+		// 	z-index: -1;
+		// 	position: absolute;
+		// 	overflow: hidden;
+		// 	max-width: 100%;
+		// 	width: 43em;
+		// 	opacity: 0.4;
+		// 	margin: 30px auto 0 auto;
+		// }
 
 		#time-container {
 			#clock {
@@ -163,6 +177,17 @@
 
 		#date {
 			font-size: 1.5em;
+			position: relative;
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: -50px;
+				left: 0;
+				width: 100%;
+				z-index: -1;
+				box-shadow: 0px 0px 100px 40px #2224;
+			}
 		}
 	}
 
@@ -174,19 +199,9 @@
 		justify-content: center;
 		margin-right: auto;
 		margin-left: auto;
-		transition: opacity 0.1s;
 
 		#weather #w_icon #widget.shown {
 			opacity: 1;
-		}
-
-		.shadow {
-			z-index: -1;
-			position: absolute;
-			width: 55em;
-			max-width: 100%;
-			opacity: 0.4;
-			overflow: hidden;
 		}
 
 		#greetings {
@@ -194,7 +209,28 @@
 			font-weight: inherit;
 		}
 
+		// .shadow {
+		// 	z-index: -1;
+		// 	position: absolute;
+		// 	width: 55em;
+		// 	max-width: 100%;
+		// 	opacity: 0.4;
+		// 	overflow: hidden;
+		// }
+
 		#weather {
+			position: relative;
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				z-index: -1;
+				box-shadow: 0px 0px 150px 40px #2224;
+			}
+
 			#weather_desc {
 				font-size: 1.5em;
 
@@ -235,26 +271,27 @@
 
 	// search bar
 	#sb_container {
-		visibility: hidden;
-		display: none;
-		height: 2px;
-		max-width: calc(100% - 2em);
-		width: 400px;
-		margin: 0 auto;
+		display: flex;
+		visibility: visible;
+		align-items: center;
+		flex-grow: 0.4;
 		padding: 0;
-		transition: none;
+		margin: auto;
+		width: 500px;
+		max-width: calc(100% - 2em);
 
 		#searchbar {
+			height: 2.5em;
+			font-family: inherit;
 			font-size: 1.3em;
 			color: #fcfcfc;
 			width: calc(100% - 2em);
-			border: 0;
-			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-			height: 50px;
-			border-radius: 10px;
-			padding: 0 1em 0 1em;
-			transition: background-color 0.2s;
 			opacity: 0.8;
+			border: 0;
+			border-radius: 10px;
+			padding: 0 1em;
+			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+			transition: background-color 0.2s;
 
 			@supports (backdrop-filter: none) {
 				background: rgba(255, 255, 255, 0.1);
@@ -295,25 +332,14 @@
 		}
 
 		&.shown {
-			display: block;
-			visibility: visible;
-			height: 52px;
-
 			#searchbar:focus {
 				opacity: 1;
 			}
 		}
 
 		&.hidden {
+			flex-grow: 0;
 			visibility: hidden;
-			opacity: 0;
-			padding: 0;
-
-			height: 2px;
-		}
-
-		&.removed {
-			display: none;
 		}
 	}
 
@@ -325,7 +351,7 @@
 		align-items: center;
 		max-width: 100%;
 		margin: 0 auto;
-		padding: 2em;
+		padding: 2em 0;
 		min-height: 8em;
 
 		@include hidden();

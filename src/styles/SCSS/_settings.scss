@@ -55,9 +55,10 @@
 
 #settings {
 	position: fixed;
-	right: -350px;
+	top: 0;
 	bottom: 0;
 	z-index: 2;
+	right: -350px;
 	width: 350px;
 	height: 100vh;
 	overflow-y: auto;
@@ -66,11 +67,10 @@
 	text-shadow: none;
 	text-align: left;
 	color: $blackish;
-	transition: transform 0.2s, background-color 0.2s;
 	will-change: transform;
-	top: 0;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
+	transition: transform 0.4s, background-color 0.2s;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
