@@ -38,6 +38,9 @@ $borderGrey: #c8c7cc;
 $greyish: #3a3a3a;
 $blackish: #222;
 
+$thumbShadow: 0px 1px 3px 1.5px #cccccc;
+$easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
+
 body {
 	overflow-x: hidden;
 	margin: 0;
@@ -124,6 +127,13 @@ body {
 
 @mixin radiusSettings {
 	border-radius: 10px;
+}
+
+@mixin backdrop($color, $blur: 5px) {
+	@supports (backdrop-filter: none) {
+		backdrop-filter: blur($blur);
+		background-color: $color;
+	}
 }
 
 @mixin hideElements {
@@ -217,6 +227,21 @@ body {
 }
 
 @mixin settingsBase {
+	//
+	// Dark mode transition
+	// #settings and buttons have seperate transitions
+	&::-webkit-scrollbar-thumb,
+	#cssEditor,
+	.tooltip,
+	.param,
+	select,
+	input,
+	hr {
+		transition-duration: 0.6s;
+		transition-timing-function: $easeOutThree;
+		transition-property: background-color, color, border;
+	}
+
 	input[type='text'],
 	input[type='range'],
 	select {
@@ -277,7 +302,6 @@ body {
 		height: 2.35em;
 		color: $blackish;
 		background-color: $inputGrey;
-		transition: background-color 0.2s;
 	}
 
 	input[type='text']:focus,
@@ -357,7 +381,7 @@ body {
 
 			&:hover {
 				background: #ccc;
-				transition: background 0.2s;
+				transition: background-color 0.2s;
 			}
 		}
 	}
@@ -377,8 +401,6 @@ body {
 			background: $borderGrey;
 		}
 	}
-
-	$thumbShadow: 0px 1px 3px 1.5px #cccccc;
 
 	/* Chrome, Opera & Safari */
 	input[type='range']::-webkit-slider-thumb {

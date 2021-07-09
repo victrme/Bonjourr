@@ -5,9 +5,7 @@
 
 	#interface #time #time-container #analogClock,
 	#popup {
-		@supports (backdrop-filter: none) {
-			background: rgba(0, 0, 0, 0.15);
-		}
+		@include backdrop($color: #0003, $blur: 0px);
 	}
 
 	#edit_linkContainer {
@@ -189,15 +187,11 @@
 		background-color: transparent;
 
 		&:hover {
-			background-color: #3c3c3e;
+			@include backdrop($color: rgba(12, 12, 12, 0.3));
 		}
 
-		&.shown {
-			background-color: #1c1c1e;
-
-			&:hover {
-				background-color: #3c3c3e;
-			}
+		&.shown &:hover {
+			background-color: #3c3c3e;
 		}
 	}
 }

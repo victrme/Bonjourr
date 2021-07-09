@@ -714,6 +714,20 @@ function quickLinks(event, that, initStorage) {
 	}
 }
 
+function linksrow(data, event) {
+	function setRows(val) {
+		domlinkblocks.style.width = `${val * 7}em`
+	}
+
+	if (data !== undefined) setRows(data)
+
+	if (event) {
+		//id("e_row").textContent = event;
+		setRows(event)
+		slowRange({ linksrow: parseInt(event) })
+	}
+}
+
 function weather(event, that, initStorage) {
 	const tempMax = id('tempMax'),
 		maxWrap = id('forecastWrap'),
@@ -1486,16 +1500,6 @@ function unsplash(init, event) {
 				raw.json().then((imgArray) => {
 					const filteredList = []
 
-					// console.log({
-					// 	url: imgArray.urls.raw + '&w=4000',
-					// 	link: imgArray.links.html,
-					// 	username: imgArray.user.username,
-					// 	name: imgArray.user.name,
-					// 	city: imgArray.location.city,
-					// 	country: imgArray.location.country,
-					// 	color: imgArray.color,
-					// })
-
 					imgArray.forEach((img) => {
 						filteredList.push({
 							url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
@@ -1892,7 +1896,13 @@ function modifyWeightOptions(weights) {
 }
 
 function customSize(init, event) {
-	const apply = (size) => (dominterface.style.fontSize = size + 'px')
+	//
+	// Apply for interface, credit & settings button
+	const apply = (size) => {
+		const doms = [dominterface, document.querySelector('#showSettings button'), id('credit')]
+		doms.forEach((dom) => (dom.style.fontSize = size + 'px'))
+	}
+
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
 			let font = data.font || { family: '', weight: '400', size: 13 }
@@ -1901,10 +1911,14 @@ function customSize(init, event) {
 		})
 	}
 
-	if (init) apply(init.size)
-	else apply(event)
+	if (event) {
+		save()
+		apply(event)
+	}
 
-	if (event) save()
+	if (init) {
+		apply(init.size)
+	}
 }
 
 function customFont(data, event) {
@@ -2038,20 +2052,6 @@ function customCss(init, event) {
 	}
 }
 
-function linksrow(data, event) {
-	function setRows(val) {
-		domlinkblocks.style.width = `${val * 7}em`
-	}
-
-	if (data !== undefined) setRows(data)
-
-	if (event) {
-		//id("e_row").textContent = event;
-		setRows(event)
-		slowRange({ linksrow: parseInt(event) })
-	}
-}
-
 function hideElem(init, buttons, that) {
 	const IDsList = [
 		['time', ['time-container', 'date']],
@@ -2181,10 +2181,7 @@ function canDisplayInterface(cat, init) {
 		if (loadtime < 30) loadtime = 0
 
 		dominterface.style.transition = `opacity ${loadtime}ms, transform .2s`
-		domshowsettings.style.transition = `opacity ${loadtime}ms`
-
 		dominterface.style.opacity = '1'
-		domshowsettings.style.opacity = '1'
 
 		setTimeout(() => dominterface.classList.remove('init'), loadtime + 100)
 	}

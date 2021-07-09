@@ -91,7 +91,8 @@
 		bottom: 15vh;
 		max-width: 90vw;
 
-		span, a {
+		span,
+		a {
 			max-width: unset;
 		}
 
@@ -108,9 +109,6 @@
 // large laptop resolution and up
 @media screen and (min-width: 1279px) {
 	#settings {
-		right: -450px;
-		width: 450px;
-
 		input[type='text'],
 		input[type='range'] {
 			width: 140px;

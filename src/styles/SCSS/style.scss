@@ -89,10 +89,8 @@
 				margin: auto auto 2em auto;
 				width: 8em;
 				box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-				@supports (backdrop-filter: none) {
-					background: rgba(255, 255, 255, 0.15);
-					backdrop-filter: blur(7px);
-				}
+
+				@include backdrop($color: #fff3, $blur: 7px);
 
 				&.hidden {
 					display: none;
@@ -209,15 +207,6 @@
 			font-weight: inherit;
 		}
 
-		// .shadow {
-		// 	z-index: -1;
-		// 	position: absolute;
-		// 	width: 55em;
-		// 	max-width: 100%;
-		// 	opacity: 0.4;
-		// 	overflow: hidden;
-		// }
-
 		#weather {
 			position: relative;
 
@@ -282,53 +271,32 @@
 
 		#searchbar {
 			height: 2.5em;
+			width: 100%;
+			padding: 0 1em;
+			margin: auto;
+
 			font-family: inherit;
 			font-size: 1.3em;
 			color: #fcfcfc;
-			width: calc(100% - 2em);
+
 			opacity: 0.8;
 			border: 0;
 			border-radius: 10px;
-			padding: 0 1em;
-			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+			box-shadow: 0 1px 5px #0003;
 			transition: background-color 0.2s;
-			margin: auto;
 
-			@supports (backdrop-filter: none) {
-				background: rgba(255, 255, 255, 0.1);
-				backdrop-filter: blur(10px);
-				opacity: unset;
-			}
+			@include backdrop($color: #fff2, $blur: 10px);
 
 			&::placeholder {
 				transition: opacity 0.2s;
 				text-transform: none;
 				opacity: 0.7;
 				color: #fffc;
-
-				// @supports (backdrop-filter: none) {
-				// 	color: #fcfcfc;
-				// 	opacity: 1;
-				// 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-				// }
 			}
 
 			&:focus {
 				opacity: 1;
-
-				@supports (backdrop-filter: none) {
-					background: #ffffff33;
-				}
-
-				// &::placeholder {
-				// 	opacity: 1;
-				// 	color: #fffc;
-
-				// 	@supports (backdrop-filter: none) {
-				// 		color: #595959;
-				// 		text-shadow: unset;
-				// 	}
-				// }
+				@include backdrop($color: #fff3, $blur: 0px);
 			}
 		}
 
@@ -658,11 +626,10 @@
 
 // review popup
 #popup {
-	@include allCentered();
-	justify-content: space-between;
-
 	position: absolute;
+	justify-content: space-between;
 	text-align: left;
+	opacity: 0;
 	left: 0;
 	bottom: 5vh;
 	padding: 1em 2em 1em 3em;
@@ -670,12 +637,9 @@
 	box-sizing: border-box;
 	will-change: transform;
 	transform: translateX(-100%);
-	opacity: 0;
 
-	@supports (backdrop-filter: none) {
-		background: #aeaeb144;
-		backdrop-filter: blur(10px);
-	}
+	@include allCentered();
+	@include backdrop($color: #aeaeb144, $blur: 10px);
 
 	&.shown {
 		opacity: 1;

@@ -387,8 +387,8 @@ function importExport(select, isEvent) {
 
 			if (dom.value.length > 0) {
 				try {
+					const imported = filterImports(JSON.parse(dom.value))
 					chrome.storage.sync.get(null, (data) => {
-						const imported = filterImports(JSON.parse(dom.value))
 						data = { ...data, ...imported }
 
 						chrome.storage.sync.set(data, () => location.reload())
@@ -407,12 +407,6 @@ function importExport(select, isEvent) {
 		const isOnChrome = navigator.userAgent.includes('Chrome')
 
 		chrome.storage.sync.get(null, (data) => {
-			//
-			// 1.9.3
-			// if (data.dynamic.every !== 'pause' && data.dynamic.current) data.dynamic.next = {}
-			// if (data.dynamic.next) data.dynamic.current = {}
-			// if (data.dynamic) data.dynamic.time = 0
-
 			input.value = JSON.stringify(data)
 
 			if (isEvent) {
@@ -422,7 +416,7 @@ function importExport(select, isEvent) {
 				//don't want to add permissions just for this
 				if (isOnChrome) {
 					document.execCommand('copy')
-					id('submitExport').innerText = tradThis('Copied')
+					id('submitExport').textContent = tradThis('Copied')
 				}
 			}
 		})
@@ -432,7 +426,7 @@ function importExport(select, isEvent) {
 		let input = id('submitReset')
 
 		if (!input.hasAttribute('sure')) {
-			input.innerText = 'Click again to confirm'
+			input.textContent = tradThis('Click again to confirm')
 			input.setAttribute('sure', '')
 		} else {
 			deleteBrowserStorage()
@@ -462,6 +456,7 @@ function showSettings() {
 		const isShown = has(settings, 'shown')
 
 		clas(settings, !isShown, 'shown')
+		clas(domshowsettings, !isShown, 'shown')
 		clas(dominterface, !isShown, 'pushed')
 		clas(edit, !isShown, 'pushed')
 	}
@@ -520,6 +515,7 @@ function showInterface(e) {
 
 	if (has(settings, 'shown')) {
 		clas(settings, false, 'shown')
+		clas(domshowsettings, false, 'shown')
 		clas(dominterface, false, 'pushed')
 
 		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
@@ -538,13 +534,13 @@ if (sessionStorage.lang) {
 domshowsettings.onmouseup = () => showSettings()
 dominterface.onmousedown = (e) => showInterface(e)
 
-document.onkeydown = () => {
+document.onkeydown = (e) => {
 	//focus la searchbar si elle existe et les settings sont fermé
 	const searchbarOn = has(id('sb_container'), 'shown') === true
 	const noSettings = has(id('settings'), 'shown') === false
 	const noEdit = has(id('edit_linkContainer'), 'shown') === false
 
-	if (searchbarOn && noSettings && noEdit) domsearchbar.focus()
+	if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
 }
 
 document.onkeyup = (e) => {
