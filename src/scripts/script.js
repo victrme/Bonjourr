@@ -354,7 +354,7 @@ function quickLinks(event, that, initStorage) {
 
 		// no icon ? + 1.9.2 dead favicons fix
 		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
-			icon = 'src/assets/images/loading.gif'
+			icon = 'src/assets/images/interface/loading.gif'
 		}
 
 		//le DOM du block
@@ -388,7 +388,7 @@ function quickLinks(event, that, initStorage) {
 		addEvents(block_parent)
 
 		//si online et l'icon charge, en rechercher une
-		const imageLoading = icon === 'src/assets/images/loading.gif'
+		const imageLoading = icon === 'src/assets/images/interface/loading.gif'
 		if (window.navigator.onLine && imageLoading) addIcon(block_parent, arr, index, links)
 	}
 
@@ -878,46 +878,66 @@ function weather(event, that, initStorage) {
 		const hour = new Date().getHours()
 
 		function getIcon() {
-			//si le soleil est levé, renvoi jour
-			//le renvoie correspond au nom du répertoire des icones jour / nuit
-			function dayOrNight(sunset, sunrise) {
-				let ss = new Date(sunset * 1000)
-				let sr = new Date(sunrise * 1000)
+			let filename = 'clearsky'
+			let sunsetDate = new Date(data.sys.sunset * 1000)
+			let sunriseDate = new Date(data.sys.sunrise * 1000)
+			const timeOfDay = hour > sunriseDate.getHours() && hour < sunsetDate.getHours() ? 'day' : 'night'
 
-				return hour > sr.getHours() && hour < ss.getHours() ? 'day' : 'night'
-			}
+			// Openweathermap is weird, not me ok
+			// prettier-ignore
+			switch (data.weather[0].id) {
+					case 200: case 201: case 202: case 210:
+					case 212: case 221: case 230: case 231:
+					case 232:
+						filename = 'thunderstorm'
+						break
 
-			//prend l'id de la météo et renvoie une description
-			//correspond au nom de l'icone (+ .png)
-			function imgId(weatherID) {
-				const codes = [
-					['thunderstorm', 200],
-					['lightdrizzle', 300],
-					['showerdrizzle', 302],
-					['lightrain', 500],
-					['showerrain', 502],
-					['snow', 602],
-					['mist', 701],
-					['clearsky', 800],
-					['fewclouds', 801],
-					['brokenclouds', 803],
-				]
+					case 300: case 301: case 302: case 310:
+						filename = 'lightdrizzle'
+						break
 
-				let result = 'clearsky'
+					case 312: case 313: case 314: case 321:
+						filename = 'showerdrizzle'
+						break
 
-				codes.forEach((code) => {
-					if (weatherID >= code[1]) result = code[0]
-				})
+					case 500: case 501: case 502: case 503:
+						filename = 'lightrain'
+						break
 
-				return result
-			}
+					case 504: case 520: case 521: case 522:
+					case 531:
+						filename = 'showerrain'
+						break
+
+					case 511: case 600: case 601: case 602:
+					case 611: case 612: case 613: case 615:
+					case 616: case 620: case 621: case 622:
+						filename = 'snow'
+						break
+
+					case 701: case 711: case 721: case 731:
+					case 741: case 751: case 761: case 762:
+					case 771: case 781:
+						filename = 'mist'
+						break
+					
+					case 800:
+						filename = 'clearsky'
+						break
+
+					case 801: case 802: case 803: case 804:
+						filename = 'brokenclouds'
+						break
+
+					default:
+						filename = 'clearsky'
+						break
+				}
 
 			const widget = id('widget')
 			const w_icon = id('w_icon')
 			const w_iconHTML = w_icon.innerHTML
-			const src = `src/assets/images/weather/
-					${dayOrNight(data.sys.sunset, data.sys.sunrise)}/
-					${imgId(data.weather[0].id)}.png`
+			const src = `src/assets/images/weather/${timeOfDay}/${filename}.png`
 
 			if (!widget) w_icon.innerHTML = `<img id="widget" src="${src}" draggable="false" />` + w_iconHTML
 			else widget.setAttribute('src', src)
