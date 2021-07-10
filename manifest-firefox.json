@@ -9,7 +9,8 @@
 	"default_locale": "en",
 
 	"icons": {
-		"120": "src/assets/images/icons/favicon.png"
+		"128": "src/assets/images/favicon-128x128.png",
+		"512": "src/assets/images/favicon-512x512.png"
 	},
 
 	"chrome_url_overrides": {
