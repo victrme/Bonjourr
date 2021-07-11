@@ -472,7 +472,10 @@ function showSettings() {
 				settingsEvents()
 				signature()
 
-				setTimeout(() => clas(id('settings'), false, 'init'), 100)
+				setTimeout(() => {
+					clas(id('settings'), false, 'init')
+					customFont(null, { autocomplete: true })
+				}, 100)
 			}, 10)
 		})
 	}

@@ -2079,37 +2079,57 @@ function customFont(data, event) {
 	}
 
 	function triggerEvent(event) {
+		//
+		function fetchFontList(callback) {
+			//
+			if (Object.entries(googleFontList).length > 0) {
+				callback(googleFontList)
+			} else {
+				fetch(
+					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk'
+				)
+					.then((response) => response.json())
+					.then((json) => {
+						googleFontList = json
+						callback(json)
+					})
+			}
+		}
+
 		// If nothing, removes custom font
 		if (event.family === '') {
 			id('fontstyle').textContent = ''
+			id('clock').style.fontFamily = ''
 			dominterface.style.fontFamily = ''
 			dominterface.style.fontWeight = ''
-			id('clock').style.fontFamily = ''
 
 			modifyWeightOptions()
-
 			save()
+
 			return false
 		}
 
 		if (event.weight) {
 			chrome.storage.sync.get('font', (data) => changeWeight(event.weight, data.font))
 
-			// condition for 1.9.3 compatibility
+			// 1.9.3 compatibility comes with "family"
+			// don't return now
 			if (!event.family) return false
 		}
 
-		// If there is something
-		if (Object.entries(googleFontList).length === 0) {
-			// Liste toute les fonts
-			fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk')
-				.then((response) => response.json())
-				.then((json) => {
-					googleFontList = json
-					changeFamily(json, event.family)
+		if (event.family) {
+			fetchFontList((json) => changeFamily(json, event.family))
+		}
+
+		// For best performance: Fill list & change innerHTML
+		if (event.autocomplete) {
+			fetchFontList(function fillFamilyInput(json) {
+				const optionList = []
+				json.items.forEach(function addOptions(item) {
+					optionList.push(`<option value="${item.family}">${item.family}</option>`)
 				})
-		} else {
-			changeFamily(googleFontList, event.family)
+				id('dl_fontfamily').innerHTML = optionList.join('')
+			})
 		}
 	}
 
