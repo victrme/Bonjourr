@@ -26,10 +26,15 @@
 			}
 
 			.empty_input {
-				filter: brightness(0.7);
+				color: #eee;
+
+				&:hover {
+					background-color: #666;
+				}
 
 				&:active {
-					filter: brightness(0.6);
+					color: #ccc;
+					background-color: #555;
 				}
 			}
 		}
