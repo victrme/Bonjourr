@@ -289,15 +289,18 @@ function date(event, usdate) {
 }
 
 function greetings(name, isevent) {
-	const h = new Date().getHours()
-	let greet
+	const greets = [
+		['Good Night', 7],
+		['Good Morning', 12],
+		['Good Afternoon', 18],
+		['Good Evening', 24],
+	]
 
-	if (h > 6 && h < 12) greet = 'Good Morning'
-	else if (h >= 12 && h < 18) greet = 'Good Afternoon'
-	else if (h >= 18 && h <= 23) greet = 'Good Evening'
-	else greet = 'Good Night'
+	const hour = new Date().getHours()
+	const greet = tradThis(greets.filter((greet) => hour < greet[1])[0][0])
+	const customName = name ? `, ${name}` : ''
 
-	id('greetings').textContent = tradThis(greet) + (name ? `, ${name}` : '')
+	id('greetings').textContent = greet + customName
 
 	if (isevent) slowRange({ greeting: name }, 500)
 }
@@ -397,21 +400,30 @@ function quickLinks(event, that, initStorage) {
 			chrome.storage.sync.get('links', (data) => {
 				const i = findindex(that)
 
-				if (is === 'start') dragged = [elem, data.links[i], i]
-				else if (is === 'enter') hovered = [elem, data.links[i], i]
-				else if (is === 'end') {
-					//changes html blocks
-					current = hovered[0].innerHTML
-					hovered[0].innerHTML = dragged[0].innerHTML
-					dragged[0].innerHTML = current
+				switch (is) {
+					case 'start':
+						dragged = [elem, data.links[i], i]
+						break
 
-					// Switches link storage
-					let allLinks = data.links
+					case 'enter':
+						hovered = [elem, data.links[i], i]
+						break
 
-					allLinks[dragged[2]] = hovered[1]
-					allLinks[hovered[2]] = dragged[1]
+					case 'end': {
+						//changes html blocks
+						current = hovered[0].innerHTML
+						hovered[0].innerHTML = dragged[0].innerHTML
+						dragged[0].innerHTML = current
 
-					chrome.storage.sync.set({ links: allLinks })
+						// Switches link storage
+						let allLinks = data.links
+
+						allLinks[dragged[2]] = hovered[1]
+						allLinks[hovered[2]] = dragged[1]
+
+						chrome.storage.sync.set({ links: allLinks })
+						break
+					}
 				}
 			})
 		}
@@ -503,19 +515,31 @@ function quickLinks(event, that, initStorage) {
 				const updated = { title: e_title.value, url: e_url.value, icon: e_iconurl.value }
 
 				// Update on interface
-				Object.entries(allLinks[i]).forEach(([key, val], j) => {
+				Object.entries(allLinks[i]).forEach(([key, val]) => {
 					if (val !== updated[key]) {
-						if (key === 'title') {
-							if (!block.querySelector('span')) {
-								block
-									.querySelector('.l_icon_wrap')
-									.insertAdjacentHTML('afterEnd', '<span>' + updated[key] + '</span>')
-							} else {
-								block.querySelector('span').textContent = updated[key]
+						//
+
+						switch (key) {
+							case 'title': {
+								// Adds span title or updates it
+								if (!block.querySelector('span')) {
+									const span = `<span>${updated[key]}</span>`
+									block.querySelector('.l_icon_wrap').insertAdjacentHTML('afterEnd', span)
+								} else block.querySelector('span').textContent = updated[key]
+								break
 							}
+
+							case 'url':
+								block.querySelector('.block').setAttribute('source', updated[key])
+								break
+
+							case 'icon':
+								block.querySelector('img').src = updated[key]
+								break
+
+							default:
+								break
 						}
-						if (key === 'url') block.querySelector('.block').setAttribute('source', updated[key])
-						if (key === 'icon') block.querySelector('img').src = updated[key]
 
 						allLinks[i][key] = updated[key]
 					}
@@ -694,13 +718,20 @@ function quickLinks(event, that, initStorage) {
 		})
 	}
 
-	//TOUT LES EVENTS, else init
+	switch (event) {
+		case 'input':
+			if (that.which === 13) linkSubmission()
+			break
 
-	if (event === 'input' && that.which === 13) linkSubmission()
-	else if (event === 'button') linkSubmission()
-	else if (event === 'linknewtab') {
-		chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
-		id('hiddenlink').setAttribute('target', '_blank')
+		case 'button':
+			linkSubmission()
+			break
+
+		case 'linknewtab': {
+			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
+			id('hiddenlink').setAttribute('target', '_blank')
+			break
+		}
 	}
 
 	if (initStorage) {
@@ -1102,7 +1133,6 @@ function weather(event, that, initStorage) {
 	const i_ccode = id('i_ccode')
 	const sett_city = id('sett_city')
 
-	//TOUT LES EVENTS, default c'est init
 	switch (event) {
 		case 'city':
 			updateCity()
@@ -1116,6 +1146,7 @@ function weather(event, that, initStorage) {
 			updateLocation(that)
 			break
 
+		// Init
 		default:
 			cacheControl(initStorage)
 	}
@@ -1152,33 +1183,44 @@ function initBackground(data) {
 }
 
 function imgBackground(val) {
-	if (val) {
-		let img = new Image()
+	let img = new Image()
 
-		img.onload = () => {
-			id('background_overlay').style.opacity = `1`
-			id('background').style.backgroundImage = `url(${val})`
-		}
+	img.onload = () => {
+		id('background_overlay').style.opacity = `1`
+		id('background').style.backgroundImage = `url(${val})`
+	}
 
-		img.src = val
-		img.remove()
-	} else return id('background').style.backgroundImage
+	img.src = val
+	img.remove()
 }
 
 function freqControl(state, every, last) {
 	const d = new Date()
-	if (state === 'set') return every === 'tabs' ? 0 : d.getTime()
 
-	if (state === 'get') {
-		let calcLast = 0
-		let today = d.getTime()
+	switch (state) {
+		case 'set':
+			return every === 'tabs' ? 0 : d.getTime()
 
-		if (every === 'hour') calcLast = last + 3600 * 1000
-		else if (every === 'day') calcLast = last + 86400 * 1000
-		else if (every === 'pause') calcLast = 10 ** 13 - 1 //le jour de la fin du monde lmao
+		case 'get': {
+			let calcLast = 0
+			let today = d.getTime()
 
-		//bool
-		return today > calcLast
+			switch (every) {
+				case 'hour':
+					calcLast = last + 3600 * 1000
+					break
+
+				case 'day':
+					calcLast = last + 86400 * 1000
+					break
+
+				case 'pause':
+					calcLast = 9999999999999
+					break
+			}
+
+			return today > calcLast
+		}
 	}
 }
 
@@ -1359,8 +1401,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 					// Si derniere image des customs
 					if (data.custom.length === 0) {
-						chrome.storage.sync.set({ background_type: 'dynamic' })
-						unsplash()
+						unsplash(null, { removedCustom: true })
 					}
 					// Sinon load une autre
 					else {
@@ -1684,24 +1725,40 @@ function unsplash(init, event) {
 	else if (event) {
 		chrome.storage.sync.get('dynamic', (data) => {
 			//
-			// Saves corresponding event
-			if (event.every) data.dynamic.every = event.every
-
-			// Apply unsplash again for new collection
-			if (event.collection !== undefined) {
-				data.dynamic.collection = event.collection
-
+			const key = Object.keys(event)[0]
+			const doDynamicAgain = (which) => {
 				chrome.storage.local.get('dynamicCache', (local) => {
 					//
-					// Resets previous user cache
-					local.dynamicCache.user = []
-					chrome.storage.local.set({ dynamicCache: local })
+
+					if (which === 'collection') {
+						local.dynamicCache.user = []
+						chrome.storage.local.set({ dynamicCache: local })
+					}
 
 					cacheControl(data.dynamic, local.dynamicCache)
 				})
 			}
 
-			chrome.storage.sync.set({ dynamic: data.dynamic })
+			switch (key) {
+				case 'every': {
+					data.dynamic.every = event.every
+					chrome.storage.sync.set({ dynamic: data.dynamic })
+					break
+				}
+
+				case 'removedCustom': {
+					chrome.storage.sync.set({ background_type: 'dynamic' })
+					doDynamicAgain(key)
+					break
+				}
+
+				case 'collection': {
+					data.dynamic.collection = event.collection
+					chrome.storage.sync.set({ dynamic: data.dynamic })
+					doDynamicAgain(key)
+					break
+				}
+			}
 		})
 	}
 
@@ -1841,25 +1898,35 @@ function searchbar(event, that, storage) {
 		}
 	}
 
-	if (event) {
-		if (event === 'searchbar') display(that.checked)
-		if (event === 'engine') engine(that.value)
-		if (event === 'newtab') setNewtab(that.checked)
-	}
-	//init
-	else {
-		const searchbar = storage.searchbar || false,
-			searchengine = storage.searchbar_engine || 'google',
-			searchbarnewtab = storage.searchbar_newtab || false
+	switch (event) {
+		case 'searchbar':
+			display(that.checked)
+			break
 
-		//display
-		display(searchbar, true)
-		engine(searchengine.replace('s_', ''), true)
-		setNewtab(searchbarnewtab, true)
+		case 'engine':
+			engine(that.value)
+			break
 
-		// 1.9.2 ==> 1.9.3 lang breaking fix
-		if (storage.searchbar_engine) {
-			chrome.storage.sync.set({ searchbar_engine: searchengine.replace('s_', '') })
+		case 'newtab':
+			setNewtab(that.checked)
+			break
+
+		//init
+		default: {
+			const searchbar = storage.searchbar || false,
+				searchengine = storage.searchbar_engine || 'google',
+				searchbarnewtab = storage.searchbar_newtab || false
+
+			//display
+			display(searchbar, true)
+			engine(searchengine.replace('s_', ''), true)
+			setNewtab(searchbarnewtab, true)
+
+			// 1.9.2 ==> 1.9.3 lang breaking fix
+			if (storage.searchbar_engine) {
+				chrome.storage.sync.set({ searchbar_engine: searchengine.replace('s_', '') })
+			}
+			break
 		}
 	}
 }
