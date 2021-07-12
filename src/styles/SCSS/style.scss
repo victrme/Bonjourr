@@ -5,6 +5,7 @@
 #interface {
 	position: relative;
 	min-height: 100vh;
+	min-width: 350px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
@@ -205,6 +206,11 @@
 		#greetings {
 			font-size: 3em;
 			font-weight: inherit;
+			min-width: 300px;
+			max-width: 16em;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
 		}
 
 		#weather {
@@ -319,9 +325,9 @@
 		justify-content: center;
 		align-items: center;
 		max-width: 100%;
+		width: 56em;
 		margin: 0 auto;
 		padding: 2em 0;
-		// min-height: 8em;
 
 		@include hidden();
 
@@ -381,6 +387,9 @@
 					display: block;
 					margin: 0.5em 0;
 					width: 100%;
+					max-height: 3.3em;
+					line-height: 1.1em;
+					overflow: hidden;
 					word-wrap: break-word;
 					text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 				}

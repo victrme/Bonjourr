@@ -109,7 +109,7 @@ function settingsEvents() {
 	}
 
 	id('i_collection').onchange = function () {
-		unsplash(null, { collection: this.value })
+		unsplash(null, { collection: stringMaxSize(this.value, 128) })
 		this.blur()
 	}
 
@@ -134,7 +134,7 @@ function settingsEvents() {
 	}
 
 	id('i_greeting').onkeyup = function () {
-		greetings(this.value, true)
+		greetings(stringMaxSize(this.value, 32), true)
 	}
 
 	//Time and date
@@ -285,7 +285,7 @@ function initParams(data) {
 	initInput('i_row', data.linksrow, 8)
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 400)
-	initInput('i_size', isThereData('font', 'size'), 13)
+	initInput('i_size', isThereData('font', 'size'), 16)
 	initInput('i_greeting', data.greeting, '')
 	initInput('cssEditor', data.css, '')
 

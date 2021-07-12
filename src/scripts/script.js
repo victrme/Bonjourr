@@ -100,6 +100,10 @@ function slow(that) {
 	}, 700)
 }
 
+function stringMaxSize(string, size) {
+	return string.length > size ? string.slice(0, size) : string
+}
+
 function traduction(ofSettings, init) {
 	//
 	function traduis(lang = 'en') {
@@ -353,7 +357,9 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function appendblock(arr, index, links) {
-		let { icon, title, url } = arr
+		let icon = arr.icon
+		let title = stringMaxSize(arr.title, 32)
+		let url = stringMaxSize(arr.url, 256)
 
 		// no icon ? + 1.9.2 dead favicons fix
 		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
@@ -481,8 +487,10 @@ function quickLinks(event, that, initStorage) {
 
 		id('e_submit').onclick = function () {
 			removeLinkSelection()
-			editlink(null, parseInt(id('edit_link').getAttribute('index')))
-			clas(id('edit_linkContainer'), false, 'shown')
+			editlink(null, parseInt(id('edit_link').getAttribute('index')), (error) => {
+				if (!error) clas(id('edit_linkContainer'), false, 'shown')
+				else console.log(error)
+			})
 		}
 
 		// close on button
@@ -502,17 +510,27 @@ function quickLinks(event, that, initStorage) {
 		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
 	}
 
-	function editlink(that, i) {
+	function editlink(that, i, callback) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
 
-		//edit est visible
+		const updated = {
+			title: stringMaxSize(e_title.value, 32),
+			url: stringMaxSize(e_url.value, 256),
+			icon: stringMaxSize(e_iconurl.value, 8192),
+		}
+
+		if (updated.icon.length === 8192) {
+			callback('Icon is above 8kB')
+			return false
+		}
+
 		if (i || i === 0) {
+			//edit est visible
 			chrome.storage.sync.get('links', (data) => {
 				let allLinks = [...data.links]
 				const block = domlinkblocks.children[i + 1]
-				const updated = { title: e_title.value, url: e_url.value, icon: e_iconurl.value }
 
 				// Update on interface
 				Object.entries(allLinks[i]).forEach(([key, val]) => {
@@ -640,7 +658,7 @@ function quickLinks(event, that, initStorage) {
 			else return false
 		}
 
-		function saveLink(lll) {
+		function saveLink(filteredLink) {
 			slow(id('i_url'))
 
 			//remet a zero les inputs
@@ -653,26 +671,24 @@ function quickLinks(event, that, initStorage) {
 				//array est tout les links + le nouveau
 				if (data.links && data.links.length > 0) {
 					arr = data.links
-					arr.push(lll)
+					arr.push(filteredLink)
 
 					//array est seulement le link
 				} else {
-					arr.push(lll)
+					arr.push(filteredLink)
 					domlinkblocks.style.visibility = 'visible'
 				}
 
 				chrome.storage.sync.set({ links: arr })
-				appendblock(lll, arr.length - 1, arr)
+				appendblock(filteredLink, arr.length - 1, arr)
 			})
 		}
-
-		const titleControl = (t) => (t.length > 42 ? t.slice(0, 42) + '...' : t)
 
 		//append avec le titre, l'url ET l'index du bloc
 
 		let links = {
-			title: titleControl(id('i_title').value),
-			url: filterUrl(id('i_url').value),
+			title: stringMaxSize(id('i_title').value, 32),
+			url: stringMaxSize(filterUrl(id('i_url').value), 256),
 			icon: '',
 		}
 
@@ -708,9 +724,6 @@ function quickLinks(event, that, initStorage) {
 
 	switch (event) {
 		case 'input':
-			if (that.which === 13) linkSubmission()
-			break
-
 		case 'button':
 			linkSubmission()
 			break
@@ -948,11 +961,11 @@ function weather(event, that, initStorage) {
 						filename = 'fewclouds'
 						break
 				
-					case 802: case 803:
+					case 802:
 						filename = 'brokenclouds'
 						break
 				
-					case 804:
+					 case 803: case 804:
 						filename = 'overcastclouds'
 						break
 
@@ -1161,7 +1174,11 @@ function initBackground(data) {
 			const customList = datalocal.custom || []
 
 			if (customList.length > 0) {
-				localBackgrounds({ local: datalocal, every: data.custom_every, time: data.custom_time })
+				localBackgrounds({
+					local: datalocal,
+					every: data.custom_every,
+					time: data.custom_time,
+				})
 			} else {
 				// If no custom, change to dynamic
 				unsplash(data)
@@ -2169,7 +2186,10 @@ function hideElem(init, buttons, that) {
 
 	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
 	function getEventListPosition(that) {
-		return { row: parseInt(that.getAttribute('he_row')), col: parseInt(that.getAttribute('he_col')) }
+		return {
+			row: parseInt(that.getAttribute('he_row')),
+			col: parseInt(that.getAttribute('he_col')),
+		}
 	}
 
 	function toggleElement(dom, hide) {
@@ -2344,9 +2364,7 @@ function startup(data) {
 	initBackground(data)
 	searchbar(null, null, data)
 	showPopup(data.reviewPopup)
-
 	customSize(data.font)
-
 	customCss(data.css)
 	hideElem(data.hide)
 
