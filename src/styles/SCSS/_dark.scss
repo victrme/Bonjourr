@@ -5,7 +5,7 @@
 
 	#interface #time #time-container #analogClock,
 	#popup {
-		@include backdrop($color: #0003, $blur: 0px);
+		@include backdrop($color: #0003, $blur: 10px);
 	}
 
 	#edit_linkContainer {

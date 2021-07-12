@@ -647,19 +647,13 @@ function quickLinks(event, that, initStorage) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
-			let full = false
-
 			chrome.storage.sync.get(['links', 'searchbar'], (data) => {
 				let arr = []
 
 				//array est tout les links + le nouveau
 				if (data.links && data.links.length > 0) {
-					if (data.links.length < 16 - 1) {
-						arr = data.links
-						arr.push(lll)
-					} else {
-						full = true
-					}
+					arr = data.links
+					arr.push(lll)
 
 					//array est seulement le link
 				} else {
@@ -667,14 +661,8 @@ function quickLinks(event, that, initStorage) {
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				//si les blocks sont moins que 16
-				if (!full) {
-					chrome.storage.sync.set({ links: arr })
-					appendblock(lll, arr.length - 1, arr)
-				} else {
-					//desactive tout les input url
-					id('i_url').setAttribute('disabled', 'disabled')
-				}
+				chrome.storage.sync.set({ links: arr })
+				appendblock(lll, arr.length - 1, arr)
 			})
 		}
 
@@ -956,8 +944,16 @@ function weather(event, that, initStorage) {
 						filename = 'clearsky'
 						break
 
-					case 801: case 802: case 803: case 804:
+					case 801:
+						filename = 'fewclouds'
+						break
+				
+					case 802: case 803:
 						filename = 'brokenclouds'
+						break
+				
+					case 804:
+						filename = 'overcastclouds'
 						break
 
 					default:
