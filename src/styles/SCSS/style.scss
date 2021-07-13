@@ -12,7 +12,7 @@
 	will-change: transform;
 	overflow: hidden;
 	transition-property: opacity, transform;
-	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
 
 	&.pushed {
 		#time,
@@ -50,10 +50,6 @@
 		}
 	}
 
-	.shadow {
-		display: none;
-	}
-
 	// clock & date
 	#time {
 		display: flex;
@@ -62,19 +58,9 @@
 		align-items: center;
 		margin: 0 auto;
 
-		// .shadow {
-		// 	z-index: -1;
-		// 	position: absolute;
-		// 	overflow: hidden;
-		// 	max-width: 100%;
-		// 	width: 43em;
-		// 	opacity: 0.4;
-		// 	margin: 30px auto 0 auto;
-		// }
-
 		#time-container {
 			#clock {
-				font-family: sf_pro_displaythin;
+				font-family: $fonts;
 				font-size: 6em;
 
 				&.hidden {
@@ -89,7 +75,7 @@
 				position: relative;
 				margin: auto auto 2em auto;
 				width: 8em;
-				box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+				box-shadow: $textShadow;
 
 				@include backdrop($color: #fff3, $blur: 7px);
 
@@ -149,7 +135,7 @@
 					margin-left: -0.1em;
 					position: absolute;
 					transform-origin: bottom center;
-					box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+					box-shadow: $textShadow;
 
 					&#hours {
 						height: 30%;
@@ -177,16 +163,6 @@
 		#date {
 			font-size: 1.5em;
 			position: relative;
-
-			&::before {
-				content: '';
-				position: absolute;
-				top: -50px;
-				left: 0;
-				width: 100%;
-				z-index: -1;
-				box-shadow: 0px 0px 100px 40px #2224;
-			}
 		}
 	}
 
@@ -215,16 +191,6 @@
 
 		#weather {
 			position: relative;
-
-			&::before {
-				content: '';
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				z-index: -1;
-				box-shadow: 0px 0px 150px 40px #2224;
-			}
 
 			#weather_desc {
 				font-size: 1.5em;
@@ -461,17 +427,15 @@
 	}
 
 	#edit_link {
+		background: $purewhite;
+		font-family: $fonts;
 		align-self: center;
 		margin: auto;
+		color: #333;
 		width: 300px;
 		padding: 1.5em;
-		z-index: 3;
-		background: $settingsGrey;
-		color: #333;
-		border-radius: 15px;
-		background: $purewhite;
-		font-family: sf_pro_textregular;
 		border-radius: 10px;
+		z-index: 3;
 
 		> div {
 			position: relative;
@@ -576,7 +540,7 @@
 			text-align: left;
 			padding: 0;
 			transition: opacity 0.1s ease-in;
-			font-family: sf_pro_textregular;
+			font-family: $fonts;
 			font-size: 0.9em;
 			color: $blue;
 			margin-bottom: 2em;
@@ -614,7 +578,7 @@
 	bottom: 1em;
 	left: 1em;
 	opacity: 0;
-	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+	text-shadow: $textShadow;
 	transition: opacity 0.4s;
 
 	&.shown {
@@ -622,13 +586,13 @@
 	}
 
 	a {
+		font-size: 14px;
 		color: #fff9;
 		text-decoration: none;
-		font-size: 0.9em;
+		transition: color 0.1s;
 
 		&:hover {
 			color: #fffe;
-			transition: all 0.1s;
 		}
 	}
 }

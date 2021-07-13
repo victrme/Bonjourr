@@ -19,7 +19,6 @@ const funcsOk = {
 let stillActive = false,
 	rangeActive = false,
 	lazyClockInterval = 0,
-	// settingsscroll = 0,
 	fontList = [],
 	googleFontList = {},
 	firstpaint = false
@@ -1525,7 +1524,7 @@ function unsplash(init, event) {
 		imgBackground(props.url)
 		imgCredits(props)
 
-		// console.log(props.color)
+		console.log(props.color)
 	}
 
 	function cacheControl(dynamic, local) {
@@ -2003,8 +2002,8 @@ function customSize(init, event) {
 	//
 	// Apply for interface, credit & settings button
 	const apply = (size) => {
-		const doms = [dominterface, document.querySelector('#showSettings button'), id('credit')]
-		doms.forEach((dom) => (dom.style.fontSize = size + 'px'))
+		dominterface.style.fontSize = size + 'px'
+		id('credit').style.fontSize = size + 'px'
 	}
 
 	const save = () => {
