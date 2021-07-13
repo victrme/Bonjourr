@@ -2155,10 +2155,19 @@ function customCss(init, event) {
 	if (init) styleHead.textContent = init
 
 	if (event) {
-		const val = stringMaxSize(event, 8080)
+		switch (event.is) {
+			case 'styling': {
+				const val = stringMaxSize(event.val, 8080)
+				styleHead.textContent = val
+				slowRange({ css: val }, 500)
+				break
+			}
 
-		styleHead.textContent = val
-		slowRange({ css: val }, 500)
+			case 'resize': {
+				slowRange({ cssHeight: event.val }, 500)
+				break
+			}
+		}
 	}
 }
 

@@ -231,16 +231,6 @@ function settingsEvents() {
 		linksrow(null, this.value)
 	}
 
-	id('cssEditor').addEventListener('keydown', function (e) {
-		if (e.code === 'Tab') {
-			e.preventDefault()
-		}
-	})
-
-	id('cssEditor').addEventListener('keyup', function (e) {
-		customCss(null, e.target.value)
-	})
-
 	id('hideelem')
 		.querySelectorAll('button')
 		.forEach((elem) => {
@@ -249,6 +239,19 @@ function settingsEvents() {
 				hideElem(null, null, this)
 			}
 		})
+
+	const cssEditor = id('cssEditor')
+	const cssResize = new ResizeObserver((e) => customCss(null, { is: 'resize', val: e[0].contentRect.height }))
+
+	cssEditor.addEventListener('keydown', function (e) {
+		if (e.code === 'Tab') e.preventDefault()
+	})
+
+	cssEditor.addEventListener('keyup', function (e) {
+		customCss(null, { is: 'styling', val: e.target.value })
+	})
+
+	cssResize.observe(cssEditor)
 }
 
 function initParams(data) {
@@ -331,6 +334,9 @@ function initParams(data) {
 
 	//searchbar display settings
 	clas(id('searchbar_options'), data.searchbar, 'shown')
+
+	//searchbar display settings
+	if (data.cssHeight) id('cssEditor').style.height = data.cssHeight + 'px'
 
 	//langue
 	id('i_lang').value = data.lang || 'en'
