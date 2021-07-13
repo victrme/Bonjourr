@@ -482,6 +482,7 @@ function quickLinks(event, that, initStorage) {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
 			clas(id('edit_linkContainer'), false, 'shown')
+			linksInputDisable(false)
 		}
 
 		id('e_submit').onclick = function () {
@@ -493,16 +494,16 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		// close on button
-		id('e_close').onmouseup = () => closeEditLink()
+		id('e_close').onclick = () => closeEditLink()
 
 		// close on outside click
 		id('edit_linkContainer').onmousedown = (e) => {
 			if (e.target.id === 'edit_linkContainer') closeEditLink()
 		}
 
-		id('re_title').onmouseup = (e) => emptyAndHideIcon(e)
-		id('re_url').onmouseup = (e) => emptyAndHideIcon(e)
-		id('re_iconurl').onmouseup = (e) => emptyAndHideIcon(e)
+		id('re_title').onclick = (e) => emptyAndHideIcon(e)
+		id('re_url').onclick = (e) => emptyAndHideIcon(e)
+		id('re_iconurl').onclick = (e) => emptyAndHideIcon(e)
 
 		id('e_title').onkeyup = (e) => showDelIcon(e.target)
 		id('e_url').onkeyup = (e) => showDelIcon(e.target)
@@ -518,11 +519,6 @@ function quickLinks(event, that, initStorage) {
 			title: stringMaxSize(e_title.value, 32),
 			url: stringMaxSize(e_url.value, 256),
 			icon: stringMaxSize(e_iconurl.value, 8192),
-		}
-
-		if (updated.icon.length === 8192) {
-			callback('Icon is above 8kB')
-			return false
 		}
 
 		if (i || i === 0) {
@@ -596,6 +592,29 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
+	function openlink(that, e) {
+		const source = that.children[0].getAttribute('source')
+		const a_hiddenlink = id('hiddenlink')
+
+		chrome.storage.sync.get('linknewtab', (data) => {
+			if (data.linknewtab) {
+				chrome.tabs.create({
+					url: source,
+				})
+			} else {
+				if (e.which === 2) {
+					chrome.tabs.create({
+						url: source,
+					})
+				} else {
+					a_hiddenlink.setAttribute('href', source)
+					a_hiddenlink.setAttribute('target', '_self')
+					a_hiddenlink.click()
+				}
+			}
+		})
+	}
+
 	function findindex(that) {
 		//passe la liste des blocks, s'arrete si that correspond
 		//renvoie le nombre de loop pour l'atteindre
@@ -621,10 +640,6 @@ function quickLinks(event, that, initStorage) {
 
 			var linkRemd = ejectIntruder(data.links)
 
-			//si on supprime un block quand la limite est atteinte
-			//réactive les inputs
-			if (linkRemd.length === 16 - 1) id('i_url').removeAttribute('disabled')
-
 			//enleve le html du block
 			var block_parent = domlinkblocks.children[count + 1]
 			block_parent.setAttribute('class', 'block_parent removed')
@@ -641,49 +656,37 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function linkSubmission() {
-		function filterUrl(str) {
-			let reg = new RegExp('^(http|https)://', 'i')
-
-			//config ne marche pas
-			if (str.startsWith('about:') || str.startsWith('chrome://')) return false
-
-			if (str.startsWith('file://')) return str
-
-			//premier regex pour savoir si c'est http
-			if (!str.match(reg)) str = 'http://' + str
-
-			//deuxieme pour savoir si il est valide (avec http)
-			if (str.match(reg)) return str.match(reg).input
-			else return false
-		}
+		//
 
 		function saveLink(filteredLink) {
-			slow(id('i_url'))
-
 			//remet a zero les inputs
 			id('i_title').value = ''
 			id('i_url').value = ''
 
-			chrome.storage.sync.get(['links', 'searchbar'], (data) => {
-				let arr = []
+			chrome.storage.sync.get('links', (data) => {
+				const links = data.links || []
+
+				if (links.length === 19) linksInputDisable(true)
 
 				//array est tout les links + le nouveau
-				if (data.links && data.links.length > 0) {
-					arr = data.links
-					arr.push(filteredLink)
-
-					//array est seulement le link
-				} else {
-					arr.push(filteredLink)
+				if (links) {
+					links.push(filteredLink)
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				chrome.storage.sync.set({ links: arr })
-				appendblock(filteredLink, arr.length - 1, arr)
+				chrome.storage.sync.set({ links: links })
+				appendblock(filteredLink, links.length - 1, links)
 			})
 		}
 
-		//append avec le titre, l'url ET l'index du bloc
+		function filterUrl(str) {
+			//
+			const to = (scheme) => str.startsWith(scheme)
+			const acceptableSchemes = to('file://') || to('http://') || to('https://')
+			const unacceptable = to('about:') || to('chrome://')
+
+			return acceptableSchemes ? str : unacceptable ? false : 'https://' + str
+		}
 
 		let links = {
 			title: stringMaxSize(id('i_title').value, 32),
@@ -698,27 +701,14 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	function openlink(that, e) {
-		const source = that.children[0].getAttribute('source')
-		const a_hiddenlink = id('hiddenlink')
+	function linksInputDisable(max) {
+		const doms = ['i_title', 'i_url', 'submitlink']
+		const domsubmitlink = id('submitlink')
 
-		chrome.storage.sync.get('linknewtab', (data) => {
-			if (data.linknewtab) {
-				chrome.tabs.create({
-					url: source,
-				})
-			} else {
-				if (e.which === 2) {
-					chrome.tabs.create({
-						url: source,
-					})
-				} else {
-					a_hiddenlink.setAttribute('href', source)
-					a_hiddenlink.setAttribute('target', '_self')
-					a_hiddenlink.click()
-				}
-			}
-		})
+		if (max) doms.forEach((dom) => id(dom).setAttribute('disabled', ''))
+		else doms.forEach((dom) => id(dom).removeAttribute('disabled'))
+
+		clas(domsubmitlink, max, 'max')
 	}
 
 	switch (event) {
@@ -726,6 +716,9 @@ function quickLinks(event, that, initStorage) {
 		case 'button':
 			linkSubmission()
 			break
+
+		case 'maxControl':
+			linksInputDisable(that)
 
 		case 'linknewtab': {
 			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
@@ -2074,8 +2067,9 @@ function customFont(data, event) {
 
 		// One font has been found
 		if (font.length > 0) {
-			const url = `https://fonts.googleapis.com/css?family=${font[0].family}:400`
 			const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
+			const defaultWeight = availWeights.includes('regular') ? '400' : availWeights[0]
+			const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`
 
 			// Change l'url, et les weight options
 			apply(url, font[0].family, '400')
@@ -2083,11 +2077,7 @@ function customFont(data, event) {
 			modifyWeightOptions(availWeights)
 
 			dom.blur()
-			dom.setAttribute('placeholder', tradThis('Any Google fonts'))
-		} else {
-			dom.value = ''
-			dom.setAttribute('placeholder', tradThis('No fonts matched'))
-		}
+		} else dom.value = ''
 	}
 
 	function triggerEvent(event) {
@@ -2165,11 +2155,8 @@ function customCss(init, event) {
 	if (init) styleHead.textContent = init
 
 	if (event) {
-		//const e = event.e
-		// const that = event.that
-		// syntaxControl(e, that)
+		const val = stringMaxSize(event, 8080)
 
-		const val = id('cssEditor').value
 		styleHead.textContent = val
 		slowRange({ css: val }, 500)
 	}

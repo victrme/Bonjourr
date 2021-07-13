@@ -212,6 +212,13 @@
 
 		#submitlink {
 			margin-left: 1em;
+			transition: filter 0.4s;
+
+			&.max {
+				filter: grayscale(1);
+				text-decoration: none;
+				cursor: default;
+			}
 		}
 	}
 
@@ -473,6 +480,7 @@
 	#cssEditor {
 		width: calc(100% - 42px);
 		min-height: 100px;
+		max-height: 2700px;
 		resize: vertical;
 		border: none;
 		padding: 0.75em 1.3em;

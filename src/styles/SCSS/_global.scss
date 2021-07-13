@@ -20,7 +20,7 @@ $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
 body {
-	overflow-x: hidden;
+	overflow: hidden;
 	margin: 0;
 	cursor: default;
 	user-select: none;
@@ -194,7 +194,7 @@ body {
 		.as_visuals {max-height: 300px}
 		.as_timedate {max-height: 260px}
 		.as_fonts {max-height: 240px}
-		.as_css {max-height: 2000px}
+		.as_css {max-height: 2800px}
 		.as_impexp {max-height: 220px}
 	}
 

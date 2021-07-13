@@ -291,7 +291,6 @@
 		justify-content: center;
 		align-items: center;
 		max-width: 100%;
-		width: 56em;
 		margin: 0 auto;
 		padding: 2em 0;
 
@@ -305,6 +304,7 @@
 		}
 
 		#linkblocks_inner {
+			width: 56em;
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
@@ -408,22 +408,22 @@
 	top: 0;
 	height: 100vh;
 	width: 100%;
-	transition: transform 0.2s;
+	transition: transform 0.4s;
 	z-index: 1;
 
 	&.pushed {
-		-webkit-transform: translateX(-10em);
-		transform: translateX(-10em);
+		-webkit-transform: translateX(-160px);
+		transform: translateX(-160px);
 	}
 
 	&.shown {
 		@include animShow('flex');
-		animation: animShow 0.2s forwards;
+		animation: animShow 0.4s forwards;
 	}
 
 	&.hiding {
 		@include animHide();
-		animation: animHide 0.3s forwards;
+		animation: animHide 0.4s forwards;
 	}
 
 	#edit_link {

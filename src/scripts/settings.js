@@ -238,7 +238,7 @@ function settingsEvents() {
 	})
 
 	id('cssEditor').addEventListener('keyup', function (e) {
-		customCss(null, { e: e, that: this })
+		customCss(null, e.target.value)
 	})
 
 	id('hideelem')
@@ -249,15 +249,6 @@ function settingsEvents() {
 				hideElem(null, null, this)
 			}
 		})
-
-	// id('settings').onscroll = function () {
-	// 	clearTimeout(scrolltimeout)
-	// 	has('settings', 'scroll') ? '' : clas(this, true, 'scroll')
-
-	// 	scrolltimeout = setTimeout(() => {
-	// 		clas(this, false, 'scroll')
-	// 	}, BonjourrAnimTime)
-	// }
 }
 
 function initParams(data) {
@@ -300,12 +291,16 @@ function initParams(data) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
+	// Links limit
+	if (data.links && data.links.length === 20) quickLinks('maxControl', true)
+
 	//hide elems
 	hideElem(null, document.querySelectorAll('#hideelem button'), null)
 
 	//Font weight
 	if (data.font) modifyWeightOptions(data.font.availWeights)
 
+	// Clock
 	if (data.clock) toggleClockOptions(data.clock.analog)
 
 	//input translation
@@ -313,7 +308,6 @@ function initParams(data) {
 	id('i_greeting').setAttribute('placeholder', tradThis('Name'))
 	id('i_import').setAttribute('placeholder', tradThis('Import code'))
 	id('i_export').setAttribute('placeholder', tradThis('Export code'))
-	id('i_customfont').setAttribute('placeholder', tradThis('Any Google fonts'))
 	id('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg
@@ -534,8 +528,8 @@ if (sessionStorage.lang) {
 	setTimeout(() => showSettings(), 20)
 }
 
-domshowsettings.onmouseup = () => showSettings()
-dominterface.onmousedown = (e) => showInterface(e)
+domshowsettings.onclick = () => showSettings()
+dominterface.onclick = (e) => showInterface(e)
 
 document.onkeydown = (e) => {
 	//focus la searchbar si elle existe et les settings sont fermé
