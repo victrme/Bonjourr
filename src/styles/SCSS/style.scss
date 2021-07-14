@@ -13,6 +13,7 @@
 	overflow: hidden;
 	transition-property: opacity, transform;
 	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
+	font-weight: 300;
 
 	&.pushed {
 		#time,
@@ -60,8 +61,8 @@
 
 		#time-container {
 			#clock {
-				font-family: $fonts;
 				font-size: 6em;
+				font-weight: 200;
 
 				&.hidden {
 					display: none;
@@ -77,7 +78,7 @@
 				width: 8em;
 				box-shadow: $textShadow;
 
-				@include backdrop($color: #fff3, $blur: 7px);
+				@include frostedGlass($color: #fff3, $blur: 7px);
 
 				&.hidden {
 					display: none;
@@ -163,6 +164,7 @@
 		#date {
 			font-size: 1.5em;
 			position: relative;
+			
 		}
 	}
 
@@ -177,6 +179,7 @@
 
 		#weather #w_icon #widget.shown {
 			opacity: 1;
+			box-shadow: $textShadow;
 		}
 
 		#greetings {
@@ -246,29 +249,41 @@
 			width: 100%;
 			padding: 0 1em;
 			margin: auto;
-
-			font-family: inherit;
 			font-size: 1.3em;
 			color: #fcfcfc;
-
-			opacity: 0.8;
 			border: 0;
 			border-radius: 10px;
 			box-shadow: 0 1px 5px #0003;
 			transition: background-color 0.2s;
 
-			@include backdrop($color: #fff2, $blur: 10px);
+			@supports not (backdrop-filter: none) {
+				opacity: 0.8;
+				transition: all .1s ease-in;
+			}
+
+			@include frostedGlass();
 
 			&::placeholder {
 				transition: opacity 0.2s;
 				text-transform: none;
-				opacity: 0.7;
-				color: #fffc;
+				color: rgba(255, 255, 255, 0.9);
+				text-shadow: $textShadow;
+
+				@supports not (backdrop-filter: none) {
+					color: rgba(0,0,0,.6);
+					text-shadow: unset;
+					
+				}
 			}
 
 			&:focus {
-				opacity: 1;
-				@include backdrop($color: #fff3, $blur: 0px);
+				@include frostedGlass($color: #fff6, $blur: 15px);
+
+				color: white;
+
+				@supports not (backdrop-filter: none) {
+					color: rgba(0,0,0,.8);
+				}
 			}
 		}
 
@@ -327,6 +342,7 @@
 					border-radius: 10px;
 					background: $purewhite;
 					border: 0.2em solid $purewhite;
+					box-shadow: $textShadow;
 					transition: border-color 0.1s, filter 0.1s;
 
 					.l_icon {
@@ -400,6 +416,25 @@
 			}
 		}
 	}
+
+	// Defunct shadows
+	#weather::before,
+	#date::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		width: 100%;
+		z-index: -1;
+	}
+
+	#date::before {
+		top: -50px;
+		box-shadow: 0px 0px 100px 40px #2224;
+	}
+
+	#weather::before {
+		box-shadow: 0px 0px 150px 40px #2224;
+	}
 }
 
 #edit_linkContainer {
@@ -428,7 +463,6 @@
 
 	#edit_link {
 		background: $purewhite;
-		font-family: $fonts;
 		align-self: center;
 		margin: auto;
 		color: #333;
@@ -540,7 +574,6 @@
 			text-align: left;
 			padding: 0;
 			transition: opacity 0.1s ease-in;
-			font-family: $fonts;
 			font-size: 0.9em;
 			color: $blue;
 			margin-bottom: 2em;
@@ -612,12 +645,18 @@
 	transform: translateX(-100%);
 
 	@include allCentered();
-	@include backdrop($color: #aeaeb144, $blur: 10px);
+	@include frostedGlass($color: #7a7a7a64, $blur: 10px);
 
 	&.shown {
 		opacity: 1;
 		transform: translateX(0);
 		transition: transform 1s 2s;
+		box-shadow: $textShadow;
+
+		@supports not (backdrop-filter: none) {
+			background-color: rgba(255, 255, 255, 0.9);
+			color:rgba(0, 0, 0, 0.7)
+		}
 	}
 
 	&.removing {
@@ -627,7 +666,7 @@
 
 	span,
 	a {
-		max-width: 200px;
+		max-width: 210px;
 		font-size: 15px;
 	}
 

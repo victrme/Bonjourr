@@ -1,11 +1,19 @@
 @mixin darkCss {
 	#interface {
 		color: #eee;
+
+		#sb_container #searchbar {
+			@include frostedGlass($color: rgba(70, 70, 70, 0.4), $blur: 5px);
+
+			&:focus {
+				@include frostedGlass($color: rgba(70, 70, 70, 0.6), $blur: 15px);
+			}
+		}
 	}
 
 	#interface #time #time-container #analogClock,
 	#popup {
-		@include backdrop($color: #0003, $blur: 10px);
+		@include frostedGlass($color: #0003, $blur: 10px);
 	}
 
 	#edit_linkContainer {
@@ -191,7 +199,7 @@
 		background-color: transparent;
 
 		&:hover {
-			@include backdrop($color: rgba(12, 12, 12, 0.3));
+			@include frostedGlass($color: rgba(12, 12, 12, 0.3));
 		}
 
 		&.shown &:hover {

@@ -82,7 +82,7 @@ const dict = {
 		no: 'if you love Bonjourr',
 	},
 	'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇': {
-		fr: 'Vous adorez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super! 😇',
+		fr: 'Vous adorez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
 		sv: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 		nl: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
 		pl: 'You love using Bonjourr? Consider giving us a review, that would help a lot! 😇',
