@@ -39,13 +39,13 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 // And maybe change import option
 
 const lsOnlineStorage = {
-	get: (which, callback) => {
-		const key = which === 'backgrounds' ? 'bonjourrBackgrounds' : 'bonjourr'
+	get: (local, unused, callback) => {
+		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
 		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
 		callback(data)
 	},
 	set: (prop) => {
-		lsOnlineStorage.get(null, (data) => {
+		lsOnlineStorage.get(null, null, (data) => {
 			if (typeof prop === 'object') {
 				const [key, val] = Object.entries(prop)[0]
 
@@ -56,15 +56,15 @@ const lsOnlineStorage = {
 			}
 		})
 	},
-	bgset: (prop) => {
-		lsOnlineStorage.get('backgrounds', (data) => {
+	setLocal: (prop) => {
+		lsOnlineStorage.get(true, null, (data) => {
 			if (typeof prop === 'object') {
 				data[Object.entries(prop)[0][0]] = Object.entries(prop)[0][1]
 				localStorage.bonjourrBackgrounds = JSON.stringify(data)
 			}
 		})
 	},
-	log: (isbg) => lsOnlineStorage.get(isbg, (data) => console.log(data)),
+	log: (isLocal) => lsOnlineStorage.get(isLocal, null, (data) => console.log(data)),
 	del: () => localStorage.clear(),
 }
 
@@ -1517,9 +1517,8 @@ function unsplash(init, event) {
 		imgBackground(props.url)
 		imgCredits(props)
 
-		// sets meta theme-color to main background's color 
-		document.querySelector('meta[name="theme-color"]').setAttribute("content", props.color);
-
+		// sets meta theme-color to main background's color
+		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
 	function cacheControl(dynamic, local) {

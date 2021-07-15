@@ -462,7 +462,7 @@ function showSettings() {
 	}
 
 	function functions() {
-		chrome.storage.sync.get((data) => {
+		chrome.storage.sync.get(null, (data) => {
 			initParams(data)
 			traduction(true, data.lang)
 

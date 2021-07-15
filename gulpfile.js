@@ -18,7 +18,7 @@ function cssTask() {
 
 function htmlTask() {
 	const scripts = {
-		before: `<script src="src/scripts/lang.js"></script></script><script src="src/scripts/script.js"></script><script src="src/scripts/settings.js" defer="defer"></script>`,
+		before: `<script src="src/scripts/lang.js"></script><script src="src/scripts/script.js"></script><script src="src/scripts/settings.js" defer="defer" async></script>`,
 		after: `<script src="src/scripts/main.js"></script>`,
 	}
 
@@ -38,15 +38,19 @@ function jsTask(online) {
 
 	if (online) {
 		const storage = {
-			sync: ['chrome.storage.sync', 'lsOnlineStorage'],
-			bgget: ['chrome.storage.local.get(null,', 'lsOnlineStorage.get("backgrounds",'],
-			bgset: ['chrome.storage.local.set', 'lsOnlineStorage.bgset'],
+			chrome: ['chrome.storage.', 'lsOnlineStorage.'],
+			syncGet: ['sync.get(', 'get(false, '],
+			localGet: ['local.get(', 'get(true, '],
+			syncSet: ['sync.set(', 'set('],
+			localSet: ['local.set(', 'setLocal('],
 		}
 
 		stream
-			.pipe(replace(storage.sync[0], storage.sync[1]))
-			.pipe(replace(storage.bgget[0], storage.bgget[1]))
-			.pipe(replace(storage.bgset[0], storage.bgset[1]))
+			.pipe(replace(storage.chrome[0], storage.chrome[1]))
+			.pipe(replace(storage.syncGet[0], storage.syncGet[1]))
+			.pipe(replace(storage.syncSet[0], storage.syncSet[1]))
+			.pipe(replace(storage.localGet[0], storage.localGet[1]))
+			.pipe(replace(storage.localSet[0], storage.localSet[1]))
 	} else {
 		stream.pipe(
 			minify({
