@@ -1517,7 +1517,9 @@ function unsplash(init, event) {
 		imgBackground(props.url)
 		imgCredits(props)
 
-		console.log(props.color)
+		// sets meta theme-color to main background's color 
+		document.querySelector('meta[name="theme-color"]').setAttribute("content", props.color);
+
 	}
 
 	function cacheControl(dynamic, local) {

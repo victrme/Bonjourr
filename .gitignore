@@ -6,3 +6,4 @@ config.codekit3
 manifest.json
 node_modules/
 release/
+src/styles/SCSS/style.css.map
