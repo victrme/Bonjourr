@@ -10,20 +10,14 @@ const clas = (dom, add, str) => {
 	else dom.classList.remove(str)
 }
 
-const funcsOk = {
-	clock: false,
-	weatherdesc: false,
-	links: false,
-}
-
 let stillActive = false,
 	rangeActive = false,
 	lazyClockInterval = 0,
-	fontList = [],
 	googleFontList = {},
-	firstpaint = false
-const randomseed = Math.floor(Math.random() * 30) + 1,
-	domshowsettings = id('showSettings'),
+	firstpaint = false,
+	sunset = 0,
+	sunrise = 0
+const domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks_inner'),
 	dominterface = id('interface'),
 	domsearchbar = id('searchbar'),
@@ -32,7 +26,14 @@ const randomseed = Math.floor(Math.random() * 30) + 1,
 	domclock = id('clock'),
 	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false,
 	BonjourrAnimTime = 400,
-	loadtimeStart = performance.now()
+	loadtimeStart = performance.now(),
+	funcsOk = {
+		clock: false,
+		weatherdesc: false,
+		links: false,
+	}
+
+const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
@@ -746,43 +747,50 @@ function linksrow(data, event) {
 	if (data !== undefined) setRows(data)
 
 	if (event) {
-		//id("e_row").textContent = event;
 		setRows(event)
 		slowRange({ linksrow: parseInt(event) })
 	}
 }
 
-function weather(event, that, initStorage) {
+function weather(event, that, init) {
 	const tempMax = id('tempMax'),
 		maxWrap = id('forecastWrap'),
-		weatherDesc = id('weather_desc').children[0]
+		weatherDesc = id('weather_desc').children[0],
+		i_city = id('i_city'),
+		i_ccode = id('i_ccode'),
+		sett_city = id('sett_city'),
+		WEATHER_API_KEY = [
+			'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
+			'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
+			'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
+		]
 
-	function cacheControl(storage) {
+	function cacheControl(storage, forecast) {
 		const date = new Date()
 		const now = Math.floor(date.getTime() / 1000)
-		const param = storage.weather ? storage.weather : ''
 
-		if (storage.weather && storage.weather.lastCall) {
+		// then forecast recursion
+		if (forecast) {
+			//
+			// toute les 3h
+			if (storage.forecastLastCall) {
+				if (now > storage.forecastLastCall + 10800) {
+					request(storage, true)
+				} else dataHandling(storage)
+			} else {
+				request(storage, true)
+			}
+		}
+
+		// first current weather
+		else {
 			//si weather est vieux d'une demi heure (1800s)
-			//ou si on change de lang
-			//faire une requete et update le lastcall
-			if (sessionStorage.lang || now > storage.weather.lastCall + 1800) {
-				dataHandling(param.lastState)
-				request(param, 'current')
-				sessionStorage.removeItem('lang')
-			} else dataHandling(param.lastState)
-
-			// Forecast tout les 3h
-			if (storage.weather.forecastLastCall) {
-				if (now > storage.weather.forecastLastCall + 10800) {
-					dataHandling(param, true)
-					request(param, 'forecast')
-				} else dataHandling(param, true)
-			} else if (storage.weather.fcHigh) dataHandling(param, true)
-		} else {
-			//initialise a Paris + Metric
-			//c'est le premier call, requete + lastCall = now
-			initWeather()
+			if (storage && storage.lastCall) {
+				if (now > storage.lastCall + 1800 || sessionStorage.lang) {
+					request(storage, false)
+					sessionStorage.removeItem('lang')
+				} else cacheControl(storage, true)
+			} else initWeather()
 		}
 	}
 
@@ -798,22 +806,17 @@ function weather(event, that, initStorage) {
 			(pos) => {
 				//update le parametre de location
 				param.location.push(pos.coords.latitude, pos.coords.longitude)
-				chrome.storage.sync.set({ weather: param })
-
-				request(param, 'current')
-				request(param, 'forecast')
+				request(param, false)
 			},
 			(refused) => {
-				chrome.storage.sync.set({ weather: param })
-
-				request(param, 'current')
-				request(param, 'forecast')
+				cacheControl(param)
+				request(param, false)
 			}
 		)
 	}
 
-	function request(arg, wCat) {
-		function urlControl(arg, forecast) {
+	function request(params, forecast) {
+		function getURL() {
 			let url = 'https://api.openweathermap.org/data/2.5/'
 			const lang = document.documentElement.getAttribute('lang')
 
@@ -821,30 +824,34 @@ function weather(event, that, initStorage) {
 			else url += 'weather?appid=' + atob(WEATHER_API_KEY[1])
 
 			//auto, utilise l'array location [lat, lon]
-			if (arg.location) {
-				url += `&lat=${arg.location[0]}&lon=${arg.location[1]}`
-			} else {
-				url += `&q=${encodeURI(arg.city)},${arg.ccode}`
+			if (params.location) url += `&lat=${params.location[0]}&lon=${params.location[1]}`
+			else url += `&q=${encodeURI(params.city)},${params.ccode}`
+
+			return (url += `&units=${params.unit}&lang=${lang}`)
+		}
+
+		function weatherResponse(response) {
+			//
+			//sauvegarde la derniere meteo
+
+			const parsedParams = {
+				...params,
+				lastCall: Math.floor(new Date().getTime() / 1000),
+				lastState: {
+					feels_like: response.main.feels_like,
+					temp_max: response.main.temp_max,
+					sunrise: response.sys.sunrise,
+					sunset: response.sys.sunset,
+					description: response.weather[0].description,
+					icon_id: response.weather[0].id,
+				},
 			}
 
-			url += `&units=${arg.unit}&lang=${lang}`
-
-			return url
+			chrome.storage.sync.set({ weather: parsedParams })
+			return parsedParams
 		}
 
-		function weatherResponse(parameters, response) {
-			//sauvegarder la derniere meteo
-			let now = Math.floor(new Date().getTime() / 1000)
-			let param = parameters
-			param.lastState = response
-			param.lastCall = now
-			chrome.storage.sync.set({ weather: param })
-
-			//la réponse est utilisé dans la fonction plus haute
-			dataHandling(response)
-		}
-
-		function forecastResponse(parameters, response) {
+		function forecastResponse(response) {
 			function findHighTemps(forecast) {
 				const todayHour = thisdate.getHours()
 				let forecastDay = thisdate.getDate()
@@ -868,48 +875,34 @@ function weather(event, that, initStorage) {
 
 			//sauvegarder la derniere meteo
 			const thisdate = new Date()
-			let param = parameters
-			param.fcHigh = findHighTemps(response)
-			param.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
-			chrome.storage.sync.set({ weather: param })
 
-			dataHandling(param, true)
+			params.fcHigh = findHighTemps(response)
+			params.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
+			chrome.storage.sync.set({ weather: params })
+
+			dataHandling(params)
 		}
 
-		let url = wCat === 'current' ? urlControl(arg, false) : urlControl(arg, true)
-
-		let request_w = new XMLHttpRequest()
-		request_w.open('GET', url, true)
-
-		request_w.onload = function () {
-			let resp = JSON.parse(this.response)
-
-			if (request_w.status >= 200 && request_w.status < 400) {
-				if (wCat === 'current') {
-					weatherResponse(arg, resp)
-				} else if (wCat === 'forecast') {
-					forecastResponse(arg, resp)
+		fetch(getURL()).then((data) =>
+			data.json().then((json) => {
+				if (forecast) forecastResponse(json)
+				else {
+					// to then control forecast and come back here
+					cacheControl(weatherResponse(json), true)
 				}
-			} else {
-				submissionError(resp.message)
-			}
-		}
-
-		request_w.send()
+			})
+		)
 	}
 
-	function dataHandling(data, forecast) {
+	function dataHandling(weather) {
 		const hour = new Date().getHours()
 
 		function getIcon() {
 			let filename = 'clearsky'
-			let sunsetDate = new Date(data.sys.sunset * 1000)
-			let sunriseDate = new Date(data.sys.sunrise * 1000)
-			const timeOfDay = hour > sunriseDate.getHours() && hour < sunsetDate.getHours() ? 'day' : 'night'
 
 			// Openweathermap is weird, not me ok
 			// prettier-ignore
-			switch (data.weather[0].id) {
+			switch (weather.lastState.icon_id) {
 					case 200: case 201: case 202: case 210:
 					case 212: case 221: case 230: case 231:
 					case 232:
@@ -969,6 +962,8 @@ function weather(event, that, initStorage) {
 			const widget = id('widget')
 			const w_icon = id('w_icon')
 			const w_iconHTML = w_icon.innerHTML
+			const { now, rise, set } = sunTime()
+			const timeOfDay = now < rise || now > set ? 'night' : 'day'
 			const src = `src/assets/images/weather/${timeOfDay}/${filename}.png`
 
 			if (!widget) w_icon.innerHTML = `<img id="widget" src="${src}" draggable="false" />` + w_iconHTML
@@ -978,20 +973,19 @@ function weather(event, that, initStorage) {
 		function getDescription() {
 			//pour la description et temperature
 			//Rajoute une majuscule à la description
-			let meteoStr = data.weather[0].description
-			meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1)
-			id('desc').textContent = meteoStr + '.'
+			id('desc').textContent =
+				weather.lastState.description[0].toUpperCase() + weather.lastState.description.slice(1) + '.'
 
 			//si c'est l'après midi (apres 12h), on enleve la partie temp max
 			let dtemp, wtemp
 
 			if (hour < 12) {
 				//temp de desc et temp de widget sont pareil
-				dtemp = wtemp = Math.floor(data.main.feels_like) + '°'
+				dtemp = wtemp = Math.floor(weather.lastState.feels_like) + '°'
 			} else {
 				//temp de desc devient temp de widget + un point
 				//on vide la catégorie temp max
-				wtemp = Math.floor(data.main.feels_like) + '°'
+				wtemp = Math.floor(weather.lastState.feels_like) + '°'
 				dtemp = wtemp + '.'
 			}
 
@@ -1004,7 +998,7 @@ function weather(event, that, initStorage) {
 		}
 
 		function getMaxTemp() {
-			tempMax.textContent = `${data.fcHigh}°`
+			tempMax.textContent = `${weather.fcHigh}°`
 			id('forecastTime').textContent = `${tradThis(hour > 21 ? 'tomorrow' : 'today')}.`
 
 			if (hour < 12 || hour > 21) maxWrap.classList.add('shown')
@@ -1014,19 +1008,9 @@ function weather(event, that, initStorage) {
 			canDisplayInterface('weatherhigh')
 		}
 
-		if (forecast) {
-			getMaxTemp()
-		} else {
-			getIcon()
-			getDescription()
-		}
-	}
-
-	function submissionError() {
-		const city = id('i_city')
-
-		city.value = ''
-		city.setAttribute('placeholder', tradThis('City not found'))
+		getMaxTemp()
+		getIcon()
+		getDescription()
 	}
 
 	function updateCity() {
@@ -1086,10 +1070,7 @@ function weather(event, that, initStorage) {
 					(pos) => {
 						//update le parametre de location
 						param.location.push(pos.coords.latitude, pos.coords.longitude)
-
-						chrome.storage.sync.set({
-							weather: param,
-						})
+						chrome.storage.sync.set({ weather: param })
 
 						//request la meteo
 						request(param, 'current')
@@ -1125,15 +1106,6 @@ function weather(event, that, initStorage) {
 		})
 	}
 
-	const WEATHER_API_KEY = [
-		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
-		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
-		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
-	]
-	const i_city = id('i_city')
-	const i_ccode = id('i_ccode')
-	const sett_city = id('sett_city')
-
 	switch (event) {
 		case 'city':
 			updateCity()
@@ -1149,12 +1121,12 @@ function weather(event, that, initStorage) {
 
 		// Init
 		default:
-			cacheControl(initStorage)
+			cacheControl(init)
 	}
 
 	// Checks every 5 minutes if weather needs update
 	setTimeout(() => {
-		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => cacheControl(data)) : ''
+		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => cacheControl(data.weather)) : ''
 	}, 5 * 60 * 1000)
 }
 
@@ -1538,22 +1510,14 @@ function unsplash(init, event) {
 
 			// Transition day and night with noon & evening collections
 			// if clock is + /- 60 min around sunrise/set
-			if (init && init.weather) {
-				const weather = init.weather
-				const minutator = (date) => date.getHours() * 60 + date.getMinutes()
+			const time = sunTime()
 
-				const { sunset, sunrise } = weather.lastState.sys,
-					minsunrise = minutator(new Date(sunrise * 1000)),
-					minsunset = minutator(new Date(sunset * 1000)),
-					sunnow = minutator(new Date())
-
-				if (sunnow >= 0 && sunnow <= minsunrise - 60) return 'night'
-				else if (sunnow <= minsunrise + 60) return 'noon'
-				else if (sunnow <= minsunset - 60) return 'day'
-				else if (sunnow <= minsunset + 60) return 'evening'
-				else if (sunnow >= minsunset + 60) return 'night'
-				else return 'day'
-			} else return 'day'
+			if (time.now >= 0 && time.now <= time.rise - 60) return 'night'
+			else if (time.now <= time.rise + 60) return 'noon'
+			else if (time.now <= time.set - 60) return 'day'
+			else if (time.now <= time.set + 60) return 'evening'
+			else if (time.now >= time.set + 60) return 'night'
+			else return 'day'
 		}
 
 		// 4
@@ -1809,44 +1773,35 @@ function filter(cat, val) {
 
 function darkmode(choice, init) {
 	//
-	function apply(val, weather) {
+	function apply(val) {
 		//
-		function auto() {
-			if (weather === undefined) return 'autodark'
-
-			//compare current hour with weather sunset / sunrise
-			const ls = weather.lastState
-			const sunrise = new Date(ls.sys.sunrise * 1000).getHours()
-			const sunset = new Date(ls.sys.sunset * 1000).getHours()
-			const hr = new Date().getHours()
-
-			return hr <= sunrise || hr > sunset ? 'dark' : ''
-		}
-
-		let bodyClass
+		let body
 
 		switch (val) {
-			case 'system':
-				bodyClass = 'autodark'
+			//compare current hour with weather sunset / sunrise
+			case 'auto': {
+				const time = sunTime()
+				body = time.now <= time.rise || time.now > time.set ? 'dark' : ''
 				break
+			}
 
-			case 'auto':
-				bodyClass = auto()
+			case 'system':
+				body = 'autodark'
 				break
 
 			case 'enable':
-				bodyClass = 'dark'
+				body = 'dark'
 				break
 
 			case 'disable':
-				bodyClass = ''
+				body = ''
 				break
 
 			default:
-				bodyClass = 'autodark'
+				body = 'autodark'
 		}
 
-		document.body.setAttribute('class', bodyClass)
+		document.body.setAttribute('class', body)
 		if (choice) chrome.storage.sync.set({ dark: choice })
 	}
 
@@ -2326,20 +2281,66 @@ function canDisplayInterface(cat, init) {
 	}
 }
 
-function safeFont(lang, font) {
-	//safe font for different alphabet
-	if (lang === 'ru' || lang === 'sk') {
-		const changeFont = () =>
-			(id('styles').textContent = `
-			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
+function sunTime(init) {
+	if (init && init.lastState) {
+		sunrise = init.lastState.sunrise
+		sunset = init.lastState.sunset
+	}
 
-		if (!font) changeFont()
-		else if (font.family === '') changeFont()
+	//
+	else {
+		if (sunset === 0)
+			return {
+				now: minutator(new Date()),
+				rise: 420,
+				set: 1320,
+			}
+		else
+			return {
+				now: minutator(new Date()),
+				rise: minutator(new Date(sunrise * 1000)),
+				set: minutator(new Date(sunset * 1000)),
+			}
 	}
 }
 
 function startup(data) {
 	//
+
+	function safeFont(lang, font) {
+		//safe font for different alphabet
+		if (lang === 'ru' || lang === 'sk') {
+			const changeFont = () =>
+				(id('styles').textContent = `
+			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
+
+			if (!font) changeFont()
+			else if (font.family === '') changeFont()
+		}
+	}
+
+	function reducedWeatherData(weather) {
+		// 1.9.3 ==> 1.10.0
+		const updatedWeather = weather
+
+		if (weather) {
+			if (weather.lastState && weather.lastState.sunset === undefined) {
+				const old = weather.lastState
+
+				updatedWeather.lastState = {
+					feels_like: old.main.feels_like,
+					temp_max: old.main.temp_max,
+					sunrise: old.sys.sunrise,
+					sunset: old.sys.sunset,
+					description: old.weather[0].description,
+					icon_id: old.weather[0].icon_id,
+				}
+			}
+		}
+
+		return updatedWeather
+	}
+
 	// Compatibility with older local versions
 	// As it is now using "bonjourr" key
 	if (!chrome && localStorage.data && !localStorage.bonjourr) {
@@ -2348,23 +2349,28 @@ function startup(data) {
 	}
 
 	canDisplayInterface(null, { font: data.font })
-	customFont(data.font)
 	traduction(null, data.lang)
-	weather(null, null, { weather: data.weather })
+
+	sunTime(reducedWeatherData(data.weather))
+	weather(null, null, reducedWeatherData(data.weather))
+
+	customFont(data.font)
+	customSize(data.font)
+	safeFont(data.lang, data.font)
+
+	newClock(null, data.clock)
+	date(null, data.usdate)
+	greetings(data.greeting)
 	linksrow(data.linksrow)
 	quickLinks(null, null, data)
-	greetings(data.greeting)
-	date(null, data.usdate)
-	newClock(null, data.clock)
+
 	darkmode(null, data)
-	initBackground(data)
 	searchbar(null, null, data)
 	showPopup(data.reviewPopup)
-	customSize(data.font)
+
 	customCss(data.css)
 	hideElem(data.hide)
-
-	safeFont(data.lang, data.font)
+	initBackground(data)
 }
 
 window.onload = function () {

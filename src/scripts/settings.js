@@ -355,6 +355,9 @@ function importExport(select, isEvent) {
 		function filterImports(data) {
 			let result = { ...data }
 
+			if (data.weather && data.weather.lastCall) result.weather.lastCall = 0
+			if (data.weather && data.weather.forecastLastCall) result.weather.forecastLastCall = 0
+
 			// Old blur was strings
 			if (typeof data.background_blur === 'string') {
 				result.background_blur = parseFloat(data.background_blur)
