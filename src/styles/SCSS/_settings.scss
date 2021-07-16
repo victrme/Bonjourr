@@ -185,6 +185,10 @@
 		background-color: #ffffff;
 		padding: 0.75em 1.3em;
 
+		> * {
+			transform: translate(0, 0);
+		}
+
 		@include radiusSettings();
 		@include marginSettings();
 	}
@@ -203,7 +207,8 @@
 
 			.tooltiptext {
 				right: 0;
-				top: -110px;
+				top: -95px;
+				position: fixed;
 			}
 		}
 	}
