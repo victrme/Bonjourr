@@ -101,10 +101,7 @@
 	hr {
 		border: none;
 		border-bottom: 1px solid $inputGrey;
-		margin-top: 0.75em;
-		margin-bottom: 0.75em;
-		margin-right: -1.3em;
-		display: block;
+		width: 100%;
 	}
 
 	h1,
@@ -207,8 +204,7 @@
 
 			.tooltiptext {
 				right: 0;
-				top: -95px;
-				position: fixed;
+				top: -110px;
 			}
 		}
 	}
