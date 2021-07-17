@@ -297,16 +297,19 @@ function initParams(data) {
 	// Links limit
 	if (data.links && data.links.length === 20) quickLinks('maxControl', true)
 
-	//hide elems
+	// Hide elems
 	hideElem(null, document.querySelectorAll('#hideelem button'), null)
 
-	//Font weight
+	// Font family default
+	safeFont(id('i_customfont'))
+
+	// Font weight
 	if (data.font) modifyWeightOptions(data.font.availWeights)
 
 	// Clock
 	if (data.clock) toggleClockOptions(data.clock.analog)
 
-	//input translation
+	// Input translation
 	id('i_title').setAttribute('placeholder', tradThis('Name'))
 	id('i_greeting').setAttribute('placeholder', tradThis('Name'))
 	id('i_import').setAttribute('placeholder', tradThis('Import code'))

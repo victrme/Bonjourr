@@ -2304,20 +2304,25 @@ function sunTime(init) {
 	}
 }
 
+function safeFont(settingsInput) {
+	const windows = document.fonts.check('16px Segoe UI')
+	const macOS = document.fonts.check('16px SF Pro Text')
+
+	// Startup
+	if (!settingsInput) {
+		if (!windows && !macOS)
+			document.getElementById('defaultFont').href =
+				'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap'
+	}
+
+	// Settings
+	else {
+		settingsInput.setAttribute('placeholder', macOS ? 'SF Pro Text' : 'Segoe UI')
+	}
+}
+
 function startup(data) {
 	//
-
-	function safeFont(lang, font) {
-		//safe font for different alphabet
-		if (lang === 'ru' || lang === 'sk') {
-			const changeFont = () =>
-				(id('styles').textContent = `
-			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`)
-
-			if (!font) changeFont()
-			else if (font.family === '') changeFont()
-		}
-	}
 
 	function reducedWeatherData(weather) {
 		// 1.9.3 ==> 1.10.0
@@ -2356,7 +2361,7 @@ function startup(data) {
 
 	customFont(data.font)
 	customSize(data.font)
-	safeFont(data.lang, data.font)
+	safeFont()
 
 	newClock(null, data.clock)
 	date(null, data.usdate)
