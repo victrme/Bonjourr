@@ -26,7 +26,7 @@
 
 		&:hover {
 			background: #777;
-			@include frostedGlass($color: #fff3);
+			@include frostedGlass($a: .3);
 
 			img {
 				transform: rotate(15deg);
@@ -40,16 +40,14 @@
 
 	&.shown {
 		button {
-			background: #aaa;
-			@include frostedGlass($color: #0004);
+			@include frostedGlass($r: 171, $g: 171, $b: 171);
 
 			img {
 				transform: rotate(60deg);
 			}
 
 			&:hover {
-				background: #777;
-				@include frostedGlass($color: #0008);
+				@include frostedGlass($r: 119, $g: 119, $b: 119);
 			}
 		}
 	}

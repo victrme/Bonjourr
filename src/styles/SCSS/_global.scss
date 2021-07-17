@@ -105,11 +105,28 @@ body {
 	border-radius: 10px;
 }
 
-@mixin frostedGlass($color: #fff5, $blur: 5px) {
+@mixin frostedGlass($r: 255, $g: 255, $b: 255, $a: .4, $blur: 5px) {
+	
 	@supports (backdrop-filter: none) {
 		backdrop-filter: blur($blur);
-		background-color: $color;
-		transition: all 0.1s ease;
+		background: rgba($r, $g, $b, $a);
+		transition: background 0.2s, backdrop-filter 0.2s;
+
+		&:hover {
+			// backdrop-filter: blur(calc(#{$blur} + 10px));
+			background: rgba($r, $g, $b, calc(#{$a} + .1));
+		}
+
+
+			// possible dark mode?
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: rgba($r, $g, $b, $a);
+
+		// 	&:hover {
+		// 		// backdrop-filter: blur(calc(#{$blur} + 10px));
+		// 		background-color: rgba($r, $g, $b, calc(#{$a} + .1));
+		// 	}
+		// }
 	}
 }
 

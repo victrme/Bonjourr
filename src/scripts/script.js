@@ -2261,7 +2261,7 @@ function canDisplayInterface(cat, init) {
 		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
 		if (loadtime < 30) loadtime = 0
 
-		dominterface.style.transition = `opacity ${loadtime}ms, transform .2s`
+		dominterface.style.transition = `opacity ${loadtime}ms, transform .4s`
 		dominterface.style.opacity = '1'
 
 		setTimeout(() => dominterface.classList.remove('init'), loadtime + 100)

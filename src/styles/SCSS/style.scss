@@ -16,18 +16,12 @@
 	font-weight: 300;
 
 	&.pushed {
-		// #time,
-		// #main,
-		// #sb_container,
-		// #linkblocks,
-		// .shadow {
-			-webkit-transform: translateX(-100px);
-			transform: translateX(-100px);
-		// }
+		-webkit-transform: translateX(-100px);
+		transform: translateX(-100px);
 
 		#background_overlay {
-			-webkit-transform: translateX(0px);
-			transform: translateX(0px);
+			-webkit-transform: scale(1.1) translateX(0px);
+			transform: scale(1.1) translateX(0px);
 		}
 	}
 
@@ -83,7 +77,7 @@
 				width: 8em;
 				box-shadow: $textShadow;
 
-				@include frostedGlass($color: #fff3, $blur: 7px);
+				@include frostedGlass($a: .2);
 
 				&.hidden {
 					display: none;
@@ -282,8 +276,7 @@
 			}
 
 			&:focus {
-				@include frostedGlass($color: #fff6, $blur: 15px);
-
+				@include frostedGlass($blur: 15px);
 				color: white;
 
 				@supports not (backdrop-filter: none) {
@@ -650,12 +643,12 @@
 	transform: translateX(-100%);
 
 	@include allCentered();
-	@include frostedGlass($color: #7a7a7a64, $blur: 10px);
+	@include frostedGlass($blur: 10px);
 
 	&.shown {
 		opacity: 1;
 		transform: translateX(0);
-		transition: transform 1s 2s;
+		transition: background-color 0.2s, backdrop-filter 0.2s, transform 1s 2s;
 		box-shadow: $textShadow;
 
 		@supports not (backdrop-filter: none) {
@@ -668,6 +661,8 @@
 		transform: translateX(-100%);
 		transition: transform 0.6s 0s, opacity 0s 0.6s;
 	}
+
+	span { text-shadow: $textShadow }
 
 	span,
 	a {
