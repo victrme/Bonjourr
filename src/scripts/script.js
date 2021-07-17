@@ -1670,22 +1670,22 @@ function unsplash(init, event) {
 					night: [],
 					user: [],
 				}
-
-				// inject saved background if pause
-				if (init.dynamic.current && init.dynamic.every === 'pause') {
-					local.dynamicCache.day = [init.dynamic.current, init.dynamic.next]
-				}
-
-				// data cleanup
-				if (init.dynamic.current) {
-					delete init.dynamic.current
-					delete init.dynamic.next
-
-					chrome.storage.sync.set({ dynamic: init.dynamic })
-				}
-
-				chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 			}
+
+			// inject saved background if pause
+			if (init.dynamic.current && init.dynamic.every === 'pause') {
+				local.dynamicCache.day = [init.dynamic.current, init.dynamic.next]
+			}
+
+			// data cleanup
+			if (init.dynamic.current) {
+				delete init.dynamic.current
+				delete init.dynamic.next
+
+				chrome.storage.sync.set({ dynamic: init.dynamic })
+			}
+
+			chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 
 			cacheControl(init.dynamic, local.dynamicCache)
 		})
@@ -1695,40 +1695,43 @@ function unsplash(init, event) {
 	else if (event) {
 		chrome.storage.sync.get('dynamic', (data) => {
 			//
-			const key = Object.keys(event)[0]
-			const doDynamicAgain = (which) => {
-				chrome.storage.local.get('dynamicCache', (local) => {
-					//
 
-					if (which === 'collection') {
-						local.dynamicCache.user = []
-						chrome.storage.local.set({ dynamicCache: local })
+			chrome.storage.local.get('dynamicCache', (local) => {
+				//
+				const key = Object.keys(event)[0]
+
+				switch (key) {
+					case 'every': {
+						//
+
+						if (event.every === 'pause') {
+							const cache = local.dynamicCache
+							data.dynamic.current = cache[cache.current][0]
+						} else delete data.dynamic.current
+
+						data.dynamic.every = event.every
+						chrome.storage.sync.set({ dynamic: data.dynamic })
+						break
 					}
 
-					cacheControl(data.dynamic, local.dynamicCache)
-				})
-			}
+					case 'removedCustom': {
+						chrome.storage.sync.set({ background_type: 'dynamic' })
+						cacheControl(data.dynamic, local.dynamicCache)
+						break
+					}
 
-			switch (key) {
-				case 'every': {
-					data.dynamic.every = event.every
-					chrome.storage.sync.set({ dynamic: data.dynamic })
-					break
-				}
+					case 'collection': {
+						local.dynamicCache.user = []
+						data.dynamic.collection = event.collection
 
-				case 'removedCustom': {
-					chrome.storage.sync.set({ background_type: 'dynamic' })
-					doDynamicAgain(key)
-					break
-				}
+						chrome.storage.sync.set({ dynamic: data.dynamic })
+						chrome.storage.local.set({ dynamicCache: local })
 
-				case 'collection': {
-					data.dynamic.collection = event.collection
-					chrome.storage.sync.set({ dynamic: data.dynamic })
-					doDynamicAgain(key)
-					break
+						cacheControl(data.dynamic, local.dynamicCache)
+						break
+					}
 				}
-			}
+			})
 		})
 	}
 

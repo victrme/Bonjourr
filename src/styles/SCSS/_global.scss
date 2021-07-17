@@ -116,11 +116,11 @@ body {
 @mixin hideElements {
 	#interface {
 		//
-		// Need flex-grow for default
 		&.init {
 			#main,
 			#linkblocks,
 			#sb_container,
+			#searchbar,
 			#time,
 			#time-container,
 			#date,
