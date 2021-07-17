@@ -16,13 +16,18 @@
 	font-weight: 300;
 
 	&.pushed {
-		#time,
-		#main,
-		#sb_container,
-		#linkblocks,
-		.shadow {
+		// #time,
+		// #main,
+		// #sb_container,
+		// #linkblocks,
+		// .shadow {
 			-webkit-transform: translateX(-100px);
 			transform: translateX(-100px);
+		// }
+
+		#background_overlay {
+			-webkit-transform: translateX(0px);
+			transform: translateX(0px);
 		}
 	}
 
@@ -39,7 +44,7 @@
 		transform: scale(1.1) translateX(0px);
 
 		opacity: 0;
-		transition: transform 0.2s, opacity 0.4s;
+		transition: transform 0.4s, opacity 0.4s;
 
 		#background {
 			position: relative;
