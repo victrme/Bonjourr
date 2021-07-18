@@ -105,8 +105,7 @@ body {
 	border-radius: 10px;
 }
 
-@mixin frostedGlass($r: 255, $g: 255, $b: 255, $a: .4, $blur: 5px) {
-	
+@mixin frostedGlass($r: 255, $g: 255, $b: 255, $a: 0.4, $blur: 5px) {
 	@supports (backdrop-filter: none) {
 		backdrop-filter: blur($blur);
 		background: rgba($r, $g, $b, $a);
@@ -114,11 +113,10 @@ body {
 
 		&:hover {
 			// backdrop-filter: blur(calc(#{$blur} + 10px));
-			background: rgba($r, $g, $b, calc(#{$a} + .1));
+			background: rgba($r, $g, $b, calc(#{$a} + 0.1));
 		}
 
-
-			// possible dark mode?
+		// possible dark mode?
 		// @media (prefers-color-scheme: dark) {
 		// 	background-color: rgba($r, $g, $b, $a);
 
@@ -141,9 +139,11 @@ body {
 			#time,
 			#time-container,
 			#date,
-			#weather_desc,
+			#description,
 			#greetings,
-			#w_icon,
+			#widget,
+			#forecast,
+			#current,
 			#showSettings {
 				transition: none;
 			}
@@ -159,9 +159,9 @@ body {
 
 		#time-container,
 		#date,
-		#weather_desc,
+		#description,
 		#greetings,
-		#w_icon,
+		#widget,
 		#showSettings {
 			transition: opacity 0.4s;
 		}
@@ -177,9 +177,9 @@ body {
 		// Children only hide
 		#time-container.he_hidden,
 		#date.he_hidden,
-		#weather_desc.he_hidden,
+		#description.he_hidden,
 		#greetings.he_hidden,
-		#w_icon.he_hidden {
+		#widget.he_hidden {
 			opacity: 0;
 		}
 	}

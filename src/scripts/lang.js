@@ -1049,7 +1049,7 @@ const dict = {
 		no: 'Date',
 	},
 	Greetings: {
-		fr: 'Horloge',
+		fr: 'Bienvenue',
 		sv: 'Greetings',
 		nl: 'Greetings',
 		pl: 'Greetings',
@@ -1555,7 +1555,7 @@ const dict = {
 		no: 'Language',
 	},
 	Greeting: {
-		fr: 'Nom',
+		fr: 'Bienvenue',
 		sv: 'Greeting',
 		nl: 'Greeting',
 		pl: 'Greeting',

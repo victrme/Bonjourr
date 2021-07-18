@@ -77,7 +77,7 @@
 				width: 8em;
 				box-shadow: $textShadow;
 
-				@include frostedGlass($a: .2);
+				@include frostedGlass($a: 0.2);
 
 				&.hidden {
 					display: none;
@@ -163,7 +163,6 @@
 		#date {
 			font-size: 1.5em;
 			position: relative;
-			
 		}
 	}
 
@@ -175,11 +174,6 @@
 		justify-content: center;
 		margin-right: auto;
 		margin-left: auto;
-
-		#weather #w_icon #widget.shown {
-			opacity: 1;
-			box-shadow: $textShadow;
-		}
 
 		#greetings {
 			font-size: 3em;
@@ -194,41 +188,45 @@
 		#weather {
 			position: relative;
 
-			#weather_desc {
+			#description {
 				font-size: 1.5em;
 
-				.trn {
-					opacity: 0;
+				#forecast {
+					display: none;
+
+					&.shown {
+						display: block;
+					}
 				}
 			}
 
-			#forecastWrap {
-				display: none;
-
-				&.shown {
-					display: block;
-				}
-			}
-
-			#w_icon {
+			#widget {
 				display: flex;
 				height: 5em;
 				justify-content: center;
 				align-items: center;
 
-				#widget {
+				img {
 					height: 3em;
 					width: 3em;
 					border: none;
 					padding-right: 10px;
 				}
 
-				#w_widget_text {
+				p {
 					font-size: 2em;
 				}
-
-				@include hidden();
 			}
+		}
+	}
+
+	#widget,
+	#forecast,
+	#current {
+		transition: opacity 1.2s 0.1s;
+
+		&.wait {
+			opacity: 0;
 		}
 	}
 
@@ -257,7 +255,7 @@
 
 			@supports not (backdrop-filter: none) {
 				opacity: 0.8;
-				transition: all .1s ease-in;
+				transition: all 0.1s ease-in;
 			}
 
 			@include frostedGlass();
@@ -269,9 +267,8 @@
 				text-shadow: $textShadow;
 
 				@supports not (backdrop-filter: none) {
-					color: rgba(0,0,0,.6);
+					color: rgba(0, 0, 0, 0.6);
 					text-shadow: unset;
-					
 				}
 			}
 
@@ -280,7 +277,7 @@
 				color: white;
 
 				@supports not (backdrop-filter: none) {
-					color: rgba(0,0,0,.8);
+					color: rgba(0, 0, 0, 0.8);
 				}
 			}
 		}
@@ -653,7 +650,7 @@
 
 		@supports not (backdrop-filter: none) {
 			background-color: rgba(255, 255, 255, 0.9);
-			color:rgba(0, 0, 0, 0.7)
+			color: rgba(0, 0, 0, 0.7);
 		}
 	}
 
@@ -662,7 +659,9 @@
 		transition: transform 0.6s 0s, opacity 0s 0.6s;
 	}
 
-	span { text-shadow: $textShadow }
+	span {
+		text-shadow: $textShadow;
+	}
 
 	span,
 	a {

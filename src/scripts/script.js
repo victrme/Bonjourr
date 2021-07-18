@@ -29,7 +29,6 @@ const domshowsettings = id('showSettings'),
 	loadtimeStart = performance.now(),
 	funcsOk = {
 		clock: false,
-		weatherdesc: false,
 		links: false,
 	}
 
@@ -753,53 +752,26 @@ function linksrow(data, event) {
 }
 
 function weather(event, that, init) {
-	const tempMax = id('tempMax'),
-		maxWrap = id('forecastWrap'),
-		weatherDesc = id('weather_desc').children[0],
-		i_city = id('i_city'),
-		i_ccode = id('i_ccode'),
-		sett_city = id('sett_city'),
-		WEATHER_API_KEY = [
-			'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
-			'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
-			'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
-		]
-
-	function cacheControl(storage, forecast) {
-		const date = new Date()
-		const now = Math.floor(date.getTime() / 1000)
-
-		// then forecast recursion
-		if (forecast) {
-			//
-			// toute les 3h
-			if (storage.forecastLastCall) {
-				if (now > storage.forecastLastCall + 10800) {
-					request(storage, true)
-				} else dataHandling(storage)
-			} else {
-				request(storage, true)
-			}
-		}
-
-		// first current weather
-		else {
-			//si weather est vieux d'une demi heure (1800s)
-			if (storage && storage.lastCall) {
-				if (now > storage.lastCall + 1800 || sessionStorage.lang) {
-					request(storage, false)
-					sessionStorage.removeItem('lang')
-				} else cacheControl(storage, true)
-			} else initWeather()
-		}
-	}
+	let weatherToSave = {}
+	const date = new Date()
+	const i_city = id('i_city')
+	const i_ccode = id('i_ccode')
+	const sett_city = id('sett_city')
+	const current = id('current')
+	const forecast = id('forecast')
+	const widget = id('widget')
+	const WEATHER_API_KEY = [
+		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
+		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
+		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
+	]
 
 	function initWeather() {
 		let param = {
+			unit: 'metric',
 			city: 'Paris',
 			ccode: 'FR',
 			location: [],
-			unit: 'metric',
 		}
 
 		navigator.geolocation.getCurrentPosition(
@@ -807,35 +779,21 @@ function weather(event, that, init) {
 				//update le parametre de location
 				param.location.push(pos.coords.latitude, pos.coords.longitude)
 				request(param, false)
+				request(param, true)
 			},
 			(refused) => {
-				cacheControl(param)
+				request(param, true)
 				request(param, false)
 			}
 		)
 	}
 
 	function request(params, forecast) {
-		function getURL() {
-			let url = 'https://api.openweathermap.org/data/2.5/'
-			const lang = document.documentElement.getAttribute('lang')
-
-			if (forecast) url += 'forecast?appid=' + atob(WEATHER_API_KEY[0])
-			else url += 'weather?appid=' + atob(WEATHER_API_KEY[1])
-
-			//auto, utilise l'array location [lat, lon]
-			if (params.location) url += `&lat=${params.location[0]}&lon=${params.location[1]}`
-			else url += `&q=${encodeURI(params.city)},${params.ccode}`
-
-			return (url += `&units=${params.unit}&lang=${lang}`)
-		}
-
-		function weatherResponse(response) {
+		function saveCurrent(response) {
 			//
-			//sauvegarde la derniere meteo
 
-			const parsedParams = {
-				...params,
+			weatherToSave = {
+				...weatherToSave,
 				lastCall: Math.floor(new Date().getTime() / 1000),
 				lastState: {
 					feels_like: response.main.feels_like,
@@ -847,282 +805,243 @@ function weather(event, that, init) {
 				},
 			}
 
-			chrome.storage.sync.set({ weather: parsedParams })
-			return parsedParams
+			chrome.storage.sync.set({ weather: weatherToSave })
+			displaysCurrent(weatherToSave)
 		}
 
-		function forecastResponse(response) {
-			function findHighTemps(forecast) {
-				const todayHour = thisdate.getHours()
-				let forecastDay = thisdate.getDate()
-				let tempMax = -99
+		function saveForecast(response) {
+			//
 
-				// Late evening forecast for tomorrow
-				if (todayHour > 18) {
-					const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
-					forecastDay = new Date(tomorrow).getDate()
-				}
-
-				// Get the highest temp for the specified day
-				forecast.list.forEach((elem) => {
-					if (new Date(elem.dt * 1000).getDate() === forecastDay)
-						tempMax < elem.main.temp_max ? (tempMax = Math.round(elem.main.temp_max)) : ''
-				})
-
-				//renvoie high
-				return tempMax
-			}
-
-			//sauvegarder la derniere meteo
 			const thisdate = new Date()
+			const todayHour = thisdate.getHours()
+			let forecastDay = thisdate.getDate()
+			let tempMax = -99
 
-			params.fcHigh = findHighTemps(response)
-			params.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
-			chrome.storage.sync.set({ weather: params })
-
-			dataHandling(params)
-		}
-
-		fetch(getURL()).then((data) =>
-			data.json().then((json) => {
-				if (forecast) forecastResponse(json)
-				else {
-					// to then control forecast and come back here
-					cacheControl(weatherResponse(json), true)
-				}
-			})
-		)
-	}
-
-	function dataHandling(weather) {
-		const hour = new Date().getHours()
-
-		function getIcon() {
-			let filename = 'clearsky'
-
-			// Openweathermap is weird, not me ok
-			// prettier-ignore
-			switch (weather.lastState.icon_id) {
-					case 200: case 201: case 202: case 210:
-					case 212: case 221: case 230: case 231:
-					case 232:
-						filename = 'thunderstorm'
-						break
-
-					case 300: case 301: case 302: case 310:
-						filename = 'lightdrizzle'
-						break
-
-					case 312: case 313: case 314: case 321:
-						filename = 'showerdrizzle'
-						break
-
-					case 500: case 501: case 502: case 503:
-						filename = 'lightrain'
-						break
-
-					case 504: case 520: case 521: case 522:
-					case 531:
-						filename = 'showerrain'
-						break
-
-					case 511: case 600: case 601: case 602:
-					case 611: case 612: case 613: case 615:
-					case 616: case 620: case 621: case 622:
-						filename = 'snow'
-						break
-
-					case 701: case 711: case 721: case 731:
-					case 741: case 751: case 761: case 762:
-					case 771: case 781:
-						filename = 'mist'
-						break
-					
-					case 800:
-						filename = 'clearsky'
-						break
-
-					case 801:
-						filename = 'fewclouds'
-						break
-				
-					case 802:
-						filename = 'brokenclouds'
-						break
-				
-					 case 803: case 804:
-						filename = 'overcastclouds'
-						break
-
-					default:
-						filename = 'clearsky'
-						break
-				}
-
-			const widget = id('widget')
-			const w_icon = id('w_icon')
-			const w_iconHTML = w_icon.innerHTML
-			const { now, rise, set } = sunTime()
-			const timeOfDay = now < rise || now > set ? 'night' : 'day'
-			const src = `src/assets/images/weather/${timeOfDay}/${filename}.png`
-
-			if (!widget) w_icon.innerHTML = `<img id="widget" src="${src}" draggable="false" />` + w_iconHTML
-			else widget.setAttribute('src', src)
-		}
-
-		function getDescription() {
-			//pour la description et temperature
-			//Rajoute une majuscule à la description
-			id('desc').textContent =
-				weather.lastState.description[0].toUpperCase() + weather.lastState.description.slice(1) + '.'
-
-			//si c'est l'après midi (apres 12h), on enleve la partie temp max
-			let dtemp, wtemp
-
-			if (hour < 12) {
-				//temp de desc et temp de widget sont pareil
-				dtemp = wtemp = Math.floor(weather.lastState.feels_like) + '°'
-			} else {
-				//temp de desc devient temp de widget + un point
-				//on vide la catégorie temp max
-				wtemp = Math.floor(weather.lastState.feels_like) + '°'
-				dtemp = wtemp + '.'
+			// Late evening forecast for tomorrow
+			if (todayHour > 18) {
+				const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
+				forecastDay = new Date(tomorrow).getDate()
 			}
 
-			id('temp').textContent = dtemp
-			id('widget_temp').textContent = wtemp
-			weatherDesc.classList.add('shown')
-			document.querySelector('#weather_desc .trn').style.opacity = 1
-
-			canDisplayInterface('weatherdesc')
-		}
-
-		function getMaxTemp() {
-			tempMax.textContent = `${weather.fcHigh}°`
-			id('forecastTime').textContent = `${tradThis(hour > 21 ? 'tomorrow' : 'today')}.`
-
-			if (hour < 12 || hour > 21) maxWrap.classList.add('shown')
-			else maxWrap.classList.remove('shown')
-			document.querySelector('#forecastWrap .trn').style.opacity = 1
-
-			canDisplayInterface('weatherhigh')
-		}
-
-		getMaxTemp()
-		getIcon()
-		getDescription()
-	}
-
-	function updateCity() {
-		slow(that)
-
-		chrome.storage.sync.get('weather', (data) => {
-			const param = data.weather
-
-			param.ccode = i_ccode.value
-			param.city = i_city.value
-
-			if (param.city.length < 2) return false
-
-			request(param, 'current')
-			request(param, 'forecast')
-
-			i_city.setAttribute('placeholder', param.city)
-			i_city.value = ''
-			i_city.blur()
-
-			chrome.storage.sync.set({
-				weather: param,
+			// Get the highest temp for the specified day
+			response.list.forEach((elem) => {
+				if (new Date(elem.dt * 1000).getDate() === forecastDay)
+					tempMax < elem.main.temp_max ? (tempMax = Math.round(elem.main.temp_max)) : ''
 			})
+
+			weatherToSave.fcHigh = tempMax
+			weatherToSave.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
+
+			chrome.storage.sync.set({ weather: weatherToSave })
+			displaysForecast(weatherToSave)
+		}
+
+		let url = 'https://api.openweathermap.org/data/2.5/'
+		const lang = document.documentElement.getAttribute('lang')
+		const [lat, lon] = params.location || [0, 0]
+		const unit = params.unit || 'metric'
+
+		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
+		url += params.location ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(params.city)},${params.ccode}`
+		url += `&units=${unit}&lang=${lang}`
+
+		// Inits global object
+		if (Object.keys(weatherToSave).length === 0) {
+			weatherToSave = params
+		}
+
+		// fetches, parses and apply callback
+		fetch(url).then((data) => {
+			if (data.ok) data.json().then((json) => (forecast ? saveForecast(json) : saveCurrent(json)))
 		})
 	}
 
-	function updateUnit(that) {
-		slow(that)
+	function cacheControl(storage) {
+		const now = Math.floor(date.getTime() / 1000)
 
-		chrome.storage.sync.get(['weather'], (data) => {
-			const param = data.weather
+		if (storage) {
+			//
+			// Current: 30 mins
+			if (now > storage.lastCall + 1800 || sessionStorage.lang) {
+				sessionStorage.removeItem('lang')
+				request(storage, false)
+			} else displaysCurrent(storage)
 
-			if (that.checked) {
-				param.unit = 'imperial'
-			} else {
-				param.unit = 'metric'
-			}
+			// Forecast: 3h
+			if (!storage.forecastLastCall || now > storage.forecastLastCall + 10800) {
+				request(storage, true)
+			} else displaysForecast(storage)
+		}
 
-			request(param, 'current')
-			request(param, 'forecast')
-
-			chrome.storage.sync.set({ weather: param })
-		})
+		// First startup
+		else initWeather()
 	}
 
-	function updateLocation(that) {
+	function displaysCurrent(weather) {
+		let filename = 'clearsky'
+
+		// Openweathermap is weird, not me ok
+		// prettier-ignore
+		switch (weather.lastState.icon_id) {
+			case 200: case 201: case 202: case 210:
+			case 212: case 221: case 230: case 231:
+			case 232:
+				filename = 'thunderstorm'
+				break
+
+			case 300: case 301: case 302: case 310:
+				filename = 'lightdrizzle'
+				break
+
+			case 312: case 313: case 314: case 321:
+				filename = 'showerdrizzle'
+				break
+
+			case 500: case 501: case 502: case 503:
+				filename = 'lightrain'
+				break
+
+			case 504: case 520: case 521: case 522:
+			case 531:
+				filename = 'showerrain'
+				break
+
+			case 511: case 600: case 601: case 602:
+			case 611: case 612: case 613: case 615:
+			case 616: case 620: case 621: case 622:
+				filename = 'snow'
+				break
+
+			case 701: case 711: case 721: case 731:
+			case 741: case 751: case 761: case 762:
+			case 771: case 781:
+				filename = 'mist'
+				break
+			
+			case 800:
+				filename = 'clearsky'
+				break
+
+			case 801:
+				filename = 'fewclouds'
+				break
+		
+			case 802:
+				filename = 'brokenclouds'
+				break
+		
+				case 803: case 804:
+				filename = 'overcastclouds'
+				break
+
+			default:
+				filename = 'clearsky'
+				break
+		}
+
+		// Widget icon
+		const widgetIcon = widget.querySelector('img')
+		const { now, rise, set } = sunTime()
+		const timeOfDay = now < rise || now > set ? 'night' : 'day'
+		const iconSrc = `src/assets/images/weather/${timeOfDay}/${filename}.png`
+
+		const icon = document.createElement('img')
+		icon.src = iconSrc
+		icon.setAttribute('draggable', 'false')
+
+		!widgetIcon ? widget.prepend(icon) : widgetIcon.setAttribute('src', iconSrc)
+
+		// Description
+		const desc = weather.lastState.description
+		const temp = Math.floor(weather.lastState.feels_like)
+
+		current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tradThis('It is currently')} ${temp}°`
+		widget.querySelector('p').textContent = temp + '°'
+
+		clas(current, false, 'wait')
+		clas(widget, false, 'wait')
+	}
+
+	function displaysForecast(weather) {
+		const when = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
+
+		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${when}.`
+		clas(forecast, false, 'wait')
+	}
+
+	function updatesWeather() {
+		//
+
+		function fetches(weather) {
+			request(weather, false)
+			request(weather, true)
+		}
+
 		slow(that)
 
 		chrome.storage.sync.get('weather', (data) => {
-			const param = data.weather
-			param.location = []
+			switch (event) {
+				case 'units': {
+					data.weather.unit = that.checked ? 'imperial' : 'metric'
+					fetches(data.weather)
+					break
+				}
 
-			if (that.checked) {
-				that.setAttribute('disabled', '')
-
-				navigator.geolocation.getCurrentPosition(
-					(pos) => {
-						//update le parametre de location
-						param.location.push(pos.coords.latitude, pos.coords.longitude)
-						chrome.storage.sync.set({ weather: param })
-
-						//request la meteo
-						request(param, 'current')
-						request(param, 'forecast')
-
-						//update le setting
-						clas(sett_city, true, 'hidden')
-						that.removeAttribute('disabled')
-					},
-					() => {
-						//désactive geolocation if refused
-						that.checked = false
-						that.removeAttribute('disabled')
-
-						if (!param.city) initWeather()
+				case 'city': {
+					if (i_city.value.length < 2) {
+						return false
 					}
-				)
-			} else {
-				clas(sett_city, false, 'hidden')
 
-				i_city.setAttribute('placeholder', param.city)
-				i_ccode.value = param.ccode
+					data.weather.ccode = i_ccode.value
+					data.weather.city = i_city.value
 
-				param.location = false
+					fetches(data.weather)
 
-				chrome.storage.sync.set({
-					weather: param,
-				})
+					i_city.setAttribute('placeholder', data.weather.city)
+					i_city.value = ''
+					i_city.blur()
+					break
+				}
 
-				request(param, 'current')
-				request(param, 'forecast')
+				case 'geol': {
+					data.weather.location = []
+					clas(sett_city, that.checked, 'hidden')
+
+					if (that.checked) {
+						that.setAttribute('disabled', '')
+
+						navigator.geolocation.getCurrentPosition(
+							(pos) => {
+								//update le parametre de location
+								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
+								fetches(data.weather)
+							},
+							(refused) => {
+								//désactive geolocation if refused
+								that.checked = false
+								if (!data.weather.city) initWeather()
+							}
+						)
+					} else {
+						i_city.setAttribute('placeholder', data.weather.city)
+						i_ccode.value = data.weather.ccode
+
+						data.weather.location = false
+						fetches(data.weather)
+					}
+					break
+				}
 			}
 		})
 	}
 
-	switch (event) {
-		case 'city':
-			updateCity()
-			break
+	// Event & Init
+	if (event) updatesWeather()
+	else cacheControl(init)
 
-		case 'units':
-			updateUnit(that)
-			break
-
-		case 'geol':
-			updateLocation(that)
-			break
-
-		// Init
-		default:
-			cacheControl(init)
-	}
+	// Detect forecast display before it fetches
+	const isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
+	clas(forecast, isTimeForForecast, 'shown')
 
 	// Checks every 5 minutes if weather needs update
 	setTimeout(() => {
@@ -1674,7 +1593,7 @@ function unsplash(init, event) {
 
 			// inject saved background if pause
 			if (init.dynamic.current && init.dynamic.every === 'pause') {
-				local.dynamicCache.day = [init.dynamic.current, init.dynamic.next]
+				local.dynamicCache.day = [init.dynamic.current, init.dynamic.current]
 			}
 
 			// data cleanup
@@ -1960,7 +1879,7 @@ function customSize(init, event) {
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
-			let font = data.font || { family: '', weight: '400', size: 13 }
+			let font = data.font || { family: '', weight: ['400'], size: 13 }
 			font.size = event
 			slowRange({ font: font }, 200)
 		})
@@ -2133,7 +2052,7 @@ function customCss(init, event) {
 function hideElem(init, buttons, that) {
 	const IDsList = [
 		['time', ['time-container', 'date']],
-		['main', ['greetings', 'weather_desc', 'w_icon']],
+		['main', ['greetings', 'description', 'widget']],
 		['linkblocks', ['linkblocks']],
 		['showSettings', ['showSettings']],
 	]
@@ -2271,7 +2190,7 @@ function canDisplayInterface(cat, init) {
 	if (init) {
 		const h = new Date().getHours()
 		if (init.font) if (init.font.family && init.font.url) funcsOk.fonts = false
-		if (h < 12 || h > 21) funcsOk.weatherhigh = false
+		//if (h < 12 || h > 21) funcsOk.weatherhigh = false
 	}
 
 	// Check if all funcs are ready
@@ -2316,6 +2235,8 @@ function safeFont(settingsInput) {
 		if (!windows && !macOS)
 			document.getElementById('defaultFont').href =
 				'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap'
+
+		if (windows) dominterface.style.fontWeight = '350'
 	}
 
 	// Settings
