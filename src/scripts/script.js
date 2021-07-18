@@ -2228,7 +2228,7 @@ function sunTime(init) {
 
 function safeFont(settingsInput) {
 	const windows = document.fonts.check('16px Segoe UI')
-	const macOS = document.fonts.check('16px SF Pro Text')
+	const macOS = document.fonts.check('16px SF Pro Display')
 
 	// Startup
 	if (!settingsInput) {
@@ -2237,11 +2237,12 @@ function safeFont(settingsInput) {
 				'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap'
 
 		if (windows) dominterface.style.fontWeight = '350'
+		if (macOS) dominterface.style.fontFamily = 'system-ui'
 	}
 
 	// Settings
 	else {
-		settingsInput.setAttribute('placeholder', macOS ? 'SF Pro Text' : 'Segoe UI')
+		settingsInput.setAttribute('placeholder', macOS ? 'SF Pro Display' : 'Segoe UI')
 	}
 }
 
