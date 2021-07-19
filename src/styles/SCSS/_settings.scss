@@ -182,7 +182,8 @@
 		padding: 0.75em 1.3em;
 
 		> * {
-			transform: translate(0, 0);
+			transform: translate3d(0, 0, 0);
+			-webkit-transform: translate3d(0, 0, 0);
 		}
 
 		@include radiusSettings();
