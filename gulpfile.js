@@ -9,7 +9,7 @@ const { series, parallel, src, dest } = require('gulp'),
 const path = {
 	css: 'src/styles/style.css',
 	html: ['index.html', 'settings.html'],
-	js: ['src/scripts/lang.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
+	js: ['src/scripts/lang.js', 'src/scripts/utils.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
 }
 
 function cssTask() {
@@ -17,10 +17,7 @@ function cssTask() {
 }
 
 function htmlTask() {
-	const scripts = {
-		before: `<script src="src/scripts/lang.js"></script><script src="src/scripts/script.js"></script><script src="src/scripts/settings.js" defer="defer" async></script>`,
-		after: `<script src="src/scripts/main.js"></script>`,
-	}
+	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
 
 	return src(path.html)
 		.pipe(
@@ -29,7 +26,7 @@ function htmlTask() {
 				removeComments: true,
 			})
 		)
-		.pipe(replace(scripts.before, scripts.after))
+		.pipe(replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : '')))
 		.pipe(dest('release/'))
 }
 

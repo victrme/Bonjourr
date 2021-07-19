@@ -487,17 +487,31 @@ function showSettings() {
 	}
 
 	function init() {
-		fetch('settings.html').then((resp) =>
-			resp.text().then((text) => {
-				const dom = document.createElement('div')
-				dom.id = 'settings'
-				dom.innerHTML = text
-				dom.setAttribute('class', 'init')
-				document.body.appendChild(dom)
+		function settingsCreator(html) {
+			const dom = document.createElement('div')
+			dom.id = 'settings'
+			dom.innerHTML = html
+			dom.setAttribute('class', 'init')
+			document.body.appendChild(dom)
 
-				functions()
-			})
-		)
+			functions()
+		}
+
+		switch (window.location.protocol) {
+			case 'file:': {
+				const xhr = new XMLHttpRequest()
+				xhr.open('POST', 'settings.html', true)
+				xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
+				xhr.send()
+				break
+			}
+
+			case 'http:':
+			case 'https:':
+			case 'chrome-extension:': {
+				fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+			}
+		}
 	}
 
 	if (!id('settings')) init()

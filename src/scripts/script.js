@@ -1522,9 +1522,8 @@ function unsplash(init, event) {
 				chrome.storage.sync.set({ dynamic: init.dynamic })
 			}
 
-			chrome.storage.local.set({ dynamicCache: local.dynamicCache }, () => {
-				cacheControl(init.dynamic, local.dynamicCache)
-			})
+			chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+			cacheControl(init.dynamic, local.dynamicCache)
 		})
 	}
 
