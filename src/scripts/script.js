@@ -2169,66 +2169,63 @@ function safeFont(settingsInput) {
 	}
 }
 
-function startup(data) {
-	//
-
-	function reducedWeatherData(weather) {
-		// 1.9.3 ==> 1.10.0
-		const updatedWeather = weather
-
-		if (weather) {
-			if (weather.lastState && weather.lastState.sunset === undefined) {
-				const old = weather.lastState
-
-				updatedWeather.lastState = {
-					feels_like: old.main.feels_like,
-					temp_max: old.main.temp_max,
-					sunrise: old.sys.sunrise,
-					sunset: old.sys.sunset,
-					description: old.weather[0].description,
-					icon_id: old.weather[0].icon_id,
-				}
-			}
-		}
-
-		return updatedWeather
-	}
-
-	// Compatibility with older local versions
-	// As it is now using "bonjourr" key
-	if (!chrome && localStorage.data && !localStorage.bonjourr) {
-		localStorage.bonjourr = atob(localStorage.data)
-		localStorage.removeItem('data')
-	}
-
-	canDisplayInterface(null, { font: data.font })
-	traduction(null, data.lang)
-
-	sunTime(reducedWeatherData(data.weather))
-	weather(null, null, reducedWeatherData(data.weather))
-
-	customFont(data.font)
-	customSize(data.font)
-	safeFont()
-
-	newClock(null, data.clock)
-	date(null, data.usdate)
-	greetings(data.greeting)
-	linksrow(data.linksrow)
-	quickLinks(null, null, data)
-
-	darkmode(null, data)
-	searchbar(null, null, data)
-	showPopup(data.reviewPopup)
-
-	customCss(data.css)
-	hideElem(data.hide)
-	initBackground(data)
-}
-
 window.onload = function () {
 	try {
-		chrome.storage.sync.get(null, startup)
+		chrome.storage.sync.get(null, function startup(data) {
+			//
+			function reducedWeatherData(weather) {
+				// 1.9.3 ==> 1.10.0
+				const updatedWeather = weather
+
+				if (weather) {
+					if (weather.lastState && weather.lastState.sunset === undefined) {
+						const old = weather.lastState
+
+						updatedWeather.lastState = {
+							feels_like: old.main.feels_like,
+							temp_max: old.main.temp_max,
+							sunrise: old.sys.sunrise,
+							sunset: old.sys.sunset,
+							description: old.weather[0].description,
+							icon_id: old.weather[0].icon_id,
+						}
+					}
+				}
+
+				return updatedWeather
+			}
+
+			// Compatibility with older local versions
+			// As it is now using "bonjourr" key
+			if (window.location.protocol !== 'chrome-extension:' && localStorage.data && !localStorage.bonjourr) {
+				localStorage.bonjourr = atob(localStorage.data)
+				localStorage.removeItem('data')
+			}
+
+			canDisplayInterface(null, { font: data.font })
+			traduction(null, data.lang)
+
+			sunTime(reducedWeatherData(data.weather))
+			weather(null, null, reducedWeatherData(data.weather))
+
+			customFont(data.font)
+			customSize(data.font)
+			safeFont()
+
+			newClock(null, data.clock)
+			date(null, data.usdate)
+			greetings(data.greeting)
+			linksrow(data.linksrow)
+			quickLinks(null, null, data)
+
+			darkmode(null, data)
+			searchbar(null, null, data)
+			showPopup(data.reviewPopup)
+
+			customCss(data.css)
+			hideElem(data.hide)
+			initBackground(data)
+		})
 	} catch (error) {
 		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)
 	}
