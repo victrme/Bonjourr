@@ -237,7 +237,7 @@ function quickLinks(event, that, initStorage) {
 	//utilise simplement une boucle de appendblock
 	function initblocks(links) {
 		if (links.length > 0) links.map((a, i) => appendblock(a, i, links))
-		canDisplayInterface('links')
+		else canDisplayInterface('links')
 	}
 
 	function addIcon(elem, arr, index, links) {
@@ -285,32 +285,39 @@ function quickLinks(event, that, initStorage) {
 		const block = document.createElement('div')
 		const block_parent = document.createElement('div')
 
-		lIcon.className = 'l_icon'
-		lIcon.src = icon
+		function waitForIconToApply(iconurl) {
+			lIcon.className = 'l_icon'
+			lIcon.src = iconurl
 
-		lIconWrap.className = 'l_icon_wrap'
-		lIconWrap.appendChild(lIcon)
+			lIconWrap.className = 'l_icon_wrap'
+			lIconWrap.appendChild(lIcon)
 
-		blockTitle.textContent = title
+			blockTitle.textContent = title
 
-		block.className = 'block'
-		block.setAttribute('source', url)
-		block.appendChild(lIconWrap)
-		title ? block.appendChild(blockTitle) : ''
+			block.className = 'block'
+			block.setAttribute('source', url)
+			block.appendChild(lIconWrap)
+			title ? block.appendChild(blockTitle) : ''
 
-		block_parent.setAttribute('class', 'block_parent')
-		block_parent.setAttribute('draggable', 'true')
-		block_parent.appendChild(block)
+			block_parent.setAttribute('class', 'block_parent')
+			block_parent.setAttribute('draggable', 'true')
+			block_parent.appendChild(block)
 
-		//l'ajoute au dom
-		domlinkblocks.appendChild(block_parent)
+			//l'ajoute au dom
+			domlinkblocks.appendChild(block_parent)
 
-		//met les events au dernier elem rajouté
-		addEvents(block_parent)
+			//met les events au dernier elem rajouté
+			addEvents(block_parent)
 
-		//si online et l'icon charge, en rechercher une
-		const imageLoading = icon === 'src/assets/images/interface/loading.gif'
-		if (window.navigator.onLine && imageLoading) addIcon(block_parent, arr, index, links)
+			//si online et l'icon charge, en rechercher une
+			const imageLoading = icon === 'src/assets/images/interface/loading.gif'
+			if (window.navigator.onLine && imageLoading) addIcon(block_parent, arr, index, links)
+
+			if (index + 1 === links.length) canDisplayInterface('links')
+		}
+
+		if (icon.startsWith('alias:')) chrome.storage.local.get([icon], (data) => waitForIconToApply(data[icon]))
+		else waitForIconToApply(icon)
 	}
 
 	function addEvents(elem) {
@@ -395,15 +402,12 @@ function quickLinks(event, that, initStorage) {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
 			clas(id('edit_linkContainer'), false, 'shown')
-			linksInputDisable(false)
+			if (id('settings')) linksInputDisable(false)
 		}
 
 		id('e_submit').onclick = function () {
 			removeLinkSelection()
-			editlink(null, parseInt(id('edit_link').getAttribute('index')), (error) => {
-				if (!error) clas(id('edit_linkContainer'), false, 'shown')
-				else console.log(error)
-			})
+			editlink(null, parseInt(id('edit_link').getAttribute('index')))
 		}
 
 		// close on button
@@ -423,7 +427,8 @@ function quickLinks(event, that, initStorage) {
 		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
 	}
 
-	function editlink(that, i, callback) {
+	function editlink(that, i) {
+		//
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
@@ -431,11 +436,10 @@ function quickLinks(event, that, initStorage) {
 		const updated = {
 			title: stringMaxSize(e_title.value, 32),
 			url: stringMaxSize(e_url.value, 256),
-			icon: stringMaxSize(e_iconurl.value, 8192),
+			icon: stringMaxSize(e_iconurl.value, 8080),
 		}
 
 		if (i || i === 0) {
-			//edit est visible
 			chrome.storage.sync.get('links', (data) => {
 				let allLinks = [...data.links]
 				const block = domlinkblocks.children[i + 1]
@@ -444,7 +448,6 @@ function quickLinks(event, that, initStorage) {
 				Object.entries(allLinks[i]).forEach(([key, val]) => {
 					if (val !== updated[key]) {
 						//
-
 						switch (key) {
 							case 'title': {
 								// Adds span title or updates it
@@ -459,12 +462,27 @@ function quickLinks(event, that, initStorage) {
 								block.querySelector('.block').setAttribute('source', updated[key])
 								break
 
-							case 'icon':
-								block.querySelector('img').src = updated[key]
-								break
+							case 'icon': {
+								block.querySelector('img').src = updated.icon
 
-							default:
+								// Saves to an alias if icon too big
+								if (updated.icon.length > 64) {
+									const alias = 'alias:' + Math.random().toString(26).substring(2)
+									const tosave = {}
+
+									tosave[alias] = updated.icon
+									chrome.storage.local.set(tosave)
+									updated.icon = alias
+									e_iconurl.value = alias
+								}
+
+								// Removes old icon from storage if alias
+								if (allLinks[i].icon.startsWith('alias:')) {
+									chrome.storage.local.remove(allLinks[i].icon)
+								}
+
 								break
+							}
 						}
 
 						allLinks[i][key] = updated[key]
@@ -474,9 +492,10 @@ function quickLinks(event, that, initStorage) {
 				// Update in storage
 				chrome.storage.sync.set({ links: allLinks })
 			})
+		}
 
-			//affiche edit avec le bon index
-		} else {
+		//affiche edit avec le bon index
+		else {
 			const index = findindex(that)
 			const liconwrap = that.querySelector('.l_icon_wrap')
 			const container = id('edit_linkContainer')
@@ -538,23 +557,25 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function removeblock(index) {
-		let count = index
-
 		chrome.storage.sync.get(['links', 'searchbar'], (data) => {
 			function ejectIntruder(arr) {
 				if (arr.length === 1) return []
 
-				if (count === 0) arr.shift()
-				else if (count === arr.length) arr.pop()
-				else arr.splice(count, 1)
+				if (index === 0) arr.shift()
+				else if (index === arr.length) arr.pop()
+				else arr.splice(index, 1)
 
 				return arr
+			}
+
+			if (data.links[index].icon.startsWith('alias:')) {
+				chrome.storage.local.remove(data.links[index].icon)
 			}
 
 			var linkRemd = ejectIntruder(data.links)
 
 			//enleve le html du block
-			var block_parent = domlinkblocks.children[count + 1]
+			var block_parent = domlinkblocks.children[index + 1]
 			block_parent.setAttribute('class', 'block_parent removed')
 
 			setTimeout(function () {
