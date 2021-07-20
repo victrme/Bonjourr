@@ -268,18 +268,6 @@ function quickLinks(event, that, initStorage) {
 		img.remove()
 	}
 
-	function controlIconLength(string) {
-		if (string > 64) {
-			const alias = 'alias:' + Math.random().toString(26).substring(8)
-			const tosave = {}
-
-			tosave[alias] = string
-			chrome.storage.local.set(tosave)
-
-			return alias
-		} else return string
-	}
-
 	function appendblock(arr, index, links) {
 		let icon = arr.icon
 		let title = stringMaxSize(arr.title, 32)
@@ -412,7 +400,7 @@ function quickLinks(event, that, initStorage) {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
 			clas(id('edit_linkContainer'), false, 'shown')
-			linksInputDisable(false)
+			if (id('settings')) linksInputDisable(false)
 		}
 
 		id('e_submit').onclick = function () {
@@ -472,7 +460,7 @@ function quickLinks(event, that, initStorage) {
 								block.querySelector('.block').setAttribute('source', updated[key])
 								break
 
-							case 'icon':
+							case 'icon': {
 								block.querySelector('img').src = updated.icon
 
 								// Saves to an alias if icon too big
@@ -483,9 +471,16 @@ function quickLinks(event, that, initStorage) {
 									tosave[alias] = updated.icon
 									chrome.storage.local.set(tosave)
 									updated.icon = alias
+									e_iconurl.value = alias
+								}
+
+								// Removes old icon from storage if alias
+								if (allLinks[i].icon.startsWith('alias:')) {
+									chrome.storage.local.remove(allLinks[i].icon)
 								}
 
 								break
+							}
 						}
 
 						allLinks[i][key] = updated[key]
@@ -560,23 +555,25 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function removeblock(index) {
-		let count = index
-
 		chrome.storage.sync.get(['links', 'searchbar'], (data) => {
 			function ejectIntruder(arr) {
 				if (arr.length === 1) return []
 
-				if (count === 0) arr.shift()
-				else if (count === arr.length) arr.pop()
-				else arr.splice(count, 1)
+				if (index === 0) arr.shift()
+				else if (index === arr.length) arr.pop()
+				else arr.splice(index, 1)
 
 				return arr
+			}
+
+			if (data.links[index].icon.startsWith('alias:')) {
+				chrome.storage.local.remove(data.links[index].icon)
 			}
 
 			var linkRemd = ejectIntruder(data.links)
 
 			//enleve le html du block
-			var block_parent = domlinkblocks.children[count + 1]
+			var block_parent = domlinkblocks.children[index + 1]
 			block_parent.setAttribute('class', 'block_parent removed')
 
 			setTimeout(function () {
