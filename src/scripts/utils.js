@@ -75,8 +75,10 @@ const logsync = (flat) => chrome.storage.sync.get(null, (data) => consolr(flat, 
 const loglocal = (flat) => chrome.storage.local.get(null, (data) => consolr(flat, data))
 
 function deleteBrowserStorage() {
-	chrome.storage.sync.clear()
-	chrome.storage.local.clear()
+	if (window.location.protocol === 'chrome-extension:') {
+		chrome.storage.sync.clear()
+		chrome.storage.local.clear()
+	}
 	localStorage.clear()
 }
 
