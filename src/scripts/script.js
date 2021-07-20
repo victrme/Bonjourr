@@ -237,7 +237,7 @@ function quickLinks(event, that, initStorage) {
 	//utilise simplement une boucle de appendblock
 	function initblocks(links) {
 		if (links.length > 0) links.map((a, i) => appendblock(a, i, links))
-		canDisplayInterface('links')
+		else canDisplayInterface('links')
 	}
 
 	function addIcon(elem, arr, index, links) {
@@ -312,6 +312,8 @@ function quickLinks(event, that, initStorage) {
 			//si online et l'icon charge, en rechercher une
 			const imageLoading = icon === 'src/assets/images/interface/loading.gif'
 			if (window.navigator.onLine && imageLoading) addIcon(block_parent, arr, index, links)
+
+			if (index + 1 === links.length) canDisplayInterface('links')
 		}
 
 		if (icon.startsWith('alias:')) chrome.storage.local.get([icon], (data) => waitForIconToApply(data[icon]))
