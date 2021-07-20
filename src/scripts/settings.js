@@ -269,7 +269,7 @@ function initParams(data) {
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
-	initInput('i_bright', data.background_bright, 0.85)
+	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_sbengine', data.searchbar_engine, 'google')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')

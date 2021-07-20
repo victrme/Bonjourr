@@ -143,8 +143,7 @@ body {
 			#greetings,
 			#widget,
 			#forecast,
-			#current,
-			#showSettings {
+			#current {
 				transition: none;
 			}
 		}
@@ -161,8 +160,7 @@ body {
 		#date,
 		#description,
 		#greetings,
-		#widget,
-		#showSettings {
+		#widget {
 			transition: opacity 0.4s;
 		}
 
@@ -180,16 +178,6 @@ body {
 		#description.he_hidden,
 		#greetings.he_hidden,
 		#widget.he_hidden {
-			opacity: 0;
-		}
-	}
-
-	#showSettings {
-		&.he_anim {
-			transition: opacity 0.4s;
-		}
-
-		&.he_hidden {
 			opacity: 0;
 		}
 	}

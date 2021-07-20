@@ -2,6 +2,7 @@
 	position: fixed;
 	bottom: 0;
 	right: 0;
+	opacity: 0;
 	padding: 0 1em 1em 0;
 	z-index: 3;
 	transition: opacity 0.4s;
@@ -23,17 +24,39 @@
 			filter: drop-shadow(0px 1px 15px #0008);
 			transition: transform 0.6s $easeOutThree;
 		}
+	}
 
-		&:hover {
+	&.init {
+		transition: opacity 0s;
+		button img {
+			transition: transform 0s;
+		}
+	}
+
+	// Doit etre dans cette ordre pour la hierarchie
+	&.enabled {
+		opacity: 1;
+	}
+
+	&.he_hidden {
+		opacity: 0;
+	}
+
+	&:hover {
+		opacity: 1;
+
+		button {
 			background: #777;
 			@include frostedGlass($a: 0.3);
-
-			img {
-				transform: rotate(15deg);
-			}
 		}
 
-		&:active img {
+		img {
+			transform: rotate(15deg);
+		}
+	}
+
+	&:active {
+		img {
 			transform: rotate(30deg);
 		}
 	}

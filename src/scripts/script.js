@@ -1,89 +1,6 @@
-const id = (name) => document.getElementById(name)
-const cl = (name) => document.getElementsByClassName(name)
-const has = (dom, val) => {
-	if (dom && dom.classList) if (dom.classList.length > 0) return dom.classList.contains(val)
-	return false
-}
-
-const clas = (dom, add, str) => {
-	if (add) dom.classList.add(str)
-	else dom.classList.remove(str)
-}
-
-let stillActive = false,
-	rangeActive = false,
-	lazyClockInterval = 0,
-	googleFontList = {},
-	firstpaint = false,
-	sunset = 0,
-	sunrise = 0
-const domshowsettings = id('showSettings'),
-	domlinkblocks = id('linkblocks_inner'),
-	dominterface = id('interface'),
-	domsearchbar = id('searchbar'),
-	domimg = id('background'),
-	domthumbnail = cl('thumbnail'),
-	domclock = id('clock'),
-	mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false,
-	BonjourrAnimTime = 400,
-	loadtimeStart = performance.now(),
-	funcsOk = {
-		clock: false,
-		links: false,
-	}
-
-const minutator = (date) => date.getHours() * 60 + date.getMinutes()
-
-// lsOnlineStorage works exactly like chrome.storage
-// Just need to replace every chrome.storage
-// And maybe change import option
-
-const lsOnlineStorage = {
-	get: (local, unused, callback) => {
-		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
-		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
-		callback(data)
-	},
-	set: (prop) => {
-		lsOnlineStorage.get(null, null, (data) => {
-			if (typeof prop === 'object') {
-				const [key, val] = Object.entries(prop)[0]
-
-				if (key === 'import') data = val
-				else data[key] = val
-
-				localStorage.bonjourr = JSON.stringify(data)
-			}
-		})
-	},
-	setLocal: (prop) => {
-		lsOnlineStorage.get(true, null, (data) => {
-			if (typeof prop === 'object') {
-				data[Object.entries(prop)[0][0]] = Object.entries(prop)[0][1]
-				localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			}
-		})
-	},
-	log: (isLocal) => lsOnlineStorage.get(isLocal, null, (data) => console.log(data)),
-	del: () => localStorage.clear(),
-}
-
-const logsync = (flat) => chrome.storage.sync.get(null, (data) => consolr(flat, data))
-const loglocal = (flat) => chrome.storage.local.get(null, (data) => consolr(flat, data))
-
-function deleteBrowserStorage() {
-	chrome.storage.sync.clear()
-	chrome.storage.local.clear()
-	localStorage.clear()
-}
-
-function consolr(flat, data) {
-	if (flat) console.log(data)
-	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
-}
+//
 
 function slowRange(tosave, time = 150) {
-	//timeout avant de save pour éviter la surcharge d'instructions de storage
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {
 		chrome.storage.sync.set(tosave)
@@ -97,10 +14,6 @@ function slow(that) {
 		clearTimeout(stillActive)
 		stillActive = false
 	}, 700)
-}
-
-function stringMaxSize(string, size) {
-	return string.length > size ? string.slice(0, size) : string
 }
 
 function traduction(ofSettings, init) {
@@ -862,13 +775,13 @@ function weather(event, that, init) {
 		if (storage) {
 			//
 			// Current: 30 mins
-			if (now > storage.lastCall + 1800 || sessionStorage.lang) {
+			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
 				sessionStorage.removeItem('lang')
 				request(storage, false)
 			} else displaysCurrent(storage)
 
 			// Forecast: 3h
-			if (!storage.forecastLastCall || now > storage.forecastLastCall + 10800) {
+			if (navigator.onLine && (!storage.forecastLastCall || now > storage.forecastLastCall + 10800)) {
 				request(storage, true)
 			} else displaysForecast(storage)
 		}
@@ -1073,7 +986,7 @@ function initBackground(data) {
 	} else unsplash(data)
 
 	const blur = data.background_blur !== undefined ? data.background_blur : 15
-	const bright = data.background_bright !== undefined ? data.background_bright : 0.7
+	const bright = data.background_bright !== undefined ? data.background_bright : 0.8
 
 	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
@@ -1394,7 +1307,7 @@ function unsplash(init, event) {
 
 		id('credit').textContent = ''
 
-		credits.forEach((elem) => {
+		credits.forEach(function cityNameRef(elem) {
 			const dom = document.createElement('a')
 			dom.textContent = elem.text
 			dom.href = elem.url
@@ -1471,18 +1384,32 @@ function unsplash(init, event) {
 		const foundCollection = chooseCollection()
 		let list = local[foundCollection]
 
-		// Startup, nothing in cache
-		if (list.length === 0) {
-			requestNewList(foundCollection, (newlist) => {
-				//
-				// Save List
-				local[foundCollection] = newlist
-				chrome.storage.local.set({ dynamicCache: local })
+		// Startup
+		if (local.firstStartup) {
+			loadBackground(defaultImages(foundCollection))
 
-				loadBackground(newlist[0])
+			// To cleanup, rn dont care
+			requestNewList('noon', (newlist) => {
+				local['noon'] = newlist
 
-				//preload first background
-				noDisplayImgLoad(newlist[1].url)
+				requestNewList('day', (newlist) => {
+					local['day'] = newlist
+
+					requestNewList('evening', (newlist) => {
+						local['evening'] = newlist
+
+						requestNewList('night', (newlist) => {
+							local['night'] = newlist
+
+							delete local.firstStartup
+							local.current = foundCollection
+							local[foundCollection][0] = defaultImages(foundCollection)
+							noDisplayImgLoad(local[foundCollection][1].url)
+
+							chrome.storage.local.set({ dynamicCache: local })
+						})
+					})
+				})
 			})
 
 			return true
@@ -1536,8 +1463,7 @@ function unsplash(init, event) {
 				//
 				// New collection already cached, get second image
 				// If not, get image from previous collection
-				if (list.length > 0) loadBackground(list[0])
-				else local[local.current][0]
+				loadBackground(list[0])
 
 				// Save new collection
 				dynamic.time = freqControl('set', dynamic.every)
@@ -1549,7 +1475,9 @@ function unsplash(init, event) {
 		}
 
 		// No need for new, load the same image
-		else loadBackground(local[local.current][0])
+		else {
+			loadBackground(local[local.current][0])
+		}
 	}
 
 	const collectionsIds = {
@@ -1560,21 +1488,11 @@ function unsplash(init, event) {
 		user: '',
 	}
 
-	const firstStartupImage = {
-		city: 'Santander',
-		color: '#0c4059',
-		country: 'Spain',
-		username: 'willianjusten',
-		name: 'Willian Justen de Vasconcellos',
-		link: 'https://unsplash.com/photos/8sHZE1CXG4w',
-		url: 'https://images.unsplash.com/photo-1519314885287-6040aee8e4ea?&w=' + screen.width * window.devicePixelRatio,
-	}
-
 	// 1
 	// Startup
 	if (init && init.dynamic) {
 		//
-		chrome.storage.local.get('dynamicCache', (local) => {
+		chrome.storage.local.get('dynamicCache', function getCache(local) {
 			//
 			// 1.9.3 ==> 1.10.0 compatiility
 
@@ -1604,9 +1522,9 @@ function unsplash(init, event) {
 				chrome.storage.sync.set({ dynamic: init.dynamic })
 			}
 
-			chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-
-			cacheControl(init.dynamic, local.dynamicCache)
+			chrome.storage.local.set({ dynamicCache: local.dynamicCache }, () => {
+				cacheControl(init.dynamic, local.dynamicCache)
+			})
 		})
 	}
 
@@ -1629,6 +1547,7 @@ function unsplash(init, event) {
 						} else delete data.dynamic.current
 
 						data.dynamic.every = event.every
+						data.dynamic.time = freqControl('set', event.every)
 						chrome.storage.sync.set({ dynamic: data.dynamic })
 						break
 					}
@@ -1656,11 +1575,12 @@ function unsplash(init, event) {
 
 	// First startup
 	else {
-		const sync = { every: 'tabs', time: 0, collection: '' },
+		const sync = { every: 'hour', time: Date.now(), collection: '' },
 			local = {
+				firstStartup: true,
 				current: 'day',
+				day: [],
 				noon: [],
-				day: [{}, firstStartupImage],
 				evening: [],
 				night: [],
 				user: [],
@@ -2182,8 +2102,12 @@ function canDisplayInterface(cat, init) {
 
 		dominterface.style.transition = `opacity ${loadtime}ms, transform .4s`
 		dominterface.style.opacity = '1'
+		clas(domshowsettings, true, 'enabled')
 
-		setTimeout(() => dominterface.classList.remove('init'), loadtime + 100)
+		setTimeout(() => {
+			dominterface.classList.remove('init')
+			domshowsettings.classList.remove('init')
+		}, loadtime + 100)
 	}
 
 	// More conditions if user is using advanced features
