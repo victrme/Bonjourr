@@ -5,7 +5,7 @@ function newTab() {
 }
 
 function goodbye() {
-	return 'https://bonjourr.fr/' + (isOnChrome ? 'goodbye_chrome' : 'goodbye_firefox')
+	return 'https://bonjourr.fr/goodbye' + (isOnChrome ? '?from=Chrome' : '?from=Firefox')
 }
 
 const isOnChrome = navigator.userAgent.includes('Chrome')
