@@ -557,7 +557,7 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function removeblock(index) {
-		chrome.storage.sync.get(['links', 'searchbar'], (data) => {
+		chrome.storage.sync.get('links', (data) => {
 			function ejectIntruder(arr) {
 				if (arr.length === 1) return []
 
@@ -616,7 +616,7 @@ function quickLinks(event, that, initStorage) {
 		function filterUrl(str) {
 			//
 			const to = (scheme) => str.startsWith(scheme)
-			const acceptableSchemes = to('file://') || to('http://') || to('https://')
+			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
 
 			return acceptableSchemes ? str : unacceptable ? false : 'https://' + str
@@ -1346,185 +1346,96 @@ function unsplash(init, event) {
 		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
-	function cacheControl(dynamic, local, collectionChange) {
-		//
-		function chooseCollection() {
-			//
-			// Mutates collectionIds to match selected collection
-			function filterUserCollection(str) {
-				str = str.replaceAll(` `, '')
-				collectionsIds.user = str
-				return 'user'
-			}
+	function requestNewList(collection, callback) {
+		const header = new Headers()
+		const collecId = allCollectionIds[collection] || allCollectionIds.day
+		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
+		header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
+		header.append('Accept-Version', 'v1')
 
-			if (event && event.collection) {
-				if (event.collection.length > 0) return filterUserCollection(event.collection)
-			} else if (dynamic.collection.length > 0) return filterUserCollection(dynamic.collection)
+		fetch(url, { headers: header }).then((raw) =>
+			raw.json().then((imgArray) => {
+				const filteredList = []
 
-			// Transition day and night with noon & evening collections
-			// if clock is + /- 60 min around sunrise/set
-			const time = sunTime()
-
-			if (time.now >= 0 && time.now <= time.rise - 60) return 'night'
-			else if (time.now <= time.rise + 60) return 'noon'
-			else if (time.now <= time.set - 60) return 'day'
-			else if (time.now <= time.set + 60) return 'evening'
-			else if (time.now >= time.set + 60) return 'night'
-			else return 'day'
-		}
-
-		// 4
-		function requestNewList(collection, callback) {
-			const header = new Headers()
-			const collecId = collectionsIds[collection] || collectionsIds.day
-			const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8&orientation=landscape`
-			header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
-			header.append('Accept-Version', 'v1')
-
-			fetch(url, { headers: header }).then((raw) =>
-				raw.json().then((imgArray) => {
-					const filteredList = []
-
-					imgArray.forEach((img) => {
-						filteredList.push({
-							url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
-							link: img.links.html,
-							username: img.user.username,
-							name: img.user.name,
-							city: img.location.city,
-							country: img.location.country,
-							color: img.color,
-						})
+				imgArray.forEach((img) => {
+					filteredList.push({
+						url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
+						link: img.links.html,
+						username: img.user.username,
+						name: img.user.name,
+						city: img.location.city,
+						country: img.location.country,
+						color: img.color,
 					})
-
-					callback(filteredList)
-				})
-			)
-		}
-
-		function updateLocal(list) {
-			local[foundCollection] = list
-			local.current = foundCollection
-			chrome.storage.local.set({ dynamicCache: local })
-		}
-
-		function preloadUpdates(url) {
-			noDisplayImgLoad(url, () => chrome.storage.local.set({ dynamicCache: local }))
-		}
-
-		const foundCollection = chooseCollection()
-		let list = local[foundCollection]
-
-		//
-		// Switch to stop evaluating every cases
-		const whichControl = local.firstStartup
-			? 'firstStartup'
-			: collectionChange && collectionsIds.user !== ''
-			? 'collectionChange'
-			: ''
-
-		switch (whichControl) {
-			case 'firstStartup': {
-				loadBackground(defaultImages(foundCollection))
-
-				function requestAllLists(idsArray) {
-					requestNewList(idsArray[0], (newlist) => {
-						local[idsArray[0]] = newlist
-
-						if (idsArray.length === 1) {
-							newlist[0] = defaultImages(foundCollection)
-							delete local.firstStartup
-
-							noDisplayImgLoad(newlist[1].url)
-							updateLocal(newlist)
-
-							return true
-						}
-
-						idsArray.shift()
-						requestAllLists(idsArray)
-					})
-				}
-
-				requestAllLists(['day', 'noon', 'evening', 'night'])
-				return true
-			}
-
-			case 'collectionChange': {
-				id('background_overlay').style.opacity = '0'
-
-				requestNewList(foundCollection, (newlist) => {
-					noDisplayImgLoad(newlist[0].url, () => {
-						noDisplayImgLoad(newlist[1].url)
-						loadBackground(newlist[0])
-						id('background_overlay').style.opacity = '1'
-					})
-
-					updateLocal(newlist)
 				})
 
-				return true
-			}
-
-			default: {
-				if (freqControl('get', dynamic.every, dynamic.time)) {
-					// Need new image
-					//
-					// Test if same collection
-					if (foundCollection === local.current) {
-						//
-						// removes previous image from list
-						list.shift()
-
-						// Load new image
-						loadBackground(list[0])
-
-						// If end of cache, get & save new list
-						if (list.length === 1)
-							requestNewList(foundCollection, (newlist) => {
-								updateLocal(list.concat(newlist))
-								preloadUpdates(list[1].url)
-							})
-						//
-						// Or preload next
-						else preloadUpdates(list[1].url)
-
-						// Update time
-						if (dynamic.every !== 'tabs') {
-							dynamic.time = freqControl('set', dynamic.every)
-							chrome.storage.sync.set({ dynamic: dynamic })
-						}
-					}
-
-					// Collection has changed !
-					else {
-						// New collection already cached, get image
-						// If not, fetch and display new
-						if (list.length > 0) loadBackground(list[0])
-						else
-							requestNewList(foundCollection, (newlist) => {
-								updateLocal(newlist)
-								loadBackground(newlist[0])
-								preloadUpdates(newlist[1].url)
-							})
-
-						// Save new collection
-						dynamic.time = freqControl('set', dynamic.every)
-						local.current = foundCollection
-
-						chrome.storage.sync.set({ dynamic: dynamic })
-						chrome.storage.local.set({ dynamicCache: local })
-					}
-				}
-
-				// No need for new, load the same image
-				else loadBackground(local[local.current][0])
-				break
-			}
-		}
+				callback(filteredList)
+			})
+		)
 	}
 
-	const collectionsIds = {
+	function chooseCollection(dynamic) {
+		//
+		function filterUserCollection(str) {
+			str = str.replaceAll(` `, '')
+			allCollectionIds.user = str
+			return 'user'
+		}
+
+		if (event && event.collection) {
+			if (event.collection.length > 0) return filterUserCollection(event.collection)
+		} else if (dynamic.collection.length > 0) return filterUserCollection(dynamic.collection)
+
+		// Transition day and night with noon & evening collections
+		// if clock is + /- 60 min around sunrise/set
+		const time = sunTime()
+
+		if (time.now >= 0 && time.now <= time.rise - 60) return 'night'
+		else if (time.now <= time.rise + 60) return 'noon'
+		else if (time.now <= time.set - 60) return 'day'
+		else if (time.now <= time.set + 60) return 'evening'
+		else if (time.now >= time.set + 60) return 'night'
+		else return 'day'
+	}
+
+	function cacheControl(dynamic, cacheList) {
+		//
+		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
+		const collecId = chooseCollection(dynamic)
+		let list = cacheList[collecId]
+
+		console.log(cacheList[collecId], cacheList.user, collecId)
+
+		if (needNewImage) {
+			//
+			// Update time
+			if (dynamic.every !== 'tabs') {
+				dynamic.time = freqControl('set', dynamic.every)
+				chrome.storage.sync.set({ dynamic: dynamic })
+			}
+
+			// Removes previous image from list
+			list.shift()
+
+			// Load new image
+			loadBackground(list[0])
+
+			// If end of cache, get & save new list
+			if (list.length === 1)
+				requestNewList(collecId, (newlist) => {
+					cacheList[collecId] = list.concat(newlist)
+					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
+				})
+			//
+			// Or preload next
+			else noDisplayImgLoad(list[1].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
+		}
+
+		// No need for new, load the same image
+		else loadBackground(list[0])
+	}
+
+	const allCollectionIds = {
 		noon: 'yDjgRh1iqkQ',
 		day: '4933370',
 		evening: '2nVzlQADDIE',
@@ -1532,25 +1443,14 @@ function unsplash(init, event) {
 		user: '',
 	}
 
-	// 1
 	// Startup
 	if (init && init.dynamic) {
 		//
 		chrome.storage.local.get('dynamicCache', function getCache(local) {
 			//
 			// 1.9.3 ==> 1.10.0 compatiility
-
 			if (local.dynamicCache === undefined) {
-				//
-				// Add local cache
-				local.dynamicCache = {
-					current: 'day',
-					noon: [],
-					day: [],
-					evening: [],
-					night: [],
-					user: [],
-				}
+				local.dynamicCache = { noon: [], day: [], evening: [], night: [], user: [] }
 			}
 
 			// inject saved background if pause
@@ -1558,16 +1458,12 @@ function unsplash(init, event) {
 				local.dynamicCache.day = [init.dynamic.current, init.dynamic.current]
 			}
 
-			// data cleanup
+			// sync cleanup
 			if (init.dynamic.current) {
 				delete init.dynamic.current
 				delete init.dynamic.next
 
 				chrome.storage.sync.set({ dynamic: init.dynamic })
-			}
-
-			if (init.dynamic.collection.length > 0) {
-				collectionsIds.user = init.dynamic.collection
 			}
 
 			cacheControl(init.dynamic, local.dynamicCache)
@@ -1577,17 +1473,15 @@ function unsplash(init, event) {
 	// Settings event
 	else if (event) {
 		chrome.storage.sync.get('dynamic', (data) => {
-			//
-
 			chrome.storage.local.get('dynamicCache', (local) => {
 				//
-				const key = Object.keys(event)[0]
 
-				switch (key) {
+				const collecId = chooseCollection(data.dynamic)
+
+				switch (Object.keys(event)[0]) {
 					case 'every': {
 						if (event.every === 'pause') {
-							const cache = local.dynamicCache
-							data.dynamic.current = cache[cache.current][0]
+							data.dynamic.current = local.dynamicCache[local.dynamicCache.current][0]
 						} else delete data.dynamic.current
 
 						data.dynamic.every = event.every
@@ -1596,21 +1490,29 @@ function unsplash(init, event) {
 						break
 					}
 
+					// Back to dynamic and load first from chosen collection
 					case 'removedCustom': {
 						chrome.storage.sync.set({ background_type: 'dynamic' })
-						cacheControl(data.dynamic, local.dynamicCache)
+						loadBackground(local.dynamicCache[collecId][0])
 						break
 					}
 
+					// Always request another set, update last time image change and load background
 					case 'collection': {
-						local.dynamicCache.user = []
-						data.dynamic.collection = event.collection
-						collectionsIds.user = event.collection
+						requestNewList(collecId, (newlist) => {
+							local.dynamicCache.user = newlist
+							data.dynamic.collection = event.collection
+							data.dynamic.time = freqControl('set', data.dynamic.every)
 
-						chrome.storage.sync.set({ dynamic: data.dynamic })
-						chrome.storage.local.set({ dynamicCache: local })
+							chrome.storage.sync.set({ dynamic: data.dynamic })
+							chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 
-						cacheControl(data.dynamic, local.dynamicCache, true)
+							noDisplayImgLoad(newlist[0].url, () => {
+								loadBackground(newlist[0])
+								noDisplayImgLoad(newlist[1].url)
+							})
+						})
+
 						break
 					}
 				}
@@ -1618,23 +1520,41 @@ function unsplash(init, event) {
 		})
 	}
 
-	// First startup
+	// First startup: Recursively fetches all collection cache
 	else {
-		const sync = { every: 'hour', time: Date.now(), collection: '' },
-			local = {
-				firstStartup: true,
-				current: 'day',
-				day: [],
-				noon: [],
-				evening: [],
-				night: [],
-				user: [],
-			}
+		function requestAllLists(ids) {
+			requestNewList(ids[0], (newlist) => {
+				// update new list
+				const currentId = ids[0]
+				local[currentId] = newlist
 
-		chrome.storage.local.set({ dynamicCache: local })
+				// If same coll as found, replace first image with default
+				if (currentId === collecId) {
+					local[currentId][0] = defaultImages(collecId)
+					noDisplayImgLoad(local[currentId][1].url)
+				}
+
+				// if last id, save all cached list
+				if (ids.length === 1) {
+					chrome.storage.local.set({ dynamicCache: local })
+					return true
+				}
+
+				ids.shift()
+				requestAllLists(ids)
+			})
+		}
+
+		// Init local (used after in function above)
+		const sync = { every: 'hour', time: Date.now(), collection: '' }
+		const local = { day: [], noon: [], evening: [], night: [], user: [] }
+
+		const collecId = chooseCollection(sync)
+		loadBackground(defaultImages(collecId))
+		requestAllLists(['day', 'noon', 'evening', 'night'])
+
+		// just save sync
 		chrome.storage.sync.set({ dynamic: sync })
-
-		cacheControl(sync, local)
 	}
 }
 
@@ -2176,6 +2096,8 @@ function sunTime(init) {
 	if (init && init.lastState) {
 		sunrise = init.lastState.sunrise
 		sunset = init.lastState.sunset
+
+		console.log(new Date(sunrise * 1000), new Date(sunset * 1000))
 	}
 
 	//
