@@ -385,6 +385,29 @@ function importExport(select, isEvent) {
 					result.hide = [[0, 0], [0, 0, 0], [0], [0]]
 				}
 
+			// Changes new hidden classes
+			const weatherIndex = data.hide.indexOf('weather_desc')
+			const widgetIndex = data.hide.indexOf('w_icon')
+
+			if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
+			if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
+
+			// Remove old unused keys
+			if (data.font) {
+				delete data.font.availableWeights
+				delete data.font.supportedWeights
+			}
+
+			// Save changes memory var
+			// favsToUpdate.push({ index, url })
+			// const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
+
+			// Last to save ? Update storage
+			// if (favsToUpdate.length === 1 || favsToUpdate.length === howManyToSave.length) {
+			// 	favsToUpdate.forEach((link) => (links[link.index].icon = link.url))
+			// 	chrome.storage.sync.set({ links: links })
+			// }
+
 			return result
 		}
 		if (isEvent) {

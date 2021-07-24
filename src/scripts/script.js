@@ -236,42 +236,89 @@ function quickLinks(event, that, initStorage) {
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
 	function initblocks(links) {
-		if (links.length > 0) links.map((a, i) => appendblock(a, i, links))
+		if (links.length > 0) {
+			const lIconList = links.map((link, i) => appendblock(link, i))
+
+			canDisplayInterface('links')
+			lIconList.forEach((lIcon, i) => addIcon(lIcon, links, i))
+		}
+
+		// Links is done
 		else canDisplayInterface('links')
 	}
 
-	function addIcon(elem, arr, index, links) {
-		//prend le domaine de n'importe quelle url
-		const a = document.createElement('a')
-		a.href = arr.url
-		const hostname = a.hostname
+	function addIcon(lIcon, links, index, isNewLink) {
+		//
+		function waitForIconToApply(iconurl) {
+			//
+			function apply(url) {
+				const loadTime = performance.now() - perfStart
+				const playAnim = loadTime > 30
 
-		// fetch l'icône et l'ajoute
-		const img = new Image()
-		const url = 'https://api.faviconkit.com/' + hostname + '/144'
+				switch (playAnim) {
+					case true: {
+						lIcon.style.opacity = '0'
+						setTimeout(() => {
+							lIcon.removeAttribute('style')
+							lIcon.src = url
+						}, BonjourrAnimTime)
+						break
+					}
 
-		img.onload = () => {
-			// Change to loaded favicon
-			elem.querySelector('img').src = url
-
-			// Save changes memory var
-			favsToUpdate.push({ index, url })
-			const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
-
-			// Last to save ? Update storage
-			if (favsToUpdate.length === 1 || favsToUpdate.length === howManyToSave.length) {
-				favsToUpdate.forEach((link) => (links[link.index].icon = link.url))
-				chrome.storage.sync.set({ links: links })
+					default:
+						lIcon.src = url
+						break
+				}
 			}
+
+			if (iconurl === 'src/assets/images/interface/loading.gif') {
+				//
+				// Apply loading gif d'abord
+				apply(iconurl)
+
+				//si online, rechercher nouvelle icone
+				if (window.navigator.onLine) {
+					//
+					const img = new Image()
+					const a = document.createElement('a')
+					a.href = link.url
+					const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
+
+					// Update link icon data if new link
+					if (isNewLink) links[index].icon = url
+
+					img.onload = () => apply(url)
+					img.src = url
+					img.remove()
+				}
+
+				// Save new link
+				if (isNewLink) chrome.storage.sync.set({ links: links })
+			}
+
+			// Apply celle cached
+			else apply(iconurl)
 		}
-		img.src = url
-		img.remove()
+
+		const link = links[index]
+		const perfStart = performance.now()
+		const isAlias = link.icon.startsWith('alias:')
+
+		switch (isAlias) {
+			case true:
+				chrome.storage.local.get([link.icon], (data) => waitForIconToApply(data[link.icon]))
+				break
+
+			default:
+				waitForIconToApply(link.icon)
+				break
+		}
 	}
 
-	function appendblock(arr, index, links) {
-		let icon = arr.icon
-		let title = stringMaxSize(arr.title, 32)
-		let url = stringMaxSize(arr.url, 256)
+	function appendblock(link) {
+		let icon = link.icon
+		let title = stringMaxSize(link.title, 32)
+		let url = stringMaxSize(link.url, 256)
 
 		// no icon ? + 1.9.2 dead favicons fix
 		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
@@ -285,39 +332,28 @@ function quickLinks(event, that, initStorage) {
 		const block = document.createElement('div')
 		const block_parent = document.createElement('div')
 
-		function waitForIconToApply(iconurl) {
-			lIcon.className = 'l_icon'
-			lIcon.src = iconurl
+		lIcon.className = 'l_icon'
+		lIconWrap.className = 'l_icon_wrap'
+		lIconWrap.appendChild(lIcon)
 
-			lIconWrap.className = 'l_icon_wrap'
-			lIconWrap.appendChild(lIcon)
+		blockTitle.textContent = title
 
-			blockTitle.textContent = title
+		block.className = 'block'
+		block.setAttribute('source', url)
+		block.appendChild(lIconWrap)
+		title ? block.appendChild(blockTitle) : ''
 
-			block.className = 'block'
-			block.setAttribute('source', url)
-			block.appendChild(lIconWrap)
-			title ? block.appendChild(blockTitle) : ''
+		block_parent.setAttribute('class', 'block_parent')
+		block_parent.setAttribute('draggable', 'true')
+		block_parent.appendChild(block)
 
-			block_parent.setAttribute('class', 'block_parent')
-			block_parent.setAttribute('draggable', 'true')
-			block_parent.appendChild(block)
+		//l'ajoute au dom
+		domlinkblocks.appendChild(block_parent)
 
-			//l'ajoute au dom
-			domlinkblocks.appendChild(block_parent)
+		//met les events au dernier elem rajouté
+		addEvents(block_parent)
 
-			//met les events au dernier elem rajouté
-			addEvents(block_parent)
-
-			//si online et l'icon charge, en rechercher une
-			const imageLoading = icon === 'src/assets/images/interface/loading.gif'
-			if (window.navigator.onLine && imageLoading) addIcon(block_parent, arr, index, links)
-
-			if (index + 1 === links.length) canDisplayInterface('links')
-		}
-
-		if (icon.startsWith('alias:')) chrome.storage.local.get([icon], (data) => waitForIconToApply(data[icon]))
-		else waitForIconToApply(icon)
+		return lIcon
 	}
 
 	function addEvents(elem) {
@@ -407,7 +443,8 @@ function quickLinks(event, that, initStorage) {
 
 		id('e_submit').onclick = function () {
 			removeLinkSelection()
-			editlink(null, parseInt(id('edit_link').getAttribute('index')))
+			const noError = editlink(null, parseInt(id('edit_link').getAttribute('index')))
+			if (noError) closeEditLink()
 		}
 
 		// close on button
@@ -432,6 +469,13 @@ function quickLinks(event, that, initStorage) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
+
+		if (e_iconurl.value.length > 8080) {
+			e_iconurl.value = ''
+			e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
+
+			return false
+		}
 
 		const updated = {
 			title: stringMaxSize(e_title.value, 32),
@@ -492,6 +536,8 @@ function quickLinks(event, that, initStorage) {
 				// Update in storage
 				chrome.storage.sync.set({ links: allLinks })
 			})
+
+			return true
 		}
 
 		//affiche edit avec le bon index
@@ -558,21 +604,12 @@ function quickLinks(event, that, initStorage) {
 
 	function removeblock(index) {
 		chrome.storage.sync.get('links', (data) => {
-			function ejectIntruder(arr) {
-				if (arr.length === 1) return []
-
-				if (index === 0) arr.shift()
-				else if (index === arr.length) arr.pop()
-				else arr.splice(index, 1)
-
-				return arr
-			}
-
+			// Remove alias from storage
 			if (data.links[index].icon.startsWith('alias:')) {
 				chrome.storage.local.remove(data.links[index].icon)
 			}
 
-			var linkRemd = ejectIntruder(data.links)
+			data.links.splice(index, 1)
 
 			//enleve le html du block
 			var block_parent = domlinkblocks.children[index + 1]
@@ -582,10 +619,10 @@ function quickLinks(event, that, initStorage) {
 				domlinkblocks.removeChild(block_parent)
 
 				//enleve linkblocks si il n'y a plus de links
-				if (linkRemd.length === 0) domlinkblocks.style.visibility = 'hidden'
+				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
 			}, 200)
 
-			chrome.storage.sync.set({ links: linkRemd })
+			chrome.storage.sync.set({ links: data.links })
 		})
 	}
 
@@ -599,17 +636,17 @@ function quickLinks(event, that, initStorage) {
 
 			chrome.storage.sync.get('links', (data) => {
 				const links = data.links || []
+				const index = links.length
 
-				if (links.length === 19) linksInputDisable(true)
-
-				//array est tout les links + le nouveau
 				if (links) {
 					links.push(filteredLink)
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				chrome.storage.sync.set({ links: links })
-				appendblock(filteredLink, links.length - 1, links)
+				if (links.length === 20) linksInputDisable(true)
+
+				const lIcon = appendblock(filteredLink, index, links)
+				addIcon(lIcon, links, index, true)
 			})
 		}
 
@@ -625,7 +662,7 @@ function quickLinks(event, that, initStorage) {
 		let links = {
 			title: stringMaxSize(id('i_title').value, 32),
 			url: stringMaxSize(filterUrl(id('i_url').value), 256),
-			icon: '',
+			icon: 'src/assets/images/interface/loading.gif',
 		}
 
 		//si l'url filtré est juste
@@ -1404,8 +1441,6 @@ function unsplash(init, event) {
 		const collecId = chooseCollection(dynamic)
 		let list = cacheList[collecId]
 
-		console.log(cacheList[collecId], cacheList.user, collecId)
-
 		if (needNewImage) {
 			//
 			// Update time
@@ -1435,6 +1470,7 @@ function unsplash(init, event) {
 		else loadBackground(list[0])
 	}
 
+	const initOrEvent = init && init.dynamic ? 'init' : event ? 'event' : 'startup'
 	const allCollectionIds = {
 		noon: 'yDjgRh1iqkQ',
 		day: '4933370',
@@ -1443,118 +1479,121 @@ function unsplash(init, event) {
 		user: '',
 	}
 
-	// Startup
-	if (init && init.dynamic) {
-		//
-		chrome.storage.local.get('dynamicCache', function getCache(local) {
-			//
-			// 1.9.3 ==> 1.10.0 compatiility
-			if (local.dynamicCache === undefined) {
-				local.dynamicCache = { noon: [], day: [], evening: [], night: [], user: [] }
-			}
-
-			// inject saved background if pause
-			if (init.dynamic.current && init.dynamic.every === 'pause') {
-				local.dynamicCache.day = [init.dynamic.current, init.dynamic.current]
-			}
-
-			// sync cleanup
-			if (init.dynamic.current) {
-				delete init.dynamic.current
-				delete init.dynamic.next
-
-				chrome.storage.sync.set({ dynamic: init.dynamic })
-			}
-
-			cacheControl(init.dynamic, local.dynamicCache)
-		})
-	}
-
-	// Settings event
-	else if (event) {
-		chrome.storage.sync.get('dynamic', (data) => {
-			chrome.storage.local.get('dynamicCache', (local) => {
+	switch (initOrEvent) {
+		case 'init': {
+			chrome.storage.local.get('dynamicCache', function getCache(local) {
 				//
-
-				const collecId = chooseCollection(data.dynamic)
-
-				switch (Object.keys(event)[0]) {
-					case 'every': {
-						if (event.every === 'pause') {
-							data.dynamic.current = local.dynamicCache[local.dynamicCache.current][0]
-						} else delete data.dynamic.current
-
-						data.dynamic.every = event.every
-						data.dynamic.time = freqControl('set', event.every)
-						chrome.storage.sync.set({ dynamic: data.dynamic })
-						break
-					}
-
-					// Back to dynamic and load first from chosen collection
-					case 'removedCustom': {
-						chrome.storage.sync.set({ background_type: 'dynamic' })
-						loadBackground(local.dynamicCache[collecId][0])
-						break
-					}
-
-					// Always request another set, update last time image change and load background
-					case 'collection': {
-						requestNewList(collecId, (newlist) => {
-							local.dynamicCache.user = newlist
-							data.dynamic.collection = event.collection
-							data.dynamic.time = freqControl('set', data.dynamic.every)
-
-							chrome.storage.sync.set({ dynamic: data.dynamic })
-							chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-
-							noDisplayImgLoad(newlist[0].url, () => {
-								loadBackground(newlist[0])
-								noDisplayImgLoad(newlist[1].url)
-							})
-						})
-
-						break
-					}
+				// 1.9.3 ==> 1.10.0 compatiility
+				if (local.dynamicCache === undefined) {
+					local.dynamicCache = { noon: [], day: [], evening: [], night: [], user: [] }
 				}
+
+				// inject saved background if pause
+				if (init.dynamic.current && init.dynamic.every === 'pause') {
+					local.dynamicCache.day = [init.dynamic.current, init.dynamic.current]
+				}
+
+				// sync cleanup
+				if (init.dynamic.current) {
+					delete init.dynamic.current
+					delete init.dynamic.next
+
+					chrome.storage.sync.set({ dynamic: init.dynamic })
+				}
+
+				cacheControl(init.dynamic, local.dynamicCache)
 			})
-		})
-	}
-
-	// First startup: Recursively fetches all collection cache
-	else {
-		function requestAllLists(ids) {
-			requestNewList(ids[0], (newlist) => {
-				// update new list
-				const currentId = ids[0]
-				local[currentId] = newlist
-
-				// If same coll as found, replace first image with default
-				if (currentId === collecId) {
-					local[currentId][0] = defaultImages(collecId)
-					noDisplayImgLoad(local[currentId][1].url)
-				}
-
-				// if last id, save all cached list
-				if (ids.length === 1) {
-					chrome.storage.local.set({ dynamicCache: local })
-					return true
-				}
-
-				ids.shift()
-				requestAllLists(ids)
-			})
+			break
 		}
 
-		// Init local (used after in function above)
-		const sync = { every: 'hour', time: Date.now(), collection: '' }
-		const local = { day: [], noon: [], evening: [], night: [], user: [] }
+		case 'event': {
+			chrome.storage.sync.get('dynamic', (data) => {
+				chrome.storage.local.get('dynamicCache', (local) => {
+					//
 
-		const collecId = chooseCollection(sync)
-		loadBackground(defaultImages(collecId))
-		requestAllLists(['day', 'noon', 'evening', 'night'])
+					const collecId = chooseCollection(data.dynamic)
 
-		// just save sync
-		chrome.storage.sync.set({ dynamic: sync })
+					switch (Object.keys(event)[0]) {
+						case 'every': {
+							if (event.every === 'pause') {
+								data.dynamic.current = local.dynamicCache[local.dynamicCache.current][0]
+							} else delete data.dynamic.current
+
+							data.dynamic.every = event.every
+							data.dynamic.time = freqControl('set', event.every)
+							chrome.storage.sync.set({ dynamic: data.dynamic })
+							break
+						}
+
+						// Back to dynamic and load first from chosen collection
+						case 'removedCustom': {
+							chrome.storage.sync.set({ background_type: 'dynamic' })
+							loadBackground(local.dynamicCache[collecId][0])
+							break
+						}
+
+						// Always request another set, update last time image change and load background
+						case 'collection': {
+							requestNewList(collecId, (newlist) => {
+								local.dynamicCache.user = newlist
+								data.dynamic.collection = event.collection
+								data.dynamic.time = freqControl('set', data.dynamic.every)
+
+								chrome.storage.sync.set({ dynamic: data.dynamic })
+								chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+
+								noDisplayImgLoad(newlist[0].url, () => {
+									loadBackground(newlist[0])
+									noDisplayImgLoad(newlist[1].url)
+								})
+							})
+
+							break
+						}
+					}
+				})
+			})
+
+			break
+		}
+
+		// First startup: Recursively fetches all collection cache
+		case 'startup': {
+			function requestAllLists(ids) {
+				requestNewList(ids[0], (newlist) => {
+					// update new list
+					const currentId = ids[0]
+					local[currentId] = newlist
+
+					// If same coll as found, replace first image with default
+					if (currentId === collecId) {
+						local[currentId][0] = defaultImages(collecId)
+						noDisplayImgLoad(local[currentId][1].url)
+					}
+
+					// if last id, save all cached list
+					if (ids.length === 1) {
+						chrome.storage.local.set({ dynamicCache: local })
+						return true
+					}
+
+					ids.shift()
+					requestAllLists(ids)
+				})
+			}
+
+			// Init local (used after in function above)
+			const sync = { every: 'hour', time: Date.now(), collection: '' }
+			const local = { day: [], noon: [], evening: [], night: [], user: [] }
+
+			const collecId = chooseCollection(sync)
+			loadBackground(defaultImages(collecId))
+			requestAllLists(['day', 'noon', 'evening', 'night'])
+
+			// just save sync
+			chrome.storage.sync.set({ dynamic: sync })
+			break
+		}
 	}
 }
 
@@ -1839,7 +1878,7 @@ function customFont(data, event) {
 			save(url, font[0].family, availWeights, '400')
 			modifyWeightOptions(availWeights)
 
-			dom.blur()
+			if (dom) dom.blur()
 		} else dom.value = ''
 	}
 
@@ -2077,9 +2116,7 @@ function canDisplayInterface(cat, init) {
 
 	// More conditions if user is using advanced features
 	if (init) {
-		const h = new Date().getHours()
 		if (init.font) if (init.font.family && init.font.url) funcsOk.fonts = false
-		//if (h < 12 || h > 21) funcsOk.weatherhigh = false
 	}
 
 	// Check if all funcs are ready
@@ -2096,8 +2133,6 @@ function sunTime(init) {
 	if (init && init.lastState) {
 		sunrise = init.lastState.sunrise
 		sunset = init.lastState.sunset
-
-		console.log(new Date(sunrise * 1000), new Date(sunset * 1000))
 	}
 
 	//
@@ -2184,7 +2219,6 @@ window.onload = function () {
 			date(null, data.usdate)
 			greetings(data.greeting)
 			linksrow(data.linksrow)
-			quickLinks(null, null, data)
 
 			darkmode(null, data)
 			searchbar(null, null, data)
@@ -2193,6 +2227,7 @@ window.onload = function () {
 			customCss(data.css)
 			hideElem(data.hide)
 			initBackground(data)
+			quickLinks(null, null, data)
 		})
 	} catch (error) {
 		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)

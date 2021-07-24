@@ -80,7 +80,7 @@
 				@include frostedGlass($a: 0.2);
 
 				&:hover {
-					background: rgba(255, 255, 255, .2);
+					background: rgba(255, 255, 255, 0.2);
 				}
 
 				&.hidden {
@@ -346,6 +346,7 @@
 
 					.l_icon {
 						width: 100%;
+						transition: opacity 0.4s;
 					}
 
 					&.selected {
