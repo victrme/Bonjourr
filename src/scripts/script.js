@@ -855,8 +855,8 @@ function weather(event, that, init) {
 		// prettier-ignore
 		switch (weather.lastState.icon_id) {
 			case 200: case 201: case 202: case 210:
-			case 212: case 221: case 230: case 231:
-			case 232:
+			case 211: case 212: case 221: case 230:
+			case 231: case 232:
 				filename = 'thunderstorm'
 				break
 
