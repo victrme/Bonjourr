@@ -737,14 +737,7 @@ function weather(event, that, init) {
 		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 	]
 
-	function initWeather() {
-		let param = {
-			unit: 'metric',
-			city: 'Paris',
-			ccode: 'FR',
-			location: [],
-		}
-
+	function initWeather(param) {
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
 				//update le parametre de location
@@ -830,7 +823,7 @@ function weather(event, that, init) {
 	function cacheControl(storage) {
 		const now = Math.floor(date.getTime() / 1000)
 
-		if (storage) {
+		if (storage.lastCall) {
 			//
 			// Current: 30 mins
 			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
@@ -845,7 +838,7 @@ function weather(event, that, init) {
 		}
 
 		// First startup
-		else initWeather()
+		else initWeather(storage)
 	}
 
 	function displaysCurrent(weather) {
@@ -1411,7 +1404,7 @@ function unsplash(init, event) {
 		)
 	}
 
-	function chooseCollection(dynamic) {
+	function chooseCollection(savedCollection) {
 		//
 		function filterUserCollection(str) {
 			str = str.replaceAll(` `, '')
@@ -1421,7 +1414,7 @@ function unsplash(init, event) {
 
 		if (event && event.collection) {
 			if (event.collection.length > 0) return filterUserCollection(event.collection)
-		} else if (dynamic.collection.length > 0) return filterUserCollection(dynamic.collection)
+		} else if (savedCollection.length > 0) return filterUserCollection(savedCollection)
 
 		// Transition day and night with noon & evening collections
 		// if clock is + /- 60 min around sunrise/set
@@ -1435,11 +1428,10 @@ function unsplash(init, event) {
 		else return 'day'
 	}
 
-	function cacheControl(dynamic, cacheList) {
+	function cacheControl(dynamic, cacheList, collection) {
 		//
 		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
-		const collecId = chooseCollection(dynamic)
-		let list = cacheList[collecId]
+		let list = cacheList[collection]
 
 		if (needNewImage) {
 			//
@@ -1450,15 +1442,15 @@ function unsplash(init, event) {
 			}
 
 			// Removes previous image from list
-			list.shift()
+			if (list.length > 1) list.shift()
 
 			// Load new image
 			loadBackground(list[0])
 
 			// If end of cache, get & save new list
 			if (list.length === 1)
-				requestNewList(collecId, (newlist) => {
-					cacheList[collecId] = list.concat(newlist)
+				requestNewList(collection, (newlist) => {
+					cacheList[collection] = list.concat(newlist)
 					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
 				})
 			//
@@ -1470,7 +1462,7 @@ function unsplash(init, event) {
 		else loadBackground(list[0])
 	}
 
-	const initOrEvent = init && init.dynamic ? 'init' : event ? 'event' : 'startup'
+	const initOrEvent = init && init.dynamic ? 'init' : 'event'
 	const allCollectionIds = {
 		noon: 'yDjgRh1iqkQ',
 		day: '4933370',
@@ -1483,11 +1475,6 @@ function unsplash(init, event) {
 		case 'init': {
 			chrome.storage.local.get('dynamicCache', function getCache(local) {
 				//
-				// 1.9.3 ==> 1.10.0 compatiility
-				if (local.dynamicCache === undefined) {
-					local.dynamicCache = { noon: [], day: [], evening: [], night: [], user: [] }
-				}
-
 				// inject saved background if pause
 				if (init.dynamic.current && init.dynamic.every === 'pause') {
 					local.dynamicCache.day = [init.dynamic.current, init.dynamic.current]
@@ -1501,7 +1488,12 @@ function unsplash(init, event) {
 					chrome.storage.sync.set({ dynamic: init.dynamic })
 				}
 
-				cacheControl(init.dynamic, local.dynamicCache)
+				const collecId = chooseCollection(init.dynamic.collection || '')
+
+				// Empty cache fakes collection event
+				// Not empty, normal cacheControl
+				if (local.dynamicCache[collecId].length === 0) unsplash(null, { collection: init.dynamic.collection })
+				else cacheControl(init.dynamic, local.dynamicCache, collecId)
 			})
 			break
 		}
@@ -1511,7 +1503,7 @@ function unsplash(init, event) {
 				chrome.storage.local.get('dynamicCache', (local) => {
 					//
 
-					const collecId = chooseCollection(data.dynamic)
+					const collecId = chooseCollection(event.collection || data.dynamic.collection)
 
 					switch (Object.keys(event)[0]) {
 						case 'every': {
@@ -1554,44 +1546,6 @@ function unsplash(init, event) {
 				})
 			})
 
-			break
-		}
-
-		// First startup: Recursively fetches all collection cache
-		case 'startup': {
-			function requestAllLists(ids) {
-				requestNewList(ids[0], (newlist) => {
-					// update new list
-					const currentId = ids[0]
-					local[currentId] = newlist
-
-					// If same coll as found, replace first image with default
-					if (currentId === collecId) {
-						local[currentId][0] = defaultImages(collecId)
-						noDisplayImgLoad(local[currentId][1].url)
-					}
-
-					// if last id, save all cached list
-					if (ids.length === 1) {
-						chrome.storage.local.set({ dynamicCache: local })
-						return true
-					}
-
-					ids.shift()
-					requestAllLists(ids)
-				})
-			}
-
-			// Init local (used after in function above)
-			const sync = { every: 'hour', time: Date.now(), collection: '' }
-			const local = { day: [], noon: [], evening: [], night: [], user: [] }
-
-			const collecId = chooseCollection(sync)
-			loadBackground(defaultImages(collecId))
-			requestAllLists(['day', 'noon', 'evening', 'night'])
-
-			// just save sync
-			chrome.storage.sync.set({ dynamic: sync })
 			break
 		}
 	}
@@ -2048,13 +2002,6 @@ function hideElem(init, buttons, that) {
 
 	// startup initialization
 	if (!that && !buttons) {
-		//
-		// first startup
-		if (!init) {
-			chrome.storage.sync.set({ hide: [[0, 0], [0, 0, 0], [0], [0]] })
-			return false
-		}
-
 		initializeHiddenElements(updateToNewData(init))
 	}
 
@@ -2154,7 +2101,7 @@ function sunTime(init) {
 
 function safeFont(settingsInput) {
 	const windows = document.fonts.check('16px Segoe UI')
-	const macOS = document.fonts.check('16px SF Pro Display')
+	const macOS = document.fonts.check('16px Helvetica')
 
 	// Startup
 	if (!settingsInput) {
@@ -2203,6 +2150,13 @@ window.onload = function () {
 			if (window.location.protocol !== 'chrome-extension:' && localStorage.data && !localStorage.bonjourr) {
 				localStorage.bonjourr = atob(localStorage.data)
 				localStorage.removeItem('data')
+			} else {
+				// Chrome extension startup
+				if (Object.keys(data).length === 0) {
+					data = bonjourrDefaults('sync')
+					chrome.storage.sync.set(bonjourrDefaults('sync'))
+					chrome.storage.local.set(bonjourrDefaults('local'))
+				}
 			}
 
 			canDisplayInterface(null, { font: data.font })

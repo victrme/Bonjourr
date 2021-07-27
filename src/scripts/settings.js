@@ -51,20 +51,20 @@ function toggleClockOptions(analog) {
 }
 
 function settingsEvents() {
+	const bgfile = document.getElementById('i_bgfile')
+	const fileContainer = document.getElementById('i_fileContainer')
+
 	// file input animation
-	const custom = id('i_bgfile')
-	const customStyle = id('fileContainer')
-
-	custom.addEventListener('dragenter', function () {
-		customStyle.classList.add('dragover')
+	bgfile.addEventListener('dragenter', function () {
+		fileContainer.classList.add('dragover')
 	})
 
-	custom.addEventListener('dragleave', function () {
-		customStyle.classList.remove('dragover')
+	bgfile.addEventListener('dragleave', function () {
+		fileContainer.classList.remove('dragover')
 	})
 
-	custom.addEventListener('drop', function () {
-		customStyle.classList.remove('dragover')
+	bgfile.addEventListener('drop', function () {
+		fileContainer.classList.remove('dragover')
 	})
 
 	//general
@@ -266,22 +266,22 @@ function initParams(data) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
+	initInput('cssEditor', data.css, '')
+	initInput('i_row', data.linksrow, 8)
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
 	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
+	initInput('i_greeting', data.greeting, '')
 	initInput('i_sbengine', data.searchbar_engine, 'google')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
-	initInput('i_row', data.linksrow, 8)
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 400)
 	initInput('i_size', isThereData('font', 'size'), 16)
-	initInput('i_greeting', data.greeting, '')
-	initInput('cssEditor', data.css, '')
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_geol', isThereData('weather', 'location'))
@@ -358,8 +358,8 @@ function importExport(select, isEvent) {
 		function filterImports(data) {
 			let result = { ...data }
 
-			if (data.weather && data.weather.lastCall) result.weather.lastCall = 0
-			if (data.weather && data.weather.forecastLastCall) result.weather.forecastLastCall = 0
+			if (data.weather && data.weather.lastCall) delete result.weather.lastCall
+			if (data.weather && data.weather.forecastLastCall) delete result.weather.forecastLastCall
 
 			// Old blur was strings
 			if (typeof data.background_blur === 'string') {
@@ -398,6 +398,7 @@ function importExport(select, isEvent) {
 				delete data.font.supportedWeights
 			}
 
+			// Todo ?
 			// Save changes memory var
 			// favsToUpdate.push({ index, url })
 			// const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
@@ -416,11 +417,28 @@ function importExport(select, isEvent) {
 
 			if (dom.value.length > 0) {
 				try {
+					// Filtered imports from input
 					const imported = filterImports(JSON.parse(dom.value))
-					chrome.storage.sync.get(null, (data) => {
-						data = { ...data, ...imported }
 
-						chrome.storage.sync.set(data, () => location.reload())
+					// Load all sync & dynamicCache
+					chrome.storage.sync.get(null, (data) => {
+						chrome.storage.local.get('dynamicCache', (local) => {
+							//
+							// Remove user collection cache if collection change
+							if (data.dynamic && imported.dynamic) {
+								if (data.dynamic.collection !== imported.dynamic.collection) {
+									local.dynamicCache.user = []
+								}
+							}
+
+							// Mutate sync
+							data = { ...data, ...imported }
+
+							// Save sync & local
+							chrome.storage.sync.set(data, () => {
+								chrome.storage.local.set(local, () => location.reload())
+							})
+						})
 					})
 				} catch (e) {
 					dom.value = ''
@@ -436,6 +454,10 @@ function importExport(select, isEvent) {
 		const isOnChrome = navigator.userAgent.includes('Chrome')
 
 		chrome.storage.sync.get(null, (data) => {
+			//
+			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+
 			input.value = JSON.stringify(data)
 
 			if (isEvent) {

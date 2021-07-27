@@ -87,6 +87,67 @@ function consolr(flat, data) {
 	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
 }
 
+function bonjourrDefaults(which) {
+	switch (which) {
+		case 'sync':
+			return {
+				usdate: false,
+				showall: false,
+				searchbar: false,
+				searchbar_newtab: false,
+				linksrow: 6,
+				cssHeight: 80,
+				reviewPopup: 0,
+				background_blur: 15,
+				background_bright: 0.8,
+				css: '',
+				lang: 'en',
+				greeting: '',
+				background_type: 'dynamic',
+				searchbar_engine: 'google',
+				links: [],
+				clock: {
+					ampm: false,
+					analog: false,
+					seconds: false,
+					face: 'none',
+					timezone: 'auto',
+				},
+				dynamic: {
+					every: 'hour',
+					collection: '',
+					time: Date.now(),
+				},
+				weather: {
+					ccode: 'FR',
+					city: 'Paris',
+					unit: 'metric',
+					location: [],
+				},
+				font: {
+					url: '',
+					family: '',
+					weight: '400',
+					availWeights: [],
+				},
+				hide: [[0, 0], [0, 0, 0], [0], [0]],
+			}
+
+		case 'local':
+			return {
+				custom: [],
+				customThumbnails: [],
+				dynamicCache: {
+					noon: [defaultImages('noon')],
+					day: [defaultImages('day')],
+					evening: [defaultImages('evening')],
+					night: [defaultImages('night')],
+					user: [],
+				},
+			}
+	}
+}
+
 function defaultImages(collection) {
 	const size = screen.width * window.devicePixelRatio
 	const domain = 'https://images.unsplash.com/'
