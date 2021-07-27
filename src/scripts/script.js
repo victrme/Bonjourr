@@ -1055,31 +1055,41 @@ function imgBackground(val) {
 }
 
 function freqControl(state, every, last) {
-	const d = new Date()
+	const nowDate = new Date()
+
+	// instead of adding unix time to the last date
+	// look if day & hour has changed
+	// because we still cannot time travel
+	// changes can only go forward
 
 	switch (state) {
 		case 'set':
-			return every === 'tabs' ? 0 : d.getTime()
+			return nowDate.getTime()
 
 		case 'get': {
-			let calcLast = 0
-			let today = d.getTime()
+			const lastDate = new Date(last),
+				changed = {
+					date: nowDate.getDate() !== lastDate.getDate(),
+					hour: nowDate.getHours() !== lastDate.getHours(),
+				}
 
 			switch (every) {
-				case 'hour':
-					calcLast = last + 3600 * 1000
+				case 'day': {
+					if (changed.date) return true
 					break
+				}
 
-				case 'day':
-					calcLast = last + 86400 * 1000
+				case 'hour': {
+					if (changed.date || changed.hour) return true
 					break
+				}
+
+				case 'tabs':
+					return true
 
 				case 'pause':
-					calcLast = 9999999999999
-					break
+					return false
 			}
-
-			return today > calcLast
 		}
 	}
 }
@@ -1314,7 +1324,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 			applyCustomBackground(customList, rand)
 
 			// Updates time & index
-			chrome.storage.sync.set({ custom_time: freqControl('set', every) })
+			chrome.storage.sync.set({ custom_time: freqControl('set') })
 			chrome.storage.local.set({ customIndex: rand })
 			//
 		} else {
@@ -1437,7 +1447,7 @@ function unsplash(init, event) {
 			//
 			// Update time
 			if (dynamic.every !== 'tabs') {
-				dynamic.time = freqControl('set', dynamic.every)
+				dynamic.time = freqControl('set')
 				chrome.storage.sync.set({ dynamic: dynamic })
 			}
 
@@ -1507,12 +1517,12 @@ function unsplash(init, event) {
 
 					switch (Object.keys(event)[0]) {
 						case 'every': {
-							if (event.every === 'pause') {
+							if (event.every === 'pause' && data.dynamic.current) {
 								data.dynamic.current = local.dynamicCache[local.dynamicCache.current][0]
 							} else delete data.dynamic.current
 
 							data.dynamic.every = event.every
-							data.dynamic.time = freqControl('set', event.every)
+							data.dynamic.time = freqControl('set')
 							chrome.storage.sync.set({ dynamic: data.dynamic })
 							break
 						}
@@ -1529,7 +1539,7 @@ function unsplash(init, event) {
 							requestNewList(collecId, (newlist) => {
 								local.dynamicCache.user = newlist
 								data.dynamic.collection = event.collection
-								data.dynamic.time = freqControl('set', data.dynamic.every)
+								data.dynamic.time = freqControl('set')
 
 								chrome.storage.sync.set({ dynamic: data.dynamic })
 								chrome.storage.local.set({ dynamicCache: local.dynamicCache })
