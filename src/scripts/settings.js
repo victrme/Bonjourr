@@ -353,64 +353,8 @@ function initParams(data) {
 
 function importExport(select, isEvent) {
 	//
-
 	function importation() {
-		function filterImports(data) {
-			let result = { ...data }
-
-			if (data.weather && data.weather.lastCall) delete result.weather.lastCall
-			if (data.weather && data.weather.forecastLastCall) delete result.weather.forecastLastCall
-
-			// Old blur was strings
-			if (typeof data.background_blur === 'string') {
-				result.background_blur = parseFloat(data.background_blur)
-			}
-
-			// 's_' before every search engines
-			if (data.searchbar_engine) {
-				result.searchbar_engine = data.searchbar_engine.replace('s_', '')
-			}
-
-			// New collection key missing
-			// Removes dynamics cache
-			if (data.dynamic) {
-				if (!data.dynamic.collection) {
-					result.dynamic = { ...data.dynamic, collection: '' }
-				}
-			}
-
-			// Si il ne touche pas au vieux hide elem
-			if (data.hide)
-				if (data.hide.length === 0) {
-					result.hide = [[0, 0], [0, 0, 0], [0], [0]]
-				}
-
-			// Changes new hidden classes
-			const weatherIndex = data.hide.indexOf('weather_desc')
-			const widgetIndex = data.hide.indexOf('w_icon')
-
-			if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
-			if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
-
-			// Remove old unused keys
-			if (data.font) {
-				delete data.font.availableWeights
-				delete data.font.supportedWeights
-			}
-
-			// Todo ?
-			// Save changes memory var
-			// favsToUpdate.push({ index, url })
-			// const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
-
-			// Last to save ? Update storage
-			// if (favsToUpdate.length === 1 || favsToUpdate.length === howManyToSave.length) {
-			// 	favsToUpdate.forEach((link) => (links[link.index].icon = link.url))
-			// 	chrome.storage.sync.set({ links: links })
-			// }
-
-			return result
-		}
+		//
 		if (isEvent) {
 			const dom = id('i_import')
 			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))

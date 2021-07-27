@@ -131,6 +131,7 @@ function bonjourrDefaults(which) {
 					availWeights: [],
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
+				about: { browser: 'chrome' },
 			}
 
 		case 'local':

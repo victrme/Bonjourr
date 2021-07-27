@@ -2129,51 +2129,121 @@ function safeFont(settingsInput) {
 	}
 }
 
+function filterImports(data) {
+	function reducedWeatherData(weather) {
+		// 1.9.3 ==> 1.10.0
+		const updatedWeather = weather
+
+		if (weather) {
+			if (weather.lastState && weather.lastState.sunset === undefined) {
+				const old = weather.lastState
+
+				updatedWeather.lastState = {
+					feels_like: old.main.feels_like,
+					temp_max: old.main.temp_max,
+					sunrise: old.sys.sunrise,
+					sunset: old.sys.sunset,
+					description: old.weather[0].description,
+					icon_id: old.weather[0].icon_id,
+				}
+			}
+		}
+
+		return updatedWeather
+	}
+
+	let result = { ...data }
+
+	if (data.weather) {
+		result.weather = reducedWeatherData(data.weather)
+
+		if (result.weather.lastCall) delete result.weather.lastCall
+		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
+	}
+
+	// Old blur was strings
+	if (typeof data.background_blur === 'string') {
+		result.background_blur = parseFloat(data.background_blur)
+	}
+
+	// 's_' before every search engines
+	if (data.searchbar_engine) {
+		result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+	}
+
+	// New collection key missing
+	// Removes dynamics cache
+	if (data.dynamic) {
+		if (!data.dynamic.collection) {
+			result.dynamic = { ...data.dynamic, collection: '' }
+		}
+	}
+
+	// Si il ne touche pas au vieux hide elem
+	if (!data.hide || data.hide.length === 0) result.hide = [[0, 0], [0, 0, 0], [0], [0]]
+	else if (data.hide && data.hide.length > 0) {
+		// Changes new hidden classes
+		const weatherIndex = data.hide.indexOf('weather_desc')
+		const widgetIndex = data.hide.indexOf('w_icon')
+
+		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
+		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
+	}
+
+	// Remove old unused keys
+	if (data.font) {
+		delete data.font.availableWeights
+		delete data.font.supportedWeights
+	}
+
+	// Todo ?
+	// Save changes memory var
+	// favsToUpdate.push({ index, url })
+	// const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
+
+	// Last to save ? Update storage
+	// if (favsToUpdate.length === 1 || favsToUpdate.length === howManyToSave.length) {
+	// 	favsToUpdate.forEach((link) => (links[link.index].icon = link.url))
+	// 	chrome.storage.sync.set({ links: links })
+	// }
+
+	return result
+}
+
 window.onload = function () {
 	try {
 		chrome.storage.sync.get(null, function startup(data) {
 			//
-			function reducedWeatherData(weather) {
-				// 1.9.3 ==> 1.10.0
-				const updatedWeather = weather
-
-				if (weather) {
-					if (weather.lastState && weather.lastState.sunset === undefined) {
-						const old = weather.lastState
-
-						updatedWeather.lastState = {
-							feels_like: old.main.feels_like,
-							temp_max: old.main.temp_max,
-							sunrise: old.sys.sunrise,
-							sunset: old.sys.sunset,
-							description: old.weather[0].description,
-							icon_id: old.weather[0].icon_id,
-						}
-					}
-				}
-
-				return updatedWeather
-			}
-
-			// Compatibility with older local versions
-			// As it is now using "bonjourr" key
-			if (window.location.protocol !== 'chrome-extension:' && localStorage.data && !localStorage.bonjourr) {
-				localStorage.bonjourr = atob(localStorage.data)
-				localStorage.removeItem('data')
-			} else {
-				// Chrome extension startup
+			// Extension conditions
+			if (window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:') {
 				if (Object.keys(data).length === 0) {
 					data = bonjourrDefaults('sync')
 					chrome.storage.sync.set(bonjourrDefaults('sync'))
 					chrome.storage.local.set(bonjourrDefaults('local'))
+				}
+
+				if (data.about && data.about.ver !== '1.10.0') {
+					data.about.ver = '1.10.0'
+					data = filterImports(data)
+					chrome.storage.sync.set(data)
+				}
+			}
+
+			// Online conditions
+			else {
+				// Compatibility with older local versions
+				// As it is now using "bonjourr" key
+				if (localStorage.data && !localStorage.bonjourr) {
+					localStorage.bonjourr = atob(localStorage.data)
+					localStorage.removeItem('data')
 				}
 			}
 
 			canDisplayInterface(null, { font: data.font })
 			traduction(null, data.lang)
 
-			sunTime(reducedWeatherData(data.weather))
-			weather(null, null, reducedWeatherData(data.weather))
+			sunTime(data.weather)
+			weather(null, null, data.weather)
 
 			customFont(data.font)
 			customSize(data.font)
