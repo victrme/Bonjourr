@@ -1378,6 +1378,26 @@ function unsplash(init, event) {
 		clas(id('credit'), true, 'shown')
 	}
 
+	function loadBlurhash(hash) {
+		const overlay = id('background_overlay')
+
+		if (hash) {
+			const pixels = blurhashDecode(hash, 32, 32)
+			const canvas = document.createElement('canvas')
+
+			canvas.height = 32
+			canvas.width = 32
+
+			const ctx = canvas.getContext('2d')
+			const imageData = ctx.createImageData(32, 32)
+			imageData.data.set(pixels)
+			ctx.putImageData(imageData, 0, 0)
+
+			overlay.append(canvas)
+			overlay.style.opacity = '1'
+		}
+	}
+
 	function loadBackground(props, callback) {
 		imgBackground(props.url, callback)
 		imgCredits(props)
@@ -1529,7 +1549,14 @@ function unsplash(init, event) {
 						chrome.storage.sync.set({ dynamic: init.dynamic })
 						chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 
+						loadBlurhash(newlist[0].hash)
+
 						noDisplayImgLoad(newlist[0].url, () => {
+							const canvasdom = document.querySelector('#background_overlay canvas')
+							if (canvasdom) {
+								canvasdom.style.opacity = `0`
+								setTimeout(() => canvasdom.remove(), 400)
+							}
 							loadBackground(newlist[0])
 							noDisplayImgLoad(newlist[1].url)
 						})
@@ -1586,7 +1613,14 @@ function unsplash(init, event) {
 									data.dynamic.time = freqControl('set')
 
 									//load
+									loadBlurhash(newlist[0].hash)
+
 									noDisplayImgLoad(newlist[0].url, () => {
+										const canvasdom = document.querySelector('#background_overlay canvas')
+										if (canvasdom) {
+											canvasdom.style.opacity = `0`
+											setTimeout(() => canvasdom.remove(), 400)
+										}
 										loadBackground(newlist[0])
 
 										//save
