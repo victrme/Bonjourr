@@ -1,5 +1,3 @@
-//
-
 function slowRange(tosave, time = 150) {
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {
@@ -1042,12 +1040,14 @@ function initBackground(data) {
 	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
 
-function imgBackground(val) {
+function imgBackground(val, callback) {
 	let img = new Image()
 
 	img.onload = () => {
 		id('background_overlay').style.opacity = `1`
 		id('background').style.backgroundImage = `url(${val})`
+
+		if (callback) callback
 	}
 
 	img.src = val
@@ -1378,8 +1378,8 @@ function unsplash(init, event) {
 		clas(id('credit'), true, 'shown')
 	}
 
-	function loadBackground(props) {
-		imgBackground(props.url)
+	function loadBackground(props, callback) {
+		imgBackground(props.url, callback)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
@@ -1399,6 +1399,7 @@ function unsplash(init, event) {
 
 				imgArray.forEach((img) => {
 					filteredList.push({
+						hash: img.blur_hash,
 						url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
 						link: img.links.html,
 						username: img.user.username,
@@ -1414,17 +1415,13 @@ function unsplash(init, event) {
 		)
 	}
 
-	function chooseCollection(savedCollection) {
+	function chooseCollection(eventCollection) {
 		//
-		function filterUserCollection(str) {
-			str = str.replaceAll(` `, '')
-			allCollectionIds.user = str
+		if (eventCollection) {
+			eventCollection = eventCollection.replaceAll(` `, '')
+			allCollectionIds.user = eventCollection
 			return 'user'
 		}
-
-		if (event && event.collection) {
-			if (event.collection.length > 0) return filterUserCollection(event.collection)
-		} else if (savedCollection.length > 0) return filterUserCollection(savedCollection)
 
 		// Transition day and night with noon & evening collections
 		// if clock is + /- 60 min around sunrise/set
@@ -1438,6 +1435,21 @@ function unsplash(init, event) {
 		else return 'day'
 	}
 
+	function collectionControl(dynamic) {
+		const { every, lastCollec, collection } = dynamic
+
+		// Collection control
+		const longEveries = every === 'pause' || every === 'day'
+		const collecId = longEveries ? lastCollec : chooseCollection(collection)
+
+		if (collecId !== lastCollec) {
+			dynamic.lastCollec = collecId
+			chrome.storage.sync.set({ dynamic: dynamic })
+		}
+
+		return collecId
+	}
+
 	function cacheControl(dynamic, cacheList, collection) {
 		//
 		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
@@ -1446,10 +1458,9 @@ function unsplash(init, event) {
 		if (needNewImage) {
 			//
 			// Update time
-			if (dynamic.every !== 'tabs') {
-				dynamic.time = freqControl('set')
-				chrome.storage.sync.set({ dynamic: dynamic })
-			}
+			dynamic.lastCollec = collection
+			dynamic.time = freqControl('set')
+			chrome.storage.sync.set({ dynamic: dynamic })
 
 			// Removes previous image from list
 			if (list.length > 1) list.shift()
@@ -1484,26 +1495,46 @@ function unsplash(init, event) {
 	switch (initOrEvent) {
 		case 'init': {
 			chrome.storage.local.get('dynamicCache', function getCache(local) {
-				//
-				// inject saved background if pause
-				if (init.dynamic.current && init.dynamic.every === 'pause') {
-					local.dynamicCache.day = [init.dynamic.current, init.dynamic.current]
-				}
+				const { current, next, every } = init.dynamic
 
-				// sync cleanup
-				if (init.dynamic.current) {
-					delete init.dynamic.current
+				// <1.10.0: next is always old import
+				// current to first background, default to 'day' collection
+				if (next) {
+					init.dynamic.lastCollec = 'day'
+
+					if (current && every === 'pause') {
+						local.dynamicCache.day[0] = init.dynamic.current
+					}
+
 					delete init.dynamic.next
-
-					chrome.storage.sync.set({ dynamic: init.dynamic })
+					delete init.dynamic.current
 				}
 
-				const collecId = chooseCollection(init.dynamic.collection || '')
+				//
+				//
+				// Real init start
+				const collecId = collectionControl(init.dynamic)
 
-				// Empty cache fakes collection event
-				// Not empty, normal cacheControl
-				if (local.dynamicCache[collecId].length === 0) unsplash(null, { collection: init.dynamic.collection })
-				else cacheControl(init.dynamic, local.dynamicCache, collecId)
+				// Not empty: normal cacheControl
+				if (local.dynamicCache[collecId].length > 0) {
+					cacheControl(init.dynamic, local.dynamicCache, collecId)
+				}
+
+				// If empty: request new, save sync & local
+				else {
+					requestNewList(collecId, (newlist) => {
+						local.dynamicCache[collecId] = newlist
+						init.dynamic.time = freqControl('set')
+
+						chrome.storage.sync.set({ dynamic: init.dynamic })
+						chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+
+						noDisplayImgLoad(newlist[0].url, () => {
+							loadBackground(newlist[0])
+							noDisplayImgLoad(newlist[1].url)
+						})
+					})
+				}
 			})
 			break
 		}
@@ -1513,14 +1544,8 @@ function unsplash(init, event) {
 				chrome.storage.local.get('dynamicCache', (local) => {
 					//
 
-					const collecId = chooseCollection(event.collection || data.dynamic.collection)
-
 					switch (Object.keys(event)[0]) {
 						case 'every': {
-							if (event.every === 'pause' && data.dynamic.current) {
-								data.dynamic.current = local.dynamicCache[local.dynamicCache.current][0]
-							} else delete data.dynamic.current
-
 							data.dynamic.every = event.every
 							data.dynamic.time = freqControl('set')
 							chrome.storage.sync.set({ dynamic: data.dynamic })
@@ -1530,25 +1555,48 @@ function unsplash(init, event) {
 						// Back to dynamic and load first from chosen collection
 						case 'removedCustom': {
 							chrome.storage.sync.set({ background_type: 'dynamic' })
-							loadBackground(local.dynamicCache[collecId][0])
+							loadBackground(local.dynamicCache[collectionControl(data.dynamic)][0])
 							break
 						}
 
 						// Always request another set, update last time image change and load background
 						case 'collection': {
-							requestNewList(collecId, (newlist) => {
-								local.dynamicCache.user = newlist
-								data.dynamic.collection = event.collection
-								data.dynamic.time = freqControl('set')
+							id('background_overlay').style.opacity = '0'
+							//
+							// remove user collec
+							if (event.collection === '') {
+								const defaultColl = chooseCollection()
+								local.dynamicCache.user = []
+								data.dynamic.collection = ''
+								data.dynamic.lastCollec = defaultColl
 
 								chrome.storage.sync.set({ dynamic: data.dynamic })
 								chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 
-								noDisplayImgLoad(newlist[0].url, () => {
-									loadBackground(newlist[0])
-									noDisplayImgLoad(newlist[1].url)
+								unsplash(data)
+							}
+
+							// add new collec
+							else {
+								requestNewList(chooseCollection(event.collection), (newlist) => {
+									//change
+									local.dynamicCache.user = newlist
+									data.dynamic.collection = event.collection
+									data.dynamic.lastCollec = 'user'
+									data.dynamic.time = freqControl('set')
+
+									//load
+									noDisplayImgLoad(newlist[0].url, () => {
+										loadBackground(newlist[0])
+
+										//save
+										chrome.storage.sync.set({ dynamic: data.dynamic })
+										chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+
+										noDisplayImgLoad(newlist[1].url)
+									})
 								})
-							})
+							}
 
 							break
 						}
