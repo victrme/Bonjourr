@@ -4,10 +4,11 @@
 	"description": "iOS styled startpage",
 	"main": "src/scripts/script.js",
 	"scripts": {
-		"build-chrome": "gulp chrome",
-		"build-firefox": "gulp firefox",
-		"build-online": "gulp online",
-		"scss": "sass --watch --no-source-map src/styles/SCSS/style.scss src/styles/style.css"
+		"chrome": "gulp chrome",
+		"firefox": "gulp firefox",
+		"firefox-dev": "gulp firefoxdev",
+		"online": "gulp online",
+		"scss": "sass --watch src/styles/SCSS/style.scss src/styles/style.css"
 	},
 	"repository": {
 		"type": "git",

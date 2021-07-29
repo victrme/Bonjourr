@@ -1,4 +1,4 @@
-const { series, parallel, src, dest } = require('gulp'),
+const { series, parallel, src, dest, watch } = require('gulp'),
 	concat = require('gulp-concat'),
 	minify = require('gulp-babel-minify'),
 	htmlmin = require('gulp-htmlmin'),
@@ -6,20 +6,15 @@ const { series, parallel, src, dest } = require('gulp'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace')
 
-const path = {
-	css: 'src/styles/style.css',
-	html: ['index.html', 'settings.html'],
-	js: ['src/scripts/lang.js', 'src/scripts/utils.js', 'src/scripts/script.js', 'src/scripts/settings.js'],
-}
-
-function css() {
-	return src(path.css).pipe(csso()).pipe(dest('release/src/styles/'))
-}
-
 function html() {
+	//
+	// Index & settings minified
+	// Multiple scripts tags => only main.js
+	//
+
 	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
 
-	return src(path.html)
+	return src('*.html')
 		.pipe(
 			htmlmin({
 				collapseWhitespace: true,
@@ -31,7 +26,20 @@ function html() {
 }
 
 function scripts(which) {
-	const stream = src(path.js).pipe(concat('main.js'))
+	//
+	// All scripts except background
+	// Online: replaces chrome.storage with homemade storage
+	// Firefox debugging: only storage.local is allowed
+	// Chrome & Firefox build: just minify
+	//
+
+	const stream = src([
+		'src/scripts/lang.js',
+		'src/scripts/utils.js',
+		'src/scripts/utils.js',
+		'src/scripts/script.js',
+		'src/scripts/settings.js',
+	]).pipe(concat('main.js'))
 
 	switch (which) {
 		case 'online': {
@@ -58,26 +66,71 @@ function scripts(which) {
 	return stream
 }
 
-function ressources() {
-	return src('src/assets/**').pipe(dest('release/src/assets'))
-}
+//
+// These one-liners must be functions, not const
+//
 
-function manifest(which) {
-	return src(`manifest-${which}.json`).pipe(rename('manifest.json')).pipe(dest('release/'))
-}
-
-function locales() {
-	return src('_locales/**').pipe(dest('release/_locales/'))
+function css() {
+	return src('src/styles/style.css').pipe(csso()).pipe(dest('release/src/styles/'))
 }
 
 function addBackground() {
 	return src('src/scripts/background.js').pipe(dest('release/src/scripts'))
 }
 
-const makeExtension = (manif, js) => [html, css, locales, addBackground, ressources, () => scripts(js), () => manifest(manif)]
-const makeOnline = () => [() => js('online'), css, ressources, html]
+function ressources() {
+	return src('src/assets/**').pipe(dest('release/src/assets'))
+}
 
-exports.online = series(parallel(...makeOnline()))
-exports.chrome = series(parallel(...makeExtension('chrome')))
-exports.firefox = series(parallel(...makeExtension('firefox')))
-exports.firefoxdev = series(parallel(...makeExtension('firefox', 'firefox-dev')))
+function locales() {
+	return src('_locales/**').pipe(dest('release/_locales/'))
+}
+
+function manifest(which) {
+	return src(`manifest-${which}.json`).pipe(rename('manifest.json')).pipe(dest('release/'))
+}
+
+//
+// Tasks
+//
+
+// Watches style map to make sure everything is compiled
+const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map']
+
+// prettier-ignore
+const makeOnline = () => [
+	css,
+	html,
+	ressources,
+	() => scripts('online'),
+]
+
+const makeExtension = (manifestFrom, scriptFrom) => [
+	css,
+	html,
+	locales,
+	ressources,
+	addBackground,
+	() => scripts(scriptFrom),
+	() => manifest(manifestFrom),
+]
+
+//
+// All Exports
+//
+
+exports.online = async function () {
+	watch(filesToWatch, series(parallel(...makeOnline())))
+}
+
+exports.chrome = async function () {
+	watch(filesToWatch, series(parallel(...makeExtension('chrome'))))
+}
+
+exports.firefox = async function () {
+	watch(filesToWatch, series(parallel(...makeExtension('firefox'))))
+}
+
+exports.firefoxdev = async function () {
+	watch(filesToWatch, series(parallel(...makeExtension('firefox', 'firefox-dev'))))
+}
