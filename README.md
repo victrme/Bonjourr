@@ -32,11 +32,10 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://t.me/
 
 -   `npm install`
 -   `npm run scss` to watch sass files
--   Rename `manifest-chrome.json` to `manifest.json`
+-   `npm run chrome` in another terminal to build and watch changes
 -   Go to chrome://extension, enable dev mode
--   Load unpacked extension, select root folder
-
--   `npm run build-online` to build bonjourr's web version
+-   Load unpacked extension, select /release folder
+-   Or `npm run online` for standalone version. Needs live server for settings to work
 
 ### Join us on Telegram
 
