@@ -2163,17 +2163,16 @@ function safeFont(settingsInput) {
 
 	// Startup
 	if (!settingsInput) {
-		if (!windows && !macOS)
-			document.getElementById('defaultFont').href =
-				'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap'
+		if (!windows && !macOS) dominterface.style.fontFamily = 'Arial'
 
 		if (windows) dominterface.style.fontWeight = '350'
-		if (macOS) dominterface.style.fontFamily = 'system-ui'
+		else if (macOS) dominterface.style.fontFamily = 'system-ui'
 	}
 
 	// Settings
 	else {
-		settingsInput.setAttribute('placeholder', macOS ? 'SF Pro Display' : 'Segoe UI')
+		const placeholderText = windows ? 'Segoe UI' : macOS ? 'SF Pro Display' : 'Arial'
+		settingsInput.setAttribute('placeholder', placeholderText)
 	}
 }
 

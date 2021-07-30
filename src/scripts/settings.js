@@ -497,6 +497,7 @@ function showSettings() {
 
 			case 'http:':
 			case 'https:':
+			case 'moz-extension:':
 			case 'chrome-extension:': {
 				fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
 			}
