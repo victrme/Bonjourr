@@ -1470,12 +1470,17 @@ function unsplash(init, event) {
 		return collecId
 	}
 
-	function cacheControl(dynamic, cacheList, collection) {
+	function cacheControl(dynamic, caches, collection, preloading) {
 		//
 		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
-		let list = cacheList[collection]
+		let list = caches[collection]
 
-		if (needNewImage) {
+		// Is trying to preload next
+		if (preloading) {
+			noDisplayImgLoad(list[1].url, () => chrome.storage.local.remove('waitingForPreload'))
+		}
+
+		if (needNewImage && !preloading) {
 			//
 			// Update time
 			dynamic.lastCollec = collection
@@ -1491,12 +1496,12 @@ function unsplash(init, event) {
 			// If end of cache, get & save new list
 			if (list.length === 1)
 				requestNewList(collection, (newlist) => {
-					cacheList[collection] = list.concat(newlist)
-					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
+					caches[collection] = list.concat(newlist)
+					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: caches }))
 				})
 			//
 			// Or preload next
-			else noDisplayImgLoad(list[1].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
+			else noDisplayImgLoad(list[1].url, () => chrome.storage.local.set({ dynamicCache: caches }))
 		}
 
 		// No need for new, load the same image
@@ -1537,7 +1542,7 @@ function unsplash(init, event) {
 
 				// Not empty: normal cacheControl
 				if (local.dynamicCache[collecId].length > 0) {
-					cacheControl(init.dynamic, local.dynamicCache, collecId)
+					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
 				}
 
 				// If empty: request new, save sync & local
@@ -1547,18 +1552,22 @@ function unsplash(init, event) {
 						init.dynamic.time = freqControl('set')
 
 						chrome.storage.sync.set({ dynamic: init.dynamic })
-						chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-
 						loadBlurhash(newlist[0].hash)
 
 						noDisplayImgLoad(newlist[0].url, () => {
+							//
+							// Delete blurhash
 							const canvasdom = document.querySelector('#background_overlay canvas')
 							if (canvasdom) {
 								canvasdom.style.opacity = `0`
 								setTimeout(() => canvasdom.remove(), 400)
 							}
+
 							loadBackground(newlist[0])
-							noDisplayImgLoad(newlist[1].url)
+							chrome.storage.local.set({ waitingForPreload: true })
+							chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+
+							noDisplayImgLoad(newlist[1].url, () => chrome.storage.local.remove('waitingForPreload'))
 						})
 					})
 				}
@@ -1611,23 +1620,34 @@ function unsplash(init, event) {
 									data.dynamic.collection = event.collection
 									data.dynamic.lastCollec = 'user'
 									data.dynamic.time = freqControl('set')
+									chrome.storage.sync.set({ dynamic: data.dynamic })
 
 									//load
-									loadBlurhash(newlist[0].hash)
+									const blurhashTimeout = setTimeout(() => loadBlurhash(newlist[0].hash), 400)
+									const maisnon = performance.now()
 
 									noDisplayImgLoad(newlist[0].url, () => {
+										//
+										// Delete Blurhash
+										clearTimeout(blurhashTimeout)
+										const loadtime = performance.now() - maisnon
+										const animtime = loadtime > 800 ? 1200 : loadtime + 400
+
 										const canvasdom = document.querySelector('#background_overlay canvas')
 										if (canvasdom) {
+											canvasdom.style.transition = `opacity ${animtime}ms`
 											canvasdom.style.opacity = `0`
-											setTimeout(() => canvasdom.remove(), 400)
+											setTimeout(() => canvasdom.remove(), animtime)
 										}
+
 										loadBackground(newlist[0])
-
-										//save
-										chrome.storage.sync.set({ dynamic: data.dynamic })
 										chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+										chrome.storage.local.set({ waitingForPreload: true })
 
-										noDisplayImgLoad(newlist[1].url)
+										//preload
+										noDisplayImgLoad(newlist[1].url, () =>
+											chrome.storage.local.remove('waitingForPreload')
+										)
 									})
 								})
 							}
