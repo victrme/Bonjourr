@@ -17,11 +17,14 @@ function selectBackgroundType(cat) {
 		// Applying functions
 		if (cat === 'custom') {
 			localBackgrounds(null, true)
-			clas(id('credit'), false, 'shown')
 		}
 		if (cat === 'dynamic') {
-			id('background_overlay').style.opacity = '0'
-			setTimeout(() => unsplash(data), BonjourrAnimTime)
+			domoverlay.style.opacity = `0`
+			domcredit.style.display = 'block'
+			setTimeout(() => {
+				clas(domcredit, true, 'shown')
+				unsplash(data)
+			}, BonjourrAnimTime)
 		}
 
 		// Setting frequence
