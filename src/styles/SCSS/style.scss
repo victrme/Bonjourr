@@ -40,16 +40,6 @@
 		opacity: 0;
 		transition: transform 0.4s, opacity 0.4s;
 
-		canvas {
-			position: absolute;
-			background-size: cover;
-			width: 100%;
-			height: 100%;
-			top: 0%;
-			left: 0%;
-			transition: opacity 0.4s;
-		}
-
 		#background {
 			position: relative;
 			width: 100%;
