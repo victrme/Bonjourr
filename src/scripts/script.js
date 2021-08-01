@@ -1040,14 +1040,20 @@ function initBackground(data) {
 	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
 
-function imgBackground(val, callback) {
+function imgBackground(val, loadTime) {
 	let img = new Image()
 
 	img.onload = () => {
-		id('background_overlay').style.opacity = `1`
-		id('background').style.backgroundImage = `url(${val})`
+		if (loadTime) {
+			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
+			const changeDuration = (time) => (domoverlay.style.transition = `transform .4s, opacity ${time}ms`)
 
-		if (callback) callback
+			changeDuration(animDuration)
+			setTimeout(() => changeDuration(400), animDuration)
+		}
+
+		domoverlay.style.opacity = `1`
+		id('background').style.backgroundImage = `url(${val})`
 	}
 
 	img.src = val
@@ -1140,21 +1146,27 @@ function localBackgrounds(init, thumbnail, newfile) {
 				chrome.storage.local.set({ customIndex: bumpedindex })
 				chrome.storage.local.set({ custom: custom })
 
-				if (custom.length === 0) {
+				if (custom.length === 1) {
 					chrome.storage.sync.get('background_type', (data) => {
 						if (data.background_type === 'dynamic') chrome.storage.sync.set({ background_type: 'custom' })
 					})
 				}
 			})
 		}
-		id('background_overlay').style.opacity = '0'
-
+		domoverlay.style.opacity = '0'
 		reader.readAsDataURL(newfile)
 	}
 
 	function compress(e, state) {
-		//prend l'image complete en arg
+		//
+		// Hides previous bg and credits
+		if (state !== 'thumbnail') {
+			domoverlay.style.opacity = `0`
+			clas(domcredit, false, 'shown')
+			setTimeout(() => (domcredit.style.display = 'none'), BonjourrAnimTime)
+		}
 
+		const compressStart = performance.now()
 		const img = new Image()
 
 		img.onload = () => {
@@ -1187,7 +1199,8 @@ function localBackgrounds(init, thumbnail, newfile) {
 				})
 			} else
 				b64toBlobUrl(cleanData, (bloburl) => {
-					imgBackground(bloburl)
+					const compressTime = performance.now() - compressStart
+					setTimeout(() => imgBackground(bloburl, compressTime), 400 - compressTime)
 				})
 		}
 
@@ -1230,12 +1243,12 @@ function localBackgrounds(init, thumbnail, newfile) {
 				const appliedIndex = parseInt(id('background').getAttribute('index'))
 
 				if (index !== appliedIndex) {
-					id('background_overlay').style.opacity = `0`
+					domoverlay.style.opacity = `0`
 
 					chrome.storage.local.get('custom', (data) => {
 						changeImgIndex(index)
 						chrome.storage.local.set({ customIndex: index })
-						compress(data.custom[index], 'thumbclick', index)
+						compress(data.custom[index])
 					})
 				}
 			}
@@ -1243,41 +1256,43 @@ function localBackgrounds(init, thumbnail, newfile) {
 
 		rem.onmouseup = (e) => {
 			if (e.button === 0) {
-				const index = getParentIndex(e.target)
-				let currentIndex = parseInt(id('background').getAttribute('index'))
+				let index = getParentIndex(e.target)
+				let displayedIndex = parseInt(id('background').getAttribute('index'))
 
-				//removes thumbnail
-				domthumbnail[index].remove()
+				const toRemoveIsDisplayed = displayedIndex === index
+				const thumbnails = [...document.getElementsByClassName('thumbnail')]
 
-				//rewrite all thumbs indexes
-				for (let i = 0; i < domthumbnail.length; i++) domthumbnail[i].setAttribute('index', i)
+				//removes thumbnail & rewrite all thumbs indexes
+				thumbnails[index].remove()
+				thumbnails.splice(index, 1)
+				thumbnails.forEach((thumb, i) => thumb.setAttribute('index', i))
 
 				chrome.storage.local.get(['custom', 'customThumbnails'], (data) => {
-					//deletes thumbnail from storage
-					//concat  [0, index] à [index + 1, fin]
-
-					const deleteArrItem = (arr) => arr.slice(null, index).concat(arr.slice(index + 1))
-
-					data.custom = deleteArrItem(data.custom)
-					data.customThumbnails = deleteArrItem(data.customThumbnails)
+					data.custom.splice(index, 1)
+					data.customThumbnails.splice(index, 1)
 
 					chrome.storage.local.set({ custom: data.custom })
 					chrome.storage.local.set({ customThumbnails: data.customThumbnails })
 
-					if (currentIndex === data.custom.length) {
-						currentIndex -= 1
-						if (currentIndex >= 0) compress(data.custom[currentIndex])
+					// Previous image, if first, stays here
+					index -= index === 0 ? 0 : 1
+
+					// Last image is removed
+					if (data.custom.length === 0) {
+						domoverlay.style.opacity = `0`
+						domcredit.style.display = 'block'
+
+						setTimeout(() => {
+							unsplash(null, { removedCustom: true })
+							clas(domcredit, true, 'shown')
+						}, 400)
 					}
 
-					// Si derniere image des customs
-					if (data.custom.length === 0) {
-						unsplash(null, { removedCustom: true })
-					}
-					// Sinon load une autre
-					else {
-						changeImgIndex(currentIndex)
-						compress(data.custom[currentIndex])
-						chrome.storage.local.set({ customIndex: data.custom })
+					// Only draw new image if displayed is removed
+					else if (toRemoveIsDisplayed) {
+						changeImgIndex(index)
+						chrome.storage.local.set({ customIndex: index })
+						compress(data.custom[index])
 					}
 				})
 			}
@@ -1378,8 +1393,8 @@ function unsplash(init, event) {
 		clas(id('credit'), true, 'shown')
 	}
 
-	function loadBackground(props, callback) {
-		imgBackground(props.url, callback)
+	function loadBackground(props, loadTime) {
+		imgBackground(props.url, loadTime)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
@@ -1450,12 +1465,17 @@ function unsplash(init, event) {
 		return collecId
 	}
 
-	function cacheControl(dynamic, cacheList, collection) {
+	function cacheControl(dynamic, caches, collection, preloading) {
 		//
 		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
-		let list = cacheList[collection]
+		let list = caches[collection]
 
-		if (needNewImage) {
+		// Is trying to preload next
+		if (preloading) {
+			noDisplayImgLoad(list[1].url, () => chrome.storage.local.remove('waitingForPreload'))
+		}
+
+		if (needNewImage && !preloading) {
 			//
 			// Update time
 			dynamic.lastCollec = collection
@@ -1471,16 +1491,41 @@ function unsplash(init, event) {
 			// If end of cache, get & save new list
 			if (list.length === 1)
 				requestNewList(collection, (newlist) => {
-					cacheList[collection] = list.concat(newlist)
-					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
+					caches[collection] = list.concat(newlist)
+					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: caches }))
 				})
 			//
 			// Or preload next
-			else noDisplayImgLoad(list[1].url, () => chrome.storage.local.set({ dynamicCache: cacheList }))
+			else noDisplayImgLoad(list[1].url, () => chrome.storage.local.set({ dynamicCache: caches }))
 		}
 
 		// No need for new, load the same image
 		else loadBackground(list[0])
+	}
+
+	function populateEmptyList(collection, local, dynamic, isEvent) {
+		//
+		if (isEvent) collection = chooseCollection(collection)
+
+		requestNewList(collection, (newlist) => {
+			//
+			//change
+			dynamic.time = freqControl('set')
+			local.dynamicCache[collection] = newlist
+			chrome.storage.sync.set({ dynamic: dynamic })
+
+			const changeStart = performance.now()
+
+			noDisplayImgLoad(newlist[0].url, () => {
+				//
+				loadBackground(newlist[0], performance.now() - changeStart)
+				chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+				chrome.storage.local.set({ waitingForPreload: true })
+
+				//preload
+				noDisplayImgLoad(newlist[1].url, () => chrome.storage.local.remove('waitingForPreload'))
+			})
+		})
 	}
 
 	const initOrEvent = init && init.dynamic ? 'init' : 'event'
@@ -1494,7 +1539,7 @@ function unsplash(init, event) {
 
 	switch (initOrEvent) {
 		case 'init': {
-			chrome.storage.local.get('dynamicCache', function getCache(local) {
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function getCache(local) {
 				const { current, next, every } = init.dynamic
 
 				// <1.10.0: next is always old import
@@ -1516,24 +1561,11 @@ function unsplash(init, event) {
 				const collecId = collectionControl(init.dynamic)
 
 				// Not empty: normal cacheControl
-				if (local.dynamicCache[collecId].length > 0) {
-					cacheControl(init.dynamic, local.dynamicCache, collecId)
-				}
-
 				// If empty: request new, save sync & local
+				if (local.dynamicCache[collecId].length > 0)
+					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
 				else {
-					requestNewList(collecId, (newlist) => {
-						local.dynamicCache[collecId] = newlist
-						init.dynamic.time = freqControl('set')
-
-						chrome.storage.sync.set({ dynamic: init.dynamic })
-						chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-
-						noDisplayImgLoad(newlist[0].url, () => {
-							loadBackground(newlist[0])
-							noDisplayImgLoad(newlist[1].url)
-						})
-					})
+					populateEmptyList(collecId, local, init.dynamic, false)
 				}
 			})
 			break
@@ -1561,7 +1593,7 @@ function unsplash(init, event) {
 
 						// Always request another set, update last time image change and load background
 						case 'collection': {
-							id('background_overlay').style.opacity = '0'
+							domoverlay.style.opacity = '0'
 							//
 							// remove user collec
 							if (event.collection === '') {
@@ -1578,24 +1610,10 @@ function unsplash(init, event) {
 
 							// add new collec
 							else {
-								requestNewList(chooseCollection(event.collection), (newlist) => {
-									//change
-									local.dynamicCache.user = newlist
-									data.dynamic.collection = event.collection
-									data.dynamic.lastCollec = 'user'
-									data.dynamic.time = freqControl('set')
+								data.dynamic.collection = event.collection
+								data.dynamic.lastCollec = 'user'
 
-									//load
-									noDisplayImgLoad(newlist[0].url, () => {
-										loadBackground(newlist[0])
-
-										//save
-										chrome.storage.sync.set({ dynamic: data.dynamic })
-										chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-
-										noDisplayImgLoad(newlist[1].url)
-									})
-								})
+								populateEmptyList(event.collection, local, data.dynamic, true)
 							}
 
 							break

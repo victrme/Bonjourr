@@ -20,11 +20,13 @@ let googleFontList = {},
 
 const domshowsettings = id('showSettings'),
 	domlinkblocks = id('linkblocks_inner'),
+	domoverlay = id('background_overlay'),
 	dominterface = id('interface'),
 	domsearchbar = id('searchbar'),
 	domimg = id('background'),
 	domthumbnail = cl('thumbnail'),
-	domclock = id('clock')
+	domclock = id('clock'),
+	domcredit = id('credit')
 
 const mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false,
 	loadtimeStart = performance.now(),
