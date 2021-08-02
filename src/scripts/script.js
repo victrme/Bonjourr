@@ -2302,6 +2302,18 @@ window.onload = function () {
 					localStorage.bonjourr = atob(localStorage.data)
 					localStorage.removeItem('data')
 				}
+
+				if (Object.keys(data).length === 0) {
+					data = bonjourrDefaults('sync')
+					localStorage.bonjourr = JSON.stringify(bonjourrDefaults('sync'))
+					localStorage.bonjourrBackgrounds = JSON.stringify(bonjourrDefaults('local'))
+				}
+
+				if (data.about && data.about.ver !== '1.10.0') {
+					data.about.ver = '1.10.0'
+					data = filterImports(data)
+					lsOnlineStorage.set(data)
+				}
 			}
 
 			canDisplayInterface(null, { font: data.font })
