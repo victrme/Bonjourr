@@ -192,7 +192,7 @@ function newClock(eventObj, init) {
 	}
 }
 
-function date(event, usdate) {
+function clockDate(event, usdate) {
 	const date = new Date(),
 		jour = tradThis(days[date.getDay()]),
 		mois = tradThis(months[date.getMonth()]),
@@ -804,7 +804,7 @@ function weather(event, that, init) {
 		const unit = params.unit || 'metric'
 
 		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
-		url += params.location ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(params.city)},${params.ccode}`
+		url += params.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(params.city)},${params.ccode}`
 		url += `&units=${unit}&lang=${lang}`
 
 		// Inits global object
@@ -988,7 +988,7 @@ function weather(event, that, init) {
 						i_city.setAttribute('placeholder', data.weather.city)
 						i_ccode.value = data.weather.ccode
 
-						data.weather.location = false
+						data.weather.location = []
 						fetches(data.weather)
 					}
 					break
@@ -1560,12 +1560,16 @@ function unsplash(init, event) {
 				// Real init start
 				const collecId = collectionControl(init.dynamic)
 
+				// If no dynamicCache, create
+				// If list empty: request new, save sync & local
 				// Not empty: normal cacheControl
-				// If empty: request new, save sync & local
-				if (local.dynamicCache[collecId].length > 0)
-					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
-				else {
+				if (local.dynamicCache === undefined) {
+					local.dynamicCache = bonjourrDefaults('local').dynamicCache
 					populateEmptyList(collecId, local, init.dynamic, false)
+				} else if (local.dynamicCache[collecId].length === 0) {
+					populateEmptyList(collecId, local, init.dynamic, false)
+				} else {
+					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
 				}
 			})
 			break
@@ -2261,84 +2265,69 @@ function filterImports(data) {
 		delete data.font.supportedWeights
 	}
 
-	// Todo ?
-	// Save changes memory var
-	// favsToUpdate.push({ index, url })
-	// const howManyToSave = links.filter((link) => link.icon === 'src/images/icons/favicon.png')
-
-	// Last to save ? Update storage
-	// if (favsToUpdate.length === 1 || favsToUpdate.length === howManyToSave.length) {
-	// 	favsToUpdate.forEach((link) => (links[link.index].icon = link.url))
-	// 	chrome.storage.sync.set({ links: links })
-	// }
-
 	return result
+}
+
+function startup(data) {
+	canDisplayInterface(null, { font: data.font })
+	traduction(null, data.lang)
+
+	sunTime(data.weather)
+	weather(null, null, data.weather)
+
+	customFont(data.font)
+	customSize(data.font)
+	safeFont()
+
+	newClock(null, data.clock)
+	clockDate(null, data.usdate)
+	greetings(data.greeting)
+	linksrow(data.linksrow)
+
+	darkmode(null, data)
+	searchbar(null, null, data)
+	showPopup(data.reviewPopup)
+
+	customCss(data.css)
+	hideElem(data.hide)
+	initBackground(data)
+	quickLinks(null, null, data)
 }
 
 window.onload = function () {
 	try {
-		chrome.storage.sync.get(null, function startup(data) {
+		chrome.storage.sync.get(null, (data) => {
 			//
-			// Extension conditions
-			if (window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:') {
-				if (Object.keys(data).length === 0) {
+			const whichStart =
+				Object.keys(data).length === 0
+					? 'firstStartup'
+					: data.about && data.about.version !== '1.10.0'
+					? 'newVersion'
+					: 'normal'
+
+			switch (whichStart) {
+				case 'firstStartup': {
 					data = bonjourrDefaults('sync')
-					chrome.storage.sync.set(bonjourrDefaults('sync'))
+
 					chrome.storage.local.set(bonjourrDefaults('local'))
+					chrome.storage.sync.set(isExtension ? data : { import: data })
+					startup(data)
+
+					break
 				}
 
-				if (data.about && data.about.ver !== '1.10.0') {
-					data.about.ver = '1.10.0'
+				case 'newVersion': {
+					data.about.version = '1.10.0'
 					data = filterImports(data)
 					chrome.storage.sync.set(data)
+					startup(data)
+					break
 				}
+
+				case 'normal':
+					startup(data)
+					break
 			}
-
-			// Online conditions
-			else {
-				// Compatibility with older local versions
-				// As it is now using "bonjourr" key
-				if (localStorage.data && !localStorage.bonjourr) {
-					localStorage.bonjourr = atob(localStorage.data)
-					localStorage.removeItem('data')
-				}
-
-				if (Object.keys(data).length === 0) {
-					data = bonjourrDefaults('sync')
-					localStorage.bonjourr = JSON.stringify(bonjourrDefaults('sync'))
-					localStorage.bonjourrBackgrounds = JSON.stringify(bonjourrDefaults('local'))
-				}
-
-				if (data.about && data.about.ver !== '1.10.0') {
-					data.about.ver = '1.10.0'
-					data = filterImports(data)
-					lsOnlineStorage.set(data)
-				}
-			}
-
-			canDisplayInterface(null, { font: data.font })
-			traduction(null, data.lang)
-
-			sunTime(data.weather)
-			weather(null, null, data.weather)
-
-			customFont(data.font)
-			customSize(data.font)
-			safeFont()
-
-			newClock(null, data.clock)
-			date(null, data.usdate)
-			greetings(data.greeting)
-			linksrow(data.linksrow)
-
-			darkmode(null, data)
-			searchbar(null, null, data)
-			showPopup(data.reviewPopup)
-
-			customCss(data.css)
-			hideElem(data.hide)
-			initBackground(data)
-			quickLinks(null, null, data)
 		})
 	} catch (error) {
 		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)

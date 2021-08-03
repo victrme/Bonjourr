@@ -164,7 +164,7 @@ function settingsEvents() {
 	}
 
 	id('i_usdate').onchange = function () {
-		date(true, this.checked)
+		clockDate(true, this.checked)
 	}
 
 	//weather
@@ -328,11 +328,13 @@ function initParams(data) {
 	}
 
 	//weather settings
-	if (data.weather && Object.keys(data).length > 0) {
+	if (data.weather && Object.keys(data.weather).length > 0) {
+		const isGeolocation = data.weather.location.length > 0
 		let cityPlaceholder = data.weather.city ? data.weather.city : 'City'
 		id('i_city').setAttribute('placeholder', cityPlaceholder)
 
-		clas(id('sett_city'), data.weather.location, 'hidden')
+		clas(id('sett_city'), isGeolocation, 'hidden')
+		id('i_geol').checked = isGeolocation
 	} else {
 		clas(id('sett_city'), true, 'hidden')
 		id('i_geol').checked = true
@@ -500,8 +502,8 @@ function showSettings() {
 
 			case 'http:':
 			case 'https:':
-			case 'moz-extension:':
-			case 'chrome-extension:': {
+			case 'chrome-extension:':
+			case 'moz-extension:': {
 				fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
 			}
 		}

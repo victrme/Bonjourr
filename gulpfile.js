@@ -36,7 +36,6 @@ function scripts(which) {
 	const stream = src([
 		'src/scripts/lang.js',
 		'src/scripts/utils.js',
-		'src/scripts/utils.js',
 		'src/scripts/script.js',
 		'src/scripts/settings.js',
 	]).pipe(concat('main.js'))
@@ -49,6 +48,8 @@ function scripts(which) {
 				.pipe(replace('local.get(', 'get(true, '))
 				.pipe(replace('sync.set(', 'set('))
 				.pipe(replace('local.set(', 'setLocal('))
+				.pipe(replace('sync.remove(', 'remove(false, '))
+				.pipe(replace('local.remove(', 'remove(true, '))
 				.pipe(minify({ mangle: { keepClassName: true } }))
 			break
 		}

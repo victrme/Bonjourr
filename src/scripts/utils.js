@@ -29,6 +29,7 @@ const domshowsettings = id('showSettings'),
 	domcredit = id('credit')
 
 const mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false,
+	isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
 	funcsOk = {
@@ -49,7 +50,7 @@ const lsOnlineStorage = {
 		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
 		callback(data)
 	},
-	set: (prop) => {
+	set: (prop, callback) => {
 		lsOnlineStorage.get(null, null, (data) => {
 			if (typeof prop === 'object') {
 				const [key, val] = Object.entries(prop)[0]
@@ -58,15 +59,27 @@ const lsOnlineStorage = {
 				else data[key] = val
 
 				localStorage.bonjourr = JSON.stringify(data)
+				if (callback) callback
 			}
 		})
 	},
+
 	setLocal: (prop) => {
 		lsOnlineStorage.get(true, null, (data) => {
 			if (typeof prop === 'object') {
-				data[Object.entries(prop)[0][0]] = Object.entries(prop)[0][1]
+				data = {
+					...data,
+					...prop,
+				}
 				localStorage.bonjourrBackgrounds = JSON.stringify(data)
 			}
+		})
+	},
+	remove: (isLocal, key) => {
+		lsOnlineStorage.get(isLocal, null, (data) => {
+			delete data[key]
+			if (isLocal) localStorage.bonjourrBackgrounds = JSON.stringify(data)
+			else localStorage.bonjourr = JSON.stringify(data)
 		})
 	},
 	log: (isLocal) => lsOnlineStorage.get(isLocal, null, (data) => console.log(data)),
@@ -77,7 +90,7 @@ const logsync = (flat) => chrome.storage.sync.get(null, (data) => consolr(flat, 
 const loglocal = (flat) => chrome.storage.local.get(null, (data) => consolr(flat, data))
 
 function deleteBrowserStorage() {
-	if (window.location.protocol === 'chrome-extension:') {
+	if (isExtension) {
 		chrome.storage.sync.clear()
 		chrome.storage.local.clear()
 	}
@@ -134,7 +147,7 @@ function bonjourrDefaults(which) {
 					availWeights: [],
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: 'chrome' },
+				about: { browser: 'chrome', version: '1.10.0' },
 			}
 
 		case 'local':
