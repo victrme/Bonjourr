@@ -37,100 +37,40 @@ function tradThis(str) {
 	return lang === 'en' ? str : dict[str][lang]
 }
 
-function newClock(eventObj, init) {
-	function displayControl() {
-		const numeric = id('clock'),
-			analog = id('analogClock'),
-			analogSec = id('analogSeconds')
+function clock(event, init) {
+	//
 
-		//cache celle qui n'est pas choisi
-		clas(numeric, clock.analog, 'hidden')
-		clas(analog, !clock.analog, 'hidden')
+	function zonedDate(timezone) {
+		const date = new Date()
+		if (timezone === 'auto' || timezone === NaN) return date
+		else {
+			const offset = parseInt(date.getTimezoneOffset() / 60)
+			const utcHour = date.getHours() + offset
 
-		//cache l'aiguille des secondes
-		clas(analogSec, !clock.seconds && clock.analog, 'hidden')
+			date.setHours(utcHour + parseInt(timezone))
+
+			return date
+		}
 	}
 
-	function main(change) {
-		//retourne une liste [heure, minutes, secondes]
-		function time() {
-			const date = new Date()
-			return [date.getHours(), date.getMinutes(), date.getSeconds()]
-		}
+	function clockDate(date, usdate) {
+		const jour = tradThis(days[date.getDay()]),
+			mois = tradThis(months[date.getMonth()]),
+			chiffre = date.getDate()
 
-		//besoin pour numerique et analogue
-		function timezone(timezone, hour) {
-			if (timezone === 'auto' || timezone === NaN) return hour
-			else {
-				let d = new Date()
-				let offset = d.getTimezoneOffset()
-				let utc = hour + offset / 60
-				let setTime = (utc + parseInt(timezone)) % 24
-
-				if (setTime < 0) setTime = 24 + setTime
-
-				return setTime
-			}
-		}
-
-		function numerical(timearray) {
-			//seul numerique a besoin du ampm
-			function toAmpm(val) {
-				if (val > 12) val -= 12
-				else if (val === 0) val = 12
-				else val
-
-				return val
-			}
-
-			function fixunits(val) {
-				val = val < 10 ? '0' + val : val
-				return val.toString()
-			}
-
-			let h = clock.ampm ? toAmpm(timearray[0]) : timearray[0],
-				m = fixunits(timearray[1]),
-				s = fixunits(timearray[2])
-
-			if (clock.seconds) {
-				domclock.textContent = `${h}:${m}:${s}`
-			} else if (change || domclock.textContent.length === 0 || s === '00') {
-				domclock.textContent = `${h}:${m}`
-			}
-		}
-
-		function analog(timearray) {
-			function rotation(that, val) {
-				that.style.transform = `rotate(${parseInt(val)}deg)`
-			}
-
-			let s = timearray[2] * 6,
-				m = timearray[1] * 6, // + (s / 60),
-				h = timearray[0] * 30 //% 12 / 12 * 360 + (m / 12);
-
-			//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
-			if (true || timearray[2] === 0) rotation(id('minutes'), m)
-			if (true || timearray[1] === 0) rotation(id('hours'), h)
-
-			//tourne pas les secondes si pas de seconds
-			if (clock.seconds) rotation(id('analogSeconds'), s)
-		}
-
-		//timezone control
-		//analog control
-		const array = time()
-
-		array[0] = timezone(clock.timezone, array[0])
-		clock.analog ? analog(array) : numerical(array)
+		id('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
 	}
 
-	function startClock(change) {
-		//stops multiple intervals
-		clearInterval(lazyClockInterval)
+	function greetings(date, name) {
+		const greets = [
+			['Good Night', 7],
+			['Good Morning', 12],
+			['Good Afternoon', 18],
+			['Good Evening', 24],
+		]
 
-		displayControl()
-		main(change)
-		lazyClockInterval = setInterval(main, 1000)
+		const greetResult = greets.filter((greet) => date.getHours() < greet[1])[0]
+		id('greetings').textContent = tradThis(greetResult[0]) + (name ? `, ${name}` : '')
 	}
 
 	function changeAnalogFace(face = 'none') {
@@ -146,77 +86,144 @@ function newClock(eventObj, init) {
 		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.textContent = chars[face][i]))
 	}
 
-	//controle très stricte de clock comme vous pouvez le voir
-	//(je sais que je peux faire mieux)
-	let clock = {
-		analog: false,
-		seconds: false,
-		ampm: false,
-		timezone: 'auto',
-		face: 'none',
-	}
+	function startClock(clock, greeting, usdate) {
+		//
+		function displayControl() {
+			const numeric = id('clock'),
+				analog = id('analogClock'),
+				analogSec = id('analogSeconds')
 
-	if (eventObj) {
-		chrome.storage.sync.get('clock', (data) => {
-			if (data.clock) {
-				clock = {
-					analog: data.clock.analog,
-					seconds: data.clock.seconds,
-					ampm: data.clock.ampm,
-					timezone: data.clock.timezone,
-					face: data.clock.face,
+			//cache celle qui n'est pas choisi
+			clas(numeric, clock.analog, 'hidden')
+			clas(analog, !clock.analog, 'hidden')
+
+			//cache l'aiguille des secondes
+			clas(analogSec, !clock.seconds && clock.analog, 'hidden')
+		}
+
+		function clockInterval() {
+			//
+
+			function numerical(time) {
+				//seul numerique a besoin du ampm
+				function toAmpm(val) {
+					if (val > 12) val -= 12
+					else if (val === 0) val = 12
+					else val
+
+					return val
 				}
+
+				function fixunits(val) {
+					val = val < 10 ? '0' + val : val
+					return val.toString()
+				}
+
+				let h = clock.ampm ? toAmpm(time.getHours()) : time.getHours(),
+					m = fixunits(time.getMinutes()),
+					s = fixunits(time.getSeconds())
+
+				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
-			//event change of clock parameters
-			clock[eventObj.param] = eventObj.value
-			chrome.storage.sync.set({ clock: clock })
+			function analog(time) {
+				function rotation(that, val) {
+					that.style.transform = `rotate(${parseInt(val)}deg)`
+				}
 
-			startClock(true)
-			changeAnalogFace(clock.face)
-		})
-	} else {
-		if (init) {
-			clock = {
-				analog: init.analog,
-				seconds: init.seconds,
-				ampm: init.ampm,
-				timezone: init.timezone,
-				face: init.face,
+				let s = time.getSeconds() * 6,
+					m = time.getMinutes() * 6, // + (s / 60),
+					h = time.getHours() * 30 //% 12 / 12 * 360 + (m / 12);
+
+				//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
+				if (true || time.getMinutes() === 0) rotation(id('minutes'), m)
+				if (true || time.getHours() === 0) rotation(id('hours'), h)
+
+				//tourne pas les secondes si pas de seconds
+				if (clock.seconds) rotation(id('analogSeconds'), s)
+			}
+
+			// Control
+			const date = zonedDate(clock.timezone)
+			clock.analog ? analog(date) : numerical(date)
+
+			// Midnight, change date
+			if (date.getHours() === 0 && date.getMinutes() === 0) {
+				clockDate(date, usdate)
+			}
+
+			// Hour change
+			if (date.getMinutes() === 0) {
+				greetings(date, greeting)
 			}
 		}
 
-		startClock(true)
+		//stops multiple intervals
+		clearInterval(lazyClockInterval)
+
+		displayControl()
+		clockInterval()
+		lazyClockInterval = setInterval(clockInterval, 1000)
+	}
+
+	if (event) {
+		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
+			const [key, val] = Object.entries(event)[0]
+
+			switch (key) {
+				case 'usdate': {
+					clockDate(zonedDate(data.clock.timezone), val)
+					slowRange({ usdate: val }, 500)
+					break
+				}
+
+				case 'greeting': {
+					greetings(zonedDate(data.clock.timezone), val)
+					slowRange({ greeting: val }, 500)
+					break
+				}
+
+				default: {
+					let clock = {
+						analog: false,
+						seconds: false,
+						ampm: false,
+						timezone: 'auto',
+						face: 'none',
+					}
+
+					clock = { ...data.clock }
+					clock[key] = val
+					chrome.storage.sync.set({ clock: clock })
+
+					if (key === 'timezone') {
+						clockDate(zonedDate(val), data.usdate)
+						greetings(zonedDate(val), data.greeting)
+					}
+
+					startClock(clock, data.greeting, data.usdate)
+					changeAnalogFace(clock.face)
+					break
+				}
+			}
+		})
+	} else {
+		let clock = {
+			analog: false,
+			seconds: false,
+			ampm: false,
+			timezone: 'auto',
+			face: 'none',
+		}
+
+		if (init.clock) clock = { ...clock, ...init.clock }
+
+		startClock(clock, init.greeting, init.usdate)
+		clockDate(zonedDate(clock.timezone), init.usdate)
+		greetings(zonedDate(clock.timezone), init.greeting)
 		changeAnalogFace(clock.face)
 		canDisplayInterface('clock')
 	}
-}
-
-function clockDate(event, usdate) {
-	const date = new Date(),
-		jour = tradThis(days[date.getDay()]),
-		mois = tradThis(months[date.getMonth()]),
-		chiffre = date.getDate()
-
-	id('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
-	if (event) chrome.storage.sync.set({ usdate: usdate })
-}
-
-function greetings(name, isevent) {
-	const greets = [
-		['Good Night', 7],
-		['Good Morning', 12],
-		['Good Afternoon', 18],
-		['Good Evening', 24],
-	]
-
-	const hour = new Date().getHours()
-	const greet = tradThis(greets.filter((greet) => hour < greet[1])[0][0])
-	const customName = name ? `, ${name}` : ''
-
-	id('greetings').textContent = greet + customName
-
-	if (isevent) slowRange({ greeting: name }, 500)
 }
 
 function quickLinks(event, that, initStorage) {
@@ -2279,9 +2286,7 @@ function startup(data) {
 	customSize(data.font)
 	safeFont()
 
-	newClock(null, data.clock)
-	clockDate(null, data.usdate)
-	greetings(data.greeting)
+	clock(null, data)
 	linksrow(data.linksrow)
 
 	darkmode(null, data)

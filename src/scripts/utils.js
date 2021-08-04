@@ -10,10 +10,10 @@ const clas = (dom, add, str) => {
 	else dom.classList.remove(str)
 }
 
-let googleFontList = {},
+let lazyClockInterval = setTimeout(() => {}, 0),
+	googleFontList = {},
 	stillActive = false,
 	rangeActive = false,
-	lazyClockInterval = 0,
 	firstpaint = false,
 	sunset = 0,
 	sunrise = 0

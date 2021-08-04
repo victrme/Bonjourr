@@ -136,35 +136,35 @@ function settingsEvents() {
 		darkmode(this.value)
 	}
 
-	id('i_greeting').onkeyup = function () {
-		greetings(stringMaxSize(this.value, 32), true)
-	}
-
 	//Time and date
 
 	id('i_analog').onchange = function () {
-		newClock({ param: 'analog', value: this.checked })
+		clock({ analog: this.checked })
 		toggleClockOptions(this.checked)
 	}
 
 	id('i_seconds').onchange = function () {
-		newClock({ param: 'seconds', value: this.checked })
+		clock({ seconds: this.checked })
 	}
 
 	id('i_clockface').onchange = function () {
-		newClock({ param: 'face', value: this.value })
+		clock({ face: this.value })
 	}
 
 	id('i_ampm').onchange = function () {
-		newClock({ param: 'ampm', value: this.checked })
+		clock({ ampm: this.checked })
 	}
 
 	id('i_timezone').onchange = function () {
-		newClock({ param: 'timezone', value: this.value })
+		clock({ timezone: this.value })
+	}
+
+	id('i_greeting').onkeyup = function () {
+		clock({ greeting: stringMaxSize(this.value, 32) })
 	}
 
 	id('i_usdate').onchange = function () {
-		clockDate(true, this.checked)
+		clock({ usdate: this.checked })
 	}
 
 	//weather
