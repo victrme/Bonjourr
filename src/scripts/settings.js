@@ -244,7 +244,6 @@ function settingsEvents() {
 		})
 
 	const cssEditor = id('cssEditor')
-	const cssResize = new ResizeObserver((e) => customCss(null, { is: 'resize', val: e[0].contentRect.height }))
 
 	cssEditor.addEventListener('keydown', function (e) {
 		if (e.code === 'Tab') e.preventDefault()
@@ -254,13 +253,21 @@ function settingsEvents() {
 		customCss(null, { is: 'styling', val: e.target.value })
 	})
 
-	cssResize.observe(cssEditor)
+	setTimeout(() => {
+		const cssResize = new ResizeObserver((e) => {
+			const rect = e[0].contentRect
+			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+		})
+		cssResize.observe(cssEditor)
+	}, 400)
 }
 
-function initParams(data) {
-	const initInput = (dom, cat, base) => (id(dom).value = cat !== undefined ? cat : base)
-	const initCheckbox = (dom, cat) => (id(dom).checked = cat ? true : false)
+function initParams(data, settingsDom) {
+	const initInput = (dom, cat, base) => (settingsDom.querySelector('#' + dom).value = cat !== undefined ? cat : base)
+	const initCheckbox = (dom, cat) => (settingsDom.querySelector('#' + dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
+
+	console.log(settingsDom)
 
 	// 1.9.2 ==> 1.9.3 lang break fix
 	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
@@ -304,7 +311,7 @@ function initParams(data) {
 	hideElem(null, document.querySelectorAll('#hideelem button'), null)
 
 	// Font family default
-	safeFont(id('i_customfont'))
+	safeFont(settingsDom.querySelector('#i_customfont'))
 
 	// Font weight
 	if (data.font) modifyWeightOptions(data.font.availWeights)
@@ -313,46 +320,47 @@ function initParams(data) {
 	if (data.clock) toggleClockOptions(data.clock.analog)
 
 	// Input translation
-	id('i_title').setAttribute('placeholder', tradThis('Name'))
-	id('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	id('i_import').setAttribute('placeholder', tradThis('Import code'))
-	id('i_export').setAttribute('placeholder', tradThis('Export code'))
-	id('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
+	settingsDom.querySelector('#i_title').setAttribute('placeholder', tradThis('Name'))
+	settingsDom.querySelector('#i_greeting').setAttribute('placeholder', tradThis('Name'))
+	settingsDom.querySelector('#i_import').setAttribute('placeholder', tradThis('Import code'))
+	settingsDom.querySelector('#i_export').setAttribute('placeholder', tradThis('Export code'))
+	settingsDom.querySelector('#cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg
 	if (data.background_type === 'custom') {
-		id('custom').style.display = 'block'
+		settingsDom.querySelector('#custom').style.display = 'block'
 		localBackgrounds(null, true)
 	} else {
-		id('dynamic').style.display = 'block'
+		settingsDom.querySelector('#dynamic').style.display = 'block'
 	}
 
 	//weather settings
 	if (data.weather && Object.keys(data.weather).length > 0) {
 		const isGeolocation = data.weather.location.length > 0
-		let cityPlaceholder = data.weather.city ? data.weather.city : 'City'
-		id('i_city').setAttribute('placeholder', cityPlaceholder)
+		let cityName = data.weather.city ? data.weather.city : 'City'
+		settingsDom.querySelector('#i_city').setAttribute('placeholder', cityName)
+		settingsDom.querySelector('#i_city').value = cityName
 
-		clas(id('sett_city'), isGeolocation, 'hidden')
-		id('i_geol').checked = isGeolocation
+		clas(settingsDom.querySelector('#sett_city'), isGeolocation, 'hidden')
+		settingsDom.querySelector('#i_geol').checked = isGeolocation
 	} else {
-		clas(id('sett_city'), true, 'hidden')
-		id('i_geol').checked = true
+		clas(settingsDom.querySelector('#sett_city'), true, 'hidden')
+		settingsDom.querySelector('#i_geol').checked = true
 	}
 
 	//searchbar display settings
-	clas(id('searchbar_options'), data.searchbar, 'shown')
+	clas(settingsDom.querySelector('#searchbar_options'), data.searchbar, 'shown')
 
 	//searchbar display settings
-	if (data.cssHeight) id('cssEditor').style.height = data.cssHeight + 'px'
+	if (data.cssHeight) settingsDom.querySelector('#cssEditor').style.height = data.cssHeight + 'px'
 
 	//langue
-	id('i_lang').value = data.lang || 'en'
+	settingsDom.querySelector('#i_lang').value = data.lang || 'en'
 
 	//firefox export
 	if (!navigator.userAgent.includes('Chrome')) {
-		id('submitExport').style.display = 'none'
-		id('i_export').style.width = '100%'
+		settingsDom.querySelector('#submitExport').style.display = 'none'
+		settingsDom.querySelector('#i_export').style.width = '100%'
 	}
 }
 
@@ -461,22 +469,25 @@ function showSettings() {
 		clas(edit, !isShown, 'pushed')
 	}
 
-	function functions() {
+	function functions(settingsDom) {
 		chrome.storage.sync.get(null, (data) => {
-			initParams(data)
-			traduction(true, data.lang)
+			if (data.lang !== 'en') {
+				const trns = settingsDom.querySelectorAll('.trn')
+				const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][data.lang]) : '')
+				trns.forEach((trn) => changeText(trn, trn.textContent))
+			}
+
+			initParams(data, settingsDom)
+			showall(data.showall)
+			settingsEvents()
+			signature()
+			clas(id('settings'), false, 'init')
+			customFont(null, { autocomplete: true })
 
 			setTimeout(() => {
+				document.body.appendChild(settingsDom)
 				display()
-				showall(data.showall)
-				settingsEvents()
-				signature()
-
-				setTimeout(() => {
-					clas(id('settings'), false, 'init')
-					customFont(null, { autocomplete: true })
-				}, 100)
-			}, 10)
+			}, 600)
 		})
 	}
 
@@ -486,9 +497,7 @@ function showSettings() {
 			dom.id = 'settings'
 			dom.innerHTML = html
 			dom.setAttribute('class', 'init')
-			document.body.appendChild(dom)
-
-			functions()
+			functions(dom)
 		}
 
 		switch (window.location.protocol) {

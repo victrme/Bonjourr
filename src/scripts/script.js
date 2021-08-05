@@ -828,7 +828,7 @@ function weather(event, that, init) {
 	function cacheControl(storage) {
 		const now = Math.floor(date.getTime() / 1000)
 
-		if (storage.lastCall) {
+		if (typeof storage.lastCall === 'number') {
 			//
 			// Current: 30 mins
 			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
@@ -1740,7 +1740,7 @@ function searchbar(event, that, storage) {
 	domsearchbar.onkeyup = function (e) {
 		const isNewtab = e.target.getAttribute('newtab') === 'true'
 
-		if (e.key === 'Enter') {
+		if (e.key === 'Enter' && this.value.length > 0) {
 			if (isNewtab) window.open(localisation(this.value), '_blank')
 			else window.location = localisation(this.value)
 		}
@@ -2231,10 +2231,11 @@ function filterImports(data) {
 	let result = { ...data }
 
 	if (data.weather) {
+		if (data.weather.location === false) result.weather.location = []
 		result.weather = reducedWeatherData(data.weather)
 
-		if (result.weather.lastCall) delete result.weather.lastCall
-		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
+		if (result.weather.lastCall) result.weather.lastCall = 0
+		if (result.weather.forecastLastCall) result.weather.forecastLastCall = 0
 	}
 
 	// Old blur was strings
