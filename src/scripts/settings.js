@@ -1,10 +1,20 @@
-function signature() {
-	let v = "<a href='https://victr.me/'>Victor Azevedo</a>"
-	let t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>"
-	let e = document.createElement('span')
+function signature(dom) {
+	const span = document.createElement('span')
+	const us = [
+		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
+		{ href: 'https://tahoe.be', name: 'Tahoe Beetschen' },
+	]
 
-	e.innerHTML = Math.random() > 0.5 ? ` ${v} & ${t}` : ` ${t} & ${v}`
-	id('rand').appendChild(e)
+	if (Math.random() > 0.5) us.reverse()
+
+	us.forEach((sign) => {
+		const a = document.createElement('a')
+		a.href = sign.href
+		a.textContent = sign.name
+		span.appendChild(a)
+	})
+
+	dom.querySelector('#rand').appendChild(span)
 }
 
 function selectBackgroundType(cat) {
@@ -37,237 +47,22 @@ function selectBackgroundType(cat) {
 	chrome.storage.sync.set({ background_type: cat })
 }
 
-function showall(val, event) {
+function showall(val, event, domSettings) {
 	if (event) chrome.storage.sync.set({ showall: val })
-	clas(id('settings'), val, 'all')
-}
-
-function toggleClockOptions(analog) {
-	const optionsWrapper = id('clockoptions')
-	if (analog) {
-		optionsWrapper.classList.remove('digital')
-		optionsWrapper.classList.add('analog')
-	} else {
-		optionsWrapper.classList.remove('analog')
-		optionsWrapper.classList.add('digital')
-	}
-}
-
-function settingsEvents() {
-	const bgfile = document.getElementById('i_bgfile')
-	const fileContainer = document.getElementById('i_fileContainer')
-
-	// file input animation
-	bgfile.addEventListener('dragenter', function () {
-		fileContainer.classList.add('dragover')
-	})
-
-	bgfile.addEventListener('dragleave', function () {
-		fileContainer.classList.remove('dragover')
-	})
-
-	bgfile.addEventListener('drop', function () {
-		fileContainer.classList.remove('dragover')
-	})
-
-	//general
-
-	id('i_showall').onchange = function () {
-		showall(this.checked, true)
-	}
-
-	id('i_lang').onchange = function () {
-		chrome.storage.sync.set({ lang: this.value })
-
-		//session pour le weather
-		sessionStorage.lang = this.value
-		if (sessionStorage.lang) location.reload()
-	}
-
-	//quick links
-	id('i_title').onkeyup = function (e) {
-		if (e.code === 'Enter') quickLinks('input', e)
-	}
-
-	id('i_url').onkeyup = function (e) {
-		if (e.code === 'Enter') quickLinks('input', e)
-	}
-
-	id('submitlink').onmouseup = function () {
-		quickLinks('button', this)
-	}
-
-	id('i_linknewtab').onchange = function () {
-		quickLinks('linknewtab', this)
-	}
-
-	//visuals
-	id('i_type').onchange = function () {
-		selectBackgroundType(this.value)
-	}
-
-	id('i_freq').onchange = function () {
-		if (id('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
-		else unsplash(null, { every: this.value })
-	}
-
-	id('i_collection').onchange = function () {
-		unsplash(null, { collection: stringMaxSize(this.value, 128) })
-		this.blur()
-	}
-
-	//custom bg
-
-	id('i_bgfile').onchange = function () {
-		localBackgrounds(null, null, this.files[0])
-	}
-
-	id('i_blur').oninput = function () {
-		filter('blur', this.value)
-		slowRange({ background_blur: parseFloat(this.value) })
-	}
-
-	id('i_bright').oninput = function () {
-		filter('bright', this.value)
-		slowRange({ background_bright: parseFloat(this.value) })
-	}
-
-	id('i_dark').onchange = function () {
-		darkmode(this.value)
-	}
-
-	//Time and date
-
-	id('i_analog').onchange = function () {
-		clock({ analog: this.checked })
-		toggleClockOptions(this.checked)
-	}
-
-	id('i_seconds').onchange = function () {
-		clock({ seconds: this.checked })
-	}
-
-	id('i_clockface').onchange = function () {
-		clock({ face: this.value })
-	}
-
-	id('i_ampm').onchange = function () {
-		clock({ ampm: this.checked })
-	}
-
-	id('i_timezone').onchange = function () {
-		clock({ timezone: this.value })
-	}
-
-	id('i_greeting').onkeyup = function () {
-		clock({ greeting: stringMaxSize(this.value, 32) })
-	}
-
-	id('i_usdate').onchange = function () {
-		clock({ usdate: this.checked })
-	}
-
-	//weather
-
-	id('i_city').onkeypress = function (e) {
-		if (!stillActive && e.code === 'Enter') weather('city', this)
-	}
-
-	id('i_units').onchange = function () {
-		if (!stillActive) weather('units', this)
-	}
-
-	id('i_geol').onchange = function () {
-		if (!stillActive) weather('geol', this)
-	}
-
-	//searchbar
-	id('i_sb').onchange = function () {
-		id('searchbar_options').classList.toggle('shown')
-		if (!stillActive) searchbar('searchbar', this)
-		slow(this)
-	}
-
-	id('i_sbengine').onchange = function () {
-		searchbar('engine', this)
-	}
-
-	id('i_sbnewtab').onchange = function () {
-		searchbar('newtab', this)
-	}
-
-	//settings
-
-	id('submitReset').onclick = function () {
-		importExport('reset')
-	}
-
-	id('submitExport').onclick = function () {
-		importExport('exp', true)
-	}
-
-	id('submitImport').onclick = function () {
-		importExport('imp', true)
-	}
-
-	id('i_import').onkeypress = function (e) {
-		if (e.code === 'Enter') importExport('imp', true)
-	}
-
-	id('i_export').onfocus = function () {
-		importExport('exp')
-	}
-
-	id('i_customfont').onchange = function () {
-		customFont(null, { family: this.value })
-	}
-
-	id('i_weight').oninput = function () {
-		customFont(null, { weight: this.value })
-	}
-
-	id('i_size').oninput = function () {
-		customSize(null, this.value)
-	}
-
-	id('i_row').oninput = function () {
-		linksrow(null, this.value)
-	}
-
-	id('hideelem')
-		.querySelectorAll('button')
-		.forEach((elem) => {
-			elem.onmouseup = function () {
-				elem.classList.toggle('clicked')
-				hideElem(null, null, this)
-			}
-		})
-
-	const cssEditor = id('cssEditor')
-
-	cssEditor.addEventListener('keydown', function (e) {
-		if (e.code === 'Tab') e.preventDefault()
-	})
-
-	cssEditor.addEventListener('keyup', function (e) {
-		customCss(null, { is: 'styling', val: e.target.value })
-	})
-
-	setTimeout(() => {
-		const cssResize = new ResizeObserver((e) => {
-			const rect = e[0].contentRect
-			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
-		})
-		cssResize.observe(cssEditor)
-	}, 400)
+	clas(event ? id('settings') : domSettings, val, 'all')
 }
 
 function initParams(data, settingsDom) {
+	//
+
 	const initInput = (dom, cat, base) => (settingsDom.querySelector('#' + dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (settingsDom.querySelector('#' + dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
-	console.log(settingsDom)
+	function toggleClockOptions(dom, analog) {
+		dom.classList.remove(analog ? 'digital' : 'analog')
+		dom.classList.add(analog ? 'analog' : 'digital')
+	}
 
 	// 1.9.2 ==> 1.9.3 lang break fix
 	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
@@ -308,7 +103,7 @@ function initParams(data, settingsDom) {
 	if (data.links && data.links.length === 20) quickLinks('maxControl', true)
 
 	// Hide elems
-	hideElem(null, document.querySelectorAll('#hideelem button'), null)
+	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
 
 	// Font family default
 	safeFont(settingsDom.querySelector('#i_customfont'))
@@ -317,7 +112,7 @@ function initParams(data, settingsDom) {
 	if (data.font) modifyWeightOptions(data.font.availWeights)
 
 	// Clock
-	if (data.clock) toggleClockOptions(data.clock.analog)
+	if (data.clock) toggleClockOptions(settingsDom.querySelector('#clockoptions'), data.clock.analog)
 
 	// Input translation
 	settingsDom.querySelector('#i_title').setAttribute('placeholder', tradThis('Name'))
@@ -341,15 +136,15 @@ function initParams(data, settingsDom) {
 		settingsDom.querySelector('#i_city').setAttribute('placeholder', cityName)
 		settingsDom.querySelector('#i_city').value = cityName
 
-		clas(settingsDom.querySelector('#sett_city'), isGeolocation, 'hidden')
+		//clas(settingsDom.querySelector('#sett_city'), isGeolocation, 'hidden')
 		settingsDom.querySelector('#i_geol').checked = isGeolocation
 	} else {
-		clas(settingsDom.querySelector('#sett_city'), true, 'hidden')
+		//clas(settingsDom.querySelector('#sett_city'), true, 'hidden')
 		settingsDom.querySelector('#i_geol').checked = true
 	}
 
 	//searchbar display settings
-	clas(settingsDom.querySelector('#searchbar_options'), data.searchbar, 'shown')
+	//clas(settingsDom.querySelector('#searchbar_options'), data.searchbar, 'shown')
 
 	//searchbar display settings
 	if (data.cssHeight) settingsDom.querySelector('#cssEditor').style.height = data.cssHeight + 'px'
@@ -362,6 +157,218 @@ function initParams(data, settingsDom) {
 		settingsDom.querySelector('#submitExport').style.display = 'none'
 		settingsDom.querySelector('#i_export').style.width = '100%'
 	}
+
+	//
+	// Events
+	//
+
+	const bgfile = settingsDom.querySelector('#i_bgfile')
+	const fileContainer = settingsDom.querySelector('#i_fileContainer')
+
+	// file input animation
+	bgfile.addEventListener('dragenter', function () {
+		fileContainer.classList.add('dragover')
+	})
+
+	bgfile.addEventListener('dragleave', function () {
+		fileContainer.classList.remove('dragover')
+	})
+
+	bgfile.addEventListener('drop', function () {
+		fileContainer.classList.remove('dragover')
+	})
+
+	//general
+
+	settingsDom.querySelector('#i_showall').onchange = function () {
+		showall(this.checked, true)
+	}
+
+	settingsDom.querySelector('#i_lang').onchange = function () {
+		chrome.storage.sync.set({ lang: this.value })
+
+		//session pour le weather
+		sessionStorage.lang = this.value
+		if (sessionStorage.lang) location.reload()
+	}
+
+	//quick links
+	settingsDom.querySelector('#i_title').onkeyup = function (e) {
+		if (e.code === 'Enter') quickLinks('input', e)
+	}
+
+	settingsDom.querySelector('#i_url').onkeyup = function (e) {
+		if (e.code === 'Enter') quickLinks('input', e)
+	}
+
+	settingsDom.querySelector('#submitlink').onmouseup = function () {
+		quickLinks('button', this)
+	}
+
+	settingsDom.querySelector('#i_linknewtab').onchange = function () {
+		quickLinks('linknewtab', this)
+	}
+
+	//visuals
+	settingsDom.querySelector('#i_type').onchange = function () {
+		selectBackgroundType(this.value)
+	}
+
+	settingsDom.querySelector('#i_freq').onchange = function () {
+		if (settingsDom.querySelector('#i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
+		else unsplash(null, { every: this.value })
+	}
+
+	settingsDom.querySelector('#i_collection').onchange = function () {
+		unsplash(null, { collection: stringMaxSize(this.value, 128) })
+		this.blur()
+	}
+
+	//custom bg
+
+	settingsDom.querySelector('#i_bgfile').onchange = function () {
+		localBackgrounds(null, null, this.files[0])
+	}
+
+	settingsDom.querySelector('#i_blur').oninput = function () {
+		filter('blur', this.value)
+		slowRange({ background_blur: parseFloat(this.value) })
+	}
+
+	settingsDom.querySelector('#i_bright').oninput = function () {
+		filter('bright', this.value)
+		slowRange({ background_bright: parseFloat(this.value) })
+	}
+
+	settingsDom.querySelector('#i_dark').onchange = function () {
+		darkmode(this.value)
+	}
+
+	//Time and date
+
+	settingsDom.querySelector('#i_analog').onchange = function () {
+		clock({ analog: this.checked })
+		toggleClockOptions(settingsDom.querySelector('#clockoptions'), this.checked)
+	}
+
+	settingsDom.querySelector('#i_seconds').onchange = function () {
+		clock({ seconds: this.checked })
+	}
+
+	settingsDom.querySelector('#i_clockface').onchange = function () {
+		clock({ face: this.value })
+	}
+
+	settingsDom.querySelector('#i_ampm').onchange = function () {
+		clock({ ampm: this.checked })
+	}
+
+	settingsDom.querySelector('#i_timezone').onchange = function () {
+		clock({ timezone: this.value })
+	}
+
+	settingsDom.querySelector('#i_greeting').onkeyup = function () {
+		clock({ greeting: stringMaxSize(this.value, 32) })
+	}
+
+	settingsDom.querySelector('#i_usdate').onchange = function () {
+		clock({ usdate: this.checked })
+	}
+
+	//weather
+
+	settingsDom.querySelector('#i_city').onkeypress = function (e) {
+		if (!stillActive && e.code === 'Enter') weather('city', this)
+	}
+
+	settingsDom.querySelector('#i_units').onchange = function () {
+		if (!stillActive) weather('units', this)
+	}
+
+	settingsDom.querySelector('#i_geol').onchange = function () {
+		if (!stillActive) weather('geol', this)
+	}
+
+	//searchbar
+	settingsDom.querySelector('#i_sb').onchange = function () {
+		settingsDom.querySelector('#searchbar_options').classList.toggle('shown')
+		if (!stillActive) searchbar('searchbar', this)
+		slow(this)
+	}
+
+	settingsDom.querySelector('#i_sbengine').onchange = function () {
+		searchbar('engine', this)
+	}
+
+	settingsDom.querySelector('#i_sbnewtab').onchange = function () {
+		searchbar('newtab', this)
+	}
+
+	//settings
+
+	settingsDom.querySelector('#submitReset').onclick = function () {
+		importExport('reset')
+	}
+
+	settingsDom.querySelector('#submitExport').onclick = function () {
+		importExport('exp', true)
+	}
+
+	settingsDom.querySelector('#submitImport').onclick = function () {
+		importExport('imp', true)
+	}
+
+	settingsDom.querySelector('#i_import').onkeypress = function (e) {
+		e.code === 'Enter' ? importExport('imp', true) : ''
+	}
+
+	settingsDom.querySelector('#i_export').onfocus = function () {
+		importExport('exp')
+	}
+
+	settingsDom.querySelector('#i_customfont').onchange = function () {
+		customFont(null, { family: this.value })
+	}
+
+	settingsDom.querySelector('#i_weight').oninput = function () {
+		customFont(null, { weight: this.value })
+	}
+
+	settingsDom.querySelector('#i_size').oninput = function () {
+		customSize(null, this.value)
+	}
+
+	settingsDom.querySelector('#i_row').oninput = function () {
+		linksrow(null, this.value)
+	}
+
+	settingsDom
+		.querySelector('#hideelem')
+		.querySelectorAll('button')
+		.forEach((elem) => {
+			elem.onmouseup = function () {
+				elem.classList.toggle('clicked')
+				hideElem(null, null, this)
+			}
+		})
+
+	const cssEditor = settingsDom.querySelector('#cssEditor')
+
+	cssEditor.addEventListener('keydown', function (e) {
+		if (e.code === 'Tab') e.preventDefault()
+	})
+
+	cssEditor.addEventListener('keyup', function (e) {
+		customCss(null, { is: 'styling', val: e.target.value })
+	})
+
+	setTimeout(() => {
+		const cssResize = new ResizeObserver((e) => {
+			const rect = e[0].contentRect
+			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+		})
+		cssResize.observe(cssEditor)
+	}, 400)
 }
 
 function importExport(select, isEvent) {
@@ -457,14 +464,16 @@ function importExport(select, isEvent) {
 	}
 }
 
-function showSettings() {
+function showSettings(isMouseDown) {
 	function display() {
 		const edit = id('edit_linkContainer')
 		const settings = id('settings')
 		const isShown = has(settings, 'shown')
 
+		clas(settings, false, 'init')
 		clas(settings, !isShown, 'shown')
 		clas(domshowsettings, !isShown, 'shown')
+
 		clas(dominterface, !isShown, 'pushed')
 		clas(edit, !isShown, 'pushed')
 	}
@@ -478,16 +487,12 @@ function showSettings() {
 			}
 
 			initParams(data, settingsDom)
-			showall(data.showall)
-			settingsEvents()
-			signature()
-			clas(id('settings'), false, 'init')
-			customFont(null, { autocomplete: true })
+			showall(data.showall, false, settingsDom)
+			signature(settingsDom)
+			//
+			//customFont(null, { autocomplete: true })
 
-			setTimeout(() => {
-				document.body.appendChild(settingsDom)
-				display()
-			}, 600)
+			document.body.appendChild(settingsDom)
 		})
 	}
 
@@ -518,8 +523,8 @@ function showSettings() {
 		}
 	}
 
-	if (!id('settings')) init()
-	else display()
+	if (!id('settings') && isMouseDown) init()
+	else if (!isMouseDown) display()
 }
 
 function showInterface(e) {
@@ -558,7 +563,8 @@ if (sessionStorage.lang) {
 	setTimeout(() => showSettings(), 20)
 }
 
-domshowsettings.onclick = () => showSettings()
+domshowsettings.onmousedown = () => showSettings(true)
+domshowsettings.onmouseup = () => showSettings(false)
 dominterface.onclick = (e) => showInterface(e)
 
 document.onkeydown = (e) => {
