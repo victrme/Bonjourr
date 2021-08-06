@@ -1786,7 +1786,7 @@ function showPopup(data) {
 
 	go.setAttribute(
 		'href',
-		navigator.userAgentData.brands[0] === 'Chromium'
+		navigator.userAgent.includes('Chrome')
 			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 	)
@@ -2315,6 +2315,8 @@ function startup(data) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
+
+	setTimeout(() => settingsInit(data), 333)
 }
 
 window.onload = function () {

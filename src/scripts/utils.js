@@ -28,7 +28,8 @@ const domshowsettings = id('showSettings'),
 	domclock = id('clock'),
 	domcredit = id('credit')
 
-const mobilecheck = navigator.userAgentData.mobile,
+const safariMobileCheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+const mobilecheck = navigator.userAgentData ? navigator.userAgentData.mobile : safariMobileCheck,
 	isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,

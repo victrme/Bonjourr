@@ -464,68 +464,76 @@ function signature(dom) {
 	dom.querySelector('#rand').appendChild(span)
 }
 
-function showSettings(isMouseDown) {
-	function display() {
-		const edit = id('edit_linkContainer')
-		const settings = id('settings')
-		const settingsNotShown = has(settings, 'shown') === false
+function showSettings() {
+	const edit = id('edit_linkContainer')
+	const settings = id('settings')
+	const settingsNotShown = has(settings, 'shown') === false
 
-		if (mobilecheck === false) {
-			clas(dominterface, settingsNotShown, 'pushed')
-			clas(edit, settingsNotShown, 'pushed')
-		}
-
-		clas(settings, false, 'init')
-		clas(settings, settingsNotShown, 'shown')
-		clas(domshowsettings, settingsNotShown, 'shown')
+	if (mobilecheck === false) {
+		clas(dominterface, settingsNotShown, 'pushed')
+		clas(edit, settingsNotShown, 'pushed')
 	}
 
-	function functions(settingsDom) {
-		chrome.storage.sync.get(null, (data) => {
-			if (data.lang !== 'en') {
-				const trns = settingsDom.querySelectorAll('.trn')
-				const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][data.lang]) : '')
-				trns.forEach((trn) => changeText(trn, trn.textContent))
-			}
+	clas(settings, false, 'init')
+	clas(settings, settingsNotShown, 'shown')
+	clas(domshowsettings, settingsNotShown, 'shown')
+}
 
-			customFont(null, { autocomplete: true, settingsDom: settingsDom })
-			signature(settingsDom)
-			initParams(data, settingsDom)
-			showall(data.showall, false, settingsDom)
+function settingsInit(data) {
+	function settingsCreator(html) {
+		// HTML creation
+		const settingsDom = document.createElement('div')
+		settingsDom.id = 'settings'
+		settingsDom.innerHTML = html
+		settingsDom.setAttribute('class', 'init')
 
-			document.body.appendChild(settingsDom)
-		})
-	}
-
-	function init() {
-		function settingsCreator(html) {
-			const dom = document.createElement('div')
-			dom.id = 'settings'
-			dom.innerHTML = html
-			dom.setAttribute('class', 'init')
-			functions(dom)
+		// Input fillings
+		if (data.lang !== 'en') {
+			const trns = settingsDom.querySelectorAll('.trn')
+			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][data.lang]) : '')
+			trns.forEach((trn) => changeText(trn, trn.textContent))
 		}
 
-		switch (window.location.protocol) {
-			case 'file:': {
-				const xhr = new XMLHttpRequest()
-				xhr.open('POST', 'settings.html', true)
-				xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
-				xhr.send()
-				break
-			}
+		customFont(null, { autocomplete: true, settingsDom: settingsDom })
+		signature(settingsDom)
+		initParams(data, settingsDom)
+		showall(data.showall, false, settingsDom)
 
-			case 'http:':
-			case 'https:':
-			case 'chrome-extension:':
-			case 'moz-extension:': {
-				fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
-			}
+		// Apply to body
+		document.body.prepend(settingsDom)
+
+		// Add Events
+		if (sessionStorage.lang) showSettings()
+		domshowsettings.onclick = () => showSettings()
+		document.onkeyup = (e) => (e.code === 'Escape' ? showSettings() : '')
+	}
+
+	switch (window.location.protocol) {
+		case 'file:': {
+			const xhr = new XMLHttpRequest()
+			xhr.open('POST', 'settings.html', true)
+			xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
+			xhr.send()
+			break
+		}
+
+		case 'http:':
+		case 'https:':
+		case 'chrome-extension:':
+		case 'moz-extension:': {
+			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
 		}
 	}
 
-	if (!id('settings') && isMouseDown) init()
-	else if (!isMouseDown) display()
+	dominterface.onclick = (e) => showInterface(e)
+	document.onkeydown = (e) => {
+		//focus la searchbar si elle existe et les settings sont fermé
+		const searchbarOn = has(id('sb_container'), 'shown') === true
+		const noEdit = has(id('edit_linkContainer'), 'shown') === false
+		const noSettings = has(id('settings'), 'shown') === false
+
+		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+	}
 }
 
 function showInterface(e) {
@@ -553,30 +561,4 @@ function showInterface(e) {
 
 		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
 	}
-}
-
-//
-// Onload
-//
-
-//si la langue a été changé
-if (sessionStorage.lang) {
-	setTimeout(() => showSettings(), 20)
-}
-
-domshowsettings.onmousedown = () => showSettings(true)
-domshowsettings.onmouseup = () => showSettings(false)
-dominterface.onclick = (e) => showInterface(e)
-
-document.onkeydown = (e) => {
-	//focus la searchbar si elle existe et les settings sont fermé
-	const searchbarOn = has(id('sb_container'), 'shown') === true
-	const noSettings = has(id('settings'), 'shown') === false
-	const noEdit = has(id('edit_linkContainer'), 'shown') === false
-
-	if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
-}
-
-document.onkeyup = (e) => {
-	if (e.code === 'Escape') showSettings()
 }
