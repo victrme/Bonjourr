@@ -1,62 +1,9 @@
-function signature(dom) {
-	const span = document.createElement('span')
-	const us = [
-		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
-		{ href: 'https://tahoe.be', name: 'Tahoe Beetschen' },
-	]
-
-	if (Math.random() > 0.5) us.reverse()
-
-	us.forEach((sign) => {
-		const a = document.createElement('a')
-		a.href = sign.href
-		a.textContent = sign.name
-		span.appendChild(a)
-	})
-
-	dom.querySelector('#rand').appendChild(span)
-}
-
-function selectBackgroundType(cat) {
-	id('dynamic').style.display = 'none'
-	id('custom').style.display = 'none'
-	id(cat).style.display = 'block'
-
-	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
-		//
-		// Applying functions
-		if (cat === 'custom') {
-			localBackgrounds(null, true)
-		}
-		if (cat === 'dynamic') {
-			domoverlay.style.opacity = `0`
-			domcredit.style.display = 'block'
-			setTimeout(() => {
-				clas(domcredit, true, 'shown')
-				unsplash(data)
-			}, BonjourrAnimTime)
-		}
-
-		// Setting frequence
-		const c_every = data.custom_every || 'pause'
-		const d_every = data.dynamic.every || 'hour'
-
-		id('i_freq').value = cat === 'custom' ? c_every : d_every
-	})
-
-	chrome.storage.sync.set({ background_type: cat })
-}
-
-function showall(val, event, domSettings) {
-	if (event) chrome.storage.sync.set({ showall: val })
-	clas(event ? id('settings') : domSettings, val, 'all')
-}
-
 function initParams(data, settingsDom) {
 	//
 
-	const initInput = (dom, cat, base) => (settingsDom.querySelector('#' + dom).value = cat !== undefined ? cat : base)
-	const initCheckbox = (dom, cat) => (settingsDom.querySelector('#' + dom).checked = cat ? true : false)
+	const paramId = (str) => settingsDom.querySelector('#' + str)
+	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
+	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
 	function toggleClockOptions(dom, analog) {
@@ -106,64 +53,64 @@ function initParams(data, settingsDom) {
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
 
 	// Font family default
-	safeFont(settingsDom.querySelector('#i_customfont'))
+	safeFont(paramId('i_customfont'))
 
 	// Font weight
-	if (data.font) modifyWeightOptions(data.font.availWeights)
+	if (data.font) modifyWeightOptions(data.font.availWeights, settingsDom)
 
 	// Clock
-	if (data.clock) toggleClockOptions(settingsDom.querySelector('#clockoptions'), data.clock.analog)
+	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
 
 	// Input translation
-	settingsDom.querySelector('#i_title').setAttribute('placeholder', tradThis('Name'))
-	settingsDom.querySelector('#i_greeting').setAttribute('placeholder', tradThis('Name'))
-	settingsDom.querySelector('#i_import').setAttribute('placeholder', tradThis('Import code'))
-	settingsDom.querySelector('#i_export').setAttribute('placeholder', tradThis('Export code'))
-	settingsDom.querySelector('#cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
+	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
+	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg
 	if (data.background_type === 'custom') {
-		settingsDom.querySelector('#custom').style.display = 'block'
+		paramId('custom').style.display = 'block'
 		localBackgrounds(null, true)
 	} else {
-		settingsDom.querySelector('#dynamic').style.display = 'block'
+		paramId('dynamic').style.display = 'block'
 	}
 
 	//weather settings
 	if (data.weather && Object.keys(data.weather).length > 0) {
 		const isGeolocation = data.weather.location.length > 0
 		let cityName = data.weather.city ? data.weather.city : 'City'
-		settingsDom.querySelector('#i_city').setAttribute('placeholder', cityName)
-		settingsDom.querySelector('#i_city').value = cityName
+		paramId('i_city').setAttribute('placeholder', cityName)
+		paramId('i_city').value = cityName
 
-		//clas(settingsDom.querySelector('#sett_city'), isGeolocation, 'hidden')
-		settingsDom.querySelector('#i_geol').checked = isGeolocation
+		clas(paramId('sett_city'), isGeolocation, 'hidden')
+		paramId('i_geol').checked = isGeolocation
 	} else {
-		//clas(settingsDom.querySelector('#sett_city'), true, 'hidden')
-		settingsDom.querySelector('#i_geol').checked = true
+		clas(paramId('sett_city'), true, 'hidden')
+		paramId('i_geol').checked = true
 	}
 
 	//searchbar display settings
-	//clas(settingsDom.querySelector('#searchbar_options'), data.searchbar, 'shown')
+	clas(paramId('searchbar_options'), data.searchbar, 'shown')
 
 	//searchbar display settings
-	if (data.cssHeight) settingsDom.querySelector('#cssEditor').style.height = data.cssHeight + 'px'
+	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
 
 	//langue
-	settingsDom.querySelector('#i_lang').value = data.lang || 'en'
+	paramId('i_lang').value = data.lang || 'en'
 
 	//firefox export
 	if (!navigator.userAgent.includes('Chrome')) {
-		settingsDom.querySelector('#submitExport').style.display = 'none'
-		settingsDom.querySelector('#i_export').style.width = '100%'
+		paramId('submitExport').style.display = 'none'
+		paramId('i_export').style.width = '100%'
 	}
 
 	//
 	// Events
 	//
 
-	const bgfile = settingsDom.querySelector('#i_bgfile')
-	const fileContainer = settingsDom.querySelector('#i_fileContainer')
+	const bgfile = paramId('i_bgfile')
+	const fileContainer = paramId('i_fileContainer')
 
 	// file input animation
 	bgfile.addEventListener('dragenter', function () {
@@ -180,11 +127,11 @@ function initParams(data, settingsDom) {
 
 	//general
 
-	settingsDom.querySelector('#i_showall').onchange = function () {
+	paramId('i_showall').onchange = function () {
 		showall(this.checked, true)
 	}
 
-	settingsDom.querySelector('#i_lang').onchange = function () {
+	paramId('i_lang').onchange = function () {
 		chrome.storage.sync.set({ lang: this.value })
 
 		//session pour le weather
@@ -193,157 +140,156 @@ function initParams(data, settingsDom) {
 	}
 
 	//quick links
-	settingsDom.querySelector('#i_title').onkeyup = function (e) {
+	paramId('i_title').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
-	settingsDom.querySelector('#i_url').onkeyup = function (e) {
+	paramId('i_url').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
-	settingsDom.querySelector('#submitlink').onmouseup = function () {
+	paramId('submitlink').onmouseup = function () {
 		quickLinks('button', this)
 	}
 
-	settingsDom.querySelector('#i_linknewtab').onchange = function () {
+	paramId('i_linknewtab').onchange = function () {
 		quickLinks('linknewtab', this)
 	}
 
 	//visuals
-	settingsDom.querySelector('#i_type').onchange = function () {
+	paramId('i_type').onchange = function () {
 		selectBackgroundType(this.value)
 	}
 
-	settingsDom.querySelector('#i_freq').onchange = function () {
-		if (settingsDom.querySelector('#i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
+	paramId('i_freq').onchange = function () {
+		if (paramId('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
 		else unsplash(null, { every: this.value })
 	}
 
-	settingsDom.querySelector('#i_collection').onchange = function () {
+	paramId('i_collection').onchange = function () {
 		unsplash(null, { collection: stringMaxSize(this.value, 128) })
 		this.blur()
 	}
 
 	//custom bg
 
-	settingsDom.querySelector('#i_bgfile').onchange = function () {
+	paramId('i_bgfile').onchange = function () {
 		localBackgrounds(null, null, this.files[0])
 	}
 
-	settingsDom.querySelector('#i_blur').oninput = function () {
+	paramId('i_blur').oninput = function () {
 		filter('blur', this.value)
 		slowRange({ background_blur: parseFloat(this.value) })
 	}
 
-	settingsDom.querySelector('#i_bright').oninput = function () {
+	paramId('i_bright').oninput = function () {
 		filter('bright', this.value)
 		slowRange({ background_bright: parseFloat(this.value) })
 	}
 
-	settingsDom.querySelector('#i_dark').onchange = function () {
+	paramId('i_dark').onchange = function () {
 		darkmode(this.value)
 	}
 
 	//Time and date
 
-	settingsDom.querySelector('#i_analog').onchange = function () {
+	paramId('i_analog').onchange = function () {
 		clock({ analog: this.checked })
-		toggleClockOptions(settingsDom.querySelector('#clockoptions'), this.checked)
+		toggleClockOptions(paramId('clockoptions'), this.checked)
 	}
 
-	settingsDom.querySelector('#i_seconds').onchange = function () {
+	paramId('i_seconds').onchange = function () {
 		clock({ seconds: this.checked })
 	}
 
-	settingsDom.querySelector('#i_clockface').onchange = function () {
+	paramId('i_clockface').onchange = function () {
 		clock({ face: this.value })
 	}
 
-	settingsDom.querySelector('#i_ampm').onchange = function () {
+	paramId('i_ampm').onchange = function () {
 		clock({ ampm: this.checked })
 	}
 
-	settingsDom.querySelector('#i_timezone').onchange = function () {
+	paramId('i_timezone').onchange = function () {
 		clock({ timezone: this.value })
 	}
 
-	settingsDom.querySelector('#i_greeting').onkeyup = function () {
+	paramId('i_greeting').onkeyup = function () {
 		clock({ greeting: stringMaxSize(this.value, 32) })
 	}
 
-	settingsDom.querySelector('#i_usdate').onchange = function () {
+	paramId('i_usdate').onchange = function () {
 		clock({ usdate: this.checked })
 	}
 
 	//weather
 
-	settingsDom.querySelector('#i_city').onkeypress = function (e) {
+	paramId('i_city').onkeypress = function (e) {
 		if (!stillActive && e.code === 'Enter') weather('city', this)
 	}
 
-	settingsDom.querySelector('#i_units').onchange = function () {
+	paramId('i_units').onchange = function () {
 		if (!stillActive) weather('units', this)
 	}
 
-	settingsDom.querySelector('#i_geol').onchange = function () {
+	paramId('i_geol').onchange = function () {
 		if (!stillActive) weather('geol', this)
 	}
 
 	//searchbar
-	settingsDom.querySelector('#i_sb').onchange = function () {
-		settingsDom.querySelector('#searchbar_options').classList.toggle('shown')
+	paramId('i_sb').onchange = function () {
+		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
 		slow(this)
 	}
 
-	settingsDom.querySelector('#i_sbengine').onchange = function () {
+	paramId('i_sbengine').onchange = function () {
 		searchbar('engine', this)
 	}
 
-	settingsDom.querySelector('#i_sbnewtab').onchange = function () {
+	paramId('i_sbnewtab').onchange = function () {
 		searchbar('newtab', this)
 	}
 
 	//settings
 
-	settingsDom.querySelector('#submitReset').onclick = function () {
+	paramId('submitReset').onclick = function () {
 		importExport('reset')
 	}
 
-	settingsDom.querySelector('#submitExport').onclick = function () {
+	paramId('submitExport').onclick = function () {
 		importExport('exp', true)
 	}
 
-	settingsDom.querySelector('#submitImport').onclick = function () {
+	paramId('submitImport').onclick = function () {
 		importExport('imp', true)
 	}
 
-	settingsDom.querySelector('#i_import').onkeypress = function (e) {
+	paramId('i_import').onkeypress = function (e) {
 		e.code === 'Enter' ? importExport('imp', true) : ''
 	}
 
-	settingsDom.querySelector('#i_export').onfocus = function () {
+	paramId('i_export').onfocus = function () {
 		importExport('exp')
 	}
 
-	settingsDom.querySelector('#i_customfont').onchange = function () {
+	paramId('i_customfont').onchange = function () {
 		customFont(null, { family: this.value })
 	}
 
-	settingsDom.querySelector('#i_weight').oninput = function () {
+	paramId('i_weight').oninput = function () {
 		customFont(null, { weight: this.value })
 	}
 
-	settingsDom.querySelector('#i_size').oninput = function () {
+	paramId('i_size').oninput = function () {
 		customSize(null, this.value)
 	}
 
-	settingsDom.querySelector('#i_row').oninput = function () {
+	paramId('i_row').oninput = function () {
 		linksrow(null, this.value)
 	}
 
-	settingsDom
-		.querySelector('#hideelem')
+	paramId('hideelem')
 		.querySelectorAll('button')
 		.forEach((elem) => {
 			elem.onmouseup = function () {
@@ -352,7 +298,7 @@ function initParams(data, settingsDom) {
 			}
 		})
 
-	const cssEditor = settingsDom.querySelector('#cssEditor')
+	const cssEditor = paramId('cssEditor')
 
 	cssEditor.addEventListener('keydown', function (e) {
 		if (e.code === 'Tab') e.preventDefault()
@@ -369,6 +315,41 @@ function initParams(data, settingsDom) {
 		})
 		cssResize.observe(cssEditor)
 	}, 400)
+}
+
+function showall(val, event, domSettings) {
+	if (event) chrome.storage.sync.set({ showall: val })
+	clas(event ? id('settings') : domSettings, val, 'all')
+}
+
+function selectBackgroundType(cat) {
+	id('dynamic').style.display = 'none'
+	id('custom').style.display = 'none'
+	id(cat).style.display = 'block'
+
+	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
+		//
+		// Applying functions
+		if (cat === 'custom') {
+			localBackgrounds(null, true)
+		}
+		if (cat === 'dynamic') {
+			domoverlay.style.opacity = `0`
+			domcredit.style.display = 'block'
+			setTimeout(() => {
+				clas(domcredit, true, 'shown')
+				unsplash(data)
+			}, BonjourrAnimTime)
+		}
+
+		// Setting frequence
+		const c_every = data.custom_every || 'pause'
+		const d_every = data.dynamic.every || 'hour'
+
+		id('i_freq').value = cat === 'custom' ? c_every : d_every
+	})
+
+	chrome.storage.sync.set({ background_type: cat })
 }
 
 function importExport(select, isEvent) {
@@ -464,18 +445,39 @@ function importExport(select, isEvent) {
 	}
 }
 
+function signature(dom) {
+	const span = document.createElement('span')
+	const us = [
+		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
+		{ href: 'https://tahoe.be', name: 'Tahoe Beetschen' },
+	]
+
+	if (Math.random() > 0.5) us.reverse()
+
+	us.forEach((sign) => {
+		const a = document.createElement('a')
+		a.href = sign.href
+		a.textContent = sign.name
+		span.appendChild(a)
+	})
+
+	dom.querySelector('#rand').appendChild(span)
+}
+
 function showSettings(isMouseDown) {
 	function display() {
 		const edit = id('edit_linkContainer')
 		const settings = id('settings')
-		const isShown = has(settings, 'shown')
+		const settingsNotShown = has(settings, 'shown') === false
+
+		if (mobilecheck === false) {
+			clas(dominterface, settingsNotShown, 'pushed')
+			clas(edit, settingsNotShown, 'pushed')
+		}
 
 		clas(settings, false, 'init')
-		clas(settings, !isShown, 'shown')
-		clas(domshowsettings, !isShown, 'shown')
-
-		clas(dominterface, !isShown, 'pushed')
-		clas(edit, !isShown, 'pushed')
+		clas(settings, settingsNotShown, 'shown')
+		clas(domshowsettings, settingsNotShown, 'shown')
 	}
 
 	function functions(settingsDom) {
@@ -486,11 +488,10 @@ function showSettings(isMouseDown) {
 				trns.forEach((trn) => changeText(trn, trn.textContent))
 			}
 
+			customFont(null, { autocomplete: true, settingsDom: settingsDom })
+			signature(settingsDom)
 			initParams(data, settingsDom)
 			showall(data.showall, false, settingsDom)
-			signature(settingsDom)
-			//
-			//customFont(null, { autocomplete: true })
 
 			document.body.appendChild(settingsDom)
 		})

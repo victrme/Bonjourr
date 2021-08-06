@@ -1786,7 +1786,7 @@ function showPopup(data) {
 
 	go.setAttribute(
 		'href',
-		navigator.userAgent.includes('Chrome')
+		navigator.userAgentData.brands[0] === 'Chromium'
 			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 	)
@@ -1810,12 +1810,14 @@ function showPopup(data) {
 	else if (data === 'removed') document.body.removeChild(popup)
 }
 
-function modifyWeightOptions(weights) {
-	const doms = document.querySelectorAll('#i_weight option')
+function modifyWeightOptions(weights, settingsDom) {
+	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
 
 	// Pas de weights, 400
 	if (!weights) {
-		id('i_weight').value = '400'
+		if (settingsDom) settingsDom.querySelector('#i_weight').value = '400'
+		else id('#i_weight').value = '400'
+
 		weights = ['400']
 	}
 
@@ -1969,11 +1971,17 @@ function customFont(data, event) {
 		// For best performance: Fill list & change innerHTML
 		if (event.autocomplete) {
 			fetchFontList(function fillFamilyInput(json) {
-				const optionList = []
+				const fragment = new DocumentFragment()
+
 				json.items.forEach(function addOptions(item) {
-					optionList.push(`<option value="${item.family}">${item.family}</option>`)
+					const option = document.createElement('option')
+
+					option.textContent = item.family
+					option.setAttribute('value', item.family)
+					fragment.appendChild(option)
 				})
-				id('dl_fontfamily').innerHTML = optionList.join('')
+
+				event.settingsDom.querySelector('#dl_fontfamily').appendChild(fragment)
 			})
 		}
 	}
