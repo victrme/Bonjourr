@@ -828,7 +828,7 @@ function weather(event, that, init) {
 	function cacheControl(storage) {
 		const now = Math.floor(date.getTime() / 1000)
 
-		if (storage.lastCall) {
+		if (typeof storage.lastCall === 'number') {
 			//
 			// Current: 30 mins
 			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
@@ -1517,7 +1517,7 @@ function unsplash(init, event) {
 		requestNewList(collection, (newlist) => {
 			//
 			//change
-			dynamic.time = freqControl('set')
+			if (isEvent) dynamic.time = freqControl('set')
 			local.dynamicCache[collection] = newlist
 			chrome.storage.sync.set({ dynamic: dynamic })
 
@@ -1740,7 +1740,7 @@ function searchbar(event, that, storage) {
 	domsearchbar.onkeyup = function (e) {
 		const isNewtab = e.target.getAttribute('newtab') === 'true'
 
-		if (e.key === 'Enter') {
+		if (e.key === 'Enter' && this.value.length > 0) {
 			if (isNewtab) window.open(localisation(this.value), '_blank')
 			else window.location = localisation(this.value)
 		}
@@ -1810,13 +1810,15 @@ function showPopup(data) {
 	else if (data === 'removed') document.body.removeChild(popup)
 }
 
-function modifyWeightOptions(weights) {
-	const doms = document.querySelectorAll('#i_weight option')
+function modifyWeightOptions(weights, settingsDom) {
+	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
 
-	// Pas de weights, 400
-	if (!weights) {
-		id('i_weight').value = '400'
-		weights = ['400']
+	if (!weights || weights.length === 0) {
+		doms.forEach((option) => {
+			option.style.display = 'block'
+		})
+
+		return true
 	}
 
 	// ya des weights, transforme regular en 400
@@ -1876,17 +1878,22 @@ function customFont(data, event) {
 
 	// Fetches fonts.google.com url
 	function apply(url, family, weight) {
-		fetch(url)
-			.then((response) => response.text())
-			.then((text) => {
-				text = text.replace(/(\r\n|\n|\r|  )/gm, '')
-				id('fontstyle').textContent = text
-				id('clock').style.fontFamily = family
-				dominterface.style.fontFamily = family
-				dominterface.style.fontWeight = weight
+		if (url) {
+			fetch(url)
+				.then((response) => response.text())
+				.then((text) => {
+					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
+					id('fontstyle').textContent = text
+					id('clock').style.fontFamily = family
+					dominterface.style.fontFamily = family
+					canDisplayInterface('fonts')
+				})
+		}
 
-				canDisplayInterface('fonts')
-			})
+		if (weight) {
+			dominterface.style.fontWeight = weight
+			id('clock').style.fontWeight = weight
+		}
 	}
 
 	// Event only
@@ -1898,6 +1905,9 @@ function customFont(data, event) {
 
 			apply(font.url, font.family, val)
 			save(font.url, font.family, font.availWeights, val)
+		} else {
+			apply(null, null, val)
+			save('', '', [], val)
 		}
 	}
 
@@ -1969,23 +1979,30 @@ function customFont(data, event) {
 		// For best performance: Fill list & change innerHTML
 		if (event.autocomplete) {
 			fetchFontList(function fillFamilyInput(json) {
-				const optionList = []
+				const fragment = new DocumentFragment()
+
 				json.items.forEach(function addOptions(item) {
-					optionList.push(`<option value="${item.family}">${item.family}</option>`)
+					const option = document.createElement('option')
+
+					option.textContent = item.family
+					option.setAttribute('value', item.family)
+					fragment.appendChild(option)
 				})
-				id('dl_fontfamily').innerHTML = optionList.join('')
+
+				event.settingsDom.querySelector('#dl_fontfamily').appendChild(fragment)
 			})
 		}
 	}
 
 	// init
 	if (data) {
-		if (data.family && data.url) {
-			apply(data.url, data.family, data.weight || '400')
-		}
+		const { family, url, weight } = data
 
+		if (family && url) apply(url, family, weight || '400')
+		else if (weight) apply(null, null, weight)
+		//
 		// 1.9.3 ==> 1.10.0
-		else if (data.family && !data.url) triggerEvent(data)
+		else if (family && !url) triggerEvent(data)
 	}
 
 	// event
@@ -2231,10 +2248,11 @@ function filterImports(data) {
 	let result = { ...data }
 
 	if (data.weather) {
+		if (data.weather.location === false) result.weather.location = []
 		result.weather = reducedWeatherData(data.weather)
 
-		if (result.weather.lastCall) delete result.weather.lastCall
-		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
+		if (result.weather.lastCall) result.weather.lastCall = 0
+		if (result.weather.forecastLastCall) result.weather.forecastLastCall = 0
 	}
 
 	// Old blur was strings
@@ -2297,6 +2315,8 @@ function startup(data) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
+
+	setTimeout(() => settingsInit(data), 333)
 }
 
 window.onload = function () {
