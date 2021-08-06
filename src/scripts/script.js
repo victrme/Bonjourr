@@ -1517,7 +1517,7 @@ function unsplash(init, event) {
 		requestNewList(collection, (newlist) => {
 			//
 			//change
-			dynamic.time = freqControl('set')
+			if (isEvent) dynamic.time = freqControl('set')
 			local.dynamicCache[collection] = newlist
 			chrome.storage.sync.set({ dynamic: dynamic })
 
@@ -1813,12 +1813,12 @@ function showPopup(data) {
 function modifyWeightOptions(weights, settingsDom) {
 	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
 
-	// Pas de weights, 400
-	if (!weights) {
-		if (settingsDom) settingsDom.querySelector('#i_weight').value = '400'
-		else id('#i_weight').value = '400'
+	if (!weights || weights.length === 0) {
+		doms.forEach((option) => {
+			option.style.display = 'block'
+		})
 
-		weights = ['400']
+		return true
 	}
 
 	// ya des weights, transforme regular en 400
@@ -1878,17 +1878,22 @@ function customFont(data, event) {
 
 	// Fetches fonts.google.com url
 	function apply(url, family, weight) {
-		fetch(url)
-			.then((response) => response.text())
-			.then((text) => {
-				text = text.replace(/(\r\n|\n|\r|  )/gm, '')
-				id('fontstyle').textContent = text
-				id('clock').style.fontFamily = family
-				dominterface.style.fontFamily = family
-				dominterface.style.fontWeight = weight
+		if (url) {
+			fetch(url)
+				.then((response) => response.text())
+				.then((text) => {
+					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
+					id('fontstyle').textContent = text
+					id('clock').style.fontFamily = family
+					dominterface.style.fontFamily = family
+					canDisplayInterface('fonts')
+				})
+		}
 
-				canDisplayInterface('fonts')
-			})
+		if (weight) {
+			dominterface.style.fontWeight = weight
+			id('clock').style.fontWeight = weight
+		}
 	}
 
 	// Event only
@@ -1900,6 +1905,9 @@ function customFont(data, event) {
 
 			apply(font.url, font.family, val)
 			save(font.url, font.family, font.availWeights, val)
+		} else {
+			apply(null, null, val)
+			save('', '', [], val)
 		}
 	}
 
@@ -1988,12 +1996,13 @@ function customFont(data, event) {
 
 	// init
 	if (data) {
-		if (data.family && data.url) {
-			apply(data.url, data.family, data.weight || '400')
-		}
+		const { family, url, weight } = data
 
+		if (family && url) apply(url, family, weight || '400')
+		else if (weight) apply(null, null, weight)
+		//
 		// 1.9.3 ==> 1.10.0
-		else if (data.family && !data.url) triggerEvent(data)
+		else if (family && !url) triggerEvent(data)
 	}
 
 	// event
