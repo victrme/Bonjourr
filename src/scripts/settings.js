@@ -47,16 +47,16 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
 	// Links limit
-	if (data.links && data.links.length === 20) quickLinks('maxControl', true)
+	if (data.links && data.links.length === 20) quickLinks('maxControl', settingsDom)
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
 
 	// Font family default
-	safeFont(paramId('i_customfont'))
+	safeFont(settingsDom)
 
 	// Font weight
-	if (data.font) modifyWeightOptions(data.font.availWeights, settingsDom)
+	if (data.font && data.font.availWeights) modifyWeightOptions(data.font.availWeights, settingsDom)
 
 	// Clock
 	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)

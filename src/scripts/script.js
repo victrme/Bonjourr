@@ -276,7 +276,7 @@ function quickLinks(event, that, initStorage) {
 				}
 			}
 
-			if (iconurl === 'src/assets/images/interface/loading.gif') {
+			if (iconurl.length === 0 || iconurl === 'src/assets/images/interface/loading.gif') {
 				//
 				// Apply loading gif d'abord
 				apply(iconurl)
@@ -677,14 +677,14 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	function linksInputDisable(max) {
+	function linksInputDisable(isMax, settingsDom) {
+		const getDoms = (name) => (settingsDom ? settingsDom.querySelector('#' + name) : id(name))
 		const doms = ['i_title', 'i_url', 'submitlink']
-		const domsubmitlink = id('submitlink')
 
-		if (max) doms.forEach((dom) => id(dom).setAttribute('disabled', ''))
-		else doms.forEach((dom) => id(dom).removeAttribute('disabled'))
+		if (isMax) doms.forEach((elem) => getDoms(elem).setAttribute('disabled', ''))
+		else doms.forEach((elem) => getDoms(elem).removeAttribute('disabled'))
 
-		clas(domsubmitlink, max, 'max')
+		clas(getDoms(doms[2]), isMax, 'max')
 	}
 
 	switch (event) {
@@ -693,8 +693,9 @@ function quickLinks(event, that, initStorage) {
 			linkSubmission()
 			break
 
+		// that est settingsDom ici
 		case 'maxControl':
-			linksInputDisable(that)
+			linksInputDisable(true, that)
 
 		case 'linknewtab': {
 			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
@@ -1810,32 +1811,6 @@ function showPopup(data) {
 	else if (data === 'removed') document.body.removeChild(popup)
 }
 
-function modifyWeightOptions(weights, settingsDom) {
-	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
-
-	if (!weights || weights.length === 0) {
-		doms.forEach((option) => {
-			option.style.display = 'block'
-		})
-
-		return true
-	}
-
-	// ya des weights, transforme regular en 400
-	else {
-		if (weights.includes('regular')) {
-			weights[weights.indexOf('regular')] = '400'
-		}
-	}
-
-	if (doms) {
-		doms.forEach((option) => {
-			if (weights.includes(option.value)) option.style.display = 'block'
-			else option.style.display = 'none'
-		})
-	}
-}
-
 function customSize(init, event) {
 	//
 	// Apply for interface, credit & settings button
@@ -1860,6 +1835,56 @@ function customSize(init, event) {
 	if (init) {
 		apply(init.size)
 	}
+}
+
+function modifyWeightOptions(weights, settingsDom) {
+	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
+
+	if (!weights || weights.length === 0) {
+		doms.forEach((option) => (option.style.display = 'block'))
+		return true
+	}
+
+	// Theres weights
+	else {
+		// filters
+		if (weights.includes('regular')) weights[weights.indexOf('regular')] = '400'
+		weights = weights.map((aa) => parseInt(aa))
+
+		// toggles selects
+		if (doms)
+			doms.forEach(
+				(option) => (option.style.display = weights.indexOf(parseInt(option.value)) !== -1 ? 'block' : 'none')
+			)
+	}
+}
+
+function safeFont(settingsDom) {
+	const is = {
+		linux: { family: 'Ubuntu', placeholder: 'Ubuntu', weights: [300, 400, 500, 700] },
+		windows: { family: 'Segoe UI', placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
+		android: { family: 'Roboto', placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
+		apple: { family: 'system-ui', placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+		fallback: { family: 'Arial', placeholder: 'Arial', weights: [500, 600, 800] },
+	}
+
+	const toUse = document.fonts.check('16px Segoe UI')
+		? is.windows
+		: document.fonts.check('16px Roboto')
+		? is.android
+		: document.fonts.check('16px Ubuntu')
+		? is.linux
+		: document.fonts.check('16px Helvetica')
+		? is.apple
+		: is.fallback
+
+	if (settingsDom) {
+		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
+		modifyWeightOptions(toUse.weights, settingsDom)
+	}
+
+	// startup fonts
+	else dominterface.style.fontFamily = toUse.family
 }
 
 function customFont(data, event) {
@@ -1921,12 +1946,12 @@ function customFont(data, event) {
 		// One font has been found
 		if (font.length > 0) {
 			const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
-			const defaultWeight = availWeights.includes('regular') ? '400' : availWeights[0]
+			const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
 			const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`
 
 			// Change l'url, et les weight options
-			apply(url, font[0].family, '400')
-			save(url, font[0].family, availWeights, '400')
+			apply(url, font[0].family, 400)
+			save(url, font[0].family, availWeights, 400)
 			modifyWeightOptions(availWeights)
 
 			if (dom) dom.blur()
@@ -1955,10 +1980,11 @@ function customFont(data, event) {
 		if (event.family === '') {
 			id('fontstyle').textContent = ''
 			id('clock').style.fontFamily = ''
+			id('clock').style.fontWeight = ''
 			dominterface.style.fontFamily = ''
 			dominterface.style.fontWeight = ''
 
-			modifyWeightOptions()
+			safeFont(id('settings'))
 			save()
 
 			return false
@@ -2200,25 +2226,6 @@ function sunTime(init) {
 				rise: minutator(new Date(sunrise * 1000)),
 				set: minutator(new Date(sunset * 1000)),
 			}
-	}
-}
-
-function safeFont(settingsInput) {
-	const windows = document.fonts.check('16px Segoe UI')
-	const macOS = document.fonts.check('16px Helvetica')
-
-	// Startup
-	if (!settingsInput) {
-		if (!windows && !macOS) dominterface.style.fontFamily = 'Arial'
-
-		if (windows) dominterface.style.fontWeight = '350'
-		else if (macOS) dominterface.style.fontFamily = 'system-ui'
-	}
-
-	// Settings
-	else {
-		const placeholderText = windows ? 'Segoe UI' : macOS ? 'SF Pro Display' : 'Arial'
-		settingsInput.setAttribute('placeholder', placeholderText)
 	}
 }
 

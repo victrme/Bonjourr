@@ -509,7 +509,7 @@
 		text-transform: capitalize;
 	}
 
-	#i_weight option:not(:nth-child(4)) {
+	#i_weight option {
 		display: none;
 	}
 
