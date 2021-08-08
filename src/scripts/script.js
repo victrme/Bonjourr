@@ -2327,6 +2327,16 @@ function startup(data) {
 }
 
 window.onload = function () {
+	if ('serviceWorker' in navigator) {
+		switch (window.location.protocol) {
+			case 'http:':
+			case 'https:':
+			case 'file:':
+				navigator.serviceWorker.register('service-worker.js')
+				break
+		}
+	}
+
 	try {
 		chrome.storage.sync.get(null, (data) => {
 			//

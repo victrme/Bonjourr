@@ -87,6 +87,14 @@ function locales() {
 	return src('_locales/**').pipe(dest('release/_locales/'))
 }
 
+function worker(online) {
+	const file = {
+		origin: online ? 'service-worker.js' : 'src/scripts/background.js',
+		destination: online ? 'release/' : 'release/src/scripts/',
+	}
+	return src(file.origin).pipe(dest(file.destination))
+}
+
 function manifest(which) {
 	return src(`manifest-${which}.json`).pipe(rename('manifest.json')).pipe(dest('release/'))
 }
@@ -103,12 +111,14 @@ const makeOnline = () => [
 	css,
 	html,
 	ressources,
-	() => scripts('online'),
+	() => worker('online'),
+	() => scripts('online')
 ]
 
 const makeExtension = (manifestFrom, scriptFrom) => [
 	css,
 	html,
+	worker,
 	locales,
 	ressources,
 	addBackground,

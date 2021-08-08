@@ -1,0 +1,26 @@
+{
+	"short_name": "Bonjourr",
+	"name": "Bonjourr Startpage",
+	"description": "iOS styled startpage",
+
+	"theme_color": "#007aff",
+	"background_color": "#ffffff",
+
+	"display": "standalone",
+	"orientation": "portrait",
+	"scope": "/",
+	"start_url": "/",
+
+	"icons": [
+		{
+			"src": "images/favicon-128x128.png",
+			"type": "image/png",
+			"sizes": "128x128"
+		},
+		{
+			"src": "images/favicon-512x512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		}
+	]
+}
