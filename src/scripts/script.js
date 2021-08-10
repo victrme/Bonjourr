@@ -1,17 +1,17 @@
-function slowRange(tosave, time = 150) {
+function slowRange(tosave, time = 400) {
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {
 		chrome.storage.sync.set(tosave)
 	}, time)
 }
 
-function slow(that) {
+function slow(that, time = 400) {
 	that.setAttribute('disabled', '')
 	stillActive = setTimeout(() => {
 		that.removeAttribute('disabled')
 		clearTimeout(stillActive)
 		stillActive = false
-	}, 700)
+	}, time)
 }
 
 function traduction(ofSettings, init) {
@@ -737,6 +737,8 @@ function weather(event, that, init) {
 	const current = id('current')
 	const forecast = id('forecast')
 	const widget = id('widget')
+	const toFarenheit = (num) => num * (9 / 5) + 32
+	const toCelsius = (num) => (num - 32) * (5 / 9)
 	const WEATHER_API_KEY = [
 		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
 		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
@@ -761,13 +763,14 @@ function weather(event, that, init) {
 	function request(params, forecast) {
 		function saveCurrent(response) {
 			//
+			const isImperial = params.unit === 'imperial'
 
 			weatherToSave = {
 				...weatherToSave,
 				lastCall: Math.floor(new Date().getTime() / 1000),
 				lastState: {
-					feels_like: response.main.feels_like,
-					temp_max: response.main.temp_max,
+					feels_like: Math.round(isImperial ? toFarenheit(response.main.feels_like) : response.main.feels_like),
+					temp_max: Math.round(isImperial ? toFarenheit(response.main.temp_max) : response.main.temp_max),
 					sunrise: response.sys.sunrise,
 					sunset: response.sys.sunset,
 					description: response.weather[0].description,
@@ -796,10 +799,10 @@ function weather(event, that, init) {
 			// Get the highest temp for the specified day
 			response.list.forEach((elem) => {
 				if (new Date(elem.dt * 1000).getDate() === forecastDay)
-					tempMax < elem.main.temp_max ? (tempMax = Math.round(elem.main.temp_max)) : ''
+					tempMax < elem.main.temp_max ? (tempMax = elem.main.temp_max) : ''
 			})
 
-			weatherToSave.fcHigh = tempMax
+			weatherToSave.fcHigh = Math.round(params.unit === 'imperial' ? toFarenheit(tempMax) : tempMax)
 			weatherToSave.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
 
 			chrome.storage.sync.set({ weather: weatherToSave })
@@ -809,11 +812,10 @@ function weather(event, that, init) {
 		let url = 'https://api.openweathermap.org/data/2.5/'
 		const lang = document.documentElement.getAttribute('lang')
 		const [lat, lon] = params.location || [0, 0]
-		const unit = params.unit || 'metric'
 
 		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
 		url += params.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(params.city)},${params.ccode}`
-		url += `&units=${unit}&lang=${lang}`
+		url += `&units=metric&lang=${lang}`
 
 		// Inits global object
 		if (Object.keys(weatherToSave).length === 0) {
@@ -958,7 +960,15 @@ function weather(event, that, init) {
 			switch (event) {
 				case 'units': {
 					data.weather.unit = that.checked ? 'imperial' : 'metric'
-					fetches(data.weather)
+
+					if (data.weather.lastState) {
+						const { feels_like, tempMax } = data.weather.lastState
+						data.weather.lastState.feels_like = that.checked ? toFarenheit(feels_like) : toCelsius(feels_like)
+						data.weather.lastState.tempMax = that.checked ? toFarenheit(tempMax) : toCelsius(tempMax)
+					}
+
+					cacheControl(data.weather)
+					chrome.storage.sync.set({ weather: data.weather })
 					break
 				}
 
