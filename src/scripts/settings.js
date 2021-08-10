@@ -71,7 +71,7 @@ function initParams(data, settingsDom) {
 	//bg
 	if (data.background_type === 'custom') {
 		paramId('custom').style.display = 'block'
-		localBackgrounds(null, true)
+		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
 	} else {
 		paramId('dynamic').style.display = 'block'
 	}
@@ -127,6 +127,20 @@ function initParams(data, settingsDom) {
 
 	//general
 
+	const tooltips = settingsDom.querySelectorAll('.tooltip')
+
+	tooltips.forEach((elem) => {
+		elem.onclick = function () {
+			const toggleTooltip = (which) => {
+				if (this.classList.contains(which))
+					settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
+			}
+
+			toggleTooltip('ttcoll')
+			toggleTooltip('ttlinks')
+		}
+	})
+
 	paramId('i_showall').onchange = function () {
 		showall(this.checked, true)
 	}
@@ -174,7 +188,7 @@ function initParams(data, settingsDom) {
 	//custom bg
 
 	paramId('i_bgfile').onchange = function () {
-		localBackgrounds(null, null, this.files[0])
+		localBackgrounds(null, { is: 'newfile', file: this.files[0] })
 	}
 
 	paramId('i_blur').oninput = function () {
@@ -331,7 +345,7 @@ function selectBackgroundType(cat) {
 		//
 		// Applying functions
 		if (cat === 'custom') {
-			localBackgrounds(null, true)
+			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
 		}
 		if (cat === 'dynamic') {
 			domoverlay.style.opacity = `0`
@@ -453,12 +467,13 @@ function signature(dom) {
 	]
 
 	if (Math.random() > 0.5) us.reverse()
+	span.textContent = ` & `
 
-	us.forEach((sign) => {
+	us.forEach((sign, i) => {
 		const a = document.createElement('a')
 		a.href = sign.href
 		a.textContent = sign.name
-		span.appendChild(a)
+		i === 0 ? span.prepend(a) : span.appendChild(a)
 	})
 
 	dom.querySelector('#rand').appendChild(span)

@@ -711,7 +711,7 @@ function quickLinks(event, that, initStorage) {
 		setTimeout(() => {
 			id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
 			editEvents()
-		}, 50)
+		}, 100)
 	}
 }
 
@@ -837,8 +837,8 @@ function weather(event, that, init) {
 				request(storage, false)
 			} else displaysCurrent(storage)
 
-			// Forecast: 3h
-			if (navigator.onLine && (!storage.forecastLastCall || now > storage.forecastLastCall + 10800)) {
+			// Forecast: 30 mins
+			if (navigator.onLine && (!storage.forecastLastCall || now > storage.forecastLastCall + 1800)) {
 				request(storage, true)
 			} else displaysForecast(storage)
 		}
@@ -930,6 +930,11 @@ function weather(event, that, init) {
 
 		clas(current, false, 'wait')
 		clas(widget, false, 'wait')
+
+		// from 1.2s request anim to .4s hide elem anim
+		setTimeout(() => {
+			widget.style.transition = 'opacity .4s'
+		}, 400)
 	}
 
 	function displaysForecast(weather) {
@@ -1108,7 +1113,7 @@ function freqControl(state, every, last) {
 	}
 }
 
-function localBackgrounds(init, thumbnail, newfile) {
+function localBackgrounds(init, event) {
 	function applyCustomBackground(backgrounds, index) {
 		const background = backgrounds[index]
 
@@ -1136,7 +1141,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 		domimg.setAttribute('index', i)
 	}
 
-	function addNewImage() {
+	function addNewImage(file) {
 		let reader = new FileReader()
 		reader.onload = function (event) {
 			const result = event.target.result
@@ -1162,7 +1167,7 @@ function localBackgrounds(init, thumbnail, newfile) {
 			})
 		}
 		domoverlay.style.opacity = '0'
-		reader.readAsDataURL(newfile)
+		reader.readAsDataURL(file)
 	}
 
 	function compress(e, state) {
@@ -1215,14 +1220,16 @@ function localBackgrounds(init, thumbnail, newfile) {
 		img.src = e
 	}
 
-	function addThumbnails(data, index) {
+	function addThumbnails(data, index, settingsDom) {
 		//créer une tag html en plus + remove button
+
+		const settings = settingsDom ? settingsDom : id('settings')
 
 		const div = document.createElement('div')
 		const i = document.createElement('img')
 		const rem = document.createElement('button')
-		const wrap = document.getElementById('bg_tn_wrap')
-		const file = document.getElementById('fileContainer')
+		const wrap = settings.querySelector('#bg_tn_wrap')
+		const file = settings.querySelector('#fileContainer')
 
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
@@ -1307,56 +1314,56 @@ function localBackgrounds(init, thumbnail, newfile) {
 		}
 	}
 
-	function displayCustomThumbnails() {
-		const thumbnails = document.querySelectorAll('#bg_tn_wrap .thumbnail')
+	function displayCustomThumbnails(settingsDom) {
+		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
 
 		chrome.storage.local.get('customThumbnails', (data) => {
 			if (data.customThumbnails) {
 				if (thumbnails.length < data.customThumbnails.length) {
-					data.customThumbnails.forEach(
-						(thumb, i) => addThumbnails(thumb.replace('data:image/jpeg;base64,', ''), i) //used for blob
-					)
+					data.customThumbnails.forEach((thumb, i) => {
+						//used for blob
+						const blob = thumb.replace('data:image/jpeg;base64,', '')
+						addThumbnails(blob, i, settingsDom)
+					})
 				}
 			}
 		})
 	}
 
-	if (thumbnail) {
-		displayCustomThumbnails()
-		return true
+	if (event) {
+		if (event.is === 'thumbnail') displayCustomThumbnails(event.settings)
+		if (event.is === 'newfile') addNewImage(event.file)
 	}
 
-	if (newfile) {
-		addNewImage()
-		return true
-	}
+	//init
+	else {
+		// need all of saved stuff
+		const { local, every, time } = init
 
-	// need all of saved stuff
-	const { local, every, time } = init
+		// Slideshow or not, need index
+		const index = local.customIndex >= 0 ? local.customIndex : 0
+		const customList = local.custom || []
 
-	// Slideshow or not, need index
-	const index = local.customIndex >= 0 ? local.customIndex : 0
-	const customList = local.custom || []
+		// Slideshow is activated
+		if (every) {
+			const rand = preventFromShowingTwice(index, customList.length)
+			const needNewImage = freqControl('get', every, time || 0)
 
-	// Slideshow is activated
-	if (every) {
-		const rand = preventFromShowingTwice(index, customList.length)
-		const needNewImage = freqControl('get', every, time || 0)
+			if (needNewImage) {
+				applyCustomBackground(customList, rand)
 
-		if (needNewImage) {
-			applyCustomBackground(customList, rand)
+				// Updates time & index
+				chrome.storage.sync.set({ custom_time: freqControl('set') })
+				chrome.storage.local.set({ customIndex: rand })
+				//
+			} else {
+				applyCustomBackground(customList, index)
+			}
 
-			// Updates time & index
-			chrome.storage.sync.set({ custom_time: freqControl('set') })
-			chrome.storage.local.set({ customIndex: rand })
-			//
+			// No slideshow or no data for it
 		} else {
 			applyCustomBackground(customList, index)
 		}
-
-		// No slideshow or no data for it
-	} else {
-		applyCustomBackground(customList, index)
 	}
 }
 
@@ -1488,7 +1495,6 @@ function unsplash(init, event) {
 			// Update time
 			dynamic.lastCollec = collection
 			dynamic.time = freqControl('set')
-			chrome.storage.sync.set({ dynamic: dynamic })
 
 			// Removes previous image from list
 			if (list.length > 1) list.shift()
@@ -1504,7 +1510,11 @@ function unsplash(init, event) {
 				})
 			//
 			// Or preload next
-			else noDisplayImgLoad(list[1].url, () => chrome.storage.local.set({ dynamicCache: caches }))
+			else
+				noDisplayImgLoad(list[1].url, () => {
+					chrome.storage.sync.set({ dynamic: dynamic })
+					chrome.storage.local.set({ dynamicCache: caches })
+				})
 		}
 
 		// No need for new, load the same image
@@ -1518,7 +1528,7 @@ function unsplash(init, event) {
 		requestNewList(collection, (newlist) => {
 			//
 			//change
-			if (isEvent) dynamic.time = freqControl('set')
+			dynamic.time = freqControl('set')
 			local.dynamicCache[collection] = newlist
 			chrome.storage.sync.set({ dynamic: dynamic })
 
@@ -2323,7 +2333,7 @@ function startup(data) {
 	initBackground(data)
 	quickLinks(null, null, data)
 
-	setTimeout(() => settingsInit(data), 333)
+	setTimeout(() => settingsInit(data), 200)
 }
 
 window.onload = function () {

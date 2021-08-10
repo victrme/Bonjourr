@@ -12,6 +12,7 @@ $settingsGrey: #f2f2f7;
 $inputGrey: #eaeaee;
 $focusedGrey: #dadade;
 $borderGrey: #c8c7cc;
+$placeholderGrey: #7c7d7e;
 $greyish: #3a3a3a;
 $blackish: #222;
 
@@ -194,7 +195,7 @@ body {
 	/* prettier-ignore */
 	&.all {
 		.as_link {max-height: 120px}
-		.as_collection {max-height: 70px}
+		.as_collection {max-height: 120px}
 		.as_visuals {max-height: 300px}
 		.as_timedate {max-height: 260px}
 		.as_fonts {max-height: 240px}
@@ -269,7 +270,7 @@ body {
 	}
 
 	input::placeholder {
-		color: #7c7d7e;
+		color: $placeholderGrey;
 		opacity: 1;
 	}
 

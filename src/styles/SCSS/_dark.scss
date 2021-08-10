@@ -2,18 +2,18 @@
 	#interface {
 		color: #eee;
 
-	// 	#sb_container #searchbar {
-	// 		// @include frostedGlass($color: rgba(70, 70, 70, 0.4), $blur: 5px);
+		// 	#sb_container #searchbar {
+		// 		// @include frostedGlass($color: rgba(70, 70, 70, 0.4), $blur: 5px);
 
-	// 		&:focus {
-	// 			// @include frostedGlass($color: rgba(70, 70, 70, 0.6), $blur: 15px);
-	// 		}
-	// 	}
-	// }
+		// 		&:focus {
+		// 			// @include frostedGlass($color: rgba(70, 70, 70, 0.6), $blur: 15px);
+		// 		}
+		// 	}
+		// }
 
-	// #interface #time #time-container #analogClock,
-	// #popup {
-	// 	// @include frostedGlass($color: #0003, $blur: 10px);
+		// #interface #time #time-container #analogClock,
+		// #popup {
+		// 	// @include frostedGlass($color: #0003, $blur: 10px);
 	}
 
 	#edit_linkContainer {
@@ -53,6 +53,12 @@
 
 		.tooltip {
 			background-color: $greyish;
+		}
+
+		.tooltip,
+		.titleContainer,
+		.tooltiptext {
+			color: #999;
 		}
 
 		.custom_zone {
