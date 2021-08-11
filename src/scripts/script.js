@@ -337,6 +337,7 @@ function quickLinks(event, that, initStorage) {
 		const block = document.createElement('div')
 		const block_parent = document.createElement('div')
 
+		lIcon.loading = 'lazy'
 		lIcon.className = 'l_icon'
 		lIconWrap.className = 'l_icon_wrap'
 		lIconWrap.appendChild(lIcon)
