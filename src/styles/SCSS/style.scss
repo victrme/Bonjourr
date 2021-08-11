@@ -47,6 +47,13 @@
 			background-color: #000;
 			background-size: cover;
 			background-position: center center;
+
+			// only for Safari
+			@media not all and (min-resolution: 0.001dpcm) {
+				@supports (-webkit-appearance: none) and (stroke-color: transparent) {
+					transform: translateZ(0);
+				}
+			}
 		}
 	}
 
