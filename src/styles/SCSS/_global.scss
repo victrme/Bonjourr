@@ -110,10 +110,11 @@ body {
 }
 
 @mixin frostedGlass($r: 255, $g: 255, $b: 255, $a: 0.4, $blur: 5px) {
-	@supports (backdrop-filter: none) {
+	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
 		backdrop-filter: blur($blur);
+		-webkit-backdrop-filter: blur($blur);
 		background: rgba($r, $g, $b, $a);
-		transition: background 0.2s, backdrop-filter 0.2s;
+		transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
 
 		&:hover {
 			// backdrop-filter: blur(calc(#{$blur} + 10px));
@@ -125,7 +126,7 @@ body {
 		// 	background-color: rgba($r, $g, $b, $a);
 
 		// 	&:hover {
-		// 		// backdrop-filter: blur(calc(#{$blur} + 10px));
+		// 		// -webkit-backdrop-filter: blur(calc(#{$blur} + 10px));
 		// 		background-color: rgba($r, $g, $b, calc(#{$a} + .1));
 		// 	}
 		// }
