@@ -20,8 +20,11 @@ $thumbShadow: 0px 1px 3px 1.5px #cccccc;
 $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
+:root {
+	--app-height: 100%;
+}
+
 body {
-	overflow: hidden;
 	margin: 0;
 	cursor: default;
 	user-select: none;

@@ -2393,6 +2393,14 @@ window.onload = function () {
 			}
 		})
 	} catch (error) {
-		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us !`, error.stack, error.line)
+		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us!`, error.stack, error.line)
 	}
 }
+
+
+const appHeight = () => {
+    const doc = document.documentElement
+    doc.style.setProperty('--app-height', `${window.innerHeight}px`)
+}
+window.addEventListener('resize', appHeight)
+appHeight()
