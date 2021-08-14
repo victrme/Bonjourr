@@ -1,73 +1,77 @@
 //
-
-const cacheName = 'bonjourrOffline-v1'
+const version = '1.10.0'
+const bonjourrCache = 'bonjourr-v' + version
+const backgroundCache = 'background-v' + version
 
 const filesToChache = [
 	'index.html',
 	'settings.html',
+	'manifest.webmanifest',
 	'src/scripts/main.js',
 	'src/styles/style.css',
-	'src/assets/manifest.webmanifest',
 	'src/assets/images/favicon-128x128.png',
 	'src/assets/images/favicon-512x512.png',
+	'src/assets/images/apple-touch-icon.jpg',
 	'src/assets/images/interface/gear.svg',
 	'src/assets/images/interface/loading.gif',
 ]
 
-const addWeatherIcons = (time) => {
-	let result = []
-	const list = [
-		'snow',
-		'mist',
-		'clearsky',
-		'fewclouds',
-		'lightrain',
-		'showerrain',
-		'thunderstorm',
-		'brokenclouds',
-		'lightdrizzle',
-		'showerdrizzle',
-		'overcastclouds',
-	]
+const weatherList = [
+	'snow',
+	'mist',
+	'clearsky',
+	'fewclouds',
+	'lightrain',
+	'showerrain',
+	'thunderstorm',
+	'brokenclouds',
+	'lightdrizzle',
+	'showerdrizzle',
+	'overcastclouds',
+]
 
-	list.forEach((elem) => result.push(`src/assets/images/weather/${time}/${elem}.png`))
-	filesToChache.concat(result)
-}
+const addWeatherIcons = (time) =>
+	weatherList.forEach((elem) => filesToChache.push(`src/assets/images/weather/${time}/${elem}.png`))
 
 addWeatherIcons('day')
 addWeatherIcons('night')
 
+//
+//
+// EVENTS
+//
+//
+
 self.addEventListener('install', function (event) {
 	event.waitUntil(
-		caches.open(cacheName).then(function (cache) {
+		caches.open(bonjourrCache).then(function (cache) {
 			return cache.addAll(filesToChache)
 		})
 	)
 })
 
-self.addEventListener('fetch', (e) => {
-	e.respondWith(
-		caches.match(e.request).then((r) => {
-			return (
-				r ||
-				fetch(e.request).then((response) => {
-					return caches.open(cacheName).then((cache) => {
-						cache.put(e.request, response.clone())
-						return response
-					})
+self.addEventListener('fetch', (event) => {
+	event.respondWith(
+		caches.open(bonjourrCache).then(function (cache) {
+			return caches.match(event.request).then(function (response) {
+				if (response) return response
+
+				return fetch(event.request).then(function (fetched) {
+					const isntUnsplash = event.request.url.indexOf('unsplash.com') === -1
+					if (isntUnsplash) cache.put(event.request, fetched.clone())
+					return fetched
 				})
-			)
+			})
 		})
 	)
 })
 
-// Deletes old
 self.addEventListener('activate', (e) => {
 	e.waitUntil(
 		caches.keys().then((keyList) => {
 			return Promise.all(
 				keyList.map((key) => {
-					if (cacheName.indexOf(key) === -1) {
+					if (bonjourrCache.indexOf(key) === -1) {
 						return caches.delete(key)
 					}
 				})

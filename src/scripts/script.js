@@ -1440,7 +1440,6 @@ function unsplash(init, event) {
 
 				imgArray.forEach((img) => {
 					filteredList.push({
-						hash: img.blur_hash,
 						url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
 						link: img.links.html,
 						username: img.user.username,
@@ -2348,16 +2347,40 @@ function startup(data) {
 	setTimeout(() => settingsInit(data), 200)
 }
 
+var promptEvent
+
+// Capture event and defer
+window.addEventListener('beforeinstallprompt', function (e) {
+	promptEvent = e
+})
+
+// window.onclick = () => {
+// 	if (promptEvent) {
+// 		promptEvent.prompt()
+// 		promptEvent.userChoice.then((choice) => {
+// 			if (choice.outcome === 'accepted') {
+// 				alert('User accepted')
+// 			} else {
+// 				alert('User dismissed')
+// 			}
+// 		})
+// 	}
+// }
+
 window.onload = function () {
 	if ('serviceWorker' in navigator) {
 		switch (window.location.protocol) {
 			case 'http:':
 			case 'https:':
 			case 'file:':
-				navigator.serviceWorker.register('service-worker.js')
+				navigator.serviceWorker.register('/service-worker.js')
 				break
 		}
 	}
+
+	const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+	window.addEventListener('resize', appHeight)
+	appHeight()
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
@@ -2397,11 +2420,3 @@ window.onload = function () {
 		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us!`, error.stack, error.line)
 	}
 }
-
-
-const appHeight = () => {
-    const doc = document.documentElement
-    doc.style.setProperty('--app-height', `${window.innerHeight}px`)
-}
-window.addEventListener('resize', appHeight)
-appHeight()

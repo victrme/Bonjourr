@@ -80,7 +80,7 @@ function addBackground() {
 }
 
 function ressources() {
-	return src('src/assets/**').pipe(dest('release/src/assets'))
+	return src('src/assets/images/**').pipe(dest('release/src/assets/images'))
 }
 
 function locales() {
@@ -96,7 +96,11 @@ function worker(online) {
 }
 
 function manifest(which) {
-	return src(`manifest-${which}.json`).pipe(rename('manifest.json')).pipe(dest('release/'))
+	if (which === 'online') return src(`src/assets/manifest.webmanifest`).pipe(dest('release/'))
+	else
+		return src(`src/assets/manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
+			.pipe(rename('manifest.json'))
+			.pipe(dest('release/'))
 }
 
 //
@@ -104,13 +108,14 @@ function manifest(which) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map']
+const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', '/service-worker.js']
 
 // prettier-ignore
 const makeOnline = () => [
 	css,
 	html,
 	ressources,
+	() => manifest('online'),
 	() => worker('online'),
 	() => scripts('online')
 ]
@@ -118,10 +123,10 @@ const makeOnline = () => [
 const makeExtension = (manifestFrom, scriptFrom) => [
 	css,
 	html,
-	worker,
 	locales,
 	ressources,
 	addBackground,
+	() => worker(false),
 	() => scripts(scriptFrom),
 	() => manifest(manifestFrom),
 ]
