@@ -103,6 +103,14 @@ function consolr(flat, data) {
 	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
 }
 
+const testOS = {
+	mac: () => window.navigator.appVersion.includes('Macintosh'),
+	windows: () => window.navigator.appVersion.includes('Windows'),
+	ios: () =>
+		['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
+}
+
 function bonjourrDefaults(which) {
 	switch (which) {
 		case 'sync':

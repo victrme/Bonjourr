@@ -1883,30 +1883,26 @@ function modifyWeightOptions(weights, settingsDom) {
 
 function safeFont(settingsDom) {
 	const is = {
-		linux: { family: 'Ubuntu', placeholder: 'Ubuntu', weights: [300, 400, 500, 700] },
-		windows: { family: 'Segoe UI', placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
-		android: { family: 'Roboto', placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
-		apple: { family: 'system-ui', placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
-		fallback: { family: 'Arial', placeholder: 'Arial', weights: [500, 600, 800] },
+		fallback: { placeholder: 'Arial', weights: [500, 600, 800] },
+		linux: { placeholder: 'Ubuntu', weights: [300, 400, 500, 700] },
+		windows: { placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
+		android: { placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
+		apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
 	}
 
-	const toUse = document.fonts.check('16px Segoe UI')
-		? is.windows
-		: document.fonts.check('16px Roboto')
-		? is.android
-		: document.fonts.check('16px Ubuntu')
-		? is.linux
-		: document.fonts.check('16px Helvetica')
-		? is.apple
-		: is.fallback
+	let toUse = is.fallback
+	const hasUbuntu = document.fonts.check('16px Ubuntu')
+	const hasRoboto = document.fonts.check('16px Roboto')
+
+	if (testOS.windows) toUse = is.windows
+	else if (testOS.mac || testOS.ios) toUse = is.apple
+	else if (!testOS.mac && !testOS.windows && !testOS.ios && hasRoboto) toUse = is.android
+	else if (!testOS.mac && !testOS.windows && !testOS.ios && hasUbuntu) toUse = is.linux
 
 	if (settingsDom) {
 		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
 		modifyWeightOptions(toUse.weights, settingsDom)
 	}
-
-	// startup fonts
-	else dominterface.style.fontFamily = toUse.family
 }
 
 function customFont(data, event) {
@@ -2331,7 +2327,6 @@ function startup(data) {
 
 	customFont(data.font)
 	customSize(data.font)
-	safeFont()
 
 	clock(null, data)
 	linksrow(data.linksrow)
@@ -2398,10 +2393,9 @@ window.onload = function () {
 	}
 }
 
-
 const appHeight = () => {
-    const doc = document.documentElement
-    doc.style.setProperty('--app-height', `${window.innerHeight}px`)
+	const doc = document.documentElement
+	doc.style.setProperty('--app-height', `${window.innerHeight}px`)
 }
 window.addEventListener('resize', appHeight)
 appHeight()
