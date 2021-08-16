@@ -276,7 +276,7 @@ function quickLinks(event, that, initStorage) {
 				}
 			}
 
-			if (iconurl.length === 0 || iconurl === 'src/assets/images/interface/loading.gif') {
+			if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
 				//
 				// Apply loading gif d'abord
 				apply(iconurl)
@@ -327,7 +327,7 @@ function quickLinks(event, that, initStorage) {
 
 		// no icon ? + 1.9.2 dead favicons fix
 		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
-			icon = 'src/assets/images/interface/loading.gif'
+			icon = 'src/assets/interface/loading.gif'
 		}
 
 		//le DOM du block
@@ -668,7 +668,7 @@ function quickLinks(event, that, initStorage) {
 		let links = {
 			title: stringMaxSize(id('i_title').value, 32),
 			url: stringMaxSize(filterUrl(id('i_url').value), 256),
-			icon: 'src/assets/images/interface/loading.gif',
+			icon: 'src/assets/interface/loading.gif',
 		}
 
 		//si l'url filtré est juste
@@ -916,7 +916,7 @@ function weather(event, that, init) {
 		const widgetIcon = widget.querySelector('img')
 		const { now, rise, set } = sunTime()
 		const timeOfDay = now < rise || now > set ? 'night' : 'day'
-		const iconSrc = `src/assets/images/weather/${timeOfDay}/${filename}.png`
+		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
 		const icon = document.createElement('img')
 		icon.src = iconSrc
@@ -2347,27 +2347,34 @@ function startup(data) {
 	setTimeout(() => settingsInit(data), 200)
 }
 
-var promptEvent
-
-// Capture event and defer
-window.addEventListener('beforeinstallprompt', function (e) {
-	promptEvent = e
-})
-
 window.onload = function () {
-	if ('serviceWorker' in navigator) {
-		switch (window.location.protocol) {
-			case 'http:':
-			case 'https:':
-			case 'file:':
+	//
+	// Only on Online
+	switch (window.location.protocol) {
+		case 'http:':
+		case 'https:':
+		case 'file:': {
+			//
+			// Service Worker
+			if ('serviceWorker' in navigator) {
 				navigator.serviceWorker.register('/service-worker.js')
-				break
+			}
+
+			// PWA install trigger (30s interaction default)
+			let promptEvent
+			window.addEventListener('beforeinstallprompt', function (e) {
+				promptEvent = e
+			})
+
+			// Safari overflow fix
+			// Todo: add safari condition
+			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+			window.addEventListener('resize', appHeight)
+			appHeight()
+
+			break
 		}
 	}
-
-	const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
-	window.addEventListener('resize', appHeight)
-	appHeight()
 
 	try {
 		chrome.storage.sync.get(null, (data) => {

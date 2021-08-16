@@ -1,43 +1,43 @@
 {
 	"name": "Bonjourr",
 	"description": "Bonjourr replaces your new tab page for something more refined and minimal. We took inspiration from Apple’s design language to create a startpage that both looks amazing and feels great to use in your daily life.",
-	"theme_color": "#007aff",
-	"background_color": "#ffffff",
+	"theme_color": "#ffffff",
+	"background_color": "#222222",
 	"display": "fullscreen",
 	"orientation": "portrait",
-	"scope": "/",
-	"start_url": "/",
+	"scope": "/online",
+	"start_url": "/online",
 	"prefer_related_applications": false,
 	"icons": [
 		{
-			"src": "src/assets/images/apple-touch-icon.png",
-			"type": "image/png",
-			"sizes": "192x192"
-		},
-		{
-			"src": "src/assets/images/favicon-128x128.png",
+			"src": "src/assets/favicon-128x128.png",
 			"type": "image/png",
 			"sizes": "128x128"
 		},
 		{
-			"src": "src/assets/images/favicon-512x512.png",
+			"src": "src/assets/apple-touch-icon.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "src/assets/favicon-512x512.png",
 			"type": "image/png",
 			"sizes": "512x512"
 		}
 	],
 	"screenshots": [
 		{
-			"src": "src/assets/images/screenshots/screenshot-1.webp",
+			"src": "src/assets/screenshots/screenshot-1.webp",
 			"type": "image/webp",
 			"sizes": "554x1200"
 		},
 		{
-			"src": "src/assets/images/screenshots/screenshot-2.webp",
+			"src": "src/assets/screenshots/screenshot-2.webp",
 			"type": "image/webp",
 			"sizes": "554x1200"
 		},
 		{
-			"src": "src/assets/images/screenshots/screenshot-4.webp",
+			"src": "src/assets/screenshots/screenshot-4.webp",
 			"type": "image/webp",
 			"sizes": "554x1200"
 		}

@@ -13,7 +13,6 @@ function html() {
 	//
 
 	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
-
 	return src('*.html')
 		.pipe(
 			htmlmin({
@@ -80,7 +79,7 @@ function addBackground() {
 }
 
 function ressources() {
-	return src('src/assets/images/**').pipe(dest('release/src/assets/images'))
+	return src('src/assets/**').pipe(dest('release/src/assets'))
 }
 
 function locales() {
@@ -96,9 +95,9 @@ function worker(online) {
 }
 
 function manifest(which) {
-	if (which === 'online') return src(`src/assets/manifest.webmanifest`).pipe(dest('release/'))
+	if (which === 'online') return src(`manifest.webmanifest`).pipe(dest('release/'))
 	else
-		return src(`src/assets/manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
+		return src(`manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
 			.pipe(rename('manifest.json'))
 			.pipe(dest('release/'))
 }
@@ -108,7 +107,7 @@ function manifest(which) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', '/service-worker.js']
+const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', './service-worker.js', './manifest*.**']
 
 // prettier-ignore
 const makeOnline = () => [
