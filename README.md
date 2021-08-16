@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/victrme/Bonjourr/master/src/assets/images/bonjourr.png" width="50%"></img>
+  <img src="https://raw.githubusercontent.com/victrme/Bonjourr/master/src/assets/bonjourr.png" width="50%"></img>
 </p>
 
 Bonjourr is a home page for your Internet browser, inspired by the looks of iOS' Bedtime feature.
