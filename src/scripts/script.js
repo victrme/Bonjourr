@@ -2354,19 +2354,6 @@ window.addEventListener('beforeinstallprompt', function (e) {
 	promptEvent = e
 })
 
-// window.onclick = () => {
-// 	if (promptEvent) {
-// 		promptEvent.prompt()
-// 		promptEvent.userChoice.then((choice) => {
-// 			if (choice.outcome === 'accepted') {
-// 				alert('User accepted')
-// 			} else {
-// 				alert('User dismissed')
-// 			}
-// 		})
-// 	}
-// }
-
 window.onload = function () {
 	if ('serviceWorker' in navigator) {
 		switch (window.location.protocol) {

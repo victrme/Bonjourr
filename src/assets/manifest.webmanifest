@@ -1,17 +1,19 @@
 {
-	"short_name": "Bonjourr",
-	"name": "Bonjourr Startpage",
-	"description": "iOS styled startpage",
-
+	"name": "Bonjourr",
+	"description": "Bonjourr replaces your new tab page for something more refined and minimal. We took inspiration from Apple’s design language to create a startpage that both looks amazing and feels great to use in your daily life.",
 	"theme_color": "#007aff",
 	"background_color": "#ffffff",
-
 	"display": "fullscreen",
 	"orientation": "portrait",
 	"scope": "/",
 	"start_url": "/",
 	"prefer_related_applications": false,
 	"icons": [
+		{
+			"src": "src/assets/images/apple-touch-icon.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
 		{
 			"src": "src/assets/images/favicon-128x128.png",
 			"type": "image/png",
@@ -21,11 +23,23 @@
 			"src": "src/assets/images/favicon-512x512.png",
 			"type": "image/png",
 			"sizes": "512x512"
+		}
+	],
+	"screenshots": [
+		{
+			"src": "src/assets/images/screenshots/screenshot-1.webp",
+			"type": "image/webp",
+			"sizes": "554x1200"
 		},
 		{
-			"src": "src/assets/images/apple-touch-icon.jpg",
-			"type": "image/jpg",
-			"sizes": "512x512"
+			"src": "src/assets/images/screenshots/screenshot-2.webp",
+			"type": "image/webp",
+			"sizes": "554x1200"
+		},
+		{
+			"src": "src/assets/images/screenshots/screenshot-4.webp",
+			"type": "image/webp",
+			"sizes": "554x1200"
 		}
 	]
 }
