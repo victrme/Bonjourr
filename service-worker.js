@@ -11,7 +11,7 @@ const filesToChache = [
 	'src/styles/style.css',
 	'src/assets/favicon-128x128.png',
 	'src/assets/favicon-512x512.png',
-	'src/assets/apple-touch-icon.jpg',
+	'src/assets/apple-touch-icon.png',
 	'src/assets/interface/gear.svg',
 	'src/assets/interface/loading.gif',
 ]
@@ -41,31 +41,9 @@ addWeatherIcons('night')
 //
 //
 
-self.addEventListener('install', function (event) {
-	event.waitUntil(
-		caches.open(bonjourrCache).then(function (cache) {
-			return cache.addAll(filesToChache)
-		})
-	)
-})
-
-self.addEventListener('fetch', (event) => {
-	event.respondWith(
-		caches.open(bonjourrCache).then(function (cache) {
-			return caches.match(event.request).then(function (response) {
-				if (response) return response
-
-				return fetch(event.request).then(function (fetched) {
-					const isntUnsplash = event.request.url.includes('unsplash.com')
-					const isntWeather = event.request.url.includes('api.openweathermap.org')
-
-					if (isntUnsplash && isntWeather) cache.put(event.request, fetched.clone())
-					return fetched
-				})
-			})
-		})
-	)
-})
+self.addEventListener('install', (event) =>
+	event.waitUntil(caches.open(bonjourrCache).then((cache) => cache.addAll(filesToChache)))
+)
 
 self.addEventListener('activate', (e) => {
 	e.waitUntil(
@@ -77,6 +55,38 @@ self.addEventListener('activate', (e) => {
 					}
 				})
 			)
+		})
+	)
+})
+
+self.addEventListener('fetch', function (event) {
+	event.respondWith(
+		caches.match(event.request).then(function (response) {
+			// Cache hit - return response
+			if (response) {
+				return response
+			}
+
+			// IMPORTANT: Cloner la requête.
+			// Une requete est un flux et est à consommation unique
+			// Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
+			const fetchRequest = event.request.clone()
+
+			return fetch(fetchRequest).then(function (response) {
+				if (!response || response.status !== 200 || response.type !== 'basic') {
+					return response
+				}
+
+				// IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
+				const responseToCache = response.clone()
+
+				if (event.request.url.includes('unsplash.com') && event.request.url.includes('api.openweathermap.org'))
+					caches.open(bonjourrCache).then(function (cache) {
+						cache.put(event.request, responseToCache)
+					})
+
+				return response
+			})
 		})
 	)
 })
