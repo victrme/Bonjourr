@@ -13,7 +13,6 @@ function html() {
 	//
 
 	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
-
 	return src('*.html')
 		.pipe(
 			htmlmin({
@@ -96,7 +95,11 @@ function worker(online) {
 }
 
 function manifest(which) {
-	return src(`manifest-${which}.json`).pipe(rename('manifest.json')).pipe(dest('release/'))
+	if (which === 'online') return src(`manifest.webmanifest`).pipe(dest('release/'))
+	else
+		return src(`manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
+			.pipe(rename('manifest.json'))
+			.pipe(dest('release/'))
 }
 
 //
@@ -104,13 +107,14 @@ function manifest(which) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map']
+const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', './service-worker.js', './manifest*.**']
 
 // prettier-ignore
 const makeOnline = () => [
 	css,
 	html,
 	ressources,
+	() => manifest('online'),
 	() => worker('online'),
 	() => scripts('online')
 ]
@@ -118,10 +122,10 @@ const makeOnline = () => [
 const makeExtension = (manifestFrom, scriptFrom) => [
 	css,
 	html,
-	worker,
 	locales,
 	ressources,
 	addBackground,
+	() => worker(false),
 	() => scripts(scriptFrom),
 	() => manifest(manifestFrom),
 ]
