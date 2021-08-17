@@ -452,6 +452,7 @@
 	width: 100%;
 	transition: transform 0.4s;
 	z-index: 1;
+	@include frostedGlass($a: 0, $blur: 50px);
 
 	&.pushed {
 		-webkit-transform: translateX(-160px);
@@ -469,7 +470,7 @@
 	}
 
 	#edit_link {
-		background: $purewhite;
+		background-color: #fff;
 		align-self: center;
 		margin: auto;
 		color: #333;
@@ -638,82 +639,64 @@
 }
 
 // review popup
-#popup {
+
+#popup_text,
+#popup_buttons {
 	position: absolute;
-	justify-content: space-between;
 	text-align: left;
+	top: 60px;
+}
+
+#popup_buttons {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	left: 400px;
+
+	a {
+		text-decoration: none;
+		color: white;
+		border: 0;
+		opacity: 0;
+		margin: 0;
+		height: 30px;
+		padding: 3px 40px;
+		border-radius: 10px;
+		transition: opacity 3s 5.2s;
+
+		&:first-child {
+			margin-bottom: 10px;
+		}
+
+		@include allCentered();
+		@include frostedGlass($a: 0.1, $blur: 10px);
+	}
+
+	&.shown {
+		a {
+			opacity: 1;
+		}
+	}
+}
+
+#popup_text {
+	justify-content: space-between;
 	opacity: 0;
-	left: 0;
-	bottom: 5vh;
-	padding: 1em 2em 1em 3em;
-	border-radius: 0 10px 10px 0;
-	box-sizing: border-box;
-	will-change: transform;
-	transform: translateX(-100%);
+	width: 260px;
+	left: 60px;
+	padding: 10px 30px;
+	border-radius: 10px;
+	transition: opacity 3s 5s;
 
 	@include allCentered();
-	@include frostedGlass($blur: 10px);
+	@include frostedGlass($a: 0.1, $blur: 10px);
 
 	&.shown {
 		opacity: 1;
-		transform: translateX(0);
-		transition: background-color 0.2s, backdrop-filter 0.2s, transform 1s 2s;
-		box-shadow: $textShadow;
 
 		@supports not (backdrop-filter: none) {
-			background-color: rgba(255, 255, 255, 0.9);
-			color: rgba(0, 0, 0, 0.7);
-		}
-	}
-
-	&.removing {
-		transform: translateX(-100%);
-		transition: transform 0.6s 0s, opacity 0s 0.6s;
-	}
-
-	span {
-		text-shadow: $textShadow;
-	}
-
-	span,
-	a {
-		max-width: 210px;
-		font-size: 15px;
-	}
-
-	.choices {
-		display: flex;
-		flex-direction: column;
-
-		a {
-			text-decoration: none;
-			background-color: $blue;
-			color: $purewhite;
-			border: 0;
-			height: 30px;
-			padding: 0 20px;
-			margin: 3px 20px;
-			border-radius: 5px;
-			@include allCentered();
-		}
-	}
-
-	#closePopup {
-		margin-bottom: 5px;
-		margin-left: 30px;
-		font-size: 30px;
-		cursor: pointer;
-	}
-
-	#closePopup,
-	a {
-		transition: filter 0.1s;
-		&:hover {
-			filter: brightness(90%);
-		}
-
-		&:active {
-			filter: brightness(80%);
+			background-color: rgba(255, 255, 255, 0.3);
+			color: #eee;
 		}
 	}
 }

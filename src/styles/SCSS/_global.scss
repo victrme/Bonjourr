@@ -114,12 +114,12 @@ body {
 		backdrop-filter: blur($blur);
 		-webkit-backdrop-filter: blur($blur);
 		background: rgba($r, $g, $b, $a);
-		transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
+		//transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
 
-		&:hover {
-			// backdrop-filter: blur(calc(#{$blur} + 10px));
-			background: rgba($r, $g, $b, calc(#{$a} + 0.1));
-		}
+		//&:hover {
+		// backdrop-filter: blur(calc(#{$blur} + 10px));
+		//background: rgba($r, $g, $b, calc(#{$a} + 0.1));
+		//}
 
 		// possible dark mode?
 		// @media (prefers-color-scheme: dark) {
@@ -378,6 +378,17 @@ body {
 
 	/* Chrome, Opera & Safari */
 	input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		background: #fff;
+		height: 20px;
+		width: 20px;
+		border-radius: 50px;
+		border: 0;
+		box-shadow: $thumbShadow;
+	}
+
+	/* has to be seperated */
+	input[type='range']::-moz-range-thumb {
 		-webkit-appearance: none;
 		background: #fff;
 		height: 20px;
