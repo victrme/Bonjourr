@@ -761,10 +761,10 @@ function weather(event, that, init) {
 		)
 	}
 
-	function request(params, forecast) {
+	function request(storage, forecast) {
 		function saveCurrent(response) {
 			//
-			const isImperial = params.unit === 'imperial'
+			const isImperial = storage.unit === 'imperial'
 
 			weatherToSave = {
 				...weatherToSave,
@@ -803,7 +803,7 @@ function weather(event, that, init) {
 					tempMax < elem.main.temp_max ? (tempMax = elem.main.temp_max) : ''
 			})
 
-			weatherToSave.fcHigh = Math.round(params.unit === 'imperial' ? toFarenheit(tempMax) : tempMax)
+			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(tempMax) : tempMax)
 			weatherToSave.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
 
 			chrome.storage.sync.set({ weather: weatherToSave })
@@ -812,36 +812,39 @@ function weather(event, that, init) {
 
 		let url = 'https://api.openweathermap.org/data/2.5/'
 		const lang = document.documentElement.getAttribute('lang')
-		const [lat, lon] = params.location || [0, 0]
+		const [lat, lon] = storage.location || [0, 0]
 
 		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
-		url += params.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(params.city)},${params.ccode}`
+		url += storage.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(storage.city)},${storage.ccode}`
 		url += `&units=metric&lang=${lang}`
 
 		// Inits global object
 		if (Object.keys(weatherToSave).length === 0) {
-			weatherToSave = params
+			weatherToSave = storage
 		}
 
 		// fetches, parses and apply callback
 		fetch(url).then((data) => {
 			if (data.ok) data.json().then((json) => (forecast ? saveForecast(json) : saveCurrent(json)))
+			else if (i_city) i_city.setAttribute('placeholder', tradThis('City not found'))
 		})
 	}
 
 	function cacheControl(storage) {
 		const now = Math.floor(date.getTime() / 1000)
+		let isCurrentChanging = false
 
 		if (typeof storage.lastCall === 'number') {
 			//
 			// Current: 30 mins
 			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
+				isCurrentChanging = true
 				sessionStorage.removeItem('lang')
 				request(storage, false)
 			} else displaysCurrent(storage)
 
-			// Forecast: 30 mins
-			if (navigator.onLine && (!storage.forecastLastCall || now > storage.forecastLastCall + 1800)) {
+			// Forecast: follows current
+			if (navigator.onLine && isCurrentChanging) {
 				request(storage, true)
 			} else displaysForecast(storage)
 		}
