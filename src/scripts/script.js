@@ -738,8 +738,8 @@ function weather(event, that, init) {
 	const current = id('current')
 	const forecast = id('forecast')
 	const widget = id('widget')
-	const toFarenheit = (num) => num * (9 / 5) + 32
-	const toCelsius = (num) => (num - 32) * (5 / 9)
+	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
+	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
 	const WEATHER_API_KEY = [
 		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
 		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
@@ -789,7 +789,7 @@ function weather(event, that, init) {
 			const thisdate = new Date()
 			const todayHour = thisdate.getHours()
 			let forecastDay = thisdate.getDate()
-			let tempMax = -99
+			let maxTempFromList = -273.15
 
 			// Late evening forecast for tomorrow
 			if (todayHour > 18) {
@@ -800,11 +800,10 @@ function weather(event, that, init) {
 			// Get the highest temp for the specified day
 			response.list.forEach((elem) => {
 				if (new Date(elem.dt * 1000).getDate() === forecastDay)
-					tempMax < elem.main.temp_max ? (tempMax = elem.main.temp_max) : ''
+					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
 			})
 
-			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(tempMax) : tempMax)
-			weatherToSave.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
+			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(maxTempFromList) : maxTempFromList)
 
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysForecast(weatherToSave)
@@ -938,9 +937,7 @@ function weather(event, that, init) {
 		clas(widget, false, 'wait')
 
 		// from 1.2s request anim to .4s hide elem anim
-		setTimeout(() => {
-			widget.style.transition = 'opacity .4s'
-		}, 400)
+		setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
 	}
 
 	function displaysForecast(weather) {
@@ -966,12 +963,13 @@ function weather(event, that, init) {
 					data.weather.unit = that.checked ? 'imperial' : 'metric'
 
 					if (data.weather.lastState) {
-						const { feels_like, tempMax } = data.weather.lastState
+						const { feels_like } = data.weather.lastState
 						data.weather.lastState.feels_like = that.checked ? toFarenheit(feels_like) : toCelsius(feels_like)
-						data.weather.lastState.tempMax = that.checked ? toFarenheit(tempMax) : toCelsius(tempMax)
+						data.weather.fcHigh = that.checked ? toFarenheit(data.weather.fcHigh) : toCelsius(data.weather.fcHigh)
 					}
 
-					cacheControl(data.weather)
+					displaysCurrent(data.weather)
+					displaysForecast(data.weather)
 					chrome.storage.sync.set({ weather: data.weather })
 					break
 				}
@@ -2279,7 +2277,7 @@ function filterImports(data) {
 		result.weather = reducedWeatherData(data.weather)
 
 		if (result.weather.lastCall) result.weather.lastCall = 0
-		if (result.weather.forecastLastCall) result.weather.forecastLastCall = 0
+		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
 	}
 
 	// Old blur was strings
