@@ -1,7 +1,7 @@
 //
 //
 
-$fonts: -apple-system, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
+$fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
 
 $purewhite: white;
 $pureblack: black;
@@ -229,7 +229,7 @@ body {
 		transition-timing-function: $easeOutThree;
 		transition-property: background-color, color, border;
 	}
-
+	#cssEditor,
 	input[type='text'],
 	input[type='range'],
 	select {
@@ -244,21 +244,7 @@ body {
 		padding-left: 10px;
 		border: 1px solid $inputGrey;
 		color: $blackish;
-
-		@supports (-webkit-touch-callout: none) {
-			-webkit-appearance: none;
-
-			// &:after {
-			// 	content: '';
-			// 	position: absolute;
-			// 	width: 0;
-			// 	height: 0;
-			// 	border-left: 20px solid transparent;
-			// 	border-right: 20px solid transparent;
-
-			// 	border-top: 20px solid #f00;
-			// }
-		}
+		-webkit-appearance: none;
 	}
 
 	.slider,

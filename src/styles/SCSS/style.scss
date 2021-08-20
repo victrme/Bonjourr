@@ -340,6 +340,7 @@
 
 			.block {
 				.l_icon_wrap {
+					pointer-events: none;
 					overflow: hidden;
 					width: 4.4em;
 					height: 4.4em;
@@ -352,6 +353,7 @@
 					transition: border-color 0.1s, filter 0.1s;
 
 					.l_icon {
+						pointer-events: none;
 						width: 100%;
 						transition: opacity 0.4s;
 					}
@@ -450,8 +452,9 @@
 	top: 0;
 	height: 100vh;
 	width: 100%;
-	transition: transform 0.4s;
 	z-index: 1;
+	transition: transform 0.4s;
+	@include frostedGlass($a: 0, $blur: 20px);
 
 	&.pushed {
 		-webkit-transform: translateX(-160px);
@@ -531,7 +534,7 @@
 			border-radius: 8px;
 			height: 2.35em;
 			margin: 0.3em 0;
-			padding-right: 2.5em;
+			padding-right: 3em;
 			transition: background 0.1s;
 
 			&:focus {
