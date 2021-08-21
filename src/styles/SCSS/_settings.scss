@@ -530,6 +530,7 @@
 		resize: vertical;
 		border: none;
 		padding: 0.75em 1.3em;
+		font-family: 'Courier New', Courier, monospace;
 		box-sizing: border-box;
 		@include radiusSettings();
 		@include marginSettings();

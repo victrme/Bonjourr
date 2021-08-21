@@ -413,11 +413,26 @@ function quickLinks(event, that, initStorage) {
 
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
-			if (mobilecheck) editlink(this)
+			editlink(this)
+		}
+
+		let longpressWait = setTimeout(() => {}, 0)
+		elem.addEventListener('touchstart', function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+			longpressWait = setTimeout(() => {
+				console.log(this)
+				editlink(this)
+			}, 400)
+		})
+
+		elem.ontouchend = function (e) {
+			clearTimeout(longpressWait)
 		}
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
+			console.log('mouse')
 			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
 		}
 	}
@@ -1897,12 +1912,12 @@ function safeFont(settingsDom) {
 
 	let toUse = is.fallback
 	const hasUbuntu = document.fonts.check('16px Ubuntu')
-	const hasRoboto = document.fonts.check('16px Roboto')
+	const notAppleOrWindows = !testOS.mac() && !testOS.windows() && !testOS.ios()
 
-	if (testOS.windows) toUse = is.windows
-	else if (testOS.mac || testOS.ios) toUse = is.apple
-	else if (!testOS.mac && !testOS.windows && !testOS.ios && hasRoboto) toUse = is.android
-	else if (!testOS.mac && !testOS.windows && !testOS.ios && hasUbuntu) toUse = is.linux
+	if (testOS.windows()) toUse = is.windows
+	else if (testOS.android()) toUse = is.android
+	else if (testOS.mac() || testOS.ios()) toUse = is.apple
+	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
 
 	if (settingsDom) {
 		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
