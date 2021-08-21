@@ -1822,11 +1822,10 @@ function searchbar(event, that, storage) {
 }
 
 function showPopup(data) {
-	const popup = id('popup')
-	const closePopup = id('closePopup')
-	const go = id('go')
+	const text = id('popup_buttons')
+	const buttons = id('popup_text')
 
-	go.setAttribute(
+	id('popup_review').setAttribute(
 		'href',
 		mobilecheck
 			? 'https://github.com/victrme/Bonjourr/stargazers'
@@ -1836,23 +1835,26 @@ function showPopup(data) {
 	)
 
 	function affiche() {
-		popup.classList.add('shown')
-
 		const close = function () {
-			popup.classList.replace('shown', 'removing')
+			text.classList.replace('shown', 'removing')
+			buttons.classList.replace('shown', 'removing')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
-		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
-		else closePopup.onclick = close
-		go.onclick = close
+		text.classList.add('shown')
+		buttons.classList.add('shown')
+
+		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close), 4000)
 	}
 
 	//s'affiche après 30 tabs
 	if (data > 30) affiche()
 	else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
 	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
-	else if (data === 'removed') document.body.removeChild(popup)
+	else if (data === 'removed') {
+		document.body.removeChild(text)
+		document.body.removeChild(buttons)
+	}
 }
 
 function customSize(init, event) {
