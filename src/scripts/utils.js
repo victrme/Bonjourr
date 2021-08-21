@@ -28,10 +28,8 @@ const domshowsettings = id('showSettings'),
 	domclock = id('clock'),
 	domcredit = id('credit')
 
-const mobilecheck =
-	navigator.userAgentData !== undefined
-		? navigator.userAgentData.mobile
-		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+let mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
@@ -158,6 +156,7 @@ function bonjourrDefaults(which) {
 					family: '',
 					weight: '400',
 					availWeights: [],
+					size: mobilecheck ? '11' : '14',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
 				about: { browser: 'chrome', version: '1.10.0' },
