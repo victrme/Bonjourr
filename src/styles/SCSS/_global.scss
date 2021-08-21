@@ -117,22 +117,10 @@ body {
 		backdrop-filter: blur($blur);
 		-webkit-backdrop-filter: blur($blur);
 		background: rgba($r, $g, $b, $a);
-		transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
-
-		// &:hover {
-		// 	backdrop-filter: blur(calc(#{$blur} + 10px));
-		// 	background: rgba($r, $g, $b, calc(#{$a} + 0.1));
-		// }
 
 		// possible dark mode?
 		// @media (prefers-color-scheme: dark) {
 		// 	background-color: rgba($r, $g, $b, $a);
-
-		// 	&:hover {
-		// 		// -webkit-backdrop-filter: blur(calc(#{$blur} + 10px));
-		// 		background-color: rgba($r, $g, $b, calc(#{$a} + .1));
-		// 	}
-		// }
 	}
 }
 
@@ -443,6 +431,7 @@ body {
 	&::-webkit-scrollbar-track {
 		box-shadow: inset 0 0 15px 15px transparent;
 		border: solid 3px transparent;
+		margin: 20px 0;
 	}
 
 	&::-webkit-scrollbar-thumb {
