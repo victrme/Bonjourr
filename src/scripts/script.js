@@ -1260,7 +1260,7 @@ function localBackgrounds(init, event) {
 
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
-		rem.setAttribute('class', 'hidden')
+		if (!mobilecheck) rem.setAttribute('class', 'hidden')
 		rem.textContent = '✕'
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
@@ -1273,9 +1273,11 @@ function localBackgrounds(init, event) {
 		const getIndex = (that) => parseInt(that.getAttribute('index'))
 		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
 
-		//displays / hides remove button
-		div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
-		div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
+		//displays / hides remove button on desktop
+		if (!mobilecheck) {
+			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
+			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
+		}
 
 		i.onmouseup = (e) => {
 			if (e.button === 0) {
