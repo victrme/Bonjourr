@@ -77,11 +77,35 @@
 		width: 100%;
 	}
 
+	#credit {
+		width: calc(100% - 7.5em);
+		line-height: 12px;
+		a {
+			font-size: 11px;
+		}
+	}
+
 	#popup {
 		flex-wrap: wrap;
 		padding: 1em;
-		bottom: 15vh;
+		bottom: 0;
+		left: 5vw;
 		max-width: 90vw;
+		border-radius: 10px 10px 0 0;
+		justify-content: center;
+		transform: translateX(0) translateY(110%);
+
+		&.shown {
+			transform: translateY(0%);
+		}
+
+		&.removing {
+			transform: translateX(0) translateY(110%);
+		}
+
+		#closePopup {
+			display: none;
+		}
 
 		span,
 		a {
@@ -90,6 +114,7 @@
 
 		.choices {
 			flex-direction: row;
+			margin-top: 15px;
 
 			a {
 				margin: 3px 8px;

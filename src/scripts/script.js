@@ -1395,7 +1395,7 @@ function unsplash(init, event) {
 
 		const credits = [
 			{
-				text: city + country + ' - ',
+				text: city + country,
 				url: `${image.link}?utm_source=Bonjourr&utm_medium=referral`,
 			},
 			{
@@ -1410,10 +1410,12 @@ function unsplash(init, event) {
 
 		id('credit').textContent = ''
 
-		credits.forEach(function cityNameRef(elem) {
+		credits.forEach(function cityNameRef(elem, i) {
 			const dom = document.createElement('a')
 			dom.textContent = elem.text
 			dom.href = elem.url
+
+			if (i === 1) id('credit').appendChild(document.createElement('br'))
 			id('credit').appendChild(dom)
 		})
 
@@ -1809,20 +1811,23 @@ function showPopup(data) {
 
 	go.setAttribute(
 		'href',
-		navigator.userAgent.includes('Chrome')
+		mobilecheck
+			? 'https://github.com/victrme/Bonjourr/stargazers'
+			: navigator.userAgent.includes('Chrome')
 			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 	)
 
 	function affiche() {
+		popup.classList.add('shown')
+
 		const close = function () {
 			popup.classList.replace('shown', 'removing')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
-		popup.classList.add('shown')
-
-		closePopup.onclick = close
+		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
+		else closePopup.onclick = close
 		go.onclick = close
 	}
 

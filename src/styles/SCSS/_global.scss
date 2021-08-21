@@ -35,7 +35,9 @@ body {
 	color: $purewhite;
 	font-family: $fonts;
 	font-size: 1em;
+	max-height: var(--app-height);
 	text-align: center;
+	overflow: hidden;
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
 	p,
@@ -117,10 +119,10 @@ body {
 		background: rgba($r, $g, $b, $a);
 		transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
 
-		&:hover {
-			// backdrop-filter: blur(calc(#{$blur} + 10px));
-			background: rgba($r, $g, $b, calc(#{$a} + 0.1));
-		}
+		// &:hover {
+		// 	backdrop-filter: blur(calc(#{$blur} + 10px));
+		// 	background: rgba($r, $g, $b, calc(#{$a} + 0.1));
+		// }
 
 		// possible dark mode?
 		// @media (prefers-color-scheme: dark) {
