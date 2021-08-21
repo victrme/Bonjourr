@@ -1,7 +1,7 @@
 //
 //
 
-$fonts: -apple-system, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
+$fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
 
 $purewhite: white;
 $pureblack: black;
@@ -35,7 +35,10 @@ body {
 	color: $purewhite;
 	font-family: $fonts;
 	font-size: 1em;
+	max-height: var(--app-height);
 	text-align: center;
+	overflow: hidden;
+	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
 	p,
 	h3 {
@@ -114,22 +117,6 @@ body {
 		backdrop-filter: blur($blur);
 		-webkit-backdrop-filter: blur($blur);
 		background: rgba($r, $g, $b, $a);
-		//transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
-
-		//&:hover {
-		// backdrop-filter: blur(calc(#{$blur} + 10px));
-		//background: rgba($r, $g, $b, calc(#{$a} + 0.1));
-		//}
-
-		// possible dark mode?
-		// @media (prefers-color-scheme: dark) {
-		// 	background-color: rgba($r, $g, $b, $a);
-
-		// 	&:hover {
-		// 		// -webkit-backdrop-filter: blur(calc(#{$blur} + 10px));
-		// 		background-color: rgba($r, $g, $b, calc(#{$a} + .1));
-		// 	}
-		// }
 	}
 }
 
@@ -228,7 +215,7 @@ body {
 		transition-timing-function: $easeOutThree;
 		transition-property: background-color, color, border;
 	}
-
+	#cssEditor,
 	input[type='text'],
 	input[type='range'],
 	select {
@@ -243,21 +230,7 @@ body {
 		padding-left: 10px;
 		border: 1px solid $inputGrey;
 		color: $blackish;
-
-		@supports (-webkit-touch-callout: none) {
-			-webkit-appearance: none;
-
-			// &:after {
-			// 	content: '';
-			// 	position: absolute;
-			// 	width: 0;
-			// 	height: 0;
-			// 	border-left: 20px solid transparent;
-			// 	border-right: 20px solid transparent;
-
-			// 	border-top: 20px solid #f00;
-			// }
-		}
+		-webkit-appearance: none;
 	}
 
 	.slider,
@@ -465,6 +438,7 @@ body {
 	&::-webkit-scrollbar-track {
 		box-shadow: inset 0 0 15px 15px transparent;
 		border: solid 3px transparent;
+		margin: 20px 0;
 	}
 
 	&::-webkit-scrollbar-thumb {

@@ -28,9 +28,10 @@ const domshowsettings = id('showSettings'),
 	domclock = id('clock'),
 	domcredit = id('credit')
 
-const safariMobileCheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-const mobilecheck = navigator.userAgentData ? navigator.userAgentData.mobile : safariMobileCheck,
-	isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
+let mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
+
+const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
 	funcsOk = {
@@ -106,6 +107,7 @@ function consolr(flat, data) {
 const testOS = {
 	mac: () => window.navigator.appVersion.includes('Macintosh'),
 	windows: () => window.navigator.appVersion.includes('Windows'),
+	android: () => window.navigator.userAgent.includes('Android'),
 	ios: () =>
 		['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
 		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
@@ -154,6 +156,7 @@ function bonjourrDefaults(which) {
 					family: '',
 					weight: '400',
 					availWeights: [],
+					size: mobilecheck ? '11' : '14',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
 				about: { browser: 'chrome', version: '1.10.0' },

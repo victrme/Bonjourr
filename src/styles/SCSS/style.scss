@@ -4,7 +4,6 @@
 
 #interface {
 	position: relative;
-	min-height: 100vh;
 	min-height: var(--app-height);
 	min-width: 350px;
 	display: flex;
@@ -16,15 +15,15 @@
 	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
 	font-weight: 300;
 
-	&.pushed {
-		-webkit-transform: translateX(-100px);
-		transform: translateX(-100px);
+	// &.pushed {
+	// 	-webkit-transform: translateX(-100px);
+	// 	transform: translateX(-100px);
 
-		#background_overlay {
-			-webkit-transform: scale(1.16) translateX(95px);
-			transform: scale(1.16) translateX(95px);
-		}
-	}
+	// 	#background_overlay {
+	// 		-webkit-transform: scale(1.16) translateX(95px);
+	// 		transform: scale(1.16) translateX(95px);
+	// 	}
+	// }
 
 	&.init {
 		opacity: 0;
@@ -214,19 +213,19 @@
 
 			#widget {
 				display: flex;
-				height: 5em;
+				height: 5.6em;
 				justify-content: center;
 				align-items: center;
 
 				img {
-					height: 3em;
-					width: 3em;
+					height: 3.6em;
+					width: 3.6em;
 					border: none;
 					padding-right: 10px;
 				}
 
 				p {
-					font-size: 2em;
+					font-size: 2.2em;
 				}
 			}
 		}
@@ -340,6 +339,7 @@
 
 			.block {
 				.l_icon_wrap {
+					pointer-events: none;
 					overflow: hidden;
 					width: 4.4em;
 					height: 4.4em;
@@ -352,6 +352,7 @@
 					transition: border-color 0.1s, filter 0.1s;
 
 					.l_icon {
+						pointer-events: none;
 						width: 100%;
 						transition: opacity 0.4s;
 					}
@@ -450,9 +451,9 @@
 	top: 0;
 	height: 100vh;
 	width: 100%;
-	transition: transform 0.4s;
 	z-index: 1;
-	@include frostedGlass($a: 0, $blur: 50px);
+	transition: transform 0.4s;
+	@include frostedGlass($a: 0, $blur: 20px);
 
 	&.pushed {
 		-webkit-transform: translateX(-160px);
@@ -532,7 +533,7 @@
 			border-radius: 8px;
 			height: 2.35em;
 			margin: 0.3em 0;
-			padding-right: 2.5em;
+			padding-right: 3em;
 			transition: background 0.1s;
 
 			&:focus {
@@ -616,10 +617,10 @@
 
 #credit {
 	position: fixed;
-	bottom: 1em;
-	left: 1em;
+	bottom: 2rem;
+	left: 2rem;
 	opacity: 0;
-	text-shadow: $textShadow;
+	text-align: left;
 	transition: opacity 0.4s;
 
 	&.shown {
@@ -627,7 +628,7 @@
 	}
 
 	a {
-		font-size: 14px;
+		font-size: 13px;
 		color: #fff9;
 		text-decoration: none;
 		transition: color 0.1s;
@@ -644,35 +645,53 @@
 #popup_buttons {
 	position: absolute;
 	text-align: left;
-	top: 60px;
-}
+	opacity: 0;
+	left: 0;
+	bottom: 2em;
+	z-index: 9;
+	padding: 1em 2em 1em 3em;
+	border-radius: 0 10px 10px 0;
+	box-sizing: border-box;
+	will-change: transform;
+	transform: translateX(-100%);
 
-#popup_buttons {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	left: 400px;
+	@include allCentered();
+	@include frostedGlass($a: 0.2, $blur: 20px);
 
-	a {
-		text-decoration: none;
-		color: white;
-		border: 0;
-		opacity: 0;
-		margin: 0;
-		height: 30px;
-		padding: 3px 40px;
-		border-radius: 10px;
-		transition: opacity 3s 5.2s;
+	span {
+		text-shadow: $textShadow;
+	}
 
-		&:first-child {
-			margin-bottom: 10px;
+	@supports not (backdrop-filter: none) {
+		background-color: rgba(255, 255, 255, 0.8);
+		color: $blackish;
+
+		span {
+			text-shadow: none;
 		}
+	}
+
+	&.shown {
+		opacity: 1;
+		transform: translateX(0);
+		transition: background-color 0.2s, backdrop-filter 0.2s, transform 2s 2s;
+		//box-shadow: $textShadow;
+	}
 
 		@include allCentered();
 		@include frostedGlass($a: 0.1, $blur: 10px);
 	}
 
-	&.shown {
+	span,
+	a {
+		max-width: 210px;
+		font-size: 15px;
+	}
+
+	.choices {
+		display: flex;
+		flex-direction: column;
+
 		a {
 			opacity: 1;
 		}

@@ -413,11 +413,26 @@ function quickLinks(event, that, initStorage) {
 
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
-			if (mobilecheck) editlink(this)
+			editlink(this)
+		}
+
+		let longpressWait = setTimeout(() => {}, 0)
+		elem.addEventListener('touchstart', function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+			longpressWait = setTimeout(() => {
+				console.log(this)
+				editlink(this)
+			}, 400)
+		})
+
+		elem.ontouchend = function (e) {
+			clearTimeout(longpressWait)
 		}
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
+			console.log('mouse')
 			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
 		}
 	}
@@ -738,8 +753,8 @@ function weather(event, that, init) {
 	const current = id('current')
 	const forecast = id('forecast')
 	const widget = id('widget')
-	const toFarenheit = (num) => num * (9 / 5) + 32
-	const toCelsius = (num) => (num - 32) * (5 / 9)
+	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
+	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
 	const WEATHER_API_KEY = [
 		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
 		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
@@ -761,10 +776,10 @@ function weather(event, that, init) {
 		)
 	}
 
-	function request(params, forecast) {
+	function request(storage, forecast) {
 		function saveCurrent(response) {
 			//
-			const isImperial = params.unit === 'imperial'
+			const isImperial = storage.unit === 'imperial'
 
 			weatherToSave = {
 				...weatherToSave,
@@ -789,7 +804,7 @@ function weather(event, that, init) {
 			const thisdate = new Date()
 			const todayHour = thisdate.getHours()
 			let forecastDay = thisdate.getDate()
-			let tempMax = -99
+			let maxTempFromList = -273.15
 
 			// Late evening forecast for tomorrow
 			if (todayHour > 18) {
@@ -800,11 +815,10 @@ function weather(event, that, init) {
 			// Get the highest temp for the specified day
 			response.list.forEach((elem) => {
 				if (new Date(elem.dt * 1000).getDate() === forecastDay)
-					tempMax < elem.main.temp_max ? (tempMax = elem.main.temp_max) : ''
+					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
 			})
 
-			weatherToSave.fcHigh = Math.round(params.unit === 'imperial' ? toFarenheit(tempMax) : tempMax)
-			weatherToSave.forecastLastCall = Math.floor(thisdate.getTime() / 1000)
+			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(maxTempFromList) : maxTempFromList)
 
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysForecast(weatherToSave)
@@ -812,36 +826,39 @@ function weather(event, that, init) {
 
 		let url = 'https://api.openweathermap.org/data/2.5/'
 		const lang = document.documentElement.getAttribute('lang')
-		const [lat, lon] = params.location || [0, 0]
+		const [lat, lon] = storage.location || [0, 0]
 
 		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
-		url += params.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(params.city)},${params.ccode}`
+		url += storage.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(storage.city)},${storage.ccode}`
 		url += `&units=metric&lang=${lang}`
 
 		// Inits global object
 		if (Object.keys(weatherToSave).length === 0) {
-			weatherToSave = params
+			weatherToSave = storage
 		}
 
 		// fetches, parses and apply callback
 		fetch(url).then((data) => {
 			if (data.ok) data.json().then((json) => (forecast ? saveForecast(json) : saveCurrent(json)))
+			else if (i_city) i_city.setAttribute('placeholder', tradThis('City not found'))
 		})
 	}
 
 	function cacheControl(storage) {
 		const now = Math.floor(date.getTime() / 1000)
+		let isCurrentChanging = false
 
 		if (typeof storage.lastCall === 'number') {
 			//
 			// Current: 30 mins
 			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
+				isCurrentChanging = true
 				sessionStorage.removeItem('lang')
 				request(storage, false)
 			} else displaysCurrent(storage)
 
-			// Forecast: 30 mins
-			if (navigator.onLine && (!storage.forecastLastCall || now > storage.forecastLastCall + 1800)) {
+			// Forecast: follows current
+			if (navigator.onLine && isCurrentChanging) {
 				request(storage, true)
 			} else displaysForecast(storage)
 		}
@@ -935,9 +952,7 @@ function weather(event, that, init) {
 		clas(widget, false, 'wait')
 
 		// from 1.2s request anim to .4s hide elem anim
-		setTimeout(() => {
-			widget.style.transition = 'opacity .4s'
-		}, 400)
+		setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
 	}
 
 	function displaysForecast(weather) {
@@ -963,12 +978,13 @@ function weather(event, that, init) {
 					data.weather.unit = that.checked ? 'imperial' : 'metric'
 
 					if (data.weather.lastState) {
-						const { feels_like, tempMax } = data.weather.lastState
+						const { feels_like } = data.weather.lastState
 						data.weather.lastState.feels_like = that.checked ? toFarenheit(feels_like) : toCelsius(feels_like)
-						data.weather.lastState.tempMax = that.checked ? toFarenheit(tempMax) : toCelsius(tempMax)
+						data.weather.fcHigh = that.checked ? toFarenheit(data.weather.fcHigh) : toCelsius(data.weather.fcHigh)
 					}
 
-					cacheControl(data.weather)
+					displaysCurrent(data.weather)
+					displaysForecast(data.weather)
 					chrome.storage.sync.set({ weather: data.weather })
 					break
 				}
@@ -1244,7 +1260,7 @@ function localBackgrounds(init, event) {
 
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
-		rem.setAttribute('class', 'hidden')
+		if (!mobilecheck) rem.setAttribute('class', 'hidden')
 		rem.textContent = '✕'
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
@@ -1257,9 +1273,11 @@ function localBackgrounds(init, event) {
 		const getIndex = (that) => parseInt(that.getAttribute('index'))
 		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
 
-		//displays / hides remove button
-		div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
-		div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
+		//displays / hides remove button on desktop
+		if (!mobilecheck) {
+			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
+			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
+		}
 
 		i.onmouseup = (e) => {
 			if (e.button === 0) {
@@ -1394,7 +1412,7 @@ function unsplash(init, event) {
 
 		const credits = [
 			{
-				text: city + country + ' - ',
+				text: city + country,
 				url: `${image.link}?utm_source=Bonjourr&utm_medium=referral`,
 			},
 			{
@@ -1409,10 +1427,12 @@ function unsplash(init, event) {
 
 		id('credit').textContent = ''
 
-		credits.forEach(function cityNameRef(elem) {
+		credits.forEach(function cityNameRef(elem, i) {
 			const dom = document.createElement('a')
 			dom.textContent = elem.text
 			dom.href = elem.url
+
+			if (i === 1) id('credit').appendChild(document.createElement('br'))
 			id('credit').appendChild(dom)
 		})
 
@@ -1807,7 +1827,9 @@ function showPopup(data) {
 
 	id('popup_review').setAttribute(
 		'href',
-		navigator.userAgent.includes('Chrome')
+		mobilecheck
+			? 'https://github.com/victrme/Bonjourr/stargazers'
+			: navigator.userAgent.includes('Chrome')
 			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 	)
@@ -1821,6 +1843,8 @@ function showPopup(data) {
 
 		text.classList.add('shown')
 		buttons.classList.add('shown')
+
+		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close), 4000)
 	}
 
 	//s'affiche après 30 tabs
@@ -1892,12 +1916,12 @@ function safeFont(settingsDom) {
 
 	let toUse = is.fallback
 	const hasUbuntu = document.fonts.check('16px Ubuntu')
-	const hasRoboto = document.fonts.check('16px Roboto')
+	const notAppleOrWindows = !testOS.mac() && !testOS.windows() && !testOS.ios()
 
-	if (testOS.windows) toUse = is.windows
-	else if (testOS.mac || testOS.ios) toUse = is.apple
-	else if (!testOS.mac && !testOS.windows && !testOS.ios && hasRoboto) toUse = is.android
-	else if (!testOS.mac && !testOS.windows && !testOS.ios && hasUbuntu) toUse = is.linux
+	if (testOS.windows()) toUse = is.windows
+	else if (testOS.android()) toUse = is.android
+	else if (testOS.mac() || testOS.ios()) toUse = is.apple
+	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
 
 	if (settingsDom) {
 		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
@@ -2277,7 +2301,7 @@ function filterImports(data) {
 		result.weather = reducedWeatherData(data.weather)
 
 		if (result.weather.lastCall) result.weather.lastCall = 0
-		if (result.weather.forecastLastCall) result.weather.forecastLastCall = 0
+		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
 	}
 
 	// Old blur was strings

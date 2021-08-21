@@ -48,6 +48,13 @@
 		}
 	}
 
+	#popup {
+		@supports not (backdrop-filter: none) {
+			background-color: #2c2c2fcc;
+			color: white;
+		}
+	}
+
 	#settings {
 		background-color: $pureblack;
 
