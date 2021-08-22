@@ -117,7 +117,6 @@ body {
 		backdrop-filter: blur($blur);
 		-webkit-backdrop-filter: blur($blur);
 		background: rgba($r, $g, $b, $a);
-		transition: background 0.2s, backdrop-filter 0.2s, -webkit-backdrop-filter 0.2s;
 
 		// &:hover {
 		// 	backdrop-filter: blur(calc(#{$blur} + 10px));
@@ -162,7 +161,7 @@ body {
 		#linkblocks {
 			flex-grow: 1;
 			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
-			will-change: transform;
+			will-change: transform, flex-grow;
 		}
 
 		#time-container,

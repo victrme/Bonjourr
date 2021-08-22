@@ -56,12 +56,6 @@
 		}
 	}
 
-	&:active {
-		img {
-			transform: rotate(30deg);
-		}
-	}
-
 	&.shown {
 		button {
 			@include frostedGlass($r: 171, $g: 171, $b: 171);
@@ -97,7 +91,7 @@
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
-	transition: transform 0.4s $easeOutThree, background-color 0.6s;
+	transition: transform 0.4s, background-color 0.6s;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -112,6 +106,18 @@
 		#searchbar_options {
 			transition: max-Height 0s;
 		}
+	}
+
+	// Safari composing layers
+	.param > *:not(hr),
+	#hideelem button,
+	#cssEditor {
+		transform: translate3d(0, 0, 0);
+		-webkit-transform: translate3d(0, 0, 0);
+	}
+
+	input[type='text'] {
+		will-change: background-color;
 	}
 
 	@include allSettings();
@@ -161,7 +167,7 @@
 	.tooltip {
 		background-color: $settingsGrey;
 		color: $placeholderGrey;
-		width: 20px;
+		padding: 0 6px;
 		height: 20px;
 		border-radius: 100%;
 		cursor: pointer;
@@ -210,11 +216,6 @@
 		background-color: #ffffff;
 		padding: 0.75em 1.3em;
 
-		> * {
-			transform: translate3d(0, 0, 0);
-			-webkit-transform: translate3d(0, 0, 0);
-		}
-
 		@include radiusSettings();
 		@include marginSettings();
 	}
@@ -231,13 +232,7 @@
 		}
 
 		.tooltip {
-			margin-left: 7px;
-
-			.tooltiptext {
-				right: 0;
-				top: -95px;
-				position: fixed;
-			}
+			margin: 0 7px;
 		}
 	}
 

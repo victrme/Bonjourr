@@ -22,15 +22,9 @@
 			color: $purewhite;
 
 			input[type='text'],
-			input[type='url'],
-			#cssEditor {
+			input[type='url'] {
 				background-color: #39383d;
 				color: $purewhite;
-
-				&:focus {
-					background-color: #2c2c2f;
-					color: $purewhite;
-				}
 			}
 
 			.empty_input {
@@ -142,8 +136,7 @@
 		}
 
 		input[type='text'],
-		input[type='url'],
-		#cssEditor {
+		input[type='url'] {
 			background-color: #39383d;
 			color: $purewhite;
 
@@ -159,6 +152,7 @@
 		}
 
 		#cssEditor {
+			color: white;
 			background-color: #1c1c1e;
 		}
 

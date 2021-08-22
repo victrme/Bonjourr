@@ -484,10 +484,8 @@ function showSettings() {
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
-	if (mobilecheck === false) {
-		clas(dominterface, settingsNotShown, 'pushed')
-		clas(edit, settingsNotShown, 'pushed')
-	}
+	clas(dominterface, settingsNotShown, 'pushed')
+	clas(edit, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')
 	clas(settings, settingsNotShown, 'shown')

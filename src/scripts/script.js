@@ -421,9 +421,8 @@ function quickLinks(event, that, initStorage) {
 			e.preventDefault()
 			e.stopPropagation()
 			longpressWait = setTimeout(() => {
-				console.log(this)
 				editlink(this)
-			}, 400)
+			}, 300)
 		})
 
 		elem.ontouchend = function (e) {
@@ -432,7 +431,6 @@ function quickLinks(event, that, initStorage) {
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
-			console.log('mouse')
 			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
 		}
 	}

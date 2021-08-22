@@ -16,12 +16,11 @@
 	font-weight: 300;
 
 	&.pushed {
-		-webkit-transform: translateX(-100px);
-		transform: translateX(-100px);
-
-		#background_overlay {
-			-webkit-transform: scale(1.16) translateX(95px);
-			transform: scale(1.16) translateX(95px);
+		#time,
+		#main,
+		#sb_container,
+		#linkblocks {
+			transform: translateX(-100px);
 		}
 	}
 
@@ -309,10 +308,10 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		align-items: center;
+		align-items: flex-start;
 		max-width: 100%;
 		margin: 0 auto;
-		padding: 2em 0;
+		padding-top: 2em;
 
 		@include hidden();
 
@@ -339,7 +338,6 @@
 
 			.block {
 				.l_icon_wrap {
-					pointer-events: none;
 					overflow: hidden;
 					width: 4.4em;
 					height: 4.4em;

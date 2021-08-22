@@ -54,27 +54,32 @@
 }
 
 @media screen and (min-height: 650px) and (max-height: 1050px) {
-	#interface {
-		font-size: 0.8em;
-
-		#sb_container {
-			#searchbar {
-				max-width: 300px;
-				height: 40px;
-			}
-
-			&.shown {
-				padding: 0;
-			}
+	#interface #sb_container {
+		width: 400px;
+		&.shown {
+			padding: 0;
 		}
 	}
 }
 
 // mobile
 @media screen and (max-width: 500px) {
+	#interface {
+		min-height: 90vh;
+		padding-bottom: 20vh;
+	}
+
 	#settings {
 		right: -100%;
 		width: 100%;
+
+		// Tooltip (?) centered when span wrap
+		&.all .as_collection {
+			max-height: 140px;
+			.wrapper span {
+				align-items: center;
+			}
+		}
 	}
 
 	#credit {
