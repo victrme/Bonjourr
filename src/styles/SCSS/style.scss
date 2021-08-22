@@ -641,60 +641,37 @@
 
 // review popup
 
-#popup_text,
-#popup_buttons {
-	position: absolute;
-	text-align: left;
+span,
+a {
+	max-width: 210px;
+	font-size: 15px;
+}
+
+#popup_buttons,
+#popup_text {
+	position: fixed;
+	top: 40px;
 	opacity: 0;
-	left: 0;
-	bottom: 2em;
-	z-index: 9;
-	padding: 1em 2em 1em 3em;
-	border-radius: 0 10px 10px 0;
-	box-sizing: border-box;
-	will-change: transform;
-	transform: translateX(-100%);
-
-	@include allCentered();
-	@include frostedGlass($a: 0.2, $blur: 20px);
-
-	span {
-		text-shadow: $textShadow;
-	}
-
-	@supports not (backdrop-filter: none) {
-		background-color: rgba(255, 255, 255, 0.8);
-		color: $blackish;
-
-		span {
-			text-shadow: none;
-		}
-	}
+	transition: opacity 3s 0s;
 
 	&.shown {
 		opacity: 1;
-		transform: translateX(0);
-		transition: background-color 0.2s, backdrop-filter 0.2s, transform 2s 2s;
-		//box-shadow: $textShadow;
 	}
+}
 
-		@include allCentered();
-		@include frostedGlass($a: 0.1, $blur: 10px);
-	}
+#popup_buttons {
+	left: calc(40px + 340px);
+	display: flex;
+	flex-direction: column;
+	min-width: 120px;
 
-	span,
 	a {
-		max-width: 210px;
-		font-size: 15px;
-	}
-
-	.choices {
-		display: flex;
-		flex-direction: column;
-
-		a {
-			opacity: 1;
-		}
+		color: white;
+		text-decoration: none;
+		@include frostedGlass($a: 0.2, $blur: 10px);
+		border-radius: 10px;
+		line-height: 34px;
+		margin-bottom: 5px;
 	}
 }
 
@@ -702,22 +679,11 @@
 	justify-content: space-between;
 	opacity: 0;
 	width: 260px;
-	left: 60px;
+	left: 40px;
+	text-align: left;
 	padding: 10px 30px;
 	border-radius: 10px;
-	transition: opacity 3s 5s;
-
-	@include allCentered();
-	@include frostedGlass($a: 0.1, $blur: 10px);
-
-	&.shown {
-		opacity: 1;
-
-		@supports not (backdrop-filter: none) {
-			background-color: rgba(255, 255, 255, 0.3);
-			color: #eee;
-		}
-	}
+	@include frostedGlass($a: 0.2, $blur: 10px);
 }
 
 @import 'settings';

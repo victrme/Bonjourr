@@ -6,8 +6,9 @@
 	padding: 0;
 	margin: 20px;
 	border-radius: 20px;
+	transition: background-color 1.2s cubic-bezier(0.68, -0.2, 0.265, 1);
 
-	@include frostedGlass($a: 0.2, $blur: 20px);
+	@include frostedGlass($a: 0.3, $blur: 20px);
 
 	button {
 		height: 60px;
