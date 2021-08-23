@@ -245,53 +245,42 @@
 		display: flex;
 		visibility: visible;
 		align-items: center;
-		flex-grow: 0.4;
+		flex-grow: 0;
 		padding: 0;
-		margin: auto;
+		margin: 0 auto;
 		width: 500px;
-		max-width: calc(100% - 2em);
+		border-radius: 10px;
+		max-width: calc(90% - 4em);
+		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
+
+		@include frostedGlass($a: 0.05, $blur: 10px);
 
 		#searchbar {
 			height: 2.5em;
 			width: 100%;
 			padding: 0 1em;
-			margin: auto;
 			font-size: 1.3em;
-			color: #fcfcfc;
+			color: #fff;
 			border: 0;
 			border-radius: 10px;
-			box-shadow: 0 1px 5px #0003;
+			background-color: #fff1;
+			font-family: $fonts;
 			transition: background-color 0.2s;
 
-			@supports not (backdrop-filter: none) {
-				opacity: 0.8;
+			&:focus {
+				background-color: #fff3;
 			}
-
-			@include frostedGlass();
 
 			&::placeholder {
 				transition: opacity 0.2s;
 				text-transform: none;
-				color: rgba(255, 255, 255, 0.9);
-				text-shadow: $textShadow;
-
-				@supports not (backdrop-filter: none) {
-					color: rgba(0, 0, 0, 0.6);
-					text-shadow: unset;
-				}
-			}
-
-			&:focus {
-				@include frostedGlass($blur: 15px);
-				color: white;
-
-				@supports not (backdrop-filter: none) {
-					color: rgba(0, 0, 0, 0.8);
-				}
+				color: #fff5;
 			}
 		}
 
 		&.shown {
+			margin: 3em auto;
+
 			#searchbar:focus {
 				opacity: 1;
 			}
@@ -339,8 +328,8 @@
 			.block {
 				.l_icon_wrap {
 					overflow: hidden;
-					width: 4.4em;
-					height: 4.4em;
+					width: 4.8em;
+					height: 4.8em;
 					margin: auto;
 					position: relative;
 					border-radius: 10px;
@@ -451,7 +440,7 @@
 	width: 100%;
 	z-index: 1;
 	transition: transform 0.4s;
-	@include frostedGlass($a: 0, $blur: 20px);
+	@include frostedGlass($a: 0, $blur: 40px);
 
 	&.pushed {
 		-webkit-transform: translateX(-160px);

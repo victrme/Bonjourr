@@ -1755,20 +1755,20 @@ function searchbar(event, that, storage) {
 	}
 
 	function engine(value, init) {
-		const names = {
-			startpage: 'Startpage',
-			ddg: 'DuckDuckGo',
-			qwant: 'Qwant',
-			lilo: 'Lilo',
-			ecosia: 'Ecosia',
-			google: 'Google',
-			yahoo: 'Yahoo',
-			bing: 'Bing',
-		}
+		// const names = {
+		// 	startpage: 'Startpage',
+		// 	ddg: 'DuckDuckGo',
+		// 	qwant: 'Qwant',
+		// 	lilo: 'Lilo',
+		// 	ecosia: 'Ecosia',
+		// 	google: 'Google',
+		// 	yahoo: 'Yahoo',
+		// 	bing: 'Bing',
+		// }
 
 		if (!init) chrome.storage.sync.set({ searchbar_engine: value })
 
-		domsearchbar.setAttribute('placeholder', tradThis('Search on ' + names[value]))
+		//domsearchbar.setAttribute('placeholder', tradThis('Search on ' + names[value]))
 		domsearchbar.setAttribute('engine', value)
 	}
 
@@ -1820,37 +1820,45 @@ function searchbar(event, that, storage) {
 }
 
 function showPopup(data) {
-	const popup = id('popup')
-	const closePopup = id('closePopup')
-	const go = id('go')
-
-	go.setAttribute(
-		'href',
-		mobilecheck
-			? 'https://github.com/victrme/Bonjourr/stargazers'
-			: navigator.userAgent.includes('Chrome')
-			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
-			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
-	)
-
 	function affiche() {
-		popup.classList.add('shown')
+		const setReviewLink = () =>
+			mobilecheck
+				? 'https://github.com/victrme/Bonjourr/stargazers'
+				: navigator.userAgent.includes('Chrome')
+				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
+				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 
 		const close = function () {
-			popup.classList.replace('shown', 'removing')
+			divPopup.classList.replace('shown', 'removing')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
+		const divPopup = document.createElement('div')
+
+		divPopup.id = 'popup'
+		divPopup.innerHTML = `<span>${tradThis(
+			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
+		)}</span><div class='choices'><a href='${setReviewLink()}' target='_blank'>${tradThis(
+			'Review'
+		)}</a><a href='http://bonjourr.fr/#donate' target='_blank'>${tradThis(
+			'Donate'
+		)}</a></div> <p id='closePopup'>&times;</p>`
+
+		document.body.appendChild(divPopup)
+
+		setTimeout(() => divPopup.classList.add('shown'), 10)
+
 		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
-		else closePopup.onclick = close
-		go.onclick = close
+		else id('closePopup').onclick = close
+
+		document.querySelectorAll('#popup .choices a')[0].onclick = close
+		document.querySelectorAll('#popup .choices a')[1].onclick = close
 	}
 
 	//s'affiche après 30 tabs
 	if (data > 30) affiche()
 	else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
 	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
-	else if (data === 'removed') document.body.removeChild(popup)
 }
 
 function customSize(init, event) {
@@ -1956,6 +1964,7 @@ function customFont(data, event) {
 		if (weight) {
 			dominterface.style.fontWeight = weight
 			id('clock').style.fontWeight = weight
+			id('searchbar').style.fontWeight = weight
 		}
 	}
 
@@ -2019,6 +2028,7 @@ function customFont(data, event) {
 			id('fontstyle').textContent = ''
 			id('clock').style.fontFamily = ''
 			id('clock').style.fontWeight = ''
+			id('searchbar').style.fontWeight = ''
 			dominterface.style.fontFamily = ''
 			dominterface.style.fontWeight = ''
 
