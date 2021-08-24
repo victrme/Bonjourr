@@ -230,6 +230,7 @@ function quickLinks(event, that, initStorage) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	const favsToUpdate = []
+	let editDisplayTimeout = setTimeout(() => {}, 0)
 	let hovered, dragged, current
 
 	//enleve les selections d'edit
@@ -431,6 +432,7 @@ function quickLinks(event, that, initStorage) {
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
+			clearTimeout(editDisplayTimeout)
 			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
 		}
 	}
@@ -445,7 +447,7 @@ function quickLinks(event, that, initStorage) {
 		function closeEditLink() {
 			removeLinkSelection()
 			id('edit_linkContainer').classList.add('hiding')
-			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), BonjourrAnimTime)
+			editDisplayTimeout = setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), BonjourrAnimTime)
 		}
 
 		function emptyAndHideIcon(e) {
@@ -722,10 +724,10 @@ function quickLinks(event, that, initStorage) {
 		initblocks(initStorage.links || [])
 
 		// No need to activate edit events asap
-		setTimeout(() => {
+		setTimeout(function timeToSetEditEvents() {
 			id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
 			editEvents()
-		}, 100)
+		}, 150)
 	}
 }
 
@@ -1887,11 +1889,12 @@ function customSize(init, event) {
 	}
 }
 
-function modifyWeightOptions(weights, settingsDom) {
-	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
+function modifyWeightOptions(weights, settingsDom, isCustomFont) {
+	const select = (settingsDom ? settingsDom : id('settings')).querySelector('#i_weight')
+	const options = select.querySelectorAll('option')
 
 	if (!weights || weights.length === 0) {
-		doms.forEach((option) => (option.style.display = 'block'))
+		options.forEach((option) => (option.style.display = 'block'))
 		return true
 	}
 
@@ -1902,10 +1905,12 @@ function modifyWeightOptions(weights, settingsDom) {
 		weights = weights.map((aa) => parseInt(aa))
 
 		// toggles selects
-		if (doms)
-			doms.forEach(
+		if (options) {
+			options.forEach(
 				(option) => (option.style.display = weights.indexOf(parseInt(option.value)) !== -1 ? 'block' : 'none')
 			)
+			select.value = isCustomFont ? '400' : '300'
+		}
 	}
 }
 
@@ -1929,7 +1934,7 @@ function safeFont(settingsDom) {
 
 	if (settingsDom) {
 		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
-		modifyWeightOptions(toUse.weights, settingsDom)
+		modifyWeightOptions(toUse.weights, settingsDom, false)
 	}
 }
 
@@ -1999,7 +2004,7 @@ function customFont(data, event) {
 			// Change l'url, et les weight options
 			apply(url, font[0].family, 400)
 			save(url, font[0].family, availWeights, 400)
-			modifyWeightOptions(availWeights)
+			modifyWeightOptions(availWeights, null, true)
 
 			if (dom) dom.blur()
 		} else dom.value = ''

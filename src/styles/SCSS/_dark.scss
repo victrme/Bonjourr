@@ -49,6 +49,13 @@
 		}
 	}
 
+	#showSettings.shown button {
+		background-color: #fff3;
+		&:hover {
+			background-color: #fff5;
+		}
+	}
+
 	#settings {
 		background-color: $pureblack;
 
@@ -200,18 +207,6 @@
 		// &.scroll::-webkit-scrollbar-thumb {
 		// 	box-shadow: inset 0 0 15px 15px #39383d;
 		// }
-	}
-
-	#showSettings button {
-		background-color: transparent;
-
-		// &:hover {
-		// 	@include frostedGlass($color: rgba(12, 12, 12, 0.3));
-		// }
-
-		&.shown &:hover {
-			background-color: #3c3c3e;
-		}
 	}
 }
 

@@ -56,7 +56,7 @@ function initParams(data, settingsDom) {
 	safeFont(settingsDom)
 
 	// Font weight
-	if (data.font && data.font.availWeights) modifyWeightOptions(data.font.availWeights, settingsDom)
+	if (data.font && data.font.availWeights) modifyWeightOptions(data.font.availWeights, settingsDom, true)
 
 	// Clock
 	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
