@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title class="trn">New Tab</title>
+
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#000" >
+	<meta name="apple-mobile-web-app-capable" content="yes"></meta>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" >
 
-	<link rel="icon" href="src/images/icons/favicon.png" />
+	<link rel="preconnect" href="https://images.unsplash.com" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-	<link rel="preload" href="src/fonts/sf-pro-display-light-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-	<link rel="preload" href="src/fonts/sf-pro-display-thin-webfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-
+	<link rel="icon" href="src/assets/favicon-128x128.png" />
+	<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png">
+	<link rel="manifest" href="manifest.webmanifest">
+	
 	<link rel="stylesheet" href="src/styles/style.css">
-	<link rel="stylesheet" href="src/styles/events.css">
-	<!-- <link rel="stylesheet" href="src/styles/style.css"> -->
-
 	<style type="text/css" id="styles"></style>
 	<style type="text/css" id="fontstyle"></style>
 </head>
 
-<body>
-
-	<div id="background_overlay">
-		<div id="background"></div>
-	</div>
+<body class="autodark">
 
 	<div id="edit_linkContainer">
 		<div id="edit_link">
@@ -30,35 +30,43 @@
 			<button id="e_close" class="trn">Cancel</button>
 
 			<div>
-				<input id="e_title" type="text" name="e_title" placeholder="Title">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_title" draggable="false">
+				<input id="e_title" type="text" maxlength="32" name="e_title" autocomplete="off" placeholder="Title">
+				<button class="empty_input" id="re_title" draggable="false">&times;</button>
 			</div>
 			<div>
-				<input id="e_url" type="text" name="e_url" placeholder="Link">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_url" draggable="false">
+				<input id="e_url" type="text" name="e_url" maxlength="256" autocomplete="off" placeholder="Link">
+				<button class="empty_input" id="re_url" draggable="false">&times;</button>
 			</div>
 			<div>
-				<input id="e_iconurl" type="url" name="e_iconurl" placeholder="Icon">
-				<img src="src/images/icons/delinput.svg" draggable="false" class="empty_input" id="re_iconurl" draggable="false">
+				<input id="e_iconurl" type="url" name="e_iconurl" maxlength="8192" autocomplete="off" placeholder="Icon">
+				<button class="empty_input" id="re_iconurl" draggable="false">&times;</button>
 			</div>
 
 
 			<div class="linkOptions">
-				<button id="e_delete" class="trn">Delete Quick Link</button>
+				<button id="e_delete" class="trn">Delete</button>
 				<button id="e_submit" class="trn">Apply changes</button>
 			</div>
 		</div>
 	</div>
 
-	<div id="interface" class="distract">
+	<div id="interface" class="init">
+
+		<div id="background_overlay">
+			<div id="background"></div>
+		</div>
 
 		<div id="time">
-			<img src="src/images/shadow.png" class="shadow" draggable="false">
 			<div id="time-container">
 
-				<div id="clock"></div>
+				<div id="clock" class="hidden"></div>
 
-				<div id="analogClock">
+				<div id="analogClock" class="hidden">
+					<div class="numbers top">12</div>
+					<div class="numbers right">3</div>
+					<div class="numbers bottom">6</div>
+					<div class="numbers left">9</div>
+
 					<div id="center"></div>
 					<span id="hours"></span>
 					<span id="minutes"></span>
@@ -67,75 +75,44 @@
 			</div>
 
 			<div id="date">
-				<span id="jour"></span>
-				<span id="chiffre"></span>
-				<span id="mois"></span>
 			</div>
 		</div>
 
 		<div id="main">
-			<img src="src/images/shadow.png" class="shadow" draggable="false">
 			<h3 id="greetings"></h3>
 			<div id="weather">
-				<div id="weather_desc">
-					<div>
-						<span id="desc"></span>
-						<span class="trn">It is currently</span>
-						<span id="temp"></span>
-					</div>
-					<div id="temp_max_wrap">
-						<span class="trn">with a high of</span>
-						<span id="temp_max"></span>
-						<span class="trn">today.</span>
-					</div>
+				<div id="description">
+					<p id="current" class="wait">meteo</p>
+					<p id="forecast" class="wait">forecast</p>
 				</div>
 
-
-				<div id="w_icon">
-					<img src="" id="widget" draggable="false">
-					<div id="w_widget_text">
-						<span id="widget_temp"></span>
-					</div>
+				<div id="widget" class="wait">
+					<p>00</p>
 				</div>
 			</div>
 		</div>
 
 		<div id="sb_container">
-			<input id="searchbar" type="text" name="q" placeholder="Search on Google"></input>
+			<input id="searchbar" type="text" name="searchbar" autocomplete="off"></input>
 		</div>
 
 		<div id="linkblocks">
-			<a href="" id="hiddenlink"></a>
+			<div id="linkblocks_inner">
+				<a href="" id="hiddenlink"></a>
+			</div>
 		</div>
 	</div>
 
-	<div id="popup" class="justShown">
-		<span class="trn">You love using Bonjourr? Consider giving us a review, that would help a lot! 😇</span>
-
-		<div class="choices">
-			<a href="" target="_blank" id="go">Go</a>
-			<img src="src/images/icons/close.svg" draggable="false" id="closePopup">
-		</div>
-
+	<div id="credit">
 	</div>
 
-	<div id="credit" class="hidden">
-		<a id="location" href=""></a>
-		<a id="artist" href=""></a>
-		<a id="onUnsplash" href="https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral"> on Unsplash</a>
+	<div id="showSettings" class="init">
+		<button><img src="src/assets/interface/gear.svg" draggable="false"></button>
 	</div>
-
-	<div id="showSettings" class="distract">
-		<button><img src="src/images/icons/gear.png" draggable="false"></button>
-	</div>
-
 
 	<script src="src/scripts/lang.js"></script>
-
+	<script src="src/scripts/utils.js"></script>
 	<script src="src/scripts/script.js"></script>
-	<script src="src/scripts/settings.js" defer></script>
-
-	<!-- <script src="src/scripts/local.js"></script>
-	<script src="src/scripts/main.js"></script> -->
+	<script src="src/scripts/settings.js"></script>
 </body>
 </html>

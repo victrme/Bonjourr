@@ -1,44 +1,30 @@
-@font-face {
-	font-family: 'sf_pro_textregular';
-	src: url('/src/fonts/sf-pro-text-regular-webfont.woff2') format('woff2'),
-		 url('/src/fonts/sf-pro-text-regular-webfont.woff') format('woff');
-	font-weight: normal;
-	font-style: normal;
-}
+//
+//
 
-@font-face {
-    font-family: 'sf_pro_displaylight';
-    src: url('/src/fonts/sf-pro-display-light-webfont.woff2') format('woff2'),
-         url('/src/fonts/sf-pro-display-light-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'sf_pro_displaythin';
-    src: url('/src/fonts/sf-pro-display-thin-webfont.woff2') format('woff2'),
-         url('/src/fonts/sf-pro-display-thin-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-$textRegular : sf_pro_textregular;
-$displayLight : sf_pro_displaylight;
-$displayThin : sf_pro_displaythin;
+$fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
 
 $purewhite: white;
 $pureblack: black;
 
 $blue: #007aff;
 $green: #4bd663;
-$inputGrey: #e3e3e5;
 $settingsGrey: #f2f2f7;
+$inputGrey: #eaeaee;
+$focusedGrey: #dadade;
 $borderGrey: #c8c7cc;
+$placeholderGrey: #7c7d7e;
+$greyish: #3a3a3a;
 $blackish: #222;
 
+$thumbShadow: 0px 1px 3px 1.5px #cccccc;
+$textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+$easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+:root {
+	--app-height: 100vh;
+}
 
 body {
-	overflow-x: hidden;
 	margin: 0;
 	cursor: default;
 	user-select: none;
@@ -46,80 +32,68 @@ body {
 	-webkit-user-select: none;
 	opacity: 1;
 	background-color: $pureblack;
-    color: $purewhite;
-    font-family: $displayLight;
+	color: $purewhite;
+	font-family: $fonts;
 	font-size: 1em;
+	max-height: var(--app-height);
 	text-align: center;
+	overflow: hidden;
+	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
-	p, h3 {
+	p,
+	h3 {
 		margin: 0;
 	}
 
 	hr {
-	    border: none;
-	    border-bottom: 1px solid $borderGrey;
-	    margin-top: .75em;
-	    margin-bottom: .75em;
-	    margin-right: -1.3em;
-	    display: block;
+		border: none;
+		border-bottom: 1px solid $borderGrey;
+		margin: 0.75em 0;
+		display: block;
 	}
 
 	select {
 		cursor: pointer;
 	}
 
-	input, textarea, select, a, button {
+	a,
+	input,
+	textarea,
+	select,
+	button {
 		outline: none;
 	}
 }
 
+@mixin animHide() {
+	@keyframes animHide {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+}
 
+@mixin animShow($display) {
+	@keyframes animShow {
+		0% {
+			display: $display;
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+}
 
 @mixin hidden {
 	&.hidden {
 		display: none;
 		cursor: default;
 		opacity: 0;
-		transition: opacity .1s;
-	}
-}
-
-/*pour le fade in*/
-@keyframes fade {
-	from {opacity: 0;}
-	to {opacity: 1;}
-}
-
-/*Wiggle animation*/
-@keyframes wiggle {
-	0% {
-		transform: rotate(-1.5deg);
-		animation-timing-function: ease-in;
-	}
-	50% {
-		transform: rotate(2deg);
-		animation-timing-function: ease-out;
-	}
-}
-
-@keyframes keyframes2 {
-	0% {
-		transform: rotate(1deg);
-		animation-timing-function: ease-in;
-	}
-	50% {
-		transform: rotate(-1.5deg);
-		animation-timing-function: ease-out;
-	}
-}
-
-@mixin hoverButton {
-	&:hover {
-		filter: brightness(110%);
-	}
-
-	&:active {
-		filter: brightness(85%);
+		transition: opacity 0.1s;
 	}
 }
 
@@ -129,319 +103,194 @@ body {
 	justify-content: center;
 }
 
-@mixin popup {
-	#popup {
-		position: absolute;
-		left: 0;
-		bottom: 4em;
-		padding: 1em;
-		background-color: $purewhite;
-		border-radius: 0 10px 10px 0;
-		opacity: .6;
-		transform: translateX(-100%);
-		box-sizing: border-box;
-		will-change: transform;
-		@include allCentered();
+@mixin marginSettings {
+	margin-left: 21px;
+	margin-right: 21px;
+}
 
-		.choices {
-			@include allCentered();
-			justify-content: space-between;
-			margin-left: 1em;
+@mixin radiusSettings {
+	border-radius: 10px;
+}
 
-			> * {
-				box-sizing: border-box;
-				border-radius: 5px;
-				transition: .1s;
-				cursor: pointer;
-				font-size: 1.1em;
-				height: 36px;
-				text-decoration: none;
-				@include hoverButton();
+@mixin frostedGlass($r: 255, $g: 255, $b: 255, $a: 0.4, $blur: 5px) {
+	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
+		backdrop-filter: blur($blur);
+		-webkit-backdrop-filter: blur($blur);
+		background: rgba($r, $g, $b, $a);
+
+		// &:hover {
+		// 	backdrop-filter: blur(calc(#{$blur} + 10px));
+		// 	background: rgba($r, $g, $b, calc(#{$a} + 0.1));
+		// }
+
+		// possible dark mode?
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: rgba($r, $g, $b, $a);
+
+		// 	&:hover {
+		// 		// -webkit-backdrop-filter: blur(calc(#{$blur} + 10px));
+		// 		background-color: rgba($r, $g, $b, calc(#{$a} + .1));
+		// 	}
+		// }
+	}
+}
+
+@mixin hideElements {
+	#interface {
+		//
+		&.init {
+			#main,
+			#linkblocks,
+			#sb_container,
+			#searchbar,
+			#time,
+			#time-container,
+			#date,
+			#description,
+			#greetings,
+			#widget,
+			#forecast,
+			#current {
+				transition: none;
 			}
-
-			#go {
-				background-color: $blue;
-				color: $purewhite;
-				border: 0;
-				width: 80px;
-				margin-right: 1em;
-				@include allCentered();
-			}
-
-			#later {
-				color: $blue;
-				border: 2px solid $blue;
-				width: 70px;
-			}
-
-			img {
-				height: 1.2em;
-			}
 		}
 
-		span {
-			max-width: 20em;
-			text-align: left;
-			color: $blackish;
+		#main,
+		#time,
+		#sb_container,
+		#linkblocks {
+			flex-grow: 1;
+			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
+			will-change: transform, flex-grow;
 		}
 
-		&:hover {
-			opacity: 1;
-			transition: opacity .1s;
+		#time-container,
+		#date,
+		#description,
+		#greetings,
+		#widget {
+			transition: opacity 0.4s;
 		}
 
-		&.shown {
-			transform: translateX(0);
-			transition: transform .4s ease;
+		// Parent blocks shrinks & hide
+		#main.he_hidden,
+		#linkblocks.he_hidden,
+		#time.he_hidden {
+			flex-grow: 0;
+			opacity: 0;
 		}
 
-		&.justShown {
-			opacity: 1;
-		}
-
-		&.removed {
-			transform: translateX(-100%);
-			transition: transform .4s ease;
+		// Children only hide
+		#time-container.he_hidden,
+		#date.he_hidden,
+		#description.he_hidden,
+		#greetings.he_hidden,
+		#widget.he_hidden {
+			opacity: 0;
 		}
 	}
 }
 
-@mixin weather {
-	#weather {
-		#weather_desc {
-			font-size: 1.5em;
-		}
-
-		#w_icon {
-			display: flex;
-			height: 100px;
-			justify-content: center;
-			align-items: center;
-
-			#widget {
-				opacity: 0;
-				height: 60px;
-				width: 60px;
-				border: none;
-				padding-right: 10px;
-				transition: opacity .1s;
-			}
-
-			#w_widget_text {
-				font-size: 2em;
-			}
-
-			@include hidden();	
-		}
+@mixin allSettings {
+	.as {
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.4s;
 	}
-}
 
-@mixin searchbar {
-	#sb_container {
-		visibility: hidden;
-		display: none;
-		height: 2px;
-		width: 100%;
-		padding: 0;
-		transition: none;
+	/* prettier-ignore */
+	&.all {
+		.as_link {max-height: 120px}
+		.as_collection {max-height: 120px}
+		.as_visuals {max-height: 300px}
+		.as_timedate {max-height: 260px}
+		.as_fonts {max-height: 240px}
+		.as_css {max-height: 3100px}
+		.as_impexp {max-height: 220px}
+	}
 
-		#searchbar {
-			opacity: 0;
-			font-size: 1.5em;
-			color: rgba(0,0,0,0.6);
-			width: calc(100% - 2em);
-			max-width: 500px;
-			border: 0;
-			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-			height: 50px;
-			border-radius: 4px;
-			padding-left: 1em;
-			transition: border-radius .15s, opacity .1s;
-
-			&:focus {
-				opacity: 1;
-				border-radius: 1em;
-			}
-		}
-		
-		// Pourquoi &:placeholder ne fonctionne pas ? Personne ne sait.
-		#searchbar::placeholder {
-			text-transform: none;
-			opacity: 1;
-		}
-
-		.popup_searchbar, .popup_searchbar:focus {
-			border: 2px solid #b8b8b8;
-			margin-top: 2em;
-		}
-
-		&.shown {
-			display: block;
-			visibility: visible;
-			height: 52px;
-		}
-
-		&.hidden {
-			visibility: hidden;
-			opacity: 0;
-			padding: 0;
-
-
-			height: 2px;
-		}
-
-		&.removed {
-			display: none;
-		}
-	}	
-}
-
-@mixin linkBlocks {
-	#linkblocks {
-		visibility: visible;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		max-width: 100%;
-		margin: 0 auto;
-		padding: 2em;
-		min-height: 8em;
-
-		.block_parent {
-			position: relative;
-			margin: 1em;
-			width: 5em;
-
-			.block {
-				.l_icon_wrap {
-					overflow: hidden;
-					width: 4.4em;
-					height: 4.4em;
-					margin: auto;
-					position: relative;
-					border-radius: 4px;
-					background: $purewhite;
-					border: .2em solid $purewhite;
-					cursor: pointer;
-					transition: border-color .1s, filter .1s;
-
-					.l_icon {
-						width: 100%;
-					}
-
-					&:hover {
-						border: .2em solid $blue;
-						transition: border-color .1s;
-					}
-
-					&:active {
-						filter: brightness(0.75);
-						transition: border-color .1s, filter .1s;
-					}
-				}
-
-				span {
-					display: block;
-					margin: .5em 0;
-					width: 100%;
-					word-wrap: break-word;
-				}
-
-				&.wiggly {
-					animation-name: wiggle;
-					animation-iteration-count: infinite;
-					transform-origin: 50% 10%;
-					animation-duration: .25s;
-				}
-			}
-
-			button.remove {
-				position: absolute;
-				display: none;
-				top: -1.2em;
-				left: -1.2em;
-				height: 30px;
-				width: 30px;
-				border: 0;
-				border-radius: 100%;
-				background: #ffffff;
-				box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
-				z-index: 3;
-				cursor: default;
-				transition: all .1s;
-
-				img {
-					height: .9em;
-					width: .9em;
-					position:absolute;
-					top: 50%;
-					left:50%;
-					transform: translate(-50%, -50%);
-				}
-
-				&.visible {
-					cursor: pointer;
-				}
-
-				&:hover {
-					background: #bbb;
-				}
-			}
-
-			&.removed {
-				transform: scale(0);
-				opacity: 0;
-			}
+	&.init {
+		.as {
+			transition: max-height 0s;
 		}
 	}
 }
 
 @mixin settingsBase {
+	//
+	// Dark mode transition
+	// #settings and buttons have seperate transitions
+	#cssEditor,
+	.tooltip,
+	.param,
+	select,
+	input,
+	hr {
+		transition-duration: 0.6s;
+		transition-timing-function: $easeOutThree;
+		transition-property: background-color, color, border;
+	}
+	#cssEditor,
+	input[type='text'],
+	input[type='range'],
+	select {
+		width: 110px;
+		font-size: 13px;
+	}
+
 	select {
 		width: 120px;
 		height: 2.35em;
+		border-radius: 8.5px;
+		padding-left: 10px;
+		border: 1px solid $inputGrey;
+		color: $blackish;
+		-webkit-appearance: none;
 	}
-	
-	input:active, input:focus, a:hover, a:active, a:focus {
+
+	.slider,
+	input:checked + .slider {
+		transition: background-color 0.1s;
+	}
+
+	input:active,
+	input:focus,
+	a:hover,
+	a:active,
+	a:focus {
 		border: 0;
 	}
 
 	input::placeholder {
-		color: #7c7d7e;
+		color: $placeholderGrey;
 		opacity: 1;
 	}
 
-	input::-moz-focus-outer { 
+	input::-moz-focus-outer {
 		border: 0;
 	}
 
-	input[type="text"] {
+	input[type='text'],
+	input[type='url'] {
+		padding-left: 10px;
 		border-radius: 8.5px;
 		border: 0;
-		background-color: $inputGrey;
 		height: 2.35em;
-		padding-left: .5em;
+		color: $blackish;
+		background-color: $inputGrey;
+	}
+
+	input[type='text']:focus,
+	input[type='url']:focus {
+		background-color: $focusedGrey;
 	}
 
 	button {
-		border:0;
+		border: 0;
 		background-color: #fff;
 		color: $blue;
 		cursor: pointer;
-		font-size: 13.5px;
-	}
-
-	.centeredButton {
-		display: block;
-		margin: 1em auto 0 auto;
-	}
-
-	p#wrongURL, p#wrongCity {
-		display: none;
-		opacity: 0;
-		color: red;
-		margin-top: 0.5em;
-		font-size: 0.8em;
+		font-size: 14px;
 	}
 
 	/* Switch */
@@ -452,7 +301,7 @@ body {
 		height: 34px;
 		margin-left: 1em;
 
-		input { 
+		input {
 			opacity: 0;
 			width: 0;
 			height: 0;
@@ -473,147 +322,135 @@ body {
 			left: 0;
 			right: 0;
 			bottom: 0;
-			background-color: #ccc;
-			-webkit-transition: .4s;
-			transition: .4s;
+			background-color: $inputGrey;
+			-webkit-transition: 0.4s;
+			transition: 0.4s;
 			border-radius: 34px;
 
 			&:before {
 				position: absolute;
-				content: "";
+				content: '';
 				height: 28px;
 				width: 28px;
 				left: 3px;
 				bottom: 3px;
 				background-color: $purewhite;
-				-webkit-transition: .4s;
-				transition: .4s;
+				-webkit-transition: 0.4s;
+				transition: 0.4s;
 				border-radius: 50%;
 				box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
+			}
+
+			&:hover {
+				background: #ccc;
+				transition: background-color 0.2s;
 			}
 		}
 	}
 
 	/* Slider */
-	.range {
-		-webkit-appearance:none;
+	input[type='range'] {
+		-webkit-appearance: none;
 		position: relative;
 		height: 2px;
-		background: #b4b4b4;
-		cursor:pointer;
-		border-radius:1.5rem
+		background: $focusedGrey;
+		cursor: pointer;
+		border-radius: 1.5rem;
+		opacity: 1;
+		transition: background-color 0.1s;
+
+		&:hover {
+			background: $borderGrey;
+		}
 	}
 
 	/* Chrome, Opera & Safari */
-	.range::-webkit-slider-thumb {
-		-webkit-appearance:none; 
-	    background: #fff;
-	    height: 20px;
-	    width: 20px;
-	    border-radius: 50px;
-	    border: 0;
-		box-shadow: 0px 1px 3px 1.5px #b8b8b8;
+	input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		background: #fff;
+		height: 20px;
+		width: 20px;
+		border-radius: 50px;
+		border: 0;
+		box-shadow: $thumbShadow;
 	}
 
-	input[type="range"]::-ms-thumb {
+	input[type='range']::-ms-thumb {
 		margin: 0; /* Resets margin in Edge since it supports -webkit-slider-thumb as well */
 	}
 
 	/* Firefox */
-	::-moz-range-track {
-	    height: 2px;
-	    border-radius: 50px;
-	    background: #b4b4b4;
+	&::-moz-range-track {
+		height: 2px;
+		border-radius: 50px;
+		background: $inputGrey;
 	}
 
-	::-moz-range-progress {
+	&::-moz-range-progress {
 		background-color: $blue;
 		height: 2px;
 		border-radius: 50px;
 	}
 
-	::-moz-range-thumb {
-	    background: #fff;
-	    height: 20px;
-	    width: 20px;
-	    border-radius: 50px;
-	    border: 0;
+	&::-moz-range-thumb {
+		background: #fff;
+		height: 20px;
+		width: 20px;
+		border-radius: 50px;
+		border: 0;
 
-		box-shadow: 0px 1px 3px 1.5px #b8b8b8;
+		box-shadow: $thumbShadow;
 	}
 
 	/*Edge*/
-	::-ms-fill-lower { 
-	    background: dodgerblue;
+	&::-ms-fill-lower {
+		background: dodgerblue;
 	}
 
-	::-ms-thumb { 
-	    background: #fff;
-	    border: 2px solid #999;
-	    height: 40px;
-	    width: 20px;
-	    box-sizing: border-box;
+	&::-ms-thumb {
+		background: #fff;
+		border: 2px solid #999;
+		height: 40px;
+		width: 20px;
+		box-sizing: border-box;
 	}
 
-	::-ms-ticks-after { 
-	    display: none; 
+	&::-ms-ticks-after {
+		display: none;
 	}
 
-	::-ms-ticks-before { 
-	    display: none; 
+	&::-ms-ticks-before {
+		display: none;
 	}
 
-	::-ms-track { 
-	    background: #ddd;
-	    color: transparent;
-	    height: 40px;
-	    border: none;
+	&::-ms-track {
+		background: #ddd;
+		color: transparent;
+		height: 40px;
+		border: none;
 	}
 
-	::-ms-tooltip { 
-	    display: none;
+	&::-ms-tooltip {
+		display: none;
 	}
-}
 
-@mixin chooseBackground {
-	#default {
-		display: flex;
-		justify-content: space-between;
-		padding: .5em 0 .5em 0;
-
-		> div {
-			display: flex;
-    		justify-content: space-between;
-
-    		.imgpreview {
-				overflow: hidden;
-				height: 80px;
-				width: 60px;
-				border-radius: 4px;
-				background-size: cover;
-				background-position: center center;
-				display: inline-block;
-				transition: border 0s, opacity .2s;
-			
-				img {
-					height: 80px;
-					cursor: pointer;
-					box-sizing: content-box;
-				}
-
-				&:hover {
-					border: 2px solid $blue;
-					width: 56px;
-					height: 76px;
-				}
-
-				&.selected {
-					border: 2px solid $blue;
-					width: 56px;
-					height: 76px;
-					opacity: .8;
-				}
-			}
-		}
+	/* total width */
+	&::-webkit-scrollbar {
+		width: 15px;
 	}
+
+	&::-webkit-scrollbar-track {
+		box-shadow: inset 0 0 15px 15px transparent;
+		border: solid 3px transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		box-shadow: inset 0 0 15px 15px $borderGrey;
+		border: solid 3px transparent;
+		border-radius: 15px;
+	}
+
+	// &.scroll::-webkit-scrollbar-thumb {
+	// 	box-shadow: inset 0 0 15px 15px $borderGrey;
+	// }
 }

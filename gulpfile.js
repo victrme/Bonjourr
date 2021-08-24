@@ -1,67 +1,151 @@
-const {series, parallel, src, dest, watch, pipe} = require('gulp');
-const concat = require('gulp-concat');
-const minify = require('gulp-babel-minify');
-const htmlmin = require('gulp-htmlmin');
-const csso = require('gulp-csso');
+const { series, parallel, src, dest, watch } = require('gulp'),
+	concat = require('gulp-concat'),
+	minify = require('gulp-babel-minify'),
+	htmlmin = require('gulp-htmlmin'),
+	csso = require('gulp-csso'),
+	rename = require('gulp-rename'),
+	replace = require('gulp-replace')
 
-const path = {
-    scss: ["src/styles/scss/_global.scss", "src/styles/scss/_media.scss", "src/styles/scss/_mixins.scss", "src/styles/scss/style.scss"],
-    css: ["src/styles/style.css", "src/styles/events.css"],
-    js: ["src/scripts/lang.js", "src/scripts/script.js", "src/scripts/settings.js"]
+function html() {
+	//
+	// Index & settings minified
+	// Multiple scripts tags => only main.js
+	//
+
+	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
+	return src('*.html')
+		.pipe(
+			htmlmin({
+				collapseWhitespace: true,
+				removeComments: true,
+			})
+		)
+		.pipe(replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : '')))
+		.pipe(dest('release/'))
 }
 
-function defaultTask(cb) {
-  // place code for your default task here
-  cb();
+function scripts(which) {
+	//
+	// All scripts except background
+	// Online: replaces chrome.storage with homemade storage
+	// Firefox debugging: only storage.local is allowed
+	// Chrome & Firefox build: just minify
+	//
+
+	const stream = src([
+		'src/scripts/lang.js',
+		'src/scripts/utils.js',
+		'src/scripts/script.js',
+		'src/scripts/settings.js',
+	]).pipe(concat('main.js'))
+
+	switch (which) {
+		case 'online': {
+			stream
+				.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
+				.pipe(replace('sync.get(', 'get(false, '))
+				.pipe(replace('local.get(', 'get(true, '))
+				.pipe(replace('sync.set(', 'set('))
+				.pipe(replace('local.set(', 'setLocal('))
+				.pipe(replace('sync.remove(', 'remove(false, '))
+				.pipe(replace('local.remove(', 'remove(true, '))
+				.pipe(minify({ mangle: { keepClassName: true } }))
+			break
+		}
+
+		case 'firefox-dev':
+			stream.pipe(replace('.sync.', '.local.'))
+			break
+
+		default:
+			stream.pipe(minify({ mangle: { keepClassName: true } }))
+			break
+	}
+
+	stream.pipe(dest('release/src/scripts'))
+	return stream
 }
 
-function scssTask(){
-    return src(path.scss)
-        .pipe(sourcemaps.init())
-        .pipe(sass())
-        .pipe(sourcemaps.write('.'))
-        .pipe(concat('style.css'))
-        .pipe(dest("src/styles")
-    );
+//
+// These one-liners must be functions, not const
+//
+
+function css() {
+	return src('src/styles/style.css').pipe(csso()).pipe(dest('release/src/styles/'))
 }
 
-function cssTask(){
-    return src(path.css)
-        .pipe(csso())
-        .pipe(concat('style.css'))
-        .pipe(dest("release/src/styles")
-    );
+function addBackground() {
+	return src('src/scripts/background.js').pipe(dest('release/src/scripts'))
 }
 
-function htmlTask() {
-    return src(["index.html", "settings.html"])
-    .pipe(htmlmin({
-      collapseWhitespace: true,
-      removeComments: true
-    }))
-    .pipe(dest('release/'));
+function ressources() {
+	return src('src/assets/**').pipe(dest('release/src/assets'))
 }
 
-function jsTask() {
-    return src(path.js)
-        .pipe(concat('main.js'))
-        .pipe(minify({
-            mangle: {
-                    keepClassName: true
-                }
-            }))
-        .pipe(dest('release/src/scripts')
-    );
+function locales() {
+	return src('_locales/**').pipe(dest('release/_locales/'))
 }
 
-
-function watchTask(){
-    watch(
-        path.css,
-        parallel(scssTask)
-    );
+function worker(online) {
+	const file = {
+		origin: online ? 'service-worker.js' : 'src/scripts/background.js',
+		destination: online ? 'release/' : 'release/src/scripts/',
+	}
+	return src(file.origin).pipe(dest(file.destination))
 }
 
-exports.default = series(
-    parallel(cssTask, jsTask, htmlTask)/*,
-    watchTask*/);
+function manifest(which) {
+	if (which === 'online') return src(`manifest.webmanifest`).pipe(dest('release/'))
+	else
+		return src(`manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
+			.pipe(rename('manifest.json'))
+			.pipe(dest('release/'))
+}
+
+//
+// Tasks
+//
+
+// Watches style map to make sure everything is compiled
+const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', './service-worker.js', './manifest*.**']
+
+// prettier-ignore
+const makeOnline = () => [
+	css,
+	html,
+	ressources,
+	() => manifest('online'),
+	() => worker('online'),
+	() => scripts('online')
+]
+
+const makeExtension = (manifestFrom, scriptFrom) => [
+	css,
+	html,
+	locales,
+	ressources,
+	addBackground,
+	() => worker(false),
+	() => scripts(scriptFrom),
+	() => manifest(manifestFrom),
+]
+
+//
+// All Exports
+//
+
+exports.online = async function () {
+	watch(filesToWatch, series(parallel(...makeOnline())))
+}
+
+exports.chrome = async function () {
+	watch(filesToWatch, series(parallel(...makeExtension('chrome'))))
+}
+
+exports.firefox = async function () {
+	watch(filesToWatch, series(parallel(...makeExtension('firefox'))))
+}
+
+exports.firefoxdev = async function () {
+	watch(filesToWatch, series(parallel(...makeExtension('firefox', 'firefox-dev'))))
+}

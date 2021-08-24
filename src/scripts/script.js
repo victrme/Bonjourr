@@ -1,2185 +1,2442 @@
-id = name => document.getElementById(name);
-cl = name => document.getElementsByClassName(name);
-clas = (that, val) => that.setAttribute("class", val);
-has = (that, val) => id(that) && id(that).getAttribute("class", val) ? true : false;
-
-let disposableData = {},
-	isPro = false,
-	langue = "en",
-	stillActive = false,
-	rangeActive = false,
-	lazyClockInterval = 0
-const randomseed = Math.floor(Math.random() * 30) + 1,
-	domshowsettings = id("showSettings"),
-	domlinkblocks = id("linkblocks"),
-	dominterface = id("interface"),
-	dict = askfordict(),
-	mobilecheck = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? true : false)
-
-//cache rapidement temp max pour eviter que ça saccade
-if ((new Date).getHours() >= 12) id("temp_max_wrap").style.display = "none";
-
-//c'est juste pour debug le storage
-function deleteBrowserStorage() {chrome.storage.sync.clear(() => {localStorage.clear()})}
-function getBrowserStorage() {chrome.storage.sync.get(null, (data) => {console.log(data)})}
-function getLocalStorage() {chrome.storage.local.get(null, (data) => {console.log(data)})}
-
-//pour bonjourr pro
-function setPremiumCode(str) {chrome.storage.sync.set({login: btoa(str)})}
-
-//cache un peu mieux les données dans le storage
-function localEnc(input="no", enc=true) {
-	let a = input.split(""), n = ""
-	for (let i in a)
-		n += String.fromCharCode(a[i].charCodeAt() + (enc ? randomseed : -randomseed))
-	return n
+function slowRange(tosave, time = 400) {
+	clearTimeout(rangeActive)
+	rangeActive = setTimeout(function () {
+		chrome.storage.sync.set(tosave)
+	}, time)
 }
 
-function slowRange(tosave) {
-	//timeout avant de save pour éviter la surcharge d'instructions de storage
-	clearTimeout(rangeActive);
-	rangeActive = setTimeout(function() {
-		chrome.storage.sync.set(tosave);
-	}, 150);
-}
-
-function slow(that) {
-	that.setAttribute("disabled", "");
+function slow(that, time = 400) {
+	that.setAttribute('disabled', '')
 	stillActive = setTimeout(() => {
-		that.removeAttribute("disabled");
-		clearTimeout(stillActive);
-		stillActive = false;
-	}, 700);
+		that.removeAttribute('disabled')
+		clearTimeout(stillActive)
+		stillActive = false
+	}, time)
 }
 
-function traduction(ofSettings, initStorage) {
+function traduction(ofSettings, init) {
+	//
+	function traduis(lang = 'en') {
+		//
+		document.documentElement.setAttribute('lang', lang)
 
-	let trns = (ofSettings ? id("settings") : document).querySelectorAll('.trn')
-		langue = (ofSettings ? JSON.parse(localEnc(disposableData, false)).lang || "en" : initStorage || "en")
+		if (lang !== 'en') {
+			const trns = (ofSettings ? id('settings') : document).querySelectorAll('.trn')
+			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
 
-	if (langue !== "en")
-		trns.forEach(t =>	dict[t.innerText] ? t.innerText = dict[t.innerText][langue] : "")
-}
-
-const tradThis = str => (
-	(langue === "en" ? str : dict[str][langue])
-)
-
-function newClock(eventObj, init) {
-
-	function displayControl() {
-
-		const numeric = id('clock'),
-			analog = id('analogClock'),
-			analSec = id('analogSeconds');
-
-		//cache celle qui n'est pas choisi
-		clas((clock.analog ? numeric : analog), "hidden");
-		clas((clock.analog ? analog : numeric), "");
-
-		//cache l'aiguille des secondes
-		if (!clock.seconds && clock.analog) clas(analSec, "hidden");
-		else clas(analSec, "");
+			trns.forEach((trn) => changeText(trn, trn.textContent))
+		}
 	}
 
-	function main() {
+	if (init && !ofSettings) traduis(init)
+	else chrome.storage.sync.get('lang', (data) => traduis(data.lang))
+}
 
-		//retourne une liste [heure, minutes, secondes]
-		function time() {
-			const date = new Date();
-			return [date.getHours(), date.getMinutes(), date.getSeconds()]
+function tradThis(str) {
+	const lang = document.documentElement.getAttribute('lang') || 'en'
+	return lang === 'en' ? str : dict[str][lang]
+}
+
+function clock(event, init) {
+	//
+
+	function zonedDate(timezone) {
+		const date = new Date()
+		if (timezone === 'auto' || timezone === NaN) return date
+		else {
+			const offset = parseInt(date.getTimezoneOffset() / 60)
+			const utcHour = date.getHours() + offset
+
+			date.setHours(utcHour + parseInt(timezone))
+
+			return date
+		}
+	}
+
+	function clockDate(date, usdate) {
+		const jour = tradThis(days[date.getDay()]),
+			mois = tradThis(months[date.getMonth()]),
+			chiffre = date.getDate()
+
+		id('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
+	}
+
+	function greetings(date, name) {
+		const greets = [
+			['Good Night', 7],
+			['Good Morning', 12],
+			['Good Afternoon', 18],
+			['Good Evening', 24],
+		]
+
+		const greetResult = greets.filter((greet) => date.getHours() < greet[1])[0]
+		id('greetings').textContent = tradThis(greetResult[0]) + (name ? `, ${name}` : '')
+	}
+
+	function changeAnalogFace(face = 'none') {
+		//
+		// Clockwise
+		const chars = {
+			none: ['', '', '', ''],
+			number: ['12', '3', '6', '9'],
+			roman: ['XII', 'III', 'VI', 'IX'],
+			marks: ['│', '─', '│', '─'],
 		}
 
-		//besoin pour numerique et analogue
-		function timezone(timezone, hour) {
+		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.textContent = chars[face][i]))
+	}
 
-			if (timezone === "auto" || timezone === NaN) return hour;
-			else {
+	function startClock(clock, greeting, usdate) {
+		//
+		function displayControl() {
+			const numeric = id('clock'),
+				analog = id('analogClock'),
+				analogSec = id('analogSeconds')
 
-				let d = new Date;
-				let offset = d.getTimezoneOffset();
-				let utc = hour + (offset / 60);
-				let setTime = (utc + parseInt(timezone)) % 24;
+			//cache celle qui n'est pas choisi
+			clas(numeric, clock.analog, 'hidden')
+			clas(analog, !clock.analog, 'hidden')
 
-				if (setTime < 0) setTime = 24 + setTime;
-
-				return setTime;
-			}
+			//cache l'aiguille des secondes
+			clas(analogSec, !clock.seconds && clock.analog, 'hidden')
 		}
 
-		function numerical(timearray) {
+		function clockInterval() {
+			//
 
-			//seul numerique a besoin du ampm
-			function toAmpm(val) {
+			function numerical(time) {
+				//seul numerique a besoin du ampm
+				function toAmpm(val) {
+					if (val > 12) val -= 12
+					else if (val === 0) val = 12
+					else val
 
-				if (val > 12)
-					val -= 12;
-				else
-					if (val === 0)
-						val = 12;
-					else
-						val;
-
-				return val
-			}
-
-			function fixunits(val) {
-				val = (val < 10 ? "0" + val : val);
-				return val
-			}
-
-			let h = clock.ampm ? toAmpm(timearray[0]) : timearray[0],
-				m = fixunits(timearray[1]),
-				s = fixunits(timearray[2]);
-
-			id('clock').innerText = clock.seconds ? `${h}:${m}:${s}` : `${h}:${m}`;
-		}
-
-		function analog(timearray) {
-
-			function rotation(that, val) {
-
-				const spancss = that.style;
-
-				if (lazyClockInterval === 0 || val === 0) {
-					spancss.transition = "none";
-				} else {
-					if (spancss.transition === "none 0s ease 0s") spancss.transition = "transform .1s";
+					return val
 				}
 
-				spancss.transform = `rotate(${parseInt(val)}deg)`;
+				function fixunits(val) {
+					val = val < 10 ? '0' + val : val
+					return val.toString()
+				}
+
+				let h = clock.ampm ? toAmpm(time.getHours()) : time.getHours(),
+					m = fixunits(time.getMinutes()),
+					s = fixunits(time.getSeconds())
+
+				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
-			// Initial clock: https://codepen.io/josephshambrook/pen/xmtco
-			let s = timearray[2] * 6,
-				m = timearray[1] * 6,// + (s / 60),
-				h = timearray[0] * 30;//% 12 / 12 * 360 + (m / 12);
+			function analog(time) {
+				function rotation(that, val) {
+					that.style.transform = `rotate(${parseInt(val)}deg)`
+				}
 
+				let s = time.getSeconds() * 6,
+					m = time.getMinutes() * 6, // + (s / 60),
+					h = time.getHours() * 30 //% 12 / 12 * 360 + (m / 12);
 
-			//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
-			if (true || timearray[2] === 0) rotation(id('minutes'), m);
-			if (true || timearray[1] === 0) rotation(id('hours'), h);
+				//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
+				if (true || time.getMinutes() === 0) rotation(id('minutes'), m)
+				if (true || time.getHours() === 0) rotation(id('hours'), h)
 
-		    //tourne pas les secondes si pas de seconds
-		    if (clock.seconds) rotation(id('analogSeconds'), s);
+				//tourne pas les secondes si pas de seconds
+				if (clock.seconds) rotation(id('analogSeconds'), s)
+			}
 
-			//fix 0deg transition
+			// Control
+			const date = zonedDate(clock.timezone)
+			clock.analog ? analog(date) : numerical(date)
+
+			// Midnight, change date
+			if (date.getHours() === 0 && date.getMinutes() === 0) {
+				clockDate(date, usdate)
+			}
+
+			// Hour change
+			if (date.getMinutes() === 0) {
+				greetings(date, greeting)
+			}
 		}
 
-		//timezone control
-		//analog control
-		const array = time();
-
-		array[0] = timezone(clock.timezone, array[0]);
-		clock.analog ? analog(array) : numerical(array);
-	}
-
-	function startClock() {
 		//stops multiple intervals
-		clearInterval(lazyClockInterval);
+		clearInterval(lazyClockInterval)
 
-		displayControl();
-		main();
-		lazyClockInterval = setInterval(main, 1000);
+		displayControl()
+		clockInterval()
+		lazyClockInterval = setInterval(clockInterval, 1000)
 	}
 
-	//controle très stricte de clock comme vous pouvez le voir
-	//(je sais que je peux faire mieux)
-	let clock;
+	if (event) {
+		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
+			const [key, val] = Object.entries(event)[0]
 
-	if (eventObj) {
+			switch (key) {
+				case 'usdate': {
+					clockDate(zonedDate(data.clock.timezone), val)
+					slowRange({ usdate: val }, 500)
+					break
+				}
 
-		chrome.storage.sync.get("clock", (data) => {
+				case 'greeting': {
+					greetings(zonedDate(data.clock.timezone), val)
+					slowRange({ greeting: val }, 500)
+					break
+				}
 
-			clock = {
-				analog: (data.clock ? data.clock.analog : false),
-				seconds: (data.clock ? data.clock.seconds : false),
-				ampm: (data.clock ? data.clock.ampm : false),
-				timezone: (data.clock ? data.clock.timezone : "auto")
+				default: {
+					let clock = {
+						analog: false,
+						seconds: false,
+						ampm: false,
+						timezone: 'auto',
+						face: 'none',
+					}
+
+					clock = { ...data.clock }
+					clock[key] = val
+					chrome.storage.sync.set({ clock: clock })
+
+					if (key === 'timezone') {
+						clockDate(zonedDate(val), data.usdate)
+						greetings(zonedDate(val), data.greeting)
+					}
+
+					startClock(clock, data.greeting, data.usdate)
+					changeAnalogFace(clock.face)
+					break
+				}
 			}
-
-			//event change of clock parameters
-			clock[eventObj.param] = eventObj.value
-			chrome.storage.sync.set({clock: clock})
-
-			startClock()
-		});
-
+		})
 	} else {
-
-		clock = {
-			analog: (init ? init.analog : false),
-			seconds: (init ? init.seconds : false),
-			ampm: (init ? init.ampm : false),
-			timezone: (init ? init.timezone : "auto")
+		let clock = {
+			analog: false,
+			seconds: false,
+			ampm: false,
+			timezone: 'auto',
+			face: 'none',
 		}
 
-		startClock()
+		if (init.clock) clock = { ...clock, ...init.clock }
+
+		startClock(clock, init.greeting, init.usdate)
+		clockDate(zonedDate(clock.timezone), init.usdate)
+		greetings(zonedDate(clock.timezone), init.greeting)
+		changeAnalogFace(clock.face)
+		canDisplayInterface('clock')
 	}
-}
-
-function date(event, usdate) {
-	const date = new Date();
-	const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-	const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-
-	if (usdate) {
-
-		id("jour").innerText = tradThis(days[date.getDay()]) + ",";
-		id("chiffre").innerText = tradThis(months[date.getMonth()]);
-		id("mois").innerText = date.getDate();
-
-	} else {
-
-		id("jour").innerText = tradThis(days[date.getDay()]);
-		id("chiffre").innerText = date.getDate();
-		id("mois").innerText = tradThis(months[date.getMonth()]);
-	}
-
-	if (event)
-		chrome.storage.sync.set({"usdate": usdate})
-}
-
-function greetings() {
-	const h = (new Date()).getHours();
-	let message;
-
-	if (h > 6 && h < 12) message = "Good Morning";
-	else if (h >= 12 && h < 18) message = "Good Afternoon";
-	else if (h >= 18 && h <= 23) message = "Good Evening";
-	else message = "Good Night";
-
-	id("greetings").innerText = tradThis(message);
 }
 
 function quickLinks(event, that, initStorage) {
-
-	//only on init
-	if(!event && !that) {
-		let dragged, hovered, current;
-		let stillActive = false;
-	}
+	// Pour ne faire qu'un seul storage call
+	// [{ index: number, url: string }]
+	const favsToUpdate = []
+	let hovered, dragged, current
 
 	//enleve les selections d'edit
-	const removeLinkSelection = x => (domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(
-		function(e) {
-			clas(e, "l_icon_wrap")
+	const removeLinkSelection = () =>
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
+			clas(e, false, 'selected')
 		})
-	);
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	function initblocks(storage) {
+	function initblocks(links) {
+		if (links.length > 0) {
+			const lIconList = links.map((link, i) => appendblock(link, i))
 
-		let array = storage.links || false;
+			canDisplayInterface('links')
+			lIconList.forEach((lIcon, i) => addIcon(lIcon, links, i))
+		}
 
-		if (array)
-			array.map((a, i) => (appendblock(a, i, array)))
+		// Links is done
+		else canDisplayInterface('links')
 	}
 
-	function appendblock(arr, index, links) {
+	function addIcon(lIcon, links, index, isNewLink) {
+		//
+		function waitForIconToApply(iconurl) {
+			//
+			function apply(url) {
+				const loadTime = performance.now() - perfStart
+				const playAnim = loadTime > 30
 
-		let {icon, title, url} = arr
+				switch (playAnim) {
+					case true: {
+						lIcon.style.opacity = '0'
+						setTimeout(() => {
+							lIcon.removeAttribute('style')
+							lIcon.src = url
+						}, BonjourrAnimTime)
+						break
+					}
 
-		icon = (icon.length > 0 ? icon : "src/images/loading.gif");
+					default:
+						lIcon.src = url
+						break
+				}
+			}
+
+			if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
+				//
+				// Apply loading gif d'abord
+				apply(iconurl)
+
+				//si online, rechercher nouvelle icone
+				if (window.navigator.onLine) {
+					//
+					const img = new Image()
+					const a = document.createElement('a')
+					a.href = link.url
+					const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
+
+					// Update link icon data if new link
+					if (isNewLink) links[index].icon = url
+
+					img.onload = () => apply(url)
+					img.src = url
+					img.remove()
+				}
+
+				// Save new link
+				if (isNewLink) chrome.storage.sync.set({ links: links })
+			}
+
+			// Apply celle cached
+			else apply(iconurl)
+		}
+
+		const link = links[index]
+		const perfStart = performance.now()
+		const isAlias = link.icon.startsWith('alias:')
+
+		switch (isAlias) {
+			case true:
+				chrome.storage.local.get([link.icon], (data) => waitForIconToApply(data[link.icon]))
+				break
+
+			default:
+				waitForIconToApply(link.icon)
+				break
+		}
+	}
+
+	function appendblock(link) {
+		let icon = link.icon
+		let title = stringMaxSize(link.title, 32)
+		let url = stringMaxSize(link.url, 256)
+
+		// no icon ? + 1.9.2 dead favicons fix
+		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
+			icon = 'src/assets/interface/loading.gif'
+		}
 
 		//le DOM du block
-		let b =
-		`<div class='block' draggable="false" source='${url}'>
-			<div class='l_icon_wrap' draggable="false">
-				<img class='l_icon' src='${icon}' draggable="false">
-			</div>
-			<span>${title}</span>
-		</div>`;
+		const lIcon = document.createElement('img')
+		const lIconWrap = document.createElement('div')
+		const blockTitle = document.createElement('span')
+		const block = document.createElement('div')
+		const block_parent = document.createElement('div')
 
-		//ajoute un wrap
-		let block_parent = document.createElement('div');
-		block_parent.setAttribute("class", "block_parent");
-		block_parent.setAttribute("draggable", "true");
-		block_parent.innerHTML = b;
+		lIcon.loading = 'lazy'
+		lIcon.className = 'l_icon'
+		lIconWrap.className = 'l_icon_wrap'
+		lIconWrap.appendChild(lIcon)
+
+		blockTitle.textContent = title
+
+		block.className = 'block'
+		block.setAttribute('source', url)
+		block.appendChild(lIconWrap)
+		title ? block.appendChild(blockTitle) : ''
+
+		block_parent.setAttribute('class', 'block_parent')
+		block_parent.setAttribute('draggable', 'true')
+		block_parent.appendChild(block)
 
 		//l'ajoute au dom
-		domlinkblocks.appendChild(block_parent);
+		domlinkblocks.appendChild(block_parent)
 
 		//met les events au dernier elem rajouté
-		addEvents(domlinkblocks.lastElementChild);
+		addEvents(block_parent)
 
-		//si online et l'icon charge, en rechercher une
-		if (window.navigator.onLine && icon === "src/images/loading.gif")
-			addIcon(domlinkblocks.lastElementChild, arr, index, links);
+		return lIcon
 	}
 
 	function addEvents(elem) {
-
 		function handleDrag(is, that) {
+			chrome.storage.sync.get('links', (data) => {
+				const i = findindex(that)
 
-			chrome.storage.sync.get("links", (data) => {
+				switch (is) {
+					case 'start':
+						dragged = [elem, data.links[i], i]
+						break
 
-				const i = findindex(that);
+					case 'enter':
+						hovered = [elem, data.links[i], i]
+						break
 
-				if (is === "start")
-					dragged = [elem, data.links[i], i];
+					case 'end': {
+						//changes html blocks
+						current = hovered[0].innerHTML
+						hovered[0].innerHTML = dragged[0].innerHTML
+						dragged[0].innerHTML = current
 
-				else if (is === "enter")
-					hovered = [elem, data.links[i], i];
+						// Switches link storage
+						let allLinks = data.links
 
-				else if (is === "end") {
+						allLinks[dragged[2]] = hovered[1]
+						allLinks[hovered[2]] = dragged[1]
 
-					//changes html blocks
-					current = hovered[0].innerHTML;
-					hovered[0].innerHTML = dragged[0].innerHTML;
-					dragged[0].innerHTML = current;
-
-
-					//changes link storage
-					let allLinks = data.links;
-
-					allLinks[dragged[2]] = hovered[1];
-					allLinks[hovered[2]] = dragged[1];
-
-					chrome.storage.sync.set({"links": allLinks});
+						chrome.storage.sync.set({ links: allLinks })
+						break
+					}
 				}
-			});
+			})
 		}
 
-		elem.ondragstart = function(e) {
-			//e.preventDefault();
-			e.dataTransfer.setData("text/plain", e.target.id);
-			e.currentTarget.style.cursor = "pointer";
-			handleDrag("start", this)
+		elem.ondragstart = function (e) {
+			e.stopPropagation()
+			e.dataTransfer.setData('text/plain', e.target.id)
+			handleDrag('start', this)
 		}
 
-		elem.ondragenter = function(e) {
-			e.preventDefault();
-			handleDrag("enter", this)
+		elem.ondragenter = function (e) {
+			e.preventDefault()
+			handleDrag('enter', this)
 		}
 
-		elem.ondragend = function(e) {
-			e.preventDefault();
-			handleDrag("end", this)
+		elem.ondragend = function (e) {
+			e.preventDefault()
+			handleDrag('end', this)
 		}
 
-		elem.oncontextmenu = function(e) {
-			e.preventDefault();
-			if(mobilecheck) editlink(this);
+		elem.oncontextmenu = function (e) {
+			e.preventDefault()
+			editlink(this)
 		}
 
-		elem.onmouseup = function(e) {
+		let longpressWait = setTimeout(() => {}, 0)
+		elem.addEventListener('touchstart', function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+			longpressWait = setTimeout(() => {
+				editlink(this)
+			}, 300)
+		})
 
-			removeLinkSelection();
-			(e.which === 3 ? editlink(this) : (!has("settings", "shown") ? openlink(this, e) : ""));
+		elem.ontouchend = function (e) {
+			clearTimeout(longpressWait)
 		}
+
+		elem.onmouseup = function (e) {
+			removeLinkSelection()
+			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
+		}
+	}
+
+	function showDelIcon(input) {
+		const img = input.nextElementSibling
+		if (input.value === '') img.classList.remove('shown')
+		else img.classList.add('shown')
 	}
 
 	function editEvents() {
-		id("e_delete").onclick = function() {
-			removeLinkSelection();
-			removeblock(parseInt(id("edit_link").getAttribute("index")));
-			clas(id("edit_linkContainer"), "");
+		function closeEditLink() {
+			removeLinkSelection()
+			id('edit_linkContainer').classList.add('hiding')
+			setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), BonjourrAnimTime)
 		}
 
-		id("e_submit").onclick = function() {
-			removeLinkSelection();
-			editlink(null, parseInt(id("edit_link").getAttribute("index")))
-			clas(id("edit_linkContainer"), "");
+		function emptyAndHideIcon(e) {
+			e.target.previousElementSibling.value = ''
+			e.target.classList.remove('shown')
 		}
 
-		id("e_close").onmouseup = function() {
-			removeLinkSelection();
-			clas(id("edit_linkContainer"), "");
+		id('e_delete').onclick = function () {
+			removeLinkSelection()
+			removeblock(parseInt(id('edit_link').getAttribute('index')))
+			clas(id('edit_linkContainer'), false, 'shown')
+			if (id('settings')) linksInputDisable(false)
 		}
 
-		id("re_title").onmouseup = function() {
-			id("e_title").value = "";
+		id('e_submit').onclick = function () {
+			removeLinkSelection()
+			const noError = editlink(null, parseInt(id('edit_link').getAttribute('index')))
+			if (noError) closeEditLink()
 		}
 
-		id("re_url").onmouseup = function() {
-			id("e_url").value = "";
+		// close on button
+		id('e_close').onclick = () => closeEditLink()
+
+		// close on outside click
+		id('edit_linkContainer').onmousedown = (e) => {
+			if (e.target.id === 'edit_linkContainer') closeEditLink()
 		}
 
-		id("re_iconurl").onmouseup = function() {
-			id("e_iconurl").value = "";
-		}
+		id('re_title').onclick = (e) => emptyAndHideIcon(e)
+		id('re_url').onclick = (e) => emptyAndHideIcon(e)
+		id('re_iconurl').onclick = (e) => emptyAndHideIcon(e)
+
+		id('e_title').onkeyup = (e) => showDelIcon(e.target)
+		id('e_url').onkeyup = (e) => showDelIcon(e.target)
+		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
 	}
 
-	function editlink(that, i, customIcon) {
+	function editlink(that, i) {
+		//
+		const e_title = id('e_title')
+		const e_url = id('e_url')
+		const e_iconurl = id('e_iconurl')
 
-		const e_title = id("e_title")
-		const e_url = id("e_url")
-		const e_iconurl = id("e_iconurl")
+		if (e_iconurl.value.length > 8080) {
+			e_iconurl.value = ''
+			e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
-		const controlIcon = old => (
-			e_iconurl.value !== "" ? e_iconurl.value : old)
-
-		const updateLinkHTML = ({title, url, icon}) => {
-			let block = domlinkblocks.children[i + 1];
-
-			block.children[0].setAttribute("source", url);
-			block.children[0].lastChild.innerText = title;
-			block.querySelector("img").src = icon;
+			return false
 		}
 
-		//edit est visible
+		const updated = {
+			title: stringMaxSize(e_title.value, 32),
+			url: stringMaxSize(e_url.value, 256),
+			icon: stringMaxSize(e_iconurl.value, 8080),
+		}
+
 		if (i || i === 0) {
+			chrome.storage.sync.get('links', (data) => {
+				let allLinks = [...data.links]
+				const block = domlinkblocks.children[i + 1]
 
-			chrome.storage.sync.get("links", (data) => {
-				let allLinks = data.links;
-				let element = {
-					title: e_title.value,
-					url: e_url.value,
-					icon: controlIcon(data.links[i].icon)
-				}
+				// Update on interface
+				Object.entries(allLinks[i]).forEach(([key, val]) => {
+					if (val !== updated[key]) {
+						//
+						switch (key) {
+							case 'title': {
+								// Adds span title or updates it
+								if (!block.querySelector('span')) {
+									const span = `<span>${updated[key]}</span>`
+									block.querySelector('.l_icon_wrap').insertAdjacentHTML('afterEnd', span)
+								} else block.querySelector('span').textContent = updated[key]
+								break
+							}
 
-				allLinks[i] = element;
-				updateLinkHTML(element);
-				chrome.storage.sync.set({"links": allLinks});
-			});
+							case 'url':
+								block.querySelector('.block').setAttribute('source', updated[key])
+								break
+
+							case 'icon': {
+								block.querySelector('img').src = updated.icon
+
+								// Saves to an alias if icon too big
+								if (updated.icon.length > 64) {
+									const alias = 'alias:' + Math.random().toString(26).substring(2)
+									const tosave = {}
+
+									tosave[alias] = updated.icon
+									chrome.storage.local.set(tosave)
+									updated.icon = alias
+									e_iconurl.value = alias
+								}
+
+								// Removes old icon from storage if alias
+								if (allLinks[i].icon.startsWith('alias:')) {
+									chrome.storage.local.remove(allLinks[i].icon)
+								}
+
+								break
+							}
+						}
+
+						allLinks[i][key] = updated[key]
+					}
+				})
+
+				// Update in storage
+				chrome.storage.sync.set({ links: allLinks })
+			})
+
+			return true
+		}
 
 		//affiche edit avec le bon index
-		} else {
+		else {
+			const index = findindex(that)
+			const liconwrap = that.querySelector('.l_icon_wrap')
+			const container = id('edit_linkContainer')
+			const openSettings = has(id('settings'), 'shown')
 
-			const index = findindex(that);
-			const liconwrap = that.querySelector(".l_icon_wrap");
+			clas(liconwrap, true, 'selected')
+			clas(container, true, 'shown')
+			clas(container, openSettings, 'pushed')
 
-			clas(liconwrap, "l_icon_wrap selected");
+			id('edit_link').setAttribute('index', index)
 
+			chrome.storage.sync.get('links', (data) => {
+				const { title, url, icon } = data.links[index]
 
-			if (has("settings", "shown"))
-				clas(id("edit_linkContainer"), "shown pushed");
-			else
-				clas(id("edit_linkContainer"), "shown");
-
-
-
-			id("edit_link").setAttribute("index", index);
-
-			chrome.storage.sync.get("links", (data) => {
-
-				const {title, url, icon} = data.links[index]
-
-				e_title.setAttribute("placeholder", tradThis("Title"))
-				e_iconurl.setAttribute("placeholder", tradThis("Icon"))
+				e_title.setAttribute('placeholder', tradThis('Title'))
+				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
 
 				e_title.value = title
 				e_url.value = url
 				e_iconurl.value = icon
-			});
-		}
-	}
 
-	function findindex(that) {
-
-		//passe la liste des blocks, s'arrete si that correspond
-		//renvoie le nombre de loop pour l'atteindre
-
-		const list = domlinkblocks.children;
-
-		for (let i = 0; i < list.length; i++)
-			if (that === list[i]) return i-1
-	}
-
-	function removeblock(index) {
-
-		let count = index;
-
-		chrome.storage.sync.get(["links", "searchbar"], (data) => {
-
-			function ejectIntruder(arr) {
-
-				if (arr.length === 1)	return []
-
-				if (count === 0)
-					arr.shift()
-				else if (count === arr.length)
-					arr.pop()
-				else
-					arr.splice(count, 1)
-
-				return arr
-			}
-
-			var linkRemd = ejectIntruder(data.links);
-
-			//si on supprime un block quand la limite est atteinte
-			//réactive les inputs
-			if (linkRemd.length === 16 - 1)
-				id("i_url").removeAttribute("disabled")
-
-
-			//enleve le html du block
-			var block_parent = domlinkblocks.children[count + 1];
-			block_parent.setAttribute("class", "block_parent removed");
-
-			setTimeout(function() {
-
-				domlinkblocks.removeChild(block_parent);
-
-				//enleve linkblocks si il n'y a plus de links
-				if (linkRemd.length === 0)
-					domlinkblocks.style.visibility = "hidden";
-			}, 200);
-
-			chrome.storage.sync.set({"links": linkRemd});
-		});
-	}
-
-	function addIcon(elem, arr, index, links) {
-
-		function faviconXHR(url) {
-
-			return new Promise(function(resolve, reject) {
-
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', url, true);
-
-				xhr.onload = function() {
-
-					if (xhr.status >= 200 && xhr.status < 400)
-						resolve(JSON.parse(this.response));
-					else
-						resolve(null);
-				}
-
-				xhr.onerror = reject;
-				xhr.send()
+				showDelIcon(e_title)
+				showDelIcon(e_url)
+				showDelIcon(e_iconurl)
 			})
-		}
-
-		function filterIcon(json) {
-			//prend le json de favicongrabber et garde la meilleure
-
-			//si le xhr est cassé, prend l'icone bonjourr
-			if (json === null)
-				return "src/images/icons/favicon.png"
-
-			var s = 0;
-			var a, b = 0;
-
-			//garde la favicon la plus grande
-			for (var i = 0; i < json.icons.length; i++) {
-
-				if (json.icons[i].sizes) {
-
-					a = parseInt(json.icons[i].sizes);
-
-					if (a > b) {
-						s = i;
-						b = a;
-					}
-
-				//si il y a une icone android ou apple, la prendre direct
-				} else if (json.icons[i].src.includes("android-chrome") || json.icons[i].src.includes("apple-touch")) {
-					return json.icons[i].src;
-				}
-			}
-
-			//si l'url n'a pas d'icones, utiliser besticon
-			if (json.icons.length === 0) {
-				return "https://besticon.herokuapp.com/icon?url=" + json.domain + "&size=80"
-			} else {
-				return json.icons[s].src;
-			}
-		}
-
-		//prend le domaine de n'importe quelle url
-		var a = document.createElement('a');
-		a.href = arr.url;
-		var hostname = a.hostname;
-
-		faviconXHR("http://favicongrabber.com/api/grab/" + hostname).then((icon) => {
-
-			var img = elem.querySelector("img");
-			var icn = filterIcon(icon);
-			img.src = icn;
-
-			links[index].icon = icn;
-			chrome.storage.sync.set({"links": links});
-		})
-	}
-
-	function linkSubmission() {
-
-		function filterUrl(str) {
-
-			let reg = new RegExp("^(http|https)://", "i");
-
-			//config ne marche pas
-			if (str.startsWith("about:") || str.startsWith("chrome://"))
-				return false
-
-			if (str.startsWith("file://"))
-				return str
-
-			//premier regex pour savoir si c'est http
-			if (!str.match(reg))
-				str = "http://" + str
-
-			//deuxieme pour savoir si il est valide (avec http)
-			if (str.match(reg))
-				return str.match(reg).input;
-			else
-				return false;
-		}
-
-		function saveLink(lll) {
-
-			slow(id("i_url"));
-
-			//remet a zero les inputs
-			id("i_title").value = "";
-			id("i_url").value = "";
-
-			let full = false;
-
-			chrome.storage.sync.get(["links", "searchbar"], (data) => {
-
-				let arr = [];
-
-				//array est tout les links + le nouveau
-				if (data.links && data.links.length > 0) {
-
-					if (data.links.length < 16 - 1) {
-
-						arr = data.links;
-						arr.push(lll);
-
-					} else {
-						full = true;
-					}
-
-				//array est seulement le link
-				} else {
-					arr.push(lll);
-					domlinkblocks.style.visibility = "visible";
-				}
-
-				//si les blocks sont moins que 16
-				if (!full) {
-					chrome.storage.sync.set({"links": arr});
-					appendblock(lll, arr.length - 1, arr);
-				} else {
-
-					//desactive tout les input url
-					id("i_url").setAttribute("disabled", "disabled");
-				}
-			});
-		}
-
-		titleControl = t => (t.length > 42 ? t.slice(0, 42) + "..." : t);
-
-		//append avec le titre, l'url ET l'index du bloc
-
-		let links = {
-			title: titleControl(id("i_title").value),
-			url: filterUrl(id("i_url").value),
-			icon: ""
-		}
-
-		//si l'url filtré est juste
-		if (links.url && id("i_url").value.length > 2) {
-
-			//et l'input n'a pas été activé ya -1s
-			if (!stillActive) saveLink(links);
 		}
 	}
 
 	function openlink(that, e) {
+		const source = that.children[0].getAttribute('source')
+		const a_hiddenlink = id('hiddenlink')
 
-		const source = that.children[0].getAttribute("source");
-		const a_hiddenlink = id("hiddenlink");
-
-		chrome.storage.sync.get("linknewtab", (data) => {
-
+		chrome.storage.sync.get('linknewtab', (data) => {
 			if (data.linknewtab) {
-
 				chrome.tabs.create({
-					url: source
-				});
-
+					url: source,
+				})
 			} else {
-
 				if (e.which === 2) {
-
 					chrome.tabs.create({
-						url: source
-					});
-
+						url: source,
+					})
 				} else {
-
-					a_hiddenlink.setAttribute("href", source);
-					a_hiddenlink.setAttribute("target", "_self");
-					a_hiddenlink.click();
+					a_hiddenlink.setAttribute('href', source)
+					a_hiddenlink.setAttribute('target', '_self')
+					a_hiddenlink.click()
 				}
 			}
-		});
+		})
 	}
 
-	//TOUT LES EVENTS, else init
+	function findindex(that) {
+		//passe la liste des blocks, s'arrete si that correspond
+		//renvoie le nombre de loop pour l'atteindre
 
-	if (event === "input" && that.which === 13) linkSubmission();
+		const list = domlinkblocks.children
 
-	else if (event === "button") linkSubmission();
-
-	else if (event === "linknewtab") {
-		chrome.storage.sync.set({"linknewtab": (that.checked ? true : false)});
-		id("hiddenlink").setAttribute("target", "_blank");
+		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
 	}
-	else {
-		initblocks(initStorage);
-		editEvents();
+
+	function removeblock(index) {
+		chrome.storage.sync.get('links', (data) => {
+			// Remove alias from storage
+			if (data.links[index].icon.startsWith('alias:')) {
+				chrome.storage.local.remove(data.links[index].icon)
+			}
+
+			data.links.splice(index, 1)
+
+			//enleve le html du block
+			var block_parent = domlinkblocks.children[index + 1]
+			block_parent.setAttribute('class', 'block_parent removed')
+
+			setTimeout(function () {
+				domlinkblocks.removeChild(block_parent)
+
+				//enleve linkblocks si il n'y a plus de links
+				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
+			}, 200)
+
+			chrome.storage.sync.set({ links: data.links })
+		})
+	}
+
+	function linkSubmission() {
+		//
+
+		function saveLink(filteredLink) {
+			//remet a zero les inputs
+			id('i_title').value = ''
+			id('i_url').value = ''
+
+			chrome.storage.sync.get('links', (data) => {
+				const links = data.links || []
+				const index = links.length
+
+				if (links) {
+					links.push(filteredLink)
+					domlinkblocks.style.visibility = 'visible'
+				}
+
+				if (links.length === 20) linksInputDisable(true)
+
+				const lIcon = appendblock(filteredLink, index, links)
+				addIcon(lIcon, links, index, true)
+			})
+		}
+
+		function filterUrl(str) {
+			//
+			const to = (scheme) => str.startsWith(scheme)
+			const acceptableSchemes = to('http://') || to('https://')
+			const unacceptable = to('about:') || to('chrome://')
+
+			return acceptableSchemes ? str : unacceptable ? false : 'https://' + str
+		}
+
+		let links = {
+			title: stringMaxSize(id('i_title').value, 32),
+			url: stringMaxSize(filterUrl(id('i_url').value), 256),
+			icon: 'src/assets/interface/loading.gif',
+		}
+
+		//si l'url filtré est juste
+		if (links.url && id('i_url').value.length > 2) {
+			//et l'input n'a pas été activé ya -1s
+			if (!stillActive) saveLink(links)
+		}
+	}
+
+	function linksInputDisable(isMax, settingsDom) {
+		const getDoms = (name) => (settingsDom ? settingsDom.querySelector('#' + name) : id(name))
+		const doms = ['i_title', 'i_url', 'submitlink']
+
+		if (isMax) doms.forEach((elem) => getDoms(elem).setAttribute('disabled', ''))
+		else doms.forEach((elem) => getDoms(elem).removeAttribute('disabled'))
+
+		clas(getDoms(doms[2]), isMax, 'max')
+	}
+
+	switch (event) {
+		case 'input':
+		case 'button':
+			linkSubmission()
+			break
+
+		// that est settingsDom ici
+		case 'maxControl':
+			linksInputDisable(true, that)
+
+		case 'linknewtab': {
+			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
+			id('hiddenlink').setAttribute('target', '_blank')
+			break
+		}
+	}
+
+	if (initStorage) {
+		initblocks(initStorage.links || [])
+
+		// No need to activate edit events asap
+		setTimeout(() => {
+			id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
+			editEvents()
+		}, 100)
 	}
 }
 
-function weather(event, that, initStorage) {
+function linksrow(data, event) {
+	function setRows(val) {
+		domlinkblocks.style.width = `${val * 7}em`
+	}
 
-	const dom_temp_max = id("temp_max"),
-		dom_temp_max_wrap = id("temp_max_wrap"),
-		dom_first_desc = id("weather_desc").children[0]
+	if (data !== undefined) setRows(data)
+
+	if (event) {
+		setRows(event)
+		slowRange({ linksrow: parseInt(event) })
+	}
+}
+
+function weather(event, that, init) {
+	let weatherToSave = {}
+	const date = new Date()
+	const i_city = id('i_city')
+	const i_ccode = id('i_ccode')
+	const sett_city = id('sett_city')
+	const current = id('current')
+	const forecast = id('forecast')
+	const widget = id('widget')
+	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
+	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
+	const WEATHER_API_KEY = [
+		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
+		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
+		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
+	]
+
+	function initWeather(param) {
+		navigator.geolocation.getCurrentPosition(
+			(pos) => {
+				//update le parametre de location
+				param.location.push(pos.coords.latitude, pos.coords.longitude)
+				request(param, false)
+				request(param, true)
+			},
+			(refused) => {
+				request(param, true)
+				request(param, false)
+			}
+		)
+	}
+
+	function request(storage, forecast) {
+		function saveCurrent(response) {
+			//
+			const isImperial = storage.unit === 'imperial'
+
+			weatherToSave = {
+				...weatherToSave,
+				lastCall: Math.floor(new Date().getTime() / 1000),
+				lastState: {
+					feels_like: Math.round(isImperial ? toFarenheit(response.main.feels_like) : response.main.feels_like),
+					temp_max: Math.round(isImperial ? toFarenheit(response.main.temp_max) : response.main.temp_max),
+					sunrise: response.sys.sunrise,
+					sunset: response.sys.sunset,
+					description: response.weather[0].description,
+					icon_id: response.weather[0].id,
+				},
+			}
+
+			chrome.storage.sync.set({ weather: weatherToSave })
+			displaysCurrent(weatherToSave)
+		}
+
+		function saveForecast(response) {
+			//
+
+			const thisdate = new Date()
+			const todayHour = thisdate.getHours()
+			let forecastDay = thisdate.getDate()
+			let maxTempFromList = -273.15
+
+			// Late evening forecast for tomorrow
+			if (todayHour > 18) {
+				const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
+				forecastDay = new Date(tomorrow).getDate()
+			}
+
+			// Get the highest temp for the specified day
+			response.list.forEach((elem) => {
+				if (new Date(elem.dt * 1000).getDate() === forecastDay)
+					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
+			})
+
+			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(maxTempFromList) : maxTempFromList)
+
+			chrome.storage.sync.set({ weather: weatherToSave })
+			displaysForecast(weatherToSave)
+		}
+
+		let url = 'https://api.openweathermap.org/data/2.5/'
+		const lang = document.documentElement.getAttribute('lang')
+		const [lat, lon] = storage.location || [0, 0]
+
+		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
+		url += storage.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(storage.city)},${storage.ccode}`
+		url += `&units=metric&lang=${lang}`
+
+		// Inits global object
+		if (Object.keys(weatherToSave).length === 0) {
+			weatherToSave = storage
+		}
+
+		// fetches, parses and apply callback
+		fetch(url).then((data) => {
+			if (data.ok) data.json().then((json) => (forecast ? saveForecast(json) : saveCurrent(json)))
+			else if (i_city) i_city.setAttribute('placeholder', tradThis('City not found'))
+		})
+	}
 
 	function cacheControl(storage) {
+		const now = Math.floor(date.getTime() / 1000)
+		let isCurrentChanging = false
 
-		let now = Math.floor((new Date()).getTime() / 1000);
-		let param = (storage.weather ? storage.weather : "");
+		if (typeof storage.lastCall === 'number') {
+			//
+			// Current: 30 mins
+			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
+				isCurrentChanging = true
+				sessionStorage.removeItem('lang')
+				request(storage, false)
+			} else displaysCurrent(storage)
 
-		if (storage.weather && storage.weather.lastCall) {
-
-
-			//si weather est vieux d'une demi heure (1800s)
-			//ou si on change de lang
-			//faire une requete et update le lastcall
-			if (sessionStorage.lang || now > storage.weather.lastCall + 1800) {
-
-				dataHandling(param.lastState);
-				request(param, "current");
-
-				//si la langue a été changé, suppr
-				if (sessionStorage.lang) sessionStorage.removeItem("lang");
-
-			} else
-				dataHandling(param.lastState);
-
-
-			//high ici
-			if (storage.weather && storage.weather.fcDay === (new Date).getDay()) {
-
-				dom_temp_max.innerText = storage.weather.fcHigh + "°"
-				dom_temp_max_wrap.style.opacity = 1
-
-			} else
-				request(storage.weather, "forecast");
-
-
-		} else {
-
-			//initialise a Paris + Metric
-			//c'est le premier call, requete + lastCall = now
-			initWeather();
+			// Forecast: follows current
+			if (navigator.onLine && isCurrentChanging) {
+				request(storage, true)
+			} else displaysForecast(storage)
 		}
+
+		// First startup
+		else initWeather(storage)
 	}
 
-	function initWeather() {
+	function displaysCurrent(weather) {
+		let filename = 'clearsky'
 
-		let param = {
-			city: "Paris",
-			ccode: "FR",
-			location: false,
-			unit: "metric"
-		};
+		// Openweathermap is weird, not me ok
+		// prettier-ignore
+		switch (weather.lastState.icon_id) {
+			case 200: case 201: case 202: case 210:
+			case 211: case 212: case 221: case 230:
+			case 231: case 232:
+				filename = 'thunderstorm'
+				break
 
-		navigator.geolocation.getCurrentPosition((pos) => {
+			case 300: case 301: case 302: case 310:
+				filename = 'lightdrizzle'
+				break
 
-			param.location = [];
+			case 312: case 313: case 314: case 321:
+				filename = 'showerdrizzle'
+				break
 
-			//update le parametre de location
-			param.location.push(pos.coords.latitude, pos.coords.longitude);
-			chrome.storage.sync.set({"weather": param});
+			case 500: case 501: case 502: case 503:
+				filename = 'lightrain'
+				break
 
-			request(param, "current");
-			request(param, "forecast");
+			case 504: case 520: case 521: case 522:
+			case 531:
+				filename = 'showerrain'
+				break
 
-		}, (refused) => {
+			case 511: case 600: case 601: case 602:
+			case 611: case 612: case 613: case 615:
+			case 616: case 620: case 621: case 622:
+				filename = 'snow'
+				break
 
-			param.location = false;
+			case 701: case 711: case 721: case 731:
+			case 741: case 751: case 761: case 762:
+			case 771: case 781:
+				filename = 'mist'
+				break
+			
+			case 800:
+				filename = 'clearsky'
+				break
 
-			chrome.storage.sync.set({"weather": param});
+			case 801:
+				filename = 'fewclouds'
+				break
+		
+			case 802:
+				filename = 'brokenclouds'
+				break
+		
+				case 803: case 804:
+				filename = 'overcastclouds'
+				break
 
-			request(param, "current");
-			request(param, "forecast");
-		});
+			default:
+				filename = 'clearsky'
+				break
+		}
+
+		// Widget icon
+		const widgetIcon = widget.querySelector('img')
+		const { now, rise, set } = sunTime()
+		const timeOfDay = now < rise || now > set ? 'night' : 'day'
+		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+
+		const icon = document.createElement('img')
+		icon.src = iconSrc
+		icon.setAttribute('draggable', 'false')
+
+		!widgetIcon ? widget.prepend(icon) : widgetIcon.setAttribute('src', iconSrc)
+
+		// Description
+		const desc = weather.lastState.description
+		const temp = Math.floor(weather.lastState.feels_like)
+
+		current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tradThis('It is currently')} ${temp}°`
+		widget.querySelector('p').textContent = temp + '°'
+
+		clas(current, false, 'wait')
+		clas(widget, false, 'wait')
+
+		// from 1.2s request anim to .4s hide elem anim
+		setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
 	}
 
-	function request(arg, wCat) {
+	function displaysForecast(weather) {
+		const when = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
 
+		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${when}.`
+		clas(forecast, false, 'wait')
+	}
 
-		function urlControl(arg, forecast) {
+	function updatesWeather() {
+		//
 
-			let url = 'https://api.openweathermap.org/data/2.5/';
-
-
-			if (forecast)
-				url += "forecast?appid=" + atob(WEATHER_API_KEY[0]);
-			else
-				url += "weather?appid=" + atob(WEATHER_API_KEY[1]);
-
-
-			//auto, utilise l'array location [lat, lon]
-			if (arg.location) {
-				url += `&lat=${arg.location[0]}&lon=${arg.location[1]}`;
-			} else {
-				url += `&q=${encodeURI(arg.city)},${arg.ccode}`;
-			}
-
-			url += `&units=${arg.unit}&lang=${langue}`;
-
-			return url;
+		function fetches(weather) {
+			request(weather, false)
+			request(weather, true)
 		}
 
+		slow(that)
 
-		function weatherResponse(parameters, response) {
+		chrome.storage.sync.get('weather', (data) => {
+			switch (event) {
+				case 'units': {
+					data.weather.unit = that.checked ? 'imperial' : 'metric'
 
-			//sauvegarder la derniere meteo
-			let now = Math.floor((new Date()).getTime() / 1000);
-			let param = parameters;
-			param.lastState = response;
-			param.lastCall = now;
-			chrome.storage.sync.set({"weather": param});
+					if (data.weather.lastState) {
+						const { feels_like } = data.weather.lastState
+						data.weather.lastState.feels_like = that.checked ? toFarenheit(feels_like) : toCelsius(feels_like)
+						data.weather.fcHigh = that.checked ? toFarenheit(data.weather.fcHigh) : toCelsius(data.weather.fcHigh)
+					}
 
-			//la réponse est utilisé dans la fonction plus haute
-			dataHandling(response);
-		}
-
-
-		function forecastResponse(parameters, response) {
-
-			function findHighTemps(d) {
-
-				let i = 0;
-				let newDay = new Date(d.list[0].dt_txt).getDay();
-				let currentDay = newDay;
-				let arr = [];
-
-				//compare la date toute les 3h (list[i])
-				//si meme journée, rajouter temp max a la liste
-
-				while (currentDay == newDay && i < 10) {
-
-					newDay = new Date(d.list[i].dt_txt).getDay();
-					arr.push(d.list[i].main.temp_max);
-
-					i += 1;
+					displaysCurrent(data.weather)
+					displaysForecast(data.weather)
+					chrome.storage.sync.set({ weather: data.weather })
+					break
 				}
 
-				let high = Math.floor(Math.max(...arr));
+				case 'city': {
+					if (i_city.value.length < 2) {
+						return false
+					}
 
-				//renvoie high
-				return [high, currentDay];
-			}
+					data.weather.ccode = i_ccode.value
+					data.weather.city = i_city.value
 
-			let fc = findHighTemps(response);
+					fetches(data.weather)
 
-			//sauvegarder la derniere meteo
-			let param = parameters;
-			param.fcHigh = fc[0];
-			param.fcDay = fc[1];
-			chrome.storage.sync.set({"weather": param});
-
-			dom_temp_max.innerText = param.fcHigh + "°";
-			dom_temp_max_wrap.style.opacity = 1;
-		}
-
-		let url = (wCat === "current" ? urlControl(arg, false) : urlControl(arg, true));
-
-		let request_w = new XMLHttpRequest();
-		request_w.open('GET', url, true);
-
-		request_w.onload = function() {
-
-			let resp = JSON.parse(this.response);
-
-			if (request_w.status >= 200 && request_w.status < 400) {
-
-				if (wCat === "current") {
-					weatherResponse(arg, resp);
-				}
-				else if (wCat === "forecast") {
-					forecastResponse(arg, resp);
+					i_city.setAttribute('placeholder', data.weather.city)
+					i_city.value = ''
+					i_city.blur()
+					break
 				}
 
-			} else {
-				submissionError(resp.message);
-			}
-		}
+				case 'geol': {
+					data.weather.location = []
+					clas(sett_city, that.checked, 'hidden')
 
-		request_w.send();
-	}
+					if (that.checked) {
+						that.setAttribute('disabled', '')
 
-	function dataHandling(data) {
+						navigator.geolocation.getCurrentPosition(
+							(pos) => {
+								//update le parametre de location
+								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
+								fetches(data.weather)
+							},
+							(refused) => {
+								//désactive geolocation if refused
+								that.checked = false
+								if (!data.weather.city) initWeather()
+							}
+						)
+					} else {
+						i_city.setAttribute('placeholder', data.weather.city)
+						i_ccode.value = data.weather.ccode
 
-		let hour = (new Date).getHours();
-
-		function getIcon() {
-			//si le soleil est levé, renvoi jour
-			//le renvoie correspond au nom du répertoire des icones jour / nuit
-			function dayOrNight(sunset, sunrise) {
-				let ss = new Date(sunset * 1000);
-				let sr = new Date(sunrise * 1000);
-
-				return (hour > sr.getHours() && hour < ss.getHours() ? "day" : "night")
-			}
-
-			//prend l'id de la météo et renvoie une description
-			//correspond au nom de l'icone (+ .png)
-			function imgId(c) {
-
-				let temp, codes = {
-					"thunderstorm": 200,
-					"lightdrizzle": 300,
-					"showerdrizzle": 302,
-					"lightrain": 500,
-					"showerrain": 502,
-					"snow": 602,
-					"mist": 701,
-					"clearsky": 800,
-					"fewclouds": 801,
-					"brokenclouds": 803
+						data.weather.location = []
+						fetches(data.weather)
+					}
+					break
 				}
-
-				for(let key in codes) {
-
-					if (c >= codes[key]) temp = key;
-				}
-
-				return temp || "clearsky";
 			}
-
-			let d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
-			let weather_id = imgId(data.weather[0].id);
-	 		let icon_src = `src/images/weather/${d_n}/${weather_id}.png`;
-	 		id("widget").setAttribute("src", icon_src);
-	 		id("widget").setAttribute("class", "shown");
-		}
-
-		function getDescription() {
-
-			//pour la description et temperature
-			//Rajoute une majuscule à la description
-			let meteoStr = data.weather[0].description;
-			meteoStr = meteoStr[0].toUpperCase() + meteoStr.slice(1);
-			id("desc").innerText = meteoStr + ".";
-
-
-			//si c'est l'après midi (apres 12h), on enleve la partie temp max
-			let dtemp, wtemp;
-
-			if (hour < 12) {
-
-				//temp de desc et temp de widget sont pareil
-				dtemp = wtemp = Math.floor(data.main.temp) + "°";
-
-			} else {
-
-				//temp de desc devient temp de widget + un point
-				//on vide la catégorie temp max
-				wtemp = Math.floor(data.main.temp) + "°";
-				dtemp = wtemp + ".";
-			}
-
-			id("temp").innerText = dtemp
-			id("widget_temp").innerText = wtemp
-			dom_first_desc.style.opacity = 1
-		}
-
-		getDescription();
-		getIcon();
+		})
 	}
 
-	function submissionError(error) {
+	// Event & Init
+	if (event) updatesWeather()
+	else cacheControl(init)
 
-		const city = id("i_city")
+	// Detect forecast display before it fetches
+	const isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
+	clas(forecast, isTimeForForecast, 'shown')
 
-		city.value = ""
-		city.setAttribute("placeholder", tradThis("City not found"))
-	}
-
-
-	function updateCity() {
-
-		slow(that);
-
-		chrome.storage.sync.get(["weather"], (data) => {
-
-			const param = data.weather;
-
-			param.ccode = i_ccode.value;
-			param.city = i_city.value;
-
-			if (param.city.length < 2) return false;
-
-			request(param, "current");
-			request(param, "forecast");
-
-			i_city.setAttribute("placeholder", param.city);
-			i_city.value = "";
-			i_city.blur();
-
-			chrome.storage.sync.set({"weather": param});
-		});
-	}
-
-	function updateUnit(that) {
-
-		slow(that);
-
-		chrome.storage.sync.get(["weather"], (data) => {
-
-			const param = data.weather;
-
-			if (that.checked) {
-				param.unit = "imperial";
-			} else {
-				param.unit = "metric";
-			}
-
-			request(param, "current");
-			request(param, "forecast");
-
-			chrome.storage.sync.set({"weather": param});
-		});
-	}
-
-	function updateLocation(that) {
-
-		slow(that);
-
-		chrome.storage.sync.get(["weather"], (data) => {
-
-			const param = data.weather;
-			param.location = [];
-
-			if (that.checked) {
-
-				that.setAttribute("disabled", "");
-
-				navigator.geolocation.getCurrentPosition((pos) => {
-
-					//update le parametre de location
-					param.location.push(pos.coords.latitude, pos.coords.longitude);
-					chrome.storage.sync.set({"weather": param});
-
-					//request la meteo
-					request(param, "current");
-					request(param, "forecast");
-
-					//update le setting
-					clas(sett_city, "city hidden");
-					that.removeAttribute("disabled");
-
-				}, (refused) => {
-
-					//désactive geolocation if refused
-					that.checked = false
-					that.removeAttribute("disabled");
-
-					if (!param.city) initWeather();
-				});
-
-			} else {
-
-				clas(sett_city, "city");
-
-				i_city.setAttribute("placeholder", param.city);
-				i_ccode.value = param.ccode;
-
-				param.location = false;
-				chrome.storage.sync.set({"weather": param});
-
-				request(param, "current");
-				request(param, "forecast");
-			}
-		});
-	}
-
-	const WEATHER_API_KEY = [
-	"YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=",
-	"Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=",
-	"N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk="];
-	const i_city = id("i_city");
-	const i_ccode = id("i_ccode");
-	const sett_city = id("sett_city");
-
-	//TOUT LES EVENTS, default c'est init
-	switch(event) {
-
-		case "city":
-			updateCity();
-			break;
-
-		case "units":
-			updateUnit(that);
-			break;
-
-		case "geol":
-			updateLocation(that);
-			break;
-
-		default:
-			cacheControl(initStorage);
-	}
+	// Checks every 5 minutes if weather needs update
+	setTimeout(() => {
+		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => cacheControl(data.weather)) : ''
+	}, 5 * 60 * 1000)
 }
 
-function imgCredits(src, type) {
+function initBackground(data) {
+	const type = data.background_type || 'dynamic'
 
-	const location = id("location"),
-		artist = id("artist"),
-		credit = id("credit"),
-		onUnsplash = id("onUnsplash");
+	if (type === 'custom') {
+		chrome.storage.local.get(null, (datalocal) => {
+			const customList = datalocal.custom || []
 
-	if (type === "dynamic") {
-		clas(onUnsplash, "shown");
-		location.innerText = src.location.text;
-		location.setAttribute("href", src.location.url);
-		artist.innerText = src.artist.text;
-		artist.setAttribute("href", src.artist.url);
-	}
-
-	if (type === "custom") clas(credit, "hidden");
-	else clas(credit, "shown");
-}
-
-function imgBackground(val) {
-
-	if (val) {
-		let img = new Image;
-
-		img.onload = () => {
-			id("background").style.backgroundImage = `url(${val})`;
-			id("background_overlay").style.animation =  "fade .1s ease-in forwards";
-		}
-
-		img.src = val;
-		img.remove();
-
-	}
-	else return id("background").style.backgroundImage;
-}
-
-function initBackground(storage) {
-
-	function loadCustom({custom, customIndex}) {
-
-		const index = (customIndex >= 0 ? customIndex : 0)
-		const chosen = custom[index]
-		const cleanData = chosen.slice(chosen.indexOf(",") + 1, chosen.length)
-
-		imgBackground(b64toBlobUrl(cleanData));
-		changeImgIndex(customIndex);
-	}
-
-	let type = storage.background_type || "dynamic";
-
-	if (type === "custom") {
-
-		//reste local !!!!
-		chrome.storage.local.get(null, (data) => {
-
-			//1.8.3 -> 1.9 data transfer
-			if (data.background_blob) {
-
-				const blob = data.background_blob
-				const old = [blob[0] + "," + blob[1]]
-
-				loadCustom({
-					custom: old,
-					customIndex: 0
+			if (customList.length > 0) {
+				localBackgrounds({
+					local: datalocal,
+					every: data.custom_every,
+					time: data.custom_time,
 				})
-
-				chrome.storage.local.set({custom: old})
-				chrome.storage.local.set({customIndex: 0})
-				chrome.storage.local.set({customThumbnails: old})
-
-				chrome.storage.local.remove("background_blob")
-			}
-
-			//if no custom background available
-			//choose dynamic
-			else if (!data.custom || data.custom.length === 0) {
-
-				unsplash(storage.dynamic)
-				chrome.storage.sync.set({background_type: "dynamic"})
-
-			//apply chosen custom background
 			} else {
-				loadCustom(data)
+				// If no custom, change to dynamic
+				unsplash(data)
+				chrome.storage.sync.set({ background_type: 'dynamic' })
 			}
 		})
 
-		imgCredits(null, type);
-	}
-	else if (type === "dynamic" || type === "default")
-		unsplash(storage.dynamic)
+		// Not Custom, load dynamic
+	} else unsplash(data)
 
-	else
-		unsplash(null, null, true); //on startup
+	const blur = data.background_blur !== undefined ? data.background_blur : 15
+	const bright = data.background_bright !== undefined ? data.background_bright : 0.8
 
-
-	let blur = (Number.isInteger(storage.background_blur) ? storage.background_blur : 15);
-	let bright = (!isNaN(storage.background_bright) ? storage.background_bright : .7);
-
-	filter("init", [blur, bright]);
+	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
 
-function setblob(donnee, reader) {
-
-	const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
-		const byteCharacters = atob(b64Data);
-		const byteArrays = [];
-
-		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-			const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-			const byteNumbers = new Array(slice.length);
-			for (let i = 0; i < slice.length; i++) {
-				byteNumbers[i] = slice.charCodeAt(i);
-			}
-
-			const byteArray = new Uint8Array(byteNumbers);
-			byteArrays.push(byteArray);
-		}
-
-		const blob = new Blob(byteArrays, {type: contentType});
-		return blob;
-	}
-
-	//découpe les données du file en [contentType, base64data]
-	let base = (reader ? donnee.split(",") : donnee);
-	let contentType = base[0].replace("data:", "").replace(";base64", "");
-	let b64Data = base[1];
-
-	//creer le blob et trouve l'url
-	let blob = b64toBlob(b64Data, contentType);
-	let blobUrl = URL.createObjectURL(blob);
-
-	return (reader ? [base, blobUrl] : blobUrl);
-}
-
-let fullImage = []
-let fullThumbnails = []
-const domimg = id('background')
-const domthumbnail = document.getElementsByClassName('thumbnail')
-
-function b64toBlobUrl(a, b = "", c = 512) {
-    const d = atob(a),
-        e = [];
-    for (let f = 0; f < d.length; f += c) {
-        const a = d.slice(f, f + c),
-            b = Array(a.length);
-        for (let c = 0; c < a.length; c++) b[c] = a.charCodeAt(c);
-        const g = new Uint8Array(b);
-        e.push(g)
-    }
-    const f = new Blob(e, {
-            type: b
-        }),
-        g = URL.createObjectURL(f);
-    return g
-}
-
-function changeImgIndex(i) {domimg.setAttribute("index", i)}
-
-function renderImage(file, is) {
-
-	let reader = new FileReader();
-	reader.onload = function(event) {
-
-		let result = event.target.result;
-
-		if (is === "change") {
-
-			fullImage.push(result);
-			chrome.storage.local.set({custom: fullImage});
-
-			compress(result, "thumbnail");
-			compress(result, "new");
-		}
-	}
-
-	reader.readAsDataURL(file);
-}
-
-function compress(e, state) {
-	//prend l'image complete en arg
-
-	const img = new Image();
+function imgBackground(val, loadTime) {
+	let img = new Image()
 
 	img.onload = () => {
+		if (loadTime) {
+			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
+			const changeDuration = (time) => (domoverlay.style.transition = `transform .4s, opacity ${time}ms`)
 
-		//const size = document.getElementById('range').value;
-		const elem = document.createElement('canvas');
-		const ctx = elem.getContext('2d');
-
-		//canvas proportionné à l'image
-
-		//rétréci suivant le taux de compression
-		//si thumbnail, toujours 100px
-		const height = (state === "thumbnail" ? 100 : img.height * 1);//parseFloat(size));
-		const scaleFactor = height / img.height;
-		elem.width = img.width * scaleFactor;
-		elem.height = height;
-
-		//dessine l'image proportionné
-		ctx.drawImage(img, 0, 0, img.width * scaleFactor, height);
-
-		//renvoie le base64
-		const data = ctx.canvas.toDataURL(img);
-		const cleanData = data.slice(data.indexOf(",") + 1, data.length) //used for blob
-
-		console.log(cleanData)
-
-		if (state === "thumbnail") {
-
-			//controle les thumbnails
-			addThumbnails(cleanData, fullImage.length - 1);
-
-			fullThumbnails.push(cleanData)
-			chrome.storage.local.set({customThumbnails: fullThumbnails})
-
-		} else {
-
-			//new image loaded from filereader sets image index
-			if (state === "new") {
-				changeImgIndex(fullImage.length - 1);
-				//save l'index
-				chrome.storage.local.set({customIndex: fullImage.length - 1});
-			}
-
-			//affiche l'image
-			imgBackground(b64toBlobUrl(cleanData));
+			changeDuration(animDuration)
+			setTimeout(() => changeDuration(400), animDuration)
 		}
+
+		domoverlay.style.opacity = `1`
+		id('background').style.backgroundImage = `url(${val})`
 	}
 
-	img.src = e;
+	img.src = val
+	img.remove()
 }
 
-function addThumbnails(data, index) {
+function freqControl(state, every, last) {
+	const nowDate = new Date()
 
-	//créer une tag html en plus + remove button
+	// instead of adding unix time to the last date
+	// look if day & hour has changed
+	// because we still cannot time travel
+	// changes can only go forward
 
-	const div = document.createElement('div');
-	const i = document.createElement('img');
-	const rem = document.createElement('button');
-	const wrap = document.getElementById('bg_tn_wrap');
-	const upload = document.getElementById('i_bgfile');
+	switch (state) {
+		case 'set':
+			return nowDate.getTime()
 
-	div.setAttribute("index", index);
-	div.setAttribute("class", "thumbnail");
-	rem.setAttribute("class", "hidden");
-	rem.innerText = "✕";
-	i.src = b64toBlobUrl(data);
+		case 'get': {
+			const lastDate = new Date(last),
+				changed = {
+					date: nowDate.getDate() !== lastDate.getDate(),
+					hour: nowDate.getHours() !== lastDate.getHours(),
+				}
 
-	div.appendChild(i);
-	div.appendChild(rem);
-	wrap.append(div)//, wrap.children[0]);
+			switch (every) {
+				case 'day': {
+					if (changed.date) return true
+					break
+				}
 
-	//events
-	const getParentIndex = that => parseInt(that.parentElement.getAttribute("index"));
-	const getIndex = that => parseInt(that.getAttribute("index"));
-	const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute("class", (show ? "shown" : "hidden"));
+				case 'hour': {
+					if (changed.date || changed.hour) return true
+					break
+				}
 
+				case 'tabs':
+					return true
 
-	//displays / hides remove button
-	div.onmouseenter = function() {
-		removeControl(true, getIndex(this));
-	}
-	div.onmouseleave = function() {
-		removeControl(false, getIndex(this));
-	}
-
-	//6
-	i.onmouseup = function() {
-
-		//affiche l'image voulu
-		//lui injecte le bon index
-
-		const index = getParentIndex(this);
-
-		compress(fullImage[index]);
-		changeImgIndex(index);
-		chrome.storage.local.set({customIndex: index});
-	}
-
-	//7
-	rem.onmouseup = function() {
-
-		const index = getParentIndex(this);
-		let currentIndex = id('background').getAttribute("index");
-
-		//removes thumbnail
-		domthumbnail[index].remove();
-
-		//rewrite all thumbs indexes
-		for (let i = 0; i < domthumbnail.length; i++) {
-			domthumbnail[i].setAttribute("index", i);
+				case 'pause':
+					return false
+			}
 		}
-
-		//deletes thumbnail from storage
-		//concat  [0, index] à [index + 1, fin]
-		const deleteArrItem = arr => arr.slice(null, index).concat(arr.slice(index +1))
-
-		fullImage = deleteArrItem(fullImage)
-		chrome.storage.local.set({custom: fullImage})
-
-		fullThumbnails = deleteArrItem(fullThumbnails)
-		chrome.storage.local.set({customThumbnails: fullThumbnails})
-
-		//celui a suppr plus petit que l'actuel, baisse son index
-		if (index <= currentIndex) chrome.storage.local.set({customIndex: currentIndex - 1});
 	}
 }
 
-function unsplash(data, event, startup) {
+function localBackgrounds(init, event) {
+	function applyCustomBackground(backgrounds, index) {
+		const background = backgrounds[index]
 
-	//on startup nothing is displayed
-	const loadbackground = url => (startup ? noDisplayImgLoad(url) : imgBackground(url));
-
-	function noDisplayImgLoad(val, callback) {
-		let img = new Image;
-
-		img.onload = callback;
-		img.src = val;
-		img.remove();
-	}
-
-	function freqControl(state, every, last) {
-
-		const d = new Date;
-		if (state === "set") return (every === "tabs" ? 0 : d.getTime());
-
-		if (state === "get") {
-
-			let calcLast = 0;
-			let today = d.getTime();
-
-			if (every === "hour") calcLast = last + 3600 * 1000;
-			else if (every === "day") calcLast = last + 86400 * 1000;
-			else if (every === "pause") calcLast = 10**13 - 1; //le jour de la fin du monde lmao
-
-			//retourne le today superieur au calculated last
-			return (today > calcLast);
+		if (background) {
+			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+			b64toBlobUrl(cleanData, (bloburl) => {
+				imgBackground(bloburl)
+				changeImgIndex(index)
+			})
 		}
 	}
 
-	function cacheControl(d) {
-
-		//as t on besoin d'une nouvelle image ?
-		let needNewImage = freqControl("get", d.every, d.time);
-		if (needNewImage) {
-
-			//sauvegarde le nouveau temps
-			d.time = freqControl("set", d.every);
-
-			//si next n'existe pas, init
-			if (d.next.url === "") {
-
-				req("current", d, true);
-
-			//sinon prendre l'image preloaded (next)
-			} else {
-
-				loadbackground(d.next.url);
-				credit(d.next);
-				req("current", d, false);
-			}
-
-		//pas besoin d'image, simplement current
-		} else {
-			loadbackground(d.current.url);
-			credit(d.current);
-		}
+	function preventFromShowingTwice(index, max) {
+		const res = Math.floor(Math.random() * max)
+		return res === index ? (res + 1) % max : res
 	}
 
-	function req(which, d, init) {
+	function b64toBlobUrl(b64Data, callback) {
+		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
+			res.blob().then((blob) => callback(URL.createObjectURL(blob)))
+		})
+	}
 
-		function dayCollections() {
-			const h = (new Date()).getHours()
-			if (h > 10 && h < 18) return "4933370" 		//day
-			else if (h > 7 && h < 21) return "9489922" 	//evening-noon
-			else return "9489906"						//night
-		}
+	function changeImgIndex(i) {
+		domimg.setAttribute('index', i)
+	}
 
-		obf = n => (n===0?atob("aHR0cHM6Ly9hcGkudW5zcGxhc2guY29tL3Bob3Rvcy9yYW5kb20/Y29sbGVjdGlvbnM9"):atob("MzY4NmMxMjIyMWQyOWNhOGY3OTQ3Yzk0NTQyMDI1ZDc2MGE4ZTBkNDkwMDdlYzcwZmEyYzRiOWY5ZDM3N2IxZA=="));
-		let xhr = new XMLHttpRequest();
-		xhr.open('GET', obf(0) + dayCollections(), true);
-		xhr.setRequestHeader('Authorization',`Client-ID ${obf(1)}`);
+	function addNewImage(file) {
+		let reader = new FileReader()
+		reader.onload = function (event) {
+			const result = event.target.result
 
-		xhr.onload = function() {
+			compress(result, 'thumbnail')
+			compress(result)
 
-			let resp = JSON.parse(this.response);
+			chrome.storage.local.get(['custom'], (data) => {
+				const custom = data.custom ? data.custom : []
+				const bumpedindex = custom.length
 
-			if (xhr.status >= 200 && xhr.status < 400) {
+				custom.push(result)
 
-				let screenWidth = window.devicePixelRatio * screen.width;
+				changeImgIndex(bumpedindex)
+				chrome.storage.local.set({ customIndex: bumpedindex })
+				chrome.storage.local.set({ custom: custom })
 
-				resp = {
-					url: resp.urls.raw +`&w=${screenWidth}&fm=jpg&q=70`,
-					link: resp.links.html,
-					username: resp.user.username,
-					name: resp.user.name,
-					city: resp.location.city,
-					country: resp.location.country
+				if (custom.length === 1) {
+					chrome.storage.sync.get('background_type', (data) => {
+						if (data.background_type === 'dynamic') chrome.storage.sync.set({ background_type: 'custom' })
+					})
 				}
+			})
+		}
+		domoverlay.style.opacity = '0'
+		reader.readAsDataURL(file)
+	}
 
-				if (init) {
+	function compress(e, state) {
+		//
+		// Hides previous bg and credits
+		if (state !== 'thumbnail') {
+			domoverlay.style.opacity = `0`
+			clas(domcredit, false, 'shown')
+			setTimeout(() => (domcredit.style.display = 'none'), BonjourrAnimTime)
+		}
 
-					//si init, fait 2 req (current, next) et save sur la 2e
-					if (which === "current") {
-						d.current = resp;
-						loadbackground(d.current.url);
-						credit(d.current);
-						req("next", d, true);
-					}
-					else if (which === "next") {
-						d.next = resp;
-						chrome.storage.sync.set({"dynamic": d});
-					}
+		const compressStart = performance.now()
+		const img = new Image()
 
-				//si next existe, current devient next et next devient la requete
-				//preload la prochaine image (sans l'afficher)
-				} else {
+		img.onload = () => {
+			const elem = document.createElement('canvas')
+			const ctx = elem.getContext('2d')
 
-					noDisplayImgLoad(resp.url, () => {
-						d.current = d.next;
-						d.next = resp;
-						chrome.storage.sync.set({"dynamic": d});
-						//console.log("loaded")
-					});
+			//canvas proportionné à l'image
 
+			//rétréci suivant le taux de compression
+			//si thumbnail, toujours 150px
+			const height = state === 'thumbnail' ? 150 : img.height * 1
+			const scaleFactor = height / img.height
+			elem.width = img.width * scaleFactor
+			elem.height = height
+
+			//dessine l'image proportionné
+			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height)
+
+			//renvoie le base64
+			const data = ctx.canvas.toDataURL(img)
+			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
+
+			if (state === 'thumbnail') {
+				chrome.storage.local.get('customThumbnails', (data) => {
+					const thumbs = data.customThumbnails || []
+
+					thumbs.push(cleanData)
+					chrome.storage.local.set({ customThumbnails: thumbs })
+					addThumbnails(cleanData, thumbs.length - 1)
+				})
+			} else
+				b64toBlobUrl(cleanData, (bloburl) => {
+					const compressTime = performance.now() - compressStart
+					setTimeout(() => imgBackground(bloburl, compressTime), 400 - compressTime)
+				})
+		}
+
+		img.src = e
+	}
+
+	function addThumbnails(data, index, settingsDom) {
+		//créer une tag html en plus + remove button
+
+		const settings = settingsDom ? settingsDom : id('settings')
+
+		const div = document.createElement('div')
+		const i = document.createElement('img')
+		const rem = document.createElement('button')
+		const wrap = settings.querySelector('#bg_tn_wrap')
+		const file = settings.querySelector('#fileContainer')
+
+		div.setAttribute('index', index)
+		div.setAttribute('class', 'thumbnail')
+		if (!mobilecheck) rem.setAttribute('class', 'hidden')
+		rem.textContent = '✕'
+		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
+
+		div.appendChild(i)
+		div.appendChild(rem)
+		wrap.insertBefore(div, file)
+
+		//events
+		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
+		const getIndex = (that) => parseInt(that.getAttribute('index'))
+		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
+
+		//displays / hides remove button on desktop
+		if (!mobilecheck) {
+			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
+			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
+		}
+
+		i.onmouseup = (e) => {
+			if (e.button === 0) {
+				//affiche l'image voulu
+				//lui injecte le bon index
+				const index = getParentIndex(e.target)
+				const appliedIndex = parseInt(id('background').getAttribute('index'))
+
+				if (index !== appliedIndex) {
+					domoverlay.style.opacity = `0`
+
+					chrome.storage.local.get('custom', (data) => {
+						changeImgIndex(index)
+						chrome.storage.local.set({ customIndex: index })
+						compress(data.custom[index])
+					})
 				}
 			}
 		}
-		xhr.send();
-	}
 
-	function credit(d) {
+		rem.onmouseup = (e) => {
+			if (e.button === 0) {
+				let index = getParentIndex(e.target)
+				let displayedIndex = parseInt(id('background').getAttribute('index'))
 
-		let loc = "";
+				const toRemoveIsDisplayed = displayedIndex === index
+				const thumbnails = [...document.getElementsByClassName('thumbnail')]
 
-		if (d.city !== null && d.country !== null) loc = `${d.city}, ${d.country} - `;
-		else if (d.country !== null) loc = `${d.country} - `;
-		else loc = "Photo - ";
+				//removes thumbnail & rewrite all thumbs indexes
+				thumbnails[index].remove()
+				thumbnails.splice(index, 1)
+				thumbnails.forEach((thumb, i) => thumb.setAttribute('index', i))
 
-		let infos = {
-			location: {
-				text: loc,
-				url: `${d.link}?utm_source=Bonjourr&utm_medium=referral`
-			},
-			artist: {
-				text: d.name,
-				url: `https://unsplash.com/@${d.username}?utm_source=Bonjourr&utm_medium=referral`
+				chrome.storage.local.get(['custom', 'customThumbnails'], (data) => {
+					data.custom.splice(index, 1)
+					data.customThumbnails.splice(index, 1)
+
+					chrome.storage.local.set({ custom: data.custom })
+					chrome.storage.local.set({ customThumbnails: data.customThumbnails })
+
+					// Previous image, if first, stays here
+					index -= index === 0 ? 0 : 1
+
+					// Last image is removed
+					if (data.custom.length === 0) {
+						domoverlay.style.opacity = `0`
+						domcredit.style.display = 'block'
+
+						setTimeout(() => {
+							unsplash(null, { removedCustom: true })
+							clas(domcredit, true, 'shown')
+						}, 400)
+					}
+
+					// Only draw new image if displayed is removed
+					else if (toRemoveIsDisplayed) {
+						changeImgIndex(index)
+						chrome.storage.local.set({ customIndex: index })
+						compress(data.custom[index])
+					}
+				})
 			}
 		}
-
-		if(!startup) imgCredits(infos, "dynamic");
 	}
 
-	if (data && data !== true) cacheControl(data);
+	function displayCustomThumbnails(settingsDom) {
+		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
+
+		chrome.storage.local.get('customThumbnails', (data) => {
+			if (data.customThumbnails) {
+				if (thumbnails.length < data.customThumbnails.length) {
+					data.customThumbnails.forEach((thumb, i) => {
+						//used for blob
+						const blob = thumb.replace('data:image/jpeg;base64,', '')
+						addThumbnails(blob, i, settingsDom)
+					})
+				}
+			}
+		})
+	}
+
+	if (event) {
+		if (event.is === 'thumbnail') displayCustomThumbnails(event.settings)
+		if (event.is === 'newfile') addNewImage(event.file)
+	}
+
+	//init
 	else {
+		// need all of saved stuff
+		const { local, every, time } = init
 
-		chrome.storage.sync.get("dynamic", (storage) => {
+		// Slideshow or not, need index
+		const index = local.customIndex >= 0 ? local.customIndex : 0
+		const customList = local.custom || []
 
-			//si on change la frequence, juste changer la freq
-			if (event) {
-				storage.dynamic.every = event;
-				chrome.storage.sync.set({"dynamic": storage.dynamic});
-				return true;
+		// Slideshow is activated
+		if (every) {
+			const rand = preventFromShowingTwice(index, customList.length)
+			const needNewImage = freqControl('get', every, time || 0)
+
+			if (needNewImage) {
+				applyCustomBackground(customList, rand)
+
+				// Updates time & index
+				chrome.storage.sync.set({ custom_time: freqControl('set') })
+				chrome.storage.local.set({ customIndex: rand })
+				//
+			} else {
+				applyCustomBackground(customList, index)
 			}
 
-			if (storage.dynamic && storage.dynamic !== true) {
-				cacheControl(storage.dynamic)
-			} else {
-				let initDyn = {
-					current: {
-						url: "",
-						link: "",
-						username: "",
-						name: "",
-						city: "",
-						country: ""
-					},
-					next: {
-						url: "",
-						link: "",
-						username: "",
-						name: "",
-						city: "",
-						country: "",
-					},
-					every: "hour",
-					time: 0
+			// No slideshow or no data for it
+		} else {
+			applyCustomBackground(customList, index)
+		}
+	}
+}
+
+function unsplash(init, event) {
+	function noDisplayImgLoad(val, callback) {
+		let img = new Image()
+
+		if (callback) img.onload = callback
+		img.src = val
+		img.remove()
+	}
+
+	function imgCredits(image) {
+		//
+		const country = image.country || 'Photo'
+		const city = image.city ? image.city + ', ' : ''
+
+		const credits = [
+			{
+				text: city + country,
+				url: `${image.link}?utm_source=Bonjourr&utm_medium=referral`,
+			},
+			{
+				text: image.name + ` `,
+				url: `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`,
+			},
+			{
+				text: tradThis('on Unsplash'),
+				url: 'https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral',
+			},
+		]
+
+		id('credit').textContent = ''
+
+		credits.forEach(function cityNameRef(elem, i) {
+			const dom = document.createElement('a')
+			dom.textContent = elem.text
+			dom.href = elem.url
+
+			if (i === 1) id('credit').appendChild(document.createElement('br'))
+			id('credit').appendChild(dom)
+		})
+
+		clas(id('credit'), true, 'shown')
+	}
+
+	function loadBackground(props, loadTime) {
+		imgBackground(props.url, loadTime)
+		imgCredits(props)
+
+		// sets meta theme-color to main background's color
+		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
+	}
+
+	function requestNewList(collection, callback) {
+		const header = new Headers()
+		const collecId = allCollectionIds[collection] || allCollectionIds.day
+		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
+		header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
+		header.append('Accept-Version', 'v1')
+
+		fetch(url, { headers: header }).then((raw) =>
+			raw.json().then((imgArray) => {
+				const filteredList = []
+
+				imgArray.forEach((img) => {
+					filteredList.push({
+						url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
+						link: img.links.html,
+						username: img.user.username,
+						name: img.user.name,
+						city: img.location.city,
+						country: img.location.country,
+						color: img.color,
+					})
+				})
+
+				callback(filteredList)
+			})
+		)
+	}
+
+	function chooseCollection(eventCollection) {
+		//
+		if (eventCollection) {
+			eventCollection = eventCollection.replaceAll(` `, '')
+			allCollectionIds.user = eventCollection
+			return 'user'
+		}
+
+		// Transition day and night with noon & evening collections
+		// if clock is + /- 60 min around sunrise/set
+		const time = sunTime()
+
+		if (time.now >= 0 && time.now <= time.rise - 60) return 'night'
+		else if (time.now <= time.rise + 60) return 'noon'
+		else if (time.now <= time.set - 60) return 'day'
+		else if (time.now <= time.set + 60) return 'evening'
+		else if (time.now >= time.set + 60) return 'night'
+		else return 'day'
+	}
+
+	function collectionControl(dynamic) {
+		const { every, lastCollec, collection } = dynamic
+
+		// Collection control
+		const longEveries = every === 'pause' || every === 'day'
+		const collecId = longEveries ? lastCollec : chooseCollection(collection)
+
+		if (collecId !== lastCollec) {
+			dynamic.lastCollec = collecId
+			chrome.storage.sync.set({ dynamic: dynamic })
+		}
+
+		return collecId
+	}
+
+	function cacheControl(dynamic, caches, collection, preloading) {
+		//
+		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
+		let list = caches[collection]
+
+		// Is trying to preload next
+		if (preloading) {
+			noDisplayImgLoad(list[1].url, () => chrome.storage.local.remove('waitingForPreload'))
+		}
+
+		if (needNewImage && !preloading) {
+			//
+			// Update time
+			dynamic.lastCollec = collection
+			dynamic.time = freqControl('set')
+
+			// Removes previous image from list
+			if (list.length > 1) list.shift()
+
+			// Load new image
+			loadBackground(list[0])
+
+			// If end of cache, get & save new list
+			if (list.length === 1)
+				requestNewList(collection, (newlist) => {
+					caches[collection] = list.concat(newlist)
+					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: caches }))
+				})
+			//
+			// Or preload next
+			else
+				noDisplayImgLoad(list[1].url, () => {
+					chrome.storage.sync.set({ dynamic: dynamic })
+					chrome.storage.local.set({ dynamicCache: caches })
+				})
+		}
+
+		// No need for new, load the same image
+		else loadBackground(list[0])
+	}
+
+	function populateEmptyList(collection, local, dynamic, isEvent) {
+		//
+		if (isEvent) collection = chooseCollection(collection)
+
+		requestNewList(collection, (newlist) => {
+			//
+			//change
+			dynamic.time = freqControl('set')
+			local.dynamicCache[collection] = newlist
+			chrome.storage.sync.set({ dynamic: dynamic })
+
+			const changeStart = performance.now()
+
+			noDisplayImgLoad(newlist[0].url, () => {
+				//
+				loadBackground(newlist[0], performance.now() - changeStart)
+				chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+				chrome.storage.local.set({ waitingForPreload: true })
+
+				//preload
+				noDisplayImgLoad(newlist[1].url, () => chrome.storage.local.remove('waitingForPreload'))
+			})
+		})
+	}
+
+	const initOrEvent = init && init.dynamic ? 'init' : 'event'
+	// collections source: https://unsplash.com/@bonjourr/collections
+	const allCollectionIds = {
+		noon: 'GD4aOSg4yQE',
+		day: 'o8uX55RbBPs',
+		evening: '3M2rKTckZaQ',
+		night: 'bHDh4Ae7O8o',
+		user: '',
+	}
+
+	switch (initOrEvent) {
+		case 'init': {
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function getCache(local) {
+				const { current, next, every } = init.dynamic
+
+				// <1.10.0: next is always old import
+				// current to first background, default to 'day' collection
+				if (next) {
+					init.dynamic.lastCollec = 'day'
+
+					if (current && every === 'pause') {
+						local.dynamicCache.day[0] = init.dynamic.current
+					}
+
+					delete init.dynamic.next
+					delete init.dynamic.current
 				}
 
-				cacheControl(initDyn)
-			}
-		});
+				//
+				//
+				// Real init start
+				const collecId = collectionControl(init.dynamic)
+
+				// If no dynamicCache, create
+				// If list empty: request new, save sync & local
+				// Not empty: normal cacheControl
+				if (local.dynamicCache === undefined) {
+					local.dynamicCache = bonjourrDefaults('local').dynamicCache
+					populateEmptyList(collecId, local, init.dynamic, false)
+				} else if (local.dynamicCache[collecId].length === 0) {
+					populateEmptyList(collecId, local, init.dynamic, false)
+				} else {
+					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
+				}
+			})
+			break
+		}
+
+		case 'event': {
+			chrome.storage.sync.get('dynamic', (data) => {
+				chrome.storage.local.get('dynamicCache', (local) => {
+					//
+
+					switch (Object.keys(event)[0]) {
+						case 'every': {
+							data.dynamic.every = event.every
+							data.dynamic.time = freqControl('set')
+							chrome.storage.sync.set({ dynamic: data.dynamic })
+							break
+						}
+
+						// Back to dynamic and load first from chosen collection
+						case 'removedCustom': {
+							chrome.storage.sync.set({ background_type: 'dynamic' })
+							loadBackground(local.dynamicCache[collectionControl(data.dynamic)][0])
+							break
+						}
+
+						// Always request another set, update last time image change and load background
+						case 'collection': {
+							domoverlay.style.opacity = '0'
+							//
+							// remove user collec
+							if (event.collection === '') {
+								const defaultColl = chooseCollection()
+								local.dynamicCache.user = []
+								data.dynamic.collection = ''
+								data.dynamic.lastCollec = defaultColl
+
+								chrome.storage.sync.set({ dynamic: data.dynamic })
+								chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+
+								unsplash(data)
+							}
+
+							// add new collec
+							else {
+								data.dynamic.collection = event.collection
+								data.dynamic.lastCollec = 'user'
+
+								populateEmptyList(event.collection, local, data.dynamic, true)
+							}
+
+							break
+						}
+					}
+				})
+			})
+
+			break
+		}
 	}
 }
 
 function filter(cat, val) {
-
-	let result = "";
+	let result = ''
 
 	switch (cat) {
+		case 'init':
+			result = `blur(${val[0]}px) brightness(${val[1]})`
+			break
 
-		case "init":
-			result = `blur(${val[0]}px) brightness(${val[1]})`;
-			break;
+		case 'blur':
+			result = `blur(${val}px) brightness(${id('i_bright').value})`
+			break
 
-		case "blur":
-			result = `blur(${val}px) brightness(${id("i_bright").value})`;
-			break;
-
-		case "bright":
-			result = `blur(${id("i_blur").value}px) brightness(${val})`;
-			break;
+		case 'bright':
+			result = `blur(${id('i_blur').value}px) brightness(${val})`
+			break
 	}
 
-	id('background').style.filter = result;
+	id('background').style.filter = result
 }
 
-function darkmode(choice, initStorage) {
+function darkmode(choice, init) {
+	//
+	function apply(val) {
+		//
+		let body
 
-	function apply(state) {
-
-		function auto(wdata) {
-
+		switch (val) {
 			//compare current hour with weather sunset / sunrise
+			case 'auto': {
+				const time = sunTime()
+				body = time.now <= time.rise || time.now > time.set ? 'dark' : ''
+				break
+			}
 
-			const ls = wdata.lastState;
-			const sunrise = new Date(ls.sys.sunrise * 1000).getHours();
-			const sunset = new Date(ls.sys.sunset * 1000).getHours();
-			const hr = (new Date()).getHours();
+			case 'system':
+				body = 'autodark'
+				break
 
-			return (hr < sunrise || hr > sunset ? "dark" : "");
-		}
+			case 'enable':
+				body = 'dark'
+				break
 
-		//uses chromesync data on startup, sessionsStorage on change
-
-		const weather = (initStorage ? initStorage.weather : localEnc(sessionStorage.data, false).weather);
-		let bodyClass;
-
-		//dark mode is defines by the body class
-
-		switch (state) {
-			case "system":
-				bodyClass = "autodark";
-				break;
-
-			case "auto":
-				bodyClass = auto(weather);
-				break;
-
-			case "enable":
-				bodyClass = "dark";
-				break;
+			case 'disable':
+				body = ''
+				break
 
 			default:
-				bodyClass = "";
+				body = 'autodark'
 		}
 
-		document.body.setAttribute("class", bodyClass);
+		document.body.setAttribute('class', body)
+		if (choice) chrome.storage.sync.set({ dark: choice })
 	}
 
-	//apply class, save if event
-	if (choice) {
-		apply(choice, true);
-		chrome.storage.sync.set({"dark": choice});
-	} else {
-		apply(initStorage.dark)
-	}
+	if (choice) chrome.storage.sync.get('weather', (data) => apply(choice, data.weather))
+	else apply(init.dark, init.weather)
 }
 
 function searchbar(event, that, storage) {
-
 	function display(value, init) {
+		id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-		id("sb_container").setAttribute("class", (value ? "shown" : "hidden"));
-
-		id("searchbar").onkeyup = function(e) {
-			if (e.which === 13) window.location = localisation(this.value)
-		}
-
-		if(!init) {
-			chrome.storage.sync.set({"searchbar": value});
-			id("choose_searchengine").setAttribute("class", (value ? "shown" : "hidden"));
-		}
+		if (!init) chrome.storage.sync.set({ searchbar: value })
 	}
 
 	function localisation(q) {
+		let response = '',
+			lang = document.documentElement.getAttribute('lang'),
+			engine = domsearchbar.getAttribute('engine')
 
-		let response = "",
-			lang = storage.lang || "en",
-			engine = storage.searchbar_engine || "s_google"
-
-		//les const l_[engine] sont dans lang.js
-
-		switch (engine) {
-			case "s_ddg":
-				response = "https://duckduckgo.com/?q=" + q + l_ddg[lang]
-				break
-			case "s_google":
-				response = "https://www.google" + l_google[lang] + q
-				break
-			case "s_startpage":
-				response = "https://www.startpage.com/do/dsearch?query=" + q + l_startpage[lang]
-				break
-			case "s_qwant":
-				response = "https://www.qwant.com/?q=" + q + l_qwant[lang]
-				break
-			case "s_yahoo":
-				response = "https://" + l_yahoo[lang] + q
-				break
-			case "s_bing":
-				response = "https://www.bing.com/search?q=" + q
-				break
-			case "s_ecosia":
-				response = "https://www.ecosia.org/search?q=" + q
-				break
-
-		}
+		// engineLocales est dans lang.js
+		response = engineLocales[engine].base.replace('$locale$', engineLocales[engine][lang]).replace('$query$', q)
 
 		return response
 	}
 
 	function engine(value, init) {
+		// const names = {
+		// 	startpage: 'Startpage',
+		// 	ddg: 'DuckDuckGo',
+		// 	qwant: 'Qwant',
+		// 	lilo: 'Lilo',
+		// 	ecosia: 'Ecosia',
+		// 	google: 'Google',
+		// 	yahoo: 'Yahoo',
+		// 	bing: 'Bing',
+		// }
 
-		const names = {
-			"s_startpage" : "Startpage",
-			"s_ddg" : "DuckDuckGo",
-			"s_qwant" : "Qwant",
-			"s_ecosia" : "Ecosia",
-			"s_google" : "Google",
-			"s_yahoo" : "Yahoo",
-			"s_bing" : "Bing"
+		if (!init) chrome.storage.sync.set({ searchbar_engine: value })
+
+		//domsearchbar.setAttribute('placeholder', tradThis('Search on ' + names[value]))
+		domsearchbar.setAttribute('engine', value)
+	}
+
+	function setNewtab(value, init) {
+		if (!init) chrome.storage.sync.set({ searchbar_newtab: value })
+		domsearchbar.setAttribute('newtab', value)
+	}
+
+	domsearchbar.onkeyup = function (e) {
+		const isNewtab = e.target.getAttribute('newtab') === 'true'
+
+		if (e.key === 'Enter' && this.value.length > 0) {
+			if (isNewtab) window.open(localisation(this.value), '_blank')
+			else window.location = localisation(this.value)
 		}
-
-		id("searchbar").setAttribute("placeholder", tradThis("Search on " + names[value]));
-		if(!init) chrome.storage.sync.set({"searchbar_engine": value});
 	}
 
-	if (event) (event === "searchbar" ? display(that.checked) : engine(that.value));
+	switch (event) {
+		case 'searchbar':
+			display(that.checked)
+			break
 
-	//init
-	else {
+		case 'engine':
+			engine(that.value)
+			break
 
-		let searchbar = storage.searchbar || false;
-		let searchengine = storage.searchbar_engine || "s_google";
+		case 'newtab':
+			setNewtab(that.checked)
+			break
 
-		//display
-		display(searchbar, true);
-		engine(searchengine, true);
+		//init
+		default: {
+			const searchbar = storage.searchbar || false,
+				searchengine = storage.searchbar_engine || 'google',
+				searchbarnewtab = storage.searchbar_newtab || false
+
+			//display
+			display(searchbar, true)
+			engine(searchengine.replace('s_', ''), true)
+			setNewtab(searchbarnewtab, true)
+
+			// 1.9.2 ==> 1.9.3 lang breaking fix
+			if (storage.searchbar_engine) {
+				chrome.storage.sync.set({ searchbar_engine: searchengine.replace('s_', '') })
+			}
+			break
+		}
 	}
-}
-
-function signature() {
-	let v = "<a href='https://victor-azevedo.me/'>Victor Azevedo</a>";
-	let t = "<a href='https://tahoe.be'>Tahoe Beetschen</a>";
-	let e = document.createElement("span");
-
-	e.innerHTML = Math.random() > 0.5 ? ` ${v} & ${t}` : ` ${t} & ${v}`;
-	id("rand").appendChild(e);
 }
 
 function showPopup(data) {
+	function affiche() {
+		const setReviewLink = () =>
+			mobilecheck
+				? 'https://github.com/victrme/Bonjourr/stargazers'
+				: navigator.userAgent.includes('Chrome')
+				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
+				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 
-	id("go").setAttribute("href", (navigator.userAgent.includes("Chrome")
-	? "https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews"
-	: "https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/"))
-
-	//s'affiche après 10 tabs
-	if (data > 10) {
-
-		const popup = id("popup")
-		const closePopup = id("closePopup")
-		const go = id("go")
-		const close = function() {
-			popup.classList.add("removed")
-			chrome.storage.sync.set({reviewPopup: "removed"})
+		const close = function () {
+			divPopup.classList.replace('shown', 'removing')
+			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
-		//attendre avant d'afficher
-		setTimeout(function() {popup.classList.add("shown")}, 2000)
+		const divPopup = document.createElement('div')
 
-		closePopup.onclick = close
-		go.onclick = close
+		divPopup.id = 'popup'
+		divPopup.innerHTML = `<span>${tradThis(
+			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
+		)}</span><div class='choices'><a href='${setReviewLink()}' target='_blank'>${tradThis(
+			'Review'
+		)}</a><a href='http://bonjourr.fr/#donate' target='_blank'>${tradThis(
+			'Donate'
+		)}</a></div> <p id='closePopup'>&times;</p>`
+
+		document.body.appendChild(divPopup)
+
+		setTimeout(() => divPopup.classList.add('shown'), 10)
+
+		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
+		else id('closePopup').onclick = close
+
+		document.querySelectorAll('#popup .choices a')[0].onclick = close
+		document.querySelectorAll('#popup .choices a')[1].onclick = close
 	}
-	else if (typeof(data) === "number") chrome.storage.sync.set({reviewPopup: data + 1})
-	else if (data !== "removed") chrome.storage.sync.set({reviewPopup: 0})
-	else if (data === "removed") document.body.removeChild(popup)
+
+	//s'affiche après 30 tabs
+	if (data > 30) affiche()
+	else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
+	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
 }
 
-function proFunctions(obj) {
+function customSize(init, event) {
+	//
+	// Apply for interface, credit & settings button
+	const apply = (size) => {
+		dominterface.style.fontSize = size + 'px'
+		id('credit').style.fontSize = size + 'px'
+	}
 
-	function customFont(data, event) {
+	const save = () => {
+		chrome.storage.sync.get('font', (data) => {
+			let font = data.font || { family: '', weight: ['400'], size: 13 }
+			font.size = event
+			slowRange({ font: font }, 200)
+		})
+	}
 
-		function setFont(f, is) {
+	if (event) {
+		save()
+		apply(event)
+	}
 
-			function saveFont(text) {
+	if (init) {
+		apply(init.size)
+	}
+}
 
-				const font = {
-					family: id("i_customfont").value,
-					weight: id("i_weight").value,
-					size: id("i_size").value,
-					str: (text ? text : id("fontstyle").innerText)
-				}
+function modifyWeightOptions(weights, settingsDom) {
+	const doms = (settingsDom ? settingsDom : id('settings')).querySelectorAll('#i_weight option')
 
-				chrome.storage.sync.set({"font": font});
+	if (!weights || weights.length === 0) {
+		doms.forEach((option) => (option.style.display = 'block'))
+		return true
+	}
+
+	// Theres weights
+	else {
+		// filters
+		if (weights.includes('regular')) weights[weights.indexOf('regular')] = '400'
+		weights = weights.map((aa) => parseInt(aa))
+
+		// toggles selects
+		if (doms)
+			doms.forEach(
+				(option) => (option.style.display = weights.indexOf(parseInt(option.value)) !== -1 ? 'block' : 'none')
+			)
+	}
+}
+
+function safeFont(settingsDom) {
+	const is = {
+		fallback: { placeholder: 'Arial', weights: [500, 600, 800] },
+		linux: { placeholder: 'Ubuntu', weights: [300, 400, 500, 700] },
+		windows: { placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
+		android: { placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
+		apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+	}
+
+	let toUse = is.fallback
+	const hasUbuntu = document.fonts.check('16px Ubuntu')
+	const notAppleOrWindows = !testOS.mac() && !testOS.windows() && !testOS.ios()
+
+	if (testOS.windows()) toUse = is.windows
+	else if (testOS.android()) toUse = is.android
+	else if (testOS.mac() || testOS.ios()) toUse = is.apple
+	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
+
+	if (settingsDom) {
+		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
+		modifyWeightOptions(toUse.weights, settingsDom)
+	}
+}
+
+function customFont(data, event) {
+	const save = (url, family, availWeights, weight) => {
+		chrome.storage.sync.get('font', (data) => {
+			const font = data.font || {}
+
+			font.url = url
+			font.family = family
+			font.availWeights = availWeights
+			font.weight = weight
+
+			slowRange({ font: font }, 200)
+		})
+	}
+
+	// Fetches fonts.google.com url
+	function apply(url, family, weight) {
+		if (url) {
+			fetch(url)
+				.then((response) => response.text())
+				.then((text) => {
+					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
+					id('fontstyle').textContent = text
+					id('clock').style.fontFamily = family
+					dominterface.style.fontFamily = family
+					canDisplayInterface('fonts')
+				})
+		}
+
+		if (weight) {
+			dominterface.style.fontWeight = weight
+			id('clock').style.fontWeight = weight
+			id('searchbar').style.fontWeight = weight
+		}
+	}
+
+	// Event only
+	// Uses already saved url, replaces weight from url and apply / save
+	function changeWeight(val, font) {
+		if (font.url) {
+			font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
+			font.url += val
+
+			apply(font.url, font.family, val)
+			save(font.url, font.family, font.availWeights, val)
+		} else {
+			apply(null, null, val)
+			save('', '', [], val)
+		}
+	}
+
+	// Event only
+	function changeFamily(json, family) {
+		//
+		// Cherche correspondante
+		const dom = id('i_customfont')
+		const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
+
+		// One font has been found
+		if (font.length > 0) {
+			const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
+			const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
+			const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`
+
+			// Change l'url, et les weight options
+			apply(url, font[0].family, 400)
+			save(url, font[0].family, availWeights, 400)
+			modifyWeightOptions(availWeights)
+
+			if (dom) dom.blur()
+		} else dom.value = ''
+	}
+
+	function triggerEvent(event) {
+		//
+		function fetchFontList(callback) {
+			//
+			if (Object.entries(googleFontList).length > 0) {
+				callback(googleFontList)
+			} else {
+				fetch(
+					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk'
+				)
+					.then((response) => response.json())
+					.then((json) => {
+						googleFontList = json
+						callback(json)
+					})
 			}
+		}
 
-			function applyFont(text) {
+		// If nothing, removes custom font
+		if (event.family === '') {
+			id('fontstyle').textContent = ''
+			id('clock').style.fontFamily = ''
+			id('clock').style.fontWeight = ''
+			id('searchbar').style.fontWeight = ''
+			dominterface.style.fontFamily = ''
+			dominterface.style.fontWeight = ''
 
-				if (f.str || text)
-					id("fontstyle").innerText = (text ? text : f.str)
+			safeFont(id('settings'))
+			save()
 
-				if (f.family) {
-					document.body.style.fontFamily = f.family;
-					id("clock").style.fontFamily = f.family;
-				}
+			return false
+		}
 
-				if (f.weight)
-					document.body.style.fontWeight = f.weight;
+		if (event.weight) {
+			chrome.storage.sync.get('font', (data) => changeWeight(event.weight, data.font))
 
-				if (f.size)
-					dominterface.style.fontSize = f.size + "px";
-			}
+			// 1.9.3 compatibility comes with "family"
+			// don't return now
+			if (!event.family) return false
+		}
 
-			//si on change la famille
-			if (is === "event" && (f.family !== null || f.weight !== null)) {
+		if (event.family) {
+			fetchFontList((json) => changeFamily(json, event.family))
+		}
 
-				let family = id("i_customfont").value,
-					weight = (":" + f.weight) || "",
-					url = `https://fonts.googleapis.com/css?family=${family}${weight}`
+		// For best performance: Fill list & change innerHTML
+		if (event.autocomplete) {
+			fetchFontList(function fillFamilyInput(json) {
+				const fragment = new DocumentFragment()
 
-				fetch(url)
-				.then(response => response.text())
-				.then(text => {
-					text = text.replace(/(\r\n|\n|\r|  )/gm,"")
-					applyFont(text)
-					saveFont(text)
+				json.items.forEach(function addOptions(item) {
+					const option = document.createElement('option')
+
+					option.textContent = item.family
+					option.setAttribute('value', item.family)
+					fragment.appendChild(option)
 				})
 
-			//si on change autre chose que la famille
-			} else if (is === "event") {
-				saveFont()
-				applyFont()
-
-			//si ça n'est pas un event
-			} else
-				applyFont()
-		}
-
-		//init
-		if (data) setFont(data)
-		if (event) setFont(event, "event")
-	}
-
-	function customCss(data, event) {
-
-		const styleHead = id("styles");
-
-		// Active l'indentation
-		function syntaxControl(e, that) {
-
-			if (e.key === "{") {
-
-				that.value = that.value + `{\r  \r}`;
-
-				that.selectionStart = that.selectionStart - 2;
-				that.selectionEnd = that.selectionEnd - 2;
-
-				e.preventDefault();
-
-				/*let selectionStartPos = this.selectionStart;
-				let selectionEndPos   = this.selectionEnd;
-				let oldContent        = this.value;
-
-				//console.log(that.selectionStart);
-
-				this.value = oldContent.substring( 0, selectionStartPos ) + "\t" + oldContent.substring( selectionEndPos );
-
-				this.selectionStart = this.selectionEnd = selectionStartPos + 1;*/
-			}
-		}
-
-		if (data) {
-			styleHead.innerText = data;
-
-		}
-
-		if (event) {
-
-			const e = event.e;
-			const that = event.that;
-			syntaxControl(e, that);
-
-			setTimeout(() => {
-				const val = id("cssEditor").value;
-				styleHead.innerText = val;
-				chrome.storage.sync.set({css: val})
-			}, 200)
+				event.settingsDom.querySelector('#dl_fontfamily').appendChild(fragment)
+			})
 		}
 	}
 
-	function linksrow(data, event) {
+	// init
+	if (data) {
+		const { family, url, weight } = data
 
-		function setRows(val) {
-
-			domlinkblocks.style.width = `${val*7}em`;
-		}
-
-		if (data !== undefined) setRows(data);
-
-		if (event) {
-			//id("e_row").innerText = event;
-			setRows(event);
-			slowRange({"linksrow": parseInt(event)});
-		}
+		if (family && url) apply(url, family, weight || '400')
+		else if (weight) apply(null, null, weight)
+		//
+		// 1.9.3 ==> 1.10.0
+		else if (family && !url) triggerEvent(data)
 	}
 
-	function greeting(data, event) {
+	// event
+	if (event) triggerEvent(event)
+}
 
-		let text = id("greetings").innerText;
-		let pause;
+function customCss(init, event) {
+	const styleHead = id('styles')
 
-		function apply(val) {
+	if (init) styleHead.textContent = init
 
-			//greeting is classic text + , + custom greet
-			id("greetings").innerText = `${text}, ${val}`;
-
-			//input empty removes ,
-			if (val === "") id("greetings").innerText = text;
-		}
-
-		function setEvent(val) {
-
-			const virgule = text.indexOf(",");
-
-			//remove last input from greetings
-			text = text.slice(0, (virgule === -1 ? text.length : virgule));
-			apply(val);
-
-			//reset save timeout
-			//wait long enough to save to storage
-			if (pause) clearTimeout(pause);
-
-			pause = setTimeout(function() {
-				chrome.storage.sync.set({"greeting": val});
-			}, 1200);
-		}
-
-		//init
-		if (data !== undefined) apply(data)
-		if (event !== undefined) setEvent(event)
-	}
-
-	function hideElem(data, e, settingsinit) {
-
-		let object = {}
-
-		if (e === undefined) {
-
-			//quit on first startup
-			if (!data) return false
-
-			for (let d of data) {
-
-				//le nouveau
-				object = {
-					dom: id(d),
-					src: d,
-					not: true
-				}
-
-				principale(object)
+	if (event) {
+		switch (event.is) {
+			case 'styling': {
+				const val = stringMaxSize(event.val, 8080)
+				styleHead.textContent = val
+				slowRange({ css: val }, 500)
+				break
 			}
 
-		} else {
-
-			//object qu'on connait
-			object = {
-				parent: e.parentElement,
-				dom: id(e.getAttribute('data')),
-				src: e.getAttribute('data'),
-				not: e.getAttribute('class') !== "clicked" //le toggle
-			}
-
-			principale(object)
-			eventStorage()
-		}
-
-		function principale(objet) {
-
-			let toggleWrap = true;
-			let toggleWrapFunc = function(elem) {
-
-				id(elem).style.display = (objet.not ? "none" : "flex")
-				if (e!==undefined) clas(objet.parent, (objet.not ? "allhidden" : ""))
-			}
-
-
-			//toggle l'opacité du dom concerné
-
-			if (e !== undefined) clas(e, (objet.not ? "clicked" : ""))
-			objet.dom.style.opacity = (objet.not ? "0" : "1")
-
-
-			//si event
-			//si un bouton n'est pas cliqué dans une catégorie
-			//ne pas toggle le wrap
-			if (objet.not && !data) {
-
-				let all = objet.parent.querySelectorAll("button")
-
-				for (let r of all)
-					if (r.getAttribute('class') !== "clicked")
-						toggleWrap = false;
-			}
-
-			//si init
-			//si tout n'est pas caché dans une catégorie
-			//ne pas toggle le wrap
-			else if (data) {
-
-				//wtf is this
-
-				if (objet.src === "time-container"
-					|| objet.src === "date")
-
-					if (!data.includes("time-container")
-						|| !data.includes("date"))
-
-						toggleWrap = false
-
-
-				if (objet.src === "greetings"
-					|| objet.src === "weather_desc"
-					|| objet.src === "w_icon")
-
-					if (!data.includes("greetings")
-						|| !data.includes("weather_desc")
-						|| !data.includes("w_icon"))
-
-						toggleWrap = false
-			}
-
-
-			//toogle les wrap en fonctions du bouton cliqué
-
-			if (toggleWrap) {
-
-				switch (objet.src) {
-					case "time-container":
-					case "date":
-						toggleWrapFunc("time")
-						break
-
-					case "greetings":
-					case "weather_desc":
-					case "w_icon":
-						toggleWrapFunc("main")
-						break
-
-					/*case "linkblocks":
-						toggleWrapFunc("linkblocks")
-						break*/
-
-				}
+			case 'resize': {
+				slowRange({ cssHeight: event.val }, 500)
+				break
 			}
 		}
-
-		function eventStorage() {
-			//c'est un event, on store
-			if (e !== undefined && !settingsinit) {
-
-				//parse through les dom a masquer, les sauvegarde
-				//liste de {id du dom a masquer, button a init}
-
-				let all = id("hideelem").querySelectorAll("button");
-				let toStore = []
-
-				for (let r of all)
-					if (r.getAttribute("class") === "clicked")
-						toStore.push(r.getAttribute('data'))
-
-				chrome.storage.sync.set({hide: toStore})
-			}
-		}
-	}
-
-	switch (obj.which) {
-		case "font":
-			customFont(obj.data, obj.event)
-			break
-
-		case "css":
-			customCss(obj.data, obj.event)
-			break
-
-		case "row":
-			linksrow(obj.data, obj.event)
-			break
-
-		case "greet":
-			greeting(obj.data, obj.event)
-			break
-
-		case "hide":
-			hideElem(obj.data, obj.event, obj.sett)
-			break
 	}
 }
 
-//comme un onload, sans le onload
-chrome.storage.sync.get(null, (data) => {
+function hideElem(init, buttons, that) {
+	const IDsList = [
+		['time', ['time-container', 'date']],
+		['main', ['greetings', 'description', 'widget']],
+		['linkblocks', ['linkblocks']],
+		['showSettings', ['showSettings']],
+	]
 
-	//1.8.3 -> 1.9 data transfer
-	if (localStorage.lang) {
-		data.lang = localStorage.lang
-		chrome.storage.sync.set({lang: localStorage.lang})
-		localStorage.removeItem("lang")
+	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
+	function getEventListPosition(that) {
+		return {
+			row: parseInt(that.getAttribute('he_row')),
+			col: parseInt(that.getAttribute('he_col')),
+		}
 	}
 
-	//pour que les settings y accede plus facilement
-	disposableData = localEnc(JSON.stringify(data))
+	function toggleElement(dom, hide) {
+		if (hide) id(dom).classList.add('he_hidden')
+		else id(dom).classList.remove('he_hidden')
+	}
 
+	function isEverythingHidden(list, row) {
+		const filtered = list[row].filter((el) => el === 1)
+		return filtered.length === list[row].length
+	}
+
+	function initializeHiddenElements(list) {
+		list.forEach((row, row_i) => {
+			const parent = IDsList[row_i][0]
+
+			isEverythingHidden(list, row_i) ? toggleElement(parent, true) : ''
+
+			// Hide children
+			row.forEach((child, child_i) => {
+				const childid = IDsList[row_i][1][child_i]
+
+				child === 1 ? toggleElement(childid, true) : ''
+			})
+		})
+	}
+
+	function updateToNewData(list) {
+		if (list[0]) {
+			if (typeof list[0][0] === 'string') {
+				//
+				// Flattens and removes parent IDs
+				const childOnly = IDsList.flat().filter((row) => typeof row === 'object')
+				let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
+
+				//
+				// Go through IDs list for every old hide elems
+				list.forEach((id) => {
+					childOnly.forEach((row, row_i) =>
+						row.forEach((col, col_i) => {
+							if (col === id) {
+								newHidden[row_i][col_i] = 1
+							}
+						})
+					)
+				})
+
+				chrome.storage.sync.set({ hide: newHidden })
+				return newHidden
+			}
+
+			// Is already updated
+			else return list
+		}
+
+		// Had nothing to hide
+		else return list
+	}
+
+	// startup initialization
+	if (!that && !buttons) {
+		initializeHiddenElements(updateToNewData(init))
+	}
+
+	// Settings buttons initialization
+	else if (buttons) {
+		chrome.storage.sync.get('hide', (data) => {
+			//
+			// 1.9.3 ==> 1.10.0
+			data.hide = updateToNewData(data.hide)
+
+			buttons.forEach((button) => {
+				const pos = getEventListPosition(button)
+				if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
+			})
+		})
+	}
+
+	// Event
+	else {
+		chrome.storage.sync.get('hide', (data) => {
+			//
+			// 1.9.3 ==> 1.10.0
+			data.hide = updateToNewData(data.hide)
+
+			const pos = getEventListPosition(that)
+			const state = that.classList.contains('clicked')
+			const child = IDsList[pos.row][1][pos.col]
+			const parent = IDsList[pos.row][0]
+
+			// Update hidden list
+			data.hide[pos.row][pos.col] = state ? 1 : 0
+			chrome.storage.sync.set({ hide: data.hide })
+
+			// Toggle children and parent if needed
+			toggleElement(child, state)
+			toggleElement(parent, isEverythingHidden(data.hide, pos.row))
+		})
+	}
+}
+
+function canDisplayInterface(cat, init) {
+	//
+	// Progressive anim to max of Bonjourr animation time
+	function displayInterface() {
+		let loadtime = performance.now() - loadtimeStart
+
+		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
+		if (loadtime < 30) loadtime = 0
+
+		dominterface.style.transition = `opacity ${loadtime}ms, transform .4s`
+		dominterface.style.opacity = '1'
+		clas(domshowsettings, true, 'enabled')
+
+		setTimeout(() => {
+			dominterface.classList.remove('init')
+			domshowsettings.classList.remove('init')
+		}, loadtime + 100)
+	}
+
+	// More conditions if user is using advanced features
+	if (init) {
+		if (init.font) if (init.font.family && init.font.url) funcsOk.fonts = false
+	}
+
+	// Check if all funcs are ready
+	else {
+		funcsOk[cat] = true
+		const entries = Object.entries(funcsOk)
+		const res = entries.filter((val) => val[1] === true)
+
+		if (res.length === entries.length) displayInterface()
+	}
+}
+
+function sunTime(init) {
+	if (init && init.lastState) {
+		sunrise = init.lastState.sunrise
+		sunset = init.lastState.sunset
+	}
+
+	//
+	else {
+		if (sunset === 0)
+			return {
+				now: minutator(new Date()),
+				rise: 420,
+				set: 1320,
+			}
+		else
+			return {
+				now: minutator(new Date()),
+				rise: minutator(new Date(sunrise * 1000)),
+				set: minutator(new Date(sunset * 1000)),
+			}
+	}
+}
+
+function filterImports(data) {
+	function reducedWeatherData(weather) {
+		// 1.9.3 ==> 1.10.0
+		const updatedWeather = weather
+
+		if (weather) {
+			if (weather.lastState && weather.lastState.sunset === undefined) {
+				const old = weather.lastState
+
+				updatedWeather.lastState = {
+					feels_like: old.main.feels_like,
+					temp_max: old.main.temp_max,
+					sunrise: old.sys.sunrise,
+					sunset: old.sys.sunset,
+					description: old.weather[0].description,
+					icon_id: old.weather[0].icon_id,
+				}
+			}
+		}
+
+		return updatedWeather
+	}
+
+	let result = { ...data }
+
+	if (data.weather) {
+		if (data.weather.location === false) result.weather.location = []
+		result.weather = reducedWeatherData(data.weather)
+
+		if (result.weather.lastCall) result.weather.lastCall = 0
+		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
+	}
+
+	// Old blur was strings
+	if (typeof data.background_blur === 'string') {
+		result.background_blur = parseFloat(data.background_blur)
+	}
+
+	// 's_' before every search engines
+	if (data.searchbar_engine) {
+		result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+	}
+
+	// New collection key missing
+	// Removes dynamics cache
+	if (data.dynamic) {
+		if (!data.dynamic.collection) {
+			result.dynamic = { ...data.dynamic, collection: '' }
+		}
+	}
+
+	// Si il ne touche pas au vieux hide elem
+	if (!data.hide || data.hide.length === 0) result.hide = [[0, 0], [0, 0, 0], [0], [0]]
+	else if (data.hide && data.hide.length > 0) {
+		// Changes new hidden classes
+		const weatherIndex = data.hide.indexOf('weather_desc')
+		const widgetIndex = data.hide.indexOf('w_icon')
+
+		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
+		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
+	}
+
+	// Remove old unused keys
+	if (data.font) {
+		delete data.font.availableWeights
+		delete data.font.supportedWeights
+	}
+
+	return result
+}
+
+function startup(data) {
+	canDisplayInterface(null, { font: data.font })
 	traduction(null, data.lang)
-	greetings()
-	date(null, data.usdate)
-	newClock(null, data.clock)
+
+	sunTime(data.weather)
+	weather(null, null, data.weather)
+
+	customFont(data.font)
+	customSize(data.font)
+
+	clock(null, data)
+	linksrow(data.linksrow)
+
 	darkmode(null, data)
-	initBackground(data)
-	weather(null, null, data)
-	quickLinks(null, null, data)
 	searchbar(null, null, data)
 	showPopup(data.reviewPopup)
 
-	//init profunctions
-	proFunctions({which: "hide", data: data.hide})
-	proFunctions({which: "font", data: data.font})
-	proFunctions({which: "css", data: data.css})
-	proFunctions({which: "row", data: data.linksrow})
-	proFunctions({which: "greet", data: data.greeting})
+	customCss(data.css)
+	hideElem(data.hide)
+	initBackground(data)
+	quickLinks(null, null, data)
 
-	clas(dominterface, "")
-	clas(domshowsettings, "")
+	setTimeout(() => settingsInit(data), 200)
+}
 
-	//safe font for different alphabet
-	/*if (data.lang === "ru" || data.lang === "sk")
-		id("styles").innerText = `
-			body, #settings, #settings h5 {font-family: Helvetica, Calibri}`*/
+window.onload = function () {
+	//
+	// Only on Online
+	switch (window.location.protocol) {
+		case 'http:':
+		case 'https:':
+		case 'file:': {
+			//
+			// Service Worker
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('/service-worker.js')
+			}
 
-	if (mobilecheck) {
+			// PWA install trigger (30s interaction default)
+			let promptEvent
+			window.addEventListener('beforeinstallprompt', function (e) {
+				promptEvent = e
+			})
 
-		dominterface.style.minHeight = "90vh"
-		dominterface.style.padding = "0 0 10vh 0"
+			// Safari overflow fix
+			// Todo: add safari condition
+			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+			window.addEventListener('resize', appHeight)
+			appHeight()
+
+			break
+		}
 	}
-});
+
+	try {
+		chrome.storage.sync.get(null, (data) => {
+			//
+			const whichStart =
+				Object.keys(data).length === 0
+					? 'firstStartup'
+					: data.about && data.about.version !== '1.10.0'
+					? 'newVersion'
+					: 'normal'
+
+			switch (whichStart) {
+				case 'firstStartup': {
+					data = bonjourrDefaults('sync')
+
+					chrome.storage.local.set(bonjourrDefaults('local'))
+					chrome.storage.sync.set(isExtension ? data : { import: data })
+					startup(data)
+
+					break
+				}
+
+				case 'newVersion': {
+					data.about.version = '1.10.0'
+					data = filterImports(data)
+					chrome.storage.sync.set(data)
+					startup(data)
+					break
+				}
+
+				case 'normal':
+					startup(data)
+					break
+			}
+		})
+	} catch (error) {
+		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us!`, error.stack, error.line)
+	}
+}

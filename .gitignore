@@ -1,11 +1,11 @@
-src/styles/.DS_Store
-src/images/weather/.DS_Store
-src/images/.DS_Store
-src/.DS_Store
-config.codekit3
+**/style.css
+**/style.css.map
+
 .DS_Store
+config.codekit3
 .directory
 .vscode
+manifest.json
 
 node_modules/
-package-lock.json
+release/

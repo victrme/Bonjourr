@@ -1,537 +1,577 @@
-function selectBackgroundType(cat) {
+function initParams(data, settingsDom) {
+	//
 
-	id("dynamic").style.display = "none";
-	id("custom").style.display = "none";
-	id(cat).style.display = "block";
+	const paramId = (str) => settingsDom.querySelector('#' + str)
+	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
+	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
+	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
-	if (cat === "dynamic" || cat === "default")
-		unsplash()
-	else if (cat === "custom")
-		displayCustomThumbnails()
-
-	chrome.storage.sync.set({"background_type": cat});
-}
-
-function displayCustomThumbnails() {
-	chrome.storage.local.get("customThumbnails", (data) => {
-
-		if (data !== undefined) {
-
-			let cleanData
-			let thumbs = data.customThumbnails
-
-			for (var i = 0; i < thumbs.length; i++) {
-				cleanData = thumbs[i].replace("data:image/jpeg;base64,", ""); //used for blob
-				addThumbnails(cleanData, i)
-			}
-
-			fullThumbnails = data.customThumbnails
-
-			setTimeout(function() {
-				chrome.storage.local.get("custom", (data) => {fullImage = data.custom})
-			}, 200)
-		}
-	})
-}
-
-function showall(that) {
-
-	const change = (ev) => {
-		for (let d of cl("pro"))
-			clas(d, ev ? "pro shown" : "pro")
+	function toggleClockOptions(dom, analog) {
+		dom.classList.remove(analog ? 'digital' : 'analog')
+		dom.classList.add(analog ? 'analog' : 'digital')
 	}
 
-	const addtransitions = (dom, css) => {
-		for (let d of cl(dom))
-			d.style.transition = css
-	}
-
-	//event
-	if (that !== undefined) {
-
-		change(that)
-		chrome.storage.sync.set({showall: that})
-
-	//init
-	} else {
-
-		const data = JSON.parse(localEnc(disposableData, false))
-		change(data.showall)
-
-		//add transitions
-		addtransitions("pro", "max-height .2s")
-	}
-}
-
-function settingsEvents() {
-
-	// file input animation
-	const custom = id("i_bgfile");
-	const customStyle = id("fileContainer");
-	let fontObj = {};
-
-	custom.addEventListener("dragenter", function(){
-	  customStyle.classList.add("dragover");
-	});
-
-	custom.addEventListener("dragleave", function(){
-	  customStyle.classList.remove("dragover");
-	});
-
-	custom.addEventListener("drop", function(){
-	  customStyle.classList.remove("dragover");
-	});
-
-
-	//general
-
-	id("i_showall").onchange = function() {
-		showall(this.checked)
-	}
-
-	id("i_lang").onchange = function() {
-
-		chrome.storage.sync.set({"lang": this.value});
-
-		//session pour le weather
-		sessionStorage.lang = this.value;
-
-		if (sessionStorage.lang)
-			location.reload()
-	}
-
-	//quick links
-	id("i_title").onkeypress = function(e) {
-		if (e.which === 13) quickLinks("input", e)
-	}
-
-	id("i_url").onkeypress = function(e) {
-		if (e.which === 13) quickLinks("input", e)
-	}
-
-	id("submitlink").onmouseup = function() {
-		quickLinks("button", this)
-	}
-
-	id("i_linknewtab").onchange = function() {
-		quickLinks("linknewtab", this)
-	}
-
-	//visuals
-	id("i_type").onchange = function() {
-		selectBackgroundType(this.value)
-	}
-
-	id("i_freq").onchange = function() {
-		unsplash(null, this.value);
-	}
-
-
-	//custom bg
-
-	id("i_bgfile").onchange = function(e) {
-		renderImage(this.files[0], "change");
-	};
-
-
-	id("i_blur").oninput = function() {
-		filter("blur", this.value);
-		slowRange({"background_blur": parseInt(this.value)});
-	};
-
-	id("i_bright").oninput = function() {
-		filter("bright", this.value);
-		slowRange({"background_bright": parseFloat(this.value)});
-	};
-
-	id("i_dark").onchange = function() {
-		darkmode(this.value)
-	}
-
-
-
-	//Time and date
-
-	id("i_analog").onchange = function() {
-		newClock({param: "analog", value: this.checked});
-	}
-
-	id("i_seconds").onchange = function() {
-		newClock({param: "seconds", value: this.checked});
-	}
-
-	id("i_ampm").onchange = function() {
-		newClock({param: "ampm", value: this.checked});
-	}
-
-	id("i_timezone").onchange = function() {
-		newClock({param: "timezone", value: this.value});
-	}
-
-	id("i_usdate").onchange = function() {
-		date(true, this.checked)
-	}
-
-	//weather
-	id("b_city").onmouseup = function() {
-		if (!stillActive) weather("city", this);
-	}
-
-	id("i_city").onkeypress = function(e) {
-		if (!stillActive && e.which === 13) weather("city", this)
-	}
-
-	id("i_units").onchange = function() {
-		if (!stillActive) weather("units", this)
-	}
-
-	id("i_geol").onchange = function() {
-		if (!stillActive) weather("geol", this)
-	}
-
-	//searchbar
-	id("i_sb").onchange = function() {
-
-		if (!stillActive) searchbar("searchbar", this);
-		slow(this);
-	}
-
-	id("i_sbengine").onchange = function() {
-		searchbar("engine", this)
-	}
-
-
-	//settings
-
-	id("submitReset").onclick = function() {
-		importExport("reset");
-	}
-
-	id("submitExport").onclick = function() {
-		importExport("exp", true);
-	}
-
-	id("submitImport").onclick = function() {
-		importExport("imp", true);
-	}
-
-	id("i_import").onkeypress = function(e) {
-		if (e.which === 13) importExport("imp", true);
-	}
-
-	id("i_export").onfocus = function() {
-		importExport("exp")
-	}
-
-
-	id("i_customfont").oninput = function() {
-		fontObj = {family: this.value, weight: null, size: null};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_weight").oninput = function() {
-		fontObj = {family: null, weight: this.value, size: null};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_size").oninput = function() {
-		fontObj = {family: null, weight: null, size: this.value};
-		proFunctions({which: "font", event: fontObj});
-	}
-
-	id("i_row").oninput = function() {
-		proFunctions({which: "row", event: this.value})
-	}
-
-	id("i_greeting").onkeyup = function() {
-		proFunctions({which: "greet", event: this.value})
-	}
-
-	id("cssEditor").onkeypress = function(e) {
-		let data = {e: e, that: this};
-		proFunctions({which: "css", event: data})
-	}
-
-
-	for(e of id("hideelem").querySelectorAll("button")) {
-
-		e.onmouseup = function() {
-			proFunctions({which: "hide", event: this})
-		}
-	}
-}
-
-function initParams() {
-
-	const data = JSON.parse(localEnc(disposableData, false))
-
-	initInput = (dom, cat, base) => (id(dom).value = (cat !== undefined ? cat : base))
-	initCheckbox = (dom, cat) => (id(dom).checked = (cat ? true : false))
-	isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
-
-	initInput("i_type", data.background_type, "dynamic")
-	initInput("i_blur", data.background_blur, 15)
-	initInput("i_bright", data.background_bright, .7)
-	initInput("i_dark", data.dark, "disable")
-	initInput("i_sbengine", data.searchbar_engine, "s_google")
-	initInput("i_timezone", isThereData("clock", "timezone"), "auto")
-	initInput("i_freq", isThereData("dynamic", "every"), "hour")
-	initInput("i_ccode", isThereData("weather", "ccode"), "US")
-	initInput("i_row", data.linksrow, 8)
-	initInput("i_customfont", isThereData("font", "family"), "")
-	initInput("i_weight", isThereData("font", "weight"), 400)
-	initInput("i_size", isThereData("font", "size"), 12)
-	initInput("i_greeting", data.greeting, "")
-	initInput("cssEditor", data.css, "")
-
-	initCheckbox("i_showall", data.showall)
-	initCheckbox("i_geol", isThereData("weather", "location"))
-	initCheckbox("i_units", (isThereData("weather", "unit") === "imperial"))
-	initCheckbox("i_linknewtab", data.linknewtab)
-	initCheckbox("i_sb", data.searchbar)
-	initCheckbox("i_usdate", data.usdate)
-	initCheckbox("i_ampm", isThereData("clock", "ampm"), false)
-	initCheckbox("i_seconds", isThereData("clock", "seconds"), false)
-	initCheckbox("i_analog", isThereData("clock", "analog"), false)
-
-	//hide elems
-	const all = id("hideelem").querySelectorAll("button")
-
-	//pour tout elem, pour chaque data, trouver une equivalence, appliquer fct
-	if (data.hide)
-		for (let a of all)
-			for (let b of data.hide)
-				if (a.getAttribute("data") === b)
-					proFunctions({which: "hide", event: a, sett: true})
-
-
-	//input translation
-	id("i_title").setAttribute("placeholder", tradThis("Name"))
-	id("i_greeting").setAttribute("placeholder", tradThis("Name"))
-	id("i_import").setAttribute("placeholder", tradThis("Import code"))
-	id("i_export").setAttribute("placeholder", tradThis("Export code"))
-	id("i_customfont").setAttribute("placeholder", tradThis("Any Google fonts"))
-	id("cssEditor").setAttribute("placeholder", tradThis("Type in your custom CSS"))
-
+	// 1.9.2 ==> 1.9.3 lang break fix
+	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
+
+	// 1.10.0 custom background slideshow
+	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
+	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
+
+	initInput('cssEditor', data.css, '')
+	initInput('i_row', data.linksrow, 8)
+	initInput('i_type', data.background_type, 'dynamic')
+	initInput('i_freq', whichFreq, whichFreqDefault)
+	initInput('i_blur', data.background_blur, 15)
+	initInput('i_bright', data.background_bright, 0.8)
+	initInput('i_dark', data.dark, 'system')
+	initInput('i_greeting', data.greeting, '')
+	initInput('i_sbengine', data.searchbar_engine, 'google')
+	initInput('i_clockface', isThereData('clock', 'face'), 'none')
+	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
+	initInput('i_collection', isThereData('dynamic', 'collection'), '')
+	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
+	initInput('i_customfont', isThereData('font', 'family'), '')
+	initInput('i_weight', isThereData('font', 'weight'), 400)
+	initInput('i_size', isThereData('font', 'size'), 16)
+
+	initCheckbox('i_showall', data.showall)
+	initCheckbox('i_geol', isThereData('weather', 'location'))
+	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
+	initCheckbox('i_linknewtab', data.linknewtab)
+	initCheckbox('i_sb', data.searchbar)
+	initCheckbox('i_sbnewtab', !!data.searchbar_newtab)
+	initCheckbox('i_usdate', data.usdate)
+	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
+	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
+	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
+
+	// Links limit
+	if (data.links && data.links.length === 20) quickLinks('maxControl', settingsDom)
+
+	// Hide elems
+	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
+
+	// Font family default
+	safeFont(settingsDom)
+
+	// Font weight
+	if (data.font && data.font.availWeights) modifyWeightOptions(data.font.availWeights, settingsDom)
+
+	// Clock
+	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
+
+	// Input translation
+	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
+	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg
-	if (data.background_type === "dynamic"
-		|| Object.keys(data).length === 0
-		|| data.background_type === undefined) {
-		id("dynamic").style.display = "block"
-	}
-	else if (data.background_type === "custom") {
-		id("custom").style.display = "block"
-		displayCustomThumbnails()
-	}
-	else if (data.background_type === "default") {
-		id("dynamic").style.display = "block"
-		id("i_type").value = "dynamic"
-		chrome.storage.sync.set({background_type: "dynamic"})
+	if (data.background_type === 'custom') {
+		paramId('custom').style.display = 'block'
+		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
+	} else {
+		paramId('dynamic').style.display = 'block'
 	}
 
 	//weather settings
-	if (data.weather && Object.keys(data).length > 0) {
+	if (data.weather && Object.keys(data.weather).length > 0) {
+		const isGeolocation = data.weather.location.length > 0
+		let cityName = data.weather.city ? data.weather.city : 'City'
+		paramId('i_city').setAttribute('placeholder', cityName)
+		paramId('i_city').value = cityName
 
-		let cityPlaceholder = (data.weather.city ? data.weather.city : "City");
-		id("i_city").setAttribute("placeholder", cityPlaceholder);
-
-		if (data.weather.location)
-			id("sett_city").setAttribute("class", "city hidden")
-
+		clas(paramId('sett_city'), isGeolocation, 'hidden')
+		paramId('i_geol').checked = isGeolocation
 	} else {
-		id("sett_city").setAttribute("class", "city hidden")
-		id("i_geol").checked = true
+		clas(paramId('sett_city'), true, 'hidden')
+		paramId('i_geol').checked = true
 	}
-
-
 
 	//searchbar display settings
-	id("choose_searchengine").setAttribute("class", (data.searchbar ? "shown" : "hidden"));
+	clas(paramId('searchbar_options'), data.searchbar, 'shown')
+
+	//searchbar display settings
+	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
 
 	//langue
-	id("i_lang").value = data.lang || "en";
-
+	paramId('i_lang').value = data.lang || 'en'
 
 	//firefox export
-	if(!navigator.userAgent.includes("Chrome")) {
-		id("submitExport").style.display = "none";
-		id("i_export").style.width = "100%";
+	if (!navigator.userAgent.includes('Chrome')) {
+		paramId('submitExport').style.display = 'none'
+		paramId('i_export').style.width = '100%'
 	}
+
+	//
+	// Events
+	//
+
+	const bgfile = paramId('i_bgfile')
+	const fileContainer = paramId('i_fileContainer')
+
+	// file input animation
+	bgfile.addEventListener('dragenter', function () {
+		fileContainer.classList.add('dragover')
+	})
+
+	bgfile.addEventListener('dragleave', function () {
+		fileContainer.classList.remove('dragover')
+	})
+
+	bgfile.addEventListener('drop', function () {
+		fileContainer.classList.remove('dragover')
+	})
+
+	//general
+
+	const tooltips = settingsDom.querySelectorAll('.tooltip')
+
+	tooltips.forEach((elem) => {
+		elem.onclick = function () {
+			const toggleTooltip = (which) => {
+				if (this.classList.contains(which))
+					settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
+			}
+
+			toggleTooltip('ttcoll')
+			toggleTooltip('ttlinks')
+		}
+	})
+
+	paramId('i_showall').onchange = function () {
+		showall(this.checked, true)
+	}
+
+	paramId('i_lang').onchange = function () {
+		chrome.storage.sync.set({ lang: this.value })
+
+		//session pour le weather
+		sessionStorage.lang = this.value
+		if (sessionStorage.lang) location.reload()
+	}
+
+	//quick links
+	paramId('i_title').onkeyup = function (e) {
+		if (e.code === 'Enter') quickLinks('input', e)
+	}
+
+	paramId('i_url').onkeyup = function (e) {
+		if (e.code === 'Enter') quickLinks('input', e)
+	}
+
+	paramId('submitlink').onmouseup = function () {
+		quickLinks('button', this)
+	}
+
+	paramId('i_linknewtab').onchange = function () {
+		quickLinks('linknewtab', this)
+	}
+
+	//visuals
+	paramId('i_type').onchange = function () {
+		selectBackgroundType(this.value)
+	}
+
+	paramId('i_freq').onchange = function () {
+		if (paramId('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
+		else unsplash(null, { every: this.value })
+	}
+
+	paramId('i_collection').onchange = function () {
+		unsplash(null, { collection: stringMaxSize(this.value, 128) })
+		this.blur()
+	}
+
+	//custom bg
+
+	paramId('i_bgfile').onchange = function () {
+		localBackgrounds(null, { is: 'newfile', file: this.files[0] })
+	}
+
+	paramId('i_blur').oninput = function () {
+		filter('blur', this.value)
+		slowRange({ background_blur: parseFloat(this.value) })
+	}
+
+	paramId('i_bright').oninput = function () {
+		filter('bright', this.value)
+		slowRange({ background_bright: parseFloat(this.value) })
+	}
+
+	paramId('i_dark').onchange = function () {
+		darkmode(this.value)
+	}
+
+	//Time and date
+
+	paramId('i_analog').onchange = function () {
+		clock({ analog: this.checked })
+		toggleClockOptions(paramId('clockoptions'), this.checked)
+	}
+
+	paramId('i_seconds').onchange = function () {
+		clock({ seconds: this.checked })
+	}
+
+	paramId('i_clockface').onchange = function () {
+		clock({ face: this.value })
+	}
+
+	paramId('i_ampm').onchange = function () {
+		clock({ ampm: this.checked })
+	}
+
+	paramId('i_timezone').onchange = function () {
+		clock({ timezone: this.value })
+	}
+
+	paramId('i_greeting').onkeyup = function () {
+		clock({ greeting: stringMaxSize(this.value, 32) })
+	}
+
+	paramId('i_usdate').onchange = function () {
+		clock({ usdate: this.checked })
+	}
+
+	//weather
+
+	paramId('i_city').onkeypress = function (e) {
+		if (!stillActive && e.code === 'Enter') weather('city', this)
+	}
+
+	paramId('i_units').onchange = function () {
+		if (!stillActive) weather('units', this)
+	}
+
+	paramId('i_geol').onchange = function () {
+		if (!stillActive) weather('geol', this)
+	}
+
+	//searchbar
+	paramId('i_sb').onchange = function () {
+		paramId('searchbar_options').classList.toggle('shown')
+		if (!stillActive) searchbar('searchbar', this)
+		slow(this)
+	}
+
+	paramId('i_sbengine').onchange = function () {
+		searchbar('engine', this)
+	}
+
+	paramId('i_sbnewtab').onchange = function () {
+		searchbar('newtab', this)
+	}
+
+	//settings
+
+	paramId('submitReset').onclick = function () {
+		importExport('reset')
+	}
+
+	paramId('submitExport').onclick = function () {
+		importExport('exp', true)
+	}
+
+	paramId('submitImport').onclick = function () {
+		importExport('imp', true)
+	}
+
+	paramId('i_import').onkeypress = function (e) {
+		e.code === 'Enter' ? importExport('imp', true) : ''
+	}
+
+	paramId('i_export').onfocus = function () {
+		importExport('exp')
+	}
+
+	paramId('i_customfont').onchange = function () {
+		customFont(null, { family: this.value })
+	}
+
+	paramId('i_weight').oninput = function () {
+		customFont(null, { weight: this.value })
+	}
+
+	paramId('i_size').oninput = function () {
+		customSize(null, this.value)
+	}
+
+	paramId('i_row').oninput = function () {
+		linksrow(null, this.value)
+	}
+
+	paramId('hideelem')
+		.querySelectorAll('button')
+		.forEach((elem) => {
+			elem.onmouseup = function () {
+				elem.classList.toggle('clicked')
+				hideElem(null, null, this)
+			}
+		})
+
+	const cssEditor = paramId('cssEditor')
+
+	cssEditor.addEventListener('keydown', function (e) {
+		if (e.code === 'Tab') e.preventDefault()
+	})
+
+	cssEditor.addEventListener('keyup', function (e) {
+		customCss(null, { is: 'styling', val: e.target.value })
+	})
+
+	setTimeout(() => {
+		const cssResize = new ResizeObserver((e) => {
+			const rect = e[0].contentRect
+			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+		})
+		cssResize.observe(cssEditor)
+	}, 400)
+}
+
+function showall(val, event, domSettings) {
+	if (event) chrome.storage.sync.set({ showall: val })
+	clas(event ? id('settings') : domSettings, val, 'all')
+}
+
+function selectBackgroundType(cat) {
+	id('dynamic').style.display = 'none'
+	id('custom').style.display = 'none'
+	id(cat).style.display = 'block'
+
+	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
+		//
+		// Applying functions
+		if (cat === 'custom') {
+			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
+		}
+		if (cat === 'dynamic') {
+			domoverlay.style.opacity = `0`
+			domcredit.style.display = 'block'
+			setTimeout(() => {
+				clas(domcredit, true, 'shown')
+				unsplash(data)
+			}, BonjourrAnimTime)
+		}
+
+		// Setting frequence
+		const c_every = data.custom_every || 'pause'
+		const d_every = data.dynamic.every || 'hour'
+
+		id('i_freq').value = cat === 'custom' ? c_every : d_every
+	})
+
+	chrome.storage.sync.set({ background_type: cat })
 }
 
 function importExport(select, isEvent) {
+	//
+	function importation() {
+		//
+		if (isEvent) {
+			const dom = id('i_import')
+			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
 
-	if (select === "exp") {
+			if (dom.value.length > 0) {
+				try {
+					// Filtered imports from input
+					const imported = filterImports(JSON.parse(dom.value))
 
-		const input = id("i_export");
-		const isOnChrome = (navigator.userAgent.includes("Chrome"));
+					// Load all sync & dynamicCache
+					chrome.storage.sync.get(null, (data) => {
+						chrome.storage.local.get('dynamicCache', (local) => {
+							//
+							// Remove user collection cache if collection change
+							if (data.dynamic && imported.dynamic) {
+								if (data.dynamic.collection !== imported.dynamic.collection) {
+									local.dynamicCache.user = []
+								}
+							}
+
+							// Mutate sync
+							data = { ...data, ...imported }
+
+							// Save sync & local
+							chrome.storage.sync.set(data, () => {
+								chrome.storage.local.set(local, () => location.reload())
+							})
+						})
+					})
+				} catch (e) {
+					dom.value = ''
+					placeholder('Error in import code')
+					setTimeout(() => placeholder('Import code'), 2000)
+				}
+			}
+		}
+	}
+
+	function exportation() {
+		const input = id('i_export')
+		const isOnChrome = navigator.userAgent.includes('Chrome')
 
 		chrome.storage.sync.get(null, (data) => {
-			input.value = JSON.stringify(data);
+			//
+			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+
+			input.value = JSON.stringify(data)
 
 			if (isEvent) {
-
-				input.select();
+				input.select()
 
 				//doesn't work on firefox for security reason
 				//don't want to add permissions just for this
 				if (isOnChrome) {
-					document.execCommand("copy");
-					id("submitExport").innerText = tradThis("Copied");
+					document.execCommand('copy')
+					id('submitExport').textContent = tradThis('Copied')
 				}
 			}
-		});
+		})
 	}
 
-	else if (select === "imp") {
+	function anihilation() {
+		let input = id('submitReset')
 
-		if (isEvent) {
-
-			let val = id("i_import").value;
-
-			if (val.length > 0) {
-
-				let data;
-
-				try {
-
-					data = JSON.parse(val);
-					chrome.storage.sync.set(data);
-					setTimeout(function() {
-						location.reload();
-					}, 20);
-
-				} catch(e) {
-					alert(e);
-				}
-			}
-		}
-	}
-
-	else if (select === "reset") {
-
-		let input = id("submitReset");
-
-		if (!input.hasAttribute("sure")) {
-
-			input.innerText = "Are you sure ?";
-			input.setAttribute("sure", "");
-
+		if (!input.hasAttribute('sure')) {
+			input.textContent = tradThis('Click again to confirm')
+			input.setAttribute('sure', '')
 		} else {
-
-			deleteBrowserStorage();
-			setTimeout(function() {
-				location.reload();
-			}, 20);
+			deleteBrowserStorage()
+			setTimeout(function () {
+				location.reload()
+			}, 20)
 		}
 	}
+
+	switch (select) {
+		case 'exp':
+			exportation()
+			break
+		case 'imp':
+			importation()
+			break
+		case 'reset':
+			anihilation()
+			break
+	}
+}
+
+function signature(dom) {
+	const span = document.createElement('span')
+	const us = [
+		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
+		{ href: 'https://tahoe.be', name: 'Tahoe Beetschen' },
+	]
+
+	if (Math.random() > 0.5) us.reverse()
+	span.textContent = ` & `
+
+	us.forEach((sign, i) => {
+		const a = document.createElement('a')
+		a.href = sign.href
+		a.textContent = sign.name
+		i === 0 ? span.prepend(a) : span.appendChild(a)
+	})
+
+	dom.querySelector('#rand').appendChild(span)
 }
 
 function showSettings() {
+	const edit = id('edit_linkContainer')
+	const settings = id('settings')
+	const settingsNotShown = has(settings, 'shown') === false
 
-	function display() {
-		const edit = id("edit_linkContainer");
-		const editClass = edit.getAttribute("class");
+	clas(dominterface, settingsNotShown, 'pushed')
+	clas(edit, settingsNotShown, 'pushed')
 
-		if (has("settings", "shown")) {
-			clas(domshowsettings.children[0], "");
-			clas(id("settings"), "");
-			clas(dominterface, "");
+	clas(settings, false, 'init')
+	clas(settings, settingsNotShown, 'shown')
+	clas(domshowsettings, settingsNotShown, 'shown')
+}
 
-			if (editClass === "shown pushed") clas(edit, "shown");
+function settingsInit(data) {
+	function settingsCreator(html) {
+		// HTML creation
+		const settingsDom = document.createElement('div')
+		settingsDom.id = 'settings'
+		settingsDom.innerHTML = html
+		settingsDom.setAttribute('class', 'init')
 
-		} else {
-			clas(domshowsettings.children[0], "shown");
-			clas(id("settings"), "shown");
-			clas(dominterface, "pushed");
+		// Input fillings
+		if (data.lang !== 'en') {
+			const trns = settingsDom.querySelectorAll('.trn')
+			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][data.lang]) : '')
+			trns.forEach((trn) => changeText(trn, trn.textContent))
+		}
 
-			if (editClass === "shown") clas(edit, "shown pushed");
+		customFont(null, { autocomplete: true, settingsDom: settingsDom })
+		signature(settingsDom)
+		initParams(data, settingsDom)
+		showall(data.showall, false, settingsDom)
+
+		// Apply to body
+		document.body.prepend(settingsDom)
+
+		// Add Events
+		if (sessionStorage.lang) showSettings()
+		domshowsettings.onclick = () => showSettings()
+		document.onkeyup = (e) => (e.code === 'Escape' ? showSettings() : '')
+	}
+
+	switch (window.location.protocol) {
+		case 'file:': {
+			const xhr = new XMLHttpRequest()
+			xhr.open('POST', 'settings.html', true)
+			xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
+			xhr.send()
+			break
+		}
+
+		case 'http:':
+		case 'https:':
+		case 'chrome-extension:':
+		case 'moz-extension:': {
+			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
 		}
 	}
 
-	function functions() {
+	dominterface.onclick = (e) => showInterface(e)
+	document.onkeydown = (e) => {
+		//focus la searchbar si elle existe et les settings sont fermé
+		const searchbarOn = has(id('sb_container'), 'shown') === true
+		const noEdit = has(id('edit_linkContainer'), 'shown') === false
+		const noSettings = has(id('settings'), 'shown') === false
 
-		initParams()
-		traduction(true)
-		setTimeout(function() {
-			display()
-			showall()
-			settingsEvents()
-			signature()
-		}, 10)
+		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
 	}
-
-	function init() {
-		let node = document.createElement("div");
-		let xhttp = new XMLHttpRequest();
-
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				if (this.status == 200) {
-
-					node.id = "settings";
-					node.innerHTML = this.responseText;
-					document.body.appendChild(node);
-
-					functions()
-				}
-			}
-		}
-
-		xhttp.open("GET", "/settings.html", true);
-		xhttp.send();
-	}
-
-	if (!id("settings")) init()
-	else display()
 }
 
 function showInterface(e) {
-
 	//cherche le parent du click jusqu'a trouver linkblocks
 	//seulement si click droit, quitter la fct
-	let parent = e.target;
+	let parent = e.target
+	const edit = id('edit_linkContainer')
+	const settings = id('settings')
 
 	while (parent !== null) {
-
-		parent = parent.parentElement;
-		if (parent && parent.id === "linkblocks" && e.which === 3) return false;
+		parent = parent.parentElement
+		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
 	}
 
 	//close edit container on interface click
-	if (has("edit_linkContainer", "shown")) {
-		clas(id("edit_linkContainer"), "");
-		domlinkblocks.querySelectorAll(".l_icon_wrap").forEach(function(e) {clas(e, "l_icon_wrap")})
+	if (has(edit, 'shown')) {
+		clas(edit, false, 'shown')
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
 	}
 
-	if (has("settings", "shown")) {
+	if (has(settings, 'shown')) {
+		clas(settings, false, 'shown')
+		clas(domshowsettings, false, 'shown')
+		clas(dominterface, false, 'pushed')
 
-		let edit = id("edit_linkContainer");
-		let editClass = edit.getAttribute("class");
-		let ui = dominterface;
-		let uiClass = dominterface.getAttribute("class");
-
-		clas(id("showSettings").children[0], "");
-		clas(id("settings"), "");
-		clas(dominterface, "");
-
-		if (editClass === "shown pushed") clas(edit, "shown");
+		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
 	}
-}
-
-domshowsettings.onmouseup = function() {showSettings()}
-dominterface.onmouseup = function(e) {showInterface(e)}
-
-document.onkeydown = function(e) {
-
-	//focus la searchbar si elle existe et les settings sont fermé
-	const searchbar = (id("sb_container") ? has("sb_container", "shown") : false);
-	const settings = (id("settings") ? has("settings", "shown") : false);
-	const edit = has("edit_linkContainer", "shown");
-
-	if (searchbar && !settings && !edit) id("searchbar").focus()
-
-	//press escape to show settings
-	if (e.code === "Escape") showSettings()
 }

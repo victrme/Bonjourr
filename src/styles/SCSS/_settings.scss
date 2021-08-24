@@ -1,0 +1,590 @@
+#showSettings {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	opacity: 0;
+	z-index: 3;
+	padding: 0 1.5em 1.5em 0;
+	transition: opacity 0.4s;
+
+	button {
+		height: 4em;
+		width: 4em;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		background-color: #ffffff00;
+		transition: background-color 0.2s;
+		padding: unset;
+
+		@include allCentered();
+
+		img {
+			width: 65%;
+			transition: transform 0.6s $easeOutThree;
+			will-change: transform;
+			// filter: drop-shadow(0px 1px 15px #0008);
+		}
+	}
+
+	&.init {
+		transition: opacity 0s;
+		button img {
+			transition: transform 0s;
+		}
+	}
+
+	// Doit etre dans cette ordre pour la hierarchie
+	&.enabled {
+		opacity: 1;
+	}
+
+	&.he_hidden {
+		opacity: 0;
+	}
+
+	&:hover {
+		opacity: 1;
+
+		button {
+			background: #777;
+			@include frostedGlass($a: 0.3);
+		}
+
+		img {
+			transform: rotate(15deg);
+		}
+	}
+
+	&.shown {
+		button {
+			@include frostedGlass($r: 171, $g: 171, $b: 171);
+
+			img {
+				transform: rotate(60deg);
+			}
+
+			&:hover {
+				@include frostedGlass($r: 119, $g: 119, $b: 119);
+			}
+		}
+	}
+}
+
+#settings {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	z-index: 2;
+	right: -450px;
+	width: 450px;
+	height: 100vh;
+	overflow-y: auto;
+
+	background-color: $settingsGrey;
+	color: $blackish;
+	font-size: 15px;
+	font-weight: 400;
+	text-shadow: none;
+	text-align: left;
+
+	will-change: transform;
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	transition: transform 0.4s, background-color 0.6s;
+
+	&.shown {
+		-webkit-transform: translateX(-100%);
+		transform: translateX(-100%);
+		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+	}
+
+	&.init {
+		#sett_city,
+		#clockoptions #w_clockface,
+		#clockoptions #w_ampm,
+		#searchbar_options {
+			transition: max-Height 0s;
+		}
+	}
+
+	// Safari composing layers
+	.param > *:not(hr),
+	#hideelem button,
+	#cssEditor {
+		transform: translate3d(0, 0, 0);
+		-webkit-transform: translate3d(0, 0, 0);
+	}
+
+	input[type='text'] {
+		will-change: background-color;
+	}
+
+	@include allSettings();
+
+	a:hover,
+	button:hover {
+		text-decoration: underline;
+	}
+
+	hr {
+		border: none;
+		border-bottom: 1px solid $inputGrey;
+		width: 100%;
+	}
+
+	h1,
+	h5,
+	span {
+		margin: 0;
+	}
+
+	.titleContainer {
+		display: flex;
+		margin: 1em 3rem;
+		margin-top: 2em;
+		color: #6d6d72;
+		justify-content: space-between;
+		align-items: center;
+		position: relative;
+
+		h5 {
+			text-transform: uppercase;
+			font-weight: 400;
+			letter-spacing: 1px;
+		}
+
+		.tooltip {
+			background-color: $inputGrey;
+		}
+	}
+
+	.help_sentence {
+		margin-top: 0.5em;
+		font-size: 0.8em;
+	}
+
+	.tooltip {
+		background-color: $settingsGrey;
+		color: $placeholderGrey;
+		padding: 0 6px;
+		height: 20px;
+		border-radius: 100%;
+		cursor: pointer;
+
+		@include allCentered();
+	}
+
+	.tooltiptext {
+		color: #6d6d72;
+		font-size: 13px;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.4s, margin 0.4s;
+
+		a {
+			color: $blue;
+			text-decoration: none;
+		}
+
+		&.ttlinks {
+			margin: 0 3rem;
+			&.shown {
+				margin-bottom: 1rem;
+				max-height: 55px;
+			}
+		}
+
+		&.ttcoll {
+			&.shown {
+				margin: 1rem 0 0.5em 0;
+				max-height: 50px;
+			}
+		}
+	}
+
+	@include settingsBase();
+
+	.title {
+		background-color: #ffffff;
+		border-top: 1px solid $borderGrey;
+		border-bottom: 1px solid $borderGrey;
+		padding: 0.5em 0;
+	}
+
+	.param {
+		background-color: #ffffff;
+		padding: 0.75em 1.3em;
+
+		@include radiusSettings();
+		@include marginSettings();
+	}
+
+	.wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 34px;
+		position: relative;
+
+		span {
+			display: flex;
+		}
+
+		.tooltip {
+			margin: 0 7px;
+		}
+	}
+
+	.link_input_wrap {
+		input[type='text'] {
+			width: calc(100% - 10px);
+		}
+
+		#i_title {
+			margin-bottom: 0.5em;
+		}
+
+		> div {
+			display: flex;
+			align-items: center;
+		}
+
+		#submitlink {
+			margin-left: 1em;
+			transition: filter 0.4s;
+
+			&.max {
+				filter: grayscale(1);
+				text-decoration: none;
+				cursor: default;
+			}
+		}
+	}
+
+	#default,
+	#dynamic,
+	#custom {
+		display: none;
+	}
+
+	#custom_thumbnail {
+		height: 100px;
+	}
+
+	#fileContainer {
+		overflow: hidden;
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 73px;
+		min-width: 200px;
+		line-height: 73px;
+		font-size: 14px;
+		text-align: center;
+		cursor: pointer;
+		color: $blue;
+		background-color: $settingsGrey;
+		border: 1px dashed transparent;
+		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+
+		@include radiusSettings();
+
+		#i_bgfile {
+			position: absolute;
+			display: block;
+			overflow: hidden;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			height: 75px;
+			min-width: 200px;
+			cursor: pointer;
+		}
+
+		&:hover {
+			opacity: 0.8;
+		}
+
+		&.dragover {
+			background-color: $blue;
+			color: $purewhite;
+		}
+
+		&:active {
+			background-color: $inputGrey;
+		}
+	}
+
+	#bg_tn_wrap {
+		display: flex;
+		align-items: flex-start;
+		padding: 10px 0;
+		overflow: auto;
+
+		img {
+			height: 75px;
+			@include radiusSettings();
+		}
+
+		.thumbnail {
+			margin-right: 1em;
+			position: relative;
+			cursor: pointer;
+			filter: grayscale(0.2);
+			transition: filter 0.2s;
+
+			&:hover {
+				filter: grayscale(0) brightness(1.2);
+			}
+
+			button {
+				position: absolute;
+				top: 5px;
+				left: 5px;
+				width: 25px;
+				height: 25px;
+				background: #fffd;
+				color: #333;
+				font-size: 10px;
+				border-radius: 100%;
+				cursor: pointer;
+				text-decoration: none;
+				transition: opacity 0.2s, filter 0.2s;
+
+				&.hidden {
+					opacity: 0;
+				}
+
+				&.shown {
+					opacity: 1;
+
+					&:hover {
+						filter: brightness(0.9);
+					}
+					&:active {
+						filter: brightness(0.7);
+					}
+				}
+			}
+		}
+
+		&::-webkit-scrollbar {
+			height: 6px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: $settingsGrey;
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: $borderGrey;
+			border-radius: 4px;
+		}
+	}
+
+	// Hide elements
+
+	#hideelem {
+		margin: 1em auto 1em auto;
+		max-width: 250px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+
+		> div {
+			margin-top: 7px;
+			display: flex;
+			overflow: hidden;
+		}
+
+		button {
+			text-align: left;
+			background-color: $settingsGrey;
+			color: $blue;
+			text-align: center;
+			font-size: small;
+			margin-right: 5px;
+			width: 100%;
+			height: 2.35em;
+			opacity: 1;
+			transition: all 0.2s;
+
+			@include radiusSettings();
+
+			&.clicked {
+				color: $borderGrey;
+				background-color: white;
+			}
+
+			&:hover {
+				text-decoration: none;
+				opacity: 0.8;
+			}
+		}
+	}
+
+	#clockoptions {
+		#w_clockface,
+		#w_ampm {
+			opacity: 1;
+			min-height: 0;
+			max-height: 3em;
+			overflow: hidden;
+			transition: max-height 0s 0.2s, opacity 0.2s;
+		}
+
+		&.digital #w_clockface,
+		&.analog #w_ampm {
+			max-height: 0;
+			opacity: 0;
+		}
+	}
+
+	#sett_city {
+		flex-direction: column;
+		max-height: 50px;
+		overflow: hidden;
+		transition: max-Height 0.4s;
+
+		&.hidden {
+			max-height: 0;
+		}
+
+		.wrapper {
+			margin-top: 1em;
+			display: inline-block;
+			width: 100%;
+
+			div {
+				display: flex;
+				width: 100%;
+			}
+
+			input {
+				width: 50%;
+				margin-left: 0.5em;
+				text-transform: capitalize;
+			}
+
+			select {
+				width: 50%;
+				display: flex;
+				align-self: center;
+			}
+		}
+	}
+
+	#submitlink,
+	#submitExport,
+	#submitImport,
+	#submitReset {
+		background-color: transparent;
+	}
+
+	#submitReset {
+		margin: auto;
+	}
+
+	#searchbar_options {
+		overflow: hidden;
+		max-height: 0;
+		transition: max-height 0.4s;
+
+		&.shown {
+			max-height: 118px;
+		}
+
+		#choose_searchengine {
+			&.shown {
+				display: block;
+			}
+
+			@include hidden();
+		}
+	}
+
+	#i_customfont {
+		text-transform: capitalize;
+	}
+
+	#i_weight option {
+		display: none;
+	}
+
+	#e_weight,
+	#e_size {
+		width: 50px;
+	}
+
+	#cssEditor {
+		width: calc(100% - 42px);
+		min-height: 100px;
+		max-height: 3000px;
+		resize: vertical;
+		border: none;
+		padding: 0.75em 1.3em;
+		font-family: 'Courier New', Courier, monospace;
+		box-sizing: border-box;
+		@include radiusSettings();
+		@include marginSettings();
+	}
+
+	#submitImport,
+	#submitExport {
+		margin-left: 1em;
+	}
+
+	#i_import {
+		margin-bottom: 0.5em;
+	}
+
+	#i_import,
+	#i_export {
+		width: 100%;
+	}
+
+	.signature {
+		text-align: left;
+		color: #6d6d72;
+		font-size: 14px;
+		padding: 4em 2em;
+
+		// Safari iOS only
+		@supports (-webkit-touch-callout: none) {
+			padding-bottom: 150px;
+		}
+
+		a {
+			text-decoration: none;
+			color: $blue;
+		}
+
+		.firstblock {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 1.5em;
+
+			.socialIcons {
+				width: 6em;
+				display: flex;
+				justify-content: space-between;
+
+				a {
+					display: flex;
+					align-items: center;
+
+					svg {
+						width: 1.25em;
+						fill: $blue;
+					}
+				}
+			}
+		}
+
+		#rdv_website {
+			margin-top: 1.5em;
+		}
+	}
+}
