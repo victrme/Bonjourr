@@ -8,14 +8,15 @@
 	transition: opacity 0.4s;
 
 	button {
+		position: relative;
 		height: 4em;
 		width: 4em;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
-		background-color: #ffffff00;
-		transition: background-color 0.2s;
 		padding: unset;
+		background-color: transparent;
+		transition: background-color 0.6s $easeOutThree;
 
 		@include allCentered();
 
@@ -23,7 +24,6 @@
 			width: 65%;
 			transition: transform 0.6s $easeOutThree;
 			will-change: transform;
-			// filter: drop-shadow(0px 1px 15px #0008);
 		}
 	}
 
@@ -46,11 +46,6 @@
 	&:hover {
 		opacity: 1;
 
-		button {
-			background: #777;
-			@include frostedGlass($a: 0.3);
-		}
-
 		img {
 			transform: rotate(15deg);
 		}
@@ -58,14 +53,14 @@
 
 	&.shown {
 		button {
-			@include frostedGlass($r: 171, $g: 171, $b: 171);
+			@include frostedGlass($r: 160, $g: 160, $b: 160);
 
 			img {
 				transform: rotate(60deg);
 			}
 
 			&:hover {
-				@include frostedGlass($r: 119, $g: 119, $b: 119);
+				@include frostedGlass($r: 100, $g: 100, $b: 100);
 			}
 		}
 	}
