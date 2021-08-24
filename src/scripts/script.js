@@ -1500,9 +1500,9 @@ function unsplash(init, event) {
 
 		// Collection control
 		const longEveries = every === 'pause' || every === 'day'
-		const collecId = longEveries ? lastCollec : chooseCollection(collection)
+		const collecId = longEveries && lastCollec ? lastCollec : chooseCollection(collection)
 
-		if (collecId !== lastCollec) {
+		if (collecId !== lastCollec || lastCollec === '') {
 			dynamic.lastCollec = collecId
 			chrome.storage.sync.set({ dynamic: dynamic })
 		}
@@ -1889,7 +1889,7 @@ function customSize(init, event) {
 	}
 }
 
-function modifyWeightOptions(weights, settingsDom, isCustomFont) {
+function modifyWeightOptions(weights, settingsDom) {
 	const select = (settingsDom ? settingsDom : id('settings')).querySelector('#i_weight')
 	const options = select.querySelectorAll('option')
 
@@ -1909,7 +1909,6 @@ function modifyWeightOptions(weights, settingsDom, isCustomFont) {
 			options.forEach(
 				(option) => (option.style.display = weights.indexOf(parseInt(option.value)) !== -1 ? 'block' : 'none')
 			)
-			select.value = isCustomFont ? '400' : '300'
 		}
 	}
 }
@@ -1934,7 +1933,7 @@ function safeFont(settingsDom) {
 
 	if (settingsDom) {
 		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
-		modifyWeightOptions(toUse.weights, settingsDom, false)
+		modifyWeightOptions(toUse.weights, settingsDom)
 	}
 }
 
@@ -2001,10 +2000,13 @@ function customFont(data, event) {
 			const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
 			const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`
 
-			// Change l'url, et les weight options
+			// Change l'url
 			apply(url, font[0].family, 400)
 			save(url, font[0].family, availWeights, 400)
+
+			// Et les weight options
 			modifyWeightOptions(availWeights, null, true)
+			id('i_weight').value = '400'
 
 			if (dom) dom.blur()
 		} else dom.value = ''
@@ -2036,6 +2038,8 @@ function customFont(data, event) {
 			id('searchbar').style.fontWeight = ''
 			dominterface.style.fontFamily = ''
 			dominterface.style.fontWeight = ''
+
+			id('i_weight').value = '300'
 
 			safeFont(id('settings'))
 			save()
