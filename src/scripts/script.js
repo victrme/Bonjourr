@@ -63,14 +63,17 @@ function clock(event, init) {
 
 	function greetings(date, name) {
 		const greets = [
-			['Good Night', 7],
-			['Good Morning', 12],
-			['Good Afternoon', 18],
-			['Good Evening', 24],
+			['Good night', 7],
+			['Good morning', 12],
+			['Good afternoon', 18],
+			['Good evening', 24],
 		]
 
+		const domgreetings = id('greetings')
 		const greetResult = greets.filter((greet) => date.getHours() < greet[1])[0]
-		id('greetings').textContent = tradThis(greetResult[0]) + (name ? `, ${name}` : '')
+
+		domgreetings.style.textTransform = name ? 'none' : 'capitalize'
+		domgreetings.textContent = tradThis(greetResult[0]) + (name ? `, ${name}` : '')
 	}
 
 	function changeAnalogFace(face = 'none') {
