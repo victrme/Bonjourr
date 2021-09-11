@@ -482,22 +482,27 @@
 		margin: auto;
 	}
 
-	#searchbar_options {
+	#searchbar_options,
+	#searchbar_request {
 		overflow: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
+	}
 
+	#searchbar_request.shown {
+		max-height: 60px;
+	}
+
+	#searchbar_options.shown {
+		max-height: 185px;
+	}
+
+	#searchbar_options #choose_searchengine {
 		&.shown {
-			max-height: 118px;
+			display: block;
 		}
 
-		#choose_searchengine {
-			&.shown {
-				display: block;
-			}
-
-			@include hidden();
-		}
+		@include hidden();
 	}
 
 	#i_customfont {

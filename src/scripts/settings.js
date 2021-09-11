@@ -27,6 +27,7 @@ function initParams(data, settingsDom) {
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_greeting', data.greeting, '')
 	initInput('i_sbengine', data.searchbar_engine, 'google')
+	initInput('i_sbrequest', data.searchbar_request, '')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
@@ -64,6 +65,7 @@ function initParams(data, settingsDom) {
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
 	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
@@ -92,6 +94,7 @@ function initParams(data, settingsDom) {
 
 	//searchbar display settings
 	clas(paramId('searchbar_options'), data.searchbar, 'shown')
+	clas(paramId('searchbar_request'), data.searchbar_engine === 'custom', 'shown')
 
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
@@ -259,6 +262,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_sbengine').onchange = function () {
 		searchbar('engine', this)
+	}
+
+	paramId('i_sbrequest').onchange = function () {
+		searchbar('request', this)
 	}
 
 	paramId('i_sbnewtab').onchange = function () {

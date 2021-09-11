@@ -583,7 +583,7 @@
 							<option value="ZM">Zambia</option>
 							<option value="ZW">Zimbabwe</option>
 						</select>
-						<input id="i_city" type="text" name="city" placeholder="City" autocomplete="off" />
+						<input id="i_city" type="text" name="city" placeholder="City" autocomplete="off" maxlength="64" />
 					</div>
 				</div>
 
@@ -632,33 +632,30 @@
 					</div>
 				</div>
 
-				<div id="choose_searchengine">
+				<hr />
+
+				<div class="wrapper">
+					<span class="trn">Search engine</span>
+					<select id="i_sbengine" class="choose_search">
+						<option value="google">Google</option>
+						<option value="ddg">DuckDuckGo</option>
+						<option value="bing">Bing</option>
+						<option value="yahoo">Yahoo</option>
+						<option value="startpage">Startpage</option>
+						<option value="brave">Brave</option>
+						<option value="lilo">Lilo</option>
+						<option value="ecosia">Ecosia</option>
+						<option value="qwant">Qwant</option>
+						<option value="custom">Custom</option>
+					</select>
+				</div>
+
+				<div id="searchbar_request">
 					<hr />
-
 					<div class="wrapper">
-						<span class="trn">Search engine</span>
-						<select id="i_sbengine" class="choose_search">
-							<option value="google">Google</option>
-							<option value="ddg">DuckDuckGo</option>
-							<option value="bing">Bing</option>
-							<option value="yahoo">Yahoo</option>
-							<option value="startpage">Startpage</option>
-							<option value="lilo">Lilo</option>
-							<option value="ecosia">Ecosia</option>
-							<option value="qwant">Qwant</option>
-						</select>
+						<span class="trn">URL Request</span>
+						<input type="text" name="sbrequest" id="i_sbrequest" placeholder="Search query: %s" maxlength="512" />
 					</div>
-
-					<!-- 
-					<div>
-						<hr>
-
-						<div class="wrapper">
-							<span class="trn">Parameters</span>
-							<input type="text" name="sbparams" id="i_sbparams" placeholder="&l=en">
-						</div>
-					</div>
-					-->
 				</div>
 			</div>
 		</div>

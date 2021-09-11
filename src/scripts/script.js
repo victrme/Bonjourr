@@ -998,7 +998,7 @@ function weather(event, that, init) {
 					}
 
 					data.weather.ccode = i_ccode.value
-					data.weather.city = i_city.value
+					data.weather.city = stringMaxSize(i_city.value, 64)
 
 					fetches(data.weather)
 
@@ -1751,30 +1751,39 @@ function searchbar(event, that, storage) {
 	function localisation(q) {
 		let response = '',
 			lang = document.documentElement.getAttribute('lang'),
-			engine = domsearchbar.getAttribute('engine')
+			engine = domsearchbar.getAttribute('engine'),
+			request = domsearchbar.getAttribute('request')
 
 		// engineLocales est dans lang.js
-		response = engineLocales[engine].base.replace('$locale$', engineLocales[engine][lang]).replace('$query$', q)
 
-		return response
+		if (engine === 'custom') response = request
+		else response = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+
+		return response.replace('%s', q)
 	}
 
 	function engine(value, init) {
-		// const names = {
-		// 	startpage: 'Startpage',
-		// 	ddg: 'DuckDuckGo',
-		// 	qwant: 'Qwant',
-		// 	lilo: 'Lilo',
-		// 	ecosia: 'Ecosia',
-		// 	google: 'Google',
-		// 	yahoo: 'Yahoo',
-		// 	bing: 'Bing',
-		// }
-
-		if (!init) chrome.storage.sync.set({ searchbar_engine: value })
-
-		//domsearchbar.setAttribute('placeholder', tradThis('Search on ' + names[value]))
 		domsearchbar.setAttribute('engine', value)
+
+		if (!init) {
+			chrome.storage.sync.set({ searchbar_engine: value })
+			clas(id('searchbar_request'), value === 'custom', 'shown')
+		}
+	}
+
+	function request(value, init, that) {
+		if (!init) {
+			if (value.indexOf('%s') !== -1) {
+				chrome.storage.sync.set({ searchbar_request: stringMaxSize(value, 512) })
+				that.blur()
+			} else if (value.length > 0) {
+				that.value = ''
+				that.setAttribute('placeholder', tradThis('%s Not found'))
+				setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+			}
+		}
+
+		domsearchbar.setAttribute('request', stringMaxSize(value, 512))
 	}
 
 	function setNewtab(value, init) {
@@ -1800,6 +1809,10 @@ function searchbar(event, that, storage) {
 			engine(that.value)
 			break
 
+		case 'request':
+			request(that.value, false, that)
+			break
+
 		case 'newtab':
 			setNewtab(that.checked)
 			break
@@ -1808,11 +1821,13 @@ function searchbar(event, that, storage) {
 		default: {
 			const searchbar = storage.searchbar || false,
 				searchengine = storage.searchbar_engine || 'google',
-				searchbarnewtab = storage.searchbar_newtab || false
+				searchbarnewtab = storage.searchbar_newtab || false,
+				searchbarrequest = storage.searchbar_request || ''
 
 			//display
 			display(searchbar, true)
 			engine(searchengine.replace('s_', ''), true)
+			request(searchbarrequest, true)
 			setNewtab(searchbarnewtab, true)
 
 			// 1.9.2 ==> 1.9.3 lang breaking fix
