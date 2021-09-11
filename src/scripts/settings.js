@@ -48,7 +48,7 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
 	// Links limit
-	if (data.links && data.links.length === 20) quickLinks('maxControl', settingsDom)
+	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)

@@ -135,8 +135,8 @@ function clock(event, init) {
 				}
 
 				let s = time.getSeconds() * 6,
-					m = time.getMinutes() * 6, // + (s / 60),
-					h = time.getHours() * 30 //% 12 / 12 * 360 + (m / 12);
+					m = time.getMinutes() * 6,
+					h = time.getHours() * 30
 
 				//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
 				if (true || time.getMinutes() === 0) rotation(id('minutes'), m)
@@ -327,7 +327,7 @@ function quickLinks(event, that, initStorage) {
 	function appendblock(link) {
 		let icon = link.icon
 		let title = stringMaxSize(link.title, 32)
-		let url = stringMaxSize(link.url, 256)
+		let url = stringMaxSize(link.url, 128)
 
 		// no icon ? + 1.9.2 dead favicons fix
 		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
@@ -503,7 +503,7 @@ function quickLinks(event, that, initStorage) {
 
 		const updated = {
 			title: stringMaxSize(e_title.value, 32),
-			url: stringMaxSize(e_url.value, 256),
+			url: stringMaxSize(e_url.value, 128),
 			icon: stringMaxSize(e_iconurl.value, 8080),
 		}
 
@@ -667,7 +667,7 @@ function quickLinks(event, that, initStorage) {
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				if (links.length === 20) linksInputDisable(true)
+				if (links.length === 30) linksInputDisable(true)
 
 				const lIcon = appendblock(filteredLink, index, links)
 				addIcon(lIcon, links, index, true)
@@ -685,7 +685,7 @@ function quickLinks(event, that, initStorage) {
 
 		let links = {
 			title: stringMaxSize(id('i_title').value, 32),
-			url: stringMaxSize(filterUrl(id('i_url').value), 256),
+			url: stringMaxSize(filterUrl(id('i_url').value), 128),
 			icon: 'src/assets/interface/loading.gif',
 		}
 
