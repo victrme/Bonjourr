@@ -11,9 +11,6 @@ function initParams(data, settingsDom) {
 		dom.classList.add(analog ? 'analog' : 'digital')
 	}
 
-	// 1.9.2 ==> 1.9.3 lang break fix
-	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
-
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'

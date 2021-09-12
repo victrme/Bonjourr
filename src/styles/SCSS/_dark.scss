@@ -1,19 +1,6 @@
 @mixin darkCss {
 	#interface {
 		color: #eee;
-
-		// 	#sb_container #searchbar {
-		// 		// @include frostedGlass($color: rgba(70, 70, 70, 0.4), $blur: 5px);
-
-		// 		&:focus {
-		// 			// @include frostedGlass($color: rgba(70, 70, 70, 0.6), $blur: 15px);
-		// 		}
-		// 	}
-		// }
-
-		// #interface #time #time-container #analogClock,
-		// #popup {
-		// 	// @include frostedGlass($color: #0003, $blur: 10px);
 	}
 
 	#edit_linkContainer {
@@ -43,10 +30,8 @@
 	}
 
 	#popup {
-		@supports not (backdrop-filter: none) {
-			background-color: #2c2c2fcc;
-			color: white;
-		}
+		color: white;
+		@include frostedGlass($tint: 28, $fbTint: 28, $fbAlpha: 1, $fbColor: white);
 	}
 
 	#showSettings.shown button {

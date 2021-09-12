@@ -1842,11 +1842,9 @@ function showPopup(data) {
 		divPopup.id = 'popup'
 		divPopup.innerHTML = `<span>${tradThis(
 			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
-		)}</span><div class='choices'><a href='${setReviewLink()}' target='_blank'>${tradThis(
+		)}</span><div class='choices'><a href='${setReviewLink()}'>${tradThis(
 			'Review'
-		)}</a><a href='http://bonjourr.fr/#donate' target='_blank'>${tradThis(
-			'Donate'
-		)}</a></div> <p id='closePopup'>&times;</p>`
+		)}</a><a href='http://bonjourr.fr/#donate'>${tradThis('Donate')}</a></div> <p id='closePopup'>&times;</p>`
 
 		document.body.appendChild(divPopup)
 
@@ -2327,7 +2325,7 @@ function filterImports(data) {
 	}
 
 	// 's_' before every search engines
-	if (data.searchbar_engine) result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+	if (data.searchbar_engine) result.searchbar_engine = data.searchbar_engine
 
 	result.searchbar = {
 		on: data.searchbar || false,
@@ -2424,12 +2422,10 @@ window.onload = function () {
 	try {
 		chrome.storage.sync.get(null, (data) => {
 			//
-			const whichStart =
-				Object.keys(data).length === 0
-					? 'firstStartup'
-					: data.about && data.about.version !== '1.10.0'
-					? 'newVersion'
-					: 'normal'
+			let newVersion = !data.about
+			if (data.about) newVersion = data.about.version !== version
+
+			const whichStart = Object.keys(data).length === 0 ? 'firstStartup' : newVersion ? 'newVersion' : 'normal'
 
 			switch (whichStart) {
 				case 'firstStartup': {
@@ -2443,7 +2439,7 @@ window.onload = function () {
 				}
 
 				case 'newVersion': {
-					data.about.version = '1.10.0'
+					data.about = { browser, version }
 					data = filterImports(data)
 					chrome.storage.sync.set(data)
 					startup(data)
@@ -2456,6 +2452,15 @@ window.onload = function () {
 			}
 		})
 	} catch (error) {
-		prompt(`Bonjourr messed up 😭😭 Copy this message and contact us!`, error.stack, error.line)
+		const warning = document.createElement('div')
+
+		warning.id = 'bonjourrError'
+		warning.innerHTML = `
+			<h1>Bonjourr messed up 😖😖</h1>
+			<p>Copy this message and contact us!</p>
+			<pre>${error.stack}</pre>
+		`
+
+		document.body.prepend(warning)
 	}
 }

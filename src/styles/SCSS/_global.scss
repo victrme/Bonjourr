@@ -112,26 +112,17 @@ body {
 	border-radius: 10px;
 }
 
-@mixin frostedGlass($r: 255, $g: 255, $b: 255, $a: 0.4, $blur: 5px) {
+@mixin frostedGlass($tint: 255, $alpha: 0.4, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: #222) {
 	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
 		backdrop-filter: blur($blur);
 		-webkit-backdrop-filter: blur($blur);
-		background: rgba($r, $g, $b, $a);
+		background: rgba($tint, $tint, $tint, $alpha);
+	}
 
-		// &:hover {
-		// 	backdrop-filter: blur(calc(#{$blur} + 10px));
-		// 	background: rgba($r, $g, $b, calc(#{$a} + 0.1));
-		// }
-
-		// possible dark mode?
-		// @media (prefers-color-scheme: dark) {
-		// 	background-color: rgba($r, $g, $b, $a);
-
-		// 	&:hover {
-		// 		// -webkit-backdrop-filter: blur(calc(#{$blur} + 10px));
-		// 		background-color: rgba($r, $g, $b, calc(#{$a} + .1));
-		// 	}
-		// }
+	// fb: fallback
+	@supports not ((backdrop-filter: none) or (-webkit-backdrop-filter: none)) {
+		background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
+		color: $fbColor;
 	}
 }
 

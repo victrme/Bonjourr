@@ -83,7 +83,7 @@
 				width: 8em;
 				box-shadow: $textShadow;
 
-				@include frostedGlass($a: 0.2);
+				@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2);
 
 				&:hover {
 					background: rgba(255, 255, 255, 0.2);
@@ -253,7 +253,7 @@
 		max-width: calc(90% - 4em);
 		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
 
-		@include frostedGlass($a: 0.05, $blur: 10px);
+		@include frostedGlass($alpha: 0.1, $fbAlpha: 0.25);
 
 		#searchbar {
 			height: 2.5em;
@@ -263,12 +263,12 @@
 			color: #fff;
 			border: 0;
 			border-radius: 10px;
-			background-color: #fff1;
 			font-family: $fonts;
+			background-color: transparent;
 			transition: background-color 0.2s;
 
 			&:focus {
-				background-color: #fff3;
+				@include frostedGlass($blur: 0, $alpha: 0.2, $fbTint: 255, $fbAlpha: 0.8, $fbColor: #222);
 			}
 
 			&::placeholder {
@@ -440,7 +440,7 @@
 	width: 100%;
 	z-index: 1;
 	transition: transform 0.4s;
-	@include frostedGlass($a: 0, $blur: 40px);
+	@include frostedGlass($alpha: 0, $blur: 40px, $fbAlpha: 0.2);
 
 	&.pushed {
 		-webkit-transform: translateX(-160px);
@@ -626,7 +626,6 @@
 	}
 }
 
-// review popup
 #popup {
 	position: absolute;
 	justify-content: space-between;
@@ -642,26 +641,16 @@
 	transform: translateX(-100%);
 
 	@include allCentered();
-	@include frostedGlass($a: 0.2, $blur: 20px);
+	@include frostedGlass($alpha: 0.2, $blur: 20px);
 
 	span {
 		text-shadow: $textShadow;
-	}
-
-	@supports not (backdrop-filter: none) {
-		background-color: rgba(255, 255, 255, 0.8);
-		color: $blackish;
-
-		span {
-			text-shadow: none;
-		}
 	}
 
 	&.shown {
 		opacity: 1;
 		transform: translateX(0);
 		transition: background-color 0.2s, backdrop-filter 0.2s, transform 2s 2s;
-		//box-shadow: $textShadow;
 	}
 
 	&.removing {
@@ -709,6 +698,23 @@
 		&:active {
 			filter: brightness(80%);
 		}
+	}
+}
+
+#bonjourrError {
+	height: 80vh;
+	width: 80vw;
+	margin: 0 10vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	pre {
+		white-space: normal;
+		word-break: break-all;
+		user-select: all;
+		cursor: text;
 	}
 }
 

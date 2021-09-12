@@ -34,6 +34,8 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
+	version = '1.10.0',
+	browser = 'chrome',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -162,7 +164,7 @@ function bonjourrDefaults(which) {
 					size: mobilecheck ? '11' : '14',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: 'chrome', version: '1.10.0' },
+				about: { browser, version },
 			}
 
 		case 'local':
