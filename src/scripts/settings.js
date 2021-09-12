@@ -26,8 +26,8 @@ function initParams(data, settingsDom) {
 	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_greeting', data.greeting, '')
-	initInput('i_sbengine', data.searchbar_engine, 'google')
-	initInput('i_sbrequest', data.searchbar_request, '')
+	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
+	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
@@ -37,12 +37,12 @@ function initParams(data, settingsDom) {
 	initInput('i_size', isThereData('font', 'size'), 16)
 
 	initCheckbox('i_showall', data.showall)
+	initCheckbox('i_linknewtab', data.linknewtab)
+	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_geol', isThereData('weather', 'location'))
 	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
-	initCheckbox('i_linknewtab', data.linknewtab)
-	initCheckbox('i_sb', data.searchbar)
-	initCheckbox('i_sbnewtab', !!data.searchbar_newtab)
-	initCheckbox('i_usdate', data.usdate)
+	initCheckbox('i_sb', isThereData('searchbar', 'on'))
+	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
@@ -93,8 +93,8 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar display settings
-	clas(paramId('searchbar_options'), data.searchbar, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar_engine === 'custom', 'shown')
+	clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
+	clas(paramId('searchbar_request'), data.searchbar.engine === 'custom', 'shown')
 
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'

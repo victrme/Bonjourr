@@ -1741,102 +1741,86 @@ function darkmode(choice, init) {
 	else apply(init.dark, init.weather)
 }
 
-function searchbar(event, that, storage) {
-	function display(value, init) {
-		id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
+function searchbar(event, that, init) {
+	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
+	const engine = (value) => domsearchbar.setAttribute('engine', value)
+	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
+	const setNewtab = (value) => domsearchbar.setAttribute('newtab', value)
 
-		if (!init) chrome.storage.sync.set({ searchbar: value })
-	}
+	function updateSearchbar() {
+		chrome.storage.sync.get('searchbar', (data) => {
+			switch (event) {
+				case 'searchbar': {
+					data.searchbar.on = that.checked
+					display(that.checked)
+					break
+				}
 
-	function localisation(q) {
-		let response = '',
-			lang = document.documentElement.getAttribute('lang'),
-			engine = domsearchbar.getAttribute('engine'),
-			request = domsearchbar.getAttribute('request')
+				case 'engine': {
+					data.searchbar.engine = that.value
+					clas(id('searchbar_request'), that.value === 'custom', 'shown')
+					engine(that.value)
+					break
+				}
 
-		// engineLocales est dans lang.js
+				case 'request': {
+					if (value.indexOf('%s') !== -1) {
+						data.searchbar.request = stringMaxSize(value, 512)
+						that.blur()
+					} else if (value.length > 0) {
+						that.value = ''
+						that.setAttribute('placeholder', tradThis('%s Not found'))
+						setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+					}
 
-		if (engine === 'custom') response = request
-		else response = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+					request(that.value)
+					break
+				}
 
-		return response.replace('%s', q)
-	}
-
-	function engine(value, init) {
-		domsearchbar.setAttribute('engine', value)
-
-		if (!init) {
-			chrome.storage.sync.set({ searchbar_engine: value })
-			clas(id('searchbar_request'), value === 'custom', 'shown')
-		}
-	}
-
-	function request(value, init, that) {
-		if (!init) {
-			if (value.indexOf('%s') !== -1) {
-				chrome.storage.sync.set({ searchbar_request: stringMaxSize(value, 512) })
-				that.blur()
-			} else if (value.length > 0) {
-				that.value = ''
-				that.setAttribute('placeholder', tradThis('%s Not found'))
-				setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+				case 'newtab': {
+					data.searchbar.newtab = that.checked
+					setNewtab(that.checked)
+					break
+				}
 			}
-		}
 
-		domsearchbar.setAttribute('request', stringMaxSize(value, 512))
+			chrome.storage.sync.set({ searchbar: data.searchbar })
+		})
 	}
 
-	function setNewtab(value, init) {
-		if (!init) chrome.storage.sync.set({ searchbar_newtab: value })
-		domsearchbar.setAttribute('newtab', value)
+	function initSearchbar() {
+		display(init.on, true)
+		engine(init.engine.replace('s_', ''), true)
+		request(init.request, true)
+		setNewtab(init.newtab, true)
+
+		// 1.9.2 ==> 1.9.3 lang breaking fix
+		if (init.engine) {
+			init.engine.replace('s_', '')
+			chrome.storage.sync.set({ searchbar: init })
+		}
 	}
 
 	domsearchbar.onkeyup = function (e) {
-		const isNewtab = e.target.getAttribute('newtab') === 'true'
-
 		if (e.key === 'Enter' && this.value.length > 0) {
-			if (isNewtab) window.open(localisation(this.value), '_blank')
-			else window.location = localisation(this.value)
+			let searchURL = ''
+			const isNewtab = e.target.getAttribute('newtab') === 'true'
+			const lang = document.documentElement.getAttribute('lang')
+			const engine = domsearchbar.getAttribute('engine')
+			const request = domsearchbar.getAttribute('request')
+
+			// engineLocales est dans lang.js
+
+			if (engine === 'custom') searchURL = request
+			else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+
+			searchURL = searchURL.replace('%s', this.value)
+
+			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 		}
 	}
 
-	switch (event) {
-		case 'searchbar':
-			display(that.checked)
-			break
-
-		case 'engine':
-			engine(that.value)
-			break
-
-		case 'request':
-			request(that.value, false, that)
-			break
-
-		case 'newtab':
-			setNewtab(that.checked)
-			break
-
-		//init
-		default: {
-			const searchbar = storage.searchbar || false,
-				searchengine = storage.searchbar_engine || 'google',
-				searchbarnewtab = storage.searchbar_newtab || false,
-				searchbarrequest = storage.searchbar_request || ''
-
-			//display
-			display(searchbar, true)
-			engine(searchengine.replace('s_', ''), true)
-			request(searchbarrequest, true)
-			setNewtab(searchbarnewtab, true)
-
-			// 1.9.2 ==> 1.9.3 lang breaking fix
-			if (storage.searchbar_engine) {
-				chrome.storage.sync.set({ searchbar_engine: searchengine.replace('s_', '') })
-			}
-			break
-		}
-	}
+	event ? updateSearchbar() : initSearchbar()
 }
 
 function showPopup(data) {
@@ -2343,9 +2327,17 @@ function filterImports(data) {
 	}
 
 	// 's_' before every search engines
-	if (data.searchbar_engine) {
-		result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+	if (data.searchbar_engine) result.searchbar_engine = data.searchbar_engine.replace('s_', '')
+
+	result.searchbar = {
+		on: data.searchbar || false,
+		newtab: data.searchbar_newtab || false,
+		engine: data.searchbar_engine || 'google',
+		request: data.searchbar['request'] !== undefined ? data.searchbar['request'] : '',
 	}
+
+	delete result.searchbar_engine
+	delete result.searchbar_newtab
 
 	// New collection key missing
 	// Removes dynamics cache
@@ -2389,7 +2381,7 @@ function startup(data) {
 	linksrow(data.linksrow)
 
 	darkmode(null, data)
-	searchbar(null, null, data)
+	searchbar(null, null, data.searchbar)
 	showPopup(data.reviewPopup)
 
 	customCss(data.css)
