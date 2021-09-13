@@ -146,10 +146,9 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_lang').onchange = function () {
-		chrome.storage.sync.set({ lang: this.value })
-
-		//session pour le weather
+		// Session pour le weather
 		sessionStorage.lang = this.value
+		chrome.storage.sync.set({ lang: this.value })
 		if (sessionStorage.lang) location.reload()
 	}
 
@@ -407,6 +406,7 @@ function importExport(select, isEvent) {
 					dom.value = ''
 					placeholder('Error in import code')
 					setTimeout(() => placeholder('Import code'), 2000)
+					console.error(e)
 				}
 			}
 		}
@@ -504,13 +504,7 @@ function settingsInit(data) {
 		settingsDom.innerHTML = html
 		settingsDom.setAttribute('class', 'init')
 
-		// Input fillings
-		if (data.lang !== 'en') {
-			const trns = settingsDom.querySelectorAll('.trn')
-			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][data.lang]) : '')
-			trns.forEach((trn) => changeText(trn, trn.textContent))
-		}
-
+		traduction(settingsDom, data.lang)
 		customFont(null, { autocomplete: true, settingsDom: settingsDom })
 		signature(settingsDom)
 		initParams(data, settingsDom)

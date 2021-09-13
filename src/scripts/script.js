@@ -14,22 +14,18 @@ function slow(that, time = 400) {
 	}, time)
 }
 
-function traduction(ofSettings, init) {
+function traduction(settingsDom, lang = 'en') {
 	//
-	function traduis(lang = 'en') {
+	function traduis() {
 		//
 		document.documentElement.setAttribute('lang', lang)
 
-		if (lang !== 'en') {
-			const trns = (ofSettings ? id('settings') : document).querySelectorAll('.trn')
-			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
-
-			trns.forEach((trn) => changeText(trn, trn.textContent))
-		}
+		const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
+		const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
+		trns.forEach((trn) => changeText(trn, trn.textContent))
 	}
 
-	if (init && !ofSettings) traduis(init)
-	else chrome.storage.sync.get('lang', (data) => traduis(data.lang))
+	if (lang !== 'en') traduis(lang)
 }
 
 function tradThis(str) {
@@ -494,7 +490,7 @@ function quickLinks(event, that, initStorage) {
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
 
-		if (e_iconurl.value.length > 8080) {
+		if (e_iconurl.value.length === 8080) {
 			e_iconurl.value = ''
 			e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
@@ -535,13 +531,9 @@ function quickLinks(event, that, initStorage) {
 
 								// Saves to an alias if icon too big
 								if (updated.icon.length > 64) {
-									const alias = 'alias:' + Math.random().toString(26).substring(2)
-									const tosave = {}
-
-									tosave[alias] = updated.icon
-									chrome.storage.local.set(tosave)
-									updated.icon = alias
+									const alias = saveIconAsAlias(updated.icon)
 									e_iconurl.value = alias
+									updated.icon = alias
 								}
 
 								// Removes old icon from storage if alias
@@ -2287,81 +2279,98 @@ function sunTime(init) {
 }
 
 function filterImports(data) {
-	function reducedWeatherData(weather) {
-		// 1.9.3 ==> 1.10.0
-		const updatedWeather = weather
+	const filter = {
+		lang: (lang) => (lang === undefined ? 'en' : lang),
+		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
 
-		if (weather) {
-			if (weather.lastState && weather.lastState.sunset === undefined) {
-				const old = weather.lastState
+		links: (links) => {
+			if (links && links.length > 0)
+				links.forEach((elem, ii) => {
+					console.log(elem.icon.length)
+					if (elem.icon.length > 8080) links[ii].icon = 'src/assets/interface/loading.gif'
+					else if (elem.icon.length > 64) links[ii].icon = saveIconAsAlias(elem.icon)
+				})
 
-				updatedWeather.lastState = {
-					feels_like: old.main.feels_like,
-					temp_max: old.main.temp_max,
-					sunrise: old.sys.sunrise,
-					sunset: old.sys.sunset,
-					description: old.weather[0].description,
-					icon_id: old.weather[0].icon_id,
+			return links
+		},
+
+		dynamic: (dynamic) => {
+			if (dynamic) {
+				// New collection key missing
+				// Removes dynamics cache
+				if (!dynamic.collection) {
+					return { ...dynamic, collection: '' }
 				}
 			}
-		}
 
-		return updatedWeather
+			return dynamic
+		},
+
+		hide: (hide) => {
+			if (!hide || hide.length === 0) return [[0, 0], [0, 0, 0], [0], [0]]
+			else if (hide && hide.length > 0) {
+				// Changes new hidden classes
+				const weatherIndex = hide.indexOf('weather_desc')
+				const widgetIndex = hide.indexOf('w_icon')
+
+				if (weatherIndex >= 0) hide[weatherIndex] = 'description'
+				if (widgetIndex >= 0) hide[widgetIndex] = 'widget'
+			}
+
+			return hide
+		},
+
+		weather: (weather) => {
+			if (weather) {
+				if (weather.location === false) result.weather.location = []
+
+				// 1.9.3 ==> 1.10.0
+				if (weather.lastState && weather.lastState.sunset === undefined) {
+					const old = weather.lastState
+
+					weather.lastState = {
+						feels_like: old.main.feels_like,
+						temp_max: old.main.temp_max,
+						sunrise: old.sys.sunrise,
+						sunset: old.sys.sunset,
+						description: old.weather[0].description,
+						icon_id: old.weather[0].icon_id,
+					}
+				}
+
+				if (weather.lastCall) weather.lastCall = 0
+				if (weather.forecastLastCall) delete weather.forecastLastCall
+			}
+
+			return weather
+		},
+
+		font: (font) => {
+			if (font) {
+				delete font.availableWeights
+				delete font.supportedWeights
+			}
+
+			return font
+		},
 	}
 
 	let result = { ...data }
 
-	if (data.weather) {
-		if (data.weather.location === false) result.weather.location = []
-		result.weather = reducedWeatherData(data.weather)
-
-		if (result.weather.lastCall) result.weather.lastCall = 0
-		if (result.weather.forecastLastCall) delete result.weather.forecastLastCall
-	}
-
-	// Old blur was strings
-	if (typeof data.background_blur === 'string') {
-		result.background_blur = parseFloat(data.background_blur)
-	}
-
-	// 's_' before every search engines
-	if (data.searchbar_engine) result.searchbar_engine = data.searchbar_engine
-
+	// for 1.9.x => 1.10, newtab/engine doesnt work with forEach below
+	// after 1.10, searchbar goes in filter.searchbar
 	result.searchbar = {
 		on: data.searchbar || false,
 		newtab: data.searchbar_newtab || false,
 		engine: data.searchbar_engine || 'google',
-		request: data.searchbar['request'] !== undefined ? data.searchbar['request'] : '',
+		request: typeof data.searchbar === 'object' ? (data.searchbar.request ? data.searchbar.request : '') : '',
 	}
 
-	delete result.searchbar_engine
-	delete result.searchbar_newtab
+	if (result.searchbar_engine) delete result.searchbar_engine
+	if (result.searchbar_newtab) delete result.searchbar_newtab
 
-	// New collection key missing
-	// Removes dynamics cache
-	if (data.dynamic) {
-		if (!data.dynamic.collection) {
-			result.dynamic = { ...data.dynamic, collection: '' }
-		}
-	}
-
-	// Si il ne touche pas au vieux hide elem
-	if (!data.hide || data.hide.length === 0) result.hide = [[0, 0], [0, 0, 0], [0], [0]]
-	else if (data.hide && data.hide.length > 0) {
-		// Changes new hidden classes
-		const weatherIndex = data.hide.indexOf('weather_desc')
-		const widgetIndex = data.hide.indexOf('w_icon')
-
-		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
-		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
-	}
-
-	// Remove old unused keys
-	if (data.font) {
-		delete data.font.availableWeights
-		delete data.font.supportedWeights
-	}
-
+	// Go through found categories in import data to filter them
+	Object.entries(data).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 	return result
 }
 
@@ -2455,12 +2464,7 @@ window.onload = function () {
 		const warning = document.createElement('div')
 
 		warning.id = 'bonjourrError'
-		warning.innerHTML = `
-			<h1>Bonjourr messed up 😖😖</h1>
-			<p>Copy this message and contact us!</p>
-			<pre>${error.stack}</pre>
-		`
-
+		warning.innerHTML = `<h1>Bonjourr messed up 😖😖</h1><p>Copy this message and contact us!</p><pre>${error.stack}</pre>`
 		document.body.prepend(warning)
 	}
 }

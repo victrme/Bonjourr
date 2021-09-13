@@ -53,14 +53,14 @@
 
 	&.shown {
 		button {
-			@include frostedGlass($tint: 160);
+			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
 
 			img {
 				transform: rotate(60deg);
 			}
 
 			&:hover {
-				@include frostedGlass($tint: 100);
+				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
 	}

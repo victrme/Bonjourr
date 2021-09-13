@@ -44,6 +44,14 @@ const isExtension = window.location.protocol === 'chrome-extension:' || window.l
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
+const saveIconAsAlias = (iconstr) => {
+	const alias = 'alias:' + Math.random().toString(26).substring(2)
+	const tosave = {}
+	tosave[alias] = iconstr
+	chrome.storage.local.set(tosave)
+	return alias
+}
+
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 // And maybe change import option
