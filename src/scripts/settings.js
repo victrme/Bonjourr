@@ -499,9 +499,13 @@ function showSettings() {
 function settingsInit(data) {
 	function settingsCreator(html) {
 		// HTML creation
+		const parser = new DOMParser()
 		const settingsDom = document.createElement('div')
+		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]
+
 		settingsDom.id = 'settings'
-		settingsDom.innerHTML = html
+		contentList.forEach((elem) => settingsDom.appendChild(elem))
+
 		settingsDom.setAttribute('class', 'init')
 
 		traduction(settingsDom, data.lang)

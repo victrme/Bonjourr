@@ -1824,23 +1824,45 @@ function showPopup(data) {
 				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 
-		const close = function () {
-			divPopup.classList.replace('shown', 'removing')
+		const close = () => {
+			dom.wrap.classList.replace('shown', 'removing')
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
 		}
 
-		const divPopup = document.createElement('div')
+		const dom = {
+			wrap: document.createElement('div'),
+			btnwrap: document.createElement('div'),
+			desc: document.createElement('span'),
+			review: document.createElement('a'),
+			donate: document.createElement('a'),
+			close: document.createElement('p'),
+		}
 
-		divPopup.id = 'popup'
-		divPopup.innerHTML = `<span>${tradThis(
+		dom.wrap.id = 'popup'
+		dom.desc.textContent = tradThis(
 			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
-		)}</span><div class='choices'><a href='${setReviewLink()}'>${tradThis(
-			'Review'
-		)}</a><a href='http://bonjourr.fr/#donate'>${tradThis('Donate')}</a></div> <p id='closePopup'>&times;</p>`
+		)
 
-		document.body.appendChild(divPopup)
+		dom.review.href = setReviewLink()
+		dom.donate.href = 'http://bonjourr.fr/#donate'
 
-		setTimeout(() => divPopup.classList.add('shown'), 10)
+		dom.review.textContent = tradThis('Review')
+		dom.donate.textContent = tradThis('Donate')
+
+		dom.close.id = 'closePopup'
+		dom.close.textContent = '×'
+
+		dom.btnwrap.className = 'choices'
+		dom.btnwrap.appendChild(dom.review)
+		dom.btnwrap.appendChild(dom.donate)
+
+		dom.wrap.appendChild(dom.desc)
+		dom.wrap.appendChild(dom.btnwrap)
+		dom.wrap.appendChild(dom.close)
+
+		document.body.appendChild(dom.wrap)
+
+		setTimeout(() => dom.wrap.classList.add('shown'), 10)
 
 		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
 		else id('closePopup').onclick = close
@@ -2051,7 +2073,6 @@ function customFont(data, event) {
 			fetchFontList((json) => changeFamily(json, event.family))
 		}
 
-		// For best performance: Fill list & change innerHTML
 		if (event.autocomplete) {
 			fetchFontList(function fillFamilyInput(json) {
 				const fragment = new DocumentFragment()
@@ -2286,7 +2307,6 @@ function filterImports(data) {
 		links: (links) => {
 			if (links && links.length > 0)
 				links.forEach((elem, ii) => {
-					console.log(elem.icon.length)
 					if (elem.icon.length > 8080) links[ii].icon = 'src/assets/interface/loading.gif'
 					else if (elem.icon.length > 64) links[ii].icon = saveIconAsAlias(elem.icon)
 				})
@@ -2307,7 +2327,7 @@ function filterImports(data) {
 		},
 
 		hide: (hide) => {
-			if (!hide || hide.length === 0) return [[0, 0], [0, 0, 0], [0], [0]]
+			if (hide === undefined || hide.length === 0) return [[0, 0], [0, 0, 0], [0], [0]]
 			else if (hide && hide.length > 0) {
 				// Changes new hidden classes
 				const weatherIndex = hide.indexOf('weather_desc')
@@ -2334,7 +2354,7 @@ function filterImports(data) {
 						sunrise: old.sys.sunrise,
 						sunset: old.sys.sunset,
 						description: old.weather[0].description,
-						icon_id: old.weather[0].icon_id,
+						icon_id: old.weather[0].id,
 					}
 				}
 
@@ -2359,18 +2379,21 @@ function filterImports(data) {
 
 	// for 1.9.x => 1.10, newtab/engine doesnt work with forEach below
 	// after 1.10, searchbar goes in filter.searchbar
-	result.searchbar = {
-		on: data.searchbar || false,
-		newtab: data.searchbar_newtab || false,
-		engine: data.searchbar_engine || 'google',
-		request: typeof data.searchbar === 'object' ? (data.searchbar.request ? data.searchbar.request : '') : '',
-	}
+	if (!result.searchbar || typeof result.searchbar === 'boolean') {
+		result.searchbar = {
+			on: data.searchbar || false,
+			newtab: data.searchbar_newtab || false,
+			engine: data.searchbar_engine || 'google',
+			request: typeof data.searchbar === 'object' ? (data.searchbar.request ? data.searchbar.request : '') : '',
+		}
 
-	if (result.searchbar_engine) delete result.searchbar_engine
-	if (result.searchbar_newtab) delete result.searchbar_newtab
+		if (result.searchbar_engine) delete result.searchbar_engine
+		if (result.searchbar_newtab) delete result.searchbar_newtab
+	}
 
 	// Go through found categories in import data to filter them
 	Object.entries(data).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
+
 	return result
 }
 
@@ -2448,7 +2471,13 @@ window.onload = function () {
 				}
 
 				case 'newVersion': {
-					data.about = { browser, version }
+					//
+					// 1.9.3 => 1.10, fills default data to storage
+					if (!data.about)
+						Object.entries(bonjourrDefaults('sync')).forEach(([key, val]) =>
+							data[key] === undefined ? (data[key] = val) : data[key]
+						)
+
 					data = filterImports(data)
 					chrome.storage.sync.set(data)
 					startup(data)
@@ -2462,9 +2491,19 @@ window.onload = function () {
 		})
 	} catch (error) {
 		const warning = document.createElement('div')
+		const title = document.createElement('h1')
+		const subtitle = document.createElement('p')
+		const errorcode = document.createElement('pre')
+
+		title.textContent = 'Bonjourr messed up 😖😖'
+		subtitle.textContent = 'Copy this message and contact us!'
+		errorcode.textContent = error.stack
+
+		warning.appendChild(title)
+		warning.appendChild(subtitle)
+		warning.appendChild(errorcode)
 
 		warning.id = 'bonjourrError'
-		warning.innerHTML = `<h1>Bonjourr messed up 😖😖</h1><p>Copy this message and contact us!</p><pre>${error.stack}</pre>`
 		document.body.prepend(warning)
 	}
 }
