@@ -228,9 +228,9 @@ function clock(event, init) {
 function quickLinks(event, that, initStorage) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
-	const favsToUpdate = []
 	let editDisplayTimeout = setTimeout(() => {}, 0)
-	let hovered, dragged, current
+	let hovered,
+		dragged = { parent: undefined, link: {}, index: 0 }
 
 	//enleve les selections d'edit
 	const removeLinkSelection = () =>
@@ -242,17 +242,21 @@ function quickLinks(event, that, initStorage) {
 	//utilise simplement une boucle de appendblock
 	function initblocks(links) {
 		if (links.length > 0) {
-			const lIconList = links.map((link, i) => appendblock(link, i))
+			const blocklist = links.map((link, i) => appendblock(link, i))
 
 			canDisplayInterface('links')
-			lIconList.forEach((lIcon, i) => addIcon(lIcon, links, i))
+
+			blocklist.forEach(({ icon, parent }, i) => {
+				addIcon(icon, links, i)
+				addEvents(parent)
+			})
 		}
 
 		// Links is done
 		else canDisplayInterface('links')
 	}
 
-	function addIcon(lIcon, links, index, isNewLink) {
+	function addIcon(lIcon, links, index) {
 		//
 		function waitForIconToApply(iconurl) {
 			//
@@ -281,24 +285,20 @@ function quickLinks(event, that, initStorage) {
 				// Apply loading gif d'abord
 				apply(iconurl)
 
-				//si online, rechercher nouvelle icone
-				if (window.navigator.onLine) {
-					//
-					const img = new Image()
-					const a = document.createElement('a')
-					a.href = link.url
-					const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
+				const img = new Image()
+				const a = document.createElement('a')
+				a.href = link.url
+				const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
 
-					// Update link icon data if new link
-					if (isNewLink) links[index].icon = url
+				img.onload = () => apply(url)
+				img.src = url
+				img.remove()
 
-					img.onload = () => apply(url)
-					img.src = url
-					img.remove()
+				// Last link is newlink
+				if (index === links.length - 1) {
+					links[index].icon = url
+					chrome.storage.sync.set({ links: links })
 				}
-
-				// Save new link
-				if (isNewLink) chrome.storage.sync.set({ links: links })
 			}
 
 			// Apply celle cached
@@ -356,10 +356,7 @@ function quickLinks(event, that, initStorage) {
 		//l'ajoute au dom
 		domlinkblocks.appendChild(block_parent)
 
-		//met les events au dernier elem rajouté
-		addEvents(block_parent)
-
-		return lIcon
+		return { icon: lIcon, parent: block_parent }
 	}
 
 	function addEvents(elem) {
@@ -369,26 +366,33 @@ function quickLinks(event, that, initStorage) {
 
 				switch (is) {
 					case 'start':
-						dragged = [elem, data.links[i], i]
+						dragged = { parent: elem, link: data.links[i], index: i }
 						break
 
 					case 'enter':
-						hovered = [elem, data.links[i], i]
+						hovered = { parent: elem, link: data.links[i], index: i }
 						break
 
 					case 'end': {
-						//changes html blocks
-						current = hovered[0].innerHTML
-						hovered[0].innerHTML = dragged[0].innerHTML
-						dragged[0].innerHTML = current
+						if (hovered.index !== dragged.index) {
+							//changes html blocks
+							const hoveredChild = hovered.parent.children[0]
+							const draggedChild = dragged.parent.children[0]
 
-						// Switches link storage
-						let allLinks = data.links
+							hovered.parent.children[0].remove()
+							dragged.parent.children[0].remove()
 
-						allLinks[dragged[2]] = hovered[1]
-						allLinks[hovered[2]] = dragged[1]
+							hovered.parent.appendChild(draggedChild)
+							dragged.parent.appendChild(hoveredChild)
 
-						chrome.storage.sync.set({ links: allLinks })
+							// Switches link storage
+							let allLinks = data.links
+
+							allLinks[dragged.index] = hovered.link
+							allLinks[hovered.index] = dragged.link
+
+							chrome.storage.sync.set({ links: allLinks })
+						}
 						break
 					}
 				}
@@ -506,7 +510,7 @@ function quickLinks(event, that, initStorage) {
 		if (i || i === 0) {
 			chrome.storage.sync.get('links', (data) => {
 				let allLinks = [...data.links]
-				const block = domlinkblocks.children[i + 1]
+				const parent = domlinkblocks.children[i + 1]
 
 				// Update on interface
 				Object.entries(allLinks[i]).forEach(([key, val]) => {
@@ -515,19 +519,20 @@ function quickLinks(event, that, initStorage) {
 						switch (key) {
 							case 'title': {
 								// Adds span title or updates it
-								if (!block.querySelector('span')) {
-									const span = `<span>${updated[key]}</span>`
-									block.querySelector('.l_icon_wrap').insertAdjacentHTML('afterEnd', span)
-								} else block.querySelector('span').textContent = updated[key]
+								if (!parent.querySelector('span')) {
+									const span = document.createElement('span')
+									span.textContent = updated[key]
+									parent.children[0].appendChild(span)
+								} else parent.querySelector('span').textContent = updated[key]
 								break
 							}
 
 							case 'url':
-								block.querySelector('.block').setAttribute('source', updated[key])
+								parent.children[0].setAttribute('source', updated[key])
 								break
 
 							case 'icon': {
-								block.querySelector('img').src = updated.icon
+								parent.querySelector('img').src = updated.icon
 
 								// Saves to an alias if icon too big
 								if (updated.icon.length > 64) {
@@ -629,14 +634,14 @@ function quickLinks(event, that, initStorage) {
 
 			//enleve le html du block
 			var block_parent = domlinkblocks.children[index + 1]
-			block_parent.setAttribute('class', 'block_parent removed')
+			clas(block_parent, true, 'removed')
 
 			setTimeout(function () {
 				domlinkblocks.removeChild(block_parent)
 
 				//enleve linkblocks si il n'y a plus de links
 				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
-			}, 200)
+			}, 600)
 
 			chrome.storage.sync.set({ links: data.links })
 		})
@@ -651,8 +656,8 @@ function quickLinks(event, that, initStorage) {
 			id('i_url').value = ''
 
 			chrome.storage.sync.get('links', (data) => {
+				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
 				const links = data.links || []
-				const index = links.length
 
 				if (links) {
 					links.push(filteredLink)
@@ -661,8 +666,8 @@ function quickLinks(event, that, initStorage) {
 
 				if (links.length === 30) linksInputDisable(true)
 
-				const lIcon = appendblock(filteredLink, index, links)
-				addIcon(lIcon, links, index, true)
+				blocklist.forEach((parent) => parent.remove())
+				initblocks(links)
 			})
 		}
 
@@ -1756,16 +1761,18 @@ function searchbar(event, that, init) {
 				}
 
 				case 'request': {
-					if (value.indexOf('%s') !== -1) {
-						data.searchbar.request = stringMaxSize(value, 512)
+					const val = that.value
+
+					if (val.indexOf('%s') !== -1) {
+						data.searchbar.request = stringMaxSize(val, 512)
 						that.blur()
-					} else if (value.length > 0) {
-						that.value = ''
+					} else if (val.length > 0) {
+						val = ''
 						that.setAttribute('placeholder', tradThis('%s Not found'))
 						setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
 					}
 
-					request(that.value)
+					request(val)
 					break
 				}
 
@@ -2034,7 +2041,8 @@ function customFont(data, event) {
 				callback(googleFontList)
 			} else {
 				fetch(
-					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=AIzaSyAky3JYc2rCOL1jIssGBgLr1PT4yW15jOk'
+					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' +
+						atob(atob('UVVsNllWTjVRV3Q1TTBwWll6SnlRMDlNTVdwSmMzTkhRbWRNY2pGUVZEUjVWekUxYWs5cg=='))
 				)
 					.then((response) => response.json())
 					.then((json) => {

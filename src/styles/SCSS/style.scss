@@ -328,9 +328,9 @@
 			.block {
 				.l_icon_wrap {
 					overflow: hidden;
-					width: 4.8em;
-					height: 4.8em;
-					margin: auto;
+					width: 4.6em;
+					height: 4.6em;
+					margin: 0 auto 0.5em auto;
 					position: relative;
 					border-radius: 10px;
 					background: $purewhite;
@@ -339,18 +339,18 @@
 					transition: border-color 0.1s, filter 0.1s;
 
 					.l_icon {
-						pointer-events: none;
 						width: 100%;
+						pointer-events: none;
 						transition: opacity 0.4s;
 					}
 
 					&.selected {
-						border: 0.2em solid $blue;
+						border-color: $blue;
 						filter: brightness(0.75);
 					}
 
 					&:hover {
-						border: 0.2em solid $blue;
+						border-color: $blue;
 						transition: border-color 0.1s;
 					}
 
@@ -362,7 +362,6 @@
 
 				span {
 					display: block;
-					margin: 0.5em 0;
 					width: 100%;
 					max-height: 3.3em;
 					line-height: 1.1em;
@@ -406,8 +405,10 @@
 			}
 
 			&.removed {
-				transform: scale(0);
+				width: 0;
+				margin: 1em 0;
 				opacity: 0;
+				transition: opacity 0.2s, width 0.4s 0.2s, margin 0.4s 0.2s;
 			}
 		}
 	}
