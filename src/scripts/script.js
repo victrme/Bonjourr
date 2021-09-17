@@ -768,6 +768,12 @@ function weather(event, that, init) {
 				param.location.push(pos.coords.latitude, pos.coords.longitude)
 				request(param, false)
 				request(param, true)
+
+				// Check geolocation after settings is loaded
+				if (id('settings')) {
+					clas(id('sett_city'), true, 'hidden')
+					id('i_geol').checked = true
+				}
 			},
 			(refused) => {
 				request(param, true)

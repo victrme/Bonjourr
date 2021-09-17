@@ -446,7 +446,7 @@ const dict = {
 		no: 'Good morning',
 	},
 	'Good afternoon': {
-		fr: 'Bon après-midi',
+		fr: 'Bonjour',
 		sv: 'Goddag',
 		nl: 'Goedemiddag',
 		pl: 'Miłego popołudia',
