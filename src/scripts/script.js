@@ -1596,10 +1596,6 @@ function unsplash(init, event) {
 				if (next) {
 					init.dynamic.lastCollec = 'day'
 
-					if (current && every === 'pause') {
-						local.dynamicCache.day[0] = init.dynamic.current
-					}
-
 					delete init.dynamic.next
 					delete init.dynamic.current
 				}
@@ -1615,8 +1611,13 @@ function unsplash(init, event) {
 				if (local.dynamicCache === undefined) {
 					local.dynamicCache = bonjourrDefaults('local').dynamicCache
 					populateEmptyList(collecId, local, init.dynamic, false)
+					if (current && every === 'pause') local.dynamicCache.day[0] = init.dynamic.current
+
+					//
 				} else if (local.dynamicCache[collecId].length === 0) {
 					populateEmptyList(collecId, local, init.dynamic, false)
+
+					//
 				} else {
 					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
 				}
@@ -1788,16 +1789,16 @@ function searchbar(event, that, init) {
 	}
 
 	function initSearchbar() {
-		display(init.on, true)
-		engine(init.engine.replace('s_', ''), true)
-		request(init.request, true)
-		setNewtab(init.newtab, true)
-
 		// 1.9.2 ==> 1.9.3 lang breaking fix
 		if (init.engine) {
 			init.engine.replace('s_', '')
 			chrome.storage.sync.set({ searchbar: init })
 		}
+
+		display(init.on, true)
+		engine(init.engine, true)
+		request(init.request, true)
+		setNewtab(init.newtab, true)
 	}
 
 	domsearchbar.onkeyup = function (e) {
