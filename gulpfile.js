@@ -6,20 +6,23 @@ const { series, parallel, src, dest, watch } = require('gulp'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace')
 
-function html() {
+function html(isExtension) {
 	//
 	// Index & settings minified
 	// Multiple scripts tags => only main.js
 	//
 
 	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
-	return src('*.html')
-		.pipe(
-			htmlmin({
-				collapseWhitespace: true,
-				removeComments: true,
-			})
-		)
+	const stream = src('*.html').pipe(
+		htmlmin({
+			collapseWhitespace: true,
+			removeComments: true,
+		})
+	)
+
+	if (isExtension) stream.pipe(replace(`<link rel="manifest" href="manifest.webmanifest">`, ``))
+
+	return stream
 		.pipe(replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : '')))
 		.pipe(dest('release/'))
 }
@@ -121,10 +124,10 @@ const makeOnline = () => [
 
 const makeExtension = (manifestFrom, scriptFrom) => [
 	css,
-	html,
 	locales,
 	ressources,
 	addBackground,
+	() => html(true),
 	() => worker(false),
 	() => scripts(scriptFrom),
 	() => manifest(manifestFrom),

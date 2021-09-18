@@ -1,5 +1,20 @@
 ## Changelogs
 
+**v1.10.0**
+
+-   New design !
+-   Added PWA support for Android & iOS
+-   Added animations & transitions
+-   Added features:
+    -   Custom search engine
+    -   Clock face
+    -   Partial imports
+    -   Custom background frequency
+-   Increased links limit from 15 to 30
+-   Improved custom font experience
+-   Improved settings and startup performance
+-   Improved security
+
 **v1.9.3**
 
 -   Dedicated backgrounds for noons & evenings
