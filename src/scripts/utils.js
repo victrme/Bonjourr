@@ -76,7 +76,7 @@ const lsOnlineStorage = {
 		})
 	},
 
-	setLocal: (prop) => {
+	setLocal: (prop, callback) => {
 		lsOnlineStorage.get(true, null, (data) => {
 			if (typeof prop === 'object') {
 				data = {
@@ -85,6 +85,8 @@ const lsOnlineStorage = {
 				}
 				localStorage.bonjourrBackgrounds = JSON.stringify(data)
 			}
+
+			if (callback) callback
 		})
 	},
 	remove: (isLocal, key) => {

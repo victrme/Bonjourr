@@ -371,6 +371,13 @@ function selectBackgroundType(cat) {
 
 function importExport(select, isEvent) {
 	//
+	const fadeOut = () => {
+		dominterface.click()
+		dominterface.style.transition = 'opacity .4s'
+		dominterface.style.opacity = '0'
+		setTimeout(() => location.reload(), 400)
+	}
+
 	function importation() {
 		//
 		if (isEvent) {
@@ -397,9 +404,8 @@ function importExport(select, isEvent) {
 							data = { ...data, ...imported }
 
 							// Save sync & local
-							chrome.storage.sync.set(data, () => {
-								chrome.storage.local.set(local, () => location.reload())
-							})
+							chrome.storage.sync.set(isExtension ? data : { import: data }, chrome.storage.local.set(local))
+							fadeOut()
 						})
 					})
 				} catch (e) {
@@ -443,10 +449,8 @@ function importExport(select, isEvent) {
 			input.textContent = tradThis('Click again to confirm')
 			input.setAttribute('sure', '')
 		} else {
-			deleteBrowserStorage()
-			setTimeout(function () {
-				location.reload()
-			}, 20)
+			isExtension ? deleteBrowserStorage() : lsOnlineStorage.del()
+			fadeOut()
 		}
 	}
 
