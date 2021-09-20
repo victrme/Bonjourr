@@ -54,7 +54,7 @@ function initParams(data, settingsDom) {
 	safeFont(settingsDom)
 
 	// Font weight
-	if (data.font && data.font.availWeights) modifyWeightOptions(data.font.availWeights, settingsDom, true)
+	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom, true)
 
 	// Clock
 	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
@@ -331,7 +331,7 @@ function initParams(data, settingsDom) {
 			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(cssEditor)
-	}, 400)
+	}, BonjourrAnimTime)
 }
 
 function showall(val, event, domSettings) {
@@ -375,7 +375,7 @@ function importExport(select, isEvent) {
 		dominterface.click()
 		dominterface.style.transition = 'opacity .4s'
 		dominterface.style.opacity = '0'
-		setTimeout(() => location.reload(), 400)
+		setTimeout(() => location.reload(), BonjourrAnimTime)
 	}
 
 	function importation() {

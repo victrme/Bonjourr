@@ -1901,7 +1901,7 @@ function customSize(init, event) {
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
-			let font = data.font || { family: '', weight: ['400'], size: 13 }
+			let font = data.font || { family: '', weight: ['300'], size: 13 }
 			font.size = event
 			slowRange({ font: font }, 200)
 		})
@@ -1942,14 +1942,7 @@ function modifyWeightOptions(weights, settingsDom) {
 }
 
 function safeFont(settingsDom) {
-	const is = {
-		fallback: { placeholder: 'Arial', weights: [500, 600, 800] },
-		linux: { placeholder: 'Ubuntu', weights: [300, 400, 500, 700] },
-		windows: { placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
-		android: { placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
-		apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
-	}
-
+	const is = safeFontList
 	let toUse = is.fallback
 	const hasUbuntu = document.fonts.check('16px Ubuntu')
 	const notAppleOrWindows = !testOS.mac() && !testOS.windows() && !testOS.ios()
@@ -1963,6 +1956,8 @@ function safeFont(settingsDom) {
 		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
 		modifyWeightOptions(toUse.weights, settingsDom)
 	}
+
+	return toUse
 }
 
 function customFont(data, event) {
@@ -1972,7 +1967,7 @@ function customFont(data, event) {
 
 			font.url = url
 			font.family = family
-			font.availWeights = availWeights
+			font.availWeights = availWeights || []
 			font.weight = weight
 
 			slowRange({ font: font }, 200)
@@ -1993,10 +1988,15 @@ function customFont(data, event) {
 				})
 		}
 
+		weight = parseInt(weight)
+
 		if (weight) {
+			const list = safeFont().weights
 			dominterface.style.fontWeight = weight
-			id('clock').style.fontWeight = weight
 			id('searchbar').style.fontWeight = weight
+
+			// If family, weight. default ? lower by one weight
+			id('clock').style.fontWeight = family ? weight : weight > 100 ? list[list.indexOf(weight) - 1] : weight
 		}
 	}
 
@@ -2071,7 +2071,7 @@ function customFont(data, event) {
 			id('i_weight').value = '300'
 
 			safeFont(id('settings'))
-			save()
+			save('', '', [], '300')
 
 			return false
 		}
