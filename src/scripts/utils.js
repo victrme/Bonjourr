@@ -177,7 +177,7 @@ function bonjourrDefaults(which) {
 				font: {
 					url: '',
 					family: '',
-					weight: '300',
+					weight: testOS.windows() ? '400' : '300',
 					availWeights: [],
 					size: mobilecheck ? '11' : '14',
 				},
