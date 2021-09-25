@@ -468,23 +468,22 @@ function importExport(select, isEvent) {
 }
 
 function signature(dom) {
-	const span = document.createElement('span')
+	const spans = dom.querySelectorAll('#rand span')
+	const hyper = dom.querySelectorAll('#rand a')
 	const us = [
 		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
-		{ href: 'https://tahoe.be', name: 'Tahoe Beetschen' },
+		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
 	]
 
 	if (Math.random() > 0.5) us.reverse()
-	span.textContent = ` & `
 
-	us.forEach((sign, i) => {
-		const a = document.createElement('a')
-		a.href = sign.href
-		a.textContent = sign.name
-		i === 0 ? span.prepend(a) : span.appendChild(a)
+	spans[0].textContent = `${tradThis('by')} `
+	spans[1].textContent = ` & `
+
+	hyper.forEach((hyper, i) => {
+		hyper.href = us[i].href
+		hyper.textContent = us[i].name
 	})
-
-	dom.querySelector('#rand').appendChild(span)
 }
 
 function showSettings() {
