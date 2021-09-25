@@ -252,6 +252,7 @@
 		border-radius: 10px;
 		max-width: calc(90% - 4em);
 		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
+		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
 		@include frostedGlass($alpha: 0.1, $fbAlpha: 0.25);
 
