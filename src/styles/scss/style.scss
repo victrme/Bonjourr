@@ -254,7 +254,7 @@
 		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
-		@include frostedGlass($alpha: 0.1, $fbAlpha: 0.25);
+		
 
 		#searchbar {
 			height: 2.5em;
@@ -281,6 +281,7 @@
 
 		&.shown {
 			margin: 3em auto;
+			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.25);
 
 			#searchbar:focus {
 				opacity: 1;
