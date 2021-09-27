@@ -486,6 +486,33 @@ function signature(dom) {
 	})
 }
 
+function showInterface(e) {
+	//cherche le parent du click jusqu'a trouver linkblocks
+	//seulement si click droit, quitter la fct
+	let parent = e.target
+	const edit = id('edit_linkContainer')
+	const settings = id('settings')
+
+	while (parent !== null) {
+		parent = parent.parentElement
+		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
+	}
+
+	//close edit container on interface click
+	if (has(edit, 'shown')) {
+		clas(edit, false, 'shown')
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
+	}
+
+	if (has(settings, 'shown')) {
+		clas(settings, false, 'shown')
+		clas(domshowsettings, false, 'shown')
+		clas(dominterface, false, 'pushed')
+
+		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
+	}
+}
+
 function showSettings() {
 	const edit = id('edit_linkContainer')
 	const settings = id('settings')
@@ -551,32 +578,5 @@ function settingsInit(data) {
 		const noSettings = has(id('settings'), 'shown') === false
 
 		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
-	}
-}
-
-function showInterface(e) {
-	//cherche le parent du click jusqu'a trouver linkblocks
-	//seulement si click droit, quitter la fct
-	let parent = e.target
-	const edit = id('edit_linkContainer')
-	const settings = id('settings')
-
-	while (parent !== null) {
-		parent = parent.parentElement
-		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
-	}
-
-	//close edit container on interface click
-	if (has(edit, 'shown')) {
-		clas(edit, false, 'shown')
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
-	}
-
-	if (has(settings, 'shown')) {
-		clas(settings, false, 'shown')
-		clas(domshowsettings, false, 'shown')
-		clas(dominterface, false, 'pushed')
-
-		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
 	}
 }
