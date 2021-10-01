@@ -2386,6 +2386,8 @@ function filterImports(data) {
 				delete font.supportedWeights
 			}
 
+			if (font.availWeights === undefined) font.availWeights = []
+
 			return font
 		},
 	}
