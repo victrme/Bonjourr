@@ -2264,15 +2264,18 @@ function canDisplayInterface(cat, init) {
 		let loadtime = performance.now() - loadtimeStart
 
 		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
-		if (loadtime < 30) loadtime = 0
+		loadtime = loadtime < 33 ? 0 : 400
 
+		domshowsettings.style.transition = `opacity ${loadtime}ms`
 		dominterface.style.transition = `opacity ${loadtime}ms, transform .4s`
 		dominterface.style.opacity = '1'
+
 		clas(domshowsettings, true, 'enabled')
 
 		setTimeout(() => {
 			dominterface.classList.remove('init')
 			domshowsettings.classList.remove('init')
+			domshowsettings.style.transition = ``
 		}, loadtime + 100)
 	}
 
