@@ -11,6 +11,7 @@ const clas = (dom, add, str) => {
 }
 
 let lazyClockInterval = setTimeout(() => {}, 0),
+	BonjourrBrowser = 'unknown',
 	googleFontList = {},
 	stillActive = false,
 	rangeActive = false,
@@ -34,12 +35,35 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	version = '1.10.0',
-	browser = 'chrome',
+	BonjourrVersion = '1.10.0',
 	funcsOk = {
 		clock: false,
 		links: false,
 	}
+
+switch (window.location.protocol) {
+	case 'http:':
+	case 'https:':
+	case 'file:': {
+		BonjourrBrowser = 'online'
+		break
+	}
+
+	case 'moz-extension:': {
+		BonjourrBrowser = 'firefox'
+		break
+	}
+
+	case 'chrome-extension:': {
+		BonjourrBrowser = 'chrome'
+		break
+	}
+
+	default:
+		BonjourrBrowser = 'chrome'
+}
+
+console.log(window.location.protocol)
 
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
@@ -177,12 +201,12 @@ function bonjourrDefaults(which) {
 				font: {
 					url: '',
 					family: '',
-					weight: testOS.windows() ? '400' : '300',
 					availWeights: [],
 					size: mobilecheck ? '11' : '14',
+					weight: testOS.windows() ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser, version },
+				about: { browser: BonjourrBrowser, version: BonjourrVersion },
 			}
 
 		case 'local':

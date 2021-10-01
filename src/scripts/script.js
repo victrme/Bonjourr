@@ -2061,17 +2061,22 @@ function customFont(data, event) {
 
 		// If nothing, removes custom font
 		if (event.family === '') {
+			// family and size
 			id('fontstyle').textContent = ''
 			id('clock').style.fontFamily = ''
-			id('clock').style.fontWeight = ''
-			id('searchbar').style.fontWeight = ''
 			dominterface.style.fontFamily = ''
-			dominterface.style.fontWeight = ''
 
-			id('i_weight').value = '300'
+			// weights
+			const baseWeight = testOS.windows() ? '400' : '300'
+			dominterface.style.fontWeight = baseWeight
+			id('searchbar').style.fontWeight = baseWeight
+			id('clock').style.fontWeight = ''
 
+			id('i_weight').value = baseWeight
+
+			// save
 			safeFont(id('settings'))
-			save('', '', [], '300')
+			save('', '', [], baseWeight)
 
 			return false
 		}
@@ -2475,7 +2480,7 @@ window.onload = function () {
 		chrome.storage.sync.get(null, (data) => {
 			//
 			let newVersion = !data.about
-			if (data.about) newVersion = data.about.version !== version
+			if (data.about) newVersion = data.about.version !== BonjourrVersion
 
 			const whichStart = Object.keys(data).length === 0 ? 'firstStartup' : newVersion ? 'newVersion' : 'normal'
 
