@@ -2282,6 +2282,9 @@ function canDisplayInterface(cat, init) {
 			domshowsettings.classList.remove('init')
 			domshowsettings.style.transition = ``
 		}, loadtime + 100)
+
+		// Prevent error message from appearing
+		clearTimeout(errorMessageInterval)
 	}
 
 	// More conditions if user is using advanced features
@@ -2434,7 +2437,6 @@ function startup(data) {
 
 	clock(null, data)
 	linksrow(data.linksrow)
-
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
 	showPopup(data.reviewPopup)
@@ -2478,6 +2480,10 @@ window.onload = function () {
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
+			errorMessageInterval = setTimeout(() => {
+				errorMessage(JSON.stringify(data), null)
+			}, 1000)
+
 			//
 			let newVersion = !data.about
 			if (data.about) newVersion = data.about.version !== BonjourrVersion
@@ -2515,20 +2521,6 @@ window.onload = function () {
 			}
 		})
 	} catch (error) {
-		const warning = document.createElement('div')
-		const title = document.createElement('h1')
-		const subtitle = document.createElement('p')
-		const errorcode = document.createElement('pre')
-
-		title.textContent = 'Bonjourr messed up 😖😖'
-		subtitle.textContent = 'Copy this message and contact us!'
-		errorcode.textContent = error.stack
-
-		warning.appendChild(title)
-		warning.appendChild(subtitle)
-		warning.appendChild(errorcode)
-
-		warning.id = 'bonjourrError'
-		document.body.prepend(warning)
+		errorMessage(null, error)
 	}
 }

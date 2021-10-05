@@ -1,3 +1,9 @@
+//
+//
+// Vals
+//
+//
+
 const id = (name) => document.getElementById(name)
 const cl = (name) => document.getElementsByClassName(name)
 const has = (dom, val) => {
@@ -11,6 +17,7 @@ const clas = (dom, add, str) => {
 }
 
 let lazyClockInterval = setTimeout(() => {}, 0),
+	errorMessageInterval = setTimeout(() => {}, 0),
 	BonjourrBrowser = 'unknown',
 	googleFontList = {},
 	stillActive = false,
@@ -63,7 +70,11 @@ switch (window.location.protocol) {
 		BonjourrBrowser = 'chrome'
 }
 
-console.log(window.location.protocol)
+//
+//
+// Functions
+//
+//
 
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
@@ -78,7 +89,6 @@ const saveIconAsAlias = (iconstr) => {
 
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
-// And maybe change import option
 
 const lsOnlineStorage = {
 	get: (local, unused, callback) => {
@@ -133,11 +143,49 @@ function deleteBrowserStorage() {
 		chrome.storage.local.clear()
 	}
 	localStorage.clear()
+
+	setTimeout(() => {
+		location.reload()
+	}, 400)
 }
 
 function consolr(flat, data) {
 	if (flat) console.log(data)
 	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
+}
+
+function errorMessage(data, error) {
+	const warning = document.createElement('div')
+	const title = document.createElement('h1')
+	const subtitle = document.createElement('p')
+	const contactlink = document.createElement('a')
+	const errorcode = document.createElement('pre')
+	const resetButton = document.createElement('button')
+
+	title.textContent = 'Bonjourr messed up 😖😖'
+
+	subtitle.textContent = data ? 'Copy your settings ' : 'Copy this error '
+	contactlink.textContent = 'and contact us!'
+	contactlink.href = `mailto:${atob(atob('WW05dWFtOTFjbkl1WVhCd1FIQnRMbTFs'))}`
+
+	subtitle.appendChild(contactlink)
+
+	errorcode.textContent = data ? data : error.stack
+	resetButton.textContent = 'Reset Bonjourr'
+	resetButton.addEventListener('click', () => {
+		warning.style.opacity = 0
+		deleteBrowserStorage()
+	})
+
+	warning.appendChild(title)
+	warning.appendChild(subtitle)
+	warning.appendChild(errorcode)
+	warning.appendChild(resetButton)
+
+	warning.id = 'bonjourrError'
+	document.body.prepend(warning)
+
+	setTimeout(() => (warning.style.opacity = 1), 20)
 }
 
 const testOS = {
