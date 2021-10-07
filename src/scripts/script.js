@@ -2216,6 +2216,13 @@ function hideElem(init, buttons, that) {
 			else return list
 		}
 
+		// 1.10.0 online hotfix
+		if (list.length === 0) {
+			let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
+			chrome.storage.sync.set({ hide: newHidden })
+			return newHidden
+		}
+
 		// Had nothing to hide
 		else return list
 	}
