@@ -2505,7 +2505,7 @@ window.onload = function () {
 						)
 
 					data = filterImports(data)
-					chrome.storage.sync.set(data)
+					chrome.storage.sync.set(isExtension ? data : { import: data })
 					startup(data)
 					break
 				}
