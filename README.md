@@ -23,7 +23,7 @@ Bonjourr is available in English, French, Spanish, Swedish, Dutch, Polish, Portu
 
 -   Download for [Chrome and Brave](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
 -   Download for [Firefox Desktop](https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/)
--   No official Safari version currently. [Use on Safari](https://bonjourr.fr/#useinsafari)
+-   No official Safari version currently. [Use on Safari](https://bonjourr.fr/use-bonjourr)
 -   [Try Bonjourr Online](https://online.bonjourr.fr)
 
 If you have trouble setting up Bonjourr, feel free to [contact us](https://t.me/BonjourrStartpage)
@@ -32,7 +32,7 @@ If you have trouble setting up Bonjourr, feel free to [contact us](https://t.me/
 
 -   `npm install`
 -   `npm run scss` to watch sass files
--   `npm run chrome` in another terminal to build and watch changes
+-   `npm run chrome` in another terminal to build and watch script changes
 -   Go to chrome://extension, enable dev mode
 -   Load unpacked extension, select /release folder
 -   Or `npm run online` for standalone version. Needs live server for settings to work
@@ -61,7 +61,7 @@ You have ideas or bug reports? We got a Telegram group just for that. Feel free 
 
 ## Donate
 
-If you'd like to support Bonjourr (which would be greatly appreciated!), you can check out our [Ko-Fi page](https://ko-fi.com/bonjourr) and even [donate in crypto](https://commerce.coinbase.com/charges/Y2DYYZCG).
+If you'd like to support Bonjourr (which would be greatly appreciated!), you can check out our [Ko-Fi page](https://ko-fi.com/bonjourr) and even [donate in crypto](https://commerce.coinbase.com/checkout/095cc203-130d-4e56-9716-3aa10a202d9b).
 
 
 <br />
