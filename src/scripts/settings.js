@@ -129,6 +129,12 @@ function initParams(data, settingsDom) {
 
 	const tooltips = settingsDom.querySelectorAll('.tooltip')
 
+	// Change edit tips on mobile
+	if (mobilecheck)
+		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
+			`Edit your Quick Links by long-pressing for 300ms the icon.`
+		)
+
 	tooltips.forEach((elem) => {
 		elem.onclick = function () {
 			const toggleTooltip = (which) => {
@@ -153,6 +159,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//quick links
+
 	paramId('i_title').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
@@ -170,6 +177,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//visuals
+
 	paramId('i_type').onchange = function () {
 		selectBackgroundType(this.value)
 	}

@@ -399,6 +399,7 @@ function quickLinks(event, that, initStorage) {
 			})
 		}
 
+		// Drags
 		elem.ondragstart = function (e) {
 			e.stopPropagation()
 			e.dataTransfer.setData('text/plain', e.target.id)
@@ -415,28 +416,33 @@ function quickLinks(event, that, initStorage) {
 			handleDrag('end', this)
 		}
 
+		// Mouse clicks
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
 			editlink(this)
-		}
-
-		let longpressWait = setTimeout(() => {}, 0)
-		elem.addEventListener('touchstart', function (e) {
-			e.preventDefault()
-			e.stopPropagation()
-			longpressWait = setTimeout(() => {
-				editlink(this)
-			}, 300)
-		})
-
-		elem.ontouchend = function (e) {
-			clearTimeout(longpressWait)
 		}
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
 			clearTimeout(editDisplayTimeout)
 			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
+		}
+
+		// Mobile clicks
+		let touchStartTime = 0
+		let touchTimeout = setTimeout(() => {}, 0)
+
+		elem.ontouchstart = function (e) {
+			e.preventDefault()
+			touchStartTime = performance.now()
+			touchTimeout = setTimeout(() => editlink(this), 300)
+		}
+
+		elem.ontouchend = function (e) {
+			if (performance.now() - touchStartTime < 300) {
+				clearTimeout(touchTimeout)
+				openlink(this, e)
+			}
 		}
 	}
 
