@@ -115,8 +115,8 @@ const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.ma
 // prettier-ignore
 const makeOnline = () => [
 	css,
-	html,
 	ressources,
+	() => html(false),
 	() => manifest('online'),
 	() => worker('online'),
 	() => scripts('online')
