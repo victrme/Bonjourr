@@ -3,7 +3,7 @@
 	"description": "Bonjourr replaces your new tab page for something more refined and minimal. We took inspiration from Apple’s design language to create a startpage that both looks amazing and feels great to use in your daily life.",
 	"theme_color": "#ffffff",
 	"background_color": "#222222",
-	"display": "fullscreen",
+	"display": "browser",
 	"orientation": "portrait",
 	"scope": "/",
 	"start_url": "/",

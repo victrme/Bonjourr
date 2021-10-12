@@ -61,23 +61,18 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', function (event) {
 	event.respondWith(
 		caches.match(event.request).then(function (response) {
-			// Cache hit - return response
-			if (response) {
-				return response
-			} else {
-				// IMPORTANT: Cloner la requête.
-				// Une requete est un flux et est à consommation unique
-				// Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
+			//
+			if (response) return response
+			else {
 				const fetchRequest = event.request.clone()
 
 				return fetch(fetchRequest).then(function (response) {
-					if (!response || response.status !== 200 || response.type !== 'basic') {
-						return response
-					}
+					if (!response || response.status !== 200 || response.type !== 'basic') return response
 
-					// IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
 					const responseToCache = response.clone()
 
+					// Don't save APIs
+					// Todo: save latest unsplash image
 					if (event.request.url.includes('unsplash.com') && event.request.url.includes('api.openweathermap.org'))
 						caches.open(bonjourrCache).then(function (cache) {
 							cache.put(event.request, responseToCache)
