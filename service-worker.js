@@ -1,19 +1,18 @@
 //
-const version = '1.10.0'
+const version = '1.10.0b'
 const bonjourrCache = 'bonjourr-v' + version
-const backgroundCache = 'background-v' + version
 
 const filesToChache = [
-	'index.html',
-	'settings.html',
-	'manifest.webmanifest',
-	'src/scripts/main.js',
-	'src/styles/style.css',
-	'src/assets/favicon-128x128.png',
-	'src/assets/favicon-512x512.png',
-	'src/assets/apple-touch-icon.png',
-	'src/assets/interface/gear.svg',
-	'src/assets/interface/loading.gif',
+	'/',
+	'/settings.html',
+	'/manifest.webmanifest',
+	'/src/scripts/main.js',
+	'/src/styles/style.css',
+	'/src/assets/favicon-128x128.png',
+	'/src/assets/favicon-512x512.png',
+	'/src/assets/apple-touch-icon.png',
+	'/src/assets/interface/gear.svg',
+	'/src/assets/interface/loading.gif',
 ]
 
 const weatherList = [
@@ -30,7 +29,7 @@ const weatherList = [
 	'overcastclouds',
 ]
 
-const addWeatherIcons = (time) => weatherList.forEach((elem) => filesToChache.push(`src/assets/weather/${time}/${elem}.png`))
+const addWeatherIcons = (time) => weatherList.forEach((elem) => filesToChache.push(`/src/assets/weather/${time}/${elem}.png`))
 
 addWeatherIcons('day')
 addWeatherIcons('night')
@@ -65,28 +64,28 @@ self.addEventListener('fetch', function (event) {
 			// Cache hit - return response
 			if (response) {
 				return response
-			}
+			} else {
+				// IMPORTANT: Cloner la requête.
+				// Une requete est un flux et est à consommation unique
+				// Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
+				const fetchRequest = event.request.clone()
 
-			// IMPORTANT: Cloner la requête.
-			// Une requete est un flux et est à consommation unique
-			// Il est donc nécessaire de copier la requete pour pouvoir l'utiliser et la servir
-			const fetchRequest = event.request.clone()
+				return fetch(fetchRequest).then(function (response) {
+					if (!response || response.status !== 200 || response.type !== 'basic') {
+						return response
+					}
 
-			return fetch(fetchRequest).then(function (response) {
-				if (!response || response.status !== 200 || response.type !== 'basic') {
+					// IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
+					const responseToCache = response.clone()
+
+					if (event.request.url.includes('unsplash.com') && event.request.url.includes('api.openweathermap.org'))
+						caches.open(bonjourrCache).then(function (cache) {
+							cache.put(event.request, responseToCache)
+						})
+
 					return response
-				}
-
-				// IMPORTANT: Même constat qu'au dessus, mais pour la mettre en cache
-				const responseToCache = response.clone()
-
-				if (event.request.url.includes('unsplash.com') && event.request.url.includes('api.openweathermap.org'))
-					caches.open(bonjourrCache).then(function (cache) {
-						cache.put(event.request, responseToCache)
-					})
-
-				return response
-			})
+				})
+			}
 		})
 	)
 })
