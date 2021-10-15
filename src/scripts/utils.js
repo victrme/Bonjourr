@@ -242,6 +242,7 @@ function bonjourrDefaults(which) {
 				},
 				searchbar: {
 					on: false,
+					opacity: 0.1,
 					newtab: false,
 					engine: 'google',
 					request: '',
