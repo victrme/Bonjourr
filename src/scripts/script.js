@@ -1740,15 +1740,19 @@ function darkmode(choice, init) {
 }
 
 function searchbar(event, that, init) {
+	const emptyButton = id('sb_empty')
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
 	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
 	const setNewtab = (value) => domsearchbar.setAttribute('newtab', value)
-	const opacity = (value) =>
+	const opacity = (value) => {
 		domsearchbar.setAttribute(
 			'style',
 			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
 		)
+
+		emptyButton.style.color = value > 0.4 ? '#222' : '#fff'
+	}
 
 	function updateSearchbar() {
 		chrome.storage.sync.get('searchbar', (data) => {
@@ -1831,6 +1835,16 @@ function searchbar(event, that, init) {
 
 			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 		}
+	}
+
+	domsearchbar.oninput = function () {
+		clas(emptyButton, this.value.length > 0, 'shown')
+	}
+
+	emptyButton.onclick = function () {
+		domsearchbar.value = ''
+		domsearchbar.focus()
+		clas(this, false, 'shown')
 	}
 
 	event ? updateSearchbar() : initSearchbar()

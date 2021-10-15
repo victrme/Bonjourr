@@ -242,6 +242,7 @@
 
 	// search bar
 	#sb_container {
+		position: relative;
 		display: flex;
 		visibility: visible;
 		align-items: center;
@@ -289,6 +290,25 @@
 		&.hidden {
 			flex-grow: 0;
 			visibility: hidden;
+		}
+
+		#sb_empty {
+			position: absolute;
+			right: 10px;
+			opacity: 0;
+			border: none;
+			color: #fff;
+			cursor: text;
+			margin-right: 1em;
+			border-radius: 1em;
+			font-size: inherit;
+			background-color: transparent;
+			transition: opacity 0.2s;
+
+			&.shown {
+				opacity: 1;
+				cursor: pointer;
+			}
 		}
 	}
 
