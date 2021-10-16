@@ -24,6 +24,7 @@ function initParams(data, settingsDom) {
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_greeting', data.greeting, '')
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
+	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
 	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
@@ -266,6 +267,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_sbengine').onchange = function () {
 		searchbar('engine', this)
+	}
+
+	paramId('i_sbopacity').oninput = function () {
+		searchbar('opacity', this)
 	}
 
 	paramId('i_sbrequest').onchange = function () {

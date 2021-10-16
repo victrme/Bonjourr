@@ -1740,10 +1740,19 @@ function darkmode(choice, init) {
 }
 
 function searchbar(event, that, init) {
+	const emptyButton = id('sb_empty')
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
 	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
 	const setNewtab = (value) => domsearchbar.setAttribute('newtab', value)
+	const opacity = (value) => {
+		domsearchbar.setAttribute(
+			'style',
+			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
+		)
+
+		emptyButton.style.color = value > 0.4 ? '#222' : '#fff'
+	}
 
 	function updateSearchbar() {
 		chrome.storage.sync.get('searchbar', (data) => {
@@ -1758,6 +1767,12 @@ function searchbar(event, that, init) {
 					data.searchbar.engine = that.value
 					clas(id('searchbar_request'), that.value === 'custom', 'shown')
 					engine(that.value)
+					break
+				}
+
+				case 'opacity': {
+					data.searchbar.opacity = parseFloat(that.value)
+					opacity(parseFloat(that.value))
 					break
 				}
 
@@ -1784,7 +1799,8 @@ function searchbar(event, that, init) {
 				}
 			}
 
-			chrome.storage.sync.set({ searchbar: data.searchbar })
+			if (event === 'opacity') slowRange({ searchbar: data.searchbar })
+			else chrome.storage.sync.set({ searchbar: data.searchbar })
 		})
 	}
 
@@ -1795,10 +1811,11 @@ function searchbar(event, that, init) {
 			chrome.storage.sync.set({ searchbar: init })
 		}
 
-		display(init.on, true)
-		engine(init.engine, true)
-		request(init.request, true)
-		setNewtab(init.newtab, true)
+		display(init.on)
+		engine(init.engine)
+		request(init.request)
+		setNewtab(init.newtab)
+		opacity(init.opacity)
 	}
 
 	domsearchbar.onkeyup = function (e) {
@@ -1818,6 +1835,16 @@ function searchbar(event, that, init) {
 
 			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 		}
+	}
+
+	domsearchbar.oninput = function () {
+		clas(emptyButton, this.value.length > 0, 'shown')
+	}
+
+	emptyButton.onclick = function () {
+		domsearchbar.value = ''
+		domsearchbar.focus()
+		clas(this, false, 'shown')
 	}
 
 	event ? updateSearchbar() : initSearchbar()
@@ -2414,6 +2441,7 @@ function filterImports(data) {
 			newtab: data.searchbar_newtab || false,
 			engine: data.searchbar_engine || 'google',
 			request: typeof data.searchbar === 'object' ? (data.searchbar.request ? data.searchbar.request : '') : '',
+			opacity: typeof data.searchbar === 'boolean' ? 0.1 : data.searchbar.opacity,
 		}
 
 		if (result.searchbar_engine) delete result.searchbar_engine

@@ -494,7 +494,7 @@
 	}
 
 	#searchbar_options.shown {
-		max-height: 185px;
+		max-height: 240px;
 	}
 
 	#searchbar_options #choose_searchengine {
@@ -574,7 +574,9 @@
 					display: flex;
 					align-items: center;
 					margin-right: 14px;
-					&:last-child { margin: unset; }
+					&:last-child {
+						margin: unset;
+					}
 
 					svg {
 						height: 1.25em;
