@@ -541,7 +541,6 @@ function quickLinks(event, that, initStorage) {
 								// Saves to an alias if icon too big
 								if (updated.icon.length > 64) {
 									const alias = saveIconAsAlias(updated.icon)
-									e_iconurl.value = alias
 									updated.icon = alias
 								}
 
@@ -586,7 +585,14 @@ function quickLinks(event, that, initStorage) {
 
 				e_title.value = title
 				e_url.value = url
-				e_iconurl.value = icon
+
+				// Show url instead of alias
+				if (icon.startsWith('alias:'))
+					chrome.storage.local.get(icon, (data) => {
+						e_iconurl.value = data[icon]
+						showDelIcon(e_iconurl)
+					})
+				else e_iconurl.value = icon
 
 				showDelIcon(e_title)
 				showDelIcon(e_url)
