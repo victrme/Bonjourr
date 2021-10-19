@@ -225,6 +225,28 @@ function clock(event, init) {
 	}
 }
 
+function replacesIconAliases(links, callback) {
+	let iconList = Object.values(links).map((link) => link.icon)
+	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
+
+	if (aliasList.length > 0) {
+		chrome.storage.local.get(aliasList, (data) => {
+			iconList.forEach((url, i) => {
+				if (url.startsWith('alias:')) {
+					iconList[i] = Object.entries(data)
+						.map(([key, val]) => (key === url ? val : ''))
+						.filter((elem) => elem !== '')[0]
+
+					// Temporaire, faire alias import plus tard
+					if (iconList[i] === undefined) iconList[i] = 'src/assets/interface/loading.gif'
+				}
+			})
+
+			callback(iconList)
+		})
+	} else callback(iconList)
+}
+
 function quickLinks(event, that, initStorage) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
@@ -259,30 +281,7 @@ function quickLinks(event, that, initStorage) {
 				canDisplayInterface('links')
 			}
 
-			let iconList = Object.values(links).map((link) => link.icon)
-			let aliasList = Object.values(links)
-				.map((link) => (link.icon.startsWith('alias:') ? link.icon : ''))
-				.filter((x) => x !== '')
-
-			if (aliasList.length > 0)
-				chrome.storage.local.get(aliasList, (data) => {
-					//
-					// Remplaces aliases by actual url
-					iconList.forEach((url, i) => {
-						if (url.startsWith('alias:')) {
-							iconList[i] = Object.entries(data)
-								.map(([key, val]) => (key === url ? val : ''))
-								.filter((elem) => elem !== '')[0]
-
-							// Temporaire, faire alias import plus tard
-							if (iconList[i] === undefined) iconList[i] = 'src/assets/interface/loading.gif'
-						}
-					})
-					addIconsAndEvents(iconList)
-				})
-			else {
-				addIconsAndEvents(iconList)
-			}
+			replacesIconAliases(links, (result) => addIconsAndEvents(result))
 		}
 
 		// Links is done
@@ -2359,9 +2358,10 @@ function filterImports(data) {
 
 		links: (links) => {
 			if (links && links.length > 0)
-				links.forEach((elem, ii) => {
-					if (elem.icon.length > 8080) links[ii].icon = 'src/assets/interface/loading.gif'
-					else if (elem.icon.length > 64) links[ii].icon = saveIconAsAlias(elem.icon)
+				links.forEach((elem, index) => {
+					if (elem.icon.startsWith('alias:') || elem.icon.length > 8080)
+						links[index].icon = 'src/assets/interface/loading.gif'
+					else if (elem.icon.length > 64) links[index].icon = saveIconAsAlias(elem.icon)
 				})
 
 			return links

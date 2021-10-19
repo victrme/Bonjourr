@@ -437,21 +437,26 @@ function importExport(select, isEvent) {
 
 		chrome.storage.sync.get(null, (data) => {
 			//
-			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-			input.value = JSON.stringify(data)
+			replacesIconAliases(data.links, (iconList) => {
+				for (let index = 0; index < data.links.length; index++) data.links[index].icon = iconList[index]
 
-			if (isEvent) {
-				input.select()
+				if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+				if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-				//doesn't work on firefox for security reason
-				//don't want to add permissions just for this
-				if (isOnChrome) {
-					document.execCommand('copy')
-					id('submitExport').textContent = tradThis('Copied')
+				input.value = JSON.stringify(data)
+
+				if (isEvent) {
+					input.select()
+
+					//doesn't work on firefox for security reason
+					//don't want to add permissions just for this
+					if (isOnChrome) {
+						document.execCommand('copy')
+						id('submitExport').textContent = tradThis('Copied')
+					}
 				}
-			}
+			})
 		})
 	}
 
