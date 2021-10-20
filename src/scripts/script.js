@@ -225,6 +225,28 @@ function clock(event, init) {
 	}
 }
 
+function replacesIconAliases(links, callback) {
+	let iconList = Object.values(links).map((link) => link.icon)
+	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
+
+	if (aliasList.length > 0) {
+		chrome.storage.local.get(aliasList, (data) => {
+			iconList.forEach((url, i) => {
+				if (url.startsWith('alias:')) {
+					iconList[i] = Object.entries(data)
+						.map(([key, val]) => (key === url ? val : ''))
+						.filter((elem) => elem !== '')[0]
+
+					// Temporaire, faire alias import plus tard
+					if (iconList[i] === undefined) iconList[i] = 'src/assets/interface/loading.gif'
+				}
+			})
+
+			callback(iconList)
+		})
+	} else callback(iconList)
+}
+
 function quickLinks(event, that, initStorage) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
@@ -242,82 +264,58 @@ function quickLinks(event, that, initStorage) {
 	//utilise simplement une boucle de appendblock
 	function initblocks(links) {
 		if (links.length > 0) {
+			//
+			// Blocks
+			// Add blocks and allow interface display
 			const blocklist = links.map((link, i) => appendblock(link, i))
 
-			canDisplayInterface('links')
+			//
+			// Icons
+			// If aliases, needs to replace "alias:""
+			const addIconsAndEvents = (icons) => {
+				blocklist.forEach(({ icon, parent }, i) => {
+					addIcon(icon, links, i, icons[i])
+					addEvents(parent)
+				})
 
-			blocklist.forEach(({ icon, parent }, i) => {
-				addIcon(icon, links, i)
-				addEvents(parent)
-			})
+				canDisplayInterface('links')
+			}
+
+			replacesIconAliases(links, (result) => addIconsAndEvents(result))
 		}
 
 		// Links is done
 		else canDisplayInterface('links')
 	}
 
-	function addIcon(lIcon, links, index) {
+	function addIcon(lIcon, links, index, iconurl) {
 		//
-		function waitForIconToApply(iconurl) {
-			//
-			function apply(url) {
-				const loadTime = performance.now() - perfStart
-				const playAnim = loadTime > 30
-
-				switch (playAnim) {
-					case true: {
-						lIcon.style.opacity = '0'
-						setTimeout(() => {
-							lIcon.removeAttribute('style')
-							lIcon.src = url
-						}, BonjourrAnimTime)
-						break
-					}
-
-					default:
-						lIcon.src = url
-						break
-				}
-			}
-
-			if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
-				//
-				// Apply loading gif d'abord
-				apply(iconurl)
-
-				const img = new Image()
-				const a = document.createElement('a')
-				a.href = link.url
-				const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
-
-				img.onload = () => apply(url)
-				img.src = url
-				img.remove()
-
-				// Last link is newlink
-				if (index === links.length - 1) {
-					links[index].icon = url
-					chrome.storage.sync.set({ links: links })
-				}
-			}
-
-			// Apply celle cached
-			else apply(iconurl)
-		}
-
 		const link = links[index]
-		const perfStart = performance.now()
-		const isAlias = link.icon.startsWith('alias:')
+		const applyURL = (url) => (lIcon.src = url)
 
-		switch (isAlias) {
-			case true:
-				chrome.storage.local.get([link.icon], (data) => waitForIconToApply(data[link.icon]))
-				break
+		if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
+			//
+			// Apply loading gif d'abord
+			applyURL(iconurl)
 
-			default:
-				waitForIconToApply(link.icon)
-				break
+			const img = new Image()
+			const a = document.createElement('a')
+			a.href = link.url
+			const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
+
+			img.onload = () => applyURL(url)
+			img.src = url
+			img.remove()
+
+			// Last link is newlink
+			if (index === links.length - 1) {
+				links[index].icon = url
+				chrome.storage.sync.set({ links: links })
+			}
 		}
+
+		// Apply celle cached
+		else applyURL(iconurl)
 	}
 
 	function appendblock(link) {
@@ -543,7 +541,6 @@ function quickLinks(event, that, initStorage) {
 								// Saves to an alias if icon too big
 								if (updated.icon.length > 64) {
 									const alias = saveIconAsAlias(updated.icon)
-									e_iconurl.value = alias
 									updated.icon = alias
 								}
 
@@ -588,7 +585,14 @@ function quickLinks(event, that, initStorage) {
 
 				e_title.value = title
 				e_url.value = url
-				e_iconurl.value = icon
+
+				// Show url instead of alias
+				if (icon.startsWith('alias:'))
+					chrome.storage.local.get(icon, (data) => {
+						e_iconurl.value = data[icon]
+						showDelIcon(e_iconurl)
+					})
+				else e_iconurl.value = icon
 
 				showDelIcon(e_title)
 				showDelIcon(e_url)
@@ -2360,9 +2364,10 @@ function filterImports(data) {
 
 		links: (links) => {
 			if (links && links.length > 0)
-				links.forEach((elem, ii) => {
-					if (elem.icon.length > 8080) links[ii].icon = 'src/assets/interface/loading.gif'
-					else if (elem.icon.length > 64) links[ii].icon = saveIconAsAlias(elem.icon)
+				links.forEach((elem, index) => {
+					if (elem.icon.startsWith('alias:') || elem.icon.length > 8080)
+						links[index].icon = 'src/assets/interface/loading.gif'
+					else if (elem.icon.length > 64) links[index].icon = saveIconAsAlias(elem.icon)
 				})
 
 			return links
