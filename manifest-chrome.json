@@ -1,5 +1,5 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
 	"version": "1.10.0",
@@ -16,13 +16,13 @@
 		"newtab": "index.html"
 	},
 
-	"browser_action": {
+	"action": {
 		"title": "Bonjourr"
 	},
 
 	"offline_enabled": true,
 
-	"background": {
+	"background.service_worker": {
 		"persistent": false,
 		"scripts": ["src/scripts/background.js"]
 	},
