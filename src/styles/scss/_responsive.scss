@@ -127,24 +127,15 @@
 	}
 }
 
-// large laptop resolution and up
-@media screen and (min-width: 1279px) {
+@media screen and (max-width: 400px) {
 	#settings {
-		input[type='text'],
-		input[type='range'] {
-			width: 140px;
+		input[type='text'] {
+			width: 100px;
 		}
 
+		input[type='range'],
 		select {
-			width: 150px;
-		}
-
-		.titleContainer .tooltip:hover .tooltiptext {
-			width: 320px;
-		}
-
-		.signature {
-			padding: 4em;
+			width: 110px;
 		}
 	}
 }
