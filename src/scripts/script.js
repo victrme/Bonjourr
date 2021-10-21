@@ -2371,8 +2371,7 @@ function filterImports(data) {
 		links: (links) => {
 			if (links && links.length > 0)
 				links.forEach((elem, index) => {
-					if (elem.icon.startsWith('alias:') || elem.icon.length > 8080)
-						links[index].icon = 'src/assets/interface/loading.gif'
+					if (elem.icon.length > 8080) links[index].icon = 'src/assets/interface/loading.gif'
 					else if (elem.icon.length > 64) links[index].icon = saveIconAsAlias(elem.icon)
 				})
 
