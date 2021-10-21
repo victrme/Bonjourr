@@ -2550,6 +2550,7 @@ window.onload = function () {
 						)
 
 					data = filterImports(data)
+					data.about.version = BonjourrVersion
 					chrome.storage.sync.set(isExtension ? data : { import: data })
 					startup(data)
 					break

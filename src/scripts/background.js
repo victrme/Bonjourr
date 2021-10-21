@@ -1,6 +1,6 @@
+const isOnChrome = navigator.userAgent.includes('Chrome')
 const newTab = () => chrome.tabs.create({ url: 'chrome://newtab' })
 const goodbye = () => 'https://bonjourr.fr/goodbye' + (isOnChrome ? '?from=Chrome' : '?from=Firefox')
-const isOnChrome = navigator.userAgent.includes('Chrome')
 
 chrome.runtime.setUninstallURL(goodbye())
 
