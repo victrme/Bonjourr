@@ -6,7 +6,6 @@
 	"scripts": {
 		"chrome": "gulp chrome",
 		"firefox": "gulp firefox",
-		"firefox-dev": "gulp firefoxdev",
 		"online": "gulp online",
 		"scss": "sass --watch src/styles/scss/style.scss src/styles/style.css"
 	},

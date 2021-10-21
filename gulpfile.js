@@ -56,10 +56,6 @@ function scripts(which) {
 			break
 		}
 
-		case 'firefox-dev':
-			stream.pipe(replace('.sync.', '.local.'))
-			break
-
 		default:
 			stream.pipe(minify({ mangle: { keepClassName: true } }))
 			break
@@ -147,8 +143,4 @@ exports.chrome = async function () {
 
 exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...makeExtension('firefox'))))
-}
-
-exports.firefoxdev = async function () {
-	watch(filesToWatch, series(parallel(...makeExtension('firefox', 'firefox-dev'))))
 }

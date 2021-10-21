@@ -25,5 +25,12 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"permissions": ["storage", "unlimitedStorage", "geolocation"]
+	"permissions": ["storage", "unlimitedStorage", "geolocation"],
+
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{4f391a9e-8717-4ba6-a5b1-488a34931fcb}",
+			"strict_min_version": "56.0"
+		}
+	}
 }
