@@ -2069,19 +2069,25 @@ function customFont(data, event) {
 		//
 		function fetchFontList(callback) {
 			//
-			if (Object.entries(googleFontList).length > 0) {
-				callback(googleFontList)
-			} else {
+			const needToFetch = () =>
 				fetch(
-					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' +
-						atob(atob('UVVsNllWTjVRV3Q1TTBwWll6SnlRMDlNTVdwSmMzTkhRbWRNY2pGUVZEUjVWekUxYWs5cg=='))
+					`https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${atob(
+						atob('UVVsNllWTjVRbmR5YlZKTGFUWjZkV2RwWTBONVpXWlJZMVZJVFU0elYyWjNjVTV0UmxrNA==')
+					)}`
 				)
 					.then((response) => response.json())
 					.then((json) => {
-						googleFontList = json
+						localStorage.googleFonts = JSON.stringify(json)
 						callback(json)
 					})
-			}
+
+			if (localStorage.googleFonts && localStorage.googleFonts.length > 0) {
+				try {
+					callback(JSON.parse(localStorage.googleFonts))
+				} catch (error) {
+					needToFetch()
+				}
+			} else needToFetch()
 		}
 
 		// If nothing, removes custom font
