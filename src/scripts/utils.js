@@ -19,7 +19,6 @@ const clas = (dom, add, str) => {
 let lazyClockInterval = setTimeout(() => {}, 0),
 	errorMessageInterval = setTimeout(() => {}, 0),
 	BonjourrBrowser = 'unknown',
-	googleFontList = {},
 	stillActive = false,
 	rangeActive = false,
 	firstpaint = false,
@@ -42,7 +41,7 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.10.0',
+	BonjourrVersion = '1.10.1',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -51,20 +50,17 @@ const isExtension = window.location.protocol === 'chrome-extension:' || window.l
 switch (window.location.protocol) {
 	case 'http:':
 	case 'https:':
-	case 'file:': {
+	case 'file:':
 		BonjourrBrowser = 'online'
 		break
-	}
 
-	case 'moz-extension:': {
+	case 'moz-extension:':
 		BonjourrBrowser = 'firefox'
 		break
-	}
 
-	case 'chrome-extension:': {
+	case 'chrome-extension:':
 		BonjourrBrowser = 'chrome'
 		break
-	}
 
 	default:
 		BonjourrBrowser = 'chrome'

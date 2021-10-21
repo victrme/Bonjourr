@@ -1,5 +1,13 @@
 ## Changelogs
 
+**v1.10.1**
+
+-   Added search bar opacity control & delete text icon
+-   Fixed links not opening on mobile & icon not showing URL
+-   Fixed google font API exceeding quota
+-   Improved links performance
+-   Minor online fixes
+
 **v1.10.0**
 
 -   New design !
