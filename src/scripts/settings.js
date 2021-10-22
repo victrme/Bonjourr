@@ -173,6 +173,10 @@ function initParams(data, settingsDom) {
 		quickLinks('button', this)
 	}
 
+	paramId('b_importbookmarks').onmouseup = function () {
+		linksImport()
+	}
+
 	paramId('i_linknewtab').onchange = function () {
 		quickLinks('linknewtab', this)
 	}

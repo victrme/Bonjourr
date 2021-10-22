@@ -28,7 +28,7 @@
 			}
 		}
 	}
-
+	#bookmarks,
 	#popup {
 		color: white;
 		@include frostedGlass($tint: 28, $fbTint: 28, $fbAlpha: 1, $fbColor: white);

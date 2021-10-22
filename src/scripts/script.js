@@ -729,6 +729,47 @@ function quickLinks(event, that, initStorage) {
 	}
 }
 
+async function linksImport() {
+	const bookmarks = await chrome.bookmarks.getTree()
+	const allCategories = [...bookmarks[0].children]
+	const bookmarksList = []
+	let counter = 0
+
+	allCategories.forEach((cat) => bookmarksList.push(...cat.children))
+	console.log(...bookmarksList)
+
+	const form = document.querySelector('#bookmarks form')
+
+	bookmarksList.forEach((mark) => {
+		const elem = document.createElement('div')
+		const title = document.createElement('h5')
+		const url = document.createElement('pre')
+
+		title.textContent = mark.title
+		url.textContent = mark.url
+
+		elem.appendChild(title)
+		elem.appendChild(url)
+		elem.onclick = () => {
+			const isSelected = elem.classList.toggle('selected')
+
+			if (isSelected && counter === 30) elem.classList.toggle('selected')
+			else {
+				counter += isSelected ? 1 : -1
+				id('selectedCounter').textContent = `${counter} / 30`
+			}
+		}
+
+		form.appendChild(elem)
+	})
+
+	id('applybookmarks').onclick = function (e) {
+		// for (let index = 0; index < fieldset.elements.length; index++) {
+		// 	console.log(fieldset.elements.item(index).checked)
+		// }
+	}
+}
+
 function linksrow(data, event) {
 	function setRows(val) {
 		domlinkblocks.style.width = `${val * 7}em`
