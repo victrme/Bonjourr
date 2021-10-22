@@ -730,23 +730,28 @@ function quickLinks(event, that, initStorage) {
 }
 
 async function linksImport() {
+	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
+
+	const form = document.querySelector('#bookmarks form')
+	const data = await chrome.storage.sync.get('links')
 	const bookmarks = await chrome.bookmarks.getTree()
 	const allCategories = [...bookmarks[0].children]
-	const bookmarksList = []
-	let counter = 0
+	let counter = data.links.length || 0
+	let bookmarksList = []
+	let selectedList = []
 
+	changeCounter(counter)
 	allCategories.forEach((cat) => bookmarksList.push(...cat.children))
 	console.log(...bookmarksList)
 
-	const form = document.querySelector('#bookmarks form')
-
-	bookmarksList.forEach((mark) => {
+	bookmarksList.forEach((mark, index) => {
 		const elem = document.createElement('div')
 		const title = document.createElement('h5')
 		const url = document.createElement('pre')
 
 		title.textContent = mark.title
 		url.textContent = mark.url
+		elem.setAttribute('index', index)
 
 		elem.appendChild(title)
 		elem.appendChild(url)
@@ -755,18 +760,24 @@ async function linksImport() {
 
 			if (isSelected && counter === 30) elem.classList.toggle('selected')
 			else {
-				counter += isSelected ? 1 : -1
-				id('selectedCounter').textContent = `${counter} / 30`
+				isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
+				isSelected ? counter++ : (counter -= 1)
+				changeCounter(counter)
 			}
+
+			clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
 		}
 
 		form.appendChild(elem)
 	})
 
-	id('applybookmarks').onclick = function (e) {
-		// for (let index = 0; index < fieldset.elements.length; index++) {
-		// 	console.log(fieldset.elements.item(index).checked)
-		// }
+	id('applybookmarks').onclick = function () {
+		const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
+		console.log(...bookmarkToApply)
+
+		if (bookmarkToApply.length > 0) {
+			id('bookmarks').style.display = 'none'
+		}
 	}
 }
 

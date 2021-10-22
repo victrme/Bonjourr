@@ -720,25 +720,32 @@
 }
 
 #bookmarks {
+	display: none;
 	position: fixed;
-	top: 2em;
-	left: 2em;
+	top: 10vh;
+	left: 10vh;
 	padding: 2em;
 	border-radius: 1em;
 	text-align: left;
 	max-height: 60vh;
 	max-width: 800px;
+	width: 80%;
 	word-break: break-all;
-	overflow-y: scroll;
+	overflow-y: auto;
 	overflow-x: hidden;
 	z-index: 3;
-	display: flex;
 	flex-direction: column;
-
-	@include frostedGlass($alpha: 0.1, $blur: 20px);
+	background-color: $settingsGrey;
 
 	form {
 		padding-top: 2em;
+	}
+
+	#applybookmarks {
+		visibility: hidden;
+		&.shown {
+			visibility: visible;
+		}
 	}
 
 	form div {
@@ -751,7 +758,7 @@
 		overflow: hidden;
 
 		&.selected {
-			background-color: rgba(0, 0, 0, 0.2);
+			background-color: rgba(#fff, 0.2);
 		}
 
 		h5 {

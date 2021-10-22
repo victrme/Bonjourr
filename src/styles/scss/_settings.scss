@@ -245,8 +245,12 @@
 			align-items: center;
 		}
 
+		.links_buttons {
+			text-align: right;
+		}
+
 		#submitlink {
-			margin-left: 1em;
+			margin-bottom: 0.5em;
 			transition: filter 0.4s;
 
 			&.max {
