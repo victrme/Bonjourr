@@ -276,10 +276,12 @@ function quickLinks(event, that, initStorage) {
 			// If aliases, needs to replace "alias:""
 			replacesIconAliases(links, (iconList) => {
 				blocklist.forEach(({ icon, parent }, i) => {
-					addIcon(icon, links, i, iconList[i])
+					links[i] = addIcon(icon, links, i, iconList[i])
 					addEvents(parent)
 				})
 
+				// Saves any changes during submission func
+				chrome.storage.sync.set({ links })
 				canDisplayInterface('links')
 			})
 		}
@@ -307,15 +309,13 @@ function quickLinks(event, that, initStorage) {
 			img.src = url
 			img.remove()
 
-			// Last link is newlink
-			if (index === links.length - 1) {
-				links[index].icon = url
-				chrome.storage.sync.set({ links: links })
-			}
+			link.icon = url
 		}
 
 		// Apply celle cached
 		else applyURL(iconurl)
+
+		return link
 	}
 
 	function appendblock(link) {
