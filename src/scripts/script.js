@@ -773,7 +773,8 @@ async function linksImport() {
 			clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
 		}
 
-		form.appendChild(elem)
+		if (typeof mark.url === 'string')
+			if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
 	})
 
 	const oldForm = document.querySelector('#bookmarks form')
