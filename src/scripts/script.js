@@ -226,19 +226,21 @@ function clock(event, init) {
 }
 
 function replacesIconAliases(links, callback) {
+	//
+	// Find all aliased icons
 	let iconList = Object.values(links).map((link) => link.icon)
 	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
 
 	if (aliasList.length > 0) {
 		chrome.storage.local.get(aliasList, (data) => {
+			//
+			// For all icons
 			iconList.forEach((url, i) => {
 				if (url.startsWith('alias:')) {
+					// Empty icons that matches aliases, replaces empty icon by alias data
 					iconList[i] = Object.entries(data)
 						.map(([key, val]) => (key === url ? val : ''))
 						.filter((elem) => elem !== '')[0]
-
-					// Temporaire, faire alias import plus tard
-					if (iconList[i] === undefined) iconList[i] = 'src/assets/interface/loading.gif'
 				}
 			})
 
@@ -272,16 +274,14 @@ function quickLinks(event, that, initStorage) {
 			//
 			// Icons
 			// If aliases, needs to replace "alias:""
-			const addIconsAndEvents = (icons) => {
+			replacesIconAliases(links, (iconList) => {
 				blocklist.forEach(({ icon, parent }, i) => {
-					addIcon(icon, links, i, icons[i])
+					addIcon(icon, links, i, iconList[i])
 					addEvents(parent)
 				})
 
 				canDisplayInterface('links')
-			}
-
-			replacesIconAliases(links, (result) => addIconsAndEvents(result))
+			})
 		}
 
 		// Links is done
@@ -645,50 +645,55 @@ function quickLinks(event, that, initStorage) {
 		})
 	}
 
-	function linkSubmission() {
+	function linkSubmission(importList) {
 		//
 
-		function saveLink(filteredLink) {
-			//remet a zero les inputs
+		function saveLink(filteredLinks) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
 			chrome.storage.sync.get('links', (data) => {
 				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
-				const links = data.links || []
 
-				if (links) {
-					links.push(filteredLink)
+				if (data.links) {
+					data.links = data.links.concat(filteredLinks)
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				if (links.length === 30) linksInputDisable(true)
+				if (data.links.length === 30) linksInputDisable(true)
 
 				blocklist.forEach((parent) => parent.remove())
-				initblocks(links)
+				initblocks(data.links)
 			})
 		}
 
-		function filterUrl(str) {
+		function filterNewLink(title, url) {
 			//
-			const to = (scheme) => str.startsWith(scheme)
+			url = stringMaxSize(url, 128)
+			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
 
-			return acceptableSchemes ? str : unacceptable ? false : 'https://' + str
+			return {
+				title: stringMaxSize(title, 32),
+				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+				icon: 'src/assets/interface/loading.gif',
+			}
 		}
 
-		let links = {
-			title: stringMaxSize(id('i_title').value, 32),
-			url: stringMaxSize(filterUrl(id('i_url').value), 128),
-			icon: 'src/assets/interface/loading.gif',
+		const newLinks = []
+
+		if (importList && importList.length > 0) {
+			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
+		} else {
+			newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
 		}
+
+		saveLink(newLinks)
 
 		//si l'url filtré est juste
-		if (links.url && id('i_url').value.length > 2) {
-			//et l'input n'a pas été activé ya -1s
-			if (!stillActive) saveLink(links)
-		}
+		//et l'input n'a pas été activé ya -1s
+		// if (links.url && id('i_url').value.length > 2 && !stillActive)
 	}
 
 	function linksInputDisable(isMax, settingsDom) {
@@ -704,7 +709,7 @@ function quickLinks(event, that, initStorage) {
 	switch (event) {
 		case 'input':
 		case 'button':
-			linkSubmission()
+			linkSubmission(that)
 			break
 
 		// that est settingsDom ici
@@ -777,6 +782,7 @@ async function linksImport() {
 
 		if (bookmarkToApply.length > 0) {
 			id('bookmarks').style.display = 'none'
+			quickLinks('button', bookmarkToApply, null)
 		}
 	}
 }
