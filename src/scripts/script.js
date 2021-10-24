@@ -33,6 +33,15 @@ function tradThis(str) {
 	return lang === 'en' ? str : dict[str][lang]
 }
 
+function favicon(init) {
+	//
+
+	const domFavicon = document.querySelector("link[rel~='icon']")
+	const emojiToFavicon = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>' + init.favicon + '</text></svg>"'
+
+	init.favicon ? domFavicon.href = emojiToFavicon : domFavicon.href = 'src/assets/favicon-128x128.png'
+}
+
 function clock(event, init) {
 	//
 
@@ -2538,6 +2547,7 @@ function startup(data) {
 	customFont(data.font)
 	customSize(data.font)
 
+	favicon(data.favicon)
 	clock(null, data)
 	linksrow(data.linksrow)
 	darkmode(null, data)

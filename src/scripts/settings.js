@@ -22,6 +22,7 @@ function initParams(data, settingsDom) {
 	initInput('i_blur', data.background_blur, 15)
 	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
+	initInput('i_favicon', data.favicon, '')
 	initInput('i_greeting', data.greeting, '')
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
