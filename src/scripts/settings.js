@@ -189,8 +189,8 @@ function initParams(data, settingsDom) {
 		selectBackgroundType(this.value)
 	}
 
-	paramId('i_favicon').onchange = function () {
-		favicon(this.value)
+	paramId('i_favicon').oninput = function (e) {
+		favicon(this.value, e)
 	}
 
 	paramId('i_freq').onchange = function () {
