@@ -189,6 +189,10 @@ function initParams(data, settingsDom) {
 		selectBackgroundType(this.value)
 	}
 
+	paramId('i_favicon').onchange = function () {
+		favicon(this.value)
+	}
+
 	paramId('i_freq').onchange = function () {
 		if (paramId('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
 		else unsplash(null, { every: this.value })
