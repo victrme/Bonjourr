@@ -737,7 +737,7 @@ function quickLinks(event, that, initStorage) {
 async function linksImport() {
 	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
 
-	const form = document.querySelector('#bookmarks form')
+	const form = document.createElement('form')
 	const data = await chrome.storage.sync.get('links')
 	const bookmarks = await chrome.bookmarks.getTree()
 	const allCategories = [...bookmarks[0].children]
@@ -775,6 +775,11 @@ async function linksImport() {
 
 		form.appendChild(elem)
 	})
+
+	const oldForm = document.querySelector('#bookmarks form')
+	if (oldForm) oldForm.remove()
+
+	id('bookmarks').appendChild(form)
 
 	id('applybookmarks').onclick = function () {
 		const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
