@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.10.1.1",
+	"version": "1.10.2",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"default_locale": "en",
@@ -27,6 +27,5 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"permissions": ["storage", "unlimitedStorage", "geolocation"],
-	"optional_permissions": ["bookmarks"]
+	"permissions": ["storage", "unlimitedStorage", "geolocation", "bookmarks"]
 }
