@@ -235,6 +235,7 @@ function bonjourrDefaults(which) {
 					city: 'Paris',
 					unit: 'metric',
 					location: [],
+					forecast: 'mornings',
 				},
 				searchbar: {
 					on: false,

@@ -963,10 +963,20 @@ function weather(event, that, init) {
 	}
 
 	function displaysForecast(weather) {
-		const when = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
+		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${tradThis(
+			date.getHours() > 21 ? 'tomorrow' : 'today'
+		)}.`
 
-		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${when}.`
 		clas(forecast, false, 'wait')
+	}
+
+	function forecastVisibilityControl(value) {
+		let isTimeForForecast = false
+
+		if (value === 'mornings') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
+		else isTimeForForecast = value === 'always'
+
+		clas(forecast, isTimeForForecast, 'shown')
 	}
 
 	function updatesWeather() {
@@ -976,8 +986,6 @@ function weather(event, that, init) {
 			request(weather, false)
 			request(weather, true)
 		}
-
-		slow(that)
 
 		chrome.storage.sync.get('weather', (data) => {
 			switch (event) {
@@ -993,6 +1001,8 @@ function weather(event, that, init) {
 					displaysCurrent(data.weather)
 					displaysForecast(data.weather)
 					chrome.storage.sync.set({ weather: data.weather })
+
+					slow(that)
 					break
 				}
 
@@ -1009,6 +1019,8 @@ function weather(event, that, init) {
 					i_city.setAttribute('placeholder', data.weather.city)
 					i_city.value = ''
 					i_city.blur()
+
+					slow(that)
 					break
 				}
 
@@ -1038,6 +1050,15 @@ function weather(event, that, init) {
 						data.weather.location = []
 						fetches(data.weather)
 					}
+
+					slow(that)
+					break
+				}
+
+				case 'forecast': {
+					data.weather.forecast = that.value
+					chrome.storage.sync.set({ weather: data.weather })
+					forecastVisibilityControl(that.value)
 					break
 				}
 			}
@@ -1046,11 +1067,10 @@ function weather(event, that, init) {
 
 	// Event & Init
 	if (event) updatesWeather()
-	else cacheControl(init)
-
-	// Detect forecast display before it fetches
-	const isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
-	clas(forecast, isTimeForForecast, 'shown')
+	else {
+		forecastVisibilityControl(init.forecast || 'mornings')
+		cacheControl(init)
+	}
 
 	// Checks every 5 minutes if weather needs update
 	setTimeout(() => {
@@ -2460,6 +2480,7 @@ function filterImports(data) {
 
 				if (weather.lastCall) weather.lastCall = 0
 				if (weather.forecastLastCall) delete weather.forecastLastCall
+				if (weather.forecast === undefined) weather.forecast = 'mornings'
 			}
 
 			return weather
