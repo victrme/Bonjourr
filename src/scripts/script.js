@@ -274,8 +274,8 @@ function quickLinks(event, that, initStorage) {
 			// If aliases, needs to replace "alias:""
 			replacesIconAliases(links, (iconList) => {
 				blocklist.forEach(({ icon, parent }, i) => {
-					const aliasedurl = iconList[i] ? iconList[i] : 'src/assets/interface/loading.gif'
-					links[i] = addIcon(icon, links, i, aliasedurl)
+					const iconURL = iconList[i] === undefined ? 'src/assets/interface/loading.gif' : iconList[i]
+					links[i] = addIcon(icon, links, i, iconURL)
 					addEvents(parent)
 				})
 
@@ -283,23 +283,21 @@ function quickLinks(event, that, initStorage) {
 				chrome.storage.sync.set({ links })
 				canDisplayInterface('links')
 			})
-
-			replacesIconAliases(links, (result) => addIconsAndEvents(result))
 		}
 
 		// Links is done
 		else canDisplayInterface('links')
 	}
 
-	function addIcon(lIcon, links, index, iconurl) {
+	function addIcon(iconDOM, links, index, iconURL) {
 		//
 		const link = links[index]
-		const applyURL = (url) => (lIcon.src = url)
+		const applyURL = (url) => (iconDOM.src = url)
 
-		if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
+		if (iconURL.length === 0 || iconURL === 'src/assets/interface/loading.gif') {
 			//
 			// Apply loading gif d'abord
-			applyURL(iconurl)
+			applyURL(iconURL)
 
 			const img = new Image()
 			const a = document.createElement('a')
@@ -310,15 +308,13 @@ function quickLinks(event, that, initStorage) {
 			img.src = url
 			img.remove()
 
-			// Last link is newlink
-			if (index === links.length - 1) {
-				links[index].icon = url
-				chrome.storage.sync.set({ links: links })
-			}
+			link.icon = url
 		}
 
 		// Apply celle cached
-		else applyURL(iconurl)
+		else applyURL(iconURL)
+
+		return link
 	}
 
 	function appendblock(link) {
