@@ -188,6 +188,10 @@ function initParams(data, settingsDom) {
 		else unsplash(null, { every: this.value })
 	}
 
+	paramId('i_refresh').onclick = function () {
+		slow(this, unsplash(null, { refresh: this.children[0] }))
+	}
+
 	paramId('i_collection').onchange = function () {
 		unsplash(null, { collection: stringMaxSize(this.value, 128) })
 		this.blur()

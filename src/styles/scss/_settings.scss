@@ -263,6 +263,18 @@
 		display: none;
 	}
 
+	#i_refresh {
+		padding: 0 10px;
+		margin-left: 5px;
+		text-decoration: none;
+		background-color: $settingsGrey;
+	}
+
+	.freq_wrap > div {
+		display: flex;
+		width: 150px;
+	}
+
 	#custom_thumbnail {
 		height: 100px;
 	}

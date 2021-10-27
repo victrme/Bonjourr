@@ -1543,7 +1543,10 @@ function unsplash(init, event) {
 			if (list.length === 1)
 				requestNewList(collection, (newlist) => {
 					caches[collection] = list.concat(newlist)
-					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: caches }))
+					noDisplayImgLoad(newlist[0].url, () => {
+						chrome.storage.local.set({ dynamicCache: caches })
+						chrome.storage.local.remove('waitingForPreload')
+					})
 				})
 			//
 			// Or preload next
@@ -1551,6 +1554,7 @@ function unsplash(init, event) {
 				noDisplayImgLoad(list[1].url, () => {
 					chrome.storage.sync.set({ dynamic: dynamic })
 					chrome.storage.local.set({ dynamicCache: caches })
+					chrome.storage.local.remove('waitingForPreload')
 				})
 		}
 
@@ -1634,10 +1638,42 @@ function unsplash(init, event) {
 
 		case 'event': {
 			chrome.storage.sync.get('dynamic', (data) => {
-				chrome.storage.local.get('dynamicCache', (local) => {
+				chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
 					//
 
 					switch (Object.keys(event)[0]) {
+						case 'refresh': {
+							const buttonSpan = Object.values(event)[0]
+							const animationOptions = { duration: 600, easing: 'ease-out' }
+
+							// Only refreshes background if preload is over
+							// If not, animate button to show it is trying
+							if (local.waitingForPreload === undefined) {
+								id('background_overlay').style.opacity = 0
+								data.dynamic.time = 0
+								chrome.storage.sync.set({ dynamic: data.dynamic })
+								chrome.storage.local.set({ waitingForPreload: true })
+
+								buttonSpan.animate([{ transform: 'rotate(360deg)' }], animationOptions)
+
+								setTimeout(
+									() =>
+										cacheControl(data.dynamic, local.dynamicCache, collectionControl(data.dynamic), false),
+									BonjourrAnimTime
+								)
+							} else
+								buttonSpan.animate(
+									[
+										{ transform: 'rotate(0deg)' },
+										{ transform: 'rotate(90deg)' },
+										{ transform: 'rotate(0deg)' },
+									],
+									animationOptions
+								)
+
+							break
+						}
+
 						case 'every': {
 							data.dynamic.every = event.every
 							data.dynamic.time = freqControl('set')

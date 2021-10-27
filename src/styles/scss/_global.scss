@@ -212,6 +212,7 @@ body {
 	//
 	// Dark mode transition
 	// #settings and buttons have seperate transitions
+	#i_refresh,
 	#cssEditor,
 	.tooltip,
 	.param,
@@ -220,8 +221,10 @@ body {
 	hr {
 		transition-duration: 0.6s;
 		transition-timing-function: $easeOutThree;
-		transition-property: background-color, color, border;
+		transition-property: background-color, color, border, border-color;
 	}
+
+	#i_refresh,
 	#cssEditor,
 	input[type='text'],
 	input[type='range'],
@@ -229,6 +232,7 @@ body {
 		font-size: 13px;
 	}
 
+	#i_refresh,
 	select {
 		height: 2.35em;
 		border-radius: 8.5px;
