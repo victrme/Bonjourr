@@ -41,11 +41,15 @@
 
 	&.he_hidden {
 		opacity: 0;
+		&.shown {
+			opacity: 0.5;
+		}
+		&:hover {
+			opacity: 1;
+		}
 	}
 
 	&:hover {
-		opacity: 1;
-
 		img {
 			transform: rotate(15deg);
 		}
@@ -60,6 +64,7 @@
 			}
 
 			&:hover {
+				opacity: 1;
 				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
