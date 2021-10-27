@@ -32,7 +32,7 @@ function initParams(data, settingsDom) {
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
-	initInput('i_size', isThereData('font', 'size'), 16)
+	initInput('i_size', isThereData('font', 'size'), mobilecheck ? 11 : 14)
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_linknewtab', data.linknewtab)
@@ -236,8 +236,9 @@ function initParams(data, settingsDom) {
 		clock({ timezone: this.value })
 	}
 
-	paramId('i_greeting').onkeyup = function () {
+	paramId('i_greeting').onkeyup = function (e) {
 		clock({ greeting: stringMaxSize(this.value, 32) })
+		if (e.code === 'Enter') e.target.blur()
 	}
 
 	paramId('i_usdate').onchange = function () {
@@ -313,6 +314,12 @@ function initParams(data, settingsDom) {
 
 	paramId('i_size').oninput = function () {
 		customSize(null, this.value)
+	}
+
+	// Reduces opacity to better see interface size changes
+	if (mobilecheck) {
+		paramId('i_size').ontouchstart = () => (id('settings').style.opacity = 0.2)
+		paramId('i_size').ontouchend = () => (id('settings').style.opacity = 1)
 	}
 
 	paramId('i_row').oninput = function () {
@@ -536,7 +543,7 @@ function showSettings() {
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
-	clas(dominterface, settingsNotShown, 'pushed')
+	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
 	clas(edit, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')

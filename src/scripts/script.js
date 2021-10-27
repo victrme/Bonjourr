@@ -1922,10 +1922,7 @@ function showPopup(data) {
 function customSize(init, event) {
 	//
 	// Apply for interface, credit & settings button
-	const apply = (size) => {
-		dominterface.style.fontSize = size + 'px'
-		id('credit').style.fontSize = size + 'px'
-	}
+	const apply = (size) => (dominterface.style.fontSize = size + 'px')
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
