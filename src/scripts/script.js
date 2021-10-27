@@ -272,14 +272,17 @@ function quickLinks(event, that, initStorage) {
 			//
 			// Icons
 			// If aliases, needs to replace "alias:""
-			const addIconsAndEvents = (icons) => {
+			replacesIconAliases(links, (iconList) => {
 				blocklist.forEach(({ icon, parent }, i) => {
-					addIcon(icon, links, i, icons[i])
+					const aliasedurl = iconList[i] ? iconList[i] : 'src/assets/interface/loading.gif'
+					links[i] = addIcon(icon, links, i, aliasedurl)
 					addEvents(parent)
 				})
 
+				// Saves any changes during submission func
+				chrome.storage.sync.set({ links })
 				canDisplayInterface('links')
-			}
+			})
 
 			replacesIconAliases(links, (result) => addIconsAndEvents(result))
 		}
