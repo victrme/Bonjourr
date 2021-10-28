@@ -1886,11 +1886,10 @@ function searchbar(event, that, init) {
 			const request = domsearchbar.getAttribute('request')
 
 			// engineLocales est dans lang.js
-
 			if (engine === 'custom') searchURL = request
 			else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
 
-			searchURL = searchURL.replace('%s', this.value)
+			searchURL = searchURL.replace('%s', encodeURIComponent(this.value))
 
 			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 		}
