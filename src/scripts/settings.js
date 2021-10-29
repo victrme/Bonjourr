@@ -190,7 +190,20 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_refresh').onclick = function () {
-		slow(this, unsplash(null, { refresh: this.children[0] }))
+		if (paramId('i_type').value === 'custom') {
+			chrome.storage.local.get((local) => {
+				id('background_overlay').style.opacity = 0
+				setTimeout(
+					() =>
+						localBackgrounds({
+							local: local,
+							every: paramId('i_freq').value,
+							time: 0,
+						}),
+					400
+				)
+			})
+		} else slow(this, unsplash(null, { refresh: this.children[0] }))
 	}
 
 	paramId('i_collection').onchange = function () {
@@ -327,8 +340,9 @@ function initParams(data, settingsDom) {
 
 	// Reduces opacity to better see interface size changes
 	if (mobilecheck) {
-		paramId('i_size').ontouchstart = () => (id('settings').style.opacity = 0.2)
-		paramId('i_size').ontouchend = () => (id('settings').style.opacity = 1)
+		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
+		paramId('i_size').addEventListener('touchstart', () => touchHandler(true), { passive: true })
+		paramId('i_size').addEventListener('touchend', () => touchHandler(false), { passive: true })
 	}
 
 	paramId('i_row').oninput = function () {

@@ -429,18 +429,20 @@ function quickLinks(event, that, initStorage) {
 		let touchStartTime = 0
 		let touchTimeout = setTimeout(() => {}, 0)
 
-		elem.ontouchstart = function (e) {
-			e.preventDefault()
+		const startHandler = () => {
 			touchStartTime = performance.now()
-			touchTimeout = setTimeout(() => editlink(this), 300)
+			touchTimeout = setTimeout(() => editlink(elem), 300)
 		}
 
-		elem.ontouchend = function (e) {
+		const endHandler = (e) => {
 			if (performance.now() - touchStartTime < 300) {
 				clearTimeout(touchTimeout)
-				openlink(this, e)
+				openlink(elem, e)
 			}
 		}
+
+		elem.addEventListener('touchstart', startHandler, { passive: true })
+		elem.addEventListener('touchend', endHandler, { passive: true })
 	}
 
 	function showDelIcon(input) {
@@ -450,10 +452,12 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function editEvents() {
+		const editLinkContainer = id('edit_linkContainer')
+
 		function closeEditLink() {
 			removeLinkSelection()
-			id('edit_linkContainer').classList.add('hiding')
-			editDisplayTimeout = setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), BonjourrAnimTime)
+			editLinkContainer.classList.add('hiding')
+			editDisplayTimeout = setTimeout(() => editLinkContainer.setAttribute('class', ''), BonjourrAnimTime)
 		}
 
 		function emptyAndHideIcon(e) {
@@ -464,7 +468,7 @@ function quickLinks(event, that, initStorage) {
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
-			clas(id('edit_linkContainer'), false, 'shown')
+			clas(editLinkContainer, false, 'shown')
 			if (id('settings')) linksInputDisable(false)
 		}
 
@@ -478,9 +482,9 @@ function quickLinks(event, that, initStorage) {
 		id('e_close').onclick = () => closeEditLink()
 
 		// close on outside click
-		id('edit_linkContainer').onmousedown = (e) => {
-			if (e.target.id === 'edit_linkContainer') closeEditLink()
-		}
+		const outsideClick = (e) => (e.target.id === 'edit_linkContainer' ? closeEditLink() : '')
+		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
+		else editLinkContainer.onmousedown = outsideClick
 
 		id('re_title').onclick = (e) => emptyAndHideIcon(e)
 		id('re_url').onclick = (e) => emptyAndHideIcon(e)
@@ -938,11 +942,17 @@ function weather(event, that, init) {
 		const timeOfDay = now < rise || now > set ? 'night' : 'day'
 		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
-		const icon = document.createElement('img')
-		icon.src = iconSrc
-		icon.setAttribute('draggable', 'false')
+		if (widgetIcon) {
+			if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
+		} else {
+			const icon = document.createElement('img')
+			icon.src = iconSrc
+			icon.setAttribute('draggable', 'false')
+			widget.prepend(icon)
 
-		!widgetIcon ? widget.prepend(icon) : widgetIcon.setAttribute('src', iconSrc)
+			// from 1.2s request anim to .4s hide elem anim
+			setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
+		}
 
 		// Description
 		const desc = weather.lastState.description
@@ -953,9 +963,6 @@ function weather(event, that, init) {
 
 		clas(current, false, 'wait')
 		clas(widget, false, 'wait')
-
-		// from 1.2s request anim to .4s hide elem anim
-		setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
 	}
 
 	function displaysForecast(weather) {
@@ -1067,11 +1074,6 @@ function weather(event, that, init) {
 		forecastVisibilityControl(init.forecast || 'mornings')
 		cacheControl(init)
 	}
-
-	// Checks every 5 minutes if weather needs update
-	setTimeout(() => {
-		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => cacheControl(data.weather)) : ''
-	}, 5 * 60 * 1000)
 }
 
 function initBackground(data) {
@@ -1957,7 +1959,7 @@ function showPopup(data) {
 
 		setTimeout(() => dom.wrap.classList.add('shown'), 10)
 
-		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
+		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close, { passive: true }), 4000)
 		else id('closePopup').onclick = close
 
 		document.querySelectorAll('#popup .choices a')[0].onclick = close
@@ -2541,6 +2543,29 @@ function startup(data) {
 }
 
 window.onload = function () {
+	if (mobilecheck) {
+		// For Mobile that caches pages for days
+		document.addEventListener('visibilitychange', () => {
+			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type'], (data) => {
+				const { dynamic, background_type } = data
+				const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
+
+				if (dynamicNeedsImage) {
+					console.log('a besoin de limage')
+					id('background_overlay').style.opacity = 0
+					setTimeout(() => unsplash(data, false), 400)
+				}
+
+				weather(null, null, data.weather)
+			})
+		})
+	}
+
+	// Checks every 5 minutes if weather needs update
+	setTimeout(() => {
+		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => weather(null, null, data.weather)) : ''
+	}, 5 * 60 * 1000)
+
 	//
 	// Only on Online
 	switch (window.location.protocol) {
