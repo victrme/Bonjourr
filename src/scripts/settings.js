@@ -82,7 +82,6 @@ function initParams(data, settingsDom) {
 		const isGeolocation = data.weather.location.length > 0
 		let cityName = data.weather.city ? data.weather.city : 'City'
 		paramId('i_city').setAttribute('placeholder', cityName)
-		paramId('i_city').value = cityName
 
 		clas(paramId('sett_city'), isGeolocation, 'hidden')
 		paramId('i_geol').checked = isGeolocation

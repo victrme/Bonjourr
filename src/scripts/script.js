@@ -763,24 +763,36 @@ function weather(event, that, init) {
 	]
 
 	function initWeather(param) {
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				//update le parametre de location
-				param.location.push(pos.coords.latitude, pos.coords.longitude)
-				request(param, false)
-				request(param, true)
+		fetch('https://ipapi.co/json')
+			.then((resp) => resp.json())
+			.then((json) => {
+				param.ccode = json.country
+				param.city = json.city
 
-				// Check geolocation after settings is loaded
 				if (id('settings')) {
-					clas(id('sett_city'), true, 'hidden')
-					id('i_geol').checked = true
+					id('i_ccode').value = json.country
+					id('i_city').setAttribute('placeholder', json.city)
 				}
-			},
-			(refused) => {
-				request(param, true)
-				request(param, false)
-			}
-		)
+
+				navigator.geolocation.getCurrentPosition(
+					(pos) => {
+						//update le parametre de location
+						param.location.push(pos.coords.latitude, pos.coords.longitude)
+						request(param, false)
+						request(param, true)
+
+						// Check geolocation after settings is loaded
+						if (id('settings')) {
+							clas(id('sett_city'), true, 'hidden')
+							id('i_geol').checked = true
+						}
+					},
+					(refused) => {
+						request(param, true)
+						request(param, false)
+					}
+				)
+			})
 	}
 
 	function request(storage, forecast) {
@@ -1029,26 +1041,27 @@ function weather(event, that, init) {
 
 				case 'geol': {
 					data.weather.location = []
-					clas(sett_city, that.checked, 'hidden')
+					that.setAttribute('disabled', '')
 
 					if (that.checked) {
-						that.setAttribute('disabled', '')
-
 						navigator.geolocation.getCurrentPosition(
 							(pos) => {
 								//update le parametre de location
+								clas(sett_city, that.checked, 'hidden')
 								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
 								fetches(data.weather)
 							},
 							(refused) => {
 								//désactive geolocation if refused
-								that.checked = false
+								setTimeout(() => (that.checked = false), 400)
 								if (!data.weather.city) initWeather()
+								console.log(refused)
 							}
 						)
 					} else {
 						i_city.setAttribute('placeholder', data.weather.city)
 						i_ccode.value = data.weather.ccode
+						clas(sett_city, that.checked, 'hidden')
 
 						data.weather.location = []
 						fetches(data.weather)
