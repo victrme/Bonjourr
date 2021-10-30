@@ -762,37 +762,39 @@ function weather(event, that, init) {
 		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 	]
 
-	function initWeather(param) {
-		fetch('https://ipapi.co/json')
-			.then((resp) => resp.json())
-			.then((json) => {
-				param.ccode = json.country
-				param.city = json.city
+	async function initWeather(param) {
+		const applyResult = (geol) => {
+			request(param, true)
+			request(param, false)
 
-				if (id('settings')) {
-					id('i_ccode').value = json.country
-					id('i_city').setAttribute('placeholder', json.city)
+			if (id('settings')) {
+				id('i_ccode').value = param.ccode
+				id('i_city').setAttribute('placeholder', param.city)
+
+				if (geol) {
+					clas(id('sett_city'), true, 'hidden')
+					id('i_geol').checked = true
 				}
+			}
+		}
 
-				navigator.geolocation.getCurrentPosition(
-					(pos) => {
-						//update le parametre de location
-						param.location.push(pos.coords.latitude, pos.coords.longitude)
-						request(param, false)
-						request(param, true)
+		try {
+			const ipapi = await fetch('https://ipapi.co/json')
+			if (ipapi.ok) {
+				const json = await ipapi.json()
+				if (!json.error) param = { ...param, city: json.city, ccode: json.country }
+			}
+		} catch (error) {
+			console.warn(error)
+		}
 
-						// Check geolocation after settings is loaded
-						if (id('settings')) {
-							clas(id('sett_city'), true, 'hidden')
-							id('i_geol').checked = true
-						}
-					},
-					(refused) => {
-						request(param, true)
-						request(param, false)
-					}
-				)
-			})
+		navigator.geolocation.getCurrentPosition(
+			(pos) => {
+				param.location.push(pos.coords.latitude, pos.coords.longitude)
+				applyResult(true)
+			},
+			() => applyResult(false)
+		)
 	}
 
 	function request(storage, forecast) {
@@ -2549,7 +2551,7 @@ function startup(data) {
 
 	customCss(data.css)
 	hideElem(data.hide)
-	initBackground(data)
+	//initBackground(data)
 	quickLinks(null, null, data)
 
 	setTimeout(() => settingsInit(data), 200)
@@ -2564,7 +2566,6 @@ window.onload = function () {
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
 
 				if (dynamicNeedsImage) {
-					console.log('a besoin de limage')
 					id('background_overlay').style.opacity = 0
 					setTimeout(() => unsplash(data, false), 400)
 				}
