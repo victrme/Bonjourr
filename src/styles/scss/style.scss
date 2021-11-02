@@ -628,18 +628,25 @@
 	text-align: left;
 	transition: opacity 0.4s;
 
-	&.shown {
-		opacity: 1;
-	}
-
 	a {
 		font-size: 13px;
 		color: #fff9;
 		text-decoration: none;
 		transition: color 0.1s;
+		cursor: inherit;
+		pointer-events: none;
 
 		&:hover {
 			color: #fffe;
+		}
+	}
+
+	&.shown {
+		opacity: 1;
+
+		a {
+			cursor: pointer;
+			pointer-events: initial;
 		}
 	}
 }

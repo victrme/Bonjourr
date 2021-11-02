@@ -1120,7 +1120,7 @@ function initBackground(data) {
 	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
 
-function imgBackground(val, loadTime) {
+function imgBackground(val, loadTime, init) {
 	let img = new Image()
 
 	img.onload = () => {
@@ -1129,11 +1129,15 @@ function imgBackground(val, loadTime) {
 			const changeDuration = (time) => (domoverlay.style.transition = `transform .4s, opacity ${time}ms`)
 
 			changeDuration(animDuration)
-			setTimeout(() => changeDuration(400), animDuration)
+			setTimeout(() => changeDuration(BonjourrAnimTime), animDuration)
 		}
 
-		domoverlay.style.opacity = `1`
-		id('background').style.backgroundImage = `url(${val})`
+		const applyBackground = () => {
+			domoverlay.style.opacity = `1`
+			id('background').style.backgroundImage = `url(${val})`
+		}
+
+		init ? applyBackground() : setTimeout(applyBackground, BonjourrAnimTime)
 	}
 
 	img.src = val
@@ -1185,9 +1189,10 @@ function localBackgrounds(init, event) {
 		const background = backgrounds[index]
 
 		if (background) {
+			const perfStart = performance.now()
 			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
 			b64toBlobUrl(cleanData, (bloburl) => {
-				imgBackground(bloburl)
+				imgBackground(bloburl, perfStart, !!init)
 				changeImgIndex(index)
 			})
 		}
@@ -1241,9 +1246,8 @@ function localBackgrounds(init, event) {
 		//
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
-			domoverlay.style.opacity = `0`
 			clas(domcredit, false, 'shown')
-			setTimeout(() => (domcredit.style.display = 'none'), BonjourrAnimTime)
+			domoverlay.style.opacity = `0`
 		}
 
 		const compressStart = performance.now()
@@ -1364,12 +1368,9 @@ function localBackgrounds(init, event) {
 					// Last image is removed
 					if (data.custom.length === 0) {
 						domoverlay.style.opacity = `0`
-						domcredit.style.display = 'block'
 
-						setTimeout(() => {
-							unsplash(null, { removedCustom: true })
-							clas(domcredit, true, 'shown')
-						}, 400)
+						unsplash(null, { removedCustom: true })
+						clas(domcredit, true, 'shown')
 					}
 
 					// Only draw new image if displayed is removed
@@ -1465,22 +1466,22 @@ function unsplash(init, event) {
 			},
 		]
 
-		id('credit').textContent = ''
+		domcredit.textContent = ''
 
 		credits.forEach(function cityNameRef(elem, i) {
 			const dom = document.createElement('a')
 			dom.textContent = elem.text
 			dom.href = elem.url
 
-			if (i === 1) id('credit').appendChild(document.createElement('br'))
-			id('credit').appendChild(dom)
+			if (i === 1) domcredit.appendChild(document.createElement('br'))
+			domcredit.appendChild(dom)
 		})
 
-		clas(id('credit'), true, 'shown')
+		clas(domcredit, true, 'shown')
 	}
 
 	function loadBackground(props, loadTime) {
-		imgBackground(props.url, loadTime)
+		imgBackground(props.url, loadTime, !!init)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
@@ -2551,7 +2552,7 @@ function startup(data) {
 
 	customCss(data.css)
 	hideElem(data.hide)
-	//initBackground(data)
+	initBackground(data)
 	quickLinks(null, null, data)
 
 	setTimeout(() => settingsInit(data), 200)
@@ -2566,8 +2567,8 @@ window.onload = function () {
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
 
 				if (dynamicNeedsImage) {
-					id('background_overlay').style.opacity = 0
-					setTimeout(() => unsplash(data, false), 400)
+					domoverlay.style.opacity = 0
+					unsplash(data, false)
 				}
 
 				weather(null, null, data.weather)

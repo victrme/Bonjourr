@@ -393,12 +393,11 @@ function selectBackgroundType(cat) {
 			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
 		}
 		if (cat === 'dynamic') {
+			// Timeout needed because it uses init data
 			domoverlay.style.opacity = `0`
-			domcredit.style.display = 'block'
-			setTimeout(() => {
-				clas(domcredit, true, 'shown')
-				unsplash(data)
-			}, BonjourrAnimTime)
+			id('background').removeAttribute('index')
+			setTimeout(() => unsplash(data), BonjourrAnimTime)
+			clas(domcredit, true, 'shown')
 		}
 
 		// Setting frequence
