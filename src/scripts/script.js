@@ -36,13 +36,15 @@ function tradThis(str) {
 function favicon(init, event) {
 	//
 
-	if (event) chrome.storage.sync.set({favicon: init})
+	if (event) chrome.storage.sync.set({ favicon: init })
 
 	const domFavicon = document.querySelector("link[rel~='icon']")
-	const emojiToFavicon = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>' + init + '</text></svg>'
+	const emojiToFavicon =
+		'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>' +
+		init +
+		'</text></svg>'
 
-	init ? domFavicon.href = emojiToFavicon : domFavicon.href = 'src/assets/favicon-128x128.png'
-
+	init ? (domFavicon.href = emojiToFavicon) : (domFavicon.href = 'src/assets/favicon-128x128.png')
 }
 
 function clock(event, init) {
@@ -749,60 +751,66 @@ function quickLinks(event, that, initStorage) {
 async function linksImport() {
 	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
 
-	const form = document.createElement('form')
-	const data = await chrome.storage.sync.get('links')
-	const bookmarks = await chrome.bookmarks.getTree()
-	const allCategories = [...bookmarks[0].children]
-	let counter = data.links.length || 0
-	let bookmarksList = []
-	let selectedList = []
+	function main(data, bookmarks) {
+		const form = document.createElement('form')
+		const allCategories = [...bookmarks[0].children]
+		let counter = data.links.length || 0
+		let bookmarksList = []
+		let selectedList = []
 
-	changeCounter(counter)
-	allCategories.forEach((cat) => bookmarksList.push(...cat.children))
-	console.log(...bookmarksList)
+		changeCounter(counter)
+		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
+		console.log(...bookmarksList)
 
-	bookmarksList.forEach((mark, index) => {
-		const elem = document.createElement('div')
-		const title = document.createElement('h5')
-		const url = document.createElement('pre')
+		bookmarksList.forEach((mark, index) => {
+			const elem = document.createElement('div')
+			const title = document.createElement('h5')
+			const url = document.createElement('pre')
 
-		title.textContent = mark.title
-		url.textContent = mark.url
-		elem.setAttribute('index', index)
+			title.textContent = mark.title
+			url.textContent = mark.url
+			elem.setAttribute('index', index)
 
-		elem.appendChild(title)
-		elem.appendChild(url)
-		elem.onclick = () => {
-			const isSelected = elem.classList.toggle('selected')
+			elem.appendChild(title)
+			elem.appendChild(url)
+			elem.onclick = () => {
+				const isSelected = elem.classList.toggle('selected')
 
-			if (isSelected && counter === 30) elem.classList.toggle('selected')
-			else {
-				isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
-				isSelected ? counter++ : (counter -= 1)
-				changeCounter(counter)
+				if (isSelected && counter === 30) elem.classList.toggle('selected')
+				else {
+					isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
+					isSelected ? counter++ : (counter -= 1)
+					changeCounter(counter)
+				}
+
+				clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
 			}
 
-			clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
-		}
+			if (typeof mark.url === 'string')
+				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
+		})
 
-		if (typeof mark.url === 'string')
-			if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
-	})
+		const oldForm = document.querySelector('#bookmarks form')
+		if (oldForm) oldForm.remove()
 
-	const oldForm = document.querySelector('#bookmarks form')
-	if (oldForm) oldForm.remove()
+		id('bookmarks').appendChild(form)
 
-	id('bookmarks').appendChild(form)
+		id('applybookmarks').onclick = function () {
+			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
+			console.log(...bookmarkToApply)
 
-	id('applybookmarks').onclick = function () {
-		const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
-		console.log(...bookmarkToApply)
-
-		if (bookmarkToApply.length > 0) {
-			id('bookmarks').style.display = 'none'
-			quickLinks('button', bookmarkToApply, null)
+			if (bookmarkToApply.length > 0) {
+				id('bookmarks').style.display = 'none'
+				quickLinks('button', bookmarkToApply, null)
+			}
 		}
 	}
+
+	chrome.storage.sync.get('links', (data) => {
+		;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+			main(data, response)
+		})
+	})
 }
 
 function linksrow(data, event) {
