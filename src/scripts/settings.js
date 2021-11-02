@@ -30,7 +30,7 @@ function initParams(data, settingsDom) {
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
-	initInput('i_forecast', isThereData('weather', 'forecast'), 'mornings')
+	initInput('i_forecast', isThereData('weather', 'forecast'), 'auto')
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
 	initInput('i_size', isThereData('font', 'size'), mobilecheck ? 11 : 14)

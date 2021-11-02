@@ -1210,7 +1210,7 @@ const dict = {
 		es: 'Sistema imperial',
 	},
 	Forecast: {
-		fr: 'Prévision',
+		fr: 'Prévisions',
 		sv: 'Prognos',
 		nl: 'Voorspelling',
 		pl: 'Prognoza',

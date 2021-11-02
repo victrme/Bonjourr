@@ -990,7 +990,7 @@ function weather(event, that, init) {
 	function forecastVisibilityControl(value) {
 		let isTimeForForecast = false
 
-		if (value === 'mornings') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
+		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
 		else isTimeForForecast = value === 'always'
 
 		clas(forecast, isTimeForForecast, 'shown')
