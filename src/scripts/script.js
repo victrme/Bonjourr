@@ -806,10 +806,16 @@ async function linksImport() {
 		}
 	}
 
-	chrome.storage.sync.get('links', (data) => {
-		;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-			main(data, response)
-		})
+	// Ask for bookmarks first
+	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
+		if (granted) {
+			chrome.storage.sync.get('links', (data) => {
+				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+					id('bookmarks').style.display = 'flex'
+					main(data, response)
+				})
+			})
+		}
 	})
 }
 

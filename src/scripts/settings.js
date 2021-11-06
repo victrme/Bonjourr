@@ -175,7 +175,6 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('b_importbookmarks').onmouseup = function () {
-		id('bookmarks').style.display = 'flex'
 		linksImport()
 	}
 

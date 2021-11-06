@@ -25,7 +25,8 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"permissions": ["storage", "unlimitedStorage", "geolocation", "bookmarks"],
+	"permissions": ["storage", "unlimitedStorage", "geolocation"],
+	"optional_permissions": ["bookmarks"],
 
 	"browser_specific_settings": {
 		"gecko": {
