@@ -27,6 +27,5 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"host_permissions": ["https://api.unsplash.com/*"],
 	"permissions": ["storage", "unlimitedStorage", "geolocation"]
 }

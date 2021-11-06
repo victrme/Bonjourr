@@ -25,7 +25,7 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"permissions": ["storage", "unlimitedStorage", "geolocation", "https://api.unsplash.com/*"],
+	"permissions": ["storage", "unlimitedStorage", "geolocation"],
 
 	"browser_specific_settings": {
 		"gecko": {
