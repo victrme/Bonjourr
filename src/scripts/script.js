@@ -1,19 +1,3 @@
-function slowRange(tosave, time = 400) {
-	clearTimeout(rangeActive)
-	rangeActive = setTimeout(function () {
-		chrome.storage.sync.set(tosave)
-	}, time)
-}
-
-function slow(that, time = 400) {
-	that.setAttribute('disabled', '')
-	stillActive = setTimeout(() => {
-		that.removeAttribute('disabled')
-		clearTimeout(stillActive)
-		stillActive = false
-	}, time)
-}
-
 function traduction(settingsDom, lang = 'en') {
 	//
 	function traduis() {
@@ -797,7 +781,7 @@ function weather(event, that, init) {
 		)
 	}
 
-	function request(storage, forecast) {
+	async function request(storage, forecast) {
 		function saveCurrent(response) {
 			//
 			const isImperial = storage.unit === 'imperial'
@@ -859,10 +843,17 @@ function weather(event, that, init) {
 		}
 
 		// fetches, parses and apply callback
-		fetch(url).then((data) => {
-			if (data.ok) data.json().then((json) => (forecast ? saveForecast(json) : saveCurrent(json)))
-			else if (i_city) i_city.setAttribute('placeholder', tradThis('City not found'))
-		})
+		try {
+			const weatherAPI = await fetch(url)
+
+			if (weatherAPI.ok) {
+				const json = await weatherAPI.json()
+				forecast ? saveForecast(json) : saveCurrent(json)
+			}
+			return weatherAPI.ok
+		} catch (error) {
+			return false
+		}
 	}
 
 	function cacheControl(storage) {
@@ -996,15 +987,17 @@ function weather(event, that, init) {
 		clas(forecast, isTimeForForecast, 'shown')
 	}
 
-	function updatesWeather() {
+	async function updatesWeather() {
 		//
 
-		function fetches(weather) {
-			request(weather, false)
-			request(weather, true)
+		async function fetches(weather) {
+			const main = await request(weather, false)
+			const forecast = await request(weather, true)
+
+			return main && forecast
 		}
 
-		chrome.storage.sync.get('weather', (data) => {
+		chrome.storage.sync.get('weather', async (data) => {
 			switch (event) {
 				case 'units': {
 					data.weather.unit = that.checked ? 'imperial' : 'metric'
@@ -1024,20 +1017,28 @@ function weather(event, that, init) {
 				}
 
 				case 'city': {
-					if (i_city.value.length < 2) {
-						return false
+					slow(that)
+
+					if (i_city.value.length < 3) return false
+					else if (navigator.onLine) {
+						data.weather.ccode = i_ccode.value
+						data.weather.city = stringMaxSize(i_city.value, 64)
+
+						const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
+							direction: 'alternate',
+							easing: 'linear',
+							duration: 800,
+							iterations: Infinity,
+						})
+
+						const cityFound = await fetches(data.weather)
+
+						if (cityFound) i_city.blur()
+						i_city.setAttribute('placeholder', cityFound ? data.weather.city : tradThis('City not found'))
+						i_city.value = ''
+						inputAnim.cancel()
 					}
 
-					data.weather.ccode = i_ccode.value
-					data.weather.city = stringMaxSize(i_city.value, 64)
-
-					fetches(data.weather)
-
-					i_city.setAttribute('placeholder', data.weather.city)
-					i_city.value = ''
-					i_city.blur()
-
-					slow(that)
 					break
 				}
 

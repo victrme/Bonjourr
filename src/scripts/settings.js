@@ -5,6 +5,7 @@ function initParams(data, settingsDom) {
 	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
+	const enterBlurs = (e) => e.addEventListener('keypress', (e) => (e.key === 'Enter' ? e.target.blur() : ''))
 
 	function toggleClockOptions(dom, analog) {
 		dom.classList.remove(analog ? 'digital' : 'analog')
@@ -109,6 +110,9 @@ function initParams(data, settingsDom) {
 	//
 	// Events
 	//
+
+	//enterBlurs(paramId('i_favicon'))
+	enterBlurs(paramId('i_greeting'))
 
 	const bgfile = paramId('i_bgfile')
 	const fileContainer = paramId('i_fileContainer')
@@ -265,7 +269,14 @@ function initParams(data, settingsDom) {
 	//weather
 
 	paramId('i_city').onkeypress = function (e) {
-		if (!stillActive && e.code === 'Enter') weather('city', this)
+		if (e.code === 'Enter') {
+			clearTimeout(rangeActive)
+			if (!stillActive) weather('city', this)
+		} else {
+			const that = this
+			clearTimeout(rangeActive)
+			rangeActive = setTimeout(() => weather('city', that), 1600)
+		}
 	}
 
 	paramId('i_units').onchange = function () {
