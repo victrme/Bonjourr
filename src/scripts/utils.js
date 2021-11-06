@@ -215,6 +215,7 @@ function bonjourrDefaults(which) {
 				css: '',
 				lang: 'en',
 				greeting: '',
+				custom_every: 'pause',
 				background_type: 'dynamic',
 				links: [],
 				clock: {
@@ -235,7 +236,7 @@ function bonjourrDefaults(which) {
 					city: 'Paris',
 					unit: 'metric',
 					location: [],
-					forecast: 'mornings',
+					forecast: 'auto',
 				},
 				searchbar: {
 					on: false,
