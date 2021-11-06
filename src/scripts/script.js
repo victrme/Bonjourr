@@ -34,17 +34,22 @@ function tradThis(str) {
 }
 
 function favicon(init, event) {
-	//
+	function createFavicon(emoji) {
+		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
+		document.querySelector("link[rel~='icon']").href = emoji ? svg : 'src/assets/favicon-128x128.png'
+	}
 
-	if (event) chrome.storage.sync.set({ favicon: init })
+	if (init !== undefined) createFavicon(init)
 
-	const domFavicon = document.querySelector("link[rel~='icon']")
-	const emojiToFavicon =
-		'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>' +
-		init +
-		'</text></svg>'
+	if (event) {
+		const val = event.value
+		const isEmoji = val.match(/\p{Emoji}/gu)
 
-	init ? (domFavicon.href = emojiToFavicon) : (domFavicon.href = 'src/assets/favicon-128x128.png')
+		if (isEmoji) createFavicon(val)
+		else event.value = ''
+
+		slowRange({ favicon: isEmoji ? val : '' })
+	}
 }
 
 function clock(event, init) {

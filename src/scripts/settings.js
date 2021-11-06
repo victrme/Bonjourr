@@ -188,10 +188,6 @@ function initParams(data, settingsDom) {
 		selectBackgroundType(this.value)
 	}
 
-	paramId('i_favicon').oninput = function (e) {
-		favicon(this.value, e)
-	}
-
 	paramId('i_freq').onchange = function () {
 		if (paramId('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
 		else unsplash(null, { every: this.value })
@@ -221,6 +217,12 @@ function initParams(data, settingsDom) {
 	paramId('i_dark').onchange = function () {
 		darkmode(this.value)
 	}
+
+	paramId('i_favicon').oninput = function () {
+		favicon(null, this)
+	}
+
+	// paramId('i_favicon').onkeyup = (e) => (e.key === 'Enter' ? e.target.blur() : '')
 
 	//Time and date
 
