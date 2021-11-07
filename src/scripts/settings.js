@@ -268,14 +268,14 @@ function initParams(data, settingsDom) {
 
 	//weather
 
-	paramId('i_city').onkeypress = function (e) {
+	paramId('i_city').onkeyup = function (e) {
 		if (e.code === 'Enter') {
 			clearTimeout(rangeActive)
 			if (!stillActive) weather('city', this)
 		} else {
 			const that = this
 			clearTimeout(rangeActive)
-			rangeActive = setTimeout(() => weather('city', that), 1600)
+			rangeActive = setTimeout(() => weather('city', that), 2000)
 		}
 	}
 

@@ -1171,7 +1171,7 @@ const dict = {
 		es: 'Geolocalización',
 	},
 	'City not found': {
-		fr: 'Ville non trouvé',
+		fr: 'Ville inconnue',
 		sv: 'Staden hittades inte',
 		nl: 'Stad niet gevonden',
 		pl: 'Zmień miasto',
