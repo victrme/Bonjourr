@@ -2,28 +2,28 @@
 	position: fixed;
 	bottom: 0;
 	right: 0;
+	opacity: 0;
 	z-index: 3;
-	padding: 0;
-	margin: 20px;
-	border-radius: 20px;
-	transition: background-color 1.2s cubic-bezier(0.68, -0.2, 0.265, 1);
-
-	@include frostedGlass($a: 0.3, $blur: 20px);
+	padding: 0 1.5em 1.5em 0;
+	transition: opacity 0.4s;
 
 	button {
-		height: 60px;
-		width: 60px;
+		height: 4em;
+		width: 4em;
 		border: none;
 		border-radius: 8px;
-		background-color: #ffffff00;
-		transition: width 1.2s cubic-bezier(0.68, -0.2, 0.265, 1);
-		padding: unset;
 		cursor: pointer;
+		background-color: #ffffff00;
+		transition: background-color 0.2s;
+		padding: unset;
 
 		@include allCentered();
 
 		img {
-			display: none;
+			width: 65%;
+			transition: transform 0.6s $easeOutThree;
+			will-change: transform;
+			// filter: drop-shadow(0px 1px 15px #0008);
 		}
 	}
 
@@ -35,10 +35,8 @@
 	}
 
 	// Doit etre dans cette ordre pour la hierarchie
-	&.shown {
-		button {
-			width: 450px;
-		}
+	&.enabled {
+		opacity: 1;
 	}
 
 	&.he_hidden {
@@ -46,17 +44,47 @@
 	}
 
 	&:hover {
+		opacity: 1;
+
+		button {
+			background: #777;
+			@include frostedGlass($a: 0.3);
+		}
+
+		img {
+			transform: rotate(15deg);
+		}
+	}
+
+	&:active {
+		img {
+			transform: rotate(30deg);
+		}
+	}
+
+	&.shown {
+		button {
+			@include frostedGlass($r: 171, $g: 171, $b: 171);
+
+			img {
+				transform: rotate(60deg);
+			}
+
+			&:hover {
+				@include frostedGlass($r: 119, $g: 119, $b: 119);
+			}
+		}
 	}
 }
 
 #settings {
 	position: fixed;
-	top: 20px;
+	top: 0;
+	bottom: 0;
 	z-index: 2;
-	right: -470px;
+	right: -450px;
 	width: 450px;
-	height: calc(100vh - 120px);
-	border-radius: 20px;
+	height: 100vh;
 	overflow-y: auto;
 
 	background-color: $settingsGrey;
@@ -65,10 +93,16 @@
 	font-weight: 400;
 	text-shadow: none;
 	text-align: left;
-	transition: transform 1.2s cubic-bezier(0.68, -0.2, 0.265, 1);
+
+	will-change: transform;
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	transition: transform 0.4s $easeOutThree, background-color 0.6s;
 
 	&.shown {
-		transform: translateX(-490px);
+		-webkit-transform: translateX(-100%);
+		transform: translateX(-100%);
+		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 	}
 
 	&.init {

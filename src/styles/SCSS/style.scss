@@ -15,15 +15,15 @@
 	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
 	font-weight: 300;
 
-	// &.pushed {
-	// 	-webkit-transform: translateX(-100px);
-	// 	transform: translateX(-100px);
+	&.pushed {
+		-webkit-transform: translateX(-100px);
+		transform: translateX(-100px);
 
-	// 	#background_overlay {
-	// 		-webkit-transform: scale(1.16) translateX(95px);
-	// 		transform: scale(1.16) translateX(95px);
-	// 	}
-	// }
+		#background_overlay {
+			-webkit-transform: scale(1.16) translateX(95px);
+			transform: scale(1.16) translateX(95px);
+		}
+	}
 
 	&.init {
 		opacity: 0;
