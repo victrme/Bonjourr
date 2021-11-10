@@ -540,7 +540,20 @@ function settingsInit(data) {
 		}
 	}
 
-	dominterface.onclick = (e) => showInterface(e)
+	function closePopup() {
+		setTimeout(() => {
+			id('popup').classList.replace('shown', 'removing')
+			chrome.storage.sync.set({ reviewPopup: 'removed' })
+		}, 4000)
+	}
+
+	dominterface.addEventListener('touchstart', closePopup, { passive: true })
+
+	dominterface.onclick = (e) => {
+		showInterface(e)
+		if (id('popup')) closePopup()
+	}
+
 	document.onkeydown = (e) => {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true

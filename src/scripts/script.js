@@ -1822,39 +1822,57 @@ function searchbar(event, that, storage) {
 }
 
 function showPopup(data) {
-	const text = id('popup_buttons')
-	const buttons = id('popup_text')
-
-	id('popup_review').setAttribute(
-		'href',
-		mobilecheck
-			? 'https://github.com/victrme/Bonjourr/stargazers'
-			: navigator.userAgent.includes('Chrome')
-			? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
-			: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
-	)
-
+	//
 	function affiche() {
-		const close = function () {
-			text.classList.replace('shown', 'removing')
-			buttons.classList.replace('shown', 'removing')
-			chrome.storage.sync.set({ reviewPopup: 'removed' })
+		const setReviewLink = () =>
+			mobilecheck
+				? 'https://github.com/victrme/Bonjourr/stargazers'
+				: navigator.userAgent.includes('Chrome')
+				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
+				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
+
+		const dom = {
+			wrap: document.createElement('div'),
+			btnwrap: document.createElement('div'),
+			desc: document.createElement('p'),
+			review: document.createElement('a'),
+			donate: document.createElement('a'),
 		}
 
-		text.classList.add('shown')
-		buttons.classList.add('shown')
+		dom.wrap.id = 'popup'
+		dom.desc.id = 'popup_text'
+		dom.desc.textContent = tradThis(
+			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
+		)
 
-		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close), 4000)
+		dom.review.href = setReviewLink()
+		dom.donate.href = 'http://bonjourr.fr/#donate'
+
+		dom.review.textContent = tradThis('Review')
+		dom.donate.textContent = tradThis('Donate')
+
+		dom.btnwrap.id = 'popup_buttons'
+		dom.btnwrap.appendChild(dom.review)
+		dom.btnwrap.appendChild(dom.donate)
+
+		dom.wrap.appendChild(dom.desc)
+		dom.wrap.appendChild(dom.btnwrap)
+
+		document.body.appendChild(dom.wrap)
+
+		domcredit.style.opacity = 0
+		setTimeout(() => dom.wrap.classList.add('shown'), 200)
+
+		document.querySelectorAll('#popup #popup_buttons a')[0].onclick = close
+		document.querySelectorAll('#popup #popup_buttons a')[1].onclick = close
+
+		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close, { passive: true }), 4000)
 	}
 
 	//s'affiche après 30 tabs
 	if (data > 30) affiche()
 	else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
 	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
-	else if (data === 'removed') {
-		document.body.removeChild(text)
-		document.body.removeChild(buttons)
-	}
 }
 
 function customSize(init, event) {
