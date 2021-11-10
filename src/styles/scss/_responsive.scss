@@ -130,13 +130,12 @@
 @media screen and (max-width: 400px) {
 	#settings {
 		input[type='text'] {
-			width: 110px;
+			width: 100px;
 		}
 
-		.freq_wrap > div,
 		input[type='range'],
 		select {
-			width: 120px;
+			width: 110px;
 		}
 	}
 }

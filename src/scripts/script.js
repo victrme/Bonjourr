@@ -1,3 +1,19 @@
+function slowRange(tosave, time = 400) {
+	clearTimeout(rangeActive)
+	rangeActive = setTimeout(function () {
+		chrome.storage.sync.set(tosave)
+	}, time)
+}
+
+function slow(that, time = 400) {
+	that.setAttribute('disabled', '')
+	stillActive = setTimeout(() => {
+		that.removeAttribute('disabled')
+		clearTimeout(stillActive)
+		stillActive = false
+	}, time)
+}
+
 function traduction(settingsDom, lang = 'en') {
 	//
 	function traduis() {
@@ -256,32 +272,31 @@ function quickLinks(event, that, initStorage) {
 			//
 			// Icons
 			// If aliases, needs to replace "alias:""
-			replacesIconAliases(links, (iconList) => {
+			const addIconsAndEvents = (icons) => {
 				blocklist.forEach(({ icon, parent }, i) => {
-					const iconURL = iconList[i] === undefined ? 'src/assets/interface/loading.gif' : iconList[i]
-					links[i] = addIcon(icon, links, i, iconURL)
+					addIcon(icon, links, i, icons[i])
 					addEvents(parent)
 				})
 
-				// Saves any changes during submission func
-				chrome.storage.sync.set({ links })
 				canDisplayInterface('links')
-			})
+			}
+
+			replacesIconAliases(links, (result) => addIconsAndEvents(result))
 		}
 
 		// Links is done
 		else canDisplayInterface('links')
 	}
 
-	function addIcon(iconDOM, links, index, iconURL) {
+	function addIcon(lIcon, links, index, iconurl) {
 		//
 		const link = links[index]
-		const applyURL = (url) => (iconDOM.src = url)
+		const applyURL = (url) => (lIcon.src = url)
 
-		if (iconURL.length === 0 || iconURL === 'src/assets/interface/loading.gif') {
+		if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
 			//
 			// Apply loading gif d'abord
-			applyURL(iconURL)
+			applyURL(iconurl)
 
 			const img = new Image()
 			const a = document.createElement('a')
@@ -292,13 +307,15 @@ function quickLinks(event, that, initStorage) {
 			img.src = url
 			img.remove()
 
-			link.icon = url
+			// Last link is newlink
+			if (index === links.length - 1) {
+				links[index].icon = url
+				chrome.storage.sync.set({ links: links })
+			}
 		}
 
 		// Apply celle cached
-		else applyURL(iconURL)
-
-		return link
+		else applyURL(iconurl)
 	}
 
 	function appendblock(link) {
@@ -413,20 +430,18 @@ function quickLinks(event, that, initStorage) {
 		let touchStartTime = 0
 		let touchTimeout = setTimeout(() => {}, 0)
 
-		const startHandler = () => {
+		elem.ontouchstart = function (e) {
+			e.preventDefault()
 			touchStartTime = performance.now()
-			touchTimeout = setTimeout(() => editlink(elem), 300)
+			touchTimeout = setTimeout(() => editlink(this), 300)
 		}
 
-		const endHandler = (e) => {
+		elem.ontouchend = function (e) {
 			if (performance.now() - touchStartTime < 300) {
 				clearTimeout(touchTimeout)
-				openlink(elem, e)
+				openlink(this, e)
 			}
 		}
-
-		elem.addEventListener('touchstart', startHandler, { passive: true })
-		elem.addEventListener('touchend', endHandler, { passive: true })
 	}
 
 	function showDelIcon(input) {
@@ -436,12 +451,10 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function editEvents() {
-		const editLinkContainer = id('edit_linkContainer')
-
 		function closeEditLink() {
 			removeLinkSelection()
-			editLinkContainer.classList.add('hiding')
-			editDisplayTimeout = setTimeout(() => editLinkContainer.setAttribute('class', ''), BonjourrAnimTime)
+			id('edit_linkContainer').classList.add('hiding')
+			editDisplayTimeout = setTimeout(() => id('edit_linkContainer').setAttribute('class', ''), BonjourrAnimTime)
 		}
 
 		function emptyAndHideIcon(e) {
@@ -452,7 +465,7 @@ function quickLinks(event, that, initStorage) {
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('edit_link').getAttribute('index')))
-			clas(editLinkContainer, false, 'shown')
+			clas(id('edit_linkContainer'), false, 'shown')
 			if (id('settings')) linksInputDisable(false)
 		}
 
@@ -466,9 +479,9 @@ function quickLinks(event, that, initStorage) {
 		id('e_close').onclick = () => closeEditLink()
 
 		// close on outside click
-		const outsideClick = (e) => (e.target.id === 'edit_linkContainer' ? closeEditLink() : '')
-		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
-		else editLinkContainer.onmousedown = outsideClick
+		id('edit_linkContainer').onmousedown = (e) => {
+			if (e.target.id === 'edit_linkContainer') closeEditLink()
+		}
 
 		id('re_title').onclick = (e) => emptyAndHideIcon(e)
 		id('re_url').onclick = (e) => emptyAndHideIcon(e)
@@ -746,42 +759,28 @@ function weather(event, that, init) {
 		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 	]
 
-	async function initWeather(param) {
-		const applyResult = (geol) => {
-			request(param, true)
-			request(param, false)
+	function initWeather(param) {
+		navigator.geolocation.getCurrentPosition(
+			(pos) => {
+				//update le parametre de location
+				param.location.push(pos.coords.latitude, pos.coords.longitude)
+				request(param, false)
+				request(param, true)
 
-			if (id('settings')) {
-				id('i_ccode').value = param.ccode
-				id('i_city').setAttribute('placeholder', param.city)
-
-				if (geol) {
+				// Check geolocation after settings is loaded
+				if (id('settings')) {
 					clas(id('sett_city'), true, 'hidden')
 					id('i_geol').checked = true
 				}
-			}
-		}
-
-		try {
-			const ipapi = await fetch('https://ipapi.co/json')
-			if (ipapi.ok) {
-				const json = await ipapi.json()
-				if (!json.error) param = { ...param, city: json.city, ccode: json.country }
-			}
-		} catch (error) {
-			console.warn(error)
-		}
-
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				param.location.push(pos.coords.latitude, pos.coords.longitude)
-				applyResult(true)
 			},
-			() => applyResult(false)
+			(refused) => {
+				request(param, true)
+				request(param, false)
+			}
 		)
 	}
 
-	async function request(storage, forecast) {
+	function request(storage, forecast) {
 		function saveCurrent(response) {
 			//
 			const isImperial = storage.unit === 'imperial'
@@ -843,17 +842,10 @@ function weather(event, that, init) {
 		}
 
 		// fetches, parses and apply callback
-		try {
-			const weatherAPI = await fetch(url)
-
-			if (weatherAPI.ok) {
-				const json = await weatherAPI.json()
-				forecast ? saveForecast(json) : saveCurrent(json)
-			}
-			return weatherAPI.ok
-		} catch (error) {
-			return false
-		}
+		fetch(url).then((data) => {
+			if (data.ok) data.json().then((json) => (forecast ? saveForecast(json) : saveCurrent(json)))
+			else if (i_city) i_city.setAttribute('placeholder', tradThis('City not found'))
+		})
 	}
 
 	function cacheControl(storage) {
@@ -947,17 +939,11 @@ function weather(event, that, init) {
 		const timeOfDay = now < rise || now > set ? 'night' : 'day'
 		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
-		if (widgetIcon) {
-			if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
-		} else {
-			const icon = document.createElement('img')
-			icon.src = iconSrc
-			icon.setAttribute('draggable', 'false')
-			widget.prepend(icon)
+		const icon = document.createElement('img')
+		icon.src = iconSrc
+		icon.setAttribute('draggable', 'false')
 
-			// from 1.2s request anim to .4s hide elem anim
-			setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
-		}
+		!widgetIcon ? widget.prepend(icon) : widgetIcon.setAttribute('src', iconSrc)
 
 		// Description
 		const desc = weather.lastState.description
@@ -968,36 +954,29 @@ function weather(event, that, init) {
 
 		clas(current, false, 'wait')
 		clas(widget, false, 'wait')
+
+		// from 1.2s request anim to .4s hide elem anim
+		setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
 	}
 
 	function displaysForecast(weather) {
-		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${tradThis(
-			date.getHours() > 21 ? 'tomorrow' : 'today'
-		)}.`
+		const when = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
 
+		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${when}.`
 		clas(forecast, false, 'wait')
 	}
 
-	function forecastVisibilityControl(value) {
-		let isTimeForForecast = false
-
-		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
-		else isTimeForForecast = value === 'always'
-
-		clas(forecast, isTimeForForecast, 'shown')
-	}
-
-	async function updatesWeather() {
+	function updatesWeather() {
 		//
 
-		async function fetches(weather) {
-			const main = await request(weather, false)
-			const forecast = await request(weather, true)
-
-			return main && forecast
+		function fetches(weather) {
+			request(weather, false)
+			request(weather, true)
 		}
 
-		chrome.storage.sync.get('weather', async (data) => {
+		slow(that)
+
+		chrome.storage.sync.get('weather', (data) => {
 			switch (event) {
 				case 'units': {
 					data.weather.unit = that.checked ? 'imperial' : 'metric'
@@ -1011,73 +990,51 @@ function weather(event, that, init) {
 					displaysCurrent(data.weather)
 					displaysForecast(data.weather)
 					chrome.storage.sync.set({ weather: data.weather })
-
-					slow(that)
 					break
 				}
 
 				case 'city': {
-					slow(that)
-
-					if (i_city.value.length < 3) return false
-					else if (navigator.onLine) {
-						data.weather.ccode = i_ccode.value
-						data.weather.city = stringMaxSize(i_city.value, 64)
-
-						const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
-							direction: 'alternate',
-							easing: 'linear',
-							duration: 800,
-							iterations: Infinity,
-						})
-
-						const cityFound = await fetches(data.weather)
-
-						if (cityFound) i_city.blur()
-						i_city.setAttribute('placeholder', cityFound ? data.weather.city : tradThis('City not found'))
-						i_city.value = ''
-						inputAnim.cancel()
+					if (i_city.value.length < 2) {
+						return false
 					}
 
+					data.weather.ccode = i_ccode.value
+					data.weather.city = stringMaxSize(i_city.value, 64)
+
+					fetches(data.weather)
+
+					i_city.setAttribute('placeholder', data.weather.city)
+					i_city.value = ''
+					i_city.blur()
 					break
 				}
 
 				case 'geol': {
 					data.weather.location = []
-					that.setAttribute('disabled', '')
+					clas(sett_city, that.checked, 'hidden')
 
 					if (that.checked) {
+						that.setAttribute('disabled', '')
+
 						navigator.geolocation.getCurrentPosition(
 							(pos) => {
 								//update le parametre de location
-								clas(sett_city, that.checked, 'hidden')
 								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
 								fetches(data.weather)
 							},
 							(refused) => {
 								//désactive geolocation if refused
-								setTimeout(() => (that.checked = false), 400)
+								that.checked = false
 								if (!data.weather.city) initWeather()
-								console.log(refused)
 							}
 						)
 					} else {
 						i_city.setAttribute('placeholder', data.weather.city)
 						i_ccode.value = data.weather.ccode
-						clas(sett_city, that.checked, 'hidden')
 
 						data.weather.location = []
 						fetches(data.weather)
 					}
-
-					slow(that)
-					break
-				}
-
-				case 'forecast': {
-					data.weather.forecast = that.value
-					chrome.storage.sync.set({ weather: data.weather })
-					forecastVisibilityControl(that.value)
 					break
 				}
 			}
@@ -1086,10 +1043,16 @@ function weather(event, that, init) {
 
 	// Event & Init
 	if (event) updatesWeather()
-	else {
-		forecastVisibilityControl(init.forecast || 'mornings')
-		cacheControl(init)
-	}
+	else cacheControl(init)
+
+	// Detect forecast display before it fetches
+	const isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
+	clas(forecast, isTimeForForecast, 'shown')
+
+	// Checks every 5 minutes if weather needs update
+	setTimeout(() => {
+		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => cacheControl(data.weather)) : ''
+	}, 5 * 60 * 1000)
 }
 
 function initBackground(data) {
@@ -1121,7 +1084,7 @@ function initBackground(data) {
 	filter('init', [parseFloat(blur), parseFloat(bright)])
 }
 
-function imgBackground(val, loadTime, init) {
+function imgBackground(val, loadTime) {
 	let img = new Image()
 
 	img.onload = () => {
@@ -1130,15 +1093,11 @@ function imgBackground(val, loadTime, init) {
 			const changeDuration = (time) => (domoverlay.style.transition = `transform .4s, opacity ${time}ms`)
 
 			changeDuration(animDuration)
-			setTimeout(() => changeDuration(BonjourrAnimTime), animDuration)
+			setTimeout(() => changeDuration(400), animDuration)
 		}
 
-		const applyBackground = () => {
-			domoverlay.style.opacity = `1`
-			id('background').style.backgroundImage = `url(${val})`
-		}
-
-		init ? applyBackground() : setTimeout(applyBackground, BonjourrAnimTime)
+		domoverlay.style.opacity = `1`
+		id('background').style.backgroundImage = `url(${val})`
 	}
 
 	img.src = val
@@ -1190,10 +1149,9 @@ function localBackgrounds(init, event) {
 		const background = backgrounds[index]
 
 		if (background) {
-			const perfStart = performance.now()
 			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
 			b64toBlobUrl(cleanData, (bloburl) => {
-				imgBackground(bloburl, perfStart, !!init)
+				imgBackground(bloburl)
 				changeImgIndex(index)
 			})
 		}
@@ -1247,8 +1205,9 @@ function localBackgrounds(init, event) {
 		//
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
-			clas(domcredit, false, 'shown')
 			domoverlay.style.opacity = `0`
+			clas(domcredit, false, 'shown')
+			setTimeout(() => (domcredit.style.display = 'none'), BonjourrAnimTime)
 		}
 
 		const compressStart = performance.now()
@@ -1369,9 +1328,12 @@ function localBackgrounds(init, event) {
 					// Last image is removed
 					if (data.custom.length === 0) {
 						domoverlay.style.opacity = `0`
+						domcredit.style.display = 'block'
 
-						unsplash(null, { removedCustom: true })
-						clas(domcredit, true, 'shown')
+						setTimeout(() => {
+							unsplash(null, { removedCustom: true })
+							clas(domcredit, true, 'shown')
+						}, 400)
 					}
 
 					// Only draw new image if displayed is removed
@@ -1467,22 +1429,22 @@ function unsplash(init, event) {
 			},
 		]
 
-		domcredit.textContent = ''
+		id('credit').textContent = ''
 
 		credits.forEach(function cityNameRef(elem, i) {
 			const dom = document.createElement('a')
 			dom.textContent = elem.text
 			dom.href = elem.url
 
-			if (i === 1) domcredit.appendChild(document.createElement('br'))
-			domcredit.appendChild(dom)
+			if (i === 1) id('credit').appendChild(document.createElement('br'))
+			id('credit').appendChild(dom)
 		})
 
-		clas(domcredit, true, 'shown')
+		clas(id('credit'), true, 'shown')
 	}
 
 	function loadBackground(props, loadTime) {
-		imgBackground(props.url, loadTime, !!init)
+		imgBackground(props.url, loadTime)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
@@ -1578,10 +1540,7 @@ function unsplash(init, event) {
 			if (list.length === 1)
 				requestNewList(collection, (newlist) => {
 					caches[collection] = list.concat(newlist)
-					noDisplayImgLoad(newlist[0].url, () => {
-						chrome.storage.local.set({ dynamicCache: caches })
-						chrome.storage.local.remove('waitingForPreload')
-					})
+					noDisplayImgLoad(newlist[0].url, () => chrome.storage.local.set({ dynamicCache: caches }))
 				})
 			//
 			// Or preload next
@@ -1589,7 +1548,6 @@ function unsplash(init, event) {
 				noDisplayImgLoad(list[1].url, () => {
 					chrome.storage.sync.set({ dynamic: dynamic })
 					chrome.storage.local.set({ dynamicCache: caches })
-					chrome.storage.local.remove('waitingForPreload')
 				})
 		}
 
@@ -1673,42 +1631,10 @@ function unsplash(init, event) {
 
 		case 'event': {
 			chrome.storage.sync.get('dynamic', (data) => {
-				chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+				chrome.storage.local.get('dynamicCache', (local) => {
 					//
 
 					switch (Object.keys(event)[0]) {
-						case 'refresh': {
-							const buttonSpan = Object.values(event)[0]
-							const animationOptions = { duration: 600, easing: 'ease-out' }
-
-							// Only refreshes background if preload is over
-							// If not, animate button to show it is trying
-							if (local.waitingForPreload === undefined) {
-								id('background_overlay').style.opacity = 0
-								data.dynamic.time = 0
-								chrome.storage.sync.set({ dynamic: data.dynamic })
-								chrome.storage.local.set({ waitingForPreload: true })
-
-								buttonSpan.animate([{ transform: 'rotate(360deg)' }], animationOptions)
-
-								setTimeout(
-									() =>
-										cacheControl(data.dynamic, local.dynamicCache, collectionControl(data.dynamic), false),
-									BonjourrAnimTime
-								)
-							} else
-								buttonSpan.animate(
-									[
-										{ transform: 'rotate(0deg)' },
-										{ transform: 'rotate(90deg)' },
-										{ transform: 'rotate(0deg)' },
-									],
-									animationOptions
-								)
-
-							break
-						}
-
 						case 'every': {
 							data.dynamic.every = event.every
 							data.dynamic.time = freqControl('set')
@@ -1905,10 +1831,11 @@ function searchbar(event, that, init) {
 			const request = domsearchbar.getAttribute('request')
 
 			// engineLocales est dans lang.js
+
 			if (engine === 'custom') searchURL = request
 			else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
 
-			searchURL = searchURL.replace('%s', encodeURIComponent(this.value))
+			searchURL = searchURL.replace('%s', this.value)
 
 			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 		}
@@ -1976,7 +1903,7 @@ function showPopup(data) {
 
 		setTimeout(() => dom.wrap.classList.add('shown'), 10)
 
-		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close, { passive: true }), 4000)
+		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
 		else id('closePopup').onclick = close
 
 		document.querySelectorAll('#popup .choices a')[0].onclick = close
@@ -1992,7 +1919,10 @@ function showPopup(data) {
 function customSize(init, event) {
 	//
 	// Apply for interface, credit & settings button
-	const apply = (size) => (dominterface.style.fontSize = size + 'px')
+	const apply = (size) => {
+		dominterface.style.fontSize = size + 'px'
+		id('credit').style.fontSize = size + 'px'
+	}
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
@@ -2494,7 +2424,6 @@ function filterImports(data) {
 
 				if (weather.lastCall) weather.lastCall = 0
 				if (weather.forecastLastCall) delete weather.forecastLastCall
-				if (weather.forecast === undefined) weather.forecast = 'mornings'
 			}
 
 			return weather
@@ -2560,28 +2489,6 @@ function startup(data) {
 }
 
 window.onload = function () {
-	if (mobilecheck) {
-		// For Mobile that caches pages for days
-		document.addEventListener('visibilitychange', () => {
-			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type'], (data) => {
-				const { dynamic, background_type } = data
-				const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
-
-				if (dynamicNeedsImage) {
-					domoverlay.style.opacity = 0
-					unsplash(data, false)
-				}
-
-				weather(null, null, data.weather)
-			})
-		})
-	}
-
-	// Checks every 5 minutes if weather needs update
-	setTimeout(() => {
-		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => weather(null, null, data.weather)) : ''
-	}, 5 * 60 * 1000)
-
 	//
 	// Only on Online
 	switch (window.location.protocol) {
