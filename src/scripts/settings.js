@@ -5,14 +5,12 @@ function initParams(data, settingsDom) {
 	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
+	const enterBlurs = (e) => e.addEventListener('keypress', (e) => (e.key === 'Enter' ? e.target.blur() : ''))
 
 	function toggleClockOptions(dom, analog) {
 		dom.classList.remove(analog ? 'digital' : 'analog')
 		dom.classList.add(analog ? 'analog' : 'digital')
 	}
-
-	// 1.9.2 ==> 1.9.3 lang break fix
-	if (data.searchbar_engine) data.searchbar_engine = data.searchbar_engine.replace('s_', '')
 
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
@@ -26,28 +24,31 @@ function initParams(data, settingsDom) {
 	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_greeting', data.greeting, '')
-	initInput('i_sbengine', data.searchbar_engine, 'google')
+	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
+	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
+	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
+	initInput('i_forecast', isThereData('weather', 'forecast'), 'auto')
 	initInput('i_customfont', isThereData('font', 'family'), '')
-	initInput('i_weight', isThereData('font', 'weight'), 400)
-	initInput('i_size', isThereData('font', 'size'), 16)
+	initInput('i_weight', isThereData('font', 'weight'), 300)
+	initInput('i_size', isThereData('font', 'size'), mobilecheck ? 11 : 14)
 
 	initCheckbox('i_showall', data.showall)
+	initCheckbox('i_linknewtab', data.linknewtab)
+	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_geol', isThereData('weather', 'location'))
 	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
-	initCheckbox('i_linknewtab', data.linknewtab)
-	initCheckbox('i_sb', data.searchbar)
-	initCheckbox('i_sbnewtab', !!data.searchbar_newtab)
-	initCheckbox('i_usdate', data.usdate)
+	initCheckbox('i_sb', isThereData('searchbar', 'on'))
+	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
 	// Links limit
-	if (data.links && data.links.length === 20) quickLinks('maxControl', settingsDom)
+	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
@@ -56,7 +57,7 @@ function initParams(data, settingsDom) {
 	safeFont(settingsDom)
 
 	// Font weight
-	if (data.font && data.font.availWeights) modifyWeightOptions(data.font.availWeights, settingsDom)
+	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom, true)
 
 	// Clock
 	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
@@ -64,6 +65,7 @@ function initParams(data, settingsDom) {
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
 	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
@@ -81,7 +83,6 @@ function initParams(data, settingsDom) {
 		const isGeolocation = data.weather.location.length > 0
 		let cityName = data.weather.city ? data.weather.city : 'City'
 		paramId('i_city').setAttribute('placeholder', cityName)
-		paramId('i_city').value = cityName
 
 		clas(paramId('sett_city'), isGeolocation, 'hidden')
 		paramId('i_geol').checked = isGeolocation
@@ -91,7 +92,8 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar display settings
-	clas(paramId('searchbar_options'), data.searchbar, 'shown')
+	clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
+	clas(paramId('searchbar_request'), data.searchbar.engine === 'custom', 'shown')
 
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
@@ -108,6 +110,9 @@ function initParams(data, settingsDom) {
 	//
 	// Events
 	//
+
+	//enterBlurs(paramId('i_favicon'))
+	enterBlurs(paramId('i_greeting'))
 
 	const bgfile = paramId('i_bgfile')
 	const fileContainer = paramId('i_fileContainer')
@@ -129,6 +134,12 @@ function initParams(data, settingsDom) {
 
 	const tooltips = settingsDom.querySelectorAll('.tooltip')
 
+	// Change edit tips on mobile
+	if (mobilecheck)
+		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
+			`Edit your Quick Links by long-pressing for 300ms the icon.`
+		)
+
 	tooltips.forEach((elem) => {
 		elem.onclick = function () {
 			const toggleTooltip = (which) => {
@@ -146,14 +157,14 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_lang').onchange = function () {
-		chrome.storage.sync.set({ lang: this.value })
-
-		//session pour le weather
+		// Session pour le weather
 		sessionStorage.lang = this.value
+		chrome.storage.sync.set({ lang: this.value })
 		if (sessionStorage.lang) location.reload()
 	}
 
 	//quick links
+
 	paramId('i_title').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
@@ -171,6 +182,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//visuals
+
 	paramId('i_type').onchange = function () {
 		selectBackgroundType(this.value)
 	}
@@ -178,6 +190,23 @@ function initParams(data, settingsDom) {
 	paramId('i_freq').onchange = function () {
 		if (paramId('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
 		else unsplash(null, { every: this.value })
+	}
+
+	paramId('i_refresh').onclick = function () {
+		if (paramId('i_type').value === 'custom') {
+			chrome.storage.local.get((local) => {
+				id('background_overlay').style.opacity = 0
+				setTimeout(
+					() =>
+						localBackgrounds({
+							local: local,
+							every: paramId('i_freq').value,
+							time: 0,
+						}),
+					400
+				)
+			})
+		} else slow(this, unsplash(null, { refresh: this.children[0] }))
 	}
 
 	paramId('i_collection').onchange = function () {
@@ -228,8 +257,9 @@ function initParams(data, settingsDom) {
 		clock({ timezone: this.value })
 	}
 
-	paramId('i_greeting').onkeyup = function () {
+	paramId('i_greeting').onkeyup = function (e) {
 		clock({ greeting: stringMaxSize(this.value, 32) })
+		if (e.code === 'Enter') e.target.blur()
 	}
 
 	paramId('i_usdate').onchange = function () {
@@ -238,8 +268,15 @@ function initParams(data, settingsDom) {
 
 	//weather
 
-	paramId('i_city').onkeypress = function (e) {
-		if (!stillActive && e.code === 'Enter') weather('city', this)
+	paramId('i_city').onkeyup = function (e) {
+		if (e.code === 'Enter') {
+			clearTimeout(rangeActive)
+			if (!stillActive) weather('city', this)
+		} else {
+			const that = this
+			clearTimeout(rangeActive)
+			rangeActive = setTimeout(() => weather('city', that), 2000)
+		}
 	}
 
 	paramId('i_units').onchange = function () {
@@ -248,6 +285,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_geol').onchange = function () {
 		if (!stillActive) weather('geol', this)
+	}
+
+	paramId('i_forecast').onchange = function () {
+		weather('forecast', this)
 	}
 
 	//searchbar
@@ -259,6 +300,14 @@ function initParams(data, settingsDom) {
 
 	paramId('i_sbengine').onchange = function () {
 		searchbar('engine', this)
+	}
+
+	paramId('i_sbopacity').oninput = function () {
+		searchbar('opacity', this)
+	}
+
+	paramId('i_sbrequest').onchange = function () {
+		searchbar('request', this)
 	}
 
 	paramId('i_sbnewtab').onchange = function () {
@@ -299,6 +348,13 @@ function initParams(data, settingsDom) {
 		customSize(null, this.value)
 	}
 
+	// Reduces opacity to better see interface size changes
+	if (mobilecheck) {
+		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
+		paramId('i_size').addEventListener('touchstart', () => touchHandler(true), { passive: true })
+		paramId('i_size').addEventListener('touchend', () => touchHandler(false), { passive: true })
+	}
+
 	paramId('i_row').oninput = function () {
 		linksrow(null, this.value)
 	}
@@ -328,7 +384,7 @@ function initParams(data, settingsDom) {
 			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(cssEditor)
-	}, 400)
+	}, BonjourrAnimTime)
 }
 
 function showall(val, event, domSettings) {
@@ -348,12 +404,11 @@ function selectBackgroundType(cat) {
 			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
 		}
 		if (cat === 'dynamic') {
+			// Timeout needed because it uses init data
 			domoverlay.style.opacity = `0`
-			domcredit.style.display = 'block'
-			setTimeout(() => {
-				clas(domcredit, true, 'shown')
-				unsplash(data)
-			}, BonjourrAnimTime)
+			id('background').removeAttribute('index')
+			setTimeout(() => unsplash(data), BonjourrAnimTime)
+			clas(domcredit, true, 'shown')
 		}
 
 		// Setting frequence
@@ -368,6 +423,13 @@ function selectBackgroundType(cat) {
 
 function importExport(select, isEvent) {
 	//
+	const fadeOut = () => {
+		dominterface.click()
+		dominterface.style.transition = 'opacity .4s'
+		dominterface.style.opacity = '0'
+		setTimeout(() => location.reload(), BonjourrAnimTime)
+	}
+
 	function importation() {
 		//
 		if (isEvent) {
@@ -394,15 +456,15 @@ function importExport(select, isEvent) {
 							data = { ...data, ...imported }
 
 							// Save sync & local
-							chrome.storage.sync.set(data, () => {
-								chrome.storage.local.set(local, () => location.reload())
-							})
+							chrome.storage.sync.set(isExtension ? data : { import: data }, chrome.storage.local.set(local))
+							fadeOut()
 						})
 					})
 				} catch (e) {
 					dom.value = ''
 					placeholder('Error in import code')
 					setTimeout(() => placeholder('Import code'), 2000)
+					console.error(e)
 				}
 			}
 		}
@@ -414,21 +476,26 @@ function importExport(select, isEvent) {
 
 		chrome.storage.sync.get(null, (data) => {
 			//
-			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-			input.value = JSON.stringify(data)
+			replacesIconAliases(data.links, (iconList) => {
+				for (let index = 0; index < data.links.length; index++) data.links[index].icon = iconList[index]
 
-			if (isEvent) {
-				input.select()
+				if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+				if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-				//doesn't work on firefox for security reason
-				//don't want to add permissions just for this
-				if (isOnChrome) {
-					document.execCommand('copy')
-					id('submitExport').textContent = tradThis('Copied')
+				input.value = JSON.stringify(data)
+
+				if (isEvent) {
+					input.select()
+
+					//doesn't work on firefox for security reason
+					//don't want to add permissions just for this
+					if (isOnChrome) {
+						document.execCommand('copy')
+						id('submitExport').textContent = tradThis('Copied')
+					}
 				}
-			}
+			})
 		})
 	}
 
@@ -439,10 +506,8 @@ function importExport(select, isEvent) {
 			input.textContent = tradThis('Click again to confirm')
 			input.setAttribute('sure', '')
 		} else {
-			deleteBrowserStorage()
-			setTimeout(function () {
-				location.reload()
-			}, 20)
+			isExtension ? deleteBrowserStorage() : lsOnlineStorage.del()
+			fadeOut()
 		}
 	}
 
@@ -460,23 +525,49 @@ function importExport(select, isEvent) {
 }
 
 function signature(dom) {
-	const span = document.createElement('span')
+	const spans = dom.querySelectorAll('#rand span')
+	const hyper = dom.querySelectorAll('#rand a')
 	const us = [
 		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
-		{ href: 'https://tahoe.be', name: 'Tahoe Beetschen' },
+		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
 	]
 
 	if (Math.random() > 0.5) us.reverse()
-	span.textContent = ` & `
 
-	us.forEach((sign, i) => {
-		const a = document.createElement('a')
-		a.href = sign.href
-		a.textContent = sign.name
-		i === 0 ? span.prepend(a) : span.appendChild(a)
+	spans[0].textContent = `${tradThis('by')} `
+	spans[1].textContent = ` & `
+
+	hyper.forEach((hyper, i) => {
+		hyper.href = us[i].href
+		hyper.textContent = us[i].name
 	})
+}
 
-	dom.querySelector('#rand').appendChild(span)
+function showInterface(e) {
+	//cherche le parent du click jusqu'a trouver linkblocks
+	//seulement si click droit, quitter la fct
+	let parent = e.target
+	const edit = id('edit_linkContainer')
+	const settings = id('settings')
+
+	while (parent !== null) {
+		parent = parent.parentElement
+		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
+	}
+
+	//close edit container on interface click
+	if (has(edit, 'shown')) {
+		clas(edit, false, 'shown')
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
+	}
+
+	if (has(settings, 'shown')) {
+		clas(settings, false, 'shown')
+		clas(domshowsettings, false, 'shown')
+		clas(dominterface, false, 'pushed')
+
+		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
+	}
 }
 
 function showSettings() {
@@ -484,10 +575,8 @@ function showSettings() {
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
-	if (mobilecheck === false) {
-		clas(dominterface, settingsNotShown, 'pushed')
-		clas(edit, settingsNotShown, 'pushed')
-	}
+	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
+	clas(edit, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')
 	clas(settings, settingsNotShown, 'shown')
@@ -497,18 +586,16 @@ function showSettings() {
 function settingsInit(data) {
 	function settingsCreator(html) {
 		// HTML creation
+		const parser = new DOMParser()
 		const settingsDom = document.createElement('div')
+		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]
+
 		settingsDom.id = 'settings'
-		settingsDom.innerHTML = html
+		contentList.forEach((elem) => settingsDom.appendChild(elem))
+
 		settingsDom.setAttribute('class', 'init')
 
-		// Input fillings
-		if (data.lang !== 'en') {
-			const trns = settingsDom.querySelectorAll('.trn')
-			const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][data.lang]) : '')
-			trns.forEach((trn) => changeText(trn, trn.textContent))
-		}
-
+		traduction(settingsDom, data.lang)
 		customFont(null, { autocomplete: true, settingsDom: settingsDom })
 		signature(settingsDom)
 		initParams(data, settingsDom)
@@ -561,32 +648,5 @@ function settingsInit(data) {
 		const noSettings = has(id('settings'), 'shown') === false
 
 		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
-	}
-}
-
-function showInterface(e) {
-	//cherche le parent du click jusqu'a trouver linkblocks
-	//seulement si click droit, quitter la fct
-	let parent = e.target
-	const edit = id('edit_linkContainer')
-	const settings = id('settings')
-
-	while (parent !== null) {
-		parent = parent.parentElement
-		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
-	}
-
-	//close edit container on interface click
-	if (has(edit, 'shown')) {
-		clas(edit, false, 'shown')
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
-	}
-
-	if (has(settings, 'shown')) {
-		clas(settings, false, 'shown')
-		clas(domshowsettings, false, 'shown')
-		clas(dominterface, false, 'pushed')
-
-		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
 	}
 }

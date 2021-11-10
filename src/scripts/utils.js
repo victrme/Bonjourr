@@ -1,3 +1,9 @@
+//
+//
+// Vals
+//
+//
+
 const id = (name) => document.getElementById(name)
 const cl = (name) => document.getElementsByClassName(name)
 const has = (dom, val) => {
@@ -11,7 +17,8 @@ const clas = (dom, add, str) => {
 }
 
 let lazyClockInterval = setTimeout(() => {}, 0),
-	googleFontList = {},
+	errorMessageInterval = setTimeout(() => {}, 0),
+	BonjourrBrowser = 'unknown',
 	stillActive = false,
 	rangeActive = false,
 	firstpaint = false,
@@ -34,17 +41,66 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
+	BonjourrVersion = '1.10.1',
 	funcsOk = {
 		clock: false,
 		links: false,
 	}
 
+switch (window.location.protocol) {
+	case 'http:':
+	case 'https:':
+	case 'file:':
+		BonjourrBrowser = 'online'
+		break
+
+	case 'moz-extension:':
+		BonjourrBrowser = 'firefox'
+		break
+
+	case 'chrome-extension:':
+		BonjourrBrowser = 'chrome'
+		break
+
+	default:
+		BonjourrBrowser = 'chrome'
+}
+
+//
+//
+// Functions
+//
+//
+
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
+const saveIconAsAlias = (iconstr) => {
+	const alias = 'alias:' + Math.random().toString(26).substring(2)
+	const tosave = {}
+	tosave[alias] = iconstr
+	chrome.storage.local.set(tosave)
+	return alias
+}
+
+function slowRange(tosave, time = 400) {
+	clearTimeout(rangeActive)
+	rangeActive = setTimeout(function () {
+		chrome.storage.sync.set(tosave)
+	}, time)
+}
+
+function slow(that, time = 400) {
+	that.setAttribute('disabled', '')
+	stillActive = setTimeout(() => {
+		that.removeAttribute('disabled')
+		clearTimeout(stillActive)
+		stillActive = false
+	}, time)
+}
+
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
-// And maybe change import option
 
 const lsOnlineStorage = {
 	get: (local, unused, callback) => {
@@ -66,7 +122,7 @@ const lsOnlineStorage = {
 		})
 	},
 
-	setLocal: (prop) => {
+	setLocal: (prop, callback) => {
 		lsOnlineStorage.get(true, null, (data) => {
 			if (typeof prop === 'object') {
 				data = {
@@ -75,6 +131,8 @@ const lsOnlineStorage = {
 				}
 				localStorage.bonjourrBackgrounds = JSON.stringify(data)
 			}
+
+			if (callback) callback
 		})
 	},
 	remove: (isLocal, key) => {
@@ -97,11 +155,49 @@ function deleteBrowserStorage() {
 		chrome.storage.local.clear()
 	}
 	localStorage.clear()
+
+	setTimeout(() => {
+		location.reload()
+	}, 400)
 }
 
 function consolr(flat, data) {
 	if (flat) console.log(data)
 	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
+}
+
+function errorMessage(data, error) {
+	const warning = document.createElement('div')
+	const title = document.createElement('h1')
+	const subtitle = document.createElement('p')
+	const contactlink = document.createElement('a')
+	const errorcode = document.createElement('pre')
+	const resetButton = document.createElement('button')
+
+	title.textContent = 'Bonjourr messed up 😖😖'
+
+	subtitle.textContent = data ? 'Copy your settings ' : 'Copy this error '
+	contactlink.textContent = 'and contact us!'
+	contactlink.href = `mailto:${atob(atob('WW05dWFtOTFjbkl1WVhCd1FIQnRMbTFs'))}`
+
+	subtitle.appendChild(contactlink)
+
+	errorcode.textContent = data ? data : error.stack
+	resetButton.textContent = 'Reset Bonjourr'
+	resetButton.addEventListener('click', () => {
+		warning.style.opacity = 0
+		deleteBrowserStorage()
+	})
+
+	warning.appendChild(title)
+	warning.appendChild(subtitle)
+	warning.appendChild(errorcode)
+	warning.appendChild(resetButton)
+
+	warning.id = 'bonjourrError'
+	document.body.prepend(warning)
+
+	setTimeout(() => (warning.style.opacity = 1), 20)
 }
 
 const testOS = {
@@ -113,14 +209,20 @@ const testOS = {
 		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
 }
 
+const safeFontList = {
+	fallback: { placeholder: 'Arial', weights: [500, 600, 800] },
+	windows: { placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
+	android: { placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
+	linux: { placeholder: 'Fira Sans', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+	apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+}
+
 function bonjourrDefaults(which) {
 	switch (which) {
 		case 'sync':
 			return {
 				usdate: false,
 				showall: false,
-				searchbar: false,
-				searchbar_newtab: false,
 				linksrow: 6,
 				cssHeight: 80,
 				reviewPopup: 0,
@@ -129,8 +231,8 @@ function bonjourrDefaults(which) {
 				css: '',
 				lang: 'en',
 				greeting: '',
+				custom_every: 'pause',
 				background_type: 'dynamic',
-				searchbar_engine: 'google',
 				links: [],
 				clock: {
 					ampm: false,
@@ -150,16 +252,24 @@ function bonjourrDefaults(which) {
 					city: 'Paris',
 					unit: 'metric',
 					location: [],
+					forecast: 'auto',
+				},
+				searchbar: {
+					on: false,
+					opacity: 0.1,
+					newtab: false,
+					engine: 'google',
+					request: '',
 				},
 				font: {
 					url: '',
 					family: '',
-					weight: '400',
 					availWeights: [],
 					size: mobilecheck ? '11' : '14',
+					weight: testOS.windows() ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: 'chrome', version: '1.10.0' },
+				about: { browser: BonjourrBrowser, version: BonjourrVersion },
 			}
 
 		case 'local':
@@ -176,56 +286,3 @@ function bonjourrDefaults(which) {
 			}
 	}
 }
-
-// function defaultImages(collection) {
-// 	const size = screen.width * window.devicePixelRatio
-// 	const domain = 'https://images.unsplash.com/'
-
-// 	switch (collection) {
-// 		case 'day':
-// 			return {
-// 				city: 'Santander',
-// 				color: '#0c4059',
-// 				country: 'Spain',
-// 				username: 'willianjusten',
-// 				name: 'Willian Justen de Vasconcellos',
-// 				link: 'https://unsplash.com/photos/8sHZE1CXG4w',
-// 				url: domain + 'photo-1519314885287-6040aee8e4ea?&w=' + size,
-// 			}
-
-// 		case 'night':
-// 			return {
-// 				city: null,
-// 				color: '#262626',
-// 				country: null,
-// 				name: 'eberhard 🖐 grossgasteiger',
-// 				link: 'https://unsplash.com/photos/OaXn4QRu-QQ',
-// 				url: domain + 'photo-1621173865296-baaf7dc3afcc?&w=' + size,
-// 			}
-
-// 		case 'noon':
-// 			return {
-// 				city: null,
-// 				color: '#26260c',
-// 				country: null,
-// 				username: 'tanelah',
-// 				name: 'Taneli Lahtinen',
-// 				link: 'https://unsplash.com/photos/suSwPNTaQ5Q',
-// 				url: domain + 'photo-1565772838491-cbeb32fac6ca?&w=' + size,
-// 			}
-
-// 		case 'evening':
-// 			return {
-// 				city: null,
-// 				color: '#0c2626',
-// 				country: null,
-// 				link: 'https://unsplash.com/photos/M0fZzkiioI0',
-// 				name: 'Patrick Jansen',
-// 				url: domain + 'photo-1618972078577-80ad6b66fd72?&w=' + size,
-// 				username: 'patrickjjansen',
-// 			}
-
-// 		default:
-// 			break
-// 	}
-// }
