@@ -1928,6 +1928,7 @@ function searchbar(event, that, init) {
 }
 
 function showPopup(data) {
+	//
 	function affiche() {
 		const setReviewLink = () =>
 			mobilecheck
@@ -1936,21 +1937,16 @@ function showPopup(data) {
 				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 
-		const close = () => {
-			dom.wrap.classList.replace('shown', 'removing')
-			chrome.storage.sync.set({ reviewPopup: 'removed' })
-		}
-
 		const dom = {
 			wrap: document.createElement('div'),
 			btnwrap: document.createElement('div'),
-			desc: document.createElement('span'),
+			desc: document.createElement('p'),
 			review: document.createElement('a'),
 			donate: document.createElement('a'),
-			close: document.createElement('p'),
 		}
 
 		dom.wrap.id = 'popup'
+		dom.desc.id = 'popup_text'
 		dom.desc.textContent = tradThis(
 			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 		)
@@ -1961,26 +1957,22 @@ function showPopup(data) {
 		dom.review.textContent = tradThis('Review')
 		dom.donate.textContent = tradThis('Donate')
 
-		dom.close.id = 'closePopup'
-		dom.close.textContent = '×'
-
-		dom.btnwrap.className = 'choices'
+		dom.btnwrap.id = 'popup_buttons'
 		dom.btnwrap.appendChild(dom.review)
 		dom.btnwrap.appendChild(dom.donate)
 
 		dom.wrap.appendChild(dom.desc)
 		dom.wrap.appendChild(dom.btnwrap)
-		dom.wrap.appendChild(dom.close)
 
 		document.body.appendChild(dom.wrap)
 
-		setTimeout(() => dom.wrap.classList.add('shown'), 10)
+		domcredit.style.opacity = 0
+		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
-		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close, { passive: true }), 4000)
-		else id('closePopup').onclick = close
+		document.querySelectorAll('#popup #popup_buttons a')[0].onclick = close
+		document.querySelectorAll('#popup #popup_buttons a')[1].onclick = close
 
-		document.querySelectorAll('#popup .choices a')[0].onclick = close
-		document.querySelectorAll('#popup .choices a')[1].onclick = close
+		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close, { passive: true }), 4000)
 	}
 
 	//s'affiche après 30 tabs

@@ -29,11 +29,6 @@
 		}
 	}
 
-	#popup {
-		color: white;
-		@include frostedGlass($tint: 28, $fbTint: 28, $fbAlpha: 1, $fbColor: white);
-	}
-
 	#showSettings.shown button {
 		background-color: #fff3;
 		&:hover {
