@@ -266,23 +266,23 @@ function quickLinks(event, that, initStorage) {
 		if (links.length > 0) {
 			//
 			// Blocks
-			// Add blocks and allow interface display
+			// Add blocks and events
 			const blocklist = links.map((link, i) => appendblock(link, i))
 			blocklist.forEach(({ parent }) => addEvents(parent))
 
 			//
 			// Icons
-			// If aliases, needs to replace "alias:""
-			replacesIconAliases(links, (iconList) => {
-				blocklist.map(async ({ icon }, i) => {
-					const iconURL = iconList[i] === undefined ? 'src/assets/interface/loading.gif' : iconList[i]
-					links[i] = await addIcon(icon, links, i, iconURL)
-
-					// Saves any changes during submission func
-					if (blocklist.length - 1 === i) chrome.storage.sync.set({ links })
-				})
-
+			// If aliases, needs to replace "alias:"
+			replacesIconAliases(links, async (iconList) => {
 				canDisplayInterface('links')
+
+				for (const ii in blocklist) {
+					const { icon } = blocklist[+ii]
+					const iconURL = iconList[+ii] === undefined ? 'src/assets/interface/loading.gif' : iconList[+ii]
+					links[+ii] = await addIcon(icon, links, +ii, iconURL)
+				}
+
+				chrome.storage.sync.set({ links })
 			})
 		}
 
@@ -654,11 +654,14 @@ function quickLinks(event, that, initStorage) {
 			data.links.splice(index, 1)
 
 			//enleve le html du block
-			var block_parent = domlinkblocks.children[index + 1]
-			clas(block_parent, true, 'removed')
+			const blockParent = domlinkblocks.children[index + 1]
+			const height = blockParent.getBoundingClientRect().height
+
+			blockParent.style.height = height + 'px'
+			clas(blockParent, true, 'removed')
 
 			setTimeout(function () {
-				domlinkblocks.removeChild(block_parent)
+				domlinkblocks.removeChild(blockParent)
 
 				//enleve linkblocks si il n'y a plus de links
 				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
@@ -2473,14 +2476,12 @@ function filterImports(data) {
 		result.searchbar.on = data.searchbar
 	} else if (typeof data.searchbar === 'object') {
 		result.searchbar = {
-			on: data.searchbar || false,
+			on: data.searchbar.on || false,
 			newtab: data.searchbar_newtab || false,
 			engine: data.searchbar_engine || 'google',
 			request: data.searchbar.request ? data.searchbar.request : '',
 			opacity: data.searchbar.opacity ? data.searchbar.opacity : 0.1,
 		}
-	} else {
-		result.searchbar = bonjourrDefaults('sync').searchbar
 	}
 
 	if (result.searchbar_engine) delete result.searchbar_engine

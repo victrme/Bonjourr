@@ -425,7 +425,10 @@
 
 			&.removed {
 				transform: scale(0);
-				transition: transform 0.6s;
+				overflow: hidden;
+				width: 0;
+				margin: 1em 0;
+				transition: transform 0.6s, width 0.6s 0.1s, margin 0.6s 0.1s;
 			}
 		}
 	}
