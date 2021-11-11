@@ -288,12 +288,12 @@ function quickLinks(event, that, initStorage) {
 		else canDisplayInterface('links')
 	}
 
-	function addIcon(lIcon, links, index, iconurl) {
+	async function addIcon(lIcon, links, index, iconurl) {
 		//
 		const link = links[index]
 		const applyURL = (url) => (lIcon.src = url)
 
-		if (iconurl.length === 0 || iconurl === 'src/assets/interface/loading.gif') {
+		if (iconurl.length === 0 || iconurl.includes('api.faviconkit.com') || iconurl.includes('loading.gif')) {
 			//
 			// Apply loading gif d'abord
 			applyURL(iconurl)
@@ -301,17 +301,35 @@ function quickLinks(event, that, initStorage) {
 			const img = new Image()
 			const a = document.createElement('a')
 			a.href = link.url
-			const url = 'https://api.faviconkit.com/' + a.hostname + '/144'
+
+			// Google favicon API is fallback
+			let url = `https://www.google.com/s2/favicons?sz=64&domain=${a.hostname}`
+			const api = await fetch(`https://favicongrabber.com/api/grab/${a.hostname}`)
+
+			// Filter favicon pngs, keep the biggest one (or first one if no sizes)
+			if (api.ok) {
+				const json = await api.json()
+				const foundIcons = json.icons.filter((x) => x.src.includes('.png'))
+				let biggestpng = { size: 0, index: 0 }
+
+				if (foundIcons.length > 0) {
+					foundIcons.forEach((elem, i) => {
+						if (elem.sizes) {
+							const thisiconsize = parseInt(elem.sizes.split('x')[0])
+							if (thisiconsize > biggestpng[0]) biggestpng = { size: thisiconsize, index: i }
+						}
+					})
+
+					url = foundIcons[biggestpng.index].src
+				}
+			}
 
 			img.onload = () => applyURL(url)
 			img.src = url
 			img.remove()
 
-			// Last link is newlink
-			if (index === links.length - 1) {
-				links[index].icon = url
-				chrome.storage.sync.set({ links: links })
-			}
+			links[index].icon = url
+			chrome.storage.sync.set({ links: links })
 		}
 
 		// Apply celle cached
