@@ -262,26 +262,28 @@ function quickLinks(event, that, initStorage) {
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	function initblocks(links) {
+	async function initblocks(links) {
 		if (links.length > 0) {
 			//
 			// Blocks
 			// Add blocks and allow interface display
 			const blocklist = links.map((link, i) => appendblock(link, i))
+			blocklist.forEach(({ parent }) => addEvents(parent))
 
 			//
 			// Icons
 			// If aliases, needs to replace "alias:""
-			const addIconsAndEvents = (icons) => {
-				blocklist.forEach(({ icon, parent }, i) => {
-					addIcon(icon, links, i, icons[i])
-					addEvents(parent)
+			replacesIconAliases(links, (iconList) => {
+				blocklist.map(async ({ icon }, i) => {
+					const iconURL = iconList[i] === undefined ? 'src/assets/interface/loading.gif' : iconList[i]
+					links[i] = await addIcon(icon, links, i, iconURL)
+
+					// Saves any changes during submission func
+					if (blocklist.length - 1 === i) chrome.storage.sync.set({ links })
 				})
 
 				canDisplayInterface('links')
-			}
-
-			replacesIconAliases(links, (result) => addIconsAndEvents(result))
+			})
 		}
 
 		// Links is done
@@ -290,10 +292,7 @@ function quickLinks(event, that, initStorage) {
 
 	async function addIcon(lIcon, links, index, iconurl) {
 		//
-		const link = links[index]
-		const applyURL = (url) => (lIcon.src = url)
-
-		if (iconurl.length === 0 || iconurl.includes('api.faviconkit.com') || iconurl.includes('loading.gif')) {
+		async function fetchNewIcon() {
 			//
 			// Apply loading gif d'abord
 			applyURL(iconurl)
@@ -306,21 +305,22 @@ function quickLinks(event, that, initStorage) {
 			let url = `https://www.google.com/s2/favicons?sz=64&domain=${a.hostname}`
 			const api = await fetch(`https://favicongrabber.com/api/grab/${a.hostname}`)
 
-			// Filter favicon pngs, keep the biggest one (or first one if no sizes)
 			if (api.ok) {
 				const json = await api.json()
-				const foundIcons = json.icons.filter((x) => x.src.includes('.png'))
-				let biggestpng = { size: 0, index: 0 }
+				const array = json.icons.filter((x) => x.src.includes('.png'))
+				let png = { size: 0, index: 0 }
 
-				if (foundIcons.length > 0) {
-					foundIcons.forEach((elem, i) => {
+				// Filter favicon pngs
+				// Keep the biggest one (or first one if no sizes)
+				if (array.length > 0) {
+					array.forEach((elem, i) => {
 						if (elem.sizes) {
-							const thisiconsize = parseInt(elem.sizes.split('x')[0])
-							if (thisiconsize > biggestpng[0]) biggestpng = { size: thisiconsize, index: i }
+							const currentSize = parseInt(elem.sizes.split('x')[0])
+							if (currentSize > png[0]) png = { size: currentSize, index: i }
 						}
 					})
 
-					url = foundIcons[biggestpng.index].src
+					url = array[png.index].src
 				}
 			}
 
@@ -328,12 +328,17 @@ function quickLinks(event, that, initStorage) {
 			img.src = url
 			img.remove()
 
-			links[index].icon = url
-			chrome.storage.sync.set({ links: links })
+			return url
 		}
+		const applyURL = (url) => (lIcon.src = url)
+		const link = links[index]
+		const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => iconurl.includes(x))
 
-		// Apply celle cached
+		// Fetch new icons if matches these urls, or apply cached
+		if (iconurl.length === 0 || needsToChange) link.icon = await fetchNewIcon()
 		else applyURL(iconurl)
+
+		return link
 	}
 
 	function appendblock(link) {
@@ -2463,18 +2468,23 @@ function filterImports(data) {
 
 	// for 1.9.x => 1.10, newtab/engine doesnt work with forEach below
 	// after 1.10, searchbar goes in filter.searchbar
-	if (!result.searchbar || typeof result.searchbar === 'boolean') {
+	if (typeof data.searchbar === 'boolean') {
+		result.searchbar = bonjourrDefaults('sync').searchbar
+		result.searchbar.on = data.searchbar
+	} else if (typeof data.searchbar === 'object') {
 		result.searchbar = {
 			on: data.searchbar || false,
 			newtab: data.searchbar_newtab || false,
 			engine: data.searchbar_engine || 'google',
-			request: typeof data.searchbar === 'object' ? (data.searchbar.request ? data.searchbar.request : '') : '',
-			opacity: typeof data.searchbar === 'boolean' ? 0.1 : data.searchbar.opacity,
+			request: data.searchbar.request ? data.searchbar.request : '',
+			opacity: data.searchbar.opacity ? data.searchbar.opacity : 0.1,
 		}
-
-		if (result.searchbar_engine) delete result.searchbar_engine
-		if (result.searchbar_newtab) delete result.searchbar_newtab
+	} else {
+		result.searchbar = bonjourrDefaults('sync').searchbar
 	}
+
+	if (result.searchbar_engine) delete result.searchbar_engine
+	if (result.searchbar_newtab) delete result.searchbar_newtab
 
 	// Go through found categories in import data to filter them
 	Object.entries(data).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))

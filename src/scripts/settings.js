@@ -437,7 +437,6 @@ function importExport(select, isEvent) {
 
 		chrome.storage.sync.get(null, (data) => {
 			//
-
 			replacesIconAliases(data.links, (iconList) => {
 				for (let index = 0; index < data.links.length; index++) data.links[index].icon = iconList[index]
 
