@@ -450,7 +450,8 @@
 	}
 }
 
-#edit_linkContainer {
+#edit_linkContainer,
+#bookmarks_container {
 	position: fixed;
 	display: none;
 	top: 0;
@@ -473,6 +474,58 @@
 	&.hiding {
 		@include animHide();
 		animation: animHide 0.4s forwards;
+	}
+
+	button {
+		width: 45%;
+		height: 40px;
+		color: $blue;
+		background-color: transparent;
+		border: 0px;
+		border-radius: 9px;
+		font-size: 0.9em;
+		padding: 0.6em;
+		cursor: pointer;
+		transition: opacity 0.1s ease-in;
+
+		&#e_delete {
+			color: red;
+		}
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:active {
+			text-decoration: underline;
+			opacity: 0.8;
+		}
+	}
+
+	#e_close {
+		display: block;
+		background-color: transparent;
+		border: 0px;
+		cursor: pointer;
+		text-align: left;
+		padding: 0;
+		transition: opacity 0.1s ease-in;
+		font-size: 0.9em;
+		color: $blue;
+		margin-bottom: 2em;
+
+		svg {
+			width: 2em;
+		}
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:active {
+			text-decoration: underline;
+			opacity: 0.8;
+		}
 	}
 
 	#edit_link {
@@ -552,58 +605,101 @@
 			justify-content: space-between;
 			width: 100%;
 			margin-top: 1.5em;
+		}
+	}
 
-			button {
-				width: 45%;
-				height: 40px;
-				color: $blue;
-				background-color: transparent;
-				border: 0px;
-				border-radius: 9px;
-				font-size: 0.9em;
-				padding: 0.6em;
-				cursor: pointer;
-				transition: opacity 0.1s ease-in;
+	#bookmarks {
+		flex-direction: column;
+		background-color: $settingsGrey;
+		width: 50%;
+		padding: 1.5em;
+		border-radius: 10px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		max-height: 80vh;
 
-				&#e_delete {
-					color: red;
-				}
+		align-self: center;
+		margin: auto;
 
-				&:hover {
-					text-decoration: underline;
-				}
+		// form {
+		// 	padding-top: 2em;
+		// }
 
-				&:active {
-					text-decoration: underline;
-					opacity: 0.8;
+		#applybookmarks {
+			visibility: hidden;
+			&.shown {
+				visibility: visible;
+			}
+		}
+
+		form div {
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+			overflow: hidden;
+			background-color: white;
+			color: $blackish;
+			padding: 10px 10px;
+			text-align: left;
+			word-break: break-all;
+			position: relative;
+			padding-left: 3em;
+
+			&:before {
+				content: '+';
+				color: white;
+				width: 25px;
+				height: 25px;
+				text-align: center;
+				background-color: $green;
+				border-radius: 100px;
+				position: absolute;
+				vertical-align: -50%;
+				top: 50%;
+				transform: translateY(-50%);
+				margin-left: -2em; 
+			}
+
+			h5 {
+				margin: 0;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+
+			pre {
+				margin-top: 10px;
+				margin-bottom: 0;
+
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+				
+			}
+
+			&:first-child {
+				padding-top: 20px;
+				border-radius: 8px 8px 0 0;
+			}
+
+			&:last-child {
+				padding-bottom:20px;
+				border-radius: 0 0 8px 8px;
+			}
+
+			&.selected {
+				background-color: rgba(#fff, 0.2);
+
+				&:before {
+					content: '-';
+					background-color: $red;
 				}
 			}
 		}
 
-		#e_close {
-			display: block;
-			background-color: transparent;
-			border: 0px;
-			cursor: pointer;
-			text-align: left;
-			padding: 0;
-			transition: opacity 0.1s ease-in;
-			font-size: 0.9em;
-			color: $blue;
-			margin-bottom: 2em;
-
-			svg {
-				width: 2em;
-			}
-
-			&:hover {
-				text-decoration: underline;
-			}
-
-			&:active {
-				text-decoration: underline;
-				opacity: 0.8;
-			}
+		.bookmarkOptions {
+			display: flex;
+			justify-content: space-between;
 		}
 	}
 
@@ -618,6 +714,10 @@
 	&.shown {
 		display: flex;
 	}
+}
+
+#bookmarks_container {
+	z-index: 3;
 }
 
 #credit {
@@ -715,67 +815,6 @@
 
 		&:active {
 			filter: brightness(80%);
-		}
-	}
-}
-
-#bookmarks {
-	display: none;
-	position: fixed;
-	top: 10vh;
-	left: 10vh;
-	padding: 2em;
-	border-radius: 1em;
-	text-align: left;
-	max-height: 60vh;
-	max-width: 800px;
-	width: 80%;
-	word-break: break-all;
-	overflow-y: auto;
-	overflow-x: hidden;
-	z-index: 3;
-	flex-direction: column;
-	background-color: $settingsGrey;
-
-	form {
-		padding-top: 2em;
-	}
-
-	#applybookmarks {
-		visibility: hidden;
-		&.shown {
-			visibility: visible;
-		}
-	}
-
-	form div {
-		display: flex;
-		flex-direction: column;
-		border-radius: 8px;
-		padding: 10px;
-		margin: 10px;
-		cursor: pointer;
-		overflow: hidden;
-
-		&.selected {
-			background-color: rgba(#fff, 0.2);
-		}
-
-		h5 {
-			margin: 0;
-		}
-	}
-
-	.bookmarks_header {
-		display: flex;
-		justify-content: space-between;
-		position: sticky;
-		top: 0;
-
-		#selectedCounter {
-			padding: 1em;
-			border-radius: 8px;
-			background-color: #aaaa;
 		}
 	}
 }

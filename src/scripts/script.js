@@ -798,7 +798,9 @@ async function linksImport() {
 		const oldForm = document.querySelector('#bookmarks form')
 		if (oldForm) oldForm.remove()
 
-		id('bookmarks').appendChild(form)
+		// id('bookmarks').appendChild(form)
+		// id('e_close').after(form)
+		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'));
 
 		id('applybookmarks').onclick = function () {
 			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
@@ -816,7 +818,7 @@ async function linksImport() {
 		if (granted) {
 			chrome.storage.sync.get('links', (data) => {
 				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-					id('bookmarks').style.display = 'flex'
+					id('bookmarks_container').style.display = 'flex'
 					main(data, response)
 				})
 			})
