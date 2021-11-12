@@ -33,6 +33,25 @@ function tradThis(str) {
 	return lang === 'en' ? str : dict[str][lang]
 }
 
+function favicon(init, event) {
+	function createFavicon(emoji) {
+		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
+		document.querySelector("link[rel~='icon']").href = emoji ? svg : 'src/assets/favicon-128x128.png'
+	}
+
+	if (init !== undefined) createFavicon(init)
+
+	if (event) {
+		const val = event.value
+		const isEmoji = val.match(/\p{Emoji}/gu)
+
+		if (isEmoji) createFavicon(val)
+		else event.value = ''
+
+		slowRange({ favicon: isEmoji ? val : '' })
+	}
+}
+
 function clock(event, init) {
 	//
 
@@ -226,19 +245,21 @@ function clock(event, init) {
 }
 
 function replacesIconAliases(links, callback) {
+	//
+	// Find all aliased icons
 	let iconList = Object.values(links).map((link) => link.icon)
 	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
 
 	if (aliasList.length > 0) {
 		chrome.storage.local.get(aliasList, (data) => {
+			//
+			// For all icons
 			iconList.forEach((url, i) => {
 				if (url.startsWith('alias:')) {
+					// Empty icons that matches aliases, replaces empty icon by alias data
 					iconList[i] = Object.entries(data)
 						.map(([key, val]) => (key === url ? val : ''))
 						.filter((elem) => elem !== '')[0]
-
-					// Temporaire, faire alias import plus tard
-					if (iconList[i] === undefined) iconList[i] = 'src/assets/interface/loading.gif'
 				}
 			})
 
@@ -671,49 +692,54 @@ function quickLinks(event, that, initStorage) {
 		})
 	}
 
-	function linkSubmission() {
+	function linkSubmission(importList) {
 		//
 
-		function saveLink(filteredLink) {
-			//remet a zero les inputs
+		function saveLink(filteredLinks) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
 			chrome.storage.sync.get('links', (data) => {
 				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
-				const links = data.links || []
 
-				if (links) {
-					links.push(filteredLink)
+				if (data.links) {
+					data.links = data.links.concat(filteredLinks)
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				if (links.length === 30) linksInputDisable(true)
+				if (data.links.length === 30) linksInputDisable(true)
 
 				blocklist.forEach((parent) => parent.remove())
-				initblocks(links)
+				initblocks(data.links)
 			})
 		}
 
-		function filterUrl(str) {
+		function filterNewLink(title, url) {
 			//
-			const to = (scheme) => str.startsWith(scheme)
+			url = stringMaxSize(url, 128)
+			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
 
-			return acceptableSchemes ? str : unacceptable ? false : 'https://' + str
+			return {
+				title: stringMaxSize(title, 32),
+				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+				icon: 'src/assets/interface/loading.gif',
+			}
 		}
 
-		let links = {
-			title: stringMaxSize(id('i_title').value, 32),
-			url: stringMaxSize(filterUrl(id('i_url').value), 128),
-			icon: 'src/assets/interface/loading.gif',
-		}
+		const newLinks = []
 
-		//si l'url filtré est juste
-		if (links.url && id('i_url').value.length > 2) {
+		if (importList && importList.length > 0) {
+			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
+			saveLink(newLinks)
+		} else {
+			//si l'url filtré est juste
 			//et l'input n'a pas été activé ya -1s
-			if (!stillActive) saveLink(links)
+			if (id('i_url').value.length > 2 && !stillActive) {
+				newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
+				saveLink(newLinks)
+			}
 		}
 	}
 
@@ -730,7 +756,7 @@ function quickLinks(event, that, initStorage) {
 	switch (event) {
 		case 'input':
 		case 'button':
-			linkSubmission()
+			linkSubmission(that)
 			break
 
 		// that est settingsDom ici
@@ -753,6 +779,79 @@ function quickLinks(event, that, initStorage) {
 			editEvents()
 		}, 150)
 	}
+}
+
+async function linksImport() {
+	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
+
+	function main(data, bookmarks) {
+		const form = document.createElement('form')
+		const allCategories = [...bookmarks[0].children]
+		let counter = data.links.length || 0
+		let bookmarksList = []
+		let selectedList = []
+
+		changeCounter(counter)
+		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
+		console.log(...bookmarksList)
+
+		bookmarksList.forEach((mark, index) => {
+			const elem = document.createElement('div')
+			const title = document.createElement('h5')
+			const url = document.createElement('pre')
+
+			title.textContent = mark.title
+			url.textContent = mark.url
+			elem.setAttribute('index', index)
+
+			elem.appendChild(title)
+			elem.appendChild(url)
+			elem.onclick = () => {
+				const isSelected = elem.classList.toggle('selected')
+
+				if (isSelected && counter === 30) elem.classList.toggle('selected')
+				else {
+					isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
+					isSelected ? counter++ : (counter -= 1)
+					changeCounter(counter)
+				}
+
+				clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
+			}
+
+			if (typeof mark.url === 'string')
+				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
+		})
+
+		const oldForm = document.querySelector('#bookmarks form')
+		if (oldForm) oldForm.remove()
+
+		// id('bookmarks').appendChild(form)
+		// id('e_close').after(form)
+		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'))
+
+		id('applybookmarks').onclick = function () {
+			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
+			console.log(...bookmarkToApply)
+
+			if (bookmarkToApply.length > 0) {
+				id('bookmarks').style.display = 'none'
+				quickLinks('button', bookmarkToApply, null)
+			}
+		}
+	}
+
+	// Ask for bookmarks first
+	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
+		if (granted) {
+			chrome.storage.sync.get('links', (data) => {
+				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+					id('bookmarks_container').style.display = 'flex'
+					main(data, response)
+				})
+			})
+		}
+	})
 }
 
 function linksrow(data, event) {
@@ -1881,6 +1980,7 @@ function searchbar(event, that, init) {
 }
 
 function showPopup(data) {
+	//
 	function affiche() {
 		const setReviewLink = () =>
 			mobilecheck
@@ -1889,21 +1989,16 @@ function showPopup(data) {
 				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
 				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
 
-		const close = () => {
-			dom.wrap.classList.replace('shown', 'removing')
-			chrome.storage.sync.set({ reviewPopup: 'removed' })
-		}
-
 		const dom = {
 			wrap: document.createElement('div'),
 			btnwrap: document.createElement('div'),
-			desc: document.createElement('span'),
+			desc: document.createElement('p'),
 			review: document.createElement('a'),
 			donate: document.createElement('a'),
-			close: document.createElement('p'),
 		}
 
 		dom.wrap.id = 'popup'
+		dom.desc.id = 'popup_text'
 		dom.desc.textContent = tradThis(
 			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 		)
@@ -1914,26 +2009,22 @@ function showPopup(data) {
 		dom.review.textContent = tradThis('Review')
 		dom.donate.textContent = tradThis('Donate')
 
-		dom.close.id = 'closePopup'
-		dom.close.textContent = '×'
-
-		dom.btnwrap.className = 'choices'
+		dom.btnwrap.id = 'popup_buttons'
 		dom.btnwrap.appendChild(dom.review)
 		dom.btnwrap.appendChild(dom.donate)
 
 		dom.wrap.appendChild(dom.desc)
 		dom.wrap.appendChild(dom.btnwrap)
-		dom.wrap.appendChild(dom.close)
 
 		document.body.appendChild(dom.wrap)
 
-		setTimeout(() => dom.wrap.classList.add('shown'), 10)
+		domcredit.style.opacity = 0
+		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
-		if (mobilecheck) setTimeout(() => dominterface.addEventListener('touchstart', close), 4000)
-		else id('closePopup').onclick = close
+		document.querySelectorAll('#popup #popup_buttons a')[0].onclick = close
+		document.querySelectorAll('#popup #popup_buttons a')[1].onclick = close
 
-		document.querySelectorAll('#popup .choices a')[0].onclick = close
-		document.querySelectorAll('#popup .choices a')[1].onclick = close
+		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close, { passive: true }), 4000)
 	}
 
 	//s'affiche après 30 tabs
@@ -2503,6 +2594,7 @@ function startup(data) {
 	customFont(data.font)
 	customSize(data.font)
 
+	favicon(data.favicon)
 	clock(null, data)
 	linksrow(data.linksrow)
 	darkmode(null, data)

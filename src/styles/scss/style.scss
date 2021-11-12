@@ -453,7 +453,8 @@
 	}
 }
 
-#edit_linkContainer {
+#edit_linkContainer,
+#bookmarks_container {
 	position: fixed;
 	display: none;
 	top: 0;
@@ -476,6 +477,58 @@
 	&.hiding {
 		@include animHide();
 		animation: animHide 0.4s forwards;
+	}
+
+	button {
+		width: 45%;
+		height: 40px;
+		color: $blue;
+		background-color: transparent;
+		border: 0px;
+		border-radius: 9px;
+		font-size: 0.9em;
+		padding: 0.6em;
+		cursor: pointer;
+		transition: opacity 0.1s ease-in;
+
+		&#e_delete {
+			color: red;
+		}
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:active {
+			text-decoration: underline;
+			opacity: 0.8;
+		}
+	}
+
+	#e_close {
+		display: block;
+		background-color: transparent;
+		border: 0px;
+		cursor: pointer;
+		text-align: left;
+		padding: 0;
+		transition: opacity 0.1s ease-in;
+		font-size: 0.9em;
+		color: $blue;
+		margin-bottom: 2em;
+
+		svg {
+			width: 2em;
+		}
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:active {
+			text-decoration: underline;
+			opacity: 0.8;
+		}
 	}
 
 	#edit_link {
@@ -555,58 +608,101 @@
 			justify-content: space-between;
 			width: 100%;
 			margin-top: 1.5em;
+		}
+	}
 
-			button {
-				width: 45%;
-				height: 40px;
-				color: $blue;
-				background-color: transparent;
-				border: 0px;
-				border-radius: 9px;
-				font-size: 0.9em;
-				padding: 0.6em;
-				cursor: pointer;
-				transition: opacity 0.1s ease-in;
+	#bookmarks {
+		flex-direction: column;
+		background-color: $settingsGrey;
+		width: 50%;
+		padding: 1.5em;
+		border-radius: 10px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		max-height: 80vh;
 
-				&#e_delete {
-					color: red;
-				}
+		align-self: center;
+		margin: auto;
 
-				&:hover {
-					text-decoration: underline;
-				}
+		// form {
+		// 	padding-top: 2em;
+		// }
 
-				&:active {
-					text-decoration: underline;
-					opacity: 0.8;
+		#applybookmarks {
+			visibility: hidden;
+			&.shown {
+				visibility: visible;
+			}
+		}
+
+		form div {
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+			overflow: hidden;
+			background-color: white;
+			color: $blackish;
+			padding: 10px 10px;
+			text-align: left;
+			word-break: break-all;
+			position: relative;
+			padding-left: 3em;
+
+			&:before {
+				content: '+';
+				color: white;
+				width: 25px;
+				height: 25px;
+				text-align: center;
+				background-color: $green;
+				border-radius: 100px;
+				position: absolute;
+				vertical-align: -50%;
+				top: 50%;
+				transform: translateY(-50%);
+				margin-left: -2em; 
+			}
+
+			h5 {
+				margin: 0;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+
+			pre {
+				margin-top: 10px;
+				margin-bottom: 0;
+
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+				
+			}
+
+			&:first-child {
+				padding-top: 20px;
+				border-radius: 8px 8px 0 0;
+			}
+
+			&:last-child {
+				padding-bottom:20px;
+				border-radius: 0 0 8px 8px;
+			}
+
+			&.selected {
+				background-color: rgba(#fff, 0.2);
+
+				&:before {
+					content: '-';
+					background-color: $red;
 				}
 			}
 		}
 
-		#e_close {
-			display: block;
-			background-color: transparent;
-			border: 0px;
-			cursor: pointer;
-			text-align: left;
-			padding: 0;
-			transition: opacity 0.1s ease-in;
-			font-size: 0.9em;
-			color: $blue;
-			margin-bottom: 2em;
-
-			svg {
-				width: 2em;
-			}
-
-			&:hover {
-				text-decoration: underline;
-			}
-
-			&:active {
-				text-decoration: underline;
-				opacity: 0.8;
-			}
+		.bookmarkOptions {
+			display: flex;
+			justify-content: space-between;
 		}
 	}
 
@@ -621,6 +717,10 @@
 	&.shown {
 		display: flex;
 	}
+}
+
+#bookmarks_container {
+	z-index: 3;
 }
 
 #credit {
@@ -648,78 +748,42 @@
 }
 
 #popup {
-	position: absolute;
-	justify-content: space-between;
-	text-align: left;
+	position: fixed;
+	bottom: 4rem;
+	left: 4rem;
+	display: flex;
 	opacity: 0;
-	left: 0;
-	bottom: 2em;
-	z-index: 9;
-	padding: 1em 2em 1em 3em;
-	border-radius: 0 10px 10px 0;
-	box-sizing: border-box;
-	will-change: transform;
-	transform: translateX(-100%);
-
-	@include allCentered();
-	@include frostedGlass($alpha: 0.2, $blur: 20px);
-
-	span {
-		text-shadow: $textShadow;
-	}
+	transition: opacity 3s 0s;
 
 	&.shown {
 		opacity: 1;
-		transform: translateX(0);
-		transition: background-color 0.2s, backdrop-filter 0.2s, transform 2s 2s;
 	}
+}
 
-	&.removing {
-		transform: translateX(-100%);
-		transition: transform 0.6s 0s, opacity 0s 0.6s;
-	}
+#popup_buttons {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-width: 140px;
 
-	span,
 	a {
-		max-width: 210px;
-		font-size: 15px;
+		color: white;
+		text-decoration: none;
+		@include frostedGlass($alpha: 0.2, $blur: 10px);
+		border-radius: 10px;
+		line-height: 36px;
 	}
+}
 
-	.choices {
-		display: flex;
-		flex-direction: column;
-
-		a {
-			text-decoration: none;
-			background-color: $blue;
-			color: $purewhite;
-			border: 0;
-			height: 30px;
-			padding: 0 20px;
-			margin: 3px 20px;
-			border-radius: 5px;
-			@include allCentered();
-		}
-	}
-
-	#closePopup {
-		margin-bottom: 5px;
-		margin-left: 30px;
-		font-size: 30px;
-		cursor: pointer;
-	}
-
-	#closePopup,
-	a {
-		transition: filter 0.1s;
-		&:hover {
-			filter: brightness(90%);
-		}
-
-		&:active {
-			filter: brightness(80%);
-		}
-	}
+#popup_text {
+	justify-content: space-between;
+	width: 260px;
+	left: 40px;
+	text-align: left;
+	padding: 10px 30px;
+	margin-right: 10px;
+	border-radius: 10px;
+	@include frostedGlass($alpha: 0.2, $blur: 10px);
 }
 
 #bonjourrError {

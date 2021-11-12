@@ -214,6 +214,7 @@ function bonjourrDefaults(which) {
 				background_bright: 0.8,
 				css: '',
 				lang: 'en',
+				favicon: '',
 				greeting: '',
 				background_type: 'dynamic',
 				links: [],
