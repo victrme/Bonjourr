@@ -17,6 +17,25 @@ function tradThis(str) {
 	return lang === 'en' ? str : dict[str][lang]
 }
 
+function favicon(init, event) {
+	function createFavicon(emoji) {
+		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
+		document.querySelector("link[rel~='icon']").href = emoji ? svg : 'src/assets/favicon-128x128.png'
+	}
+
+	if (init !== undefined) createFavicon(init)
+
+	if (event) {
+		const val = event.value
+		const isEmoji = val.match(/\p{Emoji}/gu)
+
+		if (isEmoji) createFavicon(val)
+		else event.value = ''
+
+		slowRange({ favicon: isEmoji ? val : '' })
+	}
+}
+
 function clock(event, init) {
 	//
 
@@ -210,19 +229,21 @@ function clock(event, init) {
 }
 
 function replacesIconAliases(links, callback) {
+	//
+	// Find all aliased icons
 	let iconList = Object.values(links).map((link) => link.icon)
 	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
 
 	if (aliasList.length > 0) {
 		chrome.storage.local.get(aliasList, (data) => {
+			//
+			// For all icons
 			iconList.forEach((url, i) => {
 				if (url.startsWith('alias:')) {
+					// Empty icons that matches aliases, replaces empty icon by alias data
 					iconList[i] = Object.entries(data)
 						.map(([key, val]) => (key === url ? val : ''))
 						.filter((elem) => elem !== '')[0]
-
-					// Temporaire, faire alias import plus tard
-					if (iconList[i] === undefined) iconList[i] = 'src/assets/interface/loading.gif'
 				}
 			})
 
@@ -632,50 +653,55 @@ function quickLinks(event, that, initStorage) {
 		})
 	}
 
-	function linkSubmission() {
+	function linkSubmission(importList) {
 		//
 
-		function saveLink(filteredLink) {
-			//remet a zero les inputs
+		function saveLink(filteredLinks) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
 			chrome.storage.sync.get('links', (data) => {
 				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
-				const links = data.links || []
 
-				if (links) {
-					links.push(filteredLink)
+				if (data.links) {
+					data.links = data.links.concat(filteredLinks)
 					domlinkblocks.style.visibility = 'visible'
 				}
 
-				if (links.length === 30) linksInputDisable(true)
+				if (data.links.length === 30) linksInputDisable(true)
 
 				blocklist.forEach((parent) => parent.remove())
-				initblocks(links)
+				initblocks(data.links)
 			})
 		}
 
-		function filterUrl(str) {
+		function filterNewLink(title, url) {
 			//
-			const to = (scheme) => str.startsWith(scheme)
+			url = stringMaxSize(url, 128)
+			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
 
-			return acceptableSchemes ? str : unacceptable ? false : 'https://' + str
+			return {
+				title: stringMaxSize(title, 32),
+				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+				icon: 'src/assets/interface/loading.gif',
+			}
 		}
 
-		let links = {
-			title: stringMaxSize(id('i_title').value, 32),
-			url: stringMaxSize(filterUrl(id('i_url').value), 128),
-			icon: 'src/assets/interface/loading.gif',
+		const newLinks = []
+
+		if (importList && importList.length > 0) {
+			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
+		} else {
+			newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
 		}
+
+		saveLink(newLinks)
 
 		//si l'url filtré est juste
-		if (links.url && id('i_url').value.length > 2) {
-			//et l'input n'a pas été activé ya -1s
-			if (!stillActive) saveLink(links)
-		}
+		//et l'input n'a pas été activé ya -1s
+		// if (links.url && id('i_url').value.length > 2 && !stillActive)
 	}
 
 	function linksInputDisable(isMax, settingsDom) {
@@ -691,7 +717,7 @@ function quickLinks(event, that, initStorage) {
 	switch (event) {
 		case 'input':
 		case 'button':
-			linkSubmission()
+			linkSubmission(that)
 			break
 
 		// that est settingsDom ici
@@ -714,6 +740,79 @@ function quickLinks(event, that, initStorage) {
 			editEvents()
 		}, 150)
 	}
+}
+
+async function linksImport() {
+	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
+
+	function main(data, bookmarks) {
+		const form = document.createElement('form')
+		const allCategories = [...bookmarks[0].children]
+		let counter = data.links.length || 0
+		let bookmarksList = []
+		let selectedList = []
+
+		changeCounter(counter)
+		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
+		console.log(...bookmarksList)
+
+		bookmarksList.forEach((mark, index) => {
+			const elem = document.createElement('div')
+			const title = document.createElement('h5')
+			const url = document.createElement('pre')
+
+			title.textContent = mark.title
+			url.textContent = mark.url
+			elem.setAttribute('index', index)
+
+			elem.appendChild(title)
+			elem.appendChild(url)
+			elem.onclick = () => {
+				const isSelected = elem.classList.toggle('selected')
+
+				if (isSelected && counter === 30) elem.classList.toggle('selected')
+				else {
+					isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
+					isSelected ? counter++ : (counter -= 1)
+					changeCounter(counter)
+				}
+
+				clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
+			}
+
+			if (typeof mark.url === 'string')
+				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
+		})
+
+		const oldForm = document.querySelector('#bookmarks form')
+		if (oldForm) oldForm.remove()
+
+		// id('bookmarks').appendChild(form)
+		// id('e_close').after(form)
+		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'));
+
+		id('applybookmarks').onclick = function () {
+			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
+			console.log(...bookmarkToApply)
+
+			if (bookmarkToApply.length > 0) {
+				id('bookmarks').style.display = 'none'
+				quickLinks('button', bookmarkToApply, null)
+			}
+		}
+	}
+
+	// Ask for bookmarks first
+	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
+		if (granted) {
+			chrome.storage.sync.get('links', (data) => {
+				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+					id('bookmarks_container').style.display = 'flex'
+					main(data, response)
+				})
+			})
+		}
+	})
 }
 
 function linksrow(data, event) {
@@ -2537,6 +2636,7 @@ function startup(data) {
 	customFont(data.font)
 	customSize(data.font)
 
+	favicon(data.favicon)
 	clock(null, data)
 	linksrow(data.linksrow)
 	darkmode(null, data)

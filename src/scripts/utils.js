@@ -230,6 +230,7 @@ function bonjourrDefaults(which) {
 				background_bright: 0.8,
 				css: '',
 				lang: 'en',
+				favicon: '',
 				greeting: '',
 				custom_every: 'pause',
 				background_type: 'dynamic',
