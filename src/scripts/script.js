@@ -693,15 +693,15 @@ function quickLinks(event, that, initStorage) {
 
 		if (importList && importList.length > 0) {
 			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
+			saveLink(newLinks)
 		} else {
-			newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
+			//si l'url filtré est juste
+			//et l'input n'a pas été activé ya -1s
+			if (id('i_url').value.length > 2 && !stillActive) {
+				newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
+				saveLink(newLinks)
+			}
 		}
-
-		saveLink(newLinks)
-
-		//si l'url filtré est juste
-		//et l'input n'a pas été activé ya -1s
-		// if (links.url && id('i_url').value.length > 2 && !stillActive)
 	}
 
 	function linksInputDisable(isMax, settingsDom) {
@@ -789,7 +789,7 @@ async function linksImport() {
 
 		// id('bookmarks').appendChild(form)
 		// id('e_close').after(form)
-		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'));
+		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'))
 
 		id('applybookmarks').onclick = function () {
 			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
