@@ -103,19 +103,14 @@
 
 			<hr />
 
-			<div class="wrapper freq_wrap">
+			<div class="wrapper">
 				<span class="trn">Frequency</span>
-				<div>
-					<select id="i_freq">
-						<option value="tabs" class="trn">Every tab</option>
-						<option value="hour" class="trn">Every hour</option>
-						<option value="day" class="trn">Every day</option>
-						<option value="pause" class="trn">Pause</option>
-					</select>
-					<button id="i_refresh">
-						<span>⭮</span>
-					</button>
-				</div>
+				<select id="i_freq">
+					<option value="tabs" class="trn">Every tab</option>
+					<option value="hour" class="trn">Every hour</option>
+					<option value="day" class="trn">Every day</option>
+					<option value="pause" class="trn">Pause</option>
+				</select>
 			</div>
 
 			<div id="dynamic">
@@ -603,6 +598,8 @@
 						<input id="i_city" type="text" name="city" placeholder="City" autocomplete="off" maxlength="64" />
 					</div>
 				</div>
+
+				<!-- <p class="help_sentence trn">Use this option if you don't want to enable geolocation.</p> -->
 			</div>
 
 			<hr />
@@ -614,19 +611,6 @@
 						<input id="i_units" type="checkbox" />
 						<span class="slider round span"></span>
 					</label>
-				</div>
-			</div>
-
-			<div class="as as_forecast">
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Forecast</span>
-					<select id="i_forecast">
-						<option value="auto" class="trn">Automatic</option>
-						<option value="always" class="trn">Always show</option>
-						<option value="never" class="trn">Never show</option>
-					</select>
 				</div>
 			</div>
 		</div>
@@ -746,7 +730,7 @@
 
 			<div class="wrapper">
 				<span class="trn">Size</span>
-				<input id="i_size" type="range" name="fontsize" min="5" max="26" step=".05" class="range" />
+				<input id="i_size" type="range" name="fontsize" min="8" max="26" value="13" class="range" />
 			</div>
 		</div>
 	</div>
@@ -791,7 +775,7 @@
 	</div>
 	<div class="signature">
 		<div class="firstblock">
-			<p class="version">Bonjourr <a href="https://github.com/victrme/Bonjourr/releases">1.10.1</a></p>
+			<p class="version">Bonjourr <a href="https://github.com/victrme/Bonjourr/releases">1.10.2</a></p>
 
 			<div class="socialIcons">
 				<a href="https://bonjourr.fr" title="Bonjourr's website">
@@ -833,7 +817,7 @@
 					</svg>
 				</a>
 
-				<a href="https://bonjourr.fr/use-bonjourr" title="Bonjourr's documentation">
+				<a href="https://bonjourr.fr/misc" title="Bonjourr's documentation">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
 						<path
 							d="M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z"

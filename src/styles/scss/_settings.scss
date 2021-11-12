@@ -41,15 +41,11 @@
 
 	&.he_hidden {
 		opacity: 0;
-		&.shown {
-			opacity: 0.5;
-		}
-		&:hover {
-			opacity: 1;
-		}
 	}
 
 	&:hover {
+		opacity: 1;
+
 		img {
 			transform: rotate(15deg);
 		}
@@ -64,7 +60,6 @@
 			}
 
 			&:hover {
-				opacity: 1;
 				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
@@ -91,7 +86,7 @@
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
-	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
+	transition: transform 0.4s, background-color 0.6s;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -270,18 +265,6 @@
 	#dynamic,
 	#custom {
 		display: none;
-	}
-
-	#i_refresh {
-		padding: 0 10px;
-		margin-left: 5px;
-		text-decoration: none;
-		background-color: $settingsGrey;
-	}
-
-	.freq_wrap > div {
-		display: flex;
-		width: 150px;
 	}
 
 	#custom_thumbnail {

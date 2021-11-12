@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "1.10.1",
+	"version": "1.10.2",
 	"description": "iOS styled startpage",
 	"main": "src/scripts/script.js",
 	"scripts": {

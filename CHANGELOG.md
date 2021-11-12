@@ -1,5 +1,13 @@
 ## Changelogs
 
+**v1.10.2**
+
+-   Switch to another favicon provider (RIP Favicon Kit)
+-   Fixed imports errors with 1.10 configs
+-   Improved stability for long icon URLs
+-   Removed Unsplash host permission
+-   Tiny style fixes
+
 **v1.10.1**
 
 -   Added search bar opacity control & delete text icon
