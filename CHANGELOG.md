@@ -1,6 +1,17 @@
 ## Changelogs
 
-**v1.10.2**
+**v1.11.0**
+
+-   Added features:
+    -   Import browser bookmarks !
+    -   Manually change dynamic background
+    -   Change the tab favicon with an emoji
+-   Improved weather city input UX
+-   Improved font size input UX on mobile
+-   Fixed mobile pages not changing backgrounds
+-   Fixed error message appearing on firefox
+
+-   **v1.10.2**
 
 -   Switch to another favicon provider (RIP Favicon Kit)
 -   Fixed imports errors with 1.10 configs
