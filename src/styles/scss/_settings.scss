@@ -6,7 +6,6 @@
 	z-index: 3;
 	padding: 0 1.5em 1.5em 0;
 	transition: opacity 0.4s;
-
 	button {
 		position: relative;
 		height: 4em;
@@ -17,23 +16,19 @@
 		padding: unset;
 		background-color: transparent;
 		transition: background-color 0.6s $easeOutThree;
-
 		@include allCentered();
-
 		img {
 			width: 65%;
 			transition: transform 0.6s $easeOutThree;
 			will-change: transform;
 		}
 	}
-
 	&.init {
 		transition: opacity 0s;
 		button img {
 			transition: transform 0s;
 		}
 	}
-
 	// Doit etre dans cette ordre pour la hierarchie
 	&.enabled {
 		opacity: 1;
@@ -41,25 +36,28 @@
 
 	&.he_hidden {
 		opacity: 0;
+		&.shown {
+			opacity: 0.5;
+		}
+		&:hover {
+			opacity: 1;
+		}
 	}
 
 	&:hover {
-		opacity: 1;
-
 		img {
 			transform: rotate(15deg);
 		}
 	}
-
 	&.shown {
 		button {
 			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
-
 			img {
 				transform: rotate(60deg);
 			}
 
 			&:hover {
+				opacity: 1;
 				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
@@ -86,7 +84,7 @@
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
-	transition: transform 0.4s, background-color 0.6s;
+	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -265,6 +263,18 @@
 	#dynamic,
 	#custom {
 		display: none;
+	}
+
+	#i_refresh {
+		padding: 0 10px;
+		margin-left: 5px;
+		text-decoration: none;
+		background-color: $settingsGrey;
+	}
+
+	.freq_wrap > div {
+		display: flex;
+		width: 150px;
 	}
 
 	#custom_thumbnail {

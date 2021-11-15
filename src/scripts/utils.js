@@ -83,6 +83,22 @@ const saveIconAsAlias = (iconstr) => {
 	return alias
 }
 
+function slowRange(tosave, time = 400) {
+	clearTimeout(rangeActive)
+	rangeActive = setTimeout(function () {
+		chrome.storage.sync.set(tosave)
+	}, time)
+}
+
+function slow(that, time = 400) {
+	that.setAttribute('disabled', '')
+	stillActive = setTimeout(() => {
+		that.removeAttribute('disabled')
+		clearTimeout(stillActive)
+		stillActive = false
+	}, time)
+}
+
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 
@@ -216,6 +232,7 @@ function bonjourrDefaults(which) {
 				lang: 'en',
 				favicon: '',
 				greeting: '',
+				custom_every: 'pause',
 				background_type: 'dynamic',
 				links: [],
 				clock: {
@@ -236,6 +253,7 @@ function bonjourrDefaults(which) {
 					city: 'Paris',
 					unit: 'metric',
 					location: [],
+					forecast: 'auto',
 				},
 				searchbar: {
 					on: false,
