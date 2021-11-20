@@ -477,7 +477,6 @@
 	}
 
 	button {
-		width: 45%;
 		height: 40px;
 		color: $blue;
 		background-color: transparent;
@@ -621,12 +620,17 @@
 		align-self: center;
 		margin: auto;
 
+		#e_close {
+			padding-left: 20px; 
+		}
+
 		// form {
 		// 	padding-top: 2em;
 		// }
 
 		#applybookmarks {
 			visibility: hidden;
+
 			&.shown {
 				visibility: visible;
 			}
@@ -639,25 +643,30 @@
 			overflow: hidden;
 			background-color: white;
 			color: $blackish;
-			padding: 10px 10px;
+			padding: 10px 20px 10px 3.5em;
 			text-align: left;
 			word-break: break-all;
 			position: relative;
-			padding-left: 3em;
 
 			&:before {
-				content: '+';
-				color: white;
+				content: '';
+				background-color: unset;
+				background-image: unset;
+				border: 2px solid #c5c4c6;
+				
+				background-repeat: no-repeat;
+				background-size: 12px;
+				background-position: center;
 				width: 25px;
 				height: 25px;
 				text-align: center;
-				background-color: $green;
 				border-radius: 100px;
 				position: absolute;
 				vertical-align: -50%;
 				top: 50%;
 				transform: translateY(-50%);
-				margin-left: -2em; 
+				margin-left: -39px; 
+				box-sizing: border-box;
 			}
 
 			h5 {
@@ -688,11 +697,10 @@
 			}
 
 			&.selected {
-				background-color: rgba(#fff, 0.2);
-
 				&:before {
-					content: '-';
-					background-color: $red;
+					border: unset;
+					background-image: url('/src/assets/interface/checkmark.svg');
+					background-color: $blue;
 				}
 			}
 		}
@@ -700,6 +708,14 @@
 		.bookmarkOptions {
 			display: flex;
 			justify-content: space-between;
+			margin-top: 1em;
+			padding: 0 20px;
+
+			#selectedCounter {
+				color: #6d6d72;
+				display: flex;
+				align-items: center;
+			}
 		}
 	}
 
