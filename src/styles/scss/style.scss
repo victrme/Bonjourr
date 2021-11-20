@@ -622,11 +622,14 @@
 
 		#e_close {
 			padding-left: 20px; 
+			margin-bottom: unset;
 		}
 
-		// form {
-		// 	padding-top: 2em;
-		// }
+		h3 {
+			color: $blackish;
+			margin: 1em 0 1em 20px;
+			text-align: left;
+		}
 
 		#applybookmarks {
 			visibility: hidden;
