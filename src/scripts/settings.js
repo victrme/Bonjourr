@@ -643,13 +643,6 @@ function settingsInit(data) {
 		}, 4000)
 	}
 
-	function closePopup() {
-		setTimeout(() => {
-			id('popup').classList.replace('shown', 'removing')
-			chrome.storage.sync.set({ reviewPopup: 'removed' })
-		}, 4000)
-	}
-
 	dominterface.addEventListener('touchstart', closePopup, { passive: true })
 
 	dominterface.onclick = (e) => {

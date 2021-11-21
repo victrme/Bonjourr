@@ -8,20 +8,28 @@
 		color: $purewhite;
 	}
 
+	#bookmarks_container,
 	#edit_linkContainer {
+		#bookmarks,
+		#bookmarks h3,
+		#bookmarks .bookmarkOptions,
 		#edit_link {
 			background-color: #1c1c1e;
 			color: $purewhite;
 
+			form div,
 			input[type='text'],
 			input[type='url'] {
 				background-color: #39383d;
 				color: $purewhite;
 			}
 
+			#selectedCounter,
 			.empty_input {
 				color: #eee;
+			}
 
+			.empty_input {
 				&:hover {
 					background-color: #666;
 				}

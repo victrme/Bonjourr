@@ -730,12 +730,13 @@ function quickLinks(event, that, initStorage) {
 
 	function linksInputDisable(isMax, settingsDom) {
 		const getDoms = (name) => (settingsDom ? settingsDom.querySelector('#' + name) : id(name))
-		const doms = ['i_title', 'i_url', 'submitlink']
+		const doms = ['i_title', 'i_url', 'submitlink', 'b_importbookmarks']
 
 		if (isMax) doms.forEach((elem) => getDoms(elem).setAttribute('disabled', ''))
 		else doms.forEach((elem) => getDoms(elem).removeAttribute('disabled'))
 
 		clas(getDoms(doms[2]), isMax, 'max')
+		clas(getDoms(doms[3]), isMax, 'max')
 	}
 
 	switch (event) {
@@ -769,6 +770,11 @@ function quickLinks(event, that, initStorage) {
 async function linksImport() {
 	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
 
+	const closeBookmarks = (container) => {
+		container.classList.add('hiding')
+		setTimeout(() => container.setAttribute('class', ''), BonjourrAnimTime)
+	}
+
 	function main(data, bookmarks) {
 		const form = document.createElement('form')
 		const allCategories = [...bookmarks[0].children]
@@ -778,7 +784,6 @@ async function linksImport() {
 
 		changeCounter(counter)
 		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
-		console.log(...bookmarksList)
 
 		bookmarksList.forEach((mark, index) => {
 			const elem = document.createElement('div')
@@ -794,6 +799,7 @@ async function linksImport() {
 			elem.onclick = () => {
 				const isSelected = elem.classList.toggle('selected')
 
+				// unselect selection if full
 				if (isSelected && counter === 30) elem.classList.toggle('selected')
 				else {
 					isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
@@ -801,26 +807,32 @@ async function linksImport() {
 					changeCounter(counter)
 				}
 
-				clas(id('applybookmarks'), counter > (data.links.length || 0), 'shown')
+				// Change submit button text & class on selections
+				const amountSelected = counter - data.links.length
+				id('applybookmarks').textContent =
+					amountSelected === 0
+						? 'Select bookmarks to import'
+						: amountSelected === 1
+						? 'Import this bookmark'
+						: 'Import these bookmarks'
+				clas(id('applybookmarks'), amountSelected === 0, 'none')
 			}
 
 			if (typeof mark.url === 'string')
 				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
 		})
 
+		// Replace form to filter already added bookmarks
 		const oldForm = document.querySelector('#bookmarks form')
 		if (oldForm) oldForm.remove()
-
-		// id('bookmarks').appendChild(form)
-		// id('e_close').after(form)
 		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'))
 
+		// Submit event
 		id('applybookmarks').onclick = function () {
 			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
-			console.log(...bookmarkToApply)
 
 			if (bookmarkToApply.length > 0) {
-				id('bookmarks').style.display = 'none'
+				closeBookmarks(id('bookmarks_container'))
 				quickLinks('button', bookmarkToApply, null)
 			}
 		}
@@ -831,11 +843,18 @@ async function linksImport() {
 		if (granted) {
 			chrome.storage.sync.get('links', (data) => {
 				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-					id('bookmarks_container').style.display = 'flex'
+					clas(id('bookmarks_container'), true, 'shown')
 					main(data, response)
 				})
 			})
 		}
+	})
+
+	// Close events
+	document.querySelector('#bookmarks #e_close').onclick = () => closeBookmarks(id('bookmarks_container'))
+
+	id('bookmarks_container').addEventListener('click', function (e) {
+		if (e.target.id === 'bookmarks_container') closeBookmarks(this)
 	})
 }
 

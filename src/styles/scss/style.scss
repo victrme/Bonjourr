@@ -453,13 +453,24 @@
 	}
 }
 
+@keyframes animShow {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 #edit_linkContainer,
 #bookmarks_container {
 	position: fixed;
 	display: none;
 	top: 0;
+	left: 0;
 	height: 100vh;
-	width: 100%;
+	width: 100vw;
+	opacity: 0;
 	z-index: 1;
 	transition: transform 0.4s;
 	@include frostedGlass($alpha: 0, $blur: 40px, $fbAlpha: 0.2);
@@ -470,7 +481,7 @@
 	}
 
 	&.shown {
-		@include animShow('flex');
+		display: inline-flex;
 		animation: animShow 0.4s forwards;
 	}
 
@@ -615,6 +626,7 @@
 		background-color: $settingsGrey;
 		width: 50%;
 		padding: 1.5em;
+		padding-bottom: 0;
 		border-radius: 10px;
 		overflow-y: auto;
 		overflow-x: hidden;
@@ -624,22 +636,14 @@
 		margin: auto;
 
 		#e_close {
-			padding-left: 20px; 
-			margin-bottom: unset;
+			padding-left: 20px;
+			margin-bottom: 1em;
 		}
 
 		h3 {
 			color: $blackish;
 			margin: 1em 0 1em 20px;
 			text-align: left;
-		}
-
-		#applybookmarks {
-			visibility: hidden;
-
-			&.shown {
-				visibility: visible;
-			}
 		}
 
 		form div {
@@ -649,17 +653,19 @@
 			overflow: hidden;
 			background-color: white;
 			color: $blackish;
-			padding: 10px 20px 10px 3.5em;
+			padding: 20px;
+			padding-left: 3.5em;
 			text-align: left;
 			word-break: break-all;
 			position: relative;
+			transition: filter 0.1s;
 
 			&:before {
 				content: '';
 				background-color: unset;
 				background-image: unset;
 				border: 2px solid #c5c4c6;
-				
+
 				background-repeat: no-repeat;
 				background-size: 12px;
 				background-position: center;
@@ -671,8 +677,9 @@
 				vertical-align: -50%;
 				top: 50%;
 				transform: translateY(-50%);
-				margin-left: -39px; 
+				margin-left: -39px;
 				box-sizing: border-box;
+				transition: background-color 0.1s;
 			}
 
 			h5 {
@@ -689,7 +696,6 @@
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
-				
 			}
 
 			&:first-child {
@@ -698,11 +704,12 @@
 			}
 
 			&:last-child {
-				padding-bottom:20px;
+				padding-bottom: 20px;
 				border-radius: 0 0 8px 8px;
 			}
 
 			&.selected {
+				filter: brightness(0.9);
 				&:before {
 					border: unset;
 					background-image: url('/src/assets/interface/checkmark.svg');
@@ -712,10 +719,22 @@
 		}
 
 		.bookmarkOptions {
+			position: sticky;
 			display: flex;
 			justify-content: space-between;
-			margin-top: 1em;
-			padding: 0 20px;
+			background-color: $settingsGrey;
+			padding: 1em;
+			bottom: 0;
+
+			#applybookmarks {
+				transition: filter 0.4s;
+
+				&.none {
+					cursor: default;
+					filter: grayscale(1);
+					text-decoration: none;
+				}
+			}
 
 			#selectedCounter {
 				color: #6d6d72;
@@ -723,18 +742,6 @@
 				align-items: center;
 			}
 		}
-	}
-
-	#onUnsplash {
-		&.shown {
-			display: inline;
-		}
-
-		@include hidden();
-	}
-
-	&.shown {
-		display: flex;
 	}
 }
 

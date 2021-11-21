@@ -77,18 +77,6 @@ body {
 	}
 }
 
-@mixin animShow($display) {
-	@keyframes animShow {
-		0% {
-			display: $display;
-			opacity: 0;
-		}
-		100% {
-			opacity: 1;
-		}
-	}
-}
-
 @mixin hidden {
 	&.hidden {
 		display: none;
