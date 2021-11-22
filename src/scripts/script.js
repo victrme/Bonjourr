@@ -768,14 +768,14 @@ function quickLinks(event, that, initStorage) {
 }
 
 async function linksImport() {
-	const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
-
 	const closeBookmarks = (container) => {
 		container.classList.add('hiding')
 		setTimeout(() => container.setAttribute('class', ''), BonjourrAnimTime)
 	}
 
 	function main(data, bookmarks) {
+		const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
+
 		const form = document.createElement('form')
 		const allCategories = [...bookmarks[0].children]
 		let counter = data.links.length || 0
@@ -809,12 +809,13 @@ async function linksImport() {
 
 				// Change submit button text & class on selections
 				const amountSelected = counter - data.links.length
-				id('applybookmarks').textContent =
+				id('applybookmarks').textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
 						: amountSelected === 1
 						? 'Import this bookmark'
 						: 'Import these bookmarks'
+				)
 				clas(id('applybookmarks'), amountSelected === 0, 'none')
 			}
 

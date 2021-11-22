@@ -525,7 +525,7 @@
 		transition: opacity 0.1s ease-in;
 		font-size: 0.9em;
 		color: $blue;
-		margin-bottom: 2em;
+		margin-bottom: 1.5em;
 
 		svg {
 			width: 2em;
@@ -620,113 +620,111 @@
 			margin-top: 1.5em;
 		}
 	}
+}
+
+#bookmarks_container {
+	z-index: 4;
 
 	#bookmarks {
 		flex-direction: column;
 		background-color: $settingsGrey;
 		width: 50%;
 		padding: 1.5em;
-		padding-bottom: 0;
 		border-radius: 10px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		max-height: 80vh;
+		overflow: hidden;
 
 		align-self: center;
 		margin: auto;
 
 		#e_close {
-			padding-left: 20px;
-			margin-bottom: 1em;
+			margin: 0 1em 1em 20px;
 		}
 
-		h3 {
-			color: $blackish;
-			margin: 1em 0 1em 20px;
-			text-align: left;
-		}
+		form {
+			max-height: 70vh;
+			overflow-y: auto;
 
-		form div {
-			display: flex;
-			flex-direction: column;
-			cursor: pointer;
-			overflow: hidden;
-			background-color: white;
-			color: $blackish;
-			padding: 20px;
-			padding-left: 3.5em;
-			text-align: left;
-			word-break: break-all;
-			position: relative;
-			transition: filter 0.1s;
-
-			&:before {
-				content: '';
-				background-color: unset;
-				background-image: unset;
-				border: 2px solid #c5c4c6;
-
-				background-repeat: no-repeat;
-				background-size: 12px;
-				background-position: center;
-				width: 25px;
-				height: 25px;
-				text-align: center;
-				border-radius: 100px;
-				position: absolute;
-				vertical-align: -50%;
-				top: 50%;
-				transform: translateY(-50%);
-				margin-left: -39px;
-				box-sizing: border-box;
-				transition: background-color 0.1s;
-			}
-
-			h5 {
-				margin: 0;
-				text-overflow: ellipsis;
-				white-space: nowrap;
+			div {
+				display: flex;
+				flex-direction: column;
+				cursor: pointer;
 				overflow: hidden;
-			}
+				background-color: white;
+				color: $blackish;
+				padding: 20px;
+				padding-left: 3.5em;
+				text-align: left;
+				word-break: break-all;
+				position: relative;
+				transition: filter 0.1s;
 
-			pre {
-				margin-top: 10px;
-				margin-bottom: 0;
-
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				overflow: hidden;
-			}
-
-			&:first-child {
-				padding-top: 20px;
-				border-radius: 8px 8px 0 0;
-			}
-
-			&:last-child {
-				padding-bottom: 20px;
-				border-radius: 0 0 8px 8px;
-			}
-
-			&.selected {
-				filter: brightness(0.9);
 				&:before {
-					border: unset;
-					background-image: url('/src/assets/interface/checkmark.svg');
-					background-color: $blue;
+					content: '';
+					background-color: unset;
+					background-image: unset;
+					border: 2px solid #c5c4c6;
+
+					background-repeat: no-repeat;
+					background-size: 12px;
+					background-position: center;
+					width: 25px;
+					height: 25px;
+					text-align: center;
+					border-radius: 100px;
+					position: absolute;
+					vertical-align: -50%;
+					top: 50%;
+					transform: translateY(-50%);
+					margin-left: -39px;
+					box-sizing: border-box;
+					transition: background-color 0.1s;
+				}
+
+				h5 {
+					margin: 0;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					overflow: hidden;
+				}
+
+				pre {
+					margin-top: 10px;
+					margin-bottom: 0;
+
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					overflow: hidden;
+				}
+
+				&:first-child {
+					padding-top: 20px;
+					border-radius: 8px 8px 0 0;
+				}
+
+				&:last-child {
+					padding-bottom: 20px;
+					border-radius: 0 0 8px 8px;
+				}
+
+				&.selected {
+					filter: brightness(0.9);
+					&:before {
+						border: unset;
+						background-image: url('/src/assets/interface/checkmark.svg');
+						background-color: $blue;
+					}
 				}
 			}
 		}
 
 		.bookmarkOptions {
-			position: sticky;
 			display: flex;
 			justify-content: space-between;
 			background-color: $settingsGrey;
-			padding: 1em;
-			bottom: 0;
+			margin: 1em 20px 0 20px;
 
 			#applybookmarks {
+				text-align: right;
 				transition: filter 0.4s;
 
 				&.none {
@@ -740,13 +738,10 @@
 				color: #6d6d72;
 				display: flex;
 				align-items: center;
+				white-space: pre;
 			}
 		}
 	}
-}
-
-#bookmarks_container {
-	z-index: 3;
 }
 
 #credit {
