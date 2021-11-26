@@ -380,10 +380,6 @@ function initParams(data, settingsDom) {
 
 	const cssEditor = paramId('cssEditor')
 
-	cssEditor.addEventListener('keydown', function (e) {
-		if (e.code === 'Tab') e.preventDefault()
-	})
-
 	cssEditor.addEventListener('keyup', function (e) {
 		customCss(null, { is: 'styling', val: e.target.value })
 	})
@@ -556,7 +552,7 @@ function showInterface(e) {
 	//cherche le parent du click jusqu'a trouver linkblocks
 	//seulement si click droit, quitter la fct
 	let parent = e.target
-	const edit = id('edit_linkContainer')
+	const edit = id('editlink_container')
 	const settings = id('settings')
 
 	while (parent !== null) {
@@ -580,7 +576,7 @@ function showInterface(e) {
 }
 
 function showSettings() {
-	const edit = id('edit_linkContainer')
+	const edit = id('editlink_container')
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
@@ -648,14 +644,16 @@ function settingsInit(data) {
 	dominterface.onclick = (e) => {
 		showInterface(e)
 		if (id('popup')) closePopup()
+		if (document.body.classList.contains('tabbing')) clas(document.body, false, 'tabbing')
 	}
 
 	document.onkeydown = (e) => {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
-		const noEdit = has(id('edit_linkContainer'), 'shown') === false
+		const noEdit = has(id('editlink_container'), 'shown') === false
 		const noSettings = has(id('settings'), 'shown') === false
 
 		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
 }

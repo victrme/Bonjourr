@@ -64,6 +64,16 @@ body {
 	button {
 		outline: none;
 	}
+
+	&.tabbing {
+		a:focus,
+		input:focus,
+		textarea:focus,
+		select:focus,
+		button:focus {
+			outline: auto;
+		}
+	}
 }
 
 @mixin animHide() {

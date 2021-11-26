@@ -481,7 +481,7 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function editEvents() {
-		const editLinkContainer = id('edit_linkContainer')
+		const editLinkContainer = id('editlink_container')
 
 		function closeEditLink() {
 			removeLinkSelection()
@@ -495,21 +495,21 @@ function quickLinks(event, that, initStorage) {
 		}
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
-			removeblock(parseInt(id('edit_link').getAttribute('index')))
+			removeblock(parseInt(id('editlink').getAttribute('index')))
 			clas(editLinkContainer, false, 'shown')
 			if (id('settings')) linksInputDisable(false)
 		}
 
 		id('e_submit').onclick = function () {
 			removeLinkSelection()
-			const noError = editlink(null, parseInt(id('edit_link').getAttribute('index')))
+			const noError = editlink(null, parseInt(id('editlink').getAttribute('index')))
 			if (noError) closeEditLink()
 		}
 		// close on button
 		id('e_close').onclick = () => closeEditLink()
 
 		// close on outside click
-		const outsideClick = (e) => (e.target.id === 'edit_linkContainer' ? closeEditLink() : '')
+		const outsideClick = (e) => (e.target.id === 'editlink_container' ? closeEditLink() : '')
 		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
 		else editLinkContainer.onmousedown = outsideClick
 
@@ -597,14 +597,14 @@ function quickLinks(event, that, initStorage) {
 		else {
 			const index = findindex(that)
 			const liconwrap = that.querySelector('.l_icon_wrap')
-			const container = id('edit_linkContainer')
+			const container = id('editlink_container')
 			const openSettings = has(id('settings'), 'shown')
 
 			clas(liconwrap, true, 'selected')
 			clas(container, true, 'shown')
 			clas(container, openSettings, 'pushed')
 
-			id('edit_link').setAttribute('index', index)
+			id('editlink').setAttribute('index', index)
 
 			chrome.storage.sync.get('links', (data) => {
 				const { title, url, icon } = data.links[index]
@@ -761,7 +761,7 @@ function quickLinks(event, that, initStorage) {
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
-			id('edit_linkContainer').oncontextmenu = (e) => e.preventDefault()
+			id('editlink_container').oncontextmenu = (e) => e.preventDefault()
 			editEvents()
 		}, 150)
 	}
@@ -798,9 +798,13 @@ async function linksImport() {
 			elem.appendChild(url)
 			elem.onclick = () => {
 				const isSelected = elem.classList.toggle('selected')
+				const isFull = isSelected && counter === 30
+
+				// Color counter
+				clas(id('selectedCounter'), isSelected && counter > 28, 'full')
 
 				// unselect selection if full
-				if (isSelected && counter === 30) elem.classList.toggle('selected')
+				if (isFull) elem.classList.toggle('selected')
 				else {
 					isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
 					isSelected ? counter++ : (counter -= 1)
@@ -819,6 +823,8 @@ async function linksImport() {
 				clas(id('applybookmarks'), amountSelected === 0, 'none')
 			}
 
+			// only append links if url are not empty
+			// (temp fix to prevent adding bookmarks folder title ?)
 			if (typeof mark.url === 'string')
 				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
 		})

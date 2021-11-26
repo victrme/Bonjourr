@@ -1,5 +1,4 @@
 @import 'global';
-
 @include hideElements;
 
 #interface {
@@ -259,6 +258,7 @@
 			height: 2.5em;
 			width: 100%;
 			padding: 0 1em;
+			padding-right: calc(3em + 10px);
 			font-size: 1.3em;
 			color: #fff;
 			border: 0;
@@ -462,7 +462,7 @@
 	}
 }
 
-#edit_linkContainer,
+#editlink_container,
 #bookmarks_container {
 	position: fixed;
 	display: none;
@@ -492,56 +492,40 @@
 
 	button {
 		height: 40px;
-		color: $blue;
-		background-color: transparent;
 		border: 0px;
 		border-radius: 9px;
 		font-size: 0.9em;
 		padding: 0.6em;
 		cursor: pointer;
+		color: $blue;
+		background-color: transparent;
 		transition: opacity 0.1s ease-in;
 
 		&#e_delete {
 			color: red;
 		}
 
+		&:active,
 		&:hover {
 			text-decoration: underline;
 		}
 
 		&:active {
-			text-decoration: underline;
 			opacity: 0.8;
 		}
 	}
 
 	#e_close {
 		display: block;
-		background-color: transparent;
-		border: 0px;
-		cursor: pointer;
 		text-align: left;
 		padding: 0;
-		transition: opacity 0.1s ease-in;
-		font-size: 0.9em;
-		color: $blue;
 		margin-bottom: 1.5em;
-
-		svg {
-			width: 2em;
-		}
-
-		&:hover {
-			text-decoration: underline;
-		}
-
-		&:active {
-			text-decoration: underline;
-			opacity: 0.8;
-		}
+		transition: opacity 0.1s ease-in;
 	}
+}
 
-	#edit_link {
+#editlink_container {
+	#editlink {
 		background: $purewhite;
 		align-self: center;
 		margin: auto;
@@ -555,24 +539,20 @@
 			position: relative;
 		}
 
-		h4 {
-			text-align: left;
-			margin: 1.5em 0px 0.5em 0px;
-			padding: 0px;
-		}
-
 		.empty_input {
 			position: absolute;
-			top: 50%;
-			right: 0em;
-			color: #444;
-			background-color: transparent;
+			right: 12px;
+			top: 0.6em;
+			width: 1.5em;
+			height: 1.5em;
+			line-height: 1.5em;
 			border-radius: 100%;
+			color: #444;
 			font-size: 1em;
+			padding: 0;
 			opacity: 0;
-			border: none;
 			cursor: text;
-			transform: translate(-50%, -50%);
+			text-decoration: none;
 			transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 
 			&.shown {
@@ -600,16 +580,16 @@
 			box-sizing: border-box;
 			border-radius: 9px;
 			font-size: 0.9em;
-			background: $inputGrey;
+			background-color: $inputGrey;
 			border-radius: 8px;
 			height: 2.35em;
 			margin: 0.3em 0;
 			padding-right: 3em;
-			transition: background 0.1s;
+			transition: background-color 0.1s;
 
 			&:focus {
-				background: #d3d3d5;
-				transition: background 0.1s;
+				background-color: #d3d3d5;
+				transition: background-color 0.1s;
 			}
 		}
 
@@ -632,12 +612,11 @@
 		padding: 1.5em;
 		border-radius: 10px;
 		overflow: hidden;
-
 		align-self: center;
 		margin: auto;
 
 		#e_close {
-			margin: 0 1em 1em 20px;
+			margin-left: 20px;
 		}
 
 		form {
@@ -680,7 +659,8 @@
 					transition: background-color 0.1s;
 				}
 
-				h5 {
+				h5,
+				pre {
 					margin: 0;
 					text-overflow: ellipsis;
 					white-space: nowrap;
@@ -689,21 +669,16 @@
 
 				pre {
 					margin-top: 10px;
-					margin-bottom: 0;
-
-					text-overflow: ellipsis;
-					white-space: nowrap;
-					overflow: hidden;
 				}
 
 				&:first-child {
 					padding-top: 20px;
-					border-radius: 8px 8px 0 0;
+					border-radius: 10px 10px 0 0;
 				}
 
 				&:last-child {
 					padding-bottom: 20px;
-					border-radius: 0 0 8px 8px;
+					border-radius: 0 0 10px 10px;
 				}
 
 				&.selected {
@@ -739,6 +714,11 @@
 				display: flex;
 				align-items: center;
 				white-space: pre;
+
+				&.full {
+					// dark mode has priority somehow
+					color: $red !important;
+				}
 			}
 		}
 	}
