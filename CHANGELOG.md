@@ -11,7 +11,7 @@
 -   Fixed mobile pages not changing backgrounds
 -   Fixed error message appearing on firefox
 
--   **v1.10.2**
+**v1.10.2**
 
 -   Switch to another favicon provider (RIP Favicon Kit)
 -   Fixed imports errors with 1.10 configs
