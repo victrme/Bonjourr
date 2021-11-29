@@ -955,16 +955,19 @@ function weather(event, that, init) {
 			const todayHour = thisdate.getHours()
 			let forecastDay = thisdate.getDate()
 			let maxTempFromList = -273.15
+
 			// Late evening forecast for tomorrow
 			if (todayHour > 18) {
 				const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
 				forecastDay = new Date(tomorrow).getDate()
 			}
+
 			// Get the highest temp for the specified day
 			response.list.forEach((elem) => {
 				if (new Date(elem.dt * 1000).getDate() === forecastDay)
 					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
 			})
+
 			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(maxTempFromList) : maxTempFromList)
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysForecast(weatherToSave)
@@ -994,7 +997,7 @@ function weather(event, that, init) {
 		}
 	}
 
-	function cacheControl(storage) {
+	function weatherCacheControl(storage) {
 		const now = Math.floor(date.getTime() / 1000)
 		let isCurrentChanging = false
 
@@ -1222,8 +1225,10 @@ function weather(event, that, init) {
 	// Event & Init
 	if (event) updatesWeather()
 	else {
-		forecastVisibilityControl(init.forecast || 'mornings')
-		cacheControl(init)
+		if (typeof init.hide === 'object' && init.hide[1][1] + init.hide[1][2] < 2) {
+			forecastVisibilityControl(init.weather.forecast || 'mornings')
+			weatherCacheControl(init.weather)
+		}
 	}
 }
 
@@ -2383,12 +2388,10 @@ function hideElem(init, buttons, that) {
 	]
 
 	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
-	function getEventListPosition(that) {
-		return {
-			row: parseInt(that.getAttribute('he_row')),
-			col: parseInt(that.getAttribute('he_col')),
-		}
-	}
+	const getEventListPosition = (that) => ({
+		row: parseInt(that.getAttribute('he_row')),
+		col: parseInt(that.getAttribute('he_col')),
+	})
 
 	function toggleElement(dom, hide) {
 		if (hide) id(dom).classList.add('he_hidden')
@@ -2415,57 +2418,14 @@ function hideElem(init, buttons, that) {
 		})
 	}
 
-	function updateToNewData(list) {
-		if (list[0]) {
-			if (typeof list[0][0] === 'string') {
-				//
-				// Flattens and removes parent IDs
-				const childOnly = IDsList.flat().filter((row) => typeof row === 'object')
-				let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
-
-				//
-				// Go through IDs list for every old hide elems
-				list.forEach((id) => {
-					childOnly.forEach((row, row_i) =>
-						row.forEach((col, col_i) => {
-							if (col === id) {
-								newHidden[row_i][col_i] = 1
-							}
-						})
-					)
-				})
-
-				chrome.storage.sync.set({ hide: newHidden })
-				return newHidden
-			}
-
-			// Is already updated
-			else return list
-		}
-
-		// 1.10.0 online hotfix
-		if (list.length === 0) {
-			let newHidden = [[0, 0], [0, 0, 0], [0], [0]]
-			chrome.storage.sync.set({ hide: newHidden })
-			return newHidden
-		}
-
-		// Had nothing to hide
-		else return list
-	}
-
 	// startup initialization
 	if (!that && !buttons) {
-		initializeHiddenElements(updateToNewData(init))
+		initializeHiddenElements(init)
 	}
 
 	// Settings buttons initialization
 	else if (buttons) {
 		chrome.storage.sync.get('hide', (data) => {
-			//
-			// 1.9.3 ==> 1.10.0
-			data.hide = updateToNewData(data.hide)
-
 			buttons.forEach((button) => {
 				const pos = getEventListPosition(button)
 				if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
@@ -2475,11 +2435,7 @@ function hideElem(init, buttons, that) {
 
 	// Event
 	else {
-		chrome.storage.sync.get('hide', (data) => {
-			//
-			// 1.9.3 ==> 1.10.0
-			data.hide = updateToNewData(data.hide)
-
+		chrome.storage.sync.get(['weather', 'hide'], (data) => {
 			const pos = getEventListPosition(that)
 			const state = that.classList.contains('clicked')
 			const child = IDsList[pos.row][1][pos.col]
@@ -2488,6 +2444,9 @@ function hideElem(init, buttons, that) {
 			// Update hidden list
 			data.hide[pos.row][pos.col] = state ? 1 : 0
 			chrome.storage.sync.set({ hide: data.hide })
+
+			// Re-activates weather
+			if (!state && pos.row === 1 && pos.col > 0) weather(null, null, data)
 
 			// Toggle children and parent if needed
 			toggleElement(child, state)
@@ -2670,7 +2629,7 @@ function startup(data) {
 	traduction(null, data.lang)
 
 	sunTime(data.weather)
-	weather(null, null, data.weather)
+	weather(null, null, data)
 
 	customFont(data.font)
 	customSize(data.font)
@@ -2694,7 +2653,7 @@ window.onload = function () {
 	if (mobilecheck) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
-			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type'], (data) => {
+			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
 				const { dynamic, background_type } = data
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
 
@@ -2703,14 +2662,14 @@ window.onload = function () {
 					unsplash(data, false)
 				}
 
-				weather(null, null, data.weather)
+				weather(null, null, data)
 			})
 		})
 	}
 
 	// Checks every 5 minutes if weather needs update
-	setTimeout(() => {
-		navigator.onLine ? chrome.storage.sync.get(['weather'], (data) => weather(null, null, data.weather)) : ''
+	setInterval(() => {
+		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
 	}, 5 * 60 * 1000)
 	//
 	// Only on Online
