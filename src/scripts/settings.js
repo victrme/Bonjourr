@@ -69,6 +69,7 @@ function initParams(data, settingsDom) {
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
 	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
+	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg

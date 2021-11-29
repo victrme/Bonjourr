@@ -27,7 +27,7 @@ function favicon(init, event) {
 
 	if (event) {
 		const val = event.value
-		const isEmoji = val.match(/\p{Emoji}/gu)
+		const isEmoji = val.match(/\p{Emoji}/gu) && !val.match(/[0-9a-z]/g)
 
 		if (isEmoji) createFavicon(val)
 		else event.value = ''
