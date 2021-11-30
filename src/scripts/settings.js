@@ -48,6 +48,8 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
+	if (window.location.protocol.match(/https?:/gim)) paramId('b_importbookmarks').style.display = 'none'
+
 	// Links limit
 	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
 

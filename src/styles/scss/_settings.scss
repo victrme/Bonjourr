@@ -249,7 +249,7 @@
 
 		#b_importbookmarks,
 		#submitlink {
-			margin-bottom: 0.5em;
+			height: 2.2em;
 			transition: filter 0.4s;
 
 			&.max {
@@ -257,6 +257,10 @@
 				text-decoration: none;
 				cursor: default;
 			}
+		}
+
+		#submitlink {
+			margin-left: 1em;
 		}
 	}
 
