@@ -489,6 +489,21 @@ function importExport(select, isEvent) {
 				if (data.weather && data.weather.lastCall) delete data.weather.lastCall
 				if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
+				switch (window.location.protocol) {
+					case 'http:':
+					case 'https:':
+					case 'file:':
+						data.about.browser = 'online'
+						break
+
+					case 'moz-extension:':
+						data.about.browser = 'firefox'
+						break
+
+					default:
+						data.about.browser = 'chrome'
+				}
+
 				input.value = JSON.stringify(data)
 
 				if (isEvent) {

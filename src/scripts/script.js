@@ -1225,10 +1225,12 @@ function weather(event, that, init) {
 	// Event & Init
 	if (event) updatesWeather()
 	else {
-		if (typeof init.hide === 'object' && init.hide[1][1] + init.hide[1][2] < 2) {
-			forecastVisibilityControl(init.weather.forecast || 'mornings')
-			weatherCacheControl(init.weather)
+		if (validateHideElem(init.hide)) {
+			if (init.hide[1][1] + init.hide[1][2] === 2) return false
 		}
+
+		forecastVisibilityControl(init.weather.forecast || 'mornings')
+		weatherCacheControl(init.weather)
 	}
 }
 
@@ -2419,13 +2421,15 @@ function hideElem(init, buttons, that) {
 	}
 
 	// startup initialization
-	if (!that && !buttons) {
+	if (!that && !buttons && validateHideElem(init)) {
 		initializeHiddenElements(init)
 	}
 
 	// Settings buttons initialization
 	else if (buttons) {
 		chrome.storage.sync.get('hide', (data) => {
+			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
+
 			buttons.forEach((button) => {
 				const pos = getEventListPosition(button)
 				if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
@@ -2436,6 +2440,8 @@ function hideElem(init, buttons, that) {
 	// Event
 	else {
 		chrome.storage.sync.get(['weather', 'hide'], (data) => {
+			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
+
 			const pos = getEventListPosition(that)
 			const state = that.classList.contains('clicked')
 			const child = IDsList[pos.row][1][pos.col]
@@ -2547,14 +2553,15 @@ function filterImports(data) {
 		},
 
 		hide: (hide) => {
-			if (hide === undefined || hide.length === 0) return [[0, 0], [0, 0, 0], [0], [0]]
-			else if (hide && hide.length > 0) {
+			if (validateHideElem(hide)) {
 				// Changes new hidden classes
 				const weatherIndex = hide.indexOf('weather_desc')
 				const widgetIndex = hide.indexOf('w_icon')
 
 				if (weatherIndex >= 0) hide[weatherIndex] = 'description'
 				if (widgetIndex >= 0) hide[widgetIndex] = 'widget'
+			} else {
+				hide = [[0, 0], [0, 0, 0], [0], [0]]
 			}
 
 			return hide
@@ -2596,30 +2603,34 @@ function filterImports(data) {
 
 			return font
 		},
+
+		searchbar: (searchbar) => {
+			// Converts searchbar from <1.9.x bool to object
+			if (typeof searchbar === 'boolean') {
+				let oldsetting = searchbar
+				searchbar = bonjourrDefaults('sync').searchbar
+				searchbar.on = oldsetting
+				searchbar.newtab = data.searchbar_newtab || false
+				searchbar.engine = data.searchbar_engine.replace('s_', '') || 'google'
+			}
+
+			// Add new searchbar settings >1.10.0
+			else if (typeof searchbar === 'object') {
+				if (searchbar.opacity === undefined) searchbar.opacity = 0.1
+				if (searchbar.request === undefined) searchbar.request = ''
+			}
+
+			return searchbar
+		},
 	}
 
 	let result = { ...data }
-
-	// for 1.9.x => 1.10, newtab/engine doesnt work with forEach below
-	// after 1.10, searchbar goes in filter.searchbar
-	if (typeof data.searchbar === 'boolean') {
-		result.searchbar = bonjourrDefaults('sync').searchbar
-		result.searchbar.on = data.searchbar
-	} else if (typeof data.searchbar === 'object') {
-		result.searchbar = {
-			on: data.searchbar.on || false,
-			newtab: data.searchbar_newtab || false,
-			engine: data.searchbar_engine || 'google',
-			request: data.searchbar.request ? data.searchbar.request : '',
-			opacity: data.searchbar.opacity ? data.searchbar.opacity : 0.1,
-		}
-	}
 
 	if (result.searchbar_engine) delete result.searchbar_engine
 	if (result.searchbar_newtab) delete result.searchbar_newtab
 
 	// Go through found categories in import data to filter them
-	Object.entries(data).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
+	Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 
 	return result
 }

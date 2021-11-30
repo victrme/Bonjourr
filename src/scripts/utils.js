@@ -58,10 +58,6 @@ switch (window.location.protocol) {
 		BonjourrBrowser = 'firefox'
 		break
 
-	case 'chrome-extension:':
-		BonjourrBrowser = 'chrome'
-		break
-
 	default:
 		BonjourrBrowser = 'chrome'
 }
@@ -81,6 +77,22 @@ const saveIconAsAlias = (iconstr) => {
 	tosave[alias] = iconstr
 	chrome.storage.local.set(tosave)
 	return alias
+}
+
+function validateHideElem(hide) {
+	let res = true
+
+	Array.isArray(hide)
+		? hide.forEach((parent) => {
+				Array.isArray(parent)
+					? parent.forEach((child) => {
+							typeof child === 'number' ? '' : (res = false)
+					  })
+					: (res = false)
+		  })
+		: (res = false)
+
+	return res
 }
 
 function slowRange(tosave, time = 400) {
