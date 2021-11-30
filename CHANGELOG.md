@@ -6,6 +6,8 @@
     -   Import browser bookmarks !
     -   Manually change dynamic background
     -   Change the tab favicon with an emoji
+-   Added button outline when pressing tab
+-   No more weather request when hidden
 -   Improved weather city input UX
 -   Improved font size input UX on mobile
 -   Fixed mobile pages not changing backgrounds
