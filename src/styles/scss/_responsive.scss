@@ -125,17 +125,27 @@
 			}
 		}
 	}
+
+	#bookmarks_container #bookmarks {
+		width: 90%;
+		min-width: 0;
+
+		form div {
+			width: auto;
+		}
+	}
 }
 
 @media screen and (max-width: 400px) {
 	#settings {
 		input[type='text'] {
-			width: 100px;
+			width: 110px;
 		}
 
+		.freq_wrap > div,
 		input[type='range'],
 		select {
-			width: 110px;
+			width: 120px;
 		}
 	}
 }

@@ -41,7 +41,7 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.10.2',
+	BonjourrVersion = '1.11.0',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -81,6 +81,22 @@ const saveIconAsAlias = (iconstr) => {
 	tosave[alias] = iconstr
 	chrome.storage.local.set(tosave)
 	return alias
+}
+
+function slowRange(tosave, time = 400) {
+	clearTimeout(rangeActive)
+	rangeActive = setTimeout(function () {
+		chrome.storage.sync.set(tosave)
+	}, time)
+}
+
+function slow(that, time = 400) {
+	that.setAttribute('disabled', '')
+	stillActive = setTimeout(() => {
+		that.removeAttribute('disabled')
+		clearTimeout(stillActive)
+		stillActive = false
+	}, time)
 }
 
 // lsOnlineStorage works exactly like chrome.storage
@@ -216,6 +232,7 @@ function bonjourrDefaults(which) {
 				lang: 'en',
 				favicon: '',
 				greeting: '',
+				custom_every: 'pause',
 				background_type: 'dynamic',
 				links: [],
 				clock: {
@@ -236,6 +253,7 @@ function bonjourrDefaults(which) {
 					city: 'Paris',
 					unit: 'metric',
 					location: [],
+					forecast: 'auto',
 				},
 				searchbar: {
 					on: false,

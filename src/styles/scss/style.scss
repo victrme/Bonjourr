@@ -1,5 +1,4 @@
 @import 'global';
-
 @include hideElements;
 
 #interface {
@@ -259,6 +258,7 @@
 			height: 2.5em;
 			width: 100%;
 			padding: 0 1em;
+			padding-right: calc(3em + 10px);
 			font-size: 1.3em;
 			color: #fff;
 			border: 0;
@@ -453,13 +453,24 @@
 	}
 }
 
-#edit_linkContainer,
+@keyframes animShow {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+#editlink_container,
 #bookmarks_container {
 	position: fixed;
 	display: none;
 	top: 0;
+	left: 0;
 	height: 100vh;
-	width: 100%;
+	width: 100vw;
+	opacity: 0;
 	z-index: 1;
 	transition: transform 0.4s;
 	@include frostedGlass($alpha: 0, $blur: 40px, $fbAlpha: 0.2);
@@ -470,7 +481,7 @@
 	}
 
 	&.shown {
-		@include animShow('flex');
+		display: inline-flex;
 		animation: animShow 0.4s forwards;
 	}
 
@@ -480,58 +491,41 @@
 	}
 
 	button {
-		width: 45%;
 		height: 40px;
-		color: $blue;
-		background-color: transparent;
 		border: 0px;
 		border-radius: 9px;
 		font-size: 0.9em;
 		padding: 0.6em;
 		cursor: pointer;
+		color: $blue;
+		background-color: transparent;
 		transition: opacity 0.1s ease-in;
 
 		&#e_delete {
 			color: red;
 		}
 
+		&:active,
 		&:hover {
 			text-decoration: underline;
 		}
 
 		&:active {
-			text-decoration: underline;
 			opacity: 0.8;
 		}
 	}
 
 	#e_close {
 		display: block;
-		background-color: transparent;
-		border: 0px;
-		cursor: pointer;
 		text-align: left;
 		padding: 0;
+		margin-bottom: 1.5em;
 		transition: opacity 0.1s ease-in;
-		font-size: 0.9em;
-		color: $blue;
-		margin-bottom: 2em;
-
-		svg {
-			width: 2em;
-		}
-
-		&:hover {
-			text-decoration: underline;
-		}
-
-		&:active {
-			text-decoration: underline;
-			opacity: 0.8;
-		}
 	}
+}
 
-	#edit_link {
+#editlink_container {
+	#editlink {
 		background: $purewhite;
 		align-self: center;
 		margin: auto;
@@ -545,24 +539,20 @@
 			position: relative;
 		}
 
-		h4 {
-			text-align: left;
-			margin: 1.5em 0px 0.5em 0px;
-			padding: 0px;
-		}
-
 		.empty_input {
 			position: absolute;
-			top: 50%;
-			right: 0em;
-			color: #444;
-			background-color: transparent;
+			right: 12px;
+			top: 0.6em;
+			width: 1.5em;
+			height: 1.5em;
+			line-height: 1.5em;
 			border-radius: 100%;
+			color: #444;
 			font-size: 1em;
+			padding: 0;
 			opacity: 0;
-			border: none;
 			cursor: text;
-			transform: translate(-50%, -50%);
+			text-decoration: none;
 			transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 
 			&.shown {
@@ -590,16 +580,16 @@
 			box-sizing: border-box;
 			border-radius: 9px;
 			font-size: 0.9em;
-			background: $inputGrey;
+			background-color: $inputGrey;
 			border-radius: 8px;
 			height: 2.35em;
 			margin: 0.3em 0;
 			padding-right: 3em;
-			transition: background 0.1s;
+			transition: background-color 0.1s;
 
 			&:focus {
-				background: #d3d3d5;
-				transition: background 0.1s;
+				background-color: #d3d3d5;
+				transition: background-color 0.1s;
 			}
 		}
 
@@ -610,92 +600,97 @@
 			margin-top: 1.5em;
 		}
 	}
+}
+
+#bookmarks_container {
+	z-index: 4;
 
 	#bookmarks {
 		flex-direction: column;
 		background-color: $settingsGrey;
-		width: 50%;
 		padding: 1.5em;
 		border-radius: 10px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		max-height: 80vh;
-
+		overflow: hidden;
 		align-self: center;
 		margin: auto;
+		min-width: 320px;
 
-		// form {
-		// 	padding-top: 2em;
-		// }
-
-		#applybookmarks {
-			visibility: hidden;
-			&.shown {
-				visibility: visible;
-			}
+		#e_close {
+			margin-left: 20px;
 		}
 
-		form div {
-			display: flex;
-			flex-direction: column;
-			cursor: pointer;
-			overflow: hidden;
-			background-color: white;
-			color: $blackish;
-			padding: 10px 10px;
-			text-align: left;
-			word-break: break-all;
-			position: relative;
-			padding-left: 3em;
+		form {
+			max-height: 70vh;
+			overflow-y: auto;
+			overflow-x: hidden;
 
-			&:before {
-				content: '+';
-				color: white;
-				width: 25px;
-				height: 25px;
-				text-align: center;
-				background-color: $green;
-				border-radius: 100px;
-				position: absolute;
-				vertical-align: -50%;
-				top: 50%;
-				transform: translateY(-50%);
-				margin-left: -2em; 
-			}
-
-			h5 {
-				margin: 0;
-				text-overflow: ellipsis;
-				white-space: nowrap;
+			div {
+				display: flex;
+				flex-direction: column;
+				cursor: pointer;
 				overflow: hidden;
-			}
-
-			pre {
-				margin-top: 10px;
-				margin-bottom: 0;
-
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				overflow: hidden;
-				
-			}
-
-			&:first-child {
-				padding-top: 20px;
-				border-radius: 8px 8px 0 0;
-			}
-
-			&:last-child {
-				padding-bottom:20px;
-				border-radius: 0 0 8px 8px;
-			}
-
-			&.selected {
-				background-color: rgba(#fff, 0.2);
+				background-color: white;
+				color: $blackish;
+				padding: 20px;
+				width: 50vw;
+				max-width: 800px;
+				padding-left: 3.5em;
+				text-align: left;
+				word-break: break-all;
+				position: relative;
+				transition: filter 0.1s;
 
 				&:before {
-					content: '-';
-					background-color: $red;
+					content: '';
+					background-color: unset;
+					background-image: unset;
+					border: 2px solid #c5c4c6;
+
+					background-repeat: no-repeat;
+					background-size: 12px;
+					background-position: center;
+					width: 25px;
+					height: 25px;
+					text-align: center;
+					border-radius: 100px;
+					position: absolute;
+					vertical-align: -50%;
+					top: 50%;
+					transform: translateY(-50%);
+					margin-left: -39px;
+					box-sizing: border-box;
+					transition: background-color 0.1s;
+				}
+
+				h5,
+				pre {
+					margin: 0;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					overflow: hidden;
+				}
+
+				pre {
+					margin-top: 10px;
+				}
+
+				&:first-child {
+					padding-top: 20px;
+					border-radius: 10px 10px 0 0;
+				}
+
+				&:last-child {
+					padding-bottom: 20px;
+					border-radius: 0 0 10px 10px;
+				}
+
+				&.selected {
+					filter: brightness(0.9);
+					&:before {
+						border: unset;
+						background-image: url('/src/assets/interface/checkmark.svg');
+						background-color: $blue;
+					}
 				}
 			}
 		}
@@ -703,24 +698,33 @@
 		.bookmarkOptions {
 			display: flex;
 			justify-content: space-between;
+			background-color: $settingsGrey;
+			margin: 1em 20px 0 20px;
+
+			#applybookmarks {
+				text-align: right;
+				transition: filter 0.4s;
+
+				&.none {
+					cursor: default;
+					filter: grayscale(1);
+					text-decoration: none;
+				}
+			}
+
+			#selectedCounter {
+				color: #6d6d72;
+				display: flex;
+				align-items: center;
+				white-space: pre;
+
+				&.full {
+					// dark mode has priority somehow
+					color: $red !important;
+				}
+			}
 		}
 	}
-
-	#onUnsplash {
-		&.shown {
-			display: inline;
-		}
-
-		@include hidden();
-	}
-
-	&.shown {
-		display: flex;
-	}
-}
-
-#bookmarks_container {
-	z-index: 3;
 }
 
 #credit {

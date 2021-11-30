@@ -5,6 +5,7 @@ function initParams(data, settingsDom) {
 	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
+	const enterBlurs = (e) => e.addEventListener('keypress', (e) => (e.key === 'Enter' ? e.target.blur() : ''))
 
 	function toggleClockOptions(dom, analog) {
 		dom.classList.remove(analog ? 'digital' : 'analog')
@@ -31,9 +32,10 @@ function initParams(data, settingsDom) {
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
+	initInput('i_forecast', isThereData('weather', 'forecast'), 'auto')
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
-	initInput('i_size', isThereData('font', 'size'), 16)
+	initInput('i_size', isThereData('font', 'size'), mobilecheck ? 11 : 14)
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_linknewtab', data.linknewtab)
@@ -67,6 +69,7 @@ function initParams(data, settingsDom) {
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
 	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
+	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 	//bg
@@ -82,7 +85,6 @@ function initParams(data, settingsDom) {
 		const isGeolocation = data.weather.location.length > 0
 		let cityName = data.weather.city ? data.weather.city : 'City'
 		paramId('i_city').setAttribute('placeholder', cityName)
-		paramId('i_city').value = cityName
 
 		clas(paramId('sett_city'), isGeolocation, 'hidden')
 		paramId('i_geol').checked = isGeolocation
@@ -113,6 +115,9 @@ function initParams(data, settingsDom) {
 
 	const bgfile = paramId('i_bgfile')
 	const fileContainer = paramId('i_fileContainer')
+
+	enterBlurs(paramId('i_favicon'))
+	enterBlurs(paramId('i_greeting'))
 
 	// file input animation
 	bgfile.addEventListener('dragenter', function () {
@@ -193,6 +198,23 @@ function initParams(data, settingsDom) {
 		else unsplash(null, { every: this.value })
 	}
 
+	paramId('i_refresh').onclick = function () {
+		if (paramId('i_type').value === 'custom') {
+			chrome.storage.local.get((local) => {
+				id('background_overlay').style.opacity = 0
+				setTimeout(
+					() =>
+						localBackgrounds({
+							local: local,
+							every: paramId('i_freq').value,
+							time: 0,
+						}),
+					400
+				)
+			})
+		} else slow(this, unsplash(null, { refresh: this.children[0] }))
+	}
+
 	paramId('i_collection').onchange = function () {
 		unsplash(null, { collection: stringMaxSize(this.value, 128) })
 		this.blur()
@@ -257,8 +279,15 @@ function initParams(data, settingsDom) {
 
 	//weather
 
-	paramId('i_city').onkeypress = function (e) {
-		if (!stillActive && e.code === 'Enter') weather('city', this)
+	paramId('i_city').onkeyup = function (e) {
+		if (e.code === 'Enter') {
+			clearTimeout(rangeActive)
+			if (!stillActive) weather('city', this)
+		} else {
+			const that = this
+			clearTimeout(rangeActive)
+			rangeActive = setTimeout(() => weather('city', that), 2000)
+		}
 	}
 
 	paramId('i_units').onchange = function () {
@@ -267,6 +296,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_geol').onchange = function () {
 		if (!stillActive) weather('geol', this)
+	}
+
+	paramId('i_forecast').onchange = function () {
+		weather('forecast', this)
 	}
 
 	//searchbar
@@ -326,6 +359,13 @@ function initParams(data, settingsDom) {
 		customSize(null, this.value)
 	}
 
+	// Reduces opacity to better see interface size changes
+	if (mobilecheck) {
+		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
+		paramId('i_size').addEventListener('touchstart', () => touchHandler(true), { passive: true })
+		paramId('i_size').addEventListener('touchend', () => touchHandler(false), { passive: true })
+	}
+
 	paramId('i_row').oninput = function () {
 		linksrow(null, this.value)
 	}
@@ -340,10 +380,6 @@ function initParams(data, settingsDom) {
 		})
 
 	const cssEditor = paramId('cssEditor')
-
-	cssEditor.addEventListener('keydown', function (e) {
-		if (e.code === 'Tab') e.preventDefault()
-	})
 
 	cssEditor.addEventListener('keyup', function (e) {
 		customCss(null, { is: 'styling', val: e.target.value })
@@ -375,12 +411,11 @@ function selectBackgroundType(cat) {
 			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
 		}
 		if (cat === 'dynamic') {
+			// Timeout needed because it uses init data
 			domoverlay.style.opacity = `0`
-			domcredit.style.display = 'block'
-			setTimeout(() => {
-				clas(domcredit, true, 'shown')
-				unsplash(data)
-			}, BonjourrAnimTime)
+			id('background').removeAttribute('index')
+			setTimeout(() => unsplash(data), BonjourrAnimTime)
+			clas(domcredit, true, 'shown')
 		}
 
 		// Setting frequence
@@ -518,7 +553,7 @@ function showInterface(e) {
 	//cherche le parent du click jusqu'a trouver linkblocks
 	//seulement si click droit, quitter la fct
 	let parent = e.target
-	const edit = id('edit_linkContainer')
+	const edit = id('editlink_container')
 	const settings = id('settings')
 
 	while (parent !== null) {
@@ -542,11 +577,11 @@ function showInterface(e) {
 }
 
 function showSettings() {
-	const edit = id('edit_linkContainer')
+	const edit = id('editlink_container')
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
-	clas(dominterface, settingsNotShown, 'pushed')
+	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
 	clas(edit, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')
@@ -610,13 +645,16 @@ function settingsInit(data) {
 	dominterface.onclick = (e) => {
 		showInterface(e)
 		if (id('popup')) closePopup()
+		if (document.body.classList.contains('tabbing')) clas(document.body, false, 'tabbing')
 	}
+
 	document.onkeydown = (e) => {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
-		const noEdit = has(id('edit_linkContainer'), 'shown') === false
+		const noEdit = has(id('editlink_container'), 'shown') === false
 		const noSettings = has(id('settings'), 'shown') === false
 
 		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
 }
