@@ -2086,6 +2086,17 @@ function showPopup(data) {
 			donate: document.createElement('a'),
 		}
 
+		const closePopup = (fromText) => {
+			if (fromText) {
+				id('popup').classList.remove('shown')
+				setTimeout(() => {
+					id('popup').remove()
+					setTimeout(() => (id('credit').style = ''), BonjourrAnimTime)
+				}, 200)
+			}
+			chrome.storage.sync.set({ reviewPopup: 'removed' })
+		}
+
 		dom.wrap.id = 'popup'
 		dom.desc.id = 'popup_text'
 		dom.desc.textContent = tradThis(
@@ -2093,7 +2104,7 @@ function showPopup(data) {
 		)
 
 		dom.review.href = setReviewLink()
-		dom.donate.href = 'http://bonjourr.fr/#donate'
+		dom.donate.href = 'https://ko-fi.com/bonjourr'
 
 		dom.review.textContent = tradThis('Review')
 		dom.donate.textContent = tradThis('Donate')
@@ -2110,10 +2121,9 @@ function showPopup(data) {
 		domcredit.style.opacity = 0
 		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
-		document.querySelectorAll('#popup #popup_buttons a')[0].onclick = close
-		document.querySelectorAll('#popup #popup_buttons a')[1].onclick = close
-
-		setTimeout(() => dominterface.addEventListener(['touchstart', 'click'], close, { passive: true }), 4000)
+		dom.review.addEventListener('mousedown', () => closePopup(false))
+		dom.donate.addEventListener('mousedown', () => closePopup(false))
+		dom.desc.addEventListener('click', () => closePopup(true), { passive: true })
 	}
 
 	//s'affiche après 30 tabs

@@ -752,15 +752,26 @@
 }
 
 #popup {
+	display: flex;
 	position: fixed;
 	bottom: 4rem;
 	left: 4rem;
-	display: flex;
-	opacity: 0;
-	transition: opacity 3s 0s;
+	z-index: 3;
+	transition: opacity 0.4s;
+
+	#popup_buttons a,
+	#popup_text {
+		opacity: 0;
+		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+	}
 
 	&.shown {
-		opacity: 1;
+		#popup_buttons a,
+		#popup_text {
+			opacity: 1;
+			cursor: pointer;
+			transition: opacity 2s, background-color 0.2s, color 0.2s;
+		}
 	}
 }
 
@@ -776,18 +787,60 @@
 		@include frostedGlass($alpha: 0.2, $blur: 10px);
 		border-radius: 10px;
 		line-height: 36px;
+
+		&:hover {
+			@include frostedGlass($alpha: 0.3, $blur: 10px);
+		}
+
+		&:active {
+			@include frostedGlass($alpha: 0.6, $blur: 10px);
+		}
 	}
 }
 
 #popup_text {
-	justify-content: space-between;
 	width: 260px;
 	left: 40px;
 	text-align: left;
 	padding: 10px 30px;
 	margin-right: 10px;
 	border-radius: 10px;
+	justify-content: space-between;
 	@include frostedGlass($alpha: 0.2, $blur: 10px);
+
+	&::before {
+		content: '×';
+		opacity: 0;
+		position: absolute;
+		top: 20px;
+		left: 140px;
+		width: 40px;
+		height: 40px;
+		font-size: 30px;
+		line-height: 35px;
+		border-radius: 5px;
+		color: #fff;
+		text-align: center;
+		background-color: #fff3;
+		transition: opacity 0.4s, filter 0.2s;
+	}
+
+	&:hover {
+		color: transparent;
+		@include frostedGlass($alpha: 0.1, $blur: 10px);
+
+		&::before {
+			opacity: 1;
+		}
+	}
+
+	&:active {
+		@include frostedGlass($alpha: 0, $blur: 10px);
+
+		&::before {
+			filter: brightness(0.8);
+		}
+	}
 }
 
 #bonjourrError {

@@ -91,37 +91,23 @@
 
 	#popup {
 		flex-wrap: wrap;
-		padding: 1em;
+		padding: 10%;
 		bottom: 0;
-		left: 5vw;
-		max-width: 90vw;
-		border-radius: 10px 10px 0 0;
-		justify-content: center;
-		transform: translateX(0) translateY(110%);
+		left: 0;
 
-		&.shown {
-			transform: translateY(0%);
+		#popup_text,
+		#popup_buttons {
+			width: 100%;
+			margin: 5px;
 		}
 
-		&.removing {
-			transform: translateX(0) translateY(110%);
-		}
-
-		#closePopup {
-			display: none;
-		}
-
-		span,
-		a {
-			max-width: unset;
-		}
-
-		.choices {
+		#popup_buttons {
 			flex-direction: row;
-			margin-top: 15px;
+			justify-content: space-evenly;
+			width: 100%;
 
 			a {
-				margin: 3px 8px;
+				width: 45%;
 			}
 		}
 	}

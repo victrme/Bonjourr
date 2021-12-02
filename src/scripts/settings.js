@@ -650,18 +650,8 @@ function settingsInit(data) {
 		}
 	}
 
-	function closePopup() {
-		setTimeout(() => {
-			id('popup').classList.replace('shown', 'removing')
-			chrome.storage.sync.set({ reviewPopup: 'removed' })
-		}, 4000)
-	}
-
-	dominterface.addEventListener('touchstart', closePopup, { passive: true })
-
 	dominterface.onclick = (e) => {
 		showInterface(e)
-		if (id('popup')) closePopup()
 		if (document.body.classList.contains('tabbing')) clas(document.body, false, 'tabbing')
 	}
 
