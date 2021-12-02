@@ -1,5 +1,9 @@
 ## Changelogs
 
+**v1.11.1**
+
+-   Fixed unremovable popup
+
 **v1.11.0**
 
 -   Added features:
