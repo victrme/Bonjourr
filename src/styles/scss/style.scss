@@ -784,16 +784,17 @@
 	a {
 		color: white;
 		text-decoration: none;
-		@include frostedGlass($alpha: 0.2, $blur: 10px);
 		border-radius: 10px;
 		line-height: 36px;
 
+		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbAlpha: 0.3, $fbColor: white);
+
 		&:hover {
-			@include frostedGlass($alpha: 0.3, $blur: 10px);
+			@include frostedGlass($alpha: 0.4, $blur: 10px, $fbAlpha: 0.4, $fbColor: white);
 		}
 
 		&:active {
-			@include frostedGlass($alpha: 0.6, $blur: 10px);
+			@include frostedGlass($alpha: 0.6, $blur: 10px, $fbAlpha: 0.6, $fbColor: white);
 		}
 	}
 }
@@ -806,7 +807,7 @@
 	margin-right: 10px;
 	border-radius: 10px;
 	justify-content: space-between;
-	@include frostedGlass($alpha: 0.2, $blur: 10px);
+	@include frostedGlass($alpha: 0.2, $blur: 10px, $fbAlpha: 0.3, $fbColor: white);
 
 	&::before {
 		content: '×';
@@ -826,7 +827,7 @@
 
 	&:hover {
 		color: transparent;
-		@include frostedGlass($alpha: 0.1, $blur: 10px);
+		@include frostedGlass($alpha: 0.1, $blur: 10px, $fbAlpha: 0.2, $fbColor: transparent);
 
 		&::before {
 			opacity: 1;
@@ -834,9 +835,10 @@
 	}
 
 	&:active {
-		@include frostedGlass($alpha: 0, $blur: 10px);
+		@include frostedGlass($alpha: 0, $blur: 10px, $fbAlpha: 0.1, $fbColor: transparent);
 
 		&::before {
+			opacity: 1;
 			filter: brightness(0.8);
 		}
 	}
