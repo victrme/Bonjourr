@@ -41,7 +41,7 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.11.0',
+	BonjourrVersion = '1.11.1',
 	funcsOk = {
 		clock: false,
 		links: false,

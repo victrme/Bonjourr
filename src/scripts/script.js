@@ -635,8 +635,10 @@ function quickLinks(event, that, initStorage) {
 		const a_hiddenlink = id('hiddenlink')
 
 		chrome.storage.sync.get('linknewtab', (data) => {
+			const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
+
 			a_hiddenlink.setAttribute('href', source)
-			a_hiddenlink.setAttribute('target', data.linknewtab || e.which === 2 ? '_blank' : '_self')
+			a_hiddenlink.setAttribute('target', toNewTab ? '_blank' : '_self')
 			a_hiddenlink.click()
 		})
 	}
