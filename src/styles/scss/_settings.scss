@@ -444,6 +444,7 @@
 		#w_ampm {
 			opacity: 1;
 			min-height: 0;
+			height: 34px;
 			max-height: 3em;
 			overflow: hidden;
 			transition: max-height 0s 0.2s, opacity 0.2s;
