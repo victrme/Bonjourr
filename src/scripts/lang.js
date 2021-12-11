@@ -29,7 +29,7 @@ const dict = {
 	Consider: {
 		fr: "N'hésitez pas",
 		sv: 'Överväga',
-		nl: 'Overwegen',
+		nl: 'Overweeg te',
 		pl: 'Rozważ',
 		pt_BR: 'Considere',
 		ru: 'Рассмотреть возможность',
@@ -55,7 +55,7 @@ const dict = {
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
 		sv: 'om du älskar Bonjourr',
-		nl: 'Als je van Bonjourr houdt',
+		nl: 'als je van Bonjourr houdt',
 		pl: 'jeśli kochasz Bonjourr',
 		pt_BR: 'se você ama o Bonjourr',
 		ru: 'если вы любите Bonjourr',
