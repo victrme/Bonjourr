@@ -3,7 +3,7 @@
 
 // Partial:
 //   Swedish translation by Benjamin Horn · https://benjaminhorn.io/
-//   Dutch translation by Osman Temiz · u/MANllAC
+//   Dutch translation by Osman Temiz · u/MANllAC, Erik Steinmann · github.com/esteinmann
 //   Polish translation by Mateusz K · u/DiVine92
 //   Russian translation by OemDef · u/OemDef
 //   Simplified chinese translation by Shuhuai Cao · github.com/csh980717
@@ -1342,7 +1342,7 @@ const dict = {
 	'Search bar': {
 		fr: 'Barre de recherche',
 		sv: 'Sökruta',
-		nl: 'Zoek balk',
+		nl: 'Zoekbalk',
 		pl: 'Pasek wyszukiwania',
 		pt_BR: 'Barra de pesquisa',
 		ru: 'Строка поиска',
@@ -1446,7 +1446,7 @@ const dict = {
 	'Time & Date': {
 		fr: 'Date & heure',
 		sv: 'Tid och datum',
-		nl: 'Tijd datum',
+		nl: 'Datum en tijd',
 		pl: 'Data i godzina',
 		pt_BR: 'Data & Hora',
 		ru: 'Время и дата',
