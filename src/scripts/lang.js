@@ -458,7 +458,7 @@ const dict = {
 	'with a high of': {
 		fr: 'avec une maximale de',
 		sv: 'med högsta',
-		nl: 'Met een grote',
+		nl: 'Met maximaal',
 		pl: 'z maksymalnie',
 		pt_BR: 'a máxima é de',
 		ru: 'максимальная температура воздуха сегодня',
@@ -1615,7 +1615,7 @@ const dict = {
 	Size: {
 		fr: 'Taille',
 		sv: 'Storlek',
-		nl: 'Maat',
+		nl: 'Grootte',
 		pl: 'Rozmiar',
 		pt_BR: 'Tamanho',
 		ru: 'Размер',
@@ -1706,7 +1706,7 @@ const dict = {
 	'Export code': {
 		fr: "Code d'exportation",
 		sv: 'exportkod',
-		nl: 'export code',
+		nl: 'exportcode',
 		pl: 'kod eksportowy',
 		pt_BR: 'Exportar código',
 		ru: 'экспортный код',
@@ -1758,7 +1758,7 @@ const dict = {
 	'Made in France with ❤️': {
 		fr: 'Fabriqué en France avec ❤️',
 		sv: 'Tillverkad i frankrike med ❤️',
-		nl: 'Gemaakt in Frankrijk ❤️',
+		nl: 'Gemaakt in Frankrijk met ❤️',
 		pl: 'Stworzone we Francji z ❤️',
 		pt_BR: 'Feito na França com ❤️',
 		ru: 'Сделано во франции с ❤️',
