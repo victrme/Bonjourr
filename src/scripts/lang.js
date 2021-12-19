@@ -10,7 +10,7 @@
 //   Slovak translation by Roman Bartík
 //   German translation by Bernhard Wittmann · https://bernhardwittmann.com
 //   Italian translation by Trazalca · github.com/Trazalca
-//   Spanish translation by José Alberto · github.com/joatb
+//   Spanish translation by José Alberto · github.com/joatb, and Alí Sinisterra ·github.com/alisinisterra
 
 const dict = {
 	'New Tab': {
@@ -37,7 +37,7 @@ const dict = {
 		sk: 'Zvážte',
 		de: 'Erwägen Sie eine',
 		it: 'Considera di',
-		es: 'Considere',
+		es: 'Considera',
 	},
 	donating: {
 		fr: 'faire un don',
@@ -76,7 +76,7 @@ const dict = {
 		sk: 'Máte radi používanie Bonjourru? Skúste nám dať recenziu alebo darovať, to by veľmi pomohlo! 😇',
 		de: 'Lieben Sie es, Bonjourr zu nutzen? Erwägen Sie, uns eine Bewertung zu geben oder zu spenden, das würde viel helfen! 😇',
 		it: 'Ti piace usare Bonjourr? Considera di darci una recensione o di fare una donazione, sarebbe di grande aiuto! ?',
-		es: '¿Te encanta usar Bonjourr? Considere darnos una reseña o hacer una donación, ¡eso ayudaría mucho! 😇',
+		es: '¿Te encanta usar Bonjourr? Considera darnos una reseña o hacer una donación, ¡eso nos ayudaría mucho! 😇',
 	},
 	Review: {
 		fr: 'Noter',
@@ -570,7 +570,7 @@ const dict = {
 		sk: 'Rýchle odkazy',
 		de: 'Schnelllinks',
 		it: 'Collegamenti rapidi',
-		es: 'Enlaces favoritos',
+		es: 'Links Favoritos',
 	},
 	'More info': {
 		fr: "Plus d'info",
@@ -609,7 +609,7 @@ const dict = {
 		sk: 'Upravte svoje Quick Links kliknutím pravým tlačidlom na ikone.',
 		de: 'Bearbeiten Sie Ihre Schnelllinks, indem Sie mit der rechten Maustaste auf das Symbol klicken.',
 		it: "Modifica i tuoi collegamenti Quick Links clic con il pulsante destro del mouse sull'icona.",
-		es: 'Edite sus enlaces Quick Links clic con el botón derecho en su icono.',
+		es: 'Edita tus Links Favoritos dándole clic derecho a un ícono.',
 	},
 	'Edit your Quick Links by long-pressing for 300ms the icon.': {
 		fr: "Éditez un lien favori en appuyant pendant 300ms sur l'icône.",
@@ -622,7 +622,7 @@ const dict = {
 		sk: 'Upravte svoje Quick Links dlhým podržaním ikony po dobu 300 ms.',
 		de: 'Bearbeiten Sie Ihre Schnelllinks, indem Sie das Symbol 300 ms lang gedrückt halten.',
 		it: "Modifica i tuoi collegamenti rapidi premendo a lungo per 300 ms l'icona.",
-		es: 'Edite sus enlaces rápidos manteniendo presionado durante 300 ms el icono.',
+		es: 'Edita tus Links Favoritos dejando un ícono presionado por 300 ms.',
 	},
 	'Type the collection id from its URL, add more by separating them with a comma.': {
 		fr: "Tapez l'ID de l'URL de la collection. Ajoutez en plusieurs en les séparant par une virgule.",
@@ -635,7 +635,7 @@ const dict = {
 		sk: 'Zadajte ID zbierky z jej adresy URL. Pridajte ďalšie ich oddelením čiarkou.',
 		de: 'Geben Sie die Sammlungs ID aus ihrer URL ein. Fügen Sie weitere hinzu, indem Sie diese durch ein Komma trennen.',
 		it: "Digita l'ID della raccolta dal relativo URL. Aggiungine altri separandoli con una virgola.",
-		es: 'Escriba el ID de la colección de su URL. Agregue más separándolos con una coma.',
+		es: 'Escribe el ID de la colección de tu URL. Agrega más separándolos con una coma.',
 	},
 	Name: {
 		fr: 'Nom',
@@ -674,7 +674,7 @@ const dict = {
 		sk: 'Vyberte záložky, ktoré chcete importovať',
 		de: 'Wählen Sie die zu importierenden Lesezeichen aus',
 		it: 'Seleziona i segnalibri da importare',
-		es: 'Seleccionar marcadores para importar',
+		es: 'Selecciona marcadores para importar',
 	},
 	'Import this bookmark': {
 		fr: 'Importer ce favori',
@@ -726,7 +726,7 @@ const dict = {
 		sk: 'Odkazy na riadok',
 		de: 'Links pro Zeile',
 		it: 'Link per riga',
-		es: 'Enlaces por fila',
+		es: 'Links por fila',
 	},
 	Visuals: {
 		fr: 'Affichage',
@@ -973,7 +973,7 @@ const dict = {
 		sk: 'Ikona novej karty',
 		de: 'Neues Tab-Symbol',
 		it: 'Icona Nuova scheda',
-		es: 'Icono de nueva pestaña',
+		es: 'Icono para la nueva pestaña',
 	},
 	'Any emoji': {
 		fr: "N'importe quel emoji",
@@ -1025,7 +1025,7 @@ const dict = {
 		sk: 'Ciferník',
 		de: 'Ziffernblatt',
 		it: 'Quadrante',
-		es: 'La cara del reloj',
+		es: 'Estilo del reloj',
 	},
 	None: {
 		fr: 'Simple',
@@ -1116,7 +1116,7 @@ const dict = {
 		sk: 'Počasie',
 		de: 'Wetter',
 		it: 'Tempo',
-		es: 'Tiempo',
+		es: 'Clima',
 	},
 	Icon: {
 		fr: 'Icône',
@@ -1142,7 +1142,7 @@ const dict = {
 		sk: 'Rýchle odkazy',
 		de: 'Schnelllinks',
 		it: 'Link veloci',
-		es: 'Enlaces favoritos',
+		es: 'Links Favoritos',
 	},
 	'Settings icon': {
 		fr: 'Icône réglages',
@@ -1155,7 +1155,7 @@ const dict = {
 		sk: 'Ikona nastavení',
 		de: 'Einstellungssymbol',
 		it: 'Icona Impostazioni',
-		es: 'Configuración icono',
+		es: 'Ícono de la configuración',
 	},
 	'Upload background here': {
 		fr: 'Ajoutez votre arrière-plan',
@@ -1168,7 +1168,7 @@ const dict = {
 		sk: 'Nahrať pozadie tu',
 		de: 'Hier Hintergrund hochladen',
 		it: 'Carica lo sfondo qui',
-		es: 'Suba el fondo aquí',
+		es: 'Sube el fondo aquí',
 	},
 	'Analog clock': {
 		fr: 'Horloge analogue',
@@ -1467,7 +1467,7 @@ const dict = {
 		sk: 'Vlastné písmo',
 		de: 'Benutzerdefinierte Schriftart',
 		it: 'Carattere personalizzato',
-		es: 'Fuente personalizada',
+		es: 'Tipografía personalizada',
 	},
 	'Custom Style': {
 		fr: 'Style personnalisé',
@@ -1584,7 +1584,7 @@ const dict = {
 		sk: 'Vlastné písmo',
 		de: 'Benutzerdefinierte Schriftart',
 		it: 'Carattere personalizzato',
-		es: 'Fuente personalizada',
+		es: 'Tipografía personalizada',
 	},
 	'Font family': {
 		fr: 'Police',
@@ -1597,7 +1597,7 @@ const dict = {
 		sk: 'Rodina písem',
 		de: 'Schriftfamilie',
 		it: 'Famiglia di font',
-		es: 'Fuente',
+		es: 'Tipografía',
 	},
 	Weight: {
 		fr: 'Épaisseur',
@@ -1792,7 +1792,7 @@ const dict = {
 		sk: 'Navštívte',
 		de: 'Besuche',
 		it: 'Visita',
-		es: 'Visitar',
+		es: 'Visita',
 	},
 	'our website': {
 		fr: 'notre site Internet',
@@ -1805,7 +1805,7 @@ const dict = {
 		sk: 'našu webstránku',
 		de: 'unsere Website',
 		it: 'il nostro sito internet',
-		es: 'nuestra página web',
+		es: 'nuestro sitio web',
 	},
 	'for infos and donations': {
 		fr: 'pour en savoir plus ou faire un don',
@@ -1818,7 +1818,7 @@ const dict = {
 		sk: 'pre informácie a dary',
 		de: 'für Informationen und Spenden',
 		it: 'per info e donazioni',
-		es: 'para más información y donaciones',
+		es: 'para más info y donaciones',
 	},
 }
 
