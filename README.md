@@ -22,7 +22,7 @@ Bonjourr is available in English, French, Spanish, Swedish, Dutch, Polish, Portu
 ## Install
 
 -   Download for [Chrome and Brave](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
--   Download for [Firefox Desktop](https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/)
+-   Download for [Firefox Desktop](https://addons.mozilla.org/firefox/addon/bonjourr-startpage/)
 -   No official Safari version currently. [Use on Safari](https://bonjourr.fr/use-bonjourr)
 -   [Try Bonjourr Online](https://online.bonjourr.fr)
 
