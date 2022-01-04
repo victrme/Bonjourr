@@ -41,7 +41,7 @@ if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.11.1',
+	BonjourrVersion = '1.11.2',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -266,6 +266,7 @@ function bonjourrDefaults(which) {
 					unit: 'metric',
 					location: [],
 					forecast: 'auto',
+					temperature: 'actual',
 				},
 				searchbar: {
 					on: false,

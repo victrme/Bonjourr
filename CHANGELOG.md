@@ -1,5 +1,12 @@
 ## Changelogs
 
+**v1.11.2**
+   
+-   Added temperature control option (need help with translations !)
+-   Updated Dutch & Spanish translations (thanks @alisinisterra, @Kippenhof & @esteinmann)
+-   Added ctrl + click to open link in new tab
+-   Fixed firefox popup again
+
 **v1.11.1**
 
 -   Fixed unremovable popup
