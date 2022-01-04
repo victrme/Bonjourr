@@ -458,7 +458,7 @@ const dict = {
 	'It currently feels like': {
 		fr: 'Il y a actuellement un ressenti de',
 		sv: 'It feels like',
-		nl: 'It feels like',
+		nl: 'Het voelt nu als',
 		pl: 'It feels like',
 		pt_BR: 'It feels like',
 		ru: 'It feels like',
@@ -471,7 +471,7 @@ const dict = {
 	'feels like': {
 		fr: 'avec un ressenti de',
 		sv: 'feels like',
-		nl: 'feels like',
+		nl: 'voelt als',
 		pl: 'feels like',
 		pt_BR: 'feels like',
 		ru: 'feels like',
@@ -1394,7 +1394,7 @@ const dict = {
 	'Feels like': {
 		fr: 'Ressenti',
 		sv: 'Feels like',
-		nl: 'Feels like',
+		nl: 'Gevoelsmatige',
 		pl: 'Feels like',
 		pt_BR: 'Feels like',
 		ru: 'Feels like',
@@ -1407,7 +1407,7 @@ const dict = {
 	Both: {
 		fr: 'Les deux',
 		sv: 'Both',
-		nl: 'Both',
+		nl: 'Beide',
 		pl: 'Both',
 		pt_BR: 'Both',
 		ru: 'Both',
