@@ -936,10 +936,12 @@ function weather(event, that, init) {
 		function saveCurrent(response) {
 			//
 			const isImperial = storage.unit === 'imperial'
+
 			weatherToSave = {
 				...weatherToSave,
 				lastCall: Math.floor(new Date().getTime() / 1000),
 				lastState: {
+					temp: Math.round(isImperial ? toFarenheit(response.main.temp) : response.main.temp),
 					feels_like: Math.round(isImperial ? toFarenheit(response.main.feels_like) : response.main.feels_like),
 					temp_max: Math.round(isImperial ? toFarenheit(response.main.temp_max) : response.main.temp_max),
 					sunrise: response.sys.sunrise,
@@ -948,9 +950,11 @@ function weather(event, that, init) {
 					icon_id: response.weather[0].id,
 				},
 			}
+
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysCurrent(weatherToSave)
 		}
+
 		function saveForecast(response) {
 			//
 			const thisdate = new Date()
@@ -974,12 +978,14 @@ function weather(event, that, init) {
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysForecast(weatherToSave)
 		}
+
 		let url = 'https://api.openweathermap.org/data/2.5/'
 		const lang = document.documentElement.getAttribute('lang')
 		const [lat, lon] = storage.location || [0, 0]
 		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
 		url += storage.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(storage.city)},${storage.ccode}`
 		url += `&units=metric&lang=${lang}`
+
 		// Inits global object
 		if (Object.keys(weatherToSave).length === 0) {
 			weatherToSave = storage
@@ -1022,92 +1028,75 @@ function weather(event, that, init) {
 		else initWeather(storage)
 	}
 
-	function displaysCurrent(weather) {
-		let filename = 'clearsky'
+	function displaysCurrent(storage) {
+		const currentState = storage.lastState
 
-		// Openweathermap is weird, not me ok
-		// prettier-ignore
-		switch (weather.lastState.icon_id) {
-			case 200: case 201: case 202: case 210:
-			case 211: case 212: case 221: case 230:
-			case 231: case 232:
-				filename = 'thunderstorm'
-				break
+		function handleDescription() {
+			const desc = currentState.description
+			const feels = Math.floor(currentState.feels_like)
+			const actual = Math.floor(currentState.temp)
+			let tempText = ''
 
-			case 300: case 301: case 302: case 310:
-				filename = 'lightdrizzle'
-				break
+			switch (storage.temperature) {
+				case 'feelslike': {
+					tempText = `${tradThis('It currently feels like')} ${feels}°`
+					break
+				}
 
-			case 312: case 313: case 314: case 321:
-				filename = 'showerdrizzle'
-				break
+				case 'both': {
+					tempText = `${tradThis('It is currently')} ${actual}°, ${tradThis('feels like')} ${feels}°`
+					break
+				}
 
-			case 500: case 501: case 502: case 503:
-				filename = 'lightrain'
-				break
+				default: {
+					tempText = `${tradThis('It is currently')} ${actual}°`
+				}
+			}
 
-			case 504: case 520: case 521: case 522:
-			case 531:
-				filename = 'showerrain'
-				break
-
-			case 511: case 600: case 601: case 602:
-			case 611: case 612: case 613: case 615:
-			case 616: case 620: case 621: case 622:
-				filename = 'snow'
-				break
-
-			case 701: case 711: case 721: case 731:
-			case 741: case 751: case 761: case 762:
-			case 771: case 781:
-				filename = 'mist'
-				break
-			
-			case 800:
-				filename = 'clearsky'
-				break
-
-			case 801:
-				filename = 'fewclouds'
-				break
-		
-			case 802:
-				filename = 'brokenclouds'
-				break
-		
-				case 803: case 804:
-				filename = 'overcastclouds'
-				break
-
-			default:
-				filename = 'clearsky'
-				break
+			current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
+			widget.querySelector('p').textContent = actual + '°'
 		}
 
-		// Widget icon
-		const widgetIcon = widget.querySelector('img')
-		const { now, rise, set } = sunTime()
-		const timeOfDay = now < rise || now > set ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+		function handleWidget() {
+			let filename = 'lightrain'
+			const categorieIds = [
+				[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
+				[[300, 301, 302, 310], 'lightdrizzle'],
+				[[312, 313, 314, 321], 'showerdrizzle'],
+				[[500, 501, 502, 503], 'lightrain'],
+				[[504, 520, 521, 522], 'showerrain'],
+				[[511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622], 'snow'],
+				[[701, 711, 721, 731, 741, 751, 761, 762, 771, 781], 'mist'],
+				[[800], 'clearsky'],
+				[[801], 'fewclouds'],
+				[[802], 'brokenclouds'],
+				[[803, 804], 'overcastclouds'],
+			]
 
-		if (widgetIcon) {
-			if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
-		} else {
-			const icon = document.createElement('img')
-			icon.src = iconSrc
-			icon.setAttribute('draggable', 'false')
-			widget.prepend(icon)
+			categorieIds.forEach((category) => {
+				if (category[0].includes(currentState.icon_id)) filename = category[1]
+			})
 
-			// from 1.2s request anim to .4s hide elem anim
-			setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
+			const widgetIcon = widget.querySelector('img')
+			const { now, rise, set } = sunTime()
+			const timeOfDay = now < rise || now > set ? 'night' : 'day'
+			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+
+			if (widgetIcon) {
+				if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
+			} else {
+				const icon = document.createElement('img')
+				icon.src = iconSrc
+				icon.setAttribute('draggable', 'false')
+				widget.prepend(icon)
+
+				// from 1.2s request anim to .4s hide elem anim
+				setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
+			}
 		}
 
-		// Description
-		const desc = weather.lastState.description
-		const temp = Math.floor(weather.lastState.feels_like)
-
-		current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tradThis('It is currently')} ${temp}°`
-		widget.querySelector('p').textContent = temp + '°'
+		handleWidget()
+		handleDescription()
 
 		clas(current, false, 'wait')
 		clas(widget, false, 'wait')
@@ -1218,6 +1207,13 @@ function weather(event, that, init) {
 					data.weather.forecast = that.value
 					chrome.storage.sync.set({ weather: data.weather })
 					forecastVisibilityControl(that.value)
+					break
+				}
+
+				case 'temp': {
+					data.weather.temperature = that.value
+					chrome.storage.sync.set({ weather: data.weather })
+					displaysCurrent(data.weather)
 					break
 				}
 			}
@@ -2593,6 +2589,7 @@ function filterImports(data) {
 					const old = weather.lastState
 
 					weather.lastState = {
+						temp: old.main.temp,
 						feels_like: old.main.feels_like,
 						temp_max: old.main.temp_max,
 						sunrise: old.sys.sunrise,

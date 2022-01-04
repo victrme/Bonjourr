@@ -33,6 +33,7 @@ function initParams(data, settingsDom) {
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
 	initInput('i_ccode', isThereData('weather', 'ccode'), 'US')
 	initInput('i_forecast', isThereData('weather', 'forecast'), 'auto')
+	initInput('i_temp', isThereData('weather', 'temperature'), 'actual')
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
 	initInput('i_size', isThereData('font', 'size'), mobilecheck ? 11 : 14)
@@ -306,6 +307,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_forecast').onchange = function () {
 		weather('forecast', this)
+	}
+
+	paramId('i_temp').onchange = function () {
+		weather('temp', this)
 	}
 
 	//searchbar

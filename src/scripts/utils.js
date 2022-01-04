@@ -266,6 +266,7 @@ function bonjourrDefaults(which) {
 					unit: 'metric',
 					location: [],
 					forecast: 'auto',
+					temperature: 'actual',
 				},
 				searchbar: {
 					on: false,
