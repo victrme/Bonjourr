@@ -2284,25 +2284,30 @@ function customFont(data, event) {
 		//
 		function fetchFontList(callback) {
 			//
-			const needToFetch = () =>
-				fetch(
-					`https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${atob(
-						atob('UVVsNllWTjVRbmR5YlZKTGFUWjZkV2RwWTBONVpXWlJZMVZJVFU0elYyWjNjVTV0UmxrNA==')
-					)}`
-				)
+			const fetchGoogleFonts = () => {
+				const fontAPIurl = `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${atob(
+					atob('UVVsNllWTjVRbmR5YlZKTGFUWjZkV2RwWTBONVpXWlJZMVZJVFU0elYyWjNjVTV0UmxrNA==')
+				)}`
+
+				fetch(fontAPIurl)
 					.then((response) => response.json())
 					.then((json) => {
-						localStorage.googleFonts = JSON.stringify(json)
+						// 1.11.1 => 1.11.2 firefox sql bug fix
+						if (localStorage.googleFonts) localStorage.removeItem('googleFonts')
+						chrome.storage.local.set({ googleFonts: json })
 						callback(json)
 					})
+			}
 
-			if (localStorage.googleFonts && localStorage.googleFonts.length > 0) {
-				try {
-					callback(JSON.parse(localStorage.googleFonts))
-				} catch (error) {
-					needToFetch()
-				}
-			} else needToFetch()
+			chrome.storage.local.get('googleFonts', (local) => {
+				if (local.googleFonts && local.googleFonts.length > 0) {
+					try {
+						callback(JSON.parse(local.googleFonts))
+					} catch (error) {
+						fetchGoogleFonts()
+					}
+				} else fetchGoogleFonts()
+			})
 		}
 
 		// If nothing, removes custom font

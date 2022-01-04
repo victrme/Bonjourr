@@ -1,10 +1,10 @@
 {
 	"extensionName": {
 		"message": "Bonjourr",
-		"description": "extension name"
+		"description": "имя расширения"
 	},
 	"extensionDesc": {
-		"message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage inspired by iOS.",
-		"description": "extension description"
+		"message": "Улучшите свой опыт просмотра веб-страниц с помощью Bonjourr, красивой, настраиваемой и легкой домашней страницы, вдохновленной iOS.",
+		"description": "описание расширения"
 	}
 }

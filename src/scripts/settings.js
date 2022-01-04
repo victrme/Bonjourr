@@ -59,6 +59,10 @@ function initParams(data, settingsDom) {
 	// Font family default
 	safeFont(settingsDom)
 
+	// Fetches font list if font is not default
+	// to prevent forced reflow when appending to visible datalist dom
+	if (isThereData('font', 'family') !== '') customFont(null, { autocomplete: true, settingsDom: settingsDom })
+
 	// Font weight
 	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom, true)
 
@@ -349,6 +353,12 @@ function initParams(data, settingsDom) {
 		importExport('exp')
 	}
 
+	// Fetches font list only on focus (if font family is default)
+	paramId('i_customfont').onfocus = function () {
+		const datalist = settingsDom.querySelector('#dl_fontfamily')
+		if (datalist.childElementCount === 0) customFont(null, { autocomplete: true, settingsDom: settingsDom })
+	}
+
 	paramId('i_customfont').onchange = function () {
 		customFont(null, { family: this.value })
 	}
@@ -619,7 +629,6 @@ function settingsInit(data) {
 		settingsDom.setAttribute('class', 'init')
 
 		traduction(settingsDom, data.lang)
-		customFont(null, { autocomplete: true, settingsDom: settingsDom })
 		signature(settingsDom)
 		initParams(data, settingsDom)
 		showall(data.showall, false, settingsDom)
