@@ -889,9 +889,11 @@ function weather(event, that, init) {
 	const current = id('current')
 	const forecast = id('forecast')
 	const widget = id('widget')
+
 	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
 	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
-	const handleTempUnit = (F, temp) => (F ? toFarenheit(temp) : toCelsius(temp))
+	const toggleTempUnit = (F, temp) => (F ? toFarenheit(temp) : toCelsius(temp))
+
 	const WEATHER_API_KEY = [
 		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
 		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
@@ -936,15 +938,16 @@ function weather(event, that, init) {
 	async function request(storage, forecast) {
 		function saveCurrent(response) {
 			//
-			const unit = storage.unit === 'imperial'
+			const isF = storage.unit === 'imperial'
+			const { temp, feels_like, temp_max } = response.main
 
 			weatherToSave = {
 				...weatherToSave,
 				lastCall: Math.floor(new Date().getTime() / 1000),
 				lastState: {
-					temp: handleTempUnit(unit, response.main.temp),
-					feels_like: handleTempUnit(unit, response.main.feels_like),
-					temp_max: handleTempUnit(unit, response.main.temp_max),
+					temp: isF ? toFarenheit(temp) : temp,
+					feels_like: isF ? toFarenheit(feels_like) : feels_like,
+					temp_max: isF ? toFarenheit(temp_max) : temp_max,
 					sunrise: response.sys.sunrise,
 					sunset: response.sys.sunset,
 					description: response.weather[0].description,
@@ -975,7 +978,8 @@ function weather(event, that, init) {
 					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
 			})
 
-			weatherToSave.fcHigh = handleTempUnit(storage.unit === 'imperial', maxTempFromList)
+			const isF = storage.unit === 'imperial'
+			weatherToSave.fcHigh = Math.floor(isF ? toFarenheit(maxTempFromList) : maxTempFromList)
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysForecast(weatherToSave)
 		}
@@ -1143,9 +1147,9 @@ function weather(event, that, init) {
 
 					if (data.weather.lastState) {
 						const { feels_like, temp } = data.weather.lastState
-						data.weather.lastState.temp = handleTempUnit(that.checked, temp)
-						data.weather.lastState.feels_like = handleTempUnit(that.checked, feels_like)
-						data.weather.fcHigh = handleTempUnit(that.checked, data.weather.fcHigh)
+						data.weather.lastState.temp = toggleTempUnit(that.checked, temp)
+						data.weather.lastState.feels_like = toggleTempUnit(that.checked, feels_like)
+						data.weather.fcHigh = toggleTempUnit(that.checked, data.weather.fcHigh)
 					}
 
 					displaysCurrent(data.weather)
