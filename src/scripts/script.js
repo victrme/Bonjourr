@@ -1031,6 +1031,12 @@ function weather(event, that, init) {
 	function displaysCurrent(storage) {
 		const currentState = storage.lastState
 
+		// 1.11.1 => 1.11.2 control
+		if (storage.temperature === undefined) {
+			storage.temperature = 'actual'
+			currentState.temp = currentState.feels_like
+		}
+
 		function handleDescription() {
 			const desc = currentState.description
 			const feels = Math.floor(currentState.feels_like)
