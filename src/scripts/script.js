@@ -891,6 +891,7 @@ function weather(event, that, init) {
 	const widget = id('widget')
 	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
 	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
+	const handleTempUnit = (F, temp) => (F ? toFarenheit(temp) : toCelsius(temp))
 	const WEATHER_API_KEY = [
 		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
 		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
@@ -935,15 +936,15 @@ function weather(event, that, init) {
 	async function request(storage, forecast) {
 		function saveCurrent(response) {
 			//
-			const isImperial = storage.unit === 'imperial'
+			const unit = storage.unit === 'imperial'
 
 			weatherToSave = {
 				...weatherToSave,
 				lastCall: Math.floor(new Date().getTime() / 1000),
 				lastState: {
-					temp: Math.round(isImperial ? toFarenheit(response.main.temp) : response.main.temp),
-					feels_like: Math.round(isImperial ? toFarenheit(response.main.feels_like) : response.main.feels_like),
-					temp_max: Math.round(isImperial ? toFarenheit(response.main.temp_max) : response.main.temp_max),
+					temp: handleTempUnit(unit, response.main.temp),
+					feels_like: handleTempUnit(unit, response.main.feels_like),
+					temp_max: handleTempUnit(unit, response.main.temp_max),
 					sunrise: response.sys.sunrise,
 					sunset: response.sys.sunset,
 					description: response.weather[0].description,
@@ -974,7 +975,7 @@ function weather(event, that, init) {
 					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
 			})
 
-			weatherToSave.fcHigh = Math.round(storage.unit === 'imperial' ? toFarenheit(maxTempFromList) : maxTempFromList)
+			weatherToSave.fcHigh = handleTempUnit(storage.unit === 'imperial', maxTempFromList)
 			chrome.storage.sync.set({ weather: weatherToSave })
 			displaysForecast(weatherToSave)
 		}
@@ -1139,11 +1140,14 @@ function weather(event, that, init) {
 			switch (event) {
 				case 'units': {
 					data.weather.unit = that.checked ? 'imperial' : 'metric'
+
 					if (data.weather.lastState) {
-						const { feels_like } = data.weather.lastState
-						data.weather.lastState.feels_like = that.checked ? toFarenheit(feels_like) : toCelsius(feels_like)
-						data.weather.fcHigh = that.checked ? toFarenheit(data.weather.fcHigh) : toCelsius(data.weather.fcHigh)
+						const { feels_like, temp } = data.weather.lastState
+						data.weather.lastState.temp = handleTempUnit(that.checked, temp)
+						data.weather.lastState.feels_like = handleTempUnit(that.checked, feels_like)
+						data.weather.fcHigh = handleTempUnit(that.checked, data.weather.fcHigh)
 					}
+
 					displaysCurrent(data.weather)
 					displaysForecast(data.weather)
 					chrome.storage.sync.set({ weather: data.weather })
