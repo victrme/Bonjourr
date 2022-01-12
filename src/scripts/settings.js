@@ -516,6 +516,10 @@ function importExport(select, isEvent) {
 					case 'moz-extension:':
 						data.about.browser = 'firefox'
 						break
+                        
+                    case 'safari-web-extension:':
+                        data.about.browser = 'safari'
+                        break
 
 					default:
 						data.about.browser = 'chrome'
@@ -658,6 +662,7 @@ function settingsInit(data) {
 
 		case 'http:':
 		case 'https:':
+        case 'safari-web-extension:':
 		case 'chrome-extension:':
 		case 'moz-extension:': {
 			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))

@@ -38,7 +38,7 @@ const domshowsettings = id('showSettings'),
 let mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 
-const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:',
+const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:' || window.location.protocol === 'safari-web-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
 	BonjourrVersion = '1.11.2',
