@@ -2147,7 +2147,7 @@ function showPopup(data) {
 function customSize(init, event) {
 	//
 	// Apply for interface, credit & settings button
-	const apply = (size) => (dominterface.style.fontSize = size + 'px')
+	const apply = (size) => (dominterface.style.fontSize = size / 10 + 'vh')
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
@@ -2295,8 +2295,12 @@ function customFont(data, event) {
 		function fetchFontList(callback) {
 			//
 			const fetchGoogleFonts = () => {
-				const fontAPIurl = `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${atob(
-					atob('UVVsNllWTjVRbmR5YlZKTGFUWjZkV2RwWTBONVpXWlJZMVZJVFU0elYyWjNjVTV0UmxrNA==')
+				const fontAPIurl = `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${new TextDecoder().decode(
+					new Uint8Array(
+						atob(
+							'NjUsNzMsMTIyLDk3LDgzLDEyMSw2NSwxMDIsODYsNzYsODUsNzcsOTAsNjYsNTEsODMsMTIwLDUyLDExMywxMTcsNzUsODUsOTUsNzMsMTAxLDEwMiw3OCwxMDcsODUsNzUsMTEzLDQ1LDEwMSw3NywxMjEsNTAsOTcsMTA1LDY1'
+						).split(',')
+					)
 				)}`
 
 				fetch(fontAPIurl)
@@ -2304,17 +2308,27 @@ function customFont(data, event) {
 					.then((json) => {
 						// 1.11.1 => 1.11.2 firefox sql bug fix
 						if (localStorage.googleFonts) localStorage.removeItem('googleFonts')
-						chrome.storage.local.set({ googleFonts: json })
-						callback(json)
+
+						if (json.error) console.log('Google Fonts messed up: ', json.error)
+						else {
+							chrome.storage.local.set({ googleFonts: json })
+							callback(json)
+						}
 					})
 			}
 
 			chrome.storage.local.get('googleFonts', (local) => {
-				if (local.googleFonts && local.googleFonts.length > 0) {
-					try {
-						callback(JSON.parse(local.googleFonts))
-					} catch (error) {
-						fetchGoogleFonts()
+				if (local.googleFonts) {
+					if (local.googleFonts.error) {
+						chrome.storage.local.remove('googleFonts')
+						console.log('Google Fonts messed up: ', local.googleFonts.error)
+						return false
+					} else {
+						try {
+							callback(JSON.parse(local.googleFonts))
+						} catch (error) {
+							fetchGoogleFonts()
+						}
 					}
 				} else fetchGoogleFonts()
 			})

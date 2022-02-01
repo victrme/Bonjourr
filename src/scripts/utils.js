@@ -38,7 +38,10 @@ const domshowsettings = id('showSettings'),
 let mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
 
-const isExtension = window.location.protocol === 'chrome-extension:' || window.location.protocol === 'moz-extension:' || window.location.protocol === 'safari-web-extension:',
+const isExtension =
+		window.location.protocol === 'chrome-extension:' ||
+		window.location.protocol === 'moz-extension:' ||
+		window.location.protocol === 'safari-web-extension:',
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
 	BonjourrVersion = '1.11.2',
@@ -115,9 +118,12 @@ function slow(that, time = 400) {
 // Just need to replace every chrome.storage
 
 const lsOnlineStorage = {
-	get: (local, unused, callback) => {
+	get: (local, localKey, callback) => {
 		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
 		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
+
+		console.log(localKey)
+
 		callback(data)
 	},
 	set: (prop, callback) => {
