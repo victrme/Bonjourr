@@ -2322,15 +2322,19 @@ function customFont(data, event) {
 		function fetchFontList(callback) {
 			//
 			const fetchGoogleFonts = () => {
-				const fontAPIurl = `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${new TextDecoder().decode(
-					new Uint8Array(
-						atob(
-							'NjUsNzMsMTIyLDk3LDgzLDEyMSw2NSwxMDIsODYsNzYsODUsNzcsOTAsNjYsNTEsODMsMTIwLDUyLDExMywxMTcsNzUsODUsOTUsNzMsMTAxLDEwMiw3OCwxMDcsODUsNzUsMTEzLDQ1LDEwMSw3NywxMjEsNTAsOTcsMTA1LDY1'
-						).split(',')
-					)
-				)}`
+				const a =
+					'NjUsNzQsMTI0LDEwMCw4NywxMjYsNzEsMTA5LDk0LDg1LDk1LDg4LDEwMiw3OSw2NSw5OCwxMzYsNjksMTMxLDEzNiw5NSwxMDYsMTE3LDk2LDEyNSwxMjcsMTA0LDEzNCwxMTMsMTA0LDE0Myw3NiwxMzMsMTEwLDE1NSw4NSwxMzMsMTQyLDEwMw=='
 
-				fetch(fontAPIurl)
+				fetch(
+					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' +
+						new TextDecoder().decode(
+							new Uint8Array(
+								atob(a)
+									.split(',')
+									.map((e, t) => e - t)
+							)
+						)
+				)
 					.then((response) => response.json())
 					.then((json) => {
 						// 1.11.1 => 1.11.2 firefox sql bug fix
