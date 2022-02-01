@@ -49,7 +49,7 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
-	if (window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim)) paramId('b_importbookmarks').style.display = 'none'
+	if (isOnlineOrSafari) paramId('b_importbookmarks').style.display = 'none'
 
 	// Links limit
 	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
@@ -207,7 +207,7 @@ function initParams(data, settingsDom) {
 
 	paramId('i_refresh').onclick = function () {
 		if (paramId('i_type').value === 'custom') {
-			chrome.storage.local.get((local) => {
+			chrome.storage.local.get(null, (local) => {
 				id('background_overlay').style.opacity = 0
 				setTimeout(
 					() =>
@@ -516,10 +516,10 @@ function importExport(select, isEvent) {
 					case 'moz-extension:':
 						data.about.browser = 'firefox'
 						break
-                        
-                    case 'safari-web-extension:':
-                        data.about.browser = 'safari'
-                        break
+
+					case 'safari-web-extension:':
+						data.about.browser = 'safari'
+						break
 
 					default:
 						data.about.browser = 'chrome'
@@ -662,7 +662,7 @@ function settingsInit(data) {
 
 		case 'http:':
 		case 'https:':
-        case 'safari-web-extension:':
+		case 'safari-web-extension:':
 		case 'chrome-extension:':
 		case 'moz-extension:': {
 			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))

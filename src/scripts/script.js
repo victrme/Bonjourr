@@ -1353,6 +1353,28 @@ function localBackgrounds(init, event) {
 		}
 	}
 
+	function isOnlineStorageAtCapacity(newFile) {
+		//
+		// Only applies to versions using localStorage: 5Mo limit
+		if (isOnlineOrSafari) {
+			const ls = localStorage.bonjourrBackgrounds
+
+			// Takes dynamic cache + google font list
+			const potentialFontList = JSON.parse(ls).googleFonts ? 0 : 7.6e5
+			const lsSize = ls.length + potentialFontList + 10e4
+
+			// Uploaded file in storage would exceed limit
+			if (lsSize + newFile.length > 5e6) {
+				alert(`Image size exceeds storage: ${parseInt(Math.abs(lsSize - 5e6) / 1000)}ko left`)
+				domoverlay.style.opacity = '1'
+
+				return true
+			}
+		}
+
+		return false
+	}
+
 	function preventFromShowingTwice(index, max) {
 		const res = Math.floor(Math.random() * max)
 		return res === index ? (res + 1) % max : res
@@ -1373,13 +1395,17 @@ function localBackgrounds(init, event) {
 		reader.onload = function (event) {
 			const result = event.target.result
 
-			compress(result, 'thumbnail')
-			compress(result)
+			if (isOnlineStorageAtCapacity(result)) {
+				// Exit with warning before saving image
+				return console.warn('Uploaded image was not saved')
+			}
 
 			chrome.storage.local.get(['custom'], (data) => {
 				const custom = data.custom ? data.custom : []
 				const bumpedindex = custom.length
 
+				compress(result)
+				compress(result, 'thumbnail')
 				custom.push(result)
 
 				changeImgIndex(bumpedindex)
@@ -1393,6 +1419,7 @@ function localBackgrounds(init, event) {
 				}
 			})
 		}
+
 		domoverlay.style.opacity = '0'
 		reader.readAsDataURL(file)
 	}

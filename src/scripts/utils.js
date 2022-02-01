@@ -42,6 +42,7 @@ const isExtension =
 		window.location.protocol === 'chrome-extension:' ||
 		window.location.protocol === 'moz-extension:' ||
 		window.location.protocol === 'safari-web-extension:',
+	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
 	BonjourrVersion = '1.11.2',
@@ -118,12 +119,9 @@ function slow(that, time = 400) {
 // Just need to replace every chrome.storage
 
 const lsOnlineStorage = {
-	get: (local, localKey, callback) => {
+	get: (local, unused, callback) => {
 		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
 		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
-
-		console.log(localKey)
-
 		callback(data)
 	},
 	set: (prop, callback) => {
@@ -134,8 +132,13 @@ const lsOnlineStorage = {
 				if (key === 'import') data = val
 				else data[key] = val
 
-				localStorage.bonjourr = JSON.stringify(data)
-				if (callback) callback
+				try {
+					localStorage.bonjourr = JSON.stringify(data)
+					if (callback) callback
+				} catch (error) {
+					console.warn(error)
+					console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full")
+				}
 			}
 		})
 	},
@@ -143,14 +146,16 @@ const lsOnlineStorage = {
 	setLocal: (prop, callback) => {
 		lsOnlineStorage.get(true, null, (data) => {
 			if (typeof prop === 'object') {
-				data = {
-					...data,
-					...prop,
-				}
-				localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			}
+				data = { ...data, ...prop }
 
-			if (callback) callback
+				try {
+					localStorage.bonjourrBackgrounds = JSON.stringify(data)
+					if (callback) callback
+				} catch (error) {
+					console.log(error)
+					console.log(console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full"))
+				}
+			}
 		})
 	},
 	remove: (isLocal, key) => {
