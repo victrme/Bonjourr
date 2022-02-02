@@ -2172,9 +2172,9 @@ function showPopup(data) {
 }
 
 function customSize(init, event) {
-	//
-	// Apply for interface, credit & settings button
-	const apply = (size) => (dominterface.style.fontSize = size / 10 + 'vh')
+	// Divided by 16 is === to body px size
+	// so that users don't have their font size changed (on desktop at least)
+	const apply = (size) => (dominterface.style.fontSize = size / 16 + 'em')
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
