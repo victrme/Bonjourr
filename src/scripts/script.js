@@ -349,11 +349,6 @@ function quickLinks(event, that, initStorage) {
 		let title = stringMaxSize(link.title, 32)
 		let url = stringMaxSize(link.url, 128)
 
-		// no icon ? + 1.9.2 dead favicons fix
-		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
-			icon = 'src/assets/interface/loading.gif'
-		}
-
 		//le DOM du block
 		const lIcon = document.createElement('img')
 		const lIconWrap = document.createElement('div')
@@ -2067,12 +2062,6 @@ function searchbar(event, that, init) {
 	}
 
 	function initSearchbar() {
-		// 1.9.2 ==> 1.9.3 lang breaking fix
-		if (init.engine) {
-			init.engine.replace('s_', '')
-			chrome.storage.sync.set({ searchbar: init })
-		}
-
 		display(init.on)
 		engine(init.engine)
 		request(init.request)
@@ -2812,14 +2801,6 @@ window.onload = function () {
 				}
 
 				case 'newVersion': {
-					//
-					// 1.9.3 => 1.10, fills default data to storage
-					if (!data.about) {
-						Object.entries(bonjourrDefaults('sync')).forEach(([key, val]) =>
-							data[key] === undefined ? (data[key] = val) : data[key]
-						)
-					}
-
 					// 1.11.2 => 1.12.0, Moves local icons to sync
 					// timeout as to not interfere with rest of script
 					setTimeout(() => {
