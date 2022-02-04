@@ -75,14 +75,6 @@ switch (window.location.protocol) {
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
-const saveIconAsAlias = (iconstr) => {
-	const alias = 'alias:' + Math.random().toString(26).substring(2)
-	const tosave = {}
-	tosave[alias] = iconstr
-	chrome.storage.local.set(tosave)
-	return alias
-}
-
 function validateHideElem(hide) {
 	let res = true
 
@@ -169,8 +161,13 @@ const lsOnlineStorage = {
 	del: () => localStorage.clear(),
 }
 
-const logsync = (flat) => chrome.storage.sync.get(null, (data) => consolr(flat, data))
-const loglocal = (flat) => chrome.storage.local.get(null, (data) => consolr(flat, data))
+const getSyncStorage = () => chrome.storage.sync.get(null, (data) => console.log(data))
+const getLocalStorage = () => chrome.storage.local.get(null, (data) => console.log(data))
+
+const logsync = () =>
+	chrome.storage.sync.get(null, (data) => Object.entries(data).forEach((elem) => console.log(elem[0], elem[1])))
+const loglocal = () =>
+	chrome.storage.local.get(null, (data) => Object.entries(data).forEach((elem) => console.log(elem[0], elem[1])))
 
 function deleteBrowserStorage() {
 	if (isExtension) {
@@ -182,11 +179,6 @@ function deleteBrowserStorage() {
 	setTimeout(() => {
 		location.reload()
 	}, 400)
-}
-
-function consolr(flat, data) {
-	if (flat) console.log(data)
-	else Object.entries(data).forEach((elem) => console.log(elem[0], elem[1]))
 }
 
 function errorMessage(data, error) {

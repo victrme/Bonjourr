@@ -228,28 +228,12 @@ function clock(event, init) {
 	}
 }
 
-function replacesIconAliases(links, callback) {
-	//
-	// Find all aliased icons
-	let iconList = Object.values(links).map((link) => link.icon)
-	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
-
-	if (aliasList.length > 0) {
-		chrome.storage.local.get(aliasList, (data) => {
-			//
-			// For all icons
-			iconList.forEach((url, i) => {
-				if (url.startsWith('alias:')) {
-					// Empty icons that matches aliases, replaces empty icon by alias data
-					iconList[i] = Object.entries(data)
-						.map(([key, val]) => (key === url ? val : ''))
-						.filter((elem) => elem !== '')[0]
-				}
-			})
-
-			callback(iconList)
-		})
-	} else callback(iconList)
+const saveIconAsAlias = (iconstr, oldAlias) => {
+	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(2)
+	const tosave = {}
+	tosave[alias] = iconstr
+	chrome.storage.sync.set(tosave)
+	return alias
 }
 
 function quickLinks(event, that, initStorage) {
@@ -267,7 +251,9 @@ function quickLinks(event, that, initStorage) {
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	async function initblocks(links) {
+	async function initblocks(data) {
+		const links = data.links || []
+
 		if (links.length > 0) {
 			//
 			// Blocks
@@ -278,17 +264,29 @@ function quickLinks(event, that, initStorage) {
 			//
 			// Icons
 			// If aliases, needs to replace "alias:"
-			replacesIconAliases(links, async (iconList) => {
-				canDisplayInterface('links')
+			let iconList = Object.values(links).map((link) => link.icon)
+			const aliasList = iconList.filter((url) => url.startsWith('alias:'))
 
-				for (const ii in blocklist) {
-					const { icon } = blocklist[+ii]
-					const iconURL = iconList[+ii] === undefined ? 'src/assets/interface/loading.gif' : iconList[+ii]
-					links[+ii] = await addIcon(icon, links, +ii, iconURL)
-				}
+			if (aliasList.length > 0) {
+				iconList.forEach((url, i) => {
+					if (url.startsWith('alias:')) {
+						// Empty icons that matches aliases, replaces empty icon by alias data
+						iconList[i] = Object.entries(data)
+							.map(([key, val]) => (key === url ? val : ''))
+							.filter((elem) => elem !== '')[0]
+					}
+				})
+			}
 
-				chrome.storage.sync.set({ links })
-			})
+			canDisplayInterface('links')
+
+			for (const index in blocklist) {
+				const { icon } = blocklist[+index]
+				const iconURL = iconList[+index] === undefined ? 'src/assets/interface/loading.gif' : iconList[+index]
+				links[+index] = await addIcon(icon, links, +index, iconURL)
+			}
+
+			chrome.storage.sync.set({ links })
 		}
 
 		// Links is done
@@ -522,26 +520,53 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function editlink(that, i) {
-		//
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
 
-		if (e_iconurl.value.length === 8080) {
-			e_iconurl.value = ''
-			e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
+		function displayEditWindow() {
+			const index = findindex(that)
+			const liconwrap = that.querySelector('.l_icon_wrap')
+			const container = id('editlink_container')
+			const opendedSettings = has(id('settings'), 'shown')
 
-			return false
+			clas(liconwrap, true, 'selected')
+			clas(container, true, 'shown')
+			clas(container, opendedSettings, 'pushed')
+
+			id('editlink').setAttribute('index', index)
+
+			chrome.storage.sync.get(null, (data) => {
+				const { title, url, icon } = data.links[index]
+
+				e_title.setAttribute('placeholder', tradThis('Title'))
+				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
+
+				e_title.value = title
+				e_url.value = url
+				e_iconurl.value = icon.startsWith('alias:') ? data[icon] : icon
+
+				showDelIcon(e_title)
+				showDelIcon(e_url)
+				showDelIcon(e_iconurl)
+			})
 		}
 
-		const updated = {
-			title: stringMaxSize(e_title.value, 32),
-			url: stringMaxSize(e_url.value, 128),
-			icon: stringMaxSize(e_iconurl.value, 8080),
-		}
+		function updatesEditedLink() {
+			if (e_iconurl.value.length === 8080) {
+				e_iconurl.value = ''
+				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
-		if (i || i === 0) {
-			chrome.storage.sync.get('links', (data) => {
+				return false
+			}
+
+			const updated = {
+				title: stringMaxSize(e_title.value, 32),
+				url: stringMaxSize(e_url.value, 128),
+				icon: stringMaxSize(e_iconurl.value, 8080),
+			}
+
+			chrome.storage.sync.get(null, (data) => {
 				let allLinks = [...data.links]
 				const parent = domlinkblocks.children[i + 1]
 
@@ -551,12 +576,17 @@ function quickLinks(event, that, initStorage) {
 						//
 						switch (key) {
 							case 'title': {
+								const domtitle = parent.querySelector('span')
+
 								// Adds span title or updates it
-								if (!parent.querySelector('span')) {
+								if (!domtitle) {
 									const span = document.createElement('span')
 									span.textContent = updated[key]
 									parent.children[0].appendChild(span)
-								} else parent.querySelector('span').textContent = updated[key]
+								} else {
+									domtitle.textContent = updated[key]
+								}
+
 								break
 							}
 
@@ -565,17 +595,23 @@ function quickLinks(event, that, initStorage) {
 								break
 
 							case 'icon': {
+								// Updates dom
 								parent.querySelector('img').src = updated.icon
 
-								// Saves to an alias if icon too big
+								const previousIconURL = allLinks[i].icon
+
+								// Saves to an alias if icon is too big
+								// Use same alias if still > 64
 								if (updated.icon.length > 64) {
-									const alias = saveIconAsAlias(updated.icon)
-									updated.icon = alias
+									updated.icon = saveIconAsAlias(
+										updated.icon,
+										previousIconURL.startsWith('alias:') ? previousIconURL : null
+									)
 								}
 
-								// Removes old icon from storage if alias
-								if (allLinks[i].icon.startsWith('alias:')) {
-									chrome.storage.local.remove(allLinks[i].icon)
+								// If it was an alias before, but not after being updated
+								else if (previousWasAlias) {
+									chrome.storage.sync.remove(allLinks[i].icon)
 								}
 
 								break
@@ -593,41 +629,9 @@ function quickLinks(event, that, initStorage) {
 			return true
 		}
 
-		//affiche edit avec le bon index
-		else {
-			const index = findindex(that)
-			const liconwrap = that.querySelector('.l_icon_wrap')
-			const container = id('editlink_container')
-			const openSettings = has(id('settings'), 'shown')
-
-			clas(liconwrap, true, 'selected')
-			clas(container, true, 'shown')
-			clas(container, openSettings, 'pushed')
-
-			id('editlink').setAttribute('index', index)
-
-			chrome.storage.sync.get('links', (data) => {
-				const { title, url, icon } = data.links[index]
-
-				e_title.setAttribute('placeholder', tradThis('Title'))
-				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
-
-				e_title.value = title
-				e_url.value = url
-
-				// Show url instead of alias
-				if (icon.startsWith('alias:'))
-					chrome.storage.local.get(icon, (data) => {
-						e_iconurl.value = data[icon]
-						showDelIcon(e_iconurl)
-					})
-				else e_iconurl.value = icon
-
-				showDelIcon(e_title)
-				showDelIcon(e_url)
-				showDelIcon(e_iconurl)
-			})
-		}
+		// If i is defined, you updated a link=
+		if (typeof i === 'number') return updatesEditedLink()
+		else displayEditWindow()
 	}
 
 	function openlink(that, e) {
@@ -686,18 +690,18 @@ function quickLinks(event, that, initStorage) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
-			chrome.storage.sync.get('links', (data) => {
+			chrome.storage.sync.get(null, (data) => {
 				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
 
 				if (data.links) {
 					data.links = data.links.concat(filteredLinks)
 					domlinkblocks.style.visibility = 'visible'
+
+					if (data.links.length === 30) linksInputDisable(true)
+
+					blocklist.forEach((parent) => parent.remove())
+					initblocks(data)
 				}
-
-				if (data.links.length === 30) linksInputDisable(true)
-
-				blocklist.forEach((parent) => parent.remove())
-				initblocks(data.links)
 			})
 		}
 
@@ -759,7 +763,7 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	if (initStorage) {
-		initblocks(initStorage.links || [])
+		initblocks(initStorage)
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
@@ -2604,9 +2608,9 @@ function filterImports(data) {
 
 		links: (links) => {
 			if (links && links.length > 0)
-				links.forEach((elem, index) => {
-					if (elem.icon.length > 8080) links[index].icon = 'src/assets/interface/loading.gif'
-					else if (elem.icon.length > 64) links[index].icon = saveIconAsAlias(elem.icon)
+				links.forEach(({ icon }, i) => {
+					if (icon.length > 8080) links[i].icon = 'src/assets/interface/loading.gif'
+					else if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
 				})
 
 			return links
