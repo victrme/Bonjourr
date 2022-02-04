@@ -45,7 +45,7 @@ const isExtension =
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.11.2',
+	BonjourrVersion = '1.12.0',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -161,8 +161,11 @@ const lsOnlineStorage = {
 	del: () => localStorage.clear(),
 }
 
-const getSyncStorage = () => chrome.storage.sync.get(null, (data) => console.log(data))
-const getLocalStorage = () => chrome.storage.local.get(null, (data) => console.log(data))
+const getBrowserStorage = () => {
+	chrome.storage.local.get(null, (local) => {
+		chrome.storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
+	})
+}
 
 const logsync = () =>
 	chrome.storage.sync.get(null, (data) => Object.entries(data).forEach((elem) => console.log(elem[0], elem[1])))

@@ -499,45 +499,40 @@ function importExport(select, isEvent) {
 		const isOnChrome = navigator.userAgent.includes('Chrome')
 
 		chrome.storage.sync.get(null, (data) => {
-			//
-			replacesIconAliases(data.links, (iconList) => {
-				for (let index = 0; index < data.links.length; index++) data.links[index].icon = iconList[index]
+			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-				if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-				if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+			switch (window.location.protocol) {
+				case 'http:':
+				case 'https:':
+				case 'file:':
+					data.about.browser = 'online'
+					break
 
-				switch (window.location.protocol) {
-					case 'http:':
-					case 'https:':
-					case 'file:':
-						data.about.browser = 'online'
-						break
+				case 'moz-extension:':
+					data.about.browser = 'firefox'
+					break
 
-					case 'moz-extension:':
-						data.about.browser = 'firefox'
-						break
+				case 'safari-web-extension:':
+					data.about.browser = 'safari'
+					break
 
-					case 'safari-web-extension:':
-						data.about.browser = 'safari'
-						break
+				default:
+					data.about.browser = 'chrome'
+			}
 
-					default:
-						data.about.browser = 'chrome'
+			input.value = JSON.stringify(data)
+
+			if (isEvent) {
+				input.select()
+
+				//doesn't work on firefox for security reason
+				//don't want to add permissions just for this
+				if (isOnChrome) {
+					document.execCommand('copy')
+					id('submitExport').textContent = tradThis('Copied')
 				}
-
-				input.value = JSON.stringify(data)
-
-				if (isEvent) {
-					input.select()
-
-					//doesn't work on firefox for security reason
-					//don't want to add permissions just for this
-					if (isOnChrome) {
-						document.execCommand('copy')
-						id('submitExport').textContent = tradThis('Copied')
-					}
-				}
-			})
+			}
 		})
 	}
 

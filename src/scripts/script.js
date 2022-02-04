@@ -2607,12 +2607,13 @@ function filterImports(data) {
 		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
 
 		links: (links) => {
-			if (links && links.length > 0)
-				links.forEach(({ icon }, i) => {
-					if (icon.length > 8080) links[i].icon = 'src/assets/interface/loading.gif'
-					else if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
-				})
-
+			// Plus besoin puisque plus de swap local / sync
+			// if (links && links.length > 0) {
+			// 	links.forEach(({ icon }, i) => {
+			// 		if (icon.length > 8080) links[i].icon = 'src/assets/interface/loading.gif'
+			// 		else if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
+			// 	})
+			// }
 			return links
 		},
 
@@ -2813,21 +2814,46 @@ window.onload = function () {
 				case 'newVersion': {
 					//
 					// 1.9.3 => 1.10, fills default data to storage
-					if (!data.about)
+					if (!data.about) {
 						Object.entries(bonjourrDefaults('sync')).forEach(([key, val]) =>
 							data[key] === undefined ? (data[key] = val) : data[key]
 						)
+					}
 
+					// 1.11.2 => 1.12.0, Moves local icons to sync
+					// timeout as to not interfere with rest of script
+					setTimeout(() => {
+						chrome.storage.local.get(null, (local) => {
+							const aliasList = Object.entries(local).filter(([key, val]) => key.startsWith('alias:'))
+
+							if (aliasList.length > 0) {
+								let newData = { ...data }
+
+								// move to temp sync, deletes from local
+								aliasList.forEach(([key, val]) => {
+									newData[key] = val
+									chrome.storage.local.remove(key)
+								})
+
+								// saves sync
+								chrome.storage.sync.set(isExtension ? newData : { import: newData })
+							}
+						})
+					}, 200)
+
+					// For every updates: filter & version update
 					data = filterImports(data)
 					data.about.version = BonjourrVersion
 					chrome.storage.sync.set(isExtension ? data : { import: data })
+
 					startup(data)
 					break
 				}
 
-				case 'normal':
+				case 'normal': {
 					startup(data)
 					break
+				}
 			}
 		})
 	} catch (error) {
