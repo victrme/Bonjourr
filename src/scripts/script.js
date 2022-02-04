@@ -2596,13 +2596,11 @@ function filterImports(data) {
 		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
 
 		links: (links) => {
-			// Plus besoin puisque plus de swap local / sync
-			// if (links && links.length > 0) {
-			// 	links.forEach(({ icon }, i) => {
-			// 		if (icon.length > 8080) links[i].icon = 'src/assets/interface/loading.gif'
-			// 		else if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
-			// 	})
-			// }
+			if (links && links.length > 0) {
+				links.forEach(({ icon }, i) => {
+					if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
+				})
+			}
 			return links
 		},
 
@@ -2699,6 +2697,7 @@ function filterImports(data) {
 	// Go through found categories in import data to filter them
 	Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 
+	result.about.browser = BonjourrBrowser
 	return result
 }
 
@@ -2801,33 +2800,41 @@ window.onload = function () {
 				}
 
 				case 'newVersion': {
-					// 1.11.2 => 1.12.0, Moves local icons to sync
-					// timeout as to not interfere with rest of script
-					setTimeout(() => {
-						chrome.storage.local.get(null, (local) => {
-							const aliasList = Object.entries(local).filter(([key, val]) => key.startsWith('alias:'))
+					chrome.storage.local.get(null, (local) => {
+						// 1.11.2 => 1.12.0, Moves local icons to sync
+						// newVersion is a callback of slow local only for moving icons
+						// can be removed for later versions
 
-							if (aliasList.length > 0) {
-								let newData = { ...data }
+						// For every update: filter & version update
+						data = filterImports(data)
+						data.about.version = BonjourrVersion
+						const aliasList = Object.entries(local).filter(([key, val]) => key.startsWith('alias:'))
 
-								// move to temp sync, deletes from local
-								aliasList.forEach(([key, val]) => {
-									newData[key] = val
-									chrome.storage.local.remove(key)
+						if (aliasList.length > 0) {
+							// move to temp sync, deletes from local
+							aliasList.forEach(([key, val]) => {
+								data[key] = val
+								chrome.storage.local.remove(key)
+							})
+
+							// Alias garbage collector
+							if (data.links && data.links.length > 0) {
+								const aliasKeyList = Object.keys(data).filter((key) => key.match('alias:'))
+								const linksIconList = data.links.map((item) => item.icon)
+
+								aliasKeyList.forEach((key) => {
+									if (!linksIconList.includes(key)) delete data[key]
 								})
-
-								// saves sync
-								chrome.storage.sync.set(isExtension ? newData : { import: newData })
 							}
-						})
-					}, 200)
 
-					// For every updates: filter & version update
-					data = filterImports(data)
-					data.about.version = BonjourrVersion
-					chrome.storage.sync.set(isExtension ? data : { import: data })
+							// saves sync
+							chrome.storage.sync.clear()
+							chrome.storage.sync.set(isExtension ? data : { import: data })
+						}
 
-					startup(data)
+						startup(data)
+					})
+
 					break
 				}
 

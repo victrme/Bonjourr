@@ -45,7 +45,7 @@ const isExtension =
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.12.0',
+	BonjourrVersion = '1.11.2',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -60,6 +60,10 @@ switch (window.location.protocol) {
 
 	case 'moz-extension:':
 		BonjourrBrowser = 'firefox'
+		break
+
+	case 'safari-web-extension:':
+		BonjourrBrowser = 'safari'
 		break
 
 	default:
