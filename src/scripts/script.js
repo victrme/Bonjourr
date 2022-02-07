@@ -1629,33 +1629,69 @@ function unsplash(init, event) {
 
 	function imgCredits(image) {
 		//
-		const country = image.country || 'Photo'
-		const city = image.city ? image.city + ', ' : ''
-		const credits = [
-			{
-				text: city + country,
-				url: `${image.link}?utm_source=Bonjourr&utm_medium=referral`,
-			},
-			{
-				text: image.name + ` `,
-				url: `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`,
-			},
-			{
-				text: tradThis('on Unsplash'),
-				url: 'https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral',
-			},
-		]
+		// Filtering
+
+		let needsSpacer = false
+		let artist = ''
+		let photoLocation = ''
+		let exifDescription = ''
+		const referral = '?utm_source=Bonjourr&utm_medium=referral'
+		const { city, country, name, username, link, exif } = image
+
+		if (!city && !country) {
+			photoLocation = tradThis('Photo by ')
+		} else {
+			if (city) photoLocation = city + ', '
+			if (country) {
+				photoLocation += country
+				needsSpacer = true
+			}
+		}
+
+		if (exif) {
+			const orderedExifData = [
+				{ key: 'model', format: `%val% - ` },
+				{ key: 'aperture', format: `f/%val% ` },
+				{ key: 'exposure_time', format: `%val%s ` },
+				{ key: 'iso', format: `ISO %val% ` },
+				{ key: 'focal_length', format: `%val%mm` },
+			]
+
+			orderedExifData.forEach(({ key, format }) => {
+				if (exif[key]) {
+					exifDescription += format.replace('%val%', exif[key])
+				}
+			})
+		}
+
+		// Force Capitalization
+		artist = name
+			.split(' ')
+			.map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
+			.join(' ')
+
+		// DOM element
+
+		const locationDOM = document.createElement('a')
+		const spacerDOM = document.createElement('span')
+		const artistDOM = document.createElement('a')
+		const exifDOM = document.createElement('p')
+
+		exifDOM.className = 'exif'
+		exifDOM.textContent = exifDescription
+		locationDOM.textContent = photoLocation
+		artistDOM.textContent = artist
+		spacerDOM.textContent = ` - `
+
+		locationDOM.href = link + referral
+		artistDOM.href = 'https://unsplash.com/@' + username + referral
 
 		domcredit.textContent = ''
 
-		credits.forEach(function cityNameRef(elem, i) {
-			const dom = document.createElement('a')
-			dom.textContent = elem.text
-			dom.href = elem.url
-
-			if (i === 1) domcredit.appendChild(document.createElement('br'))
-			domcredit.appendChild(dom)
-		})
+		domcredit.appendChild(exifDOM)
+		domcredit.appendChild(locationDOM)
+		if (needsSpacer) domcredit.appendChild(spacerDOM)
+		domcredit.appendChild(artistDOM)
 
 		clas(domcredit, true, 'shown')
 	}
@@ -1688,8 +1724,12 @@ function unsplash(init, event) {
 						city: img.location.city,
 						country: img.location.country,
 						color: img.color,
+						exif: img.exif,
+						desc: img.description,
 					})
 				})
+
+				console.log(imgArray)
 
 				callback(filteredList)
 			})

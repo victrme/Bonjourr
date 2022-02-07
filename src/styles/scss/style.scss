@@ -734,20 +734,35 @@
 	opacity: 0;
 	text-align: left;
 	transition: opacity 0.4s;
+	padding: 1em 1em 0 0;
+	max-width: 50%;
 
 	&.shown {
 		opacity: 1;
+
+		.exif {
+			opacity: 0;
+			transition: opacity 0.4s;
+		}
+
+		&:hover {
+			.exif {
+				opacity: 1;
+			}
+		}
 	}
 
-	a {
+	a,
+	p,
+	span {
 		font-size: 13px;
 		color: #fff9;
 		text-decoration: none;
 		transition: color 0.1s;
+	}
 
-		&:hover {
-			color: #fffe;
-		}
+	a:hover {
+		color: #fffe;
 	}
 }
 

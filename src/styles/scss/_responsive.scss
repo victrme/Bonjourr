@@ -101,8 +101,10 @@
 
 	#credit {
 		width: calc(100% - 7.5em);
-		line-height: 12px;
-		a {
+		line-height: 14px;
+		a,
+		p,
+		span {
 			font-size: 11px;
 		}
 	}
