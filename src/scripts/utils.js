@@ -45,7 +45,7 @@ const isExtension =
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.11.2',
+	BonjourrVersion = '1.12.0',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -148,10 +148,14 @@ const lsOnlineStorage = {
 					console.warn(error)
 					console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full")
 				}
+
+				window.dispatchEvent(new Event('storage'))
 			}
 		})
 	},
-
+	clear: () => {
+		localStorage.removeItem('bonjourr')
+	},
 	setLocal: (prop, callback) => {
 		lsOnlineStorage.get(true, null, (data) => {
 			if (typeof prop === 'object') {
