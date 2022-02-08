@@ -2770,7 +2770,8 @@ function startup(data) {
 window.onload = function () {
 	//
 	// On settings changes, update export code
-	chrome.storage.onChanged.addListener(() => importExport('exp'))
+	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
+	else window.onstorage = () => importExport('exp')
 
 	if (mobilecheck) {
 		// For Mobile that caches pages for days

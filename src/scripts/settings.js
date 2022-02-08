@@ -110,12 +110,6 @@ function initParams(data, settingsDom) {
 	//langue
 	paramId('i_lang').value = data.lang || 'en'
 
-	//firefox export
-	if (!navigator.userAgent.includes('Chrome')) {
-		paramId('submitExport').style.display = 'none'
-		paramId('i_export').style.width = '100%'
-	}
-
 	importExport('exp', false, settingsDom)
 
 	//
@@ -494,6 +488,8 @@ function importExport(select, isEvent, settingsDom) {
 	}
 
 	function exportation() {
+		if (!id('settings') && !settingsDom) return false
+
 		const pre = settingsDom ? settingsDom.querySelector('#i_export') : id('i_export')
 
 		chrome.storage.sync.get(null, (data) => {

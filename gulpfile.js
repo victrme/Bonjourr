@@ -46,6 +46,7 @@ function scripts(which) {
 		case 'online': {
 			stream
 				.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
+				.pipe(replace('sync.clear(', 'clear('))
 				.pipe(replace('sync.get(', 'get(false, '))
 				.pipe(replace('local.get(', 'get(true, '))
 				.pipe(replace('sync.set(', 'set('))
