@@ -95,6 +95,19 @@ function validateHideElem(hide) {
 	return res
 }
 
+function aliasGarbageCollection(sync) {
+	const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+
+	if (sync.links && sync.links.length > 0) {
+		const linksIconList = sync.links.map((item) => item.icon)
+		aliasKeyList.forEach((key) => (!linksIconList.includes(key) ? delete sync[key] : ''))
+	} else {
+		aliasKeyList.forEach((key) => delete sync[key])
+	}
+
+	return sync
+}
+
 function slowRange(tosave, time = 400) {
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {

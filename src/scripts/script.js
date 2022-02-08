@@ -927,7 +927,7 @@ function weather(event, that, init) {
 
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
-				param.location.push(pos.coords.latitude, pos.coords.longitude)
+				param.location = [pos.coords.latitude, pos.coords.longitude]
 				applyResult(true)
 			},
 			() => applyResult(false)
@@ -2738,6 +2738,7 @@ function filterImports(data) {
 	Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 
 	result.about.browser = BonjourrBrowser
+
 	return result
 }
 
@@ -2767,6 +2768,10 @@ function startup(data) {
 }
 
 window.onload = function () {
+	//
+	// On settings changes, update export code
+	chrome.storage.onChanged.addListener(() => importExport('exp'))
+
 	if (mobilecheck) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
@@ -2858,14 +2863,7 @@ window.onload = function () {
 							})
 
 							// Alias garbage collector
-							if (data.links && data.links.length > 0) {
-								const aliasKeyList = Object.keys(data).filter((key) => key.match('alias:'))
-								const linksIconList = data.links.map((item) => item.icon)
-
-								aliasKeyList.forEach((key) => {
-									if (!linksIconList.includes(key)) delete data[key]
-								})
-							}
+							data = aliasGarbageCollection(data)
 
 							// saves sync
 							chrome.storage.sync.clear()

@@ -352,10 +352,6 @@ function initParams(data, settingsDom) {
 		e.code === 'Enter' ? importExport('imp', true) : ''
 	}
 
-	paramId('i_export').onmousedown = function () {
-		importExport('exp')
-	}
-
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').onfocus = function () {
 		const datalist = settingsDom.querySelector('#dl_fontfamily')
@@ -474,11 +470,16 @@ function importExport(select, isEvent, settingsDom) {
 								}
 							}
 
-							// Mutate sync
 							data = { ...data, ...imported }
+							data = aliasGarbageCollection(data)
+
+							// full import on Online is through "import" field
+							data = isExtension ? data : { import: data }
 
 							// Save sync & local
-							chrome.storage.sync.set(isExtension ? data : { import: data }, chrome.storage.local.set(local))
+							chrome.storage.sync.clear()
+							chrome.storage.sync.set(data, chrome.storage.local.set(local))
+
 							fadeOut()
 						})
 					})
