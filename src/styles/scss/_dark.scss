@@ -137,7 +137,8 @@
 		}
 
 		input[type='text'],
-		input[type='url'] {
+		input[type='url'],
+		pre#i_export {
 			background-color: #39383d;
 			color: $purewhite;
 

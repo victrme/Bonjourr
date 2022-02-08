@@ -6,6 +6,7 @@
 	z-index: 3;
 	padding: 0 1.5em 1.5em 0;
 	transition: opacity 0.4s;
+
 	button {
 		position: relative;
 		height: 4em;
@@ -17,18 +18,21 @@
 		background-color: transparent;
 		transition: background-color 0.6s $easeOutThree;
 		@include allCentered();
+
 		img {
 			width: 65%;
 			transition: transform 0.6s $easeOutThree;
 			will-change: transform;
 		}
 	}
+
 	&.init {
 		transition: opacity 0s;
 		button img {
 			transition: transform 0s;
 		}
 	}
+
 	// Doit etre dans cette ordre pour la hierarchie
 	&.enabled {
 		opacity: 1;
@@ -49,6 +53,7 @@
 			transform: rotate(15deg);
 		}
 	}
+
 	&.shown {
 		button {
 			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
@@ -551,18 +556,25 @@
 		@include marginSettings();
 	}
 
-	#submitImport,
-	#submitExport {
-		margin-left: 1em;
+	#i_import,
+	#i_export {
+		width: 100%;
 	}
 
 	#i_import {
 		margin-bottom: 0.5em;
+		margin-right: 0.5em;
 	}
 
-	#i_import,
 	#i_export {
-		width: 100%;
+		height: 1.9em;
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+		user-select: all;
+		margin: 0;
+		padding-top: 0.45em;
+		padding-right: 10px;
+		font-family: inherit;
 	}
 
 	.signature {

@@ -73,11 +73,11 @@ function initParams(data, settingsDom) {
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
-	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
-	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
 	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
+	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
+	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	paramId('i_export').setAttribute('title', tradThis('Export code'))
 
 	//bg
 	if (data.background_type === 'custom') {
@@ -115,6 +115,8 @@ function initParams(data, settingsDom) {
 		paramId('submitExport').style.display = 'none'
 		paramId('i_export').style.width = '100%'
 	}
+
+	importExport('exp', false, settingsDom)
 
 	//
 	// Events
@@ -342,10 +344,6 @@ function initParams(data, settingsDom) {
 		importExport('reset')
 	}
 
-	paramId('submitExport').onclick = function () {
-		importExport('exp', true)
-	}
-
 	paramId('submitImport').onclick = function () {
 		importExport('imp', true)
 	}
@@ -354,7 +352,7 @@ function initParams(data, settingsDom) {
 		e.code === 'Enter' ? importExport('imp', true) : ''
 	}
 
-	paramId('i_export').onfocus = function () {
+	paramId('i_export').onmousedown = function () {
 		importExport('exp')
 	}
 
@@ -445,7 +443,7 @@ function selectBackgroundType(cat) {
 	chrome.storage.sync.set({ background_type: cat })
 }
 
-function importExport(select, isEvent) {
+function importExport(select, isEvent, settingsDom) {
 	//
 	const fadeOut = () => {
 		dominterface.click()
@@ -495,8 +493,7 @@ function importExport(select, isEvent) {
 	}
 
 	function exportation() {
-		const input = id('i_export')
-		const isOnChrome = navigator.userAgent.includes('Chrome')
+		const pre = settingsDom ? settingsDom.querySelector('#i_export') : id('i_export')
 
 		chrome.storage.sync.get(null, (data) => {
 			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
@@ -521,18 +518,7 @@ function importExport(select, isEvent) {
 					data.about.browser = 'chrome'
 			}
 
-			input.value = JSON.stringify(data)
-
-			if (isEvent) {
-				input.select()
-
-				//doesn't work on firefox for security reason
-				//don't want to add permissions just for this
-				if (isOnChrome) {
-					document.execCommand('copy')
-					id('submitExport').textContent = tradThis('Copied')
-				}
-			}
+			pre.textContent = JSON.stringify(data)
 		})
 	}
 

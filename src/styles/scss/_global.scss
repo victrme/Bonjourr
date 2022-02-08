@@ -225,12 +225,14 @@ body {
 		transition-property: background-color, color, border, border-color;
 	}
 
+	#i_export,
 	#i_refresh,
 	#cssEditor,
 	input[type='text'],
 	input[type='range'],
 	select {
 		font-size: 13px;
+		font-family: $fonts;
 	}
 
 	#i_refresh,
@@ -275,7 +277,8 @@ body {
 	}
 
 	input[type='text'],
-	input[type='url'] {
+	input[type='url'],
+	#i_export {
 		padding-left: 10px;
 		border-radius: 8.5px;
 		border: 0;
