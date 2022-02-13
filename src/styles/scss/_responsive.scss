@@ -1,7 +1,11 @@
+@media screen and (max-width: 1440px) and (max-height: 800px) {
+	body {
+		font-size: 12.5px;
+	}
+}
+
 @media screen and (max-height: 650px) {
 	#interface {
-		font-size: 0.7em;
-
 		#main {
 			#weather #widget {
 				height: 70px;
@@ -62,7 +66,11 @@
 }
 
 // mobile
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 450px) {
+	body {
+		font-size: 10px;
+	}
+
 	#interface {
 		min-height: 90vh;
 		padding-bottom: 20vh;
@@ -79,12 +87,24 @@
 				align-items: center;
 			}
 		}
+
+		input[type='text'] {
+			width: 110px;
+		}
+
+		.freq_wrap > div,
+		input[type='range'],
+		select {
+			width: 120px;
+		}
 	}
 
 	#credit {
 		width: calc(100% - 7.5em);
-		line-height: 12px;
-		a {
+		line-height: 14px;
+		a,
+		p,
+		span {
 			font-size: 11px;
 		}
 	}
@@ -118,20 +138,6 @@
 
 		form div {
 			width: auto;
-		}
-	}
-}
-
-@media screen and (max-width: 400px) {
-	#settings {
-		input[type='text'] {
-			width: 110px;
-		}
-
-		.freq_wrap > div,
-		input[type='range'],
-		select {
-			width: 120px;
 		}
 	}
 }

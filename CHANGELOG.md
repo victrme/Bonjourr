@@ -1,7 +1,16 @@
 ## Changelogs
 
+**v1.12.0**
+
+-   Added exif details in photo credits
+-   Links icons can now be synced !
+-   Fixed font size for synced desktop / laptop
+-   Fixed Google Font list API
+-   Improved storage stability
+-   Minor bug fixes & settings performance boost
+
 **v1.11.2**
-   
+
 -   Added temperature control option (need help with translations !)
 -   Updated Dutch & Spanish translations (thanks @alisinisterra, @Kippenhof & @esteinmann)
 -   Added ctrl + click to open link in new tab

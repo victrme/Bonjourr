@@ -49,7 +49,7 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
-	if (window.location.protocol.match(/https?:/gim)) paramId('b_importbookmarks').style.display = 'none'
+	if (isOnlineOrSafari) paramId('b_importbookmarks').style.display = 'none'
 
 	// Links limit
 	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
@@ -73,11 +73,11 @@ function initParams(data, settingsDom) {
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
-	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
-	paramId('i_export').setAttribute('placeholder', tradThis('Export code'))
 	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
+	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
+	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	paramId('i_export').setAttribute('title', tradThis('Export code'))
 
 	//bg
 	if (data.background_type === 'custom') {
@@ -110,11 +110,7 @@ function initParams(data, settingsDom) {
 	//langue
 	paramId('i_lang').value = data.lang || 'en'
 
-	//firefox export
-	if (!navigator.userAgent.includes('Chrome')) {
-		paramId('submitExport').style.display = 'none'
-		paramId('i_export').style.width = '100%'
-	}
+	importExport('exp', false, settingsDom)
 
 	//
 	// Events
@@ -207,7 +203,7 @@ function initParams(data, settingsDom) {
 
 	paramId('i_refresh').onclick = function () {
 		if (paramId('i_type').value === 'custom') {
-			chrome.storage.local.get((local) => {
+			chrome.storage.local.get(null, (local) => {
 				id('background_overlay').style.opacity = 0
 				setTimeout(
 					() =>
@@ -342,20 +338,12 @@ function initParams(data, settingsDom) {
 		importExport('reset')
 	}
 
-	paramId('submitExport').onclick = function () {
-		importExport('exp', true)
-	}
-
 	paramId('submitImport').onclick = function () {
 		importExport('imp', true)
 	}
 
 	paramId('i_import').onkeypress = function (e) {
 		e.code === 'Enter' ? importExport('imp', true) : ''
-	}
-
-	paramId('i_export').onfocus = function () {
-		importExport('exp')
 	}
 
 	// Fetches font list only on focus (if font family is default)
@@ -445,7 +433,7 @@ function selectBackgroundType(cat) {
 	chrome.storage.sync.set({ background_type: cat })
 }
 
-function importExport(select, isEvent) {
+function importExport(select, isEvent, settingsDom) {
 	//
 	const fadeOut = () => {
 		dominterface.click()
@@ -476,11 +464,16 @@ function importExport(select, isEvent) {
 								}
 							}
 
-							// Mutate sync
 							data = { ...data, ...imported }
+							data = aliasGarbageCollection(data)
+
+							// full import on Online is through "import" field
+							data = isExtension ? data : { import: data }
 
 							// Save sync & local
-							chrome.storage.sync.set(isExtension ? data : { import: data }, chrome.storage.local.set(local))
+							chrome.storage.sync.clear()
+							chrome.storage.sync.set(data, chrome.storage.local.set(local))
+
 							fadeOut()
 						})
 					})
@@ -495,49 +488,34 @@ function importExport(select, isEvent) {
 	}
 
 	function exportation() {
-		const input = id('i_export')
-		const isOnChrome = navigator.userAgent.includes('Chrome')
+		if (!id('settings') && !settingsDom) return false
+
+		const pre = settingsDom ? settingsDom.querySelector('#i_export') : id('i_export')
 
 		chrome.storage.sync.get(null, (data) => {
-			//
-			replacesIconAliases(data.links, (iconList) => {
-				for (let index = 0; index < data.links.length; index++) data.links[index].icon = iconList[index]
+			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-				if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-				if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+			switch (window.location.protocol) {
+				case 'http:':
+				case 'https:':
+				case 'file:':
+					data.about.browser = 'online'
+					break
 
-				switch (window.location.protocol) {
-					case 'http:':
-					case 'https:':
-					case 'file:':
-						data.about.browser = 'online'
-						break
+				case 'moz-extension:':
+					data.about.browser = 'firefox'
+					break
 
-					case 'moz-extension:':
-						data.about.browser = 'firefox'
-						break
-                        
-                    case 'safari-web-extension:':
-                        data.about.browser = 'safari'
-                        break
+				case 'safari-web-extension:':
+					data.about.browser = 'safari'
+					break
 
-					default:
-						data.about.browser = 'chrome'
-				}
+				default:
+					data.about.browser = 'chrome'
+			}
 
-				input.value = JSON.stringify(data)
-
-				if (isEvent) {
-					input.select()
-
-					//doesn't work on firefox for security reason
-					//don't want to add permissions just for this
-					if (isOnChrome) {
-						document.execCommand('copy')
-						id('submitExport').textContent = tradThis('Copied')
-					}
-				}
-			})
+			pre.textContent = JSON.stringify(data)
 		})
 	}
 
@@ -662,7 +640,7 @@ function settingsInit(data) {
 
 		case 'http:':
 		case 'https:':
-        case 'safari-web-extension:':
+		case 'safari-web-extension:':
 		case 'chrome-extension:':
 		case 'moz-extension:': {
 			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))

@@ -228,28 +228,12 @@ function clock(event, init) {
 	}
 }
 
-function replacesIconAliases(links, callback) {
-	//
-	// Find all aliased icons
-	let iconList = Object.values(links).map((link) => link.icon)
-	const aliasList = iconList.filter((url) => url.startsWith('alias:'))
-
-	if (aliasList.length > 0) {
-		chrome.storage.local.get(aliasList, (data) => {
-			//
-			// For all icons
-			iconList.forEach((url, i) => {
-				if (url.startsWith('alias:')) {
-					// Empty icons that matches aliases, replaces empty icon by alias data
-					iconList[i] = Object.entries(data)
-						.map(([key, val]) => (key === url ? val : ''))
-						.filter((elem) => elem !== '')[0]
-				}
-			})
-
-			callback(iconList)
-		})
-	} else callback(iconList)
+const saveIconAsAlias = (iconstr, oldAlias) => {
+	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(2)
+	const tosave = {}
+	tosave[alias] = iconstr
+	chrome.storage.sync.set(tosave)
+	return alias
 }
 
 function quickLinks(event, that, initStorage) {
@@ -267,7 +251,9 @@ function quickLinks(event, that, initStorage) {
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	async function initblocks(links) {
+	async function initblocks(data) {
+		const links = data.links || []
+
 		if (links.length > 0) {
 			//
 			// Blocks
@@ -278,17 +264,29 @@ function quickLinks(event, that, initStorage) {
 			//
 			// Icons
 			// If aliases, needs to replace "alias:"
-			replacesIconAliases(links, async (iconList) => {
-				canDisplayInterface('links')
+			let iconList = Object.values(links).map((link) => link.icon)
+			const aliasList = iconList.filter((url) => url.startsWith('alias:'))
 
-				for (const ii in blocklist) {
-					const { icon } = blocklist[+ii]
-					const iconURL = iconList[+ii] === undefined ? 'src/assets/interface/loading.gif' : iconList[+ii]
-					links[+ii] = await addIcon(icon, links, +ii, iconURL)
-				}
+			if (aliasList.length > 0) {
+				iconList.forEach((url, i) => {
+					if (url.startsWith('alias:')) {
+						// Empty icons that matches aliases, replaces empty icon by alias data
+						iconList[i] = Object.entries(data)
+							.map(([key, val]) => (key === url ? val : ''))
+							.filter((elem) => elem !== '')[0]
+					}
+				})
+			}
 
-				chrome.storage.sync.set({ links })
-			})
+			canDisplayInterface('links')
+
+			for (const index in blocklist) {
+				const { icon } = blocklist[+index]
+				const iconURL = iconList[+index] === undefined ? 'src/assets/interface/loading.gif' : iconList[+index]
+				links[+index] = await addIcon(icon, links, +index, iconURL)
+			}
+
+			chrome.storage.sync.set({ links })
 		}
 
 		// Links is done
@@ -350,11 +348,6 @@ function quickLinks(event, that, initStorage) {
 		let icon = link.icon
 		let title = stringMaxSize(link.title, 32)
 		let url = stringMaxSize(link.url, 128)
-
-		// no icon ? + 1.9.2 dead favicons fix
-		if (icon.length === 0 || icon === 'src/images/icons/favicon.png') {
-			icon = 'src/assets/interface/loading.gif'
-		}
 
 		//le DOM du block
 		const lIcon = document.createElement('img')
@@ -522,26 +515,53 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function editlink(that, i) {
-		//
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
 
-		if (e_iconurl.value.length === 8080) {
-			e_iconurl.value = ''
-			e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
+		function displayEditWindow() {
+			const index = findindex(that)
+			const liconwrap = that.querySelector('.l_icon_wrap')
+			const container = id('editlink_container')
+			const opendedSettings = has(id('settings'), 'shown')
 
-			return false
+			clas(liconwrap, true, 'selected')
+			clas(container, true, 'shown')
+			clas(container, opendedSettings, 'pushed')
+
+			id('editlink').setAttribute('index', index)
+
+			chrome.storage.sync.get(null, (data) => {
+				const { title, url, icon } = data.links[index]
+
+				e_title.setAttribute('placeholder', tradThis('Title'))
+				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
+
+				e_title.value = title
+				e_url.value = url
+				e_iconurl.value = icon.startsWith('alias:') ? data[icon] : icon
+
+				showDelIcon(e_title)
+				showDelIcon(e_url)
+				showDelIcon(e_iconurl)
+			})
 		}
 
-		const updated = {
-			title: stringMaxSize(e_title.value, 32),
-			url: stringMaxSize(e_url.value, 128),
-			icon: stringMaxSize(e_iconurl.value, 8080),
-		}
+		function updatesEditedLink() {
+			if (e_iconurl.value.length === 8080) {
+				e_iconurl.value = ''
+				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
-		if (i || i === 0) {
-			chrome.storage.sync.get('links', (data) => {
+				return false
+			}
+
+			const updated = {
+				title: stringMaxSize(e_title.value, 32),
+				url: stringMaxSize(e_url.value, 128),
+				icon: stringMaxSize(e_iconurl.value, 8080),
+			}
+
+			chrome.storage.sync.get(null, (data) => {
 				let allLinks = [...data.links]
 				const parent = domlinkblocks.children[i + 1]
 
@@ -551,12 +571,17 @@ function quickLinks(event, that, initStorage) {
 						//
 						switch (key) {
 							case 'title': {
+								const domtitle = parent.querySelector('span')
+
 								// Adds span title or updates it
-								if (!parent.querySelector('span')) {
+								if (!domtitle) {
 									const span = document.createElement('span')
 									span.textContent = updated[key]
 									parent.children[0].appendChild(span)
-								} else parent.querySelector('span').textContent = updated[key]
+								} else {
+									domtitle.textContent = updated[key]
+								}
+
 								break
 							}
 
@@ -565,17 +590,23 @@ function quickLinks(event, that, initStorage) {
 								break
 
 							case 'icon': {
+								// Updates dom
 								parent.querySelector('img').src = updated.icon
 
-								// Saves to an alias if icon too big
+								const previousIconURL = allLinks[i].icon
+
+								// Saves to an alias if icon is too big
+								// Use same alias if still > 64
 								if (updated.icon.length > 64) {
-									const alias = saveIconAsAlias(updated.icon)
-									updated.icon = alias
+									updated.icon = saveIconAsAlias(
+										updated.icon,
+										previousIconURL.startsWith('alias:') ? previousIconURL : null
+									)
 								}
 
-								// Removes old icon from storage if alias
-								if (allLinks[i].icon.startsWith('alias:')) {
-									chrome.storage.local.remove(allLinks[i].icon)
+								// If it was an alias before, but not after being updated
+								else if (previousWasAlias) {
+									chrome.storage.sync.remove(allLinks[i].icon)
 								}
 
 								break
@@ -593,41 +624,9 @@ function quickLinks(event, that, initStorage) {
 			return true
 		}
 
-		//affiche edit avec le bon index
-		else {
-			const index = findindex(that)
-			const liconwrap = that.querySelector('.l_icon_wrap')
-			const container = id('editlink_container')
-			const openSettings = has(id('settings'), 'shown')
-
-			clas(liconwrap, true, 'selected')
-			clas(container, true, 'shown')
-			clas(container, openSettings, 'pushed')
-
-			id('editlink').setAttribute('index', index)
-
-			chrome.storage.sync.get('links', (data) => {
-				const { title, url, icon } = data.links[index]
-
-				e_title.setAttribute('placeholder', tradThis('Title'))
-				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
-
-				e_title.value = title
-				e_url.value = url
-
-				// Show url instead of alias
-				if (icon.startsWith('alias:'))
-					chrome.storage.local.get(icon, (data) => {
-						e_iconurl.value = data[icon]
-						showDelIcon(e_iconurl)
-					})
-				else e_iconurl.value = icon
-
-				showDelIcon(e_title)
-				showDelIcon(e_url)
-				showDelIcon(e_iconurl)
-			})
-		}
+		// If i is defined, you updated a link=
+		if (typeof i === 'number') return updatesEditedLink()
+		else displayEditWindow()
 	}
 
 	function openlink(that, e) {
@@ -686,18 +685,18 @@ function quickLinks(event, that, initStorage) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
-			chrome.storage.sync.get('links', (data) => {
+			chrome.storage.sync.get(null, (data) => {
 				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
 
 				if (data.links) {
 					data.links = data.links.concat(filteredLinks)
 					domlinkblocks.style.visibility = 'visible'
+
+					if (data.links.length === 30) linksInputDisable(true)
+
+					blocklist.forEach((parent) => parent.remove())
+					initblocks(data)
 				}
-
-				if (data.links.length === 30) linksInputDisable(true)
-
-				blocklist.forEach((parent) => parent.remove())
-				initblocks(data.links)
 			})
 		}
 
@@ -759,7 +758,7 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	if (initStorage) {
-		initblocks(initStorage.links || [])
+		initblocks(initStorage)
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
@@ -928,7 +927,7 @@ function weather(event, that, init) {
 
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
-				param.location.push(pos.coords.latitude, pos.coords.longitude)
+				param.location = [pos.coords.latitude, pos.coords.longitude]
 				applyResult(true)
 			},
 			() => applyResult(false)
@@ -1353,6 +1352,28 @@ function localBackgrounds(init, event) {
 		}
 	}
 
+	function isOnlineStorageAtCapacity(newFile) {
+		//
+		// Only applies to versions using localStorage: 5Mo limit
+		if (isOnlineOrSafari) {
+			const ls = localStorage.bonjourrBackgrounds
+
+			// Takes dynamic cache + google font list
+			const potentialFontList = JSON.parse(ls).googleFonts ? 0 : 7.6e5
+			const lsSize = ls.length + potentialFontList + 10e4
+
+			// Uploaded file in storage would exceed limit
+			if (lsSize + newFile.length > 5e6) {
+				alert(`Image size exceeds storage: ${parseInt(Math.abs(lsSize - 5e6) / 1000)}ko left`)
+				domoverlay.style.opacity = '1'
+
+				return true
+			}
+		}
+
+		return false
+	}
+
 	function preventFromShowingTwice(index, max) {
 		const res = Math.floor(Math.random() * max)
 		return res === index ? (res + 1) % max : res
@@ -1373,13 +1394,17 @@ function localBackgrounds(init, event) {
 		reader.onload = function (event) {
 			const result = event.target.result
 
-			compress(result, 'thumbnail')
-			compress(result)
+			if (isOnlineStorageAtCapacity(result)) {
+				// Exit with warning before saving image
+				return console.warn('Uploaded image was not saved')
+			}
 
 			chrome.storage.local.get(['custom'], (data) => {
 				const custom = data.custom ? data.custom : []
 				const bumpedindex = custom.length
 
+				compress(result)
+				compress(result, 'thumbnail')
 				custom.push(result)
 
 				changeImgIndex(bumpedindex)
@@ -1393,6 +1418,7 @@ function localBackgrounds(init, event) {
 				}
 			})
 		}
+
 		domoverlay.style.opacity = '0'
 		reader.readAsDataURL(file)
 	}
@@ -1603,33 +1629,69 @@ function unsplash(init, event) {
 
 	function imgCredits(image) {
 		//
-		const country = image.country || 'Photo'
-		const city = image.city ? image.city + ', ' : ''
-		const credits = [
-			{
-				text: city + country,
-				url: `${image.link}?utm_source=Bonjourr&utm_medium=referral`,
-			},
-			{
-				text: image.name + ` `,
-				url: `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`,
-			},
-			{
-				text: tradThis('on Unsplash'),
-				url: 'https://unsplash.com/?utm_source=Bonjourr&utm_medium=referral',
-			},
-		]
+		// Filtering
+
+		let needsSpacer = false
+		let artist = ''
+		let photoLocation = ''
+		let exifDescription = ''
+		const referral = '?utm_source=Bonjourr&utm_medium=referral'
+		const { city, country, name, username, link, exif } = image
+
+		if (!city && !country) {
+			photoLocation = tradThis('Photo by ')
+		} else {
+			if (city) photoLocation = city + ', '
+			if (country) {
+				photoLocation += country
+				needsSpacer = true
+			}
+		}
+
+		if (exif) {
+			const orderedExifData = [
+				{ key: 'model', format: `%val% - ` },
+				{ key: 'aperture', format: `f/%val% ` },
+				{ key: 'exposure_time', format: `%val%s ` },
+				{ key: 'iso', format: `ISO %val% ` },
+				{ key: 'focal_length', format: `%val%mm` },
+			]
+
+			orderedExifData.forEach(({ key, format }) => {
+				if (exif[key]) {
+					exifDescription += format.replace('%val%', exif[key])
+				}
+			})
+		}
+
+		// Force Capitalization
+		artist = name
+			.split(' ')
+			.map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
+			.join(' ')
+
+		// DOM element
+
+		const locationDOM = document.createElement('a')
+		const spacerDOM = document.createElement('span')
+		const artistDOM = document.createElement('a')
+		const exifDOM = document.createElement('p')
+
+		exifDOM.className = 'exif'
+		exifDOM.textContent = exifDescription
+		locationDOM.textContent = photoLocation
+		artistDOM.textContent = artist
+		spacerDOM.textContent = ` - `
+
+		locationDOM.href = link + referral
+		artistDOM.href = 'https://unsplash.com/@' + username + referral
 
 		domcredit.textContent = ''
 
-		credits.forEach(function cityNameRef(elem, i) {
-			const dom = document.createElement('a')
-			dom.textContent = elem.text
-			dom.href = elem.url
-
-			if (i === 1) domcredit.appendChild(document.createElement('br'))
-			domcredit.appendChild(dom)
-		})
+		domcredit.appendChild(exifDOM)
+		domcredit.appendChild(locationDOM)
+		if (needsSpacer) domcredit.appendChild(spacerDOM)
+		domcredit.appendChild(artistDOM)
 
 		clas(domcredit, true, 'shown')
 	}
@@ -1662,8 +1724,12 @@ function unsplash(init, event) {
 						city: img.location.city,
 						country: img.location.country,
 						color: img.color,
+						exif: img.exif,
+						desc: img.description,
 					})
 				})
+
+				console.log(imgArray)
 
 				callback(filteredList)
 			})
@@ -2036,12 +2102,6 @@ function searchbar(event, that, init) {
 	}
 
 	function initSearchbar() {
-		// 1.9.2 ==> 1.9.3 lang breaking fix
-		if (init.engine) {
-			init.engine.replace('s_', '')
-			chrome.storage.sync.set({ searchbar: init })
-		}
-
 		display(init.on)
 		engine(init.engine)
 		request(init.request)
@@ -2145,9 +2205,9 @@ function showPopup(data) {
 }
 
 function customSize(init, event) {
-	//
-	// Apply for interface, credit & settings button
-	const apply = (size) => (dominterface.style.fontSize = size + 'px')
+	// Divided by 16 is === to body px size
+	// so that users don't have their font size changed (on desktop at least)
+	const apply = (size) => (dominterface.style.fontSize = size / 16 + 'em')
 
 	const save = () => {
 		chrome.storage.sync.get('font', (data) => {
@@ -2295,26 +2355,44 @@ function customFont(data, event) {
 		function fetchFontList(callback) {
 			//
 			const fetchGoogleFonts = () => {
-				const fontAPIurl = `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${atob(
-					atob('UVVsNllWTjVRbmR5YlZKTGFUWjZkV2RwWTBONVpXWlJZMVZJVFU0elYyWjNjVTV0UmxrNA==')
-				)}`
+				const a =
+					'NjUsNzQsMTI0LDEwMCw4NywxMjYsNzEsMTA5LDk0LDg1LDk1LDg4LDEwMiw3OSw2NSw5OCwxMzYsNjksMTMxLDEzNiw5NSwxMDYsMTE3LDk2LDEyNSwxMjcsMTA0LDEzNCwxMTMsMTA0LDE0Myw3NiwxMzMsMTEwLDE1NSw4NSwxMzMsMTQyLDEwMw=='
 
-				fetch(fontAPIurl)
+				fetch(
+					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' +
+						new TextDecoder().decode(
+							new Uint8Array(
+								atob(a)
+									.split(',')
+									.map((e, t) => e - t)
+							)
+						)
+				)
 					.then((response) => response.json())
 					.then((json) => {
 						// 1.11.1 => 1.11.2 firefox sql bug fix
 						if (localStorage.googleFonts) localStorage.removeItem('googleFonts')
-						chrome.storage.local.set({ googleFonts: json })
-						callback(json)
+
+						if (json.error) console.log('Google Fonts messed up: ', json.error)
+						else {
+							chrome.storage.local.set({ googleFonts: json })
+							callback(json)
+						}
 					})
 			}
 
 			chrome.storage.local.get('googleFonts', (local) => {
-				if (local.googleFonts && local.googleFonts.length > 0) {
-					try {
-						callback(JSON.parse(local.googleFonts))
-					} catch (error) {
-						fetchGoogleFonts()
+				if (local.googleFonts) {
+					if (local.googleFonts.error) {
+						chrome.storage.local.remove('googleFonts')
+						console.log('Google Fonts messed up: ', local.googleFonts.error)
+						return false
+					} else {
+						try {
+							callback(JSON.parse(local.googleFonts))
+						} catch (error) {
+							fetchGoogleFonts()
+						}
 					}
 				} else fetchGoogleFonts()
 			})
@@ -2558,12 +2636,11 @@ function filterImports(data) {
 		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
 
 		links: (links) => {
-			if (links && links.length > 0)
-				links.forEach((elem, index) => {
-					if (elem.icon.length > 8080) links[index].icon = 'src/assets/interface/loading.gif'
-					else if (elem.icon.length > 64) links[index].icon = saveIconAsAlias(elem.icon)
+			if (links && links.length > 0) {
+				links.forEach(({ icon }, i) => {
+					if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
 				})
-
+			}
 			return links
 		},
 
@@ -2660,6 +2737,8 @@ function filterImports(data) {
 	// Go through found categories in import data to filter them
 	Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 
+	result.about.browser = BonjourrBrowser
+
 	return result
 }
 
@@ -2689,6 +2768,11 @@ function startup(data) {
 }
 
 window.onload = function () {
+	//
+	// On settings changes, update export code
+	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
+	else window.onstorage = () => importExport('exp')
+
 	if (mobilecheck) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
@@ -2762,23 +2846,41 @@ window.onload = function () {
 				}
 
 				case 'newVersion': {
-					//
-					// 1.9.3 => 1.10, fills default data to storage
-					if (!data.about)
-						Object.entries(bonjourrDefaults('sync')).forEach(([key, val]) =>
-							data[key] === undefined ? (data[key] = val) : data[key]
-						)
+					chrome.storage.local.get(null, (local) => {
+						// 1.11.2 => 1.12.0, Moves local icons to sync
+						// newVersion is a callback of slow local only for moving icons
+						// can be removed for later versions
 
-					data = filterImports(data)
-					data.about.version = BonjourrVersion
-					chrome.storage.sync.set(isExtension ? data : { import: data })
-					startup(data)
+						// For every update: filter & version update
+						data = filterImports(data)
+						data.about.version = BonjourrVersion
+						const aliasList = Object.entries(local).filter(([key, val]) => key.startsWith('alias:'))
+
+						if (aliasList.length > 0) {
+							// move to temp sync, deletes from local
+							aliasList.forEach(([key, val]) => {
+								data[key] = val
+								chrome.storage.local.remove(key)
+							})
+
+							// Alias garbage collector
+							data = aliasGarbageCollection(data)
+
+							// saves sync
+							chrome.storage.sync.clear()
+							chrome.storage.sync.set(isExtension ? data : { import: data })
+						}
+
+						startup(data)
+					})
+
 					break
 				}
 
-				case 'normal':
+				case 'normal': {
 					startup(data)
 					break
+				}
 			}
 		})
 	} catch (error) {
