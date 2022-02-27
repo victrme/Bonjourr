@@ -486,6 +486,7 @@ function quickLinks(event, that, initStorage) {
 			e.target.previousElementSibling.value = ''
 			e.target.classList.remove('shown')
 		}
+
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('editlink').getAttribute('index')))
@@ -592,7 +593,6 @@ function quickLinks(event, that, initStorage) {
 							case 'icon': {
 								// Updates dom
 								parent.querySelector('img').src = updated.icon
-
 								const previousIconURL = allLinks[i].icon
 
 								// Saves to an alias if icon is too big
@@ -605,8 +605,8 @@ function quickLinks(event, that, initStorage) {
 								}
 
 								// If it was an alias before, but not after being updated
-								else if (previousWasAlias) {
-									chrome.storage.sync.remove(allLinks[i].icon)
+								else if (previousIconURL.startsWith('alias:')) {
+									chrome.storage.sync.remove(previousIconURL)
 								}
 
 								break
@@ -654,9 +654,8 @@ function quickLinks(event, that, initStorage) {
 	function removeblock(index) {
 		chrome.storage.sync.get('links', (data) => {
 			// Remove alias from storage
-			if (data.links[index].icon.startsWith('alias:')) {
-				chrome.storage.local.remove(data.links[index].icon)
-			}
+			const icon = data.links[index].icon
+			if (icon.startsWith('alias:')) chrome.storage.sync.remove(icon)
 
 			data.links.splice(index, 1)
 

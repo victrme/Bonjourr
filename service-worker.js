@@ -3,16 +3,16 @@ const version = '1.12.0'
 const bonjourrCache = 'bonjourr-v' + version
 
 const filesToChache = [
-	'release/',
-	'release/settings.html',
-	'release/manifest.webmanifest',
-	'release/src/scripts/main.js',
-	'release/src/styles/style.css',
-	'release/src/assets/favicon-128x128.png',
-	'release/src/assets/favicon-512x512.png',
-	'release/src/assets/apple-touch-icon.png',
-	'release/src/assets/interface/gear.svg',
-	'release/src/assets/interface/loading.gif',
+	'/',
+	'/settings.html',
+	'/manifest.webmanifest',
+	'/src/scripts/main.js',
+	'/src/styles/style.css',
+	'/src/assets/favicon-128x128.png',
+	'/src/assets/favicon-512x512.png',
+	'/src/assets/apple-touch-icon.png',
+	'/src/assets/interface/gear.svg',
+	'/src/assets/interface/loading.gif',
 ]
 
 const weatherList = [
@@ -29,8 +29,7 @@ const weatherList = [
 	'overcastclouds',
 ]
 
-const addWeatherIcons = (time) =>
-	weatherList.forEach((elem) => filesToChache.push(`release/src/assets/weather/${time}/${elem}.png`))
+const addWeatherIcons = (time) => weatherList.forEach((elem) => filesToChache.push(`/src/assets/weather/${time}/${elem}.png`))
 
 addWeatherIcons('day')
 addWeatherIcons('night')
