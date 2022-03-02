@@ -12,19 +12,23 @@ function html(isExtension) {
 	// Multiple scripts tags => only main.js
 	//
 
-	const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
-	const stream = src('*.html').pipe(
-		htmlmin({
-			collapseWhitespace: true,
-			removeComments: true,
-		})
-	)
+	return () => {
+		const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
+		const stream = src('*.html').pipe(
+			htmlmin({
+				collapseWhitespace: true,
+				removeComments: true,
+			})
+		)
 
-	if (isExtension) stream.pipe(replace(`<link rel="manifest" href="manifest.webmanifest">`, ``))
+		if (isExtension) stream.pipe(replace(`<link rel="manifest" href="manifest.webmanifest">`, ``))
 
-	return stream
-		.pipe(replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : '')))
-		.pipe(dest('release/'))
+		return stream
+			.pipe(
+				replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : ''))
+			)
+			.pipe(dest('release/'))
+	}
 }
 
 function scripts(which) {
@@ -35,40 +39,67 @@ function scripts(which) {
 	// Chrome & Firefox build: just minify
 	//
 
-	const stream = src([
-		'src/scripts/lang.js',
-		'src/scripts/utils.js',
-		'src/scripts/script.js',
-		'src/scripts/settings.js',
-	]).pipe(concat('main.js'))
+	return () => {
+		const stream = src([
+			'src/scripts/lang.js',
+			'src/scripts/utils.js',
+			'src/scripts/script.js',
+			'src/scripts/settings.js',
+		]).pipe(concat('main.js'))
 
-	switch (which) {
-		case 'online': {
-			stream
-				.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
-				.pipe(replace('sync.clear(', 'clear('))
-				.pipe(replace('sync.get(', 'get(false, '))
-				.pipe(replace('local.get(', 'get(true, '))
-				.pipe(replace('sync.set(', 'set('))
-				.pipe(replace('local.set(', 'setLocal('))
-				.pipe(replace('sync.remove(', 'remove(false, '))
-				.pipe(replace('local.remove(', 'remove(true, '))
-				.pipe(minify({ mangle: { keepClassName: true } }))
-			break
+		switch (which) {
+			case 'online': {
+				stream
+					.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
+					.pipe(replace('sync.clear(', 'clear('))
+					.pipe(replace('sync.get(', 'get(false, '))
+					.pipe(replace('local.get(', 'get(true, '))
+					.pipe(replace('sync.set(', 'set('))
+					.pipe(replace('local.set(', 'setLocal('))
+					.pipe(replace('sync.remove(', 'remove(false, '))
+					.pipe(replace('local.remove(', 'remove(true, '))
+					.pipe(minify({ mangle: { keepClassName: true } }))
+				break
+			}
+
+			default:
+				stream.pipe(minify({ mangle: { keepClassName: true } }))
+				break
 		}
 
-		default:
-			stream.pipe(minify({ mangle: { keepClassName: true } }))
-			break
+		stream.pipe(dest('release/src/scripts'))
+		return stream
 	}
-
-	stream.pipe(dest('release/src/scripts'))
-	return stream
 }
 
-//
-// These one-liners must be functions, not const
-//
+function ressources(isExtension) {
+	return () => {
+		const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
+		if (isExtension) assetPath.push('!src/assets/screenshots/**')
+
+		return src(assetPath).pipe(dest('release/src/assets'))
+	}
+}
+
+function worker(online) {
+	return () => {
+		const file = {
+			origin: online ? 'service-worker.js' : 'src/scripts/background.js',
+			destination: online ? 'release/' : 'release/src/scripts/',
+		}
+		return src(file.origin).pipe(dest(file.destination))
+	}
+}
+
+function manifest(which) {
+	return () => {
+		if (which === 'online') return src(`manifest.webmanifest`).pipe(dest('release/'))
+		else
+			return src(`manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
+				.pipe(rename('manifest.json'))
+				.pipe(dest('release/'))
+	}
+}
 
 function css() {
 	return src('src/styles/style.css').pipe(csso()).pipe(dest('release/src/styles/'))
@@ -78,28 +109,8 @@ function addBackground() {
 	return src('src/scripts/background.js').pipe(dest('release/src/scripts'))
 }
 
-function ressources() {
-	return src('src/assets/**').pipe(dest('release/src/assets'))
-}
-
 function locales() {
 	return src('_locales/**').pipe(dest('release/_locales/'))
-}
-
-function worker(online) {
-	const file = {
-		origin: online ? 'service-worker.js' : 'src/scripts/background.js',
-		destination: online ? 'release/' : 'release/src/scripts/',
-	}
-	return src(file.origin).pipe(dest(file.destination))
-}
-
-function manifest(which) {
-	if (which === 'online') return src(`manifest.webmanifest`).pipe(dest('release/'))
-	else
-		return src(`manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
-			.pipe(rename('manifest.json'))
-			.pipe(dest('release/'))
 }
 
 //
@@ -112,22 +123,22 @@ const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.ma
 // prettier-ignore
 const makeOnline = () => [
 	css,
-	ressources,
-	() => html(false),
-	() => manifest('online'),
-	() => worker('online'),
-	() => scripts('online')
+	html(false),
+	worker('online'),
+	scripts('online'),
+	ressources(false),
+	manifest('online'),
 ]
 
 const makeExtension = (manifestFrom, scriptFrom) => [
 	css,
 	locales,
-	ressources,
 	addBackground,
-	() => html(true),
-	() => worker(false),
-	() => scripts(scriptFrom),
-	() => manifest(manifestFrom),
+	html(true),
+	worker(false),
+	ressources(true),
+	scripts(scriptFrom),
+	manifest(manifestFrom),
 ]
 
 //
