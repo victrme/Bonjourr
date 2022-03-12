@@ -859,33 +859,61 @@
 	}
 }
 
-#bonjourrError {
-	height: 80vh;
-	width: 80vw;
-	margin: 0 10vw;
-	opacity: 0;
+#error {
+	position: absolute;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	justify-content: center;
+	align-items: center;
+	top: 100px;
+	left: 100px;
+	width: 500px;
+	padding: 100px;
+	opacity: 0;
+	color: #fff;
+	border-radius: 20px;
 	transition: opacity 0.4s;
-	color: #ddd;
+	z-index: 1;
+
+	@include frostedGlass($tint: 12, $fbTint: 12, $blur: 40px, $alpha: 0.2, $fbAlpha: 0.8, $fbColor: #222);
 
 	pre {
-		white-space: normal;
-		word-break: break-all;
 		user-select: all;
 		cursor: text;
-		max-width: 400px;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		padding: 5px 10px;
+		border-radius: 5px;
+		background-color: #2222;
 	}
 
 	a {
-		color: #ddd;
+		color: #fff;
 	}
 
 	button {
-		margin: 4em;
 		cursor: pointer;
+		padding: 5px 10px;
+		border-radius: 5px;
+		border: none;
+		background-color: $red;
+		color: #fff;
+	}
+
+	.error-explain {
+		margin-top: 3em;
+		margin-bottom: 2em;
+	}
+
+	.error-buttons {
+		display: flex;
+		justify-content: space-around;
+		width: 300px;
+	}
+
+	.error-buttons-close {
+		background-color: $blue;
 	}
 }
 

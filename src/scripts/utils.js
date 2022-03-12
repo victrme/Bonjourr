@@ -206,20 +206,26 @@ function deleteBrowserStorage() {
 }
 
 function errorMessage(data, error) {
+	if (sessionStorage.errorMessage === 'removed') {
+		dominterface.style.opacity = '1'
+		return false
+	}
+
 	const warning = document.createElement('div')
 	const title = document.createElement('h1')
 	const subtitle = document.createElement('p')
-	const contactlink = document.createElement('a')
 	const errorcode = document.createElement('pre')
+	const explain = document.createElement('p')
 	const resetButton = document.createElement('button')
+	const closeError = document.createElement('button')
+	const buttonWrap = document.createElement('div')
 
-	title.textContent = 'Bonjourr messed up 😖😖'
+	title.textContent = 'Bonjourr has a problem 😖'
+	subtitle.textContent = `Copy your settings below and contact us !`
+	explain.textContent =
+		'Sharing these settings with us helps a lot in debugging. You can also reset Bonjourr (back up your settings first ⚠️), or close this window if you think it is a false alert.'
 
-	subtitle.textContent = data ? 'Copy your settings ' : 'Copy this error '
-	contactlink.textContent = 'and contact us!'
-	contactlink.href = `mailto:${atob(atob('WW05dWFtOTFjbkl1WVhCd1FIQnRMbTFs'))}`
-
-	subtitle.appendChild(contactlink)
+	explain.className = 'error-explain'
 
 	errorcode.textContent = data ? data : error.stack
 	resetButton.textContent = 'Reset Bonjourr'
@@ -228,13 +234,28 @@ function errorMessage(data, error) {
 		deleteBrowserStorage()
 	})
 
+	closeError.className = 'error-buttons-close'
+	closeError.textContent = 'Close this window'
+	closeError.addEventListener('click', () => {
+		sessionStorage.errorMessage = 'removed'
+		warning.style.opacity = 0
+		setTimeout(() => (warning.style.display = 'none'), 400)
+	})
+
+	buttonWrap.className = 'error-buttons'
+	buttonWrap.appendChild(resetButton)
+	buttonWrap.appendChild(closeError)
+
 	warning.appendChild(title)
 	warning.appendChild(subtitle)
 	warning.appendChild(errorcode)
-	warning.appendChild(resetButton)
+	warning.appendChild(explain)
+	warning.appendChild(buttonWrap)
 
-	warning.id = 'bonjourrError'
+	warning.id = 'error'
 	document.body.prepend(warning)
+
+	dominterface.style.opacity = '1'
 
 	setTimeout(() => (warning.style.opacity = 1), 20)
 }
