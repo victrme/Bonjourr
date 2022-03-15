@@ -228,7 +228,10 @@ function clock(event, init) {
 }
 
 const saveIconAsAlias = (iconstr, oldAlias) => {
-	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(2)
+	// Fait un nouvel objet à chaque fois
+	// Ajoute l'url de l'icône à l'objet
+	// Sauvegarde et retourne le nom de l'objet
+	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(7)
 	const tosave = {}
 	tosave[alias] = iconstr
 	chrome.storage.sync.set(tosave)
@@ -279,9 +282,9 @@ function quickLinks(event, that, initStorage) {
 				canDisplayInterface('links')
 
 				for (const index in blocklist) {
-					const { icon } = blocklist[+index]
+					const iconDOM = blocklist[+index].icon
 					const iconURL = iconList[+index] === undefined ? 'src/assets/interface/loading.gif' : iconList[+index]
-					links[+index] = await addIcon(icon, links, +index, iconURL)
+					links[+index] = await addIcon(links[+index], iconDOM, iconURL)
 				}
 
 				chrome.storage.sync.set({ links })
@@ -294,12 +297,12 @@ function quickLinks(event, that, initStorage) {
 		else canDisplayInterface('links')
 	}
 
-	async function addIcon(lIcon, links, index, iconurl) {
+	async function addIcon(link, iconDOM, iconURL) {
 		//
 		async function fetchNewIcon() {
 			//
 			// Apply loading gif d'abord
-			applyURL(iconurl)
+			applyURL(iconURL)
 
 			const img = new Image()
 			const a = document.createElement('a')
@@ -334,13 +337,14 @@ function quickLinks(event, that, initStorage) {
 
 			return url
 		}
-		const applyURL = (url) => (lIcon.src = url)
-		const link = links[index]
-		const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => iconurl.includes(x))
+		const applyURL = (url) => (iconDOM.src = url)
+		const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => iconURL.includes(x))
 
 		// Fetch new icons if matches these urls, or apply cached
-		if (iconurl.length === 0 || needsToChange) link.icon = await fetchNewIcon()
-		else applyURL(iconurl)
+		if (iconURL.length === 0 || needsToChange) {
+			const foundURL = await fetchNewIcon()
+			link.icon = saveIconAsAlias(foundURL)
+		} else applyURL(iconURL)
 
 		return link
 	}
@@ -549,7 +553,7 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		function updatesEditedLink() {
-			if (e_iconurl.value.length === 8080) {
+			if (e_iconurl.value.length === 8180) {
 				e_iconurl.value = ''
 				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
@@ -558,8 +562,8 @@ function quickLinks(event, that, initStorage) {
 
 			const updated = {
 				title: stringMaxSize(e_title.value, 32),
-				url: stringMaxSize(e_url.value, 128),
-				icon: stringMaxSize(e_iconurl.value, 8080),
+				url: stringMaxSize(e_url.value, 217),
+				icon: stringMaxSize(e_iconurl.value, 8180),
 			}
 
 			chrome.storage.sync.get(null, (data) => {
@@ -595,19 +599,10 @@ function quickLinks(event, that, initStorage) {
 								parent.querySelector('img').src = updated.icon
 								const previousIconURL = allLinks[i].icon
 
-								// Saves to an alias if icon is too big
-								// Use same alias if still > 64
-								if (updated.icon.length > 64) {
-									updated.icon = saveIconAsAlias(
-										updated.icon,
-										previousIconURL.startsWith('alias:') ? previousIconURL : null
-									)
-								}
-
-								// If it was an alias before, but not after being updated
-								else if (previousIconURL.startsWith('alias:')) {
-									chrome.storage.sync.remove(previousIconURL)
-								}
+								updated.icon = saveIconAsAlias(
+									updated.icon,
+									previousIconURL.startsWith('alias:') ? previousIconURL : null
+								)
 
 								break
 							}
@@ -2630,9 +2625,7 @@ function filterImports(data) {
 
 		links: (links) => {
 			if (links && links.length > 0) {
-				links.forEach(({ icon }, i) => {
-					if (icon.length > 64) links[i].icon = saveIconAsAlias(icon)
-				})
+				links.forEach(({ icon }, i) => (links[i].icon = saveIconAsAlias(icon)))
 			}
 			return links
 		},
