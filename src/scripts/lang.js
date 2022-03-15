@@ -1966,7 +1966,7 @@ const engineLocales = {
 		no: 'no-no',
 	},
 	startpage: {
-		base: 'https://www.startpage.com/do/dsearch?query=%s&language=%l',
+		base: 'https://www.startpage.com/do/search?query=%s&language=%l',
 		fr: 'francais',
 		en: 'english',
 		ru: 'russian',
