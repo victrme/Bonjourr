@@ -658,7 +658,7 @@ function settingsInit(data) {
 		const noEdit = has(id('editlink_container'), 'shown') === false
 		const noSettings = has(id('settings'), 'shown') === false
 
-		if (e.code !== 'Escape' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
 		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
 }

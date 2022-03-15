@@ -1,7 +1,6 @@
 function traduction(settingsDom, lang = 'en') {
 	//
 	function traduis() {
-		//
 		document.documentElement.setAttribute('lang', lang)
 
 		const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
@@ -255,38 +254,40 @@ function quickLinks(event, that, initStorage) {
 		const links = data.links || []
 
 		if (links.length > 0) {
-			//
-			// Blocks
-			// Add blocks and events
-			const blocklist = links.map((link, i) => appendblock(link, i))
-			blocklist.forEach(({ parent }) => addEvents(parent))
+			try {
+				// Blocks
+				// Add blocks and events
+				const blocklist = links.map((link, i) => appendblock(link, i))
+				blocklist.forEach(({ parent }) => addEvents(parent))
 
-			//
-			// Icons
-			// If aliases, needs to replace "alias:"
-			let iconList = Object.values(links).map((link) => link.icon)
-			const aliasList = iconList.filter((url) => url.startsWith('alias:'))
+				// Icons
+				// If aliases, needs to replace "alias:"
+				let iconList = Object.values(links).map((link) => link.icon)
+				const aliasList = iconList.filter((url) => url.startsWith('alias:'))
 
-			if (aliasList.length > 0) {
-				iconList.forEach((url, i) => {
-					if (url.startsWith('alias:')) {
-						// Empty icons that matches aliases, replaces empty icon by alias data
-						iconList[i] = Object.entries(data)
-							.map(([key, val]) => (key === url ? val : ''))
-							.filter((elem) => elem !== '')[0]
-					}
-				})
+				if (aliasList.length > 0) {
+					iconList.forEach((url, i) => {
+						if (url.startsWith('alias:')) {
+							// Empty icons that matches aliases, replaces empty icon by alias data
+							iconList[i] = Object.entries(data)
+								.map(([key, val]) => (key === url ? val : ''))
+								.filter((elem) => elem !== '')[0]
+						}
+					})
+				}
+
+				canDisplayInterface('links')
+
+				for (const index in blocklist) {
+					const { icon } = blocklist[+index]
+					const iconURL = iconList[+index] === undefined ? 'src/assets/interface/loading.gif' : iconList[+index]
+					links[+index] = await addIcon(icon, links, +index, iconURL)
+				}
+
+				chrome.storage.sync.set({ links })
+			} catch (error) {
+				errorMessage('error in links initialisation')
 			}
-
-			canDisplayInterface('links')
-
-			for (const index in blocklist) {
-				const { icon } = blocklist[+index]
-				const iconURL = iconList[+index] === undefined ? 'src/assets/interface/loading.gif' : iconList[+index]
-				links[+index] = await addIcon(icon, links, +index, iconURL)
-			}
-
-			chrome.storage.sync.set({ links })
 		}
 
 		// Links is done
@@ -345,7 +346,6 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function appendblock(link) {
-		let icon = link.icon
 		let title = stringMaxSize(link.title, 32)
 		let url = stringMaxSize(link.url, 128)
 
@@ -1728,8 +1728,6 @@ function unsplash(init, event) {
 					})
 				})
 
-				console.log(imgArray)
-
 				callback(filteredList)
 			})
 		)
@@ -2585,10 +2583,6 @@ function canDisplayInterface(cat, init) {
 			domshowsettings.classList.remove('init')
 			domshowsettings.style.transition = ``
 		}, loadtime + 100)
-
-		// Prevent error message from appearing
-		clearTimeout(errorMessageInterval)
-		if (id('bonjourrError')) id('bonjourrError').remove()
 	}
 
 	// More conditions if user is using advanced features
@@ -2823,11 +2817,6 @@ window.onload = function () {
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
-			errorMessageInterval = setTimeout(() => {
-				errorMessage(JSON.stringify(data), null)
-			}, 2000)
-
-			//
 			let newVersion = !data.about
 			if (data.about) newVersion = data.about.version !== BonjourrVersion
 

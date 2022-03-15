@@ -205,59 +205,69 @@ function deleteBrowserStorage() {
 	}, 400)
 }
 
-function errorMessage(data, error) {
+function errorMessage(error) {
+	function displayMessage(dataStr) {
+		const warning = document.createElement('div')
+		const title = document.createElement('h1')
+		const subtitle = document.createElement('p')
+		const errorcode = document.createElement('pre')
+		const explain = document.createElement('p')
+		const resetButton = document.createElement('button')
+		const closeError = document.createElement('button')
+		const buttonWrap = document.createElement('div')
+
+		title.textContent = 'Bonjourr has a problem 😖'
+		subtitle.textContent = `Copy this message below and contact us !`
+		explain.textContent =
+			'Sharing this message with us helps a lot in debugging. You can also reset Bonjourr (back up your settings first ⚠️), or close this window if you think it is a false alert.'
+
+		explain.className = 'error-explain'
+
+		errorcode.textContent = error + ': ' + dataStr
+		resetButton.textContent = 'Reset Bonjourr'
+		resetButton.addEventListener('click', () => {
+			warning.style.opacity = 0
+			deleteBrowserStorage()
+		})
+
+		closeError.className = 'error-buttons-close'
+		closeError.textContent = 'Close this window'
+		closeError.addEventListener('click', () => {
+			sessionStorage.errorMessage = 'removed'
+			warning.style.opacity = 0
+			setTimeout(() => (warning.style.display = 'none'), 400)
+		})
+
+		buttonWrap.className = 'error-buttons'
+		buttonWrap.appendChild(resetButton)
+		buttonWrap.appendChild(closeError)
+
+		warning.appendChild(title)
+		warning.appendChild(subtitle)
+		warning.appendChild(errorcode)
+		warning.appendChild(explain)
+		warning.appendChild(buttonWrap)
+
+		warning.id = 'error'
+		document.body.prepend(warning)
+
+		dominterface.style.opacity = '1'
+
+		setTimeout(() => (warning.style.opacity = 1), 20)
+	}
+
 	if (sessionStorage.errorMessage === 'removed') {
 		dominterface.style.opacity = '1'
 		return false
+	} else {
+		chrome.storage.sync.get(null, (data) => {
+			try {
+				displayMessage(JSON.stringify(data))
+			} catch (e) {
+				displayMessage('', 'Could not load settings')
+			}
+		})
 	}
-
-	const warning = document.createElement('div')
-	const title = document.createElement('h1')
-	const subtitle = document.createElement('p')
-	const errorcode = document.createElement('pre')
-	const explain = document.createElement('p')
-	const resetButton = document.createElement('button')
-	const closeError = document.createElement('button')
-	const buttonWrap = document.createElement('div')
-
-	title.textContent = 'Bonjourr has a problem 😖'
-	subtitle.textContent = `Copy your settings below and contact us !`
-	explain.textContent =
-		'Sharing these settings with us helps a lot in debugging. You can also reset Bonjourr (back up your settings first ⚠️), or close this window if you think it is a false alert.'
-
-	explain.className = 'error-explain'
-
-	errorcode.textContent = data ? data : error.stack
-	resetButton.textContent = 'Reset Bonjourr'
-	resetButton.addEventListener('click', () => {
-		warning.style.opacity = 0
-		deleteBrowserStorage()
-	})
-
-	closeError.className = 'error-buttons-close'
-	closeError.textContent = 'Close this window'
-	closeError.addEventListener('click', () => {
-		sessionStorage.errorMessage = 'removed'
-		warning.style.opacity = 0
-		setTimeout(() => (warning.style.display = 'none'), 400)
-	})
-
-	buttonWrap.className = 'error-buttons'
-	buttonWrap.appendChild(resetButton)
-	buttonWrap.appendChild(closeError)
-
-	warning.appendChild(title)
-	warning.appendChild(subtitle)
-	warning.appendChild(errorcode)
-	warning.appendChild(explain)
-	warning.appendChild(buttonWrap)
-
-	warning.id = 'error'
-	document.body.prepend(warning)
-
-	dominterface.style.opacity = '1'
-
-	setTimeout(() => (warning.style.opacity = 1), 20)
 }
 
 const testOS = {
@@ -326,9 +336,9 @@ function bonjourrDefaults(which) {
 				font: {
 					url: '',
 					family: '',
+					size: '14',
 					availWeights: [],
-					size: mobilecheck ? '11' : '14',
-					weight: testOS.windows() ? '400' : '300',
+					weight: testOS.windows() || testOS.ios() ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
 				about: { browser: BonjourrBrowser, version: BonjourrVersion },
