@@ -219,11 +219,15 @@ function clock(event, init) {
 
 		if (init.clock) clock = { ...clock, ...init.clock }
 
-		startClock(clock, init.greeting, init.usdate)
-		clockDate(zonedDate(clock.timezone), init.usdate)
-		greetings(zonedDate(clock.timezone), init.greeting)
-		changeAnalogFace(clock.face)
-		canDisplayInterface('clock')
+		try {
+			startClock(clock, init.greeting, init.usdate)
+			clockDate(zonedDate(clock.timezone), init.usdate)
+			greetings(zonedDate(clock.timezone), init.greeting)
+			changeAnalogFace(clock.face)
+			canDisplayInterface('clock')
+		} catch (e) {
+			errorMessage('Clock / greetings failed at init', e)
+		}
 	}
 }
 
@@ -288,8 +292,8 @@ function quickLinks(event, that, initStorage) {
 				}
 
 				chrome.storage.sync.set({ links })
-			} catch (error) {
-				errorMessage('error in links initialisation')
+			} catch (e) {
+				errorMessage('Failed to load links', e)
 			}
 		}
 
@@ -302,7 +306,7 @@ function quickLinks(event, that, initStorage) {
 		async function fetchNewIcon() {
 			//
 			// Apply loading gif d'abord
-			applyURL(iconURL)
+			iconDOM.src = iconURL
 
 			const img = new Image()
 			const a = document.createElement('a')
@@ -331,20 +335,23 @@ function quickLinks(event, that, initStorage) {
 				}
 			}
 
-			img.onload = () => applyURL(url)
+			img.onload = () => (iconDOM.src = url)
 			img.src = url
 			img.remove()
 
 			return url
 		}
-		const applyURL = (url) => (iconDOM.src = url)
 		const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => iconURL.includes(x))
 
 		// Fetch new icons if matches these urls, or apply cached
 		if (iconURL.length === 0 || needsToChange) {
-			const foundURL = await fetchNewIcon()
-			link.icon = saveIconAsAlias(foundURL)
-		} else applyURL(iconURL)
+			try {
+				const foundURL = await fetchNewIcon()
+				link.icon = saveIconAsAlias(foundURL)
+			} catch (e) {
+				errorMessage('An icon failed to load (can be dismissed)', e)
+			}
+		} else iconDOM.src = iconURL
 
 		return link
 	}
@@ -1230,12 +1237,20 @@ function weather(event, that, init) {
 	// Event & Init
 	if (event) updatesWeather()
 	else {
-		if (validateHideElem(init.hide)) {
-			if (init.hide[1][1] + init.hide[1][2] === 2) return false
+		try {
+			if (validateHideElem(init.hide)) {
+				if (init.hide[1][1] + init.hide[1][2] === 2) return false
+			}
+		} catch (e) {
+			errorMessage('Could not validate Hide in Weather', e)
 		}
 
-		forecastVisibilityControl(init.weather.forecast || 'mornings')
-		weatherCacheControl(init.weather)
+		try {
+			forecastVisibilityControl(init.weather.forecast || 'mornings')
+			weatherCacheControl(init.weather)
+		} catch (e) {
+			errorMessage('Weather init did not work', e)
+		}
 	}
 }
 
@@ -1582,32 +1597,36 @@ function localBackgrounds(init, event) {
 
 	//init
 	else {
-		// need all of saved stuff
-		const { local, every, time } = init
+		try {
+			// need all of saved stuff
+			const { local, every, time } = init
 
-		// Slideshow or not, need index
-		const index = local.customIndex >= 0 ? local.customIndex : 0
-		const customList = local.custom || []
+			// Slideshow or not, need index
+			const index = local.customIndex >= 0 ? local.customIndex : 0
+			const customList = local.custom || []
 
-		// Slideshow is activated
-		if (every) {
-			const rand = preventFromShowingTwice(index, customList.length)
-			const needNewImage = freqControl('get', every, time || 0)
+			// Slideshow is activated
+			if (every) {
+				const rand = preventFromShowingTwice(index, customList.length)
+				const needNewImage = freqControl('get', every, time || 0)
 
-			if (needNewImage) {
-				applyCustomBackground(customList, rand)
+				if (needNewImage) {
+					applyCustomBackground(customList, rand)
 
-				// Updates time & index
-				chrome.storage.sync.set({ custom_time: freqControl('set') })
-				chrome.storage.local.set({ customIndex: rand })
-				//
+					// Updates time & index
+					chrome.storage.sync.set({ custom_time: freqControl('set') })
+					chrome.storage.local.set({ customIndex: rand })
+					//
+				} else {
+					applyCustomBackground(customList, index)
+				}
+
+				// No slideshow or no data for it
 			} else {
 				applyCustomBackground(customList, index)
 			}
-
-			// No slideshow or no data for it
-		} else {
-			applyCustomBackground(customList, index)
+		} catch (e) {
+			errorMessage('Could not init local backgrounds', e)
 		}
 	}
 }
@@ -1845,38 +1864,42 @@ function unsplash(init, event) {
 
 	switch (initOrEvent) {
 		case 'init': {
-			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function getCache(local) {
-				const { current, next, every } = init.dynamic
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function initDynamic(local) {
+				try {
+					const { current, next, every } = init.dynamic
 
-				// <1.10.0: next is always old import
-				// current to first background, default to 'day' collection
-				if (next) {
-					init.dynamic.lastCollec = 'day'
+					// <1.10.0: next is always old import
+					// current to first background, default to 'day' collection
+					if (next) {
+						init.dynamic.lastCollec = 'day'
 
-					delete init.dynamic.next
-					delete init.dynamic.current
-				}
-
-				//
-				//
-				// Real init start
-				const collecId = collectionControl(init.dynamic)
-
-				// If no dynamicCache, create
-				// If list empty: request new, save sync & local
-				// Not empty: normal cacheControl
-				if (local.dynamicCache === undefined) {
-					local.dynamicCache = bonjourrDefaults('local').dynamicCache
-					populateEmptyList(collecId, local, init.dynamic, false)
-					if (current && every === 'pause') local.dynamicCache.day[0] = init.dynamic.current
+						delete init.dynamic.next
+						delete init.dynamic.current
+					}
 
 					//
-				} else if (local.dynamicCache[collecId].length === 0) {
-					populateEmptyList(collecId, local, init.dynamic, false)
-
 					//
-				} else {
-					cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
+					// Real init start
+					const collecId = collectionControl(init.dynamic)
+
+					// If no dynamicCache, create
+					// If list empty: request new, save sync & local
+					// Not empty: normal cacheControl
+					if (local.dynamicCache === undefined) {
+						local.dynamicCache = bonjourrDefaults('local').dynamicCache
+						populateEmptyList(collecId, local, init.dynamic, false)
+						if (current && every === 'pause') local.dynamicCache.day[0] = init.dynamic.current
+
+						//
+					} else if (local.dynamicCache[collecId].length === 0) {
+						populateEmptyList(collecId, local, init.dynamic, false)
+
+						//
+					} else {
+						cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
+					}
+				} catch (e) {
+					errorMessage('Dynamic errored on init', e)
 				}
 			})
 			break
@@ -2025,7 +2048,13 @@ function darkmode(choice, init) {
 	}
 
 	if (choice) chrome.storage.sync.get('weather', (data) => apply(choice, data.weather))
-	else apply(init.dark, init.weather)
+	else {
+		try {
+			apply(init.dark, init.weather)
+		} catch (e) {
+			errorMessage('Dark mode somehow messed up', e)
+		}
+	}
 }
 
 function searchbar(event, that, init) {
@@ -2094,11 +2123,15 @@ function searchbar(event, that, init) {
 	}
 
 	function initSearchbar() {
-		display(init.on)
-		engine(init.engine)
-		request(init.request)
-		setNewtab(init.newtab)
-		opacity(init.opacity)
+		try {
+			display(init.on)
+			engine(init.engine)
+			request(init.request)
+			setNewtab(init.newtab)
+			opacity(init.opacity)
+		} catch (e) {
+			errorMessage('Error in searchbar initialization', e)
+		}
 	}
 
 	domsearchbar.onkeyup = function (e) {
@@ -2443,13 +2476,13 @@ function customFont(data, event) {
 
 	// init
 	if (data) {
-		const { family, url, weight } = data
-
-		if (family && url) apply(url, family, weight || '400')
-		else if (weight) apply(null, null, weight)
-		//
-		// 1.9.3 ==> 1.10.0
-		else if (family && !url) triggerEvent(data)
+		try {
+			const { family, url, weight } = data
+			if (family && url) apply(url, family, weight || '400')
+			else if (weight) apply(null, null, weight)
+		} catch (e) {
+			errorMessage('Custom fonts failed to start', e)
+		}
 	}
 
 	// event
@@ -2518,18 +2551,25 @@ function hideElem(init, buttons, that) {
 
 	// startup initialization
 	if (!that && !buttons && validateHideElem(init)) {
-		initializeHiddenElements(init)
+		try {
+			initializeHiddenElements(init)
+		} catch (e) {
+			errorMessage('Hide failed on init', e)
+		}
 	}
 
 	// Settings buttons initialization
 	else if (buttons) {
 		chrome.storage.sync.get('hide', (data) => {
-			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-
-			buttons.forEach((button) => {
-				const pos = getEventListPosition(button)
-				if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
-			})
+			try {
+				data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
+				buttons.forEach((button) => {
+					const pos = getEventListPosition(button)
+					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
+				})
+			} catch (e) {
+				errorMessage('Hide buttons failed', e)
+			}
 		})
 	}
 
@@ -2640,7 +2680,12 @@ function filterImports(data) {
 
 		links: (links) => {
 			if (links && links.length > 0) {
-				links.forEach(({ icon }, i) => (links[i].icon = saveIconAsAlias(icon)))
+				links.forEach((elem, i) => {
+					// >1.10.0 ==> 1.12.1 Only import icons, not aliases
+					if (!elem.icon.startsWith('alias:')) {
+						links[i].icon = saveIconAsAlias(elem.icon)
+					}
+				})
 			}
 			return links
 		},
@@ -2710,23 +2755,21 @@ function filterImports(data) {
 			return font
 		},
 
-		searchbar: (searchbar) => {
-			// Converts searchbar from <1.9.x bool to object
-			if (typeof searchbar === 'boolean') {
-				let oldsetting = searchbar
-				searchbar = bonjourrDefaults('sync').searchbar
-				searchbar.on = oldsetting
-				searchbar.newtab = data.searchbar_newtab || false
-				searchbar.engine = data.searchbar_engine.replace('s_', '') || 'google'
+		searchbar: (sb) => {
+			let updatedSb = bonjourrDefaults('sync').searchbar
+
+			if (typeof sb === 'boolean') {
+				// Converts searchbar from <1.9.x bool to object
+				updatedSb.on = sb
+				updatedSb.newtab = data.searchbar_newtab || false
+				updatedSb.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
 			}
 
 			// Add new searchbar settings >1.10.0
-			else if (typeof searchbar === 'object') {
-				if (searchbar.opacity === undefined) searchbar.opacity = 0.1
-				if (searchbar.request === undefined) searchbar.request = ''
-			}
+			if (updatedSb.opacity === undefined) updatedSb.opacity = 0.1
+			if (updatedSb.request === undefined) updatedSb.request = ''
 
-			return searchbar
+			return updatedSb
 		},
 	}
 
@@ -2738,9 +2781,9 @@ function filterImports(data) {
 	try {
 		// Go through found categories in import data to filter them
 		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
-		result.about.browser = BonjourrBrowser
+		result = aliasGarbageCollection(result)
 	} catch (e) {
-		errorMessage('Messed up in filter imports')
+		errorMessage('Messed up in filter imports', e)
 	}
 
 	return result
@@ -2816,61 +2859,28 @@ window.onload = function () {
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
-			let newVersion = !data.about
-			if (data.about) newVersion = data.about.version !== BonjourrVersion
-
-			const whichStart = Object.keys(data).length === 0 ? 'firstStartup' : newVersion ? 'newVersion' : 'normal'
-
-			switch (whichStart) {
-				case 'firstStartup': {
-					data = bonjourrDefaults('sync')
-
-					chrome.storage.local.set(bonjourrDefaults('local'))
-					chrome.storage.sync.set(isExtension ? data : { import: data })
-					startup(data)
-
-					break
-				}
-
-				case 'newVersion': {
-					chrome.storage.local.get(null, (local) => {
-						// 1.11.2 => 1.12.0, Moves local icons to sync
-						// newVersion is a callback of slow local only for moving icons
-						// can be removed for later versions
-
-						// For every update: filter & version update
-						data = filterImports(data)
-						data.about.version = BonjourrVersion
-						const aliasList = Object.entries(local).filter(([key, val]) => key.startsWith('alias:'))
-
-						if (aliasList.length > 0) {
-							// move to temp sync, deletes from local
-							aliasList.forEach(([key, val]) => {
-								data[key] = val
-								chrome.storage.local.remove(key)
-							})
-
-							// Alias garbage collector
-							data = aliasGarbageCollection(data)
-
-							// saves sync
-							chrome.storage.sync.clear()
-							chrome.storage.sync.set(isExtension ? data : { import: data })
-						}
-
-						startup(data)
-					})
-
-					break
-				}
-
-				case 'normal': {
-					startup(data)
-					break
-				}
+			// First Startup, chrome.storage is null
+			if (Object.keys(data).length === 0) {
+				data = bonjourrDefaults('sync')
+				chrome.storage.local.set(bonjourrDefaults('local'))
+				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
+
+			// Version is different, can be new update or imports
+			else if (!data.about || data.about.version !== BonjourrVersion) {
+				data = filterImports(data)
+
+				// Change version in here
+				// Only after "different version" startup is triggered
+				data.about = { browser: BonjourrBrowser, version: BonjourrVersion }
+
+				chrome.storage.sync.clear()
+				chrome.storage.sync.set(isExtension ? data : { import: data })
+			}
+
+			startup(data)
 		})
-	} catch (error) {
-		errorMessage('Could not load chrome storage on startup')
+	} catch (e) {
+		errorMessage('Could not load chrome storage on startup', e)
 	}
 }

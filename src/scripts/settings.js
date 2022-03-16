@@ -450,8 +450,7 @@ function importExport(select, isEvent, settingsDom) {
 
 			if (dom.value.length > 0) {
 				try {
-					// Filtered imports from input
-					const imported = filterImports(JSON.parse(dom.value))
+					const imported = JSON.parse(dom.value)
 
 					// Load all sync & dynamicCache
 					chrome.storage.sync.get(null, (data) => {
@@ -463,6 +462,9 @@ function importExport(select, isEvent, settingsDom) {
 									local.dynamicCache.user = []
 								}
 							}
+
+							//
+							delete data.about
 
 							data = { ...data, ...imported }
 							data = aliasGarbageCollection(data)

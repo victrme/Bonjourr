@@ -82,7 +82,7 @@ const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 function validateHideElem(hide) {
 	let res = true
 
-	Array.isArray(hide)
+	Array.isArray(hide) && hide.length > 0
 		? hide.forEach((parent) => {
 				Array.isArray(parent)
 					? parent.forEach((child) => {
@@ -205,7 +205,7 @@ function deleteBrowserStorage() {
 	}, 400)
 }
 
-function errorMessage(error) {
+function errorMessage(comment, error) {
 	function displayMessage(dataStr) {
 		const warning = document.createElement('div')
 		const title = document.createElement('h1')
@@ -223,7 +223,7 @@ function errorMessage(error) {
 
 		explain.className = 'error-explain'
 
-		errorcode.textContent = error + ': ' + dataStr
+		errorcode.textContent = comment + ': ' + dataStr
 		resetButton.textContent = 'Reset Bonjourr'
 		resetButton.addEventListener('click', () => {
 			warning.style.opacity = 0
@@ -255,6 +255,8 @@ function errorMessage(error) {
 
 		setTimeout(() => (warning.style.opacity = 1), 20)
 	}
+
+	console.log(error)
 
 	if (sessionStorage.errorMessage === 'removed') {
 		dominterface.style.opacity = '1'
