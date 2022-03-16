@@ -219,7 +219,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_collection').onchange = function () {
-		unsplash(null, { collection: stringMaxSize(this.value, 128) })
+		unsplash(null, { collection: stringMaxSize(this.value, 256) })
 		this.blur()
 	}
 

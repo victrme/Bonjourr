@@ -696,7 +696,7 @@ function quickLinks(event, that, initStorage) {
 
 		function filterNewLink(title, url) {
 			//
-			url = stringMaxSize(url, 128)
+			url = stringMaxSize(url, 217)
 			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
@@ -821,7 +821,7 @@ async function linksImport() {
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
 			if (typeof mark.url === 'string')
-				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 128)).length === 0) form.appendChild(elem)
+				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 217)).length === 0) form.appendChild(elem)
 		})
 
 		// Replace form to filter already added bookmarks
@@ -2506,13 +2506,12 @@ function hideElem(init, buttons, that) {
 		list.forEach((row, row_i) => {
 			const parent = IDsList[row_i][0]
 
-			isEverythingHidden(list, row_i) ? toggleElement(parent, true) : ''
+			if (isEverythingHidden(list, row_i)) toggleElement(parent, true)
 
 			// Hide children
 			row.forEach((child, child_i) => {
 				const childid = IDsList[row_i][1][child_i]
-
-				child === 1 ? toggleElement(childid, true) : ''
+				if (!!child) toggleElement(childid, true)
 			})
 		})
 	}
@@ -2618,6 +2617,22 @@ function sunTime(init) {
 	}
 }
 
+function onlineMobilePageUpdate() {
+	chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
+		const { dynamic, background_type } = data
+		const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
+
+		if (dynamicNeedsImage) {
+			domoverlay.style.opacity = 0
+			unsplash(data, false)
+		}
+
+		clock(null, data)
+		sunTime(data.weather)
+		weather(null, null, data)
+	})
+}
+
 function filterImports(data) {
 	const filter = {
 		lang: (lang) => (lang === undefined ? 'en' : lang),
@@ -2720,10 +2735,13 @@ function filterImports(data) {
 	if (result.searchbar_engine) delete result.searchbar_engine
 	if (result.searchbar_newtab) delete result.searchbar_newtab
 
-	// Go through found categories in import data to filter them
-	Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
-
-	result.about.browser = BonjourrBrowser
+	try {
+		// Go through found categories in import data to filter them
+		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
+		result.about.browser = BonjourrBrowser
+	} catch (e) {
+		errorMessage('Messed up in filter imports')
+	}
 
 	return result
 }
@@ -2759,28 +2777,16 @@ window.onload = function () {
 	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
 	else window.onstorage = () => importExport('exp')
 
+	// For Mobile that caches pages for days
 	if (mobilecheck) {
-		// For Mobile that caches pages for days
-		document.addEventListener('visibilitychange', () => {
-			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
-				const { dynamic, background_type } = data
-				const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
-
-				if (dynamicNeedsImage) {
-					domoverlay.style.opacity = 0
-					unsplash(data, false)
-				}
-
-				weather(null, null, data)
-			})
-		})
+		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
 	}
 
 	// Checks every 5 minutes if weather needs update
 	setInterval(() => {
 		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
 	}, 5 * 60 * 1000)
-	//
+
 	// Only on Online
 	switch (window.location.protocol) {
 		case 'http:':
@@ -2865,6 +2871,6 @@ window.onload = function () {
 			}
 		})
 	} catch (error) {
-		errorMessage(null, error)
+		errorMessage('Could not load chrome storage on startup')
 	}
 }
