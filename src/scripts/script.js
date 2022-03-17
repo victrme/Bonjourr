@@ -266,32 +266,32 @@ function quickLinks(event, that, initStorage) {
 				// Add blocks and events
 				const blocklist = links.map((link, i) => appendblock(link, i))
 				blocklist.forEach(({ parent }) => addEvents(parent))
-
-				// Icons
-				// If aliases, needs to replace "alias:"
-				let iconList = Object.values(links).map((link) => link.icon)
-				const aliasList = iconList.filter((url) => url.startsWith('alias:'))
-
-				if (aliasList.length > 0) {
-					iconList.forEach((url, i) => {
-						if (url.startsWith('alias:')) {
-							// Empty icons that matches aliases, replaces empty icon by alias data
-							iconList[i] = Object.entries(data)
-								.map(([key, val]) => (key === url ? val : ''))
-								.filter((elem) => elem !== '')[0]
-						}
-					})
-				}
-
 				canDisplayInterface('links')
 
-				for (const index in blocklist) {
-					const iconDOM = blocklist[+index].icon
-					const iconURL = iconList[+index] === undefined ? 'src/assets/interface/loading.gif' : iconList[+index]
-					links[+index] = await addIcon(links[+index], iconDOM, iconURL)
+				// Icons
+				// Get list of icons
+				let changed = 0
+				let iconList = Object.values(links).map((elem) => {
+					return elem.icon.startsWith('alias:') ? data[elem.icon] : elem.icon
+				})
+
+				// Then loads them one by one
+				for (let index = 0; index < blocklist.length; index++) {
+					const dom = blocklist[index].icon
+					const url = iconList[index] === undefined ? 'src/assets/interface/loading.gif' : iconList[index]
+					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => url.includes(x))
+
+					// Fetch new icons if matches these urls, or apply cached
+					if (url.length === 0 || needsToChange) {
+						links[index].icon = saveIconAsAlias(await fetchNewIcon(dom, links[index].url))
+						changed++
+					} else {
+						links[index].icon = dom.src = url
+					}
 				}
 
-				chrome.storage.sync.set({ links })
+				// Saves links when icons are loaded if any changed
+				if (changed > 0) chrome.storage.sync.set({ links })
 			} catch (e) {
 				errorMessage('Failed to load links', e)
 			}
@@ -301,59 +301,42 @@ function quickLinks(event, that, initStorage) {
 		else canDisplayInterface('links')
 	}
 
-	async function addIcon(link, iconDOM, iconURL) {
-		//
-		async function fetchNewIcon() {
-			//
-			// Apply loading gif d'abord
-			iconDOM.src = iconURL
+	async function fetchNewIcon(dom, url) {
+		// Apply loading gif d'abord
+		dom.src = 'src/assets/interface/loading.gif'
 
-			const img = new Image()
-			const a = document.createElement('a')
-			a.href = link.url
+		const img = new Image()
+		const a = document.createElement('a')
+		a.href = url
 
-			// Google favicon API is fallback
-			let url = `https://www.google.com/s2/favicons?sz=64&domain=${a.hostname}`
-			const api = await fetch(`https://favicongrabber.com/api/grab/${a.hostname}`)
+		// Google favicon API is fallback
+		let result = `https://www.google.com/s2/favicons?sz=64&domain=${a.hostname}`
+		const api = await fetch(`https://favicongrabber.com/api/grab/${a.hostname}`)
 
-			if (api.ok) {
-				const json = await api.json()
-				const array = json.icons.filter((x) => x.src.includes('.png'))
-				let png = { size: 0, index: 0 }
+		if (api.ok) {
+			const json = await api.json()
+			const array = json.icons.filter((x) => x.src.includes('.png'))
+			let png = { size: 0, index: 0 }
 
-				// Filter favicon pngs
-				// Keep the biggest one (or first one if no sizes)
-				if (array.length > 0) {
-					array.forEach((elem, i) => {
-						if (elem.sizes) {
-							const currentSize = parseInt(elem.sizes.split('x')[0])
-							if (currentSize > png[0]) png = { size: currentSize, index: i }
-						}
-					})
+			// Filter favicon pngs
+			// Keep the biggest one (or first one if no sizes)
+			if (array.length > 0) {
+				array.forEach((elem, i) => {
+					if (elem.sizes) {
+						const currentSize = parseInt(elem.sizes.split('x')[0])
+						if (currentSize > png[0]) png = { size: currentSize, index: i }
+					}
+				})
 
-					url = array[png.index].src
-				}
+				result = array[png.index].src
 			}
-
-			img.onload = () => (iconDOM.src = url)
-			img.src = url
-			img.remove()
-
-			return url
 		}
-		const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => iconURL.includes(x))
 
-		// Fetch new icons if matches these urls, or apply cached
-		if (iconURL.length === 0 || needsToChange) {
-			try {
-				const foundURL = await fetchNewIcon()
-				link.icon = saveIconAsAlias(foundURL)
-			} catch (e) {
-				errorMessage('An icon failed to load (can be dismissed)', e)
-			}
-		} else iconDOM.src = iconURL
+		img.onload = () => (dom.src = result)
+		img.src = result
+		img.remove()
 
-		return link
+		return result
 	}
 
 	function appendblock(link) {
@@ -2680,6 +2663,9 @@ function filterImports(data) {
 
 		links: (links) => {
 			if (links && links.length > 0) {
+				// Removes any links that doesn't seem right
+				links = links.filter((elem) => elem && elem.icon && elem.title && elem.url)
+
 				links.forEach((elem, i) => {
 					// >1.10.0 ==> 1.12.1 Only import icons, not aliases
 					if (!elem.icon.startsWith('alias:')) {

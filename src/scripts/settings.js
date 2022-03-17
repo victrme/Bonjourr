@@ -467,7 +467,6 @@ function importExport(select, isEvent, settingsDom) {
 							delete data.about
 
 							data = { ...data, ...imported }
-							data = aliasGarbageCollection(data)
 
 							// full import on Online is through "import" field
 							data = isExtension ? data : { import: data }
