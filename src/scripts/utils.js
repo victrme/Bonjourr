@@ -219,7 +219,7 @@ function errorMessage(comment, error) {
 		title.textContent = 'Bonjourr has a problem 😖'
 		subtitle.textContent = `Copy this message below and contact us !`
 		explain.textContent =
-			'Sharing this message with us helps a lot in debugging. You can also reset Bonjourr (back up your settings first ⚠️), or close this window if you think it is a false alert.'
+			'Sharing this message with us helps a lot in debugging. You can also reset Bonjourr, or close this window for now if you think it is a false alert.'
 
 		explain.className = 'error-explain'
 

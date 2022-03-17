@@ -865,10 +865,11 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	top: 100px;
-	left: 100px;
-	width: 500px;
-	padding: 100px;
+	top: 5%;
+	left: 5%;
+	width: calc(90% - 100px);
+	max-width: 500px;
+	padding: 50px;
 	opacity: 0;
 	color: #fff;
 	border-radius: 20px;
