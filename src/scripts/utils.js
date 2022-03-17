@@ -45,7 +45,7 @@ const isExtension =
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.12.0',
+	BonjourrVersion = '1.12.1',
 	funcsOk = {
 		clock: false,
 		links: false,

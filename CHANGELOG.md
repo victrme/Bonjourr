@@ -1,5 +1,13 @@
 ## Changelogs
 
+**v1.12.1**
+
+-   Improved error message style & logic
+-   Increased links url size to 217 characters
+-   Greetings update on cached mobile pages
+-   Fixed tiny default font size on mobile
+-   Fixed import / export related bugs
+
 **v1.12.0**
 
 -   Added exif details in photo credits
