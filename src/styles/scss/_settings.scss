@@ -101,7 +101,7 @@
 		#sett_city,
 		#clockoptions #w_clockface,
 		#clockoptions #w_ampm,
-		#searchbar_options {
+		#searchbar_options, #quotes_options {
 			transition: max-Height 0s;
 		}
 	}
@@ -275,7 +275,7 @@
 		display: none;
 	}
 
-	#i_refresh {
+	#i_refresh, #i_refresh_quotes {
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
@@ -529,6 +529,22 @@
 
 		@include hidden();
 	}
+
+	#quotes_options {
+		overflow: hidden;
+		max-height: 0;
+		transition: max-height 0.4s;
+
+		// #quotesCredits {
+		// 	color: $placeholderGrey;
+		// 	font-size: .8em;
+		// }
+	}
+
+	#quotes_options.shown {
+		max-height: 110px;
+	}
+
 
 	#i_customfont {
 		text-transform: capitalize;

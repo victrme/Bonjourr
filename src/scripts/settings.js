@@ -332,6 +332,17 @@ function initParams(data, settingsDom) {
 		searchbar('newtab', this)
 	}
 
+	// quotes
+	paramId('i_quotes').onchange = function () {
+		paramId('quotes_options').classList.toggle('shown')
+	}
+
+	paramId('i_refresh_quotes').onclick = function () {
+		quotes();
+	}
+
+	
+
 	//settings
 
 	paramId('submitReset').onclick = function () {

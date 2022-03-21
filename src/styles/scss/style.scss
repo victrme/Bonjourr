@@ -18,7 +18,8 @@
 		#time,
 		#main,
 		#sb_container,
-		#linkblocks {
+		#linkblocks,
+		#quotes_container {
 			transform: translateX(-100px);
 		}
 	}
@@ -308,6 +309,31 @@
 			&.shown {
 				opacity: 1;
 				cursor: pointer;
+			}
+		}
+	}
+
+	#quotes_container {
+		opacity: 0;
+		font-size: 1.4em;
+		max-width: 33vw;
+		margin: auto;
+		user-select: text;
+		-moz-user-select: text;
+		-webkit-user-select: text;
+		margin-bottom: 1.5rem;
+		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
+
+		&.shown {
+			opacity: 1;
+		
+			#theAuthor {
+				opacity: 0;
+				transition: opacity 0.4s;
+			}
+
+			&:hover #theAuthor{
+				opacity: 1;
 			}
 		}
 	}

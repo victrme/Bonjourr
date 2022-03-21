@@ -2041,6 +2041,7 @@ function darkmode(choice, init) {
 }
 
 function searchbar(event, that, init) {
+
 	const emptyButton = id('sb_empty')
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
@@ -2146,6 +2147,37 @@ function searchbar(event, that, init) {
 	}
 
 	event ? updateSearchbar() : initSearchbar()
+}
+
+function quotes(data) {
+	let dataWeMayNeed = {
+		'on' : true,
+		'freq' : 'tabs',
+		'lang' : 'en'
+	};
+		
+	
+	async function updateQuote() {
+		// Fetch a random quote from the Quotable API
+		const response = await fetch("https://api.quotable.io/random");
+		const data = await response.json();
+
+		if (response.ok) {
+		  // Update DOM elements
+		  id('theQuote').textContent = data.content;
+		  id('theAuthor').textContent = data.author;
+		} else {
+		  console.log('An error occured with the quotes API :(');
+		}
+	}
+
+
+	dataWeMayNeed['on'] ? updateQuote() : '';
+
+
+
+
+
 }
 
 function showPopup(data) {
@@ -2796,6 +2828,9 @@ function startup(data) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
+
+	// faudra lui donner à manger quelque chose qui existe mais pour l'instant pas grave
+	quotes(data.quotes);
 
 	setTimeout(() => settingsInit(data), 200)
 }
