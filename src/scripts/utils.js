@@ -335,6 +335,9 @@ function bonjourrDefaults(which) {
 					engine: 'google',
 					request: '',
 				},
+				quotes: {
+					on: true
+				},
 				font: {
 					url: '',
 					family: '',

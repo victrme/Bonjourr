@@ -2149,15 +2149,12 @@ function searchbar(event, that, init) {
 	event ? updateSearchbar() : initSearchbar()
 }
 
-function quotes(data) {
-	let dataWeMayNeed = {
-		'on' : true,
-		'freq' : 'tabs',
-		'lang' : 'en'
-	};
-		
+function quotes(event, that, init) {
+
 	
-	async function updateQuote() {
+	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
+
+	async function newQuote() {
 		// Fetch a random quote from the Quotable API
 		const response = await fetch("https://api.quotable.io/random");
 		const data = await response.json();
@@ -2171,8 +2168,40 @@ function quotes(data) {
 		}
 	}
 
+	function updateQuotes() {
+		chrome.storage.sync.get('quotes', (data) => {
+			switch (event) {
+				case 'toggle': {
+					display(that.checked)
+					data.quotes.on = that.checked
+					break
+				}
+			}
 
-	dataWeMayNeed['on'] ? updateQuote() : '';
+			chrome.storage.sync.set({ quotes: data.quotes })
+		})
+	}
+			
+
+	if (event) {
+		updateQuotes()
+	} else if (init.on) {
+		newQuote()
+		display(true)
+	}
+
+	// console.log(init);
+
+
+
+
+	// chrome.storage.sync.get('quotes', (data) => {
+	// 	console.log(data);
+	// 	chrome.storage.sync.set({ quotes: settings.on })
+	// });
+	
+	
+
 
 
 
@@ -2830,7 +2859,8 @@ function startup(data) {
 	quickLinks(null, null, data)
 
 	// faudra lui donner à manger quelque chose qui existe mais pour l'instant pas grave
-	quotes(data.quotes);
+	quotes(null, null, data.quotes);
+	console.log(data);
 
 	setTimeout(() => settingsInit(data), 200)
 }
@@ -2845,6 +2875,8 @@ window.onload = function () {
 	if (mobilecheck) {
 		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
 	}
+
+	
 
 	// Checks every 5 minutes if weather needs update
 	setInterval(() => {
@@ -2898,7 +2930,7 @@ window.onload = function () {
 				chrome.storage.sync.clear()
 				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
-
+			// console.log(data);
 			startup(data)
 		})
 	} catch (e) {

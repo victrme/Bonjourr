@@ -45,6 +45,7 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
 	initCheckbox('i_sb', isThereData('searchbar', 'on'))
 	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
+	initCheckbox('i_quotes', isThereData('quotes', 'on'))
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
@@ -106,6 +107,8 @@ function initParams(data, settingsDom) {
 
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
+
+	clas(paramId('quotes_options'), data.quotes.on, 'shown')
 
 	//langue
 	paramId('i_lang').value = data.lang || 'en'
@@ -335,10 +338,11 @@ function initParams(data, settingsDom) {
 	// quotes
 	paramId('i_quotes').onchange = function () {
 		paramId('quotes_options').classList.toggle('shown')
+		quotes('toggle', this)
 	}
 
 	paramId('i_refresh_quotes').onclick = function () {
-		quotes();
+		quotes('refresh', this);
 	}
 
 	

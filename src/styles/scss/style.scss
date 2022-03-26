@@ -317,21 +317,23 @@
 		opacity: 0;
 		font-size: 1.4em;
 		max-width: 33vw;
+		min-height: 58px;
 		margin: auto;
 		user-select: text;
 		-moz-user-select: text;
 		-webkit-user-select: text;
 		margin-bottom: 1.5rem;
 		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
+		opacity: 0;
+
+		#theAuthor {
+			opacity: 0;
+			transition: opacity 0.4s;
+		}
 
 		&.shown {
 			opacity: 1;
-		
-			#theAuthor {
-				opacity: 0;
-				transition: opacity 0.4s;
-			}
-
+			
 			&:hover #theAuthor{
 				opacity: 1;
 			}
