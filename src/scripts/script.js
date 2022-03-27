@@ -2187,6 +2187,11 @@ function quotes(event, that, init) {
 					data.quotes.on = that.checked
 					break
 				}
+				case 'author': {
+					id('theAuthor').classList.toggle('alwaysVisible')
+					data.quotes.author = that.checked
+					break
+				}
 			}
 
 			chrome.storage.sync.set({ quotes: data.quotes })
@@ -2196,19 +2201,24 @@ function quotes(event, that, init) {
 
 	(async () => {
 		if (event) {
+			// saves settings
 			if (event != 'refresh') {
 				updateQuoteSettings()
+			// refreshes quote
 			} else {
 				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
 				loadNextQuote()
 			}
-			
 		} else if (init.on) {
-			// for first startup
+				// for first startup
 			if (!localStorage.getItem("nextQuote")) {
 				insertQuote(await newQuote())
 			} else {
 				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+			}
+
+			if (init.author) {
+				id('theAuthor').classList.add('alwaysVisible')
 			}
 	
 			display(true)
@@ -2861,15 +2871,13 @@ function startup(data) {
 	linksrow(data.linksrow)
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
+	quotes(null, null, data.quotes);
 	showPopup(data.reviewPopup)
 
 	customCss(data.css)
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
-
-	// faudra lui donner à manger quelque chose qui existe mais pour l'instant pas grave
-	quotes(null, null, data.quotes);
 
 	setTimeout(() => settingsInit(data), 200)
 }

@@ -329,6 +329,10 @@
 		#theAuthor {
 			opacity: 0;
 			transition: opacity 0.4s;
+
+			&.alwaysVisible {
+				opacity: 1;
+			}
 		}
 
 		&.shown {

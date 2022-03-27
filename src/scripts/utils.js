@@ -336,7 +336,9 @@ function bonjourrDefaults(which) {
 					request: '',
 				},
 				quotes: {
-					on: true
+					on: true,
+					author: false,
+					frequency: 'day'
 				},
 				font: {
 					url: '',

@@ -46,6 +46,7 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_sb', isThereData('searchbar', 'on'))
 	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
 	initCheckbox('i_quotes', isThereData('quotes', 'on'))
+	initCheckbox('i_quotes_author', isThereData('quotes', 'author'))
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
@@ -343,6 +344,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_refresh_quotes').onclick = function () {
 		quotes('refresh', this);
+	}
+
+	paramId('i_quotes_author').onchange = function () {
+		quotes('author', this)
 	}
 
 	
