@@ -2151,7 +2151,6 @@ function searchbar(event, that, init) {
 
 function quotes(event, that, init) {
 
-	
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
 	async function newQuote() {
@@ -2160,15 +2159,24 @@ function quotes(event, that, init) {
 		const data = await response.json();
 
 		if (response.ok) {
-		  // Update DOM elements
-		  id('theQuote').textContent = data.content;
-		  id('theAuthor').textContent = data.author;
+			return data
 		} else {
 		  console.log('An error occured with the quotes API :(');
 		}
 	}
 
-	function updateQuotes() {
+	async function loadNextQuote() {
+		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
+		console.log("next quote loaded")
+	}
+
+	function insertQuote(values) {
+		// Update DOM elements
+		id('theQuote').textContent = values.content;
+		id('theAuthor').textContent = values.author;
+	}
+
+	function updateQuoteSettings() {
 		chrome.storage.sync.get('quotes', (data) => {
 			switch (event) {
 				case 'toggle': {
@@ -2181,32 +2189,27 @@ function quotes(event, that, init) {
 			chrome.storage.sync.set({ quotes: data.quotes })
 		})
 	}
+
+	(async () => {
+		if (event) {
+			if (event != 'refresh') {
+				updateQuoteSettings()
+			} else {
+				insertQuote(await newQuote())
+			}
 			
-
-	if (event) {
-		updateQuotes()
-	} else if (init.on) {
-		newQuote()
-		display(true)
-	}
-
-	// console.log(init);
-
-
-
-
-	// chrome.storage.sync.get('quotes', (data) => {
-	// 	console.log(data);
-	// 	chrome.storage.sync.set({ quotes: settings.on })
-	// });
+		} else if (init.on) {
+			// for first startup
+			if (!localStorage.getItem("nextQuote")) {
+				insertQuote(await newQuote())
+			} else {
+				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+			}
 	
-	
-
-
-
-
-
-
+			display(true)
+			loadNextQuote()	
+		}
+	})();
 }
 
 function showPopup(data) {
@@ -2860,7 +2863,6 @@ function startup(data) {
 
 	// faudra lui donner à manger quelque chose qui existe mais pour l'instant pas grave
 	quotes(null, null, data.quotes);
-	console.log(data);
 
 	setTimeout(() => settingsInit(data), 200)
 }
