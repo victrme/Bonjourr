@@ -2167,7 +2167,6 @@ function quotes(event, that, init) {
 
 	async function loadNextQuote() {
 		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
-		console.log("next quote loaded")
 	}
 
 	function insertQuote(values) {
@@ -2181,6 +2180,10 @@ function quotes(event, that, init) {
 			switch (event) {
 				case 'toggle': {
 					display(that.checked)
+					if (id('theQuote').textContent === '') {
+						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+						loadNextQuote()	
+					}
 					data.quotes.on = that.checked
 					break
 				}
@@ -2190,12 +2193,14 @@ function quotes(event, that, init) {
 		})
 	}
 
+
 	(async () => {
 		if (event) {
 			if (event != 'refresh') {
 				updateQuoteSettings()
 			} else {
-				insertQuote(await newQuote())
+				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+				loadNextQuote()
 			}
 			
 		} else if (init.on) {
@@ -2207,6 +2212,8 @@ function quotes(event, that, init) {
 			}
 	
 			display(true)
+			loadNextQuote()	
+		} else if (!init.on && !localStorage.getItem("nextQuote")) {
 			loadNextQuote()	
 		}
 	})();
