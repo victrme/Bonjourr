@@ -1291,7 +1291,6 @@ function imgBackground(val, loadTime, init) {
 }
 
 function freqControl(state, every, last) {
-	console.log(state, every, last)
 	const nowDate = new Date()
 
 	// instead of adding unix time to the last date
@@ -1300,8 +1299,11 @@ function freqControl(state, every, last) {
 	// changes can only go forward
 
 	switch (state) {
+		
 		case 'set':
+			
 			return nowDate.getTime()
+			
 
 		case 'get': {
 			const lastDate = new Date(last),
@@ -1310,13 +1312,17 @@ function freqControl(state, every, last) {
 					hour: nowDate.getHours() !== lastDate.getHours(),
 				}
 
+				console.log(lastDate)
+
 			switch (every) {
 				case 'day': {
+
 					if (changed.date) return true
 					break
 				}
 
 				case 'hour': {
+					
 					if (changed.date || changed.hour) return true
 					break
 				}
@@ -2167,6 +2173,7 @@ function quotes(event, that, init) {
 	}
 
 	async function loadNextQuote() {
+		console.log('next quote loaded')
 		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
 	}
 
@@ -2195,7 +2202,21 @@ function quotes(event, that, init) {
 				}
 				case 'frequency': {
 					data.quotes.last = freqControl('set')
-					data.quotes.frequency = that .value
+					data.quotes.frequency = that.value
+
+					if (that.value != 'pause') {
+						loadNextQuote()
+					} else {
+						// retrieves quote from dom
+						// let retrievedQuote = {
+						// 	author: id('theAuthor').textContent,
+						// 	content: id('theQuote').textContent
+						// }
+						
+						console.log(localStorage.getItem("nextQuote"))
+						// localStorage.setItem("nextQuote", retrievedQuote)
+						// console.log(localStorage.getItem("nextQuote"))
+					}
 					break;
 				}
 			}
@@ -2212,23 +2233,28 @@ function quotes(event, that, init) {
 				updateQuoteSettings()
 			// refreshes quote
 			} else {
+				
 				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
 				loadNextQuote()
 			}
 		} else if (init.on) {
 				// for first startup
+			
+
 			if (!localStorage.getItem("nextQuote")) {
 				insertQuote(await newQuote())
 			} else {
-				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+				// console.log(JSON.parse(localStorage.getItem("nextQuote")));
+				chrome.storage.sync.get('quotes', (data) => {
+					insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+					if (freqControl('get', data.quotes.frequency, data.quotes.last)) {
+						loadNextQuote()	
+					}
+				})
 			}
 
-			if (init.author) {
-				id('theAuthor').classList.add('alwaysVisible')
-			}
-	
-			display(true)
-			loadNextQuote()	
+			if (init.author) id('theAuthor').classList.add('alwaysVisible')
+			display(true)		
 		} else if (!init.on && !localStorage.getItem("nextQuote")) {
 			loadNextQuote()	
 		}
