@@ -1291,6 +1291,7 @@ function imgBackground(val, loadTime, init) {
 }
 
 function freqControl(state, every, last) {
+	console.log(state, every, last)
 	const nowDate = new Date()
 
 	// instead of adding unix time to the last date
@@ -2191,6 +2192,11 @@ function quotes(event, that, init) {
 					id('theAuthor').classList.toggle('alwaysVisible')
 					data.quotes.author = that.checked
 					break
+				}
+				case 'frequency': {
+					data.quotes.last = freqControl('set')
+					data.quotes.frequency = that .value
+					break;
 				}
 			}
 

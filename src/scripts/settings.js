@@ -28,6 +28,7 @@ function initParams(data, settingsDom) {
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
 	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
+	initInput('i_freq_quotes', isThereData('quotes', 'frequency'))
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
@@ -340,6 +341,10 @@ function initParams(data, settingsDom) {
 	paramId('i_quotes').onchange = function () {
 		paramId('quotes_options').classList.toggle('shown')
 		quotes('toggle', this)
+	}
+
+	paramId('i_freq_quotes').onchange = function () {
+		quotes('frequency', this)
 	}
 
 	paramId('i_refresh_quotes').onclick = function () {
