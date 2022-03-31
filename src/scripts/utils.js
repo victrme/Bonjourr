@@ -104,7 +104,7 @@ function bundleLinks(storage) {
 	// 1.13.0: Returns an array of found links in storage
 	let res = []
 	Object.entries(storage).map(([key, val]) => {
-		if (key.length === 10 && key.startsWith('link')) res.push(val)
+		if (key.length === 11 && key.startsWith('links')) res.push(val)
 	})
 
 	res.sort((a, b) => a.order - b.order)

@@ -251,9 +251,9 @@ function quickLinks(event, that, init) {
 					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => link.icon.includes(x))
 
 					// Fetch new icons if matches these urls
-					if (link.icon.length === 0 || needsToChange) {
+					if (needsToChange) {
 						link.icon = await fetchNewIcon(dom, link.url)
-						chrome.storage.sync.set({ [`link${link._id}`]: link })
+						chrome.storage.sync.set({ [link._id]: link })
 					}
 
 					// Apply cached
@@ -377,8 +377,8 @@ function quickLinks(event, that, init) {
 					dragged.parent.appendChild(hoveredChild)
 
 					const temp = link.order
-					data[`link${link._id}`].order = hovered.link.order
-					data[`link${hovered.link._id}`].order = temp
+					data[link._id].order = hovered.link.order
+					data[hovered.link._id].order = temp
 
 					chrome.storage.sync.set(data)
 				}
@@ -476,12 +476,11 @@ function quickLinks(event, that, init) {
 		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
 		else editLinkContainer.onmousedown = outsideClick
 
-		id('re_title').onclick = (e) => emptyAndHideIcon(e)
-		id('re_url').onclick = (e) => emptyAndHideIcon(e)
-		id('re_iconurl').onclick = (e) => emptyAndHideIcon(e)
-		id('e_title').onkeyup = (e) => showDelIcon(e.target)
-		id('e_url').onkeyup = (e) => showDelIcon(e.target)
-		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
+		const removers = ['re_title', 're_url', 're_iconurl']
+		const inputs = ['e_title', 'e_url', 'e_iconurl']
+
+		removers.forEach((name) => (id(name).onclick = (e) => emptyAndHideIcon(e)))
+		inputs.forEach((name) => (id(name).onkeyup = (e) => showDelIcon(e.target)))
 	}
 
 	function editlink(that, i) {
@@ -544,7 +543,7 @@ function quickLinks(event, that, init) {
 				parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
 
 				// Updates
-				chrome.storage.sync.set({ [`link${link._id}`]: link })
+				chrome.storage.sync.set({ [link._id]: link })
 			})
 
 			return true
@@ -597,11 +596,11 @@ function quickLinks(event, that, init) {
 
 			links.map((l) => {
 				l.order > index ? (l.order -= 1) : '' // Decrement order for elements above the one removed
-				data[`link${l._id}`] = l // updates link in storage
+				data[l._id] = l // updates link in storage
 			})
 
 			chrome.storage.sync.set(data)
-			chrome.storage.sync.remove(`link${link._id}`)
+			chrome.storage.sync.remove(link._id)
 		})
 	}
 
@@ -615,7 +614,7 @@ function quickLinks(event, that, init) {
 			const unacceptable = to('about:') || to('chrome://')
 
 			return {
-				_id: randomString(6),
+				_id: 'links' + randomString(6),
 				order: 0,
 				title: stringMaxSize(title, 32),
 				icon: 'src/assets/interface/loading.gif',
@@ -635,10 +634,10 @@ function quickLinks(event, that, init) {
 
 				// Displays and saves before fetching icon
 				initblocks([link])
-				chrome.storage.sync.set({ ['link' + link._id]: link })
+				chrome.storage.sync.set({ [link._id]: link })
 
 				// Some other dom control
-				if (data.links.length === 30) linksInputDisable(true)
+				if (linklist.length >= 30) linksInputDisable(true)
 				domlinkblocks.style.visibility = 'visible'
 			})
 		}

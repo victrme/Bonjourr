@@ -52,7 +52,7 @@ function initParams(data, settingsDom) {
 	if (isOnlineOrSafari) paramId('b_importbookmarks').style.display = 'none'
 
 	// Links limit
-	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
+	if (bundleLinks(data).length >= 30) quickLinks('maxControl', settingsDom)
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
