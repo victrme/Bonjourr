@@ -539,13 +539,11 @@ function quickLinks(event, that, init) {
 					icon: stringMaxSize(e_iconurl.value, 8180),
 				}
 
-				const { title, url, icon } = link
+				parent.querySelector('.block').setAttribute('source', link.url)
+				parent.querySelector('img').src = link.icon
+				parent.querySelector('span').textContent = link.title
 
-				parent.querySelector('.block').setAttribute('source', url)
-				parent.querySelector('img').src = icon
-				parent.querySelector('span').textContent = title
-
-				parent.querySelector('span').style.display = title === '' ? 'none' : 'block'
+				parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
 
 				// Updates
 				chrome.storage.sync.set({ [`link${link._id}`]: link })
@@ -583,12 +581,9 @@ function quickLinks(event, that, init) {
 	}
 
 	function removeblock(index) {
-		chrome.storage.sync.get('links', (data) => {
-			// Remove alias from storage
-			const icon = data.links[index].icon
-			if (icon.startsWith('alias:')) chrome.storage.sync.remove(icon)
-
-			data.links.splice(index, 1)
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data)
+			let link = links.filter((l) => l.order === index)[0]
 
 			//enleve le html du block
 			const blockParent = domlinkblocks.children[index + 1]
@@ -599,12 +594,16 @@ function quickLinks(event, that, init) {
 
 			setTimeout(function () {
 				domlinkblocks.removeChild(blockParent)
-
-				//enleve linkblocks si il n'y a plus de links
-				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
+				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
 			}, 600)
 
-			chrome.storage.sync.set({ links: data.links })
+			links.map((l) => {
+				l.order > index ? (l.order -= 1) : '' // Decrement order for elements above the one removed
+				data[`link${l._id}`] = l // updates link in storage
+			})
+
+			chrome.storage.sync.set(data)
+			chrome.storage.sync.remove(`link${link._id}`)
 		})
 	}
 
@@ -618,7 +617,7 @@ function quickLinks(event, that, init) {
 			const unacceptable = to('about:') || to('chrome://')
 
 			return {
-				_id: Math.random().toString(26).substring(7),
+				_id: randomString(6),
 				order: 0,
 				title: stringMaxSize(title, 32),
 				icon: 'src/assets/interface/loading.gif',

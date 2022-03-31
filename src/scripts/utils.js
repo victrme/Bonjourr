@@ -79,6 +79,11 @@ switch (window.location.protocol) {
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
+const randomString = (len) => {
+	const chars = 'abcdefghijklmnopqrstuvwxyz'
+	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+}
+
 function validateHideElem(hide) {
 	let res = true
 
@@ -99,8 +104,10 @@ function bundleLinks(storage) {
 	// 1.13.0: Returns an array of found links in storage
 	let res = []
 	Object.entries(storage).map(([key, val]) => {
-		if (key.length === 11 && key.startsWith('link')) res.push(val)
+		if (key.length === 10 && key.startsWith('link')) res.push(val)
 	})
+
+	res.sort((a, b) => a.order - b.order)
 	return res
 }
 
