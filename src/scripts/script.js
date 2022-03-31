@@ -317,7 +317,7 @@ function quickLinks(event, that, init) {
 
 	function appendblock(link) {
 		let title = stringMaxSize(link.title, 32)
-		let url = stringMaxSize(link.url, 128)
+		let url = stringMaxSize(link.url, 512)
 
 		//le DOM du block
 		const lIcon = document.createElement('img')
@@ -332,11 +332,12 @@ function quickLinks(event, that, init) {
 		lIconWrap.appendChild(lIcon)
 
 		blockTitle.textContent = title
+		blockTitle.style.display = title === '' ? 'none' : 'block'
 
 		block.className = 'block'
 		block.setAttribute('source', url)
 		block.appendChild(lIconWrap)
-		title ? block.appendChild(blockTitle) : ''
+		block.appendChild(blockTitle)
 
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.setAttribute('draggable', 'true')
@@ -503,14 +504,15 @@ function quickLinks(event, that, init) {
 			id('editlink').setAttribute('index', index)
 
 			chrome.storage.sync.get(null, (data) => {
-				const { title, url, icon } = data.links[index]
+				const link = bundleLinks(data).filter((l) => l.order === index)[0]
+				const { title, url, icon } = link
 
 				e_title.setAttribute('placeholder', tradThis('Title'))
 				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
 
 				e_title.value = title
 				e_url.value = url
-				e_iconurl.value = icon.startsWith('alias:') ? data[icon] : icon
+				e_iconurl.value = icon
 
 				showDelIcon(e_title)
 				showDelIcon(e_url)
@@ -526,68 +528,38 @@ function quickLinks(event, that, init) {
 				return false
 			}
 
-			const updated = {
-				title: stringMaxSize(e_title.value, 32),
-				url: stringMaxSize(e_url.value, 217),
-				icon: stringMaxSize(e_iconurl.value, 8180),
-			}
-
 			chrome.storage.sync.get(null, (data) => {
-				let allLinks = [...data.links]
 				const parent = domlinkblocks.children[i + 1]
+				let link = bundleLinks(data).filter((l) => l.order === i)[0]
 
-				// Update on interface
-				Object.entries(allLinks[i]).forEach(([key, val]) => {
-					if (val !== updated[key]) {
-						//
-						switch (key) {
-							case 'title': {
-								const domtitle = parent.querySelector('span')
+				link = {
+					...link,
+					title: stringMaxSize(e_title.value, 32),
+					url: stringMaxSize(e_url.value, 217),
+					icon: stringMaxSize(e_iconurl.value, 8180),
+				}
 
-								// Adds span title or updates it
-								if (!domtitle) {
-									const span = document.createElement('span')
-									span.textContent = updated[key]
-									parent.children[0].appendChild(span)
-								} else {
-									domtitle.textContent = updated[key]
-								}
+				const { title, url, icon } = link
 
-								break
-							}
+				parent.querySelector('.block').setAttribute('source', url)
+				parent.querySelector('img').src = icon
+				parent.querySelector('span').textContent = title
 
-							case 'url':
-								parent.children[0].setAttribute('source', updated[key])
-								break
+				parent.querySelector('span').style.display = title === '' ? 'none' : 'block'
 
-							case 'icon': {
-								// Updates dom
-								parent.querySelector('img').src = updated.icon
-								const previousIconURL = allLinks[i].icon
-
-								updated.icon = saveIconAsAlias(
-									updated.icon,
-									previousIconURL.startsWith('alias:') ? previousIconURL : null
-								)
-
-								break
-							}
-						}
-
-						allLinks[i][key] = updated[key]
-					}
-				})
-
-				// Update in storage
-				chrome.storage.sync.set({ links: allLinks })
+				// Updates
+				chrome.storage.sync.set({ [`link${link._id}`]: link })
 			})
 
 			return true
 		}
 
-		// If i is defined, you updated a link=
-		if (typeof i === 'number') return updatesEditedLink()
-		else displayEditWindow()
+		// If i is defined, updates a link
+		if (typeof i === 'number') {
+			return updatesEditedLink()
+		}
+
+		displayEditWindow()
 	}
 
 	function openlink(that, e) {
@@ -606,9 +578,7 @@ function quickLinks(event, that, init) {
 	function findindex(that) {
 		//passe la liste des blocks, s'arrete si that correspond
 		//renvoie le nombre de loop pour l'atteindre
-
 		const list = domlinkblocks.children
-
 		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
 	}
 
