@@ -80,7 +80,7 @@ const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, 
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
 const randomString = (len) => {
-	const chars = 'abcdefghijklmnopqrstuvwxyz'
+	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
 

@@ -235,17 +235,8 @@ function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	let editDisplayTimeout = setTimeout(() => {}, 0)
-	let hovered,
-		dragged = { parent: undefined, link: {}, index: 0 }
+	let hovered = { parent: undefined, link: {}, index: 0 }
 
-	//enleve les selections d'edit
-	const removeLinkSelection = () =>
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
-			clas(e, false, 'selected')
-		})
-
-	//initialise les blocs en fonction du storage
-	//utilise simplement une boucle de appendblock
 	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
@@ -349,42 +340,47 @@ function quickLinks(event, that, init) {
 		return { icon: lIcon, parent: block_parent }
 	}
 
+	function removeLinkSelection() {
+		//enleve les selections d'edit
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
+			clas(e, false, 'selected')
+		})
+	}
+
+	function showDelIcon(input) {
+		const img = input.nextElementSibling
+		if (input.value === '') img.classList.remove('shown')
+		else img.classList.add('shown')
+	}
+
 	function addEvents(elem) {
 		function handleDrag(is, that) {
-			chrome.storage.sync.get('links', (data) => {
-				const i = findindex(that)
+			chrome.storage.sync.get(null, (data) => {
+				const index = findindex(that)
+				const link = bundleLinks(data)[index]
 
-				switch (is) {
-					case 'start':
-						dragged = { parent: elem, link: data.links[i], index: i }
-						break
+				if (is === 'enter') {
+					hovered = { parent: elem, link, index }
+					return
+				}
 
-					case 'enter':
-						hovered = { parent: elem, link: data.links[i], index: i }
-						break
+				if (is === 'end') {
+					if (hovered.index === index) return
 
-					case 'end': {
-						if (hovered.index !== dragged.index) {
-							//changes html blocks
-							const hoveredChild = hovered.parent.children[0]
-							const draggedChild = dragged.parent.children[0]
+					const dragged = { parent: elem }
+					const hoveredChild = hovered.parent.children[0]
+					const draggedChild = dragged.parent.children[0]
 
-							hovered.parent.children[0].remove()
-							dragged.parent.children[0].remove()
+					hovered.parent.children[0].remove()
+					dragged.parent.children[0].remove()
+					hovered.parent.appendChild(draggedChild)
+					dragged.parent.appendChild(hoveredChild)
 
-							hovered.parent.appendChild(draggedChild)
-							dragged.parent.appendChild(hoveredChild)
+					const temp = link.order
+					data[`link${link._id}`].order = hovered.link.order
+					data[`link${hovered.link._id}`].order = temp
 
-							// Switches link storage
-							let allLinks = data.links
-
-							allLinks[dragged.index] = hovered.link
-							allLinks[hovered.index] = dragged.link
-
-							chrome.storage.sync.set({ links: allLinks })
-						}
-						break
-					}
+					chrome.storage.sync.set(data)
 				}
 			})
 		}
@@ -415,7 +411,15 @@ function quickLinks(event, that, init) {
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
 			clearTimeout(editDisplayTimeout)
-			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
+
+			if (e.which === 3) {
+				editlink(this)
+				return
+			}
+
+			if (!has(id('settings'), 'shown')) {
+				openlink(this, e)
+			}
 		}
 
 		// Mobile clicks
@@ -436,12 +440,6 @@ function quickLinks(event, that, init) {
 
 		elem.addEventListener('touchstart', startHandler, { passive: true })
 		elem.addEventListener('touchend', endHandler, { passive: true })
-	}
-
-	function showDelIcon(input) {
-		const img = input.nextElementSibling
-		if (input.value === '') img.classList.remove('shown')
-		else img.classList.add('shown')
 	}
 
 	function editEvents() {
