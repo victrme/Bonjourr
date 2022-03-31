@@ -95,6 +95,15 @@ function validateHideElem(hide) {
 	return res
 }
 
+function bundleLinks(storage) {
+	// 1.13.0: Returns an array of found links in storage
+	let res = []
+	Object.entries(storage).map(([key, val]) => {
+		if (key.length === 11 && key.startsWith('link')) res.push(val)
+	})
+	return res
+}
+
 function aliasGarbageCollection(sync) {
 	const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
 

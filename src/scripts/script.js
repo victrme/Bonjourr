@@ -231,18 +231,7 @@ function clock(event, init) {
 	}
 }
 
-const saveIconAsAlias = (iconstr, oldAlias) => {
-	// Fait un nouvel objet à chaque fois
-	// Ajoute l'url de l'icône à l'objet
-	// Sauvegarde et retourne le nom de l'objet
-	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(7)
-	const tosave = {}
-	tosave[alias] = iconstr
-	chrome.storage.sync.set(tosave)
-	return alias
-}
-
-function quickLinks(event, that, initStorage) {
+function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	let editDisplayTimeout = setTimeout(() => {}, 0)
@@ -257,41 +246,28 @@ function quickLinks(event, that, initStorage) {
 
 	//initialise les blocs en fonction du storage
 	//utilise simplement une boucle de appendblock
-	async function initblocks(data) {
-		const links = data.links || []
-
+	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
-				// Blocks
 				// Add blocks and events
-				const blocklist = links.map((link, i) => appendblock(link, i))
+				const blocklist = links.map((l) => appendblock(l))
 				blocklist.forEach(({ parent }) => addEvents(parent))
 				canDisplayInterface('links')
 
-				// Icons
-				// Get list of icons
-				let changed = 0
-				let iconList = Object.values(links).map((elem) => {
-					return elem.icon.startsWith('alias:') ? data[elem.icon] : elem.icon
-				})
-
-				// Then loads them one by one
-				for (let index = 0; index < blocklist.length; index++) {
+				// Load icons one by one
+				links.map(async (link, index) => {
 					const dom = blocklist[index].icon
-					const url = iconList[index] === undefined ? 'src/assets/interface/loading.gif' : iconList[index]
-					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => url.includes(x))
+					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => link.icon.includes(x))
 
-					// Fetch new icons if matches these urls, or apply cached
-					if (url.length === 0 || needsToChange) {
-						links[index].icon = saveIconAsAlias(await fetchNewIcon(dom, links[index].url))
-						changed++
-					} else {
-						links[index].icon = dom.src = url
+					// Fetch new icons if matches these urls
+					if (link.icon.length === 0 || needsToChange) {
+						link.icon = await fetchNewIcon(dom, link.url)
+						chrome.storage.sync.set({ [`link${link._id}`]: link })
 					}
-				}
 
-				// Saves links when icons are loaded if any changed
-				if (changed > 0) chrome.storage.sync.set({ links })
+					// Apply cached
+					else dom.src = link.icon
+				})
 			} catch (e) {
 				errorMessage('Failed to load links', e)
 			}
@@ -664,26 +640,6 @@ function quickLinks(event, that, initStorage) {
 
 	function linkSubmission(importList) {
 		//
-
-		function saveLink(filteredLinks) {
-			id('i_title').value = ''
-			id('i_url').value = ''
-
-			chrome.storage.sync.get(null, (data) => {
-				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
-
-				if (data.links) {
-					data.links = data.links.concat(filteredLinks)
-					domlinkblocks.style.visibility = 'visible'
-
-					if (data.links.length === 30) linksInputDisable(true)
-
-					blocklist.forEach((parent) => parent.remove())
-					initblocks(data)
-				}
-			})
-		}
-
 		function filterNewLink(title, url) {
 			//
 			url = stringMaxSize(url, 217)
@@ -692,24 +648,46 @@ function quickLinks(event, that, initStorage) {
 			const unacceptable = to('about:') || to('chrome://')
 
 			return {
+				_id: Math.random().toString(26).substring(7),
+				order: 0,
 				title: stringMaxSize(title, 32),
-				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 				icon: 'src/assets/interface/loading.gif',
+				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 			}
 		}
 
-		const newLinks = []
+		function saveLink(link) {
+			id('i_title').value = ''
+			id('i_url').value = ''
 
-		if (importList && importList.length > 0) {
-			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
-			saveLink(newLinks)
-		} else {
-			//si l'url filtré est juste
-			//et l'input n'a pas été activé ya -1s
-			if (id('i_url').value.length > 2 && !stillActive) {
-				newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
-				saveLink(newLinks)
-			}
+			chrome.storage.sync.get(null, (data) => {
+				const linklist = bundleLinks(data)
+
+				// Updates order
+				link.order = linklist.length
+
+				// Displays and saves before fetching icon
+				initblocks([link])
+				chrome.storage.sync.set({ ['link' + link._id]: link })
+
+				// Some other dom control
+				if (data.links.length === 30) linksInputDisable(true)
+				domlinkblocks.style.visibility = 'visible'
+			})
+		}
+
+		const title = id('i_title').value
+		const url = id('i_url').value
+
+		// const newLinks = []
+		// if (importList && importList.length > 0) {
+		// 	importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
+		// 	saveLink(newLinks)
+		// }
+
+		// Si l'url est assez longue et l'input n'a pas été activé ya -1s
+		if (url.length > 2 && !stillActive) {
+			saveLink(filterNewLink(title, url))
 		}
 	}
 
@@ -741,8 +719,8 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	if (initStorage) {
-		initblocks(initStorage)
+	if (init) {
+		initblocks(bundleLinks(init))
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
