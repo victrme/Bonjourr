@@ -1312,8 +1312,6 @@ function freqControl(state, every, last) {
 					hour: nowDate.getHours() !== lastDate.getHours(),
 				}
 
-				console.log(lastDate)
-
 			switch (every) {
 				case 'day': {
 
@@ -2183,6 +2181,16 @@ function quotes(event, that, init) {
 		id('theAuthor').textContent = values.author;
 	}
 
+	function saveCurrentQuote() {
+		// retrieves quote from dom
+		let retrievedQuote = {
+			author: id('theAuthor').textContent,
+			content: id('theQuote').textContent
+		}
+
+		localStorage.setItem("nextQuote", JSON.stringify(retrievedQuote))
+	}
+
 	function updateQuoteSettings() {
 		chrome.storage.sync.get('quotes', (data) => {
 			switch (event) {
@@ -2204,18 +2212,10 @@ function quotes(event, that, init) {
 					data.quotes.last = freqControl('set')
 					data.quotes.frequency = that.value
 
-					if (that.value != 'pause') {
+					if (that.value === 'tabs') {
 						loadNextQuote()
 					} else {
-						// retrieves quote from dom
-						// let retrievedQuote = {
-						// 	author: id('theAuthor').textContent,
-						// 	content: id('theQuote').textContent
-						// }
-						
-						console.log(localStorage.getItem("nextQuote"))
-						// localStorage.setItem("nextQuote", retrievedQuote)
-						// console.log(localStorage.getItem("nextQuote"))
+						saveCurrentQuote()
 					}
 					break;
 				}
@@ -2233,28 +2233,39 @@ function quotes(event, that, init) {
 				updateQuoteSettings()
 			// refreshes quote
 			} else {
-				
-				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
-				loadNextQuote()
+				insertQuote(await newQuote())
+				saveCurrentQuote()
 			}
 		} else if (init.on) {
-				// for first startup
+			// for first startup
 			
-
+			// if no next quote available
 			if (!localStorage.getItem("nextQuote")) {
 				insertQuote(await newQuote())
 			} else {
-				// console.log(JSON.parse(localStorage.getItem("nextQuote")));
-				chrome.storage.sync.get('quotes', (data) => {
-					insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
-					if (freqControl('get', data.quotes.frequency, data.quotes.last)) {
-						loadNextQuote()	
+				switch(init.frequency) {
+					case 'tabs' : {
+						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+						loadNextQuote()
+						break;	
 					}
-				})
+					case 'hour':
+					case 'day': {
+						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+						if (freqControl('get', init.frequency, init.last)) {
+							loadNextQuote()
+						}
+						break
+					}
+					case 'pause' : {
+						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+					}
+				}
 			}
 
 			if (init.author) id('theAuthor').classList.add('alwaysVisible')
-			display(true)		
+			display(true)	
+
 		} else if (!init.on && !localStorage.getItem("nextQuote")) {
 			loadNextQuote()	
 		}
