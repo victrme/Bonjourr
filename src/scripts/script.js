@@ -2154,13 +2154,21 @@ function searchbar(event, that, init) {
 	event ? updateSearchbar() : initSearchbar()
 }
 
-function quotes(event, that, init) {
+function quotes(event, that, init, lang) {
 
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
 	async function newQuote() {
-		// Fetch a random quote from the Quotable API
-		const response = await fetch("https://api.quotable.io/random");
+
+		let quoteAPI
+		if (lang === 'fr') {
+			quoteAPI = '';
+		} else {
+			quoteAPI = 'https://api.quotable.io/random'
+		}
+
+		// Fetch a random quote from the quotes API
+		const response = await fetch(quoteAPI);
 		const data = await response.json();
 
 		if (response.ok) {
@@ -2909,8 +2917,9 @@ function startup(data) {
 	linksrow(data.linksrow)
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
-	quotes(null, null, data.quotes);
+	quotes(null, null, data.quotes, data.lang);
 	showPopup(data.reviewPopup)
+	console.log(data)
 
 	customCss(data.css)
 	hideElem(data.hide)
