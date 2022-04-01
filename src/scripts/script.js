@@ -622,39 +622,38 @@ function quickLinks(event, that, init) {
 			}
 		}
 
-		function saveLink(link) {
+		function saveLink(link, order) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
-			chrome.storage.sync.get(null, (data) => {
-				const linklist = bundleLinks(data)
+			link.order = order
 
-				// Updates order
-				link.order = linklist.length
+			// Displays and saves before fetching icon
+			initblocks([link])
+			chrome.storage.sync.set({ [link._id]: link })
 
-				// Displays and saves before fetching icon
-				initblocks([link])
-				chrome.storage.sync.set({ [link._id]: link })
-
-				// Some other dom control
-				if (linklist.length >= 30) linksInputDisable(true)
-				domlinkblocks.style.visibility = 'visible'
-			})
+			// Some other dom control
+			if (order >= 30) linksInputDisable(true)
+			domlinkblocks.style.visibility = 'visible'
 		}
 
-		const title = id('i_title').value
-		const url = id('i_url').value
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data)
+			const url = id('i_url').value
+			const title = id('i_title').value
 
-		// const newLinks = []
-		// if (importList && importList.length > 0) {
-		// 	importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
-		// 	saveLink(newLinks)
-		// }
+			if (importList?.length > 0) {
+				importList.forEach(({ title, url }, i) => {
+					if (!url) return
+					saveLink(filterNewLink(title, url), links.length + i) // increment order for each import
+				})
+			}
 
-		// Si l'url est assez longue et l'input n'a pas été activé ya -1s
-		if (url.length > 2 && !stillActive) {
-			saveLink(filterNewLink(title, url))
-		}
+			// Si l'url est assez longue et l'input n'a pas été activé ya -1s
+			if (url.length > 2 && !stillActive) {
+				saveLink(filterNewLink(title, url), links.length)
+			}
+		})
 	}
 
 	function linksInputDisable(isMax, settingsDom) {
@@ -702,12 +701,12 @@ async function linksImport() {
 		setTimeout(() => container.setAttribute('class', ''), BonjourrAnimTime)
 	}
 
-	function main(data, bookmarks) {
+	function main(links, bookmarks) {
 		const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
 
 		const form = document.createElement('form')
 		const allCategories = [...bookmarks[0].children]
-		let counter = data.links.length || 0
+		let counter = links.length || 0
 		let bookmarksList = []
 		let selectedList = []
 
@@ -741,7 +740,7 @@ async function linksImport() {
 				}
 
 				// Change submit button text & class on selections
-				const amountSelected = counter - data.links.length
+				const amountSelected = counter - links.length
 				id('applybookmarks').textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
@@ -755,7 +754,7 @@ async function linksImport() {
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
 			if (typeof mark.url === 'string')
-				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 217)).length === 0) form.appendChild(elem)
+				if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) form.appendChild(elem)
 		})
 
 		// Replace form to filter already added bookmarks
@@ -776,14 +775,14 @@ async function linksImport() {
 
 	// Ask for bookmarks first
 	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
-		if (granted) {
-			chrome.storage.sync.get('links', (data) => {
-				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-					clas(id('bookmarks_container'), true, 'shown')
-					main(data, response)
-				})
+		if (!granted) return
+
+		chrome.storage.sync.get(null, (data) => {
+			;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+				clas(id('bookmarks_container'), true, 'shown')
+				main(bundleLinks(data), response)
 			})
-		}
+		})
 	})
 
 	// Close events
