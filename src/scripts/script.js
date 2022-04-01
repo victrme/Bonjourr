@@ -2171,7 +2171,6 @@ function quotes(event, that, init) {
 	}
 
 	async function loadNextQuote() {
-		console.log('next quote loaded')
 		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
 	}
 
@@ -2243,22 +2242,18 @@ function quotes(event, that, init) {
 			if (!localStorage.getItem("nextQuote")) {
 				insertQuote(await newQuote())
 			} else {
+				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
 				switch(init.frequency) {
 					case 'tabs' : {
-						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
 						loadNextQuote()
 						break;	
 					}
 					case 'hour':
 					case 'day': {
-						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
 						if (freqControl('get', init.frequency, init.last)) {
 							loadNextQuote()
 						}
 						break
-					}
-					case 'pause' : {
-						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
 					}
 				}
 			}
