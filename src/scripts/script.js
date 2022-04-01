@@ -307,7 +307,7 @@ function quickLinks(event, that, init) {
 	}
 
 	function appendblock(link) {
-		let title = stringMaxSize(link.title, 32)
+		let title = stringMaxSize(link.title, 64)
 		let url = stringMaxSize(link.url, 512)
 
 		//le DOM du block
@@ -518,7 +518,7 @@ function quickLinks(event, that, init) {
 		}
 
 		function updatesEditedLink() {
-			if (e_iconurl.value.length === 8180) {
+			if (e_iconurl.value.length === 7500) {
 				e_iconurl.value = ''
 				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
@@ -531,9 +531,9 @@ function quickLinks(event, that, init) {
 
 				link = {
 					...link,
-					title: stringMaxSize(e_title.value, 32),
-					url: stringMaxSize(e_url.value, 217),
-					icon: stringMaxSize(e_iconurl.value, 8180),
+					title: stringMaxSize(e_title.value, 64),
+					url: stringMaxSize(e_url.value, 512),
+					icon: stringMaxSize(e_iconurl.value, 7500),
 				}
 
 				parent.querySelector('.block').setAttribute('source', link.url)
@@ -608,7 +608,7 @@ function quickLinks(event, that, init) {
 		//
 		function filterNewLink(title, url) {
 			//
-			url = stringMaxSize(url, 217)
+			url = stringMaxSize(url, 512)
 			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
@@ -616,7 +616,7 @@ function quickLinks(event, that, init) {
 			return {
 				_id: 'links' + randomString(6),
 				order: 0,
-				title: stringMaxSize(title, 32),
+				title: stringMaxSize(title, 64),
 				icon: 'src/assets/interface/loading.gif',
 				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 			}
