@@ -2197,7 +2197,7 @@ function quotes(event, that, init, lang) {
 
 		localStorage.setItem("nextQuote", JSON.stringify(retrievedQuote))
 	}
-
+	
 	function updateQuoteSettings() {
 		chrome.storage.sync.get('quotes', (data) => {
 			switch (event) {
@@ -2218,7 +2218,7 @@ function quotes(event, that, init, lang) {
 				case 'frequency': {
 					data.quotes.last = freqControl('set')
 					data.quotes.frequency = that.value
-
+					
 					if (that.value === 'tabs') {
 						loadNextQuote()
 					} else {
@@ -2258,8 +2258,15 @@ function quotes(event, that, init, lang) {
 					}
 					case 'hour':
 					case 'day': {
+
 						if (freqControl('get', init.frequency, init.last)) {
 							loadNextQuote()
+
+							chrome.storage.sync.get('quotes', (data) => {
+								data.quotes.last = freqControl('set')
+								chrome.storage.sync.set({ quotes: data.quotes })
+							})
+
 						}
 						break
 					}
@@ -2919,7 +2926,6 @@ function startup(data) {
 	searchbar(null, null, data.searchbar)
 	quotes(null, null, data.quotes, data.lang);
 	showPopup(data.reviewPopup)
-	console.log(data)
 
 	customCss(data.css)
 	hideElem(data.hide)
