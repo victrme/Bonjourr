@@ -25,6 +25,7 @@ const dict = {
 		de: 'Neuer Tab',
 		it: 'Nuova scheda',
 		es: 'Nueva Pestaña',
+		uk: 'Нова вкладка',
 	},
 	Consider: {
 		fr: "N'hésitez pas",
@@ -38,6 +39,7 @@ const dict = {
 		de: 'Erwägen Sie eine',
 		it: 'Considera di',
 		es: 'Considera',
+		uk: 'Подумайте про те,',
 	},
 	donating: {
 		fr: 'faire un don',
@@ -51,6 +53,7 @@ const dict = {
 		de: 'Spende',
 		it: 'fare una donazione',
 		es: 'hacer una donación',
+		uk: 'щоб зробити пожертвування,',
 	},
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
@@ -64,6 +67,7 @@ const dict = {
 		de: 'wenn Sie Bonjourr lieben',
 		it: 'se ami Bonjourr',
 		es: 'si amas Bonjourr',
+		uk: 'якщо Вам подобається Bonjourr',
 	},
 	'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇': {
 		fr: 'Vous adorez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
@@ -77,6 +81,7 @@ const dict = {
 		de: 'Lieben Sie es, Bonjourr zu nutzen? Erwägen Sie, uns eine Bewertung zu geben oder zu spenden, das würde viel helfen! 😇',
 		it: 'Ti piace usare Bonjourr? Considera di darci una recensione o di fare una donazione, sarebbe di grande aiuto! ?',
 		es: '¿Te encanta usar Bonjourr? Considera darnos una reseña o hacer una donación, ¡eso nos ayudaría mucho! 😇',
+		uk: 'Подобається Bonjourr? Залиште відгук або пожертвуйте, це дуже нам допоможе! 😇',
 	},
 	Review: {
 		fr: 'Noter',
@@ -90,6 +95,7 @@ const dict = {
 		de: 'Rezension',
 		it: 'Recensione',
 		es: 'Revisar',
+		uk: 'Залишити відгук',
 	},
 	Donate: {
 		fr: 'Faire un don',
@@ -103,6 +109,7 @@ const dict = {
 		de: 'Spenden',
 		it: 'Donare',
 		es: 'Donar',
+		uk: 'Пожертвувати',
 	},
 	Cancel: {
 		fr: 'Annuler',
@@ -116,6 +123,7 @@ const dict = {
 		de: 'Abbrechen',
 		it: 'Annulla',
 		es: 'Cancelar',
+		uk: 'Скасувати',
 	},
 	Delete: {
 		fr: 'Supprimer',
@@ -129,6 +137,7 @@ const dict = {
 		de: 'Löschen',
 		it: 'Elimina',
 		es: 'Eliminar',
+		uk: 'Видалити',
 	},
 	'Apply changes': {
 		fr: 'Appliquer',
@@ -142,6 +151,7 @@ const dict = {
 		de: 'Änderungen übernehmen',
 		it: 'Applica modifiche',
 		es: 'Aplicar cambios',
+		uk: 'Зберегти зміни',
 	},
 	Monday: {
 		fr: 'Lundi',
@@ -155,6 +165,7 @@ const dict = {
 		de: 'Montag',
 		it: 'Lunedì',
 		es: 'Lunes',
+		uk: 'Понеділок',
 	},
 	Tuesday: {
 		fr: 'Mardi',
@@ -168,6 +179,7 @@ const dict = {
 		de: 'Dienstag',
 		it: 'Martedì',
 		es: 'Martes',
+		uk: 'Вівторок',
 	},
 	Wednesday: {
 		fr: 'Mercredi',
@@ -181,6 +193,7 @@ const dict = {
 		de: 'Mittwoch',
 		it: 'Mercoledì',
 		es: 'Miércoles',
+		uk: 'Середа',
 	},
 	Thursday: {
 		fr: 'Jeudi',
@@ -194,6 +207,7 @@ const dict = {
 		de: 'Donnerstag',
 		it: 'Giovedì',
 		es: 'Jueves',
+		uk: 'Четвер',
 	},
 	Friday: {
 		fr: 'Vendredi',
@@ -207,6 +221,7 @@ const dict = {
 		de: 'Freitag',
 		it: 'Venerdì',
 		es: 'Viernes',
+		uk: 'П\'ятниця',
 	},
 	Saturday: {
 		fr: 'Samedi',
@@ -220,6 +235,7 @@ const dict = {
 		de: 'Samstag',
 		it: 'Sabato',
 		es: 'Sábado',
+		uk: 'Суббота',
 	},
 	Sunday: {
 		fr: 'Dimanche',
@@ -233,6 +249,7 @@ const dict = {
 		de: 'Sonntag',
 		it: 'Domenica',
 		es: 'Domingo',
+		uk: 'Неділя',
 	},
 	January: {
 		fr: 'Janvier',
@@ -246,6 +263,7 @@ const dict = {
 		de: 'Januar',
 		it: 'Gennaio',
 		es: 'Enero',
+		uk: 'січня',
 	},
 	February: {
 		fr: 'Février',
@@ -259,6 +277,7 @@ const dict = {
 		de: 'Februar',
 		it: 'Febbraio',
 		es: 'Febrero',
+		uk: 'люте',
 	},
 	March: {
 		fr: 'Mars',
@@ -272,6 +291,7 @@ const dict = {
 		de: 'März',
 		it: 'Marzo',
 		es: 'Marzo',
+		uk: 'березня',
 	},
 	April: {
 		fr: 'Avril',
@@ -285,6 +305,7 @@ const dict = {
 		de: 'April',
 		it: 'Aprile',
 		es: 'Abril',
+		uk: 'квітня',
 	},
 	May: {
 		fr: 'Mai',
@@ -298,6 +319,7 @@ const dict = {
 		de: 'Mai',
 		it: 'Maggio',
 		es: 'Mayo',
+		uk: 'травня',
 	},
 	June: {
 		fr: 'Juin',
@@ -311,6 +333,7 @@ const dict = {
 		de: 'Juni',
 		it: 'Giugno',
 		es: 'Junio',
+		uk: 'червня',
 	},
 	July: {
 		fr: 'Juillet',
@@ -324,6 +347,7 @@ const dict = {
 		de: 'Juli',
 		it: 'Luglio',
 		es: 'Julio',
+		uk: 'липня',
 	},
 	August: {
 		fr: 'Août',
@@ -337,6 +361,7 @@ const dict = {
 		de: 'August',
 		it: 'Agosto',
 		es: 'Agosto',
+		uk: 'серпня',
 	},
 	September: {
 		fr: 'Septembre',
@@ -350,6 +375,7 @@ const dict = {
 		de: 'September',
 		it: 'Settembre',
 		es: 'Septiembre',
+		uk: 'вересня',
 	},
 	October: {
 		fr: 'Octobre',
@@ -363,6 +389,7 @@ const dict = {
 		de: 'Oktober',
 		it: 'Ottobre',
 		es: 'Octubre',
+		uk: 'жовтня',
 	},
 	November: {
 		fr: 'Novembre',
@@ -376,6 +403,7 @@ const dict = {
 		de: 'November',
 		it: 'Novembre',
 		es: 'Noviembre',
+		uk: 'листопада',
 	},
 	December: {
 		fr: 'Décembre',
@@ -389,6 +417,7 @@ const dict = {
 		de: 'Dezember',
 		it: 'Dicembre',
 		es: 'Diciembre',
+		uk: 'грудня',
 	},
 	'Good morning': {
 		fr: 'Bonjour',
@@ -402,6 +431,7 @@ const dict = {
 		de: 'Guten Morgen',
 		it: 'Buongiorno',
 		es: 'Buenos días',
+		uk: 'Доброго ранку',
 	},
 	'Good afternoon': {
 		fr: 'Bonjour',
@@ -415,6 +445,7 @@ const dict = {
 		de: 'Guten Tag',
 		it: 'Buon pomeriggio',
 		es: 'Buenas tardes',
+		uk: 'Добрий день',
 	},
 	'Good evening': {
 		fr: 'Bonsoir',
@@ -428,6 +459,7 @@ const dict = {
 		de: 'Guten Abend',
 		it: 'Buonasera',
 		es: 'Buenas noches',
+		uk: 'Добрий вечір',
 	},
 	'Good night': {
 		fr: 'Bonne nuit',
@@ -441,6 +473,7 @@ const dict = {
 		de: 'Gute Nacht',
 		it: 'Buonanotte',
 		es: 'Buenas noches',
+		uk: 'Доброї ночі',
 	},
 	'It is currently': {
 		fr: 'Il fait actuellement',
@@ -454,6 +487,7 @@ const dict = {
 		de: 'Es ist derzeit',
 		it: 'Ci sono',
 		es: 'Actualmente está',
+		uk: 'Зараз',
 	},
 	'It currently feels like': {
 		fr: 'Il y a actuellement un ressenti de',
@@ -467,6 +501,7 @@ const dict = {
 		de: 'Es fühlt sich aktuell an wie',
 		it: 'Attualmente sembra',
 		es: 'Actualmente se siente como',
+		uk: 'Відчувається як',
 	},
 	'feels like': {
 		fr: 'avec un ressenti de',
@@ -480,6 +515,7 @@ const dict = {
 		de: 'es fühlt sich an wie',
 		it: 'sembrano',
 		es: 'se siente como',
+		uk: 'відчувається як',
 	},
 	'with a high of': {
 		fr: 'avec une maximale de',
@@ -493,6 +529,7 @@ const dict = {
 		de: 'mit maximal',
 		it: 'con una massima di',
 		es: 'con un máximo de',
+		uk: 'з максимальною температурою',
 	},
 	today: {
 		fr: "aujourd'hui",
@@ -506,6 +543,7 @@ const dict = {
 		de: 'heute',
 		it: 'oggi',
 		es: 'hoy',
+		uk: 'сьогодні',
 	},
 	tomorrow: {
 		fr: 'demain',
@@ -519,6 +557,7 @@ const dict = {
 		de: 'morgen',
 		it: 'domani',
 		es: 'mañana',
+		uk: 'завтра',
 	},
 	Title: {
 		fr: 'Titre',
@@ -532,6 +571,7 @@ const dict = {
 		de: 'Titel',
 		it: 'Titolo',
 		es: 'Título',
+		uk: 'Назва',
 	},
 	'on Unsplash': {
 		fr: 'sur Unsplash',
@@ -545,6 +585,7 @@ const dict = {
 		de: 'auf Unsplash',
 		it: 'su Unsplash',
 		es: 'en Unsplash',
+		uk: 'на Unsplash',
 	},
 	'Photo by ': {
 		fr: 'Photo par ',
@@ -558,6 +599,7 @@ const dict = {
 		de: 'Foto von ',
 		it: 'Fotografato da ',
 		es: 'Foto por ',
+		uk: 'Фото від ',
 	},
 	'Icon must be < 8kB': {
 		fr: "L'icone doit etre < 8kB",
@@ -571,6 +613,7 @@ const dict = {
 		de: 'Das Symbol muss < 8kB sein',
 		it: "L'icona deve essere < 8 kB",
 		es: 'El icono debe ser <8 kB',
+		uk: 'Іконка повинна бути менше 8 КБ',
 	},
 	General: {
 		fr: 'Général',
@@ -584,6 +627,7 @@ const dict = {
 		de: 'Allgemein',
 		it: 'Generale',
 		es: 'General',
+		uk: 'Загальні',
 	},
 	'Show all settings': {
 		fr: 'Afficher tous les réglages',
@@ -597,6 +641,7 @@ const dict = {
 		de: 'Alle Einstellungen anzeigen',
 		it: 'Mostra tutte le impostazioni',
 		es: 'Mostrar todos los ajustes',
+		uk: 'Показувати всі налаштування',
 	},
 	'Quick Links': {
 		fr: 'Liens favoris',
@@ -610,6 +655,7 @@ const dict = {
 		de: 'Schnelllinks',
 		it: 'Collegamenti rapidi',
 		es: 'Links Favoritos',
+		uk: 'Швидкі посилання',
 	},
 	'More info': {
 		fr: "Plus d'info",
@@ -623,6 +669,7 @@ const dict = {
 		de: 'Weitere Infos',
 		it: 'Ulteriori informazioni',
 		es: 'Más información',
+		uk: 'Більше',
 	},
 	"These are Bonjourr's bookmarks. ": {
 		fr: 'Ce sont les favoris de Bonjourr. ',
@@ -636,6 +683,7 @@ const dict = {
 		de: 'Dies sind Bonjourrs Lesezeichen. ',
 		it: 'Questi sono i segnalibri di Bonjourr. ',
 		es: 'Estos son los marcadores de Bonjourr. ',
+		uk: 'Швидкі посилання Bonjourr. ',
 	},
 	'Edit your Quick Links by right clicking the icon.': {
 		fr: "Éditez un lien favori en faisant un clic droit sur l'icône.",
@@ -649,6 +697,7 @@ const dict = {
 		de: 'Bearbeiten Sie Ihre Schnelllinks, indem Sie mit der rechten Maustaste auf das Symbol klicken.',
 		it: "Modifica i tuoi collegamenti Quick Links clic con il pulsante destro del mouse sull'icona.",
 		es: 'Edita tus Links Favoritos dándole clic derecho a un ícono.',
+		uk: 'Редагуйте ваші швидкі посилання натиснувши правою кнопкою миші на піктограмі.',
 	},
 	'Edit your Quick Links by long-pressing for 300ms the icon.': {
 		fr: "Éditez un lien favori en appuyant pendant 300ms sur l'icône.",
@@ -662,6 +711,7 @@ const dict = {
 		de: 'Bearbeiten Sie Ihre Schnelllinks, indem Sie das Symbol 300 ms lang gedrückt halten.',
 		it: "Modifica i tuoi collegamenti rapidi premendo a lungo per 300 ms l'icona.",
 		es: 'Edita tus Links Favoritos dejando un ícono presionado por 300 ms.',
+		uk: 'Редагуйте ваші швидкі посилання утримуючи піктограму протягом 300 мс',
 	},
 	'Type the collection id from its URL, add more by separating them with a comma.': {
 		fr: "Tapez l'ID de l'URL de la collection. Ajoutez en plusieurs en les séparant par une virgule.",
@@ -675,6 +725,7 @@ const dict = {
 		de: 'Geben Sie die Sammlungs ID aus ihrer URL ein. Fügen Sie weitere hinzu, indem Sie diese durch ein Komma trennen.',
 		it: "Digita l'ID della raccolta dal relativo URL. Aggiungine altri separandoli con una virgola.",
 		es: 'Escribe el ID de la colección de tu URL. Agrega más separándolos con una coma.',
+		uk: 'Введіть ідентифікатор колекції з URL-адреси або вкажіть декілька через кому',
 	},
 	Name: {
 		fr: 'Nom',
@@ -688,6 +739,7 @@ const dict = {
 		de: 'Name',
 		it: 'nome',
 		es: 'Nombre',
+		uk: 'Назва',
 	},
 	Add: {
 		fr: 'Ajouter',
@@ -701,6 +753,7 @@ const dict = {
 		de: 'Hinzufügen',
 		it: 'Aggiungere',
 		es: 'Añadir',
+		uk: 'Додати',
 	},
 	'Select bookmarks to import': {
 		fr: 'Sélectionnez les favoris à importer',
@@ -714,6 +767,7 @@ const dict = {
 		de: 'Wählen Sie die zu importierenden Lesezeichen aus',
 		it: 'Seleziona i segnalibri da importare',
 		es: 'Selecciona marcadores para importar',
+		uk: 'Оберіть закладки для імпорту',
 	},
 	'Import this bookmark': {
 		fr: 'Importer ce favori',
@@ -727,6 +781,7 @@ const dict = {
 		de: 'Dieses Lesezeichen importieren',
 		it: 'Importa questo segnalibro',
 		es: 'Importar este marcador',
+		uk: 'Імпортувати цю закладку',
 	},
 	'Import these bookmarks': {
 		fr: 'Importer ces favoris',
@@ -740,6 +795,7 @@ const dict = {
 		de: 'Diese Lesezeichen importieren',
 		it: 'Importa questi segnalibri',
 		es: 'Importar estos marcadores',
+		uk: 'Імпортувати ці закладки',
 	},
 	'Open in new tab by default': {
 		fr: 'Ouvrir dans un nouvel onglet par défaut',
@@ -753,6 +809,7 @@ const dict = {
 		de: 'Standardmäßig in einem neuen Tab öffnen',
 		it: 'Apri in una nuova scheda come impostazione predefinita',
 		es: 'Abrir en una nueva pestaña por defecto',
+		uk: 'Відкривати в новій вкладці за замовчуванням',
 	},
 	'Links per row': {
 		fr: 'Liens par ligne',
@@ -766,6 +823,7 @@ const dict = {
 		de: 'Links pro Zeile',
 		it: 'Link per riga',
 		es: 'Links por fila',
+		uk: 'Посилань в рядку',
 	},
 	Visuals: {
 		fr: 'Affichage',
@@ -779,6 +837,7 @@ const dict = {
 		de: 'Bilder',
 		it: 'Visualizzazione',
 		es: 'Visualización',
+		uk: 'Візуалізація',
 	},
 	'Background type': {
 		fr: "Type d'arrière-plan",
@@ -792,6 +851,7 @@ const dict = {
 		de: 'Hintergrund Typ',
 		it: 'Tipo di sfondo',
 		es: 'Tipo de fondo',
+		uk: 'Тип тла',
 	},
 	Default: {
 		fr: 'Par défaut',
@@ -805,6 +865,7 @@ const dict = {
 		de: 'Standard',
 		it: 'Predefinito',
 		es: 'Por Defecto',
+		uk: 'За замовчуванням',
 	},
 	Dynamic: {
 		fr: 'Dynamique',
@@ -818,6 +879,7 @@ const dict = {
 		de: 'Dynamisch',
 		it: 'Dinamico',
 		es: 'Dinámico',
+		uk: 'Динамічний',
 	},
 	Custom: {
 		fr: 'Personnalisé',
@@ -831,6 +893,7 @@ const dict = {
 		de: 'Benutzerdefiniert',
 		it: 'Personalizzato',
 		es: 'Personalizado',
+		uk: 'Власний',
 	},
 	Frequency: {
 		fr: 'Fréquence',
@@ -844,6 +907,7 @@ const dict = {
 		de: 'Häufigkeit',
 		it: 'Frequenza',
 		es: 'Frecuencia',
+		uk: 'Частота',
 	},
 	'Every tab': {
 		fr: 'Chaque onglet',
@@ -857,6 +921,7 @@ const dict = {
 		de: 'Jeden Tab',
 		it: 'Ogni scheda',
 		es: 'Cada Pestaña',
+		uk: 'Кожну вкладку',
 	},
 	'Every hour': {
 		fr: 'Chaque heure',
@@ -870,6 +935,7 @@ const dict = {
 		de: 'Jede Stunde',
 		it: 'Ogni ora',
 		es: 'Cada hora',
+		uk: 'Кожну годину',
 	},
 	'Every day': {
 		fr: 'Chaque jour',
@@ -883,6 +949,7 @@ const dict = {
 		de: 'Jeden Tag',
 		it: 'Ogni giorno',
 		es: 'Cada día',
+		uk: 'Кожного дня',
 	},
 	Pause: {
 		fr: 'Pause',
@@ -896,6 +963,7 @@ const dict = {
 		de: 'Pause',
 		it: 'Pausa',
 		es: 'Pausa',
+		uk: 'Пауза',
 	},
 	'Unsplash collection': {
 		fr: 'Collection Unsplash',
@@ -909,6 +977,7 @@ const dict = {
 		de: 'Unsplash Kollektion',
 		it: 'Raccolta Unsplash',
 		es: 'Colección Unsplash',
+		uk: 'Колекція Unsplash',
 	},
 	'Blur intensity': {
 		fr: 'Intensité du flou',
@@ -922,6 +991,7 @@ const dict = {
 		de: 'Weichzeichner Stärke',
 		it: 'Intensità della sfocatura',
 		es: 'Intensidad de desenfoque',
+		uk: 'Інтенсивність розмиття',
 	},
 	Brightness: {
 		fr: 'Luminosité',
@@ -935,6 +1005,7 @@ const dict = {
 		de: 'Helligkeit',
 		it: 'Luminosità',
 		es: 'Brillo',
+		uk: 'Яскравість',
 	},
 	'Dark mode': {
 		fr: 'Mode sombre',
@@ -948,6 +1019,7 @@ const dict = {
 		de: 'Dunkelmodus',
 		it: 'Modalità notturna',
 		es: 'Modo Oscuro',
+		uk: 'Темний режим',
 	},
 	'At night': {
 		fr: 'La nuit',
@@ -961,6 +1033,7 @@ const dict = {
 		de: 'Nachts',
 		it: 'Di notte',
 		es: 'De noche',
+		uk: 'Вночі',
 	},
 	System: {
 		fr: 'Système',
@@ -974,6 +1047,7 @@ const dict = {
 		de: 'System',
 		it: 'Sistema',
 		es: 'Sistema',
+		uk: 'Система',
 	},
 	Enabled: {
 		fr: 'Activé',
@@ -987,6 +1061,7 @@ const dict = {
 		de: 'Aktiviert',
 		it: 'Abilitato',
 		es: 'Activado',
+		uk: 'Ввімкнено',
 	},
 	Disabled: {
 		fr: 'Désactivé',
@@ -1000,6 +1075,7 @@ const dict = {
 		de: 'Deaktiviert',
 		it: 'Disabilitato',
 		es: 'Desactivado',
+		uk: 'Вимкнено',
 	},
 	'New tab icon': {
 		fr: 'Icône nouvel onglet',
@@ -1013,6 +1089,7 @@ const dict = {
 		de: 'Neues Tab-Symbol',
 		it: 'Icona Nuova scheda',
 		es: 'Icono para la nueva pestaña',
+		uk: 'Піктограма нової вкладки',
 	},
 	'Any emoji': {
 		fr: "N'importe quel emoji",
@@ -1026,6 +1103,7 @@ const dict = {
 		de: 'Beliebiger Emoji',
 		it: 'Qualsiasi emoji',
 		es: 'Cualquier emoji',
+		uk: 'Будь-який емоджі',
 	},
 	'Hide elements': {
 		fr: 'Cacher des éléments',
@@ -1039,6 +1117,7 @@ const dict = {
 		de: 'Elemente ausblenden',
 		it: 'Nascondi elementi',
 		es: 'Esconder elementos',
+		uk: 'Сховати елементи',
 	},
 	Clock: {
 		fr: 'Horloge',
@@ -1052,6 +1131,7 @@ const dict = {
 		de: 'Uhr',
 		it: 'Orologio',
 		es: 'Reloj',
+		uk: 'Годинник',
 	},
 	'Clock face': {
 		fr: "Style d'horloge",
@@ -1065,6 +1145,7 @@ const dict = {
 		de: 'Ziffernblatt',
 		it: 'Quadrante',
 		es: 'Estilo del reloj',
+		uk: 'Циферблат',
 	},
 	None: {
 		fr: 'Simple',
@@ -1078,6 +1159,7 @@ const dict = {
 		de: 'Keiner',
 		it: 'Nessuno',
 		es: 'Ninguno',
+		uk: 'Нічого',
 	},
 	Numbers: {
 		fr: 'Chiffres',
@@ -1091,6 +1173,7 @@ const dict = {
 		de: 'Zahlen',
 		it: 'Numeri',
 		es: 'Números',
+		uk: 'Числа',
 	},
 	Romans: {
 		fr: 'Chiffres romains',
@@ -1104,6 +1187,7 @@ const dict = {
 		de: 'Römer',
 		it: 'Romani',
 		es: 'Romanos',
+		uk: 'Римський',
 	},
 	Marks: {
 		fr: 'Graduations',
@@ -1117,6 +1201,7 @@ const dict = {
 		de: 'Markierung',
 		it: 'Marcatura',
 		es: 'Marcado',
+		uk: 'Мітки',
 	},
 	Date: {
 		fr: 'Date',
@@ -1130,6 +1215,7 @@ const dict = {
 		de: 'Datum',
 		it: 'Data',
 		es: 'Fecha',
+		uk: 'Дата',
 	},
 	Greetings: {
 		fr: 'Bienvenue',
@@ -1143,6 +1229,7 @@ const dict = {
 		de: 'Grüße',
 		it: 'Saluti',
 		es: 'Saludos',
+		uk: 'Вітання',
 	},
 	Weather: {
 		fr: 'Météo',
@@ -1156,6 +1243,7 @@ const dict = {
 		de: 'Wetter',
 		it: 'Tempo',
 		es: 'Clima',
+		uk: 'Погода',
 	},
 	Icon: {
 		fr: 'Icône',
@@ -1169,6 +1257,7 @@ const dict = {
 		de: 'Symbol',
 		it: 'Icona',
 		es: 'Icono',
+		uk: 'Іконка',
 	},
 	'Quick Links': {
 		fr: 'Liens favoris',
@@ -1182,6 +1271,7 @@ const dict = {
 		de: 'Schnelllinks',
 		it: 'Link veloci',
 		es: 'Links Favoritos',
+		uk: 'Швидкі посилання',
 	},
 	'Settings icon': {
 		fr: 'Icône réglages',
@@ -1195,6 +1285,7 @@ const dict = {
 		de: 'Einstellungssymbol',
 		it: 'Icona Impostazioni',
 		es: 'Ícono de la configuración',
+		uk: 'Іконка налаштувань',
 	},
 	'Upload background here': {
 		fr: 'Ajoutez votre arrière-plan',
@@ -1208,6 +1299,7 @@ const dict = {
 		de: 'Hier Hintergrund hochladen',
 		it: 'Carica lo sfondo qui',
 		es: 'Sube el fondo aquí',
+		uk: 'Завантажити зображення',
 	},
 	'Analog clock': {
 		fr: 'Horloge analogue',
@@ -1221,6 +1313,7 @@ const dict = {
 		de: 'Analoge Uhr',
 		it: 'Orologio analogico',
 		es: 'Reloj Analógico',
+		uk: 'Аналоговий годинник',
 	},
 	'Display Seconds': {
 		fr: 'Afficher les secondes',
@@ -1234,6 +1327,7 @@ const dict = {
 		de: 'Sekunden anzeigen',
 		it: 'Visualizza secondi',
 		es: 'Mostrar los segundos',
+		uk: 'Показувати секунди',
 	},
 	Automatic: {
 		fr: 'Automatique',
@@ -1247,6 +1341,7 @@ const dict = {
 		de: 'Automatisch',
 		it: 'Automatico',
 		es: 'Automático',
+		uk: 'Автоматично',
 	},
 	WEATHER: {
 		fr: 'Météo',
@@ -1260,6 +1355,7 @@ const dict = {
 		de: 'Wetter',
 		it: 'Meteo',
 		es: 'Tiempo',
+		uk: 'Погода',
 	},
 	Geolocation: {
 		fr: 'Géolocalisation',
@@ -1273,6 +1369,7 @@ const dict = {
 		de: 'Geolokalisierung',
 		it: 'Geolocalizzazione',
 		es: 'Geolocalización',
+		uk: 'Геолокація',
 	},
 	'City not found': {
 		fr: 'Ville inconnue',
@@ -1286,6 +1383,7 @@ const dict = {
 		de: 'Stadt nicht gefunden',
 		it: 'Città non trovata',
 		es: 'Ciudad no encontrada',
+		uk: 'Місто не знайдено',
 	},
 	'Change city': {
 		fr: 'Changer la ville',
@@ -1299,6 +1397,7 @@ const dict = {
 		de: 'Stadt ändern',
 		it: 'Cambia città',
 		es: 'Cambiar ciudad',
+		uk: 'Змінити місто',
 	},
 	'There was a problem': {
 		fr: 'Il y a eu un problème',
@@ -1312,6 +1411,7 @@ const dict = {
 		de: 'Ein Problem ist aufgetreten',
 		it: "C'è stato un problema",
 		es: 'Hubo un problema',
+		uk: 'Виникла проблема',
 	},
 	'Imperial units': {
 		fr: 'Unités impériales',
@@ -1325,6 +1425,7 @@ const dict = {
 		de: 'Imperiale Maßeinheiten',
 		it: 'Sistema imperiale',
 		es: 'Sistema imperial',
+		uk: 'Використовувати шкалу Фаренгейта',
 	},
 	Forecast: {
 		fr: 'Prévisions',
@@ -1338,6 +1439,7 @@ const dict = {
 		de: 'Vorhersage',
 		it: 'Previsione',
 		es: 'Pronóstico',
+		uk: 'Прогноз',
 	},
 	'Every mornings': {
 		fr: 'Les matins',
@@ -1351,6 +1453,7 @@ const dict = {
 		de: 'Jeden Morgen',
 		it: 'Ogni mattina',
 		es: 'Cada mañana',
+		uk: 'Щоранку',
 	},
 	'Always show': {
 		fr: 'Toujours',
@@ -1364,6 +1467,7 @@ const dict = {
 		de: 'Immer anzeigen',
 		it: 'Sempre',
 		es: 'Siempre',
+		uk: 'Завжди',
 	},
 	'Never show': {
 		fr: 'Jamais',
@@ -1377,6 +1481,7 @@ const dict = {
 		de: 'Nie anzeigen',
 		it: 'Mai',
 		es: 'Nunca',
+		uk: 'Ніколи',
 	},
 	Temperature: {
 		fr: 'Température',
@@ -1390,6 +1495,7 @@ const dict = {
 		de: 'Temperatur',
 		it: 'Temperatura',
 		es: 'Temperatura',
+		uk: 'Температура',
 	},
 	Actual: {
 		fr: 'Réelle',
@@ -1403,6 +1509,7 @@ const dict = {
 		de: 'Tatsächlich',
 		it: 'Real',
 		es: 'Real',
+		uk: 'Дійсна'
 	},
 	'Feels like': {
 		fr: 'Ressenti',
@@ -1416,6 +1523,7 @@ const dict = {
 		de: 'Fühlt Sich An Wie',
 		it: 'Si Sente Come',
 		es: 'Se Siente Como',
+		uk: 'Відчуття'
 	},
 	Both: {
 		fr: 'Les deux',
@@ -1429,6 +1537,7 @@ const dict = {
 		de: 'Beide',
 		it: 'Entrambi',
 		es: 'Ambos',
+		uk: 'Обидві'
 	},
 	'Search bar': {
 		fr: 'Barre de recherche',
@@ -1442,6 +1551,7 @@ const dict = {
 		de: 'Suchleiste',
 		it: 'Barra di ricerca',
 		es: 'Barra de búsqueda',
+		uk: 'Панель пошуку',
 	},
 	'Search engine': {
 		fr: 'Moteur de recherche',
@@ -1455,6 +1565,7 @@ const dict = {
 		de: 'Suchmaschine',
 		it: 'Motore di ricerca',
 		es: 'Motor de búsqueda',
+		uk: 'Пошукова система',
 	},
 	Enable: {
 		fr: 'Activer',
@@ -1468,6 +1579,7 @@ const dict = {
 		de: 'Aktivieren',
 		it: 'Abilita',
 		es: 'Activar',
+		uk: 'Активовано',
 	},
 	'Open in new tab': {
 		fr: 'Ouvrir dans un nouvel onglet',
@@ -1481,6 +1593,7 @@ const dict = {
 		de: 'In einem neuen Tab öffnen',
 		it: 'Apri in una nuova scheda',
 		es: 'Abrir en una nueva pestaña',
+		uk: 'Відкрити в новій вкладці',
 	},
 	'URL request': {
 		fr: 'URL de requête',
@@ -1494,6 +1607,7 @@ const dict = {
 		de: 'URL Anfrage',
 		it: 'Richiesta URL',
 		es: 'Solicitud de URL',
+		uk: 'URL запит',
 	},
 	'%s Not found': {
 		fr: '%s Pas trouvé',
@@ -1507,6 +1621,7 @@ const dict = {
 		de: '%s nicht gefunden',
 		it: '%s non trovato',
 		es: '% s no encontrado',
+		uk: '%s не знайдено',
 	},
 	'Search query: %s': {
 		fr: 'Requête: %s',
@@ -1520,6 +1635,7 @@ const dict = {
 		de: 'Suchanfrage: %s',
 		it: 'Ricerca di ricerca: %s',
 		es: 'Consulta de búsqueda:% s',
+		uk: 'Пошуковий запит: %s',
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -1533,6 +1649,7 @@ const dict = {
 		de: 'Deckkraft',
 		it: 'Opacità',
 		es: 'Opacidad',
+		uk: 'Непрозорість',
 	},
 	'Time & Date': {
 		fr: 'Date & heure',
@@ -1546,6 +1663,7 @@ const dict = {
 		de: 'Zeit und Datum',
 		it: "Ora dell'appuntamento",
 		es: 'Fecha & hora',
+		uk: 'Час & Дата',
 	},
 	'Custom Font': {
 		fr: 'Police personnalisée',
@@ -1559,6 +1677,7 @@ const dict = {
 		de: 'Benutzerdefinierte Schriftart',
 		it: 'Carattere personalizzato',
 		es: 'Tipografía personalizada',
+		uk: 'Власний шрифт',
 	},
 	'Custom Style': {
 		fr: 'Style personnalisé',
@@ -1572,6 +1691,7 @@ const dict = {
 		de: 'Benutzerdefinierter Stil',
 		it: 'Stile personalizzato',
 		es: 'Estilo personalizado',
+		uk: 'Власні стилі',
 	},
 	'Type in your custom CSS': {
 		fr: 'Entrez votre CSS personnalisé',
@@ -1585,6 +1705,7 @@ const dict = {
 		de: 'Geben Sie Ihr benutzerdefiniertes CSS ein',
 		it: 'Digita il tuo CSS personalizzato',
 		es: 'Escribe aquí tu CSS personalizado',
+		uk: 'Скопіюйте власний CSS',
 	},
 	'US Date Format': {
 		fr: 'Date américaine',
@@ -1598,6 +1719,7 @@ const dict = {
 		de: 'US-Datumsformat',
 		it: 'Formato data USA',
 		es: 'Formato de fecha americano',
+		uk: 'Формат дати США',
 	},
 	'12-Hour Time': {
 		fr: 'Affichage 12h',
@@ -1611,6 +1733,7 @@ const dict = {
 		de: '12-Stunden Uhrzeit',
 		it: 'Sistema orario a 12 ore',
 		es: 'Sistema horario de 12 horas',
+		uk: '12-годинний формат часу',
 	},
 	'Time zone': {
 		fr: 'Fuseau horaire',
@@ -1624,6 +1747,7 @@ const dict = {
 		de: 'Zeitzone',
 		it: 'Fuso orario',
 		es: 'Huso horario',
+		uk: 'Часовий пояс',
 	},
 	Language: {
 		fr: 'Langue',
@@ -1637,6 +1761,7 @@ const dict = {
 		de: 'Sprache',
 		it: 'Lingua',
 		es: 'Lenguaje o idioma',
+		uk: 'Мова',
 	},
 	Greeting: {
 		fr: 'Bienvenue',
@@ -1650,6 +1775,7 @@ const dict = {
 		de: 'Gruß',
 		it: 'Saluto',
 		es: 'Saludo',
+		uk: 'Привітання',
 	},
 	'Custom CSS': {
 		fr: 'CSS personnalisé',
@@ -1663,6 +1789,7 @@ const dict = {
 		de: 'Benutzerdefinierte CSS',
 		it: 'CSS personalizzato',
 		es: 'CSS personalizado',
+		uk: 'Власний CSS',
 	},
 	'Custom Font': {
 		fr: 'Police personnalisée',
@@ -1676,6 +1803,7 @@ const dict = {
 		de: 'Benutzerdefinierte Schriftart',
 		it: 'Carattere personalizzato',
 		es: 'Tipografía personalizada',
+		uk: 'Власний шрифт',
 	},
 	'Font family': {
 		fr: 'Police',
@@ -1689,6 +1817,7 @@ const dict = {
 		de: 'Schriftfamilie',
 		it: 'Famiglia di font',
 		es: 'Tipografía',
+		uk: 'Шрифт',
 	},
 	Weight: {
 		fr: 'Épaisseur',
@@ -1702,6 +1831,7 @@ const dict = {
 		de: 'Gewicht',
 		it: 'Il peso',
 		es: 'Peso',
+		uk: 'Насиченість',
 	},
 	Size: {
 		fr: 'Taille',
@@ -1715,6 +1845,7 @@ const dict = {
 		de: 'Größe',
 		it: 'Taglia',
 		es: 'Tamaño',
+		uk: 'Розмір',
 	},
 	Settings: {
 		fr: 'Réglages',
@@ -1728,6 +1859,7 @@ const dict = {
 		de: 'Einstellungen',
 		it: 'Impostazioni',
 		es: 'Configuración',
+		uk: 'Налаштування',
 	},
 	Import: {
 		fr: 'Importer',
@@ -1741,6 +1873,7 @@ const dict = {
 		de: 'Importieren',
 		it: 'Importare',
 		es: 'Importar',
+		uk: 'Імпортувати',
 	},
 	Export: {
 		fr: 'Exporter',
@@ -1754,6 +1887,7 @@ const dict = {
 		de: 'Exportieren',
 		it: 'Esportare',
 		es: 'Exportar',
+		uk: 'Експортувати',
 	},
 	Copied: {
 		fr: 'Copié',
@@ -1767,6 +1901,7 @@ const dict = {
 		de: 'Kopiert',
 		it: 'Copiato',
 		es: 'Copiado',
+		uk: 'Скопійовано',
 	},
 	'Import code': {
 		fr: 'Importer le code',
@@ -1780,6 +1915,7 @@ const dict = {
 		de: 'Code importieren',
 		it: 'Codice di importazione',
 		es: 'Importar código',
+		uk: 'Налаштування',
 	},
 	'Error in import code': {
 		fr: "Erreur dans le code d'importation",
@@ -1793,6 +1929,7 @@ const dict = {
 		de: 'Fehler im importierten Code',
 		it: 'Errore nel codice di importazione',
 		es: 'Error en el código de importación',
+		uk: 'Помилка при імпортуванні налаштувань',
 	},
 	'Export code': {
 		fr: "Code d'exportation",
@@ -1806,6 +1943,7 @@ const dict = {
 		de: 'Code Exportieren',
 		it: 'codice di esportazione',
 		es: 'Exportar código',
+		uk: 'Експортувати налаштування',
 	},
 	'Click again to confirm': {
 		fr: 'Cliquez encore une fois pour confirmer',
@@ -1819,6 +1957,7 @@ const dict = {
 		de: 'Erneut klicken, um zu bestätigen',
 		it: 'Fai nuovamente clic per confermare',
 		es: 'Haga clic de nuevo para confirmar',
+		uk: 'Натисніть ще раз для підтвердження',
 	},
 	'Reset settings': {
 		fr: 'Réinitialiser les réglages',
@@ -1832,6 +1971,7 @@ const dict = {
 		de: 'Einstellungen zurücksetzen',
 		it: 'Impostazioni iniziali',
 		es: 'Restablecer configuración',
+		uk: 'Скинути налаштування',
 	},
 	'Are you sure ?': {
 		fr: 'Etes vous sûr ?',
@@ -1845,6 +1985,7 @@ const dict = {
 		de: 'Bist du sicher ?',
 		it: 'Sei sicuro ?',
 		es: '¿Estás seguro?',
+		uk: 'Ви впевнені ?',
 	},
 	'Made in France with ❤️': {
 		fr: 'Fabriqué en France avec ❤️',
@@ -1858,6 +1999,7 @@ const dict = {
 		de: 'Gemacht in Frankreich mit ❤️',
 		it: 'Fatto in Francia con ❤️',
 		es: 'Hecho en Francia con ❤️',
+		uk: 'Створено в Франції з ❤️',
 	},
 	by: {
 		fr: 'par',
@@ -1871,6 +2013,7 @@ const dict = {
 		de: 'von',
 		it: 'Da',
 		es: 'por',
+		uk: 'Розробники:',
 	},
 	Visit: {
 		fr: 'Rendez-vous sur',
@@ -1884,6 +2027,7 @@ const dict = {
 		de: 'Besuche',
 		it: 'Visita',
 		es: 'Visita',
+		uk: 'Відвідайте',
 	},
 	'our website': {
 		fr: 'notre site Internet',
@@ -1897,6 +2041,7 @@ const dict = {
 		de: 'unsere Website',
 		it: 'il nostro sito internet',
 		es: 'nuestro sitio web',
+		uk: 'наш сайт',
 	},
 	'for infos and donations': {
 		fr: 'pour en savoir plus ou faire un don',
@@ -1910,7 +2055,36 @@ const dict = {
 		de: 'für Informationen und Spenden',
 		it: 'per info e donazioni',
 		es: 'para más info y donaciones',
+		uk: 'для отримання додаткової інформації або пожертвування',
 	},
+	'Quotes': {
+		fr: 'Quotes',
+		sv: 'Quotes',
+		nl: 'Quotes',
+		pl: 'Quotes',
+		pt_BR: 'Quotes',
+		ru: 'Quotes',
+		zh_CN: 'Quotes',
+		sk: 'Quotes',
+		de: 'Quotes',
+		it: 'Quotes',
+		es: 'Quotes',
+		uk: 'Цитати',
+	},
+	'Always show author': {
+		fr: 'Always show author',
+		sv: 'Always show author',
+		nl: 'Always show author',
+		pl: 'Always show author',
+		pt_BR: 'Always show author',
+		ru: 'Always show author',
+		zh_CN: 'Always show author',
+		sk: 'Always show author',
+		de: 'Always show author',
+		it: 'Always show author',
+		es: 'Always show author',
+		uk: 'Показувати автора',
+	}
 }
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -1947,6 +2121,7 @@ const engineLocales = {
 		it: '.it',
 		es: '.es',
 		no: '.no',
+		uk: '.com.ua',
 	},
 	ddg: {
 		base: 'https://duckduckgo.com/?q=%s&kl=%l',
@@ -1964,6 +2139,7 @@ const engineLocales = {
 		it: 'it-it',
 		es: 'es-es',
 		no: 'no-no',
+		uk: 'uk-UA',
 	},
 	startpage: {
 		base: 'https://www.startpage.com/do/search?query=%s&language=%l',
@@ -1981,6 +2157,7 @@ const engineLocales = {
 		it: 'italiano',
 		es: 'es-es',
 		no: 'norsk',
+		uk: '',
 	},
 	qwant: {
 		base: 'https://www.qwant.com/?q=%s&r=%l',
@@ -1998,6 +2175,7 @@ const engineLocales = {
 		it: 'IT&sr=it',
 		es: 'ES&sr=es',
 		no: 'NO&sr=nb',
+		uk: '',
 	},
 	yahoo: {
 		base: 'https://%lsearch.yahoo.com/search?q=%s',
@@ -2015,6 +2193,7 @@ const engineLocales = {
 		it: 'it.',
 		es: 'es.',
 		no: 'no.',
+		uk: 'ua.',
 	},
 	bing: {
 		base: 'https://www.bing.com/search?q=%s&cc=%l',
@@ -2032,6 +2211,7 @@ const engineLocales = {
 		it: 'it',
 		es: 'es',
 		no: 'no',
+		uk: '',
 	},
 	brave: {
 		base: 'https://search.brave.com/search?q=%s',
