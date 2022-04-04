@@ -1779,6 +1779,7 @@ function unsplash(init, event) {
 	}
 
 	const initOrEvent = init && init.dynamic ? 'init' : 'event'
+
 	// collections source: https://unsplash.com/@bonjourr/collections
 	const allCollectionIds = {
 		noon: 'GD4aOSg4yQE',
@@ -1803,8 +1804,6 @@ function unsplash(init, event) {
 						delete init.dynamic.current
 					}
 
-					//
-					//
 					// Real init start
 					const collecId = collectionControl(init.dynamic)
 
@@ -2604,21 +2603,6 @@ function filterImports(data) {
 		lang: (lang) => (lang === undefined ? 'en' : lang),
 		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
 
-		links: (links) => {
-			if (links && links.length > 0) {
-				// Removes any links that doesn't seem right
-				links = links.filter((elem) => elem && elem.icon && elem.title && elem.url)
-
-				links.forEach((elem, i) => {
-					// >1.10.0 ==> 1.12.1 Only import icons, not aliases
-					if (!elem.icon.startsWith('alias:')) {
-						links[i].icon = saveIconAsAlias(elem.icon)
-					}
-				})
-			}
-			return links
-		},
-
 		dynamic: (dynamic) => {
 			if (dynamic) {
 				// New collection key missing
@@ -2706,6 +2690,17 @@ function filterImports(data) {
 
 	if (result.searchbar_engine) delete result.searchbar_engine
 	if (result.searchbar_newtab) delete result.searchbar_newtab
+
+	// Todo:
+	// search for aliases in sync
+	// put aliases in matching data.links
+
+	result.links?.forEach(({ title, url, icon }, i) => {
+		const id = 'links' + randomString(6)
+		result[id] = { _id: id, order: i, title, icon, url }
+	})
+
+	delete result.links
 
 	try {
 		// Go through found categories in import data to filter them

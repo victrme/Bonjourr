@@ -322,7 +322,6 @@ function bonjourrDefaults(which) {
 				greeting: '',
 				custom_every: 'pause',
 				background_type: 'dynamic',
-				links: [],
 				clock: {
 					ampm: false,
 					analog: false,

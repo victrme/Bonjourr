@@ -444,47 +444,44 @@ function importExport(select, isEvent, settingsDom) {
 
 	function importation() {
 		//
-		if (isEvent) {
-			const dom = id('i_import')
-			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+		const dom = id('i_import')
+		const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
 
-			if (dom.value.length > 0) {
-				try {
-					const imported = JSON.parse(dom.value)
+		if (!isEvent || dom?.value?.length === 0) {
+			return
+		}
 
-					// Load all sync & dynamicCache
-					chrome.storage.sync.get(null, (data) => {
-						chrome.storage.local.get('dynamicCache', (local) => {
-							//
-							// Remove user collection cache if collection change
-							if (data.dynamic && imported.dynamic) {
-								if (data.dynamic.collection !== imported.dynamic.collection) {
-									local.dynamicCache.user = []
-								}
-							}
-
-							//
-							delete data.about
-
-							data = { ...data, ...imported }
-
-							// full import on Online is through "import" field
-							data = isExtension ? data : { import: data }
-
-							// Save sync & local
-							chrome.storage.sync.clear()
-							chrome.storage.sync.set(data, chrome.storage.local.set(local))
-
-							fadeOut()
-						})
-					})
-				} catch (e) {
-					dom.value = ''
-					placeholder('Error in import code')
-					setTimeout(() => placeholder('Import code'), 2000)
-					console.error(e)
+		function applyImportation(sync, local, newImport) {
+			// Remove user collection cache if collection change
+			if (sync.dynamic && newImport.dynamic) {
+				if (sync.dynamic.collection !== newImport.dynamic.collection) {
+					local.dynamicCache.user = []
 				}
 			}
+
+			delete sync.about
+			sync = { ...sync, ...newImport }
+			sync = isExtension ? sync : { import: sync } // full import on Online is through "import" field
+
+			// Save sync & local
+			chrome.storage.sync.clear()
+			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+
+			fadeOut()
+		}
+
+		try {
+			const imported = JSON.parse(dom.value)
+
+			// Load all sync & dynamicCache
+			chrome.storage.sync.get(null, (data) =>
+				chrome.storage.local.get('dynamicCache', (local) => applyImportation(data, local, imported))
+			)
+		} catch (e) {
+			dom.value = ''
+			placeholder('Error in import code')
+			setTimeout(() => placeholder('Import code'), 2000)
+			console.error(e)
 		}
 	}
 
