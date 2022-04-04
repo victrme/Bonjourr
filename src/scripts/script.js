@@ -2161,12 +2161,12 @@ function quotes(event, that, init, lang) {
 	async function newQuote() {
 
 		let quoteAPI
-		if (lang === 'fr') {
-			quoteAPI = '';
+		if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
+			quoteAPI = `https://i18n-quotes.herokuapp.com/${lang}`;
 		} else {
-			quoteAPI = 'https://api.quotable.io/random'
+			quoteAPI = 'https://i18n-quotes.herokuapp.com/en'
 		}
-
+		
 		// Fetch a random quote from the quotes API
 		const response = await fetch(quoteAPI);
 		const data = await response.json();
@@ -2182,10 +2182,20 @@ function quotes(event, that, init, lang) {
 		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
 	}
 
+	function getNextQuote() {
+		return JSON.parse(localStorage.getItem("nextQuote"));
+	}
+
 	function insertQuote(values) {
 		// Update DOM elements
 		id('theQuote').textContent = values.content;
 		id('theAuthor').textContent = values.author;
+
+		// updates last quote timestamp
+		chrome.storage.sync.get('quotes', (data) => {
+			data.quotes.last = freqControl('set')
+			chrome.storage.sync.set({ quotes: data.quotes })
+		})
 	}
 
 	function saveCurrentQuote() {
@@ -2243,14 +2253,15 @@ function quotes(event, that, init, lang) {
 				insertQuote(await newQuote())
 				saveCurrentQuote()
 			}
+
 		} else if (init.on) {
-			// for first startup
-			
-			// if no next quote available
-			if (!localStorage.getItem("nextQuote")) {
+			// first startup
+			if (!getNextQuote()) {
 				insertQuote(await newQuote())
+				saveCurrentQuote()
 			} else {
-				insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
+				insertQuote(getNextQuote())
+
 				switch(init.frequency) {
 					case 'tabs' : {
 						loadNextQuote()
@@ -2258,16 +2269,7 @@ function quotes(event, that, init, lang) {
 					}
 					case 'hour':
 					case 'day': {
-
-						if (freqControl('get', init.frequency, init.last)) {
-							loadNextQuote()
-
-							chrome.storage.sync.get('quotes', (data) => {
-								data.quotes.last = freqControl('set')
-								chrome.storage.sync.set({ quotes: data.quotes })
-							})
-
-						}
+						if (freqControl('get', init.frequency, init.last)) loadNextQuote()
 						break
 					}
 				}
@@ -2276,7 +2278,7 @@ function quotes(event, that, init, lang) {
 			if (init.author) id('theAuthor').classList.add('alwaysVisible')
 			display(true)	
 
-		} else if (!init.on && !localStorage.getItem("nextQuote")) {
+		} else if (!init.on && !getNextQuote()) {
 			loadNextQuote()	
 		}
 	})();
