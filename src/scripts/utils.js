@@ -337,6 +337,7 @@ function bonjourrDefaults(which) {
 				},
 				quotes: {
 					on: true,
+					type: 'classic',
 					author: false,
 					frequency: 'day',
 					last: ''

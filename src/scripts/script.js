@@ -2158,14 +2158,35 @@ function quotes(event, that, init, lang) {
 
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-	async function newQuote() {
-
+	async function newQuote(type) {
 		let quoteAPI
+
+
+		// switch(type) {
+		// 	case 'classic': {
+		// 		if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
+		// 			quoteAPI = `https://i18n-quotes.herokuapp.com/${lang}`;
+		// 		} else {
+		// 			quoteAPI = 'https://i18n-quotes.herokuapp.com/en'
+		// 		}
+		// 		break;
+		// 	}
+		// 	case 'inspirobot': {
+		// 		quoteAPI = ''
+		// 		break;
+		// 	}
+		// 	case 'kaamelott': {
+		// 		quoteAPI = 'http://kaamelott.chaudie.re/api/random'
+		// 		break;
+		// 	}
+		// }
+
 		if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
 			quoteAPI = `https://i18n-quotes.herokuapp.com/${lang}`;
 		} else {
 			quoteAPI = 'https://i18n-quotes.herokuapp.com/en'
 		}
+
 		
 		// Fetch a random quote from the quotes API
 		const response = await fetch(quoteAPI);
@@ -2179,7 +2200,7 @@ function quotes(event, that, init, lang) {
 	}
 
 	async function loadNextQuote() {
-		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
+		localStorage.setItem("nextQuote", JSON.stringify(await newQuote(init.type)));
 	}
 
 	function getNextQuote() {
@@ -2236,6 +2257,12 @@ function quotes(event, that, init, lang) {
 					}
 					break;
 				}
+				case 'quote_type': {
+
+					data.quotes.type = that.value;
+
+					break;
+				}
 			}
 
 			chrome.storage.sync.set({ quotes: data.quotes })
@@ -2250,14 +2277,15 @@ function quotes(event, that, init, lang) {
 				updateQuoteSettings()
 			// refreshes quote
 			} else {
-				insertQuote(await newQuote())
+				// console.log(init.type)
+				// insertQuote(await newQuote(init.type))
 				saveCurrentQuote()
 			}
 
 		} else if (init.on) {
 			// first startup
 			if (!getNextQuote()) {
-				insertQuote(await newQuote())
+				insertQuote(await newQuote(init.type))
 				saveCurrentQuote()
 			} else {
 				insertQuote(getNextQuote())
