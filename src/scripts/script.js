@@ -2158,49 +2158,69 @@ function quotes(event, that, init, lang) {
 
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-	async function newQuote(type) {
+	async function newQuote() {
 		let quoteAPI
 
-
-		// switch(type) {
-		// 	case 'classic': {
-		// 		if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
-		// 			quoteAPI = `https://i18n-quotes.herokuapp.com/${lang}`;
-		// 		} else {
-		// 			quoteAPI = 'https://i18n-quotes.herokuapp.com/en'
-		// 		}
-		// 		break;
-		// 	}
-		// 	case 'inspirobot': {
-		// 		quoteAPI = ''
-		// 		break;
-		// 	}
-		// 	case 'kaamelott': {
-		// 		quoteAPI = 'http://kaamelott.chaudie.re/api/random'
-		// 		break;
-		// 	}
-		// }
-
-		if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
-			quoteAPI = `https://i18n-quotes.herokuapp.com/${lang}`;
-		} else {
-			quoteAPI = 'https://i18n-quotes.herokuapp.com/en'
+		async function getQuoteType() {
+			if (init) {
+				return init.type
+			} else {
+				
+				chrome.storage.sync.get('quotes', (data) => {
+					
+					return data.type;
+				});
+			}
 		}
+
+		console.log(await getQuoteType())
+
+		function getApiUrl(type) {
+			// if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
+			// 	return`https://i18n-quotes.herokuapp.com/${lang}`;
+			// } else {
+			// 	return'https://i18n-quotes.herokuapp.com/en'
+			// }
+
+
+			switch(type) {
+				case 'classic': {
+					if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
+						return`https://i18n-quotes.herokuapp.com/${lang}`;
+					} else {
+						return'https://i18n-quotes.herokuapp.com/en'
+					}
+				}
+				case 'inspirobot': {
+					quoteAPI = ''
+					break;
+				}
+				case 'kaamelott': {
+					quoteAPI = 'http://kaamelott.chaudie.re/api/random'
+					break;
+				}
+			}
+		}
+
+
+
+
+
 
 		
 		// Fetch a random quote from the quotes API
-		const response = await fetch(quoteAPI);
+		const response = await fetch(getApiUrl(await getQuoteType()));
 		const data = await response.json();
 
 		if (response.ok) {
 			return data
 		} else {
-		  console.log('An error occured with the quotes API :(');
+			console.log('An error occured with the quotes API :(');
 		}
 	}
 
 	async function loadNextQuote() {
-		localStorage.setItem("nextQuote", JSON.stringify(await newQuote(init.type)));
+		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
 	}
 
 	function getNextQuote() {
@@ -2278,14 +2298,14 @@ function quotes(event, that, init, lang) {
 			// refreshes quote
 			} else {
 				// console.log(init.type)
-				// insertQuote(await newQuote(init.type))
+				insertQuote(await newQuote())
 				saveCurrentQuote()
 			}
 
 		} else if (init.on) {
 			// first startup
 			if (!getNextQuote()) {
-				insertQuote(await newQuote(init.type))
+				insertQuote(await newQuote())
 				saveCurrentQuote()
 			} else {
 				insertQuote(getNextQuote())
