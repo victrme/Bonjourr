@@ -327,7 +327,7 @@
 		opacity: 0;
 		cursor: initial;
 
-		#theAuthor {
+		#author {
 			opacity: 0;
 			transition: opacity 0.4s;
 
@@ -338,8 +338,8 @@
 
 		&.shown {
 			opacity: 1;
-			
-			&:hover #theAuthor{
+
+			&:hover #author {
 				opacity: 1;
 			}
 		}

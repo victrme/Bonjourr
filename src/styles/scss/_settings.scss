@@ -101,7 +101,8 @@
 		#sett_city,
 		#clockoptions #w_clockface,
 		#clockoptions #w_ampm,
-		#searchbar_options, #quotes_options {
+		#searchbar_options,
+		#quotes_options {
 			transition: max-Height 0s;
 		}
 	}
@@ -269,13 +270,12 @@
 		}
 	}
 
-	#default,
-	#dynamic,
 	#custom {
 		display: none;
 	}
 
-	#i_refresh, #i_refresh_quotes {
+	#i_refresh,
+	#i_qtrefresh {
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
@@ -544,7 +544,6 @@
 	#quotes_options.shown {
 		max-height: 173px;
 	}
-
 
 	#i_customfont {
 		text-transform: capitalize;
