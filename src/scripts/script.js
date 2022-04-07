@@ -2100,6 +2100,12 @@ async function quotes(event, that, init, lang) {
 			inspirobot: '',
 		}
 
+		// if (!init) {
+		// 	chrome.storage.sync.get('quotes', (data) => {
+
+		// 	});
+		// }
+
 		try {
 			// Fetch a random quote from the quotes API
 			const response = await fetch(URLs[init?.type || 'classic'])
@@ -2113,7 +2119,7 @@ async function quotes(event, that, init, lang) {
 		}
 	}
 
-	async function loadNextQuote() {
+	async function storeNextQuote() {
 		localStorage.setItem('nextQuote', JSON.stringify(await newQuote()))
 	}
 
@@ -2150,7 +2156,7 @@ async function quotes(event, that, init, lang) {
 					display(that.checked)
 					if (id('quote').textContent === '') {
 						insertQuote(JSON.parse(localStorage.getItem('nextQuote')))
-						loadNextQuote()
+						storeNextQuote()
 					}
 					data.quotes.on = that.checked
 					break
@@ -2165,7 +2171,7 @@ async function quotes(event, that, init, lang) {
 				case 'frequency': {
 					data.quotes.last = freqControl('set')
 					data.quotes.frequency = that.value
-					that.value === 'tabs' ? loadNextQuote() : saveCurrentQuote()
+					that.value === 'tabs' ? storeNextQuote() : saveCurrentQuote()
 					break
 				}
 
@@ -2195,14 +2201,14 @@ async function quotes(event, that, init, lang) {
 
 		insertQuote(quote)
 
-		if (needsNewQuote) loadNextQuote()
+		if (needsNewQuote) storeNextQuote()
 		if (init.author) id('author').classList.add('alwaysVisible')
 
 		display(true)
 	}
 
 	if (!init?.on && !getNextQuote()) {
-		loadNextQuote()
+		storeNextQuote()
 	}
 }
 
