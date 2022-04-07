@@ -1299,11 +1299,8 @@ function freqControl(state, every, last) {
 	// changes can only go forward
 
 	switch (state) {
-		
 		case 'set':
-			
 			return nowDate.getTime()
-			
 
 		case 'get': {
 			const lastDate = new Date(last),
@@ -1314,13 +1311,11 @@ function freqControl(state, every, last) {
 
 			switch (every) {
 				case 'day': {
-
 					if (changed.date) return true
 					break
 				}
 
 				case 'hour': {
-					
 					if (changed.date || changed.hour) return true
 					break
 				}
@@ -2046,7 +2041,6 @@ function darkmode(choice, init) {
 }
 
 function searchbar(event, that, init) {
-
 	const emptyButton = id('sb_empty')
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
@@ -2154,83 +2148,41 @@ function searchbar(event, that, init) {
 	event ? updateSearchbar() : initSearchbar()
 }
 
-function quotes(event, that, init, lang) {
-
+async function quotes(event, that, init, lang) {
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
 	async function newQuote() {
-		let quoteAPI
-
-		async function getQuoteType() {
-			if (init) {
-				return init.type
-			} else {
-				
-				chrome.storage.sync.get('quotes', (data) => {
-					
-					return data.type;
-				});
-			}
+		const URLs = {
+			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
+			kaamelott: 'http://kaamelott.chaudie.re/api/random',
+			inspirobot: '',
 		}
 
-		console.log(await getQuoteType())
+		try {
+			// Fetch a random quote from the quotes API
+			const response = await fetch(URLs[init?.type || 'classic'])
+			const json = await response.json()
 
-		function getApiUrl(type) {
-			// if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
-			// 	return`https://i18n-quotes.herokuapp.com/${lang}`;
-			// } else {
-			// 	return'https://i18n-quotes.herokuapp.com/en'
-			// }
-
-
-			switch(type) {
-				case 'classic': {
-					if (['fr', 'ru', 'it'].indexOf(lang) >= 0) {
-						return`https://i18n-quotes.herokuapp.com/${lang}`;
-					} else {
-						return'https://i18n-quotes.herokuapp.com/en'
-					}
-				}
-				case 'inspirobot': {
-					quoteAPI = ''
-					break;
-				}
-				case 'kaamelott': {
-					quoteAPI = 'http://kaamelott.chaudie.re/api/random'
-					break;
-				}
+			if (response.ok) {
+				return json
 			}
-		}
-
-
-
-
-
-
-		
-		// Fetch a random quote from the quotes API
-		const response = await fetch(getApiUrl(await getQuoteType()));
-		const data = await response.json();
-
-		if (response.ok) {
-			return data
-		} else {
-			console.log('An error occured with the quotes API :(');
+		} catch (error) {
+			errorMessage('An error occured with the quotes API', error)
 		}
 	}
 
 	async function loadNextQuote() {
-		localStorage.setItem("nextQuote", JSON.stringify(await newQuote()));
+		localStorage.setItem('nextQuote', JSON.stringify(await newQuote()))
 	}
 
 	function getNextQuote() {
-		return JSON.parse(localStorage.getItem("nextQuote"));
+		return JSON.parse(localStorage.getItem('nextQuote'))
 	}
 
 	function insertQuote(values) {
 		// Update DOM elements
-		id('theQuote').textContent = values.content;
-		id('theAuthor').textContent = values.author;
+		id('quote').textContent = values.content
+		id('author').textContent = values.author
 
 		// updates last quote timestamp
 		chrome.storage.sync.get('quotes', (data) => {
@@ -2242,46 +2194,48 @@ function quotes(event, that, init, lang) {
 	function saveCurrentQuote() {
 		// retrieves quote from dom
 		let retrievedQuote = {
-			author: id('theAuthor').textContent,
-			content: id('theQuote').textContent
+			author: id('author').textContent,
+			content: id('quote').textContent,
 		}
 
-		localStorage.setItem("nextQuote", JSON.stringify(retrievedQuote))
+		localStorage.setItem('nextQuote', JSON.stringify(retrievedQuote))
 	}
-	
+
 	function updateQuoteSettings() {
-		chrome.storage.sync.get('quotes', (data) => {
+		chrome.storage.sync.get('quotes', async (data) => {
 			switch (event) {
 				case 'toggle': {
 					display(that.checked)
-					if (id('theQuote').textContent === '') {
-						insertQuote(JSON.parse(localStorage.getItem("nextQuote")))
-						loadNextQuote()	
+					if (id('quote').textContent === '') {
+						insertQuote(JSON.parse(localStorage.getItem('nextQuote')))
+						loadNextQuote()
 					}
 					data.quotes.on = that.checked
 					break
 				}
+
 				case 'author': {
-					id('theAuthor').classList.toggle('alwaysVisible')
+					id('author').classList.toggle('alwaysVisible')
 					data.quotes.author = that.checked
 					break
 				}
+
 				case 'frequency': {
 					data.quotes.last = freqControl('set')
 					data.quotes.frequency = that.value
-					
-					if (that.value === 'tabs') {
-						loadNextQuote()
-					} else {
-						saveCurrentQuote()
-					}
-					break;
+					that.value === 'tabs' ? loadNextQuote() : saveCurrentQuote()
+					break
 				}
-				case 'quote_type': {
 
-					data.quotes.type = that.value;
+				case 'type': {
+					data.quotes.type = that.value
+					break
+				}
 
-					break;
+				case 'refresh': {
+					insertQuote(await newQuote())
+					saveCurrentQuote()
+					return
 				}
 			}
 
@@ -2289,47 +2243,25 @@ function quotes(event, that, init, lang) {
 		})
 	}
 
+	if (event) {
+		updateQuoteSettings()
+	}
 
-	(async () => {
-		if (event) {
-			// saves settings
-			if (event != 'refresh') {
-				updateQuoteSettings()
-			// refreshes quote
-			} else {
-				// console.log(init.type)
-				insertQuote(await newQuote())
-				saveCurrentQuote()
-			}
+	if (init?.on) {
+		let quote = !getNextQuote() ? await newQuote() : getNextQuote()
+		let needsNewQuote = freqControl('get', init.frequency, init.last)
 
-		} else if (init.on) {
-			// first startup
-			if (!getNextQuote()) {
-				insertQuote(await newQuote())
-				saveCurrentQuote()
-			} else {
-				insertQuote(getNextQuote())
+		insertQuote(quote)
 
-				switch(init.frequency) {
-					case 'tabs' : {
-						loadNextQuote()
-						break;	
-					}
-					case 'hour':
-					case 'day': {
-						if (freqControl('get', init.frequency, init.last)) loadNextQuote()
-						break
-					}
-				}
-			}
+		if (needsNewQuote) loadNextQuote()
+		if (init.author) id('author').classList.add('alwaysVisible')
 
-			if (init.author) id('theAuthor').classList.add('alwaysVisible')
-			display(true)	
+		display(true)
+	}
 
-		} else if (!init.on && !getNextQuote()) {
-			loadNextQuote()	
-		}
-	})();
+	if (!init?.on && !getNextQuote()) {
+		loadNextQuote()
+	}
 }
 
 function showPopup(data) {
@@ -2974,7 +2906,7 @@ function startup(data) {
 	linksrow(data.linksrow)
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
-	quotes(null, null, data.quotes, data.lang);
+	quotes(null, null, data.quotes, data.lang)
 	showPopup(data.reviewPopup)
 
 	customCss(data.css)
@@ -2995,8 +2927,6 @@ window.onload = function () {
 	if (mobilecheck) {
 		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
 	}
-
-	
 
 	// Checks every 5 minutes if weather needs update
 	setInterval(() => {

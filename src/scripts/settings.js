@@ -28,8 +28,8 @@ function initParams(data, settingsDom) {
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
 	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
-	initInput('i_freq_quotes', isThereData('quotes', 'frequency'))
-	initInput('i_quote_type', isThereData('quotes', 'type'))
+	initInput('i_qtfreq', isThereData('quotes', 'frequency'))
+	initInput('i_qttype', isThereData('quotes', 'type'))
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
@@ -48,7 +48,7 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_sb', isThereData('searchbar', 'on'))
 	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
 	initCheckbox('i_quotes', isThereData('quotes', 'on'))
-	initCheckbox('i_quotes_author', isThereData('quotes', 'author'))
+	initCheckbox('i_qtauthor', isThereData('quotes', 'author'))
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
@@ -87,8 +87,6 @@ function initParams(data, settingsDom) {
 	if (data.background_type === 'custom') {
 		paramId('custom').style.display = 'block'
 		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
-	} else {
-		paramId('dynamic').style.display = 'block'
 	}
 
 	//weather settings
@@ -344,23 +342,21 @@ function initParams(data, settingsDom) {
 		quotes('toggle', this)
 	}
 
-	paramId('i_freq_quotes').onchange = function () {
+	paramId('i_qtfreq').onchange = function () {
 		quotes('frequency', this)
 	}
 
-	paramId('i_quote_type').onchange = function () {
-		quotes('quote_type', this)
+	paramId('i_qttype').onchange = function () {
+		quotes('type', this)
 	}
 
-	paramId('i_refresh_quotes').onclick = function () {
-		quotes('refresh', this);
+	paramId('i_qtrefresh').onclick = function () {
+		quotes('refresh', this)
 	}
 
-	paramId('i_quotes_author').onchange = function () {
+	paramId('i_qtauthor').onchange = function () {
 		quotes('author', this)
 	}
-
-	
 
 	//settings
 
@@ -435,9 +431,7 @@ function showall(val, event, domSettings) {
 }
 
 function selectBackgroundType(cat) {
-	id('dynamic').style.display = 'none'
-	id('custom').style.display = 'none'
-	id(cat).style.display = 'block'
+	id('custom').style.display = cat === 'custom' ? 'block' : 'none'
 
 	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
 		//

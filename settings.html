@@ -720,7 +720,6 @@
 	</div>
 
 	<div>
-
 		<div class="titleContainer">
 			<h5 class="trn">Quotes</h5>
 		</div>
@@ -737,58 +736,54 @@
 			</div>
 
 			<div id="quotes_options">
-				<hr>
+				<hr />
+
+				<div class="as as_quote_type">
+					<div class="wrapper">
+						<span class="trn">Always show author</span>
+						<div>
+							<label class="switch">
+								<input id="i_qtauthor" type="checkbox" />
+								<span class="slider round span"></span>
+							</label>
+						</div>
+					</div>
+
+					<hr />
+				</div>
 
 				<div class="wrapper freq_wrap">
 					<span class="trn">Frequency</span>
 					<div>
-						<select id="i_freq_quotes">
+						<select id="i_qtfreq">
 							<option value="tabs" class="trn">Every tab</option>
 							<option value="hour" class="trn">Every hour</option>
 							<option value="day" class="trn">Every day</option>
 							<option value="pause" class="trn">Pause</option>
 						</select>
-						<button id="i_refresh_quotes">
+						<button id="i_qtrefresh">
 							<span>↻</span>
 						</button>
 					</div>
 				</div>
 
-				
+				<div class="as as_quote_type">
+					<hr />
 
-				<div id="dynamic">
-					<div class="as as_quote_type">
-						<hr />
-	
-						<div class="wrapper">
-							<span class="trn">Quote type</span>
-							<div>
-								<select id="i_quote_type">
-									<option value="classic" class="trn">Classic</option>
-									<option value="inspirobot">Inspirobot</option>
-									<option value="kaamelott">Kaamelott</option>
-								</select>
-							</div>
+					<div class="wrapper">
+						<span class="trn">Quote type</span>
+						<div>
+							<select id="i_qttype">
+								<option value="classic" class="trn">Classic</option>
+								<option value="inspirobot">Inspirobot</option>
+								<option value="kaamelott">Kaamelott</option>
+							</select>
 						</div>
-	
-					</div>
-				</div>
-
-				<hr>
-
-				<div class="wrapper">
-					<span class="trn">Always show author</span>
-					<div>
-						<label class="switch">
-							<input id="i_quotes_author" type="checkbox" />
-							<span class="slider round span"></span>
-						</label>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
 
 	<div class="as as_fonts">
 		<div class="titleContainer">
