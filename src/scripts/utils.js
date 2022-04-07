@@ -45,7 +45,7 @@ const isExtension =
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.12.1',
+	BonjourrVersion = '1.13.0',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -113,14 +113,7 @@ function bundleLinks(storage) {
 
 function aliasGarbageCollection(sync) {
 	const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
-
-	if (sync.links && sync.links.length > 0) {
-		const linksIconList = sync.links.map((item) => item.icon)
-		aliasKeyList.forEach((key) => (!linksIconList.includes(key) ? delete sync[key] : ''))
-	} else {
-		aliasKeyList.forEach((key) => delete sync[key])
-	}
-
+	aliasKeyList.forEach((key) => delete sync[key])
 	return sync
 }
 

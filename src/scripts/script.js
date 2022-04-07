@@ -2691,13 +2691,11 @@ function filterImports(data) {
 	if (result.searchbar_engine) delete result.searchbar_engine
 	if (result.searchbar_newtab) delete result.searchbar_newtab
 
-	// Todo:
-	// search for aliases in sync
-	// put aliases in matching data.links
-
 	result.links?.forEach(({ title, url, icon }, i) => {
 		const id = 'links' + randomString(6)
-		result[id] = { _id: id, order: i, title, icon, url }
+		const filteredIcon = icon.startsWith('alias:') ? result[icon] : icon
+
+		result[id] = { _id: id, order: i, title, icon: filteredIcon, url }
 	})
 
 	delete result.links
@@ -2739,7 +2737,6 @@ function startup(data) {
 }
 
 window.onload = function () {
-	//
 	// On settings changes, update export code
 	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
 	else window.onstorage = () => importExport('exp')
@@ -2754,31 +2751,23 @@ window.onload = function () {
 		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
 	}, 5 * 60 * 1000)
 
-	// Only on Online
-	switch (window.location.protocol) {
-		case 'http:':
-		case 'https:':
-		case 'file:': {
-			//
-			// Service Worker
-			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/service-worker.js')
-			}
-
-			// PWA install trigger (30s interaction default)
-			let promptEvent
-			window.addEventListener('beforeinstallprompt', function (e) {
-				promptEvent = e
-			})
-
-			// Safari overflow fix
-			// Todo: add safari condition
-			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
-			window.addEventListener('resize', appHeight)
-			appHeight()
-
-			break
+	// Only on Online / Safari
+	if (['http', 'https', 'file:'].some((a) => window.location.protocol.includes(a))) {
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js')
 		}
+
+		// PWA install trigger (30s interaction default)
+		let promptEvent
+		window.addEventListener('beforeinstallprompt', function (e) {
+			promptEvent = e
+		})
+
+		// Safari overflow fix
+		// Todo: add safari condition
+		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		window.addEventListener('resize', appHeight)
+		appHeight()
 	}
 
 	try {
