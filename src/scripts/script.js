@@ -231,67 +231,34 @@ function clock(event, init) {
 	}
 }
 
-const saveIconAsAlias = (iconstr, oldAlias) => {
-	// Fait un nouvel objet à chaque fois
-	// Ajoute l'url de l'icône à l'objet
-	// Sauvegarde et retourne le nom de l'objet
-	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(7)
-	const tosave = {}
-	tosave[alias] = iconstr
-	chrome.storage.sync.set(tosave)
-	return alias
-}
-
-function quickLinks(event, that, initStorage) {
+function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	let editDisplayTimeout = setTimeout(() => {}, 0)
-	let hovered,
-		dragged = { parent: undefined, link: {}, index: 0 }
+	let hovered = { parent: undefined, link: {}, index: 0 }
 
-	//enleve les selections d'edit
-	const removeLinkSelection = () =>
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
-			clas(e, false, 'selected')
-		})
-
-	//initialise les blocs en fonction du storage
-	//utilise simplement une boucle de appendblock
-	async function initblocks(data) {
-		const links = data.links || []
-
+	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
-				// Blocks
 				// Add blocks and events
-				const blocklist = links.map((link, i) => appendblock(link, i))
+				const blocklist = links.map((l) => appendblock(l))
 				blocklist.forEach(({ parent }) => addEvents(parent))
 				canDisplayInterface('links')
 
-				// Icons
-				// Get list of icons
-				let changed = 0
-				let iconList = Object.values(links).map((elem) => {
-					return elem.icon.startsWith('alias:') ? data[elem.icon] : elem.icon
-				})
-
-				// Then loads them one by one
-				for (let index = 0; index < blocklist.length; index++) {
+				// Load icons one by one
+				links.map(async (link, index) => {
 					const dom = blocklist[index].icon
-					const url = iconList[index] === undefined ? 'src/assets/interface/loading.gif' : iconList[index]
-					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => url.includes(x))
+					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => link.icon.includes(x))
 
-					// Fetch new icons if matches these urls, or apply cached
-					if (url.length === 0 || needsToChange) {
-						links[index].icon = saveIconAsAlias(await fetchNewIcon(dom, links[index].url))
-						changed++
-					} else {
-						links[index].icon = dom.src = url
+					// Fetch new icons if matches these urls
+					if (needsToChange) {
+						link.icon = await fetchNewIcon(dom, link.url)
+						chrome.storage.sync.set({ [link._id]: link })
 					}
-				}
 
-				// Saves links when icons are loaded if any changed
-				if (changed > 0) chrome.storage.sync.set({ links })
+					// Apply cached
+					else dom.src = link.icon
+				})
 			} catch (e) {
 				errorMessage('Failed to load links', e)
 			}
@@ -340,8 +307,8 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function appendblock(link) {
-		let title = stringMaxSize(link.title, 32)
-		let url = stringMaxSize(link.url, 128)
+		let title = stringMaxSize(link.title, 64)
+		let url = stringMaxSize(link.url, 512)
 
 		//le DOM du block
 		const lIcon = document.createElement('img')
@@ -356,11 +323,12 @@ function quickLinks(event, that, initStorage) {
 		lIconWrap.appendChild(lIcon)
 
 		blockTitle.textContent = title
+		blockTitle.style.display = title === '' ? 'none' : 'block'
 
 		block.className = 'block'
 		block.setAttribute('source', url)
 		block.appendChild(lIconWrap)
-		title ? block.appendChild(blockTitle) : ''
+		block.appendChild(blockTitle)
 
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.setAttribute('draggable', 'true')
@@ -372,42 +340,47 @@ function quickLinks(event, that, initStorage) {
 		return { icon: lIcon, parent: block_parent }
 	}
 
+	function removeLinkSelection() {
+		//enleve les selections d'edit
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
+			clas(e, false, 'selected')
+		})
+	}
+
+	function showDelIcon(input) {
+		const img = input.nextElementSibling
+		if (input.value === '') img.classList.remove('shown')
+		else img.classList.add('shown')
+	}
+
 	function addEvents(elem) {
 		function handleDrag(is, that) {
-			chrome.storage.sync.get('links', (data) => {
-				const i = findindex(that)
+			chrome.storage.sync.get(null, (data) => {
+				const index = findindex(that)
+				const link = bundleLinks(data)[index]
 
-				switch (is) {
-					case 'start':
-						dragged = { parent: elem, link: data.links[i], index: i }
-						break
+				if (is === 'enter') {
+					hovered = { parent: elem, link, index }
+					return
+				}
 
-					case 'enter':
-						hovered = { parent: elem, link: data.links[i], index: i }
-						break
+				if (is === 'end') {
+					if (hovered.index === index) return
 
-					case 'end': {
-						if (hovered.index !== dragged.index) {
-							//changes html blocks
-							const hoveredChild = hovered.parent.children[0]
-							const draggedChild = dragged.parent.children[0]
+					const dragged = { parent: elem }
+					const hoveredChild = hovered.parent.children[0]
+					const draggedChild = dragged.parent.children[0]
 
-							hovered.parent.children[0].remove()
-							dragged.parent.children[0].remove()
+					hovered.parent.children[0].remove()
+					dragged.parent.children[0].remove()
+					hovered.parent.appendChild(draggedChild)
+					dragged.parent.appendChild(hoveredChild)
 
-							hovered.parent.appendChild(draggedChild)
-							dragged.parent.appendChild(hoveredChild)
+					const temp = link.order
+					data[link._id].order = hovered.link.order
+					data[hovered.link._id].order = temp
 
-							// Switches link storage
-							let allLinks = data.links
-
-							allLinks[dragged.index] = hovered.link
-							allLinks[hovered.index] = dragged.link
-
-							chrome.storage.sync.set({ links: allLinks })
-						}
-						break
-					}
+					chrome.storage.sync.set(data)
 				}
 			})
 		}
@@ -438,7 +411,15 @@ function quickLinks(event, that, initStorage) {
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
 			clearTimeout(editDisplayTimeout)
-			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
+
+			if (e.which === 3) {
+				editlink(this)
+				return
+			}
+
+			if (!has(id('settings'), 'shown')) {
+				openlink(this, e)
+			}
 		}
 
 		// Mobile clicks
@@ -459,12 +440,6 @@ function quickLinks(event, that, initStorage) {
 
 		elem.addEventListener('touchstart', startHandler, { passive: true })
 		elem.addEventListener('touchend', endHandler, { passive: true })
-	}
-
-	function showDelIcon(input) {
-		const img = input.nextElementSibling
-		if (input.value === '') img.classList.remove('shown')
-		else img.classList.add('shown')
 	}
 
 	function editEvents() {
@@ -501,12 +476,11 @@ function quickLinks(event, that, initStorage) {
 		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
 		else editLinkContainer.onmousedown = outsideClick
 
-		id('re_title').onclick = (e) => emptyAndHideIcon(e)
-		id('re_url').onclick = (e) => emptyAndHideIcon(e)
-		id('re_iconurl').onclick = (e) => emptyAndHideIcon(e)
-		id('e_title').onkeyup = (e) => showDelIcon(e.target)
-		id('e_url').onkeyup = (e) => showDelIcon(e.target)
-		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
+		const removers = ['re_title', 're_url', 're_iconurl']
+		const inputs = ['e_title', 'e_url', 'e_iconurl']
+
+		removers.forEach((name) => (id(name).onclick = (e) => emptyAndHideIcon(e)))
+		inputs.forEach((name) => (id(name).onkeyup = (e) => showDelIcon(e.target)))
 	}
 
 	function editlink(that, i) {
@@ -527,14 +501,15 @@ function quickLinks(event, that, initStorage) {
 			id('editlink').setAttribute('index', index)
 
 			chrome.storage.sync.get(null, (data) => {
-				const { title, url, icon } = data.links[index]
+				const link = bundleLinks(data).filter((l) => l.order === index)[0]
+				const { title, url, icon } = link
 
 				e_title.setAttribute('placeholder', tradThis('Title'))
 				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
 
 				e_title.value = title
 				e_url.value = url
-				e_iconurl.value = icon.startsWith('alias:') ? data[icon] : icon
+				e_iconurl.value = icon
 
 				showDelIcon(e_title)
 				showDelIcon(e_url)
@@ -543,75 +518,43 @@ function quickLinks(event, that, initStorage) {
 		}
 
 		function updatesEditedLink() {
-			if (e_iconurl.value.length === 8180) {
+			if (e_iconurl.value.length === 7500) {
 				e_iconurl.value = ''
 				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
 				return false
 			}
 
-			const updated = {
-				title: stringMaxSize(e_title.value, 32),
-				url: stringMaxSize(e_url.value, 217),
-				icon: stringMaxSize(e_iconurl.value, 8180),
-			}
-
 			chrome.storage.sync.get(null, (data) => {
-				let allLinks = [...data.links]
 				const parent = domlinkblocks.children[i + 1]
+				let link = bundleLinks(data).filter((l) => l.order === i)[0]
 
-				// Update on interface
-				Object.entries(allLinks[i]).forEach(([key, val]) => {
-					if (val !== updated[key]) {
-						//
-						switch (key) {
-							case 'title': {
-								const domtitle = parent.querySelector('span')
+				link = {
+					...link,
+					title: stringMaxSize(e_title.value, 64),
+					url: stringMaxSize(e_url.value, 512),
+					icon: stringMaxSize(e_iconurl.value, 7500),
+				}
 
-								// Adds span title or updates it
-								if (!domtitle) {
-									const span = document.createElement('span')
-									span.textContent = updated[key]
-									parent.children[0].appendChild(span)
-								} else {
-									domtitle.textContent = updated[key]
-								}
+				parent.querySelector('.block').setAttribute('source', link.url)
+				parent.querySelector('img').src = link.icon
+				parent.querySelector('span').textContent = link.title
 
-								break
-							}
+				parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
 
-							case 'url':
-								parent.children[0].setAttribute('source', updated[key])
-								break
-
-							case 'icon': {
-								// Updates dom
-								parent.querySelector('img').src = updated.icon
-								const previousIconURL = allLinks[i].icon
-
-								updated.icon = saveIconAsAlias(
-									updated.icon,
-									previousIconURL.startsWith('alias:') ? previousIconURL : null
-								)
-
-								break
-							}
-						}
-
-						allLinks[i][key] = updated[key]
-					}
-				})
-
-				// Update in storage
-				chrome.storage.sync.set({ links: allLinks })
+				// Updates
+				chrome.storage.sync.set({ [link._id]: link })
 			})
 
 			return true
 		}
 
-		// If i is defined, you updated a link=
-		if (typeof i === 'number') return updatesEditedLink()
-		else displayEditWindow()
+		// If i is defined, updates a link
+		if (typeof i === 'number') {
+			return updatesEditedLink()
+		}
+
+		displayEditWindow()
 	}
 
 	function openlink(that, e) {
@@ -630,19 +573,14 @@ function quickLinks(event, that, initStorage) {
 	function findindex(that) {
 		//passe la liste des blocks, s'arrete si that correspond
 		//renvoie le nombre de loop pour l'atteindre
-
 		const list = domlinkblocks.children
-
 		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
 	}
 
 	function removeblock(index) {
-		chrome.storage.sync.get('links', (data) => {
-			// Remove alias from storage
-			const icon = data.links[index].icon
-			if (icon.startsWith('alias:')) chrome.storage.sync.remove(icon)
-
-			data.links.splice(index, 1)
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data)
+			let link = links.filter((l) => l.order === index)[0]
 
 			//enleve le html du block
 			const blockParent = domlinkblocks.children[index + 1]
@@ -653,64 +591,69 @@ function quickLinks(event, that, initStorage) {
 
 			setTimeout(function () {
 				domlinkblocks.removeChild(blockParent)
-
-				//enleve linkblocks si il n'y a plus de links
-				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
+				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
 			}, 600)
 
-			chrome.storage.sync.set({ links: data.links })
+			links.map((l) => {
+				l.order > index ? (l.order -= 1) : '' // Decrement order for elements above the one removed
+				data[l._id] = l // updates link in storage
+			})
+
+			chrome.storage.sync.set(data)
+			chrome.storage.sync.remove(link._id)
 		})
 	}
 
 	function linkSubmission(importList) {
 		//
-
-		function saveLink(filteredLinks) {
-			id('i_title').value = ''
-			id('i_url').value = ''
-
-			chrome.storage.sync.get(null, (data) => {
-				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
-
-				if (data.links) {
-					data.links = data.links.concat(filteredLinks)
-					domlinkblocks.style.visibility = 'visible'
-
-					if (data.links.length === 30) linksInputDisable(true)
-
-					blocklist.forEach((parent) => parent.remove())
-					initblocks(data)
-				}
-			})
-		}
-
 		function filterNewLink(title, url) {
 			//
-			url = stringMaxSize(url, 217)
+			url = stringMaxSize(url, 512)
 			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
 
 			return {
-				title: stringMaxSize(title, 32),
-				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+				_id: 'links' + randomString(6),
+				order: 0,
+				title: stringMaxSize(title, 64),
 				icon: 'src/assets/interface/loading.gif',
+				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 			}
 		}
 
-		const newLinks = []
+		function saveLink(link, order) {
+			id('i_title').value = ''
+			id('i_url').value = ''
 
-		if (importList && importList.length > 0) {
-			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
-			saveLink(newLinks)
-		} else {
-			//si l'url filtré est juste
-			//et l'input n'a pas été activé ya -1s
-			if (id('i_url').value.length > 2 && !stillActive) {
-				newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
-				saveLink(newLinks)
-			}
+			link.order = order
+
+			// Displays and saves before fetching icon
+			initblocks([link])
+			chrome.storage.sync.set({ [link._id]: link })
+
+			// Some other dom control
+			if (order >= 30) linksInputDisable(true)
+			domlinkblocks.style.visibility = 'visible'
 		}
+
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data)
+			const url = id('i_url').value
+			const title = id('i_title').value
+
+			if (importList?.length > 0) {
+				importList.forEach(({ title, url }, i) => {
+					if (!url) return
+					saveLink(filterNewLink(title, url), links.length + i) // increment order for each import
+				})
+			}
+
+			// Si l'url est assez longue et l'input n'a pas été activé ya -1s
+			if (url.length > 2 && !stillActive) {
+				saveLink(filterNewLink(title, url), links.length)
+			}
+		})
 	}
 
 	function linksInputDisable(isMax, settingsDom) {
@@ -741,8 +684,8 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	if (initStorage) {
-		initblocks(initStorage)
+	if (init) {
+		initblocks(bundleLinks(init))
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
@@ -758,12 +701,12 @@ async function linksImport() {
 		setTimeout(() => container.setAttribute('class', ''), BonjourrAnimTime)
 	}
 
-	function main(data, bookmarks) {
+	function main(links, bookmarks) {
 		const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
 
 		const form = document.createElement('form')
 		const allCategories = [...bookmarks[0].children]
-		let counter = data.links.length || 0
+		let counter = links.length || 0
 		let bookmarksList = []
 		let selectedList = []
 
@@ -797,7 +740,7 @@ async function linksImport() {
 				}
 
 				// Change submit button text & class on selections
-				const amountSelected = counter - data.links.length
+				const amountSelected = counter - links.length
 				id('applybookmarks').textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
@@ -811,7 +754,7 @@ async function linksImport() {
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
 			if (typeof mark.url === 'string')
-				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 217)).length === 0) form.appendChild(elem)
+				if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) form.appendChild(elem)
 		})
 
 		// Replace form to filter already added bookmarks
@@ -832,14 +775,14 @@ async function linksImport() {
 
 	// Ask for bookmarks first
 	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
-		if (granted) {
-			chrome.storage.sync.get('links', (data) => {
-				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-					clas(id('bookmarks_container'), true, 'shown')
-					main(data, response)
-				})
+		if (!granted) return
+
+		chrome.storage.sync.get(null, (data) => {
+			;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+				clas(id('bookmarks_container'), true, 'shown')
+				main(bundleLinks(data), response)
 			})
-		}
+		})
 	})
 
 	// Close events
@@ -1836,6 +1779,7 @@ function unsplash(init, event) {
 	}
 
 	const initOrEvent = init && init.dynamic ? 'init' : 'event'
+
 	// collections source: https://unsplash.com/@bonjourr/collections
 	const allCollectionIds = {
 		noon: 'GD4aOSg4yQE',
@@ -1860,8 +1804,6 @@ function unsplash(init, event) {
 						delete init.dynamic.current
 					}
 
-					//
-					//
 					// Real init start
 					const collecId = collectionControl(init.dynamic)
 
@@ -2777,21 +2719,6 @@ function filterImports(data) {
 		lang: (lang) => (lang === undefined ? 'en' : lang),
 		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
 
-		links: (links) => {
-			if (links && links.length > 0) {
-				// Removes any links that doesn't seem right
-				links = links.filter((elem) => elem && elem.icon && elem.title && elem.url)
-
-				links.forEach((elem, i) => {
-					// >1.10.0 ==> 1.12.1 Only import icons, not aliases
-					if (!elem.icon.startsWith('alias:')) {
-						links[i].icon = saveIconAsAlias(elem.icon)
-					}
-				})
-			}
-			return links
-		},
-
 		dynamic: (dynamic) => {
 			if (dynamic) {
 				// New collection key missing
@@ -2875,15 +2802,31 @@ function filterImports(data) {
 		},
 	}
 
+	function linksFilter(sync) {
+		const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+
+		sync.links?.forEach(({ title, url, icon }, i) => {
+			const id = 'links' + randomString(6)
+			const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
+
+			sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
+		})
+
+		aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
+		delete sync.links // removes <1.13.0 links array
+
+		return sync
+	}
+
 	let result = { ...data }
 
-	if (result.searchbar_engine) delete result.searchbar_engine
-	if (result.searchbar_newtab) delete result.searchbar_newtab
+	delete result?.searchbar_engine
+	delete result?.searchbar_newtab
 
 	try {
 		// Go through found categories in import data to filter them
 		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
-		result = aliasGarbageCollection(result)
+		result = linksFilter(result)
 	} catch (e) {
 		errorMessage('Messed up in filter imports', e)
 	}
@@ -2918,7 +2861,6 @@ function startup(data) {
 }
 
 window.onload = function () {
-	//
 	// On settings changes, update export code
 	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
 	else window.onstorage = () => importExport('exp')
@@ -2933,31 +2875,23 @@ window.onload = function () {
 		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
 	}, 5 * 60 * 1000)
 
-	// Only on Online
-	switch (window.location.protocol) {
-		case 'http:':
-		case 'https:':
-		case 'file:': {
-			//
-			// Service Worker
-			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/service-worker.js')
-			}
-
-			// PWA install trigger (30s interaction default)
-			let promptEvent
-			window.addEventListener('beforeinstallprompt', function (e) {
-				promptEvent = e
-			})
-
-			// Safari overflow fix
-			// Todo: add safari condition
-			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
-			window.addEventListener('resize', appHeight)
-			appHeight()
-
-			break
+	// Only on Online / Safari
+	if (['http', 'https', 'file:'].some((a) => window.location.protocol.includes(a))) {
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js')
 		}
+
+		// PWA install trigger (30s interaction default)
+		let promptEvent
+		window.addEventListener('beforeinstallprompt', function (e) {
+			promptEvent = e
+		})
+
+		// Safari overflow fix
+		// Todo: add safari condition
+		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		window.addEventListener('resize', appHeight)
+		appHeight()
 	}
 
 	try {

@@ -45,7 +45,7 @@ const isExtension =
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
 	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.12.1',
+	BonjourrVersion = '1.13.0',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -79,6 +79,11 @@ switch (window.location.protocol) {
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
+const randomString = (len) => {
+	const chars = 'abcdefghijklmnopqr'
+	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+}
+
 function validateHideElem(hide) {
 	let res = true
 
@@ -95,17 +100,15 @@ function validateHideElem(hide) {
 	return res
 }
 
-function aliasGarbageCollection(sync) {
-	const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+function bundleLinks(storage) {
+	// 1.13.0: Returns an array of found links in storage
+	let res = []
+	Object.entries(storage).map(([key, val]) => {
+		if (key.length === 11 && key.startsWith('links')) res.push(val)
+	})
 
-	if (sync.links && sync.links.length > 0) {
-		const linksIconList = sync.links.map((item) => item.icon)
-		aliasKeyList.forEach((key) => (!linksIconList.includes(key) ? delete sync[key] : ''))
-	} else {
-		aliasKeyList.forEach((key) => delete sync[key])
-	}
-
-	return sync
+	res.sort((a, b) => a.order - b.order)
+	return res
 }
 
 function slowRange(tosave, time = 400) {
@@ -306,7 +309,6 @@ function bonjourrDefaults(which) {
 				greeting: '',
 				custom_every: 'pause',
 				background_type: 'dynamic',
-				links: [],
 				clock: {
 					ampm: false,
 					analog: false,

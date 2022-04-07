@@ -56,7 +56,7 @@ function initParams(data, settingsDom) {
 	if (isOnlineOrSafari) paramId('b_importbookmarks').style.display = 'none'
 
 	// Links limit
-	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
+	if (bundleLinks(data).length >= 30) quickLinks('maxControl', settingsDom)
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
@@ -468,47 +468,52 @@ function importExport(select, isEvent, settingsDom) {
 
 	function importation() {
 		//
-		if (isEvent) {
-			const dom = id('i_import')
-			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+		const dom = id('i_import')
+		const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
 
-			if (dom.value.length > 0) {
-				try {
-					const imported = JSON.parse(dom.value)
+		if (!isEvent || dom?.value?.length === 0) {
+			return
+		}
 
-					// Load all sync & dynamicCache
-					chrome.storage.sync.get(null, (data) => {
-						chrome.storage.local.get('dynamicCache', (local) => {
-							//
-							// Remove user collection cache if collection change
-							if (data.dynamic && imported.dynamic) {
-								if (data.dynamic.collection !== imported.dynamic.collection) {
-									local.dynamicCache.user = []
-								}
-							}
-
-							//
-							delete data.about
-
-							data = { ...data, ...imported }
-
-							// full import on Online is through "import" field
-							data = isExtension ? data : { import: data }
-
-							// Save sync & local
-							chrome.storage.sync.clear()
-							chrome.storage.sync.set(data, chrome.storage.local.set(local))
-
-							fadeOut()
-						})
-					})
-				} catch (e) {
-					dom.value = ''
-					placeholder('Error in import code')
-					setTimeout(() => placeholder('Import code'), 2000)
-					console.error(e)
+		function applyImportation(sync, local, newImport) {
+			// Remove user collection cache if collection change
+			if (sync.dynamic && newImport.dynamic) {
+				if (sync.dynamic.collection !== newImport.dynamic.collection) {
+					local.dynamicCache.user = []
 				}
 			}
+
+			// Delete current links on imports containing links somewhere
+			// to avoid duplicates
+			if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+				bundleLinks(sync).forEach((elem) => {
+					delete sync[elem._id]
+				})
+			}
+
+			sync = { ...sync, ...newImport }
+			delete sync.about // Remove about to trigger "new version" startup to filter data
+
+			sync = isExtension ? sync : { import: sync } // full import on Online is through "import" field
+
+			chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
+			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+
+			fadeOut()
+		}
+
+		try {
+			const imported = JSON.parse(dom.value)
+
+			// Load all sync & dynamicCache
+			chrome.storage.sync.get(null, (data) =>
+				chrome.storage.local.get('dynamicCache', (local) => applyImportation(data, local, imported))
+			)
+		} catch (e) {
+			dom.value = ''
+			placeholder('Error in import code')
+			setTimeout(() => placeholder('Import code'), 2000)
+			console.error(e)
 		}
 	}
 
