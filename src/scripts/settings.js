@@ -459,12 +459,20 @@ function importExport(select, isEvent, settingsDom) {
 				}
 			}
 
-			delete sync.about
+			// Delete current links on imports containing links somewhere
+			// to avoid duplicates
+			if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+				bundleLinks(sync).forEach((elem) => {
+					delete sync[elem._id]
+				})
+			}
+
 			sync = { ...sync, ...newImport }
+			delete sync.about // Remove about to trigger "new version" startup to filter data
+
 			sync = isExtension ? sync : { import: sync } // full import on Online is through "import" field
 
-			// Save sync & local
-			chrome.storage.sync.clear()
+			chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
 			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
 
 			fadeOut()

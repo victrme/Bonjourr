@@ -2686,24 +2686,31 @@ function filterImports(data) {
 		},
 	}
 
+	function linksFilter(sync) {
+		const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+
+		sync.links?.forEach(({ title, url, icon }, i) => {
+			const id = 'links' + randomString(6)
+			const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
+
+			sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
+		})
+
+		aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
+		delete sync.links // removes <1.13.0 links array
+
+		return sync
+	}
+
 	let result = { ...data }
 
-	if (result.searchbar_engine) delete result.searchbar_engine
-	if (result.searchbar_newtab) delete result.searchbar_newtab
-
-	result.links?.forEach(({ title, url, icon }, i) => {
-		const id = 'links' + randomString(6)
-		const filteredIcon = icon.startsWith('alias:') ? result[icon] : icon
-
-		result[id] = { _id: id, order: i, title, icon: filteredIcon, url }
-	})
-
-	delete result.links
+	delete result?.searchbar_engine
+	delete result?.searchbar_newtab
 
 	try {
 		// Go through found categories in import data to filter them
 		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
-		result = aliasGarbageCollection(result)
+		result = linksFilter(result)
 	} catch (e) {
 		errorMessage('Messed up in filter imports', e)
 	}

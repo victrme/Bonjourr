@@ -111,12 +111,6 @@ function bundleLinks(storage) {
 	return res
 }
 
-function aliasGarbageCollection(sync) {
-	const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
-	aliasKeyList.forEach((key) => delete sync[key])
-	return sync
-}
-
 function slowRange(tosave, time = 400) {
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {
