@@ -109,7 +109,7 @@ function initParams(data, settingsDom) {
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
 
-	clas(paramId('quotes_options'), data.quotes.on, 'shown')
+	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
 
 	//langue
 	paramId('i_lang').value = data.lang || 'en'

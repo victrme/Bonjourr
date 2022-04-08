@@ -140,7 +140,9 @@ body {
 			#greetings,
 			#widget,
 			#forecast,
-			#current {
+			#current,
+			#quotes_container,
+			#quotes_container #author {
 				transition: none;
 			}
 		}
@@ -228,6 +230,7 @@ body {
 
 	#i_export,
 	#i_refresh,
+	#i_qtrefresh,
 	#cssEditor,
 	input[type='text'],
 	input[type='range'],

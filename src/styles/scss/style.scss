@@ -314,20 +314,29 @@
 	}
 
 	#quotes_container {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 0;
 		opacity: 0;
-		font-size: 1.4em;
-		max-width: 33vw;
+		width: 33vw;
+		max-width: 600px;
+		min-width: 150px;
 		min-height: 58px;
 		margin: auto;
 		user-select: text;
 		-moz-user-select: text;
 		-webkit-user-select: text;
-		margin-bottom: 1.5rem;
-		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
-		opacity: 0;
+		transition: opacity 0.2s, flex-grow 0.4s 0.2s, transform 0.4s, margin 0.4s;
 		cursor: initial;
 
+		#quote {
+			font-size: 1.5em;
+		}
+
 		#author {
+			text-align: center;
+			font-size: 1.2em;
+			margin: 15px;
 			opacity: 0;
 			transition: opacity 0.4s;
 
@@ -337,7 +346,9 @@
 		}
 
 		&.shown {
+			flex-grow: 0.2;
 			opacity: 1;
+			transition: opacity 0.2s 0.2s, flex-grow 0.2s, transform 0.4s, margin 0.4s;
 
 			&:hover #author {
 				opacity: 1;
