@@ -249,7 +249,7 @@
 		flex-grow: 0;
 		padding: 0;
 		margin: 0 auto;
-		width: 500px;
+		width: 35em;
 		border-radius: 10px;
 		max-width: calc(90% - 4em);
 		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
@@ -514,6 +514,7 @@
 	left: 0;
 	height: 100vh;
 	width: 100vw;
+	font-size: 16px;
 	opacity: 0;
 	z-index: 1;
 	transition: transform 0.4s;
@@ -570,12 +571,12 @@
 
 #editlink_container {
 	#editlink {
-		background: $purewhite;
 		align-self: center;
-		margin: auto;
-		color: #333;
 		width: 300px;
+		margin: auto;
 		padding: 1.5em;
+		color: #333;
+		background-color: $purewhite;
 		border-radius: 10px;
 		z-index: 3;
 
@@ -616,19 +617,15 @@
 
 		input[type='text'],
 		input[type='url'] {
-			border: 0px;
-			height: 1em;
-			width: 100%;
-			font-size: 1em;
-			padding: 1em;
-			box-sizing: border-box;
-			border-radius: 9px;
 			font-size: 0.9em;
-			background-color: $inputGrey;
-			border-radius: 8px;
+			width: 100%;
 			height: 2.35em;
 			margin: 0.3em 0;
-			padding-right: 3em;
+			padding: 0 3em 0 1em;
+			border: 0px;
+			border-radius: 8px;
+			box-sizing: border-box;
+			background-color: $inputGrey;
 			transition: background-color 0.1s;
 
 			&:focus {
@@ -669,10 +666,7 @@
 			overflow-x: hidden;
 
 			div {
-				display: flex;
-				flex-direction: column;
-				cursor: pointer;
-				overflow: hidden;
+				position: relative;
 				background-color: white;
 				color: $blackish;
 				padding: 20px;
@@ -681,29 +675,23 @@
 				padding-left: 3.5em;
 				text-align: left;
 				word-break: break-all;
-				position: relative;
 				transition: filter 0.1s;
+				cursor: pointer;
 
 				&:before {
 					content: '';
-					background-color: unset;
-					background-image: unset;
-					border: 2px solid #c5c4c6;
-
-					background-repeat: no-repeat;
-					background-size: 12px;
-					background-position: center;
+					position: absolute;
+					top: 50%;
 					width: 25px;
 					height: 25px;
-					text-align: center;
-					border-radius: 100px;
-					position: absolute;
-					vertical-align: -50%;
-					top: 50%;
+					border-radius: 25px;
+					border: 2px solid #c5c4c6;
+					background-size: 12px;
+					background-repeat: no-repeat;
+					background-position: center;
 					transform: translateY(-50%);
-					margin-left: -39px;
+					margin-left: -40px;
 					box-sizing: border-box;
-					transition: background-color 0.1s;
 				}
 
 				h5,
@@ -715,7 +703,8 @@
 				}
 
 				pre {
-					margin-top: 10px;
+					font-size: 0.8em;
+					margin-top: 0.4em;
 				}
 
 				&:first-child {
@@ -731,9 +720,9 @@
 				&.selected {
 					filter: brightness(0.9);
 					&:before {
-						border: unset;
-						background-image: url('/src/assets/interface/checkmark.svg');
+						border-color: $blue;
 						background-color: $blue;
+						background-image: url('/src/assets/interface/checkmark.svg');
 					}
 				}
 			}
@@ -775,11 +764,11 @@
 	position: fixed;
 	bottom: 2rem;
 	left: 2rem;
-	opacity: 0;
-	text-align: left;
-	transition: opacity 0.4s;
-	padding: 1em 1em 0 0;
 	max-width: 50%;
+	padding: 1em 1em 0 0;
+	text-align: left;
+	opacity: 0;
+	transition: opacity 0.4s;
 
 	&.shown {
 		opacity: 1;
@@ -838,13 +827,13 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	min-width: 140px;
+	min-width: 9em;
 
 	a {
 		color: white;
 		text-decoration: none;
-		border-radius: 10px;
-		line-height: 36px;
+		border-radius: 8px;
+		line-height: 2.4em;
 
 		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbAlpha: 0.3, $fbColor: white);
 
@@ -855,32 +844,37 @@
 		&:active {
 			@include frostedGlass($alpha: 0.6, $blur: 10px, $fbAlpha: 0.6, $fbColor: white);
 		}
+
+		&:first-child {
+			margin-bottom: 0.4em;
+		}
 	}
 }
 
 #popup_text {
-	width: 260px;
+	display: flex;
+	align-items: center;
+	width: 16em;
 	left: 40px;
 	text-align: left;
-	padding: 10px 30px;
-	margin-right: 10px;
-	border-radius: 10px;
-	justify-content: space-between;
+	padding: 0.6em 2em;
+	margin-right: 0.6em;
+	border-radius: 8px;
 	@include frostedGlass($alpha: 0.2, $blur: 10px, $fbAlpha: 0.3, $fbColor: white);
 
 	&::before {
 		content: '×';
-		opacity: 0;
 		position: absolute;
-		top: 20px;
-		left: 140px;
-		width: 40px;
-		height: 40px;
-		font-size: 30px;
-		line-height: 35px;
-		border-radius: 5px;
+		left: calc(50% - 0.5em);
+		top: 50%;
+		width: 1em;
+		height: 1em;
+		font-size: 2.2em;
+		line-height: 0.8em;
+		opacity: 0;
 		color: #fff;
 		text-align: center;
+		transform: translateY(-50%);
 		transition: opacity 0.4s, filter 0.2s;
 	}
 
