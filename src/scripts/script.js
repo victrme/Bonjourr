@@ -2110,18 +2110,16 @@ async function quotes(event, that, init) {
 					n = n + 2;
 				}
 
-				if (n < 5) {
-					return {
-						author: 'Inspirobot',
-						content: json.data[n].text
-					}
-				} else {
-					// if none of the three is short enough (very unlikely),
-					// saves current quote
-					return getCurrentQuote()
+				// returns current quote if none is valid
+				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : getCurrentQuote();
+
+			}
+			case 'kaamelott': {
+				return {
+					author : json.citation.infos.personnage,
+					content : json.citation.citation
 				}
 			}
-			case 'kaamelott':
 			case 'classic': {
 				return json
 			}
@@ -2130,11 +2128,11 @@ async function quotes(event, that, init) {
 
 	async function newQuote(lang, type) {
 
-		type = 'inspirobot'
+		type = 'kaamelott'
 
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
-			kaamelott: 'http://kaamelott.chaudie.re/api/random',
+			kaamelott: 'https://kaamelott.chaudie.re/api/random',
 			inspirobot: 'https://inspirobot.me/api?generateFlow=1'
 		}
 

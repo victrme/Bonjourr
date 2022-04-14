@@ -28,6 +28,9 @@
 	},
 
 	"permissions": ["storage", "unlimitedStorage", "geolocation"],
-	"host_permissions": ["https://inspirobot.me/"],
+	"host_permissions": [
+		"https://inspirobot.me/",
+		"https://kaamelott.chaudie.re/"
+	],
 	"optional_permissions": ["bookmarks"]
 }
