@@ -318,10 +318,11 @@
 		flex-direction: column;
 		flex-grow: 0;
 		opacity: 0;
+		row-gap: 1em;
 		width: 33vw;
 		max-width: 600px;
 		min-width: 150px;
-		min-height: 58px;
+		min-height: 0;
 		margin: auto;
 		user-select: text;
 		-moz-user-select: text;
@@ -330,13 +331,14 @@
 		cursor: initial;
 
 		#quote {
+			max-height: 0;
 			font-size: 1.5em;
+			transition: max-height 0.2s 0.2s;
 		}
 
 		#author {
 			text-align: center;
 			font-size: 1.2em;
-			margin: 15px;
 			opacity: 0;
 			transition: opacity 0.4s;
 
@@ -346,9 +348,15 @@
 		}
 
 		&.shown {
+			min-height: 60px;
 			flex-grow: 0.2;
 			opacity: 1;
-			transition: opacity 0.2s 0.2s, flex-grow 0.2s, transform 0.4s, margin 0.4s;
+			transition: opacity 0.2s 0.2s, flex-grow 0.4s, transform 0.4s, margin 0.4s;
+
+			#quote {
+				max-height: 60px;
+				transition: max-height 0.2s 0s;
+			}
 
 			&:hover #author {
 				opacity: 1;
