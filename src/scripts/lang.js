@@ -2089,7 +2089,7 @@ const dict = {
 		fr: 'Type de citations',
 		sv: 'Quote type',
 		nl: 'Quote type',
-		pl: 'Always show author',
+		pl: 'Quote type',
 		pt_BR: 'Quote type',
 		ru: 'Quote type',
 		zh_CN: 'Quote type',
