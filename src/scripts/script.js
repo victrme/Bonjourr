@@ -2093,6 +2093,8 @@ function searchbar(event, that, init) {
 async function quotes(event, that, init) {
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
+	console.log(init)
+
 	async function handleJson(type, json) {
 
 		function filter(quote) {
@@ -2111,7 +2113,7 @@ async function quotes(event, that, init) {
 				}
 
 				// returns current quote if none is valid
-				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : getCurrentQuote();
+				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote()
 
 			}
 			case 'kaamelott': {
@@ -2126,6 +2128,7 @@ async function quotes(event, that, init) {
 	async function newQuote(lang, type) {
 
 		type = 'kaamelott'
+		lang = 'fr'
 
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
@@ -2135,13 +2138,10 @@ async function quotes(event, that, init) {
 
 		try {
 			// Fetch a random quote from the quotes API
-			
 			const response = await fetch(URLs[type || 'classic']);
 			const json = await response.json()
 
-			if (response.ok) {
-				return handleJson(type, json)
-			}
+			if (response.ok) return handleJson(type, json) 
 		} catch (error) {
 			errorMessage('An error occured with the quotes API', error)
 		}
@@ -2182,6 +2182,7 @@ async function quotes(event, that, init) {
 	}
 
 	function updateQuoteSettings() {
+		
 		chrome.storage.sync.get('quotes', async (data) => {
 			switch (event) {
 				case 'toggle': {
@@ -2190,6 +2191,8 @@ async function quotes(event, that, init) {
 						insertQuote(JSON.parse(localStorage.getItem('nextQuote')))
 						storeNextQuote()
 					}
+
+					console.log(that.checked)
 					data.quotes.on = that.checked
 					break
 				}
@@ -2218,6 +2221,9 @@ async function quotes(event, that, init) {
 					return
 				}
 			}
+
+			console.log((data.quotes))
+			console.log('mise à jour des settings')
 
 			chrome.storage.sync.set({ quotes: data.quotes })
 		})

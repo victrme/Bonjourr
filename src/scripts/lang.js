@@ -2058,7 +2058,7 @@ const dict = {
 		uk: 'для отримання додаткової інформації або пожертвування',
 	},
 	'Quotes': {
-		fr: 'Quotes',
+		fr: 'Citations',
 		sv: 'Quotes',
 		nl: 'Quotes',
 		pl: 'Quotes',
@@ -2072,7 +2072,7 @@ const dict = {
 		uk: 'Цитати',
 	},
 	'Always show author': {
-		fr: 'Always show author',
+		fr: 'Toujours montrer l\'auteur',
 		sv: 'Always show author',
 		nl: 'Always show author',
 		pl: 'Always show author',
@@ -2084,6 +2084,34 @@ const dict = {
 		it: 'Always show author',
 		es: 'Always show author',
 		uk: 'Показувати автора',
+	},
+	'Quote type': {
+		fr: 'Type de citations',
+		sv: 'Quote type',
+		nl: 'Quote type',
+		pl: 'Always show author',
+		pt_BR: 'Quote type',
+		ru: 'Quote type',
+		zh_CN: 'Quote type',
+		sk: 'Quote type',
+		de: 'Quote type',
+		it: 'Quote type',
+		es: 'Quote type',
+		uk: 'Quote type',
+	},
+	'Classic': {
+		fr: 'Classique',
+		sv: 'Classic',
+		nl: 'Classic',
+		pl: 'Classic',
+		pt_BR: 'Classic',
+		ru: 'Classic',
+		zh_CN: 'Classic',
+		sk: 'Classic',
+		de: 'Classic',
+		it: 'Classic',
+		es: 'Classic',
+		uk: 'Classic',
 	}
 }
 
