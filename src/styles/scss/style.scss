@@ -327,7 +327,8 @@
 		user-select: text;
 		-moz-user-select: text;
 		-webkit-user-select: text;
-		transition: opacity 0.2s, flex-grow 0.4s 0.2s, transform 0.4s, margin 0.4s;
+		will-change: transform, flex-grow;
+		transition: opacity 0.2s, flex-grow 0.4s 0.2s, transform 0.4s;
 		cursor: initial;
 
 		#quote {
@@ -351,10 +352,10 @@
 			min-height: 60px;
 			flex-grow: 0.2;
 			opacity: 1;
-			transition: opacity 0.2s 0.2s, flex-grow 0.4s, transform 0.4s, margin 0.4s;
+			transition: opacity 0.2s 0.2s, flex-grow 0.4s, transform 0.4s;
 
 			#quote {
-				max-height: 60px;
+				max-height: 180px;
 				transition: max-height 0.2s 0s;
 			}
 

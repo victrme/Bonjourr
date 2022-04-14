@@ -141,8 +141,9 @@ body {
 			#widget,
 			#forecast,
 			#current,
-			#quotes_container,
-			#quotes_container #author {
+			#quotes_container.shown,
+			#quotes_container.shown #quote,
+			#quotes_container.shown #author {
 				transition: none;
 			}
 		}
