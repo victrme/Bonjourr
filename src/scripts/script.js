@@ -2093,7 +2093,7 @@ function searchbar(event, that, init) {
 async function quotes(event, that, init) {
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-	function handleJson(type, json) {
+	async function handleJson(type, json) {
 
 		function filter(quote) {
 			return quote.includes("[pause") || quote.length > 200
@@ -2115,10 +2115,7 @@ async function quotes(event, that, init) {
 
 			}
 			case 'kaamelott': {
-				return {
-					author : json.citation.infos.personnage,
-					content : json.citation.citation
-				}
+				return !filter(json.citation.citation) ? { author : json.citation.infos.personnage,content : json.citation.citation } : await newQuote()
 			}
 			case 'classic': {
 				return json
