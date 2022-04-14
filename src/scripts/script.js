@@ -2090,29 +2090,62 @@ function searchbar(event, that, init) {
 	event ? updateSearchbar() : initSearchbar()
 }
 
-async function quotes(event, that, init, lang) {
+async function quotes(event, that, init) {
 	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 
-	async function newQuote() {
+	function handleJson(type, json) {
+
+		function filter(quote) {
+			return quote.includes("[pause") || quote.length > 200
+		}
+
+		switch(type) {
+			case 'inspirobot': {
+				// inspirobot response has three quotes
+				// some are too long
+				// some are pauses
+	
+				let n = 1;
+				while (n <= 5 && (filter(json.data[n].text))) {
+					n = n + 2;
+				}
+
+				if (n < 5) {
+					return {
+						author: 'Inspirobot',
+						content: json.data[n].text
+					}
+				} else {
+					// if none of the three is short enough (very unlikely),
+					// saves current quote
+					return getCurrentQuote()
+				}
+			}
+			case 'kaamelott':
+			case 'classic': {
+				return json
+			}
+		}
+	}
+
+	async function newQuote(lang, type) {
+
+		type = 'inspirobot'
+
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
 			kaamelott: 'http://kaamelott.chaudie.re/api/random',
-			inspirobot: '',
+			inspirobot: 'https://inspirobot.me/api?generateFlow=1'
 		}
-
-		// if (!init) {
-		// 	chrome.storage.sync.get('quotes', (data) => {
-
-		// 	});
-		// }
 
 		try {
 			// Fetch a random quote from the quotes API
-			const response = await fetch(URLs[init?.type || 'classic'])
+			
+			const response = await fetch(URLs[type || 'classic']);
 			const json = await response.json()
 
 			if (response.ok) {
-				return json
+				return handleJson(type, json)
 			}
 		} catch (error) {
 			errorMessage('An error occured with the quotes API', error)
@@ -2139,14 +2172,18 @@ async function quotes(event, that, init, lang) {
 		})
 	}
 
-	function saveCurrentQuote() {
+	function getCurrentQuote() {
 		// retrieves quote from dom
 		let retrievedQuote = {
 			author: id('author').textContent,
 			content: id('quote').textContent,
 		}
 
-		localStorage.setItem('nextQuote', JSON.stringify(retrievedQuote))
+		return retrievedQuote;
+	}
+
+	function saveCurrentQuote() {
+		localStorage.setItem('nextQuote', JSON.stringify(getCurrentQuote()))
 	}
 
 	function updateQuoteSettings() {

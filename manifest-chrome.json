@@ -28,5 +28,6 @@
 	},
 
 	"permissions": ["storage", "unlimitedStorage", "geolocation"],
+	"host_permissions": ["https://inspirobot.me/"],
 	"optional_permissions": ["bookmarks"]
 }
