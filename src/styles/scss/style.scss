@@ -322,13 +322,13 @@
 		width: 33vw;
 		max-width: 600px;
 		min-width: 150px;
-		min-height: 150px;
+		min-height: 0;
 		margin: auto;
 		user-select: text;
 		-moz-user-select: text;
 		-webkit-user-select: text;
 		will-change: transform, flex-grow;
-		transition: opacity 0.2s, flex-grow 0.4s 0.2s, transform 0.4s;
+		transition: opacity 0.2s, flex-grow 0.4s 0.2s, min-height 0.4s 0.2s, transform 0.4s;
 		cursor: initial;
 
 		#quote {
@@ -349,10 +349,10 @@
 		}
 
 		&.shown {
-			min-height: 60px;
+			min-height: 150px;
 			flex-grow: 0.2;
 			opacity: 1;
-			transition: opacity 0.2s 0.2s, flex-grow 0.4s, transform 0.4s;
+			transition: opacity 0.2s 0.2s, min-height 0.4s, flex-grow 0.4s, transform 0.4s;
 
 			#quote {
 				max-height: 180px;
