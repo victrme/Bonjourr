@@ -2091,33 +2091,33 @@ function searchbar(event, that, init) {
 }
 
 async function quotes(event, that, init) {
-	const display = (value) => id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
-
-	console.log(init)
+	const display = (value) => {
+		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
+	}
 
 	async function handleJson(type, json) {
-
 		function filter(quote) {
-			return quote.includes("[pause") || quote.length > 200
+			return quote.includes('[pause') || quote.length > 200
 		}
 
-		switch(type) {
+		switch (type) {
 			case 'inspirobot': {
 				// inspirobot response has three quotes
 				// some are too long
 				// some are pauses
-	
-				let n = 1;
-				while (n <= 5 && (filter(json.data[n].text))) {
-					n = n + 2;
+
+				let n = 1
+				while (n <= 5 && filter(json.data[n].text)) {
+					n = n + 2
 				}
 
 				// returns current quote if none is valid
 				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote()
-
 			}
 			case 'kaamelott': {
-				return !filter(json.citation.citation) ? { author : json.citation.infos.personnage,content : json.citation.citation } : await newQuote()
+				return !filter(json.citation.citation)
+					? { author: json.citation.infos.personnage, content: json.citation.citation }
+					: await newQuote()
 			}
 			case 'classic': {
 				return json
@@ -2126,22 +2126,21 @@ async function quotes(event, that, init) {
 	}
 
 	async function newQuote(lang, type) {
-
 		type = 'kaamelott'
 		lang = 'fr'
 
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
 			kaamelott: 'https://kaamelott.chaudie.re/api/random',
-			inspirobot: 'https://inspirobot.me/api?generateFlow=1'
+			inspirobot: 'https://inspirobot.me/api?generateFlow=1',
 		}
 
 		try {
 			// Fetch a random quote from the quotes API
-			const response = await fetch(URLs[type || 'classic']);
+			const response = await fetch(URLs[type || 'classic'])
 			const json = await response.json()
 
-			if (response.ok) return handleJson(type, json) 
+			if (response.ok) return handleJson(type, json)
 		} catch (error) {
 			errorMessage('An error occured with the quotes API', error)
 		}
@@ -2159,12 +2158,6 @@ async function quotes(event, that, init) {
 		// Update DOM elements
 		id('quote').textContent = values.content
 		id('author').textContent = values.author
-
-		// updates last quote timestamp
-		chrome.storage.sync.get('quotes', (data) => {
-			data.quotes.last = freqControl('set')
-			chrome.storage.sync.set({ quotes: data.quotes })
-		})
 	}
 
 	function getCurrentQuote() {
@@ -2174,7 +2167,7 @@ async function quotes(event, that, init) {
 			content: id('quote').textContent,
 		}
 
-		return retrievedQuote;
+		return retrievedQuote
 	}
 
 	function saveCurrentQuote() {
@@ -2182,55 +2175,54 @@ async function quotes(event, that, init) {
 	}
 
 	function updateQuoteSettings() {
-		
 		chrome.storage.sync.get('quotes', async (data) => {
+			const updated = { ...data.quotes }
+
 			switch (event) {
 				case 'toggle': {
 					display(that.checked)
 					if (id('quote').textContent === '') {
 						insertQuote(JSON.parse(localStorage.getItem('nextQuote')))
+						updated.last = freqControl('set')
 						storeNextQuote()
 					}
 
-					console.log(that.checked)
-					data.quotes.on = that.checked
+					updated.on = that.checked
 					break
 				}
 
 				case 'author': {
 					id('author').classList.toggle('alwaysVisible')
-					data.quotes.author = that.checked
+					updated.author = that.checked
 					break
 				}
 
 				case 'frequency': {
-					data.quotes.last = freqControl('set')
-					data.quotes.frequency = that.value
+					updated.frequency = that.value
 					that.value === 'tabs' ? storeNextQuote() : saveCurrentQuote()
 					break
 				}
 
 				case 'type': {
-					data.quotes.type = that.value
+					updated.type = that.value
 					break
 				}
 
 				case 'refresh': {
+					updated.last = freqControl('set')
 					insertQuote(await newQuote())
 					saveCurrentQuote()
-					return
+					break
 				}
 			}
 
-			console.log((data.quotes))
-			console.log('mise à jour des settings')
-
-			chrome.storage.sync.set({ quotes: data.quotes })
+			chrome.storage.sync.set({ quotes: updated })
 		})
 	}
 
 	if (event) {
 		updateQuoteSettings()
+		return
 	}
 
 	if (init?.on) {
