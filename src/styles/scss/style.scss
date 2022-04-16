@@ -570,7 +570,7 @@
 	}
 
 	#e_close {
-		display: block;
+		display: none;
 		text-align: left;
 		padding: 0;
 		margin-bottom: 1.5em;
@@ -578,76 +578,107 @@
 	}
 }
 
-#editlink_container {
-	#editlink {
-		align-self: center;
-		width: 300px;
-		margin: auto;
-		padding: 1.5em;
-		color: #333;
-		background-color: $purewhite;
-		border-radius: 10px;
-		z-index: 3;
+#editlink {
+	position: absolute;
+	top: 20%;
+	left: 20%;
+	width: 220px;
+	padding: 1em;
+	border-radius: 8px;
+	background-color: #fffa;
+	border: 1px solid #ddd;
+	backdrop-filter: blur(20px);
+	z-index: 4;
 
-		> div {
-			position: relative;
+	> div {
+		position: relative;
+	}
+
+	#e_close {
+		display: none;
+	}
+
+	.empty_input {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		border: none;
+		background: #eee;
+		color: #999;
+		border-radius: 10px;
+		width: 15px;
+		height: 15px;
+		font-size: 12px;
+		padding: 0;
+		opacity: 0;
+		cursor: text;
+		text-decoration: none;
+		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+
+		&.shown {
+			opacity: 1;
+			cursor: pointer;
 		}
 
-		.empty_input {
-			position: absolute;
-			right: 12px;
-			top: 0.6em;
-			width: 1.5em;
-			height: 1.5em;
-			line-height: 1.5em;
-			border-radius: 100%;
-			color: #444;
-			font-size: 1em;
-			padding: 0;
-			opacity: 0;
-			cursor: text;
-			text-decoration: none;
-			transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+		&:hover {
+		}
 
-			&.shown {
-				opacity: 1;
-				cursor: pointer;
-			}
+		&:active {
+		}
+	}
+
+	input[type='text'],
+	input[type='url'] {
+		font-size: 0.95em;
+		width: 100%;
+		height: 2.2em;
+		margin: 2px 0;
+		padding: 0 1em;
+		border: 3px solid transparent;
+		border-radius: 8px;
+		box-sizing: border-box;
+		background-color: transparent;
+		transition: background-color 0.1s;
+		color: #3336;
+
+		&:hover {
+			background-color: #fff2;
+			transition: background-color 0.1s;
+		}
+
+		&:focus {
+			color: #333;
+			border: 3px solid #007aff66;
+			background-color: #fff1;
+			transition: background-color 0.1s;
+		}
+
+		&::placeholder {
+			color: #6666;
+		}
+	}
+
+	hr {
+		border-color: #3334;
+	}
+
+	.linkOptions {
+		display: flex;
+		flex-direction: column;
+
+		button {
+			border: none;
+			border-radius: 6px;
+			background-color: transparent;
+			text-align: left;
+			margin: 0px;
+			padding: 4px 14px;
+			color: #2a2222;
 
 			&:hover {
-				background-color: #ddd;
+				color: white;
+				background-color: #2c7be5;
 			}
-
-			&:active {
-				background-color: #ccc;
-				color: #222;
-			}
-		}
-
-		input[type='text'],
-		input[type='url'] {
-			font-size: 0.9em;
-			width: 100%;
-			height: 2.35em;
-			margin: 0.3em 0;
-			padding: 0 3em 0 1em;
-			border: 0px;
-			border-radius: 8px;
-			box-sizing: border-box;
-			background-color: $inputGrey;
-			transition: background-color 0.1s;
-
-			&:focus {
-				background-color: #d3d3d5;
-				transition: background-color 0.1s;
-			}
-		}
-
-		.linkOptions {
-			display: flex;
-			justify-content: space-between;
-			width: 100%;
-			margin-top: 1.5em;
 		}
 	}
 }
