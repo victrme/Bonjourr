@@ -2114,6 +2114,9 @@ async function quotes(event, that, init) {
 		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 	}
 
+	const lang = await chrome.storage.sync.get('lang')
+	const type = init ? init.type : (await chrome.storage.sync.get('quotes')).quotes.type;
+
 	async function handleJson(type, json) {
 		function filter(quote) {
 			return quote.includes('[pause') || quote.length > 200
@@ -2131,12 +2134,12 @@ async function quotes(event, that, init) {
 				}
 
 				// returns current quote if none is valid
-				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote()
+				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote(lang, type)
 			}
 			case 'kaamelott': {
 				return !filter(json.citation.citation)
 					? { author: json.citation.infos.personnage, content: json.citation.citation }
-					: await newQuote()
+					: await newQuote(lang, type)
 			}
 			case 'classic': {
 				return json
@@ -2145,8 +2148,6 @@ async function quotes(event, that, init) {
 	}
 
 	async function newQuote(lang, type) {
-		type = 'kaamelott'
-		lang = 'fr'
 
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
@@ -2166,7 +2167,7 @@ async function quotes(event, that, init) {
 	}
 
 	async function storeNextQuote() {
-		localStorage.setItem('nextQuote', JSON.stringify(await newQuote()))
+		localStorage.setItem('nextQuote', JSON.stringify(await newQuote(lang, type)))
 	}
 
 	function getNextQuote() {
@@ -2224,12 +2225,15 @@ async function quotes(event, that, init) {
 
 				case 'type': {
 					updated.type = that.value
+					updated.last = freqControl('set')
+					insertQuote(await newQuote(lang, that.value))
+					saveCurrentQuote()
 					break
 				}
 
 				case 'refresh': {
 					updated.last = freqControl('set')
-					insertQuote(await newQuote())
+					insertQuote(await newQuote(lang, type))
 					saveCurrentQuote()
 					break
 				}
@@ -2245,7 +2249,7 @@ async function quotes(event, that, init) {
 	}
 
 	if (init?.on) {
-		let quote = !getNextQuote() ? await newQuote() : getNextQuote()
+		let quote = !getNextQuote() ? await newQuote(lang, type) : getNextQuote()
 		let needsNewQuote = freqControl('get', init.frequency, init.last)
 
 		insertQuote(quote)
