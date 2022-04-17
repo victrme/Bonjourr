@@ -597,36 +597,36 @@ function showInterface(e) {
 	//cherche le parent du click jusqu'a trouver linkblocks
 	//seulement si click droit, quitter la fct
 	let parent = e.target
-	const edit = id('editlink_container')
 	const settings = id('settings')
+	const domedit = document.querySelector('#editlink')
 
 	while (parent !== null) {
 		parent = parent.parentElement
 		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
 	}
 
-	//close edit container on interface click
-	if (has(edit, 'shown')) {
-		clas(edit, false, 'shown')
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
+	if (domedit.className === 'shown') {
+		domedit.className = 'shown hiding'
+		document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+		setTimeout(() => domedit.setAttribute('class', ''), 200)
 	}
 
 	if (has(settings, 'shown')) {
 		clas(settings, false, 'shown')
 		clas(domshowsettings, false, 'shown')
 		clas(dominterface, false, 'pushed')
+	}
 
-		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
+	if (document.body.classList.contains('tabbing')) {
+		clas(document.body, false, 'tabbing')
 	}
 }
 
 function showSettings() {
-	const edit = id('editlink_container')
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
 	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
-	clas(edit, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')
 	clas(settings, settingsNotShown, 'shown')
@@ -677,18 +677,13 @@ function settingsInit(data) {
 		}
 	}
 
-	dominterface.onclick = (e) => {
-		showInterface(e)
-		if (document.body.classList.contains('tabbing')) clas(document.body, false, 'tabbing')
-	}
-
+	dominterface.onclick = (e) => showInterface(e)
 	document.onkeydown = (e) => {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
-		const noEdit = has(id('editlink_container'), 'shown') === false
 		const noSettings = has(id('settings'), 'shown') === false
 
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings) domsearchbar.focus()
 		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
 }

@@ -579,9 +579,10 @@
 }
 
 #editlink {
-	position: absolute;
-	top: 20%;
-	left: 20%;
+	position: fixed;
+	display: none;
+	top: 0;
+	left: 0;
 	width: 220px;
 	padding: 1em;
 	border-radius: 8px;
@@ -589,14 +590,15 @@
 	background-color: #fffa;
 	border: 1px solid #ddd;
 	backdrop-filter: blur(25px);
-	z-index: 4;
+	z-index: 1;
 
-	> div {
-		position: relative;
+	&.shown {
+		display: block;
 	}
 
-	#e_close {
-		display: none;
+	&.hiding {
+		opacity: 0;
+		transition: opacity 0.2s;
 	}
 
 	.empty_input {
@@ -631,7 +633,6 @@
 
 	input[type='text'],
 	input[type='url'] {
-		font-size: 0.95em;
 		width: 100%;
 		height: 2.4em;
 		padding: 0 1em;
@@ -671,6 +672,7 @@
 			padding: 2px 12px;
 			color: #2a2222;
 			outline: none;
+			cursor: pointer;
 
 			&:focus-visible,
 			&:hover {

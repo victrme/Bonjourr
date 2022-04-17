@@ -413,6 +413,15 @@ function quickLinks(event, that, init) {
 			clearTimeout(editDisplayTimeout)
 
 			if (e.which === 3) {
+				const { innerHeight, innerWidth } = e.view // viewport size
+				let { x, y } = e // mouse position
+
+				if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
+				if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
+
+				// Moves edit link to mouse position
+				document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
+
 				editlink(this)
 				return
 			}
@@ -443,12 +452,12 @@ function quickLinks(event, that, init) {
 	}
 
 	function editEvents() {
-		const editLinkContainer = id('editlink_container')
+		const domedit = document.querySelector('#editlink')
 
 		function closeEditLink() {
-			removeLinkSelection()
-			editLinkContainer.classList.add('hiding')
-			editDisplayTimeout = setTimeout(() => editLinkContainer.setAttribute('class', ''), BonjourrAnimTime)
+			document.querySelectorAll('l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+			domedit.classList.add('hiding')
+			editDisplayTimeout = setTimeout(() => domedit.setAttribute('class', ''), BonjourrAnimTime)
 		}
 
 		function emptyAndHideIcon(e) {
@@ -459,7 +468,7 @@ function quickLinks(event, that, init) {
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('editlink').getAttribute('index')))
-			clas(editLinkContainer, false, 'shown')
+			clas(domedit, false, 'shown')
 			if (id('settings')) linksInputDisable(false)
 		}
 
@@ -468,13 +477,11 @@ function quickLinks(event, that, init) {
 			const noError = editlink(null, parseInt(id('editlink').getAttribute('index')))
 			if (noError) closeEditLink()
 		}
-		// close on button
-		id('e_close').onclick = () => closeEditLink()
 
 		// close on outside click
 		const outsideClick = (e) => (e.target.id === 'editlink_container' ? closeEditLink() : '')
 		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
-		else editLinkContainer.onmousedown = outsideClick
+		else document.querySelector('#interface').onmousedown = outsideClick
 
 		const removers = ['re_title', 're_url', 're_iconurl']
 		const inputs = ['e_title', 'e_url', 'e_iconurl']
@@ -491,14 +498,14 @@ function quickLinks(event, that, init) {
 		function displayEditWindow() {
 			const index = findindex(that)
 			const liconwrap = that.querySelector('.l_icon_wrap')
-			const container = id('editlink_container')
+			const domedit = document.querySelector('#editlink')
 			const opendedSettings = has(id('settings'), 'shown')
 
 			clas(liconwrap, true, 'selected')
-			clas(container, true, 'shown')
-			clas(container, opendedSettings, 'pushed')
+			clas(domedit, true, 'shown')
+			clas(domedit, opendedSettings, 'pushed')
 
-			id('editlink').setAttribute('index', index)
+			domedit.setAttribute('index', index)
 
 			chrome.storage.sync.get(null, (data) => {
 				const link = bundleLinks(data).filter((l) => l.order === index)[0]
@@ -689,7 +696,6 @@ function quickLinks(event, that, init) {
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
-			id('editlink_container').oncontextmenu = (e) => e.preventDefault()
 			editEvents()
 		}, 150)
 	}

@@ -338,11 +338,11 @@ function bonjourrDefaults(which) {
 					request: '',
 				},
 				quotes: {
-					on: true,
+					on: false,
 					type: 'classic',
 					author: false,
 					frequency: 'day',
-					last: ''
+					last: '',
 				},
 				font: {
 					url: '',
