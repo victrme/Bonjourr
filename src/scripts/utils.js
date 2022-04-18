@@ -18,7 +18,6 @@ const clas = (dom, add, str) => {
 
 let lazyClockInterval = setTimeout(() => {}, 0),
 	errorMessageInterval = setTimeout(() => {}, 0),
-	BonjourrBrowser = 'unknown',
 	stillActive = false,
 	rangeActive = false,
 	firstpaint = false,
@@ -44,31 +43,13 @@ const isExtension =
 		window.location.protocol === 'safari-web-extension:',
 	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
 	loadtimeStart = performance.now(),
-	BonjourrAnimTime = 400,
+	BonjourrBrowser = detectPlatform(),
 	BonjourrVersion = '1.13.0',
+	BonjourrAnimTime = 400,
 	funcsOk = {
 		clock: false,
 		links: false,
 	}
-
-switch (window.location.protocol) {
-	case 'http:':
-	case 'https:':
-	case 'file:':
-		BonjourrBrowser = 'online'
-		break
-
-	case 'moz-extension:':
-		BonjourrBrowser = 'firefox'
-		break
-
-	case 'safari-web-extension:':
-		BonjourrBrowser = 'safari'
-		break
-
-	default:
-		BonjourrBrowser = 'chrome'
-}
 
 //
 //
@@ -82,6 +63,17 @@ const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 const randomString = (len) => {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+}
+
+function detectPlatform() {
+	const p = window.location.protocol
+	return p === 'moz-extension:'
+		? 'firefox'
+		: p === 'chrome-extension:'
+		? 'chrome'
+		: p === 'safari-web-extension:'
+		? 'safari'
+		: 'online'
 }
 
 function validateHideElem(hide) {
