@@ -158,6 +158,7 @@ function initParams(data, settingsDom) {
 
 			toggleTooltip('ttcoll')
 			toggleTooltip('ttlinks')
+			toggleTooltip('csslinks')
 		}
 	})
 
