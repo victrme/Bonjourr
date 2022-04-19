@@ -2230,7 +2230,7 @@ async function quotes(event, that, init) {
 	// "tabs" freq: 	fetch new to store everytime, displays storage
 	//
 
-	if (quote === null || needsNewQuote) {
+	if (quote === null || (needsNewQuote && quotes.frequency !== 'tabs')) {
 		quote = await newQuote(lang, quotes.type)
 		saveToStorage(quote)
 		quotes.last = freqControl('set') // updates last quotes timestamp
