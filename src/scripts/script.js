@@ -2091,44 +2091,40 @@ function searchbar(event, that, init) {
 }
 
 async function quotes(event, that, init) {
-	const display = (value) => {
+	function display(value) {
 		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 	}
 
-	const lang = await chrome.storage.sync.get('lang')
-	const type = init ? init.type : (await chrome.storage.sync.get('quotes')).quotes.type
+	async function newQuote(lang, type) {
+		async function handleJson(type, json) {
+			switch (type) {
+				case 'inspirobot': {
+					// inspirobot response has three quotes
+					// some are too long
+					// some are pauses
+					const filter = (quote) => quote.includes('[pause') || quote.length > 200
 
-	async function handleJson(type, json) {
-		function filter(quote) {
-			return quote.includes('[pause') || quote.length > 200
-		}
+					let n = 1
+					while (n <= 5 && filter(json.data[n].text)) {
+						n = n + 2
+					}
 
-		switch (type) {
-			case 'inspirobot': {
-				// inspirobot response has three quotes
-				// some are too long
-				// some are pauses
-
-				let n = 1
-				while (n <= 5 && filter(json.data[n].text)) {
-					n = n + 2
+					// returns current quote if none is valid
+					return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote(lang, type)
 				}
 
-				// returns current quote if none is valid
-				return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote(lang, type)
-			}
-			case 'kaamelott': {
-				return !filter(json.citation.citation)
-					? { author: json.citation.infos.personnage, content: json.citation.citation }
-					: await newQuote(lang, type)
-			}
-			case 'classic': {
-				return json
+				case 'kaamelott': {
+					return !filter(json.citation.citation)
+						? { author: json.citation.infos.personnage, content: json.citation.citation }
+						: await newQuote(lang, type)
+				}
+
+				case 'classic': {
+					return json
+				}
 			}
 		}
-	}
 
-	async function newQuote(lang, type) {
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
 			kaamelott: 'https://quotes-proxy.herokuapp.com/kaamelott',
@@ -2146,45 +2142,33 @@ async function quotes(event, that, init) {
 		}
 	}
 
-	async function storeNextQuote() {
-		localStorage.setItem('nextQuote', JSON.stringify(await newQuote(lang, type)))
-	}
-
-	function getNextQuote() {
-		return JSON.parse(localStorage.getItem('nextQuote'))
-	}
-
-	function insertQuote(values) {
-		// Update DOM elements
+	function insertToDom(values) {
 		id('quote').textContent = values.content
 		id('author').textContent = values.author
 	}
 
-	function getCurrentQuote() {
-		// retrieves quote from dom
-		let retrievedQuote = {
-			author: id('author').textContent,
-			content: id('quote').textContent,
+	function getFromStorage() {
+		if (localStorage.nextQuote) {
+			return JSON.parse(localStorage.nextQuote)
 		}
-
-		return retrievedQuote
+		return null
 	}
 
-	function saveCurrentQuote() {
-		localStorage.setItem('nextQuote', JSON.stringify(getCurrentQuote()))
+	function saveToStorage(elem) {
+		localStorage.setItem('nextQuote', JSON.stringify(elem))
 	}
 
-	function updateQuoteSettings() {
-		chrome.storage.sync.get('quotes', async (data) => {
+	function updateSettings() {
+		chrome.storage.sync.get(['lang', 'quotes'], async (data) => {
 			const updated = { ...data.quotes }
+			const { lang } = data
 
 			switch (event) {
 				case 'toggle': {
 					display(that.checked)
 					if (id('quote').textContent === '') {
-						insertQuote(JSON.parse(localStorage.getItem('nextQuote')))
-						updated.last = freqControl('set')
-						storeNextQuote()
+						insertToDom(getFromStorage())
+						saveToStorage(await newQuote(lang, data.quotes.type))
 					}
 
 					updated.on = that.checked
@@ -2199,22 +2183,24 @@ async function quotes(event, that, init) {
 
 				case 'frequency': {
 					updated.frequency = that.value
-					that.value === 'tabs' ? storeNextQuote() : saveCurrentQuote()
+					if (that.value === 'tabs') saveToStorage(await newQuote(lang, data.quotes.type))
 					break
 				}
 
 				case 'type': {
 					updated.type = that.value
-					updated.last = freqControl('set')
-					insertQuote(await newQuote(lang, that.value))
-					saveCurrentQuote()
+					const quote = await newQuote(lang, that.value)
+					insertToDom(quote)
+					saveToStorage(quote)
 					break
 				}
 
 				case 'refresh': {
 					updated.last = freqControl('set')
-					insertQuote(await newQuote(lang, type))
-					saveCurrentQuote()
+					const quote = await newQuote(lang, data.quotes.type)
+					insertToDom(quote)
+					saveToStorage(quote)
+
 					break
 				}
 			}
@@ -2223,25 +2209,42 @@ async function quotes(event, that, init) {
 		})
 	}
 
+	// update and quit
 	if (event) {
-		updateQuoteSettings()
+		updateSettings()
 		return
 	}
 
-	if (init?.on) {
-		let quote = !getNextQuote() ? await newQuote(lang, type) : getNextQuote()
-		let needsNewQuote = freqControl('get', init.frequency, init.last)
-
-		insertQuote(quote)
-
-		if (needsNewQuote) storeNextQuote()
-		if (init.author) id('author').classList.add('alwaysVisible')
-
-		display(true)
+	// quotes off, just quit
+	if (init?.quotes?.on === false) {
+		return
 	}
 
-	if (!init?.on && !getNextQuote()) {
-		storeNextQuote()
+	const { lang, quotes } = init
+	let quote = getFromStorage()
+	let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
+
+	//
+	// first startup:	fetch new, store & display
+	// needsNewQuote:	fetch new, store & display
+	// "tabs" freq: 	fetch new to store everytime, displays storage
+	//
+
+	if (quote === null || needsNewQuote) {
+		quote = await newQuote(lang, quotes.type)
+		saveToStorage(quote)
+		quotes.last = freqControl('set') // updates last quotes timestamp
+		chrome.storage.sync.set({ quotes })
+	}
+
+	// Displays
+	if (quotes.author) id('author').classList.add('alwaysVisible')
+	insertToDom(quote)
+	display(true)
+
+	// "tabs" control in last to prevent fetching from blocking display
+	if (quotes.frequency === 'tabs') {
+		saveToStorage(await newQuote(lang, quotes.type))
 	}
 }
 
@@ -2888,7 +2891,7 @@ function startup(data) {
 	linksrow(data.linksrow)
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
-	quotes(null, null, data.quotes, data.lang)
+	quotes(null, null, data)
 	showPopup(data.reviewPopup)
 
 	customCss(data.css)
