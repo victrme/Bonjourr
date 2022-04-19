@@ -2096,7 +2096,7 @@ async function quotes(event, that, init) {
 	}
 
 	const lang = await chrome.storage.sync.get('lang')
-	const type = init ? init.type : (await chrome.storage.sync.get('quotes')).quotes.type;
+	const type = init ? init.type : (await chrome.storage.sync.get('quotes')).quotes.type
 
 	async function handleJson(type, json) {
 		function filter(quote) {
@@ -2129,11 +2129,10 @@ async function quotes(event, that, init) {
 	}
 
 	async function newQuote(lang, type) {
-
 		const URLs = {
 			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
-			kaamelott: 'https://kaamelott.chaudie.re/api/random',
-			inspirobot: 'https://inspirobot.me/api?generateFlow=1',
+			kaamelott: 'https://quotes-proxy.herokuapp.com/kaamelott',
+			inspirobot: 'https://quotes-proxy.herokuapp.com/inspirobot',
 		}
 
 		try {
