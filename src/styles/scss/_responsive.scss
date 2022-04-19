@@ -26,6 +26,7 @@
 	#settings {
 		right: -100%;
 		width: 100%;
+		font-size: 1.2em;
 
 		// Tooltip (?) centered when span wrap
 		&.all .as_collection {
@@ -42,7 +43,7 @@
 		.freq_wrap > div,
 		input[type='range'],
 		select {
-			width: 130px;
+			width: 144px;
 		}
 	}
 
