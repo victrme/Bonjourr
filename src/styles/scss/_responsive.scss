@@ -5,14 +5,22 @@
 }
 
 // mobile
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 500px) {
 	body {
 		font-size: 12px;
 	}
 
 	#interface {
 		min-height: 90vh;
-		padding-bottom: 20vh;
+		padding-bottom: 10vh;
+
+		#quotes_container {
+			width: 90vw;
+
+			&.shown {
+				min-height: 90px;
+			}
+		}
 	}
 
 	#settings {
@@ -34,7 +42,7 @@
 		.freq_wrap > div,
 		input[type='range'],
 		select {
-			width: 120px;
+			width: 130px;
 		}
 	}
 
