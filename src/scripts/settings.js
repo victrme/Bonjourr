@@ -569,13 +569,15 @@ function signature(dom) {
 
 function showSettings() {
 	const settings = id('settings')
-	const settingsNotShown = has(settings, 'shown') === false
+	const settingsNotShown = !has(settings, 'shown')
+	const domedit = id('editlink')
 
 	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')
 	clas(settings, settingsNotShown, 'shown')
 	clas(domshowsettings, settingsNotShown, 'shown')
+	clas(domedit, settingsNotShown, 'pushed')
 }
 
 function settingsInit(data) {
@@ -616,12 +618,14 @@ function settingsInit(data) {
 			if (parent && parent.id === 'linkblocks' && e.which === 3) return false
 		}
 
-		if (domedit.className === 'shown') {
+		// hides edit menu
+		if (has(domedit, 'shown')) {
 			domedit.className = 'shown hiding'
 			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
 			setTimeout(() => domedit.setAttribute('class', ''), 200)
 		}
 
+		//
 		if (has(settings, 'shown')) {
 			clas(settings, false, 'shown')
 			clas(domshowsettings, false, 'shown')

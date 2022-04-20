@@ -586,10 +586,15 @@
 	padding: 1em;
 	border-radius: 8px;
 	box-shadow: 0px 0px 15px #0004;
-	background-color: #fffa;
 	border: 1px solid #ddd;
-	backdrop-filter: blur(25px);
+	transition: left 0.4s;
 	z-index: 1;
+
+	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
+
+	&.pushed {
+		left: -100px;
+	}
 
 	&.shown {
 		display: block;
@@ -597,37 +602,7 @@
 
 	&.hiding {
 		opacity: 0;
-		transition: opacity 0.2s;
-	}
-
-	.empty_input {
-		position: absolute;
-		display: none;
-		top: 10px;
-		right: 10px;
-		border: none;
-		background: #eee;
-		color: #999;
-		border-radius: 10px;
-		width: 15px;
-		height: 15px;
-		font-size: 12px;
-		padding: 0;
-		opacity: 0;
-		cursor: text;
-		text-decoration: none;
-		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
-
-		&.shown {
-			opacity: 1;
-			cursor: pointer;
-		}
-
-		&:hover {
-		}
-
-		&:active {
-		}
+		transition: opacity 0.2s, left 0.4s;
 	}
 
 	input[type='text'],
@@ -640,18 +615,18 @@
 		box-sizing: border-box;
 		background-color: transparent;
 		transition: background-color 0.1s;
-		color: #3336;
+		color: #3339;
 		outline: #007aff66;
 
 		&:focus {
-			color: #333;
+			color: #222;
 			border: 3px solid #007aff66;
-			background-color: #fff1;
+			background-color: #fff3;
 			transition: background-color 0.1s;
 		}
 
 		&::placeholder {
-			color: #6666;
+			color: #3339;
 		}
 	}
 

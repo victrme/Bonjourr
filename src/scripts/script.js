@@ -347,12 +347,6 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	function showDelIcon(input) {
-		const img = input.nextElementSibling
-		if (input.value === '') img.classList.remove('shown')
-		else img.classList.add('shown')
-	}
-
 	function addEvents(elem) {
 		function positionsEditWindow(mouseEvent) {
 			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
@@ -486,14 +480,9 @@ function quickLinks(event, that, init) {
 		const domedit = document.querySelector('#editlink')
 
 		function closeEditLink() {
-			domedit.classList.add('hiding')
+			clas(domedit, true, 'hiding')
 			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
 			editDisplayTimeout = setTimeout(() => domedit.setAttribute('class', ''), 200)
-		}
-
-		function emptyAndHideIcon(e) {
-			e.target.previousElementSibling.value = ''
-			e.target.classList.remove('shown')
 		}
 
 		id('e_delete').onclick = function () {
@@ -508,12 +497,6 @@ function quickLinks(event, that, init) {
 			if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
 			removeLinkSelection()
 		}
-
-		const removers = ['re_title', 're_url', 're_iconurl']
-		const inputs = ['e_title', 'e_url', 'e_iconurl']
-
-		removers.forEach((name) => (id(name).onclick = (e) => emptyAndHideIcon(e)))
-		inputs.forEach((name) => (id(name).onkeyup = (e) => showDelIcon(e.target)))
 	}
 
 	function editlink(that, i) {
@@ -543,10 +526,6 @@ function quickLinks(event, that, init) {
 				e_title.value = title
 				e_url.value = url
 				e_iconurl.value = icon
-
-				showDelIcon(e_title)
-				showDelIcon(e_url)
-				showDelIcon(e_iconurl)
 			})
 		}
 

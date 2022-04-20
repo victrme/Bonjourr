@@ -186,7 +186,8 @@
 			text-decoration: none;
 		}
 
-		&.ttlinks, &.csslinks {
+		&.ttlinks,
+		&.csslinks {
 			margin: 0 3rem;
 			&.shown {
 				margin-bottom: 1rem;
@@ -586,6 +587,7 @@
 		overflow-x: hidden;
 		text-overflow: ellipsis;
 		user-select: all;
+		-webkit-user-select: all;
 		margin: 0;
 		padding-top: 0.45em;
 		padding-right: 10px;

@@ -229,6 +229,10 @@ body {
 		transition-property: background-color, color, border, border-color;
 	}
 
+	input:focus-visible + .slider {
+		border: 3px solid #007aff44;
+	}
+
 	#i_export,
 	#i_refresh,
 	#i_qtrefresh,
