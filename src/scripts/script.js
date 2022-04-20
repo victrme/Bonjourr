@@ -2116,32 +2116,19 @@ async function quotes(event, that, init) {
 
 	async function newQuote(lang, type) {
 		async function handleJson(type, json) {
-			switch (type) {
-				case 'inspirobot': {
-					// inspirobot response has three quotes
-					// some are too long
-					// some are pauses
-					const filter = (quote) => quote.includes('[pause') || quote.length > 200
+			const filter = (quote) => quote.includes('[pause') || quote.length > 200
 
-					let n = 1
-					while (n <= 5 && filter(json.data[n].text)) {
-						n = n + 2
-					}
-
-					// returns current quote if none is valid
-					return n < 5 ? { author: 'Inspirobot', content: json.data[n].text } : await newQuote(lang, type)
-				}
-
-				case 'kaamelott': {
-					return !filter(json.citation.citation)
-						? { author: json.citation.infos.personnage, content: json.citation.citation }
-						: await newQuote(lang, type)
-				}
-
-				case 'classic': {
-					return json
-				}
+			if (type === 'inspirobot') {
+				const res = json.data.filter((d) => d.type === 'quote' && !filter(d.text)) // data is a quote & passes the filter
+				return res.length === 0 ? await newQuote(lang, type) : { author: 'Inspirobot', content: res[0].text }
 			}
+
+			if (type === 'kaamelott') {
+				const { citation, infos } = json.citation
+				return filter(citation) ? await newQuote(lang, type) : { author: infos.personnage, content: citation }
+			}
+
+			return json
 		}
 
 		const URLs = {
