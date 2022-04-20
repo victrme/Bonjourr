@@ -8,12 +8,35 @@
 		color: $purewhite;
 	}
 
-	#bookmarks_container,
-	#editlink_container {
+	#editlink {
+		background-color: #0000007a;
+		border-color: #fff4;
+
+		input {
+			color: #aaa;
+			&::placeholder {
+				color: #aaa;
+			}
+
+			&:focus {
+				color: #eee;
+				background-color: #0001;
+			}
+		}
+
+		hr {
+			border-color: #fff4;
+		}
+
+		button {
+			color: #eee;
+		}
+	}
+
+	#bookmarks_container {
 		#bookmarks,
 		#bookmarks h3,
-		#bookmarks .bookmarkOptions,
-		#editlink {
+		#bookmarks .bookmarkOptions {
 			background-color: #1c1c1e;
 			color: $purewhite;
 

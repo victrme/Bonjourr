@@ -527,25 +527,7 @@ function importExport(select, isEvent, settingsDom) {
 			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
 			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-			switch (window.location.protocol) {
-				case 'http:':
-				case 'https:':
-				case 'file:':
-					data.about.browser = 'online'
-					break
-
-				case 'moz-extension:':
-					data.about.browser = 'firefox'
-					break
-
-				case 'safari-web-extension:':
-					data.about.browser = 'safari'
-					break
-
-				default:
-					data.about.browser = 'chrome'
-			}
-
+			data.about.browser = detectPlatform()
 			pre.textContent = JSON.stringify(data)
 		})
 	}
@@ -562,17 +544,8 @@ function importExport(select, isEvent, settingsDom) {
 		}
 	}
 
-	switch (select) {
-		case 'exp':
-			exportation()
-			break
-		case 'imp':
-			importation()
-			break
-		case 'reset':
-			anihilation()
-			break
-	}
+	const fncs = { exp: exportation, imp: importation, reset: anihilation }
+	fncs[select]()
 }
 
 function signature(dom) {
@@ -594,40 +567,11 @@ function signature(dom) {
 	})
 }
 
-function showInterface(e) {
-	//cherche le parent du click jusqu'a trouver linkblocks
-	//seulement si click droit, quitter la fct
-	let parent = e.target
-	const edit = id('editlink_container')
-	const settings = id('settings')
-
-	while (parent !== null) {
-		parent = parent.parentElement
-		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
-	}
-
-	//close edit container on interface click
-	if (has(edit, 'shown')) {
-		clas(edit, false, 'shown')
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
-	}
-
-	if (has(settings, 'shown')) {
-		clas(settings, false, 'shown')
-		clas(domshowsettings, false, 'shown')
-		clas(dominterface, false, 'pushed')
-
-		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
-	}
-}
-
 function showSettings() {
-	const edit = id('editlink_container')
 	const settings = id('settings')
 	const settingsNotShown = has(settings, 'shown') === false
 
 	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
-	clas(edit, settingsNotShown, 'pushed')
 
 	clas(settings, false, 'init')
 	clas(settings, settingsNotShown, 'shown')
@@ -660,36 +604,53 @@ function settingsInit(data) {
 		document.onkeyup = (e) => (e.code === 'Escape' ? showSettings() : '')
 	}
 
-	switch (window.location.protocol) {
-		case 'file:': {
-			const xhr = new XMLHttpRequest()
-			xhr.open('POST', 'settings.html', true)
-			xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
-			xhr.send()
-			break
+	function interfaceClickEvents(e) {
+		//cherche le parent du click jusqu'a trouver linkblocks
+		//seulement si click droit, quitter la fct
+		let parent = e.target
+		const settings = id('settings')
+		const domedit = document.querySelector('#editlink')
+
+		while (parent !== null) {
+			parent = parent.parentElement
+			if (parent && parent.id === 'linkblocks' && e.which === 3) return false
 		}
 
-		case 'http:':
-		case 'https:':
-		case 'safari-web-extension:':
-		case 'chrome-extension:':
-		case 'moz-extension:': {
-			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+		if (domedit.className === 'shown') {
+			domedit.className = 'shown hiding'
+			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+			setTimeout(() => domedit.setAttribute('class', ''), 200)
+		}
+
+		if (has(settings, 'shown')) {
+			clas(settings, false, 'shown')
+			clas(domshowsettings, false, 'shown')
+			clas(dominterface, false, 'pushed')
+		}
+
+		if (document.body.classList.contains('tabbing')) {
+			clas(document.body, false, 'tabbing')
 		}
 	}
 
-	dominterface.onclick = (e) => {
-		showInterface(e)
-		if (document.body.classList.contains('tabbing')) clas(document.body, false, 'tabbing')
-	}
-
-	document.onkeydown = (e) => {
+	function interfaceKeyEvents(e) {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
-		const noEdit = has(id('editlink_container'), 'shown') === false
 		const noSettings = has(id('settings'), 'shown') === false
 
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings) domsearchbar.focus()
 		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
+
+	if (window.location.protocol === 'file:') {
+		const xhr = new XMLHttpRequest()
+		xhr.open('POST', 'settings.html', true)
+		xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
+		xhr.send()
+	} else {
+		fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+	}
+
+	dominterface.onclick = interfaceClickEvents
+	document.onkeydown = interfaceKeyEvents
 }

@@ -1,0 +1,31 @@
+#e_title {
+	background: transparent;
+	border: 3px solid #007aff88;
+	padding: 0.4em 1em;
+	border-radius: 8px;
+	color: #eee;
+	margin: 5px 0;
+}
+
+#e_remove {
+	border: none;
+	background: #666;
+	color: #eee;
+	border-radius: 10px;
+	width: 15px;
+	height: 15px;
+	font-size: 1.2em;
+	padding: 0;
+}
+
+#edit_link {
+	position: fixed;
+	top: 20%;
+	left: 20%;
+	padding: 3em;
+	border-radius: 8px;
+	background-color: #0007;
+	z-index: 4;
+	border: 1px solid #8a8a8a;
+	backdrop-filter: blur(10px);
+}
