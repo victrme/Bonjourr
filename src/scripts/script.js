@@ -2133,10 +2133,11 @@ async function quotes(event, that, init) {
 	}
 
 	function getFromStorage() {
-		if (localStorage.nextQuote) {
+		try {
 			return JSON.parse(localStorage.nextQuote)
+		} catch (error) {
+			return null
 		}
-		return null
 	}
 
 	function saveToStorage(elem) {
@@ -2150,13 +2151,14 @@ async function quotes(event, that, init) {
 
 			switch (event) {
 				case 'toggle': {
-					display(that.checked)
-					if (id('quote').textContent === '') {
-						insertToDom(getFromStorage())
-						saveToStorage(await newQuote(lang, data.quotes.type))
-					}
-
 					updated.on = that.checked
+					display(that.checked)
+
+					if (!getFromStorage()) {
+						const quote = await newQuote(lang, data.quotes.type)
+						insertToDom(quote)
+						saveToStorage(quote)
+					}
 					break
 				}
 
@@ -2168,7 +2170,16 @@ async function quotes(event, that, init) {
 
 				case 'frequency': {
 					updated.frequency = that.value
-					if (that.value === 'tabs') saveToStorage(await newQuote(lang, data.quotes.type))
+
+					if (that.value === 'tabs') {
+						saveToStorage(await newQuote(lang, data.quotes.type))
+					}
+
+					// When changing from tabs, keep displayed quote in storage
+					if (data.quotes.frequency === 'tabs') {
+						saveToStorage({ author: id('author').textContent, content: id('quote').textContent })
+					}
+
 					break
 				}
 
@@ -2850,6 +2861,10 @@ function filterImports(data) {
 	delete result?.searchbar_newtab
 
 	try {
+		if (!result.quotes) {
+			result.quotes = bonjourrDefaults('sync').quotes
+		}
+
 		// Go through found categories in import data to filter them
 		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 		result = linksFilter(result)

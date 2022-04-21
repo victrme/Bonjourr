@@ -299,6 +299,7 @@ function bonjourrDefaults(which) {
 				lang: 'en',
 				favicon: '',
 				greeting: '',
+				dark: 'system',
 				custom_every: 'pause',
 				background_type: 'dynamic',
 				clock: {
@@ -331,10 +332,10 @@ function bonjourrDefaults(which) {
 				},
 				quotes: {
 					on: false,
-					type: 'classic',
 					author: false,
+					type: 'classic',
 					frequency: 'day',
-					last: '',
+					last: 1650516688,
 				},
 				font: {
 					url: '',
