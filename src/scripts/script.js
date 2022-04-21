@@ -497,6 +497,17 @@ function quickLinks(event, that, init) {
 			if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
 			removeLinkSelection()
 		}
+
+		function submitEvent(e) {
+			if (e.code === 'Enter') {
+				if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
+				removeLinkSelection()
+			}
+		}
+
+		id('e_title').addEventListener('keyup', submitEvent)
+		id('e_url').addEventListener('keyup', submitEvent)
+		id('e_iconurl').addEventListener('keyup', submitEvent)
 	}
 
 	function editlink(that, i) {
@@ -2396,6 +2407,7 @@ function customFont(data, event) {
 					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
 					id('fontstyle').textContent = text
 					id('clock').style.fontFamily = family
+					id('credit').style.fontFamily = family
 					dominterface.style.fontFamily = family
 					canDisplayInterface('fonts')
 				})
@@ -2506,6 +2518,7 @@ function customFont(data, event) {
 			// family and size
 			id('fontstyle').textContent = ''
 			id('clock').style.fontFamily = ''
+			id('credit').style.fontFamily = ''
 			dominterface.style.fontFamily = ''
 
 			// weights

@@ -315,6 +315,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar
+
 	paramId('i_sb').onchange = function () {
 		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
@@ -338,6 +339,7 @@ function initParams(data, settingsDom) {
 	}
 
 	// quotes
+
 	paramId('i_quotes').onchange = function () {
 		paramId('quotes_options').classList.toggle('shown')
 		quotes('toggle', this)
@@ -459,8 +461,7 @@ function selectBackgroundType(cat) {
 }
 
 function importExport(select, isEvent, settingsDom) {
-	//
-	const fadeOut = () => {
+	function fadeOut() {
 		dominterface.click()
 		dominterface.style.transition = 'opacity .4s'
 		dominterface.style.opacity = '0'
@@ -567,21 +568,21 @@ function signature(dom) {
 	})
 }
 
-function showSettings() {
-	const settings = id('settings')
-	const settingsNotShown = !has(settings, 'shown')
-	const domedit = id('editlink')
-
-	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
-
-	clas(settings, false, 'init')
-	clas(settings, settingsNotShown, 'shown')
-	clas(domshowsettings, settingsNotShown, 'shown')
-	clas(domedit, settingsNotShown, 'pushed')
-}
-
 function settingsInit(data) {
 	function settingsCreator(html) {
+		function showSettings() {
+			const settings = id('settings')
+			const settingsNotShown = !has(settings, 'shown')
+			const domedit = id('editlink')
+
+			mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
+
+			clas(settings, false, 'init')
+			clas(settings, settingsNotShown, 'shown')
+			clas(domshowsettings, settingsNotShown, 'shown')
+			clas(domedit, settingsNotShown, 'pushed')
+		}
+
 		// HTML creation
 		const parser = new DOMParser()
 		const settingsDom = document.createElement('div')

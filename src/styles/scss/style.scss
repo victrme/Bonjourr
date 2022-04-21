@@ -871,9 +871,9 @@
 
 #popup_text {
 	display: flex;
+	position: relative;
 	align-items: center;
 	width: 16em;
-	left: 40px;
 	text-align: left;
 	padding: 0.6em 2em;
 	margin-right: 0.6em;
