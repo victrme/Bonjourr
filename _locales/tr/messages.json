@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · Minimalist ve Hafif Başlangıç Sayfası",
+		"description": "uzantı adı"
+	},
+	"extensionDesc": {
+		"message": "iOS'tan ilham alan güzel, özelleştirilebilir ve hafif bir ana sayfa olan Bonjourr ile web tarama deneyiminizi geliştirin.",
+		"description": "uzantı açıklaması"
+	}
+}

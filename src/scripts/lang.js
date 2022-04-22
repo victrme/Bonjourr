@@ -1005,7 +1005,7 @@ const dict = {
 		tr: 'Saatte bir',
 		uk: 'Кожну годину',
 	},
-	'Every day': {
+	'Every day': {	
 		fr: 'Chaque jour',
 		sv: 'Varje dag',
 		nl: 'Elke dag',
@@ -1529,6 +1529,7 @@ const dict = {
 		es: 'Sistema imperial',
 		tr: 'Emperyal birimler',
 		uk: 'Використовувати шкалу Фаренгейта',
+		tr: 'Emperyal birimler'
 	},
 	Forecast: {
 		fr: 'Prévisions',
@@ -1842,6 +1843,7 @@ const dict = {
 		de: 'Make fancy things happen with CSS. ',
 		it: 'Make fancy things happen with CSS. ',
 		es: 'Make fancy things happen with CSS. ',
+		tr: 'Make fancy things happen with CSS. ',
 		uk: 'Make fancy things happen with CSS. ',
 	},
 	'Check out our ': {
@@ -1856,6 +1858,7 @@ const dict = {
 		de: 'Check out our ',
 		it: 'Check out our ',
 		es: 'Check out our ',
+		tr: 'Check out our ',
 		uk: 'Check out our ',
 	},
 	'CSS snippets.': {
@@ -1870,6 +1873,7 @@ const dict = {
 		de: 'CSS snippets.',
 		it: 'CSS snippets.',
 		es: 'CSS snippets.',
+    tr: 'Özel CSS\'nizi yazın',
 		uk: 'CSS snippets.',
 	},
 	'US Date Format': {
@@ -2259,6 +2263,7 @@ const dict = {
 		de: 'Quotes',
 		it: 'Quotes',
 		es: 'Quotes',
+		tr: 'Quotes',
 		uk: 'Цитати',
 	},
 	'Always show author': {
@@ -2273,6 +2278,7 @@ const dict = {
 		de: 'Always show author',
 		it: 'Always show author',
 		es: 'Always show author',
+		tr: 'Always show author',
 		uk: 'Показувати автора',
 	},
 	'Quote type': {
@@ -2287,6 +2293,7 @@ const dict = {
 		de: 'Quote type',
 		it: 'Quote type',
 		es: 'Quote type',
+		tr: 'Quote type',
 		uk: 'Quote type',
 	},
 	'Classic': {
@@ -2301,8 +2308,9 @@ const dict = {
 		de: 'Classic',
 		it: 'Classic',
 		es: 'Classic',
+		tr: 'Classic',
 		uk: 'Classic',
-	}
+	},
 }
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -2396,7 +2404,7 @@ const engineLocales = {
 		it: 'IT&sr=it',
 		es: 'ES&sr=es',
 		no: 'NO&sr=nb',
-		tr: '', //qwant not available in Turkeyuk: '',
+		tr: '', //qwant not available in Turkey
 	},
 	yahoo: {
 		base: 'https://%lsearch.yahoo.com/search?q=%s',
