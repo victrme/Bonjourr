@@ -2165,14 +2165,17 @@ async function quotes(event, that, init) {
 
 			switch (event) {
 				case 'toggle': {
+					let quote = getFromStorage()
 					updated.on = that.checked
 					display(that.checked)
 
-					if (!getFromStorage()) {
-						const quote = await newQuote(lang, data.quotes.type)
-						insertToDom(quote)
+					if (quote === null) {
+						quote = await newQuote(lang, data.quotes.type)
 						saveToStorage(quote)
 					}
+
+					insertToDom(quote)
+
 					break
 				}
 
