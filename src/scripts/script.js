@@ -124,7 +124,7 @@ function clock(event, init) {
 					m = fixunits(time.getMinutes()),
 					s = fixunits(time.getSeconds())
 
-				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				id('clock').textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
 			function analog(time) {
@@ -234,6 +234,7 @@ function clock(event, init) {
 function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
+	const domlinkblocks = id('linkblocks_inner')
 	let editDisplayTimeout = setTimeout(() => {}, 0)
 	let hovered = { parent: undefined, link: {}, index: 0 }
 
@@ -707,7 +708,7 @@ function quickLinks(event, that, init) {
 async function linksImport() {
 	const closeBookmarks = (container) => {
 		container.classList.add('hiding')
-		setTimeout(() => container.setAttribute('class', ''), BonjourrAnimTime)
+		setTimeout(() => container.setAttribute('class', ''), 400)
 	}
 
 	function main(links, bookmarks) {
@@ -804,7 +805,7 @@ async function linksImport() {
 
 function linksrow(data, event) {
 	function setRows(val) {
-		domlinkblocks.style.width = `${val * 7}em`
+		id('linkblocks_inner').style.width = `${val * 7}em`
 	}
 
 	if (data !== undefined) setRows(data)
@@ -1037,7 +1038,7 @@ function weather(event, that, init) {
 				widget.prepend(icon)
 
 				// from 1.2s request anim to .4s hide elem anim
-				setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
+				setTimeout(() => (widget.style.transition = 'opacity .4s'), 400)
 			}
 		}
 
@@ -1224,18 +1225,18 @@ function imgBackground(val, loadTime, init) {
 	img.onload = () => {
 		if (loadTime) {
 			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
-			const changeDuration = (time) => (domoverlay.style.transition = `transform .4s, opacity ${time}ms`)
+			const changeDuration = (time) => (id('background_overlay').style.transition = `transform .4s, opacity ${time}ms`)
 
 			changeDuration(animDuration)
-			setTimeout(() => changeDuration(BonjourrAnimTime), animDuration)
+			setTimeout(() => changeDuration(400), animDuration)
 		}
 
 		const applyBackground = () => {
-			domoverlay.style.opacity = `1`
+			id('background_overlay').style.opacity = `1`
 			id('background').style.backgroundImage = `url(${val})`
 		}
 
-		init ? applyBackground() : setTimeout(applyBackground, BonjourrAnimTime)
+		init ? applyBackground() : setTimeout(applyBackground, 400)
 	}
 
 	img.src = val
@@ -1299,7 +1300,7 @@ function localBackgrounds(init, event) {
 	function isOnlineStorageAtCapacity(newFile) {
 		//
 		// Only applies to versions using localStorage: 5Mo limit
-		if (isOnlineOrSafari) {
+		if (detectPlatform() === 'online') {
 			const ls = localStorage.bonjourrBackgrounds
 
 			// Takes dynamic cache + google font list
@@ -1309,7 +1310,7 @@ function localBackgrounds(init, event) {
 			// Uploaded file in storage would exceed limit
 			if (lsSize + newFile.length > 5e6) {
 				alert(`Image size exceeds storage: ${parseInt(Math.abs(lsSize - 5e6) / 1000)}ko left`)
-				domoverlay.style.opacity = '1'
+				id('background_overlay').style.opacity = '1'
 
 				return true
 			}
@@ -1330,7 +1331,7 @@ function localBackgrounds(init, event) {
 	}
 
 	function changeImgIndex(i) {
-		domimg.setAttribute('index', i)
+		id('background').setAttribute('index', i)
 	}
 
 	function addNewImage(file) {
@@ -1363,7 +1364,7 @@ function localBackgrounds(init, event) {
 			})
 		}
 
-		domoverlay.style.opacity = '0'
+		id('background_overlay').style.opacity = '0'
 		reader.readAsDataURL(file)
 	}
 
@@ -1371,8 +1372,8 @@ function localBackgrounds(init, event) {
 		//
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
-			clas(domcredit, false, 'shown')
-			domoverlay.style.opacity = `0`
+			clas(id('credit'), false, 'shown')
+			id('background_overlay').style.opacity = `0`
 		}
 
 		const compressStart = performance.now()
@@ -1429,7 +1430,7 @@ function localBackgrounds(init, event) {
 
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
-		if (!mobilecheck) rem.setAttribute('class', 'hidden')
+		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
 		rem.textContent = '✕'
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
@@ -1440,10 +1441,10 @@ function localBackgrounds(init, event) {
 		//events
 		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
 		const getIndex = (that) => parseInt(that.getAttribute('index'))
-		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
+		const removeControl = (show, i) => cl('thumbnail')[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
 
 		//displays / hides remove button on desktop
-		if (!mobilecheck) {
+		if (!mobilecheck()) {
 			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
 			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
 		}
@@ -1456,7 +1457,7 @@ function localBackgrounds(init, event) {
 				const appliedIndex = parseInt(id('background').getAttribute('index'))
 
 				if (index !== appliedIndex) {
-					domoverlay.style.opacity = `0`
+					id('background_overlay').style.opacity = `0`
 
 					chrome.storage.local.get('custom', (data) => {
 						changeImgIndex(index)
@@ -1492,10 +1493,10 @@ function localBackgrounds(init, event) {
 
 					// Last image is removed
 					if (data.custom.length === 0) {
-						domoverlay.style.opacity = `0`
+						id('background_overlay').style.opacity = `0`
 
 						unsplash(null, { removedCustom: true })
-						clas(domcredit, true, 'shown')
+						clas(id('credit'), true, 'shown')
 					}
 
 					// Only draw new image if displayed is removed
@@ -1578,7 +1579,7 @@ function unsplash(init, event) {
 	function imgCredits(image) {
 		//
 		// Filtering
-
+		const domcredit = id('credit')
 		let needsSpacer = false
 		let artist = ''
 		let photoLocation = ''
@@ -1862,7 +1863,7 @@ function unsplash(init, event) {
 								setTimeout(
 									() =>
 										cacheControl(data.dynamic, local.dynamicCache, collectionControl(data.dynamic), false),
-									BonjourrAnimTime
+									400
 								)
 							} else
 								buttonSpan.animate(
@@ -1893,7 +1894,7 @@ function unsplash(init, event) {
 
 						// Always request another set, update last time image change and load background
 						case 'collection': {
-							domoverlay.style.opacity = '0'
+							id('background_overlay').style.opacity = '0'
 							//
 							// remove user collec
 							if (event.collection === '') {
@@ -1992,7 +1993,9 @@ function darkmode(choice, init) {
 }
 
 function searchbar(event, that, init) {
+	const domsearchbar = id('searchbar')
 	const emptyButton = id('sb_empty')
+
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
 	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
@@ -2258,7 +2261,7 @@ function showPopup(data) {
 	//
 	function affiche() {
 		const setReviewLink = () =>
-			mobilecheck
+			mobilecheck()
 				? 'https://github.com/victrme/Bonjourr/stargazers'
 				: navigator.userAgent.includes('Chrome')
 				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
@@ -2277,7 +2280,7 @@ function showPopup(data) {
 				id('popup').classList.remove('shown')
 				setTimeout(() => {
 					id('popup').remove()
-					setTimeout(() => (id('credit').style = ''), BonjourrAnimTime)
+					setTimeout(() => (id('credit').style = ''), 400)
 				}, 200)
 			}
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
@@ -2304,7 +2307,7 @@ function showPopup(data) {
 
 		document.body.appendChild(dom.wrap)
 
-		domcredit.style.opacity = 0
+		id('credit').style.opacity = 0
 		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
 		dom.review.addEventListener('mousedown', () => closePopup(false))
@@ -2692,9 +2695,10 @@ function canDisplayInterface(cat, init) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
+		const domshowsettings = id('showSettings')
 		let loadtime = performance.now() - loadtimeStart
 
-		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
+		if (loadtime > 400) loadtime = 400
 		loadtime = loadtime < 33 ? 0 : 400
 
 		domshowsettings.style.transition = `opacity ${loadtime}ms`
@@ -2754,7 +2758,7 @@ function onlineMobilePageUpdate() {
 		const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
 
 		if (dynamicNeedsImage) {
-			domoverlay.style.opacity = 0
+			id('background_overlay').style.opacity = 0
 			unsplash(data, false)
 		}
 
@@ -2914,13 +2918,25 @@ function startup(data) {
 	setTimeout(() => settingsInit(data), 200)
 }
 
+const dominterface = id('interface'),
+	isExtension = detectPlatform() === 'online',
+	funcsOk = {
+		clock: false,
+		links: false,
+	}
+
+let lazyClockInterval = setTimeout(() => {}, 0),
+	loadtimeStart = performance.now(),
+	sunset = 0,
+	sunrise = 0
+
 window.onload = function () {
 	// On settings changes, update export code
 	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
 	else window.onstorage = () => importExport('exp')
 
 	// For Mobile that caches pages for days
-	if (mobilecheck) {
+	if (mobilecheck()) {
 		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
 	}
 
@@ -2958,12 +2974,12 @@ window.onload = function () {
 			}
 
 			// Version is different, can be new update or imports
-			else if (!data.about || data.about.version !== BonjourrVersion) {
+			else if (!data.about || data.about.version !== bonjourrDefaults('sync').about.version) {
 				data = filterImports(data)
 
 				// Change version in here
 				// Only after "different version" startup is triggered
-				data.about = { browser: BonjourrBrowser, version: BonjourrVersion }
+				data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
 
 				chrome.storage.sync.clear()
 				chrome.storage.sync.set(isExtension ? data : { import: data })

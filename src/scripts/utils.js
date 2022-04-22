@@ -16,46 +16,13 @@ const clas = (dom, add, str) => {
 	else dom.classList.remove(str)
 }
 
-let lazyClockInterval = setTimeout(() => {}, 0),
-	errorMessageInterval = setTimeout(() => {}, 0),
-	stillActive = false,
-	rangeActive = false,
-	firstpaint = false,
-	sunset = 0,
-	sunrise = 0
+let stillActive = false
+let rangeActive = false
 
-const domshowsettings = id('showSettings'),
-	domlinkblocks = id('linkblocks_inner'),
-	domoverlay = id('background_overlay'),
-	dominterface = id('interface'),
-	domsearchbar = id('searchbar'),
-	domimg = id('background'),
-	domthumbnail = cl('thumbnail'),
-	domclock = id('clock'),
-	domcredit = id('credit')
-
-let mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
-
-const isExtension =
-		window.location.protocol === 'chrome-extension:' ||
-		window.location.protocol === 'moz-extension:' ||
-		window.location.protocol === 'safari-web-extension:',
-	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
-	loadtimeStart = performance.now(),
-	BonjourrBrowser = detectPlatform(),
-	BonjourrVersion = '1.13.0',
-	BonjourrAnimTime = 400,
-	funcsOk = {
-		clock: false,
-		links: false,
-	}
-
-//
-//
-// Functions
-//
-//
+const mobilecheck = () =>
+	navigator.userAgentData
+		? navigator.userAgentData.mobile
+		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
@@ -345,7 +312,7 @@ function bonjourrDefaults(which) {
 					weight: testOS.windows() || testOS.ios() ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: BonjourrBrowser, version: BonjourrVersion },
+				about: { browser: detectPlatform(), version: '1.13.0' },
 			}
 
 		case 'local':
