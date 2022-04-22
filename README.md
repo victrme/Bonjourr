@@ -68,13 +68,14 @@ If you'd like to support Bonjourr (which would be greatly appreciated!), you can
 
 ## Contributors and translations
 
--   **Swedish translation** · [Benjamin Horn](https://benjaminhorn.io/) · [GitHub](https://github.com/beije)
--   **Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
--   **Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92)
--   **Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
--   **Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
--   **Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
--   **Slovak translation** · Roman Bartík
--   **German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
--   **Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
--   **Spanish translation** · José Alberto · [GitHub](https://github.com/joatb)
+-   **🇸🇪 Swedish translation** · [Benjamin Horn](https://benjaminhorn.io/) · [GitHub](https://github.com/beije)
+-   **🇳🇱 Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
+-   **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92)
+-   **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
+-   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
+-   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
+-   **🇸🇰 Slovak translation** · Roman Bartík
+-   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
+-   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
+-   **🇪🇸 Spanish translation** · José Alberto · [GitHub](https://github.com/joatb)
+-   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)

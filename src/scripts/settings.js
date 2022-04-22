@@ -28,6 +28,8 @@ function initParams(data, settingsDom) {
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
 	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
+	initInput('i_qtfreq', isThereData('quotes', 'frequency'))
+	initInput('i_qttype', isThereData('quotes', 'type'))
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
@@ -36,7 +38,7 @@ function initParams(data, settingsDom) {
 	initInput('i_temp', isThereData('weather', 'temperature'), 'actual')
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
-	initInput('i_size', isThereData('font', 'size'), mobilecheck ? 11 : 14)
+	initInput('i_size', isThereData('font', 'size'), mobilecheck() ? 11 : 14)
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_linknewtab', data.linknewtab)
@@ -45,14 +47,18 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
 	initCheckbox('i_sb', isThereData('searchbar', 'on'))
 	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
+	initCheckbox('i_quotes', isThereData('quotes', 'on'))
+	initCheckbox('i_qtauthor', isThereData('quotes', 'author'))
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
-	if (isOnlineOrSafari) paramId('b_importbookmarks').style.display = 'none'
+	// No bookmarks import on safari || online
+	if (window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim))
+		paramId('b_importbookmarks').style.display = 'none'
 
 	// Links limit
-	if (data.links && data.links.length === 30) quickLinks('maxControl', settingsDom)
+	if (bundleLinks(data).length >= 30) quickLinks('maxControl', settingsDom)
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
@@ -83,8 +89,6 @@ function initParams(data, settingsDom) {
 	if (data.background_type === 'custom') {
 		paramId('custom').style.display = 'block'
 		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
-	} else {
-		paramId('dynamic').style.display = 'block'
 	}
 
 	//weather settings
@@ -106,6 +110,8 @@ function initParams(data, settingsDom) {
 
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
+
+	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
 
 	//langue
 	paramId('i_lang').value = data.lang || 'en'
@@ -140,7 +146,7 @@ function initParams(data, settingsDom) {
 	const tooltips = settingsDom.querySelectorAll('.tooltip')
 
 	// Change edit tips on mobile
-	if (mobilecheck)
+	if (mobilecheck())
 		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
 			`Edit your Quick Links by long-pressing for 300ms the icon.`
 		)
@@ -154,6 +160,7 @@ function initParams(data, settingsDom) {
 
 			toggleTooltip('ttcoll')
 			toggleTooltip('ttlinks')
+			toggleTooltip('csslinks')
 		}
 	})
 
@@ -310,6 +317,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar
+
 	paramId('i_sb').onchange = function () {
 		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
@@ -330,6 +338,29 @@ function initParams(data, settingsDom) {
 
 	paramId('i_sbnewtab').onchange = function () {
 		searchbar('newtab', this)
+	}
+
+	// quotes
+
+	paramId('i_quotes').onchange = function () {
+		paramId('quotes_options').classList.toggle('shown')
+		quotes('toggle', this)
+	}
+
+	paramId('i_qtfreq').onchange = function () {
+		quotes('frequency', this)
+	}
+
+	paramId('i_qttype').onchange = function () {
+		quotes('type', this)
+	}
+
+	paramId('i_qtrefresh').onclick = function () {
+		quotes('refresh', this)
+	}
+
+	paramId('i_qtauthor').onchange = function () {
+		quotes('author', this)
 	}
 
 	//settings
@@ -365,7 +396,7 @@ function initParams(data, settingsDom) {
 	}
 
 	// Reduces opacity to better see interface size changes
-	if (mobilecheck) {
+	if (mobilecheck()) {
 		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
 		paramId('i_size').addEventListener('touchstart', () => touchHandler(true), { passive: true })
 		paramId('i_size').addEventListener('touchend', () => touchHandler(false), { passive: true })
@@ -396,7 +427,7 @@ function initParams(data, settingsDom) {
 			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(cssEditor)
-	}, BonjourrAnimTime)
+	}, 400)
 }
 
 function showall(val, event, domSettings) {
@@ -405,9 +436,7 @@ function showall(val, event, domSettings) {
 }
 
 function selectBackgroundType(cat) {
-	id('dynamic').style.display = 'none'
-	id('custom').style.display = 'none'
-	id(cat).style.display = 'block'
+	id('custom').style.display = cat === 'custom' ? 'block' : 'none'
 
 	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
 		//
@@ -417,10 +446,10 @@ function selectBackgroundType(cat) {
 		}
 		if (cat === 'dynamic') {
 			// Timeout needed because it uses init data
-			domoverlay.style.opacity = `0`
+			id('background_overlay').style.opacity = `0`
 			id('background').removeAttribute('index')
-			setTimeout(() => unsplash(data), BonjourrAnimTime)
-			clas(domcredit, true, 'shown')
+			setTimeout(() => unsplash(data), 400)
+			clas(id('credit'), true, 'shown')
 		}
 
 		// Setting frequence
@@ -434,57 +463,62 @@ function selectBackgroundType(cat) {
 }
 
 function importExport(select, isEvent, settingsDom) {
-	//
-	const fadeOut = () => {
+	function fadeOut() {
+		const dominterface = id('interface')
 		dominterface.click()
 		dominterface.style.transition = 'opacity .4s'
 		dominterface.style.opacity = '0'
-		setTimeout(() => location.reload(), BonjourrAnimTime)
+		setTimeout(() => location.reload(), 400)
 	}
 
 	function importation() {
 		//
-		if (isEvent) {
-			const dom = id('i_import')
-			const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+		const dom = id('i_import')
+		const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
 
-			if (dom.value.length > 0) {
-				try {
-					const imported = JSON.parse(dom.value)
+		if (!isEvent || dom?.value?.length === 0) {
+			return
+		}
 
-					// Load all sync & dynamicCache
-					chrome.storage.sync.get(null, (data) => {
-						chrome.storage.local.get('dynamicCache', (local) => {
-							//
-							// Remove user collection cache if collection change
-							if (data.dynamic && imported.dynamic) {
-								if (data.dynamic.collection !== imported.dynamic.collection) {
-									local.dynamicCache.user = []
-								}
-							}
-
-							//
-							delete data.about
-
-							data = { ...data, ...imported }
-
-							// full import on Online is through "import" field
-							data = isExtension ? data : { import: data }
-
-							// Save sync & local
-							chrome.storage.sync.clear()
-							chrome.storage.sync.set(data, chrome.storage.local.set(local))
-
-							fadeOut()
-						})
-					})
-				} catch (e) {
-					dom.value = ''
-					placeholder('Error in import code')
-					setTimeout(() => placeholder('Import code'), 2000)
-					console.error(e)
+		function applyImportation(sync, local, newImport) {
+			// Remove user collection cache if collection change
+			if (sync.dynamic && newImport.dynamic) {
+				if (sync.dynamic.collection !== newImport.dynamic.collection) {
+					local.dynamicCache.user = []
 				}
 			}
+
+			// Delete current links on imports containing links somewhere
+			// to avoid duplicates
+			if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+				bundleLinks(sync).forEach((elem) => {
+					delete sync[elem._id]
+				})
+			}
+
+			sync = { ...sync, ...newImport }
+			delete sync.about // Remove about to trigger "new version" startup to filter data
+
+			sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
+
+			chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
+			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+
+			fadeOut()
+		}
+
+		try {
+			const imported = JSON.parse(dom.value)
+
+			// Load all sync & dynamicCache
+			chrome.storage.sync.get(null, (data) =>
+				chrome.storage.local.get('dynamicCache', (local) => applyImportation(data, local, imported))
+			)
+		} catch (e) {
+			dom.value = ''
+			placeholder('Error in import code')
+			setTimeout(() => placeholder('Import code'), 2000)
+			console.error(e)
 		}
 	}
 
@@ -497,25 +531,7 @@ function importExport(select, isEvent, settingsDom) {
 			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
 			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 
-			switch (window.location.protocol) {
-				case 'http:':
-				case 'https:':
-				case 'file:':
-					data.about.browser = 'online'
-					break
-
-				case 'moz-extension:':
-					data.about.browser = 'firefox'
-					break
-
-				case 'safari-web-extension:':
-					data.about.browser = 'safari'
-					break
-
-				default:
-					data.about.browser = 'chrome'
-			}
-
+			data.about.browser = detectPlatform()
 			pre.textContent = JSON.stringify(data)
 		})
 	}
@@ -527,22 +543,13 @@ function importExport(select, isEvent, settingsDom) {
 			input.textContent = tradThis('Click again to confirm')
 			input.setAttribute('sure', '')
 		} else {
-			isExtension ? deleteBrowserStorage() : lsOnlineStorage.del()
+			detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
 			fadeOut()
 		}
 	}
 
-	switch (select) {
-		case 'exp':
-			exportation()
-			break
-		case 'imp':
-			importation()
-			break
-		case 'reset':
-			anihilation()
-			break
-	}
+	const fncs = { exp: exportation, imp: importation, reset: anihilation }
+	fncs[select]()
 }
 
 function signature(dom) {
@@ -564,48 +571,24 @@ function signature(dom) {
 	})
 }
 
-function showInterface(e) {
-	//cherche le parent du click jusqu'a trouver linkblocks
-	//seulement si click droit, quitter la fct
-	let parent = e.target
-	const edit = id('editlink_container')
-	const settings = id('settings')
-
-	while (parent !== null) {
-		parent = parent.parentElement
-		if (parent && parent.id === 'linkblocks' && e.which === 3) return false
-	}
-
-	//close edit container on interface click
-	if (has(edit, 'shown')) {
-		clas(edit, false, 'shown')
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach((e) => clas(e, false, 'selected'))
-	}
-
-	if (has(settings, 'shown')) {
-		clas(settings, false, 'shown')
-		clas(domshowsettings, false, 'shown')
-		clas(dominterface, false, 'pushed')
-
-		if (edit.classList.contains('pushed')) clas(edit, false, 'pushed')
-	}
-}
-
-function showSettings() {
-	const edit = id('editlink_container')
-	const settings = id('settings')
-	const settingsNotShown = has(settings, 'shown') === false
-
-	mobilecheck ? '' : clas(dominterface, settingsNotShown, 'pushed')
-	clas(edit, settingsNotShown, 'pushed')
-
-	clas(settings, false, 'init')
-	clas(settings, settingsNotShown, 'shown')
-	clas(domshowsettings, settingsNotShown, 'shown')
-}
-
 function settingsInit(data) {
+	const domshowsettings = id('showSettings')
+	const dominterface = id('interface')
+
 	function settingsCreator(html) {
+		function showSettings() {
+			const settings = id('settings')
+			const settingsNotShown = !has(settings, 'shown')
+			const domedit = id('editlink')
+
+			mobilecheck() ? '' : clas(dominterface, settingsNotShown, 'pushed')
+
+			clas(settings, false, 'init')
+			clas(settings, settingsNotShown, 'shown')
+			clas(domshowsettings, settingsNotShown, 'shown')
+			clas(domedit, settingsNotShown, 'pushed')
+		}
+
 		// HTML creation
 		const parser = new DOMParser()
 		const settingsDom = document.createElement('div')
@@ -630,36 +613,55 @@ function settingsInit(data) {
 		document.onkeyup = (e) => (e.code === 'Escape' ? showSettings() : '')
 	}
 
-	switch (window.location.protocol) {
-		case 'file:': {
-			const xhr = new XMLHttpRequest()
-			xhr.open('POST', 'settings.html', true)
-			xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
-			xhr.send()
-			break
+	function interfaceClickEvents(e) {
+		//cherche le parent du click jusqu'a trouver linkblocks
+		//seulement si click droit, quitter la fct
+		let parent = e.target
+		const settings = id('settings')
+		const domedit = document.querySelector('#editlink')
+
+		while (parent !== null) {
+			parent = parent.parentElement
+			if (parent && parent.id === 'linkblocks' && e.which === 3) return false
 		}
 
-		case 'http:':
-		case 'https:':
-		case 'safari-web-extension:':
-		case 'chrome-extension:':
-		case 'moz-extension:': {
-			fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+		// hides edit menu
+		if (has(domedit, 'shown')) {
+			domedit.className = 'shown hiding'
+			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+			setTimeout(() => domedit.setAttribute('class', ''), 200)
+		}
+
+		//
+		if (has(settings, 'shown')) {
+			clas(settings, false, 'shown')
+			clas(domshowsettings, false, 'shown')
+			clas(dominterface, false, 'pushed')
+		}
+
+		if (document.body.classList.contains('tabbing')) {
+			clas(document.body, false, 'tabbing')
 		}
 	}
 
-	dominterface.onclick = (e) => {
-		showInterface(e)
-		if (document.body.classList.contains('tabbing')) clas(document.body, false, 'tabbing')
-	}
-
-	document.onkeydown = (e) => {
+	function interfaceKeyEvents(e) {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
-		const noEdit = has(id('editlink_container'), 'shown') === false
 		const noSettings = has(id('settings'), 'shown') === false
 
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEdit) domsearchbar.focus()
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings) id('searchbar').focus()
 		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
+
+	if (window.location.protocol === 'file:') {
+		const xhr = new XMLHttpRequest()
+		xhr.open('POST', 'settings.html', true)
+		xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
+		xhr.send()
+	} else {
+		fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+	}
+
+	dominterface.onclick = interfaceClickEvents
+	document.onkeydown = interfaceKeyEvents
 }

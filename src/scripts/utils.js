@@ -16,68 +16,32 @@ const clas = (dom, add, str) => {
 	else dom.classList.remove(str)
 }
 
-let lazyClockInterval = setTimeout(() => {}, 0),
-	errorMessageInterval = setTimeout(() => {}, 0),
-	BonjourrBrowser = 'unknown',
-	stillActive = false,
-	rangeActive = false,
-	firstpaint = false,
-	sunset = 0,
-	sunrise = 0
+let stillActive = false
+let rangeActive = false
 
-const domshowsettings = id('showSettings'),
-	domlinkblocks = id('linkblocks_inner'),
-	domoverlay = id('background_overlay'),
-	dominterface = id('interface'),
-	domsearchbar = id('searchbar'),
-	domimg = id('background'),
-	domthumbnail = cl('thumbnail'),
-	domclock = id('clock'),
-	domcredit = id('credit')
-
-let mobilecheck = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-if (navigator.userAgentData) mobilecheck = navigator.userAgentData.mobile
-
-const isExtension =
-		window.location.protocol === 'chrome-extension:' ||
-		window.location.protocol === 'moz-extension:' ||
-		window.location.protocol === 'safari-web-extension:',
-	isOnlineOrSafari = window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim),
-	loadtimeStart = performance.now(),
-	BonjourrAnimTime = 400,
-	BonjourrVersion = '1.12.1',
-	funcsOk = {
-		clock: false,
-		links: false,
-	}
-
-switch (window.location.protocol) {
-	case 'http:':
-	case 'https:':
-	case 'file:':
-		BonjourrBrowser = 'online'
-		break
-
-	case 'moz-extension:':
-		BonjourrBrowser = 'firefox'
-		break
-
-	case 'safari-web-extension:':
-		BonjourrBrowser = 'safari'
-		break
-
-	default:
-		BonjourrBrowser = 'chrome'
-}
-
-//
-//
-// Functions
-//
-//
+const mobilecheck = () =>
+	navigator.userAgentData
+		? navigator.userAgentData.mobile
+		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
+
+const randomString = (len) => {
+	const chars = 'abcdefghijklmnopqr'
+	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+}
+
+function detectPlatform() {
+	const p = window.location.protocol
+	return p === 'moz-extension:'
+		? 'firefox'
+		: p === 'chrome-extension:'
+		? 'chrome'
+		: p === 'safari-web-extension:'
+		? 'safari'
+		: 'online'
+}
 
 function validateHideElem(hide) {
 	let res = true
@@ -95,17 +59,15 @@ function validateHideElem(hide) {
 	return res
 }
 
-function aliasGarbageCollection(sync) {
-	const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+function bundleLinks(storage) {
+	// 1.13.0: Returns an array of found links in storage
+	let res = []
+	Object.entries(storage).map(([key, val]) => {
+		if (key.length === 11 && key.startsWith('links')) res.push(val)
+	})
 
-	if (sync.links && sync.links.length > 0) {
-		const linksIconList = sync.links.map((item) => item.icon)
-		aliasKeyList.forEach((key) => (!linksIconList.includes(key) ? delete sync[key] : ''))
-	} else {
-		aliasKeyList.forEach((key) => delete sync[key])
-	}
-
-	return sync
+	res.sort((a, b) => a.order - b.order)
+	return res
 }
 
 function slowRange(tosave, time = 400) {
@@ -304,9 +266,9 @@ function bonjourrDefaults(which) {
 				lang: 'en',
 				favicon: '',
 				greeting: '',
+				dark: 'system',
 				custom_every: 'pause',
 				background_type: 'dynamic',
-				links: [],
 				clock: {
 					ampm: false,
 					analog: false,
@@ -335,6 +297,13 @@ function bonjourrDefaults(which) {
 					engine: 'google',
 					request: '',
 				},
+				quotes: {
+					on: false,
+					author: false,
+					type: 'classic',
+					frequency: 'day',
+					last: 1650516688,
+				},
 				font: {
 					url: '',
 					family: '',
@@ -343,7 +312,7 @@ function bonjourrDefaults(which) {
 					weight: testOS.windows() || testOS.ios() ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: BonjourrBrowser, version: BonjourrVersion },
+				about: { browser: detectPlatform(), version: '1.13.0' },
 			}
 
 		case 'local':

@@ -140,7 +140,10 @@ body {
 			#greetings,
 			#widget,
 			#forecast,
-			#current {
+			#current,
+			#quotes_container.shown,
+			#quotes_container.shown #quote,
+			#quotes_container.shown #author {
 				transition: none;
 			}
 		}
@@ -200,6 +203,7 @@ body {
 		.as_fonts {max-height: 240px}
 		.as_css {max-height: 3100px}
 		.as_impexp {max-height: 220px}
+		.as_quote_type {max-height: 130px}
 	}
 
 	&.init {
@@ -225,8 +229,13 @@ body {
 		transition-property: background-color, color, border, border-color;
 	}
 
+	input:focus-visible + .slider {
+		border: 3px solid #007aff44;
+	}
+
 	#i_export,
 	#i_refresh,
+	#i_qtrefresh,
 	#cssEditor,
 	input[type='text'],
 	input[type='range'],
@@ -236,6 +245,7 @@ body {
 	}
 
 	#i_refresh,
+	#i_qtrefresh,
 	select {
 		height: 2.35em;
 		border-radius: 8.5px;

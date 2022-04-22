@@ -124,7 +124,7 @@ function clock(event, init) {
 					m = fixunits(time.getMinutes()),
 					s = fixunits(time.getSeconds())
 
-				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				id('clock').textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
 			function analog(time) {
@@ -231,67 +231,35 @@ function clock(event, init) {
 	}
 }
 
-const saveIconAsAlias = (iconstr, oldAlias) => {
-	// Fait un nouvel objet à chaque fois
-	// Ajoute l'url de l'icône à l'objet
-	// Sauvegarde et retourne le nom de l'objet
-	const alias = oldAlias ? oldAlias : 'alias:' + Math.random().toString(26).substring(7)
-	const tosave = {}
-	tosave[alias] = iconstr
-	chrome.storage.sync.set(tosave)
-	return alias
-}
-
-function quickLinks(event, that, initStorage) {
+function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
+	const domlinkblocks = id('linkblocks_inner')
 	let editDisplayTimeout = setTimeout(() => {}, 0)
-	let hovered,
-		dragged = { parent: undefined, link: {}, index: 0 }
+	let hovered = { parent: undefined, link: {}, index: 0 }
 
-	//enleve les selections d'edit
-	const removeLinkSelection = () =>
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
-			clas(e, false, 'selected')
-		})
-
-	//initialise les blocs en fonction du storage
-	//utilise simplement une boucle de appendblock
-	async function initblocks(data) {
-		const links = data.links || []
-
+	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
-				// Blocks
 				// Add blocks and events
-				const blocklist = links.map((link, i) => appendblock(link, i))
+				const blocklist = links.map((l) => appendblock(l))
 				blocklist.forEach(({ parent }) => addEvents(parent))
 				canDisplayInterface('links')
 
-				// Icons
-				// Get list of icons
-				let changed = 0
-				let iconList = Object.values(links).map((elem) => {
-					return elem.icon.startsWith('alias:') ? data[elem.icon] : elem.icon
-				})
-
-				// Then loads them one by one
-				for (let index = 0; index < blocklist.length; index++) {
+				// Load icons one by one
+				links.map(async (link, index) => {
 					const dom = blocklist[index].icon
-					const url = iconList[index] === undefined ? 'src/assets/interface/loading.gif' : iconList[index]
-					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => url.includes(x))
+					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => link.icon.includes(x))
 
-					// Fetch new icons if matches these urls, or apply cached
-					if (url.length === 0 || needsToChange) {
-						links[index].icon = saveIconAsAlias(await fetchNewIcon(dom, links[index].url))
-						changed++
-					} else {
-						links[index].icon = dom.src = url
+					// Fetch new icons if matches these urls
+					if (needsToChange) {
+						link.icon = await fetchNewIcon(dom, link.url)
+						chrome.storage.sync.set({ [link._id]: link })
 					}
-				}
 
-				// Saves links when icons are loaded if any changed
-				if (changed > 0) chrome.storage.sync.set({ links })
+					// Apply cached
+					else dom.src = link.icon
+				})
 			} catch (e) {
 				errorMessage('Failed to load links', e)
 			}
@@ -340,8 +308,8 @@ function quickLinks(event, that, initStorage) {
 	}
 
 	function appendblock(link) {
-		let title = stringMaxSize(link.title, 32)
-		let url = stringMaxSize(link.url, 128)
+		let title = stringMaxSize(link.title, 64)
+		let url = stringMaxSize(link.url, 512)
 
 		//le DOM du block
 		const lIcon = document.createElement('img')
@@ -356,11 +324,12 @@ function quickLinks(event, that, initStorage) {
 		lIconWrap.appendChild(lIcon)
 
 		blockTitle.textContent = title
+		blockTitle.style.display = title === '' ? 'none' : 'block'
 
 		block.className = 'block'
 		block.setAttribute('source', url)
 		block.appendChild(lIconWrap)
-		title ? block.appendChild(blockTitle) : ''
+		block.appendChild(blockTitle)
 
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.setAttribute('draggable', 'true')
@@ -372,42 +341,73 @@ function quickLinks(event, that, initStorage) {
 		return { icon: lIcon, parent: block_parent }
 	}
 
+	function removeLinkSelection() {
+		//enleve les selections d'edit
+		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
+			clas(e, false, 'selected')
+		})
+	}
+
 	function addEvents(elem) {
+		function positionsEditWindow(mouseEvent) {
+			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+
+			const { innerHeight, innerWidth } = mouseEvent.view // viewport size
+			let { x, y } = mouseEvent // mouse position
+
+			// touch event is an array of touches
+			if (mouseEvent.touches?.length > 0) {
+				x = mouseEvent.touches[0].clientX
+				y = mouseEvent.touches[0].clientY
+			}
+
+			if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
+			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
+
+			// Moves edit link to mouse position
+			document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
+		}
+
+		function openlink(that, e) {
+			const source = that.children[0].getAttribute('source')
+			const a_hiddenlink = id('hiddenlink')
+
+			chrome.storage.sync.get('linknewtab', (data) => {
+				const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
+
+				a_hiddenlink.setAttribute('href', source)
+				a_hiddenlink.setAttribute('target', toNewTab ? '_blank' : '_self')
+				a_hiddenlink.click()
+			})
+		}
+
 		function handleDrag(is, that) {
-			chrome.storage.sync.get('links', (data) => {
-				const i = findindex(that)
+			chrome.storage.sync.get(null, (data) => {
+				const index = findindex(that)
+				const link = bundleLinks(data)[index]
 
-				switch (is) {
-					case 'start':
-						dragged = { parent: elem, link: data.links[i], index: i }
-						break
+				if (is === 'enter') {
+					hovered = { parent: elem, link, index }
+					return
+				}
 
-					case 'enter':
-						hovered = { parent: elem, link: data.links[i], index: i }
-						break
+				if (is === 'end') {
+					if (hovered.index === index) return
 
-					case 'end': {
-						if (hovered.index !== dragged.index) {
-							//changes html blocks
-							const hoveredChild = hovered.parent.children[0]
-							const draggedChild = dragged.parent.children[0]
+					const dragged = { parent: elem }
+					const hoveredChild = hovered.parent.children[0]
+					const draggedChild = dragged.parent.children[0]
 
-							hovered.parent.children[0].remove()
-							dragged.parent.children[0].remove()
+					hovered.parent.children[0].remove()
+					dragged.parent.children[0].remove()
+					hovered.parent.appendChild(draggedChild)
+					dragged.parent.appendChild(hoveredChild)
 
-							hovered.parent.appendChild(draggedChild)
-							dragged.parent.appendChild(hoveredChild)
+					const temp = link.order
+					data[link._id].order = hovered.link.order
+					data[hovered.link._id].order = temp
 
-							// Switches link storage
-							let allLinks = data.links
-
-							allLinks[dragged.index] = hovered.link
-							allLinks[hovered.index] = dragged.link
-
-							chrome.storage.sync.set({ links: allLinks })
-						}
-						break
-					}
+					chrome.storage.sync.set(data)
 				}
 			})
 		}
@@ -437,23 +437,39 @@ function quickLinks(event, that, initStorage) {
 
 		elem.onmouseup = function (e) {
 			removeLinkSelection()
-			clearTimeout(editDisplayTimeout)
-			e.which === 3 ? editlink(this) : !has(id('settings'), 'shown') ? openlink(this, e) : ''
+
+			// right click
+			if (e.which === 3) {
+				positionsEditWindow(e)
+				editlink(this)
+				return
+			}
+
+			// settings not opened and not on mobile
+			if (!has(id('settings'), 'shown') && !e.sourceCapabilities.firesTouchEvents) {
+				openlink(this, e)
+			}
 		}
 
 		// Mobile clicks
 		let touchStartTime = 0
 		let touchTimeout = setTimeout(() => {}, 0)
 
-		const startHandler = () => {
+		const startHandler = (e) => {
 			touchStartTime = performance.now()
-			touchTimeout = setTimeout(() => editlink(elem), 300)
+			touchTimeout = setTimeout(() => {
+				positionsEditWindow(e)
+				editlink(elem)
+			}, 600)
 		}
 
 		const endHandler = (e) => {
-			if (performance.now() - touchStartTime < 300) {
+			const pressTime = performance.now() - touchStartTime
+			const editIsNotOpen = !has(id('editlink'), 'shown')
+
+			if (pressTime < 600) {
 				clearTimeout(touchTimeout)
-				openlink(elem, e)
+				if (editIsNotOpen) openlink(elem, e)
 			}
 		}
 
@@ -461,52 +477,38 @@ function quickLinks(event, that, initStorage) {
 		elem.addEventListener('touchend', endHandler, { passive: true })
 	}
 
-	function showDelIcon(input) {
-		const img = input.nextElementSibling
-		if (input.value === '') img.classList.remove('shown')
-		else img.classList.add('shown')
-	}
-
 	function editEvents() {
-		const editLinkContainer = id('editlink_container')
+		const domedit = document.querySelector('#editlink')
 
 		function closeEditLink() {
-			removeLinkSelection()
-			editLinkContainer.classList.add('hiding')
-			editDisplayTimeout = setTimeout(() => editLinkContainer.setAttribute('class', ''), BonjourrAnimTime)
-		}
-
-		function emptyAndHideIcon(e) {
-			e.target.previousElementSibling.value = ''
-			e.target.classList.remove('shown')
+			clas(domedit, true, 'hiding')
+			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+			editDisplayTimeout = setTimeout(() => domedit.setAttribute('class', ''), 200)
 		}
 
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('editlink').getAttribute('index')))
-			clas(editLinkContainer, false, 'shown')
+			clas(domedit, false, 'shown')
 			if (id('settings')) linksInputDisable(false)
 		}
 
 		id('e_submit').onclick = function () {
+			// no error, close
+			if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
 			removeLinkSelection()
-			const noError = editlink(null, parseInt(id('editlink').getAttribute('index')))
-			if (noError) closeEditLink()
 		}
-		// close on button
-		id('e_close').onclick = () => closeEditLink()
 
-		// close on outside click
-		const outsideClick = (e) => (e.target.id === 'editlink_container' ? closeEditLink() : '')
-		if (mobilecheck) editLinkContainer.addEventListener('touchstart', outsideClick, { passive: true })
-		else editLinkContainer.onmousedown = outsideClick
+		function submitEvent(e) {
+			if (e.code === 'Enter') {
+				if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
+				removeLinkSelection()
+			}
+		}
 
-		id('re_title').onclick = (e) => emptyAndHideIcon(e)
-		id('re_url').onclick = (e) => emptyAndHideIcon(e)
-		id('re_iconurl').onclick = (e) => emptyAndHideIcon(e)
-		id('e_title').onkeyup = (e) => showDelIcon(e.target)
-		id('e_url').onkeyup = (e) => showDelIcon(e.target)
-		id('e_iconurl').onkeyup = (e) => showDelIcon(e.target)
+		id('e_title').addEventListener('keyup', submitEvent)
+		id('e_url').addEventListener('keyup', submitEvent)
+		id('e_iconurl').addEventListener('keyup', submitEvent)
 	}
 
 	function editlink(that, i) {
@@ -517,132 +519,79 @@ function quickLinks(event, that, initStorage) {
 		function displayEditWindow() {
 			const index = findindex(that)
 			const liconwrap = that.querySelector('.l_icon_wrap')
-			const container = id('editlink_container')
+			const domedit = document.querySelector('#editlink')
 			const opendedSettings = has(id('settings'), 'shown')
 
 			clas(liconwrap, true, 'selected')
-			clas(container, true, 'shown')
-			clas(container, opendedSettings, 'pushed')
+			clas(domedit, true, 'shown')
+			clas(domedit, opendedSettings, 'pushed')
 
-			id('editlink').setAttribute('index', index)
+			domedit.setAttribute('index', index)
 
 			chrome.storage.sync.get(null, (data) => {
-				const { title, url, icon } = data.links[index]
+				const link = bundleLinks(data).filter((l) => l.order === index)[0]
+				const { title, url, icon } = link
 
 				e_title.setAttribute('placeholder', tradThis('Title'))
 				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
 
 				e_title.value = title
 				e_url.value = url
-				e_iconurl.value = icon.startsWith('alias:') ? data[icon] : icon
-
-				showDelIcon(e_title)
-				showDelIcon(e_url)
-				showDelIcon(e_iconurl)
+				e_iconurl.value = icon
 			})
 		}
 
 		function updatesEditedLink() {
-			if (e_iconurl.value.length === 8180) {
+			if (e_iconurl.value.length === 7500) {
 				e_iconurl.value = ''
 				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
 				return false
 			}
 
-			const updated = {
-				title: stringMaxSize(e_title.value, 32),
-				url: stringMaxSize(e_url.value, 217),
-				icon: stringMaxSize(e_iconurl.value, 8180),
-			}
-
 			chrome.storage.sync.get(null, (data) => {
-				let allLinks = [...data.links]
 				const parent = domlinkblocks.children[i + 1]
+				let link = bundleLinks(data).filter((l) => l.order === i)[0]
 
-				// Update on interface
-				Object.entries(allLinks[i]).forEach(([key, val]) => {
-					if (val !== updated[key]) {
-						//
-						switch (key) {
-							case 'title': {
-								const domtitle = parent.querySelector('span')
+				link = {
+					...link,
+					title: stringMaxSize(e_title.value, 64),
+					url: stringMaxSize(e_url.value, 512),
+					icon: stringMaxSize(e_iconurl.value, 7500),
+				}
 
-								// Adds span title or updates it
-								if (!domtitle) {
-									const span = document.createElement('span')
-									span.textContent = updated[key]
-									parent.children[0].appendChild(span)
-								} else {
-									domtitle.textContent = updated[key]
-								}
+				parent.querySelector('.block').setAttribute('source', link.url)
+				parent.querySelector('img').src = link.icon
+				parent.querySelector('span').textContent = link.title
 
-								break
-							}
+				parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
 
-							case 'url':
-								parent.children[0].setAttribute('source', updated[key])
-								break
-
-							case 'icon': {
-								// Updates dom
-								parent.querySelector('img').src = updated.icon
-								const previousIconURL = allLinks[i].icon
-
-								updated.icon = saveIconAsAlias(
-									updated.icon,
-									previousIconURL.startsWith('alias:') ? previousIconURL : null
-								)
-
-								break
-							}
-						}
-
-						allLinks[i][key] = updated[key]
-					}
-				})
-
-				// Update in storage
-				chrome.storage.sync.set({ links: allLinks })
+				// Updates
+				chrome.storage.sync.set({ [link._id]: link })
 			})
 
 			return true
 		}
 
-		// If i is defined, you updated a link=
-		if (typeof i === 'number') return updatesEditedLink()
-		else displayEditWindow()
-	}
+		// If i is defined, updates a link
+		if (typeof i === 'number') {
+			return updatesEditedLink()
+		}
 
-	function openlink(that, e) {
-		const source = that.children[0].getAttribute('source')
-		const a_hiddenlink = id('hiddenlink')
-
-		chrome.storage.sync.get('linknewtab', (data) => {
-			const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
-
-			a_hiddenlink.setAttribute('href', source)
-			a_hiddenlink.setAttribute('target', toNewTab ? '_blank' : '_self')
-			a_hiddenlink.click()
-		})
+		displayEditWindow()
 	}
 
 	function findindex(that) {
 		//passe la liste des blocks, s'arrete si that correspond
 		//renvoie le nombre de loop pour l'atteindre
-
 		const list = domlinkblocks.children
-
 		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
 	}
 
 	function removeblock(index) {
-		chrome.storage.sync.get('links', (data) => {
-			// Remove alias from storage
-			const icon = data.links[index].icon
-			if (icon.startsWith('alias:')) chrome.storage.sync.remove(icon)
-
-			data.links.splice(index, 1)
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data)
+			let link = links.filter((l) => l.order === index)[0]
 
 			//enleve le html du block
 			const blockParent = domlinkblocks.children[index + 1]
@@ -653,64 +602,69 @@ function quickLinks(event, that, initStorage) {
 
 			setTimeout(function () {
 				domlinkblocks.removeChild(blockParent)
-
-				//enleve linkblocks si il n'y a plus de links
-				if (data.links.length === 0) domlinkblocks.style.visibility = 'hidden'
+				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
 			}, 600)
 
-			chrome.storage.sync.set({ links: data.links })
+			links.map((l) => {
+				l.order > index ? (l.order -= 1) : '' // Decrement order for elements above the one removed
+				data[l._id] = l // updates link in storage
+			})
+
+			chrome.storage.sync.set(data)
+			chrome.storage.sync.remove(link._id)
 		})
 	}
 
 	function linkSubmission(importList) {
 		//
-
-		function saveLink(filteredLinks) {
-			id('i_title').value = ''
-			id('i_url').value = ''
-
-			chrome.storage.sync.get(null, (data) => {
-				const blocklist = id('linkblocks_inner').querySelectorAll('.block_parent')
-
-				if (data.links) {
-					data.links = data.links.concat(filteredLinks)
-					domlinkblocks.style.visibility = 'visible'
-
-					if (data.links.length === 30) linksInputDisable(true)
-
-					blocklist.forEach((parent) => parent.remove())
-					initblocks(data)
-				}
-			})
-		}
-
 		function filterNewLink(title, url) {
 			//
-			url = stringMaxSize(url, 217)
+			url = stringMaxSize(url, 512)
 			const to = (scheme) => url.startsWith(scheme)
 			const acceptableSchemes = to('http://') || to('https://')
 			const unacceptable = to('about:') || to('chrome://')
 
 			return {
-				title: stringMaxSize(title, 32),
-				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+				_id: 'links' + randomString(6),
+				order: 0,
+				title: stringMaxSize(title, 64),
 				icon: 'src/assets/interface/loading.gif',
+				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 			}
 		}
 
-		const newLinks = []
+		function saveLink(link, order) {
+			id('i_title').value = ''
+			id('i_url').value = ''
 
-		if (importList && importList.length > 0) {
-			importList.forEach((elem) => (elem.url !== undefined ? newLinks.push(filterNewLink(elem.title, elem.url)) : ''))
-			saveLink(newLinks)
-		} else {
-			//si l'url filtré est juste
-			//et l'input n'a pas été activé ya -1s
-			if (id('i_url').value.length > 2 && !stillActive) {
-				newLinks.push(filterNewLink(id('i_title').value, id('i_url').value))
-				saveLink(newLinks)
-			}
+			link.order = order
+
+			// Displays and saves before fetching icon
+			initblocks([link])
+			chrome.storage.sync.set({ [link._id]: link })
+
+			// Some other dom control
+			if (order >= 30) linksInputDisable(true)
+			domlinkblocks.style.visibility = 'visible'
 		}
+
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data)
+			const url = id('i_url').value
+			const title = id('i_title').value
+
+			if (importList?.length > 0) {
+				importList.forEach(({ title, url }, i) => {
+					if (!url) return
+					saveLink(filterNewLink(title, url), links.length + i) // increment order for each import
+				})
+			}
+
+			// Si l'url est assez longue et l'input n'a pas été activé ya -1s
+			if (url.length > 2 && !stillActive) {
+				saveLink(filterNewLink(title, url), links.length)
+			}
+		})
 	}
 
 	function linksInputDisable(isMax, settingsDom) {
@@ -741,12 +695,11 @@ function quickLinks(event, that, initStorage) {
 		}
 	}
 
-	if (initStorage) {
-		initblocks(initStorage)
+	if (init) {
+		initblocks(bundleLinks(init))
 
 		// No need to activate edit events asap
 		setTimeout(function timeToSetEditEvents() {
-			id('editlink_container').oncontextmenu = (e) => e.preventDefault()
 			editEvents()
 		}, 150)
 	}
@@ -755,15 +708,15 @@ function quickLinks(event, that, initStorage) {
 async function linksImport() {
 	const closeBookmarks = (container) => {
 		container.classList.add('hiding')
-		setTimeout(() => container.setAttribute('class', ''), BonjourrAnimTime)
+		setTimeout(() => container.setAttribute('class', ''), 400)
 	}
 
-	function main(data, bookmarks) {
+	function main(links, bookmarks) {
 		const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
 
 		const form = document.createElement('form')
 		const allCategories = [...bookmarks[0].children]
-		let counter = data.links.length || 0
+		let counter = links.length || 0
 		let bookmarksList = []
 		let selectedList = []
 
@@ -797,7 +750,7 @@ async function linksImport() {
 				}
 
 				// Change submit button text & class on selections
-				const amountSelected = counter - data.links.length
+				const amountSelected = counter - links.length
 				id('applybookmarks').textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
@@ -811,7 +764,7 @@ async function linksImport() {
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
 			if (typeof mark.url === 'string')
-				if (data.links.filter((x) => x.url === stringMaxSize(mark.url, 217)).length === 0) form.appendChild(elem)
+				if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) form.appendChild(elem)
 		})
 
 		// Replace form to filter already added bookmarks
@@ -832,14 +785,14 @@ async function linksImport() {
 
 	// Ask for bookmarks first
 	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
-		if (granted) {
-			chrome.storage.sync.get('links', (data) => {
-				;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-					clas(id('bookmarks_container'), true, 'shown')
-					main(data, response)
-				})
+		if (!granted) return
+
+		chrome.storage.sync.get(null, (data) => {
+			;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+				clas(id('bookmarks_container'), true, 'shown')
+				main(bundleLinks(data), response)
 			})
-		}
+		})
 	})
 
 	// Close events
@@ -852,7 +805,7 @@ async function linksImport() {
 
 function linksrow(data, event) {
 	function setRows(val) {
-		domlinkblocks.style.width = `${val * 7}em`
+		id('linkblocks_inner').style.width = `${val * 7}em`
 	}
 
 	if (data !== undefined) setRows(data)
@@ -1085,7 +1038,7 @@ function weather(event, that, init) {
 				widget.prepend(icon)
 
 				// from 1.2s request anim to .4s hide elem anim
-				setTimeout(() => (widget.style.transition = 'opacity .4s'), BonjourrAnimTime)
+				setTimeout(() => (widget.style.transition = 'opacity .4s'), 400)
 			}
 		}
 
@@ -1272,18 +1225,18 @@ function imgBackground(val, loadTime, init) {
 	img.onload = () => {
 		if (loadTime) {
 			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
-			const changeDuration = (time) => (domoverlay.style.transition = `transform .4s, opacity ${time}ms`)
+			const changeDuration = (time) => (id('background_overlay').style.transition = `transform .4s, opacity ${time}ms`)
 
 			changeDuration(animDuration)
-			setTimeout(() => changeDuration(BonjourrAnimTime), animDuration)
+			setTimeout(() => changeDuration(400), animDuration)
 		}
 
 		const applyBackground = () => {
-			domoverlay.style.opacity = `1`
+			id('background_overlay').style.opacity = `1`
 			id('background').style.backgroundImage = `url(${val})`
 		}
 
-		init ? applyBackground() : setTimeout(applyBackground, BonjourrAnimTime)
+		init ? applyBackground() : setTimeout(applyBackground, 400)
 	}
 
 	img.src = val
@@ -1347,7 +1300,7 @@ function localBackgrounds(init, event) {
 	function isOnlineStorageAtCapacity(newFile) {
 		//
 		// Only applies to versions using localStorage: 5Mo limit
-		if (isOnlineOrSafari) {
+		if (detectPlatform() === 'online') {
 			const ls = localStorage.bonjourrBackgrounds
 
 			// Takes dynamic cache + google font list
@@ -1357,7 +1310,7 @@ function localBackgrounds(init, event) {
 			// Uploaded file in storage would exceed limit
 			if (lsSize + newFile.length > 5e6) {
 				alert(`Image size exceeds storage: ${parseInt(Math.abs(lsSize - 5e6) / 1000)}ko left`)
-				domoverlay.style.opacity = '1'
+				id('background_overlay').style.opacity = '1'
 
 				return true
 			}
@@ -1378,7 +1331,7 @@ function localBackgrounds(init, event) {
 	}
 
 	function changeImgIndex(i) {
-		domimg.setAttribute('index', i)
+		id('background').setAttribute('index', i)
 	}
 
 	function addNewImage(file) {
@@ -1411,7 +1364,7 @@ function localBackgrounds(init, event) {
 			})
 		}
 
-		domoverlay.style.opacity = '0'
+		id('background_overlay').style.opacity = '0'
 		reader.readAsDataURL(file)
 	}
 
@@ -1419,8 +1372,8 @@ function localBackgrounds(init, event) {
 		//
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
-			clas(domcredit, false, 'shown')
-			domoverlay.style.opacity = `0`
+			clas(id('credit'), false, 'shown')
+			id('background_overlay').style.opacity = `0`
 		}
 
 		const compressStart = performance.now()
@@ -1477,7 +1430,7 @@ function localBackgrounds(init, event) {
 
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
-		if (!mobilecheck) rem.setAttribute('class', 'hidden')
+		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
 		rem.textContent = '✕'
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
@@ -1488,10 +1441,10 @@ function localBackgrounds(init, event) {
 		//events
 		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
 		const getIndex = (that) => parseInt(that.getAttribute('index'))
-		const removeControl = (show, i) => domthumbnail[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
+		const removeControl = (show, i) => cl('thumbnail')[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
 
 		//displays / hides remove button on desktop
-		if (!mobilecheck) {
+		if (!mobilecheck()) {
 			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
 			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
 		}
@@ -1504,7 +1457,7 @@ function localBackgrounds(init, event) {
 				const appliedIndex = parseInt(id('background').getAttribute('index'))
 
 				if (index !== appliedIndex) {
-					domoverlay.style.opacity = `0`
+					id('background_overlay').style.opacity = `0`
 
 					chrome.storage.local.get('custom', (data) => {
 						changeImgIndex(index)
@@ -1540,10 +1493,10 @@ function localBackgrounds(init, event) {
 
 					// Last image is removed
 					if (data.custom.length === 0) {
-						domoverlay.style.opacity = `0`
+						id('background_overlay').style.opacity = `0`
 
 						unsplash(null, { removedCustom: true })
-						clas(domcredit, true, 'shown')
+						clas(id('credit'), true, 'shown')
 					}
 
 					// Only draw new image if displayed is removed
@@ -1626,7 +1579,7 @@ function unsplash(init, event) {
 	function imgCredits(image) {
 		//
 		// Filtering
-
+		const domcredit = id('credit')
 		let needsSpacer = false
 		let artist = ''
 		let photoLocation = ''
@@ -1836,6 +1789,7 @@ function unsplash(init, event) {
 	}
 
 	const initOrEvent = init && init.dynamic ? 'init' : 'event'
+
 	// collections source: https://unsplash.com/@bonjourr/collections
 	const allCollectionIds = {
 		noon: 'GD4aOSg4yQE',
@@ -1860,8 +1814,6 @@ function unsplash(init, event) {
 						delete init.dynamic.current
 					}
 
-					//
-					//
 					// Real init start
 					const collecId = collectionControl(init.dynamic)
 
@@ -1911,7 +1863,7 @@ function unsplash(init, event) {
 								setTimeout(
 									() =>
 										cacheControl(data.dynamic, local.dynamicCache, collectionControl(data.dynamic), false),
-									BonjourrAnimTime
+									400
 								)
 							} else
 								buttonSpan.animate(
@@ -1942,7 +1894,7 @@ function unsplash(init, event) {
 
 						// Always request another set, update last time image change and load background
 						case 'collection': {
-							domoverlay.style.opacity = '0'
+							id('background_overlay').style.opacity = '0'
 							//
 							// remove user collec
 							if (event.collection === '') {
@@ -2041,7 +1993,9 @@ function darkmode(choice, init) {
 }
 
 function searchbar(event, that, init) {
+	const domsearchbar = id('searchbar')
 	const emptyButton = id('sb_empty')
+
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
 	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
@@ -2148,11 +2102,169 @@ function searchbar(event, that, init) {
 	event ? updateSearchbar() : initSearchbar()
 }
 
+async function quotes(event, that, init) {
+	function display(value) {
+		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
+	}
+
+	async function newQuote(lang, type) {
+		async function handleJson(type, json) {
+			const filter = (quote) => quote.includes('[pause') || quote.length > 200
+
+			if (type === 'inspirobot') {
+				const res = json.data.filter((d) => d.type === 'quote' && !filter(d.text)) // data is a quote & passes the filter
+				return res.length === 0 ? await newQuote(lang, type) : { author: 'Inspirobot', content: res[0].text }
+			}
+
+			if (type === 'kaamelott') {
+				const { citation, infos } = json.citation
+				return filter(citation) ? await newQuote(lang, type) : { author: infos.personnage, content: citation }
+			}
+
+			return json
+		}
+
+		const URLs = {
+			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
+			kaamelott: 'https://quotes-proxy.herokuapp.com/kaamelott',
+			inspirobot: 'https://quotes-proxy.herokuapp.com/inspirobot',
+		}
+
+		try {
+			// Fetch a random quote from the quotes API
+			const response = await fetch(URLs[type || 'classic'])
+			const json = await response.json()
+
+			if (response.ok) return handleJson(type, json)
+		} catch (error) {
+			errorMessage('An error occured with the quotes API', error)
+		}
+	}
+
+	function insertToDom(values) {
+		id('quote').textContent = values.content
+		id('author').textContent = values.author
+	}
+
+	function getFromStorage() {
+		try {
+			return JSON.parse(localStorage.nextQuote)
+		} catch (error) {
+			return null
+		}
+	}
+
+	function saveToStorage(elem) {
+		localStorage.setItem('nextQuote', JSON.stringify(elem))
+	}
+
+	function updateSettings() {
+		chrome.storage.sync.get(['lang', 'quotes'], async (data) => {
+			const updated = { ...data.quotes }
+			const { lang } = data
+
+			switch (event) {
+				case 'toggle': {
+					let quote = getFromStorage()
+					updated.on = that.checked
+					display(that.checked)
+
+					if (quote === null) {
+						quote = await newQuote(lang, data.quotes.type)
+						saveToStorage(quote)
+					}
+
+					insertToDom(quote)
+
+					break
+				}
+
+				case 'author': {
+					id('author').classList.toggle('alwaysVisible')
+					updated.author = that.checked
+					break
+				}
+
+				case 'frequency': {
+					updated.frequency = that.value
+
+					if (that.value === 'tabs') {
+						saveToStorage(await newQuote(lang, data.quotes.type))
+					}
+
+					// When changing from tabs, keep displayed quote in storage
+					if (data.quotes.frequency === 'tabs') {
+						saveToStorage({ author: id('author').textContent, content: id('quote').textContent })
+					}
+
+					break
+				}
+
+				case 'type': {
+					updated.type = that.value
+					const quote = await newQuote(lang, that.value)
+					insertToDom(quote)
+					saveToStorage(quote)
+					break
+				}
+
+				case 'refresh': {
+					updated.last = freqControl('set')
+					const quote = await newQuote(lang, data.quotes.type)
+					insertToDom(quote)
+					saveToStorage(quote)
+					break
+				}
+			}
+
+			chrome.storage.sync.set({ quotes: updated })
+		})
+	}
+
+	// update and quit
+	if (event) {
+		updateSettings()
+		return
+	}
+
+	// quotes off, just quit
+	if (init?.quotes?.on === false) {
+		return
+	}
+
+	const { lang, quotes } = init
+	let quote = getFromStorage()
+	let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
+
+	//
+	// first startup:	fetch new, store & display
+	// needsNewQuote:	fetch new, store & display
+	// "tabs" freq: 	fetch new to store everytime, displays storage
+	//
+
+	if (quote === null || (needsNewQuote && quotes.frequency !== 'tabs')) {
+		quote = await newQuote(lang, quotes.type)
+		saveToStorage(quote)
+		quotes.last = freqControl('set') // updates last quotes timestamp
+		chrome.storage.sync.set({ quotes })
+	}
+
+	// Displays
+	if (quotes.author) id('author').classList.add('alwaysVisible')
+	insertToDom(quote)
+	display(true)
+
+	// "tabs" control in last to prevent fetching from blocking display
+	if (quotes.frequency === 'tabs') {
+		saveToStorage(await newQuote(lang, quotes.type))
+	}
+}
+
 function showPopup(data) {
 	//
 	function affiche() {
 		const setReviewLink = () =>
-			mobilecheck
+			mobilecheck()
 				? 'https://github.com/victrme/Bonjourr/stargazers'
 				: navigator.userAgent.includes('Chrome')
 				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
@@ -2171,7 +2283,7 @@ function showPopup(data) {
 				id('popup').classList.remove('shown')
 				setTimeout(() => {
 					id('popup').remove()
-					setTimeout(() => (id('credit').style = ''), BonjourrAnimTime)
+					setTimeout(() => (id('credit').style = ''), 400)
 				}, 200)
 			}
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
@@ -2198,7 +2310,7 @@ function showPopup(data) {
 
 		document.body.appendChild(dom.wrap)
 
-		domcredit.style.opacity = 0
+		id('credit').style.opacity = 0
 		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
 		dom.review.addEventListener('mousedown', () => closePopup(false))
@@ -2301,6 +2413,7 @@ function customFont(data, event) {
 					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
 					id('fontstyle').textContent = text
 					id('clock').style.fontFamily = family
+					id('credit').style.fontFamily = family
 					dominterface.style.fontFamily = family
 					canDisplayInterface('fonts')
 				})
@@ -2411,6 +2524,7 @@ function customFont(data, event) {
 			// family and size
 			id('fontstyle').textContent = ''
 			id('clock').style.fontFamily = ''
+			id('credit').style.fontFamily = ''
 			dominterface.style.fontFamily = ''
 
 			// weights
@@ -2584,9 +2698,10 @@ function canDisplayInterface(cat, init) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
+		const domshowsettings = id('showSettings')
 		let loadtime = performance.now() - loadtimeStart
 
-		if (loadtime > BonjourrAnimTime) loadtime = BonjourrAnimTime
+		if (loadtime > 400) loadtime = 400
 		loadtime = loadtime < 33 ? 0 : 400
 
 		domshowsettings.style.transition = `opacity ${loadtime}ms`
@@ -2646,7 +2761,7 @@ function onlineMobilePageUpdate() {
 		const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
 
 		if (dynamicNeedsImage) {
-			domoverlay.style.opacity = 0
+			id('background_overlay').style.opacity = 0
 			unsplash(data, false)
 		}
 
@@ -2660,21 +2775,6 @@ function filterImports(data) {
 	const filter = {
 		lang: (lang) => (lang === undefined ? 'en' : lang),
 		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
-
-		links: (links) => {
-			if (links && links.length > 0) {
-				// Removes any links that doesn't seem right
-				links = links.filter((elem) => elem && elem.icon && elem.title && elem.url)
-
-				links.forEach((elem, i) => {
-					// >1.10.0 ==> 1.12.1 Only import icons, not aliases
-					if (!elem.icon.startsWith('alias:')) {
-						links[i].icon = saveIconAsAlias(elem.icon)
-					}
-				})
-			}
-			return links
-		},
 
 		dynamic: (dynamic) => {
 			if (dynamic) {
@@ -2759,15 +2859,35 @@ function filterImports(data) {
 		},
 	}
 
+	function linksFilter(sync) {
+		const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+
+		sync.links?.forEach(({ title, url, icon }, i) => {
+			const id = 'links' + randomString(6)
+			const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
+
+			sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
+		})
+
+		aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
+		delete sync.links // removes <1.13.0 links array
+
+		return sync
+	}
+
 	let result = { ...data }
 
-	if (result.searchbar_engine) delete result.searchbar_engine
-	if (result.searchbar_newtab) delete result.searchbar_newtab
+	delete result?.searchbar_engine
+	delete result?.searchbar_newtab
 
 	try {
+		if (!result.quotes) {
+			result.quotes = bonjourrDefaults('sync').quotes
+		}
+
 		// Go through found categories in import data to filter them
 		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
-		result = aliasGarbageCollection(result)
+		result = linksFilter(result)
 	} catch (e) {
 		errorMessage('Messed up in filter imports', e)
 	}
@@ -2790,6 +2910,7 @@ function startup(data) {
 	linksrow(data.linksrow)
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
+	quotes(null, null, data)
 	showPopup(data.reviewPopup)
 
 	customCss(data.css)
@@ -2800,14 +2921,25 @@ function startup(data) {
 	setTimeout(() => settingsInit(data), 200)
 }
 
+const dominterface = id('interface'),
+	isExtension = detectPlatform() === 'online',
+	funcsOk = {
+		clock: false,
+		links: false,
+	}
+
+let lazyClockInterval = setTimeout(() => {}, 0),
+	loadtimeStart = performance.now(),
+	sunset = 0,
+	sunrise = 0
+
 window.onload = function () {
-	//
 	// On settings changes, update export code
 	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
 	else window.onstorage = () => importExport('exp')
 
 	// For Mobile that caches pages for days
-	if (mobilecheck) {
+	if (mobilecheck()) {
 		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
 	}
 
@@ -2816,31 +2948,23 @@ window.onload = function () {
 		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
 	}, 5 * 60 * 1000)
 
-	// Only on Online
-	switch (window.location.protocol) {
-		case 'http:':
-		case 'https:':
-		case 'file:': {
-			//
-			// Service Worker
-			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/service-worker.js')
-			}
-
-			// PWA install trigger (30s interaction default)
-			let promptEvent
-			window.addEventListener('beforeinstallprompt', function (e) {
-				promptEvent = e
-			})
-
-			// Safari overflow fix
-			// Todo: add safari condition
-			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
-			window.addEventListener('resize', appHeight)
-			appHeight()
-
-			break
+	// Only on Online / Safari
+	if (['http', 'https', 'file:'].some((a) => window.location.protocol.includes(a))) {
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js')
 		}
+
+		// PWA install trigger (30s interaction default)
+		let promptEvent
+		window.addEventListener('beforeinstallprompt', function (e) {
+			promptEvent = e
+		})
+
+		// Safari overflow fix
+		// Todo: add safari condition
+		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		window.addEventListener('resize', appHeight)
+		appHeight()
 	}
 
 	try {
@@ -2853,17 +2977,17 @@ window.onload = function () {
 			}
 
 			// Version is different, can be new update or imports
-			else if (!data.about || data.about.version !== BonjourrVersion) {
+			else if (!data.about || data.about.version !== bonjourrDefaults('sync').about.version) {
 				data = filterImports(data)
 
 				// Change version in here
 				// Only after "different version" startup is triggered
-				data.about = { browser: BonjourrBrowser, version: BonjourrVersion }
+				data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
 
 				chrome.storage.sync.clear()
 				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
-
+			// console.log(data);
 			startup(data)
 		})
 	} catch (e) {

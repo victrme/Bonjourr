@@ -8,12 +8,36 @@
 		color: $purewhite;
 	}
 
-	#bookmarks_container,
-	#editlink_container {
+	#editlink {
+		border-color: #fff4;
+
+		@include frostedGlass($blur: 25px, $tint: 0, $alpha: 0.6, $fbTint: 32, $fbAlpha: 1);
+
+		input {
+			color: #fff9;
+			&::placeholder {
+				color: #fff9;
+			}
+
+			&:focus {
+				color: #eee;
+				background-color: #0003;
+			}
+		}
+
+		hr {
+			border-color: #fff4;
+		}
+
+		button {
+			color: #eee;
+		}
+	}
+
+	#bookmarks_container {
 		#bookmarks,
 		#bookmarks h3,
-		#bookmarks .bookmarkOptions,
-		#editlink {
+		#bookmarks .bookmarkOptions {
 			background-color: #1c1c1e;
 			color: $purewhite;
 
@@ -117,6 +141,7 @@
 		}
 
 		#i_refresh,
+		#i_qtrefresh,
 		select {
 			color: $purewhite;
 			background-color: $greyish;

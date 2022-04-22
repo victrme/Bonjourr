@@ -1,5 +1,14 @@
 ## Changelogs
 
+**v1.13.0**
+
+-   Added feature: Quotes !
+-   Added Ukrainian & Turkish translations
+-   Doubled links URL & title size
+-   Fixed laptop responsive font size
+-   Fixed some iOS / mobile stying
+-   Fixed links aliases issues
+
 **v1.12.1**
 
 -   Improved error message style & logic
