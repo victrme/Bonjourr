@@ -446,7 +446,7 @@ function quickLinks(event, that, init) {
 			}
 
 			// settings not opened and not on mobile
-			if (!has(id('settings'), 'shown') && !e.sourceCapabilities.firesTouchEvents) {
+			if (!has(id('settings'), 'shown') && !mobilecheck()) {
 				openlink(this, e)
 			}
 		}
@@ -1526,9 +1526,28 @@ function localBackgrounds(init, event) {
 		})
 	}
 
+	function refreshCustom(button) {
+		chrome.storage.sync.get('custom_every', (sync) => {
+			chrome.storage.local.get(null, (local) => {
+				id('background_overlay').style.opacity = 0
+				turnRefreshButton(button, true)
+				setTimeout(
+					() =>
+						localBackgrounds({
+							local: local,
+							every: sync.custom_every,
+							time: 0,
+						}),
+					400
+				)
+			})
+		})
+	}
+
 	if (event) {
 		if (event.is === 'thumbnail') displayCustomThumbnails(event.settings)
 		if (event.is === 'newfile') addNewImage(event.file)
+		if (event.is === 'refresh') refreshCustom(event.button)
 	}
 
 	//init
@@ -1847,34 +1866,25 @@ function unsplash(init, event) {
 
 					switch (Object.keys(event)[0]) {
 						case 'refresh': {
-							const buttonSpan = Object.values(event)[0]
-							const animationOptions = { duration: 600, easing: 'ease-out' }
-
 							// Only refreshes background if preload is over
 							// If not, animate button to show it is trying
 							if (local.waitingForPreload === undefined) {
+								turnRefreshButton(Object.values(event)[0], true)
 								id('background_overlay').style.opacity = 0
-								data.dynamic.time = 0
-								chrome.storage.sync.set({ dynamic: data.dynamic })
+
+								const newDynamic = { ...data.dynamic, time: 0 }
+								chrome.storage.sync.set({ dynamic: newDynamic })
 								chrome.storage.local.set({ waitingForPreload: true })
 
-								buttonSpan.animate([{ transform: 'rotate(360deg)' }], animationOptions)
-
 								setTimeout(
-									() =>
-										cacheControl(data.dynamic, local.dynamicCache, collectionControl(data.dynamic), false),
+									() => cacheControl(newDynamic, local.dynamicCache, collectionControl(newDynamic), false),
 									400
 								)
-							} else
-								buttonSpan.animate(
-									[
-										{ transform: 'rotate(0deg)' },
-										{ transform: 'rotate(90deg)' },
-										{ transform: 'rotate(0deg)' },
-									],
-									animationOptions
-								)
 
+								return
+							}
+
+							turnRefreshButton(Object.values(event)[0], false)
 							break
 						}
 
@@ -2131,17 +2141,23 @@ async function quotes(event, that, init) {
 		}
 
 		try {
+			if (!navigator.onLine) {
+				return getFromStorage() // Offline, return whatever is in storage
+			}
+
 			// Fetch a random quote from the quotes API
 			const response = await fetch(URLs[type || 'classic'])
 			const json = await response.json()
 
 			if (response.ok) return handleJson(type, json)
 		} catch (error) {
-			errorMessage('An error occured with the quotes API', error)
+			console.log(error)
+			return getFromStorage()
 		}
 	}
 
 	function insertToDom(values) {
+		if (values === null) return
 		id('quote').textContent = values.content
 		id('author').textContent = values.author
 	}

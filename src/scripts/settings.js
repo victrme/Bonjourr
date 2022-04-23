@@ -88,6 +88,7 @@ function initParams(data, settingsDom) {
 	//bg
 	if (data.background_type === 'custom') {
 		paramId('custom').style.display = 'block'
+		settingsDom.querySelector('.as_collection').style.display = 'none'
 		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
 	}
 
@@ -208,21 +209,10 @@ function initParams(data, settingsDom) {
 		else unsplash(null, { every: this.value })
 	}
 
-	paramId('i_refresh').onclick = function () {
-		if (paramId('i_type').value === 'custom') {
-			chrome.storage.local.get(null, (local) => {
-				id('background_overlay').style.opacity = 0
-				setTimeout(
-					() =>
-						localBackgrounds({
-							local: local,
-							every: paramId('i_freq').value,
-							time: 0,
-						}),
-					400
-				)
-			})
-		} else slow(this, unsplash(null, { refresh: this.children[0] }))
+	paramId('i_refresh').onclick = function (e) {
+		paramId('i_type').value === 'custom'
+			? slow(this, localBackgrounds(null, { is: 'refresh', button: this.children[0] }))
+			: slow(this, unsplash(null, { refresh: this.children[0] }))
 	}
 
 	paramId('i_collection').onchange = function () {
@@ -356,7 +346,9 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_qtrefresh').onclick = function () {
-		quotes('refresh', this)
+		if (!stillActive) quotes('refresh', this)
+		turnRefreshButton(this.children[0], true)
+		slow(this, 600)
 	}
 
 	paramId('i_qtauthor').onchange = function () {
@@ -437,6 +429,7 @@ function showall(val, event, domSettings) {
 
 function selectBackgroundType(cat) {
 	id('custom').style.display = cat === 'custom' ? 'block' : 'none'
+	document.querySelector('.as_collection').style.display = cat === 'custom' ? 'none' : 'block'
 
 	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
 		//

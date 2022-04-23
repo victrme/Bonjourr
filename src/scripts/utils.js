@@ -86,6 +86,16 @@ function slow(that, time = 400) {
 	}, time)
 }
 
+function turnRefreshButton(button, canTurn) {
+	const animationOptions = { duration: 600, easing: 'ease-out' }
+	button.animate(
+		canTurn
+			? [{ transform: 'rotate(360deg)' }]
+			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
+		animationOptions
+	)
+}
+
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 
