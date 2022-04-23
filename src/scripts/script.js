@@ -2922,7 +2922,7 @@ function startup(data) {
 }
 
 const dominterface = id('interface'),
-	isExtension = detectPlatform() === 'online',
+	isExtension = detectPlatform() !== 'online',
 	funcsOk = {
 		clock: false,
 		links: false,
@@ -2987,7 +2987,7 @@ window.onload = function () {
 				chrome.storage.sync.clear()
 				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
-			// console.log(data);
+
 			startup(data)
 		})
 	} catch (e) {
