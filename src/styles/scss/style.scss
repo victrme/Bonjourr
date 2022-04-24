@@ -75,15 +75,16 @@
 			}
 
 			#analogClock {
-				border: 0.2em solid white;
-				border-radius: 100%;
-				height: 8em;
 				position: relative;
-				margin: auto auto 2em auto;
 				width: 8em;
+				height: 8em;
+				margin: auto;
+				margin-bottom: 2em;
+				border-radius: 100%;
+				border: 0.2em solid white;
 				box-shadow: $textShadow;
 
-				@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2);
+				@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2, $fbColor: #fff);
 
 				&:hover {
 					background: rgba(255, 255, 255, 0.2);

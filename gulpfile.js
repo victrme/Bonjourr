@@ -84,7 +84,7 @@ function ressources(isExtension) {
 function worker(online) {
 	return () => {
 		const file = {
-			origin: online ? 'service-worker.js' : 'src/scripts/background.js',
+			origin: `src/scripts/${online ? 'service-worker.js' : 'background.js'}`,
 			destination: online ? 'release/' : 'release/src/scripts/',
 		}
 		return src(file.origin).pipe(dest(file.destination))
@@ -93,11 +93,13 @@ function worker(online) {
 
 function manifest(which) {
 	return () => {
-		if (which === 'online') return src(`manifest.webmanifest`).pipe(dest('release/'))
-		else
-			return src(`manifest-${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
-				.pipe(rename('manifest.json'))
-				.pipe(dest('release/'))
+		if (which === 'online') {
+			return src(`src/manifests/manifest.webmanifest`).pipe(dest('release/'))
+		}
+
+		return src(`src/manifests/${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
+			.pipe(rename('manifest.json'))
+			.pipe(dest('release/'))
 	}
 }
 
@@ -118,7 +120,7 @@ function locales() {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', './service-worker.js', './manifest*.**']
+const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', './src/manifests/*.json']
 
 // prettier-ignore
 const makeOnline = () => [
