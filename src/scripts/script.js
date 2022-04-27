@@ -2156,16 +2156,16 @@ async function quotes(event, that, init) {
 		id('author').textContent = values.author
 	}
 
-	function getFromStorage() {
+	function getFromStorage(which = 'current') {
 		try {
-			return JSON.parse(localStorage.nextQuote)
+			return JSON.parse(localStorage[`${which}Quote`])
 		} catch (error) {
 			return null
 		}
 	}
 
-	function saveToStorage(elem) {
-		localStorage.setItem('nextQuote', JSON.stringify(elem))
+	function saveToStorage(elem, which = 'current') {
+		localStorage.setItem(`${which}Quote`, JSON.stringify(elem))
 	}
 
 	function updateSettings() {
@@ -2175,17 +2175,19 @@ async function quotes(event, that, init) {
 
 			switch (event) {
 				case 'toggle': {
-					let quote = getFromStorage()
+					let quote = getFromStorage('current')
 					updated.on = that.checked
 					display(that.checked)
 
 					if (quote === null) {
+						let next = await newQuote(lang, data.quotes.type)
 						quote = await newQuote(lang, data.quotes.type)
+
 						saveToStorage(quote)
+						saveToStorage(next, 'next')
 					}
 
 					insertToDom(quote)
-
 					break
 				}
 
@@ -2199,30 +2201,30 @@ async function quotes(event, that, init) {
 					updated.frequency = that.value
 
 					if (that.value === 'tabs') {
-						saveToStorage(await newQuote(lang, data.quotes.type))
+						saveToStorage(await newQuote(lang, data.quotes.type), 'next')
 					}
-
-					// When changing from tabs, keep displayed quote in storage
-					if (data.quotes.frequency === 'tabs') {
-						saveToStorage({ author: id('author').textContent, content: id('quote').textContent })
-					}
-
 					break
 				}
 
 				case 'type': {
 					updated.type = that.value
-					const quote = await newQuote(lang, that.value)
-					insertToDom(quote)
-					saveToStorage(quote)
+					const currentQuote = await newQuote(lang, that.value)
+					const nextQuote = await newQuote(lang, that.value)
+
+					insertToDom(currentQuote)
+					saveToStorage(currentQuote, 'current')
+					saveToStorage(nextQuote, 'next')
 					break
 				}
 
 				case 'refresh': {
 					updated.last = freqControl('set')
-					const quote = await newQuote(lang, data.quotes.type)
-					insertToDom(quote)
-					saveToStorage(quote)
+					const current = getFromStorage('next')
+					const next = await newQuote(lang, data.quotes.type)
+
+					insertToDom(current)
+					saveToStorage(current, 'current')
+					saveToStorage(next, 'next')
 					break
 				}
 			}
@@ -2238,20 +2240,30 @@ async function quotes(event, that, init) {
 	}
 
 	const { lang, quotes } = init
-	let quote = getFromStorage()
+	let quote = getFromStorage('current')
 	let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
 
 	//
-	// first startup:	fetch new, store & display
-	// needsNewQuote:	fetch new, store & display
-	// "tabs" freq: 	fetch new to store everytime, displays storage
+	// first startup:	fetch new [current & next], store & display
+	// needsNewQuote:	next to current, fetch next, store & display
 	//
 
-	if (quote === null || (needsNewQuote && quotes.frequency !== 'tabs')) {
+	if (quote === null) {
 		quote = await newQuote(lang, quotes.type)
-		saveToStorage(quote)
+		saveToStorage(quote, 'current')
+		saveToStorage(await newQuote(lang, quotes.type), 'next')
+	}
+
+	if (needsNewQuote) {
+		quote = getFromStorage('next')
+		saveToStorage(quote, 'current')
+
 		quotes.last = freqControl('set') // updates last quotes timestamp
 		chrome.storage.sync.set({ quotes })
+
+		newQuote(lang, quotes.type).then((quote) => {
+			saveToStorage(quote, 'next')
+		})
 	}
 
 	// quotes off, just quit
@@ -2263,11 +2275,6 @@ async function quotes(event, that, init) {
 	if (quotes.author) id('author').classList.add('alwaysVisible')
 	insertToDom(quote)
 	display(true)
-
-	// "tabs" control in last to prevent fetching from blocking display
-	if (quotes.frequency === 'tabs') {
-		saveToStorage(await newQuote(lang, quotes.type))
-	}
 }
 
 function showPopup(data) {
