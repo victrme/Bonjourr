@@ -5,6 +5,8 @@
 -   Added feature: Quotes !
 -   Added Ukrainian & Turkish translations
 -   Doubled links URL & title size
+-   Updated links edit design
+-   Credits inherits custom font
 -   Fixed laptop responsive font size
 -   Fixed some iOS / mobile stying
 -   Fixed links aliases issues
