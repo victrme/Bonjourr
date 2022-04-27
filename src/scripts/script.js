@@ -2134,19 +2134,13 @@ async function quotes(event, that, init) {
 			return json
 		}
 
-		const URLs = {
-			classic: `https://i18n-quotes.herokuapp.com/${lang || 'en'}`,
-			kaamelott: 'https://quotes-proxy.herokuapp.com/kaamelott',
-			inspirobot: 'https://quotes-proxy.herokuapp.com/inspirobot',
-		}
-
 		try {
 			if (!navigator.onLine) {
 				return getFromStorage() // Offline, return whatever is in storage
 			}
 
 			// Fetch a random quote from the quotes API
-			const response = await fetch(URLs[type || 'classic'])
+			const response = await fetch('https://quotes.bonjourr.fr/' + (type || 'classic/' + lang))
 			const json = await response.json()
 
 			if (response.ok) return handleJson(type, json)
@@ -2243,11 +2237,6 @@ async function quotes(event, that, init) {
 		return
 	}
 
-	// quotes off, just quit
-	if (init?.quotes?.on === false) {
-		return
-	}
-
 	const { lang, quotes } = init
 	let quote = getFromStorage()
 	let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
@@ -2263,6 +2252,11 @@ async function quotes(event, that, init) {
 		saveToStorage(quote)
 		quotes.last = freqControl('set') // updates last quotes timestamp
 		chrome.storage.sync.set({ quotes })
+	}
+
+	// quotes off, just quit
+	if (init?.quotes?.on === false) {
+		return
 	}
 
 	// Displays
