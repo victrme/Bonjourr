@@ -2140,7 +2140,8 @@ async function quotes(event, that, init) {
 			}
 
 			// Fetch a random quote from the quotes API
-			const response = await fetch('https://quotes.bonjourr.fr/' + (type || 'classic/' + lang))
+			const query = (type += type === 'classic' ? `/${lang}` : '')
+			const response = await fetch('https://quotes.bonjourr.fr/' + query)
 			const json = await response.json()
 
 			if (response.ok) return handleJson(type, json)
