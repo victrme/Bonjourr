@@ -435,7 +435,7 @@ function quickLinks(event, that, init) {
 			editlink(this)
 		}
 
-		elem.onmouseup = function (e) {
+		elem.onmousedown = function (e) {
 			removeLinkSelection()
 
 			// right click

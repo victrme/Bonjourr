@@ -589,6 +589,7 @@
 	box-shadow: 0px 0px 15px #0004;
 	border: 1px solid #ddd;
 	transition: left 0.4s;
+	transform: translate(-254px, -172px);
 	z-index: 1;
 
 	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
