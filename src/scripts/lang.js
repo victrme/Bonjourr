@@ -2,6 +2,7 @@
 //   Brazilian translation by Adilson Santos · @adilsonfsantos
 //   Turkish translation by Müslüm Barış Korkmazer · @babico
 //   Ukrainian translation by Anton Boksha · @4doge
+//   Indonesian translation by Imam Ali Mustofa · @darkterminal · https://read.cv/darkterminal
 
 // Partial:
 //   Swedish translation by Benjamin Horn · https://benjaminhorn.io/
