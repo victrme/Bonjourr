@@ -310,7 +310,8 @@
 		color: $blue;
 		background-color: $settingsGrey;
 		border: 1px dashed transparent;
-		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+		transition: all .2s;
+		transform: scale(1);
 
 		@include radiusSettings();
 
@@ -327,12 +328,14 @@
 		}
 
 		&:hover {
-			opacity: 0.8;
+			opacity: 0.7;
 		}
 
 		&.dragover {
 			background-color: $blue;
 			color: $purewhite;
+			opacity: 1;
+			transform: scale(1.03)
 		}
 
 		&:active {
@@ -344,7 +347,7 @@
 		display: flex;
 		align-items: flex-start;
 		padding: 10px 0;
-		overflow: auto;
+		overflow: visible;
 
 		img {
 			height: 75px;

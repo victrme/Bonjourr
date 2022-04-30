@@ -112,7 +112,6 @@ body {
 }
 
 @mixin frostedGlass($tint: 255, $alpha: 0.4, $blur: 10px, $fbTint: 251, $fbAlpha: 0.8, $fbColor: #222) {
-
 	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
 		backdrop-filter: blur($blur);
 		-webkit-backdrop-filter: blur($blur);
@@ -128,7 +127,6 @@ body {
 	@-moz-document url-prefix() {
 		background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
 		color: $fbColor;
-		box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 	}
 
 }

@@ -267,6 +267,7 @@
 			font-family: $fonts;
 			background-color: transparent;
 			transition: background-color 0.2s;
+			border: 1px solid rgba(255, 255, 255, 0.075);
 
 			&:focus {
 				@include frostedGlass($blur: 0, $alpha: 0.2, $fbTint: 255, $fbAlpha: 0.8, $fbColor: #222);
@@ -281,7 +282,7 @@
 
 		&.shown {
 			margin: 3em auto;
-			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.25);
+			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
 
 			#searchbar:focus {
 				opacity: 1;
@@ -907,7 +908,7 @@
 
 		&::before {
 			opacity: 1;
-			
+
 			@-moz-document url-prefix() {
 				color: rgb(94, 94, 94);
 			}

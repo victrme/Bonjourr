@@ -124,7 +124,7 @@ function initParams(data, settingsDom) {
 	//
 
 	const bgfile = paramId('i_bgfile')
-	const fileContainer = paramId('i_fileContainer')
+	const fileContainer = paramId('fileContainer')
 
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_greeting'))
