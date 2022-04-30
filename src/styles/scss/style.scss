@@ -402,15 +402,16 @@
 			.block {
 				.l_icon_wrap {
 					overflow: hidden;
-					width: 4.6em;
-					height: 4.6em;
+					width: 4.9em;
+					height: 4.9em;
 					margin: 0 auto 0.5em auto;
 					position: relative;
-					border-radius: 10px;
+					border-radius: 15px;
 					background: $purewhite;
-					border: 0.2em solid $purewhite;
+					padding: .4em;
 					box-shadow: $textShadow;
-					transition: border-color 0.1s, filter 0.1s;
+					box-sizing: border-box;
+					transition: border-color 0.1s, filter 0.1s, transform 0.2s, box-shadow 0.2s;
 
 					.l_icon {
 						width: 100%;
@@ -424,7 +425,8 @@
 
 					&:hover {
 						border-color: $blue;
-						transition: border-color 0.1s;
+						box-shadow: rgba(0, 0, 0, 0.55) 0px 5px 15px;
+						transform: scale(1.04)
 					}
 
 					&:active {
@@ -839,7 +841,7 @@
 		#popup_text {
 			opacity: 1;
 			cursor: pointer;
-			transition: opacity 2s, background-color 0.2s, color 0.2s;
+			transition: opacity 2s, background-color 0.2s, color 0.2s, transform 0.2s;
 		}
 	}
 }
@@ -856,11 +858,14 @@
 		border-radius: 8px;
 		line-height: 2.4em;
 		border: 1px solid rgba(255, 255, 255, 0.075);
+		transform: scale(1);
+
 
 		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
 
 		&:hover {
 			@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: rgb(94, 94, 94));
+			transform: scale(1.03);
 		}
 
 		&:active {
