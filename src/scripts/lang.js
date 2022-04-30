@@ -1198,7 +1198,7 @@ const dict = {
 		es: 'Sistema',
 		tr: 'Sistem',
 		uk: 'Система',
-		id: 'Sistem'.
+		id: 'Sistem'
 	},
 	Enabled: {
 		fr: 'Activé',
@@ -1214,7 +1214,7 @@ const dict = {
 		es: 'Activado',
 		tr: 'Etkinleştirildi',
 		uk: 'Ввімкнено',
-		id: 'Diaktifkan'.
+		id: 'Diaktifkan'
 	},
 	Disabled: {
 		fr: 'Désactivé',
