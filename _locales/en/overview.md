@@ -4,7 +4,7 @@ This is Bonjourr's description that appears on browser extensions stores.
 
 Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new tabs will always feel fresh.
 
-Bonjourr was built as a more modern alternative to startpages like Momentum. We took inspiration from iOS and Apple's design language to create this beautiful start page that will help you focus on what matters.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's design language to create this beautiful homepage that will help you focus on what matters.
 
 Here's some key features:
 🍏 iOS design language
@@ -44,7 +44,7 @@ Bonjourr's default clock is made to ressemble what you have on the iPhone and ot
 In a simple sentence, get a summary of you local current weather and forecast.
 
 🔗 Quick Links
-It wouldn't be a real startpage without bookmarks! Bonjourr allows you to add your own bookmarks, change their icons and import your current bookmarks from your browser.
+It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change their icons and import your current bookmarks from your browser.
 
 🌘 Dark mode
 Just like on iOS, Bonjourr has a beautiful automatic dark mode.
@@ -52,13 +52,13 @@ Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 🥖 Emoji as favicon
 
 🔒 Privacy focused
-Some startpages like Momentum encourage you to create an account, give them some personal info, use more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes, use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr being open source also means that you can easily check out if our claims are true.
+Some homepages like Momentum encourage you to create an account, give them some personal info, use more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes, use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr being open source also means that you can easily check out if our claims are true.
 
 🧑‍💻 Custom CSS styling
 Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can customise and do anything when you add your own CSS.
 
 📝 Custom fonts
-Want a specific font on your startpage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
+Want a specific font on your homepage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
 
 🌎 Multilanguage
-Thanks to our awesome contributors, Bonjourr is available in 14 different languages (English, French, Slovene, Swedish, Polish, Brasilian Portuguese, Dutch, Italian, Spanish, Russian, Simplified Chinese, German, Norwegian & Ukrainian).
+Thanks to our awesome contributors, Bonjourr is available in 15 different languages (English, French, Slovene, Swedish, Polish, Brasilian Portuguese, Dutch, Italian, Spanish, Russian, Simplified Chinese, German, Ukrainian, Turkish and Indonesian).
