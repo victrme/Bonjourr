@@ -6,7 +6,7 @@ const { series, parallel, src, dest, watch } = require('gulp'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace')
 
-function html(isExtension) {
+function html(isOnline) {
 	//
 	// Index & settings minified
 	// Multiple scripts tags => only main.js
@@ -17,11 +17,13 @@ function html(isExtension) {
 		const stream = src('*.html').pipe(
 			htmlmin({
 				collapseWhitespace: true,
-				removeComments: true,
+				removeComments: false,
 			})
 		)
 
-		if (isExtension) stream.pipe(replace(`<link rel="manifest" href="manifest.webmanifest">`, ``))
+		if (isOnline) {
+			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
+		}
 
 		return stream
 			.pipe(
@@ -125,7 +127,7 @@ const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.ma
 // prettier-ignore
 const makeOnline = () => [
 	css,
-	html(false),
+	html(true),
 	worker('online'),
 	scripts('online'),
 	ressources(false),
@@ -136,7 +138,7 @@ const makeExtension = (manifestFrom, scriptFrom) => [
 	css,
 	locales,
 	addBackground,
-	html(true),
+	html(false),
 	worker(false),
 	ressources(true),
 	scripts(scriptFrom),

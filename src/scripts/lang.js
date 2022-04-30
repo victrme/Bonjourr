@@ -990,7 +990,7 @@ const dict = {
 		es: 'Tipo de fondo',
 		tr: 'Arka plan türü',
 		uk: 'Тип тла',
-		id: 'Jenis latar belakang'
+		id: 'Jenis latar belakang',
 	},
 	Default: {
 		fr: 'Par défaut',
@@ -1038,7 +1038,7 @@ const dict = {
 		es: 'Personalizado',
 		tr: 'Özel',
 		uk: 'Власний',
-		id: 'Personalisasi'
+		id: 'Personalisasi',
 	},
 	Frequency: {
 		fr: 'Fréquence',
@@ -1214,7 +1214,7 @@ const dict = {
 		es: 'Sistema',
 		tr: 'Sistem',
 		uk: 'Система',
-		id: 'Sistem'
+		id: 'Sistem',
 	},
 	Enabled: {
 		fr: 'Activé',
@@ -1230,7 +1230,7 @@ const dict = {
 		es: 'Activado',
 		tr: 'Etkinleştirildi',
 		uk: 'Ввімкнено',
-		id: 'Diaktifkan'
+		id: 'Diaktifkan',
 	},
 	Disabled: {
 		fr: 'Désactivé',
@@ -1294,7 +1294,7 @@ const dict = {
 		es: 'Esconder elementos',
 		tr: 'Öğerleri gizle',
 		uk: 'Сховати елементи',
-		id: 'Sembunyikan elements'
+		id: 'Sembunyikan elements',
 	},
 	Clock: {
 		fr: 'Horloge',
@@ -1342,7 +1342,7 @@ const dict = {
 		es: 'Ninguno',
 		tr: 'Hiçbiri',
 		uk: 'Нічого',
-		id: 'Tidak ada'
+		id: 'Tidak ada',
 	},
 	Numbers: {
 		fr: 'Chiffres',
@@ -1550,7 +1550,7 @@ const dict = {
 		es: 'Automático',
 		tr: 'Otomatik',
 		uk: 'Автоматично',
-		id: 'Otomatis'
+		id: 'Otomatis',
 	},
 	WEATHER: {
 		fr: 'Météo',
@@ -1598,7 +1598,7 @@ const dict = {
 		es: 'Ciudad no encontrada',
 		tr: 'Şehir bulunamadı',
 		uk: 'Місто не знайдено',
-		id: 'Kota Ditemukan'
+		id: 'Kota Ditemukan',
 	},
 	'Change city': {
 		fr: 'Changer la ville',
