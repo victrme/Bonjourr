@@ -278,26 +278,12 @@ function quickLinks(event, that, init) {
 		a.href = url
 
 		// Google favicon API is fallback
-		let result = `https://www.google.com/s2/favicons?sz=64&domain=${a.hostname}`
-		const api = await fetch(`https://favicongrabber.com/api/grab/${a.hostname}`)
+		let result = `https://www.google.com/s2/favicons?sz=180&domain=${a.hostname}`
+		const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${a.hostname}`)
+		const apiText = await bonjourrAPI.text() // API return empty string if nothing found
 
-		if (api.ok) {
-			const json = await api.json()
-			const array = json.icons.filter((x) => x.src.includes('.png'))
-			let png = { size: 0, index: 0 }
-
-			// Filter favicon pngs
-			// Keep the biggest one (or first one if no sizes)
-			if (array.length > 0) {
-				array.forEach((elem, i) => {
-					if (elem.sizes) {
-						const currentSize = parseInt(elem.sizes.split('x')[0])
-						if (currentSize > png[0]) png = { size: currentSize, index: i }
-					}
-				})
-
-				result = array[png.index].src
-			}
+		if (apiText.length > 0) {
+			result = apiText
 		}
 
 		img.onload = () => (dom.src = result)
