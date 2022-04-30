@@ -161,7 +161,7 @@ const dict = {
 		id: 'Hapus',
 	},
 	'Apply changes': {
-		fr: 'Appliquer',
+		fr: 'Enregistrer',
 		sv: 'Applicera förändringar',
 		nl: 'Wijzigingen toepassen',
 		pl: 'Zatwierdź zmiany',
@@ -655,6 +655,22 @@ const dict = {
 		tr: 'Başlık',
 		uk: 'Назва',
 		id: 'Judul',
+	},
+	Link: {
+		fr: 'Lien',
+		sv: 'Link',
+		nl: 'Link',
+		pl: 'Link',
+		pt_BR: 'Link',
+		ru: 'Link',
+		zh_CN: 'Link',
+		sk: 'Link',
+		de: 'Link',
+		it: 'Link',
+		es: 'Link',
+		tr: 'Link',
+		uk: 'Link',
+		id: 'Link',
 	},
 	'on Unsplash': {
 		fr: 'sur Unsplash',
@@ -1198,7 +1214,7 @@ const dict = {
 		es: 'Sistema',
 		tr: 'Sistem',
 		uk: 'Система',
-		id: 'Sistem'.
+		id: 'Sistem'
 	},
 	Enabled: {
 		fr: 'Activé',
@@ -1214,7 +1230,7 @@ const dict = {
 		es: 'Activado',
 		tr: 'Etkinleştirildi',
 		uk: 'Ввімкнено',
-		id: 'Diaktifkan'.
+		id: 'Diaktifkan'
 	},
 	Disabled: {
 		fr: 'Désactivé',

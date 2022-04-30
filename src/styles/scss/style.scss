@@ -587,10 +587,10 @@
 	padding: 1em;
 	border-radius: 8px;
 	box-shadow: 0px 0px 15px #0004;
-	border: 1px solid #ddd;
+	border: 1px solid rgba(255, 255, 255, 0.3);
 	transition: left 0.4s;
 	transform: translate(-254px, -172px);
-	z-index: 1;
+	z-index: 4;
 
 	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
 
@@ -824,7 +824,7 @@
 	position: fixed;
 	bottom: 4rem;
 	left: 4rem;
-	z-index: 3;
+	z-index: 1;
 	transition: opacity 0.4s;
 
 	#popup_buttons a,
@@ -854,11 +854,12 @@
 		text-decoration: none;
 		border-radius: 8px;
 		line-height: 2.4em;
+		border: 1px solid rgba(255, 255, 255, 0.075);
 
-		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbAlpha: 0.3, $fbColor: white);
+		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
 
 		&:hover {
-			@include frostedGlass($alpha: 0.4, $blur: 10px, $fbAlpha: 0.4, $fbColor: white);
+			@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: rgb(94, 94, 94));
 		}
 
 		&:active {
@@ -880,7 +881,9 @@
 	padding: 0.6em 2em;
 	margin-right: 0.6em;
 	border-radius: 8px;
-	@include frostedGlass($alpha: 0.2, $blur: 10px, $fbAlpha: 0.3, $fbColor: white);
+	// border: 1px solid rgba(245, 245, 245, 0.2);
+	@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
+	border: 1px solid rgba(255, 255, 255, 0.075);
 
 	&::before {
 		content: '×';
@@ -900,12 +903,17 @@
 
 	&:hover {
 		color: transparent;
-		@include frostedGlass($alpha: 0.1, $blur: 10px, $fbAlpha: 0.2, $fbColor: transparent);
+		@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: transparent);
 
 		&::before {
 			opacity: 1;
+			
+			@-moz-document url-prefix() {
+				color: rgb(94, 94, 94);
+			}
 		}
 	}
+
 
 	&:active {
 		@include frostedGlass($alpha: 0, $blur: 10px, $fbAlpha: 0.1, $fbColor: transparent);

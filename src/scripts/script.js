@@ -519,6 +519,7 @@ function quickLinks(event, that, init) {
 				const { title, url, icon } = link
 
 				e_title.setAttribute('placeholder', tradThis('Title'))
+				e_url.setAttribute('placeholder', tradThis('Link'))
 				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
 
 				e_title.value = title

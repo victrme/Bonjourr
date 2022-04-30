@@ -119,4 +119,5 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
 -   **🇪🇸 Spanish translation** · José Alberto · [GitHub](https://github.com/joatb)
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
--   **🇹🇷 Turkish translation** ·  Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
+-   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
+-   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)

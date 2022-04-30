@@ -286,6 +286,10 @@
 	.freq_wrap > div {
 		display: flex;
 		width: 150px;
+
+		select {
+			width: 100%;
+		}
 	}
 
 	#custom_thumbnail {
