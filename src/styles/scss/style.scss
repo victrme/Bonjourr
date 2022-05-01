@@ -424,7 +424,8 @@
 
 					&.selected {
 						border-color: $blue;
-						filter: brightness(0.75);
+						transform: scale(1.1);
+						filter: brightness(0.85);
 					}
 
 					&:hover {
@@ -434,7 +435,7 @@
 					}
 
 					&:active {
-						filter: brightness(0.75);
+						filter: brightness(0.85);
 						transform: scale(1.04);
 						transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 					}
@@ -523,7 +524,6 @@
 	}
 }
 
-#editlink_container,
 #bookmarks_container {
 	position: fixed;
 	display: none;
@@ -535,7 +535,7 @@
 	opacity: 0;
 	z-index: 1;
 	transition: transform 0.4s;
-	@include frostedGlass($alpha: 0, $blur: 40px, $fbAlpha: 0.2);
+	@include frostedGlass($alpha: 0, $blur: 40px, $fbTint: 255, $fbAlpha: 1);
 
 	&.pushed {
 		-webkit-transform: translateX(-160px);
