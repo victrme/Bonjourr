@@ -334,25 +334,6 @@ function quickLinks(event, that, init) {
 	}
 
 	function addEvents(elem) {
-		function positionsEditWindow(mouseEvent) {
-			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
-
-			const { innerHeight, innerWidth } = mouseEvent.view // viewport size
-			let { x, y } = mouseEvent // mouse position
-
-			// touch event is an array of touches
-			if (mouseEvent.touches?.length > 0) {
-				x = mouseEvent.touches[0].clientX
-				y = mouseEvent.touches[0].clientY
-			}
-
-			if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
-			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
-
-			// Moves edit link to mouse position
-			document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
-		}
-
 		function openlink(that, e) {
 			const source = that.children[0].getAttribute('source')
 			const a_hiddenlink = id('hiddenlink')
@@ -418,8 +399,7 @@ function quickLinks(event, that, init) {
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
 			removeLinkSelection()
-			positionsEditWindow(e)
-			editlink(this)
+			displayEditWindow(this, e)
 		}
 
 		elem.onmouseup = function (e) {
@@ -439,8 +419,7 @@ function quickLinks(event, that, init) {
 		const startHandler = (e) => {
 			touchStartTime = performance.now()
 			touchTimeout = setTimeout(() => {
-				positionsEditWindow(e)
-				editlink(elem)
+				displayEditWindow(elem, e)
 			}, 600)
 		}
 
@@ -459,6 +438,18 @@ function quickLinks(event, that, init) {
 	}
 
 	function editEvents() {
+		function submitEvent() {
+			const foundIndex = parseInt(id('editlink').getAttribute('index'))
+			return updatesEditedLink(foundIndex)
+		}
+
+		function inputSubmitEvent(e) {
+			if (e.code === 'Enter') {
+				submitEvent()
+				e.target.blur() // unfocus to signify change
+			}
+		}
+
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('editlink').getAttribute('index')))
@@ -466,93 +457,101 @@ function quickLinks(event, that, init) {
 			if (id('settings')) linksInputDisable(false)
 		}
 
-		id('e_submit').onclick = function () {
-			// no error, close
-			if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
-			removeLinkSelection()
-		}
-
-		function submitEvent(e) {
-			if (e.code === 'Enter') {
-				if (editlink(null, parseInt(id('editlink').getAttribute('index')))) closeEditLink()
+		id('e_submit').onclick = function (e) {
+			const noErrorOnEdit = submitEvent() // returns false if saved icon data too big
+			if (noErrorOnEdit) {
+				closeEditLink() // only auto close on apply changes button
 				removeLinkSelection()
 			}
 		}
 
-		id('e_title').addEventListener('keyup', submitEvent)
-		id('e_url').addEventListener('keyup', submitEvent)
-		id('e_iconurl').addEventListener('keyup', submitEvent)
+		id('e_title').addEventListener('keyup', inputSubmitEvent)
+		id('e_url').addEventListener('keyup', inputSubmitEvent)
+		id('e_iconurl').addEventListener('keyup', inputSubmitEvent)
 	}
 
-	function editlink(that, i) {
-		const e_title = id('e_title')
-		const e_url = id('e_url')
-		const e_iconurl = id('e_iconurl')
+	function displayEditWindow(that, mouseEvent) {
+		//
+		function positionsEditWindow(mouseEvent) {
+			const { innerHeight, innerWidth } = mouseEvent.view // viewport size
+			let { x, y } = mouseEvent // mouse position
 
-		function displayEditWindow() {
-			const index = findindex(that)
-			const liconwrap = that.querySelector('.l_icon_wrap')
-			const domedit = document.querySelector('#editlink')
-			const opendedSettings = has(id('settings'), 'shown')
+			removeLinkSelection()
+
+			// touch event is an array of touches
+			if (mouseEvent.touches?.length > 0) {
+				x = mouseEvent.touches[0].clientX
+				y = mouseEvent.touches[0].clientY
+			}
+
+			if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
+			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
+
+			// Moves edit link to mouse position
+			document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
+		}
+
+		const index = findindex(that)
+		const liconwrap = that.querySelector('.l_icon_wrap')
+		const domedit = document.querySelector('#editlink')
+		const opendedSettings = has(id('settings'), 'shown')
+
+		chrome.storage.sync.get(null, (data) => {
+			const link = bundleLinks(data).filter((l) => l.order === index)[0]
+			const { title, url, icon } = link
+
+			id('e_title').setAttribute('placeholder', tradThis('Title'))
+			id('e_url').setAttribute('placeholder', tradThis('Link'))
+			id('e_iconurl').setAttribute('placeholder', tradThis('Icon'))
+
+			id('e_title').value = title
+			id('e_url').value = url
+			id('e_iconurl').value = icon
+
+			positionsEditWindow(mouseEvent)
 
 			clas(liconwrap, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
 
 			domedit.setAttribute('index', index)
+		})
+	}
 
-			chrome.storage.sync.get(null, (data) => {
-				const link = bundleLinks(data).filter((l) => l.order === index)[0]
-				const { title, url, icon } = link
+	function updatesEditedLink(index) {
+		const e_title = id('e_title')
+		const e_url = id('e_url')
+		const e_iconurl = id('e_iconurl')
 
-				e_title.setAttribute('placeholder', tradThis('Title'))
-				e_url.setAttribute('placeholder', tradThis('Link'))
-				e_iconurl.setAttribute('placeholder', tradThis('Icon'))
+		if (e_iconurl.value.length === 7500) {
+			e_iconurl.value = ''
+			e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
 
-				e_title.value = title
-				e_url.value = url
-				e_iconurl.value = icon
-			})
+			return false
 		}
 
-		function updatesEditedLink() {
-			if (e_iconurl.value.length === 7500) {
-				e_iconurl.value = ''
-				e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
+		chrome.storage.sync.get(null, (data) => {
+			const parent = domlinkblocks.children[index + 1]
+			let link = bundleLinks(data).filter((l) => l.order === index)[0]
 
-				return false
+			link = {
+				...link,
+				title: stringMaxSize(e_title.value, 64),
+				url: stringMaxSize(e_url.value, 512),
+				icon: stringMaxSize(e_iconurl.value, 7500),
 			}
 
-			chrome.storage.sync.get(null, (data) => {
-				const parent = domlinkblocks.children[i + 1]
-				let link = bundleLinks(data).filter((l) => l.order === i)[0]
+			parent.querySelector('.block').setAttribute('source', link.url)
+			parent.querySelector('img').src = link.icon
+			parent.querySelector('span').textContent = link.title
 
-				link = {
-					...link,
-					title: stringMaxSize(e_title.value, 64),
-					url: stringMaxSize(e_url.value, 512),
-					icon: stringMaxSize(e_iconurl.value, 7500),
-				}
+			parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
 
-				parent.querySelector('.block').setAttribute('source', link.url)
-				parent.querySelector('img').src = link.icon
-				parent.querySelector('span').textContent = link.title
+			// Updates
+			chrome.storage.sync.set({ [link._id]: link })
+		})
 
-				parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
-
-				// Updates
-				chrome.storage.sync.set({ [link._id]: link })
-			})
-
-			return true
-		}
-
-		// If i is defined, updates a link
-		if (typeof i === 'number') {
-			return updatesEditedLink()
-		}
-
-		displayEditWindow()
+		return true
 	}
 
 	function findindex(that) {
