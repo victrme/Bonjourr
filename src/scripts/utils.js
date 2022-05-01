@@ -96,6 +96,15 @@ function turnRefreshButton(button, canTurn) {
 	)
 }
 
+function closeEditLink() {
+	const domedit = document.querySelector('#editlink')
+	clas(domedit, true, 'hiding')
+	document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+	setTimeout(() => {
+		domedit.setAttribute('class', '')
+	}, 200)
+}
+
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 
@@ -245,10 +254,10 @@ function errorMessage(comment, error) {
 }
 
 const testOS = {
-	mac: () => window.navigator.appVersion.includes('Macintosh'),
-	windows: () => window.navigator.appVersion.includes('Windows'),
-	android: () => window.navigator.userAgent.includes('Android'),
-	ios: () =>
+	mac: window.navigator.appVersion.includes('Macintosh'),
+	windows: window.navigator.appVersion.includes('Windows'),
+	android: window.navigator.userAgent.includes('Android'),
+	ios:
 		['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
 		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
 }
@@ -319,7 +328,7 @@ function bonjourrDefaults(which) {
 					family: '',
 					size: '14',
 					availWeights: [],
-					weight: testOS.windows() || testOS.ios() ? '400' : '300',
+					weight: testOS.windows || testOS.ios ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
 				about: { browser: detectPlatform(), version: '1.13.0' },

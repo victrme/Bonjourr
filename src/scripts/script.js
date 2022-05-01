@@ -235,7 +235,6 @@ function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks_inner')
-	let editDisplayTimeout = setTimeout(() => {}, 0)
 	let hovered = { parent: undefined, link: {}, index: 0 }
 
 	async function initblocks(links) {
@@ -418,18 +417,14 @@ function quickLinks(event, that, init) {
 		// Mouse clicks
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
+			removeLinkSelection()
+			positionsEditWindow(e)
 			editlink(this)
 		}
 
-		elem.onmousedown = function (e) {
-			removeLinkSelection()
-
+		elem.onmouseup = function (e) {
 			// right click
-			if (e.which === 3) {
-				positionsEditWindow(e)
-				editlink(this)
-				return
-			}
+			if (e.which === 3) return
 
 			// settings not opened and not on mobile
 			if (!has(id('settings'), 'shown') && !mobilecheck()) {
@@ -464,18 +459,10 @@ function quickLinks(event, that, init) {
 	}
 
 	function editEvents() {
-		const domedit = document.querySelector('#editlink')
-
-		function closeEditLink() {
-			clas(domedit, true, 'hiding')
-			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
-			editDisplayTimeout = setTimeout(() => domedit.setAttribute('class', ''), 200)
-		}
-
 		id('e_delete').onclick = function () {
 			removeLinkSelection()
 			removeblock(parseInt(id('editlink').getAttribute('index')))
-			clas(domedit, false, 'shown')
+			clas(id('editlink'), false, 'shown')
 			if (id('settings')) linksInputDisable(false)
 		}
 
@@ -2380,11 +2367,11 @@ function safeFont(settingsDom) {
 	const is = safeFontList
 	let toUse = is.fallback
 	const hasUbuntu = document.fonts.check('16px Ubuntu')
-	const notAppleOrWindows = !testOS.mac() && !testOS.windows() && !testOS.ios()
+	const notAppleOrWindows = !testOS.mac && !testOS.windows && !testOS.ios
 
-	if (testOS.windows()) toUse = is.windows
-	else if (testOS.android()) toUse = is.android
-	else if (testOS.mac() || testOS.ios()) toUse = is.apple
+	if (testOS.windows) toUse = is.windows
+	else if (testOS.android) toUse = is.android
+	else if (testOS.mac || testOS.ios) toUse = is.apple
 	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
 
 	if (settingsDom) {
@@ -2533,7 +2520,7 @@ function customFont(data, event) {
 			dominterface.style.fontFamily = ''
 
 			// weights
-			const baseWeight = testOS.windows() ? '400' : '300'
+			const baseWeight = testOS.windows ? '400' : '300'
 			dominterface.style.fontWeight = baseWeight
 			id('searchbar').style.fontWeight = baseWeight
 			id('clock').style.fontWeight = ''

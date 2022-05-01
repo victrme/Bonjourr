@@ -619,11 +619,7 @@ function settingsInit(data) {
 		}
 
 		// hides edit menu
-		if (has(domedit, 'shown')) {
-			domedit.className = 'shown hiding'
-			document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
-			setTimeout(() => domedit.setAttribute('class', ''), 200)
-		}
+		if (has(domedit, 'shown')) closeEditLink()
 
 		//
 		if (has(settings, 'shown')) {
