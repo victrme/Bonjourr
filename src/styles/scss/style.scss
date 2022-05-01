@@ -408,10 +408,14 @@
 					position: relative;
 					border-radius: 15px;
 					background: $purewhite;
-					padding: .4em;
+					padding: 0.4em;
 					box-shadow: $textShadow;
 					box-sizing: border-box;
-					transition: border-color 0.1s, filter 0.1s, transform 0.2s, box-shadow 0.2s;
+					transition: border-color 0.1s, filter 0.1s, transform 0.1s linear, box-shadow 0.1s;
+
+					img {
+						border-radius: 8px;
+					}
 
 					.l_icon {
 						width: 100%;
@@ -425,13 +429,14 @@
 
 					&:hover {
 						border-color: $blue;
-						box-shadow: rgba(0, 0, 0, 0.55) 0px 5px 15px;
-						transform: scale(1.04)
+						box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+						transform: scale(1.1);
 					}
 
 					&:active {
 						filter: brightness(0.75);
-						transition: border-color 0.1s, filter 0.1s;
+						transform: scale(1.04);
+						transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 					}
 				}
 
@@ -860,7 +865,6 @@
 		border: 1px solid rgba(255, 255, 255, 0.075);
 		transform: scale(1);
 
-
 		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
 
 		&:hover {
@@ -919,7 +923,6 @@
 			}
 		}
 	}
-
 
 	&:active {
 		@include frostedGlass($alpha: 0, $blur: 10px, $fbAlpha: 0.1, $fbColor: transparent);
