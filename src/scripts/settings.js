@@ -166,11 +166,51 @@ function initParams(data, settingsDom) {
 		showall(this.checked, true)
 	}
 
+	function switchLangs(nextLang) {
+		function langSwitchTranslation(langs) {
+			// On 'en' lang, get the dict key, not one of its values
+			// create dict like object to parse through
+			// switchDict is: {{'current a': 'next a'}, {'current b': 'next b'} ...}
+
+			const getLangList = (l) => (l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l]))
+			const changeText = (dom, str) => (dom.textContent = switchDict[str])
+
+			const { current, next } = langs
+			const nextList = getLangList(next)
+			const currentList = getLangList(current)
+			let switchDict = {}
+
+			currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
+
+			const trns = document.querySelectorAll('.trn')
+			trns.forEach((trn) => changeText(trn, trn.textContent))
+		}
+
+		const langs = {
+			current: document.documentElement.getAttribute('lang'),
+			next: nextLang,
+		}
+
+		sessionStorage.lang = nextLang // Session pour le weather
+		chrome.storage.sync.set({ lang: nextLang })
+		document.documentElement.setAttribute('lang', nextLang)
+
+		chrome.storage.sync.get(null, (data) => {
+			data.lang = nextLang
+			langSwitchTranslation(langs)
+			weather(null, null, data)
+			clock(null, data)
+
+			if (data.quotes?.type === 'classic') {
+				localStorage.removeItem('nextQuote')
+				localStorage.removeItem('currentQuote')
+				quotes(null, null, data)
+			}
+		})
+	}
+
 	paramId('i_lang').onchange = function () {
-		// Session pour le weather
-		sessionStorage.lang = this.value
-		chrome.storage.sync.set({ lang: this.value })
-		if (sessionStorage.lang) location.reload()
+		switchLangs(this.value)
 	}
 
 	//quick links

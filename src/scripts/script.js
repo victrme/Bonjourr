@@ -1,18 +1,15 @@
 function traduction(settingsDom, lang = 'en') {
-	//
-	function traduis() {
-		document.documentElement.setAttribute('lang', lang)
+	if (lang === 'en') return
 
-		const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
-		const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
-		trns.forEach((trn) => changeText(trn, trn.textContent))
-	}
+	document.documentElement.setAttribute('lang', lang)
 
-	if (lang !== 'en') traduis(lang)
+	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
+	const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
+	trns.forEach((trn) => changeText(trn, trn.textContent))
 }
 
 function tradThis(str) {
-	const lang = document.documentElement.getAttribute('lang') || 'en'
+	const lang = document.documentElement.getAttribute('lang')
 	return lang === 'en' ? str : dict[str][lang]
 }
 
@@ -2866,8 +2863,8 @@ function filterImports(data) {
 }
 
 function startup(data) {
-	canDisplayInterface(null, { font: data.font })
 	traduction(null, data.lang)
+	canDisplayInterface(null, { font: data.font })
 
 	sunTime(data.weather)
 	weather(null, null, data)
