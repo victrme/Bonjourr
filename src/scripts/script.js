@@ -454,7 +454,6 @@ function quickLinks(event, that, init) {
 			removeLinkSelection()
 			removeblock(parseInt(id('editlink').getAttribute('index')))
 			clas(id('editlink'), false, 'shown')
-			if (id('settings')) linksInputDisable(false)
 		}
 
 		id('e_submit').onclick = function (e) {
@@ -615,9 +614,6 @@ function quickLinks(event, that, init) {
 			// Displays and saves before fetching icon
 			initblocks([link])
 			chrome.storage.sync.set({ [link._id]: link })
-
-			// Some other dom control
-			if (order >= 30) linksInputDisable(true)
 			domlinkblocks.style.visibility = 'visible'
 		}
 
@@ -640,26 +636,11 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	function linksInputDisable(isMax, settingsDom) {
-		const getDoms = (name) => (settingsDom ? settingsDom.querySelector('#' + name) : id(name))
-		const doms = ['i_title', 'i_url', 'submitlink', 'b_importbookmarks']
-
-		if (isMax) doms.forEach((elem) => getDoms(elem).setAttribute('disabled', ''))
-		else doms.forEach((elem) => getDoms(elem).removeAttribute('disabled'))
-
-		clas(getDoms(doms[2]), isMax, 'max')
-		clas(getDoms(doms[3]), isMax, 'max')
-	}
-
 	switch (event) {
 		case 'input':
 		case 'button':
 			linkSubmission(that)
 			break
-
-		// that est settingsDom ici
-		case 'maxControl':
-			linksInputDisable(true, that)
 
 		case 'linknewtab': {
 			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
@@ -685,15 +666,12 @@ async function linksImport() {
 	}
 
 	function main(links, bookmarks) {
-		const changeCounter = (number) => (id('selectedCounter').textContent = `${number} / 30`)
-
 		const form = document.createElement('form')
 		const allCategories = [...bookmarks[0].children]
 		let counter = links.length || 0
 		let bookmarksList = []
 		let selectedList = []
 
-		changeCounter(counter)
 		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
 
 		bookmarksList.forEach((mark, index) => {
@@ -709,18 +687,8 @@ async function linksImport() {
 			elem.appendChild(url)
 			elem.onclick = () => {
 				const isSelected = elem.classList.toggle('selected')
-				const isFull = isSelected && counter === 30
-
-				// Color counter
-				clas(id('selectedCounter'), isSelected && counter > 28, 'full')
-
-				// unselect selection if full
-				if (isFull) elem.classList.toggle('selected')
-				else {
-					isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
-					isSelected ? counter++ : (counter -= 1)
-					changeCounter(counter)
-				}
+				isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
+				isSelected ? counter++ : (counter -= 1)
 
 				// Change submit button text & class on selections
 				const amountSelected = counter - links.length
@@ -744,6 +712,17 @@ async function linksImport() {
 		const oldForm = document.querySelector('#bookmarks form')
 		if (oldForm) oldForm.remove()
 		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'))
+
+		// Adds warning if no bookmarks were found
+		const noBookmarks = bookmarksList.length === 0
+		id('applybookmarks').style.display = noBookmarks ? 'none' : ''
+
+		if (noBookmarks) {
+			const h5 = document.createElement('h5')
+			h5.textContent = tradThis('No bookmarks found')
+			form.appendChild(h5)
+			return
+		}
 
 		// Submit event
 		id('applybookmarks').onclick = function () {

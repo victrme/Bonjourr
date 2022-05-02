@@ -57,9 +57,6 @@ function initParams(data, settingsDom) {
 	if (window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim))
 		paramId('b_importbookmarks').style.display = 'none'
 
-	// Links limit
-	if (bundleLinks(data).length >= 30) quickLinks('maxControl', settingsDom)
-
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
 

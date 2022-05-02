@@ -772,18 +772,6 @@
 					text-decoration: none;
 				}
 			}
-
-			#selectedCounter {
-				color: #6d6d72;
-				display: flex;
-				align-items: center;
-				white-space: pre;
-
-				&.full {
-					// dark mode has priority somehow
-					color: $red !important;
-				}
-			}
 		}
 	}
 }

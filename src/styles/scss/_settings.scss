@@ -258,12 +258,6 @@
 		#submitlink {
 			height: 2.2em;
 			transition: filter 0.4s;
-
-			&.max {
-				filter: grayscale(1);
-				text-decoration: none;
-				cursor: default;
-			}
 		}
 
 		#submitlink {
@@ -310,7 +304,7 @@
 		color: $blue;
 		background-color: $settingsGrey;
 		border: 1px dashed transparent;
-		transition: all .2s;
+		transition: all 0.2s;
 		transform: scale(1);
 
 		@include radiusSettings();
@@ -335,7 +329,7 @@
 			background-color: $blue;
 			color: $purewhite;
 			opacity: 1;
-			transform: scale(1.03)
+			transform: scale(1.03);
 		}
 
 		&:active {
