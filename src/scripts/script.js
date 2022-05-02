@@ -514,6 +514,8 @@ function quickLinks(event, that, init) {
 		})
 	}
 
+	window.addEventListener("resize", closeEditLink);
+
 	function updatesEditedLink(index) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')

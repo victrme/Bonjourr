@@ -816,8 +816,8 @@ const dict = {
 		uk: 'Редагуйте ваші швидкі посилання натиснувши правою кнопкою миші на піктограмі.',
 		id: 'Edit Tautan Cepat Anda dengan mengeklik kanan ikon.',
 	},
-	'Edit your Quick Links by long-pressing for 300ms the icon.': {
-		fr: "Éditez un lien favori en appuyant pendant 300ms sur l'icône.",
+	'Edit your Quick Links by long-pressing the icon.': {
+		fr: "Éditez un lien favori en appuyant longtemps sur l'icône.",
 		sv: 'Redigera dina snabblänkar genom att trycka länge på ikonen i 300 ms.',
 		nl: 'Bewerk uw snelkoppelingen door 300 ms lang op het pictogram te drukken.',
 		pl: 'Edytuj swoje szybkie łącza, przytrzymując ikonę przez 300 ms.',

@@ -146,7 +146,7 @@ function initParams(data, settingsDom) {
 	// Change edit tips on mobile
 	if (mobilecheck())
 		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
-			`Edit your Quick Links by long-pressing for 300ms the icon.`
+			`Edit your Quick Links by long-pressing the icon.`
 		)
 
 	tooltips.forEach((elem) => {
