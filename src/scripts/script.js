@@ -514,7 +514,7 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	window.addEventListener("resize", closeEditLink);
+	window.addEventListener('resize', closeEditLink)
 
 	function updatesEditedLink(index) {
 		const e_title = id('e_title')
@@ -2065,6 +2065,7 @@ function searchbar(event, that, init) {
 
 async function quotes(event, that, init) {
 	function display(value) {
+		clas(id('linkblocks'), value, 'withQuotes')
 		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 	}
 
