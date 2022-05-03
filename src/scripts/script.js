@@ -2933,8 +2933,19 @@ window.onload = function () {
 		// Safari overflow fix
 		// Todo: add safari condition
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		
 		window.addEventListener('resize', appHeight)
-		appHeight()
+
+		// Fix for opening tabs Firefox iOS
+		let globalID;
+		function triggerAnimationFrame() {
+			appHeight()
+			globalID = requestAnimationFrame(triggerAnimationFrame);
+		}
+
+		window.requestAnimationFrame(triggerAnimationFrame);
+		setTimeout(function() {cancelAnimationFrame(globalID)}, 500)
+
 	}
 
 	try {
