@@ -331,7 +331,7 @@ function bonjourrDefaults(which) {
 					weight: testOS.windows || testOS.ios ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.13.0' },
+				about: { browser: detectPlatform(), version: '1.13.1' },
 			}
 
 		case 'local':

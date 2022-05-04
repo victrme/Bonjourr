@@ -1,5 +1,15 @@
 ## Changelogs
 
+**v1.13.1**
+
+-   Added indonesian translation
+-   Updated links icon design
+-   Better resolution on new links icon
+-   Removed 30 links limit
+-   Changing language doesn't reload the page
+-   Fixed link edit event on macOS
+-   Fixed classic quotes defaulting to english
+
 **v1.13.0**
 
 -   Added feature: Quotes !
