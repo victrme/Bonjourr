@@ -20,12 +20,10 @@
 
 			&.shown {
 				min-height: 90px;
+				padding-bottom: 30px;
 			}
 		}
 
-		#linkblocks {
-			flex-grow: .25;
-		}
 	}
 
 	#settings {

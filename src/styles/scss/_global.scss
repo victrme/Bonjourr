@@ -128,7 +128,6 @@ body {
 		background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
 		color: $fbColor;
 	}
-
 }
 
 @mixin hideElements {
@@ -147,6 +146,7 @@ body {
 			#widget,
 			#forecast,
 			#current,
+			#linkblocks.withQuotes,
 			#quotes_container.shown,
 			#quotes_container.shown #quote,
 			#quotes_container.shown #author {
@@ -175,7 +175,7 @@ body {
 		#main.he_hidden,
 		#linkblocks.he_hidden,
 		#time.he_hidden {
-			flex-grow: 0;
+			flex-grow: 0 !important;
 			opacity: 0;
 		}
 

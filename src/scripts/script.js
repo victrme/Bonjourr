@@ -514,7 +514,7 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	window.addEventListener("resize", closeEditLink);
+	window.addEventListener('resize', closeEditLink)
 
 	function updatesEditedLink(index) {
 		const e_title = id('e_title')
@@ -2065,6 +2065,7 @@ function searchbar(event, that, init) {
 
 async function quotes(event, that, init) {
 	function display(value) {
+		clas(id('linkblocks'), value, 'withQuotes')
 		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 	}
 
@@ -2918,7 +2919,7 @@ window.onload = function () {
 	}, 5 * 60 * 1000)
 
 	// Only on Online / Safari
-	if (['http', 'https', 'file:'].some((a) => window.location.protocol.includes(a))) {
+	if (detectPlatform() === 'online') {
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js')
 		}
@@ -2932,8 +2933,22 @@ window.onload = function () {
 		// Safari overflow fix
 		// Todo: add safari condition
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+
 		window.addEventListener('resize', appHeight)
-		appHeight()
+
+		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
+			// Fix for opening tabs Firefox iOS
+			let globalID
+			function triggerAnimationFrame() {
+				appHeight()
+				globalID = requestAnimationFrame(triggerAnimationFrame)
+			}
+
+			window.requestAnimationFrame(triggerAnimationFrame)
+			setTimeout(function () {
+				cancelAnimationFrame(globalID)
+			}, 500)
+		}
 	}
 
 	try {
