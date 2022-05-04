@@ -2919,7 +2919,7 @@ window.onload = function () {
 	}, 5 * 60 * 1000)
 
 	// Only on Online / Safari
-	if (['http', 'https', 'file:'].some((a) => window.location.protocol.includes(a))) {
+	if (detectPlatform() === 'online') {
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js')
 		}
@@ -2933,19 +2933,22 @@ window.onload = function () {
 		// Safari overflow fix
 		// Todo: add safari condition
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
-		
+
 		window.addEventListener('resize', appHeight)
 
-		// Fix for opening tabs Firefox iOS
-		let globalID;
-		function triggerAnimationFrame() {
-			appHeight()
-			globalID = requestAnimationFrame(triggerAnimationFrame);
+		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
+			// Fix for opening tabs Firefox iOS
+			let globalID
+			function triggerAnimationFrame() {
+				appHeight()
+				globalID = requestAnimationFrame(triggerAnimationFrame)
+			}
+
+			window.requestAnimationFrame(triggerAnimationFrame)
+			setTimeout(function () {
+				cancelAnimationFrame(globalID)
+			}, 500)
 		}
-
-		window.requestAnimationFrame(triggerAnimationFrame);
-		setTimeout(function() {cancelAnimationFrame(globalID)}, 500)
-
 	}
 
 	try {
