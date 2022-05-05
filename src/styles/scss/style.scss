@@ -413,7 +413,7 @@
 					height: 4.9em;
 					margin: 0 auto 0.5em auto;
 					position: relative;
-					border-radius: 15px;
+					border-radius: 1em;
 					background: $purewhite;
 					padding: 0.4em;
 					box-shadow: $textShadow;
@@ -421,7 +421,7 @@
 					transition: border-color 0.1s, filter 0.1s, transform 0.1s linear, box-shadow 0.1s;
 
 					img {
-						border-radius: 8px;
+						border-radius: 0.5em;
 					}
 
 					.l_icon {
