@@ -52,7 +52,11 @@ const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
 		? 'firefox'
 		: agent.indexOf("safari") > -1
 		? 'safari'
-		: 'other';
+		: 'other'
+}
+
+const getFavicon = () => {
+	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
 }
 
 function validateHideElem(hide) {

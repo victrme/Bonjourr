@@ -16,7 +16,7 @@ function tradThis(str) {
 function favicon(init, event) {
 	function createFavicon(emoji) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
-		document.querySelector("link[rel~='icon']").href = emoji ? svg : 'src/assets/favicon-128x128.png'
+		document.querySelector("link[rel~='icon']").href = emoji ? svg : `src/assets/${getFavicon()}`
 	}
 
 	if (init !== undefined) createFavicon(init)
@@ -2861,6 +2861,13 @@ function filterImports(data) {
 	}
 
 	return result
+}
+
+function browserSpecifics() {
+	if (getBrowser() === 'edge') {
+		console.log(id('settings'))
+		// id('tabIcon').style.color = 'pink'
+	}
 }
 
 function startup(data) {
