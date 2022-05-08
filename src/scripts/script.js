@@ -1376,8 +1376,8 @@ function localBackgrounds(init, event) {
 		const div = document.createElement('div')
 		const i = document.createElement('img')
 		const rem = document.createElement('button')
-		const wrap = settings.querySelector('#bg_tn_wrap')
-		const file = settings.querySelector('#fileContainer')
+		const wrap = settings.querySelector('#fileContainer')
+		// const file = settings.querySelector('#uploadContainer')
 
 		div.setAttribute('index', index)
 		div.setAttribute('class', 'thumbnail')
@@ -1387,7 +1387,8 @@ function localBackgrounds(init, event) {
 
 		div.appendChild(i)
 		div.appendChild(rem)
-		wrap.insertBefore(div, file)
+		wrap.prepend(div)
+		
 
 		//events
 		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))

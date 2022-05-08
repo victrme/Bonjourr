@@ -121,22 +121,22 @@ function initParams(data, settingsDom) {
 	//
 
 	const bgfile = paramId('i_bgfile')
-	const fileContainer = paramId('fileContainer')
+	const uploadContainer = paramId('uploadContainer')
 
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_greeting'))
 
 	// file input animation
 	bgfile.addEventListener('dragenter', function () {
-		fileContainer.classList.add('dragover')
+		uploadContainer.classList.add('dragover')
 	})
 
 	bgfile.addEventListener('dragleave', function () {
-		fileContainer.classList.remove('dragover')
+		uploadContainer.classList.remove('dragover')
 	})
 
 	bgfile.addEventListener('drop', function () {
-		fileContainer.classList.remove('dragover')
+		uploadContainer.classList.remove('dragover')
 	})
 
 	//general
