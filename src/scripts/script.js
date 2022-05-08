@@ -32,6 +32,11 @@ function favicon(init, event) {
 	}
 }
 
+function tabTitle(init, event) {
+	event ? slowRange({ tabtitle: event.value }) : ''
+	document.title = init ? init : event.value
+}
+
 function clock(event, init) {
 	//
 
@@ -2881,6 +2886,7 @@ function startup(data) {
 	customSize(data.font)
 
 	favicon(data.favicon)
+	tabTitle(data.tabtitle)
 	clock(null, data)
 	linksrow(data.linksrow)
 	darkmode(null, data)

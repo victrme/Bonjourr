@@ -300,6 +300,7 @@ function bonjourrDefaults(which) {
 				css: '',
 				lang: 'en',
 				favicon: '',
+				tabtitle: tradThis('New Tab'),
 				greeting: '',
 				dark: 'system',
 				custom_every: 'pause',

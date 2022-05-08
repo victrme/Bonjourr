@@ -1296,6 +1296,23 @@ const dict = {
 		uk: 'Будь-який емоджі',
 		id: 'Apa saja emojo',
 	},
+	'New tab title': {
+		fr: "Titre du nouvel onglet",
+		sv: 'New tab title',
+		nl: 'New tab title',
+		pl: 'New tab title',
+		pt_BR: 'New tab title',
+		ru: 'New tab title',
+		zh_CN: 'New tab title',
+		sk: 'New tab title',
+		de: 'New tab title',
+		it: 'New tab title',
+		es: 'New tab title',
+		tr: 'New tab title',
+		uk: 'New tab title',
+		id: 'New tab title',
+	},
+	
 	'Hide elements': {
 		fr: 'Cacher des éléments',
 		sv: 'Dölj element',

@@ -24,6 +24,7 @@ function initParams(data, settingsDom) {
 	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_favicon', data.favicon, '')
+	initInput('i_tabtitle', data.tabtitle, '')
 	initInput('i_greeting', data.greeting, '')
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
@@ -77,6 +78,7 @@ function initParams(data, settingsDom) {
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
+	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
@@ -124,6 +126,7 @@ function initParams(data, settingsDom) {
 	const uploadContainer = paramId('uploadContainer')
 
 	enterBlurs(paramId('i_favicon'))
+	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 
 	// file input animation
@@ -279,6 +282,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_favicon').oninput = function () {
 		favicon(null, this)
+	}
+
+	paramId('i_tabtitle').oninput = function () {
+		tabTitle(null, this)
 	}
 
 	// paramId('i_favicon').onkeyup = (e) => (e.key === 'Enter' ? e.target.blur() : '')
