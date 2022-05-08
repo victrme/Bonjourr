@@ -1393,13 +1393,6 @@ function localBackgrounds(init, event) {
 		//events
 		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
 		const getIndex = (that) => parseInt(that.getAttribute('index'))
-		const removeControl = (show, i) => cl('thumbnail')[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
-
-		//displays / hides remove button on desktop
-		if (!mobilecheck()) {
-			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
-			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
-		}
 
 		i.onmouseup = (e) => {
 			if (e.button === 0) {

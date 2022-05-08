@@ -1,3 +1,10 @@
+// phones an touch screens
+@media (hover: none) and (pointer: coarse) {
+	#settings #bg_tn_wrap #fileContainer .thumbnail button {
+		opacity: 1;
+	}
+}
+
 @media screen and (max-height: 900px) {
 	body {
 		font-size: 13px;

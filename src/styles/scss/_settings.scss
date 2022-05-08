@@ -362,6 +362,7 @@
 				align-items: center;
 				overflow: hidden;
 				max-height: 75px;
+				position: relative;
 				@include radiusSettings();
 
 				img {	
