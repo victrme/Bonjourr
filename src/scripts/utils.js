@@ -43,6 +43,18 @@ function detectPlatform() {
 		: 'online'
 }
 
+const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
+	return agent.indexOf("edg/" || "edge") > -1
+		? 'edge'
+		: agent.indexOf("chrome") > -1
+		? 'chrome'
+		: agent.indexOf("firefox") > -1
+		? 'firefox'
+		: agent.indexOf("safari") > -1
+		? 'safari'
+		: 'other';
+}
+
 function validateHideElem(hide) {
 	let res = true
 

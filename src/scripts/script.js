@@ -2234,11 +2234,15 @@ function showPopup(data) {
 	//
 	function affiche() {
 		const setReviewLink = () =>
-			mobilecheck()
-				? 'https://github.com/victrme/Bonjourr/stargazers'
-				: navigator.userAgent.includes('Chrome')
+			getBrowser() === 'chrome'
 				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
-				: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
+				: getBrowser() === 'firefox'
+				? 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
+				: getBrowser() === 'safari'
+				? 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236'
+				: getBrowser() === 'edge'
+				? 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid'
+				: 'https://bonjourr.fr/help#%EF%B8%8F-reviews'
 
 		const dom = {
 			wrap: document.createElement('div'),
