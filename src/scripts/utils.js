@@ -313,6 +313,11 @@ const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
 	} return 'en' // if not, defaults to english
 }
 
+function tradThis(str) {
+	const lang = document.documentElement.getAttribute('lang')
+	return lang === 'en' ? str : dict[str][lang]
+}
+
 function bonjourrDefaults(which) {
 	switch (which) {
 		case 'sync':
@@ -327,7 +332,7 @@ function bonjourrDefaults(which) {
 				css: '',
 				lang: defaultLang(),
 				favicon: '',
-				tabtitle: 'New tab',
+				tabtitle: '',
 				greeting: '',
 				dark: 'system',
 				custom_every: 'pause',

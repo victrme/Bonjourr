@@ -16,7 +16,7 @@
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
 
 const dict = {
-	'New Tab': {
+	'New tab': {
 		fr: 'Nouvel onglet',
 		sv: 'Ny flik',
 		nl: 'Nieuw tabblad',
@@ -81,7 +81,7 @@ const dict = {
 		id: 'jika Anda menyukai Bonjourr',
 	},
 	'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇': {
-		fr: 'Vous adorez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
+		fr: 'Vous aimez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
 		sv: 'Älskar du att använda Bonjourr? Överväg att ge oss en recension eller donera, det skulle hjälpa mycket! 😇',
 		nl: 'Ben je dol op het gebruik van Bonjourr? Overweeg om ons een recensie te geven of te doneren, dat zou veel helpen! 😇',
 		pl: 'Uwielbiasz korzystać z Bonjourr? Zastanów się nad wystawieniem nam recenzji lub darowizny, co bardzo by pomogło! 😇',

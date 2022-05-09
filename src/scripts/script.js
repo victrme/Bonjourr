@@ -8,11 +8,6 @@ function traduction(settingsDom, lang = 'en') {
 	trns.forEach((trn) => changeText(trn, trn.textContent))
 }
 
-function tradThis(str) {
-	const lang = document.documentElement.getAttribute('lang')
-	return lang === 'en' ? str : dict[str][lang]
-}
-
 function favicon(init, event) {
 	function createFavicon(emoji) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
@@ -33,8 +28,10 @@ function favicon(init, event) {
 }
 
 function tabTitle(init, event) {
-	event ? slowRange({ tabtitle: event.value }) : ''
-	document.title = init ? init : event.value
+	const title = init ? init : event ? event.value : tradThis('New tab')
+	
+	if (event) slowRange({ tabtitle: title })
+	document.title = title
 }
 
 function clock(event, init) {
@@ -2868,12 +2865,12 @@ function filterImports(data) {
 	return result
 }
 
-function browserSpecifics() {
-	if (getBrowser() === 'edge') {
-		console.log(id('settings'))
-		// id('tabIcon').style.color = 'pink'
-	}
-}
+// function browserSpecifics() {
+// 	if (getBrowser() === 'edge') {
+// 		console.log(id('settings'))
+// 		id('tabIcon').style.color = 'pink'
+// 	}
+// }
 
 function startup(data) {
 	traduction(null, data.lang)
@@ -2966,6 +2963,7 @@ window.onload = function () {
 		chrome.storage.sync.get(null, (data) => {
 			// First Startup, chrome.storage is null
 			if (Object.keys(data).length === 0) {
+				document.documentElement.setAttribute('lang', defaultLang())
 				data = bonjourrDefaults('sync')
 				chrome.storage.local.set(bonjourrDefaults('local'))
 				chrome.storage.sync.set(isExtension ? data : { import: data })
