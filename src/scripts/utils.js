@@ -295,13 +295,22 @@ const langList = {
 	pt_BR: 'Português (Brasil)',
 	nl: 'Nederlandse',
 	ru: 'Русский',
-	zh: 'Deutsch',
-	de: 'Italiano',
-	it: 'Español',
-	es: 'Türkçe',
-	tr: 'Українська',
+	zh_CN: '简体中文',
+	de: 'Deutsch',
+	it: 'Italiano',
+	es: 'Español',
+	tr: 'Türkçe',
 	uk: 'Українська',
 	id: 'Indonesia'
+}
+
+const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
+	// check if exact or similar languages are available
+	for (const [code] of Object.entries(langList)) {
+		if (navLang === code || navLang.startsWith(code.substring(0,2))) {
+			return code;
+		}
+	} return 'en' // if not, defaults to english
 }
 
 function bonjourrDefaults(which) {
@@ -316,7 +325,7 @@ function bonjourrDefaults(which) {
 				background_blur: 15,
 				background_bright: 0.8,
 				css: '',
-				lang: 'en',
+				lang: defaultLang(),
 				favicon: '',
 				tabtitle: 'New tab',
 				greeting: '',
