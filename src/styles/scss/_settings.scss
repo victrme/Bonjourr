@@ -90,7 +90,7 @@
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
 	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
-	transform: translateX(-100%)!important;
+	// transform: translateX(-100%)!important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);

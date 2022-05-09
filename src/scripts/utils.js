@@ -286,6 +286,24 @@ const safeFontList = {
 	apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
 }
 
+const langList = {
+	en: 'English',
+	fr: 'Français',
+	sk: 'Slovenský',
+	sv: 'Svenska',
+	pl: 'Polski',
+	pt_BR: 'Português (Brasil)',
+	nl: 'Nederlandse',
+	ru: 'Русский',
+	zh: 'Deutsch',
+	de: 'Italiano',
+	it: 'Español',
+	es: 'Türkçe',
+	tr: 'Українська',
+	uk: 'Українська',
+	id: 'Indonesia'
+}
+
 function bonjourrDefaults(which) {
 	switch (which) {
 		case 'sync':
@@ -300,7 +318,7 @@ function bonjourrDefaults(which) {
 				css: '',
 				lang: 'en',
 				favicon: '',
-				tabtitle: tradThis('New Tab'),
+				tabtitle: 'New tab',
 				greeting: '',
 				dark: 'system',
 				custom_every: 'pause',

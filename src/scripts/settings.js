@@ -16,6 +16,15 @@ function initParams(data, settingsDom) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
+	// inserts languages in select
+	for (const [code, title] of Object.entries(langList)) {
+		let option = document.createElement("option")
+			option.value = code
+			option.text = title
+			
+		paramId('i_lang').add(option)
+	}
+
 	initInput('cssEditor', data.css, '')
 	initInput('i_row', data.linksrow, 8)
 	initInput('i_type', data.background_type, 'dynamic')
