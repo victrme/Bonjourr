@@ -29,7 +29,7 @@ function favicon(init, event) {
 
 function tabTitle(init, event) {
 	const title = init ? init : event ? event.value : tradThis('New tab')
-	
+
 	if (event) slowRange({ tabtitle: title })
 	document.title = title
 }
@@ -1390,7 +1390,6 @@ function localBackgrounds(init, event) {
 		div.appendChild(i)
 		div.appendChild(rem)
 		wrap.prepend(div)
-		
 
 		//events
 		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
@@ -1629,10 +1628,12 @@ function unsplash(init, event) {
 		fetch(url, { headers: header }).then((raw) =>
 			raw.json().then((imgArray) => {
 				const filteredList = []
+				const { width, height } = screen
+				const imgSize = width > height ? width : height // higher res on mobile
 
 				imgArray.forEach((img) => {
 					filteredList.push({
-						url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
+						url: img.urls.raw + '&w=' + imgSize + '&dpr=' + window.devicePixelRatio,
 						link: img.links.html,
 						username: img.user.username,
 						name: img.user.name,
