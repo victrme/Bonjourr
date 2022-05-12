@@ -2070,22 +2070,6 @@ async function quotes(event, that, init) {
 	}
 
 	async function newQuote(lang, type) {
-		async function handleJson(type, json) {
-			const filter = (quote) => quote.includes('[pause') || quote.length > 200
-
-			if (type === 'inspirobot') {
-				const res = json.data.filter((d) => d.type === 'quote' && !filter(d.text)) // data is a quote & passes the filter
-				return res.length === 0 ? await newQuote(lang, type) : { author: 'Inspirobot', content: res[0].text }
-			}
-
-			if (type === 'kaamelott') {
-				const { citation, infos } = json.citation
-				return filter(citation) ? await newQuote(lang, type) : { author: infos.personnage, content: citation }
-			}
-
-			return json
-		}
-
 		try {
 			if (!navigator.onLine) {
 				return getFromStorage() // Offline, return whatever is in storage
@@ -2093,12 +2077,14 @@ async function quotes(event, that, init) {
 
 			// Fetch a random quote from the quotes API
 			const query = (type += type === 'classic' ? `/${lang}` : '')
-			const response = await fetch('https://quotes.bonjourr.fr/' + query)
+			const response = await fetch('https://627cd4dcbbdb2d0008997549--incandescent-pavlova-36bd49.netlify.app/' + query)
 			const json = await response.json()
 
-			if (response.ok) return handleJson(type, json)
+			if (response.ok) {
+				return json
+			}
 		} catch (error) {
-			console.log(error)
+			console.warn(error)
 			return getFromStorage()
 		}
 	}
@@ -2109,38 +2095,34 @@ async function quotes(event, that, init) {
 		id('author').textContent = values.author
 	}
 
-	function getFromStorage(which = 'current') {
-		try {
-			return JSON.parse(localStorage[`${which}Quote`])
-		} catch (error) {
-			return null
-		}
-	}
+	function controlCacheList(list, lang, type) {
+		list.shift() // removes used quote
+		chrome.storage.local.set({ quotesCache: list })
 
-	function saveToStorage(elem, which = 'current') {
-		localStorage.setItem(`${which}Quote`, JSON.stringify(elem))
+		if (list.length < 2) {
+			newQuote(lang, type).then((list) => {
+				chrome.storage.local.set({ quotesCache: list })
+			})
+		}
+
+		return list
 	}
 
 	function updateSettings() {
 		chrome.storage.sync.get(['lang', 'quotes'], async (data) => {
 			const updated = { ...data.quotes }
-			const { lang } = data
+			const { lang, quotes } = data
 
 			switch (event) {
 				case 'toggle': {
-					let quote = getFromStorage('current')
-					updated.on = that.checked
-					display(that.checked)
+					const on = that.checked // to use inside storage callback
+					updated.on = on
 
-					if (quote === null) {
-						let next = await newQuote(lang, data.quotes.type)
-						quote = await newQuote(lang, data.quotes.type)
+					chrome.storage.local.get('quotesCache', (local) => {
+						insertToDom(local.quotesCache[0])
+						display(on)
+					})
 
-						saveToStorage(quote)
-						saveToStorage(next, 'next')
-					}
-
-					insertToDom(quote)
 					break
 				}
 
@@ -2152,32 +2134,27 @@ async function quotes(event, that, init) {
 
 				case 'frequency': {
 					updated.frequency = that.value
-
-					if (that.value === 'tabs') {
-						saveToStorage(await newQuote(lang, data.quotes.type), 'next')
-					}
 					break
 				}
 
 				case 'type': {
 					updated.type = that.value
-					const currentQuote = await newQuote(lang, that.value)
-					const nextQuote = await newQuote(lang, that.value)
 
-					insertToDom(currentQuote)
-					saveToStorage(currentQuote, 'current')
-					saveToStorage(nextQuote, 'next')
+					const list = await newQuote(lang, that.value)
+					chrome.storage.local.set({ quotesCache: list })
+
+					insertToDom(list[0])
 					break
 				}
 
 				case 'refresh': {
 					updated.last = freqControl('set')
-					const current = getFromStorage('next')
-					const next = await newQuote(lang, data.quotes.type)
 
-					insertToDom(current)
-					saveToStorage(current, 'current')
-					saveToStorage(next, 'next')
+					chrome.storage.local.get('quotesCache', async (local) => {
+						const quote = controlCacheList(local.quotesCache, lang, quotes.type)[0]
+						insertToDom(quote)
+					})
+
 					break
 				}
 			}
@@ -2192,42 +2169,47 @@ async function quotes(event, that, init) {
 		return
 	}
 
-	const { lang, quotes } = init
-	let quote = getFromStorage('current')
-	let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
+	// Cache:
+	// storage.local = { quotesCache: Array(20) }
+	// NeedsNewQuote: Removes first element of the list
+	// if list is too small, fetches new batch of quotes
+	// All quotes type share the same cache
+	// changing quotes type fetches new batch
 
-	//
-	// first startup:	fetch new [current & next], store & display
-	// needsNewQuote:	next to current, fetch next, store & display
-	//
+	// Init
+	chrome.storage.local.get('quotesCache', async (local) => {
+		const { lang, quotes } = init
 
-	if (quote === null) {
-		quote = await newQuote(lang, quotes.type)
-		saveToStorage(quote, 'current')
-		saveToStorage(await newQuote(lang, quotes.type), 'next')
-	}
+		let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
+		let cache = local.quotesCache
+		let quote = {}
 
-	if (needsNewQuote) {
-		quote = getFromStorage('next')
-		saveToStorage(quote, 'current')
+		if (!cache || cache?.length === 0) {
+			cache = await newQuote(lang, quotes.type) // gets list
+			chrome.storage.local.set({ quotesCache: cache }) // saves list
 
-		quotes.last = freqControl('set') // updates last quotes timestamp
-		chrome.storage.sync.set({ quotes })
+			quote = cache[0]
+		}
 
-		newQuote(lang, quotes.type).then((quote) => {
-			saveToStorage(quote, 'next')
-		})
-	}
+		if (needsNewQuote) {
+			quotes.last = freqControl('set') // updates last quotes timestamp
+			chrome.storage.sync.set({ quotes })
 
-	// quotes off, just quit
-	if (init?.quotes?.on === false) {
-		return
-	}
+			quote = controlCacheList(cache, lang, quotes.type)[0] // has removed last quote from cache
+		}
 
-	// Displays
-	if (quotes.author) id('author').classList.add('alwaysVisible')
-	insertToDom(quote)
-	display(true)
+		// quotes off, just quit
+		if (init?.quotes?.on === false) {
+			return
+		}
+
+		quote = cache[0] // all conditions passed, cache is safe to use
+
+		// Displays
+		if (quotes.author) id('author').classList.add('alwaysVisible')
+		insertToDom(quote)
+		display(true)
+	})
 }
 
 function showPopup(data) {
@@ -2853,6 +2835,9 @@ function filterImports(data) {
 
 	delete result?.searchbar_engine
 	delete result?.searchbar_newtab
+
+	localStorage.removeItem('currentQuote')
+	localStorage.removeItem('nextQuote')
 
 	try {
 		if (!result.quotes) {
