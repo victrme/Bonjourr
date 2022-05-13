@@ -2077,7 +2077,7 @@ async function quotes(event, that, init) {
 
 			// Fetch a random quote from the quotes API
 			const query = (type += type === 'classic' ? `/${lang}` : '')
-			const response = await fetch('https://627cd4dcbbdb2d0008997549--incandescent-pavlova-36bd49.netlify.app/' + query)
+			const response = await fetch('https://627e0e5dc8fcfb00084638ba--incandescent-pavlova-36bd49.netlify.app/' + query)
 			const json = await response.json()
 
 			if (response.ok) {
@@ -2209,6 +2209,8 @@ async function quotes(event, that, init) {
 		if (quotes.author) id('author').classList.add('alwaysVisible')
 		insertToDom(quote)
 		display(true)
+
+		canDisplayInterface('quotes')
 	})
 }
 
@@ -2447,9 +2449,6 @@ function customFont(data, event) {
 				)
 					.then((response) => response.json())
 					.then((json) => {
-						// 1.11.1 => 1.11.2 firefox sql bug fix
-						if (localStorage.googleFonts) localStorage.removeItem('googleFonts')
-
 						if (json.error) console.log('Google Fonts messed up: ', json.error)
 						else {
 							chrome.storage.local.set({ googleFonts: json })
@@ -2466,7 +2465,7 @@ function customFont(data, event) {
 						return false
 					} else {
 						try {
-							callback(JSON.parse(local.googleFonts))
+							callback(local.googleFonts)
 						} catch (error) {
 							fetchGoogleFonts()
 						}
@@ -2675,7 +2674,8 @@ function canDisplayInterface(cat, init) {
 
 	// More conditions if user is using advanced features
 	if (init) {
-		if (init.font) if (init.font.family && init.font.url) funcsOk.fonts = false
+		if (init.font?.family && init.font?.url) funcsOk.fonts = false
+		if (init.quotes?.on) funcsOk.quotes = false
 	}
 
 	// Check if all funcs are ready
@@ -2856,7 +2856,7 @@ function filterImports(data) {
 
 function startup(data) {
 	traduction(null, data.lang)
-	canDisplayInterface(null, { font: data.font })
+	canDisplayInterface(null, data)
 
 	sunTime(data.weather)
 	weather(null, null, data)
