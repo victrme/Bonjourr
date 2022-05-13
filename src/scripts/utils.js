@@ -44,15 +44,15 @@ function detectPlatform() {
 }
 
 const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
-	return agent.indexOf("edg/" || "edge") > -1
+	return agent.indexOf('edg/' || 'edge') > -1
 		? 'edge'
-		: agent.indexOf("chrome") > -1
+		: agent.indexOf('chrome') > -1
 		? 'chrome'
-		: agent.indexOf("firefox") > -1
+		: agent.indexOf('firefox') > -1
 		? 'firefox'
-		: agent.indexOf("safari") > -1
+		: agent.indexOf('safari') > -1
 		? 'safari'
-		: 'other';
+		: 'other'
 }
 
 function validateHideElem(hide) {
@@ -343,7 +343,7 @@ function bonjourrDefaults(which) {
 					weight: testOS.windows || testOS.ios ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.13.1' },
+				about: { browser: detectPlatform(), version: '1.13.2' },
 			}
 
 		case 'local':
