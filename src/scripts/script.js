@@ -2072,7 +2072,7 @@ async function quotes(event, that, init) {
 	async function newQuote(lang, type) {
 		try {
 			if (!navigator.onLine) {
-				return getFromStorage() // Offline, return whatever is in storage
+				return []
 			}
 
 			// Fetch a random quote from the quotes API
@@ -2085,12 +2085,12 @@ async function quotes(event, that, init) {
 			}
 		} catch (error) {
 			console.warn(error)
-			return getFromStorage()
+			return []
 		}
 	}
 
 	function insertToDom(values) {
-		if (values === null) return
+		if (!values) return
 		id('quote').textContent = values.content
 		id('author').textContent = values.author
 	}
@@ -2178,8 +2178,9 @@ async function quotes(event, that, init) {
 
 	// Init
 	chrome.storage.local.get('quotesCache', async (local) => {
-		const { lang, quotes } = init
+		canDisplayInterface('quotes')
 
+		const { lang, quotes } = init
 		let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
 		let cache = local.quotesCache
 		let quote = {}
@@ -2209,8 +2210,6 @@ async function quotes(event, that, init) {
 		if (quotes.author) id('author').classList.add('alwaysVisible')
 		insertToDom(quote)
 		display(true)
-
-		canDisplayInterface('quotes')
 	})
 }
 
