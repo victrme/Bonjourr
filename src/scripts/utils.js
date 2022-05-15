@@ -44,13 +44,13 @@ function detectPlatform() {
 }
 
 const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
-	return agent.indexOf("edg/" || "edge") > -1
+	return agent.indexOf('edg/' || 'edge') > -1
 		? 'edge'
-		: agent.indexOf("chrome") > -1
+		: agent.indexOf('chrome') > -1
 		? 'chrome'
-		: agent.indexOf("firefox") > -1
+		: agent.indexOf('firefox') > -1
 		? 'firefox'
-		: agent.indexOf("safari") > -1
+		: agent.indexOf('safari') > -1
 		? 'safari'
 		: 'other'
 }
@@ -301,16 +301,17 @@ const langList = {
 	es: 'Español',
 	tr: 'Türkçe',
 	uk: 'Українська',
-	id: 'Indonesia'
+	id: 'Indonesia',
 }
 
 const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
 	// check if exact or similar languages are available
 	for (const [code] of Object.entries(langList)) {
-		if (navLang === code || navLang.startsWith(code.substring(0,2))) {
-			return code;
+		if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
+			return code
 		}
-	} return 'en' // if not, defaults to english
+	}
+	return 'en' // if not, defaults to english
 }
 
 function tradThis(str) {
@@ -385,8 +386,9 @@ function bonjourrDefaults(which) {
 
 		case 'local':
 			return {
-				custom: [],
-				customThumbnails: [],
+				selectedId: '',
+				idsList: [],
+				quotesCache: [],
 				dynamicCache: {
 					noon: [],
 					day: [],
