@@ -399,9 +399,111 @@
 			justify-content: center;
 			transition: visibility 0s 0s;
 
+			.block_parent {
+				cursor: pointer;
+				position: relative;
+				transition: width .3s;
+				margin: 1em;
+				width: 5em;
+	
+				.block {
+					.l_icon_wrap {
+						overflow: hidden;
+						width: 4.9em;
+						height: 4.9em;
+						margin: 0 auto 0.5em auto;
+						position: relative;
+						border-radius: 1em;
+						background: $purewhite;
+						padding: 0.4em;
+						box-shadow: $textShadow;
+						box-sizing: border-box;
+						transition: transform 0.1s linear, box-shadow 0.1s, width .3s, height .3s;
+	
+						img {
+							border-radius: 0.5em;
+						}
+	
+						.l_icon {
+							width: 100%;
+							pointer-events: none;
+						}
+	
+						&.selected {
+							border-color: $blue;
+							transform: scale(1.1);
+							filter: brightness(0.85);
+						}
+	
+						&:hover {
+							border-color: $blue;
+							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+							transform: scale(1.1);
+						}
+	
+						&:active {
+							filter: brightness(0.85);
+							transform: scale(1.04);
+							transition: border-color 0.1s, filter 0.1s, transform 0.1s;
+						}
+					}
+	
+					span {
+						display: block;
+						width: 100%;
+						max-height: 3.3em;
+						line-height: 1.1em;
+						overflow: hidden;
+						word-wrap: break-word;
+						text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+					}
+				}
+	
+				button.remove {
+					position: absolute;
+					display: none;
+					top: -1.2em;
+					left: -1.2em;
+					height: 30px;
+					width: 30px;
+					border: 0;
+					border-radius: 100%;
+					background: #ffffff;
+					box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
+					z-index: 3;
+					cursor: default;
+					transition: all 0.1s;
+	
+					img {
+						height: 0.9em;
+						width: 0.9em;
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+					}
+	
+					&.visible {
+						cursor: pointer;
+					}
+	
+					&:hover {
+						background: #bbb;
+					}
+				}
+	
+				&.removed {
+					transform: scale(0);
+					overflow: hidden;
+					width: 0;
+					margin: 1em 0;
+					transition: transform 0.6s, width 0.6s 0.1s, margin 0.6s 0.1s;
+				}
+			}
+
 			&.small {
 				.block_parent {
-					width: 2.5em; height: 2.5em;
+					width: 3em;
 	
 					.block {
 						display: flex;
@@ -409,16 +511,16 @@
 						position: relative;
 	
 						.l_icon_wrap {
-							width: 100%;
-							height: unset;
 							border-radius: 6px;
 							padding: 3px;
 							display: flex;
+							width: 2.5em; height: 2.5em;
 						}
 						
 						span {
+							transition: opacity .1s;
 							width: unset;
-							background-color: white;
+							background-color: rgba(255, 255, 255, 0.236);
 							border-radius: 4px;
 							padding: 5px;
 							text-shadow: unset;
@@ -426,134 +528,36 @@
 							color: #333;
 							position: absolute;
 							display: block;
+							visibility: hidden;
 							opacity: 0;
-							top: -35px;
+							top: -40px;
 							margin: auto;
 							left: 50%;
 							transform: translateX(-50%);
+							color: white;
+							overflow: visible;
+							border: 1px solid rgba(255,255,255,.075);
+							@include frostedGlass();
 	
-							&:after {
-								content: '';
-								position: absolute;
-								left: 42%;
-								top: 100%;
-								width: 0;
-								height: 0;
-								border-left: 20px solid transparent;
-								border-right: 20px solid transparent;
-								border-top: 20px solid #e8e8e8;
-								clear: both;
-							}
+							// &:after {
+							// 	content: '';
+							// 	position: absolute;
+							// 	top: 100%;
+							// 	left: calc(50% - 7px);
+							// 	border-top: 7px solid rgb(238, 238, 238, .4);
+							// 	border-left: 7px solid transparent;
+							// 	border-right: 7px solid transparent; 
+							// }
 							
 						}
 		
 						&:hover span {
 							opacity: 1;
+							visibility: visible;
 						}
 		
 					}
 				}
-			}
-		}
-
-		.block_parent {
-			cursor: pointer;
-			position: relative;
-			margin: 1em;
-			width: 5em;
-
-			.block {
-				.l_icon_wrap {
-					overflow: hidden;
-					width: 4.9em;
-					height: 4.9em;
-					margin: 0 auto 0.5em auto;
-					position: relative;
-					border-radius: 1em;
-					background: $purewhite;
-					padding: 0.4em;
-					box-shadow: $textShadow;
-					box-sizing: border-box;
-					transition: border-color 0.1s, filter 0.1s, transform 0.1s linear, box-shadow 0.1s;
-
-					img {
-						border-radius: 0.5em;
-					}
-
-					.l_icon {
-						width: 100%;
-						pointer-events: none;
-					}
-
-					&.selected {
-						border-color: $blue;
-						transform: scale(1.1);
-						filter: brightness(0.85);
-					}
-
-					&:hover {
-						border-color: $blue;
-						box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
-						transform: scale(1.1);
-					}
-
-					&:active {
-						filter: brightness(0.85);
-						transform: scale(1.04);
-						transition: border-color 0.1s, filter 0.1s, transform 0.1s;
-					}
-				}
-
-				span {
-					display: block;
-					width: 100%;
-					max-height: 3.3em;
-					line-height: 1.1em;
-					overflow: hidden;
-					word-wrap: break-word;
-					text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-				}
-			}
-
-			button.remove {
-				position: absolute;
-				display: none;
-				top: -1.2em;
-				left: -1.2em;
-				height: 30px;
-				width: 30px;
-				border: 0;
-				border-radius: 100%;
-				background: #ffffff;
-				box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
-				z-index: 3;
-				cursor: default;
-				transition: all 0.1s;
-
-				img {
-					height: 0.9em;
-					width: 0.9em;
-					position: absolute;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-				}
-
-				&.visible {
-					cursor: pointer;
-				}
-
-				&:hover {
-					background: #bbb;
-				}
-			}
-
-			&.removed {
-				transform: scale(0);
-				overflow: hidden;
-				width: 0;
-				margin: 1em 0;
-				transition: transform 0.6s, width 0.6s 0.1s, margin 0.6s 0.1s;
 			}
 		}
 	}
