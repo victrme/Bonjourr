@@ -398,6 +398,62 @@
 			flex-wrap: wrap;
 			justify-content: center;
 			transition: visibility 0s 0s;
+
+			&.small {
+				.block_parent {
+					width: 2.5em; height: 2.5em;
+	
+					.block {
+						display: flex;
+						flex-flow: column-reverse;
+						position: relative;
+	
+						.l_icon_wrap {
+							width: 100%;
+							height: unset;
+							border-radius: 6px;
+							padding: 3px;
+							display: flex;
+						}
+						
+						span {
+							width: unset;
+							background-color: white;
+							border-radius: 4px;
+							padding: 5px;
+							text-shadow: unset;
+							margin-bottom: 3px;
+							color: #333;
+							position: absolute;
+							display: block;
+							opacity: 0;
+							top: -35px;
+							margin: auto;
+							left: 50%;
+							transform: translateX(-50%);
+	
+							&:after {
+								content: '';
+								position: absolute;
+								left: 42%;
+								top: 100%;
+								width: 0;
+								height: 0;
+								border-left: 20px solid transparent;
+								border-right: 20px solid transparent;
+								border-top: 20px solid #e8e8e8;
+								clear: both;
+							}
+							
+						}
+		
+						&:hover span {
+							opacity: 1;
+						}
+		
+					}
+				}
+			}
 		}
 
 		.block_parent {

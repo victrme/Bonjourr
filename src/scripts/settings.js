@@ -52,6 +52,7 @@ function initParams(data, settingsDom) {
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_linknewtab', data.linknewtab)
+	initCheckbox('i_smallLinks', data.smallLinks)
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_geol', isThereData('weather', 'location'))
 	initCheckbox('i_units', isThereData('weather', 'unit') === 'imperial')
@@ -245,6 +246,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_linknewtab').onchange = function () {
 		quickLinks('linknewtab', this)
+	}
+
+	paramId('i_smallLinks').onchange = function () {
+		quickLinks('smallLinks', this)
 	}
 
 	//visuals

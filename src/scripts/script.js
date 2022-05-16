@@ -236,6 +236,8 @@ function quickLinks(event, that, init) {
 	const domlinkblocks = id('linkblocks_inner')
 	let hovered = { parent: undefined, link: {}, index: 0 }
 
+	if (init?.smallLinks) domlinkblocks.classList.add('small')
+
 	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
@@ -646,6 +648,12 @@ function quickLinks(event, that, init) {
 		case 'linknewtab': {
 			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
 			id('hiddenlink').setAttribute('target', '_blank')
+			break
+		}
+
+		case 'smallLinks': {
+			chrome.storage.sync.set({ smallLinks: that.checked ? true : false })
+			domlinkblocks.classList.toggle('small')
 			break
 		}
 	}
