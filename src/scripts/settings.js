@@ -18,10 +18,10 @@ function initParams(data, settingsDom) {
 
 	// inserts languages in select
 	for (const [code, title] of Object.entries(langList)) {
-		let option = document.createElement("option")
-			option.value = code
-			option.text = title
-			
+		let option = document.createElement('option')
+		option.value = code
+		option.text = title
+
 		paramId('i_lang').add(option)
 	}
 
@@ -481,31 +481,47 @@ function showall(val, event, domSettings) {
 }
 
 function selectBackgroundType(cat) {
-	id('custom').style.display = cat === 'custom' ? 'block' : 'none'
-	document.querySelector('.as_collection').style.display = cat === 'custom' ? 'none' : 'block'
+	function toggleType(sync, local) {
+		id('custom').style.display = cat === 'custom' ? 'block' : 'none'
+		document.querySelector('.as_collection').style.display = cat === 'custom' ? 'none' : 'block'
 
-	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
-		//
-		// Applying functions
-		if (cat === 'custom') {
-			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
-		}
-		if (cat === 'dynamic') {
-			// Timeout needed because it uses init data
+		// Only apply fade out/in if there are local backgrounds
+		// No local ? no reason to fade to black or show no thumbnails
+		// Just stick to unsplash
+
+		if (cat === 'custom' && local.selectedId !== '') {
 			id('background_overlay').style.opacity = `0`
-			id('background').removeAttribute('index')
-			setTimeout(() => unsplash(data), 400)
-			clas(id('credit'), true, 'shown')
+			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
+			setTimeout(
+				() =>
+					localBackgrounds({
+						every: sync.custom_every,
+						time: sync.custom_time,
+					}),
+				400
+			)
 		}
 
-		// Setting frequence
-		const c_every = data.custom_every || 'pause'
-		const d_every = data.dynamic.every || 'hour'
+		if (cat === 'dynamic') {
+			clas(id('credit'), true, 'shown')
 
-		id('i_freq').value = cat === 'custom' ? c_every : d_every
+			if (local.selectedId !== '') {
+				id('background_overlay').style.opacity = `0`
+				setTimeout(() => unsplash(sync), 400)
+			}
+		}
+
+		const c_every = sync.custom_every || 'pause'
+		const d_every = sync.dynamic.every || 'hour'
+
+		id('i_freq').value = cat === 'custom' ? c_every : d_every // Setting frequence input
+
+		chrome.storage.sync.set({ background_type: cat })
+	}
+
+	chrome.storage.local.get('selectedId', (local) => {
+		chrome.storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => toggleType(sync, local))
 	})
-
-	chrome.storage.sync.set({ background_type: cat })
 }
 
 function importExport(select, isEvent, settingsDom) {

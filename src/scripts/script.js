@@ -1145,33 +1145,20 @@ function weather(event, that, init) {
 
 function initBackground(data) {
 	const type = data.background_type || 'dynamic'
-
-	if (type === 'custom') {
-		let start = performance.now()
-		chrome.storage.local.get(null, (datalocal) => {
-			console.log(performance.now() - start)
-			const customList = datalocal.custom || []
-
-			if (customList.length > 0) {
-				localBackgrounds({
-					local: datalocal,
-					every: data.custom_every,
-					time: data.custom_time,
-				})
-			} else {
-				// If no custom, change to dynamic
-				unsplash(data)
-				chrome.storage.sync.set({ background_type: 'dynamic' })
-			}
-		})
-
-		// Not Custom, load dynamic
-	} else unsplash(data)
-
 	const blur = data.background_blur !== undefined ? data.background_blur : 15
 	const bright = data.background_bright !== undefined ? data.background_bright : 0.8
 
 	filter('init', [parseFloat(blur), parseFloat(bright)])
+
+	if (type === 'custom') {
+		localBackgrounds({
+			every: data.custom_every,
+			time: data.custom_time,
+		})
+		return
+	}
+
+	unsplash(data)
 }
 
 function imgBackground(val, loadTime, init) {
@@ -1206,36 +1193,20 @@ function freqControl(state, every, last) {
 	// because we still cannot time travel
 	// changes can only go forward
 
-	switch (state) {
-		case 'set':
-			return nowDate.getTime()
-
-		case 'get': {
-			const lastDate = new Date(last),
-				changed = {
-					date: nowDate.getDate() !== lastDate.getDate(),
-					hour: nowDate.getHours() !== lastDate.getHours(),
-				}
-
-			switch (every) {
-				case 'day': {
-					if (changed.date) return true
-					break
-				}
-
-				case 'hour': {
-					if (changed.date || changed.hour) return true
-					break
-				}
-
-				case 'tabs':
-					return true
-
-				case 'pause':
-					return false
-			}
-		}
+	if (state === 'set') {
+		return nowDate.getTime()
 	}
+
+	const lastDate = new Date(last)
+	const changed = {
+		date: nowDate.getDate() !== lastDate.getDate(),
+		hour: nowDate.getHours() !== lastDate.getHours(),
+	}
+
+	if (every === 'day') return changed.date
+	if (every === 'hour') return changed.date || changed.hour
+	if (every === 'tabs') return true
+	if (every === 'pause') return last === 0
 }
 
 function localBackgrounds(init, event) {
@@ -1248,14 +1219,6 @@ function localBackgrounds(init, event) {
 	// 	  idsList: [ _id1, _id2, _id3 ],
 	//    selectedId: _id3
 	// }
-
-	function applyCustomBackground(background) {
-		const perfStart = performance.now()
-		const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-		b64toBlobUrl(cleanData, (bloburl) => {
-			imgBackground(bloburl, perfStart, !!init)
-		})
-	}
 
 	function isOnlineStorageAtCapacity(newFile) {
 		//
@@ -1279,15 +1242,15 @@ function localBackgrounds(init, event) {
 		return false
 	}
 
-	function preventFromShowingTwice(index, max) {
-		const res = Math.floor(Math.random() * max)
-		return res === index ? (res + 1) % max : res
-	}
-
 	function b64toBlobUrl(b64Data, callback) {
 		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
 			res.blob().then((blob) => callback(URL.createObjectURL(blob)))
 		})
+	}
+
+	function thumbnailSelection(id) {
+		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
+		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
 	}
 
 	function addNewImage(file) {
@@ -1366,11 +1329,6 @@ function localBackgrounds(init, event) {
 		img.src = e
 	}
 
-	function thumbnailSelection(id) {
-		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
-		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
-	}
-
 	function addThumbnails(data, _id, settingsDom, isSelected) {
 		const settings = settingsDom ? settingsDom : id('settings')
 
@@ -1439,7 +1397,9 @@ function localBackgrounds(init, event) {
 
 					// back to unsplash
 					else {
-						//unsplash(null, null)
+						id('background_overlay').style.opacity = 0
+						chrome.storage.sync.set({ background_type: 'dynamic' })
+						setTimeout(() => chrome.storage.sync.get('dynamic', (data) => unsplash(data)), 400)
 						selectedId = ''
 					}
 
@@ -1474,19 +1434,16 @@ function localBackgrounds(init, event) {
 
 	function refreshCustom(button) {
 		chrome.storage.sync.get('custom_every', (sync) => {
-			chrome.storage.local.get(null, (local) => {
-				id('background_overlay').style.opacity = 0
-				turnRefreshButton(button, true)
-				setTimeout(
-					() =>
-						localBackgrounds({
-							local: local,
-							every: sync.custom_every,
-							time: 0,
-						}),
-					400
-				)
-			})
+			id('background_overlay').style.opacity = 0
+			turnRefreshButton(button, true)
+			setTimeout(
+				() =>
+					localBackgrounds({
+						every: sync.custom_every,
+						time: 0,
+					}),
+				400
+			)
 		})
 	}
 
@@ -1497,39 +1454,44 @@ function localBackgrounds(init, event) {
 		return
 	}
 
-	//init
+	function applyCustomBackground(id) {
+		chrome.storage.local.get(['custom_' + id], (local) => {
+			const perfStart = performance.now()
+			const background = local['custom_' + id]
 
-	// try {
-	// 	// need all of saved stuff
-	// 	const { local, every, time } = init
+			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+			b64toBlobUrl(cleanData, (bloburl) => {
+				imgBackground(bloburl, perfStart, !!init)
+			})
+		})
+	}
 
-	// 	// Slideshow or not, need index
-	// 	const index = local.customIndex >= 0 ? local.customIndex : 0
-	// 	const customList = local.custom || []
+	chrome.storage.local.get(['selectedId', 'idsList'], (local) => {
+		try {
+			// need all of saved stuff
+			let { selectedId, idsList } = local
+			const { every, time } = init
+			const needNewImage = freqControl('get', every, time || 0)
 
-	// 	// Slideshow is activated
-	// 	if (every) {
-	// 		const rand = preventFromShowingTwice(index, customList.length)
-	// 		const needNewImage = freqControl('get', every, time || 0)
+			if (every && needNewImage) {
+				idsList = idsList.filter((l) => !l.includes(selectedId)) // removes current from list
+				selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
 
-	// 		if (needNewImage) {
-	// 			applyCustomBackground(customList, rand)
+				applyCustomBackground(selectedId)
 
-	// 			// Updates time & index
-	// 			chrome.storage.sync.set({ custom_time: freqControl('set') })
-	// 			chrome.storage.local.set({ customIndex: rand })
-	// 			//
-	// 		} else {
-	// 			applyCustomBackground(customList, index)
-	// 		}
+				chrome.storage.sync.set({ custom_time: freqControl('set') })
+				chrome.storage.local.set({ selectedId })
 
-	// 		// No slideshow or no data for it
-	// 	} else {
-	// 		applyCustomBackground(customList, index)
-	// 	}
-	// } catch (e) {
-	// 	errorMessage('Could not init local backgrounds', e)
-	// }
+				if (id('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
+
+				return
+			}
+
+			applyCustomBackground(selectedId)
+		} catch (e) {
+			errorMessage('Could not init local backgrounds', e)
+		}
+	})
 }
 
 function unsplash(init, event) {
