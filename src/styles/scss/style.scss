@@ -399,6 +399,8 @@
 			justify-content: center;
 			transition: visibility 0s 0s;
 
+			#hiddenlink { display: none }
+
 			.block_parent {
 				cursor: pointer;
 				position: relative;
@@ -502,8 +504,11 @@
 			}
 
 			&.small {
+				gap: 2em;
+
 				.block_parent {
-					width: 3em;
+					width: unset;
+					margin: unset;
 	
 					.block {
 						display: flex;
@@ -515,14 +520,15 @@
 							padding: 3px;
 							display: flex;
 							width: 2.5em; height: 2.5em;
+							margin: unset;
 						}
 						
 						span {
-							transition: opacity .1s;
+							transition: opacity .2s;
 							width: unset;
 							background-color: rgba(255, 255, 255, 0.236);
 							border-radius: 4px;
-							padding: 5px;
+							padding: 2px;
 							text-shadow: unset;
 							margin-bottom: 3px;
 							color: #333;
@@ -530,13 +536,15 @@
 							display: block;
 							visibility: hidden;
 							opacity: 0;
-							top: -40px;
+							top: -25px;
 							margin: auto;
 							left: 50%;
 							transform: translateX(-50%);
 							color: white;
 							overflow: visible;
 							border: 1px solid rgba(255,255,255,.075);
+							white-space: nowrap;
+							font-size: .9em;
 							@include frostedGlass();
 	
 							// &:after {
