@@ -75,53 +75,28 @@ function validateHideElem(hide) {
 	return res
 }
 
-function localDataMigration(local, version) {
-	if (version === 'new') {
-		delete local.customIndex
+function localDataMigration(local) {
+	delete local.customIndex
 
-		let idsList = []
+	let idsList = []
 
-		Object.values(local.custom).forEach((val, i) => {
-			const _id = randomString(6)
-			idsList.push(_id)
+	Object.values(local.custom).forEach((val, i) => {
+		const _id = randomString(6)
+		idsList.push(_id)
 
-			local = {
-				...local,
-				idsList,
-				selectedId: _id,
-				['custom_' + _id]: val,
-				['customThumb_' + _id]: local.customThumbnails[i],
-			}
-		})
+		local = {
+			...local,
+			idsList,
+			selectedId: _id,
+			['custom_' + _id]: val,
+			['customThumb_' + _id]: local.customThumbnails[i],
+		}
+	})
 
-		delete local.custom
-		delete local.customThumbnails
+	delete local.custom
+	delete local.customThumbnails
 
-		return local
-	}
-
-	if (version === 'old') {
-		delete local.idsList
-		delete local.selectedId
-
-		const getBgs = (which) =>
-			Object.entries(local)
-				.filter(([k, v]) => k.includes(which))
-				.map(([k, v]) => v) // Groups customs in an array
-
-		const full = getBgs('custom_')
-		const thumbs = getBgs('customThumb_')
-
-		Object.keys(local).forEach((key) => {
-			if (key.includes('custom')) delete local[key] // delete customs at root
-		})
-
-		local.custom = full
-		local.customThumbnails = thumbs
-		local.customIndex = 0
-
-		return local
-	}
+	return local
 }
 
 function bundleLinks(storage) {
