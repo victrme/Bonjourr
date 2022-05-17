@@ -75,6 +75,55 @@ function validateHideElem(hide) {
 	return res
 }
 
+function localDataMigration(local, version) {
+	if (version === 'new') {
+		delete local.customIndex
+
+		let idsList = []
+
+		Object.values(local.custom).forEach((val, i) => {
+			const _id = randomString(6)
+			idsList.push(_id)
+
+			local = {
+				...local,
+				idsList,
+				selectedId: _id,
+				['custom_' + _id]: val,
+				['customThumb_' + _id]: local.customThumbnails[i],
+			}
+		})
+
+		delete local.custom
+		delete local.customThumbnails
+
+		return local
+	}
+
+	if (version === 'old') {
+		delete local.idsList
+		delete local.selectedId
+
+		const getBgs = (which) =>
+			Object.entries(local)
+				.filter(([k, v]) => k.includes(which))
+				.map(([k, v]) => v) // Groups customs in an array
+
+		const full = getBgs('custom_')
+		const thumbs = getBgs('customThumb_')
+
+		Object.keys(local).forEach((key) => {
+			if (key.includes('custom')) delete local[key] // delete customs at root
+		})
+
+		local.custom = full
+		local.customThumbnails = thumbs
+		local.customIndex = 0
+
+		return local
+	}
+}
+
 function bundleLinks(storage) {
 	// 1.13.0: Returns an array of found links in storage
 	let res = []
@@ -381,7 +430,7 @@ function bonjourrDefaults(which) {
 					weight: testOS.windows || testOS.ios ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.13.1' },
+				about: { browser: detectPlatform(), version: '1.14.0' },
 			}
 
 		case 'local':

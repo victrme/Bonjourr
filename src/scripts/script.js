@@ -2919,14 +2919,25 @@ window.onload = function () {
 
 			// Version is different, can be new update or imports
 			else if (!data.about || data.about.version !== bonjourrDefaults('sync').about.version) {
-				data = filterImports(data)
+				// needs local to migrate backgrounds (1.13.2 => 1.14.0)
+				chrome.storage.local.get(null, (local) => {
+					local = localDataMigration(local, data?.about?.version === '1.14.0' ? 'new' : 'old')
+					data = filterImports(data)
 
-				// Change version in here
-				// Only after "different version" startup is triggered
-				data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
+					// Change version in here
+					// Only after "different version" startup is triggered
+					data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
 
-				chrome.storage.sync.clear()
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+					chrome.storage.sync.clear()
+					chrome.storage.sync.set(isExtension ? data : { import: data })
+
+					if (isExtension) chrome.storage.local.set(data)
+					else localStorage.bonjourrBackgrounds = local
+
+					startup(data)
+				})
+
+				return
 			}
 
 			startup(data)
