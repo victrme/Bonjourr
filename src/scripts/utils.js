@@ -44,13 +44,13 @@ function detectPlatform() {
 }
 
 const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
-	return agent.indexOf("edg/" || "edge") > -1
+	return agent.indexOf('edg/' || 'edge') > -1
 		? 'edge'
-		: agent.indexOf("chrome") > -1
+		: agent.indexOf('chrome') > -1
 		? 'chrome'
-		: agent.indexOf("firefox") > -1
+		: agent.indexOf('firefox') > -1
 		? 'firefox'
-		: agent.indexOf("safari") > -1
+		: agent.indexOf('safari') > -1
 		? 'safari'
 		: 'other'
 }
@@ -73,6 +73,30 @@ function validateHideElem(hide) {
 		: (res = false)
 
 	return res
+}
+
+function localDataMigration(local) {
+	delete local.customIndex
+
+	let idsList = []
+
+	Object.values(local.custom).forEach((val, i) => {
+		const _id = randomString(6)
+		idsList.push(_id)
+
+		local = {
+			...local,
+			idsList,
+			selectedId: _id,
+			['custom_' + _id]: val,
+			['customThumb_' + _id]: local.customThumbnails[i],
+		}
+	})
+
+	delete local.custom
+	delete local.customThumbnails
+
+	return local
 }
 
 function bundleLinks(storage) {
@@ -301,16 +325,17 @@ const langList = {
 	es: 'Español',
 	tr: 'Türkçe',
 	uk: 'Українська',
-	id: 'Indonesia'
+	id: 'Indonesia',
 }
 
 const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
 	// check if exact or similar languages are available
 	for (const [code] of Object.entries(langList)) {
-		if (navLang === code || navLang.startsWith(code.substring(0,2))) {
-			return code;
+		if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
+			return code
 		}
-	} return 'en' // if not, defaults to english
+	}
+	return 'en' // if not, defaults to english
 }
 
 function tradThis(str) {
@@ -380,13 +405,14 @@ function bonjourrDefaults(which) {
 					weight: testOS.windows || testOS.ios ? '400' : '300',
 				},
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.13.1' },
+				about: { browser: detectPlatform(), version: '1.14.0' },
 			}
 
 		case 'local':
 			return {
-				custom: [],
-				customThumbnails: [],
+				selectedId: '',
+				idsList: [],
+				quotesCache: [],
 				dynamicCache: {
 					noon: [],
 					day: [],

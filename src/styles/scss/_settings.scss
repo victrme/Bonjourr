@@ -356,16 +356,22 @@
 				margin: 0;
 				cursor: pointer;
 				overflow: hidden;
-				transition: box-shadow .2s, transform .2s;
+				transition: box-shadow 0.2s, transform 0.2s;
 				display: flex;
 				justify-content: center;
 				align-items: center;
 				overflow: hidden;
 				max-height: 75px;
 				position: relative;
+				border: 3px solid transparent;
+
 				@include radiusSettings();
 
-				img {	
+				&.selected {
+					border-color: $blue;
+				}
+
+				img {
 					width: 100%;
 					min-height: 100%;
 				}
@@ -384,17 +390,19 @@
 					transition: opacity 0.2s;
 					opacity: 0;
 					pointer-events: none;
-					box-shadow: rgba(0,0,0,.20) 0 2px 5px;
+					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
 					@include frostedGlass();
 				}
 
 				// instead of adding a populated class in JS
-				&:first-child, &:nth-child(2), &:nth-child(3) {
+				&:first-child,
+				&:nth-child(2),
+				&:nth-child(3) {
 					margin-top: 10px;
 				}
 
 				&:hover {
-					box-shadow: rgba(0,0,0,.25) 0 5px 15px;
+					box-shadow: rgba(0, 0, 0, 0.25) 0 5px 15px;
 					transform: scale(1.04);
 
 					button {
