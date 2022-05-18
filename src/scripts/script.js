@@ -2945,8 +2945,10 @@ window.onload = function () {
 					chrome.storage.sync.clear()
 					chrome.storage.sync.set(isExtension ? data : { import: data })
 
-					if (isExtension) chrome.storage.local.set({ ...local }, () => startup(data))
-					else {
+					if (isExtension) {
+						chrome.storage.local.clear()
+						chrome.storage.local.set({ ...local }, () => startup(data))
+					} else {
 						localStorage.bonjourrBackgrounds = local
 						startup(data)
 					}
