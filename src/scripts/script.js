@@ -1913,6 +1913,7 @@ function darkmode(choice, init) {
 function searchbar(event, that, init) {
 	const domsearchbar = id('searchbar')
 	const emptyButton = id('sb_empty')
+	const submitButton = id('sb_submit')
 
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
@@ -1989,32 +1990,42 @@ function searchbar(event, that, init) {
 		}
 	}
 
+	function submitSearch() {
+		let searchURL = ''
+		const isNewtab = domsearchbar.getAttribute('newtab') === 'true'
+		const engine = domsearchbar.getAttribute('engine')
+		const request = domsearchbar.getAttribute('request')
+		const lang = document.documentElement.getAttribute('lang')
+
+		// engineLocales est dans lang.js
+		if (engine === 'custom') searchURL = request
+		else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+
+		searchURL = searchURL.replace('%s', encodeURIComponent(domsearchbar.value))
+
+		isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
+	}
+
 	domsearchbar.onkeyup = function (e) {
 		if (e.key === 'Enter' && this.value.length > 0) {
-			let searchURL = ''
-			const isNewtab = e.target.getAttribute('newtab') === 'true'
-			const lang = document.documentElement.getAttribute('lang')
-			const engine = domsearchbar.getAttribute('engine')
-			const request = domsearchbar.getAttribute('request')
-
-			// engineLocales est dans lang.js
-			if (engine === 'custom') searchURL = request
-			else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
-
-			searchURL = searchURL.replace('%s', encodeURIComponent(this.value))
-
-			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
+			submitSearch()
 		}
 	}
 
 	domsearchbar.oninput = function () {
 		clas(emptyButton, this.value.length > 0, 'shown')
+		clas(submitButton, this.value.length > 0, 'shown')
 	}
 
 	emptyButton.onclick = function () {
 		domsearchbar.value = ''
 		domsearchbar.focus()
 		clas(this, false, 'shown')
+		clas(submitButton, false, 'shown')
+	}
+
+	submitButton.onclick = function () {
+		submitSearch()
 	}
 
 	event ? updateSearchbar() : initSearchbar()

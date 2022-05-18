@@ -259,7 +259,7 @@
 			height: 2.5em;
 			width: 100%;
 			padding: 0 1em;
-			padding-right: calc(3em + 10px);
+			padding-right: 6em;
 			font-size: 1.3em;
 			color: #fff;
 			border: 0;
@@ -294,22 +294,52 @@
 			visibility: hidden;
 		}
 
+		#sb_submit,
 		#sb_empty {
 			position: absolute;
-			right: 10px;
 			opacity: 0;
 			border: none;
 			color: #fff;
-			cursor: text;
-			margin-right: 1em;
-			border-radius: 1em;
 			font-size: inherit;
 			background-color: transparent;
 			transition: opacity 0.2s;
+			pointer-events: none;
 
 			&.shown {
 				opacity: 1;
 				cursor: pointer;
+				pointer-events: all;
+			}
+		}
+
+		#sb_empty {
+			right: 5.5em;
+			position: absolute;
+			padding-right: 1.5em;
+			border-right: 1px solid #fff4;
+			cursor: text;
+		}
+
+		#sb_submit {
+			margin: 0;
+			right: 0.8em;
+			padding: 0.3em 1em;
+			border-radius: 0.5em;
+			background-color: #fff4;
+			transition: opacity 0.2s, filter 0.1s, transform 0.1s;
+
+			img {
+				margin-top: 3px;
+				height: 1.2em;
+			}
+
+			&:hover {
+				filter: brightness(0.9);
+			}
+
+			&:active {
+				filter: brightness(0.8);
+				transform: scale(0.94);
 			}
 		}
 	}
@@ -399,15 +429,17 @@
 			justify-content: center;
 			transition: visibility 0s 0s;
 
-			#hiddenlink { display: none }
+			#hiddenlink {
+				display: none;
+			}
 
 			.block_parent {
 				cursor: pointer;
 				position: relative;
-				transition: width .3s;
+				transition: width 0.3s;
 				margin: 1em;
 				width: 5em;
-	
+
 				.block {
 					.l_icon_wrap {
 						overflow: hidden;
@@ -420,36 +452,36 @@
 						padding: 0.4em;
 						box-shadow: $textShadow;
 						box-sizing: border-box;
-						transition: transform 0.1s linear, box-shadow 0.1s, width .3s, height .3s;
-	
+						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, height 0.3s;
+
 						img {
 							border-radius: 0.5em;
 						}
-	
+
 						.l_icon {
 							width: 100%;
 							pointer-events: none;
 						}
-	
+
 						&.selected {
 							border-color: $blue;
 							transform: scale(1.1);
 							filter: brightness(0.85);
 						}
-	
+
 						&:hover {
 							border-color: $blue;
 							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
 							transform: scale(1.1);
 						}
-	
+
 						&:active {
 							filter: brightness(0.85);
 							transform: scale(1.04);
 							transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 						}
 					}
-	
+
 					span {
 						display: block;
 						width: 100%;
@@ -460,7 +492,7 @@
 						text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 					}
 				}
-	
+
 				button.remove {
 					position: absolute;
 					display: none;
@@ -475,7 +507,7 @@
 					z-index: 3;
 					cursor: default;
 					transition: all 0.1s;
-	
+
 					img {
 						height: 0.9em;
 						width: 0.9em;
@@ -484,16 +516,16 @@
 						left: 50%;
 						transform: translate(-50%, -50%);
 					}
-	
+
 					&.visible {
 						cursor: pointer;
 					}
-	
+
 					&:hover {
 						background: #bbb;
 					}
 				}
-	
+
 				&.removed {
 					transform: scale(0);
 					overflow: hidden;
@@ -509,22 +541,23 @@
 				.block_parent {
 					width: unset;
 					margin: unset;
-	
+
 					.block {
 						display: flex;
 						flex-flow: column-reverse;
 						position: relative;
-	
+
 						.l_icon_wrap {
 							border-radius: 6px;
 							padding: 3px;
 							display: flex;
-							width: 2.5em; height: 2.5em;
+							width: 2.5em;
+							height: 2.5em;
 							margin: unset;
 						}
-						
+
 						span {
-							transition: opacity .2s;
+							transition: opacity 0.2s;
 							width: unset;
 							background-color: rgba(255, 255, 255, 0.236);
 							border-radius: 4px;
@@ -542,11 +575,11 @@
 							transform: translateX(-50%);
 							color: white;
 							overflow: visible;
-							border: 1px solid rgba(255,255,255,.075);
+							border: 1px solid rgba(255, 255, 255, 0.075);
 							white-space: nowrap;
-							font-size: .9em;
+							font-size: 0.9em;
 							@include frostedGlass();
-	
+
 							// &:after {
 							// 	content: '';
 							// 	position: absolute;
@@ -554,16 +587,14 @@
 							// 	left: calc(50% - 7px);
 							// 	border-top: 7px solid rgb(238, 238, 238, .4);
 							// 	border-left: 7px solid transparent;
-							// 	border-right: 7px solid transparent; 
+							// 	border-right: 7px solid transparent;
 							// }
-							
 						}
-		
+
 						&:hover span {
 							opacity: 1;
 							visibility: visible;
 						}
-		
 					}
 				}
 			}
