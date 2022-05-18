@@ -1176,6 +1176,7 @@ function imgBackground(val, loadTime, init) {
 		const applyBackground = () => {
 			id('background_overlay').style.opacity = `1`
 			id('background').style.backgroundImage = `url(${val})`
+			localIsLoading = false
 		}
 
 		init ? applyBackground() : setTimeout(applyBackground, 400)
@@ -1281,6 +1282,7 @@ function localBackgrounds(init, event) {
 			})
 		}
 
+		localIsLoading = true
 		id('background_overlay').style.opacity = '0'
 		reader.readAsDataURL(file)
 	}
@@ -1351,7 +1353,7 @@ function localBackgrounds(init, event) {
 		if (isSelected) thumbnailSelection(_id)
 
 		i.onmouseup = (e) => {
-			if (e.button !== 0) return
+			if (e.button !== 0 || localIsLoading) return
 
 			const _id = e.target.parentElement.id
 			const bgKey = 'custom_' + _id
@@ -1362,6 +1364,7 @@ function localBackgrounds(init, event) {
 					thumbnailSelection(_id)
 
 					id('background_overlay').style.opacity = `0`
+					localIsLoading = true
 					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
 					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulu
 				}
@@ -1369,7 +1372,7 @@ function localBackgrounds(init, event) {
 		}
 
 		rem.onmouseup = (e) => {
-			if (e.button !== 0) {
+			if (e.button !== 0 || localIsLoading) {
 				return
 			}
 
@@ -1436,6 +1439,8 @@ function localBackgrounds(init, event) {
 		chrome.storage.sync.get('custom_every', (sync) => {
 			id('background_overlay').style.opacity = 0
 			turnRefreshButton(button, true)
+			localIsLoading = true
+
 			setTimeout(
 				() =>
 					localBackgrounds({
@@ -2855,6 +2860,7 @@ const dominterface = id('interface'),
 	}
 
 let lazyClockInterval = setTimeout(() => {}, 0),
+	localIsLoading = false,
 	loadtimeStart = performance.now(),
 	sunset = 0,
 	sunrise = 0
