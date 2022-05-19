@@ -1072,6 +1072,22 @@ const dict = {
 		uk: 'Частота',
 		id: 'Frekuensi',
 	},
+	Daylight: {
+		fr: 'Lumière du jour',
+		sv: 'Dagsljus',
+		nl: 'Daglicht',
+		pl: 'Światło dzienne',
+		pt_BR: 'Luz do dia',
+		ru: 'дневное время',
+		zh_CN: '白天',
+		sk: 'Denné svetlo',
+		de: 'Tageslicht',
+		it: 'Luce del giorno',
+		es: 'Luz diario',
+		tr: 'Gün ışığı',
+		uk: 'денне світло',
+		id: 'Siang hari',
+	},
 	'Every tab': {
 		fr: 'Chaque onglet',
 		sv: 'Varje flik',
@@ -1297,7 +1313,7 @@ const dict = {
 		id: 'Apa saja emojo',
 	},
 	'New tab title': {
-		fr: "Titre du nouvel onglet",
+		fr: 'Titre du nouvel onglet',
 		sv: 'New tab title',
 		nl: 'New tab title',
 		pl: 'New tab title',
@@ -1312,7 +1328,7 @@ const dict = {
 		uk: 'New tab title',
 		id: 'New tab title',
 	},
-	
+
 	'Hide elements': {
 		fr: 'Cacher des éléments',
 		sv: 'Dölj element',

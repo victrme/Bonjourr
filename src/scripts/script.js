@@ -1216,6 +1216,7 @@ function freqControl(state, every, last) {
 	if (every === 'hour') return changed.date || changed.hour
 	if (every === 'tabs') return true
 	if (every === 'pause') return last === 0
+	if (every === 'period') return periodOfDay(sunTime()) !== periodOfDay(sunTime(), lastDate)
 }
 
 function localBackgrounds(init, event) {
@@ -1651,17 +1652,7 @@ function unsplash(init, event) {
 			return 'user'
 		}
 
-		// Transition day and night with noon & evening collections
-		// if clock is + /- 60 min around sunrise/set
-		const { now, rise, set } = sunTime()
-
-		if (now >= 0 && now <= rise - 60) return 'night'
-		if (now <= rise + 60) return 'noon'
-		if (now <= set - 60) return 'day'
-		if (now <= set + 60) return 'evening'
-		if (now >= set + 60) return 'night'
-
-		return 'day'
+		return periodOfDay(sunTime())
 	}
 
 	function collectionControl(dynamic) {

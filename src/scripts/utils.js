@@ -59,6 +59,23 @@ const getFavicon = () => {
 	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
 }
 
+function periodOfDay(sunTime, time) {
+	// Transition day and night with noon & evening collections
+	// if clock is + /- 60 min around sunrise/set
+	const { rise, set, now } = sunTime
+
+	if (!time) time = now // no time specified ? get current from sunTime
+	else time = minutator(new Date(time)) // everything is in minutes here
+
+	if (time >= 0 && time <= rise - 60) return 'night'
+	if (time <= rise + 60) return 'noon'
+	if (time <= set - 60) return 'day'
+	if (time <= set + 60) return 'evening'
+	if (time >= set + 60) return 'night'
+
+	return 'day'
+}
+
 function validateHideElem(hide) {
 	let res = true
 
