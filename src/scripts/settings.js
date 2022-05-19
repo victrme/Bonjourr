@@ -277,7 +277,7 @@ function initParams(data, settingsDom) {
 	//custom bg
 
 	paramId('i_bgfile').onchange = function () {
-		localBackgrounds(null, { is: 'newfile', file: this.files[0] })
+		localBackgrounds(null, { is: 'newfile', file: this.files })
 	}
 
 	paramId('i_blur').oninput = function () {

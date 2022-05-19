@@ -1262,37 +1262,55 @@ function localBackgrounds(init, event) {
 		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
 	}
 
-	function addNewImage(file) {
-		let reader = new FileReader()
+	function addNewImage(files) {
+		files = [...files] // fileList to Array
+		let filesIdsList = []
+		let selected = ''
 
-		reader.onload = function (event) {
-			const result = event.target.result
+		files.forEach(() => {
 			const _id = randomString(6)
+			selected = _id
+			filesIdsList.push(_id)
+		})
 
-			if (isOnlineStorageAtCapacity(result)) {
-				return console.warn('Uploaded image was not saved') // Exit with warning before saving image
+		files.forEach((file, i) => {
+			let reader = new FileReader()
+
+			reader.onload = function (event) {
+				const result = event.target.result
+
+				if (isOnlineStorageAtCapacity(result)) {
+					return console.warn('Uploaded image was not saved') // Exit with warning before saving image
+				}
+
+				compress(result, 'thumbnail', filesIdsList[i])
+				compress(result)
+
+				chrome.storage.local.set({ ['custom_' + filesIdsList[i]]: result })
 			}
 
-			compress(result, 'thumbnail', _id)
-			compress(result)
+			localIsLoading = true
+			id('background_overlay').style.opacity = '0'
+			reader.readAsDataURL(file)
+		})
 
-			// Adds to list, becomes selected and save background
-			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
-				let list = [...local.idsList]
-				list.push(_id)
+		// Adds to list, becomes selected and save background
+		chrome.storage.local.get(['idsList'], (local) => {
+			let list = [...local.idsList]
+			list.push(...filesIdsList)
 
-				chrome.storage.local.set({
-					...local,
-					idsList: list,
-					selectedId: _id,
-					['custom_' + _id]: result,
-				})
+			if (local.idsList.length === 0) {
+				chrome.storage.sync.set({ background_type: 'custom' }) // change type si premier local
+			}
+
+			setTimeout(() => thumbnailSelection(selected), 400)
+
+			chrome.storage.local.set({
+				...local,
+				idsList: list,
+				selectedId: selected,
 			})
-		}
-
-		localIsLoading = true
-		id('background_overlay').style.opacity = '0'
-		reader.readAsDataURL(file)
+		})
 	}
 
 	function compress(e, state, _id) {
@@ -1807,10 +1825,7 @@ function unsplash(init, event) {
 	}
 
 	if (init?.dynamic) {
-		let start = performance.now()
 		chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function initDynamic(local) {
-			console.log(performance.now() - start)
-
 			try {
 				// Real init start
 				const collecId = collectionControl(init.dynamic)
