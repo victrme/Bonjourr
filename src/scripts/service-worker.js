@@ -13,7 +13,7 @@ const filesToChache = [
 	'/src/assets/monochrome.png',
 	'/src/assets/apple-touch-icon.png',
 	'/src/assets/interface/gear.svg',
-	'/src/assets/interface/loading.gif',
+	'/src/assets/interface/loading.svg',
 ]
 
 const weatherList = [

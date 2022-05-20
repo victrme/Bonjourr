@@ -2178,8 +2178,8 @@ const dict = {
 		uk: 'Класичний',
 		id: 'Klasik',
 	},
-	'Custom Font': {
-		fr: 'Police personnalisée',
+	'Fonts': {
+		fr: 'Polices',
 		sv: 'Anpassat teckensnitt',
 		nl: 'Aangepast lettertype',
 		pl: 'Czcionka Niestandardowa',

@@ -361,10 +361,13 @@
 				justify-content: center;
 				align-items: center;
 				overflow: hidden;
-				max-height: 75px;
+				height: 75px;
 				position: relative;
 				border: 3px solid transparent;
-
+				background-image: url('/src/assets/interface/loading.svg');
+				background-size: 4em;
+				background-position: center center;
+				background-repeat: no-repeat;
 				@include radiusSettings();
 
 				&.selected {
@@ -374,6 +377,7 @@
 				img {
 					width: 100%;
 					min-height: 100%;
+					background-color: transparent;
 				}
 
 				button {

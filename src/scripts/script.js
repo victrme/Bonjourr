@@ -249,7 +249,7 @@ function quickLinks(event, that, init) {
 				// Load icons one by one
 				links.map(async (link, index) => {
 					const dom = blocklist[index].icon
-					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => link.icon.includes(x))
+					const needsToChange = ['api.faviconkit.com', 'loading.svg'].some((x) => link.icon.includes(x))
 
 					// Fetch new icons if matches these urls
 					if (needsToChange) {
@@ -271,7 +271,7 @@ function quickLinks(event, that, init) {
 
 	async function fetchNewIcon(dom, url) {
 		// Apply loading gif d'abord
-		dom.src = 'src/assets/interface/loading.gif'
+		dom.src = 'src/assets/interface/loading.svg'
 
 		const img = new Image()
 		const a = document.createElement('a')
@@ -603,7 +603,7 @@ function quickLinks(event, that, init) {
 				_id: 'links' + randomString(6),
 				order: 0,
 				title: stringMaxSize(title, 64),
-				icon: 'src/assets/interface/loading.gif',
+				icon: 'src/assets/interface/loading.svg',
 				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 			}
 		}
@@ -2534,6 +2534,13 @@ function customFont(data, event) {
 	if (event) triggerEvent(event)
 }
 
+function textShadow(init, event) {
+	const potency = init ? init : event
+	id('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${potency})`
+
+	if (event) slowRange({ textShadow: potency })
+}
+
 function customCss(init, event) {
 	const styleHead = id('styles')
 
@@ -2859,6 +2866,7 @@ function startup(data) {
 
 	customFont(data.font)
 	customSize(data.font)
+	textShadow(data.textShadow)
 
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
@@ -2868,6 +2876,8 @@ function startup(data) {
 	searchbar(null, null, data.searchbar)
 	quotes(null, null, data)
 	showPopup(data.reviewPopup)
+
+	console.log(data.textShadow);
 
 	customCss(data.css)
 	hideElem(data.hide)

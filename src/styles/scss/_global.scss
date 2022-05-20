@@ -160,7 +160,7 @@ body {
 		#linkblocks {
 			flex-grow: 1;
 			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
-			will-change: transform, flex-grow;
+			// will-change: transform, flex-grow;
 		}
 
 		#time-container,
@@ -206,7 +206,7 @@ body {
 		.as_sbopacity {max-height: 60px}
 		.as_forecast {max-height: 60px}
 		.as_temp {max-height: 60px}
-		.as_fonts {max-height: 240px}
+		.as_fonts {max-height: 300px}
 		.as_css {max-height: 3100px}
 		.as_impexp {max-height: 220px}
 		.as_quote_type {max-height: 130px}

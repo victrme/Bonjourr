@@ -49,6 +49,7 @@ function initParams(data, settingsDom) {
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
 	initInput('i_size', isThereData('font', 'size'), mobilecheck() ? 11 : 14)
+	initInput('i_textshadow', data.textShadow)
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_linknewtab', data.linknewtab)
@@ -443,6 +444,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_size').oninput = function () {
 		customSize(null, this.value)
+	}
+
+	paramId('i_textshadow').oninput = function () {
+		textShadow(null, this.value)
 	}
 
 	// Reduces opacity to better see interface size changes
