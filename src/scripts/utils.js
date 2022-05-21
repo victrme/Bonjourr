@@ -420,7 +420,7 @@ function bonjourrDefaults(which) {
 					family: '',
 					size: '14',
 					availWeights: [],
-					weight: testOS.windows || testOS.ios ? '400' : '300',
+					weight: testOS.windows ? '400' : '300',
 				},
 				textShadow: 0.2,
 				hide: [[0, 0], [0, 0, 0], [0], [0]],

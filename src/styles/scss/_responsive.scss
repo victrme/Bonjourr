@@ -19,9 +19,6 @@
 	}
 
 	#interface {
-		// min-height: 90vh;
-		// padding-bottom: 10vh;
-
 		#quotes_container {
 			width: 90vw;
 
@@ -41,19 +38,15 @@
 		// Tooltip (?) centered when span wrap
 		&.all .as_collection {
 			max-height: 140px;
+			
 			.wrapper span {
 				align-items: center;
 			}
 		}
 
-		input[type='text'] {
-			width: 135px;
-		}
-
-		.freq_wrap > div,
-		input[type='range'],
-		select {
-			width: 135px;
+		.param {
+			margin-right: 12px;
+			margin-left: 12px;
 		}
 	}
 

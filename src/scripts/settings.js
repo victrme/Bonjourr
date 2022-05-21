@@ -453,8 +453,12 @@ function initParams(data, settingsDom) {
 	// Reduces opacity to better see interface size changes
 	if (mobilecheck()) {
 		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
-		paramId('i_size').addEventListener('touchstart', () => touchHandler(true), { passive: true })
-		paramId('i_size').addEventListener('touchend', () => touchHandler(false), { passive: true })
+		const rangeInputs = document.querySelectorAll(input[type='range'])
+
+		rangeInputs.forEach(function(input) {
+			paramId(input).addEventListener('touchstart', () => touchHandler(true), { passive: true })
+			paramId(input).addEventListener('touchend', () => touchHandler(false), { passive: true })
+		})
 	}
 
 	paramId('i_row').oninput = function () {
