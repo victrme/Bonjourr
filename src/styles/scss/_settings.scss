@@ -172,16 +172,17 @@
 		height: 20px;
 		border-radius: 100%;
 		cursor: pointer;
-		transition-duration: .1s;
-
+		box-sizing: border-box;
+		transition: background-color .1s, transform .1s;
 		border: 1px solid #eaeaee;
+		font-size: .9em;
 
 		&:hover {
 			background-color:$focusedGrey;
 		}
 
 		&:active {
-			transform: scale(1.3);
+			transform: scale(1.2);
 		}
 
 		@include allCentered();
@@ -227,7 +228,7 @@
 
 	.param {
 		background-color: #ffffff;
-		padding: 0.75em 1.3em;
+		padding: $settingsMargin 1.3em;
 
 		@include radiusSettings();
 		@include marginSettings();
@@ -463,7 +464,7 @@
 			font-size: small;
 			margin-right: 5px;
 			width: 100%;
-			height: 2.35em;
+			height: $inputHeight;
 			opacity: 1;
 			transition: all 0.2s;
 
@@ -601,7 +602,7 @@
 		max-height: 3000px;
 		resize: vertical;
 		border: none;
-		padding: 0.75em 1.3em;
+		padding: $settingsMargin 1.3em;
 		font-family: 'SF Mono', 'Courier New', Courier, monospace;
 		box-sizing: border-box;
 		@include radiusSettings();
@@ -654,7 +655,7 @@
 			.socialIcons {
 				display: flex;
 				justify-content: space-between;
-				gap: 12px;
+				gap: 14px;
 
 				a {
 					display: flex;

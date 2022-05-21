@@ -7,7 +7,7 @@ $purewhite: white;
 $pureblack: black;
 
 $blue: #007aff;
-$green: #4bd663;
+$green: #35c759;
 $red: #fe3b31;
 $settingsGrey: #f2f2f7;
 $inputGrey: #eaeaee;
@@ -16,6 +16,9 @@ $borderGrey: #c8c7cc;
 $placeholderGrey: #7c7d7e;
 $greyish: #3a3a3a;
 $blackish: #222;
+
+$inputHeight: 2.35em;
+$settingsMargin: 0.65em;
 
 $thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
 
@@ -50,7 +53,7 @@ body {
 	hr {
 		border: none;
 		border-bottom: 1px solid $borderGrey;
-		margin: 0.75em 0;
+		margin: $settingsMargin 0;
 		display: block;
 	}
 
@@ -254,7 +257,7 @@ body {
 	#i_refresh,
 	#i_qtrefresh,
 	select {
-		height: 2.35em;
+		height: $inputHeight;
 		border-radius: 8.5px;
 		padding-left: 10px;
 		border: 1px solid $inputGrey;
@@ -263,7 +266,7 @@ body {
 	}
 
 	input[type='text'] {
-		width: 140px;
+		width: 150px;
 	}
 
 	input[type='range'],
@@ -299,7 +302,6 @@ body {
 		padding-left: 10px;
 		border-radius: 8.5px;
 		border: 0;
-		height: 2.35em;
 		color: $blackish;
 		background-color: $inputGrey;
 	}
@@ -315,6 +317,11 @@ body {
 		color: $blue;
 		cursor: pointer;
 		font-size: 14px;
+	}
+
+	input, select, #i_export {
+		box-sizing: border-box;
+		height: $inputHeight;
 	}
 
 	/* Switch */
@@ -383,6 +390,7 @@ body {
 		border-radius: 1.5rem;
 		opacity: 1;
 		cursor: grab;
+		margin: 0;
 
 		&:active {
 			cursor: grabbing;
