@@ -716,8 +716,12 @@ function settingsInit(data) {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
 		const noSettings = has(id('settings'), 'shown') === false
+		const noEditLinks = has(id('editlink'), 'shown') === false
 
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings) id('searchbar').focus()
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEditLinks) {
+			id('searchbar').focus()
+		}
+
 		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
 
