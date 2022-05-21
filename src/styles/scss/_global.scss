@@ -17,7 +17,8 @@ $placeholderGrey: #7c7d7e;
 $greyish: #3a3a3a;
 $blackish: #222;
 
-$thumbShadow: 0px 1px 3px 1.5px #cccccc;
+$thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
+
 $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
@@ -230,9 +231,9 @@ body {
 	select,
 	input,
 	hr {
-		transition-duration: 0.6s;
+		transition-duration: 0.4s;
 		transition-timing-function: $easeOutThree;
-		transition-property: background-color, color, border, border-color;
+		transition-property: background-color, color, border, border-color, transform;
 	}
 
 	input:focus-visible + .slider {
@@ -320,8 +321,8 @@ body {
 	.switch {
 		position: relative;
 		display: inline-block;
-		width: 56px;
-		height: 34px;
+		width: 51px;
+		height: 31px;
 		margin-left: 1em;
 
 		input {
@@ -335,7 +336,7 @@ body {
 		}
 
 		input:checked + .slider:before {
-			transform: translateX(22px);
+			transform: translateX(20px);
 		}
 
 		.slider {
@@ -346,22 +347,23 @@ body {
 			right: 0;
 			bottom: 0;
 			background-color: $inputGrey;
-			-webkit-transition: 0.4s;
-			transition: 0.4s;
+			-webkit-transition: 0.15s;
+			transition: 0.15s;
 			border-radius: 34px;
 
 			&:before {
 				position: absolute;
 				content: '';
-				height: 28px;
-				width: 28px;
-				left: 3px;
-				bottom: 3px;
+				height: 27px;
+				width: 27px;
+				top: 2px;
+				left: 2px;
+				// bottom: 3px;
 				background-color: $purewhite;
-				-webkit-transition: 0.4s;
-				transition: 0.4s;
+				-webkit-transition: 0.3s;
+				transition: 0.3s;
 				border-radius: 50%;
-				box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
+				box-shadow: $thumbShadow;
 			}
 
 			&:hover {
@@ -380,6 +382,11 @@ body {
 		background-color: $focusedGrey;
 		border-radius: 1.5rem;
 		opacity: 1;
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
 
 		/* Firefox */
 		&::-moz-range-track {

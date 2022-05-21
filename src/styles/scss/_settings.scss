@@ -90,7 +90,7 @@
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
 	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
-	// transform: translateX(-100%)!important;
+	transform: translateX(-100%)!important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -156,6 +156,7 @@
 
 		.tooltip {
 			background-color: $inputGrey;
+			border: 1px solid #e3e3ea;
 		}
 	}
 
@@ -167,10 +168,21 @@
 	.tooltip {
 		background-color: $settingsGrey;
 		color: $placeholderGrey;
-		padding: 0 6px;
+		width: 20px;
 		height: 20px;
 		border-radius: 100%;
 		cursor: pointer;
+		transition-duration: .1s;
+
+		border: 1px solid #eaeaee;
+
+		&:hover {
+			background-color:$focusedGrey;
+		}
+
+		&:active {
+			transform: scale(1.3);
+		}
 
 		@include allCentered();
 	}
@@ -275,7 +287,13 @@
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
+		transition: background-color .1s, border-color .1s;
 		background-color: $settingsGrey;
+
+		&:hover {
+			background-color: $focusedGrey;
+			border-color: #b7b7b7;
+		}
 	}
 
 	.freq_wrap > div {
@@ -584,7 +602,7 @@
 		resize: vertical;
 		border: none;
 		padding: 0.75em 1.3em;
-		font-family: 'Courier New', Courier, monospace;
+		font-family: 'SF Mono', 'Courier New', Courier, monospace;
 		box-sizing: border-box;
 		@include radiusSettings();
 		@include marginSettings();
@@ -636,18 +654,20 @@
 			.socialIcons {
 				display: flex;
 				justify-content: space-between;
+				gap: 12px;
 
 				a {
 					display: flex;
 					align-items: center;
-					margin-right: 14px;
-					&:last-child {
-						margin: unset;
-					}
+					transition: transform .15s;
 
 					svg {
 						height: 1.25em;
 						fill: $blue;
+					}
+
+					&:hover {
+						transform: scale(1.1);
 					}
 				}
 			}
