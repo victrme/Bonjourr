@@ -367,6 +367,7 @@ function bonjourrDefaults(which) {
 				usdate: false,
 				showall: false,
 				linksrow: 6,
+				link_style: 'large',
 				cssHeight: 80,
 				reviewPopup: 0,
 				background_blur: 15,

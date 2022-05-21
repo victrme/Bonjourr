@@ -235,8 +235,17 @@ function quickLinks(event, that, init) {
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks_inner')
 	let hovered = { parent: undefined, link: {}, index: 0 }
+	
+	if (init || event === 'link_style') {
+		const link_style = init?.link_style ? init.link_style : that
+		const allStyles = ['large', 'small', 'tiny']
 
-	if (init?.smallLinks) domlinkblocks.classList.add('small')
+		allStyles.forEach(function(style) {
+			style === link_style
+				? domlinkblocks.classList.add(style)
+				: domlinkblocks.classList.remove(style) 
+		})
+	}
 
 	async function initblocks(links) {
 		if (links.length > 0) {
@@ -651,9 +660,8 @@ function quickLinks(event, that, init) {
 			break
 		}
 
-		case 'smallLinks': {
-			chrome.storage.sync.set({ smallLinks: that.checked ? true : false })
-			domlinkblocks.classList.toggle('small')
+		case 'link_style': {
+			chrome.storage.sync.set({ link_style: that })
 			break
 		}
 	}
@@ -2876,8 +2884,6 @@ function startup(data) {
 	searchbar(null, null, data.searchbar)
 	quotes(null, null, data)
 	showPopup(data.reviewPopup)
-
-	console.log(data.textShadow);
 
 	customCss(data.css)
 	hideElem(data.hide)
