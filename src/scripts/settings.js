@@ -27,7 +27,7 @@ function initParams(data, settingsDom) {
 
 	initInput('cssEditor', data.css, '')
 	initInput('i_row', data.linksrow, 8)
-	initCheckbox('i_link_style', data.link_style)
+	initInput('i_link_style', data.link_style)
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
