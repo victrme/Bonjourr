@@ -21,6 +21,69 @@
 				<span class="trn selector_span">Language</span>
 				<select id="i_lang" class="lang"></select>
 			</div>
+
+			<hr />
+
+			<div class="darkmode wrapper">
+				<span class="trn selector_span">Dark mode</span>
+				<select id="i_dark" class="theme">
+					<option value="system" class="trn">System</option>
+					<option value="auto" class="trn">At night</option>
+					<option value="enable" class="trn">Enabled</option>
+					<option value="disable" class="trn">Disabled</option>
+				</select>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Greeting</span>
+				<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
+			</div>
+
+			<div class="as as_visuals">
+				<hr />
+
+				<div class="wrapper" id="tabIcon">
+					<span>
+						<span class="trn">New tab icon</span>
+					</span>
+
+					<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="✴" />
+				</div>
+
+				<hr />
+
+				<div class="wrapper" id="tabtitle">
+					<span>
+						<span class="trn">New tab title</span>
+					</span>
+
+					<input type="text" name="tabtitle" id="i_tabtitle" maxlength="12" placeholder="New tab" />
+				</div>
+
+				<hr />
+
+				<span class="trn">Hide elements</span>
+
+				<div id="hideelem">
+					<div>
+						<button he_row="0" he_col="0" data="time-container" class="trn">Clock</button>
+						<button he_row="0" he_col="1" data="date" class="trn">Date</button>
+					</div>
+					<div>
+						<button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button>
+						<button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button>
+						<button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button>
+					</div>
+					<div>
+						<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
+					</div>
+					<div>
+						<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div>
@@ -88,7 +151,7 @@
 	</div>
 	<div>
 		<div class="titleContainer">
-			<h5 class="trn">Visuals</h5>
+			<h5 class="trn">Background</h5>
 		</div>
 
 		<div class="param">
@@ -179,69 +242,6 @@
 					value=".80"
 					step=".01"
 				/>
-			</div>
-
-			<hr />
-
-			<div class="darkmode wrapper">
-				<span class="trn selector_span">Dark mode</span>
-				<select id="i_dark" class="theme">
-					<option value="system" class="trn">System</option>
-					<option value="auto" class="trn">At night</option>
-					<option value="enable" class="trn">Enabled</option>
-					<option value="disable" class="trn">Disabled</option>
-				</select>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">Greeting</span>
-				<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
-			</div>
-
-			<div class="as as_visuals">
-				<hr />
-
-				<div class="wrapper" id="tabIcon">
-					<span>
-						<span class="trn">New tab icon</span>
-					</span>
-
-					<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="✴" />
-				</div>
-
-				<hr />
-
-				<div class="wrapper" id="tabtitle">
-					<span>
-						<span class="trn">New tab title</span>
-					</span>
-
-					<input type="text" name="tabtitle" id="i_tabtitle" maxlength="12" placeholder="New tab" />
-				</div>
-
-				<hr />
-
-				<span class="trn">Hide elements</span>
-
-				<div id="hideelem">
-					<div>
-						<button he_row="0" he_col="0" data="time-container" class="trn">Clock</button>
-						<button he_row="0" he_col="1" data="date" class="trn">Date</button>
-					</div>
-					<div>
-						<button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button>
-						<button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button>
-						<button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button>
-					</div>
-					<div>
-						<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
-					</div>
-					<div>
-						<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
