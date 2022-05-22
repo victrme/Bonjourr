@@ -280,20 +280,6 @@
 			}
 		}
 
-		&.shown {
-			margin: 3em auto;
-			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
-
-			#searchbar:focus {
-				opacity: 1;
-			}
-		}
-
-		&.hidden {
-			flex-grow: 0;
-			visibility: hidden;
-		}
-
 		#sb_submit,
 		#sb_empty {
 			position: absolute;
@@ -341,6 +327,35 @@
 				filter: brightness(0.8);
 				transform: scale(0.94);
 			}
+		}
+
+		&.opaque {
+			#sb_empty {
+				color: #222;
+				border-color: #b9b9b9;
+			}
+
+			#sb_submit {
+				background-color: #bbb4;
+				img {
+					filter: invert(1);
+					opacity: .7;
+				}
+			}
+		}
+
+		&.shown {
+			margin: 3em auto;
+			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
+
+			#searchbar:focus {
+				opacity: 1;
+			}
+		}
+
+		&.hidden {
+			flex-grow: 0;
+			visibility: hidden;
 		}
 	}
 
