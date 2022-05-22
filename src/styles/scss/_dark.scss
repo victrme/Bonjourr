@@ -76,6 +76,11 @@
 	#settings {
 		background-color: $pureblack;
 
+		.changelog {
+			background-color: #1c1c1e;
+			color: #fff;
+		}
+
 		.tooltip {
 			border-color: transparent;
 			background-color: $greyish;

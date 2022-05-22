@@ -1939,7 +1939,8 @@ function searchbar(event, that, init) {
 			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
 		)
 
-		emptyButton.style.color = value > 0.4 ? '#222' : '#fff'
+		if (value > 0.4) id('sb_container').classList.add('opaque') 
+		else id('sb_container').classList.remove('opaque') 
 	}
 
 	function updateSearchbar() {

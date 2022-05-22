@@ -66,6 +66,25 @@
 				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
+
+		// &.changelog:before {
+		&:before {
+			opacity: 0;
+		}
+	}
+
+	// &.changelog:before {
+	&:before {
+		content: '';
+		background-color: #35c759;
+		width: 7px;
+		height: 7px;
+		position: absolute;
+		left: 5px;
+		top: 5px;
+		border-radius: 100%;
+		z-index: 10;
+		transition: opacity .3s;
 	}
 }
 
@@ -96,6 +115,45 @@
 		-webkit-transform: translateX(-100%);
 		transform: translateX(-100%);
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+	}
+
+	.changelog {
+		margin-top: 1em;
+		background-color: #ffffff;
+		padding: $settingsMargin 1.3em;
+		text-align: justify;
+		line-height: 1.3em;
+		position: relative;
+		transition: transform .3s $easeOutThree;
+		@include radiusSettings();
+		@include marginSettings();
+		padding-right: 3em;
+
+		#dismiss {
+			display: inline-block;
+			margin-top: .5em;
+			color: $blue;
+		}
+
+		&:after {
+			content: url('/src/assets/interface/chevron.svg');
+			position: absolute;
+			width: 12px;
+			right: 1.2em;
+			top: 50%;
+			transform: translateY(-50%);
+			transition: right .2s $easeOutThree;
+		}
+
+		&:hover {
+			box-shadow: rgba(0, 0, 0, 0.1) 0 5px 10px;
+			transform: scale(1.02);
+			cursor: pointer;
+
+			&:after {
+				right: .9em;
+			}
+		}
 	}
 
 	&.init {
@@ -375,7 +433,7 @@
 				margin: 0;
 				cursor: pointer;
 				overflow: hidden;
-				transition: box-shadow 0.2s, transform 0.2s;
+				transition: box-shadow 0.2s $easeOutThree, transform 0.2s $easeOutThree;
 				display: flex;
 				justify-content: center;
 				align-items: center;
