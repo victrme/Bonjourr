@@ -117,44 +117,58 @@
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 	}
 
-	.changelog {
-		margin-top: 1em;
-		background-color: #ffffff;
-		padding: $settingsMargin 1.3em;
-		text-align: justify;
-		line-height: 1.3em;
-		position: relative;
-		transition: transform .3s $easeOutThree;
-		@include radiusSettings();
-		@include marginSettings();
-		padding-right: 3em;
+	.changelogContainer {
+		height: 105px;
+		transition: height .3s $easeOutThree;
 
-		#dismiss {
-			display: inline-block;
-			margin-top: .5em;
-			color: $blue;
-		}
-
-		&:after {
-			content: url('/src/assets/interface/chevron.svg');
-			position: absolute;
-			width: 12px;
-			right: 1.2em;
-			top: 50%;
-			transform: translateY(-50%);
-			transition: right .2s $easeOutThree;
-		}
-
-		&:hover {
-			box-shadow: rgba(0, 0, 0, 0.1) 0 5px 10px;
-			transform: scale(1.02);
-			cursor: pointer;
-
+		.changelog {
+			margin-top: 1em;
+			background-color: #ffffff;
+			padding: $settingsMargin 1.3em;
+			text-align: justify;
+			line-height: 1.3em;
+			position: relative;
+			transition: transform .3s $easeOutThree;
+			@include radiusSettings();
+			@include marginSettings();
+			padding-right: 3em;
+	
+			#dismiss {
+				display: inline-block;
+				margin-top: .5em;
+				color: $blue;
+			}
+	
 			&:after {
-				right: .9em;
+				content: url('/src/assets/interface/chevron.svg');
+				position: absolute;
+				width: 12px;
+				right: 1.2em;
+				top: 50%;
+				transform: translateY(-50%);
+				transition: right .2s $easeOutThree;
+			}
+	
+			&:hover {
+				box-shadow: rgba(0, 0, 0, 0.1) 0 5px 10px;
+				transform: scale(1.02);
+				cursor: pointer;
+	
+				&:after {
+					right: .9em;
+				}
+			}
+		}
+
+		&.dismissed {
+			height: 0px;
+
+			.changelog {
+				transform: translateY(-120%)
 			}
 		}
 	}
+	
 
 	&.init {
 		#sett_city,
