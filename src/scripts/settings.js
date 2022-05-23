@@ -27,7 +27,7 @@ function initParams(data, settingsDom) {
 
 	initInput('cssEditor', data.css, '')
 	initInput('i_row', data.linksrow, 8)
-	initInput('i_link_style', data.link_style)
+	initInput('i_linkstyle', data.linkstyle, 'default')
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
@@ -256,8 +256,8 @@ function initParams(data, settingsDom) {
 		quickLinks('linknewtab', this)
 	}
 
-	paramId('i_link_style').onchange = function () {
-		quickLinks('link_style', this.value)
+	paramId('i_linkstyle').onchange = function () {
+		quickLinks('linkstyle', this.value)
 	}
 
 	//visuals

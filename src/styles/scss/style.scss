@@ -339,7 +339,7 @@
 				background-color: #bbb4;
 				img {
 					filter: invert(1);
-					opacity: .7;
+					opacity: 0.7;
 				}
 			}
 		}
@@ -425,9 +425,7 @@
 
 		&.withQuotes {
 			flex-grow: 0.6;
-			transition-property: flex-grow;
-			transition-duration: 0.4s;
-			transition-delay: 0.2s;
+			transition: transform 0.4s, flex-grow 0.4s 0.2s;
 		}
 
 		&.he_hidden {
@@ -454,7 +452,11 @@
 				position: relative;
 				transition: width 0.3s;
 
-				.block .l_icon_wrap {
+				.block {
+					width: 5em;
+				}
+
+				.l_icon_wrap {
 					overflow: hidden;
 					width: 4.7em;
 					height: 4.7em;
@@ -502,7 +504,6 @@
 					line-height: 1.1em;
 					overflow: hidden;
 					word-wrap: break-word;
-					text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 				}
 
 				button.remove {
@@ -548,64 +549,72 @@
 			}
 
 			&.small {
-				gap: 2.5em;
+				gap: 1em;
 
-				.block_parent {
-					.block {
-						.l_icon_wrap {
-							width: 3.5em;
-							height: 3.5em;
-						}
-					}
+				.l_icon_wrap {
+					width: 3.5em;
+					height: 3.5em;
 				}
 			}
 
 			&.tiny {
 				gap: 2em;
-				
-				.block_parent {
 
-					.block {
+				.block_parent .block {
+					width: 3em;
+					display: flex;
+					flex-flow: column-reverse;
+					position: relative;
+
+					.l_icon_wrap {
+						border-radius: 6px;
+						padding: 3px;
 						display: flex;
-						flex-flow: column-reverse;
-						position: relative;
+						width: 2.5em;
+						height: 2.5em;
+					}
 
-						.l_icon_wrap {
-							border-radius: 6px;
-							padding: 3px;
-							display: flex;
-							width: 2.5em;
-							height: 2.5em;
-						}
+					span {
+						display: block;
+						position: absolute;
+						width: unset;
+						background-color: rgba(255, 255, 255, 0.236);
+						padding: 2px;
+						margin: auto;
+						margin-bottom: 3px;
+						visibility: hidden;
+						opacity: 0;
+						top: -2em;
+						left: 50%;
+						transform: translateX(-50%);
+						color: white;
+						overflow: visible;
+						border-radius: 4px;
+						border: 1px solid rgba(255, 255, 255, 0.075);
+						white-space: nowrap;
+						font-size: 0.9em;
+						text-shadow: unset;
+						transition: opacity 0.2s;
+						@include frostedGlass();
+					}
 
-						span {
-							display: block;
-							position: absolute;
-							width: unset;
-							background-color: rgba(255, 255, 255, 0.236);
-							padding: 2px;
-							margin: auto;
-							margin-bottom: 3px;
-							visibility: hidden;
-							opacity: 0;
-							top: -2em;
-							left: 50%;
-							transform: translateX(-50%);
-							color: white;
-							overflow: visible;
-							border-radius: 4px;
-							border: 1px solid rgba(255, 255, 255, 0.075);
-							white-space: nowrap;
-							font-size: 0.9em;
-							text-shadow: unset;
-							transition: opacity 0.2s;
-							@include frostedGlass();
-						}
+					&:hover span {
+						opacity: 1;
+						visibility: visible;
+					}
+				}
+			}
 
-						&:hover span {
-							opacity: 1;
-							visibility: visible;
-						}
+			&.text {
+				.block_parent .block {
+					width: auto;
+
+					.l_icon_wrap {
+						display: none;
+					}
+
+					span {
+						font-size: 1.2em;
 					}
 				}
 			}

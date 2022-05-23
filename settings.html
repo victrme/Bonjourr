@@ -117,13 +117,14 @@
 
 			<hr />
 
-			<div class="link_style wrapper">
+			<div class="linkstyle wrapper">
 				<span class="trn">Style</span>
 				<div>
-					<select id="i_link_style">
-						<option value="large" class="trn">Large</option>
+					<select id="i_linkstyle">
+						<option value="default" class="trn">Default</option>
 						<option value="small" class="trn">Small</option>
 						<option value="tiny" class="trn">Tiny</option>
+						<option value="text" class="trn">Text</option>
 					</select>
 				</div>
 			</div>
@@ -131,21 +132,21 @@
 			<div class="as as_link">
 				<hr />
 
+				<div class="wrapper">
+					<span class="trn">Links per row</span>
+					<input id="i_row" type="range" name="i_row" min="2" max="12" step="1" value="8" class="range" />
+				</div>
+
+				<hr />
+
 				<div class="linknewtab wrapper">
-					<span class="trn">Open in new tab by default</span>
+					<span class="trn">Open in new tab</span>
 					<div>
 						<label class="switch">
 							<input id="i_linknewtab" type="checkbox" />
 							<span class="slider round span"></span>
 						</label>
 					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Links per row</span>
-					<input id="i_row" type="range" name="i_row" min="2" max="12" step="1" value="8" class="range" />
 				</div>
 			</div>
 		</div>

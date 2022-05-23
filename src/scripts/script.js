@@ -235,17 +235,6 @@ function quickLinks(event, that, init) {
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks_inner')
 	let hovered = { parent: undefined, link: {}, index: 0 }
-	
-	if (init || event === 'link_style') {
-		const link_style = init?.link_style ? init.link_style : that
-		const allStyles = ['large', 'small', 'tiny']
-
-		allStyles.forEach(function(style) {
-			style === link_style
-				? domlinkblocks.classList.add(style)
-				: domlinkblocks.classList.remove(style) 
-		})
-	}
 
 	async function initblocks(links) {
 		if (links.length > 0) {
@@ -660,13 +649,15 @@ function quickLinks(event, that, init) {
 			break
 		}
 
-		case 'link_style': {
-			chrome.storage.sync.set({ link_style: that })
+		case 'linkstyle': {
+			domlinkblocks.className = that
+			chrome.storage.sync.set({ linkstyle: that })
 			break
 		}
 	}
 
 	if (init) {
+		domlinkblocks.className = init.linkstyle
 		initblocks(bundleLinks(init))
 
 		// No need to activate edit events asap
@@ -1939,8 +1930,8 @@ function searchbar(event, that, init) {
 			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
 		)
 
-		if (value > 0.4) id('sb_container').classList.add('opaque') 
-		else id('sb_container').classList.remove('opaque') 
+		if (value > 0.4) id('sb_container').classList.add('opaque')
+		else id('sb_container').classList.remove('opaque')
 	}
 
 	function updateSearchbar() {
