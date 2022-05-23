@@ -84,7 +84,7 @@
 		top: 5px;
 		border-radius: 100%;
 		z-index: 10;
-		transition: opacity .3s;
+		transition: opacity 0.3s;
 	}
 }
 
@@ -119,7 +119,7 @@
 
 	.changelogContainer {
 		height: 105px;
-		transition: height .3s $easeOutThree;
+		transition: height 0.3s $easeOutThree;
 
 		.changelog {
 			margin-top: 1em;
@@ -128,17 +128,17 @@
 			text-align: justify;
 			line-height: 1.3em;
 			position: relative;
-			transition: transform .3s $easeOutThree;
+			transition: transform 0.3s $easeOutThree;
 			@include radiusSettings();
 			@include marginSettings();
 			padding-right: 3em;
-	
+
 			#dismiss {
 				display: inline-block;
-				margin-top: .5em;
+				margin-top: 0.5em;
 				color: $blue;
 			}
-	
+
 			&:after {
 				content: url('/src/assets/interface/chevron.svg');
 				position: absolute;
@@ -146,16 +146,16 @@
 				right: 1.2em;
 				top: 50%;
 				transform: translateY(-50%);
-				transition: right .2s $easeOutThree;
+				transition: right 0.2s $easeOutThree;
 			}
-	
+
 			&:hover {
 				box-shadow: rgba(0, 0, 0, 0.1) 0 5px 10px;
 				transform: scale(1.02);
 				cursor: pointer;
-	
+
 				&:after {
-					right: .9em;
+					right: 0.9em;
 				}
 			}
 		}
@@ -164,11 +164,10 @@
 			height: 0px;
 
 			.changelog {
-				transform: translateY(-120%)
+				transform: translateY(-120%);
 			}
 		}
 	}
-	
 
 	&.init {
 		#sett_city,
@@ -245,12 +244,12 @@
 		border-radius: 100%;
 		cursor: pointer;
 		box-sizing: border-box;
-		transition: background-color .1s, transform .1s;
+		transition: background-color 0.1s, transform 0.1s;
 		border: 1px solid #eaeaee;
-		font-size: .9em;
+		font-size: 0.9em;
 
 		&:hover {
-			background-color:$focusedGrey;
+			background-color: $focusedGrey;
 		}
 
 		&:active {
@@ -322,6 +321,24 @@
 		}
 	}
 
+	#tabtitle {
+		div {
+			display: flex;
+
+			#i_favicon {
+				text-align: center;
+				padding-left: 0;
+				padding-right: 0;
+				width: 40px;
+				margin-right: 5px;
+			}
+
+			#i_tabtitle {
+				width: 110px;
+			}
+		}
+	}
+
 	.link_input_wrap {
 		input[type='text'] {
 			width: calc(100% - 10px);
@@ -360,7 +377,7 @@
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
-		transition: background-color .1s, border-color .1s;
+		transition: background-color 0.1s, border-color 0.1s;
 		background-color: $settingsGrey;
 
 		&:hover {
@@ -732,7 +749,7 @@
 				a {
 					display: flex;
 					align-items: center;
-					transition: transform .15s;
+					transition: transform 0.15s;
 
 					svg {
 						height: 1.25em;

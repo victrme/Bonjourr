@@ -88,7 +88,6 @@ function initParams(data, settingsDom) {
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
 	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
@@ -227,6 +226,14 @@ function initParams(data, settingsDom) {
 		switchLangs(this.value)
 	}
 
+	paramId('i_favicon').oninput = function () {
+		favicon(null, this)
+	}
+
+	paramId('i_tabtitle').oninput = function () {
+		tabTitle(null, this)
+	}
+
 	//quick links
 
 	paramId('i_title').onkeyup = function (e) {
@@ -294,16 +301,6 @@ function initParams(data, settingsDom) {
 	paramId('i_dark').onchange = function () {
 		darkmode(this.value)
 	}
-
-	paramId('i_favicon').oninput = function () {
-		favicon(null, this)
-	}
-
-	paramId('i_tabtitle').oninput = function () {
-		tabTitle(null, this)
-	}
-
-	// paramId('i_favicon').onkeyup = (e) => (e.key === 'Enter' ? e.target.blur() : '')
 
 	//Time and date
 
@@ -453,9 +450,9 @@ function initParams(data, settingsDom) {
 	// Reduces opacity to better see interface size changes
 	if (mobilecheck()) {
 		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
-		const rangeInputs = document.querySelectorAll(input[type='range'])
+		const rangeInputs = document.querySelectorAll(input[(type = 'range')])
 
-		rangeInputs.forEach(function(input) {
+		rangeInputs.forEach(function (input) {
 			paramId(input).addEventListener('touchstart', () => touchHandler(true), { passive: true })
 			paramId(input).addEventListener('touchend', () => touchHandler(false), { passive: true })
 		})
