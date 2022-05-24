@@ -457,14 +457,14 @@
 				}
 
 				.l_icon_wrap {
+					position: relative;
 					overflow: hidden;
 					width: 4.7em;
 					height: 4.7em;
+					padding: 0.4em;
 					margin: 0 auto 0.5em auto;
-					position: relative;
 					border-radius: 1em;
 					background: $purewhite;
-					padding: 0.4em;
 					box-shadow: $textShadow;
 					box-sizing: border-box;
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, height 0.3s;
@@ -500,43 +500,10 @@
 				span {
 					display: block;
 					width: 100%;
-					max-height: 3.3em;
-					line-height: 1.1em;
+					max-height: 3.9em;
+					line-height: 1.3em;
 					overflow: hidden;
 					word-wrap: break-word;
-				}
-
-				button.remove {
-					position: absolute;
-					display: none;
-					top: -1.2em;
-					left: -1.2em;
-					height: 30px;
-					width: 30px;
-					border: 0;
-					border-radius: 100%;
-					background: #ffffff;
-					box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
-					z-index: 3;
-					cursor: default;
-					transition: all 0.1s;
-
-					img {
-						height: 0.9em;
-						width: 0.9em;
-						position: absolute;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
-					}
-
-					&.visible {
-						cursor: pointer;
-					}
-
-					&:hover {
-						background: #bbb;
-					}
 				}
 
 				&.removed {
@@ -551,7 +518,8 @@
 			&.small {
 				gap: 1em;
 
-				.l_icon_wrap {
+				.block_parent .l_icon_wrap {
+					border-radius: 0.6em;
 					width: 3.5em;
 					height: 3.5em;
 				}
@@ -567,35 +535,36 @@
 					position: relative;
 
 					.l_icon_wrap {
-						border-radius: 6px;
-						padding: 3px;
 						display: flex;
+						padding: 0.2em;
 						width: 2.5em;
 						height: 2.5em;
+						border-radius: 0.4em;
 					}
 
 					span {
 						display: block;
 						position: absolute;
-						width: unset;
-						background-color: rgba(255, 255, 255, 0.236);
-						padding: 2px;
-						margin: auto;
-						margin-bottom: 3px;
 						visibility: hidden;
+						padding: 0.2em 0.6em;
+						margin: auto;
+						width: unset;
 						opacity: 0;
-						top: -2em;
+						bottom: -2em;
 						left: 50%;
 						transform: translateX(-50%);
 						color: white;
 						overflow: visible;
-						border-radius: 4px;
-						border: 1px solid rgba(255, 255, 255, 0.075);
 						white-space: nowrap;
 						font-size: 0.9em;
-						text-shadow: unset;
+						font-weight: 400;
+						text-shadow: none;
+						border-radius: 0.3em;
+						border: 1px solid rgba(255, 255, 255, 0.075);
+
 						transition: opacity 0.2s;
-						@include frostedGlass();
+
+						@include frostedGlass($alpha: 0.2);
 					}
 
 					&:hover span {
