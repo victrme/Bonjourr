@@ -66,7 +66,7 @@ const dict = {
 		tr: 'bağış yap',
 		uk: 'щоб зробити пожертвування,',
 		id: 'menyumbang',
-		da: 'donere',
+		da: 'at donere',
 	},
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
@@ -2413,7 +2413,7 @@ const dict = {
 		tr: 'Dışa Aktar',
 		uk: 'Експортувати',
 		id: 'Ekspor',
-		da: 'Exportér',
+		da: 'Eksportér',
 	},
 	Copied: {
 		fr: 'Copié',
@@ -2464,7 +2464,7 @@ const dict = {
 		tr: 'İçe aktarma kodunda hata',
 		uk: 'Помилка при імпортуванні налаштувань',
 		id: 'Kesalahan ketika impor kode',
-		da: 'Fejl i importkoden',
+		da: 'Fejl i importkode',
 	},
 	'Export code': {
 		fr: "Code d'exportation",
@@ -2481,7 +2481,7 @@ const dict = {
 		tr: 'Kodu dışa aktar',
 		uk: 'Експортувати налаштування',
 		id: 'Ekspor kode',
-		da: 'Exportkode',
+		da: 'Eksportér kode',
 	},
 	'Click again to confirm': {
 		fr: 'Cliquez encore une fois pour confirmer',
@@ -2617,7 +2617,7 @@ const dict = {
 		tr: 'bilgi ve bağış için',
 		uk: 'для отримання додаткової інформації або пожертвування',
 		id: 'untuk info dan donasi',
-		da: 'for mere information om donationer',
+		da: 'for at lære mere eller donere',
 	},
 }
 
