@@ -66,22 +66,25 @@
 				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
-
-		// &.changelog:before {
-		&:before {
-			opacity: 0;
-		}
 	}
 
-	// &.changelog:before {
+	&.hasUpdated:before {
+		opacity: 1;
+	}
+
+	&.hasUpdated.shown:before {
+		opacity: 0;
+	}
+
 	&:before {
 		content: '';
-		background-color: #35c759;
-		width: 7px;
-		height: 7px;
 		position: absolute;
-		left: 5px;
-		top: 5px;
+		opacity: 0;
+		width: 10px;
+		height: 10px;
+		left: 2px;
+		top: 2px;
+		background-color: #35c759;
 		border-radius: 100%;
 		z-index: 10;
 		transition: opacity 0.3s;
@@ -117,54 +120,44 @@
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 	}
 
-	.changelogContainer {
-		height: 105px;
-		transition: height 0.3s $easeOutThree;
+	#changelogContainer {
+		display: none;
+		overflow: hidden;
+		max-height: 240px;
+		transition: max-height 0.4s $easeOutThree;
 
-		.changelog {
-			margin-top: 1em;
-			background-color: #ffffff;
-			padding: $settingsMargin 1.3em;
-			text-align: justify;
-			line-height: 1.3em;
+		&.dismissed {
+			display: block;
+			max-height: 0px;
+		}
+
+		&.shown {
+			display: block;
+		}
+
+		#changelog {
 			position: relative;
+			padding: 1.3em;
+			padding-right: 3em;
+			margin-top: 1em;
+			line-height: 1.3em;
+			background-color: #ffffff;
 			transition: transform 0.3s $easeOutThree;
+
 			@include radiusSettings();
 			@include marginSettings();
-			padding-right: 3em;
 
-			#dismiss {
+			a,
+			button {
 				display: inline-block;
-				margin-top: 0.5em;
+				text-decoration: none;
 				color: $blue;
 			}
 
-			&:after {
-				content: url('/src/assets/interface/chevron.svg');
-				position: absolute;
-				width: 12px;
-				right: 1.2em;
-				top: 50%;
-				transform: translateY(-50%);
-				transition: right 0.2s $easeOutThree;
-			}
-
-			&:hover {
-				box-shadow: rgba(0, 0, 0, 0.1) 0 5px 10px;
-				transform: scale(1.02);
-				cursor: pointer;
-
-				&:after {
-					right: 0.9em;
-				}
-			}
-		}
-
-		&.dismissed {
-			height: 0px;
-
-			.changelog {
-				transform: translateY(-120%);
+			#log_dismiss {
+				width: 100%;
+				text-align: center;
+				margin-top: 0.5em;
 			}
 		}
 	}

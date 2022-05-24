@@ -65,6 +65,21 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
+	// Activate changelog (hasUpdated is activated in background.js)
+	if (localStorage.hasUpdated === 'true') {
+		const domshowsettings = document.querySelector('#showSettings')
+		const domchangelog = settingsDom.querySelector('#changelogContainer')
+
+		clas(domchangelog, true, 'shown')
+		clas(domshowsettings, true, 'hasUpdated')
+
+		settingsDom.querySelector('#log_dismiss').onclick = () => {
+			clas(domshowsettings, false, 'hasUpdated')
+			domchangelog.className = 'dismissed'
+			localStorage.removeItem('hasUpdated')
+		}
+	}
+
 	// No bookmarks import on safari || online
 	if (window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim))
 		paramId('b_importbookmarks').style.display = 'none'
@@ -627,7 +642,7 @@ function importExport(select, isEvent, settingsDom) {
 
 function signature(dom) {
 	const spans = dom.querySelectorAll('#rand span')
-	const hyper = dom.querySelectorAll('#rand a')
+	const as = dom.querySelectorAll('#rand a')
 	const us = [
 		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
 		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
@@ -638,9 +653,9 @@ function signature(dom) {
 	spans[0].textContent = `${tradThis('by')} `
 	spans[1].textContent = ` & `
 
-	hyper.forEach((hyper, i) => {
-		hyper.href = us[i].href
-		hyper.textContent = us[i].name
+	as.forEach((a, i) => {
+		a.href = us[i].href
+		a.textContent = us[i].name
 	})
 }
 
