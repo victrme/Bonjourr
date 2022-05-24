@@ -637,34 +637,37 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	switch (event) {
-		case 'input':
-		case 'button':
-			linkSubmission(that)
-			break
+	if (event) {
+		const Input = event === 'input'
+		const Button = event === 'button'
+		const Newtab = event === 'linksnewtab'
+		const Style = event === 'linkstyle'
 
-		case 'linknewtab': {
+		if (Input || Button) {
+			linkSubmission(that)
+		}
+
+		if (Newtab) {
 			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
 			id('hiddenlink').setAttribute('target', '_blank')
-			break
 		}
 
-		case 'linkstyle': {
-			domlinkblocks.className = that
-			chrome.storage.sync.set({ linkstyle: that })
-			break
+		if (Style) {
+			chrome.storage.sync.get(['linksrow'], (data) => {
+				domlinkblocks.className = that
+				linksrow(data.linksrow, that)
+				chrome.storage.sync.set({ linkstyle: that })
+			})
 		}
+
+		return
 	}
 
-	if (init) {
-		domlinkblocks.className = init.linkstyle
-		initblocks(bundleLinks(init))
+	initblocks(bundleLinks(init))
+	linksrow(init.linksrow, init.linkstyle)
+	domlinkblocks.className = init.linkstyle
 
-		// No need to activate edit events asap
-		setTimeout(function timeToSetEditEvents() {
-			editEvents()
-		}, 150)
-	}
+	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 }
 
 async function linksImport() {
@@ -763,17 +766,20 @@ async function linksImport() {
 	})
 }
 
-function linksrow(data, event) {
-	function setRows(val) {
-		id('linkblocks_inner').style.width = `${val * 7}em`
+function linksrow(amount, style, event) {
+	function setRows(val, type) {
+		const gap = type === 'small' ? 1 : 2
+		const blockWidth = type === 'tiny' ? 3 : 5
+		id('linkblocks_inner').style.width = (blockWidth + gap) * val + 'em'
 	}
-
-	if (data !== undefined) setRows(data)
 
 	if (event) {
-		setRows(event)
+		setRows(event, document.querySelector('#linkblocks_inner').className)
 		slowRange({ linksrow: parseInt(event) })
+		return
 	}
+
+	setRows(amount, style)
 }
 
 function weather(event, that, init) {
@@ -2871,7 +2877,6 @@ function startup(data) {
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(null, data)
-	linksrow(data.linksrow)
 	darkmode(null, data)
 	searchbar(null, null, data.searchbar)
 	quotes(null, null, data)

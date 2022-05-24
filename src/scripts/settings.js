@@ -175,10 +175,6 @@ function initParams(data, settingsDom) {
 		}
 	})
 
-	paramId('i_showall').onchange = function () {
-		showall(this.checked, true)
-	}
-
 	function switchLangs(nextLang) {
 		function langSwitchTranslation(langs) {
 			// On 'en' lang, get the dict key, not one of its values
@@ -222,6 +218,10 @@ function initParams(data, settingsDom) {
 		})
 	}
 
+	paramId('i_showall').onchange = function () {
+		showall(this.checked, true)
+	}
+
 	paramId('i_lang').onchange = function () {
 		switchLangs(this.value)
 	}
@@ -258,6 +258,10 @@ function initParams(data, settingsDom) {
 
 	paramId('i_linkstyle').onchange = function () {
 		quickLinks('linkstyle', this.value)
+	}
+
+	paramId('i_row').oninput = function () {
+		linksrow(null, null, this.value)
 	}
 
 	//visuals
@@ -456,10 +460,6 @@ function initParams(data, settingsDom) {
 			paramId(input).addEventListener('touchstart', () => touchHandler(true), { passive: true })
 			paramId(input).addEventListener('touchend', () => touchHandler(false), { passive: true })
 		})
-	}
-
-	paramId('i_row').oninput = function () {
-		linksrow(null, this.value)
 	}
 
 	paramId('hideelem')
