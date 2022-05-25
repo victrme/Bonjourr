@@ -1531,13 +1531,15 @@ function localBackgrounds(init, event) {
 	})
 }
 
-function unsplash(init, event) {
-	function noDisplayImgLoad(val, callback) {
-		let img = new Image()
+async function unsplash(init, event) {
+	async function preloadImage(src) {
+		const img = new Image()
 
-		if (callback) img.onload = callback
-		img.src = val
+		img.src = src
+		await img.decode()
 		img.remove()
+
+		return
 	}
 
 	function imgCredits(image) {
@@ -1617,40 +1619,38 @@ function unsplash(init, event) {
 		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
-	function requestNewList(collection, callback) {
+	async function requestNewList(collection) {
 		const header = new Headers()
 		const collecId = allCollectionIds[collection] || allCollectionIds.day
 		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
 		header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
 		header.append('Accept-Version', 'v1')
 
-		fetch(url, { headers: header }).then((raw) =>
-			raw.json().then((imgArray) => {
-				const filteredList = []
-				const { width, height } = screen
-				const imgSize = width > height ? width : height // higher res on mobile
+		const resp = await fetch(url, { headers: header })
+		const json = await resp.json()
 
-				imgArray.forEach((img) => {
-					filteredList.push({
-						url: img.urls.raw + '&w=' + imgSize + '&dpr=' + window.devicePixelRatio,
-						link: img.links.html,
-						username: img.user.username,
-						name: img.user.name,
-						city: img.location.city,
-						country: img.location.country,
-						color: img.color,
-						exif: img.exif,
-						desc: img.description,
-					})
-				})
+		const filteredList = []
+		const { width, height } = screen
+		const imgSize = width > height ? width : height // higher res on mobile
 
-				callback(filteredList)
+		json.forEach((img) => {
+			filteredList.push({
+				url: img.urls.raw + '&w=' + imgSize + '&dpr=' + window.devicePixelRatio,
+				link: img.links.html,
+				username: img.user.username,
+				name: img.user.name,
+				city: img.location.city,
+				country: img.location.country,
+				color: img.color,
+				exif: img.exif,
+				desc: img.description,
 			})
-		)
+		})
+
+		return filteredList
 	}
 
 	function chooseCollection(eventCollection) {
-		//
 		if (eventCollection) {
 			eventCollection = eventCollection.replaceAll(` `, '')
 			allCollectionIds.user = eventCollection
@@ -1662,87 +1662,88 @@ function unsplash(init, event) {
 
 	function collectionControl(dynamic) {
 		const { every, lastCollec, collection } = dynamic
+		const Pause = every === 'pause'
+		const Day = every === 'day'
 
-		// Collection control
-		const longEveries = every === 'pause' || every === 'day'
-		const collecId = longEveries && lastCollec ? lastCollec : chooseCollection(collection)
-
-		if (collecId !== lastCollec || lastCollec === '') {
-			dynamic.lastCollec = collecId
-			chrome.storage.sync.set({ dynamic: dynamic })
+		if ((Pause || Day) && lastCollec) {
+			return lastCollec // Keeps same collection on >day so that user gets same type of backgrounds
 		}
 
-		return collecId
+		const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
+		dynamic.lastCollec = collec
+		chrome.storage.sync.set({ dynamic: dynamic })
+
+		return collec
 	}
 
-	function cacheControl(dynamic, caches, collection, preloading) {
+	async function cacheControl(dynamic, caches, collection, preloading) {
 		//
 		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
 		let list = caches[collection]
 
-		// Is trying to preload next
 		if (preloading) {
-			noDisplayImgLoad(list[1].url, () => chrome.storage.local.remove('waitingForPreload'))
-		}
-
-		if (needNewImage && !preloading) {
-			//
-			// Update time
-			dynamic.lastCollec = collection
-			dynamic.time = freqControl('set')
-
-			// Removes previous image from list
-			if (list.length > 1) list.shift()
-
-			// Load new image
 			loadBackground(list[0])
-
-			// If end of cache, get & save new list
-			if (list.length === 1)
-				requestNewList(collection, (newlist) => {
-					caches[collection] = list.concat(newlist)
-					noDisplayImgLoad(newlist[0].url, () => {
-						chrome.storage.local.set({ dynamicCache: caches })
-						chrome.storage.local.remove('waitingForPreload')
-					})
-				})
-			//
-			// Or preload next
-			else
-				noDisplayImgLoad(list[1].url, () => {
-					chrome.storage.sync.set({ dynamic: dynamic })
-					chrome.storage.local.set({ dynamicCache: caches })
-					chrome.storage.local.remove('waitingForPreload')
-				})
+			await preloadImage(list[1].url) // Is trying to preload next
+			chrome.storage.local.remove('waitingForPreload')
+			return
 		}
 
-		// No need for new, load the same image
-		else loadBackground(list[0])
+		if (!needNewImage) {
+			loadBackground(list[0]) // No need for new, load the same image
+			return
+		}
+
+		// Needs new image, Update time
+		dynamic.lastCollec = collection
+		dynamic.time = freqControl('set')
+
+		// Removes previous image from list
+		if (list.length > 1) list.shift()
+
+		// Load new image
+		loadBackground(list[0])
+
+		// If end of cache, get & save new list
+		if (list.length === 1) {
+			const newList = await requestNewList(collection)
+
+			caches[collection] = list.concat(newList)
+			await preloadImage(newList[0].url)
+			chrome.storage.local.set({ dynamicCache: caches })
+			chrome.storage.local.remove('waitingForPreload')
+
+			return
+		}
+
+		await preloadImage(list[1].url) // Or preload next
+
+		chrome.storage.sync.set({ dynamic: dynamic })
+		chrome.storage.local.set({ dynamicCache: caches })
+		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	function populateEmptyList(collection, local, dynamic, isEvent) {
+	async function populateEmptyList(collection, local, dynamic, isEvent) {
 		//
-		if (isEvent) collection = chooseCollection(collection)
+		if (isEvent) {
+			collection = chooseCollection(collection)
+		}
 
-		requestNewList(collection, (newlist) => {
-			//
-			//change
-			dynamic.time = freqControl('set')
-			local.dynamicCache[collection] = newlist
-			chrome.storage.sync.set({ dynamic: dynamic })
+		const newlist = await requestNewList(collection)
 
-			const changeStart = performance.now()
+		dynamic.time = freqControl('set')
+		local.dynamicCache[collection] = newlist
+		chrome.storage.sync.set({ dynamic: dynamic })
 
-			noDisplayImgLoad(newlist[0].url, () => {
-				//
-				loadBackground(newlist[0], performance.now() - changeStart)
-				chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-				chrome.storage.local.set({ waitingForPreload: true })
+		const changeStart = performance.now()
 
-				//preload
-				noDisplayImgLoad(newlist[1].url, () => chrome.storage.local.remove('waitingForPreload'))
-			})
-		})
+		await preloadImage(newlist[0].url)
+		loadBackground(newlist[0], performance.now() - changeStart)
+		chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+		chrome.storage.local.set({ waitingForPreload: true })
+
+		//preload
+		await preloadImage(newlist[1].url)
+		chrome.storage.local.remove('waitingForPreload')
 	}
 
 	function updateDynamic(event, sync, local) {
@@ -1820,41 +1821,35 @@ function unsplash(init, event) {
 		user: '',
 	}
 
-	if (init?.dynamic) {
-		chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function initDynamic(local) {
-			try {
-				// Real init start
-				const collecId = collectionControl(init.dynamic)
-
-				// If no dynamicCache, create
-				if (local.dynamicCache === undefined) {
-					local.dynamicCache = bonjourrDefaults('local').dynamicCache
-					populateEmptyList(collecId, local, init.dynamic, false)
-					return
-				}
-
-				// If list empty: request new, save sync & local
-				if (local.dynamicCache[collecId].length === 0) {
-					populateEmptyList(collecId, local, init.dynamic, false)
-					return
-				}
-
-				// Not empty: normal cacheControl
-				cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
-			} catch (e) {
-				errorMessage('Dynamic errored on init', e)
-			}
-		})
+	if (event) {
+		// No init, Event
+		chrome.storage.sync.get('dynamic', (sync) =>
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+				updateDynamic(event, sync, local)
+			})
+		)
 
 		return
 	}
 
-	// No init, Event
-	chrome.storage.sync.get('dynamic', (sync) =>
-		chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
-			updateDynamic(event, sync, local)
-		})
-	)
+	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+		try {
+			// Real init start
+			const collecId = collectionControl(init.dynamic)
+			const cache = local.dynamicCache || bonjourrDefaults('local').dynamicCache
+
+			if (cache[collecId].length === 0) {
+				populateEmptyList(collecId, local, init.dynamic, false) // If list empty: request new, save sync & local
+				return
+			}
+
+			cacheControl(init.dynamic, cache, collecId, local.waitingForPreload) // Not empty: normal cacheControl
+		} catch (e) {
+			errorMessage('Dynamic errored on init', e)
+		}
+	})
+
+	return
 }
 
 function filter(cat, val) {
