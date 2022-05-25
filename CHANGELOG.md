@@ -1,5 +1,10 @@
 ## Changelogs
 
+**v1.13.2**
+
+-   Added Quotes cache to reduce requests
+-   Fixed custom fonts always fetching Fonts API
+
 **v1.13.1**
 
 -   Added indonesian translation

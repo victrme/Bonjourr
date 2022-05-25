@@ -3,6 +3,7 @@
 //   Turkish translation by Müslüm Barış Korkmazer · @babico
 //   Ukrainian translation by Anton Boksha · @4doge
 //   Indonesian translation by Imam Ali Mustofa · @darkterminal · https://read.cv/darkterminal
+//   Danish translation by kar1 · @kar1 ·
 
 // Partial:
 //   Swedish translation by Benjamin Horn · https://benjaminhorn.io/
@@ -31,6 +32,7 @@ const dict = {
 		tr: 'Yeni Sekme',
 		uk: 'Нова вкладка',
 		id: 'Tab Baru',
+		da: 'Nyt fanblad',
 	},
 	Consider: {
 		fr: "N'hésitez pas",
@@ -47,6 +49,7 @@ const dict = {
 		tr: 'İstersen',
 		uk: 'Подумайте про те,',
 		id: 'Mempertimbangkan',
+		da: 'Overvej',
 	},
 	donating: {
 		fr: 'faire un don',
@@ -63,6 +66,7 @@ const dict = {
 		tr: 'bağış yap',
 		uk: 'щоб зробити пожертвування,',
 		id: 'menyumbang',
+		da: 'at donere',
 	},
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
@@ -79,6 +83,7 @@ const dict = {
 		tr: "tabi Bonjourr'u seviyorsan",
 		uk: 'якщо Вам подобається Bonjourr',
 		id: 'jika Anda menyukai Bonjourr',
+		da: 'hvis du elsker Bonjourr',
 	},
 	'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇': {
 		fr: 'Vous aimez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
@@ -95,6 +100,7 @@ const dict = {
 		tr: "Bonjourr'u kullanmayı seviyor musunuz? Bize bir inceleme yapmayı veya bağış yapmayı düşünün, bu çok yardımcı olacaktır! 😇",
 		uk: 'Подобається Bonjourr? Залиште відгук або пожертвуйте, це дуже нам допоможе! 😇',
 		id: 'Suka menggunakan Bonjourr? Pertimbangkan untuk memberi kami ulasan atau donasi, itu akan sangat membantu! ',
+		da: 'Elsker du at bruge Bonjourr? Overvej at give os en anmeldelse eller en donation, det vil hjælpe meget 😇',
 	},
 	Review: {
 		fr: 'Noter',
@@ -111,6 +117,7 @@ const dict = {
 		tr: 'İnceleme',
 		uk: 'Залишити відгук',
 		id: 'Ulasan',
+		da: 'Anmeldelse',
 	},
 	Donate: {
 		fr: 'Faire un don',
@@ -127,6 +134,7 @@ const dict = {
 		tr: 'Bağış',
 		uk: 'Пожертвувати',
 		id: 'Donasi',
+		da: 'Donere',
 	},
 	Cancel: {
 		fr: 'Annuler',
@@ -143,6 +151,7 @@ const dict = {
 		tr: 'İptal',
 		uk: 'Скасувати',
 		id: 'Batal',
+		da: 'Afbryd',
 	},
 	Delete: {
 		fr: 'Supprimer',
@@ -159,6 +168,7 @@ const dict = {
 		tr: 'Sil',
 		uk: 'Видалити',
 		id: 'Hapus',
+		da: 'Slet',
 	},
 	'Apply changes': {
 		fr: 'Enregistrer',
@@ -175,6 +185,7 @@ const dict = {
 		tr: 'Değişiklikleri uygula',
 		uk: 'Зберегти зміни',
 		id: 'Terapkan Perubahan',
+		da: 'Anvend ændringer',
 	},
 	Monday: {
 		fr: 'Lundi',
@@ -191,6 +202,7 @@ const dict = {
 		tr: 'Pazartesi',
 		uk: 'Понеділок',
 		id: 'Senin',
+		da: 'Mandag',
 	},
 	Tuesday: {
 		fr: 'Mardi',
@@ -207,6 +219,7 @@ const dict = {
 		tr: 'Salı',
 		uk: 'Вівторок',
 		id: 'Selasa',
+		da: 'Tirsdag',
 	},
 	Wednesday: {
 		fr: 'Mercredi',
@@ -223,6 +236,7 @@ const dict = {
 		tr: 'Çarşamba',
 		uk: 'Середа',
 		id: 'Rabu',
+		da: 'Onsdag',
 	},
 	Thursday: {
 		fr: 'Jeudi',
@@ -239,6 +253,7 @@ const dict = {
 		tr: 'Perşembe',
 		uk: 'Четвер',
 		id: 'Kamis',
+		da: 'Torsdag',
 	},
 	Friday: {
 		fr: 'Vendredi',
@@ -255,6 +270,7 @@ const dict = {
 		tr: 'Cuma',
 		uk: "П'ятниця",
 		id: 'Jumat',
+		da: 'Fredag',
 	},
 	Saturday: {
 		fr: 'Samedi',
@@ -271,6 +287,7 @@ const dict = {
 		tr: 'Cumartesi',
 		uk: 'Суббота',
 		id: 'Sabtu',
+		da: 'Lørdag',
 	},
 	Sunday: {
 		fr: 'Dimanche',
@@ -287,6 +304,7 @@ const dict = {
 		tr: 'Pazar',
 		uk: 'Неділя',
 		id: 'Minggu',
+		da: 'Søndag',
 	},
 	January: {
 		fr: 'Janvier',
@@ -303,6 +321,7 @@ const dict = {
 		tr: 'Ocak',
 		uk: 'січня',
 		id: 'Januari',
+		da: 'januar',
 	},
 	February: {
 		fr: 'Février',
@@ -319,6 +338,7 @@ const dict = {
 		tr: 'Şubat',
 		uk: 'люте',
 		id: 'Februari',
+		da: 'februar',
 	},
 	March: {
 		fr: 'Mars',
@@ -335,6 +355,7 @@ const dict = {
 		tr: 'Mart',
 		uk: 'березня',
 		id: 'Maret',
+		da: 'marts',
 	},
 	April: {
 		fr: 'Avril',
@@ -351,6 +372,7 @@ const dict = {
 		tr: 'Nisan',
 		uk: 'квітня',
 		id: 'April',
+		da: 'april',
 	},
 	May: {
 		fr: 'Mai',
@@ -367,6 +389,7 @@ const dict = {
 		tr: 'Mayıs',
 		uk: 'травня',
 		id: 'Mei',
+		da: 'maj',
 	},
 	June: {
 		fr: 'Juin',
@@ -383,6 +406,7 @@ const dict = {
 		tr: 'Haziran',
 		uk: 'червня',
 		id: 'Juni',
+		da: 'juni',
 	},
 	July: {
 		fr: 'Juillet',
@@ -399,6 +423,7 @@ const dict = {
 		tr: 'Temmuz',
 		uk: 'липня',
 		id: 'Juli',
+		da: 'juli',
 	},
 	August: {
 		fr: 'Août',
@@ -415,6 +440,7 @@ const dict = {
 		tr: 'Ağustos',
 		uk: 'серпня',
 		id: 'Agustus',
+		da: 'august',
 	},
 	September: {
 		fr: 'Septembre',
@@ -431,6 +457,7 @@ const dict = {
 		tr: 'Eylül',
 		uk: 'вересня',
 		id: 'September',
+		da: 'september',
 	},
 	October: {
 		fr: 'Octobre',
@@ -447,6 +474,7 @@ const dict = {
 		tr: 'Ekim',
 		uk: 'жовтня',
 		id: 'Oktober',
+		da: 'oktober',
 	},
 	November: {
 		fr: 'Novembre',
@@ -463,6 +491,7 @@ const dict = {
 		tr: 'Kasım',
 		uk: 'листопада',
 		id: 'November',
+		da: 'november',
 	},
 	December: {
 		fr: 'Décembre',
@@ -479,6 +508,7 @@ const dict = {
 		tr: 'Aralık',
 		uk: 'грудня',
 		id: 'Desember',
+		da: 'december',
 	},
 	'Good morning': {
 		fr: 'Bonjour',
@@ -495,6 +525,7 @@ const dict = {
 		tr: 'Günaydın',
 		uk: 'Доброго ранку',
 		id: 'Selamat pagi',
+		da: 'Godmorgen',
 	},
 	'Good afternoon': {
 		fr: 'Bonjour',
@@ -511,6 +542,7 @@ const dict = {
 		tr: 'Tünaydın',
 		uk: 'Добрий день',
 		id: 'Selamat siang',
+		da: 'God eftermiddag',
 	},
 	'Good evening': {
 		fr: 'Bonsoir',
@@ -527,6 +559,7 @@ const dict = {
 		tr: 'İyi akşamlar',
 		uk: 'Добрий вечір',
 		id: 'Selamat sore',
+		da: 'Godaften',
 	},
 	'Good night': {
 		fr: 'Bonne nuit',
@@ -543,6 +576,7 @@ const dict = {
 		tr: 'İyi geceler',
 		uk: 'Доброї ночі',
 		id: 'Selamat malam',
+		da: 'God nat',
 	},
 	'It is currently': {
 		fr: 'Il fait actuellement',
@@ -559,6 +593,7 @@ const dict = {
 		tr: 'Şu anda',
 		uk: 'Зараз',
 		id: 'Saat ini',
+		da: 'Det er lige nu',
 	},
 	'It currently feels like': {
 		fr: 'Il y a actuellement un ressenti de',
@@ -575,6 +610,7 @@ const dict = {
 		tr: 'Şu anda gibi hissettiriyor',
 		uk: 'Відчувається як',
 		id: 'Saat ini terasa seperti',
+		da: 'Lige nu føles det som',
 	},
 	'feels like': {
 		fr: 'avec un ressenti de',
@@ -591,6 +627,7 @@ const dict = {
 		tr: 'gibi hissettiriyor',
 		uk: 'відчувається як',
 		id: 'terasa seperti',
+		da: 'føles som',
 	},
 	'with a high of': {
 		fr: 'avec une maximale de',
@@ -607,6 +644,7 @@ const dict = {
 		tr: 'maksimum ile',
 		uk: 'з максимальною температурою',
 		id: 'dengan tinggi',
+		da: 'med op til',
 	},
 	today: {
 		fr: "aujourd'hui",
@@ -623,6 +661,7 @@ const dict = {
 		tr: 'bugün',
 		uk: 'сьогодні',
 		id: 'hari ini',
+		da: 'i dag',
 	},
 	tomorrow: {
 		fr: 'demain',
@@ -639,6 +678,7 @@ const dict = {
 		tr: 'yarın',
 		uk: 'завтра',
 		id: 'besok',
+		da: 'i morgen',
 	},
 	Title: {
 		fr: 'Titre',
@@ -655,6 +695,7 @@ const dict = {
 		tr: 'Başlık',
 		uk: 'Назва',
 		id: 'Judul',
+		da: 'Titel',
 	},
 	Link: {
 		fr: 'Lien',
@@ -671,6 +712,7 @@ const dict = {
 		tr: 'Link',
 		uk: 'Link',
 		id: 'Link',
+		da: 'Link',
 	},
 	'on Unsplash': {
 		fr: 'sur Unsplash',
@@ -687,6 +729,7 @@ const dict = {
 		tr: "Unsplash'ta",
 		uk: 'на Unsplash',
 		id: 'di Unsplash',
+		da: 'på Unsplash',
 	},
 	'Photo by ': {
 		fr: 'Photo par ',
@@ -703,6 +746,7 @@ const dict = {
 		tr: 'Fotoğrafı çeken ',
 		uk: 'Фото від ',
 		id: 'Foto oleh ',
+		da: 'Foto af ',
 	},
 	'Icon must be < 8kB': {
 		fr: "L'icone doit etre < 8kB",
@@ -719,6 +763,7 @@ const dict = {
 		tr: 'Simge <8kB olmalı',
 		uk: 'Іконка повинна бути менше 8 КБ',
 		id: 'Ikon harus <8kB',
+		da: 'Ikonet skal være < 8kB',
 	},
 	General: {
 		fr: 'Général',
@@ -735,6 +780,7 @@ const dict = {
 		tr: 'Genel',
 		uk: 'Загальні',
 		id: 'Umum',
+		da: 'Generelt',
 	},
 	'Show all settings': {
 		fr: 'Afficher tous les réglages',
@@ -751,6 +797,7 @@ const dict = {
 		tr: 'Tüm ayarları göster',
 		uk: 'Показувати всі налаштування',
 		id: 'Tampilkan semua pengaturan',
+		da: 'Vis alle indstillingerne',
 	},
 	'Quick Links': {
 		fr: 'Liens favoris',
@@ -767,6 +814,7 @@ const dict = {
 		tr: 'Hızlı Bağlantılar',
 		uk: 'Швидкі посилання',
 		id: 'Tautan Langsung',
+		da: 'Hurtig links',
 	},
 	'More info': {
 		fr: 'En savoir plus',
@@ -783,6 +831,7 @@ const dict = {
 		tr: 'Daha fazla bilgi',
 		uk: 'Більше',
 		id: 'Info Selengkapnya',
+		da: 'Mere information',
 	},
 	"These are Bonjourr's bookmarks. ": {
 		fr: '',
@@ -799,6 +848,7 @@ const dict = {
 		tr: "Bunlar Bonjourr'un hızlı bağlantıları. ",
 		uk: 'Швидкі посилання Bonjourr. ',
 		id: 'Ini adalah bookmark Bonjourr. ',
+		da: 'De her er Bonjourrs bogmærker. ',
 	},
 	'Edit your Quick Links by right clicking the icon.': {
 		fr: "Éditez un lien favori en faisant un clic droit sur l'icône.",
@@ -815,6 +865,7 @@ const dict = {
 		tr: 'Simgeye sağ tıklayarak Hızlı Bağlantılarınızı düzenleyin.',
 		uk: 'Редагуйте ваші швидкі посилання натиснувши правою кнопкою миші на піктограмі.',
 		id: 'Edit Tautan Cepat Anda dengan mengeklik kanan ikon.',
+		da: 'Rediger dine Hurtig Links ved at højreklikke på ikonet.',
 	},
 	'Edit your Quick Links by long-pressing the icon.': {
 		fr: "Éditez un lien favori en appuyant longtemps sur l'icône.",
@@ -831,6 +882,7 @@ const dict = {
 		tr: 'Simgeye 300ms uzun süre basarak Hızlı Bağlantılarınızı düzenleyin.',
 		uk: 'Редагуйте ваші швидкі посилання утримуючи піктограму протягом 300 мс',
 		id: 'Edit Tautan Cepat Anda dengan menekan lama ikon selama 300 md.',
+		da: 'Rediger dine Hurtig Links ved at trykke længe på ikonet.',
 	},
 	'Type the collection ID from its URL, add more by separating them with a comma.': {
 		fr: "Entrez l'ID de l'URL de la collection. Ajoutez en plusieurs en les séparant par une virgule.",
@@ -847,6 +899,7 @@ const dict = {
 		tr: "Koleksiyon kimliğini URL'sinden yazın, virgülle ayırarak daha fazlasını ekleyin.",
 		uk: 'Введіть ідентифікатор колекції з URL-адреси або вкажіть декілька через кому',
 		id: 'Ketik ID koleksi dari URL-nya, tambahkan lebih banyak dengan memisahkannya dengan koma.',
+		da: 'Skriv samlingsid\'et fra dens URL, tilføj flere ved at adskille dem med komma.',
 	},
 	Name: {
 		fr: 'Nom',
@@ -863,6 +916,7 @@ const dict = {
 		tr: 'İsim',
 		uk: 'Назва',
 		id: 'Nama',
+		da: 'Navn',
 	},
 	Add: {
 		fr: 'Ajouter',
@@ -879,6 +933,7 @@ const dict = {
 		tr: 'Ekle',
 		uk: 'Додати',
 		id: 'Tambah',
+		da: 'Tilføj',
 	},
 	'No bookmarks found': {
 		fr: 'Aucun favori trouvé',
@@ -895,6 +950,7 @@ const dict = {
 		tr: 'Yer işareti bulunamadı',
 		uk: 'Закладок не знайдено',
 		id: 'Tidak ada bookmark yang ditemukan',
+		da: 'Ingen bogmærker fundet',
 	},
 	'Select bookmarks to import': {
 		fr: 'Sélectionnez les favoris à importer',
@@ -911,6 +967,7 @@ const dict = {
 		tr: 'İçe aktarılacak yer imlerini seçin',
 		uk: 'Оберіть закладки для імпорту',
 		id: 'Pilih bookmark untuk diimpor',
+		da: 'Vælg bogmærker som skal importeres',
 	},
 	'Import this bookmark': {
 		fr: 'Importer ce favori',
@@ -927,6 +984,7 @@ const dict = {
 		tr: 'Bu yer işaretini içe aktar',
 		uk: 'Імпортувати цю закладку',
 		id: 'Impor bookmark ini',
+		da: 'Importer dette bogmærke',
 	},
 	'Import these bookmarks': {
 		fr: 'Importer ces favoris',
@@ -943,6 +1001,7 @@ const dict = {
 		tr: 'Bu yer işaretlerini içe aktar',
 		uk: 'Імпортувати ці закладки',
 		id: 'Import these bookmarks',
+		da: 'Importer disse bogmærker',
 	},
 	'Links per row': {
 		fr: 'Liens par ligne',
@@ -959,6 +1018,7 @@ const dict = {
 		tr: 'Her satır bir bağlantı',
 		uk: 'Посилань в рядку',
 		id: 'Tautan per baris',
+		da: 'Links per række',
 	},
 	Background: {
 		fr: 'Arrière-plan',
@@ -975,6 +1035,7 @@ const dict = {
 		tr: 'Arka plan',
 		uk: 'тла',
 		id: 'Latar belakang',
+    da: 'Baggrund',
 	},
 	'Background type': {
 		fr: "Type d'arrière-plan",
@@ -991,6 +1052,7 @@ const dict = {
 		tr: 'Arka plan türü',
 		uk: 'Тип тла',
 		id: 'Jenis latar belakang',
+		da: 'Baggrundstype',
 	},
 	Default: {
 		fr: 'Par défaut',
@@ -1007,6 +1069,7 @@ const dict = {
 		tr: 'Varsayılan',
 		uk: 'За замовчуванням',
 		id: 'Bawaan',
+		da: 'Standard',
 	},
 	Dynamic: {
 		fr: 'Dynamique',
@@ -1023,6 +1086,7 @@ const dict = {
 		tr: 'Dinamik',
 		uk: 'Динамічний',
 		id: 'Dinamis',
+		da: 'Dynamisk',
 	},
 	Custom: {
 		fr: 'Personnalisé',
@@ -1039,6 +1103,7 @@ const dict = {
 		tr: 'Özel',
 		uk: 'Власний',
 		id: 'Personalisasi',
+		da: 'Brugerdefineret',
 	},
 	Frequency: {
 		fr: 'Fréquence',
@@ -1055,6 +1120,7 @@ const dict = {
 		tr: 'Frekans',
 		uk: 'Частота',
 		id: 'Frekuensi',
+		da: 'Frekvens',
 	},
 	Daylight: {
 		fr: 'Lumière du jour',
@@ -1087,6 +1153,7 @@ const dict = {
 		tr: 'Sekmede bir',
 		uk: 'Кожну вкладку',
 		id: 'Setiap tab',
+		da: 'Hvert fanblad',
 	},
 	'Every hour': {
 		fr: 'Chaque heure',
@@ -1103,6 +1170,7 @@ const dict = {
 		tr: 'Saatte bir',
 		uk: 'Кожну годину',
 		id: 'Setiap jam',
+		da: 'Hver time',
 	},
 	'Every day': {
 		fr: 'Chaque jour',
@@ -1119,6 +1187,7 @@ const dict = {
 		tr: 'Günde bir',
 		uk: 'Кожного дня',
 		id: 'Setiap hari',
+		da: 'Hver dag',
 	},
 	Pause: {
 		fr: 'Pause',
@@ -1135,6 +1204,7 @@ const dict = {
 		tr: 'Durdur',
 		uk: 'Пауза',
 		id: 'Jeda',
+		da: 'Pause',
 	},
 	'Unsplash collection': {
 		fr: 'Collection Unsplash',
@@ -1151,6 +1221,7 @@ const dict = {
 		tr: 'Unsplash koleksiyonu',
 		uk: 'Колекція Unsplash',
 		id: 'Koleksi Unsplash',
+		da: 'Unsplash samling',
 	},
 	'Blur intensity': {
 		fr: 'Intensité du flou',
@@ -1167,6 +1238,7 @@ const dict = {
 		tr: 'Bulanıklık yoğunluğu',
 		uk: 'Інтенсивність розмиття',
 		id: 'Intensitas kabur',
+		da: 'Sløringsintensitet',
 	},
 	Brightness: {
 		fr: 'Luminosité',
@@ -1183,6 +1255,7 @@ const dict = {
 		tr: 'Parlaklık',
 		uk: 'Яскравість',
 		id: 'Kecerahan',
+		da: 'Lysstyrke',
 	},
 	'Dark mode': {
 		fr: 'Mode sombre',
@@ -1199,6 +1272,7 @@ const dict = {
 		tr: 'Karanlık mod',
 		uk: 'Темний режим',
 		id: 'Mode Gelap',
+		da: 'Mørk tilstand',
 	},
 	'At night': {
 		fr: 'La nuit',
@@ -1215,6 +1289,7 @@ const dict = {
 		tr: 'Geceleyin',
 		uk: 'Вночі',
 		id: 'Di malam hari',
+		da: 'Om natten',
 	},
 	System: {
 		fr: 'Système',
@@ -1231,6 +1306,7 @@ const dict = {
 		tr: 'Sistem',
 		uk: 'Система',
 		id: 'Sistem',
+		da: 'System',
 	},
 	Enabled: {
 		fr: 'Activé',
@@ -1247,6 +1323,7 @@ const dict = {
 		tr: 'Etkinleştirildi',
 		uk: 'Ввімкнено',
 		id: 'Diaktifkan',
+		da: 'Aktiveret',
 	},
 	Disabled: {
 		fr: 'Désactivé',
@@ -1263,6 +1340,7 @@ const dict = {
 		tr: 'Devre dışı',
 		uk: 'Вимкнено',
 		id: 'Dinonaktifkan',
+		da: 'Deaktiveret',
 	},
 	'New tab icon': {
 		fr: 'Icône nouvel onglet',
@@ -1279,6 +1357,7 @@ const dict = {
 		tr: 'Yeni sekme simgesi',
 		uk: 'Піктограма нової вкладки',
 		id: 'Ikon tab baru',
+		da: 'Fanbladsikon',
 	},
 	'Any emoji': {
 		fr: "N'importe quel emoji",
@@ -1295,6 +1374,7 @@ const dict = {
 		tr: 'Herhangi bir emoji',
 		uk: 'Будь-який емоджі',
 		id: 'Apa saja emojo',
+		da: 'Hvilken som helst emoji',
 	},
 	'New tab title': {
 		fr: 'Titre du nouvel onglet',
@@ -1328,6 +1408,7 @@ const dict = {
 		tr: 'Öğerleri gizle',
 		uk: 'Сховати елементи',
 		id: 'Sembunyikan elements',
+		da: 'Skjul elementer',
 	},
 	Clock: {
 		fr: 'Horloge',
@@ -1344,6 +1425,7 @@ const dict = {
 		tr: 'Saat',
 		uk: 'Годинник',
 		id: 'Jam',
+		da: 'Ur',
 	},
 	'Clock face': {
 		fr: "Style d'horloge",
@@ -1360,6 +1442,7 @@ const dict = {
 		tr: 'Saat stili',
 		uk: 'Циферблат',
 		id: 'Antarmuka Jam',
+		da: 'Urskive',
 	},
 	None: {
 		fr: 'Simple',
@@ -1376,6 +1459,7 @@ const dict = {
 		tr: 'Hiçbiri',
 		uk: 'Нічого',
 		id: 'Tidak ada',
+		da: 'Intet',
 	},
 	Numbers: {
 		fr: 'Chiffres',
@@ -1392,6 +1476,7 @@ const dict = {
 		tr: 'Sayılar',
 		uk: 'Числа',
 		id: 'Nomor',
+		da: 'Tal',
 	},
 	Romans: {
 		fr: 'Chiffres romains',
@@ -1408,6 +1493,7 @@ const dict = {
 		tr: 'Roma',
 		uk: 'Римський',
 		id: 'Roman',
+		da: 'Romertal',
 	},
 	Marks: {
 		fr: 'Graduations',
@@ -1424,6 +1510,7 @@ const dict = {
 		tr: 'İşaretler',
 		uk: 'Мітки',
 		id: 'Tandai',
+		da: 'Mærker',
 	},
 	Date: {
 		fr: 'Date',
@@ -1440,6 +1527,7 @@ const dict = {
 		tr: 'Tarih',
 		uk: 'Дата',
 		id: 'Tanggal',
+		da: 'Dato',
 	},
 	Greetings: {
 		fr: 'Bienvenue',
@@ -1456,6 +1544,7 @@ const dict = {
 		tr: 'Selamlama',
 		uk: 'Вітання',
 		id: 'Salam',
+		da: 'Hilsner',
 	},
 	Weather: {
 		fr: 'Météo',
@@ -1472,6 +1561,7 @@ const dict = {
 		tr: 'Hava durumu',
 		uk: 'Погода',
 		id: 'Cuaca',
+		da: 'Vejr',
 	},
 	Icon: {
 		fr: 'Icône',
@@ -1488,6 +1578,7 @@ const dict = {
 		tr: 'Simge',
 		uk: 'Іконка',
 		id: 'Icon',
+		da: 'Ikon',
 	},
 	Style: {
 		fr: 'Apparence',
@@ -1552,6 +1643,23 @@ const dict = {
 		tr: 'Tiny',
 		uk: 'Tiny',
 		id: 'Tiny',
+  },
+	'Quick Links': {
+		fr: 'Liens favoris',
+		sv: 'Snabblänkar',
+		nl: 'Snelle links',
+		pl: 'Szybkie linki',
+		pt_BR: 'Links Rápidos',
+		ru: 'Быстрые ссылки',
+		zh_CN: '快速链接',
+		sk: 'Rýchle odkazy',
+		de: 'Schnelllinks',
+		it: 'Link veloci',
+		es: 'Links Favoritos',
+		tr: 'Hızlı Linkler',
+		uk: 'Швидкі посилання',
+		id: 'Tautan Singkat',
+		da: 'Hurtig links',
 	},
 	'Settings icon': {
 		fr: 'Icône réglages',
@@ -1568,6 +1676,7 @@ const dict = {
 		tr: 'Ayarlar simgesi',
 		uk: 'Іконка налаштувань',
 		id: 'Pengaturan icon',
+		da: 'Indstillingsikon',
 	},
 	'Upload background here': {
 		fr: 'Ajoutez votre arrière-plan',
@@ -1584,6 +1693,7 @@ const dict = {
 		tr: 'Arka planı buraya yükleyin',
 		uk: 'Завантажити зображення',
 		id: 'Unggah latar belakan disini',
+		da: 'Upload baggrund her',
 	},
 	'Analog clock': {
 		fr: 'Horloge analogue',
@@ -1600,6 +1710,7 @@ const dict = {
 		tr: 'Analog saat',
 		uk: 'Аналоговий годинник',
 		id: 'Jam Analog',
+		da: 'Analog ur',
 	},
 	'Display Seconds': {
 		fr: 'Afficher les secondes',
@@ -1616,6 +1727,7 @@ const dict = {
 		tr: 'Saniyeyi göster',
 		uk: 'Показувати секунди',
 		id: 'Tampilkan keduanya',
+		da: 'Vis sekunder',
 	},
 	Automatic: {
 		fr: 'Automatique',
@@ -1632,6 +1744,7 @@ const dict = {
 		tr: 'Otomatik',
 		uk: 'Автоматично',
 		id: 'Otomatis',
+		da: 'Automatisk',
 	},
 	Geolocation: {
 		fr: 'Géolocalisation',
@@ -1648,6 +1761,7 @@ const dict = {
 		tr: 'Coğrafi konum',
 		uk: 'Геолокація',
 		id: 'Geo-lokasi',
+		da: 'Geolokalisering',
 	},
 	'City not found': {
 		fr: 'Ville inconnue',
@@ -1664,6 +1778,7 @@ const dict = {
 		tr: 'Şehir bulunamadı',
 		uk: 'Місто не знайдено',
 		id: 'Kota Ditemukan',
+		da: 'By ikke fundet',
 	},
 	'Change city': {
 		fr: 'Changer la ville',
@@ -1680,6 +1795,7 @@ const dict = {
 		tr: 'Şehri değiştir',
 		uk: 'Змінити місто',
 		id: 'Ubah kota',
+		da: 'Skift by',
 	},
 	'There was a problem': {
 		fr: 'Il y a eu un problème',
@@ -1696,6 +1812,7 @@ const dict = {
 		tr: 'Bir problem vardı',
 		uk: 'Виникла проблема',
 		id: 'Ada masalah',
+		da: 'Der opstod en fejl',
 	},
 	'Imperial units': {
 		fr: 'Unités impériales',
@@ -1713,6 +1830,7 @@ const dict = {
 		uk: 'Використовувати шкалу Фаренгейта',
 		tr: 'Emperyal birimler',
 		id: 'Kisaran Unit',
+		da: 'Engelske enheder',
 	},
 	Forecast: {
 		fr: 'Prévisions',
@@ -1729,6 +1847,7 @@ const dict = {
 		tr: 'Hava Durumu',
 		uk: 'Прогноз',
 		id: 'Ramalan Cuaca',
+		da: 'Prognose',
 	},
 	'Every mornings': {
 		fr: 'Les matins',
@@ -1745,6 +1864,7 @@ const dict = {
 		tr: 'Her sabah',
 		uk: 'Щоранку',
 		id: 'Setiap pagi',
+		da: 'Hver morgen',
 	},
 	'Always show': {
 		fr: 'Toujours',
@@ -1761,6 +1881,7 @@ const dict = {
 		tr: 'Her zaman göster',
 		uk: 'Завжди',
 		id: 'Selalu tampilkan',
+		da: 'Vis altid',
 	},
 	'Never show': {
 		fr: 'Jamais',
@@ -1777,6 +1898,7 @@ const dict = {
 		tr: 'Gösterme',
 		uk: 'Ніколи',
 		id: 'Belum pernah upload',
+		da: 'Vis aldrig',
 	},
 	Temperature: {
 		fr: 'Température',
@@ -1793,6 +1915,7 @@ const dict = {
 		tr: 'Sıcaklık',
 		uk: 'Температура',
 		id: 'tempratur',
+		da: 'Temperatur',
 	},
 	Actual: {
 		fr: 'Réelle',
@@ -1809,6 +1932,7 @@ const dict = {
 		tr: 'Gerçek',
 		uk: 'Дійсна',
 		id: 'Aktual',
+		da: 'Aktuel',
 	},
 	'Feels like': {
 		fr: 'Ressenti',
@@ -1825,6 +1949,7 @@ const dict = {
 		tr: 'Gibi hissettiriyor',
 		uk: 'Відчуття',
 		id: 'Terasa seperti',
+		da: 'Føles som',
 	},
 	Both: {
 		fr: 'Les deux',
@@ -1841,6 +1966,7 @@ const dict = {
 		tr: 'İkisi birden',
 		uk: 'Обидві',
 		id: 'Keduanya',
+		da: 'Begge',
 	},
 	'Search bar': {
 		fr: 'Barre de recherche',
@@ -1857,6 +1983,7 @@ const dict = {
 		tr: 'Arama çubuğu',
 		uk: 'Панель пошуку',
 		id: 'Bilah pencarian',
+		da: 'Søgefelt',
 	},
 	'Search engine': {
 		fr: 'Moteur de recherche',
@@ -1873,6 +2000,7 @@ const dict = {
 		tr: 'Arama motoru',
 		uk: 'Пошукова система',
 		id: 'Mesin pencari',
+		da: 'Søgemaskine',
 	},
 	Enable: {
 		fr: 'Activer',
@@ -1889,6 +2017,7 @@ const dict = {
 		tr: 'Aktif Et',
 		uk: 'Активовано',
 		id: 'Aktif',
+		da: 'Aktiver',
 	},
 	'Open in new tab': {
 		fr: 'Ouvrir dans un nouvel onglet',
@@ -1905,6 +2034,7 @@ const dict = {
 		tr: 'Yeni sekmede aç',
 		uk: 'Відкрити в новій вкладці',
 		id: 'Buka di tab baru',
+		da: 'Åben i et nyt fanblad',
 	},
 	'URL request': {
 		fr: 'URL de requête',
@@ -1921,6 +2051,7 @@ const dict = {
 		tr: 'URL isteği',
 		uk: 'URL запит',
 		id: 'URL permintaan',
+		da: 'URL-anmodning',
 	},
 	'%s Not found': {
 		fr: '%s Pas trouvé',
@@ -1937,6 +2068,7 @@ const dict = {
 		tr: '%s Bulunamadı',
 		uk: '%s не знайдено',
 		id: '%s tidak ditemukan',
+		da: '%s ikke fundet',
 	},
 	'Search query: %s': {
 		fr: 'Requête: %s',
@@ -1953,6 +2085,7 @@ const dict = {
 		tr: 'Arama sorgusu: %s',
 		uk: 'Пошуковий запит: %s',
 		id: 'Pencarian kata kunci %s',
+		da: 'Søgterm: %s',
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -1969,6 +2102,7 @@ const dict = {
 		tr: 'Opaklık',
 		uk: 'Непрозорість',
 		id: 'Transparansi',
+		da: 'uigennemsigtighed',
 	},
 	'Time & Date': {
 		fr: 'Date & heure',
@@ -1985,6 +2119,7 @@ const dict = {
 		tr: 'Saat ve Tarih',
 		uk: 'Час & Дата',
 		id: 'Waktu & Tanggal',
+		da: 'Tid og dato',
 	},
 	'Custom Style': {
 		fr: 'Style personnalisé',
@@ -2001,6 +2136,7 @@ const dict = {
 		tr: 'Özel Stil',
 		uk: 'Власні стилі',
 		id: 'Personalisasi Gaya',
+		da: 'Tilpasset stil',
 	},
 	'Type in your custom CSS': {
 		fr: 'Entrez votre CSS personnalisé',
@@ -2017,6 +2153,7 @@ const dict = {
 		tr: "Özel CSS'nizi yazın",
 		uk: 'Скопіюйте власний CSS',
 		id: 'Ketik CSS khusus Anda',
+		da: 'Skriv dit tilpassede CSS',
 	},
 	'Make fancy things happen with CSS. ': {
 		fr: 'Tentez de jolies choses en CSS. ',
@@ -2033,6 +2170,7 @@ const dict = {
 		tr: 'Make fancy things happen with CSS. ',
 		uk: 'Make fancy things happen with CSS. ',
 		id: 'Wujudkan hal-hal mewah dengan CSS. ',
+		da: 'Få smarte ting til at ske med CSS. ',
 	},
 	'Check out our ': {
 		fr: 'Jetez un oeil à nos ',
@@ -2049,6 +2187,7 @@ const dict = {
 		tr: 'Check out our ',
 		uk: 'Check out our ',
 		id: 'Lihat kami ',
+		da: 'Tjek vores ',
 	},
 	'CSS snippets.': {
 		fr: 'extraits de CSS.',
@@ -2065,6 +2204,7 @@ const dict = {
 		tr: "Özel CSS'nizi yazın",
 		uk: 'CSS snippets.',
 		id: 'Cuplikan CSS.',
+		da: 'CSS uddrag.',
 	},
 	'US Date Format': {
 		fr: 'Date américaine',
@@ -2081,6 +2221,7 @@ const dict = {
 		tr: 'Amerikan formatı',
 		uk: 'Формат дати США',
 		id: 'Format Tanggal US',
+		da: 'Amerikansk datoformat',
 	},
 	'12-Hour Time': {
 		fr: 'Affichage 12h',
@@ -2097,6 +2238,7 @@ const dict = {
 		tr: '12 Saatlik Zaman',
 		uk: '12-годинний формат часу',
 		id: 'Waktu 12-Jam',
+		da: '12-timers ur',
 	},
 	'Time zone': {
 		fr: 'Fuseau horaire',
@@ -2113,6 +2255,7 @@ const dict = {
 		tr: 'Saat dilimi',
 		uk: 'Часовий пояс',
 		id: 'Zona Waktu',
+		da: 'Tidszone',
 	},
 	Language: {
 		fr: 'Langue',
@@ -2129,6 +2272,7 @@ const dict = {
 		tr: 'Dil',
 		uk: 'Мова',
 		id: 'Bahasa',
+		da: 'Sprog',
 	},
 	Greeting: {
 		fr: 'Bienvenue',
@@ -2145,6 +2289,7 @@ const dict = {
 		tr: 'Selamlama',
 		uk: 'Привітання',
 		id: 'Salam',
+		da: 'Hilsen',
 	},
 	Quotes: {
 		fr: 'Citations',
@@ -2161,6 +2306,7 @@ const dict = {
 		tr: 'alıntılar',
 		uk: 'Цитати',
 		id: 'Kutipan',
+		da: 'Citater',
 	},
 	'Always show author': {
 		fr: "Toujours afficher l'auteur",
@@ -2177,6 +2323,7 @@ const dict = {
 		tr: 'Yazarı her zaman göster',
 		uk: 'Показувати автора',
 		id: 'Selalu tunjukkan penulis',
+		da: 'Vis altid forfatteren',
 	},
 	'Quote type': {
 		fr: 'Type de citations',
@@ -2193,6 +2340,7 @@ const dict = {
 		tr: 'alıntı türü',
 		uk: 'вид цитати',
 		id: 'Tipe kutipan',
+		da: 'Type af citat',
 	},
 	Classic: {
 		fr: 'Classique',
@@ -2209,6 +2357,7 @@ const dict = {
 		tr: 'Klasik',
 		uk: 'Класичний',
 		id: 'Klasik',
+		da: 'Klassisk',
 	},
 	Fonts: {
 		fr: 'Polices',
@@ -2225,6 +2374,7 @@ const dict = {
 		tr: 'Özel Yazı Tipi',
 		uk: 'Власний шрифт',
 		id: 'Pernolasasi Font',
+		da: 'Tilpasset skrifttype',
 	},
 	'Font family': {
 		fr: 'Police',
@@ -2241,6 +2391,7 @@ const dict = {
 		tr: 'Yazı tipi ailesi',
 		uk: 'Шрифт',
 		id: 'Font family',
+		da: 'Skrifttype familie',
 	},
 	Weight: {
 		fr: 'Épaisseur',
@@ -2257,6 +2408,7 @@ const dict = {
 		tr: 'Önem',
 		uk: 'Насиченість',
 		id: 'Bobot',
+		da: 'Vægt',
 	},
 	Size: {
 		fr: 'Taille',
@@ -2273,6 +2425,7 @@ const dict = {
 		tr: 'Boyut',
 		uk: 'Розмір',
 		id: 'Ukuran',
+		da: 'størrelse',
 	},
 	Shadow: {
 		fr: 'Ombres',
@@ -2305,6 +2458,7 @@ const dict = {
 		tr: 'Özel CSS',
 		uk: 'Власний CSS',
 		id: 'Personalisasi CSS',
+		da: 'Tilpasset CSS',
 	},
 	Settings: {
 		fr: 'Réglages',
@@ -2321,6 +2475,7 @@ const dict = {
 		tr: 'Ayarlar',
 		uk: 'Налаштування',
 		id: 'Pengaturan',
+		da: 'Indstillinger',
 	},
 	Import: {
 		fr: 'Importer',
@@ -2337,6 +2492,7 @@ const dict = {
 		tr: 'İçe Aktar',
 		uk: 'Імпортувати',
 		id: 'Impor',
+		da: 'Importér',
 	},
 	Export: {
 		fr: 'Exporter',
@@ -2353,6 +2509,7 @@ const dict = {
 		tr: 'Dışa Aktar',
 		uk: 'Експортувати',
 		id: 'Ekspor',
+		da: 'Eksportér',
 	},
 	Copied: {
 		fr: 'Copié',
@@ -2369,6 +2526,7 @@ const dict = {
 		tr: 'Kopyalandı',
 		uk: 'Скопійовано',
 		id: 'Disalin',
+		da: 'Kopieret',
 	},
 	'Import code': {
 		fr: 'Importer le code',
@@ -2385,6 +2543,7 @@ const dict = {
 		tr: 'Kodu içe aktar',
 		uk: 'Налаштування',
 		id: 'Impor kode',
+		da: 'Importér kode',
 	},
 	'Error in import code': {
 		fr: "Erreur dans le code d'importation",
@@ -2401,6 +2560,7 @@ const dict = {
 		tr: 'İçe aktarma kodunda hata',
 		uk: 'Помилка при імпортуванні налаштувань',
 		id: 'Kesalahan ketika impor kode',
+		da: 'Fejl i importkode',
 	},
 	'Export code': {
 		fr: "Code d'exportation",
@@ -2417,6 +2577,7 @@ const dict = {
 		tr: 'Kodu dışa aktar',
 		uk: 'Експортувати налаштування',
 		id: 'Ekspor kode',
+		da: 'Eksportér kode',
 	},
 	'Click again to confirm': {
 		fr: 'Cliquez encore une fois pour confirmer',
@@ -2433,6 +2594,7 @@ const dict = {
 		tr: 'Onaylamak için tekrar tıklayın',
 		uk: 'Натисніть ще раз для підтвердження',
 		id: 'Klik lagi untuk konfirmasi',
+		da: 'Klik igen for at bekræfte',
 	},
 	'Reset settings': {
 		fr: 'Réinitialiser les réglages',
@@ -2449,6 +2611,7 @@ const dict = {
 		tr: 'Ayarları sıfırla',
 		uk: 'Скинути налаштування',
 		id: 'Setel ulang pengaturan',
+		da: 'Nulstil indstillingerne',
 	},
 	'Are you sure ?': {
 		fr: 'Etes vous sûr ?',
@@ -2465,6 +2628,7 @@ const dict = {
 		tr: 'Emin misin ?',
 		uk: 'Ви впевнені ?',
 		id: 'Apakah anda yakin ?',
+		da: 'Er du sikker?',
 	},
 	'Made in France with ❤️': {
 		fr: 'Fabriqué en France avec ❤️',
@@ -2481,6 +2645,7 @@ const dict = {
 		tr: "❤️ ile Fransa'da üretilmiştir",
 		uk: 'Створено в Франції з ❤️',
 		id: 'Dibuat di Prancis dengan ❤️',
+		da: 'Lavet i Frankrig med ❤️',
 	},
 	by: {
 		fr: 'par',
@@ -2497,6 +2662,7 @@ const dict = {
 		tr: 'tarafından',
 		uk: 'Розробники:',
 		id: 'oleh',
+		da: 'af',
 	},
 	Visit: {
 		fr: 'Rendez-vous sur',
@@ -2513,6 +2679,7 @@ const dict = {
 		tr: 'Ziyaret Et',
 		uk: 'Відвідайте',
 		id: 'Kunjungi',
+		da: 'Besøg',
 	},
 	'our website': {
 		fr: 'notre site Internet',
@@ -2529,6 +2696,7 @@ const dict = {
 		tr: 'websitemiz',
 		uk: 'наш сайт',
 		id: 'Website kami',
+		da: 'vores hjemmeside',
 	},
 	'for infos and donations': {
 		fr: 'pour en savoir plus ou faire un don',
@@ -2545,6 +2713,7 @@ const dict = {
 		tr: 'bilgi ve bağış için',
 		uk: 'для отримання додаткової інформації або пожертвування',
 		id: 'untuk info dan donasi',
+		da: 'for at lære mere eller donere',
 	},
 }
 
@@ -2585,6 +2754,7 @@ const engineLocales = {
 		tr: '.com.tr',
 		uk: '.com.ua',
 		id: '.co.id',
+		da: '.dk',
 	},
 	ddg: {
 		base: 'https://duckduckgo.com/?q=%s&kl=%l',
@@ -2605,6 +2775,7 @@ const engineLocales = {
 		tr: 'tr-tr',
 		uk: 'uk-UA',
 		id: 'id-ID',
+		da: 'dk-da',
 	},
 	startpage: {
 		base: 'https://www.startpage.com/do/search?query=%s&language=%l',
@@ -2625,6 +2796,7 @@ const engineLocales = {
 		tr: 'tr-tr',
 		uk: '',
 		id: '',
+		da: 'dansk',
 	},
 	qwant: {
 		base: 'https://www.qwant.com/?q=%s&r=%l',
@@ -2643,6 +2815,7 @@ const engineLocales = {
 		es: 'ES&sr=es',
 		no: 'NO&sr=nb',
 		tr: '', //qwant not available in Turkey
+		da: 'DK&sr=da',
 	},
 	yahoo: {
 		base: 'https://%lsearch.yahoo.com/search?q=%s',
@@ -2663,6 +2836,7 @@ const engineLocales = {
 		tr: 'tr.',
 		uk: 'ua.',
 		id: 'id.',
+		da: 'dk.',
 	},
 	bing: {
 		base: 'https://www.bing.com/search?q=%s&cc=%l',
@@ -2683,6 +2857,7 @@ const engineLocales = {
 		tr: 'tr',
 		uk: '',
 		id: 'id',
+		da: 'da',
 	},
 	brave: {
 		base: 'https://search.brave.com/search?q=%s',
