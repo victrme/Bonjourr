@@ -55,6 +55,27 @@ const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
 		: 'other'
 }
 
+const getFavicon = () => {
+	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
+}
+
+function periodOfDay(sunTime, time) {
+	// Transition day and night with noon & evening collections
+	// if clock is + /- 60 min around sunrise/set
+	const { rise, set, now } = sunTime
+
+	if (!time) time = now // no time specified ? get current from sunTime
+	else time = minutator(new Date(time)) // everything is in minutes here
+
+	if (time >= 0 && time <= rise - 60) return 'night'
+	if (time <= rise + 60) return 'noon'
+	if (time <= set - 60) return 'day'
+	if (time <= set + 60) return 'evening'
+	if (time >= set + 60) return 'night'
+
+	return 'day'
+}
+
 function validateHideElem(hide) {
 	let res = true
 
@@ -69,6 +90,30 @@ function validateHideElem(hide) {
 		: (res = false)
 
 	return res
+}
+
+function localDataMigration(local) {
+	delete local.customIndex
+
+	let idsList = []
+
+	Object.values(local.custom).forEach((val, i) => {
+		const _id = randomString(6)
+		idsList.push(_id)
+
+		local = {
+			...local,
+			idsList,
+			selectedId: _id,
+			['custom_' + _id]: val,
+			['customThumb_' + _id]: local.customThumbnails[i],
+		}
+	})
+
+	delete local.custom
+	delete local.customThumbnails
+
+	return local
 }
 
 function bundleLinks(storage) {
@@ -282,6 +327,39 @@ const safeFontList = {
 	apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
 }
 
+const langList = {
+	en: 'English',
+	fr: 'Français',
+	sk: 'Slovenský',
+	sv: 'Svenska',
+	pl: 'Polski',
+	pt_BR: 'Português (Brasil)',
+	nl: 'Nederlandse',
+	ru: 'Русский',
+	zh_CN: '简体中文',
+	de: 'Deutsch',
+	it: 'Italiano',
+	es: 'Español',
+	tr: 'Türkçe',
+	uk: 'Українська',
+	id: 'Indonesia',
+}
+
+const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
+	// check if exact or similar languages are available
+	for (const [code] of Object.entries(langList)) {
+		if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
+			return code
+		}
+	}
+	return 'en' // if not, defaults to english
+}
+
+function tradThis(str) {
+	const lang = document.documentElement.getAttribute('lang')
+	return lang === 'en' ? str : dict[str][lang]
+}
+
 function bonjourrDefaults(which) {
 	switch (which) {
 		case 'sync':
@@ -289,13 +367,15 @@ function bonjourrDefaults(which) {
 				usdate: false,
 				showall: false,
 				linksrow: 6,
+				linkstyle: 'default',
 				cssHeight: 80,
 				reviewPopup: 0,
 				background_blur: 15,
 				background_bright: 0.8,
 				css: '',
-				lang: 'en',
+				lang: defaultLang(),
 				favicon: '',
+				tabtitle: '',
 				greeting: '',
 				dark: 'system',
 				custom_every: 'pause',
@@ -340,16 +420,18 @@ function bonjourrDefaults(which) {
 					family: '',
 					size: '14',
 					availWeights: [],
-					weight: testOS.windows || testOS.ios ? '400' : '300',
+					weight: testOS.windows ? '400' : '300',
 				},
+				textShadow: 0.2,
 				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.13.2' },
+				about: { browser: detectPlatform(), version: '1.14.0' },
 			}
 
 		case 'local':
 			return {
-				custom: [],
-				customThumbnails: [],
+				selectedId: '',
+				idsList: [],
+				quotesCache: [],
 				dynamicCache: {
 					noon: [],
 					day: [],

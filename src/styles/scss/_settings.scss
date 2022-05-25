@@ -67,6 +67,28 @@
 			}
 		}
 	}
+
+	&.hasUpdated:before {
+		opacity: 1;
+	}
+
+	&.hasUpdated.shown:before {
+		opacity: 0;
+	}
+
+	&:before {
+		content: '';
+		position: absolute;
+		opacity: 0;
+		width: 10px;
+		height: 10px;
+		left: 2px;
+		top: 2px;
+		background-color: #35c759;
+		border-radius: 100%;
+		z-index: 10;
+		transition: opacity 0.3s;
+	}
 }
 
 #settings {
@@ -95,6 +117,48 @@
 		-webkit-transform: translateX(-100%);
 		transform: translateX(-100%);
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+	}
+
+	#changelogContainer {
+		display: none;
+		overflow: hidden;
+		max-height: 240px;
+		transition: max-height 0.4s $easeOutThree;
+
+		&.dismissed {
+			display: block;
+			max-height: 0px;
+		}
+
+		&.shown {
+			display: block;
+		}
+
+		#changelog {
+			position: relative;
+			padding: 1.3em;
+			padding-right: 3em;
+			margin-top: 1em;
+			line-height: 1.3em;
+			background-color: #ffffff;
+			transition: transform 0.3s $easeOutThree;
+
+			@include radiusSettings();
+			@include marginSettings();
+
+			a,
+			button {
+				display: inline-block;
+				text-decoration: none;
+				color: $blue;
+			}
+
+			#log_dismiss {
+				width: 100%;
+				text-align: center;
+				margin-top: 0.5em;
+			}
+		}
 	}
 
 	&.init {
@@ -155,6 +219,7 @@
 
 		.tooltip {
 			background-color: $inputGrey;
+			border: 1px solid #e3e3ea;
 		}
 	}
 
@@ -166,10 +231,22 @@
 	.tooltip {
 		background-color: $settingsGrey;
 		color: $placeholderGrey;
-		padding: 0 6px;
+		width: 20px;
 		height: 20px;
 		border-radius: 100%;
 		cursor: pointer;
+		box-sizing: border-box;
+		transition: background-color 0.1s, transform 0.1s;
+		border: 1px solid #eaeaee;
+		font-size: 0.9em;
+
+		&:hover {
+			background-color: $focusedGrey;
+		}
+
+		&:active {
+			transform: scale(1.2);
+		}
 
 		@include allCentered();
 	}
@@ -214,7 +291,7 @@
 
 	.param {
 		background-color: #ffffff;
-		padding: 0.75em 1.3em;
+		padding: $settingsMargin 1.3em;
 
 		@include radiusSettings();
 		@include marginSettings();
@@ -233,6 +310,24 @@
 
 		.tooltip {
 			margin: 0 7px;
+		}
+	}
+
+	#tabtitle {
+		div {
+			display: flex;
+
+			#i_favicon {
+				text-align: center;
+				padding-left: 0;
+				padding-right: 0;
+				width: 40px;
+				margin-right: 5px;
+			}
+
+			#i_tabtitle {
+				width: 110px;
+			}
 		}
 	}
 
@@ -274,12 +369,18 @@
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
+		transition: background-color 0.1s, border-color 0.1s;
 		background-color: $settingsGrey;
+
+		&:hover {
+			background-color: $focusedGrey;
+			border-color: #b7b7b7;
+		}
 	}
 
 	.freq_wrap > div {
 		display: flex;
-		width: 150px;
+		width: 155px;
 
 		select {
 			width: 100%;
@@ -340,68 +441,84 @@
 	#bg_tn_wrap {
 		display: flex;
 		align-items: flex-start;
-		padding: 10px 0;
+		flex-direction: column;
+		// padding: 10px 0;
 		overflow: visible;
 
-		img {
-			height: 75px;
-			@include radiusSettings();
-		}
+		#fileContainer {
+			margin: 0;
+			width: 100%;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			grid-gap: 10px;
 
-		.thumbnail {
-			margin-right: 1em;
-			position: relative;
-			cursor: pointer;
-			filter: grayscale(0.2);
-			transition: filter 0.2s;
-
-			&:hover {
-				filter: grayscale(0) brightness(1.2);
-			}
-
-			button {
-				position: absolute;
-				top: 5px;
-				left: 5px;
-				width: 25px;
-				height: 25px;
-				background: #fffd;
-				color: #333;
-				font-size: 10px;
-				border-radius: 100%;
+			.thumbnail {
+				margin: 0;
 				cursor: pointer;
-				text-decoration: none;
-				transition: opacity 0.2s, filter 0.2s;
+				overflow: hidden;
+				transition: box-shadow 0.2s $easeOutThree, transform 0.2s $easeOutThree;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				overflow: hidden;
+				height: 75px;
+				position: relative;
+				border: 3px solid transparent;
+				background-image: url('/src/assets/interface/loading.svg');
+				background-size: 4em;
+				background-position: center center;
+				background-repeat: no-repeat;
+				@include radiusSettings();
 
-				&.hidden {
-					opacity: 0;
+				&.selected {
+					border-color: $blue;
 				}
 
-				&.shown {
-					opacity: 1;
+				img {
+					width: 100%;
+					min-height: 100%;
+					background-color: transparent;
+				}
 
-					&:hover {
-						filter: brightness(0.9);
+				button {
+					position: absolute;
+					top: 5px;
+					left: 5px;
+					width: 25px;
+					height: 25px;
+					color: #333;
+					font-size: 10px;
+					border-radius: 100%;
+					cursor: pointer;
+					text-decoration: none;
+					transition: opacity 0.2s;
+					opacity: 0;
+					pointer-events: none;
+					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+					@include frostedGlass();
+				}
+
+				// instead of adding a populated class in JS
+				&:first-child,
+				&:nth-child(2),
+				&:nth-child(3) {
+					margin-top: 10px;
+				}
+
+				&:hover {
+					box-shadow: rgba(0, 0, 0, 0.25) 0 5px 15px;
+					transform: scale(1.04);
+
+					button {
+						pointer-events: all;
+						opacity: 1;
 					}
-					&:active {
-						filter: brightness(0.7);
-					}
+				}
+
+				&:active {
+					transform: scale(1);
 				}
 			}
-		}
-
-		&::-webkit-scrollbar {
-			height: 6px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: $settingsGrey;
-			border-radius: 4px;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: $borderGrey;
-			border-radius: 4px;
 		}
 	}
 
@@ -428,7 +545,7 @@
 			font-size: small;
 			margin-right: 5px;
 			width: 100%;
-			height: 2.35em;
+			height: $inputHeight;
 			opacity: 1;
 			transition: all 0.2s;
 
@@ -566,8 +683,8 @@
 		max-height: 3000px;
 		resize: vertical;
 		border: none;
-		padding: 0.75em 1.3em;
-		font-family: 'Courier New', Courier, monospace;
+		padding: $settingsMargin 1.3em;
+		font-family: 'SF Mono', 'Courier New', Courier, monospace;
 		box-sizing: border-box;
 		@include radiusSettings();
 		@include marginSettings();
@@ -584,13 +701,12 @@
 	}
 
 	#i_export {
-		height: 1.9em;
 		overflow-x: hidden;
 		text-overflow: ellipsis;
 		user-select: all;
 		-webkit-user-select: all;
 		margin: 0;
-		padding-top: 0.45em;
+		padding-top: 0.5em;
 		padding-right: 10px;
 		font-family: inherit;
 	}
@@ -619,18 +735,20 @@
 			.socialIcons {
 				display: flex;
 				justify-content: space-between;
+				gap: 14px;
 
 				a {
 					display: flex;
 					align-items: center;
-					margin-right: 14px;
-					&:last-child {
-						margin: unset;
-					}
+					transition: transform 0.15s;
 
 					svg {
 						height: 1.25em;
 						fill: $blue;
+					}
+
+					&:hover {
+						transform: scale(1.1);
 					}
 				}
 			}

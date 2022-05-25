@@ -16,14 +16,25 @@ function initParams(data, settingsDom) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
+	// inserts languages in select
+	for (const [code, title] of Object.entries(langList)) {
+		let option = document.createElement('option')
+		option.value = code
+		option.text = title
+
+		paramId('i_lang').add(option)
+	}
+
 	initInput('cssEditor', data.css, '')
 	initInput('i_row', data.linksrow, 8)
+	initInput('i_linkstyle', data.linkstyle, 'default')
 	initInput('i_type', data.background_type, 'dynamic')
 	initInput('i_freq', whichFreq, whichFreqDefault)
 	initInput('i_blur', data.background_blur, 15)
 	initInput('i_bright', data.background_bright, 0.8)
 	initInput('i_dark', data.dark, 'system')
 	initInput('i_favicon', data.favicon, '')
+	initInput('i_tabtitle', data.tabtitle, '')
 	initInput('i_greeting', data.greeting, '')
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
@@ -39,6 +50,7 @@ function initParams(data, settingsDom) {
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
 	initInput('i_size', isThereData('font', 'size'), mobilecheck() ? 11 : 14)
+	initInput('i_textshadow', data.textShadow)
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_linknewtab', data.linknewtab)
@@ -52,6 +64,21 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
+
+	// Activate changelog (hasUpdated is activated in background.js)
+	if (localStorage.hasUpdated === 'true') {
+		const domshowsettings = document.querySelector('#showSettings')
+		const domchangelog = settingsDom.querySelector('#changelogContainer')
+
+		clas(domchangelog, true, 'shown')
+		clas(domshowsettings, true, 'hasUpdated')
+
+		settingsDom.querySelector('#log_dismiss').onclick = () => {
+			clas(domshowsettings, false, 'hasUpdated')
+			domchangelog.className = 'dismissed'
+			localStorage.removeItem('hasUpdated')
+		}
+	}
 
 	// No bookmarks import on safari || online
 	if (window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim))
@@ -76,7 +103,7 @@ function initParams(data, settingsDom) {
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
 	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_favicon').setAttribute('placeholder', tradThis('Any emoji'))
+	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
 	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
@@ -124,6 +151,7 @@ function initParams(data, settingsDom) {
 	const fileContainer = paramId('fileContainer')
 
 	enterBlurs(paramId('i_favicon'))
+	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 
 	// file input animation
@@ -161,10 +189,6 @@ function initParams(data, settingsDom) {
 			toggleTooltip('csslinks')
 		}
 	})
-
-	paramId('i_showall').onchange = function () {
-		showall(this.checked, true)
-	}
 
 	function switchLangs(nextLang) {
 		function langSwitchTranslation(langs) {
@@ -209,8 +233,20 @@ function initParams(data, settingsDom) {
 		})
 	}
 
+	paramId('i_showall').onchange = function () {
+		showall(this.checked, true)
+	}
+
 	paramId('i_lang').onchange = function () {
 		switchLangs(this.value)
+	}
+
+	paramId('i_favicon').oninput = function () {
+		favicon(null, this)
+	}
+
+	paramId('i_tabtitle').oninput = function () {
+		tabTitle(null, this)
 	}
 
 	//quick links
@@ -233,6 +269,14 @@ function initParams(data, settingsDom) {
 
 	paramId('i_linknewtab').onchange = function () {
 		quickLinks('linknewtab', this)
+	}
+
+	paramId('i_linkstyle').onchange = function () {
+		quickLinks('linkstyle', this.value)
+	}
+
+	paramId('i_row').oninput = function () {
+		linksrow(null, null, this.value)
 	}
 
 	//visuals
@@ -260,7 +304,7 @@ function initParams(data, settingsDom) {
 	//custom bg
 
 	paramId('i_bgfile').onchange = function () {
-		localBackgrounds(null, { is: 'newfile', file: this.files[0] })
+		localBackgrounds(null, { is: 'newfile', file: this.files })
 	}
 
 	paramId('i_blur').oninput = function () {
@@ -274,14 +318,8 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_dark').onchange = function () {
-		darkmode(this.value)
+		darkmode(null, this.value)
 	}
-
-	paramId('i_favicon').oninput = function () {
-		favicon(null, this)
-	}
-
-	// paramId('i_favicon').onkeyup = (e) => (e.key === 'Enter' ? e.target.blur() : '')
 
 	//Time and date
 
@@ -424,15 +462,19 @@ function initParams(data, settingsDom) {
 		customSize(null, this.value)
 	}
 
+	paramId('i_textshadow').oninput = function () {
+		textShadow(null, this.value)
+	}
+
 	// Reduces opacity to better see interface size changes
 	if (mobilecheck()) {
 		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
-		paramId('i_size').addEventListener('touchstart', () => touchHandler(true), { passive: true })
-		paramId('i_size').addEventListener('touchend', () => touchHandler(false), { passive: true })
-	}
+		const rangeInputs = document.querySelectorAll(input[(type = 'range')])
 
-	paramId('i_row').oninput = function () {
-		linksrow(null, this.value)
+		rangeInputs.forEach(function (input) {
+			paramId(input).addEventListener('touchstart', () => touchHandler(true), { passive: true })
+			paramId(input).addEventListener('touchend', () => touchHandler(false), { passive: true })
+		})
 	}
 
 	paramId('hideelem')
@@ -465,31 +507,47 @@ function showall(val, event, domSettings) {
 }
 
 function selectBackgroundType(cat) {
-	id('custom').style.display = cat === 'custom' ? 'block' : 'none'
-	document.querySelector('.as_collection').style.display = cat === 'custom' ? 'none' : 'block'
+	function toggleType(sync, local) {
+		id('custom').style.display = cat === 'custom' ? 'block' : 'none'
+		document.querySelector('.as_collection').style.display = cat === 'custom' ? 'none' : 'block'
 
-	chrome.storage.sync.get(['custom_every', 'dynamic'], (data) => {
-		//
-		// Applying functions
-		if (cat === 'custom') {
-			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
-		}
-		if (cat === 'dynamic') {
-			// Timeout needed because it uses init data
+		// Only apply fade out/in if there are local backgrounds
+		// No local ? no reason to fade to black or show no thumbnails
+		// Just stick to unsplash
+
+		if (cat === 'custom' && local.selectedId !== '') {
 			id('background_overlay').style.opacity = `0`
-			id('background').removeAttribute('index')
-			setTimeout(() => unsplash(data), 400)
-			clas(id('credit'), true, 'shown')
+			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
+			setTimeout(
+				() =>
+					localBackgrounds({
+						every: sync.custom_every,
+						time: sync.custom_time,
+					}),
+				400
+			)
 		}
 
-		// Setting frequence
-		const c_every = data.custom_every || 'pause'
-		const d_every = data.dynamic.every || 'hour'
+		if (cat === 'dynamic') {
+			clas(id('credit'), true, 'shown')
 
-		id('i_freq').value = cat === 'custom' ? c_every : d_every
+			if (local.selectedId !== '') {
+				id('background_overlay').style.opacity = `0`
+				setTimeout(() => unsplash(sync), 400)
+			}
+		}
+
+		const c_every = sync.custom_every || 'pause'
+		const d_every = sync.dynamic.every || 'hour'
+
+		id('i_freq').value = cat === 'custom' ? c_every : d_every // Setting frequence input
+
+		chrome.storage.sync.set({ background_type: cat })
+	}
+
+	chrome.storage.local.get('selectedId', (local) => {
+		chrome.storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => toggleType(sync, local))
 	})
-
-	chrome.storage.sync.set({ background_type: cat })
 }
 
 function importExport(select, isEvent, settingsDom) {
@@ -584,7 +642,7 @@ function importExport(select, isEvent, settingsDom) {
 
 function signature(dom) {
 	const spans = dom.querySelectorAll('#rand span')
-	const hyper = dom.querySelectorAll('#rand a')
+	const as = dom.querySelectorAll('#rand a')
 	const us = [
 		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
 		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
@@ -595,9 +653,9 @@ function signature(dom) {
 	spans[0].textContent = `${tradThis('by')} `
 	spans[1].textContent = ` & `
 
-	hyper.forEach((hyper, i) => {
-		hyper.href = us[i].href
-		hyper.textContent = us[i].name
+	as.forEach((a, i) => {
+		a.href = us[i].href
+		a.textContent = us[i].name
 	})
 }
 
@@ -674,8 +732,12 @@ function settingsInit(data) {
 		//focus la searchbar si elle existe et les settings sont fermé
 		const searchbarOn = has(id('sb_container'), 'shown') === true
 		const noSettings = has(id('settings'), 'shown') === false
+		const noEditLinks = has(id('editlink'), 'shown') === false
 
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings) id('searchbar').focus()
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEditLinks) {
+			id('searchbar').focus()
+		}
+
 		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
 	}
 

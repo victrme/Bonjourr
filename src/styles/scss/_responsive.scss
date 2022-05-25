@@ -1,3 +1,10 @@
+// phones an touch screens
+@media (hover: none) and (pointer: coarse) {
+	#settings #bg_tn_wrap #fileContainer .thumbnail button {
+		opacity: 1;
+	}
+}
+
 @media screen and (max-height: 900px) {
 	body {
 		font-size: 13px;
@@ -12,9 +19,6 @@
 	}
 
 	#interface {
-		// min-height: 90vh;
-		// padding-bottom: 10vh;
-
 		#quotes_container {
 			width: 90vw;
 
@@ -34,19 +38,15 @@
 		// Tooltip (?) centered when span wrap
 		&.all .as_collection {
 			max-height: 140px;
+			
 			.wrapper span {
 				align-items: center;
 			}
 		}
 
-		input[type='text'] {
-			width: 110px;
-		}
-
-		.freq_wrap > div,
-		input[type='range'],
-		select {
-			width: 144px;
+		.param {
+			margin-right: 12px;
+			margin-left: 12px;
 		}
 	}
 

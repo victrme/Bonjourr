@@ -259,7 +259,7 @@
 			height: 2.5em;
 			width: 100%;
 			padding: 0 1em;
-			padding-right: calc(3em + 10px);
+			padding-right: 6em;
 			font-size: 1.3em;
 			color: #fff;
 			border: 0;
@@ -280,6 +280,70 @@
 			}
 		}
 
+		#sb_submit,
+		#sb_empty {
+			position: absolute;
+			opacity: 0;
+			border: none;
+			color: #fff;
+			font-size: inherit;
+			background-color: transparent;
+			transition: opacity 0.2s;
+			pointer-events: none;
+
+			&.shown {
+				opacity: 1;
+				cursor: pointer;
+				pointer-events: all;
+			}
+		}
+
+		#sb_empty {
+			right: 5.5em;
+			position: absolute;
+			padding-right: 1.5em;
+			border-right: 1px solid #fff4;
+			cursor: text;
+		}
+
+		#sb_submit {
+			margin: 0;
+			right: 0.8em;
+			padding: 0.3em 1em;
+			border-radius: 0.5em;
+			background-color: #fff4;
+			transition: opacity 0.2s, filter 0.1s, transform 0.1s;
+
+			img {
+				margin-top: 3px;
+				height: 1.2em;
+			}
+
+			&:hover {
+				filter: brightness(0.9);
+			}
+
+			&:active {
+				filter: brightness(0.8);
+				transform: scale(0.94);
+			}
+		}
+
+		&.opaque {
+			#sb_empty {
+				color: #222;
+				border-color: #b9b9b9;
+			}
+
+			#sb_submit {
+				background-color: #bbb4;
+				img {
+					filter: invert(1);
+					opacity: 0.7;
+				}
+			}
+		}
+
 		&.shown {
 			margin: 3em auto;
 			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
@@ -292,25 +356,6 @@
 		&.hidden {
 			flex-grow: 0;
 			visibility: hidden;
-		}
-
-		#sb_empty {
-			position: absolute;
-			right: 10px;
-			opacity: 0;
-			border: none;
-			color: #fff;
-			cursor: text;
-			margin-right: 1em;
-			border-radius: 1em;
-			font-size: inherit;
-			background-color: transparent;
-			transition: opacity 0.2s;
-
-			&.shown {
-				opacity: 1;
-				cursor: pointer;
-			}
 		}
 	}
 
@@ -380,9 +425,7 @@
 
 		&.withQuotes {
 			flex-grow: 0.6;
-			transition-property: flex-grow;
-			transition-duration: 0.4s;
-			transition-delay: 0.2s;
+			transition: transform 0.4s, flex-grow 0.4s 0.2s;
 		}
 
 		&.he_hidden {
@@ -398,27 +441,33 @@
 			flex-wrap: wrap;
 			justify-content: center;
 			transition: visibility 0s 0s;
-		}
+			gap: 2em;
 
-		.block_parent {
-			cursor: pointer;
-			position: relative;
-			margin: 1em;
-			width: 5em;
+			#hiddenlink {
+				display: none;
+			}
 
-			.block {
+			.block_parent {
+				cursor: pointer;
+				position: relative;
+				transition: width 0.3s;
+
+				.block {
+					width: 5em;
+				}
+
 				.l_icon_wrap {
-					overflow: hidden;
-					width: 4.9em;
-					height: 4.9em;
-					margin: 0 auto 0.5em auto;
 					position: relative;
+					overflow: hidden;
+					width: 4.7em;
+					height: 4.7em;
+					padding: 0.4em;
+					margin: 0 auto 0.5em auto;
 					border-radius: 1em;
 					background: $purewhite;
-					padding: 0.4em;
 					box-shadow: $textShadow;
 					box-sizing: border-box;
-					transition: border-color 0.1s, filter 0.1s, transform 0.1s linear, box-shadow 0.1s;
+					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, height 0.3s;
 
 					img {
 						border-radius: 0.5em;
@@ -451,53 +500,92 @@
 				span {
 					display: block;
 					width: 100%;
-					max-height: 3.3em;
-					line-height: 1.1em;
+					max-height: 3.9em;
+					line-height: 1.3em;
 					overflow: hidden;
 					word-wrap: break-word;
-					text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+				}
+
+				&.removed {
+					transform: scale(0);
+					overflow: hidden;
+					width: 0;
+					margin: 1em 0;
+					transition: transform 0.6s, width 0.6s 0.1s, margin 0.6s 0.1s;
 				}
 			}
 
-			button.remove {
-				position: absolute;
-				display: none;
-				top: -1.2em;
-				left: -1.2em;
-				height: 30px;
-				width: 30px;
-				border: 0;
-				border-radius: 100%;
-				background: #ffffff;
-				box-shadow: 0px 1px 10px 1.5px rgba(0, 0, 0, 0.3);
-				z-index: 3;
-				cursor: default;
-				transition: all 0.1s;
+			&.small {
+				gap: 1em;
 
-				img {
-					height: 0.9em;
-					width: 0.9em;
-					position: absolute;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-				}
-
-				&.visible {
-					cursor: pointer;
-				}
-
-				&:hover {
-					background: #bbb;
+				.block_parent .l_icon_wrap {
+					border-radius: 0.6em;
+					width: 3.5em;
+					height: 3.5em;
 				}
 			}
 
-			&.removed {
-				transform: scale(0);
-				overflow: hidden;
-				width: 0;
-				margin: 1em 0;
-				transition: transform 0.6s, width 0.6s 0.1s, margin 0.6s 0.1s;
+			&.tiny {
+				gap: 2em;
+
+				.block_parent .block {
+					width: 3em;
+					display: flex;
+					flex-flow: column-reverse;
+					position: relative;
+
+					.l_icon_wrap {
+						display: flex;
+						padding: 0.2em;
+						width: 2.5em;
+						height: 2.5em;
+						border-radius: 0.4em;
+					}
+
+					span {
+						display: block;
+						position: absolute;
+						visibility: hidden;
+						padding: 0.2em 0.6em;
+						margin: auto;
+						width: unset;
+						opacity: 0;
+						bottom: -2em;
+						left: 50%;
+						transform: translateX(-50%);
+						color: white;
+						overflow: visible;
+						white-space: nowrap;
+						font-size: 0.9em;
+						font-weight: 400;
+						text-shadow: none;
+						border-radius: 0.3em;
+						border: 1px solid rgba(255, 255, 255, 0.075);
+
+						transition: opacity 0.2s;
+
+						@include frostedGlass($alpha: 0.2);
+					}
+
+					&:hover span {
+						opacity: 1;
+						visibility: visible;
+					}
+				}
+			}
+
+			&.text {
+				.block_parent .block {
+					width: auto;
+
+					.l_icon_wrap {
+						display: none;
+					}
+
+					span {
+						font-size: 1.2em;
+					}
+				}
 			}
 		}
 	}

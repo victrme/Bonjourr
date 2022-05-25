@@ -7,7 +7,7 @@ $purewhite: white;
 $pureblack: black;
 
 $blue: #007aff;
-$green: #4bd663;
+$green: #35c759;
 $red: #fe3b31;
 $settingsGrey: #f2f2f7;
 $inputGrey: #eaeaee;
@@ -17,7 +17,11 @@ $placeholderGrey: #7c7d7e;
 $greyish: #3a3a3a;
 $blackish: #222;
 
-$thumbShadow: 0px 1px 3px 1.5px #cccccc;
+$inputHeight: 2.35em;
+$settingsMargin: 0.65em;
+
+$thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
+
 $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
@@ -49,7 +53,7 @@ body {
 	hr {
 		border: none;
 		border-bottom: 1px solid $borderGrey;
-		margin: 0.75em 0;
+		margin: $settingsMargin 0;
 		display: block;
 	}
 
@@ -160,7 +164,7 @@ body {
 		#linkblocks {
 			flex-grow: 1;
 			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
-			will-change: transform, flex-grow;
+			// will-change: transform, flex-grow;
 		}
 
 		#time-container,
@@ -201,12 +205,12 @@ body {
 	&.all {
 		.as_link {max-height: 120px}
 		.as_collection {max-height: 130px}
-		.as_visuals {max-height: 300px}
+		.as_visuals {max-height: 327px}
 		.as_timedate {max-height: 260px}
 		.as_sbopacity {max-height: 60px}
 		.as_forecast {max-height: 60px}
 		.as_temp {max-height: 60px}
-		.as_fonts {max-height: 240px}
+		.as_fonts {max-height: 300px}
 		.as_css {max-height: 3100px}
 		.as_impexp {max-height: 220px}
 		.as_quote_type {max-height: 130px}
@@ -230,9 +234,9 @@ body {
 	select,
 	input,
 	hr {
-		transition-duration: 0.6s;
+		transition-duration: 0.4s;
 		transition-timing-function: $easeOutThree;
-		transition-property: background-color, color, border, border-color;
+		transition-property: background-color, color, border, border-color, transform;
 	}
 
 	input:focus-visible + .slider {
@@ -253,7 +257,7 @@ body {
 	#i_refresh,
 	#i_qtrefresh,
 	select {
-		height: 2.35em;
+		height: $inputHeight;
 		border-radius: 8.5px;
 		padding-left: 10px;
 		border: 1px solid $inputGrey;
@@ -262,12 +266,12 @@ body {
 	}
 
 	input[type='text'] {
-		width: 140px;
+		width: 155px;
 	}
 
 	input[type='range'],
 	select {
-		width: 150px;
+		width: 155px;
 	}
 
 	.slider,
@@ -298,7 +302,6 @@ body {
 		padding-left: 10px;
 		border-radius: 8.5px;
 		border: 0;
-		height: 2.35em;
 		color: $blackish;
 		background-color: $inputGrey;
 	}
@@ -316,12 +319,17 @@ body {
 		font-size: 14px;
 	}
 
+	input, select, #i_export {
+		box-sizing: border-box;
+		height: $inputHeight;
+	}
+
 	/* Switch */
 	.switch {
 		position: relative;
 		display: inline-block;
-		width: 56px;
-		height: 34px;
+		width: 51px;
+		height: 31px;
 		margin-left: 1em;
 
 		input {
@@ -335,7 +343,7 @@ body {
 		}
 
 		input:checked + .slider:before {
-			transform: translateX(22px);
+			transform: translateX(20px);
 		}
 
 		.slider {
@@ -346,22 +354,23 @@ body {
 			right: 0;
 			bottom: 0;
 			background-color: $inputGrey;
-			-webkit-transition: 0.4s;
-			transition: 0.4s;
+			-webkit-transition: 0.15s;
+			transition: 0.15s;
 			border-radius: 34px;
 
 			&:before {
 				position: absolute;
 				content: '';
-				height: 28px;
-				width: 28px;
-				left: 3px;
-				bottom: 3px;
+				height: 27px;
+				width: 27px;
+				top: 2px;
+				left: 2px;
+				// bottom: 3px;
 				background-color: $purewhite;
-				-webkit-transition: 0.4s;
-				transition: 0.4s;
+				-webkit-transition: 0.3s;
+				transition: 0.3s;
 				border-radius: 50%;
-				box-shadow: 0px 1px 4px 1.5px rgba(0, 0, 0, 0.2);
+				box-shadow: $thumbShadow;
 			}
 
 			&:hover {
@@ -380,6 +389,12 @@ body {
 		background-color: $focusedGrey;
 		border-radius: 1.5rem;
 		opacity: 1;
+		cursor: grab;
+		margin: 0;
+
+		&:active {
+			cursor: grabbing;
+		}
 
 		/* Firefox */
 		&::-moz-range-track {

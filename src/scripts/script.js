@@ -8,15 +8,10 @@ function traduction(settingsDom, lang = 'en') {
 	trns.forEach((trn) => changeText(trn, trn.textContent))
 }
 
-function tradThis(str) {
-	const lang = document.documentElement.getAttribute('lang')
-	return lang === 'en' ? str : dict[str][lang]
-}
-
 function favicon(init, event) {
 	function createFavicon(emoji) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
-		document.querySelector("link[rel~='icon']").href = emoji ? svg : 'src/assets/favicon-128x128.png'
+		document.querySelector("link[rel~='icon']").href = emoji ? svg : `src/assets/${getFavicon()}`
 	}
 
 	if (init !== undefined) createFavicon(init)
@@ -30,6 +25,13 @@ function favicon(init, event) {
 
 		slowRange({ favicon: isEmoji ? val : '' })
 	}
+}
+
+function tabTitle(init, event) {
+	const title = init ? init : event ? event.value : tradThis('New tab')
+
+	if (event) slowRange({ tabtitle: title })
+	document.title = title
 }
 
 function clock(event, init) {
@@ -245,7 +247,7 @@ function quickLinks(event, that, init) {
 				// Load icons one by one
 				links.map(async (link, index) => {
 					const dom = blocklist[index].icon
-					const needsToChange = ['api.faviconkit.com', 'loading.gif'].some((x) => link.icon.includes(x))
+					const needsToChange = ['api.faviconkit.com', 'loading.svg'].some((x) => link.icon.includes(x))
 
 					// Fetch new icons if matches these urls
 					if (needsToChange) {
@@ -267,7 +269,7 @@ function quickLinks(event, that, init) {
 
 	async function fetchNewIcon(dom, url) {
 		// Apply loading gif d'abord
-		dom.src = 'src/assets/interface/loading.gif'
+		dom.src = 'src/assets/interface/loading.svg'
 
 		const img = new Image()
 		const a = document.createElement('a')
@@ -599,7 +601,7 @@ function quickLinks(event, that, init) {
 				_id: 'links' + randomString(6),
 				order: 0,
 				title: stringMaxSize(title, 64),
-				icon: 'src/assets/interface/loading.gif',
+				icon: 'src/assets/interface/loading.svg',
 				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
 			}
 		}
@@ -635,27 +637,37 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	switch (event) {
-		case 'input':
-		case 'button':
-			linkSubmission(that)
-			break
+	if (event) {
+		const Input = event === 'input'
+		const Button = event === 'button'
+		const Newtab = event === 'linksnewtab'
+		const Style = event === 'linkstyle'
 
-		case 'linknewtab': {
+		if (Input || Button) {
+			linkSubmission(that)
+		}
+
+		if (Newtab) {
 			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
 			id('hiddenlink').setAttribute('target', '_blank')
-			break
 		}
+
+		if (Style) {
+			chrome.storage.sync.get(['linksrow'], (data) => {
+				domlinkblocks.className = that
+				linksrow(data.linksrow, that)
+				chrome.storage.sync.set({ linkstyle: that })
+			})
+		}
+
+		return
 	}
 
-	if (init) {
-		initblocks(bundleLinks(init))
+	initblocks(bundleLinks(init))
+	linksrow(init.linksrow, init.linkstyle)
+	domlinkblocks.className = init.linkstyle
 
-		// No need to activate edit events asap
-		setTimeout(function timeToSetEditEvents() {
-			editEvents()
-		}, 150)
-	}
+	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 }
 
 async function linksImport() {
@@ -754,17 +766,20 @@ async function linksImport() {
 	})
 }
 
-function linksrow(data, event) {
-	function setRows(val) {
-		id('linkblocks_inner').style.width = `${val * 7}em`
+function linksrow(amount, style, event) {
+	function setRows(val, type) {
+		const gap = type === 'small' ? 1 : 2
+		const blockWidth = type === 'tiny' ? 3 : 5
+		id('linkblocks_inner').style.width = (blockWidth + gap) * val + 'em'
 	}
-
-	if (data !== undefined) setRows(data)
 
 	if (event) {
-		setRows(event)
+		setRows(event, document.querySelector('#linkblocks_inner').className)
 		slowRange({ linksrow: parseInt(event) })
+		return
 	}
+
+	setRows(amount, style)
 }
 
 function weather(event, that, init) {
@@ -1143,31 +1158,20 @@ function weather(event, that, init) {
 
 function initBackground(data) {
 	const type = data.background_type || 'dynamic'
-
-	if (type === 'custom') {
-		chrome.storage.local.get(null, (datalocal) => {
-			const customList = datalocal.custom || []
-
-			if (customList.length > 0) {
-				localBackgrounds({
-					local: datalocal,
-					every: data.custom_every,
-					time: data.custom_time,
-				})
-			} else {
-				// If no custom, change to dynamic
-				unsplash(data)
-				chrome.storage.sync.set({ background_type: 'dynamic' })
-			}
-		})
-
-		// Not Custom, load dynamic
-	} else unsplash(data)
-
 	const blur = data.background_blur !== undefined ? data.background_blur : 15
 	const bright = data.background_bright !== undefined ? data.background_bright : 0.8
 
 	filter('init', [parseFloat(blur), parseFloat(bright)])
+
+	if (type === 'custom') {
+		localBackgrounds({
+			every: data.custom_every,
+			time: data.custom_time,
+		})
+		return
+	}
+
+	unsplash(data)
 }
 
 function imgBackground(val, loadTime, init) {
@@ -1185,6 +1189,7 @@ function imgBackground(val, loadTime, init) {
 		const applyBackground = () => {
 			id('background_overlay').style.opacity = `1`
 			id('background').style.backgroundImage = `url(${val})`
+			localIsLoading = false
 		}
 
 		init ? applyBackground() : setTimeout(applyBackground, 400)
@@ -1202,51 +1207,33 @@ function freqControl(state, every, last) {
 	// because we still cannot time travel
 	// changes can only go forward
 
-	switch (state) {
-		case 'set':
-			return nowDate.getTime()
-
-		case 'get': {
-			const lastDate = new Date(last),
-				changed = {
-					date: nowDate.getDate() !== lastDate.getDate(),
-					hour: nowDate.getHours() !== lastDate.getHours(),
-				}
-
-			switch (every) {
-				case 'day': {
-					if (changed.date) return true
-					break
-				}
-
-				case 'hour': {
-					if (changed.date || changed.hour) return true
-					break
-				}
-
-				case 'tabs':
-					return true
-
-				case 'pause':
-					return false
-			}
-		}
+	if (state === 'set') {
+		return nowDate.getTime()
 	}
+
+	const lastDate = new Date(last)
+	const changed = {
+		date: nowDate.getDate() !== lastDate.getDate(),
+		hour: nowDate.getHours() !== lastDate.getHours(),
+	}
+
+	if (every === 'day') return changed.date
+	if (every === 'hour') return changed.date || changed.hour
+	if (every === 'tabs') return true
+	if (every === 'pause') return last === 0
+	if (every === 'period') return periodOfDay(sunTime()) !== periodOfDay(sunTime(), lastDate)
 }
 
 function localBackgrounds(init, event) {
-	function applyCustomBackground(backgrounds, index) {
-		const background = backgrounds[index]
-
-		if (background) {
-			const perfStart = performance.now()
-			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-			b64toBlobUrl(cleanData, (bloburl) => {
-				imgBackground(bloburl, perfStart, !!init)
-				changeImgIndex(index)
-			})
-		}
-	}
+	// Storage needs to be flat, as to only ask for needed background
+	// SelectedId is self explanatory
+	// CustomIds is list to get amount of backgrounds without accessing them
+	// storage.local = {
+	// 	  `full${_id}`: "/9j/4AAQSkZJRgAB...",
+	// 	  `thumb${_id}`: "/9j/4AAQSkZJRgAB...",
+	// 	  idsList: [ _id1, _id2, _id3 ],
+	//    selectedId: _id3
+	// }
 
 	function isOnlineStorageAtCapacity(newFile) {
 		//
@@ -1270,56 +1257,69 @@ function localBackgrounds(init, event) {
 		return false
 	}
 
-	function preventFromShowingTwice(index, max) {
-		const res = Math.floor(Math.random() * max)
-		return res === index ? (res + 1) % max : res
-	}
-
 	function b64toBlobUrl(b64Data, callback) {
 		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
 			res.blob().then((blob) => callback(URL.createObjectURL(blob)))
 		})
 	}
 
-	function changeImgIndex(i) {
-		id('background').setAttribute('index', i)
+	function thumbnailSelection(id) {
+		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
+		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
 	}
 
-	function addNewImage(file) {
-		let reader = new FileReader()
-		reader.onload = function (event) {
-			const result = event.target.result
+	function addNewImage(files) {
+		files = [...files] // fileList to Array
+		let filesIdsList = []
+		let selected = ''
 
-			if (isOnlineStorageAtCapacity(result)) {
-				// Exit with warning before saving image
-				return console.warn('Uploaded image was not saved')
+		files.forEach(() => {
+			const _id = randomString(6)
+			selected = _id
+			filesIdsList.push(_id)
+		})
+
+		files.forEach((file, i) => {
+			let reader = new FileReader()
+
+			reader.onload = function (event) {
+				const result = event.target.result
+
+				if (isOnlineStorageAtCapacity(result)) {
+					return console.warn('Uploaded image was not saved') // Exit with warning before saving image
+				}
+
+				compress(result, 'thumbnail', filesIdsList[i])
+				compress(result)
+
+				chrome.storage.local.set({ ['custom_' + filesIdsList[i]]: result })
 			}
 
-			chrome.storage.local.get(['custom'], (data) => {
-				const custom = data.custom ? data.custom : []
-				const bumpedindex = custom.length
+			localIsLoading = true
+			id('background_overlay').style.opacity = '0'
+			reader.readAsDataURL(file)
+		})
 
-				compress(result)
-				compress(result, 'thumbnail')
-				custom.push(result)
+		// Adds to list, becomes selected and save background
+		chrome.storage.local.get(['idsList'], (local) => {
+			let list = [...local.idsList]
+			list.push(...filesIdsList)
 
-				changeImgIndex(bumpedindex)
-				chrome.storage.local.set({ customIndex: bumpedindex })
-				chrome.storage.local.set({ custom: custom })
+			if (local.idsList.length === 0) {
+				chrome.storage.sync.set({ background_type: 'custom' }) // change type si premier local
+			}
 
-				if (custom.length === 1) {
-					chrome.storage.sync.get('background_type', (data) => {
-						if (data.background_type === 'dynamic') chrome.storage.sync.set({ background_type: 'custom' })
-					})
-				}
+			setTimeout(() => thumbnailSelection(selected), 400)
+
+			chrome.storage.local.set({
+				...local,
+				idsList: list,
+				selectedId: selected,
 			})
-		}
-
-		id('background_overlay').style.opacity = '0'
-		reader.readAsDataURL(file)
+		})
 	}
 
-	function compress(e, state) {
+	function compress(e, state, _id) {
 		//
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
@@ -1334,164 +1334,154 @@ function localBackgrounds(init, event) {
 			const elem = document.createElement('canvas')
 			const ctx = elem.getContext('2d')
 
-			//canvas proportionné à l'image
-
-			//rétréci suivant le taux de compression
-			//si thumbnail, toujours 150px
-			const height = state === 'thumbnail' ? 150 : img.height * 1
+			// canvas proportionné à l'image
+			// rétréci suivant le taux de compression
+			// si thumbnail, toujours 140px
+			const height = state === 'thumbnail' ? 140 * window.devicePixelRatio : img.height
 			const scaleFactor = height / img.height
 			elem.width = img.width * scaleFactor
 			elem.height = height
 
-			//dessine l'image proportionné
-			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height)
+			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height) //dessine l'image proportionné
 
-			//renvoie le base64
-			const data = ctx.canvas.toDataURL(img)
+			const data = ctx.canvas.toDataURL(img) // renvoie le base64
 			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
 
 			if (state === 'thumbnail') {
-				chrome.storage.local.get('customThumbnails', (data) => {
-					const thumbs = data.customThumbnails || []
+				chrome.storage.local.set({ ['customThumb_' + _id]: cleanData })
+				addThumbnails(cleanData, _id, null, true)
 
-					thumbs.push(cleanData)
-					chrome.storage.local.set({ customThumbnails: thumbs })
-					addThumbnails(cleanData, thumbs.length - 1)
-				})
-			} else
-				b64toBlobUrl(cleanData, (bloburl) => {
-					const compressTime = performance.now() - compressStart
-					setTimeout(() => imgBackground(bloburl, compressTime), 400 - compressTime)
-				})
+				return
+			}
+
+			b64toBlobUrl(cleanData, (bloburl) => {
+				const compressTime = performance.now() - compressStart
+				setTimeout(() => imgBackground(bloburl, compressTime), 400 - compressTime)
+			})
 		}
 
 		img.src = e
 	}
 
-	function addThumbnails(data, index, settingsDom) {
-		//créer une tag html en plus + remove button
-
+	function addThumbnails(data, _id, settingsDom, isSelected) {
 		const settings = settingsDom ? settingsDom : id('settings')
 
 		const div = document.createElement('div')
 		const i = document.createElement('img')
 		const rem = document.createElement('button')
-		const wrap = settings.querySelector('#bg_tn_wrap')
-		const file = settings.querySelector('#fileContainer')
+		const wrap = settings.querySelector('#fileContainer')
 
-		div.setAttribute('index', index)
+
+		div.id = _id
 		div.setAttribute('class', 'thumbnail')
 		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
 		rem.textContent = '✕'
+
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 
 		div.appendChild(i)
 		div.appendChild(rem)
-		wrap.insertBefore(div, file)
+		wrap.prepend(div)
 
-		//events
-		const getParentIndex = (that) => parseInt(that.parentElement.getAttribute('index'))
-		const getIndex = (that) => parseInt(that.getAttribute('index'))
-		const removeControl = (show, i) => cl('thumbnail')[i].children[1].setAttribute('class', show ? 'shown' : 'hidden')
-
-		//displays / hides remove button on desktop
-		if (!mobilecheck()) {
-			div.onmouseenter = (e) => removeControl(true, getIndex(e.target))
-			div.onmouseleave = (e) => removeControl(false, getIndex(e.target))
-		}
+		if (isSelected) thumbnailSelection(_id)
 
 		i.onmouseup = (e) => {
-			if (e.button === 0) {
-				//affiche l'image voulu
-				//lui injecte le bon index
-				const index = getParentIndex(e.target)
-				const appliedIndex = parseInt(id('background').getAttribute('index'))
+			if (e.button !== 0 || localIsLoading) return
 
-				if (index !== appliedIndex) {
+			const _id = e.target.parentElement.id
+			const bgKey = 'custom_' + _id
+
+			chrome.storage.local.get('selectedId', (local) => {
+				// image selectionné est différente de celle affiché
+				if (_id !== local.selectedId) {
+					thumbnailSelection(_id)
+
 					id('background_overlay').style.opacity = `0`
-
-					chrome.storage.local.get('custom', (data) => {
-						changeImgIndex(index)
-						chrome.storage.local.set({ customIndex: index })
-						compress(data.custom[index])
-					})
+					localIsLoading = true
+					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
+					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulu
 				}
-			}
+			})
 		}
 
 		rem.onmouseup = (e) => {
-			if (e.button === 0) {
-				let index = getParentIndex(e.target)
-				let displayedIndex = parseInt(id('background').getAttribute('index'))
-
-				const toRemoveIsDisplayed = displayedIndex === index
-				const thumbnails = [...document.getElementsByClassName('thumbnail')]
-
-				//removes thumbnail & rewrite all thumbs indexes
-				thumbnails[index].remove()
-				thumbnails.splice(index, 1)
-				thumbnails.forEach((thumb, i) => thumb.setAttribute('index', i))
-
-				chrome.storage.local.get(['custom', 'customThumbnails'], (data) => {
-					data.custom.splice(index, 1)
-					data.customThumbnails.splice(index, 1)
-
-					chrome.storage.local.set({ custom: data.custom })
-					chrome.storage.local.set({ customThumbnails: data.customThumbnails })
-
-					// Previous image, if first, stays here
-					index -= index === 0 ? 0 : 1
-
-					// Last image is removed
-					if (data.custom.length === 0) {
-						id('background_overlay').style.opacity = `0`
-
-						unsplash(null, { removedCustom: true })
-						clas(id('credit'), true, 'shown')
-					}
-
-					// Only draw new image if displayed is removed
-					else if (toRemoveIsDisplayed) {
-						changeImgIndex(index)
-						chrome.storage.local.set({ customIndex: index })
-						compress(data.custom[index])
-					}
-				})
+			if (e.button !== 0 || localIsLoading) {
+				return
 			}
+
+			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
+				const _id = e.target.parentElement.id
+				let { idsList, selectedId } = local
+				let poppedList = idsList.filter((a) => !a.includes(_id))
+
+				document.querySelector(`#${_id}.thumbnail`).remove()
+
+				chrome.storage.local.remove('custom_' + _id)
+				chrome.storage.local.remove(['customThumb_' + _id])
+				chrome.storage.local.set({ idsList: poppedList })
+
+				// Draw new image if displayed is removed
+				if (_id === selectedId) {
+					// To another custom
+					if (poppedList.length > 0) {
+						selectedId = poppedList[0]
+						thumbnailSelection(selectedId)
+
+						const toShowId = 'custom_' + poppedList[0]
+						chrome.storage.local.get([toShowId], (local) => compress(local[toShowId]))
+					}
+
+					// back to unsplash
+					else {
+						id('background_overlay').style.opacity = 0
+						chrome.storage.sync.set({ background_type: 'dynamic' })
+						setTimeout(() => chrome.storage.sync.get('dynamic', (data) => unsplash(data)), 400)
+						selectedId = ''
+					}
+
+					chrome.storage.local.set({ selectedId }) // selected is new chosen background
+				}
+			})
 		}
 	}
 
 	function displayCustomThumbnails(settingsDom) {
 		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
 
-		chrome.storage.local.get('customThumbnails', (data) => {
-			if (data.customThumbnails) {
-				if (thumbnails.length < data.customThumbnails.length) {
-					data.customThumbnails.forEach((thumb, i) => {
-						//used for blob
-						const blob = thumb.replace('data:image/jpeg;base64,', '')
-						addThumbnails(blob, i, settingsDom)
+		chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
+			const { idsList, selectedId } = local
+
+			if (idsList.length > 0 && thumbnails.length < idsList.length) {
+				const thumbsKeys = idsList.map((a) => 'customThumb_' + a) // To get keys for storage
+
+				// Parse through thumbnails to display them
+				chrome.storage.local.get(thumbsKeys, (local) => {
+					Object.entries(local).forEach(([key, val]) => {
+						const _id = key.replace('customThumb_', '')
+						const blob = val.replace('data:image/jpeg;base64,', '')
+						const isSelected = _id === selectedId
+
+						addThumbnails(blob, _id, settingsDom, isSelected)
 					})
-				}
+				})
 			}
 		})
 	}
 
 	function refreshCustom(button) {
 		chrome.storage.sync.get('custom_every', (sync) => {
-			chrome.storage.local.get(null, (local) => {
-				id('background_overlay').style.opacity = 0
-				turnRefreshButton(button, true)
-				setTimeout(
-					() =>
-						localBackgrounds({
-							local: local,
-							every: sync.custom_every,
-							time: 0,
-						}),
-					400
-				)
-			})
+			id('background_overlay').style.opacity = 0
+			turnRefreshButton(button, true)
+			localIsLoading = true
+
+			setTimeout(
+				() =>
+					localBackgrounds({
+						every: sync.custom_every,
+						time: 0,
+					}),
+				400
+			)
 		})
 	}
 
@@ -1499,51 +1489,58 @@ function localBackgrounds(init, event) {
 		if (event.is === 'thumbnail') displayCustomThumbnails(event.settings)
 		if (event.is === 'newfile') addNewImage(event.file)
 		if (event.is === 'refresh') refreshCustom(event.button)
+		return
 	}
 
-	//init
-	else {
+	function applyCustomBackground(id) {
+		chrome.storage.local.get(['custom_' + id], (local) => {
+			const perfStart = performance.now()
+			const background = local['custom_' + id]
+
+			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+			b64toBlobUrl(cleanData, (bloburl) => {
+				imgBackground(bloburl, perfStart, !!init)
+			})
+		})
+	}
+
+	chrome.storage.local.get(['selectedId', 'idsList'], (local) => {
 		try {
 			// need all of saved stuff
-			const { local, every, time } = init
+			let { selectedId, idsList } = local
+			const { every, time } = init
+			const needNewImage = freqControl('get', every, time || 0)
 
-			// Slideshow or not, need index
-			const index = local.customIndex >= 0 ? local.customIndex : 0
-			const customList = local.custom || []
+			if (every && needNewImage) {
+				idsList = idsList.filter((l) => !l.includes(selectedId)) // removes current from list
+				selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
 
-			// Slideshow is activated
-			if (every) {
-				const rand = preventFromShowingTwice(index, customList.length)
-				const needNewImage = freqControl('get', every, time || 0)
+				applyCustomBackground(selectedId)
 
-				if (needNewImage) {
-					applyCustomBackground(customList, rand)
+				chrome.storage.sync.set({ custom_time: freqControl('set') })
+				chrome.storage.local.set({ selectedId })
 
-					// Updates time & index
-					chrome.storage.sync.set({ custom_time: freqControl('set') })
-					chrome.storage.local.set({ customIndex: rand })
-					//
-				} else {
-					applyCustomBackground(customList, index)
-				}
+				if (id('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
 
-				// No slideshow or no data for it
-			} else {
-				applyCustomBackground(customList, index)
+				return
 			}
+
+			applyCustomBackground(selectedId)
 		} catch (e) {
 			errorMessage('Could not init local backgrounds', e)
 		}
-	}
+	})
 }
 
-function unsplash(init, event) {
-	function noDisplayImgLoad(val, callback) {
-		let img = new Image()
+async function unsplash(init, event) {
+	async function preloadImage(src) {
+		const img = new Image()
 
-		if (callback) img.onload = callback
-		img.src = val
+		img.src = src
+		await img.decode()
 		img.remove()
+
+		return
 	}
 
 	function imgCredits(image) {
@@ -1623,142 +1620,198 @@ function unsplash(init, event) {
 		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
-	function requestNewList(collection, callback) {
+	async function requestNewList(collection) {
 		const header = new Headers()
 		const collecId = allCollectionIds[collection] || allCollectionIds.day
 		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
 		header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
 		header.append('Accept-Version', 'v1')
 
-		fetch(url, { headers: header }).then((raw) =>
-			raw.json().then((imgArray) => {
-				const filteredList = []
+		const resp = await fetch(url, { headers: header })
+		const json = await resp.json()
 
-				imgArray.forEach((img) => {
-					filteredList.push({
-						url: img.urls.raw + '&w=' + screen.width + '&dpr=' + window.devicePixelRatio,
-						link: img.links.html,
-						username: img.user.username,
-						name: img.user.name,
-						city: img.location.city,
-						country: img.location.country,
-						color: img.color,
-						exif: img.exif,
-						desc: img.description,
-					})
-				})
+		const filteredList = []
+		const { width, height } = screen
+		const imgSize = width > height ? width : height // higher res on mobile
 
-				callback(filteredList)
+		json.forEach((img) => {
+			filteredList.push({
+				url: img.urls.raw + '&w=' + imgSize + '&dpr=' + window.devicePixelRatio,
+				link: img.links.html,
+				username: img.user.username,
+				name: img.user.name,
+				city: img.location.city,
+				country: img.location.country,
+				color: img.color,
+				exif: img.exif,
+				desc: img.description,
 			})
-		)
+		})
+
+		return filteredList
 	}
 
 	function chooseCollection(eventCollection) {
-		//
 		if (eventCollection) {
 			eventCollection = eventCollection.replaceAll(` `, '')
 			allCollectionIds.user = eventCollection
 			return 'user'
 		}
 
-		// Transition day and night with noon & evening collections
-		// if clock is + /- 60 min around sunrise/set
-		const time = sunTime()
-
-		if (time.now >= 0 && time.now <= time.rise - 60) return 'night'
-		else if (time.now <= time.rise + 60) return 'noon'
-		else if (time.now <= time.set - 60) return 'day'
-		else if (time.now <= time.set + 60) return 'evening'
-		else if (time.now >= time.set + 60) return 'night'
-		else return 'day'
+		return periodOfDay(sunTime())
 	}
 
 	function collectionControl(dynamic) {
 		const { every, lastCollec, collection } = dynamic
+		const Pause = every === 'pause'
+		const Day = every === 'day'
 
-		// Collection control
-		const longEveries = every === 'pause' || every === 'day'
-		const collecId = longEveries && lastCollec ? lastCollec : chooseCollection(collection)
-
-		if (collecId !== lastCollec || lastCollec === '') {
-			dynamic.lastCollec = collecId
-			chrome.storage.sync.set({ dynamic: dynamic })
+		if ((Pause || Day) && lastCollec) {
+			return lastCollec // Keeps same collection on >day so that user gets same type of backgrounds
 		}
 
-		return collecId
+		const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
+		dynamic.lastCollec = collec
+		chrome.storage.sync.set({ dynamic: dynamic })
+
+		return collec
 	}
 
-	function cacheControl(dynamic, caches, collection, preloading) {
+	async function cacheControl(dynamic, caches, collection, preloading) {
 		//
 		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
 		let list = caches[collection]
 
-		// Is trying to preload next
 		if (preloading) {
-			noDisplayImgLoad(list[1].url, () => chrome.storage.local.remove('waitingForPreload'))
-		}
-
-		if (needNewImage && !preloading) {
-			//
-			// Update time
-			dynamic.lastCollec = collection
-			dynamic.time = freqControl('set')
-
-			// Removes previous image from list
-			if (list.length > 1) list.shift()
-
-			// Load new image
 			loadBackground(list[0])
-
-			// If end of cache, get & save new list
-			if (list.length === 1)
-				requestNewList(collection, (newlist) => {
-					caches[collection] = list.concat(newlist)
-					noDisplayImgLoad(newlist[0].url, () => {
-						chrome.storage.local.set({ dynamicCache: caches })
-						chrome.storage.local.remove('waitingForPreload')
-					})
-				})
-			//
-			// Or preload next
-			else
-				noDisplayImgLoad(list[1].url, () => {
-					chrome.storage.sync.set({ dynamic: dynamic })
-					chrome.storage.local.set({ dynamicCache: caches })
-					chrome.storage.local.remove('waitingForPreload')
-				})
+			await preloadImage(list[1].url) // Is trying to preload next
+			chrome.storage.local.remove('waitingForPreload')
+			return
 		}
 
-		// No need for new, load the same image
-		else loadBackground(list[0])
+		if (!needNewImage) {
+			loadBackground(list[0]) // No need for new, load the same image
+			return
+		}
+
+		// Needs new image, Update time
+		dynamic.lastCollec = collection
+		dynamic.time = freqControl('set')
+
+		// Removes previous image from list
+		if (list.length > 1) list.shift()
+
+		// Load new image
+		loadBackground(list[0])
+
+		// If end of cache, get & save new list
+		if (list.length === 1) {
+			const newList = await requestNewList(collection)
+
+			caches[collection] = list.concat(newList)
+			await preloadImage(newList[0].url)
+			chrome.storage.local.set({ dynamicCache: caches })
+			chrome.storage.local.remove('waitingForPreload')
+
+			return
+		}
+
+		await preloadImage(list[1].url) // Or preload next
+
+		chrome.storage.sync.set({ dynamic: dynamic })
+		chrome.storage.local.set({ dynamicCache: caches })
+		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	function populateEmptyList(collection, local, dynamic, isEvent) {
+	async function populateEmptyList(collection, local, dynamic, isEvent) {
 		//
-		if (isEvent) collection = chooseCollection(collection)
+		if (isEvent) {
+			collection = chooseCollection(collection)
+		}
 
-		requestNewList(collection, (newlist) => {
-			//
-			//change
-			dynamic.time = freqControl('set')
-			local.dynamicCache[collection] = newlist
-			chrome.storage.sync.set({ dynamic: dynamic })
+		const newlist = await requestNewList(collection)
 
-			const changeStart = performance.now()
+		dynamic.time = freqControl('set')
+		local.dynamicCache[collection] = newlist
+		chrome.storage.sync.set({ dynamic: dynamic })
 
-			noDisplayImgLoad(newlist[0].url, () => {
-				//
-				loadBackground(newlist[0], performance.now() - changeStart)
-				chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-				chrome.storage.local.set({ waitingForPreload: true })
+		const changeStart = performance.now()
 
-				//preload
-				noDisplayImgLoad(newlist[1].url, () => chrome.storage.local.remove('waitingForPreload'))
-			})
-		})
+		await preloadImage(newlist[0].url)
+		loadBackground(newlist[0], performance.now() - changeStart)
+		chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+		chrome.storage.local.set({ waitingForPreload: true })
+
+		//preload
+		await preloadImage(newlist[1].url)
+		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	const initOrEvent = init && init.dynamic ? 'init' : 'event'
+	function updateDynamic(event, sync, local) {
+		switch (Object.keys(event)[0]) {
+			case 'refresh': {
+				// Only refreshes background if preload is over
+				// If not, animate button to show it is trying
+				if (local.waitingForPreload === undefined) {
+					turnRefreshButton(Object.values(event)[0], true)
+					id('background_overlay').style.opacity = 0
+
+					const newDynamic = { ...sync.dynamic, time: 0 }
+					chrome.storage.sync.set({ dynamic: newDynamic })
+					chrome.storage.local.set({ waitingForPreload: true })
+
+					setTimeout(() => cacheControl(newDynamic, local.dynamicCache, collectionControl(newDynamic), false), 400)
+
+					return
+				}
+
+				turnRefreshButton(Object.values(event)[0], false)
+				break
+			}
+
+			case 'every': {
+				sync.dynamic.every = event.every
+				sync.dynamic.time = freqControl('set')
+				chrome.storage.sync.set({ dynamic: sync.dynamic })
+				break
+			}
+
+			// Back to dynamic and load first from chosen collection
+			case 'removedCustom': {
+				chrome.storage.sync.set({ background_type: 'dynamic' })
+				loadBackground(local.dynamicCache[collectionControl(sync.dynamic)][0])
+				break
+			}
+
+			// Always request another set, update last time image change and load background
+			case 'collection': {
+				id('background_overlay').style.opacity = '0'
+				//
+				// remove user collec
+				if (event.collection === '') {
+					const defaultColl = chooseCollection()
+					local.dynamicCache.user = []
+					sync.dynamic.collection = ''
+					sync.dynamic.lastCollec = defaultColl
+
+					chrome.storage.sync.set({ dynamic: sync.dynamic })
+					chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+
+					unsplash(sync)
+				}
+
+				// add new collec
+				else {
+					sync.dynamic.collection = event.collection
+					sync.dynamic.lastCollec = 'user'
+
+					populateEmptyList(event.collection, local, sync.dynamic, true)
+				}
+
+				break
+			}
+		}
+	}
 
 	// collections source: https://unsplash.com/@bonjourr/collections
 	const allCollectionIds = {
@@ -1769,124 +1822,35 @@ function unsplash(init, event) {
 		user: '',
 	}
 
-	switch (initOrEvent) {
-		case 'init': {
-			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], function initDynamic(local) {
-				try {
-					const { current, next, every } = init.dynamic
-
-					// <1.10.0: next is always old import
-					// current to first background, default to 'day' collection
-					if (next) {
-						init.dynamic.lastCollec = 'day'
-
-						delete init.dynamic.next
-						delete init.dynamic.current
-					}
-
-					// Real init start
-					const collecId = collectionControl(init.dynamic)
-
-					// If no dynamicCache, create
-					// If list empty: request new, save sync & local
-					// Not empty: normal cacheControl
-					if (local.dynamicCache === undefined) {
-						local.dynamicCache = bonjourrDefaults('local').dynamicCache
-						populateEmptyList(collecId, local, init.dynamic, false)
-						if (current && every === 'pause') local.dynamicCache.day[0] = init.dynamic.current
-
-						//
-					} else if (local.dynamicCache[collecId].length === 0) {
-						populateEmptyList(collecId, local, init.dynamic, false)
-
-						//
-					} else {
-						cacheControl(init.dynamic, local.dynamicCache, collecId, local.waitingForPreload)
-					}
-				} catch (e) {
-					errorMessage('Dynamic errored on init', e)
-				}
+	if (event) {
+		// No init, Event
+		chrome.storage.sync.get('dynamic', (sync) =>
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+				updateDynamic(event, sync, local)
 			})
-			break
-		}
+		)
 
-		case 'event': {
-			chrome.storage.sync.get('dynamic', (data) => {
-				chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
-					//
-
-					switch (Object.keys(event)[0]) {
-						case 'refresh': {
-							// Only refreshes background if preload is over
-							// If not, animate button to show it is trying
-							if (local.waitingForPreload === undefined) {
-								turnRefreshButton(Object.values(event)[0], true)
-								id('background_overlay').style.opacity = 0
-
-								const newDynamic = { ...data.dynamic, time: 0 }
-								chrome.storage.sync.set({ dynamic: newDynamic })
-								chrome.storage.local.set({ waitingForPreload: true })
-
-								setTimeout(
-									() => cacheControl(newDynamic, local.dynamicCache, collectionControl(newDynamic), false),
-									400
-								)
-
-								return
-							}
-
-							turnRefreshButton(Object.values(event)[0], false)
-							break
-						}
-
-						case 'every': {
-							data.dynamic.every = event.every
-							data.dynamic.time = freqControl('set')
-							chrome.storage.sync.set({ dynamic: data.dynamic })
-							break
-						}
-
-						// Back to dynamic and load first from chosen collection
-						case 'removedCustom': {
-							chrome.storage.sync.set({ background_type: 'dynamic' })
-							loadBackground(local.dynamicCache[collectionControl(data.dynamic)][0])
-							break
-						}
-
-						// Always request another set, update last time image change and load background
-						case 'collection': {
-							id('background_overlay').style.opacity = '0'
-							//
-							// remove user collec
-							if (event.collection === '') {
-								const defaultColl = chooseCollection()
-								local.dynamicCache.user = []
-								data.dynamic.collection = ''
-								data.dynamic.lastCollec = defaultColl
-
-								chrome.storage.sync.set({ dynamic: data.dynamic })
-								chrome.storage.local.set({ dynamicCache: local.dynamicCache })
-
-								unsplash(data)
-							}
-
-							// add new collec
-							else {
-								data.dynamic.collection = event.collection
-								data.dynamic.lastCollec = 'user'
-
-								populateEmptyList(event.collection, local, data.dynamic, true)
-							}
-
-							break
-						}
-					}
-				})
-			})
-
-			break
-		}
+		return
 	}
+
+	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+		try {
+			// Real init start
+			const collecId = collectionControl(init.dynamic)
+			const cache = local.dynamicCache || bonjourrDefaults('local').dynamicCache
+
+			if (cache[collecId].length === 0) {
+				populateEmptyList(collecId, local, init.dynamic, false) // If list empty: request new, save sync & local
+				return
+			}
+
+			cacheControl(init.dynamic, cache, collecId, local.waitingForPreload) // Not empty: normal cacheControl
+		} catch (e) {
+			errorMessage('Dynamic errored on init', e)
+		}
+	})
+
+	return
 }
 
 function filter(cat, val) {
@@ -1909,53 +1873,36 @@ function filter(cat, val) {
 	id('background').style.filter = result
 }
 
-function darkmode(choice, init) {
-	//
-	function apply(val) {
-		//
-		let body
-
-		switch (val) {
-			//compare current hour with weather sunset / sunrise
-			case 'auto': {
-				const time = sunTime()
-				body = time.now <= time.rise || time.now > time.set ? 'dark' : ''
-				break
-			}
-
-			case 'system':
-				body = 'autodark'
-				break
-
-			case 'enable':
-				body = 'dark'
-				break
-
-			case 'disable':
-				body = ''
-				break
-
-			default:
-				body = 'autodark'
+function darkmode(init, event) {
+	function apply(option) {
+		const time = sunTime()
+		const cases = {
+			auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
+			system: 'autodark',
+			enable: 'dark',
+			disable: '',
 		}
 
-		document.body.setAttribute('class', body)
-		if (choice) chrome.storage.sync.set({ dark: choice })
+		document.body.setAttribute('class', cases[option])
 	}
 
-	if (choice) chrome.storage.sync.get('weather', (data) => apply(choice, data.weather))
-	else {
-		try {
-			apply(init.dark, init.weather)
-		} catch (e) {
-			errorMessage('Dark mode somehow messed up', e)
-		}
+	if (event) {
+		apply(event)
+		chrome.storage.sync.set({ dark: event })
+		return
+	}
+
+	try {
+		apply(init.dark)
+	} catch (e) {
+		errorMessage('Dark mode somehow messed up', e)
 	}
 }
 
 function searchbar(event, that, init) {
 	const domsearchbar = id('searchbar')
 	const emptyButton = id('sb_empty')
+	const submitButton = id('sb_submit')
 
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
 	const engine = (value) => domsearchbar.setAttribute('engine', value)
@@ -1967,7 +1914,8 @@ function searchbar(event, that, init) {
 			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
 		)
 
-		emptyButton.style.color = value > 0.4 ? '#222' : '#fff'
+		if (value > 0.4) id('sb_container').classList.add('opaque')
+		else id('sb_container').classList.remove('opaque')
 	}
 
 	function updateSearchbar() {
@@ -2032,32 +1980,42 @@ function searchbar(event, that, init) {
 		}
 	}
 
+	function submitSearch() {
+		let searchURL = ''
+		const isNewtab = domsearchbar.getAttribute('newtab') === 'true'
+		const engine = domsearchbar.getAttribute('engine')
+		const request = domsearchbar.getAttribute('request')
+		const lang = document.documentElement.getAttribute('lang')
+
+		// engineLocales est dans lang.js
+		if (engine === 'custom') searchURL = request
+		else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+
+		searchURL = searchURL.replace('%s', encodeURIComponent(domsearchbar.value))
+
+		isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
+	}
+
 	domsearchbar.onkeyup = function (e) {
 		if (e.key === 'Enter' && this.value.length > 0) {
-			let searchURL = ''
-			const isNewtab = e.target.getAttribute('newtab') === 'true'
-			const lang = document.documentElement.getAttribute('lang')
-			const engine = domsearchbar.getAttribute('engine')
-			const request = domsearchbar.getAttribute('request')
-
-			// engineLocales est dans lang.js
-			if (engine === 'custom') searchURL = request
-			else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
-
-			searchURL = searchURL.replace('%s', encodeURIComponent(this.value))
-
-			isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
+			submitSearch()
 		}
 	}
 
 	domsearchbar.oninput = function () {
 		clas(emptyButton, this.value.length > 0, 'shown')
+		clas(submitButton, this.value.length > 0, 'shown')
 	}
 
 	emptyButton.onclick = function () {
 		domsearchbar.value = ''
 		domsearchbar.focus()
 		clas(this, false, 'shown')
+		clas(submitButton, false, 'shown')
+	}
+
+	submitButton.onclick = function () {
+		submitSearch()
 	}
 
 	event ? updateSearchbar() : initSearchbar()
@@ -2540,6 +2498,13 @@ function customFont(data, event) {
 	if (event) triggerEvent(event)
 }
 
+function textShadow(init, event) {
+	const potency = init ? init : event
+	id('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${potency})`
+
+	if (event) slowRange({ textShadow: potency })
+}
+
 function customCss(init, event) {
 	const styleHead = id('styles')
 
@@ -2853,6 +2818,13 @@ function filterImports(data) {
 	return result
 }
 
+// function browserSpecifics() {
+// 	if (getBrowser() === 'edge') {
+// 		console.log(id('settings'))
+// 		id('tabIcon').style.color = 'pink'
+// 	}
+// }
+
 function startup(data) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
@@ -2862,11 +2834,12 @@ function startup(data) {
 
 	customFont(data.font)
 	customSize(data.font)
+	textShadow(data.textShadow)
 
 	favicon(data.favicon)
+	tabTitle(data.tabtitle)
 	clock(null, data)
-	linksrow(data.linksrow)
-	darkmode(null, data)
+	darkmode(data.dark, null)
 	searchbar(null, null, data.searchbar)
 	quotes(null, null, data)
 	showPopup(data.reviewPopup)
@@ -2887,6 +2860,7 @@ const dominterface = id('interface'),
 	}
 
 let lazyClockInterval = setTimeout(() => {}, 0),
+	localIsLoading = false,
 	loadtimeStart = performance.now(),
 	sunset = 0,
 	sunrise = 0
@@ -2943,6 +2917,7 @@ window.onload = function () {
 		chrome.storage.sync.get(null, (data) => {
 			// First Startup, chrome.storage is null
 			if (Object.keys(data).length === 0) {
+				document.documentElement.setAttribute('lang', defaultLang())
 				data = bonjourrDefaults('sync')
 				chrome.storage.local.set(bonjourrDefaults('local'))
 				chrome.storage.sync.set(isExtension ? data : { import: data })
@@ -2950,14 +2925,28 @@ window.onload = function () {
 
 			// Version is different, can be new update or imports
 			else if (!data.about || data.about.version !== bonjourrDefaults('sync').about.version) {
-				data = filterImports(data)
+				// needs local to migrate backgrounds (1.13.2 => 1.14.0)
+				chrome.storage.local.get(null, (local) => {
+					local = localDataMigration(local)
+					data = filterImports(data)
 
-				// Change version in here
-				// Only after "different version" startup is triggered
-				data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
+					// Change version in here
+					// Only after "different version" startup is triggered
+					data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
 
-				chrome.storage.sync.clear()
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+					chrome.storage.sync.clear()
+					chrome.storage.sync.set(isExtension ? data : { import: data })
+
+					if (isExtension) {
+						chrome.storage.local.clear()
+						chrome.storage.local.set({ ...local }, () => startup(data))
+					} else {
+						localStorage.bonjourrBackgrounds = local
+						startup(data)
+					}
+				})
+
+				return
 			}
 
 			startup(data)

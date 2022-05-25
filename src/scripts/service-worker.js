@@ -10,9 +10,10 @@ const filesToChache = [
 	'/src/styles/style.css',
 	'/src/assets/favicon-128x128.png',
 	'/src/assets/favicon-512x512.png',
+	'/src/assets/monochrome.png',
 	'/src/assets/apple-touch-icon.png',
 	'/src/assets/interface/gear.svg',
-	'/src/assets/interface/loading.gif',
+	'/src/assets/interface/loading.svg',
 ]
 
 const weatherList = [
