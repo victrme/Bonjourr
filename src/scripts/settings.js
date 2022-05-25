@@ -318,7 +318,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_dark').onchange = function () {
-		darkmode(this.value)
+		darkmode(null, this.value)
 	}
 
 	//Time and date

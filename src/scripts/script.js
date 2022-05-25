@@ -1872,47 +1872,29 @@ function filter(cat, val) {
 	id('background').style.filter = result
 }
 
-function darkmode(choice, init) {
-	//
-	function apply(val) {
-		//
-		let body
-
-		switch (val) {
-			//compare current hour with weather sunset / sunrise
-			case 'auto': {
-				const time = sunTime()
-				body = time.now <= time.rise || time.now > time.set ? 'dark' : ''
-				break
-			}
-
-			case 'system':
-				body = 'autodark'
-				break
-
-			case 'enable':
-				body = 'dark'
-				break
-
-			case 'disable':
-				body = ''
-				break
-
-			default:
-				body = 'autodark'
+function darkmode(init, event) {
+	function apply(option) {
+		const time = sunTime()
+		const cases = {
+			auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
+			system: 'autodark',
+			enable: 'dark',
+			disable: '',
 		}
 
-		document.body.setAttribute('class', body)
-		if (choice) chrome.storage.sync.set({ dark: choice })
+		document.body.setAttribute('class', cases[option])
 	}
 
-	if (choice) chrome.storage.sync.get('weather', (data) => apply(choice, data.weather))
-	else {
-		try {
-			apply(init.dark, init.weather)
-		} catch (e) {
-			errorMessage('Dark mode somehow messed up', e)
-		}
+	if (event) {
+		apply(event)
+		chrome.storage.sync.set({ dark: event })
+		return
+	}
+
+	try {
+		apply(init.dark)
+	} catch (e) {
+		errorMessage('Dark mode somehow messed up', e)
 	}
 }
 
@@ -2872,7 +2854,7 @@ function startup(data) {
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(null, data)
-	darkmode(null, data)
+	darkmode(data.dark, null)
 	searchbar(null, null, data.searchbar)
 	quotes(null, null, data)
 	showPopup(data.reviewPopup)
