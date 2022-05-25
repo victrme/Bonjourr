@@ -32,7 +32,7 @@ const dict = {
 		tr: 'Yeni Sekme',
 		uk: 'Нова вкладка',
 		id: 'Tab Baru',
-		da: 'Nyt fanblad',
+		da: 'Nyt faneblad',
 	},
 	Consider: {
 		fr: "N'hésitez pas",
@@ -1035,7 +1035,7 @@ const dict = {
 		tr: 'Arka plan',
 		uk: 'тла',
 		id: 'Latar belakang',
-    da: 'Baggrund',
+		da: 'Baggrund',
 	},
 	'Background type': {
 		fr: "Type d'arrière-plan",
@@ -1120,7 +1120,7 @@ const dict = {
 		tr: 'Frekans',
 		uk: 'Частота',
 		id: 'Frekuensi',
-		da: 'Frekvens',
+		da: 'Hyppighed',
 	},
 	Daylight: {
 		fr: 'Lumière du jour',
@@ -1137,6 +1137,7 @@ const dict = {
 		tr: 'Gün ışığı',
 		uk: 'денне світло',
 		id: 'Siang hari',
+		da: 'Dagslys',
 	},
 	'Every tab': {
 		fr: 'Chaque onglet',
@@ -1153,7 +1154,7 @@ const dict = {
 		tr: 'Sekmede bir',
 		uk: 'Кожну вкладку',
 		id: 'Setiap tab',
-		da: 'Hvert fanblad',
+		da: 'Hvert faneblad',
 	},
 	'Every hour': {
 		fr: 'Chaque heure',
@@ -1357,7 +1358,7 @@ const dict = {
 		tr: 'Yeni sekme simgesi',
 		uk: 'Піктограма нової вкладки',
 		id: 'Ikon tab baru',
-		da: 'Fanbladsikon',
+		da: 'Fanebladsikon',
 	},
 	'Any emoji': {
 		fr: "N'importe quel emoji",
@@ -1391,6 +1392,7 @@ const dict = {
 		tr: 'New tab title',
 		uk: 'New tab title',
 		id: 'New tab title',
+		da: 'Fanebladstitel',
 	},
 
 	'Hide elements': {
@@ -1544,7 +1546,7 @@ const dict = {
 		tr: 'Selamlama',
 		uk: 'Вітання',
 		id: 'Salam',
-		da: 'Hilsner',
+		da: 'Velkomst',
 	},
 	Weather: {
 		fr: 'Météo',
@@ -1595,6 +1597,7 @@ const dict = {
 		tr: 'Style',
 		uk: 'Style',
 		id: 'Style',
+		da: 'Udseende',
 	},
 	Large: {
 		fr: 'Grands',
@@ -1611,6 +1614,7 @@ const dict = {
 		tr: 'Large',
 		uk: 'Large',
 		id: 'Large',
+		da: 'Stor',
 	},
 	Small: {
 		fr: 'Moyens',
@@ -1627,6 +1631,7 @@ const dict = {
 		tr: 'Small',
 		uk: 'Small',
 		id: 'Small',
+		da: 'Lille',
 	},
 	Tiny: {
 		fr: 'Petits',
@@ -1643,6 +1648,7 @@ const dict = {
 		tr: 'Tiny',
 		uk: 'Tiny',
 		id: 'Tiny',
+		da: 'Meget lille',
   },
 	'Quick Links': {
 		fr: 'Liens favoris',
@@ -2034,7 +2040,7 @@ const dict = {
 		tr: 'Yeni sekmede aç',
 		uk: 'Відкрити в новій вкладці',
 		id: 'Buka di tab baru',
-		da: 'Åben i et nyt fanblad',
+		da: 'Åben i et nyt faneblad',
 	},
 	'URL request': {
 		fr: 'URL de requête',
@@ -2085,7 +2091,7 @@ const dict = {
 		tr: 'Arama sorgusu: %s',
 		uk: 'Пошуковий запит: %s',
 		id: 'Pencarian kata kunci %s',
-		da: 'Søgterm: %s',
+		da: 'Søgeterm: %s',
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -2102,7 +2108,7 @@ const dict = {
 		tr: 'Opaklık',
 		uk: 'Непрозорість',
 		id: 'Transparansi',
-		da: 'uigennemsigtighed',
+		da: 'Uigennemsigtighed',
 	},
 	'Time & Date': {
 		fr: 'Date & heure',
@@ -2289,7 +2295,7 @@ const dict = {
 		tr: 'Selamlama',
 		uk: 'Привітання',
 		id: 'Salam',
-		da: 'Hilsen',
+		da: 'Velkomst',
 	},
 	Quotes: {
 		fr: 'Citations',
@@ -2442,6 +2448,7 @@ const dict = {
 		tr: 'Shadow',
 		uk: 'Shadow',
 		id: 'Shadow',
+		da: 'Skygge',
 	},
 	'Custom CSS': {
 		fr: 'CSS personnalisé',
