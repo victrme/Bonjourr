@@ -451,7 +451,6 @@
 			.block_parent {
 				cursor: pointer;
 				position: relative;
-				transition: width 0.3s;
 
 				.block {
 					width: 4.8em;
@@ -463,7 +462,6 @@
 					width: 100%;
 					height: 100%;
 					padding: 0.4em;
-					// margin: 0 auto 0.5em auto;
 					border-radius: 1em;
 					background: $purewhite;
 					box-shadow: $textShadow;
@@ -471,13 +469,13 @@
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, height 0.3s;
 					aspect-ratio: 1;
 
-					img {
-						border-radius: 0.5em;
-					}
-
 					.l_icon {
 						width: 100%;
 						pointer-events: none;
+
+						img {
+							border-radius: 0.5em;
+						}
 					}
 
 					&.selected {
@@ -510,11 +508,24 @@
 				}
 
 				&.removed {
-					transform: scale(0);
+					margin-right: -1.5em;
+					margin-left: -1.5em;
 					overflow: hidden;
-					width: 0;
-					margin: 1em 0;
-					transition: transform 0.6s, width 0.6s 0.1s, margin 0.6s 0.1s;
+					transition: margin 0.6s;
+
+					.block {
+						transition: width .6s $easeOutThree;
+						width: 0px;
+					}
+
+					.l_icon_wrap {
+						transition: transform .6s $easeOutThree;
+						transform: scale(0);
+					}
+
+					span {
+						display: none;
+					}
 				}
 			}
 
