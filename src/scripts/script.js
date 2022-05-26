@@ -308,7 +308,7 @@ function quickLinks(event, that, init) {
 		lIconWrap.appendChild(lIcon)
 
 		blockTitle.textContent = title
-		blockTitle.style.display = title === '' ? 'none' : 'block'
+		// blockTitle.style.display = title === '' ? 'none' : 'block'
 
 		block.className = 'block'
 		block.setAttribute('source', url)
