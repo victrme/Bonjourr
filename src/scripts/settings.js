@@ -16,15 +16,6 @@ function initParams(data, settingsDom) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
-	// inserts languages in select
-	for (const [code, title] of Object.entries(langList)) {
-		let option = document.createElement('option')
-		option.value = code
-		option.text = title
-
-		paramId('i_lang').add(option)
-	}
-
 	initInput('cssEditor', data.css, '')
 	initInput('i_row', data.linksrow, 8)
 	initInput('i_linkstyle', data.linkstyle, 'default')
@@ -65,6 +56,14 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
+	// inserts languages in select
+	Object.entries(langList).forEach(([code, title]) => {
+		let option = document.createElement('option')
+		option.value = code
+		option.text = title
+		paramId('i_lang').appendChild(option)
+	})
+
 	// Activate changelog (hasUpdated is activated in background.js)
 	if (localStorage.hasUpdated === 'true') {
 		const domshowsettings = document.querySelector('#showSettings')
@@ -73,7 +72,7 @@ function initParams(data, settingsDom) {
 		clas(domchangelog, true, 'shown')
 		clas(domshowsettings, true, 'hasUpdated')
 
-		settingsDom.querySelector('#log_dismiss').onclick = () => {
+		settingsDom.querySelector('#changelog').onclick = () => {
 			clas(domshowsettings, false, 'hasUpdated')
 			domchangelog.className = 'dismissed'
 			localStorage.removeItem('hasUpdated')
@@ -148,7 +147,7 @@ function initParams(data, settingsDom) {
 	//
 
 	const bgfile = paramId('i_bgfile')
-	const fileContainer = paramId('fileContainer')
+	const uploadContainer = paramId('uploadContainer')
 
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_tabtitle'))
@@ -156,15 +155,15 @@ function initParams(data, settingsDom) {
 
 	// file input animation
 	bgfile.addEventListener('dragenter', function () {
-		fileContainer.classList.add('dragover')
+		uploadContainer.classList.add('dragover')
 	})
 
 	bgfile.addEventListener('dragleave', function () {
-		fileContainer.classList.remove('dragover')
+		uploadContainer.classList.remove('dragover')
 	})
 
 	bgfile.addEventListener('drop', function () {
-		fileContainer.classList.remove('dragover')
+		uploadContainer.classList.remove('dragover')
 	})
 
 	//general

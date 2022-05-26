@@ -79,6 +79,18 @@
 		#changelogContainer #changelog {
 			background-color: #1c1c1e;
 			color: #fff;
+
+			#log_dismiss {
+				background-color: #1c1c1e;
+			}
+
+			&:hover {
+				background-color: #2b2c2d;
+
+				#log_dismiss {
+					background-color: #2b2c2d;
+				}
+			}
 		}
 
 		.tooltip {
@@ -98,19 +110,19 @@
 
 		// Background custom
 
-		#fileContainer {
+		#uploadContainer {
 			background-color: #3a3a3a;
 			color: white;
 		}
 
-		#fileContainer.dragover,
-		#fileContainer:hover {
+		#uploadContainer.dragover,
+		#uploadContainer:hover {
 			border: 1px dashed #ccc;
 			background: #2a2a2b;
 		}
 
-		#fileContainer:active,
-		#fileContainer:active {
+		#uploadContainer:active,
+		#uploadContainer:active {
 			border: 1px dashed #aaa;
 			background: #2f2f30;
 		}

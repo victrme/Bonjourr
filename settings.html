@@ -2,15 +2,24 @@
 	<div>
 		<div id="changelogContainer">
 			<div id="changelog">
-				<p>Bonjourr has been updated to 1.14.0 ✨</p>
+				<p class="trn">Bonjourr has been updated to 1.14 ✨</p>
 				<br />
-				<p>In this update:</p>
+
+				<p>Learn all about our new Quick Links style options, the better custom background management and much more in <span>the full changelog</span>.</p>
+
+				<br />
+				
+				<!-- <p class="trn">In this update, some new Quick Links styles options, better custom background management, a text shadow slider and much more! Check out <a href="#">the full changelog</a>.</p> -->
+
+				<!-- <p>In this update</p>
 				<p>- New link style option</p>
 				<p>- Reworked custom background</p>
 				<p>- Text shadow slider</p>
 				<p><a href="http://example.com">- And much more 😯</a></p>
-				<br />
-				<button id="log_dismiss">Dismiss</button>
+				<br /> -->
+				
+				<a href="https://bonjourr.fr" target="_blank" id="link"></a>
+				<button id="log_dismiss" class="trn">Dismiss</button>
 			</div>
 		</div>
 
@@ -50,7 +59,7 @@
 					<span class="trn">New tab</span>
 
 					<div>
-						<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="✴" />
+						<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" />
 						<input type="text" name="tabtitle" id="i_tabtitle" maxlength="12" placeholder="New tab" />
 					</div>
 				</div>
@@ -125,9 +134,9 @@
 				<span class="trn">Style</span>
 				<div>
 					<select id="i_linkstyle">
-						<option value="default" class="trn">Default</option>
+						<option value="large" class="trn">Large</option>
+						<option value="medium" class="trn">Medium</option>
 						<option value="small" class="trn">Small</option>
-						<option value="tiny" class="trn">Tiny</option>
 						<option value="text" class="trn">Text</option>
 					</select>
 				</div>
@@ -218,10 +227,12 @@
 				<hr />
 
 				<div id="bg_tn_wrap">
-					<label id="fileContainer">
+					<label id="uploadContainer">
 						<p class="trn">Upload background here</p>
 						<input id="i_bgfile" type="file" name="background_file" multiple />
 					</label>
+
+					<div id="fileContainer"></div>
 				</div>
 			</div>
 

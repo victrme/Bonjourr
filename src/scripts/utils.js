@@ -93,10 +93,9 @@ function validateHideElem(hide) {
 }
 
 function localDataMigration(local) {
-	delete local.customIndex
+	if (!local.custom) return local
 
 	let idsList = []
-
 	Object.values(local.custom).forEach((val, i) => {
 		const _id = randomString(6)
 		idsList.push(_id)
@@ -111,6 +110,7 @@ function localDataMigration(local) {
 	})
 
 	delete local.custom
+	delete local.customIndex
 	delete local.customThumbnails
 
 	return local
@@ -343,6 +343,7 @@ const langList = {
 	tr: 'Türkçe',
 	uk: 'Українська',
 	id: 'Indonesia',
+	da: 'Dansk',
 }
 
 const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
@@ -367,7 +368,7 @@ function bonjourrDefaults(which) {
 				usdate: false,
 				showall: false,
 				linksrow: 6,
-				linkstyle: 'default',
+				linkstyle: 'large',
 				cssHeight: 80,
 				reviewPopup: 0,
 				background_blur: 15,

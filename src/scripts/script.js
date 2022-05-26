@@ -1371,7 +1371,6 @@ function localBackgrounds(init, event) {
 		const rem = document.createElement('button')
 		const wrap = settings.querySelector('#fileContainer')
 
-
 		div.id = _id
 		div.setAttribute('class', 'thumbnail')
 		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
@@ -1893,7 +1892,7 @@ function darkmode(init, event) {
 	}
 
 	try {
-		apply(init.dark)
+		apply(init)
 	} catch (e) {
 		errorMessage('Dark mode somehow messed up', e)
 	}
