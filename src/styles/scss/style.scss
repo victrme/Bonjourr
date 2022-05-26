@@ -441,8 +441,8 @@
 			flex-wrap: wrap;
 			justify-content: center;
 			transition: visibility 0s 0s;
-			row-gap: 1.3em;
-			column-gap: 3em;
+			row-gap: .6em; // column-gap - (min-height + margin-top of title)
+			column-gap: 2.3em;
 
 			#hiddenlink {
 				display: none;
@@ -468,6 +468,7 @@
 					box-sizing: border-box;
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, height 0.3s;
 					aspect-ratio: 1;
+					z-index: 1;
 
 					.l_icon {
 						width: 100%;
@@ -498,18 +499,20 @@
 				}
 
 				span {
-					margin-top: .4em;
 					display: block;
-					width: 140%;
 					overflow: hidden;
+					margin-top: .4em;
 					line-height: 1.3em;
 					min-height: 1.3em;
+					width: 140%;
 					margin-left: -20%;
+					position: relative;
+					z-index: 2;
 				}
 
 				&.removed {
-					margin-right: -1.5em;
-					margin-left: -1.5em;
+					margin-right: -1.15em;
+					margin-left: -1.15em;
 					overflow: hidden;
 					transition: margin 0.6s;
 
