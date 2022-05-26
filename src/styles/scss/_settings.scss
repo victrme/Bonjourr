@@ -323,6 +323,11 @@
 				padding-right: 0;
 				width: 40px;
 				margin-right: 5px;
+
+				&::placeholder {
+					opacity: 0.7;
+					filter: grayscale(1);
+				}
 			}
 
 			#i_tabtitle {
@@ -391,7 +396,7 @@
 		height: 100px;
 	}
 
-	#fileContainer {
+	#uploadContainer {
 		overflow: hidden;
 		position: relative;
 		display: block;
@@ -418,7 +423,7 @@
 			left: 0;
 			opacity: 0;
 			height: 75px;
-			min-width: 200px;
+			width: 100%;
 			cursor: pointer;
 		}
 
@@ -456,7 +461,7 @@
 				margin: 0;
 				cursor: pointer;
 				overflow: hidden;
-				transition: box-shadow 0.2s $easeOutThree, transform 0.2s $easeOutThree;
+				transition: box-shadow 0.1s $easeOutThree, transform 0.1s;
 				display: flex;
 				justify-content: center;
 				align-items: center;

@@ -93,10 +93,9 @@ function validateHideElem(hide) {
 }
 
 function localDataMigration(local) {
-	delete local.customIndex
+	if (!local.custom) return local
 
 	let idsList = []
-
 	Object.values(local.custom).forEach((val, i) => {
 		const _id = randomString(6)
 		idsList.push(_id)
@@ -111,6 +110,7 @@ function localDataMigration(local) {
 	})
 
 	delete local.custom
+	delete local.customIndex
 	delete local.customThumbnails
 
 	return local
