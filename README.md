@@ -121,3 +121,4 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
+-   **🇩🇰 Danish translation** · kar1 · [GitHub](https://github.com/kar1)

@@ -1581,7 +1581,7 @@ const dict = {
 		da: 'Udseende',
 	},
 	Large: {
-		fr: 'Grand',
+		fr: 'Grands',
 		sv: 'Stor',
 		nl: 'Groot',
 		pl: 'Wielki',
@@ -1598,7 +1598,7 @@ const dict = {
 		da: 'Stor',
 	},
 	Medium: {
-		fr: 'Moyen',
+		fr: 'Moyens',
 		sv: 'Medium',
 		nl: 'Gemiddeld',
 		pl: 'Średnia',
@@ -1615,7 +1615,7 @@ const dict = {
 		da: 'Medium',
 	},
 	Small: {
-		fr: 'Petit',
+		fr: 'Petits',
 		sv: 'Liten',
 		nl: 'Klein',
 		pl: 'Mały',

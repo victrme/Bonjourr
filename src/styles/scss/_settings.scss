@@ -136,27 +136,61 @@
 
 		#changelog {
 			position: relative;
+			display: block;
 			padding: 1.3em;
-			padding-right: 3em;
 			margin-top: 1em;
 			line-height: 1.3em;
-			background-color: #ffffff;
-			transition: transform 0.3s $easeOutThree;
+			background-color: #fff;
+			transition: background-color 0.3s $easeOutThree;
+			overflow: hidden;
 
 			@include radiusSettings();
 			@include marginSettings();
 
-			a,
+			p:first-child {
+				font-weight: 500;
+			}
+
+			&:hover {
+				background-color: #e4e3ea;
+				cursor: pointer;
+
+				#log_dismiss {
+					background-color: #e4e3ea;
+				}
+
+			}
+
 			button {
 				display: inline-block;
-				text-decoration: none;
 				color: $blue;
+				text-decoration: none;
+				z-index: 10;
+				background: white;
+				position: relative;
+
+				&:hover {
+					text-decoration: underline;
+				}
 			}
 
 			#log_dismiss {
+				text-align: left;
+				margin: unset;
+				font-size: 1em;
+				padding: unset;
+				background-color: #fff;
+				transition: background-color 0.3s $easeOutThree;
+			}
+
+			#link {
 				width: 100%;
-				text-align: center;
-				margin-top: 0.5em;
+				height: 100%;
+				display: block;
+				position: absolute;
+				opacity: .5;
+				top: 0; left: 0;
+				z-index: 9;
 			}
 		}
 	}
@@ -326,7 +360,7 @@
 
 				&::placeholder {
 					opacity: 0.7;
-					filter: grayscale(1);
+					filter: grayscale(.35);
 				}
 			}
 

@@ -72,7 +72,7 @@ function initParams(data, settingsDom) {
 		clas(domchangelog, true, 'shown')
 		clas(domshowsettings, true, 'hasUpdated')
 
-		settingsDom.querySelector('#log_dismiss').onclick = () => {
+		settingsDom.querySelector('#changelog').onclick = () => {
 			clas(domshowsettings, false, 'hasUpdated')
 			domchangelog.className = 'dismissed'
 			localStorage.removeItem('hasUpdated')
@@ -147,7 +147,7 @@ function initParams(data, settingsDom) {
 	//
 
 	const bgfile = paramId('i_bgfile')
-	const fileContainer = paramId('fileContainer')
+	const uploadContainer = paramId('uploadContainer')
 
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_tabtitle'))
@@ -155,15 +155,15 @@ function initParams(data, settingsDom) {
 
 	// file input animation
 	bgfile.addEventListener('dragenter', function () {
-		fileContainer.classList.add('dragover')
+		uploadContainer.classList.add('dragover')
 	})
 
 	bgfile.addEventListener('dragleave', function () {
-		fileContainer.classList.remove('dragover')
+		uploadContainer.classList.remove('dragover')
 	})
 
 	bgfile.addEventListener('drop', function () {
-		fileContainer.classList.remove('dragover')
+		uploadContainer.classList.remove('dragover')
 	})
 
 	//general
