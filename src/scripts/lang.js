@@ -32,7 +32,7 @@ const dict = {
 		tr: 'Yeni Sekme',
 		uk: 'Нова вкладка',
 		id: 'Tab Baru',
-		da: 'Nyt fanblad',
+		da: 'Nyt faneblad',
 	},
 	Consider: {
 		fr: "N'hésitez pas",
@@ -712,7 +712,7 @@ const dict = {
 		tr: 'Bağlantı',
 		uk: 'Посилання',
 		id: 'Tautan',
-		da: 'Baggrund',
+		da: 'Link',
 	},
 	'on Unsplash': {
 		fr: 'sur Unsplash',
@@ -1103,7 +1103,7 @@ const dict = {
 		tr: 'Frekans',
 		uk: 'Частота',
 		id: 'Frekuensi',
-		da: 'Frekvens',
+		da: 'Hyppighed',
 	},
 	Daylight: {
 		fr: 'Lumière du jour',
@@ -1120,6 +1120,7 @@ const dict = {
 		tr: 'Gün ışığı',
 		uk: 'денне світло',
 		id: 'Siang hari',
+		da: 'Dagslys',
 	},
 	'Every tab': {
 		fr: 'Chaque onglet',
@@ -1136,7 +1137,7 @@ const dict = {
 		tr: 'Sekmede bir',
 		uk: 'Кожну вкладку',
 		id: 'Setiap tab',
-		da: 'Hvert fanblad',
+		da: 'Hvert faneblad',
 	},
 	'Every hour': {
 		fr: 'Chaque heure',
@@ -1340,7 +1341,7 @@ const dict = {
 		tr: 'Yeni sekme simgesi',
 		uk: 'Піктограма нової вкладки',
 		id: 'Ikon tab baru',
-		da: 'Fanbladsikon',
+		da: 'Fanebladsikon',
 	},
 	'Any emoji': {
 		fr: "N'importe quel emoji",
@@ -1374,6 +1375,7 @@ const dict = {
 		tr: 'New tab title',
 		uk: 'New tab title',
 		id: 'New tab title',
+		da: 'Fanebladstitel',
 	},
 
 	'Hide elements': {
@@ -1527,7 +1529,7 @@ const dict = {
 		tr: 'Selamlama',
 		uk: 'Вітання',
 		id: 'Salam',
-		da: 'Hilsner',
+		da: 'Velkomst',
 	},
 	Weather: {
 		fr: 'Météo',
@@ -1799,7 +1801,7 @@ const dict = {
 		tr: 'Şehri değiştir',
 		uk: 'Змінити місто',
 		id: 'Ubah kota',
-		da: 'Skift by',
+		da: 'Ændre by',
 	},
 	'There was a problem': {
 		fr: 'Il y a eu un problème',
@@ -2038,7 +2040,7 @@ const dict = {
 		tr: 'Yeni sekmede aç',
 		uk: 'Відкрити в новій вкладці',
 		id: 'Buka di tab baru',
-		da: 'Åben i et nyt fanblad',
+		da: 'Åben i et nyt faneblad',
 	},
 	'URL request': {
 		fr: 'URL de requête',
@@ -2089,7 +2091,7 @@ const dict = {
 		tr: 'Arama sorgusu: %s',
 		uk: 'Пошуковий запит: %s',
 		id: 'Pencarian kata kunci %s',
-		da: 'Søgterm: %s',
+		da: 'Søgeterm: %s',
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -2106,7 +2108,7 @@ const dict = {
 		tr: 'Opaklık',
 		uk: 'Непрозорість',
 		id: 'Transparansi',
-		da: 'uigennemsigtighed',
+		da: 'Uigennemsigtighed',
 	},
 	'Time & Date': {
 		fr: 'Date & heure',
@@ -2293,7 +2295,7 @@ const dict = {
 		tr: 'Selamlama',
 		uk: 'Привітання',
 		id: 'Salam',
-		da: 'Hilsen',
+		da: 'Velkomst',
 	},
 	Quotes: {
 		fr: 'Citations',
@@ -2378,7 +2380,7 @@ const dict = {
 		tr: 'Özel Yazı Tipi',
 		uk: 'Власний шрифт',
 		id: 'Pernolasasi Font',
-		da: 'Tilpasset skrifttype',
+		da: 'Skrifttyper',
 	},
 	'Font family': {
 		fr: 'Police',
@@ -2446,6 +2448,7 @@ const dict = {
 		tr: 'Shadow',
 		uk: 'Shadow',
 		id: 'Shadow',
+		da: 'Skygge',
 	},
 	'Custom CSS': {
 		fr: 'CSS personnalisé',
