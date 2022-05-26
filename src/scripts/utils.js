@@ -343,6 +343,7 @@ const langList = {
 	tr: 'Türkçe',
 	uk: 'Українська',
 	id: 'Indonesia',
+	da: 'Dansk',
 }
 
 const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
@@ -367,7 +368,7 @@ function bonjourrDefaults(which) {
 				usdate: false,
 				showall: false,
 				linksrow: 6,
-				linkstyle: 'default',
+				linkstyle: 'large',
 				cssHeight: 80,
 				reviewPopup: 0,
 				background_blur: 15,

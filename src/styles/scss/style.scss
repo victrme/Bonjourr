@@ -515,17 +515,22 @@
 				}
 			}
 
-			&.small {
+			&.medium {
 				gap: 1em;
 
 				.block_parent .l_icon_wrap {
+					padding: 0.3em;
 					border-radius: 0.6em;
 					width: 3.5em;
 					height: 3.5em;
+
+					img {
+						border-radius: 0.4em;
+					}
 				}
 			}
 
-			&.tiny {
+			&.small {
 				gap: 2em;
 
 				.block_parent .block {
@@ -540,6 +545,10 @@
 						width: 2.5em;
 						height: 2.5em;
 						border-radius: 0.4em;
+
+						img {
+							border-radius: 0.2em;
+						}
 					}
 
 					span {

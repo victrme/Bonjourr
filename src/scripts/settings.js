@@ -16,15 +16,6 @@ function initParams(data, settingsDom) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
-	// inserts languages in select
-	for (const [code, title] of Object.entries(langList)) {
-		let option = document.createElement('option')
-		option.value = code
-		option.text = title
-
-		paramId('i_lang').add(option)
-	}
-
 	initInput('cssEditor', data.css, '')
 	initInput('i_row', data.linksrow, 8)
 	initInput('i_linkstyle', data.linkstyle, 'default')
@@ -64,6 +55,14 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
+
+	// inserts languages in select
+	Object.entries(langList).forEach(([code, title]) => {
+		let option = document.createElement('option')
+		option.value = code
+		option.text = title
+		paramId('i_lang').appendChild(option)
+	})
 
 	// Activate changelog (hasUpdated is activated in background.js)
 	if (localStorage.hasUpdated === 'true') {
