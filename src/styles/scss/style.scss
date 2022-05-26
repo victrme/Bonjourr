@@ -441,7 +441,7 @@
 			flex-wrap: wrap;
 			justify-content: center;
 			transition: visibility 0s 0s;
-			row-gap: .6em; // column-gap - (min-height + margin-top of title)
+			row-gap: 0.6em; // column-gap - (min-height + margin-top of title)
 			column-gap: 2.3em;
 
 			#hiddenlink {
@@ -468,39 +468,36 @@
 						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, height 0.3s;
 						aspect-ratio: 1;
 						z-index: 1;
-	
+
 						.l_icon {
 							width: 100%;
 							pointer-events: none;
-	
-							img {
-								border-radius: 0.5em;
-							}
+							border-radius: 0.5em;
 						}
-	
+
 						&.selected {
 							border-color: $blue;
 							transform: scale(1.1);
 							filter: brightness(0.85);
 						}
-	
+
 						&:hover {
 							border-color: $blue;
 							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
 							transform: scale(1.1);
 						}
-	
+
 						&:active {
 							filter: brightness(0.85);
 							transform: scale(1.04);
 							transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 						}
 					}
-	
+
 					span {
 						display: block;
 						overflow: hidden;
-						margin-top: .4em;
+						margin-top: 0.4em;
 						line-height: 1.3em;
 						min-height: 1.3em;
 						width: 140%;
@@ -508,8 +505,6 @@
 						position: relative;
 						z-index: 2;
 					}
-	
-					
 				}
 
 				&.removed {
@@ -517,16 +512,16 @@
 					margin-left: -1.15em;
 					overflow: hidden;
 					transition: margin 0.6s;
-	
+
 					.block {
-						transition: width .6s $easeOutThree;
-						width: 0px!important;
-	
+						transition: width 0.6s $easeOutThree;
+						width: 0px !important;
+
 						.l_icon_wrap {
-							transition: transform .6s $easeOutThree;
+							transition: transform 0.6s $easeOutThree;
 							transform: scale(0);
 						}
-		
+
 						span {
 							opacity: 0;
 						}
@@ -542,7 +537,7 @@
 						.l_icon_wrap {
 							padding: 0.3em;
 							border-radius: 0.8em;
-		
+
 							img {
 								border-radius: 0.4em;
 							}
@@ -605,6 +600,33 @@
 					&.removed {
 						margin-right: -1em;
 						margin-left: -1em;
+					}
+				}
+			}
+
+			&.text {
+				gap: 2em;
+				justify-content: flex-start;
+
+				.block_parent .block {
+					width: auto;
+
+					.l_icon_wrap {
+						display: none;
+					}
+
+					span {
+						width: 100%;
+						max-width: 20em;
+						margin-left: 0; // because of 140% / -20%, can be removed in the future
+						font-size: 1.5em;
+						text-align: left;
+						text-overflow: ellipsis;
+						white-space: pre;
+
+						&:hover {
+							text-decoration: underline;
+						}
 					}
 				}
 			}

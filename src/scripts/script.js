@@ -307,9 +307,6 @@ function quickLinks(event, that, init) {
 		lIconWrap.className = 'l_icon_wrap'
 		lIconWrap.appendChild(lIcon)
 
-		blockTitle.textContent = title
-		// blockTitle.style.display = title === '' ? 'none' : 'block'
-
 		block.className = 'block'
 		block.setAttribute('source', url)
 		block.appendChild(lIconWrap)
@@ -319,7 +316,9 @@ function quickLinks(event, that, init) {
 		block_parent.setAttribute('draggable', 'true')
 		block_parent.appendChild(block)
 
-		//l'ajoute au dom
+		// this also adds "normal" title as usual
+		textOnlyControl(block, title, domlinkblocks.className === 'text')
+
 		domlinkblocks.appendChild(block_parent)
 
 		return { icon: lIcon, parent: block_parent }
@@ -516,8 +515,6 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	window.addEventListener('resize', closeEditLink)
-
 	function updatesEditedLink(index) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')
@@ -544,8 +541,6 @@ function quickLinks(event, that, init) {
 			parent.querySelector('.block').setAttribute('source', link.url)
 			parent.querySelector('img').src = link.icon
 			parent.querySelector('span').textContent = link.title
-
-			parent.querySelector('span').style.display = link.title === '' ? 'none' : 'block'
 
 			// Updates
 			chrome.storage.sync.set({ [link._id]: link })
@@ -637,6 +632,20 @@ function quickLinks(event, that, init) {
 		})
 	}
 
+	function textOnlyControl(block, title, toText) {
+		const span = block.querySelector('span')
+		let url = block.getAttribute('source')
+
+		if (toText && title === '') {
+			url = url.replace(/(^\w+:|^)\/\//, '')
+			url = url.split('?')[0]
+			span.textContent = url
+			return
+		}
+
+		span.textContent = title
+	}
+
 	if (event) {
 		const Input = event === 'input'
 		const Button = event === 'button'
@@ -653,9 +662,15 @@ function quickLinks(event, that, init) {
 		}
 
 		if (Style) {
-			chrome.storage.sync.get(['linksrow'], (data) => {
+			chrome.storage.sync.get(null, (data) => {
+				linksrow(data.linksrow, that) // style changes needs rows width change
+
+				const links = bundleLinks(data)
+				const blocks = document.querySelectorAll('.block')
+
+				links.forEach(({ title }, i) => textOnlyControl(blocks[i], title, that === 'text'))
+
 				domlinkblocks.className = that
-				linksrow(data.linksrow, that)
 				chrome.storage.sync.set({ linkstyle: that })
 			})
 		}
@@ -663,11 +678,12 @@ function quickLinks(event, that, init) {
 		return
 	}
 
-	initblocks(bundleLinks(init))
+	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	linksrow(init.linksrow, init.linkstyle)
-	domlinkblocks.className = init.linkstyle
+	initblocks(bundleLinks(init))
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
+	window.addEventListener('resize', closeEditLink)
 }
 
 async function linksImport() {
@@ -768,9 +784,15 @@ async function linksImport() {
 
 function linksrow(amount, style, event) {
 	function setRows(val, type) {
-		const gap = type === 'small' ? 1 : 2
-		const blockWidth = type === 'tiny' ? 3 : 5
-		id('linkblocks_inner').style.width = (blockWidth + gap) * val + 'em'
+		const sizes = {
+			large: { width: 4.8, gap: 2.3 },
+			medium: { width: 3.5, gap: 2.3 },
+			small: { width: 2.5, gap: 2 },
+			text: { width: 5, gap: 2 }, // arbitrary width because width is auto
+		}
+
+		const { width, gap } = sizes[type]
+		id('linkblocks_inner').style.width = (width + gap) * val + 'em'
 	}
 
 	if (event) {

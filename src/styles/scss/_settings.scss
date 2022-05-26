@@ -158,7 +158,6 @@
 				#log_dismiss {
 					background-color: #e4e3ea;
 				}
-
 			}
 
 			button {
@@ -188,8 +187,9 @@
 				height: 100%;
 				display: block;
 				position: absolute;
-				opacity: .5;
-				top: 0; left: 0;
+				opacity: 0.5;
+				top: 0;
+				left: 0;
 				z-index: 9;
 			}
 		}
@@ -360,7 +360,7 @@
 
 				&::placeholder {
 					opacity: 0.7;
-					filter: grayscale(.35);
+					filter: grayscale(0.35);
 				}
 			}
 
