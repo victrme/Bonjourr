@@ -267,7 +267,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_linknewtab').onchange = function () {
-		quickLinks('linknewtab', this)
+		quickLinks('linknewtab', this.checked)
 	}
 
 	paramId('i_linkstyle').onchange = function () {

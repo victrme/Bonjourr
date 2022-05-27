@@ -649,7 +649,7 @@ function quickLinks(event, that, init) {
 	if (event) {
 		const Input = event === 'input'
 		const Button = event === 'button'
-		const Newtab = event === 'linksnewtab'
+		const Newtab = event === 'linknewtab'
 		const Style = event === 'linkstyle'
 
 		if (Input || Button) {
@@ -657,7 +657,7 @@ function quickLinks(event, that, init) {
 		}
 
 		if (Newtab) {
-			chrome.storage.sync.set({ linknewtab: that.checked ? true : false })
+			chrome.storage.sync.set({ linknewtab: that })
 			id('hiddenlink').setAttribute('target', '_blank')
 		}
 
