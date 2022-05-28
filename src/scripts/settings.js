@@ -72,10 +72,18 @@ function initParams(data, settingsDom) {
 		clas(domchangelog, true, 'shown')
 		clas(domshowsettings, true, 'hasUpdated')
 
-		settingsDom.querySelector('#changelog').onclick = () => {
+		function dismiss() {
 			clas(domshowsettings, false, 'hasUpdated')
 			domchangelog.className = 'dismissed'
 			localStorage.removeItem('hasUpdated')
+		}
+
+		settingsDom.querySelector('#link').onclick = () => {
+			dismiss()
+		}
+
+		settingsDom.querySelector('#log_dismiss').onclick = () => {
+			dismiss()
 		}
 	}
 
