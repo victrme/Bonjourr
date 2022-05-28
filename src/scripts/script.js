@@ -529,6 +529,7 @@ function quickLinks(event, that, init) {
 
 		chrome.storage.sync.get(null, (data) => {
 			const parent = domlinkblocks.children[index + 1]
+			const block = parent.querySelector('.block')
 			let link = bundleLinks(data).filter((l) => l.order === index)[0]
 
 			link = {
@@ -538,9 +539,9 @@ function quickLinks(event, that, init) {
 				icon: stringMaxSize(e_iconurl.value, 7500),
 			}
 
-			parent.querySelector('.block').setAttribute('source', link.url)
+			textOnlyControl(block, link.title, domlinkblocks.className === 'text')
+			block.setAttribute('source', link.url)
 			parent.querySelector('img').src = link.icon
-			parent.querySelector('span').textContent = link.title
 
 			// Updates
 			chrome.storage.sync.set({ [link._id]: link })
