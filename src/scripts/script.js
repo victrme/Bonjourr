@@ -235,6 +235,11 @@ function quickLinks(event, that, init) {
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks_inner')
 	let hovered = { parent: undefined, link: {}, index: 0 }
+	let drags = { start: '', end: '' }
+	let lastDraggedOver = ''
+	let coords = {}
+	let startsDrag = false
+	let startMousePosition = [0, 0]
 
 	async function initblocks(links) {
 		if (links.length > 0) {
@@ -302,6 +307,7 @@ function quickLinks(event, that, init) {
 		const block = document.createElement('div')
 		const block_parent = document.createElement('div')
 
+		lIconWrap.id = link._id
 		lIcon.loading = 'lazy'
 		lIcon.className = 'l_icon'
 		lIconWrap.className = 'l_icon_wrap'
@@ -312,8 +318,8 @@ function quickLinks(event, that, init) {
 		block.appendChild(lIconWrap)
 		block.appendChild(blockTitle)
 
+		// block_parent.setAttribute('draggable', 'true')
 		block_parent.setAttribute('class', 'block_parent')
-		block_parent.setAttribute('draggable', 'true')
 		block_parent.appendChild(block)
 
 		// this also adds "normal" title as usual
@@ -377,21 +383,47 @@ function quickLinks(event, that, init) {
 		}
 
 		// Drags
-		elem.ondragstart = function (e) {
+		elem.onmousedown = function (e) {
 			e.stopPropagation()
-			e.dataTransfer.setData('text/plain', e.target.id)
-			handleDrag('start', this)
+			// e.dataTransfer.setData('text/plain', e.target.id)
+			// handleDrag('start', this)
+
+			startsDrag = true
+			drags.start = e.target.id
+			startMousePosition = [e.x, e.y]
+
+			document.querySelectorAll('.l_icon_wrap').forEach((block) => {
+				const { x, y } = block.getBoundingClientRect()
+				coords[block.id] = [x, y]
+			})
 		}
 
-		elem.ondragenter = function (e) {
+		elem.onmouseenter = function (e) {
 			e.preventDefault()
-			handleDrag('enter', this)
+			e.stopPropagation()
+
+			console.log('isEntereing')
+
+			if (drags.start) {
+				const lIconWrap = e.target.querySelector('.l_icon_wrap')
+				drags.end = lIconWrap.id
+
+				const [startX, startY] = coords[drags.start]
+				const [endX, endY] = coords[drags.end]
+
+				if (lastDraggedOver) {
+					id(lastDraggedOver).removeAttribute('style')
+				}
+
+				lIconWrap.setAttribute('style', `transform: translate(${startX - endX}px, ${startY - endY}px)`)
+				lastDraggedOver = drags.end
+			}
 		}
 
-		elem.ondragend = function (e) {
-			e.preventDefault()
-			handleDrag('end', this)
-		}
+		// elem.ondragend = function (e) {
+		// 	e.preventDefault()
+		// 	handleDrag('end', this)
+		// }
 
 		// Mouse clicks
 		elem.oncontextmenu = function (e) {
@@ -406,7 +438,7 @@ function quickLinks(event, that, init) {
 
 			// settings not opened and not on mobile
 			if (!has(id('settings'), 'shown') && !mobilecheck()) {
-				openlink(this, e)
+				// openlink(this, e)
 			}
 		}
 
@@ -677,6 +709,30 @@ function quickLinks(event, that, init) {
 
 		return
 	}
+
+	let posDiffX, posDiffY
+
+	domlinkblocks.onmousemove = function (e) {
+		if (startsDrag) {
+			posDiffX = e.x - startMousePosition[0]
+			posDiffY = e.y - startMousePosition[1]
+
+			console.log('moves: ', drags.start)
+			id(drags.start).style.transition = `none`
+			id(drags.start).style.zIndex = `4`
+			id(drags.start).style.transform = `translate(${posDiffX}px, ${posDiffY}px)`
+		}
+	}
+
+	const endDrags = () => {
+		startsDrag = false
+		id(drags.start).removeAttribute('style')
+		console.log('Selected: ', drags.end)
+	}
+
+	// end drag
+	domlinkblocks.onmouseup = endDrags
+	domlinkblocks.onmouseout = endDrags
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	linksrow(init.linksrow, init.linkstyle)

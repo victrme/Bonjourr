@@ -442,7 +442,7 @@
 			transition: visibility 0s 0s;
 			row-gap: 0.6em; // column-gap - (min-height + margin-top of title)
 			column-gap: 2.3em;
-			transition: width .18s $easeOutThree;
+			transition: width 0.18s $easeOutThree;
 
 			#hiddenlink {
 				display: none;
@@ -455,7 +455,7 @@
 
 				.block {
 					width: 4.8em;
-					transition: width .18s $easeOutThree;
+					transition: width 0.18s $easeOutThree;
 
 					.l_icon_wrap {
 						position: relative;
@@ -467,7 +467,7 @@
 						background: $purewhite;
 						box-shadow: $textShadow;
 						box-sizing: border-box;
-						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius .18s $easeOutThree;
+						transition: transform 0.2s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 						aspect-ratio: 1;
 						z-index: 1;
 
