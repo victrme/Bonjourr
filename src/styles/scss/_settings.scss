@@ -457,7 +457,7 @@
 		}
 
 		&:hover {
-			opacity: 0.7;
+			background-color: $focusedGrey;
 		}
 
 		&.dragover {
@@ -585,14 +585,14 @@
 
 			@include radiusSettings();
 
+			&:hover {
+				text-decoration: none;
+				background-color: $focusedGrey;
+			}
+
 			&.clicked {
 				color: $borderGrey;
 				background-color: white;
-			}
-
-			&:hover {
-				text-decoration: none;
-				opacity: 0.8;
 			}
 		}
 	}

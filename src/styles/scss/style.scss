@@ -440,8 +440,9 @@
 			flex-wrap: wrap;
 			justify-content: center;
 			transition: visibility 0s 0s;
-			row-gap: 0.6em; // column-gap - (min-height + margin-top of title)
-			column-gap: 2.3em;
+			$column-gap: 2.6em;
+			column-gap: $column-gap;
+			row-gap: calc($column-gap - 1.6em); // (min-height + margin-top of title)
 			transition: width .18s $easeOutThree;
 
 			#hiddenlink {
@@ -451,11 +452,11 @@
 			.block_parent {
 				cursor: pointer;
 				position: relative;
-				@include allCentered;
 
 				.block {
 					width: 4.8em;
 					transition: width .18s $easeOutThree;
+					opacity: 1;
 
 					.l_icon_wrap {
 						position: relative;
@@ -496,12 +497,12 @@
 						}
 					}
 
-					span {
+					span { // link title
 						display: block;
 						overflow: hidden;
-						margin-top: 0.4em;
-						line-height: 1.3em;
-						min-height: 1.3em;
+						margin-top: .4em;
+						line-height: 1.2em;
+						min-height: 1.2em;
 						width: 140%;
 						margin-left: -20%;
 						position: relative;
@@ -510,14 +511,15 @@
 				}
 
 				&.removed {
-					margin-right: -1.15em;
-					margin-left: -1.15em;
+					margin-right: -1.3em;
+					margin-left: -1.3em;
 					overflow: hidden;
 					transition: margin 0.6s;
 
 					.block {
-						transition: width 0.6s $easeOutThree;
+						transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
 						width: 0px !important;
+						opacity: 0;
 
 						.l_icon_wrap {
 							transition: transform 0.6s $easeOutThree;
@@ -532,7 +534,10 @@
 			}
 
 			&.medium {
+				column-gap: 2em;
+				
 				.block_parent {
+
 					.block {
 						width: 3.5em;
 
