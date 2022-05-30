@@ -473,14 +473,14 @@ function initParams(data, settingsDom) {
 		textShadow(null, this.value)
 	}
 
-	// Reduces opacity to better see interface size changes
+	// Reduces opacity to better see interface appearance changes
 	if (mobilecheck()) {
 		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
-		const rangeInputs = document.querySelectorAll(input[(type = 'range')])
+		const rangeInputs = settingsDom.querySelectorAll("input[type='range'")
 
 		rangeInputs.forEach(function (input) {
-			paramId(input).addEventListener('touchstart', () => touchHandler(true), { passive: true })
-			paramId(input).addEventListener('touchend', () => touchHandler(false), { passive: true })
+		 input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
+		 input.addEventListener('touchend', () => touchHandler(false), { passive: true })
 		})
 	}
 
