@@ -76,19 +76,18 @@
 	#settings {
 		background-color: $pureblack;
 
-		#changelogContainer #changelog {
-			background-color: #1c1c1e;
-			color: #fff;
-
-			#log_dismiss {
+		#changelogContainer {
+			#changelog {
 				background-color: #1c1c1e;
+				color: #fff;
 			}
 
-			&:hover {
-				background-color: #2b2c2d;
+			#log_dismiss {
+				background-color: #3f3f41;
+				color: #fff;
 
-				#log_dismiss {
-					background-color: #2b2c2d;
+				&:hover {
+					background-color: #929294;
 				}
 			}
 		}

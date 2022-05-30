@@ -592,12 +592,12 @@ function importExport(select, isEvent, settingsDom) {
 			}
 
 			sync = { ...sync, ...newImport }
-			delete sync.about // Remove about to trigger "new version" startup to filter data
-
 			sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
 
 			chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
 			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+
+			sessionStorage.isImport = true // to separate import and new version startup
 
 			fadeOut()
 		}

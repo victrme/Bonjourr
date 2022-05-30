@@ -783,21 +783,24 @@ async function linksImport() {
 	})
 }
 
-function linksrow(amount, style, event) {
-	function setRows(val, type) {
+function linksrow(amount, style = 'large', event) {
+	function setRows(val, style) {
 		const sizes = {
 			large: { width: 4.8, gap: 2.3 },
-			medium: { width: 3.5, gap: 2.3 },
+			medium: { width: 3.5, gap: 2 },
 			small: { width: 2.5, gap: 2 },
 			text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 		}
 
-		const { width, gap } = sizes[type]
+		const { width, gap } = sizes[style]
 		id('linkblocks_inner').style.width = (width + gap) * val + 'em'
 	}
 
 	if (event) {
-		setRows(event, document.querySelector('#linkblocks_inner').className)
+		let domStyle = document.querySelector('#linkblocks_inner').className
+		domStyle = domStyle === 'undefined' ? 'large' : domStyle
+
+		setRows(event, domStyle)
 		slowRange({ linksrow: parseInt(event) })
 		return
 	}
@@ -2817,7 +2820,8 @@ function filterImports(data) {
 		return sync
 	}
 
-	let result = { ...data }
+	let result = { ...bonjourrDefaults('sync') }
+	result = { ...data }
 
 	delete result?.searchbar_engine
 	delete result?.searchbar_newtab
@@ -2826,10 +2830,6 @@ function filterImports(data) {
 	localStorage.removeItem('nextQuote')
 
 	try {
-		if (!result.quotes) {
-			result.quotes = bonjourrDefaults('sync').quotes
-		}
-
 		// Go through found categories in import data to filter them
 		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
 		result = linksFilter(result)
@@ -2888,19 +2888,19 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 	sunrise = 0
 
 window.onload = function () {
-	// On settings changes, update export code
-	if (isExtension) chrome.storage.onChanged.addListener(() => importExport('exp'))
-	else window.onstorage = () => importExport('exp')
+	isExtension // On settings changes, update export code
+		? chrome.storage.onChanged.addListener(() => importExport('exp'))
+		: (window.onstorage = () => importExport('exp'))
+
+	setInterval(() => {
+		// Checks every 5 minutes if weather needs update
+		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
+	}, 5 * 60 * 1000)
 
 	// For Mobile that caches pages for days
 	if (mobilecheck()) {
 		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
 	}
-
-	// Checks every 5 minutes if weather needs update
-	setInterval(() => {
-		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data) => weather(null, null, data)) : ''
-	}, 5 * 60 * 1000)
 
 	// Only on Online / Safari
 	if (detectPlatform() === 'online') {
@@ -2937,20 +2937,26 @@ window.onload = function () {
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
+			const isImport = sessionStorage.isImport === 'true'
+			const versionChange = data.about?.version !== bonjourrDefaults('sync').about.version
+
 			// First Startup, chrome.storage is null
 			if (Object.keys(data).length === 0) {
-				document.documentElement.setAttribute('lang', defaultLang())
 				data = bonjourrDefaults('sync')
+				document.documentElement.setAttribute('lang', defaultLang())
 				chrome.storage.local.set(bonjourrDefaults('local'))
 				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
 
 			// Version is different, can be new update or imports
-			else if (!data.about || data.about.version !== bonjourrDefaults('sync').about.version) {
+			else if (isImport || versionChange) {
 				// needs local to migrate backgrounds (1.13.2 => 1.14.0)
 				chrome.storage.local.get(null, (local) => {
 					local = localDataMigration(local)
 					data = filterImports(data)
+
+					if (!sessionStorage.isImport) localStorage.hasUpdated = true
+					sessionStorage.removeItem('isImport')
 
 					// Change version in here
 					// Only after "different version" startup is triggered
@@ -2959,13 +2965,16 @@ window.onload = function () {
 					chrome.storage.sync.clear()
 					chrome.storage.sync.set(isExtension ? data : { import: data })
 
+					// (can be removed): updates local for 1.13.2 => 1.14.0
 					if (isExtension) {
 						chrome.storage.local.clear()
 						chrome.storage.local.set({ ...local }, () => startup(data))
 					} else {
-						localStorage.bonjourrBackgrounds = local
+						localStorage.bonjourrBackgrounds = JSON.stringify(local)
 						startup(data)
 					}
+					// end (can be removed)
+					// startup(data)
 				})
 
 				return
