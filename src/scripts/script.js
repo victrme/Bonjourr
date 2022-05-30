@@ -1400,7 +1400,10 @@ function localBackgrounds(init, event) {
 		div.id = _id
 		div.setAttribute('class', 'thumbnail')
 		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
-		rem.textContent = '✕'
+
+		let close = document.createElement('img')
+		close.setAttribute('src', 'src/assets/interface/close.svg')
+		rem.appendChild(close)
 
 		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
 

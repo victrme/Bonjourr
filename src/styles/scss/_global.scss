@@ -35,6 +35,7 @@ body {
 	user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
+	touch-action: pan-x pan-y;
 	opacity: 1;
 	background-color: $pureblack;
 	color: $purewhite;

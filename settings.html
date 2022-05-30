@@ -1,7 +1,7 @@
 <body>
 	<div>
 		<div id="changelogContainer">
-			<button id="log_dismiss" class="trn" alt='Dismiss changelog'>✕</button>
+			<button id="log_dismiss" alt='Dismiss changelog'><img src="src/assets/interface/close.svg"/></button>
 			<div id="changelog">
 				<p class="trn">Bonjourr has been updated to version 1.14 ✨</p>
 
@@ -106,8 +106,9 @@
 			<div class="link_input_wrap">
 				<div>
 					<div>
-						<input id="i_title" type="text" name="title" autocomplete="off" maxlength="64" placeholder="Name" />
-						<input id="i_url" type="text" name="url" autocomplete="off" maxlength="512" placeholder="URL" />
+						<input id="i_title" type="text" name="title" maxlength="64" placeholder="Name" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"/>
+
+						<input id="i_url" type="text" name="url" maxlength="512" placeholder="URL"  spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"/>
 					</div>
 					<div class="links_buttons">
 						<button id="b_importbookmarks" class="trn">Import</button>
@@ -200,6 +201,7 @@
 						autocomplete="off"
 						placeholder="2nVzlQADDIE"
 						maxlength="256"
+						spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
 					/>
 				</div>
 

@@ -99,7 +99,6 @@
 	right: -450px;
 	width: 450px;
 	height: 100vh;
-	overflow-y: auto;
 
 	background-color: $settingsGrey;
 	color: $blackish;
@@ -112,7 +111,10 @@
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
 	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
-	// transform: translateX(-100%)!important;
+	touch-action: pan-y;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	transform: translateX(-100%)!important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -172,17 +174,20 @@
 			position: absolute;
 			top: 1.5em;
 			right: 1em;
-			width: 2.5em;
-			height: 2.5em;
-			color: #333;
-			font-size: 12px;
+			width: 30px;
+			height: 30px;
 			border-radius: 100%;
 			cursor: pointer;
-			text-decoration: none;
 			box-shadow: rgb(0 0 0 / 20%) 0 2px 5px;
 			z-index: 10;
 			opacity: 1;
 			transition: background-color 0.2s $easeOutThree;
+			@include allCentered();
+
+			img {
+				width: 50%;
+				display: block
+			}
 
 			&:hover {
 				background-color: #e4e3ea;
@@ -520,8 +525,6 @@
 					left: 5px;
 					width: 25px;
 					height: 25px;
-					color: #333;
-					font-size: 10px;
 					border-radius: 100%;
 					cursor: pointer;
 					text-decoration: none;
@@ -529,7 +532,14 @@
 					opacity: 0;
 					pointer-events: none;
 					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+					box-sizing: border-box;
+					@include allCentered();
 					@include frostedGlass();
+
+					img {
+						width: 9px; height: 9px;
+						display: block;
+					}
 				}
 
 				// instead of adding a populated class in JS

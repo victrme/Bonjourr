@@ -3,6 +3,16 @@
 	#settings #bg_tn_wrap #fileContainer .thumbnail button {
 		opacity: 1;
 	}
+
+	#showSettings {
+		user-select: none;
+		-webkit-user-select:none;
+		-webkit-touch-callout: none;
+
+		&:active {
+			filter: brightness(.5);
+		}
+	}
 }
 
 @media screen and (max-height: 900px) {
@@ -51,6 +61,7 @@
 
 		.signature {
 			padding: 3em;
+			padding-bottom: 9em;
 		}
 	}
 
