@@ -7,6 +7,7 @@
 		"chrome": "gulp chrome",
 		"firefox": "gulp firefox",
 		"online": "gulp online",
+		"build": "gulp build",
 		"scss": "sass --watch src/styles/scss/style.scss src/styles/style.css"
 	},
 	"repository": {
@@ -30,7 +31,8 @@
 		"gulp-htmlmin": "^5.0.1",
 		"gulp-rename": "^2.0.0",
 		"gulp-replace": "^1.1.3",
-		"sass": "^1.35.2",
+		"gulp-sass": "^5.1.0",
+		"sass": "^1.52.1",
 		"set-value": ">=4.0.1",
 		"trim-newlines": ">=3.0.1"
 	}

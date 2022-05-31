@@ -1,12 +1,13 @@
-const { series, parallel, src, dest, watch } = require('gulp'),
+const { series, parallel, src, dest, watch, task } = require('gulp'),
 	concat = require('gulp-concat'),
 	minify = require('gulp-babel-minify'),
 	htmlmin = require('gulp-htmlmin'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
-	replace = require('gulp-replace')
+	replace = require('gulp-replace'),
+	sass = require('gulp-sass')(require('sass'))
 
-function html(isOnline) {
+function html(platform) {
 	//
 	// Index & settings minified
 	// Multiple scripts tags => only main.js
@@ -21,7 +22,7 @@ function html(isOnline) {
 			})
 		)
 
-		if (isOnline) {
+		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
 		}
 
@@ -29,15 +30,14 @@ function html(isOnline) {
 			.pipe(
 				replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : ''))
 			)
-			.pipe(dest('release/'))
+			.pipe(dest(`release/${platform}`))
 	}
 }
 
-function scripts(which) {
+function scripts(platform, dev) {
 	//
 	// All scripts except background
 	// Online: replaces chrome.storage with homemade storage
-	// Firefox debugging: only storage.local is allowed
 	// Chrome & Firefox build: just minify
 	//
 
@@ -49,72 +49,70 @@ function scripts(which) {
 			'src/scripts/settings.js',
 		]).pipe(concat('main.js'))
 
-		switch (which) {
-			case 'online': {
-				stream
-					.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
-					.pipe(replace('sync.clear(', 'clear('))
-					.pipe(replace('sync.get(', 'get(false, '))
-					.pipe(replace('local.get(', 'get(true, '))
-					.pipe(replace('sync.set(', 'set('))
-					.pipe(replace('local.set(', 'setLocal('))
-					.pipe(replace('sync.remove(', 'remove(false, '))
-					.pipe(replace('local.remove(', 'remove(true, '))
-					.pipe(minify({ mangle: { keepClassName: true } }))
-				break
-			}
-
-			default:
-				stream.pipe(minify({ mangle: { keepClassName: true } }))
-				break
+		if (platform === 'online') {
+			stream
+				.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
+				.pipe(replace('sync.clear(', 'clear('))
+				.pipe(replace('sync.get(', 'get(false, '))
+				.pipe(replace('local.get(', 'get(true, '))
+				.pipe(replace('sync.set(', 'set('))
+				.pipe(replace('local.set(', 'setLocal('))
+				.pipe(replace('sync.remove(', 'remove(false, '))
+				.pipe(replace('local.remove(', 'remove(true, '))
 		}
 
-		stream.pipe(dest('release/src/scripts'))
+		if (!dev) {
+			stream.pipe(minify({ mangle: { keepClassName: true } }))
+		}
+
+		stream.pipe(dest(`release/${platform}/src/scripts`))
 		return stream
 	}
 }
 
-function ressources(isExtension) {
+function ressources(platform) {
 	return () => {
 		const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
-		if (isExtension) assetPath.push('!src/assets/screenshots/**')
+		if (platform !== 'online') assetPath.push('!src/assets/screenshots/**')
 
-		return src(assetPath).pipe(dest('release/src/assets'))
+		return src(assetPath).pipe(dest(`release/${platform}/src/assets`))
 	}
 }
 
-function worker(online) {
+function worker(platform) {
 	return () => {
 		const file = {
-			origin: `src/scripts/${online ? 'service-worker.js' : 'background.js'}`,
-			destination: online ? 'release/' : 'release/src/scripts/',
+			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
+			destination: platform ? `release/${platform}` : `release/${platform}/src/scripts/`,
 		}
 		return src(file.origin).pipe(dest(file.destination))
 	}
 }
 
-function manifest(which) {
+function manifest(platform) {
 	return () => {
-		if (which === 'online') {
-			return src(`src/manifests/manifest.webmanifest`).pipe(dest('release/'))
-		}
-
-		return src(`src/manifests/${which === 'firefox' ? 'firefox' : 'chrome'}.json`)
-			.pipe(rename('manifest.json'))
-			.pipe(dest('release/'))
+		return platform === 'online'
+			? src(`src/manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
+			: src(`src/manifests/${platform}.json`)
+					.pipe(rename('manifest.json'))
+					.pipe(dest(`release/${platform}`))
 	}
 }
 
-function css() {
-	return src('src/styles/style.css').pipe(csso()).pipe(dest('release/src/styles/'))
+function styles(platform) {
+	return () =>
+		src('src/styles/scss/style.scss')
+			.pipe(sass.sync().on('error', sass.logError))
+			.pipe(csso())
+			.pipe(dest(`release/${platform}/src/styles/`))
 }
 
-function addBackground() {
-	return src('src/scripts/background.js').pipe(dest('release/src/scripts'))
+function addBackground(platform) {
+	return () => src('src/scripts/background.js').pipe(dest(`release/${platform}/src/scripts`))
 }
 
-function locales() {
-	return src('_locales/**').pipe(dest('release/_locales/'))
+function locales(platform) {
+	return () => src('_locales/**').pipe(dest(`release/${platform}/_locales/`))
 }
 
 //
@@ -125,24 +123,24 @@ function locales() {
 const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/style.css.map', './src/manifests/*.json']
 
 // prettier-ignore
-const makeOnline = () => [
-	css,
-	html(true),
+const taskOnline = (dev) => [
+	html('online'),
+	styles('online'),
 	worker('online'),
-	scripts('online'),
-	ressources(false),
 	manifest('online'),
+	scripts('online', dev),
+	ressources('online', false),
 ]
 
-const makeExtension = (manifestFrom, scriptFrom) => [
-	css,
-	locales,
-	addBackground,
-	html(false),
-	worker(false),
-	ressources(true),
-	scripts(scriptFrom),
-	manifest(manifestFrom),
+const taskExtension = (dev, from) => [
+	html(from),
+	worker(from),
+	styles(from),
+	locales(from),
+	manifest(from),
+	ressources(from),
+	scripts(from, dev),
+	addBackground(from),
 ]
 
 //
@@ -150,13 +148,15 @@ const makeExtension = (manifestFrom, scriptFrom) => [
 //
 
 exports.online = async function () {
-	watch(filesToWatch, series(parallel(...makeOnline())))
+	watch(filesToWatch, series(parallel(...taskOnline(true))))
 }
 
 exports.chrome = async function () {
-	watch(filesToWatch, series(parallel(...makeExtension('chrome'))))
+	watch(filesToWatch, series(parallel(...taskExtension(true, 'chrome'))))
 }
 
 exports.firefox = async function () {
-	watch(filesToWatch, series(parallel(...makeExtension('firefox'))))
+	watch(filesToWatch, series(parallel(...taskExtension(true, 'firefox'))))
 }
+
+exports.build = parallel(...taskOnline(false), ...taskExtension(true, 'firefox'), ...taskExtension(true, 'chrome'))
