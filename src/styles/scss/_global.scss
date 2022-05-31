@@ -35,7 +35,7 @@ body {
 	user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-	touch-action: pan-x pan-y;
+	touch-action: pan-y;
 	opacity: 1;
 	background-color: $pureblack;
 	color: $purewhite;
@@ -323,6 +323,10 @@ body {
 	input, select, #i_export {
 		box-sizing: border-box;
 		height: $inputHeight;
+	}
+
+	select {
+		background-color: $inputGrey;
 	}
 
 	/* Switch */
