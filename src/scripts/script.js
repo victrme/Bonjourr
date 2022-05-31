@@ -1398,7 +1398,7 @@ function localBackgrounds(init, event) {
 		const wrap = settings.querySelector('#fileContainer')
 
 		div.id = _id
-		div.setAttribute('class', 'thumbnail')
+		div.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
 		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
 
 		let close = document.createElement('img')
@@ -1410,8 +1410,6 @@ function localBackgrounds(init, event) {
 		div.appendChild(i)
 		div.appendChild(rem)
 		wrap.prepend(div)
-
-		if (isSelected) thumbnailSelection(_id)
 
 		i.onmouseup = (e) => {
 			if (e.button !== 0 || localIsLoading) return
@@ -1485,6 +1483,8 @@ function localBackgrounds(init, event) {
 				// Parse through thumbnails to display them
 				chrome.storage.local.get(thumbsKeys, (local) => {
 					Object.entries(local).forEach(([key, val]) => {
+						if (!key.startsWith('customThumb_')) return // online only, can be removed after lsOnlineStorage rework
+
 						const _id = key.replace('customThumb_', '')
 						const blob = val.replace('data:image/jpeg;base64,', '')
 						const isSelected = _id === selectedId
@@ -1937,10 +1937,7 @@ function searchbar(event, that, init) {
 	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
 	const setNewtab = (value) => domsearchbar.setAttribute('newtab', value)
 	const opacity = (value) => {
-		domsearchbar.setAttribute(
-			'style',
-			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
-		)
+		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
 
 		if (value > 0.4) id('sb_container').classList.add('opaque')
 		else id('sb_container').classList.remove('opaque')
