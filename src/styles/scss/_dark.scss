@@ -84,7 +84,10 @@
 
 			#log_dismiss {
 				background-color: #3f3f41;
-				color: #fff;
+
+				img {
+					filter: invert(1);
+				}
 
 				&:hover {
 					background-color: #929294;
