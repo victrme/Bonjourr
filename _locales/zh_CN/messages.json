@@ -1,10 +1,10 @@
 {
 	"extensionName": {
-		"message": "Bonjourr",
+		"message": "Bonjourr · 极简首页",
 		"description": "扩展名称"
 	},
 	"extensionDesc": {
-		"message": "使用 Bonjourr 提升您的浏览体验。它是一个美观，轻量，可自定义的主页，其灵感来自于 iOS。",
+		"message": "使用 Bonjourr 提升您的浏览体验。它是一个美观，轻量，可自定义的主页。",
 		"description": "扩展介绍"
 	}
 }

@@ -1,10 +1,10 @@
 {
 	"extensionName": {
-		"message": "Bonjourr",
+		"message": "Bonjourr · Homepage minimalista",
 		"description": "nome dell'estensione"
 	},
 	"extensionDesc": {
-		"message": "Migliora la tua esperienza di navigazione con Bonjourr, una bellissima pagina iniziale, leggera e personalizzabile ispirata ad iOS.",
+		"message": "Migliora la tua esperienza di navigazione con Bonjourr, una bellissima e personalizzabile pagina iniziale.",
 		"description": "descrizione dell'estensione"
 	}
 }
