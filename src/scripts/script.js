@@ -234,12 +234,11 @@ function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks_inner')
-	let hovered = { parent: undefined, link: {}, index: 0 }
-	let drags = { start: '', end: '' }
-	let lastDraggedOver = ''
-	let coords = {}
+	let draggedId = ''
+	let coords = []
 	let startsDrag = false
-	let startMousePosition = [0, 0]
+	let startMousePosition = { x: 0, y: 0 }
+	let posDiffX, posDiffY, width
 
 	async function initblocks(links) {
 		if (links.length > 0) {
@@ -388,42 +387,32 @@ function quickLinks(event, that, init) {
 			// e.dataTransfer.setData('text/plain', e.target.id)
 			// handleDrag('start', this)
 
+			// Initialise toute les coordonnees
+			// Defini l'ID de l'element deplace
+			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
+
+			const { x, y, target } = e
 			startsDrag = true
-			drags.start = e.target.id
-			startMousePosition = [e.x, e.y]
+			draggedId = target.id
+
+			startMousePosition = { x, y }
+
+			let dir = 'rtl'
 
 			document.querySelectorAll('.l_icon_wrap').forEach((block) => {
+				if (block.id === draggedId) dir = 'ltr'
+
 				const { x, y } = block.getBoundingClientRect()
-				coords[block.id] = [x, y]
+				coords.push({ _id: block.id, x, y, dir, moved: block.id === draggedId })
 			})
+
+			coords.sort((a, b) => a.x < b.x)
+			width = coords[1].x - coords[0].x
+
+			console.log(coords)
 		}
 
-		elem.onmouseenter = function (e) {
-			e.preventDefault()
-			e.stopPropagation()
-
-			console.log('isEntereing')
-
-			if (drags.start) {
-				const lIconWrap = e.target.querySelector('.l_icon_wrap')
-				drags.end = lIconWrap.id
-
-				const [startX, startY] = coords[drags.start]
-				const [endX, endY] = coords[drags.end]
-
-				if (lastDraggedOver) {
-					id(lastDraggedOver).removeAttribute('style')
-				}
-
-				lIconWrap.setAttribute('style', `transform: translate(${startX - endX}px, ${startY - endY}px)`)
-				lastDraggedOver = drags.end
-			}
-		}
-
-		// elem.ondragend = function (e) {
-		// 	e.preventDefault()
-		// 	handleDrag('end', this)
-		// }
+		// Mouse enter ne fonctionne pas car l'element deplace est toujours sous la souris
 
 		// Mouse clicks
 		elem.oncontextmenu = function (e) {
@@ -710,24 +699,67 @@ function quickLinks(event, that, init) {
 		return
 	}
 
-	let posDiffX, posDiffY
+	function deplaceElem(id, move) {
+		document.querySelector('.l_icon_wrap#' + id).setAttribute('style', `transform: translateX(${move}px)`)
+	}
+
+	let toMove = {}
+	let curr = 0
+	let prev = null
 
 	domlinkblocks.onmousemove = function (e) {
 		if (startsDrag) {
-			posDiffX = e.x - startMousePosition[0]
-			posDiffY = e.y - startMousePosition[1]
+			posDiffX = e.x - startMousePosition.x
+			posDiffY = e.y - startMousePosition.y
 
-			console.log('moves: ', drags.start)
-			id(drags.start).style.transition = `none`
-			id(drags.start).style.zIndex = `4`
-			id(drags.start).style.transform = `translate(${posDiffX}px, ${posDiffY}px)`
+			// x est la position de l'element, e.x celle de la souris
+			// gauche a droite,
+			curr = coords.findIndex(({ x }) => e.x <= x + width)
+			toMove = coords[curr]
+
+			// initialise les "indexes a trigger"
+			if (!prev) prev = curr
+
+			// trigger si les indexes sont differents
+			if (toMove && prev !== curr) {
+				//
+
+				// Si l'element sur lequel on devrait se trouer a deja bouge
+				// On retrouve son index avec la direction dans laquelle il a bouge
+				if (toMove.moved === true) {
+					let sign = coords[curr].dir === 'ltr' ? 1 : -1
+					if (coords[curr + 1 * sign]) toMove = coords[curr + 1 * sign]
+				}
+
+				console.log(toMove.moved, curr)
+
+				// deplace le bon element, revient a zero si il a deja bouge
+				deplaceElem(toMove._id, toMove.moved ? 0 : toMove.dir === 'ltr' ? -width : width)
+
+				// Toggle la propriete "moved" de l'element
+				coords[coords.findIndex((elem) => elem._id === toMove._id)].moved = !toMove.moved
+
+				// les deux indexes deviennent similaires
+				prev = curr
+			}
+
+			id(draggedId).style.cursor = `grabbing`
+			id(draggedId).style.transition = `none`
+			id(draggedId).style.zIndex = `4`
+			id(draggedId).style.transform = `translate(${posDiffX}px, ${posDiffY}px)`
 		}
 	}
 
 	const endDrags = () => {
-		startsDrag = false
-		id(drags.start).removeAttribute('style')
-		console.log('Selected: ', drags.end)
+		if (draggedId) {
+			startsDrag = false
+			curr = 0
+			prev = null
+			toMove = {}
+			coords = []
+			id(draggedId).removeAttribute('style')
+			// console.log('Selected: ', drags.end)
+		}
 	}
 
 	// end drag
