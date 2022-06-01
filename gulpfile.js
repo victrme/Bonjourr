@@ -83,7 +83,7 @@ function worker(platform) {
 	return () => {
 		const file = {
 			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
-			destination: platform ? `release/${platform}` : `release/${platform}/src/scripts/`,
+			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
 		}
 		return src(file.origin).pipe(dest(file.destination))
 	}
@@ -159,4 +159,4 @@ exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension(true, 'firefox'))))
 }
 
-exports.build = parallel(...taskOnline(false), ...taskExtension(true, 'firefox'), ...taskExtension(true, 'chrome'))
+exports.build = parallel(...taskOnline(false), ...taskExtension(false, 'firefox'), ...taskExtension(false, 'chrome'))
