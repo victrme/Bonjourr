@@ -185,7 +185,7 @@ const dict = {
 		tr: 'Bonjourr has been updated to version 1.14 ✨',
 		uk: 'Bonjourr has been updated to version 1.14 ✨',
 		id: 'Bonjourr has been updated to version 1.14 ✨',
-		da: 'Bonjourr has been updated to version 1.14 ✨',
+		da: 'Bonjourr er blevet opdateret til version 1.14 ✨',
 	},
 	'Learn all about our new Quick Links style options, the improved custom background management and much more in ': {
 		fr: 'Retrouvez toutes les infos sur les nouveaux styles de liens favoris, la meilleure gestion des arrière-plans personnaliés et plus encore dans ',
@@ -202,7 +202,7 @@ const dict = {
 		tr: 'Learn all about our new Quick Links style options, the improved custom background management and much more in ',
 		uk: 'Learn all about our new Quick Links style options, the improved custom background management and much more in ',
 		id: 'Learn all about our new Quick Links style options, the improved custom background management and much more in ',
-		da: 'Learn all about our new Quick Links style options, the improved custom background management and much more in ',
+		da: 'Lær alt om de nye muligheder for udseendet af Hurtig Links, den forbedrede håndtering af brugerdefinerede baggrunde og meget mere i ',
 	},
 	'our full changelog': {
 		fr: 'notre changelog complet',
@@ -219,7 +219,7 @@ const dict = {
 		tr: 'our full changelog',
 		uk: 'our full changelog',
 		id: 'our full changelog',
-		da: 'our full changelog',
+		da: 'vores ændringslog',
 	},
 	'Apply changes': {
 		fr: 'Enregistrer',
