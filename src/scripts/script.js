@@ -307,7 +307,6 @@ function quickLinks(event, that, init) {
 		const block = document.createElement('div')
 		const block_parent = document.createElement('div')
 
-		lIconWrap.id = link._id
 		lIcon.loading = 'lazy'
 		lIcon.className = 'l_icon'
 		lIconWrap.className = 'l_icon_wrap'
@@ -319,6 +318,7 @@ function quickLinks(event, that, init) {
 		block.appendChild(blockTitle)
 
 		// block_parent.setAttribute('draggable', 'true')
+		block_parent.id = link._id
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.appendChild(block)
 
@@ -392,15 +392,14 @@ function quickLinks(event, that, init) {
 			// Defini l'ID de l'element deplace
 			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
 
-			const { x, y, target } = e
+			const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] // juste pour debug, can be removed
+			const { x, y, path } = e
+			draggedId = path.find((e) => e.className === 'block_parent').id
 			startsDrag = true
-			draggedId = target.id
-
 			startMousePosition = { x, y }
-			const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
 
 			// Est deja sort puisque c'est par ordre d'apparition dans le dom
-			document.querySelectorAll('.l_icon_wrap').forEach((block, i) => {
+			document.querySelectorAll('.block_parent').forEach((block, i) => {
 				const { x, y } = block.getBoundingClientRect()
 				coords.push({ letter: letters[i], _id: block.id, x, y })
 			})
@@ -698,7 +697,7 @@ function quickLinks(event, that, init) {
 	}
 
 	function deplaceElem(id, move) {
-		document.querySelector('.l_icon_wrap#' + id).setAttribute('style', `transform: translateX(${move}px)`)
+		document.querySelector('.block_parent#' + id).setAttribute('style', `transform: translateX(${move}px)`)
 	}
 
 	let curr = 0
@@ -744,20 +743,31 @@ function quickLinks(event, that, init) {
 				prev = curr
 			}
 
+			id(draggedId).style.zIndex = `4`
 			id(draggedId).style.cursor = `grabbing`
 			id(draggedId).style.transition = `none`
-			id(draggedId).style.zIndex = `4`
 			id(draggedId).style.transform = `translate(${posDiffX}px, ${posDiffY}px)`
 		}
 	}
 
 	const endDrags = () => {
-		if (draggedId) {
-			let lastMove = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
+		if (draggedId && startsDrag) {
+			let movedBy = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
 
 			id(draggedId).removeAttribute('style')
-			id(draggedId).style.transform = `translateX(${lastMove * width}px)`
+			id(draggedId).style.transform = `translateX(${movedBy * width}px)`
 			id(draggedId).style.cursor = `pointer`
+
+			setTimeout(() => {
+				chrome.storage.sync.get(null, (data) => {
+					const links = bundleLinks(data)
+					document.querySelectorAll('.block_parent').forEach((block) => {
+						block.remove()
+					})
+					const sortedLinks = [...movedCoords.map((elem) => links.find((a) => a._id === elem._id))]
+					initblocks(sortedLinks)
+				})
+			}, 200)
 
 			startsDrag = false
 			curr = 0

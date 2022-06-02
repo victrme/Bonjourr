@@ -449,8 +449,10 @@
 			}
 
 			.block_parent {
-				cursor: pointer;
 				position: relative;
+				transition: transform 0.2s;
+				cursor: pointer;
+
 				@include allCentered;
 
 				.block {
@@ -467,7 +469,7 @@
 						background: $purewhite;
 						box-shadow: $textShadow;
 						box-sizing: border-box;
-						transition: transform 0.2s, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
+						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 						aspect-ratio: 1;
 						z-index: 1;
 
