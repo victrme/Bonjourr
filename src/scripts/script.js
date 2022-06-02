@@ -351,37 +351,6 @@ function quickLinks(event, that, init) {
 			})
 		}
 
-		function handleDrag(is, that) {
-			chrome.storage.sync.get(null, (data) => {
-				const index = findindex(that)
-				const link = bundleLinks(data)[index]
-
-				if (is === 'enter') {
-					hovered = { parent: elem, link, index }
-					return
-				}
-
-				if (is === 'end') {
-					if (hovered.index === index) return
-
-					const dragged = { parent: elem }
-					const hoveredChild = hovered.parent.children[0]
-					const draggedChild = dragged.parent.children[0]
-
-					hovered.parent.children[0].remove()
-					dragged.parent.children[0].remove()
-					hovered.parent.appendChild(draggedChild)
-					dragged.parent.appendChild(hoveredChild)
-
-					const temp = link.order
-					data[link._id].order = hovered.link.order
-					data[hovered.link._id].order = temp
-
-					chrome.storage.sync.set(data)
-				}
-			})
-		}
-
 		// Drags
 		elem.onmousedown = function (e) {
 			e.stopPropagation()
@@ -392,16 +361,15 @@ function quickLinks(event, that, init) {
 			// Defini l'ID de l'element deplace
 			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
 
-			const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] // juste pour debug, can be removed
 			const { x, y, path } = e
 			draggedId = path.find((e) => e.className === 'block_parent').id
 			startsDrag = true
 			startMousePosition = { x, y }
 
 			// Est deja sort puisque c'est par ordre d'apparition dans le dom
-			document.querySelectorAll('.block_parent').forEach((block, i) => {
+			document.querySelectorAll('.block_parent').forEach((block) => {
 				const { x, y } = block.getBoundingClientRect()
-				coords.push({ letter: letters[i], _id: block.id, x, y })
+				coords.push({ _id: block.id, x, y })
 			})
 
 			// coords.sort((a, b) => a.x < b.x)
@@ -703,6 +671,7 @@ function quickLinks(event, that, init) {
 	let curr = 0
 	let prev = null
 	let movingAmount = []
+	const styling = 'z-index: 4; cursor: grabbing; transition: none;'
 
 	// https://stackoverflow.com/a/7180095
 	Array.prototype.move = function (from, to) {
@@ -737,16 +706,11 @@ function quickLinks(event, that, init) {
 					movingAmount.push(offset)
 				})
 
-				console.log(movingAmount)
-
 				// les deux indexes deviennent similaires
 				prev = curr
 			}
 
-			id(draggedId).style.zIndex = `4`
-			id(draggedId).style.cursor = `grabbing`
-			id(draggedId).style.transition = `none`
-			id(draggedId).style.transform = `translate(${posDiffX}px, ${posDiffY}px)`
+			id(draggedId).setAttribute('style', `${styling} transform: translate(${posDiffX}px, ${posDiffY}px)`)
 		}
 	}
 
@@ -754,20 +718,17 @@ function quickLinks(event, that, init) {
 		if (draggedId && startsDrag) {
 			let movedBy = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
 
-			id(draggedId).removeAttribute('style')
-			id(draggedId).style.transform = `translateX(${movedBy * width}px)`
-			id(draggedId).style.cursor = `pointer`
+			id(draggedId).setAttribute('style', `cursor: pointer; transform: translateX(${movedBy * width}px)`)
 
 			setTimeout(() => {
 				chrome.storage.sync.get(null, (data) => {
-					const links = bundleLinks(data)
-					document.querySelectorAll('.block_parent').forEach((block) => {
-						block.remove()
-					})
-					const sortedLinks = [...movedCoords.map((elem) => links.find((a) => a._id === elem._id))]
-					initblocks(sortedLinks)
+					document.querySelectorAll('.block_parent').forEach((block) => block.remove())
+					movedCoords.forEach((elem, i) => (data[elem._id].order = i))
+
+					chrome.storage.sync.set({ ...data })
+					initblocks(bundleLinks(data))
 				})
-			}, 200)
+			}, 150)
 
 			startsDrag = false
 			curr = 0
