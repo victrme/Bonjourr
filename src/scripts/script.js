@@ -236,6 +236,7 @@ function quickLinks(event, that, init) {
 	const domlinkblocks = id('linkblocks_inner')
 	let draggedId = ''
 	let coords = []
+	let movedCoords = []
 	let startsDrag = false
 	let startMousePosition = { x: 0, y: 0 }
 	let posDiffX, posDiffY, width
@@ -396,20 +397,17 @@ function quickLinks(event, that, init) {
 			draggedId = target.id
 
 			startMousePosition = { x, y }
+			const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
 
-			let dir = 'rtl'
-
-			document.querySelectorAll('.l_icon_wrap').forEach((block) => {
-				if (block.id === draggedId) dir = 'ltr'
-
+			// Est deja sort puisque c'est par ordre d'apparition dans le dom
+			document.querySelectorAll('.l_icon_wrap').forEach((block, i) => {
 				const { x, y } = block.getBoundingClientRect()
-				coords.push({ _id: block.id, x, y, dir, moved: block.id === draggedId })
+				coords.push({ letter: letters[i], _id: block.id, x, y })
 			})
 
-			coords.sort((a, b) => a.x < b.x)
+			// coords.sort((a, b) => a.x < b.x)
 			width = coords[1].x - coords[0].x
-
-			console.log(coords)
+			movedCoords = [...coords]
 		}
 
 		// Mouse enter ne fonctionne pas car l'element deplace est toujours sous la souris
@@ -703,9 +701,14 @@ function quickLinks(event, that, init) {
 		document.querySelector('.l_icon_wrap#' + id).setAttribute('style', `transform: translateX(${move}px)`)
 	}
 
-	let toMove = {}
 	let curr = 0
 	let prev = null
+	let movingAmount = []
+
+	// https://stackoverflow.com/a/7180095
+	Array.prototype.move = function (from, to) {
+		this.splice(to, 0, this.splice(from, 1)[0])
+	}
 
 	domlinkblocks.onmousemove = function (e) {
 		if (startsDrag) {
@@ -715,29 +718,27 @@ function quickLinks(event, that, init) {
 			// x est la position de l'element, e.x celle de la souris
 			// gauche a droite,
 			curr = coords.findIndex(({ x }) => e.x <= x + width)
-			toMove = coords[curr]
 
 			// initialise les "indexes a trigger"
-			if (!prev) prev = curr
+			if (prev === null) prev = curr
 
 			// trigger si les indexes sont differents
-			if (toMove && prev !== curr) {
-				//
+			if (prev !== curr && curr >= 0) {
+				const draggedIndex = movedCoords.findIndex((a) => a._id === draggedId)
+				movedCoords.move(draggedIndex, curr)
 
-				// Si l'element sur lequel on devrait se trouer a deja bouge
-				// On retrouve son index avec la direction dans laquelle il a bouge
-				if (toMove.moved === true) {
-					let sign = coords[curr].dir === 'ltr' ? 1 : -1
-					if (coords[curr + 1 * sign]) toMove = coords[curr + 1 * sign]
-				}
+				// console.log(draggedIndex, ...movedCoords)
 
-				console.log(toMove.moved, curr)
+				// movingAmount est surtout la pour faire beau
+				// Compare la position de chaque id entre leur pos initiale et a chaque changements
+				movingAmount = []
+				movedCoords.forEach((elem, i) => {
+					let offset = i - coords.findIndex((a) => a._id === elem._id) // calcule la diff
+					deplaceElem(elem._id, offset * width) // se deplace de la diff * la taille d'un elem
+					movingAmount.push(offset)
+				})
 
-				// deplace le bon element, revient a zero si il a deja bouge
-				deplaceElem(toMove._id, toMove.moved ? 0 : toMove.dir === 'ltr' ? -width : width)
-
-				// Toggle la propriete "moved" de l'element
-				coords[coords.findIndex((elem) => elem._id === toMove._id)].moved = !toMove.moved
+				console.log(movingAmount)
 
 				// les deux indexes deviennent similaires
 				prev = curr
@@ -752,13 +753,17 @@ function quickLinks(event, that, init) {
 
 	const endDrags = () => {
 		if (draggedId) {
+			let lastMove = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
+
+			id(draggedId).removeAttribute('style')
+			id(draggedId).style.transform = `translateX(${lastMove * width}px)`
+			id(draggedId).style.cursor = `pointer`
+
 			startsDrag = false
 			curr = 0
 			prev = null
-			toMove = {}
 			coords = []
-			id(draggedId).removeAttribute('style')
-			// console.log('Selected: ', drags.end)
+			movingAmount = []
 		}
 	}
 
