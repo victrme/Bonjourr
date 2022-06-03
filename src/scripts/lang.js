@@ -2308,7 +2308,7 @@ const dict = {
 		sk: 'Časové pásmo',
 		de: 'Zeitzone',
 		it: 'Fuso orario',
-		es: 'Huso horario',
+		es: 'Uso horario',
 		tr: 'Saat dilimi',
 		uk: 'Часовий пояс',
 		id: 'Zona Waktu',
