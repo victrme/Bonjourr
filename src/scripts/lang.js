@@ -1332,7 +1332,7 @@ const dict = {
 		nl: 'Systeem',
 		pl: 'Systemem',
 		pt_BR: 'Seguir sistema',
-		ru: 'Системой',
+		ru: 'Задаётся системой',
 		zh_CN: '系统设置',
 		sk: 'Systému',
 		de: 'System',
