@@ -409,6 +409,7 @@ body {
 		}
 
 		&::-moz-range-progress {
+			height: 2px;
 			background-color: $borderGrey;
 		}
 
@@ -418,7 +419,6 @@ body {
 			width: 20px;
 			border-radius: 50px;
 			border: 0;
-
 			box-shadow: $thumbShadow;
 		}
 	}
