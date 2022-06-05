@@ -42,12 +42,20 @@
 				<hr />
 
 				<div class="wrapper" id="tabtitle">
-					<span class="trn">New tab</span>
+					<span>
+						<span class="trn">Tab appearance</span>
+						<div class="tooltip tttab">?</div>
+					</span>
 
 					<div>
 						<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" />
 						<input type="text" name="tabtitle" id="i_tabtitle" maxlength="12" placeholder="New tab" />
 					</div>
+				</div>
+
+				<div class="tooltiptext tttab">
+					<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
+					<a class="trn" href="https://bonjourr.fr/misc#newtab" referrerpolicy="no-referrer">More info</a>
 				</div>
 
 				<hr />
@@ -895,7 +903,7 @@
 				</div>
 
 				<div id="exp_wrapper" class="wrapper">
-					<pre id="i_export" onClick="this.setSelectionRange(0, this.value.length)"></pre>
+					<pre id="i_export"></pre>
 				</div>
 
 				<hr />

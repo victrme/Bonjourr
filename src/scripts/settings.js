@@ -191,6 +191,7 @@ function initParams(data, settingsDom) {
 					settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
 			}
 
+			toggleTooltip('tttab')
 			toggleTooltip('ttcoll')
 			toggleTooltip('ttlinks')
 			toggleTooltip('csslinks')

@@ -185,7 +185,7 @@
 			@include allCentered();
 
 			img {
-				width: 50%;
+				width: 10px;
 				display: block;
 			}
 
@@ -306,7 +306,7 @@
 			}
 		}
 
-		&.ttcoll {
+		&.ttcoll, &.tttab {
 			&.shown {
 				margin: 1rem 0 0.5em 0;
 				max-height: 50px;
