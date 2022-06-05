@@ -114,7 +114,7 @@
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	// transform: translateX(-100%)!important;
+	transform: translateX(-100%)!important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);

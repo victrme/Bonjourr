@@ -656,6 +656,7 @@ function quickLinks(event, that, init) {
 
 		if (Toggle) {
 			id('linkblocks').setAttribute('class', that ? 'shown' : 'hidden')
+			interfaceControl(null, that, 'links')
 			chrome.storage.sync.set({ quicklinks: that })
 		}
 
@@ -1956,6 +1957,7 @@ function searchbar(event, that, init) {
 				case 'searchbar': {
 					data.searchbar.on = that.checked
 					display(that.checked)
+					interfaceControl(null, that.checked, 'searchbar')
 					break
 				}
 
@@ -2113,6 +2115,7 @@ async function quotes(event, that, init) {
 						display(on)
 					})
 
+					interfaceControl(null, on, 'quotes')
 					break
 				}
 
@@ -2847,12 +2850,37 @@ function filterImports(data) {
 	return result
 }
 
-// function browserSpecifics() {
-// 	if (getBrowser() === 'edge') {
-// 		console.log(id('settings'))
-// 		id('tabIcon').style.color = 'pink'
-// 	}
-// }
+function interfaceControl(init, event, type) {
+	function display(links, searchbar, quotes) {
+		// !quicklinks && !quotes && !searchbar ? id('widgets').classList.add('empty') : id('widgets').classList.remove('empty')
+
+		if (!links && !quotes && !searchbar) {
+			id('widgets').classList.add('empty')
+			console.log('empty')
+		} else {
+			id('widgets').classList.remove('empty')
+			console.log('pas empty')
+		}
+	}
+
+	if (init) display(init.quicklinks, init.searchbar.on, init.quotes.on)
+
+	if (typeof event !== 'undefined') {
+		chrome.storage.sync.get(['searchbar', 'quotes', 'quicklinks'], (data) => {
+			switch(type) {
+				case 'links':
+					display(event, data.searchbar.on, data.quotes.on)
+					break
+				case 'searchbar':
+					display(data.quicklinks, event, data.quotes.on)
+					break
+				case 'quotes':
+					display(data.quicklinks, data.searchbar.on, event)
+					break
+			}
+		});
+	}
+}
 
 function startup(data) {
 	traduction(null, data.lang)
@@ -2877,6 +2905,7 @@ function startup(data) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
+	interfaceControl(data)
 
 	setTimeout(() => settingsInit(data), 200)
 }
