@@ -436,20 +436,23 @@
 		}
 
 		#linkblocks_inner {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			transition: visibility 0s 0s;
-			row-gap: 0.6em; // column-gap - (min-height + margin-top of title)
-			column-gap: 2.3em;
 			transition: width 0.18s $easeOutThree;
+
+			> div {
+				display: flex;
+				column-gap: 2.3em;
+				margin-bottom: 0.6em; // column-gap - (min-height + margin-top of title)
+				justify-content: center;
+			}
 
 			#hiddenlink {
 				display: none;
+				position: absolute;
 			}
 
 			.block_parent {
 				position: relative;
+				justify-self: center;
 				transition: transform 0.2s;
 				cursor: pointer;
 

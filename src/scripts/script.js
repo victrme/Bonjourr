@@ -241,13 +241,22 @@ function quickLinks(event, that, init) {
 	let startMousePosition = { x: 0, y: 0 }
 	let posDiffX, posDiffY, width
 
-	async function initblocks(links) {
+	async function initblocks(links, perRows) {
 		if (links.length > 0) {
 			try {
-				// Add blocks and events
-				const blocklist = links.map((l) => appendblock(l))
+				// Add Rows
+				document.querySelectorAll('#linkblocks_inner > div').forEach((b) => b.remove())
+
+				for (let i = 0; i < Math.ceil(links.length / perRows); i++) {
+					domlinkblocks.appendChild(document.createElement('div'))
+				}
+
+				// Add Blocks
+				const blocklist = links.map((l, i) => appendblock(l, Math.floor(i / perRows)))
+
 				blocklist.forEach(({ parent }) => addEvents(parent))
 				canDisplayInterface('links')
+				linksDragging()
 
 				// Load icons one by one
 				links.map(async (link, index) => {
@@ -296,7 +305,7 @@ function quickLinks(event, that, init) {
 		return result
 	}
 
-	function appendblock(link) {
+	function appendblock(link, row) {
 		let title = stringMaxSize(link.title, 64)
 		let url = stringMaxSize(link.url, 512)
 
@@ -325,7 +334,8 @@ function quickLinks(event, that, init) {
 		// this also adds "normal" title as usual
 		textOnlyControl(block, title, domlinkblocks.className === 'text')
 
-		domlinkblocks.appendChild(block_parent)
+		const rowsList = document.querySelectorAll('#linkblocks_inner > div')
+		rowsList[row].appendChild(block_parent)
 
 		return { icon: lIcon, parent: block_parent }
 	}
@@ -354,15 +364,13 @@ function quickLinks(event, that, init) {
 		// Drags
 		elem.onmousedown = function (e) {
 			e.stopPropagation()
-			// e.dataTransfer.setData('text/plain', e.target.id)
-			// handleDrag('start', this)
 
 			// Initialise toute les coordonnees
 			// Defini l'ID de l'element deplace
 			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
 
-			const { x, y, path } = e
-			draggedId = path.find((e) => e.className === 'block_parent').id
+			const { x, y } = e
+			draggedId = e.composedPath().find((e) => e.className === 'block_parent').id
 			startsDrag = true
 			startMousePosition = { x, y }
 
@@ -421,6 +429,83 @@ function quickLinks(event, that, init) {
 		elem.addEventListener('touchend', endHandler, { passive: true })
 	}
 
+	function linksDragging() {
+		function deplaceElem(id, move) {
+			document.querySelector('.block_parent#' + id).setAttribute('style', `transform: translateX(${move}px)`)
+		}
+
+		let curr = 0
+		let prev = null
+		let movingAmount = []
+		const styling = 'z-index: 4; cursor: grabbing; transition: none;'
+
+		Array.prototype.move = function (from, to) {
+			this.splice(to, 0, this.splice(from, 1)[0]) // https://stackoverflow.com/a/7180095
+		}
+
+		domlinkblocks.onmousemove = function (e) {
+			if (startsDrag) {
+				posDiffX = e.x - startMousePosition.x
+				posDiffY = e.y - startMousePosition.y
+
+				// x est la position de l'element, e.x celle de la souris
+				// gauche a droite,
+				curr = coords.findIndex(({ x }) => e.x <= x + width)
+
+				// initialise les "indexes a trigger"
+				if (prev === null) prev = curr
+
+				// trigger si les indexes sont differents
+				if (prev !== curr && curr >= 0) {
+					const draggedIndex = movedCoords.findIndex((a) => a._id === draggedId)
+					movedCoords.move(draggedIndex, curr)
+
+					// movingAmount est surtout la pour faire beau
+					// Compare la position de chaque id entre leur pos initiale et a chaque changements
+					movingAmount = []
+					movedCoords.forEach((elem, i) => {
+						let offset = i - coords.findIndex((a) => a._id === elem._id) // calcule la diff
+						deplaceElem(elem._id, offset * width) // se deplace de la diff * la taille d'un elem
+						movingAmount.push(offset)
+					})
+
+					// les deux indexes deviennent similaires
+					prev = curr
+				}
+
+				id(draggedId).setAttribute('style', `${styling} transform: translate(${posDiffX}px, ${posDiffY}px)`)
+			}
+		}
+
+		const endDrags = () => {
+			if (draggedId && startsDrag) {
+				let movedBy = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
+
+				id(draggedId).setAttribute('style', `cursor: pointer; transform: translateX(${movedBy * width}px)`)
+
+				setTimeout(() => {
+					chrome.storage.sync.get(null, (data) => {
+						document.querySelectorAll('.block_parent').forEach((block) => block.remove())
+						movedCoords.forEach((elem, i) => (data[elem._id].order = i))
+
+						chrome.storage.sync.set({ ...data })
+						initblocks(bundleLinks(data), data.linksrow)
+					})
+				}, 150)
+
+				startsDrag = false
+				curr = 0
+				prev = null
+				coords = []
+				movingAmount = []
+			}
+		}
+
+		// end drag
+		domlinkblocks.onmouseup = endDrags
+		domlinkblocks.onmouseout = endDrags
+	}
+
 	function editEvents() {
 		function submitEvent() {
 			const foundIndex = parseInt(id('editlink').getAttribute('index'))
@@ -474,14 +559,13 @@ function quickLinks(event, that, init) {
 			document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
 		}
 
-		const index = findindex(that)
+		const _id = that.id
 		const liconwrap = that.querySelector('.l_icon_wrap')
 		const domedit = document.querySelector('#editlink')
 		const opendedSettings = has(id('settings'), 'shown')
 
-		chrome.storage.sync.get(null, (data) => {
-			const link = bundleLinks(data).filter((l) => l.order === index)[0]
-			const { title, url, icon } = link
+		chrome.storage.sync.get([_id], (data) => {
+			const { title, url, icon } = data[_id]
 
 			id('e_title').setAttribute('placeholder', tradThis('Title'))
 			id('e_url').setAttribute('placeholder', tradThis('Link'))
@@ -496,8 +580,6 @@ function quickLinks(event, that, init) {
 			clas(liconwrap, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
-
-			domedit.setAttribute('index', index)
 		})
 	}
 
@@ -514,7 +596,7 @@ function quickLinks(event, that, init) {
 		}
 
 		chrome.storage.sync.get(null, (data) => {
-			const parent = domlinkblocks.children[index + 1]
+			const parent = domlinkblocks.querySelectorAll('.block_parent')[index]
 			let link = bundleLinks(data).filter((l) => l.order === index)[0]
 
 			link = {
@@ -533,13 +615,6 @@ function quickLinks(event, that, init) {
 		})
 
 		return true
-	}
-
-	function findindex(that) {
-		//passe la liste des blocks, s'arrete si that correspond
-		//renvoie le nombre de loop pour l'atteindre
-		const list = domlinkblocks.children
-		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
 	}
 
 	function removeblock(index) {
@@ -637,6 +712,7 @@ function quickLinks(event, that, init) {
 		const Button = event === 'button'
 		const Newtab = event === 'linknewtab'
 		const Style = event === 'linkstyle'
+		const Row = event === 'linksrow'
 
 		if (Input || Button) {
 			linkSubmission(that)
@@ -649,8 +725,6 @@ function quickLinks(event, that, init) {
 
 		if (Style) {
 			chrome.storage.sync.get(null, (data) => {
-				linksrow(data.linksrow, that) // style changes needs rows width change
-
 				const links = bundleLinks(data)
 				const blocks = document.querySelectorAll('.block')
 
@@ -661,90 +735,18 @@ function quickLinks(event, that, init) {
 			})
 		}
 
+		if (Row) {
+			chrome.storage.sync.get(null, (data) => {
+				initblocks(bundleLinks(data), that)
+				slowRange({ linksrow: parseInt(that) })
+			})
+		}
+
 		return
 	}
 
-	function deplaceElem(id, move) {
-		document.querySelector('.block_parent#' + id).setAttribute('style', `transform: translateX(${move}px)`)
-	}
-
-	let curr = 0
-	let prev = null
-	let movingAmount = []
-	const styling = 'z-index: 4; cursor: grabbing; transition: none;'
-
-	// https://stackoverflow.com/a/7180095
-	Array.prototype.move = function (from, to) {
-		this.splice(to, 0, this.splice(from, 1)[0])
-	}
-
-	domlinkblocks.onmousemove = function (e) {
-		if (startsDrag) {
-			posDiffX = e.x - startMousePosition.x
-			posDiffY = e.y - startMousePosition.y
-
-			// x est la position de l'element, e.x celle de la souris
-			// gauche a droite,
-			curr = coords.findIndex(({ x }) => e.x <= x + width)
-
-			// initialise les "indexes a trigger"
-			if (prev === null) prev = curr
-
-			// trigger si les indexes sont differents
-			if (prev !== curr && curr >= 0) {
-				const draggedIndex = movedCoords.findIndex((a) => a._id === draggedId)
-				movedCoords.move(draggedIndex, curr)
-
-				// console.log(draggedIndex, ...movedCoords)
-
-				// movingAmount est surtout la pour faire beau
-				// Compare la position de chaque id entre leur pos initiale et a chaque changements
-				movingAmount = []
-				movedCoords.forEach((elem, i) => {
-					let offset = i - coords.findIndex((a) => a._id === elem._id) // calcule la diff
-					deplaceElem(elem._id, offset * width) // se deplace de la diff * la taille d'un elem
-					movingAmount.push(offset)
-				})
-
-				// les deux indexes deviennent similaires
-				prev = curr
-			}
-
-			id(draggedId).setAttribute('style', `${styling} transform: translate(${posDiffX}px, ${posDiffY}px)`)
-		}
-	}
-
-	const endDrags = () => {
-		if (draggedId && startsDrag) {
-			let movedBy = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
-
-			id(draggedId).setAttribute('style', `cursor: pointer; transform: translateX(${movedBy * width}px)`)
-
-			setTimeout(() => {
-				chrome.storage.sync.get(null, (data) => {
-					document.querySelectorAll('.block_parent').forEach((block) => block.remove())
-					movedCoords.forEach((elem, i) => (data[elem._id].order = i))
-
-					chrome.storage.sync.set({ ...data })
-					initblocks(bundleLinks(data))
-				})
-			}, 150)
-
-			startsDrag = false
-			curr = 0
-			prev = null
-			coords = []
-			movingAmount = []
-		}
-	}
-
-	// end drag
-	domlinkblocks.onmouseup = endDrags
-	domlinkblocks.onmouseout = endDrags
-
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
-	linksrow(init.linksrow, init.linkstyle)
-	initblocks(bundleLinks(init))
+	initblocks(bundleLinks(init), init.linksrow)
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
@@ -844,28 +846,6 @@ async function linksImport() {
 	id('bookmarks_container').addEventListener('click', function (e) {
 		if (e.target.id === 'bookmarks_container') closeBookmarks(this)
 	})
-}
-
-function linksrow(amount, style, event) {
-	function setRows(val, type) {
-		const sizes = {
-			large: { width: 4.8, gap: 2.3 },
-			medium: { width: 3.5, gap: 2.3 },
-			small: { width: 2.5, gap: 2 },
-			text: { width: 5, gap: 2 }, // arbitrary width because width is auto
-		}
-
-		const { width, gap } = sizes[type]
-		id('linkblocks_inner').style.width = (width + gap) * val + 'em'
-	}
-
-	if (event) {
-		setRows(event, document.querySelector('#linkblocks_inner').className)
-		slowRange({ linksrow: parseInt(event) })
-		return
-	}
-
-	setRows(amount, style)
 }
 
 function weather(event, that, init) {

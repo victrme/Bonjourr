@@ -275,7 +275,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_row').oninput = function () {
-		linksrow(null, null, this.value)
+		quickLinks('linksrow', this.value)
 	}
 
 	//visuals
