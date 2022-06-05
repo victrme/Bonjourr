@@ -648,10 +648,16 @@ function quickLinks(event, that, init) {
 	}
 
 	if (event) {
+		const Toggle = event === 'toggle'
 		const Input = event === 'input'
 		const Button = event === 'button'
 		const Newtab = event === 'linknewtab'
 		const Style = event === 'linkstyle'
+
+		if (Toggle) {
+			id('linkblocks').setAttribute('class', that ? 'shown' : 'hidden')
+			chrome.storage.sync.set({ quicklinks: that })
+		}
 
 		if (Input || Button) {
 			linkSubmission(that)
@@ -682,6 +688,7 @@ function quickLinks(event, that, init) {
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	linksrow(init.linksrow, init.linkstyle)
 	initblocks(bundleLinks(init))
+	id('linkblocks').setAttribute('class', init.quicklinks ? 'shown' : 'hidden')
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)

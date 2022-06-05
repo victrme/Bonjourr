@@ -109,74 +109,88 @@
 		</div>
 
 		<div class="param">
-			<div class="link_input_wrap">
+			<div class="activate_quicklinks wrapper">
+				<span class="trn">Enable</span>
 				<div>
-					<div>
-						<input
-							id="i_title"
-							type="text"
-							name="title"
-							maxlength="64"
-							placeholder="Name"
-							spellcheck="false"
-							autocomplete="off"
-							autocorrect="off"
-							autocapitalize="off"
-						/>
-
-						<input
-							id="i_url"
-							type="text"
-							name="url"
-							maxlength="512"
-							placeholder="URL"
-							spellcheck="false"
-							autocomplete="off"
-							autocorrect="off"
-							autocapitalize="off"
-						/>
-					</div>
-					<div class="links_buttons">
-						<button id="b_importbookmarks" class="trn">Import</button>
-						<button id="submitlink" class="trn">Add</button>
-					</div>
+					<label class="switch">
+						<input id="i_quicklinks" type="checkbox" />
+						<span class="slider round span"></span>
+					</label>
 				</div>
 			</div>
 
-			<hr />
-
-			<div class="linkstyle wrapper">
-				<span class="trn">Style</span>
-				<div>
-					<select id="i_linkstyle">
-						<option value="large" class="trn">Large</option>
-						<option value="medium" class="trn">Medium</option>
-						<option value="small" class="trn">Small</option>
-						<option value="text" class="trn">Text</option>
-					</select>
-				</div>
-			</div>
-
-			<div class="as as_link">
+			<div id="quicklinks_options">
 				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Links per row</span>
-					<input id="i_row" type="range" name="i_row" min="1" max="16" step="1" value="8" class="range" />
-				</div>
-
-				<hr />
-
-				<div class="linknewtab wrapper">
-					<span class="trn">Open in new tab</span>
+				<div class="link_input_wrap">
 					<div>
-						<label class="switch">
-							<input id="i_linknewtab" type="checkbox" />
-							<span class="slider round span"></span>
-						</label>
+						<div>
+							<input
+								id="i_title"
+								type="text"
+								name="title"
+								maxlength="64"
+								placeholder="Name"
+								spellcheck="false"
+								autocomplete="off"
+								autocorrect="off"
+								autocapitalize="off"
+							/>
+	
+							<input
+								id="i_url"
+								type="text"
+								name="url"
+								maxlength="512"
+								placeholder="URL"
+								spellcheck="false"
+								autocomplete="off"
+								autocorrect="off"
+								autocapitalize="off"
+							/>
+						</div>
+						<div class="links_buttons">
+							<button id="b_importbookmarks" class="trn">Import</button>
+							<button id="submitlink" class="trn">Add</button>
+						</div>
+					</div>
+				</div>
+	
+				<hr />
+	
+				<div class="linkstyle wrapper">
+					<span class="trn">Style</span>
+					<div>
+						<select id="i_linkstyle">
+							<option value="large" class="trn">Large</option>
+							<option value="medium" class="trn">Medium</option>
+							<option value="small" class="trn">Small</option>
+							<option value="text" class="trn">Text</option>
+						</select>
+					</div>
+				</div>
+	
+				<div class="as as_link">
+					<hr />
+	
+					<div class="wrapper">
+						<span class="trn">Links per row</span>
+						<input id="i_row" type="range" name="i_row" min="1" max="16" step="1" value="8" class="range" />
+					</div>
+	
+					<hr />
+	
+					<div class="linknewtab wrapper">
+						<span class="trn">Open in new tab</span>
+						<div>
+							<label class="switch">
+								<input id="i_linknewtab" type="checkbox" />
+								<span class="slider round span"></span>
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>
+
 		</div>
 	</div>
 	<div>
