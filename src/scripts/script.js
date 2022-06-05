@@ -240,6 +240,8 @@ function quickLinks(event, that, init) {
 	let startsDrag = false
 	let startMousePosition = { x: 0, y: 0 }
 	let posDiffX, posDiffY, width
+	let matrixTempY = 0
+	let matrix = [[]]
 
 	async function initblocks(links, perRows) {
 		if (links.length > 0) {
@@ -361,30 +363,6 @@ function quickLinks(event, that, init) {
 			})
 		}
 
-		// Drags
-		elem.onmousedown = function (e) {
-			e.stopPropagation()
-
-			// Initialise toute les coordonnees
-			// Defini l'ID de l'element deplace
-			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
-
-			const { x, y } = e
-			draggedId = e.composedPath().find((e) => e.className === 'block_parent').id
-			startsDrag = true
-			startMousePosition = { x, y }
-
-			// Est deja sort puisque c'est par ordre d'apparition dans le dom
-			document.querySelectorAll('.block_parent').forEach((block) => {
-				const { x, y } = block.getBoundingClientRect()
-				coords.push({ _id: block.id, x, y })
-			})
-
-			// coords.sort((a, b) => a.x < b.x)
-			width = coords[1].x - coords[0].x
-			movedCoords = [...coords]
-		}
-
 		// Mouse enter ne fonctionne pas car l'element deplace est toujours sous la souris
 
 		// Mouse clicks
@@ -427,6 +405,41 @@ function quickLinks(event, that, init) {
 
 		elem.addEventListener('touchstart', startHandler, { passive: true })
 		elem.addEventListener('touchend', endHandler, { passive: true })
+
+		// Drags
+		elem.onmousedown = function (e) {
+			e.stopPropagation()
+
+			// Initialise toute les coordonnees
+			// Defini l'ID de l'element deplace
+			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
+			const { x, y } = e
+
+			draggedId = e.composedPath().find((e) => e.className === 'block_parent').id
+			startMousePosition = { x, y }
+			startsDrag = true
+
+			// Est deja sort puisque c'est par ordre d'apparition dans le dom
+			document.querySelectorAll('.block_parent').forEach((block) => {
+				const { x, y } = block.getBoundingClientRect()
+				coords.push({ _id: block.id, x, y })
+			})
+
+			matrix = [[]]
+			matrixTempY = coords[0].y
+
+			coords.forEach((coord) => {
+				if (coord.y === matrixTempY) matrix[matrix.length - 1].push(coord)
+				else matrix.push([coord])
+				matrixTempY = coord.y
+			})
+
+			console.log(coords)
+			console.log(matrix)
+
+			width = coords[1].x - coords[0].x
+			movedCoords = [...coords]
+		}
 	}
 
 	function linksDragging() {
@@ -436,7 +449,10 @@ function quickLinks(event, that, init) {
 
 		let curr = 0
 		let prev = null
+		let currrow = 0
+		let prevrow = 0
 		let movingAmount = []
+		let matrixMovingAmount = [[]]
 		const styling = 'z-index: 4; cursor: grabbing; transition: none;'
 
 		Array.prototype.move = function (from, to) {
@@ -452,25 +468,46 @@ function quickLinks(event, that, init) {
 				// gauche a droite,
 				curr = coords.findIndex(({ x }) => e.x <= x + width)
 
+				// meme chose pour les lignes, si la hauteur depasse, la ligne change
+				currrow = 0
+				matrix.forEach((r) => (r[0].y < e.y ? currrow++ : ''))
+				currrow = currrow === 0 ? 1 : currrow
+
 				// initialise les "indexes a trigger"
 				if (prev === null) prev = curr
 
 				// trigger si les indexes sont differents
-				if (prev !== curr && curr >= 0) {
+				if (currrow !== prevrow || (prev !== curr && curr >= 0)) {
 					const draggedIndex = movedCoords.findIndex((a) => a._id === draggedId)
 					movedCoords.move(draggedIndex, curr)
 
 					// movingAmount est surtout la pour faire beau
 					// Compare la position de chaque id entre leur pos initiale et a chaque changements
 					movingAmount = []
+					matrixMovingAmount = []
+
+					let offsetsRow = []
+					for (let i = 0; i < matrix.length; i++) {
+						for (let k = 0; k < matrix[i].length; k++) {
+							offsetsRow.push([0, 0])
+						}
+						matrixMovingAmount.push(offsetsRow)
+						offsetsRow = []
+					}
+
+					console.log(matrixMovingAmount)
+
 					movedCoords.forEach((elem, i) => {
-						let offset = i - coords.findIndex((a) => a._id === elem._id) // calcule la diff
+						let firstPos = coords.findIndex((a) => a._id === elem._id)
+						let offset = i - firstPos // calcule la diff
+
 						deplaceElem(elem._id, offset * width) // se deplace de la diff * la taille d'un elem
 						movingAmount.push(offset)
 					})
 
 					// les deux indexes deviennent similaires
 					prev = curr
+					prevrow = currrow
 				}
 
 				id(draggedId).setAttribute('style', `${styling} transform: translate(${posDiffX}px, ${posDiffY}px)`)
@@ -508,8 +545,7 @@ function quickLinks(event, that, init) {
 
 	function editEvents() {
 		function submitEvent() {
-			const foundIndex = parseInt(id('editlink').getAttribute('index'))
-			return updatesEditedLink(foundIndex)
+			return updatesEditedLink(id('editlink').getAttribute('toUpdate'))
 		}
 
 		function inputSubmitEvent(e) {
@@ -580,10 +616,12 @@ function quickLinks(event, that, init) {
 			clas(liconwrap, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
+
+			domedit.setAttribute('toUpdate', _id)
 		})
 	}
 
-	function updatesEditedLink(index) {
+	function updatesEditedLink(_id) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
@@ -595,9 +633,9 @@ function quickLinks(event, that, init) {
 			return false
 		}
 
-		chrome.storage.sync.get(null, (data) => {
-			const parent = domlinkblocks.querySelectorAll('.block_parent')[index]
-			let link = bundleLinks(data).filter((l) => l.order === index)[0]
+		chrome.storage.sync.get([_id], (data) => {
+			const parent = domlinkblocks.querySelector('.block_parent#' + _id)
+			let link = data[_id]
 
 			link = {
 				...link,
@@ -611,7 +649,7 @@ function quickLinks(event, that, init) {
 			parent.querySelector('span').textContent = link.title
 
 			// Updates
-			chrome.storage.sync.set({ [link._id]: link })
+			chrome.storage.sync.set({ [_id]: link })
 		})
 
 		return true
