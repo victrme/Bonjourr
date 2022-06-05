@@ -1,18 +1,66 @@
 @import 'global';
 @include hideElements;
 
+#background_overlay {
+	z-index: -1;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	min-height: 100vh;
+	overflow: hidden;
+	opacity: 0;
+	transition: transform 0.4s, opacity 0.4s;
+
+	#background {
+		transform: scale(1.1) translateX(0px);
+		position: relative;
+		width: 100%;
+		height: 100%;
+		background-color: #000;
+		background-size: cover;
+		background-position: center center;
+
+		// only for Safari
+		@media not all and (min-resolution: 0.001dpcm) {
+			@supports (-webkit-appearance: none) and (stroke-color: transparent) {
+				transform: translateZ(0);
+			}
+		}
+	}
+}
+
 #interface {
 	position: relative;
 	min-height: var(--app-height);
 	min-width: 350px;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-around;
+	justify-content: center;
 	will-change: transform;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	transition-property: opacity, transform;
 	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
 	font-weight: 300;
+	gap: 2em;
+	box-sizing: border-box;
+	// padding: 0 1em;
+
+	> * {
+		flex: 1 1 0px;
+		// transition: flex-grow 1s;
+	}
+
+	#widgets {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		gap: 4em;
+
+		&.empty {
+			flex-grow: 0;
+		}
+	}
 
 	&.pushed {
 		#time,
@@ -26,34 +74,6 @@
 
 	&.init {
 		opacity: 0;
-	}
-
-	#background_overlay {
-		z-index: -1;
-		position: fixed;
-		width: 100%;
-		height: 100%;
-		min-height: 100vh;
-		transform: scale(1.1) translateX(0px);
-
-		opacity: 0;
-		transition: transform 0.4s, opacity 0.4s;
-
-		#background {
-			position: relative;
-			width: 100%;
-			height: 100%;
-			background-color: #000;
-			background-size: cover;
-			background-position: center center;
-
-			// only for Safari
-			@media not all and (min-resolution: 0.001dpcm) {
-				@supports (-webkit-appearance: none) and (stroke-color: transparent) {
-					transform: translateZ(0);
-				}
-			}
-		}
 	}
 
 	// clock & date
@@ -210,9 +230,9 @@
 				}
 			}
 
-			#widget {
+			#tempContainer {
 				display: flex;
-				height: 5.6em;
+				margin-top: 1em;
 				justify-content: center;
 				align-items: center;
 
@@ -230,7 +250,7 @@
 		}
 	}
 
-	#widget,
+	#tempContainer,
 	#forecast,
 	#current {
 		transition: opacity 1.2s 0.1s;
@@ -246,13 +266,14 @@
 		display: flex;
 		visibility: visible;
 		align-items: center;
-		flex-grow: 0;
+		// flex-grow: 0;
 		padding: 0;
 		margin: 0 auto;
-		width: 35em;
+		max-width: 35em;
+		width: 100%;
 		border-radius: 10px;
-		max-width: calc(90% - 4em);
-		transition: opacity 0.4s, transform 0.4s, margin 0.4s;
+		// max-width: calc(90% - 4em);
+		// transition: opacity 0.4s, transform 0.4s, margin 0.4s;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
 		#searchbar {
@@ -345,7 +366,6 @@
 		}
 
 		&.shown {
-			margin: 3em auto;
 			@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
 
 			#searchbar:focus {
@@ -360,16 +380,17 @@
 	}
 
 	#quotes_container {
-		display: flex;
+		display: none;
 		flex-direction: column;
-		flex-grow: 0;
+		// flex-grow: 0;
 		opacity: 0;
 		row-gap: 1em;
 		width: 33vw;
 		max-width: 600px;
 		min-width: 150px;
 		min-height: 0;
-		margin: auto;
+		margin-right: auto;
+		margin-left: auto;
 		user-select: text;
 		-moz-user-select: text;
 		-webkit-user-select: text;
@@ -395,8 +416,7 @@
 		}
 
 		&.shown {
-			min-height: 150px;
-			flex-grow: 0.2;
+			display: flex;
 			opacity: 1;
 			transition: opacity 0.2s 0.2s, min-height 0.4s, flex-grow 0.4s, transform 0.4s;
 
@@ -418,22 +438,22 @@
 		justify-content: center;
 		align-items: flex-start;
 		max-width: 100%;
-		margin: 0 auto;
-		padding-top: 2em;
+		// margin: 0 auto;
+		// padding-top: 2em;
 
 		@include hidden();
 
-		&.withQuotes {
-			flex-grow: 0.6;
-			transition: transform 0.4s, flex-grow 0.4s 0.2s;
-		}
+		// &.withQuotes {
+		// 	flex-grow: 0.6;
+		// 	transition: transform 0.4s, flex-grow 0.4s 0.2s;
+		// }
 
-		&.he_hidden {
-			#linkblocks_inner {
-				visibility: hidden;
-				transition: visibility 0s 0.4s;
-			}
-		}
+		// &.he_hidden {
+		// 	#linkblocks_inner {
+		// 		visibility: hidden;
+		// 		transition: visibility 0s 0.4s;
+		// 	}
+		// }
 
 		#linkblocks_inner {
 			display: flex;

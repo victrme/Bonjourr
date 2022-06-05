@@ -52,7 +52,7 @@ const dict = {
 		da: 'Tab appearance',
 	},
 	'The icon and title that appear on your tab. You can put any emoji.': {
-		fr: 'L\'icône et le titre qui apparaissent sur votre onglet. Vous pouvez mettre un emoji de votre choix.',
+		fr: 'L\'icône et le titre qui apparaissent sur votre onglet. Vous pouvez insérer un emoji de votre choix.',
 		sv: 'The icon and title that appear on your tab. You can put any emoji.',
 		nl: 'The icon and title that appear on your tab. You can put any emoji.',
 		pl: 'The icon and title that appear on your tab. You can put any emoji.',

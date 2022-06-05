@@ -160,9 +160,7 @@ body {
 		}
 
 		#main,
-		#time,
-		#sb_container,
-		#linkblocks {
+		#time {
 			flex-grow: 1;
 			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
 			// will-change: transform, flex-grow;
