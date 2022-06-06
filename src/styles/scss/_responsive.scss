@@ -27,6 +27,18 @@
 	body {
 		font-size: 13px;
 	}
+
+	#interface #widgets {
+		gap: 2em;
+	}
+}
+
+@media screen and (min-height: 600px) and (min-width: 1000px) {
+	footer {
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+	}
 }
 
 // mobile
@@ -41,9 +53,6 @@
 			width: 90vw;
 		}
 
-		#widgets {
-			gap: 2em;
-		}
 	}
 
 	#settings {
@@ -73,6 +82,7 @@
 
 	footer {
 		#credit {
+			display: flex;
 			width: calc(100% - 7.5em);
 			line-height: 14px;
 			a,

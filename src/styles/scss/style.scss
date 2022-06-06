@@ -63,7 +63,7 @@
 		// flex-shrink: 0;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: space-around;
 		gap: 4em;
 
 		&.empty {
@@ -71,6 +71,10 @@
 			display: none;
 		}
 	}
+
+
+	#time, #main { min-height: 20vh; }
+	#widgets { flex-grow: 1.6 }
 
 	&.pushed {
 		#time,
