@@ -239,9 +239,9 @@ function quickLinks(event, that, init) {
 	let movedCoords = []
 	let startsDrag = false
 	let startMousePosition = { x: 0, y: 0 }
-	let posDiffX, posDiffY, width
-	let matrixTempY = 0
-	let matrix = [[]]
+	let posDiffX, posDiffY, width, height
+	let rowsTempY = 0
+	let rowsYPositions = []
 
 	async function initblocks(links, perRows) {
 		if (links.length > 0) {
@@ -363,6 +363,10 @@ function quickLinks(event, that, init) {
 			})
 		}
 
+		// Mobile clicks
+		let touchStartTime = 0
+		let touchTimeout = setTimeout(() => {}, 0)
+
 		// Mouse enter ne fonctionne pas car l'element deplace est toujours sous la souris
 
 		// Mouse clicks
@@ -381,10 +385,6 @@ function quickLinks(event, that, init) {
 				// openlink(this, e)
 			}
 		}
-
-		// Mobile clicks
-		let touchStartTime = 0
-		let touchTimeout = setTimeout(() => {}, 0)
 
 		const startHandler = (e) => {
 			touchStartTime = performance.now()
@@ -425,18 +425,14 @@ function quickLinks(event, that, init) {
 				coords.push({ _id: block.id, x, y })
 			})
 
-			matrix = [[]]
-			matrixTempY = coords[0].y
-
-			coords.forEach((coord) => {
-				if (coord.y === matrixTempY) matrix[matrix.length - 1].push(coord)
-				else matrix.push([coord])
-				matrixTempY = coord.y
+			coords.forEach(({ y }) => {
+				if (y !== rowsTempY) {
+					rowsYPositions.push(y)
+					rowsTempY = y
+				}
 			})
 
-			console.log(coords)
-			console.log(matrix)
-
+			height = rowsYPositions[1] - rowsYPositions[0]
 			width = coords[1].x - coords[0].x
 			movedCoords = [...coords]
 		}
@@ -448,11 +444,10 @@ function quickLinks(event, that, init) {
 		}
 
 		let curr = 0
-		let prev = null
+		let prev = 0
 		let currrow = 0
 		let prevrow = 0
 		let movingAmount = []
-		let matrixMovingAmount = [[]]
 		const styling = 'z-index: 4; cursor: grabbing; transition: none;'
 
 		Array.prototype.move = function (from, to) {
@@ -463,18 +458,15 @@ function quickLinks(event, that, init) {
 			if (startsDrag) {
 				posDiffX = e.x - startMousePosition.x
 				posDiffY = e.y - startMousePosition.y
-
-				// x est la position de l'element, e.x celle de la souris
-				// gauche a droite,
-				curr = coords.findIndex(({ x }) => e.x <= x + width)
-
-				// meme chose pour les lignes, si la hauteur depasse, la ligne change
 				currrow = 0
-				matrix.forEach((r) => (r[0].y < e.y ? currrow++ : ''))
-				currrow = currrow === 0 ? 1 : currrow
 
-				// initialise les "indexes a trigger"
-				if (prev === null) prev = curr
+				// x est la position de l'element, e.x celle de la souris. gauche a droite
+				// meme chose pour les lignes, si la hauteur depasse, la ligne change
+				curr = coords.findIndex(({ x }) => e.x <= x + width)
+				coords.forEach(({ y }) => (y + height < e.y ? currrow++ : ''))
+
+				// ajoute la quantite d'elements des lignes au dessus de la souris
+				curr += currrow
 
 				// trigger si les indexes sont differents
 				if (currrow !== prevrow || (prev !== curr && curr >= 0)) {
@@ -484,18 +476,6 @@ function quickLinks(event, that, init) {
 					// movingAmount est surtout la pour faire beau
 					// Compare la position de chaque id entre leur pos initiale et a chaque changements
 					movingAmount = []
-					matrixMovingAmount = []
-
-					let offsetsRow = []
-					for (let i = 0; i < matrix.length; i++) {
-						for (let k = 0; k < matrix[i].length; k++) {
-							offsetsRow.push([0, 0])
-						}
-						matrixMovingAmount.push(offsetsRow)
-						offsetsRow = []
-					}
-
-					console.log(matrixMovingAmount)
 
 					movedCoords.forEach((elem, i) => {
 						let firstPos = coords.findIndex((a) => a._id === elem._id)
@@ -531,8 +511,7 @@ function quickLinks(event, that, init) {
 				}, 150)
 
 				startsDrag = false
-				curr = 0
-				prev = null
+				prev = curr = 0
 				coords = []
 				movingAmount = []
 			}
