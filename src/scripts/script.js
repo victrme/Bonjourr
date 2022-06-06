@@ -2955,6 +2955,7 @@ window.onload = function () {
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 
 		window.addEventListener('resize', appHeight)
+		appHeight()
 
 		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
 			// Fix for opening tabs Firefox iOS
