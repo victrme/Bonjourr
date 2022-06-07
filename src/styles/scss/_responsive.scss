@@ -23,119 +23,114 @@
 
 }
 
-@media screen and (max-height: 900px) {
-	body {
-		font-size: 13px;
-	}
+// @media screen and (max-height: 900px) {
+// 	body {
+// 		font-size: 13px;
+// 	}
 
-	#interface #widgets {
-		gap: 2em;
-	}
-}
+// 	#interface #tempContainers {
+// 		gap: 2em;
+// 	}
+// }
 
-@media screen and (min-height: 600px) and (min-width: 1000px) {
-	footer {
-		position: fixed;
-		width: 100%;
-		bottom: 0;
-	}
-}
+// // mobile
+// @media screen and (max-width: 600px) {
+// 	body {
+// 		font-size: 12px;
+// 		overflow-y: auto;
+// 	}
 
-// mobile
-@media screen and (max-width: 500px) {
-	body {
-		font-size: 12px;
-		overflow-y: auto;
-	}
+// 	#interface {
+// 		#quotes_container {
+// 			width: 90vw;
+// 		}
 
-	#interface {
-		#quotes_container {
-			width: 90vw;
-		}
+// 		#tempContainers {
+// 			padding-bottom: unset;
+// 		}
+// 	}
 
-	}
+// 	#settings {
+// 		right: -100%;
+// 		width: 100%;
+// 		font-size: 1.2em;
 
-	#settings {
-		right: -100%;
-		width: 100%;
-		font-size: 1.2em;
-
-		// Tooltip (?) centered when span wrap
-		&.all .as_collection {
-			max-height: 140px;
+// 		// Tooltip (?) centered when span wrap
+// 		&.all .as_collection {
+// 			max-height: 140px;
 			
-			.wrapper span {
-				align-items: center;
-			}
-		}
+// 			.wrapper span {
+// 				align-items: center;
+// 			}
+// 		}
 
-		.param {
-			margin-right: 12px;
-			margin-left: 12px;
-		}
+// 		.param {
+// 			margin-right: 12px;
+// 			margin-left: 12px;
+// 		}
 
-		.signature {
-			padding: 3em;
-			padding-bottom: 9em;
-		}
-	}
+// 		.signature {
+// 			padding: 3em;
+// 			padding-bottom: 9em;
+// 		}
+// 	}
 
-	footer {
-		#credit {
-			display: flex;
-			width: calc(100% - 7.5em);
-			line-height: 14px;
-			a,
-			p,
-			span {
-				font-size: 11px;
-			}
-		}
+// 	footer {
+// 		position: relative;
 
-		.exif {
-			display: none;
-		}
-	}
+// 		#credit {
+// 			display: flex;
+// 			width: calc(100% - 7.5em);
+// 			line-height: 14px;
+// 			a,
+// 			p,
+// 			span {
+// 				font-size: 11px;
+// 			}
+// 		}
 
+// 		.exif {
+// 			display: none;
+// 		}
+// 	}
 
+// 	#popup {
+// 		flex-wrap: wrap;
+// 		padding: 10% 20%;
+// 		bottom: 0;
+// 		left: 0;
+// 		gap: 0.5em;
 
-	#popup {
-		flex-wrap: wrap;
-		padding: 10% 20%;
-		bottom: 0;
-		left: 0;
-		gap: 0.5em;
+// 		#popup_text,
+// 		#popup_buttons {
+// 			width: 100%;
+// 			margin: 0;
+// 		}
 
-		#popup_text,
-		#popup_buttons {
-			width: 100%;
-			margin: 0;
-		}
+// 		#popup_buttons {
+// 			flex-direction: row;
+// 			justify-content: space-evenly;
+// 			width: 100%;
+// 			gap: 0.5em;
 
-		#popup_buttons {
-			flex-direction: row;
-			justify-content: space-evenly;
-			width: 100%;
-			gap: 0.5em;
+// 			a {
+// 				margin: 0;
+// 				width: 100%;
+// 			}
+// 		}
+// 	}
 
-			a {
-				margin: 0;
-				width: 100%;
-			}
-		}
-	}
+// 	#editlink_container,
+// 	#bookmarks_container {
+// 		font-size: 14px;
+// 	}
 
-	#editlink_container,
-	#bookmarks_container {
-		font-size: 14px;
-	}
+// 	#bookmarks_container #bookmarks {
+// 		width: 90%;
+// 		min-width: 0;
 
-	#bookmarks_container #bookmarks {
-		width: 90%;
-		min-width: 0;
-
-		form div {
-			width: auto;
-		}
-	}
-}
+// 		form div {
+// 			width: auto;
+// 		}
+// 	}
+// }
