@@ -455,6 +455,7 @@
 				position: relative;
 				justify-self: center;
 				transition: transform 0.2s;
+				will-change: transform;
 				cursor: pointer;
 
 				@include allCentered;

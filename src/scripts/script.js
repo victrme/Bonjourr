@@ -445,15 +445,18 @@ function quickLinks(event, that, init) {
 			coords.forEach((c, i) => {
 				if (i % elemsPerRow === 0) pivots.push(i)
 			})
+
+			id(draggedId).style.zIndex = '4'
+			id(draggedId).style.cursor = 'grabbing'
+			id(draggedId).style.transition = 'none'
 		}
 	}
 
 	function linksDragging() {
 		let [curr, prev, currrow, prevrow, firstPos, ox, oy] = [0, 0, 0, 0, 0, 0, 0]
-		const styling = 'z-index: 4; cursor: grabbing; transition: none;'
 
-		const deplaceElem = (id, x, y) => {
-			document.querySelector('.block_parent#' + id).setAttribute('style', `transform: translate(${x}px, ${y}px)`)
+		const deplaceElem = (dom, x, y) => {
+			id(dom).style.transform = `translateX(${x}px) translateY(${y}px)`
 		}
 
 		domlinkblocks.onmousemove = function (e) {
@@ -488,15 +491,15 @@ function quickLinks(event, that, init) {
 						movingAmount.push([ox, oy])
 					})
 
-					console.clear()
-					console.table(movingAmount)
+					// console.clear()
+					// console.table(movingAmount)
 
 					// les deux indexes deviennent similaires
 					prev = curr
 					prevrow = currrow
 				}
 
-				id(draggedId).setAttribute('style', `${styling} transform: translate(${posDiffX}px, ${posDiffY}px)`)
+				id(draggedId).style.transform = `translateX(${posDiffX}px) translateY(${posDiffY}px)`
 			}
 		}
 
@@ -513,10 +516,10 @@ function quickLinks(event, that, init) {
 						document.querySelectorAll('.block_parent').forEach((block) => block.remove())
 						movedCoords.forEach((elem, i) => (data[elem._id].order = i))
 
-						chrome.storage.sync.set({ ...data })
+						slowRange({ ...data })
 						initblocks(bundleLinks(data), data.linksrow)
 					})
-				}, 150)
+				}, 300)
 
 				startsDrag = false
 				prev = curr = 0
