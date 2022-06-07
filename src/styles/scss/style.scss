@@ -49,13 +49,7 @@
 	padding: 0 12px;
 
 	&.pushed {
-		#time,
-		#main,
-		#sb_container,
-		#linkblocks,
-		#quotes_container {
-			transform: translateX(-100px);
-		}
+		transform: translateX(-100px);
 	}
 
 	&.init {
@@ -683,8 +677,6 @@
 		}
 	}
 
-
-
 	// Defunct shadows
 	#main::before,
 	#time::before {
@@ -1008,10 +1000,6 @@ footer {
 	z-index: 4;
 
 	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
-
-	&.pushed {
-		left: -100px;
-	}
 
 	&.shown {
 		display: block;

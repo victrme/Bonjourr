@@ -155,8 +155,16 @@ body {
 		#main,
 		#time {
 			flex-grow: 1;
-			transition: transform 0.4s, opacity 0.2s, flex-grow 0.4s 0.2s;
+			transition: transform 0.4s, opacity 0.4s, flex-grow 0.4s, min-height 0.4s;
 			// will-change: transform, flex-grow;
+
+			// Parent blocks shrinks & hide
+			&.he_hidden {
+				flex-grow: 0 !important;
+				opacity: 0;
+				min-height: 0px;
+				max-height: 0px;
+			}
 		}
 
 		#time-container,
@@ -164,24 +172,15 @@ body {
 		#description,
 		#greetings,
 		#tempContainer {
-			transition: opacity 0.4s;
-		}
-
-		// Parent blocks shrinks & hide
-		#main.he_hidden,
-		#linkblocks.he_hidden,
-		#time.he_hidden {
-			flex-grow: 0 !important;
-			opacity: 0;
-		}
-
-		// Children only hide
-		#time-container.he_hidden,
-		#date.he_hidden,
-		#description.he_hidden,
-		#greetings.he_hidden,
-		#tempContainer.he_hidden {
-			opacity: 0;
+			transition: opacity 0.4s, max-height 0.4s, transform 0.4s;
+			opacity: 1;
+			max-height: 11em;
+		
+			&.he_hidden {
+				opacity: 0;
+				max-height: 0em;
+				transform: scale(0);
+			}
 		}
 	}
 }

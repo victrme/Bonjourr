@@ -686,6 +686,8 @@ function settingsInit(data) {
 			const settingsNotShown = !has(settings, 'shown')
 			const domedit = id('editlink')
 
+			closeEditLink()
+			
 			mobilecheck() ? '' : clas(dominterface, settingsNotShown, 'pushed')
 
 			clas(settings, false, 'init')

@@ -1038,7 +1038,7 @@ function weather(event, that, init) {
 				tempContainer.prepend(icon)
 
 				// from 1.2s request anim to .4s hide elem anim
-				setTimeout(() => (tempContainer.style.transition = 'opacity .4s'), 400)
+				setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 			}
 		}
 
