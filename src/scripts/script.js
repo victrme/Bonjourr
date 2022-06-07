@@ -432,15 +432,17 @@ function quickLinks(event, that, init) {
 				}
 			})
 
-			height = rowsYPositions[1] - rowsYPositions[0]
+			// console.table(coords)
+
+			height = rowsYPositions.length > 1 ? rowsYPositions[1] - rowsYPositions[0] : rowsYPositions[0]
 			width = coords[1].x - coords[0].x
 			movedCoords = [...coords]
 		}
 	}
 
 	function linksDragging() {
-		function deplaceElem(id, move) {
-			document.querySelector('.block_parent#' + id).setAttribute('style', `transform: translateX(${move}px)`)
+		function deplaceElem(id, x, y) {
+			document.querySelector('.block_parent#' + id).setAttribute('style', `transform: translate(${x}px, ${y}px)`)
 		}
 
 		let curr = 0
@@ -448,6 +450,7 @@ function quickLinks(event, that, init) {
 		let currrow = 0
 		let prevrow = 0
 		let movingAmount = []
+		const linksPerRow = document.querySelectorAll('#linkblocks_inner > div')[0].childElementCount
 		const styling = 'z-index: 4; cursor: grabbing; transition: none;'
 
 		Array.prototype.move = function (from, to) {
@@ -471,6 +474,17 @@ function quickLinks(event, that, init) {
 				// trigger si les indexes sont differents
 				if (currrow !== prevrow || (prev !== curr && curr >= 0)) {
 					const draggedIndex = movedCoords.findIndex((a) => a._id === draggedId)
+					const firstPos = coords.findIndex((a) => a._id === draggedId)
+					const dir = firstPos > curr ? -1 : 1
+
+					let pivots = []
+
+					for (let i = 0; i < Object.values(coords).length; i++) {
+						// dir negatif: pivot du dessus, dir positif: en dessous
+						const pivotCalc = (i - (dir === 1 ? -1 : 0)) % linksPerRow === 0
+						if (pivotCalc && i !== Object.values(coords).length - 1) pivots.push(i)
+					}
+
 					movedCoords.move(draggedIndex, curr)
 
 					// movingAmount est surtout la pour faire beau
@@ -480,10 +494,18 @@ function quickLinks(event, that, init) {
 					movedCoords.forEach((elem, i) => {
 						let firstPos = coords.findIndex((a) => a._id === elem._id)
 						let offset = i - firstPos // calcule la diff
+						let offsetRow = 0
 
-						deplaceElem(elem._id, offset * width) // se deplace de la diff * la taille d'un elem
-						movingAmount.push(offset)
+						if (i > 0 && offset !== 0 && pivots.includes(i)) {
+							offsetRow = offset
+							offset = dir * (linksPerRow - 1)
+						}
+
+						deplaceElem(elem._id, offset * width, offsetRow * height) // se deplace de la diff * la taille d'un elem
+						movingAmount.push([offset, offsetRow])
 					})
+					console.clear()
+					console.table(movingAmount)
 
 					// les deux indexes deviennent similaires
 					prev = curr
@@ -496,9 +518,10 @@ function quickLinks(event, that, init) {
 
 		const endDrags = () => {
 			if (draggedId && startsDrag) {
-				let movedBy = movingAmount[movedCoords.findIndex((a) => a._id === draggedId)]
+				let newIndex = movedCoords.findIndex((a) => a._id === draggedId)
+				const move = (axis) => Object.values(coords)[newIndex][axis] - movedCoords[newIndex][axis]
 
-				id(draggedId).setAttribute('style', `cursor: pointer; transform: translateX(${movedBy * width}px)`)
+				id(draggedId).setAttribute('style', `cursor: pointer; transform: translate(${move('x')}px, ${move('y')}px)`)
 
 				setTimeout(() => {
 					chrome.storage.sync.get(null, (data) => {
