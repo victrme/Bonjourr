@@ -113,8 +113,6 @@ function initParams(data, settingsDom) {
 	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
-	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
-	paramId('i_export').setAttribute('title', tradThis('Export code'))
 
 	//bg
 	if (data.background_type === 'custom') {
@@ -443,12 +441,28 @@ function initParams(data, settingsDom) {
 		importExport('reset')
 	}
 
-	paramId('submitImport').onclick = function () {
-		importExport('imp', true)
+	paramId('i_importfile').onchange = function () {
+		const file = this.files[0]
+		const reader = new FileReader()
+
+		reader.onload = function (e) {
+			console.log(reader.result)
+		}
+		reader.readAsText(file)
 	}
 
-	paramId('i_import').onkeypress = function (e) {
-		e.code === 'Enter' ? importExport('imp', true) : ''
+	paramId('i_export').onclick = function () {
+		const date = new Date()
+		const a = id('exportSettings')
+		const d = date.toJSON().substring(2, 10).replaceAll('-', '')
+		const h = date.getHours()
+		const m = date.getMinutes()
+
+		chrome.storage.sync.get(null, (data) => {
+			a.href = `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`
+			a.download = `bonjourrExport_${data?.about?.version}_${d}-${h}${m}.txt`
+			a.click()
+		})
 	}
 
 	// Fetches font list only on focus (if font family is default)
@@ -643,8 +657,8 @@ function importExport(select, isEvent, settingsDom) {
 		}
 	}
 
-	const fncs = { exp: exportation, imp: importation, reset: anihilation }
-	fncs[select]()
+	// const fncs = { exp: exportation, imp: importation, reset: anihilation }
+	// fncs[select]()
 }
 
 function signature(dom) {

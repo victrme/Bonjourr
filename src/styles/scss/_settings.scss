@@ -114,7 +114,7 @@
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	// transform: translateX(-100%)!important;
+	transform: translateX(-100%) !important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -203,18 +203,6 @@
 		#quotes_options {
 			transition: max-Height 0s;
 		}
-	}
-
-	// Safari composing layers
-	.param > *:not(hr),
-	#hideelem button,
-	#cssEditor {
-		transform: translate3d(0, 0, 0);
-		-webkit-transform: translate3d(0, 0, 0);
-	}
-
-	input[type='text'] {
-		will-change: background-color;
 	}
 
 	@include allSettings();
@@ -306,7 +294,8 @@
 			}
 		}
 
-		&.ttcoll, &.tttab {
+		&.ttcoll,
+		&.tttab {
 			&.shown {
 				margin: 1rem 0 0.5em 0;
 				max-height: 50px;
@@ -657,6 +646,77 @@
 				display: flex;
 				align-self: center;
 			}
+		}
+	}
+
+	#importFile {
+		overflow: hidden;
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 73px;
+		min-width: 200px;
+		line-height: 73px;
+		font-size: 14px;
+		text-align: center;
+		cursor: pointer;
+		color: $blue;
+		background-color: $settingsGrey;
+		border: 1px dashed transparent;
+		transition: all 0.2s;
+		transform: scale(1);
+
+		@include radiusSettings();
+
+		#i_importfile {
+			position: absolute;
+			display: block;
+			overflow: hidden;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			height: 75px;
+			width: 100%;
+			cursor: pointer;
+		}
+
+		&:hover {
+			background-color: $focusedGrey;
+		}
+
+		&.dragover {
+			background-color: $blue;
+			color: $purewhite;
+			opacity: 1;
+			transform: scale(1.03);
+		}
+
+		&:active {
+			background-color: $inputGrey;
+		}
+	}
+
+	#i_export {
+		margin-top: 1em;
+		opacity: 1;
+		width: 100%;
+		height: $inputHeight;
+		color: $blue;
+		font-size: small;
+		background-color: $settingsGrey;
+		border: 1px solid transparent;
+		transition: all 0.2s;
+
+		@include radiusSettings();
+
+		&:hover {
+			text-decoration: none;
+			filter: brightness(0.96);
+		}
+
+		&.clicked {
+			color: $borderGrey;
+			background-color: white;
 		}
 	}
 

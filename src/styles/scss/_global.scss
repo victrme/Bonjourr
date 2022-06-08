@@ -228,6 +228,7 @@ body {
 	//
 	// Dark mode transition
 	// #settings and buttons have seperate transitions
+	#submitSave,
 	#i_refresh,
 	#cssEditor,
 	.tooltip,
@@ -320,7 +321,9 @@ body {
 		font-size: 14px;
 	}
 
-	input, select, #i_export {
+	input,
+	select,
+	#i_export {
 		box-sizing: border-box;
 		height: $inputHeight;
 	}

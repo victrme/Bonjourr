@@ -5,7 +5,18 @@
 			<div id="changelog">
 				<p class="trn">Bonjourr has been updated to version 1.14 ✨</p>
 
-				<p><span class="trn">Learn all about our new Quick Links style options, the improved custom background management and much more in </span><a href="https://ko-fi.com/post/Bonjourr-1-14-is-almost-out-L4L2D0BD7" class="trn" target="_blank" id="link"><span id="link" class="trn">our full changelog</span></a>.🗞</p>
+				<p>
+					<span class="trn"
+						>Learn all about our new Quick Links style options, the improved custom background management and much
+						more in </span
+					><a
+						href="https://ko-fi.com/post/Bonjourr-1-14-is-almost-out-L4L2D0BD7"
+						class="trn"
+						target="_blank"
+						id="link"
+						><span id="link" class="trn">our full changelog</span></a
+					>.🗞
+				</p>
 			</div>
 		</div>
 
@@ -897,16 +908,15 @@
 			</div>
 
 			<div class="param">
-				<div id="imp_wrapper" class="wrapper">
-					<input id="i_import" type="text" name="Import" autocomplete="off" placeholder="Paste settings code" />
-					<button id="submitImport" class="trn">Import</button>
-				</div>
+				<label id="importFile">
+					<p class="trn">Load Settings</p>
+					<input id="i_importfile" type="file" name="import_file" />
+				</label>
 
-				<div id="exp_wrapper" class="wrapper">
-					<pre id="i_export"></pre>
+				<div id="save_wrapper" class="wrapper">
+					<a id="exportSettings" href="" download=""></a>
+					<button id="i_export" class="trn">Export Settings as a file</button>
 				</div>
-
-				<hr />
 
 				<div id="reset_wrapper" class="wrapper">
 					<button id="submitReset" class="trn">Reset settings</button>
