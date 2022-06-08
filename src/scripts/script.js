@@ -1439,11 +1439,12 @@ function localBackgrounds(init, event) {
 			}
 
 			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
-				const _id = e.target.parentElement.id
+				const thumbnail = e.path.find((d) => d.className.includes('thumbnail'))
+				const _id = thumbnail.id
 				let { idsList, selectedId } = local
 				let poppedList = idsList.filter((a) => !a.includes(_id))
 
-				document.querySelector(`#${_id}.thumbnail`).remove()
+				thumbnail.remove()
 
 				chrome.storage.local.remove('custom_' + _id)
 				chrome.storage.local.remove(['customThumb_' + _id])
@@ -1543,8 +1544,10 @@ function localBackgrounds(init, event) {
 			const needNewImage = freqControl('get', every, time || 0)
 
 			if (every && needNewImage) {
-				idsList = idsList.filter((l) => !l.includes(selectedId)) // removes current from list
-				selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
+				if (idsList.length > 1) {
+					idsList = idsList.filter((l) => !l.includes(selectedId)) // removes current from list
+					selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
+				}
 
 				applyCustomBackground(selectedId)
 
