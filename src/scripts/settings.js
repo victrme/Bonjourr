@@ -137,8 +137,8 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar display settings
-	clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar.engine === 'custom', 'shown')
+	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
+	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
 
 	//searchbar display settings
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
@@ -187,8 +187,7 @@ function initParams(data, settingsDom) {
 	tooltips.forEach((elem) => {
 		elem.onclick = function () {
 			const toggleTooltip = (which) => {
-				if (this.classList.contains(which))
-					settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
+				if (this.classList.contains(which)) settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
 			}
 
 			toggleTooltip('tttab')
@@ -480,8 +479,8 @@ function initParams(data, settingsDom) {
 		const rangeInputs = settingsDom.querySelectorAll("input[type='range'")
 
 		rangeInputs.forEach(function (input) {
-		 input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
-		 input.addEventListener('touchend', () => touchHandler(false), { passive: true })
+			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
+			input.addEventListener('touchend', () => touchHandler(false), { passive: true })
 		})
 	}
 

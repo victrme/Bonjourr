@@ -361,85 +361,79 @@ function tradThis(str) {
 	return lang === 'en' ? str : dict[str][lang]
 }
 
-function bonjourrDefaults(which) {
-	switch (which) {
-		case 'sync':
-			return {
-				usdate: false,
-				showall: false,
-				linksrow: 6,
-				linkstyle: 'large',
-				cssHeight: 80,
-				reviewPopup: 0,
-				background_blur: 15,
-				background_bright: 0.8,
-				css: '',
-				lang: defaultLang(),
-				favicon: '',
-				tabtitle: '',
-				greeting: '',
-				dark: 'system',
-				custom_every: 'pause',
-				background_type: 'dynamic',
-				clock: {
-					ampm: false,
-					analog: false,
-					seconds: false,
-					face: 'none',
-					timezone: 'auto',
-				},
-				dynamic: {
-					every: 'hour',
-					collection: '',
-					lastCollec: '',
-					time: Date.now(),
-				},
-				weather: {
-					ccode: 'FR',
-					city: 'Paris',
-					unit: 'metric',
-					location: [],
-					forecast: 'auto',
-					temperature: 'actual',
-				},
-				searchbar: {
-					on: false,
-					opacity: 0.1,
-					newtab: false,
-					engine: 'google',
-					request: '',
-				},
-				quotes: {
-					on: false,
-					author: false,
-					type: 'classic',
-					frequency: 'day',
-					last: 1650516688,
-				},
-				font: {
-					url: '',
-					family: '',
-					size: '14',
-					availWeights: [],
-					weight: testOS.windows ? '400' : '300',
-				},
-				textShadow: 0.2,
-				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.14.0' },
-			}
+const syncDefaults = {
+	usdate: false,
+	showall: false,
+	linksrow: 6,
+	linkstyle: 'large',
+	cssHeight: 80,
+	reviewPopup: 0,
+	background_blur: 15,
+	background_bright: 0.8,
+	css: '',
+	lang: defaultLang(),
+	favicon: '',
+	tabtitle: '',
+	greeting: '',
+	dark: 'system',
+	custom_every: 'pause',
+	background_type: 'dynamic',
+	clock: {
+		ampm: false,
+		analog: false,
+		seconds: false,
+		face: 'none',
+		timezone: 'auto',
+	},
+	dynamic: {
+		every: 'hour',
+		collection: '',
+		lastCollec: '',
+		time: Date.now(),
+	},
+	weather: {
+		ccode: 'FR',
+		city: 'Paris',
+		unit: 'metric',
+		location: [],
+		forecast: 'auto',
+		temperature: 'actual',
+	},
+	searchbar: {
+		on: false,
+		opacity: 0.1,
+		newtab: false,
+		engine: 'google',
+		request: '',
+	},
+	quotes: {
+		on: false,
+		author: false,
+		type: 'classic',
+		frequency: 'day',
+		last: 1650516688,
+	},
+	font: {
+		url: '',
+		family: '',
+		size: '14',
+		availWeights: [],
+		weight: testOS.windows ? '400' : '300',
+	},
+	textShadow: 0.2,
+	hide: [[0, 0], [0, 0, 0], [0], [0]],
+	about: { browser: detectPlatform(), version: '1.14.0' },
+}
 
-		case 'local':
-			return {
-				selectedId: '',
-				idsList: [],
-				quotesCache: [],
-				dynamicCache: {
-					noon: [],
-					day: [],
-					evening: [],
-					night: [],
-					user: [],
-				},
-			}
-	}
+const localDefaults = {
+	selectedId: '',
+	idsList: [],
+	quotesCache: [],
+	dynamicCache: {
+		noon: [],
+		day: [],
+		evening: [],
+		night: [],
+		user: [],
+	},
 }

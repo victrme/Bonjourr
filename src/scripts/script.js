@@ -411,28 +411,31 @@ function quickLinks(event, that, init) {
 		}
 
 		// Mobile clicks
-		let touchStartTime = 0
-		let touchTimeout = setTimeout(() => {}, 0)
+		if (mobilecheck())
+			(function mobileTouches() {
+				let touchStartTime = 0
+				let touchTimeout = setTimeout(() => {}, 0)
 
-		const startHandler = (e) => {
-			touchStartTime = performance.now()
-			touchTimeout = setTimeout(() => {
-				displayEditWindow(elem, e)
-			}, 600)
-		}
+				const startHandler = (e) => {
+					touchStartTime = performance.now()
+					touchTimeout = setTimeout(() => {
+						displayEditWindow(elem, e)
+					}, 600)
+				}
 
-		const endHandler = (e) => {
-			const pressTime = performance.now() - touchStartTime
-			const editIsNotOpen = !has(id('editlink'), 'shown')
+				const endHandler = (e) => {
+					const pressTime = performance.now() - touchStartTime
+					const editIsNotOpen = !has(id('editlink'), 'shown')
 
-			if (pressTime < 600) {
-				clearTimeout(touchTimeout)
-				if (editIsNotOpen) openlink(elem, e)
-			}
-		}
+					if (pressTime < 600) {
+						clearTimeout(touchTimeout)
+						if (editIsNotOpen) openlink(elem, e)
+					}
+				}
 
-		elem.addEventListener('touchstart', startHandler, { passive: true })
-		elem.addEventListener('touchend', endHandler, { passive: true })
+				elem.addEventListener('touchstart', startHandler, { passive: true })
+				elem.addEventListener('touchend', endHandler, { passive: true })
+			})()
 	}
 
 	function editEvents() {
@@ -1865,7 +1868,7 @@ async function unsplash(init, event) {
 		try {
 			// Real init start
 			const collecId = collectionControl(init.dynamic)
-			const cache = local.dynamicCache || bonjourrDefaults('local').dynamicCache
+			const cache = local.dynamicCache || localDefaults.dynamicCache
 
 			if (cache[collecId].length === 0) {
 				populateEmptyList(collecId, local, init.dynamic, false) // If list empty: request new, save sync & local
@@ -1933,10 +1936,10 @@ function searchbar(event, that, init) {
 	const submitButton = id('sb_submit')
 
 	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
-	const engine = (value) => domsearchbar.setAttribute('engine', value)
-	const request = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
+	const setEngine = (value) => domsearchbar.setAttribute('engine', value)
+	const setRequest = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
 	const setNewtab = (value) => domsearchbar.setAttribute('newtab', value)
-	const opacity = (value) => {
+	const setOpacity = (value) => {
 		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
 
 		if (value > 0.4) id('sb_container').classList.add('opaque')
@@ -1955,18 +1958,18 @@ function searchbar(event, that, init) {
 				case 'engine': {
 					data.searchbar.engine = that.value
 					clas(id('searchbar_request'), that.value === 'custom', 'shown')
-					engine(that.value)
+					setEngine(that.value)
 					break
 				}
 
 				case 'opacity': {
 					data.searchbar.opacity = parseFloat(that.value)
-					opacity(parseFloat(that.value))
+					setOpacity(parseFloat(that.value))
 					break
 				}
 
 				case 'request': {
-					const val = that.value
+					let val = that.value
 
 					if (val.indexOf('%s') !== -1) {
 						data.searchbar.request = stringMaxSize(val, 512)
@@ -1977,7 +1980,7 @@ function searchbar(event, that, init) {
 						setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
 					}
 
-					request(val)
+					setRequest(val)
 					break
 				}
 
@@ -1994,12 +1997,13 @@ function searchbar(event, that, init) {
 	}
 
 	function initSearchbar() {
+		const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
 		try {
-			display(init.on)
-			engine(init.engine)
-			request(init.request)
-			setNewtab(init.newtab)
-			opacity(init.opacity)
+			display(on)
+			setEngine(engine)
+			setRequest(request)
+			setNewtab(newtab)
+			setOpacity(opacity)
 		} catch (e) {
 			errorMessage('Error in searchbar initialization', e)
 		}
@@ -2787,7 +2791,7 @@ function filterImports(data) {
 		},
 
 		searchbar: (sb) => {
-			let updatedSb = bonjourrDefaults('sync').searchbar
+			let updatedSb = syncDefaults.searchbar
 
 			if (typeof sb === 'boolean') {
 				// Converts searchbar from <1.9.x bool to object
@@ -2820,7 +2824,7 @@ function filterImports(data) {
 		return sync
 	}
 
-	let result = { ...bonjourrDefaults('sync') }
+	let result = { ...syncDefaults }
 	result = { ...data }
 
 	delete result?.searchbar_engine
@@ -2938,18 +2942,18 @@ window.onload = function () {
 	try {
 		chrome.storage.sync.get(null, (data) => {
 			const isImport = sessionStorage.isImport === 'true'
-			const versionChange = data.about?.version !== bonjourrDefaults('sync').about.version
+			const versionChange = data?.about?.version !== syncDefaults.about.version
 
 			// First Startup, chrome.storage is null
 			if (Object.keys(data).length === 0) {
-				data = bonjourrDefaults('sync')
+				data = syncDefaults
 				document.documentElement.setAttribute('lang', defaultLang())
-				chrome.storage.local.set(bonjourrDefaults('local'))
+				chrome.storage.local.set(localDefaults)
 				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
 
-			// Version is different, can be new update or imports
-			else if (isImport || versionChange) {
+			// Import
+			if (isImport) {
 				// needs local to migrate backgrounds (1.13.2 => 1.14.0)
 				chrome.storage.local.get(null, (local) => {
 					local = localDataMigration(local)
@@ -2960,7 +2964,7 @@ window.onload = function () {
 
 					// Change version in here
 					// Only after "different version" startup is triggered
-					data.about = { browser: detectPlatform(), version: bonjourrDefaults('sync').about.version }
+					data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
 
 					chrome.storage.sync.clear()
 					chrome.storage.sync.set(isExtension ? data : { import: data })
@@ -2978,6 +2982,12 @@ window.onload = function () {
 				})
 
 				return
+			}
+
+			// Update
+			if (versionChange) {
+				// Is at least 1.14.0, no filtering to do, just update version
+				chrome.storage.sync.set({ about: { browser: detectPlatform(), version: syncDefaults.about.version } })
 			}
 
 			startup(data)
