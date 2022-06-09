@@ -60,8 +60,15 @@ const getFavicon = () => {
 }
 
 // gives perfect max-height to hideable element
-const setAutoHeight = (elem, state) => {
-	maxHeight = state ? elem.scrollHeight : 0 
+const setMaxHeight = (elem, state) => {
+	let maxHeight
+
+	if (state == null) { // toggles between 0 and value
+		maxHeight = id(elem.id).style.maxHeight === '0px' ? id(elem.id).scrollHeight : 0
+	} else {
+		maxHeight = state ? elem.scrollHeight : 0 	
+	}
+
 	elem.style.maxHeight = maxHeight + 'px'
 }
 

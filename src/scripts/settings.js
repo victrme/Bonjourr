@@ -141,7 +141,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar display settings
-	clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
+	// clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
 	clas(paramId('searchbar_request'), data.searchbar.engine === 'custom', 'shown')
 	//searchbar display settings
 	
@@ -401,7 +401,6 @@ function initParams(data, settingsDom) {
 	//searchbar
 
 	paramId('i_sb').onchange = function () {
-		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
 		slow(this)
 	}
@@ -523,7 +522,7 @@ function showall(val, event, domSettings) {
 	clas(event ? id('settings') : domSettings, val, 'all')
 
 	document.querySelectorAll('.as').forEach(function(as) {
-		setAutoHeight(as, val ? true : false)
+		setMaxHeight(as, val ? true : false)
 	})
 }
 
@@ -719,6 +718,9 @@ function settingsInit(data) {
 
 		showall(data.showall, false, settingsDom)
 
+		setMaxHeight(id('searchbar_options'), data.searchbar.on)
+		id('i_sb').onchange = function() { setMaxHeight(id('searchbar_options')) }
+		
 		// Add Events
 		if (sessionStorage.lang) showSettings()
 		domshowsettings.onclick = () => showSettings()
