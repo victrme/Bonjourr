@@ -1545,6 +1545,21 @@ function localBackgrounds(init, event) {
 			const { every, time } = init
 			const needNewImage = freqControl('get', every, time || 0)
 
+			// 1.14.0 (firefox?) background recovery fix
+			if (!idsList) {
+				idsList = []
+				selectedId = ''
+
+				chrome.storage.local.get(null, (local) => {
+					const ids = Object.keys(local)
+						.filter((k) => k.startsWith('custom_'))
+						.map((k) => k.replace('custom_', ''))
+
+					chrome.storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
+					chrome.storage.sync.get(null, (data) => initBackground(data))
+				})
+			}
+
 			if (idsList.length === 0) {
 				chrome.storage.sync.get('dynamic', (data) => unsplash(data)) // no bg, back to unsplash
 				return
