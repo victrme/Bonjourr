@@ -2381,9 +2381,9 @@ function customFont(data, event) {
 				.then((text) => {
 					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
 					id('fontstyle').textContent = text
-					id('clock').style.fontFamily = family
-					id('credit').style.fontFamily = family
-					dominterface.style.fontFamily = family
+					id('clock').style.fontFamily = '"' + family + '"'
+					id('credit').style.fontFamily = '"' + family + '"'
+					dominterface.style.fontFamily = '"' + family + '"'
 					canDisplayInterface('fonts')
 				})
 		}
@@ -2426,7 +2426,7 @@ function customFont(data, event) {
 		if (font.length > 0) {
 			const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
 			const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
-			const url = `https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`
+			const url = encodeURI(`https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`)
 
 			// Change l'url
 			apply(url, font[0].family, 400)
