@@ -59,6 +59,12 @@ const getFavicon = () => {
 	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
 }
 
+// gives perfect max-height to hideable element
+const setAutoHeight = (elem, state) => {
+	maxHeight = state ? elem.scrollHeight : 0 
+	elem.style.maxHeight = maxHeight + 'px'
+}
+
 function periodOfDay(sunTime, time) {
 	// Transition day and night with noon & evening collections
 	// if clock is + /- 60 min around sunrise/set

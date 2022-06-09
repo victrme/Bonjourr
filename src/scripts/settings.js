@@ -143,8 +143,8 @@ function initParams(data, settingsDom) {
 	//searchbar display settings
 	clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
 	clas(paramId('searchbar_request'), data.searchbar.engine === 'custom', 'shown')
-
 	//searchbar display settings
+	
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
 
 	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
@@ -523,9 +523,7 @@ function showall(val, event, domSettings) {
 	clas(event ? id('settings') : domSettings, val, 'all')
 
 	document.querySelectorAll('.as').forEach(function(as) {
-		// scrollHeight is auto height
-		maxHeight = val ? as.scrollHeight : 0 
-		as.style.maxHeight = maxHeight + "px"
+		setAutoHeight(as, val ? true : false)
 	})
 }
 
