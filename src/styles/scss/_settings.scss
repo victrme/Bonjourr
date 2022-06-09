@@ -306,7 +306,8 @@
 			}
 		}
 
-		&.ttcoll, &.tttab {
+		&.ttcoll,
+		&.tttab {
 			&.shown {
 				margin: 1rem 0 0.5em 0;
 				max-height: 50px;
@@ -409,7 +410,6 @@
 		margin-left: 5px;
 		text-decoration: none;
 		transition: background-color 0.1s, border-color 0.1s;
-		background-color: $settingsGrey;
 
 		&:hover {
 			background-color: $focusedGrey;

@@ -1543,6 +1543,11 @@ function localBackgrounds(init, event) {
 			const { every, time } = init
 			const needNewImage = freqControl('get', every, time || 0)
 
+			if (idsList.length === 0) {
+				chrome.storage.sync.get('dynamic', (data) => unsplash(data)) // no bg, back to unsplash
+				return
+			}
+
 			if (every && needNewImage) {
 				if (idsList.length > 1) {
 					idsList = idsList.filter((l) => !l.includes(selectedId)) // removes current from list

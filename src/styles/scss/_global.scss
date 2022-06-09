@@ -259,10 +259,11 @@ body {
 	#i_qtrefresh,
 	select {
 		height: $inputHeight;
+		color: $blackish;
 		border-radius: 8.5px;
 		padding-left: 10px;
 		border: 1px solid $inputGrey;
-		color: $blackish;
+		background-color: $inputGrey;
 		-webkit-appearance: none;
 	}
 
@@ -320,13 +321,11 @@ body {
 		font-size: 14px;
 	}
 
-	input, select, #i_export {
+	input,
+	select,
+	#i_export {
 		box-sizing: border-box;
 		height: $inputHeight;
-	}
-
-	select {
-		background-color: $inputGrey;
 	}
 
 	/* Switch */
