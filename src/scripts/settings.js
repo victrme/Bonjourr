@@ -521,6 +521,12 @@ function initParams(data, settingsDom) {
 function showall(val, event, domSettings) {
 	if (event) chrome.storage.sync.set({ showall: val })
 	clas(event ? id('settings') : domSettings, val, 'all')
+
+	document.querySelectorAll('.as').forEach(function(as) {
+		// scrollHeight is auto height
+		maxHeight = val ? as.scrollHeight : 0 
+		as.style.maxHeight = maxHeight + "px"
+	})
 }
 
 function selectBackgroundType(cat) {
@@ -709,10 +715,11 @@ function settingsInit(data) {
 		traduction(settingsDom, data.lang)
 		signature(settingsDom)
 		initParams(data, settingsDom)
-		showall(data.showall, false, settingsDom)
-
+		
 		// Apply to body
 		document.body.prepend(settingsDom)
+
+		showall(data.showall, false, settingsDom)
 
 		// Add Events
 		if (sessionStorage.lang) showSettings()
