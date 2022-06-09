@@ -1,5 +1,5 @@
 //
-const version = '1.14.0'
+const version = '1.14.1'
 const bonjourrCache = 'bonjourr-v' + version
 
 const filesToChache = [

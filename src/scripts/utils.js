@@ -422,7 +422,7 @@ const syncDefaults = {
 	},
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
-	about: { browser: detectPlatform(), version: '1.14.0' },
+	about: { browser: detectPlatform(), version: '1.14.1' },
 }
 
 const localDefaults = {
