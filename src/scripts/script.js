@@ -1434,12 +1434,14 @@ function localBackgrounds(init, event) {
 		}
 
 		rem.onmouseup = (e) => {
+			const path = e.composedPath()
+
 			if (e.button !== 0 || localIsLoading) {
 				return
 			}
 
 			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
-				const thumbnail = e.path.find((d) => d.className.includes('thumbnail'))
+				const thumbnail = path.find((d) => d.className.includes('thumbnail'))
 				const _id = thumbnail.id
 				let { idsList, selectedId } = local
 				let poppedList = idsList.filter((a) => !a.includes(_id))
