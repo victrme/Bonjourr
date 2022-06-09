@@ -78,13 +78,8 @@ function initParams(data, settingsDom) {
 			localStorage.removeItem('hasUpdated')
 		}
 
-		settingsDom.querySelector('#link').onclick = () => {
-			dismiss()
-		}
-
-		settingsDom.querySelector('#log_dismiss').onclick = () => {
-			dismiss()
-		}
+		settingsDom.querySelector('#link').onclick = () => dismiss()
+		settingsDom.querySelector('#log_dismiss').onclick = () => dismiss()
 	}
 
 	// No bookmarks import on safari || online

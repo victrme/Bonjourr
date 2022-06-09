@@ -2966,8 +2966,6 @@ window.onload = function () {
 				chrome.storage.local.get(null, (local) => {
 					local = localDataMigration(local)
 					data = filterImports(data)
-
-					if (!sessionStorage.isImport) localStorage.hasUpdated = true
 					sessionStorage.removeItem('isImport')
 
 					// Change version in here
@@ -2994,6 +2992,10 @@ window.onload = function () {
 
 			// Update
 			if (versionChange) {
+				if (syncDefaults.about.version === '1.15.0') {
+					localStorage.hasUpdated = true
+				}
+
 				// Is at least 1.14.0, no filtering to do, just update version
 				chrome.storage.sync.set({ about: { browser: detectPlatform(), version: syncDefaults.about.version } })
 			}
