@@ -1,5 +1,14 @@
 ## Changelogs
 
+**v1.14.1**
+
+-   Added toolip on new tab title & favicon option
+-   Updated some Russian translations ( thanks @DaniilChizhevskii )
+-   Fixed custom background remove button
+-   Fixed custom background not working on Safari / Firefox
+-   Fixed fonts with numbers in family name
+-   Minor performance improvement on desktop
+
 **v1.14.0**
 
 -   Added features:
