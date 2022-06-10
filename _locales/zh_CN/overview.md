@@ -2,63 +2,61 @@
 This is Bonjourr's description that appears on browser extensions stores.
 ---
 
-Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new tabs will always feel fresh.
+每当你打开一个新的窗口或标签，迎接你的将是这个看起来很简约的页面，这将有助于你的宁静和生产力。由于其华丽的高质量背景根据一天的心情而变化，你的新标签将永远感到新鲜。
 
-Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's design language to create this beautiful homepage that will help you focus on what matters.
+Bonjourr 是作为像 Momentum 这样的主页的一个更现代的选择而建立的。我们从 iOS 和苹果的设计语言中获得灵感，创造了这个美丽的主页，将帮助你专注于重要的事情。
 
-Here's some key features:
-🍏 iOS design language
-🏞 Dynamic 4K backgrounds that change according to the mood of the day
-⚡️ Fast & lightweight!
-🔎 Search bar (compatible with all search engines)
-🕰 Analog clock with multiple clock faces
-🌤 Weather
-🔗 Quick Links
-👋 Greets you by your name
-🌘 Dark mode
-🥖 Emoji as favicon
-🧑‍💻 Custom CSS styling
-📝 Custom fonts
-🔒 Privacy focused
-🌎 Multilanguage
+这里有一些关键功能。
+🍏 iOS 设计语言
+🏞 动态 4K 背景，根据一天的心情而变化
+⚡️ 快速和轻量级!
+🔎 搜索栏（与所有搜索引擎兼容）
+🕰 带有多个钟面的模拟时钟
+🌤 天气
+🔗 快速链接
+👋 以你的名字迎接你
+🌘 黑暗模式
+🥖 表情符号作为吉祥物
+🧑💻 自定义 CSS 样式
+📝 自定义字体
+🔒 关注隐私
+🌎 多语言
 
-Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links... You can even check out our documentation where we compiled some style snippets to do even more.
+卓悦的目标是看起来和感觉都很简约，同时仍然带给你很多选项，让你根据自己的喜好进行定制。设置你自己的背景（或 Unsplash 集合！），启用美丽的模拟时钟，设置你自己的字体和快速链接...... 你甚至可以查看我们的文档，在那里我们汇编了一些风格片段来做更多事情。
 
-The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data, nor do you need to create an account to use it.
+该项目是完全开源的，对开发者友好，实际上尊重你的隐私。我们不收集任何数据，你也不需要创建一个账户来使用它。
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+🏞 动态 4K 背景
+我们精心挑选了一些最美丽的 Unsplash 照片，让你的新标签永远感到新鲜。发现令人难以置信的风景、动物和大自然的高质量照片。
 
-🏞 Dynamic 4K backgrounds
-We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel fresh. Discover high quality photos of incredible landscapes, animals and nature.
+⚡️ 快速&轻量级!
+Bonjourr 是由 vanilla JavaScript 构建的，并为最佳性能进行了优化。
 
-⚡️ Fast & lightweight!
-Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
+🔎 搜索栏
+Bonjourr 的集成搜索栏与所有搜索引擎兼容。是的，所有的! 这包括通常的谷歌，必应，DuckDuckGo，雅虎，Startpage 以及其他，如 Ecosia，Lilo 和 Qwant。如果你愿意，你甚至可以添加你自己的自定义搜索引擎。
 
-🔎 Search bar
-The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! That includes the usual Google, Bing, DuckDuckGo, Yahoo, Startpage as well as others, like Ecosia, Lilo and Qwant. If you want, you can even add you own custom search engine.
+🕰 模拟时钟
+卓悦网的默认时钟是按照你在 iPhone 和其他 iOS 设备上的样子制作的。但是，如果你喜欢更奇特的东西，你可以用一个非常酷的模拟时钟来代替它，并按你的意愿定制它。
 
-🕰 Analog clock 
-Bonjourr's default clock is made to ressemble what you have on the iPhone and other iOS devices. But if you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
+🌤 天气
+在一个简单的句子中，获得你当地当前天气和预测的摘要。
 
-🌤 Weather
-In a simple sentence, get a summary of you local current weather and forecast.
+🔗 快速链接
+没有书签就不是一个真正的主页! Bonjourr 允许你添加自己的书签，改变它们的图标，并从你的浏览器中导入你的当前书签。
 
-🔗 Quick Links
-It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change their icons and import your current bookmarks from your browser.
+🌘 黑暗模式
+就像在 iOS 上，Bonjourr 有一个美丽的自动黑暗模式。
 
-🌘 Dark mode
-Just like on iOS, Bonjourr has a beautiful automatic dark mode.
+🥖 表情符号作为吉祥物
 
-🥖 Emoji as favicon
+🔒 关注隐私
+一些主页，如 Momentum，鼓励你创建一个帐户，给他们一些个人信息，使用更多的权限，并依赖许多第三方服务。Bonjourr 不收集任何数据，甚至不用于分析目的，使用最少的权限，依赖较少的第三方服务，当然也没有任何账户系统。卓悦网是开源的，这也意味着你可以很容易地检查出我们的说法是否属实。
 
-🔒 Privacy focused
-Some homepages like Momentum encourage you to create an account, give them some personal info, use more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes, use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr being open source also means that you can easily check out if our claims are true.
+🧑💻 自定义 CSS 样式
+你有一个特定的想法吗？卓悦网为你提供了自定义样式部分。当你添加自己的 CSS 时，你可以定制和做任何事情。
 
-🧑‍💻 Custom CSS styling
-Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can customise and do anything when you add your own CSS.
+📝 自定义字体
+想在你的主页上使用一种特定的字体吗？由于卓悦与谷歌字体的整合，你可以轻松地选择它。
 
-📝 Custom fonts
-Want a specific font on your homepage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
-
-🌎 Multilanguage
-Thanks to our awesome contributors, Bonjourr is available in 15 different languages (English, French, Slovene, Swedish, Polish, Brasilian Portuguese, Dutch, Italian, Spanish, Russian, Simplified Chinese, German, Ukrainian, Turkish and Indonesian).
+🌎 多语言
+感谢我们伟大的贡献者，Bonjourr 有 15 种不同的语言（英语，法语，斯洛文尼亚语，瑞典语，波兰语，巴西葡萄牙语，荷兰语，意大利语，西班牙语，俄语，简体中文，德语，乌克兰语，土耳其语和印度尼西亚语）。
