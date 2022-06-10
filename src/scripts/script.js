@@ -276,7 +276,7 @@ function quickLinks(event, that, init) {
 		a.href = url
 
 		// Google favicon API is fallback
-		let result = `https://www.google.com/s2/favicons?sz=180&domain=${a.hostname}`
+		let result = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${a.hostname}&size=128`
 		const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${a.hostname}`)
 		const apiText = await bonjourrAPI.text() // API return empty string if nothing found
 
