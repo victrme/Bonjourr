@@ -2293,29 +2293,6 @@ function showPopup(data) {
 	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
 }
 
-function customSize(init, event) {
-	// Divided by 16 is === to body px size
-	// so that users don't have their font size changed (on desktop at least)
-	const apply = (size) => (dominterface.style.fontSize = size / 16 + 'em')
-
-	const save = () => {
-		chrome.storage.sync.get('font', (data) => {
-			let font = data.font || { family: '', weight: ['300'], size: 13 }
-			font.size = event
-			slowRange({ font: font }, 200)
-		})
-	}
-
-	if (event) {
-		save()
-		apply(event)
-	}
-
-	if (init) {
-		apply(init.size)
-	}
-}
-
 function modifyWeightOptions(weights, settingsDom) {
 	const select = (settingsDom ? settingsDom : id('settings')).querySelector('#i_weight')
 	const options = select.querySelectorAll('option')
@@ -2359,35 +2336,20 @@ function safeFont(settingsDom) {
 	return toUse
 }
 
-function customFont(data, event) {
-	const save = (url, family, availWeights, weight) => {
-		chrome.storage.sync.get('font', (data) => {
-			const font = data.font || {}
-
-			font.url = url
-			font.family = family
-			font.availWeights = availWeights || []
-			font.weight = weight
-
-			slowRange({ font: font }, 200)
-		})
+function customFont(init, event) {
+	function setSize(val) {
+		dominterface.style.fontSize = val / 16 + 'em' // 16 is body px size
 	}
 
-	// Fetches fonts.google.com url
-	function apply(url, family, weight) {
-		if (url) {
-			fetch(url)
-				.then((response) => response.text())
-				.then((text) => {
-					text = text.replace(/(\r\n|\n|\r|  )/gm, '')
-					id('fontstyle').textContent = text
-					id('clock').style.fontFamily = '"' + family + '"'
-					id('credit').style.fontFamily = '"' + family + '"'
-					dominterface.style.fontFamily = '"' + family + '"'
-					canDisplayInterface('fonts')
-				})
-		}
+	function setFamily(family, fontface) {
+		id('fontstyle').textContent = fontface
+		id('clock').style.fontFamily = '"' + family + '"'
+		id('credit').style.fontFamily = '"' + family + '"'
+		dominterface.style.fontFamily = '"' + family + '"'
+		canDisplayInterface('fonts')
+	}
 
+	function setWeight(family, weight) {
 		weight = parseInt(weight)
 
 		if (weight) {
@@ -2395,77 +2357,42 @@ function customFont(data, event) {
 			dominterface.style.fontWeight = weight
 			id('searchbar').style.fontWeight = weight
 
-			// If family, weight. default ? lower by one weight
-			id('clock').style.fontWeight = family ? weight : weight > 100 ? list[list.indexOf(weight) - 1] : weight
+			// Default bonjourr lowers font weight on clock (because we like it)
+			const loweredWeight = weight > 100 ? list[list.indexOf(weight) - 1] : weight
+			id('clock').style.fontWeight = family ? weight : loweredWeight
 		}
 	}
 
-	// Event only
-	// Uses already saved url, replaces weight from url and apply / save
-	function changeWeight(val, font) {
-		if (font.url) {
-			font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
-			font.url += val
+	async function setFontface(url) {
+		const resp = await fetch(url)
+		const text = await resp.text()
+		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
+		chrome.storage.local.set({ fontface })
 
-			apply(font.url, font.family, val)
-			save(font.url, font.family, font.availWeights, val)
-		} else {
-			apply(null, null, val)
-			save('', '', [], val)
-		}
+		return fontface
 	}
 
-	// Event only
-	function changeFamily(json, family) {
-		//
-		// Cherche correspondante
-		const dom = id('i_customfont')
-		const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
-
-		// One font has been found
-		if (font.length > 0) {
-			const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
-			const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
-			const url = encodeURI(`https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`)
-
-			// Change l'url
-			apply(url, font[0].family, 400)
-			save(url, font[0].family, availWeights, 400)
-
-			// Et les weight options
-			modifyWeightOptions(availWeights, null, true)
-			id('i_weight').value = '400'
-
-			if (dom) dom.blur()
-		} else dom.value = ''
-	}
-
-	function triggerEvent(event) {
-		//
+	function updateFont(event) {
 		function fetchFontList(callback) {
-			//
-			const fetchGoogleFonts = () => {
+			async function fetchGoogleFonts() {
 				const a =
 					'NjUsNzQsMTI0LDEwMCw4NywxMjYsNzEsMTA5LDk0LDg1LDk1LDg4LDEwMiw3OSw2NSw5OCwxMzYsNjksMTMxLDEzNiw5NSwxMDYsMTE3LDk2LDEyNSwxMjcsMTA0LDEzNCwxMTMsMTA0LDE0Myw3NiwxMzMsMTEwLDE1NSw4NSwxMzMsMTQyLDEwMw=='
 
-				fetch(
-					'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' +
-						new TextDecoder().decode(
-							new Uint8Array(
-								atob(a)
-									.split(',')
-									.map((e, t) => e - t)
-							)
+				const decod = (str) =>
+					new TextDecoder().decode(
+						new Uint8Array(
+							window
+								.atob(str)
+								.split(',')
+								.map((e, t) => e - t)
 						)
-				)
-					.then((response) => response.json())
-					.then((json) => {
-						if (json.error) console.log('Google Fonts messed up: ', json.error)
-						else {
-							chrome.storage.local.set({ googleFonts: json })
-							callback(json)
-						}
-					})
+					)
+
+				const resp = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + decod(a))
+				const json = await resp.json()
+
+				chrome.storage.local.set({ googleFonts: json })
+				callback(json)
 			}
 
 			chrome.storage.local.get('googleFonts', (local) => {
@@ -2478,16 +2405,16 @@ function customFont(data, event) {
 						try {
 							callback(local.googleFonts)
 						} catch (error) {
-							fetchGoogleFonts()
+							if (navigator.onLine) fetchGoogleFonts()
 						}
 					}
-				} else fetchGoogleFonts()
+				} else {
+					if (navigator.onLine) fetchGoogleFonts()
+				}
 			})
 		}
 
-		// If nothing, removes custom font
-		if (event.family === '') {
-			// family and size
+		function removeFont() {
 			id('fontstyle').textContent = ''
 			id('clock').style.fontFamily = ''
 			id('credit').style.fontFamily = ''
@@ -2501,23 +2428,37 @@ function customFont(data, event) {
 
 			id('i_weight').value = baseWeight
 
-			// save
-			safeFont(id('settings'))
-			save('', '', [], baseWeight)
-
-			return false
+			return { url: '', family: '', availWeights: [], weight: baseWeight }
 		}
 
-		if (event.weight) {
-			chrome.storage.sync.get('font', (data) => changeWeight(event.weight, data.font))
+		async function changeFamily(json, family) {
+			//
+			// Cherche correspondante
+			const dom = id('i_customfont')
+			const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
 
-			// 1.9.3 compatibility comes with "family"
-			// don't return now
-			if (!event.family) return false
-		}
+			// One font has been found
+			if (font.length > 0) {
+				const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
+				const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
+				const url = encodeURI(`https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`)
+				const fontface = await setFontface(url)
 
-		if (event.family) {
-			fetchFontList((json) => changeFamily(json, event.family))
+				setFamily(font[0].family, fontface)
+				setWeight(font[0].family, 400)
+				modifyWeightOptions(availWeights, null, true)
+				id('i_weight').value = '400'
+
+				if (dom) dom.blur()
+				return { url, family: font[0].family, availWeights, weight: 400 }
+			}
+
+			// No fonts found
+			else {
+				dom.value = ''
+				safeFont(id('settings'))
+				return { url: '', family: '', availWeights: [], weight: testOS.windows ? '400' : '300' }
+			}
 		}
 
 		if (event.autocomplete) {
@@ -2534,22 +2475,69 @@ function customFont(data, event) {
 
 				event.settingsDom.querySelector('#dl_fontfamily').appendChild(fragment)
 			})
+
+			return
 		}
+
+		chrome.storage.sync.get('font', async (data) => {
+			let font = data.font
+
+			if (event.size) {
+				font.size = event.size
+				setSize(event.size)
+				slowRange({ font: font }, 200)
+				return
+			}
+
+			if (event.weight) {
+				if (font.url) {
+					font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
+					font.url += event.weight
+					setFamily(font.family, await setFontface(font.url))
+				}
+
+				// If nothing, removes custom font
+				else font.weight = event.weight
+
+				setWeight(font.family, event.weight)
+				slowRange({ font: font }, 200)
+				return
+			}
+
+			if (event.family === '') {
+				safeFont(id('settings'))
+				slowRange({ font: { size: font.size, ...removeFont() } }, 200)
+				chrome.storage.local.remove('fontface')
+				return
+			}
+
+			if (event.family) {
+				fetchFontList(async (json) => {
+					slowRange({ font: { size: font.size, ...(await changeFamily(json, event.family)) } }, 200)
+				})
+			}
+		})
+	}
+
+	if (event) {
+		updateFont(event)
+		return
 	}
 
 	// init
-	if (data) {
-		try {
-			const { family, url, weight } = data
-			if (family && url) apply(url, family, weight || '400')
-			else if (weight) apply(null, null, weight)
-		} catch (e) {
-			errorMessage('Custom fonts failed to start', e)
-		}
-	}
+	try {
+		setSize(init.size)
+		setWeight(init.family, init.weight)
 
-	// event
-	if (event) triggerEvent(event)
+		// Sets family
+		if (init.family === '') return
+
+		chrome.storage.local.get('fontface', async ({ fontface }) => {
+			setFamily(init.family, fontface || (await setFontface(init.url))) // fetch font-face data if none in storage
+		})
+	} catch (e) {
+		errorMessage('Custom fonts failed to start', e)
+	}
 }
 
 function textShadow(init, event) {
@@ -2884,7 +2872,6 @@ function startup(data) {
 	weather(null, null, data)
 
 	customFont(data.font)
-	customSize(data.font)
 	textShadow(data.textShadow)
 
 	favicon(data.favicon)

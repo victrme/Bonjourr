@@ -461,7 +461,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_size').oninput = function () {
-		customSize(null, this.value)
+		customFont(null, { size: this.value })
 	}
 
 	paramId('i_textshadow').oninput = function () {
