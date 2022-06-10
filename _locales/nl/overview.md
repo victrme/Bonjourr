@@ -62,5 +62,3 @@ Wilt u een specifiek lettertype op uw homepage? U kunt het gemakkelijk selectere
 
 🌎 Meertalig
 Dankzij onze geweldige medewerkers, is Bonjourr beschikbaar in 15 verschillende talen (Engels, Frans, Sloveens, Zweeds, Pools, Braziliaans Portugees, Nederlands, Italiaans, Spaans, Russisch, Vereenvoudigd Chinees, Duits, Oekraïens, Turks en Indonesisch).
-
-Vertaald met www.DeepL.com/Translator (gratis versie)

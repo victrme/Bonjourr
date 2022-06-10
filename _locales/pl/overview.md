@@ -62,5 +62,3 @@ Chcesz mieć konkretną czcionkę na swojej stronie głównej? Możesz ją łatw
 
 🌎 Wielojęzyczność
 Dzięki naszym wspaniałym współpracownikom, Bonjourr jest dostępny w 15 różnych językach (angielski, francuski, słoweński, szwedzki, polski, brazylijski portugalski, holenderski, włoski, hiszpański, rosyjski, chiński uproszczony, niemiecki, ukraiński, turecki i indonezyjski).
-
-Przetłumaczono z www.DeepL.com/Translator (wersja darmowa)
