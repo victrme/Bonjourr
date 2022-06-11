@@ -451,16 +451,26 @@ function initParams(data, settingsDom) {
 		reader.readAsText(file)
 	}
 
-	paramId('i_export').onclick = function () {
-		const date = new Date()
+	paramId('s_settingsfile').onclick = function () {
+		clas(this, true, 'selected')
+		clas(settingsDom.querySelector('#s_settingstext'), false, 'selected')
+		settingsDom.querySelector('#settingsfile').style.display = 'block'
+		settingsDom.querySelector('#settingstext').style.display = 'none'
+	}
+
+	paramId('s_settingstext').onclick = function () {
+		clas(this, true, 'selected')
+		clas(settingsDom.querySelector('#s_settingsfile'), false, 'selected')
+		settingsDom.querySelector('#settingsfile').style.display = 'none'
+		settingsDom.querySelector('#settingstext').style.display = 'block'
+	}
+
+	paramId('exportfile').onclick = function () {
 		const a = id('exportSettings')
-		const d = date.toJSON().substring(2, 10).replaceAll('-', '')
-		const h = date.getHours()
-		const m = date.getMinutes()
 
 		chrome.storage.sync.get(null, (data) => {
 			a.href = `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`
-			a.download = `bonjourrExport_${data?.about?.version}_${d}-${h}${m}.txt`
+			a.download = `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`
 			a.click()
 		})
 	}
@@ -715,6 +725,8 @@ function settingsInit(data) {
 
 		// Apply to body
 		document.body.prepend(settingsDom)
+
+		settingsDom.scrollTo(0, 2000)
 
 		// Add Events
 		if (sessionStorage.lang) showSettings()

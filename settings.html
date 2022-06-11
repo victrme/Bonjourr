@@ -901,29 +901,45 @@
 
 		<textarea id="cssEditor" placeholder="Type in your custom CSS" maxlength="8080"></textarea>
 	</div>
-	<div class="as as_impexp">
-		<div>
-			<div class="titleContainer">
-				<h5 class="trn">Settings</h5>
+	<div>
+		<div class="titleContainer">
+			<h5 class="trn">Settings</h5>
+		</div>
+
+		<div class="param">
+			<div class="segmented">
+				<button id="s_settingsfile" class="selected">File</button>
+				<button id="s_settingstext" class="">Text</button>
 			</div>
 
-			<div class="param">
+			<div id="settingsfile">
 				<label id="importFile">
-					<p class="trn">Load Settings</p>
+					<p class="trn">Drop to load settings</p>
 					<input id="i_importfile" type="file" name="import_file" />
 				</label>
 
 				<div id="save_wrapper" class="wrapper">
 					<a id="exportSettings" href="" download=""></a>
-					<button id="i_export" class="trn">Export Settings as a file</button>
+					<button id="exportfile" class="trn">Export settings</button>
 				</div>
+			</div>
 
-				<div id="reset_wrapper" class="wrapper">
-					<button id="submitReset" class="trn">Reset settings</button>
+			<div id="settingstext">
+				<textarea id="i_settingsarea"></textarea>
+				<div>
+					<button id="copyimport">Copy settings</button>
+					<button id="exporttext" disabled>Export</button>
 				</div>
+			</div>
+
+			<hr />
+
+			<div id="reset_wrapper" class="wrapper">
+				<button id="submitReset" class="trn">Reset settings</button>
 			</div>
 		</div>
 	</div>
+
 	<div class="signature">
 		<div class="firstblock">
 			<p class="version">Bonjourr <a href="https://github.com/victrme/Bonjourr/releases">1.14.0</a></p>
