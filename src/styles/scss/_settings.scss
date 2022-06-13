@@ -826,13 +826,24 @@
 
 	#settingstext {
 		display: none;
+
+		> div {
+			display: flex;
+			justify-content: space-between;
+			padding: 0 1em;
+			min-height: 34px;
+		}
 	}
 
 	textarea#i_settingsarea {
+		font-size: 13px;
+		width: calc(100% - 2.6em);
+		padding: 0.65em 1.3em;
+		line-break: anywhere;
 		border: none;
-		width: 100%;
+		overflow-x: hidden;
 		resize: vertical;
-		height: $inputHeight;
+		height: 100px;
 		min-height: $inputHeight;
 		background-color: $inputGrey;
 

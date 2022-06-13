@@ -453,16 +453,16 @@ function initParams(data, settingsDom) {
 
 	paramId('s_settingsfile').onclick = function () {
 		clas(this, true, 'selected')
-		clas(settingsDom.querySelector('#s_settingstext'), false, 'selected')
-		settingsDom.querySelector('#settingsfile').style.display = 'block'
-		settingsDom.querySelector('#settingstext').style.display = 'none'
+		clas(paramId('s_settingstext'), false, 'selected')
+		paramId('settingsfile').style.display = 'block'
+		paramId('settingstext').style.display = 'none'
 	}
 
 	paramId('s_settingstext').onclick = function () {
 		clas(this, true, 'selected')
-		clas(settingsDom.querySelector('#s_settingsfile'), false, 'selected')
-		settingsDom.querySelector('#settingsfile').style.display = 'none'
-		settingsDom.querySelector('#settingstext').style.display = 'block'
+		clas(paramId('s_settingsfile'), false, 'selected')
+		paramId('settingsfile').style.display = 'none'
+		paramId('settingstext').style.display = 'block'
 	}
 
 	paramId('exportfile').onclick = function () {
@@ -473,6 +473,16 @@ function initParams(data, settingsDom) {
 			a.download = `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`
 			a.click()
 		})
+	}
+
+	paramId('copyimport').onclick = async function () {
+		try {
+			await navigator.clipboard.writeText(id('i_settingsarea').value)
+			this.textContent = 'Copied !'
+			setTimeout(() => (id('copyimport').textContent = 'Copy settings'), 1000)
+		} catch (err) {
+			console.error('Failed to copy: ', err)
+		}
 	}
 
 	// Fetches font list only on focus (if font family is default)
@@ -669,6 +679,20 @@ function importExport(select, isEvent, settingsDom) {
 
 	// const fncs = { exp: exportation, imp: importation, reset: anihilation }
 	// fncs[select]()
+
+	if (settingsDom) {
+		const input = settingsDom.querySelector('#i_settingsarea')
+
+		chrome.storage.sync.get(null, (data) => {
+			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+			data.about.browser = detectPlatform()
+
+			const prettified = JSON.stringify(data, null, '\t')
+
+			input.value = prettified
+		})
+	}
 }
 
 function signature(dom) {
