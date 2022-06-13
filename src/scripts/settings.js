@@ -446,7 +446,12 @@ function initParams(data, settingsDom) {
 		const reader = new FileReader()
 
 		reader.onload = function (e) {
-			console.log(reader.result)
+			try {
+				const json = JSON.parse(window.atob(reader.result))
+				importation(json)
+			} catch (err) {
+				console.log(err)
+			}
 		}
 		reader.readAsText(file)
 	}
@@ -495,7 +500,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('importtext').onclick = function () {
-		importation(id('i_settingsarea').value)
+		importation(JSON.parse(id('i_settingsarea').value))
 	}
 
 	// Fetches font list only on focus (if font family is default)
@@ -619,7 +624,7 @@ function importation(dataToImport) {
 			chrome.storage.local.get('dynamicCache', (local) => {
 				//
 				console.log(dataToImport)
-				const newImport = JSON.parse(dataToImport)
+				const newImport = dataToImport
 
 				// Remove user collection cache if collection change
 				if (sync.dynamic && newImport.dynamic) {
@@ -659,6 +664,8 @@ function paramsExport(settingsDom) {
 
 	const dom = settingsDom || id('settings')
 	const input = dom.querySelector('#i_settingsarea')
+
+	dom.querySelector('#importtext').setAttribute('disabled', '') // because cannot export same settings
 
 	chrome.storage.sync.get(null, (data) => {
 		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
