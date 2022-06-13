@@ -146,7 +146,7 @@ function initParams(data, settingsDom) {
 	//langue
 	paramId('i_lang').value = data.lang || 'en'
 
-	importExport('exp', false, settingsDom)
+	paramsExport(settingsDom)
 
 	//
 	// Events
@@ -485,6 +485,19 @@ function initParams(data, settingsDom) {
 		}
 	}
 
+	paramId('i_settingsarea').onkeyup = function () {
+		try {
+			JSON.parse(this.value)
+			id('importtext').removeAttribute('disabled')
+		} catch (error) {
+			id('importtext').setAttribute('disabled', '')
+		}
+	}
+
+	paramId('importtext').onclick = function () {
+		importation(id('i_settingsarea').value)
+	}
+
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').onfocus = function () {
 		const datalist = settingsDom.querySelector('#dl_fontfamily')
@@ -591,7 +604,7 @@ function selectBackgroundType(cat) {
 	})
 }
 
-function importExport(select, isEvent, settingsDom) {
+function importation(dataToImport) {
 	function fadeOut() {
 		const dominterface = id('interface')
 		dominterface.click()
@@ -600,99 +613,62 @@ function importExport(select, isEvent, settingsDom) {
 		setTimeout(() => location.reload(), 400)
 	}
 
-	function importation() {
-		//
-		const dom = id('i_import')
-		const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+	try {
+		// Load all sync & dynamicCache
+		chrome.storage.sync.get(null, (sync) => {
+			chrome.storage.local.get('dynamicCache', (local) => {
+				//
+				console.log(dataToImport)
+				const newImport = JSON.parse(dataToImport)
 
-		if (!isEvent || dom?.value?.length === 0) {
-			return
-		}
-
-		function applyImportation(sync, local, newImport) {
-			// Remove user collection cache if collection change
-			if (sync.dynamic && newImport.dynamic) {
-				if (sync.dynamic.collection !== newImport.dynamic.collection) {
-					local.dynamicCache.user = []
+				// Remove user collection cache if collection change
+				if (sync.dynamic && newImport.dynamic) {
+					if (sync.dynamic.collection !== newImport.dynamic.collection) {
+						local.dynamicCache.user = []
+					}
 				}
-			}
 
-			// Delete current links on imports containing links somewhere
-			// to avoid duplicates
-			if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
-				bundleLinks(sync).forEach((elem) => {
-					delete sync[elem._id]
-				})
-			}
+				// Delete current links on imports containing links somewhere
+				// to avoid duplicates
+				if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+					bundleLinks(sync).forEach((elem) => {
+						delete sync[elem._id]
+					})
+				}
 
-			sync = { ...sync, ...newImport }
-			sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
+				sync = { ...sync, ...newImport }
+				sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
 
-			chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
-			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+				chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
+				chrome.storage.sync.set(sync, chrome.storage.local.set(local))
 
-			sessionStorage.isImport = true // to separate import and new version startup
+				sessionStorage.isImport = true // to separate import and new version startup
 
-			fadeOut()
-		}
-
-		try {
-			const imported = JSON.parse(dom.value)
-
-			// Load all sync & dynamicCache
-			chrome.storage.sync.get(null, (data) =>
-				chrome.storage.local.get('dynamicCache', (local) => applyImportation(data, local, imported))
-			)
-		} catch (e) {
-			dom.value = ''
-			placeholder('Error in import code')
-			setTimeout(() => placeholder('Import code'), 2000)
-			console.error(e)
-		}
-	}
-
-	function exportation() {
-		if (!id('settings') && !settingsDom) return false
-
-		const pre = settingsDom ? settingsDom.querySelector('#i_export') : id('i_export')
-
-		chrome.storage.sync.get(null, (data) => {
-			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
-
-			data.about.browser = detectPlatform()
-			pre.textContent = JSON.stringify(data)
+				fadeOut()
+			})
 		})
+	} catch (e) {
+		console.log(e)
+	}
+}
+
+function paramsExport(settingsDom) {
+	if (!settingsDom && !id('settings')) {
+		return false
 	}
 
-	function anihilation() {
-		let input = id('submitReset')
+	const dom = settingsDom || id('settings')
+	const input = dom.querySelector('#i_settingsarea')
 
-		if (!input.hasAttribute('sure')) {
-			input.textContent = tradThis('Click again to confirm')
-			input.setAttribute('sure', '')
-		} else {
-			detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
-			fadeOut()
-		}
-	}
+	chrome.storage.sync.get(null, (data) => {
+		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+		if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+		data.about.browser = detectPlatform()
 
-	// const fncs = { exp: exportation, imp: importation, reset: anihilation }
-	// fncs[select]()
+		const prettified = JSON.stringify(data, null, '\t')
 
-	if (settingsDom) {
-		const input = settingsDom.querySelector('#i_settingsarea')
-
-		chrome.storage.sync.get(null, (data) => {
-			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
-			data.about.browser = detectPlatform()
-
-			const prettified = JSON.stringify(data, null, '\t')
-
-			input.value = prettified
-		})
-	}
+		input.value = prettified
+	})
 }
 
 function signature(dom) {

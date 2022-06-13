@@ -474,15 +474,18 @@ body {
 	}
 
 	/* total width */
+	#i_settingsarea::-webkit-scrollbar,
 	&::-webkit-scrollbar {
 		width: 15px;
 	}
 
+	#i_settingsarea::-webkit-scrollbar-track,
 	&::-webkit-scrollbar-track {
 		box-shadow: inset 0 0 15px 15px transparent;
 		border: solid 3px transparent;
 	}
 
+	#i_settingsarea::-webkit-scrollbar-thumb,
 	&::-webkit-scrollbar-thumb {
 		box-shadow: inset 0 0 15px 15px $borderGrey;
 		border: solid 3px transparent;

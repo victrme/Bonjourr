@@ -2893,8 +2893,8 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 
 window.onload = function () {
 	isExtension // On settings changes, update export code
-		? chrome.storage.onChanged.addListener(() => importExport('exp'))
-		: (window.onstorage = () => importExport('exp'))
+		? chrome.storage.onChanged.addListener(() => paramsExport())
+		: (window.onstorage = () => paramsExport())
 
 	setInterval(() => {
 		// Checks every 5 minutes if weather needs update
