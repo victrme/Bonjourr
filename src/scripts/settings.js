@@ -520,10 +520,6 @@ function initParams(data, settingsDom) {
 function showall(val, event, domSettings) {
 	if (event) chrome.storage.sync.set({ showall: val })
 	clas(event ? id('settings') : domSettings, val, 'all')
-
-	document.querySelectorAll('.as').forEach(function(as) {
-		setMaxHeight(as, val ? true : false)
-	})
 }
 
 function selectBackgroundType(cat) {
