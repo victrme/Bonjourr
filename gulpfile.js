@@ -1,7 +1,5 @@
-const { series, parallel, src, dest, watch, task } = require('gulp'),
+const { series, parallel, src, dest, watch } = require('gulp'),
 	concat = require('gulp-concat'),
-	minify = require('gulp-babel-minify'),
-	htmlmin = require('gulp-htmlmin'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
@@ -15,12 +13,7 @@ function html(platform) {
 
 	return () => {
 		const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
-		const stream = src('*.html').pipe(
-			htmlmin({
-				collapseWhitespace: true,
-				removeComments: false,
-			})
-		)
+		const stream = src('*.html')
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
@@ -34,7 +27,7 @@ function html(platform) {
 	}
 }
 
-function scripts(platform, dev) {
+function scripts(platform) {
 	//
 	// All scripts except background
 	// Online: replaces chrome.storage with homemade storage
@@ -59,10 +52,6 @@ function scripts(platform, dev) {
 				.pipe(replace('local.set(', 'setLocal('))
 				.pipe(replace('sync.remove(', 'remove(false, '))
 				.pipe(replace('local.remove(', 'remove(true, '))
-		}
-
-		if (!dev) {
-			stream.pipe(minify({ mangle: { keepClassName: true } }))
 		}
 
 		stream.pipe(dest(`release/${platform}/src/scripts`))
@@ -123,23 +112,23 @@ function locales(platform) {
 const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/scss/*.scss', './src/manifests/*.json']
 
 // prettier-ignore
-const taskOnline = (dev) => [
+const taskOnline = () => [
 	html('online'),
 	styles('online'),
 	worker('online'),
 	manifest('online'),
-	scripts('online', dev),
+	scripts('online'),
 	ressources('online', false),
 ]
 
-const taskExtension = (dev, from) => [
+const taskExtension = (from) => [
 	html(from),
 	worker(from),
 	styles(from),
 	locales(from),
 	manifest(from),
 	ressources(from),
-	scripts(from, dev),
+	scripts(from),
 	addBackground(from),
 ]
 
@@ -148,15 +137,15 @@ const taskExtension = (dev, from) => [
 //
 
 exports.online = async function () {
-	watch(filesToWatch, series(parallel(...taskOnline(true))))
+	watch(filesToWatch, series(parallel(...taskOnline())))
 }
 
 exports.chrome = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension(true, 'chrome'))))
+	watch(filesToWatch, series(parallel(...taskExtension('chrome'))))
 }
 
 exports.firefox = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension(true, 'firefox'))))
+	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
 
-exports.build = parallel(...taskOnline(false), ...taskExtension(false, 'firefox'), ...taskExtension(false, 'chrome'))
+exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'))
