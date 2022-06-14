@@ -155,7 +155,7 @@ body {
 		#main,
 		#time {
 			flex-grow: 1;
-			transition: transform 0.4s, opacity 0.4s, flex-grow 0.4s, min-height 0.4s;
+			transition: opacity 0.4s, flex-grow 0.4s, min-height 0.4s;
 			// will-change: transform, flex-grow;
 
 			// Parent blocks shrinks & hide
@@ -163,7 +163,6 @@ body {
 				flex-grow: 0 !important;
 				opacity: 0;
 				min-height: 0px;
-				max-height: 0px;
 			}
 		}
 

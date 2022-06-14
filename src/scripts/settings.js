@@ -141,7 +141,7 @@ function initParams(data, settingsDom) {
 	}
 
 	//searchbar display settings
-	// clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
+	clas(paramId('searchbar_options'), data.searchbar.on, 'shown')
 	clas(paramId('searchbar_request'), data.searchbar.engine === 'custom', 'shown')
 	//searchbar display settings
 	
@@ -714,9 +714,6 @@ function settingsInit(data) {
 
 		showall(data.showall, false, settingsDom)
 
-		setMaxHeight(id('searchbar_options'), data.searchbar.on)
-		id('i_sb').onchange = function() { setMaxHeight(id('searchbar_options')) }
-		
 		// Add Events
 		if (sessionStorage.lang) showSettings()
 		domshowsettings.onclick = () => showSettings()
