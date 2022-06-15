@@ -93,7 +93,7 @@ We recommend a Chromium based browser to work on Bonjourr.
 -   Load unpacked and select `/release/chrome` folder
     
 ### Firefox
--  Go to about:debugging#/runtime/this-firefox
+-  Go to `about:debugging#/runtime/this-firefox`
 -  Select "Load temporary Add-on"
 -  Select `manifest.json` in `/release/firefox` folder
 
