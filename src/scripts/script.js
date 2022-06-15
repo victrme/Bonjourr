@@ -28,7 +28,7 @@ function favicon(init, event) {
 }
 
 function tabTitle(init, event) {
-	const title = init ? init : event ? event.value : tradThis('New tab')
+	const title = init ? init : event ? stringMaxSize(event, 80) : tradThis('New tab')
 
 	if (event) slowRange({ tabtitle: title })
 	document.title = title

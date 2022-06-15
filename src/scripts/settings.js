@@ -244,11 +244,11 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_favicon').oninput = function () {
-		favicon(null, this)
+		favicon(null, this.value)
 	}
 
 	paramId('i_tabtitle').oninput = function () {
-		tabTitle(null, this)
+		tabTitle(null, this.value)
 	}
 
 	//quick links
