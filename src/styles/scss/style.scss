@@ -1084,14 +1084,17 @@
 
 	@include frostedGlass($tint: 12, $fbTint: 12, $blur: 40px, $alpha: 0.2, $fbAlpha: 0.8, $fbColor: #222);
 
-	pre {
-		user-select: all;
-		cursor: text;
-		max-width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
+	textarea {
+		width: calc(100% - 32px);
+		height: 100px;
+		margin-top: 1em;
 		padding: 8px 16px;
-		border-radius: 5px;
+		color: #fff;
+		font-size: 14px;
+		line-height: 20px;
+		white-space: pre;
+		resize: vertical;
+		overflow-x: hidden;
 		background-color: #1114;
 	}
 

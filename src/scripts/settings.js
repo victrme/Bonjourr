@@ -735,8 +735,9 @@ function settingsInit(data) {
 		const searchbarOn = has(id('sb_container'), 'shown') === true
 		const noSettings = has(id('settings'), 'shown') === false
 		const noEditLinks = has(id('editlink'), 'shown') === false
+		const noError = id('error') === undefined
 
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEditLinks) {
+		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEditLinks && noError) {
 			id('searchbar').focus()
 		}
 

@@ -225,7 +225,7 @@ function clock(event, init) {
 			changeAnalogFace(clock.face)
 			canDisplayInterface('clock')
 		} catch (e) {
-			errorMessage('Clock / greetings failed at init', e)
+			errorMessage('Clock or greetings failed at init', e)
 		}
 	}
 }

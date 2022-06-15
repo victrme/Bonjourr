@@ -248,20 +248,22 @@ function errorMessage(comment, error) {
 		const warning = document.createElement('div')
 		const title = document.createElement('h1')
 		const subtitle = document.createElement('p')
-		const errorcode = document.createElement('pre')
+		const errorcode = document.createElement('textarea')
 		const explain = document.createElement('p')
 		const resetButton = document.createElement('button')
 		const closeError = document.createElement('button')
 		const buttonWrap = document.createElement('div')
 
-		title.textContent = 'Bonjourr has a problem 😖'
-		subtitle.textContent = `Copy this message below and contact us !`
+		title.textContent = comment + ' 😖'
+		subtitle.textContent = `Copy your settings below and contact us !`
 		explain.textContent =
-			'Sharing this message with us helps a lot in debugging. You can also reset Bonjourr, or close this window for now if you think it is a false alert.'
+			'Sharing your settings with us helps a lot in debugging. You can also reset Bonjourr, or close this window for now if you think it is a false alert.'
 
 		explain.className = 'error-explain'
 
-		errorcode.textContent = comment + ': ' + dataStr
+		errorcode.textContent = dataStr
+		errorcode.setAttribute('spellcheck', 'false')
+
 		resetButton.textContent = 'Reset Bonjourr'
 		resetButton.addEventListener('click', () => {
 			warning.style.opacity = 0
@@ -302,7 +304,7 @@ function errorMessage(comment, error) {
 	} else {
 		chrome.storage.sync.get(null, (data) => {
 			try {
-				displayMessage(JSON.stringify(data))
+				displayMessage(JSON.stringify(data, null, 4))
 			} catch (e) {
 				displayMessage('', 'Could not load settings')
 			}
