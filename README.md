@@ -42,19 +42,6 @@ Check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss 
 
 <br>
 
-## 👨‍💻 Working on Bonjourr
-
-We recommend a Chromium based browser to work on Bonjourr.
-
--   `pnpm install`
--   `pnpm run scss` to watch sass files
--   `pnpm run chrome` in another terminal to build and watch script changes
--   Go to chrome://extension, enable dev mode
--   Load unpacked extension, select /release folder
--   Or `pnpm run online` for standalone version. Needs live server for settings to work
-
-<br>
-
 ## ✍️ Contribute
 
 Here's a list of things you can do to help us out:
@@ -89,6 +76,39 @@ If you feel like we've earned it and you want to support independant open source
 [or donate in crypto](https://commerce.coinbase.com/checkout/095cc203-130d-4e56-9716-3aa10a202d9b)
 
 </div>
+
+<br>
+
+## 👨‍💻 Working on Bonjourr
+
+We recommend a Chromium based browser to work on Bonjourr.
+
+-   `pnpm install`
+-   `pnpm run build` to build all versions
+-   `pnpm run chrome|firefox|online` to watch changes on preferred platform
+
+### Chrome
+-   Go to `chrome://extension`
+-   Enable Developer mode
+-   Load unpacked and select `/release/chrome` folder
+    
+### Firefox
+-  Go to about:debugging#/runtime/this-firefox
+-  Select "Load temporary Add-on"
+-  Select `manifest.json` in `/release/firefox` folder
+
+### Edge
+-   Go to `edge://extension`
+-   Enable Developer mode
+-   Load unpacked and select `/release/chrome` folder
+-   Replace manifest with `/src/manifests/edge.json`
+-   And rename `edge.json` to `manifest.json`
+
+### Safari
+-   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
+
+### Online
+-   Open a live server from `/release/online` folder
 
 <br>
 
