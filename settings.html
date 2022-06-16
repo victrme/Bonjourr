@@ -887,6 +887,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="as as_css cssEditor">
 		<div class="titleContainer">
 			<h5 class="trn">Custom Style</h5>
@@ -901,39 +902,50 @@
 
 		<textarea id="cssEditor" placeholder="Type in your custom CSS" maxlength="8080"></textarea>
 	</div>
-	<div>
+
+	<div id="importexport">
 		<div class="titleContainer">
-			<h5 class="trn">Settings</h5>
+			<h5 class="trn">Settings management</h5>
 		</div>
 
 		<div class="param">
-			<div class="segmented">
-				<button id="s_settingsfile" class="selected">File</button>
-				<button id="s_settingstext" class="">Text</button>
+
+			<div class="tabs">
+				<button id="s_settingsexport" class="selected">Export</button>
+				<button id="s_settingsimport" class="">Import</button>
+				<div class="glider"></div>
 			</div>
 
-			<div id="settingsfile">
+			<div id="settingsexport">
+				<textarea id="i_settingsarea" autocorrect="off" spellcheck="false"></textarea>
+
+				<div id="buttons">
+					<button id="copyimport">Copy text</button>
+					
+					<div id="save_wrapper">
+						<button id="exportfile" class="trn">Export settings</button>
+						<a id="exportSettings" href="" download=""></a>
+					</div>
+				</div>				
+				
+			</div>
+
+			<div id="settingsimport">
 				<label id="importFile">
 					<p class="trn">Drop to load settings</p>
 					<input id="i_importfile" type="file" name="import_file" />
 				</label>
 
-				<div id="save_wrapper" class="wrapper">
-					<a id="exportSettings" href="" download=""></a>
-					<button id="exportfile" class="trn">Export settings</button>
-				</div>
-			</div>
-
-			<div id="settingstext">
-				<textarea id="i_settingsarea" autocorrect="off" spellcheck="false"></textarea>
 				<div>
-					<button id="copyimport">Copy settings</button>
+					<!-- <textarea id="i_settingsarea" autocorrect="off" spellcheck="false"></textarea> -->
 					<button id="importtext" disabled>Import settings</button>
 				</div>
 			</div>
+		</div>
+	</div>
 
-			<hr />
-
+	<div id="resetContainer">
+		<div class="param">
 			<div id="reset_wrapper" class="wrapper">
 				<button id="submitReset" class="trn">Reset settings</button>
 			</div>

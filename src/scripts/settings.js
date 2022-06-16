@@ -456,18 +456,20 @@ function initParams(data, settingsDom) {
 		reader.readAsText(file)
 	}
 
-	paramId('s_settingsfile').onclick = function () {
+	paramId('s_settingsexport').onclick = function () {
 		clas(this, true, 'selected')
-		clas(paramId('s_settingstext'), false, 'selected')
-		paramId('settingsfile').style.display = 'block'
-		paramId('settingstext').style.display = 'none'
+		clas(paramId('s_settingsimport'), false, 'selected')
+		document.querySelector('.glider').style.transform = 'translateX(0%)'
+
+		clas(document.querySelector('#importexport .param'), false, 'visibleImport')
 	}
 
-	paramId('s_settingstext').onclick = function () {
+	paramId('s_settingsimport').onclick = function () {
 		clas(this, true, 'selected')
-		clas(paramId('s_settingsfile'), false, 'selected')
-		paramId('settingsfile').style.display = 'none'
-		paramId('settingstext').style.display = 'block'
+		clas(paramId('s_settingsexport'), false, 'selected')
+		document.querySelector('.glider').style.transform = 'translateX(100%)'
+		
+		clas(document.querySelector('#importexport .param'), true, 'visibleImport')
 	}
 
 	paramId('exportfile').onclick = function () {
