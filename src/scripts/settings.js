@@ -458,17 +458,12 @@ function initParams(data, settingsDom) {
 
 	paramId('s_settingsexport').onclick = function () {
 		clas(this, true, 'selected')
-		clas(paramId('s_settingsimport'), false, 'selected')
-		document.querySelector('.glider').style.transform = 'translateX(0%)'
 
 		clas(document.querySelector('#importexport .param'), false, 'visibleImport')
 	}
 
 	paramId('s_settingsimport').onclick = function () {
 		clas(this, true, 'selected')
-		clas(paramId('s_settingsexport'), false, 'selected')
-		document.querySelector('.glider').style.transform = 'translateX(100%)'
-		
 		clas(document.querySelector('#importexport .param'), true, 'visibleImport')
 	}
 

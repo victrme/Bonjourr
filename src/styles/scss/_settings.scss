@@ -114,7 +114,7 @@
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	// transform: translateX(-100%) !important;
+	transform: translateX(-100%) !important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -717,6 +717,10 @@
 		height: 200px;
 		transition: height .2s;
 
+		@mixin hoverTab() {
+			background-color: #e3e3ea;
+		}
+
 		&.visibleImport {
 			height: 203px;
 
@@ -727,6 +731,30 @@
 
 			#settingsimport {
 				height: auto;
+			}
+
+			.tabs {
+				#s_settingsexport {
+					color: $blue;
+					z-index: 2;
+
+					&:hover {
+						@include hoverTab();
+					}
+				}
+
+				#s_settingsimport {
+					z-index: 4;
+					color: white;
+
+					&:hover {
+						background-color: unset;
+					}
+				}
+
+				.glider {
+					transform: translateX(100%)
+				}
 			}
 		} 
 		
@@ -739,7 +767,6 @@
 			border-radius: 8.5px;
 			background-color: $settingsGrey;
 			align-items: center;
-			padding: 10px;
 	
 			.glider {
 				width: calc(50% - 3px);
@@ -759,25 +786,35 @@
 				width: 50%;
 				padding: unset;
 				font-size: 13px;
-				z-index: 4;
 				background-color: transparent;
 				position: relative;
 				text-decoration: none;
 				transition: color .2s;
-				
-				&.selected {
+				height: 29px;
+				border-radius: 8.5px;
+				margin: 3px;
+
+				&#s_settingsexport {
 					color: white;
+					z-index: 4;
 				}
+
+				&#s_settingsimport {
+					z-index: 2;
+
+					&:hover {
+						@include hoverTab();
+					}
+				}
+
 			}
 		}
 
 		#settingsexport {
-
-
 			#i_settingsarea {
-				width: calc(100% - 2.6em);
-				height: calc(100px - 1.3em);
-				min-height: calc(100px - 1.3em);
+				width: 100%;
+				min-height: 100px;
+				max-height: 3000px;
 				padding: 0.65em 1.3em;
 				font-size: 13px;
 				line-break: anywhere;
@@ -785,13 +822,45 @@
 				resize: vertical;
 				border: none;
 				background-color: $settingsGrey;
-	
+				box-sizing: border-box;
 				@include radiusSettings();
 			}
 	
 			#buttons {
+				margin-top: 8px;
+				display: flex;
+				height: 2em;
+				> * { flex: 1 }
+
 				#save_wrapper {
-					display: inline;
+					
+
+					#exportfile{
+						width: 100%;
+						background-color: unset;
+						border: 1px solid $blue;
+						transition: background-color .2s, color .2s;
+						opacity: 1;
+						color: $blue;
+						font-size: 13px;
+						height: 100%;
+						@include radiusSettings();
+			
+						&:hover {
+							text-decoration: none;
+							filter: brightness(0.96);
+						}
+			
+						&.clicked {
+							color: $borderGrey;
+							background-color: white;
+						}
+
+						&:hover {
+							background-color: $blue;
+							color: white;
+						}
+					}
 				}
 			}
 	
@@ -799,29 +868,7 @@
 				position: absolute;
 			}
 	
-			#exportfile {
-				opacity: 1;
-				width: 60%;
-				margin-top: 5px;
-				height: $inputHeight;
-				color: $blue;
-				font-size: 13px;
-				background-color: $settingsGrey;
-				border: 1px solid transparent;
-				transition: all 0.2s;
-	
-				@include radiusSettings();
-	
-				&:hover {
-					text-decoration: none;
-					filter: brightness(0.96);
-				}
-	
-				&.clicked {
-					color: $borderGrey;
-					background-color: white;
-				}
-			}
+
 		}
 	
 		#settingsimport {
@@ -843,26 +890,16 @@
 				transition: filter 0.1s;
 			}
 	
-			#i_importfile {
-				position: absolute;
-				display: block;
-				overflow: hidden;
-				top: 0;
-				left: 0;
-				opacity: 0;
-				height: 75px;
-				width: 100%;
-				cursor: pointer;
-			}
+			
 	
 			#importFile {
 				overflow: hidden;
 				position: relative;
 				display: block;
 				width: 100%;
-				height: 100px;
+				height: 75px;
 				min-width: 200px;
-				line-height: 100px;
+				line-height: 75px;
 				font-size: 13px;
 				text-align: center;
 				cursor: pointer;
@@ -871,8 +908,19 @@
 				border: 1px dashed transparent;
 				transition: all 0.2s;
 				transform: scale(1);
-	
 				@include radiusSettings();
+
+				#i_importfile {
+					position: absolute;
+					display: block;
+					overflow: hidden;
+					top: 0;
+					left: 0;
+					opacity: 0;
+					height: 100%;
+					width: 100%;
+					cursor: pointer;
+				}
 	
 				&:hover {
 					background-color: $focusedGrey;
