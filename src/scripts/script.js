@@ -10,7 +10,7 @@ function traduction(settingsDom, lang = 'en') {
 
 function favicon(init, event) {
 	function createFavicon(emoji) {
-		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${emoji}</text></svg>`
+		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		document.querySelector("link[rel~='icon']").href = emoji ? svg : `src/assets/${getFavicon()}`
 	}
 
@@ -28,7 +28,7 @@ function favicon(init, event) {
 }
 
 function tabTitle(init, event) {
-	const title = init ? init : event ? stringMaxSize(event, 80) : tradThis('New tab')
+	const title = init ? init : event ? stringMaxSize(event.value, 80) : tradThis('New tab')
 
 	if (event) slowRange({ tabtitle: title })
 	document.title = title
@@ -2089,7 +2089,7 @@ async function quotes(event, that, init) {
 
 			// Fetch a random quote from the quotes API
 			const query = (type += type === 'classic' ? `/${lang}` : '')
-			const response = await fetch('https://627e0e5dc8fcfb00084638ba--incandescent-pavlova-36bd49.netlify.app/' + query)
+			const response = await fetch('https://quotes.bonjourr.fr/' + query)
 			const json = await response.json()
 
 			if (response.ok) {
@@ -2996,10 +2996,6 @@ window.onload = function () {
 
 			// Update
 			if (versionChange) {
-				if (syncDefaults.about.version === '1.15.0') {
-					localStorage.hasUpdated = true
-				}
-
 				// Is at least 1.14.0, no filtering to do, just update version
 				chrome.storage.sync.set({ about: { browser: detectPlatform(), version: syncDefaults.about.version } })
 			}
