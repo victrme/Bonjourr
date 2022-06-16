@@ -5,7 +5,6 @@ function initParams(data, settingsDom) {
 	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
-	const enterBlurs = (e) => e.addEventListener('keypress', (e) => (e.key === 'Enter' ? e.target.blur() : ''))
 
 	function toggleClockOptions(dom, analog) {
 		dom.classList.remove(analog ? 'digital' : 'analog')
@@ -56,6 +55,22 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
 	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
 
+	// Input translation
+	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
+	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
+	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
+	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
+	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	paramId('i_export').setAttribute('title', tradThis('Export code'))
+
+	// Change edit tips on mobile
+	if (mobilecheck()) {
+		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
+			`Edit your Quick Links by long-pressing the icon.`
+		)
+	}
+
 	// inserts languages in select
 	Object.entries(langList).forEach(([code, title]) => {
 		let option = document.createElement('option')
@@ -66,20 +81,7 @@ function initParams(data, settingsDom) {
 
 	// Activate changelog (hasUpdated is activated in background.js)
 	if (localStorage.hasUpdated === 'true') {
-		const domshowsettings = document.querySelector('#showSettings')
-		const domchangelog = settingsDom.querySelector('#changelogContainer')
-
-		clas(domchangelog, true, 'shown')
-		clas(domshowsettings, true, 'hasUpdated')
-
-		function dismiss() {
-			clas(domshowsettings, false, 'hasUpdated')
-			domchangelog.className = 'dismissed'
-			localStorage.removeItem('hasUpdated')
-		}
-
-		settingsDom.querySelector('#link').onclick = () => dismiss()
-		settingsDom.querySelector('#log_dismiss').onclick = () => dismiss()
+		changelogControl(settingsDom)
 	}
 
 	// No bookmarks import on safari || online
@@ -102,16 +104,7 @@ function initParams(data, settingsDom) {
 	// Clock
 	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
 
-	// Input translation
-	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
-	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
-	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
-	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
-	paramId('i_export').setAttribute('title', tradThis('Export code'))
-
-	//bg
+	// Backgrounds options init
 	if (data.background_type === 'custom') {
 		paramId('custom').style.display = 'block'
 		settingsDom.querySelector('.as_collection').style.display = 'none'
@@ -131,109 +124,63 @@ function initParams(data, settingsDom) {
 		paramId('i_geol').checked = true
 	}
 
-	//searchbar display settings
+	// Searchbar display settings
 	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
 	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
 
-	//searchbar display settings
+	// CSS height control
 	if (data.cssHeight) paramId('cssEditor').style.height = data.cssHeight + 'px'
 
+	// Quotes option display
 	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
 
-	//langue
+	// Language input
 	paramId('i_lang').value = data.lang || 'en'
 
+	// Settings management control
 	importExport('exp', false, settingsDom)
 
 	//
+	//
 	// Events
 	//
+	//
 
-	const bgfile = paramId('i_bgfile')
-	const uploadContainer = paramId('uploadContainer')
-
+	// Pressing "Enter" removes focus from input to indicate change
+	const enterBlurs = (e) => e.addEventListener('keypress', (e) => (e.key === 'Enter' ? e.target.blur() : ''))
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 
 	// file input animation
-	bgfile.addEventListener('dragenter', function () {
-		uploadContainer.classList.add('dragover')
-	})
+	const bgfile = paramId('i_bgfile')
+	const upload = paramId('uploadContainer')
 
-	bgfile.addEventListener('dragleave', function () {
-		uploadContainer.classList.remove('dragover')
-	})
+	bgfile.addEventListener('dragenter', () => upload.classList.add('dragover'))
+	bgfile.addEventListener('dragleave', () => upload.classList.remove('dragover'))
+	bgfile.addEventListener('drop', () => upload.classList.remove('dragover'))
 
-	bgfile.addEventListener('drop', function () {
-		uploadContainer.classList.remove('dragover')
-	})
-
-	//general
-
-	const tooltips = settingsDom.querySelectorAll('.tooltip')
-
-	// Change edit tips on mobile
-	if (mobilecheck())
-		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
-			`Edit your Quick Links by long-pressing the icon.`
-		)
-
-	tooltips.forEach((elem) => {
+	// Tooltip text toggle
+	settingsDom.querySelectorAll('.tooltip').forEach((elem) => {
 		elem.onclick = function () {
-			const toggleTooltip = (which) => {
-				if (this.classList.contains(which)) settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
-			}
-
-			toggleTooltip('tttab')
-			toggleTooltip('ttcoll')
-			toggleTooltip('ttlinks')
-			toggleTooltip('csslinks')
+			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
+			settingsDom.querySelector('.tooltiptext.' + cl).classList.toggle('shown') // toggle tt text
 		}
 	})
 
-	function switchLangs(nextLang) {
-		function langSwitchTranslation(langs) {
-			// On 'en' lang, get the dict key, not one of its values
-			// create dict like object to parse through
-			// switchDict is: {{'current a': 'next a'}, {'current b': 'next b'} ...}
+	// Reduces opacity to better see interface appearance changes
+	if (mobilecheck()) {
+		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
+		const rangeInputs = settingsDom.querySelectorAll("input[type='range'")
 
-			const getLangList = (l) => (l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l]))
-			const changeText = (dom, str) => (dom.textContent = switchDict[str])
-
-			const { current, next } = langs
-			const nextList = getLangList(next)
-			const currentList = getLangList(current)
-			let switchDict = {}
-
-			currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
-
-			const trns = document.querySelectorAll('.trn')
-			trns.forEach((trn) => changeText(trn, trn.textContent))
-		}
-
-		const langs = {
-			current: document.documentElement.getAttribute('lang'),
-			next: nextLang,
-		}
-
-		sessionStorage.lang = nextLang // Session pour le weather
-		chrome.storage.sync.set({ lang: nextLang })
-		document.documentElement.setAttribute('lang', nextLang)
-
-		chrome.storage.sync.get(null, (data) => {
-			data.lang = nextLang
-			langSwitchTranslation(langs)
-			weather(null, null, data)
-			clock(null, data)
-
-			if (data.quotes?.type === 'classic') {
-				localStorage.removeItem('nextQuote')
-				localStorage.removeItem('currentQuote')
-				quotes(null, null, data)
-			}
+		rangeInputs.forEach(function (input) {
+			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
+			input.addEventListener('touchend', () => touchHandler(false), { passive: true })
 		})
 	}
+
+	//
+	// General
 
 	paramId('i_showall').onchange = function () {
 		showall(this.checked, true)
@@ -243,15 +190,33 @@ function initParams(data, settingsDom) {
 		switchLangs(this.value)
 	}
 
+	paramId('i_greeting').onkeyup = function () {
+		clock({ greeting: stringMaxSize(this.value, 32) })
+	}
+
 	paramId('i_favicon').oninput = function () {
-		favicon(null, this.value)
+		favicon(null, this)
 	}
 
 	paramId('i_tabtitle').oninput = function () {
-		tabTitle(null, this.value)
+		tabTitle(null, this)
 	}
 
-	//quick links
+	paramId('i_dark').onchange = function () {
+		darkmode(null, this.value)
+	}
+
+	paramId('hideelem')
+		.querySelectorAll('button')
+		.forEach((elem) => {
+			elem.onmouseup = function () {
+				elem.classList.toggle('clicked')
+				hideElem(null, null, this)
+			}
+		})
+
+	//
+	// Quick links
 
 	paramId('i_title').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
@@ -281,7 +246,8 @@ function initParams(data, settingsDom) {
 		linksrow(null, null, this.value)
 	}
 
-	//visuals
+	//
+	// Dynamic backgrounds
 
 	paramId('i_type').onchange = function () {
 		selectBackgroundType(this.value)
@@ -303,7 +269,8 @@ function initParams(data, settingsDom) {
 		this.blur()
 	}
 
-	//custom bg
+	//
+	// Custom backgrounds
 
 	paramId('i_bgfile').onchange = function () {
 		localBackgrounds(null, { is: 'newfile', file: this.files })
@@ -319,11 +286,8 @@ function initParams(data, settingsDom) {
 		slowRange({ background_bright: parseFloat(this.value) })
 	}
 
-	paramId('i_dark').onchange = function () {
-		darkmode(null, this.value)
-	}
-
-	//Time and date
+	//
+	// Time and date
 
 	paramId('i_analog').onchange = function () {
 		clock({ analog: this.checked })
@@ -346,15 +310,12 @@ function initParams(data, settingsDom) {
 		clock({ timezone: this.value })
 	}
 
-	paramId('i_greeting').onkeyup = function () {
-		clock({ greeting: stringMaxSize(this.value, 32) })
-	}
-
 	paramId('i_usdate').onchange = function () {
 		clock({ usdate: this.checked })
 	}
 
-	//weather
+	//
+	// Weather
 
 	paramId('i_city').onkeyup = function (e) {
 		if (e.code === 'Enter') {
@@ -383,7 +344,8 @@ function initParams(data, settingsDom) {
 		weather('temp', this)
 	}
 
-	//searchbar
+	//
+	// Searchbar
 
 	paramId('i_sb').onchange = function () {
 		paramId('searchbar_options').classList.toggle('shown')
@@ -407,7 +369,8 @@ function initParams(data, settingsDom) {
 		searchbar('newtab', this)
 	}
 
-	// quotes
+	//
+	// Quotes
 
 	paramId('i_quotes').onchange = function () {
 		paramId('quotes_options').classList.toggle('shown')
@@ -432,24 +395,14 @@ function initParams(data, settingsDom) {
 		quotes('author', this)
 	}
 
-	//settings
-
-	paramId('submitReset').onclick = function () {
-		importExport('reset')
-	}
-
-	paramId('submitImport').onclick = function () {
-		importExport('imp', true)
-	}
-
-	paramId('i_import').onkeypress = function (e) {
-		e.code === 'Enter' ? importExport('imp', true) : ''
-	}
+	//
+	// Custom fonts
 
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').onfocus = function () {
-		const datalist = settingsDom.querySelector('#dl_fontfamily')
-		if (datalist.childElementCount === 0) customFont(null, { autocomplete: true, settingsDom: settingsDom })
+		if (settingsDom.querySelector('#dl_fontfamily').childElementCount === 0) {
+			customFont(null, { autocomplete: true, settingsDom: settingsDom })
+		}
 	}
 
 	paramId('i_customfont').onchange = function () {
@@ -468,39 +421,99 @@ function initParams(data, settingsDom) {
 		textShadow(null, this.value)
 	}
 
-	// Reduces opacity to better see interface appearance changes
-	if (mobilecheck()) {
-		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
-		const rangeInputs = settingsDom.querySelectorAll("input[type='range'")
+	//
+	// Custom Style
 
-		rangeInputs.forEach(function (input) {
-			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
-			input.addEventListener('touchend', () => touchHandler(false), { passive: true })
-		})
-	}
-
-	paramId('hideelem')
-		.querySelectorAll('button')
-		.forEach((elem) => {
-			elem.onmouseup = function () {
-				elem.classList.toggle('clicked')
-				hideElem(null, null, this)
-			}
-		})
-
-	const cssEditor = paramId('cssEditor')
-
-	cssEditor.addEventListener('keyup', function (e) {
+	paramId('cssEditor').addEventListener('keyup', function (e) {
 		customCss(null, { is: 'styling', val: e.target.value })
 	})
 
+	cssInputSize(paramId('cssEditor'))
+
+	//
+	// Settings management
+
+	paramId('submitReset').onclick = function () {
+		importExport('reset')
+	}
+
+	paramId('submitImport').onclick = function () {
+		importExport('imp', true)
+	}
+
+	paramId('i_import').onkeypress = function (e) {
+		e.code === 'Enter' ? importExport('imp', true) : ''
+	}
+}
+
+function cssInputSize(param) {
 	setTimeout(() => {
 		const cssResize = new ResizeObserver((e) => {
 			const rect = e[0].contentRect
 			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
-		cssResize.observe(cssEditor)
+		cssResize.observe(param)
 	}, 400)
+}
+
+function changelogControl(settingsDom) {
+	const domshowsettings = document.querySelector('#showSettings')
+	const domchangelog = settingsDom.querySelector('#changelogContainer')
+
+	clas(domchangelog, true, 'shown')
+	clas(domshowsettings, true, 'hasUpdated')
+
+	function dismiss() {
+		clas(domshowsettings, false, 'hasUpdated')
+		domchangelog.className = 'dismissed'
+		localStorage.removeItem('hasUpdated')
+	}
+
+	settingsDom.querySelector('#link').onclick = () => dismiss()
+	settingsDom.querySelector('#log_dismiss').onclick = () => dismiss()
+}
+
+function switchLangs(nextLang) {
+	function langSwitchTranslation(langs) {
+		// On 'en' lang, get the dict key, not one of its values
+		// create dict like object to parse through
+		// switchDict is: {{'current a': 'next a'}, {'current b': 'next b'} ...}
+
+		const getLangList = (l) => (l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l]))
+		const changeText = (dom, str) => (dom.textContent = switchDict[str])
+
+		const { current, next } = langs
+		const nextList = getLangList(next)
+		const currentList = getLangList(current)
+		let switchDict = {}
+
+		currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
+
+		const trns = document.querySelectorAll('.trn')
+		trns.forEach((trn) => changeText(trn, trn.textContent))
+	}
+
+	const langs = {
+		current: document.documentElement.getAttribute('lang'),
+		next: nextLang,
+	}
+
+	sessionStorage.lang = nextLang // Session pour le weather
+	chrome.storage.sync.set({ lang: nextLang })
+	document.documentElement.setAttribute('lang', nextLang)
+
+	chrome.storage.sync.get(null, (data) => {
+		data.lang = nextLang
+		langSwitchTranslation(langs)
+		weather(null, null, data)
+		clock(null, data)
+
+		if (data.quotes?.type === 'classic') {
+			localStorage.removeItem('nextQuote')
+			localStorage.removeItem('currentQuote')
+			quotes(null, null, data)
+		}
+	})
 }
 
 function showall(val, event, domSettings) {
@@ -664,95 +677,91 @@ function signature(dom) {
 function settingsInit(data) {
 	const domshowsettings = id('showSettings')
 	const dominterface = id('interface')
+	const domedit = id('editlink')
 
 	function settingsCreator(html) {
-		function showSettings() {
-			const settings = id('settings')
-			const settingsNotShown = !has(settings, 'shown')
-			const domedit = id('editlink')
-
-			mobilecheck() ? '' : clas(dominterface, settingsNotShown, 'pushed')
-
-			clas(settings, false, 'init')
-			clas(settings, settingsNotShown, 'shown')
-			clas(domshowsettings, settingsNotShown, 'shown')
-			clas(domedit, settingsNotShown, 'pushed')
-		}
-
 		// HTML creation
 		const parser = new DOMParser()
 		const settingsDom = document.createElement('div')
 		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]
 
 		settingsDom.id = 'settings'
-		contentList.forEach((elem) => settingsDom.appendChild(elem))
-
 		settingsDom.setAttribute('class', 'init')
+		contentList.forEach((elem) => settingsDom.appendChild(elem))
 
 		traduction(settingsDom, data.lang)
 		signature(settingsDom)
 		initParams(data, settingsDom)
 		showall(data.showall, false, settingsDom)
 
-		// Apply to body
-		document.body.prepend(settingsDom)
-
-		// Add Events
-		if (sessionStorage.lang) showSettings()
-		domshowsettings.onclick = () => showSettings()
-		document.onkeyup = (e) => (e.code === 'Escape' ? showSettings() : '')
-	}
-
-	function interfaceClickEvents(e) {
-		//cherche le parent du click jusqu'a trouver linkblocks
-		//seulement si click droit, quitter la fct
-		let parent = e.target
-		const settings = id('settings')
-		const domedit = document.querySelector('#editlink')
-
-		while (parent !== null) {
-			parent = parent.parentElement
-			if (parent && parent.id === 'linkblocks' && e.which === 3) return false
-		}
-
-		// hides edit menu
-		if (has(domedit, 'shown')) closeEditLink()
+		document.body.prepend(settingsDom) // Apply to body
 
 		//
-		if (has(settings, 'shown')) {
-			clas(settings, false, 'shown')
-			clas(domshowsettings, false, 'shown')
-			clas(dominterface, false, 'pushed')
+		// Events
+		//
+
+		function toggleDisplay(dom) {
+			const isClosed = !has(dom, 'shown')
+
+			clas(dom, false, 'init')
+			clas(dom, isClosed, 'shown')
+			clas(domshowsettings, isClosed, 'shown')
+			clas(domedit, isClosed, 'pushed')
+
+			if (!mobilecheck()) clas(dominterface, isClosed, 'pushed')
 		}
 
-		if (document.body.classList.contains('tabbing')) {
-			clas(document.body, false, 'tabbing')
+		domshowsettings.onclick = function () {
+			toggleDisplay(settingsDom)
+		}
+
+		document.onkeydown = function (e) {
+			if (e.code === 'Escape') {
+				toggleDisplay(settingsDom) // Opens menu when pressing "Escape"
+				return
+			}
+
+			if (e.code === 'Tab') {
+				clas(document.body, true, 'tabbing') // Shows input outline when using tab
+				return
+			}
+
+			if (id('error') && e.ctrlKey) {
+				return // do nothing if pressing ctrl or if there's an error message
+			}
+
+			const conditions = [
+				['sb_container', true],
+				['settings', false],
+				['editlink', false],
+			]
+
+			if (conditions.every(([name, shouldBe]) => has(id(name), 'shown') === shouldBe)) {
+				id('searchbar').focus() // Focus searchbar if only searchbar is on
+			}
+		}
+
+		dominterface.onclick = function (e) {
+			if (e.composedPath().includes('linkblocks')) {
+				return // Do nothing if links are clicked
+			}
+
+			if (has(id('editlink'), 'shown')) {
+				closeEditLink() // hides edit menu
+			}
+
+			if (document.body.classList.contains('tabbing')) {
+				clas(document.body, false, 'tabbing') // Removes tabbing class on click
+			}
+
+			// Close menu when clicking anywhere on interface
+			if (has(settingsDom, 'shown')) {
+				clas(settingsDom, false, 'shown')
+				clas(domshowsettings, false, 'shown')
+				clas(dominterface, false, 'pushed')
+			}
 		}
 	}
 
-	function interfaceKeyEvents(e) {
-		//focus la searchbar si elle existe et les settings sont fermé
-		const searchbarOn = has(id('sb_container'), 'shown') === true
-		const noSettings = has(id('settings'), 'shown') === false
-		const noEditLinks = has(id('editlink'), 'shown') === false
-		const noError = id('error') === undefined
-
-		if (e.code !== 'Escape' && e.code !== 'ControlLeft' && searchbarOn && noSettings && noEditLinks && noError) {
-			id('searchbar').focus()
-		}
-
-		if (e.code === 'Tab') clas(document.body, true, 'tabbing')
-	}
-
-	if (window.location.protocol === 'file:') {
-		const xhr = new XMLHttpRequest()
-		xhr.open('POST', 'settings.html', true)
-		xhr.onreadystatechange = (e) => (e.target.readyState === 4 ? settingsCreator(e.target.responseText) : '')
-		xhr.send()
-	} else {
-		fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
-	}
-
-	dominterface.onclick = interfaceClickEvents
-	document.onkeydown = interfaceKeyEvents
+	fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
 }
