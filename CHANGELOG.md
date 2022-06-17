@@ -1,5 +1,13 @@
 ## Changelogs
 
+**v1.14.2**
+
+-   Better custom font performances
+-   Increased tab title length from 12 to 80 characters
+-   Fixed Russian quotes ( thanks again @DaniilChizhevskii )
+-   Fixed error message styling issues
+-   Improved font & dynamic error handling
+
 **v1.14.1**
 
 -   Added toolip on new tab title & favicon option
