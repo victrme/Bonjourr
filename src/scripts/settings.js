@@ -675,12 +675,11 @@ function signature(dom) {
 }
 
 function settingsInit(data) {
-	const domshowsettings = id('showSettings')
-	const dominterface = id('interface')
-	const domedit = id('editlink')
-
 	function settingsCreator(html) {
-		// HTML creation
+		const domshowsettings = id('showSettings')
+		const dominterface = id('interface')
+		const domedit = id('editlink')
+
 		const parser = new DOMParser()
 		const settingsDom = document.createElement('div')
 		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]

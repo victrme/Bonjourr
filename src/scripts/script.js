@@ -915,29 +915,38 @@ function weather(event, that, init) {
 			displaysForecast(weatherToSave)
 		}
 
-		let url = 'https://api.openweathermap.org/data/2.5/'
+		if (!navigator.onLine) {
+			return
+		}
+
+		const type = forecast ? 'forecast' : 'weather'
 		const lang = document.documentElement.getAttribute('lang')
+		const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
+
 		const [lat, lon] = storage.location || [0, 0]
-		url += `${forecast ? 'forecast' : 'weather'}?appid=${atob(WEATHER_API_KEY[forecast ? 0 : 1])}`
-		url += storage.location.length === 2 ? `&lat=${lat}&lon=${lon}` : `&q=${encodeURI(storage.city)},${storage.ccode}`
-		url += `&units=metric&lang=${lang}`
+		const isGeol = storage.location.length === 2
+		const geolStr = `&lat=${lat}&lon=${lon}`
+		const cityStr = `&q=${encodeURI(storage.city)},${storage.ccode}`
+		const location = isGeol ? geolStr : cityStr
+
+		const url = `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=metric&lang=${lang}`
 
 		// Inits global object
 		if (Object.keys(weatherToSave).length === 0) {
 			weatherToSave = storage
 		}
 
-		// fetches, parses and apply callback
 		try {
-			const weatherAPI = await fetch(url)
+			const weatherAPI = await fetch(url) // fetches, parses and apply callback
 
 			if (weatherAPI.ok) {
 				const json = await weatherAPI.json()
 				forecast ? saveForecast(json) : saveCurrent(json)
 			}
+
 			return weatherAPI.ok
 		} catch (error) {
-			return false
+			return
 		}
 	}
 
@@ -1686,6 +1695,11 @@ async function unsplash(init, event) {
 		const resp = await fetch(url, { headers: header })
 		const json = await resp.json()
 
+		if (resp.status === 404 || json.length === 1) {
+			console.log(json?.errors)
+			return false
+		}
+
 		const filteredList = []
 		const { width, height } = screen
 		const imgSize = width > height ? width : height // higher res on mobile
@@ -1761,18 +1775,20 @@ async function unsplash(init, event) {
 		loadBackground(list[0])
 
 		// If end of cache, get & save new list
-		if (list.length === 1) {
+		if (list.length === 1 && navigator.onLine) {
 			const newList = await requestNewList(collection)
 
-			caches[collection] = list.concat(newList)
-			await preloadImage(newList[0].url)
-			chrome.storage.local.set({ dynamicCache: caches })
-			chrome.storage.local.remove('waitingForPreload')
+			if (newList) {
+				caches[collection] = list.concat(newList)
+				await preloadImage(newList[0].url)
+				chrome.storage.local.set({ dynamicCache: caches })
+				chrome.storage.local.remove('waitingForPreload')
+			}
 
 			return
 		}
 
-		await preloadImage(list[1].url) // Or preload next
+		if (list.length > 1) await preloadImage(list[1].url) // Or preload next
 
 		chrome.storage.sync.set({ dynamic: dynamic })
 		chrome.storage.local.set({ dynamicCache: caches })
@@ -1780,26 +1796,26 @@ async function unsplash(init, event) {
 	}
 
 	async function populateEmptyList(collection, local, dynamic, isEvent) {
-		//
 		if (isEvent) {
-			collection = chooseCollection(collection)
+			collection = chooseCollection(collection) // if it comes from collection change
 		}
 
-		const newlist = await requestNewList(collection)
-
-		dynamic.time = freqControl('set')
-		local.dynamicCache[collection] = newlist
-		chrome.storage.sync.set({ dynamic: dynamic })
-
+		const newList = await requestNewList(collection)
 		const changeStart = performance.now()
 
-		await preloadImage(newlist[0].url)
-		loadBackground(newlist[0], performance.now() - changeStart)
+		if (!newList) {
+			return // Don't save dynamicCache if request failed, also don't preload nothing
+		}
+
+		await preloadImage(newList[0].url)
+		loadBackground(newList[0], performance.now() - changeStart)
+
+		local.dynamicCache[collection] = newList
 		chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 		chrome.storage.local.set({ waitingForPreload: true })
 
 		//preload
-		await preloadImage(newlist[1].url)
+		await preloadImage(newList[1].url)
 		chrome.storage.local.remove('waitingForPreload')
 	}
 
@@ -1841,8 +1857,10 @@ async function unsplash(init, event) {
 
 			// Always request another set, update last time image change and load background
 			case 'collection': {
+				if (!navigator.onLine) return
+
 				id('background_overlay').style.opacity = '0'
-				//
+
 				// remove user collec
 				if (event.collection === '') {
 					const defaultColl = chooseCollection()
@@ -1854,16 +1872,16 @@ async function unsplash(init, event) {
 					chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 
 					unsplash(sync)
+					return
 				}
 
 				// add new collec
-				else {
-					sync.dynamic.collection = event.collection
-					sync.dynamic.lastCollec = 'user'
+				sync.dynamic.collection = event.collection
+				sync.dynamic.lastCollec = 'user'
+				sync.dynamic.time = freqControl('set')
+				chrome.storage.sync.set({ dynamic: sync.dynamic })
 
-					populateEmptyList(event.collection, local, sync.dynamic, true)
-				}
-
+				populateEmptyList(event.collection, local, sync.dynamic, true)
 				break
 			}
 		}
@@ -2374,42 +2392,26 @@ function customFont(init, event) {
 
 	function updateFont(event) {
 		function fetchFontList(callback) {
-			async function fetchGoogleFonts() {
-				const a =
-					'NjUsNzQsMTI0LDEwMCw4NywxMjYsNzEsMTA5LDk0LDg1LDk1LDg4LDEwMiw3OSw2NSw5OCwxMzYsNjksMTMxLDEzNiw5NSwxMDYsMTE3LDk2LDEyNSwxMjcsMTA0LDEzNCwxMTMsMTA0LDE0Myw3NiwxMzMsMTEwLDE1NSw4NSwxMzMsMTQyLDEwMw=='
+			chrome.storage.local.get('googleFonts', async (local) => {
+				//
+				// Get list from storage
+				if (local.googleFonts && !local.googleFonts?.error) {
+					callback(local.googleFonts)
+					return
+				}
 
-				const decod = (str) =>
-					new TextDecoder().decode(
-						new Uint8Array(
-							window
-								.atob(str)
-								.split(',')
-								.map((e, t) => e - t)
-						)
-					)
+				// Get list from API if browser is online
+				if (navigator.onLine) {
+					const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
+					const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
+					const resp = await fetch(url)
 
-				const resp = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + decod(a))
-				const json = await resp.json()
+					if (!resp.ok) return // return nothing if smth wrong, will try to fetch next time
 
-				chrome.storage.local.set({ googleFonts: json })
-				callback(json)
-			}
+					const json = await resp.json()
+					chrome.storage.local.set({ googleFonts: json })
 
-			chrome.storage.local.get('googleFonts', (local) => {
-				if (local.googleFonts) {
-					if (local.googleFonts.error) {
-						chrome.storage.local.remove('googleFonts')
-						console.log('Google Fonts messed up: ', local.googleFonts.error)
-						return false
-					} else {
-						try {
-							callback(local.googleFonts)
-						} catch (error) {
-							if (navigator.onLine) fetchGoogleFonts()
-						}
-					}
-				} else {
-					if (navigator.onLine) fetchGoogleFonts()
+					callback(json)
 				}
 			})
 		}
@@ -2463,6 +2465,8 @@ function customFont(init, event) {
 
 		if (event.autocomplete) {
 			fetchFontList(function fillFamilyInput(json) {
+				if (!json) return
+
 				const fragment = new DocumentFragment()
 
 				json.items.forEach(function addOptions(item) {
