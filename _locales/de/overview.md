@@ -61,4 +61,4 @@ Haben Sie eine bestimmte Idee im Kopf? Bonjourr bietet Ihnen mit dem Abschnitt f
 Möchten Sie eine bestimmte Schriftart für Ihre Homepage? Dank der Bonjourr-Integration mit Google Fonts können Sie diese ganz einfach auswählen.
 
 🌎 Mehrsprachig
-Dank unserer großartigen Mitwirkenden ist Bonjourr in 15 verschiedenen Sprachen verfügbar (Englisch, Französisch, Slowenisch, Schwedisch, Polnisch, Portugiesisch (Brasilien), Niederländisch, Italienisch, Spanisch, Russisch, Chinesisch (vereinfacht), Deutsch, Ukrainisch, Türkisch und Indonesisch).
+Dank unserer großartigen Mitwirkenden ist Bonjourr in 15 verschiedenen Sprachen verfügbar.

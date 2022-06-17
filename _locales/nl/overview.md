@@ -61,4 +61,4 @@ Heeft u een specifiek idee in gedachten? Bonjourr heeft u gedekt met de aangepas
 Wilt u een specifiek lettertype op uw homepage? U kunt het gemakkelijk selecteren dankzij Bonjourr integreert met Google Fonts.
 
 🌎 Meertalig
-Dankzij onze geweldige medewerkers, is Bonjourr beschikbaar in 15 verschillende talen (Engels, Frans, Sloveens, Zweeds, Pools, Braziliaans Portugees, Nederlands, Italiaans, Spaans, Russisch, Vereenvoudigd Chinees, Duits, Oekraïens, Turks en Indonesisch).
+Dankzij onze geweldige medewerkers, is Bonjourr beschikbaar in 15 verschillende talen.

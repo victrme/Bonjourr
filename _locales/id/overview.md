@@ -61,4 +61,4 @@ Punya ide spesifik dalam pikiran Anda? Bonjourr telah Anda liput dengan bagian g
 Ingin font tertentu di beranda Anda? Anda dapat dengan mudah memilihnya berkat integrasi Bonjourr dengan Google Fonts.
 
 🌎 Multibahasa
-Berkat kontributor kami yang luar biasa, Bonjourr tersedia dalam 15 bahasa yang berbeda (Inggris, Prancis, Slovenia, Swedia, Polandia, Portugis Brasil, Belanda, Italia, Spanyol, Rusia, Cina Sederhana, Jerman, Ukraina, Turki dan Indonesia).
+Berkat kontributor kami yang luar biasa, Bonjourr tersedia dalam 15 bahasa yang berbeda.

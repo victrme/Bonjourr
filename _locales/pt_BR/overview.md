@@ -61,4 +61,4 @@ Tem uma idéia específica em mente? Bonjourr tem você coberto com a seção de
 Deseja uma fonte específica em sua página inicial ? Você pode selecioná-la facilmente graças à integração Bonjourr com o Google Fonts.
 
 🌎 Multilinguagem
-Graças a nossos incríveis colaboradores, Bonjourr está disponível em 15 idiomas diferentes (inglês, francês, esloveno, sueco, polonês, português do Brasil, holandês, italiano, espanhol, russo, chinês simplificado, alemão, ucraniano, turco e indonésio).
+Graças a nossos incríveis colaboradores, Bonjourr está disponível em 15 idiomas diferentes.

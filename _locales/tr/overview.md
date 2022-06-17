@@ -61,4 +61,4 @@ Aklınızda belirli bir fikir mi var? Bonjourr, özel stiller bölümüyle sizi 
 Ana sayfanızda belirli bir yazı tipi mi istiyorsunuz? Bonjourr'un Google Fonts ile entegrasyonu sayesinde kolayca seçebilirsiniz.
 
 🌎 Çoklu Dil
-Müthiş katılımcılarımız sayesinde Bonjourr 15 farklı dilde (İngilizce, Fransızca, Slovence, İsveççe, Lehçe, Brezilya Portekizcesi, Felemenkçe, İtalyanca, İspanyolca, Rusça, Basitleştirilmiş Çince, Almanca, Ukraynaca, Türkçe ve Endonezyaca) mevcuttur.
+Müthiş katılımcılarımız sayesinde Bonjourr 15 farklı dilde mevcuttur.

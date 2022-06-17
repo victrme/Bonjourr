@@ -59,4 +59,4 @@ Avete in mente un'idea specifica? Bonjourr vi offre la sezione degli stili perso
 Volete un font specifico per la vostra homepage? Potete selezionarlo facilmente grazie all'integrazione di Bonjourr con Google Fonts.
 
 🌎 Multilingua
-Grazie ai nostri fantastici collaboratori, Bonjourr è disponibile in 15 lingue diverse (inglese, francese, sloveno, svedese, polacco, portoghese brasiliano, olandese, italiano, spagnolo, russo, cinese semplificato, tedesco, ucraino, turco e indonesiano).
+Grazie ai nostri fantastici collaboratori, Bonjourr è disponibile in 15 lingue diverse.

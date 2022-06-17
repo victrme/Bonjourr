@@ -61,4 +61,4 @@ Masz w głowie konkretny pomysł? Bonjourr ma dla Ciebie rozwiązanie w postaci 
 Chcesz mieć konkretną czcionkę na swojej stronie głównej? Możesz ją łatwo wybrać dzięki integracji Bonjourr z Google Fonts.
 
 🌎 Wielojęzyczność
-Dzięki naszym wspaniałym współpracownikom, Bonjourr jest dostępny w 15 różnych językach (angielski, francuski, słoweński, szwedzki, polski, brazylijski portugalski, holenderski, włoski, hiszpański, rosyjski, chiński uproszczony, niemiecki, ukraiński, turecki i indonezyjski).
+Dzięki naszym wspaniałym współpracownikom, Bonjourr jest dostępny w 15 różnych językach.

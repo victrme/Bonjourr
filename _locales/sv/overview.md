@@ -61,4 +61,4 @@ Har du en specifik idé i åtanke? Bonjourr har dig täckt med sektionen för an
 Vill du ha ett specifikt typsnitt på din hemsida? Du kan enkelt välja det tack vare Bonjourrs integrering med Google Fonts.
 
 🌎 Flera språk
-Tack vare våra fantastiska medarbetare finns Bonjourr på 15 olika språk (engelska, franska, slovenska, svenska, polska, brasilianska portugisiska, nederländska, italienska, spanska, ryska, förenklad kinesiska, tyska, ukrainska, turkiska och indonesiska).
+Tack vare våra fantastiska medarbetare finns Bonjourr på 15 olika språk.
