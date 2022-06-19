@@ -1439,7 +1439,7 @@ function localBackgrounds(init, event) {
 			}
 
 			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
-				const _id = e.target.parentElement.id
+				const _id = e.target.parentElement.parentElement.id
 				let { idsList, selectedId } = local
 				let poppedList = idsList.filter((a) => !a.includes(_id))
 

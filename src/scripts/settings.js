@@ -161,19 +161,13 @@ function initParams(data, settingsDom) {
 	//general
 
 	paramClasses('uploadContainer').forEach(function(uploadContainer) {
+		toggleDrag = () => uploadContainer.classList.toggle('dragover')
+
 		const input = uploadContainer.querySelector('input[type="file"')
 
-		input.addEventListener('dragenter', function () {
-			uploadContainer.classList.add('dragover')
-		})
-	
-		input.addEventListener('dragleave', function () {
-			uploadContainer.classList.remove('dragover')
-		})
-	
-		input.addEventListener('drop', function () {
-			uploadContainer.classList.remove('dragover')
-		})
+		input.addEventListener('dragenter', toggleDrag)
+		input.addEventListener('dragleave', toggleDrag)
+		input.addEventListener('drop', toggleDrag)
 	})
 
 	const tooltips = settingsDom.querySelectorAll('.tooltip')
