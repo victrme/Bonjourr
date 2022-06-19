@@ -710,7 +710,8 @@
 		resize: vertical;
 		border: none;
 		padding: $settingsMargin 1.3em;
-		font-family: 'SF Mono', 'Courier New', Courier, monospace;
+		font-family: $code;
+		tab-size: 1.5em;
 		box-sizing: border-box;
 		@include radiusSettings();
 		@include marginSettings();
@@ -724,44 +725,6 @@
 			background-color: #e3e3ea;
 		}
 
-		&.visibleImport {
-			min-height: 192px; // change for smooth transition between tabs
-
-			#settingsexport {
-				height: 0px;
-				overflow: hidden;
-			}
-
-			#settingsimport {
-				height: auto;
-				overflow: visible;
-			}
-
-			.tabs {
-				#s_settingsexport {
-					color: $blue;
-					z-index: 2;
-
-					&:hover {
-						@include hoverTab();
-					}
-				}
-
-				#s_settingsimport {
-					z-index: 4;
-					color: white;
-
-					&:hover {
-						background-color: unset;
-					}
-				}
-
-				.glider {
-					transform: translateX(100%)
-				}
-			}
-		} 
-		
 		.tabs {
 			position: relative;
 			display: flex;
@@ -814,6 +777,44 @@
 			}
 		}
 
+		&.visibleImport {
+			min-height: 192px; // change for smooth transition between tabs
+
+			#settingsexport {
+				height: 0px;
+				overflow: hidden;
+			}
+
+			#settingsimport {
+				height: auto;
+				overflow: visible;
+			}
+
+			.tabs {
+				#s_settingsexport {
+					color: $blue;
+					z-index: 2;
+
+					&:hover {
+						@include hoverTab();
+					}
+				}
+
+				#s_settingsimport {
+					z-index: 4;
+					color: white;
+
+					&:hover {
+						background-color: unset;
+					}
+				}
+
+				.glider {
+					transform: translateX(100%)
+				}
+			}
+		} 
+		
 		#settingsexport {
 			#i_settingsarea {
 				width: 100%;
@@ -827,6 +828,8 @@
 				border: none;
 				background-color: $settingsGrey;
 				box-sizing: border-box;
+				font-family: $code;
+				tab-size: 1.5em;
 				@include radiusSettings();
 			}
 	
@@ -880,8 +883,11 @@
 				display: flex;
 				margin-top: 15px;
 
-				input[type="text"] {
+				#i_importtext {
 					flex: 1;
+					margin-right: 1em;
+					font-family: $code;
+					tab-size: .05em;
 				}
 			}
 	

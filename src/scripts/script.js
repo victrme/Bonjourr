@@ -1428,7 +1428,7 @@ function localBackgrounds(init, event) {
 					id('background_overlay').style.opacity = `0`
 					localIsLoading = true
 					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
-					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulu
+					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
 				}
 			})
 		}

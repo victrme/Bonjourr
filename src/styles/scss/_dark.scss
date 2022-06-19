@@ -100,6 +100,52 @@
 			background-color: $greyish;
 		}
 
+		#importexport .param {
+
+			#settingsexport #i_settingsarea {
+				background-color: $greyish;
+				color: white;
+				overflow: scroll;
+
+				&::-webkit-resizer {
+					background: $greyish;
+				}
+			}
+
+			.tabs {
+				background-color: $greyish;
+
+				#s_settingsimport {
+					color: white;
+
+					&:hover {
+						background-color: #2a2a2b;
+					}
+				}
+			}
+
+			&.visibleImport {
+				.tabs {
+					#s_settingsexport {
+						color: white;
+
+	
+						&:hover {
+							background-color: #2a2a2b;
+						}
+					}
+	
+					#s_settingsimport {
+						color: white;
+
+						&:hover {
+							background-color: unset;
+						}
+					}
+				}
+			}
+		}
+
 		.tooltip,
 		.titleContainer,
 		.tooltiptext {

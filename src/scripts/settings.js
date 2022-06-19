@@ -481,7 +481,7 @@ function initParams(data, settingsDom) {
 		}
 	}
 
-	paramId('i_settingsarea').onkeyup = function () {
+	paramId('i_importtext').onkeyup = function () {
 		try {
 			JSON.parse(this.value)
 			id('importtext').removeAttribute('disabled')
@@ -491,7 +491,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('importtext').onclick = function () {
-		importation(JSON.parse(id('i_settingsarea').value))
+		importation(JSON.parse(id('i_importtext').value))
 	}
 
 	// Fetches font list only on focus (if font family is default)
