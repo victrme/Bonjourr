@@ -884,7 +884,7 @@ const dict = {
 		id: 'Tampilkan semua pengaturan',
 		da: 'Vis alle indstillingerne',
 	},
-	'More info': {
+	'Learn more': {
 		fr: 'En savoir plus',
 		sv: 'Mer information',
 		nl: 'Meer informatie',

@@ -2,6 +2,7 @@ function initParams(data, settingsDom) {
 	//
 
 	const paramId = (str) => settingsDom.querySelector('#' + str)
+	const paramClasses = (str) => settingsDom.querySelectorAll('.' + str)
 	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
@@ -152,27 +153,28 @@ function initParams(data, settingsDom) {
 	// Events
 	//
 
-	const bgfile = paramId('i_bgfile')
-	const uploadContainer = paramId('uploadContainer')
 
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 
-	// file input animation
-	bgfile.addEventListener('dragenter', function () {
-		uploadContainer.classList.add('dragover')
-	})
-
-	bgfile.addEventListener('dragleave', function () {
-		uploadContainer.classList.remove('dragover')
-	})
-
-	bgfile.addEventListener('drop', function () {
-		uploadContainer.classList.remove('dragover')
-	})
-
 	//general
+
+	paramClasses('uploadContainer').forEach(function(uploadContainer) {
+		const input = uploadContainer.querySelector('input[type="file"')
+
+		input.addEventListener('dragenter', function () {
+			uploadContainer.classList.add('dragover')
+		})
+	
+		input.addEventListener('dragleave', function () {
+			uploadContainer.classList.remove('dragover')
+		})
+	
+		input.addEventListener('drop', function () {
+			uploadContainer.classList.remove('dragover')
+		})
+	})
 
 	const tooltips = settingsDom.querySelectorAll('.tooltip')
 
