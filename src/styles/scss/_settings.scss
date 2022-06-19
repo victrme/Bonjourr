@@ -286,8 +286,10 @@
 		}
 
 		&.ttlinks,
-		&.csslinks {
+		&.csslinks,
+		&.settingsMngmt {
 			margin: 0 3rem;
+			
 			&.shown {
 				margin-bottom: 1rem;
 				max-height: 55px;
@@ -714,15 +716,15 @@
 	}
 
 	#importexport .param {
-		height: 200px;
-		transition: height .2s;
+		min-height: 192px;
+		transition: min-height .2s;
 
 		@mixin hoverTab() {
 			background-color: #e3e3ea;
 		}
 
 		&.visibleImport {
-			height: 203px;
+			min-height: 192px; // change for smooth transition between tabs
 
 			#settingsexport {
 				height: 0px;
@@ -763,7 +765,7 @@
 			display: flex;
 			width: 220px;
 			margin: auto;
-			margin-bottom: 10px;
+			margin-bottom: 15px;
 			border-radius: 8.5px;
 			background-color: $settingsGrey;
 			align-items: center;
@@ -875,12 +877,13 @@
 			height: 0px;
 			overflow: hidden;
 
-			> div {
+			#pasteAsText {
 				display: flex;
-				justify-content: space-between;
-				width: 80%;
-				margin: auto;
-				min-height: 34px;
+				margin-top: 15px;
+
+				input[type="text"] {
+					flex: 1;
+				}
 			}
 	
 			button:disabled {

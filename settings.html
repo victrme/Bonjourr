@@ -906,6 +906,12 @@
 	<div id="importexport">
 		<div class="titleContainer">
 			<h5 class="trn">Settings management</h5>
+			<div class="tooltip settingsMngmt">?</div>
+		</div>
+
+		<div class="tooltiptext settingsMngmt">
+			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
+			<a class="trn" href="https://bonjourr.fr/#" referrerpolicy="no-referrer">Learn more</a>
 		</div>
 
 		<div class="param">
@@ -932,13 +938,13 @@
 
 			<div id="settingsimport">
 				<label id="importFile">
-					<p class="trn">Drop to load settings</p>
+					<p class="trn">Drop file to load settings</p>
 					<input id="i_importfile" type="file" name="import_file" />
 				</label>
 
-				<div>
-					<!-- <textarea id="i_settingsarea" autocorrect="off" spellcheck="false"></textarea> -->
-					<button id="importtext" disabled>Import settings</button>
+				<div id="pasteAsText">
+					<input type="text" placeholder="or paste as text">
+					<button id="importtext">Import</button>
 				</div>
 			</div>
 		</div>
