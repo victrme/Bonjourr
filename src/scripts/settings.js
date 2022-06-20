@@ -178,7 +178,7 @@ function initParams(data, settingsDom) {
 				if (this.classList.contains(which)) settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
 			}
 
-			const names = ['tttab', 'ttcoll', 'ttlinks', 'csslinks', 'settingsMngmt']
+			const names = ['tttab', 'ttcoll', 'ttlinks', 'ttcss', 'ttexport']
 			names.forEach(name => toggleTooltip(name));
 		}
 	})

@@ -114,7 +114,7 @@
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	transform: translateX(-100%) !important;
+	// transform: translateX(-100%) !important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -298,8 +298,8 @@
 		}
 
 		&.ttlinks,
-		&.csslinks,
-		&.settingsMngmt {
+		&.ttcss,
+		&.ttexport {
 			margin: 0 3rem;
 
 			&.shown {
