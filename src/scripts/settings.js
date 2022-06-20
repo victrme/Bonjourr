@@ -44,6 +44,7 @@ function initParams(data, settingsDom) {
 	initInput('i_textshadow', data.textShadow)
 
 	initCheckbox('i_showall', data.showall)
+	initCheckbox('i_quicklinks', data.quicklinks)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_geol', isThereData('weather', 'location'))
@@ -88,6 +89,9 @@ function initParams(data, settingsDom) {
 	// No bookmarks import on safari || online
 	if (window.location.protocol === 'safari-web-extension:' || window.location.protocol.match(/https?:/gim))
 		paramId('b_importbookmarks').style.display = 'none'
+
+	// quick links
+	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
 
 	// Hide elems
 	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
@@ -227,6 +231,11 @@ function initParams(data, settingsDom) {
 	//
 	// Quick links
 
+	paramId('i_quicklinks').onchange = function () {
+		paramId('quicklinks_options').classList.toggle('shown')
+		quickLinks('toggle', this.checked)
+	}
+
 	paramId('i_title').onkeyup = function (e) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
@@ -357,7 +366,6 @@ function initParams(data, settingsDom) {
 	// Searchbar
 
 	paramId('i_sb').onchange = function () {
-		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
 		slow(this)
 	}

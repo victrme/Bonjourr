@@ -52,11 +52,11 @@
 			</div>
 		</div>
 
-		<div id="interface" class="init">
-			<div id="background_overlay">
-				<div id="background"></div>
-			</div>
+		<div id="background_overlay">
+			<div id="background"></div>
+		</div>
 
+		<div id="interface" class="init">
 			<div id="time">
 				<div id="time-container">
 					<div id="clock" class="hidden"></div>
@@ -85,37 +85,43 @@
 						<p id="forecast" class="wait">forecast</p>
 					</div>
 
-					<div id="widget" class="wait">
+					<div id="tempContainer" class="wait">
 						<p>00</p>
 					</div>
 				</div>
 			</div>
 
-			<div id="sb_container">
-				<input id="searchbar" type="text" name="searchbar" autocomplete="off" />
-				<button id="sb_empty">✕</button>
-				<button id="sb_submit">
-					<img src="src/assets/interface/magnifying-glass.svg" />
-				</button>
-			</div>
-
-			<div id="linkblocks">
-				<div id="linkblocks_inner">
-					<a href="" id="hiddenlink"></a>
+			<div id="widgets">
+				<div id="sb_container">
+					<input id="searchbar" type="text" name="searchbar" autocomplete="off" />
+					<button id="sb_empty">✕</button>
+					<button id="sb_submit">
+						<img src="src/assets/interface/magnifying-glass.svg" />
+					</button>
+				</div>
+	
+				<div id="linkblocks">
+					<div id="linkblocks_inner">
+						<a href="" id="hiddenlink"></a>
+					</div>
+				</div>
+	
+				<div id="quotes_container">
+					<p id="quote"></p>
+					<p id="author"></p>
 				</div>
 			</div>
+		</div>
 
-			<div id="quotes_container">
-				<p id="quote"></p>
-				<p id="author"></p>
+		<footer>
+			<div id="credit"></div>
+
+			<div id="showSettings" class="init">
+				<button>
+					<img src="src/assets/interface/gear.svg" draggable="false" />
+				</button>
 			</div>
-		</div>
-
-		<div id="credit"></div>
-
-		<div id="showSettings" class="init">
-			<button><img src="src/assets/interface/gear.svg" draggable="false" /></button>
-		</div>
+		</footer>
 
 		<script src="src/scripts/lang.js"></script>
 		<script src="src/scripts/utils.js"></script>

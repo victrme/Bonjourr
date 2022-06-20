@@ -59,6 +59,19 @@ const getFavicon = () => {
 	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
 }
 
+// gives perfect max-height to hideable element
+const setMaxHeight = (elem, state) => {
+	let maxHeight
+
+	if (state == null) { // toggles between 0 and value
+		maxHeight = id(elem.id).style.maxHeight === '0px' ? id(elem.id).scrollHeight : 0
+	} else {
+		maxHeight = state ? elem.scrollHeight : 0 	
+	}
+
+	elem.style.maxHeight = maxHeight + 'px'
+}
+
 function periodOfDay(sunTime, time) {
 	// Transition day and night with noon & evening collections
 	// if clock is + /- 60 min around sunrise/set
@@ -366,6 +379,7 @@ function tradThis(str) {
 const syncDefaults = {
 	usdate: false,
 	showall: false,
+	quicklinks: true,
 	linksrow: 6,
 	linkstyle: 'large',
 	cssHeight: 80,

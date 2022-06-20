@@ -651,10 +651,17 @@ function quickLinks(event, that, init) {
 	}
 
 	if (event) {
+		const Toggle = event === 'toggle'
 		const Input = event === 'input'
 		const Button = event === 'button'
 		const Newtab = event === 'linknewtab'
 		const Style = event === 'linkstyle'
+
+		if (Toggle) {
+			id('linkblocks').setAttribute('class', that ? 'shown' : 'hidden')
+			interfaceControl(null, that, 'links')
+			chrome.storage.sync.set({ quicklinks: that })
+		}
 
 		if (Input || Button) {
 			linkSubmission(that)
@@ -685,6 +692,7 @@ function quickLinks(event, that, init) {
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	linksrow(init.linksrow, init.linkstyle)
 	initblocks(bundleLinks(init))
+	id('linkblocks').setAttribute('class', init.quicklinks ? 'shown' : 'hidden')
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
@@ -819,7 +827,7 @@ function weather(event, that, init) {
 	const sett_city = id('sett_city')
 	const current = id('current')
 	const forecast = id('forecast')
-	const widget = id('widget')
+	const tempContainer = id('tempContainer')
 
 	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
 	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
@@ -1005,7 +1013,7 @@ function weather(event, that, init) {
 			}
 
 			current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
-			widget.querySelector('p').textContent = actual + '°'
+			tempContainer.querySelector('p').textContent = actual + '°'
 		}
 
 		function handleWidget() {
@@ -1028,7 +1036,7 @@ function weather(event, that, init) {
 				if (category[0].includes(currentState.icon_id)) filename = category[1]
 			})
 
-			const widgetIcon = widget.querySelector('img')
+			const widgetIcon = tempContainer.querySelector('img')
 			const { now, rise, set } = sunTime()
 			const timeOfDay = now < rise || now > set ? 'night' : 'day'
 			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
@@ -1039,10 +1047,10 @@ function weather(event, that, init) {
 				const icon = document.createElement('img')
 				icon.src = iconSrc
 				icon.setAttribute('draggable', 'false')
-				widget.prepend(icon)
+				tempContainer.prepend(icon)
 
 				// from 1.2s request anim to .4s hide elem anim
-				setTimeout(() => (widget.style.transition = 'opacity .4s'), 400)
+				setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 			}
 		}
 
@@ -1050,7 +1058,7 @@ function weather(event, that, init) {
 		handleDescription()
 
 		clas(current, false, 'wait')
-		clas(widget, false, 'wait')
+		clas(tempContainer, false, 'wait')
 	}
 
 	function displaysForecast(weather) {
@@ -1995,6 +2003,7 @@ function searchbar(event, that, init) {
 				case 'searchbar': {
 					data.searchbar.on = that.checked
 					display(that.checked)
+					interfaceControl(null, that.checked, 'searchbar')
 					break
 				}
 
@@ -2153,6 +2162,7 @@ async function quotes(event, that, init) {
 						display(on)
 					})
 
+					interfaceControl(null, on, 'quotes')
 					break
 				}
 
@@ -2576,7 +2586,7 @@ function customCss(init, event) {
 function hideElem(init, buttons, that) {
 	const IDsList = [
 		['time', ['time-container', 'date']],
-		['main', ['greetings', 'description', 'widget']],
+		['main', ['greetings', 'description', 'tempContainer']],
 		['linkblocks', ['linkblocks']],
 		['showSettings', ['showSettings']],
 	]
@@ -2861,12 +2871,37 @@ function filterImports(data) {
 	return result
 }
 
-// function browserSpecifics() {
-// 	if (getBrowser() === 'edge') {
-// 		console.log(id('settings'))
-// 		id('tabIcon').style.color = 'pink'
-// 	}
-// }
+function interfaceControl(init, event, type) {
+	function display(links, searchbar, quotes) {
+		// !quicklinks && !quotes && !searchbar ? id('widgets').classList.add('empty') : id('widgets').classList.remove('empty')
+
+		if (!links && !quotes && !searchbar) {
+			id('widgets').classList.add('empty')
+			console.log('empty')
+		} else {
+			id('widgets').classList.remove('empty')
+			console.log('pas empty')
+		}
+	}
+
+	if (init) display(init.quicklinks, init.searchbar.on, init.quotes.on)
+
+	if (typeof event !== 'undefined') {
+		chrome.storage.sync.get(['searchbar', 'quotes', 'quicklinks'], (data) => {
+			switch(type) {
+				case 'links':
+					display(event, data.searchbar.on, data.quotes.on)
+					break
+				case 'searchbar':
+					display(data.quicklinks, event, data.quotes.on)
+					break
+				case 'quotes':
+					display(data.quicklinks, data.searchbar.on, event)
+					break
+			}
+		});
+	}
+}
 
 function startup(data) {
 	traduction(null, data.lang)
@@ -2890,6 +2925,7 @@ function startup(data) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
+	interfaceControl(data)
 
 	setTimeout(() => settingsInit(data), 200)
 }
@@ -2939,6 +2975,7 @@ window.onload = function () {
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 
 		window.addEventListener('resize', appHeight)
+		appHeight()
 
 		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
 			// Fix for opening tabs Firefox iOS
