@@ -164,15 +164,13 @@ function initParams(data, settingsDom) {
 		input.addEventListener('drop', toggleDrag)
 	})
 
-	const tooltips = settingsDom.querySelectorAll('.tooltip')
-
 	// Change edit tips on mobile
 	if (mobilecheck())
 		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
 			`Edit your Quick Links by long-pressing the icon.`
 		)
 
-	tooltips.forEach((elem) => {
+		settingsDom.querySelectorAll('.tooltip').forEach((elem) => {
 		elem.onclick = function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			settingsDom.querySelector('.tooltiptext.' + cl).classList.toggle('shown') // toggle tt text
