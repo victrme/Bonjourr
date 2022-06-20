@@ -1437,7 +1437,7 @@ function localBackgrounds(init, event) {
 					id('background_overlay').style.opacity = `0`
 					localIsLoading = true
 					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
-					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulu
+					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
 				}
 			})
 		}
@@ -2909,8 +2909,8 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 
 window.onload = function () {
 	isExtension // On settings changes, update export code
-		? chrome.storage.onChanged.addListener(() => importExport('exp'))
-		: (window.onstorage = () => importExport('exp'))
+		? chrome.storage.onChanged.addListener(() => paramsExport())
+		: (window.onstorage = () => paramsExport())
 
 	setInterval(() => {
 		// Checks every 5 minutes if weather needs update

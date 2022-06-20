@@ -66,7 +66,7 @@
 
 				<div class="tooltiptext tttab">
 					<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
-					<a class="trn" href="https://bonjourr.fr/misc#newtab" referrerpolicy="no-referrer">More info</a>
+					<a class="trn" href="https://bonjourr.fr/misc#newtab" referrerpolicy="no-referrer">Learn more</a>
 				</div>
 
 				<hr />
@@ -115,7 +115,7 @@
 			<div class="tooltiptext ttlinks">
 				<span class="trn">These are Bonjourr's bookmarks. </span>
 				<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
-				<a class="trn" href="https://bonjourr.fr/misc#-about-quick-links" referrerpolicy="no-referrer">More info</a>
+				<a class="trn" href="https://bonjourr.fr/misc#-about-quick-links" referrerpolicy="no-referrer">Learn more</a>
 			</div>
 		</div>
 
@@ -248,7 +248,7 @@
 				<div class="tooltiptext ttcoll">
 					<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
 					<a class="trn" href="https://bonjourr.fr/misc#custom-unsplash-collection" referrerpolicy="no-referrer"
-						>More info</a
+						>Learn more</a
 					>
 				</div>
 			</div>
@@ -257,7 +257,7 @@
 				<hr />
 
 				<div id="bg_tn_wrap">
-					<label id="uploadContainer">
+					<label class="uploadContainer">
 						<p class="trn">Upload background here</p>
 						<input id="i_bgfile" type="file" name="background_file" multiple />
 					</label>
@@ -887,6 +887,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="as as_css cssEditor">
 		<div class="titleContainer">
 			<h5 class="trn">Custom Style</h5>
@@ -901,30 +902,62 @@
 
 		<textarea id="cssEditor" placeholder="Type in your custom CSS" maxlength="8080"></textarea>
 	</div>
-	<div class="as as_impexp">
-		<div>
-			<div class="titleContainer">
-				<h5 class="trn">Settings</h5>
+
+	<div id="importexport">
+		<div class="titleContainer">
+			<h5 class="trn">Settings management</h5>
+			<div class="tooltip settingsMngmt">?</div>
+		</div>
+
+		<div class="tooltiptext settingsMngmt">
+			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
+			<a class="trn" href="https://bonjourr.fr/#" referrerpolicy="no-referrer">Learn more</a>
+		</div>
+
+		<div class="param">
+
+			<div class="tabs">
+				<button id="s_settingsexport">Export</button>
+				<button id="s_settingsimport" class="">Import</button>
+				<div class="glider"></div>
 			</div>
 
-			<div class="param">
-				<div id="imp_wrapper" class="wrapper">
-					<input id="i_import" type="text" name="Import" autocomplete="off" placeholder="Paste settings code" />
-					<button id="submitImport" class="trn">Import</button>
-				</div>
+			<div id="settingsexport">
+				<textarea id="i_settingsarea" autocorrect="off" spellcheck="false"></textarea>
 
-				<div id="exp_wrapper" class="wrapper">
-					<pre id="i_export"></pre>
-				</div>
+				<div id="buttons">
+					<button id="copyimport">Copy text</button>
+					
+					<div id="save_wrapper">
+						<button id="exportfile" class="trn">Export as file</button>
+						<a id="exportSettings" href="" download=""></a>
+					</div>
+				</div>				
+				
+			</div>
 
-				<hr />
+			<div id="settingsimport">
+				<label id="importFile" class="uploadContainer">
+					<p class="trn">Drop file to load settings</p>
+					<input id="i_importfile" type="file" name="import_file" />
+				</label>
 
-				<div id="reset_wrapper" class="wrapper">
-					<button id="submitReset" class="trn">Reset settings</button>
+				<div id="pasteAsText">
+					<input id="i_importtext" type="text" placeholder="or paste as text">
+					<button id="importtext">Import</button>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<div id="resetContainer">
+		<div class="param">
+			<div id="reset_wrapper" class="wrapper">
+				<button id="submitReset" class="trn">Reset settings</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="signature">
 		<div class="firstblock">
 			<p class="version">Bonjourr <a href="https://github.com/victrme/Bonjourr/releases">1.14.2</a></p>

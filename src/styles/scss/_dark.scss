@@ -100,6 +100,52 @@
 			background-color: $greyish;
 		}
 
+		#importexport .param {
+
+			#settingsexport #i_settingsarea {
+				background-color: $greyish;
+				color: white;
+				overflow: scroll;
+
+				&::-webkit-resizer {
+					background: $greyish;
+				}
+			}
+
+			.tabs {
+				background-color: $greyish;
+
+				#s_settingsimport {
+					color: white;
+
+					&:hover {
+						background-color: #2a2a2b;
+					}
+				}
+			}
+
+			&.visibleImport {
+				.tabs {
+					#s_settingsexport {
+						color: white;
+
+	
+						&:hover {
+							background-color: #2a2a2b;
+						}
+					}
+	
+					#s_settingsimport {
+						color: white;
+
+						&:hover {
+							background-color: unset;
+						}
+					}
+				}
+			}
+		}
+
 		.tooltip,
 		.titleContainer,
 		.tooltiptext {
@@ -112,19 +158,19 @@
 
 		// Background custom
 
-		#uploadContainer {
+	.uploadContainer {
 			background-color: #3a3a3a;
 			color: white;
 		}
 
-		#uploadContainer.dragover,
-		#uploadContainer:hover {
+		.uploadContainer.dragover,
+		.uploadContainer:hover {
 			border: 1px dashed #ccc;
 			background: #2a2a2b;
 		}
 
-		#uploadContainer:active,
-		#uploadContainer:active {
+		.uploadContainer:active,
+		.uploadContainer:active {
 			border: 1px dashed #aaa;
 			background: #2f2f30;
 		}

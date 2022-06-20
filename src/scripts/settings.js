@@ -2,6 +2,7 @@ function initParams(data, settingsDom) {
 	//
 
 	const paramId = (str) => settingsDom.querySelector('#' + str)
+	const paramClasses = (str) => settingsDom.querySelectorAll('.' + str)
 	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
@@ -61,8 +62,8 @@ function initParams(data, settingsDom) {
 	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
 	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
 	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
-	paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
-	paramId('i_export').setAttribute('title', tradThis('Export code'))
+	// paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	// paramId('i_export').setAttribute('title', tradThis('Export code'))
 
 	// Change edit tips on mobile
 	if (mobilecheck()) {
@@ -137,8 +138,7 @@ function initParams(data, settingsDom) {
 	// Language input
 	paramId('i_lang').value = data.lang || 'en'
 
-	// Settings management control
-	importExport('exp', false, settingsDom)
+	paramsExport(settingsDom)
 
 	//
 	//
@@ -152,19 +152,34 @@ function initParams(data, settingsDom) {
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 
-	// file input animation
-	const bgfile = paramId('i_bgfile')
-	const upload = paramId('uploadContainer')
+	//general
 
-	bgfile.addEventListener('dragenter', () => upload.classList.add('dragover'))
-	bgfile.addEventListener('dragleave', () => upload.classList.remove('dragover'))
-	bgfile.addEventListener('drop', () => upload.classList.remove('dragover'))
+	paramClasses('uploadContainer').forEach(function(uploadContainer) {
+		toggleDrag = () => uploadContainer.classList.toggle('dragover')
 
-	// Tooltip text toggle
-	settingsDom.querySelectorAll('.tooltip').forEach((elem) => {
+		const input = uploadContainer.querySelector('input[type="file"')
+
+		input.addEventListener('dragenter', toggleDrag)
+		input.addEventListener('dragleave', toggleDrag)
+		input.addEventListener('drop', toggleDrag)
+	})
+
+	const tooltips = settingsDom.querySelectorAll('.tooltip')
+
+	// Change edit tips on mobile
+	if (mobilecheck())
+		settingsDom.querySelector('.tooltiptext .instructions').textContent = tradThis(
+			`Edit your Quick Links by long-pressing the icon.`
+		)
+
+	tooltips.forEach((elem) => {
 		elem.onclick = function () {
-			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
-			settingsDom.querySelector('.tooltiptext.' + cl).classList.toggle('shown') // toggle tt text
+			const toggleTooltip = (which) => {
+				if (this.classList.contains(which)) settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
+			}
+
+			const names = ['tttab', 'ttcoll', 'ttlinks', 'csslinks', 'settingsMngmt']
+			names.forEach(name => toggleTooltip(name));
 		}
 	})
 
@@ -437,12 +452,63 @@ function initParams(data, settingsDom) {
 		importExport('reset')
 	}
 
-	paramId('submitImport').onclick = function () {
-		importExport('imp', true)
+	paramId('i_importfile').onchange = function () {
+		const file = this.files[0]
+		const reader = new FileReader()
+
+		reader.onload = function (e) {
+			try {
+				const json = JSON.parse(window.atob(reader.result))
+				importation(json)
+			} catch (err) {
+				console.log(err)
+			}
+		}
+		reader.readAsText(file)
 	}
 
-	paramId('i_import').onkeypress = function (e) {
-		e.code === 'Enter' ? importExport('imp', true) : ''
+	paramId('s_settingsexport').onclick = function () {
+		clas(this, true, 'selected')
+
+		clas(document.querySelector('#importexport .param'), false, 'visibleImport')
+	}
+
+	paramId('s_settingsimport').onclick = function () {
+		clas(this, true, 'selected')
+		clas(document.querySelector('#importexport .param'), true, 'visibleImport')
+	}
+
+	paramId('exportfile').onclick = function () {
+		const a = id('exportSettings')
+
+		chrome.storage.sync.get(null, (data) => {
+			a.href = `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`
+			a.download = `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`
+			a.click()
+		})
+	}
+
+	paramId('copyimport').onclick = async function () {
+		try {
+			await navigator.clipboard.writeText(id('i_settingsarea').value)
+			this.textContent = 'Copied !'
+			setTimeout(() => (id('copyimport').textContent = 'Copy settings'), 1000)
+		} catch (err) {
+			console.error('Failed to copy: ', err)
+		}
+	}
+
+	paramId('i_importtext').onkeyup = function () {
+		try {
+			JSON.parse(this.value)
+			id('importtext').removeAttribute('disabled')
+		} catch (error) {
+			id('importtext').setAttribute('disabled', '')
+		}
+	}
+
+	paramId('importtext').onclick = function () {
+		importation(JSON.parse(id('i_importtext').value))
 	}
 }
 
@@ -565,7 +631,7 @@ function selectBackgroundType(cat) {
 	})
 }
 
-function importExport(select, isEvent, settingsDom) {
+function importation(dataToImport) {
 	function fadeOut() {
 		const dominterface = id('interface')
 		dominterface.click()
@@ -574,85 +640,64 @@ function importExport(select, isEvent, settingsDom) {
 		setTimeout(() => location.reload(), 400)
 	}
 
-	function importation() {
-		//
-		const dom = id('i_import')
-		const placeholder = (str) => dom.setAttribute('placeholder', tradThis(str))
+	try {
+		// Load all sync & dynamicCache
+		chrome.storage.sync.get(null, (sync) => {
+			chrome.storage.local.get('dynamicCache', (local) => {
+				//
+				console.log(dataToImport)
+				const newImport = dataToImport
 
-		if (!isEvent || dom?.value?.length === 0) {
-			return
-		}
-
-		function applyImportation(sync, local, newImport) {
-			// Remove user collection cache if collection change
-			if (sync.dynamic && newImport.dynamic) {
-				if (sync.dynamic.collection !== newImport.dynamic.collection) {
-					local.dynamicCache.user = []
+				// Remove user collection cache if collection change
+				if (sync.dynamic && newImport.dynamic) {
+					if (sync.dynamic.collection !== newImport.dynamic.collection) {
+						local.dynamicCache.user = []
+					}
 				}
-			}
 
-			// Delete current links on imports containing links somewhere
-			// to avoid duplicates
-			if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
-				bundleLinks(sync).forEach((elem) => {
-					delete sync[elem._id]
-				})
-			}
+				// Delete current links on imports containing links somewhere
+				// to avoid duplicates
+				if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+					bundleLinks(sync).forEach((elem) => {
+						delete sync[elem._id]
+					})
+				}
 
-			sync = { ...sync, ...newImport }
-			sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
+				sync = { ...sync, ...newImport }
+				sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
 
-			chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
-			chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+				chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
+				chrome.storage.sync.set(sync, chrome.storage.local.set(local))
 
-			sessionStorage.isImport = true // to separate import and new version startup
+				sessionStorage.isImport = true // to separate import and new version startup
 
-			fadeOut()
-		}
-
-		try {
-			const imported = JSON.parse(dom.value)
-
-			// Load all sync & dynamicCache
-			chrome.storage.sync.get(null, (data) =>
-				chrome.storage.local.get('dynamicCache', (local) => applyImportation(data, local, imported))
-			)
-		} catch (e) {
-			dom.value = ''
-			placeholder('Error in import code')
-			setTimeout(() => placeholder('Import code'), 2000)
-			console.error(e)
-		}
-	}
-
-	function exportation() {
-		if (!id('settings') && !settingsDom) return false
-
-		const pre = settingsDom ? settingsDom.querySelector('#i_export') : id('i_export')
-
-		chrome.storage.sync.get(null, (data) => {
-			if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-			if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
-
-			data.about.browser = detectPlatform()
-			pre.textContent = JSON.stringify(data)
+				fadeOut()
+			})
 		})
+	} catch (e) {
+		console.log(e)
+	}
+}
+
+function paramsExport(settingsDom) {
+	if (!settingsDom && !id('settings')) {
+		return false
 	}
 
-	function anihilation() {
-		let input = id('submitReset')
+	const dom = settingsDom || id('settings')
+	const input = dom.querySelector('#i_settingsarea')
 
-		if (!input.hasAttribute('sure')) {
-			input.textContent = tradThis('Click again to confirm')
-			input.setAttribute('sure', '')
-		} else {
-			detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
-			fadeOut()
-		}
-	}
+	dom.querySelector('#importtext').setAttribute('disabled', '') // because cannot export same settings
 
-	const fncs = { exp: exportation, imp: importation, reset: anihilation }
-	fncs[select]()
+	chrome.storage.sync.get(null, (data) => {
+		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
+		if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
+		data.about.browser = detectPlatform()
+
+		const prettified = JSON.stringify(data, null, '\t')
+
+		input.value = prettified
+	})
 }
 
 function signature(dom) {

@@ -114,7 +114,7 @@
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	// transform: translateX(-100%)!important;
+	transform: translateX(-100%) !important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -298,8 +298,10 @@
 		}
 
 		&.ttlinks,
-		&.ttcss {
+		&.csslinks,
+		&.settingsMngmt {
 			margin: 0 3rem;
+
 			&.shown {
 				margin-bottom: 1rem;
 				max-height: 55px;
@@ -430,14 +432,14 @@
 		height: 100px;
 	}
 
-	#uploadContainer {
+	.uploadContainer {
 		overflow: hidden;
 		position: relative;
 		display: block;
 		width: 100%;
-		height: 73px;
+		height: 75px;
 		min-width: 200px;
-		line-height: 73px;
+		line-height: 75px;
 		font-size: 14px;
 		text-align: center;
 		cursor: pointer;
@@ -446,10 +448,11 @@
 		border: 1px dashed transparent;
 		transition: all 0.2s;
 		transform: scale(1);
+		box-sizing: border-box;
 
 		@include radiusSettings();
 
-		#i_bgfile {
+		input[type="file"] {
 			position: absolute;
 			display: block;
 			overflow: hidden;
@@ -660,17 +663,6 @@
 		}
 	}
 
-	#submitlink,
-	#submitExport,
-	#submitImport,
-	#submitReset {
-		background-color: transparent;
-	}
-
-	#submitReset {
-		margin: auto;
-	}
-
 	#searchbar_options,
 	#searchbar_request {
 		overflow: hidden;
@@ -729,31 +721,205 @@
 		resize: vertical;
 		border: none;
 		padding: $settingsMargin 1.3em;
-		font-family: 'SF Mono', 'Courier New', Courier, monospace;
+		font-family: $code;
+		tab-size: 1.5em;
 		box-sizing: border-box;
 		@include radiusSettings();
 		@include marginSettings();
 	}
 
-	#i_import,
-	#i_export {
-		width: 100%;
+	#importexport .param {
+		min-height: 192px;
+		transition: min-height .2s;
+
+		@mixin hoverTab() {
+			background-color: #e3e3ea;
+		}
+
+		.tabs {
+			position: relative;
+			display: flex;
+			width: 220px;
+			margin: auto;
+			margin-bottom: 15px;
+			border-radius: 8.5px;
+			background-color: $settingsGrey;
+			align-items: center;
+	
+			.glider {
+				width: calc(50% - 3px);
+				background-color: $blue;
+				position: absolute;
+				border-radius: 8.5px;
+				z-index: 3;
+				top: 3px;
+				bottom: 3px;
+				left: 3px;
+				transition: transform .3s;
+				transform: translateX(0%);
+			}
+	
+			button {
+				display: block;
+				width: 50%;
+				padding: unset;
+				font-size: 13px;
+				background-color: transparent;
+				position: relative;
+				text-decoration: none;
+				transition: color .2s;
+				height: 29px;
+				border-radius: 8.5px;
+				margin: 3px;
+
+				&#s_settingsexport {
+					color: white;
+					z-index: 4;
+				}
+
+				&#s_settingsimport {
+					z-index: 2;
+
+					&:hover {
+						@include hoverTab();
+					}
+				}
+
+			}
+		}
+
+		&.visibleImport {
+			min-height: 192px; // change for smooth transition between tabs
+
+			#settingsexport {
+				height: 0px;
+				overflow: hidden;
+			}
+
+			#settingsimport {
+				height: auto;
+				overflow: visible;
+			}
+
+			.tabs {
+				#s_settingsexport {
+					color: $blue;
+					z-index: 2;
+
+					&:hover {
+						@include hoverTab();
+					}
+				}
+
+				#s_settingsimport {
+					z-index: 4;
+					color: white;
+
+					&:hover {
+						background-color: unset;
+					}
+				}
+
+				.glider {
+					transform: translateX(100%)
+				}
+			}
+		} 
+		
+		#settingsexport {
+			#i_settingsarea {
+				width: 100%;
+				min-height: 100px;
+				max-height: 3000px;
+				padding: 0.65em 1.3em;
+				font-size: 13px;
+				line-break: anywhere;
+				overflow-x: hidden;
+				resize: vertical;
+				border: none;
+				background-color: $settingsGrey;
+				box-sizing: border-box;
+				font-family: $code;
+				tab-size: 1.5em;
+				@include radiusSettings();
+			}
+	
+			#buttons {
+				margin-top: 8px;
+				display: flex;
+				height: 2em;
+				> * { flex: 1 }
+
+				#save_wrapper {
+
+					#exportfile{
+						width: 100%;
+						background-color: unset;
+						border: 1px solid $blue;
+						transition: background-color .2s, color .2s;
+						opacity: 1;
+						color: $blue;
+						font-size: 13px;
+						height: 100%;
+						@include radiusSettings();
+			
+						&:hover {
+							text-decoration: none;
+							filter: brightness(0.96);
+						}
+			
+						&.clicked {
+							color: $borderGrey;
+							background-color: white;
+						}
+
+						&:hover {
+							background-color: $blue;
+							color: white;
+						}
+					}
+				}
+			}
+	
+			#exportSettings {
+				position: absolute;
+			}
+		}
+	
+		#settingsimport {
+			height: 0px;
+			overflow: hidden;
+
+			#pasteAsText {
+				display: flex;
+				margin-top: 15px;
+
+				#i_importtext {
+					flex: 1;
+					margin-right: 1em;
+					font-family: $code;
+					tab-size: .05em;
+				}
+			}
+	
+			button:disabled {
+				filter: grayscale(1) opacity(0.7);
+				text-decoration: none;
+				cursor: default;
+				transition: filter 0.1s;
+			}
+		}
 	}
 
-	#i_import {
-		margin-bottom: 0.5em;
-		margin-right: 0.5em;
-	}
+	#resetContainer {
+		margin-top: 1rem; 
 
-	#i_export {
-		overflow-x: hidden;
-		text-overflow: ellipsis;
-		user-select: all;
-		-webkit-user-select: all;
-		margin: 0;
-		padding-top: 0.5em;
-		padding-right: 10px;
-		font-family: inherit;
+		#reset_wrapper {
+			display: flex;
+			justify-content: center;
+		}
+
+		.param { padding: .3em }
 	}
 
 	.signature {
