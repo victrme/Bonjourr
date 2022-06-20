@@ -454,6 +454,32 @@ function initParams(data, settingsDom) {
 		importExport('reset')
 	}
 
+	// to be deleted when redone
+	function importExport(select, isEvent, settingsDom) {
+		function fadeOut() {
+			const dominterface = id('interface')
+			dominterface.click()
+			dominterface.style.transition = 'opacity .4s'
+			dominterface.style.opacity = '0'
+			setTimeout(() => location.reload(), 400)
+		}
+
+		function anihilation() {
+			let input = id('submitReset')
+
+			if (!input.hasAttribute('sure')) {
+				input.textContent = tradThis('Click again to confirm')
+				input.setAttribute('sure', '')
+			} else {
+				detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
+				fadeOut()
+			}
+		}
+
+		const fncs = { reset: anihilation }
+		fncs[select]()
+}
+
 	paramId('i_importfile').onchange = function () {
 		const file = this.files[0]
 		const reader = new FileReader()
