@@ -174,12 +174,8 @@ function initParams(data, settingsDom) {
 
 	tooltips.forEach((elem) => {
 		elem.onclick = function () {
-			const toggleTooltip = (which) => {
-				if (this.classList.contains(which)) settingsDom.querySelector('.tooltiptext.' + which).classList.toggle('shown')
-			}
-
-			const names = ['tttab', 'ttcoll', 'ttlinks', 'ttcss', 'ttexport']
-			names.forEach(name => toggleTooltip(name));
+			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
+			settingsDom.querySelector('.tooltiptext.' + cl).classList.toggle('shown') // toggle tt text
 		}
 	})
 
