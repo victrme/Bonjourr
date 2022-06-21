@@ -1,11 +1,13 @@
 const { series, parallel, src, dest, watch } = require('gulp'),
 	concat = require('gulp-concat'),
+	terser = require('gulp-terser'),
+	htmlmin = require('gulp-htmlmin'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
 	sass = require('gulp-sass')(require('sass'))
 
-function html(platform) {
+function html(platform, prod) {
 	//
 	// Index & settings minified
 	// Multiple scripts tags => only main.js
@@ -19,6 +21,10 @@ function html(platform) {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
 		}
 
+		if (prod) {
+			stream.pipe(htmlmin({ collapseWhitespace: true, removeComments: true }))
+		}
+
 		return stream
 			.pipe(
 				replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : ''))
@@ -27,7 +33,7 @@ function html(platform) {
 	}
 }
 
-function scripts(platform) {
+function scripts(platform, prod) {
 	//
 	// All scripts except background
 	// Online: replaces chrome.storage with homemade storage
@@ -52,6 +58,10 @@ function scripts(platform) {
 				.pipe(replace('local.set(', 'setLocal('))
 				.pipe(replace('sync.remove(', 'remove(false, '))
 				.pipe(replace('local.remove(', 'remove(true, '))
+		}
+
+		if (prod) {
+			stream.pipe(terser())
 		}
 
 		stream.pipe(dest(`release/${platform}/src/scripts`))
@@ -112,23 +122,23 @@ function locales(platform) {
 const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/scss/*.scss', './src/manifests/*.json']
 
 // prettier-ignore
-const taskOnline = () => [
-	html('online'),
+const taskOnline = (prod) => [
+	html('online', prod),
 	styles('online'),
 	worker('online'),
 	manifest('online'),
-	scripts('online'),
+	scripts('online', prod),
 	ressources('online', false),
 ]
 
-const taskExtension = (from) => [
-	html(from),
+const taskExtension = (from, prod) => [
+	scripts(from, prod),
+	html(from, prod),
 	worker(from),
 	styles(from),
 	locales(from),
 	manifest(from),
 	ressources(from),
-	scripts(from),
 	addBackground(from),
 ]
 
@@ -148,4 +158,4 @@ exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
 
-exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'))
+exports.build = parallel(...taskOnline(true), ...taskExtension('firefox', true), ...taskExtension('chrome', true))
