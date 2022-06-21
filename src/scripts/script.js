@@ -2817,9 +2817,7 @@ function filterImports(data) {
 				updatedSb.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
 			}
 
-			// Add new searchbar settings >1.10.0
-			if (updatedSb.opacity === undefined) updatedSb.opacity = 0.1
-			if (updatedSb.request === undefined) updatedSb.request = ''
+			updatedSb = { ...updatedSb, ...sb }
 
 			return updatedSb
 		},
