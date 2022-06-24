@@ -659,7 +659,7 @@ function quickLinks(event, that, init) {
 
 		if (Toggle) {
 			id('linkblocks').setAttribute('class', that ? 'shown' : 'hidden')
-			interfaceControl(null, that, 'links')
+			interfaceWidgetToggle(null, 'links')
 			chrome.storage.sync.set({ quicklinks: that })
 		}
 
@@ -2003,7 +2003,7 @@ function searchbar(event, that, init) {
 				case 'searchbar': {
 					data.searchbar.on = that.checked
 					display(that.checked)
-					interfaceControl(null, that.checked, 'searchbar')
+					interfaceWidgetToggle(null, 'searchbar')
 					break
 				}
 
@@ -2162,7 +2162,7 @@ async function quotes(event, that, init) {
 						display(on)
 					})
 
-					interfaceControl(null, on, 'quotes')
+					interfaceWidgetToggle(null, 'quotes')
 					break
 				}
 
@@ -2748,121 +2748,43 @@ function onlineMobilePageUpdate() {
 }
 
 function filterImports(data) {
-	const filter = {
-		lang: (lang) => (lang === undefined ? 'en' : lang),
-		background_blur: (blur) => (typeof blur === 'string' ? parseFloat(blur) : blur),
+	let result = { ...syncDefaults, ...data }
 
-		dynamic: (dynamic) => {
-			if (dynamic) {
-				// New collection key missing
-				// Removes dynamics cache
-				if (!dynamic.collection) {
-					return { ...dynamic, collection: '' }
-				}
-			}
+	// Hide elem classes changed at some point
+	if (validateHideElem(data.hide)) {
+		const weatherIndex = hide.indexOf('weather_desc')
+		const widgetIndex = hide.indexOf('w_icon')
 
-			return dynamic
-		},
-
-		hide: (hide) => {
-			if (validateHideElem(hide)) {
-				// Changes new hidden classes
-				const weatherIndex = hide.indexOf('weather_desc')
-				const widgetIndex = hide.indexOf('w_icon')
-
-				if (weatherIndex >= 0) hide[weatherIndex] = 'description'
-				if (widgetIndex >= 0) hide[widgetIndex] = 'widget'
-			} else {
-				hide = [[0, 0], [0, 0, 0], [0], [0]]
-			}
-
-			return hide
-		},
-
-		weather: (weather) => {
-			if (weather) {
-				if (weather.location === false) result.weather.location = []
-
-				// 1.9.3 ==> 1.10.0
-				if (weather.lastState && weather.lastState.sunset === undefined) {
-					const old = weather.lastState
-
-					weather.lastState = {
-						temp: old.main.temp,
-						feels_like: old.main.feels_like,
-						temp_max: old.main.temp_max,
-						sunrise: old.sys.sunrise,
-						sunset: old.sys.sunset,
-						description: old.weather[0].description,
-						icon_id: old.weather[0].id,
-					}
-				}
-
-				if (weather.lastCall) weather.lastCall = 0
-				if (weather.forecastLastCall) delete weather.forecastLastCall
-				if (weather.forecast === undefined) weather.forecast = 'auto'
-			}
-
-			return weather
-		},
-
-		font: (font) => {
-			if (font) {
-				delete font.availableWeights
-				delete font.supportedWeights
-			}
-
-			if (font.availWeights === undefined) font.availWeights = []
-
-			return font
-		},
-
-		searchbar: (sb) => {
-			let updatedSb = syncDefaults.searchbar
-
-			if (typeof sb === 'boolean') {
-				// Converts searchbar from <1.9.x bool to object
-				updatedSb.on = sb
-				updatedSb.newtab = data.searchbar_newtab || false
-				updatedSb.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
-			}
-
-			// Add new searchbar settings >1.10.0
-			if (updatedSb.opacity === undefined) updatedSb.opacity = 0.1
-			if (updatedSb.request === undefined) updatedSb.request = ''
-
-			return updatedSb
-		},
+		if (weatherIndex >= 0) hide[weatherIndex] = 'description'
+		if (widgetIndex >= 0) hide[widgetIndex] = 'widget'
+	} else {
+		hide = [[0, 0], [0, 0, 0], [0], [0]]
 	}
 
-	function linksFilter(sync) {
-		const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
-
-		sync.links?.forEach(({ title, url, icon }, i) => {
-			const id = 'links' + randomString(6)
-			const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
-
-			sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
-		})
-
-		aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
-		delete sync.links // removes <1.13.0 links array
-
-		return sync
+	// <1.9.0 searchbar options was boolean
+	if (typeof data.searchbar === 'boolean') {
+		result.on = sb
+		result.newtab = data.searchbar_newtab || false
+		result.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
 	}
 
-	let result = { ...syncDefaults }
-	result = { ...data }
-
-	delete result?.searchbar_engine
-	delete result?.searchbar_newtab
-
-	localStorage.removeItem('currentQuote')
-	localStorage.removeItem('nextQuote')
-
+	// Filter links to remove alias and give random ids
 	try {
-		// Go through found categories in import data to filter them
-		Object.entries(result).forEach(([key, val]) => (filter[key] ? (result[key] = filter[key](val)) : ''))
+		function linksFilter(sync) {
+			const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+
+			sync.links?.forEach(({ title, url, icon }, i) => {
+				const id = 'links' + randomString(6)
+				const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
+
+				sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
+			})
+
+			aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
+			delete sync.links // removes <1.13.0 links array
+
+			return sync
+		}
 		result = linksFilter(result)
 	} catch (e) {
 		errorMessage('Messed up in filter imports', e)
@@ -2871,36 +2793,26 @@ function filterImports(data) {
 	return result
 }
 
-function interfaceControl(init, event, type) {
-	function display(links, searchbar, quotes) {
-		// !quicklinks && !quotes && !searchbar ? id('widgets').classList.add('empty') : id('widgets').classList.remove('empty')
+function interfaceWidgetToggle(init, event) {
+	const toggleEmpty = (is) => clas(id('widgets'), is, 'empty')
 
-		if (!links && !quotes && !searchbar) {
-			id('widgets').classList.add('empty')
-			console.log('empty')
-		} else {
-			id('widgets').classList.remove('empty')
-			console.log('pas empty')
-		}
-	}
-
-	if (init) display(init.quicklinks, init.searchbar.on, init.quotes.on)
-
-	if (typeof event !== 'undefined') {
+	// Event is a string of the widget name to toggle
+	if (event) {
 		chrome.storage.sync.get(['searchbar', 'quotes', 'quicklinks'], (data) => {
-			switch(type) {
-				case 'links':
-					display(event, data.searchbar.on, data.quotes.on)
-					break
-				case 'searchbar':
-					display(data.quicklinks, event, data.quotes.on)
-					break
-				case 'quotes':
-					display(data.quicklinks, data.searchbar.on, event)
-					break
+			let displayed = {
+				links: data.quicklinks,
+				quotes: data.quotes.on,
+				searchbar: data.searchbar.on,
 			}
-		});
+
+			displayed[event] = !displayed[event] // toggles relevent widget
+			toggleEmpty(!(displayed.links || displayed.quotes || displayed.searchbar)) // checks if all values are false
+		})
+
+		return
 	}
+
+	toggleEmpty(!(init.quicklinks || init.searchbar.on || init.quotes.on)) // if one is true, not empty
 }
 
 function startup(data) {
@@ -2925,7 +2837,7 @@ function startup(data) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(null, null, data)
-	interfaceControl(data)
+	interfaceWidgetToggle(data)
 
 	setTimeout(() => settingsInit(data), 200)
 }
@@ -3038,7 +2950,10 @@ window.onload = function () {
 			// Update
 			if (versionChange) {
 				// Is at least 1.14.0, no filtering to do, just update version
-				chrome.storage.sync.set({ about: { browser: detectPlatform(), version: syncDefaults.about.version } })
+				chrome.storage.sync.set({
+					quicklinks: true,
+					about: { browser: detectPlatform(), version: syncDefaults.about.version },
+				})
 			}
 
 			startup(data)
