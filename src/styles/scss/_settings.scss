@@ -4,8 +4,9 @@
 	bottom: 0;
 	z-index: 2;
 	right: -450px;
-	width: 450px;
 	height: 100vh;
+	width: calc(450px - (21px * 2));
+	padding: 0 21px;
 
 	background-color: $settingsGrey;
 	color: $blackish;
@@ -58,9 +59,7 @@
 			background-color: #fff;
 			transition: background-color 0.3s $easeOutThree;
 			overflow: hidden;
-
-			@include radiusSettings();
-			@include marginSettings();
+			border-radius: 10px;
 
 			p:first-child {
 				margin-bottom: 0.5em;
@@ -145,13 +144,12 @@
 	}
 
 	.titleContainer {
-		display: flex;
-		margin: 1em 3rem;
-		margin-top: 2em;
-		color: #6d6d72;
-		justify-content: space-between;
-		align-items: center;
 		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin: 2em 26px 1em;
+		color: #6d6d72;
 
 		h5 {
 			text-transform: uppercase;
@@ -208,7 +206,7 @@
 		&.ttlinks,
 		&.ttcss,
 		&.ttexport {
-			margin: 0 3rem;
+			margin: 0 26px;
 
 			&.shown {
 				margin-bottom: 1rem;
@@ -237,9 +235,7 @@
 	.param {
 		background-color: #ffffff;
 		padding: $settingsMargin 1.3em;
-
-		@include radiusSettings();
-		@include marginSettings();
+		border-radius: 10px;
 	}
 
 	.wrapper {
@@ -290,26 +286,26 @@
 			input[type='text'] {
 				width: calc(100% - 10px);
 			}
-	
+
 			#i_title {
 				margin-bottom: 0.5em;
 			}
-	
+
 			> div {
 				display: flex;
 				align-items: center;
 			}
-	
+
 			.links_buttons {
 				text-align: right;
 			}
-	
+
 			#b_importbookmarks,
 			#submitlink {
 				height: 2.2em;
 				transition: filter 0.4s;
 			}
-	
+
 			#submitlink {
 				margin-left: 1em;
 			}
@@ -319,7 +315,6 @@
 			max-height: 255px;
 		}
 	}
-
 
 	#custom {
 		display: none;
@@ -368,10 +363,9 @@
 		transition: all 0.2s;
 		transform: scale(1);
 		box-sizing: border-box;
+		border-radius: 10px;
 
-		@include radiusSettings();
-
-		input[type="file"] {
+		input[type='file'] {
 			position: absolute;
 			display: block;
 			overflow: hidden;
@@ -429,7 +423,7 @@
 				background-size: 4em;
 				background-position: center center;
 				background-repeat: no-repeat;
-				@include radiusSettings();
+				border-radius: 10px;
 
 				&.selected {
 					border-color: $blue;
@@ -515,8 +509,7 @@
 			height: $inputHeight;
 			opacity: 1;
 			transition: all 0.2s;
-
-			@include radiusSettings();
+			border-radius: 10px;
 
 			&:hover {
 				text-decoration: none;
@@ -629,7 +622,7 @@
 	}
 
 	#cssEditor {
-		width: calc(100% - 42px);
+		width: 100%;
 		min-height: 100px;
 		max-height: 3000px;
 		resize: vertical;
@@ -637,18 +630,13 @@
 		padding: $settingsMargin 1.3em;
 		font-family: $code;
 		tab-size: 1.5em;
+		border-radius: 10px;
 		box-sizing: border-box;
-		@include radiusSettings();
-		@include marginSettings();
 	}
 
 	#importexport .param {
 		min-height: 192px;
-		transition: min-height .2s;
-
-		@mixin hoverTab() {
-			background-color: #e3e3ea;
-		}
+		transition: min-height 0.2s;
 
 		.tabs {
 			position: relative;
@@ -659,7 +647,7 @@
 			border-radius: 8.5px;
 			background-color: $settingsGrey;
 			align-items: center;
-	
+
 			.glider {
 				width: calc(50% - 3px);
 				background-color: $blue;
@@ -669,10 +657,14 @@
 				top: 3px;
 				bottom: 3px;
 				left: 3px;
-				transition: transform .3s;
+				transition: transform 0.3s;
 				transform: translateX(0%);
 			}
-	
+
+			&.toggled .glider {
+				transform: translateX(100%);
+			}
+
 			button {
 				display: block;
 				width: 50%;
@@ -681,67 +673,48 @@
 				background-color: transparent;
 				position: relative;
 				text-decoration: none;
-				transition: color .2s;
+				transition: color 0.2s;
 				height: 29px;
 				border-radius: 8.5px;
 				margin: 3px;
+			}
 
-				&#s_settingsexport {
-					color: white;
-					z-index: 4;
+			// When glider is under the button
+			&.toggled #s_import,
+			#s_export {
+				color: white;
+				z-index: 4;
+
+				&:hover {
+					background-color: unset;
 				}
+			}
 
-				&#s_settingsimport {
-					z-index: 2;
+			// When glider is not
+			&.toggled #s_export,
+			#s_import {
+				color: $blue;
+				z-index: 2;
 
-					&:hover {
-						@include hoverTab();
-					}
+				&:hover {
+					background-color: #e3e3ea;
 				}
-
 			}
 		}
 
-		&.visibleImport {
-			min-height: 192px; // change for smooth transition between tabs
+		#import,
+		#export {
+			overflow: hidden;
+			height: 0px;
 
-			#settingsexport {
-				height: 0px;
-				overflow: hidden;
-			}
-
-			#settingsimport {
+			&.shown {
 				height: auto;
 				overflow: visible;
 			}
+		}
 
-			.tabs {
-				#s_settingsexport {
-					color: $blue;
-					z-index: 2;
-
-					&:hover {
-						@include hoverTab();
-					}
-				}
-
-				#s_settingsimport {
-					z-index: 4;
-					color: white;
-
-					&:hover {
-						background-color: unset;
-					}
-				}
-
-				.glider {
-					transform: translateX(100%)
-				}
-			}
-		} 
-		
-		#settingsexport {
-			#i_settingsarea {
+		#export {
+			#area_export {
 				width: 100%;
 				min-height: 100px;
 				max-height: 3000px;
@@ -755,55 +728,42 @@
 				box-sizing: border-box;
 				font-family: $code;
 				tab-size: 1.5em;
-				@include radiusSettings();
+				border-radius: 10px;
 			}
-	
-			#buttons {
-				margin-top: 8px;
+
+			> div {
 				display: flex;
-				height: 2em;
-				> * { flex: 1 }
+				justify-content: space-around;
+				margin-top: 12px;
 
-				#save_wrapper {
+				// #exportfile {
+				// border: 1px solid $blue;
+				// transition: backgrund-color 0.2s, color 0.2s;
+				// border-radius: 10px;
 
-					#exportfile{
-						width: 100%;
-						background-color: unset;
-						border: 1px solid $blue;
-						transition: background-color .2s, color .2s;
-						opacity: 1;
-						color: $blue;
-						font-size: 13px;
-						height: 100%;
-						@include radiusSettings();
-			
-						&:hover {
-							text-decoration: none;
-							filter: brightness(0.96);
-						}
-			
-						&.clicked {
-							color: $borderGrey;
-							background-color: white;
-						}
+				// &:hover {
+				// 	text-decoration: none;
+				// 	filter: brightness(0.96);
+				// }
 
-						&:hover {
-							background-color: $blue;
-							color: white;
-						}
-					}
-				}
+				// &.clicked {
+				// 	color: $borderGrey;
+				// 	background-color: white;
+				// }
+
+				// &:hover {
+				// 	background-color: $blue;
+				// 	color: white;
+				// }
+				// }
 			}
-	
+
 			#exportSettings {
 				position: absolute;
 			}
 		}
-	
-		#settingsimport {
-			height: 0px;
-			overflow: hidden;
 
+		#import {
 			#pasteAsText {
 				display: flex;
 				margin-top: 15px;
@@ -811,11 +771,10 @@
 				#i_importtext {
 					flex: 1;
 					margin-right: 1em;
-					font-family: $code;
-					tab-size: .05em;
+					tab-size: 0.05em;
 				}
 			}
-	
+
 			button:disabled {
 				filter: grayscale(1) opacity(0.7);
 				text-decoration: none;
@@ -826,14 +785,28 @@
 	}
 
 	#resetContainer {
-		margin-top: 1rem; 
+		margin-top: 1rem;
 
-		#reset_wrapper {
-			display: flex;
+		.param {
+			padding: $settingsMargin 1.3em;
+		}
+
+		#reset_conf,
+		#reset_first {
+			display: none;
+
+			&.shown {
+				display: flex;
+			}
+		}
+
+		#reset_first {
 			justify-content: center;
 		}
 
-		.param { padding: .3em }
+		#b_resetno {
+			color: $red;
+		}
 	}
 
 	.signature {

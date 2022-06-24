@@ -929,25 +929,25 @@
 
 		<div class="param">
 			<div class="tabs">
-				<button id="s_settingsexport">Export</button>
-				<button id="s_settingsimport" class="">Import</button>
+				<button id="s_export" class="trn">Export</button>
+				<button id="s_import" class="trn">Import</button>
 				<div class="glider"></div>
 			</div>
 
-			<div id="settingsexport">
-				<textarea id="i_settingsarea" autocorrect="off" spellcheck="false"></textarea>
+			<div id="export" class="shown">
+				<textarea id="area_export" autocorrect="off" spellcheck="false"></textarea>
 
-				<div id="buttons">
-					<button id="copyimport">Copy text</button>
+				<div>
+					<button id="copyimport" class="trn">Copy text</button>
 
 					<div id="save_wrapper">
 						<button id="exportfile" class="trn">Export as file</button>
-						<a id="exportSettings" href="" download=""></a>
+						<a id="downloadfile" href="" download=""></a>
 					</div>
 				</div>
 			</div>
 
-			<div id="settingsimport">
+			<div id="import">
 				<label id="importFile" class="uploadContainer">
 					<p class="trn">Drop file to load settings</p>
 					<input id="i_importfile" type="file" name="import_file" />
@@ -955,7 +955,7 @@
 
 				<div id="pasteAsText">
 					<input id="i_importtext" type="text" placeholder="or paste as text" />
-					<button id="importtext">Import</button>
+					<button id="importtext" class="trn">Import</button>
 				</div>
 			</div>
 		</div>
@@ -963,8 +963,16 @@
 
 	<div id="resetContainer">
 		<div class="param">
-			<div id="reset_wrapper" class="wrapper">
-				<button id="submitReset" class="trn">Reset settings</button>
+			<div id="reset_first" class="wrapper shown">
+				<button id="b_resetconf" class="trn">Reset settings</button>
+			</div>
+
+			<div id="reset_conf" class="wrapper">
+				<span class="trn">Are you sure ?</span>
+				<div>
+					<button id="b_resetyes" class="trn">I am sure</button>
+					<button id="b_resetno" class="trn">No, go back</button>
+				</div>
 			</div>
 		</div>
 	</div>

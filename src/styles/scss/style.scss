@@ -39,7 +39,7 @@
 	// justify-content: center;
 	justify-content: stretch;
 	will-change: transform;
-	
+
 	// overflow-x: hidden;
 	// overflow-y: auto;
 	transition-property: opacity, transform;
@@ -65,7 +65,10 @@
 		align-self: stretch;
 	}
 
-	#time, #main { min-height: 20vh; }
+	#time,
+	#main {
+		min-height: 20vh;
+	}
 
 	// clock & date
 	#time {
@@ -188,7 +191,7 @@
 
 		#date {
 			font-size: 1.5em;
-			position: relative;	
+			position: relative;
 		}
 	}
 
@@ -250,7 +253,7 @@
 			#forecast,
 			#current {
 				transition: opacity 1.2s 0.1s;
-		
+
 				&.wait {
 					opacity: 0;
 				}
@@ -282,21 +285,21 @@
 			max-width: 100%;
 			// margin: 0 auto;
 			// padding-top: 2em;
-	
+
 			@include hidden();
-	
+
 			// &.withQuotes {
 			// 	flex-grow: 0.6;
 			// 	transition: transform 0.4s, flex-grow 0.4s 0.2s;
 			// }
-	
+
 			// &.he_hidden {
 			// 	#linkblocks_inner {
 			// 		visibility: hidden;
 			// 		transition: visibility 0s 0.4s;
 			// 	}
 			// }
-	
+
 			#linkblocks_inner {
 				display: flex;
 				flex-wrap: wrap;
@@ -305,20 +308,20 @@
 				column-gap: 2.6em;
 				row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 				transition: width 0.18s $easeOutThree;
-	
+
 				#hiddenlink {
 					display: none;
 				}
-	
+
 				.block_parent {
 					cursor: pointer;
 					position: relative;
-	
+
 					.block {
 						width: 4.8em;
 						transition: width 0.18s $easeOutThree;
 						opacity: 1;
-	
+
 						.l_icon_wrap {
 							position: relative;
 							overflow: hidden;
@@ -332,32 +335,32 @@
 							transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 							aspect-ratio: 1;
 							z-index: 1;
-	
+
 							.l_icon {
 								width: 100%;
 								pointer-events: none;
 								border-radius: 0.5em;
 							}
-	
+
 							&.selected {
 								border-color: $blue;
 								transform: scale(1.1);
 								filter: brightness(0.85);
 							}
-	
+
 							&:hover {
 								border-color: $blue;
 								box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
 								transform: scale(1.1);
 							}
-	
+
 							&:active {
 								filter: brightness(0.85);
 								transform: scale(1.04);
 								transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 							}
 						}
-	
+
 						span {
 							// link title
 							display: block;
@@ -371,41 +374,41 @@
 							z-index: 2;
 						}
 					}
-	
+
 					&.removed {
 						margin-right: -1.3em;
 						margin-left: -1.3em;
 						overflow: hidden;
 						transition: margin 0.6s;
-	
+
 						.block {
 							transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
 							width: 0px !important;
 							opacity: 0;
-	
+
 							.l_icon_wrap {
 								transition: transform 0.6s $easeOutThree;
 								transform: scale(0);
 							}
-	
+
 							span {
 								opacity: 0;
 							}
 						}
 					}
 				}
-	
+
 				&.medium {
 					column-gap: 2em;
-	
+
 					.block_parent {
 						.block {
 							width: 3.5em;
-	
+
 							.l_icon_wrap {
 								padding: 0.3em;
 								border-radius: 0.8em;
-	
+
 								img {
 									border-radius: 0.4em;
 								}
@@ -413,29 +416,29 @@
 						}
 					}
 				}
-	
+
 				&.small {
 					gap: 2em;
-	
+
 					.block_parent {
 						.block {
 							width: 2.5em;
-	
+
 							.l_icon_wrap {
 								padding: 0.2em;
 								border-radius: 0.4em;
-	
+
 								img {
 									border-radius: 0.2em;
 								}
 							}
-	
+
 							&:hover span {
 								opacity: 1;
 								visibility: visible;
 							}
 						}
-	
+
 						span {
 							display: block;
 							position: absolute;
@@ -459,30 +462,30 @@
 							min-height: 1em;
 							line-height: 1em;
 							@include frostedGlass($alpha: 0.2);
-	
+
 							&:empty {
 								display: none;
 							}
 						}
-	
+
 						&.removed {
 							margin-right: -1em;
 							margin-left: -1em;
 						}
 					}
 				}
-	
+
 				&.text {
 					gap: 2em;
 					justify-content: flex-start;
-	
+
 					.block_parent .block {
 						width: auto;
-	
+
 						.l_icon_wrap {
 							display: none;
 						}
-	
+
 						span {
 							width: 100%;
 							max-width: 20em;
@@ -490,7 +493,7 @@
 							font-size: 1.5em;
 							text-overflow: ellipsis;
 							white-space: pre;
-	
+
 							&:hover {
 								text-decoration: underline;
 							}
@@ -499,7 +502,7 @@
 				}
 			}
 		}
-	
+
 		// search bar
 		#sb_container {
 			position: relative;
@@ -515,7 +518,7 @@
 			// max-width: calc(90% - 4em);
 			// transition: opacity 0.4s, transform 0.4s, margin 0.4s;
 			box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-	
+
 			#searchbar {
 				height: 2.5em;
 				width: 100%;
@@ -528,18 +531,18 @@
 				font-family: $fonts;
 				background-color: transparent;
 				border: 1px solid rgba(255, 255, 255, 0.075);
-	
+
 				&:focus {
 					@include frostedGlass($blur: 0, $alpha: 0.2, $fbTint: 255, $fbAlpha: 0.8, $fbColor: #222);
 				}
-	
+
 				&::placeholder {
 					transition: opacity 0.2s;
 					text-transform: none;
 					color: #fff5;
 				}
 			}
-	
+
 			#sb_submit,
 			#sb_empty {
 				position: absolute;
@@ -550,14 +553,14 @@
 				background-color: transparent;
 				transition: opacity 0.2s;
 				pointer-events: none;
-	
+
 				&.shown {
 					opacity: 1;
 					cursor: pointer;
 					pointer-events: all;
 				}
 			}
-	
+
 			#sb_empty {
 				right: 5.5em;
 				position: absolute;
@@ -565,7 +568,7 @@
 				border-right: 1px solid #fff4;
 				cursor: text;
 			}
-	
+
 			#sb_submit {
 				margin: 0;
 				right: 0.8em;
@@ -573,28 +576,28 @@
 				border-radius: 0.5em;
 				background-color: #fff4;
 				transition: opacity 0.2s, filter 0.1s, transform 0.1s;
-	
+
 				img {
 					margin-top: 3px;
 					height: 1.2em;
 				}
-	
+
 				&:hover {
 					filter: brightness(0.9);
 				}
-	
+
 				&:active {
 					filter: brightness(0.8);
 					transform: scale(0.94);
 				}
 			}
-	
+
 			&.opaque {
 				#sb_empty {
 					color: #222;
 					border-color: #b9b9b9;
 				}
-	
+
 				#sb_submit {
 					background-color: #bbb4;
 					img {
@@ -603,26 +606,26 @@
 					}
 				}
 			}
-	
+
 			&.shown {
 				@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
-	
+
 				#searchbar:focus {
 					opacity: 1;
 				}
 			}
-	
+
 			&.hidden {
 				flex-grow: 0;
 				visibility: hidden;
 				display: none;
-	
+
 				#searchbar {
 					height: 0px;
 				}
 			}
 		}
-	
+
 		#quotes_container {
 			display: none;
 			flex-direction: column;
@@ -641,34 +644,34 @@
 			will-change: transform, flex-grow;
 			transition: opacity 0.2s, flex-grow 0.4s 0.2s, min-height 0.4s 0.2s, transform 0.4s;
 			cursor: initial;
-	
+
 			#quote {
 				max-height: 0;
 				font-size: 1.5em;
 				transition: max-height 0.2s 0.2s;
 			}
-	
+
 			#author {
 				text-align: center;
 				font-size: 1.2em;
 				opacity: 0;
 				transition: opacity 0.4s;
-	
+
 				&.alwaysVisible {
 					opacity: 1;
 				}
 			}
-	
+
 			&.shown {
 				display: flex;
 				opacity: 1;
 				transition: opacity 0.2s 0.2s, min-height 0.4s, flex-grow 0.4s, transform 0.4s;
-	
+
 				#quote {
 					max-height: 180px;
 					transition: max-height 0.2s 0s;
 				}
-	
+
 				&:hover #author {
 					opacity: 1;
 				}
@@ -705,29 +708,31 @@ footer {
 		align-items: center;
 		max-width: 50%;
 		text-align: left;
-		
+
 		&.shown {
 			opacity: 1;
-	
+
 			.exif {
 				opacity: 0;
 				transition: opacity 0.4s;
 			}
-	
+
 			&:hover {
 				.exif {
 					opacity: 1;
 				}
 			}
 		}
-	
-		a, p, span {
+
+		a,
+		p,
+		span {
 			font-size: 13px;
 			color: #fff9;
 			text-decoration: none;
 			transition: color 0.1s;
 		}
-	
+
 		a:hover {
 			color: #fffe;
 		}
@@ -737,7 +742,7 @@ footer {
 		bottom: 0;
 		right: 0;
 		z-index: 3;
-	
+
 		button {
 			position: relative;
 			height: 53px;
@@ -749,14 +754,14 @@ footer {
 			background-color: transparent;
 			transition: background-color 0.6s $easeOutThree;
 			@include allCentered();
-	
+
 			img {
 				width: 65%;
 				transition: transform 0.6s $easeOutThree;
 				will-change: transform;
 			}
 		}
-	
+
 		&.init {
 			transition: opacity 0s;
 
@@ -764,12 +769,12 @@ footer {
 				transition: transform 0s;
 			}
 		}
-	
+
 		// Doit etre dans cette ordre pour la hierarchie
 		&.enabled {
 			opacity: 1;
 		}
-	
+
 		&.he_hidden {
 			opacity: 0;
 
@@ -781,35 +786,35 @@ footer {
 				opacity: 1;
 			}
 		}
-	
+
 		&:hover {
 			img {
 				transform: rotate(15deg);
 			}
 		}
-	
+
 		&.shown {
 			button {
 				@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
 				img {
 					transform: rotate(60deg);
 				}
-	
+
 				&:hover {
 					opacity: 1;
 					@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 				}
 			}
 		}
-	
+
 		&.hasUpdated:before {
 			opacity: 1;
 		}
-	
+
 		&.hasUpdated.shown:before {
 			opacity: 0;
 		}
-	
+
 		&:before {
 			content: '';
 			position: absolute;
@@ -836,13 +841,17 @@ footer {
 	font-size: 16px;
 	opacity: 0;
 	transition: opacity 0.4s;
-	@include frostedGlass($alpha: 0, $blur: 40px, $fbTint: 25, $fbAlpha: .8);
+	@include frostedGlass($alpha: 0, $blur: 40px, $fbTint: 25, $fbAlpha: 0.8);
 	z-index: 4;
 
 	&.shown {
 		@keyframes animShow {
-			0% { opacity: 0 }
-			100% { opacity: 1 }
+			0% {
+				opacity: 0;
+			}
+			100% {
+				opacity: 1;
+			}
 		}
 
 		display: inline-flex;
@@ -851,8 +860,12 @@ footer {
 
 	&.hiding {
 		@keyframes animHide {
-			0% { opacity: 1 }
-			100% { opacity: 0 }
+			0% {
+				opacity: 1;
+			}
+			100% {
+				opacity: 0;
+			}
 		}
 
 		animation: animHide 0.4s forwards;
@@ -1093,7 +1106,7 @@ footer {
 		flex-direction: column;
 		justify-content: space-between;
 		min-width: 9em;
-	
+
 		a {
 			color: white;
 			text-decoration: none;
@@ -1101,24 +1114,24 @@ footer {
 			line-height: 2.4em;
 			border: 1px solid rgba(255, 255, 255, 0.075);
 			transform: scale(1);
-	
+
 			@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
-	
+
 			&:hover {
 				@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: rgb(94, 94, 94));
 				transform: scale(1.03);
 			}
-	
+
 			&:active {
 				@include frostedGlass($alpha: 0.6, $blur: 10px, $fbAlpha: 0.6, $fbColor: white);
 			}
-	
+
 			&:first-child {
 				margin-bottom: 0.4em;
 			}
 		}
 	}
-	
+
 	#popup_text {
 		display: flex;
 		position: relative;
@@ -1131,7 +1144,7 @@ footer {
 		// border: 1px solid rgba(245, 245, 245, 0.2);
 		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
 		border: 1px solid rgba(255, 255, 255, 0.075);
-	
+
 		&::before {
 			content: '×';
 			position: absolute;
@@ -1147,23 +1160,23 @@ footer {
 			transform: translateY(-50%);
 			transition: opacity 0.4s, filter 0.2s;
 		}
-	
+
 		&:hover {
 			color: transparent;
 			@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: transparent);
-	
+
 			&::before {
 				opacity: 1;
-	
+
 				@-moz-document url-prefix() {
 					color: rgb(94, 94, 94);
 				}
 			}
 		}
-	
+
 		&:active {
 			@include frostedGlass($alpha: 0, $blur: 10px, $fbAlpha: 0.1, $fbColor: transparent);
-	
+
 			&::before {
 				opacity: 1;
 				filter: brightness(0.8);

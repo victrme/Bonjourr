@@ -2,7 +2,7 @@
 //
 
 $fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
-$code : 'SF Mono', 'Courier New', Courier, monospace;
+$code: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
 
 $purewhite: white;
 $pureblack: black;
@@ -102,15 +102,6 @@ body {
 	justify-content: center;
 }
 
-@mixin marginSettings {
-	margin-left: 21px;
-	margin-right: 21px;
-}
-
-@mixin radiusSettings {
-	border-radius: 10px;
-}
-
 @mixin frostedGlass($tint: 255, $alpha: 0.4, $blur: 10px, $fbTint: 251, $fbAlpha: 0.8, $fbColor: #222) {
 	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
 		backdrop-filter: blur($blur);
@@ -176,7 +167,7 @@ body {
 			transition: opacity 0.4s, max-height 0.4s, transform 0.4s;
 			opacity: 1;
 			max-height: 11em;
-		
+
 			&.he_hidden {
 				opacity: 0;
 				max-height: 0em;
@@ -188,16 +179,36 @@ body {
 
 @mixin allSettings {
 	&.all {
-		.as_link {max-height: 120px}
-		.as_collection {max-height: 130px}
-		.as_visuals {max-height: 373px}
-		.as_timedate {max-height: 260px}
-		.as_sbopacity {max-height: 60px}
-		.as_forecast {max-height: 60px}
-		.as_temp {max-height: 60px}
-		.as_fonts {max-height: 300px}
-		.as_css {max-height: 3100px}
-		.as_quote_type {max-height: 130px}
+		.as_link {
+			max-height: 120px;
+		}
+		.as_collection {
+			max-height: 130px;
+		}
+		.as_visuals {
+			max-height: 373px;
+		}
+		.as_timedate {
+			max-height: 260px;
+		}
+		.as_sbopacity {
+			max-height: 60px;
+		}
+		.as_forecast {
+			max-height: 60px;
+		}
+		.as_temp {
+			max-height: 60px;
+		}
+		.as_fonts {
+			max-height: 300px;
+		}
+		.as_css {
+			max-height: 3100px;
+		}
+		.as_quote_type {
+			max-height: 130px;
+		}
 	}
 
 	.as {
@@ -460,19 +471,19 @@ body {
 	/* total width */
 	#i_settingsarea::-webkit-scrollbar,
 	&::-webkit-scrollbar {
-		width: 15px;
+		width: 10px;
 	}
 
 	#i_settingsarea::-webkit-scrollbar-track,
 	&::-webkit-scrollbar-track {
-		box-shadow: inset 0 0 15px 15px transparent;
+		box-shadow: inset 0 0 10px 10px transparent;
 		border: solid 3px transparent;
 	}
 
 	#i_settingsarea::-webkit-scrollbar-thumb,
 	&::-webkit-scrollbar-thumb {
-		box-shadow: inset 0 0 15px 15px $borderGrey;
+		box-shadow: inset 0 0 10px 10px $borderGrey;
 		border: solid 3px transparent;
-		border-radius: 15px;
+		border-radius: 10px;
 	}
 }

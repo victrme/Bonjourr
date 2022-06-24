@@ -142,7 +142,7 @@ function initParams(data, settingsDom) {
 	// Language input
 	paramId('i_lang').value = data.lang || 'en'
 
-	paramsExport(settingsDom)
+	updateExportJSON(settingsDom)
 
 	//
 	//
@@ -158,7 +158,7 @@ function initParams(data, settingsDom) {
 
 	//general
 
-	paramClasses('uploadContainer').forEach(function(uploadContainer) {
+	paramClasses('uploadContainer').forEach(function (uploadContainer) {
 		toggleDrag = () => uploadContainer.classList.toggle('dragover')
 
 		const input = uploadContainer.querySelector('input[type="file"')
@@ -174,7 +174,7 @@ function initParams(data, settingsDom) {
 			`Edit your Quick Links by long-pressing the icon.`
 		)
 
-		settingsDom.querySelectorAll('.tooltip').forEach((elem) => {
+	settingsDom.querySelectorAll('.tooltip').forEach((elem) => {
 		elem.onclick = function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			settingsDom.querySelector('.tooltiptext.' + cl).classList.toggle('shown') // toggle tt text
@@ -450,36 +450,6 @@ function initParams(data, settingsDom) {
 	//
 	// Settings management
 
-	paramId('submitReset').onclick = function () {
-		importExport('reset')
-	}
-
-	// to be deleted when redone
-	function importExport(select, isEvent, settingsDom) {
-		function fadeOut() {
-			const dominterface = id('interface')
-			dominterface.click()
-			dominterface.style.transition = 'opacity .4s'
-			dominterface.style.opacity = '0'
-			setTimeout(() => location.reload(), 400)
-		}
-
-		function anihilation() {
-			let input = id('submitReset')
-
-			if (!input.hasAttribute('sure')) {
-				input.textContent = tradThis('Click again to confirm')
-				input.setAttribute('sure', '')
-			} else {
-				detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
-				fadeOut()
-			}
-		}
-
-		const fncs = { reset: anihilation }
-		fncs[select]()
-}
-
 	paramId('i_importfile').onchange = function () {
 		const file = this.files[0]
 		const reader = new FileReader()
@@ -487,7 +457,7 @@ function initParams(data, settingsDom) {
 		reader.onload = function (e) {
 			try {
 				const json = JSON.parse(window.atob(reader.result))
-				importation(json)
+				paramsImport(json)
 			} catch (err) {
 				console.log(err)
 			}
@@ -495,19 +465,17 @@ function initParams(data, settingsDom) {
 		reader.readAsText(file)
 	}
 
-	paramId('s_settingsexport').onclick = function () {
-		clas(this, true, 'selected')
-
-		clas(document.querySelector('#importexport .param'), false, 'visibleImport')
+	const toggleSettingsMgmt = (toggled) => {
+		clas(paramId('export'), !toggled, 'shown')
+		clas(paramId('import'), toggled, 'shown')
+		clas(paramClasses('tabs')[0], toggled, 'toggled')
 	}
 
-	paramId('s_settingsimport').onclick = function () {
-		clas(this, true, 'selected')
-		clas(document.querySelector('#importexport .param'), true, 'visibleImport')
-	}
+	paramId('s_export').onclick = () => toggleSettingsMgmt(false)
+	paramId('s_import').onclick = () => toggleSettingsMgmt(true)
 
 	paramId('exportfile').onclick = function () {
-		const a = id('exportSettings')
+		const a = id('downloadfile')
 
 		chrome.storage.sync.get(null, (data) => {
 			a.href = `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`
@@ -518,7 +486,7 @@ function initParams(data, settingsDom) {
 
 	paramId('copyimport').onclick = async function () {
 		try {
-			await navigator.clipboard.writeText(id('i_settingsarea').value)
+			await navigator.clipboard.writeText(id('area_export').value)
 			this.textContent = 'Copied !'
 			setTimeout(() => (id('copyimport').textContent = 'Copy settings'), 1000)
 		} catch (err) {
@@ -536,8 +504,12 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('importtext').onclick = function () {
-		importation(JSON.parse(id('i_importtext').value))
+		paramsImport(JSON.parse(id('i_importtext').value))
 	}
+
+	paramId('b_resetconf').onclick = () => paramsReset('conf')
+	paramId('b_resetyes').onclick = () => paramsReset('yes')
+	paramId('b_resetno').onclick = () => paramsReset('no')
 }
 
 function cssInputSize(param) {
@@ -659,7 +631,7 @@ function selectBackgroundType(cat) {
 	})
 }
 
-function importation(dataToImport) {
+function paramsImport(dataToImport) {
 	function fadeOut() {
 		const dominterface = id('interface')
 		dominterface.click()
@@ -707,13 +679,13 @@ function importation(dataToImport) {
 	}
 }
 
-function paramsExport(settingsDom) {
+function updateExportJSON(settingsDom) {
 	if (!settingsDom && !id('settings')) {
 		return false
 	}
 
 	const dom = settingsDom || id('settings')
-	const input = dom.querySelector('#i_settingsarea')
+	const input = dom.querySelector('#area_export')
 
 	dom.querySelector('#importtext').setAttribute('disabled', '') // because cannot export same settings
 
@@ -726,6 +698,17 @@ function paramsExport(settingsDom) {
 
 		input.value = prettified
 	})
+}
+
+function paramsReset(action) {
+	if (action === 'yes') {
+		detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
+		fadeOut()
+		return
+	}
+
+	clas(id('reset_first'), action === 'no', 'shown')
+	clas(id('reset_conf'), action === 'conf', 'shown')
 }
 
 function signature(dom) {
