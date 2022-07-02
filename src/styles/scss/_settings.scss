@@ -138,7 +138,7 @@
 	}
 
 	h1,
-	h5,
+	h2,
 	span {
 		margin: 0;
 	}
@@ -151,9 +151,10 @@
 		margin: 2em 26px 1em;
 		color: #6d6d72;
 
-		h5 {
+		h2 {
 			text-transform: uppercase;
 			font-weight: 400;
+			font-size: 0.8em;
 			letter-spacing: 1px;
 		}
 

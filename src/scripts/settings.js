@@ -737,7 +737,7 @@ function settingsInit(data) {
 		const domedit = id('editlink')
 
 		const parser = new DOMParser()
-		const settingsDom = document.createElement('div')
+		const settingsDom = document.createElement('aside')
 		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]
 
 		settingsDom.id = 'settings'
@@ -749,7 +749,7 @@ function settingsInit(data) {
 		initParams(data, settingsDom)
 		showall(data.showall, false, settingsDom)
 
-		document.body.prepend(settingsDom) // Apply to body
+		document.body.appendChild(settingsDom) // Apply to body
 
 		//
 		// Events
@@ -785,13 +785,12 @@ function settingsInit(data) {
 				return // do nothing if pressing ctrl or if there's an error message
 			}
 
-			const conditions = [
-				['sb_container', true],
-				['settings', false],
-				['editlink', false],
-			]
+			const notTabbing = document.body.classList.contains('tabbing') === false
+			const noSettings = has(id('settings'), 'shown') === false
+			const noEdit = has(id('editlink'), 'shown') === false
+			const hasSearchbar = has(id('sb_container'), 'shown')
 
-			if (conditions.every(([name, shouldBe]) => has(id(name), 'shown') === shouldBe)) {
+			if (noSettings && noEdit && notTabbing && hasSearchbar) {
 				id('searchbar').focus() // Focus searchbar if only searchbar is on
 			}
 		}

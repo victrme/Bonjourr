@@ -84,6 +84,7 @@
 
 		#time-container {
 			#clock {
+				margin: 0;
 				font-size: 6em;
 				font-weight: 200;
 
@@ -210,6 +211,7 @@
 		#greetings {
 			font-size: 3em;
 			font-weight: inherit;
+			margin: 0;
 			min-width: 300px;
 			max-width: 16em;
 			white-space: nowrap;

@@ -302,6 +302,7 @@ function quickLinks(event, that, init) {
 		const block = document.createElement('div')
 		const block_parent = document.createElement('div')
 
+		lIcon.alt = ''
 		lIcon.loading = 'lazy'
 		lIcon.className = 'l_icon'
 		lIconWrap.className = 'l_icon_wrap'
@@ -312,6 +313,7 @@ function quickLinks(event, that, init) {
 		block.appendChild(lIconWrap)
 		block.appendChild(blockTitle)
 
+		block_parent.setAttribute('tabindex', '0')
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.setAttribute('draggable', 'true')
 		block_parent.appendChild(block)
@@ -1046,6 +1048,7 @@ function weather(event, that, init) {
 			} else {
 				const icon = document.createElement('img')
 				icon.src = iconSrc
+				icon.setAttribute('alt', 'Weather: ' + currentState.description)
 				icon.setAttribute('draggable', 'false')
 				tempContainer.prepend(icon)
 
@@ -2077,6 +2080,16 @@ function searchbar(event, that, init) {
 		isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 	}
 
+	function toggleInputButton(toggle) {
+		if (toggle) {
+			emptyButton.removeAttribute('disabled')
+			submitButton.removeAttribute('disabled')
+		} else {
+			emptyButton.setAttribute('disabled', '')
+			submitButton.setAttribute('disabled', '')
+		}
+	}
+
 	domsearchbar.onkeyup = function (e) {
 		if (e.key === 'Enter' && this.value.length > 0) {
 			submitSearch()
@@ -2084,8 +2097,11 @@ function searchbar(event, that, init) {
 	}
 
 	domsearchbar.oninput = function () {
-		clas(emptyButton, this.value.length > 0, 'shown')
-		clas(submitButton, this.value.length > 0, 'shown')
+		const hasText = this.value.length > 0
+
+		clas(emptyButton, hasText, 'shown')
+		clas(submitButton, hasText, 'shown')
+		toggleInputButton(hasText)
 	}
 
 	emptyButton.onclick = function () {
@@ -2093,6 +2109,7 @@ function searchbar(event, that, init) {
 		domsearchbar.focus()
 		clas(this, false, 'shown')
 		clas(submitButton, false, 'shown')
+		toggleInputButton(false)
 	}
 
 	submitButton.onclick = function () {
