@@ -1,7 +1,7 @@
 <body>
 	<div>
 		<div id="changelogContainer">
-			<button id="log_dismiss" alt="Dismiss changelog"><img src="src/assets/interface/close.svg" /></button>
+			<button id="log_dismiss" aria-label="Dismiss changelog"><img src="src/assets/interface/close.svg" alt="" /></button>
 			<div id="changelog">
 				<p class="trn">Bonjourr has been updated to version 1.14 ✨</p>
 
@@ -10,10 +10,11 @@
 						>Learn all about our new Quick Links style options, the improved custom background management and much
 						more in </span
 					><a
-						href="https://ko-fi.com/post/Bonjourr-1-14-is-almost-out-L4L2D0BD7"
+						id="link"
 						class="trn"
 						target="_blank"
-						id="link"
+						rel="noreferrer noopener"
+						href="https://ko-fi.com/post/Bonjourr-1-14-is-almost-out-L4L2D0BD7"
 						><span id="link" class="trn">our full changelog</span></a
 					>.🗞
 				</p>
@@ -55,7 +56,7 @@
 				<div class="wrapper" id="tabtitle">
 					<span>
 						<span class="trn">Tab appearance</span>
-						<div class="tooltip tttab">?</div>
+						<button class="tooltip tttab" aria-label="Tips on tab appearance">?</button>
 					</span>
 
 					<div>
@@ -66,7 +67,7 @@
 
 				<div class="tooltiptext tttab">
 					<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
-					<a class="trn" href="https://bonjourr.fr/misc#newtab" referrerpolicy="no-referrer">Learn more</a>
+					<a class="trn" href="https://bonjourr.fr/misc#newtab" rel="noreferrer noopener">Learn more</a>
 				</div>
 
 				<hr />
@@ -109,13 +110,13 @@
 		<div>
 			<div class="titleContainer">
 				<h2 class="trn">Quick Links</h2>
-				<div class="tooltip ttlinks">?</div>
+				<button class="tooltip ttlinks" aria-label="Tips on Quick Links">?</button>
 			</div>
 
 			<div class="tooltiptext ttlinks">
 				<span class="trn">These are Bonjourr's bookmarks. </span>
 				<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
-				<a class="trn" href="https://bonjourr.fr/misc#-about-quick-links" referrerpolicy="no-referrer">Learn more</a>
+				<a class="trn" href="https://bonjourr.fr/misc#-about-quick-links" rel="noreferrer noopener">Learn more</a>
 			</div>
 		</div>
 
@@ -241,7 +242,7 @@
 				<div class="wrapper">
 					<span>
 						<span class="trn">Unsplash collection</span>
-						<div class="tooltip ttcoll">?</div>
+						<button class="tooltip ttcoll" aria-label="Tips on Unsplash collections">?</button>
 					</span>
 
 					<input
@@ -260,7 +261,7 @@
 
 				<div class="tooltiptext ttcoll">
 					<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
-					<a class="trn" href="https://bonjourr.fr/misc#custom-unsplash-collection" referrerpolicy="no-referrer"
+					<a class="trn" href="https://bonjourr.fr/misc#custom-unsplash-collection" rel="noreferrer noopener"
 						>Learn more</a
 					>
 				</div>
@@ -670,7 +671,15 @@
 							<option value="ZM">Zambia</option>
 							<option value="ZW">Zimbabwe</option>
 						</select>
-						<input id="i_city" type="text" name="city" placeholder="City" autocomplete="off" maxlength="64" />
+						<input
+							id="i_city"
+							type="text"
+							name="city"
+							placeholder="City"
+							autocomplete="off"
+							maxlength="64"
+							spellcheck="false"
+						/>
 					</div>
 				</div>
 			</div>
@@ -904,27 +913,33 @@
 	<div class="as as_css cssEditor">
 		<div class="titleContainer">
 			<h2 class="trn">Custom Style</h2>
-			<div class="tooltip ttcss">?</div>
+			<button class="tooltip ttcss" aria-label="Tips on Custom styles">?</button>
 		</div>
 
 		<div class="tooltiptext ttcss">
 			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
-			<a class="trn" href="https://bonjourr.fr/css-snippet" referrerpolicy="no-referrer">CSS snippets.</a>
+			<a class="trn" href="https://bonjourr.fr/css-snippet" rel="noreferrer noopener">CSS snippets.</a>
 		</div>
 
-		<textarea id="cssEditor" placeholder="Type in your custom CSS" maxlength="8080"></textarea>
+		<textarea
+			id="cssEditor"
+			placeholder="Type in your custom CSS"
+			maxlength="8080"
+			spellcheck="false"
+			autocomplete="false"
+		></textarea>
 	</div>
 
 	<div id="importexport">
 		<div class="titleContainer">
 			<h2 class="trn">Settings management</h2>
-			<div class="tooltip ttexport">?</div>
+			<button class="tooltip ttexport" aria-label="Tips on imports & exports">?</button>
 		</div>
 
 		<div class="tooltiptext ttexport">
 			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-			<a class="trn" href="https://bonjourr.fr/#" referrerpolicy="no-referrer">Learn more</a>
+			<a class="trn" href="https://bonjourr.fr/#" rel="noreferrer noopener">Learn more</a>
 		</div>
 
 		<div class="param">
@@ -935,14 +950,14 @@
 			</div>
 
 			<div id="export" class="shown">
-				<textarea id="area_export" autocorrect="off" spellcheck="false"></textarea>
+				<textarea id="area_export" autocorrect="off" spellcheck="false" aria-label="Export settings"></textarea>
 
 				<div>
 					<button id="copyimport" class="trn">Copy text</button>
 
 					<div id="save_wrapper">
 						<button id="exportfile" class="trn">Export as file</button>
-						<a id="downloadfile" href="" download=""></a>
+						<a id="downloadfile" href="" download="" aria-hidden="true"></a>
 					</div>
 				</div>
 			</div>
@@ -954,7 +969,7 @@
 				</label>
 
 				<div id="pasteAsText">
-					<input id="i_importtext" type="text" placeholder="or paste as text" />
+					<input id="i_importtext" type="text" placeholder="or paste as text" aria-label="Paste export code" />
 					<button id="importtext" class="trn">Import</button>
 				</div>
 			</div>
@@ -979,10 +994,12 @@
 
 	<div class="signature">
 		<div class="firstblock">
-			<p class="version">Bonjourr <a href="https://github.com/victrme/Bonjourr/releases">1.15.0</a></p>
+			<p class="version">
+				Bonjourr <a href="https://github.com/victrme/Bonjourr/releases" rel="noreferrer noopener">1.15.0</a>
+			</p>
 
 			<div class="socialIcons">
-				<a href="https://bonjourr.fr" title="Bonjourr's website">
+				<a href="https://bonjourr.fr" title="Bonjourr's website" rel="noreferrer noopener">
 					<svg
 						height="16px"
 						id="Layer_1"
@@ -999,7 +1016,7 @@
 						/>
 					</svg>
 				</a>
-				<a href="https://twitter.com/BonjourrTeam" title="Check out our Twitter">
+				<a href="https://twitter.com/BonjourrTeam" title="Check out our Twitter" rel="noreferrer noopener">
 					<svg viewBox="0 0 300.00006 244.18703">
 						<g transform="translate(-539.17946,-568.85777)" id="layer1">
 							<path
@@ -1010,7 +1027,7 @@
 						</g>
 					</svg>
 				</a>
-				<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository">
+				<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository" rel="noreferrer noopener">
 					<svg viewBox="0 0 1024 1024" fill="none">
 						<path
 							fill-rule="evenodd"
@@ -1021,7 +1038,7 @@
 					</svg>
 				</a>
 
-				<a href="https://bonjourr.fr/misc" title="Bonjourr's documentation">
+				<a href="https://bonjourr.fr/misc" title="Bonjourr's documentation" rel="noreferrer noopener">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
 						<path
 							d="M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z"
@@ -1043,7 +1060,8 @@
 
 		<div id="rdv_website">
 			<p>
-				<span class="trn">Consider</span> <a href="https://bonjourr.fr/#donate" class="trn">donating</a>
+				<span class="trn">Consider</span>
+				<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>
 				<span class="trn">if you love Bonjourr</span> 😊
 			</p>
 		</div>

@@ -174,15 +174,15 @@
 		color: $placeholderGrey;
 		width: 20px;
 		height: 20px;
-		border-radius: 100%;
-		cursor: pointer;
-		box-sizing: border-box;
-		transition: background-color 0.1s, transform 0.1s;
-		border: 1px solid #eaeaee;
 		font-size: 0.9em;
+		border-radius: 100%;
+		box-sizing: border-box;
+		border: 1px solid #eaeaee;
+		transition: background-color 0.1s, transform 0.1s;
 
 		&:hover {
 			background-color: $focusedGrey;
+			text-decoration: none;
 		}
 
 		&:active {
@@ -736,27 +736,10 @@
 				display: flex;
 				justify-content: space-around;
 				margin-top: 12px;
+			}
 
-				// #exportfile {
-				// border: 1px solid $blue;
-				// transition: backgrund-color 0.2s, color 0.2s;
-				// border-radius: 10px;
-
-				// &:hover {
-				// 	text-decoration: none;
-				// 	filter: brightness(0.96);
-				// }
-
-				// &.clicked {
-				// 	color: $borderGrey;
-				// 	background-color: white;
-				// }
-
-				// &:hover {
-				// 	background-color: $blue;
-				// 	color: white;
-				// }
-				// }
+			#downloadfile {
+				display: none;
 			}
 
 			#exportSettings {

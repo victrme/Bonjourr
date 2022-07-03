@@ -766,6 +766,11 @@ function settingsInit(data) {
 			if (!mobilecheck()) clas(dominterface, isClosed, 'pushed')
 		}
 
+		id('skiptosettings').onclick = function () {
+			toggleDisplay(settingsDom)
+			settingsDom.querySelector('#i_showall').focus()
+		}
+
 		domshowsettings.onclick = function () {
 			toggleDisplay(settingsDom)
 		}

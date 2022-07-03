@@ -1,6 +1,13 @@
 @import 'global';
 @include hideElements;
 
+#skiptosettings {
+	position: absolute;
+	opacity: 0;
+	user-select: none;
+	touch-action: none;
+}
+
 #background_overlay {
 	z-index: -1;
 	position: fixed;
@@ -285,22 +292,12 @@
 			justify-content: center;
 			align-items: flex-start;
 			max-width: 100%;
-			// margin: 0 auto;
-			// padding-top: 2em;
 
 			@include hidden();
 
-			// &.withQuotes {
-			// 	flex-grow: 0.6;
-			// 	transition: transform 0.4s, flex-grow 0.4s 0.2s;
-			// }
-
-			// &.he_hidden {
-			// 	#linkblocks_inner {
-			// 		visibility: hidden;
-			// 		transition: visibility 0s 0.4s;
-			// 	}
-			// }
+			#hiddenlink {
+				display: none;
+			}
 
 			#linkblocks_inner {
 				display: flex;
@@ -311,91 +308,86 @@
 				row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 				transition: width 0.18s $easeOutThree;
 
-				#hiddenlink {
-					display: none;
-				}
-
-				.block_parent {
-					cursor: pointer;
+				a.block {
 					position: relative;
+					opacity: 1;
+					width: 4.8em;
+					height: 4.8em;
+					color: white;
+					cursor: pointer;
+					border: none;
+					text-decoration: none;
+					background-color: transparent;
+					transition: width 0.18s $easeOutThree;
 
-					.block {
-						width: 4.8em;
-						transition: width 0.18s $easeOutThree;
-						opacity: 1;
+					.l_icon_wrap {
+						position: relative;
+						overflow: hidden;
+						width: 100%;
+						height: 100%;
+						padding: 0.4em;
+						border-radius: 1em;
+						background: $purewhite;
+						box-shadow: $textShadow;
+						box-sizing: border-box;
+						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
+						aspect-ratio: 1;
+						z-index: 1;
 
-						.l_icon_wrap {
-							position: relative;
-							overflow: hidden;
+						.l_icon {
 							width: 100%;
-							height: 100%;
-							padding: 0.4em;
-							border-radius: 1em;
-							background: $purewhite;
-							box-shadow: $textShadow;
-							box-sizing: border-box;
-							transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
-							aspect-ratio: 1;
-							z-index: 1;
-
-							.l_icon {
-								width: 100%;
-								pointer-events: none;
-								border-radius: 0.5em;
-							}
-
-							&.selected {
-								border-color: $blue;
-								transform: scale(1.1);
-								filter: brightness(0.85);
-							}
-
-							&:hover {
-								border-color: $blue;
-								box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
-								transform: scale(1.1);
-							}
-
-							&:active {
-								filter: brightness(0.85);
-								transform: scale(1.04);
-								transition: border-color 0.1s, filter 0.1s, transform 0.1s;
-							}
+							pointer-events: none;
+							border-radius: 0.5em;
 						}
 
-						span {
-							// link title
-							display: block;
-							overflow: hidden;
-							margin-top: 0.4em;
-							line-height: 1.3em;
-							min-height: 1.3em;
-							width: 140%;
-							margin-left: -20%;
-							position: relative;
-							z-index: 2;
+						&.selected {
+							border-color: $blue;
+							transform: scale(1.1);
+							filter: brightness(0.85);
 						}
+
+						&:hover {
+							border-color: $blue;
+							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+							transform: scale(1.1);
+						}
+
+						&:active {
+							filter: brightness(0.85);
+							transform: scale(1.04);
+							transition: border-color 0.1s, filter 0.1s, transform 0.1s;
+						}
+					}
+
+					span {
+						// link title
+						position: relative;
+						display: block;
+						overflow: hidden;
+						margin-top: 0.4em;
+						line-height: 1.3em;
+						min-height: 1.3em;
+						margin-left: -20%;
+						width: 140%;
+
+						z-index: 2;
 					}
 
 					&.removed {
 						margin-right: -1.3em;
 						margin-left: -1.3em;
 						overflow: hidden;
-						transition: margin 0.6s;
+						transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
+						width: 0px !important;
+						opacity: 0;
 
-						.block {
-							transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
-							width: 0px !important;
+						.l_icon_wrap {
+							transition: transform 0.6s $easeOutThree;
+							transform: scale(0);
+						}
+
+						span {
 							opacity: 0;
-
-							.l_icon_wrap {
-								transition: transform 0.6s $easeOutThree;
-								transform: scale(0);
-							}
-
-							span {
-								opacity: 0;
-							}
 						}
 					}
 				}
@@ -403,17 +395,16 @@
 				&.medium {
 					column-gap: 2em;
 
-					.block_parent {
-						.block {
-							width: 3.5em;
+					.block {
+						width: 3.5em;
+						height: 3.5em;
 
-							.l_icon_wrap {
-								padding: 0.3em;
-								border-radius: 0.8em;
+						.l_icon_wrap {
+							padding: 0.3em;
+							border-radius: 0.8em;
 
-								img {
-									border-radius: 0.4em;
-								}
+							img {
+								border-radius: 0.4em;
 							}
 						}
 					}
@@ -422,66 +413,64 @@
 				&.small {
 					gap: 2em;
 
-					.block_parent {
-						.block {
-							width: 2.5em;
+					.block {
+						width: 2.5em;
+						height: 2.5em;
 
-							.l_icon_wrap {
-								padding: 0.2em;
-								border-radius: 0.4em;
+						.l_icon_wrap {
+							padding: 0.2em;
+							border-radius: 0.4em;
 
-								img {
-									border-radius: 0.2em;
-								}
-							}
-
-							&:hover span {
-								opacity: 1;
-								visibility: visible;
+							img {
+								border-radius: 0.2em;
 							}
 						}
 
-						span {
-							display: block;
-							position: absolute;
-							visibility: hidden;
-							padding: 0.2em 0.6em;
-							margin: auto;
-							width: unset;
-							opacity: 0;
-							bottom: -1.9em;
-							left: 50%;
-							transform: translateX(-50%);
-							color: white;
-							overflow: visible;
-							white-space: nowrap;
-							font-size: 0.9em;
-							font-weight: 400;
-							text-shadow: none;
-							border-radius: 0.3em;
-							border: 1px solid rgba(255, 255, 255, 0.075);
-							transition: opacity 0.2s;
-							min-height: 1em;
-							line-height: 1em;
-							@include frostedGlass($alpha: 0.2);
-
-							&:empty {
-								display: none;
-							}
+						&:hover span {
+							opacity: 1;
+							visibility: visible;
 						}
+					}
 
-						&.removed {
-							margin-right: -1em;
-							margin-left: -1em;
+					span {
+						display: block;
+						position: absolute;
+						visibility: hidden;
+						padding: 0.2em 0.6em;
+						margin: auto;
+						width: unset;
+						opacity: 0;
+						bottom: -1.9em;
+						left: 50%;
+						transform: translateX(-50%);
+						color: white;
+						overflow: visible;
+						white-space: nowrap;
+						font-size: 0.9em;
+						font-weight: 400;
+						text-shadow: none;
+						border-radius: 0.3em;
+						border: 1px solid rgba(255, 255, 255, 0.075);
+						transition: opacity 0.2s;
+						min-height: 1em;
+						line-height: 1em;
+						@include frostedGlass($alpha: 0.2);
+
+						&:empty {
+							display: none;
 						}
+					}
+
+					&.removed {
+						margin-right: -1em;
+						margin-left: -1em;
 					}
 				}
 
 				&.text {
 					gap: 2em;
-					justify-content: flex-start;
 
-					.block_parent .block {
+					.block {
 						width: auto;
 
 						.l_icon_wrap {

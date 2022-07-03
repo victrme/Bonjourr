@@ -82,7 +82,7 @@ body {
 		textarea:focus,
 		select:focus,
 		button:focus {
-			outline: auto;
+			outline: 2px solid $blue;
 		}
 	}
 }

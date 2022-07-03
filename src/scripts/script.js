@@ -234,14 +234,14 @@ function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks_inner')
-	let hovered = { parent: undefined, link: {}, index: 0 }
+	let hovered = { block: undefined, link: {}, index: 0 }
 
 	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
 				// Add blocks and events
 				const blocklist = links.map((l) => appendblock(l))
-				blocklist.forEach(({ parent }) => addEvents(parent))
+				blocklist.forEach(({ block }) => addEvents(block))
 				canDisplayInterface('links')
 
 				// Load icons one by one
@@ -299,8 +299,7 @@ function quickLinks(event, that, init) {
 		const lIcon = document.createElement('img')
 		const lIconWrap = document.createElement('div')
 		const blockTitle = document.createElement('span')
-		const block = document.createElement('div')
-		const block_parent = document.createElement('div')
+		const block = document.createElement('a')
 
 		lIcon.alt = ''
 		lIcon.loading = 'lazy'
@@ -308,22 +307,22 @@ function quickLinks(event, that, init) {
 		lIconWrap.className = 'l_icon_wrap'
 		lIconWrap.appendChild(lIcon)
 
-		block.className = 'block'
-		block.setAttribute('source', url)
 		block.appendChild(lIconWrap)
 		block.appendChild(blockTitle)
 
-		block_parent.setAttribute('tabindex', '0')
-		block_parent.setAttribute('class', 'block_parent')
-		block_parent.setAttribute('draggable', 'true')
-		block_parent.appendChild(block)
+		block.href = url
+		block.setAttribute('role', 'listitem')
+		block.setAttribute('rel', 'noreferrer noopener')
+		block.setAttribute('aria-label', extractDomain(url))
+		block.setAttribute('class', 'block')
+		block.setAttribute('draggable', 'true')
 
 		// this also adds "normal" title as usual
 		textOnlyControl(block, title, domlinkblocks.className === 'text')
 
-		domlinkblocks.appendChild(block_parent)
+		domlinkblocks.appendChild(block)
 
-		return { icon: lIcon, parent: block_parent }
+		return { icon: lIcon, block }
 	}
 
 	function removeLinkSelection() {
@@ -334,81 +333,17 @@ function quickLinks(event, that, init) {
 	}
 
 	function addEvents(elem) {
-		function openlink(that, e) {
-			const source = that.children[0].getAttribute('source')
-			const a_hiddenlink = id('hiddenlink')
-
-			chrome.storage.sync.get('linknewtab', (data) => {
-				const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
-
-				a_hiddenlink.setAttribute('href', source)
-				a_hiddenlink.setAttribute('target', toNewTab ? '_blank' : '_self')
-				a_hiddenlink.click()
-			})
-		}
-
-		function handleDrag(is, that) {
-			chrome.storage.sync.get(null, (data) => {
-				const index = findindex(that)
-				const link = bundleLinks(data)[index]
-
-				if (is === 'enter') {
-					hovered = { parent: elem, link, index }
-					return
-				}
-
-				if (is === 'end') {
-					if (hovered.index === index) return
-
-					const dragged = { parent: elem }
-					const hoveredChild = hovered.parent.children[0]
-					const draggedChild = dragged.parent.children[0]
-
-					hovered.parent.children[0].remove()
-					dragged.parent.children[0].remove()
-					hovered.parent.appendChild(draggedChild)
-					dragged.parent.appendChild(hoveredChild)
-
-					const temp = link.order
-					data[link._id].order = hovered.link.order
-					data[hovered.link._id].order = temp
-
-					chrome.storage.sync.set(data)
-				}
-			})
-		}
-
-		// Drags
-		elem.ondragstart = function (e) {
-			e.stopPropagation()
-			e.dataTransfer.setData('text/plain', e.target.id)
-			handleDrag('start', this)
-		}
-
-		elem.ondragenter = function (e) {
-			e.preventDefault()
-			handleDrag('enter', this)
-		}
-
-		elem.ondragend = function (e) {
-			e.preventDefault()
-			handleDrag('end', this)
-		}
-
 		// Mouse clicks
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
 			removeLinkSelection()
-			displayEditWindow(this, e)
+			displayEditWindow(this, { x: e.x, y: e.y })
 		}
 
-		elem.onmouseup = function (e) {
-			// right click
-			if (e.which === 3) return
-
-			// settings not opened and not on mobile
-			if (!has(id('settings'), 'shown') && !mobilecheck()) {
-				openlink(this, e)
+		elem.onkeyup = function (e) {
+			if (e.key === 'e') {
+				const { offsetLeft, offsetTop } = e.target
+				displayEditWindow(this, { x: offsetLeft, y: offsetTop })
 			}
 		}
 
@@ -421,18 +356,14 @@ function quickLinks(event, that, init) {
 				const startHandler = (e) => {
 					touchStartTime = performance.now()
 					touchTimeout = setTimeout(() => {
-						displayEditWindow(elem, e)
+						const { clientX, clientY } = e.touches[0]
+						displayEditWindow(elem, { x: clientX, y: clientY })
 					}, 600)
 				}
 
 				const endHandler = (e) => {
 					const pressTime = performance.now() - touchStartTime
-					const editIsNotOpen = !has(id('editlink'), 'shown')
-
-					if (pressTime < 600) {
-						clearTimeout(touchTimeout)
-						if (editIsNotOpen) openlink(elem, e)
-					}
+					if (pressTime < 600) clearTimeout(touchTimeout)
 				}
 
 				elem.addEventListener('touchstart', startHandler, { passive: true })
@@ -472,19 +403,12 @@ function quickLinks(event, that, init) {
 		id('e_iconurl').addEventListener('keyup', inputSubmitEvent)
 	}
 
-	function displayEditWindow(that, mouseEvent) {
+	function displayEditWindow(that, { x, y }) {
 		//
-		function positionsEditWindow(mouseEvent) {
-			const { innerHeight, innerWidth } = mouseEvent.view // viewport size
-			let { x, y } = mouseEvent // mouse position
+		function positionsEditWindow() {
+			const { innerHeight, innerWidth } = window // viewport size
 
 			removeLinkSelection()
-
-			// touch event is an array of touches
-			if (mouseEvent.touches?.length > 0) {
-				x = mouseEvent.touches[0].clientX
-				y = mouseEvent.touches[0].clientY
-			}
 
 			if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
 			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
@@ -510,13 +434,15 @@ function quickLinks(event, that, init) {
 			id('e_url').value = url
 			id('e_iconurl').value = icon
 
-			positionsEditWindow(mouseEvent)
+			positionsEditWindow()
 
 			clas(liconwrap, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
 
 			domedit.setAttribute('index', index)
+
+			id('e_title').focus()
 		})
 	}
 
@@ -559,7 +485,7 @@ function quickLinks(event, that, init) {
 		//passe la liste des blocks, s'arrete si that correspond
 		//renvoie le nombre de loop pour l'atteindre
 		const list = domlinkblocks.children
-		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
+		for (let i = 0; i < list.length; i++) if (that === list[i]) return i
 	}
 
 	function removeblock(index) {
@@ -640,12 +566,9 @@ function quickLinks(event, that, init) {
 
 	function textOnlyControl(block, title, toText) {
 		const span = block.querySelector('span')
-		let url = block.getAttribute('source')
 
 		if (toText && title === '') {
-			url = url.replace(/(^\w+:|^)\/\//, '')
-			url = url.split('?')[0]
-			span.textContent = url
+			span.textContent = extractDomain(block.href)
 			return
 		}
 
@@ -671,7 +594,9 @@ function quickLinks(event, that, init) {
 
 		if (Newtab) {
 			chrome.storage.sync.set({ linknewtab: that })
-			id('hiddenlink').setAttribute('target', '_blank')
+			document.querySelectorAll('.block').forEach((block) => {
+				block.setAttribute('target', '_blank')
+			})
 		}
 
 		if (Style) {
@@ -1045,6 +970,7 @@ function weather(event, that, init) {
 
 			if (widgetIcon) {
 				if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
+				widgetIcon.setAttribute('alt', 'Weather: ' + currentState.description)
 			} else {
 				const icon = document.createElement('img')
 				icon.src = iconSrc
