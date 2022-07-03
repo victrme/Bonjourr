@@ -63,6 +63,7 @@ body {
 		display: block;
 	}
 
+	button,
 	select {
 		cursor: pointer;
 	}
@@ -81,7 +82,9 @@ body {
 		input:focus,
 		textarea:focus,
 		select:focus,
-		button:focus {
+		button:focus,
+		button:focus,
+		input:focus-visible + .slider {
 			outline: 2px solid $blue;
 		}
 	}
@@ -213,7 +216,7 @@ body {
 
 	.as {
 		max-height: 0;
-		overflow: hidden;
+		overflow-y: clip;
 		transition: max-height 0.4s;
 	}
 
@@ -239,72 +242,35 @@ body {
 		transition-property: background-color, color, border, border-color, transform;
 	}
 
-	input:focus-visible + .slider {
-		border: 3px solid #007aff44;
+	button {
+		color: $blue;
+		font-size: 14px;
+		border-radius: 8.5px;
+		border: 2px solid transparent;
+		background-color: transparent;
 	}
 
+	select,
+	input[type='text'],
+	input[type='url'],
 	#i_export,
 	#i_refresh,
-	#i_qtrefresh,
-	#cssEditor,
-	input[type='text'],
-	input[type='range'],
-	select {
-		font-size: 13px;
-		font-family: $fonts;
-	}
-
-	#i_refresh,
-	#i_qtrefresh,
-	select {
+	#i_qtrefresh {
 		height: $inputHeight;
 		color: $blackish;
-		border-radius: 8.5px;
+		font-size: 13px;
 		padding-left: 10px;
-		border: 1px solid $inputGrey;
+		border-radius: 8.5px;
+		box-sizing: border-box;
+		border: 2px solid transparent;
 		background-color: $inputGrey;
 		-webkit-appearance: none;
 	}
 
-	input[type='text'] {
-		width: 155px;
-	}
-
+	input[type='text'],
 	input[type='range'],
 	select {
 		width: 155px;
-	}
-
-	.slider,
-	input:checked + .slider {
-		transition: background-color 0.1s;
-	}
-
-	input:active,
-	input:focus,
-	a:hover,
-	a:active,
-	a:focus {
-		border: 0;
-	}
-
-	input::placeholder {
-		color: $placeholderGrey;
-		opacity: 1;
-	}
-
-	input::-moz-focus-outer {
-		border: 0;
-	}
-
-	input[type='text'],
-	input[type='url'],
-	#i_export {
-		padding-left: 10px;
-		border-radius: 8.5px;
-		border: 0;
-		color: $blackish;
-		background-color: $inputGrey;
 	}
 
 	input[type='text']:focus,
@@ -312,22 +278,11 @@ body {
 		background-color: $focusedGrey;
 	}
 
-	button {
-		border: 0;
-		background-color: #fff;
-		color: $blue;
-		cursor: pointer;
-		font-size: 14px;
+	input::placeholder {
+		color: $placeholderGrey;
+		opacity: 1;
 	}
 
-	input,
-	select,
-	#i_export {
-		box-sizing: border-box;
-		height: $inputHeight;
-	}
-
-	/* Switch */
 	.switch {
 		position: relative;
 		display: inline-block;
@@ -343,6 +298,7 @@ body {
 
 		input:checked + .slider {
 			background-color: $green;
+			transition: background-color 0.1s;
 		}
 
 		input:checked + .slider:before {
@@ -356,44 +312,40 @@ body {
 			left: 0;
 			right: 0;
 			bottom: 0;
-			background-color: $inputGrey;
-			-webkit-transition: 0.15s;
-			transition: 0.15s;
 			border-radius: 34px;
+			border: 2px solid transparent;
+			background-color: $inputGrey;
+			transition: background-color 0.15s;
 
 			&:before {
-				position: absolute;
 				content: '';
+				position: absolute;
 				height: 27px;
 				width: 27px;
-				top: 2px;
-				left: 2px;
-				// bottom: 3px;
-				background-color: $purewhite;
-				-webkit-transition: 0.3s;
-				transition: 0.3s;
+				top: 0px;
+				left: 0px;
 				border-radius: 50%;
 				box-shadow: $thumbShadow;
+				background-color: $purewhite;
+				transition: background-color 0.3s, transform 0.3s;
 			}
 
 			&:hover {
-				background: #ccc;
+				background-color: #ccc;
 				transition: background-color 0.2s;
 			}
 		}
 	}
 
-	/* Slider */
 	input[type='range'] {
-		-webkit-appearance: none;
 		position: relative;
 		height: 2px;
-		cursor: pointer;
-		background-color: $focusedGrey;
-		border-radius: 1.5rem;
 		opacity: 1;
-		cursor: grab;
 		margin: 0;
+		cursor: grab;
+		border-radius: 1.5rem;
+		background-color: $focusedGrey;
+		-webkit-appearance: none;
 
 		&:active {
 			cursor: grabbing;

@@ -240,11 +240,11 @@
 	}
 
 	.wrapper {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		min-height: 34px;
-		position: relative;
 
 		span {
 			display: flex;
@@ -279,7 +279,7 @@
 	}
 
 	#quicklinks_options {
-		overflow: hidden;
+		overflow-y: clip;
 		max-height: 0;
 		transition: max-height 0.4s;
 
@@ -327,11 +327,6 @@
 		margin-left: 5px;
 		text-decoration: none;
 		transition: background-color 0.1s, border-color 0.1s;
-
-		&:hover {
-			background-color: $focusedGrey;
-			border-color: #b7b7b7;
-		}
 	}
 
 	.freq_wrap > div {
@@ -487,7 +482,8 @@
 	// Hide elements
 
 	#hideelem {
-		margin: 1em auto 1em auto;
+		margin: 1em auto;
+		padding-bottom: 2px;
 		max-width: 250px;
 		display: flex;
 		flex-direction: column;
@@ -496,21 +492,19 @@
 		> div {
 			margin-top: 7px;
 			display: flex;
-			overflow: hidden;
 		}
 
 		button {
-			text-align: left;
-			background-color: $settingsGrey;
-			color: $blue;
-			text-align: center;
-			font-size: small;
-			margin-right: 5px;
-			width: 100%;
-			height: $inputHeight;
 			opacity: 1;
-			transition: all 0.2s;
+			height: $inputHeight;
+			width: 100%;
+			margin-right: 5px;
+			color: $blue;
+			font-size: small;
+			text-align: center;
 			border-radius: 10px;
+			background-color: $settingsGrey;
+			transition: background-color 0.2s, color 0.2s;
 
 			&:hover {
 				text-decoration: none;
@@ -578,7 +572,7 @@
 
 	#searchbar_options,
 	#searchbar_request {
-		overflow: hidden;
+		overflow-y: clip;
 		max-height: 0;
 		transition: max-height 0.4s;
 	}
@@ -600,7 +594,7 @@
 	}
 
 	#quotes_options {
-		overflow: hidden;
+		overflow-y: clip;
 		max-height: 0;
 		transition: max-height 0.4s;
 
@@ -627,10 +621,11 @@
 		min-height: 100px;
 		max-height: 3000px;
 		resize: vertical;
-		border: none;
-		padding: $settingsMargin 1.3em;
+		padding: 1.3em;
 		font-family: $code;
+		font-size: 13px;
 		tab-size: 1.5em;
+		border: none;
 		border-radius: 10px;
 		box-sizing: border-box;
 	}
