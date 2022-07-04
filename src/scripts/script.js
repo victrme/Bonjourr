@@ -502,12 +502,12 @@ function quickLinks(event, that, init) {
 				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
 			}, 600)
 
-			links.map((l) => {
-				l.order > index ? (l.order -= 1) : '' // Decrement order for elements above the one removed
+			links.forEach((l) => {
+				l.order -= l.order > index ? 1 : 0 // Decrement order for elements above the one removed
 				data[l._id] = l // updates link in storage
 			})
 
-			chrome.storage.sync.set(data)
+			chrome.storage.sync.set(isExtension ? data : { import: data })
 			chrome.storage.sync.remove(link._id)
 		})
 	}
@@ -1985,6 +1985,8 @@ function searchbar(event, that, init) {
 			setRequest(request)
 			setNewtab(newtab)
 			setOpacity(opacity)
+
+			if (on) domsearchbar.focus()
 		} catch (e) {
 			errorMessage('Error in searchbar initialization', e)
 		}
