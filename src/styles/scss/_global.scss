@@ -182,6 +182,10 @@ body {
 
 @mixin allSettings {
 	&.all {
+		.as {
+			overflow-y: clip;
+		}
+
 		.as_link {
 			max-height: 120px;
 		}
@@ -216,7 +220,7 @@ body {
 
 	.as {
 		max-height: 0;
-		overflow-y: clip;
+		overflow-y: hidden;
 		transition: max-height 0.4s;
 	}
 

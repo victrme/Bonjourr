@@ -969,18 +969,18 @@ function weather(event, that, init) {
 			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
 			if (widgetIcon) {
-				if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
-				widgetIcon.setAttribute('alt', 'Weather: ' + currentState.description)
-			} else {
-				const icon = document.createElement('img')
-				icon.src = iconSrc
-				icon.setAttribute('alt', 'Weather: ' + currentState.description)
-				icon.setAttribute('draggable', 'false')
-				tempContainer.prepend(icon)
-
-				// from 1.2s request anim to .4s hide elem anim
-				setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
+				widgetIcon.setAttribute('src', iconSrc)
+				return
 			}
+
+			const icon = document.createElement('img')
+			icon.src = iconSrc
+			icon.setAttribute('alt', '')
+			icon.setAttribute('draggable', 'false')
+			tempContainer.prepend(icon)
+
+			// from 1.2s request anim to .4s hide elem anim
+			setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 		}
 
 		handleWidget()

@@ -39,14 +39,14 @@
 			<hr />
 
 			<div class="choose_language wrapper">
-				<span class="trn selector_span">Language</span>
+				<label for="i_lang" class="trn">Language</label>
 				<select id="i_lang" class="lang"></select>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Greeting</span>
+				<label for="i_greeting" class="trn">Greeting</label>
 				<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
 			</div>
 
@@ -60,8 +60,22 @@
 					</span>
 
 					<div>
-						<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" />
-						<input type="text" name="tabtitle" id="i_tabtitle" maxlength="80" placeholder="New tab" />
+						<input
+							type="text"
+							name="favicon"
+							id="i_favicon"
+							maxlength="2"
+							placeholder="🌤"
+							aria-label="Tab favicon"
+						/>
+						<input
+							type="text"
+							name="tabtitle"
+							id="i_tabtitle"
+							maxlength="80"
+							placeholder="New tab"
+							aria-label="Tab title"
+						/>
 					</div>
 				</div>
 
@@ -73,7 +87,7 @@
 				<hr />
 
 				<div class="darkmode wrapper">
-					<span class="trn selector_span">Dark mode</span>
+					<label for="i_dark" class="trn">Dark mode</label>
 					<select id="i_dark" class="theme">
 						<option value="system" class="trn">System</option>
 						<option value="auto" class="trn">At night</option>
@@ -84,25 +98,21 @@
 
 				<hr />
 
-				<span class="trn">Hide elements</span>
+				<span id="lbl-he" class="trn">Hide elements</span>
 
-				<div id="hideelem">
-					<div>
-						<button he_row="0" he_col="0" data="time-container" class="trn">Clock</button>
-						<button he_row="0" he_col="1" data="date" class="trn">Date</button>
-					</div>
-					<div>
-						<button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button>
-						<button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button>
-						<button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button>
-					</div>
-					<div>
+				<ul id="hideelem" aria-labelledby="lbl-he">
+					<li><button he_row="0" he_col="0" data="time-container" class="trn">Clock</button></li>
+					<li><button he_row="0" he_col="1" data="date" class="trn">Date</button></li>
+					<li><button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button></li>
+					<li><button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button></li>
+					<li><button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button></li>
+					<li>
 						<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
-					</div>
-					<div>
+					</li>
+					<li>
 						<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
-					</div>
-				</div>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</div>
@@ -146,6 +156,7 @@
 								autocomplete="off"
 								autocorrect="off"
 								autocapitalize="off"
+								aria-label="New link title"
 							/>
 
 							<input
@@ -158,6 +169,7 @@
 								autocomplete="off"
 								autocorrect="off"
 								autocapitalize="off"
+								aria-label="New link URL"
 							/>
 						</div>
 						<div class="links_buttons">
@@ -170,7 +182,7 @@
 				<hr />
 
 				<div class="linkstyle wrapper">
-					<span class="trn">Style</span>
+					<label for="i_linkstyle" class="trn">Style</label>
 					<div>
 						<select id="i_linkstyle">
 							<option value="large" class="trn">Large</option>
@@ -185,17 +197,17 @@
 					<hr />
 
 					<div class="wrapper">
-						<span class="trn">Links per row</span>
+						<label for="i_row" class="trn">Links per row</label>
 						<input id="i_row" type="range" name="i_row" min="1" max="16" step="1" value="8" class="range" />
 					</div>
 
 					<hr />
 
 					<div class="linknewtab wrapper">
-						<span class="trn">Open in new tab</span>
+						<span id="lbl-nt" class="trn">Open in new tab</span>
 						<div>
 							<label class="switch">
-								<input id="i_linknewtab" type="checkbox" />
+								<input id="i_linknewtab" type="checkbox" aria-labelledby="lbl-nt" />
 								<span class="slider round span"></span>
 							</label>
 						</div>
@@ -211,7 +223,7 @@
 
 		<div class="param">
 			<div class="wrapper">
-				<span class="trn selector_span">Background type</span>
+				<label for="i_type" class="trn">Background type</label>
 				<select id="i_type" class="theme">
 					<option value="dynamic" class="trn">Dynamic</option>
 					<option value="custom" class="trn">Custom</option>
@@ -221,7 +233,7 @@
 			<hr />
 
 			<div class="wrapper freq_wrap">
-				<span class="trn">Frequency</span>
+				<label for="i_freq" class="trn">Frequency</label>
 				<div>
 					<select id="i_freq">
 						<option value="tabs" class="trn">Every tab</option>
@@ -230,7 +242,7 @@
 						<option value="day" class="trn">Every day</option>
 						<option value="pause" class="trn">Pause</option>
 					</select>
-					<button id="i_refresh">
+					<button id="i_refresh" aria-label="Choose another background">
 						<span>↻</span>
 					</button>
 				</div>
@@ -241,7 +253,7 @@
 
 				<div class="wrapper">
 					<span>
-						<span class="trn">Unsplash collection</span>
+						<label for="i_collection" class="trn">Unsplash collection</label>
 						<button class="tooltip ttcoll" aria-label="Tips on Unsplash collections">?</button>
 					</span>
 
@@ -283,14 +295,14 @@
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Blur intensity</span>
+				<label for="i_blur" class="trn">Blur intensity</label>
 				<input id="i_blur" type="range" name="background_blur" min="0" max="50" value="0" step="1" class="range" />
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Brightness</span>
+				<label for="i_bright" class="trn">Brightness</label>
 				<input
 					id="i_bright"
 					type="range"
@@ -345,34 +357,34 @@
 					</div>
 				</div>
 
-				<div id="clockoptions" class="digital">
-					<hr />
+				<hr />
 
-					<div id="w_clockface" class="wrapper">
-						<span class="trn selector_span">Clock face</span>
-						<select id="i_clockface" class="">
-							<option value="none" class="trn">None</option>
-							<option value="number" class="trn">Numbers</option>
-							<option value="roman" class="trn">Romans</option>
-							<option value="marks" class="trn">Marks</option>
-						</select>
-					</div>
-
-					<div id="w_ampm" class="wrapper">
-						<span class="trn">12-Hour Time</span>
-						<div>
-							<label class="switch">
-								<input id="i_ampm" type="checkbox" />
-								<span class="slider round span"></span>
-							</label>
-						</div>
+				<div id="w_ampm" class="wrapper">
+					<span class="trn">12-Hour Time</span>
+					<div>
+						<label class="switch">
+							<input id="i_ampm" type="checkbox" />
+							<span class="slider round span"></span>
+						</label>
 					</div>
 				</div>
 
 				<hr />
 
+				<div id="w_clockface" class="wrapper">
+					<label for="i_clockface" class="trn">Clock face</label>
+					<select id="i_clockface" class="">
+						<option value="none" class="trn">None</option>
+						<option value="number" class="trn">Numbers</option>
+						<option value="roman" class="trn">Romans</option>
+						<option value="marks" class="trn">Marks</option>
+					</select>
+				</div>
+
+				<hr />
+
 				<div class="wrapper">
-					<span class="trn selector_span">Time zone</span>
+					<label for="i_timezone" class="trn">Time zone</label>
 					<select id="i_timezone" class="">
 						<option value="auto" class="trn">Automatic</option>
 						<option value="-10">UTC/HST -10 (Honolulu)</option>
@@ -420,7 +432,7 @@
 			<div id="sett_city">
 				<div class="wrapper">
 					<div>
-						<select id="i_ccode" class="countrycode">
+						<select id="i_ccode" class="countrycode" aria-label="Country location">
 							<option value="AF">Afghanistan</option>
 							<option value="AX">Åland Islands</option>
 							<option value="AL">Albania</option>
@@ -679,6 +691,7 @@
 							autocomplete="off"
 							maxlength="64"
 							spellcheck="false"
+							aria-label="City location"
 						/>
 					</div>
 				</div>
@@ -700,7 +713,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<span class="trn">Forecast</span>
+					<label for="i_forecast" class="trn">Forecast</label>
 					<select id="i_forecast">
 						<option value="auto" class="trn">Automatic</option>
 						<option value="always" class="trn">Always show</option>
@@ -713,7 +726,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<span class="trn">Temperature</span>
+					<label for="i_temp" class="trn">Temperature</label>
 					<select id="i_temp">
 						<option value="actual" class="trn">Actual</option>
 						<option value="feelslike" class="trn">Feels like</option>
@@ -755,7 +768,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<span class="trn">Search engine</span>
+					<label for="i_sbengine" class="trn">Search engine</label>
 					<select id="i_sbengine" class="choose_search">
 						<option value="google">Google</option>
 						<option value="ddg">DuckDuckGo</option>
@@ -773,8 +786,8 @@
 				<div id="searchbar_request">
 					<hr />
 					<div class="wrapper">
-						<span class="trn">URL request</span>
-						<input type="text" name="sbrequest" id="i_sbrequest" placeholder="Search query: %s" maxlength="512" />
+						<label for="i_sbrequest" class="trn">URL request</label>
+						<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
 					</div>
 				</div>
 
@@ -782,7 +795,7 @@
 					<hr />
 
 					<div class="wrapper">
-						<span class="trn">Opacity</span>
+						<label for="i_sbopacity" class="trn">Opacity</label>
 						<input
 							id="i_sbopacity"
 							type="range"
@@ -833,7 +846,7 @@
 				</div>
 
 				<div class="wrapper freq_wrap">
-					<span class="trn">Frequency</span>
+					<label for="i_qtfreq" class="trn">Frequency</label>
 					<div>
 						<select id="i_qtfreq">
 							<option value="tabs" class="trn">Every tab</option>
@@ -841,7 +854,7 @@
 							<option value="day" class="trn">Every day</option>
 							<option value="pause" class="trn">Pause</option>
 						</select>
-						<button id="i_qtrefresh">
+						<button id="i_qtrefresh" aria-label="Choose another quote">
 							<span>↻</span>
 						</button>
 					</div>
@@ -851,7 +864,7 @@
 					<hr />
 
 					<div class="wrapper">
-						<span class="trn">Quote type</span>
+						<label for="i_qttype" class="trn">Quote type</label>
 						<div>
 							<select id="i_qttype">
 								<option value="classic" class="trn">Classic</option>
@@ -872,15 +885,15 @@
 
 		<div class="param">
 			<div class="wrapper">
-				<span class="trn">Font family</span>
+				<label for="i_customfont" class="trn">Font family</label>
 				<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" placeholder="" />
-				<datalist id="dl_fontfamily"> </datalist>
+				<datalist id="dl_fontfamily"></datalist>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Weight</span>
+				<label for="i_weight" class="trn">Weight</label>
 				<select id="i_weight">
 					<option value="100">Thin</option>
 					<option value="200">Extra Light</option>
@@ -897,14 +910,14 @@
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Size</span>
+				<label for="i_size" class="trn">Size</label>
 				<input id="i_size" type="range" name="fontsize" min="5" max="26" step=".05" class="range" />
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Shadow</span>
+				<label for="i_textshadow" class="trn">Shadow</label>
 				<input id="i_textshadow" type="range" name="textshadow" min="0" max="1" step=".025" class="range" />
 			</div>
 		</div>
@@ -912,7 +925,7 @@
 
 	<div class="as as_css cssEditor">
 		<div class="titleContainer">
-			<h2 class="trn">Custom Style</h2>
+			<h2 id="lbl-css" class="trn">Custom Style</h2>
 			<button class="tooltip ttcss" aria-label="Tips on Custom styles">?</button>
 		</div>
 
@@ -928,6 +941,7 @@
 			maxlength="8080"
 			spellcheck="false"
 			autocomplete="false"
+			aria-labelledby="lbl-css"
 		></textarea>
 	</div>
 
@@ -950,7 +964,7 @@
 			</div>
 
 			<div id="export" class="shown">
-				<textarea id="area_export" autocorrect="off" spellcheck="false" aria-label="Export settings"></textarea>
+				<textarea id="area_export" autocorrect="off" spellcheck="false" aria-labelledby="s_export"></textarea>
 
 				<div>
 					<button id="copyimport" class="trn">Copy text</button>
@@ -969,7 +983,7 @@
 				</label>
 
 				<div id="pasteAsText">
-					<input id="i_importtext" type="text" placeholder="or paste as text" aria-label="Paste export code" />
+					<input id="i_importtext" type="text" placeholder="or paste as text" aria-labelledby="importtext" />
 					<button id="importtext" class="trn">Import</button>
 				</div>
 			</div>

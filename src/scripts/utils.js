@@ -26,7 +26,12 @@ const mobilecheck = () =>
 
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
-const extractDomain = (url) => url.replace(/(^\w+:|^)\/\//, '').split('?')[0]
+
+const extractDomain = (url) => {
+	url.replace(/(^\w+:|^)\/\//, '')
+	url.split('?')[0]
+	return url
+}
 
 const randomString = (len) => {
 	const chars = 'abcdefghijklmnopqr'

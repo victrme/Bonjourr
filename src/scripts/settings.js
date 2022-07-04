@@ -7,11 +7,6 @@ function initParams(data, settingsDom) {
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
-	function toggleClockOptions(dom, analog) {
-		dom.classList.remove(analog ? 'digital' : 'analog')
-		dom.classList.add(analog ? 'analog' : 'digital')
-	}
-
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
@@ -105,9 +100,6 @@ function initParams(data, settingsDom) {
 
 	// Font weight
 	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom, true)
-
-	// Clock
-	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
 
 	// Backgrounds options init
 	if (data.background_type === 'custom') {
@@ -309,7 +301,6 @@ function initParams(data, settingsDom) {
 
 	paramId('i_analog').onchange = function () {
 		clock({ analog: this.checked })
-		toggleClockOptions(paramId('clockoptions'), this.checked)
 	}
 
 	paramId('i_seconds').onchange = function () {
