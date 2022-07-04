@@ -233,7 +233,7 @@ function clock(event, init) {
 function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
-	const domlinkblocks = id('linkblocks_inner')
+	const domlinkblocks = id('linkblocks')
 	let hovered = { block: undefined, link: {}, index: 0 }
 
 	async function initblocks(links) {
@@ -296,38 +296,34 @@ function quickLinks(event, that, init) {
 		let url = stringMaxSize(link.url, 512)
 
 		//le DOM du block
-		const lIcon = document.createElement('img')
-		const lIconWrap = document.createElement('div')
-		const blockTitle = document.createElement('span')
-		const block = document.createElement('a')
+		const img = document.createElement('img')
+		const span = document.createElement('span')
+		const atag = document.createElement('a')
+		const li = document.createElement('li')
 
-		lIcon.alt = ''
-		lIcon.loading = 'lazy'
-		lIcon.className = 'l_icon'
-		lIconWrap.className = 'l_icon_wrap'
-		lIconWrap.appendChild(lIcon)
+		img.alt = ''
+		img.loading = 'lazy'
 
-		block.appendChild(lIconWrap)
-		block.appendChild(blockTitle)
+		atag.appendChild(img)
+		atag.appendChild(span)
 
-		block.href = url
-		block.setAttribute('role', 'listitem')
-		block.setAttribute('rel', 'noreferrer noopener')
-		block.setAttribute('aria-label', extractDomain(url))
-		block.setAttribute('class', 'block')
-		block.setAttribute('draggable', 'true')
+		atag.href = url
+		atag.setAttribute('rel', 'noreferrer noopener')
 
 		// this also adds "normal" title as usual
-		textOnlyControl(block, title, domlinkblocks.className === 'text')
+		textOnlyControl(atag, title, domlinkblocks.className === 'text')
 
-		domlinkblocks.appendChild(block)
+		li.setAttribute('class', 'block')
+		li.appendChild(atag)
 
-		return { icon: lIcon, block }
+		domlinkblocks.appendChild(li)
+
+		return { icon: img, block: li }
 	}
 
 	function removeLinkSelection() {
 		//enleve les selections d'edit
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
+		domlinkblocks.querySelectorAll('img').forEach(function (e) {
 			clas(e, false, 'selected')
 		})
 	}
@@ -418,7 +414,7 @@ function quickLinks(event, that, init) {
 		}
 
 		const index = findindex(that)
-		const liconwrap = that.querySelector('.l_icon_wrap')
+		const domicon = that.querySelector('img')
 		const domedit = document.querySelector('#editlink')
 		const opendedSettings = has(id('settings'), 'shown')
 
@@ -436,7 +432,7 @@ function quickLinks(event, that, init) {
 
 			positionsEditWindow()
 
-			clas(liconwrap, true, 'selected')
+			clas(domicon, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
 
@@ -459,8 +455,9 @@ function quickLinks(event, that, init) {
 		}
 
 		chrome.storage.sync.get(null, (data) => {
-			const parent = domlinkblocks.children[index + 1]
-			const block = parent.querySelector('.block')
+			const domlink = domlinkblocks.children[index]
+			const domicon = domlink.querySelector('img')
+			const domurl = domlink.querySelector('a')
 			let link = bundleLinks(data).filter((l) => l.order === index)[0]
 
 			link = {
@@ -470,9 +467,9 @@ function quickLinks(event, that, init) {
 				icon: stringMaxSize(e_iconurl.value, 7500),
 			}
 
-			textOnlyControl(block, link.title, domlinkblocks.className === 'text')
-			block.setAttribute('source', link.url)
-			parent.querySelector('img').src = link.icon
+			textOnlyControl(domlink, link.title, domlinkblocks.className === 'text')
+			domurl.href = link.url
+			domicon.src = link.icon
 
 			// Updates
 			chrome.storage.sync.set({ [link._id]: link })
@@ -494,7 +491,7 @@ function quickLinks(event, that, init) {
 			let link = links.filter((l) => l.order === index)[0]
 
 			//enleve le html du block
-			const blockParent = domlinkblocks.children[index + 1]
+			const blockParent = domlinkblocks.children[index]
 			const height = blockParent.getBoundingClientRect().height
 
 			blockParent.style.height = height + 'px'
@@ -583,7 +580,7 @@ function quickLinks(event, that, init) {
 		const Style = event === 'linkstyle'
 
 		if (Toggle) {
-			id('linkblocks').setAttribute('class', that ? 'shown' : 'hidden')
+			clas(id('linkblocks'), !that, 'hidden')
 			interfaceWidgetToggle(null, 'links')
 			chrome.storage.sync.set({ quicklinks: that })
 		}
@@ -603,12 +600,15 @@ function quickLinks(event, that, init) {
 			chrome.storage.sync.get(null, (data) => {
 				linksrow(data.linksrow, that) // style changes needs rows width change
 
+				const classes = ['large', 'medium', 'small', 'text']
 				const links = bundleLinks(data)
 				const blocks = document.querySelectorAll('.block')
 
 				links.forEach(({ title }, i) => textOnlyControl(blocks[i], title, that === 'text'))
 
-				domlinkblocks.className = that
+				classes.forEach((c) => domlinkblocks.classList.remove(c))
+				domlinkblocks.classList.add(that)
+
 				chrome.storage.sync.set({ linkstyle: that })
 			})
 		}
@@ -619,7 +619,7 @@ function quickLinks(event, that, init) {
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	linksrow(init.linksrow, init.linkstyle)
 	initblocks(bundleLinks(init))
-	id('linkblocks').setAttribute('class', init.quicklinks ? 'shown' : 'hidden')
+	clas(id('linkblocks'), !init.quicklinks, 'hidden')
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
@@ -731,11 +731,11 @@ function linksrow(amount, style = 'large', event) {
 		}
 
 		const { width, gap } = sizes[style]
-		id('linkblocks_inner').style.width = (width + gap) * val + 'em'
+		id('linkblocks').style.width = (width + gap) * val + 'em'
 	}
 
 	if (event) {
-		let domStyle = document.querySelector('#linkblocks_inner').className
+		let domStyle = document.querySelector('#linkblocks').className
 		domStyle = domStyle === 'undefined' ? 'large' : domStyle
 
 		setRows(event, domStyle)
@@ -2695,11 +2695,11 @@ function filterImports(data) {
 
 	// Hide elem classes changed at some point
 	if (validateHideElem(data.hide)) {
-		const weatherIndex = hide.indexOf('weather_desc')
-		const widgetIndex = hide.indexOf('w_icon')
+		const weatherIndex = data.hide.indexOf('weather_desc')
+		const widgetIndex = data.hide.indexOf('w_icon')
 
-		if (weatherIndex >= 0) hide[weatherIndex] = 'description'
-		if (widgetIndex >= 0) hide[widgetIndex] = 'widget'
+		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
+		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
 	} else {
 		hide = [[0, 0], [0, 0, 0], [0], [0]]
 	}

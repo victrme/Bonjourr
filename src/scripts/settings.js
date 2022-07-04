@@ -357,6 +357,7 @@ function initParams(data, settingsDom) {
 	// Searchbar
 
 	paramId('i_sb').onchange = function () {
+		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
 		slow(this)
 	}
@@ -622,15 +623,15 @@ function selectBackgroundType(cat) {
 	})
 }
 
-function paramsImport(dataToImport) {
-	function fadeOut() {
-		const dominterface = id('interface')
-		dominterface.click()
-		dominterface.style.transition = 'opacity .4s'
-		dominterface.style.opacity = '0'
-		setTimeout(() => location.reload(), 400)
-	}
+function fadeOut() {
+	const dominterface = id('interface')
+	dominterface.click()
+	dominterface.style.transition = 'opacity .4s'
+	dominterface.style.opacity = '0'
+	setTimeout(() => location.reload(), 400)
+}
 
+function paramsImport(dataToImport) {
 	try {
 		// Load all sync & dynamicCache
 		chrome.storage.sync.get(null, (sync) => {

@@ -290,8 +290,11 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
-			align-items: flex-start;
-			max-width: 100%;
+			margin: 0 auto;
+			padding: 0;
+			column-gap: 2.6em;
+			row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
+			transition: visibility 0s 0s, width 0.18s $easeOutThree;
 
 			@include hidden();
 
@@ -299,19 +302,30 @@
 				display: none;
 			}
 
-			#linkblocks_inner {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: center;
-				transition: visibility 0s 0s;
-				column-gap: 2.6em;
-				row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
-				transition: width 0.18s $easeOutThree;
+			li.block {
+				width: 4.8em;
 
-				a.block {
+				&.removed {
+					width: 0px !important;
+					margin-right: -1.3em;
+					margin-left: -1.3em;
+					overflow: hidden;
+					opacity: 0;
+					transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
+
+					img {
+						transition: transform 0.6s $easeOutThree;
+						transform: scale(0);
+					}
+
+					span {
+						opacity: 0;
+					}
+				}
+
+				a {
 					position: relative;
 					opacity: 1;
-					width: 4.8em;
 					color: white;
 					cursor: pointer;
 					border: none;
@@ -319,24 +333,18 @@
 					background-color: transparent;
 					transition: width 0.18s $easeOutThree;
 
-					.l_icon_wrap {
+					img {
 						position: relative;
 						overflow: hidden;
 						width: 100%;
 						padding: 0.4em;
-						border-radius: 1em;
 						background: $purewhite;
 						box-shadow: $textShadow;
 						box-sizing: border-box;
-						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
-						aspect-ratio: 1;
+						border-radius: 1em;
 						z-index: 1;
-
-						.l_icon {
-							width: 100%;
-							pointer-events: none;
-							border-radius: 0.5em;
-						}
+						aspect-ratio: 1;
+						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
 						&.selected {
 							border-color: $blue;
@@ -362,128 +370,100 @@
 						position: relative;
 						display: block;
 						overflow: hidden;
-						margin-top: 0.4em;
+						padding-top: 0.4em;
 						line-height: 1.3em;
 						min-height: 1.3em;
-						margin-left: -20%;
-						width: 140%;
-
 						z-index: 2;
 					}
+				}
+			}
 
-					&.removed {
-						margin-right: -1.3em;
-						margin-left: -1.3em;
-						overflow: hidden;
-						transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
-						width: 0px !important;
-						opacity: 0;
+			&.medium {
+				column-gap: 2em;
 
-						.l_icon_wrap {
-							transition: transform 0.6s $easeOutThree;
-							transform: scale(0);
-						}
+				li {
+					width: 3.5em;
 
-						span {
-							opacity: 0;
-						}
+					a img {
+						padding: 0.3em;
+						border-radius: 0.8em;
+					}
+				}
+			}
+
+			&.small {
+				gap: 2em;
+
+				li {
+					width: 2.5em;
+
+					a img {
+						padding: 0.2em;
+						border-radius: 0.4em;
+					}
+
+					&:hover span {
+						opacity: 1;
+						visibility: visible;
 					}
 				}
 
-				&.medium {
-					column-gap: 2em;
+				span {
+					display: block;
+					position: absolute;
+					visibility: hidden;
+					padding: 0.2em 0.6em;
+					margin: auto;
+					width: unset;
+					opacity: 0;
+					bottom: -1.9em;
+					left: 50%;
+					transform: translateX(-50%);
+					color: white;
+					overflow: visible;
+					white-space: nowrap;
+					font-size: 0.9em;
+					font-weight: 400;
+					text-shadow: none;
+					border-radius: 0.3em;
+					border: 1px solid rgba(255, 255, 255, 0.075);
+					transition: opacity 0.2s;
+					min-height: 1em;
+					line-height: 1em;
 
-					.block {
-						width: 3.5em;
+					@include frostedGlass($alpha: 0.2);
 
-						.l_icon_wrap {
-							padding: 0.3em;
-							border-radius: 0.8em;
-
-							img {
-								border-radius: 0.4em;
-							}
-						}
+					&:empty {
+						display: none;
 					}
 				}
 
-				&.small {
-					gap: 2em;
+				&.removed {
+					margin-right: -1em;
+					margin-left: -1em;
+				}
+			}
 
-					.block {
-						width: 2.5em;
+			&.text {
+				gap: 2em;
 
-						.l_icon_wrap {
-							padding: 0.2em;
-							border-radius: 0.4em;
+				li {
+					width: auto;
 
-							img {
-								border-radius: 0.2em;
-							}
-						}
-
-						&:hover span {
-							opacity: 1;
-							visibility: visible;
-						}
+					a img {
+						display: none;
 					}
 
 					span {
-						display: block;
-						position: absolute;
-						visibility: hidden;
-						padding: 0.2em 0.6em;
-						margin: auto;
-						width: unset;
-						opacity: 0;
-						bottom: -1.9em;
-						left: 50%;
-						transform: translateX(-50%);
-						color: white;
-						overflow: visible;
-						white-space: nowrap;
-						font-size: 0.9em;
-						font-weight: 400;
-						text-shadow: none;
-						border-radius: 0.3em;
-						border: 1px solid rgba(255, 255, 255, 0.075);
-						transition: opacity 0.2s;
-						min-height: 1em;
-						line-height: 1em;
-						@include frostedGlass($alpha: 0.2);
+						width: 100%;
+						max-width: 20em;
+						margin-left: 0; // because of 140% / -20%, can be removed in the future
+						font-size: 1.5em;
+						text-overflow: ellipsis;
+						white-space: pre;
 
-						&:empty {
-							display: none;
-						}
-					}
-
-					&.removed {
-						margin-right: -1em;
-						margin-left: -1em;
-					}
-				}
-
-				&.text {
-					gap: 2em;
-
-					.block {
-						width: auto;
-
-						.l_icon_wrap {
-							display: none;
-						}
-
-						span {
-							width: 100%;
-							max-width: 20em;
-							margin-left: 0; // because of 140% / -20%, can be removed in the future
-							font-size: 1.5em;
-							text-overflow: ellipsis;
-							white-space: pre;
-
-							&:hover {
-								text-decoration: underline;
-							}
+						&:hover {
+							text-decoration: underline;
 						}
 					}
 				}

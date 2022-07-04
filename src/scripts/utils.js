@@ -176,7 +176,7 @@ function turnRefreshButton(button, canTurn) {
 function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
 	clas(domedit, true, 'hiding')
-	document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+	document.querySelectorAll('#linkblocks img').forEach((img) => clas(img, false, 'selected'))
 	setTimeout(() => {
 		domedit.setAttribute('class', '')
 	}, 200)
