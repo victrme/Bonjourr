@@ -287,56 +287,54 @@ body {
 		opacity: 1;
 	}
 
+	input[type='checkbox'] {
+		-webkit-tap-highlight-color: transparent;
+		cursor: pointer;
+	}
+
+	label {
+		pointer-events: none;
+	}
+
 	.switch {
 		position: relative;
 		display: inline-block;
-		width: 51px;
 		height: 31px;
-		margin-left: 1em;
+		width: 51px;
+		margin: 0;
+		border-radius: 16px;
+		border: 2px solid transparent;
+		background-color: $inputGrey;
+		transition: background-color 0.15s;
 
-		input {
-			opacity: 0;
-			width: 0;
-			height: 0;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+
+		&:hover {
+			background-color: #ccc;
+			transition: background-color 0.2s;
 		}
 
-		input:checked + .slider {
+		&:after {
+			content: '';
+			position: absolute;
+			height: 27px;
+			width: 27px;
+			top: 0px;
+			left: 0px;
+			border-radius: 50%;
+			box-shadow: $thumbShadow;
+			background-color: $purewhite;
+			transition: background-color 0.3s, transform 0.3s;
+		}
+
+		&:checked {
 			background-color: $green;
 			transition: background-color 0.1s;
-		}
 
-		input:checked + .slider:before {
-			transform: translateX(20px);
-		}
-
-		.slider {
-			position: absolute;
-			cursor: pointer;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			border-radius: 34px;
-			border: 2px solid transparent;
-			background-color: $inputGrey;
-			transition: background-color 0.15s;
-
-			&:before {
-				content: '';
-				position: absolute;
-				height: 27px;
-				width: 27px;
-				top: 0px;
-				left: 0px;
-				border-radius: 50%;
-				box-shadow: $thumbShadow;
-				background-color: $purewhite;
-				transition: background-color 0.3s, transform 0.3s;
-			}
-
-			&:hover {
-				background-color: #ccc;
-				transition: background-color 0.2s;
+			&:after {
+				transform: translateX(20px);
 			}
 		}
 	}
