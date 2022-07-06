@@ -397,44 +397,40 @@
 				li {
 					width: 2.5em;
 
+					&:hover span {
+						opacity: 1;
+						visibility: visible;
+					}
+
 					a img {
 						padding: 0.2em;
 						border-radius: 0.4em;
 					}
 
-					&:hover span {
-						opacity: 1;
-						visibility: visible;
-					}
-				}
+					a span {
+						position: absolute;
+						visibility: hidden;
+						top: 1.8em;
+						left: 50%;
+						transform: translateX(-50%);
+						padding: 0.2em 0.6em;
+						opacity: 0;
+						color: white;
+						font-size: 0.9em;
+						min-height: 1em;
+						line-height: 1em;
+						white-space: nowrap;
+						text-shadow: none;
+						overflow: visible;
+						border-radius: 0.3em;
+						border: 1px solid rgba(255, 255, 255, 0.075);
+						transition: opacity 0.2s;
 
-				span {
-					display: block;
-					position: absolute;
-					visibility: hidden;
-					padding: 0.2em 0.6em;
-					margin: auto;
-					width: unset;
-					opacity: 0;
-					bottom: -1.9em;
-					left: 50%;
-					transform: translateX(-50%);
-					color: white;
-					overflow: visible;
-					white-space: nowrap;
-					font-size: 0.9em;
-					font-weight: 400;
-					text-shadow: none;
-					border-radius: 0.3em;
-					border: 1px solid rgba(255, 255, 255, 0.075);
-					transition: opacity 0.2s;
-					min-height: 1em;
-					line-height: 1em;
+						@include frostedGlass($alpha: 0.2);
 
-					@include frostedGlass($alpha: 0.2);
-
-					&:empty {
-						display: none;
+						&:empty {
+							display: none;
+						}
 					}
 				}
 

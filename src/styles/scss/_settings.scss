@@ -143,20 +143,16 @@
 		margin: 0;
 	}
 
-	.titleContainer {
-		position: relative;
+	h2 {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin: 2em 26px 1em;
+		text-transform: uppercase;
 		color: #6d6d72;
-
-		h2 {
-			text-transform: uppercase;
-			font-weight: 400;
-			font-size: 0.8em;
-			letter-spacing: 1px;
-		}
+		font-weight: 400;
+		font-size: 0.8em;
+		letter-spacing: 1px;
+		margin: 32px 26px 16px 26px;
 
 		.tooltip {
 			background-color: $inputGrey;
@@ -164,17 +160,11 @@
 		}
 	}
 
-	.help_sentence {
-		margin-top: 0.5em;
-		font-size: 0.8em;
-	}
-
 	.tooltip {
 		background-color: $settingsGrey;
-		color: $placeholderGrey;
+		color: #555;
 		width: 20px;
 		height: 20px;
-		font-size: 0.9em;
 		border-radius: 100%;
 		box-sizing: border-box;
 		border: 1px solid #eaeaee;
@@ -573,36 +563,22 @@
 	}
 
 	#sett_city {
-		flex-direction: column;
+		display: flex;
+		column-gap: 0.4em;
 		max-height: 50px;
+		margin-top: 0.8em;
 		overflow: hidden;
-		transition: max-Height 0.4s;
+		transition: max-Height 0.4s, margin-top 0.4s;
 
 		&.hidden {
+			margin-top: 0;
 			max-height: 0;
 		}
 
-		.wrapper {
-			margin-top: 1em;
-			display: inline-block;
-			width: 100%;
-
-			div {
-				display: flex;
-				width: 100%;
-			}
-
-			input {
-				width: 50%;
-				margin-left: 0.5em;
-				text-transform: capitalize;
-			}
-
-			select {
-				width: 50%;
-				display: flex;
-				align-self: center;
-			}
+		select,
+		input {
+			width: 50%;
+			text-transform: capitalize;
 		}
 	}
 
