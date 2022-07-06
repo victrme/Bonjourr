@@ -337,6 +337,10 @@ body {
 			background-color: $green;
 			transition: background-color 0.1s;
 
+			&:hover {
+				background-color: #40b354;
+			}
+
 			&:after {
 				transform: translateX(20px);
 			}
@@ -427,18 +431,18 @@ body {
 	}
 
 	/* total width */
-	#i_settingsarea::-webkit-scrollbar,
+	#area_export::-webkit-scrollbar,
 	&::-webkit-scrollbar {
 		width: 10px;
 	}
 
-	#i_settingsarea::-webkit-scrollbar-track,
+	#area_export::-webkit-scrollbar-track,
 	&::-webkit-scrollbar-track {
 		box-shadow: inset 0 0 10px 10px transparent;
 		border: solid 3px transparent;
 	}
 
-	#i_settingsarea::-webkit-scrollbar-thumb,
+	#area_export::-webkit-scrollbar-thumb,
 	&::-webkit-scrollbar-thumb {
 		box-shadow: inset 0 0 10px 10px $borderGrey;
 		border: solid 3px transparent;

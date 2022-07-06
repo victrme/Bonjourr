@@ -351,6 +351,7 @@
 		transform: scale(1);
 		box-sizing: border-box;
 		border-radius: 10px;
+		pointer-events: all;
 
 		input[type='file'] {
 			position: absolute;
@@ -758,14 +759,19 @@
 		}
 
 		#import {
-			#pasteAsText {
+			> div {
 				display: flex;
 				margin-top: 15px;
+			}
 
-				#i_importtext {
-					flex: 1;
-					margin-right: 1em;
-					tab-size: 0.05em;
+			#i_importtext {
+				flex: 1;
+				margin-right: 1em;
+				tab-size: 0.05em;
+				background-color: $settingsGrey;
+
+				&:focus {
+					background-color: $focusedGrey;
 				}
 			}
 
