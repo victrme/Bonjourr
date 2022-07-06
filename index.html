@@ -7,7 +7,10 @@
 		<meta name="theme-color" content="#000" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+		/>
 
 		<link rel="preconnect" href="https://images.unsplash.com" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,22 +26,48 @@
 	</head>
 
 	<body class="autodark">
-		<div id="editlink">
+		<button id="skiptosettings">Skip to Settings</button>
+
+		<div id="editlink" role="grid">
 			<div>
-				<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Title" />
+				<input
+					id="e_title"
+					type="text"
+					name="e_title"
+					maxlength="64"
+					autocomplete="off"
+					placeholder="Title"
+					aria-label="Update link title"
+				/>
 			</div>
 			<div>
-				<input id="e_url" type="text" name="e_url" maxlength="512" autocomplete="off" placeholder="Link" />
+				<input
+					id="e_url"
+					type="url"
+					name="e_url"
+					maxlength="512"
+					autocomplete="off"
+					placeholder="Link"
+					aria-label="Update link URL"
+				/>
 			</div>
 			<div>
-				<input id="e_iconurl" type="url" name="e_iconurl" maxlength="7600" autocomplete="off" placeholder="Icon" />
+				<input
+					id="e_iconurl"
+					type="url"
+					name="e_iconurl"
+					maxlength="7600"
+					autocomplete="off"
+					placeholder="Icon"
+					aria-label="Update link icon URL"
+				/>
 			</div>
 
 			<hr />
 
-			<div class="linkOptions">
-				<button id="e_delete" class="trn">Delete</button>
-				<button id="e_submit" class="trn">Apply changes</button>
+			<div class="linkOptions" role="menu">
+				<button id="e_delete" class="trn" role="menuitem" aria-label="Remove link">Delete</button>
+				<button id="e_submit" class="trn" role="menuitem" aria-label="Apply changes">Apply changes</button>
 			</div>
 		</div>
 
@@ -56,10 +85,10 @@
 			<div id="background"></div>
 		</div>
 
-		<div id="interface" class="init">
+		<main id="interface" class="init">
 			<div id="time">
 				<div id="time-container">
-					<div id="clock" class="hidden"></div>
+					<h1 id="clock" class="hidden"></h1>
 
 					<div id="analogClock" class="hidden">
 						<div class="numbers top">12</div>
@@ -78,7 +107,7 @@
 			</div>
 
 			<div id="main">
-				<h3 id="greetings"></h3>
+				<h2 id="greetings"></h2>
 				<div id="weather">
 					<div id="description">
 						<p id="current" class="wait">meteo</p>
@@ -93,32 +122,35 @@
 
 			<div id="widgets">
 				<div id="sb_container">
-					<input id="searchbar" type="text" name="searchbar" autocomplete="off" />
-					<button id="sb_empty">✕</button>
-					<button id="sb_submit">
-						<img src="src/assets/interface/magnifying-glass.svg" />
+					<input
+						id="searchbar"
+						type="text"
+						name="searchbar"
+						autocomplete="off"
+						spellcheck="false"
+						aria-label="Search bar"
+					/>
+					<button id="sb_empty" aria-label="Empty search" disabled>✕</button>
+					<button id="sb_submit" aria-label="Submit search" disabled>
+						<img src="src/assets/interface/magnifying-glass.svg" alt="" />
 					</button>
 				</div>
-	
-				<div id="linkblocks">
-					<div id="linkblocks_inner">
-						<a href="" id="hiddenlink"></a>
-					</div>
-				</div>
-	
+
+				<ul id="linkblocks"></ul>
+
 				<div id="quotes_container">
 					<p id="quote"></p>
 					<p id="author"></p>
 				</div>
 			</div>
-		</div>
+		</main>
 
 		<footer>
 			<div id="credit"></div>
 
 			<div id="showSettings" class="init">
-				<button>
-					<img src="src/assets/interface/gear.svg" draggable="false" />
+				<button aria-label="Toggle settings menu">
+					<img src="src/assets/interface/gear.svg" alt="" draggable="false" />
 				</button>
 			</div>
 		</footer>

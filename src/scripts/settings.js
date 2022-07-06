@@ -7,11 +7,6 @@ function initParams(data, settingsDom) {
 	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
 	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
 
-	function toggleClockOptions(dom, analog) {
-		dom.classList.remove(analog ? 'digital' : 'analog')
-		dom.classList.add(analog ? 'analog' : 'digital')
-	}
-
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
@@ -105,9 +100,6 @@ function initParams(data, settingsDom) {
 
 	// Font weight
 	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom, true)
-
-	// Clock
-	if (data.clock) toggleClockOptions(paramId('clockoptions'), data.clock.analog)
 
 	// Backgrounds options init
 	if (data.background_type === 'custom') {
@@ -309,7 +301,6 @@ function initParams(data, settingsDom) {
 
 	paramId('i_analog').onchange = function () {
 		clock({ analog: this.checked })
-		toggleClockOptions(paramId('clockoptions'), this.checked)
 	}
 
 	paramId('i_seconds').onchange = function () {
@@ -366,6 +357,7 @@ function initParams(data, settingsDom) {
 	// Searchbar
 
 	paramId('i_sb').onchange = function () {
+		paramId('searchbar_options').classList.toggle('shown')
 		if (!stillActive) searchbar('searchbar', this)
 		slow(this)
 	}
@@ -631,15 +623,15 @@ function selectBackgroundType(cat) {
 	})
 }
 
-function paramsImport(dataToImport) {
-	function fadeOut() {
-		const dominterface = id('interface')
-		dominterface.click()
-		dominterface.style.transition = 'opacity .4s'
-		dominterface.style.opacity = '0'
-		setTimeout(() => location.reload(), 400)
-	}
+function fadeOut() {
+	const dominterface = id('interface')
+	dominterface.click()
+	dominterface.style.transition = 'opacity .4s'
+	dominterface.style.opacity = '0'
+	setTimeout(() => location.reload(), 400)
+}
 
+function paramsImport(dataToImport) {
 	try {
 		// Load all sync & dynamicCache
 		chrome.storage.sync.get(null, (sync) => {
@@ -737,7 +729,7 @@ function settingsInit(data) {
 		const domedit = id('editlink')
 
 		const parser = new DOMParser()
-		const settingsDom = document.createElement('div')
+		const settingsDom = document.createElement('aside')
 		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]
 
 		settingsDom.id = 'settings'
@@ -749,7 +741,7 @@ function settingsInit(data) {
 		initParams(data, settingsDom)
 		showall(data.showall, false, settingsDom)
 
-		document.body.prepend(settingsDom) // Apply to body
+		document.body.appendChild(settingsDom) // Apply to body
 
 		//
 		// Events
@@ -764,6 +756,11 @@ function settingsInit(data) {
 			clas(domedit, isClosed, 'pushed')
 
 			if (!mobilecheck()) clas(dominterface, isClosed, 'pushed')
+		}
+
+		id('skiptosettings').onclick = function () {
+			toggleDisplay(settingsDom)
+			settingsDom.querySelector('#i_showall').focus()
 		}
 
 		domshowsettings.onclick = function () {
@@ -785,13 +782,12 @@ function settingsInit(data) {
 				return // do nothing if pressing ctrl or if there's an error message
 			}
 
-			const conditions = [
-				['sb_container', true],
-				['settings', false],
-				['editlink', false],
-			]
+			const notTabbing = document.body.classList.contains('tabbing') === false
+			const noSettings = has(id('settings'), 'shown') === false
+			const noEdit = has(id('editlink'), 'shown') === false
+			const hasSearchbar = has(id('sb_container'), 'shown')
 
-			if (conditions.every(([name, shouldBe]) => has(id(name), 'shown') === shouldBe)) {
+			if (noSettings && noEdit && notTabbing && hasSearchbar) {
 				id('searchbar').focus() // Focus searchbar if only searchbar is on
 			}
 		}

@@ -1,6 +1,13 @@
 @import 'global';
 @include hideElements;
 
+#skiptosettings {
+	position: absolute;
+	opacity: 0;
+	user-select: none;
+	touch-action: none;
+}
+
 #background_overlay {
 	z-index: -1;
 	position: fixed;
@@ -84,6 +91,7 @@
 
 		#time-container {
 			#clock {
+				margin: 0;
 				font-size: 6em;
 				font-weight: 200;
 
@@ -210,6 +218,7 @@
 		#greetings {
 			font-size: 3em;
 			font-weight: inherit;
+			margin: 0;
 			min-width: 300px;
 			max-width: 16em;
 			white-space: nowrap;
@@ -281,222 +290,176 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: center;
-			align-items: flex-start;
-			max-width: 100%;
-			// margin: 0 auto;
-			// padding-top: 2em;
+			margin: 0 auto;
+			padding: 0;
+			column-gap: 2.6em;
+			row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
+			transition: visibility 0s 0s, width 0.18s $easeOutThree;
 
 			@include hidden();
 
-			// &.withQuotes {
-			// 	flex-grow: 0.6;
-			// 	transition: transform 0.4s, flex-grow 0.4s 0.2s;
-			// }
+			#hiddenlink {
+				display: none;
+			}
 
-			// &.he_hidden {
-			// 	#linkblocks_inner {
-			// 		visibility: hidden;
-			// 		transition: visibility 0s 0.4s;
-			// 	}
-			// }
+			li.block {
+				width: 4.8em;
 
-			#linkblocks_inner {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: center;
-				transition: visibility 0s 0s;
-				column-gap: 2.6em;
-				row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
-				transition: width 0.18s $easeOutThree;
+				&.removed {
+					width: 0px !important;
+					margin-right: -1.3em;
+					margin-left: -1.3em;
+					overflow: hidden;
+					opacity: 0;
+					transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
 
-				#hiddenlink {
-					display: none;
+					img {
+						transition: transform 0.6s $easeOutThree;
+						transform: scale(0);
+					}
+
+					span {
+						opacity: 0;
+					}
 				}
 
-				.block_parent {
-					cursor: pointer;
+				a {
 					position: relative;
+					opacity: 1;
+					color: white;
+					cursor: pointer;
+					border: none;
+					text-decoration: none;
+					background-color: transparent;
+					transition: width 0.18s $easeOutThree;
 
-					.block {
-						width: 4.8em;
-						transition: width 0.18s $easeOutThree;
-						opacity: 1;
-
-						.l_icon_wrap {
-							position: relative;
-							overflow: hidden;
-							width: 100%;
-							height: 100%;
-							padding: 0.4em;
-							border-radius: 1em;
-							background: $purewhite;
-							box-shadow: $textShadow;
-							box-sizing: border-box;
-							transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
-							aspect-ratio: 1;
-							z-index: 1;
-
-							.l_icon {
-								width: 100%;
-								pointer-events: none;
-								border-radius: 0.5em;
-							}
-
-							&.selected {
-								border-color: $blue;
-								transform: scale(1.1);
-								filter: brightness(0.85);
-							}
-
-							&:hover {
-								border-color: $blue;
-								box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
-								transform: scale(1.1);
-							}
-
-							&:active {
-								filter: brightness(0.85);
-								transform: scale(1.04);
-								transition: border-color 0.1s, filter 0.1s, transform 0.1s;
-							}
-						}
-
-						span {
-							// link title
-							display: block;
-							overflow: hidden;
-							margin-top: 0.4em;
-							line-height: 1.3em;
-							min-height: 1.3em;
-							width: 140%;
-							margin-left: -20%;
-							position: relative;
-							z-index: 2;
-						}
-					}
-
-					&.removed {
-						margin-right: -1.3em;
-						margin-left: -1.3em;
+					img {
+						position: relative;
 						overflow: hidden;
-						transition: margin 0.6s;
+						width: 100%;
+						padding: 0.4em;
+						background: $purewhite;
+						box-shadow: $textShadow;
+						box-sizing: border-box;
+						border-radius: 1em;
+						z-index: 1;
+						aspect-ratio: 1;
+						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
-						.block {
-							transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
-							width: 0px !important;
-							opacity: 0;
+						&.selected {
+							border-color: $blue;
+							transform: scale(1.1);
+							filter: brightness(0.85);
+						}
 
-							.l_icon_wrap {
-								transition: transform 0.6s $easeOutThree;
-								transform: scale(0);
-							}
+						&:hover {
+							border-color: $blue;
+							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+							transform: scale(1.1);
+						}
 
-							span {
-								opacity: 0;
-							}
+						&:active {
+							filter: brightness(0.85);
+							transform: scale(1.04);
+							transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 						}
 					}
-				}
 
-				&.medium {
-					column-gap: 2em;
-
-					.block_parent {
-						.block {
-							width: 3.5em;
-
-							.l_icon_wrap {
-								padding: 0.3em;
-								border-radius: 0.8em;
-
-								img {
-									border-radius: 0.4em;
-								}
-							}
-						}
+					span {
+						// link title
+						position: relative;
+						display: block;
+						overflow: hidden;
+						padding-top: 0.4em;
+						line-height: 1.3em;
+						min-height: 1.3em;
+						z-index: 2;
 					}
 				}
+			}
 
-				&.small {
-					gap: 2em;
+			&.medium {
+				column-gap: 2em;
 
-					.block_parent {
-						.block {
-							width: 2.5em;
+				li {
+					width: 3.5em;
 
-							.l_icon_wrap {
-								padding: 0.2em;
-								border-radius: 0.4em;
-
-								img {
-									border-radius: 0.2em;
-								}
-							}
-
-							&:hover span {
-								opacity: 1;
-								visibility: visible;
-							}
-						}
-
-						span {
-							display: block;
-							position: absolute;
-							visibility: hidden;
-							padding: 0.2em 0.6em;
-							margin: auto;
-							width: unset;
-							opacity: 0;
-							bottom: -1.9em;
-							left: 50%;
-							transform: translateX(-50%);
-							color: white;
-							overflow: visible;
-							white-space: nowrap;
-							font-size: 0.9em;
-							font-weight: 400;
-							text-shadow: none;
-							border-radius: 0.3em;
-							border: 1px solid rgba(255, 255, 255, 0.075);
-							transition: opacity 0.2s;
-							min-height: 1em;
-							line-height: 1em;
-							@include frostedGlass($alpha: 0.2);
-
-							&:empty {
-								display: none;
-							}
-						}
-
-						&.removed {
-							margin-right: -1em;
-							margin-left: -1em;
-						}
+					a img {
+						padding: 0.3em;
+						border-radius: 0.8em;
 					}
 				}
+			}
 
-				&.text {
-					gap: 2em;
-					justify-content: flex-start;
+			&.small {
+				gap: 2em;
 
-					.block_parent .block {
-						width: auto;
+				li {
+					width: 2.5em;
 
-						.l_icon_wrap {
+					&:hover span {
+						opacity: 1;
+						visibility: visible;
+					}
+
+					a img {
+						padding: 0.2em;
+						border-radius: 0.4em;
+					}
+
+					a span {
+						position: absolute;
+						visibility: hidden;
+						top: 1.8em;
+						left: 50%;
+						transform: translateX(-50%);
+						padding: 0.2em 0.6em;
+						opacity: 0;
+						color: white;
+						font-size: 0.9em;
+						min-height: 1em;
+						line-height: 1em;
+						white-space: nowrap;
+						text-shadow: none;
+						overflow: visible;
+						border-radius: 0.3em;
+						border: 1px solid rgba(255, 255, 255, 0.075);
+						transition: opacity 0.2s;
+
+						@include frostedGlass($alpha: 0.2);
+
+						&:empty {
 							display: none;
 						}
+					}
+				}
 
-						span {
-							width: 100%;
-							max-width: 20em;
-							margin-left: 0; // because of 140% / -20%, can be removed in the future
-							font-size: 1.5em;
-							text-overflow: ellipsis;
-							white-space: pre;
+				&.removed {
+					margin-right: -1em;
+					margin-left: -1em;
+				}
+			}
 
-							&:hover {
-								text-decoration: underline;
-							}
+			&.text {
+				gap: 2em;
+
+				li {
+					width: auto;
+
+					a img {
+						display: none;
+					}
+
+					span {
+						width: 100%;
+						max-width: 20em;
+						margin-left: 0; // because of 140% / -20%, can be removed in the future
+						font-size: 1.5em;
+						text-overflow: ellipsis;
+						white-space: pre;
+
+						&:hover {
+							text-decoration: underline;
 						}
 					}
 				}

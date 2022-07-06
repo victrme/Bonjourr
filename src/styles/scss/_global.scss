@@ -7,7 +7,7 @@ $code: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
 $purewhite: white;
 $pureblack: black;
 
-$blue: #007aff;
+$blue: #0072ee;
 $green: #2ed058;
 $red: #fe3b31;
 $settingsGrey: #f2f2f7;
@@ -63,6 +63,11 @@ body {
 		display: block;
 	}
 
+	li {
+		list-style: none;
+	}
+
+	button,
 	select {
 		cursor: pointer;
 	}
@@ -81,8 +86,10 @@ body {
 		input:focus,
 		textarea:focus,
 		select:focus,
-		button:focus {
-			outline: auto;
+		button:focus,
+		button:focus,
+		input:focus-visible + .slider {
+			outline: 2px solid $blue;
 		}
 	}
 }
@@ -179,6 +186,10 @@ body {
 
 @mixin allSettings {
 	&.all {
+		.as {
+			overflow-y: clip;
+		}
+
 		.as_link {
 			max-height: 120px;
 		}
@@ -213,7 +224,7 @@ body {
 
 	.as {
 		max-height: 0;
-		overflow: hidden;
+		overflow-y: hidden;
 		transition: max-height 0.4s;
 	}
 
@@ -239,72 +250,35 @@ body {
 		transition-property: background-color, color, border, border-color, transform;
 	}
 
-	input:focus-visible + .slider {
-		border: 3px solid #007aff44;
+	button {
+		color: $blue;
+		font-size: 14px;
+		border-radius: 8.5px;
+		border: 2px solid transparent;
+		background-color: transparent;
 	}
 
+	select,
+	input[type='text'],
+	input[type='url'],
 	#i_export,
 	#i_refresh,
-	#i_qtrefresh,
-	#cssEditor,
-	input[type='text'],
-	input[type='range'],
-	select {
-		font-size: 13px;
-		font-family: $fonts;
-	}
-
-	#i_refresh,
-	#i_qtrefresh,
-	select {
+	#i_qtrefresh {
 		height: $inputHeight;
 		color: $blackish;
-		border-radius: 8.5px;
+		font-size: 13px;
 		padding-left: 10px;
-		border: 1px solid $inputGrey;
+		border-radius: 8.5px;
+		box-sizing: border-box;
+		border: 2px solid transparent;
 		background-color: $inputGrey;
 		-webkit-appearance: none;
 	}
 
-	input[type='text'] {
-		width: 155px;
-	}
-
+	input[type='text'],
 	input[type='range'],
 	select {
 		width: 155px;
-	}
-
-	.slider,
-	input:checked + .slider {
-		transition: background-color 0.1s;
-	}
-
-	input:active,
-	input:focus,
-	a:hover,
-	a:active,
-	a:focus {
-		border: 0;
-	}
-
-	input::placeholder {
-		color: $placeholderGrey;
-		opacity: 1;
-	}
-
-	input::-moz-focus-outer {
-		border: 0;
-	}
-
-	input[type='text'],
-	input[type='url'],
-	#i_export {
-		padding-left: 10px;
-		border-radius: 8.5px;
-		border: 0;
-		color: $blackish;
-		background-color: $inputGrey;
 	}
 
 	input[type='text']:focus,
@@ -312,88 +286,76 @@ body {
 		background-color: $focusedGrey;
 	}
 
-	button {
-		border: 0;
-		background-color: #fff;
-		color: $blue;
+	input::placeholder {
+		color: $placeholderGrey;
+		opacity: 1;
+	}
+
+	input[type='checkbox'] {
+		-webkit-tap-highlight-color: transparent;
 		cursor: pointer;
-		font-size: 14px;
 	}
 
-	input,
-	select,
-	#i_export {
-		box-sizing: border-box;
-		height: $inputHeight;
+	label {
+		pointer-events: none;
 	}
 
-	/* Switch */
 	.switch {
 		position: relative;
 		display: inline-block;
-		width: 51px;
 		height: 31px;
-		margin-left: 1em;
+		width: 51px;
+		margin: 0;
+		border-radius: 16px;
+		border: 2px solid transparent;
+		background-color: $inputGrey;
+		transition: background-color 0.15s;
 
-		input {
-			opacity: 0;
-			width: 0;
-			height: 0;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+
+		&:hover {
+			background-color: #ccc;
+			transition: background-color 0.2s;
 		}
 
-		input:checked + .slider {
-			background-color: $green;
-		}
-
-		input:checked + .slider:before {
-			transform: translateX(20px);
-		}
-
-		.slider {
+		&:after {
+			content: '';
 			position: absolute;
-			cursor: pointer;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background-color: $inputGrey;
-			-webkit-transition: 0.15s;
-			transition: 0.15s;
-			border-radius: 34px;
+			height: 27px;
+			width: 27px;
+			top: 0px;
+			left: 0px;
+			border-radius: 50%;
+			box-shadow: $thumbShadow;
+			background-color: $purewhite;
+			transition: background-color 0.3s, transform 0.3s;
+		}
 
-			&:before {
-				position: absolute;
-				content: '';
-				height: 27px;
-				width: 27px;
-				top: 2px;
-				left: 2px;
-				// bottom: 3px;
-				background-color: $purewhite;
-				-webkit-transition: 0.3s;
-				transition: 0.3s;
-				border-radius: 50%;
-				box-shadow: $thumbShadow;
-			}
+		&:checked {
+			background-color: $green;
+			transition: background-color 0.1s;
 
 			&:hover {
-				background: #ccc;
-				transition: background-color 0.2s;
+				background-color: #40b354;
+			}
+
+			&:after {
+				transform: translateX(20px);
 			}
 		}
 	}
 
-	/* Slider */
 	input[type='range'] {
-		-webkit-appearance: none;
 		position: relative;
 		height: 2px;
-		cursor: pointer;
-		background-color: $focusedGrey;
-		border-radius: 1.5rem;
 		opacity: 1;
-		cursor: grab;
 		margin: 0;
+		cursor: grab;
+		border-radius: 1.5rem;
+		background-color: $focusedGrey;
+		-webkit-appearance: none;
 
 		&:active {
 			cursor: grabbing;
@@ -469,18 +431,18 @@ body {
 	}
 
 	/* total width */
-	#i_settingsarea::-webkit-scrollbar,
+	#area_export::-webkit-scrollbar,
 	&::-webkit-scrollbar {
 		width: 10px;
 	}
 
-	#i_settingsarea::-webkit-scrollbar-track,
+	#area_export::-webkit-scrollbar-track,
 	&::-webkit-scrollbar-track {
 		box-shadow: inset 0 0 10px 10px transparent;
 		border: solid 3px transparent;
 	}
 
-	#i_settingsarea::-webkit-scrollbar-thumb,
+	#area_export::-webkit-scrollbar-thumb,
 	&::-webkit-scrollbar-thumb {
 		box-shadow: inset 0 0 10px 10px $borderGrey;
 		border: solid 3px transparent;

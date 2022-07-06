@@ -1,877 +1,785 @@
 <body>
-	<div>
-		<div id="changelogContainer">
-			<button id="log_dismiss" alt="Dismiss changelog"><img src="src/assets/interface/close.svg" /></button>
-			<div id="changelog">
-				<p class="trn">Bonjourr has been updated to version 1.14 ✨</p>
+	<div id="changelogContainer">
+		<button id="log_dismiss" aria-label="Dismiss changelog"><img src="src/assets/interface/close.svg" alt="" /></button>
+		<div id="changelog">
+			<p class="trn">Bonjourr has been updated to version 1.14 ✨</p>
 
-				<p>
-					<span class="trn"
-						>Learn all about our new Quick Links style options, the improved custom background management and much
-						more in </span
-					><a
-						href="https://ko-fi.com/post/Bonjourr-1-14-is-almost-out-L4L2D0BD7"
-						class="trn"
-						target="_blank"
-						id="link"
-						><span id="link" class="trn">our full changelog</span></a
-					>.🗞
-				</p>
-			</div>
+			<p>
+				<span class="trn"
+					>Learn all about our new Quick Links style options, the improved custom background management and much more
+					in </span
+				><a
+					id="link"
+					class="trn"
+					target="_blank"
+					rel="noreferrer noopener"
+					href="https://ko-fi.com/post/Bonjourr-1-14-is-almost-out-L4L2D0BD7"
+					><span id="link" class="trn">our full changelog</span></a
+				>.🗞
+			</p>
+		</div>
+	</div>
+
+	<h2 class="trn">General</h2>
+
+	<div class="param">
+		<div class="showall wrapper">
+			<label for="i_showall" class="trn">Show all settings</label>
+			<input id="i_showall" class="switch" type="checkbox" />
 		</div>
 
-		<div class="titleContainer">
-			<h5 class="trn">General</h5>
+		<hr />
+
+		<div class="choose_language wrapper">
+			<label for="i_lang" class="trn">Language</label>
+			<select id="i_lang" class="lang"></select>
 		</div>
 
-		<div class="param">
-			<div class="showall wrapper">
-				<span class="trn">Show all settings</span>
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_greeting" class="trn">Greeting</label>
+			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
+		</div>
+
+		<div class="as as_visuals">
+			<hr />
+
+			<div class="wrapper" id="tabtitle">
+				<span>
+					<span class="trn">Tab appearance</span>
+					<button class="tooltip tttab" aria-label="Tips on tab appearance">?</button>
+				</span>
+
 				<div>
-					<label class="switch">
-						<input id="i_showall" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
+					<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" aria-label="Tab favicon" />
+					<input
+						type="text"
+						name="tabtitle"
+						id="i_tabtitle"
+						maxlength="80"
+						placeholder="New tab"
+						aria-label="Tab title"
+					/>
 				</div>
+			</div>
+
+			<div class="tooltiptext tttab">
+				<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
+				<a class="trn" href="https://bonjourr.fr/misc#newtab" rel="noreferrer noopener">Learn more</a>
 			</div>
 
 			<hr />
 
-			<div class="choose_language wrapper">
-				<span class="trn selector_span">Language</span>
-				<select id="i_lang" class="lang"></select>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">Greeting</span>
-				<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
-			</div>
-
-			<div class="as as_visuals">
-				<hr />
-
-				<div class="wrapper" id="tabtitle">
-					<span>
-						<span class="trn">Tab appearance</span>
-						<div class="tooltip tttab">?</div>
-					</span>
-
-					<div>
-						<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" />
-						<input type="text" name="tabtitle" id="i_tabtitle" maxlength="80" placeholder="New tab" />
-					</div>
-				</div>
-
-				<div class="tooltiptext tttab">
-					<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
-					<a class="trn" href="https://bonjourr.fr/misc#newtab" referrerpolicy="no-referrer">Learn more</a>
-				</div>
-
-				<hr />
-
-				<div class="darkmode wrapper">
-					<span class="trn selector_span">Dark mode</span>
-					<select id="i_dark" class="theme">
-						<option value="system" class="trn">System</option>
-						<option value="auto" class="trn">At night</option>
-						<option value="enable" class="trn">Enabled</option>
-						<option value="disable" class="trn">Disabled</option>
-					</select>
-				</div>
-
-				<hr />
-
-				<span class="trn">Hide elements</span>
-
-				<div id="hideelem">
-					<div>
-						<button he_row="0" he_col="0" data="time-container" class="trn">Clock</button>
-						<button he_row="0" he_col="1" data="date" class="trn">Date</button>
-					</div>
-					<div>
-						<button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button>
-						<button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button>
-						<button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button>
-					</div>
-					<div>
-						<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
-					</div>
-					<div>
-						<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div>
-		<div>
-			<div class="titleContainer">
-				<h5 class="trn">Quick Links</h5>
-				<div class="tooltip ttlinks">?</div>
-			</div>
-
-			<div class="tooltiptext ttlinks">
-				<span class="trn">These are Bonjourr's bookmarks. </span>
-				<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
-				<a class="trn" href="https://bonjourr.fr/misc#-about-quick-links" referrerpolicy="no-referrer">Learn more</a>
-			</div>
-		</div>
-
-		<div class="param">
-			<div class="activate_quicklinks wrapper">
-				<span class="trn">Enable</span>
-				<div>
-					<label class="switch">
-						<input id="i_quicklinks" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<div id="quicklinks_options">
-				<hr />
-				<div class="link_input_wrap">
-					<div>
-						<div>
-							<input
-								id="i_title"
-								type="text"
-								name="title"
-								maxlength="64"
-								placeholder="Name"
-								spellcheck="false"
-								autocomplete="off"
-								autocorrect="off"
-								autocapitalize="off"
-							/>
-
-							<input
-								id="i_url"
-								type="text"
-								name="url"
-								maxlength="512"
-								placeholder="URL"
-								spellcheck="false"
-								autocomplete="off"
-								autocorrect="off"
-								autocapitalize="off"
-							/>
-						</div>
-						<div class="links_buttons">
-							<button id="b_importbookmarks" class="trn">Import</button>
-							<button id="submitlink" class="trn">Add</button>
-						</div>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="linkstyle wrapper">
-					<span class="trn">Style</span>
-					<div>
-						<select id="i_linkstyle">
-							<option value="large" class="trn">Large</option>
-							<option value="medium" class="trn">Medium</option>
-							<option value="small" class="trn">Small</option>
-							<option value="text" class="trn">Text</option>
-						</select>
-					</div>
-				</div>
-
-				<div class="as as_link">
-					<hr />
-
-					<div class="wrapper">
-						<span class="trn">Links per row</span>
-						<input id="i_row" type="range" name="i_row" min="1" max="16" step="1" value="8" class="range" />
-					</div>
-
-					<hr />
-
-					<div class="linknewtab wrapper">
-						<span class="trn">Open in new tab</span>
-						<div>
-							<label class="switch">
-								<input id="i_linknewtab" type="checkbox" />
-								<span class="slider round span"></span>
-							</label>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div>
-		<div class="titleContainer">
-			<h5 class="trn">Background</h5>
-		</div>
-
-		<div class="param">
-			<div class="wrapper">
-				<span class="trn selector_span">Background type</span>
-				<select id="i_type" class="theme">
-					<option value="dynamic" class="trn">Dynamic</option>
-					<option value="custom" class="trn">Custom</option>
+			<div class="darkmode wrapper">
+				<label for="i_dark" class="trn">Dark mode</label>
+				<select id="i_dark" class="theme">
+					<option value="system" class="trn">System</option>
+					<option value="auto" class="trn">At night</option>
+					<option value="enable" class="trn">Enabled</option>
+					<option value="disable" class="trn">Disabled</option>
 				</select>
 			</div>
 
 			<hr />
 
-			<div class="wrapper freq_wrap">
-				<span class="trn">Frequency</span>
+			<span id="lbl-he" class="trn">Hide elements</span>
+
+			<ul id="hideelem" aria-labelledby="lbl-he">
+				<li><button he_row="0" he_col="0" data="time-container" class="trn">Clock</button></li>
+				<li><button he_row="0" he_col="1" data="date" class="trn">Date</button></li>
+				<li><button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button></li>
+				<li><button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button></li>
+				<li><button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button></li>
+				<li>
+					<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
+				</li>
+				<li>
+					<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<h2>
+		<span class="trn">Quick Links</span>
+		<button class="tooltip ttlinks" aria-label="Tips on Quick Links">?</button>
+	</h2>
+
+	<p class="tooltiptext ttlinks">
+		<span class="trn">These are Bonjourr's bookmarks. </span>
+		<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
+		<a class="trn" href="https://bonjourr.fr/misc#-about-quick-links" rel="noreferrer noopener">Learn more</a>
+	</p>
+
+	<div class="param">
+		<div class="activate_quicklinks wrapper">
+			<label for="i_quicklinks" class="trn">Enable</label>
+			<input id="i_quicklinks" class="switch" type="checkbox" />
+		</div>
+
+		<div id="quicklinks_options">
+			<hr />
+			<div class="link_input_wrap">
 				<div>
-					<select id="i_freq">
+					<div>
+						<input
+							id="i_title"
+							type="text"
+							name="title"
+							maxlength="64"
+							placeholder="Name"
+							spellcheck="false"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+							aria-label="New link title"
+						/>
+
+						<input
+							id="i_url"
+							type="text"
+							name="url"
+							maxlength="512"
+							placeholder="URL"
+							spellcheck="false"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+							aria-label="New link URL"
+						/>
+					</div>
+					<div class="links_buttons">
+						<button id="b_importbookmarks" class="trn">Import</button>
+						<button id="submitlink" class="trn">Add</button>
+					</div>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="linkstyle wrapper">
+				<label for="i_linkstyle" class="trn">Style</label>
+				<select id="i_linkstyle">
+					<option value="large" class="trn">Large</option>
+					<option value="medium" class="trn">Medium</option>
+					<option value="small" class="trn">Small</option>
+					<option value="text" class="trn">Text</option>
+				</select>
+			</div>
+
+			<div class="as as_link">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_row" class="trn">Links per row</label>
+					<input id="i_row" type="range" name="i_row" min="1" max="16" step="1" value="8" class="range" />
+				</div>
+
+				<hr />
+
+				<div class="linknewtab wrapper">
+					<label for="i_linknewtab" class="trn">Open in new tab</label>
+					<input id="i_linknewtab" class="switch" type="checkbox" />
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<h2 class="trn">Background</h2>
+
+	<div class="param">
+		<div class="wrapper">
+			<label for="i_type" class="trn">Background type</label>
+			<select id="i_type" class="theme">
+				<option value="dynamic" class="trn">Dynamic</option>
+				<option value="custom" class="trn">Custom</option>
+			</select>
+		</div>
+
+		<hr />
+
+		<div class="wrapper freq_wrap">
+			<label for="i_freq" class="trn">Frequency</label>
+			<div>
+				<select id="i_freq">
+					<option value="tabs" class="trn">Every tab</option>
+					<option value="hour" class="trn">Every hour</option>
+					<option value="period" class="trn">Daylight</option>
+					<option value="day" class="trn">Every day</option>
+					<option value="pause" class="trn">Pause</option>
+				</select>
+				<button id="i_refresh" aria-label="Choose another background">
+					<span>↻</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="as as_collection">
+			<hr />
+
+			<div class="wrapper">
+				<span>
+					<label for="i_collection" class="trn">Unsplash collection</label>
+					<button class="tooltip ttcoll" aria-label="Tips on Unsplash collections">?</button>
+				</span>
+
+				<input
+					type="text"
+					name="collection"
+					id="i_collection"
+					autocomplete="off"
+					placeholder="2nVzlQADDIE"
+					maxlength="256"
+					spellcheck="false"
+					autocomplete="off"
+					autocorrect="off"
+					autocapitalize="off"
+				/>
+			</div>
+
+			<p class="tooltiptext ttcoll">
+				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
+				<a class="trn" href="https://bonjourr.fr/misc#custom-unsplash-collection" rel="noreferrer noopener"
+					>Learn more</a
+				>
+			</p>
+		</div>
+
+		<div id="custom">
+			<hr />
+
+			<div id="bg_tn_wrap">
+				<label class="uploadContainer">
+					<p class="trn">Upload background here</p>
+					<input id="i_bgfile" type="file" name="background_file" multiple />
+				</label>
+
+				<div id="fileContainer"></div>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_blur" class="trn">Blur intensity</label>
+			<input id="i_blur" type="range" name="background_blur" min="0" max="50" value="0" step="1" class="range" />
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_bright" class="trn">Brightness</label>
+			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value=".80" step=".01" />
+		</div>
+	</div>
+
+	<h2 class="trn">Time & Date</h2>
+
+	<div class="param">
+		<div class="analog wrapper">
+			<label for="i_analog" class="trn">Analog clock</label>
+			<input id="i_analog" class="switch" type="checkbox" />
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_usdate" class="trn">US Date Format</label>
+			<input id="i_usdate" class="switch" type="checkbox" />
+		</div>
+
+		<div class="as as_timedate">
+			<hr />
+
+			<div class="seconds wrapper">
+				<label for="i_seconds" class="trn">Display Seconds</label>
+				<input id="i_seconds" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div id="w_ampm" class="wrapper">
+				<label for="i_ampm" class="trn">12-Hour Time</label>
+				<input id="i_ampm" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div id="w_clockface" class="wrapper">
+				<label for="i_clockface" class="trn">Clock face</label>
+				<select id="i_clockface" class="">
+					<option value="none" class="trn">None</option>
+					<option value="number" class="trn">Numbers</option>
+					<option value="roman" class="trn">Romans</option>
+					<option value="marks" class="trn">Marks</option>
+				</select>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_timezone" class="trn">Time zone</label>
+				<select id="i_timezone" class="">
+					<option value="auto" class="trn">Automatic</option>
+					<option value="-10">UTC/HST -10 (Honolulu)</option>
+					<option value="-9">UTC/AKST -9 (Ancorage)</option>
+					<option value="-8">UTC/PST -8 (Vancouver, Los Angeles)</option>
+					<option value="-7">UTC/MST -7 (Phoenix)</option>
+					<option value="-6">UTC/CST -6 (Mexico, Houston)</option>
+					<option value="-5">UTC/EST -5 (Montreal, New York, Panama)</option>
+					<option value="-4">UTC/AST -4 (Halifax, Caracas)</option>
+					<option value="-3">UTC/CLST -3 (Sao Paulo, Santiago)</option>
+					<option value="0">UTC/GMT (London, Lisboa, Reykjavik)</option>
+					<option value="+1">UTC/CET +1 (Paris, Madrid, Amsterdam, Stockholm)</option>
+					<option value="+2">UTC/EET +2 (Helsinki, Bucharest, Athens, Cairo)</option>
+					<option value="+3">UTC/MSK +3 (Moscow, Istanbul)</option>
+					<option value="+4">UTC/AST +4 (Tehran, Doha)</option>
+					<option value="+5">UTC/PKT +5 (Karachi)</option>
+					<option value="+6">UTC/IST +6 (Mumbai)</option>
+					<option value="+7">UTC/ICT +7 (Bangkok, Jakarta)</option>
+					<option value="+8">UTC/CST +8 (Shanghai, Perth)</option>
+					<option value="+9">UTC/KST +9 (Seoul, Tokyo)</option>
+					<option value="+10">UTC/AEST +10 (Brisbane)</option>
+					<option value="+11">UTC/AEDT +11 (Canberra)</option>
+					<option value="+12">UTC/NZDT +12 (Wellington)</option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<h2 class="trn">Weather</h2>
+
+	<div class="param">
+		<div class="w_auto wrapper">
+			<label for="i_geol" class="trn">Geolocation</label>
+			<input id="i_geol" class="switch" type="checkbox" />
+		</div>
+
+		<div id="sett_city">
+			<select id="i_ccode" class="countrycode" aria-label="Country location">
+				<option value="AF">Afghanistan</option>
+				<option value="AX">Åland Islands</option>
+				<option value="AL">Albania</option>
+				<option value="DZ">Algeria</option>
+				<option value="AS">American Samoa</option>
+				<option value="AD">Andorra</option>
+				<option value="AO">Angola</option>
+				<option value="AI">Anguilla</option>
+				<option value="AQ">Antarctica</option>
+				<option value="AG">Antigua and Barbuda</option>
+				<option value="AR">Argentina</option>
+				<option value="AM">Armenia</option>
+				<option value="AW">Aruba</option>
+				<option value="AU">Australia</option>
+				<option value="AT">Austria</option>
+				<option value="AZ">Azerbaijan</option>
+				<option value="BS">Bahamas</option>
+				<option value="BH">Bahrain</option>
+				<option value="BD">Bangladesh</option>
+				<option value="BB">Barbados</option>
+				<option value="BY">Belarus</option>
+				<option value="BE">Belgium</option>
+				<option value="BZ">Belize</option>
+				<option value="BJ">Benin</option>
+				<option value="BM">Bermuda</option>
+				<option value="BT">Bhutan</option>
+				<option value="BO">Bolivia, Plurinational State of</option>
+				<option value="BQ">Bonaire, Sint Eustatius and Saba</option>
+				<option value="BA">Bosnia and Herzegovina</option>
+				<option value="BW">Botswana</option>
+				<option value="BV">Bouvet Island</option>
+				<option value="BR">Brazil</option>
+				<option value="IO">British Indian Ocean Territory</option>
+				<option value="BN">Brunei Darussalam</option>
+				<option value="BG">Bulgaria</option>
+				<option value="BF">Burkina Faso</option>
+				<option value="BI">Burundi</option>
+				<option value="KH">Cambodia</option>
+				<option value="CM">Cameroon</option>
+				<option value="CA">Canada</option>
+				<option value="CV">Cape Verde</option>
+				<option value="KY">Cayman Islands</option>
+				<option value="CF">Central African Republic</option>
+				<option value="TD">Chad</option>
+				<option value="CL">Chile</option>
+				<option value="CN">China</option>
+				<option value="CX">Christmas Island</option>
+				<option value="CC">Cocos (Keeling) Islands</option>
+				<option value="CO">Colombia</option>
+				<option value="KM">Comoros</option>
+				<option value="CG">Congo</option>
+				<option value="CD">Congo, the Democratic Republic of the</option>
+				<option value="CK">Cook Islands</option>
+				<option value="CR">Costa Rica</option>
+				<option value="CI">Côte d'Ivoire</option>
+				<option value="HR">Croatia</option>
+				<option value="CU">Cuba</option>
+				<option value="CW">Curaçao</option>
+				<option value="CY">Cyprus</option>
+				<option value="CZ">Czech Republic</option>
+				<option value="DK">Denmark</option>
+				<option value="DJ">Djibouti</option>
+				<option value="DM">Dominica</option>
+				<option value="DO">Dominican Republic</option>
+				<option value="EC">Ecuador</option>
+				<option value="EG">Egypt</option>
+				<option value="SV">El Salvador</option>
+				<option value="GQ">Equatorial Guinea</option>
+				<option value="ER">Eritrea</option>
+				<option value="EE">Estonia</option>
+				<option value="ET">Ethiopia</option>
+				<option value="FK">Falkland Islands (Malvinas)</option>
+				<option value="FO">Faroe Islands</option>
+				<option value="FJ">Fiji</option>
+				<option value="FI">Finland</option>
+				<option value="FR">France</option>
+				<option value="GF">French Guiana</option>
+				<option value="PF">French Polynesia</option>
+				<option value="TF">French Southern Territories</option>
+				<option value="GA">Gabon</option>
+				<option value="GM">Gambia</option>
+				<option value="GE">Georgia</option>
+				<option value="DE">Germany</option>
+				<option value="GH">Ghana</option>
+				<option value="GI">Gibraltar</option>
+				<option value="GR">Greece</option>
+				<option value="GL">Greenland</option>
+				<option value="GD">Grenada</option>
+				<option value="GP">Guadeloupe</option>
+				<option value="GU">Guam</option>
+				<option value="GT">Guatemala</option>
+				<option value="GG">Guernsey</option>
+				<option value="GN">Guinea</option>
+				<option value="GW">Guinea-Bissau</option>
+				<option value="GY">Guyana</option>
+				<option value="HT">Haiti</option>
+				<option value="HM">Heard Island and McDonald Islands</option>
+				<option value="VA">Holy See (Vatican City State)</option>
+				<option value="HN">Honduras</option>
+				<option value="HK">Hong Kong</option>
+				<option value="HU">Hungary</option>
+				<option value="IS">Iceland</option>
+				<option value="IN">India</option>
+				<option value="ID">Indonesia</option>
+				<option value="IR">Iran, Islamic Republic of</option>
+				<option value="IQ">Iraq</option>
+				<option value="IE">Ireland</option>
+				<option value="IM">Isle of Man</option>
+				<option value="IL">Israel</option>
+				<option value="IT">Italy</option>
+				<option value="JM">Jamaica</option>
+				<option value="JP">Japan</option>
+				<option value="JE">Jersey</option>
+				<option value="JO">Jordan</option>
+				<option value="KZ">Kazakhstan</option>
+				<option value="KE">Kenya</option>
+				<option value="KI">Kiribati</option>
+				<option value="KP">Korea, Democratic People's Republic of</option>
+				<option value="KR">Korea, Republic of</option>
+				<option value="KW">Kuwait</option>
+				<option value="KG">Kyrgyzstan</option>
+				<option value="LA">Lao People's Democratic Republic</option>
+				<option value="LV">Latvia</option>
+				<option value="LB">Lebanon</option>
+				<option value="LS">Lesotho</option>
+				<option value="LR">Liberia</option>
+				<option value="LY">Libya</option>
+				<option value="LI">Liechtenstein</option>
+				<option value="LT">Lithuania</option>
+				<option value="LU">Luxembourg</option>
+				<option value="MO">Macao</option>
+				<option value="MK">Macedonia, the Former Yugoslav Republic of</option>
+				<option value="MG">Madagascar</option>
+				<option value="MW">Malawi</option>
+				<option value="MY">Malaysia</option>
+				<option value="MV">Maldives</option>
+				<option value="ML">Mali</option>
+				<option value="MT">Malta</option>
+				<option value="MH">Marshall Islands</option>
+				<option value="MQ">Martinique</option>
+				<option value="MR">Mauritania</option>
+				<option value="MU">Mauritius</option>
+				<option value="YT">Mayotte</option>
+				<option value="MX">Mexico</option>
+				<option value="FM">Micronesia, Federated States of</option>
+				<option value="MD">Moldova, Republic of</option>
+				<option value="MC">Monaco</option>
+				<option value="MN">Mongolia</option>
+				<option value="ME">Montenegro</option>
+				<option value="MS">Montserrat</option>
+				<option value="MA">Morocco</option>
+				<option value="MZ">Mozambique</option>
+				<option value="MM">Myanmar</option>
+				<option value="NA">Namibia</option>
+				<option value="NR">Nauru</option>
+				<option value="NP">Nepal</option>
+				<option value="NL">Netherlands</option>
+				<option value="NC">New Caledonia</option>
+				<option value="NZ">New Zealand</option>
+				<option value="NI">Nicaragua</option>
+				<option value="NE">Niger</option>
+				<option value="NG">Nigeria</option>
+				<option value="NU">Niue</option>
+				<option value="NF">Norfolk Island</option>
+				<option value="MP">Northern Mariana Islands</option>
+				<option value="NO">Norway</option>
+				<option value="OM">Oman</option>
+				<option value="PK">Pakistan</option>
+				<option value="PW">Palau</option>
+				<option value="PS">Palestine, State of</option>
+				<option value="PA">Panama</option>
+				<option value="PG">Papua New Guinea</option>
+				<option value="PY">Paraguay</option>
+				<option value="PE">Peru</option>
+				<option value="PH">Philippines</option>
+				<option value="PN">Pitcairn</option>
+				<option value="PL">Poland</option>
+				<option value="PT">Portugal</option>
+				<option value="PR">Puerto Rico</option>
+				<option value="QA">Qatar</option>
+				<option value="RE">Réunion</option>
+				<option value="RO">Romania</option>
+				<option value="RU">Russian Federation</option>
+				<option value="RW">Rwanda</option>
+				<option value="BL">Saint Barthélemy</option>
+				<option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+				<option value="KN">Saint Kitts and Nevis</option>
+				<option value="LC">Saint Lucia</option>
+				<option value="MF">Saint Martin (French part)</option>
+				<option value="PM">Saint Pierre and Miquelon</option>
+				<option value="VC">Saint Vincent and the Grenadines</option>
+				<option value="WS">Samoa</option>
+				<option value="SM">San Marino</option>
+				<option value="ST">Sao Tome and Principe</option>
+				<option value="SA">Saudi Arabia</option>
+				<option value="SN">Senegal</option>
+				<option value="RS">Serbia</option>
+				<option value="SC">Seychelles</option>
+				<option value="SL">Sierra Leone</option>
+				<option value="SG">Singapore</option>
+				<option value="SX">Sint Maarten (Dutch part)</option>
+				<option value="SK">Slovakia</option>
+				<option value="SI">Slovenia</option>
+				<option value="SB">Solomon Islands</option>
+				<option value="SO">Somalia</option>
+				<option value="ZA">South Africa</option>
+				<option value="GS">South Georgia and the South Sandwich Islands</option>
+				<option value="SS">South Sudan</option>
+				<option value="ES">Spain</option>
+				<option value="LK">Sri Lanka</option>
+				<option value="SD">Sudan</option>
+				<option value="SR">Suriname</option>
+				<option value="SJ">Svalbard and Jan Mayen</option>
+				<option value="SZ">Swaziland</option>
+				<option value="SE">Sweden</option>
+				<option value="CH">Switzerland</option>
+				<option value="SY">Syrian Arab Republic</option>
+				<option value="TW">Taiwan, Province of China</option>
+				<option value="TJ">Tajikistan</option>
+				<option value="TZ">Tanzania, United Republic of</option>
+				<option value="TH">Thailand</option>
+				<option value="TL">Timor-Leste</option>
+				<option value="TG">Togo</option>
+				<option value="TK">Tokelau</option>
+				<option value="TO">Tonga</option>
+				<option value="TT">Trinidad and Tobago</option>
+				<option value="TN">Tunisia</option>
+				<option value="TR">Turkey</option>
+				<option value="TM">Turkmenistan</option>
+				<option value="TC">Turks and Caicos Islands</option>
+				<option value="TV">Tuvalu</option>
+				<option value="UG">Uganda</option>
+				<option value="UA">Ukraine</option>
+				<option value="AE">United Arab Emirates</option>
+				<option value="GB">United Kingdom</option>
+				<option value="US">United States</option>
+				<option value="UM">United States Minor Outlying Islands</option>
+				<option value="UY">Uruguay</option>
+				<option value="UZ">Uzbekistan</option>
+				<option value="VU">Vanuatu</option>
+				<option value="VE">Venezuela, Bolivarian Republic of</option>
+				<option value="VN">Viet Nam</option>
+				<option value="VG">Virgin Islands, British</option>
+				<option value="VI">Virgin Islands, U.S.</option>
+				<option value="WF">Wallis and Futuna</option>
+				<option value="EH">Western Sahara</option>
+				<option value="YE">Yemen</option>
+				<option value="ZM">Zambia</option>
+				<option value="ZW">Zimbabwe</option>
+			</select>
+			<input
+				id="i_city"
+				type="text"
+				name="city"
+				placeholder="City"
+				autocomplete="off"
+				maxlength="64"
+				spellcheck="false"
+				aria-label="City location"
+			/>
+		</div>
+
+		<hr />
+
+		<div class="units wrapper">
+			<label for="i_units" class="trn">Imperial units</label>
+			<input id="i_units" class="switch" type="checkbox" />
+		</div>
+
+		<div class="as as_forecast">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_forecast" class="trn">Forecast</label>
+				<select id="i_forecast">
+					<option value="auto" class="trn">Automatic</option>
+					<option value="always" class="trn">Always show</option>
+					<option value="never" class="trn">Never show</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="as as_temp">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_temp" class="trn">Temperature</label>
+				<select id="i_temp">
+					<option value="actual" class="trn">Actual</option>
+					<option value="feelslike" class="trn">Feels like</option>
+					<option value="both" class="trn">Both</option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<h2 class="trn">Search bar</h2>
+
+	<div class="param">
+		<div class="activate_searchbar wrapper">
+			<label for="i_sb" class="trn">Enable</label>
+			<input id="i_sb" class="switch" type="checkbox" />
+		</div>
+
+		<div id="searchbar_options">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_sbnewtab" class="trn">Open in new tab</label>
+				<input id="i_sbnewtab" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_sbengine" class="trn">Search engine</label>
+				<select id="i_sbengine" class="choose_search">
+					<option value="google">Google</option>
+					<option value="ddg">DuckDuckGo</option>
+					<option value="bing">Bing</option>
+					<option value="yahoo">Yahoo</option>
+					<option value="startpage">Startpage</option>
+					<option value="brave">Brave</option>
+					<option value="lilo">Lilo</option>
+					<option value="ecosia">Ecosia</option>
+					<option value="qwant">Qwant</option>
+					<option value="custom">Custom</option>
+				</select>
+			</div>
+
+			<div id="searchbar_request">
+				<hr />
+				<div class="wrapper">
+					<label for="i_sbrequest" class="trn">URL request</label>
+					<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
+				</div>
+			</div>
+
+			<div class="as as_sbopacity">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_sbopacity" class="trn">Opacity</label>
+					<input
+						id="i_sbopacity"
+						type="range"
+						name="i_sbopacity"
+						min="0"
+						max="1"
+						step=".01"
+						value=".1"
+						class="range"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<h2 class="trn">Quotes</h2>
+
+	<div class="param">
+		<div class="activate_quotes wrapper">
+			<label for="i_quotes" class="trn">Enable</label>
+			<input id="i_quotes" class="switch" type="checkbox" />
+		</div>
+
+		<div id="quotes_options">
+			<hr />
+
+			<div class="as as_quote_type">
+				<div class="wrapper">
+					<label for="i_qtauthor" class="trn">Always show author</label>
+					<input id="i_qtauthor" class="switch" type="checkbox" />
+				</div>
+
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_qttype" class="trn">Quote type</label>
+					<div>
+						<select id="i_qttype">
+							<option value="classic" class="trn">Classic</option>
+							<option value="inspirobot">Inspirobot</option>
+							<option value="kaamelott">Kaamelott</option>
+						</select>
+					</div>
+				</div>
+
+				<hr />
+			</div>
+
+			<div class="wrapper freq_wrap">
+				<label for="i_qtfreq" class="trn">Frequency</label>
+				<div>
+					<select id="i_qtfreq">
 						<option value="tabs" class="trn">Every tab</option>
 						<option value="hour" class="trn">Every hour</option>
-						<option value="period" class="trn">Daylight</option>
 						<option value="day" class="trn">Every day</option>
 						<option value="pause" class="trn">Pause</option>
 					</select>
-					<button id="i_refresh">
+					<button id="i_qtrefresh" aria-label="Choose another quote">
 						<span>↻</span>
 					</button>
-				</div>
-			</div>
-
-			<div class="as as_collection">
-				<hr />
-
-				<div class="wrapper">
-					<span>
-						<span class="trn">Unsplash collection</span>
-						<div class="tooltip ttcoll">?</div>
-					</span>
-
-					<input
-						type="text"
-						name="collection"
-						id="i_collection"
-						autocomplete="off"
-						placeholder="2nVzlQADDIE"
-						maxlength="256"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-					/>
-				</div>
-
-				<div class="tooltiptext ttcoll">
-					<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
-					<a class="trn" href="https://bonjourr.fr/misc#custom-unsplash-collection" referrerpolicy="no-referrer"
-						>Learn more</a
-					>
-				</div>
-			</div>
-
-			<div id="custom">
-				<hr />
-
-				<div id="bg_tn_wrap">
-					<label class="uploadContainer">
-						<p class="trn">Upload background here</p>
-						<input id="i_bgfile" type="file" name="background_file" multiple />
-					</label>
-
-					<div id="fileContainer"></div>
-				</div>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">Blur intensity</span>
-				<input id="i_blur" type="range" name="background_blur" min="0" max="50" value="0" step="1" class="range" />
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">Brightness</span>
-				<input
-					id="i_bright"
-					type="range"
-					class="range"
-					name="background_bright"
-					min="0"
-					max="1"
-					value=".80"
-					step=".01"
-				/>
-			</div>
-		</div>
-	</div>
-	<div>
-		<div class="titleContainer">
-			<h5 class="trn">Time & Date</h5>
-		</div>
-
-		<div class="param">
-			<div class="analog wrapper">
-				<span class="trn">Analog clock</span>
-				<div>
-					<label class="switch">
-						<input id="i_analog" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">US Date Format</span>
-				<div>
-					<label class="switch">
-						<input id="i_usdate" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<div class="as as_timedate">
-				<hr />
-
-				<div class="seconds wrapper">
-					<span class="trn">Display Seconds</span>
-					<div>
-						<label class="switch">
-							<input id="i_seconds" type="checkbox" />
-							<span class="slider round span"></span>
-						</label>
-					</div>
-				</div>
-
-				<div id="clockoptions" class="digital">
-					<hr />
-
-					<div id="w_clockface" class="wrapper">
-						<span class="trn selector_span">Clock face</span>
-						<select id="i_clockface" class="">
-							<option value="none" class="trn">None</option>
-							<option value="number" class="trn">Numbers</option>
-							<option value="roman" class="trn">Romans</option>
-							<option value="marks" class="trn">Marks</option>
-						</select>
-					</div>
-
-					<div id="w_ampm" class="wrapper">
-						<span class="trn">12-Hour Time</span>
-						<div>
-							<label class="switch">
-								<input id="i_ampm" type="checkbox" />
-								<span class="slider round span"></span>
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn selector_span">Time zone</span>
-					<select id="i_timezone" class="">
-						<option value="auto" class="trn">Automatic</option>
-						<option value="-10">UTC/HST -10 (Honolulu)</option>
-						<option value="-9">UTC/AKST -9 (Ancorage)</option>
-						<option value="-8">UTC/PST -8 (Vancouver, Los Angeles)</option>
-						<option value="-7">UTC/MST -7 (Phoenix)</option>
-						<option value="-6">UTC/CST -6 (Mexico, Houston)</option>
-						<option value="-5">UTC/EST -5 (Montreal, New York, Panama)</option>
-						<option value="-4">UTC/AST -4 (Halifax, Caracas)</option>
-						<option value="-3">UTC/CLST -3 (Sao Paulo, Santiago)</option>
-						<option value="0">UTC/GMT (London, Lisboa, Reykjavik)</option>
-						<option value="+1">UTC/CET +1 (Paris, Madrid, Amsterdam, Stockholm)</option>
-						<option value="+2">UTC/EET +2 (Helsinki, Bucharest, Athens, Cairo)</option>
-						<option value="+3">UTC/MSK +3 (Moscow, Istanbul)</option>
-						<option value="+4">UTC/AST +4 (Tehran, Doha)</option>
-						<option value="+5">UTC/PKT +5 (Karachi)</option>
-						<option value="+6">UTC/IST +6 (Mumbai)</option>
-						<option value="+7">UTC/ICT +7 (Bangkok, Jakarta)</option>
-						<option value="+8">UTC/CST +8 (Shanghai, Perth)</option>
-						<option value="+9">UTC/KST +9 (Seoul, Tokyo)</option>
-						<option value="+10">UTC/AEST +10 (Brisbane)</option>
-						<option value="+11">UTC/AEDT +11 (Canberra)</option>
-						<option value="+12">UTC/NZDT +12 (Wellington)</option>
-					</select>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div>
-		<div class="titleContainer">
-			<h5 class="trn">Weather</h5>
-		</div>
-
-		<div class="param">
-			<div class="w_auto wrapper">
-				<span class="trn">Geolocation</span>
-				<div>
-					<label class="switch">
-						<input id="i_geol" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<div id="sett_city">
-				<div class="wrapper">
-					<div>
-						<select id="i_ccode" class="countrycode">
-							<option value="AF">Afghanistan</option>
-							<option value="AX">Åland Islands</option>
-							<option value="AL">Albania</option>
-							<option value="DZ">Algeria</option>
-							<option value="AS">American Samoa</option>
-							<option value="AD">Andorra</option>
-							<option value="AO">Angola</option>
-							<option value="AI">Anguilla</option>
-							<option value="AQ">Antarctica</option>
-							<option value="AG">Antigua and Barbuda</option>
-							<option value="AR">Argentina</option>
-							<option value="AM">Armenia</option>
-							<option value="AW">Aruba</option>
-							<option value="AU">Australia</option>
-							<option value="AT">Austria</option>
-							<option value="AZ">Azerbaijan</option>
-							<option value="BS">Bahamas</option>
-							<option value="BH">Bahrain</option>
-							<option value="BD">Bangladesh</option>
-							<option value="BB">Barbados</option>
-							<option value="BY">Belarus</option>
-							<option value="BE">Belgium</option>
-							<option value="BZ">Belize</option>
-							<option value="BJ">Benin</option>
-							<option value="BM">Bermuda</option>
-							<option value="BT">Bhutan</option>
-							<option value="BO">Bolivia, Plurinational State of</option>
-							<option value="BQ">Bonaire, Sint Eustatius and Saba</option>
-							<option value="BA">Bosnia and Herzegovina</option>
-							<option value="BW">Botswana</option>
-							<option value="BV">Bouvet Island</option>
-							<option value="BR">Brazil</option>
-							<option value="IO">British Indian Ocean Territory</option>
-							<option value="BN">Brunei Darussalam</option>
-							<option value="BG">Bulgaria</option>
-							<option value="BF">Burkina Faso</option>
-							<option value="BI">Burundi</option>
-							<option value="KH">Cambodia</option>
-							<option value="CM">Cameroon</option>
-							<option value="CA">Canada</option>
-							<option value="CV">Cape Verde</option>
-							<option value="KY">Cayman Islands</option>
-							<option value="CF">Central African Republic</option>
-							<option value="TD">Chad</option>
-							<option value="CL">Chile</option>
-							<option value="CN">China</option>
-							<option value="CX">Christmas Island</option>
-							<option value="CC">Cocos (Keeling) Islands</option>
-							<option value="CO">Colombia</option>
-							<option value="KM">Comoros</option>
-							<option value="CG">Congo</option>
-							<option value="CD">Congo, the Democratic Republic of the</option>
-							<option value="CK">Cook Islands</option>
-							<option value="CR">Costa Rica</option>
-							<option value="CI">Côte d'Ivoire</option>
-							<option value="HR">Croatia</option>
-							<option value="CU">Cuba</option>
-							<option value="CW">Curaçao</option>
-							<option value="CY">Cyprus</option>
-							<option value="CZ">Czech Republic</option>
-							<option value="DK">Denmark</option>
-							<option value="DJ">Djibouti</option>
-							<option value="DM">Dominica</option>
-							<option value="DO">Dominican Republic</option>
-							<option value="EC">Ecuador</option>
-							<option value="EG">Egypt</option>
-							<option value="SV">El Salvador</option>
-							<option value="GQ">Equatorial Guinea</option>
-							<option value="ER">Eritrea</option>
-							<option value="EE">Estonia</option>
-							<option value="ET">Ethiopia</option>
-							<option value="FK">Falkland Islands (Malvinas)</option>
-							<option value="FO">Faroe Islands</option>
-							<option value="FJ">Fiji</option>
-							<option value="FI">Finland</option>
-							<option value="FR">France</option>
-							<option value="GF">French Guiana</option>
-							<option value="PF">French Polynesia</option>
-							<option value="TF">French Southern Territories</option>
-							<option value="GA">Gabon</option>
-							<option value="GM">Gambia</option>
-							<option value="GE">Georgia</option>
-							<option value="DE">Germany</option>
-							<option value="GH">Ghana</option>
-							<option value="GI">Gibraltar</option>
-							<option value="GR">Greece</option>
-							<option value="GL">Greenland</option>
-							<option value="GD">Grenada</option>
-							<option value="GP">Guadeloupe</option>
-							<option value="GU">Guam</option>
-							<option value="GT">Guatemala</option>
-							<option value="GG">Guernsey</option>
-							<option value="GN">Guinea</option>
-							<option value="GW">Guinea-Bissau</option>
-							<option value="GY">Guyana</option>
-							<option value="HT">Haiti</option>
-							<option value="HM">Heard Island and McDonald Islands</option>
-							<option value="VA">Holy See (Vatican City State)</option>
-							<option value="HN">Honduras</option>
-							<option value="HK">Hong Kong</option>
-							<option value="HU">Hungary</option>
-							<option value="IS">Iceland</option>
-							<option value="IN">India</option>
-							<option value="ID">Indonesia</option>
-							<option value="IR">Iran, Islamic Republic of</option>
-							<option value="IQ">Iraq</option>
-							<option value="IE">Ireland</option>
-							<option value="IM">Isle of Man</option>
-							<option value="IL">Israel</option>
-							<option value="IT">Italy</option>
-							<option value="JM">Jamaica</option>
-							<option value="JP">Japan</option>
-							<option value="JE">Jersey</option>
-							<option value="JO">Jordan</option>
-							<option value="KZ">Kazakhstan</option>
-							<option value="KE">Kenya</option>
-							<option value="KI">Kiribati</option>
-							<option value="KP">Korea, Democratic People's Republic of</option>
-							<option value="KR">Korea, Republic of</option>
-							<option value="KW">Kuwait</option>
-							<option value="KG">Kyrgyzstan</option>
-							<option value="LA">Lao People's Democratic Republic</option>
-							<option value="LV">Latvia</option>
-							<option value="LB">Lebanon</option>
-							<option value="LS">Lesotho</option>
-							<option value="LR">Liberia</option>
-							<option value="LY">Libya</option>
-							<option value="LI">Liechtenstein</option>
-							<option value="LT">Lithuania</option>
-							<option value="LU">Luxembourg</option>
-							<option value="MO">Macao</option>
-							<option value="MK">Macedonia, the Former Yugoslav Republic of</option>
-							<option value="MG">Madagascar</option>
-							<option value="MW">Malawi</option>
-							<option value="MY">Malaysia</option>
-							<option value="MV">Maldives</option>
-							<option value="ML">Mali</option>
-							<option value="MT">Malta</option>
-							<option value="MH">Marshall Islands</option>
-							<option value="MQ">Martinique</option>
-							<option value="MR">Mauritania</option>
-							<option value="MU">Mauritius</option>
-							<option value="YT">Mayotte</option>
-							<option value="MX">Mexico</option>
-							<option value="FM">Micronesia, Federated States of</option>
-							<option value="MD">Moldova, Republic of</option>
-							<option value="MC">Monaco</option>
-							<option value="MN">Mongolia</option>
-							<option value="ME">Montenegro</option>
-							<option value="MS">Montserrat</option>
-							<option value="MA">Morocco</option>
-							<option value="MZ">Mozambique</option>
-							<option value="MM">Myanmar</option>
-							<option value="NA">Namibia</option>
-							<option value="NR">Nauru</option>
-							<option value="NP">Nepal</option>
-							<option value="NL">Netherlands</option>
-							<option value="NC">New Caledonia</option>
-							<option value="NZ">New Zealand</option>
-							<option value="NI">Nicaragua</option>
-							<option value="NE">Niger</option>
-							<option value="NG">Nigeria</option>
-							<option value="NU">Niue</option>
-							<option value="NF">Norfolk Island</option>
-							<option value="MP">Northern Mariana Islands</option>
-							<option value="NO">Norway</option>
-							<option value="OM">Oman</option>
-							<option value="PK">Pakistan</option>
-							<option value="PW">Palau</option>
-							<option value="PS">Palestine, State of</option>
-							<option value="PA">Panama</option>
-							<option value="PG">Papua New Guinea</option>
-							<option value="PY">Paraguay</option>
-							<option value="PE">Peru</option>
-							<option value="PH">Philippines</option>
-							<option value="PN">Pitcairn</option>
-							<option value="PL">Poland</option>
-							<option value="PT">Portugal</option>
-							<option value="PR">Puerto Rico</option>
-							<option value="QA">Qatar</option>
-							<option value="RE">Réunion</option>
-							<option value="RO">Romania</option>
-							<option value="RU">Russian Federation</option>
-							<option value="RW">Rwanda</option>
-							<option value="BL">Saint Barthélemy</option>
-							<option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
-							<option value="KN">Saint Kitts and Nevis</option>
-							<option value="LC">Saint Lucia</option>
-							<option value="MF">Saint Martin (French part)</option>
-							<option value="PM">Saint Pierre and Miquelon</option>
-							<option value="VC">Saint Vincent and the Grenadines</option>
-							<option value="WS">Samoa</option>
-							<option value="SM">San Marino</option>
-							<option value="ST">Sao Tome and Principe</option>
-							<option value="SA">Saudi Arabia</option>
-							<option value="SN">Senegal</option>
-							<option value="RS">Serbia</option>
-							<option value="SC">Seychelles</option>
-							<option value="SL">Sierra Leone</option>
-							<option value="SG">Singapore</option>
-							<option value="SX">Sint Maarten (Dutch part)</option>
-							<option value="SK">Slovakia</option>
-							<option value="SI">Slovenia</option>
-							<option value="SB">Solomon Islands</option>
-							<option value="SO">Somalia</option>
-							<option value="ZA">South Africa</option>
-							<option value="GS">South Georgia and the South Sandwich Islands</option>
-							<option value="SS">South Sudan</option>
-							<option value="ES">Spain</option>
-							<option value="LK">Sri Lanka</option>
-							<option value="SD">Sudan</option>
-							<option value="SR">Suriname</option>
-							<option value="SJ">Svalbard and Jan Mayen</option>
-							<option value="SZ">Swaziland</option>
-							<option value="SE">Sweden</option>
-							<option value="CH">Switzerland</option>
-							<option value="SY">Syrian Arab Republic</option>
-							<option value="TW">Taiwan, Province of China</option>
-							<option value="TJ">Tajikistan</option>
-							<option value="TZ">Tanzania, United Republic of</option>
-							<option value="TH">Thailand</option>
-							<option value="TL">Timor-Leste</option>
-							<option value="TG">Togo</option>
-							<option value="TK">Tokelau</option>
-							<option value="TO">Tonga</option>
-							<option value="TT">Trinidad and Tobago</option>
-							<option value="TN">Tunisia</option>
-							<option value="TR">Turkey</option>
-							<option value="TM">Turkmenistan</option>
-							<option value="TC">Turks and Caicos Islands</option>
-							<option value="TV">Tuvalu</option>
-							<option value="UG">Uganda</option>
-							<option value="UA">Ukraine</option>
-							<option value="AE">United Arab Emirates</option>
-							<option value="GB">United Kingdom</option>
-							<option value="US">United States</option>
-							<option value="UM">United States Minor Outlying Islands</option>
-							<option value="UY">Uruguay</option>
-							<option value="UZ">Uzbekistan</option>
-							<option value="VU">Vanuatu</option>
-							<option value="VE">Venezuela, Bolivarian Republic of</option>
-							<option value="VN">Viet Nam</option>
-							<option value="VG">Virgin Islands, British</option>
-							<option value="VI">Virgin Islands, U.S.</option>
-							<option value="WF">Wallis and Futuna</option>
-							<option value="EH">Western Sahara</option>
-							<option value="YE">Yemen</option>
-							<option value="ZM">Zambia</option>
-							<option value="ZW">Zimbabwe</option>
-						</select>
-						<input id="i_city" type="text" name="city" placeholder="City" autocomplete="off" maxlength="64" />
-					</div>
-				</div>
-			</div>
-
-			<hr />
-
-			<div class="units wrapper">
-				<span class="trn">Imperial units</span>
-				<div>
-					<label class="switch">
-						<input id="i_units" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<div class="as as_forecast">
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Forecast</span>
-					<select id="i_forecast">
-						<option value="auto" class="trn">Automatic</option>
-						<option value="always" class="trn">Always show</option>
-						<option value="never" class="trn">Never show</option>
-					</select>
-				</div>
-			</div>
-
-			<div class="as as_temp">
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Temperature</span>
-					<select id="i_temp">
-						<option value="actual" class="trn">Actual</option>
-						<option value="feelslike" class="trn">Feels like</option>
-						<option value="both" class="trn">Both</option>
-					</select>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div>
-		<div class="titleContainer">
-			<h5 class="trn">Search bar</h5>
-		</div>
-
-		<div class="param">
-			<div class="activate_searchbar wrapper">
-				<span class="trn">Enable</span>
-				<div>
-					<label class="switch">
-						<input id="i_sb" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<div id="searchbar_options">
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Open in new tab</span>
-					<div>
-						<label class="switch">
-							<input id="i_sbnewtab" type="checkbox" />
-							<span class="slider round span"></span>
-						</label>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Search engine</span>
-					<select id="i_sbengine" class="choose_search">
-						<option value="google">Google</option>
-						<option value="ddg">DuckDuckGo</option>
-						<option value="bing">Bing</option>
-						<option value="yahoo">Yahoo</option>
-						<option value="startpage">Startpage</option>
-						<option value="brave">Brave</option>
-						<option value="lilo">Lilo</option>
-						<option value="ecosia">Ecosia</option>
-						<option value="qwant">Qwant</option>
-						<option value="custom">Custom</option>
-					</select>
-				</div>
-
-				<div id="searchbar_request">
-					<hr />
-					<div class="wrapper">
-						<span class="trn">URL request</span>
-						<input type="text" name="sbrequest" id="i_sbrequest" placeholder="Search query: %s" maxlength="512" />
-					</div>
-				</div>
-
-				<div class="as as_sbopacity">
-					<hr />
-
-					<div class="wrapper">
-						<span class="trn">Opacity</span>
-						<input
-							id="i_sbopacity"
-							type="range"
-							name="i_sbopacity"
-							min="0"
-							max="1"
-							step=".01"
-							value=".1"
-							class="range"
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div>
-		<div class="titleContainer">
-			<h5 class="trn">Quotes</h5>
-		</div>
-
-		<div class="param">
-			<div class="activate_quotes wrapper">
-				<span class="trn">Enable</span>
-				<div>
-					<label class="switch">
-						<input id="i_quotes" type="checkbox" />
-						<span class="slider round span"></span>
-					</label>
-				</div>
-			</div>
-
-			<div id="quotes_options">
-				<hr />
-
-				<div class="as as_quote_type">
-					<div class="wrapper">
-						<span class="trn">Always show author</span>
-						<div>
-							<label class="switch">
-								<input id="i_qtauthor" type="checkbox" />
-								<span class="slider round span"></span>
-							</label>
-						</div>
-					</div>
-
-					<hr />
-				</div>
-
-				<div class="wrapper freq_wrap">
-					<span class="trn">Frequency</span>
-					<div>
-						<select id="i_qtfreq">
-							<option value="tabs" class="trn">Every tab</option>
-							<option value="hour" class="trn">Every hour</option>
-							<option value="day" class="trn">Every day</option>
-							<option value="pause" class="trn">Pause</option>
-						</select>
-						<button id="i_qtrefresh">
-							<span>↻</span>
-						</button>
-					</div>
-				</div>
-
-				<div class="as as_quote_type">
-					<hr />
-
-					<div class="wrapper">
-						<span class="trn">Quote type</span>
-						<div>
-							<select id="i_qttype">
-								<option value="classic" class="trn">Classic</option>
-								<option value="inspirobot">Inspirobot</option>
-								<option value="kaamelott">Kaamelott</option>
-							</select>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="as as_fonts">
-		<div class="titleContainer">
-			<h5 class="trn">Fonts</h5>
-		</div>
+		<h2 class="trn">Fonts</h2>
 
 		<div class="param">
 			<div class="wrapper">
-				<span class="trn">Font family</span>
+				<label for="i_customfont" class="trn">Font family</label>
 				<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" placeholder="" />
-				<datalist id="dl_fontfamily"> </datalist>
+				<datalist id="dl_fontfamily"></datalist>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Weight</span>
+				<label for="i_weight" class="trn">Weight</label>
 				<select id="i_weight">
 					<option value="100">Thin</option>
 					<option value="200">Extra Light</option>
@@ -888,44 +796,51 @@
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Size</span>
+				<label for="i_size" class="trn">Size</label>
 				<input id="i_size" type="range" name="fontsize" min="5" max="26" step=".05" class="range" />
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Shadow</span>
+				<label for="i_textshadow" class="trn">Shadow</label>
 				<input id="i_textshadow" type="range" name="textshadow" min="0" max="1" step=".025" class="range" />
 			</div>
 		</div>
 	</div>
 
 	<div class="as as_css cssEditor">
-		<div class="titleContainer">
-			<h5 class="trn">Custom Style</h5>
-			<div class="tooltip ttcss">?</div>
-		</div>
+		<h2 id="lbl-css">
+			<span class="trn">Custom Style</span>
+			<button class="tooltip ttcss" aria-label="Tips on Custom styles">?</button>
+		</h2>
 
-		<div class="tooltiptext ttcss">
+		<p class="tooltiptext ttcss">
 			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
-			<a class="trn" href="https://bonjourr.fr/css-snippet" referrerpolicy="no-referrer">CSS snippets.</a>
-		</div>
+			<a class="trn" href="https://bonjourr.fr/css-snippet" rel="noreferrer noopener">CSS snippets.</a>
+		</p>
 
-		<textarea id="cssEditor" placeholder="Type in your custom CSS" maxlength="8080"></textarea>
+		<textarea
+			id="cssEditor"
+			placeholder="Type in your custom CSS"
+			maxlength="8080"
+			spellcheck="false"
+			autocomplete="false"
+			aria-labelledby="lbl-css"
+		></textarea>
 	</div>
 
 	<div id="importexport">
-		<div class="titleContainer">
-			<h5 class="trn">Settings management</h5>
-			<div class="tooltip ttexport">?</div>
-		</div>
+		<h2 class="trn">
+			<span class="trn">Settings management</span>
+			<button class="tooltip ttexport" aria-label="Tips on imports & exports">?</button>
+		</h2>
 
-		<div class="tooltiptext ttexport">
+		<p class="tooltiptext ttexport">
 			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-			<a class="trn" href="https://bonjourr.fr/#" referrerpolicy="no-referrer">Learn more</a>
-		</div>
+			<a class="trn" href="https://bonjourr.fr/#" rel="noreferrer noopener">Learn more</a>
+		</p>
 
 		<div class="param">
 			<div class="tabs">
@@ -935,14 +850,14 @@
 			</div>
 
 			<div id="export" class="shown">
-				<textarea id="area_export" autocorrect="off" spellcheck="false"></textarea>
+				<textarea id="area_export" autocorrect="off" spellcheck="false" aria-labelledby="s_export"></textarea>
 
 				<div>
 					<button id="copyimport" class="trn">Copy text</button>
 
 					<div id="save_wrapper">
 						<button id="exportfile" class="trn">Export as file</button>
-						<a id="downloadfile" href="" download=""></a>
+						<a id="downloadfile" href="" download="" aria-hidden="true">export download link</a>
 					</div>
 				</div>
 			</div>
@@ -953,8 +868,8 @@
 					<input id="i_importfile" type="file" name="import_file" />
 				</label>
 
-				<div id="pasteAsText">
-					<input id="i_importtext" type="text" placeholder="or paste as text" />
+				<div>
+					<input id="i_importtext" type="text" placeholder="or paste as text" aria-labelledby="importtext" />
 					<button id="importtext" class="trn">Import</button>
 				</div>
 			</div>
@@ -979,10 +894,12 @@
 
 	<div class="signature">
 		<div class="firstblock">
-			<p class="version">Bonjourr <a href="https://github.com/victrme/Bonjourr/releases">1.15.0</a></p>
+			<p class="version">
+				Bonjourr <a href="https://github.com/victrme/Bonjourr/releases" rel="noreferrer noopener">1.15.0</a>
+			</p>
 
 			<div class="socialIcons">
-				<a href="https://bonjourr.fr" title="Bonjourr's website">
+				<a href="https://bonjourr.fr" title="Bonjourr's website" rel="noreferrer noopener">
 					<svg
 						height="16px"
 						id="Layer_1"
@@ -999,7 +916,7 @@
 						/>
 					</svg>
 				</a>
-				<a href="https://twitter.com/BonjourrTeam" title="Check out our Twitter">
+				<a href="https://twitter.com/BonjourrTeam" title="Check out our Twitter" rel="noreferrer noopener">
 					<svg viewBox="0 0 300.00006 244.18703">
 						<g transform="translate(-539.17946,-568.85777)" id="layer1">
 							<path
@@ -1010,7 +927,7 @@
 						</g>
 					</svg>
 				</a>
-				<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository">
+				<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository" rel="noreferrer noopener">
 					<svg viewBox="0 0 1024 1024" fill="none">
 						<path
 							fill-rule="evenodd"
@@ -1021,7 +938,7 @@
 					</svg>
 				</a>
 
-				<a href="https://bonjourr.fr/misc" title="Bonjourr's documentation">
+				<a href="https://bonjourr.fr/misc" title="Bonjourr's documentation" rel="noreferrer noopener">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
 						<path
 							d="M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z"
@@ -1031,19 +948,18 @@
 			</div>
 		</div>
 
-		<div>
-			<p class="trn">Made in France with ❤️</p>
-			<p id="rand">
-				<span></span>
-				<a></a>
-				<span></span>
-				<a></a>
-			</p>
-		</div>
+		<p class="trn">Made in France with ❤️</p>
+		<p id="rand">
+			<span></span>
+			<a></a>
+			<span></span>
+			<a></a>
+		</p>
 
 		<div id="rdv_website">
 			<p>
-				<span class="trn">Consider</span> <a href="https://bonjourr.fr/#donate" class="trn">donating</a>
+				<span class="trn">Consider</span>
+				<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>
 				<span class="trn">if you love Bonjourr</span> 😊
 			</p>
 		</div>

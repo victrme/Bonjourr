@@ -27,6 +27,12 @@ const mobilecheck = () =>
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
+const extractDomain = (url) => {
+	url.replace(/(^\w+:|^)\/\//, '')
+	url.split('?')[0]
+	return url
+}
+
 const randomString = (len) => {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
@@ -170,7 +176,7 @@ function turnRefreshButton(button, canTurn) {
 function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
 	clas(domedit, true, 'hiding')
-	document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+	document.querySelectorAll('#linkblocks img').forEach((img) => clas(img, false, 'selected'))
 	setTimeout(() => {
 		domedit.setAttribute('class', '')
 	}, 200)

@@ -5,7 +5,7 @@
 
 	#bookmarks {
 		background-color: #1c1c1e;
-		color: $purewhite;
+		color: white;
 	}
 
 	#editlink {
@@ -39,13 +39,13 @@
 		#bookmarks h3,
 		#bookmarks .bookmarkOptions {
 			background-color: #1c1c1e;
-			color: $purewhite;
+			color: white;
 
 			form div,
 			input[type='text'],
 			input[type='url'] {
 				background-color: #39383d;
-				color: $purewhite;
+				color: white;
 			}
 
 			#selectedCounter,
@@ -74,7 +74,24 @@
 	}
 
 	#settings {
-		background-color: $pureblack;
+		background-color: black;
+
+		button {
+			background-color: #1c1c1e;
+		}
+
+		select,
+		.switch:not(:checked) {
+			background-color: #39383d;
+		}
+
+		.switch:not(:checked):hover {
+			background-color: #2c2c2f;
+		}
+
+		input[type='range']::-webkit-slider-thumb {
+			box-shadow: none;
+		}
 
 		#changelogContainer {
 			#changelog {
@@ -97,53 +114,7 @@
 
 		.tooltip {
 			border-color: transparent;
-			background-color: $greyish;
-		}
-
-		#importexport .param {
-
-			#settingsexport #i_settingsarea {
-				background-color: $greyish;
-				color: white;
-				overflow: scroll;
-
-				&::-webkit-resizer {
-					background: $greyish;
-				}
-			}
-
-			.tabs {
-				background-color: $greyish;
-
-				#s_settingsimport {
-					color: white;
-
-					&:hover {
-						background-color: #2a2a2b;
-					}
-				}
-			}
-
-			&.visibleImport {
-				.tabs {
-					#s_settingsexport {
-						color: white;
-
-	
-						&:hover {
-							background-color: #2a2a2b;
-						}
-					}
-	
-					#s_settingsimport {
-						color: white;
-
-						&:hover {
-							background-color: unset;
-						}
-					}
-				}
-			}
+			background-color: #39383d;
 		}
 
 		.tooltip,
@@ -152,14 +123,10 @@
 			color: #999;
 		}
 
-		.custom_zone {
-			border-color: #3f3f41;
-		}
-
 		// Background custom
 
-	.uploadContainer {
-			background-color: #3a3a3a;
+		.uploadContainer {
+			background-color: #39383d;
 			color: white;
 		}
 
@@ -176,10 +143,10 @@
 		}
 
 		#bg_tn_wrap,
-		#hideelem > div {
+		#hideelem {
 			button {
 				color: white;
-				background-color: #3f3f41;
+				background-color: #39383d;
 
 				&.clicked {
 					color: #ccc;
@@ -190,7 +157,7 @@
 
 		#hideelem button,
 		#bg_tn_wrap .thumbnail button {
-			color: $purewhite;
+			color: white;
 		}
 		#bg_tn_wrap::-webkit-scrollbar-track {
 			background: #39383d;
@@ -199,28 +166,20 @@
 			background: #666;
 		}
 
-		.title {
-			background-color: #1c1c1e;
-			color: $purewhite;
-			border-top: 0;
-			border-bottom: 0;
-		}
-
 		#i_refresh,
 		#i_qtrefresh,
 		select {
-			color: $purewhite;
-			background-color: $greyish;
-			border-color: transparent;
+			color: white;
+			background-color: #39383d;
 		}
 
-		.paramTitle {
+		h2 {
 			color: #929294;
 		}
 
 		.param {
 			background-color: #1c1c1e;
-			color: $purewhite;
+			color: white;
 		}
 
 		hr {
@@ -231,7 +190,7 @@
 		input[type='url'],
 		pre#i_export {
 			background-color: #39383d;
-			color: $purewhite;
+			color: white;
 
 			&:focus {
 				background-color: #2c2c2f;
@@ -249,54 +208,68 @@
 			background-color: #1c1c1e;
 		}
 
-		::-moz-range-thumb {
-			box-shadow: none;
-		}
+		#importexport .param {
+			#export #area_export {
+				background-color: #39383d;
+				color: white;
 
-		::placeholder {
-			color: #929294;
-		}
-
-		button {
-			background-color: #1c1c1e;
-		}
-
-		.slider {
-			background-color: #39383d;
-
-			&:hover {
-				background-color: #2c2c2f;
+				&::-webkit-resizer {
+					background: #39383d;
+				}
 			}
-		}
 
-		input[type='range']::-webkit-slider-thumb {
-			box-shadow: none;
-		}
-
-		input:checked + .slider {
-			background-color: $green;
-
-			&:hover {
-				background: #40b354;
-				transition: background 0.2s;
+			#import #i_importtext {
+				background-color: #39383d;
+				&:focus {
+					background-color: #2c2c2f;
+				}
 			}
-		}
 
-		select {
-			background-color: #39383d;
+			.tabs {
+				background-color: #39383d;
+
+				button#s_import:hover,
+				button#s_export:hover {
+					background-color: transparent;
+				}
+			}
+
+			&.visibleImport {
+				.tabs {
+					#s_settingsexport {
+						color: white;
+
+						&:hover {
+							background-color: #2a2a2b;
+						}
+					}
+
+					#s_settingsimport {
+						color: white;
+
+						&:hover {
+							background-color: unset;
+						}
+					}
+				}
+			}
 		}
 
 		.signature {
 			color: #929294;
 		}
 
-		&::-webkit-scrollbar-thumb {
-			box-shadow: inset 0 0 15px 15px #39383d;
+		::placeholder {
+			color: #929294;
 		}
 
-		// &.scroll::-webkit-scrollbar-thumb {
-		// 	box-shadow: inset 0 0 15px 15px #39383d;
-		// }
+		::-moz-range-thumb {
+			box-shadow: none;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			box-shadow: inset 0 0 10px 10px #39383d;
+		}
 	}
 }
 

@@ -233,15 +233,15 @@ function clock(event, init) {
 function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
-	const domlinkblocks = id('linkblocks_inner')
-	let hovered = { parent: undefined, link: {}, index: 0 }
+	const domlinkblocks = id('linkblocks')
+	let hovered = { block: undefined, link: {}, index: 0 }
 
 	async function initblocks(links) {
 		if (links.length > 0) {
 			try {
 				// Add blocks and events
 				const blocklist = links.map((l) => appendblock(l))
-				blocklist.forEach(({ parent }) => addEvents(parent))
+				blocklist.forEach(({ block }) => addEvents(block))
 				canDisplayInterface('links')
 
 				// Load icons one by one
@@ -296,117 +296,50 @@ function quickLinks(event, that, init) {
 		let url = stringMaxSize(link.url, 512)
 
 		//le DOM du block
-		const lIcon = document.createElement('img')
-		const lIconWrap = document.createElement('div')
-		const blockTitle = document.createElement('span')
-		const block = document.createElement('div')
-		const block_parent = document.createElement('div')
+		const img = document.createElement('img')
+		const span = document.createElement('span')
+		const atag = document.createElement('a')
+		const li = document.createElement('li')
 
-		lIcon.loading = 'lazy'
-		lIcon.className = 'l_icon'
-		lIconWrap.className = 'l_icon_wrap'
-		lIconWrap.appendChild(lIcon)
+		img.alt = ''
+		img.loading = 'lazy'
 
-		block.className = 'block'
-		block.setAttribute('source', url)
-		block.appendChild(lIconWrap)
-		block.appendChild(blockTitle)
+		atag.appendChild(img)
+		atag.appendChild(span)
 
-		block_parent.setAttribute('class', 'block_parent')
-		block_parent.setAttribute('draggable', 'true')
-		block_parent.appendChild(block)
+		atag.href = url
+		atag.setAttribute('rel', 'noreferrer noopener')
 
 		// this also adds "normal" title as usual
-		textOnlyControl(block, title, domlinkblocks.className === 'text')
+		textOnlyControl(atag, title, domlinkblocks.className === 'text')
 
-		domlinkblocks.appendChild(block_parent)
+		li.setAttribute('class', 'block')
+		li.appendChild(atag)
 
-		return { icon: lIcon, parent: block_parent }
+		domlinkblocks.appendChild(li)
+
+		return { icon: img, block: li }
 	}
 
 	function removeLinkSelection() {
 		//enleve les selections d'edit
-		domlinkblocks.querySelectorAll('.l_icon_wrap').forEach(function (e) {
+		domlinkblocks.querySelectorAll('img').forEach(function (e) {
 			clas(e, false, 'selected')
 		})
 	}
 
 	function addEvents(elem) {
-		function openlink(that, e) {
-			const source = that.children[0].getAttribute('source')
-			const a_hiddenlink = id('hiddenlink')
-
-			chrome.storage.sync.get('linknewtab', (data) => {
-				const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
-
-				a_hiddenlink.setAttribute('href', source)
-				a_hiddenlink.setAttribute('target', toNewTab ? '_blank' : '_self')
-				a_hiddenlink.click()
-			})
-		}
-
-		function handleDrag(is, that) {
-			chrome.storage.sync.get(null, (data) => {
-				const index = findindex(that)
-				const link = bundleLinks(data)[index]
-
-				if (is === 'enter') {
-					hovered = { parent: elem, link, index }
-					return
-				}
-
-				if (is === 'end') {
-					if (hovered.index === index) return
-
-					const dragged = { parent: elem }
-					const hoveredChild = hovered.parent.children[0]
-					const draggedChild = dragged.parent.children[0]
-
-					hovered.parent.children[0].remove()
-					dragged.parent.children[0].remove()
-					hovered.parent.appendChild(draggedChild)
-					dragged.parent.appendChild(hoveredChild)
-
-					const temp = link.order
-					data[link._id].order = hovered.link.order
-					data[hovered.link._id].order = temp
-
-					chrome.storage.sync.set(data)
-				}
-			})
-		}
-
-		// Drags
-		elem.ondragstart = function (e) {
-			e.stopPropagation()
-			e.dataTransfer.setData('text/plain', e.target.id)
-			handleDrag('start', this)
-		}
-
-		elem.ondragenter = function (e) {
-			e.preventDefault()
-			handleDrag('enter', this)
-		}
-
-		elem.ondragend = function (e) {
-			e.preventDefault()
-			handleDrag('end', this)
-		}
-
 		// Mouse clicks
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
 			removeLinkSelection()
-			displayEditWindow(this, e)
+			displayEditWindow(this, { x: e.x, y: e.y })
 		}
 
-		elem.onmouseup = function (e) {
-			// right click
-			if (e.which === 3) return
-
-			// settings not opened and not on mobile
-			if (!has(id('settings'), 'shown') && !mobilecheck()) {
-				openlink(this, e)
+		elem.onkeyup = function (e) {
+			if (e.key === 'e') {
+				const { offsetLeft, offsetTop } = e.target
+				displayEditWindow(this, { x: offsetLeft, y: offsetTop })
 			}
 		}
 
@@ -419,18 +352,14 @@ function quickLinks(event, that, init) {
 				const startHandler = (e) => {
 					touchStartTime = performance.now()
 					touchTimeout = setTimeout(() => {
-						displayEditWindow(elem, e)
+						const { clientX, clientY } = e.touches[0]
+						displayEditWindow(elem, { x: clientX, y: clientY })
 					}, 600)
 				}
 
 				const endHandler = (e) => {
 					const pressTime = performance.now() - touchStartTime
-					const editIsNotOpen = !has(id('editlink'), 'shown')
-
-					if (pressTime < 600) {
-						clearTimeout(touchTimeout)
-						if (editIsNotOpen) openlink(elem, e)
-					}
+					if (pressTime < 600) clearTimeout(touchTimeout)
 				}
 
 				elem.addEventListener('touchstart', startHandler, { passive: true })
@@ -470,19 +399,12 @@ function quickLinks(event, that, init) {
 		id('e_iconurl').addEventListener('keyup', inputSubmitEvent)
 	}
 
-	function displayEditWindow(that, mouseEvent) {
+	function displayEditWindow(that, { x, y }) {
 		//
-		function positionsEditWindow(mouseEvent) {
-			const { innerHeight, innerWidth } = mouseEvent.view // viewport size
-			let { x, y } = mouseEvent // mouse position
+		function positionsEditWindow() {
+			const { innerHeight, innerWidth } = window // viewport size
 
 			removeLinkSelection()
-
-			// touch event is an array of touches
-			if (mouseEvent.touches?.length > 0) {
-				x = mouseEvent.touches[0].clientX
-				y = mouseEvent.touches[0].clientY
-			}
 
 			if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
 			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
@@ -492,7 +414,7 @@ function quickLinks(event, that, init) {
 		}
 
 		const index = findindex(that)
-		const liconwrap = that.querySelector('.l_icon_wrap')
+		const domicon = that.querySelector('img')
 		const domedit = document.querySelector('#editlink')
 		const opendedSettings = has(id('settings'), 'shown')
 
@@ -508,13 +430,15 @@ function quickLinks(event, that, init) {
 			id('e_url').value = url
 			id('e_iconurl').value = icon
 
-			positionsEditWindow(mouseEvent)
+			positionsEditWindow()
 
-			clas(liconwrap, true, 'selected')
+			clas(domicon, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
 
 			domedit.setAttribute('index', index)
+
+			id('e_title').focus()
 		})
 	}
 
@@ -531,8 +455,9 @@ function quickLinks(event, that, init) {
 		}
 
 		chrome.storage.sync.get(null, (data) => {
-			const parent = domlinkblocks.children[index + 1]
-			const block = parent.querySelector('.block')
+			const domlink = domlinkblocks.children[index]
+			const domicon = domlink.querySelector('img')
+			const domurl = domlink.querySelector('a')
 			let link = bundleLinks(data).filter((l) => l.order === index)[0]
 
 			link = {
@@ -542,9 +467,9 @@ function quickLinks(event, that, init) {
 				icon: stringMaxSize(e_iconurl.value, 7500),
 			}
 
-			textOnlyControl(block, link.title, domlinkblocks.className === 'text')
-			block.setAttribute('source', link.url)
-			parent.querySelector('img').src = link.icon
+			textOnlyControl(domlink, link.title, domlinkblocks.className === 'text')
+			domurl.href = link.url
+			domicon.src = link.icon
 
 			// Updates
 			chrome.storage.sync.set({ [link._id]: link })
@@ -557,7 +482,7 @@ function quickLinks(event, that, init) {
 		//passe la liste des blocks, s'arrete si that correspond
 		//renvoie le nombre de loop pour l'atteindre
 		const list = domlinkblocks.children
-		for (let i = 0; i < list.length; i++) if (that === list[i]) return i - 1
+		for (let i = 0; i < list.length; i++) if (that === list[i]) return i
 	}
 
 	function removeblock(index) {
@@ -566,7 +491,7 @@ function quickLinks(event, that, init) {
 			let link = links.filter((l) => l.order === index)[0]
 
 			//enleve le html du block
-			const blockParent = domlinkblocks.children[index + 1]
+			const blockParent = domlinkblocks.children[index]
 			const height = blockParent.getBoundingClientRect().height
 
 			blockParent.style.height = height + 'px'
@@ -577,12 +502,12 @@ function quickLinks(event, that, init) {
 				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
 			}, 600)
 
-			links.map((l) => {
-				l.order > index ? (l.order -= 1) : '' // Decrement order for elements above the one removed
+			links.forEach((l) => {
+				l.order -= l.order > index ? 1 : 0 // Decrement order for elements above the one removed
 				data[l._id] = l // updates link in storage
 			})
 
-			chrome.storage.sync.set(data)
+			chrome.storage.sync.set(isExtension ? data : { import: data })
 			chrome.storage.sync.remove(link._id)
 		})
 	}
@@ -638,12 +563,9 @@ function quickLinks(event, that, init) {
 
 	function textOnlyControl(block, title, toText) {
 		const span = block.querySelector('span')
-		let url = block.getAttribute('source')
 
 		if (toText && title === '') {
-			url = url.replace(/(^\w+:|^)\/\//, '')
-			url = url.split('?')[0]
-			span.textContent = url
+			span.textContent = extractDomain(block.href)
 			return
 		}
 
@@ -658,7 +580,7 @@ function quickLinks(event, that, init) {
 		const Style = event === 'linkstyle'
 
 		if (Toggle) {
-			id('linkblocks').setAttribute('class', that ? 'shown' : 'hidden')
+			clas(id('linkblocks'), !that, 'hidden')
 			interfaceWidgetToggle(null, 'links')
 			chrome.storage.sync.set({ quicklinks: that })
 		}
@@ -669,19 +591,24 @@ function quickLinks(event, that, init) {
 
 		if (Newtab) {
 			chrome.storage.sync.set({ linknewtab: that })
-			id('hiddenlink').setAttribute('target', '_blank')
+			document.querySelectorAll('.block').forEach((block) => {
+				block.setAttribute('target', '_blank')
+			})
 		}
 
 		if (Style) {
 			chrome.storage.sync.get(null, (data) => {
 				linksrow(data.linksrow, that) // style changes needs rows width change
 
+				const classes = ['large', 'medium', 'small', 'text']
 				const links = bundleLinks(data)
 				const blocks = document.querySelectorAll('.block')
 
 				links.forEach(({ title }, i) => textOnlyControl(blocks[i], title, that === 'text'))
 
-				domlinkblocks.className = that
+				classes.forEach((c) => domlinkblocks.classList.remove(c))
+				domlinkblocks.classList.add(that)
+
 				chrome.storage.sync.set({ linkstyle: that })
 			})
 		}
@@ -692,7 +619,7 @@ function quickLinks(event, that, init) {
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	linksrow(init.linksrow, init.linkstyle)
 	initblocks(bundleLinks(init))
-	id('linkblocks').setAttribute('class', init.quicklinks ? 'shown' : 'hidden')
+	clas(id('linkblocks'), !init.quicklinks, 'hidden')
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
@@ -804,11 +731,11 @@ function linksrow(amount, style = 'large', event) {
 		}
 
 		const { width, gap } = sizes[style]
-		id('linkblocks_inner').style.width = (width + gap) * val + 'em'
+		id('linkblocks').style.width = (width + gap) * val + 'em'
 	}
 
 	if (event) {
-		let domStyle = document.querySelector('#linkblocks_inner').className
+		let domStyle = document.querySelector('#linkblocks').className
 		domStyle = domStyle === 'undefined' ? 'large' : domStyle
 
 		setRows(event, domStyle)
@@ -1042,16 +969,18 @@ function weather(event, that, init) {
 			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
 			if (widgetIcon) {
-				if (widgetIcon.getAttribute('src') !== iconSrc) widgetIcon.setAttribute('src', iconSrc)
-			} else {
-				const icon = document.createElement('img')
-				icon.src = iconSrc
-				icon.setAttribute('draggable', 'false')
-				tempContainer.prepend(icon)
-
-				// from 1.2s request anim to .4s hide elem anim
-				setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
+				widgetIcon.setAttribute('src', iconSrc)
+				return
 			}
+
+			const icon = document.createElement('img')
+			icon.src = iconSrc
+			icon.setAttribute('alt', '')
+			icon.setAttribute('draggable', 'false')
+			tempContainer.prepend(icon)
+
+			// from 1.2s request anim to .4s hide elem anim
+			setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 		}
 
 		handleWidget()
@@ -2056,6 +1985,8 @@ function searchbar(event, that, init) {
 			setRequest(request)
 			setNewtab(newtab)
 			setOpacity(opacity)
+
+			if (on) domsearchbar.focus()
 		} catch (e) {
 			errorMessage('Error in searchbar initialization', e)
 		}
@@ -2077,6 +2008,16 @@ function searchbar(event, that, init) {
 		isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 	}
 
+	function toggleInputButton(toggle) {
+		if (toggle) {
+			emptyButton.removeAttribute('disabled')
+			submitButton.removeAttribute('disabled')
+		} else {
+			emptyButton.setAttribute('disabled', '')
+			submitButton.setAttribute('disabled', '')
+		}
+	}
+
 	domsearchbar.onkeyup = function (e) {
 		if (e.key === 'Enter' && this.value.length > 0) {
 			submitSearch()
@@ -2084,8 +2025,11 @@ function searchbar(event, that, init) {
 	}
 
 	domsearchbar.oninput = function () {
-		clas(emptyButton, this.value.length > 0, 'shown')
-		clas(submitButton, this.value.length > 0, 'shown')
+		const hasText = this.value.length > 0
+
+		clas(emptyButton, hasText, 'shown')
+		clas(submitButton, hasText, 'shown')
+		toggleInputButton(hasText)
 	}
 
 	emptyButton.onclick = function () {
@@ -2093,6 +2037,7 @@ function searchbar(event, that, init) {
 		domsearchbar.focus()
 		clas(this, false, 'shown')
 		clas(submitButton, false, 'shown')
+		toggleInputButton(false)
 	}
 
 	submitButton.onclick = function () {
@@ -2752,11 +2697,11 @@ function filterImports(data) {
 
 	// Hide elem classes changed at some point
 	if (validateHideElem(data.hide)) {
-		const weatherIndex = hide.indexOf('weather_desc')
-		const widgetIndex = hide.indexOf('w_icon')
+		const weatherIndex = data.hide.indexOf('weather_desc')
+		const widgetIndex = data.hide.indexOf('w_icon')
 
-		if (weatherIndex >= 0) hide[weatherIndex] = 'description'
-		if (widgetIndex >= 0) hide[widgetIndex] = 'widget'
+		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
+		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
 	} else {
 		hide = [[0, 0], [0, 0, 0], [0], [0]]
 	}
