@@ -1,20 +1,22 @@
 @mixin darkCss {
+	::-webkit-scrollbar-thumb {
+		box-shadow: inset 0 0 10px 10px #39383d;
+	}
+
 	#interface {
 		color: #eee;
 	}
 
-	#bookmarks {
-		background-color: #1c1c1e;
-		color: white;
+	#bookmarks,
+	#editlink {
+		border-color: #fff4;
+		@include frostedGlass($blur: 25px, $tint: 0, $alpha: 0.6, $fbTint: 32, $fbAlpha: 1);
 	}
 
 	#editlink {
-		border-color: #fff4;
-
-		@include frostedGlass($blur: 25px, $tint: 0, $alpha: 0.6, $fbTint: 32, $fbAlpha: 1);
-
 		input {
 			color: #fff9;
+
 			&::placeholder {
 				color: #fff9;
 			}
@@ -34,35 +36,16 @@
 		}
 	}
 
-	#bookmarks_container {
-		#bookmarks,
-		#bookmarks h3,
-		#bookmarks .bookmarkOptions {
-			background-color: #1c1c1e;
+	#bookmarks {
+		h3,
+		ol li {
+			color: #fffd;
+		}
+
+		ol li.selected {
 			color: white;
-
-			form div,
-			input[type='text'],
-			input[type='url'] {
-				background-color: #39383d;
-				color: white;
-			}
-
-			#selectedCounter,
-			.empty_input {
-				color: #eee;
-			}
-
-			.empty_input {
-				&:hover {
-					background-color: #666;
-				}
-
-				&:active {
-					color: #ccc;
-					background-color: #555;
-				}
-			}
+			background-color: #fff2;
+			border-color: #fff1;
 		}
 	}
 
@@ -265,10 +248,6 @@
 
 		::-moz-range-thumb {
 			box-shadow: none;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			box-shadow: inset 0 0 10px 10px #39383d;
 		}
 	}
 }

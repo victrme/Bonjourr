@@ -33,6 +33,17 @@ const extractDomain = (url) => {
 	return url
 }
 
+const extractHostname = (url) => {
+	const a = document.createElement('a')
+	let res = ''
+	a.href = url
+	res = a.hostname
+
+	a.remove()
+
+	return res
+}
+
 const randomString = (len) => {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')

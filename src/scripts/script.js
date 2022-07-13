@@ -272,12 +272,10 @@ function quickLinks(event, that, init) {
 		dom.src = 'src/assets/interface/loading.svg'
 
 		const img = new Image()
-		const a = document.createElement('a')
-		a.href = url
 
-		// Google favicon API is fallback
-		let result = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${a.hostname}&size=128`
-		const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${a.hostname}`)
+		// DuckDuckGo favicon API is fallback
+		let result = `https://icons.duckduckgo.com/ip3/${extractHostname(url)}.ico`
+		const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${extractHostname(url)}`)
 		const apiText = await bonjourrAPI.text() // API return empty string if nothing found
 
 		if (apiText.length > 0) {
@@ -632,7 +630,7 @@ async function linksImport() {
 	}
 
 	function main(links, bookmarks) {
-		const form = document.createElement('form')
+		const listdom = document.createElement('ol')
 		const allCategories = [...bookmarks[0].children]
 		let counter = links.length || 0
 		let bookmarksList = []
@@ -641,57 +639,65 @@ async function linksImport() {
 		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
 
 		bookmarksList.forEach((mark, index) => {
-			const elem = document.createElement('div')
-			const title = document.createElement('h5')
+			const elem = document.createElement('li')
+			const titleWrap = document.createElement('p')
+			const title = document.createElement('span')
+			const favicon = document.createElement('img')
 			const url = document.createElement('pre')
+
+			favicon.src = 'https://icons.duckduckgo.com/ip3/' + extractHostname(mark.url) + '.ico'
+			favicon.alt = ''
 
 			title.textContent = mark.title
 			url.textContent = mark.url
-			elem.setAttribute('index', index)
 
-			elem.appendChild(title)
+			titleWrap.appendChild(favicon)
+			titleWrap.appendChild(title)
+
+			elem.setAttribute('data-index', index)
+			elem.setAttribute('tabindex', '0')
+			elem.appendChild(titleWrap)
 			elem.appendChild(url)
-			elem.onclick = () => {
+
+			function select() {
 				const isSelected = elem.classList.toggle('selected')
-				isSelected ? selectedList.push(elem.getAttribute('index')) : selectedList.pop()
+				isSelected ? selectedList.push(elem.getAttribute('data-index')) : selectedList.pop()
 				isSelected ? counter++ : (counter -= 1)
 
 				// Change submit button text & class on selections
 				const amountSelected = counter - links.length
-				id('applybookmarks').textContent = tradThis(
+				id('bmk_apply').textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
 						: amountSelected === 1
 						? 'Import this bookmark'
 						: 'Import these bookmarks'
 				)
-				clas(id('applybookmarks'), amountSelected === 0, 'none')
+				clas(id('bmk_apply'), amountSelected === 0, 'none')
 			}
+
+			elem.onclick = select
+			elem.onkeydown = (e) => (e.code === 'Enter' ? select() : '')
 
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
 			if (typeof mark.url === 'string')
-				if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) form.appendChild(elem)
+				if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) listdom.appendChild(elem)
 		})
 
-		// Replace form to filter already added bookmarks
-		const oldForm = document.querySelector('#bookmarks form')
-		if (oldForm) oldForm.remove()
-		id('bookmarks').insertBefore(form, document.querySelector('#bookmarks .bookmarkOptions'))
+		// Replace list to filter already added bookmarks
+		const oldList = document.querySelector('#bookmarks ol')
+		if (oldList) oldList.remove()
+		id('bookmarks').prepend(listdom)
 
-		// Adds warning if no bookmarks were found
-		const noBookmarks = bookmarksList.length === 0
-		id('applybookmarks').style.display = noBookmarks ? 'none' : ''
-
-		if (noBookmarks) {
-			const h5 = document.createElement('h5')
-			h5.textContent = tradThis('No bookmarks found')
-			form.appendChild(h5)
+		// Just warning if no bookmarks were found
+		if (bookmarksList.length === 0) {
+			clas(id('bookmarks'), true, 'noneFound')
 			return
 		}
 
 		// Submit event
-		id('applybookmarks').onclick = function () {
+		id('bmk_apply').onclick = function () {
 			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
 
 			if (bookmarkToApply.length > 0) {
@@ -699,6 +705,8 @@ async function linksImport() {
 				quickLinks('button', bookmarkToApply, null)
 			}
 		}
+
+		document.querySelector('#bookmarks ol li').focus()
 	}
 
 	// Ask for bookmarks first
@@ -714,7 +722,7 @@ async function linksImport() {
 	})
 
 	// Close events
-	document.querySelector('#bookmarks #e_close').onclick = () => closeBookmarks(id('bookmarks_container'))
+	document.querySelector('#bmk_close').onclick = () => closeBookmarks(id('bookmarks_container'))
 
 	id('bookmarks_container').addEventListener('click', function (e) {
 		if (e.target.id === 'bookmarks_container') closeBookmarks(this)

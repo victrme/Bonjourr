@@ -214,7 +214,7 @@ function initParams(data, settingsDom) {
 	paramId('hideelem')
 		.querySelectorAll('button')
 		.forEach((elem) => {
-			elem.onmouseup = function () {
+			elem.onclick = function () {
 				elem.classList.toggle('clicked')
 				hideElem(null, null, this)
 			}
@@ -236,11 +236,11 @@ function initParams(data, settingsDom) {
 		if (e.code === 'Enter') quickLinks('input', e)
 	}
 
-	paramId('submitlink').onmouseup = function () {
+	paramId('submitlink').onclick = function () {
 		quickLinks('button', this)
 	}
 
-	paramId('b_importbookmarks').onmouseup = function () {
+	paramId('b_importbookmarks').onclick = function () {
 		linksImport()
 	}
 

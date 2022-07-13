@@ -804,7 +804,7 @@ footer {
 	font-size: 16px;
 	opacity: 0;
 	transition: opacity 0.4s;
-	@include frostedGlass($alpha: 0, $blur: 40px, $fbTint: 25, $fbAlpha: 0.8);
+	backdrop-filter: blur(40px) brightness(0.9);
 	z-index: 4;
 
 	&.shown {
@@ -833,129 +833,160 @@ footer {
 
 		animation: animHide 0.4s forwards;
 	}
+}
+
+#bookmarks,
+#editlink {
+	border-radius: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
+
+	hr {
+		border-color: #3334;
+	}
 
 	button {
-		height: 40px;
-		border: 0px;
-		border-radius: 9px;
-		font-size: 0.9em;
-		padding: 0.6em;
-		cursor: pointer;
-		color: $blue;
+		border-radius: 6px;
+		border: 3px solid transparent;
 		background-color: transparent;
-		transition: opacity 0.1s ease-in;
-
-		&:active,
-		&:hover {
-			text-decoration: underline;
-		}
-
-		&:active {
-			opacity: 0.8;
-		}
-	}
-
-	#e_close {
 		text-align: left;
-		padding: 0;
-		margin-bottom: 1.5em;
-		transition: opacity 0.1s ease-in;
+		padding: 2px 12px;
+		color: #2a2222;
+		outline: none;
+		cursor: pointer;
+
+		&:focus-visible,
+		&:hover {
+			color: white;
+			background-color: #2c7be5;
+
+			&:first-child {
+				color: white;
+				background-color: #e64b43;
+			}
+		}
 	}
+}
 
-	#bookmarks {
-		flex-direction: column;
-		background-color: $settingsGrey;
-		padding: 1.5em;
-		border-radius: 10px;
-		overflow: hidden;
-		align-self: center;
-		margin: auto;
-		min-width: 320px;
+#bookmarks {
+	margin: auto;
+	padding: 1.5em;
 
-		form {
-			max-height: 70vh;
-			overflow-y: auto;
-			overflow-x: hidden;
+	ol {
+		margin: 0;
+		padding: 0;
+		max-height: 50vh;
+		overflow-y: auto;
+		overflow-x: hidden;
+		list-style-type: none;
 
-			div {
-				position: relative;
-				background-color: white;
-				color: $blackish;
-				padding: 20px;
-				width: 50vw;
-				max-width: 800px;
-				padding-left: 3.5em;
-				text-align: left;
-				word-break: break-all;
-				transition: filter 0.1s;
-				cursor: pointer;
+		li {
+			position: relative;
+			width: 40vw;
+			max-width: 500px;
+			min-width: 300px;
+			margin: 10px;
+			padding: 15px;
+			padding-left: 3.5em;
+			color: #222c;
+			text-align: left;
+			border-radius: 8px;
+			border: 1px solid transparent;
+			transition: background-color 0.05s, border-color 0.05s;
+			cursor: pointer;
+
+			&:before {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 15px;
+				width: 25px;
+				height: 25px;
+				border-radius: 25px;
+				background-color: $blue;
+				transform: translateY(-50%) scale(0.2);
+				transition: transform 0.05s;
+				filter: grayscale(1);
+			}
+
+			p,
+			pre {
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+
+			p {
+				line-height: 1.5em;
+				font-size: 0.9em;
+				font-weight: bold;
+
+				img {
+					width: 1.5em;
+					height: 1.5em;
+					margin-right: 0.5em;
+					vertical-align: bottom;
+				}
+			}
+
+			pre {
+				font-size: 0.8em;
+				margin: 0.4em 0 0 0;
+			}
+
+			&.selected {
+				color: #222;
+				background-color: #fff6;
+				border-color: rgba(255, 255, 255, 0.3);
 
 				&:before {
-					content: '';
-					position: absolute;
-					top: 50%;
-					width: 25px;
-					height: 25px;
-					border-radius: 25px;
-					border: 2px solid #c5c4c6;
-					background-size: 12px;
-					background-repeat: no-repeat;
-					background-position: center;
-					transform: translateY(-50%);
-					margin-left: -40px;
-					box-sizing: border-box;
-				}
-
-				h5,
-				pre {
-					margin: 0;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-					overflow: hidden;
-				}
-
-				pre {
-					font-size: 0.8em;
-					margin-top: 0.4em;
-				}
-
-				&:first-child {
-					padding-top: 20px;
-					border-radius: 10px 10px 0 0;
-				}
-
-				&:last-child {
-					padding-bottom: 20px;
-					border-radius: 0 0 10px 10px;
-				}
-
-				&.selected {
-					filter: brightness(0.9);
-					&:before {
-						border-color: $blue;
-						background-color: $blue;
-						background-image: url('/src/assets/interface/checkmark.svg');
-					}
+					filter: none;
+					transform: translateY(-50%) scale(1);
+					background: $blue no-repeat center/12px url('/src/assets/interface/checkmark.svg');
 				}
 			}
 		}
+	}
 
-		.bookmarkOptions {
-			display: flex;
-			justify-content: space-between;
-			background-color: $settingsGrey;
-			margin: 1em 20px 0 20px;
+	// no bookmark warning
+	h3 {
+		display: none;
+		color: #222d;
+	}
 
-			#applybookmarks {
-				text-align: right;
-				transition: filter 0.4s;
+	> div {
+		display: flex;
+		justify-content: space-between;
+		margin: 2em 1em 0 1em;
+	}
 
-				&.none {
-					cursor: default;
-					filter: grayscale(1);
-					text-decoration: none;
-				}
-			}
+	button {
+		color: #2c7be5;
+		transition: filter 0.4s;
+
+		&:first-child {
+			color: #e64b43;
+		}
+
+		&#bmk_apply.none {
+			pointer-events: none;
+			filter: grayscale(1);
+		}
+	}
+
+	&.noneFound {
+		min-width: 260px;
+
+		h3 {
+			display: block;
+		}
+
+		> div {
+			justify-content: center;
+		}
+
+		#bmk_apply {
+			display: none;
 		}
 	}
 }
@@ -967,14 +998,10 @@ footer {
 	left: 0;
 	width: 220px;
 	padding: 1em;
-	border-radius: 8px;
 	box-shadow: 0px 0px 15px #0004;
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	transition: left 0.4s;
 	transform: translate(-254px, -172px);
+	transition: left 0.4s;
 	z-index: 4;
-
-	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
 
 	&.shown {
 		display: block;
@@ -1010,34 +1037,19 @@ footer {
 		}
 	}
 
-	hr {
-		border-color: #3334;
-	}
-
 	.linkOptions {
 		display: flex;
 		flex-direction: column;
+	}
 
-		button {
-			border-radius: 6px;
-			border: 3px solid transparent;
-			background-color: transparent;
-			text-align: left;
-			padding: 2px 12px;
-			color: #2a2222;
-			outline: none;
-			cursor: pointer;
-
-			&:focus-visible,
-			&:hover {
-				color: white;
-				background-color: #2c7be5;
-
-				&:first-child {
-					background-color: #e64b43;
-				}
-			}
-		}
+	button {
+		border-radius: 6px;
+		border: 3px solid transparent;
+		text-align: left;
+		padding: 2px 12px;
+		color: #2a2222;
+		outline: none;
+		cursor: pointer;
 	}
 }
 
