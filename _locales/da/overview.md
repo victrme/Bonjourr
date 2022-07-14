@@ -2,63 +2,63 @@
 This is Bonjourr's description that appears on browser extensions stores.
 ---
 
-Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new tabs will always feel fresh.
+Hver gang du åbner et nyt vindue eller en ny fane, vil du blive mødt af denne minimalistiske side, som vil hjælpe dig med at få ro og produktivitet. Takket være de smukke baggrunde i høj kvalitet, der skifter alt efter dagens humør, vil dine nye faner altid føles friske.
 
-Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's design language to create this beautiful homepage that will help you focus on what matters.
+Bonjourr blev bygget som et mere moderne alternativ til hjemmesider som Momentum. Vi har ladet os inspirere af iOS og Apples designsprog for at skabe denne smukke hjemmeside, der hjælper dig med at fokusere på det, der betyder noget.
 
-Here's some key features:
-🍏 iOS design language
-🏞 Dynamic 4K backgrounds that change according to the mood of the day
-⚡️ Fast & lightweight!
-🔎 Search bar (compatible with all search engines)
-🕰 Analog clock with multiple clock faces
-🌤 Weather
-🔗 Quick Links
-👋 Greets you by your name
-🌘 Dark mode
-🥖 Emoji as favicon
-🧑‍💻 Custom CSS styling
-📝 Custom fonts
-🔒 Privacy focused
+Her er nogle af de vigtigste funktioner:
+🍏 iOS-designsprog
+🏞 Dynamiske 4K-baggrunde, der skifter alt efter dagens humør
+⚡️ Hurtig & letvægtig!
+🔎 Søgebjælke (kompatibel med alle søgemaskiner)
+🕰 Analogt ur med flere urskiver
+🌤 Vejret
+🔗 Hurtige links
+👋 Hilsner dig med dit navn
+🌘 Mørk tilstand
+🥖 Emoji som favicon
+🧑💻 Brugerdefineret CSS-styling
+📝 Brugerdefinerede skrifttyper
+🔒 Privatliv fokuseret
 🌎 Multilanguage
 
-Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links... You can even check out our documentation where we compiled some style snippets to do even more.
+Bonjourr har til formål at se og føle sig minimal ud, mens du stadig har masser af muligheder for at tilpasse den efter din smag. Indstil dine egne baggrunde (eller Unsplash-samlinger!), aktiver det smukke analoge ur, indstil din egen skrifttype og Quick Links ... Du kan endda tjekke vores dokumentation, hvor vi har samlet nogle stiludklip til at gøre endnu mere.
 
-The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data, nor do you need to create an account to use it.
+Projektet er helt open source, udviklervenligt og respekterer faktisk dit privatliv. Vi indsamler ingen data, og du behøver heller ikke at oprette en konto for at bruge det.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+---
 
-🏞 Dynamic 4K backgrounds
-We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel fresh. Discover high quality photos of incredible landscapes, animals and nature.
+🏞 Dynamiske 4K-baggrunde
+Vi har håndplukket nogle af de smukkeste Unsplash-fotos, så dine nye faner altid vil føles friske. Oplev fotos af høj kvalitet af utrolige landskaber, dyr og natur.
 
-⚡️ Fast & lightweight!
-Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
+⚡️ Hurtig og let!
+Bonjourr er bygget med vanilla JavaScript og optimeret til den bedst mulige ydeevne.
 
-🔎 Search bar
-The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! That includes the usual Google, Bing, DuckDuckGo, Yahoo, Startpage as well as others, like Ecosia, Lilo and Qwant. If you want, you can even add you own custom search engine.
+🔎 Søgebjælke
+Den integrerede søgelinje i Bonjourr er kompatibel med alle søgemaskiner. Ja, dem alle! Det omfatter de sædvanlige Google, Bing, DuckDuckGo, Yahoo, Startpage samt andre, som Ecosia, Lilo og Qwant. Hvis du ønsker det, kan du endda tilføje din egen brugerdefinerede søgemaskine.
 
-🕰 Analog clock 
-Bonjourr's default clock is made to ressemble what you have on the iPhone and other iOS devices. But if you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
+🕰 Analogt ur
+Bonjourrs standardur er lavet til at ligne det, du har på iPhone og andre iOS-enheder. Men hvis du gerne vil have noget mere eksotisk, kan du erstatte det med et meget cool analogt ur og tilpasse det, som du vil.
 
-🌤 Weather
-In a simple sentence, get a summary of you local current weather and forecast.
+🌤 Vejret
+Med en enkelt sætning får du et resumé af dit lokale aktuelle vejr og prognose.
 
-🔗 Quick Links
-It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change their icons and import your current bookmarks from your browser.
+🔗 Hurtige links
+Det ville ikke være en rigtig hjemmeside uden bogmærker! Bonjourr giver dig mulighed for at tilføje dine egne bogmærker, ændre deres ikoner og importere dine nuværende bogmærker fra din browser.
 
-🌘 Dark mode
-Just like on iOS, Bonjourr has a beautiful automatic dark mode.
+🌘 Mørk tilstand
+Ligesom på iOS har Bonjourr en smuk automatisk mørk tilstand.
 
-🥖 Emoji as favicon
+🥖 Emoji som favicon
 
-🔒 Privacy focused
-Some homepages like Momentum encourage you to create an account, give them some personal info, use more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes, use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr being open source also means that you can easily check out if our claims are true.
+🔒 Privatliv fokuseret
+Nogle hjemmesider som Momentum opfordrer dig til at oprette en konto, give dem nogle personlige oplysninger, bruge flere tilladelser og være afhængig af mange tredjepartstjenester. Bonjourr indsamler ingen data, heller ikke til analyseformål, bruger minimale tilladelser, er afhængig af færre tredjepartstjenester og har naturligvis ikke noget kontosystem. At Bonjourr er open source betyder også, at du nemt kan tjekke, om vores påstande er sande.
 
-🧑‍💻 Custom CSS styling
-Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can customise and do anything when you add your own CSS.
+🧑💻 Brugerdefineret CSS-styling
+Har du en specifik idé i tankerne? Bonjourr har dig dækket med afsnittet for brugerdefinerede stilarter. Du kan tilpasse og gøre hvad som helst, når du tilføjer din egen CSS.
 
-📝 Custom fonts
-Want a specific font on your homepage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
+📝 Brugerdefinerede skrifttyper
+Vil du have en bestemt skrifttype på din hjemmeside ? Du kan nemt vælge den takket være Bonjourrs integrering med Google Fonts.
 
 🌎 Multilanguage
-Thanks to our awesome contributors, Bonjourr is available in 15 different languages (English, French, Slovene, Swedish, Polish, Brasilian Portuguese, Dutch, Italian, Spanish, Russian, Simplified Chinese, German, Ukrainian, Turkish and Indonesian).
+Takket være vores fantastiske bidragydere er Bonjourr tilgængelig på 15 forskellige sprog.

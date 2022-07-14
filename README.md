@@ -26,10 +26,10 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 
 <div>
 
-[Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0) • 
-[Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) • 
-[Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid) • 
-[Safari](https://bonjourr.fr/use-bonjourr#-safari-desktop) • 
+[Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0) •
+[Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) •
+[Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid) •
+[Safari](https://bonjourr.fr/use-bonjourr#-safari-desktop) •
 [or try it online](https://online.bonjourr.fr)
 
 </div>
@@ -42,22 +42,10 @@ Check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss 
 
 <br>
 
-## 👨‍💻 Working on Bonjourr
-
-We recommend a Chromium based browser to work on Bonjourr.
-
--   `npm install`
--   `npm run scss` to watch sass files
--   `npm run chrome` in another terminal to build and watch script changes
--   Go to chrome://extension, enable dev mode
--   Load unpacked extension, select /release folder
--   Or `npm run online` for standalone version. Needs live server for settings to work
-
-<br>
-
 ## ✍️ Contribute
 
 Here's a list of things you can do to help us out:
+
 -   Give us feedback (positive and negative!) on how you use Bonjourr
 -   Suggest new features or improvements of the existing ones
 -   Create new [CSS snippets](https://bonjourr.fr/css-snippet) or [custom profiles](https://bonjourr.fr/profiles)
@@ -71,6 +59,7 @@ Here's a list of things you can do to help us out:
 ## 🌟 Spread the word!
 
 If you just want to say thank you and support our work, here's some ideas:
+
 -   Tweet what you like about Bonjourr! (tag us, [@BonjourrTeam](https://twitter.com/BonjourrTeam/))
 -   Leave a review on [Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0), [Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) or [Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
 -   Add a GitHub Star to the repository ⭐️
@@ -83,10 +72,43 @@ If you feel like we've earned it and you want to support independant open source
 
 <div>
 
-[Our Ko-Fi Page](https://ko-fi.com/bonjourr) • 
+[Our Ko-Fi Page](https://ko-fi.com/bonjourr) •
 [or donate in crypto](https://commerce.coinbase.com/checkout/095cc203-130d-4e56-9716-3aa10a202d9b)
 
 </div>
+
+<br>
+
+## 👨‍💻 Working on Bonjourr
+
+We recommend a Chromium based browser to work on Bonjourr.
+
+-   `pnpm install`
+-   `pnpm run build` to build all versions
+-   `pnpm run chrome|firefox|online` to watch changes on preferred platform
+
+### Chrome
+-   Go to `chrome://extension`
+-   Enable Developer mode
+-   Load unpacked and select `/release/chrome` folder
+    
+### Firefox
+-  Go to `about:debugging#/runtime/this-firefox`
+-  Select "Load temporary Add-on"
+-  Select `manifest.json` in `/release/firefox` folder
+
+### Edge
+-   Go to `edge://extension`
+-   Enable Developer mode
+-   Load unpacked and select `/release/chrome` folder
+-   Replace manifest with `/src/manifests/edge.json`
+-   And rename `edge.json` to `manifest.json`
+
+### Safari
+-   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
+
+### Online
+-   Open a live server from `/release/online` folder
 
 <br>
 

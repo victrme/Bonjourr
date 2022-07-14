@@ -27,6 +27,23 @@ const mobilecheck = () =>
 const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
 const minutator = (date) => date.getHours() * 60 + date.getMinutes()
 
+const extractDomain = (url) => {
+	url.replace(/(^\w+:|^)\/\//, '')
+	url.split('?')[0]
+	return url
+}
+
+const extractHostname = (url) => {
+	const a = document.createElement('a')
+	let res = ''
+	a.href = url
+	res = a.hostname
+
+	a.remove()
+
+	return res
+}
+
 const randomString = (len) => {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
@@ -57,6 +74,20 @@ const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
 
 const getFavicon = () => {
 	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
+}
+
+// gives perfect max-height to hideable element
+const setMaxHeight = (elem, state) => {
+	let maxHeight
+
+	if (state == null) {
+		// toggles between 0 and value
+		maxHeight = id(elem.id).style.maxHeight === '0px' ? id(elem.id).scrollHeight : 0
+	} else {
+		maxHeight = state ? elem.scrollHeight : 0
+	}
+
+	elem.style.maxHeight = maxHeight + 'px'
 }
 
 function periodOfDay(sunTime, time) {
@@ -156,7 +187,7 @@ function turnRefreshButton(button, canTurn) {
 function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
 	clas(domedit, true, 'hiding')
-	document.querySelectorAll('.l_icon_wrap').forEach((l) => (l.className = 'l_icon_wrap'))
+	document.querySelectorAll('#linkblocks img').forEach((img) => clas(img, false, 'selected'))
 	setTimeout(() => {
 		domedit.setAttribute('class', '')
 	}, 200)
@@ -248,20 +279,22 @@ function errorMessage(comment, error) {
 		const warning = document.createElement('div')
 		const title = document.createElement('h1')
 		const subtitle = document.createElement('p')
-		const errorcode = document.createElement('pre')
+		const errorcode = document.createElement('textarea')
 		const explain = document.createElement('p')
 		const resetButton = document.createElement('button')
 		const closeError = document.createElement('button')
 		const buttonWrap = document.createElement('div')
 
-		title.textContent = 'Bonjourr has a problem 😖'
-		subtitle.textContent = `Copy this message below and contact us !`
+		title.textContent = comment + ' 😖'
+		subtitle.textContent = `Copy your settings below and contact us !`
 		explain.textContent =
-			'Sharing this message with us helps a lot in debugging. You can also reset Bonjourr, or close this window for now if you think it is a false alert.'
+			'Sharing your settings with us helps a lot in debugging. You can also reset Bonjourr, or close this window for now if you think it is a false alert.'
 
 		explain.className = 'error-explain'
 
-		errorcode.textContent = comment + ': ' + dataStr
+		errorcode.textContent = dataStr
+		errorcode.setAttribute('spellcheck', 'false')
+
 		resetButton.textContent = 'Reset Bonjourr'
 		resetButton.addEventListener('click', () => {
 			warning.style.opacity = 0
@@ -302,7 +335,7 @@ function errorMessage(comment, error) {
 	} else {
 		chrome.storage.sync.get(null, (data) => {
 			try {
-				displayMessage(JSON.stringify(data))
+				displayMessage(JSON.stringify(data, null, 4))
 			} catch (e) {
 				displayMessage('', 'Could not load settings')
 			}
@@ -361,85 +394,80 @@ function tradThis(str) {
 	return lang === 'en' ? str : dict[str][lang]
 }
 
-function bonjourrDefaults(which) {
-	switch (which) {
-		case 'sync':
-			return {
-				usdate: false,
-				showall: false,
-				linksrow: 6,
-				linkstyle: 'large',
-				cssHeight: 80,
-				reviewPopup: 0,
-				background_blur: 15,
-				background_bright: 0.8,
-				css: '',
-				lang: defaultLang(),
-				favicon: '',
-				tabtitle: '',
-				greeting: '',
-				dark: 'system',
-				custom_every: 'pause',
-				background_type: 'dynamic',
-				clock: {
-					ampm: false,
-					analog: false,
-					seconds: false,
-					face: 'none',
-					timezone: 'auto',
-				},
-				dynamic: {
-					every: 'hour',
-					collection: '',
-					lastCollec: '',
-					time: Date.now(),
-				},
-				weather: {
-					ccode: 'FR',
-					city: 'Paris',
-					unit: 'metric',
-					location: [],
-					forecast: 'auto',
-					temperature: 'actual',
-				},
-				searchbar: {
-					on: false,
-					opacity: 0.1,
-					newtab: false,
-					engine: 'google',
-					request: '',
-				},
-				quotes: {
-					on: false,
-					author: false,
-					type: 'classic',
-					frequency: 'day',
-					last: 1650516688,
-				},
-				font: {
-					url: '',
-					family: '',
-					size: '14',
-					availWeights: [],
-					weight: testOS.windows ? '400' : '300',
-				},
-				textShadow: 0.2,
-				hide: [[0, 0], [0, 0, 0], [0], [0]],
-				about: { browser: detectPlatform(), version: '1.14.0' },
-			}
+const syncDefaults = {
+	usdate: false,
+	showall: false,
+	quicklinks: true,
+	linksrow: 6,
+	linkstyle: 'large',
+	cssHeight: 80,
+	reviewPopup: 0,
+	background_blur: 15,
+	background_bright: 0.8,
+	css: '',
+	lang: defaultLang(),
+	favicon: '',
+	tabtitle: '',
+	greeting: '',
+	dark: 'system',
+	custom_every: 'pause',
+	background_type: 'dynamic',
+	clock: {
+		ampm: false,
+		analog: false,
+		seconds: false,
+		face: 'none',
+		timezone: 'auto',
+	},
+	dynamic: {
+		every: 'hour',
+		collection: '',
+		lastCollec: '',
+		time: Date.now(),
+	},
+	weather: {
+		ccode: 'FR',
+		city: 'Paris',
+		unit: 'metric',
+		location: [],
+		forecast: 'auto',
+		temperature: 'actual',
+	},
+	searchbar: {
+		on: false,
+		opacity: 0.1,
+		newtab: false,
+		engine: 'google',
+		request: '',
+	},
+	quotes: {
+		on: false,
+		author: false,
+		type: 'classic',
+		frequency: 'day',
+		last: 1650516688,
+	},
+	font: {
+		url: '',
+		family: '',
+		size: '14',
+		availWeights: [],
+		weight: testOS.windows ? '400' : '300',
+	},
+	textShadow: 0.2,
+	hide: [[0, 0], [0, 0, 0], [0], [0]],
+	about: { browser: detectPlatform(), version: '1.15.0' },
+}
 
-		case 'local':
-			return {
-				selectedId: '',
-				idsList: [],
-				quotesCache: [],
-				dynamicCache: {
-					noon: [],
-					day: [],
-					evening: [],
-					night: [],
-					user: [],
-				},
-			}
-	}
+const localDefaults = {
+	selectedId: '',
+	idsList: [],
+	quotesCache: [],
+	dynamicCache: {
+		noon: [],
+		day: [],
+		evening: [],
+		night: [],
+		user: [],
+	},
 }

@@ -1,10 +1,10 @@
 {
 	"extensionName": {
-		"message": "Bonjourr",
+		"message": "Bonjourr · Minimalistische startpagina",
 		"description": "extension name"
 	},
 	"extensionDesc": {
-		"message": "Browse beter met Bonjourr. Een mooie, aanpasbare en lichte startpagina geïnspireerd door iOS.",
+		"message": "Browse beter met Bonjourr. Een mooie, aanpasbare en lichte startpagina.",
 		"description": "extension description"
 	}
 }

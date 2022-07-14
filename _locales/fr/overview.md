@@ -20,13 +20,13 @@ Quelques fonctions clés :
 🧑‍💻 CSS personnalisé
 📝 Polices personnalisées
 🔒 Respecte votre confidentialité & open source
-🌎 Multilingue 
+🌎 Multilingue
 
 Bonjourr repose sur un look certes minimaliste, mais surtout personnalisable. Vous aurez le choix entre beaucoup d'options comme la possibilité d'ajouter vos propres photos (ou collections Unsplash), vos propres polices, l'horloge analogue, les liens favoris... Vous pourrez même jeter un œil à la documentation qui contient des extraits de code pré-écrits permettant d'aller encore plus loin.
 
 Bonjourr est entièrement open source, facile à modifier et respecte (vraiment) votre confidentialité. Nous ne récoltons aucune donnée, et vous n'avez pas à créer de compte pour l'utiliser.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+---
 
 🏞 Fond 4K dynamiques
 Nous avons sélectionnés les plus belles photos d'Unsplash pour que vous ne vous lassiez jamais de vos nouveaux onglets. Découvrez de magnifiques photos de paysages, d'animaux et de la nature.
@@ -61,4 +61,4 @@ Une idée spécifique en tête ? Grâce à la section CSS personnalisé, vous po
 Bonjourr vous propose une liste de nombreuses polices qui vous permettront de donner un style plus ou moins marqué à votre page d'accueil.
 
 🌎 Multilingue
-Grâce à nos super contributeurs, Bonjourr est disponible dans 15 langues différentes (Anglais, Français, Slovène, Suédois, Polonais, Portugais Brésilien, Néerlandais, Italien, Espagnol, Russe, Chinois Simplifié, Allemand, Ukrainien, Turque et Indonésien).
+Grâce à nos super contributeurs, Bonjourr est disponible dans 15 langues différentes.

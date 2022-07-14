@@ -26,7 +26,7 @@ Bonjourr aims to look and feel minimal, while still bringing you lots of options
 
 The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data, nor do you need to create an account to use it.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+---
 
 🏞 Dynamic 4K backgrounds
 We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel fresh. Discover high quality photos of incredible landscapes, animals and nature.
@@ -37,7 +37,7 @@ Bonjourr is built with vanilla JavaScript and optimised for the best possible pe
 🔎 Search bar
 The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! That includes the usual Google, Bing, DuckDuckGo, Yahoo, Startpage as well as others, like Ecosia, Lilo and Qwant. If you want, you can even add you own custom search engine.
 
-🕰 Analog clock 
+🕰 Analog clock
 Bonjourr's default clock is made to ressemble what you have on the iPhone and other iOS devices. But if you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
 🌤 Weather
@@ -61,4 +61,4 @@ Have a specific idea in mind? Bonjourr has you covered with the custom styles se
 Want a specific font on your homepage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
 
 🌎 Multilanguage
-Thanks to our awesome contributors, Bonjourr is available in 15 different languages (English, French, Slovene, Swedish, Polish, Brasilian Portuguese, Dutch, Italian, Spanish, Russian, Simplified Chinese, German, Ukrainian, Turkish and Indonesian).
+Thanks to our awesome contributors, Bonjourr is available in 15 different languages.

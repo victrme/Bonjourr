@@ -1,5 +1,44 @@
 ## Changelogs
 
+**v1.14.2**
+
+-   Better custom font performances
+-   Increased tab title length from 12 to 80 characters
+-   Fixed Russian quotes ( thanks again @DaniilChizhevskii )
+-   Fixed error message styling issues
+-   Improved font & dynamic error handling
+
+**v1.14.1**
+
+-   Added toolip on new tab title & favicon option
+-   Updated some Russian translations ( thanks @DaniilChizhevskii )
+-   Fixed custom background remove button
+-   Fixed custom background not working on Safari / Firefox
+-   Fixed fonts with numbers in family name
+-   Minor performance improvement on desktop
+
+**v1.14.0**
+
+-   Added features:
+    -   Link style option ( Icon sizes & text only )
+    -   Custom new tab titles
+    -   Text shadow slider
+    -   “Daylight” background frequency control
+    -   Integrated changelog to inform you of new features
+    -   Danish translation ( thanks @kar1 )
+    -   Added Search bar submit button
+-   Increased links row range from [2, 12] to [1, 16]
+-   Increased background resolution on mobile
+-   Can upload multiple backgrounds at once
+-   Reworked custom background thumbnails design
+-   Automatically sets language on first launch
+-   Refined Settings look & feel
+-   New loading icon animation
+-   Fixed favicon on Edge
+-   Fixed review links on Safari and Edge
+
+$~~~~~~~~~~~$
+
 **v1.13.2**
 
 -   Added Quotes cache to reduce requests
@@ -26,6 +65,8 @@
 -   Fixed some iOS / mobile stying
 -   Fixed links aliases issues
 
+$~~~~~~~~~~~$
+
 **v1.12.1**
 
 -   Improved error message style & logic
@@ -42,6 +83,8 @@
 -   Fixed Google Font list API
 -   Improved storage stability
 -   Minor bug fixes & settings performance boost
+
+$~~~~~~~~~~~$
 
 **v1.11.2**
 
@@ -66,6 +109,8 @@
 -   Improved font size input UX on mobile
 -   Fixed mobile pages not changing backgrounds
 -   Fixed error message appearing on firefox
+
+$~~~~~~~~~~~$
 
 **v1.10.2**
 
@@ -97,6 +142,8 @@
 -   Improved custom font experience
 -   Improved settings and startup performance
 -   Improved security
+
+$~~~~~~~~~~~$
 
 **v1.9.3**
 
@@ -136,7 +183,7 @@
 -   Increased privacy for stored local data
 -   Various fixes, style changes & performance boosts
 
-<br />
+$~~~~~~~~~~~$
 
 **v1.8.3**
 
@@ -162,7 +209,7 @@
 -   Quick Links editing menu
 -   Italian translation
 
-<br />
+$~~~~~~~~~~~$
 
 **v1.7.2**
 
@@ -189,7 +236,7 @@
 -   Slovak translation thanks to Roman Bartík
 -   Brazilian portugese translation thanks to Adilson Santos
 
-<br />
+$~~~~~~~~~~~$
 
 **v1.6.0**
 
@@ -197,7 +244,7 @@
 -   Quick Links improved
 -   Less permissions on Firefox
 
-<br />
+$~~~~~~~~~~~$
 
 **v1.5.5**
 

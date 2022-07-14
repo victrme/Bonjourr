@@ -1,105 +1,12 @@
-#showSettings {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	opacity: 0;
-	z-index: 3;
-	padding: 0 1.5em 1.5em 0;
-	transition: opacity 0.4s;
-
-	button {
-		position: relative;
-		height: 4em;
-		width: 4em;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		padding: unset;
-		background-color: transparent;
-		transition: background-color 0.6s $easeOutThree;
-		@include allCentered();
-
-		img {
-			width: 65%;
-			transition: transform 0.6s $easeOutThree;
-			will-change: transform;
-		}
-	}
-
-	&.init {
-		transition: opacity 0s;
-		button img {
-			transition: transform 0s;
-		}
-	}
-
-	// Doit etre dans cette ordre pour la hierarchie
-	&.enabled {
-		opacity: 1;
-	}
-
-	&.he_hidden {
-		opacity: 0;
-		&.shown {
-			opacity: 0.5;
-		}
-		&:hover {
-			opacity: 1;
-		}
-	}
-
-	&:hover {
-		img {
-			transform: rotate(15deg);
-		}
-	}
-
-	&.shown {
-		button {
-			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
-			img {
-				transform: rotate(60deg);
-			}
-
-			&:hover {
-				opacity: 1;
-				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
-			}
-		}
-	}
-
-	&.hasUpdated:before {
-		opacity: 1;
-	}
-
-	&.hasUpdated.shown:before {
-		opacity: 0;
-	}
-
-	&:before {
-		content: '';
-		position: absolute;
-		opacity: 0;
-		width: 10px;
-		height: 10px;
-		left: 2px;
-		top: 2px;
-		background-color: #35c759;
-		border-radius: 100%;
-		z-index: 10;
-		transition: opacity 0.3s;
-	}
-}
-
 #settings {
 	position: fixed;
 	top: 0;
 	bottom: 0;
 	z-index: 2;
 	right: -450px;
-	width: 450px;
 	height: 100vh;
-	overflow-y: auto;
+	width: calc(450px - (21px * 2));
+	padding: 0 21px;
 
 	background-color: $settingsGrey;
 	color: $blackish;
@@ -112,6 +19,10 @@
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
 	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
+	touch-action: pan-y;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	// transform: translateX(-100%) !important;
 
 	&.shown {
 		-webkit-transform: translateX(-100%);
@@ -128,6 +39,11 @@
 		&.dismissed {
 			display: block;
 			max-height: 0px;
+
+			#log_dismiss {
+				opacity: 0;
+				pointer-events: none;
+			}
 		}
 
 		&.shown {
@@ -138,59 +54,49 @@
 			position: relative;
 			display: block;
 			padding: 1.3em;
-			margin-top: 1em;
+			margin-top: 2em;
 			line-height: 1.3em;
 			background-color: #fff;
 			transition: background-color 0.3s $easeOutThree;
 			overflow: hidden;
-
-			@include radiusSettings();
-			@include marginSettings();
+			border-radius: 10px;
 
 			p:first-child {
+				margin-bottom: 0.5em;
 				font-weight: 500;
+			}
+
+			p > span#link {
+				color: $blue;
+			}
+
+			#link {
+				color: $blue;
+				text-decoration: none;
+			}
+		}
+
+		#log_dismiss {
+			position: absolute;
+			top: 1.5em;
+			right: 1em;
+			width: 30px;
+			height: 30px;
+			border-radius: 100%;
+			cursor: pointer;
+			box-shadow: rgb(0 0 0 / 20%) 0 2px 5px;
+			z-index: 10;
+			opacity: 1;
+			transition: background-color 0.2s $easeOutThree;
+			@include allCentered();
+
+			img {
+				width: 10px;
+				display: block;
 			}
 
 			&:hover {
 				background-color: #e4e3ea;
-				cursor: pointer;
-
-				#log_dismiss {
-					background-color: #e4e3ea;
-				}
-			}
-
-			button {
-				display: inline-block;
-				color: $blue;
-				text-decoration: none;
-				z-index: 10;
-				background: white;
-				position: relative;
-
-				&:hover {
-					text-decoration: underline;
-				}
-			}
-
-			#log_dismiss {
-				text-align: left;
-				margin: unset;
-				font-size: 1em;
-				padding: unset;
-				background-color: #fff;
-				transition: background-color 0.3s $easeOutThree;
-			}
-
-			#link {
-				width: 100%;
-				height: 100%;
-				display: block;
-				position: absolute;
-				opacity: 0.5;
-				top: 0;
-				left: 0;
-				z-index: 9;
 			}
 		}
 	}
@@ -200,18 +106,19 @@
 		#clockoptions #w_clockface,
 		#clockoptions #w_ampm,
 		#searchbar_options,
-		#quotes_options {
-			transition: max-Height 0s;
+		#quotes_options,
+		#quicklinks_options {
+			transition: max-height 0s;
 		}
 	}
 
-	// Safari composing layers
-	.param > *:not(hr),
-	#hideelem button,
-	#cssEditor {
-		transform: translate3d(0, 0, 0);
-		-webkit-transform: translate3d(0, 0, 0);
-	}
+	// // Safari composing layers
+	// .param > *:not(hr),
+	// #hideelem button,
+	// #cssEditor {
+	// 	transform: translate3d(0, 0, 0);
+	// 	-webkit-transform: translate3d(0, 0, 0);
+	// }
 
 	input[type='text'] {
 		will-change: background-color;
@@ -231,25 +138,21 @@
 	}
 
 	h1,
-	h5,
+	h2,
 	span {
 		margin: 0;
 	}
 
-	.titleContainer {
+	h2 {
 		display: flex;
-		margin: 1em 3rem;
-		margin-top: 2em;
-		color: #6d6d72;
-		justify-content: space-between;
 		align-items: center;
-		position: relative;
-
-		h5 {
-			text-transform: uppercase;
-			font-weight: 400;
-			letter-spacing: 1px;
-		}
+		justify-content: space-between;
+		text-transform: uppercase;
+		color: #6d6d72;
+		font-weight: 400;
+		font-size: 0.8em;
+		letter-spacing: 1px;
+		margin: 32px 26px 16px 26px;
 
 		.tooltip {
 			background-color: $inputGrey;
@@ -257,25 +160,19 @@
 		}
 	}
 
-	.help_sentence {
-		margin-top: 0.5em;
-		font-size: 0.8em;
-	}
-
 	.tooltip {
 		background-color: $settingsGrey;
-		color: $placeholderGrey;
+		color: #555;
 		width: 20px;
 		height: 20px;
 		border-radius: 100%;
-		cursor: pointer;
 		box-sizing: border-box;
-		transition: background-color 0.1s, transform 0.1s;
 		border: 1px solid #eaeaee;
-		font-size: 0.9em;
+		transition: background-color 0.1s, transform 0.1s;
 
 		&:hover {
 			background-color: $focusedGrey;
+			text-decoration: none;
 		}
 
 		&:active {
@@ -298,17 +195,20 @@
 		}
 
 		&.ttlinks,
-		&.csslinks {
-			margin: 0 3rem;
+		&.ttcss,
+		&.ttexport {
+			margin: 0 26px;
+
 			&.shown {
 				margin-bottom: 1rem;
 				max-height: 55px;
 			}
 		}
 
-		&.ttcoll {
+		&.ttcoll,
+		&.tttab {
 			&.shown {
-				margin: 1rem 0 0.5em 0;
+				margin: 1em 0 0.5em 0;
 				max-height: 50px;
 			}
 		}
@@ -326,17 +226,15 @@
 	.param {
 		background-color: #ffffff;
 		padding: $settingsMargin 1.3em;
-
-		@include radiusSettings();
-		@include marginSettings();
+		border-radius: 10px;
 	}
 
 	.wrapper {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		min-height: 34px;
-		position: relative;
 
 		span {
 			display: flex;
@@ -370,32 +268,43 @@
 		}
 	}
 
-	.link_input_wrap {
-		input[type='text'] {
-			width: calc(100% - 10px);
+	#quicklinks_options {
+		max-height: 0;
+		overflow-y: hidden;
+		transition: max-height 0.4s;
+
+		.link_input_wrap {
+			input[type='text'] {
+				width: calc(100% - 10px);
+			}
+
+			#i_title {
+				margin-bottom: 0.5em;
+			}
+
+			> div {
+				display: flex;
+				align-items: center;
+			}
+
+			.links_buttons {
+				text-align: right;
+			}
+
+			#b_importbookmarks,
+			#submitlink {
+				height: 2.2em;
+				transition: filter 0.4s;
+			}
+
+			#submitlink {
+				margin-left: 1em;
+			}
 		}
 
-		#i_title {
-			margin-bottom: 0.5em;
-		}
-
-		> div {
-			display: flex;
-			align-items: center;
-		}
-
-		.links_buttons {
-			text-align: right;
-		}
-
-		#b_importbookmarks,
-		#submitlink {
-			height: 2.2em;
-			transition: filter 0.4s;
-		}
-
-		#submitlink {
-			margin-left: 1em;
+		&.shown {
+			overflow-y: clip;
+			max-height: 255px;
 		}
 	}
 
@@ -409,12 +318,6 @@
 		margin-left: 5px;
 		text-decoration: none;
 		transition: background-color 0.1s, border-color 0.1s;
-		background-color: $settingsGrey;
-
-		&:hover {
-			background-color: $focusedGrey;
-			border-color: #b7b7b7;
-		}
 	}
 
 	.freq_wrap > div {
@@ -430,14 +333,14 @@
 		height: 100px;
 	}
 
-	#uploadContainer {
+	.uploadContainer {
 		overflow: hidden;
 		position: relative;
 		display: block;
 		width: 100%;
-		height: 73px;
+		height: 75px;
 		min-width: 200px;
-		line-height: 73px;
+		line-height: 75px;
 		font-size: 14px;
 		text-align: center;
 		cursor: pointer;
@@ -446,10 +349,11 @@
 		border: 1px dashed transparent;
 		transition: all 0.2s;
 		transform: scale(1);
+		box-sizing: border-box;
+		border-radius: 10px;
+		pointer-events: all;
 
-		@include radiusSettings();
-
-		#i_bgfile {
+		input[type='file'] {
 			position: absolute;
 			display: block;
 			overflow: hidden;
@@ -462,7 +366,7 @@
 		}
 
 		&:hover {
-			opacity: 0.7;
+			background-color: $focusedGrey;
 		}
 
 		&.dragover {
@@ -507,7 +411,7 @@
 				background-size: 4em;
 				background-position: center center;
 				background-repeat: no-repeat;
-				@include radiusSettings();
+				border-radius: 10px;
 
 				&.selected {
 					border-color: $blue;
@@ -525,8 +429,6 @@
 					left: 5px;
 					width: 25px;
 					height: 25px;
-					color: #333;
-					font-size: 10px;
 					border-radius: 100%;
 					cursor: pointer;
 					text-decoration: none;
@@ -534,7 +436,15 @@
 					opacity: 0;
 					pointer-events: none;
 					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+					box-sizing: border-box;
+					@include allCentered();
 					@include frostedGlass();
+
+					img {
+						width: 9px;
+						height: 9px;
+						display: block;
+					}
 				}
 
 				// instead of adding a populated class in JS
@@ -564,40 +474,73 @@
 	// Hide elements
 
 	#hideelem {
-		margin: 1em auto 1em auto;
-		max-width: 250px;
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		margin: 1em auto;
+		padding-bottom: 2px;
+		list-style: none;
+		padding: 0;
+		gap: 5px;
 		justify-content: center;
+		grid-template-columns: repeat(6, 36px);
 
-		> div {
-			margin-top: 7px;
-			display: flex;
-			overflow: hidden;
+		// Bon c'est wtf, mais j'avais envie de le faire pour la prosperite
+		// De toute facon ca va bientot etre remplace donc tout va bien
+
+		li:nth-child(1) {
+			grid-row: 1;
+			grid-column: 1 / 4;
+		}
+
+		li:nth-child(2) {
+			grid-row: 1;
+			grid-column: 4 / 7;
+		}
+
+		li:nth-child(3) {
+			grid-row: 2;
+			grid-column: 1 / 3;
+		}
+
+		li:nth-child(4) {
+			grid-row: 2;
+			grid-column: 3 / 5;
+		}
+
+		li:nth-child(5) {
+			grid-row: 2;
+			grid-column: 5 / 7;
+		}
+
+		li:nth-child(6) {
+			grid-row: 3;
+			grid-column: 1 / 7;
+		}
+
+		li:nth-child(7) {
+			grid-row: 4;
+			grid-column: 1 / 7;
 		}
 
 		button {
-			text-align: left;
-			background-color: $settingsGrey;
-			color: $blue;
-			text-align: center;
-			font-size: small;
-			margin-right: 5px;
-			width: 100%;
-			height: $inputHeight;
 			opacity: 1;
-			transition: all 0.2s;
+			height: $inputHeight;
+			width: 100%;
+			margin-right: 5px;
+			color: $blue;
+			font-size: small;
+			text-align: center;
+			border-radius: 10px;
+			background-color: $settingsGrey;
+			transition: background-color 0.2s, color 0.2s;
 
-			@include radiusSettings();
+			&:hover {
+				text-decoration: none;
+				background-color: $focusedGrey;
+			}
 
 			&.clicked {
 				color: $borderGrey;
 				background-color: white;
-			}
-
-			&:hover {
-				text-decoration: none;
-				opacity: 0.8;
 			}
 		}
 	}
@@ -621,62 +564,39 @@
 	}
 
 	#sett_city {
-		flex-direction: column;
+		display: flex;
+		column-gap: 0.4em;
 		max-height: 50px;
+		margin-top: 0.8em;
 		overflow: hidden;
-		transition: max-Height 0.4s;
+		transition: max-Height 0.4s, margin-top 0.4s;
 
 		&.hidden {
+			margin-top: 0;
 			max-height: 0;
 		}
 
-		.wrapper {
-			margin-top: 1em;
-			display: inline-block;
-			width: 100%;
-
-			div {
-				display: flex;
-				width: 100%;
-			}
-
-			input {
-				width: 50%;
-				margin-left: 0.5em;
-				text-transform: capitalize;
-			}
-
-			select {
-				width: 50%;
-				display: flex;
-				align-self: center;
-			}
+		select,
+		input {
+			width: 50%;
+			text-transform: capitalize;
 		}
-	}
-
-	#submitlink,
-	#submitExport,
-	#submitImport,
-	#submitReset {
-		background-color: transparent;
-	}
-
-	#submitReset {
-		margin: auto;
 	}
 
 	#searchbar_options,
 	#searchbar_request {
-		overflow: hidden;
+		overflow-y: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
 	}
 
 	#searchbar_request.shown {
+		overflow-y: clip;
 		max-height: 60px;
 	}
 
 	#searchbar_options.shown {
+		overflow-y: clip;
 		max-height: 240px;
 	}
 
@@ -689,18 +609,14 @@
 	}
 
 	#quotes_options {
-		overflow: hidden;
+		overflow-y: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
 
-		// #quotesCredits {
-		// 	color: $placeholderGrey;
-		// 	font-size: .8em;
-		// }
-	}
-
-	#quotes_options.shown {
-		max-height: 173px;
+		&.shown {
+			overflow-y: clip;
+			max-height: 173px;
+		}
 	}
 
 	#i_customfont {
@@ -717,37 +633,180 @@
 	}
 
 	#cssEditor {
-		width: calc(100% - 42px);
+		width: 100%;
 		min-height: 100px;
 		max-height: 3000px;
 		resize: vertical;
+		padding: 1.3em;
+		font-family: $code;
+		font-size: 13px;
+		tab-size: 1.5em;
 		border: none;
-		padding: $settingsMargin 1.3em;
-		font-family: 'SF Mono', 'Courier New', Courier, monospace;
+		border-radius: 10px;
 		box-sizing: border-box;
-		@include radiusSettings();
-		@include marginSettings();
 	}
 
-	#i_import,
-	#i_export {
-		width: 100%;
+	#importexport .param {
+		min-height: 192px;
+		transition: min-height 0.2s;
+
+		.tabs {
+			position: relative;
+			display: flex;
+			width: 220px;
+			margin: auto;
+			margin-bottom: 15px;
+			border-radius: 8.5px;
+			background-color: $settingsGrey;
+			align-items: center;
+
+			.glider {
+				width: calc(50% - 3px);
+				background-color: $blue;
+				position: absolute;
+				border-radius: 8.5px;
+				z-index: 3;
+				top: 3px;
+				bottom: 3px;
+				left: 3px;
+				transition: transform 0.3s;
+				transform: translateX(0%);
+			}
+
+			&.toggled .glider {
+				transform: translateX(100%);
+			}
+
+			button {
+				display: block;
+				width: 50%;
+				padding: unset;
+				font-size: 13px;
+				background-color: transparent;
+				position: relative;
+				text-decoration: none;
+				transition: color 0.2s;
+				height: 29px;
+				border-radius: 8.5px;
+				margin: 3px;
+			}
+
+			// When glider is under the button
+			&.toggled #s_import,
+			#s_export {
+				color: white;
+				z-index: 4;
+
+				&:hover {
+					background-color: unset;
+				}
+			}
+
+			// When glider is not
+			&.toggled #s_export,
+			#s_import {
+				color: $blue;
+				z-index: 2;
+
+				&:hover {
+					background-color: #e3e3ea;
+				}
+			}
+		}
+
+		#import,
+		#export {
+			overflow: hidden;
+			height: 0px;
+
+			&.shown {
+				height: auto;
+				overflow: visible;
+			}
+		}
+
+		#export {
+			#area_export {
+				width: 100%;
+				min-height: 100px;
+				max-height: 3000px;
+				padding: 0.65em 1.3em;
+				font-size: 13px;
+				line-break: anywhere;
+				overflow-x: hidden;
+				resize: vertical;
+				border: none;
+				background-color: $settingsGrey;
+				box-sizing: border-box;
+				font-family: $code;
+				tab-size: 1.5em;
+				border-radius: 10px;
+			}
+
+			> div {
+				display: flex;
+				justify-content: space-around;
+				margin-top: 12px;
+			}
+
+			#downloadfile {
+				display: none;
+			}
+
+			#exportSettings {
+				position: absolute;
+			}
+		}
+
+		#import {
+			> div {
+				display: flex;
+				margin-top: 15px;
+			}
+
+			#i_importtext {
+				flex: 1;
+				margin-right: 1em;
+				tab-size: 0.05em;
+				background-color: $settingsGrey;
+
+				&:focus {
+					background-color: $focusedGrey;
+				}
+			}
+
+			button:disabled {
+				filter: grayscale(1) opacity(0.7);
+				text-decoration: none;
+				cursor: default;
+				transition: filter 0.1s;
+			}
+		}
 	}
 
-	#i_import {
-		margin-bottom: 0.5em;
-		margin-right: 0.5em;
-	}
+	#resetContainer {
+		margin-top: 1rem;
 
-	#i_export {
-		overflow-x: hidden;
-		text-overflow: ellipsis;
-		user-select: all;
-		-webkit-user-select: all;
-		margin: 0;
-		padding-top: 0.5em;
-		padding-right: 10px;
-		font-family: inherit;
+		.param {
+			padding: $settingsMargin 1.3em;
+		}
+
+		#reset_conf,
+		#reset_first {
+			display: none;
+
+			&.shown {
+				display: flex;
+			}
+		}
+
+		#reset_first {
+			justify-content: center;
+		}
+
+		#b_resetno {
+			color: $red;
+		}
 	}
 
 	.signature {

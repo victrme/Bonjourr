@@ -1,20 +1,22 @@
 @mixin darkCss {
+	::-webkit-scrollbar-thumb {
+		box-shadow: inset 0 0 10px 10px #39383d;
+	}
+
 	#interface {
 		color: #eee;
 	}
 
-	#bookmarks {
-		background-color: #1c1c1e;
-		color: $purewhite;
+	#bookmarks,
+	#editlink {
+		border-color: #fff4;
+		@include frostedGlass($blur: 25px, $tint: 0, $alpha: 0.6, $fbTint: 32, $fbAlpha: 1);
 	}
 
 	#editlink {
-		border-color: #fff4;
-
-		@include frostedGlass($blur: 25px, $tint: 0, $alpha: 0.6, $fbTint: 32, $fbAlpha: 1);
-
 		input {
 			color: #fff9;
+
 			&::placeholder {
 				color: #fff9;
 			}
@@ -34,35 +36,16 @@
 		}
 	}
 
-	#bookmarks_container {
-		#bookmarks,
-		#bookmarks h3,
-		#bookmarks .bookmarkOptions {
-			background-color: #1c1c1e;
-			color: $purewhite;
+	#bookmarks {
+		h3,
+		ol li {
+			color: #fffd;
+		}
 
-			form div,
-			input[type='text'],
-			input[type='url'] {
-				background-color: #39383d;
-				color: $purewhite;
-			}
-
-			#selectedCounter,
-			.empty_input {
-				color: #eee;
-			}
-
-			.empty_input {
-				&:hover {
-					background-color: #666;
-				}
-
-				&:active {
-					color: #ccc;
-					background-color: #555;
-				}
-			}
+		ol li.selected {
+			color: white;
+			background-color: #fff2;
+			border-color: #fff1;
 		}
 	}
 
@@ -74,28 +57,47 @@
 	}
 
 	#settings {
-		background-color: $pureblack;
+		background-color: black;
 
-		#changelogContainer #changelog {
+		button {
 			background-color: #1c1c1e;
-			color: #fff;
+		}
 
-			#log_dismiss {
+		select,
+		.switch:not(:checked) {
+			background-color: #39383d;
+		}
+
+		.switch:not(:checked):hover {
+			background-color: #2c2c2f;
+		}
+
+		input[type='range']::-webkit-slider-thumb {
+			box-shadow: none;
+		}
+
+		#changelogContainer {
+			#changelog {
 				background-color: #1c1c1e;
+				color: #fff;
 			}
 
-			&:hover {
-				background-color: #2b2c2d;
+			#log_dismiss {
+				background-color: #3f3f41;
 
-				#log_dismiss {
-					background-color: #2b2c2d;
+				img {
+					filter: invert(1);
+				}
+
+				&:hover {
+					background-color: #929294;
 				}
 			}
 		}
 
 		.tooltip {
 			border-color: transparent;
-			background-color: $greyish;
+			background-color: #39383d;
 		}
 
 		.tooltip,
@@ -104,34 +106,30 @@
 			color: #999;
 		}
 
-		.custom_zone {
-			border-color: #3f3f41;
-		}
-
 		// Background custom
 
-		#uploadContainer {
-			background-color: #3a3a3a;
+		.uploadContainer {
+			background-color: #39383d;
 			color: white;
 		}
 
-		#uploadContainer.dragover,
-		#uploadContainer:hover {
+		.uploadContainer.dragover,
+		.uploadContainer:hover {
 			border: 1px dashed #ccc;
 			background: #2a2a2b;
 		}
 
-		#uploadContainer:active,
-		#uploadContainer:active {
+		.uploadContainer:active,
+		.uploadContainer:active {
 			border: 1px dashed #aaa;
 			background: #2f2f30;
 		}
 
 		#bg_tn_wrap,
-		#hideelem > div {
+		#hideelem {
 			button {
 				color: white;
-				background-color: #3f3f41;
+				background-color: #39383d;
 
 				&.clicked {
 					color: #ccc;
@@ -142,7 +140,7 @@
 
 		#hideelem button,
 		#bg_tn_wrap .thumbnail button {
-			color: $purewhite;
+			color: white;
 		}
 		#bg_tn_wrap::-webkit-scrollbar-track {
 			background: #39383d;
@@ -151,28 +149,20 @@
 			background: #666;
 		}
 
-		.title {
-			background-color: #1c1c1e;
-			color: $purewhite;
-			border-top: 0;
-			border-bottom: 0;
-		}
-
 		#i_refresh,
 		#i_qtrefresh,
 		select {
-			color: $purewhite;
-			background-color: $greyish;
-			border-color: transparent;
+			color: white;
+			background-color: #39383d;
 		}
 
-		.paramTitle {
+		h2 {
 			color: #929294;
 		}
 
 		.param {
 			background-color: #1c1c1e;
-			color: $purewhite;
+			color: white;
 		}
 
 		hr {
@@ -183,7 +173,7 @@
 		input[type='url'],
 		pre#i_export {
 			background-color: #39383d;
-			color: $purewhite;
+			color: white;
 
 			&:focus {
 				background-color: #2c2c2f;
@@ -201,36 +191,50 @@
 			background-color: #1c1c1e;
 		}
 
-		::-moz-range-thumb {
-			box-shadow: none;
-		}
+		#importexport .param {
+			#export #area_export {
+				background-color: #39383d;
+				color: white;
 
-		::placeholder {
-			color: #929294;
-		}
-
-		button {
-			background-color: #1c1c1e;
-		}
-
-		.slider {
-			background-color: #39383d;
-
-			&:hover {
-				background-color: #2c2c2f;
+				&::-webkit-resizer {
+					background: #39383d;
+				}
 			}
-		}
 
-		input[type='range']::-webkit-slider-thumb {
-			box-shadow: none;
-		}
+			#import #i_importtext {
+				background-color: #39383d;
+				&:focus {
+					background-color: #2c2c2f;
+				}
+			}
 
-		input:checked + .slider {
-			background-color: $green;
+			.tabs {
+				background-color: #39383d;
 
-			&:hover {
-				background: #40b354;
-				transition: background 0.2s;
+				button#s_import:hover,
+				button#s_export:hover {
+					background-color: transparent;
+				}
+			}
+
+			&.visibleImport {
+				.tabs {
+					#s_settingsexport {
+						color: white;
+
+						&:hover {
+							background-color: #2a2a2b;
+						}
+					}
+
+					#s_settingsimport {
+						color: white;
+
+						&:hover {
+							background-color: unset;
+						}
+					}
+				}
 			}
 		}
 
@@ -238,13 +242,13 @@
 			color: #929294;
 		}
 
-		&::-webkit-scrollbar-thumb {
-			box-shadow: inset 0 0 15px 15px #39383d;
+		::placeholder {
+			color: #929294;
 		}
 
-		// &.scroll::-webkit-scrollbar-thumb {
-		// 	box-shadow: inset 0 0 15px 15px #39383d;
-		// }
+		::-moz-range-thumb {
+			box-shadow: none;
+		}
 	}
 }
 
