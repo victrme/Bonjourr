@@ -229,15 +229,15 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_title').onkeyup = function (e) {
-		if (e.code === 'Enter') quickLinks('input', e)
+		if (e.code === 'Enter') quickLinks('addlink', e)
 	}
 
 	paramId('i_url').onkeyup = function (e) {
-		if (e.code === 'Enter') quickLinks('input', e)
+		if (e.code === 'Enter') quickLinks('addlink', e)
 	}
 
 	paramId('submitlink').onclick = function () {
-		quickLinks('button', this)
+		quickLinks('addlink', this)
 	}
 
 	paramId('b_importbookmarks').onclick = function () {

@@ -256,12 +256,12 @@ function quickLinks(event, that, init) {
 			atag.href = url
 			atag.setAttribute('rel', 'noreferrer noopener')
 
-			// this also adds "normal" title as usual
-			textOnlyControl(atag, title, domlinkblocks.className === 'text')
-
 			li.id = link._id
 			li.setAttribute('class', 'block')
 			li.appendChild(atag)
+
+			// this also adds "normal" title as usual
+			textOnlyControl(li, title, domlinkblocks.className === 'text')
 
 			return { icon: img, block: li }
 		}
@@ -306,6 +306,11 @@ function quickLinks(event, that, init) {
 		}
 
 		if (links.length > 0) {
+			if (!init) {
+				// remove old links blocks rows
+				document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove())
+			}
+
 			try {
 				// Add blocks and events
 				const blocklist = links.map((l) => createBlock(l))
@@ -519,83 +524,92 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	function linkSubmission(importList) {
-		//
-		function filterNewLink(title, url) {
-			//
-			url = stringMaxSize(url, 512)
-			const to = (scheme) => url.startsWith(scheme)
-			const acceptableSchemes = to('http://') || to('https://')
-			const unacceptable = to('about:') || to('chrome://')
-
-			return {
-				_id: 'links' + randomString(6),
-				order: 0,
-				title: stringMaxSize(title, 64),
-				icon: 'src/assets/interface/loading.svg',
-				url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
-			}
-		}
-
-		function saveLink(link, order, links, linksrow) {
-			id('i_title').value = ''
-			id('i_url').value = ''
-
-			link.order = order
-			links.splice(order, 0, link)
-
-			// Displays and saves before fetching icon
-			initblocks([link], linksrow)
-			chrome.storage.sync.set({ [link._id]: link })
-			domlinkblocks.style.visibility = 'visible'
-		}
+	function linkSubmission(type, importList) {
+		// importList here can also be button dom when type is "addlink"
+		// This needs to be cleaned up later
 
 		chrome.storage.sync.get(null, (data) => {
 			const links = bundleLinks(data)
-			const url = id('i_url').value
-			const title = id('i_title').value
+			let newLinksList = []
 
-			if (importList?.length > 0) {
+			const validator = (title, url, order) => {
+				url = stringMaxSize(url, 512)
+				const to = (scheme) => url.startsWith(scheme)
+				const acceptableSchemes = to('http://') || to('https://') || to('localhost:')
+				const unacceptable = to('about:') || to('chrome://')
+
+				return {
+					order: order,
+					_id: 'links' + randomString(6),
+					title: stringMaxSize(title, 64),
+					icon: 'src/assets/interface/loading.svg',
+					url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+				}
+			}
+
+			// Default link submition
+			if (type === 'addlink' && !stillActive) {
+				const title = id('i_title').value
+				const url = id('i_url').value
+
+				if (url.length < 3) return
+
+				id('i_title').value = ''
+				id('i_url').value = ''
+
+				newLinksList.push(validator(title, url, links.length))
+			}
+
+			// When importing bookmarks
+			if (type === 'import' && importList?.length > 0) {
 				importList.forEach(({ title, url }, i) => {
-					if (!url) return
-					saveLink(filterNewLink(title, url), links.length + i, links, data.linksrow) // increment order for each import
+					if (url) {
+						newLinksList.push(validator(title, url, links.length + i))
+					}
 				})
 			}
 
-			// Si l'url est assez longue et l'input n'a pas été activé ya -1s
-			if (url.length > 2 && !stillActive) {
-				saveLink(filterNewLink(title, url), links.length, links, data.linksrow)
-			}
+			// Saves to storage added links before icon fetch saves again
+			newLinksList.forEach((newlink) => {
+				chrome.storage.sync.set({ [newlink._id]: newlink })
+			})
+
+			// Add new link(s) to existing ones
+			links.push(...newLinksList)
+
+			// Displays and saves before fetching icon
+			initblocks(links, data.linksrow)
+			domlinkblocks.style.visibility = 'visible'
 		})
 	}
 
 	function textOnlyControl(block, title, toText) {
 		const span = block.querySelector('span')
+		const a = block.querySelector('a')
 
-		if (toText && title === '') {
-			span.textContent = extractDomain(block.href)
-			return
-		}
-
-		span.textContent = title
+		span.textContent = toText && title === '' ? extractDomain(a.href) : title
 	}
 
 	if (event) {
+		const Add = event === 'addlink'
+		const Import = event === 'import'
 		const Toggle = event === 'toggle'
-		const Input = event === 'input'
-		const Button = event === 'button'
 		const Newtab = event === 'linknewtab'
 		const Style = event === 'linkstyle'
 		const Row = event === 'linksrow'
+
+		if (Add) {
+			linkSubmission(event)
+		}
+
+		if (Import) {
+			linkSubmission(event, that)
+		}
 
 		if (Toggle) {
 			clas(id('linkblocks'), !that, 'hidden')
 			interfaceWidgetToggle(null, 'links')
 			chrome.storage.sync.set({ quicklinks: that })
-		}
-
-		if (Input || Button) {
-			linkSubmission(that)
 		}
 
 		if (Newtab) {
@@ -607,9 +621,9 @@ function quickLinks(event, that, init) {
 
 		if (Style) {
 			chrome.storage.sync.get(null, (data) => {
-				const classes = ['large', 'medium', 'small', 'text']
 				const links = bundleLinks(data)
-				const blocks = document.querySelectorAll('.block')
+				const classes = ['large', 'medium', 'small', 'text']
+				const blocks = document.querySelectorAll('#linkblocks .block')
 
 				links.forEach(({ title }, i) => textOnlyControl(blocks[i], title, that === 'text'))
 
@@ -624,8 +638,6 @@ function quickLinks(event, that, init) {
 			chrome.storage.sync.get(null, (data) => {
 				const links = bundleLinks(data)
 				const row = parseInt(that)
-
-				document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove old links blocks rows
 
 				initblocks(links, row)
 				slowRange({ linksrow: row })
@@ -723,7 +735,7 @@ async function linksImport() {
 
 			if (bookmarkToApply.length > 0) {
 				closeBookmarks(id('bookmarks_container'))
-				quickLinks('button', bookmarkToApply, null)
+				quickLinks('import', bookmarkToApply, null)
 			}
 		}
 
