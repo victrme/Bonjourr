@@ -547,12 +547,12 @@ function quickLinks(event, that, init) {
 				}
 			}
 
-			// Default link submition
-			if (type === 'addlink' && !stillActive) {
+			// Default link submission
+			if (type === 'addlink') {
 				const title = id('i_title').value
 				const url = id('i_url').value
 
-				if (url.length < 3) return
+				if (url.length < 3 || stillActive) return
 
 				id('i_title').value = ''
 				id('i_url').value = ''
@@ -561,7 +561,9 @@ function quickLinks(event, that, init) {
 			}
 
 			// When importing bookmarks
-			if (type === 'import' && importList?.length > 0) {
+			if (type === 'import') {
+				if (importList?.length === 0) return
+
 				importList.forEach(({ title, url }, i) => {
 					if (url) {
 						newLinksList.push(validator(title, url, links.length + i))
