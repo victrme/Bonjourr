@@ -288,11 +288,9 @@
 		#linkblocks {
 			visibility: visible;
 			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
+			flex-direction: column;
 			margin: 0 auto;
-			padding: 0;
-			column-gap: 2.6em;
+
 			row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 			transition: visibility 0s 0s, width 0.18s $easeOutThree;
 
@@ -300,6 +298,16 @@
 
 			#hiddenlink {
 				display: none;
+			}
+
+			ul {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				column-gap: 2.6em;
 			}
 
 			li.block {

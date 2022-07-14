@@ -234,15 +234,85 @@ function quickLinks(event, that, init) {
 	// Pour ne faire qu'un seul storage call
 	// [{ index: number, url: string }]
 	const domlinkblocks = id('linkblocks')
-	let hovered = { block: undefined, link: {}, index: 0 }
 
-	async function initblocks(links) {
+	async function initblocks(links, linksrow) {
+		//
+		function createBlock(link) {
+			let title = stringMaxSize(link.title, 64)
+			let url = stringMaxSize(link.url, 512)
+
+			//le DOM du block
+			const img = document.createElement('img')
+			const span = document.createElement('span')
+			const atag = document.createElement('a')
+			const li = document.createElement('li')
+
+			img.alt = ''
+			img.loading = 'lazy'
+
+			atag.appendChild(img)
+			atag.appendChild(span)
+
+			atag.href = url
+			atag.setAttribute('rel', 'noreferrer noopener')
+
+			// this also adds "normal" title as usual
+			textOnlyControl(atag, title, domlinkblocks.className === 'text')
+
+			li.id = link._id
+			li.setAttribute('class', 'block')
+			li.appendChild(atag)
+
+			return { icon: img, block: li }
+		}
+
+		function createRows(blocks, rowSize) {
+			const rowsAmount = Math.ceil(blocks.length / rowSize)
+
+			// append uls to linkblocks
+			for (let row = 0; row < rowsAmount; row++) {
+				const ul = document.createElement('ul')
+
+				// append block lis to uls (rows)
+				for (let col = 0; col < rowSize; col++) {
+					const li = blocks[col + rowSize * row]?.block
+					if (li) ul.appendChild(li)
+				}
+
+				domlinkblocks.appendChild(ul)
+			}
+		}
+
+		async function fetchNewIcon(dom, url) {
+			// Apply loading gif d'abord
+			dom.src = 'src/assets/interface/loading.svg'
+
+			const img = new Image()
+
+			// DuckDuckGo favicon API is fallback
+			let result = `https://icons.duckduckgo.com/ip3/${extractHostname(url)}.ico`
+			const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${extractHostname(url)}`)
+			const apiText = await bonjourrAPI.text() // API return empty string if nothing found
+
+			if (apiText.length > 0) {
+				result = apiText
+			}
+
+			img.onload = () => (dom.src = result)
+			img.src = result
+			img.remove()
+
+			return result
+		}
+
 		if (links.length > 0) {
 			try {
 				// Add blocks and events
-				const blocklist = links.map((l) => appendblock(l))
+				const blocklist = links.map((l) => createBlock(l))
 				blocklist.forEach(({ block }) => addEvents(block))
 				canDisplayInterface('links')
+
+				createRows(blocklist, linksrow)
 
 				// Load icons one by one
 				links.map(async (link, index) => {
@@ -265,58 +335,6 @@ function quickLinks(event, that, init) {
 
 		// Links is done
 		else canDisplayInterface('links')
-	}
-
-	async function fetchNewIcon(dom, url) {
-		// Apply loading gif d'abord
-		dom.src = 'src/assets/interface/loading.svg'
-
-		const img = new Image()
-
-		// DuckDuckGo favicon API is fallback
-		let result = `https://icons.duckduckgo.com/ip3/${extractHostname(url)}.ico`
-		const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${extractHostname(url)}`)
-		const apiText = await bonjourrAPI.text() // API return empty string if nothing found
-
-		if (apiText.length > 0) {
-			result = apiText
-		}
-
-		img.onload = () => (dom.src = result)
-		img.src = result
-		img.remove()
-
-		return result
-	}
-
-	function appendblock(link) {
-		let title = stringMaxSize(link.title, 64)
-		let url = stringMaxSize(link.url, 512)
-
-		//le DOM du block
-		const img = document.createElement('img')
-		const span = document.createElement('span')
-		const atag = document.createElement('a')
-		const li = document.createElement('li')
-
-		img.alt = ''
-		img.loading = 'lazy'
-
-		atag.appendChild(img)
-		atag.appendChild(span)
-
-		atag.href = url
-		atag.setAttribute('rel', 'noreferrer noopener')
-
-		// this also adds "normal" title as usual
-		textOnlyControl(atag, title, domlinkblocks.className === 'text')
-
-		li.setAttribute('class', 'block')
-		li.appendChild(atag)
-
-		domlinkblocks.appendChild(li)
-
-		return { icon: img, block: li }
 	}
 
 	function removeLinkSelection() {
@@ -367,8 +385,7 @@ function quickLinks(event, that, init) {
 
 	function editEvents() {
 		function submitEvent() {
-			const foundIndex = parseInt(id('editlink').getAttribute('index'))
-			return updatesEditedLink(foundIndex)
+			return updatesEditedLink(id('editlink').getAttribute('data-linkid'))
 		}
 
 		function inputSubmitEvent(e) {
@@ -411,14 +428,13 @@ function quickLinks(event, that, init) {
 			document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
 		}
 
-		const index = findindex(that)
+		const linkId = that.id
 		const domicon = that.querySelector('img')
 		const domedit = document.querySelector('#editlink')
 		const opendedSettings = has(id('settings'), 'shown')
 
-		chrome.storage.sync.get(null, (data) => {
-			const link = bundleLinks(data).filter((l) => l.order === index)[0]
-			const { title, url, icon } = link
+		chrome.storage.sync.get(linkId, (data) => {
+			const { title, url, icon } = data[linkId]
 
 			id('e_title').setAttribute('placeholder', tradThis('Title'))
 			id('e_url').setAttribute('placeholder', tradThis('Link'))
@@ -434,13 +450,13 @@ function quickLinks(event, that, init) {
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
 
-			domedit.setAttribute('index', index)
+			domedit.setAttribute('data-linkid', linkId)
 
 			id('e_title').focus()
 		})
 	}
 
-	function updatesEditedLink(index) {
+	function updatesEditedLink(linkId) {
 		const e_title = id('e_title')
 		const e_url = id('e_url')
 		const e_iconurl = id('e_iconurl')
@@ -452,11 +468,11 @@ function quickLinks(event, that, init) {
 			return false
 		}
 
-		chrome.storage.sync.get(null, (data) => {
-			const domlink = domlinkblocks.children[index]
+		chrome.storage.sync.get(linkId, (data) => {
+			const domlink = id(linkId)
 			const domicon = domlink.querySelector('img')
 			const domurl = domlink.querySelector('a')
-			let link = bundleLinks(data).filter((l) => l.order === index)[0]
+			let link = data[linkId]
 
 			link = {
 				...link,
@@ -474,13 +490,6 @@ function quickLinks(event, that, init) {
 		})
 
 		return true
-	}
-
-	function findindex(that) {
-		//passe la liste des blocks, s'arrete si that correspond
-		//renvoie le nombre de loop pour l'atteindre
-		const list = domlinkblocks.children
-		for (let i = 0; i < list.length; i++) if (that === list[i]) return i
 	}
 
 	function removeblock(index) {
@@ -528,14 +537,15 @@ function quickLinks(event, that, init) {
 			}
 		}
 
-		function saveLink(link, order) {
+		function saveLink(link, order, links, linksrow) {
 			id('i_title').value = ''
 			id('i_url').value = ''
 
 			link.order = order
+			links.splice(order, 0, link)
 
 			// Displays and saves before fetching icon
-			initblocks([link])
+			initblocks([link], linksrow)
 			chrome.storage.sync.set({ [link._id]: link })
 			domlinkblocks.style.visibility = 'visible'
 		}
@@ -548,13 +558,13 @@ function quickLinks(event, that, init) {
 			if (importList?.length > 0) {
 				importList.forEach(({ title, url }, i) => {
 					if (!url) return
-					saveLink(filterNewLink(title, url), links.length + i) // increment order for each import
+					saveLink(filterNewLink(title, url), links.length + i, links, data.linksrow) // increment order for each import
 				})
 			}
 
 			// Si l'url est assez longue et l'input n'a pas été activé ya -1s
 			if (url.length > 2 && !stillActive) {
-				saveLink(filterNewLink(title, url), links.length)
+				saveLink(filterNewLink(title, url), links.length, links, data.linksrow)
 			}
 		})
 	}
@@ -576,6 +586,7 @@ function quickLinks(event, that, init) {
 		const Button = event === 'button'
 		const Newtab = event === 'linknewtab'
 		const Style = event === 'linkstyle'
+		const Row = event === 'linksrow'
 
 		if (Toggle) {
 			clas(id('linkblocks'), !that, 'hidden')
@@ -596,8 +607,6 @@ function quickLinks(event, that, init) {
 
 		if (Style) {
 			chrome.storage.sync.get(null, (data) => {
-				linksrow(data.linksrow, that) // style changes needs rows width change
-
 				const classes = ['large', 'medium', 'small', 'text']
 				const links = bundleLinks(data)
 				const blocks = document.querySelectorAll('.block')
@@ -611,13 +620,25 @@ function quickLinks(event, that, init) {
 			})
 		}
 
+		if (Row) {
+			chrome.storage.sync.get(null, (data) => {
+				const links = bundleLinks(data)
+				const row = parseInt(that)
+
+				document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove old links blocks rows
+
+				initblocks(links, row)
+				slowRange({ linksrow: row })
+			})
+		}
+
 		return
 	}
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
-	linksrow(init.linksrow, init.linkstyle)
-	initblocks(bundleLinks(init))
 	clas(id('linkblocks'), !init.quicklinks, 'hidden')
+
+	initblocks(bundleLinks(init), init.linksrow)
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
@@ -727,31 +748,6 @@ async function linksImport() {
 	id('bookmarks_container').addEventListener('click', function (e) {
 		if (e.target.id === 'bookmarks_container') closeBookmarks(this)
 	})
-}
-
-function linksrow(amount, style = 'large', event) {
-	function setRows(val, style) {
-		const sizes = {
-			large: { width: 4.8, gap: 2.3 },
-			medium: { width: 3.5, gap: 2 },
-			small: { width: 2.5, gap: 2 },
-			text: { width: 5, gap: 2 }, // arbitrary width because width is auto
-		}
-
-		const { width, gap } = sizes[style]
-		id('linkblocks').style.width = (width + gap) * val + 'em'
-	}
-
-	if (event) {
-		let domStyle = document.querySelector('#linkblocks').className
-		domStyle = domStyle === 'undefined' ? 'large' : domStyle
-
-		setRows(event, domStyle)
-		slowRange({ linksrow: parseInt(event) })
-		return
-	}
-
-	setRows(amount, style)
 }
 
 function weather(event, that, init) {
