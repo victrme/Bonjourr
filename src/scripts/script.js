@@ -317,7 +317,6 @@ function quickLinks(event, that, init) {
 				blocklist.forEach(({ block }) => addEvents(block))
 
 				canDisplayInterface('links')
-				linksDragging()
 
 				createRows(blocklist, linksrow)
 
