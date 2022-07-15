@@ -312,7 +312,7 @@
 
 			li.block {
 				width: 4.8em;
-				transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+				transition: transform 0.3s cubic-bezier(0.68, -0.2, 0.265, 1.2);
 
 				&.removed {
 					width: 0px !important;
