@@ -247,9 +247,11 @@ function quickLinks(event, that, init) {
 
 			img.alt = ''
 			img.loading = 'lazy'
+			img.setAttribute('draggable', 'false')
 
 			atag.appendChild(img)
 			atag.appendChild(span)
+			atag.setAttribute('draggable', 'false')
 
 			atag.href = url
 			atag.setAttribute('rel', 'noreferrer noopener')
@@ -387,6 +389,135 @@ function quickLinks(event, that, init) {
 			})()
 	}
 
+	function linksDragging() {
+		let draggedDOM
+		let draggedId = ''
+		let switchedId = ''
+		let coords = {}
+		let startsDrag = false
+		let [ox, oy] = [0, 0]
+		let startMousePosition = { x: 0, y: 0 }
+
+		const deplaceElem = (dom, x, y) => {
+			id(dom).style.transform = `translateX(${x}px) translateY(${y}px)`
+		}
+
+		const initDrag = (e) => {
+			const { x, y } = e
+
+			// Initialise toute les coordonnees
+			// Defini l'ID de l'element qui se deplace
+			// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
+
+			startsDrag = true
+			startMousePosition = { x, y }
+			draggedId = e.composedPath().find((e) => e.className === 'block').id
+
+			document.querySelectorAll('#linkblocks li').forEach((block) => {
+				const { x, y, width, height } = block.getBoundingClientRect()
+
+				coords[block.id] = {
+					pos: { x, y },
+					triggerbox: {
+						// Creates a box with 10% padding used to trigger
+						// the rearrange if mouse position is in-between these values
+						x: [x + width * 0.1, x + width * 0.9],
+						y: [y + height * 0.1, y + height * 0.9],
+					},
+				}
+			})
+
+			draggedDOM = id(draggedId)
+			draggedDOM.style.zIndex = '4'
+			draggedDOM.style.cursor = 'grabbing'
+			draggedDOM.style.transition = 'none'
+			draggedDOM.querySelector('a').href = '#' // to prevent clicking on link on mouse up
+		}
+
+		const applyDrag = (e) => {
+			//
+			// Element switcher
+			//
+			Object.entries(coords).forEach(([key, val]) => {
+				if (
+					// Mouse position is inside a block trigger box
+					// And it is not the dragged block box
+					// Nor the switched block (to trigger switch once)
+					e.x > val.triggerbox.x[0] &&
+					e.x < val.triggerbox.x[1] &&
+					e.y > val.triggerbox.y[0] &&
+					e.y < val.triggerbox.y[1] &&
+					key !== switchedId
+				) {
+					//
+					// Moves previous switched to its original position
+					if (switchedId) {
+						deplaceElem(switchedId, 0, 0)
+					}
+
+					switchedId = key
+					let diffx = coords[draggedId].pos.x - coords[switchedId].pos.x
+					let diffy = coords[draggedId].pos.y - coords[switchedId].pos.y
+
+					deplaceElem(key, diffx, diffy)
+
+					// console.clear()
+					// console.log(switchedId)
+					// console.log('Translate diff x: ', diffx)
+					// console.log('Translate diff y: ', diffy)
+				}
+			})
+
+			//
+			// Move dragged element
+			//
+			ox = e.x - startMousePosition.x
+			oy = e.y - startMousePosition.y
+
+			// This as to stay at the end for some reason
+			draggedDOM.style.transform = `translateX(${ox}px) translateY(${oy}px)`
+		}
+
+		const endDrag = () => {
+			if (draggedId && startsDrag) {
+				let diffx = coords[switchedId].pos.x - coords[draggedId].pos.x // opposite of applyDrag calc
+				let diffy = coords[switchedId].pos.y - coords[draggedId].pos.y // idk why, but it works
+
+				draggedDOM.setAttribute('style', `cursor: pointer; transform: translate(${diffx}px, ${diffy}px)`)
+
+				startsDrag = false
+				coords = {}
+
+				setTimeout(() => {
+					chrome.storage.sync.get(null, (data) => {
+						//
+						// Swaps order between elements in data storage
+						let temp = data[switchedId].order
+						data[switchedId].order = data[draggedId].order
+						data[draggedId].order = temp
+
+						slowRange({ ...data }) // saves
+
+						document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove uls
+						initblocks(bundleLinks(data), data.linksrow) // re-init blocks
+
+						draggedId = '' // has to stay at the end of timeout for the order swap
+						switchedId = '' // ditto
+					})
+				}, 200)
+			}
+		}
+
+		domlinkblocks.onmousemove = function (e) {
+			if (e.which !== 1) return // Do nothing if other or no buttons are pressed
+
+			!startsDrag ? initDrag(e) : applyDrag(e)
+		}
+
+		domlinkblocks.onmouseup = endDrag
+		domlinkblocks.onmouseout = endDrag
+	}
+
 	function editEvents() {
 		function submitEvent() {
 			return updatesEditedLink(id('editlink').getAttribute('data-linkid'))
@@ -490,7 +621,7 @@ function quickLinks(event, that, init) {
 			domicon.src = link.icon
 
 			// Updates
-			chrome.storage.sync.set({ [_id]: link })
+			chrome.storage.sync.set({ [linkId]: link })
 		})
 
 		return true
