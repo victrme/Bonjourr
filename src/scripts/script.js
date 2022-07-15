@@ -316,8 +316,8 @@ function quickLinks(event, that, init) {
 				const blocklist = links.map((l) => createBlock(l))
 				blocklist.forEach(({ block }) => addEvents(block))
 
+				linksDragging()
 				canDisplayInterface('links')
-
 				createRows(blocklist, linksrow)
 
 				// Load icons one by one
