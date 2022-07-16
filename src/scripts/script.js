@@ -378,6 +378,7 @@ function quickLinks(event, that, init) {
 		let draggedWidth = 0
 		let draggedHeight = 0
 		let push = 0 // adds interface translate to cursor x (only for "fixed" clone)
+		let [cox, coy] = [0, 0] // (cursor offset x & y)
 
 		const deplaceElem = (dom, x, y) => {
 			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
@@ -429,12 +430,15 @@ function quickLinks(event, that, init) {
 			draggedClone.className = 'block dragging-clone on'
 			document.querySelector('#linkblocks ul').appendChild(draggedClone) // append to ul to get same styling
 
-			deplaceElem(draggedClone, ex + push - draggedWidth / 2, ey - draggedHeight / 2) // move to middle of cursor
+			cox = ex - coords[draggedId].pos.x // offset to cursor position
+			coy = ey - coords[draggedId].pos.y // on dragged element
+
+			deplaceElem(draggedClone, ex - cox + push, ey - coy)
 		}
 
 		const applyDrag = (ex, ey) => {
 			// Dragged element clone follows cursor
-			deplaceElem(draggedClone, ex + push - draggedWidth / 2, ey - draggedHeight / 2)
+			deplaceElem(draggedClone, ex + push - cox, ey - coy)
 
 			// Element switcher
 			coordsArray.forEach(function parseThroughCoords([key, val]) {
