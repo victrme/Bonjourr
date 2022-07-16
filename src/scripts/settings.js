@@ -793,7 +793,7 @@ function settingsInit(data) {
 		}
 
 		dominterface.onclick = function (e) {
-			if (e.composedPath().includes('linkblocks')) {
+			if (e.composedPath().filter((d) => d.id === 'linkblocks').length > 0) {
 				return // Do nothing if links are clicked
 			}
 
