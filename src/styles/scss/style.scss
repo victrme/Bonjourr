@@ -290,7 +290,6 @@
 			display: flex;
 			flex-direction: column;
 			margin: 0 auto;
-
 			row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 			transition: visibility 0s 0s, width 0.18s $easeOutThree;
 
@@ -313,6 +312,20 @@
 			li.block {
 				width: 4.8em;
 				transition: transform 0.3s cubic-bezier(0.68, -0.2, 0.265, 1.2);
+
+				&.dragging-clone {
+					position: fixed;
+					top: 0;
+					left: 0;
+					opacity: 1 !important;
+					pointer-events: none;
+					will-change: transform;
+					z-index: 4;
+
+					&.on {
+						transition: none;
+					}
+				}
 
 				&.removed {
 					width: 0px !important;

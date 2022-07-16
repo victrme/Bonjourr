@@ -734,6 +734,7 @@
 				font-size: 13px;
 				line-break: anywhere;
 				overflow-x: hidden;
+				overflow-y: hidden;
 				resize: vertical;
 				border: none;
 				background-color: $settingsGrey;
@@ -741,6 +742,11 @@
 				font-family: $code;
 				tab-size: 1.5em;
 				border-radius: 10px;
+
+				&:hover,
+				&:focus {
+					overflow-y: auto;
+				}
 			}
 
 			> div {
