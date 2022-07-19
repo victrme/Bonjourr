@@ -371,14 +371,12 @@ function quickLinks(event, that, init) {
 	function linksDragging() {
 		let draggedClone
 		let draggedId = ''
-		let switchedId = ''
-		let coords = {}
-		let coordsArray = []
+		let coords = {} // {[id]: {pos: x<number>, y<number>, triggerbox: x: [number, number], y: [number, number]}}
+		let coordsEntries = []
 		let startsDrag = false
-		let draggedWidth = 0
-		let draggedHeight = 0
 		let push = 0 // adds interface translate to cursor x (only for "fixed" clone)
 		let [cox, coy] = [0, 0] // (cursor offset x & y)
+		let updatedOrder = {}
 
 		const deplaceElem = (dom, x, y) => {
 			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
@@ -400,10 +398,11 @@ function quickLinks(event, that, init) {
 			push = dominterface.classList.contains('pushed') ? 100 : 0
 			domlinkblocks.style.cursor = 'grabbing'
 
-			document.querySelectorAll('#linkblocks li').forEach((block) => {
+			document.querySelectorAll('#linkblocks li').forEach((block, i) => {
 				const { x, y, width, height } = block.getBoundingClientRect()
 
 				coords[block.id] = {
+					order: i,
 					pos: { x, y },
 					triggerbox: {
 						// Creates a box with 10% padding used to trigger
@@ -414,16 +413,10 @@ function quickLinks(event, that, init) {
 				}
 
 				block.style.pointerEvents = 'none'
-
-				// sets w & h to center the element on the cursor during dragging
-				if (block.id === draggedId) {
-					draggedHeight = height
-					draggedWidth = width
-				}
 			})
 
 			// Transform coords in array here to improve performance during mouse move
-			coordsArray = Object.entries(coords)
+			coordsEntries = Object.entries(coords)
 
 			id(draggedId).style.opacity = 0
 
@@ -443,7 +436,7 @@ function quickLinks(event, that, init) {
 			deplaceElem(draggedClone, ex + push - cox, ey - coy)
 
 			// Element switcher
-			coordsArray.forEach(function parseThroughCoords([key, val]) {
+			coordsEntries.forEach(function parseThroughCoords([key, val]) {
 				if (
 					// Mouse position is inside a block trigger box
 					// And it is not the dragged block box
@@ -451,39 +444,50 @@ function quickLinks(event, that, init) {
 					ex > val.triggerbox.x[0] &&
 					ex < val.triggerbox.x[1] &&
 					ey > val.triggerbox.y[0] &&
-					ey < val.triggerbox.y[1] &&
-					key !== switchedId
+					ey < val.triggerbox.y[1]
 				) {
-					if (switchedId) {
-						deplaceElem(id(switchedId), 0, 0) // Moves previous to its original position
-					}
+					const drgO = coords[draggedId].order // (dragged order)
+					const keyO = coords[key].order // (key order)
+					let interval = [drgO, keyO] // interval of links to move
+					let direction = 0
 
-					switchedId = key // update key after resetting old & before moving new
+					if (drgO < keyO) direction = -1 // which direction to move links
+					if (drgO > keyO) direction = 1
 
-					deplaceElem(
-						id(key),
-						coords[draggedId].pos.x - coords[switchedId].pos.x,
-						coords[draggedId].pos.y - coords[switchedId].pos.y
-					)
+					if (direction > 0) interval[0] -= 1 // remove dragged index from interval
+					if (direction < 0) interval[0] += 1
 
-					// console.clear()
-					// console.log(switchedId)
-					// console.log('Translate diff x: ', diffx)
-					// console.log('Translate diff y: ', diffy)
+					interval = interval.sort((a, b) => a - b) // sort to always have [small, big]
+
+					coordsEntries.forEach(([keyBis, coord], index) => {
+						//
+						// Element index between interval
+						if (index >= interval[0] && index <= interval[1]) {
+							const ox = coordsEntries[index + direction][1].pos.x - coord.pos.x
+							const oy = coordsEntries[index + direction][1].pos.y - coord.pos.y
+
+							updatedOrder[keyBis] = index + direction // update order w/ direction
+							deplaceElem(id(keyBis), ox, oy) // translate it to its neighboors position
+							return
+						}
+
+						updatedOrder[keyBis] = index // keep same order
+						deplaceElem(id(keyBis), 0, 0) // Not in interval (anymore) ? reset translate
+					})
+
+					updatedOrder[draggedId] = keyO // update dragged element order with triggerbox order
 				}
 			})
 		}
 
 		const endDrag = () => {
-			if (draggedId && switchedId && startsDrag) {
-				const { x, y } = coords[switchedId].pos
-				const dId = draggedId // to allow order save in timeout
-				const sId = switchedId // and be able to reset ids early
-
+			if (draggedId && startsDrag) {
+				const neworder = updatedOrder[draggedId]
+				const { x, y } = coordsEntries[neworder][1].pos // last triggerbox position
 				startsDrag = false
-				draggedId = switchedId = ''
+				draggedId = ''
 				coords = {}
-				coordsArray = []
+				coordsEntries = []
 
 				deplaceElem(draggedClone, x + push, y)
 				draggedClone.className = 'block dragging-clone' // enables transition (by removing 'on' class)
@@ -491,9 +495,9 @@ function quickLinks(event, that, init) {
 
 				setTimeout(() => {
 					chrome.storage.sync.get(null, (data) => {
-						let tempSwitchedOrder = data[sId].order // Swaps order between elements in data storage
-						data[sId].order = data[dId].order
-						data[dId].order = tempSwitchedOrder
+						Object.entries(updatedOrder).forEach(([key, val]) => {
+							data[key].order = val // Updates orders
+						})
 
 						slowRange({ ...data }) // saves
 
