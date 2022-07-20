@@ -396,12 +396,15 @@ function quickLinks(event, that, init) {
 			startsDrag = true
 			draggedId = block.id
 			push = dominterface.classList.contains('pushed') ? 100 : 0
-			domlinkblocks.style.cursor = 'grabbing'
+			dominterface.style.cursor = 'grabbing'
 
 			document.querySelectorAll('#linkblocks li').forEach((block, i) => {
 				const { x, y, width, height } = block.getBoundingClientRect()
+				const blockid = block.id
 
-				coords[block.id] = {
+				updatedOrder[blockid] = i
+
+				coords[blockid] = {
 					order: i,
 					pos: { x, y },
 					triggerbox: {
@@ -491,7 +494,7 @@ function quickLinks(event, that, init) {
 
 				deplaceElem(draggedClone, x + push, y)
 				draggedClone.className = 'block dragging-clone' // enables transition (by removing 'on' class)
-				domlinkblocks.style.cursor = ''
+				dominterface.style.cursor = ''
 
 				setTimeout(() => {
 					chrome.storage.sync.get(null, (data) => {
