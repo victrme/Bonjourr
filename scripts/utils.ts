@@ -129,7 +129,7 @@ export function localDataMigration(local: any) {
 	return local
 }
 
-export function bundleLinks(storage: any) {
+export function bundleLinks(storage: Sync) {
 	// 1.13.0: Returns an array of found links in storage
 	let res: any = []
 	Object.entries(storage).map(([key, val]) => {
@@ -253,7 +253,7 @@ export function deleteBrowserStorage() {
 	}, 400)
 }
 
-export function errorMessage(comment: string, error: Error) {
+export function errorMessage(comment: string, error?: Error) {
 	const dominterface = $('interface')
 
 	function displayMessage(dataStr: string) {

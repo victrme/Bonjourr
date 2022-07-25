@@ -1,4 +1,6 @@
 import { dict } from './lang'
+import { Sync } from './types/sync'
+
 import {
 	$,
 	has,
@@ -8,7 +10,6 @@ import {
 	closeEditLink,
 	mobilecheck,
 	randomString,
-	slowRange,
 	stringMaxSize,
 	tradThis,
 	langList,
@@ -38,7 +39,6 @@ import {
 	unsplash,
 	weather,
 } from './index'
-import { Sync } from './types/sync'
 
 function initParams(data: Sync, settingsDom: any) {
 	//
@@ -279,35 +279,36 @@ function initParams(data: Sync, settingsDom: any) {
 
 	paramId('i_quicklinks').onchange = function () {
 		paramId('quicklinks_options').classList.toggle('shown')
-		quickLinks('toggle', this.checked)
+		quickLinks(null, { is: 'toggle', checked: this.checked })
 	}
 
 	paramId('i_title').onkeyup = function (e: KeyboardEvent) {
-		if (e.code === 'Enter') quickLinks('addlink', e)
+		if (e.code === 'Enter') quickLinks(null, { is: 'add' })
 	}
 
 	paramId('i_url').onkeyup = function (e: KeyboardEvent) {
-		if (e.code === 'Enter') quickLinks('addlink', e)
+		if (e.code === 'Enter') quickLinks(null, { is: 'add' })
 	}
 
 	paramId('submitlink').onclick = function () {
-		quickLinks('addlink', this)
+		quickLinks(null, { is: 'add' })
+	}
+
+	paramId('i_linknewtab').onchange = function () {
+		quickLinks(null, { is: 'newtab', checked: this.checked })
+	}
+
+	paramId('i_linkstyle').onchange = function () {
+		quickLinks(null, { is: 'style', value: this.value })
+	}
+
+	paramId('i_row').oninput = function () {
+		console.log('what')
+		quickLinks(null, { is: 'row', value: this.value })
 	}
 
 	paramId('b_importbookmarks').onclick = function () {
 		linksImport()
-	}
-
-	paramId('i_linknewtab').onchange = function () {
-		quickLinks('linknewtab', this.checked)
-	}
-
-	paramId('i_linkstyle').onchange = function () {
-		quickLinks('linkstyle', this.value)
-	}
-
-	paramId('i_row').oninput = function () {
-		quickLinks('linksrow', this.value)
 	}
 
 	//
@@ -345,13 +346,13 @@ function initParams(data: Sync, settingsDom: any) {
 	}
 
 	paramId('i_blur').oninput = function () {
-		backgroundFilter('blur', this.value)
-		slowRange({ background_blur: parseFloat(this.value) })
+		backgroundFilter('blur', { blur: this.value })
+		// slowRange({ background_blur: parseFloat(this.value) })
 	}
 
 	paramId('i_bright').oninput = function () {
-		backgroundFilter('bright', this.value)
-		slowRange({ background_bright: parseFloat(this.value) })
+		backgroundFilter('bright', { bright: this.value })
+		// slowRange({ background_bright: parseFloat(this.value) })
 	}
 
 	//
@@ -446,26 +447,26 @@ function initParams(data: Sync, settingsDom: any) {
 
 	paramId('i_quotes').onchange = function () {
 		paramId('quotes_options').classList.toggle('shown')
-		quotes('toggle', this)
+		quotes(null, { is: 'toggle', checked: this.checked })
 	}
 
 	paramId('i_qtfreq').onchange = function () {
-		quotes('frequency', this)
+		quotes(null, { is: 'frequency', value: this.value })
 	}
 
 	paramId('i_qttype').onchange = function () {
-		quotes('type', this)
+		quotes(null, { is: 'type', value: this.value })
 	}
 
 	paramId('i_qtrefresh').onclick = function () {
 		turnRefreshButton(this.children[0], true)
-		quotes('refresh', this)
+		quotes(null, { is: 'refresh' })
 		// if (!stillActive) quotes('refresh', this)
 		// slow(this, 600)
 	}
 
 	paramId('i_qtauthor').onchange = function () {
-		quotes('author', this)
+		quotes(null, { is: 'author', checked: this.checked })
 	}
 
 	//
@@ -640,7 +641,7 @@ function switchLangs(nextLang: Langs) {
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
 			localStorage.removeItem('currentQuote')
-			quotes(null, null, data)
+			quotes(data)
 		}
 	})
 }
@@ -721,10 +722,10 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-function paramsImport(dataToImport) {
+function paramsImport(dataToImport: any) {
 	try {
 		// Load all sync & dynamicCache
-		chrome.storage.sync.get(null, (sync) => {
+		chrome.storage.sync.get(null, (sync: Sync) => {
 			chrome.storage.local.get('dynamicCache', (local) => {
 				//
 				console.log(dataToImport)
@@ -740,16 +741,18 @@ function paramsImport(dataToImport) {
 				// Delete current links on imports containing links somewhere
 				// to avoid duplicates
 				if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
-					bundleLinks(sync).forEach((elem) => {
+					bundleLinks(sync).forEach((elem: Link) => {
 						delete sync[elem._id]
 					})
 				}
 
 				sync = { ...sync, ...newImport }
-				sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
 
-				chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
-				chrome.storage.sync.set(sync, () => chrome.storage.local.set(local))
+				// full import on Online is through "import" field // Must clear, if not, it can add legacy data
+				chrome.storage.sync.clear()
+				chrome.storage.sync.set(detectPlatform() === 'online' ? { import: sync } : sync, () =>
+					chrome.storage.local.set(local)
+				)
 
 				sessionStorage.isImport = true // to separate import and new version startup
 
@@ -772,13 +775,13 @@ function paramsReset(action) {
 	clas($('reset_conf'), action === 'conf', 'shown')
 }
 
-export function updateExportJSON(settingsDom) {
+export function updateExportJSON(settingsDom?: HTMLElement) {
 	if (!settingsDom && !$('settings')) {
 		return false
 	}
 
 	const dom = settingsDom || $('settings')
-	const input = dom.querySelector('#area_export')
+	const input = dom.querySelector('#area_export') as HTMLInputElement
 
 	dom.querySelector('#importtext').setAttribute('disabled', '') // because cannot export same settings
 

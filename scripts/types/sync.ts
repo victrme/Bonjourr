@@ -6,6 +6,14 @@ export type Searchbar = {
 	request: string
 }
 
+export type Quotes = {
+	on: boolean
+	author: boolean
+	type: string
+	frequency: string
+	last: number
+}
+
 export type Sync = {
 	usdate: boolean
 	showall: boolean
@@ -48,13 +56,7 @@ export type Sync = {
 		temperature: string
 	}
 	searchbar: Searchbar
-	quotes: {
-		on: boolean
-		author: boolean
-		type: string
-		frequency: string
-		last: number
-	}
+	quotes: Quotes
 	font: {
 		url: string
 		family: string
