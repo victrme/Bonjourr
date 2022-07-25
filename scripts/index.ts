@@ -1,17 +1,54 @@
-function traduction(settingsDom, lang = 'en') {
+import { dict, days, engineLocales, months } from './lang'
+import { settingsInit, updateExportJSON } from './settings'
+import { Local, DynamicCache } from './types/local'
+import { Sync, Searchbar } from './types/sync'
+import UnsplashImage from './types/unsplashImage'
+import {
+	$,
+	clas,
+	bundleLinks,
+	closeEditLink,
+	defaultLang,
+	detectPlatform,
+	errorMessage,
+	extractDomain,
+	extractHostname,
+	getBrowser,
+	getFavicon,
+	has,
+	localDataMigration,
+	localDefaults,
+	minutator,
+	mobilecheck,
+	periodOfDay,
+	randomString,
+	safeFontList,
+	slow,
+	slowRange,
+	stringMaxSize,
+	syncDefaults,
+	testOS,
+	tradThis,
+	turnRefreshButton,
+	validateHideElem,
+} from './utils'
+
+export function traduction(settingsDom: Element, lang = 'en') {
 	if (lang === 'en') return
 
 	document.documentElement.setAttribute('lang', lang)
 
 	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
-	const changeText = (dom, str) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
-	trns.forEach((trn) => changeText(trn, trn.textContent))
+	const changeText = (dom: Element, str: string) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
+	trns.forEach((trn) => {
+		if (trn.textContent) changeText(trn, trn.textContent)
+	})
 }
 
-function favicon(init, event) {
-	function createFavicon(emoji) {
+export function favicon(init: string, event: HTMLInputElement) {
+	function createFavicon(emoji: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		document.querySelector("link[rel~='icon']").href = emoji ? svg : `src/assets/${getFavicon()}`
+		document.querySelector("link[rel~='icon']").setAttribute('href', emoji ? svg : `assets/${getFavicon()}`)
 	}
 
 	if (init !== undefined) createFavicon(init)
@@ -27,50 +64,58 @@ function favicon(init, event) {
 	}
 }
 
-function tabTitle(init, event) {
+export function tabTitle(init: string, event: HTMLInputElement) {
 	const title = init ? init : event ? stringMaxSize(event.value, 80) : tradThis('New tab')
 
 	if (event) slowRange({ tabtitle: title })
 	document.title = title
 }
 
-function clock(event, init) {
+export function clock(init: Sync, event: { is: string; value?: string; checked?: boolean }) {
 	//
-
-	function zonedDate(timezone) {
-		const date = new Date()
-		if (timezone === 'auto' || timezone === NaN) return date
-		else {
-			const offset = parseInt(date.getTimezoneOffset() / 60)
-			const utcHour = date.getHours() + offset
-
-			date.setHours(utcHour + parseInt(timezone))
-
-			return date
-		}
+	type Clock = {
+		ampm: boolean
+		analog: boolean
+		seconds: boolean
+		face: string
+		timezone: string
 	}
 
-	function clockDate(date, usdate) {
+	function zonedDate(timezone: string) {
+		const date = new Date()
+
+		if (timezone === 'auto') {
+			return date
+		}
+
+		const offset = date.getTimezoneOffset() / 60
+		const utcHour = date.getHours() + offset
+		date.setHours(utcHour + parseInt(timezone))
+
+		return date
+	}
+
+	function clockDate(date: Date, usdate: boolean) {
 		const jour = tradThis(days[date.getDay()]),
 			mois = tradThis(months[date.getMonth()]),
 			chiffre = date.getDate()
 
-		id('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
+		$('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
 	}
 
-	function greetings(date, name) {
+	function greetings(date: Date, name: string) {
 		const greets = [
-			['Good night', 7],
-			['Good morning', 12],
-			['Good afternoon', 18],
-			['Good evening', 24],
+			{ text: 'Good night', hour: 7 },
+			{ text: 'Good morning', hour: 12 },
+			{ text: 'Good afternoon', hour: 18 },
+			{ text: 'Good evening', hour: 24 },
 		]
 
-		const domgreetings = id('greetings')
-		const greetResult = greets.filter((greet) => date.getHours() < greet[1])[0]
+		const domgreetings = $('greetings')
+		const greetResult = greets.filter((greet) => date.getHours() < greet.hour)[0]
 
 		domgreetings.style.textTransform = name ? 'none' : 'capitalize'
-		domgreetings.textContent = tradThis(greetResult[0]) + (name ? `, ${name}` : '')
+		domgreetings.textContent = tradThis(greetResult.text) + (name ? `, ${name}` : '')
 	}
 
 	function changeAnalogFace(face = 'none') {
@@ -86,12 +131,12 @@ function clock(event, init) {
 		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.textContent = chars[face][i]))
 	}
 
-	function startClock(clock, greeting, usdate) {
+	function startClock(clock: Clock, greeting: string, usdate: boolean) {
 		//
 		function displayControl() {
-			const numeric = id('clock'),
-				analog = id('analogClock'),
-				analogSec = id('analogSeconds')
+			const numeric = $('clock'),
+				analog = $('analogClock'),
+				analogSec = $('analogSeconds')
 
 			//cache celle qui n'est pas choisi
 			clas(numeric, clock.analog, 'hidden')
@@ -104,9 +149,9 @@ function clock(event, init) {
 		function clockInterval() {
 			//
 
-			function numerical(time) {
+			function numerical(date: Date) {
 				//seul numerique a besoin du ampm
-				function toAmpm(val) {
+				function toAmpm(val: number) {
 					if (val > 12) val -= 12
 					else if (val === 0) val = 12
 					else val
@@ -114,33 +159,33 @@ function clock(event, init) {
 					return val
 				}
 
-				function fixunits(val) {
-					val = val < 10 ? '0' + val : val
-					return val.toString()
+				function fixunits(val: number) {
+					let res = val < 10 ? '0' + val.toString() : val.toString()
+					return res
 				}
 
-				let h = clock.ampm ? toAmpm(time.getHours()) : time.getHours(),
-					m = fixunits(time.getMinutes()),
-					s = fixunits(time.getSeconds())
+				let h = clock.ampm ? toAmpm(date.getHours()) : date.getHours(),
+					m = fixunits(date.getMinutes()),
+					s = fixunits(date.getSeconds())
 
-				id('clock').textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				$('clock').textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
-			function analog(time) {
-				function rotation(that, val) {
-					that.style.transform = `rotate(${parseInt(val)}deg)`
+			function analog(date: Date) {
+				function rotation(that: HTMLSpanElement, val: number) {
+					that.style.transform = `rotate(${val}deg)`
 				}
 
-				let s = time.getSeconds() * 6,
-					m = time.getMinutes() * 6,
-					h = time.getHours() * 30
+				let s = date.getSeconds() * 6,
+					m = date.getMinutes() * 6,
+					h = date.getHours() * 30
 
 				//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
-				if (true || time.getMinutes() === 0) rotation(id('minutes'), m)
-				if (true || time.getHours() === 0) rotation(id('hours'), h)
+				if (true || date.getMinutes() === 0) rotation($('minutes'), m)
+				if (true || date.getHours() === 0) rotation($('hours'), h)
 
 				//tourne pas les secondes si pas de seconds
-				if (clock.seconds) rotation(id('analogSeconds'), s)
+				if (clock.seconds) rotation($('analogSeconds'), s)
 			}
 
 			// Control
@@ -167,19 +212,17 @@ function clock(event, init) {
 	}
 
 	if (event) {
-		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
-			const [key, val] = Object.entries(event)[0]
-
-			switch (key) {
+		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data: Sync) => {
+			switch (event.is) {
 				case 'usdate': {
-					clockDate(zonedDate(data.clock.timezone), val)
-					slowRange({ usdate: val }, 500)
+					clockDate(zonedDate(data.clock.timezone), event.checked)
+					slowRange({ usdate: event.checked }, 500)
 					break
 				}
 
 				case 'greeting': {
-					greetings(zonedDate(data.clock.timezone), val)
-					slowRange({ greeting: val }, 500)
+					greetings(zonedDate(data.clock.timezone), event.value)
+					slowRange({ greeting: event.value }, 500)
 					break
 				}
 
@@ -193,12 +236,12 @@ function clock(event, init) {
 					}
 
 					clock = { ...data.clock }
-					clock[key] = val
+					clock[event.is] = event.value || event.checked
 					chrome.storage.sync.set({ clock: clock })
 
-					if (key === 'timezone') {
-						clockDate(zonedDate(val), data.usdate)
-						greetings(zonedDate(val), data.greeting)
+					if (event.is === 'timezone') {
+						clockDate(zonedDate(event.value), data.usdate)
+						greetings(zonedDate(event.value), data.greeting)
 					}
 
 					startClock(clock, data.greeting, data.usdate)
@@ -207,35 +250,39 @@ function clock(event, init) {
 				}
 			}
 		})
-	} else {
-		let clock = {
-			analog: false,
-			seconds: false,
-			ampm: false,
-			timezone: 'auto',
-			face: 'none',
-		}
 
-		if (init.clock) clock = { ...clock, ...init.clock }
+		return
+	}
 
-		try {
-			startClock(clock, init.greeting, init.usdate)
-			clockDate(zonedDate(clock.timezone), init.usdate)
-			greetings(zonedDate(clock.timezone), init.greeting)
-			changeAnalogFace(clock.face)
-			canDisplayInterface('clock')
-		} catch (e) {
-			errorMessage('Clock or greetings failed at init', e)
-		}
+	let clock = {
+		analog: false,
+		seconds: false,
+		ampm: false,
+		timezone: 'auto',
+		face: 'none',
+	}
+
+	if (init.clock) {
+		clock = { ...clock, ...init.clock }
+	}
+
+	try {
+		startClock(clock, init.greeting, init.usdate)
+		clockDate(zonedDate(clock.timezone), init.usdate)
+		greetings(zonedDate(clock.timezone), init.greeting)
+		changeAnalogFace(clock.face)
+		canDisplayInterface('clock', false)
+	} catch (e) {
+		errorMessage('Clock or greetings failed at init', e)
 	}
 }
 
-function quickLinks(event, that, init) {
-	const domlinkblocks = id('linkblocks')
+export function quickLinks(event, that, init?: Sync) {
+	const domlinkblocks = $('linkblocks')
 
-	async function initblocks(links, linksrow) {
+	async function initblocks(links: Link[], linksrow: number) {
 		//
-		function createBlock(link) {
+		function createBlock(link: Link) {
 			let title = stringMaxSize(link.title, 64)
 			let url = stringMaxSize(link.url, 512)
 
@@ -266,7 +313,13 @@ function quickLinks(event, that, init) {
 			return { icon: img, block: li }
 		}
 
-		function createRows(blocks, rowSize) {
+		function createRows(
+			blocks: {
+				icon: HTMLImageElement
+				block: HTMLLIElement
+			}[],
+			rowSize: number
+		) {
 			const rowsAmount = Math.ceil(blocks.length / rowSize)
 
 			// append uls to linkblocks
@@ -283,7 +336,7 @@ function quickLinks(event, that, init) {
 			}
 		}
 
-		async function fetchNewIcon(dom, url) {
+		async function fetchNewIcon(dom: HTMLImageElement, url: string) {
 			// Apply loading gif d'abord
 			dom.src = 'src/assets/interface/loading.svg'
 
@@ -317,7 +370,7 @@ function quickLinks(event, that, init) {
 				blocklist.forEach(({ block }) => addEvents(block))
 
 				linksDragging()
-				canDisplayInterface('links')
+				canDisplayInterface('links', null)
 				createRows(blocklist, linksrow)
 
 				// Load icons one by one
@@ -340,7 +393,7 @@ function quickLinks(event, that, init) {
 		}
 
 		// Links is done
-		else canDisplayInterface('links')
+		else canDisplayInterface('links', null)
 	}
 
 	function removeLinkSelection() {
@@ -350,7 +403,7 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	function addEvents(elem) {
+	function addEvents(elem: HTMLLIElement) {
 		// Mouse clicks
 		elem.oncontextmenu = function (e) {
 			e.preventDefault()
@@ -361,7 +414,7 @@ function quickLinks(event, that, init) {
 		if (!mobilecheck()) {
 			elem.onkeyup = function (e) {
 				if (e.key === 'e') {
-					const { offsetLeft, offsetTop } = e.target
+					const { offsetLeft, offsetTop } = e.target as HTMLElement
 					displayEditWindow(this, { x: offsetLeft, y: offsetTop })
 				}
 			}
@@ -378,12 +431,12 @@ function quickLinks(event, that, init) {
 		let [cox, coy] = [0, 0] // (cursor offset x & y)
 		let updatedOrder = {}
 
-		const deplaceElem = (dom, x, y) => {
+		const deplaceElem = (dom: HTMLElement, x: number, y: number) => {
 			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
 		}
 
-		const initDrag = (ex, ey, path) => {
-			let block = path.find((e) => e.className === 'block')
+		const initDrag = (ex: number, ey: number, path: EventTarget[]) => {
+			let block = path.find((e: HTMLElement) => e.className === 'block') as HTMLLIElement
 
 			if (!block) {
 				return
@@ -415,15 +468,15 @@ function quickLinks(event, that, init) {
 					},
 				}
 
-				block.style.pointerEvents = 'none'
+				block.setAttribute('style', 'pointerEvents: none')
 			})
 
 			// Transform coords in array here to improve performance during mouse move
 			coordsEntries = Object.entries(coords)
 
-			id(draggedId).style.opacity = 0
+			$(draggedId).setAttribute('style', 'opacity: 0')
 
-			draggedClone = id(draggedId).cloneNode(true) // create fixed positionned clone of element
+			draggedClone = $(draggedId).cloneNode(true) // create fixed positionned clone of element
 			draggedClone.id = ''
 			draggedClone.className = 'block dragging-clone on'
 			document.querySelector('#linkblocks ul').appendChild(draggedClone) // append to ul to get same styling
@@ -434,7 +487,7 @@ function quickLinks(event, that, init) {
 			deplaceElem(draggedClone, ex - cox + push, ey - coy)
 		}
 
-		const applyDrag = (ex, ey) => {
+		const applyDrag = (ex: number, ey: number) => {
 			// Dragged element clone follows cursor
 			deplaceElem(draggedClone, ex + push - cox, ey - coy)
 
@@ -470,12 +523,12 @@ function quickLinks(event, that, init) {
 							const oy = coordsEntries[index + direction][1].pos.y - coord.pos.y
 
 							updatedOrder[keyBis] = index + direction // update order w/ direction
-							deplaceElem(id(keyBis), ox, oy) // translate it to its neighboors position
+							deplaceElem($(keyBis), ox, oy) // translate it to its neighboors position
 							return
 						}
 
 						updatedOrder[keyBis] = index // keep same order
-						deplaceElem(id(keyBis), 0, 0) // Not in interval (anymore) ? reset translate
+						deplaceElem($(keyBis), 0, 0) // Not in interval (anymore) ? reset translate
 					})
 
 					updatedOrder[draggedId] = keyO // update dragged element order with triggerbox order
@@ -497,7 +550,7 @@ function quickLinks(event, that, init) {
 				dominterface.style.cursor = ''
 
 				setTimeout(() => {
-					chrome.storage.sync.get(null, (data) => {
+					chrome.storage.sync.get(null, (data: Sync) => {
 						Object.entries(updatedOrder).forEach(([key, val]) => {
 							data[key].order = val // Updates orders
 						})
@@ -536,23 +589,24 @@ function quickLinks(event, that, init) {
 
 	function editEvents() {
 		function submitEvent() {
-			return updatesEditedLink(id('editlink').getAttribute('data-linkid'))
+			return updatesEditedLink($('editlink').getAttribute('data-linkid'))
 		}
 
-		function inputSubmitEvent(e) {
+		function inputSubmitEvent(e: KeyboardEvent) {
 			if (e.code === 'Enter') {
 				submitEvent()
-				e.target.blur() // unfocus to signify change
+				const input = e.target as HTMLInputElement
+				input.blur() // unfocus to signify change
 			}
 		}
 
-		id('e_delete').onclick = function () {
+		$('e_delete').onclick = function () {
 			removeLinkSelection()
-			removeblock(parseInt(id('editlink').getAttribute('index')))
-			clas(id('editlink'), false, 'shown')
+			removeblock(parseInt($('editlink').getAttribute('index')))
+			clas($('editlink'), false, 'shown')
 		}
 
-		id('e_submit').onclick = function (e) {
+		$('e_submit').onclick = function (e) {
 			const noErrorOnEdit = submitEvent() // returns false if saved icon data too big
 			if (noErrorOnEdit) {
 				closeEditLink() // only auto close on apply changes button
@@ -560,12 +614,12 @@ function quickLinks(event, that, init) {
 			}
 		}
 
-		id('e_title').addEventListener('keyup', inputSubmitEvent)
-		id('e_url').addEventListener('keyup', inputSubmitEvent)
-		id('e_iconurl').addEventListener('keyup', inputSubmitEvent)
+		$('e_title').addEventListener('keyup', inputSubmitEvent)
+		$('e_url').addEventListener('keyup', inputSubmitEvent)
+		$('e_iconurl').addEventListener('keyup', inputSubmitEvent)
 	}
 
-	function displayEditWindow(that, { x, y }) {
+	function displayEditWindow(that: Element, { x, y }) {
 		//
 		function positionsEditWindow() {
 			const { innerHeight, innerWidth } = window // viewport size
@@ -576,24 +630,28 @@ function quickLinks(event, that, init) {
 			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
 
 			// Moves edit link to mouse position
-			document.querySelector('#editlink').style.transform = `translate(${x + 3}px, ${y + 3}px)`
+			document.querySelector('#editlink').setAttribute('style', `transform: translate(${x + 3}px, ${y + 3}px)`)
 		}
 
 		const linkId = that.id
 		const domicon = that.querySelector('img')
 		const domedit = document.querySelector('#editlink')
-		const opendedSettings = has(id('settings'), 'shown')
+		const opendedSettings = has($('settings'), 'shown')
 
 		chrome.storage.sync.get(linkId, (data) => {
 			const { title, url, icon } = data[linkId]
 
-			id('e_title').setAttribute('placeholder', tradThis('Title'))
-			id('e_url').setAttribute('placeholder', tradThis('Link'))
-			id('e_iconurl').setAttribute('placeholder', tradThis('Icon'))
+			const domtitle = $('e_title') as HTMLInputElement
+			const domurl = $('e_url') as HTMLInputElement
+			const domiconurl = $('e_iconurl') as HTMLInputElement
 
-			id('e_title').value = title
-			id('e_url').value = url
-			id('e_iconurl').value = icon
+			domtitle.setAttribute('placeholder', tradThis('Title'))
+			domurl.setAttribute('placeholder', tradThis('Link'))
+			domiconurl.setAttribute('placeholder', tradThis('Icon'))
+
+			domtitle.value = title
+			domurl.value = url
+			domiconurl.value = icon
 
 			positionsEditWindow()
 
@@ -603,14 +661,14 @@ function quickLinks(event, that, init) {
 
 			domedit.setAttribute('data-linkid', linkId)
 
-			id('e_title').focus()
+			domtitle.focus()
 		})
 	}
 
-	function updatesEditedLink(linkId) {
-		const e_title = id('e_title')
-		const e_url = id('e_url')
-		const e_iconurl = id('e_iconurl')
+	function updatesEditedLink(linkId: string) {
+		const e_title = $('e_title') as HTMLInputElement
+		const e_url = $('e_url') as HTMLInputElement
+		const e_iconurl = $('e_iconurl') as HTMLInputElement
 
 		if (e_iconurl.value.length === 7500) {
 			e_iconurl.value = ''
@@ -620,7 +678,7 @@ function quickLinks(event, that, init) {
 		}
 
 		chrome.storage.sync.get(linkId, (data) => {
-			const domlink = id(linkId)
+			const domlink = $(linkId) as HTMLLIElement
 			const domicon = domlink.querySelector('img')
 			const domurl = domlink.querySelector('a')
 			let link = data[linkId]
@@ -643,16 +701,16 @@ function quickLinks(event, that, init) {
 		return true
 	}
 
-	function removeblock(index) {
+	function removeblock(index: number) {
 		chrome.storage.sync.get(null, (data) => {
 			const links = bundleLinks(data)
-			let link = links.filter((l) => l.order === index)[0]
+			let link = links.filter((l: Link) => l.order === index)[0]
 
 			//enleve le html du block
 			const blockParent = domlinkblocks.children[index]
 			const height = blockParent.getBoundingClientRect().height
 
-			blockParent.style.height = height + 'px'
+			blockParent.setAttribute('style', 'height: ' + height + 'px')
 			clas(blockParent, true, 'removed')
 
 			setTimeout(function () {
@@ -660,7 +718,7 @@ function quickLinks(event, that, init) {
 				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
 			}, 600)
 
-			links.forEach((l) => {
+			links.forEach((l: Link) => {
 				l.order -= l.order > index ? 1 : 0 // Decrement order for elements above the one removed
 				data[l._id] = l // updates link in storage
 			})
@@ -670,7 +728,12 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	function linkSubmission(type, importList) {
+	enum NewLinkType {
+		AddLink,
+		Import,
+	}
+
+	function linkSubmission(type: NewLinkType, importList: any) {
 		// importList here can also be button dom when type is "addlink"
 		// This needs to be cleaned up later
 
@@ -678,9 +741,9 @@ function quickLinks(event, that, init) {
 			const links = bundleLinks(data)
 			let newLinksList = []
 
-			const validator = (title, url, order) => {
+			const validator = (title: string, url: string, order: number) => {
 				url = stringMaxSize(url, 512)
-				const to = (scheme) => url.startsWith(scheme)
+				const to = (scheme: string) => url.startsWith(scheme)
 				const acceptableSchemes = to('http://') || to('https://') || to('localhost:')
 				const unacceptable = to('about:') || to('chrome://')
 
@@ -694,23 +757,23 @@ function quickLinks(event, that, init) {
 			}
 
 			// Default link submission
-			if (type === 'addlink') {
-				const title = id('i_title').value
-				const url = id('i_url').value
+			if (type === NewLinkType.AddLink) {
+				const title = $('i_title').getAttribute('value')
+				const url = $('i_url').getAttribute('value')
 
 				if (url.length < 3 || stillActive) return
 
-				id('i_title').value = ''
-				id('i_url').value = ''
+				$('i_title').setAttribute('value', '')
+				$('i_url').setAttribute('value', '')
 
 				newLinksList.push(validator(title, url, links.length))
 			}
 
 			// When importing bookmarks
-			if (type === 'import') {
+			if (type === NewLinkType.Import) {
 				if (importList?.length === 0) return
 
-				importList.forEach(({ title, url }, i) => {
+				importList.forEach(({ title, url }, i: number) => {
 					if (url) {
 						newLinksList.push(validator(title, url, links.length + i))
 					}
@@ -731,7 +794,7 @@ function quickLinks(event, that, init) {
 		})
 	}
 
-	function textOnlyControl(block, title, toText) {
+	function textOnlyControl(block: HTMLLIElement, title: string, toText: boolean) {
 		const span = block.querySelector('span')
 		const a = block.querySelector('a')
 
@@ -747,15 +810,15 @@ function quickLinks(event, that, init) {
 		const Row = event === 'linksrow'
 
 		if (Add) {
-			linkSubmission(event)
+			linkSubmission(NewLinkType.AddLink, null)
 		}
 
 		if (Import) {
-			linkSubmission(event, that)
+			linkSubmission(NewLinkType.Import, that)
 		}
 
 		if (Toggle) {
-			clas(id('linkblocks'), !that, 'hidden')
+			clas($('linkblocks'), !that, 'hidden')
 			interfaceWidgetToggle(null, 'links')
 			chrome.storage.sync.set({ quicklinks: that })
 		}
@@ -771,9 +834,9 @@ function quickLinks(event, that, init) {
 			chrome.storage.sync.get(null, (data) => {
 				const links = bundleLinks(data)
 				const classes = ['large', 'medium', 'small', 'text']
-				const blocks = document.querySelectorAll('#linkblocks .block')
+				const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
 
-				links.forEach(({ title }, i) => textOnlyControl(blocks[i], title, that === 'text'))
+				links.forEach(({ title }, i: number) => textOnlyControl(blocks[i], title, that === 'text'))
 
 				classes.forEach((c) => domlinkblocks.classList.remove(c))
 				domlinkblocks.classList.add(that)
@@ -796,20 +859,20 @@ function quickLinks(event, that, init) {
 	}
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
-	clas(id('linkblocks'), !init.quicklinks, 'hidden')
+	clas($('linkblocks'), !init.quicklinks, 'hidden')
 	initblocks(bundleLinks(init), init.linksrow)
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
 }
 
-async function linksImport() {
-	const closeBookmarks = (container) => {
+export async function linksImport() {
+	const closeBookmarks = (container: HTMLElement) => {
 		container.classList.add('hiding')
 		setTimeout(() => container.setAttribute('class', ''), 400)
 	}
 
-	function main(links, bookmarks) {
+	function main(links: Link[], bookmarks: any) {
 		const listdom = document.createElement('ol')
 		const allCategories = [...bookmarks[0].children]
 		let counter = links.length || 0
@@ -834,7 +897,7 @@ async function linksImport() {
 			titleWrap.appendChild(favicon)
 			titleWrap.appendChild(title)
 
-			elem.setAttribute('data-index', index)
+			elem.setAttribute('data-index', index.toString())
 			elem.setAttribute('tabindex', '0')
 			elem.appendChild(titleWrap)
 			elem.appendChild(url)
@@ -846,18 +909,18 @@ async function linksImport() {
 
 				// Change submit button text & class on selections
 				const amountSelected = counter - links.length
-				id('bmk_apply').textContent = tradThis(
+				$('bmk_apply').textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
 						: amountSelected === 1
 						? 'Import this bookmark'
 						: 'Import these bookmarks'
 				)
-				clas(id('bmk_apply'), amountSelected === 0, 'none')
+				clas($('bmk_apply'), amountSelected === 0, 'none')
 			}
 
 			elem.onclick = select
-			elem.onkeydown = (e) => (e.code === 'Enter' ? select() : '')
+			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? select() : '')
 
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
@@ -868,25 +931,26 @@ async function linksImport() {
 		// Replace list to filter already added bookmarks
 		const oldList = document.querySelector('#bookmarks ol')
 		if (oldList) oldList.remove()
-		id('bookmarks').prepend(listdom)
+		$('bookmarks').prepend(listdom)
 
 		// Just warning if no bookmarks were found
 		if (bookmarksList.length === 0) {
-			clas(id('bookmarks'), true, 'noneFound')
+			clas($('bookmarks'), true, 'noneFound')
 			return
 		}
 
 		// Submit event
-		id('bmk_apply').onclick = function () {
+		$('bmk_apply').onclick = function () {
 			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
 
 			if (bookmarkToApply.length > 0) {
-				closeBookmarks(id('bookmarks_container'))
+				closeBookmarks($('bookmarks_container'))
 				quickLinks('import', bookmarkToApply, null)
 			}
 		}
 
-		document.querySelector('#bookmarks ol li').focus()
+		const lidom = document.querySelector('#bookmarks ol li') as HTMLLIElement
+		lidom.focus()
 	}
 
 	// Ask for bookmarks first
@@ -894,34 +958,45 @@ async function linksImport() {
 		if (!granted) return
 
 		chrome.storage.sync.get(null, (data) => {
-			;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-				clas(id('bookmarks_container'), true, 'shown')
+			// ;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
+			chrome.bookmarks.getTree().then((response) => {
+				clas($('bookmarks_container'), true, 'shown')
 				main(bundleLinks(data), response)
 			})
 		})
 	})
 
 	// Close events
-	document.querySelector('#bmk_close').onclick = () => closeBookmarks(id('bookmarks_container'))
+	$('bmk_close').onclick = () => closeBookmarks($('bookmarks_container'))
 
-	id('bookmarks_container').addEventListener('click', function (e) {
-		if (e.target.id === 'bookmarks_container') closeBookmarks(this)
+	$('bookmarks_container').addEventListener('click', function (e: MouseEvent) {
+		if ((e.target as HTMLElement).id === 'bookmarks_container') closeBookmarks(this)
 	})
 }
 
-function weather(event, that, init) {
+export function weather(event, that, init?: Sync) {
+	type Param = {
+		ccode: string
+		city: string
+		unit: string
+		location: number[]
+		forecast: string
+		temperature: string
+	}
+
 	let weatherToSave = {}
 	const date = new Date()
-	const i_city = id('i_city')
-	const i_ccode = id('i_ccode')
-	const sett_city = id('sett_city')
-	const current = id('current')
-	const forecast = id('forecast')
-	const tempContainer = id('tempContainer')
+	const i_city = $('i_city') as HTMLInputElement
+	const i_ccode = $('i_ccode') as HTMLInputElement
+	const i_geol = $('i_geol') as HTMLInputElement
+	const sett_city = $('sett_city') as HTMLInputElement
+	const current = $('current')
+	const forecast = $('forecast')
+	const tempContainer = $('tempContainer')
 
-	const toFarenheit = (num) => Math.round(num * (9 / 5) + 32)
-	const toCelsius = (num) => Math.round((num - 32) * (5 / 9))
-	const toggleTempUnit = (F, temp) => (F ? toFarenheit(temp) : toCelsius(temp))
+	const toFarenheit = (num: number) => Math.round(num * (9 / 5) + 32)
+	const toCelsius = (num: number) => Math.round((num - 32) * (5 / 9))
+	const toggleTempUnit = (F: boolean, temp: number) => (F ? toFarenheit(temp) : toCelsius(temp))
 
 	const WEATHER_API_KEY = [
 		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
@@ -929,18 +1004,18 @@ function weather(event, that, init) {
 		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 	]
 
-	async function initWeather(param) {
-		const applyResult = (geol) => {
+	async function initWeather(param: Param) {
+		const applyResult = (geol: boolean) => {
 			request(param, true)
 			request(param, false)
 
-			if (id('settings')) {
-				id('i_ccode').value = param.ccode
-				id('i_city').setAttribute('placeholder', param.city)
+			if ($('settings')) {
+				i_ccode.value = param.ccode
+				i_city.setAttribute('placeholder', param.city)
 
 				if (geol) {
-					clas(id('sett_city'), true, 'hidden')
-					id('i_geol').checked = true
+					clas($('sett_city'), true, 'hidden')
+					i_geol.checked = true
 				}
 			}
 		}
@@ -964,7 +1039,7 @@ function weather(event, that, init) {
 		)
 	}
 
-	async function request(storage, forecast) {
+	async function request(storage: Param, forecast: boolean) {
 		function saveCurrent(response) {
 			//
 			const isF = storage.unit === 'imperial'
@@ -1129,7 +1204,7 @@ function weather(event, that, init) {
 			const widgetIcon = tempContainer.querySelector('img')
 			const { now, rise, set } = sunTime()
 			const timeOfDay = now < rise || now > set ? 'night' : 'day'
-			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+			const iconSrc = `assets/weather/${timeOfDay}/${filename}.png`
 
 			if (widgetIcon) {
 				widgetIcon.setAttribute('src', iconSrc)
@@ -1240,7 +1315,7 @@ function weather(event, that, init) {
 							(refused) => {
 								//désactive geolocation if refused
 								setTimeout(() => (that.checked = false), 400)
-								if (!data.weather.city) initWeather()
+								if (!data.weather.city) initWeather(null)
 								console.log(refused)
 							}
 						)
@@ -1294,75 +1369,83 @@ function weather(event, that, init) {
 	}
 }
 
-function initBackground(data) {
+export function initBackground(data: Sync) {
 	const type = data.background_type || 'dynamic'
-	const blur = data.background_blur !== undefined ? data.background_blur : 15
-	const bright = data.background_bright !== undefined ? data.background_bright : 0.8
+	const blur = data.background_blur
+	const bright = data.background_bright
 
-	filter('init', [parseFloat(blur), parseFloat(bright)])
+	backgroundFilter(Filters.init, { blur, bright })
 
 	if (type === 'custom') {
-		localBackgrounds({
-			every: data.custom_every,
-			time: data.custom_time,
-		})
+		localBackgrounds({ every: data.custom_every, time: data.custom_time })
 		return
 	}
 
-	unsplash(data)
+	unsplash(data, null)
 }
 
-function imgBackground(val, loadTime, init) {
+export function imgBackground(url: string, loadTime: number, isInit?: boolean) {
 	let img = new Image()
 
 	img.onload = () => {
 		if (loadTime) {
 			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
-			const changeDuration = (time) => (id('background_overlay').style.transition = `transform .4s, opacity ${time}ms`)
+			const changeDuration = (time: number) => {
+				$('background_overlay').style.transition = `transform .4s, opacity ${time}ms`
+			}
 
 			changeDuration(animDuration)
 			setTimeout(() => changeDuration(400), animDuration)
 		}
 
 		const applyBackground = () => {
-			id('background_overlay').style.opacity = `1`
-			id('background').style.backgroundImage = `url(${val})`
+			$('background_overlay').style.opacity = `1`
+			$('background').style.backgroundImage = `url(${url})`
 			localIsLoading = false
 		}
 
-		init ? applyBackground() : setTimeout(applyBackground, 400)
+		isInit ? applyBackground() : setTimeout(applyBackground, 400)
 	}
 
-	img.src = val
+	img.src = url
 	img.remove()
 }
 
-function freqControl(state, every, last) {
-	const nowDate = new Date()
+const freqControl = {
+	set: function () {
+		return new Date().getTime()
+	},
 
-	// instead of adding unix time to the last date
-	// look if day & hour has changed
-	// because we still cannot time travel
-	// changes can only go forward
+	get: function (every?: string, last?: number) {
+		// instead of adding unix time to the last date
+		// look if day & hour has changed
+		// because we still cannot time travel
+		// changes can only go forward
 
-	if (state === 'set') {
-		return nowDate.getTime()
-	}
+		const nowDate = new Date()
+		const lastDate = new Date(last)
+		const changed = {
+			date: nowDate.getDate() !== lastDate.getDate(),
+			hour: nowDate.getHours() !== lastDate.getHours(),
+		}
 
-	const lastDate = new Date(last)
-	const changed = {
-		date: nowDate.getDate() !== lastDate.getDate(),
-		hour: nowDate.getHours() !== lastDate.getHours(),
-	}
-
-	if (every === 'day') return changed.date
-	if (every === 'hour') return changed.date || changed.hour
-	if (every === 'tabs') return true
-	if (every === 'pause') return last === 0
-	if (every === 'period') return periodOfDay(sunTime()) !== periodOfDay(sunTime(), lastDate)
+		if (every === 'day') return changed.date
+		if (every === 'hour') return changed.date || changed.hour
+		if (every === 'tabs') return true
+		if (every === 'pause') return last === 0
+		if (every === 'period') return periodOfDay(sunTime()) !== periodOfDay(sunTime(), +lastDate)
+	},
 }
 
-function localBackgrounds(init, event) {
+export function localBackgrounds(
+	init: { every: string; time: number },
+	event?: {
+		is: string
+		settings?: HTMLElement
+		button?: HTMLButtonElement
+		file?: File[]
+	}
+) {
 	// Storage needs to be flat, as to only ask for needed background
 	// SelectedId is self explanatory
 	// CustomIds is list to get amount of backgrounds without accessing them
@@ -1373,7 +1456,7 @@ function localBackgrounds(init, event) {
 	//    selectedId: _id3
 	// }
 
-	function isOnlineStorageAtCapacity(newFile) {
+	function isOnlineStorageAtCapacity(newFile: string) {
 		//
 		// Only applies to versions using localStorage: 5Mo limit
 		if (detectPlatform() === 'online') {
@@ -1385,8 +1468,8 @@ function localBackgrounds(init, event) {
 
 			// Uploaded file in storage would exceed limit
 			if (lsSize + newFile.length > 5e6) {
-				alert(`Image size exceeds storage: ${parseInt(Math.abs(lsSize - 5e6) / 1000)}ko left`)
-				id('background_overlay').style.opacity = '1'
+				alert(`Image size exceeds storage: ${Math.abs(lsSize - 5e6) / 1000}ko left`)
+				$('background_overlay').style.opacity = '1'
 
 				return true
 			}
@@ -1395,18 +1478,18 @@ function localBackgrounds(init, event) {
 		return false
 	}
 
-	function b64toBlobUrl(b64Data, callback) {
+	function b64toBlobUrl(b64Data: string, callback: Function) {
 		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
 			res.blob().then((blob) => callback(URL.createObjectURL(blob)))
 		})
 	}
 
-	function thumbnailSelection(id) {
+	function thumbnailSelection(id: string) {
 		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
 		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
 	}
 
-	function addNewImage(files) {
+	function addNewImage(files: File[]) {
 		files = [...files] // fileList to Array
 		let filesIdsList = []
 		let selected = ''
@@ -1421,9 +1504,9 @@ function localBackgrounds(init, event) {
 			let reader = new FileReader()
 
 			reader.onload = function (event) {
-				const result = event.target.result
+				const result = event.target.result as string
 
-				if (isOnlineStorageAtCapacity(result)) {
+				if (typeof result === 'string' && isOnlineStorageAtCapacity(result)) {
 					return console.warn('Uploaded image was not saved') // Exit with warning before saving image
 				}
 
@@ -1434,7 +1517,7 @@ function localBackgrounds(init, event) {
 			}
 
 			localIsLoading = true
-			id('background_overlay').style.opacity = '0'
+			$('background_overlay').style.opacity = '0'
 			reader.readAsDataURL(file)
 		})
 
@@ -1457,12 +1540,12 @@ function localBackgrounds(init, event) {
 		})
 	}
 
-	function compress(e, state, _id) {
+	function compress(file: string, state?: string, _id?: string) {
 		//
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
-			clas(id('credit'), false, 'shown')
-			id('background_overlay').style.opacity = `0`
+			clas($('credit'), false, 'shown')
+			$('background_overlay').style.opacity = `0`
 		}
 
 		const compressStart = performance.now()
@@ -1482,7 +1565,7 @@ function localBackgrounds(init, event) {
 
 			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height) //dessine l'image proportionné
 
-			const data = ctx.canvas.toDataURL(img) // renvoie le base64
+			const data = ctx.canvas.toDataURL(img.src) // renvoie le base64
 			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
 
 			if (state === 'thumbnail') {
@@ -1498,11 +1581,11 @@ function localBackgrounds(init, event) {
 			})
 		}
 
-		img.src = e
+		img.src = file
 	}
 
-	function addThumbnails(data, _id, settingsDom, isSelected) {
-		const settings = settingsDom ? settingsDom : id('settings')
+	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement, isSelected: boolean) {
+		const settings = settingsDom ? settingsDom : $('settings')
 
 		const div = document.createElement('div')
 		const i = document.createElement('img')
@@ -1517,7 +1600,7 @@ function localBackgrounds(init, event) {
 		close.setAttribute('src', 'src/assets/interface/close.svg')
 		rem.appendChild(close)
 
-		b64toBlobUrl(data, (bloburl) => (i.src = bloburl))
+		b64toBlobUrl(data, (bloburl: string) => (i.src = bloburl))
 
 		div.appendChild(i)
 		div.appendChild(rem)
@@ -1526,7 +1609,8 @@ function localBackgrounds(init, event) {
 		i.onmouseup = (e) => {
 			if (e.button !== 0 || localIsLoading) return
 
-			const _id = e.target.parentElement.id
+			const target = e.target as HTMLElement
+			const _id = target.parentElement.id
 			const bgKey = 'custom_' + _id
 
 			chrome.storage.local.get('selectedId', (local) => {
@@ -1534,7 +1618,7 @@ function localBackgrounds(init, event) {
 				if (_id !== local.selectedId) {
 					thumbnailSelection(_id)
 
-					id('background_overlay').style.opacity = `0`
+					$('background_overlay').style.opacity = `0`
 					localIsLoading = true
 					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
 					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
@@ -1550,10 +1634,10 @@ function localBackgrounds(init, event) {
 			}
 
 			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
-				const thumbnail = path.find((d) => d.className.includes('thumbnail'))
+				const thumbnail = path.find((d: HTMLElement) => d.className.includes('thumbnail')) as HTMLElement
 				const _id = thumbnail.id
 				let { idsList, selectedId } = local
-				let poppedList = idsList.filter((a) => !a.includes(_id))
+				let poppedList = idsList.filter((s: string) => !s.includes(_id))
 
 				thumbnail.remove()
 
@@ -1574,9 +1658,9 @@ function localBackgrounds(init, event) {
 
 					// back to unsplash
 					else {
-						id('background_overlay').style.opacity = 0
+						$('background_overlay').style.opacity = '0'
 						chrome.storage.sync.set({ background_type: 'dynamic' })
-						setTimeout(() => chrome.storage.sync.get('dynamic', (data) => unsplash(data)), 400)
+						setTimeout(() => chrome.storage.sync.get('dynamic', (data) => unsplash(data, null)), 400)
 						selectedId = ''
 					}
 
@@ -1586,14 +1670,14 @@ function localBackgrounds(init, event) {
 		}
 	}
 
-	function displayCustomThumbnails(settingsDom) {
+	function displayCustomThumbnails(settingsDom: HTMLElement) {
 		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
 
 		chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
 			const { idsList, selectedId } = local
 
 			if (idsList.length > 0 && thumbnails.length < idsList.length) {
-				const thumbsKeys = idsList.map((a) => 'customThumb_' + a) // To get keys for storage
+				const thumbsKeys = idsList.map((id: string) => 'customThumb_' + id) // To get keys for storage
 
 				// Parse through thumbnails to display them
 				chrome.storage.local.get(thumbsKeys, (local) => {
@@ -1611,9 +1695,9 @@ function localBackgrounds(init, event) {
 		})
 	}
 
-	function refreshCustom(button) {
+	function refreshCustom(button: HTMLButtonElement) {
 		chrome.storage.sync.get('custom_every', (sync) => {
-			id('background_overlay').style.opacity = 0
+			$('background_overlay').style.opacity = '0'
 			turnRefreshButton(button, true)
 			localIsLoading = true
 
@@ -1628,6 +1712,18 @@ function localBackgrounds(init, event) {
 		})
 	}
 
+	function applyCustomBackground(id: string) {
+		chrome.storage.local.get(['custom_' + id], (local) => {
+			const perfStart = performance.now()
+			const background = local['custom_' + id]
+
+			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+			b64toBlobUrl(cleanData, (bloburl: string) => {
+				imgBackground(bloburl, perfStart, !!init)
+			})
+		})
+	}
+
 	if (event) {
 		if (event.is === 'thumbnail') displayCustomThumbnails(event.settings)
 		if (event.is === 'newfile') addNewImage(event.file)
@@ -1635,24 +1731,12 @@ function localBackgrounds(init, event) {
 		return
 	}
 
-	function applyCustomBackground(id) {
-		chrome.storage.local.get(['custom_' + id], (local) => {
-			const perfStart = performance.now()
-			const background = local['custom_' + id]
-
-			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-			b64toBlobUrl(cleanData, (bloburl) => {
-				imgBackground(bloburl, perfStart, !!init)
-			})
-		})
-	}
-
 	chrome.storage.local.get(['selectedId', 'idsList'], (local) => {
 		try {
 			// need all of saved stuff
 			let { selectedId, idsList } = local
 			const { every, time } = init
-			const needNewImage = freqControl('get', every, time || 0)
+			const needNewImage = freqControl.get(every, time || 0)
 
 			// 1.14.0 (firefox?) background recovery fix
 			if (!idsList) {
@@ -1665,27 +1749,27 @@ function localBackgrounds(init, event) {
 						.map((k) => k.replace('custom_', ''))
 
 					chrome.storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
-					chrome.storage.sync.get(null, (data) => initBackground(data))
+					chrome.storage.sync.get(null, (data: Sync) => initBackground(data))
 				})
 			}
 
 			if (idsList.length === 0) {
-				chrome.storage.sync.get('dynamic', (data) => unsplash(data)) // no bg, back to unsplash
+				chrome.storage.sync.get('dynamic', (data: Sync) => unsplash(data, null)) // no bg, back to unsplash
 				return
 			}
 
 			if (every && needNewImage) {
 				if (idsList.length > 1) {
-					idsList = idsList.filter((l) => !l.includes(selectedId)) // removes current from list
+					idsList = idsList.filter((l: string) => !l.includes(selectedId)) // removes current from list
 					selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
 				}
 
 				applyCustomBackground(selectedId)
 
-				chrome.storage.sync.set({ custom_time: freqControl('set') })
+				chrome.storage.sync.set({ custom_time: freqControl.set() })
 				chrome.storage.local.set({ selectedId })
 
-				if (id('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
+				if ($('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
 
 				return
 			}
@@ -1697,8 +1781,21 @@ function localBackgrounds(init, event) {
 	})
 }
 
-async function unsplash(init, event) {
-	async function preloadImage(src) {
+type UnsplashEvent = {
+	is: string
+	value?: string
+	button?: HTMLButtonElement
+}
+
+type Dynamic = {
+	every: string
+	collection: string
+	lastCollec: string
+	time: number
+}
+
+export async function unsplash(init: Sync, event?: UnsplashEvent) {
+	async function preloadImage(src: string) {
 		const img = new Image()
 
 		img.src = src
@@ -1708,10 +1805,10 @@ async function unsplash(init, event) {
 		return
 	}
 
-	function imgCredits(image) {
+	function imgCredits(image: UnsplashImage) {
 		//
 		// Filtering
-		const domcredit = id('credit')
+		const domcredit = $('credit')
 		let needsSpacer = false
 		let artist = ''
 		let photoLocation = ''
@@ -1777,7 +1874,7 @@ async function unsplash(init, event) {
 		clas(domcredit, true, 'shown')
 	}
 
-	function loadBackground(props, loadTime) {
+	function loadBackground(props: UnsplashImage, loadTime?: number) {
 		imgBackground(props.url, loadTime, !!init)
 		imgCredits(props)
 
@@ -1785,7 +1882,7 @@ async function unsplash(init, event) {
 		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
-	async function requestNewList(collection) {
+	async function requestNewList(collection: string) {
 		const header = new Headers()
 		const collecId = allCollectionIds[collection] || allCollectionIds.day
 		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
@@ -1804,7 +1901,7 @@ async function unsplash(init, event) {
 		const { width, height } = screen
 		const imgSize = width > height ? width : height // higher res on mobile
 
-		json.forEach((img) => {
+		json.forEach((img: any) => {
 			filteredList.push({
 				url: img.urls.raw + '&w=' + imgSize + '&dpr=' + window.devicePixelRatio,
 				link: img.links.html,
@@ -1821,7 +1918,7 @@ async function unsplash(init, event) {
 		return filteredList
 	}
 
-	function chooseCollection(eventCollection) {
+	function chooseCollection(eventCollection?: string) {
 		if (eventCollection) {
 			eventCollection = eventCollection.replaceAll(` `, '')
 			allCollectionIds.user = eventCollection
@@ -1831,7 +1928,7 @@ async function unsplash(init, event) {
 		return periodOfDay(sunTime())
 	}
 
-	function collectionControl(dynamic) {
+	function collectionControl(dynamic: Dynamic) {
 		const { every, lastCollec, collection } = dynamic
 		const Pause = every === 'pause'
 		const Day = every === 'day'
@@ -1847,9 +1944,9 @@ async function unsplash(init, event) {
 		return collec
 	}
 
-	async function cacheControl(dynamic, caches, collection, preloading) {
+	async function cacheControl(dynamic: Dynamic, caches: DynamicCache, collection: string, preloading: boolean) {
 		//
-		const needNewImage = freqControl('get', dynamic.every, dynamic.time)
+		const needNewImage = freqControl.get(dynamic.every, dynamic.time)
 		let list = caches[collection]
 
 		if (preloading) {
@@ -1866,7 +1963,7 @@ async function unsplash(init, event) {
 
 		// Needs new image, Update time
 		dynamic.lastCollec = collection
-		dynamic.time = freqControl('set')
+		dynamic.time = freqControl.set()
 
 		// Removes previous image from list
 		if (list.length > 1) list.shift()
@@ -1895,7 +1992,7 @@ async function unsplash(init, event) {
 		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	async function populateEmptyList(collection, local, dynamic, isEvent) {
+	async function populateEmptyList(collection: string, local: Local, isEvent: boolean) {
 		if (isEvent) {
 			collection = chooseCollection(collection) // if it comes from collection change
 		}
@@ -1919,14 +2016,14 @@ async function unsplash(init, event) {
 		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	function updateDynamic(event, sync, local) {
-		switch (Object.keys(event)[0]) {
+	function updateDynamic(event: UnsplashEvent, sync: Sync, local: Local) {
+		switch (event.is) {
 			case 'refresh': {
 				// Only refreshes background if preload is over
 				// If not, animate button to show it is trying
 				if (local.waitingForPreload === undefined) {
-					turnRefreshButton(Object.values(event)[0], true)
-					id('background_overlay').style.opacity = 0
+					turnRefreshButton(event.button, true)
+					$('background_overlay').style.opacity = '0'
 
 					const newDynamic = { ...sync.dynamic, time: 0 }
 					chrome.storage.sync.set({ dynamic: newDynamic })
@@ -1937,13 +2034,13 @@ async function unsplash(init, event) {
 					return
 				}
 
-				turnRefreshButton(Object.values(event)[0], false)
+				turnRefreshButton(event.button, false)
 				break
 			}
 
 			case 'every': {
-				sync.dynamic.every = event.every
-				sync.dynamic.time = freqControl('set')
+				sync.dynamic.every = event.value
+				sync.dynamic.time = freqControl.set()
 				chrome.storage.sync.set({ dynamic: sync.dynamic })
 				break
 			}
@@ -1959,10 +2056,10 @@ async function unsplash(init, event) {
 			case 'collection': {
 				if (!navigator.onLine) return
 
-				id('background_overlay').style.opacity = '0'
+				$('background_overlay').style.opacity = '0'
 
 				// remove user collec
-				if (event.collection === '') {
+				if (event.value === '') {
 					const defaultColl = chooseCollection()
 					local.dynamicCache.user = []
 					sync.dynamic.collection = ''
@@ -1976,12 +2073,12 @@ async function unsplash(init, event) {
 				}
 
 				// add new collec
-				sync.dynamic.collection = event.collection
+				sync.dynamic.collection = event.value
 				sync.dynamic.lastCollec = 'user'
-				sync.dynamic.time = freqControl('set')
+				sync.dynamic.time = freqControl.set()
 				chrome.storage.sync.set({ dynamic: sync.dynamic })
 
-				populateEmptyList(event.collection, local, sync.dynamic, true)
+				populateEmptyList(event.value, local, true)
 				break
 			}
 		}
@@ -1998,8 +2095,8 @@ async function unsplash(init, event) {
 
 	if (event) {
 		// No init, Event
-		chrome.storage.sync.get('dynamic', (sync) =>
-			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+		chrome.storage.sync.get('dynamic', (sync: Sync) =>
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local: Local) => {
 				updateDynamic(event, sync, local)
 			})
 		)
@@ -2007,14 +2104,14 @@ async function unsplash(init, event) {
 		return
 	}
 
-	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local: Local) => {
 		try {
 			// Real init start
 			const collecId = collectionControl(init.dynamic)
 			const cache = local.dynamicCache || localDefaults.dynamicCache
 
 			if (cache[collecId].length === 0) {
-				populateEmptyList(collecId, local, init.dynamic, false) // If list empty: request new, save sync & local
+				populateEmptyList(collecId, local, false) // If list empty: request new, save sync & local
 				return
 			}
 
@@ -2027,28 +2124,28 @@ async function unsplash(init, event) {
 	return
 }
 
-function filter(cat, val) {
+export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur: number; bright: number }) {
 	let result = ''
 
 	switch (cat) {
 		case 'init':
-			result = `blur(${val[0]}px) brightness(${val[1]})`
+			result = `blur(${val.blur}px) brightness(${val.bright})`
 			break
 
 		case 'blur':
-			result = `blur(${val}px) brightness(${id('i_bright').value})`
+			result = `blur(${val.blur}px) brightness(${$('i_bright').getAttribute('value')})`
 			break
 
 		case 'bright':
-			result = `blur(${id('i_blur').value}px) brightness(${val})`
+			result = `blur(${$('i_blur').getAttribute('value')}px) brightness(${val.bright})`
 			break
 	}
 
-	id('background').style.filter = result
+	$('background').style.filter = result
 }
 
-function darkmode(init, event) {
-	function apply(option) {
+export function darkmode(init: string, event: string) {
+	function apply(option: string) {
 		const time = sunTime()
 		const cases = {
 			auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
@@ -2073,24 +2170,27 @@ function darkmode(init, event) {
 	}
 }
 
-function searchbar(event, that, init) {
-	const domsearchbar = id('searchbar')
-	const emptyButton = id('sb_empty')
-	const submitButton = id('sb_submit')
+export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement) {
+	const domsearchbar = $('searchbar') as HTMLInputElement
+	const emptyButton = $('sb_empty') as HTMLButtonElement
+	const submitButton = $('sb_submit') as HTMLButtonElement
 
-	const display = (value) => id('sb_container').setAttribute('class', value ? 'shown' : 'hidden')
-	const setEngine = (value) => domsearchbar.setAttribute('engine', value)
-	const setRequest = (value) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
-	const setNewtab = (value) => domsearchbar.setAttribute('newtab', value)
-	const setOpacity = (value) => {
-		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
+	const display = (shown: boolean) => $('sb_container').setAttribute('class', shown ? 'shown' : 'hidden')
+	const setEngine = (value: string) => domsearchbar.setAttribute('engine', value)
+	const setRequest = (value: string) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
+	const setNewtab = (value: boolean) => domsearchbar.setAttribute('newtab', value.toString())
+	const setOpacity = (value: number) => {
+		domsearchbar.setAttribute(
+			'style',
+			`background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`
+		)
 
-		if (value > 0.4) id('sb_container').classList.add('opaque')
-		else id('sb_container').classList.remove('opaque')
+		if (value > 0.4) $('sb_container').classList.add('opaque')
+		else $('sb_container').classList.remove('opaque')
 	}
 
 	function updateSearchbar() {
-		chrome.storage.sync.get('searchbar', (data) => {
+		chrome.storage.sync.get('searchbar', (data: Sync) => {
 			switch (event) {
 				case 'searchbar': {
 					data.searchbar.on = that.checked
@@ -2101,7 +2201,7 @@ function searchbar(event, that, init) {
 
 				case 'engine': {
 					data.searchbar.engine = that.value
-					clas(id('searchbar_request'), that.value === 'custom', 'shown')
+					clas($('searchbar_request'), that.value === 'custom', 'shown')
 					setEngine(that.value)
 					break
 				}
@@ -2142,6 +2242,7 @@ function searchbar(event, that, init) {
 
 	function initSearchbar() {
 		const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
+
 		try {
 			display(on)
 			setEngine(engine)
@@ -2171,7 +2272,7 @@ function searchbar(event, that, init) {
 		isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
 	}
 
-	function toggleInputButton(toggle) {
+	function toggleInputButton(toggle: boolean) {
 		if (toggle) {
 			emptyButton.removeAttribute('disabled')
 			submitButton.removeAttribute('disabled')
@@ -2182,13 +2283,15 @@ function searchbar(event, that, init) {
 	}
 
 	domsearchbar.onkeyup = function (e) {
-		if (e.key === 'Enter' && this.value.length > 0) {
+		const domssb = this as HTMLInputElement
+		if (e.key === 'Enter' && domssb.value.length > 0) {
 			submitSearch()
 		}
 	}
 
 	domsearchbar.oninput = function () {
-		const hasText = this.value.length > 0
+		const domssb = this as HTMLInputElement
+		const hasText = domssb.value.length > 0
 
 		clas(emptyButton, hasText, 'shown')
 		clas(submitButton, hasText, 'shown')
@@ -2198,7 +2301,7 @@ function searchbar(event, that, init) {
 	emptyButton.onclick = function () {
 		domsearchbar.value = ''
 		domsearchbar.focus()
-		clas(this, false, 'shown')
+		clas(emptyButton, false, 'shown')
 		clas(submitButton, false, 'shown')
 		toggleInputButton(false)
 	}
@@ -2210,10 +2313,10 @@ function searchbar(event, that, init) {
 	event ? updateSearchbar() : initSearchbar()
 }
 
-async function quotes(event, that, init) {
+export async function quotes(event, that, init?: Sync) {
 	function display(value) {
-		clas(id('linkblocks'), value, 'withQuotes')
-		id('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
+		clas($('linkblocks'), value, 'withQuotes')
+		$('quotes_container').setAttribute('class', value ? 'shown' : 'hidden')
 	}
 
 	async function newQuote(lang, type) {
@@ -2238,8 +2341,8 @@ async function quotes(event, that, init) {
 
 	function insertToDom(values) {
 		if (!values) return
-		id('quote').textContent = values.content
-		id('author').textContent = values.author
+		$('quote').textContent = values.content
+		$('author').textContent = values.author
 	}
 
 	function controlCacheList(list, lang, type) {
@@ -2275,7 +2378,7 @@ async function quotes(event, that, init) {
 				}
 
 				case 'author': {
-					id('author').classList.toggle('alwaysVisible')
+					$('author').classList.toggle('alwaysVisible')
 					updated.author = that.checked
 					break
 				}
@@ -2296,7 +2399,7 @@ async function quotes(event, that, init) {
 				}
 
 				case 'refresh': {
-					updated.last = freqControl('set')
+					updated.last = freqControl.set()
 
 					chrome.storage.local.get('quotesCache', async (local) => {
 						const quote = controlCacheList(local.quotesCache, lang, quotes.type)[0]
@@ -2329,7 +2432,7 @@ async function quotes(event, that, init) {
 		canDisplayInterface('quotes')
 
 		const { lang, quotes } = init
-		let needsNewQuote = freqControl('get', quotes.frequency, quotes.last)
+		let needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 		let cache = local.quotesCache
 		let quote = {}
 
@@ -2341,7 +2444,7 @@ async function quotes(event, that, init) {
 		}
 
 		if (needsNewQuote) {
-			quotes.last = freqControl('set') // updates last quotes timestamp
+			quotes.last = freqControl.set() // updates last quotes timestamp
 			chrome.storage.sync.set({ quotes })
 
 			quote = controlCacheList(cache, lang, quotes.type)[0] // has removed last quote from cache
@@ -2355,13 +2458,13 @@ async function quotes(event, that, init) {
 		quote = cache[0] // all conditions passed, cache is safe to use
 
 		// Displays
-		if (quotes.author) id('author').classList.add('alwaysVisible')
+		if (quotes.author) $('author').classList.add('alwaysVisible')
 		insertToDom(quote)
 		display(true)
 	})
 }
 
-function showPopup(data) {
+export function showPopup(value: string | number) {
 	//
 	function affiche() {
 		const setReviewLink = () =>
@@ -2383,12 +2486,12 @@ function showPopup(data) {
 			donate: document.createElement('a'),
 		}
 
-		const closePopup = (fromText) => {
+		const closePopup = (fromText: boolean) => {
 			if (fromText) {
-				id('popup').classList.remove('shown')
+				$('popup').classList.remove('shown')
 				setTimeout(() => {
-					id('popup').remove()
-					setTimeout(() => (id('credit').style = ''), 400)
+					$('popup').remove()
+					setTimeout(() => $('credit').removeAttribute('style'), 400)
 				}, 200)
 			}
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
@@ -2415,7 +2518,7 @@ function showPopup(data) {
 
 		document.body.appendChild(dom.wrap)
 
-		id('credit').style.opacity = 0
+		$('credit').style.opacity = '0'
 		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
 		dom.review.addEventListener('mousedown', () => closePopup(false))
@@ -2423,14 +2526,22 @@ function showPopup(data) {
 		dom.desc.addEventListener('click', () => closePopup(true), { passive: true })
 	}
 
-	//s'affiche après 30 tabs
-	if (data > 30) affiche()
-	else if (typeof data === 'number') chrome.storage.sync.set({ reviewPopup: data + 1 })
-	else if (data !== 'removed') chrome.storage.sync.set({ reviewPopup: 0 })
+	// TODO: condition a verifier
+
+	if (typeof value === 'number') {
+		if (value > 30) affiche() //s'affiche après 30 tabs
+		else chrome.storage.sync.set({ reviewPopup: value + 1 })
+
+		return
+	}
+
+	if (value !== 'removed') {
+		chrome.storage.sync.set({ reviewPopup: 0 })
+	}
 }
 
-function modifyWeightOptions(weights, settingsDom) {
-	const select = (settingsDom ? settingsDom : id('settings')).querySelector('#i_weight')
+export function modifyWeightOptions(weights: string[], settingsDom?: HTMLElement) {
+	const select = (settingsDom ? settingsDom : $('settings')).querySelector('#i_weight')
 	const options = select.querySelectorAll('option')
 
 	if (!weights || weights.length === 0) {
@@ -2442,18 +2553,16 @@ function modifyWeightOptions(weights, settingsDom) {
 	else {
 		// filters
 		if (weights.includes('regular')) weights[weights.indexOf('regular')] = '400'
-		weights = weights.map((aa) => parseInt(aa))
+		weights = weights.map((aa) => aa)
 
 		// toggles selects
 		if (options) {
-			options.forEach(
-				(option) => (option.style.display = weights.indexOf(parseInt(option.value)) !== -1 ? 'block' : 'none')
-			)
+			options.forEach((option) => (option.style.display = weights.indexOf(option.value) !== -1 ? 'block' : 'none'))
 		}
 	}
 }
 
-function safeFont(settingsDom) {
+export function safeFont(settingsDom?: HTMLElement) {
 	const is = safeFontList
 	let toUse = is.fallback
 	const hasUbuntu = document.fonts.check('16px Ubuntu')
@@ -2472,15 +2581,15 @@ function safeFont(settingsDom) {
 	return toUse
 }
 
-function customFont(init, event) {
-	function setSize(val) {
+export function customFont(init, event) {
+	function setSize(val: number) {
 		dominterface.style.fontSize = val / 16 + 'em' // 16 is body px size
 	}
 
 	function setFamily(family, fontface) {
-		id('fontstyle').textContent = fontface
-		id('clock').style.fontFamily = '"' + family + '"'
-		id('credit').style.fontFamily = '"' + family + '"'
+		$('fontstyle').textContent = fontface
+		$('clock').style.fontFamily = '"' + family + '"'
+		$('credit').style.fontFamily = '"' + family + '"'
 		dominterface.style.fontFamily = '"' + family + '"'
 		canDisplayInterface('fonts')
 	}
@@ -2491,15 +2600,15 @@ function customFont(init, event) {
 		if (weight) {
 			const list = safeFont().weights
 			dominterface.style.fontWeight = weight
-			id('searchbar').style.fontWeight = weight
+			$('searchbar').style.fontWeight = weight
 
 			// Default bonjourr lowers font weight on clock (because we like it)
 			const loweredWeight = weight > 100 ? list[list.indexOf(weight) - 1] : weight
-			id('clock').style.fontWeight = family ? weight : loweredWeight
+			$('clock').style.fontWeight = family ? weight : loweredWeight
 		}
 	}
 
-	async function setFontface(url) {
+	async function setFontface(url: string) {
 		const resp = await fetch(url)
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
@@ -2509,7 +2618,7 @@ function customFont(init, event) {
 	}
 
 	function updateFont(event) {
-		function fetchFontList(callback) {
+		function fetchFontList(callback: Function) {
 			chrome.storage.local.get('googleFonts', async (local) => {
 				//
 				// Get list from storage
@@ -2535,18 +2644,18 @@ function customFont(init, event) {
 		}
 
 		function removeFont() {
-			id('fontstyle').textContent = ''
-			id('clock').style.fontFamily = ''
-			id('credit').style.fontFamily = ''
+			$('fontstyle').textContent = ''
+			$('clock').style.fontFamily = ''
+			$('credit').style.fontFamily = ''
 			dominterface.style.fontFamily = ''
 
 			// weights
 			const baseWeight = testOS.windows ? '400' : '300'
 			dominterface.style.fontWeight = baseWeight
-			id('searchbar').style.fontWeight = baseWeight
-			id('clock').style.fontWeight = ''
+			$('searchbar').style.fontWeight = baseWeight
+			$('clock').style.fontWeight = ''
 
-			id('i_weight').value = baseWeight
+			$('i_weight').setAttribute('value', baseWeight)
 
 			return { url: '', family: '', availWeights: [], weight: baseWeight }
 		}
@@ -2554,7 +2663,8 @@ function customFont(init, event) {
 		async function changeFamily(json, family) {
 			//
 			// Cherche correspondante
-			const dom = id('i_customfont')
+			const domfamily = $('i_customfont') as HTMLInputElement
+			const domweight = $('i_weight') as HTMLSelectElement
 			const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
 
 			// One font has been found
@@ -2566,17 +2676,17 @@ function customFont(init, event) {
 
 				setFamily(font[0].family, fontface)
 				setWeight(font[0].family, 400)
-				modifyWeightOptions(availWeights, null, true)
-				id('i_weight').value = '400'
+				modifyWeightOptions(availWeights)
+				domweight.value = '400'
 
-				if (dom) dom.blur()
+				if (domfamily) domfamily.blur()
 				return { url, family: font[0].family, availWeights, weight: 400 }
 			}
 
 			// No fonts found
 			else {
-				dom.value = ''
-				safeFont(id('settings'))
+				domfamily.value = ''
+				safeFont($('settings'))
 				return { url: '', family: '', availWeights: [], weight: testOS.windows ? '400' : '300' }
 			}
 		}
@@ -2627,7 +2737,7 @@ function customFont(init, event) {
 			}
 
 			if (event.family === '') {
-				safeFont(id('settings'))
+				safeFont($('settings'))
 				slowRange({ font: { size: font.size, ...removeFont() } }, 200)
 				chrome.storage.local.remove('fontface')
 				return
@@ -2662,15 +2772,17 @@ function customFont(init, event) {
 	}
 }
 
-function textShadow(init, event) {
-	const potency = init ? init : event
-	id('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${potency})`
+export function textShadow(init: number, event?: number) {
+	const val = init ? init : event
+	$('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
 
-	if (event) slowRange({ textShadow: potency })
+	if (event) {
+		slowRange({ textShadow: val })
+	}
 }
 
-function customCss(init, event) {
-	const styleHead = id('styles')
+export function customCss(init: string, event?: any) {
+	const styleHead = $('styles')
 
 	if (init) styleHead.textContent = init
 
@@ -2691,7 +2803,7 @@ function customCss(init, event) {
 	}
 }
 
-function hideElem(init, buttons, that) {
+export function hideElem(init, buttons, that) {
 	const IDsList = [
 		['time', ['time-container', 'date']],
 		['main', ['greetings', 'description', 'tempContainer']],
@@ -2706,8 +2818,8 @@ function hideElem(init, buttons, that) {
 	})
 
 	function toggleElement(dom, hide) {
-		if (hide) id(dom).classList.add('he_hidden')
-		else id(dom).classList.remove('he_hidden')
+		if (hide) $(dom).classList.add('he_hidden')
+		else $(dom).classList.remove('he_hidden')
 	}
 
 	function isEverythingHidden(list, row) {
@@ -2777,11 +2889,80 @@ function hideElem(init, buttons, that) {
 	}
 }
 
-function canDisplayInterface(cat, init) {
+export function sunTime(init?) {
+	if (init && init.lastState) {
+		sunrise = init.lastState.sunrise
+		sunset = init.lastState.sunset
+	}
+
+	//
+	else {
+		if (sunset === 0)
+			return {
+				now: minutator(new Date()),
+				rise: 420,
+				set: 1320,
+			}
+		else
+			return {
+				now: minutator(new Date()),
+				rise: minutator(new Date(sunrise * 1000)),
+				set: minutator(new Date(sunset * 1000)),
+			}
+	}
+}
+
+function filterImports(data) {
+	let result = { ...syncDefaults, ...data }
+
+	// Hide elem classes changed at some point
+	if (validateHideElem(data.hide)) {
+		const weatherIndex = data.hide.indexOf('weather_desc')
+		const widgetIndex = data.hide.indexOf('w_icon')
+
+		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
+		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
+	} else {
+		data.hide = [[0, 0], [0, 0, 0], [0], [0]]
+	}
+
+	// <1.9.0 searchbar options was boolean
+	if (typeof data.searchbar === 'boolean') {
+		result.on = data.searchbar
+		result.newtab = data.searchbar_newtab || false
+		result.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
+	}
+
+	// Filter links to remove alias and give random ids
+	try {
+		function linksFilter(sync) {
+			const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
+
+			sync.links?.forEach(({ title, url, icon }, i) => {
+				const id = 'links' + randomString(6)
+				const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
+
+				sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
+			})
+
+			aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
+			delete sync.links // removes <1.13.0 links array
+
+			return sync
+		}
+		result = linksFilter(result)
+	} catch (e) {
+		errorMessage('Messed up in filter imports', e)
+	}
+
+	return result
+}
+
+function canDisplayInterface(cat, init?: Sync) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
-		const domshowsettings = id('showSettings')
+		const domshowsettings = $('showSettings')
 		let loadtime = performance.now() - loadtimeStart
 
 		if (loadtime > 400) loadtime = 400
@@ -2816,36 +2997,13 @@ function canDisplayInterface(cat, init) {
 	}
 }
 
-function sunTime(init) {
-	if (init && init.lastState) {
-		sunrise = init.lastState.sunrise
-		sunset = init.lastState.sunset
-	}
-
-	//
-	else {
-		if (sunset === 0)
-			return {
-				now: minutator(new Date()),
-				rise: 420,
-				set: 1320,
-			}
-		else
-			return {
-				now: minutator(new Date()),
-				rise: minutator(new Date(sunrise * 1000)),
-				set: minutator(new Date(sunset * 1000)),
-			}
-	}
-}
-
 function onlineMobilePageUpdate() {
 	chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
 		const { dynamic, background_type } = data
-		const dynamicNeedsImage = background_type === 'dynamic' && freqControl('get', dynamic.every, dynamic.time)
+		const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
 
 		if (dynamicNeedsImage) {
-			id('background_overlay').style.opacity = 0
+			$('background_overlay').style.opacity = '0'
 			unsplash(data, false)
 		}
 
@@ -2855,54 +3013,8 @@ function onlineMobilePageUpdate() {
 	})
 }
 
-function filterImports(data) {
-	let result = { ...syncDefaults, ...data }
-
-	// Hide elem classes changed at some point
-	if (validateHideElem(data.hide)) {
-		const weatherIndex = data.hide.indexOf('weather_desc')
-		const widgetIndex = data.hide.indexOf('w_icon')
-
-		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
-		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
-	} else {
-		hide = [[0, 0], [0, 0, 0], [0], [0]]
-	}
-
-	// <1.9.0 searchbar options was boolean
-	if (typeof data.searchbar === 'boolean') {
-		result.on = sb
-		result.newtab = data.searchbar_newtab || false
-		result.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
-	}
-
-	// Filter links to remove alias and give random ids
-	try {
-		function linksFilter(sync) {
-			const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
-
-			sync.links?.forEach(({ title, url, icon }, i) => {
-				const id = 'links' + randomString(6)
-				const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
-
-				sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
-			})
-
-			aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
-			delete sync.links // removes <1.13.0 links array
-
-			return sync
-		}
-		result = linksFilter(result)
-	} catch (e) {
-		errorMessage('Messed up in filter imports', e)
-	}
-
-	return result
-}
-
 function interfaceWidgetToggle(init, event) {
-	const toggleEmpty = (is) => clas(id('widgets'), is, 'empty')
+	const toggleEmpty = (is) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
 	if (event) {
@@ -2935,9 +3047,9 @@ function startup(data) {
 
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
-	clock(null, data)
+	clock(data, null)
 	darkmode(data.dark, null)
-	searchbar(null, null, data.searchbar)
+	searchbar(data.searchbar)
 	quotes(null, null, data)
 	showPopup(data.reviewPopup)
 
@@ -2950,7 +3062,7 @@ function startup(data) {
 	setTimeout(() => settingsInit(data), 200)
 }
 
-const dominterface = id('interface'),
+const dominterface = $('interface'),
 	isExtension = detectPlatform() !== 'online',
 	funcsOk = {
 		clock: false,
@@ -2981,7 +3093,7 @@ window.onload = function () {
 	// Only on Online / Safari
 	if (detectPlatform() === 'online') {
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/service-worker.js')
+			navigator.serviceWorker.register('/sw.js')
 		}
 
 		// PWA install trigger (30s interaction default)

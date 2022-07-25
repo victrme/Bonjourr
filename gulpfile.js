@@ -1,5 +1,4 @@
 const { series, parallel, src, dest, watch } = require('gulp'),
-	concat = require('gulp-concat'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
@@ -12,18 +11,13 @@ function html(platform) {
 	//
 
 	return () => {
-		const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
 		const stream = src('*.html')
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
 		}
 
-		return stream
-			.pipe(
-				replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : ''))
-			)
-			.pipe(dest(`release/${platform}`))
+		return stream.pipe(dest(`release/${platform}`))
 	}
 }
 
@@ -35,12 +29,7 @@ function scripts(platform) {
 	//
 
 	return () => {
-		const stream = src([
-			'src/scripts/lang.js',
-			'src/scripts/utils.js',
-			'src/scripts/script.js',
-			'src/scripts/settings.js',
-		]).pipe(concat('main.js'))
+		const stream = src('release/main.js')
 
 		if (platform === 'online') {
 			stream
@@ -54,25 +43,25 @@ function scripts(platform) {
 				.pipe(replace('local.remove(', 'remove(true, '))
 		}
 
-		stream.pipe(dest(`release/${platform}/src/scripts`))
+		stream.pipe(dest(`release/${platform}/scripts`))
 		return stream
 	}
 }
 
 function ressources(platform) {
 	return () => {
-		const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
-		if (platform !== 'online') assetPath.push('!src/assets/screenshots/**')
+		const assetPath = ['assets/**', '!assets/bonjourr.png']
+		if (platform !== 'online') assetPath.push('!assets/screenshots/**')
 
-		return src(assetPath).pipe(dest(`release/${platform}/src/assets`))
+		return src(assetPath).pipe(dest(`release/${platform}/assets`))
 	}
 }
 
 function worker(platform) {
 	return () => {
 		const file = {
-			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
-			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
+			origin: `scripts/${platform === 'online' ? 'sw.js' : 'background.js'}`,
+			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/scripts/`,
 		}
 		return src(file.origin).pipe(dest(file.destination))
 	}
@@ -81,8 +70,8 @@ function worker(platform) {
 function manifest(platform) {
 	return () => {
 		return platform === 'online'
-			? src(`src/manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
-			: src(`src/manifests/${platform}.json`)
+			? src(`manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
+			: src(`manifests/${platform}.json`)
 					.pipe(rename('manifest.json'))
 					.pipe(dest(`release/${platform}`))
 	}
@@ -90,14 +79,14 @@ function manifest(platform) {
 
 function styles(platform) {
 	return () =>
-		src('src/styles/scss/style.scss')
+		src('styles/scss/style.scss')
 			.pipe(sass.sync().on('error', sass.logError))
 			.pipe(csso())
-			.pipe(dest(`release/${platform}/src/styles/`))
+			.pipe(dest(`release/${platform}/styles/`))
 }
 
 function addBackground(platform) {
-	return () => src('src/scripts/background.js').pipe(dest(`release/${platform}/src/scripts`))
+	return () => src('scripts/background.js').pipe(dest(`release/${platform}/scripts`))
 }
 
 function locales(platform) {
@@ -109,7 +98,7 @@ function locales(platform) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/scss/*.scss', './src/manifests/*.json']
+const filesToWatch = ['*.html', './scripts/*.*', './styles/scss/*.scss', './manifests/*.json']
 
 // prettier-ignore
 const taskOnline = () => [

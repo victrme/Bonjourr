@@ -1,11 +1,62 @@
-function initParams(data, settingsDom) {
+import { dict } from './lang'
+import {
+	$,
+	has,
+	clas,
+	bundleLinks,
+	detectPlatform,
+	closeEditLink,
+	mobilecheck,
+	randomString,
+	slowRange,
+	stringMaxSize,
+	tradThis,
+	langList,
+	lsOnlineStorage,
+	deleteBrowserStorage,
+	turnRefreshButton,
+} from './utils'
+
+import {
+	backgroundFilter,
+	clock,
+	customCss,
+	customFont,
+	darkmode,
+	favicon,
+	hideElem,
+	linksImport,
+	localBackgrounds,
+	modifyWeightOptions,
+	quickLinks,
+	quotes,
+	safeFont,
+	searchbar,
+	tabTitle,
+	textShadow,
+	traduction,
+	unsplash,
+	weather,
+} from './index'
+import { Sync } from './types/sync'
+
+function initParams(data: Sync, settingsDom: any) {
 	//
 
-	const paramId = (str) => settingsDom.querySelector('#' + str)
-	const paramClasses = (str) => settingsDom.querySelectorAll('.' + str)
-	const initInput = (dom, cat, base) => (paramId(dom).value = cat !== undefined ? cat : base)
-	const initCheckbox = (dom, cat) => (paramId(dom).checked = cat ? true : false)
-	const isThereData = (cat, sub) => (data[cat] ? data[cat][sub] : undefined)
+	const paramId = (str: string) => settingsDom.querySelector('#' + str)
+	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)
+
+	const isThereData = (cat: string, subcat: string) => {
+		return data[cat] ? data[cat][subcat] : undefined
+	}
+
+	const initCheckbox = (id: string, cat: boolean) => {
+		paramId(id).checked = cat ? true : false
+	}
+
+	const initInput = (id: string, cat: string | number, base: string | number) => {
+		paramId(id).value = cat !== undefined ? cat : base
+	}
 
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : isThereData('dynamic', 'every')
@@ -25,8 +76,8 @@ function initParams(data, settingsDom) {
 	initInput('i_sbengine', isThereData('searchbar', 'engine'), 'google')
 	initInput('i_sbopacity', isThereData('searchbar', 'opacity'), 0.1)
 	initInput('i_sbrequest', isThereData('searchbar', 'request'), '')
-	initInput('i_qtfreq', isThereData('quotes', 'frequency'))
-	initInput('i_qttype', isThereData('quotes', 'type'))
+	initInput('i_qtfreq', isThereData('quotes', 'frequency'), 'day')
+	initInput('i_qttype', isThereData('quotes', 'type'), 'classic')
 	initInput('i_clockface', isThereData('clock', 'face'), 'none')
 	initInput('i_timezone', isThereData('clock', 'timezone'), 'auto')
 	initInput('i_collection', isThereData('dynamic', 'collection'), '')
@@ -36,7 +87,7 @@ function initParams(data, settingsDom) {
 	initInput('i_customfont', isThereData('font', 'family'), '')
 	initInput('i_weight', isThereData('font', 'weight'), 300)
 	initInput('i_size', isThereData('font', 'size'), mobilecheck() ? 11 : 14)
-	initInput('i_textshadow', data.textShadow)
+	initInput('i_textshadow', data.textShadow, 0.2)
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_quicklinks', data.quicklinks)
@@ -48,9 +99,9 @@ function initParams(data, settingsDom) {
 	initCheckbox('i_sbnewtab', isThereData('searchbar', 'newtab'))
 	initCheckbox('i_quotes', isThereData('quotes', 'on'))
 	initCheckbox('i_qtauthor', isThereData('quotes', 'author'))
-	initCheckbox('i_ampm', isThereData('clock', 'ampm'), false)
-	initCheckbox('i_seconds', isThereData('clock', 'seconds'), false)
-	initCheckbox('i_analog', isThereData('clock', 'analog'), false)
+	initCheckbox('i_ampm', isThereData('clock', 'ampm'))
+	initCheckbox('i_seconds', isThereData('clock', 'seconds'))
+	initCheckbox('i_analog', isThereData('clock', 'analog'))
 
 	// Input translation
 	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
@@ -99,7 +150,7 @@ function initParams(data, settingsDom) {
 	if (isThereData('font', 'family') !== '') customFont(null, { autocomplete: true, settingsDom: settingsDom })
 
 	// Font weight
-	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom, true)
+	if (data.font && data.font.availWeights.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom)
 
 	// Backgrounds options init
 	if (data.background_type === 'custom') {
@@ -143,21 +194,24 @@ function initParams(data, settingsDom) {
 	//
 
 	// Pressing "Enter" removes focus from input to indicate change
-	const enterBlurs = (e) => e.addEventListener('keypress', (e) => (e.key === 'Enter' ? e.target.blur() : ''))
+	const enterBlurs = (elem: HTMLInputElement) => {
+		elem.addEventListener('keypress', (e: KeyboardEvent) => {
+			e.key === 'Enter' ? (e.target as HTMLElement).blur() : ''
+		})
+	}
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 
 	//general
 
-	paramClasses('uploadContainer').forEach(function (uploadContainer) {
-		toggleDrag = () => uploadContainer.classList.toggle('dragover')
-
+	paramClasses('uploadContainer').forEach(function (uploadContainer: Element) {
+		const toggleDrag = () => uploadContainer.classList.toggle('dragover')
 		const input = uploadContainer.querySelector('input[type="file"')
 
-		input.addEventListener('dragenter', toggleDrag)
-		input.addEventListener('dragleave', toggleDrag)
-		input.addEventListener('drop', toggleDrag)
+		input?.addEventListener('dragenter', toggleDrag)
+		input?.addEventListener('dragleave', toggleDrag)
+		input?.addEventListener('drop', toggleDrag)
 	})
 
 	// Change edit tips on mobile
@@ -166,7 +220,7 @@ function initParams(data, settingsDom) {
 			`Edit your Quick Links by long-pressing the icon.`
 		)
 
-	settingsDom.querySelectorAll('.tooltip').forEach((elem) => {
+	settingsDom.querySelectorAll('.tooltip').forEach((elem: HTMLElement) => {
 		elem.onclick = function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			settingsDom.querySelector('.tooltiptext.' + cl).classList.toggle('shown') // toggle tt text
@@ -175,7 +229,7 @@ function initParams(data, settingsDom) {
 
 	// Reduces opacity to better see interface appearance changes
 	if (mobilecheck()) {
-		const touchHandler = (start) => (id('settings').style.opacity = start ? 0.2 : 1)
+		const touchHandler = (start: boolean) => ($('settings').style.opacity = start ? '0.2' : '1')
 		const rangeInputs = settingsDom.querySelectorAll("input[type='range'")
 
 		rangeInputs.forEach(function (input) {
@@ -188,7 +242,7 @@ function initParams(data, settingsDom) {
 	// General
 
 	paramId('i_showall').onchange = function () {
-		showall(this.checked, true)
+		showall(this.checked, true, null)
 	}
 
 	paramId('i_lang').onchange = function () {
@@ -196,7 +250,7 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_greeting').onkeyup = function () {
-		clock({ greeting: stringMaxSize(this.value, 32) })
+		clock(null, { is: 'greeting', value: stringMaxSize(this.value, 32) })
 	}
 
 	paramId('i_favicon').oninput = function () {
@@ -213,7 +267,7 @@ function initParams(data, settingsDom) {
 
 	paramId('hideelem')
 		.querySelectorAll('button')
-		.forEach((elem) => {
+		.forEach((elem: HTMLButtonElement) => {
 			elem.onclick = function () {
 				elem.classList.toggle('clicked')
 				hideElem(null, null, this)
@@ -228,11 +282,11 @@ function initParams(data, settingsDom) {
 		quickLinks('toggle', this.checked)
 	}
 
-	paramId('i_title').onkeyup = function (e) {
+	paramId('i_title').onkeyup = function (e: KeyboardEvent) {
 		if (e.code === 'Enter') quickLinks('addlink', e)
 	}
 
-	paramId('i_url').onkeyup = function (e) {
+	paramId('i_url').onkeyup = function (e: KeyboardEvent) {
 		if (e.code === 'Enter') quickLinks('addlink', e)
 	}
 
@@ -265,17 +319,21 @@ function initParams(data, settingsDom) {
 
 	paramId('i_freq').onchange = function () {
 		if (paramId('i_type').value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
-		else unsplash(null, { every: this.value })
+		else unsplash(null, { is: 'every', value: this.value })
 	}
 
-	paramId('i_refresh').onclick = function (e) {
+	paramId('i_refresh').onclick = function () {
+		// paramId('i_type').value === 'custom'
+		// 	? slow(this, localBackgrounds(null, { is: 'refresh', button: this.children[0] }))
+		// 	: slow(this, unsplash(null, { refresh: this.children[0] }))
+
 		paramId('i_type').value === 'custom'
-			? slow(this, localBackgrounds(null, { is: 'refresh', button: this.children[0] }))
-			: slow(this, unsplash(null, { refresh: this.children[0] }))
+			? localBackgrounds(null, { is: 'refresh', button: this.children[0] })
+			: unsplash(null, { is: 'refresh', button: this.children[0] })
 	}
 
 	paramId('i_collection').onchange = function () {
-		unsplash(null, { collection: stringMaxSize(this.value, 256) })
+		unsplash(null, { is: 'collection', value: stringMaxSize(this.value, 256) })
 		this.blur()
 	}
 
@@ -287,12 +345,12 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_blur').oninput = function () {
-		filter('blur', this.value)
+		backgroundFilter('blur', this.value)
 		slowRange({ background_blur: parseFloat(this.value) })
 	}
 
 	paramId('i_bright').oninput = function () {
-		filter('bright', this.value)
+		backgroundFilter('bright', this.value)
 		slowRange({ background_bright: parseFloat(this.value) })
 	}
 
@@ -300,49 +358,53 @@ function initParams(data, settingsDom) {
 	// Time and date
 
 	paramId('i_analog').onchange = function () {
-		clock({ analog: this.checked })
+		clock(null, { is: 'analog', checked: this.checked })
 	}
 
 	paramId('i_seconds').onchange = function () {
-		clock({ seconds: this.checked })
+		clock(null, { is: 'seconds', checked: this.checked })
 	}
 
 	paramId('i_clockface').onchange = function () {
-		clock({ face: this.value })
+		clock(null, { is: 'face', value: this.value })
 	}
 
 	paramId('i_ampm').onchange = function () {
-		clock({ ampm: this.checked })
+		clock(null, { is: 'ampm', checked: this.checked })
 	}
 
 	paramId('i_timezone').onchange = function () {
-		clock({ timezone: this.value })
+		clock(null, { is: 'timezone', value: this.value })
 	}
 
 	paramId('i_usdate').onchange = function () {
-		clock({ usdate: this.checked })
+		clock(null, { is: 'usdate', checked: this.checked })
 	}
 
 	//
 	// Weather
 
 	paramId('i_city').onkeyup = function (e) {
-		if (e.code === 'Enter') {
-			clearTimeout(rangeActive)
-			if (!stillActive) weather('city', this)
-		} else {
-			const that = this
-			clearTimeout(rangeActive)
-			rangeActive = setTimeout(() => weather('city', that), 2000)
-		}
+		weather('city', this)
+
+		// if (e.code === 'Enter') {
+		// 	clearTimeout(rangeActive)
+		// 	if (!stillActive) weather('city', this)
+		// } else {
+		// 	const that = this
+		// 	clearTimeout(rangeActive)
+		// 	rangeActive = setTimeout(() => weather('city', that), 2000)
+		// }
 	}
 
 	paramId('i_units').onchange = function () {
-		if (!stillActive) weather('units', this)
+		weather('units', this)
+		// if (!stillActive) weather('units', this)
 	}
 
 	paramId('i_geol').onchange = function () {
-		if (!stillActive) weather('geol', this)
+		weather('geol', this)
+		// if (!stillActive) weather('geol', this)
 	}
 
 	paramId('i_forecast').onchange = function () {
@@ -358,24 +420,25 @@ function initParams(data, settingsDom) {
 
 	paramId('i_sb').onchange = function () {
 		paramId('searchbar_options').classList.toggle('shown')
-		if (!stillActive) searchbar('searchbar', this)
-		slow(this)
+		searchbar(null, 'searchbar', this)
+		// if (!stillActive) searchbar('searchbar', this)
+		// slow(this)
 	}
 
 	paramId('i_sbengine').onchange = function () {
-		searchbar('engine', this)
+		searchbar(null, 'engine', this)
 	}
 
 	paramId('i_sbopacity').oninput = function () {
-		searchbar('opacity', this)
+		searchbar(null, 'opacity', this)
 	}
 
 	paramId('i_sbrequest').onchange = function () {
-		searchbar('request', this)
+		searchbar(null, 'request', this)
 	}
 
 	paramId('i_sbnewtab').onchange = function () {
-		searchbar('newtab', this)
+		searchbar(null, 'newtab', this)
 	}
 
 	//
@@ -395,9 +458,10 @@ function initParams(data, settingsDom) {
 	}
 
 	paramId('i_qtrefresh').onclick = function () {
-		if (!stillActive) quotes('refresh', this)
 		turnRefreshButton(this.children[0], true)
-		slow(this, 600)
+		quotes('refresh', this)
+		// if (!stillActive) quotes('refresh', this)
+		// slow(this, 600)
 	}
 
 	paramId('i_qtauthor').onchange = function () {
@@ -446,10 +510,12 @@ function initParams(data, settingsDom) {
 		const file = this.files[0]
 		const reader = new FileReader()
 
-		reader.onload = function (e) {
+		reader.onload = () => {
 			try {
-				const json = JSON.parse(window.atob(reader.result))
-				paramsImport(json)
+				if (typeof reader.result === 'string') {
+					const json = JSON.parse(window.atob(reader.result))
+					paramsImport(json)
+				}
 			} catch (err) {
 				console.log(err)
 			}
@@ -457,7 +523,7 @@ function initParams(data, settingsDom) {
 		reader.readAsText(file)
 	}
 
-	const toggleSettingsMgmt = (toggled) => {
+	const toggleSettingsMgmt = (toggled: boolean) => {
 		clas(paramId('export'), !toggled, 'shown')
 		clas(paramId('import'), toggled, 'shown')
 		clas(paramClasses('tabs')[0], toggled, 'toggled')
@@ -467,20 +533,20 @@ function initParams(data, settingsDom) {
 	paramId('s_import').onclick = () => toggleSettingsMgmt(true)
 
 	paramId('exportfile').onclick = function () {
-		const a = id('downloadfile')
+		const a = $('downloadfile')
 
 		chrome.storage.sync.get(null, (data) => {
-			a.href = `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`
-			a.download = `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`
+			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
+			a.setAttribute('data-download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
 			a.click()
 		})
 	}
 
 	paramId('copyimport').onclick = async function () {
 		try {
-			await navigator.clipboard.writeText(id('area_export').value)
+			await navigator.clipboard.writeText($('area_export').getAttribute('value'))
 			this.textContent = 'Copied !'
-			setTimeout(() => (id('copyimport').textContent = 'Copy settings'), 1000)
+			setTimeout(() => ($('copyimport').textContent = 'Copy settings'), 1000)
 		} catch (err) {
 			console.error('Failed to copy: ', err)
 		}
@@ -489,14 +555,14 @@ function initParams(data, settingsDom) {
 	paramId('i_importtext').onkeyup = function () {
 		try {
 			JSON.parse(this.value)
-			id('importtext').removeAttribute('disabled')
+			$('importtext').removeAttribute('disabled')
 		} catch (error) {
-			id('importtext').setAttribute('disabled', '')
+			$('importtext').setAttribute('disabled', '')
 		}
 	}
 
 	paramId('importtext').onclick = function () {
-		paramsImport(JSON.parse(id('i_importtext').value))
+		paramsImport(JSON.parse($('i_importtext').getAttribute('value')))
 	}
 
 	paramId('b_resetconf').onclick = () => paramsReset('conf')
@@ -504,7 +570,7 @@ function initParams(data, settingsDom) {
 	paramId('b_resetno').onclick = () => paramsReset('no')
 }
 
-function cssInputSize(param) {
+function cssInputSize(param: Element) {
 	setTimeout(() => {
 		const cssResize = new ResizeObserver((e) => {
 			const rect = e[0].contentRect
@@ -514,7 +580,7 @@ function cssInputSize(param) {
 	}, 400)
 }
 
-function changelogControl(settingsDom) {
+function changelogControl(settingsDom: HTMLDivElement) {
 	const domshowsettings = document.querySelector('#showSettings')
 	const domchangelog = settingsDom.querySelector('#changelogContainer')
 
@@ -527,18 +593,23 @@ function changelogControl(settingsDom) {
 		localStorage.removeItem('hasUpdated')
 	}
 
-	settingsDom.querySelector('#link').onclick = () => dismiss()
-	settingsDom.querySelector('#log_dismiss').onclick = () => dismiss()
+	const loglink = settingsDom.querySelector('#link') as HTMLAnchorElement
+	const logdismiss = settingsDom.querySelector('#log_dismiss') as HTMLButtonElement
+
+	loglink.onclick = () => dismiss()
+	logdismiss.onclick = () => dismiss()
 }
 
-function switchLangs(nextLang) {
-	function langSwitchTranslation(langs) {
+type Langs = keyof typeof langList
+
+function switchLangs(nextLang: Langs) {
+	function langSwitchTranslation(langs: { current: string; next: Langs }) {
 		// On 'en' lang, get the dict key, not one of its values
 		// create dict like object to parse through
 		// switchDict is: {{'current a': 'next a'}, {'current b': 'next b'} ...}
 
-		const getLangList = (l) => (l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l]))
-		const changeText = (dom, str) => (dom.textContent = switchDict[str])
+		const getLangList = (l: string) => (l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l]))
+		const changeText = (dom: Element, str: string) => (dom.textContent = switchDict[str])
 
 		const { current, next } = langs
 		const nextList = getLangList(next)
@@ -560,11 +631,11 @@ function switchLangs(nextLang) {
 	chrome.storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	chrome.storage.sync.get(null, (data) => {
+	chrome.storage.sync.get(null, (data: Sync) => {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
 		weather(null, null, data)
-		clock(null, data)
+		clock(data, null)
 
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
@@ -574,23 +645,23 @@ function switchLangs(nextLang) {
 	})
 }
 
-function showall(val, event, domSettings) {
+function showall(val: boolean, event: boolean, domSettings: Element) {
 	if (event) chrome.storage.sync.set({ showall: val })
-	clas(event ? id('settings') : domSettings, val, 'all')
+	clas(event ? $('settings') : domSettings, val, 'all')
 }
 
-function selectBackgroundType(cat) {
+function selectBackgroundType(cat: string) {
 	function toggleType(sync, local) {
-		id('custom').style.display = cat === 'custom' ? 'block' : 'none'
-		document.querySelector('.as_collection').style.display = cat === 'custom' ? 'none' : 'block'
+		$('custom').style.display = cat === 'custom' ? 'block' : 'none'
+		document.querySelector('.as_collection').setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
 
 		// Only apply fade out/in if there are local backgrounds
 		// No local ? no reason to fade to black or show no thumbnails
 		// Just stick to unsplash
 
 		if (cat === 'custom' && local.selectedId !== '') {
-			id('background_overlay').style.opacity = `0`
-			localBackgrounds(null, { is: 'thumbnail', settings: id('settings') })
+			$('background_overlay').style.opacity = `0`
+			localBackgrounds(null, { is: 'thumbnail', settings: $('settings') })
 			setTimeout(
 				() =>
 					localBackgrounds({
@@ -602,10 +673,10 @@ function selectBackgroundType(cat) {
 		}
 
 		if (cat === 'dynamic') {
-			clas(id('credit'), true, 'shown')
+			clas($('credit'), true, 'shown')
 
 			if (local.selectedId !== '') {
-				id('background_overlay').style.opacity = `0`
+				$('background_overlay').style.opacity = `0`
 				setTimeout(() => unsplash(sync), 400)
 			}
 		}
@@ -613,7 +684,7 @@ function selectBackgroundType(cat) {
 		const c_every = sync.custom_every || 'pause'
 		const d_every = sync.dynamic.every || 'hour'
 
-		id('i_freq').value = cat === 'custom' ? c_every : d_every // Setting frequence input
+		$('i_freq').setAttribute('value', cat === 'custom' ? c_every : d_every) // Setting frequence input
 
 		chrome.storage.sync.set({ background_type: cat })
 	}
@@ -623,8 +694,27 @@ function selectBackgroundType(cat) {
 	})
 }
 
+function signature(dom) {
+	const spans = dom.querySelectorAll('#rand span')
+	const as = dom.querySelectorAll('#rand a')
+	const us = [
+		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
+		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
+	]
+
+	if (Math.random() > 0.5) us.reverse()
+
+	spans[0].textContent = `${tradThis('by')} `
+	spans[1].textContent = ` & `
+
+	as.forEach((a, i) => {
+		a.href = us[i].href
+		a.textContent = us[i].name
+	})
+}
+
 function fadeOut() {
-	const dominterface = id('interface')
+	const dominterface = $('interface')
 	dominterface.click()
 	dominterface.style.transition = 'opacity .4s'
 	dominterface.style.opacity = '0'
@@ -659,7 +749,7 @@ function paramsImport(dataToImport) {
 				sync = detectPlatform() === 'online' ? { import: sync } : sync // full import on Online is through "import" field
 
 				chrome.storage.sync.clear() // Must clear, if not, it can add legacy data
-				chrome.storage.sync.set(sync, chrome.storage.local.set(local))
+				chrome.storage.sync.set(sync, () => chrome.storage.local.set(local))
 
 				sessionStorage.isImport = true // to separate import and new version startup
 
@@ -671,12 +761,23 @@ function paramsImport(dataToImport) {
 	}
 }
 
-function updateExportJSON(settingsDom) {
-	if (!settingsDom && !id('settings')) {
+function paramsReset(action) {
+	if (action === 'yes') {
+		detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
+		fadeOut()
+		return
+	}
+
+	clas($('reset_first'), action === 'no', 'shown')
+	clas($('reset_conf'), action === 'conf', 'shown')
+}
+
+export function updateExportJSON(settingsDom) {
+	if (!settingsDom && !$('settings')) {
 		return false
 	}
 
-	const dom = settingsDom || id('settings')
+	const dom = settingsDom || $('settings')
 	const input = dom.querySelector('#area_export')
 
 	dom.querySelector('#importtext').setAttribute('disabled', '') // because cannot export same settings
@@ -692,41 +793,11 @@ function updateExportJSON(settingsDom) {
 	})
 }
 
-function paramsReset(action) {
-	if (action === 'yes') {
-		detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
-		fadeOut()
-		return
-	}
-
-	clas(id('reset_first'), action === 'no', 'shown')
-	clas(id('reset_conf'), action === 'conf', 'shown')
-}
-
-function signature(dom) {
-	const spans = dom.querySelectorAll('#rand span')
-	const as = dom.querySelectorAll('#rand a')
-	const us = [
-		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
-		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
-	]
-
-	if (Math.random() > 0.5) us.reverse()
-
-	spans[0].textContent = `${tradThis('by')} `
-	spans[1].textContent = ` & `
-
-	as.forEach((a, i) => {
-		a.href = us[i].href
-		a.textContent = us[i].name
-	})
-}
-
-function settingsInit(data) {
+export function settingsInit(data) {
 	function settingsCreator(html) {
-		const domshowsettings = id('showSettings')
-		const dominterface = id('interface')
-		const domedit = id('editlink')
+		const domshowsettings = $('showSettings')
+		const dominterface = $('interface')
+		const domedit = $('editlink')
 
 		const parser = new DOMParser()
 		const settingsDom = document.createElement('aside')
@@ -758,9 +829,10 @@ function settingsInit(data) {
 			if (!mobilecheck()) clas(dominterface, isClosed, 'pushed')
 		}
 
-		id('skiptosettings').onclick = function () {
+		$('skiptosettings').onclick = function () {
 			toggleDisplay(settingsDom)
-			settingsDom.querySelector('#i_showall').focus()
+			const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
+			showall.focus()
 		}
 
 		domshowsettings.onclick = function () {
@@ -778,26 +850,26 @@ function settingsInit(data) {
 				return
 			}
 
-			if (id('error') && e.ctrlKey) {
+			if ($('error') && e.ctrlKey) {
 				return // do nothing if pressing ctrl or if there's an error message
 			}
 
 			const notTabbing = document.body.classList.contains('tabbing') === false
-			const noSettings = has(id('settings'), 'shown') === false
-			const noEdit = has(id('editlink'), 'shown') === false
-			const hasSearchbar = has(id('sb_container'), 'shown')
+			const noSettings = has($('settings'), 'shown') === false
+			const noEdit = has($('editlink'), 'shown') === false
+			const hasSearchbar = has($('sb_container'), 'shown')
 
 			if (noSettings && noEdit && notTabbing && hasSearchbar) {
-				id('searchbar').focus() // Focus searchbar if only searchbar is on
+				$('searchbar').focus() // Focus searchbar if only searchbar is on
 			}
 		}
 
 		dominterface.onclick = function (e) {
-			if (e.composedPath().filter((d) => d.id === 'linkblocks').length > 0) {
+			if (e.composedPath().filter((d: Element) => d.id === 'linkblocks').length > 0) {
 				return // Do nothing if links are clicked
 			}
 
-			if (has(id('editlink'), 'shown')) {
+			if (has($('editlink'), 'shown')) {
 				closeEditLink() // hides edit menu
 			}
 

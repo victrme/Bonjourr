@@ -1,39 +1,35 @@
-//
-//
-// Vals
-//
-//
+import { dict } from './lang'
+import { Sync } from './types/sync'
+import { Local } from './types/local'
 
-const id = (name) => document.getElementById(name)
-const cl = (name) => document.getElementsByClassName(name)
-const has = (dom, val) => {
-	if (dom && dom.classList) if (dom.classList.length > 0) return dom.classList.contains(val)
-	return false
+export const $ = (name: string): HTMLElement => document.getElementById(name)
+
+export const has = (dom: Element, val: string) => {
+	return dom?.classList.length > 0 ? dom.classList.contains(val) : false
 }
 
-const clas = (dom, add, str) => {
-	if (add) dom.classList.add(str)
-	else dom.classList.remove(str)
+export const clas = (dom: Element, add: boolean, str: string) => {
+	add ? dom.classList.add(str) : dom.classList.remove(str)
 }
 
-let stillActive = false
-let rangeActive = false
+let stillActive: any
+let rangeActive: any
 
-const mobilecheck = () =>
+export const mobilecheck = () =>
 	navigator.userAgentData
 		? navigator.userAgentData.mobile
 		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
-const stringMaxSize = (string, size) => (string.length > size ? string.slice(0, size) : string)
-const minutator = (date) => date.getHours() * 60 + date.getMinutes()
+export const stringMaxSize = (str: string, size: number) => (str.length > size ? str.slice(0, size) : str)
+export const minutator = (date: Date) => date.getHours() * 60 + date.getMinutes()
 
-const extractDomain = (url) => {
+export const extractDomain = (url: string) => {
 	url.replace(/(^\w+:|^)\/\//, '')
 	url.split('?')[0]
 	return url
 }
 
-const extractHostname = (url) => {
+export const extractHostname = (url: string) => {
 	const a = document.createElement('a')
 	let res = ''
 	a.href = url
@@ -44,12 +40,12 @@ const extractHostname = (url) => {
 	return res
 }
 
-const randomString = (len) => {
+export const randomString = (len: number) => {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
 
-function detectPlatform() {
+export function detectPlatform() {
 	const p = window.location.protocol
 	return p === 'moz-extension:'
 		? 'firefox'
@@ -60,7 +56,7 @@ function detectPlatform() {
 		: 'online'
 }
 
-const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
+export const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
 	return agent.indexOf('edg/' || 'edge') > -1
 		? 'edge'
 		: agent.indexOf('chrome') > -1
@@ -72,25 +68,11 @@ const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
 		: 'other'
 }
 
-const getFavicon = () => {
+export const getFavicon = () => {
 	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
 }
 
-// gives perfect max-height to hideable element
-const setMaxHeight = (elem, state) => {
-	let maxHeight
-
-	if (state == null) {
-		// toggles between 0 and value
-		maxHeight = id(elem.id).style.maxHeight === '0px' ? id(elem.id).scrollHeight : 0
-	} else {
-		maxHeight = state ? elem.scrollHeight : 0
-	}
-
-	elem.style.maxHeight = maxHeight + 'px'
-}
-
-function periodOfDay(sunTime, time) {
+export function periodOfDay(sunTime: { rise: number; set: number; now: number }, time?: number) {
 	// Transition day and night with noon & evening collections
 	// if clock is + /- 60 min around sunrise/set
 	const { rise, set, now } = sunTime
@@ -107,7 +89,7 @@ function periodOfDay(sunTime, time) {
 	return 'day'
 }
 
-function validateHideElem(hide) {
+export function validateHideElem(hide: number[][]) {
 	let res = true
 
 	Array.isArray(hide) && hide.length > 0
@@ -123,10 +105,10 @@ function validateHideElem(hide) {
 	return res
 }
 
-function localDataMigration(local) {
+export function localDataMigration(local: any) {
 	if (!local.custom) return local
 
-	let idsList = []
+	let idsList: string[]
 	Object.values(local.custom).forEach((val, i) => {
 		const _id = randomString(6)
 		idsList.push(_id)
@@ -147,25 +129,25 @@ function localDataMigration(local) {
 	return local
 }
 
-function bundleLinks(storage) {
+export function bundleLinks(storage: any) {
 	// 1.13.0: Returns an array of found links in storage
-	let res = []
+	let res: any = []
 	Object.entries(storage).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val)
 	})
 
-	res.sort((a, b) => a.order - b.order)
+	res.sort((a: any, b: any) => a.order - b.order)
 	return res
 }
 
-function slowRange(tosave, time = 400) {
+export function slowRange(tosave: any, time = 400) {
 	clearTimeout(rangeActive)
 	rangeActive = setTimeout(function () {
 		chrome.storage.sync.set(tosave)
 	}, time)
 }
 
-function slow(that, time = 400) {
+export function slow(that: Element, time = 400) {
 	that.setAttribute('disabled', '')
 	stillActive = setTimeout(() => {
 		that.removeAttribute('disabled')
@@ -174,7 +156,7 @@ function slow(that, time = 400) {
 	}, time)
 }
 
-function turnRefreshButton(button, canTurn) {
+export function turnRefreshButton(button: HTMLButtonElement, canTurn: boolean) {
 	const animationOptions = { duration: 600, easing: 'ease-out' }
 	button.animate(
 		canTurn
@@ -184,26 +166,28 @@ function turnRefreshButton(button, canTurn) {
 	)
 }
 
-function closeEditLink() {
+export function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
+	if (!domedit) return
+
 	clas(domedit, true, 'hiding')
 	document.querySelectorAll('#linkblocks img').forEach((img) => clas(img, false, 'selected'))
 	setTimeout(() => {
-		domedit.setAttribute('class', '')
+		domedit ? domedit.setAttribute('class', '') : ''
 	}, 200)
 }
 
 // lsOnlineStorage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 
-const lsOnlineStorage = {
-	get: (local, unused, callback) => {
+export const lsOnlineStorage = {
+	get: (local: boolean, unused: null, callback: Function) => {
 		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
 		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
 		callback(data)
 	},
-	set: (prop, callback) => {
-		lsOnlineStorage.get(null, null, (data) => {
+	set: (prop: {}, callback: Function) => {
+		lsOnlineStorage.get(false, null, (data: Sync) => {
 			if (typeof prop === 'object') {
 				const [key, val] = Object.entries(prop)[0]
 
@@ -225,8 +209,8 @@ const lsOnlineStorage = {
 	clear: () => {
 		localStorage.removeItem('bonjourr')
 	},
-	setLocal: (prop, callback) => {
-		lsOnlineStorage.get(true, null, (data) => {
+	setLocal: (prop, callback: Function) => {
+		lsOnlineStorage.get(true, null, (data: Local) => {
 			if (typeof prop === 'object') {
 				data = { ...data, ...prop }
 
@@ -240,30 +224,25 @@ const lsOnlineStorage = {
 			}
 		})
 	},
-	remove: (isLocal, key) => {
-		lsOnlineStorage.get(isLocal, null, (data) => {
+	remove: (isLocal: boolean, key: string) => {
+		lsOnlineStorage.get(isLocal, null, (data: Sync | Local) => {
 			delete data[key]
 			if (isLocal) localStorage.bonjourrBackgrounds = JSON.stringify(data)
 			else localStorage.bonjourr = JSON.stringify(data)
 		})
 	},
-	log: (isLocal) => lsOnlineStorage.get(isLocal, null, (data) => console.log(data)),
+	log: (isLocal: boolean) => lsOnlineStorage.get(isLocal, null, (data: Sync | Local) => console.log(data)),
 	del: () => localStorage.clear(),
 }
 
-const getBrowserStorage = () => {
+export const getBrowserStorage = () => {
 	chrome.storage.local.get(null, (local) => {
 		chrome.storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
 	})
 }
 
-const logsync = () =>
-	chrome.storage.sync.get(null, (data) => Object.entries(data).forEach((elem) => console.log(elem[0], elem[1])))
-const loglocal = () =>
-	chrome.storage.local.get(null, (data) => Object.entries(data).forEach((elem) => console.log(elem[0], elem[1])))
-
-function deleteBrowserStorage() {
-	if (isExtension) {
+export function deleteBrowserStorage() {
+	if (detectPlatform() !== 'online') {
 		chrome.storage.sync.clear()
 		chrome.storage.local.clear()
 	}
@@ -274,8 +253,10 @@ function deleteBrowserStorage() {
 	}, 400)
 }
 
-function errorMessage(comment, error) {
-	function displayMessage(dataStr) {
+export function errorMessage(comment: string, error: Error) {
+	const dominterface = $('interface')
+
+	function displayMessage(dataStr: string) {
 		const warning = document.createElement('div')
 		const title = document.createElement('h1')
 		const subtitle = document.createElement('p')
@@ -297,7 +278,7 @@ function errorMessage(comment, error) {
 
 		resetButton.textContent = 'Reset Bonjourr'
 		resetButton.addEventListener('click', () => {
-			warning.style.opacity = 0
+			warning.style.opacity = '0'
 			deleteBrowserStorage()
 		})
 
@@ -305,7 +286,7 @@ function errorMessage(comment, error) {
 		closeError.textContent = 'Close this window'
 		closeError.addEventListener('click', () => {
 			sessionStorage.errorMessage = 'removed'
-			warning.style.opacity = 0
+			warning.style.opacity = '0'
 			setTimeout(() => (warning.style.display = 'none'), 400)
 		})
 
@@ -322,14 +303,14 @@ function errorMessage(comment, error) {
 		warning.id = 'error'
 		document.body.prepend(warning)
 
-		dominterface.style.opacity = '1'
+		dominterface ? (dominterface.style.opacity = '1') : ''
 
-		setTimeout(() => (warning.style.opacity = 1), 20)
+		setTimeout(() => (warning.style.opacity = '1'), 20)
 	}
 
-	console.log(error)
+	console.error(error)
 
-	if (sessionStorage.errorMessage === 'removed') {
+	if (sessionStorage.errorMessage === 'removed' && dominterface) {
 		dominterface.style.opacity = '1'
 		return false
 	} else {
@@ -337,13 +318,13 @@ function errorMessage(comment, error) {
 			try {
 				displayMessage(JSON.stringify(data, null, 4))
 			} catch (e) {
-				displayMessage('', 'Could not load settings')
+				displayMessage('')
 			}
 		})
 	}
 }
 
-const testOS = {
+export const testOS = {
 	mac: window.navigator.appVersion.includes('Macintosh'),
 	windows: window.navigator.appVersion.includes('Windows'),
 	android: window.navigator.userAgent.includes('Android'),
@@ -352,7 +333,7 @@ const testOS = {
 		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
 }
 
-const safeFontList = {
+export const safeFontList = {
 	fallback: { placeholder: 'Arial', weights: [500, 600, 800] },
 	windows: { placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
 	android: { placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
@@ -360,7 +341,7 @@ const safeFontList = {
 	apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
 }
 
-const langList = {
+export const langList = {
 	en: 'English',
 	fr: 'Français',
 	sk: 'Slovenský',
@@ -379,7 +360,7 @@ const langList = {
 	da: 'Dansk',
 }
 
-const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
+export const defaultLang = (navLang = navigator.language.replace('-', '_')): string => {
 	// check if exact or similar languages are available
 	for (const [code] of Object.entries(langList)) {
 		if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
@@ -389,16 +370,22 @@ const defaultLang = (navLang = navigator.language.replace('-', '_')) => {
 	return 'en' // if not, defaults to english
 }
 
-function tradThis(str) {
+export function tradThis(str: string): string {
 	const lang = document.documentElement.getAttribute('lang')
-	return lang === 'en' ? str : dict[str][lang]
+
+	if (lang && lang !== 'en') {
+		return dict[str][lang]
+	}
+
+	return str
 }
 
-const syncDefaults = {
+export const syncDefaults: Sync = {
 	usdate: false,
 	showall: false,
 	quicklinks: true,
 	linksrow: 6,
+	linknewtab: false,
 	linkstyle: 'large',
 	cssHeight: 80,
 	reviewPopup: 0,
@@ -410,6 +397,7 @@ const syncDefaults = {
 	tabtitle: '',
 	greeting: '',
 	dark: 'system',
+	custom_time: 1650516688,
 	custom_every: 'pause',
 	background_type: 'dynamic',
 	clock: {
@@ -459,7 +447,8 @@ const syncDefaults = {
 	about: { browser: detectPlatform(), version: '1.15.0' },
 }
 
-const localDefaults = {
+export const localDefaults: Local = {
+	waitingForPreload: false,
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],

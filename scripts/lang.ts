@@ -16,7 +16,7 @@
 //   Italian translation by Trazalca · @Trazalca
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
 
-const dict = {
+export const dict = {
 	'New tab': {
 		fr: 'Nouvel onglet',
 		sv: 'Ny flik',
@@ -1901,7 +1901,6 @@ const dict = {
 		de: 'Imperiale Maßeinheiten',
 		it: 'Sistema imperiale',
 		es: 'Sistema imperial',
-		tr: 'Emperyal birimler',
 		uk: 'Використовувати шкалу Фаренгейта',
 		tr: 'Emperyal birimler',
 		id: 'Kisaran Unit',
@@ -2708,9 +2707,9 @@ const dict = {
 	},
 }
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
-const months = [
+export const months = [
 	'January',
 	'February',
 	'March',
@@ -2725,7 +2724,7 @@ const months = [
 	'December',
 ]
 
-const engineLocales = {
+export const engineLocales = {
 	google: {
 		base: 'https://www.google%l/search?q=%s',
 		fr: '.fr',
