@@ -1,7 +1,6 @@
 import { dict, days, engineLocales, months } from './lang'
 import { settingsInit, updateExportJSON } from './settings'
-import { Local, DynamicCache } from './types/local'
-import Quote from './types/quote'
+import { Local, DynamicCache, Quote } from './types/local'
 import { Sync, Searchbar } from './types/sync'
 import UnsplashImage from './types/unsplashImage'
 import {
@@ -32,6 +31,7 @@ import {
 	tradThis,
 	turnRefreshButton,
 	validateHideElem,
+	langList,
 } from './utils'
 
 type UnsplashEvent = {
@@ -76,12 +76,15 @@ const freqControl = {
 export function traduction(settingsDom: Element, lang = 'en') {
 	if (lang === 'en') return
 
+	type dictStrings = keyof typeof dict
+	type LangList = keyof typeof langList
+
 	document.documentElement.setAttribute('lang', lang)
 
 	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
-	const changeText = (dom: Element, str: string) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
+	const changeText = (dom: Element, str: dictStrings) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
 	trns.forEach((trn) => {
-		if (trn.textContent) changeText(trn, trn.textContent)
+		if (trn.textContent) changeText(trn, trn.textContent as dictStrings)
 	})
 }
 

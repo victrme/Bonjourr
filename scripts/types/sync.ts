@@ -67,4 +67,5 @@ export type Sync = {
 	textShadow: number
 	hide: number[][]
 	about: { browser: string; version: string }
+	[key: string]: Link | unknown
 }

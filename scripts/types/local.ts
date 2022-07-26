@@ -1,5 +1,9 @@
 import UnsplashImage from './unsplashImage'
-import Quote from './quote'
+
+export type Quote = {
+	author: string
+	content: string
+}
 
 export type DynamicCache = {
 	noon: UnsplashImage[]

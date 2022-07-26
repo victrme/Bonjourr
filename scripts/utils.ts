@@ -2,7 +2,7 @@ import { dict } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
-export const $ = (name: string): HTMLElement => document.getElementById(name)
+export const $ = (name: string) => document.getElementById(name)
 
 export const has = (dom: Element, val: string) => {
 	return dom?.classList.length > 0 ? dom.classList.contains(val) : false
