@@ -263,7 +263,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_dark').addEventListener('change', function () {
-		darkmode(null, this.value)
+		darkmode(this.value, true)
 	})
 
 	paramId('hideelem')
@@ -388,7 +388,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Weather
 
 	paramId('i_city').addEventListener('keyup', function () {
-		weather('city', this)
+		weather(null, { is: 'city', value: this.value })
 
 		// if (e.code === 'Enter') {
 		// 	clearTimeout(rangeActive)
@@ -401,21 +401,21 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_units').addEventListener('change', function () {
-		weather('units', this)
+		weather(null, { is: 'units', checked: this.checked })
 		// if (!stillActive) weather('units', this)
 	})
 
 	paramId('i_geol').addEventListener('change', function () {
-		weather('geol', this)
+		weather(null, { is: 'geol', value: this.checked, elem: this })
 		// if (!stillActive) weather('geol', this)
 	})
 
 	paramId('i_forecast').addEventListener('change', function () {
-		weather('forecast', this)
+		weather(null, { is: 'forecast', value: this.value })
 	})
 
 	paramId('i_temp').addEventListener('change', function () {
-		weather('temp', this)
+		weather(null, { is: 'temp', value: this.value })
 	})
 
 	//
@@ -644,7 +644,7 @@ function switchLangs(nextLang: Langs) {
 	chrome.storage.sync.get(null, (data: Sync) => {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
-		weather(null, null, data)
+		weather(data)
 		clock(data, null)
 
 		if (data.quotes?.type === 'classic') {

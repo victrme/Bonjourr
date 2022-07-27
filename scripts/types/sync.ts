@@ -14,6 +14,26 @@ export type Quotes = {
 	last: number
 }
 
+export type Weather = {
+	ccode: string
+	city: string
+	unit: string
+	location: number[]
+	forecast: string
+	temperature: string
+	lastCall?: number
+	fcHigh?: number
+	lastState?: {
+		temp: number
+		feels_like: number
+		temp_max: number
+		sunrise: number
+		sunset: number
+		description: string
+		icon_id: string
+	}
+}
+
 export type Sync = {
 	usdate: boolean
 	showall: boolean
@@ -30,7 +50,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
-	dark: string
+	dark: 'auto' | 'system' | 'enable' | 'disable'
 	custom_time: number
 	custom_every: string
 	background_type: string
@@ -38,23 +58,16 @@ export type Sync = {
 		ampm: boolean
 		analog: boolean
 		seconds: boolean
-		face: string
 		timezone: string
+		face: 'none' | 'number' | 'roman' | 'marks'
 	}
 	dynamic: {
 		every: string
 		collection: string
-		lastCollec: string
+		lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
 		time: number
 	}
-	weather: {
-		ccode: string
-		city: string
-		unit: string
-		location: number[]
-		forecast: string
-		temperature: string
-	}
+	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
 	font: {

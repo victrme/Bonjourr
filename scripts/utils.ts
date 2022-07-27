@@ -129,14 +129,14 @@ export function localDataMigration(local: any) {
 	return local
 }
 
-export function bundleLinks(storage: Sync) {
+export function bundleLinks(storage: Sync): Link[] {
 	// 1.13.0: Returns an array of found links in storage
-	let res: any = []
+	let res: Link[] = []
 	Object.entries(storage).map(([key, val]) => {
-		if (key.length === 11 && key.startsWith('links')) res.push(val)
+		if (key.length === 11 && key.startsWith('links')) res.push(val as Link)
 	})
 
-	res.sort((a: any, b: any) => a.order - b.order)
+	res.sort((a: Link, b: Link) => a.order - b.order)
 	return res
 }
 

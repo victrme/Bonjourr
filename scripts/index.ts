@@ -1,7 +1,7 @@
 import { dict, days, engineLocales, months } from './lang'
 import { settingsInit, updateExportJSON } from './settings'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar } from './types/sync'
+import { Sync, Searchbar, Weather } from './types/sync'
 import UnsplashImage from './types/unsplashImage'
 import {
 	$,
@@ -117,7 +117,7 @@ export function tabTitle(init: string, event?: HTMLInputElement) {
 export function clock(
 	init: Sync,
 	event?: {
-		is: string
+		is: 'analog' | 'seconds' | 'face' | 'ampm' | 'timezone' | 'usdate' | 'greeting'
 		value?: string
 		checked?: boolean
 	}
@@ -134,9 +134,7 @@ export function clock(
 	function zonedDate(timezone: string) {
 		const date = new Date()
 
-		if (timezone === 'auto') {
-			return date
-		}
+		if (timezone === 'auto') return date
 
 		const offset = date.getTimezoneOffset() / 60
 		const utcHour = date.getHours() + offset
@@ -178,7 +176,9 @@ export function clock(
 			marks: ['│', '─', '│', '─'],
 		}
 
-		document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => (mark.textContent = chars[face][i]))
+		document
+			.querySelectorAll('#analogClock .numbers')
+			.forEach((mark, i) => (mark.textContent = chars[face as keyof typeof chars][i]))
 	}
 
 	function startClock(clock: Clock, greeting: string, usdate: boolean) {
@@ -263,57 +263,61 @@ export function clock(
 
 	if (event) {
 		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data: Sync) => {
+			let clock = data.clock || {
+				analog: false,
+				seconds: false,
+				ampm: false,
+				timezone: 'auto',
+				face: 'none',
+			}
+
 			switch (event.is) {
 				case 'usdate': {
 					clockDate(zonedDate(data.clock.timezone), event.checked)
-					slowRange({ usdate: event.checked }, 500)
+					chrome.storage.sync.set({ usdate: event.checked })
 					break
 				}
 
 				case 'greeting': {
 					greetings(zonedDate(data.clock.timezone), event.value)
-					slowRange({ greeting: event.value }, 500)
+					chrome.storage.sync.set({ greeting: event.value })
 					break
 				}
 
-				default: {
-					let clock = {
-						analog: false,
-						seconds: false,
-						ampm: false,
-						timezone: 'auto',
-						face: 'none',
-					}
-
-					clock = { ...data.clock }
-					clock[event.is] = event.value || event.checked
-					chrome.storage.sync.set({ clock: clock })
-
-					if (event.is === 'timezone') {
-						clockDate(zonedDate(event.value), data.usdate)
-						greetings(zonedDate(event.value), data.greeting)
-					}
-
-					startClock(clock, data.greeting, data.usdate)
-					changeAnalogFace(clock.face)
+				case 'timezone': {
+					clockDate(zonedDate(event.value), data.usdate)
+					greetings(zonedDate(event.value), data.greeting)
+					clock.timezone = event.value
 					break
 				}
+
+				case 'analog':
+					clock.analog = event.checked
+					break
+
+				case 'face':
+					clock.face = event.value as any // TODO: force select union type
+					break
+
+				case 'seconds':
+					clock.seconds = event.checked
+					break
 			}
+
+			chrome.storage.sync.set({ clock })
+			startClock(clock, data.greeting, data.usdate)
+			changeAnalogFace(clock.face)
 		})
 
 		return
 	}
 
-	let clock = {
+	let clock = init.clock || {
 		analog: false,
 		seconds: false,
 		ampm: false,
 		timezone: 'auto',
 		face: 'none',
-	}
-
-	if (init.clock) {
-		clock = { ...clock, ...init.clock }
 	}
 
 	try {
@@ -481,14 +485,20 @@ export function quickLinks(
 	}
 
 	function linksDragging() {
-		let draggedClone
-		let draggedId = ''
-		let coords = {} // {[id]: {pos: x<number>, y<number>, triggerbox: x: [number, number], y: [number, number]}}
-		let coordsEntries = []
+		type Coords = {
+			order: number
+			pos: { x: number; y: number }
+			triggerbox: { x: [number, number]; y: [number, number] }
+		}
+
+		let draggedId: string = ''
+		let draggedClone: HTMLLIElement
+		let updatedOrder: { [key: string]: number } = {}
+		let coords: { [key: string]: Coords } = {}
+		let coordsEntries: [string, Coords][] = []
 		let startsDrag = false
 		let push = 0 // adds interface translate to cursor x (only for "fixed" clone)
 		let [cox, coy] = [0, 0] // (cursor offset x & y)
-		let updatedOrder = {}
 
 		const deplaceElem = (dom: HTMLElement, x: number, y: number) => {
 			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
@@ -535,7 +545,7 @@ export function quickLinks(
 
 			$(draggedId).setAttribute('style', 'opacity: 0')
 
-			draggedClone = $(draggedId).cloneNode(true) // create fixed positionned clone of element
+			draggedClone = $(draggedId).cloneNode(true) as HTMLLIElement // create fixed positionned clone of element
 			draggedClone.id = ''
 			draggedClone.className = 'block dragging-clone on'
 			document.querySelector('#linkblocks ul').appendChild(draggedClone) // append to ul to get same styling
@@ -611,7 +621,8 @@ export function quickLinks(
 				setTimeout(() => {
 					chrome.storage.sync.get(null, (data: Sync) => {
 						Object.entries(updatedOrder).forEach(([key, val]) => {
-							data[key].order = val // Updates orders
+							const link = data[key] as Link
+							link.order = val // Updates orders
 						})
 
 						slowRange({ ...data }) // saves
@@ -678,7 +689,7 @@ export function quickLinks(
 		$('e_iconurl').addEventListener('keyup', inputSubmitEvent)
 	}
 
-	function displayEditWindow(domlink: HTMLLIElement, { x, y }) {
+	function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; y: number }) {
 		//
 		function positionsEditWindow() {
 			const { innerHeight, innerWidth } = window // viewport size
@@ -798,7 +809,7 @@ export function quickLinks(
 			const validator = (title: string, url: string, order: number) => {
 				url = stringMaxSize(url, 512)
 				const to = (scheme: string) => url.startsWith(scheme)
-				const acceptableSchemes = to('http://') || to('https://') || to('localhost:')
+				const acceptableSchemes = to('http://') || to('https://')
 				const unacceptable = to('about:') || to('chrome://')
 
 				return {
@@ -806,7 +817,7 @@ export function quickLinks(
 					_id: 'links' + randomString(6),
 					title: stringMaxSize(title, 64),
 					icon: 'src/assets/interface/loading.svg',
-					url: acceptableSchemes ? url : unacceptable ? false : 'https://' + url,
+					url: acceptableSchemes ? url : unacceptable ? 'false' : 'https://' + url,
 				}
 			}
 
@@ -815,7 +826,8 @@ export function quickLinks(
 				const title = $('i_title').getAttribute('value')
 				const url = $('i_url').getAttribute('value')
 
-				if (url.length < 3 || stillActive) return
+				// TODO: throttle
+				if (url.length < 3) return
 
 				$('i_title').setAttribute('value', '')
 				$('i_url').setAttribute('value', '')
@@ -828,7 +840,7 @@ export function quickLinks(
 				if (importList?.length === 0) return
 
 				importList.forEach(({ title, url }, i: number) => {
-					if (url) {
+					if (url !== 'false') {
 						newLinksList.push(validator(title, url, links.length + i))
 					}
 				})
@@ -930,12 +942,14 @@ export async function linksImport() {
 		setTimeout(() => container.setAttribute('class', ''), 400)
 	}
 
-	function main(links: Link[], bookmarks: any) {
-		const listdom = document.createElement('ol')
+	function main(links: Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]): void {
+		console.log(bookmarks)
 		const allCategories = [...bookmarks[0].children]
+		const listdom = document.createElement('ol')
 		let counter = links.length || 0
-		let bookmarksList = []
-		let selectedList = []
+
+		let bookmarksList: chrome.bookmarks.BookmarkTreeNode[] = []
+		let selectedList: string[] = []
 
 		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
 
@@ -999,7 +1013,10 @@ export async function linksImport() {
 
 		// Submit event
 		$('bmk_apply').onclick = function () {
-			const bookmarkToApply = selectedList.map((i) => ({ title: bookmarksList[i].title, url: bookmarksList[i].url }))
+			const bookmarkToApply = selectedList.map((i) => ({
+				title: bookmarksList[parseInt(i)].title,
+				url: bookmarksList[parseInt(i)].url,
+			}))
 
 			if (bookmarkToApply.length > 0) {
 				closeBookmarks($('bookmarks_container'))
@@ -1032,17 +1049,10 @@ export async function linksImport() {
 	})
 }
 
-export function weather(event, that, init?: Sync) {
-	type Param = {
-		ccode: string
-		city: string
-		unit: string
-		location: number[]
-		forecast: string
-		temperature: string
-	}
-
-	let weatherToSave = {}
+export function weather(
+	init: Sync,
+	event?: { is: 'city' | 'geol' | 'units' | 'forecast' | 'temp'; checked?: boolean; value?: string; elem?: Element }
+) {
 	const date = new Date()
 	const i_city = $('i_city') as HTMLInputElement
 	const i_ccode = $('i_ccode') as HTMLInputElement
@@ -1050,6 +1060,7 @@ export function weather(event, that, init?: Sync) {
 	const sett_city = $('sett_city') as HTMLInputElement
 	const current = $('current')
 	const forecast = $('forecast')
+	let weatherToSave: Weather
 	const tempContainer = $('tempContainer')
 
 	const toFarenheit = (num: number) => Math.round(num * (9 / 5) + 32)
@@ -1062,7 +1073,7 @@ export function weather(event, that, init?: Sync) {
 		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 	]
 
-	async function initWeather(param: Param) {
+	async function initWeather(param: Weather) {
 		const applyResult = (geol: boolean) => {
 			request(param, true)
 			request(param, false)
@@ -1097,59 +1108,7 @@ export function weather(event, that, init?: Sync) {
 		)
 	}
 
-	async function request(storage: Param, forecast: boolean) {
-		function saveCurrent(response) {
-			//
-			const isF = storage.unit === 'imperial'
-			const { temp, feels_like, temp_max } = response.main
-
-			weatherToSave = {
-				...weatherToSave,
-				lastCall: Math.floor(new Date().getTime() / 1000),
-				lastState: {
-					temp: isF ? toFarenheit(temp) : temp,
-					feels_like: isF ? toFarenheit(feels_like) : feels_like,
-					temp_max: isF ? toFarenheit(temp_max) : temp_max,
-					sunrise: response.sys.sunrise,
-					sunset: response.sys.sunset,
-					description: response.weather[0].description,
-					icon_id: response.weather[0].id,
-				},
-			}
-
-			chrome.storage.sync.set({ weather: weatherToSave })
-			displaysCurrent(weatherToSave)
-		}
-
-		function saveForecast(response) {
-			//
-			const thisdate = new Date()
-			const todayHour = thisdate.getHours()
-			let forecastDay = thisdate.getDate()
-			let maxTempFromList = -273.15
-
-			// Late evening forecast for tomorrow
-			if (todayHour > 18) {
-				const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
-				forecastDay = new Date(tomorrow).getDate()
-			}
-
-			// Get the highest temp for the specified day
-			response.list.forEach((elem) => {
-				if (new Date(elem.dt * 1000).getDate() === forecastDay)
-					maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
-			})
-
-			const isF = storage.unit === 'imperial'
-			weatherToSave.fcHigh = Math.floor(isF ? toFarenheit(maxTempFromList) : maxTempFromList)
-			chrome.storage.sync.set({ weather: weatherToSave })
-			displaysForecast(weatherToSave)
-		}
-
-		if (!navigator.onLine) {
-			return
-		}
-
+	async function request(storage: Weather, forecast: boolean): Promise<boolean> {
 		const type = forecast ? 'forecast' : 'weather'
 		const lang = document.documentElement.getAttribute('lang')
 		const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
@@ -1162,6 +1121,10 @@ export function weather(event, that, init?: Sync) {
 
 		const url = `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=metric&lang=${lang}`
 
+		if (!navigator.onLine) {
+			return false
+		}
+
 		// Inits global object
 		if (Object.keys(weatherToSave).length === 0) {
 			weatherToSave = storage
@@ -1169,19 +1132,66 @@ export function weather(event, that, init?: Sync) {
 
 		try {
 			const weatherAPI = await fetch(url) // fetches, parses and apply callback
+			const json = await weatherAPI.json()
 
-			if (weatherAPI.ok) {
-				const json = await weatherAPI.json()
-				forecast ? saveForecast(json) : saveCurrent(json)
+			if (!weatherAPI.ok) {
+				return false // API not ok ? nothing was saved
 			}
 
-			return weatherAPI.ok
+			if (forecast) {
+				const thisdate = new Date()
+				const todayHour = thisdate.getHours()
+				let forecastDay = thisdate.getDate()
+				let maxTempFromList = -273.15
+
+				// Late evening forecast for tomorrow
+				if (todayHour > 18) {
+					const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
+					forecastDay = new Date(tomorrow).getDate()
+				}
+
+				// Get the highest temp for the specified day
+				json.list.forEach((elem: any) => {
+					if (new Date(elem.dt * 1000).getDate() === forecastDay)
+						maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
+				})
+
+				const isF = storage.unit === 'imperial'
+				weatherToSave.fcHigh = Math.floor(isF ? toFarenheit(maxTempFromList) : maxTempFromList)
+				chrome.storage.sync.set({ weather: weatherToSave })
+				displaysForecast(weatherToSave)
+			}
+
+			//
+			else {
+				const isF = storage.unit === 'imperial'
+				const { temp, feels_like, temp_max } = json.main
+
+				weatherToSave = {
+					...weatherToSave,
+					lastCall: Math.floor(new Date().getTime() / 1000),
+					lastState: {
+						temp: isF ? toFarenheit(temp) : temp,
+						feels_like: isF ? toFarenheit(feels_like) : feels_like,
+						temp_max: isF ? toFarenheit(temp_max) : temp_max,
+						sunrise: json.sys.sunrise,
+						sunset: json.sys.sunset,
+						description: json.weather[0].description,
+						icon_id: json.weather[0].id,
+					},
+				}
+
+				chrome.storage.sync.set({ weather: weatherToSave })
+				displaysCurrent(weatherToSave)
+			}
+
+			return true
 		} catch (error) {
 			return
 		}
 	}
 
-	function weatherCacheControl(storage) {
+	function weatherCacheControl(storage: Weather) {
 		const now = Math.floor(date.getTime() / 1000)
 		let isCurrentChanging = false
 
@@ -1204,7 +1214,7 @@ export function weather(event, that, init?: Sync) {
 		else initWeather(storage)
 	}
 
-	function displaysCurrent(storage) {
+	function displaysCurrent(storage: Weather) {
 		const currentState = storage.lastState
 
 		// 1.11.1 => 1.11.2 control
@@ -1241,7 +1251,7 @@ export function weather(event, that, init?: Sync) {
 
 		function handleWidget() {
 			let filename = 'lightrain'
-			const categorieIds = [
+			const categorieIds: [number[], string][] = [
 				[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
 				[[300, 301, 302, 310], 'lightdrizzle'],
 				[[312, 313, 314, 321], 'showerdrizzle'],
@@ -1256,7 +1266,7 @@ export function weather(event, that, init?: Sync) {
 			]
 
 			categorieIds.forEach((category) => {
-				if (category[0].includes(currentState.icon_id)) filename = category[1]
+				if (category[0].includes(currentState.icon_id as never)) filename = category[1]
 			})
 
 			const widgetIcon = tempContainer.querySelector('img')
@@ -1286,15 +1296,15 @@ export function weather(event, that, init?: Sync) {
 		clas(tempContainer, false, 'wait')
 	}
 
-	function displaysForecast(weather) {
-		forecast.textContent = `${tradThis('with a high of')} ${weather.fcHigh}° ${tradThis(
+	function displaysForecast(storage: Weather) {
+		forecast.textContent = `${tradThis('with a high of')} ${storage.fcHigh}° ${tradThis(
 			date.getHours() > 21 ? 'tomorrow' : 'today'
 		)}.`
 
 		clas(forecast, false, 'wait')
 	}
 
-	function forecastVisibilityControl(value) {
+	function forecastVisibilityControl(value: string) {
 		let isTimeForForecast = false
 
 		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
@@ -1306,7 +1316,7 @@ export function weather(event, that, init?: Sync) {
 	async function updatesWeather() {
 		//
 
-		async function fetches(weather) {
+		async function fetches(weather: Weather) {
 			const main = await request(weather, false)
 			const forecast = await request(weather, true)
 
@@ -1314,27 +1324,24 @@ export function weather(event, that, init?: Sync) {
 		}
 
 		chrome.storage.sync.get('weather', async (data) => {
-			switch (event) {
+			switch (event.is) {
 				case 'units': {
-					data.weather.unit = that.checked ? 'imperial' : 'metric'
+					data.weather.unit = event.checked ? 'imperial' : 'metric'
 
 					if (data.weather.lastState) {
 						const { feels_like, temp } = data.weather.lastState
-						data.weather.lastState.temp = toggleTempUnit(that.checked, temp)
-						data.weather.lastState.feels_like = toggleTempUnit(that.checked, feels_like)
-						data.weather.fcHigh = toggleTempUnit(that.checked, data.weather.fcHigh)
+						data.weather.lastState.temp = toggleTempUnit(event.checked, temp)
+						data.weather.lastState.feels_like = toggleTempUnit(event.checked, feels_like)
+						data.weather.fcHigh = toggleTempUnit(event.checked, data.weather.fcHigh)
 					}
 
 					displaysCurrent(data.weather)
 					displaysForecast(data.weather)
 					chrome.storage.sync.set({ weather: data.weather })
-					slow(that)
 					break
 				}
 
 				case 'city': {
-					slow(that)
-
 					if (i_city.value.length < 3) return false
 					else if (navigator.onLine) {
 						data.weather.ccode = i_ccode.value
@@ -1360,19 +1367,19 @@ export function weather(event, that, init?: Sync) {
 
 				case 'geol': {
 					data.weather.location = []
-					that.setAttribute('disabled', '')
+					event.elem.setAttribute('disabled', '')
 
-					if (that.checked) {
+					if (event.checked) {
 						navigator.geolocation.getCurrentPosition(
 							(pos) => {
 								//update le parametre de location
-								clas(sett_city, that.checked, 'hidden')
+								clas(sett_city, event.checked, 'hidden')
 								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
 								fetches(data.weather)
 							},
 							(refused) => {
 								//désactive geolocation if refused
-								setTimeout(() => (that.checked = false), 400)
+								setTimeout(() => (event.checked = false), 400)
 								if (!data.weather.city) initWeather(null)
 								console.log(refused)
 							}
@@ -1380,25 +1387,24 @@ export function weather(event, that, init?: Sync) {
 					} else {
 						i_city.setAttribute('placeholder', data.weather.city)
 						i_ccode.value = data.weather.ccode
-						clas(sett_city, that.checked, 'hidden')
+						clas(sett_city, event.checked, 'hidden')
 
 						data.weather.location = []
 						fetches(data.weather)
 					}
 
-					slow(that)
 					break
 				}
 
 				case 'forecast': {
-					data.weather.forecast = that.value
+					data.weather.forecast = event.value
 					chrome.storage.sync.set({ weather: data.weather })
-					forecastVisibilityControl(that.value)
+					forecastVisibilityControl(event.value)
 					break
 				}
 
 				case 'temp': {
-					data.weather.temperature = that.value
+					data.weather.temperature = event.value
 					chrome.storage.sync.set({ weather: data.weather })
 					displaysCurrent(data.weather)
 					break
@@ -1419,7 +1425,7 @@ export function weather(event, that, init?: Sync) {
 		}
 
 		try {
-			forecastVisibilityControl(init.weather.forecast || 'mornings')
+			forecastVisibilityControl(init.weather.forecast || 'auto')
 			weatherCacheControl(init.weather)
 		} catch (e) {
 			errorMessage('Weather init did not work', e)
@@ -1523,7 +1529,7 @@ export function localBackgrounds(
 
 	function addNewImage(files: File[]) {
 		files = [...files] // fileList to Array
-		let filesIdsList = []
+		let filesIdsList: string[] = []
 		let selected = ''
 
 		files.forEach(() => {
@@ -1607,7 +1613,7 @@ export function localBackgrounds(
 				return
 			}
 
-			b64toBlobUrl(cleanData, (bloburl) => {
+			b64toBlobUrl(cleanData, (bloburl: string) => {
 				const compressTime = performance.now() - compressStart
 				setTimeout(() => imgBackground(bloburl, compressTime), 400 - compressTime)
 			})
@@ -1814,6 +1820,9 @@ export function localBackgrounds(
 }
 
 export async function unsplash(init: Sync, event?: UnsplashEvent) {
+	// TODO: Separate Collection type with users string
+	type CollectionIds = 'night' | 'noon' | 'day' | 'evening' | 'user'
+
 	async function preloadImage(src: string) {
 		const img = new Image()
 
@@ -1854,9 +1863,9 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 				{ key: 'focal_length', format: `%val%mm` },
 			]
 
-			orderedExifData.forEach(({ key, format }) => {
+			orderedExifData.forEach(({ key, format }: { key: keyof typeof exif; format: string }) => {
 				if (exif[key]) {
-					exifDescription += format.replace('%val%', exif[key])
+					exifDescription += key === 'iso' ? exif[key].toString() : format.replace('%val%', exif[key])
 				}
 			})
 		}
@@ -1901,7 +1910,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
-	async function requestNewList(collection: string) {
+	async function requestNewList(collection: CollectionIds) {
 		const header = new Headers()
 		const collecId = allCollectionIds[collection] || allCollectionIds.day
 		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
@@ -1916,7 +1925,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 			return false
 		}
 
-		const filteredList = []
+		const filteredList: UnsplashImage[] = []
 		const { width, height } = screen
 		const imgSize = width > height ? width : height // higher res on mobile
 
@@ -1937,10 +1946,10 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		return filteredList
 	}
 
-	function chooseCollection(eventCollection?: string) {
-		if (eventCollection) {
-			eventCollection = eventCollection.replaceAll(` `, '')
-			allCollectionIds.user = eventCollection
+	function chooseCollection(userCollec?: string): CollectionIds {
+		if (userCollec) {
+			userCollec = userCollec.replaceAll(` `, '')
+			allCollectionIds.user = userCollec
 			return 'user'
 		}
 
@@ -1963,7 +1972,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		return collec
 	}
 
-	async function cacheControl(dynamic: Dynamic, caches: DynamicCache, collection: string, preloading: boolean) {
+	async function cacheControl(dynamic: Dynamic, caches: DynamicCache, collection: CollectionIds, preloading: boolean) {
 		//
 		const needNewImage = freqControl.get(dynamic.every, dynamic.time)
 		let list = caches[collection]
@@ -2165,29 +2174,19 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 	$('background').style.filter = result
 }
 
-export function darkmode(init: string, event: string) {
-	function apply(option: string) {
-		const time = sunTime()
-		const cases = {
-			auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
-			system: 'autodark',
-			enable: 'dark',
-			disable: '',
-		}
-
-		document.body.setAttribute('class', cases[option])
+export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
+	const time = sunTime()
+	const cases = {
+		auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
+		system: 'autodark',
+		enable: 'dark',
+		disable: '',
 	}
 
-	if (event) {
-		apply(event)
-		chrome.storage.sync.set({ dark: event })
-		return
-	}
+	document.body.setAttribute('class', cases[value])
 
-	try {
-		apply(init)
-	} catch (e) {
-		errorMessage('Dark mode somehow messed up', e)
+	if (isEvent) {
+		chrome.storage.sync.set({ dark: value })
 	}
 }
 
@@ -3062,7 +3061,7 @@ function onlineMobilePageUpdate() {
 
 		clock(data)
 		sunTime(data.weather)
-		weather(null, null, data)
+		weather(data)
 	})
 }
 
@@ -3071,7 +3070,7 @@ function startup(data: Sync) {
 	canDisplayInterface(null, data)
 
 	sunTime(data.weather)
-	weather(null, null, data)
+	weather(data)
 
 	customFont(data.font)
 	textShadow(data.textShadow)
@@ -3079,7 +3078,7 @@ function startup(data: Sync) {
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(data, null)
-	darkmode(data.dark, null)
+	darkmode(data.dark)
 	searchbar(data.searchbar)
 	quotes(data)
 	showPopup(data.reviewPopup)
@@ -3113,7 +3112,7 @@ window.onload = function () {
 
 	setInterval(() => {
 		// Checks every 5 minutes if weather needs update
-		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => weather(null, null, data)) : ''
+		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => weather(data)) : ''
 	}, 5 * 60 * 1000)
 
 	// For Mobile that caches pages for days
@@ -3142,7 +3141,7 @@ window.onload = function () {
 
 		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
 			// Fix for opening tabs Firefox iOS
-			let globalID
+			let globalID: number
 			function triggerAnimationFrame() {
 				appHeight()
 				globalID = requestAnimationFrame(triggerAnimationFrame)
