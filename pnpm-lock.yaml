@@ -12,6 +12,8 @@ specifiers:
   '@types/gulp-csso': ^4.0.1
   '@types/gulp-rename': ^2.0.1
   '@types/gulp-sass': ^5.0.0
+  '@types/lodash': ^4.14.182
+  '@types/underscore': ^1.11.4
   concurrently: ^7.3.0
   gulp: ^4.0.2
   gulp-csso: ^4.0.1
@@ -20,6 +22,7 @@ specifiers:
   gulp-sass: ^5.1.0
   sass: ^1.52.3
   typescript: ^4.7.4
+  underscore: ^1.13.4
   user-agent-data-types: ^0.3.0
 
 devDependencies:
@@ -28,6 +31,8 @@ devDependencies:
   '@types/gulp-csso': 4.0.1
   '@types/gulp-rename': 2.0.1
   '@types/gulp-sass': 5.0.0
+  '@types/lodash': 4.14.182
+  '@types/underscore': 1.11.4
   concurrently: 7.3.0
   gulp: 4.0.2
   gulp-csso: 4.0.1
@@ -36,6 +41,7 @@ devDependencies:
   gulp-sass: 5.1.0
   sass: 1.54.0
   typescript: 4.7.4
+  underscore: 1.13.4
   user-agent-data-types: 0.3.0
 
 packages:
@@ -107,6 +113,10 @@ packages:
     resolution: {integrity: sha512-OP6L9VuZNdskgNN3zFQQ54ceYD8OLq5IbqO4VK91ORLfOm7WdT/CiT/pHEBSQEqCInJ2y3O6iCm/zGtPElpgJQ==}
     dev: true
 
+  /@types/lodash/4.14.182:
+    resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
+    dev: true
+
   /@types/minimatch/3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
     dev: true
@@ -119,6 +129,10 @@ packages:
 
   /@types/node/14.18.22:
     resolution: {integrity: sha512-qzaYbXVzin6EPjghf/hTdIbnVW1ErMx8rPzwRNJhlbyJhu2SyqlvjGOY/tbUt6VFyzg56lROcOeSQRInpt63Yw==}
+    dev: true
+
+  /@types/underscore/1.11.4:
+    resolution: {integrity: sha512-uO4CD2ELOjw8tasUrAhvnn2W4A0ZECOvMjCivJr4gA9pGgjv+qxKWY9GLTMVEK8ej85BxQOocUyE7hImmSQYcg==}
     dev: true
 
   /@types/undertaker-registry/1.0.1:
@@ -1879,6 +1893,10 @@ packages:
   /unc-path-regex/0.1.2:
     resolution: {integrity: sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /underscore/1.13.4:
+    resolution: {integrity: sha512-BQFnUDuAQ4Yf/cYY5LNrK9NCJFKriaRbD9uR1fTeXnBeoa97W0i41qkZfGO9pSo8I5KzjAcSY2XYtdf0oKd7KQ==}
     dev: true
 
   /undertaker-registry/1.0.1:

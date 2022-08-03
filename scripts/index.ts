@@ -3,6 +3,7 @@ import { settingsInit, updateExportJSON } from './settings'
 import { Local, DynamicCache, Quote } from './types/local'
 import { Sync, Searchbar, Weather } from './types/sync'
 import UnsplashImage from './types/unsplashImage'
+import { debounce } from 'underscore'
 import {
 	$,
 	clas,
@@ -23,8 +24,6 @@ import {
 	periodOfDay,
 	randomString,
 	safeFontList,
-	slow,
-	slowRange,
 	stringMaxSize,
 	syncDefaults,
 	testOS,
@@ -103,14 +102,14 @@ export function favicon(init: string, event?: HTMLInputElement) {
 		if (isEmoji) createFavicon(val)
 		else event.value = ''
 
-		slowRange({ favicon: isEmoji ? val : '' })
+		// slowRange({ favicon: isEmoji ? val : '' })
 	}
 }
 
 export function tabTitle(init: string, event?: HTMLInputElement) {
 	const title = init ? init : event ? stringMaxSize(event.value, 80) : tradThis('New tab')
 
-	if (event) slowRange({ tabtitle: title })
+	// if (event) slowRange({ tabtitle: title })
 	document.title = title
 }
 
@@ -401,7 +400,7 @@ export function quickLinks(
 
 		async function fetchNewIcon(dom: HTMLImageElement, url: string) {
 			// Apply loading gif d'abord
-			dom.src = 'src/assets/interface/loading.svg'
+			dom.src = '/assets/interface/loading.svg'
 
 			const img = new Image()
 
@@ -625,7 +624,7 @@ export function quickLinks(
 							link.order = val // Updates orders
 						})
 
-						slowRange({ ...data }) // saves
+						// slowRange({ ...data }) // saves
 
 						document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove uls
 						initblocks(bundleLinks(data), data.linksrow) // re-init blocks
@@ -816,7 +815,7 @@ export function quickLinks(
 					order: order,
 					_id: 'links' + randomString(6),
 					title: stringMaxSize(title, 64),
-					icon: 'src/assets/interface/loading.svg',
+					icon: '/assets/interface/loading.svg',
 					url: acceptableSchemes ? url : unacceptable ? 'false' : 'https://' + url,
 				}
 			}
@@ -1060,27 +1059,127 @@ export function weather(
 	const sett_city = $('sett_city') as HTMLInputElement
 	const current = $('current')
 	const forecast = $('forecast')
-	let weatherToSave: Weather
 	const tempContainer = $('tempContainer')
 
-	const toFarenheit = (num: number) => Math.round(num * (9 / 5) + 32)
-	const toCelsius = (num: number) => Math.round((num - 32) * (5 / 9))
-	const toggleTempUnit = (F: boolean, temp: number) => (F ? toFarenheit(temp) : toCelsius(temp))
+	async function request(storage: Weather): Promise<Weather> {
+		function getRequestURL(isForecast: boolean) {
+			const WEATHER_API_KEY = [
+				'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
+				'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
+				'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
+			]
+			const type = isForecast ? 'forecast' : 'weather'
+			const lang = document.documentElement.getAttribute('lang')
+			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
+			const units = storage.unit || 'metric'
+			let location = ''
 
-	const WEATHER_API_KEY = [
-		'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
-		'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
-		'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
-	]
+			if (storage.location?.length === 2) {
+				location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`
+			} else {
+				location = `&q=${encodeURI(storage.city)},${storage.ccode}`
+			}
 
-	async function initWeather(param: Weather) {
-		const applyResult = (geol: boolean) => {
-			request(param, true)
-			request(param, false)
+			return `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=${units}&lang=${lang}`
+		}
+
+		if (!navigator.onLine) {
+			return storage
+		}
+
+		let currentResponse: any
+		let forecastResponse: any
+		let currentJSON: any
+		let forecastJSON: any
+
+		try {
+			currentResponse = await fetch(getRequestURL(false))
+			forecastResponse = await fetch(getRequestURL(true))
+			currentJSON = await currentResponse.json()
+			forecastJSON = await forecastResponse.json()
+		} catch (error) {
+			console.error(error)
+			return storage
+		}
+
+		if (!currentResponse.ok || !forecastResponse.ok) {
+			return storage // API not ok ? nothing was saved
+		}
+
+		//
+		// Current API call
+		//
+
+		const { temp, feels_like, temp_max } = currentJSON.main
+		const { sunrise, sunset } = currentJSON.sys
+		const { description, id } = currentJSON.weather[0]
+
+		storage = {
+			...storage,
+			lastCall: Math.floor(new Date().getTime() / 1000),
+			lastState: {
+				temp,
+				feels_like,
+				temp_max,
+				sunrise,
+				sunset,
+				description,
+				icon_id: id,
+			},
+		}
+
+		//
+		// Forecast API call
+		//
+
+		const thisdate = new Date()
+		const todayHour = thisdate.getHours()
+		let forecastDay = thisdate.getDate()
+		let maxTempFromList = -273.15
+
+		// Late evening forecast for tomorrow
+		if (todayHour > 18) {
+			const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
+			forecastDay = new Date(tomorrow).getDate()
+		}
+
+		// Get the highest temp for the specified day
+		forecastJSON.list.forEach((elem: any) => {
+			if (new Date(elem.dt * 1000).getDate() === forecastDay)
+				maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
+		})
+
+		storage.fcHigh = Math.round(maxTempFromList)
+
+		return storage
+	}
+
+	async function weatherCacheControl(storage: Weather) {
+		const now = Math.floor(date.getTime() / 1000)
+
+		if (typeof storage.lastCall === 'number') {
+			// Current: 30 mins
+			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
+				sessionStorage.removeItem('lang')
+				storage = await request(storage)
+				chrome.storage.sync.set({ weather: request(storage) })
+			}
+
+			displaysCurrent(storage)
+			displaysForecast(storage)
+		}
+
+		// First startup
+		else initWeather(storage)
+	}
+
+	async function initWeather(storage: Weather) {
+		const applyResult = async (geol: boolean) => {
+			chrome.storage.sync.set({ weather: await request(storage) })
 
 			if ($('settings')) {
-				i_ccode.value = param.ccode
-				i_city.setAttribute('placeholder', param.city)
+				i_ccode.value = storage.ccode
+				i_city.setAttribute('placeholder', storage.city)
 
 				if (geol) {
 					clas($('sett_city'), true, 'hidden')
@@ -1093,7 +1192,7 @@ export function weather(
 			const ipapi = await fetch('https://ipapi.co/json')
 			if (ipapi.ok) {
 				const json = await ipapi.json()
-				if (!json.error) param = { ...param, city: json.city, ccode: json.country }
+				if (!json.error) storage = { ...storage, city: json.city, ccode: json.country }
 			}
 		} catch (error) {
 			console.warn(error)
@@ -1101,117 +1200,11 @@ export function weather(
 
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
-				param.location = [pos.coords.latitude, pos.coords.longitude]
+				storage.location = [pos.coords.latitude, pos.coords.longitude]
 				applyResult(true)
 			},
 			() => applyResult(false)
 		)
-	}
-
-	async function request(storage: Weather, forecast: boolean): Promise<boolean> {
-		const type = forecast ? 'forecast' : 'weather'
-		const lang = document.documentElement.getAttribute('lang')
-		const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
-
-		const [lat, lon] = storage.location || [0, 0]
-		const isGeol = storage.location.length === 2
-		const geolStr = `&lat=${lat}&lon=${lon}`
-		const cityStr = `&q=${encodeURI(storage.city)},${storage.ccode}`
-		const location = isGeol ? geolStr : cityStr
-
-		const url = `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=metric&lang=${lang}`
-
-		if (!navigator.onLine) {
-			return false
-		}
-
-		// Inits global object
-		if (Object.keys(weatherToSave).length === 0) {
-			weatherToSave = storage
-		}
-
-		try {
-			const weatherAPI = await fetch(url) // fetches, parses and apply callback
-			const json = await weatherAPI.json()
-
-			if (!weatherAPI.ok) {
-				return false // API not ok ? nothing was saved
-			}
-
-			if (forecast) {
-				const thisdate = new Date()
-				const todayHour = thisdate.getHours()
-				let forecastDay = thisdate.getDate()
-				let maxTempFromList = -273.15
-
-				// Late evening forecast for tomorrow
-				if (todayHour > 18) {
-					const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
-					forecastDay = new Date(tomorrow).getDate()
-				}
-
-				// Get the highest temp for the specified day
-				json.list.forEach((elem: any) => {
-					if (new Date(elem.dt * 1000).getDate() === forecastDay)
-						maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
-				})
-
-				const isF = storage.unit === 'imperial'
-				weatherToSave.fcHigh = Math.floor(isF ? toFarenheit(maxTempFromList) : maxTempFromList)
-				chrome.storage.sync.set({ weather: weatherToSave })
-				displaysForecast(weatherToSave)
-			}
-
-			//
-			else {
-				const isF = storage.unit === 'imperial'
-				const { temp, feels_like, temp_max } = json.main
-
-				weatherToSave = {
-					...weatherToSave,
-					lastCall: Math.floor(new Date().getTime() / 1000),
-					lastState: {
-						temp: isF ? toFarenheit(temp) : temp,
-						feels_like: isF ? toFarenheit(feels_like) : feels_like,
-						temp_max: isF ? toFarenheit(temp_max) : temp_max,
-						sunrise: json.sys.sunrise,
-						sunset: json.sys.sunset,
-						description: json.weather[0].description,
-						icon_id: json.weather[0].id,
-					},
-				}
-
-				chrome.storage.sync.set({ weather: weatherToSave })
-				displaysCurrent(weatherToSave)
-			}
-
-			return true
-		} catch (error) {
-			return
-		}
-	}
-
-	function weatherCacheControl(storage: Weather) {
-		const now = Math.floor(date.getTime() / 1000)
-		let isCurrentChanging = false
-
-		if (typeof storage.lastCall === 'number') {
-			//
-			// Current: 30 mins
-			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
-				isCurrentChanging = true
-				sessionStorage.removeItem('lang')
-				request(storage, false)
-			} else displaysCurrent(storage)
-
-			// Forecast: follows current
-			if (navigator.onLine && isCurrentChanging) {
-				request(storage, true)
-			} else displaysForecast(storage)
-		}
-
-		// First startup
-		else initWeather(storage)
 	}
 
 	function displaysCurrent(storage: Weather) {
@@ -1314,68 +1307,49 @@ export function weather(
 	}
 
 	async function updatesWeather() {
-		//
-
-		async function fetches(weather: Weather) {
-			const main = await request(weather, false)
-			const forecast = await request(weather, true)
-
-			return main && forecast
-		}
-
 		chrome.storage.sync.get('weather', async (data) => {
 			switch (event.is) {
 				case 'units': {
 					data.weather.unit = event.checked ? 'imperial' : 'metric'
-
-					if (data.weather.lastState) {
-						const { feels_like, temp } = data.weather.lastState
-						data.weather.lastState.temp = toggleTempUnit(event.checked, temp)
-						data.weather.lastState.feels_like = toggleTempUnit(event.checked, feels_like)
-						data.weather.fcHigh = toggleTempUnit(event.checked, data.weather.fcHigh)
-					}
-
-					displaysCurrent(data.weather)
-					displaysForecast(data.weather)
-					chrome.storage.sync.set({ weather: data.weather })
+					chrome.storage.sync.set({ weather: await request(data.weather) })
 					break
 				}
 
 				case 'city': {
-					if (i_city.value.length < 3) return false
-					else if (navigator.onLine) {
-						data.weather.ccode = i_ccode.value
-						data.weather.city = stringMaxSize(i_city.value, 64)
-
-						const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
-							direction: 'alternate',
-							easing: 'linear',
-							duration: 800,
-							iterations: Infinity,
-						})
-
-						const cityFound = await fetches(data.weather)
-
-						if (cityFound) i_city.blur()
-						i_city.setAttribute('placeholder', cityFound ? data.weather.city : tradThis('City not found'))
-						i_city.value = ''
-						inputAnim.cancel()
+					if (i_city.value.length < 3 || !navigator.onLine) {
+						return false
 					}
+
+					data.weather.ccode = i_ccode.value
+					data.weather.city = stringMaxSize(i_city.value, 64)
+
+					const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
+						direction: 'alternate',
+						easing: 'linear',
+						duration: 800,
+						iterations: Infinity,
+					})
+
+					chrome.storage.sync.set({ weather: await request(data.weather) })
+
+					i_city.value = ''
+					i_city.blur()
+					inputAnim.cancel()
+					i_city.setAttribute('placeholder', data.weather.city)
 
 					break
 				}
 
 				case 'geol': {
 					data.weather.location = []
-					event.elem.setAttribute('disabled', '')
 
 					if (event.checked) {
 						navigator.geolocation.getCurrentPosition(
-							(pos) => {
+							async (pos) => {
 								//update le parametre de location
 								clas(sett_city, event.checked, 'hidden')
 								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
-								fetches(data.weather)
+								chrome.storage.sync.set({ weather: await request(data.weather) })
 							},
 							(refused) => {
 								//désactive geolocation if refused
@@ -1390,7 +1364,7 @@ export function weather(
 						clas(sett_city, event.checked, 'hidden')
 
 						data.weather.location = []
-						fetches(data.weather)
+						chrome.storage.sync.set({ weather: await request(data.weather) })
 					}
 
 					break
@@ -1635,7 +1609,7 @@ export function localBackgrounds(
 		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
 
 		let close = document.createElement('img')
-		close.setAttribute('src', 'src/assets/interface/close.svg')
+		close.setAttribute('src', 'assets/interface/close.svg')
 		rem.appendChild(close)
 
 		b64toBlobUrl(data, (bloburl: string) => (i.src = bloburl))
@@ -2252,8 +2226,8 @@ export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement)
 				}
 			}
 
-			if (event === 'opacity') slowRange({ searchbar: data.searchbar })
-			else chrome.storage.sync.set({ searchbar: data.searchbar })
+			// if (event === 'opacity') slowRange({ searchbar: data.searchbar })
+			// else chrome.storage.sync.set({ searchbar: data.searchbar })
 		})
 	}
 
@@ -2747,7 +2721,7 @@ export function customFont(init, event?) {
 			if (event.size) {
 				font.size = event.size
 				setSize(event.size)
-				slowRange({ font: font }, 200)
+				// slowRange({ font: font }, 200)
 				return
 			}
 
@@ -2762,20 +2736,20 @@ export function customFont(init, event?) {
 				else font.weight = event.weight
 
 				setWeight(font.family, event.weight)
-				slowRange({ font: font }, 200)
+				// slowRange({ font: font }, 200)
 				return
 			}
 
 			if (event.family === '') {
 				safeFont($('settings'))
 				slowRange({ font: { size: font.size, ...removeFont() } }, 200)
-				chrome.storage.local.remove('fontface')
+				// chrome.storage.local.remove('fontface')
 				return
 			}
 
 			if (event.family) {
 				fetchFontList(async (json) => {
-					slowRange({ font: { size: font.size, ...(await changeFamily(json, event.family)) } }, 200)
+					// slowRange({ font: { size: font.size, ...(await changeFamily(json, event.family)) } }, 200)
 				})
 			}
 		})
@@ -2807,7 +2781,7 @@ export function textShadow(init: number, event?: number) {
 	$('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
 
 	if (event) {
-		slowRange({ textShadow: val })
+		// slowRange({ textShadow: val })
 	}
 }
 
@@ -2821,12 +2795,12 @@ export function customCss(init: string, event?: any) {
 			case 'styling': {
 				const val = stringMaxSize(event.val, 8080)
 				styleHead.textContent = val
-				slowRange({ css: val }, 500)
+				// slowRange({ css: val }, 500)
 				break
 			}
 
 			case 'resize': {
-				slowRange({ cssHeight: event.val }, 500)
+				// slowRange({ cssHeight: event.val }, 500)
 				break
 			}
 		}

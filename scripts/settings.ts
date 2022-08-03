@@ -1,11 +1,14 @@
 import { dict } from './lang'
 import { Sync } from './types/sync'
+import { Local } from './types/local'
+import { debounce } from 'underscore'
 
 import {
 	$,
 	has,
 	clas,
 	bundleLinks,
+	inputThrottle,
 	detectPlatform,
 	closeEditLink,
 	mobilecheck,
@@ -15,6 +18,7 @@ import {
 	langList,
 	lsOnlineStorage,
 	deleteBrowserStorage,
+	getBrowserStorage,
 	turnRefreshButton,
 } from './utils'
 
@@ -39,7 +43,6 @@ import {
 	unsplash,
 	weather,
 } from './index'
-import { Local } from './types/local'
 
 function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
@@ -326,13 +329,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_refresh').addEventListener('click', function () {
-		// paramId('i_type').value === 'custom'
-		// 	? slow(this, localBackgrounds(null, { is: 'refresh', button: this.children[0] }))
-		// 	: slow(this, unsplash(null, { refresh: this.children[0] }))
 		const i_type = paramId('i_type') as HTMLInputElement
 		i_type.value === 'custom'
 			? localBackgrounds(null, { is: 'refresh', button: this.children[0] })
 			: unsplash(null, { is: 'refresh', button: this.children[0] })
+
+		inputThrottle(this)
 	})
 
 	paramId('i_collection').addEventListener('change', function () {
@@ -387,27 +389,25 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Weather
 
-	paramId('i_city').addEventListener('keyup', function () {
-		weather(null, { is: 'city', value: this.value })
+	const weatherDebounce = debounce(() => weather(null, { is: 'city' }), 800)
 
-		// if (e.code === 'Enter') {
-		// 	clearTimeout(rangeActive)
-		// 	if (!stillActive) weather('city', this)
-		// } else {
-		// 	const that', this
-		// 	clearTimeout(rangeActive)
-		// 	rangeActive', setTimeout(() => weather('city', that), 2000)
-		// }
-	})
+	paramId('i_city').addEventListener('keyup', (e: KeyboardEvent) => {
+		weatherDebounce()
 
-	paramId('i_units').addEventListener('change', function () {
-		weather(null, { is: 'units', checked: this.checked })
-		// if (!stillActive) weather('units', this)
+		if (e.code === 'Enter') {
+			weather(null, { is: 'city' })
+			weatherDebounce.cancel()
+		}
 	})
 
 	paramId('i_geol').addEventListener('change', function () {
-		weather(null, { is: 'geol', value: this.checked, elem: this })
-		// if (!stillActive) weather('geol', this)
+		inputThrottle(this, 1200)
+		weather(null, { is: 'geol', checked: this.checked, elem: this })
+	})
+
+	paramId('i_units').addEventListener('change', function () {
+		inputThrottle(this, 1200)
+		weather(null, { is: 'units', checked: this.checked })
 	})
 
 	paramId('i_forecast').addEventListener('change', function () {
@@ -461,10 +461,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_qtrefresh').addEventListener('click', function () {
+		inputThrottle(this)
 		turnRefreshButton(this.children[0], true)
 		quotes(null, { is: 'refresh' })
-		// if (!stillActive) quotes('refresh', this)
-		// slow(this, 600)
 	})
 
 	paramId('i_qtauthor').addEventListener('change', function () {
@@ -564,7 +563,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('importtext').addEventListener('click', function () {
-		paramsImport(JSON.parse($('i_importtext').getAttribute('value')))
+		paramsImport(JSON.parse(($('i_importtext') as HTMLInputElement).value))
 	})
 
 	paramId('b_resetconf').addEventListener('click', () => paramsReset('conf'))
@@ -742,7 +741,7 @@ function paramsImport(dataToImport: any) {
 
 				// Remove user collection cache if collection change
 				if (sync.dynamic && newImport.dynamic) {
-					if (sync.dynamic.collection !== newImport.dynamic.collection) {
+					if (sync.dynamic?.collection !== newImport.dynamic?.collection) {
 						local.dynamicCache.user = []
 					}
 				}
@@ -852,6 +851,10 @@ export function settingsInit(data: Sync) {
 		}
 
 		document.onkeydown = function (e) {
+			if (e.code === 'KeyG') {
+				getBrowserStorage()
+			}
+
 			if (e.code === 'Escape') {
 				toggleDisplay(settingsDom) // Opens menu when pressing "Escape"
 				return

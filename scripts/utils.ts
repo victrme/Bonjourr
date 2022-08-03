@@ -140,20 +140,15 @@ export function bundleLinks(storage: Sync): Link[] {
 	return res
 }
 
-export function slowRange(tosave: any, time = 400) {
-	clearTimeout(rangeActive)
-	rangeActive = setTimeout(function () {
-		chrome.storage.sync.set(tosave)
-	}, time)
-}
+export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
+	let isThrottled = true
 
-export function slow(that: Element, time = 400) {
-	that.setAttribute('disabled', '')
-	stillActive = setTimeout(() => {
-		that.removeAttribute('disabled')
-		clearTimeout(stillActive)
-		stillActive = false
+	setTimeout(() => {
+		isThrottled = false
+		elem.removeAttribute('disabled')
 	}, time)
+
+	if (isThrottled) elem.setAttribute('disabled', '')
 }
 
 export function turnRefreshButton(button: HTMLButtonElement, canTurn: boolean) {
