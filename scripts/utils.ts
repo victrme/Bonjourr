@@ -201,7 +201,7 @@ export const lsOnlineStorage = {
 	clear: () => {
 		localStorage.removeItem('bonjourr')
 	},
-	setLocal: (prop, callback: Function) => {
+	setLocal: (prop: { [key: string]: unknown }, callback: Function) => {
 		lsOnlineStorage.get(true, null, (data: Local) => {
 			if (typeof prop === 'object') {
 				data = { ...data, ...prop }
@@ -245,7 +245,7 @@ export function deleteBrowserStorage() {
 	}, 400)
 }
 
-export function errorMessage(comment: string, error?: Error) {
+export function errorMessage(comment: string, error?: unknown) {
 	const dominterface = $('interface')
 
 	function displayMessage(dataStr: string) {

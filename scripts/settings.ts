@@ -1,7 +1,7 @@
 import { dict } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
-import { debounce } from 'underscore'
+import debounce from 'lodash.debounce'
 
 import {
 	$,
@@ -350,13 +350,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_blur').addEventListener('input', function () {
-		backgroundFilter('blur', { blur: this.value })
-		// slowRange({ background_blur: parseFloat(this.value) })
+		backgroundFilter('blur', { blur: this.value }, true)
 	})
 
 	paramId('i_bright').addEventListener('input', function () {
-		backgroundFilter('bright', { bright: this.value })
-		// slowRange({ background_bright: parseFloat(this.value) })
+		backgroundFilter('bright', { bright: this.value }, true)
 	})
 
 	//

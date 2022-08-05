@@ -1,16 +1,17 @@
-import { dict, days, engineLocales, months } from './lang'
-import { settingsInit, updateExportJSON } from './settings'
+import debounce from 'lodash.debounce'
+
+import { google } from './types/googleFonts'
+import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
 import { Sync, Searchbar, Weather, Font, Hide } from './types/sync'
-import UnsplashImage from './types/unsplashImage'
-import { google } from './types/googleFonts'
-import { debounce } from 'underscore'
+
+import { dict, days, engineLocales, months } from './lang'
+import { settingsInit } from './settings'
 import {
 	$,
 	clas,
 	bundleLinks,
 	closeEditLink,
-	defaultLang,
 	detectPlatform,
 	errorMessage,
 	extractDomain,
@@ -18,7 +19,6 @@ import {
 	getBrowser,
 	getFavicon,
 	has,
-	localDataMigration,
 	localDefaults,
 	minutator,
 	mobilecheck,
@@ -31,7 +31,6 @@ import {
 	tradThis,
 	turnRefreshButton,
 	validateHideElem,
-	langList,
 } from './utils'
 
 type UnsplashEvent = {
@@ -47,7 +46,7 @@ type Dynamic = {
 	time: number
 }
 
-const eventDebounce = debounce(function (value: { [key: string]: string | number | Object }) {
+const eventDebounce = debounce(function (value: { [key: string]: boolean | string | number | Object }) {
 	chrome.storage.sync.set(value)
 }, 400)
 
@@ -81,7 +80,6 @@ export function traduction(settingsDom: Element, lang = 'en') {
 	if (lang === 'en') return
 
 	type dictStrings = keyof typeof dict
-	type LangList = keyof typeof langList
 
 	document.documentElement.setAttribute('lang', lang)
 
@@ -2145,7 +2143,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 	return
 }
 
-export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: number; bright?: number }) {
+export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: number; bright?: number }, isEvent?: boolean) {
 	let result = ''
 	const domblur = $('i_blur') as HTMLInputElement
 	const dombright = $('i_bright') as HTMLInputElement
@@ -2165,6 +2163,11 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 	}
 
 	$('background').style.filter = result
+
+	if (isEvent) {
+		if (cat === 'blur') eventDebounce({ background_blur: val.blur })
+		if (cat === 'bright') eventDebounce({ background_bright: val.bright })
+	}
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
@@ -3107,6 +3110,7 @@ function onlineAndMobileHandler() {
 		let promptEvent
 		window.addEventListener('beforeinstallprompt', function (e) {
 			promptEvent = e
+			return promptEvent
 		})
 
 		// Safari overflow fix
