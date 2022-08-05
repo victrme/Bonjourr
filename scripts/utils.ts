@@ -12,9 +12,6 @@ export const clas = (dom: Element, add: boolean, str: string) => {
 	add ? dom.classList.add(str) : dom.classList.remove(str)
 }
 
-let stillActive: any
-let rangeActive: any
-
 export const mobilecheck = () =>
 	navigator.userAgentData
 		? navigator.userAgentData.mobile
@@ -329,11 +326,11 @@ export const testOS = {
 }
 
 export const safeFontList = {
-	fallback: { placeholder: 'Arial', weights: [500, 600, 800] },
-	windows: { placeholder: 'Segoe UI', weights: [300, 400, 600, 700, 800] },
-	android: { placeholder: 'Roboto', weights: [100, 300, 400, 500, 700, 900] },
-	linux: { placeholder: 'Fira Sans', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
-	apple: { placeholder: 'SF Pro Display', weights: [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+	fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
+	windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
+	android: { placeholder: 'Roboto', weights: ['100', '300', '400', '500', '700', '900'] },
+	linux: { placeholder: 'Fira Sans', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
+	apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
 }
 
 export const langList = {
@@ -405,7 +402,7 @@ export const syncDefaults: Sync = {
 	dynamic: {
 		every: 'hour',
 		collection: '',
-		lastCollec: '',
+		lastCollec: 'day',
 		time: Date.now(),
 	},
 	weather: {

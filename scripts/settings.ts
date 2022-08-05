@@ -47,8 +47,8 @@ import {
 function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 
-	const paramId = (str: string) => settingsDom.querySelector('#' + str)
-	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)
+	const paramId = (str: string) => settingsDom.querySelector('#' + str)!
+	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)!
 
 	const initCheckbox = (id: string, cat: boolean) => {
 		;(paramId(id) as HTMLInputElement).checked = cat ? true : false
@@ -141,14 +141,14 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
 
 	// Hide elems
-	hideElem(null, settingsDom.querySelectorAll('#hideelem button'), null)
+	hideElem(null, { is: 'buttons', buttonList: settingsDom.querySelectorAll<HTMLButtonElement>('#hideelem button') })
 
 	// Font family default
 	safeFont(settingsDom)
 
 	// Fetches font list if font is not default
 	// to prevent forced reflow when appending to visible datalist dom
-	if (data.font?.family !== '') customFont(null, { autocomplete: true, settingsDom: settingsDom })
+	if (data.font?.family !== '') customFont(null, { is: 'autocomplete', elem: settingsDom })
 
 	// Font weight
 	if (data.font?.availWeights?.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom)
@@ -274,7 +274,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		.forEach((elem: HTMLButtonElement) => {
 			elem.onclick = function () {
 				elem.classList.toggle('clicked')
-				hideElem(null, null, this)
+				hideElem(null, { is: 'hide', button: elem })
 			}
 		})
 
@@ -476,20 +476,20 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
 		if (settingsDom.querySelector('#dl_fontfamily').childElementCount === 0) {
-			customFont(null, { autocomplete: true, settingsDom: settingsDom })
+			customFont(null, { is: 'autocomplete', elem: settingsDom })
 		}
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { family: this.value })
+		customFont(null, { is: 'family', value: this.value })
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { weight: this.value })
+		customFont(null, { is: 'weight', value: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { size: this.value })
+		customFont(null, { is: 'size', value: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
@@ -828,6 +828,11 @@ export function settingsInit(data: Sync) {
 		//
 		// Events
 		//
+
+		// On settings changes, update export code
+		detectPlatform() === 'online'
+			? (window.onstorage = () => updateExportJSON())
+			: chrome.storage.onChanged.addListener(() => updateExportJSON())
 
 		function toggleDisplay(dom: HTMLElement) {
 			const isClosed = !has(dom, 'shown')

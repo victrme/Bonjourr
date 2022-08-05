@@ -88,16 +88,16 @@
 			<span id="lbl-he" class="trn">Hide elements</span>
 
 			<ul id="hideelem" aria-labelledby="lbl-he">
-				<li><button he_row="0" he_col="0" data="time-container" class="trn">Clock</button></li>
-				<li><button he_row="0" he_col="1" data="date" class="trn">Date</button></li>
-				<li><button he_row="1" he_col="0" data="greetings" class="trn">Greetings</button></li>
-				<li><button he_row="1" he_col="1" data="weather_desc" class="trn">Weather</button></li>
-				<li><button he_row="1" he_col="2" data="w_icon" class="trn">Icon</button></li>
+				<li><button data-row="0" data-col="0" data="time-container" class="trn">Clock</button></li>
+				<li><button data-row="0" data-col="1" data="date" class="trn">Date</button></li>
+				<li><button data-row="1" data-col="0" data="greetings" class="trn">Greetings</button></li>
+				<li><button data-row="1" data-col="1" data="weather_desc" class="trn">Weather</button></li>
+				<li><button data-row="1" data-col="2" data="w_icon" class="trn">Icon</button></li>
 				<li>
-					<button he_row="2" he_col="0" data="linkblocks" class="trn">Quick Links</button>
+					<button data-row="2" data-col="0" data="linkblocks" class="trn">Quick Links</button>
 				</li>
 				<li>
-					<button he_row="3" he_col="0" data="showSettings" class="trn">Settings icon</button>
+					<button data-row="3" data-col="0" data="showSettings" class="trn">Settings icon</button>
 				</li>
 			</ul>
 		</div>
@@ -774,14 +774,7 @@
 		<div class="param">
 			<div class="wrapper">
 				<label for="i_customfont" class="trn">Font family</label>
-				<input
-					list="dl_fontfamily"
-					id="i_customfont"
-					type="text"
-					name="customfont"
-					autocomplete="off"
-					placeholder=""
-				/>
+				<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" placeholder="" />
 				<datalist id="dl_fontfamily"></datalist>
 			</div>
 

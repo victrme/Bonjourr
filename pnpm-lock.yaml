@@ -12,7 +12,6 @@ specifiers:
   '@types/gulp-csso': ^4.0.1
   '@types/gulp-rename': ^2.0.1
   '@types/gulp-sass': ^5.0.0
-  '@types/lodash': ^4.14.182
   '@types/underscore': ^1.11.4
   concurrently: ^7.3.0
   gulp: ^4.0.2
@@ -31,7 +30,6 @@ devDependencies:
   '@types/gulp-csso': 4.0.1
   '@types/gulp-rename': 2.0.1
   '@types/gulp-sass': 5.0.0
-  '@types/lodash': 4.14.182
   '@types/underscore': 1.11.4
   concurrently: 7.3.0
   gulp: 4.0.2
@@ -111,10 +109,6 @@ packages:
 
   /@types/har-format/1.2.8:
     resolution: {integrity: sha512-OP6L9VuZNdskgNN3zFQQ54ceYD8OLq5IbqO4VK91ORLfOm7WdT/CiT/pHEBSQEqCInJ2y3O6iCm/zGtPElpgJQ==}
-    dev: true
-
-  /@types/lodash/4.14.182:
-    resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
     dev: true
 
   /@types/minimatch/3.0.5:

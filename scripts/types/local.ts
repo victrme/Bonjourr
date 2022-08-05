@@ -1,3 +1,4 @@
+import { google } from './googleFonts'
 import UnsplashImage from './unsplashImage'
 
 export type Quote = {
@@ -14,6 +15,8 @@ export type DynamicCache = {
 }
 
 export type Local = {
+	googleFonts?: google.fonts.WebfontList
+	fontface?: string
 	waitingForPreload: false
 	selectedId: string
 	idsList: string[]

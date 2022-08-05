@@ -1,8 +1,9 @@
 import { dict, days, engineLocales, months } from './lang'
 import { settingsInit, updateExportJSON } from './settings'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide } from './types/sync'
 import UnsplashImage from './types/unsplashImage'
+import { google } from './types/googleFonts'
 import { debounce } from 'underscore'
 import {
 	$,
@@ -46,6 +47,10 @@ type Dynamic = {
 	time: number
 }
 
+const eventDebounce = debounce(function (value: { [key: string]: string | number | Object }) {
+	chrome.storage.sync.set(value)
+}, 400)
+
 const freqControl = {
 	set: function () {
 		return new Date().getTime()
@@ -79,6 +84,8 @@ export function traduction(settingsDom: Element, lang = 'en') {
 	type LangList = keyof typeof langList
 
 	document.documentElement.setAttribute('lang', lang)
+
+	// TODO: dictionnary
 
 	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
 	const changeText = (dom: Element, str: dictStrings) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
@@ -114,7 +121,7 @@ export function tabTitle(init: string, event?: HTMLInputElement) {
 }
 
 export function clock(
-	init: Sync,
+	init: Sync | null,
 	event?: {
 		is: 'analog' | 'seconds' | 'face' | 'ampm' | 'timezone' | 'usdate' | 'greeting'
 		value?: string
@@ -311,7 +318,7 @@ export function clock(
 		return
 	}
 
-	let clock = init.clock || {
+	let clock = init?.clock || {
 		analog: false,
 		seconds: false,
 		ampm: false,
@@ -320,9 +327,9 @@ export function clock(
 	}
 
 	try {
-		startClock(clock, init.greeting, init.usdate)
-		clockDate(zonedDate(clock.timezone), init.usdate)
-		greetings(zonedDate(clock.timezone), init.greeting)
+		startClock(clock, init?.greeting || '', init?.usdate || false)
+		clockDate(zonedDate(clock.timezone), init?.usdate || false)
+		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		changeAnalogFace(clock.face)
 		canDisplayInterface('clock')
 	} catch (e) {
@@ -340,7 +347,7 @@ export function quickLinks(
 		elem?: Element
 	}
 ) {
-	const domlinkblocks = $('linkblocks')
+	const domlinkblocks = $('linkblocks')!
 
 	async function initblocks(links: Link[], linksrow: number) {
 		//
@@ -542,15 +549,23 @@ export function quickLinks(
 			// Transform coords in array here to improve performance during mouse move
 			coordsEntries = Object.entries(coords)
 
-			$(draggedId).setAttribute('style', 'opacity: 0')
+			const draggedDOM = $(draggedId)
+			const draggedCoord = coords[draggedId]
 
-			draggedClone = $(draggedId).cloneNode(true) as HTMLLIElement // create fixed positionned clone of element
-			draggedClone.id = ''
-			draggedClone.className = 'block dragging-clone on'
-			document.querySelector('#linkblocks ul').appendChild(draggedClone) // append to ul to get same styling
+			if (draggedDOM) {
+				draggedDOM.setAttribute('style', 'opacity: 0')
+				draggedClone = draggedDOM.cloneNode(true) as HTMLLIElement // create fixed positionned clone of element
+				draggedClone.id = ''
+				draggedClone.className = 'block dragging-clone on'
 
-			cox = ex - coords[draggedId].pos.x // offset to cursor position
-			coy = ey - coords[draggedId].pos.y // on dragged element
+				const ul = document.querySelector('#linkblocks ul')
+				if (ul) ul.appendChild(draggedClone) // append to ul to get same styling
+			}
+
+			if (draggedCoord) {
+				cox = ex - draggedCoord.pos.x // offset to cursor position
+				coy = ey - draggedCoord.pos.y // on dragged element
+			}
 
 			deplaceElem(draggedClone, ex - cox + push, ey - coy)
 		}
@@ -570,8 +585,8 @@ export function quickLinks(
 					ey > val.triggerbox.y[0] &&
 					ey < val.triggerbox.y[1]
 				) {
-					const drgO = coords[draggedId].order // (dragged order)
-					const keyO = coords[key].order // (key order)
+					const drgO = coords[draggedId]?.order || 0 // (dragged order)
+					const keyO = coords[key]?.order || 0 // (key order)
 					let interval = [drgO, keyO] // interval of links to move
 					let direction = 0
 
@@ -638,8 +653,8 @@ export function quickLinks(
 			domlinkblocks.ontouchmove = function (e) {
 				// Uses touches to get the finger (or other input method :o) position
 				!startsDrag
-					? initDrag(e.touches[0].clientX, e.touches[0].clientY, e.composedPath())
-					: applyDrag(e.touches[0].clientX, e.touches[0].clientY)
+					? initDrag(e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0, e.composedPath())
+					: applyDrag(e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0)
 			}
 
 			domlinkblocks.ontouchend = endDrag
@@ -658,7 +673,7 @@ export function quickLinks(
 
 	function editEvents() {
 		function submitEvent() {
-			return updatesEditedLink($('editlink').getAttribute('data-linkid'))
+			return updatesEditedLink($('editlink')!.getAttribute('data-linkid') || '')
 		}
 
 		function inputSubmitEvent(e: KeyboardEvent) {
@@ -669,23 +684,23 @@ export function quickLinks(
 			}
 		}
 
-		$('e_delete').onclick = function () {
+		$('e_delete')?.addEventListener('click', function () {
 			removeLinkSelection()
 			removeblock(parseInt($('editlink').getAttribute('index')))
 			clas($('editlink'), false, 'shown')
-		}
+		})
 
-		$('e_submit').onclick = function (e) {
+		$('e_submit')?.addEventListener('click', function (e) {
 			const noErrorOnEdit = submitEvent() // returns false if saved icon data too big
 			if (noErrorOnEdit) {
 				closeEditLink() // only auto close on apply changes button
 				removeLinkSelection()
 			}
-		}
+		})
 
-		$('e_title').addEventListener('keyup', inputSubmitEvent)
-		$('e_url').addEventListener('keyup', inputSubmitEvent)
-		$('e_iconurl').addEventListener('keyup', inputSubmitEvent)
+		$('e_title')?.addEventListener('keyup', inputSubmitEvent)
+		$('e_url')?.addEventListener('keyup', inputSubmitEvent)
+		$('e_iconurl')?.addEventListener('keyup', inputSubmitEvent)
 	}
 
 	function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; y: number }) {
@@ -770,6 +785,7 @@ export function quickLinks(
 		return true
 	}
 
+	// TODO: forgot about removeblock rework
 	function removeblock(index: number) {
 		chrome.storage.sync.get(null, (data: Sync) => {
 			const links = bundleLinks(data)
@@ -1087,6 +1103,7 @@ export function weather(
 			return storage
 		}
 
+		// TODO: weather API types
 		let currentResponse: any
 		let forecastResponse: any
 		let currentJSON: any
@@ -1165,8 +1182,7 @@ export function weather(
 				chrome.storage.sync.set({ weather: request(storage) })
 			}
 
-			displaysCurrent(storage)
-			displaysForecast(storage)
+			displayWeather(storage)
 		}
 
 		// First startup
@@ -1207,7 +1223,7 @@ export function weather(
 		)
 	}
 
-	function displaysCurrent(storage: Weather) {
+	function displayWeather(storage: Weather) {
 		const currentState = storage.lastState
 
 		// 1.11.1 => 1.11.2 control
@@ -1282,19 +1298,20 @@ export function weather(
 			setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 		}
 
+		function handleForecast() {
+			forecast.textContent = `${tradThis('with a high of')} ${storage.fcHigh}° ${tradThis(
+				date.getHours() > 21 ? 'tomorrow' : 'today'
+			)}.`
+
+			clas(forecast, false, 'wait')
+		}
+
 		handleWidget()
 		handleDescription()
+		handleForecast()
 
 		clas(current, false, 'wait')
 		clas(tempContainer, false, 'wait')
-	}
-
-	function displaysForecast(storage: Weather) {
-		forecast.textContent = `${tradThis('with a high of')} ${storage.fcHigh}° ${tradThis(
-			date.getHours() > 21 ? 'tomorrow' : 'today'
-		)}.`
-
-		clas(forecast, false, 'wait')
 	}
 
 	function forecastVisibilityControl(value: string) {
@@ -1380,7 +1397,7 @@ export function weather(
 				case 'temp': {
 					data.weather.temperature = event.value
 					chrome.storage.sync.set({ weather: data.weather })
-					displaysCurrent(data.weather)
+					displayWeather(data.weather)
 					break
 				}
 			}
@@ -1388,22 +1405,24 @@ export function weather(
 	}
 
 	// Event & Init
-	if (event) updatesWeather()
-	else {
-		try {
-			if (validateHideElem(init.hide)) {
-				if (init.hide[1][1] + init.hide[1][2] === 2) return false
-			}
-		} catch (e) {
-			errorMessage('Could not validate Hide in Weather', e)
-		}
+	if (event) {
+		updatesWeather()
+		return
+	}
 
-		try {
-			forecastVisibilityControl(init.weather.forecast || 'auto')
-			weatherCacheControl(init.weather)
-		} catch (e) {
-			errorMessage('Weather init did not work', e)
+	try {
+		if (validateHideElem(init.hide)) {
+			if (init.hide[1][1] + init.hide[1][2] === 2) return false
 		}
+	} catch (e) {
+		errorMessage('Could not validate Hide in Weather', e)
+	}
+
+	try {
+		forecastVisibilityControl(init.weather.forecast || 'auto')
+		weatherCacheControl(init.weather)
+	} catch (e) {
+		errorMessage('Weather init did not work', e)
 	}
 }
 
@@ -2254,9 +2273,14 @@ export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement)
 		const request = domsearchbar.getAttribute('request')
 		const lang = document.documentElement.getAttribute('lang')
 
+		// TODO: do engine dictionary typing
+
 		// engineLocales est dans lang.js
-		if (engine === 'custom') searchURL = request
-		else searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+		if (engine === 'custom') {
+			searchURL = request
+		} else {
+			searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
+		}
 
 		searchURL = searchURL.replace('%s', encodeURIComponent(domsearchbar.value))
 
@@ -2585,31 +2609,32 @@ export function safeFont(settingsDom?: HTMLElement) {
 	return toUse
 }
 
-export function customFont(init, event?) {
-	function setSize(val: number) {
-		dominterface.style.fontSize = val / 16 + 'em' // 16 is body px size
+export function customFont(
+	init: Font,
+	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
+) {
+	function setSize(val: string) {
+		dominterface.style.fontSize = parseInt(val) / 16 + 'em' // 16 is body px size
 	}
 
-	function setFamily(family, fontface) {
-		$('fontstyle').textContent = fontface
-		$('clock').style.fontFamily = '"' + family + '"'
-		$('credit').style.fontFamily = '"' + family + '"'
-		dominterface.style.fontFamily = '"' + family + '"'
-		canDisplayInterface('fonts')
-	}
-
-	function setWeight(family, weight) {
-		weight = parseInt(weight)
-
+	function setWeight(family: string, weight: string) {
 		if (weight) {
 			const list = safeFont().weights
 			dominterface.style.fontWeight = weight
 			$('searchbar').style.fontWeight = weight
 
 			// Default bonjourr lowers font weight on clock (because we like it)
-			const loweredWeight = weight > 100 ? list[list.indexOf(weight) - 1] : weight
+			const loweredWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
 			$('clock').style.fontWeight = family ? weight : loweredWeight
 		}
+	}
+
+	function setFamily(family: string, fontface: string) {
+		$('fontstyle').textContent = fontface
+		$('clock').style.fontFamily = '"' + family + '"'
+		$('credit').style.fontFamily = '"' + family + '"'
+		dominterface.style.fontFamily = '"' + family + '"'
+		canDisplayInterface('fonts')
 	}
 
 	async function setFontface(url: string) {
@@ -2621,27 +2646,34 @@ export function customFont(init, event?) {
 		return fontface
 	}
 
-	function updateFont(event) {
-		function fetchFontList(callback: Function) {
-			chrome.storage.local.get('googleFonts', async (local) => {
+	function updateFont() {
+		function fetchFontList(callback: (json: google.fonts.WebfontList) => void) {
+			chrome.storage.local.get('googleFonts', async (local: Local) => {
 				//
 				// Get list from storage
-				if (local.googleFonts && !local.googleFonts?.error) {
+				if (local.googleFonts) {
 					callback(local.googleFonts)
 					return
 				}
 
-				// Get list from API if browser is online
-				if (navigator.onLine) {
-					const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
-					const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
-					const resp = await fetch(url)
+				if (!navigator.onLine) {
+					return
+				}
 
-					if (!resp.ok) return // return nothing if smth wrong, will try to fetch next time
+				// Get list from API
+				const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
+				const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
+				const resp = await fetch(url)
 
-					const json = await resp.json()
+				if (!resp.ok) {
+					return // return nothing if smth wrong, will try to fetch next time
+				}
+
+				const json = await resp.json()
+
+				// json has at least one available family
+				if (json.items?.length > 0 && typeof json.items[0]?.family === 'string') {
 					chrome.storage.local.set({ googleFonts: json })
-
 					callback(json)
 				}
 			})
@@ -2661,10 +2693,10 @@ export function customFont(init, event?) {
 
 			$('i_weight').setAttribute('value', baseWeight)
 
-			return { url: '', family: '', availWeights: [], weight: baseWeight }
+			return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
 		}
 
-		async function changeFamily(json, family) {
+		async function changeFamily(json: google.fonts.WebfontList, family: string) {
 			//
 			// Cherche correspondante
 			const domfamily = $('i_customfont') as HTMLInputElement
@@ -2674,89 +2706,97 @@ export function customFont(init, event?) {
 			// One font has been found
 			if (font.length > 0) {
 				const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
-				const defaultWeight = availWeights.includes('regular') ? 400 : availWeights[0]
+				const defaultWeight = availWeights.includes('regular') ? '400' : availWeights[0]
 				const url = encodeURI(`https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`)
 				const fontface = await setFontface(url)
 
 				setFamily(font[0].family, fontface)
-				setWeight(font[0].family, 400)
+				setWeight(font[0].family, '400')
 				modifyWeightOptions(availWeights)
 				domweight.value = '400'
 
 				if (domfamily) domfamily.blur()
-				return { url, family: font[0].family, availWeights, weight: 400 }
+				return { url, family: font[0].family, availWeights, weight: '400' }
 			}
 
 			// No fonts found
 			else {
 				domfamily.value = ''
 				safeFont($('settings'))
-				return { url: '', family: '', availWeights: [], weight: testOS.windows ? '400' : '300' }
+				return { url: '', family: '', availWeights: [] as string[], weight: testOS.windows ? '400' : '300' }
 			}
 		}
 
-		if (event.autocomplete) {
-			fetchFontList(function fillFamilyInput(json) {
-				if (!json) return
+		chrome.storage.sync.get('font', async ({ font }: Sync) => {
+			switch (event.is) {
+				case 'autocomplete': {
+					fetchFontList((json) => {
+						if (!json) return
 
-				const fragment = new DocumentFragment()
+						const fragment = new DocumentFragment()
 
-				json.items.forEach(function addOptions(item) {
-					const option = document.createElement('option')
+						json.items.forEach(function addOptions(item) {
+							const option = document.createElement('option')
 
-					option.textContent = item.family
-					option.setAttribute('value', item.family)
-					fragment.appendChild(option)
-				})
+							option.textContent = item.family
+							option.setAttribute('value', item.family)
+							fragment.appendChild(option)
+						})
 
-				event.settingsDom.querySelector('#dl_fontfamily').appendChild(fragment)
-			})
-
-			return
-		}
-
-		chrome.storage.sync.get('font', async (data) => {
-			let font = data.font
-
-			if (event.size) {
-				font.size = event.size
-				setSize(event.size)
-				// slowRange({ font: font }, 200)
-				return
-			}
-
-			if (event.weight) {
-				if (font.url) {
-					font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
-					font.url += event.weight
-					setFamily(font.family, await setFontface(font.url))
+						if (event.elem) {
+							event.elem.querySelector('#dl_fontfamily').appendChild(fragment)
+						}
+					})
+					break
 				}
 
-				// If nothing, removes custom font
-				else font.weight = event.weight
+				case 'family': {
+					if (event.value === '') {
+						safeFont($('settings'))
+						debounce(() => {
+							chrome.storage.local.remove('fontface')
+							eventDebounce({ font: { size: font.size, ...removeFont() } })
+						}, 200)
+					}
 
-				setWeight(font.family, event.weight)
-				// slowRange({ font: font }, 200)
-				return
-			}
+					if (typeof event.value === 'string' && event.value.length > 1) {
+						fetchFontList(async (json) => {
+							chrome.storage.sync.set({
+								font: { size: font.size, ...(await changeFamily(json, event.value)) },
+							})
+						})
+					}
 
-			if (event.family === '') {
-				safeFont($('settings'))
-				slowRange({ font: { size: font.size, ...removeFont() } }, 200)
-				// chrome.storage.local.remove('fontface')
-				return
-			}
+					break
+				}
 
-			if (event.family) {
-				fetchFontList(async (json) => {
-					// slowRange({ font: { size: font.size, ...(await changeFamily(json, event.family)) } }, 200)
-				})
+				case 'weight': {
+					if (font.url) {
+						font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
+						font.url += event.value
+						setFamily(font.family, await setFontface(font.url))
+					}
+
+					// If nothing, removes custom font
+					else font.weight = event.value
+
+					setWeight(font.family, event.value)
+					eventDebounce({ font: font })
+					break
+				}
+
+				case 'size': {
+					font.size = event.value
+					setSize(event.value)
+					eventDebounce({ font: font })
+					break
+				}
 			}
 		})
 	}
 
 	if (event) {
-		updateFont(event)
+		updateFont()
 		return
 	}
 
@@ -2765,11 +2805,13 @@ export function customFont(init, event?) {
 		setSize(init.size)
 		setWeight(init.family, init.weight)
 
-		// Sets family
-		if (init.family === '') return
+		if (init.family === '') {
+			return
+		}
 
-		chrome.storage.local.get('fontface', async ({ fontface }) => {
-			setFamily(init.family, fontface || (await setFontface(init.url))) // fetch font-face data if none in storage
+		// Sets family
+		chrome.storage.local.get('fontface', async (local: Local) => {
+			setFamily(init.family, local.fontface || (await setFontface(init.url))) // fetch font-face data if none in storage
 		})
 	} catch (e) {
 		errorMessage('Custom fonts failed to start', e)
@@ -2781,7 +2823,7 @@ export function textShadow(init: number, event?: number) {
 	$('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
 
 	if (event) {
-		// slowRange({ textShadow: val })
+		eventDebounce({ textShadow: val })
 	}
 }
 
@@ -2795,19 +2837,22 @@ export function customCss(init: string, event?: any) {
 			case 'styling': {
 				const val = stringMaxSize(event.val, 8080)
 				styleHead.textContent = val
-				// slowRange({ css: val }, 500)
+				eventDebounce({ css: val })
 				break
 			}
 
 			case 'resize': {
-				// slowRange({ cssHeight: event.val }, 500)
+				eventDebounce({ cssHeight: event.val })
 				break
 			}
 		}
 	}
 }
 
-export function hideElem(init, buttons?, that?) {
+export function hideElem(
+	init: Hide,
+	event?: { is: 'buttons' | 'hide'; buttonList?: NodeListOf<HTMLButtonElement>; button?: HTMLButtonElement }
+) {
 	const IDsList = [
 		['time', ['time-container', 'date']],
 		['main', ['greetings', 'description', 'tempContainer']],
@@ -2816,50 +2861,39 @@ export function hideElem(init, buttons?, that?) {
 	]
 
 	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
-	const getEventListPosition = (that) => ({
-		row: parseInt(that.getAttribute('he_row')),
-		col: parseInt(that.getAttribute('he_col')),
+	const getEventListPosition = (that: HTMLButtonElement) => ({
+		row: parseInt(that.getAttribute('data-row')),
+		col: parseInt(that.getAttribute('data-col')),
 	})
 
-	function toggleElement(dom, hide) {
-		if (hide) $(dom).classList.add('he_hidden')
-		else $(dom).classList.remove('he_hidden')
-	}
-
-	function isEverythingHidden(list, row) {
+	function isEverythingHidden(list: Hide, row: number) {
 		const filtered = list[row].filter((el) => el === 1)
 		return filtered.length === list[row].length
 	}
 
-	function initializeHiddenElements(list) {
+	function initElements(list: Hide) {
 		list.forEach((row, row_i) => {
-			const parent = IDsList[row_i][0]
+			const parent = IDsList[row_i][0] as string // [0] is always string
 
-			if (isEverythingHidden(list, row_i)) toggleElement(parent, true)
+			if (isEverythingHidden(list, row_i)) {
+				clas($(parent), true, 'he_hidden')
+			}
 
 			// Hide children
 			row.forEach((child, child_i) => {
-				const childid = IDsList[row_i][1][child_i]
-				if (!!child) toggleElement(childid, true)
+				const id = IDsList[row_i][1][child_i]
+				if (!!child) {
+					clas($(id), true, 'he_hidden')
+				}
 			})
 		})
 	}
 
-	// startup initialization
-	if (!that && !buttons && validateHideElem(init)) {
-		try {
-			initializeHiddenElements(init)
-		} catch (e) {
-			errorMessage('Hide failed on init', e)
-		}
-	}
-
-	// Settings buttons initialization
-	else if (buttons) {
+	function initButtons() {
 		chrome.storage.sync.get('hide', (data) => {
 			try {
 				data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-				buttons.forEach((button) => {
+				event.buttonList.forEach((button) => {
 					const pos = getEventListPosition(button)
 					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
 				})
@@ -2869,31 +2903,44 @@ export function hideElem(init, buttons?, that?) {
 		})
 	}
 
-	// Event
-	else {
-		chrome.storage.sync.get(['weather', 'hide'], (data) => {
+	function toggleElement() {
+		chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => {
 			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
 
-			const pos = getEventListPosition(that)
-			const state = that.classList.contains('clicked')
+			const pos = getEventListPosition(event.button)
+			const state = event.button.classList.contains('clicked')
 			const child = IDsList[pos.row][1][pos.col]
-			const parent = IDsList[pos.row][0]
+			const parent = IDsList[pos.row][0] as string
 
 			// Update hidden list
 			data.hide[pos.row][pos.col] = state ? 1 : 0
 			chrome.storage.sync.set({ hide: data.hide })
 
 			// Re-activates weather
-			if (!state && pos.row === 1 && pos.col > 0) weather(null, null, data)
+			if (!state && pos.row === 1 && pos.col > 0) weather(data)
 
 			// Toggle children and parent if needed
-			toggleElement(child, state)
-			toggleElement(parent, isEverythingHidden(data.hide, pos.row))
+			clas($(child), state, 'he_hidden')
+			clas($(parent), isEverythingHidden(data.hide, pos.row), 'he_hidden')
 		})
+	}
+
+	if (event) {
+		if (event.is === 'buttons' && event.buttonList) initButtons()
+		if (event.is === 'hide' && event.button) toggleElement()
+		return
+	}
+
+	if (validateHideElem(init)) {
+		try {
+			initElements(init)
+		} catch (e) {
+			errorMessage('Hide failed on init', e)
+		}
 	}
 }
 
-export function sunTime(init?) {
+export function sunTime(init?: Weather) {
 	if (init && init.lastState) {
 		sunrise = init.lastState.sunrise
 		sunset = init.lastState.sunset
@@ -2916,7 +2963,9 @@ export function sunTime(init?) {
 	}
 }
 
-export function filterImports(data) {
+export function filterImports(data: any) {
+	// TODO: Somehow type filterImports
+
 	let result = { ...syncDefaults, ...data }
 
 	// Hide elem classes changed at some point
@@ -2939,10 +2988,10 @@ export function filterImports(data) {
 
 	// Filter links to remove alias and give random ids
 	try {
-		function linksFilter(sync) {
+		function linksFilter(sync: any) {
 			const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
 
-			sync.links?.forEach(({ title, url, icon }, i) => {
+			sync.links?.forEach(({ title, url, icon }: Link, i: number) => {
 				const id = 'links' + randomString(6)
 				const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
 
@@ -2962,7 +3011,7 @@ export function filterImports(data) {
 	return result
 }
 
-export function canDisplayInterface(cat, init?: Sync) {
+export function canDisplayInterface(cat: keyof typeof funcsOk, init?: Sync) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
@@ -3001,8 +3050,8 @@ export function canDisplayInterface(cat, init?: Sync) {
 	}
 }
 
-export function interfaceWidgetToggle(init, event?) {
-	const toggleEmpty = (is) => clas($('widgets'), is, 'empty')
+export function interfaceWidgetToggle(init: Sync, event?: 'links' | 'quotes' | 'searchbar') {
+	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
 	if (event) {
@@ -3020,82 +3069,36 @@ export function interfaceWidgetToggle(init, event?) {
 		return
 	}
 
-	toggleEmpty(!(init.quicklinks || init.searchbar.on || init.quotes.on)) // if one is true, not empty
+	toggleEmpty(!(init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
 }
 
-function onlineMobilePageUpdate() {
-	chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data: Sync) => {
-		const { dynamic, background_type } = data
-		const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
+function onlineAndMobileHandler() {
+	//
 
-		if (dynamicNeedsImage) {
-			$('background_overlay').style.opacity = '0'
-			unsplash(data)
-		}
-
-		clock(data)
-		sunTime(data.weather)
-		weather(data)
-	})
-}
-
-function startup(data: Sync) {
-	traduction(null, data.lang)
-	canDisplayInterface(null, data)
-
-	sunTime(data.weather)
-	weather(data)
-
-	customFont(data.font)
-	textShadow(data.textShadow)
-
-	favicon(data.favicon)
-	tabTitle(data.tabtitle)
-	clock(data, null)
-	darkmode(data.dark)
-	searchbar(data.searchbar)
-	quotes(data)
-	showPopup(data.reviewPopup)
-
-	customCss(data.css)
-	hideElem(data.hide)
-	initBackground(data)
-	quickLinks(data)
-	interfaceWidgetToggle(data)
-
-	setTimeout(() => settingsInit(data), 200)
-}
-
-const dominterface = $('interface'),
-	isExtension = detectPlatform() !== 'online',
-	funcsOk = {
-		clock: false,
-		links: false,
-	}
-
-let lazyClockInterval = setTimeout(() => {}, 0),
-	localIsLoading = false,
-	loadtimeStart = performance.now(),
-	sunset = 0,
-	sunrise = 0
-
-window.onload = function () {
-	isExtension // On settings changes, update export code
-		? chrome.storage.onChanged.addListener(() => updateExportJSON())
-		: (window.onstorage = () => updateExportJSON())
-
-	setInterval(() => {
-		// Checks every 5 minutes if weather needs update
-		navigator.onLine ? chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => weather(data)) : ''
-	}, 5 * 60 * 1000)
-
-	// For Mobile that caches pages for days
 	if (mobilecheck()) {
-		document.addEventListener('visibilitychange', () => onlineMobilePageUpdate())
+		// For Mobile that caches pages for days
+		document.addEventListener('visibilitychange', () => {
+			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data: Sync) => {
+				const { dynamic, background_type } = data
+				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
+
+				if (dynamicNeedsImage) {
+					$('background_overlay').style.opacity = '0'
+					unsplash(data)
+				}
+
+				clock(data)
+				sunTime(data.weather)
+				weather(data)
+			})
+		})
 	}
 
 	// Only on Online / Safari
 	if (detectPlatform() === 'online') {
+		//
+		// Update export code on localStorage changes
+
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/sw.js')
 		}
@@ -3127,52 +3130,87 @@ window.onload = function () {
 			}, 500)
 		}
 	}
+}
+
+function startup(data: Sync) {
+	traduction(null, data.lang)
+	canDisplayInterface(null, data)
+
+	sunTime(data.weather)
+	weather(data)
+
+	customFont(data.font)
+	textShadow(data.textShadow)
+
+	favicon(data.favicon)
+	tabTitle(data.tabtitle)
+	clock(data)
+	darkmode(data.dark)
+	searchbar(data.searchbar)
+	quotes(data)
+	showPopup(data.reviewPopup)
+
+	customCss(data.css)
+	hideElem(data.hide)
+	initBackground(data)
+	quickLinks(data)
+	interfaceWidgetToggle(data)
+
+	setTimeout(() => settingsInit(data), 200)
+
+	setInterval(() => {
+		if (navigator.onLine) {
+			chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => {
+				weather(data) // Checks every 5 minutes if weather needs update
+			})
+		}
+	}, 300000)
+}
+
+const dominterface = $('interface') as HTMLDivElement,
+	isExtension = detectPlatform() !== 'online',
+	funcsOk: {
+		fonts?: boolean
+		quotes?: boolean
+		clock: boolean
+		links: boolean
+	} = {
+		clock: false,
+		links: false,
+	}
+
+let lazyClockInterval = setTimeout(() => {}, 0),
+	localIsLoading = false,
+	loadtimeStart = performance.now(),
+	sunset = 0,
+	sunrise = 0
+
+window.onload = function () {
+	onlineAndMobileHandler()
 
 	try {
 		chrome.storage.sync.get(null, (data: Sync) => {
+			const VersionChange = data?.about?.version !== syncDefaults.about.version
 			const isImport = sessionStorage.isImport === 'true'
-			const versionChange = data?.about?.version !== syncDefaults.about.version
+			const firstStart = Object.keys(data).length === 0
 
-			// First Startup, chrome.storage is null
-			if (Object.keys(data).length === 0) {
+			if (firstStart) {
 				data = syncDefaults
-				document.documentElement.setAttribute('lang', defaultLang())
 				chrome.storage.local.set(localDefaults)
 				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
+			//
+			else if (isImport) {
+				sessionStorage.removeItem('isImport')
 
-			// Import
-			if (isImport) {
-				// needs local to migrate backgrounds (1.13.2 => 1.14.0)
-				chrome.storage.local.get(null, (local) => {
-					local = localDataMigration(local)
-					data = filterImports(data)
-					sessionStorage.removeItem('isImport')
+				data = filterImports(data)
+				data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
 
-					// Change version in here
-					// Only after "different version" startup is triggered
-					data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
-
-					chrome.storage.sync.clear()
-					chrome.storage.sync.set(isExtension ? data : { import: data })
-
-					// (can be removed): updates local for 1.13.2 => 1.14.0
-					if (isExtension) {
-						chrome.storage.local.clear()
-						chrome.storage.local.set({ ...local }, () => startup(data))
-					} else {
-						localStorage.bonjourrBackgrounds = JSON.stringify(local)
-						startup(data)
-					}
-					// end (can be removed)
-					// startup(data)
-				})
-
-				return
+				chrome.storage.sync.clear()
+				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
-
-			// Update
-			if (versionChange) {
+			//
+			else if (VersionChange) {
 				// Is at least 1.14.0, no filtering to do, just update version
 				chrome.storage.sync.set({
 					quicklinks: true,

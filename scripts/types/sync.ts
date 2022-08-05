@@ -34,6 +34,16 @@ export type Weather = {
 	}
 }
 
+export type Font = {
+	url: string
+	family: string
+	size: string
+	availWeights: string[]
+	weight: string
+}
+
+export type Hide = [[number, number], [number, number, number], [number], [number]]
+
 export type Sync = {
 	usdate: boolean
 	showall: boolean
@@ -70,15 +80,9 @@ export type Sync = {
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
-	font: {
-		url: string
-		family: string
-		size: string
-		availWeights: string[]
-		weight: string
-	}
+	font: Font
+	hide: Hide
 	textShadow: number
-	hide: number[][]
 	about: { browser: string; version: string }
 	[key: string]: Link | unknown
 }
