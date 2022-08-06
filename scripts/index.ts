@@ -77,19 +77,28 @@ const freqControl = {
 }
 
 export function traduction(settingsDom: Element, lang = 'en') {
-	if (lang === 'en') return
+	type DictKey = keyof typeof dict
+	type DictField = keyof typeof dict.April // "april" just to select a random field
 
-	type dictStrings = keyof typeof dict
-
-	document.documentElement.setAttribute('lang', lang)
-
-	// TODO: dictionnary
+	if (!Object.keys(dict.April).includes(lang)) {
+		return // Is english or not valid lang code ? keep english (do nothing)
+	}
 
 	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
-	const changeText = (dom: Element, str: dictStrings) => (dict[str] ? (dom.textContent = dict[str][lang]) : '')
+	const dictKeys = Object.keys(dict)
+	let text: string
+
 	trns.forEach((trn) => {
-		if (trn.textContent) changeText(trn, trn.textContent as dictStrings)
+		text = trn.textContent
+
+		// Translate if text is a valid dict key
+		// lang is de facto a valid dict[...] key because it didnt return before
+		if (dictKeys.includes(text)) {
+			trn.textContent = dict[text as DictKey][lang as DictField]
+		}
 	})
+
+	document.documentElement.setAttribute('lang', lang)
 }
 
 export function favicon(init: string, event?: HTMLInputElement) {

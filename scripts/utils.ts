@@ -363,13 +363,20 @@ export const defaultLang = (navLang = navigator.language.replace('-', '_')): str
 }
 
 export function tradThis(str: string): string {
+	type DictKey = keyof typeof dict
+	type DictField = keyof typeof dict.April
+
 	const lang = document.documentElement.getAttribute('lang')
 
-	if (lang && lang !== 'en') {
-		return dict[str][lang]
+	if (!Object.keys(dict.April).includes(lang)) {
+		return str // English or not a dict field key ? no trn
 	}
 
-	return str
+	if (Object.keys(dict).includes(str)) {
+		return dict[str as DictKey][lang as DictField] // String is a key of dict & lang is a key of dict[...]
+	}
+
+	return str // String was not a key of dict
 }
 
 export const syncDefaults: Sync = {

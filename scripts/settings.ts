@@ -104,13 +104,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_analog', data.clock?.analog || false)
 
 	// Input translation
-	paramId('i_title').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_greeting').setAttribute('placeholder', tradThis('Name'))
-	paramId('i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
-	paramId('i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
-	paramId('cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
-	// paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
-	// paramId('i_export').setAttribute('title', tradThis('Export code'))
+	translatePlaceholders(settingsDom)
 
 	// Change edit tips on mobile
 	if (mobilecheck()) {
@@ -387,7 +381,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Weather
 
-	const weatherDebounce = debounce(() => weather(null, { is: 'city' }), 800)
+	const weatherDebounce = debounce(() => weather(null, { is: 'city' }), 1600)
 
 	paramId('i_city').addEventListener('keyup', (e: KeyboardEvent) => {
 		weatherDebounce()
@@ -601,6 +595,16 @@ function changelogControl(settingsDom: HTMLElement) {
 
 type Langs = keyof typeof langList
 
+function translatePlaceholders(settingsDom: HTMLElement) {
+	settingsDom.querySelector('#i_title').setAttribute('placeholder', tradThis('Name'))
+	settingsDom.querySelector('#i_greeting').setAttribute('placeholder', tradThis('Name'))
+	settingsDom.querySelector('#i_tabtitle').setAttribute('placeholder', tradThis('New tab'))
+	settingsDom.querySelector('#i_sbrequest').setAttribute('placeholder', tradThis('Search query: %s'))
+	settingsDom.querySelector('#cssEditor').setAttribute('placeholder', tradThis('Type in your custom CSS'))
+	// paramId('i_import').setAttribute('placeholder', tradThis('Import code'))
+	// paramId('i_export').setAttribute('title', tradThis('Export code'))
+}
+
 function switchLangs(nextLang: Langs) {
 	function langSwitchTranslation(langs: { current: Langs; next: Langs }) {
 		// On 'en' lang, get the dict key, not one of its values
@@ -614,7 +618,7 @@ function switchLangs(nextLang: Langs) {
 		const { current, next } = langs
 		const nextList = getLangList(next)
 		const currentList = getLangList(current)
-		let switchDict: Record<string, string>
+		let switchDict: Record<string, string> = {}
 
 		currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
 
@@ -641,6 +645,7 @@ function switchLangs(nextLang: Langs) {
 	chrome.storage.sync.get(null, (data: Sync) => {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
+		translatePlaceholders($('settings'))
 		weather(data)
 		clock(data, null)
 
