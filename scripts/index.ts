@@ -1177,7 +1177,7 @@ export function weather(
 			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
 				sessionStorage.removeItem('lang')
 				storage = await request(storage)
-				chrome.storage.sync.set({ weather: request(storage) })
+				chrome.storage.sync.set({ weather: storage })
 			}
 
 			displayWeather(storage)
@@ -1188,36 +1188,52 @@ export function weather(
 	}
 
 	async function initWeather(storage: Weather) {
-		const applyResult = async (geol: boolean) => {
-			chrome.storage.sync.set({ weather: await request(storage) })
+		//
+		// First, tries to get city and country code to add in settings
+		const ipapi = await fetch('https://ipapi.co/json')
 
-			if ($('settings')) {
-				i_ccode.value = storage.ccode
-				i_city.setAttribute('placeholder', storage.city)
+		if (ipapi.ok) {
+			const json = await ipapi.json()
 
-				if (geol) {
-					clas($('sett_city'), true, 'hidden')
-					i_geol.checked = true
-				}
+			if (!json.error) {
+				storage = { ...storage, city: json.city, ccode: json.country }
 			}
 		}
 
-		try {
-			const ipapi = await fetch('https://ipapi.co/json')
-			if (ipapi.ok) {
-				const json = await ipapi.json()
-				if (!json.error) storage = { ...storage, city: json.city, ccode: json.country }
+		// Then use this as callback in Geolocation request
+		async function setWeatherAfterGeolocation(location?: [number, number]) {
+			if (location) {
+				storage.location = location
 			}
-		} catch (error) {
-			console.warn(error)
+
+			// Request API with all infos available
+			storage = await request(storage)
+
+			displayWeather(storage)
+			chrome.storage.sync.set({ weather: storage })
+
+			setTimeout(() => {
+				// If settings is available, all other inputs are
+				if ($('settings')) {
+					const i_ccode = $('i_ccode') as HTMLInputElement
+					const i_city = $('i_city') as HTMLInputElement
+					const i_geol = $('i_geol') as HTMLInputElement
+					const sett_city = $('sett_city') as HTMLDivElement
+
+					i_ccode.value = storage.ccode
+					i_city.setAttribute('placeholder', storage.city)
+
+					if (location) {
+						clas(sett_city, true, 'hidden')
+						i_geol.checked = true
+					}
+				}
+			}, 150)
 		}
 
 		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				storage.location = [pos.coords.latitude, pos.coords.longitude]
-				applyResult(true)
-			},
-			() => applyResult(false)
+			(pos) => setWeatherAfterGeolocation([pos.coords.latitude, pos.coords.longitude]), // Accepted
+			() => setWeatherAfterGeolocation() // Rejected
 		)
 	}
 
@@ -1326,7 +1342,8 @@ export function weather(
 			switch (event.is) {
 				case 'units': {
 					data.weather.unit = event.checked ? 'imperial' : 'metric'
-					chrome.storage.sync.set({ weather: await request(data.weather) })
+
+					data.weather = await request(data.weather)
 					break
 				}
 
@@ -1345,7 +1362,7 @@ export function weather(
 						iterations: Infinity,
 					})
 
-					chrome.storage.sync.set({ weather: await request(data.weather) })
+					data.weather = await request(data.weather)
 
 					i_city.value = ''
 					i_city.blur()
@@ -1363,42 +1380,43 @@ export function weather(
 							async (pos) => {
 								//update le parametre de location
 								clas(sett_city, event.checked, 'hidden')
-								data.weather.location.push(pos.coords.latitude, pos.coords.longitude)
-								chrome.storage.sync.set({ weather: await request(data.weather) })
+								data.weather.location = [pos.coords.latitude, pos.coords.longitude]
+
+								data.weather = await request(data.weather)
+								chrome.storage.sync.set({ weather: data.weather })
+								displayWeather(data.weather)
 							},
-							(refused) => {
-								//désactive geolocation if refused
+							() => {
+								// Désactive geolocation if refused
 								setTimeout(() => (event.checked = false), 400)
 								if (!data.weather.city) initWeather(null)
-								console.log(refused)
 							}
 						)
+						return
 					} else {
 						i_city.setAttribute('placeholder', data.weather.city)
 						i_ccode.value = data.weather.ccode
 						clas(sett_city, event.checked, 'hidden')
 
 						data.weather.location = []
-						chrome.storage.sync.set({ weather: await request(data.weather) })
+						data.weather = await request(data.weather)
 					}
-
-					break
 				}
 
 				case 'forecast': {
 					data.weather.forecast = event.value
-					chrome.storage.sync.set({ weather: data.weather })
 					forecastVisibilityControl(event.value)
 					break
 				}
 
 				case 'temp': {
 					data.weather.temperature = event.value
-					chrome.storage.sync.set({ weather: data.weather })
-					displayWeather(data.weather)
 					break
 				}
 			}
+
+			chrome.storage.sync.set({ weather: data.weather })
+			displayWeather(data.weather)
 		})
 	}
 
