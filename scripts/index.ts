@@ -3056,7 +3056,7 @@ export function filterImports(data: any) {
 	return result
 }
 
-export function canDisplayInterface(cat: keyof typeof funcsOk, init?: Sync) {
+export function canDisplayInterface(cat: keyof typeof functionsLoad, init?: Sync) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
@@ -3076,22 +3076,26 @@ export function canDisplayInterface(cat: keyof typeof funcsOk, init?: Sync) {
 			dominterface.classList.remove('init')
 			domshowsettings.classList.remove('init')
 			domshowsettings.style.transition = ``
+
+			chrome.storage.sync.get(null, (data: Sync) => settingsInit(data))
 		}, loadtime + 100)
 	}
 
 	// More conditions if user is using advanced features
 	if (init) {
-		if (init.font?.family && init.font?.url) funcsOk.fonts = false
-		if (init.quotes?.on) funcsOk.quotes = false
+		if (init.font?.family && init.font?.url) functionsLoad.fonts = 'Waiting'
+		if (init.quotes?.on) functionsLoad.quotes = 'Waiting'
+		return
 	}
 
-	// Check if all funcs are ready
-	else {
-		funcsOk[cat] = true
-		const entries = Object.entries(funcsOk)
-		const res = entries.filter((val) => val[1] === true)
+	if (functionsLoad[cat] === 'Off') {
+		return // Function is not activated, don't wait for it
+	}
 
-		if (res.length === entries.length) displayInterface()
+	functionsLoad[cat] = 'Ready'
+
+	if (Object.values(functionsLoad).includes('Waiting') === false) {
+		displayInterface()
 	}
 }
 
@@ -3202,8 +3206,6 @@ function startup(data: Sync) {
 	quickLinks(data)
 	interfaceWidgetToggle(data)
 
-	setTimeout(() => settingsInit(data), 200)
-
 	setInterval(() => {
 		if (navigator.onLine) {
 			chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => {
@@ -3213,16 +3215,15 @@ function startup(data: Sync) {
 	}, 300000)
 }
 
+type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
+
 const dominterface = $('interface') as HTMLDivElement,
 	isExtension = detectPlatform() !== 'online',
-	funcsOk: {
-		fonts?: boolean
-		quotes?: boolean
-		clock: boolean
-		links: boolean
-	} = {
-		clock: false,
-		links: false,
+	functionsLoad: { [key: string]: FunctionsLoadState } = {
+		clock: 'Waiting',
+		links: 'Waiting',
+		fonts: 'Off',
+		quotes: 'Off',
 	}
 
 let lazyClockInterval = setTimeout(() => {}, 0),
