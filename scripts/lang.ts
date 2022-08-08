@@ -2724,9 +2724,20 @@ export const months = [
 	'December',
 ]
 
-export const engineLocales = {
+export const enginesUrls = {
+	google: 'https://www.google%l/search?q=%s',
+	ddg: 'https://duckduckgo.com/?q=%s&kl=%l',
+	startpage: 'https://www.startpage.com/do/search?query=%s&language=%l',
+	qwant: 'https://www.qwant.com/?q=%s&r=%l',
+	yahoo: 'https://%lsearch.yahoo.com/search?q=%s',
+	bing: 'https://www.bing.com/search?q=%s&cc=%l',
+	brave: 'https://search.brave.com/search?q=%s',
+	ecosia: 'https://www.ecosia.org/search?q=%s',
+	lilo: 'https://search.lilo.org/?q=%s',
+}
+
+export const enginesLocales = {
 	google: {
-		base: 'https://www.google%l/search?q=%s',
 		fr: '.fr',
 		en: '.com',
 		ru: '.ru',
@@ -2747,7 +2758,6 @@ export const engineLocales = {
 		da: '.dk',
 	},
 	ddg: {
-		base: 'https://duckduckgo.com/?q=%s&kl=%l',
 		fr: 'fr-fr',
 		en: 'en-US',
 		ru: 'ru-ru',
@@ -2768,7 +2778,6 @@ export const engineLocales = {
 		da: 'dk-da',
 	},
 	startpage: {
-		base: 'https://www.startpage.com/do/search?query=%s&language=%l',
 		fr: 'francais',
 		en: 'english',
 		ru: 'russian',
@@ -2784,12 +2793,11 @@ export const engineLocales = {
 		es: 'es-es',
 		no: 'norsk',
 		tr: 'tr-tr',
-		uk: '',
-		id: '',
+		uk: 'ukrainian',
+		id: 'interlingua',
 		da: 'dansk',
 	},
 	qwant: {
-		base: 'https://www.qwant.com/?q=%s&r=%l',
 		fr: 'FR&sr=fr',
 		en: 'US&sr=en',
 		ru: 'RU&sr=ru',
@@ -2804,11 +2812,12 @@ export const engineLocales = {
 		it: 'IT&sr=it',
 		es: 'ES&sr=es',
 		no: 'NO&sr=nb',
-		tr: '', //qwant not available in Turkey
+		tr: 'US&sr=en', // qwant not available in Turkey
+		uk: 'US&sr=en', // qwant not available in Ukraine
+		id: 'US&sr=en', // qwant not available in Indonesia
 		da: 'DK&sr=da',
 	},
 	yahoo: {
-		base: 'https://%lsearch.yahoo.com/search?q=%s',
 		fr: 'fr.',
 		en: '',
 		ru: 'ru.',
@@ -2829,7 +2838,6 @@ export const engineLocales = {
 		da: 'dk.',
 	},
 	bing: {
-		base: 'https://www.bing.com/search?q=%s&cc=%l',
 		fr: 'fr',
 		en: '',
 		ru: 'ru',
@@ -2845,17 +2853,8 @@ export const engineLocales = {
 		es: 'es',
 		no: 'no',
 		tr: 'tr',
-		uk: '',
+		uk: 'uk',
 		id: 'id',
 		da: 'da',
-	},
-	brave: {
-		base: 'https://search.brave.com/search?q=%s',
-	},
-	ecosia: {
-		base: 'https://www.ecosia.org/search?q=%s',
-	},
-	lilo: {
-		base: 'https://search.lilo.org/?q=%s',
 	},
 }

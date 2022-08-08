@@ -3,9 +3,9 @@ import debounce from 'lodash.debounce'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic } from './types/sync'
 
-import { dict, days, engineLocales, months } from './lang'
+import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
 import {
 	$,
@@ -37,13 +37,6 @@ type UnsplashEvent = {
 	is: string
 	value?: string
 	button?: HTMLButtonElement
-}
-
-type Dynamic = {
-	every: string
-	collection: string
-	lastCollec: string
-	time: number
 }
 
 const eventDebounce = debounce(function (value: { [key: string]: boolean | string | number | Object }) {
@@ -697,7 +690,7 @@ export function quickLinks(
 			clas($('editlink'), false, 'shown')
 		})
 
-		$('e_submit')?.addEventListener('click', function (e) {
+		$('e_submit')?.addEventListener('click', function () {
 			const noErrorOnEdit = submitEvent() // returns false if saved icon data too big
 			if (noErrorOnEdit) {
 				closeEditLink() // only auto close on apply changes button
@@ -1078,7 +1071,6 @@ export function weather(
 	const date = new Date()
 	const i_city = $('i_city') as HTMLInputElement
 	const i_ccode = $('i_ccode') as HTMLInputElement
-	const i_geol = $('i_geol') as HTMLInputElement
 	const sett_city = $('sett_city') as HTMLInputElement
 	const current = $('current')
 	const forecast = $('forecast')
@@ -1410,6 +1402,7 @@ export function weather(
 						data.weather.location = []
 						data.weather = await request(data.weather)
 					}
+					break
 				}
 
 				case 'forecast': {
@@ -1839,7 +1832,7 @@ export function localBackgrounds(
 
 export async function unsplash(init: Sync, event?: UnsplashEvent) {
 	// TODO: Separate Collection type with users string
-	type CollectionIds = 'night' | 'noon' | 'day' | 'evening' | 'user'
+	type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
 	async function preloadImage(src: string) {
 		const img = new Image()
@@ -1928,10 +1921,10 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
 	}
 
-	async function requestNewList(collection: CollectionIds) {
+	async function requestNewList(collecType: CollectionType) {
 		const header = new Headers()
-		const collecId = allCollectionIds[collection] || allCollectionIds.day
-		const url = `https://api.unsplash.com/photos/random?collections=${collecId}&count=8`
+		const collecString = allCollectionType[collecType] || allCollectionType.day
+		const url = `https://api.unsplash.com/photos/random?collections=${collecString}&count=8`
 		header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
 		header.append('Accept-Version', 'v1')
 
@@ -1964,17 +1957,17 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		return filteredList
 	}
 
-	function chooseCollection(userCollec?: string): CollectionIds {
-		if (userCollec) {
-			userCollec = userCollec.replaceAll(` `, '')
-			allCollectionIds.user = userCollec
+	function chooseCollection(customCollection?: string): CollectionType {
+		if (customCollection) {
+			customCollection = customCollection.replaceAll(` `, '')
+			allCollectionType.user = customCollection
 			return 'user'
 		}
 
 		return periodOfDay(sunTime())
 	}
 
-	function collectionControl(dynamic: Dynamic) {
+	function collectionUpdater(dynamic: Dynamic): CollectionType {
 		const { every, lastCollec, collection } = dynamic
 		const Pause = every === 'pause'
 		const Day = every === 'day'
@@ -1990,10 +1983,10 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		return collec
 	}
 
-	async function cacheControl(dynamic: Dynamic, caches: DynamicCache, collection: CollectionIds, preloading: boolean) {
+	async function cacheControl(dynamic: Dynamic, caches: DynamicCache, collecType: CollectionType, preloading: boolean) {
 		//
 		const needNewImage = freqControl.get(dynamic.every, dynamic.time)
-		let list = caches[collection]
+		let list = caches[collecType]
 
 		if (preloading) {
 			loadBackground(list[0])
@@ -2008,7 +2001,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		}
 
 		// Needs new image, Update time
-		dynamic.lastCollec = collection
+		dynamic.lastCollec = collecType
 		dynamic.time = freqControl.set()
 
 		// Removes previous image from list
@@ -2019,10 +2012,10 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 
 		// If end of cache, get & save new list
 		if (list.length === 1 && navigator.onLine) {
-			const newList = await requestNewList(collection)
+			const newList = await requestNewList(collecType)
 
 			if (newList) {
-				caches[collection] = list.concat(newList)
+				caches[collecType] = list.concat(newList)
 				await preloadImage(newList[0].url)
 				chrome.storage.local.set({ dynamicCache: caches })
 				chrome.storage.local.remove('waitingForPreload')
@@ -2038,12 +2031,8 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	async function populateEmptyList(collection: string, local: Local, isEvent: boolean) {
-		if (isEvent) {
-			collection = chooseCollection(collection) // if it comes from collection change
-		}
-
-		const newList = await requestNewList(collection)
+	async function populateEmptyList(collecType: CollectionType, local: Local) {
+		const newList = await requestNewList(collecType)
 		const changeStart = performance.now()
 
 		if (!newList) {
@@ -2053,7 +2042,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		await preloadImage(newList[0].url)
 		loadBackground(newList[0], performance.now() - changeStart)
 
-		local.dynamicCache[collection] = newList
+		local.dynamicCache[collecType] = newList
 		chrome.storage.local.set({ dynamicCache: local.dynamicCache })
 		chrome.storage.local.set({ waitingForPreload: true })
 
@@ -2075,7 +2064,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 					chrome.storage.sync.set({ dynamic: newDynamic })
 					chrome.storage.local.set({ waitingForPreload: true })
 
-					setTimeout(() => cacheControl(newDynamic, local.dynamicCache, collectionControl(newDynamic), false), 400)
+					setTimeout(() => cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false), 400)
 
 					return
 				}
@@ -2094,7 +2083,7 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 			// Back to dynamic and load first from chosen collection
 			case 'removedCustom': {
 				chrome.storage.sync.set({ background_type: 'dynamic' })
-				loadBackground(local.dynamicCache[collectionControl(sync.dynamic)][0])
+				loadBackground(local.dynamicCache[collectionUpdater(sync.dynamic)][0])
 				break
 			}
 
@@ -2124,14 +2113,14 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 				sync.dynamic.time = freqControl.set()
 				chrome.storage.sync.set({ dynamic: sync.dynamic })
 
-				populateEmptyList(event.value, local, true)
+				populateEmptyList(chooseCollection(event.value), local)
 				break
 			}
 		}
 	}
 
 	// collections source: https://unsplash.com/@bonjourr/collections
-	const allCollectionIds = {
+	const allCollectionType = {
 		noon: 'GD4aOSg4yQE',
 		day: 'o8uX55RbBPs',
 		evening: '3M2rKTckZaQ',
@@ -2153,15 +2142,15 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local: Local) => {
 		try {
 			// Real init start
-			const collecId = collectionControl(init.dynamic)
+			const collecType = collectionUpdater(init.dynamic)
 			const cache = local.dynamicCache || localDefaults.dynamicCache
 
-			if (cache[collecId].length === 0) {
-				populateEmptyList(collecId, local, false) // If list empty: request new, save sync & local
+			if (cache[collecType].length === 0) {
+				populateEmptyList(collecType, local) // If list empty: request new, save sync & local
 				return
 			}
 
-			cacheControl(init.dynamic, cache, collecId, local.waitingForPreload) // Not empty: normal cacheControl
+			cacheControl(init.dynamic, cache, collecType, local.waitingForPreload) // Not empty: normal cacheControl
 		} catch (e) {
 			errorMessage('Dynamic errored on init', e)
 		}
@@ -2219,9 +2208,9 @@ export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement)
 	const submitButton = $('sb_submit') as HTMLButtonElement
 
 	const display = (shown: boolean) => $('sb_container').setAttribute('class', shown ? 'shown' : 'hidden')
-	const setEngine = (value: string) => domsearchbar.setAttribute('engine', value)
-	const setRequest = (value: string) => domsearchbar.setAttribute('request', stringMaxSize(value, 512))
-	const setNewtab = (value: boolean) => domsearchbar.setAttribute('newtab', value.toString())
+	const setEngine = (value: string) => domsearchbar.setAttribute('data-engine', value)
+	const setRequest = (value: string) => domsearchbar.setAttribute('data-request', stringMaxSize(value, 512))
+	const setNewtab = (value: boolean) => domsearchbar.setAttribute('data-newtab', value.toString())
 	const setOpacity = (value: number) => {
 		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
 
@@ -2280,41 +2269,38 @@ export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement)
 		})
 	}
 
-	function initSearchbar() {
-		const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
-
-		try {
-			display(on)
-			setEngine(engine)
-			setRequest(request)
-			setNewtab(newtab)
-			setOpacity(opacity)
-
-			if (on) domsearchbar.focus()
-		} catch (e) {
-			errorMessage('Error in searchbar initialization', e)
-		}
-	}
-
 	function submitSearch() {
-		let searchURL = ''
-		const isNewtab = domsearchbar.getAttribute('newtab') === 'true'
-		const engine = domsearchbar.getAttribute('engine')
-		const request = domsearchbar.getAttribute('request')
+		let searchURL = 'https://www.google.com/search?q=%s'
+		const isNewtab = domsearchbar.getAttribute('data-newtab') === 'true'
+		const engine = domsearchbar.getAttribute('data-engine') || 'google'
+		const request = domsearchbar.getAttribute('data-request') || ''
 		const lang = document.documentElement.getAttribute('lang')
 
-		// TODO: do engine dictionary typing
+		type EnginesKey = keyof typeof enginesUrls
+		type LocalesKey = keyof typeof enginesLocales
+		type LocalesLang = keyof typeof enginesLocales.google
 
-		// engineLocales est dans lang.js
-		if (engine === 'custom') {
+		// is a valid engine
+		if (engine in enginesUrls) {
+			searchURL = enginesUrls[engine as EnginesKey]
+
+			// has found a translation
+			if (engine in enginesLocales && lang in enginesLocales[engine as LocalesKey]) {
+				const selectedLocale = enginesLocales[engine as LocalesKey]
+				const selectedLang = selectedLocale[lang as LocalesLang]
+
+				searchURL = searchURL.replace('%l', selectedLang)
+			}
+		}
+		// is custom engine
+		else if (engine === 'custom') {
 			searchURL = request
-		} else {
-			searchURL = engineLocales[engine].base.replace('%l', engineLocales[engine][lang])
 		}
 
 		searchURL = searchURL.replace('%s', encodeURIComponent(domsearchbar.value))
 
-		isNewtab ? window.open(searchURL, '_blank') : (window.location = searchURL)
+		if (isNewtab) window.open(searchURL, '_blank')
+		else window.location.href = searchURL
 	}
 
 	function toggleInputButton(toggle: boolean) {
@@ -2355,7 +2341,24 @@ export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement)
 		submitSearch()
 	}
 
-	event ? updateSearchbar() : initSearchbar()
+	if (event) {
+		updateSearchbar()
+		return
+	}
+
+	const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
+
+	try {
+		display(on)
+		setEngine(engine)
+		setRequest(request)
+		setNewtab(newtab)
+		setOpacity(opacity)
+
+		if (on) domsearchbar.focus()
+	} catch (e) {
+		errorMessage('Error in searchbar initialization', e)
+	}
 }
 
 export async function quotes(

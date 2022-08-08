@@ -34,6 +34,13 @@ export type Weather = {
 	}
 }
 
+export type Dynamic = {
+	every: string
+	collection: string
+	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
+	time: number
+}
+
 export type Font = {
 	url: string
 	family: string
@@ -71,12 +78,7 @@ export type Sync = {
 		timezone: string
 		face: 'none' | 'number' | 'roman' | 'marks'
 	}
-	dynamic: {
-		every: string
-		collection: string
-		lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
-		time: number
-	}
+	dynamic: Dynamic
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
