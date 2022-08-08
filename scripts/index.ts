@@ -7,6 +7,7 @@ import { Sync, Searchbar, Weather, Font, Hide, Dynamic } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
+
 import {
 	$,
 	clas,
@@ -39,7 +40,7 @@ type UnsplashEvent = {
 	button?: HTMLButtonElement
 }
 
-const eventDebounce = debounce(function (value: { [key: string]: boolean | string | number | Object }) {
+const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	chrome.storage.sync.set(value)
 }, 400)
 
@@ -686,7 +687,7 @@ export function quickLinks(
 
 		$('e_delete')?.addEventListener('click', function () {
 			removeLinkSelection()
-			removeblock(parseInt($('editlink').getAttribute('index')))
+			removeblock($('editlink')!.getAttribute('data-linkid') || '')
 			clas($('editlink'), false, 'shown')
 		})
 
@@ -785,26 +786,37 @@ export function quickLinks(
 		return true
 	}
 
-	// TODO: forgot about removeblock rework
-	function removeblock(index: number) {
-		chrome.storage.sync.get(null, (data: Sync) => {
+	function removeblock(linkId: string) {
+		chrome.storage.sync.get([linkId], (data: Sync) => {
 			const links = bundleLinks(data)
-			let link = links.filter((l: Link) => l.order === index)[0]
+			let link = data[linkId] as Link
 
-			//enleve le html du block
-			const blockParent = domlinkblocks.children[index]
-			const height = blockParent.getBoundingClientRect().height
+			if (!link) {
+				return
+			}
 
-			blockParent.setAttribute('style', 'height: ' + height + 'px')
-			clas(blockParent, true, 'removed')
+			const linkDOM = $(linkId)
+			const rowDOM = linkDOM.parentElement as HTMLUListElement
+			const height = linkDOM.getBoundingClientRect().height
+			const isLastOnRow = rowDOM.childElementCount === 1
+
+			linkDOM.setAttribute('style', 'height: ' + height + 'px')
+			clas(linkDOM, true, 'removed')
+
+			if (isLastOnRow) {
+				rowDOM.setAttribute('style', 'max-height: 0; overflow: hidden')
+			}
 
 			setTimeout(function () {
-				domlinkblocks.removeChild(blockParent)
-				if (links.length === 0) domlinkblocks.style.visibility = 'hidden' //enleve linkblocks si il n'y a plus de links
+				linkDOM.remove()
+
+				if (isLastOnRow) {
+					rowDOM.remove()
+				}
 			}, 600)
 
 			links.forEach((l: Link) => {
-				l.order -= l.order > index ? 1 : 0 // Decrement order for elements above the one removed
+				l.order -= l.order > link.order ? 1 : 0 // Decrement order for elements above the one removed
 				data[l._id] = l // updates link in storage
 			})
 
@@ -838,14 +850,15 @@ export function quickLinks(
 
 			// Default link submission
 			if (type === 'add') {
-				const title = $('i_title').getAttribute('value')
-				const url = $('i_url').getAttribute('value')
+				const titledom = $('i_title') as HTMLInputElement
+				const urldom = $('i_url') as HTMLInputElement
+				const title = titledom.value
+				const url = urldom.value
 
-				// TODO: throttle
 				if (url.length < 3) return
 
-				$('i_title').setAttribute('value', '')
-				$('i_url').setAttribute('value', '')
+				titledom.value = ''
+				urldom.value = ''
 
 				newLinksList.push(validator(title, url, links.length))
 			}
@@ -930,7 +943,7 @@ export function quickLinks(
 					const row = parseInt(event.value)
 
 					initblocks(links, row)
-					// slowRange({ linksrow: row })
+					eventDebounce({ linksrow: row })
 				})
 				break
 			}
@@ -1102,7 +1115,6 @@ export function weather(
 			return storage
 		}
 
-		// TODO: weather API types
 		let currentResponse: any
 		let forecastResponse: any
 		let currentJSON: any

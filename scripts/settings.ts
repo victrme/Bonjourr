@@ -1,7 +1,9 @@
+import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
+
 import { dict } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
-import debounce from 'lodash.debounce'
 
 import {
 	$,
@@ -280,16 +282,23 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		quickLinks(null, { is: 'toggle', checked: this.checked })
 	})
 
+	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
+
 	paramId('i_title').addEventListener('keyup', function (e: KeyboardEvent) {
-		if (e.code === 'Enter') quickLinks(null, { is: 'add' })
+		if (e.code === 'Enter') {
+			submitLinkFunc()
+		}
 	})
 
 	paramId('i_url').addEventListener('keyup', function (e: KeyboardEvent) {
-		if (e.code === 'Enter') quickLinks(null, { is: 'add' })
+		if (e.code === 'Enter') {
+			submitLinkFunc()
+		}
 	})
 
 	paramId('submitlink').addEventListener('click', function () {
-		quickLinks(null, { is: 'add' })
+		submitLinkFunc()
+		inputThrottle(this, 1200)
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function () {
