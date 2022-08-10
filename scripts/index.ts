@@ -2679,7 +2679,6 @@ export function customFont(
 		$('clock').style.fontFamily = '"' + family + '"'
 		$('credit').style.fontFamily = '"' + family + '"'
 		dominterface.style.fontFamily = '"' + family + '"'
-		canDisplayInterface('fonts')
 	}
 
 	async function setFontface(url: string) {
@@ -2857,6 +2856,7 @@ export function customFont(
 		// Sets family
 		chrome.storage.local.get('fontface', async (local: Local) => {
 			setFamily(init.family, local.fontface || (await setFontface(init.url))) // fetch font-face data if none in storage
+			canDisplayInterface('fonts')
 		})
 	} catch (e) {
 		errorMessage('Custom fonts failed to start', e)
@@ -3094,7 +3094,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad, init?: Sync
 
 	functionsLoad[cat] = 'Ready'
 
-	if (Object.values(functionsLoad).includes('Waiting') === false) {
+	if (Object.values(functionsLoad).includes('Waiting') === false && !$('settings')) {
 		displayInterface()
 	}
 }

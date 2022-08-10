@@ -261,7 +261,7 @@
 			#tempContainer,
 			#forecast,
 			#current {
-				transition: opacity 1.2s 0.1s;
+				transition: opacity 0.8s;
 
 				&.wait {
 					opacity: 0;
