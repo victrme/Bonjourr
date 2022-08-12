@@ -350,7 +350,7 @@ export function quickLinks(
 ) {
 	const domlinkblocks = $('linkblocks')!
 
-	async function initblocks(links: Link[], linksrow: number) {
+	async function initblocks(links: Link[], linksrow: number, isnewtab: boolean) {
 		//
 		function createBlock(link: Link) {
 			let title = stringMaxSize(link.title, 64)
@@ -372,6 +372,10 @@ export function quickLinks(
 
 			atag.href = url
 			atag.setAttribute('rel', 'noreferrer noopener')
+
+			if (isnewtab) {
+				atag.setAttribute('target', '_blank')
+			}
 
 			li.id = link._id
 			li.setAttribute('class', 'block')
@@ -643,7 +647,7 @@ export function quickLinks(
 						// slowRange({ ...data }) // saves
 
 						document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove uls
-						initblocks(bundleLinks(data), data.linksrow) // re-init blocks
+						initblocks(bundleLinks(data), data.linksrow, data.linknewtab) // re-init blocks
 					})
 				}, 200)
 			}
@@ -883,7 +887,7 @@ export function quickLinks(
 			links.push(...newLinksList)
 
 			// Displays and saves before fetching icon
-			initblocks(links, data.linksrow)
+			initblocks(links, data.linksrow, data.linknewtab)
 			domlinkblocks.style.visibility = 'visible'
 		})
 	}
@@ -906,7 +910,7 @@ export function quickLinks(
 				break
 
 			case 'toggle': {
-				clas($('linkblocks'), event.checked, 'hidden')
+				clas($('linkblocks'), !event.checked, 'hidden')
 				interfaceWidgetToggle(null, 'links')
 				chrome.storage.sync.set({ quicklinks: event.checked })
 				break
@@ -914,9 +918,11 @@ export function quickLinks(
 
 			// TODO: newtab not working on new a11y links
 			case 'newtab': {
-				chrome.storage.sync.set({ linknewtab: event.checked })
-				document.querySelectorAll('.block').forEach((block) => {
-					block.setAttribute('target', '_blank')
+				const val = event.checked || false
+				chrome.storage.sync.set({ linknewtab: val })
+				document.querySelectorAll('.block a').forEach((a) => {
+					if (val) a.setAttribute('target', '_blank')
+					else a.removeAttribute('target')
 				})
 				break
 			}
@@ -942,7 +948,7 @@ export function quickLinks(
 					const links = bundleLinks(data)
 					const row = parseInt(event.value)
 
-					initblocks(links, row)
+					initblocks(links, row, data.linknewtab)
 					eventDebounce({ linksrow: row })
 				})
 				break
@@ -958,7 +964,7 @@ export function quickLinks(
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	clas($('linkblocks'), !init.quicklinks, 'hidden')
-	initblocks(bundleLinks(init), init.linksrow)
+	initblocks(bundleLinks(init), init.linksrow, init.linknewtab)
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 	window.addEventListener('resize', closeEditLink)
@@ -2276,8 +2282,7 @@ export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement)
 				}
 			}
 
-			// if (event === 'opacity') slowRange({ searchbar: data.searchbar })
-			// else chrome.storage.sync.set({ searchbar: data.searchbar })
+			eventDebounce({ searchbar: data.searchbar })
 		})
 	}
 

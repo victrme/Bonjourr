@@ -676,10 +676,11 @@
 }
 
 footer {
-	position: absolute;
+	// position: absolute;
 	display: flex;
 	justify-content: space-between;
 	padding: 24px;
+	padding-top: 0;
 	box-sizing: border-box;
 	width: 100%;
 	bottom: 0;

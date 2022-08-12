@@ -57,7 +57,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	const initInput = (id: string, val: string | number) => {
-		;(paramId(id) as HTMLInputElement).value = val.toString()
+		const input = paramId(id) as HTMLInputElement
+		input.value = typeof val === 'string' ? val : val.toString()
 	}
 
 	// 1.10.0 custom background slideshow
@@ -89,7 +90,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_temp', data.weather?.temperature || 'actual')
 	initInput('i_customfont', data.font?.family || '')
 	initInput('i_weight', data.font?.weight || '300')
-	initInput('i_size', data.font?.size || mobilecheck() ? 11 : 14)
+	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_quicklinks', data.quicklinks)
@@ -278,7 +279,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('change', function () {
-		paramId('quicklinks_options').classList.toggle('shown')
+		clas(paramId('quicklinks_options'), this.checked, 'shown')
 		quickLinks(null, { is: 'toggle', checked: this.checked })
 	})
 
@@ -425,8 +426,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('i_sb').addEventListener('change', function () {
 		paramId('searchbar_options').classList.toggle('shown')
 		searchbar(null, 'searchbar', this)
-		// if (!stillActive) searchbar('searchbar', this)
-		// slow(this)
 	})
 
 	paramId('i_sbengine').addEventListener('change', function () {
