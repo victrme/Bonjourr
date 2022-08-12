@@ -5,6 +5,7 @@
 config.codekit3
 .directory
 .vscode
+.prettierignore
 manifest.json
 
 node_modules/
