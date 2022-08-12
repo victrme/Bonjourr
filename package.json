@@ -2,11 +2,11 @@
 	"name": "bonjourr-typescript-esbuild",
 	"version": "1.0.0",
 	"description": "",
-	"main": "scripts/index.ts",
+	"main": "src/scripts/index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"watch-js": "esbuild scripts/index.ts --outfile=release/main.js --bundle --watch",
-		"build-js": "esbuild scripts/index.ts --outfile=release/main.js --bundle --minify",
+		"watch-js": "esbuild src/scripts/index.ts --outfile=release/main.js --bundle --watch",
+		"build-js": "esbuild src/scripts/index.ts --outfile=release/main.js --bundle --minify",
 		"chrome": "concurrently --kill-others \"pnpm run watch-js\" \"gulp chrome\"",
 		"firefox": "concurrently --kill-others \"pnpm run watch-js\" \"gulp firefox\"",
 		"online": "concurrently --kill-others \"pnpm run watch-js\" \"gulp chrome\"",
@@ -31,7 +31,7 @@
 		"gulp-sass": "^5.1.0",
 		"lodash.debounce": "^4.0.8",
 		"lodash.throttle": "^4.1.1",
-		"sass": "^1.52.3",
+		"sass": "^1.54.4",
 		"typescript": "^4.7.4",
 		"user-agent-data-types": "^0.3.0"
 	},

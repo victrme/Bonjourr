@@ -11,7 +11,7 @@ function html(platform) {
 	//
 
 	return () => {
-		const stream = src('*.html')
+		const stream = src('src/*.html')
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
@@ -43,25 +43,28 @@ function scripts(platform) {
 				.pipe(replace('local.remove(', 'remove(true, '))
 		}
 
-		stream.pipe(dest(`release/${platform}/scripts`))
+		stream.pipe(dest(`release/${platform}/src/scripts`))
 		return stream
 	}
 }
 
 function ressources(platform) {
 	return () => {
-		const assetPath = ['assets/**', '!assets/bonjourr.png']
-		if (platform !== 'online') assetPath.push('!assets/screenshots/**')
+		const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
 
-		return src(assetPath).pipe(dest(`release/${platform}/assets`))
+		if (platform !== 'online') {
+			assetPath.push('!src/assets/screenshots/**')
+		}
+
+		return src(assetPath).pipe(dest(`release/${platform}/src/assets`))
 	}
 }
 
 function worker(platform) {
 	return () => {
 		const file = {
-			origin: `scripts/${platform === 'online' ? 'sw.js' : 'background.js'}`,
-			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/scripts/`,
+			origin: `src/scripts/${platform === 'online' ? 'sw.js' : 'background.js'}`,
+			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
 		}
 		return src(file.origin).pipe(dest(file.destination))
 	}
@@ -70,8 +73,8 @@ function worker(platform) {
 function manifest(platform) {
 	return () => {
 		return platform === 'online'
-			? src(`manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
-			: src(`manifests/${platform}.json`)
+			? src(`src/manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
+			: src(`src/manifests/${platform}.json`)
 					.pipe(rename('manifest.json'))
 					.pipe(dest(`release/${platform}`))
 	}
@@ -79,14 +82,14 @@ function manifest(platform) {
 
 function styles(platform) {
 	return () =>
-		src('styles/scss/style.scss')
+		src('src/styles/style.scss')
 			.pipe(sass.sync().on('error', sass.logError))
 			.pipe(csso())
-			.pipe(dest(`release/${platform}/styles/`))
+			.pipe(dest(`release/${platform}/src/styles/`))
 }
 
 function addBackground(platform) {
-	return () => src('scripts/background.js').pipe(dest(`release/${platform}/scripts`))
+	return () => src('src/scripts/background.js').pipe(dest(`release/${platform}/src/scripts`))
 }
 
 function locales(platform) {
@@ -98,7 +101,7 @@ function locales(platform) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './scripts/*.*', './styles/scss/*.scss', './manifests/*.json']
+const filesToWatch = ['*.html', './src/scripts/*.*', './src/styles/scss/*.scss', './src/manifests/*.json']
 
 // prettier-ignore
 const taskOnline = () => [

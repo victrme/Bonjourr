@@ -22,7 +22,7 @@ specifiers:
   gulp-sass: ^5.1.0
   lodash.debounce: ^4.0.8
   lodash.throttle: ^4.1.1
-  sass: ^1.52.3
+  sass: ^1.54.4
   typescript: ^4.7.4
   user-agent-data-types: ^0.3.0
 
@@ -42,7 +42,7 @@ devDependencies:
   gulp-sass: 5.1.0
   lodash.debounce: 4.0.8
   lodash.throttle: 4.1.1
-  sass: 1.54.0
+  sass: 1.54.4
   typescript: 4.7.4
   user-agent-data-types: 0.3.0
 
@@ -1676,8 +1676,8 @@ packages:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
     dev: true
 
-  /sass/1.54.0:
-    resolution: {integrity: sha512-C4zp79GCXZfK0yoHZg+GxF818/aclhp9F48XBu/+bm9vXEVAYov9iU3FBVRMq3Hx3OA4jfKL+p2K9180mEh0xQ==}
+  /sass/1.54.4:
+    resolution: {integrity: sha512-3tmF16yvnBwtlPrNBHw/H907j8MlOX8aTBnlNX1yrKx24RKcJGPyLhFUwkoKBKesR3unP93/2z14Ll8NicwQUA==}
     engines: {node: '>=12.0.0'}
     hasBin: true
     dependencies:

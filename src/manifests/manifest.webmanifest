@@ -10,34 +10,34 @@
 	"prefer_related_applications": false,
 	"icons": [
 		{
-			"src": "assets/favicon-128x128.png",
+			"src": "src/assets/favicon-128x128.png",
 			"type": "image/png",
 			"sizes": "128x128"
 		},
 		{
-			"src": "assets/apple-touch-icon.png",
+			"src": "src/assets/apple-touch-icon.png",
 			"type": "image/png",
 			"sizes": "192x192"
 		},
 		{
-			"src": "assets/favicon-512x512.png",
+			"src": "src/assets/favicon-512x512.png",
 			"type": "image/png",
 			"sizes": "512x512"
 		}
 	],
 	"screenshots": [
 		{
-			"src": "assets/screenshots/screenshot-1.webp",
+			"src": "src/assets/screenshots/screenshot-1.webp",
 			"type": "image/webp",
 			"sizes": "554x1200"
 		},
 		{
-			"src": "assets/screenshots/screenshot-2.webp",
+			"src": "src/assets/screenshots/screenshot-2.webp",
 			"type": "image/webp",
 			"sizes": "554x1200"
 		},
 		{
-			"src": "assets/screenshots/screenshot-4.webp",
+			"src": "src/assets/screenshots/screenshot-4.webp",
 			"type": "image/webp",
 			"sizes": "554x1200"
 		}

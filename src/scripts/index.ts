@@ -98,7 +98,7 @@ export function traduction(settingsDom: Element, lang = 'en') {
 export function favicon(init: string, event?: HTMLInputElement) {
 	function createFavicon(emoji: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		document.querySelector("link[rel~='icon']").setAttribute('href', emoji ? svg : `assets/${getFavicon()}`)
+		document.querySelector("link[rel~='icon']").setAttribute('href', emoji ? svg : `src/assets/${getFavicon()}`)
 	}
 
 	if (init !== undefined) createFavicon(init)
@@ -412,7 +412,7 @@ export function quickLinks(
 
 		async function fetchNewIcon(dom: HTMLImageElement, url: string) {
 			// Apply loading gif d'abord
-			dom.src = '/assets/interface/loading.svg'
+			dom.src = 'src/assets/interface/loading.svg'
 
 			const img = new Image()
 
@@ -847,7 +847,7 @@ export function quickLinks(
 					order: order,
 					_id: 'links' + randomString(6),
 					title: stringMaxSize(title, 64),
-					icon: '/assets/interface/loading.svg',
+					icon: 'src/assets/interface/loading.svg',
 					url: acceptableSchemes ? url : unacceptable ? 'false' : 'https://' + url,
 				}
 			}
@@ -1314,7 +1314,7 @@ export function weather(
 			const widgetIcon = tempContainer.querySelector('img')
 			const { now, rise, set } = sunTime()
 			const timeOfDay = now < rise || now > set ? 'night' : 'day'
-			const iconSrc = `assets/weather/${timeOfDay}/${filename}.png`
+			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
 			if (widgetIcon) {
 				widgetIcon.setAttribute('src', iconSrc)
@@ -1664,7 +1664,7 @@ export function localBackgrounds(
 		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
 
 		let close = document.createElement('img')
-		close.setAttribute('src', 'assets/interface/close.svg')
+		close.setAttribute('src', 'src/assets/interface/close.svg')
 		rem.appendChild(close)
 
 		b64toBlobUrl(data, (bloburl: string) => (i.src = bloburl))
