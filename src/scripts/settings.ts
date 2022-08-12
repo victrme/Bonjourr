@@ -545,7 +545,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('copyimport').addEventListener('click', async function () {
 		try {
-			await navigator.clipboard.writeText($('area_export').getAttribute('value'))
+			const area = $('area_export') as HTMLInputElement
+			await navigator.clipboard.writeText(area.value)
 			this.textContent = 'Copied !'
 			setTimeout(() => ($('copyimport').textContent = 'Copy settings'), 1000)
 		} catch (err) {
