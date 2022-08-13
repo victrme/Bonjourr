@@ -34,12 +34,6 @@ import {
 	validateHideElem,
 } from './utils'
 
-type UnsplashEvent = {
-	is: string
-	value?: string
-	button?: HTMLButtonElement
-}
-
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	chrome.storage.sync.set(value)
 }, 400)
@@ -95,13 +89,15 @@ export function traduction(settingsDom: Element, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function favicon(init: string, event?: HTMLInputElement) {
+export function favicon(init: string | null, event?: HTMLInputElement) {
 	function createFavicon(emoji: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		document.querySelector("link[rel~='icon']").setAttribute('href', emoji ? svg : `src/assets/${getFavicon()}`)
+		document.querySelector("link[rel~='icon']")?.setAttribute('href', emoji ? svg : `src/assets/${getFavicon()}`)
 	}
 
-	if (init !== undefined) createFavicon(init)
+	if (init !== undefined && init !== null) {
+		createFavicon(init)
+	}
 
 	if (event) {
 		const val = event.value
@@ -110,14 +106,17 @@ export function favicon(init: string, event?: HTMLInputElement) {
 		if (isEmoji) createFavicon(val)
 		else event.value = ''
 
-		// slowRange({ favicon: isEmoji ? val : '' })
+		eventDebounce({ favicon: isEmoji ? val : '' })
 	}
 }
 
-export function tabTitle(init: string, event?: HTMLInputElement) {
+export function tabTitle(init: string | null, event?: HTMLInputElement) {
 	const title = init ? init : event ? stringMaxSize(event.value, 80) : tradThis('New tab')
 
-	// if (event) slowRange({ tabtitle: title })
+	if (event) {
+		eventDebounce({ tabtitle: title })
+	}
+
 	document.title = title
 }
 
@@ -1084,7 +1083,7 @@ export async function linksImport() {
 }
 
 export function weather(
-	init: Sync,
+	init: Sync | null,
 	event?: { is: 'city' | 'geol' | 'units' | 'forecast' | 'temp'; checked?: boolean; value?: string; elem?: Element }
 ) {
 	const date = new Date()
@@ -1446,19 +1445,21 @@ export function weather(
 		return
 	}
 
-	try {
-		if (validateHideElem(init.hide)) {
-			if (init.hide[1][1] + init.hide[1][2] === 2) return false
+	if (init) {
+		try {
+			if (validateHideElem(init.hide)) {
+				if (init.hide[1][1] + init.hide[1][2] === 2) return false
+			}
+		} catch (e) {
+			errorMessage('Could not validate Hide in Weather', e)
 		}
-	} catch (e) {
-		errorMessage('Could not validate Hide in Weather', e)
-	}
 
-	try {
-		forecastVisibilityControl(init.weather.forecast || 'auto')
-		weatherCacheControl(init.weather)
-	} catch (e) {
-		errorMessage('Weather init did not work', e)
+		try {
+			forecastVisibilityControl(init.weather.forecast || 'auto')
+			weatherCacheControl(init.weather)
+		} catch (e) {
+			errorMessage('Weather init did not work', e)
+		}
 	}
 }
 
@@ -1478,13 +1479,15 @@ export function initBackground(data: Sync) {
 }
 
 export function imgBackground(url: string, loadTime: number, isInit?: boolean) {
+	const overlaydom = $('background_overlay') as HTMLDivElement
+	const backgrounddom = $('background') as HTMLDivElement
 	let img = new Image()
 
 	img.onload = () => {
 		if (loadTime) {
 			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
 			const changeDuration = (time: number) => {
-				$('background_overlay').style.transition = `transform .4s, opacity ${time}ms`
+				overlaydom.style.transition = `transform .4s, opacity ${time}ms`
 			}
 
 			changeDuration(animDuration)
@@ -1492,8 +1495,8 @@ export function imgBackground(url: string, loadTime: number, isInit?: boolean) {
 		}
 
 		const applyBackground = () => {
-			$('background_overlay').style.opacity = `1`
-			$('background').style.backgroundImage = `url(${url})`
+			overlaydom.style.opacity = `1`
+			backgrounddom.style.backgroundImage = `url(${url})`
 			localIsLoading = false
 		}
 
@@ -1505,12 +1508,12 @@ export function imgBackground(url: string, loadTime: number, isInit?: boolean) {
 }
 
 export function localBackgrounds(
-	init: { every: string; time: number },
+	init: { every: string; time: number } | null,
 	event?: {
 		is: string
 		settings?: HTMLElement
-		button?: HTMLButtonElement
-		file?: File[]
+		button?: HTMLSpanElement
+		file?: FileList
 	}
 ) {
 	// Storage needs to be flat, as to only ask for needed background
@@ -1556,22 +1559,22 @@ export function localBackgrounds(
 		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
 	}
 
-	function addNewImage(files: File[]) {
-		files = [...files] // fileList to Array
+	function addNewImage(files: FileList) {
+		const filesArray = [...files] // fileList to Array
 		let filesIdsList: string[] = []
 		let selected = ''
 
-		files.forEach(() => {
+		filesArray.forEach(() => {
 			const _id = randomString(6)
 			selected = _id
 			filesIdsList.push(_id)
 		})
 
-		files.forEach((file, i) => {
+		filesArray.forEach((file, i) => {
 			let reader = new FileReader()
 
 			reader.onload = function (event) {
-				const result = event.target.result as string
+				const result = event.target?.result as string
 
 				if (typeof result === 'string' && isOnlineStorageAtCapacity(result)) {
 					return console.warn('Uploaded image was not saved') // Exit with warning before saving image
@@ -1762,7 +1765,7 @@ export function localBackgrounds(
 		})
 	}
 
-	function refreshCustom(button: HTMLButtonElement) {
+	function refreshCustom(button: HTMLSpanElement) {
 		chrome.storage.sync.get('custom_every', (sync) => {
 			$('background_overlay').style.opacity = '0'
 			turnRefreshButton(button, true)
@@ -1792,9 +1795,13 @@ export function localBackgrounds(
 	}
 
 	if (event) {
-		if (event.is === 'thumbnail') displayCustomThumbnails(event.settings)
-		if (event.is === 'newfile') addNewImage(event.file)
-		if (event.is === 'refresh') refreshCustom(event.button)
+		if (event.is === 'thumbnail' && event.settings) displayCustomThumbnails(event.settings)
+		if (event.is === 'newfile' && event.file) addNewImage(event.file)
+		if (event.is === 'refresh' && event.button) refreshCustom(event.button)
+		return
+	}
+
+	if (!init) {
 		return
 	}
 
@@ -1848,7 +1855,14 @@ export function localBackgrounds(
 	})
 }
 
-export async function unsplash(init: Sync, event?: UnsplashEvent) {
+export async function unsplash(
+	init: Sync | null,
+	event?: {
+		is: string
+		value?: string
+		button?: Element | null
+	}
+) {
 	// TODO: Separate Collection type with users string
 	type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
@@ -2069,7 +2083,15 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	function updateDynamic(event: UnsplashEvent, sync: Sync, local: Local) {
+	function updateDynamic(
+		event: {
+			is: string
+			value?: string
+			button?: Element | null
+		},
+		sync: Sync,
+		local: Local
+	) {
 		switch (event.is) {
 			case 'refresh': {
 				// Only refreshes background if preload is over
@@ -2153,7 +2175,9 @@ export async function unsplash(init: Sync, event?: UnsplashEvent) {
 				updateDynamic(event, sync, local)
 			})
 		)
+	}
 
+	if (!init) {
 		return
 	}
 
@@ -2206,38 +2230,45 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
 	const time = sunTime()
-	const cases = {
-		auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
-		system: 'autodark',
-		enable: 'dark',
-		disable: '',
-	}
 
-	document.body.setAttribute('class', cases[value])
+	if (time) {
+		const cases = {
+			auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
+			system: 'autodark',
+			enable: 'dark',
+			disable: '',
+		}
 
-	if (isEvent) {
-		chrome.storage.sync.set({ dark: value })
+		document.body.setAttribute('class', cases[value])
+
+		if (isEvent) {
+			chrome.storage.sync.set({ dark: value })
+		}
 	}
 }
 
-export function searchbar(init: Searchbar, event?: any, that?: HTMLInputElement) {
+export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputElement) {
 	const domsearchbar = $('searchbar') as HTMLInputElement
 	const emptyButton = $('sb_empty') as HTMLButtonElement
 	const submitButton = $('sb_submit') as HTMLButtonElement
 
-	const display = (shown: boolean) => $('sb_container').setAttribute('class', shown ? 'shown' : 'hidden')
+	const display = (shown: boolean) => $('sb_container')?.setAttribute('class', shown ? 'shown' : 'hidden')
 	const setEngine = (value: string) => domsearchbar.setAttribute('data-engine', value)
 	const setRequest = (value: string) => domsearchbar.setAttribute('data-request', stringMaxSize(value, 512))
 	const setNewtab = (value: boolean) => domsearchbar.setAttribute('data-newtab', value.toString())
 	const setOpacity = (value: number) => {
 		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
 
-		if (value > 0.4) $('sb_container').classList.add('opaque')
-		else $('sb_container').classList.remove('opaque')
+		if (value > 0.4) $('sb_container')?.classList.add('opaque')
+		else $('sb_container')?.classList.remove('opaque')
 	}
 
 	function updateSearchbar() {
 		chrome.storage.sync.get('searchbar', (data: Sync) => {
+			if (!that) {
+				return
+			}
+
 			switch (event) {
 				case 'searchbar': {
 					data.searchbar.on = that.checked
@@ -2660,7 +2691,7 @@ export function safeFont(settingsDom?: HTMLElement) {
 }
 
 export function customFont(
-	init: Font,
+	init: Font | null,
 	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
 ) {
 	function setSize(val: string) {
@@ -2671,18 +2702,18 @@ export function customFont(
 		if (weight) {
 			const list = safeFont().weights
 			dominterface.style.fontWeight = weight
-			$('searchbar').style.fontWeight = weight
+			$('searchbar')!.style.fontWeight = weight
 
 			// Default bonjourr lowers font weight on clock (because we like it)
 			const loweredWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
-			$('clock').style.fontWeight = family ? weight : loweredWeight
+			$('clock')!.style.fontWeight = family ? weight : loweredWeight
 		}
 	}
 
 	function setFamily(family: string, fontface: string) {
-		$('fontstyle').textContent = fontface
-		$('clock').style.fontFamily = '"' + family + '"'
-		$('credit').style.fontFamily = '"' + family + '"'
+		$('fontstyle')!.textContent = fontface
+		$('clock')!.style.fontFamily = '"' + family + '"'
+		$('credit')!.style.fontFamily = '"' + family + '"'
 		dominterface.style.fontFamily = '"' + family + '"'
 	}
 
@@ -2851,16 +2882,22 @@ export function customFont(
 
 	// init
 	try {
-		setSize(init.size)
-		setWeight(init.family, init.weight)
+		if (!init) {
+			return
+		}
 
-		if (init.family === '') {
+		const { size, family, weight, url } = init
+
+		setSize(size)
+		setWeight(family, weight)
+
+		if (family === '') {
 			return
 		}
 
 		// Sets family
 		chrome.storage.local.get('fontface', async (local: Local) => {
-			setFamily(init.family, local.fontface || (await setFontface(init.url))) // fetch font-face data if none in storage
+			setFamily(family, local.fontface || (await setFontface(url))) // fetch font-face data if none in storage
 			canDisplayInterface('fonts')
 		})
 	} catch (e) {
@@ -2868,19 +2905,21 @@ export function customFont(
 	}
 }
 
-export function textShadow(init: number, event?: number) {
+export function textShadow(init: number | null, event?: number) {
 	const val = init ? init : event
-	$('interface').style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
+	dominterface.style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
 
 	if (event) {
 		eventDebounce({ textShadow: val })
 	}
 }
 
-export function customCss(init: string, event?: any) {
-	const styleHead = $('styles')
+export function customCss(init: string | null, event?: any) {
+	const styleHead = $('styles') as HTMLStyleElement
 
-	if (init) styleHead.textContent = init
+	if (init) {
+		styleHead.textContent = init
+	}
 
 	if (event) {
 		switch (event.is) {
@@ -2900,7 +2939,7 @@ export function customCss(init: string, event?: any) {
 }
 
 export function hideElem(
-	init: Hide,
+	init: Hide | null,
 	event?: { is: 'buttons' | 'hide'; buttonList?: NodeListOf<HTMLButtonElement>; button?: HTMLButtonElement }
 ) {
 	const IDsList = [
@@ -2912,8 +2951,8 @@ export function hideElem(
 
 	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
 	const getEventListPosition = (that: HTMLButtonElement) => ({
-		row: parseInt(that.getAttribute('data-row')),
-		col: parseInt(that.getAttribute('data-col')),
+		row: parseInt(that.getAttribute('data-row') || '0'),
+		col: parseInt(that.getAttribute('data-col') || '0'),
 	})
 
 	function isEverythingHidden(list: Hide, row: number) {
@@ -2943,7 +2982,7 @@ export function hideElem(
 		chrome.storage.sync.get('hide', (data) => {
 			try {
 				data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-				event.buttonList.forEach((button) => {
+				event?.buttonList?.forEach((button) => {
 					const pos = getEventListPosition(button)
 					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
 				})
@@ -2956,6 +2995,10 @@ export function hideElem(
 	function toggleElement() {
 		chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => {
 			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
+
+			if (!event?.button) {
+				return
+			}
 
 			const pos = getEventListPosition(event.button)
 			const state = event.button.classList.contains('clicked')
@@ -2981,7 +3024,7 @@ export function hideElem(
 		return
 	}
 
-	if (validateHideElem(init)) {
+	if (init && validateHideElem(init)) {
 		try {
 			initElements(init)
 		} catch (e) {
@@ -3104,7 +3147,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad, init?: Sync
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync, event?: 'links' | 'quotes' | 'searchbar') {
+export function interfaceWidgetToggle(init: Sync | null, event?: 'links' | 'quotes' | 'searchbar') {
 	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
@@ -3123,7 +3166,9 @@ export function interfaceWidgetToggle(init: Sync, event?: 'links' | 'quotes' | '
 		return
 	}
 
-	toggleEmpty(!(init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
+	if (init) {
+		toggleEmpty(!(init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
+	}
 }
 
 function onlineAndMobileHandler() {

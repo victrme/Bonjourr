@@ -4,12 +4,14 @@ import { Local } from './types/local'
 
 export const $ = (name: string) => document.getElementById(name)
 
-export const has = (dom: Element, val: string) => {
-	return dom?.classList.length > 0 ? dom.classList.contains(val) : false
+export const has = (dom: Element | null, val: string) => {
+	if (!dom) return false
+	else return dom.classList.length > 0 ? dom.classList.contains(val) : false
 }
 
-export const clas = (dom: Element, add: boolean, str: string) => {
-	add ? dom.classList.add(str) : dom.classList.remove(str)
+export const clas = (dom: Element | null, add: boolean, str: string) => {
+	if (dom === null) return
+	else add ? dom.classList.add(str) : dom.classList.remove(str)
 }
 
 export const mobilecheck = () =>
@@ -148,7 +150,7 @@ export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
 	if (isThrottled) elem.setAttribute('disabled', '')
 }
 
-export function turnRefreshButton(button: HTMLButtonElement, canTurn: boolean) {
+export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	const animationOptions = { duration: 600, easing: 'ease-out' }
 	button.animate(
 		canTurn
@@ -366,7 +368,7 @@ export function tradThis(str: string): string {
 	type DictKey = keyof typeof dict
 	type DictField = keyof typeof dict.April
 
-	const lang = document.documentElement.getAttribute('lang')
+	const lang = document.documentElement.getAttribute('lang') || 'en'
 
 	if (!Object.keys(dict.April).includes(lang)) {
 		return str // English or not a dict field key ? no trn
