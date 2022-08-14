@@ -991,15 +991,36 @@ export async function linksImport() {
 	}
 
 	function main(links: Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]): void {
-		console.log(bookmarks)
-		const allCategories = [...bookmarks[0].children]
 		const listdom = document.createElement('ol')
-		let counter = links.length || 0
 
 		let bookmarksList: chrome.bookmarks.BookmarkTreeNode[] = []
 		let selectedList: string[] = []
 
-		allCategories.forEach((cat) => bookmarksList.push(...cat.children))
+		bookmarks[0].children?.forEach((cat) => {
+			const list = cat.children
+
+			if (Array.isArray(list)) {
+				bookmarksList.push(...list)
+			}
+		})
+
+		function selectBookmark(elem: HTMLLIElement) {
+			const isSelected = elem.classList.toggle('selected')
+			const index = elem.getAttribute('data-index')
+			let counter = listdom.querySelectorAll('li.selected').length
+
+			if (!index) return
+
+			// update list to return
+			isSelected ? selectedList.push(index) : selectedList.pop()
+
+			// Change submit button text & class on selections
+			if (counter === 0) $('bmk_apply')!.textContent = tradThis('Select bookmarks to import')
+			if (counter === 1) $('bmk_apply')!.textContent = tradThis('Import this bookmark')
+			if (counter > 1) $('bmk_apply')!.textContent = tradThis('Import these bookmarks')
+
+			clas($('bmk_apply'), counter === 0, 'none')
+		}
 
 		bookmarksList.forEach((mark, index) => {
 			const elem = document.createElement('li')
@@ -1029,29 +1050,8 @@ export async function linksImport() {
 			elem.appendChild(titleWrap)
 			elem.appendChild(url)
 
-			const select = () => {
-				const isSelected = elem.classList.toggle('selected')
-				const index = elem.getAttribute('data-index')
-
-				if (!index) return
-
-				isSelected ? selectedList.push(index) : selectedList.pop()
-				isSelected ? counter++ : (counter -= 1)
-
-				// Change submit button text & class on selections
-				const amountSelected = counter - links.length
-				$('bmk_apply')!.textContent = tradThis(
-					amountSelected === 0
-						? 'Select bookmarks to import'
-						: amountSelected === 1
-						? 'Import this bookmark'
-						: 'Import these bookmarks'
-				)
-				clas($('bmk_apply'), amountSelected === 0, 'none')
-			}
-
-			elem.onclick = select
-			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? select() : '')
+			elem.onclick = () => selectBookmark(elem)
+			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? selectBookmark(elem) : '')
 
 			if (links.filter((x) => x.url === stringMaxSize(markURL, 512)).length === 0) {
 				listdom.appendChild(elem)

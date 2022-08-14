@@ -219,13 +219,13 @@ export const lsOnlineStorage = {
 		})
 	},
 	remove: (isLocal: boolean, key: string) => {
-		lsOnlineStorage.get(isLocal, null, (data: Sync | Local) => {
+		lsOnlineStorage.get(isLocal, null, (data: { [key: string]: unknown }) => {
 			delete data[key]
 			if (isLocal) localStorage.bonjourrBackgrounds = JSON.stringify(data)
 			else localStorage.bonjourr = JSON.stringify(data)
 		})
 	},
-	log: (isLocal: boolean) => lsOnlineStorage.get(isLocal, null, (data: Sync | Local) => console.log(data)),
+	log: (isLocal: boolean) => lsOnlineStorage.get(isLocal, null, (data: any) => console.log(data)),
 	del: () => localStorage.clear(),
 }
 
