@@ -340,9 +340,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_refresh').addEventListener('click', function (this: HTMLInputElement) {
 		const i_type = paramId('i_type') as HTMLInputElement
-		i_type.value === 'custom'
-			? localBackgrounds(null, { is: 'refresh', button: this.children[0] as HTMLSpanElement })
-			: unsplash(null, { is: 'refresh', button: this.children[0] })
+
+		if (this.children[0]) {
+			const arrow = this.children[0] as HTMLSpanElement
+			const event = { is: 'refresh', button: arrow }
+
+			i_type.value === 'custom' ? localBackgrounds(null, event) : unsplash(null, event)
+		}
 
 		inputThrottle(this)
 	})
@@ -685,13 +689,13 @@ function switchLangs(nextLang: Langs) {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
 		translatePlaceholders($('settings'))
-		weather(data)
-		clock(data)
+		weather(data as Sync)
+		clock(data as Sync)
 
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
 			localStorage.removeItem('currentQuote')
-			quotes(data)
+			quotes(data as Sync)
 		}
 	})
 }
