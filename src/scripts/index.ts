@@ -3,7 +3,7 @@ import debounce from 'lodash.debounce'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -50,7 +50,7 @@ const freqControl = {
 		// changes can only go forward
 
 		const nowDate = new Date()
-		const lastDate = new Date(last)
+		const lastDate = new Date(last || 0)
 		const changed = {
 			date: nowDate.getDate() !== lastDate.getDate(),
 			hour: nowDate.getHours() !== lastDate.getHours(),
@@ -60,11 +60,16 @@ const freqControl = {
 		if (every === 'hour') return changed.date || changed.hour
 		if (every === 'tabs') return true
 		if (every === 'pause') return last === 0
-		if (every === 'period') return periodOfDay(sunTime()) !== periodOfDay(sunTime(), +lastDate)
+		if (every === 'period') {
+			const sun = sunTime()
+
+			if (!sun) return 'day'
+			else return periodOfDay(sun) !== periodOfDay(sun, +lastDate)
+		}
 	},
 }
 
-export function traduction(settingsDom: Element, lang = 'en') {
+export function traduction(settingsDom: Element | null, lang = 'en') {
 	type DictKey = keyof typeof dict
 	type DictField = keyof typeof dict.April // "april" just to select a random field
 
@@ -77,12 +82,14 @@ export function traduction(settingsDom: Element, lang = 'en') {
 	let text: string
 
 	trns.forEach((trn) => {
-		text = trn.textContent
+		if (trn.textContent) {
+			text = trn.textContent
 
-		// Translate if text is a valid dict key
-		// lang is de facto a valid dict[...] key because it didnt return before
-		if (dictKeys.includes(text)) {
-			trn.textContent = dict[text as DictKey][lang as DictField]
+			// Translate if text is a valid dict key
+			// lang is de facto a valid dict[...] key because it didnt return before
+			if (dictKeys.includes(text)) {
+				trn.textContent = dict[text as DictKey][lang as DictField]
+			}
 		}
 	})
 
@@ -137,7 +144,7 @@ export function clock(
 		timezone: string
 	}
 
-	function zonedDate(timezone: string) {
+	function zonedDate(timezone: string = 'auto') {
 		const date = new Date()
 
 		if (timezone === 'auto') return date
@@ -154,10 +161,10 @@ export function clock(
 			mois = tradThis(months[date.getMonth()]),
 			chiffre = date.getDate()
 
-		$('date').textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
+		$('date')!.textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
 	}
 
-	function greetings(date: Date, name: string) {
+	function greetings(date: Date, name?: string) {
 		const greets = [
 			{ text: 'Good night', hour: 7 },
 			{ text: 'Good morning', hour: 12 },
@@ -165,14 +172,14 @@ export function clock(
 			{ text: 'Good evening', hour: 24 },
 		]
 
-		const domgreetings = $('greetings')
+		const domgreetings = $('greetings') as HTMLTitleElement
 		const greetResult = greets.filter((greet) => date.getHours() < greet.hour)[0]
 
 		domgreetings.style.textTransform = name ? 'none' : 'capitalize'
 		domgreetings.textContent = tradThis(greetResult.text) + (name ? `, ${name}` : '')
 	}
 
-	function changeAnalogFace(face = 'none') {
+	function changeAnalogFace(face: ClockFace = 'none') {
 		//
 		// Clockwise
 		const chars = {
@@ -224,7 +231,7 @@ export function clock(
 					m = fixunits(date.getMinutes()),
 					s = fixunits(date.getSeconds())
 
-				$('clock').textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				$('clock')!.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
 			function analog(date: Date) {
@@ -237,11 +244,11 @@ export function clock(
 					h = date.getHours() * 30
 
 				//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
-				if (true || date.getMinutes() === 0) rotation($('minutes'), m)
-				if (true || date.getHours() === 0) rotation($('hours'), h)
+				if (true || date.getMinutes() === 0) rotation($('minutes')!, m)
+				if (true || date.getHours() === 0) rotation($('hours')!, h)
 
 				//tourne pas les secondes si pas de seconds
-				if (clock.seconds) rotation($('analogSeconds'), s)
+				if (clock.seconds) rotation($('analogSeconds')!, s)
 			}
 
 			// Control
@@ -268,7 +275,7 @@ export function clock(
 	}
 
 	if (event) {
-		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data: Sync) => {
+		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
 			let clock = data.clock || {
 				analog: false,
 				seconds: false,
@@ -279,7 +286,7 @@ export function clock(
 
 			switch (event.is) {
 				case 'usdate': {
-					clockDate(zonedDate(data.clock.timezone), event.checked)
+					clockDate(zonedDate(data.clock.timezone), event.checked || false)
 					chrome.storage.sync.set({ usdate: event.checked })
 					break
 				}
@@ -302,7 +309,7 @@ export function clock(
 					break
 
 				case 'face':
-					clock.face = event.value as any // TODO: force select union type
+					clock.face = event.value as ClockFace
 					break
 
 				case 'seconds':
@@ -443,7 +450,7 @@ export function quickLinks(
 				blocklist.forEach(({ block }) => addEvents(block))
 
 				linksDragging()
-				canDisplayInterface('links', null)
+				canDisplayInterface('links')
 				createRows(blocklist, linksrow)
 
 				// Load icons one by one
@@ -466,7 +473,7 @@ export function quickLinks(
 		}
 
 		// Links is done
-		else canDisplayInterface('links', null)
+		else canDisplayInterface('links')
 	}
 
 	function removeLinkSelection() {
@@ -515,7 +522,7 @@ export function quickLinks(
 		}
 
 		const initDrag = (ex: number, ey: number, path: EventTarget[]) => {
-			let block = path.find((e: HTMLElement) => e.className === 'block') as HTMLLIElement
+			let block = path.find((t) => (t as HTMLElement).className === 'block') as HTMLLIElement
 
 			if (!block) {
 				return
@@ -603,19 +610,24 @@ export function quickLinks(
 					interval = interval.sort((a, b) => a - b) // sort to always have [small, big]
 
 					coordsEntries.forEach(([keyBis, coord], index) => {
-						//
+						const neighboor = $(keyBis)
+
+						if (!neighboor) {
+							return
+						}
+
 						// Element index between interval
 						if (index >= interval[0] && index <= interval[1]) {
 							const ox = coordsEntries[index + direction][1].pos.x - coord.pos.x
 							const oy = coordsEntries[index + direction][1].pos.y - coord.pos.y
 
 							updatedOrder[keyBis] = index + direction // update order w/ direction
-							deplaceElem($(keyBis), ox, oy) // translate it to its neighboors position
+							deplaceElem(neighboor, ox, oy) // translate it to its neighboors position
 							return
 						}
 
 						updatedOrder[keyBis] = index // keep same order
-						deplaceElem($(keyBis), 0, 0) // Not in interval (anymore) ? reset translate
+						deplaceElem(neighboor, 0, 0) // Not in interval (anymore) ? reset translate
 					})
 
 					updatedOrder[draggedId] = keyO // update dragged element order with triggerbox order
@@ -637,16 +649,16 @@ export function quickLinks(
 				dominterface.style.cursor = ''
 
 				setTimeout(() => {
-					chrome.storage.sync.get(null, (data: Sync) => {
+					chrome.storage.sync.get(null, (data) => {
 						Object.entries(updatedOrder).forEach(([key, val]) => {
 							const link = data[key] as Link
 							link.order = val // Updates orders
 						})
 
-						// slowRange({ ...data }) // saves
+						eventDebounce({ ...data }) // saves
 
 						document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove uls
-						initblocks(bundleLinks(data), data.linksrow, data.linknewtab) // re-init blocks
+						initblocks(bundleLinks(data as Sync), data.linksrow, data.linknewtab) // re-init blocks
 					})
 				}, 200)
 			}
@@ -718,7 +730,7 @@ export function quickLinks(
 			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
 
 			// Moves edit link to mouse position
-			document.querySelector('#editlink').setAttribute('style', `transform: translate(${x + 3}px, ${y + 3}px)`)
+			document.querySelector('#editlink')?.setAttribute('style', `transform: translate(${x + 3}px, ${y + 3}px)`)
 		}
 
 		const linkId = domlink.id
@@ -747,7 +759,7 @@ export function quickLinks(
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
 
-			domedit.setAttribute('data-linkid', linkId)
+			domedit?.setAttribute('data-linkid', linkId)
 
 			domtitle.focus()
 		})
@@ -767,8 +779,8 @@ export function quickLinks(
 
 		chrome.storage.sync.get(linkId, (data) => {
 			const domlink = $(linkId) as HTMLLIElement
-			const domicon = domlink.querySelector('img')
-			const domurl = domlink.querySelector('a')
+			const domicon = domlink.querySelector('img') as HTMLImageElement
+			const domurl = domlink.querySelector('a') as HTMLAnchorElement
 			let link = data[linkId]
 
 			link = {
@@ -790,15 +802,15 @@ export function quickLinks(
 	}
 
 	function removeblock(linkId: string) {
-		chrome.storage.sync.get([linkId], (data: Sync) => {
-			const links = bundleLinks(data)
+		chrome.storage.sync.get([linkId], (data) => {
+			const links = bundleLinks(data as Sync)
 			let link = data[linkId] as Link
+			const linkDOM = $(linkId)
 
-			if (!link) {
+			if (!link || !linkDOM) {
 				return
 			}
 
-			const linkDOM = $(linkId)
 			const rowDOM = linkDOM.parentElement as HTMLUListElement
 			const height = linkDOM.getBoundingClientRect().height
 			const isLastOnRow = rowDOM.childElementCount === 1
@@ -828,12 +840,12 @@ export function quickLinks(
 		})
 	}
 
-	function linkSubmission(type: 'add' | 'import', importList: { title: string; url: string }[]) {
+	function linkSubmission(type: 'add' | 'import', importList?: { title: string; url: string }[]) {
 		// importList here can also be button dom when type is "addlink"
 		// This needs to be cleaned up later
 
-		chrome.storage.sync.get(null, (data: Sync) => {
-			const links = bundleLinks(data)
+		chrome.storage.sync.get(null, (data) => {
+			const links = bundleLinks(data as Sync)
 			let newLinksList = []
 
 			const validator = (title: string, url: string, order: number) => {
@@ -867,7 +879,7 @@ export function quickLinks(
 			}
 
 			// When importing bookmarks
-			if (type === 'import') {
+			if (type === 'import' && importList) {
 				if (importList?.length === 0) return
 
 				importList.forEach(({ title, url }, i: number) => {
@@ -895,13 +907,15 @@ export function quickLinks(
 		const span = block.querySelector('span')
 		const a = block.querySelector('a')
 
-		span.textContent = toText && title === '' ? extractDomain(a.href) : title
+		if (span && a) {
+			span.textContent = toText && title === '' ? extractDomain(a.href) : title
+		}
 	}
 
 	if (event) {
 		switch (event.is) {
 			case 'add':
-				linkSubmission('add', null)
+				linkSubmission('add')
 				break
 
 			case 'import':
@@ -927,15 +941,15 @@ export function quickLinks(
 			}
 
 			case 'style': {
-				chrome.storage.sync.get(null, (data: Sync) => {
-					const links = bundleLinks(data)
+				chrome.storage.sync.get(null, (data) => {
+					const links = bundleLinks(data as Sync)
 					const classes = ['large', 'medium', 'small', 'text']
 					const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
 
 					links.forEach(({ title }, i: number) => textOnlyControl(blocks[i], title, event.value === 'text'))
 
 					classes.forEach((c) => domlinkblocks.classList.remove(c))
-					domlinkblocks.classList.add(event.value.toString())
+					domlinkblocks.classList.add(event.value?.toString() || '')
 
 					chrome.storage.sync.set({ linkstyle: event.value })
 				})
@@ -943,9 +957,9 @@ export function quickLinks(
 			}
 
 			case 'row': {
-				chrome.storage.sync.get(null, (data: Sync) => {
-					const links = bundleLinks(data)
-					const row = parseInt(event.value)
+				chrome.storage.sync.get(null, (data) => {
+					const links = bundleLinks(data as Sync)
+					const row = parseInt(event.value || '6')
 
 					initblocks(links, row, data.linknewtab)
 					eventDebounce({ linksrow: row })
@@ -959,6 +973,7 @@ export function quickLinks(
 
 	if (!init) {
 		errorMessage('No data for quick links !')
+		return
 	}
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
@@ -992,12 +1007,19 @@ export async function linksImport() {
 			const title = document.createElement('span')
 			const favicon = document.createElement('img')
 			const url = document.createElement('pre')
+			const markURL = mark.url
 
-			favicon.src = 'https://icons.duckduckgo.com/ip3/' + extractHostname(mark.url) + '.ico'
+			// only append links if url are not empty
+			// (temp fix to prevent adding bookmarks folder title ?)
+			if (!markURL || markURL === '') {
+				return
+			}
+
+			favicon.src = 'https://icons.duckduckgo.com/ip3/' + extractHostname(markURL) + '.ico'
 			favicon.alt = ''
 
 			title.textContent = mark.title
-			url.textContent = mark.url
+			url.textContent = markURL
 
 			titleWrap.appendChild(favicon)
 			titleWrap.appendChild(title)
@@ -1007,14 +1029,18 @@ export async function linksImport() {
 			elem.appendChild(titleWrap)
 			elem.appendChild(url)
 
-			function select() {
+			const select = () => {
 				const isSelected = elem.classList.toggle('selected')
-				isSelected ? selectedList.push(elem.getAttribute('data-index')) : selectedList.pop()
+				const index = elem.getAttribute('data-index')
+
+				if (!index) return
+
+				isSelected ? selectedList.push(index) : selectedList.pop()
 				isSelected ? counter++ : (counter -= 1)
 
 				// Change submit button text & class on selections
 				const amountSelected = counter - links.length
-				$('bmk_apply').textContent = tradThis(
+				$('bmk_apply')!.textContent = tradThis(
 					amountSelected === 0
 						? 'Select bookmarks to import'
 						: amountSelected === 1
@@ -1027,16 +1053,15 @@ export async function linksImport() {
 			elem.onclick = select
 			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? select() : '')
 
-			// only append links if url are not empty
-			// (temp fix to prevent adding bookmarks folder title ?)
-			if (typeof mark.url === 'string')
-				if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) listdom.appendChild(elem)
+			if (links.filter((x) => x.url === stringMaxSize(markURL, 512)).length === 0) {
+				listdom.appendChild(elem)
+			}
 		})
 
 		// Replace list to filter already added bookmarks
 		const oldList = document.querySelector('#bookmarks ol')
 		if (oldList) oldList.remove()
-		$('bookmarks').prepend(listdom)
+		$('bookmarks')!.prepend(listdom)
 
 		// Just warning if no bookmarks were found
 		if (bookmarksList.length === 0) {
@@ -1045,14 +1070,14 @@ export async function linksImport() {
 		}
 
 		// Submit event
-		$('bmk_apply').onclick = function () {
-			const bookmarkToApply = selectedList.map((i) => ({
+		$('bmk_apply')!.onclick = function () {
+			let bookmarkToApply = selectedList.map((i) => ({
 				title: bookmarksList[parseInt(i)].title,
-				url: bookmarksList[parseInt(i)].url,
+				url: bookmarksList[parseInt(i)].url || '',
 			}))
 
 			if (bookmarkToApply.length > 0) {
-				closeBookmarks($('bookmarks_container'))
+				closeBookmarks($('bookmarks_container')!)
 				quickLinks(null, { is: 'import', bookmarks: bookmarkToApply })
 			}
 		}
@@ -1065,19 +1090,19 @@ export async function linksImport() {
 	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
 		if (!granted) return
 
-		chrome.storage.sync.get(null, (data: Sync) => {
+		chrome.storage.sync.get(null, (data) => {
 			// ;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
 			chrome.bookmarks.getTree().then((response) => {
 				clas($('bookmarks_container'), true, 'shown')
-				main(bundleLinks(data), response)
+				main(bundleLinks(data as Sync), response)
 			})
 		})
 	})
 
 	// Close events
-	$('bmk_close').onclick = () => closeBookmarks($('bookmarks_container'))
+	$('bmk_close')!.onclick = () => closeBookmarks($('bookmarks_container')!)
 
-	$('bookmarks_container').addEventListener('click', function (e: MouseEvent) {
+	$('bookmarks_container')!.addEventListener('click', function (e: MouseEvent) {
 		if ((e.target as HTMLElement).id === 'bookmarks_container') closeBookmarks(this)
 	})
 }
@@ -1258,13 +1283,11 @@ export function weather(
 	function displayWeather(storage: Weather) {
 		const currentState = storage.lastState
 
-		// 1.11.1 => 1.11.2 control
-		if (storage.temperature === undefined) {
-			storage.temperature = 'actual'
-			currentState.temp = currentState.feels_like
+		if (!currentState) {
+			return
 		}
 
-		function handleDescription() {
+		const handleDescription = () => {
 			const desc = currentState.description
 			const feels = Math.floor(currentState.feels_like)
 			const actual = Math.floor(currentState.temp)
@@ -1286,11 +1309,15 @@ export function weather(
 				}
 			}
 
-			current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
-			tempContainer.querySelector('p').textContent = actual + '°'
+			const iconText = tempContainer?.querySelector('p')
+
+			if (current && iconText) {
+				current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
+				iconText.textContent = actual + '°'
+			}
 		}
 
-		function handleWidget() {
+		const handleWidget = () => {
 			let filename = 'lightrain'
 			const categorieIds: [number[], string][] = [
 				[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
@@ -1309,6 +1336,10 @@ export function weather(
 			categorieIds.forEach((category) => {
 				if (category[0].includes(currentState.icon_id as never)) filename = category[1]
 			})
+
+			if (!tempContainer) {
+				return
+			}
 
 			const widgetIcon = tempContainer.querySelector('img')
 			const { now, rise, set } = sunTime()
@@ -1330,12 +1361,14 @@ export function weather(
 			setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 		}
 
-		function handleForecast() {
-			forecast.textContent = `${tradThis('with a high of')} ${storage.fcHigh}° ${tradThis(
-				date.getHours() > 21 ? 'tomorrow' : 'today'
-			)}.`
+		const handleForecast = () => {
+			if (forecast) {
+				forecast.textContent = `${tradThis('with a high of')} ${storage.fcHigh}° ${tradThis(
+					date.getHours() > 21 ? 'tomorrow' : 'today'
+				)}.`
 
-			clas(forecast, false, 'wait')
+				clas(forecast, false, 'wait')
+			}
 		}
 
 		handleWidget()
@@ -1346,7 +1379,7 @@ export function weather(
 		clas(tempContainer, false, 'wait')
 	}
 
-	function forecastVisibilityControl(value: string) {
+	function forecastVisibilityControl(value: string = 'auto') {
 		let isTimeForForecast = false
 
 		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
@@ -1357,7 +1390,7 @@ export function weather(
 
 	async function updatesWeather() {
 		chrome.storage.sync.get('weather', async (data) => {
-			switch (event.is) {
+			switch (event?.is) {
 				case 'units': {
 					data.weather.unit = event.checked ? 'imperial' : 'metric'
 
@@ -1397,7 +1430,7 @@ export function weather(
 						navigator.geolocation.getCurrentPosition(
 							async (pos) => {
 								//update le parametre de location
-								clas(sett_city, event.checked, 'hidden')
+								clas(sett_city, event.checked || true, 'hidden')
 								data.weather.location = [pos.coords.latitude, pos.coords.longitude]
 
 								data.weather = await request(data.weather)
@@ -1407,14 +1440,13 @@ export function weather(
 							() => {
 								// Désactive geolocation if refused
 								setTimeout(() => (event.checked = false), 400)
-								if (!data.weather.city) initWeather(null)
 							}
 						)
 						return
 					} else {
 						i_city.setAttribute('placeholder', data.weather.city)
 						i_ccode.value = data.weather.ccode
-						clas(sett_city, event.checked, 'hidden')
+						clas(sett_city, event.checked || false, 'hidden')
 
 						data.weather.location = []
 						data.weather = await request(data.weather)
@@ -1455,7 +1487,7 @@ export function weather(
 		}
 
 		try {
-			forecastVisibilityControl(init.weather.forecast || 'auto')
+			forecastVisibilityControl(init.weather.forecast)
 			weatherCacheControl(init.weather)
 		} catch (e) {
 			errorMessage('Weather init did not work', e)
@@ -1475,10 +1507,10 @@ export function initBackground(data: Sync) {
 		return
 	}
 
-	unsplash(data, null)
+	unsplash(data)
 }
 
-export function imgBackground(url: string, loadTime: number, isInit?: boolean) {
+export function imgBackground(url: string, loadTime: number = 0, isInit?: boolean) {
 	const overlaydom = $('background_overlay') as HTMLDivElement
 	const backgrounddom = $('background') as HTMLDivElement
 	let img = new Image()
@@ -1539,7 +1571,7 @@ export function localBackgrounds(
 			// Uploaded file in storage would exceed limit
 			if (lsSize + newFile.length > 5e6) {
 				alert(`Image size exceeds storage: ${Math.abs(lsSize - 5e6) / 1000}ko left`)
-				$('background_overlay').style.opacity = '1'
+				$('background_overlay')!.style.opacity = '1'
 
 				return true
 			}
@@ -1587,7 +1619,7 @@ export function localBackgrounds(
 			}
 
 			localIsLoading = true
-			$('background_overlay').style.opacity = '0'
+			$('background_overlay')!.style.opacity = '0'
 			reader.readAsDataURL(file)
 		})
 
@@ -1615,7 +1647,7 @@ export function localBackgrounds(
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
 			clas($('credit'), false, 'shown')
-			$('background_overlay').style.opacity = `0`
+			$('background_overlay')!.style.opacity = `0`
 		}
 
 		const compressStart = performance.now()
@@ -1624,6 +1656,8 @@ export function localBackgrounds(
 		img.onload = () => {
 			const elem = document.createElement('canvas')
 			const ctx = elem.getContext('2d')
+
+			if (!ctx) return
 
 			// canvas proportionné à l'image
 			// rétréci suivant le taux de compression
@@ -1638,7 +1672,7 @@ export function localBackgrounds(
 			const data = ctx.canvas.toDataURL(img.src) // renvoie le base64
 			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
 
-			if (state === 'thumbnail') {
+			if (state === 'thumbnail' && _id) {
 				chrome.storage.local.set({ ['customThumb_' + _id]: cleanData })
 				addThumbnails(cleanData, _id, null, true)
 
@@ -1654,8 +1688,8 @@ export function localBackgrounds(
 		img.src = file
 	}
 
-	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement, isSelected: boolean) {
-		const settings = settingsDom ? settingsDom : $('settings')
+	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
+		const settings = settingsDom ? settingsDom : ($('settings') as HTMLElement)
 
 		const div = document.createElement('div')
 		const i = document.createElement('img')
@@ -1674,12 +1708,17 @@ export function localBackgrounds(
 
 		div.appendChild(i)
 		div.appendChild(rem)
-		wrap.prepend(div)
+		wrap?.prepend(div)
 
 		i.onmouseup = (e) => {
 			if (e.button !== 0 || localIsLoading) return
 
 			const target = e.target as HTMLElement
+
+			if (!target.parentElement) {
+				return console.log('No parent (thumbnail) found')
+			}
+
 			const _id = target.parentElement.id
 			const bgKey = 'custom_' + _id
 
@@ -1688,7 +1727,7 @@ export function localBackgrounds(
 				if (_id !== local.selectedId) {
 					thumbnailSelection(_id)
 
-					$('background_overlay').style.opacity = `0`
+					$('background_overlay')!.style.opacity = `0`
 					localIsLoading = true
 					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
 					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
@@ -1704,7 +1743,10 @@ export function localBackgrounds(
 			}
 
 			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
-				const thumbnail = path.find((d: HTMLElement) => d.className.includes('thumbnail')) as HTMLElement
+				const thumbnail = path.find((d: EventTarget) => {
+					return (d as HTMLElement).className.includes('thumbnail')
+				}) as HTMLElement
+
 				const _id = thumbnail.id
 				let { idsList, selectedId } = local
 				let poppedList = idsList.filter((s: string) => !s.includes(_id))
@@ -1728,9 +1770,13 @@ export function localBackgrounds(
 
 					// back to unsplash
 					else {
-						$('background_overlay').style.opacity = '0'
+						$('background_overlay')!.style.opacity = '0'
 						chrome.storage.sync.set({ background_type: 'dynamic' })
-						setTimeout(() => chrome.storage.sync.get('dynamic', (data: Sync) => unsplash(data, null)), 400)
+
+						setTimeout(() => {
+							chrome.storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+						}, 400)
+
 						selectedId = ''
 					}
 
@@ -1767,7 +1813,7 @@ export function localBackgrounds(
 
 	function refreshCustom(button: HTMLSpanElement) {
 		chrome.storage.sync.get('custom_every', (sync) => {
-			$('background_overlay').style.opacity = '0'
+			$('background_overlay')!.style.opacity = '0'
 			turnRefreshButton(button, true)
 			localIsLoading = true
 
@@ -1823,12 +1869,14 @@ export function localBackgrounds(
 						.map((k) => k.replace('custom_', ''))
 
 					chrome.storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
-					chrome.storage.sync.get(null, (data: Sync) => initBackground(data))
+					chrome.storage.sync.get(null, (data) => initBackground(data as Sync))
 				})
 			}
 
 			if (idsList.length === 0) {
-				chrome.storage.sync.get('dynamic', (data: Sync) => unsplash(data, null)) // no bg, back to unsplash
+				chrome.storage.sync.get('dynamic', (data) => {
+					unsplash(data as Sync) // no bg, back to unsplash
+				})
 				return
 			}
 
@@ -1860,7 +1908,7 @@ export async function unsplash(
 	event?: {
 		is: string
 		value?: string
-		button?: Element | null
+		button?: HTMLSpanElement | null
 	}
 ) {
 	// TODO: Separate Collection type with users string
@@ -1906,9 +1954,10 @@ export async function unsplash(
 				{ key: 'focal_length', format: `%val%mm` },
 			]
 
-			orderedExifData.forEach(({ key, format }: { key: keyof typeof exif; format: string }) => {
-				if (exif[key]) {
-					exifDescription += key === 'iso' ? exif[key].toString() : format.replace('%val%', exif[key])
+			orderedExifData.forEach(({ key, format }) => {
+				if (key in exif) {
+					const exifVal = exif[key as keyof typeof exif]
+					exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
 				}
 			})
 		}
@@ -1935,22 +1984,24 @@ export async function unsplash(
 		locationDOM.href = link + referral
 		artistDOM.href = 'https://unsplash.com/@' + username + referral
 
-		domcredit.textContent = ''
+		if (domcredit) {
+			domcredit.textContent = ''
 
-		domcredit.appendChild(exifDOM)
-		domcredit.appendChild(locationDOM)
-		if (needsSpacer) domcredit.appendChild(spacerDOM)
-		domcredit.appendChild(artistDOM)
+			domcredit.appendChild(exifDOM)
+			domcredit.appendChild(locationDOM)
+			if (needsSpacer) domcredit.appendChild(spacerDOM)
+			domcredit.appendChild(artistDOM)
 
-		clas(domcredit, true, 'shown')
+			clas(domcredit, true, 'shown')
+		}
 	}
 
 	function loadBackground(props: UnsplashImage, loadTime?: number) {
-		imgBackground(props.url, loadTime, !!init)
+		imgBackground(props.url, loadTime || 0, !!init)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
-		document.querySelector('meta[name="theme-color"]').setAttribute('content', props.color)
+		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', props.color)
 	}
 
 	async function requestNewList(collecType: CollectionType) {
@@ -2087,18 +2138,20 @@ export async function unsplash(
 		event: {
 			is: string
 			value?: string
-			button?: Element | null
+			button?: HTMLSpanElement | null
 		},
 		sync: Sync,
 		local: Local
 	) {
 		switch (event.is) {
 			case 'refresh': {
+				if (!event.button) return console.log('No buttons to animate')
+
 				// Only refreshes background if preload is over
 				// If not, animate button to show it is trying
 				if (local.waitingForPreload === undefined) {
 					turnRefreshButton(event.button, true)
-					$('background_overlay').style.opacity = '0'
+					$('background_overlay')!.style.opacity = '0'
 
 					const newDynamic = { ...sync.dynamic, time: 0 }
 					chrome.storage.sync.set({ dynamic: newDynamic })
@@ -2114,6 +2167,8 @@ export async function unsplash(
 			}
 
 			case 'every': {
+				if (!event.value) return console.log('Not valid "every" value')
+
 				sync.dynamic.every = event.value
 				sync.dynamic.time = freqControl.set()
 				chrome.storage.sync.set({ dynamic: sync.dynamic })
@@ -2129,9 +2184,9 @@ export async function unsplash(
 
 			// Always request another set, update last time image change and load background
 			case 'collection': {
-				if (!navigator.onLine) return
+				if (!navigator.onLine || !event.value) return
 
-				$('background_overlay').style.opacity = '0'
+				$('background_overlay')!.style.opacity = '0'
 
 				// remove user collec
 				if (event.value === '') {
@@ -2170,9 +2225,9 @@ export async function unsplash(
 
 	if (event) {
 		// No init, Event
-		chrome.storage.sync.get('dynamic', (sync: Sync) =>
-			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local: Local) => {
-				updateDynamic(event, sync, local)
+		chrome.storage.sync.get('dynamic', (sync) =>
+			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+				updateDynamic(event, sync as Sync, local as Local)
 			})
 		)
 	}
@@ -2181,14 +2236,14 @@ export async function unsplash(
 		return
 	}
 
-	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local: Local) => {
+	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
 		try {
 			// Real init start
 			const collecType = collectionUpdater(init.dynamic)
 			const cache = local.dynamicCache || localDefaults.dynamicCache
 
 			if (cache[collecType].length === 0) {
-				populateEmptyList(collecType, local) // If list empty: request new, save sync & local
+				populateEmptyList(collecType, local as Local) // If list empty: request new, save sync & local
 				return
 			}
 
@@ -2220,7 +2275,7 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 			break
 	}
 
-	$('background').style.filter = result
+	$('background')!.style.filter = result
 
 	if (isEvent) {
 		if (cat === 'blur') eventDebounce({ background_blur: val.blur })
@@ -2264,7 +2319,7 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 	}
 
 	function updateSearchbar() {
-		chrome.storage.sync.get('searchbar', (data: Sync) => {
+		chrome.storage.sync.get('searchbar', (data) => {
 			if (!that) {
 				return
 			}
@@ -2322,7 +2377,7 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 		const isNewtab = domsearchbar.getAttribute('data-newtab') === 'true'
 		const engine = domsearchbar.getAttribute('data-engine') || 'google'
 		const request = domsearchbar.getAttribute('data-request') || ''
-		const lang = document.documentElement.getAttribute('lang')
+		const lang = document.documentElement.getAttribute('lang') || 'en'
 
 		type EnginesKey = keyof typeof enginesUrls
 		type LocalesKey = keyof typeof enginesLocales
@@ -2419,7 +2474,7 @@ export async function quotes(
 ) {
 	function display(on: boolean) {
 		clas($('linkblocks'), on, 'withQuotes')
-		$('quotes_container').setAttribute('class', on ? 'shown' : 'hidden')
+		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
 	}
 
 	async function newQuote(lang: string, type: string) {
@@ -2443,9 +2498,15 @@ export async function quotes(
 	}
 
 	function insertToDom(values: Quote) {
-		if (!values) return
-		$('quote').textContent = values.content
-		$('author').textContent = values.author
+		const quoteDOM = $('quote')
+		const authorDOM = $('author')
+
+		if (!values || !quoteDOM || !authorDOM) {
+			return
+		}
+
+		quoteDOM.textContent = values.content
+		authorDOM.textContent = values.author
 	}
 
 	function controlCacheList(list: Quote[], lang: string, type: string) {
@@ -2466,9 +2527,9 @@ export async function quotes(
 			const updated = { ...data.quotes }
 			const { lang, quotes } = data
 
-			switch (event.is) {
+			switch (event?.is) {
 				case 'toggle': {
-					const on = event.checked // to use inside storage callback
+					const on = event.checked || false // to use inside storage callback
 					updated.on = on
 
 					chrome.storage.local.get('quotesCache', (local) => {
@@ -2482,7 +2543,7 @@ export async function quotes(
 
 				// TODO: investigate class toggle opposite of data
 				case 'author': {
-					$('author').classList.toggle('alwaysVisible')
+					clas($('author'), event.checked || false, 'alwaysVisible')
 					updated.author = event.checked
 					break
 				}
@@ -2493,12 +2554,14 @@ export async function quotes(
 				}
 
 				case 'type': {
-					updated.type = event.value
+					if (event.value) {
+						updated.type = event.value
 
-					const list = await newQuote(lang, event.value)
-					chrome.storage.local.set({ quotesCache: list })
+						const list = await newQuote(lang, event.value)
+						chrome.storage.local.set({ quotesCache: list })
 
-					insertToDom(list[0])
+						insertToDom(list[0])
+					}
 					break
 				}
 
@@ -2506,7 +2569,8 @@ export async function quotes(
 					updated.last = freqControl.set()
 
 					chrome.storage.local.get('quotesCache', async (local) => {
-						const quote = controlCacheList(local.quotesCache, lang, quotes.type)[0]
+						const { quotesCache } = local as Local
+						const quote = controlCacheList(quotesCache, lang, quotes.type)[0]
 						insertToDom(quote)
 					})
 
@@ -2567,7 +2631,9 @@ export async function quotes(
 		quote = cache[0] // all conditions passed, cache is safe to use
 
 		// Displays
-		if (quotes.author) $('author').classList.add('alwaysVisible')
+		if (quotes.author) {
+			$('author')?.classList.add('alwaysVisible')
+		}
 		insertToDom(quote)
 		display(true)
 	})
@@ -2597,10 +2663,10 @@ export function showPopup(value: string | number) {
 
 		const closePopup = (fromText: boolean) => {
 			if (fromText) {
-				$('popup').classList.remove('shown')
+				$('popup')?.classList.remove('shown')
 				setTimeout(() => {
-					$('popup').remove()
-					setTimeout(() => $('credit').removeAttribute('style'), 400)
+					$('popup')?.remove()
+					setTimeout(() => $('credit')?.removeAttribute('style'), 400)
 				}, 200)
 			}
 			chrome.storage.sync.set({ reviewPopup: 'removed' })
@@ -2627,7 +2693,9 @@ export function showPopup(value: string | number) {
 
 		document.body.appendChild(dom.wrap)
 
-		$('credit').style.opacity = '0'
+		const creditdom = $('credit')
+		creditdom ? (creditdom.style.opacity = '0') : ''
+
 		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 
 		dom.review.addEventListener('mousedown', () => closePopup(false))
@@ -2650,10 +2718,10 @@ export function showPopup(value: string | number) {
 }
 
 export function modifyWeightOptions(weights: string[], settingsDom?: HTMLElement) {
-	const select = (settingsDom ? settingsDom : $('settings')).querySelector('#i_weight')
-	const options = select.querySelectorAll('option')
+	const select = (settingsDom ? settingsDom : ($('settings') as HTMLElement)).querySelector('#i_weight')
+	const options = select?.querySelectorAll('option')
 
-	if (!weights || weights.length === 0) {
+	if ((!weights || weights.length === 0) && options) {
 		options.forEach((option) => (option.style.display = 'block'))
 		return true
 	}
@@ -2683,7 +2751,7 @@ export function safeFont(settingsDom?: HTMLElement) {
 	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
 
 	if (settingsDom) {
-		settingsDom.querySelector('#i_customfont').setAttribute('placeholder', toUse.placeholder)
+		settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', toUse.placeholder)
 		modifyWeightOptions(toUse.weights, settingsDom)
 	}
 
@@ -2728,7 +2796,7 @@ export function customFont(
 
 	function updateFont() {
 		function fetchFontList(callback: (json: google.fonts.WebfontList) => void) {
-			chrome.storage.local.get('googleFonts', async (local: Local) => {
+			chrome.storage.local.get('googleFonts', async (local) => {
 				//
 				// Get list from storage
 				if (local.googleFonts) {
@@ -2760,18 +2828,23 @@ export function customFont(
 		}
 
 		function removeFont() {
-			$('fontstyle').textContent = ''
-			$('clock').style.fontFamily = ''
-			$('credit').style.fontFamily = ''
+			const domstyle = $('fontstyle') as HTMLStyleElement
+			const domclock = $('clock') as HTMLDivElement
+			const domcredit = $('credit') as HTMLDivElement
+			const domsearchbar = $('searchbar') as HTMLDivElement
+
+			domstyle.textContent = ''
+			domclock.style.fontFamily = ''
+			domcredit.style.fontFamily = ''
 			dominterface.style.fontFamily = ''
 
 			// weights
 			const baseWeight = testOS.windows ? '400' : '300'
 			dominterface.style.fontWeight = baseWeight
-			$('searchbar').style.fontWeight = baseWeight
-			$('clock').style.fontWeight = ''
+			domsearchbar.style.fontWeight = baseWeight
+			domclock.style.fontWeight = ''
 
-			$('i_weight').setAttribute('value', baseWeight)
+			$('i_weight')?.setAttribute('value', baseWeight)
 
 			return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
 		}
@@ -2802,13 +2875,13 @@ export function customFont(
 			// No fonts found
 			else {
 				domfamily.value = ''
-				safeFont($('settings'))
+				safeFont($('settings') as HTMLElement)
 				return { url: '', family: '', availWeights: [] as string[], weight: testOS.windows ? '400' : '300' }
 			}
 		}
 
-		chrome.storage.sync.get('font', async ({ font }: Sync) => {
-			switch (event.is) {
+		chrome.storage.sync.get('font', async ({ font }) => {
+			switch (event?.is) {
 				case 'autocomplete': {
 					fetchFontList((json) => {
 						if (!json) return
@@ -2824,25 +2897,27 @@ export function customFont(
 						})
 
 						if (event.elem) {
-							event.elem.querySelector('#dl_fontfamily').appendChild(fragment)
+							event.elem.querySelector('#dl_fontfamily')?.appendChild(fragment)
 						}
 					})
 					break
 				}
 
 				case 'family': {
-					if (event.value === '') {
-						safeFont($('settings'))
+					const val = event.value
+
+					if (val === '') {
+						safeFont($('settings') as HTMLElement)
 						debounce(() => {
 							chrome.storage.local.remove('fontface')
 							eventDebounce({ font: { size: font.size, ...removeFont() } })
 						}, 200)
 					}
 
-					if (typeof event.value === 'string' && event.value.length > 1) {
+					if (typeof val === 'string' && val.length > 1) {
 						fetchFontList(async (json) => {
 							chrome.storage.sync.set({
-								font: { size: font.size, ...(await changeFamily(json, event.value)) },
+								font: { size: font.size, ...(await changeFamily(json, val)) },
 							})
 						})
 					}
@@ -2860,15 +2935,17 @@ export function customFont(
 					// If nothing, removes custom font
 					else font.weight = event.value
 
-					setWeight(font.family, event.value)
+					setWeight(font.family, event.value || '400')
 					eventDebounce({ font: font })
 					break
 				}
 
 				case 'size': {
-					font.size = event.value
-					setSize(event.value)
-					eventDebounce({ font: font })
+					if (event.value) {
+						font.size = event.value
+						setSize(event.value)
+						eventDebounce({ font: font })
+					}
 					break
 				}
 			}
@@ -2896,7 +2973,7 @@ export function customFont(
 		}
 
 		// Sets family
-		chrome.storage.local.get('fontface', async (local: Local) => {
+		chrome.storage.local.get('fontface', async (local) => {
 			setFamily(family, local.fontface || (await setFontface(url))) // fetch font-face data if none in storage
 			canDisplayInterface('fonts')
 		})
@@ -2993,7 +3070,7 @@ export function hideElem(
 	}
 
 	function toggleElement() {
-		chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => {
+		chrome.storage.sync.get(['weather', 'hide'], (data) => {
 			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
 
 			if (!event?.button) {
@@ -3010,7 +3087,9 @@ export function hideElem(
 			chrome.storage.sync.set({ hide: data.hide })
 
 			// Re-activates weather
-			if (!state && pos.row === 1 && pos.col > 0) weather(data)
+			if (!state && pos.row === 1 && pos.col > 0 && 'weather' in data) {
+				weather(data as Sync)
+			}
 
 			// Toggle children and parent if needed
 			clas($(child), state, 'he_hidden')
@@ -3039,20 +3118,18 @@ export function sunTime(init?: Weather) {
 		sunset = init.lastState.sunset
 	}
 
-	//
-	else {
-		if (sunset === 0)
-			return {
-				now: minutator(new Date()),
-				rise: 420,
-				set: 1320,
-			}
-		else
-			return {
-				now: minutator(new Date()),
-				rise: minutator(new Date(sunrise * 1000)),
-				set: minutator(new Date(sunset * 1000)),
-			}
+	if (sunset === 0) {
+		return {
+			now: minutator(new Date()),
+			rise: 420,
+			set: 1320,
+		}
+	}
+
+	return {
+		now: minutator(new Date()),
+		rise: minutator(new Date(sunrise * 1000)),
+		set: minutator(new Date(sunset * 1000)),
 	}
 }
 
@@ -3104,11 +3181,11 @@ export function filterImports(data: any) {
 	return result
 }
 
-export function canDisplayInterface(cat: keyof typeof functionsLoad, init?: Sync) {
+export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init?: Sync) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
-		const domshowsettings = $('showSettings')
+		const domshowsettings = $('showSettings') as HTMLDivElement
 		let loadtime = performance.now() - loadtimeStart
 
 		if (loadtime > 400) loadtime = 400
@@ -3125,14 +3202,14 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad, init?: Sync
 			domshowsettings.classList.remove('init')
 			domshowsettings.style.transition = ``
 
-			chrome.storage.sync.get(null, (data: Sync) => settingsInit(data))
+			chrome.storage.sync.get(null, (data) => settingsInit(data as Sync))
 		}, loadtime + 100)
 	}
 
 	// More conditions if user is using advanced features
-	if (init) {
-		if (init.font?.family && init.font?.url) functionsLoad.fonts = 'Waiting'
-		if (init.quotes?.on) functionsLoad.quotes = 'Waiting'
+	if (init || !cat) {
+		if (init?.font?.family && init?.font?.url) functionsLoad.fonts = 'Waiting'
+		if (init?.quotes?.on) functionsLoad.quotes = 'Waiting'
 		return
 	}
 
@@ -3177,18 +3254,18 @@ function onlineAndMobileHandler() {
 	if (mobilecheck()) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
-			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data: Sync) => {
+			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
 				const { dynamic, background_type } = data
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
 
 				if (dynamicNeedsImage) {
-					$('background_overlay').style.opacity = '0'
-					unsplash(data)
+					$('background_overlay')!.style.opacity = '0'
+					unsplash(data as Sync)
 				}
 
-				clock(data)
+				clock(data as Sync)
 				sunTime(data.weather)
-				weather(data)
+				weather(data as Sync)
 			})
 		})
 	}
@@ -3258,8 +3335,8 @@ function startup(data: Sync) {
 
 	setInterval(() => {
 		if (navigator.onLine) {
-			chrome.storage.sync.get(['weather', 'hide'], (data: Sync) => {
-				weather(data) // Checks every 5 minutes if weather needs update
+			chrome.storage.sync.get(['weather', 'hide'], (data) => {
+				weather(data as Sync) // Checks every 5 minutes if weather needs update
 			})
 		}
 	}, 300000)
@@ -3286,7 +3363,7 @@ window.onload = function () {
 	onlineAndMobileHandler()
 
 	try {
-		chrome.storage.sync.get(null, (data: Sync) => {
+		chrome.storage.sync.get(null, (data) => {
 			const VersionChange = data?.about?.version !== syncDefaults.about.version
 			const isImport = sessionStorage.isImport === 'true'
 			const firstStart = Object.keys(data).length === 0
@@ -3315,7 +3392,7 @@ window.onload = function () {
 				})
 			}
 
-			startup(data)
+			startup(data as Sync) // TODO: rip type checking
 		})
 	} catch (e) {
 		errorMessage('Could not load chrome storage on startup', e)

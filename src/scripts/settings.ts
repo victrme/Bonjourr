@@ -681,7 +681,7 @@ function switchLangs(nextLang: Langs) {
 	chrome.storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	chrome.storage.sync.get(null, (data: Sync) => {
+	chrome.storage.sync.get(null, (data) => {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
 		translatePlaceholders($('settings'))
@@ -740,8 +740,10 @@ function selectBackgroundType(cat: string) {
 		chrome.storage.sync.set({ background_type: cat })
 	}
 
-	chrome.storage.local.get('selectedId', (local: Local) => {
-		chrome.storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync: Sync) => toggleType(sync, local))
+	chrome.storage.local.get('selectedId', (local) => {
+		chrome.storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => {
+			toggleType(sync as Sync, local as Local)
+		})
 	})
 }
 
@@ -775,10 +777,9 @@ function fadeOut() {
 function paramsImport(dataToImport: any) {
 	try {
 		// Load all sync & dynamicCache
-		chrome.storage.sync.get(null, (sync: Sync) => {
+		chrome.storage.sync.get(null, (sync) => {
 			chrome.storage.local.get('dynamicCache', (local) => {
 				//
-				console.log(dataToImport)
 				const newImport = dataToImport
 
 				// Remove user collection cache if collection change
@@ -791,7 +792,7 @@ function paramsImport(dataToImport: any) {
 				// Delete current links on imports containing links somewhere
 				// to avoid duplicates
 				if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
-					bundleLinks(sync).forEach((elem: Link) => {
+					bundleLinks(sync as Sync).forEach((elem: Link) => {
 						delete sync[elem._id]
 					})
 				}

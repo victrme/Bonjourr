@@ -49,6 +49,8 @@ export type Font = {
 	weight: string
 }
 
+export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
+
 export type Hide = [[number, number], [number, number, number], [number], [number]]
 
 export type Sync = {
@@ -76,7 +78,7 @@ export type Sync = {
 		analog: boolean
 		seconds: boolean
 		timezone: string
-		face: 'none' | 'number' | 'roman' | 'marks'
+		face: ClockFace
 	}
 	dynamic: Dynamic
 	weather: Weather
