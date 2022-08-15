@@ -240,6 +240,7 @@ export function deleteBrowserStorage() {
 		chrome.storage.sync.clear()
 		chrome.storage.local.clear()
 	}
+
 	localStorage.clear()
 
 	setTimeout(() => {

@@ -69,13 +69,16 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : data.dynamic?.every || 'hour'
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
+	const blur = typeof data.background_blur === 'number' ? data.background_blur : 15
+	const bright = typeof data.background_bright === 'number' ? data.background_bright : 0.8
+
+	initInput('i_blur', blur)
+	initInput('i_bright', bright)
 	initInput('cssEditor', data.css || '')
 	initInput('i_row', data.linksrow || 8)
 	initInput('i_linkstyle', data.linkstyle || 'default')
 	initInput('i_type', data.background_type || 'dynamic')
 	initInput('i_freq', whichFreq || whichFreqDefault)
-	initInput('i_blur', data.background_blur || 15)
-	initInput('i_bright', data.background_bright || 0.8)
 	initInput('i_dark', data.dark || 'system')
 	initInput('i_favicon', data.favicon || '')
 	initInput('i_tabtitle', data.tabtitle || '')
@@ -364,11 +367,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter('blur', { blur: parseInt(this.value) }, true)
+		backgroundFilter('blur', { blur: parseFloat(this.value) }, true)
 	})
 
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter('bright', { bright: parseInt(this.value) }, true)
+		backgroundFilter('bright', { bright: parseFloat(this.value) }, true)
 	})
 
 	//
@@ -503,7 +506,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
-		textShadow(null, parseInt(this.value))
+		textShadow(null, parseFloat(this.value))
 	})
 
 	//
@@ -896,6 +899,8 @@ export function settingsInit(data: Sync) {
 			toggleDisplay(settingsDom)
 			const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
 			showall.focus()
+
+			settingsDom.scrollTo({ top: 0 })
 		})
 
 		domshowsettings?.addEventListener('click', function () {

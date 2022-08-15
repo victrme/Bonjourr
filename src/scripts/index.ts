@@ -1955,9 +1955,12 @@ export async function unsplash(
 			]
 
 			orderedExifData.forEach(({ key, format }) => {
-				if (key in exif) {
+				if (Object.keys(exif).includes(key)) {
 					const exifVal = exif[key as keyof typeof exif]
-					exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
+
+					if (exifVal) {
+						exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
+					}
 				}
 			})
 		}
@@ -2114,7 +2117,7 @@ export async function unsplash(
 		chrome.storage.local.remove('waitingForPreload')
 	}
 
-	async function populateEmptyList(collecType: CollectionType, local: Local) {
+	async function populateEmptyList(collecType: CollectionType, cache: DynamicCache) {
 		const newList = await requestNewList(collecType)
 		const changeStart = performance.now()
 
@@ -2125,8 +2128,8 @@ export async function unsplash(
 		await preloadImage(newList[0].url)
 		loadBackground(newList[0], performance.now() - changeStart)
 
-		local.dynamicCache[collecType] = newList
-		chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+		cache[collecType] = newList
+		chrome.storage.local.set({ dynamicCache: cache })
 		chrome.storage.local.set({ waitingForPreload: true })
 
 		//preload
@@ -2208,7 +2211,7 @@ export async function unsplash(
 				sync.dynamic.time = freqControl.set()
 				chrome.storage.sync.set({ dynamic: sync.dynamic })
 
-				populateEmptyList(chooseCollection(event.value), local)
+				populateEmptyList(chooseCollection(event.value), local.dynamicCache)
 				break
 			}
 		}
@@ -2243,7 +2246,7 @@ export async function unsplash(
 			const cache = local.dynamicCache || localDefaults.dynamicCache
 
 			if (cache[collecType].length === 0) {
-				populateEmptyList(collecType, local as Local) // If list empty: request new, save sync & local
+				populateEmptyList(collecType, cache) // If list empty: request new, save sync & local
 				return
 			}
 
@@ -2991,7 +2994,7 @@ export function textShadow(init: number | null, event?: number) {
 	}
 }
 
-export function customCss(init: string | null, event?: any) {
+export function customCss(init: string | null, event?: { is: 'styling' | 'resize'; val: string | number }) {
 	const styleHead = $('styles') as HTMLStyleElement
 
 	if (init) {
@@ -3001,14 +3004,18 @@ export function customCss(init: string | null, event?: any) {
 	if (event) {
 		switch (event.is) {
 			case 'styling': {
-				const val = stringMaxSize(event.val, 8080)
-				styleHead.textContent = val
-				eventDebounce({ css: val })
+				if (typeof event.val === 'string') {
+					const val = stringMaxSize(event.val, 8080)
+					styleHead.textContent = val
+					eventDebounce({ css: val })
+				}
 				break
 			}
 
 			case 'resize': {
-				eventDebounce({ cssHeight: event.val })
+				if (typeof event.val === 'number') {
+					eventDebounce({ cssHeight: event.val })
+				}
 				break
 			}
 		}
