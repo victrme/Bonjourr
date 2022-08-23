@@ -1,4 +1,5 @@
 import debounce from 'lodash.debounce'
+import snarkdown from 'snarkdown'
 
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
@@ -94,6 +95,60 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	})
 
 	document.documentElement.setAttribute('lang', lang)
+}
+
+export function textField(val: string = '', event?: boolean) {
+	let html = snarkdown(val)
+		.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox">`)
+		.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" checked>`)
+
+	const parsed = $('tfparsed')
+	const editor = $('tfeditor')
+
+	if (parsed && editor) {
+		parsed.innerHTML = html
+
+		// Set checkboxes toggle event
+		parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
+			checkbox.addEventListener('click', () => {
+				let raw = (editor as HTMLInputElement).value
+				const matches = [...raw.matchAll(/(- \[[x ]\])/g)]
+				const matchIndex = matches[ii].index
+
+				const replaceAt = (s: string, repl: string, i: number) => {
+					return s.substring(0, i) + repl + s.substring(i + repl.length)
+				}
+
+				if (typeof matchIndex === 'number') {
+					raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 3)
+				}
+
+				;(editor as HTMLInputElement).value = raw
+				eventDebounce({ textfield: raw })
+			})
+		})
+
+		// No event, also set textarea
+		if (!event) {
+			;(editor as HTMLInputElement).value = val
+
+			// Edit Button event (temporaire)
+			const editBtn = $('b_tfedit') as HTMLButtonElement
+
+			editBtn.addEventListener('click', () => {
+				console.log(parsed.classList.contains('hidden'))
+				const isEditorHidden = editor.classList.contains('hidden')
+				const isParsedHidden = parsed.classList.contains('hidden')
+
+				clas(editor, !isEditorHidden, 'hidden')
+				clas(parsed, !isParsedHidden, 'hidden')
+			})
+		}
+	}
+
+	if (event) {
+		eventDebounce({ textfield: val })
+	}
 }
 
 export function favicon(init: string | null, event?: HTMLInputElement) {
@@ -3333,6 +3388,7 @@ function startup(data: Sync) {
 	searchbar(data.searchbar)
 	quotes(data)
 	showPopup(data.reviewPopup)
+	textField(data.textfield)
 
 	customCss(data.css)
 	hideElem(data.hide)

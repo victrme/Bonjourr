@@ -27,6 +27,7 @@ import {
 
 import {
 	backgroundFilter,
+	textField,
 	clock,
 	customCss,
 	customFont,
@@ -431,6 +432,22 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
 		weather(null, { is: 'temp', value: this.value })
+	})
+
+	//
+	// Text field
+
+	$('tfparsed')?.addEventListener('click', function (this: HTMLInputElement) {
+		// const parsedDOM = $('tfparsed')
+		// const editorDOM = $('tfeditor')
+		// if (parsedDOM && editorDOM) {
+		// 	parsedDOM.style.display = "none"
+		// 	editorDOM.style.display = "block"
+		// }
+	})
+
+	$('tfeditor')?.addEventListener('input', function (this: HTMLInputElement) {
+		textField(this.value, true)
 	})
 
 	//
@@ -926,14 +943,14 @@ export function settingsInit(data: Sync) {
 				return // do nothing if pressing ctrl or if there's an error message
 			}
 
-			const notTabbing = document.body.classList.contains('tabbing') === false
-			const noSettings = has($('settings'), 'shown') === false
-			const noEdit = has($('editlink'), 'shown') === false
-			const hasSearchbar = has($('sb_container'), 'shown')
+			// const notTabbing = document.body.classList.contains('tabbing') === false
+			// const noSettings = has($('settings'), 'shown') === false
+			// const noEdit = has($('editlink'), 'shown') === false
+			// const hasSearchbar = has($('sb_container'), 'shown')
 
-			if (noSettings && noEdit && notTabbing && hasSearchbar) {
-				$('searchbar')?.focus() // Focus searchbar if only searchbar is on
-			}
+			// if (noSettings && noEdit && notTabbing && hasSearchbar) {
+			// 	$('searchbar')?.focus() // Focus searchbar if only searchbar is on
+			// }
 		}
 
 		dominterface?.addEventListener('click', function (e) {

@@ -69,6 +69,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
+	textfield?: string
 	dark: 'auto' | 'system' | 'enable' | 'disable'
 	custom_time: number
 	custom_every: string

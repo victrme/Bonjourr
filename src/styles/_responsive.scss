@@ -6,32 +6,30 @@
 
 	#showSettings {
 		user-select: none;
-		-webkit-user-select:none;
+		-webkit-user-select: none;
 		-webkit-touch-callout: none;
 
 		&:active {
-			filter: brightness(.5);
+			filter: brightness(0.5);
 		}
 	}
 
 	.block_parent .block {
 		user-select: none;
-		-webkit-user-select:none;
+		-webkit-user-select: none;
 		-webkit-touch-callout: none;
 	}
-
-
 }
 
-// @media screen and (max-height: 900px) {
-// 	body {
-// 		font-size: 13px;
-// 	}
+@media screen and (max-height: 900px) {
+	body {
+		font-size: 13px;
+	}
 
-// 	#interface #tempContainers {
-// 		gap: 2em;
-// 	}
-// }
+	// #interface #tempContainers {
+	// 	gap: 2em;
+	// }
+}
 
 // // mobile
 // @media screen and (max-width: 600px) {
@@ -58,7 +56,7 @@
 // 		// Tooltip (?) centered when span wrap
 // 		&.all .as_collection {
 // 			max-height: 140px;
-			
+
 // 			.wrapper span {
 // 				align-items: center;
 // 			}

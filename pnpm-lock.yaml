@@ -23,6 +23,7 @@ specifiers:
   lodash.debounce: ^4.0.8
   lodash.throttle: ^4.1.1
   sass: ^1.54.4
+  snarkdown: ^2.0.0
   typescript: ^4.7.4
   user-agent-data-types: ^0.3.0
 
@@ -43,6 +44,7 @@ devDependencies:
   lodash.debounce: 4.0.8
   lodash.throttle: 4.1.1
   sass: 1.54.4
+  snarkdown: 2.0.0
   typescript: 4.7.4
   user-agent-data-types: 0.3.0
 
@@ -1704,6 +1706,10 @@ packages:
 
   /shell-quote/1.7.3:
     resolution: {integrity: sha512-Vpfqwm4EnqGdlsBFNmHhxhElJYrdfcxPThu+ryKS5J8L/fhAwLazFZtq+S+TWZ9ANj2piSQLGj6NQg+lKPmxrw==}
+    dev: true
+
+  /snarkdown/2.0.0:
+    resolution: {integrity: sha512-MgL/7k/AZdXCTJiNgrO7chgDqaB9FGM/1Tvlcenenb7div6obaDATzs16JhFyHHBGodHT3B7RzRc5qk8pFhg3A==}
     dev: true
 
   /source-map-js/1.0.2:

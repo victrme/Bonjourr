@@ -1,0 +1,50 @@
+#textfield_container {
+	position: relative;
+	align-self: center;
+	width: 50%;
+	max-width: 500px;
+	border-radius: 8px;
+	backdrop-filter: blur(10px);
+	background-color: #fff2;
+	color: #fff;
+
+	button#b_tfedit {
+		position: absolute;
+		right: 1em;
+		top: 1em;
+	}
+
+	div#tfparsed {
+		padding: 2em;
+		text-align: left;
+	}
+
+	div#tfparsed,
+	textarea#tfeditor {
+		min-height: 100px;
+		max-height: 30vh;
+		overflow-x: hidden;
+		overflow-y: auto;
+		font-size: 1.3em;
+
+		&.hidden {
+			position: absolute;
+			pointer-events: none;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			height: 0;
+		}
+	}
+
+	textarea#tfeditor {
+		// display: none;
+		width: calc(100% - 4em);
+		padding: 2em;
+		color: #fff;
+		border: none;
+		font-family: 'Courier New', Courier, monospace;
+		background-color: transparent;
+		resize: vertical;
+	}
+}
