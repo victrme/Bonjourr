@@ -2,11 +2,16 @@
 	position: relative;
 	align-self: center;
 	width: 50%;
-	max-width: 500px;
+	max-width: 40em;
 	border-radius: 8px;
 	backdrop-filter: blur(10px);
 	background-color: #fff2;
 	color: #fff;
+
+	touch-action: all;
+	user-select: text;
+	-moz-user-select: text;
+	-webkit-user-select: text;
 
 	button#b_tfedit {
 		position: absolute;
@@ -17,12 +22,26 @@
 	div#tfparsed {
 		padding: 2em;
 		text-align: left;
+
+		ul {
+			padding-left: 1em;
+		}
+
+		li {
+			list-style: inherit;
+		}
+
+		a {
+			color: $blue;
+			filter: brightness(1.5);
+		}
 	}
 
 	div#tfparsed,
 	textarea#tfeditor {
+		pointer-events: all;
 		min-height: 100px;
-		max-height: 30vh;
+		max-height: 33vh;
 		overflow-x: hidden;
 		overflow-y: auto;
 		font-size: 1.3em;

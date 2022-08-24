@@ -98,57 +98,141 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 }
 
 export function textField(val: string = '', event?: boolean) {
-	let html = snarkdown(val)
-		.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox">`)
-		.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" checked>`)
-
 	const parsed = $('tfparsed')
 	const editor = $('tfeditor')
 
-	if (parsed && editor) {
-		parsed.innerHTML = html
+	let html = snarkdown(val)
 
-		// Set checkboxes toggle event
-		parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
-			checkbox.addEventListener('click', () => {
-				let raw = (editor as HTMLInputElement).value
-				const matches = [...raw.matchAll(/(- \[[x ]\])/g)]
-				const matchIndex = matches[ii].index
+	html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox">`)
+	html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" checked>`)
 
-				const replaceAt = (s: string, repl: string, i: number) => {
-					return s.substring(0, i) + repl + s.substring(i + repl.length)
-				}
-
-				if (typeof matchIndex === 'number') {
-					raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 3)
-				}
-
-				;(editor as HTMLInputElement).value = raw
-				eventDebounce({ textfield: raw })
-			})
-		})
-
-		// No event, also set textarea
-		if (!event) {
-			;(editor as HTMLInputElement).value = val
-
-			// Edit Button event (temporaire)
-			const editBtn = $('b_tfedit') as HTMLButtonElement
-
-			editBtn.addEventListener('click', () => {
-				console.log(parsed.classList.contains('hidden'))
-				const isEditorHidden = editor.classList.contains('hidden')
-				const isParsedHidden = parsed.classList.contains('hidden')
-
-				clas(editor, !isEditorHidden, 'hidden')
-				clas(parsed, !isParsedHidden, 'hidden')
-			})
-		}
+	const replaceAt = (s: string, repl: string, i: number) => {
+		return s.substring(0, i) + repl + s.substring(i + repl.length)
 	}
+
+	if (!parsed || !editor) {
+		return false
+	}
+
+	parsed.innerHTML = html
+
+	// Set checkboxes toggle event
+	parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
+		checkbox.addEventListener('click', () => {
+			let raw = (editor as HTMLInputElement).value
+			const matches = [...raw.matchAll(/(- \[[x ]\])/g)]
+			const matchIndex = matches[ii].index
+
+			if (typeof matchIndex === 'number') {
+				raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 3)
+			}
+
+			;(editor as HTMLInputElement).value = raw
+			eventDebounce({ textfield: raw })
+		})
+	})
 
 	if (event) {
 		eventDebounce({ textfield: val })
+		return
 	}
+
+	// Init: also set textarea
+	if (editor) {
+		;(editor as HTMLInputElement).value = val
+	}
+
+	// Edit Button event (temporaire)
+	const editBtn = $('b_tfedit') as HTMLButtonElement
+	editBtn.addEventListener('click', () => {
+		if (!editor || !parsed || !editBtn) {
+			return
+		}
+
+		const isEditorHidden = editor.classList.contains('hidden')
+		const isParsedHidden = parsed.classList.contains('hidden')
+
+		// Set editor height to be the same as preview
+		if (isEditorHidden) {
+			editor.style.height = parsed.getBoundingClientRect().height + 'px'
+		}
+
+		// Toggle classes
+		clas(editor, !isEditorHidden, 'hidden')
+		clas(parsed, !isParsedHidden, 'hidden')
+
+		// Change edit button text
+		editBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+	})
+
+	// No browser shortcuts if text field shortcuts detected
+	editor?.addEventListener('keydown', (e: KeyboardEvent) => {
+		if (e.ctrlKey && ['KeyI', 'KeyB', 'KeyC', 'KeyS', 'KeyU', 'KeyT'].includes(e.code)) {
+			e.preventDefault()
+		}
+	})
+
+	// Editor Shortcuts
+	editor?.addEventListener('keyup', (e: KeyboardEvent) => {
+		const editordom = editor as HTMLTextAreaElement
+		const { selectionStart, selectionEnd } = editordom
+
+		// No selections, return
+		if (!e.ctrlKey || selectionStart === selectionEnd) {
+			return
+		}
+
+		function addDecoration(charStart: string, charEnd: string = charStart) {
+			let result = editordom.value,
+				start = result.substring(0, selectionStart),
+				selection = result.substring(selectionStart, selectionEnd),
+				end = result.substring(selectionEnd)
+
+			const isRemoval = selection.startsWith(charStart) && (selection.endsWith(charEnd) || charEnd === '')
+
+			// Remove or adds characters from selection
+			selection = isRemoval
+				? selection.substring(charStart.length, selection.length - charEnd.length)
+				: charStart + selection + charEnd
+
+			// Apply to editor
+			result = start + selection + end
+			editordom.value = result
+			textField(result, true)
+
+			// Set selection to same position (because changing value resets cursor)
+			const addLength = charStart.length + charEnd.length
+			const remLength = -(charStart.length + charEnd.length)
+			editordom.selectionStart = selectionStart
+			editordom.selectionEnd = selectionEnd + (isRemoval ? remLength : addLength)
+		}
+
+		switch (e.code) {
+			case 'KeyI':
+				addDecoration('_')
+				break
+
+			case 'KeyB':
+				addDecoration('**')
+				break
+
+			case 'KeyC':
+				addDecoration('`')
+				break
+
+			case 'KeyS':
+				addDecoration('~~')
+				break
+
+			case 'KeyU':
+				addDecoration('[', '](url)')
+				break
+
+			case 'KeyT':
+				addDecoration('- [ ] ', '')
+				break
+		}
+	})
 }
 
 export function favicon(init: string | null, event?: HTMLInputElement) {

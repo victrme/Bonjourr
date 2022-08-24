@@ -437,15 +437,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Text field
 
-	$('tfparsed')?.addEventListener('click', function (this: HTMLInputElement) {
-		// const parsedDOM = $('tfparsed')
-		// const editorDOM = $('tfeditor')
-		// if (parsedDOM && editorDOM) {
-		// 	parsedDOM.style.display = "none"
-		// 	editorDOM.style.display = "block"
-		// }
-	})
-
 	$('tfeditor')?.addEventListener('input', function (this: HTMLInputElement) {
 		textField(this.value, true)
 	})
