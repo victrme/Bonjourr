@@ -100,6 +100,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 export function textField(val: string = '', event?: boolean) {
 	const parsed = $('tfparsed')
 	const editor = $('tfeditor')
+	const editBtn = $('b_tfedit')
 
 	let html = snarkdown(val)
 
@@ -120,11 +121,11 @@ export function textField(val: string = '', event?: boolean) {
 	parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
 		checkbox.addEventListener('click', () => {
 			let raw = (editor as HTMLInputElement).value
-			const matches = [...raw.matchAll(/(- \[[x ]\])/g)]
+			const matches = [...raw.matchAll(/(\[[x ]\])/g)]
 			const matchIndex = matches[ii].index
 
 			if (typeof matchIndex === 'number') {
-				raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 3)
+				raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 1)
 			}
 
 			;(editor as HTMLInputElement).value = raw
@@ -142,9 +143,8 @@ export function textField(val: string = '', event?: boolean) {
 		;(editor as HTMLInputElement).value = val
 	}
 
-	// Edit Button event (temporaire)
-	const editBtn = $('b_tfedit') as HTMLButtonElement
-	editBtn.addEventListener('click', () => {
+	// Edit Button event
+	editBtn?.addEventListener('click', (e: MouseEvent) => {
 		if (!editor || !parsed || !editBtn) {
 			return
 		}
@@ -162,7 +162,7 @@ export function textField(val: string = '', event?: boolean) {
 		clas(parsed, !isParsedHidden, 'hidden')
 
 		// Change edit button text
-		editBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+		editBtn.textContent = tradThis(isEditorHidden ? 'done' : 'edit')
 	})
 
 	// No browser shortcuts if text field shortcuts detected
@@ -229,7 +229,7 @@ export function textField(val: string = '', event?: boolean) {
 				break
 
 			case 'KeyT':
-				addDecoration('- [ ] ', '')
+				addDecoration('[ ] ', '')
 				break
 		}
 	})

@@ -13,15 +13,36 @@
 	-moz-user-select: text;
 	-webkit-user-select: text;
 
+	&:hover {
+		button#b_tfedit {
+			opacity: 1;
+			transform: scale(1);
+			transition: transform 0.3s 0.6s, opacity 0.3s 0.6s, filter 0.15s;
+		}
+	}
+
 	button#b_tfedit {
 		position: absolute;
-		right: 1em;
-		top: 1em;
+		opacity: 0;
+		right: 1.2em;
+		top: 1.2em;
+		font-size: 1.2em;
+		padding: 0.4em 0.8em;
+		color: #fff;
+		background-color: #fff2;
+		border-radius: 6px;
+		border: none;
+		transform: scale(0.9);
+		transition: transform 0.3s 0s, opacity 0.3s 0s, filter 0.15s;
+
+		&:active {
+			filter: brightness(2);
+		}
 	}
 
 	div#tfparsed {
-		padding: 2em;
 		text-align: left;
+		cursor: auto;
 
 		ul {
 			padding-left: 1em;
@@ -44,7 +65,8 @@
 		max-height: 33vh;
 		overflow-x: hidden;
 		overflow-y: auto;
-		font-size: 1.3em;
+		font-size: 1.2em;
+		padding: 2em;
 
 		&.hidden {
 			position: absolute;
@@ -59,7 +81,6 @@
 	textarea#tfeditor {
 		// display: none;
 		width: calc(100% - 4em);
-		padding: 2em;
 		color: #fff;
 		border: none;
 		font-family: 'Courier New', Courier, monospace;

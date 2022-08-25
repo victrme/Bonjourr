@@ -945,12 +945,20 @@ export function settingsInit(data: Sync) {
 		}
 
 		dominterface?.addEventListener('click', function (e) {
+			const path = e.composedPath()
+
 			if (
-				e.composedPath().filter((d: EventTarget) => {
-					return (d as HTMLElement).id === 'linkblocks'
-				}).length > 0 // finds linkblocks in event path
+				path.filter((d: EventTarget) => (d as HTMLElement).id === 'linkblocks').length > 0 // finds linkblocks in event path
 			) {
 				return // Do nothing if links are clicked
+			}
+
+			if (
+				path.filter((d: EventTarget) => (d as HTMLElement).id === 'textfield_container').length === 0 &&
+				has($('tfparsed'), 'hidden')
+			) {
+				clas($('tfparsed'), false, 'hidden')
+				clas($('tfeditor'), true, 'hidden')
 			}
 
 			if (has($('editlink'), 'shown')) {
