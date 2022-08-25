@@ -83,7 +83,12 @@ If you feel like we've earned it and you want to support independant open source
 
 We recommend a Chromium based browser to work on Bonjourr.
 
+#### Initialise the project:
+-   [Install npm](https://nodejs.org/en/download/)
+-   `npm i -g pnpm esbuild`
 -   `pnpm install`
+
+#### Watch and build:
 -   `pnpm run build` to build all versions
 -   `pnpm run chrome|firefox|online` to watch changes on preferred platform
 
