@@ -1,12 +1,13 @@
 #textfield_container {
 	position: relative;
 	align-self: center;
+	color: #fff;
 	width: 50%;
 	max-width: 40em;
-	border-radius: 8px;
+	border-radius: 0.7em;
 	backdrop-filter: blur(10px);
 	background-color: #fff2;
-	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.075);
 	text-shadow: none;
 
 	touch-action: all;
@@ -30,13 +31,23 @@
 		padding: 0.4em 0.8em;
 		color: #fff;
 		background-color: #fff2;
-		border-radius: 6px;
+		border-radius: 0.5em;
 		border: none;
 		transform: scale(0.9);
-		transition: transform 0.3s 0.6s, opacity 0.3s 0.6s, filter 0.15s;
+		transition: transform 0.3s 0.6s, opacity 0.3s 0.6s, background-color 0.15s;
+
+		&:focus {
+			opacity: 1;
+			transform: scale(1);
+			transition-delay: 0s;
+		}
+
+		&:hover {
+			background-color: #fff4;
+		}
 
 		&:active {
-			filter: brightness(2);
+			background-color: #fff5;
 		}
 	}
 
@@ -71,6 +82,7 @@
 		&.hidden {
 			position: absolute;
 			pointer-events: none;
+			user-select: none;
 			top: 0;
 			left: 0;
 			opacity: 0;
@@ -83,6 +95,7 @@
 		width: calc(100% - 4em);
 		color: #fff;
 		border: none;
+		border-radius: 0.5em;
 		font-family: 'Courier New', Courier, monospace;
 		background-color: transparent;
 		resize: vertical;

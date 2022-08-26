@@ -101,11 +101,11 @@ export function textField(val: string = '', event?: boolean) {
 	const parsed = $('tfparsed')
 	const editor = $('tfeditor')
 	const editBtn = $('b_tfedit')
+	const aria = tradThis('Text field tick box')
 
 	let html = snarkdown(val)
-
-	html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox">`)
-	html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" checked>`)
+	html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox" aria-label="${aria}">`)
+	html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" aria-label="${aria}" checked>`)
 
 	const replaceAt = (s: string, repl: string, i: number) => {
 		return s.substring(0, i) + repl + s.substring(i + repl.length)
@@ -157,7 +157,11 @@ export function textField(val: string = '', event?: boolean) {
 		if (isEditorHidden) {
 			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 4
 			editor.style.height = ($('textfield_container')?.offsetHeight || 0) - padding + 'px'
+			editor.focus()
 		}
+
+		// No tabbing possible when editor is hidden
+		editor.setAttribute('tabindex', isEditorHidden ? '0' : '-1')
 
 		// Toggle classes
 		clas(editor, !isEditorHidden, 'hidden')
