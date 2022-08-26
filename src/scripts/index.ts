@@ -153,8 +153,10 @@ export function textField(val: string = '', event?: boolean) {
 		const isParsedHidden = parsed.classList.contains('hidden')
 
 		// Set editor height to be the same as preview
+		// Removes textfield padding from height calc
 		if (isEditorHidden) {
-			editor.style.height = parsed.getBoundingClientRect().height + 'px'
+			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 4
+			editor.style.height = ($('textfield_container')?.offsetHeight || 0) - padding + 'px'
 		}
 
 		// Toggle classes
