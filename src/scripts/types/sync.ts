@@ -49,6 +49,13 @@ export type Font = {
 	weight: string
 }
 
+export type TextField = {
+	on: boolean
+	text: string
+	opacity: number
+	align: 'left' | 'center' | 'right'
+}
+
 export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
 
 export type Hide = [[number, number], [number, number, number], [number], [number]]
@@ -69,7 +76,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
-	textfield?: string
+	textfield?: TextField
 	dark: 'auto' | 'system' | 'enable' | 'disable'
 	custom_time: number
 	custom_every: string

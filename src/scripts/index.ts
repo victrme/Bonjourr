@@ -4,7 +4,7 @@ import snarkdown from 'snarkdown'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, TextField } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -97,54 +97,122 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function textField(val: string = '', event?: boolean) {
+export function textField(init: TextField | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
+	const container = $('textfield_container')
 	const parsed = $('tfparsed')
 	const editor = $('tfeditor')
 	const editBtn = $('b_tfedit')
-	const aria = tradThis('Text field tick box')
 
-	let html = snarkdown(val)
-	html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox" aria-label="${aria}">`)
-	html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" aria-label="${aria}" checked>`)
+	function parseMarkdownToHTML(val: string) {
+		const aria = tradThis('Text field tick box')
 
-	const replaceAt = (s: string, repl: string, i: number) => {
-		return s.substring(0, i) + repl + s.substring(i + repl.length)
-	}
+		let html = snarkdown(val)
+		html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox" aria-label="${aria}">`)
+		html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" aria-label="${aria}" checked>`)
 
-	if (!parsed || !editor) {
-		return false
-	}
+		const replaceAt = (s: string, repl: string, i: number) => {
+			return s.substring(0, i) + repl + s.substring(i + repl.length)
+		}
 
-	parsed.innerHTML = html
+		if (!parsed || !editor) {
+			return false
+		}
 
-	// Set checkboxes toggle event
-	parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
-		checkbox.addEventListener('click', () => {
-			let raw = (editor as HTMLInputElement).value
-			const matches = [...raw.matchAll(/(\[[x ]\])/g)]
-			const matchIndex = matches[ii].index
+		parsed.innerHTML = html
 
-			if (typeof matchIndex === 'number') {
-				raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 1)
-			}
+		// Set checkboxes toggle event
+		parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
+			checkbox.addEventListener('click', () => {
+				let raw = (editor as HTMLInputElement).value
+				const matches = [...raw.matchAll(/(\[[x ]\])/g)]
+				const matchIndex = matches[ii].index
 
-			;(editor as HTMLInputElement).value = raw
-			eventDebounce({ textfield: raw })
+				if (typeof matchIndex === 'number') {
+					raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 1)
+				}
+
+				;(editor as HTMLInputElement).value = raw
+				eventDebounce({ textfield: raw })
+			})
 		})
-	})
+	}
+
+	function handleToggle(state: boolean) {
+		if (container) clas(container, !state, 'hidden')
+	}
+
+	function handleAlign(value: string) {
+		if (container) {
+			if (value === 'center') {
+				container.style.textAlign = value
+			} else {
+				container.style.textAlign = ''
+				clas(container, value === 'right', 'right-align')
+			}
+		}
+	}
+
+	function handleOpacity(value: number) {
+		if (container) {
+			container.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
+			container.style.color = value > 0.45 ? '#222' : '#fff'
+		}
+	}
 
 	if (event) {
-		eventDebounce({ textfield: val })
+		chrome.storage.sync.get('textfield', (data: any) => {
+			let textfield = data.textfield || syncDefaults.textfield
+
+			switch (event?.is) {
+				case 'toggle': {
+					handleToggle(event.value === 'true')
+					textfield.on = event.value === 'true'
+					break
+				}
+
+				case 'change': {
+					parseMarkdownToHTML(event.value)
+					textfield.text = event.value
+					break
+				}
+
+				case 'align': {
+					handleAlign(event.value)
+					textfield.align = event.value
+					break
+				}
+
+				case 'opacity': {
+					handleOpacity(parseFloat(event.value))
+					textfield.opacity = parseFloat(event.value)
+					break
+				}
+			}
+
+			eventDebounce({ textfield })
+		})
 		return
 	}
 
-	// Init: also set textarea
+	//
+	// Init
+	//
+
+	if (!editor || !init) {
+		return
+	}
+
+	handleAlign(init.align)
+	handleOpacity(init.opacity)
+	handleToggle(init.on)
+	parseMarkdownToHTML(init.text)
+
 	if (editor) {
-		;(editor as HTMLInputElement).value = val
+		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
 
 	// Edit Button event
-	editBtn?.addEventListener('click', (e: MouseEvent) => {
+	editBtn?.addEventListener('click', () => {
 		if (!editor || !parsed || !editBtn) {
 			return
 		}
@@ -155,7 +223,7 @@ export function textField(val: string = '', event?: boolean) {
 		// Set editor height to be the same as preview
 		// Removes textfield padding from height calc
 		if (isEditorHidden) {
-			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 4
+			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
 			editor.style.height = ($('textfield_container')?.offsetHeight || 0) - padding + 'px'
 			editor.focus()
 		}
@@ -168,7 +236,12 @@ export function textField(val: string = '', event?: boolean) {
 		clas(parsed, !isParsedHidden, 'hidden')
 
 		// Change edit button text
-		editBtn.textContent = tradThis(isEditorHidden ? 'done' : 'edit')
+		editBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+	})
+
+	// Classic update on input
+	editor?.addEventListener('input', function (this: HTMLInputElement) {
+		textField(null, { is: 'change', value: this.value })
 	})
 
 	// No browser shortcuts if text field shortcuts detected
@@ -204,7 +277,7 @@ export function textField(val: string = '', event?: boolean) {
 			// Apply to editor
 			result = start + selection + end
 			editordom.value = result
-			textField(result, true)
+			textField(null, { is: 'change', value: result })
 
 			// Set selection to same position (because changing value resets cursor)
 			const addLength = charStart.length + charEnd.length
@@ -3478,7 +3551,7 @@ function startup(data: Sync) {
 	searchbar(data.searchbar)
 	quotes(data)
 	showPopup(data.reviewPopup)
-	textField(data.textfield)
+	textField(data.textfield || null)
 
 	customCss(data.css)
 	hideElem(data.hide)
