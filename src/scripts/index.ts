@@ -132,7 +132,7 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 				}
 
 				;(editor as HTMLInputElement).value = raw
-				eventDebounce({ textfield: raw })
+				textField(null, { is: 'change', value: raw })
 			})
 		})
 	}
