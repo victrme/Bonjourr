@@ -183,6 +183,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		i_geol.checked = true
 	}
 
+	// Text field display settings
+	clas(paramId('textfield_options'), data.textfield?.on || false, 'shown')
+
 	// Searchbar display settings
 	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
 	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
@@ -442,6 +445,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Text field
 
 	paramId('i_tf').addEventListener('change', function (this: HTMLInputElement) {
+		paramId('textfield_options').classList.toggle('shown')
 		textField(null, { is: 'toggle', value: this.checked.toString() })
 	})
 
@@ -965,16 +969,18 @@ export function settingsInit(data: Sync) {
 				return // Do nothing if links are clicked
 			}
 
-			if (
-				path.filter((d: EventTarget) => (d as HTMLElement).id === 'textfield_container').length === 0 &&
-				has($('tfparsed'), 'hidden')
-			) {
-				const editBtn = $('b_tfedit')
-				if (editBtn) editBtn.textContent = tradThis('Edit')
+			// if (
+			// 	path.filter((d: EventTarget) => (d as HTMLElement).id === 'textfield_container').length === 0 &&
+			// 	has($('tfparsed'), 'hidden')
+			// ) {
+			// 	const editBtn = $('b_tfedit')
+			// 	if (editBtn) editBtn.textContent = tradThis('Edit')
 
-				clas($('tfparsed'), false, 'hidden')
-				clas($('tfeditor'), true, 'hidden')
-			}
+			// 	$('tfeditor')?.blur()
+
+			// 	clas($('tfparsed'), false, 'hidden')
+			// 	clas($('tfeditor'), true, 'hidden')
+			// }
 
 			if (has($('editlink'), 'shown')) {
 				closeEditLink() // hides edit menu

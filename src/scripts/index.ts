@@ -120,6 +120,10 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 
 		parsed.innerHTML = html
 
+		if (parsed.childNodes.length > 0 && parsed.childNodes[0]?.nodeName.match(/(H[1-6])/g)) {
+			parsed.children[0]?.setAttribute('style', 'margin-top: 0px')
+		}
+
 		// Set checkboxes toggle event
 		parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
 			checkbox.addEventListener('click', () => {
@@ -144,9 +148,9 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 	function handleAlign(value: string) {
 		if (container) {
 			if (value === 'center') {
-				container.style.textAlign = value
+				clas(container, true, 'center-align')
 			} else {
-				container.style.textAlign = ''
+				clas(container, false, 'center-align')
 				clas(container, value === 'right', 'right-align')
 			}
 		}
@@ -165,6 +169,7 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 
 			switch (event?.is) {
 				case 'toggle': {
+					interfaceWidgetToggle(null, 'textfield')
 					handleToggle(event.value === 'true')
 					textfield.on = event.value === 'true'
 					break
@@ -3449,27 +3454,28 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync | null, event?: 'links' | 'quotes' | 'searchbar') {
+export function interfaceWidgetToggle(init: Sync | null, event?: 'textfield' | 'links' | 'quotes' | 'searchbar') {
 	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
 	if (event) {
-		chrome.storage.sync.get(['searchbar', 'quotes', 'quicklinks'], (data) => {
+		chrome.storage.sync.get(['searchbar', 'textfield', 'quotes', 'quicklinks'], (data) => {
 			let displayed = {
 				links: data.quicklinks,
 				quotes: data.quotes.on,
 				searchbar: data.searchbar.on,
+				textfield: data.textfield.on,
 			}
 
 			displayed[event] = !displayed[event] // toggles relevent widget
-			toggleEmpty(!(displayed.links || displayed.quotes || displayed.searchbar)) // checks if all values are false
+			toggleEmpty(!(displayed.textfield || displayed.links || displayed.quotes || displayed.searchbar)) // checks if all values are false
 		})
 
 		return
 	}
 
 	if (init) {
-		toggleEmpty(!(init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
+		toggleEmpty(!(init.textfield?.on || init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
 	}
 }
 

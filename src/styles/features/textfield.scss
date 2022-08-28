@@ -22,6 +22,19 @@
 		display: none;
 	}
 
+	&.center-align {
+		text-align: center;
+
+		div#tfparsed,
+		textarea#tfeditor {
+			padding: 1.5em;
+		}
+
+		textarea#tfeditor {
+			width: calc(100% - 3em);
+		}
+	}
+
 	&.right-align {
 		div#tfparsed,
 		textarea#tfeditor {
@@ -48,7 +61,7 @@
 		top: 1.1em;
 		right: 1em;
 		font-size: 1.2em;
-		padding: 0.4em 1em;
+		padding: 0.25em 1em;
 		color: #fff;
 		background-color: #fff3;
 		border-radius: 0.5em;
@@ -70,12 +83,18 @@
 		word-break: break-word;
 		cursor: auto;
 
+		input[type='checkbox'] {
+			width: 1.2em;
+			height: 1.2em;
+		}
+
+		h1,
 		h2,
 		h3,
 		h4,
 		h5,
 		h6 {
-			margin: 1em 0;
+			margin: 0.75em 0;
 		}
 
 		ul {
@@ -97,6 +116,7 @@
 		-webkit-filter: blur(0px);
 		pointer-events: all;
 		max-height: 40vh;
+		min-height: 1em;
 		overflow-x: hidden;
 		overflow-y: auto;
 		font-size: 1.2em;
