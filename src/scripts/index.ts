@@ -118,8 +118,18 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 			return false
 		}
 
-		parsed.innerHTML = html
+		// Remove all nodes in parsed
+		while (parsed.firstChild) {
+			parsed.removeChild(parsed.firstChild)
+		}
 
+		// Add html string to parsed div (without innerHTML)
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(html, 'text/html')
+		const allNodes = [...doc.body.childNodes]
+		allNodes.forEach((node) => parsed.appendChild(node))
+
+		// Remove margin top if first child is a title
 		if (parsed.childNodes.length > 0 && parsed.childNodes[0]?.nodeName.match(/(H[1-6])/g)) {
 			parsed.children[0]?.setAttribute('style', 'margin-top: 0px')
 		}
@@ -169,9 +179,20 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 
 			switch (event?.is) {
 				case 'toggle': {
+					const on = event.value === 'true'
+					const { align, opacity, text } = textfield
+
 					interfaceWidgetToggle(null, 'textfield')
-					handleToggle(event.value === 'true')
-					textfield.on = event.value === 'true'
+					handleToggle(on)
+					textfield.on = on
+
+					if (on && editor) {
+						handleAlign(align)
+						handleOpacity(opacity)
+						parseMarkdownToHTML(text)
+						;(editor as HTMLInputElement).value = text
+					}
+
 					break
 				}
 
@@ -207,12 +228,11 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 		return
 	}
 
-	handleAlign(init.align)
-	handleOpacity(init.opacity)
-	handleToggle(init.on)
-	parseMarkdownToHTML(init.text)
-
-	if (editor) {
+	if (init.on) {
+		handleAlign(init.align)
+		handleOpacity(init.opacity)
+		handleToggle(init.on)
+		parseMarkdownToHTML(init.text)
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
 
@@ -1147,7 +1167,7 @@ export function quickLinks(
 
 			case 'toggle': {
 				clas($('linkblocks'), !event.checked, 'hidden')
-				interfaceWidgetToggle(null, 'links')
+				interfaceWidgetToggle(null, 'quicklinks')
 				chrome.storage.sync.set({ quicklinks: event.checked })
 				break
 			}
@@ -3454,21 +3474,27 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync | null, event?: 'textfield' | 'links' | 'quotes' | 'searchbar') {
+export function interfaceWidgetToggle(init: Sync | null, event?: 'textfield' | 'quicklinks' | 'quotes' | 'searchbar') {
 	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
 	if (event) {
 		chrome.storage.sync.get(['searchbar', 'textfield', 'quotes', 'quicklinks'], (data) => {
 			let displayed = {
-				links: data.quicklinks,
+				quicklinks: data.quicklinks,
 				quotes: data.quotes.on,
 				searchbar: data.searchbar.on,
 				textfield: data.textfield.on,
 			}
 
-			displayed[event] = !displayed[event] // toggles relevent widget
-			toggleEmpty(!(displayed.textfield || displayed.links || displayed.quotes || displayed.searchbar)) // checks if all values are false
+			// Toggle settings param
+			$(event + '_options')?.classList.toggle('shown')
+
+			// toggles relevent widget
+			displayed[event] = !displayed[event]
+
+			// checks if all values are false
+			toggleEmpty(Object.values(displayed).every((d) => !d))
 		})
 
 		return

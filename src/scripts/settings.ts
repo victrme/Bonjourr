@@ -129,12 +129,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// inserts languages in select
+	const i_lang = paramId('i_lang')
 	Object.entries(langList).forEach(([code, title]) => {
 		let option = document.createElement('option')
 		option.value = code
 		option.text = title
-		paramId('i_lang').appendChild(option)
+		i_lang.appendChild(option)
 	})
+
+	initInput('i_lang', data.lang || 'en') // must be init after children appening
 
 	// Activate changelog (hasUpdated is activated in background.js)
 	if (localStorage.hasUpdated === 'true') {
@@ -197,9 +200,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	// Quotes option display
 	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
-
-	// Language input
-	paramId('i_lang').setAttribute('value', data.lang || 'en')
 
 	updateExportJSON(settingsDom)
 
@@ -295,7 +295,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('change', function (this: HTMLInputElement) {
-		clas(paramId('quicklinks_options'), this.checked, 'shown')
 		quickLinks(null, { is: 'toggle', checked: this.checked })
 	})
 
@@ -445,7 +444,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Text field
 
 	paramId('i_tf').addEventListener('change', function (this: HTMLInputElement) {
-		paramId('textfield_options').classList.toggle('shown')
 		textField(null, { is: 'toggle', value: this.checked.toString() })
 	})
 
@@ -461,7 +459,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Searchbar
 
 	paramId('i_sb').addEventListener('change', function (this: HTMLInputElement) {
-		paramId('searchbar_options').classList.toggle('shown')
 		searchbar(null, 'searchbar', this)
 	})
 
@@ -485,7 +482,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quotes
 
 	paramId('i_quotes').addEventListener('change', function () {
-		paramId('quotes_options').classList.toggle('shown')
 		quotes(null, { is: 'toggle', checked: this.checked })
 	})
 
