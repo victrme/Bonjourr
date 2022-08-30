@@ -1934,35 +1934,43 @@ export function localBackgrounds(
 	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
 		const settings = settingsDom ? settingsDom : ($('settings') as HTMLElement)
 
-		const div = document.createElement('div')
-		const i = document.createElement('img')
+		const thb = document.createElement('button')
 		const rem = document.createElement('button')
+		const thbimg = document.createElement('img')
+		const remimg = document.createElement('img')
 		const wrap = settings.querySelector('#fileContainer')
 
-		div.id = _id
-		div.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
-		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
+		thb.id = _id
+		thb.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
 
-		let close = document.createElement('img')
-		close.setAttribute('src', 'src/assets/interface/close.svg')
-		rem.appendChild(close)
+		clas(rem, true, 'b_removethumb')
+		clas(rem, !mobilecheck(), 'hidden')
 
-		b64toBlobUrl(data, (bloburl: string) => (i.src = bloburl))
+		thb.setAttribute('aria-label', 'Select this background')
+		rem.setAttribute('aria-label', 'Remove this background')
 
-		div.appendChild(i)
-		div.appendChild(rem)
-		wrap?.prepend(div)
+		remimg.setAttribute('alt', '')
+		thbimg.setAttribute('alt', '')
 
-		i.onmouseup = (e) => {
-			if (e.button !== 0 || localIsLoading) return
+		remimg.setAttribute('src', 'src/assets/interface/close.svg')
+		rem.appendChild(remimg)
 
-			const target = e.target as HTMLElement
+		b64toBlobUrl(data, (bloburl: string) => (thbimg.src = bloburl))
 
-			if (!target.parentElement) {
-				return console.log('No parent (thumbnail) found')
+		thb.appendChild(thbimg)
+		thb.appendChild(rem)
+		wrap?.prepend(thb)
+
+		thb.onclick = (e) => {
+			if (e.button !== 0 || localIsLoading || !e.target) {
+				return
 			}
 
-			const _id = target.parentElement.id
+			const thumbnailButton = e.composedPath().find((d: EventTarget) => {
+				return (d as HTMLElement).className.includes('thumbnail')
+			}) as HTMLElement
+
+			const _id = thumbnailButton.id
 			const bgKey = 'custom_' + _id
 
 			chrome.storage.local.get('selectedId', (local) => {
@@ -1978,7 +1986,7 @@ export function localBackgrounds(
 			})
 		}
 
-		rem.onmouseup = (e) => {
+		rem.onclick = (e) => {
 			const path = e.composedPath()
 
 			if (e.button !== 0 || localIsLoading) {

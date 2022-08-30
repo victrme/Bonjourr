@@ -22,7 +22,6 @@ import {
 	deleteBrowserStorage,
 	getBrowserStorage,
 	turnRefreshButton,
-	syncDefaults,
 } from './utils'
 
 import {
@@ -614,6 +613,49 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_resetconf').addEventListener('click', () => paramsReset('conf'))
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
+
+	//
+	// A11y tabbing inputs control
+	// Expensive way to toggle all inputs tabindex on "params hiding actions" in settings
+	const allHidingInputs =
+		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_tf, #i_sb, #i_sbengine, #i_quotes, #s_export, #s_import'
+
+	function controlInputTabbability() {
+		const toggleTabindex = (parent: string, on: boolean) => {
+			settingsDom
+				?.querySelectorAll(`${parent} input, ${parent} select, ${parent} button, ${parent} a, ${parent} textarea`)
+				.forEach((dom) => {
+					on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
+				})
+		}
+
+		// First control features params
+		const featuresOptions = '#quicklinks_options, #searchbar_options, #quotes_options, #textfield_options'
+		settingsDom.querySelectorAll(featuresOptions).forEach((dom) => {
+			toggleTabindex('#' + dom.id, has(dom, 'shown'))
+		})
+
+		toggleTabindex('.as', paramId('i_showall').checked)
+
+		// then all tooltips
+		settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
+			toggleTabindex('.' + dom.classList[1], has(dom, 'shown'))
+		})
+
+		toggleTabindex('#searchbar_request', paramId('i_sbengine').value === 'custom')
+		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
+
+		toggleTabindex('#import', has(paramId('import'), 'shown'))
+		toggleTabindex('#export', has(paramId('export'), 'shown'))
+	}
+
+	// On startup
+	controlInputTabbability()
+
+	// Add event to specified inputs
+	settingsDom.querySelectorAll(allHidingInputs).forEach((dom) => {
+		dom.addEventListener('click', () => setTimeout(() => controlInputTabbability(), 10))
+	})
 }
 
 function cssInputSize(param: Element) {
@@ -723,9 +765,11 @@ function switchLangs(nextLang: Langs) {
 	})
 }
 
-function showall(val: boolean, event: boolean, domSettings?: Element) {
+function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 	if (event) chrome.storage.sync.set({ showall: val })
-	clas(domSettings || $('settings'), val, 'all')
+
+	const settings = settingsDom || $('settings')
+	clas(settings, val, 'all')
 }
 
 function selectBackgroundType(cat: string) {
