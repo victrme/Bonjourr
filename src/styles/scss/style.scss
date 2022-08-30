@@ -452,6 +452,9 @@
 				cursor: pointer;
 				position: relative;
 
+				text-decoration: none;
+				color: white;
+
 				.block {
 					width: 4.8em;
 					transition: width 0.18s $easeOutThree;

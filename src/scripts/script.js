@@ -300,7 +300,7 @@ function quickLinks(event, that, init) {
 		const lIconWrap = document.createElement('div')
 		const blockTitle = document.createElement('span')
 		const block = document.createElement('div')
-		const block_parent = document.createElement('div')
+		const block_parent = document.createElement('a')
 
 		lIcon.loading = 'lazy'
 		lIcon.className = 'l_icon'
@@ -308,12 +308,18 @@ function quickLinks(event, that, init) {
 		lIconWrap.appendChild(lIcon)
 
 		block.className = 'block'
-		block.setAttribute('source', url)
 		block.appendChild(lIconWrap)
 		block.appendChild(blockTitle)
 
 		block_parent.setAttribute('class', 'block_parent')
 		block_parent.setAttribute('draggable', 'true')
+		block_parent.setAttribute('href', url)
+
+		chrome.storage.sync.get('linknewtab', (data) => {
+      const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
+			block_parent.setAttribute('target', toNewTab ? '_blank' : '_self')
+		})
+
 		block_parent.appendChild(block)
 
 		// this also adds "normal" title as usual
@@ -332,19 +338,6 @@ function quickLinks(event, that, init) {
 	}
 
 	function addEvents(elem) {
-		function openlink(that, e) {
-			const source = that.children[0].getAttribute('source')
-			const a_hiddenlink = id('hiddenlink')
-
-			chrome.storage.sync.get('linknewtab', (data) => {
-				const toNewTab = e.which === 2 || e.ctrlKey || data.linknewtab
-
-				a_hiddenlink.setAttribute('href', source)
-				a_hiddenlink.setAttribute('target', toNewTab ? '_blank' : '_self')
-				a_hiddenlink.click()
-			})
-		}
-
 		function handleDrag(is, that) {
 			chrome.storage.sync.get(null, (data) => {
 				const index = findindex(that)
@@ -400,16 +393,6 @@ function quickLinks(event, that, init) {
 			displayEditWindow(this, e)
 		}
 
-		elem.onmouseup = function (e) {
-			// right click
-			if (e.which === 3) return
-
-			// settings not opened and not on mobile
-			if (!has(id('settings'), 'shown') && !mobilecheck()) {
-				openlink(this, e)
-			}
-		}
-
 		// Mobile clicks
 		if (mobilecheck())
 			(function mobileTouches() {
@@ -425,11 +408,9 @@ function quickLinks(event, that, init) {
 
 				const endHandler = (e) => {
 					const pressTime = performance.now() - touchStartTime
-					const editIsNotOpen = !has(id('editlink'), 'shown')
 
 					if (pressTime < 600) {
 						clearTimeout(touchTimeout)
-						if (editIsNotOpen) openlink(elem, e)
 					}
 				}
 
