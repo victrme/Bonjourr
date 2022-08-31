@@ -622,29 +622,31 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	function controlInputTabbability() {
 		const toggleTabindex = (parent: string, on: boolean) => {
-			settingsDom
-				?.querySelectorAll(`${parent} input, ${parent} select, ${parent} button, ${parent} a, ${parent} textarea`)
-				.forEach((dom) => {
-					on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
-				})
+			settingsDom?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
+				on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
+			})
 		}
 
-		// First control features params
-		const featuresOptions = '#quicklinks_options, #searchbar_options, #quotes_options, #textfield_options'
-		settingsDom.querySelectorAll(featuresOptions).forEach((dom) => {
-			toggleTabindex('#' + dom.id, has(dom, 'shown'))
-		})
+		const isAllSettings = paramId('i_showall').checked
 
-		toggleTabindex('.as', paramId('i_showall').checked)
+		if (isAllSettings) {
+			toggleTabindex('.as', true) // If showall, start by enabling .as fields
+		}
 
-		// then all tooltips
+		settingsDom // Then control if features are on or off
+			.querySelectorAll('#quicklinks_options, #searchbar_options, #quotes_options, #textfield_options')
+			.forEach((dom) => toggleTabindex('#' + dom.id, has(dom, 'shown')))
+
+		if (isAllSettings === false) {
+			toggleTabindex('.as', false) // Disable all "all" settings if off
+		}
+
 		settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
 			toggleTabindex('.' + dom.classList[1], has(dom, 'shown'))
 		})
 
-		toggleTabindex('#searchbar_request', paramId('i_sbengine').value === 'custom')
+		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
-
 		toggleTabindex('#import', has(paramId('import'), 'shown'))
 		toggleTabindex('#export', has(paramId('export'), 'shown'))
 	}
