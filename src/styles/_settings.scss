@@ -105,6 +105,7 @@
 		#sett_city,
 		#clockoptions #w_clockface,
 		#clockoptions #w_ampm,
+		#notes_options,
 		#searchbar_options,
 		#quotes_options,
 		#quicklinks_options {
@@ -129,6 +130,10 @@
 	a:hover,
 	button:hover {
 		text-decoration: underline;
+	}
+
+	a {
+		border-radius: 4px;
 	}
 
 	hr {
@@ -187,7 +192,7 @@
 		font-size: 13px;
 		max-height: 0;
 		overflow: hidden;
-		transition: max-height 0.4s, margin 0.4s;
+		transition: max-height 0.4s, margin 0.4s, padding 0.2s;
 
 		a {
 			color: $blue;
@@ -200,6 +205,7 @@
 			margin: 0 26px;
 
 			&.shown {
+				padding: 4px 0;
 				margin-bottom: 1rem;
 				max-height: 55px;
 			}
@@ -208,6 +214,7 @@
 		&.ttcoll,
 		&.tttab {
 			&.shown {
+				padding: 4px 0;
 				margin: 1em 0 0.5em 0;
 				max-height: 50px;
 			}
@@ -234,7 +241,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		min-height: 34px;
+		min-height: 26px;
+		padding: 4px 0;
 
 		span {
 			display: flex;
@@ -396,25 +404,25 @@
 			grid-gap: 10px;
 
 			.thumbnail {
-				margin: 0;
-				cursor: pointer;
-				overflow: hidden;
-				transition: box-shadow 0.1s $easeOutThree, transform 0.1s;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				overflow: hidden;
-				height: 75px;
 				position: relative;
-				border: 3px solid transparent;
-				background-image: url('/assets/interface/loading.svg');
-				background-size: 4em;
-				background-position: center center;
-				background-repeat: no-repeat;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 75px;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				border: none;
 				border-radius: 10px;
+				background-image: url('/src/assets/interface/loading.svg');
+				background-size: 4em;
+				background-repeat: no-repeat;
+				background-color: transparent;
+				background-position: center center;
+				transition: box-shadow 0.1s $easeOutThree, transform 0.1s;
 
 				&.selected {
-					border-color: $blue;
+					border: 3px solid $blue;
 				}
 
 				img {
@@ -423,7 +431,7 @@
 					background-color: transparent;
 				}
 
-				button {
+				.b_removethumb {
 					position: absolute;
 					top: 5px;
 					left: 5px;
@@ -444,6 +452,10 @@
 						width: 9px;
 						height: 9px;
 						display: block;
+					}
+
+					&:focus-visible {
+						opacity: 1;
 					}
 				}
 
@@ -476,9 +488,8 @@
 	#hideelem {
 		display: grid;
 		margin: 1em auto;
-		padding-bottom: 2px;
 		list-style: none;
-		padding: 0;
+		padding: 4px 0;
 		gap: 5px;
 		justify-content: center;
 		grid-template-columns: repeat(6, 36px);
@@ -565,29 +576,39 @@
 
 	#sett_city {
 		display: flex;
+		width: calc(100% - 0.4em);
 		column-gap: 0.4em;
 		max-height: 50px;
-		margin-top: 0.8em;
+		margin-top: 0.6em;
+		padding: 0.2em;
 		overflow: hidden;
-		transition: max-Height 0.4s, margin-top 0.4s;
+		transition: max-Height 0.4s, margin-top 0.4s, padding-top 0.4s, padding-bottom 0.4s;
 
 		&.hidden {
+			padding-top: 0;
+			padding-bottom: 0;
 			margin-top: 0;
 			max-height: 0;
 		}
 
 		select,
 		input {
-			width: 50%;
+			width: 100%;
 			text-transform: capitalize;
 		}
 	}
 
+	#notes_options,
 	#searchbar_options,
 	#searchbar_request {
 		overflow-y: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
+	}
+
+	#notes_options.shown {
+		overflow-y: clip;
+		max-height: 120px;
 	}
 
 	#searchbar_request.shown {

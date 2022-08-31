@@ -208,6 +208,7 @@ body {
 
 		.as_link {
 			max-height: 120px;
+			padding-bottom: 3px;
 		}
 		.as_collection {
 			max-height: 130px;
@@ -232,16 +233,20 @@ body {
 		}
 		.as_css {
 			max-height: 3100px;
+			padding-top: 4px;
 		}
 		.as_quote_type {
 			max-height: 130px;
+		}
+		.as_notes {
+			max-height: 120px;
 		}
 	}
 
 	.as {
 		max-height: 0;
 		overflow-y: hidden;
-		transition: max-height 0.4s;
+		transition: max-height 0.4s, padding 0.2s;
 	}
 
 	&.init .as {

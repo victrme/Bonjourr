@@ -1,9 +1,10 @@
 import debounce from 'lodash.debounce'
+import snarkdown from 'snarkdown'
 
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -94,6 +95,248 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	})
 
 	document.documentElement.setAttribute('lang', lang)
+}
+
+export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
+	const container = $('notes_container')
+	const parsed = $('notes_parsed')
+	const editor = $('notes_editor')
+	const editBtn = $('b_notesedit')
+
+	function parseMarkdownToHTML(val: string) {
+		const aria = tradThis('Text field tick box')
+
+		let html = snarkdown(val)
+		html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox" aria-label="${aria}">`)
+		html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" aria-label="${aria}" checked>`)
+
+		const replaceAt = (s: string, repl: string, i: number) => {
+			return s.substring(0, i) + repl + s.substring(i + repl.length)
+		}
+
+		if (!parsed || !editor) {
+			return false
+		}
+
+		// Remove all nodes in parsed
+		while (parsed.firstChild) {
+			parsed.removeChild(parsed.firstChild)
+		}
+
+		// Add html string to parsed div (without innerHTML)
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(html, 'text/html')
+		const allNodes = [...doc.body.childNodes]
+		allNodes.forEach((node) => parsed.appendChild(node))
+
+		// Remove margin top if first child is a title
+		if (parsed.childNodes.length > 0 && parsed.childNodes[0]?.nodeName.match(/(H[1-6])/g)) {
+			parsed.children[0]?.setAttribute('style', 'margin-top: 0px')
+		}
+
+		// Set checkboxes toggle event
+		parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
+			checkbox.addEventListener('click', () => {
+				let raw = (editor as HTMLInputElement).value
+				const matches = [...raw.matchAll(/(\[[x ]\])/g)]
+				const matchIndex = matches[ii].index
+
+				if (typeof matchIndex === 'number') {
+					raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 1)
+				}
+
+				;(editor as HTMLInputElement).value = raw
+				notes(null, { is: 'change', value: raw })
+			})
+		})
+	}
+
+	function handleToggle(state: boolean) {
+		if (container) clas(container, !state, 'hidden')
+	}
+
+	function handleAlign(value: string) {
+		if (container) {
+			if (value === 'center') {
+				clas(container, true, 'center-align')
+			} else {
+				clas(container, false, 'center-align')
+				clas(container, value === 'right', 'right-align')
+			}
+		}
+	}
+
+	function handleOpacity(value: number) {
+		if (container) {
+			container.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
+			container.style.color = value > 0.45 ? '#222' : '#fff'
+		}
+	}
+
+	if (event) {
+		chrome.storage.sync.get('notes', (data: any) => {
+			let notes = data.notes || syncDefaults.notes
+
+			switch (event?.is) {
+				case 'toggle': {
+					const on = event.value === 'true'
+					const { align, opacity, text } = notes
+
+					interfaceWidgetToggle(null, 'notes')
+					handleToggle(on)
+					notes.on = on
+
+					if (on && editor) {
+						handleAlign(align)
+						handleOpacity(opacity)
+						parseMarkdownToHTML(text)
+						;(editor as HTMLInputElement).value = text
+					}
+
+					break
+				}
+
+				case 'change': {
+					parseMarkdownToHTML(event.value)
+					notes.text = event.value
+					break
+				}
+
+				case 'align': {
+					handleAlign(event.value)
+					notes.align = event.value
+					break
+				}
+
+				case 'opacity': {
+					handleOpacity(parseFloat(event.value))
+					notes.opacity = parseFloat(event.value)
+					break
+				}
+			}
+
+			eventDebounce({ notes })
+		})
+		return
+	}
+
+	//
+	// Init
+	//
+
+	if (!editor || !init) {
+		return
+	}
+
+	if (init.on) {
+		handleAlign(init.align)
+		handleOpacity(init.opacity)
+		handleToggle(init.on)
+		parseMarkdownToHTML(init.text)
+		;(editor as HTMLInputElement).value = init.text // Also set textarea
+	}
+
+	// Edit Button event
+	editBtn?.addEventListener('click', () => {
+		if (!editor || !parsed || !editBtn) {
+			return
+		}
+
+		const isEditorHidden = editor.classList.contains('hidden')
+		const isParsedHidden = parsed.classList.contains('hidden')
+
+		// Set editor height to be the same as preview
+		// Removes notes padding from height calc
+		if (isEditorHidden) {
+			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
+			editor.style.height = ($('notes_container')?.offsetHeight || 0) - padding + 'px'
+			editor.focus()
+		}
+
+		// No tabbing possible when editor is hidden
+		editor.setAttribute('tabindex', isEditorHidden ? '0' : '-1')
+
+		// Toggle classes
+		clas(editor, !isEditorHidden, 'hidden')
+		clas(parsed, !isParsedHidden, 'hidden')
+
+		// Change edit button text
+		editBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+	})
+
+	// Classic update on input
+	editor?.addEventListener('input', function (this: HTMLInputElement) {
+		notes(null, { is: 'change', value: this.value })
+	})
+
+	// No browser shortcuts if text field shortcuts detected
+	editor?.addEventListener('keydown', (e: KeyboardEvent) => {
+		if (e.ctrlKey && ['KeyI', 'KeyB', 'KeyC', 'KeyS', 'KeyU', 'KeyT'].includes(e.code)) {
+			e.preventDefault()
+		}
+	})
+
+	// Editor Shortcuts
+	editor?.addEventListener('keyup', (e: KeyboardEvent) => {
+		const editordom = editor as HTMLTextAreaElement
+		const { selectionStart, selectionEnd } = editordom
+
+		// No selections, return
+		if (!e.ctrlKey || selectionStart === selectionEnd) {
+			return
+		}
+
+		function addDecoration(charStart: string, charEnd: string = charStart) {
+			let result = editordom.value,
+				start = result.substring(0, selectionStart),
+				selection = result.substring(selectionStart, selectionEnd),
+				end = result.substring(selectionEnd)
+
+			const isRemoval = selection.startsWith(charStart) && (selection.endsWith(charEnd) || charEnd === '')
+
+			// Remove or adds characters from selection
+			selection = isRemoval
+				? selection.substring(charStart.length, selection.length - charEnd.length)
+				: charStart + selection + charEnd
+
+			// Apply to editor
+			result = start + selection + end
+			editordom.value = result
+			notes(null, { is: 'change', value: result })
+
+			// Set selection to same position (because changing value resets cursor)
+			const addLength = charStart.length + charEnd.length
+			const remLength = -(charStart.length + charEnd.length)
+			editordom.selectionStart = selectionStart
+			editordom.selectionEnd = selectionEnd + (isRemoval ? remLength : addLength)
+		}
+
+		switch (e.code) {
+			case 'KeyI':
+				addDecoration('_')
+				break
+
+			case 'KeyB':
+				addDecoration('**')
+				break
+
+			case 'KeyC':
+				addDecoration('`')
+				break
+
+			case 'KeyS':
+				addDecoration('~~')
+				break
+
+			case 'KeyU':
+				addDecoration('[', '](url)')
+				break
+
+			case 'KeyT':
+				addDecoration('[ ] ', '')
+				break
+		}
+	})
 }
 
 export function favicon(init: string | null, event?: HTMLInputElement) {
@@ -924,7 +1167,7 @@ export function quickLinks(
 
 			case 'toggle': {
 				clas($('linkblocks'), !event.checked, 'hidden')
-				interfaceWidgetToggle(null, 'links')
+				interfaceWidgetToggle(null, 'quicklinks')
 				chrome.storage.sync.set({ quicklinks: event.checked })
 				break
 			}
@@ -1691,35 +1934,43 @@ export function localBackgrounds(
 	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
 		const settings = settingsDom ? settingsDom : ($('settings') as HTMLElement)
 
-		const div = document.createElement('div')
-		const i = document.createElement('img')
+		const thb = document.createElement('button')
 		const rem = document.createElement('button')
+		const thbimg = document.createElement('img')
+		const remimg = document.createElement('img')
 		const wrap = settings.querySelector('#fileContainer')
 
-		div.id = _id
-		div.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
-		if (!mobilecheck()) rem.setAttribute('class', 'hidden')
+		thb.id = _id
+		thb.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
 
-		let close = document.createElement('img')
-		close.setAttribute('src', 'src/assets/interface/close.svg')
-		rem.appendChild(close)
+		clas(rem, true, 'b_removethumb')
+		clas(rem, !mobilecheck(), 'hidden')
 
-		b64toBlobUrl(data, (bloburl: string) => (i.src = bloburl))
+		thb.setAttribute('aria-label', 'Select this background')
+		rem.setAttribute('aria-label', 'Remove this background')
 
-		div.appendChild(i)
-		div.appendChild(rem)
-		wrap?.prepend(div)
+		remimg.setAttribute('alt', '')
+		thbimg.setAttribute('alt', '')
 
-		i.onmouseup = (e) => {
-			if (e.button !== 0 || localIsLoading) return
+		remimg.setAttribute('src', 'src/assets/interface/close.svg')
+		rem.appendChild(remimg)
 
-			const target = e.target as HTMLElement
+		b64toBlobUrl(data, (bloburl: string) => (thbimg.src = bloburl))
 
-			if (!target.parentElement) {
-				return console.log('No parent (thumbnail) found')
+		thb.appendChild(thbimg)
+		thb.appendChild(rem)
+		wrap?.prepend(thb)
+
+		thb.onclick = (e) => {
+			if (e.button !== 0 || localIsLoading || !e.target) {
+				return
 			}
 
-			const _id = target.parentElement.id
+			const thumbnailButton = e.composedPath().find((d: EventTarget) => {
+				return (d as HTMLElement).className.includes('thumbnail')
+			}) as HTMLElement
+
+			const _id = thumbnailButton.id
 			const bgKey = 'custom_' + _id
 
 			chrome.storage.local.get('selectedId', (local) => {
@@ -1735,7 +1986,7 @@ export function localBackgrounds(
 			})
 		}
 
-		rem.onmouseup = (e) => {
+		rem.onclick = (e) => {
 			const path = e.composedPath()
 
 			if (e.button !== 0 || localIsLoading) {
@@ -3231,27 +3482,34 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync | null, event?: 'links' | 'quotes' | 'searchbar') {
+export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quicklinks' | 'quotes' | 'searchbar') {
 	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
 	if (event) {
-		chrome.storage.sync.get(['searchbar', 'quotes', 'quicklinks'], (data) => {
+		chrome.storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks'], (data) => {
 			let displayed = {
-				links: data.quicklinks,
+				quicklinks: data.quicklinks,
 				quotes: data.quotes.on,
 				searchbar: data.searchbar.on,
+				notes: data.notes.on,
 			}
 
-			displayed[event] = !displayed[event] // toggles relevent widget
-			toggleEmpty(!(displayed.links || displayed.quotes || displayed.searchbar)) // checks if all values are false
+			// Toggle settings param
+			$(event + '_options')?.classList.toggle('shown')
+
+			// toggles relevent widget
+			displayed[event] = !displayed[event]
+
+			// checks if all values are false
+			toggleEmpty(Object.values(displayed).every((d) => !d))
 		})
 
 		return
 	}
 
 	if (init) {
-		toggleEmpty(!(init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
+		toggleEmpty(!(init.notes?.on || init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
 	}
 }
 
@@ -3333,6 +3591,7 @@ function startup(data: Sync) {
 	searchbar(data.searchbar)
 	quotes(data)
 	showPopup(data.reviewPopup)
+	notes(data.notes || null)
 
 	customCss(data.css)
 	hideElem(data.hide)

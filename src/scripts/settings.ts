@@ -22,11 +22,11 @@ import {
 	deleteBrowserStorage,
 	getBrowserStorage,
 	turnRefreshButton,
-	syncDefaults,
 } from './utils'
 
 import {
 	backgroundFilter,
+	notes,
 	clock,
 	customCss,
 	customFont,
@@ -84,6 +84,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_tabtitle', data.tabtitle || '')
 	initInput('i_greeting', data.greeting || '')
 	initInput('i_textshadow', data.textShadow || 0.2)
+	initInput('i_notesopacity', data.notes?.opacity || 0.1)
+	initInput('i_notesalign', data.notes?.align || 'left')
+	initInput('i_textshadow', data.textShadow || 0.2)
 	initInput('i_sbengine', data.searchbar?.engine || 'google')
 	initInput('i_sbopacity', data.searchbar?.opacity || 0.1)
 	initInput('i_sbrequest', data.searchbar?.request || '')
@@ -105,6 +108,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
 	initCheckbox('i_units', data.weather?.unit === 'imperial' || false)
+	initCheckbox('i_notes', data.notes?.on || false)
 	initCheckbox('i_sb', data.searchbar?.on || false)
 	initCheckbox('i_quotes', data.quotes?.on || false)
 	initCheckbox('i_ampm', data.clock?.ampm || false)
@@ -124,12 +128,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// inserts languages in select
+	const i_lang = paramId('i_lang')
 	Object.entries(langList).forEach(([code, title]) => {
 		let option = document.createElement('option')
 		option.value = code
 		option.text = title
-		paramId('i_lang').appendChild(option)
+		i_lang.appendChild(option)
 	})
+
+	initInput('i_lang', data.lang || 'en') // must be init after children appening
 
 	// Activate changelog (hasUpdated is activated in background.js)
 	if (localStorage.hasUpdated === 'true') {
@@ -178,6 +185,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		i_geol.checked = true
 	}
 
+	// Text field display settings
+	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
+
 	// Searchbar display settings
 	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
 	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
@@ -189,9 +199,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	// Quotes option display
 	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
-
-	// Language input
-	paramId('i_lang').setAttribute('value', data.lang || 'en')
 
 	updateExportJSON(settingsDom)
 
@@ -287,7 +294,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('change', function (this: HTMLInputElement) {
-		clas(paramId('quicklinks_options'), this.checked, 'shown')
 		quickLinks(null, { is: 'toggle', checked: this.checked })
 	})
 
@@ -434,10 +440,24 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	//
+	// Text field
+
+	paramId('i_notes').addEventListener('change', function (this: HTMLInputElement) {
+		notes(null, { is: 'toggle', value: this.checked.toString() })
+	})
+
+	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
+		notes(null, { is: 'align', value: this.value })
+	})
+
+	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
+		notes(null, { is: 'opacity', value: this.value })
+	})
+
+	//
 	// Searchbar
 
 	paramId('i_sb').addEventListener('change', function (this: HTMLInputElement) {
-		paramId('searchbar_options').classList.toggle('shown')
 		searchbar(null, 'searchbar', this)
 	})
 
@@ -461,7 +481,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quotes
 
 	paramId('i_quotes').addEventListener('change', function () {
-		paramId('quotes_options').classList.toggle('shown')
 		quotes(null, { is: 'toggle', checked: this.checked })
 	})
 
@@ -594,6 +613,51 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_resetconf').addEventListener('click', () => paramsReset('conf'))
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
+
+	//
+	// A11y tabbing inputs control
+	// Expensive way to toggle all inputs tabindex on "params hiding actions" in settings
+	const allHidingInputs =
+		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_notes, #i_sb, #i_sbengine, #i_quotes, #s_export, #s_import'
+
+	function controlInputTabbability() {
+		const toggleTabindex = (parent: string, on: boolean) => {
+			settingsDom?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
+				on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
+			})
+		}
+
+		const isAllSettings = paramId('i_showall').checked
+
+		if (isAllSettings) {
+			toggleTabindex('.as', true) // If showall, start by enabling .as fields
+		}
+
+		settingsDom // Then control if features are on or off
+			.querySelectorAll('#quicklinks_options, #searchbar_options, #quotes_options, #notes_options')
+			.forEach((dom) => toggleTabindex('#' + dom.id, has(dom, 'shown')))
+
+		if (isAllSettings === false) {
+			toggleTabindex('.as', false) // Disable all "all" settings if off
+		}
+
+		settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
+			toggleTabindex('.' + dom.classList[1], has(dom, 'shown'))
+		})
+
+		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
+		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
+		toggleTabindex('#import', has(paramId('import'), 'shown'))
+		toggleTabindex('#export', has(paramId('export'), 'shown'))
+	}
+
+	// On startup
+	controlInputTabbability()
+
+	// Add event to specified inputs
+	settingsDom.querySelectorAll(allHidingInputs).forEach((dom) => {
+		dom.addEventListener('click', () => setTimeout(() => controlInputTabbability(), 10))
+	})
 }
 
 function cssInputSize(param: Element) {
@@ -703,9 +767,11 @@ function switchLangs(nextLang: Langs) {
 	})
 }
 
-function showall(val: boolean, event: boolean, domSettings?: Element) {
+function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 	if (event) chrome.storage.sync.set({ showall: val })
-	clas(domSettings || $('settings'), val, 'all')
+
+	const settings = settingsDom || $('settings')
+	clas(settings, val, 'all')
 }
 
 function selectBackgroundType(cat: string) {
@@ -926,21 +992,21 @@ export function settingsInit(data: Sync) {
 				return // do nothing if pressing ctrl or if there's an error message
 			}
 
-			const notTabbing = document.body.classList.contains('tabbing') === false
-			const noSettings = has($('settings'), 'shown') === false
-			const noEdit = has($('editlink'), 'shown') === false
-			const hasSearchbar = has($('sb_container'), 'shown')
+			// const notTabbing = document.body.classList.contains('tabbing') === false
+			// const noSettings = has($('settings'), 'shown') === false
+			// const noEdit = has($('editlink'), 'shown') === false
+			// const hasSearchbar = has($('sb_container'), 'shown')
 
-			if (noSettings && noEdit && notTabbing && hasSearchbar) {
-				$('searchbar')?.focus() // Focus searchbar if only searchbar is on
-			}
+			// if (noSettings && noEdit && notTabbing && hasSearchbar) {
+			// 	$('searchbar')?.focus() // Focus searchbar if only searchbar is on
+			// }
 		}
 
 		dominterface?.addEventListener('click', function (e) {
+			const path = e.composedPath()
+
 			if (
-				e.composedPath().filter((d: EventTarget) => {
-					return (d as HTMLElement).id === 'linkblocks'
-				}).length > 0 // finds linkblocks in event path
+				path.filter((d: EventTarget) => (d as HTMLElement).id === 'linkblocks').length > 0 // finds linkblocks in event path
 			) {
 				return // Do nothing if links are clicked
 			}

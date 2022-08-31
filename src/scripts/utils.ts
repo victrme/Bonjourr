@@ -393,6 +393,12 @@ export const syncDefaults: Sync = {
 	reviewPopup: 0,
 	background_blur: 15,
 	background_bright: 0.8,
+	notes: {
+		on: false,
+		opacity: 0.1,
+		align: 'left',
+		text: '### Click on edit icon to edit !\n- [ ] This support markdown\n- [ ] Github styled checkboxes.',
+	},
 	css: '',
 	lang: defaultLang(),
 	favicon: '',

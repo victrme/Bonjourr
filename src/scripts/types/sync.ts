@@ -49,6 +49,13 @@ export type Font = {
 	weight: string
 }
 
+export type Notes = {
+	on: boolean
+	text: string
+	opacity: number
+	align: 'left' | 'center' | 'right'
+}
+
 export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
 
 export type Hide = [[number, number], [number, number, number], [number], [number]]
@@ -69,6 +76,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
+	notes?: Notes
 	dark: 'auto' | 'system' | 'enable' | 'disable'
 	custom_time: number
 	custom_every: string
