@@ -49,7 +49,7 @@ export type Font = {
 	weight: string
 }
 
-export type TextField = {
+export type Notes = {
 	on: boolean
 	text: string
 	opacity: number
@@ -76,7 +76,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
-	textfield?: TextField
+	notes?: Notes
 	dark: 'auto' | 'system' | 'enable' | 'disable'
 	custom_time: number
 	custom_every: string

@@ -105,7 +105,7 @@
 		#sett_city,
 		#clockoptions #w_clockface,
 		#clockoptions #w_ampm,
-		#textfield_options,
+		#notes_options,
 		#searchbar_options,
 		#quotes_options,
 		#quicklinks_options {
@@ -598,7 +598,7 @@
 		}
 	}
 
-	#textfield_options,
+	#notes_options,
 	#searchbar_options,
 	#searchbar_request {
 		overflow-y: hidden;
@@ -606,7 +606,7 @@
 		transition: max-height 0.4s;
 	}
 
-	#textfield_options.shown {
+	#notes_options.shown {
 		overflow-y: clip;
 		max-height: 120px;
 	}

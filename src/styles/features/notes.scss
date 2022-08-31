@@ -1,4 +1,4 @@
-#textfield_container {
+#notes_container {
 	position: relative;
 	align-self: center;
 	text-align: left;
@@ -25,37 +25,37 @@
 	&.center-align {
 		text-align: center;
 
-		div#tfparsed,
-		textarea#tfeditor {
+		div#notes_parsed,
+		textarea#notes_editor {
 			padding: 1.5em;
 		}
 
-		textarea#tfeditor {
+		textarea#notes_editor {
 			width: calc(100% - 3em);
 		}
 	}
 
 	&.right-align {
-		div#tfparsed,
-		textarea#tfeditor {
+		div#notes_parsed,
+		textarea#notes_editor {
 			text-align: right;
 			padding-left: 5em;
 			padding-right: 1.5em;
 		}
 
-		button#b_tfedit {
+		button#b_notesedit {
 			left: 1em;
 			right: auto;
 		}
 	}
 
 	&:hover {
-		button#b_tfedit {
+		button#b_notesedit {
 			opacity: 1;
 		}
 	}
 
-	button#b_tfedit {
+	button#b_notesedit {
 		position: absolute;
 		opacity: 0;
 		top: 1.1em;
@@ -79,7 +79,7 @@
 		}
 	}
 
-	div#tfparsed {
+	div#notes_parsed {
 		word-break: break-word;
 		cursor: auto;
 
@@ -117,8 +117,8 @@
 		}
 	}
 
-	div#tfparsed,
-	textarea#tfeditor {
+	div#notes_parsed,
+	textarea#notes_editor {
 		-webkit-filter: blur(0px);
 		pointer-events: all;
 		max-height: 40vh;
@@ -140,7 +140,7 @@
 		}
 	}
 
-	textarea#tfeditor {
+	textarea#notes_editor {
 		width: calc(100% - 6.5em);
 		min-height: 100px;
 		color: #fff;

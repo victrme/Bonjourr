@@ -4,7 +4,7 @@ import snarkdown from 'snarkdown'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, TextField } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -97,11 +97,11 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function textField(init: TextField | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
-	const container = $('textfield_container')
-	const parsed = $('tfparsed')
-	const editor = $('tfeditor')
-	const editBtn = $('b_tfedit')
+export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
+	const container = $('notes_container')
+	const parsed = $('notes_parsed')
+	const editor = $('notes_editor')
+	const editBtn = $('b_notesedit')
 
 	function parseMarkdownToHTML(val: string) {
 		const aria = tradThis('Text field tick box')
@@ -146,7 +146,7 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 				}
 
 				;(editor as HTMLInputElement).value = raw
-				textField(null, { is: 'change', value: raw })
+				notes(null, { is: 'change', value: raw })
 			})
 		})
 	}
@@ -174,17 +174,17 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 	}
 
 	if (event) {
-		chrome.storage.sync.get('textfield', (data: any) => {
-			let textfield = data.textfield || syncDefaults.textfield
+		chrome.storage.sync.get('notes', (data: any) => {
+			let notes = data.notes || syncDefaults.notes
 
 			switch (event?.is) {
 				case 'toggle': {
 					const on = event.value === 'true'
-					const { align, opacity, text } = textfield
+					const { align, opacity, text } = notes
 
-					interfaceWidgetToggle(null, 'textfield')
+					interfaceWidgetToggle(null, 'notes')
 					handleToggle(on)
-					textfield.on = on
+					notes.on = on
 
 					if (on && editor) {
 						handleAlign(align)
@@ -198,24 +198,24 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 
 				case 'change': {
 					parseMarkdownToHTML(event.value)
-					textfield.text = event.value
+					notes.text = event.value
 					break
 				}
 
 				case 'align': {
 					handleAlign(event.value)
-					textfield.align = event.value
+					notes.align = event.value
 					break
 				}
 
 				case 'opacity': {
 					handleOpacity(parseFloat(event.value))
-					textfield.opacity = parseFloat(event.value)
+					notes.opacity = parseFloat(event.value)
 					break
 				}
 			}
 
-			eventDebounce({ textfield })
+			eventDebounce({ notes })
 		})
 		return
 	}
@@ -246,10 +246,10 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 		const isParsedHidden = parsed.classList.contains('hidden')
 
 		// Set editor height to be the same as preview
-		// Removes textfield padding from height calc
+		// Removes notes padding from height calc
 		if (isEditorHidden) {
 			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
-			editor.style.height = ($('textfield_container')?.offsetHeight || 0) - padding + 'px'
+			editor.style.height = ($('notes_container')?.offsetHeight || 0) - padding + 'px'
 			editor.focus()
 		}
 
@@ -266,7 +266,7 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 
 	// Classic update on input
 	editor?.addEventListener('input', function (this: HTMLInputElement) {
-		textField(null, { is: 'change', value: this.value })
+		notes(null, { is: 'change', value: this.value })
 	})
 
 	// No browser shortcuts if text field shortcuts detected
@@ -302,7 +302,7 @@ export function textField(init: TextField | null, event?: { is: 'toggle' | 'alig
 			// Apply to editor
 			result = start + selection + end
 			editordom.value = result
-			textField(null, { is: 'change', value: result })
+			notes(null, { is: 'change', value: result })
 
 			// Set selection to same position (because changing value resets cursor)
 			const addLength = charStart.length + charEnd.length
@@ -3482,17 +3482,17 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync | null, event?: 'textfield' | 'quicklinks' | 'quotes' | 'searchbar') {
+export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quicklinks' | 'quotes' | 'searchbar') {
 	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
 
 	// Event is a string of the widget name to toggle
 	if (event) {
-		chrome.storage.sync.get(['searchbar', 'textfield', 'quotes', 'quicklinks'], (data) => {
+		chrome.storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks'], (data) => {
 			let displayed = {
 				quicklinks: data.quicklinks,
 				quotes: data.quotes.on,
 				searchbar: data.searchbar.on,
-				textfield: data.textfield.on,
+				notes: data.notes.on,
 			}
 
 			// Toggle settings param
@@ -3509,7 +3509,7 @@ export function interfaceWidgetToggle(init: Sync | null, event?: 'textfield' | '
 	}
 
 	if (init) {
-		toggleEmpty(!(init.textfield?.on || init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
+		toggleEmpty(!(init.notes?.on || init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
 	}
 }
 
@@ -3591,7 +3591,7 @@ function startup(data: Sync) {
 	searchbar(data.searchbar)
 	quotes(data)
 	showPopup(data.reviewPopup)
-	textField(data.textfield || null)
+	notes(data.notes || null)
 
 	customCss(data.css)
 	hideElem(data.hide)

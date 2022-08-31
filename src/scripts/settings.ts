@@ -26,7 +26,7 @@ import {
 
 import {
 	backgroundFilter,
-	textField,
+	notes,
 	clock,
 	customCss,
 	customFont,
@@ -84,8 +84,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_tabtitle', data.tabtitle || '')
 	initInput('i_greeting', data.greeting || '')
 	initInput('i_textshadow', data.textShadow || 0.2)
-	initInput('i_tfopacity', data.textfield?.opacity || 0.1)
-	initInput('i_tfalign', data.textfield?.align || 'left')
+	initInput('i_notesopacity', data.notes?.opacity || 0.1)
+	initInput('i_notesalign', data.notes?.align || 'left')
 	initInput('i_textshadow', data.textShadow || 0.2)
 	initInput('i_sbengine', data.searchbar?.engine || 'google')
 	initInput('i_sbopacity', data.searchbar?.opacity || 0.1)
@@ -108,7 +108,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
 	initCheckbox('i_units', data.weather?.unit === 'imperial' || false)
-	initCheckbox('i_tf', data.textfield?.on || false)
+	initCheckbox('i_notes', data.notes?.on || false)
 	initCheckbox('i_sb', data.searchbar?.on || false)
 	initCheckbox('i_quotes', data.quotes?.on || false)
 	initCheckbox('i_ampm', data.clock?.ampm || false)
@@ -186,7 +186,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Text field display settings
-	clas(paramId('textfield_options'), data.textfield?.on || false, 'shown')
+	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
 
 	// Searchbar display settings
 	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
@@ -442,16 +442,16 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Text field
 
-	paramId('i_tf').addEventListener('change', function (this: HTMLInputElement) {
-		textField(null, { is: 'toggle', value: this.checked.toString() })
+	paramId('i_notes').addEventListener('change', function (this: HTMLInputElement) {
+		notes(null, { is: 'toggle', value: this.checked.toString() })
 	})
 
-	paramId('i_tfalign').addEventListener('change', function (this: HTMLInputElement) {
-		textField(null, { is: 'align', value: this.value })
+	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
+		notes(null, { is: 'align', value: this.value })
 	})
 
-	paramId('i_tfopacity').addEventListener('input', function (this: HTMLInputElement) {
-		textField(null, { is: 'opacity', value: this.value })
+	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
+		notes(null, { is: 'opacity', value: this.value })
 	})
 
 	//
@@ -618,7 +618,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// A11y tabbing inputs control
 	// Expensive way to toggle all inputs tabindex on "params hiding actions" in settings
 	const allHidingInputs =
-		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_tf, #i_sb, #i_sbengine, #i_quotes, #s_export, #s_import'
+		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_notes, #i_sb, #i_sbengine, #i_quotes, #s_export, #s_import'
 
 	function controlInputTabbability() {
 		const toggleTabindex = (parent: string, on: boolean) => {
@@ -634,7 +634,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		}
 
 		settingsDom // Then control if features are on or off
-			.querySelectorAll('#quicklinks_options, #searchbar_options, #quotes_options, #textfield_options')
+			.querySelectorAll('#quicklinks_options, #searchbar_options, #quotes_options, #notes_options')
 			.forEach((dom) => toggleTabindex('#' + dom.id, has(dom, 'shown')))
 
 		if (isAllSettings === false) {
@@ -1010,19 +1010,6 @@ export function settingsInit(data: Sync) {
 			) {
 				return // Do nothing if links are clicked
 			}
-
-			// if (
-			// 	path.filter((d: EventTarget) => (d as HTMLElement).id === 'textfield_container').length === 0 &&
-			// 	has($('tfparsed'), 'hidden')
-			// ) {
-			// 	const editBtn = $('b_tfedit')
-			// 	if (editBtn) editBtn.textContent = tradThis('Edit')
-
-			// 	$('tfeditor')?.blur()
-
-			// 	clas($('tfparsed'), false, 'hidden')
-			// 	clas($('tfeditor'), true, 'hidden')
-			// }
 
 			if (has($('editlink'), 'shown')) {
 				closeEditLink() // hides edit menu

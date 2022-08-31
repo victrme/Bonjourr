@@ -393,7 +393,7 @@ export const syncDefaults: Sync = {
 	reviewPopup: 0,
 	background_blur: 15,
 	background_bright: 0.8,
-	textfield: {
+	notes: {
 		on: false,
 		opacity: 0.1,
 		align: 'left',
