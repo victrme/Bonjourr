@@ -397,7 +397,7 @@ export const syncDefaults: Sync = {
 		on: false,
 		opacity: 0.1,
 		align: 'left',
-		text: '### Click on edit icon to edit !\n- [ ] This support markdown\n- [ ] Github styled checkboxes.',
+		text: '### Double click to edit!\n- [ ] This support markdown\n- [ ] Github styled checkboxes.',
 	},
 	css: '',
 	lang: defaultLang(),

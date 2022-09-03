@@ -101,7 +101,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	const container = $('notes_container')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
-	const editBtn = $('b_notesedit')
+	const doneBtn = $('b_notesdone')
 
 	function parseMarkdownToHTML(val: string) {
 		const aria = tradThis('Text field tick box')
@@ -173,6 +173,30 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		}
 	}
 
+	function toggleEditable() {
+		if (!editor || !parsed || !doneBtn) {
+			return
+		}
+
+		const isEditorHidden = editor.classList.contains('hidden')
+		const isParsedHidden = parsed.classList.contains('hidden')
+
+		// Set editor height to be the same as preview
+		// Removes notes padding from height calc
+		if (isEditorHidden) {
+			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
+			editor.style.height = ($('notes_container')?.offsetHeight || 0) - padding + 'px'
+			editor.focus()
+		}
+
+		// No tabbing possible when editor is hidden
+		editor.setAttribute('tabindex', isEditorHidden ? '0' : '-1')
+
+		// Toggle classes
+		clas(editor, !isEditorHidden, 'hidden')
+		clas(parsed, !isParsedHidden, 'hidden')
+	}
+
 	if (event) {
 		chrome.storage.sync.get('notes', (data: any) => {
 			let notes = data.notes || syncDefaults.notes
@@ -236,32 +260,14 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
 
-	// Edit Button event
-	editBtn?.addEventListener('click', () => {
-		if (!editor || !parsed || !editBtn) {
-			return
-		}
+	// Double click event
+	parsed?.addEventListener('dblclick', () => {
+		toggleEditable();
+	})
 
-		const isEditorHidden = editor.classList.contains('hidden')
-		const isParsedHidden = parsed.classList.contains('hidden')
-
-		// Set editor height to be the same as preview
-		// Removes notes padding from height calc
-		if (isEditorHidden) {
-			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
-			editor.style.height = ($('notes_container')?.offsetHeight || 0) - padding + 'px'
-			editor.focus()
-		}
-
-		// No tabbing possible when editor is hidden
-		editor.setAttribute('tabindex', isEditorHidden ? '0' : '-1')
-
-		// Toggle classes
-		clas(editor, !isEditorHidden, 'hidden')
-		clas(parsed, !isParsedHidden, 'hidden')
-
-		// Change edit button text
-		editBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+	// Done button event
+	doneBtn?.addEventListener('click', () => {
+		toggleEditable();
 	})
 
 	// Classic update on input

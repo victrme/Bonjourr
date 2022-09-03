@@ -3,7 +3,7 @@
 	align-self: center;
 	text-align: left;
 	color: #fff;
-	width: 50%;
+	width: 100%;
 	max-width: 40em;
 	border-radius: 0.7em;
 	backdrop-filter: blur(10px);
@@ -39,25 +39,16 @@
 		div#notes_parsed,
 		textarea#notes_editor {
 			text-align: right;
-			padding-left: 5em;
-			padding-right: 1.5em;
 		}
 
-		button#b_notesedit {
+		button#b_notesdone {
 			left: 1em;
 			right: auto;
 		}
 	}
 
-	&:hover {
-		button#b_notesedit {
-			opacity: 1;
-		}
-	}
-
-	button#b_notesedit {
+	button#b_notesdone {
 		position: absolute;
-		opacity: 0;
 		top: 1.1em;
 		right: 1em;
 		font-size: 1.2em;
@@ -67,25 +58,33 @@
 		border-radius: 0.5em;
 		border: none;
 		backdrop-filter: blur(10px);
-		transition: opacity 0.3s 0.6s, background-color 0.15s;
-
-		&:focus {
-			opacity: 1;
-			transition-delay: 0s;
-		}
+		display: none;
+		transition: background-color .1s ease-in;
 
 		&:hover {
 			background-color: $blue;
 		}
 	}
 
+	// makes done button visible 
+	#notes_editor:not(.hidden) + button#b_notesdone {
+		display: block;
+	}
+
 	div#notes_parsed {
 		word-break: break-word;
 		cursor: auto;
+		content: "wow";
 
+		&:empty:after {
+			content: attr(placeholder);
+			opacity: .5;
+		}
+		
 		input[type='checkbox'] {
 			width: 1.2em;
 			height: 1.2em;
+			cursor: pointer;
 		}
 
 		blockquote {
@@ -120,6 +119,7 @@
 	div#notes_parsed,
 	textarea#notes_editor {
 		-webkit-filter: blur(0px);
+		filter: blur(0px);
 		pointer-events: all;
 		max-height: 40vh;
 		min-height: 1em;
@@ -127,28 +127,29 @@
 		overflow-y: auto;
 		font-size: 1.2em;
 		padding: 1.5em;
-		padding-right: 5em;
 
 		&.hidden {
 			position: absolute;
 			pointer-events: none;
 			user-select: none;
-			top: 0;
-			left: 0;
 			opacity: 0;
-			height: 0;
 		}
 	}
 
 	textarea#notes_editor {
-		width: calc(100% - 6.5em);
+		width: 100%;
 		min-height: 100px;
 		color: #fff;
 		border: none;
 		border-radius: 0.5em;
-		font-family: 'Courier New', Courier, monospace;
+		font-family: "SF Mono", "Consolas", "Courier New", Courier, monospace;
 		background-color: transparent;
 		resize: vertical;
 		text-align: left;
+		box-sizing: border-box;
+
+		&.hidden {
+			resize: none;
+		}
 	}
 }
