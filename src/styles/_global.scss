@@ -60,6 +60,7 @@ body {
 	min-height: var(--app-height);
 	text-align: center;
 	overflow-x: hidden;
+	overflow-y: clip;
 	touch-action: manipulation;
 	position: relative;
 	display: flex;

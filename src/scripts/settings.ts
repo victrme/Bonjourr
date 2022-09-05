@@ -69,11 +69,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : data.dynamic?.every || 'hour'
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 
-	const blur = typeof data.background_blur === 'number' ? data.background_blur : 15
-	const bright = typeof data.background_bright === 'number' ? data.background_bright : 0.8
-
-	initInput('i_blur', blur)
-	initInput('i_bright', bright)
+	initInput('i_blur', data.background_blur?.toString() || 15)
+	initInput('i_bright', data.background_bright?.toString() || 0.8)
 	initInput('cssEditor', data.css || '')
 	initInput('i_row', data.linksrow || 8)
 	initInput('i_linkstyle', data.linkstyle || 'default')
@@ -83,7 +80,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_favicon', data.favicon || '')
 	initInput('i_tabtitle', data.tabtitle || '')
 	initInput('i_greeting', data.greeting || '')
-	initInput('i_textshadow', data.textShadow || 0.2)
+	initInput('i_textshadow', data.textShadow?.toString() || 0.2)
 	initInput('i_notesopacity', data.notes?.opacity || 0.1)
 	initInput('i_notesalign', data.notes?.align || 'left')
 	initInput('i_textshadow', data.textShadow || 0.2)

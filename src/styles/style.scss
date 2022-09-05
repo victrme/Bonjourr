@@ -288,29 +288,20 @@
 		@import './features/notes.scss';
 
 		#linkblocks {
-			visibility: visible;
 			display: flex;
-			flex-direction: column;
+			visibility: visible;
+			flex-wrap: wrap;
+			justify-content: center;
 			margin: 0 auto;
+			padding: 0;
+			column-gap: 2.6em;
 			row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
-			transition: visibility 0s 0s, width 0.18s $easeOutThree;
+			transition: max-height 0.5s, max-width 0.18s $easeOutThree, visibility 0s 0s;
 
 			@include hidden();
 
 			#hiddenlink {
 				display: none;
-			}
-
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: center;
-				list-style: none;
-				padding: 0;
-				margin: 0;
-				column-gap: 2.6em;
-				max-height: 10em;
-				transition: max-height 0.5s;
 			}
 
 			li.block {
@@ -355,6 +346,7 @@
 					color: white;
 					cursor: pointer;
 					border: none;
+					border-radius: 1em; // for outline
 					text-decoration: none;
 					background-color: transparent;
 					transition: width 0.18s $easeOutThree;
@@ -399,6 +391,7 @@
 						padding-top: 0.4em;
 						line-height: 1.3em;
 						min-height: 1.3em;
+						max-height: 3.9em;
 						z-index: 2;
 					}
 				}
@@ -444,6 +437,7 @@
 						color: white;
 						font-size: 0.9em;
 						min-height: 1em;
+						max-height: 3em;
 						line-height: 1em;
 						white-space: nowrap;
 						text-shadow: none;
@@ -468,6 +462,7 @@
 
 			&.text {
 				gap: 2em;
+				justify-content: flex-start;
 
 				li {
 					width: auto;
@@ -678,7 +673,7 @@
 }
 
 footer {
-	// position: absolute;
+	position: fixed;
 	display: flex;
 	justify-content: space-between;
 	padding: 24px;
@@ -686,6 +681,7 @@ footer {
 	box-sizing: border-box;
 	width: 100%;
 	bottom: 0;
+	z-index: 3;
 	pointer-events: none;
 
 	> * {

@@ -262,12 +262,12 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 
 	// Double click event
 	parsed?.addEventListener('dblclick', () => {
-		toggleEditable();
+		toggleEditable()
 	})
 
 	// Done button event
 	doneBtn?.addEventListener('click', () => {
-		toggleEditable();
+		toggleEditable()
 	})
 
 	// Classic update on input
@@ -553,6 +553,10 @@ export function clock(
 					break
 				}
 
+				case 'ampm':
+					clock.ampm = event.checked
+					break
+
 				case 'analog':
 					clock.analog = event.checked
 					break
@@ -605,7 +609,7 @@ export function quickLinks(
 ) {
 	const domlinkblocks = $('linkblocks')!
 
-	async function initblocks(links: Link[], linksrow: number, isnewtab: boolean) {
+	async function initblocks(links: Link[], isnewtab: boolean) {
 		//
 		function createBlock(link: Link) {
 			let title = stringMaxSize(link.title, 64)
@@ -639,30 +643,9 @@ export function quickLinks(
 			// this also adds "normal" title as usual
 			textOnlyControl(li, title, domlinkblocks.className === 'text')
 
+			domlinkblocks.appendChild(li)
+
 			return { icon: img, block: li }
-		}
-
-		function createRows(
-			blocks: {
-				icon: HTMLImageElement
-				block: HTMLLIElement
-			}[],
-			rowSize: number
-		) {
-			const rowsAmount = Math.ceil(blocks.length / rowSize)
-
-			// append uls to linkblocks
-			for (let row = 0; row < rowsAmount; row++) {
-				const ul = document.createElement('ul')
-
-				// append block lis to uls (rows)
-				for (let col = 0; col < rowSize; col++) {
-					const li = blocks[col + rowSize * row]?.block
-					if (li) ul.appendChild(li)
-				}
-
-				domlinkblocks.appendChild(ul)
-			}
 		}
 
 		async function fetchNewIcon(dom: HTMLImageElement, url: string) {
@@ -700,7 +683,6 @@ export function quickLinks(
 
 				linksDragging()
 				canDisplayInterface('links')
-				createRows(blocklist, linksrow)
 
 				// Load icons one by one
 				links.map(async (link, index) => {
@@ -818,8 +800,7 @@ export function quickLinks(
 				draggedClone.id = ''
 				draggedClone.className = 'block dragging-clone on'
 
-				const ul = document.querySelector('#linkblocks ul')
-				if (ul) ul.appendChild(draggedClone) // append to ul to get same styling
+				domlinkblocks.appendChild(draggedClone) // append to linkblocks to get same styling
 			}
 
 			if (draggedCoord) {
@@ -907,7 +888,7 @@ export function quickLinks(
 						eventDebounce({ ...data }) // saves
 
 						document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove uls
-						initblocks(bundleLinks(data as Sync), data.linksrow, data.linknewtab) // re-init blocks
+						initblocks(bundleLinks(data as Sync), data.linknewtab) // re-init blocks
 					})
 				}, 200)
 			}
@@ -1147,7 +1128,7 @@ export function quickLinks(
 			links.push(...newLinksList)
 
 			// Displays and saves before fetching icon
-			initblocks(links, data.linksrow, data.linknewtab)
+			initblocks(links, data.linknewtab)
 			domlinkblocks.style.visibility = 'visible'
 		})
 	}
@@ -1159,6 +1140,18 @@ export function quickLinks(
 		if (span && a) {
 			span.textContent = toText && title === '' ? extractDomain(a.href) : title
 		}
+	}
+
+	function setRows(amount: number, style: string) {
+		const sizes = {
+			large: { width: 4.8, gap: 2.3 },
+			medium: { width: 3.5, gap: 2 },
+			small: { width: 2.5, gap: 2 },
+			text: { width: 5, gap: 2 }, // arbitrary width because width is auto
+		}
+
+		const { width, gap } = sizes[style as keyof typeof sizes]
+		domlinkblocks.style.maxWidth = (width + gap) * amount + 'em'
 	}
 
 	if (event) {
@@ -1194,25 +1187,27 @@ export function quickLinks(
 					const links = bundleLinks(data as Sync)
 					const classes = ['large', 'medium', 'small', 'text']
 					const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
+					const chosenClass = event.value?.toString() || ''
 
-					links.forEach(({ title }, i: number) => textOnlyControl(blocks[i], title, event.value === 'text'))
+					links.forEach(({ title }, i: number) => textOnlyControl(blocks[i], title, chosenClass === 'text'))
 
 					classes.forEach((c) => domlinkblocks.classList.remove(c))
-					domlinkblocks.classList.add(event.value?.toString() || '')
+					domlinkblocks.classList.add(chosenClass)
 
-					chrome.storage.sync.set({ linkstyle: event.value })
+					setRows(data.linksrow, chosenClass)
+
+					chrome.storage.sync.set({ linkstyle: chosenClass })
 				})
 				break
 			}
 
 			case 'row': {
-				chrome.storage.sync.get(null, (data) => {
-					const links = bundleLinks(data as Sync)
-					const row = parseInt(event.value || '6')
+				let domStyle = domlinkblocks.className || 'large'
+				const row = parseInt(event.value || '6')
 
-					initblocks(links, row, data.linknewtab)
-					eventDebounce({ linksrow: row })
-				})
+				setRows(row, domStyle)
+				eventDebounce({ linksrow: row })
+
 				break
 			}
 		}
@@ -1227,10 +1222,16 @@ export function quickLinks(
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
 	clas($('linkblocks'), !init.quicklinks, 'hidden')
-	initblocks(bundleLinks(init), init.linksrow, init.linknewtab)
+	initblocks(bundleLinks(init), init.linknewtab)
+	setRows(init.linksrow, init.linkstyle)
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
-	window.addEventListener('resize', closeEditLink)
+
+	window.addEventListener('resize', (e) => {
+		if (document.querySelector('#editlink')?.classList.contains('shown')) {
+			closeEditLink()
+		}
+	})
 }
 
 export async function linksImport() {
@@ -2271,12 +2272,25 @@ export async function unsplash(
 		header.append('Authorization', `Client-ID 3686c12221d29ca8f7947c94542025d760a8e0d49007ec70fa2c4b9f9d377b1d`)
 		header.append('Accept-Version', 'v1')
 
-		const resp = await fetch(url, { headers: header })
-		const json = await resp.json()
+		let resp: Response
+		let json: JSON[]
 
-		if (resp.status === 404 || json.length === 1) {
-			console.log(json?.errors)
-			return false
+		resp = await fetch(url, { headers: header })
+
+		if (resp.status === 404) {
+			if (collecType === 'user') {
+				const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
+				return defaultCollectionList
+			} else {
+				return []
+			}
+		}
+
+		json = await resp.json()
+
+		if (json.length === 1) {
+			const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
+			return defaultCollectionList
 		}
 
 		const filteredList: UnsplashImage[] = []
@@ -3246,7 +3260,7 @@ export function textShadow(init: number | null, event?: number) {
 	const val = init ? init : event
 	dominterface.style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
 
-	if (event) {
+	if (typeof event === 'number') {
 		eventDebounce({ textShadow: val })
 	}
 }
