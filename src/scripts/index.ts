@@ -672,8 +672,7 @@ export function quickLinks(
 
 		if (links.length > 0) {
 			if (!init) {
-				// remove old links blocks rows
-				document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove())
+				;[...domlinkblocks.children].forEach((li) => li.remove())
 			}
 
 			try {
@@ -886,8 +885,7 @@ export function quickLinks(
 						})
 
 						eventDebounce({ ...data }) // saves
-
-						document.querySelectorAll('#linkblocks ul').forEach((ul) => ul.remove()) // remove uls
+						;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
 						initblocks(bundleLinks(data as Sync), data.linknewtab) // re-init blocks
 					})
 				}, 200)

@@ -59,14 +59,14 @@
 		border: none;
 		backdrop-filter: blur(10px);
 		display: none;
-		transition: background-color .1s ease-in;
+		transition: background-color 0.1s ease-in;
 
 		&:hover {
-			background-color: $blue;
+			background-color: var(--blue);
 		}
 	}
 
-	// makes done button visible 
+	// makes done button visible
 	#notes_editor:not(.hidden) + button#b_notesdone {
 		display: block;
 	}
@@ -74,13 +74,13 @@
 	div#notes_parsed {
 		word-break: break-word;
 		cursor: auto;
-		content: "wow";
+		content: 'wow';
 
 		&:empty:after {
 			content: attr(placeholder);
-			opacity: .5;
+			opacity: 0.5;
 		}
-		
+
 		input[type='checkbox'] {
 			width: 1.2em;
 			height: 1.2em;
@@ -111,7 +111,7 @@
 		}
 
 		a {
-			color: $blue;
+			color: var(--blue);
 			filter: brightness(1.5);
 		}
 	}
@@ -142,7 +142,7 @@
 		color: #fff;
 		border: none;
 		border-radius: 0.5em;
-		font-family: "SF Mono", "Consolas", "Courier New", Courier, monospace;
+		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
 		background-color: transparent;
 		resize: vertical;
 		text-align: left;

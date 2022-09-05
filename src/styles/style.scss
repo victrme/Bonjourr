@@ -365,13 +365,13 @@
 						transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
 						&.selected {
-							border-color: $blue;
+							border-color: var(--blue);
 							transform: scale(1.1);
 							filter: brightness(0.85);
 						}
 
 						&:hover {
-							border-color: $blue;
+							border-color: var(--blue);
 							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
 							transform: scale(1.1);
 						}
@@ -517,7 +517,7 @@
 				border: 1px solid rgba(255, 255, 255, 0.075);
 
 				&:focus {
-					@include frostedGlass($blur: 0, $alpha: 0.2, $fbTint: 255, $fbAlpha: 0.8, $fbColor: #222);
+					@include frostedGlass($blur: 0, $alpha: 0.2, $fbTint: 255, $fbAlpha: 0.3, $fbColor: #222);
 				}
 
 				&::placeholder {
@@ -592,7 +592,7 @@
 			}
 
 			&.shown {
-				@include frostedGlass($alpha: 0.1, $fbAlpha: 0.5);
+				@include frostedGlass($alpha: 0.1, $fbAlpha: 0.3);
 
 				#searchbar:focus {
 					opacity: 1;
@@ -926,7 +926,7 @@ footer {
 				width: 25px;
 				height: 25px;
 				border-radius: 25px;
-				background-color: $blue;
+				background-color: var(--blue);
 				transform: translateY(-50%) scale(0.2);
 				transition: transform 0.05s;
 				filter: grayscale(1);
@@ -965,7 +965,7 @@ footer {
 				&:before {
 					filter: none;
 					transform: translateY(-50%) scale(1);
-					background: $blue no-repeat center/12px url('/src/assets/interface/checkmark.svg');
+					background: var(--blue) no-repeat center/12px url('/src/assets/interface/checkmark.svg');
 				}
 			}
 		}
@@ -1241,7 +1241,7 @@ footer {
 	}
 
 	.error-buttons-close {
-		background-color: $blue;
+		background-color: var(--blue);
 	}
 }
 

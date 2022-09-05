@@ -18,7 +18,7 @@
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
-	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
+	transition: transform 0.4s, background-color 0.4s $easeOutThree, opacity 0.4s;
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
@@ -67,11 +67,11 @@
 			}
 
 			p > span#link {
-				color: $blue;
+				color: var(--blue);
 			}
 
 			#link {
-				color: $blue;
+				color: var(--blue);
 				text-decoration: none;
 			}
 		}
@@ -195,7 +195,7 @@
 		transition: max-height 0.4s, margin 0.4s, padding 0.2s;
 
 		a {
-			color: $blue;
+			color: var(--blue);
 			text-decoration: none;
 		}
 
@@ -325,7 +325,6 @@
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
-		transition: background-color 0.1s, border-color 0.1s;
 	}
 
 	.freq_wrap > div {
@@ -352,10 +351,10 @@
 		font-size: 14px;
 		text-align: center;
 		cursor: pointer;
-		color: $blue;
+		color: var(--blue);
 		background-color: $settingsGrey;
 		border: 1px dashed transparent;
-		transition: all 0.2s;
+
 		transform: scale(1);
 		box-sizing: border-box;
 		border-radius: 10px;
@@ -373,12 +372,19 @@
 			cursor: pointer;
 		}
 
+		&:hover,
+		&:focus,
+		&.dragover,
+		&:active {
+			transition: all 0.2s;
+		}
+
 		&:hover {
 			background-color: $focusedGrey;
 		}
 
 		&.dragover {
-			background-color: $blue;
+			background-color: var(--blue);
 			color: $purewhite;
 			opacity: 1;
 			transform: scale(1.03);
@@ -422,7 +428,7 @@
 				transition: box-shadow 0.1s $easeOutThree, transform 0.1s;
 
 				&.selected {
-					border: 3px solid $blue;
+					border: 3px solid var(--blue);
 				}
 
 				img {
@@ -537,21 +543,26 @@
 			height: $inputHeight;
 			width: 100%;
 			margin-right: 5px;
-			color: $blue;
+			color: var(--blue);
 			font-size: small;
 			text-align: center;
 			border-radius: 10px;
 			background-color: $settingsGrey;
-			transition: background-color 0.2s, color 0.2s;
+
+			&:hover,
+			&:focus,
+			&:active {
+				transition: background-color 0.2s, color 0.2s;
+			}
 
 			&:hover {
 				text-decoration: none;
-				background-color: $focusedGrey;
+				background-color: #0072ee22;
 			}
 
 			&.clicked {
 				color: $borderGrey;
-				background-color: white;
+				background-color: transparent;
 			}
 		}
 	}
@@ -683,7 +694,7 @@
 
 			.glider {
 				width: calc(50% - 3px);
-				background-color: $blue;
+				background-color: var(--blue);
 				position: absolute;
 				border-radius: 8.5px;
 				z-index: 3;
@@ -726,7 +737,7 @@
 			// When glider is not
 			&.toggled #s_export,
 			#s_import {
-				color: $blue;
+				color: var(--blue);
 				z-index: 2;
 
 				&:hover {
@@ -849,7 +860,7 @@
 
 		a {
 			text-decoration: none;
-			color: $blue;
+			color: var(--blue);
 		}
 
 		.firstblock {
@@ -869,7 +880,7 @@
 
 					svg {
 						height: 1.25em;
-						fill: $blue;
+						fill: var(--blue);
 					}
 
 					&:hover {

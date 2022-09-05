@@ -7,7 +7,6 @@ $code: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
 $purewhite: white;
 $pureblack: black;
 
-$blue: #0072ee;
 $green: #2ed058;
 $red: #fe3b31;
 $settingsGrey: #f2f2f7;
@@ -67,6 +66,8 @@ body {
 	flex-direction: column;
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
+	--blue: #0072ee;
+
 	p,
 	h3 {
 		margin: 0;
@@ -106,7 +107,7 @@ body {
 		button:focus,
 		#bookmarks li:focus-visible,
 		input:focus-visible + .slider {
-			outline: 2px solid $blue;
+			outline: 2px solid var(--blue);
 		}
 	}
 }
@@ -139,10 +140,10 @@ body {
 		color: $fbColor;
 	}
 
-	@-moz-document url-prefix() {
-		background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
-		color: $fbColor;
-	}
+	// @-moz-document url-prefix() {
+	// 	background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
+	// 	color: $fbColor;
+	// }
 }
 
 @mixin hideElements {
@@ -259,6 +260,8 @@ body {
 	//
 	// Dark mode transition
 	// #settings and buttons have seperate transitions
+	#hideelem button,
+	.uploadContainer,
 	#submitSave,
 	#i_refresh,
 	#cssEditor,
@@ -273,7 +276,7 @@ body {
 	}
 
 	button {
-		color: $blue;
+		color: var(--blue);
 		font-size: 14px;
 		border-radius: 8.5px;
 		border: 2px solid transparent;
@@ -331,7 +334,6 @@ body {
 		border-radius: 16px;
 		border: 2px solid transparent;
 		background-color: $inputGrey;
-		transition: background-color 0.15s;
 
 		-webkit-appearance: none;
 		-moz-appearance: none;
@@ -339,7 +341,7 @@ body {
 
 		&:hover {
 			background-color: #ccc;
-			transition: background-color 0.2s;
+			transition: background-color 0.15s;
 		}
 
 		&:after {
@@ -357,7 +359,7 @@ body {
 
 		&:checked {
 			background-color: $green;
-			transition: background-color 0.1s;
+			transition: background-color 0.15s;
 
 			&:hover {
 				background-color: #40b354;
