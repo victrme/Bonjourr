@@ -16,7 +16,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@types/chrome": "^0.0.193",
+		"@types/chrome": "^0.0.196",
 		"@types/gulp": "^4.0.9",
 		"@types/gulp-csso": "^4.0.1",
 		"@types/gulp-rename": "^2.0.1",
@@ -31,10 +31,11 @@
 		"gulp-sass": "^5.1.0",
 		"lodash.debounce": "^4.0.8",
 		"lodash.throttle": "^4.1.1",
-		"sass": "^1.54.4",
+		"sass": "^1.54.8",
 		"snarkdown": "^2.0.0",
-		"typescript": "^4.7.4",
-		"user-agent-data-types": "^0.3.0"
+		"typescript": "^4.8.2",
+		"user-agent-data-types": "^0.3.0",
+		"web-ext-types": "^3.2.1"
 	},
 	"pnpm": {
 		"overrides": {
