@@ -783,8 +783,6 @@ export function quickLinks(
 						y: [y + height * 0.1, y + height * 0.9],
 					},
 				}
-
-				block.setAttribute('style', 'pointerEvents: none')
 			})
 
 			// Transform coords in array here to improve performance during mouse move
@@ -794,7 +792,7 @@ export function quickLinks(
 			const draggedCoord = coords[draggedId]
 
 			if (draggedDOM) {
-				draggedDOM.setAttribute('style', 'opacity: 0')
+				draggedDOM.style.opacity = '0'
 				draggedClone = draggedDOM.cloneNode(true) as HTMLLIElement // create fixed positionned clone of element
 				draggedClone.id = ''
 				draggedClone.className = 'block dragging-clone on'
@@ -808,6 +806,8 @@ export function quickLinks(
 			}
 
 			deplaceElem(draggedClone, ex - cox + push, ey - coy)
+
+			clas(domlinkblocks, true, 'dragging') // to apply pointer-events: none
 		}
 
 		const applyDrag = (ex: number, ey: number) => {
@@ -883,6 +883,8 @@ export function quickLinks(
 							const link = data[key] as Link
 							link.order = val // Updates orders
 						})
+
+						clas(domlinkblocks, false, 'dragging') // to apply pointer-events: none
 
 						eventDebounce({ ...data }) // saves
 						;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
@@ -1169,7 +1171,6 @@ export function quickLinks(
 				break
 			}
 
-			// TODO: newtab not working on new a11y links
 			case 'newtab': {
 				const val = event.checked || false
 				chrome.storage.sync.set({ linknewtab: val })
@@ -1205,7 +1206,6 @@ export function quickLinks(
 
 				setRows(row, domStyle)
 				eventDebounce({ linksrow: row })
-
 				break
 			}
 		}
@@ -1339,8 +1339,8 @@ export async function linksImport() {
 		if (!granted) return
 
 		chrome.storage.sync.get(null, (data) => {
-			// ;(window.location.protocol === 'moz-extension:' ? browser : chrome).bookmarks.getTree().then((response) => {
-			chrome.bookmarks.getTree().then((response) => {
+			const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
+			extAPI.bookmarks.getTree().then((response) => {
 				clas($('bookmarks_container'), true, 'shown')
 				main(bundleLinks(data as Sync), response)
 			})
@@ -3674,6 +3674,11 @@ window.onload = function () {
 					quicklinks: true,
 					about: { browser: detectPlatform(), version: syncDefaults.about.version },
 				})
+
+				// 1.15.0
+				if (data.hide[2] === 1) {
+					data.quicklinks = false
+				}
 			}
 
 			startup(data as Sync) // TODO: rip type checking

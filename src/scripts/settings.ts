@@ -976,7 +976,7 @@ export function settingsInit(data: Sync) {
 			}
 
 			if (e.code === 'Escape') {
-				toggleDisplay(settingsDom) // Opens menu when pressing "Escape"
+				has($('editlink'), 'shown') ? closeEditLink() : toggleDisplay(settingsDom) // Opens menu when pressing "Escape"
 				return
 			}
 
@@ -999,6 +999,15 @@ export function settingsInit(data: Sync) {
 			// }
 		}
 
+		window.addEventListener('click', function (e) {
+			const path = e.composedPath()
+			const clicksOnEdit = path.filter((d: EventTarget) => (d as HTMLElement).id === 'editlink').length > 0
+
+			if (!clicksOnEdit && has($('editlink'), 'shown')) {
+				closeEditLink() // hides edit menu
+			}
+		})
+
 		dominterface?.addEventListener('click', function (e) {
 			const path = e.composedPath()
 
@@ -1006,10 +1015,6 @@ export function settingsInit(data: Sync) {
 				path.filter((d: EventTarget) => (d as HTMLElement).id === 'linkblocks').length > 0 // finds linkblocks in event path
 			) {
 				return // Do nothing if links are clicked
-			}
-
-			if (has($('editlink'), 'shown')) {
-				closeEditLink() // hides edit menu
 			}
 
 			if (document.body.classList.contains('tabbing')) {

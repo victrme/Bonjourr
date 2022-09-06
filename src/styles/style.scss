@@ -40,6 +40,7 @@
 	position: relative;
 	flex-grow: 1;
 	// min-height: var(--app-height);
+	max-height: calc(100vh - 80px);
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -302,6 +303,12 @@
 
 			#hiddenlink {
 				display: none;
+			}
+
+			&.dragging {
+				li {
+					pointer-events: none;
+				}
 			}
 
 			li.block {
@@ -673,16 +680,13 @@
 }
 
 footer {
-	position: fixed;
 	display: flex;
 	justify-content: space-between;
+	width: 100%;
 	padding: 24px;
 	padding-top: 0;
 	box-sizing: border-box;
-	width: 100%;
-	bottom: 0;
 	z-index: 3;
-	pointer-events: none;
 
 	> * {
 		pointer-events: all;
