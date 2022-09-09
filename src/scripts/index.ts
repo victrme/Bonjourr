@@ -138,8 +138,8 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		parsed.querySelectorAll('input[type="checkbox"]').forEach((checkbox, ii) => {
 			checkbox.addEventListener('click', () => {
 				let raw = (editor as HTMLInputElement).value
-				const matches = [...raw.matchAll(/(\[[x ]\])/g)]
-				const matchIndex = matches[ii].index
+				const matches = [...raw.matchAll(/(\[[x ]\])/g)] // lists all checkboxes
+				const matchIndex = matches[ii].index // finds chbx start index
 
 				if (typeof matchIndex === 'number') {
 					raw = replaceAt(raw, matches[ii][0].includes('x') ? ` ` : `x`, matchIndex + 1)
@@ -195,6 +195,70 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		// Toggle classes
 		clas(editor, !isEditorHidden, 'hidden')
 		clas(parsed, !isParsedHidden, 'hidden')
+
+		// Change edit button text
+		doneBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+	}
+
+	function editorKeybindings(key: string, cmd: boolean, shift: boolean) {
+		const editordom = editor as HTMLTextAreaElement
+		const { selectionStart, selectionEnd } = editordom
+
+		if (cmd === false) {
+			return // no meta or ctrl ? return
+		}
+
+		function addDecoration(charStart: string, charEnd: string = charStart) {
+			let result = editordom.value,
+				start = result.substring(0, selectionStart),
+				selection = result.substring(selectionStart, selectionEnd),
+				end = result.substring(selectionEnd)
+
+			const isRemoval = selection.startsWith(charStart) && (selection.endsWith(charEnd) || charEnd === '')
+
+			// Remove or adds characters from selection
+			selection = isRemoval
+				? selection.substring(charStart.length, selection.length - charEnd.length)
+				: charStart + selection + charEnd
+
+			// Apply to editor
+			result = start + selection + end
+			editordom.value = result
+			notes(null, { is: 'change', value: result })
+
+			// Set selection to same position (because changing value resets cursor)
+			const addLength = charStart.length + charEnd.length
+			const remLength = -(charStart.length + charEnd.length)
+			editordom.selectionStart = selectionStart
+			editordom.selectionEnd = selectionEnd + (isRemoval ? remLength : addLength)
+		}
+
+		switch (key) {
+			case 'KeyC': {
+				if (shift) addDecoration('[ ] ', '')
+				break
+			}
+
+			case 'KeyI':
+				addDecoration('_')
+				break
+
+			case 'KeyB':
+				addDecoration('**')
+				break
+
+			case 'KeyS':
+				addDecoration('~~')
+				break
+
+			case 'KeyU':
+				addDecoration('[', '](url)')
+				break
+
+			case 'Enter':
+				toggleEditable()
+				break
+		}
 	}
 
 	if (event) {
@@ -260,9 +324,19 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
 
+	//
+	// Interface Events
+	//
+
 	// Double click event
-	parsed?.addEventListener('dblclick', () => {
-		toggleEditable()
+	parsed?.addEventListener('dblclick', (e: MouseEvent) => {
+		const path = e.composedPath()
+		const isCheckbox = (path[0] as HTMLElement).tagName === 'INPUT'
+		const selection = window.getSelection()?.getRangeAt(0)?.toString().trim() || ''
+
+		if (!isCheckbox && selection.length < 2) {
+			toggleEditable() // Prevent toggling when selecting text with mouse click
+		}
 	})
 
 	// Done button event
@@ -275,73 +349,24 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		notes(null, { is: 'change', value: this.value })
 	})
 
-	// No browser shortcuts if text field shortcuts detected
 	editor?.addEventListener('keydown', (e: KeyboardEvent) => {
-		if (e.ctrlKey && ['KeyI', 'KeyB', 'KeyC', 'KeyS', 'KeyU', 'KeyT'].includes(e.code)) {
-			e.preventDefault()
+		const otherKeys = ['KeyI', 'KeyB', 'KeyC', 'KeyS', 'KeyU', 'KeyT']
+		const modifier = testOS.mac ? e.metaKey : e.ctrlKey
+		const chbxKeys = modifier && e.shiftKey && e.code === 'KeyC'
+
+		if (chbxKeys || (modifier && otherKeys.includes(e.code))) {
+			e.preventDefault() // Only prevent default on needed key combos
+		}
+
+		if (!testOS.windows) {
+			// Macos & linux are triggering on keydown, but linux uses ctrl
+			editorKeybindings(e.code, modifier, e.shiftKey)
 		}
 	})
 
-	// Editor Shortcuts
 	editor?.addEventListener('keyup', (e: KeyboardEvent) => {
-		const editordom = editor as HTMLTextAreaElement
-		const { selectionStart, selectionEnd } = editordom
-
-		// No selections, return
-		if (!e.ctrlKey || selectionStart === selectionEnd) {
-			return
-		}
-
-		function addDecoration(charStart: string, charEnd: string = charStart) {
-			let result = editordom.value,
-				start = result.substring(0, selectionStart),
-				selection = result.substring(selectionStart, selectionEnd),
-				end = result.substring(selectionEnd)
-
-			const isRemoval = selection.startsWith(charStart) && (selection.endsWith(charEnd) || charEnd === '')
-
-			// Remove or adds characters from selection
-			selection = isRemoval
-				? selection.substring(charStart.length, selection.length - charEnd.length)
-				: charStart + selection + charEnd
-
-			// Apply to editor
-			result = start + selection + end
-			editordom.value = result
-			notes(null, { is: 'change', value: result })
-
-			// Set selection to same position (because changing value resets cursor)
-			const addLength = charStart.length + charEnd.length
-			const remLength = -(charStart.length + charEnd.length)
-			editordom.selectionStart = selectionStart
-			editordom.selectionEnd = selectionEnd + (isRemoval ? remLength : addLength)
-		}
-
-		switch (e.code) {
-			case 'KeyI':
-				addDecoration('_')
-				break
-
-			case 'KeyB':
-				addDecoration('**')
-				break
-
-			case 'KeyC':
-				addDecoration('`')
-				break
-
-			case 'KeyS':
-				addDecoration('~~')
-				break
-
-			case 'KeyU':
-				addDecoration('[', '](url)')
-				break
-
-			case 'KeyT':
-				addDecoration('[ ] ', '')
-				break
-		}
+		// Only windows uses keyup for its keybindings
+		testOS.windows ? editorKeybindings(e.code, e.ctrlKey, e.shiftKey) : ''
 	})
 }
 

@@ -54,21 +54,29 @@
 		font-size: 1.2em;
 		padding: 0.25em 1em;
 		color: #fff;
-		background-color: #fff3;
-		border-radius: 0.5em;
+		opacity: 0;
 		border: none;
+		border-radius: 0.5em;
+		background-color: #fff3;
 		backdrop-filter: blur(10px);
-		display: none;
-		transition: background-color 0.1s ease-in;
+		transition: background-color 0.15s, opacity 0.15s;
 
 		&:hover {
+			opacity: 1;
 			background-color: var(--blue);
+		}
+
+		&:focus-visible {
+			opacity: 1;
+			pointer-events: all;
+			background-color: #fff2;
 		}
 	}
 
 	// makes done button visible
 	#notes_editor:not(.hidden) + button#b_notesdone {
-		display: block;
+		opacity: 1;
+		pointer-events: all;
 	}
 
 	div#notes_parsed {
