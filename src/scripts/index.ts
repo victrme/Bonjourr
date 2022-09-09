@@ -328,16 +328,30 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	// Interface Events
 	//
 
-	// Double click event
-	parsed?.addEventListener('dblclick', (e: MouseEvent) => {
+	function doubleClickToggle(e: Event) {
 		const path = e.composedPath()
 		const isCheckbox = (path[0] as HTMLElement).tagName === 'INPUT'
-		const selection = window.getSelection()?.getRangeAt(0)?.toString().trim() || ''
+		let string = ''
 
-		if (!isCheckbox && selection.length < 2) {
+		if ((window.getSelection()?.rangeCount || -1) > 0) {
+			string = window.getSelection()?.getRangeAt(0)?.toString().trim() || '' // To prevent "Failed to execute 'getRangeAt' on 'Selection'"
+		}
+
+		if (!isCheckbox && string.length < 2) {
 			toggleEditable() // Prevent toggling when selecting text with mouse click
 		}
-	})
+	}
+
+	// Mobile double click
+	if (mobilecheck()) {
+		let last = 0
+		parsed?.addEventListener('touchstart', (e) => {
+			if (last !== 0 && e.timeStamp - last < 300) doubleClickToggle(e) // is fast enough to be considered a double click
+			last = e.timeStamp
+		})
+	}
+	// Desktop double click
+	else parsed?.addEventListener('dblclick', doubleClickToggle)
 
 	// Done button event
 	doneBtn?.addEventListener('click', () => {
@@ -3670,6 +3684,8 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 
 window.onload = function () {
 	onlineAndMobileHandler()
+
+	console.log(mobilecheck() ? 'mobile' : 'desktop')
 
 	try {
 		chrome.storage.sync.get(null, (data) => {

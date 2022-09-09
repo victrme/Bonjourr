@@ -46,6 +46,10 @@
 		#tempContainers {
 			padding-bottom: unset;
 		}
+
+		&.pushed {
+			transform: translateX(0);
+		}
 	}
 
 	#settings {

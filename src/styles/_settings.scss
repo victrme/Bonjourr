@@ -5,6 +5,7 @@
 	z-index: 2;
 	right: -450px;
 	height: 100vh;
+	min-width: 333px;
 	width: calc(450px - (21px * 2));
 	padding: 0 21px;
 
@@ -274,6 +275,7 @@
 	#tabtitle {
 		div {
 			display: flex;
+			align-items: center;
 
 			#i_favicon {
 				text-align: center;

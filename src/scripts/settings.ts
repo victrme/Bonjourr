@@ -961,6 +961,7 @@ export function settingsInit(data: Sync) {
 				clas(document.querySelector('footer'), isClosed, 'hidden')
 				settingsDom.style.removeProperty('transform')
 				settingsDom.style.removeProperty('transition')
+				isAtFloor = false
 			}
 		}
 
@@ -1005,23 +1006,38 @@ export function settingsInit(data: Sync) {
 			}
 		})
 
+		dominterface?.addEventListener('click', function (e) {
+			if (e.composedPath().filter((d) => (d as HTMLElement).id === 'linkblocks').length > 0) {
+				return // Do nothing if links are clicked
+			}
+
+			if (document.body.classList.contains('tabbing')) {
+				clas(document.body, false, 'tabbing') // Removes tabbing class on click
+			}
+
+			// Close menu when clicking anywhere on interface
+			if (has(settingsDom, 'shown')) {
+				toggleDisplay(settingsDom)
+			}
+		})
+
+		//
+		// Mobile settings height control
+
 		let firstPos = 0
 		let startTouchY = 0
+		let isAtFloor = false
 
 		function moveSettingsOnMobile(e: TouchEvent) {
-			if (e.touches[0].clientY > firstPos && e.touches[0].clientY < window.innerHeight - 160) {
-				settingsDom.style.transform = `translateY(-${window.innerHeight - e.touches[0].clientY}px)`
+			const isBelowMax = e.touches[0].clientY > firstPos
+			const isAboveMin = e.touches[0].clientY < window.innerHeight - 160
+
+			if (isBelowMax && (isAboveMin || isAtFloor)) {
+				settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - e.touches[0].clientY}px)`
 				settingsDom.style.transition = `transform .0s`
 
 				e.preventDefault()
 				e.stopPropagation()
-
-				// settingsDom.setAttribute(
-				// 	'style',
-				// 	`overflow: hidden; transition: transform .0s;  transform: translateY(-${
-				// 		window.innerHeight - e.touches[0].clientY
-				// 	}px)`
-				// )
 			}
 		}
 
@@ -1041,25 +1057,20 @@ export function settingsInit(data: Sync) {
 
 		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', (e) => {
 			window.removeEventListener('touchmove', moveSettingsOnMobile)
+
 			startTouchY = 0
-			console.log('cancel')
+
 			settingsDom.style.removeProperty('padding')
 			settingsDom.style.removeProperty('width')
 			settingsDom.style.removeProperty('overflow')
-		})
 
-		dominterface?.addEventListener('click', function (e) {
-			if (e.composedPath().filter((d) => (d as HTMLElement).id === 'linkblocks').length > 0) {
-				return // Do nothing if links are clicked
-			}
+			const isBelowMinHeight = (e as TouchEvent).changedTouches[0].clientY > window.innerHeight - 160
 
-			if (document.body.classList.contains('tabbing')) {
-				clas(document.body, false, 'tabbing') // Removes tabbing class on click
-			}
-
-			// Close menu when clicking anywhere on interface
-			if (has(settingsDom, 'shown')) {
+			if (isBelowMinHeight && !isAtFloor) {
+				isAtFloor = true
+			} else if (isBelowMinHeight && isAtFloor) {
 				toggleDisplay(settingsDom)
+				isAtFloor = false
 			}
 		})
 	}
