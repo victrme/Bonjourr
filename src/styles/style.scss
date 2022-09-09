@@ -688,6 +688,8 @@ footer {
 	box-sizing: border-box;
 	z-index: 3;
 
+	@include hidden();
+
 	> * {
 		pointer-events: all;
 		opacity: 0;

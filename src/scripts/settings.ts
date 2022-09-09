@@ -955,7 +955,13 @@ export function settingsInit(data: Sync) {
 			clas(domshowsettings, isClosed, 'shown')
 			clas(domedit, isClosed, 'pushed')
 
-			if (!mobilecheck()) clas(dominterface, isClosed, 'pushed')
+			if (!mobilecheck()) {
+				clas(dominterface, isClosed, 'pushed')
+			} else {
+				clas(document.querySelector('footer'), isClosed, 'hidden')
+				settingsDom.style.removeProperty('transform')
+				settingsDom.style.removeProperty('transition')
+			}
 		}
 
 		$('skiptosettings')?.addEventListener('click', function () {
@@ -988,15 +994,6 @@ export function settingsInit(data: Sync) {
 			if ($('error') && e.ctrlKey) {
 				return // do nothing if pressing ctrl or if there's an error message
 			}
-
-			// const notTabbing = document.body.classList.contains('tabbing') === false
-			// const noSettings = has($('settings'), 'shown') === false
-			// const noEdit = has($('editlink'), 'shown') === false
-			// const hasSearchbar = has($('sb_container'), 'shown')
-
-			// if (noSettings && noEdit && notTabbing && hasSearchbar) {
-			// 	$('searchbar')?.focus() // Focus searchbar if only searchbar is on
-			// }
 		}
 
 		window.addEventListener('click', function (e) {
@@ -1008,12 +1005,51 @@ export function settingsInit(data: Sync) {
 			}
 		})
 
-		dominterface?.addEventListener('click', function (e) {
-			const path = e.composedPath()
+		let firstPos = 0
+		let startTouchY = 0
 
-			if (
-				path.filter((d: EventTarget) => (d as HTMLElement).id === 'linkblocks').length > 0 // finds linkblocks in event path
-			) {
+		function moveSettingsOnMobile(e: TouchEvent) {
+			if (e.touches[0].clientY > firstPos && e.touches[0].clientY < window.innerHeight - 160) {
+				settingsDom.style.transform = `translateY(-${window.innerHeight - e.touches[0].clientY}px)`
+				settingsDom.style.transition = `transform .0s`
+
+				e.preventDefault()
+				e.stopPropagation()
+
+				// settingsDom.setAttribute(
+				// 	'style',
+				// 	`overflow: hidden; transition: transform .0s;  transform: translateY(-${
+				// 		window.innerHeight - e.touches[0].clientY
+				// 	}px)`
+				// )
+			}
+		}
+
+		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', (e) => {
+			startTouchY = (e as TouchEvent).touches[0].clientY
+
+			if (firstPos === 0) {
+				firstPos = startTouchY
+			}
+
+			settingsDom.style.width = `calc(100% - 15px)`
+			settingsDom.style.paddingRight = `10px`
+			settingsDom.style.overflow = `clip`
+
+			window.addEventListener('touchmove', moveSettingsOnMobile)
+		})
+
+		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', (e) => {
+			window.removeEventListener('touchmove', moveSettingsOnMobile)
+			startTouchY = 0
+			console.log('cancel')
+			settingsDom.style.removeProperty('padding')
+			settingsDom.style.removeProperty('width')
+			settingsDom.style.removeProperty('overflow')
+		})
+
+		dominterface?.addEventListener('click', function (e) {
+			if (e.composedPath().filter((d) => (d as HTMLElement).id === 'linkblocks').length > 0) {
 				return // Do nothing if links are clicked
 			}
 
@@ -1023,9 +1059,7 @@ export function settingsInit(data: Sync) {
 
 			// Close menu when clicking anywhere on interface
 			if (has(settingsDom, 'shown')) {
-				clas(settingsDom, false, 'shown')
-				clas(domshowsettings, false, 'shown')
-				clas(dominterface, false, 'pushed')
+				toggleDisplay(settingsDom)
 			}
 		})
 	}

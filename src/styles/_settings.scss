@@ -30,6 +30,24 @@
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 	}
 
+	#mobile-drag-zone {
+		display: none;
+		width: 40%;
+		margin: auto;
+		padding: 1em;
+		padding-top: 2em;
+		border-radius: 1em;
+		z-index: 4;
+
+		hr {
+			width: 60px;
+			height: 3px;
+			margin: auto;
+			border-top: 4px dotted #999;
+			border-bottom: 4px dotted #999;
+		}
+	}
+
 	#changelogContainer {
 		display: none;
 		overflow: hidden;
