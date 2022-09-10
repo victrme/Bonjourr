@@ -978,7 +978,7 @@ export function settingsInit(data: Sync) {
 		})
 
 		document.onkeydown = function (e) {
-			if (e.code === 'KeyG') {
+			if (e.altKey && e.code === 'KeyS') {
 				getBrowserStorage()
 			}
 

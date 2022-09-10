@@ -3566,7 +3566,8 @@ export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quic
 	}
 
 	if (init) {
-		toggleEmpty(!(init.notes?.on || init.quicklinks || init.searchbar?.on || init.quotes?.on)) // if one is true, not empty
+		const { notes, quicklinks, searchbar, quotes } = init
+		toggleEmpty(!(notes?.on || quicklinks || searchbar?.on || quotes?.on)) // if one is true, not empty
 	}
 }
 
@@ -3710,16 +3711,14 @@ window.onload = function () {
 			}
 			//
 			else if (VersionChange) {
-				// Is at least 1.14.0, no filtering to do, just update version
-				chrome.storage.sync.set({
-					quicklinks: true,
-					about: { browser: detectPlatform(), version: syncDefaults.about.version },
-				})
+				console.log(`Version change: ${data?.about?.version} => ${syncDefaults.about.version}`)
 
-				// 1.15.0
-				if (data.hide[2] === 1) {
-					data.quicklinks = false
-				}
+				data.quicklinks = data.hide[2][0] === 0
+				data.hide[2][0] = 0
+				data.notes = syncDefaults.notes
+				data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
+
+				chrome.storage.sync.set(data)
 			}
 
 			startup(data as Sync) // TODO: rip type checking
