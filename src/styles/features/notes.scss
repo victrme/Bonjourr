@@ -6,15 +6,15 @@
 	width: 100%;
 	max-width: 40em;
 	border-radius: 0.7em;
-	backdrop-filter: blur(10px);
-	background-color: #fff2;
 	border: 1px solid rgba(255, 255, 255, 0.075);
 	text-shadow: none;
 
+	@include frostedGlass($tint: 255, $alpha: 0.1, $blur: 10px, $fbAlpha: 0.4, $fbColor: #fff);
+
 	touch-action: all;
-	user-select: text;
-	-moz-user-select: text;
 	-webkit-user-select: text;
+	-moz-user-select: text;
+	user-select: text;
 
 	&.hidden {
 		flex-grow: 0;
@@ -58,7 +58,6 @@
 		border: none;
 		border-radius: 0.5em;
 		background-color: #fff3;
-		backdrop-filter: blur(10px);
 		transition: background-color 0.15s, opacity 0.15s;
 
 		&:hover {

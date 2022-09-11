@@ -629,9 +629,9 @@
 			min-height: 0;
 			margin-right: auto;
 			margin-left: auto;
-			user-select: text;
-			-moz-user-select: text;
 			-webkit-user-select: text;
+			-moz-user-select: text;
+			user-select: text;
 			will-change: transform, flex-grow;
 			transition: opacity 0.2s, flex-grow 0.4s 0.2s, min-height 0.4s 0.2s, transform 0.4s;
 			cursor: initial;

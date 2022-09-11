@@ -646,6 +646,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
 		toggleTabindex('#import', has(paramId('import'), 'shown'))
 		toggleTabindex('#export', has(paramId('export'), 'shown'))
+
+		// File export downloader is never tabbable
+		paramId('downloadfile').setAttribute('tabindex', '-1')
 	}
 
 	// On startup
@@ -702,6 +705,7 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 		['#i_tabtitle', 'New tab'],
 		['#i_sbrequest', 'Search query: %s'],
 		['#cssEditor', 'Type in your custom CSS'],
+		['#i_importtext', 'or paste as text'],
 	]
 
 	cases.forEach(([domId, text]) => {
@@ -967,10 +971,12 @@ export function settingsInit(data: Sync) {
 
 		$('skiptosettings')?.addEventListener('click', function () {
 			toggleDisplay(settingsDom)
-			const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
-			showall.focus()
-
 			settingsDom.scrollTo({ top: 0 })
+
+			setTimeout(() => {
+				const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
+				showall.focus()
+			}, 10)
 		})
 
 		domshowsettings?.addEventListener('click', function () {

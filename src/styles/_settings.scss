@@ -8,6 +8,7 @@
 	min-width: 333px;
 	width: calc(450px - (21px * 2));
 	padding: 0 21px;
+	visibility: hidden;
 
 	background-color: $settingsGrey;
 	color: $blackish;
@@ -19,13 +20,14 @@
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
-	transition: transform 0.4s, background-color 0.4s $easeOutThree, opacity 0.4s;
+	transition: transform 0.4s, background-color 0.4s $easeOutThree, opacity 0.4s, visibility 0.4s;
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	// transform: translateX(-100%) !important;
 
 	&.shown {
+		visibility: visible;
 		-webkit-transform: translateX(-100%);
 		transform: translateX(-100%);
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);

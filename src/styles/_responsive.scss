@@ -5,9 +5,9 @@
 	}
 
 	#showSettings {
-		user-select: none;
-		-webkit-user-select: none;
 		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
 
 		&:active {
 			filter: brightness(0.5);
@@ -15,9 +15,9 @@
 	}
 
 	.block_parent .block {
-		user-select: none;
-		-webkit-user-select: none;
 		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 }
 

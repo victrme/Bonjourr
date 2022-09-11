@@ -47,9 +47,9 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 body {
 	margin: 0;
 	cursor: default;
-	user-select: none;
-	-moz-user-select: none;
 	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
 	touch-action: pan-y;
 	opacity: 1;
 	background-color: $pureblack;
