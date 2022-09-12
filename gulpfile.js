@@ -1,39 +1,27 @@
 const { series, parallel, src, dest, watch } = require('gulp'),
-	concat = require('gulp-concat'),
-	terser = require('gulp-terser'),
-	htmlmin = require('gulp-htmlmin'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
 	sass = require('gulp-sass')(require('sass'))
 
-function html(platform, prod) {
+function html(platform) {
 	//
 	// Index & settings minified
 	// Multiple scripts tags => only main.js
 	//
 
 	return () => {
-		const findScriptTags = /<script[\s\S]*?>[\s\S]*?<\/script>/gi
-		const stream = src('*.html')
+		const stream = src('src/*.html')
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
 		}
 
-		if (prod) {
-			stream.pipe(htmlmin({ collapseWhitespace: true, removeComments: true }))
-		}
-
-		return stream
-			.pipe(
-				replace(findScriptTags, (match) => (match.includes('script.js') ? match.replace('script.js', 'main.js') : ''))
-			)
-			.pipe(dest(`release/${platform}`))
+		return stream.pipe(dest(`release/${platform}`))
 	}
 }
 
-function scripts(platform, prod) {
+function scripts(platform) {
 	//
 	// All scripts except background
 	// Online: replaces chrome.storage with homemade storage
@@ -41,12 +29,7 @@ function scripts(platform, prod) {
 	//
 
 	return () => {
-		const stream = src([
-			'src/scripts/lang.js',
-			'src/scripts/utils.js',
-			'src/scripts/script.js',
-			'src/scripts/settings.js',
-		]).pipe(concat('main.js'))
+		const stream = src('release/main.js')
 
 		if (platform === 'online') {
 			stream
@@ -60,10 +43,6 @@ function scripts(platform, prod) {
 				.pipe(replace('local.remove(', 'remove(true, '))
 		}
 
-		if (prod) {
-			stream.pipe(terser())
-		}
-
 		stream.pipe(dest(`release/${platform}/src/scripts`))
 		return stream
 	}
@@ -72,7 +51,10 @@ function scripts(platform, prod) {
 function ressources(platform) {
 	return () => {
 		const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
-		if (platform !== 'online') assetPath.push('!src/assets/screenshots/**')
+
+		if (platform !== 'online') {
+			assetPath.push('!src/assets/screenshots/**')
+		}
 
 		return src(assetPath).pipe(dest(`release/${platform}/src/assets`))
 	}
@@ -81,7 +63,7 @@ function ressources(platform) {
 function worker(platform) {
 	return () => {
 		const file = {
-			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
+			origin: `src/scripts/${platform === 'online' ? 'sw.js' : 'background.js'}`,
 			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
 		}
 		return src(file.origin).pipe(dest(file.destination))
@@ -100,7 +82,7 @@ function manifest(platform) {
 
 function styles(platform) {
 	return () =>
-		src('src/styles/scss/style.scss')
+		src('src/styles/style.scss')
 			.pipe(sass.sync().on('error', sass.logError))
 			.pipe(csso())
 			.pipe(dest(`release/${platform}/src/styles/`))
@@ -119,26 +101,26 @@ function locales(platform) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['*.html', './src/scripts/*.js', './src/styles/scss/*.scss', './src/manifests/*.json']
+const filesToWatch = ['./src/*.html', './src/scripts/*.*', './src/styles/**', './src/manifests/*.json']
 
 // prettier-ignore
-const taskOnline = (prod) => [
-	html('online', prod),
+const taskOnline = () => [
+	html('online'),
 	styles('online'),
 	worker('online'),
 	manifest('online'),
-	scripts('online', prod),
+	scripts('online'),
 	ressources('online', false),
 ]
 
-const taskExtension = (from, prod) => [
-	scripts(from, prod),
-	html(from, prod),
+const taskExtension = (from) => [
+	html(from),
 	worker(from),
 	styles(from),
 	locales(from),
 	manifest(from),
 	ressources(from),
+	scripts(from),
 	addBackground(from),
 ]
 
@@ -158,4 +140,4 @@ exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
 
-exports.build = parallel(...taskOnline(true), ...taskExtension('firefox', true), ...taskExtension('chrome', true))
+exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'))

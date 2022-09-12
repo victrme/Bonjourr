@@ -1,104 +1,14 @@
-#showSettings {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	opacity: 0;
-	z-index: 3;
-	padding: 0 1.5em 1.5em 0;
-	transition: opacity 0.4s;
-
-	button {
-		position: relative;
-		height: 53px;
-		width: 53px;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		padding: unset;
-		background-color: transparent;
-		transition: background-color 0.6s $easeOutThree;
-		@include allCentered();
-
-		img {
-			width: 65%;
-			transition: transform 0.6s $easeOutThree;
-			will-change: transform;
-		}
-	}
-
-	&.init {
-		transition: opacity 0s;
-		button img {
-			transition: transform 0s;
-		}
-	}
-
-	// Doit etre dans cette ordre pour la hierarchie
-	&.enabled {
-		opacity: 1;
-	}
-
-	&.he_hidden {
-		opacity: 0;
-		&.shown {
-			opacity: 0.5;
-		}
-		&:hover {
-			opacity: 1;
-		}
-	}
-
-	&:hover {
-		img {
-			transform: rotate(15deg);
-		}
-	}
-
-	&.shown {
-		button {
-			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
-			img {
-				transform: rotate(60deg);
-			}
-
-			&:hover {
-				opacity: 1;
-				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
-			}
-		}
-	}
-
-	&.hasUpdated:before {
-		opacity: 1;
-	}
-
-	&.hasUpdated.shown:before {
-		opacity: 0;
-	}
-
-	&:before {
-		content: '';
-		position: absolute;
-		opacity: 0;
-		width: 10px;
-		height: 10px;
-		left: 2px;
-		top: 2px;
-		background-color: #35c759;
-		border-radius: 100%;
-		z-index: 10;
-		transition: opacity 0.3s;
-	}
-}
-
 #settings {
 	position: fixed;
 	top: 0;
 	bottom: 0;
 	z-index: 2;
 	right: -450px;
-	width: 450px;
 	height: 100vh;
+	min-width: 333px;
+	width: calc(450px - (21px * 2));
+	padding: 0 21px;
+	visibility: hidden;
 
 	background-color: $settingsGrey;
 	color: $blackish;
@@ -110,16 +20,35 @@
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
-	transition: transform 0.4s, background-color 0.6s, opacity 0.6s;
+	transition: transform 0.4s, background-color 0.4s $easeOutThree, opacity 0.4s, visibility 0.4s;
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	// transform: translateX(-100%)!important;
+	// transform: translateX(-100%) !important;
 
 	&.shown {
+		visibility: visible;
 		-webkit-transform: translateX(-100%);
 		transform: translateX(-100%);
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+	}
+
+	#mobile-drag-zone {
+		display: none;
+		width: 40%;
+		margin: auto;
+		padding: 1em;
+		padding-top: 2em;
+		border-radius: 1em;
+		z-index: 4;
+
+		hr {
+			width: 60px;
+			height: 3px;
+			margin: auto;
+			border-top: 4px dotted #999;
+			border-bottom: 4px dotted #999;
+		}
 	}
 
 	#changelogContainer {
@@ -151,9 +80,7 @@
 			background-color: #fff;
 			transition: background-color 0.3s $easeOutThree;
 			overflow: hidden;
-
-			@include radiusSettings();
-			@include marginSettings();
+			border-radius: 10px;
 
 			p:first-child {
 				margin-bottom: 0.5em;
@@ -161,11 +88,11 @@
 			}
 
 			p > span#link {
-				color: $blue;
+				color: var(--blue);
 			}
 
 			#link {
-				color: $blue;
+				color: var(--blue);
 				text-decoration: none;
 			}
 		}
@@ -199,9 +126,11 @@
 		#sett_city,
 		#clockoptions #w_clockface,
 		#clockoptions #w_ampm,
+		#notes_options,
 		#searchbar_options,
-		#quotes_options {
-			transition: max-Height 0s;
+		#quotes_options,
+		#quicklinks_options {
+			transition: max-height 0s;
 		}
 	}
 
@@ -224,6 +153,10 @@
 		text-decoration: underline;
 	}
 
+	a {
+		border-radius: 4px;
+	}
+
 	hr {
 		border: none;
 		border-bottom: 1px solid $inputGrey;
@@ -231,25 +164,21 @@
 	}
 
 	h1,
-	h5,
+	h2,
 	span {
 		margin: 0;
 	}
 
-	.titleContainer {
+	h2 {
 		display: flex;
-		margin: 1em 3rem;
-		margin-top: 2em;
-		color: #6d6d72;
-		justify-content: space-between;
 		align-items: center;
-		position: relative;
-
-		h5 {
-			text-transform: uppercase;
-			font-weight: 400;
-			letter-spacing: 1px;
-		}
+		justify-content: space-between;
+		text-transform: uppercase;
+		color: #6d6d72;
+		font-weight: 400;
+		font-size: 0.8em;
+		letter-spacing: 1px;
+		margin: 32px 26px 16px 26px;
 
 		.tooltip {
 			background-color: $inputGrey;
@@ -257,25 +186,19 @@
 		}
 	}
 
-	.help_sentence {
-		margin-top: 0.5em;
-		font-size: 0.8em;
-	}
-
 	.tooltip {
 		background-color: $settingsGrey;
-		color: $placeholderGrey;
+		color: #555;
 		width: 20px;
 		height: 20px;
 		border-radius: 100%;
-		cursor: pointer;
 		box-sizing: border-box;
-		transition: background-color 0.1s, transform 0.1s;
 		border: 1px solid #eaeaee;
-		font-size: 0.9em;
+		transition: background-color 0.1s, transform 0.1s;
 
 		&:hover {
 			background-color: $focusedGrey;
+			text-decoration: none;
 		}
 
 		&:active {
@@ -290,17 +213,20 @@
 		font-size: 13px;
 		max-height: 0;
 		overflow: hidden;
-		transition: max-height 0.4s, margin 0.4s;
+		transition: max-height 0.4s, margin 0.4s, padding 0.2s;
 
 		a {
-			color: $blue;
+			color: var(--blue);
 			text-decoration: none;
 		}
 
 		&.ttlinks,
-		&.ttcss {
-			margin: 0 3rem;
+		&.ttcss,
+		&.ttexport {
+			margin: 0 26px;
+
 			&.shown {
+				padding: 4px 0;
 				margin-bottom: 1rem;
 				max-height: 55px;
 			}
@@ -309,6 +235,7 @@
 		&.ttcoll,
 		&.tttab {
 			&.shown {
+				padding: 4px 0;
 				margin: 1em 0 0.5em 0;
 				max-height: 50px;
 			}
@@ -327,17 +254,16 @@
 	.param {
 		background-color: #ffffff;
 		padding: $settingsMargin 1.3em;
-
-		@include radiusSettings();
-		@include marginSettings();
+		border-radius: 10px;
 	}
 
 	.wrapper {
+		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		min-height: 34px;
-		position: relative;
+		min-height: 26px;
+		padding: 4px 0;
 
 		span {
 			display: flex;
@@ -351,6 +277,7 @@
 	#tabtitle {
 		div {
 			display: flex;
+			align-items: center;
 
 			#i_favicon {
 				text-align: center;
@@ -371,32 +298,43 @@
 		}
 	}
 
-	.link_input_wrap {
-		input[type='text'] {
-			width: calc(100% - 10px);
+	#quicklinks_options {
+		max-height: 0;
+		overflow-y: hidden;
+		transition: max-height 0.4s;
+
+		.link_input_wrap {
+			input[type='text'] {
+				width: calc(100% - 10px);
+			}
+
+			#i_title {
+				margin-bottom: 0.5em;
+			}
+
+			> div {
+				display: flex;
+				align-items: center;
+			}
+
+			.links_buttons {
+				text-align: right;
+			}
+
+			#b_importbookmarks,
+			#submitlink {
+				height: 2.2em;
+				transition: filter 0.4s;
+			}
+
+			#submitlink {
+				margin-left: 1em;
+			}
 		}
 
-		#i_title {
-			margin-bottom: 0.5em;
-		}
-
-		> div {
-			display: flex;
-			align-items: center;
-		}
-
-		.links_buttons {
-			text-align: right;
-		}
-
-		#b_importbookmarks,
-		#submitlink {
-			height: 2.2em;
-			transition: filter 0.4s;
-		}
-
-		#submitlink {
-			margin-left: 1em;
+		&.shown {
+			overflow-y: clip;
+			max-height: 255px;
 		}
 	}
 
@@ -409,12 +347,6 @@
 		padding: 0 10px;
 		margin-left: 5px;
 		text-decoration: none;
-		transition: background-color 0.1s, border-color 0.1s;
-
-		&:hover {
-			background-color: $focusedGrey;
-			border-color: #b7b7b7;
-		}
 	}
 
 	.freq_wrap > div {
@@ -430,26 +362,27 @@
 		height: 100px;
 	}
 
-	#uploadContainer {
+	.uploadContainer {
 		overflow: hidden;
 		position: relative;
 		display: block;
 		width: 100%;
-		height: 73px;
+		height: 100px;
 		min-width: 200px;
-		line-height: 73px;
+		line-height: 100px;
 		font-size: 14px;
 		text-align: center;
 		cursor: pointer;
-		color: $blue;
+		color: var(--blue);
 		background-color: $settingsGrey;
 		border: 1px dashed transparent;
-		transition: all 0.2s;
+
 		transform: scale(1);
+		box-sizing: border-box;
+		border-radius: 10px;
+		pointer-events: all;
 
-		@include radiusSettings();
-
-		#i_bgfile {
+		input[type='file'] {
 			position: absolute;
 			display: block;
 			overflow: hidden;
@@ -461,12 +394,19 @@
 			cursor: pointer;
 		}
 
+		&:hover,
+		&:focus,
+		&.dragover,
+		&:active {
+			transition: all 0.2s;
+		}
+
 		&:hover {
 			background-color: $focusedGrey;
 		}
 
 		&.dragover {
-			background-color: $blue;
+			background-color: var(--blue);
 			color: $purewhite;
 			opacity: 1;
 			transform: scale(1.03);
@@ -492,25 +432,25 @@
 			grid-gap: 10px;
 
 			.thumbnail {
-				margin: 0;
-				cursor: pointer;
-				overflow: hidden;
-				transition: box-shadow 0.1s $easeOutThree, transform 0.1s;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				overflow: hidden;
-				height: 75px;
 				position: relative;
-				border: 3px solid transparent;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 75px;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				border: none;
+				border-radius: 10px;
 				background-image: url('/src/assets/interface/loading.svg');
 				background-size: 4em;
-				background-position: center center;
 				background-repeat: no-repeat;
-				@include radiusSettings();
+				background-color: transparent;
+				background-position: center center;
+				transition: box-shadow 0.1s $easeOutThree, transform 0.1s;
 
 				&.selected {
-					border-color: $blue;
+					border: 3px solid var(--blue);
 				}
 
 				img {
@@ -519,7 +459,7 @@
 					background-color: transparent;
 				}
 
-				button {
+				.b_removethumb {
 					position: absolute;
 					top: 5px;
 					left: 5px;
@@ -540,6 +480,10 @@
 						width: 9px;
 						height: 9px;
 						display: block;
+					}
+
+					&:focus-visible {
+						opacity: 1;
 					}
 				}
 
@@ -570,40 +514,72 @@
 	// Hide elements
 
 	#hideelem {
-		margin: 1em auto 1em auto;
-		max-width: 250px;
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		margin: 1em auto;
+		list-style: none;
+		padding: 4px 0;
+		gap: 5px;
 		justify-content: center;
+		grid-template-columns: repeat(6, 36px);
 
-		> div {
-			margin-top: 7px;
-			display: flex;
-			overflow: hidden;
+		// Bon c'est wtf, mais j'avais envie de le faire pour la prosperite
+		// De toute facon ca va bientot etre remplace donc tout va bien
+
+		li:nth-child(1) {
+			grid-row: 1;
+			grid-column: 1 / 4;
+		}
+
+		li:nth-child(2) {
+			grid-row: 1;
+			grid-column: 4 / 7;
+		}
+
+		li:nth-child(3) {
+			grid-row: 2;
+			grid-column: 1 / 3;
+		}
+
+		li:nth-child(4) {
+			grid-row: 2;
+			grid-column: 3 / 5;
+		}
+
+		li:nth-child(5) {
+			grid-row: 2;
+			grid-column: 5 / 7;
+		}
+
+		li:nth-child(6) {
+			grid-row: 3;
+			grid-column: 1 / 7;
 		}
 
 		button {
-			text-align: left;
-			background-color: $settingsGrey;
-			color: $blue;
-			text-align: center;
-			font-size: small;
-			margin-right: 5px;
-			width: 100%;
-			height: $inputHeight;
 			opacity: 1;
-			transition: all 0.2s;
+			height: $inputHeight;
+			width: 100%;
+			margin-right: 5px;
+			color: var(--blue);
+			font-size: small;
+			text-align: center;
+			border-radius: 10px;
+			background-color: $settingsGrey;
 
-			@include radiusSettings();
+			&:hover,
+			&:focus,
+			&:active {
+				transition: background-color 0.2s, color 0.2s;
+			}
 
 			&:hover {
 				text-decoration: none;
-				background-color: $focusedGrey;
+				background-color: #0072ee22;
 			}
 
 			&.clicked {
 				color: $borderGrey;
-				background-color: white;
+				background-color: transparent;
 			}
 		}
 	}
@@ -627,62 +603,49 @@
 	}
 
 	#sett_city {
-		flex-direction: column;
+		display: flex;
+		width: calc(100% - 0.4em);
+		column-gap: 0.4em;
 		max-height: 50px;
+		margin-top: 0.6em;
+		padding: 0.2em;
 		overflow: hidden;
-		transition: max-Height 0.4s;
+		transition: max-Height 0.4s, margin-top 0.4s, padding-top 0.4s, padding-bottom 0.4s;
 
 		&.hidden {
+			padding-top: 0;
+			padding-bottom: 0;
+			margin-top: 0;
 			max-height: 0;
 		}
 
-		.wrapper {
-			margin-top: 1em;
-			display: inline-block;
+		select,
+		input {
 			width: 100%;
-
-			div {
-				display: flex;
-				width: 100%;
-			}
-
-			input {
-				width: 50%;
-				margin-left: 0.5em;
-				text-transform: capitalize;
-			}
-
-			select {
-				width: 50%;
-				display: flex;
-				align-self: center;
-			}
+			text-transform: capitalize;
 		}
 	}
 
-	#submitlink,
-	#submitExport,
-	#submitImport,
-	#submitReset {
-		background-color: transparent;
-	}
-
-	#submitReset {
-		margin: auto;
-	}
-
+	#notes_options,
 	#searchbar_options,
 	#searchbar_request {
-		overflow: hidden;
+		overflow-y: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
 	}
 
+	#notes_options.shown {
+		overflow-y: clip;
+		max-height: 120px;
+	}
+
 	#searchbar_request.shown {
+		overflow-y: clip;
 		max-height: 60px;
 	}
 
 	#searchbar_options.shown {
+		overflow-y: clip;
 		max-height: 240px;
 	}
 
@@ -695,18 +658,14 @@
 	}
 
 	#quotes_options {
-		overflow: hidden;
+		overflow-y: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
 
-		// #quotesCredits {
-		// 	color: $placeholderGrey;
-		// 	font-size: .8em;
-		// }
-	}
-
-	#quotes_options.shown {
-		max-height: 173px;
+		&.shown {
+			overflow-y: clip;
+			max-height: 173px;
+		}
 	}
 
 	#i_customfont {
@@ -723,37 +682,186 @@
 	}
 
 	#cssEditor {
-		width: calc(100% - 42px);
+		width: 100%;
 		min-height: 100px;
 		max-height: 3000px;
 		resize: vertical;
+		padding: 1.3em;
+		font-family: $code;
+		font-size: 13px;
+		tab-size: 1.5em;
 		border: none;
-		padding: $settingsMargin 1.3em;
-		font-family: 'SF Mono', 'Courier New', Courier, monospace;
+		border-radius: 10px;
 		box-sizing: border-box;
-		@include radiusSettings();
-		@include marginSettings();
 	}
 
-	#i_import,
-	#i_export {
-		width: 100%;
+	#importexport .param {
+		min-height: 192px;
+		transition: min-height 0.2s;
+
+		.tabs {
+			position: relative;
+			display: flex;
+			width: 220px;
+			margin: auto;
+			margin-bottom: 15px;
+			border-radius: 8.5px;
+			background-color: $settingsGrey;
+			align-items: center;
+
+			.glider {
+				width: calc(50% - 3px);
+				background-color: var(--blue);
+				position: absolute;
+				border-radius: 8.5px;
+				z-index: 3;
+				top: 3px;
+				bottom: 3px;
+				left: 3px;
+				transition: transform 0.3s;
+				transform: translateX(0%);
+			}
+
+			&.toggled .glider {
+				transform: translateX(100%);
+			}
+
+			button {
+				display: block;
+				width: 50%;
+				padding: unset;
+				font-size: 13px;
+				background-color: transparent;
+				position: relative;
+				text-decoration: none;
+				transition: color 0.2s;
+				height: 29px;
+				border-radius: 8.5px;
+				margin: 3px;
+			}
+
+			// When glider is under the button
+			&.toggled #s_import,
+			#s_export {
+				color: white;
+				z-index: 4;
+
+				&:hover {
+					background-color: unset;
+				}
+			}
+
+			// When glider is not
+			&.toggled #s_export,
+			#s_import {
+				color: var(--blue);
+				z-index: 2;
+
+				&:hover {
+					background-color: #e3e3ea;
+				}
+			}
+		}
+
+		#import,
+		#export {
+			overflow: hidden;
+			height: 0px;
+
+			&.shown {
+				height: auto;
+				overflow: visible;
+			}
+		}
+
+		#export {
+			#area_export {
+				width: 100%;
+				min-height: 100px;
+				max-height: 3000px;
+				padding: 0.65em 1.3em;
+				font-size: 13px;
+				line-break: anywhere;
+				overflow-x: hidden;
+				overflow-y: hidden;
+				resize: vertical;
+				border: none;
+				background-color: $settingsGrey;
+				box-sizing: border-box;
+				font-family: $code;
+				tab-size: 1.5em;
+				border-radius: 10px;
+
+				&:hover,
+				&:focus {
+					overflow-y: auto;
+				}
+			}
+
+			> div {
+				display: flex;
+				justify-content: space-around;
+				margin-top: 12px;
+			}
+
+			#downloadfile {
+				display: none;
+			}
+
+			#exportSettings {
+				position: absolute;
+			}
+		}
+
+		#import {
+			> div {
+				display: flex;
+				margin-top: 15px;
+			}
+
+			#i_importtext {
+				flex: 1;
+				margin-right: 1em;
+				tab-size: 0.05em;
+				background-color: $settingsGrey;
+
+				&:focus {
+					background-color: $focusedGrey;
+				}
+			}
+
+			button:disabled {
+				filter: grayscale(1) opacity(0.7);
+				text-decoration: none;
+				cursor: default;
+				transition: filter 0.1s;
+			}
+		}
 	}
 
-	#i_import {
-		margin-bottom: 0.5em;
-		margin-right: 0.5em;
-	}
+	#resetContainer {
+		margin-top: 1rem;
 
-	#i_export {
-		overflow-x: hidden;
-		text-overflow: ellipsis;
-		user-select: all;
-		-webkit-user-select: all;
-		margin: 0;
-		padding-top: 0.5em;
-		padding-right: 10px;
-		font-family: inherit;
+		.param {
+			padding: $settingsMargin 1.3em;
+		}
+
+		#reset_conf,
+		#reset_first {
+			display: none;
+
+			&.shown {
+				display: flex;
+			}
+		}
+
+		#reset_first {
+			justify-content: center;
+		}
+
+		#b_resetno {
+			color: $red;
+		}
 	}
 
 	.signature {
@@ -769,7 +877,7 @@
 
 		a {
 			text-decoration: none;
-			color: $blue;
+			color: var(--blue);
 		}
 
 		.firstblock {
@@ -789,7 +897,7 @@
 
 					svg {
 						height: 1.25em;
-						fill: $blue;
+						fill: var(--blue);
 					}
 
 					&:hover {

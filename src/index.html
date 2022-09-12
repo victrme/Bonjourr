@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>New tab</title>
+
+		<meta charset="utf-8" />
+		<meta name="theme-color" content="#000" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+		/>
+
+		<link rel="preconnect" href="https://images.unsplash.com" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+		<link rel="icon" href="src/assets/favicon-128x128.png" />
+		<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />
+		<!-- manifest -->
+
+		<link rel="stylesheet" href="src/styles/style.css" />
+		<style type="text/css" id="styles"></style>
+		<style type="text/css" id="fontstyle"></style>
+	</head>
+
+	<body class="autodark">
+		<button id="skiptosettings">Skip to Settings</button>
+
+		<div id="editlink">
+			<div>
+				<input
+					id="e_title"
+					type="text"
+					name="e_title"
+					maxlength="64"
+					autocomplete="off"
+					placeholder="Title"
+					aria-label="Update link title"
+				/>
+			</div>
+			<div>
+				<input
+					id="e_url"
+					type="url"
+					name="e_url"
+					maxlength="512"
+					autocomplete="off"
+					placeholder="Link"
+					aria-label="Update link URL"
+				/>
+			</div>
+			<div>
+				<input
+					id="e_iconurl"
+					type="url"
+					name="e_iconurl"
+					maxlength="7600"
+					autocomplete="off"
+					placeholder="Icon"
+					aria-label="Update link icon URL"
+				/>
+			</div>
+
+			<hr />
+
+			<div class="linkOptions" role="menu">
+				<button id="e_delete" class="trn" role="menuitem" aria-label="Remove link">Delete</button>
+				<button id="e_submit" class="trn" role="menuitem" aria-label="Apply changes">Apply changes</button>
+			</div>
+		</div>
+
+		<div id="bookmarks_container">
+			<div id="bookmarks">
+				<h3 id="bmk_none" class="trn">No bookmarks found</h3>
+
+				<div>
+					<button id="bmk_close" class="trn">Cancel</button>
+					<button id="bmk_apply" class="trn none">Select bookmarks to import</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="background_overlay">
+			<div id="background"></div>
+		</div>
+
+		<main id="interface" class="init">
+			<div id="time">
+				<div id="time-container">
+					<h1 id="clock" class="hidden"></h1>
+
+					<div id="analogClock" class="hidden">
+						<div class="numbers top">12</div>
+						<div class="numbers right">3</div>
+						<div class="numbers bottom">6</div>
+						<div class="numbers left">9</div>
+
+						<div id="center"></div>
+						<span id="hours"></span>
+						<span id="minutes"></span>
+						<span id="analogSeconds"></span>
+					</div>
+				</div>
+
+				<div id="date"></div>
+			</div>
+
+			<div id="main">
+				<h2 id="greetings"></h2>
+				<div id="weather">
+					<div id="description">
+						<p id="current" class="wait">meteo</p>
+						<p id="forecast" class="wait">forecast</p>
+					</div>
+
+					<div id="tempContainer" class="wait">
+						<p>00</p>
+					</div>
+				</div>
+			</div>
+
+			<div id="widgets">
+				<div id="notes_container" class="hidden">
+					<div id="notes_parsed" placeholder="Double click to edit"></div>
+					<textarea id="notes_editor" class="hidden" tabindex="-1" aria-label="Text field editor"></textarea>
+					<button id="b_notesdone" class="trn">Edit</button>
+				</div>
+
+				<div id="sb_container">
+					<input
+						id="searchbar"
+						type="text"
+						name="searchbar"
+						autocomplete="off"
+						spellcheck="false"
+						aria-label="Search bar"
+					/>
+					<button id="sb_empty" aria-label="Empty search" disabled>✕</button>
+					<button id="sb_submit" aria-label="Submit search" disabled>
+						<img src="src/assets/interface/magnifying-glass.svg" alt="" />
+					</button>
+				</div>
+
+				<ul id="linkblocks"></ul>
+
+				<div id="quotes_container">
+					<p id="quote"></p>
+					<p id="author"></p>
+				</div>
+			</div>
+		</main>
+
+		<footer>
+			<div id="credit"></div>
+
+			<div id="showSettings" class="init">
+				<button aria-label="Toggle settings menu">
+					<img src="src/assets/interface/gear.svg" alt="" draggable="false" />
+				</button>
+			</div>
+		</footer>
+
+		<script src="src/scripts/main.js"></script>
+	</body>
+</html>

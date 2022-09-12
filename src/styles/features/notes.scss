@@ -1,0 +1,162 @@
+#notes_container {
+	position: relative;
+	align-self: center;
+	text-align: left;
+	color: #fff;
+	width: 100%;
+	max-width: 40em;
+	border-radius: 0.7em;
+	border: 1px solid rgba(255, 255, 255, 0.075);
+	text-shadow: none;
+
+	@include frostedGlass($tint: 255, $alpha: 0.1, $blur: 10px, $fbAlpha: 0.4, $fbColor: #fff);
+
+	touch-action: all;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	user-select: text;
+
+	&.hidden {
+		flex-grow: 0;
+		visibility: hidden;
+		display: none;
+	}
+
+	&.center-align {
+		text-align: center;
+
+		div#notes_parsed,
+		textarea#notes_editor {
+			padding: 1.5em;
+		}
+
+		textarea#notes_editor {
+			width: calc(100% - 3em);
+		}
+	}
+
+	&.right-align {
+		div#notes_parsed,
+		textarea#notes_editor {
+			text-align: right;
+		}
+
+		button#b_notesdone {
+			left: 1em;
+			right: auto;
+		}
+	}
+
+	button#b_notesdone {
+		position: absolute;
+		top: 1.1em;
+		right: 1em;
+		font-size: 1.2em;
+		padding: 0.25em 1em;
+		color: #fff;
+		opacity: 0;
+		border: none;
+		border-radius: 0.5em;
+		background-color: #fff3;
+		transition: background-color 0.15s, opacity 0.15s;
+
+		&:hover {
+			opacity: 1;
+			background-color: var(--blue);
+		}
+
+		&:focus-visible {
+			opacity: 1;
+			pointer-events: all;
+			background-color: #fff2;
+		}
+	}
+
+	// makes done button visible
+	#notes_editor:not(.hidden) + button#b_notesdone {
+		opacity: 1;
+		pointer-events: all;
+	}
+
+	div#notes_parsed {
+		word-break: break-word;
+		cursor: auto;
+		content: 'wow';
+
+		&:empty:after {
+			content: attr(placeholder);
+			opacity: 0.5;
+		}
+
+		input[type='checkbox'] {
+			width: 1.2em;
+			height: 1.2em;
+			cursor: pointer;
+		}
+
+		blockquote {
+			border-left: 2px solid #fff3;
+			padding-left: 1em;
+			margin-left: 1em;
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			margin: 0.75em 0;
+		}
+
+		ul {
+			padding-left: 1em;
+		}
+
+		li {
+			list-style: inherit;
+		}
+
+		a {
+			color: var(--blue);
+			filter: brightness(1.5);
+		}
+	}
+
+	div#notes_parsed,
+	textarea#notes_editor {
+		-webkit-filter: blur(0px);
+		filter: blur(0px);
+		pointer-events: all;
+		max-height: 40vh;
+		min-height: 1em;
+		overflow-x: hidden;
+		overflow-y: auto;
+		font-size: 1.2em;
+		padding: 1.5em;
+
+		&.hidden {
+			position: absolute;
+			pointer-events: none;
+			user-select: none;
+			opacity: 0;
+		}
+	}
+
+	textarea#notes_editor {
+		width: 100%;
+		min-height: 100px;
+		color: #fff;
+		border: none;
+		border-radius: 0.5em;
+		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
+		background-color: transparent;
+		resize: vertical;
+		text-align: left;
+		box-sizing: border-box;
+
+		&.hidden {
+			resize: none;
+		}
+	}
+}

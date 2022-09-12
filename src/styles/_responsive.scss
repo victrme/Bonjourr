@@ -5,13 +5,19 @@
 	}
 
 	#showSettings {
-		user-select: none;
-		-webkit-user-select:none;
 		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
 
 		&:active {
-			filter: brightness(.5);
+			filter: brightness(0.5);
 		}
+	}
+
+	.block_parent .block {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 }
 
@@ -19,10 +25,14 @@
 	body {
 		font-size: 13px;
 	}
+
+	// #interface #tempContainers {
+	// 	gap: 2em;
+	// }
 }
 
 // mobile
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
 	body {
 		font-size: 12px;
 		overflow-y: auto;
@@ -31,27 +41,44 @@
 	#interface {
 		#quotes_container {
 			width: 90vw;
-
-			&.shown {
-				min-height: 90px;
-				padding-bottom: 30px;
-			}
 		}
 
+		#tempContainers {
+			padding-bottom: unset;
+		}
+
+		&.pushed {
+			transform: translateX(0);
+		}
 	}
 
 	#settings {
-		right: -100%;
-		width: 100%;
+		top: auto;
+		right: auto;
+		left: 0%;
+		bottom: -85vh;
+		height: 85vh;
+		width: calc(100% - 5px);
 		font-size: 1.2em;
+		padding: 0 0 0 5px;
+		border-top-left-radius: 1em;
+		border-top-right-radius: 1em;
+
+		&.shown {
+			transform: translateX(0) translateY(-100%);
+		}
 
 		// Tooltip (?) centered when span wrap
 		&.all .as_collection {
 			max-height: 140px;
-			
+
 			.wrapper span {
 				align-items: center;
 			}
+		}
+
+		#mobile-drag-zone {
+			display: block;
 		}
 
 		.param {
@@ -65,13 +92,22 @@
 		}
 	}
 
-	#credit {
-		width: calc(100% - 7.5em);
-		line-height: 14px;
-		a,
-		p,
-		span {
-			font-size: 11px;
+	footer {
+		position: relative;
+
+		#credit {
+			display: flex;
+			width: calc(100% - 7.5em);
+			line-height: 14px;
+			a,
+			p,
+			span {
+				font-size: 11px;
+			}
+		}
+
+		.exif {
+			display: none;
 		}
 	}
 
