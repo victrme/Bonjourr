@@ -573,7 +573,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		chrome.storage.sync.get(null, (data) => {
 			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
-			a.setAttribute('data-download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
+			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
 			a.click()
 		})
 	})
