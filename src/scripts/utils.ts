@@ -405,7 +405,7 @@ export const syncDefaults: Sync = {
 		)}.  \n[ ] ${tradThis('With keyboard shortcuts', defaultLang)}, [${tradThis(
 			'see in documentation.',
 			defaultLang
-		)}](http://localhost:8000/misc#notes-keybindings)`,
+		)}](https://bonjourr.fr/misc#notes)`,
 	},
 	css: '',
 	lang: defaultLang,
