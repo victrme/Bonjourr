@@ -118,8 +118,12 @@
 		}
 
 		a {
-			color: var(--blue);
-			filter: brightness(1.5);
+			color: inherit;
+
+			&:hover,
+			&:focus {
+				color: var(--blue);
+			}
 		}
 	}
 
@@ -145,7 +149,7 @@
 
 	textarea#notes_editor {
 		width: 100%;
-		min-height: 100px;
+		min-height: 180px;
 		color: #fff;
 		border: none;
 		border-radius: 0.5em;

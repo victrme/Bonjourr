@@ -364,7 +364,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	})
 
 	editor?.addEventListener('keydown', (e: KeyboardEvent) => {
-		const otherKeys = ['KeyI', 'KeyB', 'KeyC', 'KeyS', 'KeyU', 'KeyT']
+		const otherKeys = ['KeyI', 'KeyB', 'KeyS', 'KeyU', 'KeyT']
 		const modifier = testOS.mac ? e.metaKey : e.ctrlKey
 		const chbxKeys = modifier && e.shiftKey && e.code === 'KeyC'
 

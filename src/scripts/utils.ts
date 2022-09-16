@@ -355,21 +355,23 @@ export const langList = {
 	da: 'Dansk',
 }
 
-export const defaultLang = (navLang = navigator.language.replace('-', '_')): string => {
-	// check if exact or similar languages are available
-	for (const [code] of Object.entries(langList)) {
-		if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
-			return code
-		}
+let defaultLang = 'en'
+const navLang = navigator.language.replace('-', '_')
+
+// check if exact or similar languages are available
+for (const [code] of Object.entries(langList)) {
+	if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
+		defaultLang = code
 	}
-	return 'en' // if not, defaults to english
 }
 
-export function tradThis(str: string): string {
+export function tradThis(str: string, lang?: string): string {
 	type DictKey = keyof typeof dict
 	type DictField = keyof typeof dict.April
 
-	const lang = document.documentElement.getAttribute('lang') || 'en'
+	if (!lang) {
+		lang = document.documentElement.getAttribute('lang') || 'en'
+	}
 
 	if (!Object.keys(dict.April).includes(lang)) {
 		return str // English or not a dict field key ? no trn
@@ -397,10 +399,16 @@ export const syncDefaults: Sync = {
 		on: false,
 		opacity: 0.1,
 		align: 'left',
-		text: '### Double click to edit!\n- [ ] This support markdown\n- [ ] Github styled checkboxes.',
+		text: `### ${tradThis('Double click to edit', defaultLang)} !\n[ ] ${tradThis(
+			'Supports Markdown and clickable checkboxes',
+			defaultLang
+		)}.  \n[ ] ${tradThis('With keyboard shortcuts', defaultLang)}, [${tradThis(
+			'see in documentation.',
+			defaultLang
+		)}](http://localhost:8000/misc#notes-keybindings)`,
 	},
 	css: '',
-	lang: defaultLang(),
+	lang: defaultLang,
 	favicon: '',
 	tabtitle: '',
 	greeting: '',
