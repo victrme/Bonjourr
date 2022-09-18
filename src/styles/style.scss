@@ -1094,11 +1094,13 @@ footer {
 	position: fixed;
 	bottom: 4rem;
 	left: 4rem;
-	z-index: 1;
+	z-index: 3;
 	transition: opacity 0.4s;
+	pointer-events: none;
 
 	#popup_buttons a,
 	#popup_text {
+		pointer-events: all;
 		opacity: 0;
 		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 	}
