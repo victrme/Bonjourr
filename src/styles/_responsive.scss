@@ -88,26 +88,33 @@
 
 		.signature {
 			padding: 3em;
-			padding-bottom: 9em;
+			padding-bottom: 4em;
 		}
 	}
 
 	footer {
 		position: relative;
+		padding: 0 14px 14px;
 
-		#credit {
-			display: flex;
+		#creditContainer {
 			width: calc(100% - 7.5em);
-			line-height: 14px;
-			a,
-			p,
-			span {
-				font-size: 11px;
-			}
-		}
+			display: flex;
+			align-items: center;
 
-		.exif {
-			display: none;
+			#credit {
+				display: block;
+				line-height: 14px;
+				
+				a,
+				p,
+				span {
+					font-size: 11px;
+				}
+			}
+	
+			.exif {
+				display: none;
+			}
 		}
 	}
 

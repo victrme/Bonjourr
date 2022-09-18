@@ -696,39 +696,46 @@ footer {
 		transition: opacity 0.4s;
 	}
 
-	#credit {
-		align-items: center;
+	#creditContainer {
+		opacity: 1;
 		max-width: 50%;
-		text-align: left;
 
-		&.shown {
-			opacity: 1;
-
-			.exif {
-				opacity: 0;
-				transition: opacity 0.4s;
-			}
-
-			&:hover {
+		#credit {
+			align-items: center;
+			
+			text-align: left;
+	
+			&.shown {
+				opacity: 1;
+	
 				.exif {
-					opacity: 1;
+					opacity: 0;
+					transition: opacity 0.4s;
+				}
+	
+				&:hover {
+					.exif {
+						opacity: 1;
+					}
 				}
 			}
-		}
-
-		a,
-		p,
-		span {
-			font-size: 13px;
-			color: #fff9;
-			text-decoration: none;
-			transition: color 0.1s;
-		}
-
-		a:hover {
-			color: #fffe;
+	
+			a,
+			p,
+			span {
+				font-size: 13px;
+				color: #fff9;
+				text-decoration: none;
+				transition: color 0.1s;
+			}
+	
+			a:hover {
+				color: #fffe;
+			}
 		}
 	}
+
+
 
 	#showSettings {
 		bottom: 0;

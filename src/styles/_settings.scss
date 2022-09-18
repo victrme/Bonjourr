@@ -195,15 +195,19 @@
 		box-sizing: border-box;
 		border: 1px solid #eaeaee;
 		transition: background-color 0.1s, transform 0.1s;
+		padding: 0px;
 
 		&:hover {
 			background-color: $focusedGrey;
 			text-decoration: none;
 		}
 
-		&:active {
-			transform: scale(1.2);
+		@media (hover: hover) {
+			&:active {
+				transform: scale(1.2);
+			}
 		}
+
 
 		@include allCentered();
 	}
@@ -693,6 +697,7 @@
 		border: none;
 		border-radius: 10px;
 		box-sizing: border-box;
+		margin: 0px 10px;
 	}
 
 	#importexport .param {
