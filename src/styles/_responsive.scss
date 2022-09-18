@@ -39,7 +39,7 @@
 	}
 
 	#interface {
-		#quotes_container {
+		#widgets #quotes_container {
 			width: 90vw;
 		}
 
@@ -58,9 +58,9 @@
 		left: 0%;
 		bottom: -75vh;
 		height: 75vh;
-		width: calc(100% - 5px);
+		width: 100%;
 		font-size: 1.2em;
-		padding: 0 0 0 5px;
+		padding: 0px;
 		border-top-left-radius: 1em;
 		border-top-right-radius: 1em;
 
@@ -128,7 +128,6 @@
 		#popup_text,
 		#popup_buttons {
 			width: 100%;
-			
 			margin: 0;
 		}
 
