@@ -962,10 +962,8 @@ export function settingsInit(data: Sync) {
 			if (!mobilecheck()) {
 				clas(dominterface, isClosed, 'pushed')
 			} else {
-				clas(document.querySelector('footer'), isClosed, 'hidden')
 				settingsDom.style.removeProperty('transform')
 				settingsDom.style.removeProperty('transition')
-				isAtFloor = false
 			}
 		}
 
@@ -1032,23 +1030,20 @@ export function settingsInit(data: Sync) {
 
 		let firstPos = 0
 		let startTouchY = 0
-		let isAtFloor = false
 
 		function moveSettingsOnMobile(e: TouchEvent) {
 			const isBelowMax = e.touches[0].clientY > firstPos
-			const isAboveMin = e.touches[0].clientY < window.innerHeight - 160
 
-			if (isBelowMax && (isAboveMin || isAtFloor)) {
+			if (isBelowMax) {
 				settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - e.touches[0].clientY}px)`
 				settingsDom.style.transition = `transform .0s`
-
-				e.preventDefault()
-				e.stopPropagation()
 			}
 		}
 
 		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', (e) => {
 			startTouchY = (e as TouchEvent).touches[0].clientY
+
+			e.preventDefault()
 
 			if (firstPos === 0) {
 				firstPos = startTouchY
@@ -1070,13 +1065,10 @@ export function settingsInit(data: Sync) {
 			settingsDom.style.removeProperty('width')
 			settingsDom.style.removeProperty('overflow')
 
-			const isBelowMinHeight = (e as TouchEvent).changedTouches[0].clientY > window.innerHeight - 160
+			const isBelowMinHeight = (e as TouchEvent).changedTouches[0].clientY > window.innerHeight - 100
 
-			if (isBelowMinHeight && !isAtFloor) {
-				isAtFloor = true
-			} else if (isBelowMinHeight && isAtFloor) {
+			if (isBelowMinHeight) {
 				toggleDisplay(settingsDom)
-				isAtFloor = false
 			}
 		})
 	}

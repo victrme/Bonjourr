@@ -56,8 +56,8 @@
 		top: auto;
 		right: auto;
 		left: 0%;
-		bottom: -85vh;
-		height: 85vh;
+		bottom: -75vh;
+		height: 75vh;
 		width: calc(100% - 5px);
 		font-size: 1.2em;
 		padding: 0 0 0 5px;
@@ -94,6 +94,7 @@
 
 	footer {
 		position: relative;
+		z-index: 1;
 
 		#credit {
 			display: flex;
