@@ -357,6 +357,7 @@
 					text-decoration: none;
 					background-color: transparent;
 					transition: width 0.18s $easeOutThree;
+					-webkit-touch-callout: none;
 
 					img {
 						position: relative;
@@ -377,12 +378,14 @@
 							filter: brightness(0.85);
 						}
 
-						&:hover {
-							border-color: var(--blue);
-							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
-							transform: scale(1.1);
+						@media (hover: hover) {
+							&:hover {
+								border-color: var(--blue);
+								box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+								transform: scale(1.1);
+							}
 						}
-
+						
 						&:active {
 							filter: brightness(0.85);
 							transform: scale(1.04);
@@ -699,10 +702,10 @@ footer {
 	#creditContainer {
 		opacity: 1;
 		max-width: 50%;
+		display: flex;
+		align-items: center;
 
 		#credit {
-			align-items: center;
-			
 			text-align: left;
 	
 			&.shown {

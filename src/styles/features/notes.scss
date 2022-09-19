@@ -68,10 +68,12 @@
 		background-color: #fff3;
 		transition: color 0.15s, background-color 0.15s, opacity 0.15s;
 
-		&:hover {
-			opacity: 1;
-			color: white;
-			background-color: var(--blue);
+		@media (hover: hover) {
+			&:hover {
+				opacity: 1;
+				color: white;
+				background-color: var(--blue);
+			}
 		}
 
 		&:focus-visible {

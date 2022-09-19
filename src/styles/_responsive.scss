@@ -99,8 +99,6 @@
 
 		#creditContainer {
 			width: calc(100% - 7.5em);
-			display: flex;
-			align-items: center;
 
 			#credit {
 				display: block;
@@ -146,7 +144,6 @@
 		}
 	}
 
-	#editlink_container,
 	#bookmarks_container {
 		font-size: 14px;
 	}
@@ -157,6 +154,22 @@
 
 		form div {
 			width: auto;
+		}
+	}
+
+	#editlink {
+		width: 60%;
+		max-width: 275px;
+		transform: unset;
+		position: absolute;
+		top: unset;
+		left: unset;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%)!important;
+
+		> * > * {
+			font-size: 1.25em;
 		}
 	}
 }

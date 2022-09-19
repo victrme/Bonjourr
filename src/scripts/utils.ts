@@ -403,9 +403,9 @@ export const syncDefaults: Sync = {
 			'Supports Markdown and clickable checkboxes',
 			defaultLang
 		)}.  \n[ ] ${tradThis('With keyboard shortcuts', defaultLang)}, [${tradThis(
-			'see in documentation.',
+			'see in documentation',
 			defaultLang
-		)}](https://bonjourr.fr/misc#notes)`,
+		)}](https://bonjourr.fr/misc#notes).`,
 	},
 	css: '',
 	lang: defaultLang,

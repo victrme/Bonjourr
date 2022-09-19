@@ -753,11 +753,28 @@ export function quickLinks(
 	}
 
 	function addEvents(elem: HTMLLIElement) {
-		// Mouse clicks
-		elem.oncontextmenu = function (e) {
-			e.preventDefault()
-			removeLinkSelection()
-			displayEditWindow(this as HTMLLIElement, { x: e.x, y: e.y })
+
+		if (!testOS.ios) {
+			// Mouse clicks
+			elem.oncontextmenu = function (e) {
+				e.preventDefault()
+				removeLinkSelection()
+				displayEditWindow(this as HTMLLIElement, { x: e.x, y: e.y })
+			}
+		} else {
+			// long press on iOS
+			let timer = 0;
+			elem.addEventListener('touchstart', function(e) {
+				timer = setTimeout(function() {
+					e.preventDefault()
+					removeLinkSelection()
+					displayEditWindow(elem as HTMLLIElement, { x: e.touches[0].clientX, y: e.touches[0].clientY })
+				}, 600)
+			}, false)
+	
+			elem.addEventListener('touchend', function() {
+				clearTimeout(timer)
+			}, false)
 		}
 
 		if (!mobilecheck()) {
@@ -936,6 +953,9 @@ export function quickLinks(
 		// These a the same init, apply & end function for mobile & desktop
 		if (mobilecheck()) {
 			domlinkblocks.ontouchmove = function (e) {
+				// prevents scroll when dragging
+				e.preventDefault();
+
 				// Uses touches to get the finger (or other input method :o) position
 				!startsDrag
 					? initDrag(e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0, e.composedPath())
@@ -1023,7 +1043,7 @@ export function quickLinks(
 			domiconurl.value = icon
 
 			positionsEditWindow()
-
+			
 			clas(domicon, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
@@ -3686,7 +3706,7 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 window.onload = function () {
 	onlineAndMobileHandler()
 
-	console.log(mobilecheck() ? 'mobile' : 'desktop')
+	// console.log(mobilecheck() ? 'mobile' : 'desktop')
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
