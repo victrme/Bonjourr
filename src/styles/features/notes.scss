@@ -22,6 +22,14 @@
 		display: none;
 	}
 
+	&.opaque {
+		color: #222;
+
+		button#b_notesdone {
+			background-color: #2222;
+		}
+	}
+
 	&.center-align {
 		text-align: center;
 
@@ -53,15 +61,16 @@
 		right: 1em;
 		font-size: 1.2em;
 		padding: 0.25em 1em;
-		color: #fff;
+		color: inherit;
 		opacity: 0;
 		border: none;
 		border-radius: 0.5em;
 		background-color: #fff3;
-		transition: background-color 0.15s, opacity 0.15s;
+		transition: color 0.15s, background-color 0.15s, opacity 0.15s;
 
 		&:hover {
 			opacity: 1;
+			color: white;
 			background-color: var(--blue);
 		}
 
@@ -150,7 +159,7 @@
 	textarea#notes_editor {
 		width: 100%;
 		min-height: 180px;
-		color: #fff;
+		color: inherit;
 		border: none;
 		border-radius: 0.5em;
 		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;

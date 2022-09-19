@@ -168,8 +168,8 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 
 	function handleOpacity(value: number) {
 		if (container) {
+			clas(container, value > 0.45, 'opaque')
 			container.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
-			container.style.color = value > 0.45 ? '#222' : '#fff'
 		}
 	}
 
