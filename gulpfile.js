@@ -63,7 +63,7 @@ function ressources(platform) {
 function worker(platform) {
 	return () => {
 		const file = {
-			origin: `src/scripts/${platform === 'online' ? 'sw.js' : 'background.js'}`,
+			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
 			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
 		}
 		return src(file.origin).pipe(dest(file.destination))
