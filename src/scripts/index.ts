@@ -934,7 +934,7 @@ export function quickLinks(
 		}
 
 		// These a the same init, apply & end function for mobile & desktop
-		if (navigator.maxTouchPoints > 0) {
+		if (mobilecheck()) {
 			domlinkblocks.ontouchmove = function (e) {
 				// Uses touches to get the finger (or other input method :o) position
 				!startsDrag

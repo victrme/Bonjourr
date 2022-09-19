@@ -56,8 +56,8 @@
 		top: auto;
 		right: auto;
 		left: 0%;
-		bottom: -75vh;
-		height: 75vh;
+		bottom: -100vh;
+		height: 100vh;
 		width: 100%;
 		font-size: 1.2em;
 		padding: 0px;
@@ -65,7 +65,7 @@
 		border-top-right-radius: 1em;
 
 		&.shown {
-			transform: translateX(0) translateY(-100%);
+			transform: translateX(0) translateY(-75%);
 		}
 
 		// Tooltip (?) centered when span wrap
@@ -88,13 +88,14 @@
 
 		.signature {
 			padding: 3em;
-			padding-bottom: 4em;
+			padding-bottom: 30vh;
 		}
 	}
 
 	footer {
 		position: relative;
 		padding: 0 14px 14px;
+		z-index: 1;
 
 		#creditContainer {
 			width: calc(100% - 7.5em);
@@ -104,14 +105,14 @@
 			#credit {
 				display: block;
 				line-height: 14px;
-				
+
 				a,
 				p,
 				span {
 					font-size: 11px;
 				}
 			}
-	
+
 			.exif {
 				display: none;
 			}
@@ -159,3 +160,6 @@
 		}
 	}
 }
+
+// @media only screen and (hover: none) and (pointer: coarse) {
+// }

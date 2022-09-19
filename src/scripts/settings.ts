@@ -22,6 +22,7 @@ import {
 	deleteBrowserStorage,
 	getBrowserStorage,
 	turnRefreshButton,
+	testOS,
 } from './utils'
 
 import {
@@ -959,12 +960,9 @@ export function settingsInit(data: Sync) {
 			clas(domshowsettings, isClosed, 'shown')
 			clas(domedit, isClosed, 'pushed')
 
-			if (!mobilecheck()) {
-				clas(dominterface, isClosed, 'pushed')
-			} else {
-				settingsDom.style.removeProperty('transform')
-				settingsDom.style.removeProperty('transition')
-			}
+			clas(dominterface, isClosed, 'pushed')
+			settingsDom.style.removeProperty('transform')
+			settingsDom.style.removeProperty('transition')
 		}
 
 		$('skiptosettings')?.addEventListener('click', function () {
@@ -1028,49 +1026,95 @@ export function settingsInit(data: Sync) {
 		//
 		// Mobile settings height control
 
-		let firstPos = 0
-		let startTouchY = 0
+		function responsiveSettingsHeightDrag() {
+			let firstPos = 0
+			let startTouchY = 0
 
-		function moveSettingsOnMobile(e: TouchEvent) {
-			const isBelowMax = e.touches[0].clientY > firstPos
+			function dragStart(e: Event) {
+				e.preventDefault()
 
-			if (isBelowMax) {
-				settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - e.touches[0].clientY}px)`
-				settingsDom.style.transition = `transform .0s`
+				// Get mouse / touch y position
+				if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
+				if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
+
+				// First time dragging, sets maximum y pos at which to block
+				if (firstPos === 0) firstPos = startTouchY
+
+				// Scrollbar padding control on windows & android
+				if (testOS.windows || testOS.android) {
+					settingsDom.style.width = `calc(100% - 10px)`
+					settingsDom.style.paddingRight = `10px`
+				}
+
+				// prevent scroll when dragging
+				settingsDom.style.overflow = `clip`
+
+				// Add mouse / touch moves events
+				window.addEventListener('touchmove', dragMove)
+				window.addEventListener('mousemove', dragMove)
 			}
+
+			function dragMove(e: Event) {
+				let clientY: number = 0
+
+				// Get mouse / touch y position
+				if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
+				if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
+
+				// element is below max height: move
+				if (clientY > 60) {
+					settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
+					settingsDom.style.transition = `transform .0s`
+				}
+			}
+
+			function dragEnd(e: Event) {
+				let clientY: number = 0
+
+				// Get mouse / touch y position
+				if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
+				if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
+
+				// Remove move events
+				window.removeEventListener('touchmove', dragMove)
+				window.removeEventListener('mousemove', dragMove)
+
+				// reset mouse / touch pos
+				startTouchY = 0
+
+				settingsDom.style.removeProperty('padding')
+				settingsDom.style.removeProperty('width')
+				settingsDom.style.removeProperty('overflow')
+
+				// Add bottom padding to see bottom of settings
+				const signaturedom = document.querySelector('.signature') as HTMLDivElement
+				signaturedom.style.paddingBottom = clientY + 60 + 'px'
+
+				// small enough ? close settings
+				if (clientY > window.innerHeight - 100) {
+					toggleDisplay(settingsDom)
+				}
+			}
+
+			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
+			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
+			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
+			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
+
+			document.body?.addEventListener('mouseleave', (e) => {
+				if (has(settingsDom, 'shown') && window.innerWidth < 600) {
+					dragEnd(e)
+				}
+			})
 		}
 
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', (e) => {
-			startTouchY = (e as TouchEvent).touches[0].clientY
+		const DrawerDragDebounce = debounce(() => {
+			;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
+			responsiveSettingsHeightDrag()
+		}, 600)
 
-			e.preventDefault()
-
-			if (firstPos === 0) {
-				firstPos = startTouchY
-			}
-
-			settingsDom.style.width = `calc(100% - 15px)`
-			settingsDom.style.paddingRight = `10px`
-			settingsDom.style.overflow = `clip`
-
-			window.addEventListener('touchmove', moveSettingsOnMobile)
-		})
-
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', (e) => {
-			window.removeEventListener('touchmove', moveSettingsOnMobile)
-
-			startTouchY = 0
-
-			settingsDom.style.removeProperty('padding')
-			settingsDom.style.removeProperty('width')
-			settingsDom.style.removeProperty('overflow')
-
-			const isBelowMinHeight = (e as TouchEvent).changedTouches[0].clientY > window.innerHeight - 100
-
-			if (isBelowMinHeight) {
-				toggleDisplay(settingsDom)
-			}
-		})
+		window.addEventListener('resize', DrawerDragDebounce)
+		responsiveSettingsHeightDrag()
 	}
 
 	fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
