@@ -385,7 +385,7 @@
 								transform: scale(1.1);
 							}
 						}
-						
+
 						&:active {
 							filter: brightness(0.85);
 							transform: scale(1.04);
@@ -707,22 +707,22 @@ footer {
 
 		#credit {
 			text-align: left;
-	
+
 			&.shown {
 				opacity: 1;
-	
+
 				.exif {
 					opacity: 0;
 					transition: opacity 0.4s;
 				}
-	
+
 				&:hover {
 					.exif {
 						opacity: 1;
 					}
 				}
 			}
-	
+
 			a,
 			p,
 			span {
@@ -731,16 +731,15 @@ footer {
 				text-decoration: none;
 				transition: color 0.1s;
 			}
-	
+
 			a:hover {
 				color: #fffe;
 			}
 		}
 	}
 
-
-
 	#showSettings {
+		position: relative;
 		bottom: 0;
 		right: 0;
 		z-index: 3;

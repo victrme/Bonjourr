@@ -3733,12 +3733,19 @@ window.onload = function () {
 			}
 			//
 			else if (VersionChange) {
-				console.log(`Version change: ${data?.about?.version} => ${syncDefaults.about.version}`)
+				const oldV = data?.about?.version
+				const newV = syncDefaults.about.version
+
+				console.log(`Version change: ${oldV} => ${newV}`)
+
+				if (oldV === '1.14.2' && newV === '1.15.0') {
+					localStorage.hasUpdated = 'true'
+				}
 
 				data.quicklinks = data.hide[2][0] === 0
 				data.hide[2][0] = 0
 				data.notes = syncDefaults.notes
-				data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
+				data.about = { browser: detectPlatform(), version: newV }
 
 				chrome.storage.sync.set(data)
 			}

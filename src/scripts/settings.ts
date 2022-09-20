@@ -136,7 +136,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	initInput('i_lang', data.lang || 'en') // must be init after children appening
 
-	// Activate changelog (hasUpdated is activated in background.js)
+	// Activate changelog
 	if (localStorage.hasUpdated === 'true') {
 		changelogControl(settingsDom)
 	}
