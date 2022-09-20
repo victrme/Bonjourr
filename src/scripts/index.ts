@@ -753,36 +753,38 @@ export function quickLinks(
 	}
 
 	function addEvents(elem: HTMLLIElement) {
+		// long press on iOS
+		if (testOS.ios) {
+			let timer = 0
 
-		if (!testOS.ios) {
-			// Mouse clicks
-			elem.oncontextmenu = function (e) {
-				e.preventDefault()
-				removeLinkSelection()
-				displayEditWindow(this as HTMLLIElement, { x: e.x, y: e.y })
-			}
-		} else {
-			// long press on iOS
-			let timer = 0;
-			elem.addEventListener('touchstart', function(e) {
-				timer = setTimeout(function() {
-					e.preventDefault()
-					removeLinkSelection()
-					displayEditWindow(elem as HTMLLIElement, { x: e.touches[0].clientX, y: e.touches[0].clientY })
-				}, 600)
-			}, false)
-	
-			elem.addEventListener('touchend', function() {
-				clearTimeout(timer)
-			}, false)
+			elem.addEventListener(
+				'touchstart',
+				function (e) {
+					timer = setTimeout(() => {
+						e.preventDefault()
+						removeLinkSelection()
+						displayEditWindow(elem as HTMLLIElement, { x: 0, y: 0 }) // edit centered on mobile
+					}, 600)
+				},
+				false
+			)
+
+			elem.addEventListener('touchmove', () => clearTimeout(timer), false)
+			elem.addEventListener('touchend', () => clearTimeout(timer), false)
 		}
 
-		if (!mobilecheck()) {
-			elem.onkeyup = function (e) {
-				if (e.key === 'e') {
-					const { offsetLeft, offsetTop } = e.target as HTMLElement
-					displayEditWindow(this as HTMLLIElement, { x: offsetLeft, y: offsetTop })
-				}
+		// Right click ( desktop / android )
+		elem.oncontextmenu = function (e) {
+			e.preventDefault()
+			removeLinkSelection()
+			displayEditWindow(this as HTMLLIElement, { x: e.x, y: e.y })
+		}
+
+		// E to edit
+		elem.onkeyup = function (e) {
+			if (e.key === 'e') {
+				const { offsetLeft, offsetTop } = e.target as HTMLElement
+				displayEditWindow(this as HTMLLIElement, { x: offsetLeft, y: offsetTop })
 			}
 		}
 	}
@@ -951,10 +953,10 @@ export function quickLinks(
 		}
 
 		// These a the same init, apply & end function for mobile & desktop
-		if (mobilecheck()) {
+		if (testOS.ios || mobilecheck()) {
 			domlinkblocks.ontouchmove = function (e) {
 				// prevents scroll when dragging
-				e.preventDefault();
+				e.preventDefault()
 
 				// Uses touches to get the finger (or other input method :o) position
 				!startsDrag
@@ -1043,7 +1045,7 @@ export function quickLinks(
 			domiconurl.value = icon
 
 			positionsEditWindow()
-			
+
 			clas(domicon, true, 'selected')
 			clas(domedit, true, 'shown')
 			clas(domedit, opendedSettings, 'pushed')
@@ -3706,7 +3708,7 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 window.onload = function () {
 	onlineAndMobileHandler()
 
-	// console.log(mobilecheck() ? 'mobile' : 'desktop')
+	console.log(mobilecheck() ? 'mobile' : 'desktop')
 
 	try {
 		chrome.storage.sync.get(null, (data) => {
