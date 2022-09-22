@@ -385,7 +385,7 @@
 								transform: scale(1.1);
 							}
 						}
-						
+
 						&:active {
 							filter: brightness(0.85);
 							transform: scale(1.04);
@@ -488,6 +488,7 @@
 						font-size: 1.5em;
 						text-overflow: ellipsis;
 						white-space: pre;
+						border-radius: 8px;
 
 						&:hover {
 							text-decoration: underline;
@@ -707,22 +708,22 @@ footer {
 
 		#credit {
 			text-align: left;
-	
+
 			&.shown {
 				opacity: 1;
-	
+
 				.exif {
 					opacity: 0;
 					transition: opacity 0.4s;
 				}
-	
+
 				&:hover {
 					.exif {
 						opacity: 1;
 					}
 				}
 			}
-	
+
 			a,
 			p,
 			span {
@@ -731,14 +732,12 @@ footer {
 				text-decoration: none;
 				transition: color 0.1s;
 			}
-	
+
 			a:hover {
 				color: #fffe;
 			}
 		}
 	}
-
-
 
 	#showSettings {
 		bottom: 0;

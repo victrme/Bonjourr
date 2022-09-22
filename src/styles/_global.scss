@@ -106,6 +106,7 @@ body {
 		button:focus,
 		button:focus,
 		#bookmarks li:focus-visible,
+		#linkblocks.text a:focus-visible span,
 		input:focus-visible + .slider {
 			outline: 2px solid var(--blue);
 		}
