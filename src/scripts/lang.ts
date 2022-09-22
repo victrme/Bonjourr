@@ -800,7 +800,7 @@ export const dict = {
 		da: 'Vis alle indstillingerne',
 	},
 	'Tab appearance': {
-		fr: "Onglet",
+		fr: 'Onglet',
 		sv: 'Flikens utseende',
 		nl: 'Tabbladweergave',
 		pl: 'Wygląd karty',
@@ -2195,7 +2195,7 @@ export const dict = {
 		da: 'Settings management',
 	},
 	'Transfer your settings between multiple instances of Bonjourr.': {
-		fr: 'Transférez vos réglages d\'une instance de Bonjourr à une autre.',
+		fr: "Transférez vos réglages d'une instance de Bonjourr à une autre.",
 		sv: 'Transfer your settings between multiple instances of Bonjourr.',
 		nl: 'Transfer your settings between multiple instances of Bonjourr.',
 		pl: 'Transfer your settings between multiple instances of Bonjourr.',
@@ -2790,7 +2790,7 @@ export const dict = {
 		da: 'Kopiering af tekst',
 	},
 	'Export as file': {
-		fr: 'Exporter fichier',
+		fr: 'Exporter comme fichier',
 		sv: 'Exportera som fil',
 		nl: 'Exporteer als bestand',
 		pl: 'Eksportuj jako plik',

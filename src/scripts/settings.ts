@@ -583,11 +583,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		try {
 			const area = $('area_export') as HTMLInputElement
 			await navigator.clipboard.writeText(area.value)
-			this.textContent = 'Copied !'
+			this.textContent = tradThis('Copied')
 			setTimeout(() => {
 				const domimport = $('copyimport')
 				if (domimport) {
-					domimport.textContent = 'Copy settings'
+					domimport.textContent = tradThis('Copy text')
 				}
 			}, 1000)
 		} catch (err) {
