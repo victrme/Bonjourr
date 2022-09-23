@@ -399,13 +399,13 @@ export const syncDefaults: Sync = {
 		on: false,
 		opacity: 0.1,
 		align: 'left',
-		text: `### ${tradThis('Double click to edit', defaultLang)} !\n[ ] ${tradThis(
+		text: `### ${tradThis('Double click to edit', defaultLang)}!\n[ ] ${tradThis(
 			'Supports Markdown and clickable checkboxes',
 			defaultLang
-		)}.  \n[ ] ${tradThis('With keyboard shortcuts', defaultLang)}, [${tradThis(
-			'see in documentation',
+		)}  \n[ ] ${tradThis('With keyboard shortcuts', defaultLang)}, [${tradThis(
+			'see documentation',
 			defaultLang
-		)}](https://bonjourr.fr/misc#notes).`,
+		)}](https://bonjourr.fr/misc#notes)`,
 	},
 	css: '',
 	lang: defaultLang,
