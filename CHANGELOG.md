@@ -1,5 +1,29 @@
 ## Changelogs
 
+**v1.15.0**
+
+-   Added feature: Notes !
+    -   Compatible with basic markdown
+    -   Check tick boxes on the fly
+    -   With keyboard shortcuts, see [more in docs](https://bonjourr.fr)
+-   Reworked features:
+    -   Settings import, export and reset
+    -   Quick links rearrange
+-   Improved Accessibility;
+    -   “Skip to settings” button when tabbing on page
+    -   Quick links now behaves like native browser links
+    -   Press “e” when focused to edit Link, “Esc” to close
+    -   Settings are now usable keyboard only
+    -   Improved input ARIA and focus outline when tabbing
+-   Added draggable settings panel on mobile
+-   Updated polish & turkish translations, thanks Jakub Mikuło and @lazjedi !
+-   Improved bookmark import styling & unified dark mode colors
+-   Slightly better startup performances on slow computers & mobile
+-   Lots of background work to convert Bonjourr to typescript
+-   Improved extension security
+
+$~~~~~~~~~~~$
+
 **v1.14.2**
 
 -   Better custom font performances

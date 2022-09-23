@@ -81,6 +81,14 @@
 			display: block;
 		}
 
+		#changelogContainer {
+			#log_dismiss {
+				top: 5em;
+				right: 0.5em;
+			}
+		}
+
+		#changelogContainer,
 		.param {
 			margin-right: 12px;
 			margin-left: 12px;
@@ -166,7 +174,7 @@
 		left: unset;
 		top: 50%;
 		left: 50%;
-		transform: translate(-50%, -50%)!important;
+		transform: translate(-50%, -50%) !important;
 
 		> * > * {
 			font-size: 1.25em;
