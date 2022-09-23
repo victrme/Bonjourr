@@ -1542,14 +1542,18 @@ export function weather(
 	async function initWeather(storage: Weather) {
 		//
 		// First, tries to get city and country code to add in settings
-		const ipapi = await fetch('https://ipapi.co/json')
 
-		if (ipapi.ok) {
-			const json = await ipapi.json()
+		try {
+			const ipapi = await fetch('https://ipapi.co/json')
+			if (ipapi.ok) {
+				const json = await ipapi.json()
 
-			if (!json.error) {
-				storage = { ...storage, city: json.city, ccode: json.country }
+				if (!json.error) {
+					storage = { ...storage, city: json.city, ccode: json.country }
+				}
 			}
+		} catch (error) {
+			console.log(error)
 		}
 
 		// Then use this as callback in Geolocation request
@@ -3747,7 +3751,7 @@ window.onload = function () {
 				data.notes = syncDefaults.notes
 				data.about = { browser: detectPlatform(), version: newV }
 
-				chrome.storage.sync.set(data)
+				chrome.storage.sync.set(isExtension ? data : { import: data })
 			}
 
 			startup(data as Sync) // TODO: rip type checking
