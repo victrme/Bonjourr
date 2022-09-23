@@ -3,9 +3,22 @@
 
 #skiptosettings {
 	position: absolute;
+	top: 1em;
+	left: 1em;
 	opacity: 0;
 	user-select: none;
 	touch-action: none;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	padding: 0.5em 1em;
+	transition: opacity 0.15s $easeOutThree;
+
+	@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2, $fbColor: #fff);
+
+	&:focus-visible {
+		opacity: 1;
+	}
 }
 
 #background_overlay {
