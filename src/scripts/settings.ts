@@ -48,6 +48,8 @@ import {
 	weather,
 } from './index'
 
+type Langs = keyof typeof langList
+
 function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	if (settingsDom == null) {
@@ -536,28 +538,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	cssInputSize(paramId('cssEditor'))
 
 	//
-	// Settings management
+	// Settings managment
 
-	paramId('i_importfile').addEventListener('change', function () {
-		if (!this.files || (this.files && this.files.length === 0)) {
-			return
-		}
-
-		const file = this.files[0]
-		const reader = new FileReader()
-
-		reader.onload = () => {
-			try {
-				if (typeof reader.result === 'string') {
-					const json = JSON.parse(window.atob(reader.result))
-					paramsImport(json)
-				}
-			} catch (err) {
-				console.log(err)
-			}
-		}
-		reader.readAsText(file)
-	})
+	const { exportAsFile, copyImportText, importAsText, importAsFile } = settingsMgmt()
 
 	const toggleSettingsMgmt = (toggled: boolean) => {
 		clas(paramId('export'), !toggled, 'shown')
@@ -567,50 +550,16 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('s_export').addEventListener('click', () => toggleSettingsMgmt(false))
 	paramId('s_import').addEventListener('click', () => toggleSettingsMgmt(true))
-	paramId('exportfile').addEventListener('click', () => {
-		const a = $('downloadfile')
-
-		if (!a) return
-
-		chrome.storage.sync.get(null, (data) => {
-			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
-			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
-			a.click()
-		})
-	})
-
-	paramId('copyimport').addEventListener('click', async function () {
-		try {
-			const area = $('area_export') as HTMLInputElement
-			await navigator.clipboard.writeText(area.value)
-			this.textContent = tradThis('Copied')
-			setTimeout(() => {
-				const domimport = $('copyimport')
-				if (domimport) {
-					domimport.textContent = tradThis('Copy text')
-				}
-			}, 1000)
-		} catch (err) {
-			console.error('Failed to copy: ', err)
-		}
-	})
-
-	paramId('i_importtext').addEventListener('keyup', function () {
-		try {
-			JSON.parse(this.value)
-			$('importtext')?.removeAttribute('disabled')
-		} catch (error) {
-			$('importtext')?.setAttribute('disabled', '')
-		}
-	})
-
-	paramId('importtext').addEventListener('click', function () {
-		paramsImport(JSON.parse(($('i_importtext') as HTMLInputElement).value))
-	})
-
+	paramId('b_exportfile').addEventListener('click', () => exportAsFile())
+	paramId('b_exportcopy').addEventListener('click', (e) => copyImportText(e.target as HTMLButtonElement))
+	paramId('i_importfile').addEventListener('change', (e) => importAsFile(e.target as HTMLInputElement))
+	paramId('i_importtext').addEventListener('keyup', (e) => importAsText((e.target as HTMLInputElement).value))
 	paramId('b_resetconf').addEventListener('click', () => paramsReset('conf'))
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
+	paramId('b_importtext').addEventListener('click', function () {
+		paramsImport(JSON.parse(($('i_importtext') as HTMLInputElement).value))
+	})
 
 	//
 	// A11y tabbing inputs control
@@ -661,6 +610,68 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 }
 
+function settingsMgmt() {
+	async function copyImportText(target: HTMLButtonElement) {
+		try {
+			const area = $('area_export') as HTMLInputElement
+			await navigator.clipboard.writeText(area.value)
+			target.textContent = tradThis('Copied')
+			setTimeout(() => {
+				const domimport = $('b_exportcopy')
+				if (domimport) {
+					domimport.textContent = tradThis('Copy text')
+				}
+			}, 1000)
+		} catch (err) {
+			console.error('Failed to copy: ', err)
+		}
+	}
+
+	function exportAsFile() {
+		const a = $('downloadfile')
+
+		if (!a) return
+
+		chrome.storage.sync.get(null, (data) => {
+			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
+			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
+			a.click()
+		})
+	}
+
+	function importAsText(string: string) {
+		try {
+			JSON.parse(string)
+			$('b_importtext')?.removeAttribute('disabled')
+		} catch (error) {
+			$('b_importtext')?.setAttribute('disabled', '')
+		}
+	}
+
+	function importAsFile(target: HTMLInputElement) {
+		if (!target.files || (target.files && target.files.length === 0)) {
+			return
+		}
+
+		const file = target.files[0]
+		const reader = new FileReader()
+
+		reader.onload = () => {
+			try {
+				if (typeof reader.result === 'string') {
+					const json = JSON.parse(window.atob(reader.result))
+					paramsImport(json)
+				}
+			} catch (err) {
+				console.log(err)
+			}
+		}
+		reader.readAsText(file)
+	}
+
+	return { exportAsFile, copyImportText, importAsText, importAsFile }
+}
+
 function cssInputSize(param: Element) {
 	setTimeout(() => {
 		const cssResize = new ResizeObserver((e) => {
@@ -692,8 +703,6 @@ function changelogControl(settingsDom: HTMLElement) {
 	loglink.onclick = () => dismiss()
 	logdismiss.onclick = () => dismiss()
 }
-
-type Langs = keyof typeof langList
 
 function translatePlaceholders(settingsDom: HTMLElement | null) {
 	if (!settingsDom) {
