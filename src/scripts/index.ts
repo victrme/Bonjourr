@@ -719,7 +719,7 @@ export function quickLinks(
 				const blocklist = links.map((l) => createBlock(l))
 				blocklist.forEach(({ block }) => addEvents(block))
 
-				linksDragging()
+				linksDragging(blocklist.map((list) => list.block)) // Pass LIs to create events faster
 				canDisplayInterface('links')
 
 				// Load icons one by one
@@ -789,7 +789,7 @@ export function quickLinks(
 		}
 	}
 
-	function linksDragging() {
+	function linksDragging(LIList: HTMLLIElement[]) {
 		type Coords = {
 			order: number
 			pos: { x: number; y: number }
@@ -809,7 +809,7 @@ export function quickLinks(
 			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
 		}
 
-		const initDrag = (ex: number, ey: number, path: EventTarget[]) => {
+		function initDrag(ex: number, ey: number, path: EventTarget[]) {
 			let block = path.find((t) => (t as HTMLElement).className === 'block') as HTMLLIElement
 
 			if (!block) {
@@ -868,7 +868,7 @@ export function quickLinks(
 			clas(domlinkblocks, true, 'dragging') // to apply pointer-events: none
 		}
 
-		const applyDrag = (ex: number, ey: number) => {
+		function applyDrag(ex: number, ey: number) {
 			// Dragged element clone follows cursor
 			deplaceElem(draggedClone, ex + push - cox, ey - coy)
 
@@ -922,7 +922,7 @@ export function quickLinks(
 			})
 		}
 
-		const endDrag = () => {
+		function endDrag() {
 			if (draggedId && startsDrag) {
 				const neworder = updatedOrder[draggedId]
 				const { x, y } = coordsEntries[neworder][1].pos // last triggerbox position
@@ -934,6 +934,8 @@ export function quickLinks(
 				deplaceElem(draggedClone, x + push, y)
 				draggedClone.className = 'block dragging-clone' // enables transition (by removing 'on' class)
 				dominterface.style.cursor = ''
+
+				dominterface.removeEventListener('mousemove', triggerDragging)
 
 				setTimeout(() => {
 					chrome.storage.sync.get(null, (data) => {
@@ -952,29 +954,50 @@ export function quickLinks(
 			}
 		}
 
-		// These a the same init, apply & end function for mobile & desktop
-		if (testOS.ios || mobilecheck()) {
-			domlinkblocks.ontouchmove = function (e) {
-				// prevents scroll when dragging
-				e.preventDefault()
-
-				// Uses touches to get the finger (or other input method :o) position
-				!startsDrag
-					? initDrag(e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0, e.composedPath())
-					: applyDrag(e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0)
-			}
-
-			domlinkblocks.ontouchend = endDrag
-		}
 		//
-		else {
-			dominterface.onmousemove = function (e) {
-				if (e.buttons !== 1) return // Do nothing unless left click is down
-				!startsDrag ? initDrag(e.x, e.y, e.composedPath()) : applyDrag(e.x, e.y)
+		// Event
+
+		let initialpos = [0, 0]
+
+		function triggerDragging(e: MouseEvent | TouchEvent) {
+			const isMouseEvent = 'buttons' in e
+			const ex = isMouseEvent ? e.x : e.touches[0]?.clientX
+			const ey = isMouseEvent ? e.y : e.touches[0]?.clientY
+
+			// Offset between current and initial cursor position
+			const thresholdpos = [Math.abs(initialpos[0] - ex), Math.abs(initialpos[1] - ey)]
+
+			// Only apply drag if user moved by 10px, to prevent accidental dragging
+			if (thresholdpos[0] > 10 || thresholdpos[1] > 10) {
+				initialpos = [1e7, 1e7] // so that condition is always true until endDrag
+				!startsDrag ? initDrag(ex, ey, e.composedPath()) : applyDrag(ex, ey)
 			}
 
-			dominterface.onmouseup = endDrag
-			dominterface.onmouseleave = endDrag
+			if (isMouseEvent && e.buttons === 0) {
+				endDrag() // Ends dragging when no buttons on MouseEvent
+			}
+
+			if (!isMouseEvent) {
+				e.preventDefault() // prevents scroll when dragging on touches
+			}
+		}
+
+		LIList.forEach((li) => {
+			li.addEventListener('touchstart', (e) => {
+				initialpos = [e.touches[0]?.clientX, e.touches[0]?.clientY]
+				dominterface.addEventListener('touchmove', triggerDragging) // Mobile (touches)
+			})
+
+			li.addEventListener('mousedown', (e) => {
+				initialpos = [e.x, e.y]
+				dominterface.addEventListener('mousemove', triggerDragging) // Desktop (mouse)
+			})
+		})
+
+		dominterface.onmouseleave = endDrag
+		dominterface.ontouchend = () => {
+			endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
+			dominterface.removeEventListener('touchmove', triggerDragging) // and has to be here
 		}
 	}
 
@@ -1052,7 +1075,9 @@ export function quickLinks(
 
 			domedit?.setAttribute('data-linkid', linkId)
 
-			domtitle.focus()
+			if (!testOS.ios && !mobilecheck()) {
+				domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
+			}
 		})
 	}
 
