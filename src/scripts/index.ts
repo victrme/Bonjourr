@@ -1312,7 +1312,7 @@ export function quickLinks(
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 
 	window.addEventListener('resize', (e) => {
-		if (document.querySelector('#editlink')?.classList.contains('shown')) {
+		if ((testOS.ios || !mobilecheck()) && document.querySelector('#editlink')?.classList.contains('shown')) {
 			closeEditLink()
 		}
 	})
@@ -3664,7 +3664,10 @@ function onlineAndMobileHandler() {
 		// Todo: add safari condition
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 
-		window.addEventListener('resize', appHeight)
+		if (!mobilecheck()) {
+			window.addEventListener('resize', appHeight)
+		}
+
 		appHeight()
 
 		if (testOS.ios && navigator.userAgent.includes('Firefox')) {

@@ -34,6 +34,7 @@
 // mobile
 @media screen and (max-width: 600px) {
 	body {
+		min-height: var(--app-height);
 		font-size: 12px;
 		overflow-y: auto;
 	}
@@ -42,7 +43,14 @@
 		display: none;
 	}
 
+	#background_overlay {
+		height: var(--app-height);
+		min-height: initial;
+	}
+
 	#interface {
+		max-height: initial;
+
 		#widgets #quotes_container {
 			width: 90vw;
 		}
@@ -173,7 +181,6 @@
 		width: 60%;
 		max-width: 275px;
 		transform: unset;
-		position: absolute;
 		top: unset;
 		left: unset;
 		top: 50%;
