@@ -101,9 +101,14 @@
 		}
 
 		#changelogContainer,
+		#cssEditor,
 		.param {
 			margin-right: 12px;
 			margin-left: 12px;
+		}
+
+		#cssEditor {
+			width: calc(100% - 24px);
 		}
 
 		.signature {
