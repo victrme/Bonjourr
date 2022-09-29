@@ -1848,9 +1848,12 @@ export function initBackground(data: Sync) {
 	unsplash(data)
 }
 
+let loadBisBackground = false
+
 export function imgBackground(url: string, loadTime: number = 0, isInit?: boolean) {
 	const overlaydom = $('background_overlay') as HTMLDivElement
 	const backgrounddom = $('background') as HTMLDivElement
+	const backgroundbisdom = $('background-bis') as HTMLDivElement
 	let img = new Image()
 
 	img.onload = () => {
@@ -1865,8 +1868,16 @@ export function imgBackground(url: string, loadTime: number = 0, isInit?: boolea
 		}
 
 		const applyBackground = () => {
-			overlaydom.style.opacity = `1`
-			backgrounddom.style.backgroundImage = `url(${url})`
+			if (loadBisBackground) {
+				backgrounddom.style.opacity = '0'
+				backgroundbisdom.style.backgroundImage = `url(${url})`
+			} else {
+				backgrounddom.style.opacity = `1`
+				backgrounddom.style.backgroundImage = `url(${url})`
+			}
+
+			overlaydom.style.opacity = '1'
+			loadBisBackground = !loadBisBackground
 			localIsLoading = false
 		}
 
@@ -1909,7 +1920,6 @@ export function localBackgrounds(
 			// Uploaded file in storage would exceed limit
 			if (lsSize + newFile.length > 5e6) {
 				alert(`Image size exceeds storage: ${Math.abs(lsSize - 5e6) / 1000}ko left`)
-				$('background_overlay')!.style.opacity = '1'
 
 				return true
 			}
@@ -1957,7 +1967,6 @@ export function localBackgrounds(
 			}
 
 			localIsLoading = true
-			$('background_overlay')!.style.opacity = '0'
 			reader.readAsDataURL(file)
 		})
 
@@ -1985,7 +1994,6 @@ export function localBackgrounds(
 		// Hides previous bg and credits
 		if (state !== 'thumbnail') {
 			clas($('credit'), false, 'shown')
-			$('background_overlay')!.style.opacity = `0`
 		}
 
 		const compressStart = performance.now()
@@ -2073,7 +2081,6 @@ export function localBackgrounds(
 				if (_id !== local.selectedId) {
 					thumbnailSelection(_id)
 
-					$('background_overlay')!.style.opacity = `0`
 					localIsLoading = true
 					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
 					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
@@ -2116,7 +2123,6 @@ export function localBackgrounds(
 
 					// back to unsplash
 					else {
-						$('background_overlay')!.style.opacity = '0'
 						chrome.storage.sync.set({ background_type: 'dynamic' })
 
 						setTimeout(() => {
@@ -2159,7 +2165,6 @@ export function localBackgrounds(
 
 	function refreshCustom(button: HTMLSpanElement) {
 		chrome.storage.sync.get('custom_every', (sync) => {
-			$('background_overlay')!.style.opacity = '0'
 			turnRefreshButton(button, true)
 			localIsLoading = true
 
@@ -2513,7 +2518,6 @@ export async function unsplash(
 				// If not, animate button to show it is trying
 				if (local.waitingForPreload === undefined) {
 					turnRefreshButton(event.button, true)
-					$('background_overlay')!.style.opacity = '0'
 
 					const newDynamic = { ...sync.dynamic, time: 0 }
 					chrome.storage.sync.set({ dynamic: newDynamic })
@@ -2547,8 +2551,6 @@ export async function unsplash(
 			// Always request another set, update last time image change and load background
 			case 'collection': {
 				if (!navigator.onLine || !event.value) return
-
-				$('background_overlay')!.style.opacity = '0'
 
 				// remove user collec
 				if (event.value === '') {
@@ -2638,6 +2640,7 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 	}
 
 	$('background')!.style.filter = result
+	$('background-bis')!.style.filter = result
 
 	if (isEvent) {
 		if (cat === 'blur') eventDebounce({ background_blur: val.blur })
@@ -3633,7 +3636,6 @@ function onlineAndMobileHandler() {
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
 
 				if (dynamicNeedsImage) {
-					$('background_overlay')!.style.opacity = '0'
 					unsplash(data as Sync)
 				}
 

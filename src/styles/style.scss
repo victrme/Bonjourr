@@ -31,14 +31,16 @@
 	opacity: 0;
 	transition: transform 0.4s, opacity 0.4s;
 
+	#background-bis,
 	#background {
 		transform: scale(1.1) translateX(0px);
-		position: relative;
+		position: absolute;
 		width: 100%;
 		height: 100%;
-		background-color: #000;
 		background-size: cover;
 		background-position: center center;
+		transition: opacity 1s $easeOutThree;
+		z-index: 1;
 
 		// only for Safari
 		@media not all and (min-resolution: 0.001dpcm) {
@@ -46,6 +48,10 @@
 				transform: translateZ(0);
 			}
 		}
+	}
+
+	#background-bis {
+		z-index: 0;
 	}
 }
 

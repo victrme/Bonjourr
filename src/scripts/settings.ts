@@ -795,7 +795,6 @@ function selectBackgroundType(cat: string) {
 		// Just stick to unsplash
 
 		if (cat === 'custom' && local.selectedId !== '') {
-			$('background_overlay')!.style.opacity = `0`
 			localBackgrounds(null, { is: 'thumbnail', settings: $('settings') || undefined })
 			setTimeout(
 				() =>
@@ -811,7 +810,6 @@ function selectBackgroundType(cat: string) {
 			clas($('credit'), true, 'shown')
 
 			if (local.selectedId !== '') {
-				$('background_overlay')!.style.opacity = `0`
 				setTimeout(() => unsplash(sync), 400)
 			}
 		}
