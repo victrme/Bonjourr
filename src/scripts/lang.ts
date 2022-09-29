@@ -1517,7 +1517,7 @@ export const dict = {
 	Romans: {
 		fr: 'Chiffres romains',
 		sv: 'Romarna',
-		nl: 'Romeinen',
+		nl: 'Romeinse cijfers',
 		pl: 'Rzymianie',
 		pt_BR: 'Algarismos Romanos',
 		ru: 'Римские цифры',
@@ -2180,7 +2180,7 @@ export const dict = {
 	'Settings management': {
 		fr: 'Gestion des réglages',
 		sv: 'Settings management',
-		nl: 'Settings management',
+		nl: 'Instellingenbeheer',
 		pl: 'Settings management',
 		pt_BR: 'Settings management',
 		ru: 'Settings management',
@@ -2197,7 +2197,7 @@ export const dict = {
 	'Transfer your settings between multiple instances of Bonjourr.': {
 		fr: "Transférez vos réglages d'une instance de Bonjourr à une autre.",
 		sv: 'Transfer your settings between multiple instances of Bonjourr.',
-		nl: 'Transfer your settings between multiple instances of Bonjourr.',
+		nl: 'Verplaats je instellingen naar andere instantie(s) van Bonjourr.',
 		pl: 'Transfer your settings between multiple instances of Bonjourr.',
 		pt_BR: 'Transfer your settings between multiple instances of Bonjourr.',
 		ru: 'Transfer your settings between multiple instances of Bonjourr.',
