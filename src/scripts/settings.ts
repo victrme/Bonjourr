@@ -5,11 +5,12 @@ import { dict } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
+import storage from './storage'
+
 import {
 	$,
 	has,
 	clas,
-	online,
 	bundleLinks,
 	inputThrottle,
 	detectPlatform,
@@ -343,7 +344,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
 		const i_type = paramId('i_type') as HTMLInputElement
 
-		if (i_type.value === 'custom') chrome.storage.sync.set({ custom_every: this.value })
+		if (i_type.value === 'custom') storage.sync.set({ custom_every: this.value })
 		else unsplash(null, { is: 'every', value: this.value })
 	})
 
@@ -632,7 +633,7 @@ function settingsMgmt() {
 
 		if (!a) return
 
-		chrome.storage.sync.get(null, (data) => {
+		storage.sync.get(null, (data) => {
 			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
 			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
 			a.click()
@@ -760,10 +761,10 @@ function switchLangs(nextLang: Langs) {
 	}
 
 	sessionStorage.lang = nextLang // Session pour le weather
-	chrome.storage.sync.set({ lang: nextLang })
+	storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	chrome.storage.sync.get(null, (data) => {
+	storage.sync.get(null, (data) => {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
 		translatePlaceholders($('settings'))
@@ -779,7 +780,7 @@ function switchLangs(nextLang: Langs) {
 }
 
 function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
-	if (event) chrome.storage.sync.set({ showall: val })
+	if (event) storage.sync.set({ showall: val })
 
 	const settings = settingsDom || $('settings')
 	clas(settings, val, 'all')
@@ -821,11 +822,11 @@ function selectBackgroundType(cat: string) {
 
 		$('i_freq')?.setAttribute('value', cat === 'custom' ? c_every : d_every) // Setting frequence input
 
-		chrome.storage.sync.set({ background_type: cat })
+		storage.sync.set({ background_type: cat })
 	}
 
-	chrome.storage.local.get('selectedId', (local) => {
-		chrome.storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => {
+	storage.local.get('selectedId', (local) => {
+		storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => {
 			toggleType(sync as Sync, local as Local)
 		})
 	})
@@ -861,8 +862,8 @@ function fadeOut() {
 function paramsImport(dataToImport: any) {
 	try {
 		// Load all sync & dynamicCache
-		chrome.storage.sync.get(null, (sync) => {
-			chrome.storage.local.get('dynamicCache', (local) => {
+		storage.sync.get(null, (sync) => {
+			storage.local.get('dynamicCache', (local) => {
 				//
 				const newImport = dataToImport
 
@@ -884,8 +885,8 @@ function paramsImport(dataToImport: any) {
 				sync = { ...sync, ...newImport }
 
 				// full import on Online is through "import" field // Must clear, if not, it can add legacy data
-				chrome.storage.sync.clear()
-				chrome.storage.sync.set(sync, () => chrome.storage.local.set(local))
+				storage.sync.clear()
+				storage.sync.set(sync, () => storage.local.set(local))
 
 				sessionStorage.isImport = true // to separate import and new version startup
 
@@ -918,7 +919,7 @@ export function updateExportJSON(settingsDom?: HTMLElement) {
 
 	dom?.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	chrome.storage.sync.get(null, (data) => {
+	storage.sync.get(null, (data) => {
 		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
 		if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 		data.about.browser = detectPlatform()

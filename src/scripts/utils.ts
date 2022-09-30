@@ -2,6 +2,8 @@ import { dict } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
+import storage from './storage'
+
 export const $ = (name: string) => document.getElementById(name)
 
 export const has = (dom: Element | null, val: string) => {
@@ -128,10 +130,10 @@ export function localDataMigration(local: any) {
 	return local
 }
 
-export function bundleLinks(storage: Sync): Link[] {
+export function bundleLinks(data: Sync): Link[] {
 	// 1.13.0: Returns an array of found links in storage
 	let res: Link[] = []
-	Object.entries(storage).map(([key, val]) => {
+	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Link)
 	})
 
@@ -171,87 +173,16 @@ export function closeEditLink() {
 	}, 200)
 }
 
-// online.storage works exactly like chrome.storage
-// Just need to replace every chrome.storage
-
-export const online = (function () {
-	const onlineSet = (type: 'sync' | 'local') => {
-		return (props: { [key: string]: unknown }, callback: Function) => {
-			online.storage[type].get(null, (data: Sync) => {
-				if (typeof props === 'object') {
-					Object.entries(props).forEach(([key, val]) => {
-						data[key] = val
-					})
-
-					try {
-						localStorage[type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'] = JSON.stringify(data)
-						if (callback) callback
-					} catch (error) {
-						console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
-					}
-
-					window.dispatchEvent(new Event('storage'))
-				}
-			})
-		}
-	}
-
-	const onlineGet = (type: 'sync' | 'local') => {
-		return (props: unknown, callback: Function) => {
-			const key = type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'
-			callback(localStorage[key] ? JSON.parse(localStorage[key]) : {})
-		}
-	}
-
-	const onlineRemove = (type: 'sync' | 'local') => {
-		const sync = (key: string) => {
-			online.storage.sync.get(null, (data: { [key: string]: unknown }) => {
-				delete data[key]
-				localStorage.bonjourr = JSON.stringify(data)
-			})
-		}
-
-		const local = (key: string) => {
-			online.storage.local.get(null, (data: { [key: string]: unknown }) => {
-				delete data[key]
-				localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			})
-		}
-
-		return type === 'sync' ? sync : local
-	}
-
-	return {
-		storage: {
-			sync: {
-				get: onlineGet('sync'),
-				set: onlineSet('sync'),
-				remove: onlineRemove('sync'),
-				clear: () => localStorage.removeItem('bonjourr'),
-				log: () => online.storage.sync.get(null, (data: any) => console.log(data)),
-			},
-
-			local: {
-				get: onlineGet('local'),
-				set: onlineSet('local'),
-				remove: onlineRemove('local'),
-				clear: () => localStorage.removeItem('bonjourrBackgrounds'),
-				log: () => online.storage.local.get(null, (data: any) => console.log(data)),
-			},
-		},
-	}
-})()
-
 export const getBrowserStorage = () => {
-	chrome.storage.local.get(null, (local) => {
-		chrome.storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
+	storage.local.get(null, (local) => {
+		storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
 	})
 }
 
 export function deleteBrowserStorage() {
 	if (detectPlatform() !== 'online') {
-		chrome.storage.sync.clear()
-		chrome.storage.local.clear()
+		storage.sync.clear()
+		storage.local.clear()
 	}
 
 	localStorage.clear()
@@ -322,7 +253,7 @@ export function errorMessage(comment: string, error?: unknown) {
 		dominterface.style.opacity = '1'
 		return false
 	} else {
-		chrome.storage.sync.get(null, (data) => {
+		storage.sync.get(null, (data) => {
 			try {
 				displayMessage(JSON.stringify(data, null, 4))
 			} catch (e) {
