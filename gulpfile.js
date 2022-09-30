@@ -32,15 +32,7 @@ function scripts(platform) {
 		const stream = src('release/main.js')
 
 		if (platform === 'online') {
-			stream
-				.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
-				.pipe(replace('sync.clear(', 'clear('))
-				.pipe(replace('sync.get(', 'get(false, '))
-				.pipe(replace('local.get(', 'get(true, '))
-				.pipe(replace('sync.set(', 'set('))
-				.pipe(replace('local.set(', 'setLocal('))
-				.pipe(replace('sync.remove(', 'remove(false, '))
-				.pipe(replace('local.remove(', 'remove(true, '))
+			stream.pipe(replace('chrome.storage.', 'online.storage.'))
 		}
 
 		stream.pipe(dest(`release/${platform}/src/scripts`))

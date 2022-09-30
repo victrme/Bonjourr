@@ -21,6 +21,7 @@ import {
 	getBrowser,
 	getFavicon,
 	has,
+	online,
 	localDefaults,
 	minutator,
 	mobilecheck,
@@ -1151,7 +1152,7 @@ export function quickLinks(
 				data[l._id] = l // updates link in storage
 			})
 
-			chrome.storage.sync.set(isExtension ? data : { import: data })
+			chrome.storage.sync.set(data)
 			chrome.storage.sync.remove(link._id)
 		})
 	}
@@ -3723,7 +3724,6 @@ function startup(data: Sync) {
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
 const dominterface = $('interface') as HTMLDivElement,
-	isExtension = detectPlatform() !== 'online',
 	functionsLoad: { [key: string]: FunctionsLoadState } = {
 		clock: 'Waiting',
 		links: 'Waiting',
@@ -3751,7 +3751,7 @@ window.onload = function () {
 			if (firstStart) {
 				data = syncDefaults
 				chrome.storage.local.set(localDefaults)
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+				chrome.storage.sync.set(data)
 			}
 			//
 			else if (isImport) {
@@ -3761,7 +3761,7 @@ window.onload = function () {
 				data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
 
 				chrome.storage.sync.clear()
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+				chrome.storage.sync.set(data)
 			}
 			//
 			else if (VersionChange) {
@@ -3779,7 +3779,7 @@ window.onload = function () {
 				data.notes = syncDefaults.notes
 				data.about = { browser: detectPlatform(), version: newV }
 
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+				chrome.storage.sync.set(data)
 			}
 
 			startup(data as Sync) // TODO: rip type checking

@@ -171,63 +171,76 @@ export function closeEditLink() {
 	}, 200)
 }
 
-// lsOnlineStorage works exactly like chrome.storage
+// online.storage works exactly like chrome.storage
 // Just need to replace every chrome.storage
 
-export const lsOnlineStorage = {
-	get: (local: boolean, unused: null, callback: Function) => {
-		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
-		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
-		callback(data)
-	},
-	set: (prop: {}, callback: Function) => {
-		lsOnlineStorage.get(false, null, (data: Sync) => {
-			if (typeof prop === 'object') {
-				const [key, val] = Object.entries(prop)[0]
+export const online = (function () {
+	const onlineSet = (type: 'sync' | 'local') => {
+		return (props: { [key: string]: unknown }, callback: Function) => {
+			online.storage[type].get(null, (data: Sync) => {
+				if (typeof props === 'object') {
+					Object.entries(props).forEach(([key, val]) => {
+						data[key] = val
+					})
 
-				if (key === 'import') data = val
-				else data[key] = val
+					try {
+						localStorage[type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'] = JSON.stringify(data)
+						if (callback) callback
+					} catch (error) {
+						console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
+					}
 
-				try {
-					localStorage.bonjourr = JSON.stringify(data)
-					if (callback) callback
-				} catch (error) {
-					console.warn(error)
-					console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full")
+					window.dispatchEvent(new Event('storage'))
 				}
+			})
+		}
+	}
 
-				window.dispatchEvent(new Event('storage'))
-			}
-		})
-	},
-	clear: () => {
-		localStorage.removeItem('bonjourr')
-	},
-	setLocal: (prop: { [key: string]: unknown }, callback: Function) => {
-		lsOnlineStorage.get(true, null, (data: Local) => {
-			if (typeof prop === 'object') {
-				data = { ...data, ...prop }
+	const onlineGet = (type: 'sync' | 'local') => {
+		return (props: unknown, callback: Function) => {
+			const key = type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'
+			callback(localStorage[key] ? JSON.parse(localStorage[key]) : {})
+		}
+	}
 
-				try {
-					localStorage.bonjourrBackgrounds = JSON.stringify(data)
-					if (callback) callback
-				} catch (error) {
-					console.log(error)
-					console.log(console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full"))
-				}
-			}
-		})
-	},
-	remove: (isLocal: boolean, key: string) => {
-		lsOnlineStorage.get(isLocal, null, (data: { [key: string]: unknown }) => {
-			delete data[key]
-			if (isLocal) localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			else localStorage.bonjourr = JSON.stringify(data)
-		})
-	},
-	log: (isLocal: boolean) => lsOnlineStorage.get(isLocal, null, (data: any) => console.log(data)),
-	del: () => localStorage.clear(),
-}
+	const onlineRemove = (type: 'sync' | 'local') => {
+		const sync = (key: string) => {
+			online.storage.sync.get(null, (data: { [key: string]: unknown }) => {
+				delete data[key]
+				localStorage.bonjourr = JSON.stringify(data)
+			})
+		}
+
+		const local = (key: string) => {
+			online.storage.local.get(null, (data: { [key: string]: unknown }) => {
+				delete data[key]
+				localStorage.bonjourrBackgrounds = JSON.stringify(data)
+			})
+		}
+
+		return type === 'sync' ? sync : local
+	}
+
+	return {
+		storage: {
+			sync: {
+				get: onlineGet('sync'),
+				set: onlineSet('sync'),
+				remove: onlineRemove('sync'),
+				clear: () => localStorage.removeItem('bonjourr'),
+				log: () => online.storage.sync.get(null, (data: any) => console.log(data)),
+			},
+
+			local: {
+				get: onlineGet('local'),
+				set: onlineSet('local'),
+				remove: onlineRemove('local'),
+				clear: () => localStorage.removeItem('bonjourrBackgrounds'),
+				log: () => online.storage.local.get(null, (data: any) => console.log(data)),
+			},
+		},
+	}
+})()
 
 export const getBrowserStorage = () => {
 	chrome.storage.local.get(null, (local) => {

@@ -9,6 +9,7 @@ import {
 	$,
 	has,
 	clas,
+	online,
 	bundleLinks,
 	inputThrottle,
 	detectPlatform,
@@ -18,7 +19,6 @@ import {
 	stringMaxSize,
 	tradThis,
 	langList,
-	lsOnlineStorage,
 	deleteBrowserStorage,
 	getBrowserStorage,
 	turnRefreshButton,
@@ -885,9 +885,7 @@ function paramsImport(dataToImport: any) {
 
 				// full import on Online is through "import" field // Must clear, if not, it can add legacy data
 				chrome.storage.sync.clear()
-				chrome.storage.sync.set(detectPlatform() === 'online' ? { import: sync } : sync, () =>
-					chrome.storage.local.set(local)
-				)
+				chrome.storage.sync.set(sync, () => chrome.storage.local.set(local))
 
 				sessionStorage.isImport = true // to separate import and new version startup
 
@@ -901,7 +899,7 @@ function paramsImport(dataToImport: any) {
 
 function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
-		detectPlatform() === 'online' ? lsOnlineStorage.del() : deleteBrowserStorage()
+		deleteBrowserStorage()
 		fadeOut()
 		return
 	}
