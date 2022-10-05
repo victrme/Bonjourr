@@ -1849,40 +1849,26 @@ export function initBackground(data: Sync) {
 	unsplash(data)
 }
 
-let loadBisBackground = false
+let loadBis = false
 
-export function imgBackground(url: string, loadTime: number = 0, isInit?: boolean) {
+export function imgBackground(url: string) {
 	const overlaydom = $('background_overlay') as HTMLDivElement
 	const backgrounddom = $('background') as HTMLDivElement
 	const backgroundbisdom = $('background-bis') as HTMLDivElement
 	let img = new Image()
 
 	img.onload = () => {
-		if (loadTime) {
-			const animDuration = loadTime > 1000 ? 1400 : loadTime + 400
-			const changeDuration = (time: number) => {
-				overlaydom.style.transition = `transform .4s, opacity ${time}ms`
-			}
-
-			changeDuration(animDuration)
-			setTimeout(() => changeDuration(400), animDuration)
+		if (loadBis) {
+			backgrounddom.style.opacity = '0'
+			backgroundbisdom.style.backgroundImage = `url(${url})`
+		} else {
+			backgrounddom.style.opacity = `1`
+			backgrounddom.style.backgroundImage = `url(${url})`
 		}
 
-		const applyBackground = () => {
-			if (loadBisBackground) {
-				backgrounddom.style.opacity = '0'
-				backgroundbisdom.style.backgroundImage = `url(${url})`
-			} else {
-				backgrounddom.style.opacity = `1`
-				backgrounddom.style.backgroundImage = `url(${url})`
-			}
-
-			overlaydom.style.opacity = '1'
-			loadBisBackground = !loadBisBackground
-			localIsLoading = false
-		}
-
-		isInit ? applyBackground() : setTimeout(applyBackground, 400)
+		overlaydom.style.opacity = '1'
+		loadBis = !loadBis
+		localIsLoading = false
 	}
 
 	img.src = url
@@ -1962,7 +1948,7 @@ export function localBackgrounds(
 				}
 
 				compress(result, 'thumbnail', filesIdsList[i])
-				compress(result)
+				setTimeout(() => compress(result), 1000)
 
 				storage.local.set({ ['custom_' + filesIdsList[i]]: result })
 			}
@@ -1991,18 +1977,11 @@ export function localBackgrounds(
 	}
 
 	function compress(file: string, state?: string, _id?: string) {
-		//
-		// Hides previous bg and credits
-		if (state !== 'thumbnail') {
-			clas($('credit'), false, 'shown')
-		}
-
-		const compressStart = performance.now()
 		const img = new Image()
 
 		img.onload = () => {
-			const elem = document.createElement('canvas')
-			const ctx = elem.getContext('2d')
+			const canvas = document.createElement('canvas')
+			const ctx = canvas.getContext('2d')
 
 			if (!ctx) return
 
@@ -2011,8 +1990,8 @@ export function localBackgrounds(
 			// si thumbnail, toujours 140px
 			const height = state === 'thumbnail' ? 140 * window.devicePixelRatio : img.height
 			const scaleFactor = height / img.height
-			elem.width = img.width * scaleFactor
-			elem.height = height
+			canvas.width = img.width * scaleFactor
+			canvas.height = height
 
 			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height) //dessine l'image proportionné
 
@@ -2027,8 +2006,8 @@ export function localBackgrounds(
 			}
 
 			b64toBlobUrl(cleanData, (bloburl: string) => {
-				const compressTime = performance.now() - compressStart
-				setTimeout(() => imgBackground(bloburl, compressTime), 400 - compressTime)
+				imgBackground(bloburl)
+				clas($('creditContainer'), false, 'shown')
 			})
 		}
 
@@ -2090,6 +2069,8 @@ export function localBackgrounds(
 		}
 
 		rem.onclick = (e) => {
+			e.stopPropagation()
+
 			const path = e.composedPath()
 
 			if (e.button !== 0 || localIsLoading) {
@@ -2127,6 +2108,7 @@ export function localBackgrounds(
 						storage.sync.set({ background_type: 'dynamic' })
 
 						setTimeout(() => {
+							clas($('creditContainer'), true, 'shown')
 							storage.sync.get('dynamic', (data) => unsplash(data as Sync))
 						}, 400)
 
@@ -2182,12 +2164,12 @@ export function localBackgrounds(
 
 	function applyCustomBackground(id: string) {
 		storage.local.get(['custom_' + id], (local) => {
-			const perfStart = performance.now()
 			const background = local['custom_' + id]
 
 			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
 			b64toBlobUrl(cleanData, (bloburl: string) => {
-				imgBackground(bloburl, perfStart, !!init)
+				imgBackground(bloburl)
+				clas($('creditContainer'), false, 'shown')
 			})
 		})
 	}
@@ -2347,12 +2329,12 @@ export async function unsplash(
 			if (needsSpacer) domcredit.appendChild(spacerDOM)
 			domcredit.appendChild(artistDOM)
 
-			clas(domcredit, true, 'shown')
+			clas($('creditContainer'), true, 'shown')
 		}
 	}
 
-	function loadBackground(props: UnsplashImage, loadTime?: number) {
-		imgBackground(props.url, loadTime || 0, !!init)
+	function loadBackground(props: UnsplashImage) {
+		imgBackground(props.url)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
@@ -2491,7 +2473,7 @@ export async function unsplash(
 		}
 
 		await preloadImage(newList[0].url)
-		loadBackground(newList[0], performance.now() - changeStart)
+		loadBackground(newList[0])
 
 		cache[collecType] = newList
 		storage.local.set({ dynamicCache: cache })
@@ -3032,7 +3014,7 @@ export function showPopup(value: string | number) {
 				$('popup')?.classList.remove('shown')
 				setTimeout(() => {
 					$('popup')?.remove()
-					setTimeout(() => $('credit')?.removeAttribute('style'), 400)
+					setTimeout(() => $('creditContainer')?.style.removeProperty('opacity'), 400)
 				}, 200)
 			}
 			storage.sync.set({ reviewPopup: 'removed' })
@@ -3059,8 +3041,7 @@ export function showPopup(value: string | number) {
 
 		document.body.appendChild(dom.wrap)
 
-		const creditdom = $('credit')
-		creditdom ? (creditdom.style.opacity = '0') : ''
+		$('creditContainer')!.style.opacity = '0'
 
 		setTimeout(() => dom.wrap.classList.add('shown'), 200)
 

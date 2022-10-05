@@ -720,27 +720,29 @@ footer {
 	}
 
 	#creditContainer {
-		opacity: 1;
+		opacity: 0;
 		max-width: 50%;
 		display: flex;
 		align-items: center;
+		pointer-events: none;
+
+		&.shown {
+			opacity: 1;
+			pointer-events: all;
+
+			&:hover {
+				#credit .exif {
+					opacity: 1;
+				}
+			}
+		}
 
 		#credit {
 			text-align: left;
 
-			&.shown {
-				opacity: 1;
-
-				.exif {
-					opacity: 0;
-					transition: opacity 0.4s;
-				}
-
-				&:hover {
-					.exif {
-						opacity: 1;
-					}
-				}
+			.exif {
+				opacity: 0;
+				transition: opacity 0.4s;
 			}
 
 			a,

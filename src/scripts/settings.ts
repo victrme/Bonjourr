@@ -808,7 +808,7 @@ function selectBackgroundType(cat: string) {
 		}
 
 		if (cat === 'dynamic') {
-			clas($('credit'), true, 'shown')
+			clas($('creditContainer'), true, 'shown')
 
 			if (local.selectedId !== '') {
 				setTimeout(() => unsplash(sync), 400)
