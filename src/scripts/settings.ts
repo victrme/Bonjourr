@@ -24,6 +24,7 @@ import {
 	getBrowserStorage,
 	turnRefreshButton,
 	testOS,
+	syncDefaults,
 } from './utils'
 
 import {
@@ -847,6 +848,9 @@ function signature(dom: HTMLElement) {
 		a.href = us[i].href
 		a.textContent = us[i].name
 	})
+
+	const version = dom.querySelector('.version a')
+	if (version) version.textContent = syncDefaults.about.version
 }
 
 function fadeOut() {

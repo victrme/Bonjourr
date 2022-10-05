@@ -3755,10 +3755,13 @@ window.onload = function () {
 					localStorage.hasUpdated = 'true'
 				}
 
-				data.quicklinks = data.hide[2][0] === 0
-				data.hide[2][0] = 0
-				data.notes = syncDefaults.notes
-				data.about = { browser: detectPlatform(), version: newV }
+				// Only update if coming from <=1.14.2
+				if (oldV !== '1.15.0') {
+					data.quicklinks = data.hide[2][0] === 0
+					data.hide[2][0] = 0
+					data.notes = syncDefaults.notes
+					data.about = { browser: detectPlatform(), version: newV }
+				}
 
 				storage.sync.set(data)
 			}

@@ -1,5 +1,16 @@
 ## Changelogs
 
+**v1.15.1**
+
+-   Replaced fade to black background transition
+-   Small Dutch translation fixes by @esteinmann
+-   Fixes:
+    -   Accidental dragging on links
+    -   CSS editor alignment styling
+    -   Custom collection impossible to remove
+    -   Keyboard resizing / breaking page on mobile
+    -   Credit display when switching background type
+
 **v1.15.0**
 
 -   Added feature: Notes !
