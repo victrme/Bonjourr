@@ -2,6 +2,8 @@ import { dict } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
+import storage from './storage'
+
 export const $ = (name: string) => document.getElementById(name)
 
 export const has = (dom: Element | null, val: string) => {
@@ -128,10 +130,10 @@ export function localDataMigration(local: any) {
 	return local
 }
 
-export function bundleLinks(storage: Sync): Link[] {
+export function bundleLinks(data: Sync): Link[] {
 	// 1.13.0: Returns an array of found links in storage
 	let res: Link[] = []
-	Object.entries(storage).map(([key, val]) => {
+	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Link)
 	})
 
@@ -171,74 +173,16 @@ export function closeEditLink() {
 	}, 200)
 }
 
-// lsOnlineStorage works exactly like chrome.storage
-// Just need to replace every chrome.storage
-
-export const lsOnlineStorage = {
-	get: (local: boolean, unused: null, callback: Function) => {
-		const key = local ? 'bonjourrBackgrounds' : 'bonjourr'
-		const data = localStorage[key] ? JSON.parse(localStorage[key]) : {}
-		callback(data)
-	},
-	set: (prop: {}, callback: Function) => {
-		lsOnlineStorage.get(false, null, (data: Sync) => {
-			if (typeof prop === 'object') {
-				const [key, val] = Object.entries(prop)[0]
-
-				if (key === 'import') data = val
-				else data[key] = val
-
-				try {
-					localStorage.bonjourr = JSON.stringify(data)
-					if (callback) callback
-				} catch (error) {
-					console.warn(error)
-					console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full")
-				}
-
-				window.dispatchEvent(new Event('storage'))
-			}
-		})
-	},
-	clear: () => {
-		localStorage.removeItem('bonjourr')
-	},
-	setLocal: (prop: { [key: string]: unknown }, callback: Function) => {
-		lsOnlineStorage.get(true, null, (data: Local) => {
-			if (typeof prop === 'object') {
-				data = { ...data, ...prop }
-
-				try {
-					localStorage.bonjourrBackgrounds = JSON.stringify(data)
-					if (callback) callback
-				} catch (error) {
-					console.log(error)
-					console.log(console.warn("Bonjourr couldn't save this setting 😅\nMemory might be full"))
-				}
-			}
-		})
-	},
-	remove: (isLocal: boolean, key: string) => {
-		lsOnlineStorage.get(isLocal, null, (data: { [key: string]: unknown }) => {
-			delete data[key]
-			if (isLocal) localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			else localStorage.bonjourr = JSON.stringify(data)
-		})
-	},
-	log: (isLocal: boolean) => lsOnlineStorage.get(isLocal, null, (data: any) => console.log(data)),
-	del: () => localStorage.clear(),
-}
-
 export const getBrowserStorage = () => {
-	chrome.storage.local.get(null, (local) => {
-		chrome.storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
+	storage.local.get(null, (local) => {
+		storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
 	})
 }
 
 export function deleteBrowserStorage() {
 	if (detectPlatform() !== 'online') {
-		chrome.storage.sync.clear()
-		chrome.storage.local.clear()
+		storage.sync.clear()
+		storage.local.clear()
 	}
 
 	localStorage.clear()
@@ -309,7 +253,7 @@ export function errorMessage(comment: string, error?: unknown) {
 		dominterface.style.opacity = '1'
 		return false
 	} else {
-		chrome.storage.sync.get(null, (data) => {
+		storage.sync.get(null, (data) => {
 			try {
 				displayMessage(JSON.stringify(data, null, 4))
 			} catch (e) {

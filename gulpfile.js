@@ -2,6 +2,7 @@ const { series, parallel, src, dest, watch } = require('gulp'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
+	htmlmin = require('gulp-htmlmin'),
 	sass = require('gulp-sass')(require('sass'))
 
 function html(platform) {
@@ -17,35 +18,12 @@ function html(platform) {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
 		}
 
-		return stream.pipe(dest(`release/${platform}`))
+		return stream.pipe(htmlmin({ collapseWhitespace: true })).pipe(dest(`release/${platform}`))
 	}
 }
 
 function scripts(platform) {
-	//
-	// All scripts except background
-	// Online: replaces chrome.storage with homemade storage
-	// Chrome & Firefox build: just minify
-	//
-
-	return () => {
-		const stream = src('release/main.js')
-
-		if (platform === 'online') {
-			stream
-				.pipe(replace('chrome.storage.', 'lsOnlineStorage.'))
-				.pipe(replace('sync.clear(', 'clear('))
-				.pipe(replace('sync.get(', 'get(false, '))
-				.pipe(replace('local.get(', 'get(true, '))
-				.pipe(replace('sync.set(', 'set('))
-				.pipe(replace('local.set(', 'setLocal('))
-				.pipe(replace('sync.remove(', 'remove(false, '))
-				.pipe(replace('local.remove(', 'remove(true, '))
-		}
-
-		stream.pipe(dest(`release/${platform}/src/scripts`))
-		return stream
-	}
+	return () => src('release/main.js').pipe(dest(`release/${platform}/src/scripts`))
 }
 
 function ressources(platform) {

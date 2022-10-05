@@ -8,6 +8,7 @@ import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes } from 
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
+import storage from './storage'
 
 import {
 	$,
@@ -36,7 +37,7 @@ import {
 } from './utils'
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	chrome.storage.sync.set(value)
+	storage.sync.set(value)
 }, 400)
 
 const freqControl = {
@@ -262,7 +263,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	}
 
 	if (event) {
-		chrome.storage.sync.get('notes', (data: any) => {
+		storage.sync.get('notes', (data: any) => {
 			let notes = data.notes || syncDefaults.notes
 
 			switch (event?.is) {
@@ -563,7 +564,7 @@ export function clock(
 	}
 
 	if (event) {
-		chrome.storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
+		storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
 			let clock = data.clock || {
 				analog: false,
 				seconds: false,
@@ -575,13 +576,13 @@ export function clock(
 			switch (event.is) {
 				case 'usdate': {
 					clockDate(zonedDate(data.clock.timezone), event.checked || false)
-					chrome.storage.sync.set({ usdate: event.checked })
+					storage.sync.set({ usdate: event.checked })
 					break
 				}
 
 				case 'greeting': {
 					greetings(zonedDate(data.clock.timezone), event.value)
-					chrome.storage.sync.set({ greeting: event.value })
+					storage.sync.set({ greeting: event.value })
 					break
 				}
 
@@ -609,7 +610,7 @@ export function clock(
 					break
 			}
 
-			chrome.storage.sync.set({ clock })
+			storage.sync.set({ clock })
 			startClock(clock, data.greeting, data.usdate)
 			changeAnalogFace(clock.face)
 		})
@@ -730,7 +731,7 @@ export function quickLinks(
 					// Fetch new icons if matches these urls
 					if (needsToChange) {
 						link.icon = await fetchNewIcon(dom, link.url)
-						chrome.storage.sync.set({ [link._id]: link })
+						storage.sync.set({ [link._id]: link })
 					}
 
 					// Apply cached
@@ -938,7 +939,7 @@ export function quickLinks(
 				dominterface.removeEventListener('mousemove', triggerDragging)
 
 				setTimeout(() => {
-					chrome.storage.sync.get(null, (data) => {
+					storage.sync.get(null, (data) => {
 						Object.entries(updatedOrder).forEach(([key, val]) => {
 							const link = data[key] as Link
 							link.order = val // Updates orders
@@ -1052,7 +1053,7 @@ export function quickLinks(
 		const domedit = document.querySelector('#editlink')
 		const opendedSettings = has($('settings'), 'shown')
 
-		chrome.storage.sync.get(linkId, (data) => {
+		storage.sync.get(linkId, (data) => {
 			const { title, url, icon } = data[linkId]
 
 			const domtitle = $('e_title') as HTMLInputElement
@@ -1093,7 +1094,7 @@ export function quickLinks(
 			return false
 		}
 
-		chrome.storage.sync.get(linkId, (data) => {
+		storage.sync.get(linkId, (data) => {
 			const domlink = $(linkId) as HTMLLIElement
 			const domicon = domlink.querySelector('img') as HTMLImageElement
 			const domurl = domlink.querySelector('a') as HTMLAnchorElement
@@ -1111,14 +1112,14 @@ export function quickLinks(
 			domicon.src = link.icon
 
 			// Updates
-			chrome.storage.sync.set({ [linkId]: link })
+			storage.sync.set({ [linkId]: link })
 		})
 
 		return true
 	}
 
 	function removeblock(linkId: string) {
-		chrome.storage.sync.get([linkId], (data) => {
+		storage.sync.get([linkId], (data) => {
 			const links = bundleLinks(data as Sync)
 			let link = data[linkId] as Link
 			const linkDOM = $(linkId)
@@ -1151,8 +1152,8 @@ export function quickLinks(
 				data[l._id] = l // updates link in storage
 			})
 
-			chrome.storage.sync.set(isExtension ? data : { import: data })
-			chrome.storage.sync.remove(link._id)
+			storage.sync.set(data)
+			storage.sync.remove(link._id)
 		})
 	}
 
@@ -1160,7 +1161,7 @@ export function quickLinks(
 		// importList here can also be button dom when type is "addlink"
 		// This needs to be cleaned up later
 
-		chrome.storage.sync.get(null, (data) => {
+		storage.sync.get(null, (data) => {
 			const links = bundleLinks(data as Sync)
 			let newLinksList = []
 
@@ -1207,7 +1208,7 @@ export function quickLinks(
 
 			// Saves to storage added links before icon fetch saves again
 			newLinksList.forEach((newlink) => {
-				chrome.storage.sync.set({ [newlink._id]: newlink })
+				storage.sync.set({ [newlink._id]: newlink })
 			})
 
 			// Add new link(s) to existing ones
@@ -1253,13 +1254,13 @@ export function quickLinks(
 			case 'toggle': {
 				clas($('linkblocks'), !event.checked, 'hidden')
 				interfaceWidgetToggle(null, 'quicklinks')
-				chrome.storage.sync.set({ quicklinks: event.checked })
+				storage.sync.set({ quicklinks: event.checked })
 				break
 			}
 
 			case 'newtab': {
 				const val = event.checked || false
-				chrome.storage.sync.set({ linknewtab: val })
+				storage.sync.set({ linknewtab: val })
 				document.querySelectorAll('.block a').forEach((a) => {
 					if (val) a.setAttribute('target', '_blank')
 					else a.removeAttribute('target')
@@ -1268,7 +1269,7 @@ export function quickLinks(
 			}
 
 			case 'style': {
-				chrome.storage.sync.get(null, (data) => {
+				storage.sync.get(null, (data) => {
 					const links = bundleLinks(data as Sync)
 					const classes = ['large', 'medium', 'small', 'text']
 					const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
@@ -1281,7 +1282,7 @@ export function quickLinks(
 
 					setRows(data.linksrow, chosenClass)
 
-					chrome.storage.sync.set({ linkstyle: chosenClass })
+					storage.sync.set({ linkstyle: chosenClass })
 				})
 				break
 			}
@@ -1424,7 +1425,7 @@ export async function linksImport() {
 	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
 		if (!granted) return
 
-		chrome.storage.sync.get(null, (data) => {
+		storage.sync.get(null, (data) => {
 			const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
 			extAPI.bookmarks.getTree().then((response) => {
 				clas($('bookmarks_container'), true, 'shown')
@@ -1546,25 +1547,25 @@ export function weather(
 		return storage
 	}
 
-	async function weatherCacheControl(storage: Weather) {
+	async function weatherCacheControl(data: Weather) {
 		const now = Math.floor(date.getTime() / 1000)
 
-		if (typeof storage.lastCall === 'number') {
+		if (typeof data.lastCall === 'number') {
 			// Current: 30 mins
-			if (navigator.onLine && (now > storage.lastCall + 1800 || sessionStorage.lang)) {
+			if (navigator.onLine && (now > data.lastCall + 1800 || sessionStorage.lang)) {
 				sessionStorage.removeItem('lang')
-				storage = await request(storage)
-				chrome.storage.sync.set({ weather: storage })
+				data = await request(data)
+				storage.sync.set({ weather: data })
 			}
 
-			displayWeather(storage)
+			displayWeather(data)
 		}
 
 		// First startup
-		else initWeather(storage)
+		else initWeather(data)
 	}
 
-	async function initWeather(storage: Weather) {
+	async function initWeather(data: Weather) {
 		//
 		// First, tries to get city and country code to add in settings
 
@@ -1574,7 +1575,7 @@ export function weather(
 				const json = await ipapi.json()
 
 				if (!json.error) {
-					storage = { ...storage, city: json.city, ccode: json.country }
+					data = { ...data, city: json.city, ccode: json.country }
 				}
 			}
 		} catch (error) {
@@ -1584,14 +1585,14 @@ export function weather(
 		// Then use this as callback in Geolocation request
 		async function setWeatherAfterGeolocation(location?: [number, number]) {
 			if (location) {
-				storage.location = location
+				data.location = location
 			}
 
 			// Request API with all infos available
-			storage = await request(storage)
+			data = await request(data)
 
-			displayWeather(storage)
-			chrome.storage.sync.set({ weather: storage })
+			displayWeather(data)
+			storage.sync.set({ weather: data })
 
 			setTimeout(() => {
 				// If settings is available, all other inputs are
@@ -1601,8 +1602,8 @@ export function weather(
 					const i_geol = $('i_geol') as HTMLInputElement
 					const sett_city = $('sett_city') as HTMLDivElement
 
-					i_ccode.value = storage.ccode
-					i_city.setAttribute('placeholder', storage.city)
+					i_ccode.value = data.ccode
+					i_city.setAttribute('placeholder', data.city)
 
 					if (location) {
 						clas(sett_city, true, 'hidden')
@@ -1618,8 +1619,8 @@ export function weather(
 		)
 	}
 
-	function displayWeather(storage: Weather) {
-		const currentState = storage.lastState
+	function displayWeather(data: Weather) {
+		const currentState = data.lastState
 
 		if (!currentState) {
 			return
@@ -1631,7 +1632,7 @@ export function weather(
 			const actual = Math.floor(currentState.temp)
 			let tempText = ''
 
-			switch (storage.temperature) {
+			switch (data.temperature) {
 				case 'feelslike': {
 					tempText = `${tradThis('It currently feels like')} ${feels}°`
 					break
@@ -1701,7 +1702,7 @@ export function weather(
 
 		const handleForecast = () => {
 			if (forecast) {
-				forecast.textContent = `${tradThis('with a high of')} ${storage.fcHigh}° ${tradThis(
+				forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}° ${tradThis(
 					date.getHours() > 21 ? 'tomorrow' : 'today'
 				)}.`
 
@@ -1727,7 +1728,7 @@ export function weather(
 	}
 
 	async function updatesWeather() {
-		chrome.storage.sync.get('weather', async (data) => {
+		storage.sync.get('weather', async (data) => {
 			switch (event?.is) {
 				case 'units': {
 					data.weather.unit = event.checked ? 'imperial' : 'metric'
@@ -1772,7 +1773,7 @@ export function weather(
 								data.weather.location = [pos.coords.latitude, pos.coords.longitude]
 
 								data.weather = await request(data.weather)
-								chrome.storage.sync.set({ weather: data.weather })
+								storage.sync.set({ weather: data.weather })
 								displayWeather(data.weather)
 							},
 							() => {
@@ -1804,7 +1805,7 @@ export function weather(
 				}
 			}
 
-			chrome.storage.sync.set({ weather: data.weather })
+			storage.sync.set({ weather: data.weather })
 			displayWeather(data.weather)
 		})
 	}
@@ -1963,7 +1964,7 @@ export function localBackgrounds(
 				compress(result, 'thumbnail', filesIdsList[i])
 				compress(result)
 
-				chrome.storage.local.set({ ['custom_' + filesIdsList[i]]: result })
+				storage.local.set({ ['custom_' + filesIdsList[i]]: result })
 			}
 
 			localIsLoading = true
@@ -1971,17 +1972,17 @@ export function localBackgrounds(
 		})
 
 		// Adds to list, becomes selected and save background
-		chrome.storage.local.get(['idsList'], (local) => {
+		storage.local.get(['idsList'], (local) => {
 			let list = [...local.idsList]
 			list.push(...filesIdsList)
 
 			if (local.idsList.length === 0) {
-				chrome.storage.sync.set({ background_type: 'custom' }) // change type si premier local
+				storage.sync.set({ background_type: 'custom' }) // change type si premier local
 			}
 
 			setTimeout(() => thumbnailSelection(selected), 400)
 
-			chrome.storage.local.set({
+			storage.local.set({
 				...local,
 				idsList: list,
 				selectedId: selected,
@@ -2019,7 +2020,7 @@ export function localBackgrounds(
 			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
 
 			if (state === 'thumbnail' && _id) {
-				chrome.storage.local.set({ ['customThumb_' + _id]: cleanData })
+				storage.local.set({ ['customThumb_' + _id]: cleanData })
 				addThumbnails(cleanData, _id, null, true)
 
 				return
@@ -2076,14 +2077,14 @@ export function localBackgrounds(
 			const _id = thumbnailButton.id
 			const bgKey = 'custom_' + _id
 
-			chrome.storage.local.get('selectedId', (local) => {
+			storage.local.get('selectedId', (local) => {
 				// image selectionné est différente de celle affiché
 				if (_id !== local.selectedId) {
 					thumbnailSelection(_id)
 
 					localIsLoading = true
-					chrome.storage.local.set({ selectedId: _id }) // Change bg selectionné
-					chrome.storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
+					storage.local.set({ selectedId: _id }) // Change bg selectionné
+					storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
 				}
 			})
 		}
@@ -2095,7 +2096,7 @@ export function localBackgrounds(
 				return
 			}
 
-			chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
+			storage.local.get(['idsList', 'selectedId'], (local) => {
 				const thumbnail = path.find((d: EventTarget) => {
 					return (d as HTMLElement).className.includes('thumbnail')
 				}) as HTMLElement
@@ -2106,9 +2107,9 @@ export function localBackgrounds(
 
 				thumbnail.remove()
 
-				chrome.storage.local.remove('custom_' + _id)
-				chrome.storage.local.remove(['customThumb_' + _id])
-				chrome.storage.local.set({ idsList: poppedList })
+				storage.local.remove('custom_' + _id)
+				storage.local.remove('customThumb_' + _id)
+				storage.local.set({ idsList: poppedList })
 
 				// Draw new image if displayed is removed
 				if (_id === selectedId) {
@@ -2118,21 +2119,21 @@ export function localBackgrounds(
 						thumbnailSelection(selectedId)
 
 						const toShowId = 'custom_' + poppedList[0]
-						chrome.storage.local.get([toShowId], (local) => compress(local[toShowId]))
+						storage.local.get([toShowId], (local) => compress(local[toShowId]))
 					}
 
 					// back to unsplash
 					else {
-						chrome.storage.sync.set({ background_type: 'dynamic' })
+						storage.sync.set({ background_type: 'dynamic' })
 
 						setTimeout(() => {
-							chrome.storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+							storage.sync.get('dynamic', (data) => unsplash(data as Sync))
 						}, 400)
 
 						selectedId = ''
 					}
 
-					chrome.storage.local.set({ selectedId }) // selected is new chosen background
+					storage.local.set({ selectedId }) // selected is new chosen background
 				}
 			})
 		}
@@ -2141,14 +2142,14 @@ export function localBackgrounds(
 	function displayCustomThumbnails(settingsDom: HTMLElement) {
 		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
 
-		chrome.storage.local.get(['idsList', 'selectedId'], (local) => {
+		storage.local.get(['idsList', 'selectedId'], (local) => {
 			const { idsList, selectedId } = local
 
 			if (idsList.length > 0 && thumbnails.length < idsList.length) {
 				const thumbsKeys = idsList.map((id: string) => 'customThumb_' + id) // To get keys for storage
 
 				// Parse through thumbnails to display them
-				chrome.storage.local.get(thumbsKeys, (local) => {
+				storage.local.get(thumbsKeys, (local) => {
 					Object.entries(local).forEach(([key, val]) => {
 						if (!key.startsWith('customThumb_')) return // online only, can be removed after lsOnlineStorage rework
 
@@ -2164,7 +2165,7 @@ export function localBackgrounds(
 	}
 
 	function refreshCustom(button: HTMLSpanElement) {
-		chrome.storage.sync.get('custom_every', (sync) => {
+		storage.sync.get('custom_every', (sync) => {
 			turnRefreshButton(button, true)
 			localIsLoading = true
 
@@ -2180,7 +2181,7 @@ export function localBackgrounds(
 	}
 
 	function applyCustomBackground(id: string) {
-		chrome.storage.local.get(['custom_' + id], (local) => {
+		storage.local.get(['custom_' + id], (local) => {
 			const perfStart = performance.now()
 			const background = local['custom_' + id]
 
@@ -2202,7 +2203,7 @@ export function localBackgrounds(
 		return
 	}
 
-	chrome.storage.local.get(['selectedId', 'idsList'], (local) => {
+	storage.local.get(['selectedId', 'idsList'], (local) => {
 		try {
 			// need all of saved stuff
 			let { selectedId, idsList } = local
@@ -2214,18 +2215,18 @@ export function localBackgrounds(
 				idsList = []
 				selectedId = ''
 
-				chrome.storage.local.get(null, (local) => {
+				storage.local.get(null, (local) => {
 					const ids = Object.keys(local)
 						.filter((k) => k.startsWith('custom_'))
 						.map((k) => k.replace('custom_', ''))
 
-					chrome.storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
-					chrome.storage.sync.get(null, (data) => initBackground(data as Sync))
+					storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
+					storage.sync.get(null, (data) => initBackground(data as Sync))
 				})
 			}
 
 			if (idsList.length === 0) {
-				chrome.storage.sync.get('dynamic', (data) => {
+				storage.sync.get('dynamic', (data) => {
 					unsplash(data as Sync) // no bg, back to unsplash
 				})
 				return
@@ -2239,8 +2240,8 @@ export function localBackgrounds(
 
 				applyCustomBackground(selectedId)
 
-				chrome.storage.sync.set({ custom_time: freqControl.set() })
-				chrome.storage.local.set({ selectedId })
+				storage.sync.set({ custom_time: freqControl.set() })
+				storage.local.set({ selectedId })
 
 				if ($('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
 
@@ -2428,7 +2429,7 @@ export async function unsplash(
 
 		const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
 		dynamic.lastCollec = collec
-		chrome.storage.sync.set({ dynamic: dynamic })
+		storage.sync.set({ dynamic: dynamic })
 
 		return collec
 	}
@@ -2441,7 +2442,7 @@ export async function unsplash(
 		if (preloading) {
 			loadBackground(list[0])
 			await preloadImage(list[1].url) // Is trying to preload next
-			chrome.storage.local.remove('waitingForPreload')
+			storage.local.remove('waitingForPreload')
 			return
 		}
 
@@ -2467,8 +2468,8 @@ export async function unsplash(
 			if (newList) {
 				caches[collecType] = list.concat(newList)
 				await preloadImage(newList[0].url)
-				chrome.storage.local.set({ dynamicCache: caches })
-				chrome.storage.local.remove('waitingForPreload')
+				storage.local.set({ dynamicCache: caches })
+				storage.local.remove('waitingForPreload')
 			}
 
 			return
@@ -2476,9 +2477,9 @@ export async function unsplash(
 
 		if (list.length > 1) await preloadImage(list[1].url) // Or preload next
 
-		chrome.storage.sync.set({ dynamic: dynamic })
-		chrome.storage.local.set({ dynamicCache: caches })
-		chrome.storage.local.remove('waitingForPreload')
+		storage.sync.set({ dynamic: dynamic })
+		storage.local.set({ dynamicCache: caches })
+		storage.local.remove('waitingForPreload')
 	}
 
 	async function populateEmptyList(collecType: CollectionType, cache: DynamicCache) {
@@ -2493,12 +2494,12 @@ export async function unsplash(
 		loadBackground(newList[0], performance.now() - changeStart)
 
 		cache[collecType] = newList
-		chrome.storage.local.set({ dynamicCache: cache })
-		chrome.storage.local.set({ waitingForPreload: true })
+		storage.local.set({ dynamicCache: cache })
+		storage.local.set({ waitingForPreload: true })
 
 		//preload
 		await preloadImage(newList[1].url)
-		chrome.storage.local.remove('waitingForPreload')
+		storage.local.remove('waitingForPreload')
 	}
 
 	function updateDynamic(
@@ -2520,8 +2521,8 @@ export async function unsplash(
 					turnRefreshButton(event.button, true)
 
 					const newDynamic = { ...sync.dynamic, time: 0 }
-					chrome.storage.sync.set({ dynamic: newDynamic })
-					chrome.storage.local.set({ waitingForPreload: true })
+					storage.sync.set({ dynamic: newDynamic })
+					storage.local.set({ waitingForPreload: true })
 
 					setTimeout(() => cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false), 400)
 
@@ -2537,13 +2538,13 @@ export async function unsplash(
 
 				sync.dynamic.every = event.value
 				sync.dynamic.time = freqControl.set()
-				chrome.storage.sync.set({ dynamic: sync.dynamic })
+				storage.sync.set({ dynamic: sync.dynamic })
 				break
 			}
 
 			// Back to dynamic and load first from chosen collection
 			case 'removedCustom': {
-				chrome.storage.sync.set({ background_type: 'dynamic' })
+				storage.sync.set({ background_type: 'dynamic' })
 				loadBackground(local.dynamicCache[collectionUpdater(sync.dynamic)][0])
 				break
 			}
@@ -2559,8 +2560,8 @@ export async function unsplash(
 					sync.dynamic.collection = ''
 					sync.dynamic.lastCollec = defaultColl
 
-					chrome.storage.sync.set({ dynamic: sync.dynamic })
-					chrome.storage.local.set({ dynamicCache: local.dynamicCache })
+					storage.sync.set({ dynamic: sync.dynamic })
+					storage.local.set({ dynamicCache: local.dynamicCache })
 
 					unsplash(sync)
 					return
@@ -2570,7 +2571,7 @@ export async function unsplash(
 				sync.dynamic.collection = event.value
 				sync.dynamic.lastCollec = 'user'
 				sync.dynamic.time = freqControl.set()
-				chrome.storage.sync.set({ dynamic: sync.dynamic })
+				storage.sync.set({ dynamic: sync.dynamic })
 
 				populateEmptyList(chooseCollection(event.value), local.dynamicCache)
 				break
@@ -2589,8 +2590,8 @@ export async function unsplash(
 
 	if (event) {
 		// No init, Event
-		chrome.storage.sync.get('dynamic', (sync) =>
-			chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+		storage.sync.get('dynamic', (sync) =>
+			storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
 				updateDynamic(event, sync as Sync, local as Local)
 			})
 		)
@@ -2600,7 +2601,7 @@ export async function unsplash(
 		return
 	}
 
-	chrome.storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+	storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
 		try {
 			// Real init start
 			const collecType = collectionUpdater(init.dynamic)
@@ -2662,7 +2663,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 		document.body.setAttribute('class', cases[value])
 
 		if (isEvent) {
-			chrome.storage.sync.set({ dark: value })
+			storage.sync.set({ dark: value })
 		}
 	}
 }
@@ -2684,7 +2685,7 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 	}
 
 	function updateSearchbar() {
-		chrome.storage.sync.get('searchbar', (data) => {
+		storage.sync.get('searchbar', (data) => {
 			if (!that) {
 				return
 			}
@@ -2876,11 +2877,11 @@ export async function quotes(
 
 	function controlCacheList(list: Quote[], lang: string, type: string) {
 		list.shift() // removes used quote
-		chrome.storage.local.set({ quotesCache: list })
+		storage.local.set({ quotesCache: list })
 
 		if (list.length < 2) {
 			newQuote(lang, type).then((list) => {
-				chrome.storage.local.set({ quotesCache: list })
+				storage.local.set({ quotesCache: list })
 			})
 		}
 
@@ -2888,7 +2889,7 @@ export async function quotes(
 	}
 
 	function updateSettings() {
-		chrome.storage.sync.get(['lang', 'quotes'], async (data) => {
+		storage.sync.get(['lang', 'quotes'], async (data) => {
 			const updated = { ...data.quotes }
 			const { lang, quotes } = data
 
@@ -2897,7 +2898,7 @@ export async function quotes(
 					const on = event.checked || false // to use inside storage callback
 					updated.on = on
 
-					chrome.storage.local.get('quotesCache', (local) => {
+					storage.local.get('quotesCache', (local) => {
 						insertToDom(local.quotesCache[0])
 						display(on)
 					})
@@ -2923,7 +2924,7 @@ export async function quotes(
 						updated.type = event.value
 
 						const list = await newQuote(lang, event.value)
-						chrome.storage.local.set({ quotesCache: list })
+						storage.local.set({ quotesCache: list })
 
 						insertToDom(list[0])
 					}
@@ -2933,7 +2934,7 @@ export async function quotes(
 				case 'refresh': {
 					updated.last = freqControl.set()
 
-					chrome.storage.local.get('quotesCache', async (local) => {
+					storage.local.get('quotesCache', async (local) => {
 						const { quotesCache } = local as Local
 						const quote = controlCacheList(quotesCache, lang, quotes.type)[0]
 						insertToDom(quote)
@@ -2943,7 +2944,7 @@ export async function quotes(
 				}
 			}
 
-			chrome.storage.sync.set({ quotes: updated })
+			storage.sync.set({ quotes: updated })
 		})
 	}
 
@@ -2966,7 +2967,7 @@ export async function quotes(
 	}
 
 	// Init
-	chrome.storage.local.get('quotesCache', async (local) => {
+	storage.local.get('quotesCache', async (local) => {
 		canDisplayInterface('quotes')
 
 		const { lang, quotes } = init
@@ -2976,14 +2977,14 @@ export async function quotes(
 
 		if (!cache || cache?.length === 0) {
 			cache = await newQuote(lang, quotes.type) // gets list
-			chrome.storage.local.set({ quotesCache: cache }) // saves list
+			storage.local.set({ quotesCache: cache }) // saves list
 
 			quote = cache[0]
 		}
 
 		if (needsNewQuote) {
 			quotes.last = freqControl.set() // updates last quotes timestamp
-			chrome.storage.sync.set({ quotes })
+			storage.sync.set({ quotes })
 
 			quote = controlCacheList(cache, lang, quotes.type)[0] // has removed last quote from cache
 		}
@@ -3034,7 +3035,7 @@ export function showPopup(value: string | number) {
 					setTimeout(() => $('credit')?.removeAttribute('style'), 400)
 				}, 200)
 			}
-			chrome.storage.sync.set({ reviewPopup: 'removed' })
+			storage.sync.set({ reviewPopup: 'removed' })
 		}
 
 		dom.wrap.id = 'popup'
@@ -3072,13 +3073,13 @@ export function showPopup(value: string | number) {
 
 	if (typeof value === 'number') {
 		if (value > 30) affiche() //s'affiche après 30 tabs
-		else chrome.storage.sync.set({ reviewPopup: value + 1 })
+		else storage.sync.set({ reviewPopup: value + 1 })
 
 		return
 	}
 
 	if (value !== 'removed') {
-		chrome.storage.sync.set({ reviewPopup: 0 })
+		storage.sync.set({ reviewPopup: 0 })
 	}
 }
 
@@ -3154,14 +3155,14 @@ export function customFont(
 		const resp = await fetch(url)
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
-		chrome.storage.local.set({ fontface })
+		storage.local.set({ fontface })
 
 		return fontface
 	}
 
 	function updateFont() {
 		function fetchFontList(callback: (json: google.fonts.WebfontList) => void) {
-			chrome.storage.local.get('googleFonts', async (local) => {
+			storage.local.get('googleFonts', async (local) => {
 				//
 				// Get list from storage
 				if (local.googleFonts) {
@@ -3186,7 +3187,7 @@ export function customFont(
 
 				// json has at least one available family
 				if (json.items?.length > 0 && typeof json.items[0]?.family === 'string') {
-					chrome.storage.local.set({ googleFonts: json })
+					storage.local.set({ googleFonts: json })
 					callback(json)
 				}
 			})
@@ -3245,7 +3246,7 @@ export function customFont(
 			}
 		}
 
-		chrome.storage.sync.get('font', async ({ font }) => {
+		storage.sync.get('font', async ({ font }) => {
 			switch (event?.is) {
 				case 'autocomplete': {
 					fetchFontList((json) => {
@@ -3274,14 +3275,14 @@ export function customFont(
 					if (val === '') {
 						safeFont($('settings') as HTMLElement)
 						debounce(() => {
-							chrome.storage.local.remove('fontface')
+							storage.local.remove('fontface')
 							eventDebounce({ font: { size: font.size, ...removeFont() } })
 						}, 200)
 					}
 
 					if (typeof val === 'string' && val.length > 1) {
 						fetchFontList(async (json) => {
-							chrome.storage.sync.set({
+							storage.sync.set({
 								font: { size: font.size, ...(await changeFamily(json, val)) },
 							})
 						})
@@ -3338,7 +3339,7 @@ export function customFont(
 		}
 
 		// Sets family
-		chrome.storage.local.get('fontface', async (local) => {
+		storage.local.get('fontface', async (local) => {
 			setFamily(family, local.fontface || (await setFontface(url))) // fetch font-face data if none in storage
 			canDisplayInterface('fonts')
 		})
@@ -3425,7 +3426,7 @@ export function hideElem(
 	}
 
 	function initButtons() {
-		chrome.storage.sync.get('hide', (data) => {
+		storage.sync.get('hide', (data) => {
 			try {
 				data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
 				event?.buttonList?.forEach((button) => {
@@ -3439,7 +3440,7 @@ export function hideElem(
 	}
 
 	function toggleElement() {
-		chrome.storage.sync.get(['weather', 'hide'], (data) => {
+		storage.sync.get(['weather', 'hide'], (data) => {
 			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
 
 			if (!event?.button) {
@@ -3453,7 +3454,7 @@ export function hideElem(
 
 			// Update hidden list
 			data.hide[pos.row][pos.col] = state ? 1 : 0
-			chrome.storage.sync.set({ hide: data.hide })
+			storage.sync.set({ hide: data.hide })
 
 			// Re-activates weather
 			if (!state && pos.row === 1 && pos.col > 0 && 'weather' in data) {
@@ -3571,7 +3572,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 			domshowsettings.classList.remove('init')
 			domshowsettings.style.transition = ``
 
-			chrome.storage.sync.get(null, (data) => settingsInit(data as Sync))
+			storage.sync.get(null, (data) => settingsInit(data as Sync))
 		}, loadtime + 100)
 	}
 
@@ -3598,7 +3599,7 @@ export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quic
 
 	// Event is a string of the widget name to toggle
 	if (event) {
-		chrome.storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks'], (data) => {
+		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks'], (data) => {
 			let displayed = {
 				quicklinks: data.quicklinks,
 				quotes: data.quotes.on,
@@ -3631,7 +3632,7 @@ function onlineAndMobileHandler() {
 	if (mobilecheck()) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
-			chrome.storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
+			storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
 				const { dynamic, background_type } = data
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
 
@@ -3715,7 +3716,7 @@ function startup(data: Sync) {
 
 	setInterval(() => {
 		if (navigator.onLine) {
-			chrome.storage.sync.get(['weather', 'hide'], (data) => {
+			storage.sync.get(['weather', 'hide'], (data) => {
 				weather(data as Sync) // Checks every 5 minutes if weather needs update
 			})
 		}
@@ -3725,7 +3726,6 @@ function startup(data: Sync) {
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
 const dominterface = $('interface') as HTMLDivElement,
-	isExtension = detectPlatform() !== 'online',
 	functionsLoad: { [key: string]: FunctionsLoadState } = {
 		clock: 'Waiting',
 		links: 'Waiting',
@@ -3742,18 +3742,16 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 window.onload = function () {
 	onlineAndMobileHandler()
 
-	console.log(mobilecheck() ? 'mobile' : 'desktop')
-
 	try {
-		chrome.storage.sync.get(null, (data) => {
+		storage.sync.get(null, (data) => {
 			const VersionChange = data?.about?.version !== syncDefaults.about.version
 			const isImport = sessionStorage.isImport === 'true'
 			const firstStart = Object.keys(data).length === 0
 
 			if (firstStart) {
 				data = syncDefaults
-				chrome.storage.local.set(localDefaults)
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+				storage.local.set(localDefaults)
+				storage.sync.set(data)
 			}
 			//
 			else if (isImport) {
@@ -3762,8 +3760,8 @@ window.onload = function () {
 				data = filterImports(data)
 				data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
 
-				chrome.storage.sync.clear()
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+				storage.sync.clear()
+				storage.sync.set(data)
 			}
 			//
 			else if (VersionChange) {
@@ -3781,7 +3779,7 @@ window.onload = function () {
 				data.notes = syncDefaults.notes
 				data.about = { browser: detectPlatform(), version: newV }
 
-				chrome.storage.sync.set(isExtension ? data : { import: data })
+				storage.sync.set(data)
 			}
 
 			startup(data as Sync) // TODO: rip type checking
