@@ -2551,7 +2551,7 @@ export async function unsplash(
 
 			// Always request another set, update last time image change and load background
 			case 'collection': {
-				if (!navigator.onLine || !event.value) return
+				if (!navigator.onLine || typeof event.value !== 'string') return
 
 				// remove user collec
 				if (event.value === '') {
