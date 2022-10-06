@@ -2821,7 +2821,6 @@ export async function quotes(
 	}
 ) {
 	function display(on: boolean) {
-		clas($('linkblocks'), on, 'withQuotes')
 		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
 	}
 
