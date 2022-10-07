@@ -990,8 +990,10 @@ export function quickLinks(
 			})
 
 			li.addEventListener('mousedown', (e) => {
-				initialpos = [e.x, e.y]
-				dominterface.addEventListener('mousemove', triggerDragging) // Desktop (mouse)
+				if (e.button === 0) {
+					initialpos = [e.x, e.y]
+					dominterface.addEventListener('mousemove', triggerDragging) // Desktop (mouse)
+				}
 			})
 		})
 
