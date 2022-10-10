@@ -291,6 +291,7 @@
 
 		span {
 			display: flex;
+			align-items: center;
 		}
 
 		.tooltip {
@@ -302,6 +303,7 @@
 		div {
 			display: flex;
 			align-items: center;
+			width: 155px;
 
 			#i_favicon {
 				text-align: center;
@@ -317,7 +319,7 @@
 			}
 
 			#i_tabtitle {
-				width: 110px;
+				width: 100%;
 			}
 		}
 	}
@@ -358,7 +360,7 @@
 
 		&.shown {
 			overflow-y: clip;
-			max-height: 255px;
+			max-height: 260px;
 		}
 	}
 
