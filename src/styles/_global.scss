@@ -52,7 +52,7 @@ body {
 	user-select: none;
 	touch-action: pan-y;
 	opacity: 1;
-	background-color: $pureblack;
+	background-color: var(--average-color);
 	color: $purewhite;
 	font-family: $fonts;
 	font-size: 1em;

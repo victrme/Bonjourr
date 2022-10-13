@@ -43,11 +43,11 @@
 		z-index: 1;
 
 		// only for Safari
-		@media not all and (min-resolution: 0.001dpcm) {
-			@supports (-webkit-appearance: none) and (stroke-color: transparent) {
-				transform: translateZ(0);
-			}
-		}
+		// @media not all and (min-resolution: 0.001dpcm) {
+		// 	@supports (-webkit-appearance: none) and (stroke-color: transparent) {
+		// 		transform: translateZ(0);
+		// 	}
+		// }
 	}
 
 	#background-bis {
@@ -73,7 +73,7 @@
 	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
 	font-weight: 300;
 	box-sizing: border-box;
-	padding: 0 12px;
+	padding: 12px;
 
 	&.pushed {
 		transform: translateX(-100px);
@@ -1118,7 +1118,7 @@ footer {
 	position: fixed;
 	bottom: 4rem;
 	left: 4rem;
-	z-index: 3;
+	z-index: 2;
 	transition: opacity 0.4s;
 	pointer-events: none;
 

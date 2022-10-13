@@ -35,6 +35,7 @@
 @media screen and (max-width: 600px) {
 	body {
 		min-height: var(--app-height);
+		min-height: -webkit-fill-available;
 		font-size: 12px;
 		overflow-y: auto;
 	}
@@ -44,7 +45,8 @@
 	}
 
 	#background_overlay {
-		height: var(--app-height);
+		min-height: var(--app-height);
+		min-height: -webkit-fill-available;
 		min-height: initial;
 	}
 
@@ -181,6 +183,45 @@
 			width: auto;
 		}
 	}
+}
+
+// fix iPhone notch in landscape
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+	body {
+		padding: env(safe-area-inset);
+		overflow-y: scroll;
+		min-height: 400px;
+
+		#interface {
+			max-height: unset;
+		}
+
+		#interface #main, #interface #time {
+			min-height: unset;
+		}
+	}
+}
+
+@media (orientation: landscape) {
+	footer {
+		position: absolute;
+		bottom: 0;
+	}
+
+	#interface {
+		max-height: unset;
+
+		#widgets {
+			gap: 1em;
+		}
+	}
+}
+
+// touch screens!
+@media only screen and (hover: none) and (pointer: coarse) {
+	#background_overlay {
+		position: absolute;
+	}
 
 	#editlink {
 		width: 60%;
@@ -196,7 +237,10 @@
 			font-size: 1.25em;
 		}
 	}
+
+	#interface #widgets #quotes_container #author {
+		opacity: 1;
+	}
 }
 
-// @media only screen and (hover: none) and (pointer: coarse) {
-// }
+

@@ -2341,6 +2341,7 @@ export async function unsplash(
 
 		// sets meta theme-color to main background's color
 		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', props.color)
+		document.documentElement.style.setProperty('--average-color', props.color)
 	}
 
 	async function requestNewList(collecType: CollectionType) {
@@ -3649,9 +3650,9 @@ function onlineAndMobileHandler() {
 		// Todo: add safari condition
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 
-		if (!mobilecheck()) {
+		// if (!mobilecheck()) {
 			window.addEventListener('resize', appHeight)
-		}
+		// }
 
 		appHeight()
 
