@@ -27,6 +27,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
 :root {
 	--app-height: 100vh;
+	--average-color: black;
 }
 
 ::-webkit-scrollbar {
@@ -65,7 +66,6 @@ body {
 	display: flex;
 	flex-direction: column;
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-
 	--blue: #0072ee;
 
 	p,

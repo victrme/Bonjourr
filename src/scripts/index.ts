@@ -1853,7 +1853,7 @@ export function initBackground(data: Sync) {
 
 let loadBis = false
 
-export function imgBackground(url: string) {
+export function imgBackground(url: string, color?: string) {
 	const overlaydom = $('background_overlay') as HTMLDivElement
 	const backgrounddom = $('background') as HTMLDivElement
 	const backgroundbisdom = $('background-bis') as HTMLDivElement
@@ -1871,6 +1871,10 @@ export function imgBackground(url: string) {
 		overlaydom.style.opacity = '1'
 		loadBis = !loadBis
 		localIsLoading = false
+
+		if (color && testOS.ios) {
+			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
+		}
 	}
 
 	img.src = url
@@ -2336,12 +2340,11 @@ export async function unsplash(
 	}
 
 	function loadBackground(props: UnsplashImage) {
-		imgBackground(props.url)
+		imgBackground(props.url, props.color)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
 		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', props.color)
-		document.documentElement.style.setProperty('--average-color', props.color)
 	}
 
 	async function requestNewList(collecType: CollectionType) {
@@ -3651,7 +3654,7 @@ function onlineAndMobileHandler() {
 		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 
 		// if (!mobilecheck()) {
-			window.addEventListener('resize', appHeight)
+		window.addEventListener('resize', appHeight)
 		// }
 
 		appHeight()
