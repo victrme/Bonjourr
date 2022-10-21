@@ -2,63 +2,65 @@
 This is Bonjourr's description that appears on browser extensions stores.
 ---
 
-Toda vez que você abrir uma nova janela ou aba, você será saudado por esta página de aparência minimalista que ajudará sua serenidade e produtividade. Graças a seus lindos fundos de alta qualidade que mudam de acordo com o humor do dia, suas novas abas sempre se sentirão frescas.
+Cada vez que você abrir uma nova janela ou aba, você será recebido por esta página de aparência minimalista que vai ajudar com sua tranquilidade e produtividade. Graças aos seus lindos fundos de alta qualidade que mudam conforme o ânimo do dia, suas novas abas sempre vão parecer renovadas.
 
-Bonjourr foi construída como uma alternativa mais moderna às homepages como Momentum. Inspirámo-nos na linguagem de design do iOS e da Apple para criar esta bela homepage que o ajudará a focar no que importa.
+O Bonjourr foi feito como uma alternativa mais moderna as páginas iniciais como o Momentum. Nos inspiramos na linguagem de design do iOS e da Apple para criar essa bela página inicial que vai te ajudar a focar no que importa.
 
-Aqui estão algumas características chave:
-🍏 linguagem de design do iOS
-🏞 Fundos dinâmicos 4K que mudam de acordo com o estado de espírito do dia
+Algumas características principais:
+🍏 Linguagem de design do iOS
+🏞 Backgrounds dinâmicos em 4K que mudam de acordo com o ânimo do dia
 ⚡️ Rápido e leve!
-🔎 Barra de busca (compatível com todos os motores de busca)
-🕰 Relógio analógico com múltiplas faces de relógio
+🔎 Barra de pesquisa (compatível com todos os motores de busca)
+🕰 Relógio analógico com múltiplos ponteiros
 🌤 Clima
-🔗 Links rápidos
-👋 Cumprimenta-o pelo seu nome
+🔗 Links Rápidos
+👋 Cumprimentos pelo seu nome
 🌘 Modo escuro
 🥖 Emoji como favicon
-🧑💻 Estilo CSS personalizado
+🧑💻 CSS personalizado
 📝 Fontes personalizadas
 🔒 Foco na privacidade
 🌎 Multilinguagem
 
-Bonjourr tem o objetivo de parecer e sentir-se o mínimo, enquanto ainda traz muitas opções para personalizá-lo ao seu gosto. Defina seus próprios fundos (ou Unsplash Collection!), habilite o belo relógio analógico, defina sua própria fonte e Links Rápidos... Você pode até mesmo conferir nossa documentação onde compilamos alguns trechos de estilo para fazer ainda mais.
+O Bonjourr tem o objetivo de parecer e sentir-se o mínimo, enquanto ainda traz muitas opções para personalizá-lo ao seu gosto. Defina seus próprios fundos (ou Unsplash Collection!), habilite o belo relógio analógico, defina sua própria fonte e Links Rápidos... Você pode até mesmo conferir nossa documentação onde compilamos alguns trechos de estilo para fazer ainda mais.
 
-O projeto é inteiramente de código aberto, amigável ao desenvolvedor e realmente respeita sua privacidade. Não coletamos nenhum dado, nem você precisa criar uma conta para usá-lo.
+O projeto é inteiramente de código aberto, acessível ao desenvolvedor e realmente respeita sua privacidade. Não coletamos nenhum dado, nem você precisa criar uma conta para usá-lo.
 
 ---
 
-🏞 Fundos dinâmicos 4K
+🏞 Backgrounds dinâmicos em 4K
+Escolhemos a dedo algumas das mais belas fotos do Unsplash para que suas novas abas pareçam sempre renovadas. Descubra fotos de alta qualidade de paisagens incríveis, animais e natureza.
+
 Escolhemos a dedo algumas das mais belas fotos Unsplash para que suas novas abas se sintam sempre frescas. Descubra fotos de alta qualidade de paisagens incríveis, animais e natureza.
 
 ⚡️ Rápido e leve!
-Bonjourr é construído com baunilha JavaScript e otimizado para o melhor desempenho possível.
+O Bonjourr é construído com JavaScript vanilla e otimizado para o melhor desempenho possível.
 
-🔎 Barra de busca
-A barra de busca integrada de Bonjourr é compatível com todos os motores de busca. Sim, todos eles! Isso inclui o habitual Google, Bing, DuckDuckGo, Yahoo, Startpage assim como outros, como Ecosia, Lilo e Qwant. Se você quiser, você pode até mesmo adicionar seu próprio mecanismo de busca personalizado.
+🔎 Barra de pesquisa
+A barra de pesquisa integrada do Bonjourr é compatível com todos os motores de busca. Sim, todos eles! Isso inclui o habitual Google, Bing, DuckDuckGo, Yahoo, Startpage assim como outros, como Ecosia, Lilo e Qwant. Se você quiser, você pode até mesmo adicionar seu próprio mecanismo de busca personalizado.
 
 🕰 Relógio analógico
-O relógio padrão do Bonjourr é feito para lembrar o que você tem no iPhone e em outros dispositivos iOS. Mas se você quiser algo mais exótico, você pode substituí-lo por um relógio analógico muito legal, e personalizá-lo como quiser.
+O relógio padrão do Bonjourr é feito para parecer com o que você tem no iPhone e em outros dispositivos iOS. Mas se você quiser algo mais exótico, você pode substituí-lo por um relógio analógico muito legal, e personalizá-lo como quiser.
 
 🌤 Clima
-Em uma frase simples, obtenha um resumo de seu tempo local atual e previsões.
+Em uma frase simples, obtenha um resumo do seu tempo local atual e previsões.
 
 🔗 Links rápidos
-Não seria uma verdadeira página inicial sem marcadores de página! Bonjourr permite adicionar seus próprios bookmarks, mudar seus ícones e importar seus bookmarks atuais de seu navegador.
+Não seria uma verdadeira página inicial sem os favoritos! O Bonjourr permite adicionar seus próprios favoritos, mudar seus ícones e importar seus favoritos atuais do seu navegador.
 
 🌘 Modo escuro
-Assim como no iOS, Bonjourr tem um belo modo automático escuro.
+Assim como no iOS, o Bonjourr tem um belo modo escuro automático.
 
 🥖 Emoji como favicon
 
 🔒 Foco na privacidade
-Algumas homepages como Momentum encorajam você a criar uma conta, dar-lhes algumas informações pessoais, usar mais permissões e contar com muitos serviços de terceiros. Bonjourr não coleta nenhum dado, mesmo para fins analíticos, usa permissões mínimas, conta com menos serviços de terceiros e, é claro, não tem nenhum sistema de conta. Bonjourr sendo de código aberto também significa que você pode verificar facilmente se nossas reivindicações são verdadeiras.
+Algumas homepages como Momentum estimulam você a criar uma conta, dar algumas informações pessoais, usar mais permissões e confiar em muitos serviços de terceiros. O Bonjourr não coleta nenhum dado, mesmo para fins analíticos, usa permissões mínimas, depende de menos serviços de terceiros e, claro, não tem nenhum sistema de conta. O Bonjourr sendo código aberto significa que você pode verificar facilmente se as nossas declarações são verdadeiras.
 
 🧑💻 Estilo CSS personalizado
-Tem uma idéia específica em mente? Bonjourr tem você coberto com a seção de estilos personalizados. Você pode personalizar e fazer qualquer coisa quando você adiciona seu próprio CSS.
+Tem uma ideia específica em mente? O Bonjourr cobre você com a seção de estilos personalizados. Você pode personalizar e fazer qualquer coisa quando você adiciona seu próprio CSS.
 
 📝 Fontes personalizadas
-Deseja uma fonte específica em sua página inicial ? Você pode selecioná-la facilmente graças à integração Bonjourr com o Google Fonts.
+Deseja uma fonte específica em sua página inicial? Você pode adicioná-la facilmente graças à integração do Bonjourr com o Google Fonts.
 
 🌎 Multilinguagem
-Graças a nossos incríveis colaboradores, Bonjourr está disponível em 15 idiomas diferentes.
+Graças aos nossos incríveis colaboradores, o Bonjourr está disponível em 15 idiomas diferentes.
