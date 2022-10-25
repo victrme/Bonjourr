@@ -35,6 +35,7 @@ import {
 	turnRefreshButton,
 	validateHideElem,
 } from './utils'
+import moveElements from './moveElements'
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
@@ -3693,6 +3694,7 @@ function startup(data: Sync) {
 	quotes(data)
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
+	moveElements()
 
 	customCss(data.css)
 	hideElem(data.hide)

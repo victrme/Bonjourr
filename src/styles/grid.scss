@@ -2,6 +2,28 @@
 	display: grid;
 	grid-template-columns: 0.5fr 1fr 0.5fr;
 
+	&.move-edit {
+		#main,
+		#time,
+		#widgets {
+			padding: 2em;
+			border-radius: 8px;
+			background: #fff2;
+			border: 3px solid transparent;
+			box-shadow: 5px 5px 20px #2224;
+			cursor: pointer;
+
+			&:hover {
+				background: #fff3;
+			}
+
+			&.move-selected {
+				background: #fff3;
+				border-color: var(--blue);
+			}
+		}
+	}
+
 	#main,
 	#time,
 	#widgets {
@@ -10,13 +32,6 @@
 		width: fit-content;
 		height: fit-content;
 		place-self: center;
-
-		&.moving {
-			padding: 2em;
-			border-radius: 8px;
-			background: #2224;
-			box-shadow: 5px 5px 20px #2224;
-		}
 	}
 }
 
