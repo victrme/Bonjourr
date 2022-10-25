@@ -1,20 +1,25 @@
 #interface {
 	display: grid;
+	padding: 2em;
 	grid-template-columns: 0.5fr 1fr 0.5fr;
+	grid-template-rows: 0.6fr 0.6fr 1fr;
 
 	&.move-edit {
+		#element-mover {
+			visibility: visible;
+		}
+
 		#main,
 		#time,
 		#widgets {
 			padding: 2em;
 			border-radius: 8px;
 			background: #fff2;
-			border: 3px solid transparent;
 			box-shadow: 5px 5px 20px #2224;
 			cursor: pointer;
 
 			&:hover {
-				background: #fff3;
+				background: #fff5;
 			}
 
 			&.move-selected {
@@ -27,6 +32,8 @@
 	#main,
 	#time,
 	#widgets {
+		border: 3px solid transparent;
+		padding: 2em;
 		grid-column: 2;
 		min-height: 0;
 		width: fit-content;
@@ -37,14 +44,17 @@
 
 #element-mover {
 	position: absolute;
+	display: flex;
 	top: 2em;
 	left: 2em;
-	display: flex;
 	gap: 2em;
 	padding: 1em 2em;
 	background-color: #2224;
+	backdrop-filter: blur(1em);
 	box-shadow: 5px 5px 20px #2224;
 	border-radius: 1em;
+	z-index: 3;
+	visibility: hidden;
 }
 
 .mover {
@@ -68,12 +78,7 @@
 }
 
 #grid-mover {
-	grid-template-columns: 1fr 1fr 1fr;
-
-	#grid-up,
-	#grid-down {
-		grid-column: 1 / 4;
-	}
+	grid-template-columns: 1fr;
 }
 
 #alignment-mover {

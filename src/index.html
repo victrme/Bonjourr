@@ -90,11 +90,12 @@
 		<main id="interface" class="init">
 			<div id="element-mover">
 				<div id="grid-mover" class="mover">
-					<button id="grid-up">▲</button>
-					<button id="grid-left">◀</button>
-					<div></div>
-					<button id="grid-right">▶</button>
-					<button id="grid-down">▼</button>
+					<button data-row="-1" data-col="0">▲</button>
+					<div>
+						<button data-row="0" data-col="-1">◀</button>
+						<button data-row="0" data-col="1">▶</button>
+					</div>
+					<button data-row="1" data-col="0">▼</button>
 				</div>
 				<div id="alignment-mover" class="mover">
 					<button data-align="baseline" data-justify="baseline">┏</button>
