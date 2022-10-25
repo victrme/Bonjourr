@@ -89,24 +89,38 @@
 
 		<main id="interface" class="init">
 			<div id="element-mover">
-				<div id="grid-mover" class="mover">
-					<button data-row="-1" data-col="0">▲</button>
-					<div>
-						<button data-row="0" data-col="-1">◀</button>
-						<button data-row="0" data-col="1">▶</button>
+				<div>
+					<p>Grid position</p>
+					<div id="grid-mover" class="mover">
+						<button data-row="-1" data-col="0">▲</button>
+						<div>
+							<button data-row="0" data-col="-1">◀</button>
+							<button data-row="0" data-col="1">▶</button>
+						</div>
+						<button data-row="1" data-col="0">▼</button>
 					</div>
-					<button data-row="1" data-col="0">▼</button>
 				</div>
-				<div id="alignment-mover" class="mover">
-					<button data-align="baseline" data-justify="baseline">┏</button>
-					<button data-align="baseline" data-justify="center">┳</button>
-					<button data-align="baseline" data-justify="end">┓</button>
-					<button data-align="center" data-justify="baseline">┣</button>
-					<button data-align="center" data-justify="center">╋</button>
-					<button data-align="center" data-justify="end">┫</button>
-					<button data-align="end" data-justify="baseline">┗</button>
-					<button data-align="end" data-justify="center">┻</button>
-					<button data-align="end" data-justify="end">┛</button>
+				<div>
+					<p>Box alignment</p>
+					<div id="box-alignment-mover" class="mover">
+						<button data-align="baseline" data-justify="baseline">┏</button>
+						<button data-align="baseline" data-justify="center">┳</button>
+						<button data-align="baseline" data-justify="end">┓</button>
+						<button data-align="center" data-justify="baseline">┣</button>
+						<button data-align="center" data-justify="center">╋</button>
+						<button data-align="center" data-justify="end">┫</button>
+						<button data-align="end" data-justify="baseline">┗</button>
+						<button data-align="end" data-justify="center">┻</button>
+						<button data-align="end" data-justify="end">┛</button>
+					</div>
+				</div>
+				<div>
+					<p>Text alignment</p>
+					<div id="text-alignment-mover" class="mover">
+						<button data-align="left">【</button>
+						<button data-align="center">▉</button>
+						<button data-align="right">】</button>
+					</div>
 				</div>
 			</div>
 
@@ -127,7 +141,7 @@
 					</div>
 				</div>
 
-				<div id="date"></div>
+				<p id="date"></p>
 			</div>
 
 			<div id="main">

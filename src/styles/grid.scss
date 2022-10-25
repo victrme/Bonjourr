@@ -18,6 +18,11 @@
 			box-shadow: 5px 5px 20px #2224;
 			cursor: pointer;
 
+			> * {
+				pointer-events: none;
+				user-select: none;
+			}
+
 			&:hover {
 				background: #fff5;
 			}
@@ -55,6 +60,11 @@
 	border-radius: 1em;
 	z-index: 3;
 	visibility: hidden;
+
+	p {
+		font-family: 'consolas';
+		margin-bottom: 1em;
+	}
 }
 
 .mover {
@@ -81,6 +91,10 @@
 	grid-template-columns: 1fr;
 }
 
-#alignment-mover {
+#box-alignment-mover {
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+#text-alignment-mover {
 	grid-template-columns: 1fr 1fr 1fr;
 }

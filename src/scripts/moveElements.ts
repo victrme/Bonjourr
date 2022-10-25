@@ -65,13 +65,25 @@ export default function moveElements() {
 	})
 
 	//
-	// Alignment
+	// Box Alignment
 	//
 
-	document.querySelectorAll('#alignment-mover button').forEach((button) => {
+	document.querySelectorAll('#box-alignment-mover button').forEach((button) => {
 		button.addEventListener('click', () => {
 			if (selected) {
 				selected.style.placeSelf = `${button.getAttribute('data-align')} ${button.getAttribute('data-justify')}`
+			}
+		})
+	})
+
+	//
+	// Text Alignment
+	//
+
+	document.querySelectorAll('#text-alignment-mover button').forEach((button) => {
+		button.addEventListener('click', () => {
+			if (selected) {
+				selected.style.textAlign = button.getAttribute('data-align') || ''
 			}
 		})
 	})
