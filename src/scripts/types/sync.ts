@@ -56,6 +56,15 @@ export type Notes = {
 	align: 'left' | 'center' | 'right'
 }
 
+export type Move = {
+	[key: string]: {
+		row: number
+		col: number
+		box: string
+		text: string
+	}
+}
+
 export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
 
 export type Hide = [[number, number], [number, number, number], [number], [number]]
@@ -94,6 +103,7 @@ export type Sync = {
 	quotes: Quotes
 	font: Font
 	hide: Hide
+	move: Move
 	textShadow: number
 	about: { browser: string; version: string }
 	[key: string]: Link | unknown

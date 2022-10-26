@@ -1,90 +1,129 @@
 import clamp from 'lodash.clamp'
+import storage from './storage'
+import { Move } from './types/sync'
 
-export default function moveElements() {
-	const selectables = document.querySelectorAll('#interface #time, #interface #main, #interface #widgets')
-	let selected: HTMLElement
+type MoveItem = {
+	row?: number
+	col?: number
+	box?: string
+	text?: string
+}
 
-	const removeSelections = () => selectables.forEach((d) => d.classList.remove('move-selected'))
+export default function moveElements(moveData: Move) {
+	const selectables = document.querySelectorAll<HTMLElement>('#time, #main, #widgets')
+	let selected: HTMLElement | null
 
-	// Sets default grid values for Interface elements
-	// (To be removed when storage is here)
-	;(document.querySelector('#time') as HTMLElement).style.gridArea = '1 / 2 / span 1 / span 1'
-	;(document.querySelector('#main') as HTMLElement).style.gridArea = '2 / 2 / span 1 / span 1'
-	;(document.querySelector('#widgets') as HTMLElement).style.gridArea = '3 / 2 / span 1 / span 1'
+	function saveChanges(changes: MoveItem) {
+		if (!selected) return false
 
-	//
-	// Elements Selection
-	//
+		moveData = {
+			...moveData,
+			[selected.id]: {
+				...moveData[selected.id],
+				...changes,
+			},
+		}
 
-	// Activate moving mode
-	document.addEventListener('keypress', (e: KeyboardEvent) => {
+		storage.sync.set({ move: moveData })
+	}
+
+	;(function initilisation() {
+		selectables.forEach((elem) => {
+			if (elem.id in moveData) {
+				const { row, col, box, text } = moveData[elem.id]
+
+				elem.style.gridArea = `${row} / ${col} / span 1 /span 1`
+				elem.style.placeSelf = box
+				elem.style.textAlign = text
+			}
+		})
+	})()
+
+	function removeSelection() {
+		selectables.forEach((d) => d.classList.remove('move-selected'))
+		selected = null
+	}
+
+	function toggleMoveStatus(e: KeyboardEvent) {
 		if (e.key === 'm') {
 			document.querySelector('#interface')?.classList.toggle('move-edit')
-			removeSelections()
+			removeSelection()
 		}
-	})
+	}
 
-	// Select (Toggle) movable elements
+	function toggleElementSelection(elem: Element) {
+		removeSelection()
+		elem.classList.add('move-selected') // add clicked
+		selected = elem as HTMLElement
+	}
+
+	function gridChange(button: Element) {
+		if (!selected) {
+			return false
+		}
+
+		// Get current row / col
+		const current = {
+			row: parseInt(selected.style.gridRowStart) || 0,
+			col: parseInt(selected.style.gridColumnStart) || 0,
+		}
+
+		// Get button move amount
+		const moveAmout = {
+			row: parseInt(button.getAttribute('data-row') || '0'),
+			col: parseInt(button.getAttribute('data-col') || '0'),
+		}
+
+		// Update row / col
+		current.row = clamp(current.row + moveAmout.row, 1, selectables.length)
+		current.col = clamp(current.col + moveAmout.col, 1, selectables.length)
+
+		// Apply changes
+		selected.style.gridColumn = current.col.toString() + '/ span 1'
+		selected.style.gridRow = current.row.toString() + '/ span 1'
+
+		saveChanges({ row: current.row, col: current.col })
+	}
+
+	function alignChange(button: Element, type: 'box' | 'text') {
+		if (!selected) {
+			return false
+		}
+
+		let align = ''
+
+		if (type === 'box') {
+			align = `${button.getAttribute('data-align')} ${button.getAttribute('data-justify')}`
+			selected.style.placeSelf = align
+		}
+
+		if (type === 'text') {
+			align = button.getAttribute('data-align') || ''
+			selected.style.textAlign = align
+		}
+
+		saveChanges({ [type]: align })
+	}
+
+	//
+	// Events
+	//
+
+	document.addEventListener('keypress', toggleMoveStatus)
+
 	selectables.forEach((elem) => {
-		elem.addEventListener('click', () => {
-			removeSelections()
-			elem.classList.add('move-selected') // add clicked
-
-			selected = elem as HTMLElement
-		})
+		elem.addEventListener('click', () => toggleElementSelection(elem))
 	})
-
-	//
-	// Grid Move
-	//
 
 	document.querySelectorAll('#grid-mover button').forEach((button) => {
-		button.addEventListener('click', () => {
-			if (selected) {
-				// Get current row / col
-				const domGridStart = {
-					row: parseInt(selected.style.gridRowStart) || 0,
-					col: parseInt(selected.style.gridColumnStart) || 0,
-				}
-
-				// Get button move amount
-				const moveAmout = {
-					row: parseInt(button.getAttribute('data-row') || '0'),
-					col: parseInt(button.getAttribute('data-col') || '0'),
-				}
-
-				// Update row / col
-				const row = clamp(domGridStart.row + moveAmout.row, 0, selectables.length)
-				const col = clamp(domGridStart.col + moveAmout.col, 0, selectables.length)
-
-				// Apply changes
-				selected.style.gridColumn = col.toString() + '/ span 1'
-				selected.style.gridRow = row.toString() + '/ span 1'
-			}
-		})
+		button.addEventListener('click', () => gridChange(button))
 	})
-
-	//
-	// Box Alignment
-	//
 
 	document.querySelectorAll('#box-alignment-mover button').forEach((button) => {
-		button.addEventListener('click', () => {
-			if (selected) {
-				selected.style.placeSelf = `${button.getAttribute('data-align')} ${button.getAttribute('data-justify')}`
-			}
-		})
+		button.addEventListener('click', () => alignChange(button, 'box'))
 	})
 
-	//
-	// Text Alignment
-	//
-
 	document.querySelectorAll('#text-alignment-mover button').forEach((button) => {
-		button.addEventListener('click', () => {
-			if (selected) {
-				selected.style.textAlign = button.getAttribute('data-align') || ''
-			}
-		})
+		button.addEventListener('click', () => alignChange(button, 'text'))
 	})
 }

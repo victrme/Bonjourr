@@ -402,6 +402,26 @@ export const syncDefaults: Sync = {
 		availWeights: [],
 		weight: testOS.windows ? '400' : '300',
 	},
+	move: {
+		time: {
+			row: 1,
+			col: 2,
+			box: 'center center',
+			text: 'center',
+		},
+		main: {
+			row: 2,
+			col: 2,
+			box: 'center center',
+			text: 'center',
+		},
+		widgets: {
+			row: 3,
+			col: 2,
+			box: 'center center',
+			text: 'center',
+		},
+	},
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
 	about: { browser: detectPlatform(), version: '1.15.1' },
