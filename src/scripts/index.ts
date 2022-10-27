@@ -1568,26 +1568,45 @@ export function weather(
 	}
 
 	async function initWeather(data: Weather) {
-		//
+		// Get IPAPI first to get city and location
+
+		// Get geolocation
+		// if geoloc success, replace IPAPI
+		// else try with IPAPI city
+
+		// If ipapi city failed, use Paris, France
+
 		// First, tries to get city and country code to add in settings
 
-		try {
-			const ipapi = await fetch('https://ipapi.co/json')
-			if (ipapi.ok) {
-				const json = await ipapi.json()
+		async function getInitialPositionFromIpapi() {
+			try {
+				const ipapi = await fetch('https://ipapi.co/json')
 
-				if (!json.error) {
-					data = { ...data, city: json.city, ccode: json.country }
+				if (ipapi.ok) {
+					const { error, city, country, latitude, longitude } = await ipapi.json()
+
+					if (!error) {
+						return {
+							city: city,
+							ccode: country,
+							location: [latitude, longitude],
+						}
+					}
 				}
+			} catch (error) {
+				return { city: 'Paris', ccode: 'FR' }
 			}
-		} catch (error) {
-			console.log(error)
 		}
 
 		// Then use this as callback in Geolocation request
 		async function setWeatherAfterGeolocation(location?: [number, number]) {
+			data = {
+				...data,
+				...(await getInitialPositionFromIpapi()), // get location + city from ipapi
+			}
+
 			if (location) {
-				data.location = location
+				data.location = location // replace location if geoloc is available
 			}
 
 			// Request API with all infos available
