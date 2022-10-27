@@ -297,6 +297,7 @@ export const langList = {
 	uk: 'Українська',
 	id: 'Indonesia',
 	da: 'Dansk',
+	fi: 'Suomi',
 }
 
 let defaultLang = 'en'
