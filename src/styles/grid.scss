@@ -2,7 +2,6 @@
 	display: grid;
 	padding: 2em;
 	grid-template-columns: 0.5fr 1fr 0.5fr;
-	grid-template-rows: 0.6fr 0.6fr 1fr;
 
 	&.move-edit {
 		#element-mover {
@@ -11,8 +10,10 @@
 
 		#main,
 		#time,
-		#widgets {
-			padding: 2em;
+		#linkblocks,
+		#sb_container,
+		#notes_container,
+		#quotes_container {
 			border-radius: 8px;
 			background: #fff2;
 			box-shadow: 5px 5px 20px #2224;
@@ -29,21 +30,32 @@
 
 			&.move-selected {
 				background: #fff3;
+				backdrop-filter: blur(1em);
 				border-color: var(--blue);
+				z-index: 2;
 			}
 		}
 	}
 
 	#main,
 	#time,
-	#widgets {
+	#linkblocks,
+	#sb_container,
+	#notes_container,
+	#quotes_container {
 		border: 3px solid transparent;
-		padding: 2em;
 		grid-column: 2;
 		min-height: 0;
 		width: fit-content;
 		height: fit-content;
 		place-self: center;
+	}
+
+	#main,
+	#time,
+	#linkblocks,
+	#quotes_container {
+		padding: 2em;
 	}
 }
 

@@ -328,6 +328,13 @@ export function tradThis(str: string, lang?: string): string {
 	return str // String was not a key of dict
 }
 
+const defaultMove = {
+	row: 1,
+	col: 2,
+	box: 'center center',
+	text: 'center',
+}
+
 export const syncDefaults: Sync = {
 	usdate: false,
 	showall: false,
@@ -403,24 +410,12 @@ export const syncDefaults: Sync = {
 		weight: testOS.windows ? '400' : '300',
 	},
 	move: {
-		time: {
-			row: 1,
-			col: 2,
-			box: 'center center',
-			text: 'center',
-		},
-		main: {
-			row: 2,
-			col: 2,
-			box: 'center center',
-			text: 'center',
-		},
-		widgets: {
-			row: 3,
-			col: 2,
-			box: 'center center',
-			text: 'center',
-		},
+		time: { ...defaultMove, row: 1 },
+		main: { ...defaultMove, row: 2 },
+		searchbar: { ...defaultMove, row: 3 },
+		notes: { ...defaultMove, row: 4 },
+		linkblocks: { ...defaultMove, row: 5 },
+		quotes: { ...defaultMove, row: 6 },
 	},
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],

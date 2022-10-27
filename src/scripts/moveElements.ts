@@ -10,16 +10,24 @@ type MoveItem = {
 }
 
 export default function moveElements(moveData: Move) {
-	const selectables = document.querySelectorAll<HTMLElement>('#time, #main, #widgets')
+	const doms = '#time, #main, #sb_container, #notes_container, #linkblocks, #quotes_container'
+	const selectables = document.querySelectorAll<HTMLElement>(doms)
 	let selected: HTMLElement | null
+
+	function getID(dom: HTMLElement) {
+		// Uses dataset for widgets that uses dom ids that doesn't match storage fields (ex: id="x_container")
+		return dom?.dataset.moveId || dom?.id || ''
+	}
 
 	function saveChanges(changes: MoveItem) {
 		if (!selected) return false
 
+		console.log(getID(selected))
+
 		moveData = {
 			...moveData,
-			[selected.id]: {
-				...moveData[selected.id],
+			[getID(selected)]: {
+				...moveData[getID(selected)],
 				...changes,
 			},
 		}
@@ -29,8 +37,10 @@ export default function moveElements(moveData: Move) {
 
 	;(function initilisation() {
 		selectables.forEach((elem) => {
-			if (elem.id in moveData) {
-				const { row, col, box, text } = moveData[elem.id]
+			const elemID = getID(elem)
+
+			if (elemID in moveData) {
+				const { row, col, box, text } = moveData[elemID]
 
 				elem.style.gridArea = `${row} / ${col} / span 1 /span 1`
 				elem.style.placeSelf = box
@@ -57,7 +67,7 @@ export default function moveElements(moveData: Move) {
 		selected = elem as HTMLElement
 	}
 
-	function gridChange(button: Element) {
+	function gridChange(button: HTMLButtonElement) {
 		if (!selected) {
 			return false
 		}
@@ -70,8 +80,8 @@ export default function moveElements(moveData: Move) {
 
 		// Get button move amount
 		const moveAmout = {
-			row: parseInt(button.getAttribute('data-row') || '0'),
-			col: parseInt(button.getAttribute('data-col') || '0'),
+			row: parseInt(button.dataset.row || '0'),
+			col: parseInt(button.dataset.col || '0'),
 		}
 
 		// Update row / col
@@ -85,7 +95,7 @@ export default function moveElements(moveData: Move) {
 		saveChanges({ row: current.row, col: current.col })
 	}
 
-	function alignChange(button: Element, type: 'box' | 'text') {
+	function alignChange(button: HTMLButtonElement, type: 'box' | 'text') {
 		if (!selected) {
 			return false
 		}
@@ -93,12 +103,12 @@ export default function moveElements(moveData: Move) {
 		let align = ''
 
 		if (type === 'box') {
-			align = `${button.getAttribute('data-align')} ${button.getAttribute('data-justify')}`
+			align = `${button.dataset.align} ${button.dataset.justify}`
 			selected.style.placeSelf = align
 		}
 
 		if (type === 'text') {
-			align = button.getAttribute('data-align') || ''
+			align = button.dataset.align || ''
 			selected.style.textAlign = align
 		}
 
@@ -115,15 +125,15 @@ export default function moveElements(moveData: Move) {
 		elem.addEventListener('click', () => toggleElementSelection(elem))
 	})
 
-	document.querySelectorAll('#grid-mover button').forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
 		button.addEventListener('click', () => gridChange(button))
 	})
 
-	document.querySelectorAll('#box-alignment-mover button').forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((button) => {
 		button.addEventListener('click', () => alignChange(button, 'box'))
 	})
 
-	document.querySelectorAll('#text-alignment-mover button').forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((button) => {
 		button.addEventListener('click', () => alignChange(button, 'text'))
 	})
 }
