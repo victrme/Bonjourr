@@ -22,8 +22,6 @@ export default function moveElements(moveData: Move) {
 	function saveChanges(changes: MoveItem) {
 		if (!selected) return false
 
-		console.log(getID(selected))
-
 		moveData = {
 			...moveData,
 			[getID(selected)]: {
@@ -89,8 +87,8 @@ export default function moveElements(moveData: Move) {
 		current.col = clamp(current.col + moveAmout.col, 1, selectables.length)
 
 		// Apply changes
-		selected.style.gridColumn = current.col.toString() + '/ span 1'
-		selected.style.gridRow = current.row.toString() + '/ span 1'
+		selected.style.gridColumn = current.col + '/ span 1'
+		selected.style.gridRow = current.row + '/ span 1'
 
 		saveChanges({ row: current.row, col: current.col })
 	}
@@ -115,14 +113,52 @@ export default function moveElements(moveData: Move) {
 		saveChanges({ [type]: align })
 	}
 
+	function layoutChange(button: HTMLButtonElement) {
+		const dominterface = document.querySelector('#interface') as HTMLDivElement
+		let layout = button.dataset.layout || '1fr 1fr 1fr'
+
+		dominterface.style.gridTemplateColumns = layout
+		storage.sync.set({ moveLayout: layout })
+	}
+
+	function handleReset(type: 'grid' | 'box' | 'text') {
+		selectables.forEach((elem, i) => {
+			selected = elem
+
+			if (type === 'grid') {
+				saveChanges({ row: i + 1, col: 2 })
+				selected.style.gridRow = i + 1 + '/ span 1'
+				selected.style.gridColumn = '2 / span 1'
+			}
+
+			if (type === 'box') {
+				saveChanges({ box: 'center center' })
+				selected.style.placeSelf = 'center center'
+			}
+
+			if (type === 'text') {
+				saveChanges({ text: 'center' })
+				selected.style.textAlign = 'center'
+			}
+		})
+	}
+
 	//
 	// Events
 	//
 
 	document.addEventListener('keypress', toggleMoveStatus)
 
+	document.querySelector('#move-reset-grid')?.addEventListener('click', () => handleReset('grid'))
+	document.querySelector('#move-reset-box')?.addEventListener('click', () => handleReset('box'))
+	document.querySelector('#move-reset-text')?.addEventListener('click', () => handleReset('text'))
+
 	selectables.forEach((elem) => {
 		elem.addEventListener('click', () => toggleElementSelection(elem))
+	})
+
+	document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
+		button.addEventListener('click', () => layoutChange(button))
 	})
 
 	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {

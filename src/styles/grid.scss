@@ -1,7 +1,7 @@
 #interface {
 	display: grid;
 	padding: 2em;
-	grid-template-columns: 0.5fr 1fr 0.5fr;
+	grid-template-rows: 1fr 1fr 1fr;
 
 	&.move-edit {
 		#element-mover {
@@ -31,7 +31,7 @@
 			&.move-selected {
 				background: #fff3;
 				backdrop-filter: blur(1em);
-				border-color: var(--blue);
+				outline-color: var(--blue);
 				z-index: 2;
 			}
 		}
@@ -43,7 +43,7 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
-		border: 3px solid transparent;
+		outline: 3px solid transparent;
 		grid-column: 2;
 		min-height: 0;
 		width: fit-content;
@@ -103,10 +103,50 @@
 	grid-template-columns: 1fr;
 }
 
+#text-alignment-mover,
 #box-alignment-mover {
 	grid-template-columns: 1fr 1fr 1fr;
 }
 
-#text-alignment-mover {
-	grid-template-columns: 1fr 1fr 1fr;
+#reset-moves button {
+	font-size: 1em;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+#grid-layout {
+	grid-template-columns: 1fr 1fr;
+
+	button {
+		display: grid;
+		padding: 0;
+		margin: 4px;
+		width: 60px;
+		border: 2px solid white;
+
+		div {
+			height: 2em;
+			width: 100%;
+			border-right: 2px solid white;
+		}
+
+		&[data-layout='1fr'] {
+			grid-template-columns: 1fr;
+		}
+
+		&[data-layout='1fr 1fr'] {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		&[data-layout='1fr 2fr'] {
+			grid-template-columns: 1fr 2fr;
+		}
+
+		&[data-layout='2fr 1fr'] {
+			grid-template-columns: 2fr 1fr;
+		}
+
+		&[data-layout='1fr 1fr 1fr'] {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
 }

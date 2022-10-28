@@ -417,6 +417,7 @@ export const syncDefaults: Sync = {
 		linkblocks: { ...defaultMove, row: 5 },
 		quotes: { ...defaultMove, row: 6 },
 	},
+	moveLayout: '1fr 1fr 1fr',
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
 	about: { browser: detectPlatform(), version: '1.15.1' },

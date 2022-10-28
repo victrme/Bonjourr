@@ -236,6 +236,7 @@
 
 		#weather {
 			position: relative;
+			width: 100%;
 
 			#description {
 				font-size: 1.5em;
@@ -286,7 +287,6 @@
 		visibility: visible;
 		flex-wrap: wrap;
 		justify-content: center;
-		margin: 0 auto;
 		padding: 0;
 		column-gap: 2.6em;
 		row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
@@ -498,7 +498,6 @@
 		visibility: visible;
 		align-items: center;
 		padding: 0;
-		margin: 0 auto;
 		width: 100%;
 		border-radius: 10px;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -507,6 +506,7 @@
 			height: 2.5em;
 			width: 100%;
 			max-width: 40em;
+			min-width: 15em;
 			padding: 0 1em;
 			padding-right: 6em;
 			font-size: 1.3em;

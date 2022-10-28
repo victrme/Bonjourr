@@ -90,6 +90,31 @@
 		<main id="interface" class="init">
 			<div id="element-mover">
 				<div>
+					<p>Layouts</p>
+					<div id="grid-layout" class="mover">
+						<button data-layout="1fr">
+							<div></div>
+						</button>
+						<button data-layout="1fr 1fr">
+							<div></div>
+							<div></div>
+						</button>
+						<button data-layout="1fr 2fr">
+							<div></div>
+							<div></div>
+						</button>
+						<button data-layout="2fr 1fr">
+							<div></div>
+							<div></div>
+						</button>
+						<button data-layout="1fr 1fr 1fr">
+							<div></div>
+							<div></div>
+							<div></div>
+						</button>
+					</div>
+				</div>
+				<div>
 					<p>Grid position</p>
 					<div id="grid-mover" class="mover">
 						<button data-row="-1" data-col="0">▲</button>
@@ -120,6 +145,14 @@
 						<button data-align="left">【</button>
 						<button data-align="center">▉</button>
 						<button data-align="right">】</button>
+					</div>
+				</div>
+				<div>
+					<p>Reset</p>
+					<div id="reset-moves" class="mover">
+						<button id="move-reset-grid">Grid position</button>
+						<button id="move-reset-box">Box alignment</button>
+						<button id="move-reset-text">Text alignment</button>
 					</div>
 				</div>
 			</div>
