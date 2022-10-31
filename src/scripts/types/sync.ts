@@ -56,12 +56,25 @@ export type Notes = {
 	align: 'left' | 'center' | 'right'
 }
 
+type MoveAlign = {
+	box?: string
+	text?: string
+}
+
 export type Move = {
-	[key: string]: {
-		row: number
-		col: number
-		box: string
-		text: string
+	selectedLayout: keyof Move['layouts']
+	layouts: {
+		single: [string][]
+		double: [string, string][]
+		triple: [string, string, string][]
+	}
+	align: {
+		time: MoveAlign
+		main: MoveAlign
+		notes: MoveAlign
+		searchbar: MoveAlign
+		linkblocks: MoveAlign
+		quotes: MoveAlign
 	}
 }
 

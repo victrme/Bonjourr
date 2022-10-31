@@ -1,48 +1,93 @@
 import clamp from 'lodash.clamp'
 import storage from './storage'
 import { Move } from './types/sync'
+import { syncDefaults } from './utils'
 
-type MoveItem = {
-	row?: number
-	col?: number
-	box?: string
-	text?: string
-}
+// get elem: move.layouts[move.selectedLayout][row][col]
+// ex: move.layouts['triple'][2][1] ==> notes
+// ex: move.layouts['triple'][0][2] ==> empty cell
+// ex: move.layouts['single'][4][0] ==> linkblocks
+// ex: move.layouts['single'][4][1] ==> does not exist
+
+// in grid change with multiple layouts
+// col: clamp(0, [max layout col -1])
+// row: clamp(0, [max displayed element])
+
+// /!\ 'wide left' & 'wide right' use grid-template-column 2fr 1fr with 'double' layout
+
+//
+// swap
+//
+
+// overlappedElem = {id: string, pos: [number, number]}
+
+// if pos is not empty (move.layouts[move.selectedLayout][row][col] !== '')
+// swap:
+//  	assign wanted elem to overlappedElem
+//		move elem to old selected position
+
+// then on next move
+//		if pos is empty
+// 			move elem back to original position ([overlappedElem.pos[0], overlappedElem.pos[1]])
+//			unassign overlappedElem (important)
+//		if not
+//			unassign overlappedElem (important)
+//			back to swap step
+
+//
+// responsive
+//
+
+// > 764px => triple par defaut, sinon le selectedLayout
+// <=764px => on force le single column
+
+// window.addEventListener('resize', function forceSingleLayout() {
+// 	if (this.window.innerWidth <= 764) {
+// 		// changeLayout('single')
+// 	}
+// })
 
 export default function moveElements(moveData: Move) {
 	const doms = '#time, #main, #sb_container, #notes_container, #linkblocks, #quotes_container'
+	const dominterface = document.querySelector<HTMLElement>('#interface')
 	const selectables = document.querySelectorAll<HTMLElement>(doms)
 	let selected: HTMLElement | null
+	let overlappedElem: HTMLElement | null
 
-	function getID(dom: HTMLElement) {
+	function getID(dom: HTMLElement | null) {
 		// Uses dataset for widgets that uses dom ids that doesn't match storage fields (ex: id="x_container")
 		return dom?.dataset.moveId || dom?.id || ''
 	}
 
-	function saveChanges(changes: MoveItem) {
-		if (!selected) return false
+	function setGridAreas(grid: Move['layouts'][keyof Move['layouts']]) {
+		let areas = ``
 
-		moveData = {
-			...moveData,
-			[getID(selected)]: {
-				...moveData[getID(selected)],
-				...changes,
-			},
+		grid.forEach((row) => {
+			areas += `'${row.reduce((a, b) => a + ' ' + b)}' `
+		})
+
+		if (dominterface) {
+			dominterface.style.gridTemplateAreas = areas
 		}
+	}
 
-		storage.sync.set({ move: moveData })
+	function setAlignment(elem: HTMLElement, align: Move['align'][keyof Move['align']]) {
+		if (typeof align.box === 'string') elem.style.placeSelf = align.box
+		if (typeof align.text === 'string') elem.style.textAlign = align.text
 	}
 
 	;(function initilisation() {
+		const { layouts, selectedLayout, align } = moveData
+
+		// Layout
+		setGridAreas(layouts[selectedLayout])
+
+		// Align
 		selectables.forEach((elem) => {
-			const elemID = getID(elem)
+			const id = getID(elem)
 
-			if (elemID in moveData) {
-				const { row, col, box, text } = moveData[elemID]
-
-				elem.style.gridArea = `${row} / ${col} / span 1 /span 1`
-				elem.style.placeSelf = box
-				elem.style.textAlign = text
+			if (id in align) {
+				setAlignment(elem, align[id as keyof Move['align']])
 			}
 		})
 	})()
@@ -70,77 +115,79 @@ export default function moveElements(moveData: Move) {
 			return false
 		}
 
+		const id = getID(selected)
+		let activeLayout = moveData.layouts[moveData.selectedLayout]
+
 		// Get current row / col
-		const current = {
-			row: parseInt(selected.style.gridRowStart) || 0,
-			col: parseInt(selected.style.gridColumnStart) || 0,
-		}
+		const currentRow = activeLayout.findIndex((row) => row.find((col) => col === id))
+		const currentCol = activeLayout[currentRow].findIndex((col) => col === id)
 
 		// Get button move amount
-		const moveAmout = {
-			row: parseInt(button.dataset.row || '0'),
-			col: parseInt(button.dataset.col || '0'),
-		}
+		const moveRow = parseInt(button.dataset.row || '0')
+		const moveCol = parseInt(button.dataset.col || '0')
 
 		// Update row / col
-		current.row = clamp(current.row + moveAmout.row, 1, selectables.length)
-		current.col = clamp(current.col + moveAmout.col, 1, selectables.length)
+		let newRow = clamp(currentRow + moveRow, 0, activeLayout.length - 1)
+		let newCol = clamp(currentCol + moveCol, 0, activeLayout[0].length - 1)
+
+		// swap
+		let temp = activeLayout[currentRow][currentCol]
+
+		activeLayout[currentRow][currentCol] = activeLayout[newRow][newCol]
+		activeLayout[newRow][newCol] = temp
 
 		// Apply changes
-		selected.style.gridColumn = current.col + '/ span 1'
-		selected.style.gridRow = current.row + '/ span 1'
+		setGridAreas(activeLayout)
 
-		saveChanges({ row: current.row, col: current.col })
+		moveData.layouts[moveData.selectedLayout] = activeLayout
+		storage.sync.set({ move: moveData })
 	}
 
 	function alignChange(button: HTMLButtonElement, type: 'box' | 'text') {
-		if (!selected) {
+		const id = getID(selected)
+
+		if (!selected || !(id in moveData.align)) {
 			return false
 		}
 
-		let align = ''
+		// set align after determining id as valid key
+		let align = { ...moveData.align[id as keyof Move['align']] }
 
-		if (type === 'box') {
-			align = `${button.dataset.align} ${button.dataset.justify}`
-			selected.style.placeSelf = align
-		}
+		align[type] = button.dataset.align
+		setAlignment(selected, align)
 
-		if (type === 'text') {
-			align = button.dataset.align || ''
-			selected.style.textAlign = align
-		}
-
-		saveChanges({ [type]: align })
+		// Update storage
+		moveData.align[id as keyof Move['align']] = align
+		storage.sync.set({ move: moveData })
 	}
 
 	function layoutChange(button: HTMLButtonElement) {
-		const dominterface = document.querySelector('#interface') as HTMLDivElement
-		let layout = button.dataset.layout || '1fr 1fr 1fr'
+		// Todo: change manual layout check
+		if (button.dataset.layout?.match(/single|double|triple/g)) {
+			moveData.selectedLayout = button.dataset.layout as typeof moveData.selectedLayout
+		}
 
-		dominterface.style.gridTemplateColumns = layout
-		storage.sync.set({ moveLayout: layout })
+		setGridAreas(moveData.layouts[moveData.selectedLayout])
+		storage.sync.set({ move: moveData })
 	}
 
 	function handleReset(type: 'grid' | 'box' | 'text') {
-		selectables.forEach((elem, i) => {
-			selected = elem
+		const { selectedLayout } = moveData
 
-			if (type === 'grid') {
-				saveChanges({ row: i + 1, col: 2 })
-				selected.style.gridRow = i + 1 + '/ span 1'
-				selected.style.gridColumn = '2 / span 1'
-			}
+		if (type === 'grid') {
+			moveData.layouts[moveData.selectedLayout] = syncDefaults.move.layouts[selectedLayout]
+			setGridAreas(syncDefaults.move.layouts[selectedLayout])
+		}
 
-			if (type === 'box') {
-				saveChanges({ box: 'center center' })
-				selected.style.placeSelf = 'center center'
-			}
+		if (type === 'box') {
+			moveData.align = syncDefaults.move.align
+		}
 
-			if (type === 'text') {
-				saveChanges({ text: 'center' })
-				selected.style.textAlign = 'center'
-			}
-		})
+		if (type === 'text') {
+			moveData.align = syncDefaults.move.align
+		}
+
+		storage.sync.set({ move: moveData })
 	}
 
 	//
