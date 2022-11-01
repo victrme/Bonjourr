@@ -41,11 +41,11 @@ const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 }, 400)
 
 const freqControl = {
-	set: function () {
+	set: () => {
 		return new Date().getTime()
 	},
 
-	get: function (every?: string, last?: number) {
+	get: (every: string, last: number) => {
 		// instead of adding unix time to the last date
 		// look if day & hour has changed
 		// because we still cannot time travel
@@ -58,15 +58,26 @@ const freqControl = {
 			hour: nowDate.getHours() !== lastDate.getHours(),
 		}
 
-		if (every === 'day') return changed.date
-		if (every === 'hour') return changed.date || changed.hour
-		if (every === 'tabs') return true
-		if (every === 'pause') return last === 0
-		if (every === 'period') {
-			const sun = sunTime()
+		switch (every) {
+			case 'day':
+				return changed.date
 
-			if (!sun) return 'day'
-			else return periodOfDay(sun) !== periodOfDay(sun, +lastDate)
+			case 'hour':
+				return changed.date || changed.hour
+
+			case 'tabs':
+				return true
+
+			case 'pause':
+				return last === 0
+
+			case 'period': {
+				const sun = sunTime()
+				return last === 0 || !sun ? true : periodOfDay(sun) !== periodOfDay(sun, +lastDate) || false
+			}
+
+			default:
+				return false
 		}
 	},
 }
@@ -2427,10 +2438,10 @@ export async function unsplash(
 
 	function collectionUpdater(dynamic: Dynamic): CollectionType {
 		const { every, lastCollec, collection } = dynamic
-		const Pause = every === 'pause'
-		const Day = every === 'day'
+		const pause = every === 'pause'
+		const day = every === 'day'
 
-		if ((Pause || Day) && lastCollec) {
+		if ((pause || day) && lastCollec) {
 			return lastCollec // Keeps same collection on >day so that user gets same type of backgrounds
 		}
 
@@ -2531,7 +2542,9 @@ export async function unsplash(
 					storage.sync.set({ dynamic: newDynamic })
 					storage.local.set({ waitingForPreload: true })
 
-					setTimeout(() => cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false), 400)
+					setTimeout(() => {
+						cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false)
+					}, 400)
 
 					return
 				}
@@ -2541,7 +2554,10 @@ export async function unsplash(
 			}
 
 			case 'every': {
-				if (!event.value) return console.log('Not valid "every" value')
+				// Todo: fix bad manual value check
+				if (!event.value || !event.value.match(/tabs|hour|day|period|pause/g)) {
+					return console.log('Not valid "every" value')
+				}
 
 				sync.dynamic.every = event.value
 				sync.dynamic.time = freqControl.set()
