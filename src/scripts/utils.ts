@@ -1,4 +1,4 @@
-import { dict } from './lang'
+import { dict, langList } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
@@ -278,27 +278,6 @@ export const safeFontList = {
 	android: { placeholder: 'Roboto', weights: ['100', '300', '400', '500', '700', '900'] },
 	linux: { placeholder: 'Fira Sans', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
 	apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-}
-
-export const langList = {
-	en: 'English',
-	fr: 'Français',
-	sk: 'Slovenský',
-	sv: 'Svenska',
-	pl: 'Polski',
-	pt_BR: 'Português (Brasil)',
-	nl: 'Nederlandse',
-	ru: 'Русский',
-	zh_CN: '简体中文',
-	zh_HK: '繁體中文',
-	de: 'Deutsch',
-	it: 'Italiano',
-	es: 'Español',
-	tr: 'Türkçe',
-	uk: 'Українська',
-	id: 'Indonesia',
-	da: 'Dansk',
-	fi: 'Suomi',
 }
 
 let defaultLang = 'en'

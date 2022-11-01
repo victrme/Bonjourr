@@ -19,6 +19,28 @@
 //   Italian translation by Trazalca · @Trazalca
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
 
+export const langList = {
+	en: 'English',
+	fr: 'Français',
+	sk: 'Slovenský',
+	sv: 'Svenska',
+	pl: 'Polski',
+	pt_BR: 'Português (Brasil)',
+	nl: 'Nederlandse',
+	ru: 'Русский',
+	zh_CN: '简体中文',
+	zh_HK: '繁體中文',
+	de: 'Deutsch',
+	it: 'Italiano',
+	es: 'Español',
+	tr: 'Türkçe',
+	uk: 'Українська',
+	id: 'Indonesia',
+	da: 'Dansk',
+	fi: 'Suomi',
+	hu: 'Magyar',
+}
+
 export const dict = {
 	'New tab': {
 		fr: 'Nouvel onglet',

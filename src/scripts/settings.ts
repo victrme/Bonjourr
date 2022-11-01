@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
-import { dict } from './lang'
+import { dict, langList } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
@@ -11,6 +11,7 @@ import {
 	$,
 	has,
 	clas,
+	tradThis,
 	bundleLinks,
 	inputThrottle,
 	detectPlatform,
@@ -18,8 +19,6 @@ import {
 	mobilecheck,
 	randomString,
 	stringMaxSize,
-	tradThis,
-	langList,
 	deleteBrowserStorage,
 	getBrowserStorage,
 	turnRefreshButton,
