@@ -290,6 +290,7 @@ export const langList = {
 	nl: 'Nederlandse',
 	ru: 'Русский',
 	zh_CN: '简体中文',
+	zh_HK: '繁體中文',
 	de: 'Deutsch',
 	it: 'Italiano',
 	es: 'Español',
