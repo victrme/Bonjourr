@@ -3668,28 +3668,28 @@ function onlineAndMobileHandler() {
 			return promptEvent
 		})
 
-		// Safari overflow fix
-		// Todo: add safari condition
-		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		// Firefox cannot -moz-fill-available with height
+		// On desktop, uses fallback 100vh
+		// On mobile, sets height dynamically because vh is bad on mobile
+		if (getBrowser('firefox') && mobilecheck()) {
+			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+			appHeight()
 
-		// if (!mobilecheck()) {
-		window.addEventListener('resize', appHeight)
-		// }
+			// Resize will crush page when keyboard opens
+			// window.addEventListener('resize', appHeight)
 
-		appHeight()
-
-		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
 			// Fix for opening tabs Firefox iOS
-			let globalID: number
-			function triggerAnimationFrame() {
-				appHeight()
-				globalID = requestAnimationFrame(triggerAnimationFrame)
-			}
+			if (testOS.ios) {
+				let globalID: number
 
-			window.requestAnimationFrame(triggerAnimationFrame)
-			setTimeout(function () {
-				cancelAnimationFrame(globalID)
-			}, 500)
+				function triggerAnimationFrame() {
+					appHeight()
+					globalID = requestAnimationFrame(triggerAnimationFrame)
+				}
+
+				window.requestAnimationFrame(triggerAnimationFrame)
+				setTimeout(() => cancelAnimationFrame(globalID), 500)
+			}
 		}
 	}
 }
@@ -3775,17 +3775,9 @@ window.onload = function () {
 
 				console.log(`Version change: ${oldV} => ${newV}`)
 
-				if (oldV === '1.14.2' && newV === '1.15.0') {
-					localStorage.hasUpdated = 'true'
-				}
-
-				// Only update if coming from <=1.14.2
-				if (oldV !== '1.15.0') {
-					data.quicklinks = data.hide[2][0] === 0
-					data.hide[2][0] = 0
-					data.notes = syncDefaults.notes
-					data.about = { browser: detectPlatform(), version: newV }
-				}
+				// if (oldV === '1.14.2' && newV === '1.15.0') {
+				// 	localStorage.hasUpdated = 'true'
+				// }
 
 				storage.sync.set(data)
 			}

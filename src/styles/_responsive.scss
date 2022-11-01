@@ -33,21 +33,14 @@
 
 // mobile
 @media screen and (max-width: 600px) {
+	html,
 	body {
-		min-height: var(--app-height);
-		min-height: -webkit-fill-available;
 		font-size: 12px;
 		overflow-y: auto;
 	}
 
 	#skiptosettings {
 		display: none;
-	}
-
-	#background_overlay {
-		min-height: var(--app-height);
-		min-height: -webkit-fill-available;
-		min-height: initial;
 	}
 
 	#interface {
@@ -196,7 +189,8 @@
 			max-height: unset;
 		}
 
-		#interface #main, #interface #time {
+		#interface #main,
+		#interface #time {
 			min-height: unset;
 		}
 	}
@@ -242,5 +236,3 @@
 		opacity: 1;
 	}
 }
-
-

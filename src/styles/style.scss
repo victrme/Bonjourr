@@ -26,7 +26,7 @@
 	position: fixed;
 	width: 100%;
 	height: 100%;
-	min-height: 100vh;
+	min-height: -webkit-fill-available;
 	overflow: hidden;
 	opacity: 0;
 	transition: transform 0.4s, opacity 0.4s;
@@ -58,7 +58,6 @@
 #interface {
 	position: relative;
 	flex-grow: 1;
-	// min-height: var(--app-height);
 	max-height: calc(100vh - 80px);
 	width: 100%;
 	display: flex;
