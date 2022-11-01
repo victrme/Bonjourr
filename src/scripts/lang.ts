@@ -5,6 +5,7 @@
 //   Indonesian translation by Imam Ali Mustofa · @darkterminal · https://read.cv/darkterminal
 //   Danish translation by kar1 · @kar1
 //   Finnish translation by jaajko · @jaajko · https://jaajko.fi
+//   Hungarian translation by cook3r - @cook3r
 
 // Partial:
 //   Swedish translation by Benjamin Horn · https://benjaminhorn.io/
@@ -35,6 +36,7 @@ export const dict = {
 		id: 'Tab Baru',
 		da: 'Nyt faneblad',
 		fi: 'Uusi välilehti',
+		hu: 'Új lap',
 	},
 	Consider: {
 		fr: "N'hésitez pas à",
@@ -53,6 +55,7 @@ export const dict = {
 		id: 'Mempertimbangkan',
 		da: 'Overvej',
 		fi: 'Harkitse',
+		hu: 'Fontold meg',
 	},
 	donating: {
 		fr: 'faire un don',
@@ -71,6 +74,7 @@ export const dict = {
 		id: 'menyumbang',
 		da: 'at donere',
 		fi: 'lahjoittamista',
+		hu: 'a támogatást',
 	},
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
@@ -89,6 +93,7 @@ export const dict = {
 		id: 'jika Anda menyukai Bonjourr',
 		da: 'hvis du elsker Bonjourr',
 		fi: 'jos rakastat Bonjourria',
+		hu: 'ha tetszik a Bonjourr',
 	},
 	'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇': {
 		fr: 'Vous aimez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
@@ -107,6 +112,7 @@ export const dict = {
 		id: 'Suka menggunakan Bonjourr? Pertimbangkan untuk memberi kami ulasan atau donasi, itu akan sangat membantu! ',
 		da: 'Elsker du at bruge Bonjourr? Overvej at give os en anmeldelse eller en donation, det vil hjælpe meget 😇',
 		fi: 'Pidätkö Bonjourrin käytöstä? Harkitse arvostelun antamista tai lahjoittamista, se auttaisi paljon! 😇',
+		hu: 'Szereted használni a Bonjourr-t? Mondd el véleményed vagy támogasd a projektet, az sokat segítene 😇',
 	},
 	Review: {
 		fr: 'Noter',
@@ -125,6 +131,7 @@ export const dict = {
 		id: 'Ulasan',
 		da: 'Anmeldelse',
 		fi: 'Arvostelu',
+		hu: 'Elmondom a véleményem',
 	},
 	Donate: {
 		fr: 'Faire un don',
@@ -143,6 +150,7 @@ export const dict = {
 		id: 'Donasi',
 		da: 'Donere',
 		fi: 'Lahjoitus',
+		hu: 'Támogatom a projektet',
 	},
 	Cancel: {
 		fr: 'Annuler',
@@ -161,6 +169,7 @@ export const dict = {
 		id: 'Batal',
 		da: 'Afbryd',
 		fi: 'Peruuta',
+		hu: 'Mégse',
 	},
 	Delete: {
 		fr: 'Supprimer',
@@ -179,6 +188,7 @@ export const dict = {
 		id: 'Hapus',
 		da: 'Slet',
 		fi: 'Poista',
+		hu: 'Törlés',
 	},
 	'Apply changes': {
 		fr: 'Enregistrer',
@@ -197,6 +207,7 @@ export const dict = {
 		id: 'Terapkan Perubahan',
 		da: 'Anvend ændringer',
 		fi: 'Ota muutokset käyttöön',
+		hu: 'Módosítások alkalmazása',
 	},
 	Monday: {
 		fr: 'Lundi',
@@ -215,6 +226,7 @@ export const dict = {
 		id: 'Senin',
 		da: 'Mandag',
 		fi: 'maanantai',
+		hu: 'Hétfő',
 	},
 	Tuesday: {
 		fr: 'Mardi',
@@ -233,6 +245,7 @@ export const dict = {
 		id: 'Selasa',
 		da: 'Tirsdag',
 		fi: 'tiistai',
+		hu: 'Kedd',
 	},
 	Wednesday: {
 		fr: 'Mercredi',
@@ -251,6 +264,7 @@ export const dict = {
 		id: 'Rabu',
 		da: 'Onsdag',
 		fi: 'keskiviikko',
+		hu: 'Szerda',
 	},
 	Thursday: {
 		fr: 'Jeudi',
@@ -269,6 +283,7 @@ export const dict = {
 		id: 'Kamis',
 		da: 'Torsdag',
 		fi: 'torstai',
+		hu: 'Csütörtök',
 	},
 	Friday: {
 		fr: 'Vendredi',
@@ -287,6 +302,7 @@ export const dict = {
 		id: 'Jumat',
 		da: 'Fredag',
 		fi: 'perjantai',
+		hu: 'Péntek',
 	},
 	Saturday: {
 		fr: 'Samedi',
@@ -305,6 +321,7 @@ export const dict = {
 		id: 'Sabtu',
 		da: 'Lørdag',
 		fi: 'lauantai',
+		hu: 'Szombat',
 	},
 	Sunday: {
 		fr: 'Dimanche',
@@ -323,6 +340,7 @@ export const dict = {
 		id: 'Minggu',
 		da: 'Søndag',
 		fi: 'sunnuntai',
+		hu: 'Vasárnap',
 	},
 	January: {
 		fr: 'Janvier',
@@ -341,6 +359,7 @@ export const dict = {
 		id: 'Januari',
 		da: 'januar',
 		fi: 'tammikuu',
+		hu: 'Január',
 	},
 	February: {
 		fr: 'Février',
@@ -359,6 +378,7 @@ export const dict = {
 		id: 'Februari',
 		da: 'februar',
 		fi: 'helmikuu',
+		hu: 'Február',
 	},
 	March: {
 		fr: 'Mars',
@@ -377,6 +397,7 @@ export const dict = {
 		id: 'Maret',
 		da: 'marts',
 		fi: 'maaliskuu',
+		hu: 'Március',
 	},
 	April: {
 		fr: 'Avril',
@@ -395,6 +416,7 @@ export const dict = {
 		id: 'April',
 		da: 'april',
 		fi: 'huhtikuu',
+		hu: 'Április',
 	},
 	May: {
 		fr: 'Mai',
@@ -413,6 +435,7 @@ export const dict = {
 		id: 'Mei',
 		da: 'maj',
 		fi: 'toukokuu',
+		hu: 'Május',
 	},
 	June: {
 		fr: 'Juin',
@@ -431,6 +454,7 @@ export const dict = {
 		id: 'Juni',
 		da: 'juni',
 		fi: 'kesäkuu',
+		hu: 'Június',
 	},
 	July: {
 		fr: 'Juillet',
@@ -449,6 +473,7 @@ export const dict = {
 		id: 'Juli',
 		da: 'juli',
 		fi: 'heinäkuu',
+		hu: 'Július',
 	},
 	August: {
 		fr: 'Août',
@@ -467,6 +492,7 @@ export const dict = {
 		id: 'Agustus',
 		da: 'august',
 		fi: 'elokuu',
+		hu: 'Augusztus',
 	},
 	September: {
 		fr: 'Septembre',
@@ -485,6 +511,7 @@ export const dict = {
 		id: 'September',
 		da: 'september',
 		fi: 'syyskuu',
+		hu: 'Szeptember',
 	},
 	October: {
 		fr: 'Octobre',
@@ -503,6 +530,7 @@ export const dict = {
 		id: 'Oktober',
 		da: 'oktober',
 		fi: 'lokakuu',
+		hu: 'Október',
 	},
 	November: {
 		fr: 'Novembre',
@@ -521,6 +549,7 @@ export const dict = {
 		id: 'November',
 		da: 'november',
 		fi: 'marraskuu',
+		hu: 'November',
 	},
 	December: {
 		fr: 'Décembre',
@@ -539,6 +568,7 @@ export const dict = {
 		id: 'Desember',
 		da: 'december',
 		fi: 'joulukuu',
+		hu: 'December',
 	},
 	'Good morning': {
 		fr: 'Bonjour',
@@ -557,6 +587,7 @@ export const dict = {
 		id: 'Selamat pagi',
 		da: 'Godmorgen',
 		fi: 'Hyvää huomenta',
+		hu: 'Jó reggelt',
 	},
 	'Good afternoon': {
 		fr: 'Bonjour',
@@ -575,6 +606,7 @@ export const dict = {
 		id: 'Selamat siang',
 		da: 'God eftermiddag',
 		fi: 'Hyvää iltapäivää',
+		hu: 'Jó napot',
 	},
 	'Good evening': {
 		fr: 'Bonsoir',
@@ -593,6 +625,7 @@ export const dict = {
 		id: 'Selamat sore',
 		da: 'Godaften',
 		fi: 'Hyvää iltaa',
+		hu: 'Szép estét',
 	},
 	'Good night': {
 		fr: 'Bonne nuit',
@@ -611,6 +644,7 @@ export const dict = {
 		id: 'Selamat malam',
 		da: 'God nat',
 		fi: 'Hyvää yötä',
+		hu: 'Jó éjszakát',
 	},
 	'It is currently': {
 		fr: 'Il fait actuellement',
@@ -629,6 +663,7 @@ export const dict = {
 		id: 'Saat ini',
 		da: 'Det er lige nu',
 		fi: 'Se on tällä hetkellä',
+		hu: 'Aktuális hőmérséklet',
 	},
 	'It currently feels like': {
 		fr: 'Il y a actuellement un ressenti de',
@@ -647,6 +682,7 @@ export const dict = {
 		id: 'Saat ini terasa seperti',
 		da: 'Lige nu føles det som',
 		fi: 'Tällä hetkellä tuntuu',
+		hu: 'Hőérzet',
 	},
 	'feels like': {
 		fr: 'avec un ressenti de',
@@ -665,6 +701,7 @@ export const dict = {
 		id: 'terasa seperti',
 		da: 'føles som',
 		fi: 'tuntuu siltä',
+		hu: 'olyan, mintha',
 	},
 	'with a high of': {
 		fr: 'avec une maximale de',
@@ -683,6 +720,7 @@ export const dict = {
 		id: 'dengan tinggi',
 		da: 'med op til',
 		fi: 'korkeimmillaan',
+		hu: 'maximum',
 	},
 	today: {
 		fr: "aujourd'hui",
@@ -701,6 +739,7 @@ export const dict = {
 		id: 'hari ini',
 		da: 'i dag',
 		fi: 'tänään',
+		hu: 'ma',
 	},
 	tomorrow: {
 		fr: 'demain',
@@ -719,6 +758,7 @@ export const dict = {
 		id: 'besok',
 		da: 'i morgen',
 		fi: 'huomenna',
+		hu: 'holnap',
 	},
 	Title: {
 		fr: 'Titre',
@@ -737,6 +777,7 @@ export const dict = {
 		id: 'Judul',
 		da: 'Titel',
 		fi: 'Otsikko',
+		hu: 'Cím',
 	},
 	Link: {
 		fr: 'Lien',
@@ -755,6 +796,7 @@ export const dict = {
 		id: 'Tautan',
 		da: 'Link',
 		fi: 'Linkki',
+		hu: 'Link',
 	},
 	'on Unsplash': {
 		fr: 'sur Unsplash',
@@ -773,6 +815,7 @@ export const dict = {
 		id: 'di Unsplash',
 		da: 'på Unsplash',
 		fi: 'Unsplashissa',
+		hu: 'Unsplash-on',
 	},
 	'Photo by ': {
 		fr: 'Photo par ',
@@ -791,6 +834,7 @@ export const dict = {
 		id: 'Foto oleh ',
 		da: 'Foto af ',
 		fi: 'Kuvan tekijä',
+		hu: 'A képet készítette',
 	},
 	'Icon must be < 8kB': {
 		fr: "L'icone doit etre < 8kB",
@@ -809,6 +853,7 @@ export const dict = {
 		id: 'Ikon harus <8kB',
 		da: 'Ikonet skal være < 8kB',
 		fi: 'Kuvakkeen pitää olla < 8kt',
+		hu: 'Az ikon mérete kissebb kell legyen mint 8kB',
 	},
 	General: {
 		fr: 'Général',
@@ -827,6 +872,7 @@ export const dict = {
 		id: 'Umum',
 		da: 'Generelt',
 		fi: 'Yleinen',
+		hu: 'Általános',
 	},
 	'Show all settings': {
 		fr: 'Afficher tous les réglages',
@@ -845,6 +891,7 @@ export const dict = {
 		id: 'Tampilkan semua pengaturan',
 		da: 'Vis alle indstillingerne',
 		fi: 'Näytä kaikki asetukset',
+		hu: 'Minden beállítás megjelenítése',
 	},
 	'Tab appearance': {
 		fr: 'Onglet',
@@ -863,6 +910,7 @@ export const dict = {
 		id: 'Tampilan tab',
 		da: 'Faneudseende',
 		fi: 'Välilehden ulkonäky',
+		hu: 'Lapok megjelenése',
 	},
 	'Learn more': {
 		fr: 'En savoir plus',
@@ -881,6 +929,7 @@ export const dict = {
 		id: 'Belajarlah lagi',
 		da: 'Lær mere',
 		fi: 'Lue lisää',
+		hu: 'Tudj meg többet',
 	},
 	'The icon and title that appear on your tab. You can put any emoji.': {
 		fr: "L'icône et le titre qui apparaissent sur votre onglet. Vous pouvez mettre un emoji de votre choix.",
@@ -899,6 +948,7 @@ export const dict = {
 		id: 'Ikon dan judul yang muncul di tab Anda. Anda dapat menempatkan emoji apa pun.',
 		da: 'Ikonet og titlen, der vises på din fane. Du kan sætte enhver emoji.',
 		fi: 'Välilehdelläsi näkyvä kuvake ja otsikko. Voit laittaa minkä tahansa emojin.',
+		hu: 'Az ikon és a cím ami megjelenik a lapon. Bármilyen emoji használható.',
 	},
 	'More info': {
 		fr: 'En savoir plus',
@@ -917,6 +967,7 @@ export const dict = {
 		id: 'Info Selengkapnya',
 		da: 'Mere information',
 		fi: 'Lisää tietoa',
+		hu: 'További információ',
 	},
 	"These are Bonjourr's bookmarks. ": {
 		fr: '',
@@ -935,6 +986,7 @@ export const dict = {
 		id: 'Ini adalah bookmark Bonjourr. ',
 		da: 'De her er Bonjourrs bogmærker. ',
 		fi: 'Nämä ovat Bonjourrin kirjanmerkit. ',
+		hu: 'Ezek Bonjourr könyvjelzők.',
 	},
 	'Edit your Quick Links by right clicking the icon.': {
 		fr: "Éditez un lien favori en faisant un clic droit sur l'icône.",
@@ -953,6 +1005,7 @@ export const dict = {
 		id: 'Edit Tautan Cepat Anda dengan mengeklik kanan ikon.',
 		da: 'Rediger dine Hurtig Links ved at højreklikke på ikonet.',
 		fi: 'Muokkaa pikalinkkejä napsauttamalla kuvaketta hiiren kakkospainikeella',
+		hu: 'A Gyors Hivatkozás szerkesztéséhez kattints jobb gombbal az ikonra.',
 	},
 	'Edit your Quick Links by long-pressing the icon.': {
 		fr: "Éditez un lien favori en appuyant longtemps sur l'icône.",
@@ -971,6 +1024,7 @@ export const dict = {
 		id: 'Edit Tautan Cepat Anda dengan menekan lama ikon selama 300 md.',
 		da: 'Rediger dine Hurtig Links ved at trykke længe på ikonet.',
 		fi: 'Muokaa pikalinkkejäsi painamalla kuvaketta pitkään',
+		hu: 'A Gyors Hivatkozás szerkesztéséhez hosszan tartsd nyomva az ikont.',
 	},
 	'Type the collection ID from its URL, add more by separating them with a comma.': {
 		fr: "Entrez l'ID de l'URL de la collection. Ajoutez en plusieurs en les séparant par une virgule.",
@@ -989,6 +1043,7 @@ export const dict = {
 		id: 'Ketik ID koleksi dari URL-nya, tambahkan lebih banyak dengan memisahkannya dengan koma.',
 		da: "Skriv samlingsid'et fra dens URL, tilføj flere ved at adskille dem med komma.",
 		fi: 'Kirjoita kokoelman tunnus sen URL-osoitteesta, lisää enemmän erottamalla ne pilkulla.',
+		hu: 'Írd be a gyűjtemény URL-ben található azonosítóját, több azonosító megadása esetén vesszővel válaszd el őket.',
 	},
 	Name: {
 		fr: 'Nom',
@@ -1007,6 +1062,7 @@ export const dict = {
 		id: 'Nama',
 		da: 'Navn',
 		fi: 'Nimi',
+		hu: 'Név',
 	},
 	Add: {
 		fr: 'Ajouter',
@@ -1025,6 +1081,7 @@ export const dict = {
 		id: 'Tambah',
 		da: 'Tilføj',
 		fi: 'Lisää',
+		hu: 'Hozzáadás',
 	},
 	'No bookmarks found': {
 		fr: 'Aucun favori trouvé',
@@ -1043,6 +1100,7 @@ export const dict = {
 		id: 'Tidak ada bookmark yang ditemukan',
 		da: 'Ingen bogmærker fundet',
 		fi: 'Kirjanmerkkejä ei loytynyt',
+		hu: 'Nem találhatóak könyvjelzők',
 	},
 	'Select bookmarks to import': {
 		fr: 'Sélectionnez les favoris à importer',
@@ -1061,6 +1119,7 @@ export const dict = {
 		id: 'Pilih bookmark untuk diimpor',
 		da: 'Vælg bogmærker som skal importeres',
 		fi: 'Valitse tuotavat kirjanmerkit',
+		hu: 'Válassza ki az importálandó könyvjelzőket',
 	},
 	'Import this bookmark': {
 		fr: 'Importer ce favori',
@@ -1079,6 +1138,7 @@ export const dict = {
 		id: 'Impor bookmark ini',
 		da: 'Importer dette bogmærke',
 		fi: 'Tuo tämä kirjanmerkki',
+		hu: 'Könyvjelző importálása',
 	},
 	'Import these bookmarks': {
 		fr: 'Importer ces favoris',
@@ -1097,6 +1157,7 @@ export const dict = {
 		id: 'Import these bookmarks',
 		da: 'Importer disse bogmærker',
 		fi: 'Tuo nämä kirjanmerkit',
+		hu: 'Könyvjelzők importálása',
 	},
 	'Links per row': {
 		fr: 'Liens par ligne',
@@ -1115,6 +1176,7 @@ export const dict = {
 		id: 'Tautan per baris',
 		da: 'Links per række',
 		fi: 'Linkkejä per rivi',
+		hu: 'Linkek száma soronként',
 	},
 	Background: {
 		fr: 'Arrière-plan',
@@ -1133,6 +1195,7 @@ export const dict = {
 		id: 'Latar belakang',
 		da: 'Baggrund',
 		fi: 'Tausta',
+		hu: 'Háttér',
 	},
 	'Background type': {
 		fr: "Type d'arrière-plan",
@@ -1151,6 +1214,7 @@ export const dict = {
 		id: 'Jenis latar belakang',
 		da: 'Baggrundstype',
 		fi: 'Taustatyyppi',
+		hu: 'Háttér típusa',
 	},
 	Default: {
 		fr: 'Par défaut',
@@ -1169,6 +1233,7 @@ export const dict = {
 		id: 'Bawaan',
 		da: 'Standard',
 		fi: 'Oletus',
+		hu: 'Alapértelmezett',
 	},
 	Dynamic: {
 		fr: 'Dynamique',
@@ -1187,6 +1252,7 @@ export const dict = {
 		id: 'Dinamis',
 		da: 'Dynamisk',
 		fi: 'Dynaaminen',
+		hu: 'Dinamikus',
 	},
 	Custom: {
 		fr: 'Personnalisé',
@@ -1205,6 +1271,7 @@ export const dict = {
 		id: 'Personalisasi',
 		da: 'Brugerdefineret',
 		fi: 'Mukautettu',
+		hu: 'Egyedi',
 	},
 	Frequency: {
 		fr: 'Fréquence',
@@ -1223,6 +1290,7 @@ export const dict = {
 		id: 'Frekuensi',
 		da: 'Hyppighed',
 		fi: 'Taajuus',
+		hu: 'Gyakoriság',
 	},
 	Daylight: {
 		fr: 'Lumière du jour',
@@ -1241,6 +1309,7 @@ export const dict = {
 		id: 'Siang hari',
 		da: 'Dagslys',
 		fi: 'Päivänvalo',
+		hu: 'Nappal',
 	},
 	'Every tab': {
 		fr: 'Chaque onglet',
@@ -1259,6 +1328,7 @@ export const dict = {
 		id: 'Setiap tab',
 		da: 'Hvert faneblad',
 		fi: 'Jokainen välilehti',
+		hu: 'Minden lap esetén',
 	},
 	'Every hour': {
 		fr: 'Chaque heure',
@@ -1277,6 +1347,7 @@ export const dict = {
 		id: 'Setiap jam',
 		da: 'Hver time',
 		fi: 'Joka tunti',
+		hu: 'Óránkén',
 	},
 	'Every day': {
 		fr: 'Chaque jour',
@@ -1295,6 +1366,7 @@ export const dict = {
 		id: 'Setiap hari',
 		da: 'Hver dag',
 		fi: 'Joka päivä',
+		hu: 'Naponta',
 	},
 	Pause: {
 		fr: 'Pause',
@@ -1313,6 +1385,7 @@ export const dict = {
 		id: 'Jeda',
 		da: 'Pause',
 		fi: 'Tauko',
+		hu: 'Szüneteltetés',
 	},
 	'Unsplash collection': {
 		fr: 'Collection Unsplash',
@@ -1331,6 +1404,7 @@ export const dict = {
 		id: 'Koleksi Unsplash',
 		da: 'Unsplash samling',
 		fi: 'Unsplash-kokoelma',
+		hu: 'Unsplash gyűjtemény',
 	},
 	'Blur intensity': {
 		fr: 'Intensité du flou',
@@ -1349,6 +1423,7 @@ export const dict = {
 		id: 'Intensitas kabur',
 		da: 'Sløringsintensitet',
 		fi: 'Sumennuksen intensiteetti',
+		hu: 'Elmosás mértéket',
 	},
 	Brightness: {
 		fr: 'Luminosité',
@@ -1367,6 +1442,7 @@ export const dict = {
 		id: 'Kecerahan',
 		da: 'Lysstyrke',
 		fi: 'Kirkkaus',
+		hu: 'Fényerősség',
 	},
 	'Dark mode': {
 		fr: 'Mode sombre',
@@ -1385,6 +1461,7 @@ export const dict = {
 		id: 'Mode Gelap',
 		da: 'Mørk tilstand',
 		fi: 'Tumma tila',
+		hu: 'Sötét mód',
 	},
 	'At night': {
 		fr: 'La nuit',
@@ -1403,6 +1480,7 @@ export const dict = {
 		id: 'Di malam hari',
 		da: 'Om natten',
 		fi: 'Yöllä',
+		hu: 'Éjszaka',
 	},
 	System: {
 		fr: 'Système',
@@ -1421,6 +1499,7 @@ export const dict = {
 		id: 'Sistem',
 		da: 'System',
 		fi: 'Järjestelmä',
+		hu: 'Rendszer',
 	},
 	Enabled: {
 		fr: 'Activé',
@@ -1439,6 +1518,7 @@ export const dict = {
 		id: 'Diaktifkan',
 		da: 'Aktiveret',
 		fi: 'Käytössä',
+		hu: 'Engedélyezve',
 	},
 	Disabled: {
 		fr: 'Désactivé',
@@ -1457,6 +1537,7 @@ export const dict = {
 		id: 'Dinonaktifkan',
 		da: 'Deaktiveret',
 		fi: 'Pois käytöstä',
+		hu: 'Tiltva',
 	},
 	'New tab icon': {
 		fr: 'Icône nouvel onglet',
@@ -1475,6 +1556,7 @@ export const dict = {
 		id: 'Ikon tab baru',
 		da: 'Fanebladsikon',
 		fi: 'Uuden välilehden kuvake',
+		hu: 'Új lap ikon',
 	},
 	'Any emoji': {
 		fr: "N'importe quel emoji",
@@ -1493,6 +1575,7 @@ export const dict = {
 		id: 'Apa saja emojo',
 		da: 'Hvilken som helst emoji',
 		fi: 'Mikä tahansa emoji',
+		hu: 'bármilyen emoji',
 	},
 	'New tab title': {
 		fr: 'Titre du nouvel onglet',
@@ -1511,6 +1594,7 @@ export const dict = {
 		id: 'New tab title',
 		da: 'Fanebladstitel',
 		fi: 'Uuden välilehden otsikko',
+		hu: 'Új lap címe',
 	},
 
 	'Hide elements': {
@@ -1530,6 +1614,7 @@ export const dict = {
 		id: 'Sembunyikan elements',
 		da: 'Skjul elementer',
 		fi: 'Piilota elementtejä',
+		hu: 'Elemek elrejtése',
 	},
 	Clock: {
 		fr: 'Horloge',
@@ -1548,6 +1633,7 @@ export const dict = {
 		id: 'Jam',
 		da: 'Ur',
 		fi: 'Kello',
+		hu: 'Óra',
 	},
 	'Clock face': {
 		fr: "Style d'horloge",
@@ -1566,6 +1652,7 @@ export const dict = {
 		id: 'Antarmuka Jam',
 		da: 'Urskive',
 		fi: 'Kellotaulu',
+		hu: 'Számlap stílusa',
 	},
 	None: {
 		fr: 'Simple',
@@ -1584,6 +1671,7 @@ export const dict = {
 		id: 'Tidak ada',
 		da: 'Intet',
 		fi: 'ei mitään',
+		hu: 'Nincs',
 	},
 	Numbers: {
 		fr: 'Chiffres',
@@ -1602,6 +1690,7 @@ export const dict = {
 		id: 'Nomor',
 		da: 'Tal',
 		fi: 'Numerot',
+		hu: 'Számok',
 	},
 	Romans: {
 		fr: 'Chiffres romains',
@@ -1620,6 +1709,7 @@ export const dict = {
 		id: 'Roman',
 		da: 'Romertal',
 		fi: 'Roomalaiset',
+		hu: 'Római számok',
 	},
 	Marks: {
 		fr: 'Graduations',
@@ -1638,6 +1728,7 @@ export const dict = {
 		id: 'Tandai',
 		da: 'Mærker',
 		fi: 'Merkit',
+		hu: 'Jelölések',
 	},
 	Date: {
 		fr: 'Date',
@@ -1656,6 +1747,7 @@ export const dict = {
 		id: 'Tanggal',
 		da: 'Dato',
 		fi: 'Päivämäärä',
+		hu: 'Dátum',
 	},
 	Greetings: {
 		fr: 'Bienvenue',
@@ -1674,6 +1766,7 @@ export const dict = {
 		id: 'Salam',
 		da: 'Velkomst',
 		fi: 'Terveisiä',
+		hu: 'Üdv',
 	},
 	Weather: {
 		fr: 'Météo',
@@ -1692,6 +1785,7 @@ export const dict = {
 		id: 'Cuaca',
 		da: 'Vejr',
 		fi: 'Sää',
+		hu: 'Időjárás',
 	},
 	Icon: {
 		fr: 'Icône',
@@ -1710,6 +1804,7 @@ export const dict = {
 		id: 'Icon',
 		da: 'Ikon',
 		fi: 'Kuvake',
+		hu: 'Ikon',
 	},
 	Style: {
 		fr: 'Apparence',
@@ -1728,6 +1823,7 @@ export const dict = {
 		id: 'Gaya',
 		da: 'Udseende',
 		fi: 'Ulkonäkö',
+		hu: 'Stílus',
 	},
 	Large: {
 		fr: 'Grands',
@@ -1746,6 +1842,7 @@ export const dict = {
 		id: 'Besar',
 		da: 'Stor',
 		fi: 'Suuri',
+		hu: 'Nagy',
 	},
 	Medium: {
 		fr: 'Moyens',
@@ -1764,6 +1861,7 @@ export const dict = {
 		id: 'Sedang',
 		da: 'Medium',
 		fi: 'Keskikokoinen',
+		hu: 'Közepes',
 	},
 	Small: {
 		fr: 'Petits',
@@ -1782,6 +1880,7 @@ export const dict = {
 		id: 'Kecil',
 		da: 'Lille',
 		fi: 'Pieni',
+		hu: 'Kicsi',
 	},
 	Text: {
 		fr: 'Texte',
@@ -1800,6 +1899,7 @@ export const dict = {
 		id: 'Teks',
 		da: 'Tekst',
 		fi: 'Teksti',
+		hu: 'Szöveg',
 	},
 	'Quick Links': {
 		fr: 'Liens favoris',
@@ -1818,6 +1918,7 @@ export const dict = {
 		id: 'Tautan Singkat',
 		da: 'Hurtig links',
 		fi: 'Pikalinkit',
+		hu: 'Gyors hivatkozások',
 	},
 	'Settings icon': {
 		fr: 'Icône réglages',
@@ -1836,6 +1937,7 @@ export const dict = {
 		id: 'Pengaturan icon',
 		da: 'Indstillingsikon',
 		fi: 'Asetuskuvake',
+		hu: 'Beállítások ikon',
 	},
 	'Upload background here': {
 		fr: 'Ajoutez votre arrière-plan',
@@ -1854,6 +1956,7 @@ export const dict = {
 		id: 'Unggah latar belakan disini',
 		da: 'Upload baggrund her',
 		fi: 'Lataa tausta tähän',
+		hu: 'Háttér feltöltése',
 	},
 	'Analog clock': {
 		fr: 'Horloge analogue',
@@ -1872,6 +1975,7 @@ export const dict = {
 		id: 'Jam Analog',
 		da: 'Analog ur',
 		fi: 'Analoginen kello',
+		hu: 'Analóg óra',
 	},
 	'Display Seconds': {
 		fr: 'Afficher les secondes',
@@ -1890,6 +1994,7 @@ export const dict = {
 		id: 'Tampilkan keduanya',
 		da: 'Vis sekunder',
 		fi: 'Näytä sekunnit',
+		hu: 'Másodpercek megjelenítése',
 	},
 	Automatic: {
 		fr: 'Automatique',
@@ -1908,6 +2013,7 @@ export const dict = {
 		id: 'Otomatis',
 		da: 'Automatisk',
 		fi: 'Automaattinen',
+		hu: 'Automatikus',
 	},
 	Geolocation: {
 		fr: 'Géolocalisation',
@@ -1926,6 +2032,7 @@ export const dict = {
 		id: 'Geo-lokasi',
 		da: 'Geolokalisering',
 		fi: 'Maantieteellinen sijainti',
+		hu: 'Geolokáció',
 	},
 	'City not found': {
 		fr: 'Ville inconnue',
@@ -1944,6 +2051,7 @@ export const dict = {
 		id: 'Kota Ditemukan',
 		da: 'By ikke fundet',
 		fi: 'Kaupunkia ei löydetty',
+		hu: 'Város nem található',
 	},
 	'Change city': {
 		fr: 'Changer la ville',
@@ -1962,6 +2070,7 @@ export const dict = {
 		id: 'Ubah kota',
 		da: 'Ændre by',
 		fi: 'Vaihda kaupunkia',
+		hu: 'Város választása',
 	},
 	'There was a problem': {
 		fr: 'Il y a eu un problème',
@@ -1980,6 +2089,7 @@ export const dict = {
 		id: 'Ada masalah',
 		da: 'Der opstod en fejl',
 		fi: 'Oli ongelma',
+		hu: 'Hiba történt',
 	},
 	'Imperial units': {
 		fr: 'Unités impériales',
@@ -1998,6 +2108,7 @@ export const dict = {
 		id: 'Kisaran Unit',
 		da: 'Engelske enheder',
 		fi: 'Imperiaaliset yksiköt',
+		hu: 'Angolszász mértékegységek használata',
 	},
 	Forecast: {
 		fr: 'Prévisions',
@@ -2016,6 +2127,7 @@ export const dict = {
 		id: 'Ramalan Cuaca',
 		da: 'Prognose',
 		fi: 'Ennuste',
+		hu: 'Előrejelzés',
 	},
 	'Every mornings': {
 		fr: 'Les matins',
@@ -2034,6 +2146,7 @@ export const dict = {
 		id: 'Setiap pagi',
 		da: 'Hver morgen',
 		fi: 'Joka aamu',
+		hu: 'Minden reggel',
 	},
 	'Always show': {
 		fr: 'Toujours',
@@ -2052,6 +2165,7 @@ export const dict = {
 		id: 'Selalu tampilkan',
 		da: 'Vis altid',
 		fi: 'Näytä aina',
+		hu: 'Mindig látható',
 	},
 	'Never show': {
 		fr: 'Jamais',
@@ -2070,6 +2184,7 @@ export const dict = {
 		id: 'Belum pernah upload',
 		da: 'Vis aldrig',
 		fi: 'Älä koskaan naytä',
+		hu: 'Sosem látható',
 	},
 	Temperature: {
 		fr: 'Température',
@@ -2088,6 +2203,7 @@ export const dict = {
 		id: 'tempratur',
 		da: 'Temperatur',
 		fi: 'Lämpötila',
+		hu: 'Hőmérséklet',
 	},
 	Actual: {
 		fr: 'Réelle',
@@ -2106,6 +2222,7 @@ export const dict = {
 		id: 'Aktual',
 		da: 'Aktuel',
 		fi: 'Todellinen',
+		hu: 'Aktuális',
 	},
 	'Feels like': {
 		fr: 'Ressenti',
@@ -2124,6 +2241,7 @@ export const dict = {
 		id: 'Terasa seperti',
 		da: 'Føles som',
 		fi: 'Tuntuu kuin',
+		hu: 'Hőérzet',
 	},
 	Both: {
 		fr: 'Les deux',
@@ -2142,6 +2260,7 @@ export const dict = {
 		id: 'Keduanya',
 		da: 'Begge',
 		fi: 'Kummatkin',
+		hu: 'Mindkettő',
 	},
 	Notes: {
 		fr: 'Notes',
@@ -2160,6 +2279,7 @@ export const dict = {
 		id: 'Catatan',
 		da: 'Noter',
 		fi: 'Musitiinpanot',
+		hu: 'Jegyzetek',
 	},
 	'Double click to edit': {
 		fr: 'Double-cliquez pour modifier',
@@ -2178,6 +2298,7 @@ export const dict = {
 		id: 'Klik dua kali untuk mengedit',
 		da: 'Dobbeltklik for at redigere',
 		fi: 'Muokkaa kaskoisnapauttamalla',
+		hu: 'A szerkesztéshez kattintson duplán',
 	},
 	'Supports Markdown and clickable checkboxes': {
 		fr: 'Compatible Markdown et cases à cocher cliquables',
@@ -2196,6 +2317,7 @@ export const dict = {
 		id: 'Mendukung penurunan harga dan kotak centang yang dapat diklik',
 		da: 'Understøtter Markdown og klikbare afkrydsningsfelter',
 		fi: 'Tukee Markdownia ja napsautettavia valintaruutuja',
+		hu: 'Támogatja a markdown-t és kattintható jelölönégyzeteket létrehozását',
 	},
 	'With keyboard shortcuts': {
 		fr: 'Avec des raccourcis clavier',
@@ -2214,6 +2336,7 @@ export const dict = {
 		id: 'Dengan pintasan keyboard',
 		da: 'Med tastaturgenveje',
 		fi: 'Pikanäppäimillä',
+		hu: 'gyorsbillentyűk segítségével.',
 	},
 	'see documentation': {
 		fr: 'voir la documentation',
@@ -2232,6 +2355,7 @@ export const dict = {
 		id: 'lihat di dokumentasi',
 		da: 'se i dokumentationen',
 		fi: 'katso dokumentaatiota',
+		hu: 'Dokumentáció megtekintése',
 	},
 	'Text alignment': {
 		fr: 'Alignement du texte',
@@ -2250,6 +2374,7 @@ export const dict = {
 		id: 'Perataan teks',
 		da: 'Justering af tekst',
 		fi: 'Tekstin tasaus',
+		hu: 'Szövegigazítás',
 	},
 	Left: {
 		fr: 'Gauche',
@@ -2268,6 +2393,7 @@ export const dict = {
 		id: 'Kiri',
 		da: 'Venstre',
 		fi: 'Vasen',
+		hu: 'Balra',
 	},
 	Center: {
 		fr: 'Centré',
@@ -2286,6 +2412,7 @@ export const dict = {
 		id: 'Tengah',
 		da: 'Midt',
 		fi: 'Keskellä',
+		hu: 'Középre',
 	},
 	Right: {
 		fr: 'Droite',
@@ -2304,6 +2431,7 @@ export const dict = {
 		id: 'Kanan',
 		da: 'Højre',
 		fi: 'Oikea',
+		hu: 'Jobbra',
 	},
 	'Settings management': {
 		fr: 'Gestion des réglages',
@@ -2322,6 +2450,7 @@ export const dict = {
 		id: 'Settings management',
 		da: 'Settings management',
 		fi: 'Asetusten hallinta',
+		hu: 'Beállítások kezelése',
 	},
 	'Transfer your settings between multiple instances of Bonjourr.': {
 		fr: "Transférez vos réglages d'une instance de Bonjourr à une autre.",
@@ -2340,6 +2469,7 @@ export const dict = {
 		id: 'Transfer your settings between multiple instances of Bonjourr.',
 		da: 'Transfer your settings between multiple instances of Bonjourr.',
 		fi: 'Siirrä asetuksesi useiden Bonjourr-esiintymien välillä',
+		hu: 'Beállítások átvitele több Bonjourr példány között.',
 	},
 	'Search bar': {
 		fr: 'Barre de recherche',
@@ -2358,6 +2488,7 @@ export const dict = {
 		id: 'Bilah pencarian',
 		da: 'Søgefelt',
 		fi: 'Hakupalkki',
+		hu: 'Kereső sáv',
 	},
 	'Search engine': {
 		fr: 'Moteur de recherche',
@@ -2376,6 +2507,7 @@ export const dict = {
 		id: 'Mesin pencari',
 		da: 'Søgemaskine',
 		fi: 'Hakukone',
+		hu: 'Kereső motor',
 	},
 	Enable: {
 		fr: 'Activer',
@@ -2394,6 +2526,7 @@ export const dict = {
 		id: 'Aktif',
 		da: 'Aktiver',
 		fi: 'Ota käyttöön',
+		hu: 'Engedélyezve',
 	},
 	'Open in new tab': {
 		fr: 'Ouvrir dans un nouvel onglet',
@@ -2412,6 +2545,7 @@ export const dict = {
 		id: 'Buka di tab baru',
 		da: 'Åben i et nyt faneblad',
 		fi: 'Avaa uudessa välilehdessä',
+		hu: 'Megnyitás új lapon',
 	},
 	'URL request': {
 		fr: 'URL de requête',
@@ -2430,6 +2564,7 @@ export const dict = {
 		id: 'URL permintaan',
 		da: 'URL-anmodning',
 		fi: 'URL-pyyntö',
+		hu: 'URL-kérés',
 	},
 	'%s Not found': {
 		fr: '%s Pas trouvé',
@@ -2448,6 +2583,7 @@ export const dict = {
 		id: '%s tidak ditemukan',
 		da: '%s ikke fundet',
 		fi: '%s ei löydetty',
+		hu: '%s nem található',
 	},
 	'Search query: %s': {
 		fr: 'Requête: %s',
@@ -2466,6 +2602,7 @@ export const dict = {
 		id: 'Pencarian kata kunci %s',
 		da: 'Søgeterm: %s',
 		fi: 'Hakulauseke %s',
+		hu: 'Keresési kifejezés: %s',
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -2484,6 +2621,7 @@ export const dict = {
 		id: 'Transparansi',
 		da: 'Uigennemsigtighed',
 		fi: 'Läpikuultamattomuus',
+		hu: 'Áttetszőség',
 	},
 	'Time & Date': {
 		fr: 'Date & heure',
@@ -2502,6 +2640,7 @@ export const dict = {
 		id: 'Waktu & Tanggal',
 		da: 'Tid og dato',
 		fi: 'Aika ja Päivämäärä',
+		hu: 'Dátum és idő',
 	},
 	'Custom Style': {
 		fr: 'Style personnalisé',
@@ -2520,6 +2659,7 @@ export const dict = {
 		id: 'Personalisasi Gaya',
 		da: 'Tilpasset stil',
 		fi: 'Mukautettu tyyli',
+		hu: 'Egyedi stílus',
 	},
 	'Type in your custom CSS': {
 		fr: 'Entrez votre CSS personnalisé',
@@ -2538,6 +2678,7 @@ export const dict = {
 		id: 'Ketik CSS khusus Anda',
 		da: 'Skriv dit tilpassede CSS',
 		fi: 'Kirjoita sinun oma CSS',
+		hu: 'Add meg egyedi CSS formázásod',
 	},
 	'Make cool things happen with CSS. ': {
 		fr: 'Tentez de jolies choses en CSS. ',
@@ -2556,6 +2697,7 @@ export const dict = {
 		id: 'Wujudkan hal-hal mewah dengan CSS. ',
 		da: 'Få smarte ting til at ske med CSS. ',
 		fi: 'Tee hienoja juttuja tapahtumaan CSS:llä',
+		hu: 'Legyen még nagyszerűbb a kezdőlapja CSS segítségével.',
 	},
 	'Check out our ': {
 		fr: 'Jetez un oeil à nos ',
@@ -2574,6 +2716,7 @@ export const dict = {
 		id: 'Lihat kami ',
 		da: 'Tjek vores ',
 		fi: 'Tutustu meidän ',
+		hu: 'Nézze meg a mi',
 	},
 	'CSS snippets.': {
 		fr: 'extraits de CSS.',
@@ -2592,6 +2735,7 @@ export const dict = {
 		id: 'Cuplikan CSS.',
 		da: 'CSS uddrag.',
 		fi: 'CSS-katkelmia',
+		hu: 'CSS kódrészleteinket.',
 	},
 	'US Date Format': {
 		fr: 'Date américaine',
@@ -2610,6 +2754,7 @@ export const dict = {
 		id: 'Format Tanggal US',
 		da: 'Amerikansk datoformat',
 		fi: 'Yhdysvaltain päivämäärämuoto',
+		hu: 'Amerikai dátum formátum',
 	},
 	'12-Hour Time': {
 		fr: 'Affichage 12h',
@@ -2628,6 +2773,7 @@ export const dict = {
 		id: 'Waktu 12-Jam',
 		da: '12-timers ur',
 		fi: '12-tunnin aika',
+		hu: '12 órás formátum',
 	},
 	'Time zone': {
 		fr: 'Fuseau horaire',
@@ -2646,6 +2792,7 @@ export const dict = {
 		id: 'Zona Waktu',
 		da: 'Tidszone',
 		fi: 'Aikavyöhyke',
+		hu: 'Időzóna',
 	},
 	Language: {
 		fr: 'Langue',
@@ -2664,6 +2811,7 @@ export const dict = {
 		id: 'Bahasa',
 		da: 'Sprog',
 		fi: 'Kieli',
+		hu: 'Nyelv',
 	},
 	Greeting: {
 		fr: 'Bienvenue',
@@ -2682,6 +2830,7 @@ export const dict = {
 		id: 'Salam',
 		da: 'Velkomst',
 		fi: 'Tervehdys',
+		hu: 'Üdv',
 	},
 	Quotes: {
 		fr: 'Citations',
@@ -2700,6 +2849,7 @@ export const dict = {
 		id: 'Kutipan',
 		da: 'Citater',
 		fi: 'Lainaukset',
+		hu: 'Idézetek',
 	},
 	'Always show author': {
 		fr: "Toujours afficher l'auteur",
@@ -2718,6 +2868,7 @@ export const dict = {
 		id: 'Selalu tunjukkan penulis',
 		da: 'Vis altid forfatteren',
 		fi: 'Näytä aina kirjoittaja',
+		hu: 'Mindig mutassa a szerzőt',
 	},
 	'Quote type': {
 		fr: 'Type de citations',
@@ -2736,6 +2887,7 @@ export const dict = {
 		id: 'Tipe kutipan',
 		da: 'Type af citat',
 		fi: 'Lainausten tyyppi',
+		hu: 'Idézet típusa',
 	},
 	Classic: {
 		fr: 'Classique',
@@ -2754,6 +2906,7 @@ export const dict = {
 		id: 'Klasik',
 		da: 'Klassisk',
 		fi: 'Klassikko',
+		hu: 'Klasszikus',
 	},
 	Fonts: {
 		fr: 'Polices',
@@ -2772,6 +2925,7 @@ export const dict = {
 		id: 'Pernolasasi Font',
 		da: 'Skrifttyper',
 		fi: 'Fontti',
+		hu: 'Betűtípus',
 	},
 	'Font family': {
 		fr: 'Police',
@@ -2790,6 +2944,7 @@ export const dict = {
 		id: 'Font family',
 		da: 'Skrifttype familie',
 		fi: 'Fonttiperhe',
+		hu: 'Betűtípus család',
 	},
 	Weight: {
 		fr: 'Épaisseur',
@@ -2808,6 +2963,7 @@ export const dict = {
 		id: 'Bobot',
 		da: 'Vægt',
 		fi: 'Paino',
+		hu: 'Vastagság',
 	},
 	Size: {
 		fr: 'Taille',
@@ -2826,6 +2982,7 @@ export const dict = {
 		id: 'Ukuran',
 		da: 'størrelse',
 		fi: 'Koko',
+		hu: 'Méret',
 	},
 	Shadow: {
 		fr: 'Ombres',
@@ -2844,6 +3001,7 @@ export const dict = {
 		id: 'Shadow',
 		da: 'Skygge',
 		fi: 'Varjo',
+		hu: 'Árnyék',
 	},
 	'Custom CSS': {
 		fr: 'CSS personnalisé',
@@ -2862,6 +3020,7 @@ export const dict = {
 		id: 'Personalisasi CSS',
 		da: 'Tilpasset CSS',
 		fi: 'Mukautettu CSS',
+		hu: 'Egyedi CSS',
 	},
 	Settings: {
 		fr: 'Réglages',
@@ -2880,6 +3039,7 @@ export const dict = {
 		id: 'Pengaturan',
 		da: 'Indstillinger',
 		fi: 'Asetukset',
+		hu: 'Beállítások',
 	},
 	Import: {
 		fr: 'Importer',
@@ -2898,6 +3058,7 @@ export const dict = {
 		id: 'Impor',
 		da: 'Importér',
 		fi: 'Tuo',
+		hu: 'Importálás',
 	},
 	Export: {
 		fr: 'Exporter',
@@ -2916,6 +3077,7 @@ export const dict = {
 		id: 'Ekspor',
 		da: 'Eksportér',
 		fi: 'Vie',
+		hu: 'Exportálás',
 	},
 	Copied: {
 		fr: 'Copié',
@@ -2934,6 +3096,7 @@ export const dict = {
 		id: 'Disalin',
 		da: 'Kopieret',
 		fi: 'Kopioitu',
+		hu: 'Másolva',
 	},
 	'Copy text': {
 		fr: 'Copier texte',
@@ -2952,6 +3115,7 @@ export const dict = {
 		id: 'Salin teks',
 		da: 'Kopiering af tekst',
 		fi: 'Kopioi teksti',
+		hu: 'Szöveg másolása',
 	},
 	'Export as file': {
 		fr: 'Exporter comme fichier',
@@ -2970,6 +3134,7 @@ export const dict = {
 		id: 'Ekspor sebagai file',
 		da: 'Eksport som fil',
 		fi: 'Vie tiedostona',
+		hu: 'Exportálás fájlként',
 	},
 	'Drop file to import settings': {
 		fr: 'Déposer le fichier pour importer les paramètres',
@@ -2988,6 +3153,7 @@ export const dict = {
 		id: 'Jatuhkan file untuk mengimpor pengaturan',
 		da: 'Drop fil for at importere indstillinger',
 		fi: 'Pudota tiedosto tuodakseen asetukset',
+		hu: 'Húzza ide a fájlt a beállítások importáláshoz',
 	},
 	'or paste as text': {
 		fr: 'ou coller en tant que texte',
@@ -3006,6 +3172,7 @@ export const dict = {
 		id: 'atau tempelkan sebagai teks',
 		da: 'of plakken als tekst',
 		fi: 'tai liitä tekstinä',
+		hu: 'vagy másolja ide szövegként',
 	},
 	'Reset settings': {
 		fr: 'Réinitialiser les réglages',
@@ -3024,6 +3191,7 @@ export const dict = {
 		id: 'Setel ulang pengaturan',
 		da: 'Nulstil indstillingerne',
 		fi: 'Nollaa asetukset',
+		hu: 'Beállítások visszaállítása',
 	},
 	'Are you sure ?': {
 		fr: 'Vous êtes sûr ?',
@@ -3042,6 +3210,7 @@ export const dict = {
 		id: 'Apakah Anda yakin?',
 		da: 'Er du sikker?',
 		fi: 'Oletko varma?',
+		hu: 'Biztos benne?',
 	},
 	'I am sure': {
 		fr: 'Je suis sûr',
@@ -3060,6 +3229,7 @@ export const dict = {
 		id: 'Saya yakin',
 		da: 'Jeg er sikker',
 		fi: 'Olen varma',
+		hu: 'Igen, biztos vagyok',
 	},
 	'No, go back': {
 		fr: 'Finalement non',
@@ -3078,6 +3248,7 @@ export const dict = {
 		id: 'Tidak, kembali',
 		da: 'Nej, gå tilbage',
 		fi: 'Ei, mene takaisin',
+		hu: 'Nem, visszalépés',
 	},
 	'Made in France with ❤️': {
 		fr: 'Fabriqué en France avec ❤️',
@@ -3096,6 +3267,7 @@ export const dict = {
 		id: 'Dibuat di Prancis dengan ❤️',
 		da: 'Lavet i Frankrig med ❤️',
 		fi: 'Tehty ranskassa ❤️',
+		hu: 'Készült Franciaországban, szeretettel ❤️',
 	},
 	by: {
 		fr: 'par',
@@ -3114,6 +3286,7 @@ export const dict = {
 		id: 'oleh',
 		da: 'af',
 		fi: '',
+		hu: '',
 	},
 	Visit: {
 		fr: 'Rendez-vous sur',
@@ -3132,6 +3305,7 @@ export const dict = {
 		id: 'Kunjungi',
 		da: 'Besøg',
 		fi: 'Vieraile',
+		hu: 'Látogassa meg',
 	},
 	'our website': {
 		fr: 'notre site Internet',
@@ -3150,6 +3324,7 @@ export const dict = {
 		id: 'Website kami',
 		da: 'vores hjemmeside',
 		fi: 'Nettisivullamme',
+		hu: 'weboldalunkat',
 	},
 	'for infos and donations': {
 		fr: 'pour en savoir plus ou faire un don',
@@ -3168,6 +3343,7 @@ export const dict = {
 		id: 'untuk info dan donasi',
 		da: 'for at lære mere eller donere',
 		fi: 'tietoja ja lahjoituksia varten',
+		hu: 'ha további információra van szüksége vagy támogatni szeretné a projektet.',
 	},
 }
 
@@ -3221,6 +3397,7 @@ export const enginesLocales = {
 		id: '.co.id',
 		da: '.dk',
 		fi: '.fi',
+		hu: '.hu',
 	},
 	ddg: {
 		fr: 'fr-fr',
@@ -3242,6 +3419,7 @@ export const enginesLocales = {
 		id: 'id-ID',
 		da: 'dk-da',
 		fi: 'fi-fi',
+		hu: 'hu-hu',
 	},
 	startpage: {
 		fr: 'francais',
@@ -3263,6 +3441,7 @@ export const enginesLocales = {
 		id: 'interlingua',
 		da: 'dansk',
 		fi: 'suomi',
+		hu: 'magyar',
 	},
 	qwant: {
 		fr: 'FR&sr=fr',
@@ -3284,6 +3463,7 @@ export const enginesLocales = {
 		id: 'US&sr=en', // qwant not available in Indonesia
 		da: 'DK&sr=da',
 		fi: 'FI&sr=fi',
+		hu: 'US&sr=en', // qwant not available in Hungary
 	},
 	yahoo: {
 		fr: 'fr.',
@@ -3305,6 +3485,7 @@ export const enginesLocales = {
 		id: 'id.',
 		da: 'dk.',
 		fi: 'fi.',
+		hu: 'hu.',
 	},
 	bing: {
 		fr: 'fr',
@@ -3326,5 +3507,6 @@ export const enginesLocales = {
 		id: 'id',
 		da: 'da',
 		fi: 'fi',
+		hu: 'hu',
 	},
 }
