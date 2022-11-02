@@ -1474,17 +1474,18 @@ export function weather(
 				'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
 				'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 			]
-			const type = isForecast ? 'forecast' : 'weather'
-			const lang = document.documentElement.getAttribute('lang')
-			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
 			const units = storage.unit || 'metric'
+			const type = isForecast ? 'forecast' : 'weather'
+			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
+			let lang = document.documentElement.getAttribute('lang')
 			let location = ''
 
-			if (storage.location?.length === 2) {
-				location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`
-			} else {
-				location = `&q=${encodeURI(storage.city)},${storage.ccode}`
-			}
+			// Openweathermap country code for traditional chinese is tw
+			if (lang === 'zh_HK') lang = 'zh_TW'
+
+			storage.location?.length === 2
+				? (location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`)
+				: (location = `&q=${encodeURI(storage.city)},${storage.ccode}`)
 
 			return `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=${units}&lang=${lang}`
 		}
