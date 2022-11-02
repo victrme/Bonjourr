@@ -404,7 +404,7 @@ export const syncDefaults: Sync = {
 	},
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
-	about: { browser: detectPlatform(), version: '1.15.1' },
+	about: { browser: detectPlatform(), version: '1.15.2' },
 }
 
 export const localDefaults: Local = {

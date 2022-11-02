@@ -1,5 +1,17 @@
 ## Changelogs
 
+**v1.15.2**
+
+-   Translations:
+    -   Brazilian update by @adilsonfsantos
+    -   Traditional Chinese by Pu · @unknownnumbers
+    -   Hungarian by @cook3r
+    -   Finnish by @jaajko
+-   Fixes:
+    -   Visual issues on Safari
+    -   Overall experience on Safari iOS
+    -   Refresh backgrounds with daylight frequency
+
 **v1.15.1**
 
 -   Replaced fade to black background transition
