@@ -20,6 +20,7 @@ import {
 	randomString,
 	stringMaxSize,
 	deleteBrowserStorage,
+	translateNotesText,
 	getBrowserStorage,
 	turnRefreshButton,
 	testOS,
@@ -770,6 +771,12 @@ function switchLangs(nextLang: Langs) {
 		translatePlaceholders($('settings'))
 		weather(data as Sync)
 		clock(data as Sync)
+
+		if (data.notes?.text) {
+			const value = translateNotesText(nextLang, langs.current, data.notes.text)
+			document.querySelector<HTMLInputElement>('#notes_editor')!.value = value
+			notes(null, { is: 'change', value })
+		}
 
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
