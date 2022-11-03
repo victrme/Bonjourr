@@ -3694,7 +3694,7 @@ function startup(data: Sync) {
 	quotes(data)
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
-	moveElements(data.move)
+	moveElements(data.move, data.moveSelection)
 
 	customCss(data.css)
 	hideElem(data.hide)

@@ -56,26 +56,16 @@ export type Notes = {
 	align: 'left' | 'center' | 'right'
 }
 
-type MoveAlign = {
-	box?: string
-	text?: string
-}
+export type MoveItem = {
+	_id: string
+	box: string
+	text: string
+} | null
 
 export type Move = {
-	selectedLayout: keyof Move['layouts']
-	layouts: {
-		single: [string][]
-		double: [string, string][]
-		triple: [string, string, string][]
-	}
-	align: {
-		time: MoveAlign
-		main: MoveAlign
-		notes: MoveAlign
-		searchbar: MoveAlign
-		linkblocks: MoveAlign
-		quotes: MoveAlign
-	}
+	single: [MoveItem][]
+	double: [MoveItem, MoveItem][]
+	triple: [MoveItem, MoveItem, MoveItem][]
 }
 
 export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
@@ -117,6 +107,7 @@ export type Sync = {
 	font: Font
 	hide: Hide
 	move: Move
+	moveSelection: keyof Move
 	textShadow: number
 	about: { browser: string; version: string }
 	[key: string]: Link | unknown
