@@ -10,6 +10,10 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 
 	type Layout = Move[keyof Move]
 
+	//
+	// Utils
+	//
+
 	function getID(dom: HTMLElement | null) {
 		// Uses dataset for widgets that uses dom ids that doesn't match storage fields (ex: id="x_container")
 		return dom?.dataset.moveId || dom?.id || ''
@@ -29,6 +33,10 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		return { row, col }
 	}
 
+	//
+	// Grid and Align
+	//
+
 	function setGridAreas(grid: Layout) {
 		let areas = ``
 
@@ -43,8 +51,8 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	}
 
 	function setAlign(elem: HTMLElement, item: MoveItem) {
-		if (item?.box) elem.style.placeSelf = item.box
-		if (item?.text) elem.style.textAlign = item.text
+		if (typeof item?.box === 'string') elem.style.placeSelf = item.box
+		if (typeof item?.text === 'string') elem.style.textAlign = item.text
 	}
 
 	function setAllAligns(layout: Layout) {
@@ -54,6 +62,10 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 			setAlign(elem, getItem(itemList, getID(elem)))
 		})
 	}
+
+	//
+	// Buttons class control / selection
+	//
 
 	function removeSelection() {
 		selectables.forEach((d) => d.classList.remove('move-selected'))
@@ -68,10 +80,49 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	}
 
 	function toggleElementSelection(elem: Element) {
+		const layout = move[selection]
+		const id = getID(elem as HTMLElement)
+		const item = getItem(getItemList(layout), id)
+
 		removeSelection()
+		disableMoveButtonOnEdges(layout, id)
+		setAlignButtonSelection(item)
+
 		elem.classList.add('move-selected') // add clicked
 		selectedDOM = elem as HTMLElement
 	}
+
+	function disableMoveButtonOnEdges(layout: Layout, id: string) {
+		const { row, col } = getItemPosition(layout, id)
+
+		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
+			const c = parseInt(b.dataset.col || '0')
+			const r = parseInt(b.dataset.row || '0')
+			const disable = c === 0 ? layout[row + r] === undefined : layout[row][col + c] === undefined
+
+			disable ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
+		})
+	}
+
+	function setLayoutButtonSelection(sel: keyof Move) {
+		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
+			b.dataset.layout === sel ? b.classList.add('selected') : b.classList.remove('selected')
+		})
+	}
+
+	function setAlignButtonSelection(item: MoveItem) {
+		document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((b) => {
+			b.dataset.align === item?.box ? b.classList.add('selected') : b.classList.remove('selected')
+		})
+
+		document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((b) => {
+			b.dataset.align === item?.text ? b.classList.add('selected') : b.classList.remove('selected')
+		})
+	}
+
+	//
+	// Updates
+	//
 
 	function gridChange(button: HTMLButtonElement) {
 		if (!selectedDOM) {
@@ -101,6 +152,8 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		// Apply changes
 		setGridAreas(move[selection])
 		storage.sync.set({ move: move })
+
+		disableMoveButtonOnEdges(move[selection], id)
 	}
 
 	function alignChange(button: HTMLButtonElement, type: 'box' | 'text') {
@@ -117,6 +170,7 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 			item[type] = button.dataset.align || ''
 
 			setAlign(selectedDOM, item)
+			setAlignButtonSelection(item)
 
 			// Update storage
 			move[selection][row][col] = item
@@ -133,6 +187,11 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 
 		setAllAligns(move[selection])
 		setGridAreas(move[selection])
+		setLayoutButtonSelection(selection)
+
+		if (selectedDOM) {
+			toggleElementSelection(selectedDOM)
+		}
 
 		storage.sync.set({ moveSelection: selection })
 	}
@@ -163,15 +222,13 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	})()
 
 	//
-	// Events
+	// Events (& late init)
 	//
 
 	setTimeout(() => {
-		document.addEventListener('keypress', toggleMoveStatus)
+		setLayoutButtonSelection(selection)
 
-		document.querySelector('#move-reset-grid')?.addEventListener('click', () => handleReset('grid'))
-		document.querySelector('#move-reset-box')?.addEventListener('click', () => handleReset('box'))
-		document.querySelector('#move-reset-text')?.addEventListener('click', () => handleReset('text'))
+		document.addEventListener('keypress', toggleMoveStatus)
 
 		selectables.forEach((elem) => {
 			elem.addEventListener('click', () => toggleElementSelection(elem))

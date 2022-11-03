@@ -112,11 +112,21 @@
 		color: white;
 		background-color: transparent;
 
-		&:hover {
+		&.selected {
+			background-color: #0072ee22;
+			outline: 2px solid var(--blue);
+		}
+
+		&:disabled {
+			opacity: 0.3;
+			cursor: default;
+		}
+
+		&:hover:not(:disabled) {
 			background-color: #fff4;
 		}
 
-		&:active {
+		&:active:not(:disabled) {
 			background-color: #fff5;
 		}
 	}
@@ -137,7 +147,7 @@
 }
 
 #grid-layout {
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
 
 	button {
 		display: grid;
@@ -145,6 +155,11 @@
 		margin: 4px;
 		width: 60px;
 		border: 2px solid white;
+
+		&.selected,
+		&.selected div {
+			border-color: var(--blue);
+		}
 
 		div {
 			height: 2em;
