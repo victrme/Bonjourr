@@ -1,6 +1,7 @@
 import clamp from 'lodash.clamp'
 import storage from './storage'
 import { Move, MoveItem, Sync } from './types/sync'
+import { syncDefaults } from './utils'
 
 export default function moveElements(move: Move, selection: Sync['moveSelection']) {
 	const doms = '#time, #main, #sb_container, #notes_container, #linkblocks, #quotes_container'
@@ -72,11 +73,13 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		selectedDOM = null
 	}
 
-	function toggleMoveStatus(e: KeyboardEvent) {
-		if (e.key === 'm') {
+	function toggleMoveStatus(e?: KeyboardEvent) {
+		const toggle = () => {
 			document.querySelector('#interface')?.classList.toggle('move-edit')
 			removeSelection()
 		}
+
+		e ? (e.key === 'm' ? toggle() : '') : toggle()
 	}
 
 	function toggleElementSelection(elem: Element) {
@@ -196,19 +199,21 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		storage.sync.set({ moveSelection: selection })
 	}
 
-	function handleReset(type: 'grid' | 'box' | 'text') {
-		// const { selectedLayout } = moveData
-		// if (type === 'grid') {
-		// 	moveData.layouts[moveData.selectedLayout] = syncDefaults.move.layouts[selectedLayout]
-		// 	setGridAreas(syncDefaults.move.layouts[selectedLayout])
-		// }
-		// if (type === 'box') {
-		// 	moveData.align = syncDefaults.move.align
-		// }
-		// if (type === 'text') {
-		// 	moveData.align = syncDefaults.move.align
-		// }
-		// storage.sync.set({ move: moveData })
+	function layoutReset() {
+		// Todo: don't select layout manually
+		if (selection === 'single') move.single = syncDefaults.move.single
+		if (selection === 'double') move.double = syncDefaults.move.double
+		if (selection === 'triple') move.triple = syncDefaults.move.triple
+
+		setAllAligns(move[selection])
+		setGridAreas(move[selection])
+		setLayoutButtonSelection(selection)
+
+		if (selectedDOM) {
+			toggleElementSelection(selectedDOM)
+		}
+
+		storage.sync.set({ move: move })
 	}
 
 	//
@@ -249,5 +254,9 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((button) => {
 			button.addEventListener('click', () => alignChange(button, 'text'))
 		})
+
+		document.querySelector<HTMLButtonElement>('#reset-layout')?.addEventListener('click', layoutReset)
+
+		document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => toggleMoveStatus())
 	}, 200)
 }

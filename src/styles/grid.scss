@@ -85,6 +85,7 @@
 #element-mover {
 	position: absolute;
 	display: flex;
+	flex-direction: column;
 	top: 2em;
 	left: 2em;
 	gap: 2em;
@@ -133,17 +134,15 @@
 }
 
 #grid-mover {
-	grid-template-columns: 1fr;
+	place-content: center;
+	grid-template-columns: 80px;
 }
 
 #text-alignment-mover,
 #box-alignment-mover {
-	grid-template-columns: 1fr 1fr 1fr;
-}
-
-#reset-moves button {
-	font-size: 1em;
-	font-family: 'Courier New', Courier, monospace;
+	place-content: center;
+	grid-template-columns: repeat(3, 40px);
+	grid-template-rows: repeat(3, 30px);
 }
 
 #grid-layout {
