@@ -1,7 +1,7 @@
 import clamp from 'lodash.clamp'
 import storage from './storage'
 import { Move, MoveItem, Sync } from './types/sync'
-import { syncDefaults } from './utils'
+import { syncDefaults, clas } from './utils'
 
 export default function moveElements(move: Move, selection: Sync['moveSelection']) {
 	const doms = '#time, #main, #sb_container, #notes_container, #linkblocks, #quotes_container'
@@ -17,15 +17,15 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 
 	function getID(dom: HTMLElement | null) {
 		// Uses dataset for widgets that uses dom ids that doesn't match storage fields (ex: id="x_container")
-		return dom?.dataset.moveId || dom?.id || ''
+		return dom?.dataset.moveId || dom?.id || null
 	}
 
 	function getItemList(layout: Layout) {
 		return layout.flat().filter((a) => a?._id)
 	}
 
-	function getItem(itemList: MoveItem[], id: string) {
-		return itemList.filter((a) => a?._id === id)[0]
+	function getItem(itemList: MoveItem[], id: string | null) {
+		return itemList.filter((a) => a?._id === id)[0] || null
 	}
 
 	function getItemPosition(layout: Layout, id: string) {
@@ -38,20 +38,24 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	// Grid and Align
 	//
 
-	function setGridAreas(grid: Layout) {
+	function layoutToGridAreas(layout: Layout) {
 		let areas = ``
 
 		const columnItemToString = (col: MoveItem) => (col?._id ? col._id : '.') // 3
 		const itemListToString = (row: MoveItem[]) => row.map(columnItemToString).reduce((a, b) => `${a} ${b}`) // 2
 
-		grid.forEach((row: MoveItem[]) => (areas += `'${itemListToString(row)}' `)) // 1
+		layout.forEach((row: MoveItem[]) => (areas += `'${itemListToString(row)}' `)) // 1
 
+		return areas
+	}
+
+	function setGridAreas(layout: Layout) {
 		if (dominterface) {
-			dominterface.style.gridTemplateAreas = areas
+			dominterface.style.gridTemplateAreas = layoutToGridAreas(layout)
 		}
 	}
 
-	function setAlign(elem: HTMLElement, item: MoveItem) {
+	function setAlign(elem: HTMLElement, item?: MoveItem) {
 		if (typeof item?.box === 'string') elem.style.placeSelf = item.box
 		if (typeof item?.text === 'string') elem.style.textAlign = item.text
 	}
@@ -71,6 +75,10 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	function removeSelection() {
 		selectables.forEach((d) => d.classList.remove('move-selected'))
 		selectedDOM = null
+		btnSelectionAlign(null)
+		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
+			b.removeAttribute('disabled')
+		})
 	}
 
 	function toggleMoveStatus(e?: KeyboardEvent) {
@@ -82,45 +90,60 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		e ? (e.key === 'm' ? toggle() : '') : toggle()
 	}
 
+	// Todo: Impure function (don't use move here)
 	function toggleElementSelection(elem: Element) {
 		const layout = move[selection]
 		const id = getID(elem as HTMLElement)
 		const item = getItem(getItemList(layout), id)
 
-		removeSelection()
-		disableMoveButtonOnEdges(layout, id)
-		setAlignButtonSelection(item)
+		if (id) {
+			removeSelection()
+			btnSelectionAlign(item)
+			gridMoveEdgesControl(layout, id)
+		}
 
 		elem.classList.add('move-selected') // add clicked
 		selectedDOM = elem as HTMLElement
 	}
 
-	function disableMoveButtonOnEdges(layout: Layout, id: string) {
+	function gridMoveEdgesControl(layout: Layout, id: string) {
 		const { row, col } = getItemPosition(layout, id)
 
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
 			const c = parseInt(b.dataset.col || '0')
 			const r = parseInt(b.dataset.row || '0')
+
+			// btn is up/down => test rows, left/right => test cols
 			const disable = c === 0 ? layout[row + r] === undefined : layout[row][col + c] === undefined
 
 			disable ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
 		})
 	}
 
-	function setLayoutButtonSelection(sel: keyof Move) {
+	function btnSelectionLayout(sel: keyof Move) {
 		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-			b.dataset.layout === sel ? b.classList.add('selected') : b.classList.remove('selected')
+			clas(b, b.dataset.layout === sel, 'selected')
 		})
 	}
 
-	function setAlignButtonSelection(item: MoveItem) {
-		document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((b) => {
-			b.dataset.align === item?.box ? b.classList.add('selected') : b.classList.remove('selected')
-		})
+	function btnSelectionAlign(item: MoveItem) {
+		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
+		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-		document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((b) => {
-			b.dataset.align === item?.text ? b.classList.add('selected') : b.classList.remove('selected')
-		})
+		boxBtns.forEach((b) => clas(b, b.dataset.align === item?.box, 'selected'))
+		textBtns.forEach((b) => clas(b, b.dataset.align === item?.text, 'selected'))
+	}
+
+	function resetBtnControl(layout: Layout) {
+		const btn = document.querySelector<HTMLButtonElement>('#reset-layout')
+		const isSameGrid = layoutToGridAreas(layout) === layoutToGridAreas(syncDefaults.move[selection])
+		const isSameAlign = getItemList(layout).filter((item) => item?.box !== '' || item?.text !== '').length === 0
+
+		if (isSameGrid && isSameAlign) {
+			btn?.setAttribute('disabled', '')
+		} else {
+			btn?.removeAttribute('disabled')
+		}
 	}
 
 	//
@@ -128,12 +151,12 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	//
 
 	function gridChange(button: HTMLButtonElement) {
-		if (!selectedDOM) {
-			return false
-		}
+		if (!selectedDOM) return
 
 		const id = getID(selectedDOM)
-		let layout = [...move[selection]]
+		let layout = move[selection]
+
+		if (!id) return
 
 		// Get button move amount
 		const y = parseInt(button.dataset.row || '0')
@@ -156,24 +179,25 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		setGridAreas(move[selection])
 		storage.sync.set({ move: move })
 
-		disableMoveButtonOnEdges(move[selection], id)
+		gridMoveEdgesControl(move[selection], id)
+		resetBtnControl(move[selection])
 	}
 
 	function alignChange(button: HTMLButtonElement, type: 'box' | 'text') {
 		const id = getID(selectedDOM)
+
+		if (!selectedDOM || !id) return
+
 		const layout = move[selection]
 		const item = getItem(getItemList(layout), id)
 		const { row, col } = getItemPosition(layout, id)
-
-		if (!selectedDOM) {
-			return false
-		}
 
 		if (item) {
 			item[type] = button.dataset.align || ''
 
 			setAlign(selectedDOM, item)
-			setAlignButtonSelection(item)
+			btnSelectionAlign(item)
+			resetBtnControl(layout)
 
 			// Update storage
 			move[selection][row][col] = item
@@ -182,18 +206,22 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	}
 
 	function layoutChange(button: HTMLButtonElement) {
-		const val = button.dataset.layout || 'triple'
-
-		if (val in move) {
-			selection = val as keyof Move
+		if ((button.dataset.layout || 'triple') in move) {
+			selection = (button.dataset.layout || 'triple') as keyof Move
 		}
 
-		setAllAligns(move[selection])
-		setGridAreas(move[selection])
-		setLayoutButtonSelection(selection)
+		const layout = move[selection]
+		const id = getID(selectedDOM)
 
-		if (selectedDOM) {
-			toggleElementSelection(selectedDOM)
+		setAllAligns(layout)
+		setGridAreas(layout)
+		resetBtnControl(layout)
+		btnSelectionLayout(selection)
+
+		if (id) {
+			const item = getItem(getItemList(layout), id)
+			gridMoveEdgesControl(layout, id)
+			btnSelectionAlign(item)
 		}
 
 		storage.sync.set({ moveSelection: selection })
@@ -207,11 +235,8 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 
 		setAllAligns(move[selection])
 		setGridAreas(move[selection])
-		setLayoutButtonSelection(selection)
-
-		if (selectedDOM) {
-			toggleElementSelection(selectedDOM)
-		}
+		resetBtnControl(move[selection])
+		removeSelection()
 
 		storage.sync.set({ move: move })
 	}
@@ -227,11 +252,12 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 	})()
 
 	//
-	// Events (& late init)
+	// Events
 	//
 
 	setTimeout(() => {
-		setLayoutButtonSelection(selection)
+		btnSelectionLayout(selection)
+		resetBtnControl(move[selection])
 
 		document.addEventListener('keypress', toggleMoveStatus)
 
@@ -256,7 +282,6 @@ export default function moveElements(move: Move, selection: Sync['moveSelection'
 		})
 
 		document.querySelector<HTMLButtonElement>('#reset-layout')?.addEventListener('click', layoutReset)
-
 		document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => toggleMoveStatus())
 	}, 200)
 }
