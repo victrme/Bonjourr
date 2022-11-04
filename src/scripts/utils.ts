@@ -328,11 +328,13 @@ export function tradThis(str: string, lang?: string): string {
 	return str // String was not a key of dict
 }
 
-const defaultMove = {
-	row: 1,
-	col: 2,
-	box: 'center center',
-	text: 'center',
+const moveItems = {
+	time: { box: '', text: '' },
+	main: { box: '', text: '' },
+	notes: { box: '', text: '' },
+	searchbar: { box: '', text: '' },
+	linkblocks: { box: '', text: '' },
+	quotes: { box: '', text: '' },
 }
 
 export const syncDefaults: Sync = {
@@ -410,32 +412,36 @@ export const syncDefaults: Sync = {
 		weight: testOS.windows ? '400' : '300',
 	},
 	move: {
-		single: [
-			[{ _id: 'time', box: '', text: '' }],
-			[{ _id: 'main', box: '', text: '' }],
-			[{ _id: 'notes', box: '', text: '' }],
-			[{ _id: 'searchbar', box: '', text: '' }],
-			[{ _id: 'linkblocks', box: '', text: '' }],
-			[{ _id: 'quotes', box: '', text: '' }],
-		],
-		double: [
-			[{ _id: 'time', box: '', text: '' }, null],
-			[{ _id: 'main', box: '', text: '' }, null],
-			[{ _id: 'notes', box: '', text: '' }, null],
-			[{ _id: 'searchbar', box: '', text: '' }, null],
-			[{ _id: 'linkblocks', box: '', text: '' }, null],
-			[{ _id: 'quotes', box: '', text: '' }, null],
-		],
-		triple: [
-			[null, { _id: 'time', box: '', text: '' }, null],
-			[null, { _id: 'main', box: '', text: '' }, null],
-			[null, { _id: 'notes', box: '', text: '' }, null],
-			[null, { _id: 'searchbar', box: '', text: '' }, null],
-			[null, { _id: 'linkblocks', box: '', text: '' }, null],
-			[null, { _id: 'quotes', box: '', text: '' }, null],
-		],
+		selection: 'triple',
+		layouts: {
+			single: {
+				grid: [['time'], ['main'], ['notes'], ['searchbar'], ['linkblocks'], ['quotes']],
+				items: { ...moveItems },
+			},
+			double: {
+				grid: [
+					['time', null],
+					['main', null],
+					['notes', null],
+					['searchbar', null],
+					['linkblocks', null],
+					['quotes', null],
+				],
+				items: { ...moveItems },
+			},
+			triple: {
+				grid: [
+					[null, 'time', null],
+					[null, 'main', null],
+					[null, 'notes', null],
+					[null, 'searchbar', null],
+					[null, 'linkblocks', null],
+					[null, 'quotes', null],
+				],
+				items: { ...moveItems },
+			},
+		},
 	},
-	moveSelection: 'triple',
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
 	about: { browser: detectPlatform(), version: '1.15.1' },

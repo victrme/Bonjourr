@@ -56,17 +56,28 @@ export type Notes = {
 	align: 'left' | 'center' | 'right'
 }
 
+export type Move = {
+	selection: keyof Move['layouts']
+	layouts: {
+		single: Layout<[string | null]>
+		double: Layout<[string | null, string | null]>
+		triple: Layout<[string | null, string | null, string | null]>
+	}
+}
+
+export type Layout<Cols> = {
+	grid: Cols[]
+	items: {
+		[key in MoveItemKeys]: MoveItem
+	}
+}
+
 export type MoveItem = {
-	_id: string
 	box: string
 	text: string
-} | null
-
-export type Move = {
-	single: [MoveItem][]
-	double: [MoveItem, MoveItem][]
-	triple: [MoveItem, MoveItem, MoveItem][]
 }
+
+export type MoveItemKeys = 'time' | 'main' | 'notes' | 'searchbar' | 'linkblocks' | 'quotes'
 
 export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
 
@@ -107,7 +118,6 @@ export type Sync = {
 	font: Font
 	hide: Hide
 	move: Move
-	moveSelection: keyof Move
 	textShadow: number
 	about: { browser: string; version: string }
 	[key: string]: Link | unknown
