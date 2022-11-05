@@ -1,7 +1,10 @@
 #interface {
+	--grid: '';
+
 	display: grid;
 	padding: 2em;
 	padding-bottom: 100px;
+	grid-template-areas: var(--grid);
 
 	&.move-edit {
 		#element-mover {
@@ -184,6 +187,43 @@
 
 		&[data-layout='triple'] {
 			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+}
+
+#reset-layout,
+#close-mover {
+	border-radius: 6px;
+	border: 3px solid transparent;
+	background-color: transparent;
+	text-align: left;
+	padding: 2px 12px;
+	color: var(--blue);
+	outline: none;
+	cursor: pointer;
+
+	&:focus-visible,
+	&:hover {
+		color: white;
+		background-color: #2c7be5;
+
+		&:first-child {
+			color: white;
+			background-color: #e64b43;
+		}
+	}
+}
+
+#reset-layout {
+	color: #e64b43;
+
+	&:disabled {
+		filter: grayscale(1);
+
+		&:focus-visible,
+		&:hover {
+			color: #e64b43;
+			background-color: transparent;
 		}
 	}
 }
