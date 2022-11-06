@@ -239,9 +239,33 @@ export default function moveElements(move: Move) {
 	//
 
 	;(function initilisation() {
-		const { grid, items } = move.layouts[move.selection]
-		setGridAreas(grid)
-		setAllAligns(items)
+		function changeLayout(isMobile: boolean, init?: boolean) {
+			const layout = isMobile ? move.layouts.single : move.layouts[move.selection]
+
+			mobileWidth = isMobile
+
+			setAllAligns(layout.items)
+			setGridAreas(layout.grid)
+			btnSelectionLayout(isMobile ? 'single' : move.selection)
+
+			// Don't set align / grid buttons on init
+			if (!init && selectedID) {
+				resetBtnControl(layout)
+				gridMoveEdgesControl(layout.grid, selectedID)
+				btnSelectionAlign(layout.items[selectedID])
+			}
+		}
+
+		let mobileWidth = false
+
+		// Init layout change
+		changeLayout(window.innerWidth < 764, true)
+
+		// Trigger a layout change when width is crosses threshold
+		window.addEventListener('resize', () => {
+			if (window.innerWidth < 764 && !mobileWidth) changeLayout(true)
+			if (window.innerWidth > 764 && mobileWidth) changeLayout(false)
+		})
 	})()
 
 	//
@@ -249,9 +273,6 @@ export default function moveElements(move: Move) {
 	//
 
 	setTimeout(() => {
-		btnSelectionLayout(move.selection)
-		resetBtnControl(move.layouts[move.selection])
-
 		document.addEventListener('keypress', toggleMoveStatus)
 
 		selectables.forEach((elem) => {
