@@ -1,4 +1,5 @@
 import clamp from 'lodash.clamp'
+import clonedeep from 'lodash.clonedeep'
 import storage from './storage'
 import { Move, MoveKeys, MoveItem } from './types/sync'
 import { syncDefaults, clas } from './utils'
@@ -8,7 +9,7 @@ export default function moveElements(move: Move) {
 	const dominterface = document.querySelector<HTMLElement>('#interface')
 	const selectables = document.querySelectorAll<HTMLElement>(doms)
 	let selectedDOM: HTMLElement | null
-	let selectedID: MoveKeys = 'time'
+	let selectedID: MoveKeys | null
 
 	type Layout = Move['layouts'][keyof Move['layouts']]
 
@@ -48,7 +49,11 @@ export default function moveElements(move: Move) {
 
 	function setAllAligns(items: Layout['items']) {
 		selectables.forEach((elem) => {
-			setAlign(elem, items[selectedID])
+			const elemID = elem?.dataset.moveId || elem?.id
+
+			if (elemID in items) {
+				setAlign(elem, items[elemID as MoveKeys])
+			}
 		})
 	}
 
@@ -59,6 +64,7 @@ export default function moveElements(move: Move) {
 	function removeSelection() {
 		selectables.forEach((d) => d.classList.remove('move-selected'))
 		selectedDOM = null
+		selectedID = null
 		btnSelectionAlign()
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
 			b.removeAttribute('disabled')
@@ -74,7 +80,6 @@ export default function moveElements(move: Move) {
 		e ? (e.key === 'm' ? toggle() : '') : toggle()
 	}
 
-	// Todo: Impure function (don't use move here)
 	function toggleElementSelection(elem: HTMLElement) {
 		const layout = move.layouts[move.selection]
 		const id = elem?.dataset.moveId || elem?.id
@@ -191,8 +196,7 @@ export default function moveElements(move: Move) {
 	}
 
 	function layoutChange(button: HTMLButtonElement) {
-		if (!selectedDOM || !selectedID) return // No ID
-		if (!((button.dataset.layout || 'triple') in move)) return // button dataset is wrong somehow
+		if (!((button.dataset.layout || 'triple') in move.layouts)) return // button dataset is wrong somehow
 
 		// Update selection
 		move.selection = (button.dataset.layout || 'triple') as Move['selection']
@@ -205,8 +209,10 @@ export default function moveElements(move: Move) {
 		resetBtnControl(layout)
 		btnSelectionLayout(move.selection)
 
-		gridMoveEdgesControl(layout.grid, selectedID)
-		btnSelectionAlign(layout.items[selectedID])
+		if (selectedID) {
+			gridMoveEdgesControl(layout.grid, selectedID)
+			btnSelectionAlign(layout.items[selectedID])
+		}
 
 		storage.sync.set({ move: move })
 	}
@@ -214,9 +220,9 @@ export default function moveElements(move: Move) {
 	function layoutReset() {
 		// Todo: don't select layout manually
 		const { single, double, triple } = syncDefaults.move.layouts
-		if (move.selection === 'single') move.layouts.single = single
-		if (move.selection === 'double') move.layouts.double = double
-		if (move.selection === 'triple') move.layouts.triple = triple
+		if (move.selection === 'single') move.layouts.single = clonedeep(single)
+		if (move.selection === 'double') move.layouts.double = clonedeep(double)
+		if (move.selection === 'triple') move.layouts.triple = clonedeep(triple)
 
 		const layout = move.layouts[move.selection]
 
