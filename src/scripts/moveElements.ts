@@ -101,39 +101,52 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})
 	}
 
-	function addElemFromGrid(grid: Layout['grid'], id: MoveKeys) {
-		const isTriple = grid[0].length === 3
-		let index = grid.length
+	function gridWidget() {
+		function add(grid: Layout['grid'], id: MoveKeys) {
+			// in triple colum, default colum is [x, here, x]
+			const middleColumn = grid[0].length === 3 ? 1 : 0
+			let index = grid.length - 1
 
-		if (id === 'searchbar') index = 2
-		if (id === 'notes') index = 2
-		if (id === 'quotes') index = grid.length
+			// Searchbar and notes always appear in the middle
+			// Quotes always at the bottom
+			if (id === 'searchbar' || id === 'notes') index = 2
+			if (id === 'quotes') index = grid.length - 1
 
-		if (isRowEmpty(grid, grid.length - 1) === false) {
-			let newrow: string[] = new Array(grid[0].length).fill('.')
-			grid.splice(index, 0, [...newrow])
+			// If space is available, simply replace and return
+			if (grid[index][middleColumn] === '.') {
+				grid[index][middleColumn] = id
+				return grid
+			}
+
+			// Not available ? create new row
+			let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
+			grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
+			grid[index][middleColumn] = id
+
+			return grid
 		}
 
-		grid[index][isTriple ? 1 : 0] = id
-
-		return grid
-	}
-
-	function removeElemFromGrid(grid: Layout['grid'], id: MoveKeys) {
-		// remove id from grid
-		grid = grid.map((row) => row.map((col) => (col === id ? '.' : col)))
-
-		// if any one (1) row is empty, suppr
-		let hasRemovedRow = false
-
-		grid.forEach((e, i) => {
-			if (isRowEmpty(grid, i) && !hasRemovedRow) {
-				grid.splice(i, 1)
-				hasRemovedRow = true
+		function remove(grid: Layout['grid'], id: MoveKeys) {
+			// remove id from grid
+			for (const i in grid) {
+				for (const k in grid[i]) {
+					if (grid[i][k] === id) grid[i][k] = '.'
+				}
 			}
-		})
 
-		return grid
+			// if an empty row is found, removes it and quits
+			let hasRemovedRow = false
+			for (const ii in grid) {
+				if (isRowEmpty(grid, parseInt(ii)) && !hasRemovedRow) {
+					grid.splice(parseInt(ii), 1)
+					hasRemovedRow = true
+				}
+			}
+
+			return grid
+		}
+
+		return { add, remove }
 	}
 
 	// function spanRowsInGridArea(grid: Layout['grid'], id: MoveKeys) {
@@ -316,7 +329,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					storage.sync.set({ move: move })
 				}
 
-				// Use new selection
+				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
 
 				setAllAligns(layout.items)
@@ -331,33 +344,36 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			}
 
 			function layoutReset() {
-				const { quicklinks, quotes, searchbar, notes } = data as Sync
+				const { quotes, searchbar, notes } = data as Sync
+				const { add } = gridWidget()
+
+				// Get each widget state from their specific storage
+				// Not linkblocks/quicklinks because it is already enabled in default grid
 				let displayed = {
-					quicklinks: quicklinks,
-					quotes: quotes.on,
-					searchbar: searchbar.on,
-					notes: notes?.on,
+					quotes: !!quotes?.on,
+					searchbar: !!searchbar?.on,
+					notes: !!notes?.on,
 				}
 
-				console.log(displayed)
-
-				function withAddedWidgets(layout: Layout) {
+				// Filters "on" widgets, adds all widgets to grid
+				function addEnabledWidgetsToGrid(grid: Layout['grid']) {
 					Object.entries(displayed)
-						.filter((o) => o[1])
-						.forEach(([key, val]) => {
-							layout.grid = addElemFromGrid(layout.grid, key as MoveKeys)
-						})
-
-					return layout
+						.filter(([key, val]) => val)
+						.forEach(([key, val]) => (grid = add(grid, key as MoveKeys)))
+					return grid
 				}
 
-				// Todo: don't select layout manually
-				const { single, double, triple } = clonedeep(syncDefaults.move.layouts)
+				// DEEP CLONE is important as to not mutate sync defaults (it shouldn't come to this, but here we are)
+				// Destructure layout to appease typescript
+				Object.entries(clonedeep(syncDefaults.move.layouts)).forEach(([key, layout]) => {
+					const selection = key as Move['selection']
+					const { grid, items } = layout
 
-				if (move.selection === 'single') move.layouts.single = withAddedWidgets(single)
-				if (move.selection === 'double') move.layouts.double = withAddedWidgets(double)
-				if (move.selection === 'triple') move.layouts.triple = withAddedWidgets(triple)
+					move.layouts[selection].grid = addEnabledWidgetsToGrid(grid)
+					move.layouts[selection].items = items
+				})
 
+				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
 
 				setAllAligns(layout.items)
@@ -365,6 +381,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				resetBtnControl(move)
 				removeSelection()
 
+				// Save
 				storage.sync.set({ move: move })
 			}
 
@@ -403,21 +420,22 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			// }
 
 			function addOrRemElements() {
+				if (!widget) return
+
 				removeSelection()
+				const { add, remove } = gridWidget()
 
-				const { single, double, triple } = move.layouts
+				// For all layouts
+				Object.entries(move.layouts).forEach(([key, layout]) => {
+					// Asked widget is a valid item from list
+					if (widget.id in layout.items) {
+						const id = widget.id as MoveKeys
+						const selection = key as Move['selection']
 
-				if (widget && widget.which === 'add') {
-					single.grid = addElemFromGrid(single.grid, widget.id as MoveKeys)
-					double.grid = addElemFromGrid(double.grid, widget.id as MoveKeys)
-					triple.grid = addElemFromGrid(triple.grid, widget.id as MoveKeys)
-				}
-
-				if (widget && widget.which === 'remove') {
-					single.grid = removeElemFromGrid(single.grid, widget.id as MoveKeys)
-					double.grid = removeElemFromGrid(double.grid, widget.id as MoveKeys)
-					triple.grid = removeElemFromGrid(triple.grid, widget.id as MoveKeys)
-				}
+						if (widget.which === 'remove') move.layouts[selection].grid = remove(layout.grid, id)
+						if (widget.which === 'add') move.layouts[selection].grid = add(layout.grid, id)
+					}
+				})
 
 				setGridAreas(move.layouts[move.selection])
 				setAllAligns(move.layouts[move.selection].items)
@@ -435,7 +453,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					break
 
 				case 'span-rows': {
-					toggleGridSpans()
+					// toggleGridSpans()
 					break
 				}
 
