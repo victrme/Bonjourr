@@ -196,7 +196,8 @@
 			max-height: unset;
 		}
 
-		#interface #main, #interface #time {
+		#interface #main,
+		#interface #time {
 			min-height: unset;
 		}
 	}
@@ -210,6 +211,7 @@
 
 	#interface {
 		max-height: unset;
+		padding-bottom: 90px;
 
 		#widgets {
 			gap: 1em;
@@ -242,5 +244,3 @@
 		opacity: 1;
 	}
 }
-
-

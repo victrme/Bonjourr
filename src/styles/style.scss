@@ -283,6 +283,7 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		padding: 0;
+		min-height: 6em;
 		column-gap: 2.6em;
 		row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 		transition: max-height 0.5s, max-width 0.18s $easeOutThree, visibility 0s 0s;
@@ -396,6 +397,7 @@
 		}
 
 		&.medium {
+			min-height: 5em;
 			column-gap: 2em;
 
 			li {
@@ -409,6 +411,7 @@
 		}
 
 		&.small {
+			min-height: 2em;
 			gap: 2em;
 
 			li {
@@ -460,6 +463,7 @@
 
 		&.text {
 			gap: 2em;
+			min-height: 2em;
 			justify-content: flex-start;
 
 			li {
