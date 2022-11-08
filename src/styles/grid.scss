@@ -2,8 +2,6 @@
 	--grid: '';
 
 	display: grid;
-	padding: 2em;
-	padding-bottom: 100px;
 	grid-template-areas: var(--grid);
 
 	&.move-edit {
@@ -70,7 +68,6 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
-		min-height: 0;
 		outline: 3px solid transparent;
 		width: fit-content;
 		height: fit-content;

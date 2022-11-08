@@ -4,14 +4,36 @@ import storage from './storage'
 import { Move, MoveKeys, MoveItem, Sync } from './types/sync'
 import { syncDefaults, clas } from './utils'
 
-export default function moveElements(init: Move) {
+// ┌──────────────────────────────────────┐
+// │   ┌────────────┐  ┌────────────┐     │
+// │   │ Utils      ◄──┤ Funcs      ◄──┐  │
+// │   └─────▲──────┘  └────▲───────┘  │  │
+// │   ┌─────┴──────────────┴───────┐  │  │
+// │   │ Updates                    │  │  │
+// │   └────────────────────▲───────┘  │  │
+// │   ┌─────────────┐      │          │  │
+// │   │ On load     │      │          │  │
+// │   │ ┌────────┐  │      │          │  │
+// │   │ │ Init   ├──┼──────┼──────────┘  │
+// │   │ └────────┘  │      │             │
+// │   │ ┌────────┐  │      │             │
+// │   │ │ Events ├──┼──────┘             │
+// │   │ └────────┘  │                    │
+// │   └─────────────┘                    │
+// └──────────────────────────────────────┘
+
+type InterfaceWidgetControl = {
+	id: string
+	which: 'add' | 'remove'
+}
+
+export default function moveElements(init: Move | null, widget?: InterfaceWidgetControl) {
 	const doms = '#time, #main, #sb_container, #notes_container, #linkblocks, #quotes_container'
 	const dominterface = document.querySelector<HTMLElement>('#interface')
 	const selectables = document.querySelectorAll<HTMLElement>(doms)
 	let selectedDOM: HTMLElement | null
 	let selectedID: MoveKeys | null
 	let smallWidth = false
-	let lastSelection: Move['selection']
 
 	type Layout = Move['layouts'][keyof Move['layouts']]
 
@@ -23,6 +45,14 @@ export default function moveElements(init: Move) {
 		const row = grid.findIndex((row) => row.find((col) => col === id))
 		const col = grid[row].findIndex((col) => col === id)
 		return { row, col }
+	}
+
+	function isRowEmpty(grid: Layout['grid'], index: number) {
+		if (grid[index]) {
+			return grid[index].filter((col) => col !== '.').length === 0
+		}
+
+		return true
 	}
 
 	//
@@ -38,9 +68,21 @@ export default function moveElements(init: Move) {
 		return areas
 	}
 
-	function setGridAreas(grid: Layout['grid']) {
+	function setGridAreas(layout: Layout) {
+		// const spanList = Object.entries(layout.items)
+		// 	.map(([k, v]) => {
+		// 		if (v.rowspan) return k as MoveKeys
+		// 	})
+		// 	.filter((k) => k)
+
+		// spanList.forEach((item) => {
+		// 	if (item) {
+		// 		layout.grid = spanRowsInGridArea(layout.grid, item)
+		// 	}
+		// })
+
 		if (dominterface) {
-			dominterface.style.setProperty('grid', layoutToGridAreas(grid))
+			dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
 		}
 	}
 
@@ -58,6 +100,72 @@ export default function moveElements(init: Move) {
 			}
 		})
 	}
+
+	function addElemFromGrid(grid: Layout['grid'], id: MoveKeys) {
+		const isTriple = grid[0].length === 3
+		let index = grid.length
+
+		if (id === 'searchbar') index = 2
+		if (id === 'notes') index = 2
+		if (id === 'quotes') index = grid.length
+
+		if (isRowEmpty(grid, grid.length - 1) === false) {
+			let newrow: string[] = new Array(grid[0].length).fill('.')
+			grid.splice(index, 0, [...newrow])
+		}
+
+		grid[index][isTriple ? 1 : 0] = id
+
+		return grid
+	}
+
+	function removeElemFromGrid(grid: Layout['grid'], id: MoveKeys) {
+		// remove id from grid
+		grid = grid.map((row) => row.map((col) => (col === id ? '.' : col)))
+
+		// if any one (1) row is empty, suppr
+		let hasRemovedRow = false
+
+		grid.forEach((e, i) => {
+			if (isRowEmpty(grid, i) && !hasRemovedRow) {
+				grid.splice(i, 1)
+				hasRemovedRow = true
+			}
+		})
+
+		return grid
+	}
+
+	// function spanRowsInGridArea(grid: Layout['grid'], id: MoveKeys) {
+	// 	// [., a, ., b, ., ., target, ., .,., c, .]
+	// 	// last = a ... last = b ... last === target ? keep last
+	// 	// { start: last, end: target }
+	// 	// next = c
+	// 	// { start: target, end: next }
+
+	// 	const { col } = getItemPosition(grid, id)
+	// 	const list = grid.map((g) => g[col])
+	// 	let last = 0
+	// 	let next = 0
+	// 	let target = list.indexOf(id)
+
+	// 	list.forEach((e, i) => {
+	// 		if (i < target) {
+	// 			if (e !== '.') last = i + 1
+	// 		}
+
+	// 		if (i > target && next === 0) {
+	// 			if (e !== '.') next = i - 1
+	// 			if (i === list.length - 1) next = i
+	// 		}
+	// 	})
+
+	// 	for (let i = last; i <= next; i++) {
+	// 		grid[i][col] = id
+	// 	}
+
+	// 	return grid
+	// }
 
 	//
 	// Buttons class control / selection
@@ -130,13 +238,13 @@ export default function moveElements(init: Move) {
 	//
 
 	type Update = {
-		is: 'select' | 'grid' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
+		is: 'select' | 'remove' | 'add' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
 		button?: HTMLButtonElement
 		elem?: HTMLElement
 	}
 
 	function updateMoveElement({ is, elem, button }: Update) {
-		storage.sync.get('move', (data) => {
+		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
 			let move: Move
 
 			// Check if storage has move, if not, use (/ deep clone) default move
@@ -170,7 +278,7 @@ export default function moveElements(init: Move) {
 				grid[newR][newC] = tempItem
 
 				// Apply changes
-				setGridAreas(grid)
+				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
 				gridMoveEdgesControl(grid, selectedID)
@@ -212,7 +320,7 @@ export default function moveElements(init: Move) {
 				const layout = move.layouts[move.selection]
 
 				setAllAligns(layout.items)
-				setGridAreas(layout.grid)
+				setGridAreas(layout)
 				resetBtnControl(move)
 				btnSelectionLayout(move.selection)
 
@@ -223,16 +331,37 @@ export default function moveElements(init: Move) {
 			}
 
 			function layoutReset() {
+				const { quicklinks, quotes, searchbar, notes } = data as Sync
+				let displayed = {
+					quicklinks: quicklinks,
+					quotes: quotes.on,
+					searchbar: searchbar.on,
+					notes: notes?.on,
+				}
+
+				console.log(displayed)
+
+				function withAddedWidgets(layout: Layout) {
+					Object.entries(displayed)
+						.filter((o) => o[1])
+						.forEach(([key, val]) => {
+							layout.grid = addElemFromGrid(layout.grid, key as MoveKeys)
+						})
+
+					return layout
+				}
+
 				// Todo: don't select layout manually
-				const { single, double, triple } = syncDefaults.move.layouts
-				if (move.selection === 'single') move.layouts.single = clonedeep(single)
-				if (move.selection === 'double') move.layouts.double = clonedeep(double)
-				if (move.selection === 'triple') move.layouts.triple = clonedeep(triple)
+				const { single, double, triple } = clonedeep(syncDefaults.move.layouts)
+
+				if (move.selection === 'single') move.layouts.single = withAddedWidgets(single)
+				if (move.selection === 'double') move.layouts.double = withAddedWidgets(double)
+				if (move.selection === 'triple') move.layouts.triple = withAddedWidgets(triple)
 
 				const layout = move.layouts[move.selection]
 
 				setAllAligns(layout.items)
-				setGridAreas(layout.grid)
+				setGridAreas(layout)
 				resetBtnControl(move)
 				removeSelection()
 
@@ -259,6 +388,43 @@ export default function moveElements(init: Move) {
 				selectedID = id as MoveKeys
 			}
 
+			// function toggleGridSpans() {
+			// 	const layout = clonedeep(move.layouts[move.selection])
+
+			// 	if (selectedID) {
+			// 		layout.grid = spanRowsInGridArea(layout.grid, selectedID)
+			// 		layout.items[selectedID].rowspan = true
+
+			// 		setGridAreas(layout)
+
+			// 		move.layouts[move.selection].items[selectedID].rowspan = true
+			// 		storage.sync.set({ move: move })
+			// 	}
+			// }
+
+			function addOrRemElements() {
+				removeSelection()
+
+				const { single, double, triple } = move.layouts
+
+				if (widget && widget.which === 'add') {
+					single.grid = addElemFromGrid(single.grid, widget.id as MoveKeys)
+					double.grid = addElemFromGrid(double.grid, widget.id as MoveKeys)
+					triple.grid = addElemFromGrid(triple.grid, widget.id as MoveKeys)
+				}
+
+				if (widget && widget.which === 'remove') {
+					single.grid = removeElemFromGrid(single.grid, widget.id as MoveKeys)
+					double.grid = removeElemFromGrid(double.grid, widget.id as MoveKeys)
+					triple.grid = removeElemFromGrid(triple.grid, widget.id as MoveKeys)
+				}
+
+				setGridAreas(move.layouts[move.selection])
+				setAllAligns(move.layouts[move.selection].items)
+
+				storage.sync.set({ move: move })
+			}
+
 			switch (is) {
 				case 'select':
 					elementSelection()
@@ -267,6 +433,11 @@ export default function moveElements(init: Move) {
 				case 'grid':
 					gridChange()
 					break
+
+				case 'span-rows': {
+					toggleGridSpans()
+					break
+				}
 
 				case 'box':
 					alignChange('box')
@@ -286,65 +457,77 @@ export default function moveElements(init: Move) {
 				case 'responsive':
 					layoutChange()
 					break
+
+				case 'add':
+				case 'remove':
+					addOrRemElements()
+					break
 			}
 		})
 	}
 
-	//
-	// Init
-	//
+	if (widget) {
+		updateMoveElement({ is: widget.which })
+	}
 
-	;(function initilisation() {
-		// Detect small width on startup
-		if (window.innerWidth < 764) {
-			init.selection = 'single'
-		}
+	if (init) {
+		//
+		// Init
+		//
 
-		const layout = init.layouts[init.selection]
+		;(function initilisation() {
+			// Detect small width on startup
+			if (window.innerWidth < 764) {
+				init.selection = 'single'
+			}
 
-		setAllAligns(layout.items)
-		setGridAreas(layout.grid)
-		btnSelectionLayout(init.selection)
-	})()
+			const layout = init.layouts[init.selection]
 
-	//
-	// Events
-	//
+			setAllAligns(layout.items)
+			setGridAreas(layout)
+			btnSelectionLayout(init.selection)
+		})()
 
-	setTimeout(() => {
-		document.addEventListener('keypress', toggleMoveStatus)
+		setTimeout(() => {
+			document.addEventListener('keypress', toggleMoveStatus)
 
-		selectables.forEach((elem) => {
-			elem.addEventListener('click', () => updateMoveElement({ is: 'select', elem: elem }))
-		})
+			selectables.forEach((elem) => {
+				elem.addEventListener('click', () => updateMoveElement({ is: 'select', elem: elem }))
+			})
 
-		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
-			button.addEventListener('click', () => updateMoveElement({ is: 'layout', button }))
-		})
+			document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
+				button.addEventListener('click', () => updateMoveElement({ is: 'layout', button }))
+			})
 
-		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
-			button.addEventListener('click', () => updateMoveElement({ is: 'grid', button }))
-		})
+			document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
+				button.addEventListener('click', () => updateMoveElement({ is: 'grid', button }))
+			})
 
-		document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((button) => {
-			button.addEventListener('click', () => updateMoveElement({ is: 'box', button }))
-		})
+			document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((button) => {
+				button.addEventListener('click', () => updateMoveElement({ is: 'box', button }))
+			})
 
-		document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((button) => {
-			button.addEventListener('click', () => updateMoveElement({ is: 'text', button }))
-		})
+			document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((button) => {
+				button.addEventListener('click', () => updateMoveElement({ is: 'text', button }))
+			})
 
-		document
-			.querySelector<HTMLButtonElement>('#reset-layout')
-			?.addEventListener('click', () => updateMoveElement({ is: 'reset' }))
-		document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => toggleMoveStatus())
+			document.querySelector<HTMLButtonElement>('#reset-layout')?.addEventListener('click', () => {
+				updateMoveElement({ is: 'reset' })
+			})
 
-		// Trigger a layout change when width is crosses threshold
-		window.addEventListener('resize', () => {
-			if (window.innerWidth < 764 && !smallWidth) smallWidth = true
-			if (window.innerWidth > 764 && smallWidth) smallWidth = false
+			document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => toggleMoveStatus())
 
-			updateMoveElement({ is: 'responsive' })
-		})
-	}, 200)
+			// document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
+			// 	updateMoveElement({ is: 'span-rows' })
+			// })
+
+			// Trigger a layout change when width is crosses threshold
+			window.addEventListener('resize', () => {
+				if (window.innerWidth < 764 && !smallWidth) smallWidth = true
+				if (window.innerWidth > 764 && smallWidth) smallWidth = false
+
+				updateMoveElement({ is: 'responsive' })
+			})
+		}, 200)
+	}
 }

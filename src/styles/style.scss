@@ -83,11 +83,6 @@
 		opacity: 0;
 	}
 
-	#time,
-	#main {
-		min-height: 20vh;
-	}
-
 	// clock & date
 	#time {
 		position: relative;
@@ -614,7 +609,6 @@
 		width: 33vw;
 		max-width: 600px;
 		min-width: 150px;
-		min-height: 0;
 		-webkit-user-select: text;
 		-moz-user-select: text;
 		user-select: text;

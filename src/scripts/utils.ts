@@ -329,12 +329,12 @@ export function tradThis(str: string, lang?: string): string {
 }
 
 const moveItems = {
-	time: { box: '', text: '' },
-	main: { box: '', text: '' },
-	notes: { box: '', text: '' },
-	searchbar: { box: '', text: '' },
-	linkblocks: { box: '', text: '' },
-	quotes: { box: '', text: '' },
+	time: { box: '', text: '', rowspan: false },
+	main: { box: '', text: '', rowspan: false },
+	notes: { box: '', text: '', rowspan: false },
+	searchbar: { box: '', text: '', rowspan: false },
+	linkblocks: { box: '', text: '', rowspan: false },
+	quotes: { box: '', text: '', rowspan: false },
 }
 
 export const syncDefaults: Sync = {
@@ -415,17 +415,14 @@ export const syncDefaults: Sync = {
 		selection: 'triple',
 		layouts: {
 			single: {
-				grid: [['time'], ['main'], ['notes'], ['searchbar'], ['linkblocks'], ['quotes']],
+				grid: [['time'], ['main'], ['linkblocks']],
 				items: { ...moveItems },
 			},
 			double: {
 				grid: [
 					['time', '.'],
 					['main', '.'],
-					['notes', '.'],
-					['searchbar', '.'],
 					['linkblocks', '.'],
-					['quotes', '.'],
 				],
 				items: { ...moveItems },
 			},
@@ -433,10 +430,7 @@ export const syncDefaults: Sync = {
 				grid: [
 					['.', 'time', '.'],
 					['.', 'main', '.'],
-					['.', 'notes', '.'],
-					['.', 'searchbar', '.'],
 					['.', 'linkblocks', '.'],
-					['.', 'quotes', '.'],
 				],
 				items: { ...moveItems },
 			},

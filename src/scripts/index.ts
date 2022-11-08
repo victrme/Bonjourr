@@ -3594,6 +3594,9 @@ export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quic
 				notes: data.notes.on,
 			}
 
+			// Toggle widget in grid
+			moveElements(null, { which: displayed[event] ? 'remove' : 'add', id: event })
+
 			// Toggle settings param
 			$(event + '_options')?.classList.toggle('shown')
 
