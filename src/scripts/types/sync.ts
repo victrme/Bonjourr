@@ -56,11 +56,12 @@ export type Notes = {
 	align: 'left' | 'center' | 'right'
 }
 
-export type MoveKeys = 'time' | 'main' | 'notes' | 'searchbar' | 'linkblocks' | 'quotes'
+export type MoveKeys = 'time' | 'main' | 'notes' | 'searchbar' | 'quicklinks' | 'quotes'
 
 export type MoveItem = {
 	box: string
 	text: string
+	rowspan: boolean
 }
 
 type MoveItemList = {

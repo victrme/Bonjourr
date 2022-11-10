@@ -2,10 +2,12 @@ import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
 import { dict } from './lang'
-import { Sync } from './types/sync'
+import { MoveKeys, Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
+
+import moveElements from './moveElements'
 
 import {
 	$,
@@ -150,8 +152,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		paramId('b_importbookmarks').setAttribute('style', 'display: none')
 	}
 
-	// quick links
+	// Activate feature options
 	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
+	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
+	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
+	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
+	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
 
 	// Hide elems
 	hideElem(null, { is: 'buttons', buttonList: settingsDom.querySelectorAll<HTMLButtonElement>('#hideelem button') })
@@ -187,20 +193,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		i_geol.checked = true
 	}
 
-	// Text field display settings
-	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
-
-	// Searchbar display settings
-	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
-
 	// CSS height control
 	if (data.cssHeight) {
 		paramId('cssEditor').setAttribute('style', 'height: ' + data.cssHeight + 'px')
 	}
-
-	// Quotes option display
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
 
 	updateExportJSON(settingsDom)
 
@@ -295,8 +291,30 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quick links
 
-	paramId('i_quicklinks').addEventListener('change', function (this: HTMLInputElement) {
-		quickLinks(null, { is: 'toggle', checked: this.checked })
+	function widgetToggle({ event, callback, id, on }: { event: Event; callback: Function; id: MoveKeys; on: boolean }) {
+		if (sessionStorage.throttledWidgetInput === 'true') {
+			event.preventDefault()
+			return
+		}
+
+		// removes it in moveElements when storage is correctly saved
+		sessionStorage.throttledWidgetInput = 'true'
+
+		// Toggles settings options
+		$(id + '_options')?.classList.toggle('shown')
+
+		// Updates grid and apply widget toggle function
+		moveElements(null, { id, on })
+		callback()
+	}
+
+	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		widgetToggle({
+			event: ev,
+			id: 'quicklinks',
+			on: this.checked,
+			callback: () => quickLinks(null, { is: 'toggle', checked: this.checked }),
+		})
 	})
 
 	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
@@ -442,10 +460,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	//
-	// Text field
+	// Notes
 
-	paramId('i_notes').addEventListener('change', function (this: HTMLInputElement) {
-		notes(null, { is: 'toggle', value: this.checked.toString() })
+	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		widgetToggle({
+			event: ev,
+			id: 'notes',
+			on: this.checked,
+			callback: () => notes(null, { is: 'toggle', value: this.checked.toString() }),
+		})
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -459,8 +482,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Searchbar
 
-	paramId('i_sb').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'searchbar', this)
+	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		widgetToggle({
+			event: ev,
+			id: 'searchbar',
+			on: this.checked,
+			callback: () => searchbar(null, 'searchbar', this),
+		})
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -482,8 +510,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quotes
 
-	paramId('i_quotes').addEventListener('change', function () {
-		quotes(null, { is: 'toggle', checked: this.checked })
+	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		widgetToggle({
+			event: ev,
+			id: 'quotes',
+			on: this.checked,
+			callback: () => quotes(null, { is: 'toggle', checked: this.checked }),
+		})
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {

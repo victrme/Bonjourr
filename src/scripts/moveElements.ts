@@ -23,8 +23,8 @@ import { syncDefaults, clas } from './utils'
 // └──────────────────────────────────────┘
 
 type InterfaceWidgetControl = {
-	id: string
-	which: 'add' | 'remove'
+	id: MoveKeys
+	on: boolean
 }
 
 export default function moveElements(init: Move | null, widget?: InterfaceWidgetControl) {
@@ -251,7 +251,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	//
 
 	type Update = {
-		is: 'select' | 'remove' | 'add' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
+		is: 'select' | 'widget' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
 		button?: HTMLButtonElement
 		elem?: HTMLElement
 	}
@@ -348,7 +348,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				const { add } = gridWidget()
 
 				// Get each widget state from their specific storage
-				// Not linkblocks/quicklinks because it is already enabled in default grid
+				// Not quicklinks because it is already enabled in default grid
 				let displayed = {
 					quotes: !!quotes?.on,
 					searchbar: !!searchbar?.on,
@@ -419,28 +419,27 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			// 	}
 			// }
 
-			function addOrRemElements() {
+			function addOrRemmoveWidgets() {
 				if (!widget) return
 
-				removeSelection()
 				const { add, remove } = gridWidget()
 
 				// For all layouts
 				Object.entries(move.layouts).forEach(([key, layout]) => {
-					// Asked widget is a valid item from list
-					if (widget.id in layout.items) {
-						const id = widget.id as MoveKeys
-						const selection = key as Move['selection']
-
-						if (widget.which === 'remove') move.layouts[selection].grid = remove(layout.grid, id)
-						if (widget.which === 'add') move.layouts[selection].grid = add(layout.grid, id)
-					}
+					const { id, on } = widget
+					const selection = key as Move['selection']
+					move.layouts[selection].grid = on ? add(layout.grid, id) : remove(layout.grid, id)
 				})
 
+				removeSelection()
 				setGridAreas(move.layouts[move.selection])
 				setAllAligns(move.layouts[move.selection].items)
 
-				storage.sync.set({ move: move })
+				storage.sync.set({ move: move }, () => {
+					setTimeout(() => {
+						sessionStorage.throttledWidgetInput = '' // initParams events in settings.ts
+					}, 256) // increase throttle time for dramatic purposes
+				})
 			}
 
 			switch (is) {
@@ -476,16 +475,15 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					layoutChange()
 					break
 
-				case 'add':
-				case 'remove':
-					addOrRemElements()
+				case 'widget':
+					addOrRemmoveWidgets()
 					break
 			}
 		})
 	}
 
 	if (widget) {
-		updateMoveElement({ is: widget.which })
+		updateMoveElement({ is: 'widget' })
 	}
 
 	if (init) {

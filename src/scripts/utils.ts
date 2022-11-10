@@ -333,7 +333,7 @@ const moveItems = {
 	main: { box: '', text: '', rowspan: false },
 	notes: { box: '', text: '', rowspan: false },
 	searchbar: { box: '', text: '', rowspan: false },
-	linkblocks: { box: '', text: '', rowspan: false },
+	quicklinks: { box: '', text: '', rowspan: false },
 	quotes: { box: '', text: '', rowspan: false },
 }
 
@@ -415,14 +415,14 @@ export const syncDefaults: Sync = {
 		selection: 'triple',
 		layouts: {
 			single: {
-				grid: [['time'], ['main'], ['linkblocks']],
+				grid: [['time'], ['main'], ['quicklinks']],
 				items: { ...moveItems },
 			},
 			double: {
 				grid: [
 					['time', '.'],
 					['main', '.'],
-					['linkblocks', '.'],
+					['quicklinks', '.'],
 				],
 				items: { ...moveItems },
 			},
@@ -430,7 +430,7 @@ export const syncDefaults: Sync = {
 				grid: [
 					['.', 'time', '.'],
 					['.', 'main', '.'],
-					['.', 'linkblocks', '.'],
+					['.', 'quicklinks', '.'],
 				],
 				items: { ...moveItems },
 			},

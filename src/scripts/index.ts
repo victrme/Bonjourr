@@ -1,4 +1,5 @@
 import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
 import snarkdown from 'snarkdown'
 
 import { google } from './types/googleFonts'
@@ -272,7 +273,6 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 					const on = event.value === 'true'
 					const { align, opacity, text } = notes
 
-					interfaceWidgetToggle(null, 'notes')
 					handleToggle(on)
 					notes.on = on
 
@@ -1256,7 +1256,6 @@ export function quickLinks(
 
 			case 'toggle': {
 				clas($('linkblocks'), !event.checked, 'hidden')
-				interfaceWidgetToggle(null, 'quicklinks')
 				storage.sync.set({ quicklinks: event.checked })
 				break
 			}
@@ -2683,7 +2682,6 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 				case 'searchbar': {
 					data.searchbar.on = that.checked
 					display(that.checked)
-					interfaceWidgetToggle(null, 'searchbar')
 					break
 				}
 
@@ -2890,8 +2888,6 @@ export async function quotes(
 						insertToDom(local.quotesCache[0])
 						display(on)
 					})
-
-					interfaceWidgetToggle(null, 'quotes')
 					break
 				}
 
@@ -3581,41 +3577,6 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quicklinks' | 'quotes' | 'searchbar') {
-	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
-
-	// Event is a string of the widget name to toggle
-	if (event) {
-		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks'], (data) => {
-			let displayed = {
-				quicklinks: data.quicklinks,
-				quotes: data.quotes.on,
-				searchbar: data.searchbar.on,
-				notes: data.notes.on,
-			}
-
-			// Toggle widget in grid
-			moveElements(null, { which: displayed[event] ? 'remove' : 'add', id: event })
-
-			// Toggle settings param
-			$(event + '_options')?.classList.toggle('shown')
-
-			// toggles relevent widget
-			displayed[event] = !displayed[event]
-
-			// checks if all values are false
-			toggleEmpty(Object.values(displayed).every((d) => !d))
-		})
-
-		return
-	}
-
-	if (init) {
-		const { notes, quicklinks, searchbar, quotes } = init
-		toggleEmpty(!(notes?.on || quicklinks || searchbar?.on || quotes?.on)) // if one is true, not empty
-	}
-}
-
 function onlineAndMobileHandler() {
 	//
 
@@ -3703,7 +3664,6 @@ function startup(data: Sync) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(data)
-	interfaceWidgetToggle(data)
 
 	setInterval(() => {
 		if (navigator.onLine) {

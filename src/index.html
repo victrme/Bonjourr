@@ -125,24 +125,10 @@
 						<button type="button" data-row="1" data-col="0">▼</button>
 					</div>
 				</div>
-				<!-- <div>
-					<p>Row size</p>
-					<div id="grid-row-size" class="mover">
-						<div>
-							<button data-row="-1">-</button>
-							<button data-row="1">+</button>
-						</div>
-					</div>
-				</div>
 				<div>
-					<p>Column size</p>
-					<div id="grid-col-size" class="mover">
-						<div>
-							<button data-col="-1">-</button>
-							<button data-col="1">+</button>
-						</div>
-					</div>
-				</div> -->
+					<button id="grid-span-rows">Fill row</button>
+					<!-- <button id="grid-fill-col">fill column</button> -->
+				</div>
 				<div>
 					<p>Box alignment</p>
 					<div id="box-alignment-mover" class="mover">
@@ -226,7 +212,7 @@
 				</button>
 			</div>
 
-			<ul id="linkblocks"></ul>
+			<ul id="linkblocks" data-move-id="quicklinks"></ul>
 
 			<div id="quotes_container" data-move-id="quotes">
 				<p id="quote"></p>
