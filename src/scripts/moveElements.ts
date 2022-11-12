@@ -105,20 +105,18 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		function add(grid: Layout['grid'], id: MoveKeys) {
 			// in triple colum, default colum is [x, here, x]
 			const middleColumn = grid[0].length === 3 ? 1 : 0
-			let index = grid.length - 1
+			let index = 2
 
-			// Searchbar and notes always appear in the middle
 			// Quotes always at the bottom
-			if (id === 'searchbar' || id === 'notes') index = 2
-			if (id === 'quotes') index = grid.length - 1
+			if (id === 'quotes') index = grid.length
 
-			// If space is available, simply replace and return
-			if (grid[index][middleColumn] === '.') {
-				grid[index][middleColumn] = id
-				return grid
+			// Quick links above quotes, below the rest
+			if (id === 'quicklinks') {
+				const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
+				index = lastItemIsQuotes ? grid.length - 1 : grid.length
 			}
 
-			// Not available ? create new row
+			// Create new row
 			let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
 			grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
 			grid[index][middleColumn] = id
