@@ -55,6 +55,20 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		return true
 	}
 
+	function getEnabledWidgetsFromStorage(data: Sync) {
+		// Get each widget state from their specific storage
+		let displayed = {
+			quotes: !!data.quotes?.on,
+			notes: !!data.notes?.on,
+			searchbar: !!data.searchbar?.on,
+			quicklinks: data.quicklinks,
+		}
+
+		return Object.entries(displayed)
+			.filter(([key, val]) => val)
+			.map(([key, val]) => key as MoveKeys)
+	}
+
 	//
 	// Grid and Align
 	//
@@ -101,8 +115,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})
 	}
 
-	function gridWidget() {
-		function add(grid: Layout['grid'], id: MoveKeys) {
+	const gridWidget = {
+		add: (grid: Layout['grid'], id: MoveKeys) => {
 			// in triple colum, default colum is [x, here, x]
 			const middleColumn = grid[0].length === 3 ? 1 : 0
 			let index = 2
@@ -122,9 +136,9 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			grid[index][middleColumn] = id
 
 			return grid
-		}
+		},
 
-		function remove(grid: Layout['grid'], id: MoveKeys) {
+		remove: (grid: Layout['grid'], id: MoveKeys) => {
 			// remove id from grid
 			for (const i in grid) {
 				for (const k in grid[i]) {
@@ -142,9 +156,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			}
 
 			return grid
-		}
-
-		return { add, remove }
+		},
 	}
 
 	// function spanRowsInGridArea(grid: Layout['grid'], id: MoveKeys) {
@@ -182,23 +194,35 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	// Buttons class control / selection
 	//
 
+	const gridOverlay = {
+		add: (id: MoveKeys) => {
+			const div = document.createElement('div')
+			div.id = 'move-overlay-' + id
+			div.className = 'move-overlay'
+			dominterface?.appendChild(div)
+		},
+
+		remove: (id: MoveKeys) => {
+			document.querySelector('#move-overlay-' + id)?.remove()
+		},
+
+		removeAll: () => {
+			document.querySelectorAll('.move-overlay').forEach((d) => d.remove())
+		},
+	}
+
 	function removeSelection() {
-		selectables.forEach((d) => d.classList.remove('move-selected'))
 		selectedDOM = null
 		selectedID = null
-		btnSelectionAlign()
+		btnSelectionAlign() // without params, selects 0 align
+
+		document.querySelectorAll<HTMLDivElement>('.move-overlay').forEach((elem) => {
+			elem.classList.remove('selected')
+		})
+
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
 			b.removeAttribute('disabled')
 		})
-	}
-
-	function toggleMoveStatus(e?: KeyboardEvent) {
-		const toggle = () => {
-			document.querySelector('#interface')?.classList.toggle('move-edit')
-			removeSelection()
-		}
-
-		e ? (e.key === 'm' ? toggle() : '') : toggle()
 	}
 
 	function gridMoveEdgesControl(grid: Layout['grid'], id: MoveKeys) {
@@ -249,9 +273,10 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	//
 
 	type Update = {
-		is: 'select' | 'widget' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
+		is: 'toggle' | 'select' | 'widget' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
 		button?: HTMLButtonElement
 		elem?: HTMLElement
+		ev?: KeyboardEvent
 	}
 
 	function updateMoveElement({ is, elem, button }: Update) {
@@ -342,22 +367,15 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			}
 
 			function layoutReset() {
-				const { quotes, searchbar, notes } = data as Sync
-				const { add } = gridWidget()
-
-				// Get each widget state from their specific storage
-				// Not quicklinks because it is already enabled in default grid
-				let displayed = {
-					quotes: !!quotes?.on,
-					searchbar: !!searchbar?.on,
-					notes: !!notes?.on,
-				}
-
-				// Filters "on" widgets, adds all widgets to grid
 				function addEnabledWidgetsToGrid(grid: Layout['grid']) {
-					Object.entries(displayed)
-						.filter(([key, val]) => val)
-						.forEach(([key, val]) => (grid = add(grid, key as MoveKeys)))
+					// Filters "on" widgets, adds all widgets to grid
+					// remove quicklinks here bc its in reset data already
+					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync).filter((a) => a !== 'quicklinks')
+
+					enabledWidgets.forEach((id) => {
+						grid = gridWidget.add(grid, id)
+					})
+
 					return grid
 				}
 
@@ -397,10 +415,26 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				btnSelectionAlign(layout.items[id as MoveKeys])
 				gridMoveEdgesControl(layout.grid, id as MoveKeys)
 
-				elem.classList.add('move-selected') // add clicked
+				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 
 				selectedDOM = elem as HTMLElement
 				selectedID = id as MoveKeys
+			}
+
+			function toggleMoveStatus(e?: KeyboardEvent) {
+				const toggle = () => {
+					if (dominterface?.classList.contains('move-edit')) {
+						gridOverlay.removeAll()
+					} else {
+						const ids = getEnabledWidgetsFromStorage(data as Sync).concat(['main', 'time'])
+						ids.forEach((id) => gridOverlay.add(id))
+					}
+
+					dominterface?.classList.toggle('move-edit')
+					removeSelection()
+				}
+
+				e ? (e.key === 'm' ? toggle() : '') : toggle()
 			}
 
 			// function toggleGridSpans() {
@@ -420,18 +454,20 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			function addOrRemmoveWidgets() {
 				if (!widget) return
 
-				const { add, remove } = gridWidget()
+				const { id, on } = widget
 
 				// For all layouts
 				Object.entries(move.layouts).forEach(([key, layout]) => {
-					const { id, on } = widget
 					const selection = key as Move['selection']
-					move.layouts[selection].grid = on ? add(layout.grid, id) : remove(layout.grid, id)
+					move.layouts[selection].grid = on ? gridWidget.add(layout.grid, id) : gridWidget.remove(layout.grid, id)
 				})
 
 				removeSelection()
 				setGridAreas(move.layouts[move.selection])
 				setAllAligns(move.layouts[move.selection].items)
+
+				if (on) gridOverlay.add(id)
+				else gridOverlay.remove(id)
 
 				storage.sync.set({ move: move }, () => {
 					setTimeout(() => {
@@ -441,6 +477,10 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			}
 
 			switch (is) {
+				case 'toggle':
+					toggleMoveStatus()
+					break
+
 				case 'select':
 					elementSelection()
 					break
@@ -503,7 +543,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})()
 
 		setTimeout(() => {
-			document.addEventListener('keypress', toggleMoveStatus)
+			document.addEventListener('keypress', (ev: KeyboardEvent) => updateMoveElement({ is: 'toggle', ev: ev }))
 
 			selectables.forEach((elem) => {
 				elem.addEventListener('click', () => updateMoveElement({ is: 'select', elem: elem }))
@@ -529,7 +569,9 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				updateMoveElement({ is: 'reset' })
 			})
 
-			document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => toggleMoveStatus())
+			document
+				.querySelector<HTMLButtonElement>('#close-mover')
+				?.addEventListener('click', () => updateMoveElement({ is: 'toggle' }))
 
 			// document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
 			// 	updateMoveElement({ is: 'span-rows' })

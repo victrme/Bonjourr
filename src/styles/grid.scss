@@ -1,6 +1,7 @@
 #interface {
 	--grid: '';
 	display: grid;
+	gap: 1em;
 	grid-template-areas: var(--grid);
 
 	&.move-edit {
@@ -14,10 +15,11 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
-			border-radius: 8px;
-			background: #fff2;
-			box-shadow: 5px 5px 20px #2224;
-			cursor: pointer;
+			// border-radius: 8px;
+			// background: #fff2;
+			// box-shadow: 5px 5px 20px #2224;
+			// cursor: pointer;
+			z-index: 2;
 
 			> * {
 				pointer-events: none;
@@ -25,38 +27,55 @@
 			}
 
 			&:hover {
-				background: #fff5;
+				// background: #fff5;
 			}
 
 			&.move-selected {
-				background: #fff3;
-				backdrop-filter: blur(1em);
-				outline-color: var(--blue);
-				z-index: 2;
+				// background: #fff3;
+				// backdrop-filter: blur(1em);
+				// outline-color: var(--blue);
 			}
 		}
 	}
 
+	.move-overlay {
+		border-radius: 1em;
+		background-color: #fff2;
+		backdrop-filter: blur(1em);
+		outline: 3px solid transparent;
+
+		&.selected {
+			background: #fff3;
+			outline-color: var(--blue);
+		}
+	}
+
+	#move-overlay-time,
 	#time {
 		grid-area: time;
 	}
 
+	#move-overlay-main,
 	#main {
 		grid-area: main;
 	}
 
+	#move-overlay-searchbar,
 	#sb_container {
 		grid-area: searchbar;
 	}
 
+	#move-overlay-notes,
 	#notes_container {
 		grid-area: notes;
 	}
 
+	#move-overlay-quicklinks,
 	#linkblocks {
 		grid-area: quicklinks;
 	}
 
+	#move-overlay-quotes,
 	#quotes_container {
 		grid-area: quotes;
 	}
@@ -67,7 +86,6 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
-		outline: 3px solid transparent;
 		width: fit-content;
 		height: fit-content;
 		place-self: center;

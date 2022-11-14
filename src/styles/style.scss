@@ -290,10 +290,6 @@
 
 		@include hidden();
 
-		#hiddenlink {
-			display: none;
-		}
-
 		&.dragging {
 			li {
 				pointer-events: none;
