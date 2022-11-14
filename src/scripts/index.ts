@@ -1141,24 +1141,12 @@ export function quickLinks(
 				return
 			}
 
-			const rowDOM = linkDOM.parentElement as HTMLUListElement
 			const height = linkDOM.getBoundingClientRect().height
-			const isLastOnRow = rowDOM.childElementCount === 1
 
 			linkDOM.setAttribute('style', 'height: ' + height + 'px')
 			clas(linkDOM, true, 'removed')
 
-			if (isLastOnRow) {
-				rowDOM.setAttribute('style', 'max-height: 0; overflow: hidden')
-			}
-
-			setTimeout(function () {
-				linkDOM.remove()
-
-				if (isLastOnRow) {
-					rowDOM.remove()
-				}
-			}, 600)
+			setTimeout(() => linkDOM.remove(), 600)
 
 			links.forEach((l: Link) => {
 				l.order -= l.order > link.order ? 1 : 0 // Decrement order for elements above the one removed
