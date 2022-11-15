@@ -50,10 +50,10 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 	const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
-	function getItemPosition(grid: Layout['grid'], id: string) {
-		const row = grid.findIndex((row) => row.find((col) => col === id))
-		const col = grid[row].findIndex((col) => col === id)
-		return { row, col }
+	function areaStringToLayoutGrid(area: string) {
+		let rows = area.substring(1, area.length - 2).split('" "')
+		let grid = rows.map((row) => row.replace('"', '').split(' '))
+		return grid
 	}
 
 	function isRowEmpty(grid: Layout['grid'], index: number) {
@@ -239,7 +239,10 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})
 	}
 
-	function gridBtnControl(grid: Layout['grid'], id: MoveKeys) {
+	function gridBtnControl(id: MoveKeys) {
+		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '')
+		if (grid.length === 0) return
+
 		let top = false,
 			bottom = false,
 			left = false,
@@ -346,7 +349,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
-				gridBtnControl(grid, activeID)
+				gridBtnControl(activeID)
 				resetBtnControl(move)
 
 				storage.sync.set({ move: move })
@@ -390,7 +393,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				btnSelectionLayout(move.selection)
 
 				if (activeID) {
-					gridBtnControl(layout.grid, activeID)
+					gridBtnControl(activeID)
 					btnSelectionAlign(layout.items[activeID])
 				}
 			}
@@ -443,7 +446,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				const id = elementId as MoveKeys
 
 				btnSelectionAlign(layout.items[id])
-				gridBtnControl(layout.grid, id)
+				gridBtnControl(id)
 
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 				activeID = id
