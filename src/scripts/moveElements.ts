@@ -2,7 +2,7 @@ import clamp from 'lodash.clamp'
 import clonedeep from 'lodash.clonedeep'
 import storage from './storage'
 import { Move, MoveKeys, MoveItem, Sync } from './types/sync'
-import { syncDefaults, clas } from './utils'
+import { syncDefaults, clas, $ } from './utils'
 
 // ┌──────────────────────────────────────┐
 // │   ┌────────────┐  ┌────────────┐     │
@@ -27,12 +27,19 @@ type InterfaceWidgetControl = {
 	on: boolean
 }
 
+const dominterface = document.querySelector<HTMLElement>('#interface')
+
+const elements = {
+	time: $('time'),
+	main: $('main'),
+	quicklinks: $('linkblocks'),
+	searchbar: $('sb_container'),
+	notes: $('notes_container'),
+	quotes: $('quotes_container'),
+}
+
 export default function moveElements(init: Move | null, widget?: InterfaceWidgetControl) {
-	const doms = '#time, #main, #sb_container, #notes_container, #linkblocks, #quotes_container'
-	const dominterface = document.querySelector<HTMLElement>('#interface')
-	const selectables = document.querySelectorAll<HTMLElement>(doms)
-	let selectedDOM: HTMLElement | null
-	let selectedID: MoveKeys | null
+	let activeID: MoveKeys | null
 	let smallWidth = false
 
 	type Layout = Move['layouts'][keyof Move['layouts']]
@@ -40,6 +47,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	//
 	// Utils
 	//
+
+	const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
 	function getItemPosition(grid: Layout['grid'], id: string) {
 		const row = grid.findIndex((row) => row.find((col) => col === id))
@@ -100,17 +109,19 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		}
 	}
 
-	function setAlign(elem: HTMLElement, item?: MoveItem) {
-		if (typeof item?.box === 'string') elem.style.placeSelf = item.box
-		if (typeof item?.text === 'string') elem.style.textAlign = item.text
+	function setAlign(item: MoveItem, id: MoveKeys) {
+		const elem = elements[id]
+		if (elem) {
+			if (typeof item?.box === 'string') elem.style.placeSelf = item.box
+			if (typeof item?.text === 'string') elem.style.textAlign = item.text
+		}
 	}
 
 	function setAllAligns(items: Layout['items']) {
-		selectables.forEach((elem) => {
-			const elemID = elem?.dataset.moveId || elem?.id
-
-			if (elemID in items) {
-				setAlign(elem, items[elemID as MoveKeys])
+		Object.keys(elements).forEach((key) => {
+			if (key in items) {
+				const id = key as MoveKeys
+				setAlign(items[id], id)
 			}
 		})
 	}
@@ -200,6 +211,10 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			div.id = 'move-overlay-' + id
 			div.className = 'move-overlay'
 			dominterface?.appendChild(div)
+
+			div.addEventListener('click', () => {
+				updateMoveElement({ is: 'select', elementId: id })
+			})
 		},
 
 		remove: (id: MoveKeys) => {
@@ -212,8 +227,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	}
 
 	function removeSelection() {
-		selectedDOM = null
-		selectedID = null
+		activeID = null
 		btnSelectionAlign() // without params, selects 0 align
 
 		document.querySelectorAll<HTMLDivElement>('.move-overlay').forEach((elem) => {
@@ -275,11 +289,11 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	type Update = {
 		is: 'toggle' | 'select' | 'widget' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
 		button?: HTMLButtonElement
-		elem?: HTMLElement
+		elementId?: string
 		ev?: KeyboardEvent
 	}
 
-	function updateMoveElement({ is, elem, button }: Update) {
+	function updateMoveElement({ is, elementId, button }: Update) {
 		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
 			let move: Move
 
@@ -292,7 +306,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			}
 
 			function gridChange() {
-				if (!selectedDOM || !selectedID || !button) return
+				if (!activeID || !button) return
 
 				const { grid } = move.layouts[move.selection]
 
@@ -301,8 +315,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				const x = parseInt(button.dataset.col || '0')
 
 				// Get current row / col
-				const currR = grid.findIndex((row) => row.find((col) => col === selectedID))
-				const currC = grid[currR].findIndex((col) => col === selectedID)
+				const currR = grid.findIndex((row) => row.find((col) => col === activeID))
+				const currC = grid[currR].findIndex((col) => col === activeID)
 
 				// Update row / col
 				const newR = clamp(currR + y, 0, grid.length - 1)
@@ -317,26 +331,26 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
-				gridMoveEdgesControl(grid, selectedID)
+				gridMoveEdgesControl(grid, activeID)
 				resetBtnControl(move)
 
 				storage.sync.set({ move: move })
 			}
 
 			function alignChange(type: 'box' | 'text') {
-				if (!selectedDOM || !selectedID || !button) return
+				if (!activeID || !button) return
 
 				const layout = move.layouts[move.selection]
-				const item = layout.items[selectedID]
+				const item = layout.items[activeID]
 
 				item[type] = button.dataset.align || ''
 
-				setAlign(selectedDOM, item)
+				setAlign(item, activeID)
 				btnSelectionAlign(item)
 				resetBtnControl(move)
 
 				// Update storage
-				move.layouts[move.selection].items[selectedID] = item
+				move.layouts[move.selection].items[activeID] = item
 				storage.sync.set({ move: move })
 			}
 
@@ -360,9 +374,9 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				resetBtnControl(move)
 				btnSelectionLayout(move.selection)
 
-				if (selectedID) {
-					gridMoveEdgesControl(layout.grid, selectedID)
-					btnSelectionAlign(layout.items[selectedID])
+				if (activeID) {
+					gridMoveEdgesControl(layout.grid, activeID)
+					btnSelectionAlign(layout.items[activeID])
 				}
 			}
 
@@ -403,22 +417,21 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 			function elementSelection() {
 				const layout = move.layouts[move.selection]
-				const id = elem?.dataset.moveId || elem?.id
 
 				removeSelection()
 
 				// Only remove selection modifiers if failed to get id
-				if (!id || !(id in layout.items)) {
+				if (!isEditing() || !elementId || !(elementId in layout.items)) {
 					return
 				}
 
-				btnSelectionAlign(layout.items[id as MoveKeys])
-				gridMoveEdgesControl(layout.grid, id as MoveKeys)
+				const id = elementId as MoveKeys
+
+				btnSelectionAlign(layout.items[id])
+				gridMoveEdgesControl(layout.grid, id)
 
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
-
-				selectedDOM = elem as HTMLElement
-				selectedID = id as MoveKeys
+				activeID = id
 			}
 
 			function toggleMoveStatus(e?: KeyboardEvent) {
@@ -440,13 +453,13 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			// function toggleGridSpans() {
 			// 	const layout = clonedeep(move.layouts[move.selection])
 
-			// 	if (selectedID) {
-			// 		layout.grid = spanRowsInGridArea(layout.grid, selectedID)
-			// 		layout.items[selectedID].rowspan = true
+			// 	if (activeID) {
+			// 		layout.grid = spanRowsInGridArea(layout.grid, activeID)
+			// 		layout.items[activeID].rowspan = true
 
 			// 		setGridAreas(layout)
 
-			// 		move.layouts[move.selection].items[selectedID].rowspan = true
+			// 		move.layouts[move.selection].items[activeID].rowspan = true
 			// 		storage.sync.set({ move: move })
 			// 	}
 			// }
@@ -466,8 +479,10 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				setGridAreas(move.layouts[move.selection])
 				setAllAligns(move.layouts[move.selection].items)
 
-				if (on) gridOverlay.add(id)
-				else gridOverlay.remove(id)
+				// add/remove widget overlay only when editing move
+				if (isEditing()) {
+					on ? gridOverlay.add(id) : gridOverlay.remove(id)
+				}
 
 				storage.sync.set({ move: move }, () => {
 					setTimeout(() => {
@@ -545,8 +560,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		setTimeout(() => {
 			document.addEventListener('keypress', (ev: KeyboardEvent) => updateMoveElement({ is: 'toggle', ev: ev }))
 
-			selectables.forEach((elem) => {
-				elem.addEventListener('click', () => updateMoveElement({ is: 'select', elem: elem }))
+			Object.entries(elements).forEach(([key, elem]) => {
+				elem?.addEventListener('click', () => updateMoveElement({ is: 'select', elementId: key }))
 			})
 
 			document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {

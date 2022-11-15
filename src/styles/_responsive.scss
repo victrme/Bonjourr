@@ -35,7 +35,8 @@
 @media screen and (max-width: 600px) {
 	body {
 		min-height: var(--app-height);
-		min-height: -webkit-fill-available;
+		// min-height: -webkit-fill-available;
+		// todo: a enlever quand ça sera merge
 		font-size: 12px;
 		overflow-y: auto;
 	}
