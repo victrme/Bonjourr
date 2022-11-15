@@ -239,17 +239,32 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})
 	}
 
-	function gridMoveEdgesControl(grid: Layout['grid'], id: MoveKeys) {
-		const { row, col } = getItemPosition(grid, id)
+	function gridBtnControl(grid: Layout['grid'], id: MoveKeys) {
+		let top = false,
+			bottom = false,
+			left = false,
+			right = false
 
+		// Detect if element is on array limits
+		grid.forEach((row, i) => {
+			if (row.some((a) => a === id) && i === 0) top = true
+			if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
+			if (row.at(0) === id) left = true
+			if (row.at(-1) === id) right = true
+		})
+
+		// link button to correct limit, apply disable attr
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
 			const c = parseInt(b.dataset.col || '0')
 			const r = parseInt(b.dataset.row || '0')
+			let limit = false
 
-			// btn is up/down => test rows, left/right => test cols
-			const disable = c === 0 ? grid[row + r] === undefined : grid[row][col + c] === undefined
+			if (r === -1) limit = top
+			if (r === 1) limit = bottom
+			if (c === -1) limit = left
+			if (c === 1) limit = right
 
-			disable ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
+			limit ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
 		})
 	}
 
@@ -331,7 +346,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
-				gridMoveEdgesControl(grid, activeID)
+				gridBtnControl(grid, activeID)
 				resetBtnControl(move)
 
 				storage.sync.set({ move: move })
@@ -375,7 +390,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				btnSelectionLayout(move.selection)
 
 				if (activeID) {
-					gridMoveEdgesControl(layout.grid, activeID)
+					gridBtnControl(layout.grid, activeID)
 					btnSelectionAlign(layout.items[activeID])
 				}
 			}
@@ -428,7 +443,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				const id = elementId as MoveKeys
 
 				btnSelectionAlign(layout.items[id])
-				gridMoveEdgesControl(layout.grid, id)
+				gridBtnControl(layout.grid, id)
 
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 				activeID = id
