@@ -61,7 +61,6 @@ export type MoveKeys = 'time' | 'main' | 'notes' | 'searchbar' | 'quicklinks' | 
 export type MoveItem = {
 	box: string
 	text: string
-	rowspan: boolean
 }
 
 type MoveItemList = {

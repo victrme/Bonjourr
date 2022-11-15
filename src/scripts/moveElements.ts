@@ -92,18 +92,6 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	}
 
 	function setGridAreas(layout: Layout) {
-		// const spanList = Object.entries(layout.items)
-		// 	.map(([k, v]) => {
-		// 		if (v.rowspan) return k as MoveKeys
-		// 	})
-		// 	.filter((k) => k)
-
-		// spanList.forEach((item) => {
-		// 	if (item) {
-		// 		layout.grid = spanRowsInGridArea(layout.grid, item)
-		// 	}
-		// })
-
 		if (dominterface) {
 			dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
 		}
@@ -170,36 +158,56 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		},
 	}
 
-	// function spanRowsInGridArea(grid: Layout['grid'], id: MoveKeys) {
-	// 	// [., a, ., b, ., ., target, ., .,., c, .]
-	// 	// last = a ... last = b ... last === target ? keep last
-	// 	// { start: last, end: target }
-	// 	// next = c
-	// 	// { start: target, end: next }
+	function spansInGridArea(dir: 'row' | 'col', grid: Layout['grid'], id: MoveKeys) {
+		//
+		function fillArrayWithIds(arr: string[]) {
+			let target = arr.indexOf(id)
+			let stopper = [false, false]
 
-	// 	const { col } = getItemPosition(grid, id)
-	// 	const list = grid.map((g) => g[col])
-	// 	let last = 0
-	// 	let next = 0
-	// 	let target = list.indexOf(id)
+			function replaceWithId(a: string[], i: number, lim: number) {
+				// not stopping and elem exit
+				if (!stopper[lim] && a[i]) {
+					if (a[i] === '.') a[i] = id // replaces dot with id
+					else if (a[i] !== id) stopper[lim] = true // other ? stop
+				}
 
-	// 	list.forEach((e, i) => {
-	// 		if (i < target) {
-	// 			if (e !== '.') last = i + 1
-	// 		}
+				return a
+			}
 
-	// 		if (i > target && next === 0) {
-	// 			if (e !== '.') next = i - 1
-	// 			if (i === list.length - 1) next = i
-	// 		}
-	// 	})
+			// in [., a, ., ., target, ., b, ., .]
+			for (let ii = 1; ii < arr.length; ii++) {
+				arr = replaceWithId(arr, target + ii, 0) // replaces until b
+				arr = replaceWithId(arr, target - ii, 1) // replaces until a
+			}
 
-	// 	for (let i = last; i <= next; i++) {
-	// 		grid[i][col] = id
-	// 	}
+			return arr
+		}
 
-	// 	return grid
-	// }
+		// These two dir are basically doing the same thing
+		// But because each steps are slighty different, it cannot be reduced
+		// And it looks ugly
+
+		if (dir === 'col') {
+			const col_i = grid.map((row) => row.findIndex((a) => a === id)).filter((i) => i > -1)[0]
+			const arr = grid.map((g) => g[col_i])
+			const filledArr = fillArrayWithIds(arr)
+
+			grid.forEach((r, i) => {
+				grid[i][col_i] = filledArr[i]
+			})
+		}
+
+		if (dir === 'row') {
+			const row_i = grid.map((row) => row.some((a) => a === id)).findIndex((a) => a)
+			const filledArr = fillArrayWithIds(grid[row_i])
+
+			grid[row_i].forEach((r, i) => {
+				grid[row_i][i] = filledArr[i]
+			})
+		}
+
+		return grid
+	}
 
 	//
 	// Buttons class control / selection
@@ -305,7 +313,18 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	//
 
 	type Update = {
-		is: 'toggle' | 'select' | 'widget' | 'grid' | 'span-rows' | 'box' | 'text' | 'layout' | 'reset' | 'responsive'
+		is:
+			| 'toggle'
+			| 'select'
+			| 'widget'
+			| 'grid'
+			| 'span-cols'
+			| 'span-rows'
+			| 'box'
+			| 'text'
+			| 'layout'
+			| 'reset'
+			| 'responsive'
 		button?: HTMLButtonElement
 		elementId?: string
 		ev?: KeyboardEvent
@@ -468,19 +487,18 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				e ? (e.key === 'm' ? toggle() : '') : toggle()
 			}
 
-			// function toggleGridSpans() {
-			// 	const layout = clonedeep(move.layouts[move.selection])
+			function toggleGridSpans(dir: 'col' | 'row') {
+				const layout = move.layouts[move.selection]
 
-			// 	if (activeID) {
-			// 		layout.grid = spanRowsInGridArea(layout.grid, activeID)
-			// 		layout.items[activeID].rowspan = true
+				if (activeID) {
+					if (dir === 'col') layout.grid = spansInGridArea(dir, layout.grid, activeID)
+					if (dir === 'row') layout.grid = spansInGridArea(dir, layout.grid, activeID)
 
-			// 		setGridAreas(layout)
-
-			// 		move.layouts[move.selection].items[activeID].rowspan = true
-			// 		storage.sync.set({ move: move })
-			// 	}
-			// }
+					setGridAreas(layout)
+					gridBtnControl(activeID)
+					storage.sync.set({ move: move })
+				}
+			}
 
 			function addOrRemmoveWidgets() {
 				if (!widget) return
@@ -522,10 +540,13 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					gridChange()
 					break
 
-				case 'span-rows': {
-					// toggleGridSpans()
+				case 'span-cols':
+					toggleGridSpans('col')
 					break
-				}
+
+				case 'span-rows':
+					toggleGridSpans('row')
+					break
 
 				case 'box':
 					alignChange('box')
@@ -606,9 +627,13 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				.querySelector<HTMLButtonElement>('#close-mover')
 				?.addEventListener('click', () => updateMoveElement({ is: 'toggle' }))
 
-			// document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
-			// 	updateMoveElement({ is: 'span-rows' })
-			// })
+			document.querySelector<HTMLButtonElement>('#grid-span-cols')?.addEventListener('click', () => {
+				updateMoveElement({ is: 'span-cols' })
+			})
+
+			document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
+				updateMoveElement({ is: 'span-rows' })
+			})
 
 			// Trigger a layout change when width is crosses threshold
 			window.addEventListener('resize', () => {

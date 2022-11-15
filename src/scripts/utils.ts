@@ -329,12 +329,12 @@ export function tradThis(str: string, lang?: string): string {
 }
 
 const moveItems = {
-	time: { box: '', text: '', rowspan: false },
-	main: { box: '', text: '', rowspan: false },
-	notes: { box: '', text: '', rowspan: false },
-	searchbar: { box: '', text: '', rowspan: false },
-	quicklinks: { box: '', text: '', rowspan: false },
-	quotes: { box: '', text: '', rowspan: false },
+	time: { box: '', text: '' },
+	main: { box: '', text: '' },
+	notes: { box: '', text: '' },
+	searchbar: { box: '', text: '' },
+	quicklinks: { box: '', text: '' },
+	quotes: { box: '', text: '' },
 }
 
 export const syncDefaults: Sync = {
