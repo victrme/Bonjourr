@@ -27,6 +27,24 @@ type InterfaceWidgetControl = {
 	on: boolean
 }
 
+type Update = {
+	action:
+		| 'toggle'
+		| 'select'
+		| 'widget'
+		| 'grid'
+		| 'span-cols'
+		| 'span-rows'
+		| 'box'
+		| 'text'
+		| 'layout'
+		| 'reset'
+		| 'responsive'
+	button?: HTMLButtonElement
+	elementId?: string
+	ev?: KeyboardEvent
+}
+
 let smallWidth = false
 const dominterface = document.querySelector<HTMLElement>('#interface')
 const elements = {
@@ -49,7 +67,18 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 	const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
-	const checkDuplicate = (arr: string[], id: string) => arr.filter((a) => a === id).length > 1
+	const checkDuplicate = (arr: string[], id?: string) => arr.filter((a) => a === (id || activeID)).length > 1
+
+	function removeDuplicateIds(arr: string[], id?: string) {
+		let keepfirst = true
+		return arr.map((a) => {
+			if (a === (id || activeID)) {
+				if (keepfirst) keepfirst = false
+				else return '.'
+			}
+			return a
+		})
+	}
 
 	function areaStringToLayoutGrid(area: string) {
 		let rows = area.substring(1, area.length - 2).split('" "')
@@ -88,12 +117,18 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			.map(([key, val]) => key as MoveKeys)
 	}
 
-	function findIdPosition(grid: Layout['grid'], id: MoveKeys) {
-		const flatIndex = grid.flat().findIndex((a) => a === id)
-		return {
-			posCol: flatIndex % grid[0].length,
-			posRow: Math.floor(flatIndex / grid[0].length),
-		}
+	function findIdsPosition(grid: Layout['grid'], id: MoveKeys) {
+		const allpos: { posCol: number; posRow: number }[] = []
+
+		grid.flat().forEach((a, i) => {
+			if (a === id)
+				allpos.push({
+					posCol: i % grid[0].length,
+					posRow: Math.floor(i / grid[0].length),
+				})
+		})
+
+		return allpos
 	}
 
 	//
@@ -148,17 +183,6 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			return arr
 		}
 
-		function removeDuplicateIds(arr: string[]) {
-			let keepfirst = true
-			return arr.map((a) => {
-				if (a === id) {
-					if (keepfirst) keepfirst = false
-					else return '.'
-				}
-				return a
-			})
-		}
-
 		/*
 		 	For columns and rows:
 			mutate column by adding / removing duplicates 
@@ -166,17 +190,17 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			update buttons with recheck duplication (don't assume duped work everytime) 
 		*/
 
-		const { posCol, posRow } = findIdPosition(grid, id)
+		const { posCol, posRow } = findIdsPosition(grid, id)[0]
 		let col = grid.map((g) => g[posCol])
 		let row = [...grid[posRow]]
 
 		if (dir === 'col') {
-			col = checkDuplicate(col, id) ? removeDuplicateIds(col) : fillArrayWithIds(col)
+			col = checkDuplicate(col) ? removeDuplicateIds(col) : fillArrayWithIds(col)
 			grid.forEach((r, i) => (grid[i][posCol] = col[i])) // different /!\
 		}
 
 		if (dir === 'row') {
-			row = checkDuplicate(row, id) ? removeDuplicateIds(row) : fillArrayWithIds(row)
+			row = checkDuplicate(row) ? removeDuplicateIds(row) : fillArrayWithIds(row)
 			grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i])) // different /!\
 		}
 
@@ -301,7 +325,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
 			if (grid.length === 0) return
 
-			const { posCol, posRow } = findIdPosition(grid, id)
+			const { posCol, posRow } = findIdsPosition(grid, id)[0]
 			let col = grid.map((g) => g[posCol])
 			let row = [...grid[posRow]]
 
@@ -355,24 +379,6 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	// Updates
 	//
 
-	type Update = {
-		action:
-			| 'toggle'
-			| 'select'
-			| 'widget'
-			| 'grid'
-			| 'span-cols'
-			| 'span-rows'
-			| 'box'
-			| 'text'
-			| 'layout'
-			| 'reset'
-			| 'responsive'
-		button?: HTMLButtonElement
-		elementId?: string
-		ev?: KeyboardEvent
-	}
-
 	function updateMoveElement({ action, elementId, button }: Update) {
 		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
 			let move: Move
@@ -388,26 +394,54 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			function gridChange() {
 				if (!activeID || !button) return
 
-				const { grid } = move.layouts[move.selection]
-
 				// Get button move amount
 				const y = parseInt(button.dataset.row || '0')
 				const x = parseInt(button.dataset.col || '0')
 
-				// Get current row / col
-				const currR = grid.findIndex((row) => row.find((col) => col === activeID))
-				const currC = grid[currR].findIndex((col) => col === activeID)
+				const { grid } = move.layouts[move.selection]
+				const allActivePos = findIdsPosition(grid, activeID)
+				const allAffectedIds: MoveKeys[] = []
 
-				// Update row / col
-				const newR = clamp(currR + y, 0, grid.length - 1)
-				const newC = clamp(currC + x, 0, grid[0].length - 1)
+				// step 1: Find elements affected by grid change
+				allActivePos.forEach(({ posRow, posCol }) => {
+					const newposition = grid[posRow + y][posCol + x]
 
-				// swap items
-				let tempItem = grid[currR][currC]
-				grid[currR][currC] = grid[newR][newC]
-				grid[newR][newC] = tempItem
+					if (newposition !== '.') {
+						allAffectedIds.push(newposition as MoveKeys)
+					}
+				})
 
-				// Apply changes
+				// step 2: remove conflicting fillings on affected elements
+				allAffectedIds.forEach((id) => {
+					const positions = findIdsPosition(grid, id)
+
+					// are filling
+					if (positions.length > 1) {
+						const { posCol, posRow } = positions[0]
+						let col = grid.map((g) => g[posCol])
+						let row = [...grid[posRow]]
+
+						// remove row fills
+						row = removeDuplicateIds(row, id)
+						grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i]))
+
+						// remove column fills
+						col = removeDuplicateIds(col, id)
+						grid.forEach((r, i) => (grid[i][posCol] = col[i]))
+					}
+				})
+
+				// step 3: replace all active position with affected
+				allActivePos.forEach(({ posRow, posCol }) => {
+					const newRow = clamp(posRow + y, 0, grid.length - 1)
+					const newCol = clamp(posCol + x, 0, grid[0].length - 1)
+
+					let tempItem = grid[posRow][posCol]
+					grid[posRow][posCol] = grid[newRow][newCol]
+					grid[newRow][newCol] = tempItem
+				})
+
+				// step 4: profit ??????????????
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
