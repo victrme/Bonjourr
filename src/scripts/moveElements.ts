@@ -27,8 +27,8 @@ type InterfaceWidgetControl = {
 	on: boolean
 }
 
+let smallWidth = false
 const dominterface = document.querySelector<HTMLElement>('#interface')
-
 const elements = {
 	time: $('time'),
 	main: $('main'),
@@ -40,7 +40,6 @@ const elements = {
 
 export default function moveElements(init: Move | null, widget?: InterfaceWidgetControl) {
 	let activeID: MoveKeys | null
-	let smallWidth = false
 
 	type Layout = Move['layouts'][keyof Move['layouts']]
 
@@ -56,6 +55,15 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		let rows = area.substring(1, area.length - 2).split('" "')
 		let grid = rows.map((row) => row.replace('"', '').split(' '))
 		return grid
+	}
+
+	function layoutToGridAreas(grid: Layout['grid']) {
+		let areas = ``
+
+		const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
+		grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
+
+		return areas
 	}
 
 	function isRowEmpty(grid: Layout['grid'], index: number) {
@@ -89,17 +97,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	}
 
 	//
-	// Grid and Align
+	// Funcs
 	//
-
-	function layoutToGridAreas(grid: Layout['grid']) {
-		let areas = ``
-
-		const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
-		grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
-
-		return areas
-	}
 
 	function setGridAreas(layout: Layout) {
 		if (dominterface) {
@@ -122,50 +121,6 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				setAlign(items[id], id)
 			}
 		})
-	}
-
-	const gridWidget = {
-		add: (grid: Layout['grid'], id: MoveKeys) => {
-			// in triple colum, default colum is [x, here, x]
-			const middleColumn = grid[0].length === 3 ? 1 : 0
-			let index = 2
-
-			// Quotes always at the bottom
-			if (id === 'quotes') index = grid.length
-
-			// Quick links above quotes, below the rest
-			if (id === 'quicklinks') {
-				const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
-				index = lastItemIsQuotes ? grid.length - 1 : grid.length
-			}
-
-			// Create new row
-			let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
-			grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
-			grid[index][middleColumn] = id
-
-			return grid
-		},
-
-		remove: (grid: Layout['grid'], id: MoveKeys) => {
-			// remove id from grid
-			for (const i in grid) {
-				for (const k in grid[i]) {
-					if (grid[i][k] === id) grid[i][k] = '.'
-				}
-			}
-
-			// if an empty row is found, removes it and quits
-			let hasRemovedRow = false
-			for (const ii in grid) {
-				if (isRowEmpty(grid, parseInt(ii)) && !hasRemovedRow) {
-					grid.splice(parseInt(ii), 1)
-					hasRemovedRow = true
-				}
-			}
-
-			return grid
-		},
 	}
 
 	function spansInGridArea(dir: 'row' | 'col', grid: Layout['grid'], id: MoveKeys) {
@@ -228,9 +183,49 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		return grid
 	}
 
-	//
-	// Buttons class control / selection
-	//
+	const gridWidget = {
+		add: (grid: Layout['grid'], id: MoveKeys) => {
+			// in triple colum, default colum is [x, here, x]
+			const middleColumn = grid[0].length === 3 ? 1 : 0
+			let index = 2
+
+			// Quotes always at the bottom
+			if (id === 'quotes') index = grid.length
+
+			// Quick links above quotes, below the rest
+			if (id === 'quicklinks') {
+				const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
+				index = lastItemIsQuotes ? grid.length - 1 : grid.length
+			}
+
+			// Create new row
+			let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
+			grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
+			grid[index][middleColumn] = id
+
+			return grid
+		},
+
+		remove: (grid: Layout['grid'], id: MoveKeys) => {
+			// remove id from grid
+			for (const i in grid) {
+				for (const k in grid[i]) {
+					if (grid[i][k] === id) grid[i][k] = '.'
+				}
+			}
+
+			// if an empty row is found, removes it and quits
+			let hasRemovedRow = false
+			for (const ii in grid) {
+				if (isRowEmpty(grid, parseInt(ii)) && !hasRemovedRow) {
+					grid.splice(parseInt(ii), 1)
+					hasRemovedRow = true
+				}
+			}
+
+			return grid
+		},
+	}
 
 	const gridOverlay = {
 		add: (id: MoveKeys) => {
@@ -253,9 +248,94 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		},
 	}
 
+	const buttonControl = {
+		layout: (selection: Move['selection']) => {
+			document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
+				clas(b, b.dataset.layout === selection, 'selected')
+			})
+		},
+
+		grid: (id: MoveKeys) => {
+			const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '')
+			if (grid.length === 0) return
+
+			let top = false,
+				bottom = false,
+				left = false,
+				right = false
+
+			// Detect if element is on array limits
+			grid.forEach((row, i) => {
+				if (row.some((a) => a === id) && i === 0) top = true
+				if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
+				if (row.at(0) === id) left = true
+				if (row.at(-1) === id) right = true
+			})
+
+			// link button to correct limit, apply disable attr
+			document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
+				const c = parseInt(b.dataset.col || '0')
+				const r = parseInt(b.dataset.row || '0')
+				let limit = false
+
+				if (r === -1) limit = top
+				if (r === 1) limit = bottom
+				if (c === -1) limit = left
+				if (c === 1) limit = right
+
+				limit ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
+			})
+		},
+
+		span: (id: MoveKeys) => {
+			function applyStates(dir: 'col' | 'row', state: boolean) {
+				const dirButton = document.querySelector(`#grid-span-${dir}s`)
+				const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
+
+				if (state) otherButton?.setAttribute('disabled', '')
+				else otherButton?.removeAttribute('disabled')
+
+				clas(dirButton, state, 'selected')
+			}
+
+			const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
+			if (grid.length === 0) return
+
+			const { posCol, posRow } = findIdPosition(grid, id)
+			let col = grid.map((g) => g[posCol])
+			let row = [...grid[posRow]]
+
+			applyStates('col', checkDuplicate(col, id))
+			applyStates('row', checkDuplicate(row, id))
+		},
+
+		align: (item?: MoveItem) => {
+			const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
+			const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
+
+			boxBtns.forEach((b) => clas(b, b.dataset.align === item?.box, 'selected'))
+			textBtns.forEach((b) => clas(b, b.dataset.align === item?.text, 'selected'))
+		},
+
+		reset: (move: Move) => {
+			const btn = document.querySelector<HTMLButtonElement>('#reset-layout')
+			const defaultGrid = syncDefaults.move.layouts[move.selection].grid
+			const layout = move.layouts[move.selection]
+
+			const isSameGrid = layoutToGridAreas(layout.grid) === layoutToGridAreas(defaultGrid)
+			const isSameAlign = Object.values(layout.items).filter(({ box, text }) => box !== '' || text !== '').length === 0
+
+			if (isSameGrid && isSameAlign) {
+				btn?.setAttribute('disabled', '')
+			} else {
+				btn?.removeAttribute('disabled')
+			}
+		},
+	}
+
 	function removeSelection() {
 		activeID = null
-		btnSelectionAlign() // without params, selects 0 align
+		buttonControl.align() // without params, selects 0 align
 
 		document.querySelectorAll('.grid-spanner')?.forEach((elem) => {
 			elem.removeAttribute('disabled')
@@ -269,89 +349,6 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
 			b.removeAttribute('disabled')
 		})
-	}
-
-	function gridBtnControl(id: MoveKeys) {
-		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '')
-		if (grid.length === 0) return
-
-		let top = false,
-			bottom = false,
-			left = false,
-			right = false
-
-		// Detect if element is on array limits
-		grid.forEach((row, i) => {
-			if (row.some((a) => a === id) && i === 0) top = true
-			if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
-			if (row.at(0) === id) left = true
-			if (row.at(-1) === id) right = true
-		})
-
-		// link button to correct limit, apply disable attr
-		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
-			const c = parseInt(b.dataset.col || '0')
-			const r = parseInt(b.dataset.row || '0')
-			let limit = false
-
-			if (r === -1) limit = top
-			if (r === 1) limit = bottom
-			if (c === -1) limit = left
-			if (c === 1) limit = right
-
-			limit ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
-		})
-	}
-
-	function btnSelectionSpans(id: MoveKeys) {
-		function applyStates(dir: 'col' | 'row', state: boolean) {
-			const dirButton = document.querySelector(`#grid-span-${dir}s`)
-			const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
-
-			if (state) otherButton?.setAttribute('disabled', '')
-			else otherButton?.removeAttribute('disabled')
-
-			clas(dirButton, state, 'selected')
-		}
-
-		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
-		if (grid.length === 0) return
-
-		const { posCol, posRow } = findIdPosition(grid, id)
-		let col = grid.map((g) => g[posCol])
-		let row = [...grid[posRow]]
-
-		applyStates('col', checkDuplicate(col, id))
-		applyStates('row', checkDuplicate(row, id))
-	}
-
-	function btnSelectionLayout(selection: Move['selection']) {
-		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-			clas(b, b.dataset.layout === selection, 'selected')
-		})
-	}
-
-	function btnSelectionAlign(item?: MoveItem) {
-		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
-		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
-
-		boxBtns.forEach((b) => clas(b, b.dataset.align === item?.box, 'selected'))
-		textBtns.forEach((b) => clas(b, b.dataset.align === item?.text, 'selected'))
-	}
-
-	function resetBtnControl(move: Move) {
-		const btn = document.querySelector<HTMLButtonElement>('#reset-layout')
-		const defaultGrid = syncDefaults.move.layouts[move.selection].grid
-		const layout = move.layouts[move.selection]
-
-		const isSameGrid = layoutToGridAreas(layout.grid) === layoutToGridAreas(defaultGrid)
-		const isSameAlign = Object.values(layout.items).filter(({ box, text }) => box !== '' || text !== '').length === 0
-
-		if (isSameGrid && isSameAlign) {
-			btn?.setAttribute('disabled', '')
-		} else {
-			btn?.removeAttribute('disabled')
-		}
 	}
 
 	//
@@ -414,8 +411,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
-				gridBtnControl(activeID)
-				resetBtnControl(move)
+				buttonControl.grid(activeID)
+				buttonControl.reset(move)
 
 				storage.sync.set({ move: move })
 			}
@@ -429,8 +426,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				item[type] = button.dataset.align || ''
 
 				setAlign(item, activeID)
-				btnSelectionAlign(item)
-				resetBtnControl(move)
+				buttonControl.align(item)
+				buttonControl.reset(move)
 
 				// Update storage
 				move.layouts[move.selection].items[activeID] = item
@@ -454,12 +451,12 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 				setAllAligns(layout.items)
 				setGridAreas(layout)
-				resetBtnControl(move)
-				btnSelectionLayout(move.selection)
+				buttonControl.reset(move)
+				buttonControl.layout(move.selection)
 
 				if (activeID) {
-					gridBtnControl(activeID)
-					btnSelectionAlign(layout.items[activeID])
+					buttonControl.grid(activeID)
+					buttonControl.align(layout.items[activeID])
 				}
 			}
 
@@ -491,7 +488,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 				setAllAligns(layout.items)
 				setGridAreas(layout)
-				resetBtnControl(move)
+				buttonControl.reset(move)
 				removeSelection()
 
 				// Save
@@ -510,9 +507,9 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 				const id = elementId as MoveKeys
 
-				btnSelectionAlign(layout.items[id])
-				btnSelectionSpans(id)
-				gridBtnControl(id)
+				buttonControl.align(layout.items[id])
+				buttonControl.span(id)
+				buttonControl.grid(id)
 
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 				activeID = id
@@ -541,8 +538,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				layout.grid = spansInGridArea(dir, layout.grid, activeID)
 
 				setGridAreas(layout)
-				gridBtnControl(activeID)
-				btnSelectionSpans(activeID)
+				buttonControl.grid(activeID)
+				buttonControl.span(activeID)
 
 				storage.sync.set({ move: move })
 			}
@@ -640,8 +637,12 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 			setAllAligns(layout.items)
 			setGridAreas(layout)
-			btnSelectionLayout(init.selection)
+			buttonControl.layout(init.selection)
 		})()
+
+		//
+		// Events
+		//
 
 		setTimeout(() => {
 			document.addEventListener('keypress', (ev: KeyboardEvent) => updateMoveElement({ action: 'toggle', ev: ev }))
