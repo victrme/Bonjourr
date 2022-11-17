@@ -91,8 +91,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 	function findIdPosition(grid: Layout['grid'], id: MoveKeys) {
 		const flatIndex = grid.flat().findIndex((a) => a === id)
 		return {
-			posCol: flatIndex % grid.length,
-			posRow: Math.floor(flatIndex / grid.length),
+			posCol: flatIndex % grid[0].length,
+			posRow: Math.floor(flatIndex / grid[0].length),
 		}
 	}
 
