@@ -150,6 +150,29 @@
 	}
 }
 
+button.grid-spanner {
+	border: none;
+	border-radius: 8px;
+	outline: 2px solid transparent;
+	padding: 0.3em 1.2em;
+	background-color: #fff4;
+	color: white;
+
+	&:hover:not(:disabled) {
+		background-color: #fff6;
+	}
+
+	&.selected:not(:disabled) {
+		background-color: #0072ee22;
+		outline-color: var(--blue);
+	}
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.4;
+	}
+}
+
 #grid-mover {
 	place-content: center;
 	grid-template-columns: 80px;
