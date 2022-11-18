@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Setiap kali Anda membuka jendela atau tab baru, Anda akan disambut oleh halaman yang tampak minimalis ini yang akan membantu ketenangan dan produktivitas Anda. Berkat latar belakang berkualitas tinggi yang cantik yang berubah sesuai dengan suasana hati hari itu, tab baru Anda akan selalu terasa segar.
 
 Bonjourr dibangun sebagai alternatif yang lebih modern untuk homepage seperti Momentum. Kami mengambil inspirasi dari iOS dan bahasa desain Apple untuk menciptakan homepage yang indah ini yang akan membantu Anda fokus pada hal-hal yang penting.

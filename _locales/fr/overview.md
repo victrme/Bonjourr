@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Avec son design minimaliste, Bonjourr vous accueillera chaque fois que vous ouvrirez un nouvel onglet. Grâce à ses magnifiques photos en 4K qui changent selon l'heure de la journée, vous ne vous lasserez jamais de vos nouveaux onglets.
 
 Nous avons développé Bonjourr en tant qu'alternative plus moderne aux extensions comme Momentum. Nous nous sommes inspiré du design d'iOS pour créer une page d'accueil belle et qui s'adapte à vos besoins.

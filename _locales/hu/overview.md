@@ -1,7 +1,3 @@
----
-Ez a Bonjourr's leírása, amely megjelenik a böngészők bővítmény áruházaiban.
----
-
 Minden alkalommal, amikor új ablakot vagy lapot nyit meg, ez a minimalista megjelenésű oldal fogadja Önt, amely nyugtatóan hat és segíti a produktivitást. Gyönyörű, kiváló minőségű háttereinek köszönhetően, amelyek a nap hangulatának megfelelően változnak, az új lapok mindig frissítően hatnak.
 
 A Bonjourr az olyan kezdőlapok modernebb alternatívájaként készült, mint a Momentum. Az iOS és az Apple tervezési irányelveiből merítettünk ihletet ennek a gyönyörű kezdőlapnak a létrehozásához, amely segít a fontos dolgokra összpontosítani.

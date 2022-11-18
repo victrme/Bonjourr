@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Joka kerta kun avaat uuden ikkunan tai välilehden, sinua tervehtii tämä minimalistisen näköinen sivu joka auttaa sinun tyyneyttäsi ja tuottavuuttasi. Upeiden ja laadukkaiden taustojensa ansiosta, jotka vaihtelevat päivän tunnelman mukaan, sinun uudet välilehtesi tuntuvat aina tuoreilta.
 
 Bonjourr rakennettiin modernimmaksi vaihtoehdoksi kotisivuille, kuten Momentumille. Saimme inspiraation iOS:ltä ja Applen muotoilukieleltä luodaksemme tämän kauniin aloitussivun joka auttaa sinua keskittymään olennaiseen.
