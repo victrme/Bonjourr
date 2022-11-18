@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Za każdym razem, gdy otworzysz nowe okno lub kartę, powita Cię ta minimalistycznie wyglądająca strona, która pomoże Ci się zrelaksować i zwiększyć produktywność. Dzięki wspaniałemu, wysokiej jakości tłu, które zmienia się w zależności od nastroju dnia, Twoje nowe karty będą zawsze świeże.
 
 Bonjourr został stworzony jako bardziej nowoczesna alternatywa dla stron głównych takich jak Momentum. Zainspirowaliśmy się systemem iOS i językiem projektowania Apple, aby stworzyć tę piękną stronę główną, która pomoże Ci skupić się na tym, co ważne.
