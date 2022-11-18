@@ -71,7 +71,7 @@ function addBackground(platform) {
 }
 
 function locales(platform) {
-	return () => src('_locales/**').pipe(dest(`release/${platform}/_locales/`))
+	return () => src('_locales/**/messages.json').pipe(dest(`release/${platform}/_locales/`))
 }
 
 //
