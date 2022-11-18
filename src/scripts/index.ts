@@ -1132,29 +1132,35 @@ export function quickLinks(
 	}
 
 	function removeblock(linkId: string) {
-		storage.sync.get([linkId], (data) => {
+		storage.sync.get(null, (data) => {
 			const links = bundleLinks(data as Sync)
-			let link = data[linkId] as Link
+			const target = data[linkId] as Link
 			const linkDOM = $(linkId)
 
-			if (!link || !linkDOM) {
-				return
-			}
+			if (!target || !linkDOM) return
 
+			// Removes DOM
 			const height = linkDOM.getBoundingClientRect().height
-
 			linkDOM.setAttribute('style', 'height: ' + height + 'px')
-			clas(linkDOM, true, 'removed')
 
+			clas(linkDOM, true, 'removed')
 			setTimeout(() => linkDOM.remove(), 600)
 
-			links.forEach((l: Link) => {
-				l.order -= l.order > link.order ? 1 : 0 // Decrement order for elements above the one removed
-				data[l._id] = l // updates link in storage
-			})
+			// Removes storage
+			delete data[linkId]
 
+			// Updates Order
+			links
+				.filter((l) => l._id !== linkId) // pop deleted first
+				.forEach((l: Link) => {
+					data[l._id] = {
+						...l,
+						order: l.order - (l.order > target.order ? 1 : 0),
+					}
+				})
+
+			storage.sync.clear()
 			storage.sync.set(data)
-			storage.sync.remove(link._id)
 		})
 	}
 
@@ -3779,6 +3785,10 @@ window.onload = function () {
 				const newV = syncDefaults.about.version
 
 				console.log(`Version change: ${oldV} => ${newV}`)
+
+				if (data?.about?.version) {
+					data.about.version = newV
+				}
 
 				// if (oldV === '1.14.2' && newV === '1.15.0') {
 				// 	localStorage.hasUpdated = 'true'
