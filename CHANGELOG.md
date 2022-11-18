@@ -1,5 +1,11 @@
 ## Changelogs
 
+**v1.15.3**
+
+-   Fixes:
+    -   Links impossible to remove on Safari extension
+    -   Removing last link prevents adding new ones
+
 **v1.15.2**
 
 -   Translations:
