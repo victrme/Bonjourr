@@ -22,6 +22,8 @@ import { syncDefaults, clas, $ } from './utils'
 // │   └─────────────┘                    │
 // └──────────────────────────────────────┘
 
+type Layout = Move['layouts'][keyof Move['layouts']]
+
 type InterfaceWidgetControl = {
 	id: MoveKeys
 	on: boolean
@@ -59,26 +61,9 @@ const elements = {
 export default function moveElements(init: Move | null, widget?: InterfaceWidgetControl) {
 	let activeID: MoveKeys | null
 
-	type Layout = Move['layouts'][keyof Move['layouts']]
-
-	//
-	// Utils
-	//
+	// Utils (no dom uses or manipulation)
 
 	const isEditing = () => dominterface?.classList.contains('move-edit') || false
-
-	const checkDuplicate = (arr: string[], id?: string) => arr.filter((a) => a === (id || activeID)).length > 1
-
-	function removeDuplicateIds(arr: string[], id?: string) {
-		let keepfirst = true
-		return arr.map((a) => {
-			if (a === (id || activeID)) {
-				if (keepfirst) keepfirst = false
-				else return '.'
-			}
-			return a
-		})
-	}
 
 	function areaStringToLayoutGrid(area: string) {
 		let rows = area.substring(1, area.length - 2).split('" "')
@@ -117,7 +102,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			.map(([key, val]) => key as MoveKeys)
 	}
 
-	function findIdsPosition(grid: Layout['grid'], id: MoveKeys) {
+	function findIdsPosition(grid: Layout['grid'], id: string) {
 		const allpos: { posCol: number; posRow: number }[] = []
 
 		grid.flat().forEach((a, i) => {
@@ -131,36 +116,20 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		return allpos
 	}
 
-	//
-	// Funcs
-	//
-
-	function setGridAreas(layout: Layout) {
-		if (dominterface) {
-			dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
-		}
+	function hasDuplicateInArray(arr: string[], id?: string) {
+		return arr.filter((a) => a === (id || activeID)).length > 1
 	}
 
-	function setAlign(item: MoveItem, id: MoveKeys) {
-		const elem = elements[id]
-		if (elem) {
-			if (typeof item?.box === 'string') elem.style.placeSelf = item.box
-			if (typeof item?.text === 'string') elem.style.textAlign = item.text
-		}
+	function hasDuplicateInGrid(grid: Layout['grid'], id: string) {
+		return findIdsPosition(grid, id).length > 1
 	}
 
-	function setAllAligns(items: Layout['items']) {
-		Object.keys(elements).forEach((key) => {
-			if (key in items) {
-				const id = key as MoveKeys
-				setAlign(items[id], id)
-			}
-		})
-	}
-
-	function spansInGridArea(dir: 'row' | 'col', grid: Layout['grid'], id: MoveKeys) {
-		//
-		function fillArrayWithIds(arr: string[]) {
+	function spansInGridArea(
+		grid: Layout['grid'],
+		id: MoveKeys,
+		{ toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }
+	) {
+		function addSpans(arr: string[]) {
 			let target = arr.indexOf(id)
 			let stopper = [false, false]
 
@@ -183,6 +152,17 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			return arr
 		}
 
+		function removeSpans(arr: string[]) {
+			let keepfirst = true
+			return arr.map((a) => {
+				if (a === id) {
+					if (keepfirst) keepfirst = false
+					else return '.'
+				}
+				return a
+			})
+		}
+
 		/*
 		 	For columns and rows:
 			mutate column by adding / removing duplicates 
@@ -194,15 +174,18 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		let col = grid.map((g) => g[posCol])
 		let row = [...grid[posRow]]
 
-		if (dir === 'col') {
-			col = checkDuplicate(col) ? removeDuplicateIds(col) : fillArrayWithIds(col)
-			grid.forEach((r, i) => (grid[i][posCol] = col[i])) // different /!\
+		if (remove) {
+			col = removeSpans(col)
+			row = removeSpans(row)
 		}
 
-		if (dir === 'row') {
-			row = checkDuplicate(row) ? removeDuplicateIds(row) : fillArrayWithIds(row)
-			grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i])) // different /!\
+		if (toggle) {
+			if (toggle === 'col') col = hasDuplicateInArray(col) ? removeSpans(col) : addSpans(col)
+			if (toggle === 'row') row = hasDuplicateInArray(row) ? removeSpans(row) : addSpans(row)
 		}
+
+		grid.forEach((r, i) => (grid[i][posCol] = col[i])) // Row changes
+		grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i])) // Column changes
 
 		return grid
 	}
@@ -221,6 +204,16 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
 				index = lastItemIsQuotes ? grid.length - 1 : grid.length
 			}
+
+			// remove spans on the targeted row
+			// todo: could be improved, good enough for now
+			grid[index]?.forEach((col) => {
+				if (col && col !== '.') {
+					if (hasDuplicateInGrid(grid, id)) {
+						grid = spansInGridArea(grid, id, { remove: true })
+					}
+				}
+			})
 
 			// Create new row
 			let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
@@ -249,6 +242,31 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 			return grid
 		},
+	}
+
+	// Funcs (modifies dom in some ways)
+
+	function setGridAreas(layout: Layout) {
+		if (dominterface) {
+			dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
+		}
+	}
+
+	function setAlign(item: MoveItem, id: MoveKeys) {
+		const elem = elements[id]
+		if (elem) {
+			if (typeof item?.box === 'string') elem.style.placeSelf = item.box
+			if (typeof item?.text === 'string') elem.style.textAlign = item.text
+		}
+	}
+
+	function setAllAligns(items: Layout['items']) {
+		Object.keys(elements).forEach((key) => {
+			if (key in items) {
+				const id = key as MoveKeys
+				setAlign(items[id], id)
+			}
+		})
 	}
 
 	const gridOverlay = {
@@ -329,8 +347,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 			let col = grid.map((g) => g[posCol])
 			let row = [...grid[posRow]]
 
-			applyStates('col', checkDuplicate(col, id))
-			applyStates('row', checkDuplicate(row, id))
+			applyStates('col', hasDuplicateInArray(col, id))
+			applyStates('row', hasDuplicateInArray(row, id))
 		},
 
 		align: (item?: MoveItem) => {
@@ -375,9 +393,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})
 	}
 
-	//
-	// Updates
-	//
+	// Updates (needs storage, tries not to modify dom too much)
 
 	function updateMoveElement({ action, elementId, button }: Update) {
 		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
@@ -398,7 +414,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				const y = parseInt(button.dataset.row || '0')
 				const x = parseInt(button.dataset.col || '0')
 
-				const { grid } = move.layouts[move.selection]
+				let { grid } = move.layouts[move.selection]
 				const allActivePos = findIdsPosition(grid, activeID)
 				const allAffectedIds: MoveKeys[] = []
 
@@ -413,21 +429,8 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 				// step 2: remove conflicting fillings on affected elements
 				allAffectedIds.forEach((id) => {
-					const positions = findIdsPosition(grid, id)
-
-					// are filling
-					if (positions.length > 1) {
-						const { posCol, posRow } = positions[0]
-						let col = grid.map((g) => g[posCol])
-						let row = [...grid[posRow]]
-
-						// remove row fills
-						row = removeDuplicateIds(row, id)
-						grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i]))
-
-						// remove column fills
-						col = removeDuplicateIds(col, id)
-						grid.forEach((r, i) => (grid[i][posCol] = col[i]))
+					if (hasDuplicateInGrid(grid, id)) {
+						grid = spansInGridArea(grid, id, { remove: true })
 					}
 				})
 
@@ -554,6 +557,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					if (dominterface?.classList.contains('move-edit')) {
 						gridOverlay.removeAll()
 					} else {
+						buttonControl.layout(move.selection)
 						const ids = getEnabledWidgetsFromStorage(data as Sync).concat(['main', 'time'])
 						ids.forEach((id) => gridOverlay.add(id))
 					}
@@ -569,7 +573,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				if (!activeID) return
 
 				const layout = move.layouts[move.selection]
-				layout.grid = spansInGridArea(dir, layout.grid, activeID)
+				layout.grid = spansInGridArea(layout.grid, activeID, { toggle: dir })
 
 				setGridAreas(layout)
 				buttonControl.grid(activeID)
@@ -652,32 +656,22 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 		})
 	}
 
-	if (widget) {
-		updateMoveElement({ action: 'widget' })
-	}
+	// Init
 
 	if (init) {
-		//
-		// Init
-		//
-
 		;(function initilisation() {
 			// Detect small width on startup
-			if (window.innerWidth < 764) {
-				init.selection = 'single'
-			}
+			if (window.innerWidth < 764) init.selection = 'single'
 
 			const layout = init.layouts[init.selection]
-
 			setAllAligns(layout.items)
 			setGridAreas(layout)
-			buttonControl.layout(init.selection)
 		})()
+	}
 
-		//
-		// Events
-		//
+	// Events (only start on startup)
 
+	if (init) {
 		setTimeout(() => {
 			document.addEventListener('keypress', (ev: KeyboardEvent) => updateMoveElement({ action: 'toggle', ev: ev }))
 
@@ -725,5 +719,11 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				updateMoveElement({ action: 'responsive' })
 			})
 		}, 200)
+	}
+
+	// Widget (comes from outside events)
+
+	if (widget) {
+		updateMoveElement({ action: 'widget' })
 	}
 }
