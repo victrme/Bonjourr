@@ -2686,21 +2686,26 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 	}
 }
 
-export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputElement) {
-	const domsearchbar = $('searchbar') as HTMLInputElement
-	const emptyButton = $('sb_empty') as HTMLButtonElement
-	const submitButton = $('sb_submit') as HTMLButtonElement
+export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInputElement) {
+	const domcontainer = $('sb_container')
+	const domsearchbar = $('searchbar')
+	const emptyButton = $('sb_empty')
+	const submitButton = $('sb_submit')
 
 	const display = (shown: boolean) => $('sb_container')?.setAttribute('class', shown ? 'shown' : 'hidden')
-	const setEngine = (value: string) => domsearchbar.setAttribute('data-engine', value)
-	const setRequest = (value: string) => domsearchbar.setAttribute('data-request', stringMaxSize(value, 512))
-	const setNewtab = (value: boolean) => domsearchbar.setAttribute('data-newtab', value.toString())
+	const setEngine = (value: string) => domsearchbar?.setAttribute('data-engine', value)
+	const setRequest = (value: string) => domsearchbar?.setAttribute('data-request', stringMaxSize(value, 512))
+	const setNewtab = (value: boolean) => domsearchbar?.setAttribute('data-newtab', value.toString())
 	const setOpacity = (value: number) => {
-		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
-
-		if (value > 0.4) $('sb_container')?.classList.add('opaque')
-		else $('sb_container')?.classList.remove('opaque')
+		if (domsearchbar) {
+			domsearchbar.style.backgroundColor = `rgba(255, 255, 255, ${value})`
+			domsearchbar.style.color = value > 0.4 ? '#222' : '#fff'
+			clas($('sb_container'), value > 0.4, 'opaque')
+		}
 	}
+
+	//
+	// Updates
 
 	function updateSearchbar() {
 		storage.sync.get('searchbar', (data) => {
@@ -2708,7 +2713,7 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 				return
 			}
 
-			switch (event) {
+			switch (update) {
 				case 'searchbar': {
 					data.searchbar.on = that.checked
 					display(that.checked)
@@ -2756,11 +2761,41 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 		})
 	}
 
-	function submitSearch() {
+	if (update) {
+		updateSearchbar()
+		return
+	}
+
+	//
+	// Initialisation
+
+	const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
+
+	try {
+		display(on)
+		setEngine(engine)
+		setRequest(request)
+		setNewtab(newtab)
+		setOpacity(opacity)
+
+		if (on) {
+			domsearchbar?.focus()
+		}
+	} catch (e) {
+		errorMessage('Error in searchbar initialization', e)
+	}
+
+	//
+	// Events
+
+	function submitSearch(e: SubmitEvent) {
+		if (!domsearchbar) return
+		e.preventDefault()
+
 		let searchURL = 'https://www.google.com/search?q=%s'
-		const isNewtab = domsearchbar.getAttribute('data-newtab') === 'true'
-		const engine = domsearchbar.getAttribute('data-engine') || 'google'
-		const request = domsearchbar.getAttribute('data-request') || ''
+		const isNewtab = domsearchbar?.dataset.newtab === 'true'
+		const engine = domsearchbar?.dataset.engine || 'google'
+		const request = domsearchbar?.dataset.request || ''
 		const lang = document.documentElement.getAttribute('lang') || 'en'
 
 		type EnginesKey = keyof typeof enginesUrls
@@ -2784,68 +2819,50 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 			searchURL = request
 		}
 
-		searchURL = searchURL.replace('%s', encodeURIComponent(domsearchbar.value))
+		// add search query to url
+		searchURL = searchURL.replace('%s', encodeURIComponent((domsearchbar as HTMLInputElement).value))
 
-		if (isNewtab) window.open(searchURL, '_blank')
-		else window.location.href = searchURL
+		// open new page
+		window.open(searchURL, isNewtab ? '_blank' : '')
 	}
 
 	function toggleInputButton(toggle: boolean) {
 		if (toggle) {
-			emptyButton.removeAttribute('disabled')
-			submitButton.removeAttribute('disabled')
+			emptyButton?.removeAttribute('disabled')
+			submitButton?.removeAttribute('disabled')
 		} else {
-			emptyButton.setAttribute('disabled', '')
-			submitButton.setAttribute('disabled', '')
+			emptyButton?.setAttribute('disabled', '')
+			submitButton?.setAttribute('disabled', '')
 		}
 	}
 
-	domsearchbar.onkeyup = function (e) {
-		const domssb = this as HTMLInputElement
-		if (e.key === 'Enter' && domssb.value.length > 0) {
-			submitSearch()
-		}
-	}
-
-	domsearchbar.oninput = function () {
-		const domssb = this as HTMLInputElement
-		const hasText = domssb.value.length > 0
+	function handleInputButtons() {
+		const hasText = (domsearchbar as HTMLInputElement).value.length > 0
 
 		clas(emptyButton, hasText, 'shown')
 		clas(submitButton, hasText, 'shown')
 		toggleInputButton(hasText)
 	}
 
-	emptyButton.onclick = function () {
-		domsearchbar.value = ''
+	function removeInputText() {
+		if (!domsearchbar) return
+
 		domsearchbar.focus()
+		;(domsearchbar as HTMLInputElement).value = ''
+
 		clas(emptyButton, false, 'shown')
 		clas(submitButton, false, 'shown')
 		toggleInputButton(false)
 	}
 
-	submitButton.onclick = function () {
-		submitSearch()
-	}
+	// This removes duplicates in case searchbar is called multiple times
+	domcontainer?.removeEventListener('submit', submitSearch)
+	domsearchbar?.removeEventListener('input', handleInputButtons)
+	emptyButton?.removeEventListener('click', removeInputText)
 
-	if (event) {
-		updateSearchbar()
-		return
-	}
-
-	const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
-
-	try {
-		display(on)
-		setEngine(engine)
-		setRequest(request)
-		setNewtab(newtab)
-		setOpacity(opacity)
-
-		if (on) domsearchbar.focus()
-	} catch (e) {
-		errorMessage('Error in searchbar initialization', e)
-	}
+	domcontainer?.addEventListener('submit', submitSearch)
+	domsearchbar?.addEventListener('input', handleInputButtons)
+	emptyButton?.addEventListener('click', removeInputText)
 }
 
 export async function quotes(
