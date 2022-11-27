@@ -631,12 +631,14 @@ function settingsMgmt() {
 
 	function exportAsFile() {
 		const a = $('downloadfile')
-
 		if (!a) return
 
 		storage.sync.get(null, (data) => {
-			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
-			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
+			const bytes = new TextEncoder().encode(JSON.stringify(data))
+			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+
+			a.setAttribute('href', URL.createObjectURL(blob))
+			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.json`)
 			a.click()
 		})
 	}
@@ -651,6 +653,25 @@ function settingsMgmt() {
 	}
 
 	function importAsFile(target: HTMLInputElement) {
+		function decodeExportFile(str: string) {
+			let result = {}
+
+			try {
+				// Tries to decode base64 from previous versions
+				result = JSON.parse(atob(str))
+			} catch {
+				try {
+					// If base64 failed, parse raw string
+					result = JSON.parse(str)
+				} catch (error) {
+					// If all failed, return empty object
+					result = {}
+				}
+			}
+
+			return result
+		}
+
 		if (!target.files || (target.files && target.files.length === 0)) {
 			return
 		}
@@ -659,13 +680,13 @@ function settingsMgmt() {
 		const reader = new FileReader()
 
 		reader.onload = () => {
-			try {
-				if (typeof reader.result === 'string') {
-					const json = JSON.parse(window.atob(reader.result))
-					paramsImport(json)
-				}
-			} catch (err) {
-				console.log(err)
+			if (typeof reader.result !== 'string') return false
+
+			const importData = decodeExportFile(reader.result)
+
+			// data has at least one valid key from default sync storage => import
+			if (Object.keys(syncDefaults).filter((key) => key in importData).length > 0) {
+				paramsImport(importData as Sync)
 			}
 		}
 		reader.readAsText(file)
@@ -867,7 +888,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-function paramsImport(dataToImport: any) {
+function paramsImport(dataToImport: Sync) {
 	try {
 		// Load all sync & dynamicCache
 		storage.sync.get(null, (sync) => {
@@ -884,7 +905,7 @@ function paramsImport(dataToImport: any) {
 
 				// Delete current links on imports containing links somewhere
 				// to avoid duplicates
-				if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+				if ((newImport.links as [])?.length > 0 || bundleLinks(newImport)?.length > 0) {
 					bundleLinks(sync as Sync).forEach((elem: Link) => {
 						delete sync[elem._id]
 					})
