@@ -40,11 +40,13 @@ function ressources(platform) {
 
 function worker(platform) {
 	return () => {
-		const file = {
-			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
-			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
+		if (platform === 'online') {
+			return src('src/scripts/services/service-worker.js').pipe(dest('release/online'))
 		}
-		return src(file.origin).pipe(dest(file.destination))
+
+		return src(`src/scripts/services/background-${platform === 'chrome' ? 'chrome' : 'browser'}.js`)
+			.pipe(rename('background.js'))
+			.pipe(dest('release/' + platform + '/src/scripts'))
 	}
 }
 
@@ -64,10 +66,6 @@ function styles(platform) {
 			.pipe(sass.sync().on('error', sass.logError))
 			.pipe(csso())
 			.pipe(dest(`release/${platform}/src/styles/`))
-}
-
-function addBackground(platform) {
-	return () => src('src/scripts/background.js').pipe(dest(`release/${platform}/src/scripts`))
 }
 
 function locales(platform) {
@@ -99,7 +97,6 @@ const taskExtension = (from) => [
 	manifest(from),
 	ressources(from),
 	scripts(from),
-	addBackground(from),
 ]
 
 //
