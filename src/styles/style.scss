@@ -435,6 +435,10 @@
 						padding: 0.3em;
 						border-radius: 0.8em;
 					}
+
+					span {
+						word-break: break-word;
+					}
 				}
 			}
 
@@ -919,6 +923,7 @@ footer {
 			color: white;
 			background-color: #2c7be5;
 
+			&#e_delete,
 			&:first-child {
 				color: white;
 				background-color: #e64b43;
@@ -1096,12 +1101,9 @@ footer {
 		}
 	}
 
-	.linkOptions {
-		display: flex;
-		flex-direction: column;
-	}
-
 	button {
+		display: block;
+		width: 100%;
 		border-radius: 6px;
 		border: 3px solid transparent;
 		text-align: left;

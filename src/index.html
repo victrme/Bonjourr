@@ -29,46 +29,40 @@
 		<button id="skiptosettings" type="button">Skip to Settings</button>
 
 		<div id="editlink">
-			<div>
-				<input
-					id="e_title"
-					type="text"
-					name="e_title"
-					maxlength="64"
-					autocomplete="off"
-					placeholder="Title"
-					aria-label="Update link title"
-				/>
-			</div>
-			<div>
-				<input
-					id="e_url"
-					type="url"
-					name="e_url"
-					maxlength="512"
-					autocomplete="off"
-					placeholder="Link"
-					aria-label="Update link URL"
-				/>
-			</div>
-			<div>
-				<input
-					id="e_iconurl"
-					type="url"
-					name="e_iconurl"
-					maxlength="7600"
-					autocomplete="off"
-					placeholder="Icon"
-					aria-label="Update link icon URL"
-				/>
-			</div>
+			<input
+				id="e_title"
+				type="text"
+				name="e_title"
+				maxlength="64"
+				autocomplete="off"
+				placeholder="Title"
+				aria-label="Update link title"
+			/>
+
+			<input
+				id="e_url"
+				type="url"
+				name="e_url"
+				maxlength="512"
+				autocomplete="off"
+				placeholder="Link"
+				aria-label="Update link URL"
+			/>
+
+			<input
+				id="e_iconurl"
+				type="url"
+				name="e_iconurl"
+				maxlength="7600"
+				autocomplete="off"
+				placeholder="Icon"
+				aria-label="Update link icon URL"
+			/>
 
 			<hr />
 
-			<div class="linkOptions" role="menu">
-				<button id="e_delete" class="trn" role="menuitem" aria-label="Remove link">Delete</button>
-				<button id="e_submit" class="trn" role="menuitem" aria-label="Apply changes">Apply changes</button>
-			</div>
+			<button id="e_delete" class="trn" aria-label="Remove link">Delete</button>
+			<button id="e_submit" class="trn" aria-label="Apply changes">Apply changes</button>
 		</div>
 
 		<div id="bookmarks_container">

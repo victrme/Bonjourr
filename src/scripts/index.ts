@@ -1058,7 +1058,8 @@ export function quickLinks(
 			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
 
 			// Moves edit link to mouse position
-			document.querySelector('#editlink')?.setAttribute('style', `transform: translate(${x + 3}px, ${y + 3}px)`)
+			const domeditlink = $('editlink')
+			if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
 		}
 
 		const linkId = domlink.id
@@ -1319,11 +1320,12 @@ export function quickLinks(
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 
-	window.addEventListener('resize', (e) => {
-		if ((testOS.ios || !mobilecheck()) && document.querySelector('#editlink')?.classList.contains('shown')) {
-			closeEditLink()
-		}
-	})
+	if (testOS.ios || !mobilecheck()) {
+		const domeditlink = $('editlink')
+		window.addEventListener('resize', () => {
+			if (domeditlink?.classList.contains('shown')) closeEditLink()
+		})
+	}
 }
 
 export async function linksImport() {

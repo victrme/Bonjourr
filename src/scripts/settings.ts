@@ -1150,7 +1150,16 @@ export function settingsInit(data: Sync) {
 			responsiveSettingsHeightDrag()
 		}, 600)
 
-		window.addEventListener('resize', DrawerDragDebounce)
+		window.addEventListener('resize', (e) => {
+			DrawerDragDebounce()
+
+			// removes transition to prevent weird movement when changing to mobile styling
+			// /!\ this is dependent on toggleDisplay() to remove inline styling /!\
+			if (!settingsDom.style.transition) {
+				settingsDom.style.transition = 'none'
+			}
+		})
+
 		responsiveSettingsHeightDrag()
 	}
 
