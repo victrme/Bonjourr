@@ -706,10 +706,11 @@
 }
 
 footer {
+	position: fixed;
+	bottom: 0;
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
-	padding: 24px;
 	padding-top: 0;
 	box-sizing: border-box;
 	z-index: 3;
@@ -723,6 +724,7 @@ footer {
 	}
 
 	#creditContainer {
+		margin: 0 0 24px 24px;
 		opacity: 0;
 		max-width: 50%;
 		display: flex;
@@ -767,7 +769,7 @@ footer {
 		position: relative;
 		bottom: 0;
 		right: 0;
-		z-index: 3;
+		padding: 0 24px 24px 0;
 
 		button {
 			position: relative;

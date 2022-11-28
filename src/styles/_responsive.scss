@@ -114,7 +114,6 @@
 
 	footer {
 		position: relative;
-		padding: 0 14px 14px;
 		z-index: 1;
 
 		#creditContainer {
@@ -197,11 +196,6 @@
 }
 
 @media (orientation: landscape) {
-	footer {
-		position: absolute;
-		bottom: 0;
-	}
-
 	#interface {
 		max-height: unset;
 
