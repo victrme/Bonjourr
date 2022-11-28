@@ -16,8 +16,18 @@
 		"newtab": "index.html"
 	},
 
-	"action": {
-		"title": "Bonjourr"
+	"browser_action": {
+		"default_title": "__MSG_extensionName__",
+		"default_icon": {
+			"128": "src/assets/favicon-128x128.png",
+			"512": "src/assets/favicon-512x512.png"
+		},
+		"browser_style": true
+	},
+
+	"background": {
+		"page": "background.html",
+		"persistent": false
 	},
 
 	"offline_enabled": true,

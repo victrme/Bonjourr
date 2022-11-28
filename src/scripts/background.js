@@ -1,9 +1,20 @@
-const isOnChrome = navigator.userAgent.includes('Chrome')
-const newTab = () => chrome.tabs.create({ url: 'chrome://newtab' })
-const goodbye = () => 'https://bonjourr.fr/goodbye' + (isOnChrome ? '?from=Chrome' : '?from=Firefox')
+let extension = browser
+if (chrome) extension = chrome
 
-chrome.runtime.setUninstallURL(goodbye())
+function createNewTab() {
+	const url = extension.runtime.getURL('index.html')
+	extension.tabs.create({ url })
+}
 
-chrome.runtime.onInstalled.addListener(function (d) {
-	if (d?.reason === 'install') newTab()
-})
+function handleInstalled(details) {
+	if (details.reason === 'install') createNewTab()
+	console.log(details)
+}
+
+function goodbye() {
+	return 'https://bonjourr.fr/goodbye?from=' + (navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Firefox')
+}
+
+extension.browserAction.onClicked.addListener(createNewTab)
+extension.runtime.onInstalled.addListener(handleInstalled)
+extension.runtime.setUninstallURL(goodbye())
