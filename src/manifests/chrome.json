@@ -17,7 +17,7 @@
 	},
 
 	"action": {
-		"title": "Bonjourr"
+		"title": "__MSG_extensionName__"
 	},
 
 	"offline_enabled": true,

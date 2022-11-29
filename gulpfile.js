@@ -115,4 +115,8 @@ exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
 
-exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'))
+exports.safari = async function () {
+	watch(filesToWatch, series(parallel(...taskExtension('safari'))))
+}
+
+exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'), ...taskExtension('safari'))
