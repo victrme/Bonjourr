@@ -21,8 +21,18 @@
 		"homepage": "index.html"
 	},
 
+	"browser_action": {
+		"default_title": "__MSG_extensionName__",
+		"default_icon": {
+			"128": "src/assets/favicon-128x128.png",
+			"512": "src/assets/favicon-512x512.png"
+		},
+		"browser_style": true
+	},
+
 	"background": {
-		"scripts": ["src/scripts/background.js"]
+		"page": "background.html",
+		"persistent": false
 	},
 
 	"permissions": ["storage", "unlimitedStorage", "geolocation"],
