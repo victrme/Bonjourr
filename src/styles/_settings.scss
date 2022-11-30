@@ -896,6 +896,7 @@
 		color: #6d6d72;
 		font-size: 14px;
 		padding: 4em;
+		padding-bottom: 100px; // to always stay above footer
 
 		// Safari iOS only
 		@supports (-webkit-touch-callout: none) {

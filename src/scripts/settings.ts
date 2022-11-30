@@ -878,6 +878,9 @@ function signature(dom: HTMLElement) {
 
 	const version = dom.querySelector('.version a')
 	if (version) version.textContent = syncDefaults.about.version
+
+	// Remove donate text on safari because apple is evil
+	if (testOS.ios || detectPlatform() === 'safari') dom.querySelector('#rdv_website')?.remove()
 }
 
 function fadeOut() {
