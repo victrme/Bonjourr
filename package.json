@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "1.15.3",
+	"version": "1.15.4",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
 	"main": "src/scripts/index.ts",
 	"scripts": {

@@ -1,5 +1,14 @@
 ## Changelogs
 
+**v1.15.4**
+
+-   Fixes:
+    -   File export not working with non-latin language
+    -   Searchbar events capturing `Enter` key instead of submit
+-   Clicking on the extension icon now creates a new tab
+-   Improved resize performance
+-   Minor style changes
+
 **v1.15.3**
 
 -   Fixes:
