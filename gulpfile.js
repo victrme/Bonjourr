@@ -12,7 +12,12 @@ function html(platform) {
 	//
 
 	return () => {
-		const stream = src('src/*.html')
+		const assets = ['src/*.html']
+
+		// no background.html on chrome because manifest v3
+		if (/chrome|online/.test(platform)) assets.push('!src/background.html')
+
+		const stream = src(assets)
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
