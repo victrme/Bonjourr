@@ -1,5 +1,9 @@
 ## Changelogs
 
+**v1.15.5**
+
+-   Hotfix: Fixed searchbar stuck in "open in new tab" state
+
 **v1.15.4**
 
 -   Fixes:
