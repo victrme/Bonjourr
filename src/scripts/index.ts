@@ -2825,7 +2825,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 		searchURL = searchURL.replace('%s', encodeURIComponent((domsearchbar as HTMLInputElement).value))
 
 		// open new page
-		window.open(searchURL, isNewtab ? '_blank' : '')
+		window.open(searchURL, isNewtab ? '_blank' : '_self')
 	}
 
 	function toggleInputButton(toggle: boolean) {
