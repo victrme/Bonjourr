@@ -30,6 +30,7 @@ import {
 } from './utils'
 
 import {
+	toggleWidgets,
 	backgroundFilter,
 	notes,
 	clock,
@@ -206,6 +207,17 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	//
 
+	function widgetThrottle(e: Event) {
+		if (sessionStorage.throttledWidgetInput === 'true') {
+			e.preventDefault()
+			return true
+		}
+
+		// removes it in moveElements when storage is correctly saved
+		sessionStorage.throttledWidgetInput = 'true'
+		return false
+	}
+
 	// Pressing "Enter" removes focus from input to indicate change
 	const enterBlurs = (elem: HTMLInputElement) => {
 		elem.onkeyup = (e: KeyboardEvent) => {
@@ -279,6 +291,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
+	paramId('b_editmove').addEventListener('click', function () {
+		moveElements(null, { toggle: true })
+	})
+
 	paramId('hideelem')
 		.querySelectorAll('button')
 		.forEach((elem: HTMLButtonElement) => {
@@ -291,30 +307,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quick links
 
-	function widgetToggle({ event, callback, id, on }: { event: Event; callback: Function; id: MoveKeys; on: boolean }) {
-		if (sessionStorage.throttledWidgetInput === 'true') {
-			event.preventDefault()
-			return
-		}
-
-		// removes it in moveElements when storage is correctly saved
-		sessionStorage.throttledWidgetInput = 'true'
-
-		// Toggles settings options
-		$(id + '_options')?.classList.toggle('shown')
-
-		// Updates grid and apply widget toggle function
-		moveElements(null, { id, on })
-		callback()
-	}
-
 	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		widgetToggle({
-			event: ev,
-			id: 'quicklinks',
-			on: this.checked,
-			callback: () => quickLinks(null, { is: 'toggle', checked: this.checked }),
-		})
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ quicklinks: this.checked }, true)
 	})
 
 	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
@@ -463,12 +458,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Notes
 
 	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		widgetToggle({
-			event: ev,
-			id: 'notes',
-			on: this.checked,
-			callback: () => notes(null, { is: 'toggle', value: this.checked.toString() }),
-		})
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ notes: this.checked }, true)
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -483,12 +474,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Searchbar
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		widgetToggle({
-			event: ev,
-			id: 'searchbar',
-			on: this.checked,
-			callback: () => searchbar(null, 'searchbar', this),
-		})
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ searchbar: this.checked }, true)
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -511,12 +498,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quotes
 
 	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		widgetToggle({
-			event: ev,
-			id: 'quotes',
-			on: this.checked,
-			callback: () => quotes(null, { is: 'toggle', checked: this.checked }),
-		})
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ quotes: this.checked }, true)
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {

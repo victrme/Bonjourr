@@ -677,11 +677,11 @@
 	}
 
 	#searchbar_options #choose_searchengine {
+		display: none;
+
 		&.shown {
 			display: block;
 		}
-
-		@include hidden();
 	}
 
 	#quotes_options {

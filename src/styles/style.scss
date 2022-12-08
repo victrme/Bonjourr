@@ -288,7 +288,9 @@
 		row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 		transition: max-height 0.5s, max-width 0.18s $easeOutThree, visibility 0s 0s;
 
-		@include hidden();
+		&.hidden {
+			display: none;
+		}
 
 		&.dragging {
 			li {
@@ -497,6 +499,10 @@
 		border-radius: 10px;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
+		&.hidden {
+			display: none;
+		}
+
 		#searchbar {
 			height: 2.5em;
 			width: 100%;
@@ -588,23 +594,11 @@
 				}
 			}
 		}
-
-		&.hidden {
-			flex-grow: 0;
-			visibility: hidden;
-			display: none;
-
-			#searchbar {
-				height: 0px;
-			}
-		}
 	}
 
 	#quotes_container {
-		display: none;
+		display: flex;
 		flex-direction: column;
-		// flex-grow: 0;
-		opacity: 0;
 		row-gap: 1em;
 		width: 33vw;
 		max-width: 600px;
@@ -616,35 +610,24 @@
 		transition: opacity 0.2s, flex-grow 0.4s 0.2s, min-height 0.4s 0.2s, transform 0.4s;
 		cursor: initial;
 
+		&.hidden {
+			display: none;
+		}
+
 		#quote {
-			max-height: 0;
 			font-size: 1.5em;
-			transition: max-height 0.2s 0.2s;
+			max-height: 180px;
 		}
 
 		#author {
-			font-size: 1.2em;
 			opacity: 0;
+			font-size: 1.2em;
 			transition: opacity 0.4s;
-
-			&.alwaysVisible {
-				opacity: 1;
-			}
 		}
 
-		&.shown {
-			display: flex;
+		#author.always-on,
+		&:hover #author {
 			opacity: 1;
-			transition: opacity 0.2s 0.2s, min-height 0.4s, flex-grow 0.4s, transform 0.4s;
-
-			#quote {
-				max-height: 180px;
-				transition: max-height 0.2s 0s;
-			}
-
-			&:hover #author {
-				opacity: 1;
-			}
 		}
 	}
 }
@@ -657,8 +640,6 @@ footer {
 	padding-top: 0;
 	box-sizing: border-box;
 	z-index: 3;
-
-	@include hidden();
 
 	> * {
 		pointer-events: all;

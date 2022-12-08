@@ -3,6 +3,7 @@ import clonedeep from 'lodash.clonedeep'
 import storage from './storage'
 import { Move, MoveKeys, MoveItem, Sync } from './types/sync'
 import { syncDefaults, clas, $ } from './utils'
+import { toggleWidgets } from '.'
 
 // ┌──────────────────────────────────────┐
 // │   ┌────────────┐  ┌────────────┐     │
@@ -44,7 +45,7 @@ type Update = {
 		| 'responsive'
 	button?: HTMLButtonElement
 	elementId?: string
-	ev?: KeyboardEvent
+	keyboardEvent?: KeyboardEvent
 }
 
 let smallWidth = false
@@ -58,344 +59,353 @@ const elements = {
 	quotes: $('quotes_container'),
 }
 
-export default function moveElements(init: Move | null, widget?: InterfaceWidgetControl) {
-	let activeID: MoveKeys | null
+let activeID: MoveKeys | null
 
-	// Utils (no dom uses or manipulation)
+// Utils (no dom uses or manipulation)
 
-	const isEditing = () => dominterface?.classList.contains('move-edit') || false
+const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
-	function areaStringToLayoutGrid(area: string) {
-		let rows = area.substring(1, area.length - 2).split('" "')
-		let grid = rows.map((row) => row.replace('"', '').split(' '))
-		return grid
+function areaStringToLayoutGrid(area: string) {
+	let rows = area.substring(1, area.length - 2).split('" "')
+	let grid = rows.map((row) => row.replace('"', '').split(' '))
+	return grid
+}
+
+function layoutToGridAreas(grid: Layout['grid']) {
+	let areas = ``
+
+	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
+	grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
+
+	return areas
+}
+
+function isRowEmpty(grid: Layout['grid'], index: number) {
+	if (grid[index]) {
+		return grid[index].filter((col) => col !== '.').length === 0
 	}
 
-	function layoutToGridAreas(grid: Layout['grid']) {
-		let areas = ``
+	return true
+}
 
-		const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
-		grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
-
-		return areas
+function getEnabledWidgetsFromStorage(data: Sync) {
+	// Get each widget state from their specific storage
+	let displayed = {
+		quotes: !!data.quotes?.on,
+		notes: !!data.notes?.on,
+		searchbar: !!data.searchbar?.on,
+		quicklinks: data.quicklinks,
 	}
 
-	function isRowEmpty(grid: Layout['grid'], index: number) {
-		if (grid[index]) {
-			return grid[index].filter((col) => col !== '.').length === 0
-		}
+	return Object.entries(displayed)
+		.filter(([key, val]) => val)
+		.map(([key, val]) => key as MoveKeys)
+}
 
-		return true
-	}
+function getEnabledWidgetsFromGrid(grid: Layout['grid']) {
+	let flat = [...grid.flat()]
+	flat = flat.filter((str) => str !== '.') // remove empty cells
+	flat = flat.filter((str, i) => flat.indexOf(str) === i) // remove duplicates
+	return flat
+}
 
-	function getEnabledWidgetsFromStorage(data: Sync) {
-		// Get each widget state from their specific storage
-		let displayed = {
-			quotes: !!data.quotes?.on,
-			notes: !!data.notes?.on,
-			searchbar: !!data.searchbar?.on,
-			quicklinks: data.quicklinks,
-		}
+function findIdsPosition(grid: Layout['grid'], id: string) {
+	const allpos: { posCol: number; posRow: number }[] = []
 
-		return Object.entries(displayed)
-			.filter(([key, val]) => val)
-			.map(([key, val]) => key as MoveKeys)
-	}
-
-	function findIdsPosition(grid: Layout['grid'], id: string) {
-		const allpos: { posCol: number; posRow: number }[] = []
-
-		grid.flat().forEach((a, i) => {
-			if (a === id)
-				allpos.push({
-					posCol: i % grid[0].length,
-					posRow: Math.floor(i / grid[0].length),
-				})
-		})
-
-		return allpos
-	}
-
-	function hasDuplicateInArray(arr: string[], id?: string) {
-		return arr.filter((a) => a === (id || activeID)).length > 1
-	}
-
-	function hasDuplicateInGrid(grid: Layout['grid'], id: string) {
-		return findIdsPosition(grid, id).length > 1
-	}
-
-	function spansInGridArea(
-		grid: Layout['grid'],
-		id: MoveKeys,
-		{ toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }
-	) {
-		function addSpans(arr: string[]) {
-			let target = arr.indexOf(id)
-			let stopper = [false, false]
-
-			function replaceWithId(a: string[], i: number, lim: number) {
-				// not stopping and elem exit
-				if (!stopper[lim] && a[i]) {
-					if (a[i] === '.') a[i] = id // replaces dot with id
-					else if (a[i] !== id) stopper[lim] = true // other ? stop
-				}
-
-				return a
-			}
-
-			// in [., a, ., ., target, ., b, ., .]
-			for (let ii = 1; ii < arr.length; ii++) {
-				arr = replaceWithId(arr, target + ii, 0) // replaces until b
-				arr = replaceWithId(arr, target - ii, 1) // replaces until a
-			}
-
-			return arr
-		}
-
-		function removeSpans(arr: string[]) {
-			let keepfirst = true
-			return arr.map((a) => {
-				if (a === id) {
-					if (keepfirst) keepfirst = false
-					else return '.'
-				}
-				return a
+	grid.flat().forEach((a, i) => {
+		if (a === id)
+			allpos.push({
+				posCol: i % grid[0].length,
+				posRow: Math.floor(i / grid[0].length),
 			})
+	})
+
+	return allpos
+}
+
+function hasDuplicateInArray(arr: string[], id?: string) {
+	return arr.filter((a) => a === (id || activeID)).length > 1
+}
+
+function hasDuplicateInGrid(grid: Layout['grid'], id: string) {
+	return findIdsPosition(grid, id).length > 1
+}
+
+function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
+	function addSpans(arr: string[]) {
+		let target = arr.indexOf(id)
+		let stopper = [false, false]
+
+		function replaceWithId(a: string[], i: number, lim: number) {
+			// not stopping and elem exit
+			if (!stopper[lim] && a[i]) {
+				if (a[i] === '.') a[i] = id // replaces dot with id
+				else if (a[i] !== id) stopper[lim] = true // other ? stop
+			}
+
+			return a
 		}
 
-		/*
+		// in [., a, ., ., target, ., b, ., .]
+		for (let ii = 1; ii < arr.length; ii++) {
+			arr = replaceWithId(arr, target + ii, 0) // replaces until b
+			arr = replaceWithId(arr, target - ii, 1) // replaces until a
+		}
+
+		return arr
+	}
+
+	function removeSpans(arr: string[]) {
+		let keepfirst = true
+		return arr.map((a) => {
+			if (a === id) {
+				if (keepfirst) keepfirst = false
+				else return '.'
+			}
+			return a
+		})
+	}
+
+	/*
 		 	For columns and rows:
 			mutate column by adding / removing duplicates 
 			mutate grid with new column
 			update buttons with recheck duplication (don't assume duped work everytime) 
 		*/
 
-		const { posCol, posRow } = findIdsPosition(grid, id)[0]
-		let col = grid.map((g) => g[posCol])
-		let row = [...grid[posRow]]
+	const { posCol, posRow } = findIdsPosition(grid, id)[0]
+	let col = grid.map((g) => g[posCol])
+	let row = [...grid[posRow]]
 
-		if (remove) {
-			col = removeSpans(col)
-			row = removeSpans(row)
+	if (remove) {
+		col = removeSpans(col)
+		row = removeSpans(row)
+	}
+
+	if (toggle) {
+		if (toggle === 'col') col = hasDuplicateInArray(col) ? removeSpans(col) : addSpans(col)
+		if (toggle === 'row') row = hasDuplicateInArray(row) ? removeSpans(row) : addSpans(row)
+	}
+
+	grid.forEach((r, i) => (grid[i][posCol] = col[i])) // Row changes
+	grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i])) // Column changes
+
+	return grid
+}
+
+function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
+	function addWidget() {
+		// in triple colum, default colum is [x, here, x]
+		const middleColumn = grid[0].length === 3 ? 1 : 0
+		let index = 2
+
+		// Quotes always at the bottom
+		if (id === 'quotes') index = grid.length
+
+		// Quick links above quotes, below the rest
+		if (id === 'quicklinks') {
+			const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
+			index = lastItemIsQuotes ? grid.length - 1 : grid.length
 		}
 
-		if (toggle) {
-			if (toggle === 'col') col = hasDuplicateInArray(col) ? removeSpans(col) : addSpans(col)
-			if (toggle === 'row') row = hasDuplicateInArray(row) ? removeSpans(row) : addSpans(row)
-		}
+		// remove spans on the targeted row
+		// todo: could be improved, good enough for now
+		grid[index]?.forEach((col) => {
+			if (col && col !== '.') {
+				if (hasDuplicateInGrid(grid, id)) {
+					grid = spansInGridArea(grid, id, { remove: true })
+				}
+			}
+		})
 
-		grid.forEach((r, i) => (grid[i][posCol] = col[i])) // Row changes
-		grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i])) // Column changes
+		// Create new row
+		let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
+		grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
+		grid[index][middleColumn] = id
 
 		return grid
 	}
 
-	const gridWidget = {
-		add: (grid: Layout['grid'], id: MoveKeys) => {
-			// in triple colum, default colum is [x, here, x]
-			const middleColumn = grid[0].length === 3 ? 1 : 0
-			let index = 2
-
-			// Quotes always at the bottom
-			if (id === 'quotes') index = grid.length
-
-			// Quick links above quotes, below the rest
-			if (id === 'quicklinks') {
-				const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
-				index = lastItemIsQuotes ? grid.length - 1 : grid.length
+	function removeWidget() {
+		// remove id from grid
+		for (const i in grid) {
+			for (const k in grid[i]) {
+				if (grid[i][k] === id) grid[i][k] = '.'
 			}
-
-			// remove spans on the targeted row
-			// todo: could be improved, good enough for now
-			grid[index]?.forEach((col) => {
-				if (col && col !== '.') {
-					if (hasDuplicateInGrid(grid, id)) {
-						grid = spansInGridArea(grid, id, { remove: true })
-					}
-				}
-			})
-
-			// Create new row
-			let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
-			grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
-			grid[index][middleColumn] = id
-
-			return grid
-		},
-
-		remove: (grid: Layout['grid'], id: MoveKeys) => {
-			// remove id from grid
-			for (const i in grid) {
-				for (const k in grid[i]) {
-					if (grid[i][k] === id) grid[i][k] = '.'
-				}
-			}
-
-			// if an empty row is found, removes it and quits
-			let hasRemovedRow = false
-			for (const ii in grid) {
-				if (isRowEmpty(grid, parseInt(ii)) && !hasRemovedRow) {
-					grid.splice(parseInt(ii), 1)
-					hasRemovedRow = true
-				}
-			}
-
-			return grid
-		},
-	}
-
-	// Funcs (modifies dom in some ways)
-
-	function setGridAreas(layout: Layout) {
-		if (dominterface) {
-			dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
 		}
-	}
 
-	function setAlign(item: MoveItem, id: MoveKeys) {
-		const elem = elements[id]
-		if (elem) {
-			if (typeof item?.box === 'string') elem.style.placeSelf = item.box
-			if (typeof item?.text === 'string') elem.style.textAlign = item.text
+		// if an empty row is found, removes it and quits
+		let hasRemovedRow = false
+		for (const ii in grid) {
+			if (isRowEmpty(grid, parseInt(ii)) && !hasRemovedRow) {
+				grid.splice(parseInt(ii), 1)
+				hasRemovedRow = true
+			}
 		}
+
+		return grid
 	}
 
-	function setAllAligns(items: Layout['items']) {
-		Object.keys(elements).forEach((key) => {
-			if (key in items) {
-				const id = key as MoveKeys
-				setAlign(items[id], id)
-			}
+	if (add) return addWidget()
+	else return removeWidget()
+}
+
+// Funcs (modifies dom in some ways)
+
+function setGridAreas(layout: Layout) {
+	if (dominterface) {
+		dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
+	}
+}
+
+function setAlign(item: MoveItem, id: MoveKeys) {
+	const elem = elements[id]
+	if (elem) {
+		if (typeof item?.box === 'string') elem.style.placeSelf = item.box
+		if (typeof item?.text === 'string') elem.style.textAlign = item.text
+	}
+}
+
+function setAllAligns(items: Layout['items']) {
+	Object.keys(elements).forEach((key) => {
+		if (key in items) {
+			const id = key as MoveKeys
+			setAlign(items[id], id)
+		}
+	})
+}
+
+const gridOverlay = {
+	add: (id: MoveKeys) => {
+		const button = document.createElement('button')
+		button.id = 'move-overlay-' + id
+		button.className = 'move-overlay'
+		dominterface?.appendChild(button)
+
+		button.addEventListener('click', () => {
+			moveElements(null, { select: id })
 		})
-	}
+	},
 
-	const gridOverlay = {
-		add: (id: MoveKeys) => {
-			const div = document.createElement('div')
-			div.id = 'move-overlay-' + id
-			div.className = 'move-overlay'
-			dominterface?.appendChild(div)
+	remove: (id: MoveKeys) => {
+		document.querySelector('#move-overlay-' + id)?.remove()
+	},
 
-			div.addEventListener('click', () => {
-				updateMoveElement({ action: 'select', elementId: id })
-			})
-		},
+	removeAll: () => {
+		document.querySelectorAll('.move-overlay').forEach((d) => d.remove())
+	},
+}
 
-		remove: (id: MoveKeys) => {
-			document.querySelector('#move-overlay-' + id)?.remove()
-		},
+const buttonControl = {
+	layout: (selection: Move['selection']) => {
+		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
+			clas(b, b.dataset.layout === selection, 'selected')
+		})
+	},
 
-		removeAll: () => {
-			document.querySelectorAll('.move-overlay').forEach((d) => d.remove())
-		},
-	}
+	grid: (id: MoveKeys) => {
+		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '')
+		if (grid.length === 0) return
 
-	const buttonControl = {
-		layout: (selection: Move['selection']) => {
-			document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-				clas(b, b.dataset.layout === selection, 'selected')
-			})
-		},
+		let top = false,
+			bottom = false,
+			left = false,
+			right = false
 
-		grid: (id: MoveKeys) => {
-			const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '')
-			if (grid.length === 0) return
-
-			let top = false,
-				bottom = false,
-				left = false,
-				right = false
-
-			// Detect if element is on array limits
-			grid.forEach((row, i) => {
-				if (row.some((a) => a === id) && i === 0) top = true
-				if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
-				if (row.at(0) === id) left = true
-				if (row.at(-1) === id) right = true
-			})
-
-			// link button to correct limit, apply disable attr
-			document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
-				const c = parseInt(b.dataset.col || '0')
-				const r = parseInt(b.dataset.row || '0')
-				let limit = false
-
-				if (r === -1) limit = top
-				if (r === 1) limit = bottom
-				if (c === -1) limit = left
-				if (c === 1) limit = right
-
-				limit ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
-			})
-		},
-
-		span: (id: MoveKeys) => {
-			function applyStates(dir: 'col' | 'row', state: boolean) {
-				const dirButton = document.querySelector(`#grid-span-${dir}s`)
-				const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
-
-				if (state) otherButton?.setAttribute('disabled', '')
-				else otherButton?.removeAttribute('disabled')
-
-				clas(dirButton, state, 'selected')
-			}
-
-			const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
-			if (grid.length === 0) return
-
-			const { posCol, posRow } = findIdsPosition(grid, id)[0]
-			let col = grid.map((g) => g[posCol])
-			let row = [...grid[posRow]]
-
-			applyStates('col', hasDuplicateInArray(col, id))
-			applyStates('row', hasDuplicateInArray(row, id))
-		},
-
-		align: (item?: MoveItem) => {
-			const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
-			const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
-
-			boxBtns.forEach((b) => clas(b, b.dataset.align === item?.box, 'selected'))
-			textBtns.forEach((b) => clas(b, b.dataset.align === item?.text, 'selected'))
-		},
-
-		reset: (move: Move) => {
-			const btn = document.querySelector<HTMLButtonElement>('#reset-layout')
-			const defaultGrid = syncDefaults.move.layouts[move.selection].grid
-			const layout = move.layouts[move.selection]
-
-			const isSameGrid = layoutToGridAreas(layout.grid) === layoutToGridAreas(defaultGrid)
-			const isSameAlign = Object.values(layout.items).filter(({ box, text }) => box !== '' || text !== '').length === 0
-
-			if (isSameGrid && isSameAlign) {
-				btn?.setAttribute('disabled', '')
-			} else {
-				btn?.removeAttribute('disabled')
-			}
-		},
-	}
-
-	function removeSelection() {
-		activeID = null
-		buttonControl.align() // without params, selects 0 align
-
-		document.querySelectorAll('.grid-spanner')?.forEach((elem) => {
-			elem.removeAttribute('disabled')
-			clas(elem, false, 'selected')
+		// Detect if element is on array limits
+		grid.forEach((row, i) => {
+			if (row.some((a) => a === id) && i === 0) top = true
+			if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
+			if (row.at(0) === id) left = true
+			if (row.at(-1) === id) right = true
 		})
 
-		document.querySelectorAll<HTMLDivElement>('.move-overlay').forEach((elem) => {
-			elem.classList.remove('selected')
-		})
-
+		// link button to correct limit, apply disable attr
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
-			b.removeAttribute('disabled')
-		})
-	}
+			const c = parseInt(b.dataset.col || '0')
+			const r = parseInt(b.dataset.row || '0')
+			let limit = false
 
+			if (r === -1) limit = top
+			if (r === 1) limit = bottom
+			if (c === -1) limit = left
+			if (c === 1) limit = right
+
+			limit ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
+		})
+	},
+
+	span: (id: MoveKeys) => {
+		function applyStates(dir: 'col' | 'row', state: boolean) {
+			const dirButton = document.querySelector(`#grid-span-${dir}s`)
+			const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
+
+			if (state) otherButton?.setAttribute('disabled', '')
+			else otherButton?.removeAttribute('disabled')
+
+			clas(dirButton, state, 'selected')
+		}
+
+		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
+		if (grid.length === 0) return
+
+		const { posCol, posRow } = findIdsPosition(grid, id)[0]
+		let col = grid.map((g) => g[posCol])
+		let row = [...grid[posRow]]
+
+		applyStates('col', hasDuplicateInArray(col, id))
+		applyStates('row', hasDuplicateInArray(row, id))
+	},
+
+	align: (item?: MoveItem) => {
+		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
+		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
+
+		boxBtns.forEach((b) => clas(b, b.dataset.align === item?.box, 'selected'))
+		textBtns.forEach((b) => clas(b, b.dataset.align === item?.text, 'selected'))
+	},
+
+	reset: (move: Move) => {
+		const btn = document.querySelector<HTMLButtonElement>('#reset-layout')
+		const defaultGrid = syncDefaults.move.layouts[move.selection].grid
+		const layout = move.layouts[move.selection]
+
+		const isSameGrid = layoutToGridAreas(layout.grid) === layoutToGridAreas(defaultGrid)
+		const isSameAlign = Object.values(layout.items).filter(({ box, text }) => box !== '' || text !== '').length === 0
+
+		if (isSameGrid && isSameAlign) {
+			btn?.setAttribute('disabled', '')
+		} else {
+			btn?.removeAttribute('disabled')
+		}
+	},
+}
+
+function removeSelection() {
+	activeID = null
+	buttonControl.align() // without params, selects 0 align
+
+	document.querySelectorAll('.grid-spanner')?.forEach((elem) => {
+		elem.removeAttribute('disabled')
+		clas(elem, false, 'selected')
+	})
+
+	document.querySelectorAll<HTMLDivElement>('.move-overlay').forEach((elem) => {
+		elem.classList.remove('selected')
+	})
+
+	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
+		b.removeAttribute('disabled')
+	})
+}
+
+export default function moveElements(
+	init: Move | null,
+	events?: { widget?: InterfaceWidgetControl; toggle?: true; select?: MoveKeys }
+) {
 	// Updates (needs storage, tries not to modify dom too much)
 
-	function updateMoveElement({ action, elementId, button }: Update) {
+	function updateMoveElement({ action, elementId, button, keyboardEvent }: Update) {
 		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
 			let move: Move
 
@@ -486,10 +496,27 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
 
+				const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
+				const widgetsInStorage = getEnabledWidgetsFromStorage(data as Sync)
+				const stateIsDifferent = (id: MoveKeys) => !(widgetsInGrid.includes(id) === widgetsInStorage.includes(id))
+
+				toggleWidgets({
+					notes: widgetsInGrid.includes('notes'),
+					quotes: widgetsInGrid.includes('quotes'),
+					searchbar: widgetsInGrid.includes('searchbar'),
+					quicklinks: widgetsInGrid.includes('quicklinks'),
+				})
+
 				setAllAligns(layout.items)
 				setGridAreas(layout)
 				buttonControl.reset(move)
 				buttonControl.layout(move.selection)
+
+				// Toggle overlays if we are editing
+				if (dominterface?.classList.contains('move-edit')) {
+					gridOverlay.removeAll()
+					widgetsInGrid.forEach((id) => gridOverlay.add(id as MoveKeys))
+				}
 
 				if (activeID) {
 					buttonControl.grid(activeID)
@@ -504,7 +531,7 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync).filter((a) => a !== 'quicklinks')
 
 					enabledWidgets.forEach((id) => {
-						grid = gridWidget.add(grid, id)
+						grid = gridWidget(grid, id, true)
 					})
 
 					return grid
@@ -566,7 +593,14 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					removeSelection()
 				}
 
-				e ? (e.key === 'm' ? toggle() : '') : toggle()
+				if (!e) {
+					toggle()
+					return
+				}
+
+				if (e.shiftKey && e.key === 'M') {
+					toggle()
+				}
 			}
 
 			function toggleGridSpans(dir: 'col' | 'row') {
@@ -582,16 +616,13 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 				storage.sync.set({ move: move })
 			}
 
-			function addOrRemmoveWidgets() {
-				if (!widget) return
+			function toggleWidgetsOnGrid() {
+				if (!events?.widget) return
 
-				const { id, on } = widget
+				const { id, on } = events?.widget
+				const layout = { ...move.layouts[move.selection] }
 
-				// For all layouts
-				Object.entries(move.layouts).forEach(([key, layout]) => {
-					const selection = key as Move['selection']
-					move.layouts[selection].grid = on ? gridWidget.add(layout.grid, id) : gridWidget.remove(layout.grid, id)
-				})
+				move.layouts[move.selection].grid = gridWidget(layout.grid, id, on)
 
 				removeSelection()
 				setGridAreas(move.layouts[move.selection])
@@ -604,14 +635,14 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 				storage.sync.set({ move: move }, () => {
 					setTimeout(() => {
-						sessionStorage.throttledWidgetInput = '' // initParams events in settings.ts
-					}, 256) // increase throttle time for dramatic purposes
+						sessionStorage.removeItem('throttledWidgetInput') // initParams events in settings.ts
+					}, 400) // increase throttle time for dramatic purposes
 				})
 			}
 
 			switch (action) {
 				case 'toggle':
-					toggleMoveStatus()
+					toggleMoveStatus(keyboardEvent)
 					break
 
 				case 'select':
@@ -646,11 +677,11 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 					layoutReset()
 
 				case 'responsive':
-					layoutChange()
+					// layoutChange()
 					break
 
 				case 'widget':
-					addOrRemmoveWidgets()
+					toggleWidgetsOnGrid()
 					break
 			}
 		})
@@ -673,7 +704,9 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 	if (init) {
 		setTimeout(() => {
-			document.addEventListener('keypress', (ev: KeyboardEvent) => updateMoveElement({ action: 'toggle', ev: ev }))
+			document.addEventListener('keypress', (e: KeyboardEvent) =>
+				updateMoveElement({ action: 'toggle', keyboardEvent: e })
+			)
 
 			Object.entries(elements).forEach(([key, elem]) => {
 				elem?.addEventListener('click', () => updateMoveElement({ action: 'select', elementId: key }))
@@ -697,6 +730,12 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 			document.querySelector<HTMLButtonElement>('#reset-layout')?.addEventListener('click', () => {
 				updateMoveElement({ action: 'reset' })
+			})
+
+			document.querySelector('#element-mover')?.addEventListener('mousedown', (e) => {
+				if (e.composedPath()[0]?.id === 'element-mover') {
+					console.log('drag')
+				}
 			})
 
 			document
@@ -723,7 +762,15 @@ export default function moveElements(init: Move | null, widget?: InterfaceWidget
 
 	// Widget (comes from outside events)
 
-	if (widget) {
+	if (events?.widget) {
 		updateMoveElement({ action: 'widget' })
+	}
+
+	if (events?.toggle) {
+		updateMoveElement({ action: 'toggle' })
+	}
+
+	if (events?.select) {
+		updateMoveElement({ action: 'select', elementId: events.select })
 	}
 }

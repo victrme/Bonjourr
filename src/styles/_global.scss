@@ -113,15 +113,6 @@ body {
 	}
 }
 
-@mixin hidden {
-	&.hidden {
-		display: none;
-		cursor: default;
-		opacity: 0;
-		transition: opacity 0.1s;
-	}
-}
-
 @mixin allCentered {
 	display: flex;
 	align-items: center;

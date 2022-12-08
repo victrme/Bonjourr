@@ -20,6 +20,7 @@
 			// box-shadow: 5px 5px 20px #2224;
 			// cursor: pointer;
 			z-index: 2;
+			cursor: pointer;
 
 			> * {
 				pointer-events: none;
@@ -39,10 +40,11 @@
 	}
 
 	.move-overlay {
+		border: none;
 		border-radius: 1em;
 		background-color: #fff2;
 		backdrop-filter: blur(1em);
-		outline: 3px solid transparent;
+		outline: 0.4em solid transparent;
 
 		&.selected {
 			background: #fff3;

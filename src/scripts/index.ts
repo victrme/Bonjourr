@@ -5,7 +5,7 @@ import snarkdown from 'snarkdown'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes, MoveKeys } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -73,6 +73,59 @@ const freqControl = {
 	},
 }
 
+export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar']?: boolean }, fromInput?: true) {
+	//
+	// Update Display
+	//
+
+	const doms = {
+		quicklinks: 'linkblocks',
+		notes: 'notes_container',
+		quotes: 'quotes_container',
+		searchbar: 'sb_container',
+	}
+
+	const inputs = {
+		notes: 'i_notes',
+		quotes: 'i_quotes',
+		searchbar: 'i_sb',
+		quicklinks: 'i_quicklinks',
+	}
+
+	Object.entries(list).forEach(([key, on]) => {
+		clas($(doms[key as keyof typeof doms]), !on, 'hidden')
+		clas($(key + '_options'), on, 'shown')
+
+		if (!fromInput) {
+			;($(inputs[key as keyof typeof inputs]) as HTMLInputElement).checked = on
+		}
+	})
+
+	//
+	// Update Storage
+	//
+
+	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar'], (data) => {
+		let statesToSave: { [key: string]: unknown } = {}
+
+		if ('quicklinks' in list) statesToSave.quicklinks = list.quicklinks
+		if ('notes' in list) statesToSave.notes = { ...data.notes, on: list.notes }
+		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }
+		if ('searchbar' in list) statesToSave.searchbar = { ...data.searchbar, on: list.searchbar }
+
+		storage.sync.set({ ...statesToSave })
+	})
+
+	//
+	// Update grid
+	//
+
+	if (fromInput) {
+		const [id, on] = Object.entries(list)[0]
+		moveElements(null, { widget: { id: id as MoveKeys, on } })
+	}
+}
+
 export function traduction(settingsDom: Element | null, lang = 'en') {
 	type DictKey = keyof typeof dict
 	type DictField = keyof typeof dict.April // "april" just to select a random field
@@ -100,7 +153,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
+export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'change'; value: string }) {
 	const container = $('notes_container')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
@@ -269,23 +322,6 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 			let notes = data.notes || syncDefaults.notes
 
 			switch (event?.is) {
-				case 'toggle': {
-					const on = event.value === 'true'
-					const { align, opacity, text } = notes
-
-					handleToggle(on)
-					notes.on = on
-
-					if (on && editor) {
-						handleAlign(align)
-						handleOpacity(opacity)
-						parseMarkdownToHTML(text)
-						;(editor as HTMLInputElement).value = text
-					}
-
-					break
-				}
-
 				case 'change': {
 					parseMarkdownToHTML(event.value)
 					notes.text = event.value
@@ -314,17 +350,18 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	// Init
 	//
 
-	if (!editor || !init) {
-		return
-	}
+	function notesStartup() {
+		if (!editor || !init) return
 
-	if (init.on) {
 		handleAlign(init.align)
 		handleOpacity(init.opacity)
 		handleToggle(init.on)
 		parseMarkdownToHTML(init.text)
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
+
+	if (init?.on) notesStartup()
+	else setTimeout(() => notesStartup(), 400)
 
 	//
 	// Interface Events
@@ -641,7 +678,7 @@ export function clock(
 export function quickLinks(
 	init: Sync | null,
 	event?: {
-		is: 'add' | 'import' | 'style' | 'toggle' | 'newtab' | 'row'
+		is: 'add' | 'import' | 'style' | 'newtab' | 'row'
 		bookmarks?: { title: string; url: string }[]
 		checked?: boolean
 		value?: string
@@ -1253,12 +1290,6 @@ export function quickLinks(
 			case 'import':
 				linkSubmission('import', event.bookmarks)
 				break
-
-			case 'toggle': {
-				clas($('linkblocks'), !event.checked, 'hidden')
-				storage.sync.set({ quicklinks: event.checked })
-				break
-			}
 
 			case 'newtab': {
 				const val = event.checked || false
@@ -2656,7 +2687,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 	}
 }
 
-export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputElement) {
+export function searchbar(init: Searchbar | null, event?: string, that?: HTMLInputElement) {
 	const domsearchbar = $('searchbar') as HTMLInputElement
 	const emptyButton = $('sb_empty') as HTMLButtonElement
 	const submitButton = $('sb_submit') as HTMLButtonElement
@@ -2665,6 +2696,7 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 	const setEngine = (value: string) => domsearchbar.setAttribute('data-engine', value)
 	const setRequest = (value: string) => domsearchbar.setAttribute('data-request', stringMaxSize(value, 512))
 	const setNewtab = (value: boolean) => domsearchbar.setAttribute('data-newtab', value.toString())
+
 	const setOpacity = (value: number) => {
 		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
 
@@ -2679,12 +2711,6 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 			}
 
 			switch (event) {
-				case 'searchbar': {
-					data.searchbar.on = that.checked
-					display(that.checked)
-					break
-				}
-
 				case 'engine': {
 					data.searchbar.engine = that.value
 					clas($('searchbar_request'), that.value === 'custom', 'shown')
@@ -2820,13 +2846,13 @@ export function searchbar(init: Searchbar | null, event?: any, that?: HTMLInputE
 export async function quotes(
 	init: Sync | null,
 	event?: {
-		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh'
+		is: 'author' | 'frequency' | 'type' | 'refresh'
 		value?: string
 		checked?: boolean
 	}
 ) {
 	function display(on: boolean) {
-		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
+		clas($('quotes_container'), !on, 'hidden')
 	}
 
 	async function newQuote(lang: string, type: string) {
@@ -2880,20 +2906,9 @@ export async function quotes(
 			const { lang, quotes } = data
 
 			switch (event?.is) {
-				case 'toggle': {
-					const on = event.checked || false // to use inside storage callback
-					updated.on = on
-
-					storage.local.get('quotesCache', (local) => {
-						insertToDom(local.quotesCache[0])
-						display(on)
-					})
-					break
-				}
-
 				// TODO: investigate class toggle opposite of data
 				case 'author': {
-					clas($('author'), event.checked || false, 'alwaysVisible')
+					clas($('author'), event.checked || false, 'always-on')
 					updated.author = event.checked
 					break
 				}
@@ -2973,19 +2988,15 @@ export async function quotes(
 			quote = controlCacheList(cache, lang, quotes.type)[0] // has removed last quote from cache
 		}
 
-		// quotes off, just quit
-		if (init?.quotes?.on === false) {
-			return
-		}
-
 		quote = cache[0] // all conditions passed, cache is safe to use
 
 		// Displays
 		if (quotes.author) {
-			$('author')?.classList.add('alwaysVisible')
+			$('author')?.classList.add('always-on')
 		}
+
 		insertToDom(quote)
-		display(true)
+		display(init?.quotes?.on)
 	})
 }
 
@@ -3732,8 +3743,6 @@ window.onload = function () {
 					data.notes = syncDefaults.notes
 					data.about = { browser: detectPlatform(), version: newV }
 				}
-
-				storage.sync.set(data)
 			}
 
 			startup(data as Sync) // TODO: rip type checking

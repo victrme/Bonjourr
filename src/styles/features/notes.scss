@@ -18,8 +18,6 @@
 	user-select: text;
 
 	&.hidden {
-		flex-grow: 0;
-		visibility: hidden;
 		display: none;
 	}
 
