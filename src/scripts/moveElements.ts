@@ -80,14 +80,6 @@ function layoutToGridAreas(grid: Layout['grid']) {
 	return areas
 }
 
-function isRowEmpty(grid: Layout['grid'], index: number) {
-	if (grid[index]) {
-		return grid[index].filter((col) => col !== '.').length === 0
-	}
-
-	return true
-}
-
 function getEnabledWidgetsFromStorage(data: Sync) {
 	// Get each widget state from their specific storage
 	let displayed = {
@@ -109,26 +101,31 @@ function getEnabledWidgetsFromGrid(grid: Layout['grid']) {
 	return flat
 }
 
-function findIdsPosition(grid: Layout['grid'], id: string) {
+function findIdPositions(grid: Layout['grid'], id: string) {
 	const allpos: { posCol: number; posRow: number }[] = []
 
 	grid.flat().forEach((a, i) => {
-		if (a === id)
-			allpos.push({
-				posCol: i % grid[0].length,
-				posRow: Math.floor(i / grid[0].length),
-			})
+		if (a !== id) return
+		allpos.push({
+			posCol: i % grid[0].length,
+			posRow: Math.floor(i / grid[0].length),
+		})
 	})
 
 	return allpos
 }
 
-function hasDuplicateInArray(arr: string[], id?: string) {
-	return arr.filter((a) => a === (id || activeID)).length > 1
+function getSpanDirection(grid: Layout['grid'], id: string) {
+	const poses = findIdPositions(grid, id)
+	const rows = Object.values(poses).map(({ posRow }) => posRow)
+
+	if (poses.length < 2) return 'none'
+	if (rows[0] !== rows[1]) return 'columns'
+	else return 'rows'
 }
 
-function hasDuplicateInGrid(grid: Layout['grid'], id: string) {
-	return findIdsPosition(grid, id).length > 1
+function hasDuplicateInArray(arr: string[], id?: string) {
+	return arr.filter((a) => a === (id || activeID)).length > 1
 }
 
 function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
@@ -173,7 +170,7 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 			update buttons with recheck duplication (don't assume duped work everytime) 
 		*/
 
-	const { posCol, posRow } = findIdsPosition(grid, id)[0]
+	const { posCol, posRow } = findIdPositions(grid, id)[0]
 	let col = grid.map((g) => g[posCol])
 	let row = [...grid[posRow]]
 
@@ -196,7 +193,7 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
 	function addWidget() {
 		// in triple colum, default colum is [x, here, x]
-		const middleColumn = grid[0].length === 3 ? 1 : 0
+		const targetCol = grid[0].length === 3 ? 1 : 0
 		let index = 2
 
 		// Quotes always at the bottom
@@ -204,24 +201,38 @@ function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
 
 		// Quick links above quotes, below the rest
 		if (id === 'quicklinks') {
-			const lastItemIsQuotes = grid[grid.length - 1][middleColumn] === 'quotes'
+			const lastItemIsQuotes = grid[grid.length - 1][targetCol] === 'quotes'
 			index = lastItemIsQuotes ? grid.length - 1 : grid.length
 		}
 
-		// remove spans on the targeted row
-		// todo: could be improved, good enough for now
-		grid[index]?.forEach((col) => {
-			if (col && col !== '.') {
-				if (hasDuplicateInGrid(grid, id)) {
-					grid = spansInGridArea(grid, id, { remove: true })
-				}
-			}
-		})
+		//
+		// Apply
+		//
 
-		// Create new row
-		let newrow = grid[0].map(() => '.') // return [.] | [., .] | [., ., .] ????
+		function fillNewRow(cell: string, i: number) {
+			if (!cell || cell === '.') return
+
+			const positions = findIdPositions(grid, cell)
+
+			// remove spans on targeted cell
+			if (i === targetCol && positions.length > 1) {
+				grid = spansInGridArea(grid, cell as MoveKeys, { remove: true })
+				return
+			}
+
+			// keep column spans on adjacent columns
+			if (getSpanDirection(grid, cell) === 'columns') {
+				newrow[i] = cell
+			}
+		}
+
+		// Adding last row, duplicates above and replace middle id
+		let newrow = grid[0].map(() => '.')
+		const isLastRow = grid[index] === undefined
+
+		grid[index - (isLastRow ? 1 : 0)].forEach((cell, i) => fillNewRow(cell, i))
 		grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
-		grid[index][middleColumn] = id
+		grid[index][targetCol] = id
 
 		return grid
 	}
@@ -234,14 +245,20 @@ function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
 			}
 		}
 
-		// if an empty row is found, removes it and quits
+		// Removes only one empty row
 		let hasRemovedRow = false
-		for (const ii in grid) {
-			if (isRowEmpty(grid, parseInt(ii)) && !hasRemovedRow) {
-				grid.splice(parseInt(ii), 1)
+
+		grid.forEach((row, i) => {
+			const emptyCellsOnly = row.filter((cell) => {
+				// If dot, or cell is used as a col / row span
+				return cell === '.' || getSpanDirection(grid, cell) !== 'none'
+			})
+
+			if (!hasRemovedRow && emptyCellsOnly.length === row.length) {
+				grid.splice(i, 1)
 				hasRemovedRow = true
 			}
-		}
+		})
 
 		return grid
 	}
@@ -349,7 +366,7 @@ const buttonControl = {
 		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
 		if (grid.length === 0) return
 
-		const { posCol, posRow } = findIdsPosition(grid, id)[0]
+		const { posCol, posRow } = findIdPositions(grid, id)[0]
 		let col = grid.map((g) => g[posCol])
 		let row = [...grid[posRow]]
 
@@ -425,7 +442,7 @@ export default function moveElements(
 				const x = parseInt(button.dataset.col || '0')
 
 				let { grid } = move.layouts[move.selection]
-				const allActivePos = findIdsPosition(grid, activeID)
+				const allActivePos = findIdPositions(grid, activeID)
 				const allAffectedIds: MoveKeys[] = []
 
 				// step 1: Find elements affected by grid change
@@ -439,7 +456,7 @@ export default function moveElements(
 
 				// step 2: remove conflicting fillings on affected elements
 				allAffectedIds.forEach((id) => {
-					if (hasDuplicateInGrid(grid, id)) {
+					if (findIdPositions(grid, id).length > 1) {
 						grid = spansInGridArea(grid, id, { remove: true })
 					}
 				})
