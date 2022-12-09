@@ -1611,9 +1611,7 @@ export function weather(
 					data = { ...data, city: json.city, ccode: json.country }
 				}
 			}
-		} catch (error) {
-			console.log(error)
-		}
+		} catch (error) {}
 
 		// Then use this as callback in Geolocation request
 		async function setWeatherAfterGeolocation(location?: [number, number]) {
@@ -3732,17 +3730,11 @@ window.onload = function () {
 
 				console.log(`Version change: ${oldV} => ${newV}`)
 
-				if (oldV === '1.14.2' && newV === '1.15.0') {
+				if (newV === '1.16.0') {
 					localStorage.hasUpdated = 'true'
 				}
 
-				// Only update if coming from <=1.14.2
-				if (oldV !== '1.15.0') {
-					data.quicklinks = data.hide[2][0] === 0
-					data.hide[2][0] = 0
-					data.notes = syncDefaults.notes
-					data.about = { browser: detectPlatform(), version: newV }
-				}
+				storage.sync.set({ about: { browser: detectPlatform(), version: newV } })
 			}
 
 			startup(data as Sync) // TODO: rip type checking
