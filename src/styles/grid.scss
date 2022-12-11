@@ -108,16 +108,29 @@
 	top: 2em;
 	left: 2em;
 	gap: 2em;
-	padding: 1em 2em;
-	background-color: #2224;
-	backdrop-filter: blur(1em);
+	padding: 1em;
+	padding-top: 2em;
+	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
+	text-shadow: none;
 	border-radius: 1em;
-	z-index: 3;
 	visibility: hidden;
+	cursor: grab;
+	z-index: 3;
+
+	color: #2a2222;
+
+	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
+
+	> * {
+		cursor: auto;
+	}
+
+	hr {
+		border-color: #3334;
+	}
 
 	p {
-		font-family: 'consolas';
 		margin-bottom: 1em;
 	}
 }
@@ -129,7 +142,7 @@
 		border: none;
 		border-radius: 0.2em;
 		min-width: 2em;
-		color: white;
+		color: #666;
 		background-color: transparent;
 
 		&.selected {
@@ -153,12 +166,14 @@
 }
 
 button.grid-spanner {
+	display: block;
+	width: 60%;
+	margin: 0.3em auto;
+	padding: 0.3em 1.2em;
 	border: none;
 	border-radius: 8px;
 	outline: 2px solid transparent;
-	padding: 0.3em 1.2em;
 	background-color: #fff4;
-	color: white;
 
 	&:hover:not(:disabled) {
 		background-color: #fff6;
@@ -180,11 +195,15 @@ button.grid-spanner {
 	grid-template-columns: 80px;
 }
 
-#text-alignment-mover,
 #box-alignment-mover {
 	place-content: center;
 	grid-template-columns: repeat(3, 40px);
 	grid-template-rows: repeat(3, 30px);
+}
+
+#text-alignment-mover {
+	place-content: center;
+	grid-template-columns: repeat(3, 40px);
 }
 
 #grid-layout {
@@ -195,7 +214,7 @@ button.grid-spanner {
 		padding: 0;
 		margin: 4px;
 		width: 60px;
-		border: 2px solid white;
+		border: 2px solid #666;
 
 		&.selected,
 		&.selected div {
@@ -205,7 +224,7 @@ button.grid-spanner {
 		div {
 			height: 2em;
 			width: 100%;
-			border-right: 2px solid white;
+			border-right: 2px solid #666;
 		}
 
 		&[data-layout='single'] {
@@ -232,36 +251,37 @@ button.grid-spanner {
 
 #reset-layout,
 #close-mover {
+	display: block;
+	width: 100%;
 	border-radius: 6px;
 	border: 3px solid transparent;
 	background-color: transparent;
 	text-align: left;
 	padding: 2px 12px;
-	color: var(--blue);
 	outline: none;
 	cursor: pointer;
+}
 
-	&:focus-visible,
-	&:hover {
-		color: white;
-		background-color: #2c7be5;
-
-		&:first-child {
-			color: white;
-			background-color: #e64b43;
-		}
-	}
+#close-mover:focus-visible,
+#close-mover:hover {
+	color: white;
+	background-color: #2c7be5;
 }
 
 #reset-layout {
-	color: #e64b43;
+	&:focus-visible,
+	&:hover {
+		color: white;
+		background-color: #e64b43;
+	}
 
 	&:disabled {
-		filter: grayscale(1);
+		opacity: 0.5;
+		cursor: default;
 
 		&:focus-visible,
 		&:hover {
-			color: #e64b43;
+			color: white;
 			background-color: transparent;
 		}
 	}

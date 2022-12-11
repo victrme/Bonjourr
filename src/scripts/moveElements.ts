@@ -718,6 +718,27 @@ export default function moveElements(
 	}
 
 	// Events (only start on startup)
+	const moverdom = document.querySelector('#element-mover')
+	let firstPos = { x: 0, y: 0 }
+	let moverPos = { x: 0, y: 0 }
+
+	function moverDrag(e: Event) {
+		if (e.type !== 'mousemove') return
+		const { x, y } = e as MouseEvent
+
+		// Set first position to calc offset
+		if (firstPos.x === 0 && firstPos.y === 0) {
+			firstPos = { x: x - moverPos.x, y: y - moverPos.y }
+			return
+		}
+
+		moverPos = {
+			x: x - firstPos.x,
+			y: y - firstPos.y,
+		}
+		;(moverdom as HTMLElement).style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
+		;(moverdom as HTMLElement).style.cursor = `grabbing`
+	}
 
 	if (init) {
 		setTimeout(() => {
@@ -749,12 +770,6 @@ export default function moveElements(
 				updateMoveElement({ action: 'reset' })
 			})
 
-			document.querySelector('#element-mover')?.addEventListener('mousedown', (e) => {
-				if (e.composedPath()[0]?.id === 'element-mover') {
-					console.log('drag')
-				}
-			})
-
 			document
 				.querySelector<HTMLButtonElement>('#close-mover')
 				?.addEventListener('click', () => updateMoveElement({ action: 'toggle' }))
@@ -767,11 +782,25 @@ export default function moveElements(
 				updateMoveElement({ action: 'span-rows' })
 			})
 
+			moverdom?.addEventListener('mousedown', (e) => {
+				if ((e.target as HTMLElement)?.id === 'element-mover') {
+					moverdom?.addEventListener('mousemove', moverDrag)
+				}
+			})
+
+			const removeDrag = () => {
+				firstPos = { x: 0, y: 0 }
+				;(moverdom as HTMLElement).style.removeProperty('cursor')
+				moverdom?.removeEventListener('mousemove', moverDrag)
+			}
+
+			moverdom?.addEventListener('mouseup', removeDrag)
+			moverdom?.addEventListener('mouseleave', removeDrag)
+
 			// Trigger a layout change when width is crosses threshold
 			window.addEventListener('resize', () => {
 				if (window.innerWidth < 764 && !smallWidth) smallWidth = true
 				if (window.innerWidth > 764 && smallWidth) smallWidth = false
-
 				updateMoveElement({ action: 'responsive' })
 			})
 		}, 200)
