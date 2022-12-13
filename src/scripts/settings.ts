@@ -94,6 +94,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
+	initInput('i_qtlist', JSON.stringify(data.quotes?.customList) || '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.dynamic?.collection || '')
@@ -502,6 +503,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_qtauthor').addEventListener('change', function () {
 		quotes(null, { is: 'author', checked: this.checked })
+	})
+
+	paramId('i_qtlist').addEventListener('change', function () {
+		quotes(null, { is: 'customlist', value: this.value })
 	})
 
 	//
