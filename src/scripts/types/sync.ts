@@ -12,7 +12,7 @@ export type Quotes = {
 	last: number
 	type: string
 	frequency: string
-	customList?: [string, string][]
+	userlist?: [string, string][]
 }
 
 export type Weather = {

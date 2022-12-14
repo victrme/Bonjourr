@@ -2869,7 +2869,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 export async function quotes(
 	init: Sync | null,
 	update?: {
-		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh' | 'customlist'
+		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh' | 'userlist'
 		value?: string
 		checked?: boolean
 	}
@@ -2878,7 +2878,7 @@ export async function quotes(
 		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
 	}
 
-	function storageListToQuotes(arr: [string, string][]): Quote[] {
+	function userlistToQuotes(arr: [string, string][]): Quote[] {
 		return arr?.map(([author, content]) => ({ author, content }))
 	}
 
@@ -2916,11 +2916,11 @@ export async function quotes(
 
 	function controlCacheList(list: Quote[], lang: string, type: string) {
 		//
-		// Custom
+		// User
 
-		if (type === 'custom') {
-			const randIndex = Math.round(Math.random() * list.length - 1)
-			storage.local.set({ customQuoteSelection: randIndex })
+		if (type === 'user') {
+			const randIndex = Math.round(Math.random() * (list.length - 1))
+			storage.local.set({ userQuoteSelection: randIndex })
 			return list[randIndex]
 		}
 
@@ -2949,10 +2949,13 @@ export async function quotes(
 					const on = update.checked || false // to use inside storage callback
 					updated.on = on
 
-					storage.local.get(['quotesCache', 'customQuoteSelection'], (local) => {
-						if (quotes.type === 'custom' && quotes.customList) {
-						}
-						insertToDom(local.quotesCache[0])
+					storage.local.get(['quotesCache', 'userQuoteSelection'], (local) => {
+						const { quotesCache, userQuoteSelection } = local as Local
+						const isUser = quotes.type === 'user'
+
+						if (isUser && quotes.userlist) insertToDom(userlistToQuotes(quotes.userlist!)[userQuoteSelection || 0])
+						else if (!isUser) insertToDom(quotesCache[0])
+
 						display(on)
 					})
 
@@ -2977,32 +2980,32 @@ export async function quotes(
 					updated.type = update.value
 
 					let list: Quote[] = []
-					const { customList } = quotes
-					const isCustomAndEmpty = updated.type === 'custom' && !customList
+					const { userlist } = quotes
+					const isUserAndEmpty = updated.type === 'user' && !userlist
 
-					clas($('quotes_customlist'), update.value === 'custom', 'shown')
+					clas($('quotes_userlist'), update.value === 'user', 'shown')
 
 					// Do nothing more if no list is found
-					if (isCustomAndEmpty) break
+					if (isUserAndEmpty) break
 
 					// Fetch quotes from API and display
-					if (updated.type !== 'custom') {
+					if (updated.type !== 'user') {
 						list = await newQuoteFromAPI(lang, updated.type)
 						storage.local.set({ quotesCache: list })
 						insertToDom(list[0])
 						break
 					}
 
-					// Custom needs local to get selection
-					storage.local.get(['customQuoteSelection'], async (local) => {
-						list = storageListToQuotes(customList!)
-						insertToDom(list[local.customQuoteSelection || 0])
+					// User list needs local to get selection
+					storage.local.get(['userQuoteSelection'], async (local) => {
+						list = userlistToQuotes(userlist!)
+						insertToDom(list[local.userQuoteSelection || 0])
 					})
 
 					break
 				}
 
-				case 'customlist': {
+				case 'userlist': {
 					if (typeof update.value !== 'string') return
 
 					let array: [string, string][] = []
@@ -3030,14 +3033,14 @@ export async function quotes(
 
 							array = userJSON
 							insertToDom({ author: array[0][0], content: array[0][1] })
-							storage.local.set({ customQuoteSelection: 0 })
+							storage.local.set({ userQuoteSelection: 0 })
 						}
 					} catch (error) {
 						console.log('User quotes list is not valid JSON')
 					}
 
 					// Apply changes
-					updated.customList = array
+					updated.userlist = array
 					$('i_qtlist')?.blur()
 
 					break
@@ -3049,9 +3052,9 @@ export async function quotes(
 					storage.local.get('quotesCache', async (local) => {
 						let { quotesCache } = local as Local
 
-						if (quotes.type === 'custom') {
-							if (!quotes.customList) return
-							quotesCache = storageListToQuotes(quotes.customList)
+						if (quotes.type === 'user') {
+							if (!quotes.userlist) return
+							quotesCache = userlistToQuotes(quotes.userlist)
 						}
 
 						const quote = controlCacheList(quotesCache, lang, quotes.type)
@@ -3084,21 +3087,17 @@ export async function quotes(
 		return
 	}
 
-	storage.local.get(['quotesCache', 'customQuoteSelection'], async (local) => {
+	storage.local.get(['quotesCache', 'userQuoteSelection'], async (local) => {
 		const { lang, quotes } = init
-		const isCustom = quotes.type === 'custom'
-		const isCustomAndEmpty = isCustom && (!quotes.customList || quotes.customList.length === 0)
+		const isUser = quotes.type === 'user'
+		const isUserAndEmpty = isUser && (!quotes.userlist || quotes.userlist.length === 0)
 		const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
-		let customSel = local.customQuoteSelection || 0
+		let userSel = local.userQuoteSelection || 0
 		let cache = local.quotesCache
 		let quote: Quote
 
 		canDisplayInterface('quotes')
-
-		//
-		// Quote list control
-		//
 
 		// First startup, create classic cache
 		if (!cache || cache?.length === 0) {
@@ -3106,14 +3105,14 @@ export async function quotes(
 			storage.local.set({ quotesCache: cache })
 		}
 
-		// Quotes are off or no custom list, just quit
-		if (init?.quotes?.on === false || isCustomAndEmpty) {
+		// Quotes are off or no user list, just quit
+		if (init?.quotes?.on === false || isUserAndEmpty) {
 			return
 		}
 
-		// If custom quotes, replace cache
-		if (isCustom) {
-			cache = storageListToQuotes(quotes.customList!) // force because list check is above
+		// If user quotes, replace cache
+		if (isUser) {
+			cache = userlistToQuotes(quotes.userlist!) // force because list check is above
 		}
 
 		// Frequence control, get new quote from controlCacheList
@@ -3122,7 +3121,7 @@ export async function quotes(
 			quote = controlCacheList(cache, lang, quotes.type)
 			storage.sync.set({ quotes })
 		} else {
-			quote = cache[isCustom ? customSel : 0]
+			quote = cache[isUser ? userSel : 0]
 		}
 
 		// Displays

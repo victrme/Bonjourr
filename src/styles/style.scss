@@ -668,8 +668,9 @@
 			#quote {
 				font-size: 1.5em;
 				line-height: 1.5em;
-				max-height: calc(1.5em * 5);
+				max-height: calc(1.5em * 6);
 				margin-bottom: 0.75em;
+				overflow-y: clip;
 			}
 
 			#author {

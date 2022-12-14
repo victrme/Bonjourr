@@ -394,7 +394,7 @@ export const syncDefaults: Sync = {
 		type: 'classic',
 		frequency: 'day',
 		last: 1650516688,
-		customList: [],
+		userlist: [],
 	},
 	font: {
 		url: '',
@@ -410,10 +410,10 @@ export const syncDefaults: Sync = {
 
 export const localDefaults: Local = {
 	waitingForPreload: false,
+	userQuoteSelection: 0,
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
-	customQuoteSelection: 0,
 	dynamicCache: {
 		noon: [],
 		day: [],
