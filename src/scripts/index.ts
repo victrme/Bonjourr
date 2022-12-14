@@ -2939,139 +2939,164 @@ export async function quotes(
 		return list[0]
 	}
 
-	function updateSettings() {
-		storage.sync.get(['lang', 'quotes'], async (data) => {
-			const updated = { ...data.quotes }
-			const { lang, quotes } = data as Sync
+	function updateSettings({
+		lang,
+		quotes,
+		quotesCache,
+		userQuoteSelection,
+	}: {
+		lang: string
+		quotes: Sync['quotes']
+		quotesCache: Local['quotesCache']
+		userQuoteSelection: Local['userQuoteSelection']
+	}) {
+		async function handleQuotesType(type: string) {
+			let list: Quote[] = []
+			const { userlist } = quotes
+			const isUserAndEmpty = type === 'user' && !userlist
 
-			switch (update?.is) {
-				case 'toggle': {
-					const on = update.checked || false // to use inside storage callback
-					updated.on = on
+			clas($('quotes_userlist'), type === 'user', 'shown')
 
-					storage.local.get(['quotesCache', 'userQuoteSelection'], (local) => {
-						const { quotesCache, userQuoteSelection } = local as Local
-						const isUser = quotes.type === 'user'
+			// Do nothing more if no list is found
+			if (isUserAndEmpty) return
 
-						if (isUser && quotes.userlist) insertToDom(userlistToQuotes(quotes.userlist!)[userQuoteSelection || 0])
-						else if (!isUser) insertToDom(quotesCache[0])
-
-						display(on)
-					})
-
-					interfaceWidgetToggle(null, 'quotes')
-					break
-				}
-
-				// TODO: investigate class toggle opposite of data
-				case 'author': {
-					clas($('author'), update.checked || false, 'alwaysVisible')
-					updated.author = update.checked
-					break
-				}
-
-				case 'frequency': {
-					updated.frequency = update.value
-					break
-				}
-
-				case 'type': {
-					if (!update.value) return
-					updated.type = update.value
-
-					let list: Quote[] = []
-					const { userlist } = quotes
-					const isUserAndEmpty = updated.type === 'user' && !userlist
-
-					clas($('quotes_userlist'), update.value === 'user', 'shown')
-
-					// Do nothing more if no list is found
-					if (isUserAndEmpty) break
-
-					// Fetch quotes from API and display
-					if (updated.type !== 'user') {
-						list = await newQuoteFromAPI(lang, updated.type)
-						storage.local.set({ quotesCache: list })
-						insertToDom(list[0])
-						break
-					}
-
-					// User list needs local to get selection
-					storage.local.get(['userQuoteSelection'], async (local) => {
-						list = userlistToQuotes(userlist!)
-						insertToDom(list[local.userQuoteSelection || 0])
-					})
-
-					break
-				}
-
-				case 'userlist': {
-					if (typeof update.value !== 'string') return
-
-					let array: [string, string][] = []
-
-					function validateUserQuotes(json: JSON) {
-						return (
-							Array.isArray(json) &&
-							json.length > 0 &&
-							json.every((val) => val.length === 2) &&
-							json.flat().every((val) => typeof val === 'string')
-						)
-					}
-
-					try {
-						// if user removes their quotes, skip validation
-						if (update.value !== '') {
-							const userJSON = JSON.parse(update.value)
-
-							// if list is not valid, skip
-							if (validateUserQuotes(userJSON) === false) {
-								console.log('User quotes list is not of type [string, string][]')
-								;($('i_qtlist') as HTMLInputElement).value = ''
-								break
-							}
-
-							array = userJSON
-							insertToDom({ author: array[0][0], content: array[0][1] })
-							storage.local.set({ userQuoteSelection: 0 })
-						}
-					} catch (error) {
-						console.log('User quotes list is not valid JSON')
-					}
-
-					// Apply changes
-					updated.userlist = array
-					$('i_qtlist')?.blur()
-
-					break
-				}
-
-				case 'refresh': {
-					updated.last = freqControl.set()
-
-					storage.local.get('quotesCache', async (local) => {
-						let { quotesCache } = local as Local
-
-						if (quotes.type === 'user') {
-							if (!quotes.userlist) return
-							quotesCache = userlistToQuotes(quotes.userlist)
-						}
-
-						const quote = controlCacheList(quotesCache, lang, quotes.type)
-						insertToDom(quote)
-					})
-
-					break
-				}
+			// Fetch quotes from API and display
+			if (type !== 'user') {
+				list = await newQuoteFromAPI(lang, type)
+				storage.local.set({ quotesCache: list })
+				insertToDom(list[0])
+				return
 			}
 
-			storage.sync.set({ quotes: updated })
-		})
+			// User list needs local to get selection
+			storage.local.get(['userQuoteSelection'], async (local) => {
+				list = userlistToQuotes(userlist!)
+				insertToDom(list[local.userQuoteSelection || 0])
+			})
+		}
+
+		function handleQuotesToggle(on: boolean) {
+			const isUser = quotes.type === 'user'
+
+			if (isUser && quotes.userlist) insertToDom(userlistToQuotes(quotes.userlist!)[userQuoteSelection || 0])
+			else if (!isUser) insertToDom(quotesCache[0])
+
+			display(on)
+		}
+
+		function handleUserListChange(userlist: string) {
+			function validateUserQuotes(json: JSON) {
+				return (
+					Array.isArray(json) &&
+					json.length > 0 &&
+					json.every((val) => val.length === 2) &&
+					json.flat().every((val) => typeof val === 'string')
+				)
+			}
+
+			function inputError(log: string) {
+				;($('i_qtlist') as HTMLInputElement).value = ''
+				console.log(log)
+			}
+
+			let array: [string, string][] = []
+			let quote: Quote = { author: '', content: '' }
+
+			if (userlist !== '') {
+				let userJSON = []
+
+				try {
+					userJSON = JSON.parse(userlist)
+				} catch (error) {
+					inputError('User quotes list is not valid JSON')
+					return quotes.userlist
+				}
+
+				// if list is not valid, skip
+				if (validateUserQuotes(userJSON) === false) {
+					inputError('User quotes list is not of type [string, string][]')
+					return quotes.userlist
+				}
+
+				array = userJSON
+				quote = { author: array[0][0], content: array[0][1] }
+				storage.local.set({ userQuoteSelection: 0 })
+			}
+
+			// Apply changes
+			insertToDom(quote)
+			$('i_qtlist')?.blur()
+
+			return array
+		}
+
+		function handleQuotesRefresh() {
+			if (quotes.type === 'user') {
+				if (!quotes.userlist) return
+				quotesCache = userlistToQuotes(quotes.userlist)
+			}
+
+			const quote = controlCacheList(quotesCache, lang, quotes.type)
+			insertToDom(quote)
+		}
+
+		const updated = { ...quotes }
+		const { checked, value } = update! // force because updateSettings is only called after update check
+
+		switch (update?.is) {
+			case 'toggle': {
+				if (typeof checked !== 'boolean') return
+				updated.on = checked
+				interfaceWidgetToggle(null, 'quotes')
+				handleQuotesToggle(updated.on)
+				break
+			}
+
+			case 'author': {
+				if (typeof checked !== 'boolean') return
+				updated.author = checked
+				clas($('author'), checked, 'alwaysVisible')
+				break
+			}
+
+			case 'frequency': {
+				if (!value) return
+				updated.frequency = value
+				break
+			}
+
+			case 'type': {
+				if (!value) return
+				updated.type = value
+				handleQuotesType(value)
+				break
+			}
+
+			case 'userlist': {
+				if (typeof value !== 'string') return
+				updated.userlist = handleUserListChange(value)
+				break
+			}
+
+			case 'refresh': {
+				updated.last = freqControl.set()
+				handleQuotesRefresh()
+				break
+			}
+		}
+
+		storage.sync.set({ quotes: updated })
 	}
 
-	// update and quit
+	// get sync & local, update, and quit
 	if (update) {
-		updateSettings()
+		storage.sync.get(['lang', 'quotes'], async (data) => {
+			storage.local.get(['quotesCache', 'userQuoteSelection'], async (local) => {
+				const { lang, quotes } = data as Sync
+				const { quotesCache, userQuoteSelection } = local as Local
+				updateSettings({ quotes, lang, quotesCache, userQuoteSelection })
+			})
+		})
 		return
 	}
 
