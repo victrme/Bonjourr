@@ -655,24 +655,27 @@
 
 	#notes_options,
 	#searchbar_options,
-	#searchbar_request {
+	#searchbar_request,
+	#quotes_customlist {
 		overflow-y: hidden;
 		max-height: 0;
 		transition: max-height 0.4s;
+
+		&.shown {
+			overflow-y: clip;
+		}
 	}
 
 	#notes_options.shown {
-		overflow-y: clip;
 		max-height: 120px;
 	}
 
+	#quotes_customlist.shown,
 	#searchbar_request.shown {
-		overflow-y: clip;
 		max-height: 60px;
 	}
 
 	#searchbar_options.shown {
-		overflow-y: clip;
 		max-height: 240px;
 	}
 

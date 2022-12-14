@@ -36,6 +36,7 @@ import {
 	validateHideElem,
 } from './utils'
 
+let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
 }, 400)
@@ -1878,8 +1879,6 @@ export function initBackground(data: Sync) {
 	unsplash(data)
 }
 
-let loadBis = false
-
 export function imgBackground(url: string, color?: string) {
 	const overlaydom = $('background_overlay') as HTMLDivElement
 	const backgrounddom = $('background') as HTMLDivElement
@@ -2869,7 +2868,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 
 export async function quotes(
 	init: Sync | null,
-	event?: {
+	update?: {
 		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh' | 'customlist'
 		value?: string
 		checked?: boolean
@@ -2879,7 +2878,11 @@ export async function quotes(
 		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
 	}
 
-	async function newQuote(lang: string, type: string) {
+	function storageListToQuotes(arr: [string, string][]): Quote[] {
+		return arr?.map(([author, content]) => ({ author, content }))
+	}
+
+	async function newQuoteFromAPI(lang: string, type: string) {
 		try {
 			if (!navigator.onLine) {
 				return []
@@ -2891,7 +2894,6 @@ export async function quotes(
 			const json = await response.json()
 
 			if (response.ok) {
-				storage.local.set({ quotesCache: json })
 				return json
 			}
 		} catch (error) {
@@ -2913,17 +2915,25 @@ export async function quotes(
 	}
 
 	function controlCacheList(list: Quote[], lang: string, type: string) {
+		//
+		// Custom
+
 		if (type === 'custom') {
-			const randIndex = Math.round(Math.random() * list.length)
+			const randIndex = Math.round(Math.random() * list.length - 1)
 			storage.local.set({ customQuoteSelection: randIndex })
 			return list[randIndex]
 		}
+
+		//
+		// APIs
 
 		list.shift() // removes used quote
 		storage.local.set({ quotesCache: list })
 
 		if (list.length < 2) {
-			newQuote(lang, type)
+			newQuoteFromAPI(lang, type).then((list) => {
+				storage.local.set({ quotesCache: list })
+			})
 		}
 
 		return list[0]
@@ -2934,12 +2944,14 @@ export async function quotes(
 			const updated = { ...data.quotes }
 			const { lang, quotes } = data as Sync
 
-			switch (event?.is) {
+			switch (update?.is) {
 				case 'toggle': {
-					const on = event.checked || false // to use inside storage callback
+					const on = update.checked || false // to use inside storage callback
 					updated.on = on
 
-					storage.local.get('quotesCache', (local) => {
+					storage.local.get(['quotesCache', 'customQuoteSelection'], (local) => {
+						if (quotes.type === 'custom' && quotes.customList) {
+						}
 						insertToDom(local.quotesCache[0])
 						display(on)
 					})
@@ -2950,39 +2962,40 @@ export async function quotes(
 
 				// TODO: investigate class toggle opposite of data
 				case 'author': {
-					clas($('author'), event.checked || false, 'alwaysVisible')
-					updated.author = event.checked
+					clas($('author'), update.checked || false, 'alwaysVisible')
+					updated.author = update.checked
 					break
 				}
 
 				case 'frequency': {
-					updated.frequency = event.value
+					updated.frequency = update.value
 					break
 				}
 
 				case 'type': {
-					if (!event.value) return
-					updated.type = event.value
+					if (!update.value) return
+					updated.type = update.value
 
 					let list: Quote[] = []
 					const { customList } = quotes
 					const isCustomAndEmpty = updated.type === 'custom' && !customList
 
-					debugger
+					clas($('quotes_customlist'), update.value === 'custom', 'shown')
 
 					// Do nothing more if no list is found
 					if (isCustomAndEmpty) break
 
 					// Fetch quotes from API and display
 					if (updated.type !== 'custom') {
-						list = await newQuote(lang, updated.type)
+						list = await newQuoteFromAPI(lang, updated.type)
+						storage.local.set({ quotesCache: list })
 						insertToDom(list[0])
 						break
 					}
 
 					// Custom needs local to get selection
 					storage.local.get(['customQuoteSelection'], async (local) => {
-						list = customList?.map(([author, content]) => ({ author, content })) as Quote[]
+						list = storageListToQuotes(customList!)
 						insertToDom(list[local.customQuoteSelection || 0])
 					})
 
@@ -2990,17 +3003,42 @@ export async function quotes(
 				}
 
 				case 'customlist': {
-					if (typeof event.value !== 'string') return
+					if (typeof update.value !== 'string') return
 
 					let array: [string, string][] = []
 
-					try {
-						if (event.value !== '') array = JSON.parse(event.value)
-						updated.customList = array
-						$('i_qtlist')?.blur()
-					} catch (error) {
-						console.log('not an array')
+					function validateUserQuotes(json: JSON) {
+						return (
+							Array.isArray(json) &&
+							json.length > 0 &&
+							json.every((val) => val.length === 2) &&
+							json.flat().every((val) => typeof val === 'string')
+						)
 					}
+
+					try {
+						// if user removes their quotes, skip validation
+						if (update.value !== '') {
+							const userJSON = JSON.parse(update.value)
+
+							// if list is not valid, skip
+							if (validateUserQuotes(userJSON) === false) {
+								console.log('User quotes list is not of type [string, string][]')
+								;($('i_qtlist') as HTMLInputElement).value = ''
+								break
+							}
+
+							array = userJSON
+							insertToDom({ author: array[0][0], content: array[0][1] })
+							storage.local.set({ customQuoteSelection: 0 })
+						}
+					} catch (error) {
+						console.log('User quotes list is not valid JSON')
+					}
+
+					// Apply changes
+					updated.customList = array
+					$('i_qtlist')?.blur()
 
 					break
 				}
@@ -3009,7 +3047,13 @@ export async function quotes(
 					updated.last = freqControl.set()
 
 					storage.local.get('quotesCache', async (local) => {
-						const { quotesCache } = local as Local
+						let { quotesCache } = local as Local
+
+						if (quotes.type === 'custom') {
+							if (!quotes.customList) return
+							quotesCache = storageListToQuotes(quotes.customList)
+						}
+
 						const quote = controlCacheList(quotesCache, lang, quotes.type)
 						insertToDom(quote)
 					})
@@ -3023,7 +3067,7 @@ export async function quotes(
 	}
 
 	// update and quit
-	if (event) {
+	if (update) {
 		updateSettings()
 		return
 	}
@@ -3043,7 +3087,7 @@ export async function quotes(
 	storage.local.get(['quotesCache', 'customQuoteSelection'], async (local) => {
 		const { lang, quotes } = init
 		const isCustom = quotes.type === 'custom'
-		const isCustomAndEmpty = quotes.type === 'custom' && !quotes.customList
+		const isCustomAndEmpty = isCustom && (!quotes.customList || quotes.customList.length === 0)
 		const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
 		let customSel = local.customQuoteSelection || 0
@@ -3052,15 +3096,14 @@ export async function quotes(
 
 		canDisplayInterface('quotes')
 
-		debugger
-
 		//
 		// Quote list control
 		//
 
 		// First startup, create classic cache
 		if (!cache || cache?.length === 0) {
-			cache = await newQuote(lang, quotes.type)
+			cache = await newQuoteFromAPI(lang, quotes.type)
+			storage.local.set({ quotesCache: cache })
 		}
 
 		// Quotes are off or no custom list, just quit
@@ -3070,7 +3113,7 @@ export async function quotes(
 
 		// If custom quotes, replace cache
 		if (isCustom) {
-			cache = quotes.customList?.map(([author, content]) => ({ author, content })) as Quote[]
+			cache = storageListToQuotes(quotes.customList!) // force because list check is above
 		}
 
 		// Frequence control, get new quote from controlCacheList

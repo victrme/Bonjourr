@@ -73,6 +73,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : data.dynamic?.every || 'hour'
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
+	const customList = !data.quotes?.customList?.[0] ? undefined : data.quotes?.customList
 
 	initInput('i_blur', data.background_blur?.toString() || 15)
 	initInput('i_bright', data.background_bright?.toString() || 0.8)
@@ -94,7 +95,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
-	initInput('i_qtlist', JSON.stringify(data.quotes?.customList) || '')
+	initInput('i_qtlist', JSON.stringify(customList) || '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.dynamic?.collection || '')
@@ -202,6 +203,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	// Quotes option display
 	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
+	clas(paramId('quotes_customlist'), data.quotes?.type === 'custom', 'shown')
 
 	updateExportJSON(settingsDom)
 
@@ -600,6 +602,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		})
 
 		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
+		toggleTabindex('#quotes_customlist', has(paramId('quotes_customlist'), 'shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
 		toggleTabindex('#import', has(paramId('import'), 'shown'))
 		toggleTabindex('#export', has(paramId('export'), 'shown'))

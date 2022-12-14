@@ -645,51 +645,40 @@
 
 		#quotes_container {
 			display: none;
-			flex-direction: column;
-			// flex-grow: 0;
 			opacity: 0;
 			row-gap: 1em;
-			width: 33vw;
-			max-width: 600px;
-			min-width: 150px;
-			min-height: 0;
-			margin-right: auto;
-			margin-left: auto;
+			width: 50vw;
+			max-width: 45em;
+			min-width: 20em;
+			margin: 0 auto;
 			-webkit-user-select: text;
 			-moz-user-select: text;
 			user-select: text;
-			will-change: transform, flex-grow;
-			transition: opacity 0.2s, flex-grow 0.4s 0.2s, min-height 0.4s 0.2s, transform 0.4s;
 			cursor: initial;
 
-			#quote {
-				max-height: 0;
-				font-size: 1.5em;
-				transition: max-height 0.2s 0.2s;
-			}
+			&.shown {
+				display: block;
+				opacity: 1;
 
-			#author {
-				text-align: center;
-				font-size: 1.2em;
-				opacity: 0;
-				transition: opacity 0.4s;
-
-				&.alwaysVisible {
+				&:hover #author {
 					opacity: 1;
 				}
 			}
 
-			&.shown {
-				display: flex;
-				opacity: 1;
-				transition: opacity 0.2s 0.2s, min-height 0.4s, flex-grow 0.4s, transform 0.4s;
+			#quote {
+				font-size: 1.5em;
+				line-height: 1.5em;
+				max-height: calc(1.5em * 5);
+				margin-bottom: 0.75em;
+			}
 
-				#quote {
-					max-height: 180px;
-					transition: max-height 0.2s 0s;
-				}
+			#author {
+				opacity: 0;
+				font-size: 1.2em;
+				text-align: center;
+				transition: opacity 0.4s;
 
-				&:hover #author {
+				&.alwaysVisible {
 					opacity: 1;
 				}
 			}
