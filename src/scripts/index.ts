@@ -2878,7 +2878,7 @@ export async function quotes(
 		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
 	}
 
-	function userlistToQuotes(arr: [string, string][]): Quote[] {
+	function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
 		return arr?.map(([author, content]) => ({ author, content }))
 	}
 
@@ -3020,12 +3020,11 @@ export async function quotes(
 
 				array = userJSON
 				quote = { author: array[0][0], content: array[0][1] }
-				storage.local.set({ userQuoteSelection: 0 })
 			}
 
-			// Apply changes
-			insertToDom(quote)
 			$('i_qtlist')?.blur()
+			insertToDom(quote)
+			storage.local.set({ userQuoteSelection: 0 })
 
 			return array
 		}
@@ -3115,7 +3114,6 @@ export async function quotes(
 	storage.local.get(['quotesCache', 'userQuoteSelection'], async (local) => {
 		const { lang, quotes } = init
 		const isUser = quotes.type === 'user'
-		const isUserAndEmpty = isUser && (!quotes.userlist || quotes.userlist.length === 0)
 		const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
 		let userSel = local.userQuoteSelection || 0
@@ -3131,13 +3129,13 @@ export async function quotes(
 		}
 
 		// Quotes are off or no user list, just quit
-		if (init?.quotes?.on === false || isUserAndEmpty) {
+		if (init?.quotes?.on === false) {
 			return
 		}
 
 		// If user quotes, replace cache
 		if (isUser) {
-			cache = userlistToQuotes(quotes.userlist!) // force because list check is above
+			cache = userlistToQuotes(quotes.userlist) // force because list check is above
 		}
 
 		// Frequence control, get new quote from controlCacheList
