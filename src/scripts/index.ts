@@ -669,27 +669,29 @@ export function quickLinks(
 			//le DOM du block
 			const img = document.createElement('img')
 			const span = document.createElement('span')
-			const atag = document.createElement('a')
+			const anchor = document.createElement('a')
 			const li = document.createElement('li')
 
 			img.alt = ''
 			img.loading = 'lazy'
 			img.setAttribute('draggable', 'false')
 
-			atag.appendChild(img)
-			atag.appendChild(span)
-			atag.setAttribute('draggable', 'false')
+			anchor.appendChild(img)
+			anchor.appendChild(span)
+			anchor.setAttribute('draggable', 'false')
 
-			atag.href = url
-			atag.setAttribute('rel', 'noreferrer noopener')
+			anchor.href = url
+			anchor.setAttribute('rel', 'noreferrer noopener')
 
 			if (isnewtab) {
-				atag.setAttribute('target', '_blank')
+				getBrowser() === 'safari'
+					? anchor.addEventListener('click', handleSafariNewtab)
+					: anchor.setAttribute('target', '_blank')
 			}
 
 			li.id = link._id
 			li.setAttribute('class', 'block')
-			li.appendChild(atag)
+			li.appendChild(anchor)
 
 			// this also adds "normal" title as usual
 			textOnlyControl(li, title, domlinkblocks.className === 'text')
@@ -1249,6 +1251,12 @@ export function quickLinks(
 		domlinkblocks.style.maxWidth = (width + gap) * amount + 'em'
 	}
 
+	function handleSafariNewtab(e: Event) {
+		const anchor = e.composedPath().filter((el) => (el as Element).tagName === 'A')[0]
+		window.open((anchor as HTMLAnchorElement)?.href)
+		e.preventDefault()
+	}
+
 	if (event) {
 		switch (event.is) {
 			case 'add':
@@ -1269,7 +1277,15 @@ export function quickLinks(
 			case 'newtab': {
 				const val = event.checked || false
 				storage.sync.set({ linknewtab: val })
+
 				document.querySelectorAll('.block a').forEach((a) => {
+					//
+					if (getBrowser() === 'safari') {
+						if (val) a.addEventListener('click', handleSafariNewtab)
+						else a.removeEventListener('click', handleSafariNewtab)
+						return
+					}
+
 					if (val) a.setAttribute('target', '_blank')
 					else a.removeAttribute('target')
 				})
