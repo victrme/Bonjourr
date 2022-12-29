@@ -110,7 +110,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 }
 
 export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
-	const container = $('notes_container')
+	const views = $('notes_views')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
 	const doneBtn = $('b_notesdone')
@@ -164,24 +164,24 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	}
 
 	function handleToggle(state: boolean) {
-		if (container) clas(container, !state, 'hidden')
+		if (views) clas(views, !state, 'hidden')
 	}
 
 	function handleAlign(value: string) {
-		if (container) {
+		if (views) {
 			if (value === 'center') {
-				clas(container, true, 'center-align')
+				clas(views, true, 'center-align')
 			} else {
-				clas(container, false, 'center-align')
-				clas(container, value === 'right', 'right-align')
+				clas(views, false, 'center-align')
+				clas(views, value === 'right', 'right-align')
 			}
 		}
 	}
 
 	function handleOpacity(value: number) {
-		if (container) {
-			clas(container, value > 0.45, 'opaque')
-			container.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
+		if (views) {
+			clas(views, value > 0.45, 'opaque')
+			views.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
 		}
 	}
 
@@ -197,7 +197,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		// Removes notes padding from height calc
 		if (isEditorHidden) {
 			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
-			editor.style.height = ($('notes_container')?.offsetHeight || 0) - padding + 'px'
+			editor.style.height = ($('notes_views')?.offsetHeight || 0) - padding + 'px'
 			editor.focus()
 		}
 
@@ -394,6 +394,24 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		// Only windows uses keyup for its keybindings
 		testOS.windows ? editorKeybindings(e.code, e.ctrlKey, e.shiftKey) : ''
 	})
+
+	//
+	// Toolbar events
+	//
+
+	const container = $('notes_container')
+
+	function togglePreview() {
+		if (has(container, 'editor')) container?.classList.toggle('preview')
+	}
+
+	function toggleEditor() {
+		if (has(container, 'preview')) container?.classList.toggle('editor')
+		if (has(container, 'editor')) editor?.focus()
+	}
+
+	$('b_notespreview')?.addEventListener('click', togglePreview)
+	$('b_noteseditor')?.addEventListener('click', toggleEditor)
 }
 
 export function favicon(init: string | null, event?: HTMLInputElement) {

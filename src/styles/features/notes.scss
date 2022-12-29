@@ -1,26 +1,60 @@
 #notes_container {
 	position: relative;
 	align-self: center;
-	text-align: left;
-	color: #fff;
 	width: 100%;
-	max-width: 40em;
+	max-width: 50em;
+
+	&.preview {
+		div#notes_parsed {
+			display: block;
+		}
+
+		#b_notespreview {
+			background-color: #fff4;
+		}
+	}
+
+	&.editor {
+		textarea#notes_editor {
+			display: block;
+		}
+
+		#b_noteseditor {
+			background-color: #fff4;
+		}
+	}
+
+	&.preview.editor {
+		max-width: 70em;
+
+		.spacer {
+			display: block;
+		}
+
+		#b_noteseditor,
+		#b_notespreview {
+			background-color: #fff4;
+		}
+	}
+}
+
+#notes_views,
+#notes_toolbar {
+	display: flex;
+	color: #fff;
+	text-align: left;
+	text-shadow: none;
 	border-radius: 0.7em;
 	border: 1px solid rgba(255, 255, 255, 0.075);
-	text-shadow: none;
-
 	@include frostedGlass($tint: 255, $alpha: 0.1, $blur: 10px, $fbAlpha: 0.4, $fbColor: #fff);
+}
 
+#notes_views {
+	padding: 1.5em;
 	touch-action: all;
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	user-select: text;
-
-	&.hidden {
-		flex-grow: 0;
-		visibility: hidden;
-		display: none;
-	}
 
 	&.opaque {
 		color: #222;
@@ -55,38 +89,23 @@
 		}
 	}
 
-	button#b_notesdone {
-		position: absolute;
-		top: 1.1em;
-		right: 1em;
-		font-size: 1.2em;
-		padding: 0.25em 1em;
-		color: inherit;
-		opacity: 0;
-		border: none;
-		border-radius: 0.5em;
-		background-color: #fff3;
-		transition: color 0.15s, background-color 0.15s, opacity 0.15s;
-
-		@media (hover: hover) {
-			&:hover {
-				opacity: 1;
-				color: white;
-				background-color: var(--blue);
-			}
-		}
-
-		&:focus-visible {
-			opacity: 1;
-			pointer-events: all;
-			background-color: #fff2;
-		}
+	> .spacer {
+		display: none;
+		width: 1px;
+		margin: 0 1em;
+		background-color: rgba(255, 255, 255, 0.075);
 	}
 
-	// makes done button visible
-	#notes_editor:not(.hidden) + button#b_notesdone {
-		opacity: 1;
+	div#notes_parsed,
+	textarea#notes_editor {
+		display: none;
+		width: 100%;
 		pointer-events: all;
+		max-height: 40vh;
+		min-height: 1em;
+		overflow-x: hidden;
+		overflow-y: auto;
+		font-size: 1.2em;
 	}
 
 	div#notes_parsed {
@@ -138,40 +157,37 @@
 		}
 	}
 
-	div#notes_parsed,
-	textarea#notes_editor {
-		-webkit-filter: blur(0px);
-		filter: blur(0px);
-		pointer-events: all;
-		max-height: 40vh;
-		min-height: 1em;
-		overflow-x: hidden;
-		overflow-y: auto;
-		font-size: 1.2em;
-		padding: 1.5em;
-
-		&.hidden {
-			position: absolute;
-			pointer-events: none;
-			user-select: none;
-			opacity: 0;
-		}
-	}
-
 	textarea#notes_editor {
 		width: 100%;
-		min-height: 180px;
+		min-height: 10em;
 		color: inherit;
 		border: none;
-		border-radius: 0.5em;
+		border-radius: 0.7em;
 		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
-		background-color: transparent;
+		letter-spacing: -0.4px;
 		resize: vertical;
 		text-align: left;
 		box-sizing: border-box;
+		background-color: transparent;
+	}
+}
 
-		&.hidden {
-			resize: none;
+#notes_toolbar {
+	width: fit-content;
+	margin: 0.5em auto 0 auto;
+	padding: 0.5em;
+
+	button {
+		margin: 0 0.25em;
+		padding: 0.3em 1em;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		background-color: transparent;
+
+		&:hover {
+			background-color: #fff2;
+			// outline: 2px solid var(--blue);
 		}
 	}
 }

@@ -117,10 +117,16 @@
 			</div>
 
 			<div id="widgets">
-				<div id="notes_container" class="hidden">
-					<div id="notes_parsed" placeholder="Double click to edit"></div>
-					<textarea id="notes_editor" class="hidden" tabindex="-1" aria-label="Text field editor"></textarea>
-					<button id="b_notesdone" class="trn">Edit</button>
+				<div id="notes_container" class="hidden preview">
+					<div id="notes_views">
+						<textarea id="notes_editor" class="hidden" tabindex="-1" aria-label="Text field editor"></textarea>
+						<div class="spacer"></div>
+						<div id="notes_parsed" placeholder="Double click to edit"></div>
+					</div>
+					<div id="notes_toolbar">
+						<button id="b_noteseditor">&#128393; Editor</button>
+						<button id="b_notespreview">&#128065; Notes</button>
+					</div>
 				</div>
 
 				<form id="sb_container">
