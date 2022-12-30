@@ -370,6 +370,34 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		toggleEditable()
 	})
 
+	editor?.addEventListener('beforeinput', function (e: Event) {
+		const edit = editor as HTMLTextAreaElement
+		const pos = edit.selectionStart
+		const lines = edit.value.split('\n')
+		const linepos = edit.value.substring(0, pos).split('\n').length - 1 || 0
+
+		const eventIsLineBreak = (e as InputEvent).inputType === 'insertLineBreak'
+		const isNotEmptyLine = lines[linepos].trim().length > 0
+		const endsWithDoubleSpace = lines[linepos].endsWith(`  `)
+		const lineisList = lines[linepos].startsWith(`- `)
+
+		console.clear()
+		console.log('We are at line: ', lines[linepos])
+		console.log('Line is not empty: ', isNotEmptyLine)
+		console.log('Ends with a double space: ', endsWithDoubleSpace)
+		
+		if (eventIsLineBreak && !endsWithDoubleSpace && !lineisList) {
+			let val = edit.value
+			val = val.slice(0, pos) + `  ` + val.slice(pos)
+
+			edit.value = val
+			edit.selectionStart = pos + 2
+			edit.selectionEnd = pos + 2
+
+			console.log('Inserts line at pos: ', val.slice(0, pos), val.slice(pos))
+		}
+	})
+
 	// Classic update on input
 	editor?.addEventListener('input', function (this: HTMLInputElement) {
 		notes(null, { is: 'change', value: this.value })
