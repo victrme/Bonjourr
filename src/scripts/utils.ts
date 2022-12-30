@@ -43,6 +43,21 @@ export const extractHostname = (url: string) => {
 	return res
 }
 
+export const hashCode = function (str: string) {
+	let hash = 0
+	let i
+	let chr
+	if (str.length === 0) return hash
+	for (i = 0; i < str.length; i++) {
+		chr = str.charCodeAt(i)
+		hash = (hash << 5) - hash + chr
+		hash |= 0 // Convert to 32bit integer
+	}
+	return hash
+}
+
+console.log(hashCode('revenue'))
+
 export const randomString = (len: number) => {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
