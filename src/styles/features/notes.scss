@@ -191,6 +191,9 @@
 	transition: background-color 0.15s;
 
 	button {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
 		margin: 0 0.25em;
 		padding: 0.3em 1em;
 		color: white;
@@ -198,6 +201,12 @@
 		border-radius: 4px;
 		background-color: transparent;
 		transition: opacity 0.15s;
+
+		img {
+			width: 1em;
+			height: 1em;
+			filter: invert(1);
+		}
 
 		&:hover {
 			background-color: #fff2;
