@@ -1,8 +1,14 @@
 #notes_container {
 	position: relative;
 	align-self: center;
+
 	width: 100%;
-	max-width: 50em;
+	--notes-width: 50em;
+	max-width: var(--notes-width);
+
+	&.hidden {
+		display: none;
+	}
 
 	&.preview {
 		div#notes_parsed {
@@ -18,6 +24,7 @@
 		&:not(.editor) {
 			#notes_toolbar:not(:hover, :focus-within) {
 				background-color: transparent;
+				backdrop-filter: none;
 
 				button {
 					opacity: 0;
@@ -37,7 +44,7 @@
 	}
 
 	&.preview.editor {
-		max-width: 60em;
+		max-width: calc(var(--notes-width) * 1.5);
 
 		.spacer {
 			display: block;
@@ -198,7 +205,8 @@
 		padding: 0.3em 1em;
 		color: white;
 		border: none;
-		border-radius: 4px;
+		border-radius: 0.3em;
+		font-size: inherit;
 		background-color: transparent;
 		transition: opacity 0.15s;
 

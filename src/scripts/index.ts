@@ -109,7 +109,8 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
+export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'width' | 'opacity' | 'change'; value: string }) {
+	const container = $('notes_container')
 	const views = $('notes_views')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
@@ -168,7 +169,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	}
 
 	function handleToggle(state: boolean) {
-		if (views) clas(views, !state, 'hidden')
+		if (container) clas(container, !state, 'hidden')
 	}
 
 	function handleAlign(value: string) {
@@ -180,6 +181,10 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 				clas(views, value === 'right', 'right-align')
 			}
 		}
+	}
+
+	function handleWidth(value?: number) {
+		if (value && container) container.style.setProperty('--notes-width', value.toString() + 'em')
 	}
 
 	function handleOpacity(value: number) {
@@ -361,6 +366,12 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 					break
 				}
 
+				case 'width': {
+					notes.width = parseInt(event.value)
+					handleWidth(notes.width)
+					break
+				}
+
 				case 'opacity': {
 					handleOpacity(parseFloat(event.value))
 					notes.opacity = parseFloat(event.value)
@@ -383,6 +394,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 
 	if (init.on) {
 		handleAlign(init.align)
+		handleWidth(init.width)
 		handleOpacity(init.opacity)
 		handleToggle(init.on)
 		parseMarkdownToHTML(init.text)
@@ -424,8 +436,6 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	//
 	// Toolbar events
 	//
-
-	const container = $('notes_container')
 
 	function togglePreview() {
 		if (has(container, 'editor')) container?.classList.toggle('preview')

@@ -345,12 +345,7 @@ export const syncDefaults: Sync = {
 	reviewPopup: 0,
 	background_blur: 15,
 	background_bright: 0.8,
-	notes: {
-		on: false,
-		opacity: 0.1,
-		align: 'left',
-		text: translateNotesText(defaultLang),
-	},
+
 	css: '',
 	lang: defaultLang,
 	favicon: '',
@@ -380,6 +375,13 @@ export const syncDefaults: Sync = {
 		location: [],
 		forecast: 'auto',
 		temperature: 'actual',
+	},
+	notes: {
+		on: false,
+		width: 50,
+		opacity: 0.1,
+		align: 'left',
+		text: translateNotesText(defaultLang),
 	},
 	searchbar: {
 		on: false,
