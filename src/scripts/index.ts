@@ -118,7 +118,11 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	function parseMarkdownToHTML(val: string) {
 		const aria = tradThis('Text field tick box')
 
-		let html = snarkdown(val)
+		// Fix line break for snarkdown (no double spaces on lists)
+		let sanitized = ''
+		val.split('\n').forEach((line) => (sanitized += line + (line.startsWith('- ') ? '\n' : `  \n`)))
+
+		let html = snarkdown(sanitized)
 		html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox" aria-label="${aria}">`)
 		html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" aria-label="${aria}" checked>`)
 
@@ -273,6 +277,55 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		}
 	}
 
+	function lineBreakAutocomplete(ev: InputEvent) {
+		if (ev.inputType !== 'insertLineBreak') return
+
+		const edit = editor as HTMLTextAreaElement
+		const lines = edit.value.split('\n')
+		const posInChars = edit.selectionStart
+		const posInLines = edit.value.substring(0, posInChars).split('\n').length - 1 || 0
+
+		const modifiers = [
+			[`- - `, `\n- - `], // /!\ must be before "- " because of startsWith below
+			[`- `, `\n- `],
+			[`[ ] `, `  \n[ ] `],
+			[`[x] `, `  \n[ ] `],
+		]
+
+		let toAdd = '\n'
+		let removeMod: undefined | string
+
+		modifiers.forEach(([mod, change]) => {
+			// No mod in line, do nothing
+			if (!lines[posInLines].startsWith(mod)) return
+
+			// Line is empty, remove mod
+			if (lines[posInLines].replace(mod, '').length === 0) {
+				removeMod = mod
+				toAdd = ''
+				return
+			}
+
+			// Line not empty, apply automod
+			toAdd = change
+		})
+
+		let val = edit.value
+		let slice = posInChars
+		let selec = posInChars + toAdd.length
+
+		if (removeMod) {
+			selec = posInChars - removeMod.length
+			slice = posInChars - removeMod.length
+		}
+
+		edit.value = val.slice(0, slice) + toAdd + val.slice(posInChars) // Put modif between caret position
+		edit.selectionEnd = edit.selectionStart = selec // change selection (start = end)
+
+		ev.preventDefault() // Don't add user actual input
+		notes(null, { is: 'change', value: edit.value }) // apply changes because 'input' ev is prevented
+	}
+
 	if (event) {
 		storage.sync.get('notes', (data: any) => {
 			let notes = data.notes || syncDefaults.notes
@@ -340,63 +393,8 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	// Interface Events
 	//
 
-	function doubleClickToggle(e: Event) {
-		const path = e.composedPath()
-		const isCheckbox = (path[0] as HTMLElement).tagName === 'INPUT'
-		let string = ''
-
-		if ((window.getSelection()?.rangeCount || -1) > 0) {
-			string = window.getSelection()?.getRangeAt(0)?.toString().trim() || '' // To prevent "Failed to execute 'getRangeAt' on 'Selection'"
-		}
-
-		if (!isCheckbox && string.length < 2) {
-			toggleEditable() // Prevent toggling when selecting text with mouse click
-		}
-	}
-
-	// Mobile double click
-	if (mobilecheck()) {
-		let last = 0
-		parsed?.addEventListener('touchstart', (e) => {
-			if (last !== 0 && e.timeStamp - last < 300) doubleClickToggle(e) // is fast enough to be considered a double click
-			last = e.timeStamp
-		})
-	}
-	// Desktop double click
-	else parsed?.addEventListener('dblclick', doubleClickToggle)
-
-	// Done button event
-	doneBtn?.addEventListener('click', () => {
-		toggleEditable()
-	})
-
-	editor?.addEventListener('beforeinput', function (e: Event) {
-		const edit = editor as HTMLTextAreaElement
-		const pos = edit.selectionStart
-		const lines = edit.value.split('\n')
-		const linepos = edit.value.substring(0, pos).split('\n').length - 1 || 0
-
-		const eventIsLineBreak = (e as InputEvent).inputType === 'insertLineBreak'
-		const isNotEmptyLine = lines[linepos].trim().length > 0
-		const endsWithDoubleSpace = lines[linepos].endsWith(`  `)
-		const lineisList = lines[linepos].startsWith(`- `)
-
-		console.clear()
-		console.log('We are at line: ', lines[linepos])
-		console.log('Line is not empty: ', isNotEmptyLine)
-		console.log('Ends with a double space: ', endsWithDoubleSpace)
-		
-		if (eventIsLineBreak && !endsWithDoubleSpace && !lineisList) {
-			let val = edit.value
-			val = val.slice(0, pos) + `  ` + val.slice(pos)
-
-			edit.value = val
-			edit.selectionStart = pos + 2
-			edit.selectionEnd = pos + 2
-
-			console.log('Inserts line at pos: ', val.slice(0, pos), val.slice(pos))
-		}
-	})
+	// Auto add modifiers on line breaks
+	editor?.addEventListener('beforeinput', lineBreakAutocomplete)
 
 	// Classic update on input
 	editor?.addEventListener('input', function (this: HTMLInputElement) {
