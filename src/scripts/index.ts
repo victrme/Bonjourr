@@ -34,6 +34,7 @@ import {
 	tradThis,
 	turnRefreshButton,
 	validateHideElem,
+	notesCharCodeCount,
 } from './utils'
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
@@ -114,7 +115,6 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 	const views = $('notes_views')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
-	const doneBtn = $('b_notesdone')
 
 	function parseMarkdownToHTML(val: string) {
 		const aria = tradThis('Text field tick box')
@@ -194,39 +194,41 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 		}
 	}
 
-	function toggleEditable() {
-		if (!editor || !parsed || !doneBtn) {
-			return
+	function persistentToolbarControl(text: string) {
+		let isDefault = false
+		let charCodes = 0
+		const lang = (document.documentElement.getAttribute('lang') || 'en') as keyof typeof notesCharCodeCount
+
+		if (text.length > 0) {
+			charCodes = text
+				.split('')
+				.map((char) => char.charCodeAt(0))
+				.reduce((a, b) => a + b)
 		}
 
-		const isEditorHidden = editor.classList.contains('hidden')
-		const isParsedHidden = parsed.classList.contains('hidden')
+		isDefault = charCodes === notesCharCodeCount[lang] && text.startsWith('##') && text.includes('Markdown')
+		isDefault = isDefault || charCodes === 0
 
-		// Set editor height to be the same as preview
-		// Removes notes padding from height calc
-		if (isEditorHidden) {
-			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
-			editor.style.height = ($('notes_views')?.offsetHeight || 0) - padding + 'px'
-			editor.focus()
-		}
+		if (isDefault) container?.classList.add('default')
+		else container?.classList.remove('default')
 
-		// No tabbing possible when editor is hidden
-		editor.setAttribute('tabindex', isEditorHidden ? '0' : '-1')
-
-		// Toggle classes
-		clas(editor, !isEditorHidden, 'hidden')
-		clas(parsed, !isParsedHidden, 'hidden')
-
-		// Change edit button text
-		doneBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+		return charCodes
 	}
 
-	function editorKeybindings(key: string, cmd: boolean, shift: boolean) {
+	function editorKeybindings(e: KeyboardEvent) {
 		const editordom = editor as HTMLTextAreaElement
 		const { selectionStart, selectionEnd } = editordom
+		const modifier = testOS.mac ? e.metaKey : e.ctrlKey
+		const otherKeys = ['KeyI', 'KeyB', 'KeyS', 'KeyU', 'KeyT']
+		const chbxKeys = modifier && e.shiftKey && e.code === 'KeyC'
 
-		if (cmd === false) {
-			return // no meta or ctrl ? return
+		// no meta or ctrl ? return
+		if (modifier === false) return
+
+		if (e.type === 'keydown') {
+			if (chbxKeys || (modifier && otherKeys.includes(e.code))) {
+				e.preventDefault() // Only prevent default on needed key combos
+			}
 		}
 
 		function addDecoration(charStart: string, charEnd: string = charStart) {
@@ -254,9 +256,9 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 			editordom.selectionEnd = selectionEnd + (isRemoval ? remLength : addLength)
 		}
 
-		switch (key) {
+		switch (e.code) {
 			case 'KeyC': {
-				if (shift) addDecoration('[ ] ', '')
+				if (e.shiftKey) addDecoration('[ ] ', '')
 				break
 			}
 
@@ -275,10 +277,6 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 			case 'KeyU':
 				addDecoration('[', '](url)')
 				break
-
-			case 'Enter':
-				toggleEditable()
-				break
 		}
 	}
 
@@ -293,8 +291,8 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 		const modifiers = [
 			[`- - `, `\n- - `], // /!\ must be before "- " because of startsWith below
 			[`- `, `\n- `],
-			[`[ ] `, `  \n[ ] `],
-			[`[x] `, `  \n[ ] `],
+			[`[ ] `, `\n[ ] `],
+			[`[x] `, `\n[ ] `],
 		]
 
 		let toAdd = '\n'
@@ -356,6 +354,7 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 
 				case 'change': {
 					parseMarkdownToHTML(event.value)
+					persistentToolbarControl(event.value)
 					notes.text = event.value
 					break
 				}
@@ -398,43 +397,12 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 		handleOpacity(init.opacity)
 		handleToggle(init.on)
 		parseMarkdownToHTML(init.text)
+		persistentToolbarControl(init.text)
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
 
 	//
-	// Interface Events
-	//
-
-	// Auto add modifiers on line breaks
-	editor?.addEventListener('beforeinput', lineBreakAutocomplete)
-
-	// Classic update on input
-	editor?.addEventListener('input', function (this: HTMLInputElement) {
-		notes(null, { is: 'change', value: this.value })
-	})
-
-	editor?.addEventListener('keydown', (e: KeyboardEvent) => {
-		const otherKeys = ['KeyI', 'KeyB', 'KeyS', 'KeyU', 'KeyT']
-		const modifier = testOS.mac ? e.metaKey : e.ctrlKey
-		const chbxKeys = modifier && e.shiftKey && e.code === 'KeyC'
-
-		if (chbxKeys || (modifier && otherKeys.includes(e.code))) {
-			e.preventDefault() // Only prevent default on needed key combos
-		}
-
-		if (!testOS.windows) {
-			// Macos & linux are triggering on keydown, but linux uses ctrl
-			editorKeybindings(e.code, modifier, e.shiftKey)
-		}
-	})
-
-	editor?.addEventListener('keyup', (e: KeyboardEvent) => {
-		// Only windows uses keyup for its keybindings
-		testOS.windows ? editorKeybindings(e.code, e.ctrlKey, e.shiftKey) : ''
-	})
-
-	//
-	// Toolbar events
+	// Events
 	//
 
 	function togglePreview() {
@@ -445,6 +413,15 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'wi
 		if (has(container, 'preview')) container?.classList.toggle('editor')
 		if (has(container, 'editor')) editor?.focus()
 	}
+
+	function inputEvent(this: HTMLInputElement) {
+		notes(null, { is: 'change', value: this.value })
+	}
+
+	// Classic update on input
+	editor?.addEventListener('input', inputEvent)
+	editor?.addEventListener('beforeinput', lineBreakAutocomplete) // Auto add modifiers on line breaks
+	editor?.addEventListener('keydown', editorKeybindings)
 
 	$('b_notespreview')?.addEventListener('click', togglePreview)
 	$('b_noteseditor')?.addEventListener('click', toggleEditor)

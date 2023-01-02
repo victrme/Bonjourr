@@ -313,13 +313,17 @@ export function tradThis(str: string, lang?: string): string {
 
 export function translateNotesText(target: LangList, current?: LangList, note?: string) {
 	function notesStrings(lang: LangList) {
-		const edit = tradThis('Double click to edit', lang)
-		const md = tradThis('Supports Markdown and clickable checkboxes', lang)
+		const edit = tradThis('Click on "Editor" button below to edit', lang)
+		const md = tradThis('Supports **Markdown** and clickable checkboxes', lang)
 		const key = tradThis('With keyboard shortcuts', lang)
 		const docs = tradThis('see documentation', lang)
 		const url = 'https://bonjourr.fr/' + (lang === 'fr' ? 'fr/' : '') + 'docs/overview/#notes'
+		const warn = tradThis(
+			'Buttons below automatically hide once this note has been modified. Hover with your mouse to show again.',
+			lang
+		)
 
-		return { edit, md, key, docs, url }
+		return { edit, md, key, docs, url, warn }
 	}
 
 	// All default strings are present in the note
@@ -328,10 +332,32 @@ export function translateNotesText(target: LangList, current?: LangList, note?: 
 	// first start or has default text, translate
 	if (!note || isDefault) {
 		const t = notesStrings(target)
-		return '### ' + t.edit + '!  \n\n[ ] ' + t.md + '  \n[ ] ' + t.key + ', [' + t.docs + '](' + t.url + ')'
+		return `## ${t.edit}!\n\n[x] ${t.md}\n[x] ${t.key}, [${t.docs}](${t.url})\n\n_${t.warn}_`
 	}
 
 	return note
+}
+
+export const notesCharCodeCount = {
+	en: 26826,
+	fr: 35158,
+	sk: 33800,
+	sv: 29435,
+	pl: 32876,
+	pt_BR: 30968,
+	nl: 29944,
+	ru: 237001,
+	zh_CN: 2034643,
+	zh_HK: 694013,
+	de: 35629,
+	it: 36033,
+	es: 32827,
+	tr: 35302,
+	uk: 249631,
+	id: 33211,
+	da: 30795,
+	fi: 31428,
+	hu: 39826,
 }
 
 export const syncDefaults: Sync = {

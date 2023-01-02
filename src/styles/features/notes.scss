@@ -21,7 +21,7 @@
 
 		/* Only hide on .preview only */
 		/* Don't hide on hover or tabbing */
-		&:not(.editor) {
+		&:not(.editor, .default) {
 			#notes_toolbar:not(:hover, :focus-within) {
 				background-color: transparent;
 				backdrop-filter: none;
@@ -80,26 +80,12 @@
 
 	&.center-align {
 		text-align: center;
-
-		div#notes_parsed,
-		textarea#notes_editor {
-			padding: 1.5em;
-		}
-
-		textarea#notes_editor {
-			width: calc(100% - 3em);
-		}
 	}
 
 	&.right-align {
 		div#notes_parsed,
 		textarea#notes_editor {
 			text-align: right;
-		}
-
-		button#b_notesdone {
-			left: 1em;
-			right: auto;
 		}
 	}
 
@@ -123,6 +109,7 @@
 	}
 
 	div#notes_parsed {
+		line-height: 1.5em;
 		word-break: break-word;
 		cursor: auto;
 		content: 'wow';
@@ -133,9 +120,13 @@
 		}
 
 		input[type='checkbox'] {
-			width: 1.2em;
-			height: 1.2em;
+			margin: 0;
+			margin-left: 0.2em;
+			margin-right: 0.4em;
+			width: 1.4em;
+			height: 1.4em;
 			cursor: pointer;
+			vertical-align: text-bottom;
 		}
 
 		blockquote {
@@ -144,12 +135,21 @@
 			margin: 0 0 0 1em;
 		}
 
+		code {
+			color: lightsalmon;
+			padding: 0.2em 0.6em;
+			border-radius: 0.4em;
+			border: 1px solid #fff1;
+			background-color: #fff1;
+		}
+
 		h1,
 		h2,
 		h3,
 		h4,
 		h5,
 		h6 {
+			line-height: initial;
 			margin: 0.5em 0;
 		}
 
