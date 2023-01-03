@@ -64,7 +64,7 @@ export type MoveItem = {
 }
 
 type MoveItemList = {
-	[key in MoveKeys]: MoveItem
+	[key in MoveKeys]?: MoveItem
 }
 
 export type Move = {

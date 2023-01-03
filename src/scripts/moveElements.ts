@@ -275,7 +275,7 @@ function setGridAreas(layout: Layout) {
 	}
 }
 
-function setAlign(item: MoveItem, id: MoveKeys) {
+function setAlign(id: MoveKeys, item?: MoveItem) {
 	const elem = elements[id]
 	if (elem) {
 		if (typeof item?.box === 'string') elem.style.placeSelf = item.box
@@ -287,7 +287,7 @@ function setAllAligns(items: Layout['items']) {
 	Object.keys(elements).forEach((key) => {
 		if (key in items) {
 			const id = key as MoveKeys
-			setAlign(items[id], id)
+			setAlign(id, items[id])
 		}
 	})
 }
@@ -378,8 +378,8 @@ const buttonControl = {
 		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-		boxBtns.forEach((b) => clas(b, b.dataset.align === item?.box, 'selected'))
-		textBtns.forEach((b) => clas(b, b.dataset.align === item?.text, 'selected'))
+		boxBtns.forEach((b) => clas(b, b.dataset.align === (item?.box || ''), 'selected'))
+		textBtns.forEach((b) => clas(b, b.dataset.align === (item?.text || ''), 'selected'))
 	},
 
 	reset: (move: Move) => {
@@ -485,11 +485,11 @@ export default function moveElements(
 				if (!activeID || !button) return
 
 				const layout = move.layouts[move.selection]
-				const item = layout.items[activeID]
+				const item = layout.items[activeID] || { box: '', text: '' }
 
 				item[type] = button.dataset.align || ''
 
-				setAlign(item, activeID)
+				setAlign(activeID, item)
 				buttonControl.align(item)
 				buttonControl.reset(move)
 
@@ -582,7 +582,7 @@ export default function moveElements(
 				removeSelection()
 
 				// Only remove selection modifiers if failed to get id
-				if (!isEditing() || !elementId || !(elementId in layout.items)) {
+				if (!isEditing() || !elementId) {
 					return
 				}
 

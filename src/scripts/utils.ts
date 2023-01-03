@@ -328,14 +328,14 @@ export function tradThis(str: string, lang?: string): string {
 	return str // String was not a key of dict
 }
 
-const moveItems = {
-	time: { box: '', text: '' },
-	main: { box: '', text: '' },
-	notes: { box: '', text: '' },
-	searchbar: { box: '', text: '' },
-	quicklinks: { box: '', text: '' },
-	quotes: { box: '', text: '' },
-}
+// const moveItems = {
+// 	time: { box: '', text: '' },
+// 	main: { box: '', text: '' },
+// 	notes: { box: '', text: '' },
+// 	searchbar: { box: '', text: '' },
+// 	quicklinks: { box: '', text: '' },
+// 	quotes: { box: '', text: '' },
+// }
 
 export const syncDefaults: Sync = {
 	usdate: false,
@@ -416,7 +416,7 @@ export const syncDefaults: Sync = {
 		layouts: {
 			single: {
 				grid: [['time'], ['main'], ['quicklinks']],
-				items: { ...moveItems },
+				items: {},
 			},
 			double: {
 				grid: [
@@ -424,7 +424,7 @@ export const syncDefaults: Sync = {
 					['main', '.'],
 					['quicklinks', '.'],
 				],
-				items: { ...moveItems },
+				items: {},
 			},
 			triple: {
 				grid: [
@@ -432,7 +432,7 @@ export const syncDefaults: Sync = {
 					['.', 'main', '.'],
 					['.', 'quicklinks', '.'],
 				],
-				items: { ...moveItems },
+				items: {},
 			},
 		},
 	},
