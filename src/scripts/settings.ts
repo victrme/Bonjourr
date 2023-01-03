@@ -1035,8 +1035,9 @@ export function settingsInit(data: Sync) {
 		})
 
 		dominterface?.addEventListener('click', function (e) {
-			if (e.composedPath().filter((d) => (d as HTMLElement).id === 'linkblocks').length > 0) {
-				return // Do nothing if links are clicked
+			const pathIds = e.composedPath().map((d) => (d as HTMLElement).id)
+			if (pathIds.includes('linkblocks') || pathIds.includes('element-mover')) {
+				return // Do nothing if links or element mover are clicked
 			}
 
 			if (document.body.classList.contains('tabbing')) {

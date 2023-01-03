@@ -93,8 +93,15 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 	}
 
 	Object.entries(list).forEach(([key, on]) => {
-		clas($(doms[key as keyof typeof doms]), !on, 'hidden')
 		clas($(key + '_options'), on, 'shown')
+
+		// This hides interface while grid is changing to avoid flickering
+		// Todo: This is an ugly hack and there must be a better way
+		dominterface.style.opacity = '0'
+		setTimeout(() => {
+			clas($(doms[key as keyof typeof doms]), !on, 'hidden')
+			dominterface.style.opacity = '1'
+		}, 5)
 
 		if (!fromInput) {
 			;($(inputs[key as keyof typeof inputs]) as HTMLInputElement).checked = on
