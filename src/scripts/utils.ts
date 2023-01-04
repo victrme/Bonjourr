@@ -402,9 +402,34 @@ export const syncDefaults: Sync = {
 		availWeights: [],
 		weight: testOS.windows ? '400' : '300',
 	},
+	move: {
+		selection: 'triple',
+		layouts: {
+			single: {
+				grid: [['time'], ['main'], ['quicklinks']],
+				items: {},
+			},
+			double: {
+				grid: [
+					['time', '.'],
+					['main', '.'],
+					['quicklinks', '.'],
+				],
+				items: {},
+			},
+			triple: {
+				grid: [
+					['.', 'time', '.'],
+					['.', 'main', '.'],
+					['.', 'quicklinks', '.'],
+				],
+				items: {},
+			},
+		},
+	},
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
-	about: { browser: detectPlatform(), version: '1.15.5' },
+	about: { browser: detectPlatform(), version: '1.15.1' },
 }
 
 export const localDefaults: Local = {

@@ -82,6 +82,52 @@
 		</div>
 
 		<main id="interface" class="init">
+			<div id="element-mover">
+				<div>
+					<p>Grid position</p>
+					<div id="grid-mover" class="mover">
+						<button type="button" data-row="-1">▲</button>
+						<div>
+							<button type="button" data-col="-1">◀</button>
+							<button type="button" data-col="1">▶</button>
+						</div>
+						<button type="button" data-row="1">▼</button>
+					</div>
+				</div>
+				<div>
+					<button class="grid-spanner" id="grid-span-rows">Fill row</button>
+					<button class="grid-spanner" id="grid-span-cols">Fill column</button>
+				</div>
+				<div>
+					<p>Box alignment</p>
+					<div id="box-alignment-mover" class="mover">
+						<button type="button" data-align="baseline baseline">┏</button>
+						<button type="button" data-align="baseline center">┳</button>
+						<button type="button" data-align="baseline end">┓</button>
+						<button type="button" data-align="center baseline">┣</button>
+						<button type="button" data-align="">╋</button>
+						<button type="button" data-align="center end">┫</button>
+						<button type="button" data-align="end baseline">┗</button>
+						<button type="button" data-align="end center">┻</button>
+						<button type="button" data-align="end end">┛</button>
+					</div>
+				</div>
+				<div>
+					<p>Text alignment</p>
+					<div id="text-alignment-mover" class="mover">
+						<button data-align="left">【</button>
+						<button data-align="">▉</button>
+						<button data-align="right">】</button>
+					</div>
+				</div>
+
+				<div>
+					<hr />
+
+					<button id="close-mover" class="trn">Done</button>
+				</div>
+			</div>
+
 			<div id="time">
 				<div id="time-container">
 					<h1 id="clock" class="hidden"></h1>
@@ -99,7 +145,7 @@
 					</div>
 				</div>
 
-				<div id="date"></div>
+				<p id="date"></p>
 			</div>
 
 			<div id="main">
@@ -116,34 +162,32 @@
 				</div>
 			</div>
 
-			<div id="widgets">
-				<div id="notes_container" class="hidden">
-					<div id="notes_parsed" placeholder="Double click to edit"></div>
-					<textarea id="notes_editor" class="hidden" tabindex="-1" aria-label="Text field editor"></textarea>
-					<button id="b_notesdone" class="trn">Edit</button>
-				</div>
+			<div id="notes_container" class="hidden">
+				<div id="notes_parsed" placeholder="Double click to edit"></div>
+				<textarea id="notes_editor" class="hidden" tabindex="-1" aria-label="Text field editor"></textarea>
+				<button id="b_notesdone" class="trn">Edit</button>
+			</div>
 
-				<form id="sb_container">
-					<input
-						id="searchbar"
-						type="text"
-						name="searchbar"
-						autocomplete="off"
-						spellcheck="false"
-						aria-label="Search bar"
-					/>
-					<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
-					<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-						<img src="src/assets/interface/magnifying-glass.svg" alt="" />
-					</button>
-				</form>
+			<form id="sb_container" class="hidden">
+				<input
+					id="searchbar"
+					type="text"
+					name="searchbar"
+					autocomplete="off"
+					spellcheck="false"
+					aria-label="Search bar"
+				/>
+				<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
+				<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
+					<img src="src/assets/interface/magnifying-glass.svg" alt="" />
+				</button>
+			</form>
 
-				<ul id="linkblocks"></ul>
+			<ul id="linkblocks"></ul>
 
-				<div id="quotes_container">
-					<p id="quote"></p>
-					<p id="author"></p>
-				</div>
+			<div id="quotes_container" class="hidden">
+				<p id="quote"></p>
+				<p id="author"></p>
 			</div>
 		</main>
 

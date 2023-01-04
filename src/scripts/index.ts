@@ -1,10 +1,11 @@
 import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
 import snarkdown from 'snarkdown'
 
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, Notes, MoveKeys } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -35,6 +36,7 @@ import {
 	turnRefreshButton,
 	validateHideElem,
 } from './utils'
+import moveElements from './moveElements'
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
@@ -82,6 +84,66 @@ const freqControl = {
 	},
 }
 
+export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar']?: boolean }, fromInput?: true) {
+	//
+	// Update Display
+	//
+
+	const doms = {
+		quicklinks: 'linkblocks',
+		notes: 'notes_container',
+		quotes: 'quotes_container',
+		searchbar: 'sb_container',
+	}
+
+	const inputs = {
+		notes: 'i_notes',
+		quotes: 'i_quotes',
+		searchbar: 'i_sb',
+		quicklinks: 'i_quicklinks',
+	}
+
+	Object.entries(list).forEach(([key, on]) => {
+		clas($(key + '_options'), on, 'shown')
+
+		// This hides interface while grid is changing to avoid flickering
+		// Todo: This is an ugly hack and there must be a better way
+		dominterface.style.opacity = '0'
+		setTimeout(() => {
+			clas($(doms[key as keyof typeof doms]), !on, 'hidden')
+			dominterface.style.opacity = '1'
+		}, 5)
+
+		if (!fromInput) {
+			;($(inputs[key as keyof typeof inputs]) as HTMLInputElement).checked = on
+		}
+	})
+
+	//
+	// Update Storage
+	//
+
+	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar'], (data) => {
+		let statesToSave: { [key: string]: unknown } = {}
+
+		if ('quicklinks' in list) statesToSave.quicklinks = list.quicklinks
+		if ('notes' in list) statesToSave.notes = { ...data.notes, on: list.notes }
+		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }
+		if ('searchbar' in list) statesToSave.searchbar = { ...data.searchbar, on: list.searchbar }
+
+		storage.sync.set({ ...statesToSave })
+	})
+
+	//
+	// Update grid
+	//
+
+	if (fromInput) {
+		const [id, on] = Object.entries(list)[0]
+		moveElements(null, { widget: { id: id as MoveKeys, on } })
+	}
+}
+
 export function traduction(settingsDom: Element | null, lang = 'en') {
 	type DictKey = keyof typeof dict
 	type DictField = keyof typeof dict.April // "april" just to select a random field
@@ -109,7 +171,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'opacity' | 'change'; value: string }) {
+export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'change'; value: string }) {
 	const container = $('notes_container')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
@@ -278,24 +340,6 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 			let notes = data.notes || syncDefaults.notes
 
 			switch (event?.is) {
-				case 'toggle': {
-					const on = event.value === 'true'
-					const { align, opacity, text } = notes
-
-					interfaceWidgetToggle(null, 'notes')
-					handleToggle(on)
-					notes.on = on
-
-					if (on && editor) {
-						handleAlign(align)
-						handleOpacity(opacity)
-						parseMarkdownToHTML(text)
-						;(editor as HTMLInputElement).value = text
-					}
-
-					break
-				}
-
 				case 'change': {
 					parseMarkdownToHTML(event.value)
 					notes.text = event.value
@@ -324,17 +368,18 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 	// Init
 	//
 
-	if (!editor || !init) {
-		return
-	}
+	function notesStartup() {
+		if (!editor || !init) return
 
-	if (init.on) {
 		handleAlign(init.align)
 		handleOpacity(init.opacity)
 		handleToggle(init.on)
 		parseMarkdownToHTML(init.text)
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
+
+	if (init?.on) notesStartup()
+	else setTimeout(() => notesStartup(), 400)
 
 	//
 	// Interface Events
@@ -651,7 +696,7 @@ export function clock(
 export function quickLinks(
 	init: Sync | null,
 	event?: {
-		is: 'add' | 'import' | 'style' | 'toggle' | 'newtab' | 'row'
+		is: 'add' | 'import' | 'style' | 'newtab' | 'row'
 		bookmarks?: { title: string; url: string }[]
 		checked?: boolean
 		value?: string
@@ -1266,13 +1311,6 @@ export function quickLinks(
 			case 'import':
 				linkSubmission('import', event.bookmarks)
 				break
-
-			case 'toggle': {
-				clas($('linkblocks'), !event.checked, 'hidden')
-				interfaceWidgetToggle(null, 'quicklinks')
-				storage.sync.set({ quicklinks: event.checked })
-				break
-			}
 
 			case 'newtab': {
 				const val = event.checked || false
@@ -2732,13 +2770,6 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 			}
 
 			switch (update) {
-				case 'searchbar': {
-					data.searchbar.on = that.checked
-					display(that.checked)
-					interfaceWidgetToggle(null, 'searchbar')
-					break
-				}
-
 				case 'engine': {
 					data.searchbar.engine = that.value
 					clas($('searchbar_request'), that.value === 'custom', 'shown')
@@ -2886,13 +2917,13 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 export async function quotes(
 	init: Sync | null,
 	event?: {
-		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh'
+		is: 'author' | 'frequency' | 'type' | 'refresh'
 		value?: string
 		checked?: boolean
 	}
 ) {
 	function display(on: boolean) {
-		$('quotes_container')?.setAttribute('class', on ? 'shown' : 'hidden')
+		clas($('quotes_container'), !on, 'hidden')
 	}
 
 	async function newQuote(lang: string, type: string) {
@@ -2946,22 +2977,9 @@ export async function quotes(
 			const { lang, quotes } = data
 
 			switch (event?.is) {
-				case 'toggle': {
-					const on = event.checked || false // to use inside storage callback
-					updated.on = on
-
-					storage.local.get('quotesCache', (local) => {
-						insertToDom(local.quotesCache[0])
-						display(on)
-					})
-
-					interfaceWidgetToggle(null, 'quotes')
-					break
-				}
-
 				// TODO: investigate class toggle opposite of data
 				case 'author': {
-					clas($('author'), event.checked || false, 'alwaysVisible')
+					clas($('author'), event.checked || false, 'always-on')
 					updated.author = event.checked
 					break
 				}
@@ -3041,19 +3059,15 @@ export async function quotes(
 			quote = controlCacheList(cache, lang, quotes.type)[0] // has removed last quote from cache
 		}
 
-		// quotes off, just quit
-		if (init?.quotes?.on === false) {
-			return
-		}
-
 		quote = cache[0] // all conditions passed, cache is safe to use
 
 		// Displays
 		if (quotes.author) {
-			$('author')?.classList.add('alwaysVisible')
+			$('author')?.classList.add('always-on')
 		}
+
 		insertToDom(quote)
-		display(true)
+		display(init?.quotes?.on)
 	})
 }
 
@@ -3645,38 +3659,6 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	}
 }
 
-export function interfaceWidgetToggle(init: Sync | null, event?: 'notes' | 'quicklinks' | 'quotes' | 'searchbar') {
-	const toggleEmpty = (is: boolean) => clas($('widgets'), is, 'empty')
-
-	// Event is a string of the widget name to toggle
-	if (event) {
-		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks'], (data) => {
-			let displayed = {
-				quicklinks: data.quicklinks,
-				quotes: data.quotes.on,
-				searchbar: data.searchbar.on,
-				notes: data.notes.on,
-			}
-
-			// Toggle settings param
-			$(event + '_options')?.classList.toggle('shown')
-
-			// toggles relevent widget
-			displayed[event] = !displayed[event]
-
-			// checks if all values are false
-			toggleEmpty(Object.values(displayed).every((d) => !d))
-		})
-
-		return
-	}
-
-	if (init) {
-		const { notes, quicklinks, searchbar, quotes } = init
-		toggleEmpty(!(notes?.on || quicklinks || searchbar?.on || quotes?.on)) // if one is true, not empty
-	}
-}
-
 function onlineAndMobileHandler() {
 	//
 
@@ -3758,12 +3740,12 @@ function startup(data: Sync) {
 	quotes(data)
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
+	moveElements(data.move)
 
 	customCss(data.css)
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(data)
-	interfaceWidgetToggle(data)
 
 	setInterval(() => {
 		if (navigator.onLine) {
@@ -3821,15 +3803,11 @@ window.onload = function () {
 
 				console.log(`Version change: ${oldV} => ${newV}`)
 
-				if (data?.about?.version) {
-					data.about.version = newV
+				if (newV === '1.16.0') {
+					localStorage.hasUpdated = 'true'
 				}
 
-				// if (oldV === '1.14.2' && newV === '1.15.0') {
-				// 	localStorage.hasUpdated = 'true'
-				// }
-
-				storage.sync.set(data)
+				storage.sync.set({ about: { browser: detectPlatform(), version: newV } })
 			}
 
 			startup(data as Sync) // TODO: rip type checking
