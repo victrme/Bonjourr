@@ -38,6 +38,7 @@ import {
 } from './utils'
 import moveElements from './moveElements'
 
+let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
 }, 400)
@@ -1932,8 +1933,6 @@ export function initBackground(data: Sync) {
 	unsplash(data)
 }
 
-let loadBis = false
-
 export function imgBackground(url: string, color?: string) {
 	const overlaydom = $('background_overlay') as HTMLDivElement
 	const backgrounddom = $('background') as HTMLDivElement
@@ -2916,17 +2915,17 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 
 export async function quotes(
 	init: Sync | null,
-	event?: {
-		is: 'author' | 'frequency' | 'type' | 'refresh'
+	update?: {
+		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh' | 'userlist'
 		value?: string
 		checked?: boolean
 	}
 ) {
-	function display(on: boolean) {
-		clas($('quotes_container'), !on, 'hidden')
+	function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
+		return arr?.map(([author, content]) => ({ author, content }))
 	}
 
-	async function newQuote(lang: string, type: string) {
+	async function newQuoteFromAPI(lang: string, type: string) {
 		try {
 			if (!navigator.onLine) {
 				return []
@@ -2959,68 +2958,168 @@ export async function quotes(
 	}
 
 	function controlCacheList(list: Quote[], lang: string, type: string) {
+		//
+		// User
+
+		if (type === 'user') {
+			const randIndex = Math.round(Math.random() * (list.length - 1))
+			storage.local.set({ userQuoteSelection: randIndex })
+			return list[randIndex]
+		}
+
+		//
+		// APIs
+
 		list.shift() // removes used quote
 		storage.local.set({ quotesCache: list })
 
 		if (list.length < 2) {
-			newQuote(lang, type).then((list) => {
+			newQuoteFromAPI(lang, type).then((list) => {
 				storage.local.set({ quotesCache: list })
 			})
 		}
 
-		return list
+		return list[0]
 	}
 
-	function updateSettings() {
-		storage.sync.get(['lang', 'quotes'], async (data) => {
-			const updated = { ...data.quotes }
-			const { lang, quotes } = data
+	function updateSettings({
+		lang,
+		quotes,
+		quotesCache,
+	}: {
+		lang: string
+		quotes: Sync['quotes']
+		quotesCache: Local['quotesCache']
+	}) {
+		async function handleQuotesType(type: string) {
+			let list: Quote[] = []
+			const { userlist } = quotes
+			const isUserAndEmpty = type === 'user' && !userlist
 
-			switch (event?.is) {
-				// TODO: investigate class toggle opposite of data
-				case 'author': {
-					clas($('author'), event.checked || false, 'always-on')
-					updated.author = event.checked
-					break
-				}
+			clas($('quotes_userlist'), type === 'user', 'shown')
 
-				case 'frequency': {
-					updated.frequency = event.value
-					break
-				}
+			// Do nothing more if no list is found
+			if (isUserAndEmpty) return
 
-				case 'type': {
-					if (event.value) {
-						updated.type = event.value
-
-						const list = await newQuote(lang, event.value)
-						storage.local.set({ quotesCache: list })
-
-						insertToDom(list[0])
-					}
-					break
-				}
-
-				case 'refresh': {
-					updated.last = freqControl.set()
-
-					storage.local.get('quotesCache', async (local) => {
-						const { quotesCache } = local as Local
-						const quote = controlCacheList(quotesCache, lang, quotes.type)[0]
-						insertToDom(quote)
-					})
-
-					break
-				}
+			// Fetch quotes from API and display
+			if (type !== 'user') {
+				list = await newQuoteFromAPI(lang, type)
+				storage.local.set({ quotesCache: list })
+				insertToDom(list[0])
+				return
 			}
 
-			storage.sync.set({ quotes: updated })
-		})
+			// User list needs local to get selection
+			storage.local.get(['userQuoteSelection'], async (local) => {
+				list = userlistToQuotes(userlist!)
+				insertToDom(list[local.userQuoteSelection || 0])
+			})
+		}
+
+		function handleUserListChange(userlist: string) {
+			function validateUserQuotes(json: JSON) {
+				return (
+					Array.isArray(json) &&
+					json.length > 0 &&
+					json.every((val) => val.length === 2) &&
+					json.flat().every((val) => typeof val === 'string')
+				)
+			}
+
+			function inputError(log: string) {
+				;($('i_qtlist') as HTMLInputElement).value = ''
+				console.log(log)
+			}
+
+			let array: [string, string][] = []
+			let quote: Quote = { author: '', content: '' }
+
+			if (userlist !== '') {
+				let userJSON = []
+
+				try {
+					userJSON = JSON.parse(userlist)
+				} catch (error) {
+					inputError('User quotes list is not valid JSON')
+					return quotes.userlist
+				}
+
+				// if list is not valid, skip
+				if (validateUserQuotes(userJSON) === false) {
+					inputError('User quotes list is not of type [string, string][]')
+					return quotes.userlist
+				}
+
+				array = userJSON
+				quote = { author: array[0][0], content: array[0][1] }
+			}
+
+			$('i_qtlist')?.blur()
+			insertToDom(quote)
+			storage.local.set({ userQuoteSelection: 0 })
+
+			return array
+		}
+
+		function handleQuotesRefresh() {
+			if (quotes.type === 'user') {
+				if (!quotes.userlist) return
+				quotesCache = userlistToQuotes(quotes.userlist)
+			}
+
+			const quote = controlCacheList(quotesCache, lang, quotes.type)
+			insertToDom(quote)
+		}
+
+		const updated = { ...quotes }
+		const { checked, value } = update! // force because updateSettings is only called after update check
+
+		switch (update?.is) {
+			case 'author': {
+				if (typeof checked !== 'boolean') return
+				updated.author = checked
+				clas($('author'), checked, 'alwaysVisible')
+				break
+			}
+
+			case 'frequency': {
+				if (!value) return
+				updated.frequency = value
+				break
+			}
+
+			case 'type': {
+				if (!value) return
+				updated.type = value
+				handleQuotesType(value)
+				break
+			}
+
+			case 'userlist': {
+				if (typeof value !== 'string') return
+				updated.userlist = handleUserListChange(value)
+				break
+			}
+
+			case 'refresh': {
+				updated.last = freqControl.set()
+				handleQuotesRefresh()
+				break
+			}
+		}
+
+		storage.sync.set({ quotes: updated })
 	}
 
-	// update and quit
-	if (event) {
-		updateSettings()
+	// get sync & local, update, and quit
+	if (update) {
+		storage.sync.get(['lang', 'quotes'], async (data) => {
+			storage.local.get(['quotesCache'], async (local) => {
+				const { lang, quotes } = data as Sync
+				const { quotesCache } = local as Local
+				updateSettings({ quotes, lang, quotesCache })
+			})
+		})
 		return
 	}
 
@@ -3036,38 +3135,47 @@ export async function quotes(
 		return
 	}
 
-	// Init
-	storage.local.get('quotesCache', async (local) => {
-		canDisplayInterface('quotes')
-
+	storage.local.get(['quotesCache', 'userQuoteSelection'], async (local) => {
 		const { lang, quotes } = init
-		let needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
+		const isUser = quotes.type === 'user'
+		const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
+
+		let userSel = local.userQuoteSelection || 0
 		let cache = local.quotesCache
 		let quote: Quote
 
-		if (!cache || cache?.length === 0) {
-			cache = await newQuote(lang, quotes.type) // gets list
-			storage.local.set({ quotesCache: cache }) // saves list
+		canDisplayInterface('quotes')
 
-			quote = cache[0]
+		// First startup, create classic cache
+		if (!cache || cache?.length === 0) {
+			cache = await newQuoteFromAPI(lang, quotes.type)
+			storage.local.set({ quotesCache: cache })
 		}
 
+		// If user quotes, replace cache
+		if (isUser) {
+			cache = userlistToQuotes(quotes.userlist) // force because list check is above
+		}
+
+		// Frequence control, get new quote from controlCacheList
 		if (needsNewQuote) {
 			quotes.last = freqControl.set() // updates last quotes timestamp
+			quote = controlCacheList(cache, lang, quotes.type)
 			storage.sync.set({ quotes })
-
-			quote = controlCacheList(cache, lang, quotes.type)[0] // has removed last quote from cache
+		} else {
+			quote = cache[isUser ? userSel : 0]
 		}
-
-		quote = cache[0] // all conditions passed, cache is safe to use
 
 		// Displays
 		if (quotes.author) {
 			$('author')?.classList.add('always-on')
 		}
 
+		if (isUser && quotes.userlist) insertToDom(userlistToQuotes(quotes.userlist!)[userSel])
+		else if (!isUser) insertToDom(cache[0])
+
 		insertToDom(quote)
-		display(init?.quotes?.on)
+		clas($('quotes_container'), !quotes.on, 'hidden')
 	})
 }
 

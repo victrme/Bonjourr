@@ -600,37 +600,42 @@
 	}
 
 	#quotes_container {
-		display: flex;
-		flex-direction: column;
+		display: block;
 		row-gap: 1em;
-		width: 33vw;
-		max-width: 600px;
-		min-width: 150px;
+		width: 50vw;
+		max-width: 45em;
+		min-width: 20em;
+		margin: 0 auto;
 		-webkit-user-select: text;
 		-moz-user-select: text;
 		user-select: text;
-		will-change: transform, flex-grow;
-		transition: opacity 0.2s, flex-grow 0.4s 0.2s, min-height 0.4s 0.2s, transform 0.4s;
 		cursor: initial;
 
 		&.hidden {
 			display: none;
 		}
 
+		&:hover #author {
+			opacity: 1;
+		}
+
 		#quote {
 			font-size: 1.5em;
-			max-height: 180px;
+			line-height: 1.5em;
+			max-height: calc(1.5em * 6);
+			margin-bottom: 0.75em;
+			overflow-y: clip;
 		}
 
 		#author {
 			opacity: 0;
 			font-size: 1.2em;
+			text-align: center;
 			transition: opacity 0.4s;
-		}
 
-		#author.always-on,
-		&:hover #author {
-			opacity: 1;
+			&.always-on {
+				opacity: 1;
+			}
 		}
 	}
 }

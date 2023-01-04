@@ -9,9 +9,10 @@ export type Searchbar = {
 export type Quotes = {
 	on: boolean
 	author: boolean
+	last: number
 	type: string
 	frequency: string
-	last: number
+	userlist?: [string, string][]
 }
 
 export type Weather = {
