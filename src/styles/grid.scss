@@ -1,0 +1,275 @@
+#interface {
+	--grid: '';
+	display: grid;
+	gap: 1em;
+	grid-template-areas: var(--grid);
+
+	&.move-edit {
+		#element-mover {
+			visibility: visible;
+		}
+
+		#main,
+		#time,
+		#linkblocks,
+		#sb_container,
+		#notes_container,
+		#quotes_container {
+			// border-radius: 8px;
+			// background: #fff2;
+			// box-shadow: 5px 5px 20px #2224;
+			// cursor: pointer;
+			z-index: 2;
+			cursor: pointer;
+
+			> * {
+				pointer-events: none;
+				user-select: none;
+			}
+
+			&:hover {
+				// background: #fff5;
+			}
+
+			&.move-selected {
+				// background: #fff3;
+				// backdrop-filter: blur(1em);
+				// outline-color: var(--blue);
+			}
+		}
+	}
+
+	.move-overlay {
+		border: none;
+		border-radius: 1em;
+		background-color: #fff2;
+		backdrop-filter: blur(1em);
+		outline: 0.4em solid transparent;
+
+		&.selected {
+			background: #fff3;
+			outline-color: var(--blue);
+		}
+	}
+
+	#move-overlay-time,
+	#time {
+		grid-area: time;
+	}
+
+	#move-overlay-main,
+	#main {
+		grid-area: main;
+	}
+
+	#move-overlay-searchbar,
+	#sb_container {
+		grid-area: searchbar;
+	}
+
+	#move-overlay-notes,
+	#notes_container {
+		grid-area: notes;
+	}
+
+	#move-overlay-quicklinks,
+	#linkblocks {
+		grid-area: quicklinks;
+	}
+
+	#move-overlay-quotes,
+	#quotes_container {
+		grid-area: quotes;
+	}
+
+	#main,
+	#time,
+	#linkblocks,
+	#sb_container,
+	#notes_container,
+	#quotes_container {
+		width: fit-content;
+		height: fit-content;
+		place-self: center;
+	}
+
+	#main,
+	#time,
+	#linkblocks,
+	#quotes_container {
+		padding: 2em;
+	}
+}
+
+#element-mover {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	left: calc(2em + 100px); // because of .pushed interface
+	top: 2em;
+	gap: 2em;
+	padding: 1em;
+	padding-top: 2em;
+	min-width: 12em;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 5px 5px 20px #2224;
+	text-shadow: none;
+	border-radius: 1em;
+	visibility: hidden;
+	cursor: grab;
+	z-index: 3;
+	transition: left 0.4s;
+
+	color: #2a2222;
+
+	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
+
+	> * {
+		cursor: auto;
+	}
+
+	hr {
+		border-color: #3334;
+	}
+
+	p {
+		margin-bottom: 1em;
+	}
+}
+
+.mover {
+	display: grid;
+
+	button {
+		border: none;
+		border-radius: 0.2em;
+		min-width: 2em;
+		color: #666;
+		background-color: transparent;
+
+		&.selected {
+			background-color: #0072ee22;
+			outline: 2px solid var(--blue);
+		}
+
+		&:disabled {
+			opacity: 0.3;
+			cursor: default;
+		}
+
+		&:hover:not(:disabled) {
+			background-color: #fff4;
+		}
+
+		&:active:not(:disabled) {
+			background-color: #fff5;
+		}
+	}
+}
+
+button.grid-spanner {
+	display: block;
+	width: 60%;
+	margin: 0.3em auto;
+	padding: 0.3em 1.2em;
+	border: none;
+	border-radius: 8px;
+	outline: 2px solid transparent;
+	background-color: #fff4;
+
+	&:hover:not(:disabled) {
+		background-color: #fff6;
+	}
+
+	&.selected:not(:disabled) {
+		background-color: #0072ee22;
+		outline-color: var(--blue);
+	}
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.4;
+	}
+}
+
+#grid-mover {
+	place-content: center;
+	grid-template-columns: 80px;
+}
+
+#box-alignment-mover {
+	place-content: center;
+	grid-template-columns: repeat(3, 40px);
+	grid-template-rows: repeat(3, 30px);
+}
+
+#text-alignment-mover {
+	place-content: center;
+	grid-template-columns: repeat(3, 40px);
+}
+
+#grid-layout {
+	margin: 0.5em auto;
+	width: fit-content;
+	grid-template-columns: 1fr 1fr 1fr;
+
+	button {
+		display: grid;
+		padding: 0;
+		margin: 4px;
+		width: 60px;
+		overflow: hidden;
+		border-radius: 4px;
+		border: 2px solid #666;
+
+		&.selected,
+		&.selected div {
+			border-color: var(--blue);
+		}
+
+		div {
+			height: 2em;
+			width: 100%;
+			border-right: 2px solid #666;
+		}
+
+		&[data-layout='single'] {
+			grid-template-columns: 1fr;
+		}
+
+		&[data-layout='double'] {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		&[data-layout='double-left'] {
+			grid-template-columns: 2fr 1fr;
+		}
+
+		&[data-layout='double-right'] {
+			grid-template-columns: 1fr 2fr;
+		}
+
+		&[data-layout='triple'] {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+}
+
+#close-mover {
+	display: block;
+	width: 100%;
+	border-radius: 6px;
+	border: 3px solid transparent;
+	background-color: transparent;
+	text-align: left;
+	padding: 2px 12px;
+	outline: none;
+	cursor: pointer;
+	text-align: center;
+}
+
+#close-mover:focus-visible,
+#close-mover:hover {
+	color: white;
+	background-color: #2c7be5;
+}

@@ -6,17 +6,11 @@
 	<div id="changelogContainer">
 		<button id="log_dismiss" aria-label="Dismiss changelog"><img src="src/assets/interface/close.svg" alt="" /></button>
 		<div id="changelog">
-			<p class="trn">Bonjourr has been updated to version 1.15 ✨</p>
+			<p class="trn">Bonjourr has been updated to version 1.16 ✨</p>
 
 			<p>
-				<span class="trn"
-					>We've added a new feature: Notes, greatly improved accessibility and more. Take a look at </span
-				><a
-					id="link"
-					class="trn"
-					target="_blank"
-					rel="noreferrer noopener"
-					href="https://ko-fi.com/Post/Bonjourr-1-15-is-coming-Notes-accessibility-and-L3L6F6YQS"
+				<span class="trn">We've added a new feature: Move Elements, and more. Take a look at</span
+				><a id="link" class="trn" target="_blank" rel="noreferrer noopener" href="https://ko-fi.com/bonjourr"
 					><span class="trn">our full changelog</span>.</a
 				>
 				🗞
@@ -84,6 +78,55 @@
 					<option value="enable" class="trn">Enabled</option>
 					<option value="disable" class="trn">Disabled</option>
 				</select>
+			</div>
+		</div>
+	</div>
+
+	<div id="pageelem" class="as as_pageelem">
+		<h2 class="trn">Page elements</h2>
+
+		<div class="param">
+			<div>
+				<div class="wrapper">
+					<span>
+						<span class="trn">Page layout</span>
+						<button class="tooltip ttgrid" aria-label="Tips on page grid layout">?</button>
+					</span>
+				</div>
+
+				<div class="tooltiptext ttgrid">
+					<span class="trn">Here you can move page elements. </span>
+					<span class="trn instructions">Edit button opens a toolbox. Click on page element to select. </span>
+					<a class="trn" href="https://bonjourr.fr/misc" rel="noreferrer noopener">Learn more</a>
+				</div>
+
+				<div id="grid-layout" class="mover">
+					<button data-layout="single" aria-label="Single column layout">
+						<div></div>
+					</button>
+					<button data-layout="double" aria-label="Double column layout">
+						<div></div>
+						<div></div>
+					</button>
+					<!-- <button data-layout="double-left">
+						<div></div>
+						<div></div>
+					</button>
+					<button data-layout="double-right">
+						<div></div>
+						<div></div>
+					</button> -->
+					<button data-layout="triple" aria-label="Triple column layout">
+						<div></div>
+						<div></div>
+						<div></div>
+					</button>
+				</div>
+			</div>
+
+			<div class="wrapper grid-btns">
+				<button id="b_editmove" class="trn">Edit grid</button>
+				<button id="reset-layout" class="trn">Reset layout</button>
 			</div>
 
 			<hr />

@@ -118,15 +118,6 @@ body {
 	}
 }
 
-@mixin hidden {
-	&.hidden {
-		display: none;
-		cursor: default;
-		opacity: 0;
-		transition: opacity 0.1s;
-	}
-}
-
 @mixin allCentered {
 	display: flex;
 	align-items: center;
@@ -212,7 +203,10 @@ body {
 		.as {
 			overflow-y: clip;
 		}
-
+		.as_pageelem {
+			max-height: 400px;
+			padding-bottom: 3px;
+		}
 		.as_link {
 			max-height: 120px;
 			padding-bottom: 3px;

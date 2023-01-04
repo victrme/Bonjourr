@@ -7,6 +7,8 @@ import { Local } from './types/local'
 
 import storage from './storage'
 
+import moveElements from './moveElements'
+
 import {
 	$,
 	has,
@@ -28,6 +30,7 @@ import {
 } from './utils'
 
 import {
+	toggleWidgets,
 	backgroundFilter,
 	notes,
 	clock,
@@ -152,8 +155,17 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		paramId('b_importbookmarks').setAttribute('style', 'display: none')
 	}
 
-	// quick links
+	// Activate feature options
 	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
+	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
+	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
+	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
+	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
+
+	// Page layout
+	settingsDom.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
+		clas(b, b.dataset.layout === data.move.selection, 'selected')
+	})
 
 	// Hide elems
 	hideElem(null, { is: 'buttons', buttonList: settingsDom.querySelectorAll<HTMLButtonElement>('#hideelem button') })
@@ -189,13 +201,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		i_geol.checked = true
 	}
 
-	// Text field display settings
-	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
-
-	// Searchbar display settings
-	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
-
 	// CSS height control
 	if (data.cssHeight) {
 		paramId('cssEditor').setAttribute('style', 'height: ' + data.cssHeight + 'px')
@@ -212,6 +217,17 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Events
 	//
 	//
+
+	function widgetThrottle(e: Event) {
+		if (sessionStorage.throttledWidgetInput === 'true') {
+			e.preventDefault()
+			return true
+		}
+
+		// removes it in moveElements when storage is correctly saved
+		sessionStorage.throttledWidgetInput = 'true'
+		return false
+	}
 
 	// Pressing "Enter" removes focus from input to indicate change
 	const enterBlurs = (elem: HTMLInputElement) => {
@@ -286,6 +302,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
+	paramId('b_editmove').addEventListener('click', function () {
+		moveElements(null, { toggle: true })
+	})
+
 	paramId('hideelem')
 		.querySelectorAll('button')
 		.forEach((elem: HTMLButtonElement) => {
@@ -298,8 +318,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quick links
 
-	paramId('i_quicklinks').addEventListener('change', function (this: HTMLInputElement) {
-		quickLinks(null, { is: 'toggle', checked: this.checked })
+	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ quicklinks: this.checked }, true)
 	})
 
 	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
@@ -445,10 +466,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	//
-	// Text field
+	// Notes
 
-	paramId('i_notes').addEventListener('change', function (this: HTMLInputElement) {
-		notes(null, { is: 'toggle', value: this.checked.toString() })
+	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ notes: this.checked }, true)
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -462,8 +484,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Searchbar
 
-	paramId('i_sb').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'searchbar', this)
+	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ searchbar: this.checked }, true)
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -485,8 +508,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quotes
 
-	paramId('i_quotes').addEventListener('change', function () {
-		quotes(null, { is: 'toggle', checked: this.checked })
+	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
+		if (widgetThrottle(ev)) return
+		toggleWidgets({ quotes: this.checked }, true)
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
@@ -1057,8 +1081,9 @@ export function settingsInit(data: Sync) {
 		})
 
 		dominterface?.addEventListener('click', function (e) {
-			if (e.composedPath().filter((d) => (d as HTMLElement).id === 'linkblocks').length > 0) {
-				return // Do nothing if links are clicked
+			const pathIds = e.composedPath().map((d) => (d as HTMLElement).id)
+			if (pathIds.includes('linkblocks') || pathIds.includes('element-mover')) {
+				return // Do nothing if links or element mover are clicked
 			}
 
 			if (document.body.classList.contains('tabbing')) {
