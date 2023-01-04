@@ -164,11 +164,11 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 	}
 
 	/*
-		 	For columns and rows:
-			mutate column by adding / removing duplicates 
-			mutate grid with new column
-			update buttons with recheck duplication (don't assume duped work everytime) 
-		*/
+		For columns and rows:
+		mutate column by adding / removing duplicates 
+		mutate grid with new column
+		update buttons with recheck duplication (don't assume duped work everytime) 
+	*/
 
 	const { posCol, posRow } = findIdPositions(grid, id)[0]
 	let col = grid.map((g) => g[posCol])
@@ -381,21 +381,6 @@ const buttonControl = {
 		boxBtns.forEach((b) => clas(b, b.dataset.align === (item?.box || ''), 'selected'))
 		textBtns.forEach((b) => clas(b, b.dataset.align === (item?.text || ''), 'selected'))
 	},
-
-	reset: (move: Move) => {
-		const btn = document.querySelector<HTMLButtonElement>('#reset-layout')
-		const defaultGrid = syncDefaults.move.layouts[move.selection].grid
-		const layout = move.layouts[move.selection]
-
-		const isSameGrid = layoutToGridAreas(layout.grid) === layoutToGridAreas(defaultGrid)
-		const isSameAlign = Object.values(layout.items).filter(({ box, text }) => box !== '' || text !== '').length === 0
-
-		if (isSameGrid && isSameAlign) {
-			btn?.setAttribute('disabled', '')
-		} else {
-			btn?.removeAttribute('disabled')
-		}
-	},
 }
 
 function removeSelection() {
@@ -476,7 +461,6 @@ export default function moveElements(
 				move.layouts[move.selection].grid = grid
 
 				buttonControl.grid(activeID)
-				buttonControl.reset(move)
 
 				storage.sync.set({ move: move })
 			}
@@ -491,7 +475,6 @@ export default function moveElements(
 
 				setAlign(activeID, item)
 				buttonControl.align(item)
-				buttonControl.reset(move)
 
 				// Update storage
 				move.layouts[move.selection].items[activeID] = item
@@ -514,8 +497,6 @@ export default function moveElements(
 				const layout = move.layouts[move.selection]
 
 				const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
-				const widgetsInStorage = getEnabledWidgetsFromStorage(data as Sync)
-				const stateIsDifferent = (id: MoveKeys) => !(widgetsInGrid.includes(id) === widgetsInStorage.includes(id))
 
 				toggleWidgets({
 					notes: widgetsInGrid.includes('notes'),
@@ -526,7 +507,6 @@ export default function moveElements(
 
 				setAllAligns(layout.items)
 				setGridAreas(layout)
-				buttonControl.reset(move)
 				buttonControl.layout(move.selection)
 
 				// Toggle overlays if we are editing
@@ -554,22 +534,20 @@ export default function moveElements(
 					return grid
 				}
 
+				if (!activeID) return
+
 				// DEEP CLONE is important as to not mutate sync defaults (it shouldn't come to this, but here we are)
 				// Destructure layout to appease typescript
-				Object.entries(clonedeep(syncDefaults.move.layouts)).forEach(([key, layout]) => {
-					const selection = key as Move['selection']
-					const { grid, items } = layout
+				const { grid, items } = clonedeep(syncDefaults.move.layouts)[move.selection]
 
-					move.layouts[selection].grid = addEnabledWidgetsToGrid(grid)
-					move.layouts[selection].items = items
-				})
+				move.layouts[move.selection].grid = addEnabledWidgetsToGrid(grid)
+				move.layouts[move.selection].items = items
 
 				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
 
 				setAllAligns(layout.items)
 				setGridAreas(layout)
-				buttonControl.reset(move)
 				removeSelection()
 
 				// Save

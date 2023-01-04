@@ -325,7 +325,7 @@
 		}
 	}
 
-	#pageelem_options {
+	#pageelem {
 		transition: max-height 0.4s;
 
 		#page-layout_label {
@@ -341,17 +341,9 @@
 			gap: 1em;
 		}
 
-		#reset-layout {
-			&:focus-visible:not(:disabled),
-			&:hover:not(:disabled) {
-				color: #e64b43;
-			}
-
-			&:disabled {
-				opacity: 0.5;
-				cursor: default;
-				text-decoration: none;
-			}
+		#reset-layout:focus-visible,
+		#reset-layout:hover {
+			color: #e64b43;
 		}
 	}
 
