@@ -160,6 +160,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
 	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
 
+	// Page layout
+	settingsDom.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
+		clas(b, b.dataset.layout === data.move.selection, 'selected')
+	})
+
 	// Hide elems
 	hideElem(null, { is: 'buttons', buttonList: settingsDom.querySelectorAll<HTMLButtonElement>('#hideelem button') })
 
