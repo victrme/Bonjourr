@@ -149,3 +149,6 @@ We recommend a Chromium based browser to work on Bonjourr.
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
 -   **🇩🇰 Danish translation** · kar1 · [GitHub](https://github.com/kar1)
+-   **🇫🇮 Finnish translation** · jaajko · [Jaajko](https://jaajko.fi) · [GitHub](https://github.com/jaajko)
+-   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
+-   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)

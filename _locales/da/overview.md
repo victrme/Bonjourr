@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Hver gang du åbner et nyt vindue eller en ny fane, vil du blive mødt af denne minimalistiske side, som vil hjælpe dig med at få ro og produktivitet. Takket være de smukke baggrunde i høj kvalitet, der skifter alt efter dagens humør, vil dine nye faner altid føles friske.
 
 Bonjourr blev bygget som et mere moderne alternativ til hjemmesider som Momentum. Vi har ladet os inspirere af iOS og Apples designsprog for at skabe denne smukke hjemmeside, der hjælper dig med at fokusere på det, der betyder noget.

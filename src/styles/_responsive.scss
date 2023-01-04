@@ -33,22 +33,14 @@
 
 // mobile
 @media screen and (max-width: 600px) {
+	html,
 	body {
-		min-height: var(--app-height);
-		// min-height: -webkit-fill-available;
-		// todo: a enlever quand ça sera merge
 		font-size: 12px;
 		overflow-y: auto;
 	}
 
 	#skiptosettings {
 		display: none;
-	}
-
-	#background_overlay {
-		min-height: var(--app-height);
-		min-height: -webkit-fill-available;
-		min-height: initial;
 	}
 
 	#interface {
@@ -122,7 +114,6 @@
 
 	footer {
 		position: relative;
-		padding: 0 14px 14px;
 		z-index: 1;
 
 		#creditContainer {
@@ -205,11 +196,6 @@
 }
 
 @media (orientation: landscape) {
-	footer {
-		position: absolute;
-		bottom: 0;
-	}
-
 	#interface {
 		max-height: unset;
 		padding-bottom: 90px;

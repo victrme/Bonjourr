@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "1.15.1",
+	"version": "1.15.5",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
 	"main": "src/scripts/index.ts",
 	"scripts": {
@@ -9,6 +9,7 @@
 		"build-js": "esbuild src/scripts/index.ts --outfile=release/main.js --bundle --minify",
 		"chrome": "concurrently --kill-others \"pnpm run watch-js\" \"gulp chrome\"",
 		"firefox": "concurrently --kill-others \"pnpm run watch-js\" \"gulp firefox\"",
+		"safari": "concurrently --kill-others \"pnpm run watch-js\" \"gulp safari\"",
 		"online": "concurrently --kill-others \"pnpm run watch-js\" \"gulp online\"",
 		"build": "(pnpm run build-js) & gulp build"
 	},

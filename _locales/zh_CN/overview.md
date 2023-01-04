@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 每当你打开一个新的窗口或标签，迎接你的将是这个看起来很简约的页面，这将有助于你的宁静和生产力。由于其华丽的高质量背景根据一天的心情而变化，你的新标签将永远感到新鲜。
 
 Bonjourr 是作为像 Momentum 这样的主页的一个更现代的选择而建立的。我们从 iOS 和苹果的设计语言中获得灵感，创造了这个美丽的主页，将帮助你专注于重要的事情。

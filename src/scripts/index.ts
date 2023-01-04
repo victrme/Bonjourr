@@ -43,11 +43,11 @@ const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 }, 400)
 
 const freqControl = {
-	set: function () {
+	set: () => {
 		return new Date().getTime()
 	},
 
-	get: function (every?: string, last?: number) {
+	get: (every: string, last: number) => {
 		// instead of adding unix time to the last date
 		// look if day & hour has changed
 		// because we still cannot time travel
@@ -60,15 +60,26 @@ const freqControl = {
 			hour: nowDate.getHours() !== lastDate.getHours(),
 		}
 
-		if (every === 'day') return changed.date
-		if (every === 'hour') return changed.date || changed.hour
-		if (every === 'tabs') return true
-		if (every === 'pause') return last === 0
-		if (every === 'period') {
-			const sun = sunTime()
+		switch (every) {
+			case 'day':
+				return changed.date
 
-			if (!sun) return 'day'
-			else return periodOfDay(sun) !== periodOfDay(sun, +lastDate)
+			case 'hour':
+				return changed.date || changed.hour
+
+			case 'tabs':
+				return true
+
+			case 'pause':
+				return last === 0
+
+			case 'period': {
+				const sun = sunTime()
+				return last === 0 || !sun ? true : periodOfDay(sun) !== periodOfDay(sun, +lastDate) || false
+			}
+
+			default:
+				return false
 		}
 	},
 }
@@ -703,27 +714,29 @@ export function quickLinks(
 			//le DOM du block
 			const img = document.createElement('img')
 			const span = document.createElement('span')
-			const atag = document.createElement('a')
+			const anchor = document.createElement('a')
 			const li = document.createElement('li')
 
 			img.alt = ''
 			img.loading = 'lazy'
 			img.setAttribute('draggable', 'false')
 
-			atag.appendChild(img)
-			atag.appendChild(span)
-			atag.setAttribute('draggable', 'false')
+			anchor.appendChild(img)
+			anchor.appendChild(span)
+			anchor.setAttribute('draggable', 'false')
 
-			atag.href = url
-			atag.setAttribute('rel', 'noreferrer noopener')
+			anchor.href = url
+			anchor.setAttribute('rel', 'noreferrer noopener')
 
 			if (isnewtab) {
-				atag.setAttribute('target', '_blank')
+				getBrowser() === 'safari'
+					? anchor.addEventListener('click', handleSafariNewtab)
+					: anchor.setAttribute('target', '_blank')
 			}
 
 			li.id = link._id
 			li.setAttribute('class', 'block')
-			li.appendChild(atag)
+			li.appendChild(anchor)
 
 			// this also adds "normal" title as usual
 			textOnlyControl(li, title, domlinkblocks.className === 'text')
@@ -1092,7 +1105,8 @@ export function quickLinks(
 			if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
 
 			// Moves edit link to mouse position
-			document.querySelector('#editlink')?.setAttribute('style', `transform: translate(${x + 3}px, ${y + 3}px)`)
+			const domeditlink = $('editlink')
+			if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
 		}
 
 		const linkId = domlink.id
@@ -1166,41 +1180,35 @@ export function quickLinks(
 	}
 
 	function removeblock(linkId: string) {
-		storage.sync.get([linkId], (data) => {
+		storage.sync.get(null, (data) => {
 			const links = bundleLinks(data as Sync)
-			let link = data[linkId] as Link
+			const target = data[linkId] as Link
 			const linkDOM = $(linkId)
 
-			if (!link || !linkDOM) {
-				return
-			}
+			if (!target || !linkDOM) return
 
-			const rowDOM = linkDOM.parentElement as HTMLUListElement
+			// Removes DOM
 			const height = linkDOM.getBoundingClientRect().height
-			const isLastOnRow = rowDOM.childElementCount === 1
-
 			linkDOM.setAttribute('style', 'height: ' + height + 'px')
+
 			clas(linkDOM, true, 'removed')
+			setTimeout(() => linkDOM.remove(), 600)
 
-			if (isLastOnRow) {
-				rowDOM.setAttribute('style', 'max-height: 0; overflow: hidden')
-			}
+			// Removes storage
+			delete data[linkId]
 
-			setTimeout(function () {
-				linkDOM.remove()
+			// Updates Order
+			links
+				.filter((l) => l._id !== linkId) // pop deleted first
+				.forEach((l: Link) => {
+					data[l._id] = {
+						...l,
+						order: l.order - (l.order > target.order ? 1 : 0),
+					}
+				})
 
-				if (isLastOnRow) {
-					rowDOM.remove()
-				}
-			}, 600)
-
-			links.forEach((l: Link) => {
-				l.order -= l.order > link.order ? 1 : 0 // Decrement order for elements above the one removed
-				data[l._id] = l // updates link in storage
-			})
-
+			storage.sync.clear()
 			storage.sync.set(data)
-			storage.sync.remove(link._id)
 		})
 	}
 
@@ -1288,6 +1296,12 @@ export function quickLinks(
 		domlinkblocks.style.maxWidth = (width + gap) * amount + 'em'
 	}
 
+	function handleSafariNewtab(e: Event) {
+		const anchor = e.composedPath().filter((el) => (el as Element).tagName === 'A')[0]
+		window.open((anchor as HTMLAnchorElement)?.href)
+		e.preventDefault()
+	}
+
 	if (event) {
 		switch (event.is) {
 			case 'add':
@@ -1301,7 +1315,15 @@ export function quickLinks(
 			case 'newtab': {
 				const val = event.checked || false
 				storage.sync.set({ linknewtab: val })
+
 				document.querySelectorAll('.block a').forEach((a) => {
+					//
+					if (getBrowser() === 'safari') {
+						if (val) a.addEventListener('click', handleSafariNewtab)
+						else a.removeEventListener('click', handleSafariNewtab)
+						return
+					}
+
 					if (val) a.setAttribute('target', '_blank')
 					else a.removeAttribute('target')
 				})
@@ -1352,11 +1374,12 @@ export function quickLinks(
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 
-	window.addEventListener('resize', (e) => {
-		if ((testOS.ios || !mobilecheck()) && document.querySelector('#editlink')?.classList.contains('shown')) {
-			closeEditLink()
-		}
-	})
+	if (testOS.ios || !mobilecheck()) {
+		const domeditlink = $('editlink')
+		window.addEventListener('resize', () => {
+			if (domeditlink?.classList.contains('shown')) closeEditLink()
+		})
+	}
 }
 
 export async function linksImport() {
@@ -1501,17 +1524,18 @@ export function weather(
 				'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
 				'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
 			]
-			const type = isForecast ? 'forecast' : 'weather'
-			const lang = document.documentElement.getAttribute('lang')
-			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
 			const units = storage.unit || 'metric'
+			const type = isForecast ? 'forecast' : 'weather'
+			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
+			let lang = document.documentElement.getAttribute('lang')
 			let location = ''
 
-			if (storage.location?.length === 2) {
-				location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`
-			} else {
-				location = `&q=${encodeURI(storage.city)},${storage.ccode}`
-			}
+			// Openweathermap country code for traditional chinese is tw
+			if (lang === 'zh_HK') lang = 'zh_TW'
+
+			storage.location?.length === 2
+				? (location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`)
+				: (location = `&q=${encodeURI(storage.city)},${storage.ccode}`)
 
 			return `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=${units}&lang=${lang}`
 		}
@@ -1606,24 +1630,45 @@ export function weather(
 	}
 
 	async function initWeather(data: Weather) {
-		//
+		// Get IPAPI first to get city and location
+
+		// Get geolocation
+		// if geoloc success, replace IPAPI
+		// else try with IPAPI city
+
+		// If ipapi city failed, use Paris, France
+
 		// First, tries to get city and country code to add in settings
 
-		try {
-			const ipapi = await fetch('https://ipapi.co/json')
-			if (ipapi.ok) {
-				const json = await ipapi.json()
+		async function getInitialPositionFromIpapi() {
+			try {
+				const ipapi = await fetch('https://ipapi.co/json')
 
-				if (!json.error) {
-					data = { ...data, city: json.city, ccode: json.country }
+				if (ipapi.ok) {
+					const { error, city, country, latitude, longitude } = await ipapi.json()
+
+					if (!error) {
+						return {
+							city: city,
+							ccode: country,
+							location: [latitude, longitude],
+						}
+					}
 				}
+			} catch (error) {
+				return { city: 'Paris', ccode: 'FR' }
 			}
-		} catch (error) {}
+		}
 
 		// Then use this as callback in Geolocation request
 		async function setWeatherAfterGeolocation(location?: [number, number]) {
+			data = {
+				...data,
+				...(await getInitialPositionFromIpapi()), // get location + city from ipapi
+			}
+
 			if (location) {
-				data.location = location
+				data.location = location // replace location if geoloc is available
 			}
 
 			// Request API with all infos available
@@ -2444,10 +2489,10 @@ export async function unsplash(
 
 	function collectionUpdater(dynamic: Dynamic): CollectionType {
 		const { every, lastCollec, collection } = dynamic
-		const Pause = every === 'pause'
-		const Day = every === 'day'
+		const pause = every === 'pause'
+		const day = every === 'day'
 
-		if ((Pause || Day) && lastCollec) {
+		if ((pause || day) && lastCollec) {
 			return lastCollec // Keeps same collection on >day so that user gets same type of backgrounds
 		}
 
@@ -2548,7 +2593,9 @@ export async function unsplash(
 					storage.sync.set({ dynamic: newDynamic })
 					storage.local.set({ waitingForPreload: true })
 
-					setTimeout(() => cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false), 400)
+					setTimeout(() => {
+						cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false)
+					}, 400)
 
 					return
 				}
@@ -2558,7 +2605,10 @@ export async function unsplash(
 			}
 
 			case 'every': {
-				if (!event.value) return console.log('Not valid "every" value')
+				// Todo: fix bad manual value check
+				if (!event.value || !event.value.match(/tabs|hour|day|period|pause/g)) {
+					return console.log('Not valid "every" value')
+				}
 
 				sync.dynamic.every = event.value
 				sync.dynamic.time = freqControl.set()
@@ -2692,22 +2742,26 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 	}
 }
 
-export function searchbar(init: Searchbar | null, event?: string, that?: HTMLInputElement) {
-	const domsearchbar = $('searchbar') as HTMLInputElement
-	const emptyButton = $('sb_empty') as HTMLButtonElement
-	const submitButton = $('sb_submit') as HTMLButtonElement
+export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInputElement) {
+	const domcontainer = $('sb_container')
+	const domsearchbar = $('searchbar')
+	const emptyButton = $('sb_empty')
+	const submitButton = $('sb_submit')
 
 	const display = (shown: boolean) => $('sb_container')?.setAttribute('class', shown ? 'shown' : 'hidden')
-	const setEngine = (value: string) => domsearchbar.setAttribute('data-engine', value)
-	const setRequest = (value: string) => domsearchbar.setAttribute('data-request', stringMaxSize(value, 512))
-	const setNewtab = (value: boolean) => domsearchbar.setAttribute('data-newtab', value.toString())
-
+	const setEngine = (value: string) => domsearchbar?.setAttribute('data-engine', value)
+	const setRequest = (value: string) => domsearchbar?.setAttribute('data-request', stringMaxSize(value, 512))
+	const setNewtab = (value: boolean) => domsearchbar?.setAttribute('data-newtab', value.toString())
 	const setOpacity = (value: number) => {
-		domsearchbar.setAttribute('style', `background: rgba(255, 255, 255, ${value}); color: ${value > 0.4 ? '#222' : '#fff'}`)
-
-		if (value > 0.4) $('sb_container')?.classList.add('opaque')
-		else $('sb_container')?.classList.remove('opaque')
+		if (domsearchbar) {
+			domsearchbar.style.backgroundColor = `rgba(255, 255, 255, ${value})`
+			domsearchbar.style.color = value > 0.4 ? '#222' : '#fff'
+			clas($('sb_container'), value > 0.4, 'opaque')
+		}
 	}
+
+	//
+	// Updates
 
 	function updateSearchbar() {
 		storage.sync.get('searchbar', (data) => {
@@ -2715,7 +2769,7 @@ export function searchbar(init: Searchbar | null, event?: string, that?: HTMLInp
 				return
 			}
 
-			switch (event) {
+			switch (update) {
 				case 'engine': {
 					data.searchbar.engine = that.value
 					clas($('searchbar_request'), that.value === 'custom', 'shown')
@@ -2756,11 +2810,41 @@ export function searchbar(init: Searchbar | null, event?: string, that?: HTMLInp
 		})
 	}
 
-	function submitSearch() {
+	if (update) {
+		updateSearchbar()
+		return
+	}
+
+	//
+	// Initialisation
+
+	const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
+
+	try {
+		display(on)
+		setEngine(engine)
+		setRequest(request)
+		setNewtab(newtab)
+		setOpacity(opacity)
+
+		if (on) {
+			domsearchbar?.focus()
+		}
+	} catch (e) {
+		errorMessage('Error in searchbar initialization', e)
+	}
+
+	//
+	// Events
+
+	function submitSearch(e: SubmitEvent) {
+		if (!domsearchbar) return
+		e.preventDefault()
+
 		let searchURL = 'https://www.google.com/search?q=%s'
-		const isNewtab = domsearchbar.getAttribute('data-newtab') === 'true'
-		const engine = domsearchbar.getAttribute('data-engine') || 'google'
-		const request = domsearchbar.getAttribute('data-request') || ''
+		const isNewtab = domsearchbar?.dataset.newtab === 'true'
+		const engine = domsearchbar?.dataset.engine || 'google'
+		const request = domsearchbar?.dataset.request || ''
 		const lang = document.documentElement.getAttribute('lang') || 'en'
 
 		type EnginesKey = keyof typeof enginesUrls
@@ -2784,68 +2868,50 @@ export function searchbar(init: Searchbar | null, event?: string, that?: HTMLInp
 			searchURL = request
 		}
 
-		searchURL = searchURL.replace('%s', encodeURIComponent(domsearchbar.value))
+		// add search query to url
+		searchURL = searchURL.replace('%s', encodeURIComponent((domsearchbar as HTMLInputElement).value))
 
-		if (isNewtab) window.open(searchURL, '_blank')
-		else window.location.href = searchURL
+		// open new page
+		window.open(searchURL, isNewtab ? '_blank' : '_self')
 	}
 
 	function toggleInputButton(toggle: boolean) {
 		if (toggle) {
-			emptyButton.removeAttribute('disabled')
-			submitButton.removeAttribute('disabled')
+			emptyButton?.removeAttribute('disabled')
+			submitButton?.removeAttribute('disabled')
 		} else {
-			emptyButton.setAttribute('disabled', '')
-			submitButton.setAttribute('disabled', '')
+			emptyButton?.setAttribute('disabled', '')
+			submitButton?.setAttribute('disabled', '')
 		}
 	}
 
-	domsearchbar.onkeyup = function (e) {
-		const domssb = this as HTMLInputElement
-		if (e.key === 'Enter' && domssb.value.length > 0) {
-			submitSearch()
-		}
-	}
-
-	domsearchbar.oninput = function () {
-		const domssb = this as HTMLInputElement
-		const hasText = domssb.value.length > 0
+	function handleInputButtons() {
+		const hasText = (domsearchbar as HTMLInputElement).value.length > 0
 
 		clas(emptyButton, hasText, 'shown')
 		clas(submitButton, hasText, 'shown')
 		toggleInputButton(hasText)
 	}
 
-	emptyButton.onclick = function () {
-		domsearchbar.value = ''
+	function removeInputText() {
+		if (!domsearchbar) return
+
 		domsearchbar.focus()
+		;(domsearchbar as HTMLInputElement).value = ''
+
 		clas(emptyButton, false, 'shown')
 		clas(submitButton, false, 'shown')
 		toggleInputButton(false)
 	}
 
-	submitButton.onclick = function () {
-		submitSearch()
-	}
+	// This removes duplicates in case searchbar is called multiple times
+	domcontainer?.removeEventListener('submit', submitSearch)
+	domsearchbar?.removeEventListener('input', handleInputButtons)
+	emptyButton?.removeEventListener('click', removeInputText)
 
-	if (event) {
-		updateSearchbar()
-		return
-	}
-
-	const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
-
-	try {
-		display(on)
-		setEngine(engine)
-		setRequest(request)
-		setNewtab(newtab)
-		setOpacity(opacity)
-
-		if (on) domsearchbar.focus()
-	} catch (e) {
-		errorMessage('Error in searchbar initialization', e)
-	}
+	domcontainer?.addEventListener('submit', submitSearch)
+	domsearchbar?.addEventListener('input', handleInputButtons)
+	emptyButton?.addEventListener('click', removeInputText)
 }
 
 export async function quotes(
@@ -3630,28 +3696,28 @@ function onlineAndMobileHandler() {
 			return promptEvent
 		})
 
-		// Safari overflow fix
-		// Todo: add safari condition
-		const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		// Firefox cannot -moz-fill-available with height
+		// On desktop, uses fallback 100vh
+		// On mobile, sets height dynamically because vh is bad on mobile
+		if (getBrowser('firefox') && mobilecheck()) {
+			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+			appHeight()
 
-		// if (!mobilecheck()) {
-		window.addEventListener('resize', appHeight)
-		// }
+			// Resize will crush page when keyboard opens
+			// window.addEventListener('resize', appHeight)
 
-		appHeight()
-
-		if (testOS.ios && navigator.userAgent.includes('Firefox')) {
 			// Fix for opening tabs Firefox iOS
-			let globalID: number
-			function triggerAnimationFrame() {
-				appHeight()
-				globalID = requestAnimationFrame(triggerAnimationFrame)
-			}
+			if (testOS.ios) {
+				let globalID: number
 
-			window.requestAnimationFrame(triggerAnimationFrame)
-			setTimeout(function () {
-				cancelAnimationFrame(globalID)
-			}, 500)
+				function triggerAnimationFrame() {
+					appHeight()
+					globalID = requestAnimationFrame(triggerAnimationFrame)
+				}
+
+				window.requestAnimationFrame(triggerAnimationFrame)
+				setTimeout(() => cancelAnimationFrame(globalID), 500)
+			}
 		}
 	}
 }

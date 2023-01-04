@@ -12,7 +12,12 @@ function html(platform) {
 	//
 
 	return () => {
-		const stream = src('src/*.html')
+		const assets = ['src/*.html']
+
+		// no background.html on chrome because manifest v3
+		if (/chrome|online/.test(platform)) assets.push('!src/background.html')
+
+		const stream = src(assets)
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
@@ -40,11 +45,13 @@ function ressources(platform) {
 
 function worker(platform) {
 	return () => {
-		const file = {
-			origin: `src/scripts/${platform === 'online' ? 'service-worker.js' : 'background.js'}`,
-			destination: platform === 'online' ? `release/${platform}` : `release/${platform}/src/scripts/`,
+		if (platform === 'online') {
+			return src('src/scripts/services/service-worker.js').pipe(dest('release/online'))
 		}
-		return src(file.origin).pipe(dest(file.destination))
+
+		return src(`src/scripts/services/background-${platform === 'chrome' ? 'chrome' : 'browser'}.js`)
+			.pipe(rename('background.js'))
+			.pipe(dest('release/' + platform + '/src/scripts'))
 	}
 }
 
@@ -66,12 +73,8 @@ function styles(platform) {
 			.pipe(dest(`release/${platform}/src/styles/`))
 }
 
-function addBackground(platform) {
-	return () => src('src/scripts/background.js').pipe(dest(`release/${platform}/src/scripts`))
-}
-
 function locales(platform) {
-	return () => src('_locales/**').pipe(dest(`release/${platform}/_locales/`))
+	return () => src('_locales/**/messages.json').pipe(dest(`release/${platform}/_locales/`))
 }
 
 //
@@ -99,7 +102,6 @@ const taskExtension = (from) => [
 	manifest(from),
 	ressources(from),
 	scripts(from),
-	addBackground(from),
 ]
 
 //
@@ -118,4 +120,8 @@ exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
 
-exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'))
+exports.safari = async function () {
+	watch(filesToWatch, series(parallel(...taskExtension('safari'))))
+}
+
+exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'), ...taskExtension('safari'))

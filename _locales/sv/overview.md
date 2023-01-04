@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Varje gång du öppnar ett nytt fönster eller en ny flik möts du av den här minimalistiska sidan som kommer att bidra till ditt lugn och din produktivitet. Tack vare de vackra högkvalitativa bakgrunderna som ändras beroende på dagens humör kommer dina nya flikar alltid att kännas fräscha.
 
 Bonjourr byggdes som ett modernare alternativ till hemsidor som Momentum. Vi tog inspiration från iOS och Apples designspråk för att skapa den här vackra hemsidan som hjälper dig att fokusera på det som är viktigt.

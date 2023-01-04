@@ -1,8 +1,10 @@
-import { dict } from './lang'
+import { dict, langList } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
+
+type LangList = keyof typeof langList
 
 export const $ = (name: string) => document.getElementById(name)
 
@@ -280,32 +282,13 @@ export const safeFontList = {
 	apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
 }
 
-export const langList = {
-	en: 'English',
-	fr: 'Français',
-	sk: 'Slovenský',
-	sv: 'Svenska',
-	pl: 'Polski',
-	pt_BR: 'Português (Brasil)',
-	nl: 'Nederlandse',
-	ru: 'Русский',
-	zh_CN: '简体中文',
-	de: 'Deutsch',
-	it: 'Italiano',
-	es: 'Español',
-	tr: 'Türkçe',
-	uk: 'Українська',
-	id: 'Indonesia',
-	da: 'Dansk',
-}
-
-let defaultLang = 'en'
+let defaultLang: LangList = 'en'
 const navLang = navigator.language.replace('-', '_')
 
 // check if exact or similar languages are available
 for (const [code] of Object.entries(langList)) {
 	if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
-		defaultLang = code
+		defaultLang = code as LangList
 	}
 }
 
@@ -328,14 +311,28 @@ export function tradThis(str: string, lang?: string): string {
 	return str // String was not a key of dict
 }
 
-// const moveItems = {
-// 	time: { box: '', text: '' },
-// 	main: { box: '', text: '' },
-// 	notes: { box: '', text: '' },
-// 	searchbar: { box: '', text: '' },
-// 	quicklinks: { box: '', text: '' },
-// 	quotes: { box: '', text: '' },
-// }
+export function translateNotesText(target: LangList, current?: LangList, note?: string) {
+	function notesStrings(lang: LangList) {
+		const edit = tradThis('Double click to edit', lang)
+		const md = tradThis('Supports Markdown and clickable checkboxes', lang)
+		const key = tradThis('With keyboard shortcuts', lang)
+		const docs = tradThis('see documentation', lang)
+		const url = 'https://bonjourr.fr/' + (lang === 'fr' ? 'fr/' : '') + 'docs/overview/#notes'
+
+		return { edit, md, key, docs, url }
+	}
+
+	// All default strings are present in the note
+	const isDefault = current ? Object.values(notesStrings(current)).every((str) => note?.includes(str)) : false
+
+	// first start or has default text, translate
+	if (!note || isDefault) {
+		const t = notesStrings(target)
+		return '### ' + t.edit + '!  \n\n[ ] ' + t.md + '  \n[ ] ' + t.key + ', [' + t.docs + '](' + t.url + ')'
+	}
+
+	return note
+}
 
 export const syncDefaults: Sync = {
 	usdate: false,
@@ -352,13 +349,7 @@ export const syncDefaults: Sync = {
 		on: false,
 		opacity: 0.1,
 		align: 'left',
-		text: `### ${tradThis('Double click to edit', defaultLang)}!\n[ ] ${tradThis(
-			'Supports Markdown and clickable checkboxes',
-			defaultLang
-		)}  \n[ ] ${tradThis('With keyboard shortcuts', defaultLang)}, [${tradThis(
-			'see documentation',
-			defaultLang
-		)}](https://bonjourr.fr/misc#notes)`,
+		text: translateNotesText(defaultLang),
 	},
 	css: '',
 	lang: defaultLang,
@@ -438,7 +429,7 @@ export const syncDefaults: Sync = {
 	},
 	textShadow: 0.2,
 	hide: [[0, 0], [0, 0, 0], [0], [0]],
-	about: { browser: detectPlatform(), version: '1.16.0' },
+	about: { browser: detectPlatform(), version: '1.15.1' },
 }
 
 export const localDefaults: Local = {

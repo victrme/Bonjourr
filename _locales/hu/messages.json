@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · Minimalista kezdőlap",
+		"description": "Bővítmény neve"
+	},
+	"extensionDesc": {
+		"message": "Hozzon ki többet webböngészési élményéből a Bonjourrral, egy gyönyörű és testreszabható igényű kezdőlappal.",
+		"description": "Bővítmény leírása"
+	}
+}

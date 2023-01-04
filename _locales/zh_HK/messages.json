@@ -1,0 +1,10 @@
+{
+"extensionName": {
+		"message": "Bonjourr · 極簡起始頁",
+		"description": "extension name"
+	},
+	"extensionDesc": {
+		"message": "Bonjourr (日安~) 是一個美觀、可定製的、輕量級的主頁, 可改善你的網頁瀏覽體驗.",
+		"description": "extension description"
+	}
+}

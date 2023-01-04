@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Cada vez que você abrir uma nova janela ou aba, você será recebido por esta página de aparência minimalista que vai ajudar com sua tranquilidade e produtividade. Graças aos seus lindos fundos de alta qualidade que mudam conforme o ânimo do dia, suas novas abas sempre vão parecer renovadas.
 
 O Bonjourr foi feito como uma alternativa mais moderna as páginas iniciais como o Momentum. Nos inspiramos na linguagem de design do iOS e da Apple para criar essa bela página inicial que vai te ajudar a focar no que importa.

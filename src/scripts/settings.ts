@@ -1,8 +1,8 @@
 import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
-import { dict } from './lang'
-import { MoveKeys, Sync } from './types/sync'
+import { dict, langList } from './lang'
+import { Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
@@ -13,6 +13,7 @@ import {
 	$,
 	has,
 	clas,
+	tradThis,
 	bundleLinks,
 	inputThrottle,
 	detectPlatform,
@@ -20,9 +21,8 @@ import {
 	mobilecheck,
 	randomString,
 	stringMaxSize,
-	tradThis,
-	langList,
 	deleteBrowserStorage,
+	translateNotesText,
 	getBrowserStorage,
 	turnRefreshButton,
 	testOS,
@@ -652,12 +652,14 @@ function settingsMgmt() {
 
 	function exportAsFile() {
 		const a = $('downloadfile')
-
 		if (!a) return
 
 		storage.sync.get(null, (data) => {
-			a.setAttribute('href', `data:text/plain;charset=utf-8,${window.btoa(JSON.stringify(data))}`)
-			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.txt`)
+			const bytes = new TextEncoder().encode(JSON.stringify(data))
+			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+
+			a.setAttribute('href', URL.createObjectURL(blob))
+			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.json`)
 			a.click()
 		})
 	}
@@ -672,6 +674,25 @@ function settingsMgmt() {
 	}
 
 	function importAsFile(target: HTMLInputElement) {
+		function decodeExportFile(str: string) {
+			let result = {}
+
+			try {
+				// Tries to decode base64 from previous versions
+				result = JSON.parse(atob(str))
+			} catch {
+				try {
+					// If base64 failed, parse raw string
+					result = JSON.parse(str)
+				} catch (error) {
+					// If all failed, return empty object
+					result = {}
+				}
+			}
+
+			return result
+		}
+
 		if (!target.files || (target.files && target.files.length === 0)) {
 			return
 		}
@@ -680,13 +701,13 @@ function settingsMgmt() {
 		const reader = new FileReader()
 
 		reader.onload = () => {
-			try {
-				if (typeof reader.result === 'string') {
-					const json = JSON.parse(window.atob(reader.result))
-					paramsImport(json)
-				}
-			} catch (err) {
-				console.log(err)
+			if (typeof reader.result !== 'string') return false
+
+			const importData = decodeExportFile(reader.result)
+
+			// data has at least one valid key from default sync storage => import
+			if (Object.keys(syncDefaults).filter((key) => key in importData).length > 0) {
+				paramsImport(importData as Sync)
 			}
 		}
 		reader.readAsText(file)
@@ -793,6 +814,12 @@ function switchLangs(nextLang: Langs) {
 		weather(data as Sync)
 		clock(data as Sync)
 
+		if (data.notes?.text) {
+			const value = translateNotesText(nextLang, langs.current, data.notes.text)
+			document.querySelector<HTMLInputElement>('#notes_editor')!.value = value
+			notes(null, { is: 'change', value })
+		}
+
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
 			localStorage.removeItem('currentQuote')
@@ -872,6 +899,9 @@ function signature(dom: HTMLElement) {
 
 	const version = dom.querySelector('.version a')
 	if (version) version.textContent = syncDefaults.about.version
+
+	// Remove donate text on safari because apple is evil
+	if (testOS.ios || detectPlatform() === 'safari') dom.querySelector('#rdv_website')?.remove()
 }
 
 function fadeOut() {
@@ -882,7 +912,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-function paramsImport(dataToImport: any) {
+function paramsImport(dataToImport: Sync) {
 	try {
 		// Load all sync & dynamicCache
 		storage.sync.get(null, (sync) => {
@@ -899,7 +929,7 @@ function paramsImport(dataToImport: any) {
 
 				// Delete current links on imports containing links somewhere
 				// to avoid duplicates
-				if (newImport.links?.length > 0 || bundleLinks(newImport)?.length > 0) {
+				if ((newImport.links as [])?.length > 0 || bundleLinks(newImport)?.length > 0) {
 					bundleLinks(sync as Sync).forEach((elem: Link) => {
 						delete sync[elem._id]
 					})
@@ -1145,7 +1175,16 @@ export function settingsInit(data: Sync) {
 			responsiveSettingsHeightDrag()
 		}, 600)
 
-		window.addEventListener('resize', DrawerDragDebounce)
+		window.addEventListener('resize', (e) => {
+			DrawerDragDebounce()
+
+			// removes transition to prevent weird movement when changing to mobile styling
+			// /!\ this is dependent on toggleDisplay() to remove inline styling /!\
+			if (!settingsDom.style.transition) {
+				settingsDom.style.transition = 'none'
+			}
+		})
+
 		responsiveSettingsHeightDrag()
 	}
 

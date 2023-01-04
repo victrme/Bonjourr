@@ -1,5 +1,36 @@
 ## Changelogs
 
+**v1.15.5**
+
+-   Hotfix: Fixed searchbar stuck in "open in new tab" state
+
+**v1.15.4**
+
+-   Fixes:
+    -   File export not working with non-latin language
+    -   Searchbar events capturing `Enter` key instead of submit
+-   Clicking on the extension icon now creates a new tab
+-   Improved resize performance
+-   Minor style changes
+
+**v1.15.3**
+
+-   Fixes:
+    -   Links impossible to remove on Safari extension
+    -   Removing last link prevents adding new ones
+
+**v1.15.2**
+
+-   Translations:
+    -   Brazilian update by @adilsonfsantos
+    -   Traditional Chinese by Pu · @unknownnumbers
+    -   Hungarian by @cook3r
+    -   Finnish by @jaajko
+-   Fixes:
+    -   Visual issues on Safari
+    -   Overall experience on Safari iOS
+    -   Refresh backgrounds with daylight frequency
+
 **v1.15.1**
 
 -   Replaced fade to black background transition

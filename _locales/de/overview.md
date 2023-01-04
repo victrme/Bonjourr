@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Jedes Mal, wenn Sie ein neues Fenster oder eine neue Registerkarte öffnen, werden Sie von dieser minimalistisch aussehenden Seite begrüßt, die Ihre Gelassenheit und Produktivität fördern wird. Dank der wunderschönen, hochwertigen Hintergründe, die sich je nach Tagesstimmung ändern, fühlen sich Ihre neuen Tabs immer frisch an.
 
 Bonjourr wurde als eine modernere Alternative zu Homepages wie Momentum entwickelt. Wir haben uns von iOS und der Designsprache von Apple inspirieren lassen, um diese wunderschöne Homepage zu erstellen, die Ihnen hilft, sich auf das Wesentliche zu konzentrieren.

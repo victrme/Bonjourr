@@ -1,7 +1,3 @@
----
-This is Bonjourr's description that appears on browser extensions stores.
----
-
 Her yeni pencere veya sekme açtığınızda, huzurunuza ve üretkenliğinize yardımcı olacak bu minimalist görünümlü sayfa ile karşılaşacaksınız. Günün ruh haline göre değişen muhteşem yüksek kaliteli arka planları sayesinde yeni sekmeleriniz her zaman taze hissedecek.
 
 Bonjourr, Momentum gibi ana sayfalara daha modern bir alternatif olarak tasarlandı. Önemli olana odaklanmanıza yardımcı olacak bu güzel ana sayfayı oluşturmak için iOS ve Apple'ın tasarım dilinden ilham aldık.
