@@ -105,11 +105,12 @@
 	position: absolute;
 	display: flex;
 	flex-direction: column;
+	left: calc(2em + 100px); // because of .pushed interface
 	top: 2em;
-	left: 2em;
 	gap: 2em;
 	padding: 1em;
 	padding-top: 2em;
+	min-width: 12em;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
 	text-shadow: none;
@@ -117,6 +118,7 @@
 	visibility: hidden;
 	cursor: grab;
 	z-index: 3;
+	transition: left 0.4s;
 
 	color: #2a2222;
 
@@ -207,6 +209,8 @@ button.grid-spanner {
 }
 
 #grid-layout {
+	margin: 0.5em auto;
+	width: fit-content;
 	grid-template-columns: 1fr 1fr 1fr;
 
 	button {
@@ -214,6 +218,8 @@ button.grid-spanner {
 		padding: 0;
 		margin: 4px;
 		width: 60px;
+		overflow: hidden;
+		border-radius: 4px;
 		border: 2px solid #666;
 
 		&.selected,
@@ -249,7 +255,6 @@ button.grid-spanner {
 	}
 }
 
-#reset-layout,
 #close-mover {
 	display: block;
 	width: 100%;
@@ -260,29 +265,11 @@ button.grid-spanner {
 	padding: 2px 12px;
 	outline: none;
 	cursor: pointer;
+	text-align: center;
 }
 
 #close-mover:focus-visible,
 #close-mover:hover {
 	color: white;
 	background-color: #2c7be5;
-}
-
-#reset-layout {
-	&:focus-visible,
-	&:hover {
-		color: white;
-		background-color: #e64b43;
-	}
-
-	&:disabled {
-		opacity: 0.5;
-		cursor: default;
-
-		&:focus-visible,
-		&:hover {
-			color: white;
-			background-color: transparent;
-		}
-	}
 }
