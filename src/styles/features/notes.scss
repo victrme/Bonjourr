@@ -1,7 +1,4 @@
 #notes_container {
-	position: relative;
-	align-self: center;
-
 	width: 100%;
 	--notes-width: 50em;
 	max-width: var(--notes-width);
@@ -72,10 +69,6 @@
 
 	&.opaque {
 		color: #222;
-
-		button#b_notesdone {
-			background-color: #2222;
-		}
 	}
 
 	&.center-align {

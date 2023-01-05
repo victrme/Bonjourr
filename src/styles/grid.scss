@@ -86,10 +86,13 @@
 	#time,
 	#linkblocks,
 	#sb_container,
-	#notes_container,
 	#quotes_container {
 		width: fit-content;
 		height: fit-content;
+		place-self: center;
+	}
+
+	#notes_container {
 		place-self: center;
 	}
 
