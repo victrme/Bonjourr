@@ -1,5 +1,21 @@
 ## Changelogs
 
+**1.16.0**
+
+-   Added Custom quotes feature
+-   Added Move page elements feature
+-   Reworked Notes feature:
+    -   Removed double-click to edit
+    -   Replaced "edit" button with buttons that toggles Editor / Notes view
+    -   Added autocomplete on line breaks with classic & todo lists
+    -   Added option to change Notes width
+    -   Improved line breaks behavior
+-   Fixes:
+    -   Fixed landscape interface height on tablet
+    -   Fixed "open in new tab" not working on safari
+
+$~~~~~~~~~~~$
+
 **v1.15.5**
 
 -   Hotfix: Fixed searchbar stuck in "open in new tab" state
