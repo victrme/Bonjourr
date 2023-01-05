@@ -76,6 +76,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// 1.10.0 custom background slideshow
 	const whichFreq = data.background_type === 'custom' ? data.custom_every : data.dynamic?.every || 'hour'
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
+	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
 
 	initInput('i_blur', data.background_blur?.toString() || 15)
 	initInput('i_bright', data.background_bright?.toString() || 0.8)
@@ -98,6 +99,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
+	initInput('i_qtlist', JSON.stringify(userQuotes) || '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.dynamic?.collection || '')
@@ -204,6 +206,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	if (data.cssHeight) {
 		paramId('cssEditor').setAttribute('style', 'height: ' + data.cssHeight + 'px')
 	}
+
+	// Quotes option display
+	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
+	clas(paramId('quotes_userlist'), data.quotes?.type === 'user', 'shown')
 
 	updateExportJSON(settingsDom)
 
@@ -530,6 +536,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		quotes(null, { is: 'author', checked: this.checked })
 	})
 
+	paramId('i_qtlist').addEventListener('change', function () {
+		quotes(null, { is: 'userlist', value: this.value })
+	})
+
 	//
 	// Custom fonts
 
@@ -621,6 +631,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		})
 
 		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
+		toggleTabindex('#quotes_userlist', has(paramId('quotes_userlist'), 'shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
 		toggleTabindex('#import', has(paramId('import'), 'shown'))
 		toggleTabindex('#export', has(paramId('export'), 'shown'))

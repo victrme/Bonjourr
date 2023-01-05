@@ -20,6 +20,7 @@ export type Local = {
 	waitingForPreload: false
 	selectedId: string
 	idsList: string[]
+	userQuoteSelection: number
 	quotesCache: Quote[]
 	dynamicCache: DynamicCache
 }
