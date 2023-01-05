@@ -1,25 +1,74 @@
 #notes_container {
 	position: relative;
 	align-self: center;
-	text-align: left;
-	color: #fff;
+
 	width: 100%;
-	min-width: 300px;
-	max-width: 40em;
-	border-radius: 0.7em;
-	border: 1px solid rgba(255, 255, 255, 0.075);
-	text-shadow: none;
-
-	@include frostedGlass($tint: 255, $alpha: 0.1, $blur: 10px, $fbAlpha: 0.4, $fbColor: #fff);
-
-	touch-action: all;
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	user-select: text;
+	--notes-width: 50em;
+	max-width: var(--notes-width);
 
 	&.hidden {
 		display: none;
 	}
+
+	&.preview {
+		div#notes_parsed {
+			display: block;
+		}
+
+		#b_notespreview {
+			background-color: #fff4;
+		}
+
+		/* Only hide on .preview only */
+		/* Don't hide on hover or tabbing */
+		&:not(.editor, .default) {
+			#notes_toolbar:not(:hover, :focus-within) {
+				background-color: transparent;
+				backdrop-filter: none;
+
+				button {
+					opacity: 0;
+				}
+			}
+		}
+	}
+
+	&.editor {
+		textarea#notes_editor {
+			display: block;
+		}
+
+		#b_noteseditor {
+			background-color: #fff4;
+		}
+	}
+
+	&.preview.editor {
+		max-width: calc(var(--notes-width) * 1.5);
+
+		.spacer {
+			display: block;
+		}
+	}
+}
+
+#notes_views,
+#notes_toolbar {
+	display: flex;
+	color: #fff;
+	text-align: left;
+	text-shadow: none;
+	border-radius: 0.7em;
+	border: 1px solid rgba(255, 255, 255, 0.075);
+	@include frostedGlass($tint: 255, $alpha: 0.1, $blur: 10px, $fbAlpha: 0.4, $fbColor: #fff);
+}
+
+#notes_views {
+	padding: 1.5em;
+	touch-action: all;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	user-select: text;
 
 	&.opaque {
 		color: #222;
@@ -31,15 +80,6 @@
 
 	&.center-align {
 		text-align: center;
-
-		div#notes_parsed,
-		textarea#notes_editor {
-			padding: 1.5em;
-		}
-
-		textarea#notes_editor {
-			width: calc(100% - 3em);
-		}
 	}
 
 	&.right-align {
@@ -47,48 +87,29 @@
 		textarea#notes_editor {
 			text-align: right;
 		}
-
-		button#b_notesdone {
-			left: 1em;
-			right: auto;
-		}
 	}
 
-	button#b_notesdone {
-		position: absolute;
-		top: 1.1em;
-		right: 1em;
-		font-size: 1.2em;
-		padding: 0.25em 1em;
-		color: inherit;
-		opacity: 0;
-		border: none;
-		border-radius: 0.5em;
-		background-color: #fff3;
-		transition: color 0.15s, background-color 0.15s, opacity 0.15s;
-
-		@media (hover: hover) {
-			&:hover {
-				opacity: 1;
-				color: white;
-				background-color: var(--blue);
-			}
-		}
-
-		&:focus-visible {
-			opacity: 1;
-			pointer-events: all;
-			background-color: #fff2;
-		}
+	> .spacer {
+		display: none;
+		width: 1px;
+		margin: 0 1.5em;
+		background-color: rgba(255, 255, 255, 0.075);
 	}
 
-	// makes done button visible
-	#notes_editor:not(.hidden) + button#b_notesdone {
-		opacity: 1;
+	div#notes_parsed,
+	textarea#notes_editor {
+		display: none;
+		width: 100%;
 		pointer-events: all;
+		max-height: 40vh;
+		min-height: 1em;
+		overflow-x: hidden;
+		overflow-y: auto;
+		font-size: 1.2em;
 	}
 
 	div#notes_parsed {
+		line-height: 1.5em;
 		word-break: break-word;
 		cursor: auto;
 		content: 'wow';
@@ -99,15 +120,27 @@
 		}
 
 		input[type='checkbox'] {
-			width: 1.2em;
-			height: 1.2em;
+			margin: 0;
+			margin-left: 0.2em;
+			margin-right: 0.4em;
+			width: 1.4em;
+			height: 1.4em;
 			cursor: pointer;
+			vertical-align: text-bottom;
 		}
 
 		blockquote {
 			border-left: 2px solid #fff3;
 			padding-left: 1em;
-			margin-left: 1em;
+			margin: 0 0 0 1em;
+		}
+
+		code {
+			color: lightsalmon;
+			padding: 0.2em 0.6em;
+			border-radius: 0.4em;
+			border: 1px solid #fff1;
+			background-color: #fff1;
 		}
 
 		h1,
@@ -116,11 +149,13 @@
 		h4,
 		h5,
 		h6 {
-			margin: 0.75em 0;
+			line-height: initial;
+			margin: 0.5em 0;
 		}
 
 		ul {
-			padding-left: 1em;
+			margin: 0;
+			padding-left: 1.6em;
 		}
 
 		li {
@@ -137,40 +172,52 @@
 		}
 	}
 
-	div#notes_parsed,
-	textarea#notes_editor {
-		-webkit-filter: blur(0px);
-		filter: blur(0px);
-		pointer-events: all;
-		max-height: 40vh;
-		min-height: 1em;
-		overflow-x: hidden;
-		overflow-y: auto;
-		font-size: 1.2em;
-		padding: 1.5em;
-
-		&.hidden {
-			position: absolute;
-			pointer-events: none;
-			user-select: none;
-			opacity: 0;
-		}
-	}
-
 	textarea#notes_editor {
 		width: 100%;
-		min-height: 180px;
+		min-height: 10em;
 		color: inherit;
 		border: none;
-		border-radius: 0.5em;
+		border-radius: 0.7em;
 		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
-		background-color: transparent;
+		letter-spacing: -0.4px;
 		resize: vertical;
 		text-align: left;
 		box-sizing: border-box;
+		background-color: transparent;
 
-		&.hidden {
-			resize: none;
+		&::placeholder {
+			color: #fff6;
+		}
+	}
+}
+
+#notes_toolbar {
+	width: fit-content;
+	margin: 0.5em auto 0 auto;
+	padding: 0.5em;
+	transition: background-color 0.15s;
+
+	button {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
+		margin: 0 0.25em;
+		padding: 0.3em 1em;
+		color: white;
+		border: none;
+		border-radius: 0.3em;
+		font-size: inherit;
+		background-color: transparent;
+		transition: opacity 0.15s;
+
+		img {
+			width: 1em;
+			height: 1em;
+			filter: invert(1);
+		}
+
+		&:hover {
+			background-color: #fff2;
 		}
 	}
 }

@@ -90,6 +90,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_tabtitle', data.tabtitle || '')
 	initInput('i_greeting', data.greeting || '')
 	initInput('i_textshadow', data.textShadow?.toString() || 0.2)
+	initInput('i_noteswidth', data.notes?.width || 50)
 	initInput('i_notesopacity', data.notes?.opacity || 0.1)
 	initInput('i_notesalign', data.notes?.align || 'left')
 	initInput('i_textshadow', data.textShadow || 0.2)
@@ -475,6 +476,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
 		notes(null, { is: 'align', value: this.value })
+	})
+
+	paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement) {
+		notes(null, { is: 'width', value: this.value })
 	})
 
 	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {

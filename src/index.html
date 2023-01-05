@@ -162,10 +162,22 @@
 				</div>
 			</div>
 
-			<div id="notes_container" class="hidden">
-				<div id="notes_parsed" placeholder="Double click to edit"></div>
-				<textarea id="notes_editor" class="hidden" tabindex="-1" aria-label="Text field editor"></textarea>
-				<button id="b_notesdone" class="trn">Edit</button>
+			<div id="notes_container" class="hidden preview">
+				<div id="notes_views">
+					<textarea id="notes_editor" aria-label="Notes editor"></textarea>
+					<div class="spacer"></div>
+					<div id="notes_parsed"></div>
+				</div>
+				<div id="notes_toolbar" tabindex="0">
+					<button id="b_noteseditor">
+						<img src="/src/assets/interface/icons8-crayon-50.png" />
+						<span class="trn">Editor</span>
+					</button>
+					<button id="b_notespreview">
+						<img src="/src/assets/interface/icons8-visible-48.png" />
+						<span class="trn">Notes</span>
+					</button>
+				</div>
 			</div>
 
 			<form id="sb_container" class="hidden">

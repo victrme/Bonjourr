@@ -690,7 +690,8 @@
 	}
 
 	#notes_options.shown {
-		max-height: 120px;
+		overflow-y: clip;
+		max-height: 160px;
 	}
 
 	#quotes_userlist.shown,

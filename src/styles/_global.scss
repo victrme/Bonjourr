@@ -27,6 +27,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
 :root {
 	--app-height: 100vh;
+	--notes-width: 50em;
 	--average-color: black;
 }
 
@@ -112,6 +113,7 @@ body {
 		button:focus,
 		#bookmarks li:focus-visible,
 		#linkblocks.text a:focus-visible span,
+		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {
 			outline: 2px solid var(--blue);
 		}
@@ -240,7 +242,7 @@ body {
 			max-height: 170px;
 		}
 		.as_notes {
-			max-height: 120px;
+			max-height: 160px;
 		}
 	}
 

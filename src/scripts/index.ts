@@ -35,6 +35,7 @@ import {
 	tradThis,
 	turnRefreshButton,
 	validateHideElem,
+	notesCharCodeCount,
 } from './utils'
 import moveElements from './moveElements'
 
@@ -172,16 +173,20 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'change'; value: string }) {
+export function notes(init: Notes | null, event?: { is: 'align' | 'width' | 'opacity' | 'change'; value: string }) {
 	const container = $('notes_container')
+	const views = $('notes_views')
 	const parsed = $('notes_parsed')
 	const editor = $('notes_editor')
-	const doneBtn = $('b_notesdone')
 
 	function parseMarkdownToHTML(val: string) {
 		const aria = tradThis('Text field tick box')
 
-		let html = snarkdown(val)
+		// Fix line break for snarkdown (no double spaces on lists)
+		let sanitized = ''
+		val.split('\n').forEach((line) => (sanitized += line + (line.startsWith('- ') ? '\n' : `  \n`)))
+
+		let html = snarkdown(sanitized)
 		html = html.replaceAll(`<a href="undefined"> </a>`, `<input type="checkbox" aria-label="${aria}">`)
 		html = html.replaceAll(`<a href="undefined">x</a>`, `<input type="checkbox" aria-label="${aria}" checked>`)
 
@@ -231,56 +236,62 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 	}
 
 	function handleAlign(value: string) {
-		if (container) {
+		if (views) {
 			if (value === 'center') {
-				clas(container, true, 'center-align')
+				clas(views, true, 'center-align')
 			} else {
-				clas(container, false, 'center-align')
-				clas(container, value === 'right', 'right-align')
+				clas(views, false, 'center-align')
+				clas(views, value === 'right', 'right-align')
 			}
 		}
 	}
 
+	function handleWidth(value?: number) {
+		if (value && container) container.style.setProperty('--notes-width', value.toString() + 'em')
+	}
+
 	function handleOpacity(value: number) {
-		if (container) {
-			clas(container, value > 0.45, 'opaque')
-			container.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
+		if (views) {
+			clas(views, value > 0.45, 'opaque')
+			views.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
 		}
 	}
 
-	function toggleEditable() {
-		if (!editor || !parsed || !doneBtn) {
-			return
+	function persistentToolbarControl(text: string) {
+		let isDefault = false
+		let charCodes = 0
+		const lang = (document.documentElement.getAttribute('lang') || 'en') as keyof typeof notesCharCodeCount
+
+		if (text.length > 0) {
+			charCodes = text
+				.split('')
+				.map((char) => char.charCodeAt(0))
+				.reduce((a, b) => a + b)
 		}
 
-		const isEditorHidden = editor.classList.contains('hidden')
-		const isParsedHidden = parsed.classList.contains('hidden')
+		isDefault = charCodes === notesCharCodeCount[lang] && text.startsWith('##') && text.includes('Markdown')
+		isDefault = isDefault || charCodes === 0
 
-		// Set editor height to be the same as preview
-		// Removes notes padding from height calc
-		if (isEditorHidden) {
-			const padding = parseFloat($('interface')?.style.fontSize || '0') * 16 * 3
-			editor.style.height = ($('notes_container')?.offsetHeight || 0) - padding + 'px'
-			editor.focus()
-		}
+		if (isDefault) container?.classList.add('default')
+		else container?.classList.remove('default')
 
-		// No tabbing possible when editor is hidden
-		editor.setAttribute('tabindex', isEditorHidden ? '0' : '-1')
-
-		// Toggle classes
-		clas(editor, !isEditorHidden, 'hidden')
-		clas(parsed, !isParsedHidden, 'hidden')
-
-		// Change edit button text
-		doneBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
+		return charCodes
 	}
 
-	function editorKeybindings(key: string, cmd: boolean, shift: boolean) {
+	function editorKeybindings(e: KeyboardEvent) {
 		const editordom = editor as HTMLTextAreaElement
 		const { selectionStart, selectionEnd } = editordom
+		const modifier = testOS.mac ? e.metaKey : e.ctrlKey
+		const otherKeys = ['KeyI', 'KeyB', 'KeyS', 'KeyU', 'KeyT']
+		const chbxKeys = modifier && e.shiftKey && e.code === 'KeyC'
 
-		if (cmd === false) {
-			return // no meta or ctrl ? return
+		// no meta or ctrl ? return
+		if (modifier === false) return
+
+		if (e.type === 'keydown') {
+			if (chbxKeys || (modifier && otherKeys.includes(e.code))) {
+				e.preventDefault() // Only prevent default on needed key combos
+			}
 		}
 
 		function addDecoration(charStart: string, charEnd: string = charStart) {
@@ -308,9 +319,9 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 			editordom.selectionEnd = selectionEnd + (isRemoval ? remLength : addLength)
 		}
 
-		switch (key) {
+		switch (e.code) {
 			case 'KeyC': {
-				if (shift) addDecoration('[ ] ', '')
+				if (e.shiftKey) addDecoration('[ ] ', '')
 				break
 			}
 
@@ -329,11 +340,56 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 			case 'KeyU':
 				addDecoration('[', '](url)')
 				break
-
-			case 'Enter':
-				toggleEditable()
-				break
 		}
+	}
+
+	function lineBreakAutocomplete(ev: InputEvent) {
+		if (ev.inputType !== 'insertLineBreak') return
+
+		const edit = editor as HTMLTextAreaElement
+		const lines = edit.value.split('\n')
+		const posInChars = edit.selectionStart
+		const posInLines = edit.value.substring(0, posInChars).split('\n').length - 1 || 0
+
+		const modifiers = [
+			[`- - `, `\n- - `], // /!\ must be before "- " because of startsWith below
+			[`- `, `\n- `],
+			[`[ ] `, `\n[ ] `],
+			[`[x] `, `\n[ ] `],
+		]
+
+		let toAdd = '\n'
+		let removeMod: undefined | string
+
+		modifiers.forEach(([mod, change]) => {
+			// No mod in line, do nothing
+			if (!lines[posInLines].startsWith(mod)) return
+
+			// Line is empty, remove mod
+			if (lines[posInLines].replace(mod, '').length === 0) {
+				removeMod = mod
+				toAdd = ''
+				return
+			}
+
+			// Line not empty, apply automod
+			toAdd = change
+		})
+
+		let val = edit.value
+		let slice = posInChars
+		let selec = posInChars + toAdd.length
+
+		if (removeMod) {
+			selec = posInChars - removeMod.length
+			slice = posInChars - removeMod.length
+		}
+
+		edit.value = val.slice(0, slice) + toAdd + val.slice(posInChars) // Put modif between caret position
+		edit.selectionEnd = edit.selectionStart = selec // change selection (start = end)
+
+		ev.preventDefault() // Don't add user actual input
+		notes(null, { is: 'change', value: edit.value }) // apply changes because 'input' ev is prevented
 	}
 
 	if (event) {
@@ -343,6 +399,7 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 			switch (event?.is) {
 				case 'change': {
 					parseMarkdownToHTML(event.value)
+					persistentToolbarControl(event.value)
 					notes.text = event.value
 					break
 				}
@@ -350,6 +407,12 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 				case 'align': {
 					handleAlign(event.value)
 					notes.align = event.value
+					break
+				}
+
+				case 'width': {
+					notes.width = parseInt(event.value)
+					handleWidth(notes.width)
 					break
 				}
 
@@ -373,9 +436,11 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 		if (!editor || !init) return
 
 		handleAlign(init.align)
+		handleWidth(init.width)
 		handleOpacity(init.opacity)
 		handleToggle(init.on)
 		parseMarkdownToHTML(init.text)
+		persistentToolbarControl(init.text)
 		;(editor as HTMLInputElement).value = init.text // Also set textarea
 	}
 
@@ -383,63 +448,29 @@ export function notes(init: Notes | null, event?: { is: 'align' | 'opacity' | 'c
 	else setTimeout(() => notesStartup(), 400)
 
 	//
-	// Interface Events
+	// Events
 	//
 
-	function doubleClickToggle(e: Event) {
-		const path = e.composedPath()
-		const isCheckbox = (path[0] as HTMLElement).tagName === 'INPUT'
-		let string = ''
-
-		if ((window.getSelection()?.rangeCount || -1) > 0) {
-			string = window.getSelection()?.getRangeAt(0)?.toString().trim() || '' // To prevent "Failed to execute 'getRangeAt' on 'Selection'"
-		}
-
-		if (!isCheckbox && string.length < 2) {
-			toggleEditable() // Prevent toggling when selecting text with mouse click
-		}
+	function togglePreview() {
+		if (has(container, 'editor')) container?.classList.toggle('preview')
 	}
 
-	// Mobile double click
-	if (mobilecheck()) {
-		let last = 0
-		parsed?.addEventListener('touchstart', (e) => {
-			if (last !== 0 && e.timeStamp - last < 300) doubleClickToggle(e) // is fast enough to be considered a double click
-			last = e.timeStamp
-		})
+	function toggleEditor() {
+		if (has(container, 'preview')) container?.classList.toggle('editor')
+		if (has(container, 'editor')) editor?.focus()
 	}
-	// Desktop double click
-	else parsed?.addEventListener('dblclick', doubleClickToggle)
 
-	// Done button event
-	doneBtn?.addEventListener('click', () => {
-		toggleEditable()
-	})
+	function inputEvent(this: HTMLInputElement) {
+		notes(null, { is: 'change', value: this.value })
+	}
 
 	// Classic update on input
-	editor?.addEventListener('input', function (this: HTMLInputElement) {
-		notes(null, { is: 'change', value: this.value })
-	})
+	editor?.addEventListener('input', inputEvent)
+	editor?.addEventListener('beforeinput', lineBreakAutocomplete) // Auto add modifiers on line breaks
+	editor?.addEventListener('keydown', editorKeybindings)
 
-	editor?.addEventListener('keydown', (e: KeyboardEvent) => {
-		const otherKeys = ['KeyI', 'KeyB', 'KeyS', 'KeyU', 'KeyT']
-		const modifier = testOS.mac ? e.metaKey : e.ctrlKey
-		const chbxKeys = modifier && e.shiftKey && e.code === 'KeyC'
-
-		if (chbxKeys || (modifier && otherKeys.includes(e.code))) {
-			e.preventDefault() // Only prevent default on needed key combos
-		}
-
-		if (!testOS.windows) {
-			// Macos & linux are triggering on keydown, but linux uses ctrl
-			editorKeybindings(e.code, modifier, e.shiftKey)
-		}
-	})
-
-	editor?.addEventListener('keyup', (e: KeyboardEvent) => {
-		// Only windows uses keyup for its keybindings
-		testOS.windows ? editorKeybindings(e.code, e.ctrlKey, e.shiftKey) : ''
-	})
+	$('b_notespreview')?.addEventListener('click', togglePreview)
+	$('b_noteseditor')?.addEventListener('click', toggleEditor)
 }
 
 export function favicon(init: string | null, event?: HTMLInputElement) {
