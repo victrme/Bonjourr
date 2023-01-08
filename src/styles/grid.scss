@@ -7,6 +7,19 @@
 	&.move-edit {
 		#element-mover {
 			visibility: visible;
+
+			> * {
+				pointer-events: none;
+				filter: grayscale(1);
+				opacity: .4;
+			}
+
+			&.active > * {
+				pointer-events: all;
+				filter: unset;
+				opacity: 1;
+			}
+
 		}
 
 		#main,
@@ -21,9 +34,10 @@
 			// cursor: pointer;
 			z-index: 2;
 			cursor: pointer;
+			pointer-events: none;
 
 			> * {
-				pointer-events: none;
+				// pointer-events: none;
 				user-select: none;
 			}
 
@@ -45,10 +59,15 @@
 		background-color: #fff2;
 		backdrop-filter: blur(1em);
 		outline: 0.4em solid transparent;
+		transition: background-color .2s cubic-bezier(.215, .61, .355, 1);
 
 		&.selected {
 			background: #fff3;
 			outline-color: var(--blue);
+		}
+
+		&:hover {
+			background-color: #fff5;
 		}
 	}
 
@@ -131,6 +150,10 @@
 		cursor: auto;
 	}
 
+	h2 {
+		text-transform: capitalize;
+	}
+
 	hr {
 		border-color: #3334;
 	}
@@ -200,6 +223,10 @@ button.grid-spanner {
 	grid-template-columns: 80px;
 }
 
+// #grid-spanner-container {
+// 	display: none;
+// }
+
 #box-alignment-mover {
 	place-content: center;
 	grid-template-columns: repeat(3, 40px);
@@ -209,6 +236,15 @@ button.grid-spanner {
 #text-alignment-mover {
 	place-content: center;
 	grid-template-columns: repeat(3, 40px);
+
+	button {
+		@include allCentered();
+
+		img {
+			padding: 5px;
+			height: 15px;
+		}
+	}
 }
 
 #grid-layout {

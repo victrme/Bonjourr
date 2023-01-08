@@ -571,6 +571,10 @@ export default function moveElements(
 				buttonControl.grid(id)
 
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
+
+				$('element-mover')?.classList.add('active');
+
+				document.querySelector('#element-mover h2')!.innerHTML = `${id} widget`;
 				activeID = id
 			}
 
@@ -585,6 +589,7 @@ export default function moveElements(
 					}
 
 					dominterface?.classList.toggle('move-edit')
+					$('element-mover')?.classList.remove('active');
 					removeSelection()
 				}
 

@@ -432,7 +432,7 @@ export const syncDefaults: Sync = {
 		weight: testOS.windows ? '400' : '300',
 	},
 	move: {
-		selection: 'triple',
+		selection: 'single',
 		layouts: {
 			single: {
 				grid: [['time'], ['main'], ['quicklinks']],
