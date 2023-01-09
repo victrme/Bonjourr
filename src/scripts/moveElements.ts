@@ -292,6 +292,14 @@ function setAllAligns(items: Layout['items']) {
 	})
 }
 
+function manageGridSpanner(selection: string) {
+	if (selection !== 'single') {
+		$('grid-spanner-container')?.classList.add('active')
+	} else {
+		$('grid-spanner-container')?.classList.remove('active')
+	}
+}
+
 const gridOverlay = {
 	add: (id: MoveKeys) => {
 		const button = document.createElement('button')
@@ -481,7 +489,7 @@ export default function moveElements(
 				storage.sync.set({ move: move })
 			}
 
-			function layoutChange(selection?: Move['selection']) {
+			function layoutChange(selection?: Move['selection'],) {
 				if (!selection && button) {
 					// button dataset is wrong somehow
 					if (!((button.dataset.layout || 'triple') in move.layouts)) return
@@ -508,6 +516,8 @@ export default function moveElements(
 				setAllAligns(layout.items)
 				setGridAreas(layout)
 				buttonControl.layout(move.selection)
+
+				manageGridSpanner(move.selection)
 
 				// Toggle overlays if we are editing
 				if (dominterface?.classList.contains('move-edit')) {
@@ -555,14 +565,16 @@ export default function moveElements(
 			}
 
 			function elementSelection() {
+				
 				const layout = move.layouts[move.selection]
 
-				removeSelection()
+				// removeSelection()
 
 				// Only remove selection modifiers if failed to get id
 				if (!isEditing() || !elementId) {
 					return
 				}
+				console.log('ah')
 
 				const id = elementId as MoveKeys
 
@@ -690,11 +702,12 @@ export default function moveElements(
 	// Init
 
 	if (init) {
-		;(function initilisation() {
+		(function initilisation() {
 			// Detect small width on startup
 			if (window.innerWidth < 764) init.selection = 'single'
 
 			const layout = init.layouts[init.selection]
+			manageGridSpanner(init.selection)
 			setAllAligns(layout.items)
 			setGridAreas(layout)
 		})()

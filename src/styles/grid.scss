@@ -223,9 +223,13 @@ button.grid-spanner {
 	grid-template-columns: 80px;
 }
 
-// #grid-spanner-container {
-// 	display: none;
-// }
+#grid-spanner-container {
+	display: none;
+
+	&.active {
+		display: block;
+	}
+}
 
 #box-alignment-mover {
 	place-content: center;
