@@ -574,7 +574,6 @@ export default function moveElements(
 				if (!isEditing() || !elementId) {
 					return
 				}
-				console.log('ah')
 
 				const id = elementId as MoveKeys
 
@@ -582,11 +581,13 @@ export default function moveElements(
 				buttonControl.span(id)
 				buttonControl.grid(id)
 
+				removeSelection()
+
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 
 				$('element-mover')?.classList.add('active');
 
-				document.querySelector('#element-mover h2')!.innerHTML = `${id} widget`;
+				document.querySelector('#mover-titles h2')!.innerHTML = `${id} widget`;
 				activeID = id
 			}
 

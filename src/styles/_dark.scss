@@ -21,9 +21,10 @@
 	}
 
 	#grid-layout button:not(.selected) {
-		border-color: #eee;
+		outline-color: #eee;
+		
 		div {
-			border-color: #eee;
+			outline-color: #eee;
 		}
 	}
 
