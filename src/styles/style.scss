@@ -233,7 +233,6 @@
 			width: 100%;
 
 			#description {
-				min-height: 1.2em;
 				font-size: 1.5em;
 
 				#forecast {
@@ -243,10 +242,14 @@
 						display: block;
 					}
 				}
+
+				#current, #forecast {
+					min-height: 1.2em;
+				}
 			}
 
 			#tempContainer {
-				display: inline-flex;
+				display: flex;
 				justify-content: center;
 				align-items: center;
 				margin-top: 1em;
@@ -746,6 +749,7 @@ footer {
 			&:hover {
 				opacity: 1;
 			}
+			
 		}
 
 		&:hover {

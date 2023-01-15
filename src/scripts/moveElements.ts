@@ -568,7 +568,7 @@ export default function moveElements(
 				
 				const layout = move.layouts[move.selection]
 
-				// removeSelection()
+				removeSelection()
 
 				// Only remove selection modifiers if failed to get id
 				if (!isEditing() || !elementId) {
@@ -581,7 +581,7 @@ export default function moveElements(
 				buttonControl.span(id)
 				buttonControl.grid(id)
 
-				removeSelection()
+
 
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 

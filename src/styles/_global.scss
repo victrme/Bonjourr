@@ -186,15 +186,18 @@ body {
 		#date,
 		#description,
 		#greetings,
-		#tempContainer {
+		#main #weather #tempContainer {
 			transition: opacity 0.4s, max-height 0.4s, transform 0.4s;
 			opacity: 1;
 			max-height: 11em;
 
-			&.he_hidden {
+			&.he_hidden, &.he_hidden * {
 				opacity: 0;
 				max-height: 0em;
 				transform: scale(0);
+				min-height: 0px;
+				margin: 0;
+				padding: 0;
 			}
 		}
 	}
