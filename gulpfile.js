@@ -1,4 +1,5 @@
 const { series, parallel, src, dest, watch } = require('gulp'),
+	fs = require('fs'),
 	csso = require('gulp-csso'),
 	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
@@ -28,7 +29,22 @@ function html(platform) {
 }
 
 function scripts(platform) {
-	return () => src('release/main.js').pipe(dest(`release/${platform}/src/scripts`))
+	const envFile = fs.readFileSync('.env.json', 'utf-8')
+	let envVars = {}
+
+	try {
+		envVars = JSON.parse(envFile)
+	} catch (error) {
+		console.log('Could not get APIs', error)
+	}
+
+	return () =>
+		src('release/main.js')
+			.pipe(replace('@@UNSPLASH_API', envVars.UNSPLASH_API))
+			.pipe(replace('@@WEATHER_API_1', envVars.WEATHER_API_1))
+			.pipe(replace('@@WEATHER_API_2', envVars.WEATHER_API_2))
+			.pipe(replace('@@WEATHER_API_3', envVars.WEATHER_API_3))
+			.pipe(dest(`release/${platform}/src/scripts`))
 }
 
 function ressources(platform) {
