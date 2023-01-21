@@ -1,3 +1,4 @@
+@import '../../node_modules/pocket-editor/dist/style';
 @import 'global';
 @include hideElements;
 
@@ -243,7 +244,8 @@
 					}
 				}
 
-				#current, #forecast {
+				#current,
+				#forecast {
 					min-height: 1.2em;
 				}
 			}
@@ -749,7 +751,6 @@ footer {
 			&:hover {
 				opacity: 1;
 			}
-			
 		}
 
 		&:hover {
