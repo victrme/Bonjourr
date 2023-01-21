@@ -6,54 +6,13 @@
 	&.hidden {
 		display: none;
 	}
-
-	&.preview {
-		div#notes_parsed {
-			display: block;
-		}
-
-		#b_notespreview {
-			background-color: #fff4;
-		}
-
-		/* Only hide on .preview only */
-		/* Don't hide on hover or tabbing */
-		&:not(.editor, .default) {
-			#notes_toolbar:not(:hover, :focus-within) {
-				background-color: transparent;
-				backdrop-filter: none;
-
-				button {
-					opacity: 0;
-				}
-			}
-		}
-	}
-
-	&.editor {
-		textarea#notes_editor {
-			display: block;
-		}
-
-		#b_noteseditor {
-			background-color: #fff4;
-		}
-	}
-
-	&.preview.editor {
-		max-width: calc(var(--notes-width) * 1.5);
-
-		.spacer {
-			display: block;
-		}
-	}
 }
 
 div#pocket-editor {
 	display: flex;
 	color: #fff;
-	font-size: 1.2em;
-	padding: 1.5em;
+	font-size: 1.3em;
+	padding: 1.2em;
 	text-align: left;
 	text-shadow: none;
 	border-radius: 0.7em;
@@ -80,30 +39,6 @@ div#pocket-editor {
 	&:empty:after {
 		content: attr(placeholder);
 		opacity: 0.5;
-	}
-
-	input[type='checkbox'] {
-		margin: 0;
-		margin-left: 0.2em;
-		margin-right: 0.4em;
-		width: 1em;
-		height: 1em;
-		cursor: pointer;
-		vertical-align: text-bottom;
-	}
-
-	blockquote {
-		border-left: 2px solid #fff3;
-		padding-left: 1em;
-		margin: 0 0 0 1em;
-	}
-
-	code {
-		color: lightsalmon;
-		padding: 0.2em 0.6em;
-		border-radius: 0.4em;
-		border: 1px solid #fff1;
-		background-color: #fff1;
 	}
 
 	h1,
