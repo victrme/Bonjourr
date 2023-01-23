@@ -88,7 +88,7 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	handleToggle(init.on)
 	editor.set(init.text)
 
-	$('pocket-editor')?.addEventListener('input', () => {
+	editor.oninput(() => {
 		updateNotes(init, { is: 'change', value: editor.get() })
 	})
 }
