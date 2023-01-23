@@ -6,7 +6,7 @@ import { Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
-
+import notes from './features/notes'
 import moveElements from './moveElements'
 
 import {
@@ -32,7 +32,6 @@ import {
 import {
 	toggleWidgets,
 	backgroundFilter,
-	notes,
 	clock,
 	customCss,
 	customFont,
