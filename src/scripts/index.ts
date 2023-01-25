@@ -3411,6 +3411,10 @@ export function filterImports(data: any) {
 
 	let result = { ...syncDefaults, ...data }
 
+	// imports without move data
+	// lets moveElements handle it as a first startup
+	if (!data.move) delete result.move
+
 	// Hide elem classes changed at some point
 	if (validateHideElem(data.hide)) {
 		const weatherIndex = data.hide.indexOf('weather_desc')
@@ -3579,7 +3583,6 @@ function startup(data: Sync) {
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
 	moveElements(data.move)
-
 	customCss(data.css)
 	hideElem(data.hide)
 	initBackground(data)

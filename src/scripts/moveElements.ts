@@ -527,8 +527,6 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					return grid
 				}
 
-				if (!activeID) return
-
 				// DEEP CLONE is important as to not mutate sync defaults (it shouldn't come to this, but here we are)
 				// Destructure layout to appease typescript
 				const { grid, items } = clonedeep(syncDefaults.move.layouts)[move.selection]
@@ -751,8 +749,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 	// First launch from version without move data
 	if (!init && !events) {
-		init = structuredClone(syncDefaults.move)
-		storage.sync.set({ move: init })
+		updateMoveElement({ reset: true })
+		return
 	}
 
 	if (init) {
