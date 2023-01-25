@@ -11,7 +11,7 @@
 			> * {
 				pointer-events: none;
 				filter: grayscale(1);
-				opacity: .4;
+				opacity: 0.4;
 			}
 
 			&.active > * {
@@ -19,7 +19,6 @@
 				filter: unset;
 				opacity: 1;
 			}
-
 		}
 
 		#main,
@@ -59,7 +58,7 @@
 		background-color: #fff2;
 		backdrop-filter: blur(1em);
 		outline: 0.4em solid transparent;
-		transition: background-color .2s cubic-bezier(.215, .61, .355, 1);
+		transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 
 		&.selected {
 			background: #fff3;
@@ -163,7 +162,7 @@
 	}
 
 	h3 {
-		opacity: .7;
+		opacity: 0.7;
 	}
 
 	h2 {
@@ -335,7 +334,7 @@ button.grid-spanner {
 		&.selected,
 		&.selected div {
 			// not sure why color from #settings button gets priority
-			outline-color: var(--blue)!important;
+			outline-color: var(--blue) !important;
 		}
 	}
 }

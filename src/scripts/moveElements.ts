@@ -30,22 +30,17 @@ type InterfaceWidgetControl = {
 	on: boolean
 }
 
-type Update = {
-	action:
-		| 'toggle'
-		| 'select'
-		| 'widget'
-		| 'grid'
-		| 'span-cols'
-		| 'span-rows'
-		| 'box'
-		| 'text'
-		| 'layout'
-		| 'reset'
-		| 'responsive'
-	button?: HTMLButtonElement
-	elementId?: string
-	keyboardEvent?: KeyboardEvent
+type UpdateMove = {
+	widget?: InterfaceWidgetControl
+	span?: 'col' | 'row'
+	reset?: true
+	toggle?: true
+	box?: string
+	text?: string
+	layout?: string
+	select?: string
+	responsive?: true
+	grid?: { x?: string; y?: string }
 }
 
 let smallWidth = false
@@ -409,30 +404,26 @@ function removeSelection() {
 	})
 }
 
-export default function moveElements(
-	init: Move | null,
-	events?: { widget?: InterfaceWidgetControl; toggle?: true; select?: MoveKeys }
-) {
-	// Updates (needs storage, tries not to modify dom too much)
+export default function moveElements(init: Move | null, events?: UpdateMove) {
+	const moverdom = document.querySelector('#element-mover')
+	let firstPos = { x: 0, y: 0 }
+	let moverPos = { x: 0, y: 0 }
 
-	function updateMoveElement({ action, elementId, button, keyboardEvent }: Update) {
+	function updateMoveElement(prop: UpdateMove) {
 		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
 			let move: Move
 
 			// Check if storage has move, if not, use (/ deep clone) default move
 			move = 'move' in data ? data.move : clonedeep(syncDefaults.move)
-
 			// force single on small width
-			if (smallWidth) {
-				move.selection = 'single'
-			}
+			if (smallWidth) move.selection = 'single'
 
 			function gridChange() {
-				if (!activeID || !button) return
+				if (!activeID) return
 
 				// Get button move amount
-				const y = parseInt(button.dataset.row || '0')
-				const x = parseInt(button.dataset.col || '0')
+				const y = parseInt(prop.grid?.y || '0')
+				const x = parseInt(prop.grid?.x || '0')
 
 				let { grid } = move.layouts[move.selection]
 				const allActivePos = findIdPositions(grid, activeID)
@@ -474,12 +465,12 @@ export default function moveElements(
 			}
 
 			function alignChange(type: 'box' | 'text') {
-				if (!activeID || !button) return
+				if (!activeID) return
 
 				const layout = move.layouts[move.selection]
 				const item = layout.items[activeID] || { box: '', text: '' }
 
-				item[type] = button.dataset.align || ''
+				item[type] = prop.box || prop.text || ''
 
 				setAlign(activeID, item)
 				buttonControl.align(item)
@@ -489,21 +480,13 @@ export default function moveElements(
 				storage.sync.set({ move: move })
 			}
 
-			function layoutChange(selection?: Move['selection'],) {
-				if (!selection && button) {
-					// button dataset is wrong somehow
-					if (!((button.dataset.layout || 'triple') in move.layouts)) return
-				}
-
+			function layoutChange() {
 				// Only update selection if coming from user
-				if (action !== 'responsive' && button) {
-					move.selection = (button.dataset.layout || 'triple') as Move['selection']
-					storage.sync.set({ move: move })
-				}
+				move.selection = (prop.layout || 'single') as Move['selection']
+				storage.sync.set({ move: move })
 
 				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
-
 				const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
 
 				toggleWidgets({
@@ -565,55 +548,39 @@ export default function moveElements(
 			}
 
 			function elementSelection() {
-				
 				const layout = move.layouts[move.selection]
 
 				removeSelection()
 
-				// Only remove selection modifiers if failed to get id
-				if (!isEditing() || !elementId) {
-					return
-				}
+				// Remove selection modifiers and quit if failed to get id
+				if (!isEditing() || !prop.select) return
 
-				const id = elementId as MoveKeys
+				const id = prop.select as MoveKeys
 
 				buttonControl.align(layout.items[id])
 				buttonControl.span(id)
 				buttonControl.grid(id)
 
-
-
 				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
 
-				$('element-mover')?.classList.add('active');
+				$('element-mover')?.classList.add('active')
 
-				document.querySelector('#mover-titles h2')!.innerHTML = `${id} widget`;
+				document.querySelector('#mover-titles h2')!.innerHTML = `${id} widget`
 				activeID = id
 			}
 
-			function toggleMoveStatus(e?: KeyboardEvent) {
-				const toggle = () => {
-					if (dominterface?.classList.contains('move-edit')) {
-						gridOverlay.removeAll()
-					} else {
-						buttonControl.layout(move.selection)
-						const ids = getEnabledWidgetsFromStorage(data as Sync).concat(['main', 'time'])
-						ids.forEach((id) => gridOverlay.add(id))
-					}
-
-					dominterface?.classList.toggle('move-edit')
-					$('element-mover')?.classList.remove('active');
-					removeSelection()
+			function toggleMoveStatus() {
+				if (dominterface?.classList.contains('move-edit')) {
+					gridOverlay.removeAll()
+				} else {
+					buttonControl.layout(move.selection)
+					const ids = getEnabledWidgetsFromStorage(data as Sync).concat(['main', 'time'])
+					ids.forEach((id) => gridOverlay.add(id))
 				}
 
-				if (!e) {
-					toggle()
-					return
-				}
-
-				if (e.shiftKey && e.key === 'M') {
-					toggle()
-				}
+				dominterface?.classList.toggle('move-edit')
+				$('element-mover')?.classList.remove('active')
+				removeSelection()
 			}
 
 			function toggleGridSpans(dir: 'col' | 'row') {
@@ -653,9 +620,9 @@ export default function moveElements(
 				})
 			}
 
-			switch (action) {
+			switch (Object.keys(prop)[0]) {
 				case 'toggle':
-					toggleMoveStatus(keyboardEvent)
+					toggleMoveStatus()
 					break
 
 				case 'select':
@@ -666,12 +633,8 @@ export default function moveElements(
 					gridChange()
 					break
 
-				case 'span-cols':
-					toggleGridSpans('col')
-					break
-
-				case 'span-rows':
-					toggleGridSpans('row')
+				case 'span':
+					toggleGridSpans(prop.span!)
 					break
 
 				case 'box':
@@ -700,10 +663,100 @@ export default function moveElements(
 		})
 	}
 
-	// Init
+	function moverToolboxEvents() {
+		function moverDrag(e: Event) {
+			if (e.type !== 'mousemove') return
+			const { x, y } = e as MouseEvent
+
+			// Set first position to calc offset
+			if (firstPos.x === 0 && firstPos.y === 0) {
+				firstPos = { x: x - moverPos.x, y: y - moverPos.y }
+				return
+			}
+
+			moverPos = {
+				x: x - firstPos.x,
+				y: y - firstPos.y,
+			}
+			;(moverdom as HTMLElement).style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
+			;(moverdom as HTMLElement).style.cursor = `grabbing`
+		}
+
+		Object.entries(elements).forEach(([key, elem]) => {
+			elem?.addEventListener('click', () => updateMoveElement({ select: key }))
+		})
+
+		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((btn) => {
+			btn.addEventListener('click', () => updateMoveElement({ layout: btn.dataset.layout || '' }))
+		})
+
+		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((btn) => {
+			btn.addEventListener('click', () => updateMoveElement({ grid: { x: btn.dataset.col, y: btn.dataset.row } }))
+		})
+
+		document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((btn) => {
+			btn.addEventListener('click', () => updateMoveElement({ box: btn.dataset.align }))
+		})
+
+		document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((btn) => {
+			btn.addEventListener('click', () => updateMoveElement({ text: btn.dataset.align }))
+		})
+
+		document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => {
+			updateMoveElement({ toggle: true })
+		})
+
+		document.querySelector<HTMLButtonElement>('#grid-span-cols')?.addEventListener('click', () => {
+			updateMoveElement({ span: 'col' })
+		})
+
+		document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
+			updateMoveElement({ span: 'row' })
+		})
+
+		moverdom?.addEventListener('mousedown', (e) => {
+			if ((e.target as HTMLElement)?.id === 'element-mover') {
+				moverdom?.addEventListener('mousemove', moverDrag)
+			}
+		})
+
+		const removeDrag = () => {
+			firstPos = { x: 0, y: 0 }
+			;(moverdom as HTMLElement).style.removeProperty('cursor')
+			moverdom?.removeEventListener('mousemove', moverDrag)
+		}
+
+		moverdom?.addEventListener('mouseup', removeDrag)
+		moverdom?.addEventListener('mouseleave', removeDrag)
+
+		// Trigger a layout change when width is crosses threshold
+		window.addEventListener('resize', () => {
+			if (window.innerWidth < 764 && !smallWidth) smallWidth = true
+			if (window.innerWidth > 764 && smallWidth) smallWidth = false
+			updateMoveElement({ responsive: true })
+		})
+	}
+
+	// Events coming from settings menu
+	if (events) {
+		if (events?.select) updateMoveElement({ select: events.select })
+		if (events?.widget) updateMoveElement({ widget: events.widget })
+		if (events?.toggle) updateMoveElement({ toggle: true })
+		if (events?.reset) updateMoveElement({ reset: true })
+		return
+	}
+
+	// Init events coming from mover toolbox
+	setTimeout(() => moverToolboxEvents(), 200)
+
+	// First launch from version without move data
+	if (!init && !events) {
+		init = structuredClone(syncDefaults.move)
+		storage.sync.set({ move: init })
+	}
 
 	if (init) {
-		(function initilisation() {
+		;(function initilisation() {
 			// Detect small width on startup
 			if (window.innerWidth < 764) init.selection = 'single'
 
@@ -712,108 +765,5 @@ export default function moveElements(
 			setAllAligns(layout.items)
 			setGridAreas(layout)
 		})()
-	}
-
-	// Events (only start on startup)
-	const moverdom = document.querySelector('#element-mover')
-	let firstPos = { x: 0, y: 0 }
-	let moverPos = { x: 0, y: 0 }
-
-	function moverDrag(e: Event) {
-		if (e.type !== 'mousemove') return
-		const { x, y } = e as MouseEvent
-
-		// Set first position to calc offset
-		if (firstPos.x === 0 && firstPos.y === 0) {
-			firstPos = { x: x - moverPos.x, y: y - moverPos.y }
-			return
-		}
-
-		moverPos = {
-			x: x - firstPos.x,
-			y: y - firstPos.y,
-		}
-		;(moverdom as HTMLElement).style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
-		;(moverdom as HTMLElement).style.cursor = `grabbing`
-	}
-
-	if (init) {
-		setTimeout(() => {
-			document.addEventListener('keypress', (e: KeyboardEvent) =>
-				updateMoveElement({ action: 'toggle', keyboardEvent: e })
-			)
-
-			Object.entries(elements).forEach(([key, elem]) => {
-				elem?.addEventListener('click', () => updateMoveElement({ action: 'select', elementId: key }))
-			})
-
-			document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
-				button.addEventListener('click', () => updateMoveElement({ action: 'layout', button }))
-			})
-
-			document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
-				button.addEventListener('click', () => updateMoveElement({ action: 'grid', button }))
-			})
-
-			document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((button) => {
-				button.addEventListener('click', () => updateMoveElement({ action: 'box', button }))
-			})
-
-			document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((button) => {
-				button.addEventListener('click', () => updateMoveElement({ action: 'text', button }))
-			})
-
-			document.querySelector<HTMLButtonElement>('#reset-layout')?.addEventListener('click', () => {
-				updateMoveElement({ action: 'reset' })
-			})
-
-			document
-				.querySelector<HTMLButtonElement>('#close-mover')
-				?.addEventListener('click', () => updateMoveElement({ action: 'toggle' }))
-
-			document.querySelector<HTMLButtonElement>('#grid-span-cols')?.addEventListener('click', () => {
-				updateMoveElement({ action: 'span-cols' })
-			})
-
-			document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
-				updateMoveElement({ action: 'span-rows' })
-			})
-
-			moverdom?.addEventListener('mousedown', (e) => {
-				if ((e.target as HTMLElement)?.id === 'element-mover') {
-					moverdom?.addEventListener('mousemove', moverDrag)
-				}
-			})
-
-			const removeDrag = () => {
-				firstPos = { x: 0, y: 0 }
-				;(moverdom as HTMLElement).style.removeProperty('cursor')
-				moverdom?.removeEventListener('mousemove', moverDrag)
-			}
-
-			moverdom?.addEventListener('mouseup', removeDrag)
-			moverdom?.addEventListener('mouseleave', removeDrag)
-
-			// Trigger a layout change when width is crosses threshold
-			window.addEventListener('resize', () => {
-				if (window.innerWidth < 764 && !smallWidth) smallWidth = true
-				if (window.innerWidth > 764 && smallWidth) smallWidth = false
-				updateMoveElement({ action: 'responsive' })
-			})
-		}, 200)
-	}
-
-	// Widget (comes from outside events)
-
-	if (events?.widget) {
-		updateMoveElement({ action: 'widget' })
-	}
-
-	if (events?.toggle) {
-		updateMoveElement({ action: 'toggle' })
-	}
-
-	if (events?.select) {
-		updateMoveElement({ action: 'select', elementId: events.select })
 	}
 }

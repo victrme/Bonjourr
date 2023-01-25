@@ -164,7 +164,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	// Page layout
 	settingsDom.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-		clas(b, b.dataset.layout === data.move.selection, 'selected')
+		clas(b, b.dataset.layout === (data.move?.selection || 'single'), 'selected')
 	})
 
 	// Hide elems
@@ -304,6 +304,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('b_editmove').addEventListener('click', function () {
 		moveElements(null, { toggle: true })
+	})
+
+	paramId('b_resetlayout').addEventListener('click', function () {
+		moveElements(null, { reset: true })
 	})
 
 	paramId('hideelem')
