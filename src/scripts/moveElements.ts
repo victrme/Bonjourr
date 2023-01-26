@@ -690,10 +690,6 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			elem?.addEventListener('click', () => updateMoveElement({ select: key }))
 		})
 
-		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((btn) => {
-			btn.addEventListener('click', () => updateMoveElement({ layout: btn.dataset.layout || '' }))
-		})
-
 		document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((btn) => {
 			btn.addEventListener('click', () => updateMoveElement({ grid: { x: btn.dataset.col, y: btn.dataset.row } }))
 		})
@@ -745,6 +741,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	if (events) {
 		if (events?.select) updateMoveElement({ select: events.select })
 		if (events?.widget) updateMoveElement({ widget: events.widget })
+		if (events?.layout) updateMoveElement({ layout: events.layout })
 		if (events?.toggle) updateMoveElement({ toggle: true })
 		if (events?.reset) updateMoveElement({ reset: true })
 		return

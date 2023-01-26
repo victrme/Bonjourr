@@ -310,13 +310,22 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		moveElements(null, { reset: true })
 	})
 
+	paramId('grid-layout')
+		.querySelectorAll<HTMLButtonElement>('button')
+		.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				console.log('tezqtestg')
+				moveElements(null, { layout: btn.dataset.layout || '' })
+			})
+		})
+
 	paramId('hideelem')
-		.querySelectorAll('button')
-		.forEach((elem: HTMLButtonElement) => {
-			elem.onclick = function () {
-				elem.classList.toggle('clicked')
-				hideElem(null, { is: 'hide', button: elem })
-			}
+		.querySelectorAll<HTMLButtonElement>('button')
+		.forEach((button) => {
+			button.addEventListener('click', () => {
+				button.classList.toggle('clicked')
+				hideElem(null, { is: 'hide', button })
+			})
 		})
 
 	//
