@@ -7,6 +7,7 @@ config.codekit3
 .vscode
 .prettierignore
 manifest.json
+.env.json
 
 node_modules/
 release/
