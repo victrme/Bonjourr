@@ -61,7 +61,13 @@ let activeID: MoveKeys | null
 const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
 function areaStringToLayoutGrid(area: string) {
-	let rows = area.substring(1, area.length - 2).split('" "')
+	// Remove first and last char quotes
+	area = area.substring(1, area.length - 2)
+
+	// Quotes / double quotes are inverted on firefox, try other split if first failed
+	let rows: string[] = area.split('" "')
+	if (rows.length === 1) rows = area.split("' '")
+
 	let grid = rows.map((row) => row.replace('"', '').split(' '))
 	return grid
 }
