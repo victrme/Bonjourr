@@ -89,9 +89,31 @@
 			<div>
 				<div class="wrapper">
 					<span>
-						<span class="trn">Layout</span>
+						<span class="trn">Page layout</span>
 						<button class="tooltip ttgrid" aria-label="Tips on page grid layout">?</button>
 					</span>
+
+					<div>
+						<div id="grid-layout" class="mover">
+							<button data-layout="single" aria-label="Single column layout">
+								<div></div>
+							</button>
+							<button data-layout="double" aria-label="Double column layout">
+								<div></div>
+								<div></div>
+							</button>
+							<button data-layout="triple" aria-label="Triple column layout">
+								<div></div>
+								<div></div>
+								<div></div>
+							</button>
+						</div>
+
+						<div class="grid-btns">
+							<button id="b_editmove" class="trn">Edit grid</button>
+							<button id="b_resetlayout" class="trn">Reset layout</button>
+						</div>
+					</div>
 				</div>
 
 				<div class="tooltiptext ttgrid">
@@ -99,34 +121,6 @@
 					<span class="trn instructions">Choose a layout, click edit and select a widget to modify.</span>
 					<a class="trn" href="https://bonjourr.fr/misc" rel="noreferrer noopener">Learn more</a>
 				</div>
-
-				<div id="grid-layout" class="mover">
-					<button data-layout="single" aria-label="Single column layout">
-						<div></div>
-					</button>
-					<button data-layout="double" aria-label="Double column layout">
-						<div></div>
-						<div></div>
-					</button>
-					<!-- <button data-layout="double-left">
-						<div></div>
-						<div></div>
-					</button>
-					<button data-layout="double-right">
-						<div></div>
-						<div></div>
-					</button> -->
-					<button data-layout="triple" aria-label="Triple column layout">
-						<div></div>
-						<div></div>
-						<div></div>
-					</button>
-				</div>
-			</div>
-
-			<div class="wrapper grid-btns">
-				<button id="b_editmove" class="trn">Edit grid</button>
-				<button id="b_resetlayout" class="trn">Reset layout</button>
 			</div>
 
 			<hr />

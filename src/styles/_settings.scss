@@ -336,14 +336,64 @@
 		}
 
 		.grid-btns {
-			width: fit-content;
-			margin: 0.5em auto;
+			margin-top: 0.5em;
+			width: 100%;
 			gap: 1em;
 		}
 
 		#reset-layout:focus-visible,
 		#reset-layout:hover {
 			color: #e64b43;
+		}
+	}
+
+	#grid-layout {
+		display: flex;
+		padding: 4px; // to offset outline
+		column-gap: 1em;
+
+		button,
+		button[data-layout='double'] div:nth-child(1),
+		button[data-layout='triple'] div:nth-child(2) {
+			outline: 2px solid #9e9ea0;
+		}
+
+		button.selected,
+		button.selected[data-layout='double'] div:nth-child(1),
+		button.selected[data-layout='triple'] div:nth-child(2) {
+			outline-color: var(--blue);
+		}
+
+		button {
+			overflow: hidden;
+			display: grid;
+			padding: 0;
+			border: 0;
+			width: 4em;
+			border-radius: 4px;
+			background-color: $inputGrey;
+
+			div {
+				height: 2em;
+				width: 100%;
+			}
+
+			&.selected {
+				outline-width: 3px;
+				background-color: rgba(0, 114, 238, 0.1333333333);
+			}
+
+			&[data-layout='single'] {
+				grid-template-columns: 1fr;
+			}
+
+			&[data-layout='double'] {
+				grid-template-columns: 1fr 1fr;
+			}
+
+			&[data-layout='triple'] {
+				grid-template-columns: 1fr 1fr 1fr;
+			}
 		}
 	}
 
@@ -572,7 +622,7 @@
 		grid-template-columns: repeat(6, 36px);
 
 		// Bon c'est wtf, mais j'avais envie de le faire pour la prosperite
-		// De toute facon ca va bientot etre remplace donc tout va bien
+		// De toute facon ca va bientot etre remplace (non) donc tout va bien
 
 		li:nth-child(1) {
 			grid-row: 1;

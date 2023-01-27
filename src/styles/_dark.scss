@@ -22,7 +22,7 @@
 
 	#grid-layout button:not(.selected) {
 		outline-color: #eee;
-		
+
 		div {
 			outline-color: #eee;
 		}
@@ -75,7 +75,12 @@
 	#settings {
 		background-color: black;
 
+		#grid-layout button:not(.selected) + div {
+			outline-color: #777779;
+		}
+
 		select,
+		#grid-layout button,
 		.switch:not(:checked) {
 			background-color: #39383d;
 		}

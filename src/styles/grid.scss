@@ -27,10 +27,6 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
-			// border-radius: 8px;
-			// background: #fff2;
-			// box-shadow: 5px 5px 20px #2224;
-			// cursor: pointer;
 			z-index: 2;
 			cursor: pointer;
 			pointer-events: none;
@@ -38,16 +34,6 @@
 			> * {
 				// pointer-events: none;
 				user-select: none;
-			}
-
-			&:hover {
-				// background: #fff5;
-			}
-
-			&.move-selected {
-				// background: #fff3;
-				// backdrop-filter: blur(1em);
-				// outline-color: var(--blue);
 			}
 		}
 	}
@@ -104,21 +90,16 @@
 	#time,
 	#linkblocks,
 	#sb_container,
+	#notes_container,
 	#quotes_container {
 		width: fit-content;
 		height: fit-content;
 		place-self: center;
 	}
 
-	#notes_container {
-		place-self: center;
-	}
-
 	#main,
-	#time,
-	#linkblocks,
-	#quotes_container {
-		padding: 2em;
+	#time {
+		padding: 3em 0;
 	}
 }
 
@@ -266,75 +247,6 @@ button.grid-spanner {
 		img {
 			padding: 5px;
 			height: 15px;
-		}
-	}
-}
-
-#grid-layout {
-	margin: 0.5em auto;
-	width: fit-content;
-	grid-template-columns: 1fr 1fr 1fr;
-
-	button {
-		display: grid;
-		padding: 0;
-		border: 0;
-		margin: 4px 8px;
-		width: 60px;
-		overflow: hidden;
-		border-radius: 4px;
-		outline: 2px solid #666;
-		border: 0;
-
-		div:not(.selected) {
-			height: 2.2em;
-			width: 100%;
-		}
-
-		&[data-layout='single'] {
-			grid-template-columns: 1fr;
-		}
-
-		&[data-layout='double'] {
-			grid-template-columns: 1fr 1fr;
-
-			div {
-				outline: 1px solid #666;
-			}
-
-			&.selected div {
-				outline-width: 2px;
-			}
-		}
-
-		// &[data-layout='double-left'] {
-		// 	grid-template-columns: 2fr 1fr;
-		// }
-
-		// &[data-layout='double-right'] {
-		// 	grid-template-columns: 1fr 2fr;
-		// }
-
-		&[data-layout='triple'] {
-			grid-template-columns: 1fr 1fr 1fr;
-
-			div:nth-child(2) {
-				outline: 2px solid #666;
-			}
-
-			&.selected div:nth-child(2) {
-				outline-width: 4px;
-			}
-		}
-
-		&.selected {
-			outline-width: 4px;
-		}
-
-		&.selected,
-		&.selected div {
-			// not sure why color from #settings button gets priority
-			outline-color: var(--blue) !important;
 		}
 	}
 }
