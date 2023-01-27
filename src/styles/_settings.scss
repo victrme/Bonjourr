@@ -336,6 +336,8 @@
 		}
 
 		.grid-btns {
+			display: flex;
+			justify-content: flex-end;
 			margin-top: 0.5em;
 			width: 100%;
 			gap: 1em;
