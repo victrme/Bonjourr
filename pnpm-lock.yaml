@@ -27,7 +27,7 @@ specifiers:
   lodash.clonedeep: ^4.5.0
   lodash.debounce: ^4.0.8
   lodash.throttle: ^4.1.1
-  pocket-editor: ^1.2.1
+  pocket-editor: ^1.3.1
   sass: ^1.54.8
   snarkdown: ^2.0.0
   typescript: ^4.8.2
@@ -57,7 +57,7 @@ devDependencies:
   lodash.clamp: 4.0.3
   lodash.debounce: 4.0.8
   lodash.throttle: 4.1.1
-  pocket-editor: 1.2.1
+  pocket-editor: 1.3.1
   sass: 1.54.8
   snarkdown: 2.0.0
   typescript: 4.8.2
@@ -1617,8 +1617,8 @@ packages:
       extend-shallow: 3.0.2
     dev: true
 
-  /pocket-editor/1.2.1:
-    resolution: {integrity: sha512-USZ3qVwPVN6MdtxRXTkF4e6w6zkHqVl+j4XSUiNcvKht1Jl8n6jAFnyADK0sfU0gOmv23z0+HG14+h9wZb/aBw==}
+  /pocket-editor/1.3.1:
+    resolution: {integrity: sha512-g8l/9UAWh7tellQxB/M+x5ZWTM83jMaFIoPCXfqY3Un6j/BCN+Ji7pu9wabw5x2oPEJM/6Ndcpc/AV7GsiXCmg==}
     dev: true
 
   /pretty-hrtime/1.0.3:

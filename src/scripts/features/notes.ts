@@ -34,9 +34,9 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	}
 
 	function handleOpacity(value: number) {
-		if (editordom) {
-			clas(editordom, value > 0.45, 'opaque')
-			editordom.style.backgroundColor = 'rgba(255, 255, 255, ' + value + ')'
+		if (container) {
+			clas(container, value > 0.45, 'opaque')
+			document.documentElement.style.setProperty('--notes-background-alpha', value.toString())
 		}
 	}
 

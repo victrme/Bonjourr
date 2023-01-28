@@ -6,6 +6,13 @@
 	&.hidden {
 		display: none;
 	}
+
+	&.opaque #pocket-editor {
+		color: #222;
+		.line.sel {
+			background-color: #2222;
+		}
+	}
 }
 
 div#pocket-editor {
@@ -15,13 +22,17 @@ div#pocket-editor {
 	text-align: left;
 	text-shadow: none;
 	border-radius: 0.7em;
+	line-height: 1.5em;
+	letter-spacing: initial;
 	border: 1px solid rgba(255, 255, 255, 0.075);
 
-	@include frostedGlass($tint: 255, $alpha: 0.1, $blur: 10px, $fbAlpha: 0.4, $fbColor: #fff);
-
-	&.opaque {
-		color: #222;
-	}
+	@include frostedGlass(
+		$tint: 255,
+		$alpha: var(--notes-background-alpha),
+		$fbAlpha: var(--notes-background-alpha),
+		$blur: 10px,
+		$fbColor: #fff
+	);
 
 	&.center-align {
 		text-align: center;
@@ -40,6 +51,14 @@ div#pocket-editor {
 		opacity: 0.5;
 	}
 
+	.line:first-child {
+		h1,
+		h2,
+		h3 {
+			margin-top: 0;
+		}
+	}
+
 	h1,
 	h2,
 	h3,
@@ -48,6 +67,11 @@ div#pocket-editor {
 	h6 {
 		line-height: initial;
 		margin: 0.5em 0;
+	}
+
+	input[type='checkbox'] {
+		width: 1.35em;
+		height: 1.35em;
 	}
 
 	ul {
