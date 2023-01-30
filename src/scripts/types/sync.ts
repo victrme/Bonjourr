@@ -4,6 +4,7 @@ export type Searchbar = {
 	newtab: boolean
 	engine: string
 	request: string
+	placeholder: string
 }
 
 export type Quotes = {

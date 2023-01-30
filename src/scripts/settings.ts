@@ -94,6 +94,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_notesalign', data.notes?.align || 'left')
 	initInput('i_textshadow', data.textShadow || 0.2)
 	initInput('i_sbengine', data.searchbar?.engine || 'google')
+	initInput('i_sbplaceholder', data.searchbar?.placeholder || '')
 	initInput('i_sbopacity', data.searchbar?.opacity || 0.1)
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
@@ -228,6 +229,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	enterBlurs(paramId('i_favicon'))
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
+	enterBlurs(paramId('i_sbplaceholder'))
 
 	//general
 
@@ -508,6 +510,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		searchbar(null, 'newtab', this)
 	})
 
+	paramId('i_sbplaceholder').addEventListener('keyup', function () {
+		searchbar(null, 'placeholder', this)
+	})
+
 	//
 	// Quotes
 
@@ -771,6 +777,7 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 		['#i_greeting', 'Name'],
 		['#i_tabtitle', 'New tab'],
 		['#i_sbrequest', 'Search query: %s'],
+		['#i_sbplaceholder', 'Search'],
 		['#cssEditor', 'Type in your custom CSS'],
 		['#i_importtext', 'or paste as text'],
 	]

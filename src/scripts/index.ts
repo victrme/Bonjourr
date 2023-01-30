@@ -2515,6 +2515,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 			clas($('sb_container'), value > 0.4, 'opaque')
 		}
 	}
+	const setPlaceholder = (value: string) => domsearchbar?.setAttribute('placeholder', value)
 
 	//
 	// Updates
@@ -2560,6 +2561,12 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 					setNewtab(that.checked)
 					break
 				}
+
+				case 'placeholder': {
+					data.searchbar.placeholder = that.value
+					setPlaceholder(that.value)
+					break
+				}
 			}
 
 			eventDebounce({ searchbar: data.searchbar })
@@ -2574,13 +2581,14 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 	//
 	// Initialisation
 
-	const { on, engine, request, newtab, opacity } = init || syncDefaults.searchbar
+	const { on, engine, request, newtab, opacity, placeholder } = init || syncDefaults.searchbar
 
 	try {
 		display(on)
 		setEngine(engine)
 		setRequest(request)
 		setNewtab(newtab)
+		setPlaceholder(placeholder)
 		setOpacity(opacity)
 
 		if (on) {

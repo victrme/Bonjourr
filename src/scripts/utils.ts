@@ -415,6 +415,7 @@ export const syncDefaults: Sync = {
 		newtab: false,
 		engine: 'google',
 		request: '',
+		placeholder: ''
 	},
 	quotes: {
 		on: false,
