@@ -279,8 +279,8 @@ function setGridAreas(layout: Layout) {
 function setAlign(id: MoveKeys, item?: MoveItem) {
 	const elem = elements[id]
 	if (elem) {
-		if (typeof item?.box === 'string') elem.style.placeSelf = item.box
-		if (typeof item?.text === 'string') elem.style.textAlign = item.text
+		elem.style.placeSelf = item?.box || ''
+		elem.style.textAlign = item?.text || ''
 	}
 }
 
@@ -538,17 +538,26 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 				// DEEP CLONE is important as to not mutate sync defaults (it shouldn't come to this, but here we are)
 				// Destructure layout to appease typescript
-				const { grid, items } = clonedeep(syncDefaults.move.layouts)[move.selection]
+				const { grid } = structuredClone(syncDefaults.move.layouts)[move.selection]
 
 				move.layouts[move.selection].grid = addEnabledWidgetsToGrid(grid)
-				move.layouts[move.selection].items = items
+				move.layouts[move.selection].items = {}
 
 				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
 
-				setAllAligns(layout.items)
-				setGridAreas(layout)
 				removeSelection()
+				setGridAreas(layout)
+
+				// Reset aligns
+				setAllAligns({
+					quicklinks: { box: '', text: '' },
+					main: { box: '', text: '' },
+					time: { box: '', text: '' },
+					notes: { box: '', text: '' },
+					searchbar: { box: '', text: '' },
+					quotes: { box: '', text: '' },
+				})
 
 				// Save
 				storage.sync.set({ move: move })

@@ -305,7 +305,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		.querySelectorAll<HTMLButtonElement>('button')
 		.forEach((btn) => {
 			btn.addEventListener('click', () => {
-				console.log('tezqtestg')
 				moveElements(null, { layout: btn.dataset.layout || '' })
 			})
 		})
