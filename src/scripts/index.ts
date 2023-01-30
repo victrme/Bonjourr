@@ -85,45 +85,43 @@ const freqControl = {
 	},
 }
 
-export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar']?: boolean }, fromInput?: true) {
-	//
-	// Update Display
-	//
+const interfaceFade = (function interfaceFadeDebounce() {
+	let fadeTimeout = setTimeout(() => {})
 
-	const doms = {
-		quicklinks: 'linkblocks',
-		notes: 'notes_container',
-		quotes: 'quotes_container',
-		searchbar: 'sb_container',
-	}
-
-	const inputs = {
-		notes: 'i_notes',
-		quotes: 'i_quotes',
-		searchbar: 'i_sb',
-		quicklinks: 'i_quicklinks',
-	}
-
-	Object.entries(list).forEach(([key, on]) => {
-		clas($(key + '_options'), on, 'shown')
-
-		// This hides interface while grid is changing to avoid flickering
-		// Todo: This is an ugly hack and there must be a better way
+	function applyFade(callback: Function, duration = 400) {
+		clearTimeout(fadeTimeout)
 		dominterface.style.opacity = '0'
-		setTimeout(() => {
-			clas($(doms[key as keyof typeof doms]), !on, 'hidden')
-			dominterface.style.opacity = '1'
-		}, 5)
+		dominterface.style.transition = `opacity ${duration}ms cubic-bezier(.215,.61,.355,1)`
 
-		if (!fromInput) {
-			;($(inputs[key as keyof typeof inputs]) as HTMLInputElement).checked = on
-		}
+		fadeTimeout = setTimeout(() => {
+			callback()
+
+			dominterface.style.removeProperty('opacity')
+			fadeTimeout = setTimeout(() => {
+				dominterface.style.transition = 'transform .4s'
+			}, duration + 10)
+		}, duration + 10)
+	}
+
+	return { apply: applyFade }
+})()
+
+export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar']?: boolean }, fromInput?: true) {
+	const listEntries = Object.entries(list)
+
+	const widgets = {
+		quicklinks: { domid: 'linkblocks', inputid: 'i_quicklinks' },
+		notes: { domid: 'notes_container', inputid: 'i_notes' },
+		quotes: { domid: 'quotes_container', inputid: 'i_quotes' },
+		searchbar: { domid: 'sb_container', inputid: 'i_sb' },
+	}
+
+	// toggle settings options instantly
+	listEntries.forEach(([key, on]) => {
+		clas($(key + '_options'), on, 'shown')
 	})
 
-	//
-	// Update Storage
-	//
-
+	// Update storage instantly
 	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar'], (data) => {
 		let statesToSave: { [key: string]: unknown } = {}
 
@@ -132,17 +130,35 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }
 		if ('searchbar' in list) statesToSave.searchbar = { ...data.searchbar, on: list.searchbar }
 
-		storage.sync.set({ ...statesToSave })
+		storage.sync.set({ ...statesToSave }, () => console.log('saved from toggle widget', performance.now()))
 	})
 
-	//
-	// Update grid
-	//
+	// Fade interface
+	interfaceFade.apply(function () {
+		// toggle widget on interface
+		listEntries.forEach(([key, on]) => {
+			if (key in widgets) {
+				const dom = $(widgets[key as keyof typeof widgets].domid)
+				clas(dom, !on, 'hidden')
+			}
+		})
 
-	if (fromInput) {
-		const [id, on] = Object.entries(list)[0]
-		moveElements(null, { widget: { id: id as MoveKeys, on } })
-	}
+		// user is toggling from settings
+		if (fromInput) {
+			const [id, on] = listEntries[0] // always only one toggle
+			moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+			return
+		}
+
+		// Toggle comes from move element initialization
+		listEntries.forEach(([key, on]) => {
+			if (key in widgets) {
+				const id = widgets[key as keyof typeof widgets].inputid
+				const input = document.querySelector<HTMLInputElement>(id)
+				if (input) input.checked = on
+			}
+		})
+	}, 200)
 }
 
 export function traduction(settingsDom: Element | null, lang = 'en') {

@@ -218,17 +218,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	//
 
-	function widgetThrottle(e: Event) {
-		if (sessionStorage.throttledWidgetInput === 'true') {
-			e.preventDefault()
-			return true
-		}
-
-		// removes it in moveElements when storage is correctly saved
-		sessionStorage.throttledWidgetInput = 'true'
-		return false
-	}
-
 	// Pressing "Enter" removes focus from input to indicate change
 	const enterBlurs = (elem: HTMLInputElement) => {
 		elem.onkeyup = (e: KeyboardEvent) => {
@@ -331,8 +320,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quick links
 
-	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		if (widgetThrottle(ev)) return
+	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
 		toggleWidgets({ quicklinks: this.checked }, true)
 	})
 
@@ -481,8 +469,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Notes
 
-	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		if (widgetThrottle(ev)) return
+	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
 		toggleWidgets({ notes: this.checked }, true)
 	})
 
@@ -501,8 +488,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Searchbar
 
-	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		if (widgetThrottle(ev)) return
+	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
 		toggleWidgets({ searchbar: this.checked }, true)
 	})
 
@@ -525,8 +511,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Quotes
 
-	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement, ev: Event) {
-		if (widgetThrottle(ev)) return
+	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
 		toggleWidgets({ quotes: this.checked }, true)
 	})
 

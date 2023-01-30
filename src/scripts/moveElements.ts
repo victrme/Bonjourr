@@ -495,6 +495,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const layout = move.layouts[move.selection]
 				const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
 
+				// This triggers interface fade
 				toggleWidgets({
 					notes: widgetsInGrid.includes('notes'),
 					quotes: widgetsInGrid.includes('quotes'),
@@ -502,22 +503,24 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					quicklinks: widgetsInGrid.includes('quicklinks'),
 				})
 
-				setAllAligns(layout.items)
-				setGridAreas(layout)
-				buttonControl.layout(move.selection)
+				setTimeout(() => {
+					setAllAligns(layout.items)
+					setGridAreas(layout)
+					buttonControl.layout(move.selection)
 
-				manageGridSpanner(move.selection)
+					manageGridSpanner(move.selection)
 
-				// Toggle overlays if we are editing
-				if (dominterface?.classList.contains('move-edit')) {
-					gridOverlay.removeAll()
-					widgetsInGrid.forEach((id) => gridOverlay.add(id as MoveKeys))
-				}
+					// Toggle overlays if we are editing
+					if (dominterface?.classList.contains('move-edit')) {
+						gridOverlay.removeAll()
+						widgetsInGrid.forEach((id) => gridOverlay.add(id as MoveKeys))
+					}
 
-				if (activeID) {
-					buttonControl.grid(activeID)
-					buttonControl.align(layout.items[activeID])
-				}
+					if (activeID) {
+						buttonControl.grid(activeID)
+						buttonControl.align(layout.items[activeID])
+					}
+				}, 200) // same duration as toggleWidgets interfaceFade.apply
 			}
 
 			function layoutReset() {
@@ -617,11 +620,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					on ? gridOverlay.add(id) : gridOverlay.remove(id)
 				}
 
-				storage.sync.set({ move: move }, () => {
-					setTimeout(() => {
-						sessionStorage.removeItem('throttledWidgetInput') // initParams events in settings.ts
-					}, 400) // increase throttle time for dramatic purposes
-				})
+				storage.sync.set({ move: move }, () => console.log('saved from move', performance.now()))
 			}
 
 			switch (Object.keys(prop)[0]) {
