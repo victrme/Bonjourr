@@ -241,9 +241,20 @@ export function clock(
 
 		if (timezone === 'auto') return date
 
-		const offset = date.getTimezoneOffset() / 60
-		const utcHour = date.getHours() + offset
-		date.setHours(utcHour + parseInt(timezone))
+		const offset = date.getTimezoneOffset() / 60 // hour
+		let utcHour = date.getHours() + offset
+
+		const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
+		// const minutes = timezone.split('.')[1] ? utcMinutes + parseInt(timezone.split('.')[1]) : date.getMinutes()
+
+		let minutes
+		if (timezone.split('.')[1]) {
+			minutes = utcMinutes + parseInt(timezone.split('.')[1])
+
+			if (minutes > -30) utcHour++
+		} else minutes = date.getMinutes()
+
+		date.setHours(utcHour + parseInt(timezone), minutes)
 
 		return date
 	}
