@@ -200,6 +200,11 @@ body {
 				padding: 0;
 			}
 		}
+
+		// removes margin on tempContainer when both greetings and weather are hidden
+		#greetings.he_hidden + #weather #description.he_hidden + #tempContainer {
+			margin: 0;
+		}
 	}
 }
 
