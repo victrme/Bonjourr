@@ -2,7 +2,7 @@ import clamp from 'lodash.clamp'
 import clonedeep from 'lodash.clonedeep'
 import storage from './storage'
 import { Move, MoveKeys, MoveItem, Sync } from './types/sync'
-import { syncDefaults, clas, $ } from './utils'
+import { syncDefaults, clas, $, tradThis } from './utils'
 import { toggleWidgets } from '.'
 
 // ┌──────────────────────────────────────┐
@@ -390,11 +390,27 @@ const buttonControl = {
 		boxBtns.forEach((b) => clas(b, b.dataset.align === (item?.box || ''), 'selected'))
 		textBtns.forEach((b) => clas(b, b.dataset.align === (item?.text || ''), 'selected'))
 	},
+
+	title: (id?: MoveKeys | null) => {
+		let titlestr = ''
+		const editingNames = {
+			time: tradThis('Time & Date'),
+			main: tradThis('Weather'),
+			notes: tradThis('Notes'),
+			searchbar: tradThis('Search bar'),
+			quotes: tradThis('Quotes'),
+			quicklinks: tradThis('Quick Links'),
+		}
+
+		titlestr = id ? editingNames[id] : tradThis('No selection')
+		$('mover-title')!.textContent = titlestr
+	},
 }
 
 function removeSelection() {
 	activeID = null
 	buttonControl.align() // without params, selects 0 align
+	buttonControl.title()
 
 	document.querySelectorAll('.grid-spanner')?.forEach((elem) => {
 		elem.removeAttribute('disabled')
@@ -507,8 +523,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					setAllAligns(layout.items)
 					setGridAreas(layout)
 					buttonControl.layout(move.selection)
-
 					manageGridSpanner(move.selection)
+					removeSelection()
 
 					// Toggle overlays if we are editing
 					if (dominterface?.classList.contains('move-edit')) {
@@ -547,6 +563,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const layout = move.layouts[move.selection]
 
 				removeSelection()
+				buttonControl.title()
 				setGridAreas(layout)
 
 				// Reset aligns
@@ -576,12 +593,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				buttonControl.align(layout.items[id])
 				buttonControl.span(id)
 				buttonControl.grid(id)
+				buttonControl.title(id)
 
-				document.querySelector('#move-overlay-' + id)!.classList.add('selected') // add clicked
-
+				$('move-overlay-' + id)!.classList.add('selected') // add clicked
 				$('element-mover')?.classList.add('active')
 
-				document.querySelector('#mover-titles h2')!.innerHTML = `${id} widget`
 				activeID = id
 			}
 

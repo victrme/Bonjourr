@@ -34,7 +34,6 @@ import {
 	tradThis,
 	turnRefreshButton,
 	validateHideElem,
-	notesCharCodeCount,
 } from './utils'
 import moveElements from './moveElements'
 
