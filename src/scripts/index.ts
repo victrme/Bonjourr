@@ -2507,6 +2507,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 	const setEngine = (value: string) => domsearchbar?.setAttribute('data-engine', value)
 	const setRequest = (value: string) => domsearchbar?.setAttribute('data-request', stringMaxSize(value, 512))
 	const setNewtab = (value: boolean) => domsearchbar?.setAttribute('data-newtab', value.toString())
+	const setPlaceholder = (value: string) => domsearchbar?.setAttribute('placeholder', value || '')
 	const setOpacity = (value: number) => {
 		if (domsearchbar) {
 			domsearchbar.style.backgroundColor = `rgba(255, 255, 255, ${value})`
@@ -2514,7 +2515,6 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 			clas($('sb_container'), value > 0.4, 'opaque')
 		}
 	}
-	const setPlaceholder = (value: string) => domsearchbar?.setAttribute('placeholder', value)
 
 	//
 	// Updates
