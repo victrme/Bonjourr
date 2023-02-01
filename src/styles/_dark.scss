@@ -75,13 +75,14 @@
 	#settings {
 		background-color: black;
 
-		#grid-layout button:not(.selected) + div {
+		#grid-layout button:not(.selected, :hover, :focus-visible),
+		#grid-layout button:not(.selected, :hover, :focus-visible) div {
 			outline-color: #777779;
 		}
 
 		select,
-		#grid-layout button,
-		.switch:not(:checked) {
+		.switch:not(:checked),
+		#grid-layout button:not(.selected, :hover, :focus-visible) {
 			background-color: #39383d;
 		}
 

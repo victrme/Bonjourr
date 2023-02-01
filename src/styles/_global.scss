@@ -216,8 +216,11 @@ body {
 		.as {
 			overflow-y: clip;
 		}
+		.as_visuals {
+			max-height: 170px;
+		}
 		.as_pageelem {
-			max-height: 400px;
+			max-height: 370px;
 			padding-bottom: 3px;
 		}
 		.as_link {
@@ -226,9 +229,6 @@ body {
 		}
 		.as_collection {
 			max-height: 130px;
-		}
-		.as_visuals {
-			max-height: 373px;
 		}
 		.as_timedate {
 			max-height: 260px;

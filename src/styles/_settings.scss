@@ -360,10 +360,14 @@
 			outline: 2px solid #9e9ea0;
 		}
 
+		button:hover,
 		button.selected,
-		button.selected[data-layout='double'] div:nth-child(1),
-		button.selected[data-layout='triple'] div:nth-child(2) {
+		button:focus-visible {
 			outline-color: var(--blue);
+			&[data-layout='double'] div:nth-child(1),
+			&[data-layout='triple'] div:nth-child(2) {
+				outline-color: var(--blue);
+			}
 		}
 
 		button {
@@ -380,9 +384,14 @@
 				width: 100%;
 			}
 
+			&:hover,
+			&:focus-visible,
+			&.selected {
+				background-color: rgba(0, 114, 238, 0.1333333333);
+			}
+
 			&.selected {
 				outline-width: 3px;
-				background-color: rgba(0, 114, 238, 0.1333333333);
 			}
 
 			&[data-layout='single'] {
