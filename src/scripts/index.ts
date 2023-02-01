@@ -2502,18 +2502,16 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 	const domsearchbar = $('searchbar')
 	const emptyButton = $('sb_empty')
 	const submitButton = $('sb_submit')
+	const searchbarButtons = $('sb-buttons')
 
 	const display = (shown: boolean) => $('sb_container')?.setAttribute('class', shown ? 'shown' : 'hidden')
 	const setEngine = (value: string) => domsearchbar?.setAttribute('data-engine', value)
 	const setRequest = (value: string) => domsearchbar?.setAttribute('data-request', stringMaxSize(value, 512))
 	const setNewtab = (value: boolean) => domsearchbar?.setAttribute('data-newtab', value.toString())
-	const setPlaceholder = (value: string) => domsearchbar?.setAttribute('placeholder', value || '')
-	const setOpacity = (value: number) => {
-		if (domsearchbar) {
-			domsearchbar.style.backgroundColor = `rgba(255, 255, 255, ${value})`
-			domsearchbar.style.color = value > 0.4 ? '#222' : '#fff'
-			clas($('sb_container'), value > 0.4, 'opaque')
-		}
+	const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value || '')
+	const setOpacity = (value = 0.1) => {
+		document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
+		clas($('sb_container'), value > 0.4, 'opaque')
 	}
 
 	//
@@ -2650,9 +2648,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 
 	function handleInputButtons() {
 		const hasText = (domsearchbar as HTMLInputElement).value.length > 0
-
-		clas(emptyButton, hasText, 'shown')
-		clas(submitButton, hasText, 'shown')
+		clas(searchbarButtons, hasText, 'shown')
 		toggleInputButton(hasText)
 	}
 
@@ -2661,9 +2657,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 
 		domsearchbar.focus()
 		;(domsearchbar as HTMLInputElement).value = ''
-
-		clas(emptyButton, false, 'shown')
-		clas(submitButton, false, 'shown')
+		clas(searchbarButtons, false, 'shown')
 		toggleInputButton(false)
 	}
 
