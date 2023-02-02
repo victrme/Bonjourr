@@ -5,22 +5,6 @@
 	grid-template-areas: var(--grid);
 
 	&.move-edit {
-		#element-mover {
-			visibility: visible;
-
-			> * {
-				pointer-events: none;
-				filter: grayscale(1);
-				opacity: 0.4;
-			}
-
-			&.active > * {
-				pointer-events: all;
-				filter: unset;
-				opacity: 1;
-			}
-		}
-
 		#main,
 		#time,
 		#linkblocks,
@@ -108,27 +92,37 @@
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	left: calc(2em + 100px); // because of .pushed interface
+	left: 2em; // because of .pushed interface
 	top: 2em;
 	gap: 2em;
 	padding: 1em;
 	padding-top: 2em;
 	min-width: 12em;
+	font-size: 14px;
+	color: #2a2222;
+	border-radius: 1em;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
-	text-shadow: none;
-	border-radius: 1em;
-	visibility: hidden;
 	cursor: grab;
 	z-index: 4;
-	transition: left 0.4s;
-
-	color: #2a2222;
 
 	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
 
+	&.hidden {
+		display: none;
+	}
+
 	> * {
+		pointer-events: none;
+		filter: grayscale(1);
+		opacity: 0.4;
 		cursor: auto;
+	}
+
+	&.active > * {
+		pointer-events: all;
+		filter: unset;
+		opacity: 1;
 	}
 
 	hr {

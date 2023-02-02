@@ -610,8 +610,10 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					ids.forEach((id) => gridOverlay.add(id))
 				}
 
+				const mover = $('element-mover')
+				mover?.classList.toggle('hidden')
+				mover?.classList.remove('active')
 				dominterface?.classList.toggle('move-edit')
-				$('element-mover')?.classList.remove('active')
 				removeSelection()
 			}
 

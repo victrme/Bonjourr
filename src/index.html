@@ -81,64 +81,64 @@
 			<div id="background-bis"></div>
 		</div>
 
-		<main id="interface" class="init">
-			<div id="element-mover">
-				<div>
-					<p class="trn">Editing</p>
-					<h3 id="mover-title" class="trn">No selection</h3>
-				</div>
+		<div id="element-mover" class="hidden">
+			<div>
+				<p class="trn">Editing</p>
+				<h3 id="mover-title" class="trn">No selection</h3>
+			</div>
 
-				<div>
-					<p>Grid position</p>
-					<div id="grid-mover" class="mover">
-						<button type="button" data-row="-1">▲</button>
-						<div>
-							<button type="button" data-col="-1">◀</button>
-							<button type="button" data-col="1">▶</button>
-						</div>
-						<button type="button" data-row="1">▼</button>
+			<div>
+				<p>Grid position</p>
+				<div id="grid-mover" class="mover">
+					<button type="button" data-row="-1">▲</button>
+					<div>
+						<button type="button" data-col="-1">◀</button>
+						<button type="button" data-col="1">▶</button>
 					</div>
+					<button type="button" data-row="1">▼</button>
 				</div>
-				<div id="grid-spanner-container">
-					<button class="grid-spanner" id="grid-span-rows">Fill row</button>
-					<button class="grid-spanner" id="grid-span-cols">Fill column</button>
+			</div>
+			<div id="grid-spanner-container">
+				<button class="grid-spanner" id="grid-span-rows">Fill row</button>
+				<button class="grid-spanner" id="grid-span-cols">Fill column</button>
+			</div>
+			<div>
+				<p>Box alignment</p>
+				<div id="box-alignment-mover" class="mover">
+					<button type="button" data-align="baseline baseline">┏</button>
+					<button type="button" data-align="baseline center">┳</button>
+					<button type="button" data-align="baseline end">┓</button>
+					<button type="button" data-align="center baseline">┣</button>
+					<button type="button" data-align="">╋</button>
+					<button type="button" data-align="center end">┫</button>
+					<button type="button" data-align="end baseline">┗</button>
+					<button type="button" data-align="end center">┻</button>
+					<button type="button" data-align="end end">┛</button>
 				</div>
-				<div>
-					<p>Box alignment</p>
-					<div id="box-alignment-mover" class="mover">
-						<button type="button" data-align="baseline baseline">┏</button>
-						<button type="button" data-align="baseline center">┳</button>
-						<button type="button" data-align="baseline end">┓</button>
-						<button type="button" data-align="center baseline">┣</button>
-						<button type="button" data-align="">╋</button>
-						<button type="button" data-align="center end">┫</button>
-						<button type="button" data-align="end baseline">┗</button>
-						<button type="button" data-align="end center">┻</button>
-						<button type="button" data-align="end end">┛</button>
-					</div>
-				</div>
-				<div>
-					<p>Text alignment</p>
-					<div id="text-alignment-mover" class="mover">
-						<button data-align="left">
-							<img src="src/assets/interface/align-left.svg" />
-						</button>
-						<button data-align="">
-							<img src="src/assets/interface/align-center.svg" />
-						</button>
-						<button data-align="right">
-							<img src="src/assets/interface/align-right.svg" />
-						</button>
-					</div>
-				</div>
-
-				<div>
-					<hr />
-
-					<button id="close-mover" class="trn">Done</button>
+			</div>
+			<div>
+				<p>Text alignment</p>
+				<div id="text-alignment-mover" class="mover">
+					<button data-align="left">
+						<img src="src/assets/interface/align-left.svg" />
+					</button>
+					<button data-align="">
+						<img src="src/assets/interface/align-center.svg" />
+					</button>
+					<button data-align="right">
+						<img src="src/assets/interface/align-right.svg" />
+					</button>
 				</div>
 			</div>
 
+			<div>
+				<hr />
+
+				<button id="close-mover" class="trn">Done</button>
+			</div>
+		</div>
+
+		<main id="interface" class="init">
 			<div id="time">
 				<div id="time-container">
 					<h1 id="clock" class="hidden"></h1>

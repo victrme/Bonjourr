@@ -24,6 +24,7 @@ div#pocket-editor {
 	border-radius: 0.7em;
 	line-height: 1.5em;
 	letter-spacing: initial;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	border: 1px solid rgba(255, 255, 255, 0.075);
 
 	@include frostedGlass(
