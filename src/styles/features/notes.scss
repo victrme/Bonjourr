@@ -1,7 +1,7 @@
 #notes_container {
-	width: 100%;
 	--notes-width: 50em;
-	max-width: var(--notes-width);
+	width: var(--notes-width);
+	max-width: 100%;
 
 	&.hidden {
 		display: none;
@@ -13,9 +13,17 @@
 			background-color: #2222;
 		}
 	}
+
+	&.center-align #pocket-editor {
+		text-align: center;
+	}
+
+	&.right-align #pocket-editor {
+		text-align: right;
+	}
 }
 
-div#pocket-editor {
+#pocket-editor {
 	color: #fff;
 	font-size: 1.3em;
 	padding: 1.2em;
@@ -34,14 +42,6 @@ div#pocket-editor {
 		$blur: 10px,
 		$fbColor: #fff
 	);
-
-	&.center-align {
-		text-align: center;
-	}
-
-	&.right-align {
-		text-align: right;
-	}
 
 	.line.sel {
 		background-color: #fff2;

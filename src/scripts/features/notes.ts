@@ -19,14 +19,8 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	}
 
 	function handleAlign(value: string) {
-		if (editordom) {
-			if (value === 'center') {
-				clas(editordom, true, 'center-align')
-			} else {
-				clas(editordom, false, 'center-align')
-				clas(editordom, value === 'right', 'right-align')
-			}
-		}
+		clas(container, value === 'center', 'center-align')
+		clas(container, value === 'right', 'right-align')
 	}
 
 	function handleWidth(value?: number) {
