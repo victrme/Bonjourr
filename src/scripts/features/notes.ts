@@ -12,7 +12,6 @@ type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string 
 
 export default function notes(init: Notes | null, event?: NotesEvent) {
 	const container = $('notes_container')
-	const editordom = $('pocket-editor')
 
 	function handleToggle(state: boolean) {
 		if (container) clas(container, !state, 'hidden')
@@ -24,7 +23,9 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	}
 
 	function handleWidth(value?: number) {
-		if (value && container) container.style.setProperty('--notes-width', value.toString() + 'em')
+		if (value) {
+			document.documentElement.style.setProperty('--notes-width', value.toString() + 'em')
+		}
 	}
 
 	function handleOpacity(value: number) {
