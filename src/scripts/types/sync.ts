@@ -53,7 +53,7 @@ export type Font = {
 
 export type Notes = {
 	on: boolean
-	text: string
+	text: string | null
 	width?: number
 	opacity: number
 	align: 'left' | 'center' | 'right'

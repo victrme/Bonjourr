@@ -1,14 +1,28 @@
-import { $, clas, syncDefaults } from '../utils'
+import { $, clas, syncDefaults, tradThis } from '../utils'
+import { langList } from '../lang'
 import { Notes } from '../types/sync'
 import storage from '../storage'
 import debounce from 'lodash.debounce'
 import pocketEditor from 'pocket-editor'
 
+type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
+
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
 }, 400)
 
-type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
+function translateNotesText() {
+	let lang = document.documentElement.getAttribute('lang')
+
+	// Is NOT: defined and an available lang, en
+	if (!(lang && lang in langList)) lang = 'en'
+
+	const edit = tradThis('Focus anywhere to edit Notes', lang)
+	const mdT = tradThis('Supports markdown titles', lang)
+	const mdL = tradThis('Lists and clickable checkboxes', lang)
+
+	return `## ${edit} !\n\n[x] ${mdT}\n[x] ${mdL}`
+}
 
 export default function notes(init: Notes | null, event?: NotesEvent) {
 	const container = $('notes_container')
@@ -71,9 +85,8 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 		return
 	}
 
-	if (!init) {
-		return
-	}
+	if (!init) return
+	if ($('pocket-editor')) $('pocket-editor')?.remove()
 
 	const editor = pocketEditor('notes_container')
 
@@ -81,7 +94,8 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	handleWidth(init.width)
 	handleOpacity(init.opacity)
 	handleToggle(init.on)
-	editor.set(init.text)
+
+	editor.set(typeof init.text === 'string' ? init.text : translateNotesText())
 
 	editor.oninput(() => {
 		updateNotes(init, { is: 'change', value: editor.get() })
