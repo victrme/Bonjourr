@@ -2836,7 +2836,7 @@ export async function quotes(
 			case 'author': {
 				if (typeof checked !== 'boolean') return
 				updated.author = checked
-				clas($('author'), checked, 'alwaysVisible')
+				clas($('author'), checked, 'always-on')
 				break
 			}
 
