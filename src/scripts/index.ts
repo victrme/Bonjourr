@@ -132,13 +132,8 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		storage.sync.set({ ...statesToSave }, () => console.log('saved from toggle widget', performance.now()))
 	})
 
-	// user is toggling from settings
-	if (fromInput) {
-		const [id, on] = listEntries[0] // always only one toggle
-		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
-	}
 	// Toggle comes from move element initialization
-	else {
+	if (!fromInput) {
 		listEntries.forEach(([key, on]) => {
 			if (key in widgets) {
 				const id = widgets[key as keyof typeof widgets].inputid
@@ -157,6 +152,12 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 				clas(dom, !on, 'hidden')
 			}
 		})
+
+		// user is toggling from settings
+		if (fromInput) {
+			const [id, on] = listEntries[0] // always only one toggle
+			moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+		}
 	}, 200)
 }
 
