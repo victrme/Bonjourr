@@ -43,10 +43,15 @@
 		display: none;
 	}
 
-	#interface {
+	body #interface {
 		max-height: initial;
 
-		#widgets #quotes_container {
+		#main,
+		#time {
+			padding: .5em 0;
+		}
+
+		#quotes_container {
 			width: 90vw;
 		}
 
@@ -70,6 +75,7 @@
 		padding: 0px;
 		border-top-left-radius: 1em;
 		border-top-right-radius: 1em;
+		-webkit-overflow-scrolling: touch;
 
 		&.shown {
 			transform: translateX(0) translateY(-75%);
@@ -118,6 +124,7 @@
 
 		#creditContainer {
 			width: calc(100% - 7.5em);
+			margin: 0 15px;
 
 			#credit {
 				display: block;
@@ -133,6 +140,10 @@
 			.exif {
 				display: none;
 			}
+		}
+
+		#showSettings {
+			padding: 0 15px 15px 0;
 		}
 	}
 
@@ -185,12 +196,19 @@
 
 		#interface {
 			max-height: unset;
+
+			#main,
+			#time {
+				padding: 1em 0;
+			}
 		}
 
 		#interface #main,
 		#interface #time {
 			min-height: unset;
 		}
+
+
 	}
 }
 
@@ -226,7 +244,32 @@
 		}
 	}
 
-	#interface #widgets #quotes_container #author {
-		opacity: 1;
+	#interface {
+		#sb_container {
+			#searchbar {
+				// height:em;
+				font-size: 1.7em;
+				box-sizing: border-box;
+				padding: 0 7em 0 1em
+			}
+	
+			#sb-buttons {
+				#sb_empty {
+					font-size: 2.5em;
+					display: block;
+					width: 39px;
+					padding: 0;
+					box-sizing: border-box;
+				}
+	
+				#sb_submit img {
+					height: 1.5em;
+				}
+			}
+		}
+
+		#quotes_container #author {
+			opacity: 1;
+		}
 	}
 }
