@@ -132,6 +132,22 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		storage.sync.set({ ...statesToSave }, () => console.log('saved from toggle widget', performance.now()))
 	})
 
+	// user is toggling from settings
+	if (fromInput) {
+		const [id, on] = listEntries[0] // always only one toggle
+		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+	}
+	// Toggle comes from move element initialization
+	else {
+		listEntries.forEach(([key, on]) => {
+			if (key in widgets) {
+				const id = widgets[key as keyof typeof widgets].inputid
+				const input = $(id) as HTMLInputElement
+				if (input) input.checked = on
+			}
+		})
+	}
+
 	// Fade interface
 	interfaceFade.apply(function () {
 		// toggle widget on interface
@@ -139,22 +155,6 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 			if (key in widgets) {
 				const dom = $(widgets[key as keyof typeof widgets].domid)
 				clas(dom, !on, 'hidden')
-			}
-		})
-
-		// user is toggling from settings
-		if (fromInput) {
-			const [id, on] = listEntries[0] // always only one toggle
-			moveElements(null, { widget: { id: id as MoveKeys, on: on } })
-			return
-		}
-
-		// Toggle comes from move element initialization
-		listEntries.forEach(([key, on]) => {
-			if (key in widgets) {
-				const id = widgets[key as keyof typeof widgets].inputid
-				const input = document.querySelector<HTMLInputElement>(id)
-				if (input) input.checked = on
 			}
 		})
 	}, 200)
