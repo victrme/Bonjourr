@@ -273,6 +273,7 @@ function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
 function setGridAreas(layout: Layout) {
 	if (dominterface) {
 		dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
+		dominterface.style.setProperty('--rows', '1fr '.repeat(layout.grid.length)) // adds variable for grid-template-rows
 	}
 }
 

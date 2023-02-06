@@ -1,8 +1,10 @@
 #interface {
 	--grid: '';
+	--rows: '';
 	display: grid;
 	gap: 1em;
 	grid-template-areas: var(--grid);
+	grid-template-rows: var(--rows);
 
 	&.move-edit {
 		#main,
