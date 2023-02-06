@@ -322,7 +322,6 @@ export const syncDefaults: Sync = {
 	reviewPopup: 0,
 	background_blur: 15,
 	background_bright: 0.8,
-
 	css: '',
 	lang: defaultLang,
 	favicon: '',

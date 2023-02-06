@@ -544,11 +544,17 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				function addEnabledWidgetsToGrid(grid: Layout['grid']) {
 					// Filters "on" widgets, adds all widgets to grid
 					// remove quicklinks here bc its in reset data already
-					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync).filter((a) => a !== 'quicklinks')
+					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync)
 
 					enabledWidgets.forEach((id) => {
 						grid = gridWidget(grid, id, true)
 					})
+
+					// Specificly remove quicklinks because it will
+					// always be "on" since it is using default settings
+					if (!enabledWidgets.includes('quicklinks')) {
+						grid = gridWidget(grid, 'quicklinks', false)
+					}
 
 					return grid
 				}
