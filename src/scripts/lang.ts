@@ -2248,7 +2248,7 @@ export const dict = {
 		nl: 'Klein',
 		pl: 'Mały',
 		pt_BR: 'Pequeno',
-		ru: 'Большой',
+		ru: 'Маленький',
 		zh_CN: '小的',
 		zh_HK: '小',
 		sk: 'Malý',
