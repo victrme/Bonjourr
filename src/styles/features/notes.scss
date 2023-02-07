@@ -1,6 +1,6 @@
 #notes_container {
-	width: var(--notes-width);
-	max-width: 100%;
+	width: 100%;
+	max-width: var(--notes-width);
 
 	&.hidden {
 		display: none;
@@ -26,6 +26,7 @@
 	color: #fff;
 	font-size: 1.3em;
 	padding: 1.2em;
+	min-width: 0;
 	text-align: left;
 	text-shadow: none;
 	border-radius: 0.7em;
