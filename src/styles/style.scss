@@ -252,7 +252,7 @@
 			}
 
 			#tempContainer {
-				display: flex;
+				display: inline-flex;
 				justify-content: center;
 				align-items: center;
 				margin-top: 1em;
@@ -618,7 +618,6 @@
 		width: 50vw;
 		max-width: 45em;
 		min-width: 20em;
-		margin: 0 auto;
 		-webkit-user-select: text;
 		-moz-user-select: text;
 		user-select: text;
@@ -643,7 +642,6 @@
 		#author {
 			opacity: 0;
 			font-size: 1.2em;
-			text-align: center;
 			transition: opacity 0.4s;
 
 			&.always-on {

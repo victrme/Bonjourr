@@ -281,7 +281,14 @@ function setAlign(id: MoveKeys, item?: MoveItem) {
 	const elem = elements[id]
 	if (elem) {
 		elem.style.placeSelf = item?.box || ''
-		elem.style.textAlign = item?.text || ''
+
+		if (id !== 'quicklinks') {
+			elem.style.textAlign = item?.text || ''
+		} else {
+			// Special align for quicklinks, bc must be display flex
+			const flex = item?.text == 'left' ? 'flex-start' : item?.text == 'right' ? 'flex-end' : ''
+			elem.style.justifyContent = flex
+		}
 	}
 }
 
