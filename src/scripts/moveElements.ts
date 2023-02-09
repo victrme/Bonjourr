@@ -335,7 +335,7 @@ const buttonControl = {
 	},
 
 	grid: (id: MoveKeys) => {
-		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '')
+		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '')
 		if (grid.length === 0) return
 
 		let top = false,
@@ -377,7 +377,7 @@ const buttonControl = {
 			clas(dirButton, state, 'selected')
 		}
 
-		const grid = areaStringToLayoutGrid(dominterface?.style.getPropertyValue('--grid') || '') as Layout['grid']
+		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '') as Layout['grid']
 		if (grid.length === 0) return
 
 		const { posCol, posRow } = findIdPositions(grid, id)[0]
