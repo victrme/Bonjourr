@@ -271,10 +271,7 @@ function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
 // Funcs (modifies dom in some ways)
 
 function setGridAreas(layout: Layout) {
-	if (dominterface) {
-		dominterface.style.setProperty('--grid', layoutToGridAreas(layout.grid))
-		dominterface.style.setProperty('--rows', '1fr '.repeat(layout.grid.length)) // adds variable for grid-template-rows
-	}
+	document.documentElement.style.setProperty('--grid', layoutToGridAreas(layout.grid))
 }
 
 function setAlign(id: MoveKeys, item?: MoveItem) {
