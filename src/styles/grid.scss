@@ -182,11 +182,15 @@ button.grid-spanner {
 }
 
 #grid-mover {
-	place-content: center;
-	grid-template-columns: 80px;
+	display: flex;
+	flex-direction: column;
+	max-width: 85px;
+	margin: auto;
 
-	> button {
-		margin: 0 25px;
+	button {
+		min-width: 3em;
+		margin: 0;
+		padding: 0;
 	}
 }
 
@@ -200,8 +204,8 @@ button.grid-spanner {
 
 #box-alignment-mover {
 	place-content: center;
-	grid-template-columns: repeat(3, 40px);
-	grid-template-rows: repeat(3, 30px);
+	grid-template-columns: repeat(3, 32px);
+	grid-template-rows: repeat(3, 24px);
 }
 
 #text-alignment-mover {
@@ -209,6 +213,7 @@ button.grid-spanner {
 	grid-template-columns: repeat(3, 40px);
 
 	button {
+		padding: 0.5em;
 		@include allCentered();
 
 		img {
@@ -235,4 +240,140 @@ button.grid-spanner {
 #close-mover:hover {
 	color: white;
 	background-color: #2c7be5;
+}
+
+/*
+ *
+ *	Grid Toolbox Icons
+ *
+ */
+
+button i {
+	box-sizing: border-box;
+	position: relative;
+	display: block;
+	margin: auto;
+
+	&::before,
+	&::after {
+		content: '';
+		box-sizing: border-box;
+		position: absolute;
+		display: block;
+	}
+}
+
+.rotate-half {
+	transform: rotate(180deg);
+}
+.rotate-quart {
+	transform: rotate(90deg);
+}
+.rotate-quart-r {
+	transform: rotate(-90deg);
+}
+
+/* Grid mover icons */
+
+.chevron {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+
+	&::after {
+		border-bottom: 2px solid;
+		border-right: 2px solid;
+		width: 10px;
+		height: 10px;
+		transform: rotate(45deg) translateX(100%);
+	}
+}
+
+/* Box align icons */
+
+i.text-left,
+i.text-center,
+i.text-right,
+i.box-center,
+i.box-corner,
+i.box-side {
+	margin: auto;
+	width: 14px;
+	height: 14px;
+}
+
+i.box-center {
+	&::after {
+		top: 2px;
+		left: 1px;
+		height: 6px;
+		width: 12px;
+		border-bottom: 2px solid;
+	}
+
+	&::before {
+		top: 1px;
+		left: 6px;
+		height: 12px;
+		border-left: 2px solid;
+	}
+}
+
+i.box-side {
+	border-bottom: 2px solid;
+
+	&::before {
+		bottom: 0;
+		left: 6px;
+		height: 6px;
+		border-left: 2px solid;
+	}
+}
+
+i.box-corner::before {
+	left: 0;
+	top: 0;
+	height: 10px;
+	width: 10px;
+	border-left: 2px solid;
+	border-top: 2px solid;
+}
+
+/* Text align icons */
+
+i.text-left,
+i.text-center,
+i.text-right {
+	&::before,
+	&::after {
+		border-bottom: 2px solid;
+		border-top: 2px solid;
+	}
+
+	&::before {
+		top: 0;
+		width: 8px;
+		height: 10px;
+	}
+
+	&::after {
+		top: 4px;
+		width: 14px;
+		height: 10px;
+	}
+}
+
+i.text-left::after,
+i.text-left::before,
+i.text-center::after {
+	left: 0;
+}
+
+i.text-right::before,
+i.text-right::after {
+	right: 0;
+}
+
+i.text-center::before {
+	left: 3px;
 }
