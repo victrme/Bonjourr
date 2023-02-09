@@ -547,10 +547,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync)
 
 					enabledWidgets.forEach((id) => {
+						if (id === 'quicklinks') return
 						grid = gridWidget(grid, id, true)
 					})
 
-					// Specificly remove quicklinks because it will
+					// Specifically remove quicklinks because it will
 					// always be "on" since it is using default settings
 					if (!enabledWidgets.includes('quicklinks')) {
 						grid = gridWidget(grid, 'quicklinks', false)
