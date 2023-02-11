@@ -534,6 +534,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 				// This triggers interface fade
 				toggleWidgets({
+					time: widgetsInGrid.includes('time'),
+					main: widgetsInGrid.includes('main'),
 					notes: widgetsInGrid.includes('notes'),
 					quotes: widgetsInGrid.includes('quotes'),
 					searchbar: widgetsInGrid.includes('searchbar'),
@@ -616,7 +618,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					gridOverlay.removeAll()
 				} else {
 					buttonControl.layout(move.selection)
-					const ids = getEnabledWidgetsFromStorage(data as Sync).concat(['main', 'time'])
+					const ids = getEnabledWidgetsFromStorage(data as Sync)
 					ids.forEach((id) => gridOverlay.add(id))
 				}
 

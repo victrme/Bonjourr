@@ -3330,17 +3330,17 @@ export function hideElem(
 	init: Hide | null,
 	event?: { is: 'buttons' | 'hide'; buttonList?: NodeListOf<HTMLButtonElement>; button?: HTMLButtonElement }
 ) {
-	const IDsList = [
+	const domIds = [
 		['time', ['time-container', 'date']],
 		['main', ['greetings', 'description', 'tempContainer']],
-		['linkblocks', ['linkblocks']],
+		['quicklinks', ['linkblocks']], // defunct
 		['showSettings', ['showSettings']],
 	]
 
 	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
 	const getEventListPosition = (that: HTMLButtonElement) => ({
-		row: parseInt(that.getAttribute('data-row') || '0'),
-		col: parseInt(that.getAttribute('data-col') || '0'),
+		row: parseInt(that.dataset.row || '0'),
+		col: parseInt(that.dataset.col || '0'),
 	})
 
 	function isEverythingHidden(list: Hide, row: number) {
@@ -3348,17 +3348,16 @@ export function hideElem(
 	}
 
 	function initElements(list: Hide) {
-		list.forEach((row, row_i) => {
+		list.forEach((row, ri) => {
 			// Hide children
-			row.forEach((child, child_i) => {
-				const id = IDsList[row_i][1][child_i]
-				if (!!child) {
-					clas($(id), true, 'he_hidden')
-				}
+			row.forEach((child, ci) => {
+				const id = domIds[ri][1][ci]
+				if (!!child) clas($(id), true, 'he_hidden')
 			})
 		})
 
-		toggleWidgets({ time: !isEverythingHidden(list, 0), main: !isEverythingHidden(list, 1) })
+		clas($('time'), isEverythingHidden(list, 0), 'hidden')
+		clas($('main'), isEverythingHidden(list, 1), 'hidden')
 	}
 
 	function initButtons() {
@@ -3385,8 +3384,7 @@ export function hideElem(
 
 			const pos = getEventListPosition(event.button)
 			const state = event.button.classList.contains('clicked')
-			const child = IDsList[pos.row][1][pos.col]
-			const parent = IDsList[pos.row][0] as string
+			const child = domIds[pos.row][1][pos.col]
 
 			// Update hidden list
 			data.hide[pos.row][pos.col] = state ? 1 : 0
