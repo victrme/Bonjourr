@@ -92,6 +92,10 @@
 			box-shadow: 0px 0px 100px 40px #2224;
 		}
 
+		&.hidden {
+			display: none;
+		}
+
 		#time-container {
 			#clock {
 				margin: 0;
@@ -214,6 +218,10 @@
 		align-items: center;
 		justify-content: center;
 		position: relative;
+
+		&.hidden {
+			display: none;
+		}
 
 		&:before {
 			box-shadow: 0px 0px 150px 40px #2224;

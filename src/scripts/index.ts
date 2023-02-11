@@ -105,7 +105,10 @@ const interfaceFade = (function interfaceFadeDebounce() {
 	return { apply: applyFade }
 })()
 
-export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar']?: boolean }, fromInput?: true) {
+export function toggleWidgets(
+	list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar' | 'time' | 'main']?: boolean },
+	fromInput?: true
+) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
@@ -113,6 +116,8 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		notes: { domid: 'notes_container', inputid: 'i_notes' },
 		quotes: { domid: 'quotes_container', inputid: 'i_quotes' },
 		searchbar: { domid: 'sb_container', inputid: 'i_sb' },
+		time: { domid: 'time', inputid: undefined },
+		main: { domid: 'main', inputid: undefined },
 	}
 
 	// toggle settings options instantly
@@ -129,7 +134,7 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }
 		if ('searchbar' in list) statesToSave.searchbar = { ...data.searchbar, on: list.searchbar }
 
-		storage.sync.set({ ...statesToSave }, () => console.log('saved from toggle widget', performance.now()))
+		storage.sync.set({ ...statesToSave })
 	})
 
 	// Toggle comes from move element initialization
@@ -137,8 +142,11 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		listEntries.forEach(([key, on]) => {
 			if (key in widgets) {
 				const id = widgets[key as keyof typeof widgets].inputid
-				const input = $(id) as HTMLInputElement
-				if (input) input.checked = on
+
+				if (id) {
+					const input = $(id) as HTMLInputElement
+					input.checked = on
+				}
 			}
 		})
 	}
@@ -150,6 +158,7 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 			if (key in widgets) {
 				const dom = $(widgets[key as keyof typeof widgets].domid)
 				clas(dom, !on, 'hidden')
+				console.log(key)
 			}
 		})
 
@@ -3335,18 +3344,11 @@ export function hideElem(
 	})
 
 	function isEverythingHidden(list: Hide, row: number) {
-		const filtered = list[row].filter((el) => el === 1)
-		return filtered.length === list[row].length
+		return list[row].every((a: number) => a === 1)
 	}
 
 	function initElements(list: Hide) {
 		list.forEach((row, row_i) => {
-			const parent = IDsList[row_i][0] as string // [0] is always string
-
-			if (isEverythingHidden(list, row_i)) {
-				clas($(parent), true, 'he_hidden')
-			}
-
 			// Hide children
 			row.forEach((child, child_i) => {
 				const id = IDsList[row_i][1][child_i]
@@ -3355,6 +3357,8 @@ export function hideElem(
 				}
 			})
 		})
+
+		toggleWidgets({ time: !isEverythingHidden(list, 0), main: !isEverythingHidden(list, 1) })
 	}
 
 	function initButtons() {
@@ -3395,7 +3399,26 @@ export function hideElem(
 
 			// Toggle children and parent if needed
 			clas($(child), state, 'he_hidden')
-			clas($(parent), isEverythingHidden(data.hide, pos.row), 'he_hidden')
+
+			// Toggles off time
+			if (pos.row === 0 && isEverythingHidden(data.hide, pos.row)) {
+				toggleWidgets({ time: false }, true)
+			}
+
+			// Toggles on time
+			if (pos.row === 0 && !state && data.hide[pos.row].filter((a: number) => a === 0).length === 1) {
+				toggleWidgets({ time: true }, true)
+			}
+
+			// Toggles off main
+			if (pos.row === 1 && isEverythingHidden(data.hide, pos.row)) {
+				toggleWidgets({ main: false }, true)
+			}
+
+			// Toggles on main
+			if (pos.row === 1 && !state && data.hide[pos.row].filter((a: number) => a === 0).length === 1) {
+				toggleWidgets({ main: true }, true)
+			}
 		})
 	}
 

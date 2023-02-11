@@ -88,6 +88,8 @@ function getEnabledWidgetsFromStorage(data: Sync) {
 		notes: !!data.notes?.on,
 		searchbar: !!data.searchbar?.on,
 		quicklinks: data.quicklinks,
+		time: data.hide[0].every((h: number) => h === 0),
+		main: data.hide[1].every((h: number) => h === 0),
 	}
 
 	return Object.entries(displayed)
@@ -191,11 +193,25 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 	return grid
 }
 
-function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
+function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: MoveKeys, add: boolean) {
 	function addWidget() {
-		// in triple colum, default colum is [x, here, x]
+		if (grid.length === 0) {
+			if (selection === 'single') return [[id]] as [string][]
+			if (selection === 'double') return [[id, '.']] as [string, string][]
+			if (selection === 'triple') return [['.', id, '.']] as [string, string, string][]
+		}
+
+		// in triple column, default column is [x, here, x]
 		const targetCol = grid[0].length === 3 ? 1 : 0
 		let index = 2
+
+		if (id === 'time') {
+			index = 0
+		}
+
+		if (id === 'main') {
+			index = grid[0][targetCol] === 'time' ? 1 : 0
+		}
 
 		// Quotes always at the bottom
 		if (id === 'quotes') index = grid.length
@@ -437,7 +453,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	let moverPos = { x: 0, y: 0 }
 
 	function updateMoveElement(prop: UpdateMove) {
-		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
+		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move', 'hide'], (data) => {
 			let move: Move
 
 			// Check if storage has move, if not, use (/ deep clone) default move
@@ -545,38 +561,20 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 
 			function layoutReset() {
-				function addEnabledWidgetsToGrid(grid: Layout['grid']) {
-					// Filters "on" widgets, adds all widgets to grid
-					// remove quicklinks here bc its in reset data already
-					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync)
+				const layout = move.layouts[move.selection]
+				const enabled = getEnabledWidgetsFromStorage(data as Sync)
+				let grid: typeof layout.grid = []
 
-					enabledWidgets.forEach((id) => {
-						if (id === 'quicklinks') return
-						grid = gridWidget(grid, id, true)
-					})
+				enabled.forEach((id) => {
+					grid = gridWidget(grid, move.selection, id, true)
+				})
 
-					// Specifically remove quicklinks because it will
-					// always be "on" since it is using default settings
-					if (!enabledWidgets.includes('quicklinks')) {
-						grid = gridWidget(grid, 'quicklinks', false)
-					}
-
-					return grid
-				}
-
-				// DEEP CLONE is important as to not mutate sync defaults (it shouldn't come to this, but here we are)
-				// Destructure layout to appease typescript
-				const { grid } = structuredClone(syncDefaults.move.layouts)[move.selection]
-
-				move.layouts[move.selection].grid = addEnabledWidgetsToGrid(grid)
+				move.layouts[move.selection].grid = grid
 				move.layouts[move.selection].items = {}
 
-				// Assign layout after mutating move
-				const layout = move.layouts[move.selection]
-
 				removeSelection()
-				buttonControl.title()
 				setGridAreas(layout)
+				buttonControl.title()
 
 				// Reset aligns
 				setAllAligns({
@@ -648,7 +646,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const { id, on } = events?.widget
 				const layout = { ...move.layouts[move.selection] }
 
-				move.layouts[move.selection].grid = gridWidget(layout.grid, id, on)
+				move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
 
 				removeSelection()
 				setGridAreas(move.layouts[move.selection])
@@ -659,7 +657,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					on ? gridOverlay.add(id) : gridOverlay.remove(id)
 				}
 
-				storage.sync.set({ move: move }, () => console.log('saved from move', performance.now()))
+				storage.sync.set({ move: move })
 			}
 
 			switch (Object.keys(prop)[0]) {
