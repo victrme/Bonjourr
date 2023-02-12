@@ -330,11 +330,13 @@ export function clock(
 					return res
 				}
 
-				let h = clock.ampm ? toAmpm(date.getHours()) : ('0' + date.getHours()).slice(-2),
+				let h = clock.ampm ?
+						toAmpm(date.getHours()) :
+						('<span id="zero">0</span>' + date.getHours()).slice(-25), // #zero for hiding in CSS
 					m = fixunits(date.getMinutes()),
 					s = fixunits(date.getSeconds())
 
-				$('clock')!.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				$('clock')!.innerHTML = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 
 			function analog(date: Date) {
