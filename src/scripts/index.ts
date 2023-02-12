@@ -330,7 +330,7 @@ export function clock(
 					return res
 				}
 
-				let h = clock.ampm ? toAmpm(date.getHours()) : date.getHours(),
+				let h = clock.ampm ? toAmpm(date.getHours()) : ('0' + date.getHours()).slice(-2),
 					m = fixunits(date.getMinutes()),
 					s = fixunits(date.getSeconds())
 
