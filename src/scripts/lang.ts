@@ -3891,6 +3891,7 @@ export const enginesUrls = {
 	brave: 'https://search.brave.com/search?q=%s',
 	ecosia: 'https://www.ecosia.org/search?q=%s',
 	lilo: 'https://search.lilo.org/?q=%s',
+	baidu: 'https://www.baidu.com/s?wd=%s'
 }
 
 export const enginesLocales = {
