@@ -406,7 +406,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Time and date
 
 	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
-		toggleWidgets({ time: this.checked })
+		toggleWidgets({ time: this.checked }, true)
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
@@ -448,7 +448,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
-		toggleWidgets({ main: this.checked })
+		toggleWidgets({ main: this.checked }, true)
 	})
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {

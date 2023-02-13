@@ -112,12 +112,12 @@ export function toggleWidgets(
 	const listEntries = Object.entries(list)
 
 	const widgets = {
+		time: { domid: 'time', inputid: 'i_time' },
+		main: { domid: 'main', inputid: 'i_main' },
 		quicklinks: { domid: 'linkblocks', inputid: 'i_quicklinks' },
 		notes: { domid: 'notes_container', inputid: 'i_notes' },
 		quotes: { domid: 'quotes_container', inputid: 'i_quotes' },
 		searchbar: { domid: 'sb_container', inputid: 'i_sb' },
-		time: { domid: 'time', inputid: undefined },
-		main: { domid: 'main', inputid: undefined },
 	}
 
 	// toggle settings options instantly
@@ -3616,6 +3616,11 @@ function onlineAndMobileHandler() {
 	}
 }
 
+function initTimeAndMainBlocks(time: boolean, main: boolean) {
+	clas($('time'), !time, 'hidden')
+	clas($('main'), !main, 'hidden')
+}
+
 function startup(data: Sync) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
@@ -3639,6 +3644,7 @@ function startup(data: Sync) {
 	hideElem(data.hide)
 	initBackground(data)
 	quickLinks(data)
+	initTimeAndMainBlocks(data.time, data.main)
 
 	setInterval(() => {
 		if (navigator.onLine) {
