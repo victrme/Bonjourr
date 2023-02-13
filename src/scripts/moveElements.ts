@@ -1,5 +1,4 @@
 import clamp from 'lodash.clamp'
-import clonedeep from 'lodash.clonedeep'
 import storage from './storage'
 import { Move, MoveKeys, MoveItem, Sync } from './types/sync'
 import { syncDefaults, clas, $, tradThis } from './utils'
@@ -88,8 +87,8 @@ function getEnabledWidgetsFromStorage(data: Sync) {
 		notes: !!data.notes?.on,
 		searchbar: !!data.searchbar?.on,
 		quicklinks: data.quicklinks,
-		time: data.hide[0].every((h: number) => h === 0),
-		main: data.hide[1].every((h: number) => h === 0),
+		time: data.time,
+		main: data.main,
 	}
 
 	return Object.entries(displayed)
@@ -453,11 +452,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	let moverPos = { x: 0, y: 0 }
 
 	function updateMoveElement(prop: UpdateMove) {
-		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move', 'hide'], (data) => {
+		storage.sync.get(null, (data) => {
 			let move: Move
 
 			// Check if storage has move, if not, use (/ deep clone) default move
-			move = 'move' in data ? data.move : clonedeep(syncDefaults.move)
+			move = 'move' in data ? data.move : structuredClone(syncDefaults.move)
 			// force single on small width
 			if (smallWidth) move.selection = 'single'
 
