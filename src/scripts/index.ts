@@ -126,9 +126,11 @@ export function toggleWidgets(
 	})
 
 	// Update storage instantly
-	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar'], (data) => {
+	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar', 'time', 'main'], (data) => {
 		let statesToSave: { [key: string]: unknown } = {}
 
+		if ('time' in list) statesToSave.time = list.time
+		if ('main' in list) statesToSave.main = list.main
 		if ('quicklinks' in list) statesToSave.quicklinks = list.quicklinks
 		if ('notes' in list) statesToSave.notes = { ...data.notes, on: list.notes }
 		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }

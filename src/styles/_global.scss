@@ -170,20 +170,6 @@ body {
 			}
 		}
 
-		#main,
-		#time {
-			flex-grow: 1;
-			transition: opacity 0.4s, flex-grow 0.4s, min-height 0.4s;
-			// will-change: transform, flex-grow;
-
-			// Parent blocks shrinks & hide
-			&.he_hidden {
-				flex-grow: 0 !important;
-				opacity: 0;
-				min-height: 0px;
-			}
-		}
-
 		#time-container,
 		#date,
 		#description,
@@ -217,7 +203,7 @@ body {
 			overflow-y: clip;
 		}
 		.as_visuals {
-			max-height: 170px;
+			max-height: 250px;
 		}
 		.as_pageelem {
 			max-height: 370px;

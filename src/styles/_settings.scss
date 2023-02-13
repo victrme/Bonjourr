@@ -150,9 +150,28 @@
 		#notes_options,
 		#searchbar_options,
 		#quotes_options,
+		#time_options,
+		#main_options,
 		#quicklinks_options {
 			transition: max-height 0s;
 		}
+	}
+
+	#time_options,
+	#main_options {
+		max-height: 0;
+		overflow-y: hidden;
+		transition: max-height 0.4s;
+	}
+
+	#time_options.shown {
+		overflow-y: clip;
+		max-height: 420px;
+	}
+
+	#main_options.shown {
+		overflow-y: clip;
+		max-height: 350px;
 	}
 
 	// // Safari composing layers
@@ -325,28 +344,15 @@
 		}
 	}
 
-	#pageelem {
-		transition: max-height 0.4s;
+	.grid-btns {
+		text-align: right;
+		margin-top: 0.35em;
+		width: 100%;
+	}
 
-		#page-layout_label {
-			display: flex;
-			align-items: center;
-			height: 2.5em;
-			line-height: 2.5em;
-		}
-
-		.grid-btns {
-			display: flex;
-			justify-content: flex-end;
-			margin-top: 0.5em;
-			width: 100%;
-			gap: 1em;
-		}
-
-		#reset-layout:focus-visible,
-		#reset-layout:hover {
-			color: #e64b43;
-		}
+	#reset-layout:focus-visible,
+	#reset-layout:hover {
+		color: #e64b43;
 	}
 
 	#grid-layout {

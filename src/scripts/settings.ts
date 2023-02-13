@@ -112,7 +112,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_quicklinks', data.quicklinks)
 	initCheckbox('i_linknewtab', data.linknewtab)
+	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
+	initCheckbox('i_main', data.main)
 	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
 	initCheckbox('i_units', data.weather?.unit === 'imperial' || false)
 	initCheckbox('i_notes', data.notes?.on || false)
@@ -156,6 +158,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Activate feature options
+	clas(paramId('time_options'), data.time, 'shown')
+	clas(paramId('main_options'), data.main, 'shown')
 	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
 	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
 	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
@@ -308,15 +312,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 			})
 		})
 
-	paramId('hideelem')
-		.querySelectorAll<HTMLButtonElement>('button')
-		.forEach((button) => {
-			button.addEventListener('click', () => {
-				button.classList.toggle('clicked')
-				hideElem(null, { is: 'hide', button })
-			})
-		})
-
 	//
 	// Quick links
 
@@ -410,6 +405,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Time and date
 
+	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
+		toggleWidgets({ time: this.checked })
+	})
+
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
 		clock(null, { is: 'analog', checked: this.checked })
 	})
@@ -447,6 +446,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 			weatherDebounce.cancel()
 		}
 	}
+
+	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
+		toggleWidgets({ main: this.checked })
+	})
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)

@@ -315,6 +315,8 @@ export const syncDefaults: Sync = {
 	usdate: false,
 	showall: false,
 	quicklinks: true,
+	time: true,
+	main: true,
 	linksrow: 6,
 	linknewtab: false,
 	linkstyle: 'large',

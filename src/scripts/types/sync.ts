@@ -96,6 +96,8 @@ export type Sync = {
 	usdate: boolean
 	showall: boolean
 	quicklinks: boolean
+	time: boolean
+	main: boolean
 	linksrow: number
 	linkstyle: string
 	linknewtab: boolean
