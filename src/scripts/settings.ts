@@ -36,7 +36,6 @@ import {
 	customFont,
 	darkmode,
 	favicon,
-	hideElem,
 	linksImport,
 	localBackgrounds,
 	modifyWeightOptions,
@@ -50,6 +49,7 @@ import {
 	unsplash,
 	weather,
 } from './index'
+import hideElem from './features/hide'
 
 type Langs = keyof typeof langList
 
@@ -76,8 +76,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
 
-	initInput('i_blur', data.background_blur?.toString() || 15)
-	initInput('i_bright', data.background_bright?.toString() || 0.8)
+	initInput('i_blur', data.background_blur ?? 15)
+	initInput('i_bright', data.background_bright ?? 0.8)
 	initInput('cssEditor', data.css || '')
 	initInput('i_row', data.linksrow || 8)
 	initInput('i_linkstyle', data.linkstyle || 'default')
@@ -87,7 +87,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_favicon', data.favicon || '')
 	initInput('i_tabtitle', data.tabtitle || '')
 	initInput('i_greeting', data.greeting || '')
-	initInput('i_textshadow', data.textShadow?.toString() || 0.2)
+	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
 	initInput('i_notesopacity', data.notes?.opacity.toString() || 0.1)
 	initInput('i_notesalign', data.notes?.align || 'left')
@@ -110,6 +110,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
 
 	initCheckbox('i_showall', data.showall)
+	initCheckbox('i_settingshide', data.hide?.settingsicon || false)
 	initCheckbox('i_quicklinks', data.quicklinks)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
@@ -117,6 +118,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_main', data.main)
 	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
 	initCheckbox('i_units', data.weather?.unit === 'imperial' || false)
+	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
 	initCheckbox('i_notes', data.notes?.on || false)
 	initCheckbox('i_sb', data.searchbar?.on || false)
 	initCheckbox('i_quotes', data.quotes?.on || false)
@@ -125,6 +127,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_qtauthor', data.quotes?.author || false)
 	initCheckbox('i_seconds', data.clock?.seconds || false)
 	initCheckbox('i_analog', data.clock?.analog || false)
+
+	console.log(data.hide?.greetings)
 
 	// Input translation
 	translatePlaceholders(settingsDom)
@@ -171,8 +175,14 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		clas(b, b.dataset.layout === (data.move?.selection || 'single'), 'selected')
 	})
 
-	// Hide elems
-	hideElem(null, { is: 'buttons', buttonList: settingsDom.querySelectorAll<HTMLButtonElement>('#hideelem button') })
+	// Time & main hide elems
+	;(function initHideInputs() {
+		const { clock, date, weatherdesc, weathericon } = data.hide || {}
+		let time = !clock && !date ? 'all' : clock ? 'clock' : 'date'
+		let weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
+		initInput('i_timehide', time)
+		initInput('i_weatherhide', weather)
+	})()
 
 	// Font family default
 	safeFont(settingsDom)
@@ -280,10 +290,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		switchLangs(this.value as Langs)
 	})
 
-	paramId('i_greeting').addEventListener('keyup', function () {
-		clock(null, { is: 'greeting', value: stringMaxSize(this.value, 32) })
-	})
-
 	paramId('i_favicon').addEventListener('input', function () {
 		favicon(null, this)
 	})
@@ -311,6 +317,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 				moveElements(null, { layout: btn.dataset.layout || '' })
 			})
 		})
+
+	paramId('i_settingshide').addEventListener('change', function () {
+		hideElem({ settingsicon: this.checked }, { isEvent: true })
+	})
 
 	//
 	// Quick links
@@ -433,6 +443,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		clock(null, { is: 'usdate', checked: this.checked })
 	})
 
+	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
+		hideElem({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
+	})
+
 	//
 	// Weather
 
@@ -467,6 +481,20 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
 		weather(null, { is: 'temp', value: this.value })
+	})
+
+	paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {
+		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
+		let weathericon = this.value === 'disabled' || this.value === 'icon'
+		hideElem({ weatherdesc, weathericon }, { isEvent: true })
+	})
+
+	paramId('i_greethide').addEventListener('change', function () {
+		hideElem({ greetings: !this.checked }, { isEvent: true })
+	})
+
+	paramId('i_greeting').addEventListener('keyup', function () {
+		clock(null, { is: 'greeting', value: stringMaxSize(this.value, 32) })
 	})
 
 	//

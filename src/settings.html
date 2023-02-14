@@ -33,13 +33,6 @@
 			<select id="i_lang" class="lang"></select>
 		</div>
 
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_greeting" class="trn">Greeting</label>
-			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
-		</div>
-
 		<div class="as as_visuals">
 			<hr />
 
@@ -78,6 +71,13 @@
 
 			<div class="tooltiptext tttab">
 				<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
+			</div>
+
+			<hr />
+
+			<div class="settingshide wrapper">
+				<label for="i_settingshide" class="trn">Hide settings icon</label>
+				<input id="i_settingshide" class="switch" type="checkbox" />
 			</div>
 
 			<hr />
@@ -388,17 +388,17 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_xxxx" class="trn">Display type</label>
-				<select id="i_xxxx">
-					<option value="auto" class="trn">Clock and date</option>
-					<option value="never" class="trn">Clock only</option>
-					<option value="always" class="trn">Date only</option>
+				<label for="i_timehide" class="trn">Display elements</label>
+				<select id="i_timehide">
+					<option value="all" class="trn">Clock and date</option>
+					<option value="date" class="trn">Clock only</option>
+					<option value="clock" class="trn">Date only</option>
 				</select>
 			</div>
 		</div>
 	</div>
 
-	<h2 class="trn">Weather</h2>
+	<h2 class="trn">Weather & Greetings</h2>
 
 	<div class="param">
 		<div class="wrapper">
@@ -714,12 +714,27 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_xxxx" class="trn">Display type</label>
-				<select id="i_xxxx">
-					<option value="auto" class="trn">Description and icon</option>
-					<option value="always" class="trn">Description only</option>
-					<option value="never" class="trn">Icon only</option>
+				<label for="i_weatherhide" class="trn">Weather display</label>
+				<select id="i_weatherhide">
+					<option value="all" class="trn">Description and icon</option>
+					<option value="icon" class="trn">Description only</option>
+					<option value="desc" class="trn">Icon only</option>
+					<option value="disabled" class="trn">Disabled</option>
 				</select>
+			</div>
+
+			<hr />
+
+			<div class="greethide wrapper">
+				<label for="i_greethide" class="trn">Greetings</label>
+				<input id="i_greethide" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_greeting" class="trn">Custom greeting</label>
+				<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
 			</div>
 		</div>
 	</div>

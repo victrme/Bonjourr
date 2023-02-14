@@ -1,5 +1,5 @@
 import { dict, langList } from './lang'
-import { Sync } from './types/sync'
+import { Hide, HideOld, Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
@@ -92,20 +92,17 @@ export function periodOfDay(sunTime: { rise: number; set: number; now: number },
 	return 'day'
 }
 
-export function validateHideElem(hide: number[][]) {
-	let res = true
+export function convertHideStorage(old: HideOld) {
+	let hide: Hide = {}
 
-	Array.isArray(hide) && hide.length > 0
-		? hide.forEach((parent) => {
-				Array.isArray(parent)
-					? parent.forEach((child) => {
-							typeof child === 'number' ? '' : (res = false)
-					  })
-					: (res = false)
-		  })
-		: (res = false)
+	if (old[0][0]) hide.clock = true
+	if (old[0][1]) hide.date = true
+	if (old[1][0]) hide.greetings = true
+	if (old[1][1]) hide.weatherdesc = true
+	if (old[1][2]) hide.weathericon = true
+	if (old[3][0]) hide.settingsicon = true
 
-	return res
+	return hide
 }
 
 export function localDataMigration(local: any) {
@@ -312,6 +309,7 @@ export function tradThis(str: string, lang?: string): string {
 }
 
 export const syncDefaults: Sync = {
+	about: { browser: detectPlatform(), version: '1.16.0' },
 	usdate: false,
 	showall: false,
 	quicklinks: true,
@@ -324,6 +322,8 @@ export const syncDefaults: Sync = {
 	reviewPopup: 0,
 	background_blur: 15,
 	background_bright: 0.8,
+	textShadow: 0.2,
+	hide: {},
 	css: '',
 	lang: defaultLang,
 	favicon: '',
@@ -409,9 +409,6 @@ export const syncDefaults: Sync = {
 			},
 		},
 	},
-	textShadow: 0.2,
-	hide: [[0, 0], [0, 0, 0], [0], [0]],
-	about: { browser: detectPlatform(), version: '1.16.0' },
 }
 
 export const localDefaults: Local = {

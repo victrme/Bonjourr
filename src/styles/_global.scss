@@ -170,24 +170,8 @@ body {
 			}
 		}
 
-		#time-container,
-		#date,
-		#description,
-		#greetings,
-		#main #weather #tempContainer {
-			transition: opacity 0.4s, max-height 0.4s, transform 0.4s;
-			opacity: 1;
-			max-height: 11em;
-
-			&.he_hidden,
-			&.he_hidden * {
-				opacity: 0;
-				max-height: 0em;
-				transform: scale(0);
-				min-height: 0px;
-				margin: 0;
-				padding: 0;
-			}
+		.he_hidden {
+			display: none !important;
 		}
 
 		// removes margin on tempContainer when both greetings and weather are hidden
@@ -203,15 +187,13 @@ body {
 			overflow-y: clip;
 		}
 		.as_visuals {
-			max-height: 270px;
+			max-height: 330px;
 		}
 		.as_pageelem {
 			max-height: 370px;
-			padding-bottom: 3px;
 		}
 		.as_link {
 			max-height: 120px;
-			padding-bottom: 3px;
 		}
 		.as_collection {
 			max-height: 130px;

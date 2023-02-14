@@ -3,11 +3,12 @@ import debounce from 'lodash.debounce'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, MoveKeys } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Dynamic, ClockFace, MoveKeys } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
 import notes from './features/notes'
+import hideElem from './features/hide'
 import storage from './storage'
 
 import {
@@ -33,8 +34,8 @@ import {
 	testOS,
 	tradThis,
 	turnRefreshButton,
-	validateHideElem,
 } from './utils'
+
 import moveElements from './moveElements'
 
 let loadBis = false
@@ -1669,12 +1670,7 @@ export function weather(
 	}
 
 	if (init) {
-		try {
-			if (validateHideElem(init.hide)) {
-				if (init.hide[1][1] + init.hide[1][2] === 2) return false
-			}
-		} catch (e) {
-			errorMessage('Could not validate Hide in Weather', e)
+		if (init.hide?.weatherdesc && init.hide?.weathericon) {
 		}
 
 		try {
@@ -3328,115 +3324,6 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 	}
 }
 
-export function hideElem(
-	init: Hide | null,
-	event?: { is: 'buttons' | 'hide'; buttonList?: NodeListOf<HTMLButtonElement>; button?: HTMLButtonElement }
-) {
-	const domIds = [
-		['time', ['time-container', 'date']],
-		['main', ['greetings', 'description', 'tempContainer']],
-		['quicklinks', ['linkblocks']], // defunct
-		['showSettings', ['showSettings']],
-	]
-
-	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
-	const getEventListPosition = (that: HTMLButtonElement) => ({
-		row: parseInt(that.dataset.row || '0'),
-		col: parseInt(that.dataset.col || '0'),
-	})
-
-	function isEverythingHidden(list: Hide, row: number) {
-		return list[row].every((a: number) => a === 1)
-	}
-
-	function initElements(list: Hide) {
-		list.forEach((row, ri) => {
-			// Hide children
-			row.forEach((child, ci) => {
-				const id = domIds[ri][1][ci]
-				if (!!child) clas($(id), true, 'he_hidden')
-			})
-		})
-
-		clas($('time'), isEverythingHidden(list, 0), 'hidden')
-		clas($('main'), isEverythingHidden(list, 1), 'hidden')
-	}
-
-	function initButtons() {
-		storage.sync.get('hide', (data) => {
-			try {
-				data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-				event?.buttonList?.forEach((button) => {
-					const pos = getEventListPosition(button)
-					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
-				})
-			} catch (e) {
-				errorMessage('Hide buttons failed', e)
-			}
-		})
-	}
-
-	function toggleElement() {
-		storage.sync.get(['weather', 'hide'], (data) => {
-			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-
-			if (!event?.button) {
-				return
-			}
-
-			const pos = getEventListPosition(event.button)
-			const state = event.button.classList.contains('clicked')
-			const child = domIds[pos.row][1][pos.col]
-
-			// Update hidden list
-			data.hide[pos.row][pos.col] = state ? 1 : 0
-			storage.sync.set({ hide: data.hide })
-
-			// Re-activates weather
-			if (!state && pos.row === 1 && pos.col > 0 && 'weather' in data) {
-				weather(data as Sync)
-			}
-
-			// Toggle children and parent if needed
-			clas($(child), state, 'he_hidden')
-
-			// Toggles off time
-			if (pos.row === 0 && isEverythingHidden(data.hide, pos.row)) {
-				toggleWidgets({ time: false }, true)
-			}
-
-			// Toggles on time
-			if (pos.row === 0 && !state && data.hide[pos.row].filter((a: number) => a === 0).length === 1) {
-				toggleWidgets({ time: true }, true)
-			}
-
-			// Toggles off main
-			if (pos.row === 1 && isEverythingHidden(data.hide, pos.row)) {
-				toggleWidgets({ main: false }, true)
-			}
-
-			// Toggles on main
-			if (pos.row === 1 && !state && data.hide[pos.row].filter((a: number) => a === 0).length === 1) {
-				toggleWidgets({ main: true }, true)
-			}
-		})
-	}
-
-	if (event) {
-		if (event.is === 'buttons' && event.buttonList) initButtons()
-		if (event.is === 'hide' && event.button) toggleElement()
-		return
-	}
-
-	if (init && validateHideElem(init)) {
-		try {
-			initElements(init)
-		} catch (e) {
-			errorMessage('Hide failed on init', e)
-		}
-	}
-}
-
 export function sunTime(init?: Weather) {
 	if (init && init.lastState) {
 		sunrise = init.lastState.sunrise
@@ -3466,17 +3353,6 @@ export function filterImports(data: any) {
 	// imports without move data
 	// lets moveElements handle it as a first startup
 	if (!data.move) delete result.move
-
-	// Hide elem classes changed at some point
-	if (validateHideElem(data.hide)) {
-		const weatherIndex = data.hide.indexOf('weather_desc')
-		const widgetIndex = data.hide.indexOf('w_icon')
-
-		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
-		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
-	} else {
-		data.hide = [[0, 0], [0, 0, 0], [0], [0]]
-	}
 
 	// <1.9.0 searchbar options was boolean
 	if (typeof data.searchbar === 'boolean') {
