@@ -81,14 +81,15 @@ function layoutToGridAreas(grid: Layout['grid']) {
 }
 
 function getEnabledWidgetsFromStorage(data: Sync) {
-	// Get each widget state from their specific storage
+	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
+	// Time & main in first place ensures grid size is enough to add quotes & links
 	let displayed = {
-		quotes: !!data.quotes?.on,
+		time: data.time,
+		main: data.main,
 		notes: !!data.notes?.on,
 		searchbar: !!data.searchbar?.on,
 		quicklinks: data.quicklinks,
-		time: data.time,
-		main: data.main,
+		quotes: !!data.quotes?.on,
 	}
 
 	return Object.entries(displayed)
@@ -202,23 +203,14 @@ function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: Move
 
 		// in triple column, default column is [x, here, x]
 		const targetCol = grid[0].length === 3 ? 1 : 0
-		let index = 2
+		let index = grid.length === 1 ? 1 : 2
 
-		if (id === 'time') {
-			index = 0
-		}
-
-		if (id === 'main') {
-			index = grid[0][targetCol] === 'time' ? 1 : 0
-		}
-
-		// Quotes always at the bottom
+		if (id === 'time') index = 0
+		if (id === 'main') index = grid[0][targetCol] === 'time' ? 1 : 0
 		if (id === 'quotes') index = grid.length
-
-		// Quick links above quotes, below the rest
 		if (id === 'quicklinks') {
-			const lastItemIsQuotes = grid[grid.length - 1][targetCol] === 'quotes'
-			index = lastItemIsQuotes ? grid.length - 1 : grid.length
+			const isLastQuotes = grid[grid.length - 1][targetCol] === 'quotes'
+			index = isLastQuotes ? grid.length - 1 : grid.length
 		}
 
 		//
@@ -314,11 +306,9 @@ function setAllAligns(items: Layout['items']) {
 }
 
 function manageGridSpanner(selection: string) {
-	if (selection !== 'single') {
-		$('grid-spanner-container')?.classList.add('active')
-	} else {
-		$('grid-spanner-container')?.classList.remove('active')
-	}
+	selection !== 'single'
+		? $('grid-spanner-container')?.classList.add('active')
+		: $('grid-spanner-container')?.classList.remove('active')
 }
 
 const gridOverlay = {
