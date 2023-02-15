@@ -7,9 +7,11 @@ import { Sync, Searchbar, Weather, Font, Dynamic, ClockFace, MoveKeys } from './
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
-import notes from './features/notes'
-import hideElem from './features/hide'
+
 import storage from './storage'
+import notes from './features/notes'
+import moveElements from './features/move'
+import hideElements from './features/hide'
 
 import {
 	$,
@@ -35,8 +37,6 @@ import {
 	tradThis,
 	turnRefreshButton,
 } from './utils'
-
-import moveElements from './moveElements'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
@@ -3528,7 +3528,7 @@ function startup(data: Sync) {
 	notes(data.notes || null)
 	moveElements(data.move)
 	customCss(data.css)
-	hideElem(data.hide)
+	hideElements(data.hide)
 	initBackground(data)
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)

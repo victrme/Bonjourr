@@ -7,7 +7,8 @@ import { Local } from './types/local'
 
 import storage from './storage'
 import notes from './features/notes'
-import moveElements from './moveElements'
+import hideElements from './features/hide'
+import moveElements from './features/move'
 
 import {
 	$,
@@ -49,7 +50,6 @@ import {
 	unsplash,
 	weather,
 } from './index'
-import hideElem from './features/hide'
 
 type Langs = keyof typeof langList
 
@@ -317,7 +317,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		})
 
 	paramId('i_settingshide').addEventListener('change', function () {
-		hideElem({ settingsicon: this.checked }, { isEvent: true })
+		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
 	//
@@ -442,7 +442,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
-		hideElem({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
+		hideElements({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
 	})
 
 	//
@@ -484,12 +484,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
-		hideElem({ weatherdesc, weathericon }, { isEvent: true })
+		hideElements({ weatherdesc, weathericon }, { isEvent: true })
 		weather(null, { is: 'unhide', value: this.value })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
-		hideElem({ greetings: !this.checked }, { isEvent: true })
+		hideElements({ greetings: !this.checked }, { isEvent: true })
 	})
 
 	paramId('i_greeting').addEventListener('keyup', function () {
