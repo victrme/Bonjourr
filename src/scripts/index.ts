@@ -3,7 +3,7 @@ import debounce from 'lodash.debounce'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Dynamic, ClockFace, MoveKeys } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Dynamic, ClockFace, MoveKeys, HideOld } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -36,6 +36,7 @@ import {
 	testOS,
 	tradThis,
 	turnRefreshButton,
+	convertHideStorage,
 } from './utils'
 
 let loadBis = false
@@ -3364,6 +3365,10 @@ export function filterImports(data: any) {
 	// imports without move data
 	// lets moveElements handle it as a first startup
 	if (!data.move) delete result.move
+
+	if (Array.isArray(data.hide)) {
+		result.hide = convertHideStorage(data.hide)
+	}
 
 	// <1.9.0 searchbar options was boolean
 	if (typeof data.searchbar === 'boolean') {
