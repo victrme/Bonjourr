@@ -165,8 +165,8 @@
 		</div>
 
 		<main id="interface" class="init">
-			<div id="time">
-				<div id="time-container">
+			<div id="time" class="hidden">
+				<div id="time-container" data-hide="clock">
 					<h1 id="clock" class="hidden"></h1>
 
 					<div id="analogClock" class="hidden">
@@ -182,18 +182,18 @@
 					</div>
 				</div>
 
-				<p id="date"></p>
+				<p id="date" data-hide="date"></p>
 			</div>
 
-			<div id="main">
-				<h2 id="greetings"></h2>
+			<div id="main" class="hidden">
+				<h2 id="greetings" data-hide="greetings"></h2>
 				<div id="weather">
-					<div id="description">
+					<div id="description" data-hide="weatherdesc">
 						<p id="current" class="wait">meteo</p>
 						<p id="forecast" class="wait">forecast</p>
 					</div>
 
-					<div id="tempContainer" class="wait">
+					<div id="tempContainer" class="wait" data-hide="weathericon">
 						<p>00</p>
 					</div>
 				</div>
@@ -232,7 +232,7 @@
 				<div id="credit"></div>
 			</div>
 
-			<div id="showSettings" class="init">
+			<div id="showSettings" class="init" data-hide="settingsicon">
 				<button aria-label="Toggle settings menu">
 					<img src="src/assets/interface/gear.svg" alt="" draggable="false" />
 				</button>

@@ -170,38 +170,8 @@ body {
 			}
 		}
 
-		#main,
-		#time {
-			flex-grow: 1;
-			transition: opacity 0.4s, flex-grow 0.4s, min-height 0.4s;
-			// will-change: transform, flex-grow;
-
-			// Parent blocks shrinks & hide
-			&.he_hidden {
-				flex-grow: 0 !important;
-				opacity: 0;
-				min-height: 0px;
-			}
-		}
-
-		#time-container,
-		#date,
-		#description,
-		#greetings,
-		#main #weather #tempContainer {
-			transition: opacity 0.4s, max-height 0.4s, transform 0.4s;
-			opacity: 1;
-			max-height: 11em;
-
-			&.he_hidden,
-			&.he_hidden * {
-				opacity: 0;
-				max-height: 0em;
-				transform: scale(0);
-				min-height: 0px;
-				margin: 0;
-				padding: 0;
-			}
+		.he_hidden {
+			display: none !important;
 		}
 
 		// removes margin on tempContainer when both greetings and weather are hidden
@@ -217,30 +187,25 @@ body {
 			overflow-y: clip;
 		}
 		.as_visuals {
-			max-height: 170px;
+			max-height: 330px;
 		}
 		.as_pageelem {
 			max-height: 370px;
-			padding-bottom: 3px;
 		}
 		.as_link {
 			max-height: 120px;
-			padding-bottom: 3px;
 		}
 		.as_collection {
 			max-height: 130px;
 		}
 		.as_timedate {
-			max-height: 260px;
+			max-height: 300px;
 		}
 		.as_searchbar {
 			max-height: 160px;
 		}
-		.as_forecast {
-			max-height: 60px;
-		}
-		.as_temp {
-			max-height: 60px;
+		.as_weather {
+			max-height: 230px;
 		}
 		.as_fonts {
 			max-height: 300px;

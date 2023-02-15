@@ -90,12 +90,23 @@ export type Move = {
 
 export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
 
-export type Hide = [[number, number], [number, number, number], [number], [number]]
+export type HideOld = [[number, number], [number, number, number], [number], [number]]
+
+export type Hide = {
+	clock?: boolean
+	date?: boolean
+	greetings?: boolean
+	weatherdesc?: boolean
+	weathericon?: boolean
+	settingsicon?: boolean
+}
 
 export type Sync = {
 	usdate: boolean
 	showall: boolean
 	quicklinks: boolean
+	time: boolean
+	main: boolean
 	linksrow: number
 	linkstyle: string
 	linknewtab: boolean
@@ -109,6 +120,7 @@ export type Sync = {
 	tabtitle: string
 	greeting: string
 	notes?: Notes
+	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'
 	custom_time: number
 	custom_every: string
@@ -125,7 +137,6 @@ export type Sync = {
 	searchbar: Searchbar
 	quotes: Quotes
 	font: Font
-	hide: Hide
 	move: Move
 	textShadow: number
 	about: { browser: string; version: string }

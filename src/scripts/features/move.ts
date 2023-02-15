@@ -1,9 +1,8 @@
 import clamp from 'lodash.clamp'
-import clonedeep from 'lodash.clonedeep'
-import storage from './storage'
-import { Move, MoveKeys, MoveItem, Sync } from './types/sync'
-import { syncDefaults, clas, $, tradThis } from './utils'
-import { toggleWidgets } from '.'
+import storage from '../storage'
+import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
+import { syncDefaults, clas, $, tradThis } from '../utils'
+import { toggleWidgets } from '..'
 
 // ┌──────────────────────────────────────┐
 // │   ┌────────────┐  ┌────────────┐     │
@@ -82,12 +81,15 @@ function layoutToGridAreas(grid: Layout['grid']) {
 }
 
 function getEnabledWidgetsFromStorage(data: Sync) {
-	// Get each widget state from their specific storage
+	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
+	// Time & main in first place ensures grid size is enough to add quotes & links
 	let displayed = {
-		quotes: !!data.quotes?.on,
+		time: data.time,
+		main: data.main,
 		notes: !!data.notes?.on,
 		searchbar: !!data.searchbar?.on,
 		quicklinks: data.quicklinks,
+		quotes: !!data.quotes?.on,
 	}
 
 	return Object.entries(displayed)
@@ -191,19 +193,24 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 	return grid
 }
 
-function gridWidget(grid: Layout['grid'], id: MoveKeys, add: boolean) {
+function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: MoveKeys, add: boolean) {
 	function addWidget() {
-		// in triple colum, default colum is [x, here, x]
+		if (grid.length === 0) {
+			if (selection === 'single') return [[id]] as [string][]
+			if (selection === 'double') return [[id, '.']] as [string, string][]
+			if (selection === 'triple') return [['.', id, '.']] as [string, string, string][]
+		}
+
+		// in triple column, default column is [x, here, x]
 		const targetCol = grid[0].length === 3 ? 1 : 0
-		let index = 2
+		let index = grid.length === 1 ? 1 : 2
 
-		// Quotes always at the bottom
+		if (id === 'time') index = 0
+		if (id === 'main') index = grid[0][targetCol] === 'time' ? 1 : 0
 		if (id === 'quotes') index = grid.length
-
-		// Quick links above quotes, below the rest
 		if (id === 'quicklinks') {
-			const lastItemIsQuotes = grid[grid.length - 1][targetCol] === 'quotes'
-			index = lastItemIsQuotes ? grid.length - 1 : grid.length
+			const isLastQuotes = grid[grid.length - 1][targetCol] === 'quotes'
+			index = isLastQuotes ? grid.length - 1 : grid.length
 		}
 
 		//
@@ -299,11 +306,9 @@ function setAllAligns(items: Layout['items']) {
 }
 
 function manageGridSpanner(selection: string) {
-	if (selection !== 'single') {
-		$('grid-spanner-container')?.classList.add('active')
-	} else {
-		$('grid-spanner-container')?.classList.remove('active')
-	}
+	selection !== 'single'
+		? $('grid-spanner-container')?.classList.add('active')
+		: $('grid-spanner-container')?.classList.remove('active')
 }
 
 const gridOverlay = {
@@ -437,11 +442,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	let moverPos = { x: 0, y: 0 }
 
 	function updateMoveElement(prop: UpdateMove) {
-		storage.sync.get(['searchbar', 'notes', 'quotes', 'quicklinks', 'move'], (data) => {
+		storage.sync.get(null, (data) => {
 			let move: Move
 
 			// Check if storage has move, if not, use (/ deep clone) default move
-			move = 'move' in data ? data.move : clonedeep(syncDefaults.move)
+			move = 'move' in data ? data.move : structuredClone(syncDefaults.move)
 			// force single on small width
 			if (smallWidth) move.selection = 'single'
 
@@ -518,6 +523,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 				// This triggers interface fade
 				toggleWidgets({
+					time: widgetsInGrid.includes('time'),
+					main: widgetsInGrid.includes('main'),
 					notes: widgetsInGrid.includes('notes'),
 					quotes: widgetsInGrid.includes('quotes'),
 					searchbar: widgetsInGrid.includes('searchbar'),
@@ -545,38 +552,20 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 
 			function layoutReset() {
-				function addEnabledWidgetsToGrid(grid: Layout['grid']) {
-					// Filters "on" widgets, adds all widgets to grid
-					// remove quicklinks here bc its in reset data already
-					const enabledWidgets = getEnabledWidgetsFromStorage(data as Sync)
+				const layout = move.layouts[move.selection]
+				const enabled = getEnabledWidgetsFromStorage(data as Sync)
+				let grid: typeof layout.grid = []
 
-					enabledWidgets.forEach((id) => {
-						if (id === 'quicklinks') return
-						grid = gridWidget(grid, id, true)
-					})
+				enabled.forEach((id) => {
+					grid = gridWidget(grid, move.selection, id, true)
+				})
 
-					// Specifically remove quicklinks because it will
-					// always be "on" since it is using default settings
-					if (!enabledWidgets.includes('quicklinks')) {
-						grid = gridWidget(grid, 'quicklinks', false)
-					}
-
-					return grid
-				}
-
-				// DEEP CLONE is important as to not mutate sync defaults (it shouldn't come to this, but here we are)
-				// Destructure layout to appease typescript
-				const { grid } = structuredClone(syncDefaults.move.layouts)[move.selection]
-
-				move.layouts[move.selection].grid = addEnabledWidgetsToGrid(grid)
+				move.layouts[move.selection].grid = grid
 				move.layouts[move.selection].items = {}
 
-				// Assign layout after mutating move
-				const layout = move.layouts[move.selection]
-
 				removeSelection()
-				buttonControl.title()
 				setGridAreas(layout)
+				buttonControl.title()
 
 				// Reset aligns
 				setAllAligns({
@@ -618,7 +607,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					gridOverlay.removeAll()
 				} else {
 					buttonControl.layout(move.selection)
-					const ids = getEnabledWidgetsFromStorage(data as Sync).concat(['main', 'time'])
+					const ids = getEnabledWidgetsFromStorage(data as Sync)
 					ids.forEach((id) => gridOverlay.add(id))
 				}
 
@@ -648,7 +637,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const { id, on } = events?.widget
 				const layout = { ...move.layouts[move.selection] }
 
-				move.layouts[move.selection].grid = gridWidget(layout.grid, id, on)
+				move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
 
 				removeSelection()
 				setGridAreas(move.layouts[move.selection])
@@ -659,7 +648,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					on ? gridOverlay.add(id) : gridOverlay.remove(id)
 				}
 
-				storage.sync.set({ move: move }, () => console.log('saved from move', performance.now()))
+				storage.sync.set({ move: move })
 			}
 
 			switch (Object.keys(prop)[0]) {

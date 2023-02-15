@@ -3,12 +3,15 @@ import debounce from 'lodash.debounce'
 import { google } from './types/googleFonts'
 import UnsplashImage from './types/unsplashImage'
 import { Local, DynamicCache, Quote } from './types/local'
-import { Sync, Searchbar, Weather, Font, Hide, Dynamic, ClockFace, MoveKeys } from './types/sync'
+import { Sync, Searchbar, Weather, Font, Dynamic, ClockFace, MoveKeys, HideOld } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
-import notes from './features/notes'
+
 import storage from './storage'
+import notes from './features/notes'
+import moveElements from './features/move'
+import hideElements from './features/hide'
 
 import {
 	$,
@@ -33,9 +36,8 @@ import {
 	testOS,
 	tradThis,
 	turnRefreshButton,
-	validateHideElem,
+	convertHideStorage,
 } from './utils'
-import moveElements from './moveElements'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
@@ -105,10 +107,15 @@ const interfaceFade = (function interfaceFadeDebounce() {
 	return { apply: applyFade }
 })()
 
-export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar']?: boolean }, fromInput?: true) {
+export function toggleWidgets(
+	list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar' | 'time' | 'main']?: boolean },
+	fromInput?: true
+) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
+		time: { domid: 'time', inputid: 'i_time' },
+		main: { domid: 'main', inputid: 'i_main' },
 		quicklinks: { domid: 'linkblocks', inputid: 'i_quicklinks' },
 		notes: { domid: 'notes_container', inputid: 'i_notes' },
 		quotes: { domid: 'quotes_container', inputid: 'i_quotes' },
@@ -121,15 +128,17 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 	})
 
 	// Update storage instantly
-	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar'], (data) => {
+	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar', 'time', 'main'], (data) => {
 		let statesToSave: { [key: string]: unknown } = {}
 
+		if ('time' in list) statesToSave.time = list.time
+		if ('main' in list) statesToSave.main = list.main
 		if ('quicklinks' in list) statesToSave.quicklinks = list.quicklinks
 		if ('notes' in list) statesToSave.notes = { ...data.notes, on: list.notes }
 		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }
 		if ('searchbar' in list) statesToSave.searchbar = { ...data.searchbar, on: list.searchbar }
 
-		storage.sync.set({ ...statesToSave }, () => console.log('saved from toggle widget', performance.now()))
+		storage.sync.set({ ...statesToSave })
 	})
 
 	// Toggle comes from move element initialization
@@ -137,8 +146,11 @@ export function toggleWidgets(list: { [key in 'quicklinks' | 'notes' | 'quotes' 
 		listEntries.forEach(([key, on]) => {
 			if (key in widgets) {
 				const id = widgets[key as keyof typeof widgets].inputid
-				const input = $(id) as HTMLInputElement
-				if (input) input.checked = on
+
+				if (id) {
+					const input = $(id) as HTMLInputElement
+					input.checked = on
+				}
 			}
 		})
 	}
@@ -1267,7 +1279,12 @@ export async function linksImport() {
 
 export function weather(
 	init: Sync | null,
-	event?: { is: 'city' | 'geol' | 'units' | 'forecast' | 'temp'; checked?: boolean; value?: string; elem?: Element }
+	event?: {
+		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide'
+		checked?: boolean
+		value?: string
+		elem?: Element
+	}
 ) {
 	const date = new Date()
 	const i_city = $('i_city') as HTMLInputElement
@@ -1571,11 +1588,10 @@ export function weather(
 	}
 
 	async function updatesWeather() {
-		storage.sync.get('weather', async (data) => {
+		storage.sync.get(['weather', 'hide'], async (data) => {
 			switch (event?.is) {
 				case 'units': {
 					data.weather.unit = event.checked ? 'imperial' : 'metric'
-
 					data.weather = await request(data.weather)
 					break
 				}
@@ -1646,6 +1662,15 @@ export function weather(
 					data.weather.temperature = event.value
 					break
 				}
+
+				case 'unhide': {
+					const { weatherdesc, weathericon } = data.hide || {}
+					if (weatherdesc && weathericon) {
+						forecastVisibilityControl(data.weather.forecast)
+						weatherCacheControl(data.weather)
+					}
+					return
+				}
 			}
 
 			storage.sync.set({ weather: data.weather })
@@ -1659,21 +1684,15 @@ export function weather(
 		return
 	}
 
-	if (init) {
-		try {
-			if (validateHideElem(init.hide)) {
-				if (init.hide[1][1] + init.hide[1][2] === 2) return false
-			}
-		} catch (e) {
-			errorMessage('Could not validate Hide in Weather', e)
-		}
+	if (!init || (init.hide?.weatherdesc && init.hide?.weathericon)) {
+		return
+	}
 
-		try {
-			forecastVisibilityControl(init.weather.forecast)
-			weatherCacheControl(init.weather)
-		} catch (e) {
-			errorMessage('Weather init did not work', e)
-		}
+	try {
+		forecastVisibilityControl(init.weather.forecast)
+		weatherCacheControl(init.weather)
+	} catch (e) {
+		errorMessage('Weather init did not work', e)
 	}
 }
 
@@ -3319,103 +3338,6 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 	}
 }
 
-export function hideElem(
-	init: Hide | null,
-	event?: { is: 'buttons' | 'hide'; buttonList?: NodeListOf<HTMLButtonElement>; button?: HTMLButtonElement }
-) {
-	const IDsList = [
-		['time', ['time-container', 'date']],
-		['main', ['greetings', 'description', 'tempContainer']],
-		['linkblocks', ['linkblocks']],
-		['showSettings', ['showSettings']],
-	]
-
-	// Returns { row, col } to naviguate [[0, 0], [0, 0, 0]] etc.
-	const getEventListPosition = (that: HTMLButtonElement) => ({
-		row: parseInt(that.getAttribute('data-row') || '0'),
-		col: parseInt(that.getAttribute('data-col') || '0'),
-	})
-
-	function isEverythingHidden(list: Hide, row: number) {
-		const filtered = list[row].filter((el) => el === 1)
-		return filtered.length === list[row].length
-	}
-
-	function initElements(list: Hide) {
-		list.forEach((row, row_i) => {
-			const parent = IDsList[row_i][0] as string // [0] is always string
-
-			if (isEverythingHidden(list, row_i)) {
-				clas($(parent), true, 'he_hidden')
-			}
-
-			// Hide children
-			row.forEach((child, child_i) => {
-				const id = IDsList[row_i][1][child_i]
-				if (!!child) {
-					clas($(id), true, 'he_hidden')
-				}
-			})
-		})
-	}
-
-	function initButtons() {
-		storage.sync.get('hide', (data) => {
-			try {
-				data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-				event?.buttonList?.forEach((button) => {
-					const pos = getEventListPosition(button)
-					if (data.hide[pos.row][pos.col] === 1) button.classList.toggle('clicked')
-				})
-			} catch (e) {
-				errorMessage('Hide buttons failed', e)
-			}
-		})
-	}
-
-	function toggleElement() {
-		storage.sync.get(['weather', 'hide'], (data) => {
-			data.hide = validateHideElem(data.hide) ? data.hide : [[0, 0], [0, 0, 0], [0], [0]]
-
-			if (!event?.button) {
-				return
-			}
-
-			const pos = getEventListPosition(event.button)
-			const state = event.button.classList.contains('clicked')
-			const child = IDsList[pos.row][1][pos.col]
-			const parent = IDsList[pos.row][0] as string
-
-			// Update hidden list
-			data.hide[pos.row][pos.col] = state ? 1 : 0
-			storage.sync.set({ hide: data.hide })
-
-			// Re-activates weather
-			if (!state && pos.row === 1 && pos.col > 0 && 'weather' in data) {
-				weather(data as Sync)
-			}
-
-			// Toggle children and parent if needed
-			clas($(child), state, 'he_hidden')
-			clas($(parent), isEverythingHidden(data.hide, pos.row), 'he_hidden')
-		})
-	}
-
-	if (event) {
-		if (event.is === 'buttons' && event.buttonList) initButtons()
-		if (event.is === 'hide' && event.button) toggleElement()
-		return
-	}
-
-	if (init && validateHideElem(init)) {
-		try {
-			initElements(init)
-		} catch (e) {
-			errorMessage('Hide failed on init', e)
-		}
-	}
-}
-
 export function sunTime(init?: Weather) {
 	if (init && init.lastState) {
 		sunrise = init.lastState.sunrise
@@ -3446,15 +3368,8 @@ export function filterImports(data: any) {
 	// lets moveElements handle it as a first startup
 	if (!data.move) delete result.move
 
-	// Hide elem classes changed at some point
-	if (validateHideElem(data.hide)) {
-		const weatherIndex = data.hide.indexOf('weather_desc')
-		const widgetIndex = data.hide.indexOf('w_icon')
-
-		if (weatherIndex >= 0) data.hide[weatherIndex] = 'description'
-		if (widgetIndex >= 0) data.hide[widgetIndex] = 'widget'
-	} else {
-		data.hide = [[0, 0], [0, 0, 0], [0], [0]]
+	if (Array.isArray(data.hide)) {
+		result.hide = convertHideStorage(data.hide)
 	}
 
 	// <1.9.0 searchbar options was boolean
@@ -3595,6 +3510,11 @@ function onlineAndMobileHandler() {
 	}
 }
 
+function initTimeAndMainBlocks(time: boolean, main: boolean) {
+	clas($('time'), !time, 'hidden')
+	clas($('main'), !main, 'hidden')
+}
+
 function startup(data: Sync) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
@@ -3615,9 +3535,10 @@ function startup(data: Sync) {
 	notes(data.notes || null)
 	moveElements(data.move)
 	customCss(data.css)
-	hideElem(data.hide)
+	hideElements(data.hide)
 	initBackground(data)
 	quickLinks(data)
+	initTimeAndMainBlocks(data.time, data.main)
 
 	setInterval(() => {
 		if (navigator.onLine) {
