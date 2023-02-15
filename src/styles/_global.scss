@@ -65,7 +65,7 @@ body {
 	min-height: -webkit-fill-available;
 	text-align: center;
 	overflow-x: hidden;
-	overflow-y: clip;
+	overflow-y: auto;
 	touch-action: manipulation;
 	position: relative;
 	display: flex;
