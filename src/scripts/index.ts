@@ -161,7 +161,6 @@ export function toggleWidgets(
 			if (key in widgets) {
 				const dom = $(widgets[key as keyof typeof widgets].domid)
 				clas(dom, !on, 'hidden')
-				console.log(key)
 			}
 		})
 
@@ -1277,7 +1276,12 @@ export async function linksImport() {
 
 export function weather(
 	init: Sync | null,
-	event?: { is: 'city' | 'geol' | 'units' | 'forecast' | 'temp'; checked?: boolean; value?: string; elem?: Element }
+	event?: {
+		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide'
+		checked?: boolean
+		value?: string
+		elem?: Element
+	}
 ) {
 	const date = new Date()
 	const i_city = $('i_city') as HTMLInputElement
@@ -1581,11 +1585,10 @@ export function weather(
 	}
 
 	async function updatesWeather() {
-		storage.sync.get('weather', async (data) => {
+		storage.sync.get(['weather', 'hide'], async (data) => {
 			switch (event?.is) {
 				case 'units': {
 					data.weather.unit = event.checked ? 'imperial' : 'metric'
-
 					data.weather = await request(data.weather)
 					break
 				}
@@ -1656,6 +1659,15 @@ export function weather(
 					data.weather.temperature = event.value
 					break
 				}
+
+				case 'unhide': {
+					const { weatherdesc, weathericon } = data.hide || {}
+					if (weatherdesc && weathericon) {
+						forecastVisibilityControl(data.weather.forecast)
+						weatherCacheControl(data.weather)
+					}
+					return
+				}
 			}
 
 			storage.sync.set({ weather: data.weather })
@@ -1669,16 +1681,15 @@ export function weather(
 		return
 	}
 
-	if (init) {
-		if (init.hide?.weatherdesc && init.hide?.weathericon) {
-		}
+	if (!init || (init.hide?.weatherdesc && init.hide?.weathericon)) {
+		return
+	}
 
-		try {
-			forecastVisibilityControl(init.weather.forecast)
-			weatherCacheControl(init.weather)
-		} catch (e) {
-			errorMessage('Weather init did not work', e)
-		}
+	try {
+		forecastVisibilityControl(init.weather.forecast)
+		weatherCacheControl(init.weather)
+	} catch (e) {
+		errorMessage('Weather init did not work', e)
 	}
 }
 

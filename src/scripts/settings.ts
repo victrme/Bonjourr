@@ -128,8 +128,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initCheckbox('i_seconds', data.clock?.seconds || false)
 	initCheckbox('i_analog', data.clock?.analog || false)
 
-	console.log(data.hide?.greetings)
-
 	// Input translation
 	translatePlaceholders(settingsDom)
 
@@ -487,6 +485,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElem({ weatherdesc, weathericon }, { isEvent: true })
+		weather(null, { is: 'unhide', value: this.value })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
