@@ -7,8 +7,11 @@ import { Local } from './types/local'
 
 import storage from './storage'
 import notes from './features/notes'
-import hideElements from './features/hide'
+import quotes from './features/quotes'
+import weather from './features/weather'
+import quickLinks from './features/links'
 import moveElements from './features/move'
+import hideElements from './features/hide'
 
 import {
 	$,
@@ -40,15 +43,12 @@ import {
 	linksImport,
 	localBackgrounds,
 	modifyWeightOptions,
-	quickLinks,
-	quotes,
 	safeFont,
 	searchbar,
 	tabTitle,
 	textShadow,
 	traduction,
 	unsplash,
-	weather,
 } from './index'
 
 type Langs = keyof typeof langList
