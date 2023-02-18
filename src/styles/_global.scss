@@ -116,6 +116,11 @@ body {
 			outline: 2px solid var(--blue);
 		}
 	}
+
+	// fix for Chrome double scrollbar 
+	&.clip {
+		overflow: clip;
+	}
 }
 
 @mixin hidden {

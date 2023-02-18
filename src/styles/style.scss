@@ -706,157 +706,163 @@
 	}
 }
 
-footer {
-	position: fixed;
+// footer {
+// 	position: fixed;
+// 	bottom: 0;
+// 	display: flex;
+// 	justify-content: space-between;
+// 	width: 100%;
+// 	padding-top: 0;
+// 	box-sizing: border-box;
+// 	z-index: 3;
+
+// 	@include hidden();
+// }
+
+// footer
+#creditContainer, #showSettings {
+	pointer-events: all;
+	opacity: 0;
+	transition: opacity 0.4s;
+}
+
+#creditContainer {
+	position: absolute;
 	bottom: 0;
+	left: 0;
+	margin: 0 0 36px 24px;
+	opacity: 0;
+	max-width: 50%;
 	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	padding-top: 0;
-	box-sizing: border-box;
+	align-items: center;
+	pointer-events: none;
+
+	&.shown {
+		opacity: 1;
+		pointer-events: all;
+
+		&:hover {
+			#credit .exif {
+				opacity: 1;
+			}
+		}
+	}
+
+	#credit {
+		text-align: left;
+
+		.exif {
+			opacity: 0;
+			transition: opacity 0.4s;
+		}
+
+		a,
+		p,
+		span {
+			font-size: 13px;
+			color: #fff9;
+			text-decoration: none;
+			transition: color 0.1s;
+		}
+
+		a:hover {
+			color: #fffe;
+		}
+	}
+}
+
+#showSettings {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 0 24px 24px 0;
 	z-index: 3;
 
-	@include hidden();
+	button {
+		position: relative;
+		height: 53px;
+		width: 53px;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		padding: unset;
+		background-color: transparent;
+		transition: background-color 0.6s $easeOutThree;
+		@include allCentered();
 
-	> * {
-		pointer-events: all;
-		opacity: 0;
-		transition: opacity 0.4s;
+		img {
+			width: 65%;
+			transition: transform 0.6s $easeOutThree;
+			will-change: transform;
+		}
 	}
 
-	#creditContainer {
-		margin: 0 0 24px 24px;
+	&.init {
+		transition: opacity 0s;
+
+		button img {
+			transition: transform 0s;
+		}
+	}
+
+	// Doit etre dans cette ordre pour la hierarchie
+	&.enabled {
+		opacity: 1;
+	}
+
+	&.he_hidden {
 		opacity: 0;
-		max-width: 50%;
-		display: flex;
-		align-items: center;
-		pointer-events: none;
 
 		&.shown {
-			opacity: 1;
-			pointer-events: all;
-
-			&:hover {
-				#credit .exif {
-					opacity: 1;
-				}
-			}
+			opacity: 0.5;
 		}
 
-		#credit {
-			text-align: left;
-
-			.exif {
-				opacity: 0;
-				transition: opacity 0.4s;
-			}
-
-			a,
-			p,
-			span {
-				font-size: 13px;
-				color: #fff9;
-				text-decoration: none;
-				transition: color 0.1s;
-			}
-
-			a:hover {
-				color: #fffe;
-			}
+		&:hover {
+			opacity: 1;
 		}
 	}
 
-	#showSettings {
-		position: relative;
-		bottom: 0;
-		right: 0;
-		padding: 0 24px 24px 0;
+	&:hover {
+		img {
+			transform: rotate(15deg);
+		}
+	}
 
+	&.shown {
 		button {
-			position: relative;
-			height: 53px;
-			width: 53px;
-			border: none;
-			border-radius: 8px;
-			cursor: pointer;
-			padding: unset;
-			background-color: transparent;
-			transition: background-color 0.6s $easeOutThree;
-			@include allCentered();
+			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
 
 			img {
-				width: 65%;
-				transition: transform 0.6s $easeOutThree;
-				will-change: transform;
-			}
-		}
-
-		&.init {
-			transition: opacity 0s;
-
-			button img {
-				transition: transform 0s;
-			}
-		}
-
-		// Doit etre dans cette ordre pour la hierarchie
-		&.enabled {
-			opacity: 1;
-		}
-
-		&.he_hidden {
-			opacity: 0;
-
-			&.shown {
-				opacity: 0.5;
+				transform: rotate(60deg);
 			}
 
 			&:hover {
 				opacity: 1;
+				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
 			}
 		}
+	}
 
-		&:hover {
-			img {
-				transform: rotate(15deg);
-			}
-		}
+	&.hasUpdated:before {
+		opacity: 1;
+	}
 
-		&.shown {
-			button {
-				@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
-				img {
-					transform: rotate(60deg);
-				}
+	&.hasUpdated.shown:before {
+		opacity: 0;
+	}
 
-				&:hover {
-					opacity: 1;
-					@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
-				}
-			}
-		}
-
-		&.hasUpdated:before {
-			opacity: 1;
-		}
-
-		&.hasUpdated.shown:before {
-			opacity: 0;
-		}
-
-		&:before {
-			content: '';
-			position: absolute;
-			opacity: 0;
-			width: 10px;
-			height: 10px;
-			left: 2px;
-			top: 2px;
-			background-color: #35c759;
-			border-radius: 100%;
-			z-index: 10;
-			transition: opacity 0.3s;
-		}
+	&:before {
+		content: '';
+		position: absolute;
+		opacity: 0;
+		width: 10px;
+		height: 10px;
+		left: 2px;
+		top: 2px;
+		background-color: #35c759;
+		border-radius: 100%;
+		z-index: 10;
+		transition: opacity 0.3s;
 	}
 }
 

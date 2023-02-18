@@ -24,7 +24,7 @@
 	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	// transform: translateX(-100%) !important;
+	-webkit-filter: blur(0);
 
 	&.shown {
 		visibility: visible;
