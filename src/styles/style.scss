@@ -96,6 +96,11 @@
 			display: none;
 		}
 
+		// here because its cleaner to overrite with custom css
+		.zero::before {
+			content: '0';
+		}
+
 		#time-container {
 			#clock {
 				margin: 0;

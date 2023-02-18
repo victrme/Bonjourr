@@ -325,30 +325,19 @@ export function clock(
 		}
 
 		function clockInterval() {
-			//
-
 			function numerical(date: Date) {
-				//seul numerique a besoin du ampm
-				function toAmpm(val: number) {
-					if (val > 12) val -= 12
-					else if (val === 0) val = 12
-					else val
+				const fixunits = (val: number) => (val < 10 ? '0' : '') + val.toString()
 
-					return val
-				}
-
-				function fixunits(val: number) {
-					let res = val < 10 ? '0' + val.toString() : val.toString()
-					return res
-				}
-
-				let h = clock.ampm ?
-						toAmpm(date.getHours()) :
-						('<span id="zero">0</span>' + date.getHours()).slice(-25), // #zero for hiding in CSS
+				let h = clock.ampm ? date.getHours() % 12 : date.getHours(),
 					m = fixunits(date.getMinutes()),
 					s = fixunits(date.getSeconds())
 
-				$('clock')!.innerHTML = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				const domclock = $('clock')
+
+				if (domclock) {
+					clas(domclock, !clock.ampm && h < 10, 'zero') // Double zero on 24h
+					domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
+				}
 			}
 
 			function analog(date: Date) {
