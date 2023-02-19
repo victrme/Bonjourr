@@ -721,13 +721,13 @@
 
 // footer
 #creditContainer, #showSettings {
+	position: fixed;
 	pointer-events: all;
 	opacity: 0;
 	transition: opacity 0.4s;
 }
 
 #creditContainer {
-	position: absolute;
 	bottom: 0;
 	left: 0;
 	margin: 0 0 36px 24px;
@@ -772,7 +772,6 @@
 }
 
 #showSettings {
-	position: absolute;
 	bottom: 0;
 	right: 0;
 	padding: 0 24px 24px 0;

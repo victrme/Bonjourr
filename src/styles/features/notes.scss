@@ -83,6 +83,12 @@
 		}
 	}
 
+	@media (hover: hover) {
+		&:hover button#b_notesdone {
+			opacity: 1;
+		}
+	}
+
 	// makes done button visible
 	#notes_editor:not(.hidden) + button#b_notesdone {
 		opacity: 1;
@@ -172,6 +178,7 @@
 
 		&.hidden {
 			resize: none;
+			display: none;
 		}
 	}
 }

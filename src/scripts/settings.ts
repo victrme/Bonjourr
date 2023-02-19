@@ -998,10 +998,6 @@ export function settingsInit(data: Sync) {
 
 			clas(dom, false, 'init')
 			clas(dom, isClosed, 'shown')
-
-			if (getBrowser() === 'chrome') { // fix for Chrome double scrollbar
-				clas(document.body, isClosed, 'clip') 
-			}
 			
 			clas(domshowsettings, isClosed, 'shown')
 			clas(domedit, isClosed, 'pushed')

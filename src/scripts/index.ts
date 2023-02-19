@@ -208,6 +208,9 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		clas(editor, !isEditorHidden, 'hidden')
 		clas(parsed, !isParsedHidden, 'hidden')
 
+		// start writing right away
+		editor.focus()
+
 		// Change edit button text
 		doneBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
 	}
