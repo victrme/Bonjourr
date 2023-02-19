@@ -65,7 +65,7 @@ body {
 	min-height: -webkit-fill-available;
 	text-align: center;
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: overlay;
 	touch-action: manipulation;
 	position: relative;
 	display: flex;
@@ -115,11 +115,6 @@ body {
 		input:focus-visible + .slider {
 			outline: 2px solid var(--blue);
 		}
-	}
-
-	// fix for Chrome double scrollbar 
-	&.clip {
-		overflow: clip;
 	}
 }
 
