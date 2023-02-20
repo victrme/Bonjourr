@@ -8,6 +8,7 @@ config.codekit3
 .env.json
 .prettierignore
 manifest.json
+.env.json
 
 node_modules/
 release/

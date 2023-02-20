@@ -15,6 +15,14 @@
     -   Fixed "open in new tab" not working on safari
 
 $~~~~~~~~~~~$
+**v1.15.6**
+-   Footer no longer takes height space (except on mobile)
+-   Notes: more visible edit button & focus after edit
+-   Fixes:
+    -   Accidental "!" in russian greetings
+    -   Innaccessible links when overflowing or too low
+    -   Half solid black page on some touch screen devices
+    -   Slightly blurry settings panel on Chrome
 
 **v1.15.5**
 

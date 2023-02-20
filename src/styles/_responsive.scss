@@ -45,6 +45,7 @@
 
 	body #interface {
 		max-height: initial;
+		margin-bottom: 77px;
 
 		#main,
 		#time {
@@ -118,33 +119,29 @@
 		}
 	}
 
-	footer {
-		position: relative;
+	#creditContainer {
+		width: calc(100% - 7.5em);
 		z-index: 1;
+		margin-bottom: 42px;
 
-		#creditContainer {
-			width: calc(100% - 7.5em);
-			margin: 0 15px;
+		#credit {
+			display: block;
+			line-height: 14px;
 
-			#credit {
-				display: block;
-				line-height: 14px;
-
-				a,
-				p,
-				span {
-					font-size: 11px;
-				}
-			}
-
-			.exif {
-				display: none;
+			a,
+			p,
+			span {
+				font-size: 11px;
 			}
 		}
 
-		#showSettings {
-			padding: 0 15px 15px 0;
+		.exif {
+			display: none;
 		}
+	}
+
+	#showSettings {
+		z-index: 1;
 	}
 
 	#popup {

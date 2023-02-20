@@ -87,9 +87,9 @@
 	a {
 		color: inherit;
 
-		&:hover,
-		&:focus {
-			color: var(--blue);
+		&.hidden {
+			resize: none;
+			display: none;
 		}
 	}
 }
