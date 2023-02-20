@@ -208,6 +208,9 @@ export function notes(init: Notes | null, event?: { is: 'toggle' | 'align' | 'op
 		clas(editor, !isEditorHidden, 'hidden')
 		clas(parsed, !isParsedHidden, 'hidden')
 
+		// start writing right away
+		editor.focus()
+
 		// Change edit button text
 		doneBtn.textContent = tradThis(isEditorHidden ? 'Done' : 'Edit')
 	}
@@ -535,20 +538,23 @@ export function clock(
 			}
 
 			function analog(date: Date) {
-				function rotation(that: HTMLSpanElement, val: number) {
-					that.style.transform = `rotate(${val}deg)`
+				const rotation = (elem: HTMLElement | null, val: number) => {
+					if (elem) {
+						elem.style.transform = `rotate(${val}deg)`
+					}
 				}
 
 				let s = date.getSeconds() * 6,
-					m = date.getMinutes() * 6,
-					h = date.getHours() * 30
+					m = (date.getMinutes() + date.getSeconds() / 60) * 6,
+					h = ((date.getHours() % 12) + date.getMinutes() / 60) * 30
 
-				//bouge les aiguilles minute et heure quand seconde ou minute arrive à 0
-				if (true || date.getMinutes() === 0) rotation($('minutes')!, m)
-				if (true || date.getHours() === 0) rotation($('hours')!, h)
+				
+				rotation($('hours'), h)
+				rotation($('minutes'), m)
 
-				//tourne pas les secondes si pas de seconds
-				if (clock.seconds) rotation($('analogSeconds')!, s)
+				if (clock.seconds) {
+					rotation($('analogSeconds'), s)
+				}
 			}
 
 			// Control
