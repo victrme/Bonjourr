@@ -20,6 +20,10 @@
 	&.right-align #pocket-editor {
 		text-align: right;
 	}
+
+	*[contenteditable="true"] {
+		cursor: text;
+	}
 }
 
 #pocket-editor {
