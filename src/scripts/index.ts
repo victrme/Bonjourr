@@ -548,7 +548,6 @@ export function clock(
 					m = (date.getMinutes() + date.getSeconds() / 60) * 6,
 					h = ((date.getHours() % 12) + date.getMinutes() / 60) * 30
 
-				
 				rotation($('hours'), h)
 				rotation($('minutes'), m)
 
@@ -1747,9 +1746,10 @@ export function weather(
 
 		const handleForecast = () => {
 			if (forecast) {
-				forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}° ${tradThis(
-					date.getHours() > 21 ? 'tomorrow' : 'today'
-				)}.`
+				let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
+				day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
+
+				forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}°${day}.`
 
 				clas(forecast, false, 'wait')
 			}

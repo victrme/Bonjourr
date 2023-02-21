@@ -7,8 +7,8 @@
 //   Finnish translation by jaajko · @jaajko · https://jaajko.fi
 //   Hungarian translation by cook3r · @cook3r
 //   Traditional Chinese translation by Pu · @unknownnumbers
-//   Serbian Cyrillic translation by Igor Lukic · @stormigy  
-//   Serbian Latin translation by Igor Lukic · @stormigy  
+//   Serbian Cyrillic translation by Igor Lukic · @stormigy
+//   Serbian Latin translation by Igor Lukic · @stormigy
 
 // Partial:
 //   Swedish translation by Benjamin Horn · https://benjaminhorn.io/
@@ -20,7 +20,6 @@
 //   German translation by Bernhard Wittmann · https://bernhardwittmann.com
 //   Italian translation by Trazalca · @Trazalca
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
-
 
 export const langList = {
 	en: 'English',
@@ -65,7 +64,7 @@ export const dict = {
 		id: 'Tab Baru',
 		da: 'Nyt faneblad',
 		fi: 'Uusi välilehti',
-		hu: 'Új lap',	
+		hu: 'Új lap',
 		sr: 'Нова картица',
 		sr_YU: 'Nova kartica',
 	},
@@ -244,7 +243,6 @@ export const dict = {
 		hu: 'Törlés',
 		sr: 'Обриши',
 		sr_YU: 'Obriši',
-
 	},
 	'Apply changes': {
 		fr: 'Enregistrer',
@@ -868,7 +866,7 @@ export const dict = {
 		nl: 'vandaag',
 		pl: 'dzisiaj',
 		pt_BR: 'hoje',
-		ru: 'сегодня',
+		ru: '',
 		zh_CN: ', 以上是今日天气',
 		zh_HK: '(今日)',
 		sk: 'dnes',
@@ -890,7 +888,7 @@ export const dict = {
 		nl: 'morgen',
 		pl: 'jutro',
 		pt_BR: 'amanhã',
-		ru: 'завтра',
+		ru: '',
 		zh_CN: ', 以上是明天的天气',
 		zh_HK: '(明日)',
 		sk: 'zajtra',
@@ -2643,7 +2641,7 @@ export const dict = {
 		fi: 'Kummatkin',
 		hu: 'Mindkettő',
 		sr: 'Обе',
-		sr_YU: 'Obe'
+		sr_YU: 'Obe',
 	},
 	Notes: {
 		fr: 'Notes',
@@ -2776,7 +2774,6 @@ export const dict = {
 		hu: 'gyorsbillentyűk segítségével.',
 		sr: 'Са пречицама на тастатури',
 		sr_YU: 'Sa prečicama na tastaturi',
-		
 	},
 	'see documentation': {
 		fr: 'voir la documentation',
@@ -3085,7 +3082,6 @@ export const dict = {
 		hu: 'Keresési kifejezés: %s',
 		sr: 'Упит за претрагу: %s',
 		sr_YU: 'Upit za pretragu: %s',
-		
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -3194,8 +3190,8 @@ export const dict = {
 		da: 'Få smarte ting til at ske med CSS. ',
 		fi: 'Tee hienoja juttuja tapahtumaan CSS:llä',
 		hu: 'Legyen még nagyszerűbb a kezdőlapja CSS segítségével.',
-		sr: 'Направите малу магију са CSS-ом.',	
-		sr_YU: 'Napravite malu magiju sa CSS-om.',		
+		sr: 'Направите малу магију са CSS-ом.',
+		sr_YU: 'Napravite malu magiju sa CSS-om.',
 	},
 	'Check out our ': {
 		fr: 'Jetez un oeil à nos ',
@@ -3217,7 +3213,7 @@ export const dict = {
 		fi: 'Tutustu meidän ',
 		hu: 'Nézze meg a mi',
 		sr: 'Погледајте наше ',
-		sr_YU: 'Pogledajte naše ',		
+		sr_YU: 'Pogledajte naše ',
 	},
 	'CSS snippets.': {
 		fr: 'extraits de CSS.',
@@ -3239,7 +3235,7 @@ export const dict = {
 		fi: 'CSS-katkelmia',
 		hu: 'CSS kódrészleteinket.',
 		sr: 'CSS примере',
-		sr_YU: 'CSS primere',		
+		sr_YU: 'CSS primere',
 	},
 	'US Date Format': {
 		fr: 'Date américaine',
@@ -3260,7 +3256,7 @@ export const dict = {
 		da: 'Amerikansk datoformat',
 		fi: 'Yhdysvaltain päivämäärämuoto',
 		hu: 'Amerikai dátum formátum',
-		sr: 'Амерички формат датума',	
+		sr: 'Амерички формат датума',
 		sr_YU: 'Američki format datuma',
 	},
 	'12-Hour Time': {
@@ -3283,7 +3279,7 @@ export const dict = {
 		fi: '12-tunnin aika',
 		hu: '12 órás formátum',
 		sr: '12-то часовни приказ сата.',
-		sr_YU: '12-to časovni prikaz sata.',		
+		sr_YU: '12-to časovni prikaz sata.',
 	},
 	'Time zone': {
 		fr: 'Fuseau horaire',
@@ -3305,7 +3301,7 @@ export const dict = {
 		fi: 'Aikavyöhyke',
 		hu: 'Időzóna',
 		sr: 'Временска зона',
-		sr_YU: 'Vremenska zona',		
+		sr_YU: 'Vremenska zona',
 	},
 	Language: {
 		fr: 'Langue',
@@ -3326,7 +3322,7 @@ export const dict = {
 		da: 'Sprog',
 		fi: 'Kieli',
 		hu: 'Nyelv',
-		sr: 'Језик',	
+		sr: 'Језик',
 		sr_YU: 'Jezik',
 	},
 	Greeting: {
