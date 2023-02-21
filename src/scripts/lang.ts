@@ -7,8 +7,8 @@
 //   Finnish translation by jaajko · @jaajko · https://jaajko.fi
 //   Hungarian translation by cook3r · @cook3r
 //   Traditional Chinese translation by Pu · @unknownnumbers
-//   Serbian Cyrillic translation by Igor Lukic · @stormigy  
-//   Serbian Latin translation by Igor Lukic · @stormigy  
+//   Serbian Cyrillic translation by Igor Lukic · @stormigy
+//   Serbian Latin translation by Igor Lukic · @stormigy
 
 // Partial:
 //   Swedish translation by Benjamin Horn · https://benjaminhorn.io/
@@ -20,7 +20,6 @@
 //   German translation by Bernhard Wittmann · https://bernhardwittmann.com
 //   Italian translation by Trazalca · @Trazalca
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
-
 
 export const langList = {
 	en: 'English',
@@ -65,7 +64,7 @@ export const dict = {
 		id: 'Tab Baru',
 		da: 'Nyt faneblad',
 		fi: 'Uusi välilehti',
-		hu: 'Új lap',	
+		hu: 'Új lap',
 		sr: 'Нова картица',
 		sr_YU: 'Nova kartica',
 	},
@@ -244,7 +243,6 @@ export const dict = {
 		hu: 'Törlés',
 		sr: 'Обриши',
 		sr_YU: 'Obriši',
-
 	},
 	'Apply changes': {
 		fr: 'Enregistrer',
@@ -1035,6 +1033,8 @@ export const dict = {
 		da: 'Redigering',
 		fi: 'Muokkaus',
 		hu: 'Szerkesztés',
+		sr: '',
+		sr_YU: '',
 	},
 	'No selection': {
 		fr: 'Pas de sélection',
@@ -1055,6 +1055,8 @@ export const dict = {
 		da: 'Intet valg',
 		fi: 'Ei valintaa',
 		hu: 'Nincs kiválasztás',
+		sr: '',
+		sr_YU: '',
 	},
 	'Grid position': {
 		fr: 'Position de la grille',
@@ -1075,6 +1077,8 @@ export const dict = {
 		da: 'Placering af gitter',
 		fi: 'Ruudukon sijainti',
 		hu: 'Rács pozíciója',
+		sr: '',
+		sr_YU: '',
 	},
 	'Fill row': {
 		fr: 'Remplir la ligne',
@@ -1095,6 +1099,8 @@ export const dict = {
 		da: 'Udfyld række',
 		fi: 'Täytä rivi',
 		hu: 'Sor kitöltése',
+		sr: '',
+		sr_YU: '',
 	},
 	'Fill column': {
 		fr: 'Remplir la colonne',
@@ -1115,6 +1121,8 @@ export const dict = {
 		da: 'Udfyld kolonne',
 		fi: 'Täytä sarake',
 		hu: 'oszlop kitöltése',
+		sr: '',
+		sr_YU: '',
 	},
 	'Box alignment': {
 		fr: 'Alignement des cases',
@@ -1135,26 +1143,8 @@ export const dict = {
 		da: 'Justering af boks',
 		fi: 'Laatikon kohdistus',
 		hu: 'Doboz igazítása',
-	},
-	Done: {
-		fr: 'Terminé',
-		sk: 'Hotovo',
-		sv: 'Klar',
-		pl: 'Gotowe',
-		pt_BR: 'Feito',
-		nl: 'Gereed',
-		ru: 'Готово',
-		zh_CN: '完成',
-		zh_HK: '完畢',
-		de: 'Erledigt',
-		it: 'Fatto',
-		es: 'Hecho',
-		tr: 'Bitti',
-		uk: 'Готово',
-		id: 'Selesai',
-		da: 'Udført',
-		fi: 'Valmis',
-		hu: 'Kész',
+		sr: '',
+		sr_YU: '',
 	},
 	General: {
 		fr: 'Général',
@@ -2014,26 +2004,6 @@ export const dict = {
 		sr: 'Назив нове картице',
 		sr_YU: 'Naziv nove kartice',
 	},
-	'Page elements': {
-		fr: 'Éléments de la page',
-		sk: 'Prvky stránky',
-		sv: 'Sidelement',
-		pl: 'Elementy strony',
-		pt_BR: 'Elementos da página',
-		nl: 'Pagina elementen',
-		ru: 'Элементы страницы',
-		zh_CN: '页面元素',
-		zh_HK: '頁面元素',
-		de: 'Seitenelemente',
-		it: 'Elementi della pagina',
-		es: 'Elementos de página',
-		tr: 'Sayfa öğeleri',
-		uk: 'Елементи сторінки',
-		id: 'Elemen halaman',
-		da: 'Sideelementer',
-		fi: 'Sivun elementit',
-		hu: 'Oldalelemek',
-	},
 	'Page layout': {
 		fr: 'Mise en page',
 		sk: 'Rozloženie stránky',
@@ -2053,6 +2023,8 @@ export const dict = {
 		da: 'Sidelayout',
 		fi: 'Sivun asettelu',
 		hu: 'Oldal elrendezése',
+		sr: '',
+		sr_YU: '',
 	},
 	'Customise how and where widgets appear.': {
 		fr: 'Personnalisez comment et où les widgets apparaissent.',
@@ -2073,6 +2045,8 @@ export const dict = {
 		da: 'Tilpas hvordan og hvor widgets vises.',
 		fi: 'Mukauta, miten ja missä widgetit näkyvät.',
 		hu: 'A widgetek megjelenésének módja és helye testreszabása.',
+		sr: '',
+		sr_YU: '',
 	},
 	'Choose a layout, click edit and select a widget to modify.': {
 		fr: 'Choisissez une mise en page, cliquez sur modifier et sélectionnez un widget à modifier.',
@@ -2093,6 +2067,8 @@ export const dict = {
 		da: 'Vælg et layout, klik på Rediger og vælg en widget, der skal ændres.',
 		fi: 'Valitse asettelu, napsauta muokkausta ja valitse muokattava widget.',
 		hu: 'Válasszon ki egy elrendezést, kattintson a szerkesztésre, és válasszon ki egy widgetet a módosításhoz.',
+		sr: '',
+		sr_YU: '',
 	},
 	'Edit grid': {
 		fr: 'Modifier la grille',
@@ -2113,6 +2089,8 @@ export const dict = {
 		da: 'Rediger gitter',
 		fi: 'Muokkaa ruudukkoa',
 		hu: 'Rács szerkesztése',
+		sr: '',
+		sr_YU: '',
 	},
 	'Reset layout': {
 		fr: 'Réinitialiser la grille',
@@ -2133,28 +2111,8 @@ export const dict = {
 		da: 'Nulstil layout',
 		fi: 'Asettelun palauttaminen',
 		hu: 'Elrendezés visszaállítása',
-	},
-	'Hide elements': {
-		fr: 'Cacher des éléments',
-		sv: 'Dölj element',
-		nl: 'Verberg elementen',
-		pl: 'Ukryj elementy',
-		pt_BR: 'Ocultar elementos',
-		ru: 'Скрыть элементы',
-		zh_CN: '隐藏元素',
-		zh_HK: '隱藏元素',
-		sk: 'Skryť prvky',
-		de: 'Elemente ausblenden',
-		it: 'Nascondi elementi',
-		es: 'Esconder elementos',
-		tr: 'Öğerleri gizle',
-		uk: 'Сховати елементи',
-		id: 'Sembunyikan elements',
-		da: 'Skjul elementer',
-		fi: 'Piilota elementtejä',
-		hu: 'Elemek elrejtése',
-		sr: 'Сакријте елементе',
-		sr_YU: 'Sakrijte elemente',
+		sr: '',
+		sr_YU: '',
 	},
 	Clock: {
 		fr: 'Horloge',
@@ -2902,7 +2860,7 @@ export const dict = {
 		fi: 'Kummatkin',
 		hu: 'Mindkettő',
 		sr: 'Обе',
-		sr_YU: 'Obe'
+		sr_YU: 'Obe',
 	},
 	Notes: {
 		fr: 'Notes',
@@ -2945,6 +2903,8 @@ export const dict = {
 		da: 'Fokus hvor som helst for at redigere noter',
 		fi: 'Keskity mihin tahansa muistiinpanojen muokkaamiseen',
 		hu: 'A jegyzetek szerkesztéséhez fókuszáljon bárhová',
+		sr: '',
+		sr_YU: '',
 	},
 	'Supports markdown titles': {
 		fr: 'Supporte les titres markdown',
@@ -2965,6 +2925,8 @@ export const dict = {
 		da: 'Understøtter markdown-titler',
 		fi: 'Tukee merkintöjen otsikoita',
 		hu: 'Támogatja a leértékelési címeket',
+		sr: '',
+		sr_YU: '',
 	},
 	'Lists and clickable checkboxes': {
 		fr: 'Listes et cases à cocher cliquables',
@@ -2985,6 +2947,9 @@ export const dict = {
 		da: 'Lister og klikbare afkrydsningsfelter',
 		fi: 'Luettelot ja napsautettavat valintaruudut',
 		hu: 'Listák és kattintható jelölőnégyzetek',
+		sr: '',
+		sr_YU: '',
+	},
 	Edit: {
 		fr: 'Modifier',
 		sv: 'Redigera',
@@ -3008,23 +2973,23 @@ export const dict = {
 		sr_YU: 'Uređivanje',
 	},
 	Done: {
-		fr: 'Fini',
-		sv: 'Gjort',
-		nl: 'Gedaan',
+		fr: 'Terminé',
+		sk: 'Hotovo',
+		sv: 'Klar',
 		pl: 'Gotowe',
 		pt_BR: 'Feito',
-		ru: 'Сделанный',
-		zh_CN: '完毕',
+		nl: 'Gereed',
+		ru: 'Готово',
+		zh_CN: '完成',
 		zh_HK: '完畢',
-		sk: 'hotový',
-		de: 'Fertig',
+		de: 'Erledigt',
 		it: 'Fatto',
 		es: 'Hecho',
-		tr: 'Tamamlandı',
+		tr: 'Bitti',
 		uk: 'Готово',
 		id: 'Selesai',
-		da: 'Noter',
-		fi: 'Tehty',
+		da: 'Udført',
+		fi: 'Valmis',
 		hu: 'Kész',
 		sr: 'Обављено',
 		sr_YU: 'Obavljeno',
@@ -3094,7 +3059,6 @@ export const dict = {
 		hu: 'gyorsbillentyűk segítségével.',
 		sr: 'Са пречицама на тастатури',
 		sr_YU: 'Sa prečicama na tastaturi',
-		
 	},
 	'see documentation': {
 		fr: 'voir la documentation',
@@ -3225,6 +3189,8 @@ export const dict = {
 		da: 'Bredde',
 		fi: 'Leveys',
 		hu: 'Szélesség',
+		sr: '',
+		sr_YU: '',
 	},
 	'Settings management': {
 		fr: 'Gestion des réglages',
@@ -3423,7 +3389,6 @@ export const dict = {
 		hu: 'Keresési kifejezés: %s',
 		sr: 'Упит за претрагу: %s',
 		sr_YU: 'Upit za pretragu: %s',
-		
 	},
 	'Placeholder text': {
 		fr: 'Texte de référence',
@@ -3444,6 +3409,8 @@ export const dict = {
 		da: 'Plaatsaanduiding tekst',
 		fi: 'Paikanhaltijateksti',
 		hu: 'Helyőrző szöveg',
+		sr: '',
+		sr_YU: '',
 	},
 	Search: {
 		fr: 'Rechercher',
@@ -3464,6 +3431,8 @@ export const dict = {
 		da: 'Søg',
 		fi: 'Etsi',
 		hu: 'Keresés',
+		sr: '',
+		sr_YU: '',
 	},
 	Opacity: {
 		fr: 'Opacité',
@@ -3572,8 +3541,8 @@ export const dict = {
 		da: 'Få smarte ting til at ske med CSS. ',
 		fi: 'Tee hienoja juttuja tapahtumaan CSS:llä',
 		hu: 'Legyen még nagyszerűbb a kezdőlapja CSS segítségével.',
-		sr: 'Направите малу магију са CSS-ом.',	
-		sr_YU: 'Napravite malu magiju sa CSS-om.',		
+		sr: 'Направите малу магију са CSS-ом.',
+		sr_YU: 'Napravite malu magiju sa CSS-om.',
 	},
 	'Check out our ': {
 		fr: 'Jetez un oeil à nos ',
@@ -3595,7 +3564,7 @@ export const dict = {
 		fi: 'Tutustu meidän ',
 		hu: 'Nézze meg a mi',
 		sr: 'Погледајте наше ',
-		sr_YU: 'Pogledajte naše ',		
+		sr_YU: 'Pogledajte naše ',
 	},
 	'CSS snippets.': {
 		fr: 'extraits de CSS.',
@@ -3617,7 +3586,7 @@ export const dict = {
 		fi: 'CSS-katkelmia',
 		hu: 'CSS kódrészleteinket.',
 		sr: 'CSS примере',
-		sr_YU: 'CSS primere',		
+		sr_YU: 'CSS primere',
 	},
 	'US Date Format': {
 		fr: 'Date américaine',
@@ -3638,7 +3607,7 @@ export const dict = {
 		da: 'Amerikansk datoformat',
 		fi: 'Yhdysvaltain päivämäärämuoto',
 		hu: 'Amerikai dátum formátum',
-		sr: 'Амерички формат датума',	
+		sr: 'Амерички формат датума',
 		sr_YU: 'Američki format datuma',
 	},
 	'12-Hour Time': {
@@ -3661,7 +3630,7 @@ export const dict = {
 		fi: '12-tunnin aika',
 		hu: '12 órás formátum',
 		sr: '12-то часовни приказ сата.',
-		sr_YU: '12-to časovni prikaz sata.',		
+		sr_YU: '12-to časovni prikaz sata.',
 	},
 	'Time zone': {
 		fr: 'Fuseau horaire',
@@ -3683,7 +3652,7 @@ export const dict = {
 		fi: 'Aikavyöhyke',
 		hu: 'Időzóna',
 		sr: 'Временска зона',
-		sr_YU: 'Vremenska zona',		
+		sr_YU: 'Vremenska zona',
 	},
 	Language: {
 		fr: 'Langue',
@@ -3704,7 +3673,7 @@ export const dict = {
 		da: 'Sprog',
 		fi: 'Kieli',
 		hu: 'Nyelv',
-		sr: 'Језик',	
+		sr: 'Језик',
 		sr_YU: 'Jezik',
 	},
 	Greeting: {
@@ -3836,6 +3805,8 @@ export const dict = {
 		da: 'Brugerdefinerede citater',
 		fi: 'Mukautetut lainaukset',
 		hu: 'Egyéni idézőjelek',
+		sr: '',
+		sr_YU: '',
 	},
 	Fonts: {
 		fr: 'Polices',
@@ -4372,7 +4343,7 @@ export const enginesUrls = {
 	brave: 'https://search.brave.com/search?q=%s',
 	ecosia: 'https://www.ecosia.org/search?q=%s',
 	lilo: 'https://search.lilo.org/?q=%s',
-	baidu: 'https://www.baidu.com/s?wd=%s'
+	baidu: 'https://www.baidu.com/s?wd=%s',
 }
 
 export const enginesLocales = {
