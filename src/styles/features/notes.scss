@@ -20,10 +20,6 @@
 	&.right-align #pocket-editor {
 		text-align: right;
 	}
-
-	*[contenteditable="true"] {
-		cursor: text;
-	}
 }
 
 #pocket-editor {
@@ -75,8 +71,7 @@
 	}
 
 	input[type='checkbox'] {
-		width: 1.35em;
-		height: 1.35em;
+		margin: 0.25em 0.1em;
 	}
 
 	ul {
