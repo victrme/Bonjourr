@@ -30,7 +30,6 @@ import {
 	turnRefreshButton,
 	testOS,
 	syncDefaults,
-	getBrowser
 } from './utils'
 
 import {
@@ -92,7 +91,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_noteswidth', data.notes?.width || 50)
 	initInput('i_notesopacity', data.notes?.opacity.toString() || 0.1)
 	initInput('i_notesalign', data.notes?.align || 'left')
-	initInput('i_textshadow', data.textShadow || 0.2)
 	initInput('i_sbengine', data.searchbar?.engine || 'google')
 	initInput('i_sbplaceholder', data.searchbar?.placeholder || '')
 	initInput('i_sbopacity', data.searchbar?.opacity || 0.1)
@@ -1062,7 +1060,7 @@ export function settingsInit(data: Sync) {
 
 			clas(dom, false, 'init')
 			clas(dom, isClosed, 'shown')
-			
+
 			clas(domshowsettings, isClosed, 'shown')
 			clas(domedit, isClosed, 'pushed')
 

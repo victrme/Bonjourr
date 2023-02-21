@@ -351,7 +351,6 @@ export function clock(
 					m = (date.getMinutes() + date.getSeconds() / 60) * 6,
 					h = ((date.getHours() % 12) + date.getMinutes() / 60) * 30
 
-				
 				rotation($('hours'), h)
 				rotation($('minutes'), m)
 
@@ -1920,8 +1919,8 @@ export function customFont(
 }
 
 export function textShadow(init: number | null, event?: number) {
-	const val = init ? init : event
-	dominterface.style.textShadow = `1px 2px 6px rgba(0, 0, 0, ${val})`
+	const val = init ?? event
+	document.documentElement.style.setProperty('--text-shadow-alpha', (val ?? 0.2)?.toString())
 
 	if (typeof event === 'number') {
 		eventDebounce({ textShadow: val })
