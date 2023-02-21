@@ -59,22 +59,17 @@
 
 #interface {
 	position: relative;
-	flex-grow: 1;
-	max-height: calc(100vh - 80px);
+	display: grid;
+	gap: 1em;
 	width: 100%;
-	display: flex;
-	flex-direction: column;
-	// justify-content: center;
-	justify-content: stretch;
+	min-height: 100vh;
+	padding: 12px;
+	box-sizing: border-box;
+	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
+	transition-property: opacity, transform;
 	will-change: transform;
 
-	// overflow-x: hidden;
-	// overflow-y: auto;
-	transition-property: opacity, transform;
-	text-shadow: 1px 2px 15px rgba(0, 0, 0, 0.2);
-	font-weight: 300;
-	box-sizing: border-box;
-	padding: 12px;
+	grid-template-areas: var(--grid);
 
 	&.pushed {
 		transform: translateX(-100px);
@@ -82,6 +77,32 @@
 
 	&.init {
 		opacity: 0;
+	}
+
+	&.move-edit {
+		#main,
+		#time,
+		#linkblocks,
+		#sb_container,
+		#notes_container,
+		#quotes_container {
+			z-index: 3;
+			cursor: pointer;
+			pointer-events: none;
+
+			> * {
+				user-select: none;
+			}
+		}
+	}
+
+	#main,
+	#time,
+	#linkblocks,
+	#sb_container,
+	#notes_container,
+	#quotes_container {
+		place-self: center;
 	}
 
 	// clock & date
@@ -665,21 +686,9 @@
 	}
 }
 
-// footer {
-// 	position: fixed;
-// 	bottom: 0;
-// 	display: flex;
-// 	justify-content: space-between;
-// 	width: 100%;
-// 	padding-top: 0;
-// 	box-sizing: border-box;
-// 	z-index: 3;
-
-// 	@include hidden();
-// }
-
 // footer
-#creditContainer, #showSettings {
+#creditContainer,
+#showSettings {
 	position: fixed;
 	pointer-events: all;
 	opacity: 0;

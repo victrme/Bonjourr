@@ -25,10 +25,6 @@
 	body {
 		font-size: 13px;
 	}
-
-	// #interface #tempContainers {
-	// 	gap: 2em;
-	// }
 }
 
 // mobile
@@ -44,20 +40,10 @@
 	}
 
 	body #interface {
-		max-height: initial;
 		margin-bottom: 77px;
-
-		#main,
-		#time {
-			padding: .5em 0;
-		}
 
 		#quotes_container {
 			width: 90vw;
-		}
-
-		#tempContainers {
-			padding-bottom: unset;
 		}
 
 		&.pushed {
@@ -191,31 +177,9 @@
 		padding: env(safe-area-inset);
 		overflow-y: scroll;
 
-		#interface {
-			max-height: unset;
-
-			#main,
-			#time {
-				padding: 1em 0;
-			}
-		}
-
 		#interface #main,
 		#interface #time {
 			min-height: unset;
-		}
-
-
-	}
-}
-
-@media (orientation: landscape) {
-	#interface {
-		max-height: unset;
-		padding-bottom: 90px;
-
-		#widgets {
-			gap: 1em;
 		}
 	}
 }
@@ -235,21 +199,16 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%) !important;
-
-		> * > * {
-			font-size: 1.25em;
-		}
 	}
 
 	#interface {
 		#sb_container {
 			#searchbar {
-				// height:em;
 				font-size: 1.7em;
 				box-sizing: border-box;
-				padding: 0 7em 0 1em
+				padding: 0 7em 0 1em;
 			}
-	
+
 			#sb-buttons {
 				#sb_empty {
 					font-size: 2.5em;
@@ -258,7 +217,7 @@
 					padding: 0;
 					box-sizing: border-box;
 				}
-	
+
 				#sb_submit img {
 					height: 1.5em;
 				}
