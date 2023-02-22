@@ -348,6 +348,7 @@ export default function quickLinks(
 		// Event
 
 		let initialpos = [0, 0]
+		let shortPressTimeout = setTimeout(() => {})
 
 		function triggerDragging(e: MouseEvent | TouchEvent) {
 			const isMouseEvent = 'buttons' in e
@@ -372,18 +373,27 @@ export default function quickLinks(
 			}
 		}
 
-		LIList.forEach((li) => {
-			li.addEventListener('touchstart', (e) => {
-				initialpos = [e.touches[0]?.clientX, e.touches[0]?.clientY]
-				dominterface.addEventListener('touchmove', triggerDragging) // Mobile (touches)
-			})
+		function activateDragMove(e: MouseEvent | TouchEvent) {
+			if (e.type === 'touchstart') {
+				const { clientX, clientY } = (e as TouchEvent).touches[0]
+				initialpos = [clientX || 0, clientY || 0]
+				dominterface.addEventListener('touchmove', triggerDragging)
+			}
 
-			li.addEventListener('mousedown', (e) => {
-				if (e.button === 0) {
-					initialpos = [e.x, e.y]
-					dominterface.addEventListener('mousemove', triggerDragging) // Desktop (mouse)
-				}
-			})
+			if (e.type === 'mousedown' && (e as MouseEvent)?.button === 0) {
+				const { x, y } = e as MouseEvent
+				initialpos = [x, y]
+				dominterface.addEventListener('mousemove', triggerDragging)
+			}
+		}
+
+		LIList.forEach((li) => {
+			// Mobile need a short press to activate drag, to avoid scroll dragging
+			li.addEventListener('touchmove', () => clearTimeout(shortPressTimeout), { passive: true })
+			li.addEventListener('touchstart', (e) => (shortPressTimeout = setTimeout(() => activateDragMove(e), 220)))
+
+			// Desktop
+			li.addEventListener('mousedown', activateDragMove)
 		})
 
 		dominterface.onmouseleave = endDrag
