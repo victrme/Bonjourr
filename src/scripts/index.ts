@@ -2208,16 +2208,23 @@ window.onload = function () {
 			}
 			//
 			else if (VersionChange) {
-				const oldV = data?.about?.version
-				const newV = syncDefaults.about.version
+				const version_old = data?.about?.version
+				const version = syncDefaults.about.version
 
-				console.log(`Version change: ${oldV} => ${newV}`)
+				console.log(`Version change: ${version_old} => ${version}`)
 
-				if (newV === '1.16.0') {
+				if (version === '1.16.0') {
 					localStorage.hasUpdated = 'true'
 				}
 
-				storage.sync.set({ about: { browser: detectPlatform(), version: newV } })
+				// Breaking data changes needs filtering
+				data.hide = convertHideStorage(data.hide)
+				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
+				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
+				data.about = { browser: detectPlatform(), version }
+
+				storage.sync.set({ ...data }, () => startup(data as Sync))
+				return
 			}
 
 			startup(data as Sync) // TODO: rip type checking

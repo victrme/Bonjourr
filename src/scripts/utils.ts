@@ -92,7 +92,8 @@ export function periodOfDay(sunTime: { rise: number; set: number; now: number },
 	return 'day'
 }
 
-export function convertHideStorage(old: HideOld) {
+export function convertHideStorage(old: Hide | HideOld) {
+	if (!Array.isArray(old)) return old
 	let hide: Hide = {}
 
 	if (old[0][0]) hide.clock = true
