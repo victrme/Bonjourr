@@ -257,12 +257,9 @@ function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: Move
 		let hasRemovedRow = false
 
 		grid.forEach((row, i) => {
-			const emptyCellsOnly = row.filter((cell) => {
-				// If dot, or cell is used as a col / row span
-				return cell === '.' || getSpanDirection(grid, cell) !== 'none'
-			})
+			const isEmptyRow = row.filter((cell) => cell === '.').length === row.length
 
-			if (!hasRemovedRow && emptyCellsOnly.length === row.length) {
+			if (!hasRemovedRow && isEmptyRow) {
 				grid.splice(i, 1)
 				hasRemovedRow = true
 			}
@@ -271,8 +268,7 @@ function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: Move
 		return grid
 	}
 
-	if (add) return addWidget()
-	else return removeWidget()
+	return add ? addWidget() : removeWidget()
 }
 
 // Funcs (modifies dom in some ways)
