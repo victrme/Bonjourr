@@ -17,7 +17,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@types/chrome": "^0.0.196",
+		"@types/chrome": "^0.0.217",
 		"@types/gulp": "^4.0.10",
 		"@types/gulp-csso": "^4.0.1",
 		"@types/gulp-rename": "^2.0.1",
@@ -36,10 +36,9 @@
 		"lodash.clamp": "^4.0.3",
 		"lodash.debounce": "^4.0.8",
 		"lodash.throttle": "^4.1.1",
-		"pocket-editor": "^1.5.2",
-		"sass": "^1.57.1",
-		"snarkdown": "^2.0.0",
-		"typescript": "^4.9.4",
+		"pocket-editor": "^1.5.3",
+		"sass": "^1.58.3",
+		"typescript": "^4.9.5",
 		"user-agent-data-types": "^0.3.0",
 		"web-ext-types": "^3.2.1"
 	},
