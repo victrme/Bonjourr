@@ -78,15 +78,15 @@ export default function quickLinks(
 		}
 
 		async function fetchNewIcon(dom: HTMLImageElement, url: string) {
-			// Apply loading gif d'abord
-			dom.src = 'src/assets/interface/loading.svg'
+			dom.src = 'src/assets/interface/loading.svg' // Apply loading gif d'abord
 
 			const img = new Image()
 
-			// DuckDuckGo favicon API is fallback
 			let result = `https://icons.duckduckgo.com/ip3/${extractHostname(url)}.ico`
-			const bonjourrAPI = await fetch(`https://favicon.bonjourr.fr/api/${extractHostname(url)}`)
-			const apiText = await bonjourrAPI.text() // API return empty string if nothing found
+			const API = new Date().getDay() % 2 === 1 ? '@@FAVICON_API_1' : '@@FAVICON_API_2'
+
+			const response = await fetch(API + url)
+			const apiText = await response.text()
 
 			if (apiText.length > 0) {
 				result = apiText
