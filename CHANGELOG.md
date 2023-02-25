@@ -2,20 +2,35 @@
 
 **1.16.0**
 
--   Added Custom quotes feature
--   Added Move page elements feature
--   Reworked Notes feature:
-    -   Removed double-click to edit
-    -   Replaced "edit" button with buttons that toggles Editor / Notes view
-    -   Added autocomplete on line breaks with classic & todo lists
-    -   Added option to change Notes width
-    -   Improved line breaks behavior
+-   Added features:
+    -   Custom quote list
+    -   Custom searchbar placeholder
+    -   Move page widgets !
+        -   Select between 3 different layouts
+        -   Use toolbox with "Edit grid" to move widgets around
+        -   Widgets on/off state are independent between layouts
+-   Reworked Notes:
+    -   Directly edit content on the fly
+    -   Added width option
+    -   No more keyboard shortcuts (working on it)
+    -   Only markdown title, lists and checkboxes available
+-   Translations:
+    -   Added cyrillic & latin Serbian, thanks @StormIgy
+-   Changes:
+    -   Moved "Hide elements" option to respective option blocks
+    -   Moved "Greetings" to "Weather & greetings" option
+    -   "Time" & "Weather" now toggleable widgets ( like searchbar, quotes, etc )
+    -   Granular opacity slider for searchbar & notes
+    -   Numerical Clock has double zero (00) on 24h
 -   Fixes:
-    -   Fixed landscape interface height on tablet
-    -   Fixed "open in new tab" not working on safari
+    -   Low-res links favicons
+    -   Landscape interface height on tablet
+    -   "open in new tab" not working on safari
 
 $~~~~~~~~~~~$
+
 **v1.15.6**
+
 -   Footer no longer takes height space (except on mobile)
 -   Notes: more visible edit button & focus after edit
 -   Fixes:
