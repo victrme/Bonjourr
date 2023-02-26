@@ -71,10 +71,6 @@ export const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => 
 		: 'other'
 }
 
-export const getFavicon = () => {
-	return getBrowser() === 'edge' ? 'monochrome.png' : 'favicon-128x128.png'
-}
-
 export function periodOfDay(sunTime: { rise: number; set: number; now: number }, time?: number) {
 	// Transition day and night with noon & evening collections
 	// if clock is + /- 60 min around sunrise/set

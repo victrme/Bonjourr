@@ -24,7 +24,6 @@ import {
 	errorMessage,
 	extractHostname,
 	getBrowser,
-	getFavicon,
 	localDefaults,
 	minutator,
 	mobilecheck,
@@ -200,24 +199,23 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function favicon(init: string | null, event?: HTMLInputElement) {
-	function createFavicon(emoji: string) {
+export function favicon(val?: string, isEvent?: true) {
+	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		document.querySelector("link[rel~='icon']")?.setAttribute('href', emoji ? svg : `src/assets/${getFavicon()}`)
+		const defaulticon = '/src/assets/' + (getBrowser() === 'edge' ? 'monochrome.png' : 'favicon.ico')
+
+		document.querySelector("head link[rel~='icon']")?.setAttribute('href', emoji ? svg : defaulticon)
 	}
 
-	if (init !== undefined && init !== null) {
-		createFavicon(init)
-	}
-
-	if (event) {
-		const val = event.value
-		const isEmoji = val.match(/\p{Emoji}/gu) && !val.match(/[0-9a-z]/g)
-
-		if (isEmoji) createFavicon(val)
-		else event.value = ''
-
+	if (isEvent) {
+		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
+		createFavicon(val)
 		eventDebounce({ favicon: isEmoji ? val : '' })
+		return
+	}
+
+	if (val) {
+		createFavicon(val)
 	}
 }
 

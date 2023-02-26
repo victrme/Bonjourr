@@ -287,8 +287,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		switchLangs(this.value as Langs)
 	})
 
-	paramId('i_favicon').addEventListener('input', function () {
-		favicon(null, this)
+	paramId('i_favicon').addEventListener('input', function (this: HTMLInputElement) {
+		favicon(this.value, true)
 	})
 
 	paramId('i_tabtitle').addEventListener('input', function () {
