@@ -3671,7 +3671,7 @@ export const dict = {
 		tr: 'Metni kopyala',
 		uk: 'Копіювати текст',
 		id: 'Salin teks',
-		da: 'Kopiering af tekst',
+		da: 'Kopier tekst',
 		fi: 'Kopioi teksti',
 		hu: 'Szöveg másolása',
 		sr: 'Копирај текст',
