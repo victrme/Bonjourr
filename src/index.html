@@ -16,7 +16,7 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-		<link rel="icon" href="src/assets/favicon-128x128.png" />
+		<link rel="icon" href="src/assets/favicon.ico" />
 		<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />
 		<!-- manifest -->
 
@@ -25,7 +25,7 @@
 		<style type="text/css" id="fontstyle"></style>
 	</head>
 
-	<body class="autodark">
+	<body class="autodark init loading">
 		<button id="skiptosettings" type="button">Skip to Settings</button>
 
 		<div id="editlink">
@@ -164,7 +164,7 @@
 			</div>
 		</div>
 
-		<main id="interface" class="init">
+		<main id="interface">
 			<div id="time" class="hidden">
 				<div id="time-container" data-hide="clock">
 					<h1 id="clock" class="hidden"></h1>
@@ -231,7 +231,7 @@
 			<div id="credit"></div>
 		</div>
 
-		<div id="showSettings" class="init" data-hide="settingsicon">
+		<div id="showSettings" data-hide="settingsicon">
 			<button aria-label="Toggle settings menu">
 				<img src="src/assets/interface/gear.svg" alt="" draggable="false" />
 			</button>

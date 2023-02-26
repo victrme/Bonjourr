@@ -1394,7 +1394,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 			disable: '',
 		}
 
-		document.body.setAttribute('class', cases[value])
+		clas(document.body, true, cases[value])
 
 		if (isEvent) {
 			storage.sync.set({ dark: value })
@@ -2025,23 +2025,17 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
-		const domshowsettings = $('showSettings') as HTMLDivElement
-		let loadtime = performance.now() - loadtimeStart
+		let loadtime = Math.min(performance.now() - loadtimeStart, 400)
 
-		if (loadtime > 400) loadtime = 400
-		loadtime = loadtime < 33 ? 0 : 400
+		if (loadtime < 33) {
+			loadtime = 0
+		}
 
-		domshowsettings.style.transition = `opacity ${loadtime}ms`
-		dominterface.style.transition = `opacity ${loadtime}ms, transform .4s`
-		dominterface.style.opacity = '1'
-
-		clas(domshowsettings, true, 'enabled')
+		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
+		document.body.classList.remove('loading')
 
 		setTimeout(() => {
-			dominterface.classList.remove('init')
-			domshowsettings.classList.remove('init')
-			domshowsettings.style.transition = ``
-
+			document.body.classList.remove('init')
 			storage.sync.get(null, (data) => settingsInit(data as Sync))
 		}, loadtime + 100)
 	}

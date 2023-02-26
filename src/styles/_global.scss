@@ -28,6 +28,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 :root {
 	--app-height: 100vh;
 	--notes-width: 50em;
+	--load-time-transition: 0ms;
 	--average-color: black;
 	--text-shadow-alpha: 0.2;
 	--notes-background-alpha: 0.1;
@@ -121,6 +122,33 @@ body {
 			outline: 2px solid var(--blue);
 		}
 	}
+
+	&.loading {
+		#interface,
+		#showSettings,
+		#creditContainer,
+		#skiptosettings {
+			opacity: 0;
+		}
+	}
+
+	&.init {
+		#interface,
+		#showSettings,
+		#creditContainer,
+		#skiptosettings {
+			transition: opacity var(--load-time-transition);
+		}
+
+		#showSettings button {
+			transition: background-color 0s;
+		}
+	}
+
+	.he_hidden,
+	#interface #main #weather #tempContainer.he_hidden {
+		display: none;
+	}
 }
 
 @mixin allCentered {
@@ -146,40 +174,6 @@ body {
 	// 	background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
 	// 	color: $fbColor;
 	// }
-}
-
-@mixin hideElements {
-	#interface {
-		//
-		&.init {
-			#main,
-			#linkblocks,
-			#sb_container,
-			#searchbar,
-			#time,
-			#time-container,
-			#date,
-			#description,
-			#greetings,
-			#main #weather #tempContainer,
-			#main #weather #forecast,
-			#main #weather #current,
-			#quotes_container.shown,
-			#quotes_container.shown #quote,
-			#quotes_container.shown #author {
-				transition: none;
-			}
-		}
-
-		.he_hidden {
-			display: none !important;
-		}
-
-		// removes margin on tempContainer when both greetings and weather are hidden
-		#greetings.he_hidden + #weather #description.he_hidden + #tempContainer {
-			margin: 0;
-		}
-	}
 }
 
 @mixin allSettings {

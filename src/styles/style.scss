@@ -1,6 +1,5 @@
 @import '../../node_modules/pocket-editor/dist/style';
 @import 'global';
-@include hideElements;
 
 #skiptosettings {
 	position: absolute;
@@ -66,16 +65,12 @@
 	padding: 12px;
 	box-sizing: border-box;
 	will-change: transform;
-
+	transition: opacity var(--load-time-transition), transform 0.4s;
 	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
 	grid-template-areas: var(--grid);
 
 	&.pushed {
 		transform: translateX(-100px);
-	}
-
-	&.init {
-		opacity: 0;
 	}
 
 	&.move-edit {
@@ -690,15 +685,14 @@
 #showSettings {
 	position: fixed;
 	pointer-events: all;
-	opacity: 0;
 	transition: opacity 0.4s;
 }
 
 #creditContainer {
 	bottom: 0;
 	left: 0;
-	margin: 0 0 36px 24px;
 	opacity: 0;
+	padding: 0 0 36px 24px;
 	max-width: 50%;
 	display: flex;
 	align-items: center;
@@ -708,10 +702,8 @@
 		opacity: 1;
 		pointer-events: all;
 
-		&:hover {
-			#credit .exif {
-				opacity: 1;
-			}
+		&:hover #credit .exif {
+			opacity: 1;
 		}
 	}
 
@@ -739,9 +731,9 @@
 }
 
 #showSettings {
+	padding: 0 24px 24px 0;
 	bottom: 0;
 	right: 0;
-	padding: 0 24px 24px 0;
 	z-index: 3;
 
 	button {
@@ -763,20 +755,8 @@
 		}
 	}
 
-	&.init {
-		transition: opacity 0s;
-
-		button img {
-			transition: transform 0s;
-		}
-	}
-
-	// Doit etre dans cette ordre pour la hierarchie
-	&.enabled {
-		opacity: 1;
-	}
-
 	&.he_hidden {
+		display: flex;
 		opacity: 0;
 
 		&.shown {
