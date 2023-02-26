@@ -8,7 +8,7 @@
 	"default_locale": "en",
 
 	"icons": {
-		"128": "src/assets/monochrome.png",
+		"128": "src/assets/favicon-128x128.png",
 		"512": "src/assets/favicon-512x512.png"
 	},
 

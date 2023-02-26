@@ -16,9 +16,13 @@ function html(platform) {
 		const assets = ['src/*.html']
 
 		// no background.html on chrome because manifest v3
-		if (/chrome|online/.test(platform)) assets.push('!src/background.html')
+		if (/edge|chrome|online/.test(platform)) assets.push('!src/background.html')
 
 		const stream = src(assets)
+
+		if (platform === 'edge') {
+			stream.pipe(replace(`favicon.ico`, `monochrome.png`))
+		}
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
@@ -67,7 +71,7 @@ function worker(platform) {
 			return src('src/scripts/services/service-worker.js').pipe(dest('release/online'))
 		}
 
-		return src(`src/scripts/services/background-${platform === 'chrome' ? 'chrome' : 'browser'}.js`)
+		return src(`src/scripts/services/background-${/edge|chrome/.test(platform) ? 'chrome' : 'browser'}.js`)
 			.pipe(rename('background.js'))
 			.pipe(dest('release/' + platform + '/src/scripts'))
 	}
@@ -134,6 +138,10 @@ exports.chrome = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('chrome'))))
 }
 
+exports.edge = async function () {
+	watch(filesToWatch, series(parallel(...taskExtension('edge'))))
+}
+
 exports.firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
@@ -142,4 +150,10 @@ exports.safari = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('safari'))))
 }
 
-exports.build = parallel(...taskOnline(), ...taskExtension('firefox'), ...taskExtension('chrome'), ...taskExtension('safari'))
+exports.build = parallel(
+	...taskOnline(),
+	...taskExtension('firefox'),
+	...taskExtension('chrome'),
+	...taskExtension('edge'),
+	...taskExtension('safari')
+)
