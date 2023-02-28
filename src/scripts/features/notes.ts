@@ -96,8 +96,5 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	handleToggle(init.on)
 
 	editor.set(typeof init.text === 'string' ? init.text : translateNotesText())
-
-	editor.oninput(() => {
-		updateNotes(init, { is: 'change', value: editor.get() })
-	})
+	editor.oninput(() => notes(init, { is: 'change', value: editor.get() }))
 }
