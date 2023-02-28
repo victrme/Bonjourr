@@ -17,11 +17,14 @@ function translateNotesText() {
 	// Is NOT: defined and an available lang, en
 	if (!(lang && lang in langList)) lang = 'en'
 
-	const edit = tradThis('Focus anywhere to edit Notes', lang)
-	const mdT = tradThis('Supports markdown titles', lang)
-	const mdL = tradThis('Lists and clickable checkboxes', lang)
+	const or = tradThis('or', lang)
+	const edit = tradThis('Edit this note', lang)
+	const titles = tradThis('to create titles', lang)
+	const lists = tradThis('to add a list or check boxes', lang)
 
-	return `## ${edit} !\n\n[x] ${mdT}\n[x] ${mdL}`
+	const lines = [`## ${edit} !\n\n`, `[x] "# ", "## " ${or} "### " ${titles}\n`, `[x] "- " ${or} "[ ] " ${lists}`]
+
+	return lines.join('')
 }
 
 export default function notes(init: Notes | null, event?: NotesEvent) {
