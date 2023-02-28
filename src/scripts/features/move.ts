@@ -279,6 +279,7 @@ function setGridAreas(layout: Layout) {
 
 function setAlign(id: MoveKeys, item?: MoveItem) {
 	const elem = elements[id]
+
 	if (elem) {
 		elem.style.placeSelf = item?.box || ''
 
@@ -294,10 +295,8 @@ function setAlign(id: MoveKeys, item?: MoveItem) {
 
 function setAllAligns(items: Layout['items']) {
 	Object.keys(elements).forEach((key) => {
-		if (key in items) {
-			const id = key as MoveKeys
-			setAlign(id, items[id])
-		}
+		const id = key as MoveKeys
+		setAlign(id, items[id])
 	})
 }
 
@@ -528,6 +527,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				})
 
 				setTimeout(() => {
+					console.log(layout)
 					setAllAligns(layout.items)
 					setGridAreas(layout)
 					buttonControl.layout(move.selection)
