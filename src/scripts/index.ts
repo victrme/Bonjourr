@@ -229,6 +229,14 @@ export function tabTitle(init: string | null, event?: HTMLInputElement) {
 	document.title = title
 }
 
+export function pageWidth(val?: number, isEvent?: true) {
+	document.documentElement.style.setProperty('--page-width', (val || syncDefaults.pagewidth) + 'px')
+
+	if (isEvent) {
+		eventDebounce({ pagewidth: val })
+	}
+}
+
 export function clock(
 	init: Sync | null,
 	event?: {
@@ -2148,6 +2156,7 @@ function startup(data: Sync) {
 	initBackground(data)
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)
+	pageWidth(data.pagewidth)
 
 	setInterval(() => {
 		if (navigator.onLine) {

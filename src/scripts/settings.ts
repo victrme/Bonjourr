@@ -49,6 +49,7 @@ import {
 	textShadow,
 	traduction,
 	unsplash,
+	pageWidth,
 } from './index'
 
 type Langs = keyof typeof langList
@@ -86,6 +87,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_dark', data.dark || 'system')
 	initInput('i_favicon', data.favicon || '')
 	initInput('i_tabtitle', data.tabtitle || '')
+	initInput('i_pagewidth', data.pagewidth || 1600)
 	initInput('i_greeting', data.greeting || '')
 	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
@@ -317,6 +319,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_settingshide').addEventListener('change', function () {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
+	})
+
+	paramId('i_pagewidth').addEventListener('change', function () {
+		pageWidth(parseInt(this.value))
 	})
 
 	//

@@ -312,6 +312,7 @@ export const syncDefaults: Sync = {
 	quicklinks: true,
 	time: true,
 	main: true,
+	pagewidth: 1600,
 	linksrow: 6,
 	linknewtab: false,
 	linkstyle: 'large',

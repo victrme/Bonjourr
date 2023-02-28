@@ -61,8 +61,10 @@
 	display: grid;
 	gap: 1em;
 	width: 100%;
+	max-width: var(--page-width);
 	min-height: 100vh;
 	padding: 12px;
+	margin: 0 auto;
 	box-sizing: border-box;
 	will-change: transform;
 	transition: opacity var(--load-time-transition), transform 0.4s;
