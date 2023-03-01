@@ -321,7 +321,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
-	paramId('i_pagewidth').addEventListener('change', function () {
+	paramId('i_pagewidth').addEventListener('input', function () {
 		pageWidth(parseInt(this.value))
 	})
 

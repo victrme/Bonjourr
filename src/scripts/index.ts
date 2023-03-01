@@ -2220,6 +2220,7 @@ window.onload = function () {
 
 				// Breaking data changes needs filtering
 				data.hide = convertHideStorage(data.hide)
+				data.css = data.css.replaceAll('#widgets', '')
 				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
 				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
 				data.about = { browser: detectPlatform(), version }
