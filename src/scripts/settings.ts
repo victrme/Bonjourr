@@ -9,6 +9,7 @@ import storage from './storage'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
+import unsplash from './features/unsplash'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
@@ -48,7 +49,6 @@ import {
 	tabTitle,
 	textShadow,
 	traduction,
-	unsplash,
 	pageWidth,
 } from './index'
 
