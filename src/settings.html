@@ -340,7 +340,7 @@
 				<hr />
 
 				<div class="seconds wrapper">
-					<label for="i_seconds" class="trn">Display Seconds</label>
+					<label for="i_seconds" class="trn">Show Seconds</label>
 					<input id="i_seconds" class="switch" type="checkbox" />
 				</div>
 
@@ -402,7 +402,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<label for="i_timehide" class="trn">Display</label>
+					<label for="i_timehide" class="trn">Show</label>
 					<select id="i_timehide">
 						<option value="all" class="trn">Clock and date</option>
 						<option value="date" class="trn">Clock only</option>
@@ -726,7 +726,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<label for="i_weatherhide" class="trn">Display</label>
+					<label for="i_weatherhide" class="trn">Show</label>
 					<select id="i_weatherhide">
 						<option value="all" class="trn">Description and icon</option>
 						<option value="icon" class="trn">Description only</option>
@@ -921,6 +921,9 @@
 
 					<div class="wrapper">
 						<label for="i_qtlist" class="trn">Custom quotes</label>
+
+						<button class="tooltip ttcustomquotes" aria-label="Tips on custom quotes">?</button>
+
 						<input
 							id="i_qtlist"
 							name="qtlist"
@@ -929,6 +932,12 @@
 							maxlength="8000"
 						/>
 					</div>
+
+					<p class="tooltiptext ttcustomquotes">
+						<span class="trn">Paste in your own quotes and authors in an array format.</span>
+						<a class="trn" href="https://bonjourr.fr/docs/overview/#custom-quotes" rel="noreferrer noopener" target="_blank">Learn more</a>
+					</p>
+
 				</div>
 
 				<hr />

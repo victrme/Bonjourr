@@ -40,7 +40,8 @@
 	}
 
 	body #interface {
-		margin-bottom: 77px;
+		padding-bottom: 77px;
+		min-height: 100dvh;
 
 		#quotes_container {
 			width: 90vw;
@@ -55,8 +56,8 @@
 		top: auto;
 		right: auto;
 		left: 0%;
-		bottom: -100vh;
-		height: 100vh;
+		bottom: -100dvh;
+		height: 100dvh;
 		width: 100%;
 		font-size: 1.2em;
 		padding: 0px;
@@ -108,7 +109,6 @@
 	#creditContainer {
 		width: calc(100% - 7.5em);
 		z-index: 1;
-		margin-bottom: 42px;
 
 		#credit {
 			display: block;
