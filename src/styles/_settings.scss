@@ -277,7 +277,8 @@
 
 		&.ttcoll,
 		&.ttgrid,
-		&.tttab {
+		&.tttab,
+		&.ttcustomquotes {
 			&.shown {
 				padding: 4px 0;
 				margin: 0 0 0.5em 0;
@@ -689,7 +690,7 @@
 
 	#quotes_userlist.shown,
 	#searchbar_request.shown {
-		max-height: 60px;
+		max-height: 100px;
 	}
 
 	#searchbar_options.shown {
@@ -711,7 +712,7 @@
 
 		&.shown {
 			overflow-y: clip;
-			max-height: 230px;
+			max-height: 270px;
 		}
 	}
 

@@ -21,6 +21,30 @@
 //   Italian translation by Trazalca · @Trazalca
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
 
+// Empty array template :
+// '': {
+// 	fr: '',
+// 	sk: '',
+// 	sv: '',
+// 	pl: '',
+// 	pt_BR: '',
+// 	nl: '',
+// 	ru: '',
+// 	zh_CN: '',
+// 	zh_HK: '',
+// 	de: '',
+// 	it: '',
+// 	es: '',
+// 	tr: '',
+// 	uk: '',
+// 	id: '',
+// 	da: '',
+// 	fi: '',
+// 	hu: '',
+// 	sr: '',
+// 	sr_YU: '',
+// },
+
 export const langList = {
 	en: 'English',
 	fr: 'Français',
@@ -2269,7 +2293,7 @@ export const dict = {
 		sr_YU: 'Sa rimskim ciframa',
 	},
 	Marks: {
-		fr: 'Graduations',
+		fr: 'Lignes',
 		sv: 'Markera',
 		nl: 'Markering',
 		pl: 'Znakowanie',
@@ -2313,13 +2337,13 @@ export const dict = {
 		sr_YU: 'Datum',
 	},
 
-	Display: {
+	Show: {
 		fr: 'Affichage',
 		sk: 'Zobraziť',
 		sv: 'Visa',
 		pl: 'Wyświetl',
 		pt_BR: 'Mostrar',
-		nl: 'Display',
+		nl: 'Show',
 		ru: 'Отображение',
 		zh_CN: '显示',
 		zh_HK: '顯示',
@@ -2400,6 +2424,28 @@ export const dict = {
 		hu: 'Időjárás',
 		sr: 'Прогноза',
 		sr_YU: 'Prognoza',
+	},
+	'Weather & Greetings': {
+		fr: 'Météo & bienvenue',
+		sk: 'Počasie & pozdravy',
+		sv: 'Väder och hälsningar',
+		pl: 'Pogoda i pozdrowienia',
+		pt_BR: 'Clima e saudações',
+		nl: 'Weer & groeten',
+		ru: 'Погода и приветствия',
+		zh_CN: '天气与问候',
+		zh_HK: '天氣和問候語',
+		de: 'Wetter & Grüße',
+		it: 'Tempo e saluti',
+		es: 'Tiempo y saludos',
+		tr: 'Hava durumu ve selamlar',
+		uk: 'Погода та привітання',
+		id: 'Cuaca & salam',
+		da: 'Vejret og hilsner',
+		fi: 'Sää & terveiset',
+		hu: 'Időjárás és üdvözlet',
+		sr: 'Време & поздрав',
+		sr_YU: 'Vremenska prognoza & pozdrav ',
 	},
 	Icon: {
 		fr: 'Icône',
@@ -2621,7 +2667,7 @@ export const dict = {
 		sr: 'Аналогни сат',
 		sr_YU: 'Analogni sat',
 	},
-	'Display Seconds': {
+	'Show Seconds': {
 		fr: 'Afficher les secondes',
 		sv: 'Visa sekunder',
 		nl: 'Weergave seconden',
@@ -3105,7 +3151,7 @@ export const dict = {
 		sr: 'да креираш наслове',
 		sr_YU: 'za kreiranje naslova',
 	},
-	'to add a list or check boxes': {
+	'to add a list or checkbox': {
 		fr: 'pour ajouter une liste ou des cases à cocher',
 		sk: 'pridať zoznam alebo zaškrtávacie políčka',
 		sv: 'lägga till en lista eller kryssrutor',
@@ -4031,7 +4077,7 @@ export const dict = {
 		sr_YU: 'Klasični',
 	},
 	'Custom quotes': {
-		fr: 'Citations personnalisés',
+		fr: 'Citations personnalisées',
 		sk: 'Vlastné úvodzovky',
 		sv: 'Anpassade citat',
 		pl: 'Cytaty niestandardowe',
@@ -4051,6 +4097,28 @@ export const dict = {
 		hu: 'Egyéni idézőjelek',
 		sr: 'Прилагођени цитати',
 		sr_YU: 'Prilagođeni citati',
+	},
+	'Paste in your own quotes and authors in an array format.': {
+		fr: 'Insérez vos propres citations et auteurs sous forme de tableau.',
+		sk: '',
+		sv: 'Klistra in dina egna citat och författare i ett matrisformat.',
+		pl: 'Wklejanie własnych cytatów i autorów w formacie tablicowym.',
+		pt_BR: 'Cole em suas próprias citações e autores em um formato de matriz.',
+		nl: 'Plak uw eigen citaten en auteurs in een matrix.',
+		ru: 'Вставляйте собственные цитаты и авторов в формате массива.',
+		zh_CN: '以数组的形式粘贴你自己的引言和作者。',
+		zh_HK: '以数组的形式粘贴你自己的引言和作者。',
+		de: 'Fügen Sie Ihre eigenen Zitate und Autoren in einem Array-Format ein.',
+		it: 'Incollate le vostre citazioni e i vostri autori in un formato array.',
+		es: 'Pega tus propias citas y autores en formato array.',
+		tr: 'Kendi alıntılarınızı ve yazarlarınızı bir dizi biçiminde yapıştırın.',
+		uk: 'Вставте власні цитати та авторів у форматі масиву.',
+		id: 'Tempelkan kutipan dan penulis Anda sendiri dalam format larik.',
+		da: 'Indsæt dine egne citater og forfattere i et array-format.',
+		fi: 'Liitä omat lainauksesi ja kirjoittajasi rivimuodossa.',
+		hu: 'Illessze be a saját idézeteit és szerzőit tömb formátumban.',
+		sr: 'Налепите своје цитате и ауторе у формату низа.',
+		sr_YU: 'Nalepite u sopstvene navodnike i autore u formatu niza. ',
 	},
 	Fonts: {
 		fr: 'Polices',
