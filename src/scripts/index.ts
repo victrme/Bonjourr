@@ -1022,17 +1022,20 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 
 	if (time) {
 		const cases = {
-			auto: time.now <= time.rise || time.now > time.set ? 'dark' : '',
+			auto: time.now <= time.rise || time.now > time.set ? 'dark' : 'light',
 			system: 'autodark',
 			enable: 'dark',
-			disable: '',
+			disable: 'light',
+		}
+
+		if (isEvent) {
+			clas(document.body, false, 'light')
+			clas(document.body, false, 'dark')
+			clas(document.body, false, 'autodark')
+			storage.sync.set({ dark: value })
 		}
 
 		clas(document.body, true, cases[value])
-
-		if (isEvent) {
-			storage.sync.set({ dark: value })
-		}
 	}
 }
 
