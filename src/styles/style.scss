@@ -283,9 +283,11 @@
 				justify-content: center;
 				align-items: center;
 				margin-top: 1em;
-				min-height: 3em; // to prevent layout shift
+				min-height: 3.3em;
 
 				img {
+					object-fit: contain;
+					height: 3.3em;
 					width: 3.3em;
 					border: none;
 					padding-right: 10px;
