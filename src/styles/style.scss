@@ -351,20 +351,15 @@
 			}
 
 			&.removed {
-				width: 0px !important;
-				margin-right: -1.3em;
-				margin-left: -1.3em;
-				overflow: hidden;
+				width: 0 !important;
+				margin: 0 -1.3em;
 				opacity: 0;
-				transition: width 0.6s $easeOutThree, opacity 0.6s $easeOutThree;
+				overflow: hidden;
+				transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
 
 				img {
-					transition: transform 0.6s $easeOutThree;
-					transform: scale(0);
-				}
-
-				span {
-					opacity: 0;
+					transition: transform 0.3s $easeOutThree;
+					transform: scale(0.6);
 				}
 			}
 

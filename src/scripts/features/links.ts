@@ -115,10 +115,9 @@ export default function quickLinks(
 				// Load icons one by one
 				links.map(async (link, index) => {
 					const dom = blocklist[index].icon
-					const needsToChange = ['api.faviconkit.com', 'loading.svg'].some((x) => link.icon.includes(x))
 
 					// Fetch new icons if matches these urls
-					if (needsToChange) {
+					if (link.icon.includes('loading.svg')) {
 						link.icon = await fetchNewIcon(dom, link.url)
 						storage.sync.set({ [link._id]: link })
 					}
@@ -524,18 +523,9 @@ export default function quickLinks(
 		storage.sync.get(null, (data) => {
 			const links = bundleLinks(data as Sync)
 			const target = data[linkId] as Link
-			const linkDOM = $(linkId)
 
-			if (!target || !linkDOM) return
+			clas($(linkId), true, 'removed')
 
-			// Removes DOM
-			const height = linkDOM.getBoundingClientRect().height
-			linkDOM.setAttribute('style', 'height: ' + height + 'px')
-
-			clas(linkDOM, true, 'removed')
-			setTimeout(() => linkDOM.remove(), 600)
-
-			// Removes storage
 			delete data[linkId]
 
 			// Updates Order
@@ -550,29 +540,37 @@ export default function quickLinks(
 
 			storage.sync.clear()
 			storage.sync.set(data)
+
+			setTimeout(() => {
+				$(linkId)?.remove()
+			}, 600)
 		})
 	}
 
 	function linkSubmission(type: 'add' | 'import', importList?: { title: string; url: string }[]) {
-		// importList here can also be button dom when type is "addlink"
-		// This needs to be cleaned up later
-
 		storage.sync.get(null, (data) => {
 			const links = bundleLinks(data as Sync)
 			let newLinksList = []
 
 			const validator = (title: string, url: string, order: number) => {
+				const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
+
 				url = stringMaxSize(url, 512)
-				const to = (scheme: string) => url.startsWith(scheme)
-				const acceptableSchemes = to('http://') || to('https://')
-				const unacceptable = to('about:') || to('chrome://')
+
+				const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
+				const noProtocol = !startsWithEither(['https://', 'http://'])
+				const isLocalhost = url.startsWith('localhost')
+
+				let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
+
+				url = prefix + url
 
 				return {
 					order: order,
 					_id: 'links' + randomString(6),
 					title: stringMaxSize(title, 64),
 					icon: 'src/assets/interface/loading.svg',
-					url: acceptableSchemes ? url : unacceptable ? 'false' : 'https://' + url,
+					url: url,
 				}
 			}
 
