@@ -25,7 +25,11 @@ export default async function quotes(
 
 			// Fetch a random quote from the quotes API
 			const query = (type += type === 'classic' ? `/${lang}` : '')
-			const response = await fetch('https://quotes.bonjourr.fr/' + query)
+
+			const day = new Date().getDay() % 3
+			const API = day === 0 ? '@@QUOTES_API_1' : day === 1 ? '@@QUOTES_API_2' : '@@QUOTES_API_3'
+
+			const response = await fetch(API + query)
 			const json = await response.json()
 
 			if (response.ok) {
