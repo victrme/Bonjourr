@@ -8,10 +8,6 @@ function handleInstalled(details) {
 	console.log(details)
 }
 
-function goodbye() {
-	return 'https://bonjourr.fr/goodbye?from=' + (navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Firefox')
-}
-
 browser.browserAction.onClicked.addListener(createNewTab)
 browser.runtime.onInstalled.addListener(handleInstalled)
-browser.runtime.setUninstallURL(goodbye())
+browser.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
