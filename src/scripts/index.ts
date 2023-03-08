@@ -105,10 +105,7 @@ const interfaceFade = (function interfaceFadeDebounce() {
 	return { apply: applyFade }
 })()
 
-export function toggleWidgets(
-	list: { [key in 'quicklinks' | 'notes' | 'quotes' | 'searchbar' | 'time' | 'main']?: boolean },
-	fromInput?: true
-) {
+export function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, fromInput?: true) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
@@ -120,38 +117,22 @@ export function toggleWidgets(
 		searchbar: { domid: 'sb_container', inputid: 'i_sb' },
 	}
 
-	// toggle settings options instantly
+	// toggle settings option drawers
 	listEntries.forEach(([key, on]) => {
 		clas($(key + '_options'), on, 'shown')
 	})
 
-	// Update storage instantly
-	storage.sync.get(['quicklinks', 'notes', 'quotes', 'searchbar', 'time', 'main'], (data) => {
-		let statesToSave: { [key: string]: unknown } = {}
+	// toggle 'enable' switches
+	listEntries.forEach(([key, on]) => {
+		if (key in widgets) {
+			const id = widgets[key as keyof typeof widgets].inputid
+			const input = $(id) as HTMLInputElement
 
-		if ('time' in list) statesToSave.time = list.time
-		if ('main' in list) statesToSave.main = list.main
-		if ('quicklinks' in list) statesToSave.quicklinks = list.quicklinks
-		if ('notes' in list) statesToSave.notes = { ...data.notes, on: list.notes }
-		if ('quotes' in list) statesToSave.quotes = { ...data.quotes, on: list.quotes }
-		if ('searchbar' in list) statesToSave.searchbar = { ...data.searchbar, on: list.searchbar }
-
-		storage.sync.set({ ...statesToSave })
-	})
-
-	// Toggle comes from move element initialization
-	if (!fromInput) {
-		listEntries.forEach(([key, on]) => {
-			if (key in widgets) {
-				const id = widgets[key as keyof typeof widgets].inputid
-
-				if (id) {
-					const input = $(id) as HTMLInputElement
-					input.checked = on
-				}
+			if (id && input) {
+				input.checked = on
 			}
-		})
-	}
+		}
+	})
 
 	// Fade interface
 	interfaceFade.apply(function () {
@@ -163,7 +144,7 @@ export function toggleWidgets(
 			}
 		})
 
-		// user is toggling from settings
+		// user is toggling from settings, update grid
 		if (fromInput) {
 			const [id, on] = listEntries[0] // always only one toggle
 			moveElements(null, { widget: { id: id as MoveKeys, on: on } })
@@ -1620,7 +1601,9 @@ export function filterImports(data: any) {
 
 	// imports without move data
 	// lets moveElements handle it as a first startup
-	if (!data.move) delete result.move
+	// if (!data.move && (data.quicklinks || data.searchbar || data.notes || data.quotes || data.time || data.main)) {
+	// 	delete result.move
+	// }
 
 	if (Array.isArray(data.hide)) {
 		result.hide = convertHideStorage(data.hide)

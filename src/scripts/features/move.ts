@@ -1,8 +1,8 @@
 import clamp from 'lodash.clamp'
 import storage from '../storage'
-import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
+import { toggleWidgetsDisplay } from '..'
 import { syncDefaults, clas, $, tradThis } from '../utils'
-import { toggleWidgets } from '..'
+import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
 
 // ┌──────────────────────────────────────┐
 // │   ┌────────────┐  ┌────────────┐     │
@@ -24,13 +24,8 @@ import { toggleWidgets } from '..'
 
 type Layout = Move['layouts'][keyof Move['layouts']]
 
-type InterfaceWidgetControl = {
-	id: MoveKeys
-	on: boolean
-}
-
 type UpdateMove = {
-	widget?: InterfaceWidgetControl
+	widget?: { id: MoveKeys; on: boolean }
 	span?: 'col' | 'row'
 	reset?: true
 	toggle?: true
@@ -58,6 +53,19 @@ let activeID: MoveKeys | null
 // Utils (no dom uses or manipulation)
 
 const isEditing = () => dominterface?.classList.contains('move-edit') || false
+
+function widgetsListToData(list: { [key in MoveKeys]?: boolean }, data: Sync) {
+	let states: { [key: string]: unknown } = {}
+
+	if ('time' in list) states.time = list.time
+	if ('main' in list) states.main = list.main
+	if ('quicklinks' in list) states.quicklinks = list.quicklinks
+	if ('notes' in list) states.notes = { ...data.notes, on: list.notes }
+	if ('quotes' in list) states.quotes = { ...data.quotes, on: list.quotes }
+	if ('searchbar' in list) states.searchbar = { ...data.searchbar, on: list.searchbar }
+
+	return states
+}
 
 function areaStringToLayoutGrid(area: string) {
 	// Remove first and last char quotes
@@ -193,7 +201,7 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 	return grid
 }
 
-function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: MoveKeys, add: boolean) {
+export function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: MoveKeys, add: boolean) {
 	function addWidget() {
 		if (grid.length === 0) {
 			if (selection === 'single') return [[id]] as [string][]
@@ -510,24 +518,28 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			function layoutChange() {
 				// Only update selection if coming from user
 				move.selection = (prop.layout || 'single') as Move['selection']
-				storage.sync.set({ move: move })
 
 				// Assign layout after mutating move
 				const layout = move.layouts[move.selection]
 				const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
 
-				// This triggers interface fade
-				toggleWidgets({
+				const list = {
 					time: widgetsInGrid.includes('time'),
 					main: widgetsInGrid.includes('main'),
 					notes: widgetsInGrid.includes('notes'),
 					quotes: widgetsInGrid.includes('quotes'),
 					searchbar: widgetsInGrid.includes('searchbar'),
 					quicklinks: widgetsInGrid.includes('quicklinks'),
-				})
+				}
+
+				// Update storage
+				const states = widgetsListToData(list, data as Sync)
+				storage.sync.set({ ...states, move })
+
+				// This triggers interface fade
+				toggleWidgetsDisplay(list)
 
 				setTimeout(() => {
-					console.log(layout)
 					setAllAligns(layout.items)
 					setGridAreas(layout)
 					buttonControl.layout(move.selection)
@@ -544,7 +556,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 						buttonControl.grid(activeID)
 						buttonControl.align(layout.items[activeID])
 					}
-				}, 200) // same duration as toggleWidgets interfaceFade.apply
+				}, 200) // same duration as toggleWidgetsDisplay interfaceFade.apply
 			}
 
 			function layoutReset() {
@@ -627,11 +639,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				storage.sync.set({ move: move })
 			}
 
-			function toggleWidgetsOnGrid() {
+			function toggleWidgetOnGrid() {
 				if (!events?.widget) return
 
-				const { id, on } = events?.widget
 				const layout = { ...move.layouts[move.selection] }
+				const { id, on } = events?.widget
 
 				move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
 
@@ -644,7 +656,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					on ? gridOverlay.add(id) : gridOverlay.remove(id)
 				}
 
-				storage.sync.set({ move: move })
+				let list: { [key in MoveKeys]?: boolean } = {}
+				list[id] = on
+
+				const states = widgetsListToData(list, data as Sync)
+				storage.sync.set({ ...states, move })
 			}
 
 			switch (Object.keys(prop)[0]) {
@@ -684,7 +700,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					break
 
 				case 'widget':
-					toggleWidgetsOnGrid()
+					toggleWidgetOnGrid()
 					break
 			}
 		})
@@ -762,8 +778,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 	// Events coming from settings menu
 	if (events) {
-		if (events?.select) updateMoveElement({ select: events.select })
 		if (events?.widget) updateMoveElement({ widget: events.widget })
+		if (events?.select) updateMoveElement({ select: events.select })
 		if (events?.layout) updateMoveElement({ layout: events.layout })
 		if (events?.toggle) updateMoveElement({ toggle: true })
 		if (events?.reset) updateMoveElement({ reset: true })

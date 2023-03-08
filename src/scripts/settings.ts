@@ -2,7 +2,7 @@ import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
 import { dict, langList } from './lang'
-import { Sync } from './types/sync'
+import { MoveKeys, Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
@@ -11,8 +11,8 @@ import quotes from './features/quotes'
 import weather from './features/weather'
 import unsplash from './features/unsplash'
 import quickLinks from './features/links'
-import moveElements from './features/move'
 import hideElements from './features/hide'
+import moveElements, { gridWidget } from './features/move'
 
 import {
 	$,
@@ -34,7 +34,7 @@ import {
 } from './utils'
 
 import {
-	toggleWidgets,
+	toggleWidgetsDisplay,
 	backgroundFilter,
 	clock,
 	customCss,
@@ -329,7 +329,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgets({ quicklinks: this.checked }, true)
+		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
 	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
@@ -419,7 +419,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Time and date
 
 	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
-		toggleWidgets({ time: this.checked }, true)
+		toggleWidgetsDisplay({ time: this.checked }, true)
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
@@ -465,7 +465,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
-		toggleWidgets({ main: this.checked }, true)
+		toggleWidgetsDisplay({ main: this.checked }, true)
 	})
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
@@ -505,7 +505,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Notes
 
 	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgets({ notes: this.checked }, true)
+		toggleWidgetsDisplay({ notes: this.checked }, true)
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -524,7 +524,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Searchbar
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgets({ searchbar: this.checked }, true)
+		toggleWidgetsDisplay({ searchbar: this.checked }, true)
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -551,7 +551,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Quotes
 
 	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgets({ quotes: this.checked }, true)
+		toggleWidgetsDisplay({ quotes: this.checked }, true)
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
@@ -965,7 +965,6 @@ function paramsImport(dataToImport: Sync) {
 		// Load all sync & dynamicCache
 		storage.sync.get(null, (sync) => {
 			storage.local.get('dynamicCache', (local) => {
-				//
 				const newImport = dataToImport
 
 				// Remove user collection cache if collection change
@@ -981,6 +980,44 @@ function paramsImport(dataToImport: Sync) {
 					bundleLinks(sync as Sync).forEach((elem: Link) => {
 						delete sync[elem._id]
 					})
+				}
+
+				// When import doesn't have move, other widgets can still be different
+				// This updates current grid with the widgets states from import
+				if (!dataToImport.move) {
+					let diffWidgets = {
+						time: sync.time !== dataToImport.time ?? true,
+						main: sync.main !== dataToImport.main ?? true,
+						notes: sync.notes?.on !== dataToImport.notes?.on ?? false,
+						quotes: !!sync.quotes?.on !== dataToImport.quotes?.on ?? false,
+						searchbar: !!sync.searchbar?.on !== dataToImport.searchbar?.on ?? false,
+						quicklinks: !!sync.quicklinks !== dataToImport.quicklinks ?? true,
+					}
+
+					let importStates = {
+						time: dataToImport.time ?? true,
+						main: dataToImport.main ?? true,
+						notes: dataToImport.notes?.on ?? false,
+						quotes: dataToImport.quotes?.on ?? false,
+						searchbar: dataToImport.searchbar?.on ?? false,
+						quicklinks: dataToImport.quicklinks ?? true,
+					}
+
+					let data = sync as Sync
+					let layout = structuredClone(data.move.layouts[data.move.selection])
+					const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
+
+					// mutate grid: add or remove widgets that are different from current data
+					diffEntries.forEach(([key, _]) => {
+						layout.grid = gridWidget(
+							layout.grid,
+							data.move.selection,
+							key as MoveKeys,
+							importStates[key as keyof typeof importStates]
+						)
+					})
+
+					sync.move.layouts[sync.move.selection] = layout
 				}
 
 				sync = { ...sync, ...newImport }
