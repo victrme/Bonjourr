@@ -23,7 +23,7 @@ export const mobilecheck = () =>
 		? navigator.userAgentData.mobile
 		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
-export const stringMaxSize = (str: string, size: number) => (str.length > size ? str.slice(0, size) : str)
+export const stringMaxSize = (str: string = '', size: number) => (str.length > size ? str.slice(0, size) : str)
 export const minutator = (date: Date) => date.getHours() * 60 + date.getMinutes()
 
 export const extractDomain = (url: string) => {

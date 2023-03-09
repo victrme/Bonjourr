@@ -2,7 +2,7 @@ import debounce from 'lodash.debounce'
 import throttle from 'lodash.throttle'
 
 import { dict, langList } from './lang'
-import { MoveKeys, Sync } from './types/sync'
+import { Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
@@ -12,14 +12,15 @@ import weather from './features/weather'
 import unsplash from './features/unsplash'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
-import moveElements, { gridWidget } from './features/move'
+import moveElements from './features/move'
+
+import filterImports from './utils/filterImports'
 
 import {
 	$,
 	has,
 	clas,
 	tradThis,
-	bundleLinks,
 	inputThrottle,
 	detectPlatform,
 	closeEditLink,
@@ -960,75 +961,26 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-function paramsImport(dataToImport: Sync) {
+function paramsImport(toImport: Sync) {
 	try {
 		// Load all sync & dynamicCache
 		storage.sync.get(null, (sync) => {
 			storage.local.get('dynamicCache', (local) => {
-				const newImport = dataToImport
-
 				// Remove user collection cache if collection change
-				if (sync.dynamic && newImport.dynamic) {
-					if (sync.dynamic?.collection !== newImport.dynamic?.collection) {
+				if (sync.dynamic && toImport.dynamic) {
+					if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
 						local.dynamicCache.user = []
 					}
 				}
 
-				// Delete current links on imports containing links somewhere
-				// to avoid duplicates
-				if ((newImport.links as [])?.length > 0 || bundleLinks(newImport)?.length > 0) {
-					bundleLinks(sync as Sync).forEach((elem: Link) => {
-						delete sync[elem._id]
-					})
-				}
+				sync = filterImports(sync as Sync, toImport)
 
-				// When import doesn't have move, other widgets can still be different
-				// This updates current grid with the widgets states from import
-				if (!dataToImport.move) {
-					let diffWidgets = {
-						time: sync.time !== dataToImport.time ?? true,
-						main: sync.main !== dataToImport.main ?? true,
-						notes: sync.notes?.on !== dataToImport.notes?.on ?? false,
-						quotes: !!sync.quotes?.on !== dataToImport.quotes?.on ?? false,
-						searchbar: !!sync.searchbar?.on !== dataToImport.searchbar?.on ?? false,
-						quicklinks: !!sync.quicklinks !== dataToImport.quicklinks ?? true,
-					}
-
-					let importStates = {
-						time: dataToImport.time ?? true,
-						main: dataToImport.main ?? true,
-						notes: dataToImport.notes?.on ?? false,
-						quotes: dataToImport.quotes?.on ?? false,
-						searchbar: dataToImport.searchbar?.on ?? false,
-						quicklinks: dataToImport.quicklinks ?? true,
-					}
-
-					let data = sync as Sync
-					let layout = structuredClone(data.move.layouts[data.move.selection])
-					const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
-
-					// mutate grid: add or remove widgets that are different from current data
-					diffEntries.forEach(([key, _]) => {
-						layout.grid = gridWidget(
-							layout.grid,
-							data.move.selection,
-							key as MoveKeys,
-							importStates[key as keyof typeof importStates]
-						)
-					})
-
-					sync.move.layouts[sync.move.selection] = layout
-				}
-
-				sync = { ...sync, ...newImport }
-
-				// full import on Online is through "import" field // Must clear, if not, it can add legacy data
 				storage.sync.clear()
-				storage.sync.set(sync, () => storage.local.set(local))
-
-				sessionStorage.isImport = true // to separate import and new version startup
-
-				fadeOut()
+				storage.sync.set(sync, () =>
+					storage.local.set(local, () => {
+						fadeOut()
+					})
+				)
 			})
 		})
 	} catch (e) {

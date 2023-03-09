@@ -1101,7 +1101,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 	//
 	// Initialisation
 
-	const { on, engine, request, newtab, opacity, placeholder } = init || syncDefaults.searchbar
+	const { on, engine, request, newtab, opacity, placeholder } = init || structuredClone(syncDefaults.searchbar)
 
 	try {
 		display(on)
@@ -1594,53 +1594,6 @@ export function sunTime(init?: Weather) {
 	}
 }
 
-export function filterImports(data: any) {
-	// TODO: Somehow type filterImports
-
-	let result = { ...syncDefaults, ...data }
-
-	// imports without move data
-	// lets moveElements handle it as a first startup
-	// if (!data.move && (data.quicklinks || data.searchbar || data.notes || data.quotes || data.time || data.main)) {
-	// 	delete result.move
-	// }
-
-	if (Array.isArray(data.hide)) {
-		result.hide = convertHideStorage(data.hide)
-	}
-
-	// <1.9.0 searchbar options was boolean
-	if (typeof data.searchbar === 'boolean') {
-		result.on = data.searchbar
-		result.newtab = data.searchbar_newtab || false
-		result.engine = data.searchbar_engine ? data.searchbar_engine.replace('s_', '') : 'google'
-	}
-
-	// Filter links to remove alias and give random ids
-	try {
-		function linksFilter(sync: any) {
-			const aliasKeyList = Object.keys(sync).filter((key) => key.match('alias:'))
-
-			sync.links?.forEach(({ title, url, icon }: Link, i: number) => {
-				const id = 'links' + randomString(6)
-				const filteredIcon = icon.startsWith('alias:') ? sync[icon] : icon
-
-				sync[id] = { _id: id, order: i, title, icon: filteredIcon, url }
-			})
-
-			aliasKeyList.forEach((key) => delete sync[key]) // removes <1.13.0 aliases
-			delete sync.links // removes <1.13.0 links array
-
-			return sync
-		}
-		result = linksFilter(result)
-	} catch (e) {
-		errorMessage('Messed up in filter imports', e)
-	}
-
-	return result
-}
-
 export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init?: Sync) {
 	//
 	// Progressive anim to max of Bonjourr animation time
@@ -1803,22 +1756,11 @@ window.onload = function () {
 	try {
 		storage.sync.get(null, (data) => {
 			const VersionChange = data?.about?.version !== syncDefaults.about.version
-			const isImport = sessionStorage.isImport === 'true'
 			const firstStart = Object.keys(data).length === 0
 
 			if (firstStart) {
-				data = syncDefaults
+				data = structuredClone(syncDefaults)
 				storage.local.set(localDefaults)
-				storage.sync.set(data)
-			}
-			//
-			else if (isImport) {
-				sessionStorage.removeItem('isImport')
-
-				data = filterImports(data)
-				data.about = { browser: detectPlatform(), version: syncDefaults.about.version }
-
-				storage.sync.clear()
 				storage.sync.set(data)
 			}
 			//
