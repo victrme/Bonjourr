@@ -323,7 +323,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_pagewidth').addEventListener('input', function () {
-		pageWidth(parseInt(this.value))
+		pageWidth(parseInt(this.value), true)
 	})
 
 	//
