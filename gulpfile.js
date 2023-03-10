@@ -33,26 +33,24 @@ function html(platform) {
 }
 
 function scripts(platform) {
-	const envFile = fs.readFileSync('.env.json', 'utf-8')
 	let envVars = {}
 
 	try {
+		const envFile = fs.readFileSync('.env.json', 'utf-8')
 		envVars = JSON.parse(envFile)
-	} catch (error) {
-		console.log('Could not get APIs', error)
-	}
+	} catch (e) {}
 
 	return () =>
 		src('release/main.js')
-			.pipe(replace('@@UNSPLASH_API', envVars.UNSPLASH_API))
-			.pipe(replace('@@FAVICON_API_1', envVars.FAVICON_API_1))
-			.pipe(replace('@@FAVICON_API_2', envVars.FAVICON_API_2))
-			.pipe(replace('@@QUOTES_API_1', envVars.QUOTES_API_1))
-			.pipe(replace('@@QUOTES_API_2', envVars.QUOTES_API_2))
-			.pipe(replace('@@QUOTES_API_3', envVars.QUOTES_API_3))
-			.pipe(replace('@@WEATHER_API_1', envVars.WEATHER_API_1))
-			.pipe(replace('@@WEATHER_API_2', envVars.WEATHER_API_2))
-			.pipe(replace('@@WEATHER_API_3', envVars.WEATHER_API_3))
+			.pipe(replace('@@UNSPLASH_API', envVars?.UNSPLASH_API || '/'))
+			.pipe(replace('@@FAVICON_API_1', envVars?.FAVICON_API_1 || '/'))
+			.pipe(replace('@@FAVICON_API_2', envVars?.FAVICON_API_2 || '/'))
+			.pipe(replace('@@QUOTES_API_1', envVars?.QUOTES_API_1 || '/'))
+			.pipe(replace('@@QUOTES_API_2', envVars?.QUOTES_API_2 || '/'))
+			.pipe(replace('@@QUOTES_API_3', envVars?.QUOTES_API_3 || '/'))
+			.pipe(replace('@@WEATHER_API_1', envVars?.WEATHER_API_1 || '/'))
+			.pipe(replace('@@WEATHER_API_2', envVars?.WEATHER_API_2 || '/'))
+			.pipe(replace('@@WEATHER_API_3', envVars?.WEATHER_API_3 || '/'))
 			.pipe(dest(`release/${platform}/src/scripts`))
 }
 

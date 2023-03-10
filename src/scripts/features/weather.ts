@@ -22,11 +22,7 @@ export default function weather(
 
 	async function request(storage: Weather): Promise<Weather> {
 		function getRequestURL(isForecast: boolean) {
-			const WEATHER_API_KEY = [
-				'YTU0ZjkxOThkODY4YTJhNjk4ZDQ1MGRlN2NiODBiNDU=',
-				'Y2U1M2Y3MDdhZWMyZDk1NjEwZjIwYjk4Y2VjYzA1NzE=',
-				'N2M1NDFjYWVmNWZjNzQ2N2ZjNzI2N2UyZjc1NjQ5YTk=',
-			]
+			const WEATHER_API_KEY = ['@@WEATHER_API_1', '@@WEATHER_API_2', '@@WEATHER_API_3']
 			const units = storage.unit || 'metric'
 			const type = isForecast ? 'forecast' : 'weather'
 			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
