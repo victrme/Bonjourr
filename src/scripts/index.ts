@@ -1755,16 +1755,15 @@ window.onload = function () {
 
 	try {
 		storage.sync.get(null, (data) => {
-			const VersionChange = data?.about?.version !== syncDefaults.about.version
-			const firstStart = Object.keys(data).length === 0
-
-			if (firstStart) {
-				data = structuredClone(syncDefaults)
-				storage.local.set(localDefaults)
-				storage.sync.set(data)
-			}
 			//
-			else if (VersionChange) {
+			// First start
+			if (Object.keys(data).length === 0) {
+				storage.local.set(localDefaults)
+			}
+
+			//
+			// Version change
+			else if (data?.about?.version !== syncDefaults.about.version) {
 				const version_old = data?.about?.version
 				const version = syncDefaults.about.version
 
@@ -1785,7 +1784,22 @@ window.onload = function () {
 				return
 			}
 
-			startup(data as Sync) // TODO: rip type checking
+			//
+			// Verify data as a valid Sync storage ( essentially type checking )
+			let hasMissingProps = false
+
+			Object.entries(syncDefaults).forEach(([key, val]) => {
+				if (!(key in data)) {
+					data[key] = val
+					hasMissingProps = true
+				}
+			})
+
+			if (hasMissingProps) {
+				storage.sync.set({ ...data }, () => startup(data as Sync))
+			} else {
+				startup(data as Sync)
+			}
 		})
 	} catch (e) {
 		errorMessage('Could not load chrome storage on startup', e)
