@@ -75,6 +75,12 @@ export default function filterImports(current: Sync, toImport: Sync) {
 			quicklinks: current.quicklinks !== importStates.quicklinks,
 		}
 
+		// Force single layout with old imports
+		// Partial imports, for example links list only, will not force single
+		if (Object.keys(toImport).some((key) => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
+			current.move.selection = 'single'
+		}
+
 		let layout = structuredClone(current.move.layouts[current.move.selection])
 		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
 
