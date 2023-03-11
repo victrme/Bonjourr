@@ -3,6 +3,7 @@ import { $, deleteBrowserStorage } from '../utils'
 
 export default function errorMessage(error: unknown) {
 	const dominterface = $('interface')
+	console.error(error)
 
 	function reduceErrorStack() {
 		try {

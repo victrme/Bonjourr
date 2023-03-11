@@ -1,4 +1,4 @@
-import { syncDefaults, convertHideStorage, randomString, errorMessage, bundleLinks } from '../utils'
+import { syncDefaults, convertHideStorage, randomString, bundleLinks } from '../utils'
 import { MoveKeys, Sync } from '../types/sync'
 import { gridWidget } from '../features/move'
 
