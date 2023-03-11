@@ -5,10 +5,10 @@
 config.codekit3
 .directory
 .vscode
-.env.json
 .prettierignore
 manifest.json
 .env.json
+env.json
 
 node_modules/
 release/
