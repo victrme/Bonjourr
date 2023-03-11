@@ -1767,8 +1767,6 @@ window.onload = function () {
 				}
 			})
 
-			console.log('has loaded', data)
-
 			//
 			// First start
 			if (Object.keys(data).length === 0) {
