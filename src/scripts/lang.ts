@@ -2073,7 +2073,7 @@ export const dict = {
 		sr_YU: 'Raspored na stranici',
 	},
 	'Customise how and where widgets appear.': {
-		fr: 'Personnalisez comment et où les widgets apparaissent.',
+		fr: 'Personnalisez où et comment les widgets apparaissent.',
 		sk: 'Prispôsobiť spôsob a miesto zobrazenia widgetov.',
 		sv: 'Anpassa hur och var widgetar visas.',
 		pl: 'Dostosuj sposób i miejsce wyświetlania widżetów.',
@@ -4670,7 +4670,7 @@ export const dict = {
 		sr: 'Сада можете да померате виџете около, приказујете сопствене цитате и још много тога. Погледајте нове функције у програму ',
 		sr_YU: 'Sada možete da pomerate vidžete, pokazujete sopstvene citate i još mnogo toga. Pogledajte nove funkcije u',
 	},
-	'our full changelog': {
+	'our update post': {
 		fr: 'le changelog complet',
 		sk: 'náš úplný zoznam zmien',
 		sv: 'hela vår ändringslogg',
