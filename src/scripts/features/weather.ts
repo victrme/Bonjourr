@@ -1,7 +1,8 @@
 import { sunTime } from '..'
 import storage from '../storage'
 import { Sync, Weather } from '../types/sync'
-import { $, clas, tradThis, stringMaxSize, errorMessage } from '../utils'
+import { $, clas, tradThis, stringMaxSize } from '../utils'
+import errorMessage from '../utils/errorMessage'
 
 export default function weather(
 	init: Sync | null,
@@ -276,6 +277,7 @@ export default function weather(
 			icon.src = iconSrc
 			icon.setAttribute('alt', '')
 			icon.setAttribute('draggable', 'false')
+			icon.setAttribute('fetchPriority', 'high')
 			tempContainer.prepend(icon)
 
 			// from 1.2s request anim to .4s hide elem anim
@@ -415,6 +417,6 @@ export default function weather(
 		forecastVisibilityControl(init.weather.forecast)
 		weatherCacheControl(init.weather)
 	} catch (e) {
-		errorMessage('Weather init did not work', e)
+		errorMessage(e)
 	}
 }

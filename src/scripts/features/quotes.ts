@@ -2,7 +2,7 @@ import { Quote, Local } from '../types/local'
 import { Sync } from '../types/sync'
 
 import { canDisplayInterface, freqControl } from '..'
-import { $, clas, errorMessage } from '../utils'
+import { $, clas } from '../utils'
 import storage from '../storage'
 
 export default async function quotes(
@@ -227,7 +227,6 @@ export default async function quotes(
 	// changing quotes type fetches new batch
 
 	if (!init) {
-		errorMessage('No data to display Quotes !')
 		return
 	}
 

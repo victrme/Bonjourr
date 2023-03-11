@@ -1179,6 +1179,8 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	user-select: auto;
+	pointer-events: all;
 	top: 5%;
 	left: 5%;
 	width: calc(90% - 100px);
@@ -1192,17 +1194,28 @@
 
 	@include frostedGlass($tint: 12, $fbTint: 12, $blur: 40px, $alpha: 0.2, $fbAlpha: 0.8, $fbColor: #222);
 
+	pre {
+		width: calc(100% - 32px);
+		overflow: hidden;
+		user-select: all;
+		pointer-events: all;
+		padding: 8px 16px;
+		text-align: left;
+		background-color: #1114;
+		margin-top: 3em;
+	}
+
 	textarea {
 		width: calc(100% - 32px);
 		height: 100px;
-		margin-top: 1em;
 		padding: 8px 16px;
 		color: #fff;
-		font-size: 14px;
-		line-height: 20px;
+		font-size: 13px;
 		white-space: pre;
 		resize: vertical;
 		overflow-x: hidden;
+		border: none;
+		font-family: monospace;
 		background-color: #1114;
 	}
 

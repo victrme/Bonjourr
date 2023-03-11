@@ -7,7 +7,6 @@ import {
 	stringMaxSize,
 	getBrowser,
 	extractHostname,
-	errorMessage,
 	clas,
 	testOS,
 	bundleLinks,
@@ -18,6 +17,8 @@ import {
 	randomString,
 	extractDomain,
 } from '../utils'
+
+import errorMessage from '../utils/errorMessage'
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
@@ -126,7 +127,7 @@ export default function quickLinks(
 					else dom.src = link.icon
 				})
 			} catch (e) {
-				errorMessage('Failed to load links', e)
+				errorMessage(e)
 			}
 		}
 

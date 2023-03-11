@@ -1,5 +1,6 @@
-import { $, tradThis, clas, periodOfDay, turnRefreshButton, localDefaults, errorMessage } from '../utils'
+import { $, tradThis, clas, periodOfDay, turnRefreshButton, localDefaults } from '../utils'
 import { imgBackground, sunTime, freqControl } from '..'
+import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
 
 import { DynamicCache, Local } from '../types/local'
@@ -370,7 +371,7 @@ export default async function unsplash(
 
 			cacheControl(init.dynamic, cache, collecType, local.waitingForPreload) // Not empty: normal cacheControl
 		} catch (e) {
-			errorMessage('Dynamic errored on init', e)
+			errorMessage(e)
 		}
 	})
 

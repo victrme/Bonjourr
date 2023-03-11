@@ -20,7 +20,6 @@ import {
 	clas,
 	bundleLinks,
 	detectPlatform,
-	errorMessage,
 	extractHostname,
 	getBrowser,
 	localDefaults,
@@ -36,6 +35,8 @@ import {
 	turnRefreshButton,
 	convertHideStorage,
 } from './utils'
+
+import errorMessage from './utils/errorMessage'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
@@ -438,7 +439,7 @@ export function clock(
 		changeAnalogFace(clock.face)
 		canDisplayInterface('clock')
 	} catch (e) {
-		errorMessage('Clock or greetings failed at init', e)
+		errorMessage(e)
 	}
 }
 
@@ -965,7 +966,7 @@ export function localBackgrounds(
 
 			applyCustomBackground(selectedId)
 		} catch (e) {
-			errorMessage('Could not init local backgrounds', e)
+			errorMessage(e)
 		}
 	})
 }
@@ -1115,7 +1116,7 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 			domsearchbar?.focus()
 		}
 	} catch (e) {
-		errorMessage('Error in searchbar initialization', e)
+		errorMessage(e)
 	}
 
 	//
@@ -1532,7 +1533,7 @@ export function customFont(
 			canDisplayInterface('fonts')
 		})
 	} catch (e) {
-		errorMessage('Custom fonts failed to start', e)
+		errorMessage(e)
 	}
 }
 
@@ -1802,6 +1803,6 @@ window.onload = function () {
 			}
 		})
 	} catch (e) {
-		errorMessage('Could not load chrome storage on startup', e)
+		errorMessage(e)
 	}
 }
