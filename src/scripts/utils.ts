@@ -176,16 +176,8 @@ export const getBrowserStorage = () => {
 }
 
 export function deleteBrowserStorage() {
-	if (detectPlatform() !== 'online') {
-		storage.sync.clear()
-		storage.local.clear()
-	}
-
-	localStorage.clear()
-
-	setTimeout(() => {
-		location.reload()
-	}, 400)
+	storage.sync.clear()
+	storage.local.clear()
 }
 
 export const testOS = {

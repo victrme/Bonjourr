@@ -1757,6 +1757,19 @@ window.onload = function () {
 	try {
 		storage.sync.get(null, (data) => {
 			//
+			// Verify data as a valid Sync storage ( essentially type checking )
+			let hasMissingProps = false
+
+			Object.entries(syncDefaults).forEach(([key, val]) => {
+				if (!(key in data)) {
+					data[key] = val
+					hasMissingProps = true
+				}
+			})
+
+			console.log('has loaded', data)
+
+			//
 			// First start
 			if (Object.keys(data).length === 0) {
 				storage.local.set(localDefaults)
@@ -1784,17 +1797,6 @@ window.onload = function () {
 				storage.sync.set({ ...data }, () => startup(data as Sync))
 				return
 			}
-
-			//
-			// Verify data as a valid Sync storage ( essentially type checking )
-			let hasMissingProps = false
-
-			Object.entries(syncDefaults).forEach(([key, val]) => {
-				if (!(key in data)) {
-					data[key] = val
-					hasMissingProps = true
-				}
-			})
 
 			if (hasMissingProps) {
 				storage.sync.set({ ...data }, () => startup(data as Sync))

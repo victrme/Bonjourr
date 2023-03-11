@@ -957,7 +957,7 @@ function fadeOut() {
 	const dominterface = $('interface')!
 	dominterface.click()
 	dominterface.style.transition = 'opacity .4s'
-	dominterface.style.opacity = '0'
+	setTimeout(() => (dominterface.style.opacity = '0'))
 	setTimeout(() => location.reload(), 400)
 }
 

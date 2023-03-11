@@ -11,7 +11,7 @@ const online = (function () {
 
 					try {
 						localStorage[type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'] = JSON.stringify(data)
-						if (callback) callback
+						if (callback) callback(data)
 					} catch (error) {
 						console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
 					}
