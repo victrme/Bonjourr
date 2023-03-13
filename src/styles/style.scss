@@ -376,6 +376,9 @@
 				background-color: transparent;
 				transition: width 0.18s $easeOutThree;
 				-webkit-touch-callout: none;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
 
 				img {
 					position: relative;
@@ -415,7 +418,6 @@
 					// link title
 					position: relative;
 					display: block;
-					overflow: hidden;
 					padding-top: 0.4em;
 					line-height: 1.3em;
 					min-height: 1.3em;
@@ -436,10 +438,6 @@
 					padding: 0.3em;
 					border-radius: 0.8em;
 				}
-
-				span {
-					word-break: break-word;
-				}
 			}
 		}
 
@@ -455,6 +453,8 @@
 					visibility: visible;
 				}
 
+				a { display: inline }
+
 				a img {
 					padding: 0.2em;
 					border-radius: 0.4em;
@@ -463,7 +463,7 @@
 				a span {
 					position: absolute;
 					visibility: hidden;
-					top: 1.8em;
+					top: 1.6em;
 					left: 50%;
 					transform: translateX(-50%);
 					padding: 0.2em 0.6em;
