@@ -79,30 +79,36 @@ If you feel like we've earned it and you want to support independant open source
 
 <br>
 
-## 👨‍💻 Working on Bonjourr
+## 👨‍💻 Running Bonjourr locally
 
-We recommend a Chromium based browser to work on Bonjourr.
-
-#### Initialise the project:
+#### Chrome (Recommended)
+- **Initialize**
 -   [Install npm](https://nodejs.org/en/download/)
--   `npm i -g pnpm esbuild`
+-   `npm i pnpm esbuild`
 -   `pnpm install`
-
-#### Watch and build:
--   `pnpm run build` to build all versions
--   `pnpm run chrome|firefox|online` to watch changes on preferred platform
-
-### Chrome
+- **Build**
+-   `pnpm run build`
+- **Run & watch**
+-   `pnpm run chrome`
+- **Browser extension launch**
 -   Go to `chrome://extension`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
-    
+
 ### Firefox
--  Go to `about:debugging#/runtime/this-firefox`
--  Select "Load temporary Add-on"
--  Select `manifest.json` in `/release/firefox` folder
+-   Follow the initialize and build steps from Chrome
+- **Run & watch**
+-   `pnpm run firefox`
+- **Browser extension launch**
+-   Go to `about:debugging#/runtime/this-firefox`
+-   Select "Load temporary Add-on"
+-   Select `manifest.json` in `/release/firefox` folder
 
 ### Edge
+-   Follow the initialize and build steps from Chrome
+- **Run & watch**
+-   `pnpm run Edge`
+- **Browser extension launch**
 -   Go to `edge://extension`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
