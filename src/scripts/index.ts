@@ -1761,7 +1761,7 @@ window.onload = function () {
 			let hasMissingProps = false
 
 			Object.entries(syncDefaults).forEach(([key, val]) => {
-				if (!(key in data)) {
+				if (!(key in data) && key !== 'move') {
 					data[key] = val
 					hasMissingProps = true
 				}
