@@ -53,7 +53,7 @@
 	}
 
 	#settings {
-		top: auto;
+		top: 100%; // kiwi browser fix as dvh doesn't work (?)
 		right: auto;
 		left: 0%;
 		bottom: -100dvh;
