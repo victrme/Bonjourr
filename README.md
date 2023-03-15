@@ -79,40 +79,74 @@ If you feel like we've earned it and you want to support independant open source
 
 <br>
 
-## 👨‍💻 Working on Bonjourr
-
-We recommend a Chromium based browser to work on Bonjourr.
-
-#### Initialise the project:
--   [Install npm](https://nodejs.org/en/download/)
--   `npm i -g pnpm esbuild`
--   `pnpm install`
-
-#### Watch and build:
--   `pnpm run build` to build all versions
--   `pnpm run chrome|firefox|online` to watch changes on preferred platform
+## 👨‍💻 Running Bonjourr locally
 
 ### Chrome
+
+#### Initialize
+
+-   [Install npm](https://nodejs.org/en/download/)
+-   `npm install -g pnpm`
+-   `pnpm install`
+
+#### Build
+
+-   `pnpm run build`
+
+#### Run & watch
+
+-   `pnpm run chrome`
+
+#### Browser extension launch
+
 -   Go to `chrome://extension`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
-    
+
 ### Firefox
--  Go to `about:debugging#/runtime/this-firefox`
--  Select "Load temporary Add-on"
--  Select `manifest.json` in `/release/firefox` folder
+
+-   Follow the initialize and build steps from Chrome
+
+#### Run & watch
+
+-   `pnpm run firefox`
+
+#### Browser extension launch
+
+-   Go to `about:debugging#/runtime/this-firefox`
+-   Select "Load temporary Add-on"
+-   Select `manifest.json` in `/release/firefox` folder
 
 ### Edge
+
+-   Follow the initialize and build steps from Chrome
+
+#### Run & watch
+
+-   `pnpm run edge`
+
+#### Browser extension launch
+
 -   Go to `edge://extension`
 -   Enable Developer mode
--   Load unpacked and select `/release/chrome` folder
+-   Load unpacked and select `/release/edge` folder
 -   Replace manifest with `/src/manifests/edge.json`
 -   And rename `edge.json` to `manifest.json`
 
 ### Safari
+
 -   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
 
 ### Online
+
+-   Follow the initialize and build steps from Chrome
+
+#### Run & watch
+
+-   `pnpm run online`
+
+#### Web server launch
+
 -   Open a live server from `/release/online` folder
 
 <br>
