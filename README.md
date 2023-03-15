@@ -81,44 +81,72 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 Running Bonjourr locally
 
-#### Chrome (Recommended)
-- **Initialize**
+### Chrome
+
+#### Initialize
+
 -   [Install npm](https://nodejs.org/en/download/)
--   `npm i pnpm esbuild`
+-   `npm install -g pnpm`
 -   `pnpm install`
-- **Build**
+
+#### Build
+
 -   `pnpm run build`
-- **Run & watch**
+
+#### Run & watch
+
 -   `pnpm run chrome`
-- **Browser extension launch**
+
+#### Browser extension launch
+
 -   Go to `chrome://extension`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
 
 ### Firefox
+
 -   Follow the initialize and build steps from Chrome
-- **Run & watch**
+
+#### Run & watch
+
 -   `pnpm run firefox`
-- **Browser extension launch**
+
+#### Browser extension launch
+
 -   Go to `about:debugging#/runtime/this-firefox`
 -   Select "Load temporary Add-on"
 -   Select `manifest.json` in `/release/firefox` folder
 
 ### Edge
+
 -   Follow the initialize and build steps from Chrome
-- **Run & watch**
--   `pnpm run Edge`
-- **Browser extension launch**
+
+#### Run & watch
+
+-   `pnpm run edge`
+
+#### Browser extension launch
+
 -   Go to `edge://extension`
 -   Enable Developer mode
--   Load unpacked and select `/release/chrome` folder
+-   Load unpacked and select `/release/edge` folder
 -   Replace manifest with `/src/manifests/edge.json`
 -   And rename `edge.json` to `manifest.json`
 
 ### Safari
+
 -   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
 
 ### Online
+
+-   Follow the initialize and build steps from Chrome
+
+#### Run & watch
+
+-   `pnpm run online`
+
+#### Web server launch
+
 -   Open a live server from `/release/online` folder
 
 <br>
