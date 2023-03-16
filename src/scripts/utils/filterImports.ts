@@ -1,6 +1,7 @@
 import { syncDefaults, convertHideStorage, randomString, bundleLinks } from '../utils'
-import { MoveKeys, Sync } from '../types/sync'
+import { MoveKeys, Sync, Move } from '../types/sync'
 import { gridWidget } from '../features/move'
+import merge from 'deepmerge'
 
 export default function filterImports(current: Sync, toImport: Sync) {
 	//
@@ -97,13 +98,26 @@ export default function filterImports(current: Sync, toImport: Sync) {
 		current.move.layouts[current.move.selection] = layout
 	}
 
+	// Remove current layouts grid if import has grids
+	// because deepmerge of arrays concats them
+	if (toImport.move && current.move) {
+		Object.entries(toImport.move?.layouts).forEach(([key, layout]) => {
+			const keyIsValidLayout = key in current.move.layouts
+			const layoutKey = key as keyof Move['layouts']
+
+			if (layout.grid && keyIsValidLayout) {
+				current.move.layouts[layoutKey].grid = []
+			}
+		})
+	}
+
 	// To avoid link duplicates: delete current links
 	bundleLinks(current).forEach((elem: Link) => {
 		delete current[elem._id]
 	})
 
-	current = { ...current, ...toImport }
-	current.about = structuredClone(syncDefaults.about)
+	current = merge(current, toImport)
+	current.about = { ...syncDefaults.about }
 
 	return current
 }

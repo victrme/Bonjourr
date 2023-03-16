@@ -17,6 +17,7 @@ specifiers:
   '@types/lodash.debounce': ^4.0.7
   '@types/lodash.throttle': ^4.1.7
   concurrently: ^7.6.0
+  deepmerge: ^4.3.0
   esbuild: ^0.17.11
   gulp: ^4.0.2
   gulp-csso: ^4.0.1
@@ -48,6 +49,7 @@ devDependencies:
   '@types/lodash.debounce': 4.0.7
   '@types/lodash.throttle': 4.1.7
   concurrently: 7.6.0
+  deepmerge: 4.3.0
   esbuild: 0.17.11
   gulp: 4.0.2
   gulp-csso: 4.0.1
@@ -807,6 +809,11 @@ packages:
 
   /decamelize/1.2.0:
     resolution: {integrity: sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /deepmerge/4.3.0:
+    resolution: {integrity: sha512-z2wJZXrmeHdvYJp/Ux55wIjqo81G5Bp4c+oELTW+7ar6SogWHajt5a9gO3s3IDaGSAXjDk0vlQKN3rms8ab3og==}
     engines: {node: '>=0.10.0'}
     dev: true
 

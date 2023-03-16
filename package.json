@@ -28,6 +28,7 @@
 		"@types/lodash.debounce": "^4.0.7",
 		"@types/lodash.throttle": "^4.1.7",
 		"concurrently": "^7.6.0",
+		"deepmerge": "^4.3.0",
 		"esbuild": "^0.17.11",
 		"gulp": "^4.0.2",
 		"gulp-csso": "^4.0.1",

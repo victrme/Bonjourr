@@ -973,7 +973,7 @@ function paramsImport(toImport: Sync) {
 					}
 				}
 
-				sync = filterImports(sync as Sync, toImport)
+				sync = { ...filterImports(sync as Sync, toImport) }
 
 				storage.sync.clear()
 				storage.sync.set(sync, () =>
