@@ -141,11 +141,10 @@ export default async function unsplash(
 
 		const filteredList: UnsplashImage[] = []
 		const { width, height } = screen
-		const imgSize = width > height ? width : height // higher res on mobile
 
 		json.forEach((img: any) => {
 			filteredList.push({
-				url: img.urls.raw + '&w=' + imgSize + '&dpr=' + window.devicePixelRatio,
+				url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${window.devicePixelRatio}&auto=format&q=50&fit=crop`,
 				link: img.links.html,
 				username: img.user.username,
 				name: img.user.name,
