@@ -734,7 +734,7 @@ export const dict = {
 		fr: 'Bonjour',
 		sv: 'Goddag',
 		nl: 'Goedemiddag',
-		pl: 'Miłego popołudia',
+		pl: 'Miłego popołudnia',
 		pt_BR: 'Boa tarde',
 		ru: 'Добрый день',
 		zh_CN: '下午好',
