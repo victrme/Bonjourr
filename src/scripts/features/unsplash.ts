@@ -141,10 +141,15 @@ export default async function unsplash(
 
 		const filteredList: UnsplashImage[] = []
 		const { width, height } = screen
+		const dpr = window.devicePixelRatio
+
+		// Increase compression with pixel density
+		// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
+		const quality = Math.min(100 - dpr * 28, 75)
 
 		json.forEach((img: any) => {
 			filteredList.push({
-				url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${window.devicePixelRatio}&auto=format&q=50&fit=crop`,
+				url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
 				link: img.links.html,
 				username: img.user.username,
 				name: img.user.name,
