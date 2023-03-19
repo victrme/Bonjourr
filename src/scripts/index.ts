@@ -319,6 +319,10 @@ export function clock(
 					m = fixunits(date.getMinutes()),
 					s = fixunits(date.getSeconds())
 
+				if (clock.ampm && h === 0) {
+					h = 12
+				}
+
 				const domclock = $('clock')
 
 				if (domclock) {
