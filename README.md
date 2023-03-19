@@ -99,7 +99,7 @@ If you feel like we've earned it and you want to support independant open source
 
 #### Browser extension launch
 
--   Go to `chrome://extension`
+-   Go to `chrome://extensions`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
 
@@ -127,7 +127,7 @@ If you feel like we've earned it and you want to support independant open source
 
 #### Browser extension launch
 
--   Go to `edge://extension`
+-   Go to `edge://extensions`
 -   Enable Developer mode
 -   Load unpacked and select `/release/edge` folder
 -   Replace manifest with `/src/manifests/edge.json`
