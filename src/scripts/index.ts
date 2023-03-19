@@ -315,14 +315,13 @@ export function clock(
 			function numerical(date: Date) {
 				const fixunits = (val: number) => (val < 10 ? '0' : '') + val.toString()
 
-				let h = date.getHours()
-
-				if (clock.ampm) {
-					h = h === 12 ? h : h % 12
-				}
-
-				let m = fixunits(date.getMinutes()),
+				let h = clock.ampm ? date.getHours() % 12 : date.getHours()
+					m = fixunits(date.getMinutes()),
 					s = fixunits(date.getSeconds())
+				
+				if (clock.ampm && h === 0) {
+					h = 12
+				}
 
 				const domclock = $('clock')
 
