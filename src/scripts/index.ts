@@ -1785,19 +1785,19 @@ window.onload = function () {
 
 				console.log(`Version change: ${version_old} => ${version}`)
 
-				if (version === '1.16.0') {
+				if (version_old.includes('1.15') && version.includes('1.16')) {
 					localStorage.hasUpdated = 'true'
+
+					// Breaking data changes needs filtering
+					data.hide = convertHideStorage(data.hide)
+					data.css = data.css.replaceAll('#widgets', '')
+					data.time = (!data.hide?.clock || !data.hide?.date) ?? true
+					data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
+					data.about = { browser: detectPlatform(), version }
+
+					storage.sync.set({ ...data }, () => startup(data as Sync))
+					return
 				}
-
-				// Breaking data changes needs filtering
-				data.hide = convertHideStorage(data.hide)
-				data.css = data.css.replaceAll('#widgets', '')
-				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
-				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
-				data.about = { browser: detectPlatform(), version }
-
-				storage.sync.set({ ...data }, () => startup(data as Sync))
-				return
 			}
 
 			if (hasMissingProps) {

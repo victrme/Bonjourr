@@ -1,5 +1,17 @@
 ## Changelogs
 
+**1.16.1**
+
+-   Added support for nested data imports ( ex: searchbar.request )
+-   Smaller image file sizes for high resolution devices & mobile
+-   Translations:
+    -   Brazilian update by @adilsonfsantos
+    -   Dutch update by @kar1
+    -   Fixed Polish "Good Afternoon"
+-   Fixes:
+    -   Clock zero on 12am/pm, thanks @aprivette
+    -   Kiwi browser settings position
+
 **1.16.0**
 
 -   Added features:
