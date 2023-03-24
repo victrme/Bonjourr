@@ -139,6 +139,21 @@ function hasDuplicateInArray(arr: string[], id?: string) {
 	return arr.filter((a) => a === (id || activeID)).length > 1
 }
 
+function isRowEmpty(grid: Layout['grid'], index: number) {
+	if (grid[index] === undefined) return false
+
+	let row = grid[index]
+	let empty = true
+
+	row.forEach((cell) => {
+		if (cell !== '.' && getSpanDirection(grid, cell) !== 'columns') {
+			empty = false
+		}
+	})
+
+	return empty
+}
+
 function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
 	function addSpans(arr: string[]) {
 		let target = arr.indexOf(id)
@@ -261,15 +276,9 @@ export function gridWidget(grid: Layout['grid'], selection: Move['selection'], i
 			}
 		}
 
-		// Removes only one empty row
-		let hasRemovedRow = false
-
-		grid.forEach((row, i) => {
-			const isEmptyRow = row.filter((cell) => cell === '.').length === row.length
-
-			if (!hasRemovedRow && isEmptyRow) {
+		grid.forEach((_, i) => {
+			if (isRowEmpty(grid, i)) {
 				grid.splice(i, 1)
-				hasRemovedRow = true
 			}
 		})
 
@@ -490,7 +499,14 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					grid[newRow][newCol] = tempItem
 				})
 
-				// step 4: profit ??????????????
+				// step 4: remove empty lines
+				grid.forEach((_, i) => {
+					if (isRowEmpty(grid, i)) {
+						grid.splice(i, 1)
+					}
+				})
+
+				// step 5: profit ??????????????
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
