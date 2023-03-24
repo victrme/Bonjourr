@@ -257,6 +257,7 @@ export const syncDefaults: Sync = {
 		analog: false,
 		seconds: false,
 		face: 'none',
+		style: 'round',
 		timezone: 'auto',
 	},
 	dynamic: {

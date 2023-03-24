@@ -163,6 +163,26 @@
 					border-radius: 100px;
 				}
 
+				&.square {
+					border-radius: 2px;
+
+					.numbers.top {
+						top: 8px;
+					}
+
+					.numbers.right {
+						right: 8px;
+					}
+
+					.numbers.left {
+						left: 8px;
+					}
+
+					.numbers.bottom {
+						bottom: 8px;
+					}
+				}
+
 				.numbers {
 					position: absolute;
 					display: block;

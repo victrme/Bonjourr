@@ -102,6 +102,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_qttype', data.quotes?.type || 'classic')
 	initInput('i_qtlist', JSON.stringify(userQuotes) || '')
 	initInput('i_clockface', data.clock?.face || 'none')
+	initInput('i_clockstyle', data.clock?.style || 'none')
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.dynamic?.collection || '')
 	initInput('i_ccode', data.weather?.ccode || 'US')
@@ -433,6 +434,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
 		clock(null, { is: 'face', value: this.value })
+	})
+
+	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
+		clock(null, { is: 'style', value: this.value })
 	})
 
 	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {

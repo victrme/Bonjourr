@@ -132,6 +132,7 @@ export type Sync = {
 		seconds: boolean
 		timezone: string
 		face: ClockFace
+		style: string
 	}
 	dynamic: Dynamic
 	weather: Weather

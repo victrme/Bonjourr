@@ -221,7 +221,7 @@ export function pageWidth(val?: number, isEvent?: true) {
 export function clock(
 	init: Sync | null,
 	event?: {
-		is: 'analog' | 'seconds' | 'face' | 'ampm' | 'timezone' | 'usdate' | 'greeting'
+		is: 'analog' | 'seconds' | 'face' | 'style' | 'ampm' | 'timezone' | 'usdate' | 'greeting'
 		value?: string
 		checked?: boolean
 	}
@@ -232,6 +232,7 @@ export function clock(
 		analog: boolean
 		seconds: boolean
 		face: string
+		style: string
 		timezone: string
 	}
 
@@ -294,6 +295,10 @@ export function clock(
 		document
 			.querySelectorAll('#analogClock .numbers')
 			.forEach((mark, i) => (mark.textContent = chars[face as keyof typeof chars][i]))
+	}
+
+	function changeAnalogStyle(style: string) {
+		clas(document.querySelector('#analogClock'), style === 'square' ? true : false, 'square')
 	}
 
 	function startClock(clock: Clock, greeting: string, usdate: boolean) {
@@ -381,6 +386,7 @@ export function clock(
 				ampm: false,
 				timezone: 'auto',
 				face: 'none',
+				style: 'round'
 			}
 
 			switch (event.is) {
@@ -414,6 +420,12 @@ export function clock(
 				case 'face':
 					clock.face = event.value as ClockFace
 					break
+				
+				case 'style':
+					changeAnalogStyle(clock.style)
+					clock.style = event.value
+					// console.log(clock)
+					break;
 
 				case 'seconds':
 					clock.seconds = event.checked
@@ -423,6 +435,7 @@ export function clock(
 			storage.sync.set({ clock })
 			startClock(clock, data.greeting, data.usdate)
 			changeAnalogFace(clock.face)
+			changeAnalogStyle(clock.style)
 		})
 
 		return
@@ -434,6 +447,7 @@ export function clock(
 		ampm: false,
 		timezone: 'auto',
 		face: 'none',
+		style: 'round',
 	}
 
 	try {
@@ -441,6 +455,7 @@ export function clock(
 		clockDate(zonedDate(clock.timezone), init?.usdate || false)
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		changeAnalogFace(clock.face)
+		changeAnalogStyle(clock.style)
 		canDisplayInterface('clock')
 	} catch (e) {
 		errorMessage(e)
