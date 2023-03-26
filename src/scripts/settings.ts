@@ -175,6 +175,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		clas(b, b.dataset.layout === (data.move?.selection || 'single'), 'selected')
 	})
 
+	// Disables double and triple layouts on mobile
+	if (window.innerWidth < 600 && 'ontouchstart' in window) {
+		settingsDom.querySelector('#grid-layout button[data-layout="double"]')?.setAttribute('disabled', '')
+		settingsDom.querySelector('#grid-layout button[data-layout="triple"]')?.setAttribute('disabled', '')
+	}
+
 	// Time & main hide elems
 	;(function initHideInputs() {
 		const { clock, date, weatherdesc, weathericon } = data.hide || {}

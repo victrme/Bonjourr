@@ -76,7 +76,7 @@ function areaStringToLayoutGrid(area: string) {
 	if (rows.length === 1) rows = area.split("' '")
 
 	let grid = rows.map((row) => row.replace('"', '').split(' '))
-	return grid
+	return grid as Layout['grid']
 }
 
 function layoutToGridAreas(grid: Layout['grid']) {
@@ -360,10 +360,12 @@ const buttonControl = {
 			left = false,
 			right = false
 
+		const len = getEnabledWidgetsFromGrid(grid).length
+
 		// Detect if element is on array limits
 		grid.forEach((row, i) => {
 			if (row.some((a) => a === id) && i === 0) top = true
-			if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
+			if (row.some((a) => a === id) && i === len) bottom = true
 			if (row.at(0) === id) left = true
 			if (row.at(-1) === id) right = true
 		})
@@ -449,7 +451,7 @@ function removeSelection() {
 }
 
 export default function moveElements(init: Move | null, events?: UpdateMove) {
-	const moverdom = document.querySelector('#element-mover')
+	const moverdom = document.querySelector<HTMLElement>('#element-mover')
 	let firstPos = { x: 0, y: 0 }
 	let moverPos = { x: 0, y: 0 }
 
@@ -457,7 +459,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 		storage.sync.get(null, (data) => {
 			let move: Move
 
-			// Check if storage has move, if not, use (/ deep clone) default move
+			// Check if storage has move, if not, use (deep clone) default move
 			move = 'move' in data ? data.move : structuredClone(syncDefaults.move)
 			// force single on small width
 			if (smallWidth) move.selection = 'single'
@@ -723,9 +725,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	}
 
 	function moverToolboxEvents() {
-		function moverDrag(e: Event) {
-			if (e.type !== 'mousemove') return
-			const { x, y } = e as MouseEvent
+		function moverDrag(e: MouseEvent | TouchEvent) {
+			let pos = (e as TouchEvent).touches ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+
+			let x = pos.clientX
+			let y = pos.clientY
 
 			// Set first position to calc offset
 			if (firstPos.x === 0 && firstPos.y === 0) {
@@ -737,8 +741,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				x: x - firstPos.x,
 				y: y - firstPos.y,
 			}
-			;(moverdom as HTMLElement).style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
-			;(moverdom as HTMLElement).style.cursor = `grabbing`
+
+			if (moverdom) {
+				moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
+				moverdom.style.cursor = `grabbing`
+			}
 		}
 
 		Object.entries(elements).forEach(([key, elem]) => {
@@ -775,21 +782,22 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 		})
 
+		moverdom?.addEventListener('touchstart', (e) => {
+			if ((e.target as HTMLElement)?.id === 'element-mover') {
+				moverdom?.addEventListener('touchmove', moverDrag)
+			}
+		})
+
 		const removeDrag = () => {
 			firstPos = { x: 0, y: 0 }
 			;(moverdom as HTMLElement).style.removeProperty('cursor')
 			moverdom?.removeEventListener('mousemove', moverDrag)
+			moverdom?.removeEventListener('touchmove', moverDrag)
 		}
 
 		moverdom?.addEventListener('mouseup', removeDrag)
 		moverdom?.addEventListener('mouseleave', removeDrag)
-
-		// Trigger a layout change when width is crosses threshold
-		window.addEventListener('resize', () => {
-			if (window.innerWidth < 764 && !smallWidth) smallWidth = true
-			if (window.innerWidth > 764 && smallWidth) smallWidth = false
-			updateMoveElement({ responsive: true })
-		})
+		moverdom?.addEventListener('touchend', removeDrag)
 	}
 
 	// Events coming from settings menu
@@ -812,14 +820,9 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	}
 
 	if (init) {
-		;(function initilisation() {
-			// Detect small width on startup
-			if (window.innerWidth < 764) init.selection = 'single'
-
-			const layout = init.layouts[init.selection]
-			manageGridSpanner(init.selection)
-			setAllAligns(layout.items)
-			setGridAreas(layout)
-		})()
+		const layout = init.layouts[init.selection]
+		manageGridSpanner(init.selection)
+		setAllAligns(layout.items)
+		setGridAreas(layout)
 	}
 }
