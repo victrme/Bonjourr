@@ -355,19 +355,27 @@ const buttonControl = {
 		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '')
 		if (grid.length === 0) return
 
-		let top = false,
-			bottom = false,
-			left = false,
-			right = false
+		let top = false
+		let bottom = false
+		let left = false
+		let right = false
 
-		const len = getEnabledWidgetsFromGrid(grid).length
+		const positions = findIdPositions(grid, id)
+		const widgetBottomLimit = getEnabledWidgetsFromGrid(grid).length - 1
+		const rightLimit = grid[0].length - 1
 
 		// Detect if element is on array limits
-		grid.forEach((row, i) => {
-			if (row.some((a) => a === id) && i === 0) top = true
-			if (row.some((a) => a === id) && i === len) bottom = true
-			if (row.at(0) === id) left = true
-			if (row.at(-1) === id) right = true
+		positions.forEach((pos) => {
+			if (pos.posRow === 0) top = true
+			if (pos.posCol === 0) left = true
+			if (pos.posCol === rightLimit) right = true
+			if (pos.posRow === widgetBottomLimit) bottom = true
+
+			// Bottom limit when last elem on last line
+			if (pos.posRow === grid.length - 1) {
+				const idOnlyRow = grid.at(pos.posRow)?.filter((id) => id !== '.')
+				if (new Set(idOnlyRow).size === 1) bottom = true
+			}
 		})
 
 		// link button to correct limit, apply disable attr
@@ -471,9 +479,19 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const y = parseInt(prop.grid?.y || '0')
 				const x = parseInt(prop.grid?.x || '0')
 
-				let { grid } = move.layouts[move.selection]
+				let grid = move.layouts[move.selection].grid
 				const allActivePos = findIdPositions(grid, activeID)
 				const allAffectedIds: MoveKeys[] = []
+
+				// step 0: Adds new line
+				const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
+
+				if (isGridOverflowing) {
+					// fugly typing, that'll do for now
+					if (move.selection === 'single') (grid as Move['layouts']['single']['grid']).push(['.'])
+					if (move.selection === 'double') (grid as Move['layouts']['double']['grid']).push(['.', '.'])
+					if (move.selection === 'triple') (grid as Move['layouts']['triple']['grid']).push(['.', '.', '.'])
+				}
 
 				// step 1: Find elements affected by grid change
 				allActivePos.forEach(({ posRow, posCol }) => {
