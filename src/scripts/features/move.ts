@@ -76,7 +76,7 @@ function areaStringToLayoutGrid(area: string) {
 	if (rows.length === 1) rows = area.split("' '")
 
 	let grid = rows.map((row) => row.replace('"', '').split(' '))
-	return grid
+	return grid as Layout['grid']
 }
 
 function layoutToGridAreas(grid: Layout['grid']) {
@@ -137,6 +137,21 @@ function getSpanDirection(grid: Layout['grid'], id: string) {
 
 function hasDuplicateInArray(arr: string[], id?: string) {
 	return arr.filter((a) => a === (id || activeID)).length > 1
+}
+
+function isRowEmpty(grid: Layout['grid'], index: number) {
+	if (grid[index] === undefined) return false
+
+	let row = grid[index]
+	let empty = true
+
+	row.forEach((cell) => {
+		if (cell !== '.' && getSpanDirection(grid, cell) !== 'columns') {
+			empty = false
+		}
+	})
+
+	return empty
 }
 
 function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
@@ -261,15 +276,9 @@ export function gridWidget(grid: Layout['grid'], selection: Move['selection'], i
 			}
 		}
 
-		// Removes only one empty row
-		let hasRemovedRow = false
-
-		grid.forEach((row, i) => {
-			const isEmptyRow = row.filter((cell) => cell === '.').length === row.length
-
-			if (!hasRemovedRow && isEmptyRow) {
+		grid.forEach((_, i) => {
+			if (isRowEmpty(grid, i)) {
 				grid.splice(i, 1)
-				hasRemovedRow = true
 			}
 		})
 
@@ -346,17 +355,27 @@ const buttonControl = {
 		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '')
 		if (grid.length === 0) return
 
-		let top = false,
-			bottom = false,
-			left = false,
-			right = false
+		let top = false
+		let bottom = false
+		let left = false
+		let right = false
+
+		const positions = findIdPositions(grid, id)
+		const widgetBottomLimit = getEnabledWidgetsFromGrid(grid).length - 1
+		const rightLimit = grid[0].length - 1
 
 		// Detect if element is on array limits
-		grid.forEach((row, i) => {
-			if (row.some((a) => a === id) && i === 0) top = true
-			if (row.some((a) => a === id) && i === grid.length - 1) bottom = true
-			if (row.at(0) === id) left = true
-			if (row.at(-1) === id) right = true
+		positions.forEach((pos) => {
+			if (pos.posRow === 0) top = true
+			if (pos.posCol === 0) left = true
+			if (pos.posCol === rightLimit) right = true
+			if (pos.posRow === widgetBottomLimit) bottom = true
+
+			// Bottom limit when last elem on last line
+			if (pos.posRow === grid.length - 1) {
+				const idOnlyRow = grid.at(pos.posRow)?.filter((id) => id !== '.')
+				if (new Set(idOnlyRow).size === 1) bottom = true
+			}
 		})
 
 		// link button to correct limit, apply disable attr
@@ -440,7 +459,7 @@ function removeSelection() {
 }
 
 export default function moveElements(init: Move | null, events?: UpdateMove) {
-	const moverdom = document.querySelector('#element-mover')
+	const moverdom = document.querySelector<HTMLElement>('#element-mover')
 	let firstPos = { x: 0, y: 0 }
 	let moverPos = { x: 0, y: 0 }
 
@@ -448,7 +467,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 		storage.sync.get(null, (data) => {
 			let move: Move
 
-			// Check if storage has move, if not, use (/ deep clone) default move
+			// Check if storage has move, if not, use (deep clone) default move
 			move = 'move' in data ? data.move : structuredClone(syncDefaults.move)
 			// force single on small width
 			if (smallWidth) move.selection = 'single'
@@ -460,9 +479,19 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const y = parseInt(prop.grid?.y || '0')
 				const x = parseInt(prop.grid?.x || '0')
 
-				let { grid } = move.layouts[move.selection]
+				let grid = move.layouts[move.selection].grid
 				const allActivePos = findIdPositions(grid, activeID)
 				const allAffectedIds: MoveKeys[] = []
+
+				// step 0: Adds new line
+				const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
+
+				if (isGridOverflowing) {
+					// fugly typing, that'll do for now
+					if (move.selection === 'single') (grid as Move['layouts']['single']['grid']).push(['.'])
+					if (move.selection === 'double') (grid as Move['layouts']['double']['grid']).push(['.', '.'])
+					if (move.selection === 'triple') (grid as Move['layouts']['triple']['grid']).push(['.', '.', '.'])
+				}
 
 				// step 1: Find elements affected by grid change
 				allActivePos.forEach(({ posRow, posCol }) => {
@@ -490,7 +519,14 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 					grid[newRow][newCol] = tempItem
 				})
 
-				// step 4: profit ??????????????
+				// step 4: remove empty lines
+				grid.forEach((_, i) => {
+					if (isRowEmpty(grid, i)) {
+						grid.splice(i, 1)
+					}
+				})
+
+				// step 5: profit ??????????????
 				setGridAreas(move.layouts[move.selection])
 				move.layouts[move.selection].grid = grid
 
@@ -707,9 +743,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	}
 
 	function moverToolboxEvents() {
-		function moverDrag(e: Event) {
-			if (e.type !== 'mousemove') return
-			const { x, y } = e as MouseEvent
+		function moverDrag(e: MouseEvent | TouchEvent) {
+			let pos = (e as TouchEvent).touches ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+
+			let x = pos.clientX
+			let y = pos.clientY
 
 			// Set first position to calc offset
 			if (firstPos.x === 0 && firstPos.y === 0) {
@@ -721,8 +759,11 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				x: x - firstPos.x,
 				y: y - firstPos.y,
 			}
-			;(moverdom as HTMLElement).style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
-			;(moverdom as HTMLElement).style.cursor = `grabbing`
+
+			if (moverdom) {
+				moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
+				moverdom.style.cursor = `grabbing`
+			}
 		}
 
 		Object.entries(elements).forEach(([key, elem]) => {
@@ -759,21 +800,22 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 		})
 
+		moverdom?.addEventListener('touchstart', (e) => {
+			if ((e.target as HTMLElement)?.id === 'element-mover') {
+				moverdom?.addEventListener('touchmove', moverDrag)
+			}
+		})
+
 		const removeDrag = () => {
 			firstPos = { x: 0, y: 0 }
 			;(moverdom as HTMLElement).style.removeProperty('cursor')
 			moverdom?.removeEventListener('mousemove', moverDrag)
+			moverdom?.removeEventListener('touchmove', moverDrag)
 		}
 
 		moverdom?.addEventListener('mouseup', removeDrag)
 		moverdom?.addEventListener('mouseleave', removeDrag)
-
-		// Trigger a layout change when width is crosses threshold
-		window.addEventListener('resize', () => {
-			if (window.innerWidth < 764 && !smallWidth) smallWidth = true
-			if (window.innerWidth > 764 && smallWidth) smallWidth = false
-			updateMoveElement({ responsive: true })
-		})
+		moverdom?.addEventListener('touchend', removeDrag)
 	}
 
 	// Events coming from settings menu
@@ -796,14 +838,9 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	}
 
 	if (init) {
-		;(function initilisation() {
-			// Detect small width on startup
-			if (window.innerWidth < 764) init.selection = 'single'
-
-			const layout = init.layouts[init.selection]
-			manageGridSpanner(init.selection)
-			setAllAligns(layout.items)
-			setGridAreas(layout)
-		})()
+		const layout = init.layouts[init.selection]
+		manageGridSpanner(init.selection)
+		setAllAligns(layout.items)
+		setGridAreas(layout)
 	}
 }

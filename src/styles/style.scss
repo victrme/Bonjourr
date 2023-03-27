@@ -473,7 +473,9 @@
 					visibility: visible;
 				}
 
-				a { display: inline }
+				a {
+					display: inline;
+				}
 
 				a img {
 					padding: 0.2em;
@@ -1269,6 +1271,6 @@
 }
 
 @import 'settings';
+@import 'grid';
 @import 'dark';
 @import 'responsive';
-@import 'grid';
