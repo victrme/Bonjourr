@@ -386,7 +386,7 @@ export function clock(
 				ampm: false,
 				timezone: 'auto',
 				face: 'none',
-				style: 'round'
+				style: 'round',
 			}
 
 			switch (event.is) {
@@ -420,12 +420,12 @@ export function clock(
 				case 'face':
 					clock.face = event.value as ClockFace
 					break
-				
+
 				case 'style':
 					changeAnalogStyle(clock.style)
 					clock.style = event.value
 					// console.log(clock)
-					break;
+					break
 
 				case 'seconds':
 					clock.seconds = event.checked
@@ -1800,6 +1800,10 @@ window.onload = function () {
 
 				console.log(`Version change: ${version_old} => ${version}`)
 
+				data.about = { browser: detectPlatform(), version }
+
+				// From old 1.15.x
+				// To new 1.16.x
 				if (version_old.includes('1.15') && version.includes('1.16')) {
 					localStorage.hasUpdated = 'true'
 
@@ -1808,7 +1812,6 @@ window.onload = function () {
 					data.css = data.css.replaceAll('#widgets', '')
 					data.time = (!data.hide?.clock || !data.hide?.date) ?? true
 					data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
-					data.about = { browser: detectPlatform(), version }
 
 					storage.sync.set({ ...data }, () => startup(data as Sync))
 					return
