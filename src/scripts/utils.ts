@@ -227,7 +227,7 @@ export function tradThis(str: string, lang?: string): string {
 }
 
 export const syncDefaults: Sync = {
-	about: { browser: detectPlatform(), version: '1.16.1' },
+	about: { browser: detectPlatform(), version: '1.16.2' },
 	usdate: false,
 	showall: false,
 	quicklinks: true,
