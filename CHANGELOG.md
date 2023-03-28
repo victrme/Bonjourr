@@ -1,5 +1,16 @@
 ## Changelogs
 
+**1.16.2**
+
+-   Added square analog clock style
+-   Added page layout support on mobile
+-   Fixes:
+    -   Improved layout move behavior with empty rows
+    -   Improved Notes overall stability
+    -   Weather API not working
+-   Translations:
+    -   Improved Traditional Chinese translation, thanks @TszHong0411 !
+
 **1.16.1**
 
 -   Added support for nested data imports ( ex: searchbar.request )
