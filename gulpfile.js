@@ -48,9 +48,10 @@ function scripts(platform) {
 			.pipe(replace('@@QUOTES_API_1', envVars?.QUOTES_API_1 || '/'))
 			.pipe(replace('@@QUOTES_API_2', envVars?.QUOTES_API_2 || '/'))
 			.pipe(replace('@@QUOTES_API_3', envVars?.QUOTES_API_3 || '/'))
-			.pipe(replace('@@WEATHER_API_1', envVars?.WEATHER_API_1 || '/'))
-			.pipe(replace('@@WEATHER_API_2', envVars?.WEATHER_API_2 || '/'))
-			.pipe(replace('@@WEATHER_API_3', envVars?.WEATHER_API_3 || '/'))
+			.pipe(replace('@@WEATHER_1', envVars?.WEATHER_1 || '/'))
+			.pipe(replace('@@WEATHER_2', envVars?.WEATHER_2 || '/'))
+			.pipe(replace('@@WEATHER_3', envVars?.WEATHER_3 || '/'))
+			.pipe(replace('@@WEATHER_4', envVars?.WEATHER_4 || '/'))
 			.pipe(dest(`release/${platform}/src/scripts`))
 }
 

@@ -23,10 +23,9 @@ export default function weather(
 
 	async function request(storage: Weather): Promise<Weather> {
 		function getRequestURL(isForecast: boolean) {
-			const WEATHER_API_KEY = ['@@WEATHER_API_1', '@@WEATHER_API_2', '@@WEATHER_API_3']
+			const key = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4'][Math.ceil(Math.random() * 4) - 1]
 			const units = storage.unit || 'metric'
 			const type = isForecast ? 'forecast' : 'weather'
-			const key = window.atob(WEATHER_API_KEY[forecast ? 0 : 1])
 			let lang = document.documentElement.getAttribute('lang')
 			let location = ''
 
