@@ -15,6 +15,7 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 
 import filterImports from './utils/filterImports'
+import stringifyOrder from './utils/stringifyOrder'
 
 import {
 	$,
@@ -719,7 +720,7 @@ function settingsMgmt() {
 		if (!a) return
 
 		storage.sync.get(null, (data) => {
-			const bytes = new TextEncoder().encode(JSON.stringify(data))
+			const bytes = new TextEncoder().encode(stringifyOrder(data))
 			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
 
 			a.setAttribute('href', URL.createObjectURL(blob))
@@ -1025,9 +1026,7 @@ export function updateExportJSON(settingsDom?: HTMLElement) {
 		if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
 		data.about.browser = detectPlatform()
 
-		const prettified = JSON.stringify(data, null, '\t')
-
-		input.value = prettified
+		input.value = stringifyOrder(data)
 	})
 }
 
