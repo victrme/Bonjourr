@@ -722,9 +722,12 @@ function settingsMgmt() {
 		storage.sync.get(null, (data) => {
 			const bytes = new TextEncoder().encode(stringifyOrder(data))
 			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+			const date = new Date()
+			const YYYYMMDD = date.toISOString().slice(0, 10)
+			const HHMMSS = `${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`
 
 			a.setAttribute('href', URL.createObjectURL(blob))
-			a.setAttribute('download', `bonjourrExport-${data?.about?.version}-${randomString(6)}.json`)
+			a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
 			a.click()
 		})
 	}
