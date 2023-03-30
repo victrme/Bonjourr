@@ -145,7 +145,7 @@ export default async function unsplash(
 
 		// Increase compression with pixel density
 		// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
-		const quality = Math.min(100 - dpr * 28, 75)
+		const quality = Math.min(100 - dpr * 20, 75)
 
 		json.forEach((img: any) => {
 			filteredList.push({
