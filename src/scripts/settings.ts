@@ -109,6 +109,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_ccode', data.weather?.ccode || 'US')
 	initInput('i_forecast', data.weather?.forecast || 'auto')
 	initInput('i_temp', data.weather?.temperature || 'actual')
+	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
+	initInput('i_provider', data.weather?.provider || '')
 	initInput('i_customfont', data.font?.family || '')
 	initInput('i_weight', data.font?.weight || '300')
 	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
@@ -497,6 +499,14 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
 		weather(null, { is: 'temp', value: this.value })
+	})
+
+	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
+		weather(null, { is: 'moreinfo', value: this.value })
+	})
+
+	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
+		weather(null, { is: 'provider', value: this.value })
 	})
 
 	paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {

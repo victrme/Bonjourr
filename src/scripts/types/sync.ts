@@ -25,6 +25,8 @@ export type Weather = {
 	temperature: string
 	lastCall?: number
 	fcHigh?: number
+	moreinfo?: string
+	provider?: string
 	lastState?: {
 		temp: number
 		feels_like: number

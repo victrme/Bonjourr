@@ -7,7 +7,7 @@ import errorMessage from '../utils/errorMessage'
 export default function weather(
 	init: Sync | null,
 	event?: {
-		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide'
+		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide' | 'moreinfo' | 'provider'
 		checked?: boolean
 		value?: string
 		elem?: Element
@@ -294,9 +294,26 @@ export default function weather(
 			}
 		}
 
+		const handleMoreInfo = () => {
+			if (!data.moreinfo) return
+
+			const URLs = {
+				none: '',
+				owm: 'https://openweathermap.org/',
+				msnw: 'https://www.msn.com/en-us/weather/forecast/',
+				yhw: 'https://www.yahoo.com/news/weather/',
+				custom: data.provider ?? '',
+			}
+
+			if (data.moreinfo in URLs) {
+				$('weather')?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
+			}
+		}
+
 		handleWidget()
 		handleDescription()
 		handleForecast()
+		handleMoreInfo()
 
 		clas(current, false, 'wait')
 		clas(tempContainer, false, 'wait')
@@ -384,6 +401,16 @@ export default function weather(
 
 				case 'temp': {
 					data.weather.temperature = event.value
+					break
+				}
+
+				case 'moreinfo': {
+					data.weather.moreinfo = event.value
+					break
+				}
+
+				case 'provider': {
+					data.weather.provider = event.value
 					break
 				}
 

@@ -745,6 +745,33 @@
 				<hr />
 
 				<div class="wrapper">
+					<label for="i_moreinfo" class="trn">Detailed weather</label>
+					<select id="i_moreinfo">
+						<option value="none">None</option>
+						<option value="owm">OpenWeatherMap</option>
+						<option value="msnw">MSN Weather</option>
+						<option value="yhw">Yahoo Weather</option>
+						<option value="custom">Custom provider</option>
+					</select>
+				</div>
+
+				<div id="weather_provider">
+					<hr />
+					<div class="wrapper">
+						<label for="i_provider" class="trn">Provider URL</label>
+						<input
+							id="i_provider"
+							name="provider"
+							type="text"
+							placeholder="https://weather.com/weather/today"
+							maxlength="512"
+						/>
+					</div>
+				</div>
+
+				<hr />
+
+				<div class="wrapper">
 					<label for="i_weatherhide" class="trn">Show</label>
 					<select id="i_weatherhide">
 						<option value="all" class="trn">Description and icon</option>
@@ -753,13 +780,13 @@
 						<option value="disabled" class="trn">Disabled</option>
 					</select>
 				</div>
+			</div>
 
-				<hr />
+			<hr />
 
-				<div class="greethide wrapper">
-					<label for="i_greethide" class="trn">Greetings</label>
-					<input id="i_greethide" class="switch" type="checkbox" />
-				</div>
+			<div class="greethide wrapper">
+				<label for="i_greethide" class="trn">Greetings</label>
+				<input id="i_greethide" class="switch" type="checkbox" />
 			</div>
 
 			<hr />
