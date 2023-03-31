@@ -168,6 +168,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Activate feature options
 	clas(paramId('time_options'), data.time, 'shown')
 	clas(paramId('main_options'), data.main, 'shown')
+	clas(paramId('weather_provider'), data.weather?.moreinfo === 'custom', 'shown')
 	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
 	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
 	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')

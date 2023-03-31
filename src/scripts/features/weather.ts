@@ -295,10 +295,12 @@ export default function weather(
 		}
 
 		const handleMoreInfo = () => {
-			if (!data.moreinfo) return
+			if (!data.moreinfo || data.moreinfo === 'none') {
+				$('weather')?.removeAttribute('href')
+				return
+			}
 
 			const URLs = {
-				none: '',
 				owm: 'https://openweathermap.org/',
 				msnw: 'https://www.msn.com/en-us/weather/forecast/',
 				yhw: 'https://www.yahoo.com/news/weather/',
@@ -405,6 +407,7 @@ export default function weather(
 				}
 
 				case 'moreinfo': {
+					clas($('weather_provider'), event.value === 'custom', 'shown')
 					data.weather.moreinfo = event.value
 					break
 				}
