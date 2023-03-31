@@ -194,6 +194,7 @@ export default function quickLinks(
 		let startsDrag = false
 		let push = 0 // adds interface translate to cursor x (only for "fixed" clone)
 		let [cox, coy] = [0, 0] // (cursor offset x & y)
+		let interfacemargin = 0
 
 		const deplaceElem = (dom: HTMLElement, x: number, y: number) => {
 			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
@@ -253,14 +254,14 @@ export default function quickLinks(
 				coy = ey - draggedCoord.pos.y // on dragged element
 			}
 
-			deplaceElem(draggedClone, ex - cox + push, ey - coy)
+			deplaceElem(draggedClone, ex - cox + push - interfacemargin, ey - coy)
 
 			clas(domlinkblocks, true, 'dragging') // to apply pointer-events: none
 		}
 
 		function applyDrag(ex: number, ey: number) {
 			// Dragged element clone follows cursor
-			deplaceElem(draggedClone, ex + push - cox, ey - coy)
+			deplaceElem(draggedClone, ex + push - cox - interfacemargin, ey - coy)
 
 			// Element switcher
 			coordsEntries.forEach(function parseThroughCoords([key, val]) {
@@ -321,11 +322,11 @@ export default function quickLinks(
 				coords = {}
 				coordsEntries = []
 
-				deplaceElem(draggedClone, x + push, y)
+				deplaceElem(draggedClone, x + push - interfacemargin, y)
 				draggedClone.className = 'block dragging-clone' // enables transition (by removing 'on' class)
 				dominterface.style.cursor = ''
 
-				dominterface.removeEventListener('mousemove', triggerDragging)
+				document.body.removeEventListener('mousemove', triggerDragging)
 
 				setTimeout(() => {
 					storage.sync.get(null, (data) => {
@@ -374,16 +375,18 @@ export default function quickLinks(
 		}
 
 		function activateDragMove(e: MouseEvent | TouchEvent) {
+			interfacemargin = dominterface.getBoundingClientRect().left
+
 			if (e.type === 'touchstart') {
 				const { clientX, clientY } = (e as TouchEvent).touches[0]
 				initialpos = [clientX || 0, clientY || 0]
-				dominterface.addEventListener('touchmove', triggerDragging)
+				document.body.addEventListener('touchmove', triggerDragging)
 			}
 
 			if (e.type === 'mousedown' && (e as MouseEvent)?.button === 0) {
 				const { x, y } = e as MouseEvent
 				initialpos = [x, y]
-				dominterface.addEventListener('mousemove', triggerDragging)
+				document.body.addEventListener('mousemove', triggerDragging)
 			}
 		}
 
@@ -396,10 +399,10 @@ export default function quickLinks(
 			li.addEventListener('mousedown', activateDragMove)
 		})
 
-		dominterface.onmouseleave = endDrag
-		dominterface.ontouchend = () => {
+		document.body.onmouseleave = endDrag
+		document.body.ontouchend = () => {
 			endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
-			dominterface.removeEventListener('touchmove', triggerDragging) // and has to be here
+			document.body.removeEventListener('touchmove', triggerDragging) // and has to be here
 		}
 	}
 
