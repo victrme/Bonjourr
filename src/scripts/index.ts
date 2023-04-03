@@ -1744,14 +1744,6 @@ function startup(data: Sync) {
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)
 	pageWidth(data.pagewidth)
-
-	setInterval(() => {
-		if (navigator.onLine) {
-			storage.sync.get(['weather', 'hide'], (data) => {
-				weather(data as Sync) // Checks every 5 minutes if weather needs update
-			})
-		}
-	}, 300000)
 }
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'

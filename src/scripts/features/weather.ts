@@ -419,3 +419,11 @@ export default function weather(
 		errorMessage(e)
 	}
 }
+
+setInterval(() => {
+	if (navigator.onLine) {
+		storage.sync.get(['weather', 'hide'], (data) => {
+			weather(data as Sync) // Checks every 5 minutes if weather needs update
+		})
+	}
+}, 300000)
