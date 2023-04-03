@@ -301,9 +301,9 @@ export default function weather(
 			}
 
 			const URLs = {
-				owm: 'https://openweathermap.org/',
 				msnw: 'https://www.msn.com/en-us/weather/forecast/',
 				yhw: 'https://www.yahoo.com/news/weather/',
+				windy: 'https://www.windy.com/',
 				custom: data.provider ?? '',
 			}
 
