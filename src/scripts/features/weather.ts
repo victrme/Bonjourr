@@ -295,7 +295,10 @@ export default function weather(
 		}
 
 		const handleMoreInfo = () => {
-			if (!data.moreinfo || data.moreinfo === 'none') {
+			const noDetails = !data.moreinfo || data.moreinfo === 'none'
+			const emptyCustom = data.moreinfo === 'custom' && !data.provider
+
+			if (noDetails || emptyCustom) {
 				$('weather')?.removeAttribute('href')
 				return
 			}
@@ -307,7 +310,7 @@ export default function weather(
 				custom: data.provider ?? '',
 			}
 
-			if (data.moreinfo in URLs) {
+			if ((data.moreinfo || '') in URLs) {
 				$('weather')?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
 			}
 		}
