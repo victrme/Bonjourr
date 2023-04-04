@@ -663,34 +663,37 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// A11y tabbing inputs control
 	// Expensive way to toggle all inputs tabindex on "params hiding actions" in settings
-	const allHidingInputs =
-		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_notes, #i_sb, #i_sbengine, #i_moreinfo, #i_quotes, #s_export, #s_import'
+	function optionsTabIndex() {
+		const isAllSettings = paramId('i_showall').checked
 
-	function controlInputTabbability() {
 		const toggleTabindex = (parent: string, on: boolean) => {
 			settingsDom?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
 				on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
 			})
 		}
 
-		const isAllSettings = paramId('i_showall').checked
-
+		// If showall, start by enabling .as fields
 		if (isAllSettings) {
-			toggleTabindex('.as', true) // If showall, start by enabling .as fields
+			toggleTabindex('.as', true)
 		}
 
-		settingsDom // Then control if features are on or off
-			.querySelectorAll('#quicklinks_options, #searchbar_options, #quotes_options, #notes_options')
-			.forEach((dom) => toggleTabindex('#' + dom.id, has(dom, 'shown')))
+		// Then control if widgets are on or off
+		const options = '#time_options, #main_options, #quicklinks_options, #searchbar_options, #quotes_options, #notes_options'
+		settingsDom.querySelectorAll(options).forEach((dom) => {
+			toggleTabindex('#' + dom.id, has(dom, 'shown'))
+		})
 
+		// Disable all "all" settings if off
 		if (isAllSettings === false) {
-			toggleTabindex('.as', false) // Disable all "all" settings if off
+			toggleTabindex('.as', false)
 		}
 
+		// Toggle tooltips
 		settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
 			toggleTabindex('.' + dom.classList[1], has(dom, 'shown'))
 		})
 
+		// Toggle in-widgets hidden options
 		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
 		toggleTabindex('#weather_provider', has(paramId('weather_provider'), 'shown'))
 		toggleTabindex('#quotes_userlist', has(paramId('quotes_userlist'), 'shown'))
@@ -703,11 +706,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// On startup
-	controlInputTabbability()
+	optionsTabIndex()
 
 	// Add event to specified inputs
-	settingsDom.querySelectorAll(allHidingInputs).forEach((dom) => {
-		dom.addEventListener('click', () => setTimeout(() => controlInputTabbability(), 10))
+	settingsDom.querySelectorAll('.opt-hider').forEach((dom) => {
+		dom.addEventListener('input', () => setTimeout(() => optionsTabIndex(), 10))
 	})
 }
 
