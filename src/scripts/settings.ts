@@ -508,6 +508,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
 		weather(null, { is: 'provider', value: this.value })
+		this.blur()
 	})
 
 	paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {
@@ -663,7 +664,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// A11y tabbing inputs control
 	// Expensive way to toggle all inputs tabindex on "params hiding actions" in settings
 	const allHidingInputs =
-		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_notes, #i_sb, #i_sbengine, #i_quotes, #s_export, #s_import'
+		'#i_showall, .tooltip, #i_quicklinks, #i_geol, #i_notes, #i_sb, #i_sbengine, #i_moreinfo, #i_quotes, #s_export, #s_import'
 
 	function controlInputTabbability() {
 		const toggleTabindex = (parent: string, on: boolean) => {
@@ -691,6 +692,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		})
 
 		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
+		toggleTabindex('#weather_provider', has(paramId('weather_provider'), 'shown'))
 		toggleTabindex('#quotes_userlist', has(paramId('quotes_userlist'), 'shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
 		toggleTabindex('#import', has(paramId('import'), 'shown'))
