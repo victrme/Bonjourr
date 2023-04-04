@@ -119,19 +119,26 @@
 		}
 
 		#time-container {
+			&.analog {
+				#clock {
+					display: none;
+				}
+
+				#analogClock {
+					display: block;
+				}
+			}
+
 			#clock {
 				margin: 0;
 				margin-bottom: 0.1em;
 				font-size: 6em;
 				line-height: 1em;
 				font-weight: 200;
-
-				&.hidden {
-					display: none;
-				}
 			}
 
 			#analogClock {
+				display: none;
 				position: relative;
 				width: 8em;
 				height: 8em;
@@ -143,14 +150,6 @@
 
 				@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2, $fbColor: #fff);
 
-				&:hover {
-					background: rgba(255, 255, 255, 0.2);
-				}
-
-				&.hidden {
-					display: none;
-				}
-
 				#center {
 					position: absolute;
 					z-index: 5;
@@ -161,6 +160,13 @@
 					transform: translate(-50%, -50%);
 					background-color: white;
 					border-radius: 100px;
+				}
+
+				&.transparent {
+					box-shadow: none;
+					backdrop-filter: none;
+					border-color: transparent;
+					background-color: transparent;
 				}
 
 				&.square {

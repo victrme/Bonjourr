@@ -297,23 +297,15 @@ export function clock(
 			.forEach((mark, i) => (mark.textContent = chars[face as keyof typeof chars][i]))
 	}
 
-	function changeAnalogStyle(style: string) {
-		clas(document.querySelector('#analogClock'), style === 'square' ? true : false, 'square')
+	function changeAnalogStyle(style?: string) {
+		$('analogClock')?.setAttribute('class', style || '')
 	}
 
 	function startClock(clock: Clock, greeting: string, usdate: boolean) {
 		//
 		function displayControl() {
-			const numeric = $('clock'),
-				analog = $('analogClock'),
-				analogSec = $('analogSeconds')
-
-			//cache celle qui n'est pas choisi
-			clas(numeric, clock.analog, 'hidden')
-			clas(analog, !clock.analog, 'hidden')
-
-			//cache l'aiguille des secondes
-			clas(analogSec, !clock.seconds && clock.analog, 'hidden')
+			clas($('time-container'), clock.analog, 'analog')
+			clas($('analogSeconds'), !clock.seconds, 'hidden')
 		}
 
 		function clockInterval() {

@@ -2336,7 +2336,7 @@ export const dict = {
 		sr: 'Стил сата',
 		sr_YU: 'Stil sata',
 	},
-	'Round': {
+	Round: {
 		fr: 'Rond',
 		sv: 'Runt',
 		nl: 'Rond',
@@ -2358,7 +2358,7 @@ export const dict = {
 		sr: 'Округли круг',
 		sr_YU: 'Zaokruživanje',
 	},
-	'Square': {
+	Square: {
 		fr: 'Carré',
 		sv: 'Kvadratisk',
 		nl: 'Vierkant',
@@ -2379,6 +2379,28 @@ export const dict = {
 		hu: 'Négyzet',
 		sr: 'Квадратни квадрат',
 		sr_YU: 'Kvadratnih',
+	},
+	Transparent: {
+		fr: 'Transparent',
+		sv: 'Transparent',
+		nl: 'Transparant',
+		pl: 'Przezroczysta',
+		pt_BR: 'Transparente',
+		ru: 'Прозрачный',
+		zh_CN: '透明的',
+		zh_HK: '透明的',
+		sk: 'Transparentné',
+		de: 'Transparent',
+		it: 'Trasparente',
+		es: 'Transparente',
+		tr: 'Şeffaf',
+		uk: 'Прозорий',
+		id: 'Transparan',
+		da: 'Gennemsigtig',
+		fi: 'Läpinäkyvä',
+		hu: 'Átlátszó',
+		sr: 'Транспарент',
+		sr_YU: 'Transparent',
 	},
 	Date: {
 		fr: 'Date',
