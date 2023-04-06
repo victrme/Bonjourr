@@ -4,6 +4,11 @@ test.beforeEach(async ({ page }) => {
 	await page.goto('http://127.0.0.1:5500/release/online/index.html')
 })
 
+test.afterAll(async ({ page }) => {
+	await page.close()
+	expect(page.isClosed()).toBe(true)
+})
+
 test('Page loads', async ({ page }) => {
 	await expect(page).toHaveTitle(/New tab/)
 	await page.waitForSelector('#interface')
@@ -11,7 +16,7 @@ test('Page loads', async ({ page }) => {
 
 test.describe('Settings', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.waitForTimeout(100)
+		await page.waitForTimeout(200)
 		await page.getByRole('button', { name: 'Toggle settings menu' }).click()
 		await page.waitForTimeout(5)
 		await page.waitForSelector('#settings')
