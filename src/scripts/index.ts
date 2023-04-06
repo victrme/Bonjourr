@@ -200,14 +200,12 @@ export function favicon(val?: string, isEvent?: true) {
 	}
 }
 
-export function tabTitle(init: string | null, event?: HTMLInputElement) {
-	const title = init ? init : event ? stringMaxSize(event.value, 80) : tradThis('New tab')
+export function tabTitle(val = '', isEvent?: true) {
+	document.title = stringMaxSize(val, 80) || tradThis('New tab')
 
-	if (event) {
-		eventDebounce({ tabtitle: title })
+	if (isEvent) {
+		eventDebounce({ tabtitle: stringMaxSize(val, 80) })
 	}
-
-	document.title = title
 }
 
 export function pageWidth(val?: number, isEvent?: true) {

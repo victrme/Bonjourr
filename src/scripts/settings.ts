@@ -303,7 +303,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_tabtitle').addEventListener('input', function () {
-		tabTitle(null, this)
+		tabTitle(this.value, true)
 	})
 
 	paramId('i_dark').addEventListener('change', function () {
@@ -882,7 +882,7 @@ function switchLangs(nextLang: Langs) {
 		translatePlaceholders($('settings'))
 		weather(data as Sync)
 		clock(data as Sync)
-		notes((data.notes as Sync['notes']) || structuredClone(syncDefaults.notes))
+		notes((data.notes as Sync['notes']) || structuredClone(syncDefaults.notes) || null)
 
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
