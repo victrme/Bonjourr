@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
 	await page.goto('http://127.0.0.1:5500/release/online/index.html')
@@ -14,14 +14,16 @@ test('Page loads', async ({ page }) => {
 	await page.waitForSelector('#interface')
 })
 
+export async function openAllSettings(page: Page) {
+	await page.waitForTimeout(200)
+	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
+	await page.waitForTimeout(5)
+	await page.waitForSelector('#settings')
+	await page.getByLabel('Show all settings').click()
+}
+
 test.describe('Settings', () => {
-	test.beforeEach(async ({ page }) => {
-		await page.waitForTimeout(200)
-		await page.getByRole('button', { name: 'Toggle settings menu' }).click()
-		await page.waitForTimeout(5)
-		await page.waitForSelector('#settings')
-		await page.getByLabel('Show all settings').click()
-	})
+	test.beforeEach(async ({ page }) => openAllSettings(page))
 
 	test.describe('Language', () => {
 		test('Is correctly set to english', async ({ page }) => {
@@ -80,23 +82,6 @@ test.describe('Settings', () => {
 			// Removes
 			await page.getByRole('textbox', { name: 'Tab favicon' }).fill('')
 			expect(await link?.getAttribute('href')).toContain('/src/assets/favicon.ico')
-		})
-	})
-
-	test.describe('Quick links', () => {
-		test('Adds link & modifies title', async ({ page }) => {
-			// Adds
-			await page.getByRole('textbox', { name: 'New link title' }).click()
-			await page.getByRole('textbox', { name: 'New link title' }).fill('wikipedia')
-			await page.getByRole('textbox', { name: 'New link title' }).press('Tab')
-			await page.getByPlaceholder('URL').fill('wikipedia.org')
-			await page.getByRole('button', { name: 'Add' }).click()
-
-			// Modifies
-			await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
-			await page.getByPlaceholder('Title').click()
-			await page.getByPlaceholder('Title').fill('wiki')
-			await page.getByRole('button', { name: 'Apply changes' }).click()
 		})
 	})
 })
