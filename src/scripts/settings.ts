@@ -1014,15 +1014,10 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 	clas($('reset_conf'), action === 'conf', 'shown')
 }
 
-export function updateExportJSON(settingsDom?: HTMLElement) {
-	if (!settingsDom && !$('settings')) {
-		return false
-	}
+export function updateExportJSON(settingsDom: HTMLElement) {
+	const input = settingsDom.querySelector('#area_export') as HTMLInputElement
 
-	const dom = settingsDom || $('settings')
-	const input = dom?.querySelector('#area_export') as HTMLInputElement
-
-	dom?.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
+	settingsDom.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
 	storage.sync.get(null, (data) => {
 		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
@@ -1059,9 +1054,16 @@ export function settingsInit(data: Sync) {
 		//
 
 		// On settings changes, update export code
-		detectPlatform() === 'online'
-			? (window.onstorage = () => updateExportJSON())
-			: chrome.storage.onChanged.addListener(() => updateExportJSON())
+		const isOnline = detectPlatform() === 'online'
+		const storageUpdate = () => updateExportJSON($('settings') as HTMLElement)
+		const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+		if (isOnline) {
+			window.addEventListener('storage', storageUpdate)
+		} else {
+			chrome.storage.onChanged.addListener(storageUpdate)
+			window.addEventListener('beforeunload', unloadUpdate, { once: true })
+		}
 
 		function toggleDisplay(dom: HTMLElement) {
 			const isClosed = !has(dom, 'shown')
