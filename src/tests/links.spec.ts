@@ -20,8 +20,7 @@ test.beforeEach(async () => {
 	await page.waitForTimeout(5)
 	await page.waitForSelector('#settings')
 
-	const settings = await page.$('#settings')
-	const classes = (await settings?.getAttribute('class')) || ''
+	const classes = (await page.locator('#settings')?.getAttribute('class')) || ''
 
 	if (!classes.includes('all')) {
 		await page.getByLabel('Show all settings').click()
@@ -68,9 +67,9 @@ test('Modifies title, link & icon', async () => {
 	await page.getByPlaceholder('Icon').fill(icon)
 	await page.getByRole('button', { name: 'Apply changes' }).click()
 
-	const span = await page.$('#linkblocks li:last-child span')
-	const img = await page.$('#linkblocks li:last-child img')
-	const a = await page.$('#linkblocks li:last-child a')
+	const span = page.locator('#linkblocks li:last-child span')
+	const img = page.locator('#linkblocks li:last-child img')
+	const a = page.locator('#linkblocks li:last-child a')
 
 	expect(await span?.textContent()).toEqual(title)
 	expect(await a?.getAttribute('href')).toEqual(url)

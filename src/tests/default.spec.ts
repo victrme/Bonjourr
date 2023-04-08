@@ -28,13 +28,13 @@ test.describe('Settings', () => {
 	test.describe('Language', () => {
 		test('Is correctly set to english', async ({ page }) => {
 			expect(await page.getByRole('combobox', { name: 'Language' }).inputValue()).toEqual('en')
-			expect(await (await page.$('html'))?.getAttribute('lang')).toEqual('en')
+			expect(await page.locator('html')?.getAttribute('lang')).toEqual('en')
 		})
 
 		test('Switch to French', async ({ page }) => {
 			await page.getByRole('combobox', { name: 'Language' }).selectOption('fr')
 			await page.getByRole('heading', { name: 'Général' }).isVisible()
-			expect(await (await page.$('html'))?.getAttribute('lang')).toEqual('fr')
+			expect(await page.locator('html')?.getAttribute('lang')).toEqual('fr')
 
 			// Back to English
 			await page.getByRole('combobox', { name: 'Langue' }).selectOption('en')
@@ -76,7 +76,7 @@ test.describe('Settings', () => {
 			await page.getByRole('textbox', { name: 'Tab favicon' }).fill('🤱')
 			await page.waitForTimeout(10)
 
-			const link = await page.$('link[rel="icon"]')
+			const link = page.locator('link[rel="icon"]')
 			expect(await link?.getAttribute('href')).toContain('🤱')
 
 			// Removes
