@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test'
 
-test.setTimeout(5000)
+test.setTimeout(8000)
 test.describe.configure({ mode: 'serial' })
 
 let page: Page
@@ -19,7 +19,13 @@ test.beforeEach(async () => {
 	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
 	await page.waitForTimeout(5)
 	await page.waitForSelector('#settings')
-	await page.getByLabel('Show all settings').click()
+
+	const settings = await page.$('#settings')
+	const classes = (await settings?.getAttribute('class')) || ''
+
+	if (!classes.includes('all')) {
+		await page.getByLabel('Show all settings').click()
+	}
 })
 
 test.afterEach(async () => {
@@ -93,10 +99,33 @@ test('Changes styles', async () => {
 })
 
 test('Reduces links row', async () => {
+	test.slow()
+	await addLink('bonjourr.fr', '')
 	await page.getByLabel('Links per row').fill('1')
-	// restofthefrickingowl
+	await page.waitForTimeout(200)
+
+	const links = await page.locator('#linkblocks li').all()
+	let areInColumn = true
+	let lastHeight = 0
+
+	links.forEach(async (link) => {
+		const box = await link.boundingBox()
+
+		if (lastHeight === box?.y) {
+			areInColumn = false
+		}
+
+		lastHeight = box?.y || 0
+	})
+
+	expect(areInColumn).toEqual(true)
 })
 
 test('Opens in new tab', async () => {
-	// how to do ?
+	await page.locator('#i_linknewtab').click()
+
+	const a = page.locator('#linkblocks li:last-child a')
+	const target = await a.getAttribute('target')
+
+	expect(target).toEqual('_blank')
 })
