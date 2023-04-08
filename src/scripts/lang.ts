@@ -20,6 +20,7 @@
 //   German translation by Bernhard Wittmann · https://bernhardwittmann.com
 //   Italian translation by Trazalca · @Trazalca
 //   Spanish translation by José Alberto · @joatb, and Alí Sinisterra · @alisinisterra
+//   Greek (Modern) translation by Aggelos Tselios · @tseli0s
 
 // Empty array template :
 // '': {
@@ -43,6 +44,7 @@
 // 	hu: '',
 // 	sr: '',
 // 	sr_YU: '',
+//  gr: '',
 // },
 
 export const langList = {
@@ -67,6 +69,7 @@ export const langList = {
 	hu: 'Magyar',
 	sr: 'Српски (ћирилица)',
 	sr_YU: 'Srpski (latinica)',
+	gr: 'Ελληνικά'
 }
 
 export const dict = {
@@ -91,6 +94,7 @@ export const dict = {
 		hu: 'Új lap',
 		sr: 'Нова картица',
 		sr_YU: 'Nova kartica',
+		gr: 'Νέα καρτέλα'
 	},
 	Consider: {
 		fr: "N'hésitez pas à",
@@ -113,6 +117,7 @@ export const dict = {
 		hu: 'Fontold meg',
 		sr: 'Ако вам се допада Bonjourr, размислите о',
 		sr_YU: 'Ako vam se dopada Bonjourr, razmislite o',
+		gr: 'Σκεφτείτε',
 	},
 	donating: {
 		fr: 'faire un don',
@@ -135,6 +140,8 @@ export const dict = {
 		hu: 'a támogatást',
 		sr: 'малој донацији',
 		sr_YU: 'maloj donaciji',
+		gr: 'Κάντε μια δωρεά',
+
 	},
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
@@ -157,6 +164,7 @@ export const dict = {
 		hu: 'ha tetszik a Bonjourr',
 		sr: 'ако волите Bonjourr',
 		sr_YU: 'ako volite Bonjourr',
+		gr: 'Εάν αγαπάτε το Bonjourr',
 	},
 	'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇': {
 		fr: 'Vous aimez utiliser Bonjourr ? Pensez à nous noter ou faire un don, ça serait super ! 😇',
@@ -178,7 +186,8 @@ export const dict = {
 		fi: 'Pidätkö Bonjourrin käytöstä? Harkitse arvostelun antamista tai lahjoittamista, se auttaisi paljon! 😇',
 		hu: 'Szereted használni a Bonjourr-t? Mondd el véleményed vagy támogasd a projektet, az sokat segítene 😇',
 		sr: 'Допада вам се да користите Bonjourr? Размислите о томе да нам дате рецензију или донацију, јер би нам то много значило!',
-		sr_YU: 'Dopada vam se da koristite Bonjourr? Razmislite o tome da nam date recenziju ili donaciju, jer bi nam to mnogo značilo!',
+		sr_YU: 'Dopada vam se da oristite Bonjourr? Razmislite o tome da nam date recenziju ili donaciju, jer bi nam to mnogo značilo!',
+		gr: 'Αγαπάτε να χρησιμοποιήτε το Bonjourr; Σκεφτείτε να μας αξιολογήσετε ή να κάνετε μια δωρεά, αυτό θα βοηθούσε πολύ! 😇',
 	},
 	Review: {
 		fr: 'Noter',
@@ -201,6 +210,7 @@ export const dict = {
 		hu: 'Elmondom a véleményem',
 		sr: 'Рецензија',
 		sr_YU: 'Recenzija',
+		gr: 'Αξιολόγηση',
 	},
 	Donate: {
 		fr: 'Faire un don',
@@ -223,6 +233,7 @@ export const dict = {
 		hu: 'Támogatom a projektet',
 		sr: 'Донација',
 		sr_YU: 'Donacija',
+		gr: 'Κάντε μια δωρεά',
 	},
 	Cancel: {
 		fr: 'Annuler',
@@ -245,6 +256,7 @@ export const dict = {
 		hu: 'Mégse',
 		sr: 'Откажи',
 		sr_YU: 'Otkaži',
+		gr: 'Ακύρωση',
 	},
 	Delete: {
 		fr: 'Supprimer',
@@ -267,6 +279,7 @@ export const dict = {
 		hu: 'Törlés',
 		sr: 'Обриши',
 		sr_YU: 'Obriši',
+		gr: 'Διαγραφή',
 	},
 	'Apply changes': {
 		fr: 'Enregistrer',
@@ -289,6 +302,7 @@ export const dict = {
 		hu: 'Módosítások alkalmazása',
 		sr: 'Примени измене',
 		sr_YU: 'Primeni izmene',
+		gr: 'Εφαρμόστε τις αλλαγές',
 	},
 	Monday: {
 		fr: 'Lundi',
@@ -311,6 +325,7 @@ export const dict = {
 		hu: 'Hétfő',
 		sr: 'понедељак',
 		sr_YU: 'ponedeljak',
+		gr: 'Δευτέρα',
 	},
 	Tuesday: {
 		fr: 'Mardi',
