@@ -1452,6 +1452,7 @@ export const dict = {
 		hu: 'Írd be a gyűjtemény URL-ben található azonosítóját, több azonosító megadása esetén vesszővel válaszd el őket.',
 		sr: 'Унесите ID колекције који се налази у URL-у. Уколико желите да додате више колекција, одвојте их зарезом.',
 		sr_YU: 'Unesite ID kolekcije koji se nalazi u URL-u. Ukoliko želite da dodate više kolekcija, odvojte ih zarezom.',
+		gr: 'Πληκτρολογήστε το Collection ID από το URL του, προσθέστε περισσότερα ξεχωρίζοντας τα με ένα κόμμα.'
 	},
 	Name: {
 		fr: 'Nom',
