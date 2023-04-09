@@ -29,8 +29,9 @@ export default function weather(
 			let lang = document.documentElement.getAttribute('lang')
 			let location = ''
 
-			// Openweathermap country code for traditional chinese is tw
+			// Openweathermap country code for traditional chinese is tw, greek is el
 			if (lang === 'zh_HK') lang = 'zh_TW'
+			if (lang === 'gr') lang = 'el'
 
 			storage.location?.length === 2
 				? (location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`)
