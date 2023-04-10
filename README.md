@@ -186,3 +186,4 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇫🇮 Finnish translation** · jaajko · [Jaajko](https://jaajko.fi) · [GitHub](https://github.com/jaajko)
 -   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
+-   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
