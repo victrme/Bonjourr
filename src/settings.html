@@ -29,7 +29,7 @@
 	<div class="param">
 		<div class="showall wrapper">
 			<label for="i_showall" class="trn">Show all settings</label>
-			<input id="i_showall" class="switch" type="checkbox" />
+			<input id="i_showall" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<hr />
@@ -57,7 +57,7 @@
 			<div class="wrapper" id="tabtitle">
 				<span>
 					<span class="trn">Tab appearance</span>
-					<button class="tooltip tttab" aria-label="Tips on tab appearance">?</button>
+					<button class="tooltip tttab opt-hider" aria-label="Tips on tab appearance">?</button>
 				</span>
 
 				<div>
@@ -92,7 +92,7 @@
 				<div class="wrapper">
 					<span>
 						<span class="trn">Page layout</span>
-						<button class="tooltip ttgrid" aria-label="Tips on page grid layout">?</button>
+						<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
 					</span>
 
 					<div id="grid-layout" class="mover">
@@ -178,7 +178,7 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_collection" class="trn">Unsplash collection</label>
-					<button class="tooltip ttcoll" aria-label="Tips on Unsplash collections">?</button>
+					<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
 				</span>
 
 				<input
@@ -237,7 +237,7 @@
 
 	<h2>
 		<span class="trn">Quick Links</span>
-		<button class="tooltip ttlinks" aria-label="Tips on Quick Links">?</button>
+		<button class="tooltip ttlinks opt-hider" aria-label="Tips on Quick Links">?</button>
 	</h2>
 
 	<p class="tooltiptext ttlinks">
@@ -251,7 +251,7 @@
 	<div class="param">
 		<div class="activate_quicklinks wrapper">
 			<label for="i_quicklinks" class="trn">Enable</label>
-			<input id="i_quicklinks" class="switch" type="checkbox" />
+			<input id="i_quicklinks" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<div id="quicklinks_options">
@@ -327,7 +327,7 @@
 	<div class="param">
 		<div class="wrapper">
 			<label for="i_time" class="trn">Enable</label>
-			<input id="i_time" class="switch" type="checkbox" />
+			<input id="i_time" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<div id="time_options">
@@ -438,7 +438,7 @@
 	<div class="param">
 		<div class="wrapper">
 			<label for="i_main" class="trn">Enable</label>
-			<input id="i_main" class="switch" type="checkbox" />
+			<input id="i_main" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<div id="main_options">
@@ -446,7 +446,7 @@
 
 			<div class="w_auto wrapper">
 				<label for="i_geol" class="trn">Geolocation</label>
-				<input id="i_geol" class="switch" type="checkbox" />
+				<input id="i_geol" class="switch opt-hider" type="checkbox" />
 			</div>
 
 			<div id="sett_city">
@@ -746,6 +746,33 @@
 				<hr />
 
 				<div class="wrapper">
+					<label for="i_moreinfo" class="trn">Detailed weather</label>
+					<select id="i_moreinfo" class="opt-hider">
+						<option value="none">None</option>
+						<option value="msnw">MSN Weather</option>
+						<option value="yhw">Yahoo Weather</option>
+						<option value="windy">Windy.com</option>
+						<option value="custom" class="trn">Custom provider</option>
+					</select>
+				</div>
+
+				<div id="weather_provider">
+					<hr />
+					<div class="wrapper">
+						<label for="i_provider" class="trn">Provider URL</label>
+						<input
+							id="i_provider"
+							name="provider"
+							type="text"
+							placeholder="https://www.weatherbug.com/"
+							maxlength="512"
+						/>
+					</div>
+				</div>
+
+				<hr />
+
+				<div class="wrapper">
 					<label for="i_weatherhide" class="trn">Show</label>
 					<select id="i_weatherhide">
 						<option value="all" class="trn">Description and icon</option>
@@ -754,13 +781,13 @@
 						<option value="disabled" class="trn">Disabled</option>
 					</select>
 				</div>
+			</div>
 
-				<hr />
+			<hr />
 
-				<div class="greethide wrapper">
-					<label for="i_greethide" class="trn">Greetings</label>
-					<input id="i_greethide" class="switch" type="checkbox" />
-				</div>
+			<div class="greethide wrapper">
+				<label for="i_greethide" class="trn">Greetings</label>
+				<input id="i_greethide" class="switch" type="checkbox" />
 			</div>
 
 			<hr />
@@ -777,7 +804,7 @@
 	<div class="param">
 		<div class="activate_notes wrapper">
 			<label for="i_notes" class="trn">Enable</label>
-			<input id="i_notes" class="switch" type="checkbox" />
+			<input id="i_notes" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<div id="notes_options">
@@ -833,7 +860,7 @@
 	<div class="param">
 		<div class="activate_searchbar wrapper">
 			<label for="i_sb" class="trn">Enable</label>
-			<input id="i_sb" class="switch" type="checkbox" />
+			<input id="i_sb" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<div id="searchbar_options">
@@ -848,7 +875,7 @@
 
 			<div class="wrapper">
 				<label for="i_sbengine" class="trn">Search engine</label>
-				<select id="i_sbengine" class="choose_search">
+				<select id="i_sbengine" class="choose_search opt-hider">
 					<option value="google">Google</option>
 					<option value="ddg">DuckDuckGo</option>
 					<option value="bing">Bing</option>
@@ -910,7 +937,7 @@
 	<div class="param">
 		<div class="activate_quotes wrapper">
 			<label for="i_quotes" class="trn">Enable</label>
-			<input id="i_quotes" class="switch" type="checkbox" />
+			<input id="i_quotes" class="switch opt-hider" type="checkbox" />
 		</div>
 
 		<div id="quotes_options">
@@ -943,7 +970,7 @@
 						<span>
 							<label for="i_qtlist" class="trn">Custom quotes</label>
 
-							<button class="tooltip ttcustomquotes" aria-label="Tips on custom quotes">?</button>
+							<button class="tooltip ttcustomquotes opt-hider" aria-label="Tips on custom quotes">?</button>
 						</span>
 
 						<input
@@ -1033,7 +1060,7 @@
 	<div class="as as_css cssEditor">
 		<h2 id="lbl-css">
 			<span class="trn">Custom Style</span>
-			<button class="tooltip ttcss" aria-label="Tips on Custom styles">?</button>
+			<button class="tooltip ttcss opt-hider" aria-label="Tips on Custom styles">?</button>
 		</h2>
 
 		<p class="tooltiptext ttcss">
@@ -1071,8 +1098,8 @@
 
 		<div class="param">
 			<div class="tabs">
-				<button id="s_export" class="trn">Export</button>
-				<button id="s_import" class="trn">Import</button>
+				<button id="s_export" class="trn opt-hider">Export</button>
+				<button id="s_import" class="trn opt-hider">Import</button>
 				<div class="glider"></div>
 			</div>
 

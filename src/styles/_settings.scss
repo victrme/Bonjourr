@@ -171,7 +171,7 @@
 
 	#main_options.shown {
 		overflow-y: clip;
-		max-height: 450px;
+		max-height: 580px;
 	}
 
 	// // Safari composing layers
@@ -672,6 +672,7 @@
 
 	#notes_options,
 	#searchbar_options,
+	#weather_provider,
 	#searchbar_request,
 	#quotes_userlist {
 		overflow-y: hidden;
@@ -688,8 +689,12 @@
 		max-height: 160px;
 	}
 
-	#quotes_userlist.shown,
+	#weather_provider.shown,
 	#searchbar_request.shown {
+		max-height: 50px;
+	}
+
+	#quotes_userlist.shown {
 		max-height: 100px;
 	}
 

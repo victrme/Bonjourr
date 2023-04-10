@@ -271,6 +271,8 @@ export const syncDefaults: Sync = {
 		city: 'Paris',
 		unit: 'metric',
 		location: [],
+		provider: '',
+		moreinfo: 'none',
 		forecast: 'auto',
 		temperature: 'actual',
 	},
