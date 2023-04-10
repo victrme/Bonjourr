@@ -48,7 +48,7 @@ Here's a list of things you can do to help us out:
 
 -   Give us feedback (positive and negative!) on how you use Bonjourr
 -   Suggest new features or improvements of the existing ones
--   Create new [CSS snippets](https://bonjourr.fr/css-snippet) or [custom profiles](https://bonjourr.fr/profiles)
+-   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/profiles)
 -   [Translate](https://bonjourr.fr/help#-translations) to a new language, or complete an existing one
 -   Contribute to [our website](https://github.com/morceaudebois/bonjourr.fr)
 -   Add new quotes (especially non english/french) to [the API](https://github.com/victrme/i18n-quotes)
