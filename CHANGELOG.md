@@ -1,5 +1,20 @@
 ## Changelogs
 
+**1.16.3**
+
+-   Added:
+    -   Transparent clock style
+    -   #192 Detailed weather feature
+-   Fixes:
+    -   #194 Fixed error in Firefox browser console
+    -   #191 Improved export settings order
+    -   #190 Improved export file naming
+    -   Reduced compression (improved quality) on high DPR devices
+    -   Links dragging breaking with small page width
+    -   Tab title showing path when removing input
+-   Translations:
+    -   Added modern Greek by @tseli0s, thanks !
+
 **1.16.2**
 
 -   Added square analog clock style
