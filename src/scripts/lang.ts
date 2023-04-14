@@ -69,7 +69,7 @@ export const langList = {
 	hu: 'Magyar',
 	sr: 'Српски (ћирилица)',
 	sr_YU: 'Srpski (latinica)',
-	gr: 'Ελληνικά'
+	gr: 'Ελληνικά',
 }
 
 export const dict = {
@@ -94,7 +94,7 @@ export const dict = {
 		hu: 'Új lap',
 		sr: 'Нова картица',
 		sr_YU: 'Nova kartica',
-		gr: 'Νέα καρτέλα'
+		gr: 'Νέα καρτέλα',
 	},
 	Consider: {
 		fr: "N'hésitez pas à",
@@ -141,7 +141,6 @@ export const dict = {
 		sr: 'малој донацији',
 		sr_YU: 'maloj donaciji',
 		gr: 'Κάντε μια δωρεά',
-
 	},
 	'if you love Bonjourr': {
 		fr: 'si vous aimez Bonjourr',
@@ -1363,7 +1362,7 @@ export const dict = {
 		gr: 'Περισσότερες πληροφορίες',
 	},
 	"These are Bonjourr's bookmarks. ": {
-		fr: '',
+		fr: 'Ce sont les favoris de Bonjourr. ',
 		sv: 'Det här är Bonjourrs bokmärken. ',
 		nl: 'Dit zijn de bladwijzers van Bonjourr. ',
 		pl: 'To są zakładki Bonjourr. ',
@@ -1380,9 +1379,9 @@ export const dict = {
 		id: 'Ini adalah bookmark Bonjourr. ',
 		da: 'De her er Bonjourrs bogmærker. ',
 		fi: 'Nämä ovat Bonjourrin kirjanmerkit. ',
-		hu: 'Ezek Bonjourr könyvjelzők.',
-		sr: 'Ово су Bonjourr-ови омиљени сајтови.',
-		sr_YU: 'Ovo su Bonjourr-ovi omiljeni sajtovi.',
+		hu: 'Ezek Bonjourr könyvjelzők. ',
+		sr: 'Ово су Bonjourr-ови омиљени сајтови. ',
+		sr_YU: 'Ovo su Bonjourr-ovi omiljeni sajtovi. ',
 		gr: 'Αυτοί είναι οι σελιδοδείκτες του Bonjourr. ',
 	},
 	'Edit your Quick Links by right clicking the icon.': {
@@ -1452,7 +1451,7 @@ export const dict = {
 		hu: 'Írd be a gyűjtemény URL-ben található azonosítóját, több azonosító megadása esetén vesszővel válaszd el őket.',
 		sr: 'Унесите ID колекције који се налази у URL-у. Уколико желите да додате више колекција, одвојте их зарезом.',
 		sr_YU: 'Unesite ID kolekcije koji se nalazi u URL-u. Ukoliko želite da dodate više kolekcija, odvojte ih zarezom.',
-		gr: 'Πληκτρολογήστε το Collection ID από το URL του, προσθέστε περισσότερα ξεχωρίζοντας τα με ένα κόμμα.'
+		gr: 'Πληκτρολογήστε το Collection ID από το URL του, προσθέστε περισσότερα ξεχωρίζοντας τα με ένα κόμμα.',
 	},
 	Name: {
 		fr: 'Nom',
@@ -2211,7 +2210,7 @@ export const dict = {
 		hu: 'Válasszon ki egy elrendezést, kattintson a szerkesztésre, és válasszon ki egy widgetet a módosításhoz.',
 		sr: 'Изаберите изглед, кликните на уреди и изаберите виџет за измену.',
 		sr_YU: 'Izaberite izgled, kliknite na uredi i izaberite vidžet za izmenu.',
-		gr: 'Επιλέξτε ένα layout, πατήστε επεξεργασία και επιλέξτε ένα widget για να επεξεργαστείτε.'
+		gr: 'Επιλέξτε ένα layout, πατήστε επεξεργασία και επιλέξτε ένα widget για να επεξεργαστείτε.',
 	},
 	'Edit grid': {
 		fr: 'Modifier la grille',
@@ -2326,6 +2325,7 @@ export const dict = {
 		hu: 'Számlap stílusa',
 		sr: 'Изглед сата',
 		sr_YU: 'Izgled sata',
+		gr: 'Πρόσοψη ρολογιού',
 	},
 	None: {
 		fr: 'Simple',
@@ -3154,7 +3154,7 @@ export const dict = {
 		hu: 'Hőmérséklet',
 		sr: 'Температура',
 		sr_YU: 'Temperatura',
-		gr: 'Θερμοκρασία',	
+		gr: 'Θερμοκρασία',
 	},
 	Actual: {
 		fr: 'Réelle',
@@ -3246,6 +3246,7 @@ export const dict = {
 		hu: 'Részletes időjárás',
 		sr: 'Детаљно време',
 		sr_YU: 'Detaljno vreme',
+		gr: 'Αναλυτικά ο καιρός',
 	},
 	'Custom provider': {
 		fr: 'Fournisseur personnalisé',
@@ -3268,6 +3269,7 @@ export const dict = {
 		hu: 'Egyéni szolgáltató',
 		sr: 'Прилагођени добављач',
 		sr_YU: 'Prilagođeni dobavljač',
+		gr: 'Προσαρμοσμένος πάροχος',
 	},
 	'Provider URL': {
 		fr: 'URL du fournisseur',
@@ -3290,6 +3292,7 @@ export const dict = {
 		hu: 'Szolgáltató URL',
 		sr: 'УРЛ провајдера',
 		sr_YU: 'URL provajdera',
+		gr: 'URL παρόχου',
 	},
 	'Description and icon': {
 		fr: 'Description et icône',
@@ -5038,7 +5041,7 @@ export const dict = {
 		hu: 'Mostantól áthelyezheti a widgeteket, megjelenítheti a saját idézeteit és még sok mást is. Tekintse meg az új funkciókat a',
 		sr: 'Сада можете да померате виџете около, приказујете сопствене цитате и још много тога. Погледајте нове функције у програму ',
 		sr_YU: 'Sada možete da pomerate vidžete, pokazujete sopstvene citate i još mnogo toga. Pogledajte nove funkcije u',
-		gr: 'Τώρα μπορείτε να μετακινείτε widgets γύρω, να δείχνετε τα δικά σας quotes και πολλά περισσότερα. Τσεκάρετε όλες τις νέες λειτουργίες στο'
+		gr: 'Τώρα μπορείτε να μετακινείτε widgets γύρω, να δείχνετε τα δικά σας quotes και πολλά περισσότερα. Τσεκάρετε όλες τις νέες λειτουργίες στο',
 	},
 	'our update post': {
 		fr: 'le changelog complet',
@@ -5144,7 +5147,7 @@ export const enginesLocales = {
 		hu: 'hu-hu',
 		sr: 'sr_RS',
 		sr_YU: 'sr_RS',
-		gr: 'el_GR'
+		gr: 'el_GR',
 	},
 	startpage: {
 		fr: 'francais',
@@ -5219,7 +5222,7 @@ export const enginesLocales = {
 		hu: 'hu.',
 		sr: '',
 		sr_YU: '',
-		gr: '' // Greece does have one but it can only be accessed by using a Greek IP
+		gr: '', // Greece does have one but it can only be accessed by using a Greek IP
 	},
 	bing: {
 		fr: 'fr',
@@ -5244,6 +5247,6 @@ export const enginesLocales = {
 		hu: 'hu',
 		sr: 'sr-cyrl',
 		sr_YU: 'sr-latn',
-		gr: 'gr'
+		gr: 'gr',
 	},
 }
