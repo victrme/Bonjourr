@@ -88,25 +88,28 @@ export const freqControl = {
 const interfaceFade = (function interfaceFadeDebounce() {
 	let fadeTimeout = setTimeout(() => {})
 
-	function applyFade(callback: Function, duration = 400) {
+	async function apply(duration = 400) {
 		clearTimeout(fadeTimeout)
+
+		// Wait for grid change (in ::root css var) to fade back in
+		let observer = new MutationObserver(() => {
+			fadeTimeout = setTimeout(() => (dominterface.style.transition = ''), duration)
+			dominterface.style.removeProperty('opacity')
+			observer.disconnect()
+		})
+
+		observer.observe(document.documentElement, { attributes: true })
+
+		// Do fade out and then wait for the duration of the transition
 		dominterface.style.opacity = '0'
 		dominterface.style.transition = `opacity ${duration}ms cubic-bezier(.215,.61,.355,1)`
-
-		fadeTimeout = setTimeout(() => {
-			callback()
-
-			dominterface.style.removeProperty('opacity')
-			fadeTimeout = setTimeout(() => {
-				dominterface.style.transition = 'transform .4s'
-			}, duration + 10)
-		}, duration + 10)
+		await new Promise((resolve) => setTimeout(resolve, duration))
 	}
 
-	return { apply: applyFade }
+	return { apply }
 })()
 
-export function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, fromInput?: true) {
+export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, fromInput?: true) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
@@ -136,21 +139,21 @@ export function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, from
 	})
 
 	// Fade interface
-	interfaceFade.apply(function () {
-		// toggle widget on interface
-		listEntries.forEach(([key, on]) => {
-			if (key in widgets) {
-				const dom = $(widgets[key as keyof typeof widgets].domid)
-				clas(dom, !on, 'hidden')
-			}
-		})
+	await interfaceFade.apply(200)
 
-		// user is toggling from settings, update grid
-		if (fromInput) {
-			const [id, on] = listEntries[0] // always only one toggle
-			moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+	// toggle widget on interface
+	listEntries.forEach(([key, on]) => {
+		if (key in widgets) {
+			const dom = $(widgets[key as keyof typeof widgets].domid)
+			clas(dom, !on, 'hidden')
 		}
-	}, 200)
+	})
+
+	// user is toggling from settings, update grid
+	if (fromInput) {
+		const [id, on] = listEntries[0] // always only one toggle
+		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+	}
 }
 
 export function traduction(settingsDom: Element | null, lang = 'en') {
