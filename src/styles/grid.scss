@@ -71,17 +71,11 @@
 		display: none;
 	}
 
-	> * {
+	&:not(.active) > div:not(#close-mover-wrapper) {
 		pointer-events: none;
 		filter: grayscale(1);
 		opacity: 0.4;
 		cursor: auto;
-	}
-
-	&.active > * {
-		pointer-events: all;
-		filter: unset;
-		opacity: 1;
 	}
 
 	hr {
