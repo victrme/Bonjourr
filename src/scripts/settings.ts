@@ -736,11 +736,13 @@ function settingsMgmt() {
 		if (!a) return
 
 		storage.sync.get(null, (data) => {
+			const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
+
 			const bytes = new TextEncoder().encode(stringifyOrder(data))
 			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
 			const date = new Date()
 			const YYYYMMDD = date.toISOString().slice(0, 10)
-			const HHMMSS = `${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`
+			const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
 			a.setAttribute('href', URL.createObjectURL(blob))
 			a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
