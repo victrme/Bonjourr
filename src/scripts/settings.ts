@@ -1053,11 +1053,11 @@ export function settingsInit(data: Sync) {
 
 		const parser = new DOMParser()
 		const settingsDom = document.createElement('aside')
-		const contentList = [...parser.parseFromString(html, 'text/html').body.childNodes]
+		const contentList = parser.parseFromString(html, 'text/html').body.childNodes
 
 		settingsDom.id = 'settings'
 		settingsDom.setAttribute('class', 'init')
-		contentList.forEach((elem) => settingsDom.appendChild(elem))
+		Object.values(contentList).forEach((elem) => settingsDom.appendChild(elem))
 
 		traduction(settingsDom, data.lang)
 		signature(settingsDom)
