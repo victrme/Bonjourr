@@ -1,6 +1,3 @@
-import debounce from 'lodash.debounce'
-import throttle from 'lodash.throttle'
-
 import { dict, langList } from './lang'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
@@ -14,6 +11,8 @@ import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 
+import throttle from './utils/throttle'
+import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
 import stringifyOrder from './utils/stringifyOrder'
 

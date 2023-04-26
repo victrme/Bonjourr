@@ -1,5 +1,3 @@
-import debounce from 'lodash.debounce'
-
 import { google } from './types/googleFonts'
 import { Sync, Searchbar, Weather, Font, ClockFace, MoveKeys } from './types/sync'
 
@@ -36,10 +34,12 @@ import {
 	convertHideStorage,
 } from './utils'
 
+import debounce from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
+	console.log('test')
 	storage.sync.set(value)
 }, 400)
 
@@ -663,7 +663,10 @@ export function localBackgrounds(
 
 	function b64toBlobUrl(b64Data: string, callback: Function) {
 		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
-			res.blob().then((blob) => callback(URL.createObjectURL(blob)))
+			res.blob().then((blob) => {
+				blob.text().then((text) => console.log(blob.stream()))
+				callback(URL.createObjectURL(blob))
+			})
 		})
 	}
 
@@ -673,17 +676,16 @@ export function localBackgrounds(
 	}
 
 	function addNewImage(files: FileList) {
-		const filesArray = [...files] // fileList to Array
 		let filesIdsList: string[] = []
 		let selected = ''
 
-		filesArray.forEach(() => {
+		Object.values(files).forEach(() => {
 			const _id = randomString(6)
 			selected = _id
 			filesIdsList.push(_id)
 		})
 
-		filesArray.forEach((file, i) => {
+		Object.values(files).forEach((file, i) => {
 			let reader = new FileReader()
 
 			reader.onload = function (event) {
@@ -913,7 +915,10 @@ export function localBackgrounds(
 			const background = local['custom_' + id]
 
 			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
+
+			console.time('base64 => blob')
 			b64toBlobUrl(cleanData, (bloburl: string) => {
+				console.timeEnd('base64 => blob')
 				imgBackground(bloburl)
 				clas($('creditContainer'), false, 'shown')
 			})
@@ -1620,8 +1625,8 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 		document.body.classList.remove('loading')
 
 		setTimeout(() => {
-			document.body.classList.remove('init')
 			storage.sync.get(null, (data) => settingsInit(data as Sync))
+			document.body.classList.remove('init')
 		}, loadtime + 100)
 	}
 

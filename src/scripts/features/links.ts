@@ -1,4 +1,3 @@
-import debounce from 'lodash.debounce'
 import { canDisplayInterface } from '..'
 import storage from '../storage'
 import { Sync } from '../types/sync'
@@ -18,6 +17,7 @@ import {
 	extractDomain,
 } from '../utils'
 
+import debounce from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {

@@ -2,7 +2,7 @@ import { $, clas, syncDefaults, tradThis } from '../utils'
 import { langList } from '../lang'
 import { Notes } from '../types/sync'
 import storage from '../storage'
-import debounce from 'lodash.debounce'
+import debounce from '../utils/debounce'
 import pocketEditor from 'pocket-editor'
 
 type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }

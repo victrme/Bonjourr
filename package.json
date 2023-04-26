@@ -25,8 +25,6 @@
 		"@types/gulp-sass": "^5.0.0",
 		"@types/lodash.clamp": "^4.0.7",
 		"@types/lodash.clonedeep": "^4.5.7",
-		"@types/lodash.debounce": "^4.0.7",
-		"@types/lodash.throttle": "^4.1.7",
 		"concurrently": "^7.6.0",
 		"deepmerge": "^4.3.1",
 		"esbuild": "^0.17.12",
@@ -37,8 +35,7 @@
 		"gulp-replace": "^1.1.4",
 		"gulp-sass": "^5.1.0",
 		"lodash.clamp": "^4.0.3",
-		"lodash.debounce": "^4.0.8",
-		"lodash.throttle": "^4.1.1",
+		"lodash.clonedeep": "^4.5.0",
 		"pocket-editor": "^1.6.2",
 		"sass": "^1.60.0",
 		"typescript": "^4.9.5",
@@ -52,8 +49,5 @@
 			"chokidar": "^3.5.3",
 			"glob-parent": "^6.0.2"
 		}
-	},
-	"dependencies": {
-		"lodash.clonedeep": "^4.5.0"
 	}
 }
