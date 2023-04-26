@@ -1245,7 +1245,7 @@ export function settingsInit(data: Sync) {
 			responsiveSettingsHeightDrag()
 		}, 600)
 
-		window.addEventListener('resize', (e) => {
+		window.addEventListener('resize', () => {
 			DrawerDragDebounce()
 
 			// removes transition to prevent weird movement when changing to mobile styling

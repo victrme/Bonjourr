@@ -1435,7 +1435,6 @@ export function customFont(
 				modifyWeightOptions(availWeights)
 				domweight.value = '400'
 
-				if (domfamily) domfamily.blur()
 				return { url, family: font[0].family, availWeights, weight: '400' }
 			}
 
@@ -1474,11 +1473,9 @@ export function customFont(
 					const val = event.value
 
 					if (val === '') {
+						storage.local.remove('fontface')
 						safeFont($('settings') as HTMLElement)
-						debounce(() => {
-							storage.local.remove('fontface')
-							eventDebounce({ font: { size: font.size, ...removeFont() } })
-						}, 200)
+						eventDebounce({ font: { size: font.size, ...removeFont() } })
 					}
 
 					if (typeof val === 'string' && val.length > 1) {
@@ -1488,6 +1485,8 @@ export function customFont(
 							})
 						})
 					}
+
+					$('i_customfont')?.blur()
 
 					break
 				}
