@@ -33,6 +33,15 @@
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 	}
 
+	&.init {
+		#sett_city,
+		#clockoptions #w_clockface,
+		#clockoptions #w_ampm,
+		.widget-options {
+			transition: max-height 0s;
+		}
+	}
+
 	#mobile-drag-zone {
 		display: none;
 		width: 80%;
@@ -143,35 +152,50 @@
 		}
 	}
 
-	&.init {
-		#sett_city,
-		#clockoptions #w_clockface,
-		#clockoptions #w_ampm,
-		#notes_options,
-		#searchbar_options,
-		#quotes_options,
-		#time_options,
-		#main_options,
-		#quicklinks_options {
-			transition: max-height 0s;
+	.widget-option,
+	#weather_provider,
+	#searchbar_request,
+	#quotes_userlist {
+		overflow-y: hidden;
+		max-height: 0;
+		transition: max-height 0.4s;
+
+		&.shown {
+			overflow-y: clip;
 		}
 	}
 
-	#time_options,
-	#main_options {
-		max-height: 0;
-		overflow-y: hidden;
-		transition: max-height 0.4s;
-	}
-
 	#time_options.shown {
-		overflow-y: clip;
 		max-height: 470px;
 	}
 
 	#main_options.shown {
-		overflow-y: clip;
 		max-height: 580px;
+	}
+
+	#quicklinks_options.shown {
+		max-height: 260px;
+	}
+
+	#notes_options.shown {
+		max-height: 160px;
+	}
+
+	#weather_provider.shown,
+	#searchbar_request.shown {
+		max-height: 50px;
+	}
+
+	#quotes_userlist.shown {
+		max-height: 100px;
+	}
+
+	#searchbar_options.shown {
+		max-height: 290px;
+	}
+
+	#quotes_options.shown {
+		max-height: 270px;
 	}
 
 	// // Safari composing layers
@@ -415,43 +439,28 @@
 		}
 	}
 
-	#quicklinks_options {
-		max-height: 0;
-		overflow-y: hidden;
-		transition: max-height 0.4s;
+	#link-input-wrap {
+		display: flex;
+		align-items: center;
+		column-gap: 1em;
+		width: 100%;
 
-		.link_input_wrap {
-			input[type='text'] {
-				width: calc(100% - 10px);
-			}
-
-			#i_title {
-				margin-bottom: 0.5em;
-			}
-
-			> div {
-				display: flex;
-				align-items: center;
-			}
-
-			.links_buttons {
-				text-align: right;
-			}
-
-			#b_importbookmarks,
-			#submitlink {
-				height: 2.2em;
-				transition: filter 0.4s;
-			}
-
-			#submitlink {
-				margin-left: 1em;
-			}
+		input[type='text'] {
+			width: 100%;
 		}
 
-		&.shown {
-			overflow-y: clip;
-			max-height: 260px;
+		#i_title {
+			margin-bottom: 0.5em;
+		}
+
+		#link-input-buttons {
+			text-align: right;
+		}
+
+		#b_importbookmarks,
+		#submitlink {
+			height: 2.2em;
+			transition: filter 0.4s;
 		}
 	}
 
@@ -667,57 +676,6 @@
 		input {
 			width: 100%;
 			text-transform: capitalize;
-		}
-	}
-
-	#notes_options,
-	#searchbar_options,
-	#weather_provider,
-	#searchbar_request,
-	#quotes_userlist {
-		overflow-y: hidden;
-		max-height: 0;
-		transition: max-height 0.4s;
-
-		&.shown {
-			overflow-y: clip;
-		}
-	}
-
-	#notes_options.shown {
-		overflow-y: clip;
-		max-height: 160px;
-	}
-
-	#weather_provider.shown,
-	#searchbar_request.shown {
-		max-height: 50px;
-	}
-
-	#quotes_userlist.shown {
-		max-height: 100px;
-	}
-
-	#searchbar_options.shown {
-		max-height: 290px;
-	}
-
-	#searchbar_options #choose_searchengine {
-		display: none;
-
-		&.shown {
-			display: block;
-		}
-	}
-
-	#quotes_options {
-		overflow-y: hidden;
-		max-height: 0;
-		transition: max-height 0.4s;
-
-		&.shown {
-			overflow-y: clip;
-			max-height: 270px;
 		}
 	}
 

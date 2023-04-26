@@ -678,8 +678,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		}
 
 		// Then control if widgets are on or off
-		const options = '#time_options, #main_options, #quicklinks_options, #searchbar_options, #quotes_options, #notes_options'
-		settingsDom.querySelectorAll(options).forEach((dom) => {
+		settingsDom.querySelectorAll('widget-option').forEach((dom) => {
 			toggleTabindex('#' + dom.id, has(dom, 'shown'))
 		})
 
