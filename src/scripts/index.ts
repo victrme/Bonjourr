@@ -416,7 +416,6 @@ export function clock(
 				case 'style':
 					changeAnalogStyle(clock.style)
 					clock.style = event.value
-					// console.log(clock)
 					break
 
 				case 'seconds':
@@ -663,7 +662,6 @@ export function localBackgrounds(
 	function b64toBlobUrl(b64Data: string, callback: Function) {
 		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
 			res.blob().then((blob) => {
-				blob.text().then((text) => console.log(blob.stream()))
 				callback(URL.createObjectURL(blob))
 			})
 		})
