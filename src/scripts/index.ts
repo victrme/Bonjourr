@@ -1,5 +1,5 @@
-import { google } from './types/googleFonts'
 import { Sync, Searchbar, Weather, Font, ClockFace, MoveKeys } from './types/sync'
+import { google } from './types/googleFonts'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -913,9 +913,7 @@ export function localBackgrounds(
 
 			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
 
-			console.time('base64 => blob')
 			b64toBlobUrl(cleanData, (bloburl: string) => {
-				console.timeEnd('base64 => blob')
 				imgBackground(bloburl)
 				clas($('creditContainer'), false, 'shown')
 			})

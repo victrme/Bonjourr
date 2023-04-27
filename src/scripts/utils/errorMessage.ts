@@ -1,4 +1,4 @@
-import { storage } from '../storage'
+import storage from '../storage'
 import { $, deleteBrowserStorage } from '../utils'
 
 export default function errorMessage(error: unknown) {

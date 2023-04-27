@@ -34,6 +34,7 @@
 		"gulp-rename": "^2.0.0",
 		"gulp-replace": "^1.1.4",
 		"gulp-sass": "^5.1.0",
+		"idb-keyval": "^6.2.0",
 		"lodash.clamp": "^4.0.3",
 		"lodash.clonedeep": "^4.5.0",
 		"pocket-editor": "^1.6.2",
