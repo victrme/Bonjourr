@@ -192,7 +192,6 @@ export default function quickLinks(
 		let coords: { [key: string]: Coords } = {}
 		let coordsEntries: [string, Coords][] = []
 		let startsDrag = false
-		let push = 0 // adds interface translate to cursor x (only for "fixed" clone)
 		let [cox, coy] = [0, 0] // (cursor offset x & y)
 		let interfacemargin = 0
 
@@ -213,7 +212,6 @@ export default function quickLinks(
 
 			startsDrag = true
 			draggedId = block.id
-			push = dominterface.classList.contains('pushed') ? 100 : 0
 			dominterface.style.cursor = 'grabbing'
 
 			document.querySelectorAll('#linkblocks li').forEach((block, i) => {
@@ -254,14 +252,14 @@ export default function quickLinks(
 				coy = ey - draggedCoord.pos.y // on dragged element
 			}
 
-			deplaceElem(draggedClone, ex - cox + push - interfacemargin, ey - coy)
+			deplaceElem(draggedClone, ex - cox - interfacemargin, ey - coy)
 
 			clas(domlinkblocks, true, 'dragging') // to apply pointer-events: none
 		}
 
 		function applyDrag(ex: number, ey: number) {
 			// Dragged element clone follows cursor
-			deplaceElem(draggedClone, ex + push - cox - interfacemargin, ey - coy)
+			deplaceElem(draggedClone, ex - cox - interfacemargin, ey - coy)
 
 			// Element switcher
 			coordsEntries.forEach(function parseThroughCoords([key, val]) {
@@ -322,7 +320,7 @@ export default function quickLinks(
 				coords = {}
 				coordsEntries = []
 
-				deplaceElem(draggedClone, x + push - interfacemargin, y)
+				deplaceElem(draggedClone, x - interfacemargin, y)
 				draggedClone.className = 'block dragging-clone' // enables transition (by removing 'on' class)
 				dominterface.style.cursor = ''
 
