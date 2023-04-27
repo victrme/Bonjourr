@@ -332,6 +332,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
+	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
+
 	paramId('i_pagewidth').addEventListener('input', function () {
 		pageWidth(parseInt(this.value), true)
 	})

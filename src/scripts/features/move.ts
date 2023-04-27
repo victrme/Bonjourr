@@ -34,6 +34,7 @@ type UpdateMove = {
 	layout?: string
 	select?: string
 	responsive?: true
+	overlay?: boolean
 	grid?: { x?: string; y?: string }
 }
 
@@ -699,6 +700,25 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				storage.sync.set({ ...states, move })
 			}
 
+			function pageWidthOverlay(overlay?: boolean) {
+				const isEditing = $('interface')?.classList?.contains('move-edit')
+				const hasOverlays = document.querySelector('.move-overlay')
+
+				if (!isEditing && overlay === false) {
+					gridOverlay.removeAll()
+					return
+				}
+
+				if (!hasOverlays) {
+					const grid = move.layouts[move.selection].grid
+					const widgets = getEnabledWidgetsFromGrid(grid)
+
+					widgets.forEach((id) => {
+						gridOverlay.add(id as MoveKeys)
+					})
+				}
+			}
+
 			switch (Object.keys(prop)[0]) {
 				case 'toggle':
 					toggleMoveStatus()
@@ -731,12 +751,12 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				case 'reset':
 					layoutReset()
 
-				case 'responsive':
-					// layoutChange()
-					break
-
 				case 'widget':
 					toggleWidgetOnGrid()
+					break
+
+				case 'overlay':
+					pageWidthOverlay(prop.overlay)
 					break
 			}
 		})
@@ -820,6 +840,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 	// Events coming from settings menu
 	if (events) {
+		if (typeof events.overlay === 'boolean') updateMoveElement({ overlay: events.overlay })
 		if (events?.widget) updateMoveElement({ widget: events.widget })
 		if (events?.select) updateMoveElement({ select: events.select })
 		if (events?.layout) updateMoveElement({ layout: events.layout })

@@ -82,7 +82,6 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
-			z-index: 3;
 			cursor: pointer;
 			pointer-events: none;
 
@@ -98,6 +97,7 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
+		z-index: 3;
 		place-self: center;
 	}
 

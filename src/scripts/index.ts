@@ -39,7 +39,6 @@ import errorMessage from './utils/errorMessage'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	console.log('test')
 	storage.sync.set(value)
 }, 400)
 
