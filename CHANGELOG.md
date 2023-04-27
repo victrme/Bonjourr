@@ -1,3 +1,15 @@
+## 1.16.4
+
+-   Improvements:
+    -   No more layout shift when toggling widgets (on slow computers)
+    -   Shows grid overlay when changing page width
+    -   Grid toolbox "Done" button is always clickable
+-   Fixes:
+    -   Leading zero on export file name
+    -   Long link titles not truncated
+    -   Removing custom font not working
+    -   Links dragging broken with settings open
+
 ## 1.16.3
 
 -   Added:
