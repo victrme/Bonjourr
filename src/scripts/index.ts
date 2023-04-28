@@ -36,6 +36,7 @@ import {
 
 import debounce from './utils/debounce'
 import errorMessage from './utils/errorMessage'
+import { get, set } from 'idb-keyval'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
@@ -685,17 +686,14 @@ export function localBackgrounds(
 		Object.values(files).forEach((file, i) => {
 			let reader = new FileReader()
 
-			reader.onload = function (event) {
+			reader.onload = async function saveFileAsImage(event) {
 				const result = event.target?.result as string
+				const response = await fetch(result)
+				const blob = await response.blob()
+				const blobURL = URL.createObjectURL(blob)
 
-				if (typeof result === 'string' && isOnlineStorageAtCapacity(result)) {
-					return console.warn('Uploaded image was not saved') // Exit with warning before saving image
-				}
-
-				compress(result, 'thumbnail', filesIdsList[i])
-				setTimeout(() => compress(result), 1000)
-
-				storage.local.set({ ['custom_' + filesIdsList[i]]: result })
+				imgBackground(blobURL)
+				await set('custom_' + filesIdsList[i], blob)
 			}
 
 			localIsLoading = true
@@ -907,17 +905,11 @@ export function localBackgrounds(
 		})
 	}
 
-	function applyCustomBackground(id: string) {
-		storage.local.get(['custom_' + id], (local) => {
-			const background = local['custom_' + id]
+	async function applyCustomBackground(id: string) {
+		const blob = (await get('custom_' + id)) as Blob
 
-			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-
-			b64toBlobUrl(cleanData, (bloburl: string) => {
-				imgBackground(bloburl)
-				clas($('creditContainer'), false, 'shown')
-			})
-		})
+		imgBackground(URL.createObjectURL(blob))
+		clas($('creditContainer'), false, 'shown')
 	}
 
 	if (event) {
