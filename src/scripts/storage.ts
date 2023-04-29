@@ -1,5 +1,4 @@
 import { detectPlatform } from './utils'
-import { get, set } from 'idb-keyval'
 
 const online = (function () {
 	const onlineSet = (type: 'sync' | 'local') => {
@@ -68,34 +67,5 @@ const online = (function () {
 		},
 	}
 })()
-
-function loadBlobBackgroundBenchmark() {
-	window.addEventListener('load', async () => {
-		console.time('idb')
-		const idbData = (await get('background')) as Blob
-		console.timeEnd('idb')
-
-		document.querySelector('#background')?.setAttribute('style', `background-image: url(${URL.createObjectURL(idbData)})`)
-		document.querySelector('#background_overlay')?.setAttribute('style', `opacity: 1`)
-	})
-}
-
-function idbBenchmark() {
-	chrome.storage.sync.get(null, async (data) => {
-		await set('hello', data)
-
-		console.time('idb')
-		const idbData = (await get('hello')) as Blob
-		console.timeEnd('idb')
-
-		console.time('chrome.storage')
-		chrome.storage.sync.get(null, async (chromeData) => {
-			console.timeEnd('chrome.storage')
-
-			console.log(idbData)
-			console.log(chromeData)
-		})
-	})
-}
 
 export default detectPlatform() === 'online' ? online.storage : chrome.storage

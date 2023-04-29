@@ -36,7 +36,7 @@ import {
 
 import debounce from './utils/debounce'
 import errorMessage from './utils/errorMessage'
-import { get, set } from 'idb-keyval'
+import { del, get, getMany, set, update } from 'idb-keyval'
 
 let loadBis = false
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
@@ -620,7 +620,7 @@ export function imgBackground(url: string, color?: string) {
 	img.remove()
 }
 
-export function localBackgrounds(
+export async function localBackgrounds(
 	init: { every: string; time: number } | null,
 	event?: {
 		is: string
@@ -629,58 +629,53 @@ export function localBackgrounds(
 		file?: FileList
 	}
 ) {
-	// Storage needs to be flat, as to only ask for needed background
-	// SelectedId is self explanatory
-	// CustomIds is list to get amount of backgrounds without accessing them
-	// storage.local = {
-	// 	  `full${_id}`: "/9j/4AAQSkZJRgAB...",
-	// 	  `thumb${_id}`: "/9j/4AAQSkZJRgAB...",
-	// 	  idsList: [ _id1, _id2, _id3 ],
-	//    selectedId: _id3
-	// }
-
-	function isOnlineStorageAtCapacity(newFile: string) {
-		//
-		// Only applies to versions using localStorage: 5Mo limit
-		if (detectPlatform() === 'online') {
-			const ls = localStorage.bonjourrBackgrounds
-
-			// Takes dynamic cache + google font list
-			const potentialFontList = JSON.parse(ls).googleFonts ? 0 : 7.6e5
-			const lsSize = ls.length + potentialFontList + 10e4
-
-			// Uploaded file in storage would exceed limit
-			if (lsSize + newFile.length > 5e6) {
-				alert(`Image size exceeds storage: ${Math.abs(lsSize - 5e6) / 1000}ko left`)
-
-				return true
-			}
-		}
-
-		return false
-	}
-
-	function b64toBlobUrl(b64Data: string, callback: Function) {
-		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
-			res.blob().then((blob) => {
-				callback(URL.createObjectURL(blob))
-			})
-		})
-	}
+	type UserImages = { ids: string[]; selected: string }
+	type Blobs = { background: Blob; thumbnail: Blob }
 
 	function thumbnailSelection(id: string) {
 		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
 		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
 	}
 
-	function addNewImage(files: FileList) {
-		let filesIdsList: string[] = []
+	async function compressThumbnail(blob: Blob) {
+		const blobURL = window.URL.createObjectURL(blob)
+		const canvas = document.createElement('canvas')
+		const ctx = canvas.getContext('2d')
+		const img = new Image()
+
+		img.src = blobURL
+
+		await new Promise((resolve) => {
+			img.onload = () => {
+				// canvas proportionné à l'image
+				// rétréci suivant le taux de compression
+				// si thumbnail, toujours 140px
+				const height = 140 * window.devicePixelRatio
+				const scaleFactor = height / img.height
+
+				canvas.width = img.width * scaleFactor
+				canvas.height = height
+
+				ctx?.drawImage(img, 0, 0, img.width * scaleFactor, height)
+				resolve(true)
+			}
+		})
+
+		const newBlob = await new Promise((resolve) => ctx?.canvas.toBlob(resolve))
+
+		return newBlob as Blob
+	}
+
+	async function addNewImage(files: FileList) {
+		let ids: string[] = []
 		let selected = ''
 
+		console.time('storage')
+
 		Object.values(files).forEach(() => {
-			const _id = randomString(6)
+			const _id = randomString(16)
+			ids.push(_id)
 			selected = _id
-			filesIdsList.push(_id)
 		})
 
 		Object.values(files).forEach((file, i) => {
@@ -690,74 +685,43 @@ export function localBackgrounds(
 				const result = event.target?.result as string
 				const response = await fetch(result)
 				const blob = await response.blob()
-				const blobURL = URL.createObjectURL(blob)
+				const thumbnail = await compressThumbnail(blob)
 
-				imgBackground(blobURL)
-				await set('custom_' + filesIdsList[i], blob)
+				const blobs = {
+					background: blob,
+					thumbnail: thumbnail,
+				}
+
+				addThumbnail(blobs.thumbnail, ids[i], null, true)
+
+				if (i === files.length - 1) {
+					displayCustomBackground(blobs.background)
+					thumbnailSelection(selected)
+				}
+
+				await set(ids[i], blobs)
 			}
 
 			localIsLoading = true
 			reader.readAsDataURL(file)
 		})
 
-		// Adds to list, becomes selected and save background
-		storage.local.get(['idsList'], (local) => {
-			let list = [...local.idsList]
-			list.push(...filesIdsList)
+		const userImages = (await get('userImages')) || { ids: [], selected: '' }
 
-			if (local.idsList.length === 0) {
-				storage.sync.set({ background_type: 'custom' }) // change type si premier local
-			}
+		userImages.ids.push(...ids)
+		userImages.selected = selected
 
-			setTimeout(() => thumbnailSelection(selected), 400)
+		set('userImages', { ids, selected })
 
-			storage.local.set({
-				...local,
-				idsList: list,
-				selectedId: selected,
-			})
-		})
-	}
-
-	function compress(file: string, state?: string, _id?: string) {
-		const img = new Image()
-
-		img.onload = () => {
-			const canvas = document.createElement('canvas')
-			const ctx = canvas.getContext('2d')
-
-			if (!ctx) return
-
-			// canvas proportionné à l'image
-			// rétréci suivant le taux de compression
-			// si thumbnail, toujours 140px
-			const height = state === 'thumbnail' ? 140 * window.devicePixelRatio : img.height
-			const scaleFactor = height / img.height
-			canvas.width = img.width * scaleFactor
-			canvas.height = height
-
-			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height) //dessine l'image proportionné
-
-			const data = ctx.canvas.toDataURL(img.src) // renvoie le base64
-			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
-
-			if (state === 'thumbnail' && _id) {
-				storage.local.set({ ['customThumb_' + _id]: cleanData })
-				addThumbnails(cleanData, _id, null, true)
-
-				return
-			}
-
-			b64toBlobUrl(cleanData, (bloburl: string) => {
-				imgBackground(bloburl)
-				clas($('creditContainer'), false, 'shown')
-			})
+		// change type si premier local
+		if (userImages.ids.length === 0) {
+			storage.sync.set({ background_type: 'custom' })
 		}
 
-		img.src = file
+		console.timeEnd('storage')
 	}
 
-	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
+	function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
 		const settings = settingsDom ? settingsDom : ($('settings') as HTMLElement)
 
 		const thb = document.createElement('button')
@@ -767,6 +731,7 @@ export function localBackgrounds(
 		const wrap = settings.querySelector('#fileContainer')
 
 		thb.id = _id
+		thbimg.src = URL.createObjectURL(blob)
 		thb.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
 
 		clas(rem, true, 'b_removethumb')
@@ -781,13 +746,11 @@ export function localBackgrounds(
 		remimg.setAttribute('src', 'src/assets/interface/close.svg')
 		rem.appendChild(remimg)
 
-		b64toBlobUrl(data, (bloburl: string) => (thbimg.src = bloburl))
-
 		thb.appendChild(thbimg)
 		thb.appendChild(rem)
 		wrap?.prepend(thb)
 
-		thb.onclick = (e) => {
+		thb.onclick = async (e) => {
 			if (e.button !== 0 || localIsLoading || !e.target) {
 				return
 			}
@@ -797,21 +760,17 @@ export function localBackgrounds(
 			}) as HTMLElement
 
 			const _id = thumbnailButton.id
-			const bgKey = 'custom_' + _id
+			const selectedId = (await get('selectedId')) || ''
 
-			storage.local.get('selectedId', (local) => {
-				// image selectionné est différente de celle affiché
-				if (_id !== local.selectedId) {
-					thumbnailSelection(_id)
+			if (_id !== selectedId) {
+				thumbnailSelection(_id)
+				set('selectedId', _id)
 
-					localIsLoading = true
-					storage.local.set({ selectedId: _id }) // Change bg selectionné
-					storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
-				}
-			})
+				// ...affiche l'image
+			}
 		}
 
-		rem.onclick = (e) => {
+		rem.onclick = async (e) => {
 			e.stopPropagation()
 
 			const path = e.composedPath()
@@ -820,73 +779,71 @@ export function localBackgrounds(
 				return
 			}
 
-			storage.local.get(['idsList', 'selectedId'], (local) => {
-				const thumbnail = path.find((d: EventTarget) => {
-					return (d as HTMLElement).className.includes('thumbnail')
-				}) as HTMLElement
+			const thumbnail = path.find((d: EventTarget) => {
+				return (d as HTMLElement).className.includes('thumbnail')
+			}) as HTMLElement
 
-				const _id = thumbnail.id
-				let { idsList, selectedId } = local
-				let poppedList = idsList.filter((s: string) => !s.includes(_id))
+			const _id = thumbnail.id
+			let selectedId = (await get('selectedId')) || ''
+			let idsList = (await get('idsList')) || []
 
-				thumbnail.remove()
+			let poppedList = idsList.filter((s: string) => !s.includes(_id))
 
-				storage.local.remove('custom_' + _id)
-				storage.local.remove('customThumb_' + _id)
-				storage.local.set({ idsList: poppedList })
+			thumbnail.remove()
 
-				// Draw new image if displayed is removed
-				if (_id === selectedId) {
-					// To another custom
-					if (poppedList.length > 0) {
-						selectedId = poppedList[0]
-						thumbnailSelection(selectedId)
+			del(_id)
+			set('idsList', poppedList)
 
-						const toShowId = 'custom_' + poppedList[0]
-						storage.local.get([toShowId], (local) => compress(local[toShowId]))
-					}
+			if (_id !== selectedId) {
+				return
+			}
 
-					// back to unsplash
-					else {
-						storage.sync.set({ background_type: 'dynamic' })
+			// Draw new image if displayed is removed
+			// To another custom
+			if (poppedList.length > 0) {
+				selectedId = poppedList[0]
+				thumbnailSelection(selectedId)
 
-						setTimeout(() => {
-							clas($('creditContainer'), true, 'shown')
-							storage.sync.get('dynamic', (data) => unsplash(data as Sync))
-						}, 400)
+				// ...affiche l'image (toShowId)
 
-						selectedId = ''
-					}
+				set('selectedId', selectedId)
+			}
 
-					storage.local.set({ selectedId }) // selected is new chosen background
-				}
-			})
+			// back to unsplash
+			else {
+				storage.sync.set({ background_type: 'dynamic' })
+
+				setTimeout(() => {
+					clas($('creditContainer'), true, 'shown')
+					storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+				}, 400)
+
+				set('selectedId', '')
+			}
 		}
 	}
 
-	function displayCustomThumbnails(settingsDom: HTMLElement) {
+	async function displayCustomThumbnails(settingsDom: HTMLElement) {
 		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
 
-		storage.local.get(['idsList', 'selectedId'], (local) => {
-			const { idsList, selectedId } = local
+		const userImages = (await get('userImages')) as UserImages
 
-			if (idsList.length > 0 && thumbnails.length < idsList.length) {
-				const thumbsKeys = idsList.map((id: string) => 'customThumb_' + id) // To get keys for storage
+		if (userImages.ids.length === 0 || thumbnails.length >= userImages.ids.length) {
+			return
+		}
 
-				// Parse through thumbnails to display them
-				storage.local.get(thumbsKeys, (local) => {
-					Object.entries(local).forEach(([key, val]) => {
-						if (!key.startsWith('customThumb_')) return // online only, can be removed after lsOnlineStorage rework
+		userImages.ids.forEach(async (id) => {
+			const blobs = (await get(id)) as Blobs
 
-						const _id = key.replace('customThumb_', '')
-						const blob = val.replace('data:image/jpeg;base64,', '')
-						const isSelected = _id === selectedId
-
-						addThumbnails(blob, _id, settingsDom, isSelected)
-					})
-				})
+			if (blobs.thumbnail) {
+				addThumbnail(blobs.thumbnail, id, settingsDom, id === userImages.selected)
 			}
 		})
+	}
+
+	async function displayCustomBackground(blob: Blob) {
+		imgBackground(URL.createObjectURL(blob))
+		clas($('creditContainer'), false, 'shown')
 	}
 
 	function refreshCustom(button: HTMLSpanElement) {
@@ -905,13 +862,6 @@ export function localBackgrounds(
 		})
 	}
 
-	async function applyCustomBackground(id: string) {
-		const blob = (await get('custom_' + id)) as Blob
-
-		imgBackground(URL.createObjectURL(blob))
-		clas($('creditContainer'), false, 'shown')
-	}
-
 	if (event) {
 		if (event.is === 'thumbnail' && event.settings) displayCustomThumbnails(event.settings)
 		if (event.is === 'newfile' && event.file) addNewImage(event.file)
@@ -923,56 +873,52 @@ export function localBackgrounds(
 		return
 	}
 
-	storage.local.get(['selectedId', 'idsList'], (local) => {
-		try {
-			// need all of saved stuff
-			let { selectedId, idsList } = local
-			const { every, time } = init
-			const needNewImage = freqControl.get(every, time || 0)
+	console.time('localBackgrounds')
 
-			// 1.14.0 (firefox?) background recovery fix
-			if (!idsList) {
-				idsList = []
-				selectedId = ''
+	try {
+		const { every, time } = init
+		const needNewImage = freqControl.get(every, time || 0)
+		let { ids, selected } = (await get('userImages')) || { ids: [], selected: '' }
 
-				storage.local.get(null, (local) => {
-					const ids = Object.keys(local)
-						.filter((k) => k.startsWith('custom_'))
-						.map((k) => k.replace('custom_', ''))
-
-					storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
-					storage.sync.get(null, (data) => initBackground(data as Sync))
-				})
-			}
-
-			if (idsList.length === 0) {
-				storage.sync.get('dynamic', (data) => {
-					unsplash(data as Sync) // no bg, back to unsplash
-				})
-				return
-			}
-
-			if (every && needNewImage) {
-				if (idsList.length > 1) {
-					idsList = idsList.filter((l: string) => !l.includes(selectedId)) // removes current from list
-					selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
-				}
-
-				applyCustomBackground(selectedId)
-
-				storage.sync.set({ custom_time: freqControl.set() })
-				storage.local.set({ selectedId })
-
-				if ($('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
-
-				return
-			}
-
-			applyCustomBackground(selectedId)
-		} catch (e) {
-			errorMessage(e)
+		if (ids.length === 0) {
+			storage.sync.get('dynamic', (data) => {
+				unsplash(data as Sync) // no bg, back to unsplash
+			})
+			return
 		}
-	})
+
+		if (every && needNewImage) {
+			if (ids.length > 1) {
+				ids = ids.filter((l: string) => !l.includes(selected)) // removes current from list
+				selected = ids[Math.floor(Math.random() * ids.length)] // randomize from list
+			}
+
+			const blobs = (await get(selected)) as Blobs
+
+			if (blobs.background) {
+				displayCustomBackground(blobs.background)
+			}
+
+			set('userImages', { ids, selected })
+			storage.sync.set({ custom_time: freqControl.set() })
+
+			if ($('settings')) {
+				thumbnailSelection(selected) // change selection if coming from refresh
+			}
+
+			return
+		}
+
+		const blobs = (await get(selected)) as Blobs
+
+		if (blobs.background) {
+			displayCustomBackground(blobs.background)
+		}
+
+		console.timeEnd('localBackgrounds')
+	} catch (e) {
+		errorMessage(e)
+	}
 }
 
 export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: number; bright?: number }, isEvent?: boolean) {
@@ -1746,11 +1692,13 @@ let lazyClockInterval = setTimeout(() => {}, 0),
 	sunset = 0,
 	sunrise = 0
 
-window.onload = function () {
+window.onload = async function () {
 	onlineAndMobileHandler()
 
 	try {
+		console.time('startup')
 		storage.sync.get(null, (data) => {
+			console.timeEnd('startup')
 			//
 			// Verify data as a valid Sync storage ( essentially type checking )
 			let hasMissingProps = false
