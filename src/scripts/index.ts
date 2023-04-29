@@ -711,7 +711,7 @@ export async function localBackgrounds(
 		userImages.ids.push(...ids)
 		userImages.selected = selected
 
-		set('userImages', { ids, selected })
+		set('userImages', userImages)
 
 		// change type si premier local
 		if (userImages.ids.length === 0) {
@@ -760,14 +760,16 @@ export async function localBackgrounds(
 			}) as HTMLElement
 
 			const _id = thumbnailButton.id
-			const selectedId = (await get('selectedId')) || ''
+			const userImages = (await get('userImages')) as UserImages
 
-			if (_id !== selectedId) {
-				thumbnailSelection(_id)
-				set('selectedId', _id)
+			// Do nothing if same id
+			if (_id === userImages.selected) return
 
-				// ...affiche l'image
-			}
+			const blobs = (await get(userImages.selected)) as Blobs
+			if (blobs?.background) displayCustomBackground(blobs.background)
+
+			thumbnailSelection(_id)
+			set('selected', _id)
 		}
 
 		rem.onclick = async (e) => {
@@ -784,48 +786,44 @@ export async function localBackgrounds(
 			}) as HTMLElement
 
 			const _id = thumbnail.id
-			let selectedId = (await get('selectedId')) || ''
-			let idsList = (await get('idsList')) || []
-
-			let poppedList = idsList.filter((s: string) => !s.includes(_id))
+			let userImages = (await get('userImages')) as UserImages
+			userImages.ids = userImages.ids.filter((s: string) => !s.includes(_id))
 
 			thumbnail.remove()
 
 			del(_id)
-			set('idsList', poppedList)
+			set('userImages', userImages)
 
-			if (_id !== selectedId) {
+			if (_id !== userImages.selected) {
 				return
 			}
 
 			// Draw new image if displayed is removed
 			// To another custom
-			if (poppedList.length > 0) {
-				selectedId = poppedList[0]
-				thumbnailSelection(selectedId)
+			if (userImages.ids.length > 0) {
+				userImages.selected = userImages.ids[0]
+				thumbnailSelection(userImages.selected)
 
-				// ...affiche l'image (toShowId)
+				const blobs = (await get(userImages.selected)) as Blobs
+				if (blobs?.background) displayCustomBackground(blobs.background)
 
-				set('selectedId', selectedId)
+				set('userImages', userImages)
+				return
 			}
 
 			// back to unsplash
-			else {
-				storage.sync.set({ background_type: 'dynamic' })
+			storage.sync.set({ background_type: 'dynamic' })
+			set('userImages', { ids: [], selected: '' })
 
-				setTimeout(() => {
-					clas($('creditContainer'), true, 'shown')
-					storage.sync.get('dynamic', (data) => unsplash(data as Sync))
-				}, 400)
-
-				set('selectedId', '')
-			}
+			setTimeout(() => {
+				clas($('creditContainer'), true, 'shown')
+				storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+			}, 400)
 		}
 	}
 
 	async function displayCustomThumbnails(settingsDom: HTMLElement) {
 		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
-
 		const userImages = (await get('userImages')) as UserImages
 
 		if (userImages.ids.length === 0 || thumbnails.length >= userImages.ids.length) {
@@ -834,10 +832,7 @@ export async function localBackgrounds(
 
 		userImages.ids.forEach(async (id) => {
 			const blobs = (await get(id)) as Blobs
-
-			if (blobs.thumbnail) {
-				addThumbnail(blobs.thumbnail, id, settingsDom, id === userImages.selected)
-			}
+			if (blobs?.thumbnail) addThumbnail(blobs.thumbnail, id, settingsDom, id === userImages.selected)
 		})
 	}
 
@@ -880,24 +875,15 @@ export async function localBackgrounds(
 		const needNewImage = freqControl.get(every, time || 0)
 		let { ids, selected } = (await get('userImages')) || { ids: [], selected: '' }
 
+		// no bg, back to unsplash
 		if (ids.length === 0) {
-			storage.sync.get('dynamic', (data) => {
-				unsplash(data as Sync) // no bg, back to unsplash
-			})
+			storage.sync.get('dynamic', (data) => unsplash(data as Sync))
 			return
 		}
 
-		if (every && needNewImage) {
-			if (ids.length > 1) {
-				ids = ids.filter((l: string) => !l.includes(selected)) // removes current from list
-				selected = ids[Math.floor(Math.random() * ids.length)] // randomize from list
-			}
-
-			const blobs = (await get(selected)) as Blobs
-
-			if (blobs.background) {
-				displayCustomBackground(blobs.background)
-			}
+		if (every && needNewImage && ids.length > 1) {
+			const filteredIds = ids.filter((l: string) => !l.includes(selected)) // removes current from list
+			selected = ids[Math.floor(Math.random() * filteredIds.length)] // randomize from list
 
 			set('userImages', { ids, selected })
 			storage.sync.set({ custom_time: freqControl.set() })
@@ -905,15 +891,10 @@ export async function localBackgrounds(
 			if ($('settings')) {
 				thumbnailSelection(selected) // change selection if coming from refresh
 			}
-
-			return
 		}
 
 		const blobs = (await get(selected)) as Blobs
-
-		if (blobs.background) {
-			displayCustomBackground(blobs.background)
-		}
+		if (blobs?.background) displayCustomBackground(blobs.background)
 
 		console.timeEnd('localBackgrounds')
 	} catch (e) {
