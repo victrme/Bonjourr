@@ -207,7 +207,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	if (data.background_type === 'custom') {
 		paramId('custom').setAttribute('style', 'display: block')
 		settingsDom.querySelector('.as_collection')?.setAttribute('style', 'display: none')
-		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
+		localBackgrounds(null, { thumbnail: settingsDom })
 	}
 
 	//weather settings
@@ -402,9 +402,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		if (this.children[0]) {
 			const arrow = this.children[0] as HTMLSpanElement
-			const event = { is: 'refresh', button: arrow }
 
-			i_type.value === 'custom' ? localBackgrounds(null, event) : unsplash(null, event)
+			i_type.value === 'custom'
+				? localBackgrounds(null, { refresh: arrow })
+				: unsplash(null, { is: 'refresh', button: arrow })
 		}
 
 		inputThrottle(this)
@@ -419,7 +420,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds(null, { is: 'newfile', file: this.files || undefined })
+		localBackgrounds(null, { newfile: this.files || undefined })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
@@ -929,7 +930,7 @@ function selectBackgroundType(cat: string) {
 		// Just stick to unsplash
 
 		if (cat === 'custom' && local.selectedId !== '') {
-			localBackgrounds(null, { is: 'thumbnail', settings: $('settings') || undefined })
+			localBackgrounds(null, { thumbnail: $('settings') || undefined })
 			setTimeout(
 				() =>
 					localBackgrounds({

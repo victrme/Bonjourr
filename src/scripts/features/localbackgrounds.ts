@@ -2,13 +2,16 @@ import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
 import unsplash from './unsplash'
 import storage from '../storage'
-import { $, clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
+import { $, clas, randomString, mobilecheck, turnRefreshButton, syncDefaults } from '../utils'
 import errorMessage from '../utils/errorMessage'
 
 import { Sync } from '../types/sync'
 
 type UserImages = { ids: string[]; selected: string }
 type Blobs = { background: Blob; thumbnail: Blob }
+
+type Init = { every: string; time: number } | null
+type UpdateEvent = { thumbnail?: HTMLElement; refresh?: HTMLSpanElement; newfile?: FileList }
 
 let localIsLoading = false
 
@@ -237,23 +240,11 @@ function refreshCustom(button: HTMLSpanElement) {
 	})
 }
 
-export default async function localBackgrounds(
-	init: { every: string; time: number } | null,
-	event?: {
-		is: string
-		settings?: HTMLElement
-		button?: HTMLSpanElement
-		file?: FileList
-	}
-) {
-	if (event) {
-		if (event.is === 'thumbnail' && event.settings) displayCustomThumbnails(event.settings)
-		if (event.is === 'newfile' && event.file) addNewImage(event.file)
-		if (event.is === 'refresh' && event.button) refreshCustom(event.button)
-		return
-	}
-
-	if (!init) {
+export default async function localBackgrounds(init: Init, event?: UpdateEvent) {
+	if (event || !init) {
+		if (event?.thumbnail) displayCustomThumbnails(event?.thumbnail)
+		if (event?.refresh) refreshCustom(event.refresh)
+		if (event?.newfile) addNewImage(event.newfile)
 		return
 	}
 
