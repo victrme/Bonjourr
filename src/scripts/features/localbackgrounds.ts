@@ -59,6 +59,8 @@ async function addNewImage(files: FileList) {
 	let ids: string[] = []
 	let selected = ''
 
+	localIsLoading = true
+
 	console.time('storage')
 
 	Object.values(files).forEach(() => {
@@ -91,7 +93,6 @@ async function addNewImage(files: FileList) {
 			await set(ids[i], blobs)
 		}
 
-		localIsLoading = true
 		reader.readAsDataURL(file)
 	})
 
@@ -101,6 +102,7 @@ async function addNewImage(files: FileList) {
 	userImages.selected = selected
 
 	set('userImages', userImages)
+	localIsLoading = false
 
 	// change type si premier local
 	if (userImages.ids.length === 0) {
@@ -139,17 +141,11 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 	thb.appendChild(rem)
 	wrap?.prepend(thb)
 
-	function getThumbnailDOM(e: Event) {
-		const path = e.composedPath()
-		const elem = path.find((d: EventTarget) => (d as HTMLElement).className.includes('thumbnail'))
-		return elem as HTMLElement | undefined
-	}
-
-	async function applyThisBackground(e: MouseEvent) {
+	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return
 
-		const thumbnail = getThumbnailDOM(e)
 		const userImages = await getUserImages()
+		const thumbnail = this?.parentElement
 		const thisId = thumbnail?.id
 
 		if (thisId && thisId !== userImages.selected) {
@@ -161,20 +157,22 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 		}
 	}
 
-	async function deleteThisBackground(e: MouseEvent) {
+	async function deleteThisBackground(this: HTMLButtonElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading || !e.target) return
 
 		let { ids, selected } = await getUserImages()
-		const thumbnail = getThumbnailDOM(e)
+		const thumbnail = this?.parentElement
 		const thisId = thumbnail?.id
 
 		if (thisId) {
-			thumbnail?.remove()
-			del(thisId)
+			clas(thumbnail, true, 'hiding')
+			setTimeout(() => thumbnail?.remove(), 100)
 
 			// Pop background from list
 			ids = ids.filter((s) => !s.includes(thisId))
 			update('userImages', (prev) => ({ ...prev, ids }))
+
+			del(thisId)
 		}
 
 		if (thisId === selected) {
