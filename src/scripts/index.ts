@@ -762,67 +762,64 @@ export async function localBackgrounds(
 			return elem as HTMLElement | undefined
 		}
 
-		thb.onclick = async (e) => {
-			if (e.button !== 0 || localIsLoading || !e.target) {
-				return
-			}
+		async function applyThisBackground(e: MouseEvent) {
+			if (e.button !== 0 || localIsLoading) return
 
 			const thumbnail = getThumbnailDOM(e)
-			const _id = thumbnail?.id
 			const userImages = await getUserImages()
+			const thisId = thumbnail?.id
 
-			// Do nothing if same id
-			if (!_id || _id === userImages.selected) return
-
-			const blobs = (await get(_id)) as Blobs
-			if (blobs?.background) displayCustomBackground(blobs.background)
-
-			thumbnailSelection(_id)
-			update('userImages', (prev) => ({ ...prev, selected: _id }))
-		}
-
-		rem.onclick = async (e) => {
-			const thumbnail = getThumbnailDOM(e)
-			const _id = thumbnail?.id
-
-			if (e.button !== 0 || localIsLoading || !_id) {
-				return
-			}
-
-			let userImages = await getUserImages()
-			userImages.ids = userImages.ids.filter((s: string) => !s.includes(_id))
-
-			thumbnail.remove()
-
-			del(_id)
-			set('userImages', userImages)
-
-			if (_id !== userImages.selected) {
-				return
-			}
-
-			// Draw new image if displayed is removed
-			// To another custom
-			if (userImages.ids.length > 0) {
-				userImages.selected = userImages.ids[0]
-				thumbnailSelection(userImages.selected)
-
-				const blobs = (await get(userImages.selected)) as Blobs
+			if (thisId && thisId !== userImages.selected) {
+				const blobs = (await get(thisId)) as Blobs
 				if (blobs?.background) displayCustomBackground(blobs.background)
 
-				set('userImages', userImages)
-				return
+				thumbnailSelection(thisId)
+				update('userImages', (prev) => ({ ...prev, selected: thisId }))
+			}
+		}
+
+		async function deleteThisBackground(e: MouseEvent) {
+			if (e.button !== 0 || localIsLoading || !e.target) return
+
+			let { ids, selected } = await getUserImages()
+			const thumbnail = getThumbnailDOM(e)
+			const thisId = thumbnail?.id
+
+			if (thisId) {
+				thumbnail?.remove()
+				del(thisId)
+
+				// Pop background from list
+				ids = ids.filter((s) => !s.includes(thisId))
+				update('userImages', (prev) => ({ ...prev, ids }))
 			}
 
-			// back to unsplash
-			storage.sync.set({ background_type: 'dynamic' })
-			set('userImages', { ids: [], selected: '' })
+			if (thisId === selected) {
+				// Draw new image if displayed is removed to another custom
+				if (ids.length > 0) {
+					selected = ids[0]
+					thumbnailSelection(selected)
 
-			setTimeout(() => {
-				clas($('creditContainer'), true, 'shown')
-				storage.sync.get('dynamic', (data) => unsplash(data as Sync))
-			}, 400)
+					const blobs = (await get(selected)) as Blobs
+					if (blobs?.background) displayCustomBackground(blobs.background)
+
+					update('userImages', (prev) => ({ ...prev, selected }))
+					return
+				}
+
+				// back to unsplash
+				storage.sync.set({ background_type: 'dynamic' })
+				set('userImages', { ids: [], selected: '' })
+
+				setTimeout(() => {
+					clas($('creditContainer'), true, 'shown')
+					storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+				}, 400)
+			}
 		}
+
+		thbimg.addEventListener('click', applyThisBackground)
+		rem.addEventListener('click', deleteThisBackground)
 	}
 
 	async function displayCustomThumbnails(settingsDom: HTMLElement) {
