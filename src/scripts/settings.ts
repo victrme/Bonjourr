@@ -10,6 +10,7 @@ import unsplash from './features/unsplash'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
+import localBackgrounds from './features/localbackgrounds'
 
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
@@ -25,7 +26,6 @@ import {
 	detectPlatform,
 	closeEditLink,
 	mobilecheck,
-	randomString,
 	stringMaxSize,
 	deleteBrowserStorage,
 	getBrowserStorage,
@@ -43,7 +43,6 @@ import {
 	darkmode,
 	favicon,
 	linksImport,
-	localBackgrounds,
 	modifyWeightOptions,
 	safeFont,
 	searchbar,
