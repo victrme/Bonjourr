@@ -632,6 +632,12 @@ export async function localBackgrounds(
 	type UserImages = { ids: string[]; selected: string }
 	type Blobs = { background: Blob; thumbnail: Blob }
 
+	async function getUserImages() {
+		const res = (await get('userImages')) as UserImages
+		const userImages = { ids: res?.ids ?? [], selected: res?.selected ?? '' }
+		return userImages
+	}
+
 	function thumbnailSelection(id: string) {
 		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
 		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
@@ -706,7 +712,7 @@ export async function localBackgrounds(
 			reader.readAsDataURL(file)
 		})
 
-		const userImages = (await get('userImages')) || { ids: [], selected: '' }
+		const userImages = await getUserImages()
 
 		userImages.ids.push(...ids)
 		userImages.selected = selected
@@ -750,43 +756,40 @@ export async function localBackgrounds(
 		thb.appendChild(rem)
 		wrap?.prepend(thb)
 
+		function getThumbnailDOM(e: Event) {
+			const path = e.composedPath()
+			const elem = path.find((d: EventTarget) => (d as HTMLElement).className.includes('thumbnail'))
+			return elem as HTMLElement | undefined
+		}
+
 		thb.onclick = async (e) => {
 			if (e.button !== 0 || localIsLoading || !e.target) {
 				return
 			}
 
-			const thumbnailButton = e.composedPath().find((d: EventTarget) => {
-				return (d as HTMLElement).className.includes('thumbnail')
-			}) as HTMLElement
-
-			const _id = thumbnailButton.id
-			const userImages = (await get('userImages')) as UserImages
+			const thumbnail = getThumbnailDOM(e)
+			const _id = thumbnail?.id
+			const userImages = await getUserImages()
 
 			// Do nothing if same id
-			if (_id === userImages.selected) return
+			if (!_id || _id === userImages.selected) return
 
-			const blobs = (await get(userImages.selected)) as Blobs
+			const blobs = (await get(_id)) as Blobs
 			if (blobs?.background) displayCustomBackground(blobs.background)
 
 			thumbnailSelection(_id)
-			set('selected', _id)
+			update('userImages', (prev) => ({ ...prev, selected: _id }))
 		}
 
 		rem.onclick = async (e) => {
-			e.stopPropagation()
+			const thumbnail = getThumbnailDOM(e)
+			const _id = thumbnail?.id
 
-			const path = e.composedPath()
-
-			if (e.button !== 0 || localIsLoading) {
+			if (e.button !== 0 || localIsLoading || !_id) {
 				return
 			}
 
-			const thumbnail = path.find((d: EventTarget) => {
-				return (d as HTMLElement).className.includes('thumbnail')
-			}) as HTMLElement
-
-			const _id = thumbnail.id
-			let userImages = (await get('userImages')) as UserImages
+			let userImages = await getUserImages()
 			userImages.ids = userImages.ids.filter((s: string) => !s.includes(_id))
 
 			thumbnail.remove()
@@ -824,7 +827,7 @@ export async function localBackgrounds(
 
 	async function displayCustomThumbnails(settingsDom: HTMLElement) {
 		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
-		const userImages = (await get('userImages')) as UserImages
+		const userImages = await getUserImages()
 
 		if (userImages.ids.length === 0 || thumbnails.length >= userImages.ids.length) {
 			return
@@ -873,7 +876,9 @@ export async function localBackgrounds(
 	try {
 		const { every, time } = init
 		const needNewImage = freqControl.get(every, time || 0)
-		let { ids, selected } = (await get('userImages')) || { ids: [], selected: '' }
+		let { ids, selected } = await getUserImages()
+
+		console.timeEnd('localBackgrounds')
 
 		// no bg, back to unsplash
 		if (ids.length === 0) {
@@ -895,8 +900,6 @@ export async function localBackgrounds(
 
 		const blobs = (await get(selected)) as Blobs
 		if (blobs?.background) displayCustomBackground(blobs.background)
-
-		console.timeEnd('localBackgrounds')
 	} catch (e) {
 		errorMessage(e)
 	}
