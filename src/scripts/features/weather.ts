@@ -14,12 +14,6 @@ export default function weather(
 	}
 ) {
 	const date = new Date()
-	const i_city = $('i_city') as HTMLInputElement
-	const i_ccode = $('i_ccode') as HTMLInputElement
-	const sett_city = $('sett_city') as HTMLInputElement
-	const current = $('current')
-	const forecast = $('forecast')
-	const tempContainer = $('tempContainer')
 
 	async function request(storage: Weather): Promise<Weather> {
 		function getRequestURL(isForecast: boolean) {
@@ -204,6 +198,10 @@ export default function weather(
 
 	function displayWeather(data: Weather) {
 		const currentState = data.lastState
+		const current = document.getElementById('current')
+		const forecast = document.getElementById('forecast')
+		const tempContainer = document.getElementById('tempContainer')
+		const weatherdom = document.getElementById('weather')
 
 		if (!currentState) {
 			return
@@ -263,25 +261,12 @@ export default function weather(
 				return
 			}
 
-			const widgetIcon = tempContainer.querySelector('img')
+			const icon = $('weather-icon') as HTMLImageElement
 			const { now, rise, set } = sunTime()
 			const timeOfDay = now < rise || now > set ? 'night' : 'day'
 			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
-			if (widgetIcon) {
-				widgetIcon.setAttribute('src', iconSrc)
-				return
-			}
-
-			const icon = document.createElement('img')
 			icon.src = iconSrc
-			icon.setAttribute('alt', '')
-			icon.setAttribute('draggable', 'false')
-			icon.setAttribute('fetchPriority', 'high')
-			tempContainer.prepend(icon)
-
-			// from 1.2s request anim to .4s hide elem anim
-			setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 		}
 
 		const handleForecast = () => {
@@ -300,7 +285,7 @@ export default function weather(
 			const emptyCustom = data.moreinfo === 'custom' && !data.provider
 
 			if (noDetails || emptyCustom) {
-				$('weather')?.removeAttribute('href')
+				weatherdom?.removeAttribute('href')
 				return
 			}
 
@@ -312,7 +297,7 @@ export default function weather(
 			}
 
 			if ((data.moreinfo || '') in URLs) {
-				$('weather')?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
+				weatherdom?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
 			}
 		}
 
@@ -321,20 +306,25 @@ export default function weather(
 		handleForecast()
 		handleMoreInfo()
 
-		clas(current, false, 'wait')
-		clas(tempContainer, false, 'wait')
+		current?.classList.remove('wait')
+		tempContainer?.classList.remove('wait')
 	}
 
 	function forecastVisibilityControl(value: string = 'auto') {
+		const forcastdom = document.getElementById('forecast')
 		let isTimeForForecast = false
 
 		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
 		else isTimeForForecast = value === 'always'
 
-		clas(forecast, isTimeForForecast, 'shown')
+		forcastdom?.classList.toggle('shown', isTimeForForecast)
 	}
 
 	async function updatesWeather() {
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+		const sett_city = document.getElementById('sett_city') as HTMLInputElement
+
 		storage.sync.get(['weather', 'hide'], async (data) => {
 			switch (event?.is) {
 				case 'units': {
