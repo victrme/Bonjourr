@@ -68,6 +68,4 @@ const online = (function () {
 	}
 })()
 
-export const storage = detectPlatform() === 'online' ? online.storage : chrome.storage
-
-export default storage
+export default detectPlatform() === 'online' ? online.storage : chrome.storage
