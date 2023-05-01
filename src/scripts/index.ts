@@ -37,10 +37,26 @@ import {
 import debounce from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
-let loadBis = false
+type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
+
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
 }, 400)
+
+const dominterface = $('interface') as HTMLDivElement
+const functionsLoad: { [key: string]: FunctionsLoadState } = {
+	clock: 'Waiting',
+	links: 'Waiting',
+	fonts: 'Off',
+	quotes: 'Off',
+}
+
+let lazyClockInterval: number
+let localIsLoading = false
+let loadtimeStart = performance.now()
+let loadBis = false
+let sunset = 0
+let sunrise = 0
 
 export const freqControl = {
 	set: () => {
@@ -85,7 +101,7 @@ export const freqControl = {
 }
 
 const interfaceFade = (function interfaceFadeDebounce() {
-	let fadeTimeout = setTimeout(() => {})
+	let fadeTimeout: number
 
 	async function apply(duration = 400) {
 		clearTimeout(fadeTimeout)
@@ -1709,20 +1725,17 @@ function onlineAndMobileHandler() {
 }
 
 function initTimeAndMainBlocks(time: boolean, main: boolean) {
-	clas($('time'), !time, 'hidden')
-	clas($('main'), !main, 'hidden')
+	document.getElementById('time')?.classList.toggle('hidden', !time)
+	document.getElementById('main')?.classList.toggle('hidden', !main)
 }
 
 function startup(data: Sync) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
-
 	sunTime(data.weather)
 	weather(data)
-
 	customFont(data.font)
 	textShadow(data.textShadow)
-
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(data)
@@ -1740,77 +1753,58 @@ function startup(data: Sync) {
 	pageWidth(data.pagewidth)
 }
 
-type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
+onlineAndMobileHandler()
 
-const dominterface = $('interface') as HTMLDivElement,
-	functionsLoad: { [key: string]: FunctionsLoadState } = {
-		clock: 'Waiting',
-		links: 'Waiting',
-		fonts: 'Off',
-		quotes: 'Off',
-	}
+try {
+	storage.sync.get(null, (data) => {
+		//
+		// Verify data as a valid Sync storage ( essentially type checking )
+		let hasMissingProps = false
 
-let lazyClockInterval = setTimeout(() => {}, 0),
-	localIsLoading = false,
-	loadtimeStart = performance.now(),
-	sunset = 0,
-	sunrise = 0
-
-window.onload = function () {
-	onlineAndMobileHandler()
-
-	try {
-		storage.sync.get(null, (data) => {
-			//
-			// Verify data as a valid Sync storage ( essentially type checking )
-			let hasMissingProps = false
-
-			Object.entries(syncDefaults).forEach(([key, val]) => {
-				if (!(key in data) && key !== 'move') {
-					data[key] = val
-					hasMissingProps = true
-				}
-			})
-
-			//
-			// First start
-			if (Object.keys(data).length === 0) {
-				storage.local.set(localDefaults)
-			}
-
-			//
-			// Version change
-			else if (data?.about?.version !== syncDefaults.about.version) {
-				const version_old = data?.about?.version
-				const version = syncDefaults.about.version
-
-				console.log(`Version change: ${version_old} => ${version}`)
-
-				data.about = { browser: detectPlatform(), version }
-
-				// From old 1.15.x
-				// To new 1.16.x
-				if (version_old.includes('1.15') && version.includes('1.16')) {
-					localStorage.hasUpdated = 'true'
-
-					// Breaking data changes needs filtering
-					data.hide = convertHideStorage(data.hide)
-					data.css = data.css.replaceAll('#widgets', '')
-					data.time = (!data.hide?.clock || !data.hide?.date) ?? true
-					data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
-				}
-
-				storage.sync.set({ ...data }, () => startup(data as Sync))
-				return
-			}
-
-			if (hasMissingProps) {
-				storage.sync.set({ ...data }, () => startup(data as Sync))
-			} else {
-				startup(data as Sync)
+		Object.entries(syncDefaults).forEach(([key, val]) => {
+			if (!(key in data) && key !== 'move') {
+				data[key] = val
+				hasMissingProps = true
 			}
 		})
-	} catch (e) {
-		errorMessage(e)
-	}
+
+		//
+		// First start
+		if (Object.keys(data).length === 0) {
+			storage.local.set(localDefaults)
+		}
+
+		//
+		// Version change
+		else if (data?.about?.version !== syncDefaults.about.version) {
+			const version_old = data?.about?.version
+			const version = syncDefaults.about.version
+
+			console.log(`Version change: ${version_old} => ${version}`)
+
+			data.about = { browser: detectPlatform(), version }
+
+			// From old 1.15.x
+			// To new 1.16.x
+			if (version_old.includes('1.15') && version.includes('1.16')) {
+				localStorage.hasUpdated = 'true'
+
+				// Breaking data changes needs filtering
+				data.hide = convertHideStorage(data.hide)
+				data.css = data.css.replaceAll('#widgets', '')
+				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
+				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
+			}
+
+			storage.sync.set({ ...data }, () => startup(data as Sync))
+		}
+
+		if (hasMissingProps) {
+			storage.sync.set({ ...data }, () => startup(data as Sync))
+		} else {
+			startup(data as Sync)
+		}
+	})
+} catch (e) {
+	errorMessage(e)
 }

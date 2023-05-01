@@ -347,7 +347,7 @@ export default function quickLinks(
 		// Event
 
 		let initialpos = [0, 0]
-		let shortPressTimeout = setTimeout(() => {})
+		let shortPressTimeout: number
 
 		function triggerDragging(e: MouseEvent | TouchEvent) {
 			const isMouseEvent = 'buttons' in e
