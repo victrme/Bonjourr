@@ -1,12 +1,12 @@
 import { dict, langList } from './lang'
 import { Sync } from './types/sync'
-import { Local } from './types/local'
 
 import storage from './storage'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
 import unsplash from './features/unsplash'
+import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
@@ -39,7 +39,6 @@ import {
 	backgroundFilter,
 	clock,
 	customCss,
-	customFont,
 	darkmode,
 	favicon,
 	linksImport,
