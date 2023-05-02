@@ -568,11 +568,7 @@
 				overflow: hidden;
 				border: none;
 				border-radius: 10px;
-				background-image: url('/src/assets/interface/loading.svg');
-				background-size: 4em;
-				background-repeat: no-repeat;
-				background-color: transparent;
-				background-position: center center;
+				background-color: $inputGrey;
 				transition: box-shadow 0.15s, transform 0.15s, opacity 0.15s;
 
 				&.selected {
