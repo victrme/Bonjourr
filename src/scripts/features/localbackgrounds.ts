@@ -50,9 +50,21 @@ const localImages = {
 	},
 }
 
-function thumbnailSelection(id: string) {
-	document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
-	clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
+function selectThumbnail(id: string) {
+	document.querySelector('.thumbnail.selected')?.classList.remove('selected')
+	document.getElementById(id)?.classList?.add('selected')
+}
+
+function findNextImage(ids: string[], selected: string) {
+	const filtered = (ids = ids.filter((l: string) => !l.includes(selected)))
+	const randomId = Math.floor(Math.random() * filtered.length)
+
+	return filtered[randomId]
+}
+
+async function getBlob(id: string, which: 'background' | 'thumbnail') {
+	const blobs = await get(id)
+	return blobs ? (blobs[which] as Blob) : undefined
 }
 
 async function compressThumbnail(blob: Blob) {
@@ -79,76 +91,74 @@ async function compressThumbnail(blob: Blob) {
 		}
 	})
 
-	const newBlob = await new Promise((resolve) => ctx?.canvas.toBlob(resolve))
+	const newBlob = await new Promise((resolve) => ctx?.canvas.toBlob(resolve, 'image/webp', 80))
 
 	return newBlob as Blob
 }
 
 async function addNewImage(files: FileList) {
-	let ids: string[] = []
-	let selected = ''
+	let { ids, selected } = await localImages.get()
+	let blobs: { [key: string]: Blobs } = {}
+	let newIds: string[] = []
 
 	localIsLoading = true
 
-	Object.values(files).forEach(() => {
-		const _id = 'local-' + randomString(8)
-		ids.push(_id)
-		selected = _id
-	})
-
-	Object.values(files).forEach((file, i) => {
-		let reader = new FileReader()
-
-		reader.onload = async function saveFileAsImage(event) {
-			const result = event.target?.result as string
-			const response = await fetch(result)
-			const blob = await response.blob()
-			const thumbnail = await compressThumbnail(blob)
-
-			const blobs = {
-				background: blob,
-				thumbnail: thumbnail,
-			}
-
-			addThumbnail(blobs.thumbnail, ids[i], null, true)
-
-			if (i === files.length - 1) {
-				displayCustomBackground(blobs.background)
-				thumbnailSelection(selected)
-			}
-
-			await set(ids[i], blobs)
-		}
-
-		reader.readAsDataURL(file)
-	})
-
-	const userImages = await localImages.get()
-
-	userImages.ids.push(...ids)
-	userImages.selected = selected
-
-	localImages.set(userImages)
-	localIsLoading = false
-
 	// change type si premier local
-	if (userImages.ids.length === 0) {
+	if (ids.length === 0) {
 		storage.sync.set({ background_type: 'custom' })
 	}
+
+	Object.values(files).forEach(() => {
+		const id = randomString(8)
+		newIds.push(id)
+		selected = id
+	})
+
+	await new Promise((resolve) => {
+		Object.values(files).forEach((file, i) => {
+			let reader = new FileReader()
+
+			reader.onload = async function saveFileAsImage(event) {
+				const result = event.target?.result as string
+				const response = await fetch(result)
+				const blob = await response.blob()
+				const thumbnail = await compressThumbnail(blob)
+				const id = newIds[i]
+
+				blobs[id] = {
+					thumbnail: thumbnail,
+					background: blob,
+				}
+
+				addThumbnail(thumbnail, id, false)
+				await set(id, blobs[id])
+
+				if (i === files.length - 1) resolve(true)
+			}
+
+			reader.readAsDataURL(file)
+		})
+	})
+
+	localImages.update({ ids: ids.concat(newIds), selected })
+	localIsLoading = false
+
+	displayCustomBackground(blobs[selected].background)
+	selectThumbnail(selected)
 }
 
-function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
-	const settings = settingsDom ? settingsDom : ($('settings') as HTMLElement)
+async function addThumbnail(blob: Blob, id: string, isSelected: boolean, settingsDom?: HTMLElement) {
+	const settings = settingsDom ? settingsDom : document.getElementById('settings')
 
 	const thb = document.createElement('button')
 	const rem = document.createElement('button')
 	const thbimg = document.createElement('img')
 	const remimg = document.createElement('img')
-	const wrap = settings.querySelector('#fileContainer')
+	const wrap = settings?.querySelector('#fileContainer')
 
-	thb.id = _id
+	thb.id = id
 	thbimg.src = URL.createObjectURL(blob)
-	thb.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
+	thb.className = 'thumbnail' + (isSelected ? ' selected' : '')
 
 	clas(rem, true, 'b_removethumb')
 	clas(rem, !mobilecheck(), 'hidden')
@@ -171,14 +181,15 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 
 		const userImages = await localImages.get()
 		const thumbnail = this?.parentElement
-		const thisId = thumbnail?.id
+		const id = thumbnail?.id
+		const notAlreadySelected = id && id !== userImages.selected
 
-		if (thisId && thisId !== userImages.selected) {
-			const blobs = (await get(thisId)) as Blobs
-			if (blobs?.background) displayCustomBackground(blobs.background)
+		if (notAlreadySelected) {
+			localIsLoading = false
+			localImages.update({ selected: id })
 
-			thumbnailSelection(thisId)
-			localImages.update({ selected: thisId })
+			selectThumbnail(id)
+			displayCustomBackground(await getBlob(id, 'background'))
 		}
 	}
 
@@ -187,41 +198,43 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 
 		let { ids, selected } = await localImages.get()
 		const thumbnail = this?.parentElement
-		const thisId = thumbnail?.id
+		const id = thumbnail?.id
 
-		if (thisId) {
-			clas(thumbnail, true, 'hiding')
+		if (id) {
+			thumbnail?.classList.toggle('hiding', true)
 			setTimeout(() => thumbnail?.remove(), 100)
 
 			// Pop background from list
-			ids = ids.filter((s) => !s.includes(thisId))
-			update('userImages', (prev) => ({ ...prev, ids }))
+			ids = ids.filter((s) => !s.includes(id))
+			localImages.update({ ids })
 
-			del(thisId)
+			del(id)
 		}
 
-		if (thisId === selected) {
-			// Draw new image if displayed is removed to another custom
-			if (ids.length > 0) {
-				selected = ids[0]
-				thumbnailSelection(selected)
-
-				const blobs = (await get(selected)) as Blobs
-				if (blobs?.background) displayCustomBackground(blobs.background)
-
-				update('userImages', (prev) => ({ ...prev, selected }))
-				return
-			}
-
-			// back to unsplash
-			storage.sync.set({ background_type: 'dynamic' })
-			set('userImages', { ids: [], selected: '' })
-
-			setTimeout(() => {
-				clas($('creditContainer'), true, 'shown')
-				storage.sync.get('dynamic', (data) => unsplash(data as Sync))
-			}, 400)
+		if (id !== selected) {
+			return
 		}
+
+		// Draw new image if displayed is removed to another custom
+		if (ids.length > 0) {
+			selected = ids[0]
+			localImages.update({ selected })
+
+			const blob = await getBlob(selected, 'background')
+
+			selectThumbnail(selected)
+			displayCustomBackground(blob)
+			return
+		}
+
+		// back to unsplash
+		storage.sync.set({ background_type: 'dynamic' })
+		localImages.update({ ids: [], selected: '' })
+
+		setTimeout(() => {
+			document.getElementById('creditContainer')?.classList.toggle('shown', true)
+			storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+		}, 100)
 	}
 
 	thbimg.addEventListener('click', applyThisBackground)
@@ -229,29 +242,31 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 }
 
 async function displayCustomThumbnails(settingsDom: HTMLElement) {
-	const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
 	const { ids, selected } = await localImages.get()
-	const idsAndNotAllThumbs = ids.length > 0 || thumbnails.length < ids.length
+	const thumbsAmount = document.getElementById('fileContainer')?.childElementCount || 0
+	const idsAndNotAllThumbs = ids.length > 0 && thumbsAmount < ids.length
 
 	if (idsAndNotAllThumbs) {
 		ids.forEach(async (id) => {
-			const blobs = (await get(id)) as Blobs
-			if (blobs?.thumbnail) addThumbnail(blobs.thumbnail, id, settingsDom, id === selected)
+			const blob = await getBlob(id, 'thumbnail')
+			if (blob) addThumbnail(blob, id, id === selected, settingsDom)
 		})
 	}
 }
 
-async function displayCustomBackground(blob: Blob) {
-	imgBackground(URL.createObjectURL(blob))
-	clas($('creditContainer'), false, 'shown')
+async function displayCustomBackground(blob?: Blob) {
+	if (blob) {
+		imgBackground(URL.createObjectURL(blob))
+		document.getElementById('creditContainer')?.classList.remove('shown')
+		localIsLoading = false
+	}
 }
 
 async function refreshCustom(button: HTMLSpanElement) {
-	localImages.update({ last: Date.now() })
+	localImages.update({ last: 0 })
 	turnRefreshButton(button, true)
-	localIsLoading = true
 
-	setTimeout(() => localBackgrounds(), 400)
+	setTimeout(() => localBackgrounds(), 100)
 }
 
 export default async function localBackgrounds(event?: UpdateEvent) {
@@ -265,27 +280,27 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 
 	try {
 		let { ids, selected, freq, last } = await localImages.get()
-		const needNewImage = freqControl.get(freq, last)
+		const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
-		// no bg, back to unsplash
 		if (ids.length === 0) {
-			storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+			storage.sync.set({ background_type: 'dynamic' }, () => {
+				storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+			})
 			return
 		}
 
-		if (freq && needNewImage && ids.length > 1) {
-			const filteredIds = ids.filter((l: string) => !l.includes(selected)) // removes current from list
-			selected = ids[Math.floor(Math.random() * filteredIds.length)] // randomize from list
-
-			localImages.update({ ids, selected, last: freqControl.set() })
-
-			if ($('settings')) {
-				thumbnailSelection(selected) // change selection if coming from refresh
-			}
+		if (needNewImage) {
+			selected = findNextImage(ids, selected)
+			localImages.update({ selected, last: freqControl.set() })
 		}
 
-		const blobs = (await get(selected)) as Blobs
-		if (blobs?.background) displayCustomBackground(blobs.background)
+		if (document.getElementById('settings')) {
+			document.getElementById('i_freq')?.setAttribute('value', freq)
+			selectThumbnail(selected)
+		}
+
+		displayCustomBackground(await getBlob(selected, 'background'))
+		//
 	} catch (e) {
 		errorMessage(e)
 	}

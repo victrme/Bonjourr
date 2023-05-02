@@ -928,40 +928,23 @@ function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 }
 
 function selectBackgroundType(cat: string) {
-	function toggleType(sync: Sync, local: Local) {
-		$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
-		document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
+	$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
+	document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
 
-		// Only apply fade out/in if there are local backgrounds
-		// No local ? no reason to fade to black or show no thumbnails
-		// Just stick to unsplash
-
-		if (cat === 'custom' && local.selectedId !== '') {
-			localBackgrounds({ thumbnail: $('settings') || undefined })
-			setTimeout(() => localBackgrounds(), 400)
-		}
-
-		if (cat === 'dynamic') {
-			clas($('creditContainer'), true, 'shown')
-
-			if (local.selectedId !== '') {
-				setTimeout(() => unsplash(sync), 400)
-			}
-		}
-
-		const c_every = sync.custom_every || 'pause'
-		const d_every = sync.dynamic.every || 'hour'
-
-		$('i_freq')?.setAttribute('value', cat === 'custom' ? c_every : d_every) // Setting frequence input
-
-		storage.sync.set({ background_type: cat })
+	if (cat === 'custom') {
+		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
+		setTimeout(() => localBackgrounds(), 100)
 	}
 
-	storage.local.get('selectedId', (local) => {
-		storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => {
-			toggleType(sync as Sync, local as Local)
+	if (cat === 'dynamic') {
+		storage.sync.get('dynamic', (sync) => {
+			document.getElementById('i_freq')?.setAttribute('value', sync.dynamic.every || 'hour')
+			document.getElementById('creditContainer')?.classList.toggle('shown', true)
+			setTimeout(() => unsplash(sync as Sync), 100)
 		})
-	})
+	}
+
+	storage.sync.set({ background_type: cat })
 }
 
 function signature(dom: HTMLElement) {
