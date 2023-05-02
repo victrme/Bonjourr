@@ -207,7 +207,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	if (data.background_type === 'custom') {
 		paramId('custom').setAttribute('style', 'display: block')
 		settingsDom.querySelector('.as_collection')?.setAttribute('style', 'display: none')
-		localBackgrounds(null, { thumbnail: settingsDom })
+		localBackgrounds({ thumbnail: settingsDom })
 	}
 
 	//weather settings
@@ -392,9 +392,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
 		const i_type = paramId('i_type') as HTMLInputElement
+		const isCustom = i_type.value === 'custom'
 
-		if (i_type.value === 'custom') storage.sync.set({ custom_every: this.value })
-		else unsplash(null, { is: 'every', value: this.value })
+		if (isCustom) {
+			localBackgrounds({ freq: this.value })
+		} else {
+			unsplash(null, { is: 'every', value: this.value })
+		}
 	})
 
 	paramId('i_refresh').addEventListener('click', function (this: HTMLInputElement) {
@@ -402,10 +406,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		if (this.children[0]) {
 			const arrow = this.children[0] as HTMLSpanElement
+			const isCustom = i_type.value === 'custom'
 
-			i_type.value === 'custom'
-				? localBackgrounds(null, { refresh: arrow })
-				: unsplash(null, { is: 'refresh', button: arrow })
+			if (isCustom) {
+				localBackgrounds({ refresh: arrow })
+			} else {
+				unsplash(null, { is: 'refresh', button: arrow })
+			}
 		}
 
 		inputThrottle(this)
@@ -420,7 +427,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds(null, { newfile: this.files || undefined })
+		localBackgrounds({ newfile: this.files || undefined })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
@@ -930,15 +937,8 @@ function selectBackgroundType(cat: string) {
 		// Just stick to unsplash
 
 		if (cat === 'custom' && local.selectedId !== '') {
-			localBackgrounds(null, { thumbnail: $('settings') || undefined })
-			setTimeout(
-				() =>
-					localBackgrounds({
-						every: sync.custom_every,
-						time: sync.custom_time,
-					}),
-				400
-			)
+			localBackgrounds({ thumbnail: $('settings') || undefined })
+			setTimeout(() => localBackgrounds(), 400)
 		}
 
 		if (cat === 'dynamic') {

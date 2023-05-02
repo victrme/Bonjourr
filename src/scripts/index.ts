@@ -582,12 +582,7 @@ export function initBackground(data: Sync) {
 
 	backgroundFilter('init', { blur, bright })
 
-	if (type === 'custom') {
-		localBackgrounds({ every: data.custom_every, time: data.custom_time })
-		return
-	}
-
-	unsplash(data)
+	type === 'custom' ? localBackgrounds() : unsplash(data)
 }
 
 export function imgBackground(url: string, color?: string) {

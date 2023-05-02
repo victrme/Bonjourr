@@ -2,23 +2,52 @@ import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
 import unsplash from './unsplash'
 import storage from '../storage'
-import { $, clas, randomString, mobilecheck, turnRefreshButton, syncDefaults } from '../utils'
+import { $, clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
 import errorMessage from '../utils/errorMessage'
 
 import { Sync } from '../types/sync'
 
-type UserImages = { ids: string[]; selected: string }
-type Blobs = { background: Blob; thumbnail: Blob }
+type LocalImages = {
+	ids: string[]
+	selected: string
+	last: number
+	freq: string
+}
 
-type Init = { every: string; time: number } | null
-type UpdateEvent = { thumbnail?: HTMLElement; refresh?: HTMLSpanElement; newfile?: FileList }
+type Blobs = {
+	background: Blob
+	thumbnail: Blob
+}
+
+type UpdateEvent = {
+	thumbnail?: HTMLElement
+	refresh?: HTMLSpanElement
+	newfile?: FileList
+	freq?: string
+}
 
 let localIsLoading = false
 
-async function getUserImages() {
-	const res = (await get('userImages')) as UserImages
-	const userImages = { ids: res?.ids ?? [], selected: res?.selected ?? '' }
-	return userImages
+const localImages = {
+	get: async () => {
+		const res = (await get('localImages')) as LocalImages
+		const userImages = {
+			selected: res?.selected ?? '',
+			freq: res?.freq ?? 'pause',
+			ids: res?.ids ?? [],
+			last: res?.last ?? 0,
+		}
+
+		return userImages
+	},
+
+	set: (val: LocalImages) => {
+		set('localImages', val)
+	},
+
+	update: (val: Partial<LocalImages>) => {
+		update('localImages', (prev) => ({ ...prev, ...val }))
+	},
 }
 
 function thumbnailSelection(id: string) {
@@ -61,10 +90,8 @@ async function addNewImage(files: FileList) {
 
 	localIsLoading = true
 
-	console.time('storage')
-
 	Object.values(files).forEach(() => {
-		const _id = randomString(16)
+		const _id = 'local-' + randomString(8)
 		ids.push(_id)
 		selected = _id
 	})
@@ -96,20 +123,18 @@ async function addNewImage(files: FileList) {
 		reader.readAsDataURL(file)
 	})
 
-	const userImages = await getUserImages()
+	const userImages = await localImages.get()
 
 	userImages.ids.push(...ids)
 	userImages.selected = selected
 
-	set('userImages', userImages)
+	localImages.set(userImages)
 	localIsLoading = false
 
 	// change type si premier local
 	if (userImages.ids.length === 0) {
 		storage.sync.set({ background_type: 'custom' })
 	}
-
-	console.timeEnd('storage')
 }
 
 function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
@@ -144,7 +169,7 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return
 
-		const userImages = await getUserImages()
+		const userImages = await localImages.get()
 		const thumbnail = this?.parentElement
 		const thisId = thumbnail?.id
 
@@ -153,14 +178,14 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 			if (blobs?.background) displayCustomBackground(blobs.background)
 
 			thumbnailSelection(thisId)
-			update('userImages', (prev) => ({ ...prev, selected: thisId }))
+			localImages.update({ selected: thisId })
 		}
 	}
 
 	async function deleteThisBackground(this: HTMLButtonElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading || !e.target) return
 
-		let { ids, selected } = await getUserImages()
+		let { ids, selected } = await localImages.get()
 		const thumbnail = this?.parentElement
 		const thisId = thumbnail?.id
 
@@ -205,16 +230,15 @@ function addThumbnail(blob: Blob, _id: string, settingsDom: HTMLElement | null, 
 
 async function displayCustomThumbnails(settingsDom: HTMLElement) {
 	const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
-	const userImages = await getUserImages()
+	const { ids, selected } = await localImages.get()
+	const idsAndNotAllThumbs = ids.length > 0 || thumbnails.length < ids.length
 
-	if (userImages.ids.length === 0 || thumbnails.length >= userImages.ids.length) {
-		return
+	if (idsAndNotAllThumbs) {
+		ids.forEach(async (id) => {
+			const blobs = (await get(id)) as Blobs
+			if (blobs?.thumbnail) addThumbnail(blobs.thumbnail, id, settingsDom, id === selected)
+		})
 	}
-
-	userImages.ids.forEach(async (id) => {
-		const blobs = (await get(id)) as Blobs
-		if (blobs?.thumbnail) addThumbnail(blobs.thumbnail, id, settingsDom, id === userImages.selected)
-	})
 }
 
 async function displayCustomBackground(blob: Blob) {
@@ -222,38 +246,26 @@ async function displayCustomBackground(blob: Blob) {
 	clas($('creditContainer'), false, 'shown')
 }
 
-function refreshCustom(button: HTMLSpanElement) {
-	storage.sync.get('custom_every', (sync) => {
-		turnRefreshButton(button, true)
-		localIsLoading = true
+async function refreshCustom(button: HTMLSpanElement) {
+	localImages.update({ last: Date.now() })
+	turnRefreshButton(button, true)
+	localIsLoading = true
 
-		setTimeout(
-			() =>
-				localBackgrounds({
-					every: sync.custom_every,
-					time: 0,
-				}),
-			400
-		)
-	})
+	setTimeout(() => localBackgrounds(), 400)
 }
 
-export default async function localBackgrounds(init: Init, event?: UpdateEvent) {
-	if (event || !init) {
+export default async function localBackgrounds(event?: UpdateEvent) {
+	if (event) {
 		if (event?.thumbnail) displayCustomThumbnails(event?.thumbnail)
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
+		if (event?.freq) localImages.update({ freq: event?.freq })
 		return
 	}
 
-	console.time('localBackgrounds')
-
 	try {
-		const { every, time } = init
-		const needNewImage = freqControl.get(every, time || 0)
-		let { ids, selected } = await getUserImages()
-
-		console.timeEnd('localBackgrounds')
+		let { ids, selected, freq, last } = await localImages.get()
+		const needNewImage = freqControl.get(freq, last)
 
 		// no bg, back to unsplash
 		if (ids.length === 0) {
@@ -261,12 +273,11 @@ export default async function localBackgrounds(init: Init, event?: UpdateEvent) 
 			return
 		}
 
-		if (every && needNewImage && ids.length > 1) {
+		if (freq && needNewImage && ids.length > 1) {
 			const filteredIds = ids.filter((l: string) => !l.includes(selected)) // removes current from list
 			selected = ids[Math.floor(Math.random() * filteredIds.length)] // randomize from list
 
-			set('userImages', { ids, selected })
-			storage.sync.set({ custom_time: freqControl.set() })
+			localImages.update({ ids, selected, last: freqControl.set() })
 
 			if ($('settings')) {
 				thumbnailSelection(selected) // change selection if coming from refresh
