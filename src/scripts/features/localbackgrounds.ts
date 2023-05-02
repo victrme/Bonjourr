@@ -169,6 +169,9 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	remimg.setAttribute('alt', '')
 	thbimg.setAttribute('alt', '')
 
+	remimg.setAttribute('draggable', 'false')
+	thbimg.setAttribute('draggable', 'false')
+
 	remimg.setAttribute('src', 'src/assets/interface/close.svg')
 	rem.appendChild(remimg)
 
@@ -295,7 +298,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		}
 
 		if (document.getElementById('settings')) {
-			document.getElementById('i_freq')?.setAttribute('value', freq)
+			document.querySelector<HTMLSelectElement>('#i_freq')!.value = freq
 			selectThumbnail(selected)
 		}
 

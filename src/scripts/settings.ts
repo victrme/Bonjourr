@@ -938,7 +938,7 @@ function selectBackgroundType(cat: string) {
 
 	if (cat === 'dynamic') {
 		storage.sync.get('dynamic', (sync) => {
-			document.getElementById('i_freq')?.setAttribute('value', sync.dynamic.every || 'hour')
+			document.querySelector<HTMLSelectElement>('#i_freq')!.value = sync.dynamic.every || 'hour'
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
 			setTimeout(() => unsplash(sync as Sync), 100)
 		})
