@@ -3,10 +3,10 @@ import storage from '../storage'
 
 import debounce from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
-import { $, testOS } from '../utils'
+import { $, syncDefaults, testOS } from '../utils'
 
 import { google } from '../types/googleFonts'
-import { Font, Sync } from '../types/sync'
+import { Font } from '../types/sync'
 
 type FontList = {
 	family: string
@@ -46,10 +46,7 @@ async function fetchFontList() {
 		const noRegulars = (arr: string[]) => arr.map((weight) => weight.replace('regular', '400'))
 		const noItalics = (arr: string[]) => arr.filter((str) => !str.includes('italic'))
 
-		const list = json.items.map((item) => ({
-			family: item.family,
-			variants: noRegulars(noItalics(item.variants)),
-		}))
+		const list = json.items.map((item) => ({ family: item.family, variants: noRegulars(noItalics(item.variants)) }))
 
 		localStorage.fonts = JSON.stringify(list)
 		storage.local.set({ googleFonts: list })
@@ -97,6 +94,12 @@ export default async function customFont(
 		return fontface
 	}
 
+	async function fetchFontface(url: string) {
+		const resp = await fetch(url)
+		const text = await resp.text()
+		return text.replace(/(\r\n|\n|\r|  )/gm, '')
+	}
+
 	async function updateFont() {
 		function removeFont() {
 			const domstyle = $('fontstyle') as HTMLStyleElement
@@ -129,10 +132,22 @@ export default async function customFont(
 
 			// One font has been found
 			if (font.length > 0) {
-				const { family, variants } = font[0]
-				const defaultWeight = variants[variants.indexOf('400')]
-				const url = encodeURI(`https://fonts.googleapis.com/css?family=${family}:${defaultWeight}`)
-				const fontface = await setFontface(url)
+				let { family, variants } = font[0]
+				let fontface: string | null
+				let url = encodeURI(`https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@`)
+
+				const variableWeights = `${variants[0]}..${variants.at(-1)}`
+				const classicWeights = variants.reduce((a, b) => a + ';' + b)
+
+				try {
+					console.log('Variable font weight')
+					fontface = await fetchFontface(url + variableWeights)
+				} catch (error) {
+					console.log('Classic font weight fallback')
+					fontface = await fetchFontface(url + classicWeights)
+				}
+
+				localStorage.fontface = fontface
 
 				modifyWeightOptions(variants)
 				setFamily(family, fontface)
@@ -150,9 +165,10 @@ export default async function customFont(
 			}
 		}
 
-		const font = (await new Promise((resolve) => {
-			storage.sync.get('font', async ({ font }) => resolve(font))
-		})) as Sync['font']
+		const font: Font =
+			(await new Promise((resolve) => {
+				storage.sync.get('font', async ({ font }) => resolve(font))
+			})) ?? structuredClone(syncDefaults.font)
 
 		switch (event?.is) {
 			case 'autocomplete': {
@@ -199,16 +215,8 @@ export default async function customFont(
 			}
 
 			case 'weight': {
-				if (font.url) {
-					font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
-					font.url += event.value
-					setFamily(font.family, await setFontface(font.url))
-				}
-
-				// If nothing, removes custom font
-				else font.weight = event.value
-
-				setWeight(font.family, event.value || '400')
+				font.weight = event.value || '400'
+				setWeight(font.family, font.weight)
 				eventDebounce({ font: font })
 				break
 			}
