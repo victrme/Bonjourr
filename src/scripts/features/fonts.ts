@@ -6,14 +6,59 @@ import errorMessage from '../utils/errorMessage'
 import { $, testOS } from '../utils'
 
 import { google } from '../types/googleFonts'
-import { Font } from '../types/sync'
-import { get, set } from 'idb-keyval'
+import { Font, Sync } from '../types/sync'
+
+type FontList = {
+	family: string
+	variants: string[]
+}[]
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
 }, 400)
 
-export default function customFont(
+async function fetchFontList() {
+	const fonts = JSON.parse(localStorage.fonts ?? '{}')
+
+	if (fonts.length > 0) {
+		return fonts as FontList
+	}
+
+	if (!navigator.onLine) {
+		return
+	}
+
+	// Get list from API
+	const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
+	const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
+	const resp = await fetch(url)
+
+	// return nothing if smth wrong, will try to fetch next time
+	if (!resp.ok) {
+		console.warn("Couldn't fetch google fonts")
+		return
+	}
+
+	const json = (await resp.json()) as google.fonts.WebfontList
+
+	// json has at least one available family
+	if (json.items?.length > 0 && 'family' in json.items[0]) {
+		const noRegulars = (arr: string[]) => arr.map((weight) => weight.replace('regular', '400'))
+		const noItalics = (arr: string[]) => arr.filter((str) => !str.includes('italic'))
+
+		const list = json.items.map((item) => ({
+			family: item.family,
+			variants: noRegulars(noItalics(item.variants)),
+		}))
+
+		localStorage.fonts = JSON.stringify(list)
+		storage.local.set({ googleFonts: list })
+
+		return list as FontList
+	}
+}
+
+export default async function customFont(
 	init: Font | null,
 	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
 ) {
@@ -36,54 +81,23 @@ export default function customFont(
 	}
 
 	function setFamily(family: string, fontface: string) {
-		$('fontstyle')!.textContent = fontface
-		$('clock')!.style.fontFamily = '"' + family + '"'
-		$('credit')!.style.fontFamily = '"' + family + '"'
-		dominterface.style.fontFamily = '"' + family + '"'
+		document.getElementById('fontstyle')!.textContent = fontface
+		document.getElementById('clock')!.style.fontFamily = `"${family}"`
+		document.getElementById('credit')!.style.fontFamily = `"${family}"`
+		dominterface.style.fontFamily = `"${family}"`
 	}
 
 	async function setFontface(url: string) {
 		const resp = await fetch(url)
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
-		storage.local.set({ fontface })
+
+		localStorage.fontface = text
 
 		return fontface
 	}
 
-	function updateFont() {
-		function fetchFontList(callback: (json: google.fonts.WebfontList) => void) {
-			storage.local.get('googleFonts', async (local) => {
-				//
-				// Get list from storage
-				if (local.googleFonts) {
-					callback(local.googleFonts)
-					return
-				}
-
-				if (!navigator.onLine) {
-					return
-				}
-
-				// Get list from API
-				const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
-				const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
-				const resp = await fetch(url)
-
-				if (!resp.ok) {
-					return // return nothing if smth wrong, will try to fetch next time
-				}
-
-				const json = await resp.json()
-
-				// json has at least one available family
-				if (json.items?.length > 0 && typeof json.items[0]?.family === 'string') {
-					storage.local.set({ googleFonts: json })
-					callback(json)
-				}
-			})
-		}
-
+	async function updateFont() {
 		function removeFont() {
 			const domstyle = $('fontstyle') as HTMLStyleElement
 			const domclock = $('clock') as HTMLDivElement
@@ -106,26 +120,26 @@ export default function customFont(
 			return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
 		}
 
-		async function changeFamily(json: google.fonts.WebfontList, family: string) {
+		async function changeFamily(list: FontList, currentFamily: string) {
 			//
 			// Cherche correspondante
 			const domfamily = $('i_customfont') as HTMLInputElement
 			const domweight = $('i_weight') as HTMLSelectElement
-			const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
+			const font = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
 
 			// One font has been found
 			if (font.length > 0) {
-				const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
-				const defaultWeight = availWeights.includes('regular') ? '400' : availWeights[0]
-				const url = encodeURI(`https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`)
+				const { family, variants } = font[0]
+				const defaultWeight = variants[variants.indexOf('400')]
+				const url = encodeURI(`https://fonts.googleapis.com/css?family=${family}:${defaultWeight}`)
 				const fontface = await setFontface(url)
 
-				setFamily(font[0].family, fontface)
-				setWeight(font[0].family, '400')
-				modifyWeightOptions(availWeights)
+				modifyWeightOptions(variants)
+				setFamily(family, fontface)
+				setWeight(family, '400')
 				domweight.value = '400'
 
-				return { url, family: font[0].family, availWeights, weight: '400' }
+				return { url, family, availWeights: variants, weight: '400' }
 			}
 
 			// No fonts found
@@ -136,76 +150,78 @@ export default function customFont(
 			}
 		}
 
-		storage.sync.get('font', async ({ font }) => {
-			switch (event?.is) {
-				case 'autocomplete': {
-					fetchFontList((json) => {
-						if (!json) return
+		const font = (await new Promise((resolve) => {
+			storage.sync.get('font', async ({ font }) => resolve(font))
+		})) as Sync['font']
 
-						const fragment = new DocumentFragment()
+		switch (event?.is) {
+			case 'autocomplete': {
+				const fontlist = await fetchFontList()
+				const fragment = new DocumentFragment()
 
-						json.items.forEach(function addOptions(item) {
-							const option = document.createElement('option')
+				fontlist?.forEach(function addOptions(item) {
+					const option = document.createElement('option')
 
-							option.textContent = item.family
-							option.setAttribute('value', item.family)
-							fragment.appendChild(option)
-						})
+					option.textContent = item.family
+					option.setAttribute('value', item.family)
+					fragment.appendChild(option)
+				})
 
-						if (event.elem) {
-							event.elem.querySelector('#dl_fontfamily')?.appendChild(fragment)
-						}
-					})
-					break
+				if (event.elem) {
+					event.elem.querySelector('#dl_fontfamily')?.appendChild(fragment)
 				}
 
-				case 'family': {
-					const val = event.value
-
-					if (val === '') {
-						storage.local.remove('fontface')
-						safeFont($('settings') as HTMLElement)
-						eventDebounce({ font: { size: font.size, ...removeFont() } })
-					}
-
-					if (typeof val === 'string' && val.length > 1) {
-						fetchFontList(async (json) => {
-							storage.sync.set({
-								font: { size: font.size, ...(await changeFamily(json, val)) },
-							})
-						})
-					}
-
-					$('i_customfont')?.blur()
-
-					break
-				}
-
-				case 'weight': {
-					if (font.url) {
-						font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
-						font.url += event.value
-						setFamily(font.family, await setFontface(font.url))
-					}
-
-					// If nothing, removes custom font
-					else font.weight = event.value
-
-					setWeight(font.family, event.value || '400')
-					eventDebounce({ font: font })
-					break
-				}
-
-				case 'size': {
-					if (event.value) {
-						font.size = event.value
-						setSize(event.value)
-						eventDebounce({ font: font })
-					}
-					break
-				}
+				break
 			}
-		})
+
+			case 'family': {
+				const val = event.value
+
+				if (val === '') {
+					storage.local.remove('fontface')
+					safeFont($('settings') as HTMLElement)
+					eventDebounce({ font: { size: font.size, ...removeFont() } })
+				}
+
+				if (typeof val === 'string' && val.length > 1) {
+					const fontlist = await fetchFontList()
+
+					if (fontlist) {
+						storage.sync.set({
+							font: { size: font.size, ...(await changeFamily(fontlist, val)) },
+						})
+					}
+				}
+
+				$('i_customfont')?.blur()
+
+				break
+			}
+
+			case 'weight': {
+				if (font.url) {
+					font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
+					font.url += event.value
+					setFamily(font.family, await setFontface(font.url))
+				}
+
+				// If nothing, removes custom font
+				else font.weight = event.value
+
+				setWeight(font.family, event.value || '400')
+				eventDebounce({ font: font })
+				break
+			}
+
+			case 'size': {
+				if (event.value) {
+					font.size = event.value
+					setSize(event.value)
+					eventDebounce({ font: font })
+				}
+				break
+			}
+		}
 	}
 
 	if (event) {
@@ -214,35 +230,18 @@ export default function customFont(
 	}
 
 	// init
-	try {
-		if (!init) {
-			return
+	if (init) {
+		try {
+			setSize(init.size)
+			setWeight(init.family, init.weight)
+
+			if (init.family) {
+				const fontface = localStorage.fontface || (await setFontface(init.url))
+				setFamily(init.family, fontface)
+				canDisplayInterface('fonts')
+			}
+		} catch (e) {
+			errorMessage(e)
 		}
-
-		const { size, family, weight, url } = init
-
-		setSize(size)
-		setWeight(family, weight)
-
-		if (family === '') {
-			return
-		}
-
-		;(async () => {
-			console.time('fontface idb')
-			await get('fontface')
-			console.timeEnd('fontface idb')
-		})()
-		// Sets family
-		console.time('fontface storage.local')
-
-		storage.local.get('fontface', async (local) => {
-			console.timeEnd('fontface storage.local')
-
-			setFamily(family, local.fontface || (await setFontface(url))) // fetch font-face data if none in storage
-			canDisplayInterface('fonts')
-		})
-	} catch (e) {
-		errorMessage(e)
 	}
 }
