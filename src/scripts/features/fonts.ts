@@ -58,45 +58,32 @@ async function fetchFontList() {
 }
 
 function setSize(val: string) {
-	dominterface.style.fontSize = parseInt(val) / 16 + 'em' // 16 is body px size
+	document.documentElement.style.setProperty('--font-size', parseInt(val) / 16 + 'em') // 16 is body px size
 }
 
 function setWeight(family: string, weight: string) {
 	if (weight) {
 		const list = safeFont().weights
-		dominterface.style.fontWeight = weight
-		$('searchbar')!.style.fontWeight = weight
+		const clockWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
 
-		// Default bonjourr lowers font weight on clock (because we like it)
-		const loweredWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
-		$('clock')!.style.fontWeight = family ? weight : loweredWeight
+		document.documentElement.style.setProperty('--font-weight', weight)
+		document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight) // Default bonjourr lowers font weight on clock (because we like it)
 	}
 }
 
 function setFamily(family: string, fontface: string) {
 	document.getElementById('fontstyle')!.textContent = fontface
-	document.getElementById('clock')!.style.fontFamily = `"${family}"`
-	document.getElementById('credit')!.style.fontFamily = `"${family}"`
-	dominterface.style.fontFamily = `"${family}"`
+	document.documentElement.style.setProperty('--font-family', `"${family}"`)
 }
 
 function removeFont() {
 	const domstyle = $('fontstyle') as HTMLStyleElement
-	const domclock = $('clock') as HTMLDivElement
-	const domcredit = $('credit') as HTMLDivElement
-	const domsearchbar = $('searchbar') as HTMLDivElement
+	const baseWeight = testOS.windows ? '400' : '300'
 
 	domstyle.textContent = ''
-	domclock.style.fontFamily = ''
-	domcredit.style.fontFamily = ''
-	dominterface.style.fontFamily = ''
-
-	// weights
-	const baseWeight = testOS.windows ? '400' : '300'
-	dominterface.style.fontWeight = baseWeight
-	domsearchbar.style.fontWeight = baseWeight
-	domclock.style.fontWeight = ''
-
+	document.documentElement.style.setProperty('--font-family', '')
+	document.documentElement.style.setProperty('--font-weight', baseWeight)
+	document.documentElement.style.setProperty('--font-weight-clock', '200')
 	document.getElementById('i_weight')?.setAttribute('value', baseWeight)
 
 	return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
@@ -151,6 +138,7 @@ async function changeFamily(list: FontList, currentFamily: string) {
 
 	safeFont(document.getElementById('settings') as HTMLElement)
 	i_customfont.value = ''
+
 	return {
 		url: '',
 		family: '',
