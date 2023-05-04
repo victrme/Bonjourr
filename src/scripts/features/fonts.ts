@@ -13,6 +13,8 @@ type FontList = {
 	variants: string[]
 }[]
 
+const dominterface = document.getElementById('interface') as HTMLElement
+
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
 }, 400)
@@ -55,120 +57,118 @@ async function fetchFontList() {
 	}
 }
 
-export default async function customFont(
-	init: Font | null,
-	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
-) {
-	const dominterface = document.getElementById('interface') as HTMLElement
+function setSize(val: string) {
+	dominterface.style.fontSize = parseInt(val) / 16 + 'em' // 16 is body px size
+}
 
-	function setSize(val: string) {
-		dominterface.style.fontSize = parseInt(val) / 16 + 'em' // 16 is body px size
+function setWeight(family: string, weight: string) {
+	if (weight) {
+		const list = safeFont().weights
+		dominterface.style.fontWeight = weight
+		$('searchbar')!.style.fontWeight = weight
+
+		// Default bonjourr lowers font weight on clock (because we like it)
+		const loweredWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
+		$('clock')!.style.fontWeight = family ? weight : loweredWeight
 	}
+}
 
-	function setWeight(family: string, weight: string) {
-		if (weight) {
-			const list = safeFont().weights
-			dominterface.style.fontWeight = weight
-			$('searchbar')!.style.fontWeight = weight
+function setFamily(family: string, fontface: string) {
+	document.getElementById('fontstyle')!.textContent = fontface
+	document.getElementById('clock')!.style.fontFamily = `"${family}"`
+	document.getElementById('credit')!.style.fontFamily = `"${family}"`
+	dominterface.style.fontFamily = `"${family}"`
+}
 
-			// Default bonjourr lowers font weight on clock (because we like it)
-			const loweredWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
-			$('clock')!.style.fontWeight = family ? weight : loweredWeight
-		}
-	}
+function removeFont() {
+	const domstyle = $('fontstyle') as HTMLStyleElement
+	const domclock = $('clock') as HTMLDivElement
+	const domcredit = $('credit') as HTMLDivElement
+	const domsearchbar = $('searchbar') as HTMLDivElement
 
-	function setFamily(family: string, fontface: string) {
-		document.getElementById('fontstyle')!.textContent = fontface
-		document.getElementById('clock')!.style.fontFamily = `"${family}"`
-		document.getElementById('credit')!.style.fontFamily = `"${family}"`
-		dominterface.style.fontFamily = `"${family}"`
-	}
+	domstyle.textContent = ''
+	domclock.style.fontFamily = ''
+	domcredit.style.fontFamily = ''
+	dominterface.style.fontFamily = ''
 
-	async function setFontface(url: string) {
+	// weights
+	const baseWeight = testOS.windows ? '400' : '300'
+	dominterface.style.fontWeight = baseWeight
+	domsearchbar.style.fontWeight = baseWeight
+	domclock.style.fontWeight = ''
+
+	document.getElementById('i_weight')?.setAttribute('value', baseWeight)
+
+	return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
+}
+
+async function fetchFontface(url: string) {
+	try {
 		const resp = await fetch(url)
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
 
-		localStorage.fontface = text
+		localStorage.fontface = fontface
 
 		return fontface
+	} catch (error) {
+		return null
+	}
+}
+
+async function changeFamily(list: FontList, currentFamily: string) {
+	const i_customfont = document.getElementById('i_customfont') as HTMLInputElement
+	const i_weight = document.getElementById('i_weight') as HTMLSelectElement
+
+	const foundFonts = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
+
+	if (foundFonts.length > 0) {
+		let { family, variants } = foundFonts[0]
+
+		// All this because google fonts API fails
+		// when fetching variable weights on non variable fonts (smh google)
+		const variableFontList = await (await fetch('src/assets/variablefonts.json')).json()
+		const fontIsVariable = variableFontList.includes(family)
+		const weights = fontIsVariable ? `${variants[0]}..${variants.at(-1)}` : variants.join(';')
+		const url = encodeURI(`https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weights}`)
+
+		let fontface = await fetchFontface(url)
+
+		if (fontface) {
+			modifyWeightOptions(variants)
+			setFamily(family, fontface)
+			setWeight(family, '400')
+			i_weight.value = '400'
+
+			return {
+				url,
+				family,
+				weight: '400',
+				availWeights: variants,
+			}
+		}
 	}
 
-	async function fetchFontface(url: string) {
-		const resp = await fetch(url)
-		const text = await resp.text()
-		return text.replace(/(\r\n|\n|\r|  )/gm, '')
+	safeFont(document.getElementById('settings') as HTMLElement)
+	i_customfont.value = ''
+	return {
+		url: '',
+		family: '',
+		availWeights: [] as string[],
+		weight: testOS.windows ? '400' : '300',
 	}
+}
 
+export default async function customFont(
+	init: Font | null,
+	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
+) {
 	async function updateFont() {
-		function removeFont() {
-			const domstyle = $('fontstyle') as HTMLStyleElement
-			const domclock = $('clock') as HTMLDivElement
-			const domcredit = $('credit') as HTMLDivElement
-			const domsearchbar = $('searchbar') as HTMLDivElement
-
-			domstyle.textContent = ''
-			domclock.style.fontFamily = ''
-			domcredit.style.fontFamily = ''
-			dominterface.style.fontFamily = ''
-
-			// weights
-			const baseWeight = testOS.windows ? '400' : '300'
-			dominterface.style.fontWeight = baseWeight
-			domsearchbar.style.fontWeight = baseWeight
-			domclock.style.fontWeight = ''
-
-			$('i_weight')?.setAttribute('value', baseWeight)
-
-			return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
-		}
-
-		async function changeFamily(list: FontList, currentFamily: string) {
-			//
-			// Cherche correspondante
-			const domfamily = $('i_customfont') as HTMLInputElement
-			const domweight = $('i_weight') as HTMLSelectElement
-			const font = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
-
-			// One font has been found
-			if (font.length > 0) {
-				let { family, variants } = font[0]
-				let fontface: string | null
-				let url = encodeURI(`https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@`)
-
-				const variableWeights = `${variants[0]}..${variants.at(-1)}`
-				const classicWeights = variants.reduce((a, b) => a + ';' + b)
-
-				try {
-					console.log('Variable font weight')
-					fontface = await fetchFontface(url + variableWeights)
-				} catch (error) {
-					console.log('Classic font weight fallback')
-					fontface = await fetchFontface(url + classicWeights)
-				}
-
-				localStorage.fontface = fontface
-
-				modifyWeightOptions(variants)
-				setFamily(family, fontface)
-				setWeight(family, '400')
-				domweight.value = '400'
-
-				return { url, family, availWeights: variants, weight: '400' }
-			}
-
-			// No fonts found
-			else {
-				domfamily.value = ''
-				safeFont($('settings') as HTMLElement)
-				return { url: '', family: '', availWeights: [] as string[], weight: testOS.windows ? '400' : '300' }
-			}
-		}
-
-		const font: Font =
-			(await new Promise((resolve) => {
-				storage.sync.get('font', async ({ font }) => resolve(font))
-			})) ?? structuredClone(syncDefaults.font)
+		const font: Font = await new Promise((resolve) => {
+			storage.sync.get('font', async ({ font }) => {
+				resolve(font ?? structuredClone(syncDefaults.font))
+			})
+		})
 
 		switch (event?.is) {
 			case 'autocomplete': {
@@ -209,7 +209,7 @@ export default async function customFont(
 					}
 				}
 
-				$('i_customfont')?.blur()
+				document.getElementById('i_customfont')?.blur()
 
 				break
 			}
@@ -244,7 +244,7 @@ export default async function customFont(
 			setWeight(init.family, init.weight)
 
 			if (init.family) {
-				const fontface = localStorage.fontface || (await setFontface(init.url))
+				const fontface = localStorage.fontface || (await fetchFontface(init.url))
 				setFamily(init.family, fontface)
 				canDisplayInterface('fonts')
 			}
