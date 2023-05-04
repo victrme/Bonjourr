@@ -13,7 +13,12 @@ type FontList = {
 	variants: string[]
 }[]
 
-const dominterface = document.getElementById('interface') as HTMLElement
+type FontUpdateEvent = {
+	autocomplete?: HTMLElement
+	size?: string
+	family?: string
+	weight?: string
+}
 
 const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
 	storage.sync.set(value)
@@ -147,85 +152,66 @@ async function changeFamily(list: FontList, currentFamily: string) {
 	}
 }
 
-export default async function customFont(
-	init: Font | null,
-	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
-) {
-	async function updateFont() {
-		const font: Font = await new Promise((resolve) => {
-			storage.sync.get('font', async ({ font }) => {
-				resolve(font ?? structuredClone(syncDefaults.font))
-			})
+async function updateFont(event: FontUpdateEvent) {
+	const font: Font = await new Promise((resolve) => {
+		storage.sync.get('font', async ({ font }) => {
+			resolve(font ?? structuredClone(syncDefaults.font))
+		})
+	})
+
+	if (event?.autocomplete) {
+		const fontlist = await fetchFontList()
+		const fragment = new DocumentFragment()
+
+		fontlist?.forEach(function addOptions(item) {
+			const option = document.createElement('option')
+
+			option.textContent = item.family
+			option.setAttribute('value', item.family)
+			fragment.appendChild(option)
 		})
 
-		switch (event?.is) {
-			case 'autocomplete': {
-				const fontlist = await fetchFontList()
-				const fragment = new DocumentFragment()
-
-				fontlist?.forEach(function addOptions(item) {
-					const option = document.createElement('option')
-
-					option.textContent = item.family
-					option.setAttribute('value', item.family)
-					fragment.appendChild(option)
-				})
-
-				if (event.elem) {
-					event.elem.querySelector('#dl_fontfamily')?.appendChild(fragment)
-				}
-
-				break
-			}
-
-			case 'family': {
-				const val = event.value
-
-				if (val === '') {
-					storage.local.remove('fontface')
-					safeFont($('settings') as HTMLElement)
-					eventDebounce({ font: { size: font.size, ...removeFont() } })
-				}
-
-				if (typeof val === 'string' && val.length > 1) {
-					const fontlist = await fetchFontList()
-
-					if (fontlist) {
-						storage.sync.set({
-							font: { size: font.size, ...(await changeFamily(fontlist, val)) },
-						})
-					}
-				}
-
-				document.getElementById('i_customfont')?.blur()
-
-				break
-			}
-
-			case 'weight': {
-				font.weight = event.value || '400'
-				setWeight(font.family, font.weight)
-				eventDebounce({ font: font })
-				break
-			}
-
-			case 'size': {
-				if (event.value) {
-					font.size = event.value
-					setSize(event.value)
-					eventDebounce({ font: font })
-				}
-				break
-			}
-		}
+		event.autocomplete.querySelector('#dl_fontfamily')?.appendChild(fragment)
 	}
 
+	if (typeof event?.family === 'string') {
+		const val = event.family
+
+		if (val === '') {
+			storage.local.remove('fontface')
+			safeFont($('settings') as HTMLElement)
+			eventDebounce({ font: { size: font.size, ...removeFont() } })
+		}
+
+		if (val.length > 1) {
+			const fontlist = (await fetchFontList()) ?? []
+			const newFont = await changeFamily(fontlist, val)
+
+			eventDebounce({ font: { size: font.size, ...newFont } })
+		}
+
+		document.getElementById('i_customfont')?.blur()
+	}
+
+	if (event?.weight) {
+		font.weight = event.weight || '400'
+		setWeight(font.family, font.weight)
+		eventDebounce({ font: font })
+	}
+
+	if (event?.size) {
+		font.size = event.size
+		setSize(event.size)
+		eventDebounce({ font: font })
+	}
+}
+
+export default async function customFont(init: Font | null, event?: FontUpdateEvent) {
 	if (event) {
-		updateFont()
+		updateFont(event)
 		return
 	}
 
-	// init
 	if (init) {
 		try {
 			setSize(init.size)
