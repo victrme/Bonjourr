@@ -42,8 +42,6 @@ import {
 	darkmode,
 	favicon,
 	linksImport,
-	modifyWeightOptions,
-	safeFont,
 	searchbar,
 	tabTitle,
 	textShadow,
@@ -192,15 +190,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		initInput('i_weatherhide', weather)
 	})()
 
-	// Font family default
-	safeFont(settingsDom)
-
-	// Fetches font list if font is not default
-	// to prevent forced reflow when appending to visible datalist dom
-	if (data.font?.family !== '') customFont(null, { autocomplete: settingsDom })
-
-	// Font weight
-	if (data.font?.availWeights?.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom)
+	// Custom Fonts
+	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
 	if (data.background_type === 'custom') {
