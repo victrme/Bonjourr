@@ -25,7 +25,6 @@ import {
 	minutator,
 	mobilecheck,
 	periodOfDay,
-	safeFontList,
 	stringMaxSize,
 	syncDefaults,
 	testOS,
@@ -912,47 +911,6 @@ export function showPopup(value: string | number) {
 	if (value !== 'removed') {
 		storage.sync.set({ reviewPopup: 0 })
 	}
-}
-
-export function modifyWeightOptions(weights: string[], settingsDom?: HTMLElement) {
-	const select = (settingsDom ? settingsDom : ($('settings') as HTMLElement)).querySelector('#i_weight')
-	const options = select?.querySelectorAll('option')
-
-	if ((!weights || weights.length === 0) && options) {
-		options.forEach((option) => (option.style.display = 'block'))
-		return true
-	}
-
-	// Theres weights
-	else {
-		// filters
-		if (weights.includes('regular')) weights[weights.indexOf('regular')] = '400'
-		weights = weights.map((aa) => aa)
-
-		// toggles selects
-		if (options) {
-			options.forEach((option) => (option.style.display = weights.indexOf(option.value) !== -1 ? 'block' : 'none'))
-		}
-	}
-}
-
-export function safeFont(settingsDom?: HTMLElement) {
-	const is = safeFontList
-	let toUse = is.fallback
-	const hasUbuntu = document.fonts.check('16px Ubuntu')
-	const notAppleOrWindows = !testOS.mac && !testOS.windows && !testOS.ios
-
-	if (testOS.windows) toUse = is.windows
-	else if (testOS.android) toUse = is.android
-	else if (testOS.mac || testOS.ios) toUse = is.apple
-	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
-
-	if (settingsDom) {
-		settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', toUse.placeholder)
-		modifyWeightOptions(toUse.weights, settingsDom)
-	}
-
-	return toUse
 }
 
 export function textShadow(init: number | null, event?: number) {

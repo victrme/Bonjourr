@@ -42,8 +42,6 @@ import {
 	darkmode,
 	favicon,
 	linksImport,
-	modifyWeightOptions,
-	safeFont,
 	searchbar,
 	tabTitle,
 	textShadow,
@@ -192,15 +190,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		initInput('i_weatherhide', weather)
 	})()
 
-	// Font family default
-	safeFont(settingsDom)
-
-	// Fetches font list if font is not default
-	// to prevent forced reflow when appending to visible datalist dom
-	if (data.font?.family !== '') customFont(null, { is: 'autocomplete', elem: settingsDom })
-
-	// Font weight
-	if (data.font?.availWeights?.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom)
+	// Custom Fonts
+	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
 	if (data.background_type === 'custom') {
@@ -617,20 +608,20 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
 		if (settingsDom.querySelector('#dl_fontfamily')?.childElementCount === 0) {
-			customFont(null, { is: 'autocomplete', elem: settingsDom })
+			customFont(null, { autocomplete: settingsDom })
 		}
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { is: 'family', value: this.value })
+		customFont(null, { family: this.value })
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { is: 'weight', value: this.value })
+		customFont(null, { weight: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { is: 'size', value: this.value })
+		customFont(null, { size: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
