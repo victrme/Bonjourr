@@ -581,7 +581,7 @@ export function initBackground(data: Sync) {
 
 	backgroundFilter('init', { blur, bright })
 
-	type === 'custom' ? localBackgrounds() : unsplash(data)
+	type === 'custom' ? localBackgrounds() : unsplash(data.dynamic)
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -601,7 +601,6 @@ export function imgBackground(url: string, color?: string) {
 
 		overlaydom.style.opacity = '1'
 		loadBis = !loadBis
-		localIsLoading = false
 
 		if (color && testOS.ios) {
 			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
@@ -1014,12 +1013,12 @@ function onlineAndMobileHandler() {
 	if (mobilecheck()) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
-			storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
+			storage.sync.get(['dynamic', 'weather', 'background_type', 'hide'], (data) => {
 				const { dynamic, background_type } = data
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
 
-				if (dynamicNeedsImage) {
-					unsplash(data as Sync)
+				if (dynamicNeedsImage && data.dynamic) {
+					unsplash(data.dynamic)
 				}
 
 				clock(data as Sync)
@@ -1114,7 +1113,6 @@ const dominterface = $('interface') as HTMLDivElement,
 	}
 
 let lazyClockInterval = setTimeout(() => {}, 0),
-	localIsLoading = false,
 	loadtimeStart = performance.now(),
 	sunset = 0,
 	sunrise = 0
