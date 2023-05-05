@@ -330,13 +330,12 @@
 				align-items: center;
 				margin-top: 1em;
 				min-height: 3.3em;
+				column-gap: 0.5em;
 
 				img {
-					object-fit: contain;
 					height: 3.3em;
 					width: 3.3em;
 					border: none;
-					padding-right: 10px;
 				}
 
 				p {
