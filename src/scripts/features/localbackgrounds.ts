@@ -2,10 +2,8 @@ import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
 import unsplash from './unsplash'
 import storage from '../storage'
-import { $, clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
+import { clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
 import errorMessage from '../utils/errorMessage'
-
-import { Sync } from '../types/sync'
 
 type LocalImages = {
 	ids: string[]
@@ -236,7 +234,7 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 
 		setTimeout(() => {
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
-			storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+			storage.sync.get('dynamic', ({ dynamic }) => unsplash(dynamic))
 		}, 100)
 	}
 
@@ -287,7 +285,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 
 		if (ids.length === 0) {
 			storage.sync.set({ background_type: 'dynamic' }, () => {
-				storage.sync.get('dynamic', (data) => unsplash(data as Sync))
+				storage.sync.get('dynamic', ({ dynamic }) => unsplash(dynamic))
 			})
 			return
 		}

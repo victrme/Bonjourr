@@ -927,10 +927,10 @@ function selectBackgroundType(cat: string) {
 	}
 
 	if (cat === 'dynamic') {
-		storage.sync.get('dynamic', (sync) => {
-			document.querySelector<HTMLSelectElement>('#i_freq')!.value = sync.dynamic.every || 'hour'
+		storage.sync.get('dynamic', ({ dynamic }) => {
+			document.querySelector<HTMLSelectElement>('#i_freq')!.value = dynamic.every || 'hour'
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
-			setTimeout(() => unsplash(sync as Sync), 100)
+			setTimeout(() => unsplash(dynamic), 100)
 		})
 	}
 

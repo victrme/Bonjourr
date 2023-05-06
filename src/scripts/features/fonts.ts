@@ -1,8 +1,8 @@
 import { canDisplayInterface } from '..'
 import storage from '../storage'
 
-import debounce from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
+import { eventDebounce } from '../utils/debounce'
 import { syncDefaults, testOS } from '../utils'
 
 import { google } from '../types/googleFonts'
@@ -21,10 +21,6 @@ type FontUpdateEvent = {
 	weight?: string
 }
 
-const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	storage.sync.set(value)
-}, 400)
-
 const systemfont = (function () {
 	const fonts = {
 		fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
@@ -36,12 +32,11 @@ const systemfont = (function () {
 
 	const { windows, android, mac, ios } = testOS
 	const notAppleOrWindows = !mac && !windows && !ios
-	const hasUbuntu = document.fonts.check('16px Ubuntu')
 
 	if (windows) return fonts.windows
 	if (android) return fonts.android
 	if (mac || ios) return fonts.apple
-	if (notAppleOrWindows && hasUbuntu) return fonts.linux
+	if (notAppleOrWindows) return fonts.linux
 
 	return fonts.fallback
 })()

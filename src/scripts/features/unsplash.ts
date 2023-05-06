@@ -112,7 +112,7 @@ export default async function unsplash(
 	}
 
 	function loadBackground(props: UnsplashImage) {
-		imgBackground(props.url, props.color)
+		setTimeout(() => imgBackground(props.url, props.color), 1)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color

@@ -17,12 +17,8 @@ import {
 	extractDomain,
 } from '../utils'
 
-import debounce from '../utils/debounce'
+import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
-
-const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	storage.sync.set(value)
-}, 400)
 
 export default function quickLinks(
 	init: Sync | null,

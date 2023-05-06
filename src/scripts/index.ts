@@ -32,14 +32,10 @@ import {
 	convertHideStorage,
 } from './utils'
 
-import debounce from './utils/debounce'
+import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
-
-const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	storage.sync.set(value)
-}, 400)
 
 const dominterface = $('interface') as HTMLDivElement
 const functionsLoad: { [key: string]: FunctionsLoadState } = {
@@ -50,7 +46,6 @@ const functionsLoad: { [key: string]: FunctionsLoadState } = {
 }
 
 let lazyClockInterval: number
-let localIsLoading = false
 let loadtimeStart = performance.now()
 let loadBis = false
 let sunset = 0
