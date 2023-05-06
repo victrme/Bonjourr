@@ -199,25 +199,6 @@ for (const [code] of Object.entries(langList)) {
 	}
 }
 
-export function tradThis(str: string, lang?: string): string {
-	type DictKey = keyof typeof dict
-	type DictField = keyof typeof dict.April
-
-	if (!lang) {
-		lang = document.documentElement.getAttribute('lang') || 'en'
-	}
-
-	if (!Object.keys(dict.April).includes(lang)) {
-		return str // English or not a dict field key ? no trn
-	}
-
-	if (Object.keys(dict).includes(str)) {
-		return dict[str as DictKey][lang as DictField] // String is a key of dict & lang is a key of dict[...]
-	}
-
-	return str // String was not a key of dict
-}
-
 export const syncDefaults: Sync = {
 	about: { browser: detectPlatform(), version: '1.16.4' },
 	showall: false,

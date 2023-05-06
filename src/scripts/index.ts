@@ -28,16 +28,16 @@ import {
 	stringMaxSize,
 	syncDefaults,
 	testOS,
-	tradThis,
 	convertHideStorage,
 } from './utils'
 
+import { traduction, tradThis } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
-const dominterface = $('interface') as HTMLDivElement
+const dominterface = document.getElementById('interface') as HTMLDivElement
 const functionsLoad: { [key: string]: FunctionsLoadState } = {
 	clock: 'Waiting',
 	links: 'Waiting',
@@ -50,6 +50,15 @@ let loadtimeStart = performance.now()
 let loadBis = false
 let sunset = 0
 let sunrise = 0
+
+// const interfaceObserver = new MutationObserver((mutationList, observer) => {
+// 	console.log(mutationList, observer)
+// 	setTimeout(() => {
+// 		interfaceObserver.disconnect()
+// 	}, 500)
+// })
+
+// interfaceObserver.observe(dominterface, { attributes: true, childList: true, subtree: true })
 
 export const freqControl = {
 	set: () => {
@@ -162,33 +171,6 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 		const [id, on] = listEntries[0] // always only one toggle
 		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
 	}
-}
-
-export function traduction(settingsDom: Element | null, lang = 'en') {
-	type DictKey = keyof typeof dict
-	type DictField = keyof typeof dict.April // "april" just to select a random field
-
-	if (!Object.keys(dict.April).includes(lang)) {
-		return // Is english or not valid lang code ? keep english (do nothing)
-	}
-
-	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
-	const dictKeys = Object.keys(dict)
-	let text: string
-
-	trns.forEach((trn) => {
-		if (trn.textContent) {
-			text = trn.textContent
-
-			// Translate if text is a valid dict key
-			// lang is de facto a valid dict[...] key because it didnt return before
-			if (dictKeys.includes(text)) {
-				trn.textContent = dict[text as DictKey][lang as DictField]
-			}
-		}
-	})
-
-	document.documentElement.setAttribute('lang', lang)
 }
 
 export function favicon(val?: string, isEvent?: true) {
@@ -1110,58 +1092,60 @@ function startup(data: Sync) {
 	pageWidth(data.pagewidth)
 }
 
-onlineAndMobileHandler()
+export default function load() {
+	onlineAndMobileHandler()
 
-try {
-	storage.sync.get(null, (data) => {
-		//
-		// Verify data as a valid Sync storage ( essentially type checking )
-		let hasMissingProps = false
+	try {
+		storage.sync.get(null, async (data) => {
+			//
+			// Verify data as a valid Sync storage ( essentially type checking )
+			let hasMissingProps = false
 
-		Object.entries(syncDefaults).forEach(([key, val]) => {
-			if (!(key in data) && key !== 'move') {
-				data[key] = val
-				hasMissingProps = true
+			Object.entries(syncDefaults).forEach(([key, val]) => {
+				if (!(key in data) && key !== 'move') {
+					data[key] = val
+					hasMissingProps = true
+				}
+			})
+
+			//
+			// First start
+			if (Object.keys(data).length === 0) {
+				storage.local.set(localDefaults)
+			}
+
+			//
+			// Version change
+			else if (data?.about?.version !== syncDefaults.about.version) {
+				const version_old = data?.about?.version
+				const version = syncDefaults.about.version
+
+				console.log(`Version change: ${version_old} => ${version}`)
+
+				data.about = { browser: detectPlatform(), version }
+
+				// From old 1.15.x
+				// To new 1.16.x
+				if (version_old.includes('1.15') && version.includes('1.16')) {
+					localStorage.hasUpdated = 'true'
+
+					// Breaking data changes needs filtering
+					data.hide = convertHideStorage(data.hide)
+					data.css = data.css.replaceAll('#widgets', '')
+					data.time = (!data.hide?.clock || !data.hide?.date) ?? true
+					data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
+				}
+
+				storage.sync.set({ ...data }, () => startup(data as Sync))
+			}
+
+			if (hasMissingProps) {
+				storage.sync.set({ ...data }, () => startup(data as Sync))
+			} else {
+				startup(data as Sync)
 			}
 		})
-
-		//
-		// First start
-		if (Object.keys(data).length === 0) {
-			storage.local.set(localDefaults)
-		}
-
-		//
-		// Version change
-		else if (data?.about?.version !== syncDefaults.about.version) {
-			const version_old = data?.about?.version
-			const version = syncDefaults.about.version
-
-			console.log(`Version change: ${version_old} => ${version}`)
-
-			data.about = { browser: detectPlatform(), version }
-
-			// From old 1.15.x
-			// To new 1.16.x
-			if (version_old.includes('1.15') && version.includes('1.16')) {
-				localStorage.hasUpdated = 'true'
-
-				// Breaking data changes needs filtering
-				data.hide = convertHideStorage(data.hide)
-				data.css = data.css.replaceAll('#widgets', '')
-				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
-				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
-			}
-
-			storage.sync.set({ ...data }, () => startup(data as Sync))
-		}
-
-		if (hasMissingProps) {
-			storage.sync.set({ ...data }, () => startup(data as Sync))
-		} else {
-			startup(data as Sync)
-		}
-	})
-} catch (e) {
-	errorMessage(e)
+	} catch (e) {
+		errorMessage(e)
+	}
 }

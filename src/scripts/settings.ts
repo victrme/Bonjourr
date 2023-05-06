@@ -16,12 +16,12 @@ import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
 import stringifyOrder from './utils/stringifyOrder'
+import { traduction, tradThis } from './utils/translations'
 
 import {
 	$,
 	has,
 	clas,
-	tradThis,
 	inputThrottle,
 	detectPlatform,
 	closeEditLink,
@@ -45,7 +45,6 @@ import {
 	searchbar,
 	tabTitle,
 	textShadow,
-	traduction,
 	pageWidth,
 } from './index'
 

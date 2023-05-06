@@ -98,7 +98,7 @@ function styles(platform) {
 }
 
 function locales(platform) {
-	return () => src('_locales/**/messages.json').pipe(dest(`release/${platform}/_locales/`))
+	return () => src('_locales/**/*.json').pipe(dest(`release/${platform}/_locales/`))
 }
 
 //

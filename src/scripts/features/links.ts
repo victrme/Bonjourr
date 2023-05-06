@@ -11,12 +11,12 @@ import {
 	bundleLinks,
 	closeEditLink,
 	has,
-	tradThis,
 	mobilecheck,
 	randomString,
 	extractDomain,
 } from '../utils'
 
+import { tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
 
@@ -30,8 +30,8 @@ export default function quickLinks(
 		elem?: Element
 	}
 ) {
-	const domlinkblocks = $('linkblocks')!
-	const dominterface = $('interface')!
+	const domlinkblocks = document.getElementById('linkblocks')!
+	const dominterface = document.getElementById('interface')!
 
 	async function initblocks(links: Link[], isnewtab: boolean) {
 		//
@@ -705,7 +705,7 @@ export default function quickLinks(
 	}
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
-	clas($('linkblocks'), !init.quicklinks, 'hidden')
+	document.getElementById('linkblocks')?.classList.toggle('hidden', !init.quicklinks)
 	initblocks(bundleLinks(init), init.linknewtab)
 	setRows(init.linksrow, init.linkstyle)
 

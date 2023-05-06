@@ -1,7 +1,8 @@
 import { sunTime } from '..'
 import storage from '../storage'
 import { Sync, Weather } from '../types/sync'
-import { $, clas, tradThis, stringMaxSize } from '../utils'
+import { $, clas, stringMaxSize } from '../utils'
+import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
 
 export default function weather(

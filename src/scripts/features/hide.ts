@@ -1,11 +1,11 @@
-import { clas, convertHideStorage } from '../utils'
+import { convertHideStorage } from '../utils'
 import { Hide, HideOld, Sync } from '../types/sync'
 import storage from '../storage'
 
 export default function hideElements(hidelist: Hide = {}, options?: { isEvent: true }) {
 	function applyHide(list: Hide) {
 		Object.entries(list).forEach(([key, val]) => {
-			clas(document.querySelector(`[data-hide="${key}"]`), val, 'he_hidden')
+			document.querySelector(`[data-hide="${key}"]`)?.classList.toggle('he_hidden', val)
 		})
 	}
 

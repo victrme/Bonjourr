@@ -1,8 +1,9 @@
 import clamp from 'lodash.clamp'
 import storage from '../storage'
 import { toggleWidgetsDisplay } from '..'
-import { syncDefaults, clas, $, tradThis } from '../utils'
+import { syncDefaults, clas, $ } from '../utils'
 import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
+import { tradThis } from '../utils/translations'
 
 // ┌──────────────────────────────────────┐
 // │   ┌────────────┐  ┌────────────┐     │
