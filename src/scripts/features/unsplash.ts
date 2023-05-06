@@ -1,14 +1,14 @@
-import { $, tradThis, clas, periodOfDay, turnRefreshButton, localDefaults } from '../utils'
+import { $, tradThis, periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
 import { imgBackground, sunTime, freqControl } from '..'
 import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
 
-import { DynamicCache, Local } from '../types/local'
-import { Sync, Dynamic } from '../types/sync'
+import { DynamicCache } from '../types/local'
+import { Dynamic } from '../types/sync'
 import UnsplashImage from '../types/unsplashImage'
 
 export default async function unsplash(
-	init: Sync | null,
+	init: Dynamic | null,
 	event?: {
 		is: string
 		value?: string
@@ -17,6 +17,14 @@ export default async function unsplash(
 ) {
 	// TODO: Separate Collection type with users string
 	type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
+
+	function getCache() {
+		try {
+			return JSON.parse(localStorage.dynamicCache) as DynamicCache
+		} catch (e) {
+			return { ...localDefaults.dynamicCache }
+		}
+	}
 
 	async function preloadImage(src: string) {
 		const img = new Image()
@@ -99,12 +107,12 @@ export default async function unsplash(
 			if (needsSpacer) domcredit.appendChild(spacerDOM)
 			domcredit.appendChild(artistDOM)
 
-			clas($('creditContainer'), true, 'shown')
+			document.getElementById('creditContainer')?.classList.toggle('shown', true)
 		}
 	}
 
 	function loadBackground(props: UnsplashImage) {
-		imgBackground(props.url, props.color)
+		setTimeout(() => imgBackground(props.url, props.color), 1)
 		imgCredits(props)
 
 		// sets meta theme-color to main background's color
@@ -185,20 +193,47 @@ export default async function unsplash(
 
 		const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
 		dynamic.lastCollec = collec
-		storage.sync.set({ dynamic: dynamic })
+
+		if (collec !== lastCollec) {
+			storage.sync.set({ dynamic: dynamic }, () => console.warn('bad'))
+		}
 
 		return collec
 	}
 
-	async function cacheControl(dynamic: Dynamic, caches: DynamicCache, collecType: CollectionType, preloading: boolean) {
-		//
-		const needNewImage = freqControl.get(dynamic.every, dynamic.time)
-		let list = caches[collecType]
+	async function populateEmptyList(collecType: CollectionType, cache: DynamicCache) {
+		const newList = await requestNewList(collecType)
 
-		if (preloading) {
+		if (!newList) {
+			return // Don't save dynamicCache if request failed, also don't preload nothing
+		}
+
+		await preloadImage(newList[0].url)
+		loadBackground(newList[0])
+
+		cache[collecType] = newList
+		localStorage.setItem('dynamicCache', JSON.stringify(cache))
+		sessionStorage.setItem('waitingForPreload', 'true')
+
+		//preload
+		await preloadImage(newList[1].url)
+		sessionStorage.removeItem('waitingForPreload')
+	}
+
+	async function cacheControl(dynamic: Dynamic, collecType: CollectionType) {
+		const needNewImage = freqControl.get(dynamic.every, dynamic.time)
+		const cache = getCache()
+		let list = cache[collecType]
+
+		if (cache[collecType].length === 0) {
+			populateEmptyList(collecType, cache)
+			return
+		}
+
+		if (sessionStorage.waitingForPreload) {
 			loadBackground(list[0])
 			await preloadImage(list[1].url) // Is trying to preload next
-			storage.local.remove('waitingForPreload')
+			sessionStorage.removeItem('waitingForPreload')
 			return
 		}
 
@@ -222,10 +257,10 @@ export default async function unsplash(
 			const newList = await requestNewList(collecType)
 
 			if (newList) {
-				caches[collecType] = list.concat(newList)
+				cache[collecType] = list.concat(newList)
 				await preloadImage(newList[0].url)
-				storage.local.set({ dynamicCache: caches })
-				storage.local.remove('waitingForPreload')
+				localStorage.setItem('dynamicCache', JSON.stringify(cache))
+				sessionStorage.removeItem('waitingForPreload')
 			}
 
 			return
@@ -234,54 +269,33 @@ export default async function unsplash(
 		if (list.length > 1) await preloadImage(list[1].url) // Or preload next
 
 		storage.sync.set({ dynamic: dynamic })
-		storage.local.set({ dynamicCache: caches })
-		storage.local.remove('waitingForPreload')
+		localStorage.setItem('dynamicCache', JSON.stringify(cache))
+		sessionStorage.removeItem('waitingForPreload')
 	}
 
-	async function populateEmptyList(collecType: CollectionType, cache: DynamicCache) {
-		const newList = await requestNewList(collecType)
-		const changeStart = performance.now()
+	async function updateDynamic(event: { is: string; value?: string; button?: HTMLSpanElement | null }) {
+		const dynamicCache = getCache()
+		const dynamic =
+			((await new Promise((resolve) => {
+				storage.sync.get('dynamic', (data) => resolve(data?.dynamic))
+			})) as Dynamic) ?? structuredClone(syncDefaults.dynamic)
 
-		if (!newList) {
-			return // Don't save dynamicCache if request failed, also don't preload nothing
-		}
-
-		await preloadImage(newList[0].url)
-		loadBackground(newList[0])
-
-		cache[collecType] = newList
-		storage.local.set({ dynamicCache: cache })
-		storage.local.set({ waitingForPreload: true })
-
-		//preload
-		await preloadImage(newList[1].url)
-		storage.local.remove('waitingForPreload')
-	}
-
-	function updateDynamic(
-		event: {
-			is: string
-			value?: string
-			button?: HTMLSpanElement | null
-		},
-		sync: Sync,
-		local: Local
-	) {
 		switch (event.is) {
 			case 'refresh': {
 				if (!event.button) return console.log('No buttons to animate')
 
 				// Only refreshes background if preload is over
 				// If not, animate button to show it is trying
-				if (local.waitingForPreload === undefined) {
+				if (!sessionStorage.waitingForPreload) {
 					turnRefreshButton(event.button, true)
 
-					const newDynamic = { ...sync.dynamic, time: 0 }
+					const newDynamic = { ...dynamic, time: 0 }
 					storage.sync.set({ dynamic: newDynamic })
-					storage.local.set({ waitingForPreload: true })
+					sessionStorage.setItem('waitingForPreload', 'true')
 
 					setTimeout(() => {
-						cacheControl(newDynamic, local.dynamicCache, collectionUpdater(newDynamic), false)
+						sessionStorage.removeItem('waitingForPreload')
+						cacheControl(newDynamic, collectionUpdater(newDynamic))
 					}, 400)
 
 					return
@@ -297,16 +311,17 @@ export default async function unsplash(
 					return console.log('Not valid "every" value')
 				}
 
-				sync.dynamic.every = event.value
-				sync.dynamic.time = freqControl.set()
-				storage.sync.set({ dynamic: sync.dynamic })
+				dynamic.every = event.value
+				dynamic.time = freqControl.set()
+				storage.sync.set({ dynamic })
 				break
 			}
 
 			// Back to dynamic and load first from chosen collection
 			case 'removedCustom': {
+				const firstImageFromCache = dynamicCache[collectionUpdater(dynamic)][0]
+				loadBackground(firstImageFromCache)
 				storage.sync.set({ background_type: 'dynamic' })
-				loadBackground(local.dynamicCache[collectionUpdater(sync.dynamic)][0])
 				break
 			}
 
@@ -317,24 +332,24 @@ export default async function unsplash(
 				// remove user collec
 				if (event.value === '') {
 					const defaultColl = chooseCollection()
-					local.dynamicCache.user = []
-					sync.dynamic.collection = ''
-					sync.dynamic.lastCollec = defaultColl
+					dynamicCache.user = []
+					dynamic.collection = ''
+					dynamic.lastCollec = defaultColl
 
-					storage.sync.set({ dynamic: sync.dynamic })
-					storage.local.set({ dynamicCache: local.dynamicCache })
+					storage.sync.set({ dynamic })
+					localStorage.setItem('dynamicCache', JSON.stringify(dynamicCache))
 
-					unsplash(sync)
+					unsplash(dynamic)
 					return
 				}
 
 				// add new collec
-				sync.dynamic.collection = event.value
-				sync.dynamic.lastCollec = 'user'
-				sync.dynamic.time = freqControl.set()
-				storage.sync.set({ dynamic: sync.dynamic })
+				dynamic.collection = event.value
+				dynamic.lastCollec = 'user'
+				dynamic.time = freqControl.set()
+				storage.sync.set({ dynamic })
 
-				populateEmptyList(chooseCollection(event.value), local.dynamicCache)
+				populateEmptyList(chooseCollection(event.value), dynamicCache)
 				break
 			}
 		}
@@ -350,34 +365,17 @@ export default async function unsplash(
 	}
 
 	if (event) {
-		// No init, Event
-		storage.sync.get('dynamic', (sync) =>
-			storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
-				updateDynamic(event, sync as Sync, local as Local)
-			})
-		)
-	}
-
-	if (!init) {
+		updateDynamic(event)
 		return
 	}
 
-	storage.local.get(['dynamicCache', 'waitingForPreload'], (local) => {
+	if (init) {
 		try {
-			// Real init start
-			const collecType = collectionUpdater(init.dynamic)
-			const cache = local.dynamicCache || localDefaults.dynamicCache
-
-			if (cache[collecType].length === 0) {
-				populateEmptyList(collecType, cache) // If list empty: request new, save sync & local
-				return
-			}
-
-			cacheControl(init.dynamic, cache, collecType, local.waitingForPreload) // Not empty: normal cacheControl
+			cacheControl(init, collectionUpdater(init))
 		} catch (e) {
 			errorMessage(e)
 		}
-	})
+	}
 
 	return
 }

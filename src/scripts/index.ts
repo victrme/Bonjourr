@@ -1,5 +1,4 @@
-import { google } from './types/googleFonts'
-import { Sync, Searchbar, Weather, Font, ClockFace, MoveKeys } from './types/sync'
+import { Sync, Searchbar, Weather, ClockFace, MoveKeys } from './types/sync'
 
 import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
@@ -9,9 +8,11 @@ import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
 import unsplash from './features/unsplash'
+import customFont from './features/fonts'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
+import localBackgrounds from './features/localbackgrounds'
 
 import {
 	$,
@@ -24,24 +25,17 @@ import {
 	minutator,
 	mobilecheck,
 	periodOfDay,
-	randomString,
-	safeFontList,
 	stringMaxSize,
 	syncDefaults,
 	testOS,
 	tradThis,
-	turnRefreshButton,
 	convertHideStorage,
 } from './utils'
 
-import debounce from './utils/debounce'
+import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
-
-const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	storage.sync.set(value)
-}, 400)
 
 const dominterface = $('interface') as HTMLDivElement
 const functionsLoad: { [key: string]: FunctionsLoadState } = {
@@ -52,7 +46,6 @@ const functionsLoad: { [key: string]: FunctionsLoadState } = {
 }
 
 let lazyClockInterval: number
-let localIsLoading = false
 let loadtimeStart = performance.now()
 let loadBis = false
 let sunset = 0
@@ -599,12 +592,7 @@ export function initBackground(data: Sync) {
 
 	backgroundFilter('init', { blur, bright })
 
-	if (type === 'custom') {
-		localBackgrounds({ every: data.custom_every, time: data.custom_time })
-		return
-	}
-
-	unsplash(data)
+	type === 'custom' ? localBackgrounds() : unsplash(data.dynamic)
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -624,7 +612,6 @@ export function imgBackground(url: string, color?: string) {
 
 		overlaydom.style.opacity = '1'
 		loadBis = !loadBis
-		localIsLoading = false
 
 		if (color && testOS.ios) {
 			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
@@ -633,372 +620,6 @@ export function imgBackground(url: string, color?: string) {
 
 	img.src = url
 	img.remove()
-}
-
-export function localBackgrounds(
-	init: { every: string; time: number } | null,
-	event?: {
-		is: string
-		settings?: HTMLElement
-		button?: HTMLSpanElement
-		file?: FileList
-	}
-) {
-	// Storage needs to be flat, as to only ask for needed background
-	// SelectedId is self explanatory
-	// CustomIds is list to get amount of backgrounds without accessing them
-	// storage.local = {
-	// 	  `full${_id}`: "/9j/4AAQSkZJRgAB...",
-	// 	  `thumb${_id}`: "/9j/4AAQSkZJRgAB...",
-	// 	  idsList: [ _id1, _id2, _id3 ],
-	//    selectedId: _id3
-	// }
-
-	function isOnlineStorageAtCapacity(newFile: string) {
-		//
-		// Only applies to versions using localStorage: 5Mo limit
-		if (detectPlatform() === 'online') {
-			const ls = localStorage.bonjourrBackgrounds
-
-			// Takes dynamic cache + google font list
-			const potentialFontList = JSON.parse(ls).googleFonts ? 0 : 7.6e5
-			const lsSize = ls.length + potentialFontList + 10e4
-
-			// Uploaded file in storage would exceed limit
-			if (lsSize + newFile.length > 5e6) {
-				alert(`Image size exceeds storage: ${Math.abs(lsSize - 5e6) / 1000}ko left`)
-
-				return true
-			}
-		}
-
-		return false
-	}
-
-	function b64toBlobUrl(b64Data: string, callback: Function) {
-		fetch(`data:image/jpeg;base64,${b64Data}`).then((res) => {
-			res.blob().then((blob) => {
-				callback(URL.createObjectURL(blob))
-			})
-		})
-	}
-
-	function thumbnailSelection(id: string) {
-		document.querySelectorAll('.thumbnail').forEach((thumb) => clas(thumb, false, 'selected'))
-		clas(document.querySelector('.thumbnail#' + id), true, 'selected') // add selection style
-	}
-
-	function addNewImage(files: FileList) {
-		let filesIdsList: string[] = []
-		let selected = ''
-
-		Object.values(files).forEach(() => {
-			const _id = randomString(6)
-			selected = _id
-			filesIdsList.push(_id)
-		})
-
-		Object.values(files).forEach((file, i) => {
-			let reader = new FileReader()
-
-			reader.onload = function (event) {
-				const result = event.target?.result as string
-
-				if (typeof result === 'string' && isOnlineStorageAtCapacity(result)) {
-					return console.warn('Uploaded image was not saved') // Exit with warning before saving image
-				}
-
-				compress(result, 'thumbnail', filesIdsList[i])
-				setTimeout(() => compress(result), 1000)
-
-				storage.local.set({ ['custom_' + filesIdsList[i]]: result })
-			}
-
-			localIsLoading = true
-			reader.readAsDataURL(file)
-		})
-
-		// Adds to list, becomes selected and save background
-		storage.local.get(['idsList'], (local) => {
-			let list = [...local.idsList]
-			list.push(...filesIdsList)
-
-			if (local.idsList.length === 0) {
-				storage.sync.set({ background_type: 'custom' }) // change type si premier local
-			}
-
-			setTimeout(() => thumbnailSelection(selected), 400)
-
-			storage.local.set({
-				...local,
-				idsList: list,
-				selectedId: selected,
-			})
-		})
-	}
-
-	function compress(file: string, state?: string, _id?: string) {
-		const img = new Image()
-
-		img.onload = () => {
-			const canvas = document.createElement('canvas')
-			const ctx = canvas.getContext('2d')
-
-			if (!ctx) return
-
-			// canvas proportionné à l'image
-			// rétréci suivant le taux de compression
-			// si thumbnail, toujours 140px
-			const height = state === 'thumbnail' ? 140 * window.devicePixelRatio : img.height
-			const scaleFactor = height / img.height
-			canvas.width = img.width * scaleFactor
-			canvas.height = height
-
-			ctx.drawImage(img, 0, 0, img.width * scaleFactor, height) //dessine l'image proportionné
-
-			const data = ctx.canvas.toDataURL(img.src) // renvoie le base64
-			const cleanData = data.slice(data.indexOf(',') + 1, data.length) //used for blob
-
-			if (state === 'thumbnail' && _id) {
-				storage.local.set({ ['customThumb_' + _id]: cleanData })
-				addThumbnails(cleanData, _id, null, true)
-
-				return
-			}
-
-			b64toBlobUrl(cleanData, (bloburl: string) => {
-				imgBackground(bloburl)
-				clas($('creditContainer'), false, 'shown')
-			})
-		}
-
-		img.src = file
-	}
-
-	function addThumbnails(data: string, _id: string, settingsDom: HTMLElement | null, isSelected: boolean) {
-		const settings = settingsDom ? settingsDom : ($('settings') as HTMLElement)
-
-		const thb = document.createElement('button')
-		const rem = document.createElement('button')
-		const thbimg = document.createElement('img')
-		const remimg = document.createElement('img')
-		const wrap = settings.querySelector('#fileContainer')
-
-		thb.id = _id
-		thb.setAttribute('class', 'thumbnail' + (isSelected ? ' selected' : ''))
-
-		clas(rem, true, 'b_removethumb')
-		clas(rem, !mobilecheck(), 'hidden')
-
-		thb.setAttribute('aria-label', 'Select this background')
-		rem.setAttribute('aria-label', 'Remove this background')
-
-		remimg.setAttribute('alt', '')
-		thbimg.setAttribute('alt', '')
-
-		remimg.setAttribute('src', 'src/assets/interface/close.svg')
-		rem.appendChild(remimg)
-
-		b64toBlobUrl(data, (bloburl: string) => (thbimg.src = bloburl))
-
-		thb.appendChild(thbimg)
-		thb.appendChild(rem)
-		wrap?.prepend(thb)
-
-		thb.onclick = (e) => {
-			if (e.button !== 0 || localIsLoading || !e.target) {
-				return
-			}
-
-			const thumbnailButton = e.composedPath().find((d: EventTarget) => {
-				return (d as HTMLElement).className.includes('thumbnail')
-			}) as HTMLElement
-
-			const _id = thumbnailButton.id
-			const bgKey = 'custom_' + _id
-
-			storage.local.get('selectedId', (local) => {
-				// image selectionné est différente de celle affiché
-				if (_id !== local.selectedId) {
-					thumbnailSelection(_id)
-
-					localIsLoading = true
-					storage.local.set({ selectedId: _id }) // Change bg selectionné
-					storage.local.get([bgKey], (local) => compress(local[bgKey])) //affiche l'image voulue
-				}
-			})
-		}
-
-		rem.onclick = (e) => {
-			e.stopPropagation()
-
-			const path = e.composedPath()
-
-			if (e.button !== 0 || localIsLoading) {
-				return
-			}
-
-			storage.local.get(['idsList', 'selectedId'], (local) => {
-				const thumbnail = path.find((d: EventTarget) => {
-					return (d as HTMLElement).className.includes('thumbnail')
-				}) as HTMLElement
-
-				const _id = thumbnail.id
-				let { idsList, selectedId } = local
-				let poppedList = idsList.filter((s: string) => !s.includes(_id))
-
-				thumbnail.remove()
-
-				storage.local.remove('custom_' + _id)
-				storage.local.remove('customThumb_' + _id)
-				storage.local.set({ idsList: poppedList })
-
-				// Draw new image if displayed is removed
-				if (_id === selectedId) {
-					// To another custom
-					if (poppedList.length > 0) {
-						selectedId = poppedList[0]
-						thumbnailSelection(selectedId)
-
-						const toShowId = 'custom_' + poppedList[0]
-						storage.local.get([toShowId], (local) => compress(local[toShowId]))
-					}
-
-					// back to unsplash
-					else {
-						storage.sync.set({ background_type: 'dynamic' })
-
-						setTimeout(() => {
-							clas($('creditContainer'), true, 'shown')
-							storage.sync.get('dynamic', (data) => unsplash(data as Sync))
-						}, 400)
-
-						selectedId = ''
-					}
-
-					storage.local.set({ selectedId }) // selected is new chosen background
-				}
-			})
-		}
-	}
-
-	function displayCustomThumbnails(settingsDom: HTMLElement) {
-		const thumbnails = settingsDom.querySelectorAll('#bg_tn_wrap .thumbnail')
-
-		storage.local.get(['idsList', 'selectedId'], (local) => {
-			const { idsList, selectedId } = local
-
-			if (idsList.length > 0 && thumbnails.length < idsList.length) {
-				const thumbsKeys = idsList.map((id: string) => 'customThumb_' + id) // To get keys for storage
-
-				// Parse through thumbnails to display them
-				storage.local.get(thumbsKeys, (local) => {
-					Object.entries(local).forEach(([key, val]) => {
-						if (!key.startsWith('customThumb_')) return // online only, can be removed after lsOnlineStorage rework
-
-						const _id = key.replace('customThumb_', '')
-						const blob = val.replace('data:image/jpeg;base64,', '')
-						const isSelected = _id === selectedId
-
-						addThumbnails(blob, _id, settingsDom, isSelected)
-					})
-				})
-			}
-		})
-	}
-
-	function refreshCustom(button: HTMLSpanElement) {
-		storage.sync.get('custom_every', (sync) => {
-			turnRefreshButton(button, true)
-			localIsLoading = true
-
-			setTimeout(
-				() =>
-					localBackgrounds({
-						every: sync.custom_every,
-						time: 0,
-					}),
-				400
-			)
-		})
-	}
-
-	function applyCustomBackground(id: string) {
-		storage.local.get(['custom_' + id], (local) => {
-			const background = local['custom_' + id]
-
-			const cleanData = background.slice(background.indexOf(',') + 1, background.length)
-
-			console.time('base64 => blob')
-			b64toBlobUrl(cleanData, (bloburl: string) => {
-				console.timeEnd('base64 => blob')
-				imgBackground(bloburl)
-				clas($('creditContainer'), false, 'shown')
-			})
-		})
-	}
-
-	if (event) {
-		if (event.is === 'thumbnail' && event.settings) displayCustomThumbnails(event.settings)
-		if (event.is === 'newfile' && event.file) addNewImage(event.file)
-		if (event.is === 'refresh' && event.button) refreshCustom(event.button)
-		return
-	}
-
-	if (!init) {
-		return
-	}
-
-	storage.local.get(['selectedId', 'idsList'], (local) => {
-		try {
-			// need all of saved stuff
-			let { selectedId, idsList } = local
-			const { every, time } = init
-			const needNewImage = freqControl.get(every, time || 0)
-
-			// 1.14.0 (firefox?) background recovery fix
-			if (!idsList) {
-				idsList = []
-				selectedId = ''
-
-				storage.local.get(null, (local) => {
-					const ids = Object.keys(local)
-						.filter((k) => k.startsWith('custom_'))
-						.map((k) => k.replace('custom_', ''))
-
-					storage.local.set({ idsList: ids, selectedId: ids[0] || '' })
-					storage.sync.get(null, (data) => initBackground(data as Sync))
-				})
-			}
-
-			if (idsList.length === 0) {
-				storage.sync.get('dynamic', (data) => {
-					unsplash(data as Sync) // no bg, back to unsplash
-				})
-				return
-			}
-
-			if (every && needNewImage) {
-				if (idsList.length > 1) {
-					idsList = idsList.filter((l: string) => !l.includes(selectedId)) // removes current from list
-					selectedId = idsList[Math.floor(Math.random() * idsList.length)] // randomize from list
-				}
-
-				applyCustomBackground(selectedId)
-
-				storage.sync.set({ custom_time: freqControl.set() })
-				storage.local.set({ selectedId })
-
-				if ($('settings')) thumbnailSelection(selectedId) // change selection if coming from refresh
-
-				return
-			}
-
-			applyCustomBackground(selectedId)
-		} catch (e) {
-			errorMessage(e)
-		}
-	})
 }
 
 export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: number; bright?: number }, isEvent?: boolean) {
@@ -1302,270 +923,6 @@ export function showPopup(value: string | number) {
 	}
 }
 
-export function modifyWeightOptions(weights: string[], settingsDom?: HTMLElement) {
-	const select = (settingsDom ? settingsDom : ($('settings') as HTMLElement)).querySelector('#i_weight')
-	const options = select?.querySelectorAll('option')
-
-	if ((!weights || weights.length === 0) && options) {
-		options.forEach((option) => (option.style.display = 'block'))
-		return true
-	}
-
-	// Theres weights
-	else {
-		// filters
-		if (weights.includes('regular')) weights[weights.indexOf('regular')] = '400'
-		weights = weights.map((aa) => aa)
-
-		// toggles selects
-		if (options) {
-			options.forEach((option) => (option.style.display = weights.indexOf(option.value) !== -1 ? 'block' : 'none'))
-		}
-	}
-}
-
-export function safeFont(settingsDom?: HTMLElement) {
-	const is = safeFontList
-	let toUse = is.fallback
-	const hasUbuntu = document.fonts.check('16px Ubuntu')
-	const notAppleOrWindows = !testOS.mac && !testOS.windows && !testOS.ios
-
-	if (testOS.windows) toUse = is.windows
-	else if (testOS.android) toUse = is.android
-	else if (testOS.mac || testOS.ios) toUse = is.apple
-	else if (notAppleOrWindows && hasUbuntu) toUse = is.linux
-
-	if (settingsDom) {
-		settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', toUse.placeholder)
-		modifyWeightOptions(toUse.weights, settingsDom)
-	}
-
-	return toUse
-}
-
-export function customFont(
-	init: Font | null,
-	event?: { is: 'autocomplete' | 'size' | 'family' | 'weight'; value?: string; elem?: HTMLElement }
-) {
-	function setSize(val: string) {
-		dominterface.style.fontSize = parseInt(val) / 16 + 'em' // 16 is body px size
-	}
-
-	function setWeight(family: string, weight: string) {
-		if (weight) {
-			const list = safeFont().weights
-			dominterface.style.fontWeight = weight
-			$('searchbar')!.style.fontWeight = weight
-
-			// Default bonjourr lowers font weight on clock (because we like it)
-			const loweredWeight = parseInt(weight) > 100 ? list[list.indexOf(weight) - 1] : weight
-			$('clock')!.style.fontWeight = family ? weight : loweredWeight
-		}
-	}
-
-	function setFamily(family: string, fontface: string) {
-		$('fontstyle')!.textContent = fontface
-		$('clock')!.style.fontFamily = '"' + family + '"'
-		$('credit')!.style.fontFamily = '"' + family + '"'
-		dominterface.style.fontFamily = '"' + family + '"'
-	}
-
-	async function setFontface(url: string) {
-		const resp = await fetch(url)
-		const text = await resp.text()
-		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
-		storage.local.set({ fontface })
-
-		return fontface
-	}
-
-	function updateFont() {
-		function fetchFontList(callback: (json: google.fonts.WebfontList) => void) {
-			storage.local.get('googleFonts', async (local) => {
-				//
-				// Get list from storage
-				if (local.googleFonts) {
-					callback(local.googleFonts)
-					return
-				}
-
-				if (!navigator.onLine) {
-					return
-				}
-
-				// Get list from API
-				const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
-				const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
-				const resp = await fetch(url)
-
-				if (!resp.ok) {
-					return // return nothing if smth wrong, will try to fetch next time
-				}
-
-				const json = await resp.json()
-
-				// json has at least one available family
-				if (json.items?.length > 0 && typeof json.items[0]?.family === 'string') {
-					storage.local.set({ googleFonts: json })
-					callback(json)
-				}
-			})
-		}
-
-		function removeFont() {
-			const domstyle = $('fontstyle') as HTMLStyleElement
-			const domclock = $('clock') as HTMLDivElement
-			const domcredit = $('credit') as HTMLDivElement
-			const domsearchbar = $('searchbar') as HTMLDivElement
-
-			domstyle.textContent = ''
-			domclock.style.fontFamily = ''
-			domcredit.style.fontFamily = ''
-			dominterface.style.fontFamily = ''
-
-			// weights
-			const baseWeight = testOS.windows ? '400' : '300'
-			dominterface.style.fontWeight = baseWeight
-			domsearchbar.style.fontWeight = baseWeight
-			domclock.style.fontWeight = ''
-
-			$('i_weight')?.setAttribute('value', baseWeight)
-
-			return { url: '', family: '', availWeights: [] as string[], weight: baseWeight }
-		}
-
-		async function changeFamily(json: google.fonts.WebfontList, family: string) {
-			//
-			// Cherche correspondante
-			const domfamily = $('i_customfont') as HTMLInputElement
-			const domweight = $('i_weight') as HTMLSelectElement
-			const font = json.items.filter((font) => font.family.toUpperCase() === family.toUpperCase())
-
-			// One font has been found
-			if (font.length > 0) {
-				const availWeights = font[0].variants.filter((variant) => !variant.includes('italic'))
-				const defaultWeight = availWeights.includes('regular') ? '400' : availWeights[0]
-				const url = encodeURI(`https://fonts.googleapis.com/css?family=${font[0].family}:${defaultWeight}`)
-				const fontface = await setFontface(url)
-
-				setFamily(font[0].family, fontface)
-				setWeight(font[0].family, '400')
-				modifyWeightOptions(availWeights)
-				domweight.value = '400'
-
-				return { url, family: font[0].family, availWeights, weight: '400' }
-			}
-
-			// No fonts found
-			else {
-				domfamily.value = ''
-				safeFont($('settings') as HTMLElement)
-				return { url: '', family: '', availWeights: [] as string[], weight: testOS.windows ? '400' : '300' }
-			}
-		}
-
-		storage.sync.get('font', async ({ font }) => {
-			switch (event?.is) {
-				case 'autocomplete': {
-					fetchFontList((json) => {
-						if (!json) return
-
-						const fragment = new DocumentFragment()
-
-						json.items.forEach(function addOptions(item) {
-							const option = document.createElement('option')
-
-							option.textContent = item.family
-							option.setAttribute('value', item.family)
-							fragment.appendChild(option)
-						})
-
-						if (event.elem) {
-							event.elem.querySelector('#dl_fontfamily')?.appendChild(fragment)
-						}
-					})
-					break
-				}
-
-				case 'family': {
-					const val = event.value
-
-					if (val === '') {
-						storage.local.remove('fontface')
-						safeFont($('settings') as HTMLElement)
-						eventDebounce({ font: { size: font.size, ...removeFont() } })
-					}
-
-					if (typeof val === 'string' && val.length > 1) {
-						fetchFontList(async (json) => {
-							storage.sync.set({
-								font: { size: font.size, ...(await changeFamily(json, val)) },
-							})
-						})
-					}
-
-					$('i_customfont')?.blur()
-
-					break
-				}
-
-				case 'weight': {
-					if (font.url) {
-						font.url = font.url.slice(0, font.url.lastIndexOf(':') + 1)
-						font.url += event.value
-						setFamily(font.family, await setFontface(font.url))
-					}
-
-					// If nothing, removes custom font
-					else font.weight = event.value
-
-					setWeight(font.family, event.value || '400')
-					eventDebounce({ font: font })
-					break
-				}
-
-				case 'size': {
-					if (event.value) {
-						font.size = event.value
-						setSize(event.value)
-						eventDebounce({ font: font })
-					}
-					break
-				}
-			}
-		})
-	}
-
-	if (event) {
-		updateFont()
-		return
-	}
-
-	// init
-	try {
-		if (!init) {
-			return
-		}
-
-		const { size, family, weight, url } = init
-
-		setSize(size)
-		setWeight(family, weight)
-
-		if (family === '') {
-			return
-		}
-
-		// Sets family
-		storage.local.get('fontface', async (local) => {
-			setFamily(family, local.fontface || (await setFontface(url))) // fetch font-face data if none in storage
-			canDisplayInterface('fonts')
-		})
-	} catch (e) {
-		errorMessage(e)
-	}
-}
-
 export function textShadow(init: number | null, event?: number) {
 	const val = init ?? event
 	document.documentElement.style.setProperty('--text-shadow-alpha', (val ?? 0.2)?.toString())
@@ -1667,12 +1024,12 @@ function onlineAndMobileHandler() {
 	if (mobilecheck()) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', () => {
-			storage.sync.get(['dynamic', 'waitingForPreload', 'weather', 'background_type', 'hide'], (data) => {
+			storage.sync.get(['dynamic', 'weather', 'background_type', 'hide'], (data) => {
 				const { dynamic, background_type } = data
 				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
 
-				if (dynamicNeedsImage) {
-					unsplash(data as Sync)
+				if (dynamicNeedsImage && data.dynamic) {
+					unsplash(data.dynamic)
 				}
 
 				clock(data as Sync)

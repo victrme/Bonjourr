@@ -67,6 +67,9 @@
 	margin: 0 auto;
 	box-sizing: border-box;
 	will-change: transform;
+	font-size: var(--font-size);
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
 	transition: opacity var(--load-time-transition), transform 0.4s;
 	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
 	grid-template-areas: var(--grid);
@@ -135,6 +138,7 @@
 				font-size: 6em;
 				line-height: 1em;
 				font-weight: 200;
+				font-weight: var(--font-weight-clock);
 			}
 
 			#analogClock {
@@ -734,6 +738,8 @@
 	display: flex;
 	align-items: center;
 	pointer-events: none;
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
 
 	&.shown {
 		opacity: 1;

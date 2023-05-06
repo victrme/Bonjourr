@@ -1,15 +1,16 @@
 import { dict, langList } from './lang'
 import { Sync } from './types/sync'
-import { Local } from './types/local'
 
 import storage from './storage'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
 import unsplash from './features/unsplash'
+import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
+import localBackgrounds from './features/localbackgrounds'
 
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
@@ -25,7 +26,6 @@ import {
 	detectPlatform,
 	closeEditLink,
 	mobilecheck,
-	randomString,
 	stringMaxSize,
 	deleteBrowserStorage,
 	getBrowserStorage,
@@ -39,13 +39,9 @@ import {
 	backgroundFilter,
 	clock,
 	customCss,
-	customFont,
 	darkmode,
 	favicon,
 	linksImport,
-	localBackgrounds,
-	modifyWeightOptions,
-	safeFont,
 	searchbar,
 	tabTitle,
 	textShadow,
@@ -194,21 +190,14 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		initInput('i_weatherhide', weather)
 	})()
 
-	// Font family default
-	safeFont(settingsDom)
-
-	// Fetches font list if font is not default
-	// to prevent forced reflow when appending to visible datalist dom
-	if (data.font?.family !== '') customFont(null, { is: 'autocomplete', elem: settingsDom })
-
-	// Font weight
-	if (data.font?.availWeights?.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom)
+	// Custom Fonts
+	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
 	if (data.background_type === 'custom') {
 		paramId('custom').setAttribute('style', 'display: block')
 		settingsDom.querySelector('.as_collection')?.setAttribute('style', 'display: none')
-		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
+		localBackgrounds({ thumbnail: settingsDom })
 	}
 
 	//weather settings
@@ -393,9 +382,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
 		const i_type = paramId('i_type') as HTMLInputElement
+		const isCustom = i_type.value === 'custom'
 
-		if (i_type.value === 'custom') storage.sync.set({ custom_every: this.value })
-		else unsplash(null, { is: 'every', value: this.value })
+		if (isCustom) {
+			localBackgrounds({ freq: this.value })
+		} else {
+			unsplash(null, { is: 'every', value: this.value })
+		}
 	})
 
 	paramId('i_refresh').addEventListener('click', function (this: HTMLInputElement) {
@@ -403,9 +396,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		if (this.children[0]) {
 			const arrow = this.children[0] as HTMLSpanElement
-			const event = { is: 'refresh', button: arrow }
+			const isCustom = i_type.value === 'custom'
 
-			i_type.value === 'custom' ? localBackgrounds(null, event) : unsplash(null, event)
+			if (isCustom) {
+				localBackgrounds({ refresh: arrow })
+			} else {
+				unsplash(null, { is: 'refresh', button: arrow })
+			}
 		}
 
 		inputThrottle(this)
@@ -420,7 +417,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds(null, { is: 'newfile', file: this.files || undefined })
+		localBackgrounds({ newfile: this.files || undefined })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
@@ -584,25 +581,25 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
-		quotes(null, { is: 'frequency', value: this.value })
+		quotes(null, { frequency: this.value })
 	})
 
 	paramId('i_qttype').addEventListener('change', function () {
-		quotes(null, { is: 'type', value: this.value })
+		quotes(null, { type: this.value })
 	})
 
 	paramId('i_qtrefresh').addEventListener('click', function () {
 		inputThrottle(this)
 		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
-		quotes(null, { is: 'refresh' })
+		quotes(null, { refresh: true })
 	})
 
 	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(null, { is: 'author', checked: this.checked })
+		quotes(null, { author: this.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
-		quotes(null, { is: 'userlist', value: this.value })
+		quotes(null, { userlist: this.value })
 	})
 
 	//
@@ -611,20 +608,20 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
 		if (settingsDom.querySelector('#dl_fontfamily')?.childElementCount === 0) {
-			customFont(null, { is: 'autocomplete', elem: settingsDom })
+			customFont(null, { autocomplete: settingsDom })
 		}
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { is: 'family', value: this.value })
+		customFont(null, { family: this.value })
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { is: 'weight', value: this.value })
+		customFont(null, { weight: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { is: 'size', value: this.value })
+		customFont(null, { size: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
@@ -921,47 +918,23 @@ function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 }
 
 function selectBackgroundType(cat: string) {
-	function toggleType(sync: Sync, local: Local) {
-		$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
-		document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
+	$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
+	document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
 
-		// Only apply fade out/in if there are local backgrounds
-		// No local ? no reason to fade to black or show no thumbnails
-		// Just stick to unsplash
-
-		if (cat === 'custom' && local.selectedId !== '') {
-			localBackgrounds(null, { is: 'thumbnail', settings: $('settings') || undefined })
-			setTimeout(
-				() =>
-					localBackgrounds({
-						every: sync.custom_every,
-						time: sync.custom_time,
-					}),
-				400
-			)
-		}
-
-		if (cat === 'dynamic') {
-			clas($('creditContainer'), true, 'shown')
-
-			if (local.selectedId !== '') {
-				setTimeout(() => unsplash(sync), 400)
-			}
-		}
-
-		const c_every = sync.custom_every || 'pause'
-		const d_every = sync.dynamic.every || 'hour'
-
-		$('i_freq')?.setAttribute('value', cat === 'custom' ? c_every : d_every) // Setting frequence input
-
-		storage.sync.set({ background_type: cat })
+	if (cat === 'custom') {
+		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
+		setTimeout(() => localBackgrounds(), 100)
 	}
 
-	storage.local.get('selectedId', (local) => {
-		storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => {
-			toggleType(sync as Sync, local as Local)
+	if (cat === 'dynamic') {
+		storage.sync.get('dynamic', ({ dynamic }) => {
+			document.querySelector<HTMLSelectElement>('#i_freq')!.value = dynamic.every || 'hour'
+			document.getElementById('creditContainer')?.classList.toggle('shown', true)
+			setTimeout(() => unsplash(dynamic), 100)
 		})
-	})
+	}
+
+	storage.sync.set({ background_type: cat })
 }
 
 function signature(dom: HTMLElement) {

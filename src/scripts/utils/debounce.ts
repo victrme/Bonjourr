@@ -1,6 +1,7 @@
+import storage from '../storage'
+
 // Typing from
 // https://gist.github.com/ca0v/73a31f57b397606c9813472f7493a940?permalink_comment_id=4276799#gistcomment-4276799
-
 export default function debounce<F extends (...args: Parameters<F>) => ReturnType<F>>(callback: F, waitFor: number) {
 	let timeout: ReturnType<typeof setTimeout>
 
@@ -13,3 +14,7 @@ export default function debounce<F extends (...args: Parameters<F>) => ReturnTyp
 
 	return debounced
 }
+
+export const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
+	storage.sync.set(value)
+}, 400)

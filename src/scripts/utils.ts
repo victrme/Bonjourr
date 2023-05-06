@@ -189,14 +189,6 @@ export const testOS = {
 		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
 }
 
-export const safeFontList = {
-	fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
-	windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
-	android: { placeholder: 'Roboto', weights: ['100', '300', '400', '500', '700', '900'] },
-	linux: { placeholder: 'Fira Sans', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-	apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-}
-
 let defaultLang: LangList = 'en'
 const navLang = navigator.language.replace('-', '_')
 
