@@ -581,25 +581,25 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
-		quotes(null, { is: 'frequency', value: this.value })
+		quotes(null, { frequency: this.value })
 	})
 
 	paramId('i_qttype').addEventListener('change', function () {
-		quotes(null, { is: 'type', value: this.value })
+		quotes(null, { type: this.value })
 	})
 
 	paramId('i_qtrefresh').addEventListener('click', function () {
 		inputThrottle(this)
 		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
-		quotes(null, { is: 'refresh' })
+		quotes(null, { refresh: true })
 	})
 
 	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(null, { is: 'author', checked: this.checked })
+		quotes(null, { author: this.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
-		quotes(null, { is: 'userlist', value: this.value })
+		quotes(null, { userlist: this.value })
 	})
 
 	//

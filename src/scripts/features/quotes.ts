@@ -1,9 +1,18 @@
-import { Quote, Local } from '../types/local'
+import { Quote } from '../types/local'
 import { Sync } from '../types/sync'
 
 import { canDisplayInterface, freqControl } from '..'
-import { $, clas } from '../utils'
+import { $ } from '../utils'
 import storage from '../storage'
+
+type QuotesUpdate = {
+	toggle?: boolean
+	author?: boolean
+	refresh?: true
+	type?: string
+	userlist?: string
+	frequency?: string
+}
 
 function getCache() {
 	return JSON.parse(localStorage.quotesCache ?? '[]')
@@ -78,156 +87,118 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 	return list[0]
 }
 
-export default async function quotes(
-	init: Sync | null,
-	update?: {
-		is: 'toggle' | 'author' | 'frequency' | 'type' | 'refresh' | 'userlist'
-		value?: string
-		checked?: boolean
-	}
-) {
-	function updateSettings({
-		lang,
-		quotes,
-		quotesCache,
-	}: {
-		lang: string
-		quotes: Sync['quotes']
-		quotesCache: Local['quotesCache']
-	}) {
-		async function handleQuotesType(type: string) {
-			let list: Quote[] = []
-			const { userlist } = quotes
+function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
+	let quotesCache = getCache()
 
-			document.getElementById('quotes_userlist')?.classList.toggle('shown', type === 'user')
+	async function handleQuotesType(type: string) {
+		let list: Quote[] = []
+		const { userlist } = quotes
 
-			const isUserAndEmpty = type === 'user' && !userlist
-			if (isUserAndEmpty) return
+		document.getElementById('quotes_userlist')?.classList.toggle('shown', type === 'user')
 
-			// Fetch quotes from API and display
-			if (type !== 'user') {
-				list = await newQuoteFromAPI(lang, type)
-				localStorage.setItem('quotesCache', JSON.stringify(list))
-				insertToDom(list[0])
-				return
-			}
+		const isUserAndEmpty = type === 'user' && !userlist
+		if (isUserAndEmpty) return
 
-			const selection = getUserQuoteSelection()
-			list = userlistToQuotes(userlist!)
-			insertToDom(list[selection])
+		// Fetch quotes from API and display
+		if (type !== 'user') {
+			list = await newQuoteFromAPI(lang, type)
+			localStorage.setItem('quotesCache', JSON.stringify(list))
+			insertToDom(list[0])
+			return
 		}
 
-		function handleUserListChange(userlist: string) {
-			function validateUserQuotes(json: JSON) {
-				return (
-					Array.isArray(json) &&
-					json.length > 0 &&
-					json.every((val) => val.length === 2) &&
-					json.flat().every((val) => typeof val === 'string')
-				)
-			}
-
-			function inputError(log: string) {
-				;($('i_qtlist') as HTMLInputElement).value = ''
-				console.log(log)
-			}
-
-			let array: [string, string][] = []
-			let quote: Quote = { author: '', content: '' }
-
-			if (userlist !== '') {
-				let userJSON = []
-
-				try {
-					userJSON = JSON.parse(userlist)
-				} catch (error) {
-					inputError('User quotes list is not valid JSON')
-					return quotes.userlist
-				}
-
-				// if list is not valid, skip
-				if (validateUserQuotes(userJSON) === false) {
-					inputError('User quotes list is not of type [string, string][]')
-					return quotes.userlist
-				}
-
-				array = userJSON
-				quote = { author: array[0][0], content: array[0][1] }
-			}
-
-			insertToDom(quote)
-			document.getElementById('i_qtlist')?.blur()
-			localStorage.setItem('userQuoteSelection', '0')
-
-			return array
-		}
-
-		function handleQuotesRefresh() {
-			if (quotes.type === 'user') {
-				if (!quotes.userlist) return
-				quotesCache = userlistToQuotes(quotes.userlist)
-			}
-
-			const quote = controlCacheList(quotesCache, lang, quotes.type)
-			insertToDom(quote)
-		}
-
-		const updated = { ...quotes }
-		const { checked, value } = update! // force because updateSettings is only called after update check
-
-		switch (update?.is) {
-			case 'author': {
-				if (typeof checked !== 'boolean') return
-				updated.author = checked
-				clas($('author'), checked, 'always-on')
-				break
-			}
-
-			case 'frequency': {
-				if (!value) return
-				updated.frequency = value
-				break
-			}
-
-			case 'type': {
-				if (!value) return
-				updated.type = value
-				handleQuotesType(value)
-				break
-			}
-
-			case 'userlist': {
-				if (typeof value !== 'string') return
-				updated.userlist = handleUserListChange(value)
-				break
-			}
-
-			case 'refresh': {
-				updated.last = freqControl.set()
-				handleQuotesRefresh()
-				break
-			}
-		}
-
-		storage.sync.set({ quotes: updated })
+		const selection = getUserQuoteSelection()
+		list = userlistToQuotes(userlist!)
+		insertToDom(list[selection])
 	}
 
-	// get sync & local, update, and quit
+	function handleUserListChange(userlist: string) {
+		function validateUserQuotes(json: JSON) {
+			return (
+				Array.isArray(json) &&
+				json.length > 0 &&
+				json.every((val) => val.length === 2) &&
+				json.flat().every((val) => typeof val === 'string')
+			)
+		}
+
+		function inputError(log: string) {
+			;($('i_qtlist') as HTMLInputElement).value = ''
+			console.log(log)
+		}
+
+		let array: [string, string][] = []
+		let quote: Quote = { author: '', content: '' }
+
+		if (userlist !== '') {
+			let userJSON = []
+
+			try {
+				userJSON = JSON.parse(userlist)
+			} catch (error) {
+				inputError('User quotes list is not valid JSON')
+				return quotes.userlist
+			}
+
+			// if list is not valid, skip
+			if (validateUserQuotes(userJSON) === false) {
+				inputError('User quotes list is not of type [string, string][]')
+				return quotes.userlist
+			}
+
+			array = userJSON
+			quote = { author: array[0][0], content: array[0][1] }
+		}
+
+		insertToDom(quote)
+		document.getElementById('i_qtlist')?.blur()
+		localStorage.setItem('userQuoteSelection', '0')
+
+		return array
+	}
+
+	function handleQuotesRefresh() {
+		if (quotes.type === 'user') {
+			if (!quotes.userlist) return
+			quotesCache = userlistToQuotes(quotes.userlist)
+		}
+
+		const quote = controlCacheList(quotesCache, lang, quotes.type)
+		insertToDom(quote)
+	}
+
+	if (author) {
+		quotes.author = author
+		document.getElementById('author')?.classList.toggle('always-on', author)
+	}
+
+	if (frequency) {
+		quotes.frequency = frequency
+	}
+
+	if (type) {
+		quotes.type = type
+		handleQuotesType(type)
+	}
+
+	if (userlist) {
+		quotes.userlist = handleUserListChange(userlist)
+	}
+
+	if (refresh) {
+		quotes.last = freqControl.set()
+		handleQuotesRefresh()
+	}
+
+	storage.sync.set({ quotes })
+}
+
+export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
 	if (update) {
 		storage.sync.get(['lang', 'quotes'], async (data) => {
-			const { lang, quotes } = data as Sync
-			const quotesCache = getCache()
-			updateSettings({ quotes, lang, quotesCache })
+			UpdateQuotes(update, data as Sync)
 		})
-		return
 	}
-
-	// Cache:
-	// storage.local = { quotesCache: Array(20) }
-	// NeedsNewQuote: Removes first element of the list
-	// if list is too small, fetches new batch of quotes
-	// All quotes type share the same cache
-	// changing quotes type fetches new batch
 
 	if (!init) {
 		return
