@@ -1,7 +1,6 @@
-import { syncDefaults } from '../utils'
+import { syncDefaults, langList } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import { tradThis } from '../utils/translations'
-import { langList } from '../lang'
 import storage from '../storage'
 import pocketEditor from 'pocket-editor'
 

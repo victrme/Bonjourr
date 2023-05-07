@@ -1,10 +1,34 @@
-import { dict, langList } from './lang'
 import { Hide, HideOld, Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
 
 type LangList = keyof typeof langList
+
+export const langList = {
+	en: 'English',
+	fr: 'Français',
+	sk: 'Slovenský',
+	sv: 'Svenska',
+	pl: 'Polski',
+	pt_BR: 'Português (Brasil)',
+	nl: 'Nederlandse',
+	ru: 'Русский',
+	zh_CN: '简体中文',
+	zh_HK: '繁體中文',
+	de: 'Deutsch',
+	it: 'Italiano',
+	es_ES: 'Español',
+	tr: 'Türkçe',
+	uk: 'Українська',
+	id: 'Indonesia',
+	da: 'Dansk',
+	fi: 'Suomi',
+	hu: 'Magyar',
+	sr: 'Српски (ћирилица)',
+	sr_YU: 'Srpski (latinica)',
+	gr: 'Ελληνικά',
+}
 
 export const $ = (name: string) => document.getElementById(name)
 

@@ -1,4 +1,13 @@
-let trns: any = JSON.parse(localStorage.translations ?? '{}')
+let trns: { [key: string]: string } = {}
+
+export async function initTrns(lang: string) {
+	trns = JSON.parse(localStorage.translations ?? '{}')
+
+	if (!localStorage.translations && lang !== 'en') {
+		localStorage.translations = await (await fetch(`../../../_locales/${lang}/translations.json`)).text()
+		trns = JSON.parse(localStorage.translations)
+	}
+}
 
 export function traduction(settingsDom: Element | null, lang = 'en') {
 	if (lang === 'en') return

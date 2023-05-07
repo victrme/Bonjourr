@@ -1,4 +1,3 @@
-import { langList } from './lang'
 import { Sync } from './types/sync'
 
 import storage from './storage'
@@ -31,6 +30,7 @@ import {
 	getBrowserStorage,
 	turnRefreshButton,
 	testOS,
+	langList,
 	syncDefaults,
 } from './utils'
 

@@ -29,7 +29,7 @@ import {
 	convertHideStorage,
 } from './utils'
 
-import { traduction, tradThis } from './utils/translations'
+import { traduction, tradThis, initTrns } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
@@ -761,30 +761,31 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 		if (!domsearchbar) return
 		e.preventDefault()
 
+		const URLs = {
+			google: 'https://www.google.com/search?q=%s',
+			ddg: 'https://duckduckgo.com/?q=%s',
+			startpage: 'https://www.startpage.com/do/search?query=%s',
+			qwant: 'https://www.qwant.com/?q=%s',
+			yahoo: 'https://search.yahoo.com/search?q=%s',
+			bing: 'https://www.bing.com/search?q=%s',
+			brave: 'https://search.brave.com/search?q=%s',
+			ecosia: 'https://www.ecosia.org/search?q=%s',
+			lilo: 'https://search.lilo.org/?q=%s',
+			baidu: 'https://www.baidu.com/s?wd=%s',
+		}
+
 		let searchURL = 'https://www.google.com/search?q=%s'
 		const isNewtab = domsearchbar?.dataset.newtab === 'true'
 		const engine = domsearchbar?.dataset.engine || 'google'
 		const request = domsearchbar?.dataset.request || ''
-		const lang = document.documentElement.getAttribute('lang') || 'en'
 
-		type EnginesKey = keyof typeof enginesUrls
-		type LocalesKey = keyof typeof enginesLocales
-		type LocalesLang = keyof typeof enginesLocales.google
+		searchURL = tradThis(engine)
 
-		// is a valid engine
-		if (engine in enginesUrls) {
-			searchURL = enginesUrls[engine as EnginesKey]
-
-			// has found a translation
-			if (engine in enginesLocales && lang in enginesLocales[engine as LocalesKey]) {
-				const selectedLocale = enginesLocales[engine as LocalesKey]
-				const selectedLang = selectedLocale[lang as LocalesLang]
-
-				searchURL = searchURL.replace('%l', selectedLang)
-			}
+		if (!searchURL.includes('%s') && engine in URLs) {
+			searchURL = URLs[engine as keyof typeof URLs]
 		}
-		// is custom engine
-		else if (engine === 'custom') {
+
+		if (engine === 'custom') {
 			searchURL = request
 		}
 
@@ -1098,9 +1099,7 @@ onlineAndMobileHandler()
 
 try {
 	storage.sync.get(null, async (data) => {
-		if (!localStorage.translations && data.lang !== 'en') {
-			localStorage.translations = await (await fetch(`../../../_locales/${data.lang}/translations.json`)).text()
-		}
+		await initTrns(data.lang)
 
 		//
 		// Verify data as a valid Sync storage ( essentially type checking )
