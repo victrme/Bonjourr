@@ -1,6 +1,6 @@
 import { Sync, Searchbar, Weather, ClockFace, MoveKeys } from './types/sync'
 
-import { dict, days, enginesLocales, months, enginesUrls } from './lang'
+import { enginesLocales, enginesUrls } from './lang'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -226,6 +226,10 @@ export function clock(
 		style: string
 		timezone: string
 	}
+
+	// prettier-ignore
+	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 	function zonedDate(timezone: string = 'auto') {
 		const date = new Date()
@@ -1092,60 +1096,62 @@ function startup(data: Sync) {
 	pageWidth(data.pagewidth)
 }
 
-export default function load() {
-	onlineAndMobileHandler()
+onlineAndMobileHandler()
 
-	try {
-		storage.sync.get(null, async (data) => {
-			//
-			// Verify data as a valid Sync storage ( essentially type checking )
-			let hasMissingProps = false
+try {
+	storage.sync.get(null, async (data) => {
+		if (!localStorage.translations && data.lang !== 'en') {
+			localStorage.translations = await (await fetch(`../../../_locales/${data.lang}/translations.json`)).text()
+		}
 
-			Object.entries(syncDefaults).forEach(([key, val]) => {
-				if (!(key in data) && key !== 'move') {
-					data[key] = val
-					hasMissingProps = true
-				}
-			})
+		//
+		// Verify data as a valid Sync storage ( essentially type checking )
+		let hasMissingProps = false
 
-			//
-			// First start
-			if (Object.keys(data).length === 0) {
-				storage.local.set(localDefaults)
-			}
-
-			//
-			// Version change
-			else if (data?.about?.version !== syncDefaults.about.version) {
-				const version_old = data?.about?.version
-				const version = syncDefaults.about.version
-
-				console.log(`Version change: ${version_old} => ${version}`)
-
-				data.about = { browser: detectPlatform(), version }
-
-				// From old 1.15.x
-				// To new 1.16.x
-				if (version_old.includes('1.15') && version.includes('1.16')) {
-					localStorage.hasUpdated = 'true'
-
-					// Breaking data changes needs filtering
-					data.hide = convertHideStorage(data.hide)
-					data.css = data.css.replaceAll('#widgets', '')
-					data.time = (!data.hide?.clock || !data.hide?.date) ?? true
-					data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
-				}
-
-				storage.sync.set({ ...data }, () => startup(data as Sync))
-			}
-
-			if (hasMissingProps) {
-				storage.sync.set({ ...data }, () => startup(data as Sync))
-			} else {
-				startup(data as Sync)
+		Object.entries(syncDefaults).forEach(([key, val]) => {
+			if (!(key in data) && key !== 'move') {
+				data[key] = val
+				hasMissingProps = true
 			}
 		})
-	} catch (e) {
-		errorMessage(e)
-	}
+
+		//
+		// First start
+		if (Object.keys(data).length === 0) {
+			storage.local.set(localDefaults)
+		}
+
+		//
+		// Version change
+		else if (data?.about?.version !== syncDefaults.about.version) {
+			const version_old = data?.about?.version
+			const version = syncDefaults.about.version
+
+			console.log(`Version change: ${version_old} => ${version}`)
+
+			data.about = { browser: detectPlatform(), version }
+
+			// From old 1.15.x
+			// To new 1.16.x
+			if (version_old.includes('1.15') && version.includes('1.16')) {
+				localStorage.hasUpdated = 'true'
+
+				// Breaking data changes needs filtering
+				data.hide = convertHideStorage(data.hide)
+				data.css = data.css.replaceAll('#widgets', '')
+				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
+				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
+			}
+
+			storage.sync.set({ ...data }, () => startup(data as Sync))
+		}
+
+		if (hasMissingProps) {
+			storage.sync.set({ ...data }, () => startup(data as Sync))
+		} else {
+			startup(data as Sync)
+		}
+	})
+} catch (e) {
+	errorMessage(e)
 }

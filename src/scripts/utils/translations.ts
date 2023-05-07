@@ -1,45 +1,19 @@
-let trns = {}
-
-//
-export default async () => {
-	if (localStorage.lastLang === 'fr') {
-		trns = (await import('../../../_locales/fr/translations.json')).default
-	}
-}
+let trns: any = JSON.parse(localStorage.translations ?? '{}')
 
 export function traduction(settingsDom: Element | null, lang = 'en') {
-	if (lang === 'en') {
-		return
-	}
+	if (lang === 'en') return
 
 	const tags = (settingsDom ? settingsDom : document.body).querySelectorAll('.trn')
 	let text: string
 
-	tags.forEach((trn) => {
-		if (trn.textContent) {
-			text = trn.textContent
-
-			if (text in trns) {
-				trn.textContent = trns[text as keyof typeof trns]
-			}
-		}
-	})
+	for (const tag of tags) {
+		text = tag.textContent ?? ''
+		tag.textContent = trns[text] ?? text
+	}
 
 	document.documentElement.setAttribute('lang', lang)
 }
 
-export function tradThis(str: string, lang?: string): string {
-	if (!lang) {
-		lang = document.documentElement.getAttribute('lang') || 'en'
-	}
-
-	if (lang === 'en') {
-		return str
-	}
-
-	if (str in trns) {
-		return trns[str as keyof typeof trns]
-	}
-
-	return str
+export function tradThis(str: string): string {
+	return trns[str] ?? str
 }

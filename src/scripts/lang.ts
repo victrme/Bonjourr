@@ -72,32 +72,6 @@ export const langList = {
 	gr: 'Ελληνικά',
 }
 
-export const dict = {
-	April: {
-		fr: 'Avril',
-		sv: 'April',
-		nl: 'April',
-		pl: 'kwiecień',
-		pt_BR: 'Abril',
-		ru: 'апреля',
-		zh_CN: '4月',
-		zh_HK: '四月',
-		sk: 'Apríl',
-		de: 'April',
-		it: 'Aprile',
-		es: 'Abril',
-		tr: 'Nisan',
-		uk: 'квітня',
-		id: 'April',
-		da: 'april',
-		fi: 'huhtikuu',
-		hu: 'Április',
-		sr: 'април',
-		sr_YU: 'april',
-		gr: 'Απρίλιος',
-	},
-}
-
 // export const dict = {
 // 	'New tab': {
 // 		fr: 'Nouvel onglet',
@@ -5094,22 +5068,14 @@ export const dict = {
 // 	},
 // }
 
-export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-
-export const months = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December',
-]
+// Object.keys(langList).forEach((lang) => {
+// 	let trad = {}
+// 	Object.entries(dict).forEach(([key, string]) => {
+// 		trad[key] = string[lang]
+// 	})
+// 	console.log({ ...trad })
+// 	trad = {}
+// })
 
 export const enginesUrls = {
 	google: 'https://www.google%l/search?q=%s',

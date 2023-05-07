@@ -14,10 +14,10 @@ function translateNotesText() {
 
 	if (!(lang && lang in langList)) lang = 'en'
 
-	const or = tradThis('or', lang)
-	const edit = tradThis('Edit this note', lang)
-	const titles = tradThis('to create titles', lang)
-	const lists = tradThis('to add a list or checkbox', lang)
+	const or = tradThis('or')
+	const edit = tradThis('Edit this note')
+	const titles = tradThis('to create titles')
+	const lists = tradThis('to add a list or checkbox')
 
 	const lines = [`## ${edit} !\n\n`, `[x] "# ", "## " ${or} "### " ${titles}\n`, `[x] "- " ${or} "[ ] " ${lists}`]
 

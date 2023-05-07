@@ -1,4 +1,4 @@
-import { dict, langList } from './lang'
+import { langList } from './lang'
 import { Sync } from './types/sync'
 
 import storage from './storage'
@@ -854,28 +854,22 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 	})
 }
 
-function switchLangs(nextLang: Langs) {
+async function switchLangs(nextLang: Langs) {
 	function langSwitchTranslation(langs: { current: Langs; next: Langs }) {
 		// On 'en' lang, get the dict key, not one of its values
 		// create dict like object to parse through
 		// switchDict is: {{'hello': 'bonjour'}, {'this is a test': 'ceci est un test'} ...}
 
-		const getLangList = (l: Langs) => {
-			return l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l])
-		}
-
 		const { current, next } = langs
-		const nextList = getLangList(next)
-		const currentList = getLangList(current)
 		let switchDict: Record<string, string> = {}
 
-		currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
+		// currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
 
-		document.querySelectorAll('.trn').forEach((trn) => {
-			if (typeof trn.textContent === 'string') {
-				trn.textContent = switchDict[trn.textContent]
-			}
-		})
+		// const tags = document.querySelectorAll('.trn').forEach((trn) => {
+		// 	if (typeof trn.textContent === 'string') {
+		// 		trn.textContent = switchDict[trn.textContent]
+		// 	}
+		// })
 	}
 
 	// This forces lang="" tag to be a valid lang code
@@ -893,13 +887,16 @@ function switchLangs(nextLang: Langs) {
 	storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
+	if (nextLang === 'en') localStorage.removeItem('translations')
+	else localStorage.translations = await (await fetch(`../../../_locales/${nextLang}/translations.json`)).text()
+
 	storage.sync.get(null, (data) => {
 		data.lang = nextLang
 		langSwitchTranslation(langs)
 		translatePlaceholders($('settings'))
 		weather(data as Sync)
 		clock(data as Sync)
-		notes((data.notes as Sync['notes']) || structuredClone(syncDefaults.notes) || null)
+		notes(data.notes || null)
 
 		if (data.quotes?.type === 'classic') {
 			localStorage.removeItem('nextQuote')
