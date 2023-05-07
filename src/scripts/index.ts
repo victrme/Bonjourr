@@ -1,6 +1,4 @@
 import { Sync, Searchbar, Weather, ClockFace, MoveKeys } from './types/sync'
-
-import { enginesLocales, enginesUrls } from './lang'
 import { settingsInit } from './settings'
 
 import storage from './storage'
