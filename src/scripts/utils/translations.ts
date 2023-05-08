@@ -1,18 +1,25 @@
 let trns: { [key: string]: string } = {}
 
-export async function initTrns(lang: string) {
+export async function setTranslationCache(lang: string) {
+	if (lang === 'en') {
+		localStorage.removeItem('translations')
+		trns = {}
+		return
+	}
+
 	trns = JSON.parse(localStorage.translations ?? '{}')
 
-	if (!localStorage.translations && lang !== 'en') {
+	if (trns?.lang !== lang) {
 		localStorage.translations = await (await fetch(`../../../_locales/${lang}/translations.json`)).text()
-		trns = JSON.parse(localStorage.translations)
+		trns = JSON.parse(localStorage.translations ?? '{}')
 	}
 }
 
 export function traduction(settingsDom: Element | null, lang = 'en') {
 	if (lang === 'en') return
 
-	const tags = (settingsDom ? settingsDom : document.body).querySelectorAll('.trn')
+	const dom = settingsDom ? settingsDom : document.body
+	const tags = dom.querySelectorAll('.trn')
 	let text: string
 
 	for (const tag of tags) {
@@ -21,6 +28,33 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	}
 
 	document.documentElement.setAttribute('lang', lang)
+}
+
+export async function toggleTraduction(lang: string) {
+	const tags = document.querySelectorAll('.trn')
+	let newDict: { [key: string]: string } = {}
+	let toggleDict: { [key: string]: string } = {}
+	let currentDict = { ...trns }
+	let text: string
+
+	await setTranslationCache(lang)
+
+	newDict = JSON.parse(localStorage.translations ?? '{}')
+
+	// old lang is 'en'
+	if (currentDict?.lang === undefined) {
+		Object.keys(newDict).forEach((key) => (currentDict[key] = key))
+	}
+
+	// {en: fr} & {en: sv} ==> {fr: sv}
+	for (const [key, val] of Object.entries(currentDict)) {
+		toggleDict[val] = lang === 'en' ? key : newDict[key]
+	}
+
+	for (const tag of tags) {
+		text = tag.textContent ?? ''
+		tag.textContent = toggleDict[text] ?? text
+	}
 }
 
 export function tradThis(str: string): string {

@@ -15,7 +15,7 @@ import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
 import stringifyOrder from './utils/stringifyOrder'
-import { traduction, tradThis } from './utils/translations'
+import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
 	$,
@@ -848,61 +848,25 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 		['#i_importtext', 'or paste as text'],
 	]
 
-	cases.forEach(([domId, text]) => {
-		const input = settingsDom.querySelector(domId) as HTMLInputElement
-		input.setAttribute('placeholder', tradThis(text))
-	})
+	for (const [id, text] of cases) {
+		settingsDom.querySelector(id)?.setAttribute('placeholder', tradThis(text))
+	}
 }
 
 async function switchLangs(nextLang: Langs) {
-	function langSwitchTranslation(langs: { current: Langs; next: Langs }) {
-		// On 'en' lang, get the dict key, not one of its values
-		// create dict like object to parse through
-		// switchDict is: {{'hello': 'bonjour'}, {'this is a test': 'ceci est un test'} ...}
-
-		const { current, next } = langs
-		let switchDict: Record<string, string> = {}
-
-		// currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
-
-		// const tags = document.querySelectorAll('.trn').forEach((trn) => {
-		// 	if (typeof trn.textContent === 'string') {
-		// 		trn.textContent = switchDict[trn.textContent]
-		// 	}
-		// })
-	}
-
-	// This forces lang="" tag to be a valid lang code
-	function isValidLang(val: string): val is Langs {
-		return Object.keys(langList).includes(val)
-	}
-
-	const htmllang = document.documentElement.getAttribute('lang') || 'en'
-	const langs = {
-		current: isValidLang(htmllang) ? htmllang : 'en',
-		next: nextLang,
-	}
+	await toggleTraduction(nextLang)
 
 	sessionStorage.lang = nextLang // Session pour le weather
 	storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	if (nextLang === 'en') localStorage.removeItem('translations')
-	else localStorage.translations = await (await fetch(`../../../_locales/${nextLang}/translations.json`)).text()
-
 	storage.sync.get(null, (data) => {
 		data.lang = nextLang
-		langSwitchTranslation(langs)
-		translatePlaceholders($('settings'))
 		weather(data as Sync)
 		clock(data as Sync)
+		quotes(data as Sync)
 		notes(data.notes || null)
-
-		if (data.quotes?.type === 'classic') {
-			localStorage.removeItem('nextQuote')
-			localStorage.removeItem('currentQuote')
-			quotes(data as Sync)
-		}
+		translatePlaceholders($('settings'))
 	})
 }
 

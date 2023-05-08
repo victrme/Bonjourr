@@ -29,7 +29,7 @@ import {
 	convertHideStorage,
 } from './utils'
 
-import { traduction, tradThis, initTrns } from './utils/translations'
+import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
@@ -1099,7 +1099,7 @@ onlineAndMobileHandler()
 
 try {
 	storage.sync.get(null, async (data) => {
-		await initTrns(data.lang)
+		await setTranslationCache(data.lang)
 
 		//
 		// Verify data as a valid Sync storage ( essentially type checking )
