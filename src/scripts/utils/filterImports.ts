@@ -1,7 +1,7 @@
 import { syncDefaults, convertHideStorage, randomString, bundleLinks } from '../utils'
 import { MoveKeys, Sync, Move } from '../types/sync'
 import { gridWidget } from '../features/move'
-import * as merge from 'deepmerge'
+import merge from 'deepmerge'
 
 export default function filterImports(current: Sync, toImport: Sync) {
 	//
