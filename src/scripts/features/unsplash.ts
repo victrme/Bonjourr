@@ -1,5 +1,6 @@
-import { $, tradThis, periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
+import { $, periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
 import { imgBackground, sunTime, freqControl } from '..'
+import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
 

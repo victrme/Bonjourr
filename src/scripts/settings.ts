@@ -1,4 +1,3 @@
-import { dict, langList } from './lang'
 import { Sync } from './types/sync'
 
 import storage from './storage'
@@ -16,12 +15,12 @@ import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
 import stringifyOrder from './utils/stringifyOrder'
+import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
 	$,
 	has,
 	clas,
-	tradThis,
 	inputThrottle,
 	detectPlatform,
 	closeEditLink,
@@ -31,6 +30,7 @@ import {
 	getBrowserStorage,
 	turnRefreshButton,
 	testOS,
+	langList,
 	syncDefaults,
 } from './utils'
 
@@ -45,7 +45,6 @@ import {
 	searchbar,
 	tabTitle,
 	textShadow,
-	traduction,
 	pageWidth,
 } from './index'
 
@@ -849,46 +848,13 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 		['#i_importtext', 'or paste as text'],
 	]
 
-	cases.forEach(([domId, text]) => {
-		const input = settingsDom.querySelector(domId) as HTMLInputElement
-		input.setAttribute('placeholder', tradThis(text))
-	})
+	for (const [id, text] of cases) {
+		settingsDom.querySelector(id)?.setAttribute('placeholder', tradThis(text))
+	}
 }
 
-function switchLangs(nextLang: Langs) {
-	function langSwitchTranslation(langs: { current: Langs; next: Langs }) {
-		// On 'en' lang, get the dict key, not one of its values
-		// create dict like object to parse through
-		// switchDict is: {{'hello': 'bonjour'}, {'this is a test': 'ceci est un test'} ...}
-
-		const getLangList = (l: Langs) => {
-			return l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l])
-		}
-
-		const { current, next } = langs
-		const nextList = getLangList(next)
-		const currentList = getLangList(current)
-		let switchDict: Record<string, string> = {}
-
-		currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
-
-		document.querySelectorAll('.trn').forEach((trn) => {
-			if (typeof trn.textContent === 'string') {
-				trn.textContent = switchDict[trn.textContent]
-			}
-		})
-	}
-
-	// This forces lang="" tag to be a valid lang code
-	function isValidLang(val: string): val is Langs {
-		return Object.keys(langList).includes(val)
-	}
-
-	const htmllang = document.documentElement.getAttribute('lang') || 'en'
-	const langs = {
-		current: isValidLang(htmllang) ? htmllang : 'en',
-		next: nextLang,
-	}
+async function switchLangs(nextLang: Langs) {
+	await toggleTraduction(nextLang)
 
 	sessionStorage.lang = nextLang // Session pour le weather
 	storage.sync.set({ lang: nextLang })
@@ -896,17 +862,11 @@ function switchLangs(nextLang: Langs) {
 
 	storage.sync.get(null, (data) => {
 		data.lang = nextLang
-		langSwitchTranslation(langs)
-		translatePlaceholders($('settings'))
 		weather(data as Sync)
 		clock(data as Sync)
-		notes((data.notes as Sync['notes']) || structuredClone(syncDefaults.notes) || null)
-
-		if (data.quotes?.type === 'classic') {
-			localStorage.removeItem('nextQuote')
-			localStorage.removeItem('currentQuote')
-			quotes(data as Sync)
-		}
+		quotes(data as Sync)
+		notes(data.notes || null)
+		translatePlaceholders($('settings'))
 	})
 }
 

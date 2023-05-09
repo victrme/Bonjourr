@@ -1,10 +1,34 @@
-import { dict, langList } from './lang'
 import { Hide, HideOld, Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
 
 type LangList = keyof typeof langList
+
+export const langList = {
+	en: 'English',
+	fr: 'Français',
+	sk: 'Slovenský',
+	sv: 'Svenska',
+	pl: 'Polski',
+	pt_BR: 'Português (Brasil)',
+	nl: 'Nederlandse',
+	ru: 'Русский',
+	zh_CN: '简体中文',
+	zh_HK: '繁體中文',
+	de: 'Deutsch',
+	it: 'Italiano',
+	es_ES: 'Español',
+	tr: 'Türkçe',
+	uk: 'Українська',
+	id: 'Indonesia',
+	da: 'Dansk',
+	fi: 'Suomi',
+	hu: 'Magyar',
+	sr: 'Српски (ћирилица)',
+	sr_YU: 'Srpski (latinica)',
+	gr: 'Ελληνικά',
+}
 
 export const $ = (name: string) => document.getElementById(name)
 
@@ -197,25 +221,6 @@ for (const [code] of Object.entries(langList)) {
 	if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
 		defaultLang = code as LangList
 	}
-}
-
-export function tradThis(str: string, lang?: string): string {
-	type DictKey = keyof typeof dict
-	type DictField = keyof typeof dict.April
-
-	if (!lang) {
-		lang = document.documentElement.getAttribute('lang') || 'en'
-	}
-
-	if (!Object.keys(dict.April).includes(lang)) {
-		return str // English or not a dict field key ? no trn
-	}
-
-	if (Object.keys(dict).includes(str)) {
-		return dict[str as DictKey][lang as DictField] // String is a key of dict & lang is a key of dict[...]
-	}
-
-	return str // String was not a key of dict
 }
 
 export const syncDefaults: Sync = {

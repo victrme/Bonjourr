@@ -1,6 +1,4 @@
 import { Sync, Searchbar, Weather, ClockFace, MoveKeys } from './types/sync'
-
-import { dict, days, enginesLocales, months, enginesUrls } from './lang'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -28,16 +26,16 @@ import {
 	stringMaxSize,
 	syncDefaults,
 	testOS,
-	tradThis,
 	convertHideStorage,
 } from './utils'
 
+import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
-const dominterface = $('interface') as HTMLDivElement
+const dominterface = document.getElementById('interface') as HTMLDivElement
 const functionsLoad: { [key: string]: FunctionsLoadState } = {
 	clock: 'Waiting',
 	links: 'Waiting',
@@ -50,6 +48,15 @@ let loadtimeStart = performance.now()
 let loadBis = false
 let sunset = 0
 let sunrise = 0
+
+// const interfaceObserver = new MutationObserver((mutationList, observer) => {
+// 	console.log(mutationList, observer)
+// 	setTimeout(() => {
+// 		interfaceObserver.disconnect()
+// 	}, 500)
+// })
+
+// interfaceObserver.observe(dominterface, { attributes: true, childList: true, subtree: true })
 
 export const freqControl = {
 	set: () => {
@@ -164,33 +171,6 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 	}
 }
 
-export function traduction(settingsDom: Element | null, lang = 'en') {
-	type DictKey = keyof typeof dict
-	type DictField = keyof typeof dict.April // "april" just to select a random field
-
-	if (!Object.keys(dict.April).includes(lang)) {
-		return // Is english or not valid lang code ? keep english (do nothing)
-	}
-
-	const trns = (settingsDom ? settingsDom : document).querySelectorAll('.trn')
-	const dictKeys = Object.keys(dict)
-	let text: string
-
-	trns.forEach((trn) => {
-		if (trn.textContent) {
-			text = trn.textContent
-
-			// Translate if text is a valid dict key
-			// lang is de facto a valid dict[...] key because it didnt return before
-			if (dictKeys.includes(text)) {
-				trn.textContent = dict[text as DictKey][lang as DictField]
-			}
-		}
-	})
-
-	document.documentElement.setAttribute('lang', lang)
-}
-
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
@@ -244,6 +224,10 @@ export function clock(
 		style: string
 		timezone: string
 	}
+
+	// prettier-ignore
+	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+	const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 	function zonedDate(timezone: string = 'auto') {
 		const date = new Date()
@@ -777,30 +761,31 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 		if (!domsearchbar) return
 		e.preventDefault()
 
+		const URLs = {
+			google: 'https://www.google.com/search?q=%s',
+			ddg: 'https://duckduckgo.com/?q=%s',
+			startpage: 'https://www.startpage.com/do/search?query=%s',
+			qwant: 'https://www.qwant.com/?q=%s',
+			yahoo: 'https://search.yahoo.com/search?q=%s',
+			bing: 'https://www.bing.com/search?q=%s',
+			brave: 'https://search.brave.com/search?q=%s',
+			ecosia: 'https://www.ecosia.org/search?q=%s',
+			lilo: 'https://search.lilo.org/?q=%s',
+			baidu: 'https://www.baidu.com/s?wd=%s',
+		}
+
 		let searchURL = 'https://www.google.com/search?q=%s'
 		const isNewtab = domsearchbar?.dataset.newtab === 'true'
 		const engine = domsearchbar?.dataset.engine || 'google'
 		const request = domsearchbar?.dataset.request || ''
-		const lang = document.documentElement.getAttribute('lang') || 'en'
 
-		type EnginesKey = keyof typeof enginesUrls
-		type LocalesKey = keyof typeof enginesLocales
-		type LocalesLang = keyof typeof enginesLocales.google
+		searchURL = tradThis(engine)
 
-		// is a valid engine
-		if (engine in enginesUrls) {
-			searchURL = enginesUrls[engine as EnginesKey]
-
-			// has found a translation
-			if (engine in enginesLocales && lang in enginesLocales[engine as LocalesKey]) {
-				const selectedLocale = enginesLocales[engine as LocalesKey]
-				const selectedLang = selectedLocale[lang as LocalesLang]
-
-				searchURL = searchURL.replace('%l', selectedLang)
-			}
+		if (!searchURL.includes('%s') && engine in URLs) {
+			searchURL = URLs[engine as keyof typeof URLs]
 		}
-		// is custom engine
-		else if (engine === 'custom') {
+
+		if (engine === 'custom') {
 			searchURL = request
 		}
 
@@ -1113,7 +1098,9 @@ function startup(data: Sync) {
 onlineAndMobileHandler()
 
 try {
-	storage.sync.get(null, (data) => {
+	storage.sync.get(null, async (data) => {
+		await setTranslationCache(data.lang)
+
 		//
 		// Verify data as a valid Sync storage ( essentially type checking )
 		let hasMissingProps = false

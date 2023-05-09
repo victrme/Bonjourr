@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch-js": "esbuild src/scripts/index.ts --outfile=release/main.js --bundle --watch",
-		"build-js": "esbuild src/scripts/index.ts --outfile=release/main.js --bundle --minify-syntax --minify-whitespace",
+		"build-js": "esbuild src/scripts/index.ts --outfile=release/main.js --bundle --minify",
 		"edge": "concurrently --kill-others \"pnpm run watch-js\" \"gulp edge\"",
 		"chrome": "concurrently --kill-others \"pnpm run watch-js\" \"gulp chrome\"",
 		"firefox": "concurrently --kill-others \"pnpm run watch-js\" \"gulp firefox\"",
