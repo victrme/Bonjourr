@@ -1,7 +1,7 @@
 import { syncDefaults, convertHideStorage, randomString, bundleLinks } from '../utils'
 import { MoveKeys, Sync, Move } from '../types/sync'
 import { gridWidget } from '../features/move'
-import merge from 'deepmerge'
+import * as merge from 'deepmerge'
 
 export default function filterImports(current: Sync, toImport: Sync) {
 	//
@@ -95,7 +95,8 @@ export default function filterImports(current: Sync, toImport: Sync) {
 			)
 		})
 
-		current.move.layouts[current.move.selection] = layout
+		current.move.layouts[current.move.selection].grid = layout.grid
+		current.move.layouts[current.move.selection].items = layout.items
 	}
 
 	// Remove current layouts grid if import has grids

@@ -68,24 +68,20 @@ export type MoveItem = {
 	text: string
 }
 
-type MoveItemList = {
-	[key in MoveKeys]?: MoveItem
-}
-
 export type Move = {
 	selection: keyof Move['layouts']
 	layouts: {
 		single: {
 			grid: [string][]
-			items: MoveItemList
+			items: { [key in MoveKeys]?: MoveItem }
 		}
 		double: {
 			grid: [string, string][]
-			items: MoveItemList
+			items: { [key in MoveKeys]?: MoveItem }
 		}
 		triple: {
 			grid: [string, string, string][]
-			items: MoveItemList
+			items: { [key in MoveKeys]?: MoveItem }
 		}
 	}
 }
