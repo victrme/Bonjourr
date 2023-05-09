@@ -22,9 +22,6 @@ devDependencies:
   '@types/gulp-sass':
     specifier: ^5.0.0
     version: 5.0.0
-  '@types/lodash.clamp':
-    specifier: ^4.0.7
-    version: 4.0.7
   '@types/lodash.clonedeep':
     specifier: ^4.5.7
     version: 4.5.7
@@ -58,9 +55,6 @@ devDependencies:
   idb-keyval:
     specifier: ^6.2.0
     version: 6.2.0
-  lodash.clamp:
-    specifier: ^4.0.3
-    version: 4.0.3
   lodash.clonedeep:
     specifier: ^4.5.0
     version: 4.5.0
@@ -345,12 +339,6 @@ packages:
 
   /@types/har-format@1.2.10:
     resolution: {integrity: sha512-o0J30wqycjF5miWDKYKKzzOU1ZTLuA42HZ4HE7/zqTOc/jTLdQ5NhYWvsRQo45Nfi1KHoRdNhteSI4BAxTF1Pg==}
-    dev: true
-
-  /@types/lodash.clamp@4.0.7:
-    resolution: {integrity: sha512-qr2pQl+7Ntd/5q9sZfY/MUOMd7FgGvfyTwqutf1c/mwZiVseaoD/xsp/OeOLAkT/XmM7wGfZcm6vzNShnNF2+g==}
-    dependencies:
-      '@types/lodash': 4.14.194
     dev: true
 
   /@types/lodash.clonedeep@4.5.7:
@@ -1565,10 +1553,6 @@ packages:
       pify: 2.3.0
       pinkie-promise: 2.0.1
       strip-bom: 2.0.0
-    dev: true
-
-  /lodash.clamp@4.0.3:
-    resolution: {integrity: sha512-HvzRFWjtcguTW7yd8NJBshuNaCa8aqNFtnswdT7f/cMd/1YKy5Zzoq4W/Oxvnx9l7aeY258uSdDfM793+eLsVg==}
     dev: true
 
   /lodash.clonedeep@4.5.0:

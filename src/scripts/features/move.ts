@@ -1,4 +1,3 @@
-import clamp from 'lodash.clamp'
 import storage from '../storage'
 import { toggleWidgetsDisplay } from '..'
 import { syncDefaults, clas, $ } from '../utils'
@@ -513,8 +512,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 				// step 3: replace all active position with affected
 				allActivePos.forEach(({ posRow, posCol }) => {
-					const newRow = clamp(posRow + y, 0, grid.length - 1)
-					const newCol = clamp(posCol + x, 0, grid[0].length - 1)
+					const newRow = Math.min(Math.max(posRow + y, 0), grid.length - 1)
+					const newCol = Math.min(Math.max(posCol + x, 0), grid[0].length - 1)
 
 					let tempItem = grid[posRow][posCol]
 					grid[posRow][posCol] = grid[newRow][newCol]
