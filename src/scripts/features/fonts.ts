@@ -73,7 +73,6 @@ async function fetchFontList() {
 		const list = json.items.map((item) => ({ family: item.family, variants: noRegulars(noItalics(item.variants)) }))
 
 		localStorage.fonts = JSON.stringify(list)
-		storage.local.set({ googleFonts: list })
 
 		return list as FontList
 	}

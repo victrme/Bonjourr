@@ -934,23 +934,17 @@ function paramsImport(toImport: Sync) {
 	try {
 		// Load all sync & dynamicCache
 		storage.sync.get(null, (sync) => {
-			storage.local.get('dynamicCache', (local) => {
-				// Remove user collection cache if collection change
-				if (sync.dynamic && toImport.dynamic) {
-					if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
-						local.dynamicCache.user = []
-					}
-				}
+			// Remove user collection cache if collection change
+			// if (sync.dynamic && toImport.dynamic) {
+			// 	if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
+			// 		local.dynamicCache.user = []
+			// 	}
+			// }
 
-				sync = { ...filterImports(sync as Sync, toImport) }
+			sync = { ...filterImports(sync as Sync, toImport) }
 
-				storage.sync.clear()
-				storage.sync.set(sync, () =>
-					storage.local.set(local, () => {
-						fadeOut()
-					})
-				)
-			})
+			storage.sync.clear()
+			storage.sync.set(sync, () => fadeOut())
 		})
 	} catch (e) {
 		console.log(e)
@@ -964,8 +958,8 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 		return
 	}
 
-	clas($('reset_first'), action === 'no', 'shown')
-	clas($('reset_conf'), action === 'conf', 'shown')
+	document.getElementById('reset_first')?.classList.toggle('shown', action === 'no')
+	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
 }
 
 export function updateExportJSON(settingsDom: HTMLElement) {

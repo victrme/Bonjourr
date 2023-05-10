@@ -1099,9 +1099,6 @@ onlineAndMobileHandler()
 
 try {
 	storage.sync.get(null, async (data) => {
-		await setTranslationCache(data.lang)
-
-		//
 		// Verify data as a valid Sync storage ( essentially type checking )
 		let hasMissingProps = false
 
@@ -1112,15 +1109,10 @@ try {
 			}
 		})
 
-		//
-		// First start
-		if (Object.keys(data).length === 0) {
-			storage.local.set(localDefaults)
-		}
+		await setTranslationCache(data.lang)
 
-		//
 		// Version change
-		else if (data?.about?.version !== syncDefaults.about.version) {
+		if (data?.about?.version !== syncDefaults.about.version) {
 			const version_old = data?.about?.version
 			const version = syncDefaults.about.version
 

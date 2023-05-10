@@ -1,16 +1,16 @@
 import { detectPlatform } from './utils'
 
 const online = (function () {
-	const onlineSet = (type: 'sync' | 'local') => {
+	const onlineSet = () => {
 		return (props: { [key: string]: unknown }, callback?: Function) => {
-			online.storage[type].get(null, (data: { [key: string]: unknown }) => {
+			online.storage.sync.get(null, (data: { [key: string]: unknown }) => {
 				if (typeof props === 'object') {
 					Object.entries(props).forEach(([key, val]) => {
 						data[key] = val
 					})
 
 					try {
-						localStorage[type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'] = JSON.stringify(data)
+						localStorage.bonjourr = JSON.stringify(data)
 						if (callback) callback(data)
 					} catch (error) {
 						console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
@@ -22,14 +22,13 @@ const online = (function () {
 		}
 	}
 
-	const onlineGet = (type: 'sync' | 'local') => {
-		return (props: unknown, callback?: Function) => {
-			const key = type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'
-			if (callback) callback(localStorage[key] ? JSON.parse(localStorage[key]) : {})
+	const onlineGet = () => {
+		return (_: unknown, callback?: Function) => {
+			if (callback) callback(JSON.parse(localStorage.bonjourr ?? {}))
 		}
 	}
 
-	const onlineRemove = (type: 'sync' | 'local') => {
+	const onlineRemove = () => {
 		const sync = (key: string) => {
 			online.storage.sync.get(null, (data: { [key: string]: unknown }) => {
 				delete data[key]
@@ -37,32 +36,25 @@ const online = (function () {
 			})
 		}
 
-		const local = (key: string) => {
-			online.storage.local.get(null, (data: { [key: string]: unknown }) => {
-				delete data[key]
-				localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			})
-		}
+		return sync
+	}
 
-		return type === 'sync' ? sync : local
+	const onlineClear = () => {
+		localStorage.removeItem('bonjourr')
+	}
+
+	const onlineLog = () => {
+		online.storage.sync.get(null, (data: any) => console.log(data))
 	}
 
 	return {
 		storage: {
 			sync: {
-				get: onlineGet('sync'),
-				set: onlineSet('sync'),
-				remove: onlineRemove('sync'),
-				clear: () => localStorage.removeItem('bonjourr'),
-				log: () => online.storage.sync.get(null, (data: any) => console.log(data)),
-			},
-
-			local: {
-				get: onlineGet('local'),
-				set: onlineSet('local'),
-				remove: onlineRemove('local'),
-				clear: () => localStorage.removeItem('bonjourrBackgrounds'),
-				log: () => online.storage.local.get(null, (data: any) => console.log(data)),
+				get: onlineGet(),
+				set: onlineSet(),
+				remove: onlineRemove(),
+				clear: onlineClear,
+				log: onlineLog,
 			},
 		},
 	}

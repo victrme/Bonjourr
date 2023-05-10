@@ -194,14 +194,14 @@ export function closeEditLink() {
 }
 
 export const getBrowserStorage = () => {
-	storage.local.get(null, (local) => {
-		storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
-	})
+	console.clear()
+	console.log(localStorage)
+	storage.sync.get(null, (sync) => console.log(sync))
 }
 
 export function deleteBrowserStorage() {
 	storage.sync.clear()
-	storage.local.clear()
+	localStorage.clear()
 }
 
 export const testOS = {
