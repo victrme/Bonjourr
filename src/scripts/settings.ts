@@ -92,7 +92,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_notesalign', data.notes?.align || 'left')
 	initInput('i_sbengine', data.searchbar?.engine || 'google')
 	initInput('i_sbplaceholder', data.searchbar?.placeholder || '')
-	initInput('i_sbopacity', data.searchbar?.opacity || 0.1)
+	initInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
@@ -554,23 +554,23 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'engine', this)
+		searchbar(null, { engine: this.value })
 	})
 
 	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(null, 'opacity', this)
+		searchbar(null, { opacity: this.value })
 	})
 
 	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'request', this)
+		searchbar(null, { request: this })
 	})
 
 	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'newtab', this)
+		searchbar(null, { newtab: this.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
-		searchbar(null, 'placeholder', this)
+		searchbar(null, { placeholder: this.value })
 	})
 
 	//
