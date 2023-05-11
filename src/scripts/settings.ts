@@ -5,6 +5,7 @@ import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
 import unsplash from './features/unsplash'
+import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
@@ -42,7 +43,6 @@ import {
 	darkmode,
 	favicon,
 	linksImport,
-	searchbar,
 	tabTitle,
 	textShadow,
 	pageWidth,
