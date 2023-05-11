@@ -20,7 +20,7 @@ import { tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
 
-export default function quickLinks(
+export default async function quickLinks(
 	init: Sync | null,
 	event?: {
 		is: 'add' | 'import' | 'style' | 'newtab' | 'row'
@@ -116,7 +116,7 @@ export default function quickLinks(
 					// Fetch new icons if matches these urls
 					if (link.icon.includes('loading.svg')) {
 						link.icon = await fetchNewIcon(dom, link.url)
-						storage.sync.set({ [link._id]: link })
+						storage.set({ [link._id]: link })
 					}
 
 					// Apply cached
@@ -322,19 +322,19 @@ export default function quickLinks(
 
 				document.body.removeEventListener('mousemove', triggerDragging)
 
-				setTimeout(() => {
-					storage.sync.get(null, (data) => {
-						Object.entries(updatedOrder).forEach(([key, val]) => {
-							const link = data[key] as Link
-							link.order = val // Updates orders
-						})
+				setTimeout(async () => {
+					const data = await storage.get()
 
-						clas(domlinkblocks, false, 'dragging') // to apply pointer-events: none
-
-						eventDebounce({ ...data }) // saves
-						;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
-						initblocks(bundleLinks(data as Sync), data.linknewtab) // re-init blocks
+					Object.entries(updatedOrder).forEach(([key, val]) => {
+						const link = data[key] as Link
+						link.order = val // Updates orders
 					})
+
+					clas(domlinkblocks, false, 'dragging') // to apply pointer-events: none
+
+					eventDebounce({ ...data }) // saves
+					;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
+					initblocks(bundleLinks(data as Sync), data.linknewtab) // re-init blocks
 				}, 200)
 			}
 		}
@@ -401,38 +401,42 @@ export default function quickLinks(
 	}
 
 	function editEvents() {
-		function submitEvent() {
-			return updatesEditedLink($('editlink')!.getAttribute('data-linkid') || '')
+		async function submitEvent() {
+			const linkid = document.getElementById('editlink')?.dataset.linkid || ''
+			return await updatesEditedLink(linkid)
 		}
 
 		function inputSubmitEvent(e: KeyboardEvent) {
 			if (e.code === 'Enter') {
-				submitEvent()
 				const input = e.target as HTMLInputElement
-				input.blur() // unfocus to signify change
+				input.blur()
+				submitEvent()
 			}
 		}
 
-		$('e_delete')?.addEventListener('click', function () {
+		document.getElementById('e_delete')?.addEventListener('click', function () {
+			const editlink = document.getElementById('editlink')
+			const linkid = editlink?.dataset.linkid || ''
+
 			removeLinkSelection()
-			removeblock($('editlink')!.getAttribute('data-linkid') || '')
-			clas($('editlink'), false, 'shown')
+			removeblock(linkid)
+			editlink?.classList.toggle('shown', false)
 		})
 
-		$('e_submit')?.addEventListener('click', function () {
-			const noErrorOnEdit = submitEvent() // returns false if saved icon data too big
+		document.getElementById('e_submit')?.addEventListener('click', async function () {
+			const noErrorOnEdit = await submitEvent() // returns false if saved icon data too big
 			if (noErrorOnEdit) {
 				closeEditLink() // only auto close on apply changes button
 				removeLinkSelection()
 			}
 		})
 
-		$('e_title')?.addEventListener('keyup', inputSubmitEvent)
-		$('e_url')?.addEventListener('keyup', inputSubmitEvent)
-		$('e_iconurl')?.addEventListener('keyup', inputSubmitEvent)
+		document.getElementById('e_title')?.addEventListener('keyup', inputSubmitEvent)
+		document.getElementById('e_url')?.addEventListener('keyup', inputSubmitEvent)
+		document.getElementById('e_iconurl')?.addEventListener('keyup', inputSubmitEvent)
 	}
 
-	function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; y: number }) {
+	async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; y: number }) {
 		//
 		function positionsEditWindow() {
 			const { innerHeight, innerWidth } = window // viewport size
@@ -452,39 +456,38 @@ export default function quickLinks(
 		const domedit = document.querySelector('#editlink')
 		const opendedSettings = has($('settings'), 'shown')
 
-		storage.sync.get(linkId, (data) => {
-			const { title, url, icon } = data[linkId]
+		const data = await storage.get(linkId)
+		const { title, url, icon } = data[linkId] as Link
 
-			const domtitle = $('e_title') as HTMLInputElement
-			const domurl = $('e_url') as HTMLInputElement
-			const domiconurl = $('e_iconurl') as HTMLInputElement
+		const domtitle = document.getElementById('e_title') as HTMLInputElement
+		const domurl = document.getElementById('e_url') as HTMLInputElement
+		const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
 
-			domtitle.setAttribute('placeholder', tradThis('Title'))
-			domurl.setAttribute('placeholder', tradThis('Link'))
-			domiconurl.setAttribute('placeholder', tradThis('Icon'))
+		domtitle.setAttribute('placeholder', tradThis('Title'))
+		domurl.setAttribute('placeholder', tradThis('Link'))
+		domiconurl.setAttribute('placeholder', tradThis('Icon'))
 
-			domtitle.value = title
-			domurl.value = url
-			domiconurl.value = icon
+		domtitle.value = title
+		domurl.value = url
+		domiconurl.value = icon
 
-			positionsEditWindow()
+		positionsEditWindow()
 
-			clas(domicon, true, 'selected')
-			clas(domedit, true, 'shown')
-			clas(domedit, opendedSettings, 'pushed')
+		clas(domicon, true, 'selected')
+		clas(domedit, true, 'shown')
+		clas(domedit, opendedSettings, 'pushed')
 
-			domedit?.setAttribute('data-linkid', linkId)
+		domedit?.setAttribute('data-linkid', linkId)
 
-			if (!testOS.ios && !mobilecheck()) {
-				domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
-			}
-		})
+		if (!testOS.ios && !mobilecheck()) {
+			domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
+		}
 	}
 
-	function updatesEditedLink(linkId: string) {
-		const e_title = $('e_title') as HTMLInputElement
-		const e_url = $('e_url') as HTMLInputElement
-		const e_iconurl = $('e_iconurl') as HTMLInputElement
+	async function updatesEditedLink(linkId: string) {
+		const e_iconurl = document.getElementById('e_iconurl') as HTMLInputElement
+		const e_title = document.getElementById('e_title') as HTMLInputElement
+		const e_url = document.getElementById('e_url') as HTMLInputElement
 
 		if (e_iconurl.value.length === 7500) {
 			e_iconurl.value = ''
@@ -493,123 +496,120 @@ export default function quickLinks(
 			return false
 		}
 
-		storage.sync.get(linkId, (data) => {
-			const domlink = $(linkId) as HTMLLIElement
-			const domicon = domlink.querySelector('img') as HTMLImageElement
-			const domurl = domlink.querySelector('a') as HTMLAnchorElement
-			let link = data[linkId]
+		const data = await storage.get(linkId)
+		const domlink = document.getElementById(linkId) as HTMLLIElement
+		const domicon = domlink.querySelector('img') as HTMLImageElement
+		const domurl = domlink.querySelector('a') as HTMLAnchorElement
+		let link = data[linkId] as Link
 
-			link = {
-				...link,
-				title: stringMaxSize(e_title.value, 64),
-				url: stringMaxSize(e_url.value, 512),
-				icon: stringMaxSize(e_iconurl.value, 7500),
-			}
+		link = {
+			...link,
+			title: stringMaxSize(e_title.value, 64),
+			url: stringMaxSize(e_url.value, 512),
+			icon: stringMaxSize(e_iconurl.value, 7500),
+		}
 
-			textOnlyControl(domlink, link.title, domlinkblocks.className === 'text')
-			domurl.href = link.url
-			domicon.src = link.icon
+		textOnlyControl(domlink, link.title, domlinkblocks.className === 'text')
+		domurl.href = link.url
+		domicon.src = link.icon
 
-			// Updates
-			storage.sync.set({ [linkId]: link })
-		})
+		// Updates
+		storage.set({ [linkId]: link })
 
 		return true
 	}
 
-	function removeblock(linkId: string) {
-		storage.sync.get(null, (data) => {
-			const links = bundleLinks(data as Sync)
-			const target = data[linkId] as Link
+	async function removeblock(linkId: string) {
+		const data = await storage.get(linkId)
+		const links = bundleLinks(data)
+		const target = data[linkId] as Link
 
-			clas($(linkId), true, 'removed')
+		document.getElementById(linkId)?.classList.toggle('removed', true)
 
-			delete data[linkId]
+		delete data[linkId]
 
-			// Updates Order
-			links
-				.filter((l) => l._id !== linkId) // pop deleted first
-				.forEach((l: Link) => {
-					data[l._id] = {
-						...l,
-						order: l.order - (l.order > target.order ? 1 : 0),
-					}
-				})
-
-			storage.sync.clear()
-			storage.sync.set(data)
-
-			setTimeout(() => {
-				$(linkId)?.remove()
-			}, 600)
-		})
-	}
-
-	function linkSubmission(type: 'add' | 'import', importList?: { title: string; url: string }[]) {
-		storage.sync.get(null, (data) => {
-			const links = bundleLinks(data as Sync)
-			let newLinksList = []
-
-			const validator = (title: string, url: string, order: number) => {
-				const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
-
-				url = stringMaxSize(url, 512)
-
-				const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
-				const noProtocol = !startsWithEither(['https://', 'http://'])
-				const isLocalhost = url.startsWith('localhost')
-
-				let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
-
-				url = prefix + url
-
-				return {
-					order: order,
-					_id: 'links' + randomString(6),
-					title: stringMaxSize(title, 64),
-					icon: 'src/assets/interface/loading.svg',
-					url: url,
+		// Updates Order
+		links
+			.filter((l) => l._id !== linkId) // pop deleted first
+			.forEach((l: Link) => {
+				data[l._id] = {
+					...l,
+					order: l.order - (l.order > target.order ? 1 : 0),
 				}
-			}
-
-			// Default link submission
-			if (type === 'add') {
-				const titledom = $('i_title') as HTMLInputElement
-				const urldom = $('i_url') as HTMLInputElement
-				const title = titledom.value
-				const url = urldom.value
-
-				if (url.length < 3) return
-
-				titledom.value = ''
-				urldom.value = ''
-
-				newLinksList.push(validator(title, url, links.length))
-			}
-
-			// When importing bookmarks
-			if (type === 'import' && importList) {
-				if (importList?.length === 0) return
-
-				importList.forEach(({ title, url }, i: number) => {
-					if (url !== 'false') {
-						newLinksList.push(validator(title, url, links.length + i))
-					}
-				})
-			}
-
-			// Saves to storage added links before icon fetch saves again
-			newLinksList.forEach((newlink) => {
-				storage.sync.set({ [newlink._id]: newlink })
 			})
 
-			// Add new link(s) to existing ones
-			links.push(...newLinksList)
+		storage.clear()
+		storage.set(data)
 
-			// Displays and saves before fetching icon
-			initblocks(links, data.linknewtab)
-			domlinkblocks.style.visibility = 'visible'
+		setTimeout(() => {
+			document.getElementById(linkId)?.remove()
+		}, 600)
+	}
+
+	async function linkSubmission(type: 'add' | 'import', importList?: { title: string; url: string }[]) {
+		const data = await storage.get()
+		const links = bundleLinks(data)
+		let newLinksList = []
+
+		const validator = (title: string, url: string, order: number) => {
+			const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
+
+			url = stringMaxSize(url, 512)
+
+			const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
+			const noProtocol = !startsWithEither(['https://', 'http://'])
+			const isLocalhost = url.startsWith('localhost')
+
+			let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
+
+			url = prefix + url
+
+			return {
+				order: order,
+				_id: 'links' + randomString(6),
+				title: stringMaxSize(title, 64),
+				icon: 'src/assets/interface/loading.svg',
+				url: url,
+			}
+		}
+
+		// Default link submission
+		if (type === 'add') {
+			const titledom = $('i_title') as HTMLInputElement
+			const urldom = $('i_url') as HTMLInputElement
+			const title = titledom.value
+			const url = urldom.value
+
+			if (url.length < 3) return
+
+			titledom.value = ''
+			urldom.value = ''
+
+			newLinksList.push(validator(title, url, links.length))
+		}
+
+		// When importing bookmarks
+		if (type === 'import' && importList) {
+			if (importList?.length === 0) return
+
+			importList.forEach(({ title, url }, i: number) => {
+				if (url !== 'false') {
+					newLinksList.push(validator(title, url, links.length + i))
+				}
+			})
+		}
+
+		// Saves to storage added links before icon fetch saves again
+		newLinksList.forEach((newlink) => {
+			storage.set({ [newlink._id]: newlink })
 		})
+
+		// Add new link(s) to existing ones
+		links.push(...newLinksList)
+
+		// Displays and saves before fetching icon
+		initblocks(links, data.linknewtab)
+		domlinkblocks.style.visibility = 'visible'
 	}
 
 	function textOnlyControl(block: HTMLLIElement, title: string, toText: boolean) {
@@ -651,7 +651,7 @@ export default function quickLinks(
 
 			case 'newtab': {
 				const val = event.checked || false
-				storage.sync.set({ linknewtab: val })
+				storage.set({ linknewtab: val })
 
 				document.querySelectorAll('.block a').forEach((a) => {
 					//
@@ -668,21 +668,21 @@ export default function quickLinks(
 			}
 
 			case 'style': {
-				storage.sync.get(null, (data) => {
-					const links = bundleLinks(data as Sync)
-					const classes = ['large', 'medium', 'small', 'text']
-					const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
-					const chosenClass = event.value?.toString() || ''
+				const data = await storage.get()
+				const links = bundleLinks(data as Sync)
+				const classes = ['large', 'medium', 'small', 'text']
+				const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
+				const chosenClass = event.value?.toString() || ''
 
-					links.forEach(({ title }, i: number) => textOnlyControl(blocks[i], title, chosenClass === 'text'))
+				links.forEach(({ title }, i: number) => textOnlyControl(blocks[i], title, chosenClass === 'text'))
 
-					classes.forEach((c) => domlinkblocks.classList.remove(c))
-					domlinkblocks.classList.add(chosenClass)
+				classes.forEach((c) => domlinkblocks.classList.remove(c))
+				domlinkblocks.classList.add(chosenClass)
 
-					setRows(data.linksrow, chosenClass)
+				setRows(data.linksrow, chosenClass)
 
-					storage.sync.set({ linkstyle: chosenClass })
-				})
+				storage.set({ linkstyle: chosenClass })
+
 				break
 			}
 

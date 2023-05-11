@@ -85,7 +85,7 @@ export default function errorMessage(error: unknown) {
 		dominterface.style.opacity = '1'
 		return false
 	} else {
-		storage.sync.get(null, (data) => {
+		storage.get().then((data) => {
 			try {
 				document.querySelector('#error')?.remove()
 				displayMessage(JSON.stringify(data, null, 4))

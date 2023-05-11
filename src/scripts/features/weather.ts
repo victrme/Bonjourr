@@ -114,7 +114,7 @@ export default function weather(
 			if (navigator.onLine && (now > data.lastCall + 1800 || sessionStorage.lang)) {
 				sessionStorage.removeItem('lang')
 				data = await request(data)
-				storage.sync.set({ weather: data })
+				storage.set({ weather: data })
 			}
 
 			displayWeather(data)
@@ -170,7 +170,7 @@ export default function weather(
 			data = await request(data)
 
 			displayWeather(data)
-			storage.sync.set({ weather: data })
+			storage.set({ weather: data })
 
 			setTimeout(() => {
 				// If settings is available, all other inputs are
@@ -326,105 +326,109 @@ export default function weather(
 		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
 		const sett_city = document.getElementById('sett_city') as HTMLInputElement
 
-		storage.sync.get(['weather', 'hide'], async (data) => {
-			switch (event?.is) {
-				case 'units': {
-					data.weather.unit = event.checked ? 'imperial' : 'metric'
-					data.weather = await request(data.weather)
-					break
-				}
+		let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
 
-				case 'city': {
-					if (i_city.value.length < 3 || !navigator.onLine) {
-						return false
-					}
+		if (!weather || !hide) {
+			return
+		}
 
-					data.weather.ccode = i_ccode.value
-					data.weather.city = stringMaxSize(i_city.value, 64)
-
-					const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
-						direction: 'alternate',
-						easing: 'linear',
-						duration: 800,
-						iterations: Infinity,
-					})
-
-					data.weather = await request(data.weather)
-
-					i_city.value = ''
-					i_city.blur()
-					inputAnim.cancel()
-					i_city.setAttribute('placeholder', data.weather.city)
-
-					break
-				}
-
-				case 'geol': {
-					data.weather.location = []
-
-					if (event.checked) {
-						navigator.geolocation.getCurrentPosition(
-							async (pos) => {
-								//update le parametre de location
-								clas(sett_city, event.checked || true, 'hidden')
-								data.weather.location = [pos.coords.latitude, pos.coords.longitude]
-
-								data.weather = await request(data.weather)
-								storage.sync.set({ weather: data.weather })
-								displayWeather(data.weather)
-							},
-							() => {
-								// Désactive geolocation if refused
-								setTimeout(() => (event.checked = false), 400)
-							}
-						)
-						return
-					} else {
-						i_city.setAttribute('placeholder', data.weather.city)
-						i_ccode.value = data.weather.ccode
-						clas(sett_city, event.checked || false, 'hidden')
-
-						data.weather.location = []
-						data.weather = await request(data.weather)
-					}
-					break
-				}
-
-				case 'forecast': {
-					data.weather.forecast = event.value
-					forecastVisibilityControl(event.value)
-					break
-				}
-
-				case 'temp': {
-					data.weather.temperature = event.value
-					break
-				}
-
-				case 'moreinfo': {
-					clas($('weather_provider'), event.value === 'custom', 'shown')
-					data.weather.moreinfo = event.value
-					break
-				}
-
-				case 'provider': {
-					data.weather.provider = event.value
-					break
-				}
-
-				case 'unhide': {
-					const { weatherdesc, weathericon } = data.hide || {}
-					if (weatherdesc && weathericon) {
-						forecastVisibilityControl(data.weather.forecast)
-						weatherCacheControl(data.weather)
-					}
-					return
-				}
+		switch (event?.is) {
+			case 'units': {
+				weather.unit = event.checked ? 'imperial' : 'metric'
+				weather = await request(weather)
+				break
 			}
 
-			storage.sync.set({ weather: data.weather })
-			displayWeather(data.weather)
-		})
+			case 'city': {
+				if (i_city.value.length < 3 || !navigator.onLine) {
+					return false
+				}
+
+				weather.ccode = i_ccode.value
+				weather.city = stringMaxSize(i_city.value, 64)
+
+				const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
+					direction: 'alternate',
+					easing: 'linear',
+					duration: 800,
+					iterations: Infinity,
+				})
+
+				weather = await request(weather)
+
+				i_city.value = ''
+				i_city.blur()
+				inputAnim.cancel()
+				i_city.setAttribute('placeholder', weather.city)
+
+				break
+			}
+
+			case 'geol': {
+				weather.location = []
+
+				if (event.checked) {
+					navigator.geolocation.getCurrentPosition(
+						async (pos) => {
+							//update le parametre de location
+							clas(sett_city, event.checked || true, 'hidden')
+							weather.location = [pos.coords.latitude, pos.coords.longitude]
+
+							weather = await request(weather)
+							storage.set({ weather: weather })
+							displayWeather(weather)
+						},
+						() => {
+							// Désactive geolocation if refused
+							setTimeout(() => (event.checked = false), 400)
+						}
+					)
+					return
+				} else {
+					i_city.setAttribute('placeholder', weather.city)
+					i_ccode.value = weather.ccode
+					clas(sett_city, event.checked || false, 'hidden')
+
+					weather.location = []
+					weather = await request(weather)
+				}
+				break
+			}
+
+			case 'forecast': {
+				weather.forecast = event.value ?? 'auto'
+				forecastVisibilityControl(event.value)
+				break
+			}
+
+			case 'temp': {
+				weather.temperature = event.value ?? 'actual'
+				break
+			}
+
+			case 'moreinfo': {
+				clas($('weather_provider'), event.value === 'custom', 'shown')
+				weather.moreinfo = event.value
+				break
+			}
+
+			case 'provider': {
+				weather.provider = event.value
+				break
+			}
+
+			case 'unhide': {
+				const { weatherdesc, weathericon } = hide || {}
+				if (weatherdesc && weathericon) {
+					forecastVisibilityControl(weather.forecast)
+					weatherCacheControl(weather)
+				}
+				return
+			}
+		}
+
+		storage.set({ weather })
+		displayWeather(weather)
 	}
 
 	// Event & Init
@@ -445,10 +449,10 @@ export default function weather(
 	}
 }
 
-setInterval(() => {
+// Checks every 5 minutes if weather needs update
+setInterval(async () => {
 	if (navigator.onLine) {
-		storage.sync.get(['weather', 'hide'], (data) => {
-			weather(data as Sync) // Checks every 5 minutes if weather needs update
-		})
+		const data = await storage.get(['weather', 'hide'])
+		if (data) weather(data as Sync)
 	}
 }, 300000)

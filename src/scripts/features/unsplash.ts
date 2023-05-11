@@ -5,7 +5,7 @@ import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
 
 import { DynamicCache } from '../types/local'
-import { Dynamic } from '../types/sync'
+import { Dynamic, Sync } from '../types/sync'
 import UnsplashImage from '../types/unsplashImage'
 
 export default async function unsplash(
@@ -196,7 +196,7 @@ export default async function unsplash(
 		dynamic.lastCollec = collec
 
 		if (collec !== lastCollec) {
-			storage.sync.set({ dynamic: dynamic }, () => console.warn('bad'))
+			storage.set({ dynamic: dynamic }, () => console.warn('bad'))
 		}
 
 		return collec
@@ -269,17 +269,16 @@ export default async function unsplash(
 
 		if (list.length > 1) await preloadImage(list[1].url) // Or preload next
 
-		storage.sync.set({ dynamic: dynamic })
+		storage.set({ dynamic: dynamic })
 		localStorage.setItem('dynamicCache', JSON.stringify(cache))
 		sessionStorage.removeItem('waitingForPreload')
 	}
 
 	async function updateDynamic(event: { is: string; value?: string; button?: HTMLSpanElement | null }) {
 		const dynamicCache = getCache()
-		const dynamic =
-			((await new Promise((resolve) => {
-				storage.sync.get('dynamic', (data) => resolve(data?.dynamic))
-			})) as Dynamic) ?? structuredClone(syncDefaults.dynamic)
+		const { dynamic } = (await storage.get('dynamic')) as Sync
+
+		if (!dynamic) return
 
 		switch (event.is) {
 			case 'refresh': {
@@ -291,7 +290,7 @@ export default async function unsplash(
 					turnRefreshButton(event.button, true)
 
 					const newDynamic = { ...dynamic, time: 0 }
-					storage.sync.set({ dynamic: newDynamic })
+					storage.set({ dynamic: newDynamic })
 					sessionStorage.setItem('waitingForPreload', 'true')
 
 					setTimeout(() => {
@@ -314,7 +313,7 @@ export default async function unsplash(
 
 				dynamic.every = event.value
 				dynamic.time = freqControl.set()
-				storage.sync.set({ dynamic })
+				storage.set({ dynamic })
 				break
 			}
 
@@ -322,7 +321,7 @@ export default async function unsplash(
 			case 'removedCustom': {
 				const firstImageFromCache = dynamicCache[collectionUpdater(dynamic)][0]
 				loadBackground(firstImageFromCache)
-				storage.sync.set({ background_type: 'dynamic' })
+				storage.set({ background_type: 'dynamic' })
 				break
 			}
 
@@ -337,7 +336,7 @@ export default async function unsplash(
 					dynamic.collection = ''
 					dynamic.lastCollec = defaultColl
 
-					storage.sync.set({ dynamic })
+					storage.set({ dynamic })
 					localStorage.setItem('dynamicCache', JSON.stringify(dynamicCache))
 
 					unsplash(dynamic)
@@ -348,7 +347,7 @@ export default async function unsplash(
 				dynamic.collection = event.value
 				dynamic.lastCollec = 'user'
 				dynamic.time = freqControl.set()
-				storage.sync.set({ dynamic })
+				storage.set({ dynamic })
 
 				populateEmptyList(chooseCollection(event.value), dynamicCache)
 				break

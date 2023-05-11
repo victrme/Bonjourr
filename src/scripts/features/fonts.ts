@@ -3,7 +3,7 @@ import storage from '../storage'
 
 import errorMessage from '../utils/errorMessage'
 import { eventDebounce } from '../utils/debounce'
-import { syncDefaults, testOS } from '../utils'
+import { testOS } from '../utils'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
@@ -175,11 +175,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	const isRemovingFamily = typeof family === 'string' && family.length === 0
 	const isChangingFamily = typeof family === 'string' && family.length > 1
 
-	const font: Font = await new Promise((resolve) => {
-		storage.sync.get('font', async ({ font }) => {
-			resolve(font ?? structuredClone(syncDefaults.font))
-		})
-	})
+	const { font } = await storage.get('font')
 
 	if (isRemovingFamily) {
 		const i_customfont = document.getElementById('i_customfont') as HTMLInputElement

@@ -190,14 +190,13 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 		handleQuotesRefresh()
 	}
 
-	storage.sync.set({ quotes })
+	storage.set({ quotes })
 }
 
 export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
 	if (update) {
-		storage.sync.get(['lang', 'quotes'], async (data) => {
-			UpdateQuotes(update, data as Sync)
-		})
+		const data = await storage.get(['lang', 'quotes'])
+		UpdateQuotes(update, data as Sync)
 	}
 
 	if (!init) {
@@ -227,7 +226,7 @@ export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
 	if (needsNewQuote) {
 		quotes.last = freqControl.set() // updates last quotes timestamp
 		quote = controlCacheList(cache, lang, quotes.type)
-		storage.sync.set({ quotes })
+		storage.set({ quotes })
 	} else {
 		quote = cache[isUser ? userSel : 0]
 	}

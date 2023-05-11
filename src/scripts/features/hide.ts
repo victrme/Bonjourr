@@ -2,7 +2,7 @@ import { convertHideStorage } from '../utils'
 import { Hide, HideOld, Sync } from '../types/sync'
 import storage from '../storage'
 
-export default function hideElements(hidelist: Hide = {}, options?: { isEvent: true }) {
+export default async function hideElements(hidelist: Hide = {}, options?: { isEvent: true }) {
 	function applyHide(list: Hide) {
 		Object.entries(list).forEach(([key, val]) => {
 			document.querySelector(`[data-hide="${key}"]`)?.classList.toggle('he_hidden', val)
@@ -10,18 +10,17 @@ export default function hideElements(hidelist: Hide = {}, options?: { isEvent: t
 	}
 
 	if (options?.isEvent) {
-		storage.sync.get(['hide'], (data) => {
-			let hide = (data as Sync).hide || {}
+		let { hide } = await storage.get('hide')
 
-			if (Array.isArray(data.hide) && data.hide.length === 4) {
-				hide = convertHideStorage(data.hide as HideOld)
-			}
+		if (Array.isArray(hide) && hide.length === 4) {
+			hide = convertHideStorage(hide as HideOld)
+		}
 
-			hide = { ...hide, ...hidelist }
+		hide = { ...hide, ...hidelist }
 
-			storage.sync.set({ hide })
-			applyHide(hidelist)
-		})
+		storage.set({ hide })
+		applyHide(hidelist)
+
 		return
 	}
 

@@ -730,23 +730,22 @@ function settingsMgmt() {
 		}
 	}
 
-	function exportAsFile() {
-		const a = $('downloadfile')
+	async function exportAsFile() {
+		const a = document.getElementById('downloadfile')
 		if (!a) return
 
-		storage.sync.get(null, (data) => {
-			const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
+		const data = ((await storage.get()) as Sync) ?? {}
+		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
 
-			const bytes = new TextEncoder().encode(stringifyOrder(data))
-			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
-			const date = new Date()
-			const YYYYMMDD = date.toISOString().slice(0, 10)
-			const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
+		const bytes = new TextEncoder().encode(stringifyOrder(data))
+		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+		const date = new Date()
+		const YYYYMMDD = date.toISOString().slice(0, 10)
+		const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
-			a.setAttribute('href', URL.createObjectURL(blob))
-			a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
-			a.click()
-		})
+		a.setAttribute('href', URL.createObjectURL(blob))
+		a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
+		a.click()
 	}
 
 	function importAsText(string: string) {
@@ -857,27 +856,26 @@ async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
 	sessionStorage.lang = nextLang // Session pour le weather
-	storage.sync.set({ lang: nextLang })
+	storage.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	storage.sync.get(null, (data) => {
-		data.lang = nextLang
-		weather(data as Sync)
-		clock(data as Sync)
-		quotes(data as Sync)
-		notes(data.notes || null)
-		translatePlaceholders($('settings'))
-	})
+	const data = ((await storage.get()) as Sync) ?? {}
+	data.lang = nextLang
+	weather(data)
+	clock(data)
+	quotes(data)
+	notes(data.notes || null)
+	translatePlaceholders(document.getElementById('settings'))
 }
 
 function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
-	if (event) storage.sync.set({ showall: val })
+	if (event) storage.set({ showall: val })
 
 	const settings = settingsDom || $('settings')
 	clas(settings, val, 'all')
 }
 
-function selectBackgroundType(cat: string) {
+async function selectBackgroundType(cat: string) {
 	$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
 	document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
 
@@ -887,14 +885,15 @@ function selectBackgroundType(cat: string) {
 	}
 
 	if (cat === 'dynamic') {
-		storage.sync.get('dynamic', ({ dynamic }) => {
-			document.querySelector<HTMLSelectElement>('#i_freq')!.value = dynamic.every || 'hour'
-			document.getElementById('creditContainer')?.classList.toggle('shown', true)
-			setTimeout(() => unsplash(dynamic), 100)
-		})
+		const { dynamic } = ((await storage.get()) as Sync) ?? {}
+		if (!dynamic) return
+
+		document.querySelector<HTMLSelectElement>('#i_freq')!.value = dynamic.every || 'hour'
+		document.getElementById('creditContainer')?.classList.toggle('shown', true)
+		setTimeout(() => unsplash(dynamic), 100)
 	}
 
-	storage.sync.set({ background_type: cat })
+	storage.set({ background_type: cat })
 }
 
 function signature(dom: HTMLElement) {
@@ -930,22 +929,22 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-function paramsImport(toImport: Sync) {
+async function paramsImport(toImport: Sync) {
 	try {
 		// Load all sync & dynamicCache
-		storage.sync.get(null, (sync) => {
-			// Remove user collection cache if collection change
-			// if (sync.dynamic && toImport.dynamic) {
-			// 	if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
-			// 		local.dynamicCache.user = []
-			// 	}
-			// }
+		let data = ((await storage.get()) as Sync) ?? {}
 
-			sync = { ...filterImports(sync as Sync, toImport) }
+		// Remove user collection cache if collection change
+		// if (sync.dynamic && toImport.dynamic) {
+		// 	if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
+		// 		local.dynamicCache.user = []
+		// 	}
+		// }
 
-			storage.sync.clear()
-			storage.sync.set(sync, () => fadeOut())
-		})
+		data = { ...filterImports(data, toImport) }
+
+		storage.clear()
+		storage.set(data, () => fadeOut())
 	} catch (e) {
 		console.log(e)
 	}
@@ -962,18 +961,17 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
 }
 
-export function updateExportJSON(settingsDom: HTMLElement) {
+export async function updateExportJSON(settingsDom: HTMLElement) {
 	const input = settingsDom.querySelector('#area_export') as HTMLInputElement
 
 	settingsDom.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	storage.sync.get(null, (data) => {
-		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-		if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
-		data.about.browser = detectPlatform()
+	const data = ((await storage.get()) as Sync) ?? {}
 
-		input.value = stringifyOrder(data)
-	})
+	if (data?.weather?.lastCall) delete data.weather.lastCall
+	data.about.browser = detectPlatform()
+
+	input.value = stringifyOrder(data)
 }
 
 export function settingsInit(data: Sync) {
