@@ -1,7 +1,8 @@
-import { $, periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
+import { $, periodOfDay, turnRefreshButton, localDefaults } from '../utils'
 import { imgBackground, sunTime, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
+import parse from '../utils/JSONparse'
 import storage from '../storage'
 
 import { DynamicCache } from '../types/local'
@@ -20,11 +21,7 @@ export default async function unsplash(
 	type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
 	function getCache() {
-		try {
-			return JSON.parse(localStorage.dynamicCache) as DynamicCache
-		} catch (e) {
-			return { ...localDefaults.dynamicCache }
-		}
+		return parse(localStorage.dynamicCache) ?? { ...localDefaults.dynamicCache }
 	}
 
 	async function preloadImage(src: string) {

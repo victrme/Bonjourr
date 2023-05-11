@@ -47,6 +47,7 @@ import {
 	textShadow,
 	pageWidth,
 } from './index'
+import parse from './utils/JSONparse'
 
 type Langs = keyof typeof langList
 
@@ -657,7 +658,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
-		paramsImport(JSON.parse(($('i_importtext') as HTMLInputElement).value))
+		paramsImport(parse(($('i_importtext') as HTMLInputElement).value))
 	})
 
 	//
@@ -750,7 +751,7 @@ function settingsMgmt() {
 
 	function importAsText(string: string) {
 		try {
-			JSON.parse(string)
+			parse(string)
 			$('b_importtext')?.removeAttribute('disabled')
 		} catch (error) {
 			$('b_importtext')?.setAttribute('disabled', '')
@@ -763,11 +764,11 @@ function settingsMgmt() {
 
 			try {
 				// Tries to decode base64 from previous versions
-				result = JSON.parse(atob(str))
+				result = parse(atob(str))
 			} catch {
 				try {
 					// If base64 failed, parse raw string
-					result = JSON.parse(str)
+					result = parse(str)
 				} catch (error) {
 					// If all failed, return empty object
 					result = {}

@@ -7,6 +7,7 @@ import { testOS } from '../utils'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
+import parse from '../utils/JSONparse'
 
 type FontList = {
 	family: string
@@ -42,7 +43,7 @@ const systemfont = (function () {
 })()
 
 async function fetchFontList() {
-	const fonts = JSON.parse(localStorage.fonts ?? '{}')
+	const fonts = parse(localStorage.fonts) ?? []
 
 	if (fonts.length > 0) {
 		return fonts as FontList
@@ -244,7 +245,12 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 			setWeight(init.family, init.weight)
 
 			if (init.family) {
-				const fontface = localStorage.fontface || (await fetchFontface(init.url))
+				let fontface = localStorage.fontface
+
+				if (!fontface.includes('@font-face')) {
+					fontface = await fetchFontface(init.url)
+				}
+
 				setFamily(init.family, fontface)
 				canDisplayInterface('fonts')
 			}

@@ -1100,8 +1100,6 @@ function startup(data: Sync) {
 	try {
 		const data = await storage.get()
 
-		await setTranslationCache(data.lang)
-
 		// Version change
 		if (data?.about?.version !== syncDefaults.about.version) {
 			const version_old = data?.about?.version
@@ -1115,6 +1113,7 @@ function startup(data: Sync) {
 			// To new 1.16.x
 			if (version_old.includes('1.15') && version.includes('1.16')) {
 				localStorage.hasUpdated = 'true'
+				localStorage.removeItem('translations')
 
 				// Breaking data changes needs filtering
 				data.hide = convertHideStorage(data.hide as HideOld)
@@ -1123,8 +1122,10 @@ function startup(data: Sync) {
 				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
 			}
 
-			storage.set({ ...data }, () => startup(data))
+			storage.set({ ...data })
 		}
+
+		await setTranslationCache(data.lang)
 
 		startup(data)
 	} catch (e) {

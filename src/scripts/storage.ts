@@ -1,4 +1,5 @@
 import { Sync } from './types/sync'
+import parse from './utils/JSONparse'
 import { detectPlatform, syncDefaults } from './utils'
 
 function verifyDataAsSync(data: { [key: string]: unknown }) {
@@ -22,7 +23,7 @@ function onlineSet(props: { [key: string]: unknown }) {
 		})
 
 		try {
-			localStorage.bonjourr = JSON.stringify(data)
+			localStorage.bonjourr = JSON.stringify(data ?? {})
 		} catch (error) {
 			console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
 		}
@@ -32,7 +33,7 @@ function onlineSet(props: { [key: string]: unknown }) {
 }
 
 function onlineGet(_?: unknown) {
-	return verifyDataAsSync(JSON.parse(localStorage.bonjourr ?? '{}'))
+	return verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
 }
 
 function onlineRemove(key: string) {

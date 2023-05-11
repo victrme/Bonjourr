@@ -4,6 +4,7 @@ import { Sync } from '../types/sync'
 import { canDisplayInterface, freqControl } from '..'
 import { $ } from '../utils'
 import storage from '../storage'
+import parse from '../utils/JSONparse'
 
 type QuotesUpdate = {
 	toggle?: boolean
@@ -12,10 +13,6 @@ type QuotesUpdate = {
 	type?: string
 	userlist?: string
 	frequency?: string
-}
-
-function getCache() {
-	return JSON.parse(localStorage.quotesCache ?? '[]')
 }
 
 function getUserQuoteSelection() {
@@ -28,7 +25,7 @@ function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
 
 async function newQuoteFromAPI(lang: string, type: string) {
 	try {
-		if (!navigator.onLine) {
+		if (!navigator.onLine || type === 'user') {
 			return []
 		}
 
@@ -88,7 +85,7 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 }
 
 function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
-	let quotesCache = getCache()
+	let quotesCache = parse(localStorage.quotesCache) ?? []
 
 	async function handleQuotesType(type: string) {
 		let list: Quote[] = []
@@ -131,11 +128,9 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 		let quote: Quote = { author: '', content: '' }
 
 		if (userlist !== '') {
-			let userJSON = []
+			let userJSON = parse(userlist)
 
-			try {
-				userJSON = JSON.parse(userlist)
-			} catch (error) {
+			if (!userJSON) {
 				inputError('User quotes list is not valid JSON')
 				return quotes.userlist
 			}
@@ -208,7 +203,7 @@ export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
 	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
 	let userSel = getUserQuoteSelection()
-	let cache = getCache()
+	let cache = parse(localStorage.quotesCache) ?? []
 	let quote: Quote
 
 	// First startup, create classic cache
