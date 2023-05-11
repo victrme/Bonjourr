@@ -1,4 +1,4 @@
-import { Sync, Searchbar, Weather, ClockFace, MoveKeys } from './types/sync'
+import { Sync, Searchbar, Weather, ClockFace, MoveKeys, HideOld } from './types/sync'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -207,7 +207,7 @@ export function pageWidth(val?: number, isEvent?: true) {
 	}
 }
 
-export function clock(
+export async function clock(
 	init: Sync | null,
 	event?: {
 		is: 'analog' | 'seconds' | 'face' | 'style' | 'ampm' | 'timezone' | 'usdate' | 'greeting'
@@ -364,63 +364,58 @@ export function clock(
 	}
 
 	if (event) {
-		storage.sync.get(['clock', 'usdate', 'greeting'], (data) => {
-			let clock = data.clock || {
-				analog: false,
-				seconds: false,
-				ampm: false,
-				timezone: 'auto',
-				face: 'none',
-				style: 'round',
+		const { clock, usdate, greeting } = await storage.get(['clock', 'usdate', 'greeting'])
+
+		if (!clock || usdate === undefined || greeting === undefined) {
+			return
+		}
+
+		switch (event.is) {
+			case 'usdate': {
+				clockDate(zonedDate(clock.timezone), event.checked || false)
+				storage.set({ usdate: event.checked })
+				break
 			}
 
-			switch (event.is) {
-				case 'usdate': {
-					clockDate(zonedDate(data.clock.timezone), event.checked || false)
-					storage.sync.set({ usdate: event.checked })
-					break
-				}
-
-				case 'greeting': {
-					greetings(zonedDate(data.clock.timezone), event.value)
-					storage.sync.set({ greeting: event.value })
-					break
-				}
-
-				case 'timezone': {
-					clockDate(zonedDate(event.value), data.usdate)
-					greetings(zonedDate(event.value), data.greeting)
-					clock.timezone = event.value
-					break
-				}
-
-				case 'ampm':
-					clock.ampm = event.checked
-					break
-
-				case 'analog':
-					clock.analog = event.checked
-					break
-
-				case 'face':
-					clock.face = event.value as ClockFace
-					break
-
-				case 'style':
-					changeAnalogStyle(clock.style)
-					clock.style = event.value
-					break
-
-				case 'seconds':
-					clock.seconds = event.checked
-					break
+			case 'greeting': {
+				greetings(zonedDate(clock.timezone), event.value)
+				storage.set({ greeting: event.value })
+				break
 			}
 
-			storage.sync.set({ clock })
-			startClock(clock, data.greeting, data.usdate)
-			changeAnalogFace(clock.face)
-			changeAnalogStyle(clock.style)
-		})
+			case 'timezone': {
+				clockDate(zonedDate(event.value), usdate)
+				greetings(zonedDate(event.value), greeting)
+				clock.timezone = event.value ?? 'auto'
+				break
+			}
+
+			case 'ampm':
+				clock.ampm = event.checked ?? false
+				break
+
+			case 'analog':
+				clock.analog = event.checked ?? false
+				break
+
+			case 'face':
+				clock.face = event.value as ClockFace
+				break
+
+			case 'style':
+				changeAnalogStyle(clock.style)
+				clock.style = event.value ?? 'round'
+				break
+
+			case 'seconds':
+				clock.seconds = event.checked ?? false
+				break
+		}
+
+		storage.set({ clock })
+		startClock(clock, greeting, usdate)
+		changeAnalogFace(clock.face)
+		changeAnalogStyle(clock.style)
 
 		return
 	}
@@ -549,15 +544,14 @@ export async function linksImport() {
 	}
 
 	// Ask for bookmarks first
-	chrome.permissions.request({ permissions: ['bookmarks'] }, (granted) => {
+	chrome.permissions.request({ permissions: ['bookmarks'] }, async (granted) => {
 		if (!granted) return
 
-		storage.sync.get(null, (data) => {
-			const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
-			extAPI.bookmarks.getTree().then((response) => {
-				clas($('bookmarks_container'), true, 'shown')
-				main(bundleLinks(data as Sync), response)
-			})
+		const data = await storage.get()
+		const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
+		extAPI.bookmarks.getTree().then((response) => {
+			clas($('bookmarks_container'), true, 'shown')
+			main(bundleLinks(data as Sync), response)
 		})
 	})
 
@@ -649,7 +643,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 			clas(document.body, false, 'light')
 			clas(document.body, false, 'dark')
 			clas(document.body, false, 'autodark')
-			storage.sync.set({ dark: value })
+			storage.set({ dark: value })
 		}
 
 		clas(document.body, true, cases[value])
@@ -676,57 +670,57 @@ export function searchbar(init: Searchbar | null, update?: any, that?: HTMLInput
 	//
 	// Updates
 
-	function updateSearchbar() {
-		storage.sync.get('searchbar', (data) => {
-			if (!that) {
-				return
+	async function updateSearchbar() {
+		const { searchbar } = await storage.get('searchbar')
+
+		if (!that || !searchbar) {
+			return
+		}
+
+		switch (update) {
+			case 'engine': {
+				searchbar.engine = that.value
+				clas($('searchbar_request'), that.value === 'custom', 'shown')
+				setEngine(that.value)
+				break
 			}
 
-			switch (update) {
-				case 'engine': {
-					data.searchbar.engine = that.value
-					clas($('searchbar_request'), that.value === 'custom', 'shown')
-					setEngine(that.value)
-					break
-				}
-
-				case 'opacity': {
-					data.searchbar.opacity = parseFloat(that.value)
-					setOpacity(parseFloat(that.value))
-					break
-				}
-
-				case 'request': {
-					let val = that.value
-
-					if (val.indexOf('%s') !== -1) {
-						data.searchbar.request = stringMaxSize(val, 512)
-						that.blur()
-					} else if (val.length > 0) {
-						val = ''
-						that.setAttribute('placeholder', tradThis('%s Not found'))
-						setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
-					}
-
-					setRequest(val)
-					break
-				}
-
-				case 'newtab': {
-					data.searchbar.newtab = that.checked
-					setNewtab(that.checked)
-					break
-				}
-
-				case 'placeholder': {
-					data.searchbar.placeholder = that.value
-					setPlaceholder(that.value)
-					break
-				}
+			case 'opacity': {
+				searchbar.opacity = parseFloat(that.value)
+				setOpacity(parseFloat(that.value))
+				break
 			}
 
-			eventDebounce({ searchbar: data.searchbar })
-		})
+			case 'request': {
+				let val = that.value
+
+				if (val.indexOf('%s') !== -1) {
+					searchbar.request = stringMaxSize(val, 512)
+					that.blur()
+				} else if (val.length > 0) {
+					val = ''
+					that.setAttribute('placeholder', tradThis('%s Not found'))
+					setTimeout(() => that.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+				}
+
+				setRequest(val)
+				break
+			}
+
+			case 'newtab': {
+				searchbar.newtab = that.checked
+				setNewtab(that.checked)
+				break
+			}
+
+			case 'placeholder': {
+				searchbar.placeholder = that.value
+				setPlaceholder(that.value)
+				break
+			}
+		}
+
+		eventDebounce({ searchbar })
 	}
 
 	if (update) {
@@ -861,7 +855,7 @@ export function showPopup(value: string | number) {
 					setTimeout(() => $('creditContainer')?.style.removeProperty('opacity'), 400)
 				}, 200)
 			}
-			storage.sync.set({ reviewPopup: 'removed' })
+			storage.set({ reviewPopup: 'removed' })
 		}
 
 		dom.wrap.id = 'popup'
@@ -898,13 +892,13 @@ export function showPopup(value: string | number) {
 
 	if (typeof value === 'number') {
 		if (value > 30) affiche() //s'affiche après 30 tabs
-		else storage.sync.set({ reviewPopup: value + 1 })
+		else storage.set({ reviewPopup: value + 1 })
 
 		return
 	}
 
 	if (value !== 'removed') {
-		storage.sync.set({ reviewPopup: 0 })
+		storage.set({ reviewPopup: 0 })
 	}
 }
 
@@ -979,8 +973,9 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 		document.body.classList.remove('loading')
 
-		setTimeout(() => {
-			storage.sync.get(null, (data) => settingsInit(data as Sync))
+		setTimeout(async () => {
+			const data = await storage.get()
+			settingsInit(data)
 			document.body.classList.remove('init')
 		}, loadtime + 100)
 	}
@@ -1008,19 +1003,23 @@ function onlineAndMobileHandler() {
 
 	if (mobilecheck()) {
 		// For Mobile that caches pages for days
-		document.addEventListener('visibilitychange', () => {
-			storage.sync.get(['dynamic', 'weather', 'background_type', 'hide'], (data) => {
-				const { dynamic, background_type } = data
-				const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
+		document.addEventListener('visibilitychange', async () => {
+			const data = await storage.get()
 
-				if (dynamicNeedsImage && data.dynamic) {
-					unsplash(data.dynamic)
-				}
+			if (!data?.clock || !data?.weather) {
+				return
+			}
 
-				clock(data as Sync)
-				sunTime(data.weather)
-				weather(data as Sync)
-			})
+			const { dynamic, background_type } = data
+			const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
+
+			if (dynamicNeedsImage && data.dynamic) {
+				unsplash(data.dynamic)
+			}
+
+			clock(data)
+			weather(data)
+			sunTime(data.weather)
 		})
 	}
 
@@ -1095,21 +1094,11 @@ function startup(data: Sync) {
 	pageWidth(data.pagewidth)
 }
 
-onlineAndMobileHandler()
+;(async () => {
+	onlineAndMobileHandler()
 
-try {
-	storage.sync.get(null, async (data) => {
-		// Verify data as a valid Sync storage ( essentially type checking )
-		let hasMissingProps = false
-
-		Object.entries(syncDefaults).forEach(([key, val]) => {
-			if (!(key in data) && key !== 'move') {
-				data[key] = val
-				hasMissingProps = true
-			}
-		})
-
-		await setTranslationCache(data.lang)
+	try {
+		const data = await storage.get()
 
 		// Version change
 		if (data?.about?.version !== syncDefaults.about.version) {
@@ -1124,23 +1113,22 @@ try {
 			// To new 1.16.x
 			if (version_old.includes('1.15') && version.includes('1.16')) {
 				localStorage.hasUpdated = 'true'
+				localStorage.removeItem('translations')
 
 				// Breaking data changes needs filtering
-				data.hide = convertHideStorage(data.hide)
+				data.hide = convertHideStorage(data.hide as HideOld)
 				data.css = data.css.replaceAll('#widgets', '')
 				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
 				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
 			}
 
-			storage.sync.set({ ...data }, () => startup(data as Sync))
+			storage.set({ ...data })
 		}
 
-		if (hasMissingProps) {
-			storage.sync.set({ ...data }, () => startup(data as Sync))
-		} else {
-			startup(data as Sync)
-		}
-	})
-} catch (e) {
-	errorMessage(e)
-}
+		await setTranslationCache(data.lang)
+
+		startup(data)
+	} catch (e) {
+		errorMessage(e)
+	}
+})()

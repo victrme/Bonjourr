@@ -103,7 +103,7 @@ async function addNewImage(files: FileList) {
 
 	// change type si premier local
 	if (ids.length === 0) {
-		storage.sync.set({ background_type: 'custom' })
+		storage.set({ background_type: 'custom' })
 	}
 
 	Object.values(files).forEach(() => {
@@ -229,12 +229,13 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 		}
 
 		// back to unsplash
-		storage.sync.set({ background_type: 'dynamic' })
+		storage.set({ background_type: 'dynamic' })
 		localImages.update({ ids: [], selected: '' })
 
-		setTimeout(() => {
+		setTimeout(async () => {
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
-			storage.sync.get('dynamic', ({ dynamic }) => unsplash(dynamic))
+			const { dynamic } = await storage.get('dynamic')
+			unsplash(dynamic)
 		}, 100)
 	}
 
@@ -284,8 +285,9 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
 		if (ids.length === 0) {
-			storage.sync.set({ background_type: 'dynamic' }, () => {
-				storage.sync.get('dynamic', ({ dynamic }) => unsplash(dynamic))
+			storage.set({ background_type: 'dynamic' }, async () => {
+				const { dynamic } = await storage.get('dynamic')
+				unsplash(dynamic)
 			})
 			return
 		}

@@ -23,7 +23,7 @@ function translateNotesText() {
 	return lines.join('')
 }
 
-export default function notes(init: Notes | null, event?: NotesEvent) {
+export default async function notes(init: Notes | null, event?: NotesEvent) {
 	const container = document.getElementById('notes_container')
 
 	function handleToggle(state: boolean) {
@@ -78,9 +78,8 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	}
 
 	if (event) {
-		storage.sync.get('notes', (data: any) => {
-			updateNotes(data.notes || syncDefaults.notes, event)
-		})
+		const data = await storage.get('notes')
+		updateNotes(data.notes as Notes, event)
 		return
 	}
 

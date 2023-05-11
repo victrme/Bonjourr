@@ -193,14 +193,14 @@ export function closeEditLink() {
 	}, 200)
 }
 
-export const getBrowserStorage = () => {
+export const getBrowserStorage = async () => {
 	console.clear()
 	console.log(localStorage)
-	storage.sync.get(null, (sync) => console.log(sync))
+	console.log(await storage.get())
 }
 
 export function deleteBrowserStorage() {
-	storage.sync.clear()
+	storage.clear()
 	localStorage.clear()
 }
 

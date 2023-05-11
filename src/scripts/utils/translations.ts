@@ -1,3 +1,5 @@
+import parse from './JSONparse'
+
 let trns: { [key: string]: string } = {}
 
 export async function setTranslationCache(lang: string) {
@@ -7,11 +9,13 @@ export async function setTranslationCache(lang: string) {
 		return
 	}
 
-	trns = JSON.parse(localStorage.translations ?? '{}')
+	trns = parse(localStorage.translations) ?? {}
 
 	if (trns?.lang !== lang) {
 		localStorage.translations = await (await fetch(`../../../_locales/${lang}/translations.json`)).text()
-		trns = JSON.parse(localStorage.translations ?? '{}')
+		try {
+		} catch (error) {}
+		trns = parse(localStorage.translations) ?? {}
 	}
 }
 
@@ -24,7 +28,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 
 	for (const tag of tags) {
 		text = tag.textContent ?? ''
-		tag.textContent = trns[text] ?? text
+		tag.textContent = (trns[text] as string) ?? text
 	}
 
 	document.documentElement.setAttribute('lang', lang)
@@ -39,7 +43,7 @@ export async function toggleTraduction(lang: string) {
 
 	await setTranslationCache(lang)
 
-	newDict = JSON.parse(localStorage.translations ?? '{}')
+	newDict = parse(localStorage.translations) ?? {}
 
 	// old lang is 'en'
 	if (currentDict?.lang === undefined) {

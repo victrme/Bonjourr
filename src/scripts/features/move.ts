@@ -464,302 +464,305 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	let firstPos = { x: 0, y: 0 }
 	let moverPos = { x: 0, y: 0 }
 
-	function updateMoveElement(prop: UpdateMove) {
-		storage.sync.get(null, (data) => {
-			let move: Move
+	async function updateMoveElement(prop: UpdateMove) {
+		const data = await storage.get()
+		let move = data.move
 
-			// Check if storage has move, if not, use (deep clone) default move
-			move = 'move' in data ? data.move : structuredClone(syncDefaults.move)
-			// force single on small width
-			if (smallWidth) move.selection = 'single'
+		if (!move) {
+			move = structuredClone(syncDefaults.move)
+		}
 
-			function gridChange() {
-				if (!activeID) return
+		// force single on small width
+		if (smallWidth) {
+			move.selection = 'single'
+		}
 
-				// Get button move amount
-				const y = parseInt(prop.grid?.y || '0')
-				const x = parseInt(prop.grid?.x || '0')
+		function gridChange() {
+			if (!activeID) return
 
-				let grid = move.layouts[move.selection].grid
-				const allActivePos = findIdPositions(grid, activeID)
-				const allAffectedIds: MoveKeys[] = []
+			// Get button move amount
+			const y = parseInt(prop.grid?.y || '0')
+			const x = parseInt(prop.grid?.x || '0')
 
-				// step 0: Adds new line
-				const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
+			let grid = move.layouts[move.selection].grid
+			const allActivePos = findIdPositions(grid, activeID)
+			const allAffectedIds: MoveKeys[] = []
 
-				if (isGridOverflowing) {
-					// fugly typing, that'll do for now
-					if (move.selection === 'single') (grid as Move['layouts']['single']['grid']).push(['.'])
-					if (move.selection === 'double') (grid as Move['layouts']['double']['grid']).push(['.', '.'])
-					if (move.selection === 'triple') (grid as Move['layouts']['triple']['grid']).push(['.', '.', '.'])
+			// step 0: Adds new line
+			const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
+
+			if (isGridOverflowing) {
+				// fugly typing, that'll do for now
+				if (move.selection === 'single') (grid as Move['layouts']['single']['grid']).push(['.'])
+				if (move.selection === 'double') (grid as Move['layouts']['double']['grid']).push(['.', '.'])
+				if (move.selection === 'triple') (grid as Move['layouts']['triple']['grid']).push(['.', '.', '.'])
+			}
+
+			// step 1: Find elements affected by grid change
+			allActivePos.forEach(({ posRow, posCol }) => {
+				const newposition = grid[posRow + y][posCol + x]
+
+				if (newposition !== '.') {
+					allAffectedIds.push(newposition as MoveKeys)
 				}
+			})
 
-				// step 1: Find elements affected by grid change
-				allActivePos.forEach(({ posRow, posCol }) => {
-					const newposition = grid[posRow + y][posCol + x]
-
-					if (newposition !== '.') {
-						allAffectedIds.push(newposition as MoveKeys)
-					}
-				})
-
-				// step 2: remove conflicting fillings on affected elements
-				allAffectedIds.forEach((id) => {
-					if (findIdPositions(grid, id).length > 1) {
-						grid = spansInGridArea(grid, id, { remove: true })
-					}
-				})
-
-				// step 3: replace all active position with affected
-				allActivePos.forEach(({ posRow, posCol }) => {
-					const newRow = Math.min(Math.max(posRow + y, 0), grid.length - 1)
-					const newCol = Math.min(Math.max(posCol + x, 0), grid[0].length - 1)
-
-					let tempItem = grid[posRow][posCol]
-					grid[posRow][posCol] = grid[newRow][newCol]
-					grid[newRow][newCol] = tempItem
-				})
-
-				// step 4: remove empty lines
-				grid.forEach((_, i) => {
-					if (isRowEmpty(grid, i)) {
-						grid.splice(i, 1)
-					}
-				})
-
-				// step 5: profit ??????????????
-				setGridAreas(move.layouts[move.selection])
-				move.layouts[move.selection].grid = grid
-
-				buttonControl.grid(activeID)
-
-				storage.sync.set({ move: move })
-			}
-
-			function alignChange(type: 'box' | 'text') {
-				if (!activeID) return
-
-				const layout = move.layouts[move.selection]
-				const item = layout.items[activeID] || { box: '', text: '' }
-
-				item[type] = prop.box || prop.text || ''
-
-				setAlign(activeID, item)
-				buttonControl.align(item)
-
-				// Update storage
-				move.layouts[move.selection].items[activeID] = item
-				storage.sync.set({ move: move })
-			}
-
-			function layoutChange() {
-				// Only update selection if coming from user
-				move.selection = (prop.layout || 'single') as Move['selection']
-
-				// Assign layout after mutating move
-				const layout = move.layouts[move.selection]
-				const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
-
-				const list = {
-					time: widgetsInGrid.includes('time'),
-					main: widgetsInGrid.includes('main'),
-					notes: widgetsInGrid.includes('notes'),
-					quotes: widgetsInGrid.includes('quotes'),
-					searchbar: widgetsInGrid.includes('searchbar'),
-					quicklinks: widgetsInGrid.includes('quicklinks'),
+			// step 2: remove conflicting fillings on affected elements
+			allAffectedIds.forEach((id) => {
+				if (findIdPositions(grid, id).length > 1) {
+					grid = spansInGridArea(grid, id, { remove: true })
 				}
+			})
 
-				// Update storage
-				const states = widgetsListToData(list, data as Sync)
-				storage.sync.set({ ...states, move })
+			// step 3: replace all active position with affected
+			allActivePos.forEach(({ posRow, posCol }) => {
+				const newRow = Math.min(Math.max(posRow + y, 0), grid.length - 1)
+				const newCol = Math.min(Math.max(posCol + x, 0), grid[0].length - 1)
 
-				// This triggers interface fade
-				toggleWidgetsDisplay(list)
+				let tempItem = grid[posRow][posCol]
+				grid[posRow][posCol] = grid[newRow][newCol]
+				grid[newRow][newCol] = tempItem
+			})
 
-				setTimeout(() => {
-					setAllAligns(layout.items)
-					setGridAreas(layout)
-					buttonControl.layout(move.selection)
-					manageGridSpanner(move.selection)
-					removeSelection()
+			// step 4: remove empty lines
+			grid.forEach((_, i) => {
+				if (isRowEmpty(grid, i)) {
+					grid.splice(i, 1)
+				}
+			})
 
-					// Toggle overlays if we are editing
-					if (dominterface?.classList.contains('move-edit')) {
-						gridOverlay.removeAll()
-						widgetsInGrid.forEach((id) => gridOverlay.add(id as MoveKeys))
-					}
+			// step 5: profit ??????????????
+			setGridAreas(move.layouts[move.selection])
+			move.layouts[move.selection].grid = grid
 
-					if (activeID) {
-						buttonControl.grid(activeID)
-						buttonControl.align(layout.items[activeID])
-					}
-				}, 200) // same duration as toggleWidgetsDisplay interfaceFade.apply
+			buttonControl.grid(activeID)
+
+			storage.set({ move: move })
+		}
+
+		function alignChange(type: 'box' | 'text') {
+			if (!activeID) return
+
+			const layout = move.layouts[move.selection]
+			const item = layout.items[activeID] || { box: '', text: '' }
+
+			item[type] = prop.box || prop.text || ''
+
+			setAlign(activeID, item)
+			buttonControl.align(item)
+
+			// Update storage
+			move.layouts[move.selection].items[activeID] = item
+			storage.set({ move: move })
+		}
+
+		function layoutChange() {
+			// Only update selection if coming from user
+			move.selection = (prop.layout || 'single') as Move['selection']
+
+			// Assign layout after mutating move
+			const layout = move.layouts[move.selection]
+			const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
+
+			const list = {
+				time: widgetsInGrid.includes('time'),
+				main: widgetsInGrid.includes('main'),
+				notes: widgetsInGrid.includes('notes'),
+				quotes: widgetsInGrid.includes('quotes'),
+				searchbar: widgetsInGrid.includes('searchbar'),
+				quicklinks: widgetsInGrid.includes('quicklinks'),
 			}
 
-			function layoutReset() {
-				const layout = move.layouts[move.selection]
-				const enabled = getEnabledWidgetsFromStorage(data as Sync)
-				let grid: typeof layout.grid = []
+			// Update storage
+			const states = widgetsListToData(list, data as Sync)
+			storage.set({ ...states, move })
 
-				enabled.forEach((id) => {
-					grid = gridWidget(grid, move.selection, id, true)
-				})
+			// This triggers interface fade
+			toggleWidgetsDisplay(list)
 
-				move.layouts[move.selection].grid = grid
-				move.layouts[move.selection].items = {}
-
-				removeSelection()
+			setTimeout(() => {
+				setAllAligns(layout.items)
 				setGridAreas(layout)
-				buttonControl.title()
-
-				// Reset aligns
-				setAllAligns({
-					quicklinks: { box: '', text: '' },
-					main: { box: '', text: '' },
-					time: { box: '', text: '' },
-					notes: { box: '', text: '' },
-					searchbar: { box: '', text: '' },
-					quotes: { box: '', text: '' },
-				})
-
-				// Save
-				storage.sync.set({ move: move })
-			}
-
-			function elementSelection() {
-				const layout = move.layouts[move.selection]
-
+				buttonControl.layout(move.selection)
+				manageGridSpanner(move.selection)
 				removeSelection()
 
-				// Remove selection modifiers and quit if failed to get id
-				if (!isEditing() || !prop.select) return
-
-				const id = prop.select as MoveKeys
-
-				buttonControl.align(layout.items[id])
-				buttonControl.span(id)
-				buttonControl.grid(id)
-				buttonControl.title(id)
-
-				$('move-overlay-' + id)!.classList.add('selected') // add clicked
-				$('element-mover')?.classList.add('active')
-
-				activeID = id
-			}
-
-			function toggleMoveStatus() {
+				// Toggle overlays if we are editing
 				if (dominterface?.classList.contains('move-edit')) {
 					gridOverlay.removeAll()
-				} else {
-					buttonControl.layout(move.selection)
-					const ids = getEnabledWidgetsFromStorage(data as Sync)
-					ids.forEach((id) => gridOverlay.add(id))
+					widgetsInGrid.forEach((id) => gridOverlay.add(id as MoveKeys))
 				}
 
-				const mover = $('element-mover')
-				mover?.classList.toggle('hidden')
-				mover?.classList.remove('active')
-				dominterface?.classList.toggle('move-edit')
-				removeSelection()
-			}
-
-			function toggleGridSpans(dir: 'col' | 'row') {
-				if (!activeID) return
-
-				const layout = move.layouts[move.selection]
-				layout.grid = spansInGridArea(layout.grid, activeID, { toggle: dir })
-
-				setGridAreas(layout)
-				buttonControl.grid(activeID)
-				buttonControl.span(activeID)
-
-				storage.sync.set({ move: move })
-			}
-
-			function toggleWidgetOnGrid() {
-				if (!events?.widget) return
-
-				const layout = { ...move.layouts[move.selection] }
-				const { id, on } = events?.widget
-
-				move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
-
-				removeSelection()
-				setGridAreas(move.layouts[move.selection])
-				setAllAligns(move.layouts[move.selection].items)
-
-				// add/remove widget overlay only when editing move
-				if (isEditing()) {
-					on ? gridOverlay.add(id) : gridOverlay.remove(id)
+				if (activeID) {
+					buttonControl.grid(activeID)
+					buttonControl.align(layout.items[activeID])
 				}
+			}, 200) // same duration as toggleWidgetsDisplay interfaceFade.apply
+		}
 
-				let list: { [key in MoveKeys]?: boolean } = {}
-				list[id] = on
+		function layoutReset() {
+			const layout = move.layouts[move.selection]
+			const enabled = getEnabledWidgetsFromStorage(data as Sync)
+			let grid: typeof layout.grid = []
 
-				const states = widgetsListToData(list, data as Sync)
-				storage.sync.set({ ...states, move })
+			enabled.forEach((id) => {
+				grid = gridWidget(grid, move.selection, id, true)
+			})
+
+			move.layouts[move.selection].grid = grid
+			move.layouts[move.selection].items = {}
+
+			removeSelection()
+			setGridAreas(layout)
+			buttonControl.title()
+
+			// Reset aligns
+			setAllAligns({
+				quicklinks: { box: '', text: '' },
+				main: { box: '', text: '' },
+				time: { box: '', text: '' },
+				notes: { box: '', text: '' },
+				searchbar: { box: '', text: '' },
+				quotes: { box: '', text: '' },
+			})
+
+			// Save
+			storage.set({ move: move })
+		}
+
+		function elementSelection() {
+			const layout = move.layouts[move.selection]
+
+			removeSelection()
+
+			// Remove selection modifiers and quit if failed to get id
+			if (!isEditing() || !prop.select) return
+
+			const id = prop.select as MoveKeys
+
+			buttonControl.align(layout.items[id])
+			buttonControl.span(id)
+			buttonControl.grid(id)
+			buttonControl.title(id)
+
+			$('move-overlay-' + id)!.classList.add('selected') // add clicked
+			$('element-mover')?.classList.add('active')
+
+			activeID = id
+		}
+
+		function toggleMoveStatus() {
+			if (dominterface?.classList.contains('move-edit')) {
+				gridOverlay.removeAll()
+			} else {
+				buttonControl.layout(move.selection)
+				const ids = getEnabledWidgetsFromStorage(data as Sync)
+				ids.forEach((id) => gridOverlay.add(id))
 			}
 
-			function pageWidthOverlay(overlay?: boolean) {
-				const isEditing = $('interface')?.classList?.contains('move-edit')
-				const hasOverlays = document.querySelector('.move-overlay')
+			const mover = $('element-mover')
+			mover?.classList.toggle('hidden')
+			mover?.classList.remove('active')
+			dominterface?.classList.toggle('move-edit')
+			removeSelection()
+		}
 
-				if (!isEditing && overlay === false) {
-					gridOverlay.removeAll()
-					return
-				}
+		function toggleGridSpans(dir: 'col' | 'row') {
+			if (!activeID) return
 
-				if (!hasOverlays) {
-					const grid = move.layouts[move.selection].grid
-					const widgets = getEnabledWidgetsFromGrid(grid)
+			const layout = move.layouts[move.selection]
+			layout.grid = spansInGridArea(layout.grid, activeID, { toggle: dir })
 
-					widgets.forEach((id) => {
-						gridOverlay.add(id as MoveKeys)
-					})
-				}
+			setGridAreas(layout)
+			buttonControl.grid(activeID)
+			buttonControl.span(activeID)
+
+			storage.set({ move: move })
+		}
+
+		function toggleWidgetOnGrid() {
+			if (!events?.widget) return
+
+			const layout = { ...move.layouts[move.selection] }
+			const { id, on } = events?.widget
+
+			move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
+
+			removeSelection()
+			setGridAreas(move.layouts[move.selection])
+			setAllAligns(move.layouts[move.selection].items)
+
+			// add/remove widget overlay only when editing move
+			if (isEditing()) {
+				on ? gridOverlay.add(id) : gridOverlay.remove(id)
 			}
 
-			switch (Object.keys(prop)[0]) {
-				case 'toggle':
-					toggleMoveStatus()
-					break
+			let list: { [key in MoveKeys]?: boolean } = {}
+			list[id] = on
 
-				case 'select':
-					elementSelection()
-					break
+			const states = widgetsListToData(list, data as Sync)
+			storage.set({ ...states, move })
+		}
 
-				case 'grid':
-					gridChange()
-					break
+		function pageWidthOverlay(overlay?: boolean) {
+			const isEditing = $('interface')?.classList?.contains('move-edit')
+			const hasOverlays = document.querySelector('.move-overlay')
 
-				case 'span':
-					toggleGridSpans(prop.span!)
-					break
-
-				case 'box':
-					alignChange('box')
-					break
-
-				case 'text':
-					alignChange('text')
-					break
-
-				case 'layout':
-					layoutChange()
-					break
-
-				case 'reset':
-					layoutReset()
-
-				case 'widget':
-					toggleWidgetOnGrid()
-					break
-
-				case 'overlay':
-					pageWidthOverlay(prop.overlay)
-					break
+			if (!isEditing && overlay === false) {
+				gridOverlay.removeAll()
+				return
 			}
-		})
+
+			if (!hasOverlays) {
+				const grid = move.layouts[move.selection].grid
+				const widgets = getEnabledWidgetsFromGrid(grid)
+
+				widgets.forEach((id) => {
+					gridOverlay.add(id as MoveKeys)
+				})
+			}
+		}
+
+		switch (Object.keys(prop)[0]) {
+			case 'toggle':
+				toggleMoveStatus()
+				break
+
+			case 'select':
+				elementSelection()
+				break
+
+			case 'grid':
+				gridChange()
+				break
+
+			case 'span':
+				toggleGridSpans(prop.span!)
+				break
+
+			case 'box':
+				alignChange('box')
+				break
+
+			case 'text':
+				alignChange('text')
+				break
+
+			case 'layout':
+				layoutChange()
+				break
+
+			case 'reset':
+				layoutReset()
+
+			case 'widget':
+				toggleWidgetOnGrid()
+				break
+
+			case 'overlay':
+				pageWidthOverlay(prop.overlay)
+				break
+		}
 	}
 
 	function moverToolboxEvents() {
