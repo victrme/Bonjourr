@@ -468,7 +468,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 		const data = await storage.get()
 		let move = data.move
 
-		if (!('move' in move)) {
+		if (!move) {
 			move = structuredClone(syncDefaults.move)
 		}
 
