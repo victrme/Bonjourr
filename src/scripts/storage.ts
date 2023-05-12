@@ -48,7 +48,9 @@ function onlineClear() {
 
 async function getChromeStorage(key?: string | string[]) {
 	const res = await new Promise<{ [key: string]: unknown }>((resolve) => {
-		chrome.storage.sync.get(key ?? null).then(resolve)
+		window.location.protocol === 'moz-extension:'
+			? browser.storage.sync.get(key ?? null).then(resolve)
+			: chrome.storage.sync.get(key ?? null).then(resolve)
 	})
 
 	return verifyDataAsSync(res)
