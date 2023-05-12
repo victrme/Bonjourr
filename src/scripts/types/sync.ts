@@ -1,3 +1,12 @@
+export type Clock = {
+	ampm: boolean
+	analog: boolean
+	seconds: boolean
+	style: string
+	timezone: string
+	face: string
+}
+
 export type Searchbar = {
 	on: boolean
 	opacity: number
@@ -86,8 +95,6 @@ export type Move = {
 	}
 }
 
-export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
-
 export type HideOld = [[number, number], [number, number, number], [number], [number]]
 
 export type Hide = {
@@ -124,14 +131,7 @@ export type Sync = {
 	custom_time: number
 	custom_every: string
 	background_type: string
-	clock: {
-		ampm: boolean
-		analog: boolean
-		seconds: boolean
-		timezone: string
-		face: ClockFace
-		style: string
-	}
+	clock: Clock
 	dynamic: Dynamic
 	weather: Weather
 	searchbar: Searchbar

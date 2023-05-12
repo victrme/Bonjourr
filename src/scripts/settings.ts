@@ -1,6 +1,7 @@
 import { Sync } from './types/sync'
 
 import storage from './storage'
+import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
@@ -38,7 +39,6 @@ import {
 import {
 	toggleWidgetsDisplay,
 	backgroundFilter,
-	clock,
 	customCss,
 	darkmode,
 	favicon,
@@ -436,31 +436,31 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'analog', checked: this.checked })
+		clock(null, { analog: this.checked })
 	})
 
 	paramId('i_seconds').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'seconds', checked: this.checked })
+		clock(null, { seconds: this.checked })
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'face', value: this.value })
+		clock(null, { face: this.value })
 	})
 
 	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'style', value: this.value })
+		clock(null, { style: this.value })
 	})
 
 	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'ampm', checked: this.checked })
+		clock(null, { ampm: this.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'timezone', value: this.value })
+		clock(null, { timezone: this.value })
 	})
 
 	paramId('i_usdate').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'usdate', checked: this.checked })
+		clock(null, { usdate: this.checked })
 	})
 
 	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
@@ -524,7 +524,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_greeting').addEventListener('keyup', function () {
-		clock(null, { is: 'greeting', value: stringMaxSize(this.value, 32) })
+		clock(null, { greeting: stringMaxSize(this.value, 32) })
 	})
 
 	//
