@@ -28,8 +28,8 @@ type LinksUpdate = {
 	add?: true
 }
 
-const domlinkblocks = document.getElementById('linkblocks')!
-const dominterface = document.getElementById('interface')!
+const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
+const dominterface = document.getElementById('interface') as HTMLDivElement
 
 async function initblocks(links: Link[], isnewtab: boolean) {
 	//
@@ -698,7 +698,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	}
 
 	domlinkblocks.className = init.linkstyle // set class before appendBlock, cannot be moved
-	document.getElementById('linkblocks')?.classList.toggle('hidden', !init.quicklinks)
+	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 	initblocks(bundleLinks(init), init.linknewtab)
 	setRows(init.linksrow, init.linkstyle)
 

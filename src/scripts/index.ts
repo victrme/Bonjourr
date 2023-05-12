@@ -535,7 +535,7 @@ export async function linksImport() {
 
 			if (bookmarkToApply.length > 0) {
 				closeBookmarks($('bookmarks_container')!)
-				quickLinks(null, { is: 'import', bookmarks: bookmarkToApply })
+				quickLinks(null, { bookmarks: bookmarkToApply })
 			}
 		}
 
