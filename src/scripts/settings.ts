@@ -337,7 +337,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
+	const submitLinkFunc = throttle(() => quickLinks(null, { add: true }), 1200)
 
 	paramId('i_title').onkeyup = (e: KeyboardEvent) => {
 		if (e.code === 'Enter') {
@@ -358,17 +358,17 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_linknewtab').onchange = (e) => {
 		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { is: 'newtab', checked: input.checked })
+		quickLinks(null, { newtab: input.checked })
 	}
 
 	paramId('i_linkstyle').onchange = (e) => {
 		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { is: 'style', value: input.value })
+		quickLinks(null, { style: input.value })
 	}
 
 	paramId('i_row').oninput = function (e: Event) {
 		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { is: 'row', value: input.value })
+		quickLinks(null, { row: input.value })
 	}
 
 	paramId('b_importbookmarks').onclick = linksImport
