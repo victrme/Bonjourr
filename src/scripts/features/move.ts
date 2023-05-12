@@ -69,14 +69,8 @@ function widgetsListToData(list: { [key in MoveKeys]?: boolean }, data: Sync) {
 }
 
 function areaStringToLayoutGrid(area: string) {
-	// Remove first and last char quotes
-	area = area.substring(1, area.length - 2)
-
-	// Quotes / double quotes are inverted on firefox, try other split if first failed
-	let rows: string[] = area.split('" "')
-	if (rows.length === 1) rows = area.split("' '")
-
-	let grid = rows.map((row) => row.replace('"', '').split(' '))
+	let rows = area.split("'").filter((a) => a.length > 1)
+	let grid = rows.map((r) => r.split(' '))
 	return grid as Layout['grid']
 }
 
@@ -102,8 +96,8 @@ function getEnabledWidgetsFromStorage(data: Sync) {
 	}
 
 	return Object.entries(displayed)
-		.filter(([key, val]) => val)
-		.map(([key, val]) => key as MoveKeys)
+		.filter(([_, val]) => val)
+		.map(([key, _]) => key as MoveKeys)
 }
 
 function getEnabledWidgetsFromGrid(grid: Layout['grid']) {
