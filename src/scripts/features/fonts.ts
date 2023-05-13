@@ -142,13 +142,12 @@ async function setAutocompleteSettings(settingsDom: HTMLElement) {
 	const fontlist = await fetchFontList()
 	const fragment = new DocumentFragment()
 
-	fontlist?.forEach(function addOptions(item) {
+	for (const item of fontlist ?? []) {
 		const option = document.createElement('option')
-
 		option.textContent = item.family
-		option.setAttribute('value', item.family)
+		option.value = item.family
 		fragment.appendChild(option)
-	})
+	}
 
 	settingsDom.querySelector('#dl_fontfamily')?.appendChild(fragment)
 }
@@ -247,7 +246,7 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 			if (init.family) {
 				let fontface = localStorage.fontface
 
-				if (!fontface.includes('@font-face')) {
+				if (!fontface?.includes('@font-face')) {
 					fontface = await fetchFontface(init.url)
 				}
 

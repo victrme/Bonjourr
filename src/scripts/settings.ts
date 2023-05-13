@@ -870,10 +870,11 @@ async function switchLangs(nextLang: Langs) {
 }
 
 function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
-	if (event) storage.set({ showall: val })
+	;(settingsDom || document.getElementById('settings'))?.classList.toggle('all', val)
 
-	const settings = settingsDom || $('settings')
-	clas(settings, val, 'all')
+	if (event) {
+		storage.set({ showall: val })
+	}
 }
 
 async function selectBackgroundType(cat: string) {
@@ -975,218 +976,213 @@ export async function updateExportJSON(settingsDom: HTMLElement) {
 	input.value = stringifyOrder(data)
 }
 
-export function settingsInit(data: Sync) {
-	function settingsCreator(html: string) {
-		const domshowsettings = $('showSettings')
-		const dominterface = $('interface')
-		const domedit = $('editlink')
+export async function settingsInit(data: Sync) {
+	const html = await (await fetch('settings.html')).text()
 
-		const parser = new DOMParser()
-		const settingsDom = document.createElement('aside')
-		const contentList = parser.parseFromString(html, 'text/html').body.childNodes
+	const domshowsettings = document.getElementById('showSettings')
+	const dominterface = document.getElementById('interface')
+	const domedit = document.getElementById('editlink')
 
-		settingsDom.id = 'settings'
-		settingsDom.setAttribute('class', 'init')
-		Object.values(contentList).forEach((elem) => settingsDom.appendChild(elem))
+	const parser = new DOMParser()
+	const settingsDom = document.createElement('aside')
+	const contentList = parser.parseFromString(html, 'text/html').body.childNodes
 
-		traduction(settingsDom, data.lang)
-		signature(settingsDom)
-		initParams(data, settingsDom)
-		showall(data.showall, false, settingsDom)
+	settingsDom.id = 'settings'
+	settingsDom.setAttribute('class', 'init')
 
-		document.body.appendChild(settingsDom) // Apply to body
-
-		//
-		// Events
-		//
-
-		// On settings changes, update export code
-		const isOnline = detectPlatform() === 'online'
-		const storageUpdate = () => updateExportJSON($('settings') as HTMLElement)
-		const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
-
-		if (isOnline) {
-			window.addEventListener('storage', storageUpdate)
-		} else {
-			chrome.storage.onChanged.addListener(storageUpdate)
-			window.addEventListener('beforeunload', unloadUpdate, { once: true })
-		}
-
-		function toggleDisplay(dom: HTMLElement) {
-			const isClosed = !has(dom, 'shown')
-
-			clas(dom, false, 'init')
-			clas(dom, isClosed, 'shown')
-
-			clas(domshowsettings, isClosed, 'shown')
-			clas(domedit, isClosed, 'pushed')
-
-			clas(dominterface, isClosed, 'pushed')
-			settingsDom.style.removeProperty('transform')
-			settingsDom.style.removeProperty('transition')
-		}
-
-		$('skiptosettings')?.addEventListener('click', function () {
-			toggleDisplay(settingsDom)
-			settingsDom.scrollTo({ top: 0 })
-
-			setTimeout(() => {
-				const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
-				showall.focus()
-			}, 10)
-		})
-
-		domshowsettings?.addEventListener('click', function () {
-			toggleDisplay(settingsDom)
-		})
-
-		document.onkeydown = function (e) {
-			if (e.altKey && e.code === 'KeyS') {
-				getBrowserStorage()
-			}
-
-			if (e.code === 'Escape') {
-				has($('editlink'), 'shown') ? closeEditLink() : toggleDisplay(settingsDom) // Opens menu when pressing "Escape"
-				return
-			}
-
-			if (e.code === 'Tab') {
-				clas(document.body, true, 'tabbing') // Shows input outline when using tab
-				return
-			}
-
-			if ($('error') && e.ctrlKey) {
-				return // do nothing if pressing ctrl or if there's an error message
-			}
-		}
-
-		window.addEventListener('click', function (e) {
-			const path = e.composedPath()
-			const clicksOnEdit = path.filter((d: EventTarget) => (d as HTMLElement).id === 'editlink').length > 0
-
-			if (!clicksOnEdit && has($('editlink'), 'shown')) {
-				closeEditLink() // hides edit menu
-			}
-		})
-
-		dominterface?.addEventListener('click', function (e) {
-			const pathIds = e.composedPath().map((d) => (d as HTMLElement).id)
-			if (pathIds.includes('linkblocks') || pathIds.includes('element-mover')) {
-				return // Do nothing if links or element mover are clicked
-			}
-
-			if (document.body.classList.contains('tabbing')) {
-				clas(document.body, false, 'tabbing') // Removes tabbing class on click
-			}
-
-			// Close menu when clicking anywhere on interface
-			if (has(settingsDom, 'shown')) {
-				toggleDisplay(settingsDom)
-			}
-		})
-
-		//
-		// Mobile settings height control
-
-		function responsiveSettingsHeightDrag() {
-			let firstPos = 0
-			let startTouchY = 0
-
-			function dragStart(e: Event) {
-				e.preventDefault()
-
-				// Get mouse / touch y position
-				if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
-				if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
-
-				// First time dragging, sets maximum y pos at which to block
-				if (firstPos === 0) firstPos = startTouchY
-
-				// Scrollbar padding control on windows & android
-				if (testOS.windows || testOS.android) {
-					settingsDom.style.width = `calc(100% - 10px)`
-					settingsDom.style.paddingRight = `10px`
-				}
-
-				// prevent scroll when dragging
-				settingsDom.style.overflow = `clip`
-
-				// Add mouse / touch moves events
-				window.addEventListener('touchmove', dragMove)
-				window.addEventListener('mousemove', dragMove)
-			}
-
-			function dragMove(e: Event) {
-				let clientY: number = 0
-
-				// Get mouse / touch y position
-				if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
-				if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
-
-				// element is below max height: move
-				if (clientY > 60) {
-					settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
-					settingsDom.style.transition = `transform .0s`
-				}
-			}
-
-			function dragEnd(e: Event) {
-				let clientY: number = 0
-
-				// Get mouse / touch y position
-				if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
-				if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
-
-				// Remove move events
-				window.removeEventListener('touchmove', dragMove)
-				window.removeEventListener('mousemove', dragMove)
-
-				// reset mouse / touch pos
-				startTouchY = 0
-
-				settingsDom.style.removeProperty('padding')
-				settingsDom.style.removeProperty('width')
-				settingsDom.style.removeProperty('overflow')
-
-				// Add bottom padding to see bottom of settings
-				const signaturedom = document.querySelector('.signature') as HTMLDivElement
-				signaturedom.style.paddingBottom = clientY + 60 + 'px'
-
-				// small enough ? close settings
-				if (clientY > window.innerHeight - 100) {
-					toggleDisplay(settingsDom)
-				}
-			}
-
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
-
-			document.body?.addEventListener('mouseleave', (e) => {
-				if (has(settingsDom, 'shown') && window.innerWidth < 600) {
-					dragEnd(e)
-				}
-			})
-		}
-
-		const DrawerDragDebounce = debounce(() => {
-			;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
-			responsiveSettingsHeightDrag()
-		}, 600)
-
-		window.addEventListener('resize', () => {
-			DrawerDragDebounce()
-
-			// removes transition to prevent weird movement when changing to mobile styling
-			// /!\ this is dependent on toggleDisplay() to remove inline styling /!\
-			if (!settingsDom.style.transition) {
-				settingsDom.style.transition = 'none'
-			}
-		})
-
-		responsiveSettingsHeightDrag()
+	for (const elem of Object.values(contentList)) {
+		settingsDom.appendChild(elem)
 	}
 
-	fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+	traduction(settingsDom, data.lang)
+	signature(settingsDom)
+	initParams(data, settingsDom)
+	showall(data.showall, false, settingsDom)
+
+	document.body.appendChild(settingsDom)
+
+	//
+	// Events
+	//
+
+	// On settings changes, update export code
+	const isOnline = detectPlatform() === 'online'
+	const storageUpdate = () => updateExportJSON(settingsDom)
+	const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (isOnline) {
+		window.addEventListener('storage', storageUpdate)
+	} else {
+		chrome.storage.onChanged.addListener(storageUpdate)
+		window.addEventListener('beforeunload', unloadUpdate, { once: true })
+	}
+
+	function toggleDisplay(dom: HTMLElement) {
+		const isClosed = !dom?.classList.contains('shown')
+
+		dom?.classList.toggle('init', false)
+		dom?.classList.toggle('shown', isClosed)
+		domedit?.classList.toggle('pushed', isClosed)
+		dominterface?.classList.toggle('pushed', isClosed)
+		domshowsettings?.classList.toggle('shown', isClosed)
+
+		settingsDom.style.removeProperty('transform')
+		settingsDom.style.removeProperty('transition')
+	}
+
+	document.getElementById('skiptosettings')?.addEventListener('click', function () {
+		toggleDisplay(settingsDom)
+		settingsDom.scrollTo({ top: 0 })
+
+		setTimeout(() => {
+			const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
+			showall.focus()
+		}, 10)
+	})
+
+	domshowsettings?.addEventListener('click', function () {
+		toggleDisplay(settingsDom)
+	})
+
+	window.addEventListener('keydown', function (e) {
+		if (e.altKey && e.code === 'KeyS') {
+			getBrowserStorage()
+		}
+
+		if (e.code === 'Escape') {
+			document.getElementById('editlink')?.classList.contains('shown') ? closeEditLink() : toggleDisplay(settingsDom)
+			return
+		}
+
+		if (e.code === 'Tab') {
+			document.body.classList.toggle('tabbing', true)
+			return
+		}
+	})
+
+	window.addEventListener('click', function (e) {
+		const path = e.composedPath() ?? [document.body]
+		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
+
+		const areSettingsShown = settingsDom?.classList.contains('shown')
+		const isEditlinkOpen = document.getElementById('editlink')?.classList.contains('shown')
+
+		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
+		const onInterface = pathIds.includes('interface')
+		const onEdit = pathIds.includes('editlink')
+
+		if (document.body.classList.contains('tabbing')) {
+			document.body?.classList.toggle('tabbing', false)
+		}
+
+		if (!onEdit && isEditlinkOpen) {
+			closeEditLink()
+		}
+
+		if ((onBody || onInterface) && areSettingsShown) {
+			toggleDisplay(settingsDom)
+		}
+	})
+
+	//
+	// Mobile settings height control
+
+	function responsiveSettingsHeightDrag() {
+		let firstPos = 0
+		let startTouchY = 0
+
+		function dragStart(e: Event) {
+			e.preventDefault()
+
+			// Get mouse / touch y position
+			if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
+			if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
+
+			// First time dragging, sets maximum y pos at which to block
+			if (firstPos === 0) firstPos = startTouchY
+
+			// Scrollbar padding control on windows & android
+			if (testOS.windows || testOS.android) {
+				settingsDom.style.width = `calc(100% - 10px)`
+				settingsDom.style.paddingRight = `10px`
+			}
+
+			// prevent scroll when dragging
+			settingsDom.style.overflow = `clip`
+
+			// Add mouse / touch moves events
+			window.addEventListener('touchmove', dragMove)
+			window.addEventListener('mousemove', dragMove)
+		}
+
+		function dragMove(e: Event) {
+			let clientY: number = 0
+
+			// Get mouse / touch y position
+			if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
+			if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
+
+			// element is below max height: move
+			if (clientY > 60) {
+				settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
+				settingsDom.style.transition = `transform .0s`
+			}
+		}
+
+		function dragEnd(e: Event) {
+			let clientY: number = 0
+
+			// Get mouse / touch y position
+			if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
+			if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
+
+			// Remove move events
+			window.removeEventListener('touchmove', dragMove)
+			window.removeEventListener('mousemove', dragMove)
+
+			// reset mouse / touch pos
+			startTouchY = 0
+
+			settingsDom.style.removeProperty('padding')
+			settingsDom.style.removeProperty('width')
+			settingsDom.style.removeProperty('overflow')
+
+			// Add bottom padding to see bottom of settings
+			const signaturedom = document.querySelector('.signature') as HTMLDivElement
+			signaturedom.style.paddingBottom = clientY + 60 + 'px'
+
+			// small enough ? close settings
+			if (clientY > window.innerHeight - 100) {
+				toggleDisplay(settingsDom)
+			}
+		}
+
+		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
+		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
+		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
+		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
+
+		document.body?.addEventListener('mouseleave', (e) => {
+			if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
+				dragEnd(e)
+			}
+		})
+	}
+
+	const DrawerDragDebounce = debounce(() => {
+		;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
+		responsiveSettingsHeightDrag()
+	}, 600)
+
+	window.addEventListener('resize', () => {
+		DrawerDragDebounce()
+
+		// removes transition to prevent weird movement when changing to mobile styling
+		// /!\ this is dependent on toggleDisplay() to remove inline styling /!\
+		if (!settingsDom.style.transition) {
+			settingsDom.style.transition = 'none'
+		}
+	})
+
+	responsiveSettingsHeightDrag()
 }
