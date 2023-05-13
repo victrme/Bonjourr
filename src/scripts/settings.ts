@@ -679,8 +679,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		}
 
 		// Then control if widgets are on or off
-		settingsDom.querySelectorAll('widget-option').forEach((dom) => {
-			toggleTabindex('#' + dom.id, has(dom, 'shown'))
+		settingsDom.querySelectorAll('.widget-option').forEach((dom) => {
+			toggleTabindex('#' + dom.id, dom?.classList.contains('shown'))
 		})
 
 		// Disable all "all" settings if off
@@ -690,7 +690,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		// Toggle tooltips
 		settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
-			toggleTabindex('.' + dom.classList[1], has(dom, 'shown'))
+			toggleTabindex('.' + dom.classList[1], dom?.classList.contains('shown'))
 		})
 
 		// Toggle in-widgets hidden options
