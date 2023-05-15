@@ -34,14 +34,9 @@
 	letter-spacing: initial;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	border: 1px solid rgba(255, 255, 255, 0.075);
+	background-color: rgba(255, 255, 255, var(--notes-background-alpha));
 
-	@include frostedGlass(
-		$tint: 255,
-		$alpha: var(--notes-background-alpha),
-		$fbAlpha: var(--notes-background-alpha),
-		$blur: 10px,
-		$fbColor: #fff
-	);
+	@include frostedGlass();
 
 	.line.sel {
 		background-color: #fff2;

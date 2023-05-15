@@ -2,14 +2,13 @@
 	border: none;
 	border-radius: 1em;
 	background-color: #fff2;
-	backdrop-filter: blur(1em);
 	outline: 0.4em solid transparent;
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 	z-index: 2;
 
 	&.selected {
 		background: #fff3;
-		outline-color: var(--blue);
+		outline-color: var(--color-blue);
 	}
 
 	&:hover {
@@ -58,14 +57,15 @@
 	padding-top: 2em;
 	min-width: 12em;
 	font-size: 14px;
-	color: #2a2222;
+	color: var(--color-text);
+	background-color: var(--color-dialog);
 	border-radius: 1em;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
 	cursor: grab;
 	z-index: 4;
 
-	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
+	@include frostedGlass($blur: 1em);
 
 	&.hidden {
 		display: none;
@@ -99,7 +99,7 @@
 
 		&.selected {
 			background-color: #0072ee22;
-			outline: 2px solid var(--blue);
+			outline: 2px solid var(--color-blue);
 		}
 
 		&:disabled {
@@ -133,7 +133,7 @@ button.grid-spanner {
 
 	&.selected:not(:disabled) {
 		background-color: #0072ee22;
-		outline-color: var(--blue);
+		outline-color: var(--color-blue);
 	}
 
 	&:disabled {

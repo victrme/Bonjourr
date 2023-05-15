@@ -4,18 +4,8 @@
 $fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
 $code: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
 
-$purewhite: white;
-$pureblack: black;
-
 $green: #2ed058;
 $red: #fe3b31;
-$settingsGrey: #f2f2f7;
-$inputGrey: #eaeaee;
-$focusedGrey: #dadade;
-$borderGrey: #c8c7cc;
-$placeholderGrey: #7c7d7e;
-$greyish: #3a3a3a;
-$blackish: #222;
 
 $inputHeight: 2.35em;
 $settingsMargin: 0.65em;
@@ -50,7 +40,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 ::-webkit-scrollbar-thumb {
-	box-shadow: inset 0 0 10px 10px $borderGrey;
+	box-shadow: inset 0 0 10px 10px var(--color-gray-border);
 	border: solid 3px transparent;
 	border-radius: 10px;
 }
@@ -67,8 +57,8 @@ body {
 	user-select: none;
 	touch-action: pan-y;
 	opacity: 1;
+	color: white;
 	background-color: var(--average-color);
-	color: $purewhite;
 	font-size: 1em;
 	font-family: $fonts;
 	min-height: var(--app-height);
@@ -81,7 +71,6 @@ body {
 	display: flex;
 	flex-direction: column;
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-	--blue: #0072ee;
 
 	p,
 	h3 {
@@ -90,7 +79,7 @@ body {
 
 	hr {
 		border: none;
-		border-bottom: 1px solid $borderGrey;
+		border-bottom: 1px solid var(--color-gray-border);
 		margin: $settingsMargin 0;
 		display: block;
 	}
@@ -124,7 +113,7 @@ body {
 		#linkblocks.text a:focus-visible span,
 		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {
-			outline: 2px solid var(--blue);
+			outline: 2px solid var(--color-blue);
 		}
 	}
 
@@ -162,23 +151,56 @@ body {
 	justify-content: center;
 }
 
-@mixin frostedGlass($tint: 255, $alpha: 0.4, $blur: 10px, $fbTint: 251, $fbAlpha: 0.8, $fbColor: #222) {
-	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
-		backdrop-filter: blur($blur);
+@mixin frostedGlass($blur: 10px) {
+	backdrop-filter: blur($blur);
+
+	@supports not (backdrop-filter: none) {
 		-webkit-backdrop-filter: blur($blur);
-		background: rgba($tint, $tint, $tint, $alpha);
 	}
+}
 
-	// fb: fallback
-	@supports not ((backdrop-filter: none) or (-webkit-backdrop-filter: none)) {
-		background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
-		color: $fbColor;
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-red: #fe3b31;
+		--color-blue: #2990ff;
+		--color-green: #2ed058;
+		--color-gray-param: #1c1c1e;
+		--color-gray-settings: #000000;
+		--color-gray-areas: #39383d;
+		--color-gray-input: #39383d;
+		--color-gray-border: #39383d;
+		--color-gray-focused: #2c2c2f;
+		--color-gray-light-text: #929294;
+		--color-gray-text: #eeeeee;
+		--color-dialog: #000a;
+		--color-dialog-border: #fff4;
+		--color-dialog-input-text: #a4a7a8;
+
+		@supports not (backdrop-filter: none) {
+			--color-dialog: #1c1c1cee;
+		}
 	}
+}
 
-	// @-moz-document url-prefix() {
-	// 	background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
-	// 	color: $fbColor;
-	// }
+:root[data-theme='light'] {
+	--color-red: #fe3b31;
+	--color-blue: #0072ee;
+	--color-green: #2ed058;
+	--color-gray-param: #ffffff;
+	--color-gray-settings: #f2f2f7;
+	--color-gray-areas: #f2f2f7;
+	--color-gray-input: #eaeaee;
+	--color-gray-focused: #dadade;
+	--color-gray-border: #c8c7cc;
+	--color-gray-light-text: #7c7d7e;
+	--color-gray-text: #222222;
+	--color-dialog: #fffa;
+	--color-dialog-border: #3334;
+	--color-dialog-input-text: #a4a7a8;
+
+	@supports not (backdrop-filter: none) {
+		--color-dialog: #f2f2f7ee;
+	}
 }
 
 @mixin allSettings {
@@ -253,7 +275,7 @@ body {
 	}
 
 	button {
-		color: var(--blue);
+		color: var(--color-blue);
 		font-size: 14px;
 		border-radius: 8.5px;
 		border: 2px solid transparent;
@@ -267,13 +289,13 @@ body {
 	#i_refresh,
 	#i_qtrefresh {
 		height: $inputHeight;
-		color: $blackish;
+		color: var(--color-gray-text);
 		font-size: 13px;
 		padding-left: 10px;
 		border-radius: 8.5px;
 		box-sizing: border-box;
 		border: 2px solid transparent;
-		background-color: $inputGrey;
+		background-color: var(--color-gray-input);
 		-webkit-appearance: none;
 	}
 
@@ -285,11 +307,11 @@ body {
 
 	input[type='text']:focus,
 	input[type='url']:focus {
-		background-color: $focusedGrey;
+		background-color: var(--color-gray-focused);
 	}
 
 	input::placeholder {
-		color: $placeholderGrey;
+		color: var(--color-gray-light-text);
 		opacity: 1;
 	}
 
@@ -310,7 +332,7 @@ body {
 		margin: 0;
 		border-radius: 16px;
 		border: 2px solid transparent;
-		background-color: $inputGrey;
+		background-color: var(--color-gray-input);
 
 		-webkit-appearance: none;
 		-moz-appearance: none;
@@ -330,7 +352,7 @@ body {
 			left: 0px;
 			border-radius: 50%;
 			box-shadow: $thumbShadow;
-			background-color: $purewhite;
+			background-color: white;
 			transition: background-color 0.3s, transform 0.3s;
 		}
 
@@ -355,7 +377,7 @@ body {
 		margin: 0;
 		cursor: grab;
 		border-radius: 1.5rem;
-		background-color: $focusedGrey;
+		background-color: #c8c7cc;
 		-webkit-appearance: none;
 
 		&:active {
@@ -366,12 +388,12 @@ body {
 		&::-moz-range-track {
 			height: 2px;
 			border-radius: 50px;
-			background: $focusedGrey;
+			background: #c8c7cc;
 		}
 
 		&::-moz-range-progress {
 			height: 2px;
-			background-color: $borderGrey;
+			background-color: #c8c7cc;
 		}
 
 		&::-moz-range-thumb {
@@ -390,8 +412,8 @@ body {
 		background: #fff;
 		height: 20px;
 		width: 20px;
-		border-radius: 50px;
 		border: 0;
+		border-radius: 50px;
 		box-shadow: $thumbShadow;
 	}
 
