@@ -397,28 +397,18 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
 	const { now, rise, set } = sunTime()
 
-	if (now) {
-		if (isEvent) {
-			storage.set({ dark: value })
-		}
-
-		if (value === 'auto') {
-			const choice = now <= rise || now > set ? 'dark' : 'light'
-			document.documentElement.dataset.theme = choice
-		}
-
-		if (value === 'disable') {
-			document.documentElement.dataset.theme = 'light'
-		}
-
-		if (value === 'enable') {
-			document.documentElement.dataset.theme = 'dark'
-		}
-
-		if (value === 'system') {
-			document.documentElement.dataset.theme = ''
-		}
+	if (isEvent) {
+		storage.set({ dark: value })
 	}
+
+	if (now && value === 'auto') {
+		const choice = now <= rise || now > set ? 'dark' : 'light'
+		document.documentElement.dataset.theme = choice
+	}
+
+	if (value === 'disable') document.documentElement.dataset.theme = 'light'
+	if (value === 'enable') document.documentElement.dataset.theme = 'dark'
+	if (value === 'system') document.documentElement.dataset.theme = ''
 }
 
 export function showPopup(value: string | number) {

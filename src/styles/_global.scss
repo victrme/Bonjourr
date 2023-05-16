@@ -9,48 +9,7 @@ $thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
 $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
-:root {
-	--app-height: 100vh;
-	--notes-width: 50em;
-	--page-width: 1600px;
-	--load-time-transition: 0ms;
-	--average-color: black;
-	--text-shadow-alpha: 0.2;
-	--notes-background-alpha: 0.1;
-	--searchbar-background-alpha: 0.1;
-	--font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
-	--font-weight-clock: 200;
-	--font-weight: 400;
-	--font-size: 1em;
-	--color-red: #fe3b31;
-	--color-green: #2ed058;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--color-blue: #2990ff;
-		--color-text: #eeeeee;
-		--color-light-text: #929294;
-		--color-param: #1c1c1e;
-		--color-settings: #000000;
-		--color-input: #39383d;
-		--color-border: var(--color-input);
-		--color-areas: var(--color-input);
-		--color-areas-text: var(--color-text);
-		--color-placeholder: var(--color-light-text);
-		--color-focused: #2c2c2f;
-		--color-dialog: #000a;
-		--color-dialog-border: #fff4;
-		--color-dialog-highlight: #fff2;
-		--color-dialog-input-text: #a4a7a8;
-
-		@supports not (backdrop-filter: none) {
-			--color-dialog: #1c1c1cee;
-		}
-	}
-}
-
-:root[data-theme='light'] {
+@mixin light-theme {
 	--color-blue: #0072ee;
 	--color-text: #222222;
 	--color-param: #ffffff;
@@ -69,6 +28,61 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
 	@supports not (backdrop-filter: none) {
 		--color-dialog: #f2f2f7ee;
+	}
+}
+
+@mixin dark-theme {
+	--color-blue: #2990ff;
+	--color-text: #eeeeee;
+	--color-light-text: #929294;
+	--color-param: #1c1c1e;
+	--color-settings: #000000;
+	--color-input: #39383d;
+	--color-border: var(--color-input);
+	--color-areas: var(--color-input);
+	--color-areas-text: var(--color-text);
+	--color-placeholder: var(--color-light-text);
+	--color-focused: #2c2c2f;
+	--color-dialog: #000a;
+	--color-dialog-border: #fff4;
+	--color-dialog-highlight: #fff2;
+	--color-dialog-input-text: #a4a7a8;
+
+	@supports not (backdrop-filter: none) {
+		--color-dialog: #1c1c1cee;
+	}
+}
+
+:root {
+	--app-height: 100vh;
+	--notes-width: 50em;
+	--page-width: 1600px;
+	--load-time-transition: 0ms;
+	--average-color: black;
+	--text-shadow-alpha: 0.2;
+	--notes-background-alpha: 0.1;
+	--searchbar-background-alpha: 0.1;
+	--font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
+	--font-weight-clock: 200;
+	--font-weight: 400;
+	--font-size: 1em;
+	--color-red: #fe3b31;
+	--color-green: #2ed058;
+
+	&[data-theme='light'] {
+		@include light-theme();
+	}
+
+	&[data-theme='dark'] {
+		@include dark-theme();
+	}
+
+	@media (prefers-color-scheme: dark) {
+		@include dark-theme();
+	}
+
+	@media (prefers-color-scheme: light) {
+		@include light-theme();
 	}
 }
 
