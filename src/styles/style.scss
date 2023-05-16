@@ -852,7 +852,7 @@
 		height: 10px;
 		left: 2px;
 		top: 2px;
-		background-color: #35c759;
+		background-color: var(--color-green);
 		border-radius: 100%;
 		z-index: 10;
 		transition: opacity 0.3s;
@@ -902,10 +902,10 @@
 
 #bookmarks,
 #editlink {
-	color: var(--color-gray-text);
+	color: var(--color-text);
 	background-color: var(--color-dialog);
+	border: 1px solid var(--color-dialog-border);
 	border-radius: 8px;
-	border: 1px solid rgba(255, 255, 255, 0.3);
 
 	@include frostedGlass($blur: 25px);
 
@@ -957,7 +957,6 @@
 			margin: 10px;
 			padding: 15px;
 			padding-left: 3.5em;
-			color: #222c;
 			text-align: left;
 			border-radius: 8px;
 			border: 1px solid transparent;
@@ -1004,9 +1003,8 @@
 			}
 
 			&.selected {
-				color: #222;
-				background-color: #fff6;
-				border-color: rgba(255, 255, 255, 0.3);
+				border-color: var(--color-dialog-highlight);
+				background-color: var(--color-dialog-highlight);
 
 				&:before {
 					filter: none;
@@ -1095,8 +1093,8 @@
 		outline: #007aff66;
 
 		&:focus {
-			color: var(--color-gray-text);
-			background-color: var(--color-gray-param);
+			color: var(--color-text);
+			background-color: var(--color-dialog-highlight);
 			border: 3px solid #007aff66;
 			transition: background-color 0.1s;
 		}
@@ -1109,7 +1107,7 @@
 		border: 3px solid transparent;
 		text-align: left;
 		padding: 2px 12px;
-		color: var(--color-gray-text);
+		color: var(--color-text);
 		outline: none;
 		cursor: pointer;
 	}
@@ -1282,7 +1280,7 @@
 		padding: 5px 10px;
 		border-radius: 5px;
 		border: none;
-		background-color: $red;
+		background-color: var(--color-red);
 		color: #fff;
 	}
 

@@ -10,8 +10,8 @@
 	padding: 0 21px;
 	visibility: hidden;
 
-	background-color: var(--color-gray-settings);
-	color: var(--color-gray-text);
+	background-color: var(--color-settings);
+	color: var(--color-text);
 	font-size: 15px;
 	font-weight: 400;
 	text-shadow: none;
@@ -106,7 +106,7 @@
 			padding: 1.3em;
 			margin-top: 2em;
 			line-height: 1.3em;
-			background-color: #fff;
+			background-color: var(--color-param);
 			transition: background-color 0.3s $easeOutThree;
 			overflow: hidden;
 			border-radius: 10px;
@@ -130,24 +130,28 @@
 			position: absolute;
 			top: 1.5em;
 			right: 1em;
-			width: 30px;
-			height: 30px;
-			border-radius: 100%;
-			cursor: pointer;
-			box-shadow: rgb(0 0 0 / 20%) 0 2px 5px;
-			z-index: 10;
 			opacity: 1;
-			background-color: #fff;
+			padding: 0;
+			margin: 0;
+			border-radius: 100%;
+			box-shadow: rgb(0 0 0 / 20%) 0 2px 5px;
+			background-color: var(--color-input);
 			transition: background-color 0.2s $easeOutThree;
+			z-index: 10;
+			cursor: pointer;
 			@include allCentered();
 
-			img {
-				width: 10px;
-				display: block;
+			span {
+				font-size: 16px;
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				color: var(--color-light-text);
 			}
 
 			&:hover {
-				background-color: #e4e3ea;
+				background-color: var(--color-focused);
+				text-decoration: none;
 			}
 		}
 	}
@@ -215,7 +219,7 @@
 
 	hr {
 		border: none;
-		border-bottom: 1px solid var(--color-gray-input);
+		border-bottom: 1px solid var(--color-input);
 		width: 100%;
 	}
 
@@ -230,31 +234,32 @@
 		align-items: center;
 		justify-content: space-between;
 		text-transform: uppercase;
-		color: var(--color-gray-light-text);
+		color: var(--color-light-text);
 		font-weight: 400;
 		font-size: 0.8em;
 		letter-spacing: 1px;
 		margin: 32px 26px 16px 26px;
 
 		.tooltip {
-			background-color: var(--color-gray-input);
-			border: 1px solid var(--color-gray-focused);
+			background-color: var(--color-input);
+			border-color: var(--color-focused);
 		}
 	}
 
 	.tooltip {
-		background-color: var(--color-gray-areas);
-		color: var(--color-gray-light-text);
 		width: 20px;
 		height: 20px;
 		border-radius: 100%;
+		border: 1px solid;
 		box-sizing: border-box;
-		border: 1px solid var(--color-gray-focused);
+		color: var(--color-light-text);
+		border-color: var(--color-input);
+		background-color: var(--color-areas);
 		transition: background-color 0.1s, transform 0.1s;
 		padding: 0px;
 
 		&:hover {
-			background-color: var(--color-gray-focused);
+			background-color: var(--color-input);
 			text-decoration: none;
 		}
 
@@ -268,7 +273,7 @@
 	}
 
 	.tooltiptext {
-		color: var(--color-gray-light-text);
+		color: var(--color-light-text);
 		font-size: 13px;
 		max-height: 0;
 		overflow: hidden;
@@ -305,15 +310,8 @@
 
 	@include settingsBase();
 
-	.title {
-		background-color: #ffffff;
-		border-top: 1px solid var(--color-gray-border);
-		border-bottom: 1px solid var(--color-gray-border);
-		padding: 0.5em 0;
-	}
-
 	.param {
-		background-color: var(--color-gray-param);
+		background-color: var(--color-param);
 		padding: $settingsMargin 1.3em;
 		border-radius: 10px;
 	}
@@ -380,13 +378,14 @@
 		button,
 		button[data-layout='double'] div:nth-child(1),
 		button[data-layout='triple'] div:nth-child(2) {
-			outline: 2px solid #9e9ea0;
+			outline: 2px solid var(--color-placeholder);
 		}
 
 		button:hover,
 		button.selected,
 		button:focus-visible {
 			outline-color: var(--color-blue);
+
 			&[data-layout='double'] div:nth-child(1),
 			&[data-layout='triple'] div:nth-child(2) {
 				outline-color: var(--color-blue);
@@ -398,9 +397,10 @@
 			display: grid;
 			padding: 0;
 			border: 0;
+			opacity: 0.7;
 			width: 4em;
 			border-radius: 4px;
-			background-color: var(--color-gray-input);
+			background-color: var(--color-input);
 
 			div {
 				height: 2em;
@@ -410,6 +410,7 @@
 			&:hover,
 			&:focus-visible,
 			&.selected {
+				opacity: 1;
 				background-color: rgba(0, 114, 238, 0.1333333333);
 			}
 
@@ -491,8 +492,8 @@
 		font-size: 14px;
 		text-align: center;
 		cursor: pointer;
-		color: var(--color-text);
-		background-color: var(--color-gray-areas);
+		color: var(--color-areas-text);
+		background-color: var(--color-areas);
 		border: 1px dashed transparent;
 
 		transform: scale(1);
@@ -520,7 +521,7 @@
 		}
 
 		&:hover {
-			background-color: var(--color-gray-focused);
+			background-color: var(--color-focused);
 		}
 
 		&.dragover {
@@ -531,7 +532,7 @@
 		}
 
 		&:active {
-			background-color: var(--color-gray-input);
+			background-color: var(--color-input);
 		}
 	}
 
@@ -560,7 +561,7 @@
 				overflow: hidden;
 				border: none;
 				border-radius: 10px;
-				background-color: var(--color-gray-input);
+				background-color: var(--color-input);
 				transition: box-shadow 0.15s, transform 0.15s, opacity 0.15s;
 
 				&.selected {
@@ -697,8 +698,8 @@
 		border: none;
 		border-radius: 10px;
 		box-sizing: border-box;
-		color: var(--color-gray-text);
-		background-color: var(--color-gray-param);
+		color: var(--color-text);
+		background-color: var(--color-param);
 	}
 
 	#importexport .param {
@@ -712,7 +713,7 @@
 			margin: auto;
 			margin-bottom: 15px;
 			border-radius: 8.5px;
-			background-color: var(--color-gray-areas);
+			background-color: var(--color-areas);
 			align-items: center;
 
 			.glider {
@@ -764,7 +765,7 @@
 				z-index: 2;
 
 				&:hover {
-					background-color: var(--color-gray-focused);
+					background-color: var(--color-focused);
 				}
 			}
 		}
@@ -792,8 +793,8 @@
 				overflow-y: hidden;
 				resize: vertical;
 				border: none;
-				color: var(--color-gray-text);
-				background-color: var(--color-gray-areas);
+				color: var(--color-text);
+				background-color: var(--color-areas);
 				box-sizing: border-box;
 				font-family: $code;
 				tab-size: 1.5em;
@@ -830,10 +831,10 @@
 				flex: 1;
 				margin-right: 1em;
 				tab-size: 0.05em;
-				background-color: var(--color-gray-areas);
+				background-color: var(--color-areas);
 
 				&:focus {
-					background-color: var(--color-gray-focused);
+					background-color: var(--color-focused);
 				}
 			}
 
@@ -867,11 +868,12 @@
 		}
 
 		#b_resetno {
-			color: $red;
+			color: var(--color-red);
 		}
 	}
 
 	.signature {
+		color: var(--color-light-text);
 		text-align: left;
 		font-size: 14px;
 		padding: 4em;

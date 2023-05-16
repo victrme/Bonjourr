@@ -6,6 +6,8 @@
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 	z-index: 2;
 
+	@include frostedGlass($blur: 1em);
+
 	&.selected {
 		background: #fff3;
 		outline-color: var(--color-blue);
@@ -46,6 +48,12 @@
 	grid-area: quotes;
 }
 
+:root[data-theme='light'] #text-alignment-mover button,
+:root[data-theme='light'] #box-alignment-mover button,
+:root[data-theme='light'] #grid-mover button {
+	color: var(--color-light-text);
+}
+
 #element-mover {
 	position: absolute;
 	display: flex;
@@ -67,10 +75,6 @@
 
 	@include frostedGlass($blur: 1em);
 
-	&.hidden {
-		display: none;
-	}
-
 	&:not(.active) > div:not(#close-mover-wrapper) {
 		pointer-events: none;
 		filter: grayscale(1);
@@ -78,8 +82,16 @@
 		cursor: auto;
 	}
 
+	&.hidden {
+		display: none;
+	}
+
+	button {
+		color: var(--color-text);
+	}
+
 	hr {
-		border-color: #3334;
+		border-color: var(--color-dialog-border);
 	}
 
 	p {
@@ -94,7 +106,6 @@
 		border: none;
 		border-radius: 0.2em;
 		min-width: 2.5em;
-		color: #666;
 		background-color: transparent;
 
 		&.selected {
