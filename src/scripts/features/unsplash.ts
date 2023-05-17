@@ -27,11 +27,13 @@ export default async function unsplash(
 	async function preloadImage(src: string) {
 		const img = new Image()
 
-		img.src = src
-		await img.decode()
-		img.remove()
-
-		return
+		try {
+			img.src = src
+			await img.decode()
+			img.remove()
+		} catch (error) {
+			console.warn('Could not decode image: ', src)
+		}
 	}
 
 	function imgCredits(image: UnsplashImage) {
