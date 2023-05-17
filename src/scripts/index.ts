@@ -395,13 +395,12 @@ export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: 
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
-	const { now, rise, set } = sunTime()
-
 	if (isEvent) {
 		storage.set({ dark: value })
 	}
 
-	if (now && value === 'auto') {
+	if (value === 'auto') {
+		const { now, rise, set } = sunTime()
 		const choice = now <= rise || now > set ? 'dark' : 'light'
 		document.documentElement.dataset.theme = choice
 	}
