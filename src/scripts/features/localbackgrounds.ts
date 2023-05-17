@@ -285,10 +285,8 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
 		if (ids.length === 0) {
-			storage.set({ background_type: 'dynamic' }, async () => {
-				const { dynamic } = await storage.get('dynamic')
-				unsplash(dynamic)
-			})
+			const { dynamic } = await storage.get('dynamic')
+			unsplash(dynamic ?? null)
 			return
 		}
 
