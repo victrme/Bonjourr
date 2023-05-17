@@ -387,7 +387,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		if (isCustom) {
 			localBackgrounds({ freq: this.value })
 		} else {
-			unsplash(null, { is: 'every', value: this.value })
+			unsplash(null, { every: this.value })
 		}
 	})
 
@@ -401,7 +401,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 			if (isCustom) {
 				localBackgrounds({ refresh: arrow })
 			} else {
-				unsplash(null, { is: 'refresh', button: arrow })
+				unsplash(null, { refresh: arrow })
 			}
 		}
 
@@ -409,7 +409,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplash(null, { is: 'collection', value: stringMaxSize(this.value, 256) })
+		unsplash(null, { collection: stringMaxSize(this.value, 256) })
 		this.blur()
 	})
 
