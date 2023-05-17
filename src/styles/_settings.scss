@@ -10,8 +10,8 @@
 	padding: 0 21px;
 	visibility: hidden;
 
-	background-color: $settingsGrey;
-	color: $blackish;
+	background-color: var(--color-settings);
+	color: var(--color-text);
 	font-size: 15px;
 	font-weight: 400;
 	text-shadow: none;
@@ -106,7 +106,7 @@
 			padding: 1.3em;
 			margin-top: 2em;
 			line-height: 1.3em;
-			background-color: #fff;
+			background-color: var(--color-param);
 			transition: background-color 0.3s $easeOutThree;
 			overflow: hidden;
 			border-radius: 10px;
@@ -117,11 +117,11 @@
 			}
 
 			p > span#link {
-				color: var(--blue);
+				color: var(--color-blue);
 			}
 
 			#link {
-				color: var(--blue);
+				color: var(--color-blue);
 				text-decoration: none;
 			}
 		}
@@ -130,24 +130,28 @@
 			position: absolute;
 			top: 1.5em;
 			right: 1em;
-			width: 30px;
-			height: 30px;
-			border-radius: 100%;
-			cursor: pointer;
-			box-shadow: rgb(0 0 0 / 20%) 0 2px 5px;
-			z-index: 10;
 			opacity: 1;
-			background-color: #fff;
+			padding: 0;
+			margin: 0;
+			border-radius: 100%;
+			box-shadow: rgb(0 0 0 / 20%) 0 2px 5px;
+			background-color: var(--color-input);
 			transition: background-color 0.2s $easeOutThree;
+			z-index: 10;
+			cursor: pointer;
 			@include allCentered();
 
-			img {
-				width: 10px;
-				display: block;
+			span {
+				font-size: 16px;
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				color: var(--color-light-text);
 			}
 
 			&:hover {
-				background-color: #e4e3ea;
+				background-color: var(--color-focused);
+				text-decoration: none;
 			}
 		}
 	}
@@ -198,14 +202,6 @@
 		max-height: 270px;
 	}
 
-	// // Safari composing layers
-	// .param > *:not(hr),
-	// #hideelem button,
-	// #cssEditor {
-	// 	transform: translate3d(0, 0, 0);
-	// 	-webkit-transform: translate3d(0, 0, 0);
-	// }
-
 	input[type='text'] {
 		will-change: background-color;
 	}
@@ -223,7 +219,7 @@
 
 	hr {
 		border: none;
-		border-bottom: 1px solid $inputGrey;
+		border-bottom: 1px solid var(--color-input);
 		width: 100%;
 	}
 
@@ -238,31 +234,32 @@
 		align-items: center;
 		justify-content: space-between;
 		text-transform: uppercase;
-		color: #6d6d72;
+		color: var(--color-light-text);
 		font-weight: 400;
 		font-size: 0.8em;
 		letter-spacing: 1px;
 		margin: 32px 26px 16px 26px;
 
 		.tooltip {
-			background-color: $inputGrey;
-			border: 1px solid #e3e3ea;
+			background-color: var(--color-input);
+			border-color: var(--color-focused);
 		}
 	}
 
 	.tooltip {
-		background-color: $settingsGrey;
-		color: #555;
 		width: 20px;
 		height: 20px;
 		border-radius: 100%;
+		border: 1px solid;
 		box-sizing: border-box;
-		border: 1px solid #eaeaee;
+		color: var(--color-light-text);
+		border-color: var(--color-input);
+		background-color: var(--color-areas);
 		transition: background-color 0.1s, transform 0.1s;
 		padding: 0px;
 
 		&:hover {
-			background-color: $focusedGrey;
+			background-color: var(--color-input);
 			text-decoration: none;
 		}
 
@@ -276,14 +273,14 @@
 	}
 
 	.tooltiptext {
-		color: #6d6d72;
+		color: var(--color-light-text);
 		font-size: 13px;
 		max-height: 0;
 		overflow: hidden;
 		transition: max-height 0.4s, margin 0.4s, padding 0.2s;
 
 		a {
-			color: var(--blue);
+			color: var(--color-blue);
 			text-decoration: none;
 		}
 
@@ -313,15 +310,8 @@
 
 	@include settingsBase();
 
-	.title {
-		background-color: #ffffff;
-		border-top: 1px solid $borderGrey;
-		border-bottom: 1px solid $borderGrey;
-		padding: 0.5em 0;
-	}
-
 	.param {
-		background-color: #ffffff;
+		background-color: var(--color-param);
 		padding: $settingsMargin 1.3em;
 		border-radius: 10px;
 	}
@@ -388,16 +378,17 @@
 		button,
 		button[data-layout='double'] div:nth-child(1),
 		button[data-layout='triple'] div:nth-child(2) {
-			outline: 2px solid #9e9ea0;
+			outline: 2px solid var(--color-placeholder);
 		}
 
 		button:hover,
 		button.selected,
 		button:focus-visible {
-			outline-color: var(--blue);
+			outline-color: var(--color-blue);
+
 			&[data-layout='double'] div:nth-child(1),
 			&[data-layout='triple'] div:nth-child(2) {
-				outline-color: var(--blue);
+				outline-color: var(--color-blue);
 			}
 		}
 
@@ -406,9 +397,10 @@
 			display: grid;
 			padding: 0;
 			border: 0;
+			opacity: 0.7;
 			width: 4em;
 			border-radius: 4px;
-			background-color: $inputGrey;
+			background-color: var(--color-input);
 
 			div {
 				height: 2em;
@@ -418,6 +410,7 @@
 			&:hover,
 			&:focus-visible,
 			&.selected {
+				opacity: 1;
 				background-color: rgba(0, 114, 238, 0.1333333333);
 			}
 
@@ -499,8 +492,8 @@
 		font-size: 14px;
 		text-align: center;
 		cursor: pointer;
-		color: var(--blue);
-		background-color: $settingsGrey;
+		color: var(--color-areas-text);
+		background-color: var(--color-areas);
 		border: 1px dashed transparent;
 
 		transform: scale(1);
@@ -528,18 +521,18 @@
 		}
 
 		&:hover {
-			background-color: $focusedGrey;
+			background-color: var(--color-focused);
 		}
 
 		&.dragover {
-			background-color: var(--blue);
-			color: $purewhite;
+			background-color: var(--color-blue);
+			color: white;
 			opacity: 1;
 			transform: scale(1.03);
 		}
 
 		&:active {
-			background-color: $inputGrey;
+			background-color: var(--color-input);
 		}
 	}
 
@@ -568,11 +561,11 @@
 				overflow: hidden;
 				border: none;
 				border-radius: 10px;
-				background-color: $inputGrey;
+				background-color: var(--color-input);
 				transition: box-shadow 0.15s, transform 0.15s, opacity 0.15s;
 
 				&.selected {
-					outline: 3px solid var(--blue);
+					outline: 3px solid var(--color-blue);
 				}
 
 				&.hiding {
@@ -705,6 +698,8 @@
 		border: none;
 		border-radius: 10px;
 		box-sizing: border-box;
+		color: var(--color-text);
+		background-color: var(--color-param);
 	}
 
 	#importexport .param {
@@ -718,12 +713,12 @@
 			margin: auto;
 			margin-bottom: 15px;
 			border-radius: 8.5px;
-			background-color: $settingsGrey;
+			background-color: var(--color-areas);
 			align-items: center;
 
 			.glider {
 				width: calc(50% - 3px);
-				background-color: var(--blue);
+				background-color: var(--color-blue);
 				position: absolute;
 				border-radius: 8.5px;
 				z-index: 3;
@@ -766,11 +761,11 @@
 			// When glider is not
 			&.toggled #s_export,
 			#s_import {
-				color: var(--blue);
+				color: var(--color-blue);
 				z-index: 2;
 
 				&:hover {
-					background-color: #e3e3ea;
+					background-color: var(--color-focused);
 				}
 			}
 		}
@@ -798,7 +793,8 @@
 				overflow-y: hidden;
 				resize: vertical;
 				border: none;
-				background-color: $settingsGrey;
+				color: var(--color-text);
+				background-color: var(--color-areas);
 				box-sizing: border-box;
 				font-family: $code;
 				tab-size: 1.5em;
@@ -835,10 +831,10 @@
 				flex: 1;
 				margin-right: 1em;
 				tab-size: 0.05em;
-				background-color: $settingsGrey;
+				background-color: var(--color-areas);
 
 				&:focus {
-					background-color: $focusedGrey;
+					background-color: var(--color-focused);
 				}
 			}
 
@@ -872,13 +868,13 @@
 		}
 
 		#b_resetno {
-			color: $red;
+			color: var(--color-red);
 		}
 	}
 
 	.signature {
+		color: var(--color-light-text);
 		text-align: left;
-		color: #6d6d72;
 		font-size: 14px;
 		padding: 4em;
 		padding-bottom: 100px; // to always stay above footer
@@ -890,7 +886,7 @@
 
 		a {
 			text-decoration: none;
-			color: var(--blue);
+			color: var(--color-blue);
 		}
 
 		.firstblock {
@@ -910,7 +906,7 @@
 
 					svg {
 						height: 1.25em;
-						fill: var(--blue);
+						fill: var(--color-blue);
 					}
 
 					&:hover {

@@ -2,14 +2,15 @@
 	border: none;
 	border-radius: 1em;
 	background-color: #fff2;
-	backdrop-filter: blur(1em);
 	outline: 0.4em solid transparent;
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 	z-index: 2;
 
+	@include frostedGlass($blur: 1em);
+
 	&.selected {
 		background: #fff3;
-		outline-color: var(--blue);
+		outline-color: var(--color-blue);
 	}
 
 	&:hover {
@@ -47,6 +48,12 @@
 	grid-area: quotes;
 }
 
+:root[data-theme='light'] #text-alignment-mover button,
+:root[data-theme='light'] #box-alignment-mover button,
+:root[data-theme='light'] #grid-mover button {
+	color: var(--color-light-text);
+}
+
 #element-mover {
 	position: absolute;
 	display: flex;
@@ -58,18 +65,15 @@
 	padding-top: 2em;
 	min-width: 12em;
 	font-size: 14px;
-	color: #2a2222;
+	color: var(--color-text);
+	background-color: var(--color-dialog);
 	border-radius: 1em;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
 	cursor: grab;
 	z-index: 4;
 
-	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
-
-	&.hidden {
-		display: none;
-	}
+	@include frostedGlass($blur: 1em);
 
 	&:not(.active) > div:not(#close-mover-wrapper) {
 		pointer-events: none;
@@ -78,8 +82,16 @@
 		cursor: auto;
 	}
 
+	&.hidden {
+		display: none;
+	}
+
+	button {
+		color: var(--color-text);
+	}
+
 	hr {
-		border-color: #3334;
+		border-color: var(--color-dialog-border);
 	}
 
 	p {
@@ -94,12 +106,11 @@
 		border: none;
 		border-radius: 0.2em;
 		min-width: 2.5em;
-		color: #666;
 		background-color: transparent;
 
 		&.selected {
 			background-color: #0072ee22;
-			outline: 2px solid var(--blue);
+			outline: 2px solid var(--color-blue);
 		}
 
 		&:disabled {
@@ -133,7 +144,7 @@ button.grid-spanner {
 
 	&.selected:not(:disabled) {
 		background-color: #0072ee22;
-		outline-color: var(--blue);
+		outline-color: var(--color-blue);
 	}
 
 	&:disabled {
