@@ -413,70 +413,43 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 export function showPopup(value: string | number) {
 	//
 	function affiche() {
-		const setReviewLink = () =>
-			getBrowser() === 'chrome'
-				? 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews'
-				: getBrowser() === 'firefox'
-				? 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/'
-				: getBrowser() === 'safari'
-				? 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236'
-				: getBrowser() === 'edge'
-				? 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid'
-				: 'https://bonjourr.fr/help#%EF%B8%8F-reviews'
+		const popup = document.getElementById('popup') as HTMLElement
+		const browser = getBrowser()
 
-		const dom = {
-			wrap: document.createElement('div'),
-			btnwrap: document.createElement('div'),
-			desc: document.createElement('p'),
-			review: document.createElement('a'),
-			donate: document.createElement('a'),
+		const reviewURLs = {
+			chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+			firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
+			safari: 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236',
+			edge: 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid',
+			other: 'https://bonjourr.fr/help#%EF%B8%8F-reviews',
 		}
 
-		const closePopup = (fromText: boolean) => {
-			if (fromText) {
-				$('popup')?.classList.remove('shown')
-				setTimeout(() => {
-					$('popup')?.remove()
-					setTimeout(() => $('creditContainer')?.style.removeProperty('opacity'), 400)
-				}, 200)
+		function closePopup(e: Event) {
+			const isDesc = (e.target as HTMLElement)?.id === 'popup_text'
+
+			if (isDesc) {
+				popup?.classList.remove('shown')
+				setTimeout(() => popup?.remove(), 200)
+				setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
 			}
+
 			storage.set({ reviewPopup: 'removed' })
 		}
 
-		dom.wrap.id = 'popup'
-		dom.desc.id = 'popup_text'
-		dom.desc.textContent = tradThis(
-			'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
-		)
+		popup.style.display = 'flex'
+		document.getElementById('popup_review')?.setAttribute('href', reviewURLs[browser])
+		document.getElementById('popup_review')?.addEventListener('mousedown', closePopup)
+		document.getElementById('popup_donate')?.addEventListener('mousedown', closePopup)
+		document.getElementById('popup_text')?.addEventListener('click', closePopup, { passive: true })
 
-		dom.review.href = setReviewLink()
-		dom.donate.href = 'https://ko-fi.com/bonjourr'
-
-		dom.review.textContent = tradThis('Review')
-		dom.donate.textContent = tradThis('Donate')
-
-		dom.btnwrap.id = 'popup_buttons'
-		dom.btnwrap.appendChild(dom.review)
-		dom.btnwrap.appendChild(dom.donate)
-
-		dom.wrap.appendChild(dom.desc)
-		dom.wrap.appendChild(dom.btnwrap)
-
-		document.body.appendChild(dom.wrap)
-
-		$('creditContainer')!.style.opacity = '0'
-
-		setTimeout(() => dom.wrap.classList.add('shown'), 200)
-
-		dom.review.addEventListener('mousedown', () => closePopup(false))
-		dom.donate.addEventListener('mousedown', () => closePopup(false))
-		dom.desc.addEventListener('click', () => closePopup(true), { passive: true })
+		setTimeout(() => popup?.classList.add('shown'), 400)
+		setTimeout(() => document.getElementById('creditContainer')?.classList.remove('shown'), 0)
 	}
 
 	// TODO: condition a verifier
 
 	if (typeof value === 'number') {
-		if (value > 30) affiche() //s'affiche après 30 tabs
+		if (value > 30) affiche() // s'affiche après 30 tabs
 		else storage.set({ reviewPopup: value + 1 })
 
 		return

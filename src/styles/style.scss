@@ -1114,8 +1114,9 @@
 }
 
 #popup {
-	display: flex;
+	display: none;
 	position: fixed;
+	opacity: 0;
 	bottom: 4rem;
 	left: 4rem;
 	z-index: 2;
@@ -1124,12 +1125,14 @@
 
 	#popup_buttons a,
 	#popup_text {
-		pointer-events: all;
 		opacity: 0;
+		pointer-events: all;
 		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 	}
 
 	&.shown {
+		opacity: 1;
+
 		#popup_buttons a,
 		#popup_text {
 			opacity: 1;
@@ -1144,8 +1147,6 @@
 		justify-content: space-between;
 		min-width: 9em;
 
-		@include frostedGlass();
-
 		a {
 			color: white;
 			text-decoration: none;
@@ -1154,6 +1155,8 @@
 			background-color: #fff2;
 			border: 1px solid rgba(255, 255, 255, 0.075);
 			transform: scale(1);
+
+			@include frostedGlass();
 
 			&:hover {
 				background-color: #fff1;
