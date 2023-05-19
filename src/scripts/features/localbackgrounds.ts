@@ -94,7 +94,27 @@ async function compressThumbnail(blob: Blob) {
 	return newBlob as Blob
 }
 
-async function addNewImage(files: FileList) {
+async function dataURIsFromFiles(files: FileList): Promise<string[]> {
+	let URIs: string[] = []
+
+	for (const file of files) {
+		await new Promise((resolve) => {
+			let reader = new FileReader()
+			reader.onload = async function (e) {
+				if (typeof e.target?.result === 'string') {
+					URIs.push(e.target?.result as string)
+					resolve(true)
+				}
+				resolve(false)
+			}
+			reader.readAsDataURL(file)
+		})
+	}
+
+	return URIs
+}
+
+async function addNewImage(dataURIs: string[]) {
 	let { ids, selected } = await localImages.get()
 	let blobs: { [key: string]: Blobs } = {}
 	let newIds: string[] = []
@@ -106,37 +126,23 @@ async function addNewImage(files: FileList) {
 		storage.set({ background_type: 'custom' })
 	}
 
-	Object.values(files).forEach(() => {
+	for (const dataURI of dataURIs) {
 		const id = randomString(8)
 		newIds.push(id)
 		selected = id
-	})
 
-	await new Promise((resolve) => {
-		Object.values(files).forEach((file, i) => {
-			let reader = new FileReader()
+		const response = await fetch(dataURI)
+		const blob = await response.blob()
+		const thumbnail = await compressThumbnail(blob)
 
-			reader.onload = async function saveFileAsImage(event) {
-				const result = event.target?.result as string
-				const response = await fetch(result)
-				const blob = await response.blob()
-				const thumbnail = await compressThumbnail(blob)
-				const id = newIds[i]
+		blobs[id] = {
+			thumbnail: thumbnail,
+			background: blob,
+		}
 
-				blobs[id] = {
-					thumbnail: thumbnail,
-					background: blob,
-				}
-
-				addThumbnail(thumbnail, id, false)
-				await set(id, blobs[id])
-
-				if (i === files.length - 1) resolve(true)
-			}
-
-			reader.readAsDataURL(file)
-		})
-	})
+		addThumbnail(thumbnail, id, false)
+		await set(id, blobs[id])
+	}
 
 	localImages.update({ ids: ids.concat(newIds), selected })
 	localIsLoading = false
@@ -271,12 +277,45 @@ async function refreshCustom(button: HTMLSpanElement) {
 	setTimeout(() => localBackgrounds(), 100)
 }
 
+// Note: Can be removed after everyone updated from 1.16.4
+async function convertOldBackgroundStorage(every = 'pause') {
+	const local = (await new Promise((resolve) => chrome.storage.local.get(null, resolve))) as any // yolo
+	const customs: string[] = []
+
+	if (local?.idsList === undefined) {
+		return false
+	}
+
+	for (const id of local?.idsList ?? []) {
+		if (id !== local.selectedId) {
+			customs.push(local['custom_' + id])
+			chrome.storage.local.remove('custom_' + id)
+			chrome.storage.local.remove('customThumb_' + id)
+		}
+	}
+
+	if (local['custom_' + local.selectedId]) {
+		customs.push(local['custom_' + local.selectedId])
+		chrome.storage.local.remove('custom_' + local.selectedId)
+		chrome.storage.local.remove('customThumb_' + local.selectedId)
+	}
+
+	chrome.storage.local.remove('selectedId')
+	chrome.storage.local.remove('idsList')
+
+	localImages.set({ selected: '', ids: [], freq: every, last: Date.now() })
+
+	addNewImage(customs)
+
+	return true
+}
+
 export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
 		if (event?.thumbnail) displayCustomThumbnails(event?.thumbnail)
 		if (event?.refresh) refreshCustom(event.refresh)
-		if (event?.newfile) addNewImage(event.newfile)
 		if (event?.freq) localImages.update({ freq: event?.freq })
+		if (event?.newfile) addNewImage(await dataURIsFromFiles(event.newfile)) // Note: To improve after >1.16.4 update
 		return
 	}
 
@@ -285,8 +324,15 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
 		if (ids.length === 0) {
-			const { dynamic } = await storage.get('dynamic')
-			unsplash(dynamic ?? null)
+			const { dynamic, custom_every } = await storage.get(['dynamic', 'custom_every'])
+
+			// Note: Can be removed after everyone updated from 1.16.4
+			const hasConverted = await convertOldBackgroundStorage(custom_every)
+
+			if (hasConverted === false) {
+				unsplash(dynamic ?? null)
+			}
+
 			return
 		}
 
