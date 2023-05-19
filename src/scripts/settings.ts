@@ -421,11 +421,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter('blur', { blur: parseFloat(this.value) }, true)
+		backgroundFilter({ blur: parseFloat(this.value), isEvent: true })
 	})
 
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter('bright', { bright: parseFloat(this.value) }, true)
+		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
 
 	//

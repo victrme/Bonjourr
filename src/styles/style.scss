@@ -42,6 +42,7 @@
 		background-size: cover;
 		background-position: center center;
 		transition: opacity 1s $easeOutThree;
+		filter: blur(var(--background-blur)) brightness(var(--background-brightness));
 		z-index: 1;
 
 		// only for Safari

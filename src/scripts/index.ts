@@ -332,33 +332,32 @@ export async function linksImport() {
 export function initBackground(data: Sync) {
 	const type = data.background_type || 'dynamic'
 	const blur = data.background_blur
-	const bright = data.background_bright
+	const brightness = data.background_bright
 
-	backgroundFilter('init', { blur, bright })
+	backgroundFilter({ blur, brightness })
 
 	type === 'custom' ? localBackgrounds() : unsplash(data.dynamic)
 }
 
 export function imgBackground(url: string, color?: string) {
-	const overlaydom = $('background_overlay') as HTMLDivElement
-	const backgrounddom = $('background') as HTMLDivElement
-	const backgroundbisdom = $('background-bis') as HTMLDivElement
 	let img = new Image()
 
 	img.onload = () => {
-		if (loadBis) {
-			backgrounddom.style.opacity = '0'
-			backgroundbisdom.style.backgroundImage = `url(${url})`
-		} else {
-			backgrounddom.style.opacity = `1`
-			backgrounddom.style.backgroundImage = `url(${url})`
-		}
+		const bgoverlay = document.getElementById('background_overlay') as HTMLDivElement
+		const bgfirst = document.getElementById('background') as HTMLDivElement
+		const bgsecond = document.getElementById('background-bis') as HTMLDivElement
+		const loadBis = bgfirst.style.opacity === '1'
+		const bgToChange = loadBis ? bgsecond : bgfirst
 
-		overlaydom.style.opacity = '1'
-		loadBis = !loadBis
+		bgfirst.style.opacity = loadBis ? '0' : '1'
+		bgToChange.style.backgroundImage = `url(${url})`
+
+		bgoverlay.style.opacity = '1'
 
 		if (color && testOS.ios) {
-			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
+			setTimeout(() => {
+				document.documentElement.style.setProperty('--average-color', color)
+			}, 400)
 		}
 	}
 
@@ -366,32 +365,15 @@ export function imgBackground(url: string, color?: string) {
 	img.remove()
 }
 
-export function backgroundFilter(cat: 'init' | 'blur' | 'bright', val: { blur?: number; bright?: number }, isEvent?: boolean) {
-	let result = ''
-	const domblur = $('i_blur') as HTMLInputElement
-	const dombright = $('i_bright') as HTMLInputElement
+export function backgroundFilter({ blur, brightness, isEvent }: { blur?: number; brightness?: number; isEvent?: true }) {
+	const hasbright = typeof brightness === 'number'
+	const hasblur = typeof blur === 'number'
 
-	switch (cat) {
-		case 'init':
-			result = `blur(${val.blur}px) brightness(${val.bright})`
-			break
+	if (hasblur) document.documentElement.style.setProperty('--background-blur', blur.toString() + 'px')
+	if (hasbright) document.documentElement.style.setProperty('--background-brightness', brightness.toString())
 
-		case 'blur':
-			result = `blur(${val.blur}px) brightness(${dombright.value})`
-			break
-
-		case 'bright':
-			result = `blur(${domblur.value}px) brightness(${val.bright})`
-			break
-	}
-
-	$('background')!.style.filter = result
-	$('background-bis')!.style.filter = result
-
-	if (isEvent) {
-		if (cat === 'blur') eventDebounce({ background_blur: val.blur })
-		if (cat === 'bright') eventDebounce({ background_bright: val.bright })
-	}
+	if (isEvent && hasblur) eventDebounce({ background_blur: blur })
+	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
