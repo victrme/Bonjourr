@@ -157,7 +157,7 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	const thb = document.createElement('button')
 	const rem = document.createElement('button')
 	const thbimg = document.createElement('img')
-	const remimg = document.createElement('img')
+	const remspan = document.createElement('span')
 	const wrap = settings?.querySelector('#fileContainer')
 
 	thb.id = id
@@ -170,14 +170,11 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	thb.setAttribute('aria-label', 'Select this background')
 	rem.setAttribute('aria-label', 'Remove this background')
 
-	remimg.setAttribute('alt', '')
 	thbimg.setAttribute('alt', '')
-
-	remimg.setAttribute('draggable', 'false')
 	thbimg.setAttribute('draggable', 'false')
 
-	remimg.setAttribute('src', 'src/assets/interface/close.svg')
-	rem.appendChild(remimg)
+	remspan.textContent = '✕'
+	rem.appendChild(remspan)
 
 	thb.appendChild(thbimg)
 	thb.appendChild(rem)

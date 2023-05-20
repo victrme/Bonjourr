@@ -573,37 +573,31 @@
 					opacity: 0;
 				}
 
-				img {
-					width: 100%;
-					min-height: 100%;
-					background-color: transparent;
-				}
-
 				.b_removethumb {
 					position: absolute;
 					top: 5px;
 					left: 5px;
 					width: 25px;
 					height: 25px;
-					border-radius: 100%;
-					cursor: pointer;
-					text-decoration: none;
-					transition: opacity 0.15s;
 					opacity: 0;
-					pointer-events: none;
-					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+					color: #222;
+					background-color: #fff3;
+					border-radius: 100%;
+					text-decoration: none;
 					box-sizing: border-box;
+					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+					transition: opacity 0.15s, background-color 0.15s;
+
 					@include allCentered();
 					@include frostedGlass();
 
-					img {
-						width: 9px;
-						height: 9px;
-						display: block;
-					}
-
 					&:focus-visible {
 						opacity: 1;
+					}
+
+					&:hover {
+						color: #000;
+						background-color: #fff5;
 					}
 				}
 
