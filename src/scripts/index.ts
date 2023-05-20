@@ -1,4 +1,4 @@
-import { Sync, Weather, MoveKeys, HideOld } from './types/sync'
+import { Sync, Weather, MoveKeys } from './types/sync'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -27,7 +27,7 @@ import {
 	stringMaxSize,
 	syncDefaults,
 	testOS,
-	convertHideStorage,
+	localDefaults,
 } from './utils'
 
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
@@ -355,9 +355,8 @@ export function imgBackground(url: string, color?: string) {
 		bgoverlay.style.opacity = '1'
 
 		if (color && testOS.ios) {
-			setTimeout(() => {
-				document.documentElement.style.setProperty('--average-color', color)
-			}, 400)
+			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
+			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
 		}
 	}
 
@@ -639,27 +638,38 @@ function startup(data: Sync) {
 
 	try {
 		const data = await storage.get()
+		const version_old = data?.about?.version
+		const version_curr = syncDefaults.about.version
 
 		// Version change
-		if (data?.about?.version !== syncDefaults.about.version) {
-			const version_old = data?.about?.version
-			const version = syncDefaults.about.version
+		if (version_old !== version_curr) {
+			console.log(`Version change: ${version_old} => ${version_curr}`)
 
-			console.log(`Version change: ${version_old} => ${version}`)
+			data.about = {
+				browser: detectPlatform(),
+				version: version_curr,
+			}
 
-			data.about = { browser: detectPlatform(), version }
-
-			// From old 1.15.x
-			// To new 1.16.x
-			if (version_old.includes('1.15') && version.includes('1.16')) {
+			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {
 				localStorage.hasUpdated = 'true'
 				localStorage.removeItem('translations')
 
-				// Breaking data changes needs filtering
-				data.hide = convertHideStorage(data.hide as HideOld)
-				data.css = data.css.replaceAll('#widgets', '')
-				data.time = (!data.hide?.clock || !data.hide?.date) ?? true
-				data.main = (!data.hide?.weatherdesc || !data.hide?.weathericon || !data.hide?.greetings) ?? true
+				const getOnlineLocal = () => JSON.parse(localStorage.bonjourrBackgrounds ?? '{}')
+				const getChromeLocal = async () => await new Promise((resolve) => chrome?.storage.local.get(null, resolve))
+				const removeOnlineLocal = () => localStorage.removeItem('bonjourrBackgrounds')
+				const removeChromeLocal = () => {
+					chrome?.storage.local.remove('dynamicCache')
+					chrome?.storage.local.remove('quotesCache')
+				}
+
+				const isOnline = data.about.browser === 'online'
+				const local = await (isOnline ? getOnlineLocal() : getChromeLocal())
+				const { dynamicCache, quotesCache } = localDefaults
+
+				localStorage.setItem('dynamicCache', JSON.stringify(local?.dynamicCache ?? { ...dynamicCache }))
+				localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? { ...quotesCache }))
+
+				isOnline ? removeOnlineLocal() : removeChromeLocal()
 			}
 
 			storage.set({ ...data })

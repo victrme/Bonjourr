@@ -279,12 +279,12 @@ async function refreshCustom(button: HTMLSpanElement) {
 
 // Note: Can be removed after everyone updated from 1.16.4
 async function convertOldBackgroundStorage(every = 'pause') {
-	const local = (await new Promise((resolve) => chrome.storage.local.get(null, resolve))) as any // yolo
-	const customs: string[] = []
-
-	if (local?.idsList === undefined) {
+	if (!chrome?.storage) {
 		return false
 	}
+
+	const local = (await new Promise((resolve) => chrome.storage.local.get(null, resolve))) as any // yolo
+	const customs: string[] = []
 
 	for (const id of local?.idsList ?? []) {
 		if (id !== local.selectedId) {

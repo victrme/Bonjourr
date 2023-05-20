@@ -117,11 +117,8 @@ function imgCredits(image: UnsplashImage) {
 }
 
 function loadBackground(props: UnsplashImage) {
-	setTimeout(() => imgBackground(props.url, props.color), 1)
+	imgBackground(props.url, props.color)
 	imgCredits(props)
-
-	// sets meta theme-color to main background's color
-	document.querySelector('meta[name="theme-color"]')?.setAttribute('content', props.color)
 }
 
 function chooseCollection(customCollection?: string): CollectionType {
