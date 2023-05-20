@@ -9,6 +9,7 @@ import unsplash from './features/unsplash'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
+import linksImport from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import localBackgrounds from './features/localbackgrounds'
@@ -36,17 +37,7 @@ import {
 	syncDefaults,
 } from './utils'
 
-import {
-	toggleWidgetsDisplay,
-	backgroundFilter,
-	customCss,
-	darkmode,
-	favicon,
-	linksImport,
-	tabTitle,
-	textShadow,
-	pageWidth,
-} from './index'
+import { toggleWidgetsDisplay, backgroundFilter, customCss, darkmode, favicon, tabTitle, textShadow, pageWidth } from './index'
 import parse from './utils/JSONparse'
 
 type Langs = keyof typeof langList

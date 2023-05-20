@@ -17,9 +17,7 @@ import localBackgrounds from './features/localbackgrounds'
 import {
 	$,
 	clas,
-	bundleLinks,
 	detectPlatform,
-	extractHostname,
 	getBrowser,
 	minutator,
 	mobilecheck,
@@ -45,18 +43,8 @@ const functionsLoad: { [key: string]: FunctionsLoadState } = {
 }
 
 let loadtimeStart = performance.now()
-let loadBis = false
 let sunset = 0
 let sunrise = 0
-
-// const interfaceObserver = new MutationObserver((mutationList, observer) => {
-// 	console.log(mutationList, observer)
-// 	setTimeout(() => {
-// 		interfaceObserver.disconnect()
-// 	}, 500)
-// })
-
-// interfaceObserver.observe(dominterface, { attributes: true, childList: true, subtree: true })
 
 export const freqControl = {
 	set: () => {
@@ -64,11 +52,6 @@ export const freqControl = {
 	},
 
 	get: (every: string, last: number) => {
-		// instead of adding unix time to the last date
-		// look if day & hour has changed
-		// because we still cannot time travel
-		// changes can only go forward
-
 		const nowDate = new Date()
 		const lastDate = new Date(last || 0)
 		const changed = {
@@ -205,128 +188,6 @@ export function pageWidth(val?: number, isEvent?: true) {
 	if (isEvent) {
 		eventDebounce({ pagewidth: val })
 	}
-}
-
-export async function linksImport() {
-	const closeBookmarks = (container: HTMLElement) => {
-		container.classList.add('hiding')
-		setTimeout(() => container.setAttribute('class', ''), 400)
-	}
-
-	function main(links: Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]): void {
-		const listdom = document.createElement('ol')
-
-		let bookmarksList: chrome.bookmarks.BookmarkTreeNode[] = []
-		let selectedList: string[] = []
-
-		bookmarks[0].children?.forEach((cat) => {
-			const list = cat.children
-
-			if (Array.isArray(list)) {
-				bookmarksList.push(...list)
-			}
-		})
-
-		function selectBookmark(elem: HTMLLIElement) {
-			const isSelected = elem.classList.toggle('selected')
-			const index = elem.getAttribute('data-index')
-			let counter = listdom.querySelectorAll('li.selected').length
-
-			if (!index) return
-
-			// update list to return
-			isSelected ? selectedList.push(index) : selectedList.pop()
-
-			// Change submit button text & class on selections
-			if (counter === 0) $('bmk_apply')!.textContent = tradThis('Select bookmarks to import')
-			if (counter === 1) $('bmk_apply')!.textContent = tradThis('Import this bookmark')
-			if (counter > 1) $('bmk_apply')!.textContent = tradThis('Import these bookmarks')
-
-			clas($('bmk_apply'), counter === 0, 'none')
-		}
-
-		bookmarksList.forEach((mark, index) => {
-			const elem = document.createElement('li')
-			const titleWrap = document.createElement('p')
-			const title = document.createElement('span')
-			const favicon = document.createElement('img')
-			const url = document.createElement('pre')
-			const markURL = mark.url
-
-			// only append links if url are not empty
-			// (temp fix to prevent adding bookmarks folder title ?)
-			if (!markURL || markURL === '') {
-				return
-			}
-
-			favicon.src = 'https://icons.duckduckgo.com/ip3/' + extractHostname(markURL) + '.ico'
-			favicon.alt = ''
-
-			title.textContent = mark.title
-			url.textContent = markURL
-
-			titleWrap.appendChild(favicon)
-			titleWrap.appendChild(title)
-
-			elem.setAttribute('data-index', index.toString())
-			elem.setAttribute('tabindex', '0')
-			elem.appendChild(titleWrap)
-			elem.appendChild(url)
-
-			elem.onclick = () => selectBookmark(elem)
-			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? selectBookmark(elem) : '')
-
-			if (links.filter((x) => x.url === stringMaxSize(markURL, 512)).length === 0) {
-				listdom.appendChild(elem)
-			}
-		})
-
-		// Replace list to filter already added bookmarks
-		const oldList = document.querySelector('#bookmarks ol')
-		if (oldList) oldList.remove()
-		$('bookmarks')!.prepend(listdom)
-
-		// Just warning if no bookmarks were found
-		if (bookmarksList.length === 0) {
-			clas($('bookmarks'), true, 'noneFound')
-			return
-		}
-
-		// Submit event
-		$('bmk_apply')!.onclick = function () {
-			let bookmarkToApply = selectedList.map((i) => ({
-				title: bookmarksList[parseInt(i)].title,
-				url: bookmarksList[parseInt(i)].url || '',
-			}))
-
-			if (bookmarkToApply.length > 0) {
-				closeBookmarks($('bookmarks_container')!)
-				quickLinks(null, { bookmarks: bookmarkToApply })
-			}
-		}
-
-		const lidom = document.querySelector('#bookmarks ol li') as HTMLLIElement
-		lidom.focus()
-	}
-
-	// Ask for bookmarks first
-	chrome.permissions.request({ permissions: ['bookmarks'] }, async (granted) => {
-		if (!granted) return
-
-		const data = await storage.get()
-		const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
-		extAPI.bookmarks.getTree().then((response) => {
-			clas($('bookmarks_container'), true, 'shown')
-			main(bundleLinks(data as Sync), response)
-		})
-	})
-
-	// Close events
-	$('bmk_close')!.onclick = () => closeBookmarks($('bookmarks_container')!)
-
-	$('bookmarks_container')!.addEventListener('click', function (e: MouseEvent) {
-		if ((e.target as HTMLElement).id === 'bookmarks_container') closeBookmarks(this)
-	})
 }
 
 export function initBackground(data: Sync) {
