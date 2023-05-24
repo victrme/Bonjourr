@@ -1176,19 +1176,14 @@
 		border: 1px solid rgba(255, 255, 255, 0.075);
 
 		&::before {
-			content: '×';
+			content: '✕';
 			position: absolute;
-			left: calc(50% - 0.5em);
-			top: 50%;
-			width: 1em;
-			height: 1em;
-			font-size: 2.2em;
-			line-height: 0.8em;
-			opacity: 0;
-			color: #fff;
+			width: calc(100% - 2em);
+			font-size: 1.6em;
+			font-weight: bolder;
 			text-align: center;
-			transform: translateY(-50%);
-			transition: opacity 0.4s, filter 0.2s;
+			color: transparent;
+			transition: color 0.4s, filter 0.2s;
 		}
 
 		&:hover {
@@ -1196,21 +1191,12 @@
 			@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: transparent);
 
 			&::before {
-				opacity: 1;
-
-				@-moz-document url-prefix() {
-					color: rgb(94, 94, 94);
-				}
+				color: #ffff;
 			}
 		}
 
 		&:active {
 			@include frostedGlass($alpha: 0, $blur: 10px, $fbAlpha: 0.1, $fbColor: transparent);
-
-			&::before {
-				opacity: 1;
-				filter: brightness(0.8);
-			}
 		}
 	}
 }
