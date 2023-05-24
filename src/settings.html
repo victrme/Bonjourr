@@ -85,68 +85,6 @@
 				<label for="i_settingshide" class="trn">Hide settings icon</label>
 				<input id="i_settingshide" class="switch" type="checkbox" />
 			</div>
-
-			<hr />
-
-			<div>
-				<div class="wrapper">
-					<span>
-						<span class="trn">Page layout</span>
-						<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
-					</span>
-
-					<div id="grid-layout" class="mover">
-						<button data-layout="single" aria-label="Single column layout">
-							<div></div>
-						</button>
-						<button data-layout="double" aria-label="Double column layout">
-							<div></div>
-							<div></div>
-						</button>
-						<button data-layout="triple" aria-label="Triple column layout">
-							<div></div>
-							<div></div>
-							<div></div>
-						</button>
-					</div>
-				</div>
-
-				<div class="tooltiptext ttgrid">
-					<span class="trn">Customise how and where widgets appear.</span>
-					<span class="trn instructions">Choose a layout, click edit and select a widget to modify.</span>
-					<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener"
-						>Learn more</a
-					>
-				</div>
-			</div>
-
-			<div class="grid-btns">
-				<button id="b_editmove" class="trn">Edit grid</button>
-				<button id="b_resetlayout" class="trn">Reset layout</button>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_pagewidth" class="trn">Page width</label>
-				<input
-					id="i_pagewidth"
-					type="range"
-					name="page_width"
-					min="600"
-					max="2200"
-					value="1600"
-					step="100"
-					class="range"
-				/>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_pagegap" class="trn">Page gap</label>
-				<input id="i_pagegap" type="range" name="page_gap" min="0" max="6" value="1" step=".5" class="range" />
-			</div>
 		</div>
 	</div>
 
@@ -1058,6 +996,72 @@
 			<div class="wrapper">
 				<label for="i_textshadow" class="trn">Shadow</label>
 				<input id="i_textshadow" type="range" name="textshadow" min="0" max="1" step=".025" class="range" />
+			</div>
+		</div>
+	</div>
+
+	<div class="as as_page">
+		<h2 class="trn">Page Control</h2>
+
+		<div class="param">
+			<div>
+				<div class="wrapper">
+					<span>
+						<span class="trn">Page layout</span>
+						<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
+					</span>
+
+					<div id="grid-layout" class="mover">
+						<button data-layout="single" aria-label="Single column layout">
+							<div></div>
+						</button>
+						<button data-layout="double" aria-label="Double column layout">
+							<div></div>
+							<div></div>
+						</button>
+						<button data-layout="triple" aria-label="Triple column layout">
+							<div></div>
+							<div></div>
+							<div></div>
+						</button>
+					</div>
+				</div>
+
+				<div class="tooltiptext ttgrid">
+					<span class="trn">Customise how and where widgets appear.</span>
+					<span class="trn instructions">Choose a layout, click edit and select a widget to modify.</span>
+					<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener"
+						>Learn more</a
+					>
+				</div>
+			</div>
+
+			<div class="grid-btns">
+				<button id="b_editmove" class="trn">Edit grid</button>
+				<button id="b_resetlayout" class="trn">Reset layout</button>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pagewidth" class="trn">Page width</label>
+				<input
+					id="i_pagewidth"
+					type="range"
+					name="page_width"
+					min="600"
+					max="2200"
+					value="1600"
+					step="100"
+					class="range"
+				/>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pagegap" class="trn">Page gap</label>
+				<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
 			</div>
 		</div>
 	</div>
