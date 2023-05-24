@@ -85,6 +85,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_favicon', data.favicon ?? '')
 	initInput('i_tabtitle', data.tabtitle ?? '')
 	initInput('i_pagewidth', data.pagewidth || 1600)
+	initInput('i_pagegap', data.pagegap ?? 1)
 	initInput('i_greeting', data.greeting ?? '')
 	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
