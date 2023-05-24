@@ -37,7 +37,16 @@ import {
 	syncDefaults,
 } from './utils'
 
-import { toggleWidgetsDisplay, backgroundFilter, customCss, darkmode, favicon, tabTitle, textShadow, pageWidth } from './index'
+import {
+	toggleWidgetsDisplay,
+	backgroundFilter,
+	customCss,
+	darkmode,
+	favicon,
+	tabTitle,
+	textShadow,
+	pageControl,
+} from './index'
 import parse from './utils/JSONparse'
 
 type Langs = keyof typeof langList
@@ -312,14 +321,24 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('input', function () {
+		pageControl({ width: parseInt(this.value) }, true)
+	})
+
+	paramId('i_pagegap').addEventListener('input', function () {
+		pageControl({ gap: parseFloat(this.value) }, true)
+	})
+
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
 	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
-	paramId('i_pagewidth').addEventListener('input', function () {
-		pageWidth(parseInt(this.value), true)
-	})
+	// TODO: To do or not to do ?
+	// paramId('i_pagegap').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
+	// paramId('i_pagegap').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
+	// paramId('i_pagegap').addEventListener('touchend', () => moveElements(null, { overlay: false }))
+	// paramId('i_pagegap').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
 	//
 	// Quick links

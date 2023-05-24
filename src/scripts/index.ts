@@ -182,11 +182,15 @@ export function tabTitle(val = '', isEvent?: true) {
 	}
 }
 
-export function pageWidth(val?: number, isEvent?: true) {
-	document.documentElement.style.setProperty('--page-width', (val || syncDefaults.pagewidth) + 'px')
+export function pageControl(val: { width?: number; gap?: number }, isEvent?: true) {
+	if (val.width) {
+		document.documentElement.style.setProperty('--page-width', (val.width ?? syncDefaults.pagewidth) + 'px')
+		if (isEvent) eventDebounce({ pagewidth: val.width })
+	}
 
-	if (isEvent) {
-		eventDebounce({ pagewidth: val })
+	if (typeof val.gap === 'number') {
+		document.documentElement.style.setProperty('--page-gap', (val.gap ?? syncDefaults.pagegap) + 'em')
+		if (isEvent) eventDebounce({ pagegap: val.gap })
 	}
 }
 
@@ -491,7 +495,7 @@ function startup(data: Sync) {
 	initBackground(data)
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)
-	pageWidth(data.pagewidth)
+	pageControl({ width: data.pagewidth, gap: data.pagegap })
 }
 
 ;(async () => {
