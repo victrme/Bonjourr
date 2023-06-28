@@ -61,8 +61,8 @@
 #interface {
 	position: relative;
 	display: grid;
-	gap: 1em;
 	width: 100%;
+	gap: var(--page-gap);
 	max-width: var(--page-width);
 	min-height: 100vh;
 	padding: 4em 1em 6em 1em;

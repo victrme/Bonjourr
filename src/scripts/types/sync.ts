@@ -112,6 +112,7 @@ export type Sync = {
 	quicklinks: boolean
 	time: boolean
 	main: boolean
+	pagegap: number
 	pagewidth: number
 	linksrow: number
 	linkstyle: string

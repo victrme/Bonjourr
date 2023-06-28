@@ -37,7 +37,16 @@ import {
 	syncDefaults,
 } from './utils'
 
-import { toggleWidgetsDisplay, backgroundFilter, customCss, darkmode, favicon, tabTitle, textShadow, pageWidth } from './index'
+import {
+	toggleWidgetsDisplay,
+	backgroundFilter,
+	customCss,
+	darkmode,
+	favicon,
+	tabTitle,
+	textShadow,
+	pageControl,
+} from './index'
 import parse from './utils/JSONparse'
 
 type Langs = keyof typeof langList
@@ -76,6 +85,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_favicon', data.favicon ?? '')
 	initInput('i_tabtitle', data.tabtitle ?? '')
 	initInput('i_pagewidth', data.pagewidth || 1600)
+	initInput('i_pagegap', data.pagegap ?? 1)
 	initInput('i_greeting', data.greeting ?? '')
 	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
@@ -144,6 +154,16 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Activate changelog
 	if (localStorage.hasUpdated === 'true') {
 		changelogControl(settingsDom)
+
+		// to remove after 1.17.0 update
+		const movemoveddom = settingsDom.querySelector<HTMLElement>('#move-option-moved')
+		const movemovedbtn = settingsDom.querySelector<HTMLElement>('#move-option-moved button')
+
+		movemoveddom?.setAttribute('style', 'display: block')
+		movemovedbtn?.addEventListener('click', () => {
+			movemoveddom?.setAttribute('style', 'display: none')
+			localStorage.removeItem('hasUpdated')
+		})
 	}
 
 	// No bookmarks import on safari || online
@@ -312,14 +332,24 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('input', function () {
+		pageControl({ width: parseInt(this.value) }, true)
+	})
+
+	paramId('i_pagegap').addEventListener('input', function () {
+		pageControl({ gap: parseFloat(this.value) }, true)
+	})
+
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
 	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
-	paramId('i_pagewidth').addEventListener('input', function () {
-		pageWidth(parseInt(this.value), true)
-	})
+	// TODO: To do or not to do ?
+	// paramId('i_pagegap').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
+	// paramId('i_pagegap').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
+	// paramId('i_pagegap').addEventListener('touchend', () => moveElements(null, { overlay: false }))
+	// paramId('i_pagegap').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
 	//
 	// Quick links

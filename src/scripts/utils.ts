@@ -231,6 +231,7 @@ export const syncDefaults: Sync = {
 	favicon: '',
 	tabtitle: '',
 	greeting: '',
+	pagegap: 1,
 	pagewidth: 1600,
 	time: true,
 	main: true,

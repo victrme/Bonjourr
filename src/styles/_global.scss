@@ -57,6 +57,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--app-height: 100vh;
 	--notes-width: 50em;
 	--page-width: 1600px;
+	--page-gap: 1em;
 	--background-blur: 15px;
 	--background-brightness: 0.8;
 	--load-time-transition: 0ms;
@@ -244,6 +245,9 @@ body {
 			max-height: 300px;
 		}
 		.as_fonts {
+			max-height: 300px;
+		}
+		.as_page {
 			max-height: 300px;
 		}
 		.as_css {
