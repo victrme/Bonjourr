@@ -18,21 +18,32 @@ export default function weather(
 
 	async function request(storage: Weather): Promise<Weather> {
 		function getRequestURL(isForecast: boolean) {
-			const key = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4'][Math.ceil(Math.random() * 4) - 1]
-			const units = storage.unit || 'metric'
-			const type = isForecast ? 'forecast' : 'weather'
+			const apis = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4']
+			const key = apis[Math.ceil(Math.random() * 4) - 1]
+			const isGeolocated = storage.location?.length === 2
+
+			let base = 'https://api.openweathermap.org/data/2.5/'
 			let lang = document.documentElement.getAttribute('lang')
-			let location = ''
 
 			// Openweathermap country code for traditional chinese is tw, greek is el
 			if (lang === 'zh_HK') lang = 'zh_TW'
 			if (lang === 'gr') lang = 'el'
 
-			storage.location?.length === 2
-				? (location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`)
-				: (location = `&q=${encodeURI(storage.city)},${storage.ccode}`)
+			base += isForecast ? 'forecast/' : 'weather/'
+			base += '?units=' + (storage.unit ?? 'metric')
+			base += '&lang=' + lang
 
-			return `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=${units}&lang=${lang}`
+			if (isGeolocated) {
+				base += '&lat=' + storage.location[0]
+				base += '&lon=' + storage.location[1]
+			} else {
+				base += '&q=' + encodeURI(storage.city ?? 'Paris')
+				base += ',' + storage.ccode ?? 'fr'
+			}
+
+			base += '&appid=' + atob(key)
+
+			return base
 		}
 
 		if (!navigator.onLine) {
@@ -50,7 +61,6 @@ export default function weather(
 			currentJSON = await currentResponse.json()
 			forecastJSON = await forecastResponse.json()
 		} catch (error) {
-			console.error(error)
 			return storage
 		}
 
@@ -125,16 +135,6 @@ export default function weather(
 	}
 
 	async function initWeather(data: Weather) {
-		// Get IPAPI first to get city and location
-
-		// Get geolocation
-		// if geoloc success, replace IPAPI
-		// else try with IPAPI city
-
-		// If ipapi city failed, use Paris, France
-
-		// First, tries to get city and country code to add in settings
-
 		async function getInitialPositionFromIpapi() {
 			try {
 				const ipapi = await fetch('https://ipapi.co/json')
@@ -174,17 +174,17 @@ export default function weather(
 
 			setTimeout(() => {
 				// If settings is available, all other inputs are
-				if ($('settings')) {
-					const i_ccode = $('i_ccode') as HTMLInputElement
-					const i_city = $('i_city') as HTMLInputElement
-					const i_geol = $('i_geol') as HTMLInputElement
-					const sett_city = $('sett_city') as HTMLDivElement
+				if (document.getElementById('settings')) {
+					const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+					const i_city = document.getElementById('i_city') as HTMLInputElement
+					const i_geol = document.getElementById('i_geol') as HTMLInputElement
+					const sett_city = document.getElementById('sett_city') as HTMLDivElement
 
 					i_ccode.value = data.ccode
 					i_city.setAttribute('placeholder', data.city)
 
 					if (location) {
-						clas(sett_city, true, 'hidden')
+						sett_city.classList.toggle('hidden', true)
 						i_geol.checked = true
 					}
 				}

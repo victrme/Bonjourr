@@ -78,9 +78,8 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		const img = new Image()
 
 		let result = `https://icons.duckduckgo.com/ip3/${extractHostname(url)}.ico`
-		const API = new Date().getDay() % 2 === 1 ? '@@FAVICON_API_1' : '@@FAVICON_API_2'
-
-		const response = await fetch(API + url)
+		const API = Math.random() > 0.5 ? '@@FAVICON_API_1' : '@@FAVICON_API_2'
+		const response = await fetch(atob(API) + url)
 		const apiText = await response.text()
 
 		if (apiText.length > 0) {

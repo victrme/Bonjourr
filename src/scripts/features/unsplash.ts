@@ -154,7 +154,7 @@ async function requestNewList(collecType: CollectionType) {
 	const header = new Headers()
 	const collecString = allCollectionType[collecType] || allCollectionType.day
 	const url = `https://api.unsplash.com/photos/random?collections=${collecString}&count=8`
-	header.append('Authorization', `Client-ID @@UNSPLASH_API`)
+	header.append('Authorization', `Client-ID ${atob('@@UNSPLASH_API')}`)
 	header.append('Accept-Version', 'v1')
 
 	let resp: Response
