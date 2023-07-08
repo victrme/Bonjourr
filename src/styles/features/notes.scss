@@ -8,7 +8,9 @@
 
 	&.opaque #pocket-editor {
 		color: #222;
+
 		.line.sel {
+			color: #222;
 			background-color: #2222;
 		}
 	}
@@ -39,6 +41,7 @@
 	@include frostedGlass();
 
 	.line.sel {
+		color: #fff;
 		background-color: #fff2;
 	}
 
