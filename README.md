@@ -81,23 +81,45 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 Running Bonjourr locally
 
+Clone this repository
+```bash
+git clone https://github.com/victrme/Bonjourr
+cd Bonjourr
+```
+  
+Create a `.env.json` for your own API keys and endpoints 
+```jsonc
+{
+  "UNSPLASH_API": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "FAVICON_API_1": "https://example-favicon-fetcher-api.com/",
+  "FAVICON_API_2": "https://example-favicon-fetcher-api-fallback.com/",
+  "QUOTES_API_1": "https://example-i18n-quotes-api.com/",
+  "QUOTES_API_2": "https://example-i18n-quotes-api-fallback.com/",
+  "WEATHER_1": "openweathermap_api_xxxxxxxxxxxxx",
+  "WEATHER_2": "openweathermap_api_xxxxxxxxxxxxx",
+  "WEATHER_3": "openweathermap_api_xxxxxxxxxxxxx",
+  "WEATHER_4": "openweathermap_api_xxxxxxxxxxxxx"
+}
+```
+
+Then [install pnpm](https://pnpm.io/installation) on your system
+```bash
+# In root directory
+pnpm install
+
+# Production build for all platforms in /release/
+pnpm build
+
+# These commands watch changes for each platforms
+# You need to save a .ts or .scss file to trigger a change
+pnpm chrome
+pnpm edge
+pnpm firefox
+pnpm safari
+pnpm online
+```
+
 ### Chrome
-
-#### Initialize
-
--   [Install npm](https://nodejs.org/en/download/)
--   `npm install -g pnpm`
--   `pnpm install`
-
-#### Build
-
--   `pnpm run build`
-
-#### Run & watch
-
--   `pnpm run chrome`
-
-#### Browser extension launch
 
 -   Go to `chrome://extensions`
 -   Enable Developer mode
@@ -105,27 +127,11 @@ If you feel like we've earned it and you want to support independant open source
 
 ### Firefox
 
--   Follow the initialize and build steps from Chrome
-
-#### Run & watch
-
--   `pnpm run firefox`
-
-#### Browser extension launch
-
 -   Go to `about:debugging#/runtime/this-firefox`
 -   Select "Load temporary Add-on"
 -   Select `manifest.json` in `/release/firefox` folder
 
 ### Edge
-
--   Follow the initialize and build steps from Chrome
-
-#### Run & watch
-
--   `pnpm run edge`
-
-#### Browser extension launch
 
 -   Go to `edge://extensions`
 -   Enable Developer mode
@@ -137,17 +143,13 @@ If you feel like we've earned it and you want to support independant open source
 
 -   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
 
-### Online
+### Online (web version)
 
--   Follow the initialize and build steps from Chrome
-
-#### Run & watch
-
--   `pnpm run online`
-
-#### Web server launch
-
--   Open a live server from `/release/online` folder
+```bash
+python -m http.server
+```
+- Open a live server, for example using python
+- Go to http://localhost:8000/release/online/
 
 <br>
 
