@@ -90,7 +90,11 @@
 	"Any emoji": "Qualquer emoji",
 	"New tab title": "Titulo da nova aba",
 	"Hide settings icon": "Ocultar ícone de configurações",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Layout da página",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Personalize como e onde aparecem os widgets.",
 	"Choose a layout, click edit and select a widget to modify.": "Escolha um layout, clique em editar e selecione um widget para modificar.",
 	"Edit grid": "Editar grid",
@@ -220,7 +224,7 @@
 	"Visit": "Veja",
 	"our website": "nosso site",
 	"for infos and donations": "para mais informações e doações",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr foi atualizado para a versão 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Agora você pode mover os widgets, mostrar suas próprias citações e muito mais. Dê uma olhada nos novos recursos em  ",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr foi atualizado para a versão 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "nosso changelog completo"
 }

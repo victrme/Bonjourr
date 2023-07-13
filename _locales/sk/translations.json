@@ -90,7 +90,11 @@
 	"Any emoji": "Akékoľvek emoji",
 	"New tab title": "New tab title",
 	"Hide settings icon": "Skryť ikonu nastavení",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Rozloženie stránky",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Prispôsobiť spôsob a miesto zobrazenia widgetov.",
 	"Choose a layout, click edit and select a widget to modify.": "Vyberte rozloženie, kliknite na tlačidlo upraviť a vyberte widget, ktorý chcete upraviť.",
 	"Edit grid": "Upraviť mriežku",
@@ -220,7 +224,7 @@
 	"Visit": "Navštívte",
 	"our website": "našu webstránku",
 	"for infos and donations": "pre informácie a dary",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr bol aktualizovaný na verziu 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Teraz môžete presúvať widgety, zobrazovať vlastné citáty a mnoho ďalšieho. Pozrite si nové funkcie v",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr bol aktualizovaný na verziu 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "náš úplný zoznam zmien"
 }

@@ -90,7 +90,11 @@
 	"Any emoji": "Oποιδήποτε Emoji",
 	"New tab title": "Τίτλος νέας καρτέλας",
 	"Hide settings icon": "Κρύψε το εικονίδιο ρυθμίσεων",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Οργάνωση σελίδας",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Επεξεργαστείτε πως και που εμφανίζονται νέα widgets.",
 	"Choose a layout, click edit and select a widget to modify.": "Επιλέξτε ένα layout, πατήστε επεξεργασία και επιλέξτε ένα widget για να επεξεργαστείτε.",
 	"Edit grid": "Επεξεργασία πλέγματος",
@@ -220,7 +224,7 @@
 	"Visit": "Επισκεφτείτε",
 	"our website": "την ιστοσελίδα μας",
 	"for infos and donations": "για πληροφορίες και δωρεές",
-	"Bonjourr has been updated to version 1.16 ✨": "Το Bonjourr ενημερώθηκε στην έκδοση 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Τώρα μπορείτε να μετακινείτε widgets γύρω, να δείχνετε τα δικά σας quotes και πολλά περισσότερα. Τσεκάρετε όλες τις νέες λειτουργίες στο",
+	"Bonjourr has been updated to version 1.17 ✨": "Το Bonjourr ενημερώθηκε στην έκδοση 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "update post μας"
 }

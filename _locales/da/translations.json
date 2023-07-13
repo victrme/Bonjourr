@@ -90,7 +90,11 @@
 	"Any emoji": "Hvilken som helst emoji",
 	"New tab title": "Fanebladstitel",
 	"Hide settings icon": "Skjul ikonet for indstillinger",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Sidelayout",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Tilpas hvordan og hvor widgets vises.",
 	"Choose a layout, click edit and select a widget to modify.": "Vælg et layout, klik på Rediger og vælg en widget, der skal ændres.",
 	"Edit grid": "Rediger gitter",
@@ -220,7 +224,7 @@
 	"Visit": "Besøg",
 	"our website": "vores hjemmeside",
 	"for infos and donations": "for at lære mere eller donere",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr er blevet opdateret til version 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Du kan nu flytte widgets rundt, vise dine egne citater og meget mere. Tag et kig på de nye funktioner i",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr er blevet opdateret til version 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "vores komplette ændringsliste"
 }

@@ -90,7 +90,11 @@
 	"Any emoji": "任何 emoji",
 	"New tab title": "新索引標籤標題",
 	"Hide settings icon": "隱藏設定圖標",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "頁面佈局",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "自定義小部件的顯示方式和位置。",
 	"Choose a layout, click edit and select a widget to modify.": "選擇一個佈局，單擊編輯並選擇一個要修改的小部件。",
 	"Edit grid": "編輯網格",
@@ -220,7 +224,7 @@
 	"Visit": "訪問",
 	"our website": "我們的網站",
 	"for infos and donations": "以獲取更多資訊，或向我們捐款",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr 已更新至 1.16 版本 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "您現在可以四處移動小部件，顯示您自己的引言等等。 看看中的新功能",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr 已更新至 1.16 版本 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "完整的更新日誌"
 }

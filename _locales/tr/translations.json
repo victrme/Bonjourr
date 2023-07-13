@@ -90,7 +90,11 @@
 	"Any emoji": "Herhangi bir emoji",
 	"New tab title": "New tab title",
 	"Hide settings icon": "Ayar simgesini gizle",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Sayfa düzeni",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Widget'ların nasıl ve nerede görüneceğini özelleştirin",
 	"Choose a layout, click edit and select a widget to modify.": "Bir düzen seçin, düzenle'ye tıklayın ve değiştirmek için bir widget seçin",
 	"Edit grid": "Izgarayı düzenle",
@@ -220,7 +224,7 @@
 	"Visit": "Ziyaret Et",
 	"our website": "websitemiz",
 	"for infos and donations": "bilgi ve bağış için",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr 1.16 sürümüne güncellendi ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Artık widget'ları hareket ettirebilir, kendi alıntılarınızı gösterebilir ve çok daha fazlasını yapabilirsiniz.Yeni özelliklere bir göz atın",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr 1.16 sürümüne güncellendi ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "tam değişiklik günlüğümüz"
 }

@@ -90,7 +90,11 @@
 	"Any emoji": "Mikä tahansa emoji",
 	"New tab title": "Uuden välilehden otsikko",
 	"Hide settings icon": "Piilota asetuskuvake",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Sivun asettelu",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Mukauta, miten ja missä widgetit näkyvät.",
 	"Choose a layout, click edit and select a widget to modify.": "Valitse asettelu, napsauta muokkausta ja valitse muokattava widget.",
 	"Edit grid": "Muokkaa ruudukkoa",
@@ -220,7 +224,7 @@
 	"Visit": "Vieraile",
 	"our website": "Nettisivullamme",
 	"for infos and donations": "tietoja ja lahjoituksia varten",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr on päivitetty versioon 1.16. ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Voit nyt siirtää widgettejä ympäriinsä, näyttää omia lainauksiasi ja paljon muuta. Tutustu uusiin ominaisuuksiin osoitteessa",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr on päivitetty versioon 1.16. ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "täydellinen muutosluettelo"
 }

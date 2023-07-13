@@ -90,7 +90,11 @@
 	"Any emoji": "Apa saja emojo",
 	"New tab title": "New tab title",
 	"Hide settings icon": "Sembunyikan ikon pengaturan",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Tata letak halaman",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Sesuaikan bagaimana dan di mana widget muncul.",
 	"Choose a layout, click edit and select a widget to modify.": "Pilih tata letak, klik edit dan pilih widget yang akan dimodifikasi.",
 	"Edit grid": "Edit kisi",
@@ -220,7 +224,7 @@
 	"Visit": "Kunjungi",
 	"our website": "Website kami",
 	"for infos and donations": "untuk info dan donasi",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr telah diperbarui ke versi 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Sekarang Anda dapat memindahkan widget, menampilkan kutipan Anda sendiri, dan masih banyak lagi. Lihatlah fitur-fitur baru di ",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr telah diperbarui ke versi 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "log perubahan lengkap kami"
 }

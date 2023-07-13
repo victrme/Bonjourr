@@ -90,7 +90,11 @@
 	"Any emoji": "Bilo koji emotikon",
 	"New tab title": "Naziv nove kartice",
 	"Hide settings icon": "Sakrij ikonu podešavanja",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Raspored na stranici",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Prilagodite kako i gde se vidžeti pojavljuju.",
 	"Choose a layout, click edit and select a widget to modify.": "Izaberite izgled, kliknite na uredi i izaberite vidžet za izmenu.",
 	"Edit grid": "Uredi mrežu",
@@ -220,7 +224,7 @@
 	"Visit": "Posetite",
 	"our website": "naši sajtovi",
 	"for infos and donations": "za dodatne informacije i donacije",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr je ažuriran na verziju 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Sada možete da pomerate vidžete, pokazujete sopstvene citate i još mnogo toga. Pogledajte nove funkcije u",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr je ažuriran na verziju 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "kompletna promena"
 }

@@ -90,7 +90,11 @@
 	"Any emoji": "bármilyen emoji",
 	"New tab title": "Új lap címe",
 	"Hide settings icon": "Beállítások ikonjának elrejtése",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Oldal elrendezése",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "A widgetek megjelenésének módja és helye testreszabása.",
 	"Choose a layout, click edit and select a widget to modify.": "Válasszon ki egy elrendezést, kattintson a szerkesztésre, és válasszon ki egy widgetet a módosításhoz.",
 	"Edit grid": "Rács szerkesztése",
@@ -220,7 +224,7 @@
 	"Visit": "Látogassa meg",
 	"our website": "weboldalunkat",
 	"for infos and donations": "ha további információra van szüksége vagy támogatni szeretné a projektet.",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr frissült az 1.16 verzióra ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Mostantól áthelyezheti a widgeteket, megjelenítheti a saját idézeteit és még sok mást is. Tekintse meg az új funkciókat a",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr frissült az 1.16 verzióra ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "a teljes changelog"
 }

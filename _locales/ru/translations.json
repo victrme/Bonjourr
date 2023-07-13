@@ -90,7 +90,11 @@
 	"Any emoji": "Любые эмодзи",
 	"New tab title": "Название новой вкладки",
 	"Hide settings icon": "Скрыть значок настроек",
+	"Page layout is now at the bottom": "Page layout is now at the bottom",
+	"Understood": "Understood",
+	"Page Control": "Page Control",
 	"Page layout": "Разметка страницы",
+	"Page gap": "Page gap",
 	"Customise how and where widgets appear.": "Настройте, как и где отображаются виджеты.",
 	"Choose a layout, click edit and select a widget to modify.": "Выберите макет, нажмите кнопку редактировать и выберите виджет для изменения.",
 	"Edit grid": "Редактировать сетку",
@@ -220,7 +224,7 @@
 	"Visit": "Посетите",
 	"our website": "наш сайт",
 	"for infos and donations": "чтобы узнать больше или поддержать разработчиков",
-	"Bonjourr has been updated to version 1.16 ✨": "Bonjourr был обновлен до версии 1.16 ✨",
-	"You can now move widgets around, show your own quotes and much more. Take a look at the new features in ": "Теперь вы можете перемещать виджеты, показывать собственные цитаты и многое другое. Взгляните на новые возможности в",
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr был обновлен до версии 1.17 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
 	"our update post": "полный список изменений"
 }
