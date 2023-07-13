@@ -886,6 +886,7 @@ async function switchLangs(nextLang: Langs) {
 	weather(data)
 	clock(data)
 	quotes(data)
+	tabTitle(data.tabtitle)
 	notes(data.notes || null)
 	translatePlaceholders(document.getElementById('settings'))
 }
