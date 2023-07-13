@@ -33,12 +33,17 @@
 		box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 	}
 
-	&.init {
-		#sett_city,
-		#clockoptions #w_clockface,
-		#clockoptions #w_ampm,
-		.widget-options {
-			transition: max-height 0s;
+	&.init .dropdown {
+		transition: max-height 0s;
+	}
+
+	.dropdown {
+		overflow-y: hidden;
+		max-height: 0;
+		transition: max-height 0.4s;
+
+		&.shown {
+			overflow-y: clip;
 		}
 	}
 
@@ -156,17 +161,8 @@
 		}
 	}
 
-	.widget-option,
-	#weather_provider,
-	#searchbar_request,
-	#quotes_userlist {
-		overflow-y: hidden;
-		max-height: 0;
-		transition: max-height 0.4s;
-
-		&.shown {
-			overflow-y: clip;
-		}
+	#local_options.shown {
+		max-height: 290px;
 	}
 
 	#time_options.shown {
@@ -190,6 +186,7 @@
 		max-height: 50px;
 	}
 
+	#unsplash_options.shown,
 	#quotes_userlist.shown {
 		max-height: 100px;
 	}
@@ -457,10 +454,6 @@
 		}
 	}
 
-	#custom {
-		display: none;
-	}
-
 	#i_refresh,
 	#i_qtrefresh {
 		padding: 0 10px;
@@ -544,11 +537,12 @@
 		overflow: visible;
 
 		#fileContainer {
-			margin: 0;
 			width: 100%;
 			display: grid;
 			grid-template-columns: repeat(3, 1fr);
 			grid-gap: 10px;
+			margin: 0;
+			padding-bottom: 3px;
 
 			.thumbnail {
 				position: relative;
@@ -645,19 +639,15 @@
 
 	#sett_city {
 		display: flex;
-		width: calc(100% - 0.4em);
+		width: calc(100% - 6px);
+		padding: 0 3px;
 		column-gap: 0.4em;
-		max-height: 50px;
-		margin-top: 0.6em;
-		padding: 0.2em;
-		overflow: hidden;
-		transition: max-Height 0.4s, margin-top 0.4s, padding-top 0.4s, padding-bottom 0.4s;
+		transition: max-height 0.4s, margin 0.4s, padding 0.4s;
 
-		&.hidden {
-			padding-top: 0;
-			padding-bottom: 0;
-			margin-top: 0;
-			max-height: 0;
+		&.shown {
+			padding: 3px;
+			margin-top: 0.6em;
+			max-height: 50px;
 		}
 
 		select,

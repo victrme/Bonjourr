@@ -184,7 +184,7 @@ export default function weather(
 					i_city.setAttribute('placeholder', data.city)
 
 					if (location) {
-						sett_city.classList.toggle('hidden', true)
+						sett_city.classList.remove('shown')
 						i_geol.checked = true
 					}
 				}
@@ -370,8 +370,7 @@ export default function weather(
 				if (event.checked) {
 					navigator.geolocation.getCurrentPosition(
 						async (pos) => {
-							//update le parametre de location
-							clas(sett_city, event.checked || true, 'hidden')
+							sett_city?.classList.toggle('shown', false)
 							weather.location = [pos.coords.latitude, pos.coords.longitude]
 
 							weather = await request(weather)
@@ -386,8 +385,8 @@ export default function weather(
 					return
 				} else {
 					i_city.setAttribute('placeholder', weather.city)
+					sett_city?.classList.toggle('shown', true)
 					i_ccode.value = weather.ccode
-					clas(sett_city, event.checked || false, 'hidden')
 
 					weather.location = []
 					weather = await request(weather)

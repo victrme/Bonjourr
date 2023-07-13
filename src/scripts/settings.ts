@@ -205,9 +205,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
+	paramId('local_options')?.classList.toggle('shown', data.background_type === 'custom')
+	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'dynamic')
+
 	if (data.background_type === 'custom') {
-		paramId('custom').setAttribute('style', 'display: block')
-		settingsDom.querySelector('.as_collection')?.setAttribute('style', 'display: none')
 		localBackgrounds({ thumbnail: settingsDom })
 	}
 
@@ -217,11 +218,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		const isGeolocation = data.weather?.location?.length > 0
 		let cityName = data.weather?.city || 'City'
 		paramId('i_city').setAttribute('placeholder', cityName)
-
-		clas(paramId('sett_city'), isGeolocation, 'hidden')
+		paramId('sett_city')?.classList.toggle('shown', !isGeolocation)
 		i_geol.checked = isGeolocation
 	} else {
-		clas(paramId('sett_city'), true, 'hidden')
+		paramId('sett_city')?.classList.toggle('shown', true)
 		i_geol.checked = true
 	}
 
@@ -700,7 +700,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		}
 
 		// Then control if widgets are on or off
-		settingsDom.querySelectorAll('.widget-option').forEach((dom) => {
+		settingsDom.querySelectorAll('.dropdown').forEach((dom) => {
 			toggleTabindex('#' + dom.id, dom?.classList.contains('shown'))
 		})
 
@@ -900,8 +900,8 @@ function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 }
 
 async function selectBackgroundType(cat: string) {
-	$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
-	document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
+	document.getElementById('local_options')?.classList.toggle('shown', cat === 'custom')
+	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'dynamic')
 
 	if (cat === 'custom') {
 		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
