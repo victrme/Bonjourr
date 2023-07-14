@@ -5,13 +5,13 @@ import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
-import unsplash from './features/unsplash'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
 import linksImport from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
+import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
 import throttle from './utils/throttle'
@@ -69,9 +69,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		input.value = typeof val === 'string' ? val : val.toString()
 	}
 
-	// 1.10.0 custom background slideshow
-	const whichFreq = data.background_type === 'custom' ? data.custom_every : data.dynamic?.every || 'hour'
-	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
 
 	initInput('i_blur', data.background_blur ?? 15)
@@ -79,8 +76,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('cssEditor', data.css || '')
 	initInput('i_row', data.linksrow || 8)
 	initInput('i_linkstyle', data.linkstyle || 'default')
-	initInput('i_type', data.background_type || 'dynamic')
-	initInput('i_freq', whichFreq || whichFreqDefault)
+	initInput('i_type', data.background_type || 'unsplash')
+	initInput('i_freq', data.unsplash?.every)
 	initInput('i_dark', data.dark || 'system')
 	initInput('i_favicon', data.favicon ?? '')
 	initInput('i_tabtitle', data.tabtitle ?? '')
@@ -101,7 +98,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_clockstyle', data.clock?.style || 'round')
 	initInput('i_timezone', data.clock?.timezone || 'auto')
-	initInput('i_collection', data.dynamic?.collection ?? '')
+	initInput('i_collection', data.unsplash?.collection ?? '')
 	initInput('i_ccode', data.weather?.ccode || 'US')
 	initInput('i_forecast', data.weather?.forecast || 'auto')
 	initInput('i_temp', data.weather?.temperature || 'actual')
@@ -205,10 +202,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
-	paramId('local_options')?.classList.toggle('shown', data.background_type === 'custom')
-	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'dynamic')
+	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
+	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
-	if (data.background_type === 'custom') {
+	if (data.background_type === 'local') {
 		localBackgrounds({ thumbnail: settingsDom })
 	}
 
@@ -395,7 +392,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_importbookmarks').onclick = linksImport
 
 	//
-	// Dynamic backgrounds
+	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
 		selectBackgroundType(this.value)
@@ -403,12 +400,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
 		const i_type = paramId('i_type') as HTMLInputElement
-		const isCustom = i_type.value === 'custom'
+		const isLocalBg = i_type.value === 'local'
 
-		if (isCustom) {
+		if (isLocalBg) {
 			localBackgrounds({ freq: this.value })
 		} else {
-			unsplash(null, { every: this.value })
+			unsplashBackgrounds(null, { every: this.value })
 		}
 	})
 
@@ -417,12 +414,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		if (this.children[0]) {
 			const arrow = this.children[0] as HTMLSpanElement
-			const isCustom = i_type.value === 'custom'
+			const isLocalBg = i_type.value === 'local'
 
-			if (isCustom) {
+			if (isLocalBg) {
 				localBackgrounds({ refresh: arrow })
 			} else {
-				unsplash(null, { refresh: arrow })
+				unsplashBackgrounds(null, { refresh: arrow })
 			}
 		}
 
@@ -430,7 +427,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplash(null, { collection: stringMaxSize(this.value, 256) })
+		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
 		this.blur()
 	})
 
@@ -438,7 +435,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds({ newfile: this.files || undefined })
+		localBackgrounds({ newfile: this.files })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
@@ -900,21 +897,21 @@ function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 }
 
 async function selectBackgroundType(cat: string) {
-	document.getElementById('local_options')?.classList.toggle('shown', cat === 'custom')
-	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'dynamic')
+	document.getElementById('local_options')?.classList.toggle('shown', cat === 'local')
+	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
 
-	if (cat === 'custom') {
+	if (cat === 'local') {
 		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
 	}
 
-	if (cat === 'dynamic') {
-		const { dynamic } = ((await storage.get()) as Sync) ?? {}
-		if (!dynamic) return
+	if (cat === 'unsplash') {
+		const data = ((await storage.get()) as Sync) ?? {}
+		if (!data.unsplash) return
 
-		document.querySelector<HTMLSelectElement>('#i_freq')!.value = dynamic.every || 'hour'
+		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
 		document.getElementById('creditContainer')?.classList.toggle('shown', true)
-		setTimeout(() => unsplash(dynamic), 100)
+		setTimeout(() => unsplashBackgrounds(data.unsplash), 100)
 	}
 
 	storage.set({ background_type: cat })
@@ -955,15 +952,7 @@ function fadeOut() {
 
 async function paramsImport(toImport: Sync) {
 	try {
-		// Load all sync & dynamicCache
 		let data = ((await storage.get()) as Sync) ?? {}
-
-		// Remove user collection cache if collection change
-		// if (sync.dynamic && toImport.dynamic) {
-		// 	if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
-		// 		local.dynamicCache.user = []
-		// 	}
-		// }
 
 		data = { ...filterImports(data, toImport) }
 

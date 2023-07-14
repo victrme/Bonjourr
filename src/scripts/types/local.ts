@@ -1,17 +1,36 @@
 import { google } from './googleFonts'
-import UnsplashImage from './unsplashImage'
 
 export type Quote = {
 	author: string
 	content: string
 }
 
-export type DynamicCache = {
+export type UnsplashCache = {
 	noon: UnsplashImage[]
 	day: UnsplashImage[]
 	evening: UnsplashImage[]
 	night: UnsplashImage[]
 	user: UnsplashImage[]
+}
+
+export type UnsplashImage = {
+	url: string
+	link: string
+	username: string
+	name: string
+	city: string
+	country: string
+	color: string
+	exif: {
+		make: string
+		model: string
+		name: string
+		exposure_time: string
+		aperture: string
+		focal_length: string
+		iso: number
+	}
+	desc: string
 }
 
 export type Local = {
@@ -22,5 +41,5 @@ export type Local = {
 	idsList: string[]
 	userQuoteSelection: number
 	quotesCache: Quote[]
-	dynamicCache: DynamicCache
+	unsplashCache: UnsplashCache
 }
