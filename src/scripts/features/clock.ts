@@ -56,18 +56,22 @@ function clockDate(date: Date, usdate: boolean) {
 
 function greetings(date: Date, name?: string) {
 	const rand = Math.random() > 0.8 ? 1 : 0
-	const greets = [
-		{ text: ['Good night', 'Sweet dreams'][rand], hour: 6 },
-		{ text: 'Good morning', hour: 12 },
-		{ text: 'Good afternoon', hour: 18 },
-		{ text: 'Good evening', hour: 2 },
-	]
+	const hour = date.getHours()
+	let greet = 'Good evening'
+
+	if (hour < 3) {
+		greet = 'Good evening'
+	} else if (hour < 5) {
+		greet = ['Good night', 'Sweet dreams'][rand]
+	} else if (hour < 12) {
+		greet = 'Good morning'
+	} else if (hour < 18) {
+		greet = 'Good afternoon'
+	}
 
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
-	const greetResult = greets.filter((greet) => date.getHours() < greet.hour)[0]
-
 	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
-	domgreetings.textContent = tradThis(greetResult.text) + (name ? `, ${name}` : '')
+	domgreetings.textContent = tradThis(greet) + (name ? `, ${name}` : '')
 }
 
 function changeAnalogFace(face = 'none') {
