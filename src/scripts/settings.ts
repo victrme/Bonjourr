@@ -209,7 +209,18 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		localBackgrounds({ thumbnail: settingsDom })
 	}
 
-	//weather settings
+	// Update thumbnails grid max-height by watching changes
+	const fileContainer = settingsDom.querySelector<HTMLElement>('#fileContainer')
+	const optionsDom = settingsDom.querySelector<HTMLElement>('#local_options')
+
+	if (fileContainer) {
+		new MutationObserver(() => {
+			const thumbsHeight = fileContainer?.offsetHeight ?? 0
+			optionsDom?.style.setProperty('--thumbnails-grid-height', thumbsHeight + 'px')
+		}).observe(fileContainer, { childList: true })
+	}
+
+	// weather settings
 	const i_geol = paramId('i_geol') as HTMLInputElement
 	if (data.weather && Object.keys(data.weather).length > 0) {
 		const isGeolocation = data.weather?.location?.length > 0

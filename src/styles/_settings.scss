@@ -162,7 +162,8 @@
 	}
 
 	#local_options.shown {
-		max-height: 290px;
+		--thumbnails-grid-height: 0px;
+		max-height: calc(112px + var(--thumbnails-grid-height));
 	}
 
 	#time_options.shown {
