@@ -123,7 +123,7 @@ async function addNewImage(dataURIs: string[]) {
 
 	// change type si premier local
 	if (ids.length === 0) {
-		storage.set({ background_type: 'custom' })
+		storage.set({ background_type: 'local' })
 	}
 
 	for (const dataURI of dataURIs) {
