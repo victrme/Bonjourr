@@ -55,11 +55,12 @@ function clockDate(date: Date, usdate: boolean) {
 }
 
 function greetings(date: Date, name?: string) {
+	const rand = Math.random() > 0.8 ? 1 : 0
 	const greets = [
-		{ text: 'Good night', hour: 7 },
+		{ text: ['Good night', 'Sweet dreams'][rand], hour: 6 },
 		{ text: 'Good morning', hour: 12 },
 		{ text: 'Good afternoon', hour: 18 },
-		{ text: 'Good evening', hour: 24 },
+		{ text: 'Good evening', hour: 2 },
 	]
 
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
