@@ -47,7 +47,7 @@ export type Weather = {
 	}
 }
 
-export type Dynamic = {
+export type Unsplash = {
 	every: string
 	collection: string
 	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
@@ -129,11 +129,9 @@ export type Sync = {
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'
-	custom_time: number
-	custom_every: string
-	background_type: string
+	background_type: 'local' | 'unsplash'
 	clock: Clock
-	dynamic: Dynamic
+	unsplash: Unsplash
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes

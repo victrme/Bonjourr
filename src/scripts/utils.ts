@@ -238,9 +238,7 @@ export const syncDefaults: Sync = {
 	usdate: false,
 	background_blur: 15,
 	background_bright: 0.8,
-	background_type: 'dynamic',
-	custom_time: 1650516688,
-	custom_every: 'pause',
+	background_type: 'unsplash',
 	quicklinks: true,
 	linkstyle: 'large',
 	linknewtab: false,
@@ -258,7 +256,7 @@ export const syncDefaults: Sync = {
 		style: 'round',
 		timezone: 'auto',
 	},
-	dynamic: {
+	unsplash: {
 		every: 'hour',
 		collection: '',
 		lastCollec: 'day',
@@ -337,7 +335,7 @@ export const localDefaults: Local = {
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
-	dynamicCache: {
+	unsplashCache: {
 		noon: [],
 		day: [],
 		evening: [],

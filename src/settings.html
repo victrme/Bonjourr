@@ -97,9 +97,9 @@
 	<div class="param">
 		<div class="wrapper">
 			<label for="i_type" class="trn">Background type</label>
-			<select id="i_type" class="theme">
-				<option value="dynamic" class="trn">Dynamic</option>
-				<option value="custom" class="trn">Custom</option>
+			<select id="i_type">
+				<option value="unsplash" class="trn">Unsplash</option>
+				<option value="local" class="trn">Local file</option>
 			</select>
 		</div>
 
@@ -121,42 +121,44 @@
 			</div>
 		</div>
 
-		<div class="as as_collection">
-			<hr />
+		<div id="unsplash_options" class="dropdown shown">
+			<div class="as as_collection">
+				<hr />
 
-			<div class="wrapper">
-				<span>
-					<label for="i_collection" class="trn">Unsplash collection</label>
-					<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
-				</span>
+				<div class="wrapper">
+					<span>
+						<label for="i_collection" class="trn">Unsplash collection</label>
+						<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
+					</span>
 
-				<input
-					type="text"
-					name="collection"
-					id="i_collection"
-					autocomplete="off"
-					placeholder="2nVzlQADDIE"
-					maxlength="256"
-					spellcheck="false"
-					autocomplete="off"
-					autocorrect="off"
-					autocapitalize="off"
-				/>
+					<input
+						type="text"
+						name="collection"
+						id="i_collection"
+						autocomplete="off"
+						placeholder="2nVzlQADDIE"
+						maxlength="256"
+						spellcheck="false"
+						autocomplete="off"
+						autocorrect="off"
+						autocapitalize="off"
+					/>
+				</div>
+
+				<p class="tooltiptext ttcoll">
+					<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
+					<a
+						class="trn"
+						href="https://bonjourr.fr/docs/overview/#custom-unsplash-collection"
+						rel="noreferrer noopener"
+						target="_blank"
+						>Learn more</a
+					>
+				</p>
 			</div>
-
-			<p class="tooltiptext ttcoll">
-				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
-				<a
-					class="trn"
-					href="https://bonjourr.fr/docs/overview/#custom-unsplash-collection"
-					rel="noreferrer noopener"
-					target="_blank"
-					>Learn more</a
-				>
-			</p>
 		</div>
 
-		<div id="custom">
+		<div id="local_options" class="dropdown">
 			<hr />
 
 			<div id="bg_tn_wrap">
@@ -203,7 +205,7 @@
 			<input id="i_quicklinks" class="switch opt-hider" type="checkbox" />
 		</div>
 
-		<div id="quicklinks_options" class="widget-option">
+		<div id="quicklinks_options" class="dropdown">
 			<hr />
 			<div id="link-input-wrap">
 				<div>
@@ -277,7 +279,7 @@
 			<input id="i_time" class="switch opt-hider" type="checkbox" />
 		</div>
 
-		<div id="time_options" class="widget-option">
+		<div id="time_options" class="dropdown">
 			<hr />
 
 			<div class="analog wrapper">
@@ -388,7 +390,7 @@
 			<input id="i_main" class="switch opt-hider" type="checkbox" />
 		</div>
 
-		<div id="main_options" class="widget-option">
+		<div id="main_options" class="dropdown">
 			<hr />
 
 			<div class="w_auto wrapper">
@@ -396,7 +398,7 @@
 				<input id="i_geol" class="switch opt-hider" type="checkbox" />
 			</div>
 
-			<div id="sett_city">
+			<div id="sett_city" class="dropdown">
 				<select id="i_ccode" class="countrycode" aria-label="Country location">
 					<option value="AF">Afghanistan</option>
 					<option value="AX">Åland Islands</option>
@@ -703,7 +705,7 @@
 					</select>
 				</div>
 
-				<div id="weather_provider">
+				<div id="weather_provider" class="dropdown">
 					<hr />
 					<div class="wrapper">
 						<label for="i_provider" class="trn">Provider URL</label>
@@ -754,7 +756,7 @@
 			<input id="i_notes" class="switch opt-hider" type="checkbox" />
 		</div>
 
-		<div id="notes_options" class="widget-option">
+		<div id="notes_options" class="dropdown">
 			<div class="as as_notes">
 				<hr />
 
@@ -810,7 +812,7 @@
 			<input id="i_sb" class="switch opt-hider" type="checkbox" />
 		</div>
 
-		<div id="searchbar_options" class="widget-option">
+		<div id="searchbar_options" class="dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -833,11 +835,11 @@
 					<option value="ecosia">Ecosia</option>
 					<option value="qwant">Qwant</option>
 					<option value="baidu">Baidu</option>
-					<option value="custom">Custom</option>
+					<option value="custom" class="trn">Custom</option>
 				</select>
 			</div>
 
-			<div id="searchbar_request">
+			<div id="searchbar_request" class="dropdown">
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
@@ -887,7 +889,7 @@
 			<input id="i_quotes" class="switch opt-hider" type="checkbox" />
 		</div>
 
-		<div id="quotes_options" class="widget-option">
+		<div id="quotes_options" class="dropdown">
 			<hr />
 
 			<div class="as as_quote_type">
@@ -905,12 +907,12 @@
 							<option value="classic" class="trn">Classic</option>
 							<option value="inspirobot">Inspirobot</option>
 							<option value="kaamelott">Kaamelott</option>
-							<option value="user">Custom</option>
+							<option value="user" class="trn">Custom</option>
 						</select>
 					</div>
 				</div>
 
-				<div id="quotes_userlist">
+				<div id="quotes_userlist" class="dropdown">
 					<hr />
 
 					<div class="wrapper">

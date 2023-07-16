@@ -6,12 +6,12 @@ import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
-import unsplash from './features/unsplash'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
+import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
 import {
@@ -195,13 +195,13 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 }
 
 export function initBackground(data: Sync) {
-	const type = data.background_type || 'dynamic'
+	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
 
 	backgroundFilter({ blur, brightness })
 
-	type === 'custom' ? localBackgrounds() : unsplash(data.dynamic)
+	type === 'local' ? localBackgrounds() : unsplashBackgrounds(data.unsplash)
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -414,11 +414,11 @@ function onlineAndMobileHandler() {
 				return
 			}
 
-			const { dynamic, background_type } = data
-			const dynamicNeedsImage = background_type === 'dynamic' && freqControl.get(dynamic.every, dynamic.time)
+			const frequency = freqControl.get(data.unsplash.every, data.unsplash.time)
+			const needNewImage = data.background_type === 'unsplash' && frequency
 
-			if (dynamicNeedsImage && data.dynamic) {
-				unsplash(data.dynamic)
+			if (needNewImage && data.unsplash) {
+				unsplashBackgrounds(data.unsplash)
 			}
 
 			clock(data)
@@ -529,12 +529,22 @@ function startup(data: Sync) {
 
 				const isOnline = data.about.browser === 'online'
 				const local = await (isOnline ? getOnlineLocal() : getChromeLocal())
-				const { dynamicCache, quotesCache } = localDefaults
+				const { unsplashCache, quotesCache } = localDefaults
 
-				localStorage.setItem('dynamicCache', JSON.stringify(local?.dynamicCache ?? { ...dynamicCache }))
-				localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? { ...quotesCache }))
+				localStorage.setItem('unsplashCache', JSON.stringify(local?.unsplashCache ?? { ...unsplashCache }))
+				localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? quotesCache))
 
 				isOnline ? removeOnlineLocal() : removeChromeLocal()
+
+				data.unsplash = { ...(data.dynamic as Sync['unsplash']) }
+
+				delete data.dynamic
+				delete data.custom_every
+				delete data.custom_time
+
+				storage.remove('dynamic')
+				storage.remove('custom_every')
+				storage.remove('custom_time')
 			}
 
 			storage.set({ ...data })

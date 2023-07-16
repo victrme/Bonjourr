@@ -1,9 +1,9 @@
+import { clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
 import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
-import unsplash from './unsplash'
-import storage from '../storage'
-import { clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
+import unsplashBackgrounds from './unsplash'
 import errorMessage from '../utils/errorMessage'
+import storage from '../storage'
 
 type LocalImages = {
 	ids: string[]
@@ -20,7 +20,7 @@ type Blobs = {
 type UpdateEvent = {
 	thumbnail?: HTMLElement
 	refresh?: HTMLSpanElement
-	newfile?: FileList
+	newfile?: FileList | null
 	freq?: string
 }
 
@@ -123,7 +123,7 @@ async function addNewImage(dataURIs: string[]) {
 
 	// change type si premier local
 	if (ids.length === 0) {
-		storage.set({ background_type: 'custom' })
+		storage.set({ background_type: 'local' })
 	}
 
 	for (const dataURI of dataURIs) {
@@ -232,13 +232,13 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 		}
 
 		// back to unsplash
-		storage.set({ background_type: 'dynamic' })
+		storage.set({ background_type: 'unsplash' })
 		localImages.update({ ids: [], selected: '' })
 
 		setTimeout(async () => {
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
-			const { dynamic } = await storage.get('dynamic')
-			unsplash(dynamic)
+			const data = await storage.get('unsplash')
+			unsplashBackgrounds(data.unsplash)
 		}, 100)
 	}
 
@@ -321,13 +321,13 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
 		if (ids.length === 0) {
-			const { dynamic, custom_every } = await storage.get(['dynamic', 'custom_every'])
+			const data = await storage.get('unsplash')
 
 			// Note: Can be removed after everyone updated from 1.16.4
-			const hasConverted = await convertOldBackgroundStorage(custom_every)
+			const hasConverted = await convertOldBackgroundStorage()
 
 			if (hasConverted === false) {
-				unsplash(dynamic ?? null)
+				unsplashBackgrounds(data.unsplash ?? null)
 			}
 
 			return

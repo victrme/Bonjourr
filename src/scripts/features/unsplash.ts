@@ -5,13 +5,13 @@ import errorMessage from '../utils/errorMessage'
 import parse from '../utils/JSONparse'
 import storage from '../storage'
 
-import { Dynamic, Sync } from '../types/sync'
-import UnsplashImage from '../types/unsplashImage'
+import { UnsplashImage } from '../types/local'
+import { Unsplash, Sync } from '../types/sync'
 
 // TODO: Separate Collection type with users string
 type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
-type DynamicUpdate = {
+type UnsplashUpdate = {
 	refresh?: HTMLElement
 	collection?: string
 	every?: string
@@ -27,7 +27,7 @@ const allCollectionType = {
 }
 
 function getCache() {
-	return parse(localStorage.dynamicCache) ?? { ...localDefaults.dynamicCache }
+	return parse(localStorage.unsplashCache) ?? { ...localDefaults.unsplashCache }
 }
 
 async function preloadImage(src: string) {
@@ -131,8 +131,8 @@ function chooseCollection(customCollection?: string): CollectionType {
 	return periodOfDay(sunTime())
 }
 
-function collectionUpdater(dynamic: Dynamic): CollectionType {
-	const { every, lastCollec, collection } = dynamic
+function collectionUpdater(unsplash: Unsplash): CollectionType {
+	const { every, lastCollec, collection } = unsplash
 	const pause = every === 'pause'
 	const day = every === 'day'
 
@@ -141,10 +141,10 @@ function collectionUpdater(dynamic: Dynamic): CollectionType {
 	}
 
 	const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
-	dynamic.lastCollec = collec
+	unsplash.lastCollec = collec
 
 	if (collec !== lastCollec) {
-		storage.set({ dynamic: dynamic }, () => console.warn('bad'))
+		storage.set({ unsplash: unsplash }, () => console.warn('bad'))
 	}
 
 	return collec
@@ -203,8 +203,8 @@ async function requestNewList(collecType: CollectionType) {
 	return filteredList
 }
 
-async function cacheControl(dynamic: Dynamic, collecType: CollectionType) {
-	const needNewImage = freqControl.get(dynamic.every, dynamic.time)
+async function cacheControl(unsplash: Unsplash, collecType: CollectionType) {
+	const needNewImage = freqControl.get(unsplash.every, unsplash.time)
 	const cache = getCache()
 	let list = cache[collecType]
 
@@ -215,7 +215,7 @@ async function cacheControl(dynamic: Dynamic, collecType: CollectionType) {
 		await preloadImage(list[0].url)
 
 		cache[collecType] = list
-		localStorage.setItem('dynamicCache', JSON.stringify(cache))
+		localStorage.setItem('unsplashCache', JSON.stringify(cache))
 		sessionStorage.setItem('waitingForPreload', 'true')
 	}
 
@@ -231,8 +231,8 @@ async function cacheControl(dynamic: Dynamic, collecType: CollectionType) {
 	}
 
 	// Needs new image, Update time
-	dynamic.lastCollec = collecType
-	dynamic.time = freqControl.set()
+	unsplash.lastCollec = collecType
+	unsplash.time = freqControl.set()
 
 	if (list.length > 1) {
 		list.shift()
@@ -247,7 +247,7 @@ async function cacheControl(dynamic: Dynamic, collecType: CollectionType) {
 
 		cache[collecType] = list.concat(newList)
 		await preloadImage(newList[0].url)
-		localStorage.setItem('dynamicCache', JSON.stringify(cache))
+		localStorage.setItem('unsplashCache', JSON.stringify(cache))
 		return
 	}
 
@@ -256,15 +256,15 @@ async function cacheControl(dynamic: Dynamic, collecType: CollectionType) {
 		await preloadImage(list[1].url)
 	}
 
-	storage.set({ dynamic: dynamic })
-	localStorage.setItem('dynamicCache', JSON.stringify(cache))
+	storage.set({ unsplash })
+	localStorage.setItem('unsplashCache', JSON.stringify(cache))
 }
 
-async function updateDynamic({ refresh, every, collection }: DynamicUpdate) {
-	const { dynamic } = (await storage.get('dynamic')) as Sync
-	const dynamicCache = getCache()
+async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
+	const { unsplash } = (await storage.get('unsplash')) as Sync
+	const unsplashCache = getCache()
 
-	if (!dynamic) {
+	if (!unsplash) {
 		return
 	}
 
@@ -274,11 +274,11 @@ async function updateDynamic({ refresh, every, collection }: DynamicUpdate) {
 			return
 		}
 
-		dynamic.time = 0
-		storage.set({ dynamic })
+		unsplash.time = 0
+		storage.set({ unsplash })
 		turnRefreshButton(refresh, true)
 
-		setTimeout(() => cacheControl(dynamic, collectionUpdater(dynamic)), 400)
+		setTimeout(() => cacheControl(unsplash, collectionUpdater(unsplash)), 400)
 	}
 
 	if (every !== undefined) {
@@ -287,9 +287,9 @@ async function updateDynamic({ refresh, every, collection }: DynamicUpdate) {
 			return console.log('Not valid "every" value')
 		}
 
-		dynamic.every = every
-		dynamic.time = freqControl.set()
-		storage.set({ dynamic })
+		unsplash.every = every
+		unsplash.time = freqControl.set()
+		storage.set({ unsplash })
 	}
 
 	if (collection !== undefined) {
@@ -298,30 +298,30 @@ async function updateDynamic({ refresh, every, collection }: DynamicUpdate) {
 		// remove user collec
 		if (collection === '') {
 			const defaultColl = chooseCollection()
-			dynamicCache.user = []
-			dynamic.collection = ''
-			dynamic.lastCollec = defaultColl
+			unsplashCache.user = []
+			unsplash.collection = ''
+			unsplash.lastCollec = defaultColl
 
-			storage.set({ dynamic })
-			localStorage.setItem('dynamicCache', JSON.stringify(dynamicCache))
+			storage.set({ unsplash })
+			localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
 
-			unsplash(dynamic)
+			unsplashBackgrounds(unsplash)
 			return
 		}
 
 		// add new collec
-		dynamic.collection = collection
-		dynamic.lastCollec = 'user'
-		dynamic.time = freqControl.set()
-		storage.set({ dynamic })
+		unsplash.collection = collection
+		unsplash.lastCollec = 'user'
+		unsplash.time = freqControl.set()
+		storage.set({ unsplash })
 
-		cacheControl(dynamicCache, chooseCollection(collection))
+		cacheControl(unsplashCache, chooseCollection(collection))
 	}
 }
 
-export default async function unsplash(init: Dynamic | null, event?: DynamicUpdate) {
+export default async function unsplashBackgrounds(init: Unsplash | null, event?: UnsplashUpdate) {
 	if (event) {
-		updateDynamic(event)
+		updateUnsplash(event)
 	}
 
 	if (init) {
