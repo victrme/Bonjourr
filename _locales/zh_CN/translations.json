@@ -70,7 +70,7 @@
 	"Background": "通用",
 	"Background type": "背景类型",
 	"Default": "默认",
-	"Dynamic": "动态",
+	"Local file": "本地文件",
 	"Custom": "自定义",
 	"Frequency": "切换频率",
 	"Daylight": "白天",
