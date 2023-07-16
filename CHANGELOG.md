@@ -1,3 +1,29 @@
+## 1.17.0
+
+-   Local background:
+    -   No more slowdown when adding or loading new images
+    -   Loading is much faster and is not blocking
+    -   Online: Images can be as big as you want
+    -   Minor option styling improvements
+-   Notes:
+    -   Added line modification keybindings (headings, lists, todos)
+    -   Caret keeps horizontal position when moving between lines
+    -   Working Ctrl + Z when adding / removing lines
+    -   Strikes text when checking todo list
+    -   Improved overall stability
+-   Page layout:
+    -   Added page gap option
+    -   Moved options below custom fonts
+-   Other:
+    -   Faster loading times with Quotes or custom Fonts enabled
+    -   Upgraded to google fonts v2 with variable fonts
+    -   "Good night" greetings narrowed to 2h - 5h
+    -   Moved translations to `/_locales/[lang]/translations.json`
+    -   Minor settings accessibility improvements
+    -   Reduced script overhead
+
+$~~~~~~~~~~~$
+
 ## 1.16.4
 
 -   Improvements:
