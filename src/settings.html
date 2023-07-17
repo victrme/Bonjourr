@@ -1007,16 +1007,20 @@
 	</div>
 
 	<div class="as as_page">
-		<h2 class="trn">Page Control</h2>
+		<h2>
+			<span class="trn">Page layout</span>
+			<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
+		</h2>
+
+		<div class="tooltiptext ttgrid">
+			<span class="trn">Customise how and where widgets appear.</span>
+			<span class="trn instructions">Choose a layout, click edit and select a widget to modify.</span>
+			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener">Learn more</a>
+		</div>
 
 		<div class="param">
 			<div>
 				<div class="wrapper">
-					<span>
-						<span class="trn">Page layout</span>
-						<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
-					</span>
-
 					<div id="grid-layout" class="mover">
 						<button data-layout="single" aria-label="Single column layout">
 							<div></div>
@@ -1031,20 +1035,12 @@
 							<div></div>
 						</button>
 					</div>
-				</div>
 
-				<div class="tooltiptext ttgrid">
-					<span class="trn">Customise how and where widgets appear.</span>
-					<span class="trn instructions">Choose a layout, click edit and select a widget to modify.</span>
-					<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener"
-						>Learn more</a
-					>
+					<div class="grid-btns">
+						<button id="b_editmove" class="trn">Edit layout</button>
+						<button id="b_resetlayout" class="trn">Reset</button>
+					</div>
 				</div>
-			</div>
-
-			<div class="grid-btns">
-				<button id="b_editmove" class="trn">Edit grid</button>
-				<button id="b_resetlayout" class="trn">Reset layout</button>
 			</div>
 
 			<hr />

@@ -283,6 +283,7 @@
 		}
 
 		&.ttlinks,
+		&.ttgrid,
 		&.ttcss,
 		&.ttexport {
 			margin: 0 26px;
@@ -295,7 +296,6 @@
 		}
 
 		&.ttcoll,
-		&.ttgrid,
 		&.tttab,
 		&.ttcustomquotes {
 			&.shown {
@@ -358,9 +358,14 @@
 	}
 
 	.grid-btns {
-		text-align: right;
-		margin-top: 0.35em;
-		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		justify-content: end;
+
+		button {
+			text-align: right;
+		}
 	}
 
 	#b_resetlayout:focus-visible,
