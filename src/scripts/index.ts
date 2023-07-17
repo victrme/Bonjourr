@@ -538,6 +538,11 @@ function startup(data: Sync) {
 
 				data.unsplash = { ...(data.dynamic as Sync['unsplash']) }
 
+				//@ts-ignore
+				if (data.background_type === 'custom') data.background_type = 'local'
+				//@ts-ignore
+				if (data.background_type === 'dynamic') data.background_type = 'unsplash'
+
 				delete data.dynamic
 				delete data.custom_every
 				delete data.custom_time
