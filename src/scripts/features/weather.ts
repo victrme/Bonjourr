@@ -1,42 +1,49 @@
 import { sunTime } from '..'
 import storage from '../storage'
 import { Sync, Weather } from '../types/sync'
-import { $, clas, tradThis, stringMaxSize } from '../utils'
+import { $, clas, stringMaxSize } from '../utils'
+import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
 
 export default function weather(
 	init: Sync | null,
 	event?: {
-		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide'
+		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide' | 'moreinfo' | 'provider'
 		checked?: boolean
 		value?: string
 		elem?: Element
 	}
 ) {
 	const date = new Date()
-	const i_city = $('i_city') as HTMLInputElement
-	const i_ccode = $('i_ccode') as HTMLInputElement
-	const sett_city = $('sett_city') as HTMLInputElement
-	const current = $('current')
-	const forecast = $('forecast')
-	const tempContainer = $('tempContainer')
 
 	async function request(storage: Weather): Promise<Weather> {
 		function getRequestURL(isForecast: boolean) {
-			const key = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4'][Math.ceil(Math.random() * 4) - 1]
-			const units = storage.unit || 'metric'
-			const type = isForecast ? 'forecast' : 'weather'
+			const apis = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4']
+			const key = apis[Math.ceil(Math.random() * 4) - 1]
+			const isGeolocated = storage.location?.length === 2
+
+			let base = 'https://api.openweathermap.org/data/2.5/'
 			let lang = document.documentElement.getAttribute('lang')
-			let location = ''
 
-			// Openweathermap country code for traditional chinese is tw
+			// Openweathermap country code for traditional chinese is tw, greek is el
 			if (lang === 'zh_HK') lang = 'zh_TW'
+			if (lang === 'gr') lang = 'el'
 
-			storage.location?.length === 2
-				? (location = `&lat=${storage.location[0]}&lon=${storage.location[1]}`)
-				: (location = `&q=${encodeURI(storage.city)},${storage.ccode}`)
+			base += isForecast ? 'forecast/' : 'weather/'
+			base += '?units=' + (storage.unit ?? 'metric')
+			base += '&lang=' + lang
 
-			return `https://api.openweathermap.org/data/2.5/${type}?appid=${key}${location}&units=${units}&lang=${lang}`
+			if (isGeolocated) {
+				base += '&lat=' + storage.location[0]
+				base += '&lon=' + storage.location[1]
+			} else {
+				base += '&q=' + encodeURI(storage.city ?? 'Paris')
+				base += ',' + storage.ccode ?? 'fr'
+			}
+
+			base += '&appid=' + atob(key)
+
+			return base
 		}
 
 		if (!navigator.onLine) {
@@ -54,7 +61,6 @@ export default function weather(
 			currentJSON = await currentResponse.json()
 			forecastJSON = await forecastResponse.json()
 		} catch (error) {
-			console.error(error)
 			return storage
 		}
 
@@ -118,7 +124,7 @@ export default function weather(
 			if (navigator.onLine && (now > data.lastCall + 1800 || sessionStorage.lang)) {
 				sessionStorage.removeItem('lang')
 				data = await request(data)
-				storage.sync.set({ weather: data })
+				storage.set({ weather: data })
 			}
 
 			displayWeather(data)
@@ -129,16 +135,6 @@ export default function weather(
 	}
 
 	async function initWeather(data: Weather) {
-		// Get IPAPI first to get city and location
-
-		// Get geolocation
-		// if geoloc success, replace IPAPI
-		// else try with IPAPI city
-
-		// If ipapi city failed, use Paris, France
-
-		// First, tries to get city and country code to add in settings
-
 		async function getInitialPositionFromIpapi() {
 			try {
 				const ipapi = await fetch('https://ipapi.co/json')
@@ -174,21 +170,21 @@ export default function weather(
 			data = await request(data)
 
 			displayWeather(data)
-			storage.sync.set({ weather: data })
+			storage.set({ weather: data })
 
 			setTimeout(() => {
 				// If settings is available, all other inputs are
-				if ($('settings')) {
-					const i_ccode = $('i_ccode') as HTMLInputElement
-					const i_city = $('i_city') as HTMLInputElement
-					const i_geol = $('i_geol') as HTMLInputElement
-					const sett_city = $('sett_city') as HTMLDivElement
+				if (document.getElementById('settings')) {
+					const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+					const i_city = document.getElementById('i_city') as HTMLInputElement
+					const i_geol = document.getElementById('i_geol') as HTMLInputElement
+					const sett_city = document.getElementById('sett_city') as HTMLDivElement
 
 					i_ccode.value = data.ccode
 					i_city.setAttribute('placeholder', data.city)
 
 					if (location) {
-						clas(sett_city, true, 'hidden')
+						sett_city.classList.remove('shown')
 						i_geol.checked = true
 					}
 				}
@@ -203,6 +199,10 @@ export default function weather(
 
 	function displayWeather(data: Weather) {
 		const currentState = data.lastState
+		const current = document.getElementById('current')
+		const forecast = document.getElementById('forecast')
+		const tempContainer = document.getElementById('tempContainer')
+		const weatherdom = document.getElementById('weather')
 
 		if (!currentState) {
 			return
@@ -262,25 +262,12 @@ export default function weather(
 				return
 			}
 
-			const widgetIcon = tempContainer.querySelector('img')
+			const icon = $('weather-icon') as HTMLImageElement
 			const { now, rise, set } = sunTime()
 			const timeOfDay = now < rise || now > set ? 'night' : 'day'
 			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
-			if (widgetIcon) {
-				widgetIcon.setAttribute('src', iconSrc)
-				return
-			}
-
-			const icon = document.createElement('img')
 			icon.src = iconSrc
-			icon.setAttribute('alt', '')
-			icon.setAttribute('draggable', 'false')
-			icon.setAttribute('fetchPriority', 'high')
-			tempContainer.prepend(icon)
-
-			// from 1.2s request anim to .4s hide elem anim
-			setTimeout(() => (tempContainer.style.transition = 'opacity 0.4s, max-height 0.4s, transform 0.4s'), 400)
 		}
 
 		const handleForecast = () => {
@@ -294,112 +281,153 @@ export default function weather(
 			}
 		}
 
+		const handleMoreInfo = () => {
+			const noDetails = !data.moreinfo || data.moreinfo === 'none'
+			const emptyCustom = data.moreinfo === 'custom' && !data.provider
+
+			if (noDetails || emptyCustom) {
+				weatherdom?.removeAttribute('href')
+				return
+			}
+
+			const URLs = {
+				msnw: 'https://www.msn.com/en-us/weather/forecast/',
+				yhw: 'https://www.yahoo.com/news/weather/',
+				windy: 'https://www.windy.com/',
+				custom: data.provider ?? '',
+			}
+
+			if ((data.moreinfo || '') in URLs) {
+				weatherdom?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
+			}
+		}
+
 		handleWidget()
 		handleDescription()
 		handleForecast()
+		handleMoreInfo()
 
-		clas(current, false, 'wait')
-		clas(tempContainer, false, 'wait')
+		current?.classList.remove('wait')
+		tempContainer?.classList.remove('wait')
 	}
 
 	function forecastVisibilityControl(value: string = 'auto') {
+		const forcastdom = document.getElementById('forecast')
 		let isTimeForForecast = false
 
 		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
 		else isTimeForForecast = value === 'always'
 
-		clas(forecast, isTimeForForecast, 'shown')
+		forcastdom?.classList.toggle('shown', isTimeForForecast)
 	}
 
 	async function updatesWeather() {
-		storage.sync.get(['weather', 'hide'], async (data) => {
-			switch (event?.is) {
-				case 'units': {
-					data.weather.unit = event.checked ? 'imperial' : 'metric'
-					data.weather = await request(data.weather)
-					break
-				}
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+		const sett_city = document.getElementById('sett_city') as HTMLInputElement
 
-				case 'city': {
-					if (i_city.value.length < 3 || !navigator.onLine) {
-						return false
-					}
+		let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
 
-					data.weather.ccode = i_ccode.value
-					data.weather.city = stringMaxSize(i_city.value, 64)
+		if (!weather || !hide) {
+			return
+		}
 
-					const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
-						direction: 'alternate',
-						easing: 'linear',
-						duration: 800,
-						iterations: Infinity,
-					})
-
-					data.weather = await request(data.weather)
-
-					i_city.value = ''
-					i_city.blur()
-					inputAnim.cancel()
-					i_city.setAttribute('placeholder', data.weather.city)
-
-					break
-				}
-
-				case 'geol': {
-					data.weather.location = []
-
-					if (event.checked) {
-						navigator.geolocation.getCurrentPosition(
-							async (pos) => {
-								//update le parametre de location
-								clas(sett_city, event.checked || true, 'hidden')
-								data.weather.location = [pos.coords.latitude, pos.coords.longitude]
-
-								data.weather = await request(data.weather)
-								storage.sync.set({ weather: data.weather })
-								displayWeather(data.weather)
-							},
-							() => {
-								// Désactive geolocation if refused
-								setTimeout(() => (event.checked = false), 400)
-							}
-						)
-						return
-					} else {
-						i_city.setAttribute('placeholder', data.weather.city)
-						i_ccode.value = data.weather.ccode
-						clas(sett_city, event.checked || false, 'hidden')
-
-						data.weather.location = []
-						data.weather = await request(data.weather)
-					}
-					break
-				}
-
-				case 'forecast': {
-					data.weather.forecast = event.value
-					forecastVisibilityControl(event.value)
-					break
-				}
-
-				case 'temp': {
-					data.weather.temperature = event.value
-					break
-				}
-
-				case 'unhide': {
-					const { weatherdesc, weathericon } = data.hide || {}
-					if (weatherdesc && weathericon) {
-						forecastVisibilityControl(data.weather.forecast)
-						weatherCacheControl(data.weather)
-					}
-					return
-				}
+		switch (event?.is) {
+			case 'units': {
+				weather.unit = event.checked ? 'imperial' : 'metric'
+				weather = await request(weather)
+				break
 			}
 
-			storage.sync.set({ weather: data.weather })
-			displayWeather(data.weather)
-		})
+			case 'city': {
+				if (i_city.value.length < 3 || !navigator.onLine) {
+					return false
+				}
+
+				weather.ccode = i_ccode.value
+				weather.city = stringMaxSize(i_city.value, 64)
+
+				const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
+					direction: 'alternate',
+					easing: 'linear',
+					duration: 800,
+					iterations: Infinity,
+				})
+
+				weather = await request(weather)
+
+				i_city.value = ''
+				i_city.blur()
+				inputAnim.cancel()
+				i_city.setAttribute('placeholder', weather.city)
+
+				break
+			}
+
+			case 'geol': {
+				weather.location = []
+
+				if (event.checked) {
+					navigator.geolocation.getCurrentPosition(
+						async (pos) => {
+							sett_city?.classList.toggle('shown', false)
+							weather.location = [pos.coords.latitude, pos.coords.longitude]
+
+							weather = await request(weather)
+							storage.set({ weather: weather })
+							displayWeather(weather)
+						},
+						() => {
+							// Désactive geolocation if refused
+							setTimeout(() => (event.checked = false), 400)
+						}
+					)
+					return
+				} else {
+					i_city.setAttribute('placeholder', weather.city)
+					sett_city?.classList.toggle('shown', true)
+					i_ccode.value = weather.ccode
+
+					weather.location = []
+					weather = await request(weather)
+				}
+				break
+			}
+
+			case 'forecast': {
+				weather.forecast = event.value ?? 'auto'
+				forecastVisibilityControl(event.value)
+				break
+			}
+
+			case 'temp': {
+				weather.temperature = event.value ?? 'actual'
+				break
+			}
+
+			case 'moreinfo': {
+				clas($('weather_provider'), event.value === 'custom', 'shown')
+				weather.moreinfo = event.value
+				break
+			}
+
+			case 'provider': {
+				weather.provider = event.value
+				break
+			}
+
+			case 'unhide': {
+				const { weatherdesc, weathericon } = hide || {}
+				if (weatherdesc && weathericon) {
+					forecastVisibilityControl(weather.forecast)
+					weatherCacheControl(weather)
+				}
+				return
+			}
+		}
+
+		storage.set({ weather })
+		displayWeather(weather)
 	}
 
 	// Event & Init
@@ -420,10 +448,10 @@ export default function weather(
 	}
 }
 
-setInterval(() => {
+// Checks every 5 minutes if weather needs update
+setInterval(async () => {
 	if (navigator.onLine) {
-		storage.sync.get(['weather', 'hide'], (data) => {
-			weather(data as Sync) // Checks every 5 minutes if weather needs update
-		})
+		const data = await storage.get(['weather', 'hide'])
+		if (data) weather(data as Sync)
 	}
 }, 300000)

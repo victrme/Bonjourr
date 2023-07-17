@@ -23,6 +23,8 @@
 		<link rel="stylesheet" href="src/styles/style.css" />
 		<style type="text/css" id="styles"></style>
 		<style type="text/css" id="fontstyle"></style>
+
+		<script src="src/scripts/main.js" defer></script>
 	</head>
 
 	<body class="init loading">
@@ -157,7 +159,7 @@
 				</div>
 			</div>
 
-			<div>
+			<div id="close-mover-wrapper">
 				<hr />
 
 				<button id="close-mover" class="trn">Done</button>
@@ -187,16 +189,18 @@
 
 			<div id="main" class="hidden">
 				<h2 id="greetings" data-hide="greetings"></h2>
-				<div id="weather">
+
+				<a id="weather" rel="noreferrer">
 					<div id="description" data-hide="weatherdesc">
 						<p id="current" class="wait">meteo</p>
 						<p id="forecast" class="wait">forecast</p>
 					</div>
 
 					<div id="tempContainer" class="wait" data-hide="weathericon">
+						<img id="weather-icon" alt="" draggable="false" fetchpriority="high" />
 						<p>00</p>
 					</div>
-				</div>
+				</a>
 			</div>
 
 			<div id="notes_container" class="hidden"></div>
@@ -227,6 +231,16 @@
 			</div>
 		</main>
 
+		<div id="popup">
+			<p id="popup_text" class="trn">
+				Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇
+			</p>
+			<div id="popup_buttons">
+				<a class="trn" id="popup_review" href="" rel="noreferrer">Review</a>
+				<a class="trn" id="popup_donate" href="https://ko-fi.com/bonjourr">Donate</a>
+			</div>
+		</div>
+
 		<div id="creditContainer">
 			<div id="credit"></div>
 		</div>
@@ -236,7 +250,5 @@
 				<img src="src/assets/interface/gear.svg" alt="" draggable="false" />
 			</button>
 		</div>
-
-		<script src="src/scripts/main.js"></script>
 	</body>
 </html>

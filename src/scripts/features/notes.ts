@@ -1,42 +1,38 @@
-import { $, clas, syncDefaults, tradThis } from '../utils'
-import { langList } from '../lang'
-import { Notes } from '../types/sync'
+import { syncDefaults, langList } from '../utils'
+import { eventDebounce } from '../utils/debounce'
+import { tradThis } from '../utils/translations'
 import storage from '../storage'
-import debounce from 'lodash.debounce'
 import pocketEditor from 'pocket-editor'
 
-type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
+import { Notes } from '../types/sync'
 
-const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	storage.sync.set(value)
-}, 400)
+type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
 
 function translateNotesText() {
 	let lang = document.documentElement.getAttribute('lang')
 
-	// Is NOT: defined and an available lang, en
 	if (!(lang && lang in langList)) lang = 'en'
 
-	const or = tradThis('or', lang)
-	const edit = tradThis('Edit this note', lang)
-	const titles = tradThis('to create titles', lang)
-	const lists = tradThis('to add a list or checkbox', lang)
+	const or = tradThis('or')
+	const edit = tradThis('Edit this note')
+	const titles = tradThis('to create titles')
+	const lists = tradThis('to add a list or checkbox')
 
 	const lines = [`## ${edit} !\n\n`, `[x] "# ", "## " ${or} "### " ${titles}\n`, `[x] "- " ${or} "[ ] " ${lists}`]
 
 	return lines.join('')
 }
 
-export default function notes(init: Notes | null, event?: NotesEvent) {
-	const container = $('notes_container')
+export default async function notes(init: Notes | null, event?: NotesEvent) {
+	const container = document.getElementById('notes_container')
 
 	function handleToggle(state: boolean) {
-		if (container) clas(container, !state, 'hidden')
+		if (container) container?.classList.toggle('hidden', !state)
 	}
 
 	function handleAlign(value: string) {
-		clas(container, value === 'center', 'center-align')
-		clas(container, value === 'right', 'right-align')
+		container?.classList.toggle('center-align', value === 'center')
+		container?.classList.toggle('right-align', value === 'right')
 	}
 
 	function handleWidth(value?: number) {
@@ -47,7 +43,7 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 
 	function handleOpacity(value: number) {
 		if (container) {
-			clas(container, value > 0.45, 'opaque')
+			container?.classList.toggle('opaque', value > 0.45)
 			document.documentElement.style.setProperty('--notes-background-alpha', value.toString())
 		}
 	}
@@ -82,14 +78,15 @@ export default function notes(init: Notes | null, event?: NotesEvent) {
 	}
 
 	if (event) {
-		storage.sync.get('notes', (data: any) => {
-			updateNotes(data.notes || syncDefaults.notes, event)
-		})
+		const data = await storage.get('notes')
+		updateNotes(data.notes as Notes, event)
 		return
 	}
 
 	if (!init) return
-	if ($('pocket-editor')) $('pocket-editor')?.remove()
+	if (document.getElementById('pocket-editor')) {
+		document.getElementById('pocket-editor')?.remove()
+	}
 
 	const editor = pocketEditor('notes_container')
 

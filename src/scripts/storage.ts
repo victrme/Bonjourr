@@ -1,73 +1,71 @@
-import { detectPlatform } from './utils'
+import { Sync } from './types/sync'
+import parse from './utils/JSONparse'
+import { detectPlatform, syncDefaults } from './utils'
 
-const online = (function () {
-	const onlineSet = (type: 'sync' | 'local') => {
-		return (props: { [key: string]: unknown }, callback?: Function) => {
-			online.storage[type].get(null, (data: { [key: string]: unknown }) => {
-				if (typeof props === 'object') {
-					Object.entries(props).forEach(([key, val]) => {
-						data[key] = val
-					})
+function verifyDataAsSync(data: { [key: string]: unknown }) {
+	data = data ?? {}
 
-					try {
-						localStorage[type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'] = JSON.stringify(data)
-						if (callback) callback(data)
-					} catch (error) {
-						console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
-					}
-
-					window.dispatchEvent(new Event('storage'))
-				}
-			})
+	for (const key in syncDefaults) {
+		if (!(key in data) && key !== 'move') {
+			data[key] = syncDefaults[key]
 		}
 	}
 
-	const onlineGet = (type: 'sync' | 'local') => {
-		return (props: unknown, callback?: Function) => {
-			const key = type === 'sync' ? 'bonjourr' : 'bonjourrBackgrounds'
-			if (callback) callback(localStorage[key] ? JSON.parse(localStorage[key]) : {})
-		}
-	}
+	return data as Sync
+}
 
-	const onlineRemove = (type: 'sync' | 'local') => {
-		const sync = (key: string) => {
-			online.storage.sync.get(null, (data: { [key: string]: unknown }) => {
-				delete data[key]
-				localStorage.bonjourr = JSON.stringify(data)
-			})
-		}
+function onlineSet(props: { [key: string]: unknown }) {
+	const data = onlineGet()
 
-		const local = (key: string) => {
-			online.storage.local.get(null, (data: { [key: string]: unknown }) => {
-				delete data[key]
-				localStorage.bonjourrBackgrounds = JSON.stringify(data)
-			})
+	if (typeof props === 'object') {
+		Object.entries(props).forEach(([key, val]) => {
+			data[key] = val
+		})
+
+		try {
+			localStorage.bonjourr = JSON.stringify(data ?? {})
+		} catch (error) {
+			console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
 		}
 
-		return type === 'sync' ? sync : local
+		window.dispatchEvent(new Event('storage'))
 	}
+}
 
-	return {
-		storage: {
-			sync: {
-				get: onlineGet('sync'),
-				set: onlineSet('sync'),
-				remove: onlineRemove('sync'),
-				clear: () => localStorage.removeItem('bonjourr'),
-				log: () => online.storage.sync.get(null, (data: any) => console.log(data)),
-			},
+function onlineGet(_?: unknown) {
+	return verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+}
 
-			local: {
-				get: onlineGet('local'),
-				set: onlineSet('local'),
-				remove: onlineRemove('local'),
-				clear: () => localStorage.removeItem('bonjourrBackgrounds'),
-				log: () => online.storage.local.get(null, (data: any) => console.log(data)),
-			},
-		},
-	}
-})()
+function onlineRemove(key: string) {
+	const data = onlineGet()
+	delete data[key]
+	localStorage.bonjourr = JSON.stringify(data ?? {})
+}
 
-export const storage = detectPlatform() === 'online' ? online.storage : chrome.storage
+function onlineClear() {
+	localStorage.removeItem('bonjourr')
+}
 
-export default storage
+async function getChromeStorage(key?: string | string[]) {
+	const res = await new Promise<{ [key: string]: unknown }>((resolve) => {
+		window.location.protocol === 'moz-extension:'
+			? browser.storage.sync.get(key ?? null).then(resolve)
+			: chrome.storage.sync.get(key ?? null).then(resolve)
+	})
+
+	return verifyDataAsSync(res)
+}
+
+export default detectPlatform() === 'online'
+	? {
+			get: onlineGet,
+			set: onlineSet,
+			remove: onlineRemove,
+			clear: onlineClear,
+	  }
+	: {
+			get: getChromeStorage as typeof getChromeStorage,
+			set: (val: { [key: string]: unknown }, callback = () => {}) => chrome.storage.sync.set(val, callback),
+			remove: (key: string) => chrome.storage.sync.remove(key),
+			clear: () => chrome.storage.sync.clear(),
+	  }

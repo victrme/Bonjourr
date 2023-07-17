@@ -95,7 +95,8 @@ export default function filterImports(current: Sync, toImport: Sync) {
 			)
 		})
 
-		current.move.layouts[current.move.selection] = layout
+		current.move.layouts[current.move.selection].grid = layout.grid
+		current.move.layouts[current.move.selection].items = layout.items
 	}
 
 	// Remove current layouts grid if import has grids

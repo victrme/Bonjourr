@@ -1,10 +1,34 @@
-import { dict, langList } from './lang'
 import { Hide, HideOld, Sync } from './types/sync'
 import { Local } from './types/local'
 
 import storage from './storage'
 
 type LangList = keyof typeof langList
+
+export const langList = {
+	en: 'English',
+	fr: 'Français',
+	sk: 'Slovenský',
+	sv: 'Svenska',
+	pl: 'Polski',
+	pt_BR: 'Português (Brasil)',
+	nl: 'Nederlandse',
+	ru: 'Русский',
+	zh_CN: '简体中文',
+	zh_HK: '繁體中文',
+	de: 'Deutsch',
+	it: 'Italiano',
+	es_ES: 'Español',
+	tr: 'Türkçe',
+	uk: 'Українська',
+	id: 'Indonesia',
+	da: 'Dansk',
+	fi: 'Suomi',
+	hu: 'Magyar',
+	sr: 'Српски (ћирилица)',
+	sr_YU: 'Srpski (latinica)',
+	gr: 'Ελληνικά',
+}
 
 export const $ = (name: string) => document.getElementById(name)
 
@@ -169,15 +193,15 @@ export function closeEditLink() {
 	}, 200)
 }
 
-export const getBrowserStorage = () => {
-	storage.local.get(null, (local) => {
-		storage.sync.get(null, (sync) => console.log('local: ', local, 'sync: ', sync))
-	})
+export const getBrowserStorage = async () => {
+	console.clear()
+	console.log(localStorage)
+	console.log(await storage.get())
 }
 
 export function deleteBrowserStorage() {
-	storage.sync.clear()
-	storage.local.clear()
+	storage.clear()
+	localStorage.clear()
 }
 
 export const testOS = {
@@ -187,14 +211,6 @@ export const testOS = {
 	ios:
 		['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
 		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
-}
-
-export const safeFontList = {
-	fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
-	windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
-	android: { placeholder: 'Roboto', weights: ['100', '300', '400', '500', '700', '900'] },
-	linux: { placeholder: 'Fira Sans', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-	apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
 }
 
 let defaultLang: LangList = 'en'
@@ -207,42 +223,22 @@ for (const [code] of Object.entries(langList)) {
 	}
 }
 
-export function tradThis(str: string, lang?: string): string {
-	type DictKey = keyof typeof dict
-	type DictField = keyof typeof dict.April
-
-	if (!lang) {
-		lang = document.documentElement.getAttribute('lang') || 'en'
-	}
-
-	if (!Object.keys(dict.April).includes(lang)) {
-		return str // English or not a dict field key ? no trn
-	}
-
-	if (Object.keys(dict).includes(str)) {
-		return dict[str as DictKey][lang as DictField] // String is a key of dict & lang is a key of dict[...]
-	}
-
-	return str // String was not a key of dict
-}
-
 export const syncDefaults: Sync = {
-	about: { browser: detectPlatform(), version: '1.16.2' },
+	about: { browser: detectPlatform(), version: '1.17.0' },
 	showall: false,
 	lang: defaultLang,
 	dark: 'system',
 	favicon: '',
 	tabtitle: '',
 	greeting: '',
+	pagegap: 1,
 	pagewidth: 1600,
 	time: true,
 	main: true,
 	usdate: false,
 	background_blur: 15,
 	background_bright: 0.8,
-	background_type: 'dynamic',
-	custom_time: 1650516688,
-	custom_every: 'pause',
+	background_type: 'unsplash',
 	quicklinks: true,
 	linkstyle: 'large',
 	linknewtab: false,
@@ -260,7 +256,7 @@ export const syncDefaults: Sync = {
 		style: 'round',
 		timezone: 'auto',
 	},
-	dynamic: {
+	unsplash: {
 		every: 'hour',
 		collection: '',
 		lastCollec: 'day',
@@ -271,6 +267,8 @@ export const syncDefaults: Sync = {
 		city: 'Paris',
 		unit: 'metric',
 		location: [],
+		provider: '',
+		moreinfo: 'none',
 		forecast: 'auto',
 		temperature: 'actual',
 	},
@@ -337,7 +335,7 @@ export const localDefaults: Local = {
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
-	dynamicCache: {
+	unsplashCache: {
 		noon: [],
 		day: [],
 		evening: [],

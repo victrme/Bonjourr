@@ -12,9 +12,10 @@
 	border: none;
 	border-radius: 4px;
 	padding: 0.5em 1em;
+	background-color: #fff2;
 	transition: opacity 0.15s $easeOutThree;
 
-	@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2, $fbColor: #fff);
+	@include frostedGlass();
 
 	&:focus-visible {
 		opacity: 1;
@@ -41,6 +42,7 @@
 		background-size: cover;
 		background-position: center center;
 		transition: opacity 1s $easeOutThree;
+		filter: blur(var(--background-blur)) brightness(var(--background-brightness));
 		z-index: 1;
 
 		// only for Safari
@@ -59,14 +61,17 @@
 #interface {
 	position: relative;
 	display: grid;
-	gap: 1em;
 	width: 100%;
+	gap: var(--page-gap);
 	max-width: var(--page-width);
 	min-height: 100vh;
 	padding: 4em 1em 6em 1em;
 	margin: 0 auto;
 	box-sizing: border-box;
 	will-change: transform;
+	font-size: var(--font-size);
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
 	transition: opacity var(--load-time-transition), transform 0.4s;
 	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
 	grid-template-areas: var(--grid);
@@ -82,7 +87,6 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
-			z-index: 3;
 			cursor: pointer;
 			pointer-events: none;
 
@@ -98,6 +102,7 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
+		z-index: 3;
 		place-self: center;
 	}
 
@@ -135,6 +140,7 @@
 				font-size: 6em;
 				line-height: 1em;
 				font-weight: 200;
+				font-weight: var(--font-weight-clock);
 			}
 
 			#analogClock {
@@ -147,7 +153,8 @@
 				border: 0.2em solid white;
 				box-shadow: $textShadow;
 
-				@include frostedGlass($alpha: 0.2, $fbAlpha: 0.2, $fbColor: #fff);
+				background-color: #fff3;
+				@include frostedGlass();
 
 				#center {
 					position: absolute;
@@ -291,8 +298,16 @@
 		}
 
 		#weather {
+			display: block;
 			position: relative;
+			text-decoration: none;
+			color: inherit;
 			width: 100%;
+			transition: opacity 0.15s;
+
+			&[href]:hover {
+				opacity: 0.7;
+			}
 
 			#description {
 				font-size: 1.5em;
@@ -318,13 +333,12 @@
 				align-items: center;
 				margin-top: 1em;
 				min-height: 3.3em;
+				column-gap: 0.5em;
 
 				img {
-					object-fit: contain;
 					height: 3.3em;
 					width: 3.3em;
 					border: none;
-					padding-right: 10px;
 				}
 
 				p {
@@ -419,7 +433,7 @@
 					overflow: hidden;
 					width: 100%;
 					padding: 0.4em;
-					background: $purewhite;
+					background: white;
 					box-shadow: $textShadow;
 					box-sizing: border-box;
 					border-radius: 1em;
@@ -428,14 +442,14 @@
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
 					&.selected {
-						border-color: var(--blue);
+						border-color: var(--color-blue);
 						transform: scale(1.1);
 						filter: brightness(0.85);
 					}
 
 					@media (hover: hover) {
 						&:hover {
-							border-color: var(--blue);
+							border-color: var(--color-blue);
 							box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
 							transform: scale(1.1);
 						}
@@ -456,6 +470,8 @@
 					line-height: 1.3em;
 					min-height: 1.3em;
 					max-height: 3.9em;
+					word-break: break-word;
+					overflow: hidden;
 					z-index: 2;
 				}
 			}
@@ -499,24 +515,22 @@
 				a span {
 					position: absolute;
 					visibility: hidden;
+					width: max-content;
+					max-width: 7em;
 					top: 1.6em;
 					left: 50%;
 					transform: translateX(-50%);
-					padding: 0.2em 0.6em;
+					padding: 0em 0.6em;
 					opacity: 0;
 					color: white;
 					font-size: 0.9em;
-					min-height: 1em;
-					max-height: 3em;
-					line-height: 1em;
-					white-space: nowrap;
 					text-shadow: none;
-					overflow: visible;
 					border-radius: 0.3em;
+					background-color: #fff3;
 					border: 1px solid rgba(255, 255, 255, 0.075);
 					transition: opacity 0.2s;
 
-					@include frostedGlass($alpha: 0.2);
+					@include frostedGlass();
 
 					&:empty {
 						display: none;
@@ -584,10 +598,10 @@
 			color: #fff;
 			font-size: 1.3em;
 			font-family: $fonts;
-			background-color: transparent;
+			background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
 			border: 1px solid rgba(255, 255, 255, 0.075);
 
-			@include frostedGlass($alpha: var(--searchbar-background-alpha), $fbAlpha: var(--searchbar-background-alpha));
+			@include frostedGlass();
 
 			&::placeholder {
 				transition: opacity 0.2s;
@@ -728,6 +742,8 @@
 	display: flex;
 	align-items: center;
 	pointer-events: none;
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
 
 	&.shown {
 		opacity: 1;
@@ -807,7 +823,8 @@
 
 	&.shown {
 		button {
-			@include frostedGlass($tint: 160, $fbTint: 160, $fbAlpha: 0.4);
+			background-color: #aaa6;
+			@include frostedGlass();
 
 			img {
 				transform: rotate(60deg);
@@ -815,7 +832,7 @@
 
 			&:hover {
 				opacity: 1;
-				@include frostedGlass($tint: 80, $fbTint: 80, $fbAlpha: 0.4);
+				background-color: #6666;
 			}
 		}
 	}
@@ -836,7 +853,7 @@
 		height: 10px;
 		left: 2px;
 		top: 2px;
-		background-color: #35c759;
+		background-color: var(--color-green);
 		border-radius: 100%;
 		z-index: 10;
 		transition: opacity 0.3s;
@@ -886,12 +903,15 @@
 
 #bookmarks,
 #editlink {
+	color: var(--color-text);
+	background-color: var(--color-dialog);
+	border: 1px solid var(--color-dialog-border);
 	border-radius: 8px;
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	@include frostedGlass($blur: 25px, $alpha: 0.7, $fbTint: 255, $fbAlpha: 1);
+
+	@include frostedGlass($blur: 25px);
 
 	hr {
-		border-color: #3334;
+		border-color: var(--color-dialog-border);
 	}
 
 	button {
@@ -938,7 +958,6 @@
 			margin: 10px;
 			padding: 15px;
 			padding-left: 3.5em;
-			color: #222c;
 			text-align: left;
 			border-radius: 8px;
 			border: 1px solid transparent;
@@ -953,7 +972,7 @@
 				width: 25px;
 				height: 25px;
 				border-radius: 25px;
-				background-color: var(--blue);
+				background-color: var(--color-blue);
 				transform: translateY(-50%) scale(0.2);
 				transition: transform 0.05s;
 				filter: grayscale(1);
@@ -985,14 +1004,13 @@
 			}
 
 			&.selected {
-				color: #222;
-				background-color: #fff6;
-				border-color: rgba(255, 255, 255, 0.3);
+				border-color: var(--color-dialog-highlight);
+				background-color: var(--color-dialog-highlight);
 
 				&:before {
 					filter: none;
 					transform: translateY(-50%) scale(1);
-					background: var(--blue) no-repeat center/12px url('/src/assets/interface/checkmark.svg');
+					background: var(--color-blue) no-repeat center/12px url('/src/assets/interface/checkmark.svg');
 				}
 			}
 		}
@@ -1064,6 +1082,7 @@
 
 	input[type='text'],
 	input[type='url'] {
+		color: var(--color-dialog-input-text);
 		width: 100%;
 		height: 2.4em;
 		padding: 0 1em;
@@ -1072,18 +1091,13 @@
 		box-sizing: border-box;
 		background-color: transparent;
 		transition: background-color 0.1s;
-		color: #3339;
 		outline: #007aff66;
 
 		&:focus {
-			color: #222;
+			color: var(--color-text);
+			background-color: var(--color-dialog-highlight);
 			border: 3px solid #007aff66;
-			background-color: #fff3;
 			transition: background-color 0.1s;
-		}
-
-		&::placeholder {
-			color: #3339;
 		}
 	}
 
@@ -1094,15 +1108,16 @@
 		border: 3px solid transparent;
 		text-align: left;
 		padding: 2px 12px;
-		color: #2a2222;
+		color: var(--color-text);
 		outline: none;
 		cursor: pointer;
 	}
 }
 
 #popup {
-	display: flex;
+	display: none;
 	position: fixed;
+	opacity: 0;
 	bottom: 4rem;
 	left: 4rem;
 	z-index: 2;
@@ -1111,12 +1126,14 @@
 
 	#popup_buttons a,
 	#popup_text {
-		pointer-events: all;
 		opacity: 0;
+		pointer-events: all;
 		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 	}
 
 	&.shown {
+		opacity: 1;
+
 		#popup_buttons a,
 		#popup_text {
 			opacity: 1;
@@ -1136,18 +1153,19 @@
 			text-decoration: none;
 			border-radius: 8px;
 			line-height: 2.4em;
+			background-color: #fff2;
 			border: 1px solid rgba(255, 255, 255, 0.075);
 			transform: scale(1);
 
-			@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
+			@include frostedGlass();
 
 			&:hover {
-				@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: rgb(94, 94, 94));
+				background-color: #fff1;
 				transform: scale(1.03);
 			}
 
 			&:active {
-				@include frostedGlass($alpha: 0.6, $blur: 10px, $fbAlpha: 0.6, $fbColor: white);
+				background-color: #fff6;
 			}
 
 			&:first-child {
@@ -1165,41 +1183,33 @@
 		padding: 0.6em 2em;
 		margin-right: 0.6em;
 		border-radius: 8px;
-		// border: 1px solid rgba(245, 245, 245, 0.2);
-		@include frostedGlass($alpha: 0.2, $blur: 10px, $fbTint: 255, $fbAlpha: 0.95, $fbColor: rgb(94, 94, 94));
+		background-color: #fff2;
 		border: 1px solid rgba(255, 255, 255, 0.075);
 
+		@include frostedGlass();
+
 		&::before {
-			content: '×';
+			content: '✕';
 			position: absolute;
-			left: calc(50% - 0.5em);
-			top: 50%;
-			width: 1em;
-			height: 1em;
-			font-size: 2.2em;
-			line-height: 0.8em;
-			opacity: 0;
-			color: #fff;
+			width: calc(100% - 2em);
+			font-size: 1.6em;
+			font-weight: bolder;
 			text-align: center;
-			transform: translateY(-50%);
-			transition: opacity 0.4s, filter 0.2s;
+			color: transparent;
+			transition: color 0.4s, filter 0.2s;
 		}
 
 		&:hover {
 			color: transparent;
-			@include frostedGlass($alpha: 0.1, $blur: 10px, $fbTint: 255, $fbAlpha: 0.8, $fbColor: transparent);
+			background-color: #fff1;
 
 			&::before {
-				opacity: 1;
-
-				@-moz-document url-prefix() {
-					color: rgb(94, 94, 94);
-				}
+				color: #ffff;
 			}
 		}
 
 		&:active {
-			@include frostedGlass($alpha: 0, $blur: 10px, $fbAlpha: 0.1, $fbColor: transparent);
+			background-color: transparent;
 
 			&::before {
 				opacity: 1;
@@ -1228,7 +1238,8 @@
 	transition: opacity 0.4s;
 	z-index: 1;
 
-	@include frostedGlass($tint: 12, $fbTint: 12, $blur: 40px, $alpha: 0.2, $fbAlpha: 0.8, $fbColor: #222);
+	background-color: #0002;
+	@include frostedGlass($blur: 40px);
 
 	pre {
 		width: calc(100% - 32px);
@@ -1264,7 +1275,7 @@
 		padding: 5px 10px;
 		border-radius: 5px;
 		border: none;
-		background-color: $red;
+		background-color: var(--color-red);
 		color: #fff;
 	}
 
@@ -1280,11 +1291,10 @@
 	}
 
 	.error-buttons-close {
-		background-color: var(--blue);
+		background-color: var(--color-blue);
 	}
 }
 
 @import 'settings';
 @import 'grid';
-@import 'dark';
 @import 'responsive';

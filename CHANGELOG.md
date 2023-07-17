@@ -1,6 +1,57 @@
-## Changelogs
+## 1.17.0
 
-**1.16.2**
+-   Local background:
+    -   No more slowdown when adding or loading new images
+    -   Loading is much faster and is not blocking
+    -   Online: Images can be as big as you want
+    -   Minor option styling improvements
+-   Notes:
+    -   Added line modification keybindings (headings, lists, todos)
+    -   Caret keeps horizontal position when moving between lines
+    -   Working Ctrl + Z when adding / removing lines
+    -   Strikes text when checking todo list
+    -   Improved overall stability
+-   Page layout:
+    -   Added page gap option
+    -   Moved options below custom fonts
+-   Other:
+    -   Faster loading times with Quotes or custom Fonts enabled
+    -   Upgraded to google fonts v2 with variable fonts
+    -   "Good night" greetings narrowed to 2h - 5h
+    -   Moved translations to `/_locales/[lang]/translations.json`
+    -   Minor settings accessibility improvements
+    -   Reduced script overhead
+
+$~~~~~~~~~~~$
+
+## 1.16.4
+
+-   Improvements:
+    -   No more layout shift when toggling widgets (on slow computers)
+    -   Shows grid overlay when changing page width
+    -   Grid toolbox "Done" button is always clickable
+-   Fixes:
+    -   Leading zero on export file name
+    -   Long link titles not truncated
+    -   Removing custom font not working
+    -   Links dragging broken with settings open
+
+## 1.16.3
+
+-   Added:
+    -   Transparent clock style
+    -   #192 Detailed weather feature
+-   Fixes:
+    -   #194 Fixed error in Firefox browser console
+    -   #191 Improved export settings order
+    -   #190 Improved export file naming
+    -   Reduced compression (improved quality) on high DPR devices
+    -   Links dragging breaking with small page width
+    -   Tab title showing path when removing input
+-   Translations:
+    -   Added modern Greek by @tseli0s, thanks !
+
+## 1.16.2
 
 -   Added square analog clock style
 -   Added page layout support on mobile
@@ -11,7 +62,7 @@
 -   Translations:
     -   Improved Traditional Chinese translation, thanks @TszHong0411 !
 
-**1.16.1**
+## 1.16.1
 
 -   Added support for nested data imports ( ex: searchbar.request )
 -   Smaller image file sizes for high resolution devices & mobile
@@ -23,7 +74,7 @@
     -   Clock zero on 12am/pm, thanks @aprivette
     -   Kiwi browser settings position
 
-**1.16.0**
+## 1.16.0
 
 -   Added features:
     -   Custom quote list
@@ -52,7 +103,7 @@
 
 $~~~~~~~~~~~$
 
-**v1.15.6**
+## 1.15.6
 
 -   Footer no longer takes height space (except on mobile)
 -   Notes: more visible edit button & focus after edit
@@ -62,11 +113,11 @@ $~~~~~~~~~~~$
     -   Half solid black page on some touch screen devices
     -   Slightly blurry settings panel on Chrome
 
-**v1.15.5**
+## 1.15.5
 
 -   Hotfix: Fixed searchbar stuck in "open in new tab" state
 
-**v1.15.4**
+## 1.15.4
 
 -   Fixes:
     -   File export not working with non-latin language
@@ -75,13 +126,13 @@ $~~~~~~~~~~~$
 -   Improved resize performance
 -   Minor style changes
 
-**v1.15.3**
+## 1.15.3
 
 -   Fixes:
     -   Links impossible to remove on Safari extension
     -   Removing last link prevents adding new ones
 
-**v1.15.2**
+## 1.15.2
 
 -   Translations:
     -   Brazilian update by @adilsonfsantos
@@ -93,7 +144,7 @@ $~~~~~~~~~~~$
     -   Overall experience on Safari iOS
     -   Refresh backgrounds with daylight frequency
 
-**v1.15.1**
+## 1.15.1
 
 -   Replaced fade to black background transition
 -   Small Dutch translation fixes by @esteinmann
@@ -104,7 +155,7 @@ $~~~~~~~~~~~$
     -   Keyboard resizing / breaking page on mobile
     -   Credit display when switching background type
 
-**v1.15.0**
+## 1.15.0
 
 -   Added feature: Notes !
     -   Compatible with basic markdown
@@ -128,7 +179,7 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.14.2**
+## 1.14.2
 
 -   Better custom font performances
 -   Increased tab title length from 12 to 80 characters
@@ -136,7 +187,7 @@ $~~~~~~~~~~~$
 -   Fixed error message styling issues
 -   Improved font & dynamic error handling
 
-**v1.14.1**
+## 1.14.1
 
 -   Added toolip on new tab title & favicon option
 -   Updated some Russian translations ( thanks @DaniilChizhevskii )
@@ -145,7 +196,7 @@ $~~~~~~~~~~~$
 -   Fixed fonts with numbers in family name
 -   Minor performance improvement on desktop
 
-**v1.14.0**
+## 1.14.0
 
 -   Added features:
     -   Link style option ( Icon sizes & text only )
@@ -167,12 +218,12 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.13.2**
+## 1.13.2
 
 -   Added Quotes cache to reduce requests
 -   Fixed custom fonts always fetching Fonts API
 
-**v1.13.1**
+## 1.13.1
 
 -   Added indonesian translation
 -   Updated links icon design
@@ -182,7 +233,7 @@ $~~~~~~~~~~~$
 -   Fixed link edit event on macOS
 -   Fixed classic quotes defaulting to english
 
-**v1.13.0**
+## 1.13.0
 
 -   Added feature: Quotes !
 -   Added Ukrainian & Turkish translations
@@ -195,7 +246,7 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.12.1**
+## 1.12.1
 
 -   Improved error message style & logic
 -   Increased links url size to 217 characters
@@ -203,7 +254,7 @@ $~~~~~~~~~~~$
 -   Fixed tiny default font size on mobile
 -   Fixed import / export related bugs
 
-**v1.12.0**
+## 1.12.0
 
 -   Added exif details in photo credits
 -   Links icons can now be synced !
@@ -214,18 +265,18 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.11.2**
+## 1.11.2
 
 -   Added temperature control option (need help with translations !)
 -   Updated Dutch & Spanish translations (thanks @alisinisterra, @Kippenhof & @esteinmann)
 -   Added ctrl + click to open link in new tab
 -   Fixed firefox popup again
 
-**v1.11.1**
+## 1.11.1
 
 -   Fixed unremovable popup
 
-**v1.11.0**
+## 1.11.0
 
 -   Added features:
     -   Import browser bookmarks !
@@ -240,7 +291,7 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.10.2**
+## 1.10.2
 
 -   Switch to another favicon provider (RIP Favicon Kit)
 -   Fixed imports errors with 1.10 configs
@@ -248,7 +299,7 @@ $~~~~~~~~~~~$
 -   Removed Unsplash host permission
 -   Tiny style fixes
 
-**v1.10.1**
+## 1.10.1
 
 -   Added search bar opacity control & delete text icon
 -   Fixed links not opening on mobile & icon not showing URL
@@ -256,7 +307,7 @@ $~~~~~~~~~~~$
 -   Improved links performance
 -   Minor online fixes
 
-**v1.10.0**
+## 1.10.0
 
 -   New design !
 -   Added PWA support for Android & iOS
@@ -273,7 +324,7 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.9.3**
+## 1.9.3
 
 -   Dedicated backgrounds for noons & evenings
 -   Added custom Unsplash collections option
@@ -283,14 +334,14 @@ $~~~~~~~~~~~$
 -   Fixed styling issues
 -   Fixed links icons API
 
-**v1.9.2**
+## 1.9.2
 
 -   Bonjourr now supports any image types
 -   Fixed review redirection
 -   Added animations
 -   Added translations
 
-**v1.9.1**
+## 1.9.1
 
 -   Added all previously hidden features !
 -   Bonjourr greetings
@@ -301,7 +352,7 @@ $~~~~~~~~~~~$
 -   Custom CSS
 -   Select number of quick links rows
 
-**v1.9.0**
+## 1.9.0
 
 -   Added review popup
 -   Dynamic backgrounds by default
@@ -313,25 +364,25 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.8.3**
+## 1.8.3
 
 -   Better dynamic backgrounds preload
 -   Smaller settings icon
 -   Fixed an issue that prevented Quick Links to be edited
 
-**v1.8.2**
+## 1.8.2
 
 -   Performance boost on low end hardware
 -   Improved overall animations
 -   Faster "each tab" dynamic backgrounds
 
-**v1.8.1**
+## 1.8.1
 
 -   Timezone Control
 -   US Date Format
 -   No distraction Mode
 
-**v1.8.0**
+## 1.8.0
 
 -   Rearrangeable Quick Links
 -   Quick Links editing menu
@@ -339,20 +390,20 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.7.2**
+## 1.7.2
 
 -   German translation
 -   Chrome: Browser icon + new tab on install
 -   Import / Export Settings
 -   Searchbar autofocus fix
 
-**v1.7.1**
+## 1.7.1
 
--   Removed unsplash permissions from https://victor-azevedo.me
+-   Removed unsplash permissions from victor-azevedo.me
 -   Windows lang select fix
 -   4k background error fix
 
-**v1.7.0**
+## 1.7.0
 
 -   Massive performance on startup
 -   Dynamic Backgrounds are now preloaded, a lot quicker and credited
@@ -366,7 +417,7 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.6.0**
+## 1.6.0
 
 -   Massive performance boost
 -   Quick Links improved
@@ -374,7 +425,7 @@ $~~~~~~~~~~~$
 
 $~~~~~~~~~~~$
 
-**v1.5.5**
+## 1.5.5
 
 -   New Favicon API
 -   4k / Retina option

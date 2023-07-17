@@ -42,16 +42,15 @@ function scripts(platform) {
 
 	return () =>
 		src('release/main.js')
-			.pipe(replace('@@UNSPLASH_API', envVars?.UNSPLASH_API || '/'))
-			.pipe(replace('@@FAVICON_API_1', envVars?.FAVICON_API_1 || '/'))
-			.pipe(replace('@@FAVICON_API_2', envVars?.FAVICON_API_2 || '/'))
-			.pipe(replace('@@QUOTES_API_1', envVars?.QUOTES_API_1 || '/'))
-			.pipe(replace('@@QUOTES_API_2', envVars?.QUOTES_API_2 || '/'))
-			.pipe(replace('@@QUOTES_API_3', envVars?.QUOTES_API_3 || '/'))
-			.pipe(replace('@@WEATHER_1', envVars?.WEATHER_1 || '/'))
-			.pipe(replace('@@WEATHER_2', envVars?.WEATHER_2 || '/'))
-			.pipe(replace('@@WEATHER_3', envVars?.WEATHER_3 || '/'))
-			.pipe(replace('@@WEATHER_4', envVars?.WEATHER_4 || '/'))
+			.pipe(replace('@@UNSPLASH_API', btoa(envVars?.UNSPLASH_API) || '/'))
+			.pipe(replace('@@FAVICON_API_1', btoa(envVars?.FAVICON_API_1) || '/'))
+			.pipe(replace('@@FAVICON_API_2', btoa(envVars?.FAVICON_API_2) || '/'))
+			.pipe(replace('@@QUOTES_API_1', btoa(envVars?.QUOTES_API_1) || '/'))
+			.pipe(replace('@@QUOTES_API_2', btoa(envVars?.QUOTES_API_2) || '/'))
+			.pipe(replace('@@WEATHER_1', btoa(envVars?.WEATHER_1) || '/'))
+			.pipe(replace('@@WEATHER_2', btoa(envVars?.WEATHER_2) || '/'))
+			.pipe(replace('@@WEATHER_3', btoa(envVars?.WEATHER_3) || '/'))
+			.pipe(replace('@@WEATHER_4', btoa(envVars?.WEATHER_4) || '/'))
 			.pipe(dest(`release/${platform}/src/scripts`))
 }
 
@@ -98,7 +97,7 @@ function styles(platform) {
 }
 
 function locales(platform) {
-	return () => src('_locales/**/messages.json').pipe(dest(`release/${platform}/_locales/`))
+	return () => src('_locales/**/*.json').pipe(dest(`release/${platform}/_locales/`))
 }
 
 //
