@@ -105,7 +105,7 @@ function locales(platform) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['./src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
+const filesToWatch = ['./_locales/**', './src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
 
 // prettier-ignore
 const taskOnline = () => [
