@@ -91,7 +91,7 @@
 	"Any emoji": "Любые эмодзи",
 	"New tab title": "Название новой вкладки",
 	"Hide settings icon": "Скрыть значок настроек",
-	"Page layout is now at the bottom": "Разметка страницы теперь находится внизу",
+	"Page layout is now at the bottom 👇": "Разметка страницы теперь находится внизу 👇",
 	"Understood": "Понятно",
 	"Page layout": "Разметка страницы",
 	"Customise how and where widgets appear.": "Настройте, как и где отображаются виджеты.",
@@ -225,6 +225,6 @@
 	"our website": "наш сайт",
 	"for infos and donations": "чтобы узнать больше или поддержать разработчиков",
 	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr был обновлен до версии 1.17 ✨",
-	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
-	"our update post": "полный список изменений"
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Многое сделано под капотом. Улучшено хранение пользовательских фонов, ускорено общее время загрузки и многое другое в",
+	"our update post": "нашем обновлении"
 }

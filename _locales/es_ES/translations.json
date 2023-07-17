@@ -91,7 +91,7 @@
 	"Any emoji": "Cualquier emoji",
 	"New tab title": "New tab title",
 	"Hide settings icon": "Ocultar icono de configuración",
-	"Page layout is now at the bottom": "El diseño de página está ahora en la parte inferior",
+	"Page layout is now at the bottom 👇": "El diseño de página está ahora en la parte inferior 👇",
 	"Understood": "Entendido",
 	"Page layout": "Diseño de página",
 	"Customise how and where widgets appear.": "Personaliza cómo y dónde aparecen los widgets.",
@@ -225,6 +225,6 @@
 	"our website": "nuestro sitio web",
 	"for infos and donations": "para más info y donaciones",
 	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr ha sido actualizado a la versión 1.17 ✨",
-	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
-	"our update post": "nuestra lista completa de cambios"
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Mucho trabajo bajo el capó. Mejoras en el almacenamiento de fondos personalizados, tiempos de carga más rápidos y mucho más en ",
+	"our update post": "nuestro post de actualización"
 }

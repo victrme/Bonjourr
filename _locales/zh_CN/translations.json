@@ -91,7 +91,7 @@
 	"Any emoji": "任何 emoji",
 	"New tab title": "新标签标题",
 	"Hide settings icon": "隐藏设置图标",
-	"Page layout is now at the bottom": "页面布局现在在底部",
+	"Page layout is now at the bottom 👇": "页面布局现在在底部 👇",
 	"Understood": "同意",
 	"Page layout": "页面布局",
 	"Customise how and where widgets appear.": "自定义小部件的出现方式和位置。",
@@ -224,7 +224,7 @@
 	"Visit": "访问",
 	"our website": "我们的网站",
 	"for infos and donations": "以获取更多资讯，或向我们捐款",
-	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr 已更新至 1.16 版本 ✨",
-	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on",
-	"our update post": "完整的更新日志"
+	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr 已更新至 1.17 版本 ✨",
+	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "引擎盖下的大量工作。改进了自定义背景存储，加快了整体加载时间，以及",
+	"our update post": "我们的更新文章中的更多内容。"
 }
