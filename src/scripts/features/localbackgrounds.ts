@@ -1,4 +1,4 @@
-import { clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
+import { randomString, mobilecheck, turnRefreshButton } from '../utils'
 import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
 import unsplashBackgrounds from './unsplash'
@@ -164,8 +164,8 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	thbimg.src = URL.createObjectURL(blob)
 	thb.className = 'thumbnail' + (isSelected ? ' selected' : '')
 
-	clas(rem, true, 'b_removethumb')
-	clas(rem, !mobilecheck(), 'hidden')
+	rem.classList.toggle('b_removethumb', true)
+	rem.classList.toggle('hidden', !mobilecheck())
 
 	thb.setAttribute('aria-label', 'Select this background')
 	rem.setAttribute('aria-label', 'Remove this background')

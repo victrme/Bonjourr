@@ -1,5 +1,5 @@
 import { canDisplayInterface } from '..'
-import { clas, syncDefaults } from '../utils'
+import { syncDefaults } from '../utils'
 import { Sync, Clock } from '../types/sync'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
@@ -115,7 +115,7 @@ function startClock(clock: Clock, greeting: string, usdate: boolean) {
 			const domclock = document.getElementById('clock')
 
 			if (domclock) {
-				clas(domclock, !clock.ampm && h < 10, 'zero') // Double zero on 24h
+				domclock?.classList.toggle('zero', !clock.ampm && h < 10) // Double zero on 24h
 				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 		}

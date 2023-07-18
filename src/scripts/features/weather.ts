@@ -1,7 +1,7 @@
 import { sunTime } from '..'
 import storage from '../storage'
 import { Sync, Weather } from '../types/sync'
-import { $, clas, stringMaxSize } from '../utils'
+import { stringMaxSize } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
 
@@ -262,7 +262,7 @@ export default function weather(
 				return
 			}
 
-			const icon = $('weather-icon') as HTMLImageElement
+			const icon = document.getElementById('weather-icon') as HTMLImageElement
 			const { now, rise, set } = sunTime()
 			const timeOfDay = now < rise || now > set ? 'night' : 'day'
 			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
@@ -276,8 +276,7 @@ export default function weather(
 				day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
 
 				forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}°${day}.`
-
-				clas(forecast, false, 'wait')
+				forecast.classList.remove('wait')
 			}
 		}
 
@@ -406,7 +405,8 @@ export default function weather(
 			}
 
 			case 'moreinfo': {
-				clas($('weather_provider'), event.value === 'custom', 'shown')
+				const providerdom = document.getElementById('weather_provider')
+				providerdom?.classList.toggle('shown', event.value === 'custom')
 				weather.moreinfo = event.value
 				break
 			}

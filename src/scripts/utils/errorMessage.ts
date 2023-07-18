@@ -1,8 +1,7 @@
 import storage from '../storage'
-import { $, deleteBrowserStorage } from '../utils'
 
-export default function errorMessage(error: unknown) {
-	const dominterface = $('interface')
+export default async function errorMessage(error: unknown) {
+	const dominterface = document.getElementById('interface')
 	console.error(error)
 
 	function reduceErrorStack() {
@@ -30,7 +29,7 @@ export default function errorMessage(error: unknown) {
 		const title = document.createElement('h1')
 		const subtitle = document.createElement('p')
 		const errorpre = document.createElement('pre')
-		const storage = document.createElement('textarea')
+		const storagetext = document.createElement('textarea')
 		const explain = document.createElement('p')
 		const resetButton = document.createElement('button')
 		const closeError = document.createElement('button')
@@ -45,13 +44,14 @@ export default function errorMessage(error: unknown) {
 
 		errorpre.textContent = reduceErrorStack()
 
-		storage.textContent = dataStr
-		storage.setAttribute('spellcheck', 'false')
+		storagetext.textContent = dataStr
+		storagetext.setAttribute('spellcheck', 'false')
 
 		resetButton.textContent = 'Reset Bonjourr'
 		resetButton.addEventListener('click', () => {
 			warning.style.opacity = '0'
-			deleteBrowserStorage()
+			storage.clear()
+			localStorage.clear()
 		})
 
 		closeError.className = 'error-buttons-close'
@@ -69,7 +69,7 @@ export default function errorMessage(error: unknown) {
 		warning.appendChild(title)
 		warning.appendChild(subtitle)
 		warning.appendChild(errorpre)
-		warning.appendChild(storage)
+		warning.appendChild(storagetext)
 		warning.appendChild(explain)
 		warning.appendChild(buttonWrap)
 
@@ -84,14 +84,13 @@ export default function errorMessage(error: unknown) {
 	if (sessionStorage.errorMessage === 'removed' && dominterface) {
 		dominterface.style.opacity = '1'
 		return false
-	} else {
-		storage.get().then((data) => {
-			try {
-				document.querySelector('#error')?.remove()
-				displayMessage(JSON.stringify(data, null, 4))
-			} catch (e) {
-				displayMessage('')
-			}
-		})
+	}
+
+	try {
+		const data = await storage.get()
+		document.querySelector('#error')?.remove()
+		displayMessage(JSON.stringify(data, null, 4))
+	} catch (e) {
+		displayMessage('')
 	}
 }

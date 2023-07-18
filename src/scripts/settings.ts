@@ -14,6 +14,7 @@ import moveElements from './features/move'
 import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
+import langList from './langs'
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
@@ -21,20 +22,14 @@ import stringifyOrder from './utils/stringifyOrder'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
-	$,
-	has,
-	clas,
-	inputThrottle,
-	detectPlatform,
-	closeEditLink,
-	mobilecheck,
-	stringMaxSize,
-	deleteBrowserStorage,
-	getBrowserStorage,
-	turnRefreshButton,
 	testOS,
-	langList,
+	mobilecheck,
 	syncDefaults,
+	inputThrottle,
+	closeEditLink,
+	stringMaxSize,
+	detectPlatform,
+	turnRefreshButton,
 } from './utils'
 
 import {
@@ -169,18 +164,19 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Activate feature options
-	clas(paramId('time_options'), data.time, 'shown')
-	clas(paramId('main_options'), data.main, 'shown')
-	clas(paramId('weather_provider'), data.weather?.moreinfo === 'custom', 'shown')
-	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
-	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
-	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
+	paramId('time_options')?.classList.toggle('shown', data.time)
+	paramId('main_options')?.classList.toggle('shown', data.main)
+	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
+	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
+	paramId('notes_options')?.classList.toggle('shown', data.notes?.on || false)
+	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
+	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
 	// Page layout
 	settingsDom.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-		clas(b, b.dataset.layout === (data.move?.selection || 'single'), 'selected')
+		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
+		b?.classList.toggle('selected', selectedLayout)
 	})
 
 	// Disables double and triple layouts on mobile
@@ -239,8 +235,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Quotes option display
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
-	clas(paramId('quotes_userlist'), data.quotes?.type === 'user', 'shown')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
 
 	updateExportJSON(settingsDom)
 
@@ -672,9 +668,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const { exportAsFile, copyImportText, importAsText, importAsFile } = settingsMgmt()
 
 	const toggleSettingsMgmt = (toggled: boolean) => {
-		clas(paramId('export'), !toggled, 'shown')
-		clas(paramId('import'), toggled, 'shown')
-		clas(paramClasses('tabs')[0], toggled, 'toggled')
+		paramId('export')?.classList.toggle('shown', !toggled)
+		paramId('import')?.classList.toggle('shown', toggled)
+		paramClasses('tabs')[0]?.classList.toggle('toggled', toggled)
 	}
 
 	paramId('s_export').addEventListener('click', () => toggleSettingsMgmt(false))
@@ -687,7 +683,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
-		paramsImport(parse(($('i_importtext') as HTMLInputElement).value))
+		paramsImport(parse((document.getElementById('i_importtext') as HTMLInputElement).value))
 	})
 
 	//
@@ -723,12 +719,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		})
 
 		// Toggle in-widgets hidden options
-		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
-		toggleTabindex('#weather_provider', has(paramId('weather_provider'), 'shown'))
-		toggleTabindex('#quotes_userlist', has(paramId('quotes_userlist'), 'shown'))
+		toggleTabindex('#searchbar_request', paramId('searchbar_request').classList.contains('shown'))
+		toggleTabindex('#weather_provider', paramId('weather_provider').classList.contains('shown'))
+		toggleTabindex('#quotes_userlist', paramId('quotes_userlist').classList.contains('shown'))
+		toggleTabindex('#import', paramId('import').classList.contains('shown'))
+		toggleTabindex('#export', paramId('export').classList.contains('shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
-		toggleTabindex('#import', has(paramId('import'), 'shown'))
-		toggleTabindex('#export', has(paramId('export'), 'shown'))
 
 		// File export downloader is never tabbable
 		paramId('downloadfile').setAttribute('tabindex', '-1')
@@ -746,11 +742,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 function settingsMgmt() {
 	async function copyImportText(target: HTMLButtonElement) {
 		try {
-			const area = $('area_export') as HTMLInputElement
+			const area = document.getElementById('area_export') as HTMLInputElement
 			await navigator.clipboard.writeText(area.value)
 			target.textContent = tradThis('Copied')
 			setTimeout(() => {
-				const domimport = $('b_exportcopy')
+				const domimport = document.getElementById('b_exportcopy')
 				if (domimport) {
 					domimport.textContent = tradThis('Copy text')
 				}
@@ -779,11 +775,13 @@ function settingsMgmt() {
 	}
 
 	function importAsText(string: string) {
+		const importtext = document.getElementById('b_importtext')
+
 		try {
 			parse(string)
-			$('b_importtext')?.removeAttribute('disabled')
+			importtext?.removeAttribute('disabled')
 		} catch (error) {
-			$('b_importtext')?.setAttribute('disabled', '')
+			importtext?.setAttribute('disabled', '')
 		}
 	}
 
@@ -846,11 +844,11 @@ function changelogControl(settingsDom: HTMLElement) {
 
 	if (!domchangelog) return
 
-	clas(domchangelog, true, 'shown')
-	clas(domshowsettings, true, 'hasUpdated')
+	domchangelog.classList.toggle('shown', true)
+	domshowsettings?.classList.toggle('hasUpdated', true)
 
 	const dismiss = () => {
-		clas(domshowsettings, false, 'hasUpdated')
+		domshowsettings?.classList.toggle('hasUpdated', false)
 		domchangelog.className = 'dismissed'
 		localStorage.removeItem('hasUpdated')
 	}
@@ -954,7 +952,7 @@ function signature(dom: HTMLElement) {
 }
 
 function fadeOut() {
-	const dominterface = $('interface')!
+	const dominterface = document.getElementById('interface')!
 	dominterface.click()
 	dominterface.style.transition = 'opacity .4s'
 	setTimeout(() => (dominterface.style.opacity = '0'))
@@ -976,7 +974,8 @@ async function paramsImport(toImport: Sync) {
 
 function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
-		deleteBrowserStorage()
+		storage.clear()
+		localStorage.clear()
 		fadeOut()
 		return
 	}
@@ -1066,9 +1065,11 @@ export async function settingsInit(data: Sync) {
 		toggleDisplay(settingsDom)
 	})
 
-	window.addEventListener('keydown', function (e) {
+	window.addEventListener('keydown', async function (e) {
 		if (e.altKey && e.code === 'KeyS') {
-			getBrowserStorage()
+			console.clear()
+			console.log(localStorage)
+			console.log(await storage.get())
 		}
 
 		if (e.code === 'Escape') {

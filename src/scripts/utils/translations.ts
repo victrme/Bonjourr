@@ -13,8 +13,6 @@ export async function setTranslationCache(lang: string) {
 
 	if (trns?.lang !== lang) {
 		localStorage.translations = await (await fetch(`../../../_locales/${lang}/translations.json`)).text()
-		try {
-		} catch (error) {}
 		trns = parse(localStorage.translations) ?? {}
 	}
 }

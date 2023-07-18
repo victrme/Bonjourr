@@ -1,7 +1,8 @@
-import { clas, extractHostname, stringMaxSize, bundleLinks } from '../utils'
+import { stringMaxSize, bundleLinks } from '../utils'
 import { tradThis } from '../utils/translations'
-import storage from '../storage'
 import quickLinks from './links'
+import storage from '../storage'
+
 import { Sync } from '../types/sync'
 
 export default async function linksImport() {
@@ -52,19 +53,23 @@ export default async function linksImport() {
 			const title = document.createElement('span')
 			const favicon = document.createElement('img')
 			const url = document.createElement('pre')
-			const markURL = mark.url
+			let hostname = mark.url
 
 			// only append links if url are not empty
 			// (temp fix to prevent adding bookmarks folder title ?)
-			if (!markURL || markURL === '') {
+			if (!mark.url || mark.url === '') {
 				return
 			}
 
-			favicon.src = 'https://icons.duckduckgo.com/ip3/' + extractHostname(markURL) + '.ico'
+			try {
+				hostname = new URL(mark.url).hostname
+			} catch (_) {}
+
+			favicon.src = 'https://icons.duckduckgo.com/ip3/' + hostname + '.ico'
 			favicon.alt = ''
 
 			title.textContent = mark.title
-			url.textContent = markURL
+			url.textContent = mark.url
 
 			titleWrap.appendChild(favicon)
 			titleWrap.appendChild(title)
@@ -77,7 +82,7 @@ export default async function linksImport() {
 			elem.onclick = () => selectBookmark(elem)
 			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? selectBookmark(elem) : '')
 
-			if (links.filter((x) => x.url === stringMaxSize(markURL, 512)).length === 0) {
+			if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) {
 				listdom.appendChild(elem)
 			}
 		})

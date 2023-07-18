@@ -1,10 +1,9 @@
+import { canDisplayInterface, freqControl } from '..'
+import parse from '../utils/JSONparse'
+import storage from '../storage'
+
 import { Quote } from '../types/local'
 import { Sync } from '../types/sync'
-
-import { canDisplayInterface, freqControl } from '..'
-import { $ } from '../utils'
-import storage from '../storage'
-import parse from '../utils/JSONparse'
 
 type QuotesUpdate = {
 	toggle?: boolean
@@ -119,7 +118,8 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 		}
 
 		function inputError(log: string) {
-			;($('i_qtlist') as HTMLInputElement).value = ''
+			const input = document.getElementById('i_qtlist') as HTMLInputElement
+			input.value = ''
 			console.log(log)
 		}
 

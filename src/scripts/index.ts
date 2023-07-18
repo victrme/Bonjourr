@@ -15,17 +15,15 @@ import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
 import {
-	$,
-	clas,
-	detectPlatform,
-	getBrowser,
+	testOS,
 	minutator,
+	getBrowser,
 	mobilecheck,
 	periodOfDay,
-	stringMaxSize,
 	syncDefaults,
-	testOS,
+	stringMaxSize,
 	localDefaults,
+	detectPlatform,
 } from './utils'
 
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
@@ -121,14 +119,15 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 
 	// toggle settings option drawers
 	listEntries.forEach(([key, on]) => {
-		clas($(key + '_options'), on, 'shown')
+		const option = document.getElementById(key + '_options')
+		option?.classList.toggle('shown', on)
 	})
 
 	// toggle 'enable' switches
 	listEntries.forEach(([key, on]) => {
 		if (key in widgets) {
 			const id = widgets[key as keyof typeof widgets].inputid
-			const input = $(id) as HTMLInputElement
+			const input = document.getElementById(id) as HTMLInputElement
 
 			if (id && input) {
 				input.checked = on
@@ -142,8 +141,8 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 	// toggle widget on interface
 	listEntries.forEach(([key, on]) => {
 		if (key in widgets) {
-			const dom = $(widgets[key as keyof typeof widgets].domid)
-			clas(dom, !on, 'hidden')
+			const id = widgets[key as keyof typeof widgets].domid
+			document.getElementById(id)?.classList.toggle('hidden', !on)
 		}
 	})
 
@@ -316,7 +315,7 @@ export function textShadow(init: number | null, event?: number) {
 }
 
 export function customCss(init: string | null, event?: { is: 'styling' | 'resize'; val: string | number }) {
-	const styleHead = $('styles') as HTMLStyleElement
+	const styleHead = document.getElementById('styles') as HTMLStyleElement
 
 	if (init) {
 		styleHead.textContent = init
@@ -397,7 +396,10 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 
 	functionsLoad[cat] = 'Ready'
 
-	if (Object.values(functionsLoad).includes('Waiting') === false && !$('settings')) {
+	const noSettings = !document.getElementById('settings')
+	const noWait = Object.values(functionsLoad).includes('Waiting') === false
+
+	if (noWait && noSettings) {
 		displayInterface()
 	}
 }
