@@ -29,7 +29,7 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 [Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0) •
 [Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) •
 [Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid) •
-[Safari](https://bonjourr.fr/use-bonjourr#-safari-desktop) •
+[Safari](https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236) •
 [or try it online](https://online.bonjourr.fr)
 
 </div>
@@ -48,11 +48,11 @@ Here's a list of things you can do to help us out:
 
 -   Give us feedback (positive and negative!) on how you use Bonjourr
 -   Suggest new features or improvements of the existing ones
--   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/profiles)
--   [Translate](https://bonjourr.fr/help#-translations) to a new language, or complete an existing one
+-   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/docs/profiles)
+-   [Translate](https://bonjourr.fr/docs/help/#translations) to a new language, or complete an existing one
 -   Contribute to [our website](https://github.com/morceaudebois/bonjourr.fr)
 -   Add new quotes (especially non english/french) to [the API](https://github.com/victrme/i18n-quotes)
--   Suggest new [Unsplash photos](https://bonjourr.fr/misc#-about-backgrounds)
+-   Suggest new [Unsplash photos](https://bonjourr.fr/docs/overview/#backgrounds)
 
 <br>
 
