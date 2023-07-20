@@ -663,6 +663,7 @@
 
 		&.opaque {
 			#searchbar,
+			#sb-suggestions,
 			#sb-buttons button {
 				color: #3a3b3c;
 			}
@@ -675,14 +676,58 @@
 				border-color: #3a3b3c55;
 			}
 
+			img {
+				filter: invert(1);
+				opacity: 0.7;
+			}
+
 			#sb-buttons #sb_submit {
 				background-color: #2222221a;
-
-				img {
-					filter: invert(1);
-					opacity: 0.7;
-				}
 			}
+		}
+	}
+
+	#sb-suggestions {
+		position: absolute;
+		top: 2.5em;
+		width: 100%;
+		min-height: 100px;
+		padding: 0.6em;
+		font-size: 1.3em;
+		border-radius: 10px;
+		box-sizing: border-box;
+		backdrop-filter: blur(1em);
+		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+		border: 1px solid rgba(255, 255, 255, 0.075);
+		background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
+
+		li {
+			display: flex;
+			text-align: left;
+			align-items: center;
+			margin: 0;
+			padding: 0.4em 1em;
+			border-radius: 4px;
+			column-gap: 1em;
+			border: 1px solid transparent;
+			cursor: pointer;
+			outline: none;
+
+			&:focus,
+			&:hover {
+				border-color: #2c7be5;
+				background-color: rgba(44, 123, 229, 0.3);
+			}
+		}
+
+		img {
+			width: 1.1em;
+			height: 1.1em;
+			object-fit: contain;
+		}
+
+		small {
+			vertical-align: top;
 		}
 	}
 
