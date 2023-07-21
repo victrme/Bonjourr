@@ -19,14 +19,15 @@ type Suggestions = {
 	image?: string
 }[]
 
+const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
 const display = (shown: boolean) => domcontainer?.classList.toggle('hidden', !shown)
-const setEngine = (value: string) => domsearchbar?.setAttribute('data-engine', value)
-const setRequest = (value: string) => domsearchbar?.setAttribute('data-request', stringMaxSize(value, 512))
-const setNewtab = (value: boolean) => domsearchbar?.setAttribute('data-newtab', value.toString())
+const setEngine = (value: string) => domcontainer?.setAttribute('data-engine', value)
+const setRequest = (value: string) => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
+const setNewtab = (value: boolean) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value || '')
 const setOpacity = (value = 0.1) => {
 	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
@@ -52,9 +53,9 @@ function submitSearch(e: Event) {
 	}
 
 	let searchURL = 'https://www.google.com/search?q=%s'
-	const isNewtab = domsearchbar?.dataset.newtab === 'true'
-	const engine = domsearchbar?.dataset.engine || 'google'
-	const request = domsearchbar?.dataset.request || ''
+	const isNewtab = domcontainer?.dataset.newtab === 'true'
+	const engine = domcontainer?.dataset.engine || 'google'
+	const request = domcontainer?.dataset.request || ''
 
 	searchURL = tradThis(engine)
 
@@ -137,18 +138,24 @@ function initSuggestions() {
 
 		if (isArrowDown && domsearchbar) {
 			lastSelected = lastSelected?.nextElementSibling ?? ul?.querySelector('li')
-			const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
-			domsearchbar.value = value
+
+			if (lastSelected) {
+				const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
+				domsearchbar.value = value
+			}
 		}
 
 		if (isArrowUp && domsearchbar) {
 			lastSelected = lastSelected?.previousElementSibling
-			const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
-			domsearchbar.value = value
 			e.preventDefault()
+
+			if (lastSelected) {
+				const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
+				domsearchbar.value = value
+			}
 		}
 
-		if (isEnter && domsearchbar) {
+		if (isEnter && domsearchbar && lastSelected) {
 			const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
 			domsearchbar.value = value
 			submitSearch(e)
@@ -161,26 +168,39 @@ function initSuggestions() {
 async function handleSuggestions(e: Event) {
 	const event = e as InputEvent // why typescript, why
 	const input = event.target as HTMLInputElement
-	const ul = document.querySelector<HTMLUListElement>('#sb-suggestions')
 
 	// INIT
-	if (ul?.childElementCount === 0) {
+	if (domsuggestions?.childElementCount === 0) {
 		initSuggestions()
 	}
 
 	// API
+	const providerList = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant']
+	let engine = (domcontainer?.dataset.engine ?? '').replace('ddg', 'duckduckgo')
+
+	if (providerList.includes(engine) === false) {
+		engine = 'duckduckgo'
+	}
+
 	const query = encodeURIComponent(input.value ?? '')
-	const url = `${atob('@@SUGGESTIONS_API')}?q=${query}&with=bing`
-	const resp = (await (await fetch(url)).json()) as Suggestions
+	const url = `${atob('@@SUGGESTIONS_API')}?q=${query}&with=${engine}`
+	let results: Suggestions
+
+	try {
+		results = (await (await fetch(url)).json()) as Suggestions
+	} catch (_) {
+		console.warn('Cannot get search suggestions')
+		results = []
+	}
 
 	// ADD TO DOM
-	const liList = ul?.querySelectorAll('li') ?? []
+	const liList = domsuggestions?.querySelectorAll('li') ?? []
 
-	ul?.classList.toggle('shown', resp?.length > 0)
-	ul?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
+	domsuggestions?.classList.toggle('shown', results?.length > 0)
+	domsuggestions?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
 
 	liList.forEach((li, i) => {
-		const result = resp[i]
+		const result = results[i]
 
 		if (result) {
 			const image = result.image ?? 'src/assets/interface/magnifying-glass.svg'
@@ -209,6 +229,7 @@ function handleInputButtons() {
 
 function removeInputText() {
 	if (domsearchbar) {
+		domsuggestions?.classList.remove('shown')
 		domsearchbar.focus()
 		domsearchbar.value = ''
 		toggleInputButton(false)
