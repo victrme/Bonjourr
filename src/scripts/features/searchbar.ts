@@ -94,18 +94,68 @@ function suggestionItemDOM() {
 	li.appendChild(wrapper)
 
 	li.addEventListener('mouseenter', (e) => {
+		domcontainer?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
 		;(e.target as HTMLElement).setAttribute('aria-selected', 'true')
 	})
 
 	li.addEventListener('mouseleave', (e) => {
-		;(e.target as HTMLElement).setAttribute('aria-selected', 'false')
+		;(e.target as HTMLElement).removeAttribute('aria-selected')
 	})
 
 	li.addEventListener('click', (e) => {
-		submitSearch(e)
+		if (domsearchbar) {
+			const value = li.querySelector('.suggest-result')?.textContent ?? ''
+			domsearchbar.value = value
+			submitSearch(e)
+		}
 	})
 
 	return li
+}
+
+function initSuggestions() {
+	const ul = document.querySelector<HTMLUListElement>('#sb-suggestions')
+
+	if (ul?.childElementCount === 0) {
+		for (let ii = 0; ii < 10; ii++) {
+			ul?.appendChild(suggestionItemDOM())
+		}
+	}
+
+	domcontainer?.addEventListener('keydown', (e) => {
+		const isArrowDown = e.code === 'ArrowDown'
+		const isArrowUp = e.code === 'ArrowUp'
+		const isEnter = e.code === 'Enter'
+		const isEscape = e.code === 'Escape'
+		let lastSelected = ul?.querySelector('li[aria-selected="true"]')
+
+		lastSelected?.removeAttribute('aria-selected')
+
+		if (isEscape) {
+			return
+		}
+
+		if (isArrowDown && domsearchbar) {
+			lastSelected = lastSelected?.nextElementSibling ?? ul?.querySelector('li')
+			const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
+			domsearchbar.value = value
+		}
+
+		if (isArrowUp && domsearchbar) {
+			lastSelected = lastSelected?.previousElementSibling
+			const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
+			domsearchbar.value = value
+			e.preventDefault()
+		}
+
+		if (isEnter && domsearchbar) {
+			const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
+			domsearchbar.value = value
+			submitSearch(e)
+		}
+
+		lastSelected?.setAttribute('aria-selected', 'true')
+	})
 }
 
 async function handleSuggestions(e: Event) {
@@ -113,26 +163,23 @@ async function handleSuggestions(e: Event) {
 	const input = event.target as HTMLInputElement
 	const ul = document.querySelector<HTMLUListElement>('#sb-suggestions')
 
+	// INIT
+	if (ul?.childElementCount === 0) {
+		initSuggestions()
+	}
+
 	// API
 	const query = encodeURIComponent(input.value ?? '')
 	const url = `${atob('@@SUGGESTIONS_API')}?q=${query}&with=bing`
 	const resp = (await (await fetch(url)).json()) as Suggestions
 
 	// ADD TO DOM
-
-	// INIT
-	if (ul?.childElementCount === 0) {
-		for (let ii = 0; ii < 10; ii++) {
-			ul?.appendChild(suggestionItemDOM())
-		}
-	}
-
-	// TOGGLE & FILL
-	const LIs = ul?.querySelectorAll('li') ?? []
+	const liList = ul?.querySelectorAll('li') ?? []
 
 	ul?.classList.toggle('shown', resp?.length > 0)
+	ul?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
 
-	LIs.forEach((li, i) => {
+	liList.forEach((li, i) => {
 		const result = resp[i]
 
 		if (result) {
