@@ -212,6 +212,15 @@ async function handleSuggestions(e: Event) {
 		}
 
 		li.classList.toggle('shown', !!result)
+
+		// This cuts results short if it overflows the interface
+		const rect = li.getBoundingClientRect()
+		const y_limit = rect.y + rect.height + 40 // 40 is arbitrary padding in px
+		const isOverflowing = y_limit > document.body.offsetHeight
+
+		if (isOverflowing) {
+			li.classList.remove('shown')
+		}
 	})
 }
 
