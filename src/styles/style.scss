@@ -689,9 +689,9 @@
 
 	#sb-suggestions {
 		position: absolute;
+		display: none;
 		top: 2.5em;
 		width: 100%;
-		min-height: 100px;
 		padding: 0.6em;
 		font-size: 1.3em;
 		border-radius: 10px;
@@ -701,8 +701,12 @@
 		border: 1px solid rgba(255, 255, 255, 0.075);
 		background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
 
+		&.shown {
+			display: block;
+		}
+
 		li {
-			display: flex;
+			display: none;
 			text-align: left;
 			align-items: center;
 			margin: 0;
@@ -713,8 +717,11 @@
 			cursor: pointer;
 			outline: none;
 
-			&:focus,
-			&:hover {
+			&.shown {
+				display: flex;
+			}
+
+			&[aria-selected='true'] {
 				border-color: #2c7be5;
 				background-color: rgba(44, 123, 229, 0.3);
 			}
@@ -726,8 +733,8 @@
 			object-fit: contain;
 		}
 
-		small {
-			vertical-align: top;
+		.suggest-desc {
+			font-size: 0.8em;
 		}
 	}
 

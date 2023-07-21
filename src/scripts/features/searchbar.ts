@@ -13,6 +13,12 @@ type SearchbarUpdate = {
 	request?: HTMLInputElement
 }
 
+type Suggestions = {
+	text: string
+	desc?: string
+	image?: string
+}[]
+
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
 const emptyButton = document.getElementById('sb_empty')
@@ -27,7 +33,7 @@ const setOpacity = (value = 0.1) => {
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
 }
 
-function submitSearch(e: SubmitEvent) {
+function submitSearch(e: Event) {
 	if (!domsearchbar) return
 
 	e.preventDefault()
@@ -65,6 +71,81 @@ function submitSearch(e: SubmitEvent) {
 
 	// open new page
 	window.open(searchURL, isNewtab ? '_blank' : '_self')
+}
+
+function suggestionItemDOM() {
+	const li = document.createElement('li')
+	const image = document.createElement('img')
+	const wrapper = document.createElement('div')
+	const result = document.createElement('p')
+	const description = document.createElement('p')
+
+	li.setAttribute('tabindex', '0')
+	image.setAttribute('draggable', 'false')
+	image.setAttribute('width', '16')
+	image.setAttribute('height', '16')
+
+	result.classList.add('suggest-result')
+	description.classList.add('suggest-desc')
+
+	wrapper.appendChild(result)
+	wrapper.appendChild(description)
+	li.appendChild(image)
+	li.appendChild(wrapper)
+
+	li.addEventListener('mouseenter', (e) => {
+		;(e.target as HTMLElement).setAttribute('aria-selected', 'true')
+	})
+
+	li.addEventListener('mouseleave', (e) => {
+		;(e.target as HTMLElement).setAttribute('aria-selected', 'false')
+	})
+
+	li.addEventListener('click', (e) => {
+		submitSearch(e)
+	})
+
+	return li
+}
+
+async function handleSuggestions(e: Event) {
+	const event = e as InputEvent // why typescript, why
+	const input = event.target as HTMLInputElement
+	const ul = document.querySelector<HTMLUListElement>('#sb-suggestions')
+
+	// API
+	const query = encodeURIComponent(input.value ?? '')
+	const url = `${atob('@@SUGGESTIONS_API')}?q=${query}&with=bing`
+	const resp = (await (await fetch(url)).json()) as Suggestions
+
+	// ADD TO DOM
+
+	// INIT
+	if (ul?.childElementCount === 0) {
+		for (let ii = 0; ii < 10; ii++) {
+			ul?.appendChild(suggestionItemDOM())
+		}
+	}
+
+	// TOGGLE & FILL
+	const LIs = ul?.querySelectorAll('li') ?? []
+
+	ul?.classList.toggle('shown', resp?.length > 0)
+
+	LIs.forEach((li, i) => {
+		const result = resp[i]
+
+		if (result) {
+			const image = result.image ?? 'src/assets/interface/magnifying-glass.svg'
+			const desc = result.desc ?? ''
+			const text = result.text
+			li.querySelector('img')!.src = image
+			li.querySelector('.suggest-result')!.textContent = text
+			li.querySelector('.suggest-desc')!.textContent = desc
+		}
+
+		li.classList.toggle('shown', !!result)
+	})
 }
 
 function toggleInputButton(enabled: boolean) {
@@ -155,9 +236,10 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		setPlaceholder(placeholder)
 		setOpacity(opacity)
 
-		domcontainer?.addEventListener('submit', submitSearch)
-		domsearchbar?.addEventListener('input', handleInputButtons)
 		emptyButton?.addEventListener('click', removeInputText)
+		domcontainer?.addEventListener('submit', submitSearch)
+		domsearchbar?.addEventListener('input', handleSuggestions)
+		domsearchbar?.addEventListener('input', handleInputButtons)
 
 		if (on) {
 			setTimeout(() => domsearchbar?.focus(), 100)
