@@ -36,6 +36,80 @@ const setOpacity = (value = 0.1) => {
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
 }
 
+export default function searchbar(init: Searchbar | null, update?: SearchbarUpdate) {
+	if (update) {
+		updateSearchbar(update)
+		return
+	}
+
+	const { on, engine, request, newtab, opacity, placeholder } = init || structuredClone(syncDefaults.searchbar)
+
+	try {
+		display(on)
+		setEngine(engine)
+		setRequest(request)
+		setNewtab(newtab)
+		setPlaceholder(placeholder)
+		setOpacity(opacity)
+
+		emptyButton?.addEventListener('click', removeInputText)
+		domcontainer?.addEventListener('submit', submitSearch)
+		domsearchbar?.addEventListener('input', handleUserInput)
+
+		if (on) {
+			setTimeout(() => domsearchbar?.focus(), 100)
+		}
+	} catch (e) {
+		errorMessage(e)
+	}
+}
+
+async function updateSearchbar({ engine, newtab, opacity, placeholder, request }: SearchbarUpdate) {
+	const { searchbar } = await storage.get('searchbar')
+
+	if (!searchbar) {
+		return
+	}
+
+	if (engine) {
+		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
+		searchbar.engine = engine
+		setEngine(engine)
+	}
+
+	if (newtab !== undefined) {
+		searchbar.newtab = newtab
+		setNewtab(newtab)
+	}
+
+	if (opacity !== undefined) {
+		searchbar.opacity = parseFloat(opacity)
+		setOpacity(parseFloat(opacity))
+	}
+
+	if (placeholder !== undefined) {
+		searchbar.placeholder = placeholder
+		setPlaceholder(placeholder)
+	}
+
+	if (request) {
+		let val = request.value
+
+		if (val.indexOf('%s') !== -1) {
+			searchbar.request = stringMaxSize(val, 512)
+			request.blur()
+		} else if (val.length > 0) {
+			val = ''
+			request.setAttribute('placeholder', tradThis('%s Not found'))
+			setTimeout(() => request.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+		}
+
+		setRequest(val)
+	}
+
+	eventDebounce({ searchbar })
+}
+
 function isValidURL(string: string) {
 	const pattern = /^(?:(?:https?):\/\/)?(?:\S+(?::\S*)?@)?(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
 	return pattern.test(string)
@@ -89,87 +163,87 @@ function submitSearch(e: Event) {
 	e.preventDefault()
 }
 
-async function suggestions(e: Event) {
-	function initSuggestions() {
-		function selectShownResult(next: UndefinedElement): UndefinedElement {
-			return next?.classList.contains('shown') ? next : null
-		}
-
-		function applyResultContentToInput(elem: UndefinedElement) {
-			if (!elem || !domsearchbar) return
-			domsearchbar.value = elem?.querySelector('.suggest-result')?.textContent ?? ''
-		}
-
-		for (let ii = 0; ii < 10; ii++) {
-			const li = document.createElement('li')
-			const image = document.createElement('img')
-			const wrapper = document.createElement('div')
-			const result = document.createElement('p')
-			const description = document.createElement('p')
-
-			li.setAttribute('tabindex', '0')
-			image.setAttribute('draggable', 'false')
-			image.setAttribute('width', '16')
-			image.setAttribute('height', '16')
-
-			result.classList.add('suggest-result')
-			description.classList.add('suggest-desc')
-
-			wrapper.appendChild(result)
-			wrapper.appendChild(description)
-			li.appendChild(image)
-			li.appendChild(wrapper)
-
-			li.addEventListener('mouseenter', () => {
-				domcontainer?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
-				li?.setAttribute('aria-selected', 'true')
-			})
-
-			li.addEventListener('mouseleave', () => {
-				li?.removeAttribute('aria-selected')
-			})
-
-			li.addEventListener('click', (e) => {
-				applyResultContentToInput(li)
-				submitSearch(e)
-			})
-
-			domsuggestions?.appendChild(li)
-		}
-
-		domcontainer?.addEventListener('keydown', (e) => {
-			const isArrowDown = e.code === 'ArrowDown'
-			const isArrowUp = e.code === 'ArrowUp'
-			const isEnter = e.code === 'Enter'
-			const isEscape = e.code === 'Escape'
-			let lastSelected = domsuggestions?.querySelector('li[aria-selected="true"]')
-
-			lastSelected?.removeAttribute('aria-selected')
-
-			if (isEscape) {
-				return
-			}
-
-			if (isArrowDown) {
-				lastSelected = selectShownResult(lastSelected?.nextElementSibling) ?? domsuggestions?.querySelector('li.shown')
-				applyResultContentToInput(lastSelected)
-			}
-
-			if (isArrowUp) {
-				lastSelected = selectShownResult(lastSelected?.previousElementSibling)
-				applyResultContentToInput(lastSelected)
-				e.preventDefault()
-			}
-
-			if (isEnter && lastSelected) {
-				applyResultContentToInput(lastSelected)
-				submitSearch(e)
-			}
-
-			lastSelected?.setAttribute('aria-selected', 'true')
-		})
+function initSuggestions() {
+	function selectShownResult(next: UndefinedElement): UndefinedElement {
+		return next?.classList.contains('shown') ? next : null
 	}
 
+	function applyResultContentToInput(elem: UndefinedElement) {
+		if (!elem || !domsearchbar) return
+		domsearchbar.value = elem?.querySelector('.suggest-result')?.textContent ?? ''
+	}
+
+	for (let ii = 0; ii < 10; ii++) {
+		const li = document.createElement('li')
+		const image = document.createElement('img')
+		const wrapper = document.createElement('div')
+		const result = document.createElement('p')
+		const description = document.createElement('p')
+
+		li.setAttribute('tabindex', '0')
+		image.setAttribute('draggable', 'false')
+		image.setAttribute('width', '16')
+		image.setAttribute('height', '16')
+
+		result.classList.add('suggest-result')
+		description.classList.add('suggest-desc')
+
+		wrapper.appendChild(result)
+		wrapper.appendChild(description)
+		li.appendChild(image)
+		li.appendChild(wrapper)
+
+		li.addEventListener('mouseenter', () => {
+			domcontainer?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
+			li?.setAttribute('aria-selected', 'true')
+		})
+
+		li.addEventListener('mouseleave', () => {
+			li?.removeAttribute('aria-selected')
+		})
+
+		li.addEventListener('click', (e) => {
+			applyResultContentToInput(li)
+			submitSearch(e)
+		})
+
+		domsuggestions?.appendChild(li)
+	}
+
+	domcontainer?.addEventListener('keydown', (e) => {
+		const isArrowDown = e.code === 'ArrowDown'
+		const isArrowUp = e.code === 'ArrowUp'
+		const isEnter = e.code === 'Enter'
+		const isEscape = e.code === 'Escape'
+		let lastSelected = domsuggestions?.querySelector('li[aria-selected="true"]')
+
+		lastSelected?.removeAttribute('aria-selected')
+
+		if (isEscape) {
+			return
+		}
+
+		if (isArrowDown) {
+			lastSelected = selectShownResult(lastSelected?.nextElementSibling) ?? domsuggestions?.querySelector('li.shown')
+			applyResultContentToInput(lastSelected)
+		}
+
+		if (isArrowUp) {
+			lastSelected = selectShownResult(lastSelected?.previousElementSibling)
+			applyResultContentToInput(lastSelected)
+			e.preventDefault()
+		}
+
+		if (isEnter && lastSelected) {
+			applyResultContentToInput(lastSelected)
+			submitSearch(e)
+		}
+
+		lastSelected?.setAttribute('aria-selected', 'true')
+	})
+}
+
+async function suggestions(e: Event) {
 	// INIT
 	if (domsuggestions?.childElementCount === 0) {
 		initSuggestions()
@@ -260,83 +334,5 @@ function removeInputText() {
 		domsearchbar.focus()
 		domsearchbar.value = ''
 		toggleInputButton(false)
-	}
-}
-
-async function updateSearchbar({ engine, newtab, opacity, placeholder, request }: SearchbarUpdate) {
-	const { searchbar } = await storage.get('searchbar')
-
-	if (!searchbar) {
-		return
-	}
-
-	if (engine) {
-		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
-		searchbar.engine = engine
-		setEngine(engine)
-	}
-
-	if (newtab !== undefined) {
-		searchbar.newtab = newtab
-		setNewtab(newtab)
-	}
-
-	if (opacity !== undefined) {
-		searchbar.opacity = parseFloat(opacity)
-		setOpacity(parseFloat(opacity))
-	}
-
-	if (placeholder !== undefined) {
-		searchbar.placeholder = placeholder
-		setPlaceholder(placeholder)
-	}
-
-	if (request) {
-		let val = request.value
-
-		if (val.indexOf('%s') !== -1) {
-			searchbar.request = stringMaxSize(val, 512)
-			request.blur()
-		} else if (val.length > 0) {
-			val = ''
-			request.setAttribute('placeholder', tradThis('%s Not found'))
-			setTimeout(() => request.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
-		}
-
-		setRequest(val)
-	}
-
-	eventDebounce({ searchbar })
-}
-
-export default function searchbar(init: Searchbar | null, update?: SearchbarUpdate) {
-	//
-	// Updates
-	if (update) {
-		updateSearchbar(update)
-		return
-	}
-
-	//
-	// Initialisation
-	const { on, engine, request, newtab, opacity, placeholder } = init || structuredClone(syncDefaults.searchbar)
-
-	try {
-		display(on)
-		setEngine(engine)
-		setRequest(request)
-		setNewtab(newtab)
-		setPlaceholder(placeholder)
-		setOpacity(opacity)
-
-		emptyButton?.addEventListener('click', removeInputText)
-		domcontainer?.addEventListener('submit', submitSearch)
-		domsearchbar?.addEventListener('input', handleUserInput)
-
-		if (on) {
-			setTimeout(() => domsearchbar?.focus(), 100)
-		}
-	} catch (e) {
-		errorMessage(e)
 	}
 }
