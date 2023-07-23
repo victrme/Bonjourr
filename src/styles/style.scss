@@ -712,9 +712,9 @@
 			text-align: left;
 			align-items: center;
 			margin: 0;
-			padding: 0.4em 1em;
+			padding: 0.4em 1em 0.4em 0.6em;
 			border-radius: 4px;
-			column-gap: 1em;
+			column-gap: 0.6em;
 			border: 1px solid transparent;
 			cursor: pointer;
 			outline: none;
@@ -730,9 +730,13 @@
 		}
 
 		img {
-			width: 1.1em;
-			height: 1.1em;
+			width: 1.6em;
+			height: 1.6em;
 			object-fit: contain;
+
+			&.default-search-icon {
+				height: 1.1em;
+			}
 		}
 
 		.suggest-desc {
