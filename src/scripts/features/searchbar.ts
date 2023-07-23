@@ -42,23 +42,19 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		return
 	}
 
-	const { on, engine, request, newtab, opacity, placeholder } = init || structuredClone(syncDefaults.searchbar)
-
 	try {
-		display(on)
-		setEngine(engine)
-		setRequest(request)
-		setNewtab(newtab)
-		setPlaceholder(placeholder)
-		setOpacity(opacity)
+		const { on, engine, request, newtab } = structuredClone(syncDefaults.searchbar)
+
+		display(init?.on ?? on)
+		setEngine(init?.engine ?? engine)
+		setRequest(init?.request ?? request)
+		setNewtab(init?.newtab ?? newtab)
+		setPlaceholder(init?.placeholder)
+		setOpacity(init?.opacity)
 
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
-
-		if (on) {
-			setTimeout(() => domsearchbar?.focus(), 100)
-		}
 	} catch (e) {
 		errorMessage(e)
 	}
@@ -210,7 +206,15 @@ function initSuggestions() {
 		domsuggestions?.appendChild(li)
 	}
 
-	domcontainer?.addEventListener('keydown', (e) => {
+	function hideSuggestions(e: MouseEvent) {
+		const pathIds = Object.values(e.composedPath()).map((el) => (el as Element).id)
+
+		if (!pathIds.includes('sb_container')) {
+			domsuggestions?.classList.remove('shown')
+		}
+	}
+
+	function navigateSuggestions(e: KeyboardEvent) {
 		const isArrowDown = e.code === 'ArrowDown'
 		const isArrowUp = e.code === 'ArrowUp'
 		const isEnter = e.code === 'Enter'
@@ -240,7 +244,10 @@ function initSuggestions() {
 		}
 
 		lastSelected?.setAttribute('aria-selected', 'true')
-	})
+	}
+
+	window.addEventListener('click', hideSuggestions)
+	domcontainer?.addEventListener('keydown', navigateSuggestions)
 }
 
 async function suggestions(e: Event) {
