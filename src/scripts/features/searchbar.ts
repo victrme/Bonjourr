@@ -35,8 +35,8 @@ const setOpacity = (value = 0.1) => {
 }
 
 function isValidURL(string: string) {
-	const urlPattern = /^(?:(?:https?):\/\/)?(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?\/?$/
-	return urlPattern.test(string)
+	const pattern = /^(?:(?:https?):\/\/)?(?:\S+(?::\S*)?@)?(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
+	return pattern.test(string)
 }
 
 function submitSearch(e: Event) {
@@ -205,10 +205,15 @@ async function suggestions(e: Event) {
 		const result = results[i]
 		if (!result) return
 
-		const image = result.image ?? 'src/assets/interface/magnifying-glass.svg'
+		const searchIcon = 'src/assets/interface/magnifying-glass.svg'
+		const image = result.image ?? searchIcon
 		const desc = result.desc ?? ''
 		const text = result.text
-		li.querySelector('img')!.src = image
+
+		const imgdom = li.querySelector('img') as HTMLImageElement
+		imgdom.classList.toggle('default-search-icon', image === searchIcon)
+		imgdom.src = image
+
 		li.querySelector('.suggest-result')!.textContent = text
 		li.querySelector('.suggest-desc')!.textContent = desc
 		li.classList.toggle('shown', !!result)
@@ -225,21 +230,21 @@ async function suggestions(e: Event) {
 }
 
 async function handleUserInput(e: Event) {
-	const event = e as InputEvent // why typescript, why
-	const input = event.target as HTMLInputElement
+	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
 
 	// Button display toggle
 	if (domsearchbar) {
-		toggleInputButton(domsearchbar.value.length > 0)
+		toggleInputButton(value.length > 0)
 	}
 
-	// Don't suggest if user input is an URL
-	if (isValidURL(input.value) || 'https://'.startsWith(input.value) || input.value.match(/https?:\/?\/?/i)) {
+	// Don't suggest if user types a URL
+	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
+
+	if (startsTypingProtocol || isValidURL(value)) {
 		domsuggestions?.classList.remove('shown')
-		return
+	} else {
+		suggestions(e)
 	}
-
-	suggestions(e)
 }
 
 function toggleInputButton(enabled: boolean) {
