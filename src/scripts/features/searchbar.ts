@@ -19,6 +19,8 @@ type Suggestions = {
 	image?: string
 }[]
 
+type UndefinedElement = Element | undefined | null
+
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
@@ -89,7 +91,14 @@ function submitSearch(e: Event) {
 
 async function suggestions(e: Event) {
 	function initSuggestions() {
-		const ul = document.querySelector<HTMLUListElement>('#sb-suggestions')
+		function selectShownResult(next: UndefinedElement): UndefinedElement {
+			return next?.classList.contains('shown') ? next : null
+		}
+
+		function applyResultContentToInput(elem: UndefinedElement) {
+			if (!elem || !domsearchbar) return
+			domsearchbar.value = elem?.querySelector('.suggest-result')?.textContent ?? ''
+		}
 
 		for (let ii = 0; ii < 10; ii++) {
 			const li = document.createElement('li')
@@ -111,24 +120,21 @@ async function suggestions(e: Event) {
 			li.appendChild(image)
 			li.appendChild(wrapper)
 
-			li.addEventListener('mouseenter', (e) => {
+			li.addEventListener('mouseenter', () => {
 				domcontainer?.querySelector('li[aria-selected="true"]')?.removeAttribute('aria-selected')
-				;(e.target as HTMLElement).setAttribute('aria-selected', 'true')
+				li?.setAttribute('aria-selected', 'true')
 			})
 
-			li.addEventListener('mouseleave', (e) => {
-				;(e.target as HTMLElement).removeAttribute('aria-selected')
+			li.addEventListener('mouseleave', () => {
+				li?.removeAttribute('aria-selected')
 			})
 
 			li.addEventListener('click', (e) => {
-				if (domsearchbar) {
-					const value = li.querySelector('.suggest-result')?.textContent ?? ''
-					domsearchbar.value = value
-					submitSearch(e)
-				}
+				applyResultContentToInput(li)
+				submitSearch(e)
 			})
 
-			ul?.appendChild(li)
+			domsuggestions?.appendChild(li)
 		}
 
 		domcontainer?.addEventListener('keydown', (e) => {
@@ -136,7 +142,7 @@ async function suggestions(e: Event) {
 			const isArrowUp = e.code === 'ArrowUp'
 			const isEnter = e.code === 'Enter'
 			const isEscape = e.code === 'Escape'
-			let lastSelected = ul?.querySelector('li[aria-selected="true"]')
+			let lastSelected = domsuggestions?.querySelector('li[aria-selected="true"]')
 
 			lastSelected?.removeAttribute('aria-selected')
 
@@ -144,28 +150,19 @@ async function suggestions(e: Event) {
 				return
 			}
 
-			if (isArrowDown && domsearchbar) {
-				lastSelected = lastSelected?.nextElementSibling ?? ul?.querySelector('li')
-
-				if (lastSelected) {
-					const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
-					domsearchbar.value = value
-				}
+			if (isArrowDown) {
+				lastSelected = selectShownResult(lastSelected?.nextElementSibling) ?? domsuggestions?.querySelector('li.shown')
+				applyResultContentToInput(lastSelected)
 			}
 
-			if (isArrowUp && domsearchbar) {
-				lastSelected = lastSelected?.previousElementSibling
+			if (isArrowUp) {
+				lastSelected = selectShownResult(lastSelected?.previousElementSibling)
+				applyResultContentToInput(lastSelected)
 				e.preventDefault()
-
-				if (lastSelected) {
-					const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
-					domsearchbar.value = value
-				}
 			}
 
-			if (isEnter && domsearchbar && lastSelected) {
-				const value = lastSelected?.querySelector('.suggest-result')?.textContent ?? ''
-				domsearchbar.value = value
+			if (isEnter && lastSelected) {
+				applyResultContentToInput(lastSelected)
 				submitSearch(e)
 			}
 
@@ -227,6 +224,10 @@ async function suggestions(e: Event) {
 			li.classList.remove('shown')
 		}
 	})
+
+	if (domsuggestions?.querySelectorAll('li.shown')?.length === 0) {
+		domsuggestions?.classList.remove('shown')
+	}
 }
 
 async function handleUserInput(e: Event) {
