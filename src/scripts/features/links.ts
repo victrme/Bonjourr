@@ -141,11 +141,11 @@ function addEvents(elem: HTMLLIElement) {
 					displayEditWindow(elem as HTMLLIElement, { x: 0, y: 0 }) // edit centered on mobile
 				}, 600)
 			},
-			false
+			{ passive: false }
 		)
 
-		elem.addEventListener('touchmove', () => clearTimeout(timer), false)
-		elem.addEventListener('touchend', () => clearTimeout(timer), false)
+		elem.addEventListener('touchmove', () => clearTimeout(timer), { passive: false })
+		elem.addEventListener('touchend', () => clearTimeout(timer), { passive: false })
 	}
 
 	// Right click ( desktop / android )
@@ -375,18 +375,24 @@ function linksDragging(LIList: HTMLLIElement[]) {
 
 	LIList.forEach((li) => {
 		// Mobile need a short press to activate drag, to avoid scroll dragging
-		li.addEventListener('touchmove', () => clearTimeout(shortPressTimeout), { passive: true })
-		li.addEventListener('touchstart', (e) => (shortPressTimeout = setTimeout(() => activateDragMove(e), 220)))
+		li.addEventListener('touchmove', () => clearTimeout(shortPressTimeout), { passive: false })
+		li.addEventListener('touchstart', (e) => (shortPressTimeout = setTimeout(() => activateDragMove(e), 220)), {
+			passive: false,
+		})
 
 		// Desktop
 		li.addEventListener('mousedown', activateDragMove)
 	})
 
 	document.body.onmouseleave = endDrag
-	document.body.ontouchend = () => {
-		endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
-		document.body.removeEventListener('touchmove', triggerDragging) // and has to be here
-	}
+	document.body.addEventListener(
+		'touchend',
+		function () {
+			endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
+			document.body.removeEventListener('touchmove', triggerDragging) // and has to be here
+		},
+		{ passive: false }
+	)
 }
 
 function editEvents() {

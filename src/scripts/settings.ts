@@ -1180,10 +1180,11 @@ export async function settingsInit(data: Sync) {
 			}
 		}
 
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
+		const dragzone = settingsDom.querySelector('#mobile-drag-zone')
+		dragzone?.addEventListener('touchstart', dragStart, { passive: false })
+		dragzone?.addEventListener('mousedown', dragStart)
+		dragzone?.addEventListener('touchend', dragEnd, { passive: false })
+		dragzone?.addEventListener('mouseup', dragEnd)
 
 		document.body?.addEventListener('mouseleave', (e) => {
 			if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
