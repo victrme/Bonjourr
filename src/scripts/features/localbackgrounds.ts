@@ -300,11 +300,11 @@ async function convertOldBackgroundStorage(every = 'pause') {
 	chrome.storage.local.remove('selectedId')
 	chrome.storage.local.remove('idsList')
 
-	localImages.set({ selected: '', ids: [], freq: every, last: Date.now() })
-
-	addNewImage(customs)
-
-	return true
+	if (customs.length > 0) {
+		localImages.set({ selected: '', ids: [], freq: every, last: Date.now() })
+		addNewImage(customs)
+		return true
+	}
 }
 
 export default async function localBackgrounds(event?: UpdateEvent) {
@@ -326,7 +326,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 			// Note: Can be removed after everyone updated from 1.16.4
 			const hasConverted = await convertOldBackgroundStorage()
 
-			if (hasConverted === false) {
+			if (!hasConverted) {
 				unsplashBackgrounds(data.unsplash ?? null)
 			}
 
