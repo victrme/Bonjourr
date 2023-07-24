@@ -3,37 +3,90 @@
 
 $fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
 $code: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
-
-$purewhite: white;
-$pureblack: black;
-
-$green: #2ed058;
-$red: #fe3b31;
-$settingsGrey: #f2f2f7;
-$inputGrey: #eaeaee;
-$focusedGrey: #dadade;
-$borderGrey: #c8c7cc;
-$placeholderGrey: #7c7d7e;
-$greyish: #3a3a3a;
-$blackish: #222;
-
 $inputHeight: 2.35em;
 $settingsMargin: 0.65em;
-
 $thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
-
 $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+@mixin light-theme {
+	--color-blue: #0072ee;
+	--color-text: #222222;
+	--color-param: #ffffff;
+	--color-settings: #f2f2f7;
+	--color-areas: #f2f2f7;
+	--color-areas-text: var(--color-blue);
+	--color-input: #eaeaee;
+	--color-focused: #dadade;
+	--color-border: #c8c7cc;
+	--color-placeholder: #7c7d7e;
+	--color-light-text: #5a5858;
+	--color-dialog: #fffb;
+	--color-dialog-border: #3334;
+	--color-dialog-highlight: #fff4;
+	--color-dialog-input-text: #716f6d;
+
+	@supports not (backdrop-filter: none) {
+		--color-dialog: #f2f2f7ee;
+	}
+}
+
+@mixin dark-theme {
+	--color-blue: #2990ff;
+	--color-text: #eeeeee;
+	--color-light-text: #929294;
+	--color-param: #1c1c1e;
+	--color-settings: #000000;
+	--color-input: #39383d;
+	--color-border: var(--color-input);
+	--color-areas: var(--color-input);
+	--color-areas-text: var(--color-text);
+	--color-placeholder: var(--color-light-text);
+	--color-focused: #2c2c2f;
+	--color-dialog: #000a;
+	--color-dialog-border: #fff4;
+	--color-dialog-highlight: #fff2;
+	--color-dialog-input-text: #a4a7a8;
+
+	@supports not (backdrop-filter: none) {
+		--color-dialog: #1c1c1cee;
+	}
+}
 
 :root {
 	--app-height: 100vh;
 	--notes-width: 50em;
 	--page-width: 1600px;
+	--page-gap: 1em;
+	--background-blur: 15px;
+	--background-brightness: 0.8;
 	--load-time-transition: 0ms;
 	--average-color: black;
 	--text-shadow-alpha: 0.2;
 	--notes-background-alpha: 0.1;
 	--searchbar-background-alpha: 0.1;
+	--font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
+	--font-weight-clock: 200;
+	--font-weight: 400;
+	--font-size: 1em;
+	--color-red: #fe3b31;
+	--color-green: #2ed058;
+
+	&[data-theme='light'] {
+		@include light-theme();
+	}
+
+	&[data-theme='dark'] {
+		@include dark-theme();
+	}
+
+	@media (prefers-color-scheme: dark) {
+		@include dark-theme();
+	}
+
+	@media (prefers-color-scheme: light) {
+		@include light-theme();
+	}
 }
 
 ::-webkit-scrollbar {
@@ -46,7 +99,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 ::-webkit-scrollbar-thumb {
-	box-shadow: inset 0 0 10px 10px $borderGrey;
+	box-shadow: inset 0 0 10px 10px var(--color-border);
 	border: solid 3px transparent;
 	border-radius: 10px;
 }
@@ -63,10 +116,10 @@ body {
 	user-select: none;
 	touch-action: pan-y;
 	opacity: 1;
+	color: white;
 	background-color: var(--average-color);
-	color: $purewhite;
-	font-family: $fonts;
 	font-size: 1em;
+	font-family: $fonts;
 	min-height: var(--app-height);
 	min-height: -webkit-fill-available;
 	text-align: center;
@@ -77,7 +130,6 @@ body {
 	display: flex;
 	flex-direction: column;
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-	--blue: #0072ee;
 
 	p,
 	h3 {
@@ -86,7 +138,7 @@ body {
 
 	hr {
 		border: none;
-		border-bottom: 1px solid $borderGrey;
+		border-bottom: 1px solid var(--color-border);
 		margin: $settingsMargin 0;
 		display: block;
 	}
@@ -120,7 +172,7 @@ body {
 		#linkblocks.text a:focus-visible span,
 		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {
-			outline: 2px solid var(--blue);
+			outline: 2px solid var(--color-blue);
 		}
 	}
 
@@ -158,23 +210,12 @@ body {
 	justify-content: center;
 }
 
-@mixin frostedGlass($tint: 255, $alpha: 0.4, $blur: 10px, $fbTint: 251, $fbAlpha: 0.8, $fbColor: #222) {
-	@supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
-		backdrop-filter: blur($blur);
+@mixin frostedGlass($blur: 10px) {
+	backdrop-filter: blur($blur);
+
+	@supports not (backdrop-filter: none) {
 		-webkit-backdrop-filter: blur($blur);
-		background: rgba($tint, $tint, $tint, $alpha);
 	}
-
-	// fb: fallback
-	@supports not ((backdrop-filter: none) or (-webkit-backdrop-filter: none)) {
-		background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
-		color: $fbColor;
-	}
-
-	// @-moz-document url-prefix() {
-	// 	background: rgba($fbTint, $fbTint, $fbTint, $fbAlpha);
-	// 	color: $fbColor;
-	// }
 }
 
 @mixin allSettings {
@@ -204,6 +245,9 @@ body {
 			max-height: 300px;
 		}
 		.as_fonts {
+			max-height: 300px;
+		}
+		.as_page {
 			max-height: 300px;
 		}
 		.as_css {
@@ -249,7 +293,7 @@ body {
 	}
 
 	button {
-		color: var(--blue);
+		color: var(--color-blue);
 		font-size: 14px;
 		border-radius: 8.5px;
 		border: 2px solid transparent;
@@ -263,13 +307,13 @@ body {
 	#i_refresh,
 	#i_qtrefresh {
 		height: $inputHeight;
-		color: $blackish;
+		color: var(--color-text);
 		font-size: 13px;
 		padding-left: 10px;
 		border-radius: 8.5px;
 		box-sizing: border-box;
 		border: 2px solid transparent;
-		background-color: $inputGrey;
+		background-color: var(--color-input);
 		-webkit-appearance: none;
 	}
 
@@ -281,11 +325,11 @@ body {
 
 	input[type='text']:focus,
 	input[type='url']:focus {
-		background-color: $focusedGrey;
+		background-color: var(--color-focused);
 	}
 
 	input::placeholder {
-		color: $placeholderGrey;
+		color: var(--color-placeholder);
 		opacity: 1;
 	}
 
@@ -306,14 +350,14 @@ body {
 		margin: 0;
 		border-radius: 16px;
 		border: 2px solid transparent;
-		background-color: $inputGrey;
+		background-color: var(--color-input);
 
 		-webkit-appearance: none;
 		-moz-appearance: none;
 		appearance: none;
 
 		&:hover {
-			background-color: #ccc;
+			background-color: var(--color-focused);
 			transition: background-color 0.15s;
 		}
 
@@ -326,12 +370,12 @@ body {
 			left: 0px;
 			border-radius: 50%;
 			box-shadow: $thumbShadow;
-			background-color: $purewhite;
+			background-color: white;
 			transition: background-color 0.3s, transform 0.3s;
 		}
 
 		&:checked {
-			background-color: $green;
+			background-color: var(--color-green);
 			transition: background-color 0.15s;
 
 			&:hover {
@@ -351,7 +395,7 @@ body {
 		margin: 0;
 		cursor: grab;
 		border-radius: 1.5rem;
-		background-color: $focusedGrey;
+		background-color: #c8c7cc;
 		-webkit-appearance: none;
 
 		&:active {
@@ -362,12 +406,12 @@ body {
 		&::-moz-range-track {
 			height: 2px;
 			border-radius: 50px;
-			background: $focusedGrey;
+			background: #c8c7cc;
 		}
 
 		&::-moz-range-progress {
 			height: 2px;
-			background-color: $borderGrey;
+			background-color: #c8c7cc;
 		}
 
 		&::-moz-range-thumb {
@@ -386,8 +430,8 @@ body {
 		background: #fff;
 		height: 20px;
 		width: 20px;
-		border-radius: 50px;
 		border: 0;
+		border-radius: 50px;
 		box-shadow: $thumbShadow;
 	}
 

@@ -1,57 +1,48 @@
-import { dict, langList } from './lang'
 import { Sync } from './types/sync'
-import { Local } from './types/local'
 
 import storage from './storage'
+import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
-import unsplash from './features/unsplash'
+import searchbar from './features/searchbar'
+import customFont from './features/fonts'
 import quickLinks from './features/links'
+import linksImport from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
+import unsplashBackgrounds from './features/unsplash'
+import localBackgrounds from './features/localbackgrounds'
 
+import langList from './langs'
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
 import stringifyOrder from './utils/stringifyOrder'
+import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
-	$,
-	has,
-	clas,
-	tradThis,
-	inputThrottle,
-	detectPlatform,
-	closeEditLink,
-	mobilecheck,
-	randomString,
-	stringMaxSize,
-	deleteBrowserStorage,
-	getBrowserStorage,
-	turnRefreshButton,
 	testOS,
+	mobilecheck,
 	syncDefaults,
+	inputThrottle,
+	closeEditLink,
+	stringMaxSize,
+	detectPlatform,
+	turnRefreshButton,
 } from './utils'
 
 import {
 	toggleWidgetsDisplay,
 	backgroundFilter,
-	clock,
 	customCss,
-	customFont,
 	darkmode,
 	favicon,
-	linksImport,
-	localBackgrounds,
-	modifyWeightOptions,
-	safeFont,
-	searchbar,
 	tabTitle,
 	textShadow,
-	traduction,
-	pageWidth,
+	pageControl,
 } from './index'
+import parse from './utils/JSONparse'
 
 type Langs = keyof typeof langList
 
@@ -65,7 +56,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)!
 
 	const initCheckbox = (id: string, cat: boolean) => {
-		;(paramId(id) as HTMLInputElement).checked = cat ? true : false
+		;(paramId(id) as HTMLInputElement).checked = cat
 	}
 
 	const initInput = (id: string, val: string | number) => {
@@ -73,9 +64,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		input.value = typeof val === 'string' ? val : val.toString()
 	}
 
-	// 1.10.0 custom background slideshow
-	const whichFreq = data.background_type === 'custom' ? data.custom_every : data.dynamic?.every || 'hour'
-	const whichFreqDefault = data.background_type === 'custom' ? 'pause' : 'hour'
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
 
 	initInput('i_blur', data.background_blur ?? 15)
@@ -83,55 +71,56 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('cssEditor', data.css || '')
 	initInput('i_row', data.linksrow || 8)
 	initInput('i_linkstyle', data.linkstyle || 'default')
-	initInput('i_type', data.background_type || 'dynamic')
-	initInput('i_freq', whichFreq || whichFreqDefault)
+	initInput('i_type', data.background_type || 'unsplash')
+	initInput('i_freq', data.unsplash?.every)
 	initInput('i_dark', data.dark || 'system')
-	initInput('i_favicon', data.favicon || '')
-	initInput('i_tabtitle', data.tabtitle || '')
+	initInput('i_favicon', data.favicon ?? '')
+	initInput('i_tabtitle', data.tabtitle ?? '')
 	initInput('i_pagewidth', data.pagewidth || 1600)
-	initInput('i_greeting', data.greeting || '')
+	initInput('i_pagegap', data.pagegap ?? 1)
+	initInput('i_greeting', data.greeting ?? '')
 	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
 	initInput('i_notesopacity', data.notes?.opacity.toString() || 0.1)
 	initInput('i_notesalign', data.notes?.align || 'left')
 	initInput('i_sbengine', data.searchbar?.engine || 'google')
 	initInput('i_sbplaceholder', data.searchbar?.placeholder || '')
-	initInput('i_sbopacity', data.searchbar?.opacity || 0.1)
+	initInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
-	initInput('i_qtlist', JSON.stringify(userQuotes) || '')
+	initInput('i_qtlist', JSON.stringify(userQuotes) ?? '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_clockstyle', data.clock?.style || 'round')
 	initInput('i_timezone', data.clock?.timezone || 'auto')
-	initInput('i_collection', data.dynamic?.collection || '')
+	initInput('i_collection', data.unsplash?.collection ?? '')
 	initInput('i_ccode', data.weather?.ccode || 'US')
 	initInput('i_forecast', data.weather?.forecast || 'auto')
 	initInput('i_temp', data.weather?.temperature || 'actual')
 	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
-	initInput('i_provider', data.weather?.provider || '')
-	initInput('i_customfont', data.font?.family || '')
+	initInput('i_provider', data.weather?.provider ?? '')
+	initInput('i_customfont', data.font?.family ?? '')
 	initInput('i_weight', data.font?.weight || '300')
 	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
 
 	initCheckbox('i_showall', data.showall)
-	initCheckbox('i_settingshide', data.hide?.settingsicon || false)
+	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	initCheckbox('i_quicklinks', data.quicklinks)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_main', data.main)
 	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
-	initCheckbox('i_units', data.weather?.unit === 'imperial' || false)
+	initCheckbox('i_units', data.weather?.unit === 'imperial' ?? false)
 	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
-	initCheckbox('i_notes', data.notes?.on || false)
-	initCheckbox('i_sb', data.searchbar?.on || false)
-	initCheckbox('i_quotes', data.quotes?.on || false)
-	initCheckbox('i_ampm', data.clock?.ampm || false)
-	initCheckbox('i_sbnewtab', data.searchbar?.newtab || false)
-	initCheckbox('i_qtauthor', data.quotes?.author || false)
-	initCheckbox('i_seconds', data.clock?.seconds || false)
-	initCheckbox('i_analog', data.clock?.analog || false)
+	initCheckbox('i_notes', data.notes?.on ?? false)
+	initCheckbox('i_sb', data.searchbar?.on ?? false)
+	initCheckbox('i_quotes', data.quotes?.on ?? false)
+	initCheckbox('i_ampm', data.clock?.ampm ?? false)
+	initCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
+	initCheckbox('i_qtauthor', data.quotes?.author ?? false)
+	initCheckbox('i_seconds', data.clock?.seconds ?? false)
+	initCheckbox('i_analog', data.clock?.analog ?? false)
 
 	// Input translation
 	translatePlaceholders(settingsDom)
@@ -157,6 +146,16 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Activate changelog
 	if (localStorage.hasUpdated === 'true') {
 		changelogControl(settingsDom)
+
+		// to remove after 1.17.0 update
+		const movemoveddom = settingsDom.querySelector<HTMLElement>('#move-option-moved')
+		const movemovedbtn = settingsDom.querySelector<HTMLElement>('#move-option-moved button')
+
+		movemoveddom?.setAttribute('style', 'display: block')
+		movemovedbtn?.addEventListener('click', () => {
+			movemoveddom?.setAttribute('style', 'display: none')
+			localStorage.removeItem('hasUpdated')
+		})
 	}
 
 	// No bookmarks import on safari || online
@@ -165,18 +164,19 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Activate feature options
-	clas(paramId('time_options'), data.time, 'shown')
-	clas(paramId('main_options'), data.main, 'shown')
-	clas(paramId('weather_provider'), data.weather?.moreinfo === 'custom', 'shown')
-	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
-	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
-	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
+	paramId('time_options')?.classList.toggle('shown', data.time)
+	paramId('main_options')?.classList.toggle('shown', data.main)
+	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
+	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
+	paramId('notes_options')?.classList.toggle('shown', data.notes?.on || false)
+	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
+	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
 	// Page layout
 	settingsDom.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-		clas(b, b.dataset.layout === (data.move?.selection || 'single'), 'selected')
+		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
+		b?.classList.toggle('selected', selectedLayout)
 	})
 
 	// Disables double and triple layouts on mobile
@@ -194,34 +194,38 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		initInput('i_weatherhide', weather)
 	})()
 
-	// Font family default
-	safeFont(settingsDom)
-
-	// Fetches font list if font is not default
-	// to prevent forced reflow when appending to visible datalist dom
-	if (data.font?.family !== '') customFont(null, { is: 'autocomplete', elem: settingsDom })
-
-	// Font weight
-	if (data.font?.availWeights?.length > 0) modifyWeightOptions(data.font.availWeights, settingsDom)
+	// Custom Fonts
+	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
-	if (data.background_type === 'custom') {
-		paramId('custom').setAttribute('style', 'display: block')
-		settingsDom.querySelector('.as_collection')?.setAttribute('style', 'display: none')
-		localBackgrounds(null, { is: 'thumbnail', settings: settingsDom })
+	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
+	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
+
+	if (data.background_type === 'local') {
+		localBackgrounds({ thumbnail: settingsDom })
 	}
 
-	//weather settings
+	// Update thumbnails grid max-height by watching changes
+	const fileContainer = settingsDom.querySelector<HTMLElement>('#fileContainer')
+	const optionsDom = settingsDom.querySelector<HTMLElement>('#local_options')
+
+	if (fileContainer) {
+		new MutationObserver(() => {
+			const thumbsHeight = fileContainer?.offsetHeight ?? 0
+			optionsDom?.style.setProperty('--thumbnails-grid-height', thumbsHeight + 'px')
+		}).observe(fileContainer, { childList: true })
+	}
+
+	// weather settings
 	const i_geol = paramId('i_geol') as HTMLInputElement
 	if (data.weather && Object.keys(data.weather).length > 0) {
 		const isGeolocation = data.weather?.location?.length > 0
 		let cityName = data.weather?.city || 'City'
 		paramId('i_city').setAttribute('placeholder', cityName)
-
-		clas(paramId('sett_city'), isGeolocation, 'hidden')
+		paramId('sett_city')?.classList.toggle('shown', !isGeolocation)
 		i_geol.checked = isGeolocation
 	} else {
-		clas(paramId('sett_city'), true, 'hidden')
+		paramId('sett_city')?.classList.toggle('shown', true)
 		i_geol.checked = true
 	}
 
@@ -231,8 +235,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Quotes option display
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
-	clas(paramId('quotes_userlist'), data.quotes?.type === 'user', 'shown')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
 
 	updateExportJSON(settingsDom)
 
@@ -332,14 +336,24 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('input', function () {
+		pageControl({ width: parseInt(this.value) }, true)
+	})
+
+	paramId('i_pagegap').addEventListener('input', function () {
+		pageControl({ gap: parseFloat(this.value) }, true)
+	})
+
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
 	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
-	paramId('i_pagewidth').addEventListener('input', function () {
-		pageWidth(parseInt(this.value), true)
-	})
+	// TODO: To do or not to do ?
+	// paramId('i_pagegap').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
+	// paramId('i_pagegap').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
+	// paramId('i_pagegap').addEventListener('touchend', () => moveElements(null, { overlay: false }))
+	// paramId('i_pagegap').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
 	//
 	// Quick links
@@ -348,7 +362,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(null, { is: 'add' }), 1200)
+	const submitLinkFunc = throttle(() => quickLinks(null, { add: true }), 1200)
 
 	paramId('i_title').onkeyup = (e: KeyboardEvent) => {
 		if (e.code === 'Enter') {
@@ -369,23 +383,23 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_linknewtab').onchange = (e) => {
 		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { is: 'newtab', checked: input.checked })
+		quickLinks(null, { newtab: input.checked })
 	}
 
 	paramId('i_linkstyle').onchange = (e) => {
 		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { is: 'style', value: input.value })
+		quickLinks(null, { style: input.value })
 	}
 
 	paramId('i_row').oninput = function (e: Event) {
 		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { is: 'row', value: input.value })
+		quickLinks(null, { row: input.value })
 	}
 
 	paramId('b_importbookmarks').onclick = linksImport
 
 	//
-	// Dynamic backgrounds
+	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
 		selectBackgroundType(this.value)
@@ -393,9 +407,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
 		const i_type = paramId('i_type') as HTMLInputElement
+		const isLocalBg = i_type.value === 'local'
 
-		if (i_type.value === 'custom') storage.sync.set({ custom_every: this.value })
-		else unsplash(null, { is: 'every', value: this.value })
+		if (isLocalBg) {
+			localBackgrounds({ freq: this.value })
+		} else {
+			unsplashBackgrounds(null, { every: this.value })
+		}
 	})
 
 	paramId('i_refresh').addEventListener('click', function (this: HTMLInputElement) {
@@ -403,16 +421,20 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		if (this.children[0]) {
 			const arrow = this.children[0] as HTMLSpanElement
-			const event = { is: 'refresh', button: arrow }
+			const isLocalBg = i_type.value === 'local'
 
-			i_type.value === 'custom' ? localBackgrounds(null, event) : unsplash(null, event)
+			if (isLocalBg) {
+				localBackgrounds({ refresh: arrow })
+			} else {
+				unsplashBackgrounds(null, { refresh: arrow })
+			}
 		}
 
 		inputThrottle(this)
 	})
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplash(null, { is: 'collection', value: stringMaxSize(this.value, 256) })
+		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
 		this.blur()
 	})
 
@@ -420,15 +442,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds(null, { is: 'newfile', file: this.files || undefined })
+		localBackgrounds({ newfile: this.files })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter('blur', { blur: parseFloat(this.value) }, true)
+		backgroundFilter({ blur: parseFloat(this.value), isEvent: true })
 	})
 
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter('bright', { bright: parseFloat(this.value) }, true)
+		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
 
 	//
@@ -439,31 +461,31 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'analog', checked: this.checked })
+		clock(null, { analog: this.checked })
 	})
 
 	paramId('i_seconds').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'seconds', checked: this.checked })
+		clock(null, { seconds: this.checked })
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'face', value: this.value })
+		clock(null, { face: this.value })
 	})
 
 	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'style', value: this.value })
+		clock(null, { style: this.value })
 	})
 
 	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'ampm', checked: this.checked })
+		clock(null, { ampm: this.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'timezone', value: this.value })
+		clock(null, { timezone: this.value })
 	})
 
 	paramId('i_usdate').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { is: 'usdate', checked: this.checked })
+		clock(null, { usdate: this.checked })
 	})
 
 	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
@@ -527,7 +549,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_greeting').addEventListener('keyup', function () {
-		clock(null, { is: 'greeting', value: stringMaxSize(this.value, 32) })
+		clock(null, { greeting: stringMaxSize(this.value, 32) })
 	})
 
 	//
@@ -557,23 +579,23 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'engine', this)
+		searchbar(null, { engine: this.value })
 	})
 
 	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(null, 'opacity', this)
+		searchbar(null, { opacity: this.value })
 	})
 
 	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'request', this)
+		searchbar(null, { request: this })
 	})
 
 	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, 'newtab', this)
+		searchbar(null, { newtab: this.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
-		searchbar(null, 'placeholder', this)
+		searchbar(null, { placeholder: this.value })
 	})
 
 	//
@@ -584,25 +606,25 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
-		quotes(null, { is: 'frequency', value: this.value })
+		quotes(null, { frequency: this.value })
 	})
 
 	paramId('i_qttype').addEventListener('change', function () {
-		quotes(null, { is: 'type', value: this.value })
+		quotes(null, { type: this.value })
 	})
 
 	paramId('i_qtrefresh').addEventListener('click', function () {
 		inputThrottle(this)
 		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
-		quotes(null, { is: 'refresh' })
+		quotes(null, { refresh: true })
 	})
 
 	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(null, { is: 'author', checked: this.checked })
+		quotes(null, { author: this.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
-		quotes(null, { is: 'userlist', value: this.value })
+		quotes(null, { userlist: this.value })
 	})
 
 	//
@@ -611,20 +633,20 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
 		if (settingsDom.querySelector('#dl_fontfamily')?.childElementCount === 0) {
-			customFont(null, { is: 'autocomplete', elem: settingsDom })
+			customFont(null, { autocomplete: settingsDom })
 		}
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { is: 'family', value: this.value })
+		customFont(null, { family: this.value })
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { is: 'weight', value: this.value })
+		customFont(null, { weight: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { is: 'size', value: this.value })
+		customFont(null, { size: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
@@ -646,9 +668,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const { exportAsFile, copyImportText, importAsText, importAsFile } = settingsMgmt()
 
 	const toggleSettingsMgmt = (toggled: boolean) => {
-		clas(paramId('export'), !toggled, 'shown')
-		clas(paramId('import'), toggled, 'shown')
-		clas(paramClasses('tabs')[0], toggled, 'toggled')
+		paramId('export')?.classList.toggle('shown', !toggled)
+		paramId('import')?.classList.toggle('shown', toggled)
+		paramClasses('tabs')[0]?.classList.toggle('toggled', toggled)
 	}
 
 	paramId('s_export').addEventListener('click', () => toggleSettingsMgmt(false))
@@ -661,7 +683,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
-		paramsImport(JSON.parse(($('i_importtext') as HTMLInputElement).value))
+		paramsImport(parse((document.getElementById('i_importtext') as HTMLInputElement).value))
 	})
 
 	//
@@ -682,8 +704,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		}
 
 		// Then control if widgets are on or off
-		settingsDom.querySelectorAll('widget-option').forEach((dom) => {
-			toggleTabindex('#' + dom.id, has(dom, 'shown'))
+		settingsDom.querySelectorAll('.dropdown').forEach((dom) => {
+			toggleTabindex('#' + dom.id, dom?.classList.contains('shown'))
 		})
 
 		// Disable all "all" settings if off
@@ -693,16 +715,16 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 		// Toggle tooltips
 		settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
-			toggleTabindex('.' + dom.classList[1], has(dom, 'shown'))
+			toggleTabindex('.' + dom.classList[1], dom?.classList.contains('shown'))
 		})
 
 		// Toggle in-widgets hidden options
-		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
-		toggleTabindex('#weather_provider', has(paramId('weather_provider'), 'shown'))
-		toggleTabindex('#quotes_userlist', has(paramId('quotes_userlist'), 'shown'))
+		toggleTabindex('#searchbar_request', paramId('searchbar_request').classList.contains('shown'))
+		toggleTabindex('#weather_provider', paramId('weather_provider').classList.contains('shown'))
+		toggleTabindex('#quotes_userlist', paramId('quotes_userlist').classList.contains('shown'))
+		toggleTabindex('#import', paramId('import').classList.contains('shown'))
+		toggleTabindex('#export', paramId('export').classList.contains('shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
-		toggleTabindex('#import', has(paramId('import'), 'shown'))
-		toggleTabindex('#export', has(paramId('export'), 'shown'))
 
 		// File export downloader is never tabbable
 		paramId('downloadfile').setAttribute('tabindex', '-1')
@@ -720,11 +742,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 function settingsMgmt() {
 	async function copyImportText(target: HTMLButtonElement) {
 		try {
-			const area = $('area_export') as HTMLInputElement
+			const area = document.getElementById('area_export') as HTMLInputElement
 			await navigator.clipboard.writeText(area.value)
 			target.textContent = tradThis('Copied')
 			setTimeout(() => {
-				const domimport = $('b_exportcopy')
+				const domimport = document.getElementById('b_exportcopy')
 				if (domimport) {
 					domimport.textContent = tradThis('Copy text')
 				}
@@ -734,31 +756,32 @@ function settingsMgmt() {
 		}
 	}
 
-	function exportAsFile() {
-		const a = $('downloadfile')
+	async function exportAsFile() {
+		const a = document.getElementById('downloadfile')
 		if (!a) return
 
-		storage.sync.get(null, (data) => {
-			const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
+		const data = ((await storage.get()) as Sync) ?? {}
+		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
 
-			const bytes = new TextEncoder().encode(stringifyOrder(data))
-			const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
-			const date = new Date()
-			const YYYYMMDD = date.toISOString().slice(0, 10)
-			const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
+		const bytes = new TextEncoder().encode(stringifyOrder(data))
+		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+		const date = new Date()
+		const YYYYMMDD = date.toISOString().slice(0, 10)
+		const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
-			a.setAttribute('href', URL.createObjectURL(blob))
-			a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
-			a.click()
-		})
+		a.setAttribute('href', URL.createObjectURL(blob))
+		a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
+		a.click()
 	}
 
 	function importAsText(string: string) {
+		const importtext = document.getElementById('b_importtext')
+
 		try {
-			JSON.parse(string)
-			$('b_importtext')?.removeAttribute('disabled')
+			parse(string)
+			importtext?.removeAttribute('disabled')
 		} catch (error) {
-			$('b_importtext')?.setAttribute('disabled', '')
+			importtext?.setAttribute('disabled', '')
 		}
 	}
 
@@ -768,11 +791,11 @@ function settingsMgmt() {
 
 			try {
 				// Tries to decode base64 from previous versions
-				result = JSON.parse(atob(str))
+				result = parse(atob(str))
 			} catch {
 				try {
 					// If base64 failed, parse raw string
-					result = JSON.parse(str)
+					result = parse(str)
 				} catch (error) {
 					// If all failed, return empty object
 					result = {}
@@ -821,11 +844,11 @@ function changelogControl(settingsDom: HTMLElement) {
 
 	if (!domchangelog) return
 
-	clas(domchangelog, true, 'shown')
-	clas(domshowsettings, true, 'hasUpdated')
+	domchangelog.classList.toggle('shown', true)
+	domshowsettings?.classList.toggle('hasUpdated', true)
 
 	const dismiss = () => {
-		clas(domshowsettings, false, 'hasUpdated')
+		domshowsettings?.classList.toggle('hasUpdated', false)
 		domchangelog.className = 'dismissed'
 		localStorage.removeItem('hasUpdated')
 	}
@@ -852,116 +875,55 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 		['#i_importtext', 'or paste as text'],
 	]
 
-	cases.forEach(([domId, text]) => {
-		const input = settingsDom.querySelector(domId) as HTMLInputElement
-		input.setAttribute('placeholder', tradThis(text))
-	})
+	for (const [id, text] of cases) {
+		settingsDom.querySelector(id)?.setAttribute('placeholder', tradThis(text))
+	}
 }
 
-function switchLangs(nextLang: Langs) {
-	function langSwitchTranslation(langs: { current: Langs; next: Langs }) {
-		// On 'en' lang, get the dict key, not one of its values
-		// create dict like object to parse through
-		// switchDict is: {{'hello': 'bonjour'}, {'this is a test': 'ceci est un test'} ...}
-
-		const getLangList = (l: Langs) => {
-			return l === 'en' ? Object.keys(dict) : Object.values(dict).map((t) => t[l])
-		}
-
-		const { current, next } = langs
-		const nextList = getLangList(next)
-		const currentList = getLangList(current)
-		let switchDict: Record<string, string> = {}
-
-		currentList.forEach((curr, i) => (switchDict[curr] = nextList[i]))
-
-		document.querySelectorAll('.trn').forEach((trn) => {
-			if (typeof trn.textContent === 'string') {
-				trn.textContent = switchDict[trn.textContent]
-			}
-		})
-	}
-
-	// This forces lang="" tag to be a valid lang code
-	function isValidLang(val: string): val is Langs {
-		return Object.keys(langList).includes(val)
-	}
-
-	const htmllang = document.documentElement.getAttribute('lang') || 'en'
-	const langs = {
-		current: isValidLang(htmllang) ? htmllang : 'en',
-		next: nextLang,
-	}
+async function switchLangs(nextLang: Langs) {
+	await toggleTraduction(nextLang)
 
 	sessionStorage.lang = nextLang // Session pour le weather
-	storage.sync.set({ lang: nextLang })
+	storage.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	storage.sync.get(null, (data) => {
-		data.lang = nextLang
-		langSwitchTranslation(langs)
-		translatePlaceholders($('settings'))
-		weather(data as Sync)
-		clock(data as Sync)
-		notes((data.notes as Sync['notes']) || structuredClone(syncDefaults.notes) || null)
-
-		if (data.quotes?.type === 'classic') {
-			localStorage.removeItem('nextQuote')
-			localStorage.removeItem('currentQuote')
-			quotes(data as Sync)
-		}
-	})
+	const data = ((await storage.get()) as Sync) ?? {}
+	data.lang = nextLang
+	weather(data)
+	clock(data)
+	quotes(data)
+	tabTitle(data.tabtitle)
+	notes(data.notes || null)
+	translatePlaceholders(document.getElementById('settings'))
 }
 
 function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
-	if (event) storage.sync.set({ showall: val })
+	;(settingsDom || document.getElementById('settings'))?.classList.toggle('all', val)
 
-	const settings = settingsDom || $('settings')
-	clas(settings, val, 'all')
+	if (event) {
+		storage.set({ showall: val })
+	}
 }
 
-function selectBackgroundType(cat: string) {
-	function toggleType(sync: Sync, local: Local) {
-		$('custom')?.setAttribute('style', `display: ${cat === 'custom' ? 'block' : 'none'}`)
-		document.querySelector('.as_collection')?.setAttribute('style', `display: ${cat === 'custom' ? 'none' : 'block'}`)
+async function selectBackgroundType(cat: string) {
+	document.getElementById('local_options')?.classList.toggle('shown', cat === 'local')
+	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
 
-		// Only apply fade out/in if there are local backgrounds
-		// No local ? no reason to fade to black or show no thumbnails
-		// Just stick to unsplash
-
-		if (cat === 'custom' && local.selectedId !== '') {
-			localBackgrounds(null, { is: 'thumbnail', settings: $('settings') || undefined })
-			setTimeout(
-				() =>
-					localBackgrounds({
-						every: sync.custom_every,
-						time: sync.custom_time,
-					}),
-				400
-			)
-		}
-
-		if (cat === 'dynamic') {
-			clas($('creditContainer'), true, 'shown')
-
-			if (local.selectedId !== '') {
-				setTimeout(() => unsplash(sync), 400)
-			}
-		}
-
-		const c_every = sync.custom_every || 'pause'
-		const d_every = sync.dynamic.every || 'hour'
-
-		$('i_freq')?.setAttribute('value', cat === 'custom' ? c_every : d_every) // Setting frequence input
-
-		storage.sync.set({ background_type: cat })
+	if (cat === 'local') {
+		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
+		setTimeout(() => localBackgrounds(), 100)
 	}
 
-	storage.local.get('selectedId', (local) => {
-		storage.sync.get(['custom_every', 'custom_time', 'dynamic'], (sync) => {
-			toggleType(sync as Sync, local as Local)
-		})
-	})
+	if (cat === 'unsplash') {
+		const data = ((await storage.get()) as Sync) ?? {}
+		if (!data.unsplash) return
+
+		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
+		document.getElementById('creditContainer')?.classList.toggle('shown', true)
+		setTimeout(() => unsplashBackgrounds(data.unsplash), 100)
+	}
+
+	storage.set({ background_type: cat })
 }
 
 function signature(dom: HTMLElement) {
@@ -990,35 +952,21 @@ function signature(dom: HTMLElement) {
 }
 
 function fadeOut() {
-	const dominterface = $('interface')!
+	const dominterface = document.getElementById('interface')!
 	dominterface.click()
 	dominterface.style.transition = 'opacity .4s'
 	setTimeout(() => (dominterface.style.opacity = '0'))
 	setTimeout(() => location.reload(), 400)
 }
 
-function paramsImport(toImport: Sync) {
+async function paramsImport(toImport: Sync) {
 	try {
-		// Load all sync & dynamicCache
-		storage.sync.get(null, (sync) => {
-			storage.local.get('dynamicCache', (local) => {
-				// Remove user collection cache if collection change
-				if (sync.dynamic && toImport.dynamic) {
-					if (sync.dynamic?.collection !== toImport.dynamic?.collection) {
-						local.dynamicCache.user = []
-					}
-				}
+		let data = ((await storage.get()) as Sync) ?? {}
 
-				sync = { ...filterImports(sync as Sync, toImport) }
+		data = { ...filterImports(data, toImport) }
 
-				storage.sync.clear()
-				storage.sync.set(sync, () =>
-					storage.local.set(local, () => {
-						fadeOut()
-					})
-				)
-			})
-		})
+		storage.clear()
+		storage.set(data, () => fadeOut())
 	} catch (e) {
 		console.log(e)
 	}
@@ -1026,241 +974,239 @@ function paramsImport(toImport: Sync) {
 
 function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
-		deleteBrowserStorage()
+		storage.clear()
+		localStorage.clear()
 		fadeOut()
 		return
 	}
 
-	clas($('reset_first'), action === 'no', 'shown')
-	clas($('reset_conf'), action === 'conf', 'shown')
+	document.getElementById('reset_first')?.classList.toggle('shown', action === 'no')
+	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
 }
 
-export function updateExportJSON(settingsDom: HTMLElement) {
+export async function updateExportJSON(settingsDom: HTMLElement) {
 	const input = settingsDom.querySelector('#area_export') as HTMLInputElement
 
 	settingsDom.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	storage.sync.get(null, (data) => {
-		if (data.weather && data.weather.lastCall) delete data.weather.lastCall
-		if (data.weather && data.weather.forecastLastCall) delete data.weather.forecastLastCall
-		data.about.browser = detectPlatform()
+	const data = ((await storage.get()) as Sync) ?? {}
 
-		input.value = stringifyOrder(data)
-	})
+	if (data?.weather?.lastCall) delete data.weather.lastCall
+	data.about.browser = detectPlatform()
+
+	input.value = stringifyOrder(data)
 }
 
-export function settingsInit(data: Sync) {
-	function settingsCreator(html: string) {
-		const domshowsettings = $('showSettings')
-		const dominterface = $('interface')
-		const domedit = $('editlink')
+export async function settingsInit(data: Sync) {
+	const html = await (await fetch('settings.html')).text()
 
-		const parser = new DOMParser()
-		const settingsDom = document.createElement('aside')
-		const contentList = parser.parseFromString(html, 'text/html').body.childNodes
+	const domshowsettings = document.getElementById('showSettings')
+	const dominterface = document.getElementById('interface')
+	const domedit = document.getElementById('editlink')
 
-		settingsDom.id = 'settings'
-		settingsDom.setAttribute('class', 'init')
-		Object.values(contentList).forEach((elem) => settingsDom.appendChild(elem))
+	const parser = new DOMParser()
+	const settingsDom = document.createElement('aside')
+	const contentList = parser.parseFromString(html, 'text/html').body.childNodes
 
-		traduction(settingsDom, data.lang)
-		signature(settingsDom)
-		initParams(data, settingsDom)
-		showall(data.showall, false, settingsDom)
+	settingsDom.id = 'settings'
+	settingsDom.setAttribute('class', 'init')
 
-		document.body.appendChild(settingsDom) // Apply to body
-
-		//
-		// Events
-		//
-
-		// On settings changes, update export code
-		const isOnline = detectPlatform() === 'online'
-		const storageUpdate = () => updateExportJSON($('settings') as HTMLElement)
-		const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
-
-		if (isOnline) {
-			window.addEventListener('storage', storageUpdate)
-		} else {
-			chrome.storage.onChanged.addListener(storageUpdate)
-			window.addEventListener('beforeunload', unloadUpdate, { once: true })
-		}
-
-		function toggleDisplay(dom: HTMLElement) {
-			const isClosed = !has(dom, 'shown')
-
-			clas(dom, false, 'init')
-			clas(dom, isClosed, 'shown')
-
-			clas(domshowsettings, isClosed, 'shown')
-			clas(domedit, isClosed, 'pushed')
-
-			clas(dominterface, isClosed, 'pushed')
-			settingsDom.style.removeProperty('transform')
-			settingsDom.style.removeProperty('transition')
-		}
-
-		$('skiptosettings')?.addEventListener('click', function () {
-			toggleDisplay(settingsDom)
-			settingsDom.scrollTo({ top: 0 })
-
-			setTimeout(() => {
-				const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
-				showall.focus()
-			}, 10)
-		})
-
-		domshowsettings?.addEventListener('click', function () {
-			toggleDisplay(settingsDom)
-		})
-
-		document.onkeydown = function (e) {
-			if (e.altKey && e.code === 'KeyS') {
-				getBrowserStorage()
-			}
-
-			if (e.code === 'Escape') {
-				has($('editlink'), 'shown') ? closeEditLink() : toggleDisplay(settingsDom) // Opens menu when pressing "Escape"
-				return
-			}
-
-			if (e.code === 'Tab') {
-				clas(document.body, true, 'tabbing') // Shows input outline when using tab
-				return
-			}
-
-			if ($('error') && e.ctrlKey) {
-				return // do nothing if pressing ctrl or if there's an error message
-			}
-		}
-
-		window.addEventListener('click', function (e) {
-			const path = e.composedPath()
-			const clicksOnEdit = path.filter((d: EventTarget) => (d as HTMLElement).id === 'editlink').length > 0
-
-			if (!clicksOnEdit && has($('editlink'), 'shown')) {
-				closeEditLink() // hides edit menu
-			}
-		})
-
-		dominterface?.addEventListener('click', function (e) {
-			const pathIds = e.composedPath().map((d) => (d as HTMLElement).id)
-			if (pathIds.includes('linkblocks') || pathIds.includes('element-mover')) {
-				return // Do nothing if links or element mover are clicked
-			}
-
-			if (document.body.classList.contains('tabbing')) {
-				clas(document.body, false, 'tabbing') // Removes tabbing class on click
-			}
-
-			// Close menu when clicking anywhere on interface
-			if (has(settingsDom, 'shown')) {
-				toggleDisplay(settingsDom)
-			}
-		})
-
-		//
-		// Mobile settings height control
-
-		function responsiveSettingsHeightDrag() {
-			let firstPos = 0
-			let startTouchY = 0
-
-			function dragStart(e: Event) {
-				e.preventDefault()
-
-				// Get mouse / touch y position
-				if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
-				if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
-
-				// First time dragging, sets maximum y pos at which to block
-				if (firstPos === 0) firstPos = startTouchY
-
-				// Scrollbar padding control on windows & android
-				if (testOS.windows || testOS.android) {
-					settingsDom.style.width = `calc(100% - 10px)`
-					settingsDom.style.paddingRight = `10px`
-				}
-
-				// prevent scroll when dragging
-				settingsDom.style.overflow = `clip`
-
-				// Add mouse / touch moves events
-				window.addEventListener('touchmove', dragMove)
-				window.addEventListener('mousemove', dragMove)
-			}
-
-			function dragMove(e: Event) {
-				let clientY: number = 0
-
-				// Get mouse / touch y position
-				if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
-				if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
-
-				// element is below max height: move
-				if (clientY > 60) {
-					settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
-					settingsDom.style.transition = `transform .0s`
-				}
-			}
-
-			function dragEnd(e: Event) {
-				let clientY: number = 0
-
-				// Get mouse / touch y position
-				if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
-				if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
-
-				// Remove move events
-				window.removeEventListener('touchmove', dragMove)
-				window.removeEventListener('mousemove', dragMove)
-
-				// reset mouse / touch pos
-				startTouchY = 0
-
-				settingsDom.style.removeProperty('padding')
-				settingsDom.style.removeProperty('width')
-				settingsDom.style.removeProperty('overflow')
-
-				// Add bottom padding to see bottom of settings
-				const signaturedom = document.querySelector('.signature') as HTMLDivElement
-				signaturedom.style.paddingBottom = clientY + 60 + 'px'
-
-				// small enough ? close settings
-				if (clientY > window.innerHeight - 100) {
-					toggleDisplay(settingsDom)
-				}
-			}
-
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
-			settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
-
-			document.body?.addEventListener('mouseleave', (e) => {
-				if (has(settingsDom, 'shown') && window.innerWidth < 600) {
-					dragEnd(e)
-				}
-			})
-		}
-
-		const DrawerDragDebounce = debounce(() => {
-			;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
-			responsiveSettingsHeightDrag()
-		}, 600)
-
-		window.addEventListener('resize', () => {
-			DrawerDragDebounce()
-
-			// removes transition to prevent weird movement when changing to mobile styling
-			// /!\ this is dependent on toggleDisplay() to remove inline styling /!\
-			if (!settingsDom.style.transition) {
-				settingsDom.style.transition = 'none'
-			}
-		})
-
-		responsiveSettingsHeightDrag()
+	for (const elem of Object.values(contentList)) {
+		settingsDom.appendChild(elem)
 	}
 
-	fetch('settings.html').then((resp) => resp.text().then(settingsCreator))
+	traduction(settingsDom, data.lang)
+	signature(settingsDom)
+	initParams(data, settingsDom)
+	showall(data.showall, false, settingsDom)
+
+	document.body.appendChild(settingsDom)
+
+	//
+	// Events
+	//
+
+	// On settings changes, update export code
+	const isOnline = detectPlatform() === 'online'
+	const storageUpdate = () => updateExportJSON(settingsDom)
+	const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (isOnline) {
+		window.addEventListener('storage', storageUpdate)
+	} else {
+		chrome.storage.onChanged.addListener(storageUpdate)
+		window.addEventListener('beforeunload', unloadUpdate, { once: true })
+	}
+
+	function toggleDisplay(dom: HTMLElement) {
+		const isClosed = !dom?.classList.contains('shown')
+
+		dom?.classList.toggle('init', false)
+		dom?.classList.toggle('shown', isClosed)
+		domedit?.classList.toggle('pushed', isClosed)
+		dominterface?.classList.toggle('pushed', isClosed)
+		domshowsettings?.classList.toggle('shown', isClosed)
+
+		settingsDom.style.removeProperty('transform')
+		settingsDom.style.removeProperty('transition')
+	}
+
+	document.getElementById('skiptosettings')?.addEventListener('click', function () {
+		toggleDisplay(settingsDom)
+		settingsDom.scrollTo({ top: 0 })
+
+		setTimeout(() => {
+			const showall = settingsDom.querySelector('#i_showall') as HTMLButtonElement
+			showall.focus()
+		}, 10)
+	})
+
+	domshowsettings?.addEventListener('click', function () {
+		toggleDisplay(settingsDom)
+	})
+
+	window.addEventListener('keydown', async function (e) {
+		if (e.altKey && e.code === 'KeyS') {
+			console.clear()
+			console.log(localStorage)
+			console.log(await storage.get())
+		}
+
+		if (e.code === 'Escape') {
+			document.getElementById('editlink')?.classList.contains('shown') ? closeEditLink() : toggleDisplay(settingsDom)
+			return
+		}
+
+		if (e.code === 'Tab') {
+			document.body.classList.toggle('tabbing', true)
+			return
+		}
+	})
+
+	window.addEventListener('click', function (e) {
+		const path = e.composedPath() ?? [document.body]
+		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
+
+		const areSettingsShown = settingsDom?.classList.contains('shown')
+		const isEditlinkOpen = document.getElementById('editlink')?.classList.contains('shown')
+
+		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
+		const onInterface = pathIds.includes('interface')
+		const onEdit = pathIds.includes('editlink')
+
+		if (document.body.classList.contains('tabbing')) {
+			document.body?.classList.toggle('tabbing', false)
+		}
+
+		if (!onEdit && isEditlinkOpen) {
+			closeEditLink()
+		}
+
+		if ((onBody || onInterface) && areSettingsShown) {
+			toggleDisplay(settingsDom)
+		}
+	})
+
+	//
+	// Mobile settings height control
+
+	function responsiveSettingsHeightDrag() {
+		let firstPos = 0
+		let startTouchY = 0
+
+		function dragStart(e: Event) {
+			e.preventDefault()
+
+			// Get mouse / touch y position
+			if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
+			if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
+
+			// First time dragging, sets maximum y pos at which to block
+			if (firstPos === 0) firstPos = startTouchY
+
+			// Scrollbar padding control on windows & android
+			if (testOS.windows || testOS.android) {
+				settingsDom.style.width = `calc(100% - 10px)`
+				settingsDom.style.paddingRight = `10px`
+			}
+
+			// prevent scroll when dragging
+			settingsDom.style.overflow = `clip`
+
+			// Add mouse / touch moves events
+			window.addEventListener('touchmove', dragMove)
+			window.addEventListener('mousemove', dragMove)
+		}
+
+		function dragMove(e: Event) {
+			let clientY: number = 0
+
+			// Get mouse / touch y position
+			if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
+			if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
+
+			// element is below max height: move
+			if (clientY > 60) {
+				settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
+				settingsDom.style.transition = `transform .0s`
+			}
+		}
+
+		function dragEnd(e: Event) {
+			let clientY: number = 0
+
+			// Get mouse / touch y position
+			if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
+			if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
+
+			// Remove move events
+			window.removeEventListener('touchmove', dragMove)
+			window.removeEventListener('mousemove', dragMove)
+
+			// reset mouse / touch pos
+			startTouchY = 0
+
+			settingsDom.style.removeProperty('padding')
+			settingsDom.style.removeProperty('width')
+			settingsDom.style.removeProperty('overflow')
+
+			// Add bottom padding to see bottom of settings
+			const signaturedom = document.querySelector('.signature') as HTMLDivElement
+			signaturedom.style.paddingBottom = clientY + 60 + 'px'
+
+			// small enough ? close settings
+			if (clientY > window.innerHeight - 100) {
+				toggleDisplay(settingsDom)
+			}
+		}
+
+		const dragzone = settingsDom.querySelector('#mobile-drag-zone')
+		dragzone?.addEventListener('touchstart', dragStart, { passive: false })
+		dragzone?.addEventListener('mousedown', dragStart)
+		dragzone?.addEventListener('touchend', dragEnd, { passive: false })
+		dragzone?.addEventListener('mouseup', dragEnd)
+
+		document.body?.addEventListener('mouseleave', (e) => {
+			if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
+				dragEnd(e)
+			}
+		})
+	}
+
+	const DrawerDragDebounce = debounce(() => {
+		;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
+		responsiveSettingsHeightDrag()
+	}, 600)
+
+	window.addEventListener('resize', () => {
+		DrawerDragDebounce()
+
+		// removes transition to prevent weird movement when changing to mobile styling
+		// /!\ this is dependent on toggleDisplay() to remove inline styling /!\
+		if (!settingsDom.style.transition) {
+			settingsDom.style.transition = 'none'
+		}
+	})
+
+	responsiveSettingsHeightDrag()
 }

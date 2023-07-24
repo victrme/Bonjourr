@@ -1,3 +1,12 @@
+export type Clock = {
+	ampm: boolean
+	analog: boolean
+	seconds: boolean
+	style: string
+	timezone: string
+	face: string
+}
+
 export type Searchbar = {
 	on: boolean
 	opacity: number
@@ -38,7 +47,7 @@ export type Weather = {
 	}
 }
 
-export type Dynamic = {
+export type Unsplash = {
 	every: string
 	collection: string
 	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
@@ -68,29 +77,23 @@ export type MoveItem = {
 	text: string
 }
 
-type MoveItemList = {
-	[key in MoveKeys]?: MoveItem
-}
-
 export type Move = {
 	selection: keyof Move['layouts']
 	layouts: {
 		single: {
 			grid: [string][]
-			items: MoveItemList
+			items: { [key in MoveKeys]?: MoveItem }
 		}
 		double: {
 			grid: [string, string][]
-			items: MoveItemList
+			items: { [key in MoveKeys]?: MoveItem }
 		}
 		triple: {
 			grid: [string, string, string][]
-			items: MoveItemList
+			items: { [key in MoveKeys]?: MoveItem }
 		}
 	}
 }
-
-export type ClockFace = 'none' | 'number' | 'roman' | ' marks'
 
 export type HideOld = [[number, number], [number, number, number], [number], [number]]
 
@@ -109,6 +112,7 @@ export type Sync = {
 	quicklinks: boolean
 	time: boolean
 	main: boolean
+	pagegap: number
 	pagewidth: number
 	linksrow: number
 	linkstyle: string
@@ -125,18 +129,9 @@ export type Sync = {
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'
-	custom_time: number
-	custom_every: string
-	background_type: string
-	clock: {
-		ampm: boolean
-		analog: boolean
-		seconds: boolean
-		timezone: string
-		face: ClockFace
-		style: string
-	}
-	dynamic: Dynamic
+	background_type: 'local' | 'unsplash'
+	clock: Clock
+	unsplash: Unsplash
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes

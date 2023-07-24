@@ -29,7 +29,7 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 [Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0) •
 [Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) •
 [Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid) •
-[Safari](https://bonjourr.fr/use-bonjourr#-safari-desktop) •
+[Safari](https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236) •
 [or try it online](https://online.bonjourr.fr)
 
 </div>
@@ -48,11 +48,11 @@ Here's a list of things you can do to help us out:
 
 -   Give us feedback (positive and negative!) on how you use Bonjourr
 -   Suggest new features or improvements of the existing ones
--   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/profiles)
--   [Translate](https://bonjourr.fr/help#-translations) to a new language, or complete an existing one
+-   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/docs/profiles)
+-   [Translate](https://bonjourr.fr/docs/help/#translations) to a new language, or complete an existing one
 -   Contribute to [our website](https://github.com/morceaudebois/bonjourr.fr)
 -   Add new quotes (especially non english/french) to [the API](https://github.com/victrme/i18n-quotes)
--   Suggest new [Unsplash photos](https://bonjourr.fr/misc#-about-backgrounds)
+-   Suggest new [Unsplash photos](https://bonjourr.fr/docs/overview/#backgrounds)
 
 <br>
 
@@ -81,23 +81,45 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 Running Bonjourr locally
 
+Clone this repository
+```bash
+git clone https://github.com/victrme/Bonjourr
+cd Bonjourr
+```
+  
+Create a `.env.json` for your own API keys and endpoints 
+```jsonc
+{
+  "UNSPLASH_API": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "FAVICON_API_1": "https://example-favicon-fetcher-api.com/",
+  "FAVICON_API_2": "https://example-favicon-fetcher-api-fallback.com/",
+  "QUOTES_API_1": "https://example-i18n-quotes-api.com/",
+  "QUOTES_API_2": "https://example-i18n-quotes-api-fallback.com/",
+  "WEATHER_1": "openweathermap_api_xxxxxxxxxxxxx",
+  "WEATHER_2": "openweathermap_api_xxxxxxxxxxxxx",
+  "WEATHER_3": "openweathermap_api_xxxxxxxxxxxxx",
+  "WEATHER_4": "openweathermap_api_xxxxxxxxxxxxx"
+}
+```
+
+Then [install pnpm](https://pnpm.io/installation) on your system
+```bash
+# In root directory
+pnpm install
+
+# Production build for all platforms in /release/
+pnpm build
+
+# These commands watch changes for each platforms
+# You need to save a .ts or .scss file to trigger a change
+pnpm chrome
+pnpm edge
+pnpm firefox
+pnpm safari
+pnpm online
+```
+
 ### Chrome
-
-#### Initialize
-
--   [Install npm](https://nodejs.org/en/download/)
--   `npm install -g pnpm`
--   `pnpm install`
-
-#### Build
-
--   `pnpm run build`
-
-#### Run & watch
-
--   `pnpm run chrome`
-
-#### Browser extension launch
 
 -   Go to `chrome://extensions`
 -   Enable Developer mode
@@ -105,27 +127,11 @@ If you feel like we've earned it and you want to support independant open source
 
 ### Firefox
 
--   Follow the initialize and build steps from Chrome
-
-#### Run & watch
-
--   `pnpm run firefox`
-
-#### Browser extension launch
-
 -   Go to `about:debugging#/runtime/this-firefox`
 -   Select "Load temporary Add-on"
 -   Select `manifest.json` in `/release/firefox` folder
 
 ### Edge
-
--   Follow the initialize and build steps from Chrome
-
-#### Run & watch
-
--   `pnpm run edge`
-
-#### Browser extension launch
 
 -   Go to `edge://extensions`
 -   Enable Developer mode
@@ -137,17 +143,13 @@ If you feel like we've earned it and you want to support independant open source
 
 -   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
 
-### Online
+### Online (web version)
 
--   Follow the initialize and build steps from Chrome
-
-#### Run & watch
-
--   `pnpm run online`
-
-#### Web server launch
-
--   Open a live server from `/release/online` folder
+```bash
+python -m http.server
+```
+- Open a live server, for example using python
+- Go to http://localhost:8000/release/online/
 
 <br>
 
@@ -178,12 +180,13 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇸🇰 Slovak translation** · Roman Bartík
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
--   **🇪🇸 Spanish translation** · José Alberto · [GitHub](https://github.com/joatb)
+-   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
 -   **🇩🇰 Danish translation** · kar1 · [GitHub](https://github.com/kar1)
 -   **🇫🇮 Finnish translation** · jaajko · [Jaajko](https://jaajko.fi) · [GitHub](https://github.com/jaajko)
 -   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
+-   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
 -   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
