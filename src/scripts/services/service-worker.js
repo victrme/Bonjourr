@@ -28,10 +28,39 @@ const weatherList = [
 	'overcastclouds',
 ]
 
-const addWeatherIcons = (time) => weatherList.forEach((elem) => filesToChache.push(`/src/assets/weather/${time}/${elem}.png`))
+const langs = [
+	'en',
+	'fr',
+	'sk',
+	'sv',
+	'pl',
+	'pt_BR',
+	'nl',
+	'ru',
+	'zh_CN',
+	'zh_HK',
+	'de',
+	'it',
+	'es_ES',
+	'tr',
+	'uk',
+	'id',
+	'da',
+	'fi',
+	'hu',
+	'sr',
+	'sr_YU',
+	'gr',
+]
 
-addWeatherIcons('day')
-addWeatherIcons('night')
+langs.forEach((lang) => {
+	filesToChache.push(`/_locales/${lang}/translations.json`)
+})
+
+weatherList.forEach((elem) => {
+	filesToChache.push(`/src/assets/weather/day/${elem}.png`)
+	filesToChache.push(`/src/assets/weather/night/${elem}.png`)
+})
 
 //
 //
