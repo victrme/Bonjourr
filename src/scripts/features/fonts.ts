@@ -203,10 +203,25 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	if (isChangingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLSelectElement
 		const fontlist = (await fetchFontList()) ?? []
-		const newfont = await getNewFont(fontlist, family)
-		const fontface = await fetchFontface(newfont.url)
+		const isGoogleFont = Object.values(fontlist).some((list) => list.family === family)
+		let fontface = ''
+		let newfont = {
+			url: '',
+			family: '',
+			weight: '400',
+			availWeights: ['200', '300', '400', '500', '600', '700', '800', '900'],
+		}
 
-		if (fontface) {
+		if (isGoogleFont) {
+			newfont = await getNewFont(fontlist, family)
+			fontface = (await fetchFontface(newfont.url)) ?? ''
+		} else {
+			if (document.fonts.check(`16px "${family}"`)) {
+				newfont.family = family
+			}
+		}
+
+		if (newfont.family) {
 			setFamily(family, fontface)
 			setWeight(family, '400')
 			i_weight.value = '400'
@@ -246,7 +261,7 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 			if (init.family) {
 				let fontface = localStorage.fontface
 
-				if (!fontface?.includes('@font-face')) {
+				if (init.url && !fontface?.includes('@font-face')) {
 					fontface = await fetchFontface(init.url)
 				}
 
