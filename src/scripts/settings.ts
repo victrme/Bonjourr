@@ -30,6 +30,7 @@ import {
 	stringMaxSize,
 	detectPlatform,
 	turnRefreshButton,
+	handleGeolOption,
 } from './utils'
 
 import {
@@ -217,17 +218,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// weather settings
-	const i_geol = paramId('i_geol') as HTMLInputElement
-	if (data.weather && Object.keys(data.weather).length > 0) {
-		const isGeolocation = data.weather?.location?.length > 0
-		let cityName = data.weather?.city || 'City'
-		paramId('i_city').setAttribute('placeholder', cityName)
-		paramId('sett_city')?.classList.toggle('shown', !isGeolocation)
-		i_geol.checked = isGeolocation
-	} else {
-		paramId('sett_city')?.classList.toggle('shown', true)
-		i_geol.checked = true
-	}
+	handleGeolOption(data.weather, settingsDom)
 
 	// CSS height control
 	if (data.cssHeight) {
@@ -494,25 +485,17 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	//
 	// Weather
-
-	const weatherDebounce = debounce(() => weather(null, { is: 'city' }), 1600)
-
-	paramId('i_city').onkeyup = (e: KeyboardEvent) => {
-		weatherDebounce()
-
-		if (e.code === 'Enter') {
-			weather(null, { is: 'city' })
-			weatherDebounce.cancel()
-		}
-	}
-
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
 		toggleWidgetsDisplay({ main: this.checked }, true)
 	})
 
+	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
+		weather(null, { is: 'city' })
+	})
+
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'geol', checked: this.checked, elem: this })
+		weather(null, { is: 'geol', elem: this })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {

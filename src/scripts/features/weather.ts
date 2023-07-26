@@ -1,9 +1,28 @@
 import { sunTime } from '..'
-import storage from '../storage'
-import { Sync, Weather } from '../types/sync'
-import { stringMaxSize } from '../utils'
+import { stringMaxSize, handleGeolOption } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
+import storage from '../storage'
+
+import { Sync, Weather } from '../types/sync'
+
+type GeolAPI = {
+	city: string
+	latitude: string
+	longitude: string
+	country: { code: string }
+}
+
+async function getGeolocation(): Promise<[number, number] | undefined> {
+	const location: [number, number] | undefined = await new Promise((resolve) =>
+		navigator.geolocation.getCurrentPosition(
+			(geo) => resolve([geo.coords.latitude, geo.coords.longitude]),
+			() => resolve(undefined)
+		)
+	)
+
+	return location
+}
 
 export default function weather(
 	init: Sync | null,
@@ -135,66 +154,25 @@ export default function weather(
 	}
 
 	async function initWeather(data: Weather) {
-		async function getInitialPositionFromIpapi() {
-			try {
-				const ipapi = await fetch('https://ipapi.co/json')
-
-				if (ipapi.ok) {
-					const { error, city, country, latitude, longitude } = await ipapi.json()
-
-					if (!error) {
-						return {
-							city: city,
-							ccode: country,
-							location: [latitude, longitude],
-						}
-					}
-				}
-			} catch (error) {
-				return { city: 'Paris', ccode: 'FR' }
-			}
+		try {
+			const geol = (await (await fetch('https://geol.netlify.app/')).json()) as GeolAPI
+			data.city = geol.city
+			data.ccode = geol.country.code
+			data.location = [parseFloat(geol.latitude), parseFloat(geol.longitude)]
+		} catch (_) {
+			console.warn('Cannot get geol')
+			data.city = 'Paris'
+			data.ccode = 'FR'
 		}
 
-		// Then use this as callback in Geolocation request
-		async function setWeatherAfterGeolocation(location?: [number, number]) {
-			data = {
-				...data,
-				...(await getInitialPositionFromIpapi()), // get location + city from ipapi
-			}
+		data.location = (await getGeolocation()) ?? []
+		data = await request(data)
 
-			if (location) {
-				data.location = location // replace location if geoloc is available
-			}
+		console.log(data)
 
-			// Request API with all infos available
-			data = await request(data)
-
-			displayWeather(data)
-			storage.set({ weather: data })
-
-			setTimeout(() => {
-				// If settings is available, all other inputs are
-				if (document.getElementById('settings')) {
-					const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-					const i_city = document.getElementById('i_city') as HTMLInputElement
-					const i_geol = document.getElementById('i_geol') as HTMLInputElement
-					const sett_city = document.getElementById('sett_city') as HTMLDivElement
-
-					i_ccode.value = data.ccode
-					i_city.setAttribute('placeholder', data.city)
-
-					if (location) {
-						sett_city.classList.remove('shown')
-						i_geol.checked = true
-					}
-				}
-			}, 150)
-		}
-
-		navigator.geolocation.getCurrentPosition(
-			(pos) => setWeatherAfterGeolocation([pos.coords.latitude, pos.coords.longitude]), // Accepted
-			() => setWeatherAfterGeolocation() // Rejected
-		)
+		displayWeather(data)
+		storage.set({ weather: data })
+		setTimeout(() => handleGeolOption(data), 400)
 	}
 
 	function displayWeather(data: Weather) {
@@ -323,7 +301,6 @@ export default function weather(
 	async function updatesWeather() {
 		const i_city = document.getElementById('i_city') as HTMLInputElement
 		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-		const sett_city = document.getElementById('sett_city') as HTMLInputElement
 
 		let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
 
@@ -364,32 +341,26 @@ export default function weather(
 			}
 
 			case 'geol': {
-				weather.location = []
+				const input = event.elem as HTMLInputElement | undefined
+				const checked = input?.checked ?? false
 
-				if (event.checked) {
-					navigator.geolocation.getCurrentPosition(
-						async (pos) => {
-							sett_city?.classList.toggle('shown', false)
-							weather.location = [pos.coords.latitude, pos.coords.longitude]
-
-							weather = await request(weather)
-							storage.set({ weather: weather })
-							displayWeather(weather)
-						},
-						() => {
-							// Désactive geolocation if refused
-							setTimeout(() => (event.checked = false), 400)
-						}
-					)
-					return
-				} else {
-					i_city.setAttribute('placeholder', weather.city)
-					sett_city?.classList.toggle('shown', true)
-					i_ccode.value = weather.ccode
-
+				if (!checked || !input) {
 					weather.location = []
 					weather = await request(weather)
+					handleGeolOption(weather)
+				} else {
+					const location = await getGeolocation()
+
+					if (location) {
+						weather.location = location
+						weather = await request(weather)
+						handleGeolOption(weather)
+					} else {
+						input.checked = true
+						setTimeout(() => handleGeolOption(weather), 300)
+					}
 				}
+
 				break
 			}
 
