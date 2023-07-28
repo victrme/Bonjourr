@@ -1,7 +1,7 @@
-import { sunTime } from '..'
 import { stringMaxSize, handleGeolOption } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
+import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
