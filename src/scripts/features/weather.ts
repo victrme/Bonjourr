@@ -5,6 +5,7 @@ import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
+import { OWMCurrent, OWMForecast } from '../types/openweathermap'
 
 type GeolAPI = {
 	city: string
@@ -69,35 +70,27 @@ export default function weather(
 			return storage
 		}
 
-		let currentResponse: any
-		let forecastResponse: any
-		let currentJSON: any
-		let forecastJSON: any
+		let current: OWMCurrent
+		let forecast: OWMForecast
 
-		try {
-			currentResponse = await fetch(getRequestURL(false))
-			forecastResponse = await fetch(getRequestURL(true))
-			currentJSON = await currentResponse.json()
-			forecastJSON = await forecastResponse.json()
-		} catch (error) {
-			return storage
-		}
+		current = await (await fetch(getRequestURL(false))).json()
+		if (current?.cod !== 200) return storage
 
-		if (!currentResponse.ok || !forecastResponse.ok) {
-			return storage // API not ok ? nothing was saved
-		}
+		forecast = await (await fetch(getRequestURL(true))).json()
+		if (forecast?.cod !== '200') return storage
 
 		//
 		// Current API call
 		//
 
-		const { temp, feels_like, temp_max } = currentJSON.main
-		const { sunrise, sunset } = currentJSON.sys
-		const { description, id } = currentJSON.weather[0]
+		const { temp, feels_like, temp_max } = current.main
+		const { sunrise, sunset } = current.sys
+		const { description, id } = current.weather[0]
+		const lastCall = Math.floor(new Date().getTime() / 1000)
 
 		storage = {
 			...storage,
-			lastCall: Math.floor(new Date().getTime() / 1000),
+			lastCall,
 			lastState: {
 				temp,
 				feels_like,
@@ -125,7 +118,7 @@ export default function weather(
 		}
 
 		// Get the highest temp for the specified day
-		forecastJSON.list.forEach((elem: any) => {
+		forecast.list.forEach((elem: any) => {
 			if (new Date(elem.dt * 1000).getDate() === forecastDay)
 				maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
 		})
@@ -167,8 +160,6 @@ export default function weather(
 
 		data.location = (await getGeolocation()) ?? []
 		data = await request(data)
-
-		console.log(data)
 
 		displayWeather(data)
 		storage.set({ weather: data })
@@ -320,21 +311,15 @@ export default function weather(
 					return false
 				}
 
+				i_city.classList.add('loads')
 				weather.ccode = i_ccode.value
 				weather.city = stringMaxSize(i_city.value, 64)
-
-				const inputAnim = i_city.animate([{ opacity: 1 }, { opacity: 0.6 }], {
-					direction: 'alternate',
-					easing: 'linear',
-					duration: 800,
-					iterations: Infinity,
-				})
 
 				weather = await request(weather)
 
 				i_city.value = ''
 				i_city.blur()
-				inputAnim.cancel()
+				i_city.classList.remove('loads')
 				i_city.setAttribute('placeholder', weather.city)
 
 				break
