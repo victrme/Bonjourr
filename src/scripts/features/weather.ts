@@ -370,11 +370,11 @@ async function weatherCacheControl(data: Weather) {
 
 	const now = Math.floor(new Date().getTime() / 1000)
 	const isThirtyMinutesLater = now > data.lastCall + 1800
-	const hasGeol = data.location.length > 2
+	const hasGeol = data.location.length === 2
 
 	if (navigator.onLine && isThirtyMinutesLater) {
 		if (hasGeol) {
-			data.location = (await getGeolocation()) ?? data.location
+			data.location = (await getGeolocation()) ?? []
 		}
 
 		data = await request(data)
