@@ -363,22 +363,25 @@ function displayWeather(data: Weather) {
 }
 
 async function weatherCacheControl(data: Weather) {
-	const date = new Date()
-	const now = Math.floor(date.getTime() / 1000)
-
-	if (typeof data.lastCall === 'number') {
-		// Current: 30 mins
-		if (navigator.onLine && (now > data.lastCall + 1800 || sessionStorage.lang)) {
-			sessionStorage.removeItem('lang')
-			data = await request(data)
-			storage.set({ weather: data })
-		}
-
-		displayWeather(data)
+	if (typeof data.lastCall !== 'number') {
+		initWeather(data)
+		return
 	}
 
-	// First startup
-	else initWeather(data)
+	const now = Math.floor(new Date().getTime() / 1000)
+	const isThirtyMinutesLater = now > data.lastCall + 1800
+	const hasGeol = data.location.length > 2
+
+	if (navigator.onLine && isThirtyMinutesLater) {
+		if (hasGeol) {
+			data.location = (await getGeolocation()) ?? data.location
+		}
+
+		data = await request(data)
+		storage.set({ weather: data })
+	}
+
+	displayWeather(data)
 }
 
 function forecastVisibilityControl(value: string = 'auto') {

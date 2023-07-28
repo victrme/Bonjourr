@@ -866,12 +866,12 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
-	sessionStorage.lang = nextLang // Session pour le weather
 	storage.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
 	const data = ((await storage.get()) as Sync) ?? {}
 	data.lang = nextLang
+	data.weather.lastCall = 0
 	weather(data)
 	clock(data)
 	quotes(data)
