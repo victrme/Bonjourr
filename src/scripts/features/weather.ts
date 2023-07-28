@@ -14,6 +14,125 @@ type GeolAPI = {
 	country: { code: string }
 }
 
+type WeatherUpdate = {
+	forecast?: string
+	moreinfo?: string
+	provider?: string
+	units?: boolean
+	geol?: boolean
+	city?: string
+	temp?: string
+	unhide?: true
+}
+
+// Checks every 5 minutes if weather needs update
+setInterval(async () => {
+	if (navigator.onLine) {
+		const data = await storage.get(['weather', 'hide'])
+		if (data) weather(data as Sync)
+	}
+}, 300000)
+
+export default function weather(init: Sync | null, update?: WeatherUpdate) {
+	if (update) {
+		updatesWeather(update)
+		return
+	}
+
+	if (init && (!init.hide?.weatherdesc || !init.hide?.weathericon)) {
+		try {
+			forecastVisibilityControl(init.weather.forecast)
+			weatherCacheControl(init.weather)
+		} catch (e) {
+			errorMessage(e)
+		}
+	}
+}
+
+async function updatesWeather(update: WeatherUpdate) {
+	let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
+
+	if (!weather || !hide) {
+		return
+	}
+
+	if (update.units !== undefined) {
+		weather.unit = update.units ? 'imperial' : 'metric'
+		weather = await request(weather)
+	}
+
+	if (update.forecast) {
+		weather.forecast = update.forecast
+		forecastVisibilityControl(update.forecast)
+	}
+
+	if (update.temp) {
+		weather.temperature = update.temp ?? 'actual'
+	}
+
+	if (update.provider) {
+		weather.provider = update.provider
+	}
+
+	if (update.moreinfo) {
+		const providerdom = document.getElementById('weather_provider')
+		providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
+		weather.moreinfo = update.moreinfo
+	}
+
+	if (update.unhide) {
+		const { weatherdesc, weathericon } = hide || {}
+		if (weatherdesc && weathericon) {
+			forecastVisibilityControl(weather.forecast)
+			weatherCacheControl(weather)
+		}
+	}
+
+	if (update.city) {
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+
+		if (update.city.length < 3 || !navigator.onLine) {
+			return false
+		}
+
+		i_city.classList.add('loads')
+		weather.ccode = i_ccode.value
+		weather.city = stringMaxSize(update.city, 64)
+
+		weather = await request(weather)
+
+		i_city.value = ''
+		i_city.blur()
+		i_city.classList.remove('loads')
+		i_city.setAttribute('placeholder', weather.city)
+	}
+
+	if (update.geol !== undefined) {
+		const i_geol = document.getElementById('i_geol') as HTMLInputElement
+
+		if (!update.geol || !i_geol) {
+			weather.location = []
+			weather = await request(weather)
+			handleGeolOption(weather)
+		} else {
+			const location = await getGeolocation()
+
+			if (location) {
+				weather.location = location
+				weather = await request(weather)
+				handleGeolOption(weather)
+			} else {
+				i_geol.checked = true
+				setTimeout(() => handleGeolOption(weather), 300)
+			}
+		}
+	}
+
+	storage.set({ weather })
+	displayWeather(weather)
+}
+
 async function getGeolocation(): Promise<[number, number] | undefined> {
 	const location: [number, number] | undefined = await new Promise((resolve) =>
 		navigator.geolocation.getCurrentPosition(
@@ -25,389 +144,250 @@ async function getGeolocation(): Promise<[number, number] | undefined> {
 	return location
 }
 
-export default function weather(
-	init: Sync | null,
-	event?: {
-		is: 'city' | 'geol' | 'units' | 'forecast' | 'temp' | 'unhide' | 'moreinfo' | 'provider'
-		checked?: boolean
-		value?: string
-		elem?: Element
-	}
-) {
-	const date = new Date()
+function createRequestQueries(data: Weather) {
+	const apis = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4']
+	const key = apis[Math.ceil(Math.random() * 4) - 1]
+	const isGeolocated = data.location?.length === 2
+	let lang = document.documentElement.getAttribute('lang')
+	let queries = ''
 
-	async function request(storage: Weather): Promise<Weather> {
-		function getRequestURL(isForecast: boolean) {
-			const apis = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4']
-			const key = apis[Math.ceil(Math.random() * 4) - 1]
-			const isGeolocated = storage.location?.length === 2
+	// Openweathermap country code for traditional chinese is tw, greek is el
+	if (lang === 'zh_HK') lang = 'zh_TW'
+	if (lang === 'gr') lang = 'el'
 
-			let base = 'https://api.openweathermap.org/data/2.5/'
-			let lang = document.documentElement.getAttribute('lang')
+	queries += '?units=' + (data.unit ?? 'metric')
+	queries += '&lang=' + lang
 
-			// Openweathermap country code for traditional chinese is tw, greek is el
-			if (lang === 'zh_HK') lang = 'zh_TW'
-			if (lang === 'gr') lang = 'el'
-
-			base += isForecast ? 'forecast/' : 'weather/'
-			base += '?units=' + (storage.unit ?? 'metric')
-			base += '&lang=' + lang
-
-			if (isGeolocated) {
-				base += '&lat=' + storage.location[0]
-				base += '&lon=' + storage.location[1]
-			} else {
-				base += '&q=' + encodeURI(storage.city ?? 'Paris')
-				base += ',' + storage.ccode ?? 'fr'
-			}
-
-			base += '&appid=' + atob(key)
-
-			return base
-		}
-
-		if (!navigator.onLine) {
-			return storage
-		}
-
-		let current: OWMCurrent
-		let forecast: OWMForecast
-
-		current = await (await fetch(getRequestURL(false))).json()
-		if (current?.cod !== 200) return storage
-
-		forecast = await (await fetch(getRequestURL(true))).json()
-		if (forecast?.cod !== '200') return storage
-
-		//
-		// Current API call
-		//
-
-		const { temp, feels_like, temp_max } = current.main
-		const { sunrise, sunset } = current.sys
-		const { description, id } = current.weather[0]
-		const lastCall = Math.floor(new Date().getTime() / 1000)
-
-		storage = {
-			...storage,
-			lastCall,
-			lastState: {
-				temp,
-				feels_like,
-				temp_max,
-				sunrise,
-				sunset,
-				description,
-				icon_id: id,
-			},
-		}
-
-		//
-		// Forecast API call
-		//
-
-		const thisdate = new Date()
-		const todayHour = thisdate.getHours()
-		let forecastDay = thisdate.getDate()
-		let maxTempFromList = -273.15
-
-		// Late evening forecast for tomorrow
-		if (todayHour > 18) {
-			const tomorrow = thisdate.setDate(thisdate.getDate() + 1)
-			forecastDay = new Date(tomorrow).getDate()
-		}
-
-		// Get the highest temp for the specified day
-		forecast.list.forEach((elem: any) => {
-			if (new Date(elem.dt * 1000).getDate() === forecastDay)
-				maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
-		})
-
-		storage.fcHigh = Math.round(maxTempFromList)
-
-		return storage
+	if (isGeolocated) {
+		queries += '&lat=' + data.location[0]
+		queries += '&lon=' + data.location[1]
+	} else {
+		queries += '&q=' + encodeURI(data.city ?? 'Paris')
+		queries += ',' + data.ccode ?? 'fr'
 	}
 
-	async function weatherCacheControl(data: Weather) {
-		const now = Math.floor(date.getTime() / 1000)
+	queries += '&appid=' + atob(key)
 
-		if (typeof data.lastCall === 'number') {
-			// Current: 30 mins
-			if (navigator.onLine && (now > data.lastCall + 1800 || sessionStorage.lang)) {
-				sessionStorage.removeItem('lang')
-				data = await request(data)
-				storage.set({ weather: data })
-			}
-
-			displayWeather(data)
-		}
-
-		// First startup
-		else initWeather(data)
-	}
-
-	async function initWeather(data: Weather) {
-		try {
-			const geol = (await (await fetch('https://geol.netlify.app/')).json()) as GeolAPI
-			data.city = geol.city
-			data.ccode = geol.country.code
-			data.location = [parseFloat(geol.latitude), parseFloat(geol.longitude)]
-		} catch (_) {
-			console.warn('Cannot get geol')
-			data.city = 'Paris'
-			data.ccode = 'FR'
-		}
-
-		data.location = (await getGeolocation()) ?? []
-		data = await request(data)
-
-		displayWeather(data)
-		storage.set({ weather: data })
-		setTimeout(() => handleGeolOption(data), 400)
-	}
-
-	function displayWeather(data: Weather) {
-		const currentState = data.lastState
-		const current = document.getElementById('current')
-		const forecast = document.getElementById('forecast')
-		const tempContainer = document.getElementById('tempContainer')
-		const weatherdom = document.getElementById('weather')
-
-		if (!currentState) {
-			return
-		}
-
-		const handleDescription = () => {
-			const desc = currentState.description
-			const feels = Math.floor(currentState.feels_like)
-			const actual = Math.floor(currentState.temp)
-			let tempText = ''
-
-			switch (data.temperature) {
-				case 'feelslike': {
-					tempText = `${tradThis('It currently feels like')} ${feels}°`
-					break
-				}
-
-				case 'both': {
-					tempText = `${tradThis('It is currently')} ${actual}°, ${tradThis('feels like')} ${feels}°`
-					break
-				}
-
-				default: {
-					tempText = `${tradThis('It is currently')} ${actual}°`
-				}
-			}
-
-			const iconText = tempContainer?.querySelector('p')
-
-			if (current && iconText) {
-				current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
-				iconText.textContent = actual + '°'
-			}
-		}
-
-		const handleWidget = () => {
-			let filename = 'lightrain'
-			const categorieIds: [number[], string][] = [
-				[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
-				[[300, 301, 302, 310], 'lightdrizzle'],
-				[[312, 313, 314, 321], 'showerdrizzle'],
-				[[500, 501, 502, 503], 'lightrain'],
-				[[504, 520, 521, 522], 'showerrain'],
-				[[511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622], 'snow'],
-				[[701, 711, 721, 731, 741, 751, 761, 762, 771, 781], 'mist'],
-				[[800], 'clearsky'],
-				[[801], 'fewclouds'],
-				[[802], 'brokenclouds'],
-				[[803, 804], 'overcastclouds'],
-			]
-
-			categorieIds.forEach((category) => {
-				if (category[0].includes(currentState.icon_id as never)) filename = category[1]
-			})
-
-			if (!tempContainer) {
-				return
-			}
-
-			const icon = document.getElementById('weather-icon') as HTMLImageElement
-			const { now, rise, set } = sunTime()
-			const timeOfDay = now < rise || now > set ? 'night' : 'day'
-			const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
-
-			icon.src = iconSrc
-		}
-
-		const handleForecast = () => {
-			if (forecast) {
-				let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
-				day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
-
-				forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}°${day}.`
-				forecast.classList.remove('wait')
-			}
-		}
-
-		const handleMoreInfo = () => {
-			const noDetails = !data.moreinfo || data.moreinfo === 'none'
-			const emptyCustom = data.moreinfo === 'custom' && !data.provider
-
-			if (noDetails || emptyCustom) {
-				weatherdom?.removeAttribute('href')
-				return
-			}
-
-			const URLs = {
-				msnw: 'https://www.msn.com/en-us/weather/forecast/',
-				yhw: 'https://www.yahoo.com/news/weather/',
-				windy: 'https://www.windy.com/',
-				custom: data.provider ?? '',
-			}
-
-			if ((data.moreinfo || '') in URLs) {
-				weatherdom?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
-			}
-		}
-
-		handleWidget()
-		handleDescription()
-		handleForecast()
-		handleMoreInfo()
-
-		current?.classList.remove('wait')
-		tempContainer?.classList.remove('wait')
-	}
-
-	function forecastVisibilityControl(value: string = 'auto') {
-		const forcastdom = document.getElementById('forecast')
-		let isTimeForForecast = false
-
-		if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
-		else isTimeForForecast = value === 'always'
-
-		forcastdom?.classList.toggle('shown', isTimeForForecast)
-	}
-
-	async function updatesWeather() {
-		const i_city = document.getElementById('i_city') as HTMLInputElement
-		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-
-		let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
-
-		if (!weather || !hide) {
-			return
-		}
-
-		switch (event?.is) {
-			case 'units': {
-				weather.unit = event.checked ? 'imperial' : 'metric'
-				weather = await request(weather)
-				break
-			}
-
-			case 'city': {
-				if (i_city.value.length < 3 || !navigator.onLine) {
-					return false
-				}
-
-				i_city.classList.add('loads')
-				weather.ccode = i_ccode.value
-				weather.city = stringMaxSize(i_city.value, 64)
-
-				weather = await request(weather)
-
-				i_city.value = ''
-				i_city.blur()
-				i_city.classList.remove('loads')
-				i_city.setAttribute('placeholder', weather.city)
-
-				break
-			}
-
-			case 'geol': {
-				const input = event.elem as HTMLInputElement | undefined
-				const checked = input?.checked ?? false
-
-				if (!checked || !input) {
-					weather.location = []
-					weather = await request(weather)
-					handleGeolOption(weather)
-				} else {
-					const location = await getGeolocation()
-
-					if (location) {
-						weather.location = location
-						weather = await request(weather)
-						handleGeolOption(weather)
-					} else {
-						input.checked = true
-						setTimeout(() => handleGeolOption(weather), 300)
-					}
-				}
-
-				break
-			}
-
-			case 'forecast': {
-				weather.forecast = event.value ?? 'auto'
-				forecastVisibilityControl(event.value)
-				break
-			}
-
-			case 'temp': {
-				weather.temperature = event.value ?? 'actual'
-				break
-			}
-
-			case 'moreinfo': {
-				const providerdom = document.getElementById('weather_provider')
-				providerdom?.classList.toggle('shown', event.value === 'custom')
-				weather.moreinfo = event.value
-				break
-			}
-
-			case 'provider': {
-				weather.provider = event.value
-				break
-			}
-
-			case 'unhide': {
-				const { weatherdesc, weathericon } = hide || {}
-				if (weatherdesc && weathericon) {
-					forecastVisibilityControl(weather.forecast)
-					weatherCacheControl(weather)
-				}
-				return
-			}
-		}
-
-		storage.set({ weather })
-		displayWeather(weather)
-	}
-
-	// Event & Init
-	if (event) {
-		updatesWeather()
-		return
-	}
-
-	if (!init || (init.hide?.weatherdesc && init.hide?.weathericon)) {
-		return
-	}
-
-	try {
-		forecastVisibilityControl(init.weather.forecast)
-		weatherCacheControl(init.weather)
-	} catch (e) {
-		errorMessage(e)
-	}
+	return queries
 }
 
-// Checks every 5 minutes if weather needs update
-setInterval(async () => {
-	if (navigator.onLine) {
-		const data = await storage.get(['weather', 'hide'])
-		if (data) weather(data as Sync)
+async function request(data: Weather): Promise<Weather> {
+	if (!navigator.onLine) {
+		return data
 	}
-}, 300000)
+
+	let current: OWMCurrent
+	let forecast: OWMForecast
+	const queries = createRequestQueries(data)
+
+	current = await (await fetch(`https://api.openweathermap.org/data/2.5/weather/${queries}`)).json()
+	if (current?.cod !== 200) return data
+
+	forecast = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast/${queries}`)).json()
+	if (forecast?.cod !== '200') return data
+
+	//
+	// Current API call
+	//
+
+	const { temp, feels_like, temp_max } = current.main
+	const { sunrise, sunset } = current.sys
+	const { description, id } = current.weather[0]
+	const lastCall = Math.floor(new Date().getTime() / 1000)
+
+	data = {
+		...data,
+		lastCall,
+		lastState: {
+			temp,
+			feels_like,
+			temp_max,
+			sunrise,
+			sunset,
+			description,
+			icon_id: id,
+		},
+	}
+
+	//
+	// Forecast API call
+	//
+
+	const date = new Date()
+	const todayHour = date.getHours()
+	let forecastDay = date.getDate()
+	let maxTempFromList = -273.15
+
+	// Late evening forecast for tomorrow
+	if (todayHour > 18) {
+		const tomorrow = date.setDate(date.getDate() + 1)
+		forecastDay = new Date(tomorrow).getDate()
+	}
+
+	// Get the highest temp for the specified day
+	forecast.list.forEach((elem: any) => {
+		if (new Date(elem.dt * 1000).getDate() === forecastDay)
+			maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
+	})
+
+	data.fcHigh = Math.round(maxTempFromList)
+
+	return data
+}
+
+async function initWeather(data: Weather) {
+	try {
+		const geol = (await (await fetch('https://geol.netlify.app/')).json()) as GeolAPI
+		data.city = geol.city
+		data.ccode = geol.country.code
+		data.location = [parseFloat(geol.latitude), parseFloat(geol.longitude)]
+	} catch (_) {
+		console.warn('Cannot get geol')
+		data.city = 'Paris'
+		data.ccode = 'FR'
+	}
+
+	data.location = (await getGeolocation()) ?? []
+	data = await request(data)
+
+	displayWeather(data)
+	storage.set({ weather: data })
+	setTimeout(() => handleGeolOption(data), 400)
+}
+
+function displayWeather(data: Weather) {
+	const currentState = data.lastState
+	const current = document.getElementById('current')
+	const forecast = document.getElementById('forecast')
+	const tempContainer = document.getElementById('tempContainer')
+	const weatherdom = document.getElementById('weather')
+	const date = new Date()
+
+	if (!currentState) {
+		return
+	}
+
+	const handleDescription = () => {
+		const desc = currentState.description
+		const feels = Math.floor(currentState.feels_like)
+		const actual = Math.floor(currentState.temp)
+
+		let tempText = `${tradThis('It is currently')} ${actual}°`
+
+		if (data.temperature === 'feelslike') {
+			tempText = `${tradThis('It currently feels like')} ${feels}°`
+		}
+
+		if (data.temperature === 'both') {
+			tempText = `${tradThis('It currently feels like')} ${feels}°`
+		}
+
+		const iconText = tempContainer?.querySelector('p')
+
+		if (current && iconText) {
+			current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
+			iconText.textContent = actual + '°'
+		}
+	}
+
+	const handleWidget = () => {
+		let filename = 'lightrain'
+		const categorieIds: [number[], string][] = [
+			[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
+			[[300, 301, 302, 310], 'lightdrizzle'],
+			[[312, 313, 314, 321], 'showerdrizzle'],
+			[[500, 501, 502, 503], 'lightrain'],
+			[[504, 520, 521, 522], 'showerrain'],
+			[[511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622], 'snow'],
+			[[701, 711, 721, 731, 741, 751, 761, 762, 771, 781], 'mist'],
+			[[800], 'clearsky'],
+			[[801], 'fewclouds'],
+			[[802], 'brokenclouds'],
+			[[803, 804], 'overcastclouds'],
+		]
+
+		categorieIds.forEach((category) => {
+			if (category[0].includes(currentState.icon_id as never)) filename = category[1]
+		})
+
+		if (!tempContainer) {
+			return
+		}
+
+		const icon = document.getElementById('weather-icon') as HTMLImageElement
+		const { now, rise, set } = sunTime()
+		const timeOfDay = now < rise || now > set ? 'night' : 'day'
+		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+
+		icon.src = iconSrc
+	}
+
+	const handleForecast = () => {
+		if (forecast) {
+			let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
+			day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
+
+			forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}°${day}.`
+			forecast.classList.remove('wait')
+		}
+	}
+
+	const handleMoreInfo = () => {
+		const noDetails = !data.moreinfo || data.moreinfo === 'none'
+		const emptyCustom = data.moreinfo === 'custom' && !data.provider
+
+		if (noDetails || emptyCustom) {
+			weatherdom?.removeAttribute('href')
+			return
+		}
+
+		const URLs = {
+			msnw: 'https://www.msn.com/en-us/weather/forecast/',
+			yhw: 'https://www.yahoo.com/news/weather/',
+			windy: 'https://www.windy.com/',
+			custom: data.provider ?? '',
+		}
+
+		if ((data.moreinfo || '') in URLs) {
+			weatherdom?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
+		}
+	}
+
+	handleWidget()
+	handleDescription()
+	handleForecast()
+	handleMoreInfo()
+
+	current?.classList.remove('wait')
+	tempContainer?.classList.remove('wait')
+}
+
+async function weatherCacheControl(data: Weather) {
+	const date = new Date()
+	const now = Math.floor(date.getTime() / 1000)
+
+	if (typeof data.lastCall === 'number') {
+		// Current: 30 mins
+		if (navigator.onLine && (now > data.lastCall + 1800 || sessionStorage.lang)) {
+			sessionStorage.removeItem('lang')
+			data = await request(data)
+			storage.set({ weather: data })
+		}
+
+		displayWeather(data)
+	}
+
+	// First startup
+	else initWeather(data)
+}
+
+function forecastVisibilityControl(value: string = 'auto') {
+	const forcastdom = document.getElementById('forecast')
+	const date = new Date()
+	let isTimeForForecast = false
+
+	if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
+	else isTimeForForecast = value === 'always'
+
+	forcastdom?.classList.toggle('shown', isTimeForForecast)
+}

@@ -490,33 +490,33 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'city' })
+		weather(null, { city: this.value })
 	})
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'geol', elem: this })
+		weather(null, { geol: this.checked })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'units', checked: this.checked })
+		weather(null, { units: this.checked })
 	})
 
 	paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'forecast', value: this.value })
+		weather(null, { forecast: this.value })
 	})
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'temp', value: this.value })
+		weather(null, { temp: this.value })
 	})
 
 	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'moreinfo', value: this.value })
+		weather(null, { moreinfo: this.value })
 	})
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'provider', value: this.value })
+		weather(null, { provider: this.value })
 		this.blur()
 	})
 
@@ -524,7 +524,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
-		weather(null, { is: 'unhide', value: this.value })
+		weather(null, { unhide: true })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
