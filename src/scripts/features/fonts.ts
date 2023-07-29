@@ -166,7 +166,7 @@ async function initFontSettings(font: Font, settingsDom: HTMLElement) {
 	settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', systemfont.placeholder)
 	setWeightSettings(font.availWeights.length === 0 ? systemfont.weights : font.availWeights, settingsDom)
 
-	if (font.family) {
+	if (font.family && font.url) {
 		setAutocompleteSettings(settingsDom)
 	}
 }
@@ -202,8 +202,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 
 	if (isChangingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLSelectElement
-		const fontlist = (await fetchFontList()) ?? []
-		const isGoogleFont = Object.values(fontlist).some((list) => list.family === family)
+
 		let fontface = ''
 		let newfont = {
 			url: '',
@@ -212,13 +211,12 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			availWeights: ['200', '300', '400', '500', '600', '700', '800', '900'],
 		}
 
-		if (isGoogleFont) {
+		if (document.fonts.check(`16px "${family}"`)) {
+			newfont.family = family
+		} else {
+			const fontlist = (await fetchFontList()) ?? []
 			newfont = await getNewFont(fontlist, family)
 			fontface = (await fetchFontface(newfont.url)) ?? ''
-		} else {
-			if (document.fonts.check(`16px "${family}"`)) {
-				newfont.family = family
-			}
 		}
 
 		if (newfont.family) {
@@ -245,8 +243,14 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 }
 
 export default async function customFont(init: Font | null, event?: FontUpdateEvent) {
-	if (event?.initsettings && init) return initFontSettings(init, event?.initsettings)
-	if (event?.autocomplete) return setAutocompleteSettings(event?.autocomplete)
+	if (event?.initsettings && init) {
+		return initFontSettings(init, event?.initsettings)
+	}
+
+	if (event?.autocomplete) {
+		setAutocompleteSettings(event?.autocomplete)
+		return
+	}
 
 	if (event) {
 		updateFont(event)
