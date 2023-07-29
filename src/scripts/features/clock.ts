@@ -19,6 +19,7 @@ type ClockUpdate = {
 // prettier-ignore
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const rand = Math.random() > 0.8 ? 1 : 0
 
 let lazyClockInterval: number
 
@@ -55,7 +56,6 @@ function clockDate(date: Date, usdate: boolean) {
 }
 
 function greetings(date: Date, name?: string) {
-	const rand = Math.random() > 0.8 ? 1 : 0
 	const hour = date.getHours()
 	let greet = 'Good evening'
 
