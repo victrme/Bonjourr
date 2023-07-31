@@ -42,6 +42,26 @@ const systemfont = (function () {
 	return fonts.fallback
 })()
 
+// Needs a special method to detect system fonts.
+// Because of fingerprinting concerns,
+// Firefox and safari made fonts.check() useless
+function systemFontChecker(family: string) {
+	const p = document.createElement('p')
+	p.setAttribute('style', 'position: absolute; opacity: 0; font-family: invalid font;')
+	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890'
+	document.getElementById('interface')?.prepend(p)
+
+	const first_w = p.getBoundingClientRect().width
+	p.style.fontFamily = `'${family}'`
+
+	const second_w = p.getBoundingClientRect().width
+	const hasLoadedFont = first_w !== second_w
+
+	p.remove()
+
+	return hasLoadedFont
+}
+
 async function fetchFontList() {
 	const fonts = parse(localStorage.fonts) ?? []
 
@@ -80,12 +100,14 @@ async function fetchFontList() {
 }
 
 async function fetchFontface(url: string) {
+	if (!url) {
+		return null
+	}
+
 	try {
 		const resp = await fetch(url)
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
-
-		localStorage.fontface = fontface
 
 		return fontface
 	} catch (error) {
@@ -101,7 +123,7 @@ async function getNewFont(list: FontList, currentFamily: string) {
 
 		// All this because google fonts API fails
 		// when fetching variable weights on non variable fonts (smh google)
-		const variableFontList = (await (await fetch('src/assets/variablefonts.json')).json()) ?? []
+		const variableFontList = ((await (await fetch('src/assets/variablefonts.json')).json()) as string[]) ?? []
 		const fontIsVariable = variableFontList.includes(family)
 		const weights = fontIsVariable ? `${variants[0]}..${variants.at(-1)}` : variants.join(';')
 		const url = encodeURI(`https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weights}`)
@@ -211,7 +233,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			availWeights: ['200', '300', '400', '500', '600', '700', '800', '900'],
 		}
 
-		if (document.fonts.check(`16px "${family}"`)) {
+		if (systemFontChecker(family)) {
 			newfont.family = family
 		} else {
 			const fontlist = (await fetchFontList()) ?? []
@@ -223,7 +245,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			setFamily(family, fontface)
 			setWeight(family, '400')
 			i_weight.value = '400'
-
+			localStorage.fontface = fontface
 			setWeightSettings(newfont.availWeights)
 			eventDebounce({ font: { size: font.size, ...newfont } })
 		}
@@ -267,6 +289,7 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 
 				if (init.url && !fontface?.includes('@font-face')) {
 					fontface = await fetchFontface(init.url)
+					localStorage.fontface = fontface
 				}
 
 				setFamily(init.family, fontface)
