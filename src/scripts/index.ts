@@ -16,7 +16,6 @@ import localBackgrounds from './features/localbackgrounds'
 
 import {
 	testOS,
-	minutator,
 	getBrowser,
 	mobilecheck,
 	periodOfDay,
@@ -29,6 +28,7 @@ import {
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
+import sunTime from './utils/suntime'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -41,8 +41,6 @@ const functionsLoad: { [key: string]: FunctionsLoadState } = {
 }
 
 let loadtimeStart = performance.now()
-let sunset = 0
-let sunrise = 0
 
 export const freqControl = {
 	set: () => {
@@ -339,27 +337,6 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 				break
 			}
 		}
-	}
-}
-
-export function sunTime(init?: Weather) {
-	if (init && init.lastState) {
-		sunrise = init.lastState.sunrise
-		sunset = init.lastState.sunset
-	}
-
-	if (sunset === 0) {
-		return {
-			now: minutator(new Date()),
-			rise: 420,
-			set: 1320,
-		}
-	}
-
-	return {
-		now: minutator(new Date()),
-		rise: minutator(new Date(sunrise * 1000)),
-		set: minutator(new Date(sunset * 1000)),
 	}
 }
 

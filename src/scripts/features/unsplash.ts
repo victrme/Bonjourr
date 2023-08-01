@@ -1,8 +1,9 @@
 import { periodOfDay, turnRefreshButton, localDefaults } from '../utils'
-import { imgBackground, sunTime, freqControl } from '..'
+import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
 import parse from '../utils/JSONparse'
+import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import { UnsplashImage } from '../types/local'

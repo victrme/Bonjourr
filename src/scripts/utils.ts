@@ -1,4 +1,4 @@
-import { Hide, HideOld, Sync } from './types/sync'
+import { Hide, HideOld, Sync, Weather } from './types/sync'
 import { Local } from './types/local'
 import langList from './langs'
 
@@ -102,6 +102,21 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
 		animationOptions
 	)
+}
+
+export function handleGeolOption(data: Weather, settingsDom?: HTMLElement) {
+	settingsDom = settingsDom ?? (document.getElementById('settings') as HTMLElement)
+
+	const i_city = settingsDom.querySelector('#i_city') as HTMLInputElement
+	const i_geol = settingsDom.querySelector('#i_geol') as HTMLInputElement
+	const i_ccode = settingsDom.querySelector('#i_ccode') as HTMLInputElement
+	const sett_city = settingsDom.querySelector('#sett_city') as HTMLDivElement
+	const isGeol = data.location.length > 0
+
+	i_geol.checked = isGeol
+	i_ccode.value = data.ccode
+	i_city.setAttribute('placeholder', data.city)
+	sett_city.classList.toggle('shown', isGeol === false)
 }
 
 export function closeEditLink() {
