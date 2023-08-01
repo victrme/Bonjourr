@@ -249,6 +249,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	enterBlurs(paramId('i_greeting'))
 	enterBlurs(paramId('i_sbplaceholder'))
 
+	//
+	paramId('i_city')?.addEventListener('input', function (this: HTMLInputElement) {
+		this.classList.remove('warn')
+	})
+
+	paramId('i_city')?.addEventListener('blur', function (this: HTMLInputElement) {
+		this.classList.remove('warn')
+	})
+
 	//general
 
 	paramClasses('uploadContainer').forEach(function (uploadContainer: Element) {

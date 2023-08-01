@@ -58,7 +58,7 @@ async function updatesWeather(update: WeatherUpdate) {
 
 	if (update.units !== undefined) {
 		weather.unit = update.units ? 'imperial' : 'metric'
-		weather = await request(weather)
+		weather = (await request(weather)) ?? weather
 	}
 
 	if (update.forecast) {
@@ -89,23 +89,34 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.city) {
-		const i_city = document.getElementById('i_city') as HTMLInputElement
-		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+		if (!navigator.onLine) return false
 
-		if (update.city.length < 3 || !navigator.onLine) {
-			return false
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+
+		update.city = stringMaxSize(update.city, 64)
+
+		if (update.city === weather.city) {
+			i_city.setAttribute('placeholder', weather.city)
+			i_city.value = ''
+			return
 		}
 
 		i_city.classList.add('loads')
-		weather.ccode = i_ccode.value
-		weather.city = stringMaxSize(update.city, 64)
 
-		weather = await request(weather)
+		const response = await request({
+			...weather,
+			city: update.city,
+		})
 
-		i_city.value = ''
-		i_city.blur()
+		if (response) {
+			weather = response
+			i_city.setAttribute('placeholder', weather.city)
+			i_city.value = ''
+		} else {
+			i_city.classList.add('warn')
+		}
+
 		i_city.classList.remove('loads')
-		i_city.setAttribute('placeholder', weather.city)
 	}
 
 	if (update.geol !== undefined) {
@@ -113,14 +124,14 @@ async function updatesWeather(update: WeatherUpdate) {
 
 		if (!update.geol || !i_geol) {
 			weather.location = []
-			weather = await request(weather)
+			weather = (await request(weather)) ?? weather
 			handleGeolOption(weather)
 		} else {
 			const location = await getGeolocation()
 
 			if (location) {
 				weather.location = location
-				weather = await request(weather)
+				weather = (await request(weather)) ?? weather
 				handleGeolOption(weather)
 			} else {
 				i_geol.checked = true
@@ -171,7 +182,7 @@ function createRequestQueries(data: Weather) {
 	return queries
 }
 
-async function request(data: Weather): Promise<Weather> {
+async function request(data: Weather): Promise<Weather | null> {
 	if (!navigator.onLine) {
 		return data
 	}
@@ -181,10 +192,10 @@ async function request(data: Weather): Promise<Weather> {
 	const queries = createRequestQueries(data)
 
 	current = await (await fetch(`https://api.openweathermap.org/data/2.5/weather/${queries}`)).json()
-	if (current?.cod !== 200) return data
+	if (current?.cod !== 200) return null
 
 	forecast = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast/${queries}`)).json()
-	if (forecast?.cod !== '200') return data
+	if (forecast?.cod !== '200') return null
 
 	//
 	// Current API call
@@ -248,7 +259,7 @@ async function initWeather(data: Weather) {
 	}
 
 	data.location = (await getGeolocation()) ?? []
-	data = await request(data)
+	data = (await request(data)) ?? data
 
 	displayWeather(data)
 	storage.set({ weather: data })
@@ -377,7 +388,7 @@ async function weatherCacheControl(data: Weather) {
 			data.location = (await getGeolocation()) ?? []
 		}
 
-		data = await request(data)
+		data = (await request(data)) ?? data
 		storage.set({ weather: data })
 	}
 
