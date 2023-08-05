@@ -100,7 +100,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_temp', data.weather?.temperature || 'actual')
 	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
 	initInput('i_provider', data.weather?.provider ?? '')
-	initInput('i_customfont', data.font?.family ?? '')
 	initInput('i_weight', data.font?.weight || '300')
 	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
 
@@ -196,7 +195,10 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})()
 
 	// Custom Fonts
-	customFont(data.font, { initsettings: settingsDom })
+	if (data.font) {
+		customFont(data.font, { initsettings: settingsDom })
+		paramId('i_customfont')?.setAttribute('placeholder', data.font.family)
+	}
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')

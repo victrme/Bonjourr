@@ -194,13 +194,13 @@ async function initFontSettings(font: Font, settingsDom: HTMLElement) {
 }
 
 async function updateFont({ family, weight, size }: FontUpdateEvent) {
+	const i_customfont = document.getElementById('i_customfont') as HTMLInputElement
 	const isRemovingFamily = typeof family === 'string' && family.length === 0
 	const isChangingFamily = typeof family === 'string' && family.length > 1
 
 	const { font } = await storage.get('font')
 
 	if (isRemovingFamily) {
-		const i_customfont = document.getElementById('i_customfont') as HTMLInputElement
 		const i_weight = document.getElementById('i_weight') as HTMLInputElement
 		const domstyle = document.getElementById('fontstyle') as HTMLStyleElement
 		const baseWeight = testOS.windows ? '400' : '300'
@@ -215,8 +215,8 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 		setWeight('', '400')
 		setWeightSettings(systemfont.weights)
 
-		i_customfont?.blur()
 		i_customfont.value = ''
+		i_customfont.placeholder = systemfont.placeholder
 		i_weight.value = baseWeight
 
 		eventDebounce({ font: { size: font.size, url: '', family: '', availWeights: [], weight: baseWeight } })
@@ -248,6 +248,9 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			localStorage.fontface = fontface
 			setWeightSettings(newfont.availWeights)
 			eventDebounce({ font: { size: font.size, ...newfont } })
+
+			i_customfont.value = ''
+			i_customfont.placeholder = family
 		}
 	}
 
