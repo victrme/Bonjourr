@@ -156,7 +156,7 @@ export function favicon(val?: string, isEvent?: true) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = '/src/assets/' + (getBrowser() === 'edge' ? 'monochrome.png' : 'favicon.ico')
 
-		document.querySelector("head link[rel~='icon']")?.setAttribute('href', emoji ? svg : defaulticon)
+		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
 	}
 
 	if (isEvent) {
