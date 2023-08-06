@@ -1,3 +1,18 @@
+## 1.17.1
+
+-   Weather:
+    -   Replaced ipapi.co with a smaller homemade API
+    -   Update position when geolocation is enabled
+    -   Fixed geolocation switch behavior
+    -   Added input warning when city is not found
+-   Fonts:
+    -   System fonts can be used
+    -   No requests to fonts.google.com when using system fonts
+    -   More expressive input when applying font
+-   pt_BR translations fixes by @adilsonfsantos
+-   Fixed greetings flickering at 3am
+-   Added missing chached files on Online
+
 ## 1.17.0
 
 -   Local background:
