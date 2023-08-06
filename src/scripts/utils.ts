@@ -150,7 +150,7 @@ for (const [code] of Object.entries(langList)) {
 }
 
 export const syncDefaults: Sync = {
-	about: { browser: detectPlatform(), version: '1.17.0' },
+	about: { browser: detectPlatform(), version: '1.17.1' },
 	showall: false,
 	lang: defaultLang,
 	dark: 'system',
