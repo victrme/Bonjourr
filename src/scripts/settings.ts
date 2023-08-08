@@ -195,10 +195,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})()
 
 	// Custom Fonts
-	if (data.font) {
-		customFont(data.font, { initsettings: settingsDom })
-		paramId('i_customfont')?.setAttribute('placeholder', data.font.family)
-	}
+	customFont(data.font, { initsettings: settingsDom })
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
@@ -624,15 +621,18 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Custom fonts
 
-	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
-		if (settingsDom.querySelector('#dl_fontfamily')?.childElementCount === 0) {
-			customFont(null, { autocomplete: settingsDom })
-		}
+		customFont(null, { autocomplete: settingsDom })
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
 		customFont(null, { family: this.value })
+	})
+
+	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
+		if (this.value === '' && e.inputType.match(/deleteContentBackward|insertLineBreak/)) {
+			customFont(null, { family: '' })
+		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
