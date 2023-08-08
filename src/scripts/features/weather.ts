@@ -248,7 +248,8 @@ async function request(data: Weather): Promise<Weather | null> {
 
 async function initWeather(data: Weather) {
 	try {
-		const geol = (await (await fetch('https://geol.netlify.app/')).json()) as GeolAPI
+		const resp = await fetch('https://geol.bonjourr.fr/')
+		const geol = (await resp.json()) as GeolAPI
 		data.city = geol.city
 		data.ccode = geol.country.code
 		data.location = [parseFloat(geol.latitude), parseFloat(geol.longitude)]
