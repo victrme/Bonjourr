@@ -630,7 +630,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
-		if (this.value === '' && e.inputType.match(/deleteContentBackward|insertLineBreak/)) {
+		if (this.value === '' && e.inputType === 'deleteContentBackward') {
 			customFont(null, { family: '' })
 		}
 	})
