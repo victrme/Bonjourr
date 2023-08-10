@@ -31,4 +31,30 @@ Am ales câteva dintre cele mai frumoase fotografii Unsplash, astfel încât noi
 BonJourr este construit cu JavaScript Vanilla și optimizat pentru cea mai bună performanță posibilă.
 
 🔎 Bara de căutare
-Bara de căutare integrată a Bonjourr este compatibilă cu toate motoarele de căutare. Da, toate! Aceasta include obișnuita Google, Bing, DuckDuckgo, Yahoo, StartPage, precum și altele, precum Ecosia, Lilo și Qwant. Daca vrei, poti
+Bara de căutare integrată a Bonjourr este compatibilă cu toate motoarele de căutare. Da, toate! Aceasta include obișnuita Google, Bing, DuckDuckgo, Yahoo, StartPage, precum și altele, precum Ecosia, Lilo și Qwant. Dacă doriți, vă puteți adăuga chiar propriul motor de căutare personalizat.
+
+🕰 Clock analog
+Ceasul implicit al lui Bonjourr este făcut pentru a resembla ceea ce aveți pe iPhone și alte dispozitive iOS. Dar dacă doriți ceva mai exotic, îl puteți înlocui cu un ceas analogic foarte mișto și îl puteți personaliza așa cum doriți.
+
+🌤 Vremea
+Într -o propoziție simplă, obțineți un rezumat al vremii locale și prognozei locale.
+
+🔗 Link -uri rapide
+Nu ar fi o adevărată pagină de pornire fără marcaje! BonJourr vă permite să adăugați propriile marcaje, să -și schimbați pictogramele și să vă importați marcajele curente din browserul dvs.
+
+🌘 Modul întunecat
+La fel ca la iOS, Bonjourr are un mod frumos automat întunecat.
+
+🥖 Emoji ca favicon
+
+🔒 Concentrat asupra confidențialității
+Unele pagini de pornire precum Momentum vă încurajează să creați un cont, să le oferiți câteva informații personale, să utilizați mai multe permisiuni și să vă bazați pe multe servicii ale terților. Bonjourr nu colectează date, chiar și în scopuri de analiză, nu folosește permisiuni minime, se bazează pe mai puține servicii terțe și, desigur, nu are niciun sistem de cont. Bonjourr fiind open source înseamnă, de asemenea, că puteți verifica cu ușurință dacă revendicările noastre sunt adevărate.
+
+🧑‍💻 Stiluri CSS personalizate
+Aveți în minte o idee specifică? Bonjourr v -a acoperit cu secțiunea Stiluri personalizate. Puteți personaliza și face orice atunci când adăugați propriile CSS.
+
+📝 Fonturi personalizate
+Vrei un font specific pe pagina ta de pornire? Îl puteți selecta cu ușurință datorită integrării bonjourr cu fonturile Google.
+
+🌎 Multilanguaj
+Datorită contribuabililor noștri minunați, Bonjourr este disponibil în 15 limbi diferite.
