@@ -286,13 +286,30 @@ async function suggestions(e: Event) {
 		const searchIcon = 'src/assets/interface/magnifying-glass.svg'
 		const image = result.image ?? searchIcon
 		const desc = result.desc ?? ''
-		const text = result.text
+
+		const resultdom = li.querySelector('.suggest-result')
+		resultdom!.textContent = result.text
+
+		if (result.text.includes(input.value)) {
+			const queryIndex = result.text.indexOf(input.value)
+			const startdom = document.createElement('span')
+			const querydom = document.createElement('b')
+			const enddom = document.createElement('span')
+
+			startdom.textContent = result.text.slice(0, queryIndex)
+			querydom.textContent = result.text.slice(queryIndex, input.value.length)
+			enddom.textContent = result.text.slice(input.value.length)
+
+			resultdom!.textContent = ''
+			resultdom?.appendChild(startdom)
+			resultdom?.appendChild(querydom)
+			resultdom?.appendChild(enddom)
+		}
 
 		const imgdom = li.querySelector('img') as HTMLImageElement
 		imgdom.classList.toggle('default-search-icon', image === searchIcon)
 		imgdom.src = image
 
-		li.querySelector('.suggest-result')!.textContent = text
 		li.querySelector('.suggest-desc')!.textContent = desc
 		li.classList.toggle('shown', !!result)
 
