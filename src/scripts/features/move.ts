@@ -800,11 +800,15 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 		})
 
-		moverdom?.addEventListener('touchstart', (e) => {
-			if ((e.target as HTMLElement)?.id === 'element-mover') {
-				moverdom?.addEventListener('touchmove', moverDrag)
-			}
-		})
+		moverdom?.addEventListener(
+			'touchstart',
+			(e) => {
+				if ((e.target as HTMLElement)?.id === 'element-mover') {
+					moverdom?.addEventListener('touchmove', moverDrag)
+				}
+			},
+			{ passive: false }
+		)
 
 		const removeDrag = () => {
 			firstPos = { x: 0, y: 0 }

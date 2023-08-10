@@ -663,6 +663,23 @@
 		}
 	}
 
+	@keyframes loadsResponse {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0.6;
+		}
+	}
+
+	#i_city.loads {
+		animation: loadsResponse 800ms linear infinite alternate;
+	}
+
+	#i_city.warn {
+		outline: 2px solid #ff7400;
+	}
+
 	#i_customfont {
 		text-transform: capitalize;
 	}

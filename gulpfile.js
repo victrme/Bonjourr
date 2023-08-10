@@ -98,7 +98,8 @@ function styles(platform) {
 }
 
 function locales(platform) {
-	return () => src('_locales/**/*.json').pipe(dest(`release/${platform}/_locales/`))
+	const filenames = platform === 'online' ? 'translations' : '*'
+	return () => src(`_locales/**/${filenames}.json`).pipe(dest(`release/${platform}/_locales/`))
 }
 
 //
@@ -115,6 +116,7 @@ const taskOnline = () => [
 	worker('online'),
 	manifest('online'),
 	scripts('online'),
+	locales('online'),
 	ressources('online', false),
 ]
 

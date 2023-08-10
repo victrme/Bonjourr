@@ -30,6 +30,7 @@ import {
 	stringMaxSize,
 	detectPlatform,
 	turnRefreshButton,
+	handleGeolOption,
 } from './utils'
 
 import {
@@ -99,7 +100,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_temp', data.weather?.temperature || 'actual')
 	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
 	initInput('i_provider', data.weather?.provider ?? '')
-	initInput('i_customfont', data.font?.family ?? '')
 	initInput('i_weight', data.font?.weight || '300')
 	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
 
@@ -217,17 +217,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// weather settings
-	const i_geol = paramId('i_geol') as HTMLInputElement
-	if (data.weather && Object.keys(data.weather).length > 0) {
-		const isGeolocation = data.weather?.location?.length > 0
-		let cityName = data.weather?.city || 'City'
-		paramId('i_city').setAttribute('placeholder', cityName)
-		paramId('sett_city')?.classList.toggle('shown', !isGeolocation)
-		i_geol.checked = isGeolocation
-	} else {
-		paramId('sett_city')?.classList.toggle('shown', true)
-		i_geol.checked = true
-	}
+	handleGeolOption(data.weather, settingsDom)
 
 	// CSS height control
 	if (data.cssHeight) {
@@ -257,6 +247,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 	enterBlurs(paramId('i_sbplaceholder'))
+
+	//
+	paramId('i_city')?.addEventListener('input', function (this: HTMLInputElement) {
+		this.classList.remove('warn')
+	})
+
+	paramId('i_city')?.addEventListener('blur', function (this: HTMLInputElement) {
+		this.classList.remove('warn')
+	})
 
 	//general
 
@@ -494,46 +493,38 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	//
 	// Weather
-
-	const weatherDebounce = debounce(() => weather(null, { is: 'city' }), 1600)
-
-	paramId('i_city').onkeyup = (e: KeyboardEvent) => {
-		weatherDebounce()
-
-		if (e.code === 'Enter') {
-			weather(null, { is: 'city' })
-			weatherDebounce.cancel()
-		}
-	}
-
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
 		toggleWidgetsDisplay({ main: this.checked }, true)
 	})
 
+	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
+		weather(null, { city: this.value })
+	})
+
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'geol', checked: this.checked, elem: this })
+		weather(null, { geol: this.checked })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'units', checked: this.checked })
+		weather(null, { units: this.checked })
 	})
 
 	paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'forecast', value: this.value })
+		weather(null, { forecast: this.value })
 	})
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'temp', value: this.value })
+		weather(null, { temp: this.value })
 	})
 
 	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'moreinfo', value: this.value })
+		weather(null, { moreinfo: this.value })
 	})
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'provider', value: this.value })
+		weather(null, { provider: this.value })
 		this.blur()
 	})
 
@@ -541,7 +532,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
-		weather(null, { is: 'unhide', value: this.value })
+		weather(null, { unhide: true })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
@@ -630,15 +621,18 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Custom fonts
 
-	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
-		if (settingsDom.querySelector('#dl_fontfamily')?.childElementCount === 0) {
-			customFont(null, { autocomplete: settingsDom })
-		}
+		customFont(null, { autocomplete: settingsDom })
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
 		customFont(null, { family: this.value })
+	})
+
+	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
+		if (this.value === '' && e.inputType === 'deleteContentBackward') {
+			customFont(null, { family: '' })
+		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
@@ -883,12 +877,12 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
-	sessionStorage.lang = nextLang // Session pour le weather
 	storage.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
 	const data = ((await storage.get()) as Sync) ?? {}
 	data.lang = nextLang
+	data.weather.lastCall = 0
 	weather(data)
 	clock(data)
 	quotes(data)
@@ -1180,10 +1174,11 @@ export async function settingsInit(data: Sync) {
 			}
 		}
 
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
+		const dragzone = settingsDom.querySelector('#mobile-drag-zone')
+		dragzone?.addEventListener('touchstart', dragStart, { passive: false })
+		dragzone?.addEventListener('mousedown', dragStart)
+		dragzone?.addEventListener('touchend', dragEnd, { passive: false })
+		dragzone?.addEventListener('mouseup', dragEnd)
 
 		document.body?.addEventListener('mouseleave', (e) => {
 			if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {

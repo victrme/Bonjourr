@@ -43,7 +43,7 @@ export type Weather = {
 		sunrise: number
 		sunset: number
 		description: string
-		icon_id: string
+		icon_id: number
 	}
 }
 

@@ -16,7 +16,6 @@ import localBackgrounds from './features/localbackgrounds'
 
 import {
 	testOS,
-	minutator,
 	getBrowser,
 	mobilecheck,
 	periodOfDay,
@@ -29,6 +28,7 @@ import {
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
+import sunTime from './utils/suntime'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -41,8 +41,6 @@ const functionsLoad: { [key: string]: FunctionsLoadState } = {
 }
 
 let loadtimeStart = performance.now()
-let sunset = 0
-let sunrise = 0
 
 export const freqControl = {
 	set: () => {
@@ -158,7 +156,7 @@ export function favicon(val?: string, isEvent?: true) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = '/src/assets/' + (getBrowser() === 'edge' ? 'monochrome.png' : 'favicon.ico')
 
-		document.querySelector("head link[rel~='icon']")?.setAttribute('href', emoji ? svg : defaulticon)
+		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
 	}
 
 	if (isEvent) {
@@ -339,27 +337,6 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 				break
 			}
 		}
-	}
-}
-
-export function sunTime(init?: Weather) {
-	if (init && init.lastState) {
-		sunrise = init.lastState.sunrise
-		sunset = init.lastState.sunset
-	}
-
-	if (sunset === 0) {
-		return {
-			now: minutator(new Date()),
-			rise: 420,
-			set: 1320,
-		}
-	}
-
-	return {
-		now: minutator(new Date()),
-		rise: minutator(new Date(sunrise * 1000)),
-		set: minutator(new Date(sunset * 1000)),
 	}
 }
 
