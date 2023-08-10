@@ -4,18 +4,18 @@ Bonjourr a fost construit ca o alternativă mai modernă la paginile de pornire 
 
 Iată câteva caracteristici cheie:
 🍏 Limba de design iOS
-🏞 fundaluri dinamice 4K care se schimbă în funcție de starea de spirit a zilei
-⚡️ Fast & Lightweight!
+🏞 Fundaluri dinamice 4K care se schimbă în funcție de starea de spirit a zilei
+⚡️  Fast & Lightweight!
 🔎 Bara de căutare (compatibilă cu toate motoarele de căutare)
 🕰 Ceas analogic cu mai multe fețe de ceas
 🌤 Vremea
 🔗 Link -uri rapide
-👋 te salută după numele tău
+👋 Te salută după numele tău
 🌘 Modul întunecat
-🥖 emoji ca favicon
+🥖 Emoji ca favicon
 🧑‍💻 Stiluri CSS personalizate
-📝 fonturi personalizate
-🔒 concentrat asupra confidențialității
+📝 Fonturi personalizate
+🔒 Concentrat asupra confidențialității
 🌎 Multilanguaj
 
 Bonjourr își propune să arate și să se simtă minim, în timp ce vă aduce în continuare o mulțime de opțiuni pentru a -l personaliza după bunul plac. Setați -vă propriile fundaluri (sau colecții Unsplash!), Activați frumosul ceas analogic, setați -vă propriile fonturi și link -uri rapide ... puteți chiar să consultați documentația noastră în care am compilat câteva fragmente de stil pentru a face și mai mult.
