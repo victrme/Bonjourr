@@ -6,6 +6,7 @@ export default {
 	pl: 'Polski',
 	pt_BR: 'Português (Brasil)',
 	nl: 'Nederlandse',
+	ro: 'Română',
 	ru: 'Русский',
 	zh_CN: '简体中文',
 	zh_HK: '繁體中文',
