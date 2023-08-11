@@ -161,6 +161,12 @@ function setFamily(family: string, fontface: string) {
 }
 
 async function setAutocompleteSettings(settingsDom: HTMLElement) {
+	const dl_fontfamily = settingsDom.querySelector('#dl_fontfamily') as HTMLSelectElement
+
+	if (dl_fontfamily.childElementCount > 0) {
+		return
+	}
+
 	const fontlist = await fetchFontList()
 	const fragment = new DocumentFragment()
 
@@ -171,7 +177,7 @@ async function setAutocompleteSettings(settingsDom: HTMLElement) {
 		fragment.appendChild(option)
 	}
 
-	settingsDom.querySelector('#dl_fontfamily')?.appendChild(fragment)
+	dl_fontfamily?.appendChild(fragment)
 }
 
 async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
@@ -184,11 +190,15 @@ async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
 	})
 }
 
-async function initFontSettings(font: Font, settingsDom: HTMLElement) {
-	settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', systemfont.placeholder)
-	setWeightSettings(font.availWeights.length === 0 ? systemfont.weights : font.availWeights, settingsDom)
+async function initFontSettings(settingsDom: HTMLElement, font: Font | null) {
+	const hasCustomWeights = font && font.availWeights.length > 0
+	const weights = hasCustomWeights ? font.availWeights : systemfont.weights
+	const family = font?.family || systemfont.placeholder
 
-	if (font.family && font.url) {
+	settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', family)
+	setWeightSettings(weights, settingsDom)
+
+	if (font?.url) {
 		setAutocompleteSettings(settingsDom)
 	}
 }
@@ -268,18 +278,16 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 }
 
 export default async function customFont(init: Font | null, event?: FontUpdateEvent) {
-	if (event?.initsettings && init) {
-		return initFontSettings(init, event?.initsettings)
+	if (event?.initsettings) {
+		return initFontSettings(event?.initsettings, init)
 	}
 
 	if (event?.autocomplete) {
-		setAutocompleteSettings(event?.autocomplete)
-		return
+		return setAutocompleteSettings(event?.autocomplete)
 	}
 
 	if (event) {
-		updateFont(event)
-		return
+		return updateFont(event)
 	}
 
 	if (init) {
