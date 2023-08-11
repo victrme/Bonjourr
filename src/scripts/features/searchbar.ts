@@ -206,12 +206,11 @@ function initSuggestions() {
 		domsuggestions?.appendChild(li)
 	}
 
-	function hideSuggestions(e: MouseEvent) {
-		const pathIds = Object.values(e.composedPath()).map((el) => (el as Element).id)
+	function toggleSuggestions(e: Event) {
+		const hasResults = document.querySelectorAll('#sb-suggestions li.shown')?.length > 0
+		const isFocus = e.type === 'focus'
 
-		if (!pathIds.includes('sb_container')) {
-			domsuggestions?.classList.remove('shown')
-		}
+		domsuggestions?.classList.toggle('shown', isFocus && hasResults)
 	}
 
 	function navigateSuggestions(e: KeyboardEvent) {
@@ -246,8 +245,16 @@ function initSuggestions() {
 		lastSelected?.setAttribute('aria-selected', 'true')
 	}
 
-	window.addEventListener('click', hideSuggestions)
+	function hideResultsAndSuggestions() {
+		const children = Object.values(domsuggestions?.children ?? [])
+		children.forEach((child) => child.classList.remove('shown'))
+		domsuggestions?.classList.remove('shown')
+	}
+
 	domcontainer?.addEventListener('keydown', navigateSuggestions)
+	domsearchbar?.addEventListener('focus', toggleSuggestions)
+	domsearchbar?.addEventListener('blur', toggleSuggestions)
+	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 }
 
 async function suggestions(e: Event) {
@@ -354,7 +361,6 @@ function toggleInputButton(enabled: boolean) {
 
 function removeInputText() {
 	if (domsearchbar) {
-		domsuggestions?.classList.remove('shown')
 		domsearchbar.focus()
 		domsearchbar.value = ''
 		toggleInputButton(false)
