@@ -42,6 +42,7 @@ function scripts(platform) {
 
 	return () =>
 		src('release/main.js')
+			.pipe(replace('@@SUGGESTIONS_API', btoa(envVars?.SUGGESTIONS_API) || '/'))
 			.pipe(replace('@@UNSPLASH_API', btoa(envVars?.UNSPLASH_API) || '/'))
 			.pipe(replace('@@FAVICON_API_1', btoa(envVars?.FAVICON_API_1) || '/'))
 			.pipe(replace('@@FAVICON_API_2', btoa(envVars?.FAVICON_API_2) || '/'))
@@ -97,7 +98,8 @@ function styles(platform) {
 }
 
 function locales(platform) {
-	return () => src('_locales/**/*.json').pipe(dest(`release/${platform}/_locales/`))
+	const filenames = platform === 'online' ? 'translations' : '*'
+	return () => src(`_locales/**/${filenames}.json`).pipe(dest(`release/${platform}/_locales/`))
 }
 
 //
@@ -105,7 +107,7 @@ function locales(platform) {
 //
 
 // Watches style map to make sure everything is compiled
-const filesToWatch = ['./src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
+const filesToWatch = ['./_locales/**', './src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
 
 // prettier-ignore
 const taskOnline = () => [
@@ -114,6 +116,7 @@ const taskOnline = () => [
 	worker('online'),
 	manifest('online'),
 	scripts('online'),
+	locales('online'),
 	ressources('online', false),
 ]
 

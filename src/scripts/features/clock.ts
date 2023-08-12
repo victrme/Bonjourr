@@ -1,5 +1,5 @@
 import { canDisplayInterface } from '..'
-import { clas, syncDefaults } from '../utils'
+import { syncDefaults } from '../utils'
 import { Sync, Clock } from '../types/sync'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
@@ -19,6 +19,7 @@ type ClockUpdate = {
 // prettier-ignore
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const rand = Math.random() > 0.8 ? 1 : 0
 
 let lazyClockInterval: number
 
@@ -55,7 +56,6 @@ function clockDate(date: Date, usdate: boolean) {
 }
 
 function greetings(date: Date, name?: string) {
-	const rand = Math.random() > 0.8 ? 1 : 0
 	const hour = date.getHours()
 	let greet = 'Good evening'
 
@@ -115,7 +115,7 @@ function startClock(clock: Clock, greeting: string, usdate: boolean) {
 			const domclock = document.getElementById('clock')
 
 			if (domclock) {
-				clas(domclock, !clock.ampm && h < 10, 'zero') // Double zero on 24h
+				domclock?.classList.toggle('zero', !clock.ampm && h < 10) // Double zero on 24h
 				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
 			}
 		}

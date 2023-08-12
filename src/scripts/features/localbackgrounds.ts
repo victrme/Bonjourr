@@ -1,4 +1,4 @@
-import { clas, randomString, mobilecheck, turnRefreshButton } from '../utils'
+import { randomString, mobilecheck, turnRefreshButton } from '../utils'
 import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
 import unsplashBackgrounds from './unsplash'
@@ -164,8 +164,8 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	thbimg.src = URL.createObjectURL(blob)
 	thb.className = 'thumbnail' + (isSelected ? ' selected' : '')
 
-	clas(rem, true, 'b_removethumb')
-	clas(rem, !mobilecheck(), 'hidden')
+	rem.classList.toggle('b_removethumb', true)
+	rem.classList.toggle('hidden', !mobilecheck())
 
 	thb.setAttribute('aria-label', 'Select this background')
 	rem.setAttribute('aria-label', 'Remove this background')
@@ -300,11 +300,11 @@ async function convertOldBackgroundStorage(every = 'pause') {
 	chrome.storage.local.remove('selectedId')
 	chrome.storage.local.remove('idsList')
 
-	localImages.set({ selected: '', ids: [], freq: every, last: Date.now() })
-
-	addNewImage(customs)
-
-	return true
+	if (customs.length > 0) {
+		localImages.set({ selected: '', ids: [], freq: every, last: Date.now() })
+		addNewImage(customs)
+		return true
+	}
 }
 
 export default async function localBackgrounds(event?: UpdateEvent) {
@@ -326,7 +326,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 			// Note: Can be removed after everyone updated from 1.16.4
 			const hasConverted = await convertOldBackgroundStorage()
 
-			if (hasConverted === false) {
+			if (!hasConverted) {
 				unsplashBackgrounds(data.unsplash ?? null)
 			}
 

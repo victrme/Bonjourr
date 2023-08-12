@@ -15,22 +15,20 @@ import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
 import {
-	$,
-	clas,
-	detectPlatform,
+	testOS,
 	getBrowser,
-	minutator,
 	mobilecheck,
 	periodOfDay,
-	stringMaxSize,
 	syncDefaults,
-	testOS,
+	stringMaxSize,
 	localDefaults,
+	detectPlatform,
 } from './utils'
 
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
+import sunTime from './utils/suntime'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -43,8 +41,6 @@ const functionsLoad: { [key: string]: FunctionsLoadState } = {
 }
 
 let loadtimeStart = performance.now()
-let sunset = 0
-let sunrise = 0
 
 export const freqControl = {
 	set: () => {
@@ -121,14 +117,15 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 
 	// toggle settings option drawers
 	listEntries.forEach(([key, on]) => {
-		clas($(key + '_options'), on, 'shown')
+		const option = document.getElementById(key + '_options')
+		option?.classList.toggle('shown', on)
 	})
 
 	// toggle 'enable' switches
 	listEntries.forEach(([key, on]) => {
 		if (key in widgets) {
 			const id = widgets[key as keyof typeof widgets].inputid
-			const input = $(id) as HTMLInputElement
+			const input = document.getElementById(id) as HTMLInputElement
 
 			if (id && input) {
 				input.checked = on
@@ -142,8 +139,8 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 	// toggle widget on interface
 	listEntries.forEach(([key, on]) => {
 		if (key in widgets) {
-			const dom = $(widgets[key as keyof typeof widgets].domid)
-			clas(dom, !on, 'hidden')
+			const id = widgets[key as keyof typeof widgets].domid
+			document.getElementById(id)?.classList.toggle('hidden', !on)
 		}
 	})
 
@@ -159,7 +156,7 @@ export function favicon(val?: string, isEvent?: true) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = '/src/assets/' + (getBrowser() === 'edge' ? 'monochrome.png' : 'favicon.ico')
 
-		document.querySelector("head link[rel~='icon']")?.setAttribute('href', emoji ? svg : defaulticon)
+		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
 	}
 
 	if (isEvent) {
@@ -316,7 +313,7 @@ export function textShadow(init: number | null, event?: number) {
 }
 
 export function customCss(init: string | null, event?: { is: 'styling' | 'resize'; val: string | number }) {
-	const styleHead = $('styles') as HTMLStyleElement
+	const styleHead = document.getElementById('styles') as HTMLStyleElement
 
 	if (init) {
 		styleHead.textContent = init
@@ -340,27 +337,6 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 				break
 			}
 		}
-	}
-}
-
-export function sunTime(init?: Weather) {
-	if (init && init.lastState) {
-		sunrise = init.lastState.sunrise
-		sunset = init.lastState.sunset
-	}
-
-	if (sunset === 0) {
-		return {
-			now: minutator(new Date()),
-			rise: 420,
-			set: 1320,
-		}
-	}
-
-	return {
-		now: minutator(new Date()),
-		rise: minutator(new Date(sunrise * 1000)),
-		set: minutator(new Date(sunset * 1000)),
 	}
 }
 
@@ -397,7 +373,10 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 
 	functionsLoad[cat] = 'Ready'
 
-	if (Object.values(functionsLoad).includes('Waiting') === false && !$('settings')) {
+	const noSettings = !document.getElementById('settings')
+	const noWait = Object.values(functionsLoad).includes('Waiting') === false
+
+	if (noWait && noSettings) {
 		displayInterface()
 	}
 }
@@ -537,6 +516,11 @@ function startup(data: Sync) {
 				isOnline ? removeOnlineLocal() : removeChromeLocal()
 
 				data.unsplash = { ...(data.dynamic as Sync['unsplash']) }
+
+				//@ts-ignore
+				if (data.background_type === 'custom') data.background_type = 'local'
+				//@ts-ignore
+				if (data.background_type === 'dynamic') data.background_type = 'unsplash'
 
 				delete data.dynamic
 				delete data.custom_every

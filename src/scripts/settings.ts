@@ -14,6 +14,7 @@ import moveElements from './features/move'
 import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
+import langList from './langs'
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
@@ -21,20 +22,15 @@ import stringifyOrder from './utils/stringifyOrder'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
-	$,
-	has,
-	clas,
-	inputThrottle,
-	detectPlatform,
-	closeEditLink,
-	mobilecheck,
-	stringMaxSize,
-	deleteBrowserStorage,
-	getBrowserStorage,
-	turnRefreshButton,
 	testOS,
-	langList,
+	mobilecheck,
 	syncDefaults,
+	inputThrottle,
+	closeEditLink,
+	stringMaxSize,
+	detectPlatform,
+	turnRefreshButton,
+	handleGeolOption,
 } from './utils'
 
 import {
@@ -104,7 +100,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_temp', data.weather?.temperature || 'actual')
 	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
 	initInput('i_provider', data.weather?.provider ?? '')
-	initInput('i_customfont', data.font?.family ?? '')
 	initInput('i_weight', data.font?.weight || '300')
 	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
 
@@ -169,18 +164,19 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Activate feature options
-	clas(paramId('time_options'), data.time, 'shown')
-	clas(paramId('main_options'), data.main, 'shown')
-	clas(paramId('weather_provider'), data.weather?.moreinfo === 'custom', 'shown')
-	clas(paramId('quicklinks_options'), data.quicklinks, 'shown')
-	clas(paramId('notes_options'), data.notes?.on || false, 'shown')
-	clas(paramId('searchbar_options'), data.searchbar?.on, 'shown')
-	clas(paramId('searchbar_request'), data.searchbar?.engine === 'custom', 'shown')
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
+	paramId('time_options')?.classList.toggle('shown', data.time)
+	paramId('main_options')?.classList.toggle('shown', data.main)
+	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
+	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
+	paramId('notes_options')?.classList.toggle('shown', data.notes?.on || false)
+	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
+	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
 	// Page layout
 	settingsDom.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-		clas(b, b.dataset.layout === (data.move?.selection || 'single'), 'selected')
+		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
+		b?.classList.toggle('selected', selectedLayout)
 	})
 
 	// Disables double and triple layouts on mobile
@@ -221,17 +217,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// weather settings
-	const i_geol = paramId('i_geol') as HTMLInputElement
-	if (data.weather && Object.keys(data.weather).length > 0) {
-		const isGeolocation = data.weather?.location?.length > 0
-		let cityName = data.weather?.city || 'City'
-		paramId('i_city').setAttribute('placeholder', cityName)
-		paramId('sett_city')?.classList.toggle('shown', !isGeolocation)
-		i_geol.checked = isGeolocation
-	} else {
-		paramId('sett_city')?.classList.toggle('shown', true)
-		i_geol.checked = true
-	}
+	handleGeolOption(data.weather, settingsDom)
 
 	// CSS height control
 	if (data.cssHeight) {
@@ -239,8 +225,8 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// Quotes option display
-	clas(paramId('quotes_options'), data.quotes?.on, 'shown')
-	clas(paramId('quotes_userlist'), data.quotes?.type === 'user', 'shown')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
 
 	updateExportJSON(settingsDom)
 
@@ -261,6 +247,15 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	enterBlurs(paramId('i_tabtitle'))
 	enterBlurs(paramId('i_greeting'))
 	enterBlurs(paramId('i_sbplaceholder'))
+
+	//
+	paramId('i_city')?.addEventListener('input', function (this: HTMLInputElement) {
+		this.classList.remove('warn')
+	})
+
+	paramId('i_city')?.addEventListener('blur', function (this: HTMLInputElement) {
+		this.classList.remove('warn')
+	})
 
 	//general
 
@@ -498,46 +493,38 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	//
 	// Weather
-
-	const weatherDebounce = debounce(() => weather(null, { is: 'city' }), 1600)
-
-	paramId('i_city').onkeyup = (e: KeyboardEvent) => {
-		weatherDebounce()
-
-		if (e.code === 'Enter') {
-			weather(null, { is: 'city' })
-			weatherDebounce.cancel()
-		}
-	}
-
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
 		toggleWidgetsDisplay({ main: this.checked }, true)
 	})
 
+	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
+		weather(null, { city: this.value })
+	})
+
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'geol', checked: this.checked, elem: this })
+		weather(null, { geol: this.checked })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { is: 'units', checked: this.checked })
+		weather(null, { units: this.checked })
 	})
 
 	paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'forecast', value: this.value })
+		weather(null, { forecast: this.value })
 	})
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'temp', value: this.value })
+		weather(null, { temp: this.value })
 	})
 
 	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'moreinfo', value: this.value })
+		weather(null, { moreinfo: this.value })
 	})
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { is: 'provider', value: this.value })
+		weather(null, { provider: this.value })
 		this.blur()
 	})
 
@@ -545,7 +532,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
-		weather(null, { is: 'unhide', value: this.value })
+		weather(null, { unhide: true })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
@@ -634,15 +621,18 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	//
 	// Custom fonts
 
-	// Fetches font list only on focus (if font family is default)
 	paramId('i_customfont').addEventListener('focus', function () {
-		if (settingsDom.querySelector('#dl_fontfamily')?.childElementCount === 0) {
-			customFont(null, { autocomplete: settingsDom })
-		}
+		customFont(null, { autocomplete: settingsDom })
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
 		customFont(null, { family: this.value })
+	})
+
+	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
+		if (this.value === '' && e.inputType === 'deleteContentBackward') {
+			customFont(null, { family: '' })
+		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
@@ -672,9 +662,9 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	const { exportAsFile, copyImportText, importAsText, importAsFile } = settingsMgmt()
 
 	const toggleSettingsMgmt = (toggled: boolean) => {
-		clas(paramId('export'), !toggled, 'shown')
-		clas(paramId('import'), toggled, 'shown')
-		clas(paramClasses('tabs')[0], toggled, 'toggled')
+		paramId('export')?.classList.toggle('shown', !toggled)
+		paramId('import')?.classList.toggle('shown', toggled)
+		paramClasses('tabs')[0]?.classList.toggle('toggled', toggled)
 	}
 
 	paramId('s_export').addEventListener('click', () => toggleSettingsMgmt(false))
@@ -687,7 +677,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
-		paramsImport(parse(($('i_importtext') as HTMLInputElement).value))
+		paramsImport(parse((document.getElementById('i_importtext') as HTMLInputElement).value))
 	})
 
 	//
@@ -723,12 +713,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		})
 
 		// Toggle in-widgets hidden options
-		toggleTabindex('#searchbar_request', has(paramId('searchbar_request'), 'shown'))
-		toggleTabindex('#weather_provider', has(paramId('weather_provider'), 'shown'))
-		toggleTabindex('#quotes_userlist', has(paramId('quotes_userlist'), 'shown'))
+		toggleTabindex('#searchbar_request', paramId('searchbar_request').classList.contains('shown'))
+		toggleTabindex('#weather_provider', paramId('weather_provider').classList.contains('shown'))
+		toggleTabindex('#quotes_userlist', paramId('quotes_userlist').classList.contains('shown'))
+		toggleTabindex('#import', paramId('import').classList.contains('shown'))
+		toggleTabindex('#export', paramId('export').classList.contains('shown'))
 		toggleTabindex('#sett_city', paramId('i_geol').checked === false)
-		toggleTabindex('#import', has(paramId('import'), 'shown'))
-		toggleTabindex('#export', has(paramId('export'), 'shown'))
 
 		// File export downloader is never tabbable
 		paramId('downloadfile').setAttribute('tabindex', '-1')
@@ -746,11 +736,11 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 function settingsMgmt() {
 	async function copyImportText(target: HTMLButtonElement) {
 		try {
-			const area = $('area_export') as HTMLInputElement
+			const area = document.getElementById('area_export') as HTMLInputElement
 			await navigator.clipboard.writeText(area.value)
 			target.textContent = tradThis('Copied')
 			setTimeout(() => {
-				const domimport = $('b_exportcopy')
+				const domimport = document.getElementById('b_exportcopy')
 				if (domimport) {
 					domimport.textContent = tradThis('Copy text')
 				}
@@ -779,11 +769,13 @@ function settingsMgmt() {
 	}
 
 	function importAsText(string: string) {
+		const importtext = document.getElementById('b_importtext')
+
 		try {
 			parse(string)
-			$('b_importtext')?.removeAttribute('disabled')
+			importtext?.removeAttribute('disabled')
 		} catch (error) {
-			$('b_importtext')?.setAttribute('disabled', '')
+			importtext?.setAttribute('disabled', '')
 		}
 	}
 
@@ -846,11 +838,11 @@ function changelogControl(settingsDom: HTMLElement) {
 
 	if (!domchangelog) return
 
-	clas(domchangelog, true, 'shown')
-	clas(domshowsettings, true, 'hasUpdated')
+	domchangelog.classList.toggle('shown', true)
+	domshowsettings?.classList.toggle('hasUpdated', true)
 
 	const dismiss = () => {
-		clas(domshowsettings, false, 'hasUpdated')
+		domshowsettings?.classList.toggle('hasUpdated', false)
 		domchangelog.className = 'dismissed'
 		localStorage.removeItem('hasUpdated')
 	}
@@ -885,12 +877,12 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
-	sessionStorage.lang = nextLang // Session pour le weather
 	storage.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
 	const data = ((await storage.get()) as Sync) ?? {}
 	data.lang = nextLang
+	data.weather.lastCall = 0
 	weather(data)
 	clock(data)
 	quotes(data)
@@ -954,7 +946,7 @@ function signature(dom: HTMLElement) {
 }
 
 function fadeOut() {
-	const dominterface = $('interface')!
+	const dominterface = document.getElementById('interface')!
 	dominterface.click()
 	dominterface.style.transition = 'opacity .4s'
 	setTimeout(() => (dominterface.style.opacity = '0'))
@@ -976,7 +968,8 @@ async function paramsImport(toImport: Sync) {
 
 function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
-		deleteBrowserStorage()
+		storage.clear()
+		localStorage.clear()
 		fadeOut()
 		return
 	}
@@ -1066,9 +1059,11 @@ export async function settingsInit(data: Sync) {
 		toggleDisplay(settingsDom)
 	})
 
-	window.addEventListener('keydown', function (e) {
+	window.addEventListener('keydown', async function (e) {
 		if (e.altKey && e.code === 'KeyS') {
-			getBrowserStorage()
+			console.clear()
+			console.log(localStorage)
+			console.log(await storage.get())
 		}
 
 		if (e.code === 'Escape') {
@@ -1179,10 +1174,11 @@ export async function settingsInit(data: Sync) {
 			}
 		}
 
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchstart', dragStart)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mousedown', dragStart)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('touchend', dragEnd)
-		settingsDom.querySelector('#mobile-drag-zone')?.addEventListener('mouseup', dragEnd)
+		const dragzone = settingsDom.querySelector('#mobile-drag-zone')
+		dragzone?.addEventListener('touchstart', dragStart, { passive: false })
+		dragzone?.addEventListener('mousedown', dragStart)
+		dragzone?.addEventListener('touchend', dragEnd, { passive: false })
+		dragzone?.addEventListener('mouseup', dragEnd)
 
 		document.body?.addEventListener('mouseleave', (e) => {
 			if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {

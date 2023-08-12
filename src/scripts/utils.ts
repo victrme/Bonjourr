@@ -1,46 +1,8 @@
-import { Hide, HideOld, Sync } from './types/sync'
+import { Hide, HideOld, Sync, Weather } from './types/sync'
 import { Local } from './types/local'
-
-import storage from './storage'
+import langList from './langs'
 
 type LangList = keyof typeof langList
-
-export const langList = {
-	en: 'English',
-	fr: 'Français',
-	sk: 'Slovenský',
-	sv: 'Svenska',
-	pl: 'Polski',
-	pt_BR: 'Português (Brasil)',
-	nl: 'Nederlandse',
-	ru: 'Русский',
-	zh_CN: '简体中文',
-	zh_HK: '繁體中文',
-	de: 'Deutsch',
-	it: 'Italiano',
-	es_ES: 'Español',
-	tr: 'Türkçe',
-	uk: 'Українська',
-	id: 'Indonesia',
-	da: 'Dansk',
-	fi: 'Suomi',
-	hu: 'Magyar',
-	sr: 'Српски (ћирилица)',
-	sr_YU: 'Srpski (latinica)',
-	gr: 'Ελληνικά',
-}
-
-export const $ = (name: string) => document.getElementById(name)
-
-export const has = (dom: Element | null, val: string) => {
-	if (!dom) return false
-	else return dom.classList.length > 0 ? dom.classList.contains(val) : false
-}
-
-export const clas = (dom: Element | null, add: boolean, str: string) => {
-	if (dom === null) return
-	else add ? dom.classList.add(str) : dom.classList.remove(str)
-}
 
 export const mobilecheck = () =>
 	navigator.userAgentData
@@ -48,24 +10,8 @@ export const mobilecheck = () =>
 		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
 export const stringMaxSize = (str: string = '', size: number) => (str.length > size ? str.slice(0, size) : str)
+
 export const minutator = (date: Date) => date.getHours() * 60 + date.getMinutes()
-
-export const extractDomain = (url: string) => {
-	url.replace(/(^\w+:|^)\/\//, '')
-	url.split('?')[0]
-	return url
-}
-
-export const extractHostname = (url: string) => {
-	const a = document.createElement('a')
-	let res = ''
-	a.href = url
-	res = a.hostname
-
-	a.remove()
-
-	return res
-}
 
 export const randomString = (len: number) => {
 	const chars = 'abcdefghijklmnopqr'
@@ -126,30 +72,6 @@ export function convertHideStorage(old: Hide | HideOld) {
 	return hide
 }
 
-export function localDataMigration(local: any) {
-	if (!local.custom) return local
-
-	let idsList: string[]
-	Object.values(local.custom).forEach((val, i) => {
-		const _id = randomString(6)
-		idsList.push(_id)
-
-		local = {
-			...local,
-			idsList,
-			selectedId: _id,
-			['custom_' + _id]: val,
-			['customThumb_' + _id]: local.customThumbnails[i],
-		}
-	})
-
-	delete local.custom
-	delete local.customIndex
-	delete local.customThumbnails
-
-	return local
-}
-
 export function bundleLinks(data: Sync): Link[] {
 	// 1.13.0: Returns an array of found links in storage
 	let res: Link[] = []
@@ -182,26 +104,30 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
+export function handleGeolOption(data: Weather, settingsDom?: HTMLElement) {
+	settingsDom = settingsDom ?? (document.getElementById('settings') as HTMLElement)
+
+	const i_city = settingsDom.querySelector('#i_city') as HTMLInputElement
+	const i_geol = settingsDom.querySelector('#i_geol') as HTMLInputElement
+	const i_ccode = settingsDom.querySelector('#i_ccode') as HTMLInputElement
+	const sett_city = settingsDom.querySelector('#sett_city') as HTMLDivElement
+	const isGeol = data.location.length > 0
+
+	i_geol.checked = isGeol
+	i_ccode.value = data.ccode
+	i_city.setAttribute('placeholder', data.city)
+	sett_city.classList.toggle('shown', isGeol === false)
+}
+
 export function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
 	if (!domedit) return
 
-	clas(domedit, true, 'hiding')
-	document.querySelectorAll('#linkblocks img').forEach((img) => clas(img, false, 'selected'))
+	domedit?.classList.add('hiding')
+	document.querySelectorAll('#linkblocks img').forEach((img) => img?.classList.remove('selected'))
 	setTimeout(() => {
 		domedit ? domedit.setAttribute('class', '') : ''
 	}, 200)
-}
-
-export const getBrowserStorage = async () => {
-	console.clear()
-	console.log(localStorage)
-	console.log(await storage.get())
-}
-
-export function deleteBrowserStorage() {
-	storage.clear()
-	localStorage.clear()
 }
 
 export const testOS = {
@@ -224,7 +150,7 @@ for (const [code] of Object.entries(langList)) {
 }
 
 export const syncDefaults: Sync = {
-	about: { browser: detectPlatform(), version: '1.17.0' },
+	about: { browser: detectPlatform(), version: '1.17.1' },
 	showall: false,
 	lang: defaultLang,
 	dark: 'system',

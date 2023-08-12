@@ -1,26 +1,9 @@
-import storage from '../storage'
 import { toggleWidgetsDisplay } from '..'
-import { syncDefaults, clas, $ } from '../utils'
-import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
+import { syncDefaults } from '../utils'
 import { tradThis } from '../utils/translations'
+import storage from '../storage'
 
-// ┌──────────────────────────────────────┐
-// │   ┌────────────┐  ┌────────────┐     │
-// │   │ Utils      ◄──┤ Funcs      ◄──┐  │
-// │   └─────▲──────┘  └────▲───────┘  │  │
-// │   ┌─────┴──────────────┴───────┐  │  │
-// │   │ Updates                    │  │  │
-// │   └────────────────────▲───────┘  │  │
-// │   ┌─────────────┐      │          │  │
-// │   │ On load     │      │          │  │
-// │   │ ┌────────┐  │      │          │  │
-// │   │ │ Init   ├──┼──────┼──────────┘  │
-// │   │ └────────┘  │      │             │
-// │   │ ┌────────┐  │      │             │
-// │   │ │ Events ├──┼──────┘             │
-// │   │ └────────┘  │                    │
-// │   └─────────────┘                    │
-// └──────────────────────────────────────┘
+import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
 
 type Layout = Move['layouts'][keyof Move['layouts']]
 
@@ -41,12 +24,12 @@ type UpdateMove = {
 let smallWidth = false
 const dominterface = document.querySelector<HTMLElement>('#interface')
 const elements = {
-	time: $('time'),
-	main: $('main'),
-	quicklinks: $('linkblocks'),
-	searchbar: $('sb_container'),
-	notes: $('notes_container'),
-	quotes: $('quotes_container'),
+	time: document.getElementById('time'),
+	main: document.getElementById('main'),
+	quicklinks: document.getElementById('linkblocks'),
+	searchbar: document.getElementById('sb_container'),
+	notes: document.getElementById('notes_container'),
+	quotes: document.getElementById('quotes_container'),
 }
 
 let activeID: MoveKeys | null
@@ -314,8 +297,8 @@ function setAllAligns(items: Layout['items']) {
 
 function manageGridSpanner(selection: string) {
 	selection !== 'single'
-		? $('grid-spanner-container')?.classList.add('active')
-		: $('grid-spanner-container')?.classList.remove('active')
+		? document.getElementById('grid-spanner-container')?.classList.add('active')
+		: document.getElementById('grid-spanner-container')?.classList.remove('active')
 }
 
 const gridOverlay = {
@@ -341,8 +324,8 @@ const gridOverlay = {
 
 const buttonControl = {
 	layout: (selection: Move['selection']) => {
-		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-			clas(b, b.dataset.layout === selection, 'selected')
+		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
+			button.classList.toggle('selected', button.dataset.layout === selection)
 		})
 	},
 
@@ -396,7 +379,7 @@ const buttonControl = {
 			if (state) otherButton?.setAttribute('disabled', '')
 			else otherButton?.removeAttribute('disabled')
 
-			clas(dirButton, state, 'selected')
+			dirButton?.classList.toggle('selected', state)
 		}
 
 		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '') as Layout['grid']
@@ -414,8 +397,8 @@ const buttonControl = {
 		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-		boxBtns.forEach((b) => clas(b, b.dataset.align === (item?.box || ''), 'selected'))
-		textBtns.forEach((b) => clas(b, b.dataset.align === (item?.text || ''), 'selected'))
+		boxBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (item?.box || '')))
+		textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (item?.text || '')))
 	},
 
 	title: (id?: MoveKeys | null) => {
@@ -430,7 +413,7 @@ const buttonControl = {
 		}
 
 		titlestr = id ? editingNames[id] : tradThis('No selection')
-		$('mover-title')!.textContent = titlestr
+		document.getElementById('mover-title')!.textContent = titlestr
 	},
 }
 
@@ -441,7 +424,7 @@ function removeSelection() {
 
 	document.querySelectorAll('.grid-spanner')?.forEach((elem) => {
 		elem.removeAttribute('disabled')
-		clas(elem, false, 'selected')
+		elem?.classList.remove('selected')
 	})
 
 	document.querySelectorAll<HTMLDivElement>('.move-overlay').forEach((elem) => {
@@ -639,8 +622,8 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			buttonControl.grid(id)
 			buttonControl.title(id)
 
-			$('move-overlay-' + id)!.classList.add('selected') // add clicked
-			$('element-mover')?.classList.add('active')
+			document.getElementById('move-overlay-' + id)!.classList.add('selected')
+			document.getElementById('element-mover')?.classList.add('active')
 
 			activeID = id
 		}
@@ -654,7 +637,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				ids.forEach((id) => gridOverlay.add(id))
 			}
 
-			const mover = $('element-mover')
+			const mover = document.getElementById('element-mover')
 			mover?.classList.toggle('hidden')
 			mover?.classList.remove('active')
 			dominterface?.classList.toggle('move-edit')
@@ -699,7 +682,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 		}
 
 		function pageWidthOverlay(overlay?: boolean) {
-			const isEditing = $('interface')?.classList?.contains('move-edit')
+			const isEditing = document.getElementById('interface')?.classList?.contains('move-edit')
 			const hasOverlays = document.querySelector('.move-overlay')
 
 			if (!isEditing && overlay === false) {
@@ -817,11 +800,15 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 		})
 
-		moverdom?.addEventListener('touchstart', (e) => {
-			if ((e.target as HTMLElement)?.id === 'element-mover') {
-				moverdom?.addEventListener('touchmove', moverDrag)
-			}
-		})
+		moverdom?.addEventListener(
+			'touchstart',
+			(e) => {
+				if ((e.target as HTMLElement)?.id === 'element-mover') {
+					moverdom?.addEventListener('touchmove', moverDrag)
+				}
+			},
+			{ passive: false }
+		)
 
 		const removeDrag = () => {
 			firstPos = { x: 0, y: 0 }

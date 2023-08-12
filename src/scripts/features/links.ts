@@ -1,24 +1,11 @@
-import { canDisplayInterface } from '..'
-import storage from '../storage'
-import { Sync } from '../types/sync'
-import {
-	$,
-	stringMaxSize,
-	getBrowser,
-	extractHostname,
-	clas,
-	testOS,
-	bundleLinks,
-	closeEditLink,
-	has,
-	mobilecheck,
-	randomString,
-	extractDomain,
-} from '../utils'
-
+import { testOS, getBrowser, bundleLinks, mobilecheck, randomString, stringMaxSize, closeEditLink } from '../utils'
 import { tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
+
+import { canDisplayInterface } from '..'
+import storage from '../storage'
+import { Sync } from '../types/sync'
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -76,8 +63,13 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		dom.src = 'src/assets/interface/loading.svg' // Apply loading gif d'abord
 
 		const img = new Image()
+		let hostname = ''
 
-		let result = `https://icons.duckduckgo.com/ip3/${extractHostname(url)}.ico`
+		try {
+			hostname = new URL(url).hostname
+		} catch (_) {}
+
+		let result = `https://icons.duckduckgo.com/ip3/${hostname}.ico`
 		const API = Math.random() > 0.5 ? '@@FAVICON_API_1' : '@@FAVICON_API_2'
 		const response = await fetch(atob(API) + url)
 		const apiText = await response.text()
@@ -130,8 +122,8 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 
 function removeLinkSelection() {
 	//enleve les selections d'edit
-	domlinkblocks.querySelectorAll('img').forEach(function (e) {
-		clas(e, false, 'selected')
+	domlinkblocks.querySelectorAll('img').forEach((img) => {
+		img?.classList.remove('selected')
 	})
 }
 
@@ -149,11 +141,11 @@ function addEvents(elem: HTMLLIElement) {
 					displayEditWindow(elem as HTMLLIElement, { x: 0, y: 0 }) // edit centered on mobile
 				}, 600)
 			},
-			false
+			{ passive: false }
 		)
 
-		elem.addEventListener('touchmove', () => clearTimeout(timer), false)
-		elem.addEventListener('touchend', () => clearTimeout(timer), false)
+		elem.addEventListener('touchmove', () => clearTimeout(timer), { passive: false })
+		elem.addEventListener('touchend', () => clearTimeout(timer), { passive: false })
 	}
 
 	// Right click ( desktop / android )
@@ -228,7 +220,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 		// Transform coords in array here to improve performance during mouse move
 		coordsEntries = Object.entries(coords)
 
-		const draggedDOM = $(draggedId)
+		const draggedDOM = document.getElementById(draggedId)
 		const draggedCoord = coords[draggedId]
 
 		if (draggedDOM) {
@@ -247,7 +239,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 
 		deplaceElem(draggedClone, ex - cox - interfacemargin, ey - coy)
 
-		clas(domlinkblocks, true, 'dragging') // to apply pointer-events: none
+		domlinkblocks?.classList.add('dragging') // to apply pointer-events: none
 	}
 
 	function applyDrag(ex: number, ey: number) {
@@ -279,7 +271,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 				interval = interval.sort((a, b) => a - b) // sort to always have [small, big]
 
 				coordsEntries.forEach(([keyBis, coord], index) => {
-					const neighboor = $(keyBis)
+					const neighboor = document.getElementById(keyBis)
 
 					if (!neighboor) {
 						return
@@ -327,7 +319,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 					link.order = val // Updates orders
 				})
 
-				clas(domlinkblocks, false, 'dragging') // to apply pointer-events: none
+				domlinkblocks?.classList.remove('dragging') // to apply pointer-events: none
 
 				eventDebounce({ ...data }) // saves
 				;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
@@ -383,18 +375,24 @@ function linksDragging(LIList: HTMLLIElement[]) {
 
 	LIList.forEach((li) => {
 		// Mobile need a short press to activate drag, to avoid scroll dragging
-		li.addEventListener('touchmove', () => clearTimeout(shortPressTimeout), { passive: true })
-		li.addEventListener('touchstart', (e) => (shortPressTimeout = setTimeout(() => activateDragMove(e), 220)))
+		li.addEventListener('touchmove', () => clearTimeout(shortPressTimeout), { passive: false })
+		li.addEventListener('touchstart', (e) => (shortPressTimeout = setTimeout(() => activateDragMove(e), 220)), {
+			passive: false,
+		})
 
 		// Desktop
 		li.addEventListener('mousedown', activateDragMove)
 	})
 
 	document.body.onmouseleave = endDrag
-	document.body.ontouchend = () => {
-		endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
-		document.body.removeEventListener('touchmove', triggerDragging) // and has to be here
-	}
+	document.body.addEventListener(
+		'touchend',
+		function () {
+			endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
+			document.body.removeEventListener('touchmove', triggerDragging) // and has to be here
+		},
+		{ passive: false }
+	)
 }
 
 function editEvents() {
@@ -417,7 +415,7 @@ function editEvents() {
 
 		removeLinkSelection()
 		removeblock(linkid)
-		editlink?.classList.toggle('shown', false)
+		editlink?.classList.remove('shown')
 	})
 
 	document.getElementById('e_submit')?.addEventListener('click', async function () {
@@ -444,14 +442,14 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 		if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
 
 		// Moves edit link to mouse position
-		const domeditlink = $('editlink')
+		const domeditlink = document.getElementById('editlink')
 		if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
 	}
 
 	const linkId = domlink.id
 	const domicon = domlink.querySelector('img')
 	const domedit = document.querySelector('#editlink')
-	const opendedSettings = has($('settings'), 'shown')
+	const opendedSettings = document.getElementById('settings')?.classList.contains('shown') ?? false
 
 	const data = await storage.get(linkId)
 	const { title, url, icon } = data[linkId] as Link
@@ -470,10 +468,9 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 	positionsEditWindow()
 
-	clas(domicon, true, 'selected')
-	clas(domedit, true, 'shown')
-	clas(domedit, opendedSettings, 'pushed')
-
+	domedit?.classList.add('shown')
+	domicon?.classList.add('selected')
+	domedit?.classList.toggle('pushed', opendedSettings)
 	domedit?.setAttribute('data-linkid', linkId)
 
 	if (!testOS.ios && !mobilecheck()) {
@@ -521,7 +518,7 @@ async function removeblock(linkId: string) {
 	const links = bundleLinks(data)
 	const target = data[linkId] as Link
 
-	document.getElementById(linkId)?.classList.toggle('removed', true)
+	document.getElementById(linkId)?.classList.add('removed')
 
 	delete data[linkId]
 
@@ -614,7 +611,16 @@ function textOnlyControl(block: HTMLLIElement, title: string, toText: boolean) {
 	const a = block.querySelector('a')
 
 	if (span && a) {
-		span.textContent = toText && title === '' ? extractDomain(a.href) : title
+		let origin = ''
+
+		try {
+			origin = new URL(a.href)?.origin
+		} catch (err) {
+			console.warn('Cannot get origin of URL')
+			origin = title
+		}
+
+		span.textContent = toText && title === '' ? origin : title
 	}
 }
 
@@ -704,7 +710,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 
 	if (testOS.ios || !mobilecheck()) {
-		const domeditlink = $('editlink')
+		const domeditlink = document.getElementById('editlink')
 		window.addEventListener('resize', () => {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
 		})
