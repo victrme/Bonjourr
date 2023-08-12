@@ -106,43 +106,48 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request }
 	eventDebounce({ searchbar })
 }
 
-function isValidURL(string: string) {
-	const pattern = /^(?:(?:https?):\/\/)?(?:\S+(?::\S*)?@)?(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
-	return pattern.test(string)
+function isValidURL(string: string): boolean {
+	try {
+		const url = new URL(string.startsWith('http') ? string : 'https://' + string)
+		const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
+		return domainPattern.test(url.host)
+	} catch (_) {
+		return false
+	}
+}
+
+function createSearchURL(val: string): string {
+	const URLs = {
+		google: 'https://www.google.com/search?q=%s',
+		ddg: 'https://duckduckgo.com/?q=%s',
+		startpage: 'https://www.startpage.com/do/search?query=%s',
+		qwant: 'https://www.qwant.com/?q=%s',
+		yahoo: 'https://search.yahoo.com/search?q=%s',
+		bing: 'https://www.bing.com/search?q=%s',
+		brave: 'https://search.brave.com/search?q=%s',
+		ecosia: 'https://www.ecosia.org/search?q=%s',
+		lilo: 'https://search.lilo.org/?q=%s',
+		baidu: 'https://www.baidu.com/s?wd=%s',
+	}
+
+	let searchURL = 'https://www.google.com/search?q=%s'
+	const engine = domcontainer?.dataset.engine || 'google'
+	const request = domcontainer?.dataset.request || ''
+
+	searchURL = tradThis(engine)
+
+	if (!searchURL.includes('%s') && engine in URLs) {
+		searchURL = URLs[engine as keyof typeof URLs]
+	}
+
+	if (engine === 'custom') {
+		searchURL = request
+	}
+
+	return searchURL.replace('%s', encodeURIComponent(val ?? ''))
 }
 
 function submitSearch(e: Event) {
-	function createSearchURL(val: string) {
-		const URLs = {
-			google: 'https://www.google.com/search?q=%s',
-			ddg: 'https://duckduckgo.com/?q=%s',
-			startpage: 'https://www.startpage.com/do/search?query=%s',
-			qwant: 'https://www.qwant.com/?q=%s',
-			yahoo: 'https://search.yahoo.com/search?q=%s',
-			bing: 'https://www.bing.com/search?q=%s',
-			brave: 'https://search.brave.com/search?q=%s',
-			ecosia: 'https://www.ecosia.org/search?q=%s',
-			lilo: 'https://search.lilo.org/?q=%s',
-			baidu: 'https://www.baidu.com/s?wd=%s',
-		}
-
-		let searchURL = 'https://www.google.com/search?q=%s'
-		const engine = domcontainer?.dataset.engine || 'google'
-		const request = domcontainer?.dataset.request || ''
-
-		searchURL = tradThis(engine)
-
-		if (!searchURL.includes('%s') && engine in URLs) {
-			searchURL = URLs[engine as keyof typeof URLs]
-		}
-
-		if (engine === 'custom') {
-			searchURL = request
-		}
-
-		return searchURL.replace('%s', encodeURIComponent(val ?? ''))
-	}
-
 	if (!domsearchbar) return
 
 	const target = domcontainer?.dataset.newtab === 'true' ? '_blank' : '_self'
@@ -150,7 +155,7 @@ function submitSearch(e: Event) {
 	let url = ''
 
 	if (isValidURL(val)) {
-		url = val.startsWith('http') ? val : 'http://' + val
+		url = val.startsWith('http') ? val : 'https://' + val
 	} else {
 		url = createSearchURL(val)
 	}
