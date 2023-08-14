@@ -272,12 +272,11 @@ async function suggestions(e: Event) {
 	let results: Suggestions = []
 
 	// API
-	const providerList = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant']
-	let engine = (domcontainer?.dataset.engine ?? '').replace('ddg', 'duckduckgo')
-	engine = providerList.includes(engine) ? engine : 'duckduckgo'
+	let engine = domcontainer?.dataset.engine
+	engine = (engine ?? '').replace('ddg', 'duckduckgo')
+	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
 
-	const query = encodeURIComponent(input.value ?? '')
-	const url = `${atob('@@SUGGESTIONS_API')}?q=${query}&with=${engine}`
+	const url = `${atob('@@SUGGESTIONS_API')}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
 
 	try {
 		results = (await (await fetch(url)).json()) as Suggestions
@@ -342,20 +341,25 @@ async function suggestions(e: Event) {
 
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
+	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
 
 	// Button display toggle
 	if (domsearchbar) {
 		toggleInputButton(value.length > 0)
 	}
 
-	// Don't suggest if user types a URL
-	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
+	if (value === '') {
+		document.querySelectorAll('#sb-suggestions li.shown')?.forEach((li) => li.classList.remove('shown'))
+		domsuggestions?.classList.remove('shown')
+		return
+	}
 
 	if (startsTypingProtocol || isValidURL(value)) {
 		domsuggestions?.classList.remove('shown')
-	} else {
-		suggestions(e)
+		return
 	}
+
+	suggestions(e)
 }
 
 function toggleInputButton(enabled: boolean) {
