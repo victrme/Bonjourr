@@ -87,6 +87,7 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
+			z-index: 3;
 			cursor: pointer;
 			pointer-events: none;
 
@@ -102,7 +103,6 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
-		z-index: 3;
 		place-self: center;
 	}
 
@@ -702,6 +702,7 @@
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 		border: 1px solid rgba(255, 255, 255, 0.075);
 		background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
+		z-index: 2;
 
 		&.shown {
 			display: block;
