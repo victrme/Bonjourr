@@ -137,18 +137,27 @@
 						<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
 					</span>
 
-					<input
-						type="text"
-						name="collection"
-						id="i_collection"
-						autocomplete="off"
-						placeholder="2nVzlQADDIE"
-						maxlength="256"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-					/>
+					<div class="superinput">
+						<input
+							type="text"
+							name="collection"
+							id="i_collection"
+							autocomplete="off"
+							placeholder="2nVzlQADDIE"
+							maxlength="256"
+							spellcheck="false"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+						/>
+
+						<button>
+							<span class="icon-loading">↺</span>
+							<span class="icon-warn">⚠</span>
+							<span class="icon-failed">⨉</span>
+							<span class="icon-validate">...</span>
+						</button>
+					</div>
 				</div>
 
 				<p class="tooltiptext ttcoll">

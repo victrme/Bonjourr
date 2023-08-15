@@ -5,6 +5,7 @@ import errorMessage from '../utils/errorMessage'
 import parse from '../utils/JSONparse'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
+import superinput from '../utils/superinput'
 
 import { UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
@@ -17,6 +18,8 @@ type UnsplashUpdate = {
 	collection?: string
 	every?: string
 }
+
+const collectionInput = superinput('i_collection')
 
 // collections source: https://unsplash.com/@bonjourr/collections
 const allCollectionType = {
@@ -294,7 +297,10 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	}
 
 	if (collection !== undefined) {
-		if (!navigator.onLine || typeof collection !== 'string') return
+		if (typeof collection !== 'string') {
+			collectionInput.fail('No internet connection')
+			return
+		}
 
 		// remove user collec
 		if (collection === '') {
@@ -305,18 +311,42 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 			storage.set({ unsplash })
 			localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+			collectionInput.toggle(false)
 
 			unsplashBackgrounds(unsplash)
 			return
 		}
 
+		if (!navigator.onLine) {
+			collectionInput.warn('No internet connection')
+			return
+		}
+
+		collectionInput.load()
+
 		// add new collec
+		chooseCollection(collection)
 		unsplash.collection = collection
 		unsplash.lastCollec = 'user'
 		unsplash.time = freqControl.set()
 		storage.set({ unsplash })
 
+		let list = await requestNewList('user')
+
+		list = []
+
+		if (list.length === 0) {
+			collectionInput.fail('Cannot get collection')
+			return
+		}
+
+		unsplashCache['user'] = list
+		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+
+		await preloadImage(unsplashCache['user'][0].url)
+
 		cacheControl(unsplashCache, chooseCollection(collection))
+		collectionInput.toggle(false)
 	}
 }
 
