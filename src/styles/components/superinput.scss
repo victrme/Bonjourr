@@ -1,0 +1,45 @@
+/* SUPERINPUT */
+
+.superinput {
+	display: flex;
+	width: 155px;
+
+	input[type='text'] {
+		width: 100%;
+	}
+
+	.si-status {
+		max-width: 0;
+		padding: 0;
+		margin: 0;
+		opacity: 0;
+		overflow-x: hidden;
+		text-align: center;
+		transition: max-width 0.2s, padding, 0.2s, opacity 0.1s, color 0s;
+	}
+
+	&.active .si-status {
+		opacity: 1;
+		max-width: 20px;
+		padding-left: 8px;
+		padding-right: 4px;
+	}
+
+	&.active .si-status i {
+		width: 20px;
+	}
+
+	&.load .si-status {
+		color: var(--color-light-text);
+	}
+
+	&.fail .si-status {
+		color: var(--color-red);
+		cursor: help;
+	}
+
+	&.warn .si-status {
+		color: orange;
+		cursor: help;
+	}
+}

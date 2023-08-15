@@ -333,8 +333,6 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		let list = await requestNewList('user')
 
-		list = []
-
 		if (list.length === 0) {
 			collectionInput.fail('Cannot get collection')
 			return
@@ -344,6 +342,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
 
 		await preloadImage(unsplashCache['user'][0].url)
+		sessionStorage.waitingForPreload = 'true'
 
 		cacheControl(unsplashCache, chooseCollection(collection))
 		collectionInput.toggle(false)

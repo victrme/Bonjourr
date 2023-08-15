@@ -434,7 +434,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
 		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
-		this.blur()
 	})
 
 	//

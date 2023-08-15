@@ -1,10 +1,12 @@
 export default function superinput(inputtarget: string) {
 	let input: HTMLInputElement
 	let wrapper: HTMLDivElement
+	let indicator: HTMLDivElement
 
 	setTimeout(() => {
 		input = document.getElementById(inputtarget) as HTMLInputElement
 		wrapper = input.parentElement as HTMLDivElement
+		indicator = input.nextElementSibling as HTMLDivElement
 
 		input.addEventListener('blur', () => toggle(false))
 		input.addEventListener('input', () => toggle(true))
@@ -12,26 +14,29 @@ export default function superinput(inputtarget: string) {
 
 	function toggle(force?: boolean) {
 		wrapper.classList.toggle('active', force)
+		wrapper.title = ''
 
 		if (force) {
-			wrapper.className = 'superinput active validate'
+			wrapper.className = 'superinput active'
+			indicator.textContent = '...'
 		}
-
-		wrapper.title = ''
 	}
 
 	function load() {
-		wrapper.className = 'superinput active loading'
+		wrapper.className = 'superinput active load'
 		wrapper.title = 'loading'
+		indicator.textContent = '↺'
+	}
+
+	function fail(err: string) {
+		wrapper.className = 'superinput active fail'
+		indicator.textContent = '⨉'
+		wrapper.title = err
 	}
 
 	function warn(err: string) {
 		wrapper.className = 'superinput active warn'
-		wrapper.title = err
-	}
-
-	function fail(err: string) {
-		wrapper.className = 'superinput active failed'
+		indicator.textContent = '⚠'
 		wrapper.title = err
 	}
 

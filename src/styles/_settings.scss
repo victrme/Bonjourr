@@ -1,4 +1,6 @@
 #settings {
+	@import './components/superinput.scss';
+
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -624,70 +626,6 @@
 			}
 		}
 	}
-
-	/**/
-
-	.superinput {
-		display: flex;
-		width: 155px;
-
-		input[type='text'] {
-			width: 100%;
-		}
-
-		button {
-			max-width: 0;
-			padding: 0;
-			margin: 0;
-			opacity: 0;
-			border: none;
-			overflow-x: hidden;
-			pointer-events: none;
-			touch-action: none;
-			cursor: default;
-			transition: max-width 0.2s, padding, 0.2s, opacity 0.1s;
-		}
-
-		button span {
-			display: none;
-		}
-
-		button span.icon-loading {
-			color: var(--color-light-text);
-		}
-
-		button span.icon-failed {
-			color: var(--color-red);
-		}
-
-		button span.icon-warn {
-			color: orange;
-		}
-
-		&.active {
-			button {
-				opacity: 1;
-				max-width: 40px;
-				padding-left: 10px;
-				padding-right: 5px;
-			}
-		}
-
-		&.loading span.icon-loading,
-		&.failed span.icon-failed,
-		&.warn span.icon-warn,
-		&.validate span.icon-validate {
-			display: inline-block;
-		}
-
-		&.validate button {
-			pointer-events: auto;
-			touch-action: auto;
-			cursor: pointer;
-		}
-	}
-
-	/**/
 
 	#clockoptions {
 		#w_clockface,
