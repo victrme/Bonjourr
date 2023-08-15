@@ -154,7 +154,7 @@ function collectionUpdater(unsplash: Unsplash): CollectionType {
 	return collec
 }
 
-async function requestNewList(collecType: CollectionType) {
+async function requestNewList(collecType: CollectionType): Promise<UnsplashImage[] | null> {
 	const header = new Headers()
 	const collecString = allCollectionType[collecType] || allCollectionType.day
 	const url = `https://api.unsplash.com/photos/random?collections=${collecString}&count=8`
@@ -167,19 +167,13 @@ async function requestNewList(collecType: CollectionType) {
 	resp = await fetch(url, { headers: header })
 
 	if (resp.status === 404) {
-		if (collecType === 'user') {
-			const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
-			return defaultCollectionList
-		} else {
-			return []
-		}
+		return null
 	}
 
 	json = await resp.json()
 
 	if (json.length === 1) {
-		const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
-		return defaultCollectionList
+		return null
 	}
 
 	const filteredList: UnsplashImage[] = []
@@ -333,7 +327,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		let list = await requestNewList('user')
 
-		if (list.length === 0) {
+		if (!list || list.length === 0) {
 			collectionInput.fail('Cannot get collection')
 			return
 		}
