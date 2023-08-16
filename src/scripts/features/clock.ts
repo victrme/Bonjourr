@@ -70,8 +70,12 @@ function greetings(date: Date, name?: string) {
 	}
 
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
+	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
+	const domname = document.getElementById('greeting-name') as HTMLSpanElement
+
 	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
-	domgreetings.textContent = tradThis(greet) + (name ? `, ${name}` : '')
+	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
+	domname.textContent = name ?? ''
 }
 
 function changeAnalogFace(face = 'none') {
