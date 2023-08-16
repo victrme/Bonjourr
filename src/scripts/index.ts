@@ -244,7 +244,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 
 	if (value === 'auto') {
 		const { now, rise, set } = sunTime()
-		const choice = now <= rise || now > set ? 'dark' : 'light'
+		const choice = now <= rise || now > set ? 'light' : 'dark'
 		document.documentElement.dataset.theme = choice
 	}
 
