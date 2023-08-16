@@ -1,4 +1,5 @@
 import { canDisplayInterface, freqControl } from '..'
+import superinput from '../utils/superinput'
 import parse from '../utils/JSONparse'
 import storage from '../storage'
 
@@ -13,6 +14,8 @@ type QuotesUpdate = {
 	userlist?: string
 	frequency?: string
 }
+
+const userQuotesInput = superinput('i_qtlist')
 
 function getUserQuoteSelection() {
 	return parseInt(localStorage.userQuoteSelection || '0')
@@ -117,12 +120,6 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 			)
 		}
 
-		function inputError(log: string) {
-			const input = document.getElementById('i_qtlist') as HTMLInputElement
-			input.value = ''
-			console.log(log)
-		}
-
 		let array: [string, string][] = []
 		let quote: Quote = { author: '', content: '' }
 
@@ -130,13 +127,13 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 			let userJSON = parse(userlist)
 
 			if (!userJSON) {
-				inputError('User quotes list is not valid JSON')
+				userQuotesInput.warn('User quotes list is not valid JSON')
 				return quotes.userlist
 			}
 
 			// if list is not valid, skip
 			if (validateUserQuotes(userJSON) === false) {
-				inputError('User quotes list is not of type [string, string][]')
+				userQuotesInput.warn('Should look like: [["author", "quote"], ..., ...]')
 				return quotes.userlist
 			}
 
