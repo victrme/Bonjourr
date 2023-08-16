@@ -18,7 +18,7 @@ type Blobs = {
 }
 
 type UpdateEvent = {
-	thumbnail?: HTMLElement
+	settings?: HTMLElement
 	refresh?: HTMLSpanElement
 	newfile?: FileList | null
 	freq?: string
@@ -246,9 +246,12 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	rem.addEventListener('click', deleteThisBackground)
 }
 
-async function displayCustomThumbnails(settingsDom: HTMLElement) {
-	const { ids, selected } = await localImages.get()
-	const thumbsAmount = document.getElementById('fileContainer')?.childElementCount || 0
+async function handleSettingsOptions(settingsDom: HTMLElement) {
+	const fileContainer = settingsDom.querySelector<HTMLElement>('#fileContainer')
+	const i_freq = settingsDom.querySelector<HTMLSelectElement>('#i_freq')
+
+	const { ids, selected, freq } = await localImages.get()
+	const thumbsAmount = fileContainer?.childElementCount || 0
 	const idsAndNotAllThumbs = ids.length > 0 && thumbsAmount < ids.length
 
 	if (idsAndNotAllThumbs) {
@@ -256,6 +259,10 @@ async function displayCustomThumbnails(settingsDom: HTMLElement) {
 			const blob = await getBlob(id, 'thumbnail')
 			if (blob) addThumbnail(blob, id, id === selected, settingsDom)
 		})
+	}
+
+	if (i_freq) {
+		i_freq.value = freq
 	}
 }
 
@@ -309,7 +316,7 @@ async function convertOldBackgroundStorage(every = 'pause') {
 
 export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
-		if (event?.thumbnail) displayCustomThumbnails(event?.thumbnail)
+		if (event?.settings) handleSettingsOptions(event?.settings)
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.freq) localImages.update({ freq: event?.freq })
 		if (event?.newfile) addNewImage(await dataURIsFromFiles(event.newfile)) // Note: To improve after >1.16.4 update

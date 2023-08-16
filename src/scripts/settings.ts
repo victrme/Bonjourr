@@ -202,7 +202,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
 	if (data.background_type === 'local') {
-		localBackgrounds({ thumbnail: settingsDom })
+		localBackgrounds({ settings: settingsDom })
 	}
 
 	// Update thumbnails grid max-height by watching changes
@@ -904,7 +904,7 @@ async function selectBackgroundType(cat: string) {
 	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
 
 	if (cat === 'local') {
-		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
+		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
 	}
 
