@@ -8,6 +8,9 @@ export default function superinput(inputtarget: string) {
 		wrapper = input.parentElement as HTMLDivElement
 		indicator = input.nextElementSibling as HTMLDivElement
 		input.addEventListener('blur', () => toggle(false))
+		input.addEventListener('input', () => {
+			if (wrapper.classList.contains('warn')) toggle(false)
+		})
 	}
 
 	function toggle(force?: boolean, value?: string) {
