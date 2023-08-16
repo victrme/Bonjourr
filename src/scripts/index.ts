@@ -494,6 +494,10 @@ function startup(data: Sync) {
 				version: version_curr,
 			}
 
+			if (data.lang === 'es') {
+				data.lang = 'es_ES'
+			}
+
 			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {
 				localStorage.hasUpdated = 'true'
 				localStorage.removeItem('translations')
