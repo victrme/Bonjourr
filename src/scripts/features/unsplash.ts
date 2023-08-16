@@ -290,56 +290,48 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		storage.set({ unsplash })
 	}
 
+	if (collection === '') {
+		const defaultColl = chooseCollection()
+		unsplashCache.user = []
+		unsplash.collection = ''
+		unsplash.lastCollec = defaultColl
+
+		storage.set({ unsplash })
+		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+		collectionInput.toggle(false, '2nVzlQADDIE')
+
+		unsplashBackgrounds(unsplash)
+		return
+	}
+
 	if (collection !== undefined) {
-		if (typeof collection !== 'string') {
-			collectionInput.fail('No internet connection')
-			return
-		}
-
-		// remove user collec
-		if (collection === '') {
-			const defaultColl = chooseCollection()
-			unsplashCache.user = []
-			unsplash.collection = ''
-			unsplash.lastCollec = defaultColl
-
-			storage.set({ unsplash })
-			localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
-			collectionInput.toggle(false)
-
-			unsplashBackgrounds(unsplash)
-			return
-		}
-
 		if (!navigator.onLine) {
-			collectionInput.warn('No internet connection')
-			return
+			return collectionInput.warn('No internet connection')
 		}
-
-		collectionInput.load()
 
 		// add new collec
 		chooseCollection(collection)
 		unsplash.collection = collection
 		unsplash.lastCollec = 'user'
 		unsplash.time = freqControl.set()
-		storage.set({ unsplash })
 
+		collectionInput.load()
 		let list = await requestNewList('user')
 
 		if (!list || list.length === 0) {
-			collectionInput.fail('Cannot get collection')
+			collectionInput.warn('Cannot get: ' + collection)
 			return
 		}
 
-		unsplashCache['user'] = list
 		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+		unsplashCache['user'] = list
+		storage.set({ unsplash })
 
 		await preloadImage(unsplashCache['user'][0].url)
 		sessionStorage.waitingForPreload = 'true'
 
 		cacheControl(unsplashCache, chooseCollection(collection))
-		collectionInput.toggle(false)
+		collectionInput.toggle(false, unsplash.collection)
 	}
 }
 
