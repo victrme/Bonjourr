@@ -187,7 +187,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 
 	if (timezone !== undefined) {
 		clockDate(zonedDate(timezone), data.usdate)
-		greetings(zonedDate(timezone), greeting)
+		greetings(zonedDate(timezone), data.greeting)
 	}
 
 	clock = {
