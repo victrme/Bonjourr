@@ -94,27 +94,7 @@ async function compressThumbnail(blob: Blob) {
 	return newBlob as Blob
 }
 
-async function dataURIsFromFiles(files: FileList): Promise<string[]> {
-	let URIs: string[] = []
-
-	for (const file of files) {
-		await new Promise((resolve) => {
-			let reader = new FileReader()
-			reader.onload = async function (e) {
-				if (typeof e.target?.result === 'string') {
-					URIs.push(e.target?.result as string)
-					resolve(true)
-				}
-				resolve(false)
-			}
-			reader.readAsDataURL(file)
-		})
-	}
-
-	return URIs
-}
-
-async function addNewImage(dataURIs: string[]) {
+async function addNewImage(filelist: FileList) {
 	let { ids, selected } = await localImages.get()
 	let blobs: { [key: string]: Blobs } = {}
 	let newIds: string[] = []
@@ -126,18 +106,16 @@ async function addNewImage(dataURIs: string[]) {
 		storage.set({ background_type: 'local' })
 	}
 
-	for (const dataURI of dataURIs) {
+	for (const file of filelist) {
 		const id = randomString(8)
 		newIds.push(id)
 		selected = id
 
-		const response = await fetch(dataURI)
-		const blob = await response.blob()
-		const thumbnail = await compressThumbnail(blob)
+		const thumbnail = await compressThumbnail(file)
 
 		blobs[id] = {
 			thumbnail: thumbnail,
-			background: blob,
+			background: file,
 		}
 
 		addThumbnail(thumbnail, id, false)
@@ -281,45 +259,12 @@ async function refreshCustom(button: HTMLSpanElement) {
 	setTimeout(() => localBackgrounds(), 100)
 }
 
-// Note: Can be removed after everyone updated from 1.16.4
-async function convertOldBackgroundStorage(every = 'pause') {
-	if (!chrome?.storage) {
-		return false
-	}
-
-	const local = (await new Promise((resolve) => chrome.storage.local.get(null, resolve))) as any // yolo
-	const customs: string[] = []
-
-	for (const id of local?.idsList ?? []) {
-		if (id !== local.selectedId) {
-			customs.push(local['custom_' + id])
-			chrome.storage.local.remove('custom_' + id)
-			chrome.storage.local.remove('customThumb_' + id)
-		}
-	}
-
-	if (local['custom_' + local.selectedId]) {
-		customs.push(local['custom_' + local.selectedId])
-		chrome.storage.local.remove('custom_' + local.selectedId)
-		chrome.storage.local.remove('customThumb_' + local.selectedId)
-	}
-
-	chrome.storage.local.remove('selectedId')
-	chrome.storage.local.remove('idsList')
-
-	if (customs.length > 0) {
-		localImages.set({ selected: '', ids: [], freq: every, last: Date.now() })
-		addNewImage(customs)
-		return true
-	}
-}
-
 export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
 		if (event?.settings) handleSettingsOptions(event?.settings)
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.freq) localImages.update({ freq: event?.freq })
-		if (event?.newfile) addNewImage(await dataURIsFromFiles(event.newfile)) // Note: To improve after >1.16.4 update
+		if (event?.newfile) addNewImage(event.newfile)
 		return
 	}
 
@@ -329,14 +274,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 
 		if (ids.length === 0) {
 			const data = await storage.get('unsplash')
-
-			// Note: Can be removed after everyone updated from 1.16.4
-			const hasConverted = await convertOldBackgroundStorage()
-
-			if (!hasConverted) {
-				unsplashBackgrounds(data.unsplash ?? null)
-			}
-
+			if (data) unsplashBackgrounds(data.unsplash ?? null)
 			return
 		}
 
