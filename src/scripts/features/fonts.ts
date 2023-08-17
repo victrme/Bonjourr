@@ -1,6 +1,7 @@
 import { canDisplayInterface } from '..'
 import storage from '../storage'
 
+import superinput from '../utils/superinput'
 import errorMessage from '../utils/errorMessage'
 import { eventDebounce } from '../utils/debounce'
 import { testOS } from '../utils'
@@ -8,6 +9,7 @@ import { testOS } from '../utils'
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
 import parse from '../utils/JSONparse'
+import { tradThis } from '../utils/translations'
 
 type FontList = {
 	family: string
@@ -21,6 +23,8 @@ type FontUpdateEvent = {
 	family?: string
 	weight?: string
 }
+
+const familyInput = superinput('i_customfont')
 
 const systemfont = (function () {
 	const fonts = {
@@ -45,10 +49,10 @@ const systemfont = (function () {
 // Needs a special method to detect system fonts.
 // Because of fingerprinting concerns,
 // Firefox and safari made fonts.check() useless
-function systemFontChecker(family: string) {
+function systemFontChecker(family: string): boolean {
 	const p = document.createElement('p')
 	p.setAttribute('style', 'position: absolute; opacity: 0; font-family: invalid font;')
-	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890'
+	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
 	document.getElementById('interface')?.prepend(p)
 
 	const first_w = p.getBoundingClientRect().width
@@ -60,6 +64,30 @@ function systemFontChecker(family: string) {
 	p.remove()
 
 	return hasLoadedFont
+}
+
+function waitForFontLoad(cb: Function) {
+	const p = document.createElement('p')
+	p.setAttribute('style', 'position: absolute; opacity: 0;')
+	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
+	document.getElementById('interface')?.prepend(p)
+
+	let lastwidth = p.getBoundingClientRect().width
+	let currwidth = lastwidth
+
+	let interval = setInterval(() => {
+		currwidth = p.getBoundingClientRect().width
+
+		console.log(lastwidth, currwidth)
+
+		if (currwidth !== lastwidth) {
+			clearInterval(interval)
+			p.remove()
+			cb()
+		}
+
+		lastwidth = currwidth
+	}, 100)
 }
 
 async function fetchFontList() {
@@ -246,9 +274,18 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 		if (systemFontChecker(family)) {
 			newfont.family = family
 		} else {
+			familyInput.load()
 			const fontlist = (await fetchFontList()) ?? []
 			newfont = await getNewFont(fontlist, family)
 			fontface = (await fetchFontface(newfont.url)) ?? ''
+
+			if (fontface) {
+				waitForFontLoad(() => {
+					familyInput.toggle(false, family)
+				})
+			} else {
+				familyInput.warn(`Cannot load "${family}"`)
+			}
 		}
 
 		if (newfont.family) {
@@ -258,9 +295,6 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			localStorage.fontface = fontface
 			setWeightSettings(newfont.availWeights)
 			eventDebounce({ font: { size: font.size, ...newfont } })
-
-			i_customfont.value = ''
-			i_customfont.placeholder = family
 		}
 	}
 
