@@ -319,19 +319,20 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		let list = await requestNewList('user')
 
 		if (!list || list.length === 0) {
-			collectionInput.warn('Cannot get: ' + collection)
+			collectionInput.warn(`Cannot get "${collection}"`)
 			return
 		}
 
-		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
 		unsplashCache['user'] = list
-		storage.set({ unsplash })
 
 		await preloadImage(unsplashCache['user'][0].url)
-		sessionStorage.waitingForPreload = 'true'
+		preloadImage(unsplashCache['user'][1].url)
+		loadBackground(unsplashCache['user'][0])
 
-		cacheControl(unsplashCache, chooseCollection(collection))
 		collectionInput.toggle(false, unsplash.collection)
+
+		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+		storage.set({ unsplash })
 	}
 }
 
