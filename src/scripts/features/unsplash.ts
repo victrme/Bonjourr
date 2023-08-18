@@ -5,6 +5,7 @@ import errorMessage from '../utils/errorMessage'
 import parse from '../utils/JSONparse'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
+import superinput from '../utils/superinput'
 
 import { UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
@@ -17,6 +18,8 @@ type UnsplashUpdate = {
 	collection?: string
 	every?: string
 }
+
+const collectionInput = superinput('i_collection')
 
 // collections source: https://unsplash.com/@bonjourr/collections
 const allCollectionType = {
@@ -151,7 +154,7 @@ function collectionUpdater(unsplash: Unsplash): CollectionType {
 	return collec
 }
 
-async function requestNewList(collecType: CollectionType) {
+async function requestNewList(collecType: CollectionType): Promise<UnsplashImage[] | null> {
 	const header = new Headers()
 	const collecString = allCollectionType[collecType] || allCollectionType.day
 	const url = `https://api.unsplash.com/photos/random?collections=${collecString}&count=8`
@@ -164,19 +167,13 @@ async function requestNewList(collecType: CollectionType) {
 	resp = await fetch(url, { headers: header })
 
 	if (resp.status === 404) {
-		if (collecType === 'user') {
-			const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
-			return defaultCollectionList
-		} else {
-			return []
-		}
+		return null
 	}
 
 	json = await resp.json()
 
 	if (json.length === 1) {
-		const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
-		return defaultCollectionList
+		return null
 	}
 
 	const filteredList: UnsplashImage[] = []
@@ -293,30 +290,49 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		storage.set({ unsplash })
 	}
 
+	if (collection === '') {
+		const defaultColl = chooseCollection()
+		unsplashCache.user = []
+		unsplash.collection = ''
+		unsplash.lastCollec = defaultColl
+
+		storage.set({ unsplash })
+		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+		collectionInput.toggle(false, '2nVzlQADDIE')
+
+		unsplashBackgrounds(unsplash)
+		return
+	}
+
 	if (collection !== undefined) {
-		if (!navigator.onLine || typeof collection !== 'string') return
-
-		// remove user collec
-		if (collection === '') {
-			const defaultColl = chooseCollection()
-			unsplashCache.user = []
-			unsplash.collection = ''
-			unsplash.lastCollec = defaultColl
-
-			storage.set({ unsplash })
-			localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
-
-			unsplashBackgrounds(unsplash)
-			return
+		if (!navigator.onLine) {
+			return collectionInput.warn('No internet connection')
 		}
 
 		// add new collec
+		chooseCollection(collection)
 		unsplash.collection = collection
 		unsplash.lastCollec = 'user'
 		unsplash.time = freqControl.set()
-		storage.set({ unsplash })
 
-		cacheControl(unsplashCache, chooseCollection(collection))
+		collectionInput.load()
+		let list = await requestNewList('user')
+
+		if (!list || list.length === 0) {
+			collectionInput.warn(`Cannot get "${collection}"`)
+			return
+		}
+
+		unsplashCache['user'] = list
+
+		await preloadImage(unsplashCache['user'][0].url)
+		preloadImage(unsplashCache['user'][1].url)
+		loadBackground(unsplashCache['user'][0])
+
+		collectionInput.toggle(false, unsplash.collection)
+
+		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+		storage.set({ unsplash })
 	}
 }
 

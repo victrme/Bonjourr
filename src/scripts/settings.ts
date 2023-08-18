@@ -205,6 +205,12 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		localBackgrounds({ settings: settingsDom })
 	}
 
+	// Unsplash collection placeholder
+	if (data?.unsplash?.collection) {
+		const coll = data?.unsplash?.collection
+		paramId('i_collection')?.setAttribute('placeholder', coll ? coll : '2nVzlQADDIE')
+	}
+
 	// Update thumbnails grid max-height by watching changes
 	const fileContainer = settingsDom.querySelector<HTMLElement>('#fileContainer')
 	const optionsDom = settingsDom.querySelector<HTMLElement>('#local_options')
@@ -434,7 +440,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
 		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
-		this.blur()
 	})
 
 	//
