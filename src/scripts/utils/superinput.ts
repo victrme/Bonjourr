@@ -1,12 +1,13 @@
 export default function superinput(inputtarget: string) {
 	let input: HTMLInputElement
 	let wrapper: HTMLDivElement
-	let indicator: HTMLDivElement
+	let statusicon: HTMLElement
 
 	function init() {
 		input = document.getElementById(inputtarget) as HTMLInputElement
 		wrapper = input.parentElement as HTMLDivElement
-		indicator = input.nextElementSibling as HTMLDivElement
+		statusicon = wrapper.querySelector('i') as HTMLElement
+
 		input.addEventListener('blur', () => toggle(false))
 		input.addEventListener('input', () => {
 			if (wrapper.classList.contains('warn')) toggle(false)
@@ -25,13 +26,13 @@ export default function superinput(inputtarget: string) {
 	function load() {
 		wrapper.className = 'superinput active load'
 		wrapper.title = 'loading'
-		indicator.textContent = '↺'
+		statusicon.className = 'gg-spinner'
 	}
 
 	function warn(err: string) {
 		wrapper.className = 'superinput active warn'
-		indicator.textContent = '⚠'
 		wrapper.title = err
+		statusicon.className = 'gg-danger'
 	}
 
 	setTimeout(() => init(), 400)
