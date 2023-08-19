@@ -1,4 +1,4 @@
-import { testOS, getBrowser, bundleLinks, mobilecheck, randomString, stringMaxSize, closeEditLink } from '../utils'
+import { SYSTEM_OS, BROWSER, IS_MOBILE, bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
 import { tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
@@ -42,7 +42,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		anchor.setAttribute('rel', 'noreferrer noopener')
 
 		if (isnewtab) {
-			getBrowser() === 'safari'
+			BROWSER === 'safari'
 				? anchor.addEventListener('click', handleSafariNewtab)
 				: anchor.setAttribute('target', '_blank')
 		}
@@ -129,7 +129,7 @@ function removeLinkSelection() {
 
 function addEvents(elem: HTMLLIElement) {
 	// long press on iOS
-	if (testOS.ios) {
+	if (SYSTEM_OS === 'ios') {
 		let timer = 0
 
 		elem.addEventListener(
@@ -473,7 +473,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	domedit?.classList.toggle('pushed', opendedSettings)
 	domedit?.setAttribute('data-linkid', linkId)
 
-	if (!testOS.ios && !mobilecheck()) {
+	if (SYSTEM_OS !== 'ios' && !IS_MOBILE) {
 		domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
 	}
 }
@@ -656,7 +656,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 
 		document.querySelectorAll('.block a').forEach((a) => {
 			//
-			if (getBrowser() === 'safari') {
+			if (BROWSER === 'safari') {
 				if (newtab) a.addEventListener('click', handleSafariNewtab)
 				else a.removeEventListener('click', handleSafariNewtab)
 				return
@@ -709,7 +709,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 
 	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
 
-	if (testOS.ios || !mobilecheck()) {
+	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		const domeditlink = document.getElementById('editlink')
 		window.addEventListener('resize', () => {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()

@@ -4,7 +4,7 @@ import storage from '../storage'
 import superinput from '../utils/superinput'
 import errorMessage from '../utils/errorMessage'
 import { eventDebounce } from '../utils/debounce'
-import { detectPlatform, testOS } from '../utils'
+import { PLATFORM, SYSTEM_OS } from '../utils'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
@@ -35,15 +35,11 @@ const systemfont = (function () {
 		apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
 	}
 
-	const { windows, android, mac, ios } = testOS
-	const notAppleOrWindows = !mac && !windows && !ios
-
-	if (windows) return fonts.windows
-	if (android) return fonts.android
-	if (mac || ios) return fonts.apple
-	if (notAppleOrWindows) return fonts.linux
-
-	return fonts.fallback
+	if (SYSTEM_OS === 'windows') return fonts.windows
+	else if (SYSTEM_OS === 'android') return fonts.android
+	else if (SYSTEM_OS === 'mac') return fonts.apple
+	else if (SYSTEM_OS === 'ios') return fonts.apple
+	else return fonts.linux
 })()
 
 // Needs a special method to detect system fonts.
@@ -156,7 +152,7 @@ async function getNewFont(list: FontList, currentFamily: string) {
 		const fontIsVariable = variableFontList.includes(family)
 
 		// no variable fonts on firefox because of aggregious load times (~70ms)
-		if (fontIsVariable && detectPlatform() !== 'firefox') {
+		if (fontIsVariable && PLATFORM !== 'firefox') {
 			url += encodeURI(`css2?family=${family.replace(/ /g, '+')}:wght@${variants[0]}..${variants.at(-1)}`)
 		} else {
 			url += encodeURI(`css?family=${family.replace(/ /g, '+')}:wght@${variants.join(';')}`)
@@ -174,7 +170,7 @@ async function getNewFont(list: FontList, currentFamily: string) {
 		url: '',
 		family: '',
 		availWeights: [] as string[],
-		weight: testOS.windows ? '400' : '300',
+		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	}
 }
 
@@ -247,7 +243,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	if (isRemovingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLInputElement
 		const domstyle = document.getElementById('fontstyle') as HTMLStyleElement
-		const baseWeight = testOS.windows ? '400' : '300'
+		const baseWeight = SYSTEM_OS === 'windows' ? '400' : '300'
 
 		domstyle.textContent = ''
 		document.documentElement.style.setProperty('--font-family', '')

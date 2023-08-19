@@ -4,41 +4,64 @@ import langList from './langs'
 
 type LangList = keyof typeof langList
 
-export const mobilecheck = () =>
-	navigator.userAgentData
-		? navigator.userAgentData.mobile
-		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+//
+// CONSTS
+//
 
-export const stringMaxSize = (str: string = '', size: number) => (str.length > size ? str.slice(0, size) : str)
+const protocol = window.location.protocol
+const userAgent = window.navigator.userAgent.toLowerCase()
+const appVersion = window.navigator.appVersion
 
-export const minutator = (date: Date) => date.getHours() * 60 + date.getMinutes()
+export const SYSTEM_OS = appVersion.includes('Macintosh')
+	? 'mac'
+	: appVersion.includes('Windows')
+	? 'windows'
+	: userAgent.includes('Android')
+	? 'android'
+	: ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+	  (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+	? 'ios'
+	: 'unknown'
 
-export const randomString = (len: number) => {
-	const chars = 'abcdefghijklmnopqr'
-	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
-}
-
-export function detectPlatform() {
-	const p = window.location.protocol
-	return p === 'moz-extension:'
+export const PLATFORM =
+	protocol === 'moz-extension:'
 		? 'firefox'
-		: p === 'chrome-extension:'
+		: protocol === 'chrome-extension:'
 		? 'chrome'
-		: p === 'safari-web-extension:'
+		: protocol === 'safari-web-extension:'
 		? 'safari'
 		: 'online'
-}
 
-export const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
-	return agent.indexOf('edg/' || 'edge') > -1
+export const BROWSER =
+	userAgent.indexOf('edg/' || 'edge') > -1
 		? 'edge'
-		: agent.indexOf('chrome') > -1
+		: userAgent.indexOf('chrome') > -1
 		? 'chrome'
-		: agent.indexOf('firefox') > -1
+		: userAgent.indexOf('firefox') > -1
 		? 'firefox'
-		: agent.indexOf('safari') > -1
+		: userAgent.indexOf('safari') > -1
 		? 'safari'
 		: 'other'
+
+export const IS_MOBILE = navigator.userAgentData
+	? navigator.userAgentData.mobile
+	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+
+//
+// FUNCS
+//
+
+export function stringMaxSize(str: string = '', size: number) {
+	return str.length > size ? str.slice(0, size) : str
+}
+
+export function minutator(date: Date) {
+	return date.getHours() * 60 + date.getMinutes()
+}
+
+export function randomString(len: number) {
+	const chars = 'abcdefghijklmnopqr'
+	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
 
 export function periodOfDay(sunTime: { rise: number; set: number; now: number }, time?: number) {
@@ -130,14 +153,9 @@ export function closeEditLink() {
 	}, 200)
 }
 
-export const testOS = {
-	mac: window.navigator.appVersion.includes('Macintosh'),
-	windows: window.navigator.appVersion.includes('Windows'),
-	android: window.navigator.userAgent.includes('Android'),
-	ios:
-		['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
-}
+//
+// DEFAULTS
+//
 
 let defaultLang: LangList = 'en'
 const navLang = navigator.language.replace('-', '_')
@@ -150,7 +168,7 @@ for (const [code] of Object.entries(langList)) {
 }
 
 export const syncDefaults: Sync = {
-	about: { browser: detectPlatform(), version: '1.17.2' },
+	about: { browser: PLATFORM, version: '1.17.2' },
 	showall: false,
 	lang: defaultLang,
 	dark: 'system',
@@ -226,7 +244,7 @@ export const syncDefaults: Sync = {
 		family: '',
 		size: '14',
 		availWeights: [],
-		weight: testOS.windows ? '400' : '300',
+		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	move: {
 		selection: 'single',
