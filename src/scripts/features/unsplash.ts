@@ -26,217 +26,18 @@ const bonjourrCollections = {
 	night: 'bHDh4Ae7O8o',
 }
 
-function getCache(): UnsplashCache {
-	return parse(localStorage.unsplashCache) ?? { ...localDefaults.unsplashCache }
-}
-
-async function preloadImage(src: string) {
-	const img = new Image()
-
-	sessionStorage.setItem('waitingForPreload', 'true')
-
-	try {
-		img.src = src
-		await img.decode()
-		img.remove()
-		sessionStorage.removeItem('waitingForPreload')
-	} catch (error) {
-		console.warn('Could not decode image: ', src)
+export default async function unsplashBackgrounds(init: Unsplash | null, event?: UnsplashUpdate) {
+	if (event) {
+		updateUnsplash(event)
 	}
-}
 
-function imgCredits(image: UnsplashImage) {
-	const domcredit = document.getElementById('credit')
-	let needsSpacer = false
-	let artist = ''
-	let photoLocation = ''
-	let exifDescription = ''
-	const referral = '?utm_source=Bonjourr&utm_medium=referral'
-	const { city, country, name, username, link, exif } = image
-
-	if (!city && !country) {
-		photoLocation = tradThis('Photo by ')
-	} else {
-		if (city) photoLocation = city + ', '
-		if (country) {
-			photoLocation += country
-			needsSpacer = true
+	if (init) {
+		try {
+			cacheControl(init)
+		} catch (e) {
+			errorMessage(e)
 		}
 	}
-
-	if (exif) {
-		const orderedExifData = [
-			{ key: 'model', format: `%val% - ` },
-			{ key: 'aperture', format: `f/%val% ` },
-			{ key: 'exposure_time', format: `%val%s ` },
-			{ key: 'iso', format: `ISO %val% ` },
-			{ key: 'focal_length', format: `%val%mm` },
-		]
-
-		orderedExifData.forEach(({ key, format }) => {
-			if (Object.keys(exif).includes(key)) {
-				const exifVal = exif[key as keyof typeof exif]
-
-				if (exifVal) {
-					exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
-				}
-			}
-		})
-	}
-
-	// Force Capitalization
-	artist = name
-		.split(' ')
-		.map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
-		.join(' ')
-
-	const locationDOM = document.createElement('a')
-	const spacerDOM = document.createElement('span')
-	const artistDOM = document.createElement('a')
-	const exifDOM = document.createElement('p')
-
-	exifDOM.className = 'exif'
-	exifDOM.textContent = exifDescription
-	locationDOM.textContent = photoLocation
-	artistDOM.textContent = artist
-	spacerDOM.textContent = ` - `
-
-	locationDOM.href = link + referral
-	artistDOM.href = 'https://unsplash.com/@' + username + referral
-
-	if (domcredit) {
-		domcredit.textContent = ''
-
-		domcredit.appendChild(exifDOM)
-		domcredit.appendChild(locationDOM)
-		if (needsSpacer) domcredit.appendChild(spacerDOM)
-		domcredit.appendChild(artistDOM)
-
-		document.getElementById('creditContainer')?.classList.toggle('shown', true)
-	}
-}
-
-function loadBackground(props: UnsplashImage) {
-	imgBackground(props.url, props.color)
-	imgCredits(props)
-}
-
-async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
-	const header = new Headers()
-	const url = `https://api.unsplash.com/photos/random?collections=${collection}&count=8`
-	header.append('Authorization', `Client-ID ${atob('@@UNSPLASH_API')}`)
-	header.append('Accept-Version', 'v1')
-
-	let resp: Response
-	let json: JSON[]
-
-	resp = await fetch(url, { headers: header })
-
-	if (resp.status === 404) {
-		return null
-	}
-
-	json = await resp.json()
-
-	if (json.length === 1) {
-		return null
-	}
-
-	const filteredList: UnsplashImage[] = []
-	const { width, height } = screen
-	const dpr = window.devicePixelRatio
-
-	// Increase compression with pixel density
-	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
-	const quality = Math.min(100 - dpr * 20, 75)
-
-	json.forEach((img: any) => {
-		filteredList.push({
-			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
-			link: img.links.html,
-			username: img.user.username,
-			name: img.user.name,
-			city: img.location.city,
-			country: img.location.country,
-			color: img.color,
-			exif: img.exif,
-			desc: img.description,
-		})
-	})
-
-	return filteredList
-}
-
-async function cacheControl(unsplash: Unsplash) {
-	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
-	const cache = getCache()
-
-	const needNewImage = freqControl.get(every, time)
-	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
-
-	if (needNewCollec && lastCollec !== 'user') {
-		lastCollec = periodOfDay(sunTime())
-	}
-
-	let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]
-	let list = cache[lastCollec]
-
-	if (list.length === 0) {
-		const newlist = await requestNewList(collectionId)
-
-		if (!newlist) {
-			return
-		}
-
-		list = newlist
-		await preloadImage(list[0].url)
-
-		cache[lastCollec] = list
-		localStorage.setItem('unsplashCache', JSON.stringify(cache))
-		sessionStorage.setItem('waitingForPreload', 'true')
-	}
-
-	if (sessionStorage.waitingForPreload === 'true') {
-		loadBackground(list[0])
-		await preloadImage(list[1].url)
-		return
-	}
-
-	if (!needNewImage) {
-		loadBackground(list[0])
-		return
-	}
-
-	// Needs new image, Update time
-	unsplash.lastCollec = lastCollec
-	unsplash.time = freqControl.set()
-
-	if (list.length > 1) {
-		list.shift()
-	}
-
-	loadBackground(list[0])
-
-	// If end of cache, get & save new list
-	if (list.length === 1 && navigator.onLine) {
-		const newList = await requestNewList(collectionId)
-
-		if (newList) {
-			cache[unsplash.lastCollec] = list.concat(newList)
-			await preloadImage(newList[0].url)
-			localStorage.setItem('unsplashCache', JSON.stringify(cache))
-		}
-
-		return
-	}
-
-	// Or preload next
-	else if (list.length > 1) {
-		await preloadImage(list[1].url)
-	}
-
-	storage.set({ unsplash })
-	localStorage.setItem('unsplashCache', JSON.stringify(cache))
 }
 
 async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
@@ -315,16 +116,215 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	}
 }
 
-export default async function unsplashBackgrounds(init: Unsplash | null, event?: UnsplashUpdate) {
-	if (event) {
-		updateUnsplash(event)
+async function cacheControl(unsplash: Unsplash) {
+	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
+	const cache = getCache()
+
+	const needNewImage = freqControl.get(every, time)
+	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
+
+	if (needNewCollec && lastCollec !== 'user') {
+		lastCollec = periodOfDay(sunTime())
 	}
 
-	if (init) {
-		try {
-			cacheControl(init)
-		} catch (e) {
-			errorMessage(e)
+	let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]
+	let list = cache[lastCollec]
+
+	if (list.length === 0) {
+		const newlist = await requestNewList(collectionId)
+
+		if (!newlist) {
+			return
 		}
+
+		list = newlist
+		await preloadImage(list[0].url)
+
+		cache[lastCollec] = list
+		localStorage.setItem('unsplashCache', JSON.stringify(cache))
+		sessionStorage.setItem('waitingForPreload', 'true')
+	}
+
+	if (sessionStorage.waitingForPreload === 'true') {
+		loadBackground(list[0])
+		await preloadImage(list[1].url)
+		return
+	}
+
+	if (!needNewImage) {
+		loadBackground(list[0])
+		return
+	}
+
+	// Needs new image, Update time
+	unsplash.lastCollec = lastCollec
+	unsplash.time = freqControl.set()
+
+	if (list.length > 1) {
+		list.shift()
+	}
+
+	loadBackground(list[0])
+
+	// If end of cache, get & save new list
+	if (list.length === 1 && navigator.onLine) {
+		const newList = await requestNewList(collectionId)
+
+		if (newList) {
+			cache[unsplash.lastCollec] = list.concat(newList)
+			await preloadImage(newList[0].url)
+			localStorage.setItem('unsplashCache', JSON.stringify(cache))
+		}
+
+		return
+	}
+
+	// Or preload next
+	else if (list.length > 1) {
+		await preloadImage(list[1].url)
+	}
+
+	storage.set({ unsplash })
+	localStorage.setItem('unsplashCache', JSON.stringify(cache))
+}
+
+async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
+	const header = new Headers()
+	const url = `https://api.unsplash.com/photos/random?collections=${collection}&count=8`
+	header.append('Authorization', `Client-ID ${atob('@@UNSPLASH_API')}`)
+	header.append('Accept-Version', 'v1')
+
+	let resp: Response
+	let json: JSON[]
+
+	resp = await fetch(url, { headers: header })
+
+	if (resp.status === 404) {
+		return null
+	}
+
+	json = await resp.json()
+
+	if (json.length === 1) {
+		return null
+	}
+
+	const filteredList: UnsplashImage[] = []
+	const { width, height } = screen
+	const dpr = window.devicePixelRatio
+
+	// Increase compression with pixel density
+	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
+	const quality = Math.min(100 - dpr * 20, 75)
+
+	json.forEach((img: any) => {
+		filteredList.push({
+			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
+			link: img.links.html,
+			username: img.user.username,
+			name: img.user.name,
+			city: img.location.city,
+			country: img.location.country,
+			color: img.color,
+			exif: img.exif,
+			desc: img.description,
+		})
+	})
+
+	return filteredList
+}
+
+function imgCredits(image: UnsplashImage) {
+	const domcredit = document.getElementById('credit')
+	let needsSpacer = false
+	let artist = ''
+	let photoLocation = ''
+	let exifDescription = ''
+	const referral = '?utm_source=Bonjourr&utm_medium=referral'
+	const { city, country, name, username, link, exif } = image
+
+	if (!city && !country) {
+		photoLocation = tradThis('Photo by ')
+	} else {
+		if (city) photoLocation = city + ', '
+		if (country) {
+			photoLocation += country
+			needsSpacer = true
+		}
+	}
+
+	if (exif) {
+		const orderedExifData = [
+			{ key: 'model', format: `%val% - ` },
+			{ key: 'aperture', format: `f/%val% ` },
+			{ key: 'exposure_time', format: `%val%s ` },
+			{ key: 'iso', format: `ISO %val% ` },
+			{ key: 'focal_length', format: `%val%mm` },
+		]
+
+		orderedExifData.forEach(({ key, format }) => {
+			if (Object.keys(exif).includes(key)) {
+				const exifVal = exif[key as keyof typeof exif]
+
+				if (exifVal) {
+					exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
+				}
+			}
+		})
+	}
+
+	// Force Capitalization
+	artist = name
+		.split(' ')
+		.map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
+		.join(' ')
+
+	const locationDOM = document.createElement('a')
+	const spacerDOM = document.createElement('span')
+	const artistDOM = document.createElement('a')
+	const exifDOM = document.createElement('p')
+
+	exifDOM.className = 'exif'
+	exifDOM.textContent = exifDescription
+	locationDOM.textContent = photoLocation
+	artistDOM.textContent = artist
+	spacerDOM.textContent = ` - `
+
+	locationDOM.href = link + referral
+	artistDOM.href = 'https://unsplash.com/@' + username + referral
+
+	if (domcredit) {
+		domcredit.textContent = ''
+
+		domcredit.appendChild(exifDOM)
+		domcredit.appendChild(locationDOM)
+		if (needsSpacer) domcredit.appendChild(spacerDOM)
+		domcredit.appendChild(artistDOM)
+
+		document.getElementById('creditContainer')?.classList.toggle('shown', true)
+	}
+}
+
+function getCache(): UnsplashCache {
+	return parse(localStorage.unsplashCache) ?? { ...localDefaults.unsplashCache }
+}
+
+function loadBackground(props: UnsplashImage) {
+	imgBackground(props.url, props.color)
+	imgCredits(props)
+}
+
+async function preloadImage(src: string) {
+	const img = new Image()
+
+	sessionStorage.setItem('waitingForPreload', 'true')
+
+	try {
+		img.src = src
+		await img.decode()
+		img.remove()
+		sessionStorage.removeItem('waitingForPreload')
+	} catch (error) {
+		console.warn('Could not decode image: ', src)
 	}
 }
