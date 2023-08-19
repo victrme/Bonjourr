@@ -494,6 +494,7 @@ function startup(data: Sync) {
 				version: version_curr,
 			}
 
+			// #229
 			if (data.lang === 'es') {
 				data.lang = 'es_ES'
 			}
