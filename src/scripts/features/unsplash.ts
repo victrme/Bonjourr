@@ -1,4 +1,4 @@
-import { periodOfDay, turnRefreshButton, localDefaults } from '../utils'
+import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
@@ -7,11 +7,8 @@ import sunTime from '../utils/suntime'
 import storage from '../storage'
 import superinput from '../utils/superinput'
 
-import { UnsplashImage } from '../types/local'
+import { UnsplashCache, UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
-
-// TODO: Separate Collection type with users string
-type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
 type UnsplashUpdate = {
 	refresh?: HTMLElement
@@ -21,16 +18,15 @@ type UnsplashUpdate = {
 
 const collectionInput = superinput('i_collection')
 
-// collections source: https://unsplash.com/@bonjourr/collections
-const allCollectionType = {
+// https://unsplash.com/@bonjourr/collections
+const bonjourrCollections = {
 	noon: 'GD4aOSg4yQE',
 	day: 'o8uX55RbBPs',
 	evening: '3M2rKTckZaQ',
 	night: 'bHDh4Ae7O8o',
-	user: '',
 }
 
-function getCache() {
+function getCache(): UnsplashCache {
 	return parse(localStorage.unsplashCache) ?? { ...localDefaults.unsplashCache }
 }
 
@@ -125,39 +121,9 @@ function loadBackground(props: UnsplashImage) {
 	imgCredits(props)
 }
 
-function chooseCollection(customCollection?: string): CollectionType {
-	if (customCollection) {
-		customCollection = customCollection.replaceAll(` `, '')
-		allCollectionType.user = customCollection
-		return 'user'
-	}
-
-	return periodOfDay(sunTime())
-}
-
-function collectionUpdater(unsplash: Unsplash): CollectionType {
-	const { every, lastCollec, collection } = unsplash
-	const pause = every === 'pause'
-	const day = every === 'day'
-
-	if ((pause || day) && lastCollec) {
-		return lastCollec // Keeps same collection on >day so that user gets same type of backgrounds
-	}
-
-	const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
-	unsplash.lastCollec = collec
-
-	if (collec !== lastCollec) {
-		storage.set({ unsplash: unsplash }, () => console.warn('bad'))
-	}
-
-	return collec
-}
-
-async function requestNewList(collecType: CollectionType): Promise<UnsplashImage[] | null> {
+async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
 	const header = new Headers()
-	const collecString = allCollectionType[collecType] || allCollectionType.day
-	const url = `https://api.unsplash.com/photos/random?collections=${collecString}&count=8`
+	const url = `https://api.unsplash.com/photos/random?collections=${collection}&count=8`
 	header.append('Authorization', `Client-ID ${atob('@@UNSPLASH_API')}`)
 	header.append('Accept-Version', 'v1')
 
@@ -201,18 +167,31 @@ async function requestNewList(collecType: CollectionType): Promise<UnsplashImage
 	return filteredList
 }
 
-async function cacheControl(unsplash: Unsplash, collecType: CollectionType) {
-	const needNewImage = freqControl.get(unsplash.every, unsplash.time)
+async function cacheControl(unsplash: Unsplash) {
+	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
 	const cache = getCache()
-	let list = cache[collecType]
 
-	if (cache[collecType].length === 0) {
-		list = await requestNewList(collecType)
-		if (!list) return
+	const needNewImage = freqControl.get(every, time)
+	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
 
+	if (needNewCollec && lastCollec !== 'user') {
+		lastCollec = periodOfDay(sunTime())
+	}
+
+	let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]
+	let list = cache[lastCollec]
+
+	if (list.length === 0) {
+		const newlist = await requestNewList(collectionId)
+
+		if (!newlist) {
+			return
+		}
+
+		list = newlist
 		await preloadImage(list[0].url)
 
-		cache[collecType] = list
+		cache[lastCollec] = list
 		localStorage.setItem('unsplashCache', JSON.stringify(cache))
 		sessionStorage.setItem('waitingForPreload', 'true')
 	}
@@ -229,7 +208,7 @@ async function cacheControl(unsplash: Unsplash, collecType: CollectionType) {
 	}
 
 	// Needs new image, Update time
-	unsplash.lastCollec = collecType
+	unsplash.lastCollec = lastCollec
 	unsplash.time = freqControl.set()
 
 	if (list.length > 1) {
@@ -240,12 +219,14 @@ async function cacheControl(unsplash: Unsplash, collecType: CollectionType) {
 
 	// If end of cache, get & save new list
 	if (list.length === 1 && navigator.onLine) {
-		const newList = await requestNewList(collecType)
-		if (!newList) return
+		const newList = await requestNewList(collectionId)
 
-		cache[collecType] = list.concat(newList)
-		await preloadImage(newList[0].url)
-		localStorage.setItem('unsplashCache', JSON.stringify(cache))
+		if (newList) {
+			cache[unsplash.lastCollec] = list.concat(newList)
+			await preloadImage(newList[0].url)
+			localStorage.setItem('unsplashCache', JSON.stringify(cache))
+		}
+
 		return
 	}
 
@@ -276,7 +257,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		storage.set({ unsplash })
 		turnRefreshButton(refresh, true)
 
-		setTimeout(() => cacheControl(unsplash, collectionUpdater(unsplash)), 400)
+		setTimeout(() => cacheControl(unsplash), 400)
 	}
 
 	if (every !== undefined) {
@@ -291,10 +272,9 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	}
 
 	if (collection === '') {
-		const defaultColl = chooseCollection()
 		unsplashCache.user = []
 		unsplash.collection = ''
-		unsplash.lastCollec = defaultColl
+		unsplash.lastCollec = 'day'
 
 		storage.set({ unsplash })
 		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
@@ -310,13 +290,12 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		}
 
 		// add new collec
-		chooseCollection(collection)
-		unsplash.collection = collection
+		unsplash.collection = collection.replaceAll(` `, '')
 		unsplash.lastCollec = 'user'
 		unsplash.time = freqControl.set()
 
 		collectionInput.load()
-		let list = await requestNewList('user')
+		let list = await requestNewList(unsplash.collection)
 
 		if (!list || list.length === 0) {
 			collectionInput.warn(`Cannot get "${collection}"`)
@@ -343,7 +322,7 @@ export default async function unsplashBackgrounds(init: Unsplash | null, event?:
 
 	if (init) {
 		try {
-			cacheControl(init, collectionUpdater(init))
+			cacheControl(init)
 		} catch (e) {
 			errorMessage(e)
 		}

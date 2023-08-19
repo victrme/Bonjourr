@@ -274,7 +274,6 @@ export const syncDefaults: Sync = {
 }
 
 export const localDefaults: Local = {
-	waitingForPreload: false,
 	userQuoteSelection: 0,
 	selectedId: '',
 	idsList: [],
