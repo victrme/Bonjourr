@@ -4,7 +4,7 @@ import storage from '../storage'
 import superinput from '../utils/superinput'
 import errorMessage from '../utils/errorMessage'
 import { eventDebounce } from '../utils/debounce'
-import { testOS } from '../utils'
+import { detectPlatform, testOS } from '../utils'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
@@ -148,13 +148,19 @@ async function getNewFont(list: FontList, currentFamily: string) {
 
 	if (foundFonts.length > 0) {
 		let { family, variants } = foundFonts[0]
+		let url = 'https://fonts.googleapis.com/'
 
 		// All this because google fonts API fails
 		// when fetching variable weights on non variable fonts (smh google)
 		const variableFontList = ((await (await fetch('src/assets/variablefonts.json')).json()) as string[]) ?? []
 		const fontIsVariable = variableFontList.includes(family)
-		const weights = fontIsVariable ? `${variants[0]}..${variants.at(-1)}` : variants.join(';')
-		const url = encodeURI(`https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weights}`)
+
+		// no variable fonts on firefox because of aggregious load times (~70ms)
+		if (fontIsVariable && detectPlatform() !== 'firefox') {
+			url += encodeURI(`css2?family=${family.replace(/ /g, '+')}:wght@${variants[0]}..${variants.at(-1)}`)
+		} else {
+			url += encodeURI(`css?family=${family.replace(/ /g, '+')}:wght@${variants.join(';')}`)
+		}
 
 		return {
 			url,
