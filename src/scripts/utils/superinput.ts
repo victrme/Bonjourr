@@ -5,12 +5,12 @@ export default function superinput(inputtarget: string) {
 
 	function init() {
 		input = document.getElementById(inputtarget) as HTMLInputElement
-		wrapper = input.parentElement as HTMLDivElement
-		statusicon = wrapper.querySelector('i') as HTMLElement
+		wrapper = input?.parentElement as HTMLDivElement
+		statusicon = wrapper?.querySelector('i') as HTMLElement
 
-		input.addEventListener('blur', () => toggle(false))
-		input.addEventListener('input', () => {
-			if (wrapper.classList.contains('warn')) toggle(false)
+		input?.addEventListener('blur', () => toggle(false))
+		input?.addEventListener('input', () => {
+			if (wrapper?.classList.contains('warn')) toggle(false)
 		})
 	}
 
