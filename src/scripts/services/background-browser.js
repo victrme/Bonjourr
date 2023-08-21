@@ -8,6 +8,6 @@ function handleInstalled(details) {
 	console.log(details)
 }
 
-browser.browserAction.onClicked.addListener(createNewTab)
+browser.action.onClicked.addListener(createNewTab)
 browser.runtime.onInstalled.addListener(handleInstalled)
 browser.runtime.setUninstallURL('https://bonjourr.fr/goodbye')

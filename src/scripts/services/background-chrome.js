@@ -8,6 +8,6 @@ function handleInstalled(details) {
 	console.log(details)
 }
 
-chrome.action.onClicked.addListener(createNewTab) // Manifest v3 uses "action" instead of "browserAction"
+chrome.action.onClicked.addListener(createNewTab)
 chrome.runtime.onInstalled.addListener(handleInstalled)
 chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
