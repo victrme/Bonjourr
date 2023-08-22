@@ -238,7 +238,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	const isRemovingFamily = typeof family === 'string' && family.length === 0
 	const isChangingFamily = typeof family === 'string' && family.length > 1
 
-	const { font } = await storage.get('font')
+	const { font } = await storage.sync.get('font')
 
 	if (isRemovingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLInputElement
@@ -250,7 +250,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 		document.documentElement.style.setProperty('--font-weight-clock', '200')
 		document.documentElement.style.setProperty('--font-weight', baseWeight)
 
-		localStorage.removeItem('fontface')
+		storage.local.remove('fontface')
 
 		setWeight('', '400')
 		setWeightSettings(systemfont.weights)
@@ -294,7 +294,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			setFamily(family, fontface)
 			setWeight(family, '400')
 			i_weight.value = '400'
-			localStorage.fontface = fontface
+			storage.local.set({ fontface })
 			setWeightSettings(newfont.availWeights)
 			eventDebounce({ font: { size: font.size, ...newfont } })
 		}
@@ -332,11 +332,15 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 			setWeight(init.family, init.weight)
 
 			if (init.family) {
-				let fontface = localStorage.fontface
+				let fontface = storage.local.get('fontface')?.fontface ?? ''
 
 				if (init.url && !fontface?.includes('@font-face')) {
-					fontface = await fetchFontface(init.url)
-					localStorage.fontface = fontface
+					const newfontface = await fetchFontface(init.url)
+
+					if (newfontface) {
+						storage.local.set({ fontface: newfontface })
+						fontface = newfontface
+					}
 				}
 
 				setFamily(init.family, fontface)

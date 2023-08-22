@@ -10,7 +10,7 @@ export default async function hideElements(hidelist: Hide = {}, options?: { isEv
 	}
 
 	if (options?.isEvent) {
-		let { hide } = await storage.get('hide')
+		let { hide } = await storage.sync.get('hide')
 
 		if (Array.isArray(hide) && hide.length === 4) {
 			hide = convertHideStorage(hide as HideOld)
@@ -18,7 +18,7 @@ export default async function hideElements(hidelist: Hide = {}, options?: { isEv
 
 		hide = { ...hide, ...hidelist }
 
-		storage.set({ hide })
+		storage.sync.set({ hide })
 		applyHide(hidelist)
 
 		return

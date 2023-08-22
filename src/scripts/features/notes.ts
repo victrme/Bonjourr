@@ -78,7 +78,7 @@ export default async function notes(init: Notes | null, event?: NotesEvent) {
 	}
 
 	if (event) {
-		const data = await storage.get('notes')
+		const data = await storage.sync.get('notes')
 		updateNotes(data.notes as Notes, event)
 		return
 	}

@@ -1,8 +1,30 @@
-import { Sync } from './types/sync'
-import parse from './utils/JSONparse'
 import { PLATFORM, syncDefaults } from './utils'
+import parse from './utils/JSONparse'
+import { Sync } from './types/sync'
+import { Local } from './types/local'
 
-function verifyDataAsSync(data: { [key: string]: unknown }) {
+type Keyval = {
+	[key: string]: unknown
+}
+
+type Storage = {
+	sync: {
+		get: (key?: string | string[]) => Promise<Sync>
+		set: (val: Keyval) => void
+		remove: (key: string) => void
+		clear: () => void
+	}
+	local: {
+		get: (key: string) => Partial<Local> | null
+		set: (val: Keyval) => void
+		remove: (key: string) => void
+		init: (key?: string | string[]) => Promise<void>
+	}
+}
+
+let webextLocalCache: any
+
+function verifyDataAsSync(data: Keyval) {
 	data = data ?? {}
 
 	for (const key in syncDefaults) {
@@ -14,58 +36,110 @@ function verifyDataAsSync(data: { [key: string]: unknown }) {
 	return data as Sync
 }
 
-function onlineSet(props: { [key: string]: unknown }) {
-	const data = onlineGet()
+function online(): Storage {
+	const sync = {
+		set: function (value: Keyval) {
+			const data = verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
 
-	if (typeof props === 'object') {
-		Object.entries(props).forEach(([key, val]) => {
-			data[key] = val
-		})
+			if (typeof value !== 'object') {
+				return console.warn('Value is not an object: ', value)
+			}
 
-		try {
+			for (const [key, val] of Object.entries(value)) {
+				data[key] = val
+			}
+
 			localStorage.bonjourr = JSON.stringify(data ?? {})
-		} catch (error) {
-			console.warn(error, "Bonjourr couldn't save this setting 😅 - Memory might be full")
-		}
+			window.dispatchEvent(new Event('storage'))
+		},
 
-		window.dispatchEvent(new Event('storage'))
+		get: async (_?: string | string[]) => {
+			return verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+		},
+
+		remove: (key: string) => {
+			const data = verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+			delete data[key]
+			localStorage.bonjourr = JSON.stringify(data ?? {})
+		},
+
+		clear: () => {
+			localStorage.removeItem('bonjourr')
+		},
 	}
+
+	const local = {
+		init: async (_?: string | string[]) => {
+			return
+		},
+
+		get: (key: string) => {
+			const val = parse(localStorage.getItem(key) ?? '')
+			const res: Keyval = {}
+			res[key] = val
+			return val ? (res as Partial<Local>) : null
+		},
+
+		remove: (key: string) => {
+			return localStorage.removeItem(key)
+		},
+
+		set: (value: Keyval) => {
+			const [key, val] = Object.entries(value)[0]
+			return localStorage.setItem(key, JSON.stringify(val))
+		},
+	}
+
+	return { sync, local }
 }
 
-function onlineGet(_?: unknown) {
-	return verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+function webext(): Storage {
+	const sync = {
+		set: (val: Keyval, cb = (): void => {}) => {
+			chrome.storage.sync.set(val, cb)
+		},
+
+		get: async (key?: string | string[]): Promise<Sync> => {
+			const data = await chrome.storage.sync.get(key ?? null)
+			return verifyDataAsSync(data)
+		},
+
+		remove: (key: string) => {
+			chrome.storage.sync.remove(key)
+		},
+
+		clear: () => {
+			chrome.storage.sync.clear()
+		},
+	}
+
+	const local = {
+		init: async (key?: string | string[]) => {
+			webextLocalCache = await chrome.storage.local.get(key ?? null)
+			return
+		},
+
+		get: (key: string) => {
+			if (key in webextLocalCache) {
+				const res: Keyval = {}
+				res[key] = webextLocalCache[key]
+				return res as Partial<Local>
+			}
+
+			return null
+		},
+
+		remove: (key: string) => {
+			return chrome.storage.local.remove(key)
+		},
+
+		set: (val: Keyval) => {
+			webextLocalCache = { ...webextLocalCache, val }
+			chrome.storage.local.set(val)
+		},
+	}
+
+	return { sync, local }
 }
 
-function onlineRemove(key: string) {
-	const data = onlineGet()
-	delete data[key]
-	localStorage.bonjourr = JSON.stringify(data ?? {})
-}
-
-function onlineClear() {
-	localStorage.removeItem('bonjourr')
-}
-
-async function getChromeStorage(key?: string | string[]) {
-	const res = await new Promise<{ [key: string]: unknown }>((resolve) => {
-		window.location.protocol === 'moz-extension:'
-			? browser.storage.sync.get(key ?? null).then(resolve)
-			: chrome.storage.sync.get(key ?? null).then(resolve)
-	})
-
-	return verifyDataAsSync(res)
-}
-
-export default PLATFORM === 'online'
-	? {
-			get: onlineGet,
-			set: onlineSet,
-			remove: onlineRemove,
-			clear: onlineClear,
-	  }
-	: {
-			get: getChromeStorage as typeof getChromeStorage,
-			set: (val: { [key: string]: unknown }, callback = () => {}) => chrome.storage.sync.set(val, callback),
-			remove: (key: string) => chrome.storage.sync.remove(key),
-			clear: () => chrome.storage.sync.clear(),
-	  }
+export default PLATFORM === 'online' ? online() : webext()

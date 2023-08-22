@@ -41,4 +41,5 @@ export type Local = {
 	userQuoteSelection: number
 	quotesCache: Quote[]
 	unsplashCache: UnsplashCache
+	translations: { [key: string]: string }
 }

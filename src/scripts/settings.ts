@@ -759,7 +759,7 @@ function settingsMgmt() {
 		const a = document.getElementById('downloadfile')
 		if (!a) return
 
-		const data = ((await storage.get()) as Sync) ?? {}
+		const data = ((await storage.sync.get()) as Sync) ?? {}
 		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
 
 		const bytes = new TextEncoder().encode(stringifyOrder(data))
@@ -882,10 +882,10 @@ function translatePlaceholders(settingsDom: HTMLElement | null) {
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
-	storage.set({ lang: nextLang })
+	storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	const data = ((await storage.get()) as Sync) ?? {}
+	const data = ((await storage.sync.get()) as Sync) ?? {}
 	data.lang = nextLang
 	data.weather.lastCall = 0
 	weather(data)
@@ -900,7 +900,7 @@ function showall(val: boolean, event: boolean, settingsDom?: HTMLElement) {
 	;(settingsDom || document.getElementById('settings'))?.classList.toggle('all', val)
 
 	if (event) {
-		storage.set({ showall: val })
+		storage.sync.set({ showall: val })
 	}
 }
 
@@ -914,7 +914,7 @@ async function selectBackgroundType(cat: string) {
 	}
 
 	if (cat === 'unsplash') {
-		const data = ((await storage.get()) as Sync) ?? {}
+		const data = ((await storage.sync.get()) as Sync) ?? {}
 		if (!data.unsplash) return
 
 		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
@@ -922,7 +922,7 @@ async function selectBackgroundType(cat: string) {
 		setTimeout(() => unsplashBackgrounds(data.unsplash), 100)
 	}
 
-	storage.set({ background_type: cat })
+	storage.sync.set({ background_type: cat })
 }
 
 function signature(dom: HTMLElement) {
@@ -960,12 +960,12 @@ function fadeOut() {
 
 async function paramsImport(toImport: Sync) {
 	try {
-		let data = ((await storage.get()) as Sync) ?? {}
+		let data = ((await storage.sync.get()) as Sync) ?? {}
 
 		data = { ...filterImports(data, toImport) }
 
-		storage.clear()
-		storage.set(data, () => fadeOut())
+		storage.sync.clear()
+		storage.sync.set(data, () => fadeOut())
 	} catch (e) {
 		console.log(e)
 	}
@@ -973,7 +973,7 @@ async function paramsImport(toImport: Sync) {
 
 function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
-		storage.clear()
+		storage.sync.clear()
 		localStorage.clear()
 		fadeOut()
 		return
@@ -988,7 +988,7 @@ export async function updateExportJSON(settingsDom: HTMLElement) {
 
 	settingsDom.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	const data = ((await storage.get()) as Sync) ?? {}
+	const data = ((await storage.sync.get()) as Sync) ?? {}
 
 	if (data?.weather?.lastCall) delete data.weather.lastCall
 	data.about.browser = PLATFORM
@@ -1068,7 +1068,7 @@ export async function settingsInit(data: Sync) {
 		if (e.altKey && e.code === 'KeyS') {
 			console.clear()
 			console.log(localStorage)
-			console.log(await storage.get())
+			console.log(await storage.sync.get())
 		}
 
 		if (e.code === 'Escape') {

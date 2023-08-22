@@ -31,7 +31,7 @@ const cityInput = superinput('i_city')
 // Checks every 5 minutes if weather needs update
 setInterval(async () => {
 	if (navigator.onLine) {
-		const data = await storage.get(['weather', 'hide'])
+		const data = await storage.sync.get(['weather', 'hide'])
 		if (data) weather(data as Sync)
 	}
 }, 300000)
@@ -53,7 +53,7 @@ export default function weather(init: Sync | null, update?: WeatherUpdate) {
 }
 
 async function updatesWeather(update: WeatherUpdate) {
-	let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
+	let { weather, hide } = (await storage.sync.get(['weather', 'hide'])) as Sync
 
 	if (!weather || !hide) {
 		return
@@ -143,7 +143,7 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 	}
 
-	storage.set({ weather })
+	storage.sync.set({ weather })
 	displayWeather(weather)
 }
 
@@ -266,7 +266,7 @@ async function initWeather(data: Weather) {
 	data = (await request(data)) ?? data
 
 	displayWeather(data)
-	storage.set({ weather: data })
+	storage.sync.set({ weather: data })
 	setTimeout(() => handleGeolOption(data), 400)
 }
 
@@ -393,7 +393,7 @@ async function weatherCacheControl(data: Weather) {
 		}
 
 		data = (await request(data)) ?? data
-		storage.set({ weather: data })
+		storage.sync.set({ weather: data })
 	}
 
 	displayWeather(data)

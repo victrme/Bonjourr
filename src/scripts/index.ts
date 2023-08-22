@@ -19,6 +19,7 @@ import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
 import sunTime from './utils/suntime'
+import { Local } from './types/local'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -229,7 +230,7 @@ export function backgroundFilter({ blur, brightness, isEvent }: { blur?: number;
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
 	if (isEvent) {
-		storage.set({ dark: value })
+		storage.sync.set({ dark: value })
 	}
 
 	if (value === 'auto') {
@@ -265,7 +266,7 @@ export function showPopup(value: string | number) {
 				setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
 			}
 
-			storage.set({ reviewPopup: 'removed' })
+			storage.sync.set({ reviewPopup: 'removed' })
 		}
 
 		popup.style.display = 'flex'
@@ -282,13 +283,13 @@ export function showPopup(value: string | number) {
 
 	if (typeof value === 'number') {
 		if (value > 30) affiche() // s'affiche après 30 tabs
-		else storage.set({ reviewPopup: value + 1 })
+		else storage.sync.set({ reviewPopup: value + 1 })
 
 		return
 	}
 
 	if (value !== 'removed') {
-		storage.set({ reviewPopup: 0 })
+		storage.sync.set({ reviewPopup: 0 })
 	}
 }
 
@@ -343,7 +344,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 		document.body.classList.remove('loading')
 
 		setTimeout(async () => {
-			const data = await storage.get()
+			const data = await storage.sync.get()
 			settingsInit(data)
 			document.body.classList.remove('init')
 		}, loadtime + 100)
@@ -376,7 +377,7 @@ function onlineAndMobileHandler() {
 	if (IS_MOBILE) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
-			const data = await storage.get()
+			const data = await storage.sync.get()
 
 			if (!data?.clock || !data?.weather) {
 				return
@@ -470,9 +471,13 @@ function startup(data: Sync) {
 	onlineAndMobileHandler()
 
 	try {
-		const data = await storage.get()
+		console.time('startup')
+		const data = await storage.sync.get()
+		await storage.local.init(['quotesCache', 'unsplashCache', 'translations', 'fontface', 'userQuoteSelection'])
+
 		const version_old = data?.about?.version
 		const version_curr = syncDefaults.about.version
+		console.timeEnd('startup')
 
 		// Version change
 		if (version_old !== version_curr) {
@@ -520,12 +525,12 @@ function startup(data: Sync) {
 				delete data.custom_every
 				delete data.custom_time
 
-				storage.remove('dynamic')
-				storage.remove('custom_every')
-				storage.remove('custom_time')
+				storage.sync.remove('dynamic')
+				storage.sync.remove('custom_every')
+				storage.sync.remove('custom_time')
 			}
 
-			storage.set({ ...data })
+			storage.sync.set({ ...data })
 		}
 
 		await setTranslationCache(data.lang)

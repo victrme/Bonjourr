@@ -103,7 +103,7 @@ async function addNewImage(filelist: FileList) {
 
 	// change type si premier local
 	if (ids.length === 0) {
-		storage.set({ background_type: 'local' })
+		storage.sync.set({ background_type: 'local' })
 	}
 
 	for (const file of filelist) {
@@ -210,12 +210,12 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 		}
 
 		// back to unsplash
-		storage.set({ background_type: 'unsplash' })
+		storage.sync.set({ background_type: 'unsplash' })
 		localImages.update({ ids: [], selected: '' })
 
 		setTimeout(async () => {
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
-			const data = await storage.get('unsplash')
+			const data = await storage.sync.get('unsplash')
 			unsplashBackgrounds(data.unsplash)
 		}, 100)
 	}
@@ -273,7 +273,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
 		if (ids.length === 0) {
-			const data = await storage.get('unsplash')
+			const data = await storage.sync.get('unsplash')
 			if (data) unsplashBackgrounds(data.unsplash ?? null)
 			return
 		}

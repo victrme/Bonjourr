@@ -61,7 +61,7 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 }
 
 async function updateSearchbar({ engine, newtab, opacity, placeholder, request }: SearchbarUpdate) {
-	const { searchbar } = await storage.get('searchbar')
+	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
 		return

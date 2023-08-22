@@ -442,7 +442,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	let moverPos = { x: 0, y: 0 }
 
 	async function updateMoveElement(prop: UpdateMove) {
-		const data = await storage.get()
+		const data = await storage.sync.get()
 		let move = data.move
 
 		if (!move) {
@@ -514,7 +514,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 			buttonControl.grid(activeID)
 
-			storage.set({ move: move })
+			storage.sync.set({ move: move })
 		}
 
 		function alignChange(type: 'box' | 'text') {
@@ -530,7 +530,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 			// Update storage
 			move.layouts[move.selection].items[activeID] = item
-			storage.set({ move: move })
+			storage.sync.set({ move: move })
 		}
 
 		function layoutChange() {
@@ -552,7 +552,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 			// Update storage
 			const states = widgetsListToData(list, data as Sync)
-			storage.set({ ...states, move })
+			storage.sync.set({ ...states, move })
 
 			// This triggers interface fade
 			toggleWidgetsDisplay(list)
@@ -604,7 +604,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			})
 
 			// Save
-			storage.set({ move: move })
+			storage.sync.set({ move: move })
 		}
 
 		function elementSelection() {
@@ -654,7 +654,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			buttonControl.grid(activeID)
 			buttonControl.span(activeID)
 
-			storage.set({ move: move })
+			storage.sync.set({ move: move })
 		}
 
 		function toggleWidgetOnGrid() {
@@ -678,7 +678,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			list[id] = on
 
 			const states = widgetsListToData(list, data as Sync)
-			storage.set({ ...states, move })
+			storage.sync.set({ ...states, move })
 		}
 
 		function pageWidthOverlay(overlay?: boolean) {
