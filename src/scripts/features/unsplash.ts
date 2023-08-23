@@ -10,6 +10,11 @@ import superinput from '../utils/superinput'
 import { UnsplashCache, UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
 
+type UnsplashInit = {
+	unsplash: Unsplash
+	cache: UnsplashCache
+} | null
+
 type UnsplashUpdate = {
 	refresh?: HTMLElement
 	collection?: string
@@ -26,14 +31,15 @@ const bonjourrCollections = {
 	night: 'bHDh4Ae7O8o',
 }
 
-export default async function unsplashBackgrounds(init: Unsplash | null, event?: UnsplashUpdate) {
+export default function unsplashBackgrounds(init: UnsplashInit, event?: UnsplashUpdate) {
 	if (event) {
 		updateUnsplash(event)
 	}
 
 	if (init) {
 		try {
-			cacheControl(init)
+			console.time('unsplash')
+			cacheControl(init.unsplash, init.cache)
 		} catch (e) {
 			errorMessage(e)
 		}
@@ -81,7 +87,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		storage.local.set({ unsplashCache })
 		collectionInput.toggle(false, '2nVzlQADDIE')
 
-		unsplashBackgrounds(unsplash)
+		unsplashBackgrounds({ unsplash, cache: unsplashCache })
 		return
 	}
 
@@ -116,9 +122,11 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	}
 }
 
-async function cacheControl(unsplash: Unsplash) {
+async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
-	const cache = await getCache()
+	cache = cache ?? (await getCache())
+
+	console.timeEnd('unsplash')
 
 	const needNewImage = freqControl.get(every, time)
 	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
@@ -306,7 +314,7 @@ function imgCredits(image: UnsplashImage) {
 }
 
 async function getCache(): Promise<UnsplashCache> {
-	const cache = storage.local.get('unsplashCache')?.unsplashCache ?? { ...localDefaults.unsplashCache }
+	const cache = (await storage.local.get('unsplashCache'))?.unsplashCache ?? { ...localDefaults.unsplashCache }
 	return cache
 }
 

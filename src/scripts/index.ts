@@ -182,14 +182,14 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 	}
 }
 
-export function initBackground(data: Sync) {
+export function initBackground(data: Sync, local: Local) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
 
 	backgroundFilter({ blur, brightness })
 
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds(data.unsplash)
+	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -378,6 +378,7 @@ function onlineAndMobileHandler() {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
 			const data = await storage.sync.get()
+			const { unsplashCache } = await storage.local.get('unsplashCache')
 
 			if (!data?.clock || !data?.weather) {
 				return
@@ -387,7 +388,7 @@ function onlineAndMobileHandler() {
 			const needNewImage = data.background_type === 'unsplash' && frequency
 
 			if (needNewImage && data.unsplash) {
-				unsplashBackgrounds(data.unsplash)
+				unsplashBackgrounds({ unsplash: data.unsplash, cache: unsplashCache })
 			}
 
 			clock(data)
@@ -443,25 +444,25 @@ function initTimeAndMainBlocks(time: boolean, main: boolean) {
 	document.getElementById('main')?.classList.toggle('hidden', !main)
 }
 
-function startup(data: Sync) {
+function startup(data: Sync, local: Local) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
 	sunTime(data.weather)
 	weather(data)
-	customFont(data.font)
+	customFont({ font: data.font, fontface: local.fontface })
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(data)
 	darkmode(data.dark)
 	searchbar(data.searchbar)
-	quotes(data)
+	quotes({ sync: data, local })
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
 	moveElements(data.move)
 	customCss(data.css)
 	hideElements(data.hide)
-	initBackground(data)
+	initBackground(data, local)
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
@@ -471,71 +472,59 @@ function startup(data: Sync) {
 	onlineAndMobileHandler()
 
 	try {
-		console.time('startup')
-		const data = await storage.sync.get()
-		await storage.local.init(['quotesCache', 'unsplashCache', 'translations', 'fontface', 'userQuoteSelection'])
-
-		const version_old = data?.about?.version
+		const { sync, local } = await storage.init()
+		const version_old = sync?.about?.version
 		const version_curr = syncDefaults.about.version
-		console.timeEnd('startup')
 
 		// Version change
 		if (version_old !== version_curr) {
 			console.log(`Version change: ${version_old} => ${version_curr}`)
 
-			data.about = {
+			sync.about = {
 				browser: PLATFORM,
 				version: version_curr,
 			}
 
 			// #229
-			if (data.lang === 'es') {
-				data.lang = 'es_ES'
+			if (sync.lang === 'es') {
+				sync.lang = 'es_ES'
 			}
 
 			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {
-				localStorage.hasUpdated = 'true'
-				localStorage.removeItem('translations')
-
-				const getOnlineLocal = () => JSON.parse(localStorage.bonjourrBackgrounds ?? '{}')
-				const getChromeLocal = async () => await new Promise((resolve) => chrome?.storage.local.get(null, resolve))
-				const removeOnlineLocal = () => localStorage.removeItem('bonjourrBackgrounds')
-				const removeChromeLocal = () => {
-					chrome?.storage.local.remove('dynamicCache')
-					chrome?.storage.local.remove('quotesCache')
-				}
-
-				const isOnline = data.about.browser === 'online'
-				const local = await (isOnline ? getOnlineLocal() : getChromeLocal())
-				const { unsplashCache, quotesCache } = localDefaults
-
-				localStorage.setItem('unsplashCache', JSON.stringify(local?.unsplashCache ?? { ...unsplashCache }))
-				localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? quotesCache))
-
-				isOnline ? removeOnlineLocal() : removeChromeLocal()
-
-				data.unsplash = { ...(data.dynamic as Sync['unsplash']) }
-
-				//@ts-ignore
-				if (data.background_type === 'custom') data.background_type = 'local'
-				//@ts-ignore
-				if (data.background_type === 'dynamic') data.background_type = 'unsplash'
-
-				delete data.dynamic
-				delete data.custom_every
-				delete data.custom_time
-
-				storage.sync.remove('dynamic')
-				storage.sync.remove('custom_every')
-				storage.sync.remove('custom_time')
+				// localStorage.hasUpdated = 'true'
+				// localStorage.removeItem('translations')
+				// const getOnlineLocal = () => JSON.parse(localStorage.bonjourrBackgrounds ?? '{}')
+				// const getChromeLocal = async () => await new Promise((resolve) => chrome?.storage.local.get(null, resolve))
+				// const removeOnlineLocal = () => localStorage.removeItem('bonjourrBackgrounds')
+				// const removeChromeLocal = () => {
+				// 	chrome?.storage.local.remove('dynamicCache')
+				// 	chrome?.storage.local.remove('quotesCache')
+				// }
+				// const isOnline = sync.about.browser === 'online'
+				// const local = isOnline ? getOnlineLocal() : getChromeLocal()
+				// const { unsplashCache, quotesCache } = localDefaults
+				// localStorage.setItem('unsplashCache', JSON.stringify(local?.unsplashCache ?? { ...unsplashCache }))
+				// localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? quotesCache))
+				// isOnline ? removeOnlineLocal() : removeChromeLocal()
+				// sync.unsplash = { ...(sync.dynamic as Sync['unsplash']) }
+				// //@ts-ignore
+				// if (sync.background_type === 'custom') sync.background_type = 'local'
+				// //@ts-ignore
+				// if (sync.background_type === 'dynamic') sync.background_type = 'unsplash'
+				// delete sync.dynamic
+				// delete sync.custom_every
+				// delete sync.custom_time
+				// storage.sync.remove('dynamic')
+				// storage.sync.remove('custom_every')
+				// storage.sync.remove('custom_time')
 			}
 
-			storage.sync.set({ ...data })
+			storage.sync.set({ ...sync })
 		}
 
-		await setTranslationCache(data.lang)
+		await setTranslationCache(sync.lang, local)
 
-		startup(data)
+		startup(sync, local)
 	} catch (e) {
 		errorMessage(e)
 	}

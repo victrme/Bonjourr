@@ -3,7 +3,7 @@ import superinput from '../utils/superinput'
 import parse from '../utils/JSONparse'
 import storage from '../storage'
 
-import { Quote } from '../types/local'
+import { Local, Quote } from '../types/local'
 import { Sync } from '../types/sync'
 
 type QuotesUpdate = {
@@ -81,8 +81,8 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 	return list[0]
 }
 
-function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
-	let quotesCache = storage.local.get('quotesCache')?.quotesCache ?? []
+async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
+	let quotesCache = (await storage.local.get('quotesCache'))?.quotesCache ?? []
 
 	async function handleQuotesType(type: string) {
 		let list: Quote[] = []
@@ -101,7 +101,7 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 			return
 		}
 
-		const selection = (storage.local.get('userQuoteSelection') as number) ?? 0
+		const selection = (await storage.local.get('userQuoteSelection'))?.userQuoteSelection ?? 0
 		list = userlistToQuotes(userlist!)
 		insertToDom(list[selection])
 	}
@@ -180,7 +180,7 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 	storage.sync.set({ quotes })
 }
 
-export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
+export default async function quotes(init: { sync: Sync; local: Local } | null, update?: QuotesUpdate) {
 	if (update) {
 		const data = await storage.sync.get(['lang', 'quotes'])
 		UpdateQuotes(update, data as Sync)
@@ -190,12 +190,14 @@ export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
 		return
 	}
 
-	const { lang, quotes } = init
+	const { lang, quotes } = init.sync
 	const isUser = quotes.type === 'user'
 	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
-	let userSel = (storage.local.get('userQuoteSelection') as number) ?? 0
-	let cache = storage.local.get('quotesCache')?.quotesCache
+	console.time('quotes')
+	let userSel = init.local?.userQuoteSelection ?? 0
+	let cache = init.local?.quotesCache ?? []
+	console.timeEnd('quotes')
 	let quote: Quote
 
 	// First startup, create classic cache

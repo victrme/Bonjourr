@@ -275,6 +275,7 @@ export const syncDefaults: Sync = {
 
 export const localDefaults: Local = {
 	userQuoteSelection: 0,
+	translations: {},
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],

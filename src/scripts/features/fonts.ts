@@ -313,9 +313,9 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	}
 }
 
-export default async function customFont(init: Font | null, event?: FontUpdateEvent) {
+export default async function customFont(init: { font: Font; fontface?: string } | null, event?: FontUpdateEvent) {
 	if (event?.initsettings) {
-		return initFontSettings(event?.initsettings, init)
+		return initFontSettings(event?.initsettings, init?.font ?? null)
 	}
 
 	if (event?.autocomplete) {
@@ -328,14 +328,17 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 
 	if (init) {
 		try {
-			setSize(init.size)
-			setWeight(init.family, init.weight)
+			const { size, family, weight, url } = init.font
+			setSize(size)
+			setWeight(family, weight)
 
-			if (init.family) {
-				let fontface = storage.local.get('fontface')?.fontface ?? ''
+			if (family) {
+				console.time('fontface')
+				let fontface = init.fontface ?? ''
+				console.timeEnd('fontface')
 
-				if (init.url && !fontface?.includes('@font-face')) {
-					const newfontface = await fetchFontface(init.url)
+				if (url && !fontface?.includes('@font-face')) {
+					const newfontface = await fetchFontface(url)
 
 					if (newfontface) {
 						storage.local.set({ fontface: newfontface })
@@ -343,7 +346,7 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 					}
 				}
 
-				setFamily(init.family, fontface)
+				setFamily(family, fontface)
 				canDisplayInterface('fonts')
 			}
 		} catch (e) {

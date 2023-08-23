@@ -1,16 +1,17 @@
 import storage from '../storage'
 import parse from './JSONparse'
+import { Local } from '../types/local'
 
 let trns: { [key: string]: string } = {}
 
-export async function setTranslationCache(lang: string) {
+export async function setTranslationCache(lang: string, local?: Local) {
 	if (lang === 'en') {
 		storage.local.remove('translations')
 		trns = {}
 		return
 	}
 
-	trns = storage.local.get('translations')?.translations as any
+	trns = local?.translations ?? (await storage.local.get('translations'))?.translations
 
 	if (trns?.lang !== lang) {
 		trns = await (await fetch(`../../../_locales/${lang}/translations.json`)).json()

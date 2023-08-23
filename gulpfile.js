@@ -26,6 +26,8 @@ function html(platform) {
 
 		if (platform === 'online') {
 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
+		} else {
+			stream.pipe(replace(`<!-- webext-storage -->`, `<script src="src/scripts/webext-storage.js"></script>`))
 		}
 
 		return stream.pipe(htmlmin({ collapseWhitespace: true })).pipe(dest(`release/${platform}`))
@@ -75,6 +77,8 @@ function worker(platform) {
 
 		return src(`src/scripts/services/background-${/edge|chrome/.test(platform) ? 'chrome' : 'browser'}.js`)
 			.pipe(rename('background.js'))
+			.pipe(dest('release/' + platform + '/src/scripts'))
+			.pipe(src('src/scripts/services/webext-storage.js'))
 			.pipe(dest('release/' + platform + '/src/scripts'))
 	}
 }

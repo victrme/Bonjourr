@@ -7,6 +7,17 @@ type Keyval = {
 	[key: string]: unknown
 }
 
+type StartupStorage = {
+	sync: Sync | null
+	local: Local | null
+}
+
+declare global {
+	interface Window {
+		startupStorage?: StartupStorage
+	}
+}
+
 type Storage = {
 	sync: {
 		get: (key?: string | string[]) => Promise<Sync>
@@ -15,14 +26,12 @@ type Storage = {
 		clear: () => void
 	}
 	local: {
-		get: (key: string) => Partial<Local> | null
+		get: (key: string | string[]) => Promise<Local>
 		set: (val: Keyval) => void
 		remove: (key: string) => void
-		init: (key?: string | string[]) => Promise<void>
 	}
+	init: () => Promise<{ sync: Sync; local: Local }>
 }
-
-let webextLocalCache: any
 
 function verifyDataAsSync(data: Keyval) {
 	data = data ?? {}
@@ -69,15 +78,21 @@ function online(): Storage {
 	}
 
 	const local = {
-		init: async (_?: string | string[]) => {
-			return
-		},
-
-		get: (key: string) => {
-			const val = parse(localStorage.getItem(key) ?? '')
+		get: async (keys: string | string[]) => {
 			const res: Keyval = {}
-			res[key] = val
-			return val ? (res as Partial<Local>) : null
+
+			if (typeof keys === 'string') {
+				keys = [keys]
+			}
+
+			for (const key of keys) {
+				const val = parse(localStorage.getItem(key) ?? '')
+				if (val) {
+					res[key] = val
+				}
+			}
+
+			return res as Local
 		},
 
 		remove: (key: string) => {
@@ -90,7 +105,14 @@ function online(): Storage {
 		},
 	}
 
-	return { sync, local }
+	const init = async () => {
+		return {
+			sync: await sync.get(),
+			local: await local.get(['quotesCache', 'unsplashCache', 'translations', 'fontface', 'userQuoteSelection']),
+		}
+	}
+
+	return { sync, local, init }
 }
 
 function webext(): Storage {
@@ -114,19 +136,8 @@ function webext(): Storage {
 	}
 
 	const local = {
-		init: async (key?: string | string[]) => {
-			webextLocalCache = await chrome.storage.local.get(key ?? null)
-			return
-		},
-
-		get: (key: string) => {
-			if (key in webextLocalCache) {
-				const res: Keyval = {}
-				res[key] = webextLocalCache[key]
-				return res as Partial<Local>
-			}
-
-			return null
+		get: async (key?: string | string[]) => {
+			return (await chrome.storage.local.get(key ?? null)) as Local
 		},
 
 		remove: (key: string) => {
@@ -134,12 +145,33 @@ function webext(): Storage {
 		},
 
 		set: (val: Keyval) => {
-			webextLocalCache = { ...webextLocalCache, val }
 			chrome.storage.local.set(val)
 		},
 	}
 
-	return { sync, local }
+	// todo:
+	// add local storage to startup
+
+	const init = async (): Promise<{ sync: Sync; local: Local }> => {
+		if (window.startupStorage?.sync && window.startupStorage?.local) {
+			const { sync, local } = window.startupStorage
+			delete window.startupStorage
+			return { sync, local }
+		}
+
+		return await new Promise((resolve) => {
+			let interval = setInterval(() => {
+				if (window.startupStorage?.sync && window.startupStorage?.local) {
+					const { sync, local } = window.startupStorage
+					delete window.startupStorage
+					clearInterval(interval)
+					resolve({ sync, local })
+				}
+			}, 1)
+		})
+	}
+
+	return { sync, local, init }
 }
 
 export default PLATFORM === 'online' ? online() : webext()
