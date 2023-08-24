@@ -1,10 +1,11 @@
 import { SYSTEM_OS, BROWSER, IS_MOBILE, bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
-import { tradThis } from '../utils/translations'
-import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errorMessage'
-
 import { canDisplayInterface } from '..'
+import { eventDebounce } from '../utils/debounce'
+import onSettingsLoad from '../utils/onsettingsload'
+import { tradThis } from '../utils/translations'
+import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
+
 import { Sync } from '../types/sync'
 
 type LinksUpdate = {
@@ -706,8 +707,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 	initblocks(bundleLinks(init), init.linknewtab)
 	setRows(init.linksrow, init.linkstyle)
-
-	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
+	onSettingsLoad(editEvents)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		const domeditlink = document.getElementById('editlink')

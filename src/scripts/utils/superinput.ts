@@ -1,9 +1,11 @@
+import onSettingsLoad from './onsettingsload'
+
 export default function superinput(inputtarget: string) {
 	let input: HTMLInputElement
 	let wrapper: HTMLDivElement
 	let statusicon: HTMLElement
 
-	function init() {
+	onSettingsLoad(() => {
 		input = document.getElementById(inputtarget) as HTMLInputElement
 		wrapper = input?.parentElement as HTMLDivElement
 		statusicon = wrapper?.querySelector('i') as HTMLElement
@@ -12,7 +14,7 @@ export default function superinput(inputtarget: string) {
 		input?.addEventListener('input', () => {
 			if (wrapper?.classList.contains('warn')) toggle(false)
 		})
-	}
+	})
 
 	function toggle(force?: boolean, value?: string) {
 		wrapper.classList.toggle('active', force)
@@ -34,8 +36,6 @@ export default function superinput(inputtarget: string) {
 		wrapper.title = err
 		statusicon.className = 'gg-danger'
 	}
-
-	setTimeout(() => init(), 400)
 
 	return {
 		toggle,

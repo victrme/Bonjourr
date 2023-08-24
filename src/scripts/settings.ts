@@ -194,9 +194,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 		initInput('i_weatherhide', weather)
 	})()
 
-	// Custom Fonts
-	customFont({ font: data.font, fontface: '' }, { initsettings: settingsDom })
-
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')

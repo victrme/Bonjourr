@@ -1,6 +1,7 @@
 import { toggleWidgetsDisplay } from '..'
 import { syncDefaults } from '../utils'
 import { tradThis } from '../utils/translations'
+import onSettingsLoad from '../utils/onsettingsload'
 import storage from '../storage'
 
 import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
@@ -834,7 +835,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 	}
 
 	// Init events coming from mover toolbox
-	setTimeout(() => moverToolboxEvents(), 200)
+	onSettingsLoad(moverToolboxEvents)
 
 	// First launch from version without move data
 	if (!init && !events) {

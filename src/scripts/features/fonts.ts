@@ -1,15 +1,16 @@
 import { canDisplayInterface } from '..'
 import storage from '../storage'
 
-import superinput from '../utils/superinput'
-import errorMessage from '../utils/errorMessage'
-import { eventDebounce } from '../utils/debounce'
 import { PLATFORM, SYSTEM_OS } from '../utils'
+import { eventDebounce } from '../utils/debounce'
+import onSettingsLoad from '../utils/onsettingsload'
+import errorMessage from '../utils/errorMessage'
+import { tradThis } from '../utils/translations'
+import superinput from '../utils/superinput'
+import parse from '../utils/JSONparse'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
-import parse from '../utils/JSONparse'
-import { tradThis } from '../utils/translations'
 
 type FontList = {
 	family: string
@@ -18,7 +19,6 @@ type FontList = {
 
 type FontUpdateEvent = {
 	autocomplete?: HTMLElement
-	initsettings?: HTMLElement
 	size?: string
 	family?: string
 	weight?: string
@@ -218,16 +218,17 @@ async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
 	})
 }
 
-async function initFontSettings(settingsDom: HTMLElement, font: Font | null) {
+async function initFontSettings(font: Font | null) {
+	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.availWeights.length > 0
 	const weights = hasCustomWeights ? font.availWeights : systemfont.weights
 	const family = font?.family || systemfont.placeholder
 
-	settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', family)
-	setWeightSettings(weights, settingsDom)
+	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
+	setWeightSettings(weights, settings)
 
 	if (font?.url) {
-		setAutocompleteSettings(settingsDom)
+		setAutocompleteSettings(settings)
 	}
 }
 
@@ -312,15 +313,11 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 }
 
 export default async function customFont(init: { font: Font; fontface?: string } | null, event?: FontUpdateEvent) {
+	if (event?.autocomplete) {
+		return setAutocompleteSettings(event?.autocomplete)
+	}
+
 	if (event) {
-		if (event.initsettings) {
-			return initFontSettings(event?.initsettings, init?.font ?? null)
-		}
-
-		if (event?.autocomplete) {
-			return setAutocompleteSettings(event?.autocomplete)
-		}
-
 		return updateFont(event)
 	}
 
@@ -344,6 +341,10 @@ export default async function customFont(init: { font: Font; fontface?: string }
 
 				setFamily(family, fontface)
 			}
+
+			onSettingsLoad(() => {
+				initFontSettings(init?.font)
+			})
 
 			canDisplayInterface('fonts')
 		} catch (e) {
