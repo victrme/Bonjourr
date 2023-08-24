@@ -156,16 +156,16 @@ function webext(): Storage {
 			return { sync, local }
 		}
 
-		return await new Promise((resolve) => {
-			let interval = setInterval(() => {
-				if (window.startupStorage?.sync && window.startupStorage?.local) {
-					const { sync, local } = window.startupStorage
-					delete window.startupStorage
-					clearInterval(interval)
-					resolve({ sync, local })
-				}
-			}, 1)
+		await new Promise((resolve) => {
+			;(function cycle() {
+				const { sync, local } = window.startupStorage ?? {}
+				sync && local ? resolve(true) : setTimeout(cycle)
+			})()
 		})
+
+		const { sync, local } = window.startupStorage as { sync: Sync; local: Local }
+		delete window.startupStorage
+		return { sync, local }
 	}
 
 	return { sync, local, init }
