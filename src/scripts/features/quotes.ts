@@ -194,10 +194,8 @@ export default async function quotes(init: { sync: Sync; local: Local } | null, 
 	const isUser = quotes.type === 'user'
 	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
-	console.time('quotes')
 	let userSel = init.local?.userQuoteSelection ?? 0
 	let cache = init.local?.quotesCache ?? []
-	console.timeEnd('quotes')
 	let quote: Quote
 
 	// First startup, create classic cache
@@ -208,12 +206,12 @@ export default async function quotes(init: { sync: Sync; local: Local } | null, 
 
 	// If user quotes, replace cache
 	if (isUser) {
-		cache = userlistToQuotes(quotes.userlist) // force because list check is above
+		cache = userlistToQuotes(quotes.userlist)
 	}
 
 	// Frequence control, get new quote from controlCacheList
 	if (needsNewQuote) {
-		quotes.last = freqControl.set() // updates last quotes timestamp
+		quotes.last = freqControl.set()
 		quote = controlCacheList(cache, lang, quotes.type)
 		storage.sync.set({ quotes })
 	} else {

@@ -38,7 +38,6 @@ export default function unsplashBackgrounds(init: UnsplashInit, event?: Unsplash
 
 	if (init) {
 		try {
-			console.time('unsplash')
 			cacheControl(init.unsplash, init.cache)
 		} catch (e) {
 			errorMessage(e)
@@ -125,8 +124,6 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
 	cache = cache ?? (await getCache())
-
-	console.timeEnd('unsplash')
 
 	const needNewImage = freqControl.get(every, time)
 	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec

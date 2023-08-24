@@ -149,9 +149,6 @@ function webext(): Storage {
 		},
 	}
 
-	// todo:
-	// add local storage to startup
-
 	const init = async (): Promise<{ sync: Sync; local: Local }> => {
 		if (window.startupStorage?.sync && window.startupStorage?.local) {
 			const { sync, local } = window.startupStorage

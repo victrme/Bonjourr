@@ -74,8 +74,6 @@ function waitForFontLoad(cb: Function) {
 	let interval = setInterval(() => {
 		currwidth = p.getBoundingClientRect().width
 
-		console.log(lastwidth, currwidth)
-
 		if (currwidth !== lastwidth) {
 			clearInterval(interval)
 			p.remove()
@@ -314,15 +312,15 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 }
 
 export default async function customFont(init: { font: Font; fontface?: string } | null, event?: FontUpdateEvent) {
-	if (event?.initsettings) {
-		return initFontSettings(event?.initsettings, init?.font ?? null)
-	}
-
-	if (event?.autocomplete) {
-		return setAutocompleteSettings(event?.autocomplete)
-	}
-
 	if (event) {
+		if (event.initsettings) {
+			return initFontSettings(event?.initsettings, init?.font ?? null)
+		}
+
+		if (event?.autocomplete) {
+			return setAutocompleteSettings(event?.autocomplete)
+		}
+
 		return updateFont(event)
 	}
 
@@ -333,9 +331,7 @@ export default async function customFont(init: { font: Font; fontface?: string }
 			setWeight(family, weight)
 
 			if (family) {
-				console.time('fontface')
 				let fontface = init.fontface ?? ''
-				console.timeEnd('fontface')
 
 				if (url && !fontface?.includes('@font-face')) {
 					const newfontface = await fetchFontface(url)
@@ -347,8 +343,9 @@ export default async function customFont(init: { font: Font; fontface?: string }
 				}
 
 				setFamily(family, fontface)
-				canDisplayInterface('fonts')
 			}
+
+			canDisplayInterface('fonts')
 		} catch (e) {
 			errorMessage(e)
 		}
