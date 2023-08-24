@@ -15,6 +15,7 @@ import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
 import langList from './langs'
+import parse from './utils/JSONparse'
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterImports'
@@ -43,7 +44,6 @@ import {
 	textShadow,
 	pageControl,
 } from './index'
-import parse from './utils/JSONparse'
 
 type Langs = keyof typeof langList
 
@@ -195,7 +195,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})()
 
 	// Custom Fonts
-	customFont(data.font, { initsettings: settingsDom })
+	customFont({ font: data.font, fontface: '' }, { initsettings: settingsDom })
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
@@ -885,12 +885,14 @@ async function switchLangs(nextLang: Langs) {
 	storage.sync.set({ lang: nextLang })
 	document.documentElement.setAttribute('lang', nextLang)
 
-	const data = ((await storage.sync.get()) as Sync) ?? {}
+	const data = await storage.sync.get()
+	const local = await storage.local.get(['quotesCache', 'userQuoteSelection'])
+
 	data.lang = nextLang
 	data.weather.lastCall = 0
 	weather(data)
 	clock(data)
-	quotes(data)
+	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes || null)
 	translatePlaceholders(document.getElementById('settings'))
@@ -914,12 +916,21 @@ async function selectBackgroundType(cat: string) {
 	}
 
 	if (cat === 'unsplash') {
-		const data = ((await storage.sync.get()) as Sync) ?? {}
+		const data = await storage.sync.get()
+		const local = await storage.local.get('unsplashCache')
+
 		if (!data.unsplash) return
 
 		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
 		document.getElementById('creditContainer')?.classList.toggle('shown', true)
-		setTimeout(() => unsplashBackgrounds(data.unsplash), 100)
+		setTimeout(
+			() =>
+				unsplashBackgrounds({
+					unsplash: data.unsplash,
+					cache: local.unsplashCache,
+				}),
+			100
+		)
 	}
 
 	storage.sync.set({ background_type: cat })
@@ -960,12 +971,12 @@ function fadeOut() {
 
 async function paramsImport(toImport: Sync) {
 	try {
-		let data = ((await storage.sync.get()) as Sync) ?? {}
-
-		data = { ...filterImports(data, toImport) }
+		let data = await storage.sync.get()
+		data = filterImports(data, toImport)
 
 		storage.sync.clear()
-		storage.sync.set(data, () => fadeOut())
+		storage.sync.set(data)
+		fadeOut()
 	} catch (e) {
 		console.log(e)
 	}
