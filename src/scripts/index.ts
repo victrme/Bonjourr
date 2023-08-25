@@ -343,10 +343,9 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 		document.body.classList.remove('loading')
 
-		setTimeout(async () => {
-			const data = await storage.sync.get()
-			settingsInit(data)
+		setTimeout(() => {
 			document.body.classList.remove('init')
+			settingsInit()
 		}, loadtime + 100)
 	}
 

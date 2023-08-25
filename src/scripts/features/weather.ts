@@ -1,4 +1,4 @@
-import { stringMaxSize, handleGeolOption } from '../utils'
+import { stringMaxSize } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
 import superinput from '../utils/superinput'
@@ -7,6 +7,7 @@ import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
 import { OWMCurrent, OWMForecast } from '../types/openweathermap'
+import onSettingsLoad from '../utils/onsettingsload'
 
 type GeolAPI = {
 	city: string
@@ -29,12 +30,6 @@ type WeatherUpdate = {
 const cityInput = superinput('i_city')
 
 // Checks every 5 minutes if weather needs update
-setInterval(async () => {
-	if (navigator.onLine) {
-		const data = await storage.sync.get(['weather', 'hide'])
-		if (data) weather(data as Sync)
-	}
-}, 300000)
 
 export default function weather(init: Sync | null, update?: WeatherUpdate) {
 	if (update) {
@@ -49,6 +44,17 @@ export default function weather(init: Sync | null, update?: WeatherUpdate) {
 		} catch (e) {
 			errorMessage(e)
 		}
+	}
+
+	if (init) {
+		onSettingsLoad(() => {
+			handleGeolOption(init.weather)
+			setInterval(async () => {
+				if (!navigator.onLine) {
+					weather(await storage.sync.get(['weather', 'hide']))
+				}
+			}, 300000)
+		})
 	}
 }
 
@@ -156,6 +162,19 @@ async function getGeolocation(): Promise<[number, number] | undefined> {
 	)
 
 	return location
+}
+
+function handleGeolOption(data: Weather) {
+	const i_city = document.getElementById('i_city') as HTMLInputElement
+	const i_geol = document.getElementById('i_geol') as HTMLInputElement
+	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+	const sett_city = document.getElementById('sett_city') as HTMLDivElement
+	const isGeol = data.location.length > 0
+
+	i_geol.checked = isGeol
+	i_ccode.value = data.ccode
+	i_city.setAttribute('placeholder', data.city)
+	sett_city.classList.toggle('shown', isGeol === false)
 }
 
 function createRequestQueries(data: Weather) {

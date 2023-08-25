@@ -1,7 +1,8 @@
 import { randomString, IS_MOBILE, turnRefreshButton } from '../utils'
-import { get, set, update, del } from 'idb-keyval'
 import { imgBackground, freqControl } from '..'
+import { get, set, update, del } from 'idb-keyval'
 import unsplashBackgrounds from './unsplash'
+import onSettingsLoad from '../utils/onsettingsload'
 import errorMessage from '../utils/errorMessage'
 import storage from '../storage'
 
@@ -216,7 +217,8 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 		setTimeout(async () => {
 			document.getElementById('creditContainer')?.classList.toggle('shown', true)
 			const data = await storage.sync.get('unsplash')
-			unsplashBackgrounds(data.unsplash)
+			const local = await storage.local.get('unsplashCache')
+			unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 		}, 100)
 	}
 
@@ -224,9 +226,10 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	rem.addEventListener('click', deleteThisBackground)
 }
 
-async function handleSettingsOptions(settingsDom: HTMLElement) {
-	const fileContainer = settingsDom.querySelector<HTMLElement>('#fileContainer')
-	const i_freq = settingsDom.querySelector<HTMLSelectElement>('#i_freq')
+async function handleSettingsOptions() {
+	const fileContainer = document.getElementById('fileContainer') as HTMLElement
+	const settings = document.getElementById('settings') as HTMLElement
+	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
 
 	const { ids, selected, freq } = await localImages.get()
 	const thumbsAmount = fileContainer?.childElementCount || 0
@@ -235,7 +238,7 @@ async function handleSettingsOptions(settingsDom: HTMLElement) {
 	if (idsAndNotAllThumbs) {
 		ids.forEach(async (id) => {
 			const blob = await getBlob(id, 'thumbnail')
-			if (blob) addThumbnail(blob, id, id === selected, settingsDom)
+			if (blob) addThumbnail(blob, id, id === selected, settings)
 		})
 	}
 
@@ -255,16 +258,14 @@ async function displayCustomBackground(blob?: Blob) {
 async function refreshCustom(button: HTMLSpanElement) {
 	localImages.update({ last: 0 })
 	turnRefreshButton(button, true)
-
 	setTimeout(() => localBackgrounds(), 100)
 }
 
 export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
-		if (event?.settings) handleSettingsOptions(event?.settings)
 		if (event?.refresh) refreshCustom(event.refresh)
-		if (event?.freq) localImages.update({ freq: event?.freq })
 		if (event?.newfile) addNewImage(event.newfile)
+		if (event?.freq) localImages.update({ freq: event?.freq })
 		return
 	}
 
@@ -274,7 +275,8 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 
 		if (ids.length === 0) {
 			const data = await storage.sync.get('unsplash')
-			if (data) unsplashBackgrounds(data.unsplash ?? null)
+			const local = await storage.local.get('unsplashCache')
+			unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 			return
 		}
 
@@ -283,12 +285,9 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 			localImages.update({ selected, last: freqControl.set() })
 		}
 
-		if (document.getElementById('settings')) {
-			document.querySelector<HTMLSelectElement>('#i_freq')!.value = freq
-			selectThumbnail(selected)
-		}
-
 		displayCustomBackground(await getBlob(selected, 'background'))
+		onSettingsLoad(handleSettingsOptions)
+
 		//
 	} catch (e) {
 		errorMessage(e)

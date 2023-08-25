@@ -136,7 +136,7 @@ function webext(): Storage {
 	}
 
 	const local = {
-		get: async (key?: string | string[]) => {
+		get: async (key: string | string[]) => {
 			return (await chrome.storage.local.get(key ?? null)) as Local
 		},
 
