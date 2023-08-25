@@ -146,16 +146,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	// Activate changelog
 	if (localStorage.hasUpdated === 'true') {
 		changelogControl(settingsDom)
-
-		// to remove after 1.17.0 update
-		const movemoveddom = settingsDom.querySelector<HTMLElement>('#move-option-moved')
-		const movemovedbtn = settingsDom.querySelector<HTMLElement>('#move-option-moved button')
-
-		movemoveddom?.setAttribute('style', 'display: block')
-		movemovedbtn?.addEventListener('click', () => {
-			movemoveddom?.setAttribute('style', 'display: none')
-			localStorage.removeItem('hasUpdated')
-		})
 	}
 
 	// No bookmarks import on safari || online
