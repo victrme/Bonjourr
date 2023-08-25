@@ -1,5 +1,5 @@
 import { PLATFORM, syncDefaults } from './utils'
-import parse from './utils/JSONparse'
+import parse from './utils/parse'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
 

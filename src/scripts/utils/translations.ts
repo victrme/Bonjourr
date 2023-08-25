@@ -1,5 +1,5 @@
 import storage from '../storage'
-import parse from './JSONparse'
+import parse from './parse'
 import { Local } from '../types/local'
 
 let trns: { [key: string]: string } = {}

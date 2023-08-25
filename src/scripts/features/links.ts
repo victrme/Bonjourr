@@ -3,7 +3,7 @@ import { canDisplayInterface } from '..'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
 import { Sync } from '../types/sync'

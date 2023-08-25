@@ -2,7 +2,7 @@ import { canDisplayInterface } from '..'
 import { syncDefaults } from '../utils'
 import { Sync, Clock } from '../types/sync'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
 type ClockUpdate = {

@@ -2,7 +2,7 @@ import storage from '../storage'
 import { Searchbar } from '../types/sync'
 import { stringMaxSize, syncDefaults } from '../utils'
 import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
 
 type SearchbarUpdate = {

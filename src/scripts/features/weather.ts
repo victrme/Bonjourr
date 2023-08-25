@@ -1,6 +1,6 @@
 import { stringMaxSize } from '../utils'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import sunTime from '../utils/suntime'
 import storage from '../storage'

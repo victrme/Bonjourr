@@ -3,7 +3,7 @@ import { imgBackground, freqControl } from '..'
 import { get, set, update, del } from 'idb-keyval'
 import unsplashBackgrounds from './unsplash'
 import onSettingsLoad from '../utils/onsettingsload'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
 type LocalImages = {

@@ -2,7 +2,7 @@ import { Sync } from '../types/sync'
 import { syncDefaults, bundleLinks } from '../utils'
 
 // https://stackoverflow.com/a/53593328
-export default function stringifyOrder(data: { [key in string]: unknown }) {
+export default function orderedStringify(data: { [key in string]: unknown }) {
 	const sync = { ...syncDefaults }
 	const orderedKeys = Object.keys(sync)
 

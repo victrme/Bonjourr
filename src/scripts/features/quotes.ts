@@ -1,6 +1,6 @@
 import { canDisplayInterface, freqControl } from '..'
 import superinput from '../utils/superinput'
-import parse from '../utils/JSONparse'
+import parse from '../utils/parse'
 import storage from '../storage'
 
 import { Local, Quote } from '../types/local'

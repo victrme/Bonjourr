@@ -15,11 +15,11 @@ import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
 
 import langList from './langs'
-import parse from './utils/JSONparse'
+import parse from './utils/parse'
 import throttle from './utils/throttle'
 import debounce from './utils/debounce'
-import filterImports from './utils/filterImports'
-import stringifyOrder from './utils/stringifyOrder'
+import filterImports from './utils/filterimports'
+import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
@@ -948,7 +948,7 @@ function settingsMgmt() {
 		const data = ((await storage.sync.get()) as Sync) ?? {}
 		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
 
-		const bytes = new TextEncoder().encode(stringifyOrder(data))
+		const bytes = new TextEncoder().encode(orderedStringify(data))
 		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
 		const date = new Date()
 		const YYYYMMDD = date.toISOString().slice(0, 10)
@@ -1182,5 +1182,5 @@ export async function updateExportJSON(settingsDom: HTMLElement) {
 	if (data?.weather?.lastCall) delete data.weather.lastCall
 	data.about.browser = PLATFORM
 
-	input.value = stringifyOrder(data)
+	input.value = orderedStringify(data)
 }

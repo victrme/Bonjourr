@@ -17,7 +17,7 @@ import unsplashBackgrounds from './features/unsplash'
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, periodOfDay, syncDefaults, stringMaxSize, localDefaults } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
-import errorMessage from './utils/errorMessage'
+import errorMessage from './utils/errormessage'
 import sunTime from './utils/suntime'
 import { Local } from './types/local'
 
