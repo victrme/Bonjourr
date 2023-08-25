@@ -153,7 +153,7 @@ function webext(): Storage {
 		if (window.startupStorage?.sync && window.startupStorage?.local) {
 			const { sync, local } = window.startupStorage
 			delete window.startupStorage
-			return { sync, local }
+			return { sync: verifyDataAsSync(sync), local }
 		}
 
 		await new Promise((resolve) => {
@@ -165,7 +165,7 @@ function webext(): Storage {
 
 		const { sync, local } = window.startupStorage as { sync: Sync; local: Local }
 		delete window.startupStorage
-		return { sync, local }
+		return { sync: verifyDataAsSync(sync), local }
 	}
 
 	return { sync, local, init }
