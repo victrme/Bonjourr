@@ -211,11 +211,15 @@ function initSuggestions() {
 		domsuggestions?.appendChild(li)
 	}
 
-	function toggleSuggestions(e: Event) {
+	function toggleSuggestions(e: FocusEvent) {
+		const relatedTarget = e?.relatedTarget as Element
+		const targetIsResult = relatedTarget?.parentElement?.id === 'sb-suggestions'
 		const hasResults = document.querySelectorAll('#sb-suggestions li.shown')?.length > 0
 		const isFocus = e.type === 'focus'
 
-		domsuggestions?.classList.toggle('shown', isFocus && hasResults)
+		if (!targetIsResult) {
+			domsuggestions?.classList.toggle('shown', isFocus && hasResults)
+		}
 	}
 
 	function navigateSuggestions(e: KeyboardEvent) {
