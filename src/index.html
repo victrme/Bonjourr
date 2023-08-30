@@ -188,7 +188,10 @@
 			</div>
 
 			<div id="main" class="hidden">
-				<h2 id="greetings" data-hide="greetings"></h2>
+				<h2 id="greetings" data-hide="greetings">
+					<span id="greeting"></span>
+					<span id="greeting-name"></span>
+				</h2>
 
 				<a id="weather" rel="noreferrer">
 					<div id="description" data-hide="weatherdesc">
@@ -218,9 +221,16 @@
 					<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
 					<hr />
 					<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-						<img src="src/assets/interface/magnifying-glass.svg" alt="" draggable="false" />
+						<img
+							src="src/assets/interface/magnifying-glass.svg"
+							class="default-search-icon"
+							draggable="false"
+							alt=""
+						/>
 					</button>
 				</div>
+
+				<ul id="sb-suggestions"></ul>
 			</form>
 
 			<ul id="linkblocks"></ul>

@@ -18,7 +18,7 @@ function translateNotesText() {
 	const titles = tradThis('to create titles')
 	const lists = tradThis('to add a list or checkbox')
 
-	const lines = [`## ${edit} !\n\n`, `[x] "# ", "## " ${or} "### " ${titles}\n`, `[x] "- " ${or} "[ ] " ${lists}`]
+	const lines = [`## ${edit} !\n\n`, `[ ] "# ", "## " ${or} "### " ${titles}\n`, `[ ] "- " ${or} "[ ] " ${lists}`]
 
 	return lines.join('')
 }

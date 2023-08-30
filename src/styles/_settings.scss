@@ -1,4 +1,6 @@
 #settings {
+	@import './components/superinput.scss';
+
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -657,7 +659,7 @@
 		}
 
 		select,
-		input {
+		.superinput {
 			width: 100%;
 			text-transform: capitalize;
 		}

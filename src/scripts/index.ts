@@ -1,4 +1,4 @@
-import { Sync, Weather, MoveKeys } from './types/sync'
+import { Sync, MoveKeys } from './types/sync'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -11,20 +11,10 @@ import customFont from './features/fonts'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
-import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
+import unsplashBackgrounds from './features/unsplash'
 
-import {
-	testOS,
-	getBrowser,
-	mobilecheck,
-	periodOfDay,
-	syncDefaults,
-	stringMaxSize,
-	localDefaults,
-	detectPlatform,
-} from './utils'
-
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, periodOfDay, syncDefaults, stringMaxSize, localDefaults } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errorMessage'
@@ -154,7 +144,7 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		const defaulticon = '/src/assets/' + (getBrowser() === 'edge' ? 'monochrome.png' : 'favicon.ico')
+		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
 
 		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
 	}
@@ -216,7 +206,7 @@ export function imgBackground(url: string, color?: string) {
 
 		bgoverlay.style.opacity = '1'
 
-		if (color && testOS.ios) {
+		if (color && SYSTEM_OS === 'ios') {
 			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
 		}
@@ -244,7 +234,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 
 	if (value === 'auto') {
 		const { now, rise, set } = sunTime()
-		const choice = now <= rise || now > set ? 'dark' : 'light'
+		const choice = now <= rise || now > set ? 'light' : 'dark'
 		document.documentElement.dataset.theme = choice
 	}
 
@@ -257,7 +247,6 @@ export function showPopup(value: string | number) {
 	//
 	function affiche() {
 		const popup = document.getElementById('popup') as HTMLElement
-		const browser = getBrowser()
 
 		const reviewURLs = {
 			chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
@@ -280,7 +269,7 @@ export function showPopup(value: string | number) {
 		}
 
 		popup.style.display = 'flex'
-		document.getElementById('popup_review')?.setAttribute('href', reviewURLs[browser])
+		document.getElementById('popup_review')?.setAttribute('href', reviewURLs[BROWSER])
 		document.getElementById('popup_review')?.addEventListener('mousedown', closePopup)
 		document.getElementById('popup_donate')?.addEventListener('mousedown', closePopup)
 		document.getElementById('popup_text')?.addEventListener('click', closePopup, { passive: true })
@@ -384,7 +373,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 function onlineAndMobileHandler() {
 	//
 
-	if (mobilecheck()) {
+	if (IS_MOBILE) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
 			const data = await storage.get()
@@ -407,7 +396,7 @@ function onlineAndMobileHandler() {
 	}
 
 	// Only on Online / Safari
-	if (detectPlatform() === 'online') {
+	if (PLATFORM === 'online') {
 		//
 		// Update export code on localStorage changes
 
@@ -425,7 +414,7 @@ function onlineAndMobileHandler() {
 		// Firefox cannot -moz-fill-available with height
 		// On desktop, uses fallback 100vh
 		// On mobile, sets height dynamically because vh is bad on mobile
-		if (getBrowser('firefox') && mobilecheck()) {
+		if (BROWSER && IS_MOBILE) {
 			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 			appHeight()
 
@@ -433,7 +422,7 @@ function onlineAndMobileHandler() {
 			// window.addEventListener('resize', appHeight)
 
 			// Fix for opening tabs Firefox iOS
-			if (testOS.ios) {
+			if (SYSTEM_OS === 'ios') {
 				let globalID: number
 
 				function triggerAnimationFrame() {
@@ -490,8 +479,13 @@ function startup(data: Sync) {
 			console.log(`Version change: ${version_old} => ${version_curr}`)
 
 			data.about = {
-				browser: detectPlatform(),
+				browser: PLATFORM,
 				version: version_curr,
+			}
+
+			// #229
+			if (data.lang === 'es') {
+				data.lang = 'es_ES'
 			}
 
 			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {

@@ -42,6 +42,7 @@ function scripts(platform) {
 
 	return () =>
 		src('release/main.js')
+			.pipe(replace('@@SUGGESTIONS_API', btoa(envVars?.SUGGESTIONS_API) || '/'))
 			.pipe(replace('@@UNSPLASH_API', btoa(envVars?.UNSPLASH_API) || '/'))
 			.pipe(replace('@@FAVICON_API_1', btoa(envVars?.FAVICON_API_1) || '/'))
 			.pipe(replace('@@FAVICON_API_2', btoa(envVars?.FAVICON_API_2) || '/'))

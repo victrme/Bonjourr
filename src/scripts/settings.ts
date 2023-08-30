@@ -22,13 +22,13 @@ import stringifyOrder from './utils/stringifyOrder'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import {
-	testOS,
-	mobilecheck,
+	SYSTEM_OS,
+	IS_MOBILE,
+	PLATFORM,
 	syncDefaults,
 	inputThrottle,
 	closeEditLink,
 	stringMaxSize,
-	detectPlatform,
 	turnRefreshButton,
 	handleGeolOption,
 } from './utils'
@@ -101,7 +101,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
 	initInput('i_provider', data.weather?.provider ?? '')
 	initInput('i_weight', data.font?.weight || '300')
-	initInput('i_size', data.font?.size || (mobilecheck() ? 11 : 14))
+	initInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -126,7 +126,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	translatePlaceholders(settingsDom)
 
 	// Change edit tips on mobile
-	if (mobilecheck()) {
+	if (IS_MOBILE) {
 		settingsDom.querySelector('.tooltiptext .instructions')!.textContent = tradThis(
 			`Edit your Quick Links by long-pressing the icon.`
 		)
@@ -159,7 +159,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// No bookmarks import on safari || online
-	if (detectPlatform() === 'safari' || detectPlatform() === 'online') {
+	if (PLATFORM === 'safari' || PLATFORM === 'online') {
 		paramId('b_importbookmarks').setAttribute('style', 'display: none')
 	}
 
@@ -202,7 +202,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
 	if (data.background_type === 'local') {
-		localBackgrounds({ thumbnail: settingsDom })
+		localBackgrounds({ settings: settingsDom })
+	}
+
+	// Unsplash collection placeholder
+	if (data?.unsplash?.collection) {
+		const coll = data?.unsplash?.collection
+		paramId('i_collection')?.setAttribute('placeholder', coll ? coll : '2nVzlQADDIE')
 	}
 
 	// Update thumbnails grid max-height by watching changes
@@ -269,7 +275,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	// Change edit tips on mobile
-	if (mobilecheck()) {
+	if (IS_MOBILE) {
 		const instr = settingsDom.querySelector('.tooltiptext .instructions')
 		if (instr) instr.textContent = tradThis(`Edit your Quick Links by long-pressing the icon.`)
 	}
@@ -282,7 +288,7 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	})
 
 	// Reduces opacity to better see interface appearance changes
-	if (mobilecheck()) {
+	if (IS_MOBILE) {
 		const touchHandler = (start: boolean) => (settingsDom.style.opacity = start ? '0.2' : '1')
 		const rangeInputs = settingsDom.querySelectorAll("input[type='range'")
 
@@ -434,7 +440,6 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
 		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
-		this.blur()
 	})
 
 	//
@@ -904,7 +909,7 @@ async function selectBackgroundType(cat: string) {
 	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
 
 	if (cat === 'local') {
-		localBackgrounds({ thumbnail: document.getElementById('settings') as HTMLElement })
+		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
 	}
 
@@ -942,7 +947,7 @@ function signature(dom: HTMLElement) {
 	if (version) version.textContent = syncDefaults.about.version
 
 	// Remove donate text on safari because apple is evil
-	if (testOS.ios || detectPlatform() === 'safari') dom.querySelector('#rdv_website')?.remove()
+	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') dom.querySelector('#rdv_website')?.remove()
 }
 
 function fadeOut() {
@@ -986,7 +991,7 @@ export async function updateExportJSON(settingsDom: HTMLElement) {
 	const data = ((await storage.get()) as Sync) ?? {}
 
 	if (data?.weather?.lastCall) delete data.weather.lastCall
-	data.about.browser = detectPlatform()
+	data.about.browser = PLATFORM
 
 	input.value = stringifyOrder(data)
 }
@@ -1021,7 +1026,7 @@ export async function settingsInit(data: Sync) {
 	//
 
 	// On settings changes, update export code
-	const isOnline = detectPlatform() === 'online'
+	const isOnline = PLATFORM === 'online'
 	const storageUpdate = () => updateExportJSON(settingsDom)
 	const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
 
@@ -1119,7 +1124,7 @@ export async function settingsInit(data: Sync) {
 			if (firstPos === 0) firstPos = startTouchY
 
 			// Scrollbar padding control on windows & android
-			if (testOS.windows || testOS.android) {
+			if (SYSTEM_OS.match(/windows|android/)) {
 				settingsDom.style.width = `calc(100% - 10px)`
 				settingsDom.style.paddingRight = `10px`
 			}

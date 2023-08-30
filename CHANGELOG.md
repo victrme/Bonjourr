@@ -1,3 +1,21 @@
+## 1.17.2
+
+-   Added feature:
+    -   Search suggestions !
+-   Improvements:
+    -   Added status icon (loading / error) on data fetching icons
+    -   Typing a valid URL in searchbar opens website
+    -   Increased blur on Notes for legibility
+-   Fixes:
+    -   Timezone option losing greeting text
+    -   Inverted "At night" dark mode option
+    -   Notes checkboxes fixed size
+    -   #227 Greetings text overflow
+    -   #228 Broken local background frequency option
+    -   #229 Spanish translation breaking page
+-   Translations:
+    -   Added Romanian translation, thanks @UnifeGi !
+
 ## 1.17.1
 
 -   Weather:
