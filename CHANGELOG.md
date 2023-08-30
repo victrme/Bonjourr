@@ -1,10 +1,10 @@
 ## 1.17.2
 
 -   Added feature:
-    -   Search suggestions !
+    -   #206 Search suggestions !
 -   Improvements:
-    -   Added status icon (loading / error) on data fetching icons
-    -   Typing a valid URL in searchbar opens website
+    -   Added status icon (loading / error) on data fetching inputs
+    -   #210 Typing a valid URL in searchbar opens website
     -   Increased blur on Notes for legibility
 -   Fixes:
     -   Timezone option losing greeting text
