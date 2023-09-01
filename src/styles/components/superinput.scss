@@ -36,10 +36,13 @@
 
 	&.warn .si-status {
 		width: 25px;
-		padding-left: 5px;
 		padding-right: 1px;
 		color: orange;
 		cursor: help;
+	}
+
+	&.active.warn .si-status {
+		padding-left: 5px;
 	}
 }
 

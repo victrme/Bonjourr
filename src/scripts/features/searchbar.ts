@@ -1,8 +1,9 @@
 import storage from '../storage'
 import { Searchbar } from '../types/sync'
 import { stringMaxSize, syncDefaults } from '../utils'
-import { eventDebounce } from '../utils/debounce'
+import debounce, { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
+import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
 
 type SearchbarUpdate = {
@@ -20,6 +21,8 @@ type Suggestions = {
 }[]
 
 type UndefinedElement = Element | undefined | null
+
+const requestInput = superinput('i_sbrequest')
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -89,18 +92,14 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request }
 	}
 
 	if (request) {
-		let val = request.value
-
-		if (val.indexOf('%s') !== -1) {
-			searchbar.request = stringMaxSize(val, 512)
-			request.blur()
-		} else if (val.length > 0) {
-			val = ''
-			request.setAttribute('placeholder', tradThis('%s Not found'))
-			setTimeout(() => request.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+		if (!request.value.includes('%s')) {
+			requestInput.warn('"%s" not found')
+			return
 		}
 
-		setRequest(val)
+		searchbar.request = stringMaxSize(request.value, 512)
+		setRequest(searchbar.request)
+		request.blur()
 	}
 
 	eventDebounce({ searchbar })
@@ -211,11 +210,15 @@ function initSuggestions() {
 		domsuggestions?.appendChild(li)
 	}
 
-	function toggleSuggestions(e: Event) {
+	function toggleSuggestions(e: FocusEvent) {
+		const relatedTarget = e?.relatedTarget as Element
+		const targetIsResult = relatedTarget?.parentElement?.id === 'sb-suggestions'
 		const hasResults = document.querySelectorAll('#sb-suggestions li.shown')?.length > 0
 		const isFocus = e.type === 'focus'
 
-		domsuggestions?.classList.toggle('shown', isFocus && hasResults)
+		if (!targetIsResult) {
+			domsuggestions?.classList.toggle('shown', isFocus && hasResults)
+		}
 	}
 
 	function navigateSuggestions(e: KeyboardEvent) {
@@ -262,13 +265,13 @@ function initSuggestions() {
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 }
 
-async function suggestions(e: Event) {
+const suggestionsDebounce = debounce(async function suggestions() {
 	// INIT
 	if (domsuggestions?.childElementCount === 0) {
 		initSuggestions()
 	}
 
-	const input = (e as InputEvent).target as HTMLInputElement
+	const input = domsearchbar as HTMLInputElement
 	let results: Suggestions = []
 
 	// API
@@ -276,7 +279,8 @@ async function suggestions(e: Event) {
 	engine = (engine ?? '').replace('ddg', 'duckduckgo')
 	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
 
-	const url = `${atob('@@SUGGESTIONS_API')}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
+	const api = Math.random() > 0.5 ? '@@SUGGESTIONS_API_1' : '@@SUGGESTIONS_API_2'
+	const url = `${window.atob(api)}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
 
 	try {
 		results = (await (await fetch(url)).json()) as Suggestions
@@ -337,7 +341,7 @@ async function suggestions(e: Event) {
 	if (domsuggestions?.querySelectorAll('li.shown')?.length === 0) {
 		domsuggestions?.classList.remove('shown')
 	}
-}
+}, 180)
 
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
@@ -359,7 +363,7 @@ async function handleUserInput(e: Event) {
 		return
 	}
 
-	suggestions(e)
+	suggestionsDebounce()
 }
 
 function toggleInputButton(enabled: boolean) {
