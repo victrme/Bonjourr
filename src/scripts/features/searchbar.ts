@@ -3,6 +3,7 @@ import { Searchbar } from '../types/sync'
 import { stringMaxSize, syncDefaults } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
+import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
 
 type SearchbarUpdate = {
@@ -20,6 +21,8 @@ type Suggestions = {
 }[]
 
 type UndefinedElement = Element | undefined | null
+
+const requestInput = superinput('i_sbrequest')
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -89,18 +92,14 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request }
 	}
 
 	if (request) {
-		let val = request.value
-
-		if (val.indexOf('%s') !== -1) {
-			searchbar.request = stringMaxSize(val, 512)
-			request.blur()
-		} else if (val.length > 0) {
-			val = ''
-			request.setAttribute('placeholder', tradThis('%s Not found'))
-			setTimeout(() => request.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+		if (!request.value.includes('%s')) {
+			requestInput.warn('"%s" not found')
+			return
 		}
 
-		setRequest(val)
+		searchbar.request = stringMaxSize(request.value, 512)
+		setRequest(searchbar.request)
+		request.blur()
 	}
 
 	eventDebounce({ searchbar })
