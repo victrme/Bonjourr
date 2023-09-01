@@ -279,7 +279,8 @@ const suggestionsDebounce = debounce(async function suggestions() {
 	engine = (engine ?? '').replace('ddg', 'duckduckgo')
 	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
 
-	const url = `${atob('@@SUGGESTIONS_API')}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
+	const api = Math.random() > 0.5 ? '@@SUGGESTIONS_API_1' : '@@SUGGESTIONS_API_2'
+	const url = `${window.atob(api)}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
 
 	try {
 		results = (await (await fetch(url)).json()) as Suggestions
