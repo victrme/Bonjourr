@@ -1,7 +1,7 @@
 import storage from '../storage'
 import { Searchbar } from '../types/sync'
 import { stringMaxSize, syncDefaults } from '../utils'
-import { eventDebounce } from '../utils/debounce'
+import debounce, { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
 import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
@@ -265,13 +265,13 @@ function initSuggestions() {
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 }
 
-async function suggestions(e: Event) {
+const suggestionsDebounce = debounce(async function suggestions() {
 	// INIT
 	if (domsuggestions?.childElementCount === 0) {
 		initSuggestions()
 	}
 
-	const input = (e as InputEvent).target as HTMLInputElement
+	const input = domsearchbar as HTMLInputElement
 	let results: Suggestions = []
 
 	// API
@@ -340,7 +340,7 @@ async function suggestions(e: Event) {
 	if (domsuggestions?.querySelectorAll('li.shown')?.length === 0) {
 		domsuggestions?.classList.remove('shown')
 	}
-}
+}, 180)
 
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
@@ -362,7 +362,7 @@ async function handleUserInput(e: Event) {
 		return
 	}
 
-	suggestions(e)
+	suggestionsDebounce()
 }
 
 function toggleInputButton(enabled: boolean) {
