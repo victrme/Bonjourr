@@ -1,7 +1,7 @@
 import storage from '../storage'
 import { Searchbar } from '../types/sync'
 import { stringMaxSize, syncDefaults } from '../utils'
-import debounce, { eventDebounce } from '../utils/debounce'
+import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errorMessage'
 import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
@@ -23,6 +23,8 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 const requestInput = superinput('i_sbrequest')
+
+let lastSuggestionAbort: AbortController
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -265,12 +267,7 @@ function initSuggestions() {
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 }
 
-const suggestionsDebounce = debounce(async function suggestions() {
-	// INIT
-	if (domsuggestions?.childElementCount === 0) {
-		initSuggestions()
-	}
-
+async function suggestions() {
 	const input = domsearchbar as HTMLInputElement
 	let results: Suggestions = []
 
@@ -283,9 +280,13 @@ const suggestionsDebounce = debounce(async function suggestions() {
 	const url = `${window.atob(api)}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
 
 	try {
-		results = (await (await fetch(url)).json()) as Suggestions
+		lastSuggestionAbort = new AbortController()
+		const response = await fetch(url, { signal: lastSuggestionAbort.signal })
+		const json = await response.json()
+		results = json as Suggestions
 	} catch (_) {
 		console.warn('Cannot get search suggestions')
+		return
 	}
 
 	// ADD TO DOM
@@ -341,7 +342,7 @@ const suggestionsDebounce = debounce(async function suggestions() {
 	if (domsuggestions?.querySelectorAll('li.shown')?.length === 0) {
 		domsuggestions?.classList.remove('shown')
 	}
-}, 180)
+}
 
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
@@ -363,7 +364,12 @@ async function handleUserInput(e: Event) {
 		return
 	}
 
-	suggestionsDebounce()
+	if (domsuggestions?.childElementCount === 0) {
+		initSuggestions()
+	}
+
+	lastSuggestionAbort?.abort()
+	suggestions()
 }
 
 function toggleInputButton(enabled: boolean) {
