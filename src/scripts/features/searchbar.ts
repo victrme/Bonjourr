@@ -31,11 +31,11 @@ const domcontainer = document.getElementById('sb_container') as HTMLDivElement |
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
-const display = (shown: boolean) => domcontainer?.classList.toggle('hidden', !shown)
-const setEngine = (value: string) => domcontainer?.setAttribute('data-engine', value)
-const setRequest = (value: string) => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
-const setNewtab = (value: boolean) => domcontainer?.setAttribute('data-newtab', value.toString())
-const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value || '')
+const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
+const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine', value)
+const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
+const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
+const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
 const setOpacity = (value = 0.1) => {
 	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
@@ -48,12 +48,10 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 	}
 
 	try {
-		const { on, engine, request, newtab } = structuredClone(syncDefaults.searchbar)
-
-		display(init?.on ?? on)
-		setEngine(init?.engine ?? engine)
-		setRequest(init?.request ?? request)
-		setNewtab(init?.newtab ?? newtab)
+		display(init?.on)
+		setEngine(init?.engine)
+		setRequest(init?.request)
+		setNewtab(init?.newtab)
 		setPlaceholder(init?.placeholder)
 		setOpacity(init?.opacity)
 
@@ -284,9 +282,10 @@ async function suggestions() {
 		const response = await fetch(url, { signal: lastSuggestionAbort.signal })
 		const json = await response.json()
 		results = json as Suggestions
-	} catch (_) {
-		console.warn('Cannot get search suggestions')
-		return
+	} catch (err: any) {
+		if (err?.name === 'AbortError') {
+			return
+		}
 	}
 
 	// ADD TO DOM
