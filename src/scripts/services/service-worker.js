@@ -1,4 +1,4 @@
-const bonjourrCache = 'bonjourr-v1.17.2'
+const bonjourrCache = 'bonjourr-v1.17.3'
 
 const filesToChache = [
 	'/',
