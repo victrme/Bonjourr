@@ -346,7 +346,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 			const data = await storage.get()
 			settingsInit(data)
 			document.body.classList.remove('init')
-		}, loadtime + 400)
+		}, loadtime + 100)
 	}
 
 	// More conditions if user is using advanced features
