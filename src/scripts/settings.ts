@@ -31,6 +31,7 @@ import {
 	stringMaxSize,
 	turnRefreshButton,
 	handleGeolOption,
+	BROWSER,
 } from './utils'
 
 import {
@@ -159,8 +160,13 @@ function initParams(data: Sync, settingsDom: HTMLElement) {
 	}
 
 	// No bookmarks import on safari || online
-	if (PLATFORM === 'safari' || PLATFORM === 'online') {
+	if (BROWSER === 'safari' || PLATFORM === 'online') {
 		paramId('b_importbookmarks').setAttribute('style', 'display: none')
+	}
+
+	// Favicon doesn't work on Safari
+	if (BROWSER === 'safari') {
+		paramId('i_favicon').setAttribute('style', 'display: none')
 	}
 
 	// Activate feature options
