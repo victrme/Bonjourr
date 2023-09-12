@@ -1,3 +1,11 @@
+## 1.17.4
+
+-   Fixed status icon breaking inputs on slower devices
+-   Fixed text links overlapping search suggestions
+-   Removed favicon option for Safari
+-   No geolocation update on Safari
+-   Romanian translation update by @UnifeGi
+
 ## 1.17.3
 
 -   Added warning status icon on custom search provider input
