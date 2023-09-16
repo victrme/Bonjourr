@@ -1,18 +1,33 @@
+## 1.17.4
+
+-   Fixed status icon breaking inputs on slower devices
+-   Fixed text links overlapping search suggestions
+-   Removed favicon option for Safari
+-   No geolocation update on Safari
+-   Romanian translation update by @UnifeGi
+
+## 1.17.3
+
+-   Added warning status icon on custom search provider input
+-   Added search suggestions API key to avoid being rate limited
+-   Fixed Bonjourr failing on Firefox 93 and older
+-   Re-Inverted "At night" dark mode option (oops)
+
 ## 1.17.2
 
 -   Added feature:
-    -   #206 Search suggestions !
+    -   Search suggestions !
 -   Improvements:
     -   Added status icon (loading / error) on data fetching inputs
-    -   #210 Typing a valid URL in searchbar opens website
+    -   Typing a valid URL in searchbar opens website
     -   Increased blur on Notes for legibility
 -   Fixes:
     -   Timezone option losing greeting text
     -   Inverted "At night" dark mode option
     -   Notes checkboxes fixed size
-    -   #227 Greetings text overflow
-    -   #228 Broken local background frequency option
-    -   #229 Spanish translation breaking page
+    -   Greetings text overflow
+    -   Broken local background frequency option
+    -   Spanish translation breaking page
 -   Translations:
     -   Added Romanian translation, thanks @UnifeGi !
 

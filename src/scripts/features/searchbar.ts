@@ -1,7 +1,7 @@
 import storage from '../storage'
 import { Searchbar } from '../types/sync'
-import { stringMaxSize, syncDefaults } from '../utils'
-import debounce, { eventDebounce } from '../utils/debounce'
+import { stringMaxSize } from '../utils'
+import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
@@ -24,16 +24,18 @@ type UndefinedElement = Element | undefined | null
 
 const requestInput = superinput('i_sbrequest')
 
+let lastSuggestionAbort: AbortController
+
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
-const display = (shown: boolean) => domcontainer?.classList.toggle('hidden', !shown)
-const setEngine = (value: string) => domcontainer?.setAttribute('data-engine', value)
-const setRequest = (value: string) => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
-const setNewtab = (value: boolean) => domcontainer?.setAttribute('data-newtab', value.toString())
-const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value || '')
+const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
+const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine', value)
+const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
+const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
+const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
 const setOpacity = (value = 0.1) => {
 	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
@@ -46,12 +48,10 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 	}
 
 	try {
-		const { on, engine, request, newtab } = structuredClone(syncDefaults.searchbar)
-
-		display(init?.on ?? on)
-		setEngine(init?.engine ?? engine)
-		setRequest(init?.request ?? request)
-		setNewtab(init?.newtab ?? newtab)
+		display(init?.on)
+		setEngine(init?.engine)
+		setRequest(init?.request)
+		setNewtab(init?.newtab)
 		setPlaceholder(init?.placeholder)
 		setOpacity(init?.opacity)
 
@@ -265,12 +265,7 @@ function initSuggestions() {
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 }
 
-const suggestionsDebounce = debounce(async function suggestions() {
-	// INIT
-	if (domsuggestions?.childElementCount === 0) {
-		initSuggestions()
-	}
-
+async function suggestions() {
 	const input = domsearchbar as HTMLInputElement
 	let results: Suggestions = []
 
@@ -283,9 +278,14 @@ const suggestionsDebounce = debounce(async function suggestions() {
 	const url = `${window.atob(api)}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
 
 	try {
-		results = (await (await fetch(url)).json()) as Suggestions
-	} catch (_) {
-		console.warn('Cannot get search suggestions')
+		lastSuggestionAbort = new AbortController()
+		const response = await fetch(url, { signal: lastSuggestionAbort.signal })
+		const json = await response.json()
+		results = json as Suggestions
+	} catch (err: any) {
+		if (err?.name === 'AbortError') {
+			return
+		}
 	}
 
 	// ADD TO DOM
@@ -341,7 +341,7 @@ const suggestionsDebounce = debounce(async function suggestions() {
 	if (domsuggestions?.querySelectorAll('li.shown')?.length === 0) {
 		domsuggestions?.classList.remove('shown')
 	}
-}, 180)
+}
 
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
@@ -363,7 +363,12 @@ async function handleUserInput(e: Event) {
 		return
 	}
 
-	suggestionsDebounce()
+	if (domsuggestions?.childElementCount === 0) {
+		initSuggestions()
+	}
+
+	lastSuggestionAbort?.abort()
+	suggestions()
 }
 
 function toggleInputButton(enabled: boolean) {

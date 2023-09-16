@@ -207,7 +207,7 @@ export function imgBackground(url: string, color?: string) {
 
 		bgoverlay.style.opacity = '1'
 
-		if (color && SYSTEM_OS === 'ios') {
+		if (color && BROWSER === 'safari') {
 			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
 		}

@@ -382,6 +382,7 @@
 
 		li.block {
 			width: 4.8em;
+			z-index: 1;
 			transition: transform 0.3s cubic-bezier(0.68, -0.2, 0.265, 1.2);
 
 			&.dragging-clone {
@@ -435,7 +436,6 @@
 					box-shadow: $textShadow;
 					box-sizing: border-box;
 					border-radius: 1em;
-					z-index: 1;
 					aspect-ratio: 1;
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 

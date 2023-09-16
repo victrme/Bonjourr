@@ -31,6 +31,7 @@ import {
 	closeEditLink,
 	stringMaxSize,
 	turnRefreshButton,
+	BROWSER,
 } from './utils'
 
 import {
@@ -164,8 +165,13 @@ export async function settingsInit() {
 	}
 
 	// No bookmarks import on safari || online
-	if (PLATFORM === 'safari' || PLATFORM === 'online') {
+	if (BROWSER === 'safari' || PLATFORM === 'online') {
 		paramId('b_importbookmarks').setAttribute('style', 'display: none')
+	}
+
+	// Favicon doesn't work on Safari
+	if (BROWSER === 'safari') {
+		paramId('i_favicon').setAttribute('style', 'display: none')
 	}
 
 	// Activate feature options
