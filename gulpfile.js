@@ -1,10 +1,14 @@
-const { series, parallel, src, dest, watch } = require('gulp'),
-	fs = require('fs'),
-	csso = require('gulp-csso'),
-	rename = require('gulp-rename'),
-	replace = require('gulp-replace'),
-	htmlmin = require('gulp-htmlmin'),
-	sass = require('gulp-sass')(require('sass'))
+import fs from 'fs'
+import gulp from 'gulp'
+import rename from 'gulp-rename'
+import replace from 'gulp-replace'
+import htmlmin from 'gulp-htmlmin'
+import gulpsass from 'gulp-sass'
+import esbuild from 'esbuild'
+import * as sasscompiler from 'sass'
+
+const { series, parallel, src, dest, watch } = gulp
+const sass = gulpsass(sasscompiler)
 
 function html(platform) {
 	//
@@ -35,27 +39,37 @@ function html(platform) {
 }
 
 function scripts(platform) {
-	let envVars = {}
+	let envs = {}
 
 	try {
 		const envFile = fs.readFileSync('.env.json', 'utf-8')
-		envVars = JSON.parse(envFile)
+		envs = JSON.parse(envFile)
 	} catch (e) {}
 
-	return () =>
-		src('release/main.js')
-			.pipe(replace('@@SUGGESTIONS_API_1', btoa(envVars?.SUGGESTIONS_API_1) || '/'))
-			.pipe(replace('@@SUGGESTIONS_API_2', btoa(envVars?.SUGGESTIONS_API_2) || '/'))
-			.pipe(replace('@@UNSPLASH_API', btoa(envVars?.UNSPLASH_API) || '/'))
-			.pipe(replace('@@FAVICON_API_1', btoa(envVars?.FAVICON_API_1) || '/'))
-			.pipe(replace('@@FAVICON_API_2', btoa(envVars?.FAVICON_API_2) || '/'))
-			.pipe(replace('@@QUOTES_API_1', btoa(envVars?.QUOTES_API_1) || '/'))
-			.pipe(replace('@@QUOTES_API_2', btoa(envVars?.QUOTES_API_2) || '/'))
-			.pipe(replace('@@WEATHER_1', btoa(envVars?.WEATHER_1) || '/'))
-			.pipe(replace('@@WEATHER_2', btoa(envVars?.WEATHER_2) || '/'))
-			.pipe(replace('@@WEATHER_3', btoa(envVars?.WEATHER_3) || '/'))
-			.pipe(replace('@@WEATHER_4', btoa(envVars?.WEATHER_4) || '/'))
+	return () => {
+		esbuild.buildSync({
+			entryPoints: ['src/scripts/index.ts'],
+			outfile: 'release/online/src/scripts/main.js',
+			format: 'iife',
+			bundle: true,
+			minifySyntax: true,
+			minifyWhitespace: true,
+		})
+
+		return src('release/online/src/scripts/main.js')
+			.pipe(replace('@@SUGGESTIONS_API_1', btoa(envs?.SUGGESTIONS_API_1) || '/'))
+			.pipe(replace('@@SUGGESTIONS_API_2', btoa(envs?.SUGGESTIONS_API_2) || '/'))
+			.pipe(replace('@@UNSPLASH_API', btoa(envs?.UNSPLASH_API) || '/'))
+			.pipe(replace('@@FAVICON_API_1', btoa(envs?.FAVICON_API_1) || '/'))
+			.pipe(replace('@@FAVICON_API_2', btoa(envs?.FAVICON_API_2) || '/'))
+			.pipe(replace('@@QUOTES_API_1', btoa(envs?.QUOTES_API_1) || '/'))
+			.pipe(replace('@@QUOTES_API_2', btoa(envs?.QUOTES_API_2) || '/'))
+			.pipe(replace('@@WEATHER_1', btoa(envs?.WEATHER_1) || '/'))
+			.pipe(replace('@@WEATHER_2', btoa(envs?.WEATHER_2) || '/'))
+			.pipe(replace('@@WEATHER_3', btoa(envs?.WEATHER_3) || '/'))
+			.pipe(replace('@@WEATHER_4', btoa(envs?.WEATHER_4) || '/'))
 			.pipe(dest(`release/${platform}/src/scripts`))
+	}
 }
 
 function ressources(platform) {
@@ -80,7 +94,6 @@ function worker(platform) {
 			.pipe(rename('background.js'))
 			.pipe(dest('release/' + platform + '/src/scripts'))
 			.pipe(src('src/scripts/services/webext-storage.js'))
-			.pipe(dest('release/' + platform + '/src/scripts'))
 	}
 }
 
@@ -97,8 +110,7 @@ function manifest(platform) {
 function styles(platform) {
 	return () =>
 		src('src/styles/style.scss')
-			.pipe(sass.sync().on('error', sass.logError))
-			.pipe(csso())
+			.pipe(sass.sync({ outputStyle: 'compressed' }).on('error', sass.logError))
 			.pipe(dest(`release/${platform}/src/styles/`))
 }
 
@@ -139,27 +151,27 @@ const taskExtension = (from) => [
 // All Exports
 //
 
-exports.online = async function () {
+export const online = async function () {
 	watch(filesToWatch, series(parallel(...taskOnline())))
 }
 
-exports.chrome = async function () {
+export const chrome = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('chrome'))))
 }
 
-exports.edge = async function () {
+export const edge = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('edge'))))
 }
 
-exports.firefox = async function () {
+export const firefox = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
 }
 
-exports.safari = async function () {
+export const safari = async function () {
 	watch(filesToWatch, series(parallel(...taskExtension('safari'))))
 }
 
-exports.build = parallel(
+export const build = parallel(
 	...taskOnline(),
 	...taskExtension('firefox'),
 	...taskExtension('chrome'),
