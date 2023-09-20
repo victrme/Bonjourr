@@ -1,5 +1,5 @@
-import { toggleWidgetsDisplay } from '..'
-import { syncDefaults } from '../utils'
+import { toggleWidgetsDisplay } from '../index'
+import { BROWSER, syncDefaults } from '../utils'
 import { tradThis } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
 import storage from '../storage'
@@ -53,8 +53,10 @@ function widgetsListToData(list: { [key in MoveKeys]?: boolean }, data: Sync) {
 }
 
 function areaStringToLayoutGrid(area: string) {
-	let rows = area.split("'").filter((a) => a.length > 1)
+	let splitchar = BROWSER === 'safari' ? `\"` : "'"
+	let rows = area.split(splitchar).filter((a) => a.length > 1)
 	let grid = rows.map((r) => r.split(' '))
+
 	return grid as Layout['grid']
 }
 
