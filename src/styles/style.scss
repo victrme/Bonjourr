@@ -87,6 +87,7 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
+			z-index: 3;
 			cursor: pointer;
 			pointer-events: none;
 
@@ -102,7 +103,6 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
-		z-index: 3;
 		place-self: center;
 	}
 
@@ -292,8 +292,6 @@
 			margin: 0;
 			width: 100%;
 			min-width: 300px;
-			max-width: 16em;
-			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
 
@@ -384,6 +382,7 @@
 
 		li.block {
 			width: 4.8em;
+			z-index: 1;
 			transition: transform 0.3s cubic-bezier(0.68, -0.2, 0.265, 1.2);
 
 			&.dragging-clone {
@@ -437,7 +436,6 @@
 					box-shadow: $textShadow;
 					box-sizing: border-box;
 					border-radius: 1em;
-					z-index: 1;
 					aspect-ratio: 1;
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
@@ -597,7 +595,8 @@
 			border-radius: 10px;
 			color: #fff;
 			font-size: 1.3em;
-			font-family: $fonts;
+			font-family: inherit;
+			font-weight: inherit;
 			background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
 			border: 1px solid rgba(255, 255, 255, 0.075);
 
@@ -663,6 +662,7 @@
 
 		&.opaque {
 			#searchbar,
+			#sb-suggestions,
 			#sb-buttons button {
 				color: #3a3b3c;
 			}
@@ -675,14 +675,71 @@
 				border-color: #3a3b3c55;
 			}
 
+			.default-search-icon {
+				filter: invert(1);
+				opacity: 0.7;
+			}
+
 			#sb-buttons #sb_submit {
 				background-color: #2222221a;
-
-				img {
-					filter: invert(1);
-					opacity: 0.7;
-				}
 			}
+		}
+	}
+
+	#sb-suggestions {
+		position: absolute;
+		display: none;
+		top: 2.5em;
+		width: 100%;
+		padding: 0.6em;
+		font-size: 1.3em;
+		text-shadow: none;
+		border-radius: 10px;
+		box-sizing: border-box;
+		backdrop-filter: blur(1em);
+		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+		border: 1px solid rgba(255, 255, 255, 0.075);
+		background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
+		z-index: 2;
+
+		&.shown {
+			display: block;
+		}
+
+		li {
+			display: none;
+			text-align: left;
+			align-items: center;
+			margin: 0;
+			padding: 0.4em 1em 0.4em 0.6em;
+			border-radius: 4px;
+			column-gap: 0.6em;
+			border: 1px solid transparent;
+			cursor: pointer;
+			outline: none;
+
+			&.shown {
+				display: flex;
+			}
+
+			&[aria-selected='true'] {
+				border-color: #2c7be5;
+				background-color: rgba(44, 123, 229, 0.3);
+			}
+		}
+
+		img {
+			width: 1.6em;
+			height: 1.6em;
+			object-fit: contain;
+
+			&.default-search-icon {
+				height: 1.1em;
+			}
+		}
+
+		.suggest-desc {
+			font-size: 0.8em;
 		}
 	}
 

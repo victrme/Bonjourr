@@ -137,18 +137,21 @@
 						<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
 					</span>
 
-					<input
-						type="text"
-						name="collection"
-						id="i_collection"
-						autocomplete="off"
-						placeholder="2nVzlQADDIE"
-						maxlength="256"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-					/>
+					<div class="superinput">
+						<input
+							type="text"
+							name="collection"
+							id="i_collection"
+							autocomplete="off"
+							placeholder="2nVzlQADDIE"
+							maxlength="256"
+							spellcheck="false"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+						/>
+						<span class="si-status"><i></i></span>
+					</div>
 				</div>
 
 				<p class="tooltiptext ttcoll">
@@ -656,16 +659,20 @@
 					<option value="ZM">Zambia</option>
 					<option value="ZW">Zimbabwe</option>
 				</select>
-				<input
-					id="i_city"
-					type="text"
-					name="city"
-					placeholder="City"
-					autocomplete="off"
-					maxlength="64"
-					spellcheck="false"
-					aria-label="City location"
-				/>
+
+				<div class="superinput">
+					<input
+						id="i_city"
+						type="text"
+						name="city"
+						placeholder="City"
+						autocomplete="off"
+						maxlength="64"
+						spellcheck="false"
+						aria-label="City location"
+					/>
+					<span class="si-status"><i></i></span>
+				</div>
 			</div>
 
 			<hr />
@@ -849,7 +856,11 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
+
+					<div class="superinput">
+						<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
+						<span class="si-status"><i></i></span>
+					</div>
 				</div>
 			</div>
 
@@ -928,13 +939,16 @@
 							<button class="tooltip ttcustomquotes opt-hider" aria-label="Tips on custom quotes">?</button>
 						</span>
 
-						<input
-							id="i_qtlist"
-							name="qtlist"
-							type="text"
-							placeholder='[["author", "text"], ["au...'
-							maxlength="8000"
-						/>
+						<div class="superinput">
+							<input
+								id="i_qtlist"
+								name="qtlist"
+								type="text"
+								placeholder='[["author", "text"], ["au...'
+								maxlength="8000"
+							/>
+							<span class="si-status"><i></i></span>
+						</div>
 					</div>
 
 					<p class="tooltiptext ttcustomquotes">
@@ -975,8 +989,19 @@
 		<div class="param">
 			<div class="wrapper">
 				<label for="i_customfont" class="trn">Font family</label>
-				<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" placeholder="" />
-				<datalist id="dl_fontfamily"></datalist>
+
+				<div class="superinput">
+					<input
+						list="dl_fontfamily"
+						id="i_customfont"
+						type="text"
+						name="customfont"
+						autocomplete="off"
+						placeholder=""
+					/>
+					<span class="si-status"><i></i></span>
+					<datalist id="dl_fontfamily"></datalist>
+				</div>
 			</div>
 
 			<hr />

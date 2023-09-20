@@ -145,10 +145,7 @@ pnpm online
 
 ### Online (web version)
 
-```bash
-python -m http.server
-```
-- Open a live server, for example using python
+- Open a live server, for example using: `python -m http.server`
 - Go to http://localhost:8000/release/online/
 
 <br>

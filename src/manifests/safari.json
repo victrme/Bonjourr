@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.17.1",
+	"version": "1.17.4",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"default_locale": "en",

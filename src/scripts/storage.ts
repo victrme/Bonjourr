@@ -1,6 +1,6 @@
 import { Sync } from './types/sync'
 import parse from './utils/JSONparse'
-import { detectPlatform, syncDefaults } from './utils'
+import { PLATFORM, syncDefaults } from './utils'
 
 function verifyDataAsSync(data: { [key: string]: unknown }) {
 	data = data ?? {}
@@ -56,7 +56,7 @@ async function getChromeStorage(key?: string | string[]) {
 	return verifyDataAsSync(res)
 }
 
-export default detectPlatform() === 'online'
+export default PLATFORM === 'online'
 	? {
 			get: onlineGet,
 			set: onlineSet,

@@ -36,7 +36,6 @@ export type UnsplashImage = {
 export type Local = {
 	googleFonts?: google.fonts.WebfontList
 	fontface?: string
-	waitingForPreload: false
 	selectedId: string
 	idsList: string[]
 	userQuoteSelection: number

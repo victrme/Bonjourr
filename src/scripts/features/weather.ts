@@ -1,6 +1,7 @@
-import { stringMaxSize, handleGeolOption } from '../utils'
+import { stringMaxSize, handleGeolOption, BROWSER } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errorMessage'
+import superinput from '../utils/superinput'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
 
@@ -24,6 +25,8 @@ type WeatherUpdate = {
 	temp?: string
 	unhide?: true
 }
+
+const cityInput = superinput('i_city')
 
 // Checks every 5 minutes if weather needs update
 setInterval(async () => {
@@ -89,34 +92,34 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.city) {
-		if (!navigator.onLine) return false
-
-		const i_city = document.getElementById('i_city') as HTMLInputElement
-
-		update.city = stringMaxSize(update.city, 64)
+		if (!navigator.onLine) {
+			cityInput.warn('No internet connection')
+			return false
+		}
 
 		if (update.city === weather.city) {
-			i_city.setAttribute('placeholder', weather.city)
-			i_city.value = ''
 			return
 		}
 
-		i_city.classList.add('loads')
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+
+		update.city = stringMaxSize(update.city, 64)
+		cityInput.load()
 
 		const response = await request({
 			...weather,
+			ccode: i_ccode.value,
 			city: update.city,
 		})
 
 		if (response) {
 			weather = response
 			i_city.setAttribute('placeholder', weather.city)
-			i_city.value = ''
+			cityInput.toggle(false)
 		} else {
-			i_city.classList.add('warn')
+			cityInput.warn('Cannot find city')
 		}
-
-		i_city.classList.remove('loads')
 	}
 
 	if (update.geol !== undefined) {
@@ -383,9 +386,10 @@ async function weatherCacheControl(data: Weather) {
 	const now = Math.floor(new Date().getTime() / 1000)
 	const isThirtyMinutesLater = now > data.lastCall + 1800
 	const hasGeol = data.location.length === 2
+	const isNotSafari = BROWSER !== 'safari' // to prevent safari geol popup every day
 
 	if (navigator.onLine && isThirtyMinutesLater) {
-		if (hasGeol) {
+		if (hasGeol && isNotSafari) {
 			data.location = (await getGeolocation()) ?? []
 		}
 
