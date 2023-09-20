@@ -1,4 +1,4 @@
-import { canDisplayInterface } from '..'
+import { canDisplayInterface } from '../index'
 import storage from '../storage'
 
 import { PLATFORM, SYSTEM_OS } from '../utils'
@@ -7,7 +7,6 @@ import onSettingsLoad from '../utils/onsettingsload'
 import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
-import parse from '../utils/parse'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
@@ -85,7 +84,7 @@ function waitForFontLoad(cb: Function) {
 }
 
 async function fetchFontList() {
-	const fonts = parse(localStorage.fonts) ?? []
+	const fonts = (await storage.local.get('fonts')).fonts ?? []
 
 	if (fonts.length > 0) {
 		return fonts as FontList
@@ -115,7 +114,7 @@ async function fetchFontList() {
 
 		const list = json.items.map((item) => ({ family: item.family, variants: noRegulars(noItalics(item.variants)) }))
 
-		localStorage.fonts = JSON.stringify(list)
+		storage.local.set({ fonts: list })
 
 		return list as FontList
 	}

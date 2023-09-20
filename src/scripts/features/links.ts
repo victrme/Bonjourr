@@ -1,5 +1,6 @@
-import { SYSTEM_OS, BROWSER, IS_MOBILE, bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
-import { canDisplayInterface } from '..'
+import { bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
+import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../utils'
+import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'

@@ -14,13 +14,14 @@ import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, localDefaults } from './utils'
 import { periodOfDay, syncDefaults, stringMaxSize } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errormessage'
 import sunTime from './utils/suntime'
 import { Local } from './types/local'
+import parse from './utils/parse'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -490,33 +491,16 @@ function startup(data: Sync, local: Local) {
 				sync.lang = 'es_ES'
 			}
 
-			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {
-				// localStorage.hasUpdated = 'true'
-				// localStorage.removeItem('translations')
-				// const getOnlineLocal = () => JSON.parse(localStorage.bonjourrBackgrounds ?? '{}')
-				// const getChromeLocal = async () => await new Promise((resolve) => chrome?.storage.local.get(null, resolve))
-				// const removeOnlineLocal = () => localStorage.removeItem('bonjourrBackgrounds')
-				// const removeChromeLocal = () => {
-				// 	chrome?.storage.local.remove('dynamicCache')
-				// 	chrome?.storage.local.remove('quotesCache')
-				// }
-				// const isOnline = sync.about.browser === 'online'
-				// const local = isOnline ? getOnlineLocal() : getChromeLocal()
-				// const { unsplashCache, quotesCache } = localDefaults
-				// localStorage.setItem('unsplashCache', JSON.stringify(local?.unsplashCache ?? { ...unsplashCache }))
-				// localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? quotesCache))
-				// isOnline ? removeOnlineLocal() : removeChromeLocal()
-				// sync.unsplash = { ...(sync.dynamic as Sync['unsplash']) }
-				// //@ts-ignore
-				// if (sync.background_type === 'custom') sync.background_type = 'local'
-				// //@ts-ignore
-				// if (sync.background_type === 'dynamic') sync.background_type = 'unsplash'
-				// delete sync.dynamic
-				// delete sync.custom_every
-				// delete sync.custom_time
-				// storage.sync.remove('dynamic')
-				// storage.sync.remove('custom_every')
-				// storage.sync.remove('custom_time')
+			if (version_old.includes('1.17') && version_curr.includes('1.18')) {
+				const oldlocal = {
+					unsplashCache: parse(localStorage.unsplashCache) ?? localDefaults.unsplashCache,
+					quotesCache: parse(localStorage.quotesCache) ?? localDefaults.quotesCache,
+					fonts: parse(localStorage.fonts) ?? [],
+					fontface: localStorage.fontface ?? '',
+				}
+
+				storage.local.set(oldlocal)
+				localStorage.clear()
 			}
 
 			storage.sync.set({ ...sync })
