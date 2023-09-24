@@ -27,6 +27,6 @@
 		"type": "module"
 	},
 
-	"permissions": ["storage", "unlimitedStorage", "geolocation"],
+	"permissions": ["storage", "geolocation"],
 	"optional_permissions": ["bookmarks"]
 }
