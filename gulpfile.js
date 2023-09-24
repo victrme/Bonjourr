@@ -88,12 +88,10 @@ function worker(platform) {
 	return () => {
 		if (platform === 'online') {
 			return src('src/scripts/services/service-worker.js').pipe(dest('release/online'))
+		} else {
+			const services = ['src/scripts/services/background.js', 'src/scripts/services/webext-storage.js']
+			return src(services).pipe(dest('release/' + platform + '/src/scripts'))
 		}
-
-		return src(`src/scripts/services/background-${/edge|chrome/.test(platform) ? 'chrome' : 'browser'}.js`)
-			.pipe(rename('background.js'))
-			.pipe(dest('release/' + platform + '/src/scripts'))
-			.pipe(src('src/scripts/services/webext-storage.js'))
 	}
 }
 
