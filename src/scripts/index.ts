@@ -148,20 +148,22 @@ export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
+		const iconlink = document.createElement('link') as HTMLLinkElement
 
-		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
+		iconlink.id = 'head-favicon'
+		iconlink.rel = 'icon'
+		iconlink.href = emoji ? svg : defaulticon
+
+		document.querySelector('head')?.appendChild(iconlink)
 	}
 
 	if (isEvent) {
 		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
-		createFavicon(val)
 		eventDebounce({ favicon: isEmoji ? val : '' })
-		return
+		document.getElementById('head-favicon')?.remove()
 	}
 
-	if (val) {
-		createFavicon(val)
-	}
+	createFavicon(val)
 }
 
 export function tabTitle(val = '', isEvent?: true) {
