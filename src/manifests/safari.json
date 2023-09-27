@@ -6,13 +6,20 @@
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"default_locale": "en",
+
 	"icons": {
 		"128": "src/assets/favicon-128x128.png",
 		"512": "src/assets/favicon-512x512.png"
 	},
+
+	"chrome_settings_overrides": {
+		"homepage": "index.html"
+	},
+
 	"chrome_url_overrides": {
 		"newtab": "index.html"
 	},
+
 	"action": {
 		"default_icon": {
 			"128": "src/assets/favicon-128x128.png",
@@ -20,8 +27,10 @@
 		},
 		"default_title": "__MSG_extensionName__"
 	},
+
 	"background": {
 		"scripts": ["src/scripts/background.js"]
 	},
+
 	"permissions": ["storage", "geolocation"]
 }
