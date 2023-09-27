@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "1.17.4.1",
+	"version": "1.17.4.2",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"homepage_url": "https://bonjourr.fr",
@@ -35,7 +35,7 @@
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "{4f391a9e-8717-4ba6-a5b1-488a34931fcb}",
-			"strict_min_version": "56.0"
+			"strict_min_version": "109.0"
 		}
 	}
 }
