@@ -4,6 +4,7 @@
 		"types": ["user-agent-data-types", "web-ext-types", "chrome"],
 		"strict": true,
 		"esModuleInterop": true,
+		"moduleResolution": "Bundler",
 		"forceConsistentCasingInFileNames": true
 	}
 }
