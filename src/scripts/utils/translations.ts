@@ -1,19 +1,21 @@
-import parse from './JSONparse'
+import storage from '../storage'
+import parse from './parse'
+import { Local } from '../types/local'
 
 let trns: { [key: string]: string } = {}
 
-export async function setTranslationCache(lang: string) {
+export async function setTranslationCache(lang: string, local?: Local) {
 	if (lang === 'en') {
-		localStorage.removeItem('translations')
+		storage.local.remove('translations')
 		trns = {}
 		return
 	}
 
-	trns = parse(localStorage.translations) ?? {}
+	trns = local?.translations ?? (await storage.local.get('translations'))?.translations
 
 	if (trns?.lang !== lang) {
-		localStorage.translations = await (await fetch(`../../../_locales/${lang}/translations.json`)).text()
-		trns = parse(localStorage.translations) ?? {}
+		trns = await (await fetch(`../../../_locales/${lang}/translations.json`)).json()
+		storage.local.set({ translations: trns })
 	}
 }
 
@@ -40,8 +42,7 @@ export async function toggleTraduction(lang: string) {
 	let text: string
 
 	await setTranslationCache(lang)
-
-	newDict = parse(localStorage.translations) ?? {}
+	newDict = (await storage.local.get('translations')).translations
 
 	// old lang is 'en'
 	if (currentDict?.lang === undefined) {

@@ -1,14 +1,19 @@
 import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
-import parse from '../utils/JSONparse'
+import errorMessage from '../utils/errormessage'
+import parse from '../utils/parse'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
 import superinput from '../utils/superinput'
 
 import { UnsplashCache, UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
+
+type UnsplashInit = {
+	unsplash: Unsplash
+	cache: UnsplashCache
+} | null
 
 type UnsplashUpdate = {
 	refresh?: HTMLElement
@@ -26,14 +31,14 @@ const bonjourrCollections = {
 	night: 'bHDh4Ae7O8o',
 }
 
-export default async function unsplashBackgrounds(init: Unsplash | null, event?: UnsplashUpdate) {
+export default function unsplashBackgrounds(init: UnsplashInit, event?: UnsplashUpdate) {
 	if (event) {
 		updateUnsplash(event)
 	}
 
 	if (init) {
 		try {
-			cacheControl(init)
+			cacheControl(init.unsplash, init.cache)
 		} catch (e) {
 			errorMessage(e)
 		}
@@ -41,8 +46,8 @@ export default async function unsplashBackgrounds(init: Unsplash | null, event?:
 }
 
 async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
-	const { unsplash } = (await storage.get('unsplash')) as Sync
-	const unsplashCache = getCache()
+	const { unsplash } = (await storage.sync.get('unsplash')) as Sync
+	const unsplashCache = await getCache()
 
 	if (!unsplash) {
 		return
@@ -55,7 +60,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		}
 
 		unsplash.time = 0
-		storage.set({ unsplash })
+		storage.sync.set({ unsplash })
 		turnRefreshButton(refresh, true)
 
 		setTimeout(() => cacheControl(unsplash), 400)
@@ -69,7 +74,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		unsplash.every = every
 		unsplash.time = freqControl.set()
-		storage.set({ unsplash })
+		storage.sync.set({ unsplash })
 	}
 
 	if (collection === '') {
@@ -77,11 +82,11 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.collection = ''
 		unsplash.lastCollec = 'day'
 
-		storage.set({ unsplash })
-		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
+		storage.sync.set({ unsplash })
+		storage.local.set({ unsplashCache })
 		collectionInput.toggle(false, '2nVzlQADDIE')
 
-		unsplashBackgrounds(unsplash)
+		unsplashBackgrounds({ unsplash, cache: unsplashCache })
 		return
 	}
 
@@ -111,14 +116,14 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		collectionInput.toggle(false, unsplash.collection)
 
-		localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
-		storage.set({ unsplash })
+		storage.sync.set({ unsplash })
+		storage.local.set({ unsplashCache })
 	}
 }
 
-async function cacheControl(unsplash: Unsplash) {
+async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
-	const cache = getCache()
+	cache = cache ?? (await getCache())
 
 	const needNewImage = freqControl.get(every, time)
 	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
@@ -141,7 +146,7 @@ async function cacheControl(unsplash: Unsplash) {
 		await preloadImage(list[0].url)
 
 		cache[lastCollec] = list
-		localStorage.setItem('unsplashCache', JSON.stringify(cache))
+		storage.local.set({ unsplashCache: cache })
 		sessionStorage.setItem('waitingForPreload', 'true')
 	}
 
@@ -173,7 +178,7 @@ async function cacheControl(unsplash: Unsplash) {
 		if (newList) {
 			cache[unsplash.lastCollec] = list.concat(newList)
 			await preloadImage(newList[0].url)
-			localStorage.setItem('unsplashCache', JSON.stringify(cache))
+			storage.local.set({ unsplashCache: cache })
 		}
 
 		return
@@ -184,8 +189,8 @@ async function cacheControl(unsplash: Unsplash) {
 		await preloadImage(list[1].url)
 	}
 
-	storage.set({ unsplash })
-	localStorage.setItem('unsplashCache', JSON.stringify(cache))
+	storage.sync.set({ unsplash })
+	storage.local.set({ unsplashCache: cache })
 }
 
 async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
@@ -305,8 +310,9 @@ function imgCredits(image: UnsplashImage) {
 	}
 }
 
-function getCache(): UnsplashCache {
-	return parse(localStorage.unsplashCache) ?? { ...localDefaults.unsplashCache }
+async function getCache(): Promise<UnsplashCache> {
+	const cache = (await storage.local.get('unsplashCache'))?.unsplashCache ?? { ...localDefaults.unsplashCache }
+	return cache
 }
 
 function loadBackground(props: UnsplashImage) {

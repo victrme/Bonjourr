@@ -14,11 +14,14 @@ import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, periodOfDay, syncDefaults, stringMaxSize, localDefaults } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, localDefaults } from './utils'
+import { periodOfDay, syncDefaults, stringMaxSize } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
-import errorMessage from './utils/errorMessage'
+import errorMessage from './utils/errormessage'
 import sunTime from './utils/suntime'
+import { Local } from './types/local'
+import parse from './utils/parse'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -145,18 +148,20 @@ export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
+		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
 
-		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
+		domfavicon.href = emoji ? svg : defaulticon
 	}
 
 	if (isEvent) {
 		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
-		createFavicon(val)
 		eventDebounce({ favicon: isEmoji ? val : '' })
-		return
+		document.getElementById('head-favicon')?.remove()
 	}
 
-	if (val) {
+	if (BROWSER === 'firefox') {
+		setTimeout(() => createFavicon(val), 0)
+	} else {
 		createFavicon(val)
 	}
 }
@@ -181,14 +186,14 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 	}
 }
 
-export function initBackground(data: Sync) {
+export function initBackground(data: Sync, local: Local) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
 
 	backgroundFilter({ blur, brightness })
 
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds(data.unsplash)
+	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -206,7 +211,7 @@ export function imgBackground(url: string, color?: string) {
 
 		bgoverlay.style.opacity = '1'
 
-		if (color && SYSTEM_OS === 'ios') {
+		if (color && BROWSER === 'safari') {
 			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
 		}
@@ -229,7 +234,7 @@ export function backgroundFilter({ blur, brightness, isEvent }: { blur?: number;
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
 	if (isEvent) {
-		storage.set({ dark: value })
+		storage.sync.set({ dark: value })
 	}
 
 	if (value === 'auto') {
@@ -265,7 +270,7 @@ export function showPopup(value: string | number) {
 				setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
 			}
 
-			storage.set({ reviewPopup: 'removed' })
+			storage.sync.set({ reviewPopup: 'removed' })
 		}
 
 		popup.style.display = 'flex'
@@ -282,13 +287,13 @@ export function showPopup(value: string | number) {
 
 	if (typeof value === 'number') {
 		if (value > 30) affiche() // s'affiche après 30 tabs
-		else storage.set({ reviewPopup: value + 1 })
+		else storage.sync.set({ reviewPopup: value + 1 })
 
 		return
 	}
 
 	if (value !== 'removed') {
-		storage.set({ reviewPopup: 0 })
+		storage.sync.set({ reviewPopup: 0 })
 	}
 }
 
@@ -342,10 +347,9 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 		document.body.classList.remove('loading')
 
-		setTimeout(async () => {
-			const data = await storage.get()
-			settingsInit(data)
+		setTimeout(() => {
 			document.body.classList.remove('init')
+			settingsInit()
 		}, loadtime + 100)
 	}
 
@@ -376,7 +380,8 @@ function onlineAndMobileHandler() {
 	if (IS_MOBILE) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
-			const data = await storage.get()
+			const data = await storage.sync.get()
+			const { unsplashCache } = await storage.local.get('unsplashCache')
 
 			if (!data?.clock || !data?.weather) {
 				return
@@ -386,7 +391,7 @@ function onlineAndMobileHandler() {
 			const needNewImage = data.background_type === 'unsplash' && frequency
 
 			if (needNewImage && data.unsplash) {
-				unsplashBackgrounds(data.unsplash)
+				unsplashBackgrounds({ unsplash: data.unsplash, cache: unsplashCache })
 			}
 
 			clock(data)
@@ -442,25 +447,25 @@ function initTimeAndMainBlocks(time: boolean, main: boolean) {
 	document.getElementById('main')?.classList.toggle('hidden', !main)
 }
 
-function startup(data: Sync) {
+function startup(data: Sync, local: Local) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
 	sunTime(data.weather)
 	weather(data)
-	customFont(data.font)
+	customFont({ font: data.font, fontface: local.fontface })
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(data)
 	darkmode(data.dark)
 	searchbar(data.searchbar)
-	quotes(data)
+	quotes({ sync: data, local })
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
 	moveElements(data.move)
 	customCss(data.css)
 	hideElements(data.hide)
-	initBackground(data)
+	initBackground(data, local)
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
@@ -470,67 +475,42 @@ function startup(data: Sync) {
 	onlineAndMobileHandler()
 
 	try {
-		const data = await storage.get()
-		const version_old = data?.about?.version
+		const { sync, local } = await storage.init()
+		const version_old = sync?.about?.version
 		const version_curr = syncDefaults.about.version
 
 		// Version change
 		if (version_old !== version_curr) {
 			console.log(`Version change: ${version_old} => ${version_curr}`)
 
-			data.about = {
+			sync.about = {
 				browser: PLATFORM,
 				version: version_curr,
 			}
 
 			// #229
-			if (data.lang === 'es') {
-				data.lang = 'es_ES'
+			if (sync.lang === 'es') {
+				sync.lang = 'es_ES'
 			}
 
-			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {
-				localStorage.hasUpdated = 'true'
-				localStorage.removeItem('translations')
-
-				const getOnlineLocal = () => JSON.parse(localStorage.bonjourrBackgrounds ?? '{}')
-				const getChromeLocal = async () => await new Promise((resolve) => chrome?.storage.local.get(null, resolve))
-				const removeOnlineLocal = () => localStorage.removeItem('bonjourrBackgrounds')
-				const removeChromeLocal = () => {
-					chrome?.storage.local.remove('dynamicCache')
-					chrome?.storage.local.remove('quotesCache')
+			if (version_old.includes('1.17') && version_curr.includes('1.18')) {
+				const oldlocal = {
+					unsplashCache: parse(localStorage.unsplashCache) ?? localDefaults.unsplashCache,
+					quotesCache: parse(localStorage.quotesCache) ?? localDefaults.quotesCache,
+					fonts: parse(localStorage.fonts) ?? [],
+					fontface: localStorage.fontface ?? '',
 				}
 
-				const isOnline = data.about.browser === 'online'
-				const local = await (isOnline ? getOnlineLocal() : getChromeLocal())
-				const { unsplashCache, quotesCache } = localDefaults
-
-				localStorage.setItem('unsplashCache', JSON.stringify(local?.unsplashCache ?? { ...unsplashCache }))
-				localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? quotesCache))
-
-				isOnline ? removeOnlineLocal() : removeChromeLocal()
-
-				data.unsplash = { ...(data.dynamic as Sync['unsplash']) }
-
-				//@ts-ignore
-				if (data.background_type === 'custom') data.background_type = 'local'
-				//@ts-ignore
-				if (data.background_type === 'dynamic') data.background_type = 'unsplash'
-
-				delete data.dynamic
-				delete data.custom_every
-				delete data.custom_time
-
-				storage.remove('dynamic')
-				storage.remove('custom_every')
-				storage.remove('custom_time')
+				storage.local.set(oldlocal)
+				localStorage.clear()
 			}
 
-			storage.set({ ...data })
+			storage.sync.set({ ...sync })
 		}
 
-		await setTranslationCache(data.lang)
+		await setTranslationCache(sync.lang, local)
 
-		startup(data)
+		startup(sync, local)
 	} catch (e) {
 		errorMessage(e)
 	}

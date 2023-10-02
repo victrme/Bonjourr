@@ -16,5 +16,5 @@ export default function debounce<F extends (...args: Parameters<F>) => ReturnTyp
 }
 
 export const eventDebounce = debounce(function (value: { [key: string]: unknown }) {
-	storage.set(value)
+	storage.sync.set(value)
 }, 400)

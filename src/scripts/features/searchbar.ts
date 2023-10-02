@@ -1,8 +1,8 @@
 import storage from '../storage'
 import { Searchbar } from '../types/sync'
-import { stringMaxSize, syncDefaults } from '../utils'
+import { stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
 
@@ -64,7 +64,7 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 }
 
 async function updateSearchbar({ engine, newtab, opacity, placeholder, request }: SearchbarUpdate) {
-	const { searchbar } = await storage.get('searchbar')
+	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
 		return

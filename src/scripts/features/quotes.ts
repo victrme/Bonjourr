@@ -1,9 +1,9 @@
 import { canDisplayInterface, freqControl } from '..'
 import superinput from '../utils/superinput'
-import parse from '../utils/JSONparse'
+import parse from '../utils/parse'
 import storage from '../storage'
 
-import { Quote } from '../types/local'
+import { Local, Quote } from '../types/local'
 import { Sync } from '../types/sync'
 
 type QuotesUpdate = {
@@ -16,10 +16,6 @@ type QuotesUpdate = {
 }
 
 const userQuotesInput = superinput('i_qtlist')
-
-function getUserQuoteSelection() {
-	return parseInt(localStorage.userQuoteSelection || '0')
-}
 
 function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
 	return arr?.map(([author, content]) => ({ author, content }))
@@ -66,7 +62,7 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 
 	if (type === 'user') {
 		const randIndex = Math.round(Math.random() * (list.length - 1))
-		localStorage.setItem('userQuoteSelection', JSON.stringify(randIndex))
+		storage.local.set({ userQuoteSelection: randIndex })
 		return list[randIndex]
 	}
 
@@ -74,19 +70,19 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 	// APIs
 
 	list.shift() // removes used quote
-	localStorage.setItem('quotesCache', JSON.stringify(list))
+	storage.local.set({ quotesCache: list })
 
 	if (list.length < 2) {
 		newQuoteFromAPI(lang, type).then((list) => {
-			localStorage.setItem('quotesCache', JSON.stringify(list))
+			storage.local.set({ quotesCache: list })
 		})
 	}
 
 	return list[0]
 }
 
-function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
-	let quotesCache = parse(localStorage.quotesCache) ?? []
+async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
+	let quotesCache = (await storage.local.get('quotesCache'))?.quotesCache ?? []
 
 	async function handleQuotesType(type: string) {
 		let list: Quote[] = []
@@ -100,12 +96,12 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 		// Fetch quotes from API and display
 		if (type !== 'user') {
 			list = await newQuoteFromAPI(lang, type)
-			localStorage.setItem('quotesCache', JSON.stringify(list))
+			storage.local.set({ quotesCache: list })
 			insertToDom(list[0])
 			return
 		}
 
-		const selection = getUserQuoteSelection()
+		const selection = (await storage.local.get('userQuoteSelection'))?.userQuoteSelection ?? 0
 		list = userlistToQuotes(userlist!)
 		insertToDom(list[selection])
 	}
@@ -143,7 +139,7 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 
 		insertToDom(quote)
 		document.getElementById('i_qtlist')?.blur()
-		localStorage.setItem('userQuoteSelection', '0')
+		storage.local.set({ userQuoteSelection: 0 })
 
 		return array
 	}
@@ -181,12 +177,12 @@ function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpda
 		handleQuotesRefresh()
 	}
 
-	storage.set({ quotes })
+	storage.sync.set({ quotes })
 }
 
-export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
+export default async function quotes(init: { sync: Sync; local: Local } | null, update?: QuotesUpdate) {
 	if (update) {
-		const data = await storage.get(['lang', 'quotes'])
+		const data = await storage.sync.get(['lang', 'quotes'])
 		UpdateQuotes(update, data as Sync)
 	}
 
@@ -194,30 +190,30 @@ export default async function quotes(init: Sync | null, update?: QuotesUpdate) {
 		return
 	}
 
-	const { lang, quotes } = init
+	const { lang, quotes } = init.sync
 	const isUser = quotes.type === 'user'
 	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
-	let userSel = getUserQuoteSelection()
-	let cache = parse(localStorage.quotesCache) ?? []
+	let userSel = init.local?.userQuoteSelection ?? 0
+	let cache = init.local?.quotesCache ?? []
 	let quote: Quote
 
 	// First startup, create classic cache
 	if (!cache || cache?.length === 0) {
 		cache = await newQuoteFromAPI(lang, quotes.type)
-		localStorage.setItem('quotesCache', JSON.stringify(cache))
+		storage.local.set({ quotesCache: cache })
 	}
 
 	// If user quotes, replace cache
 	if (isUser) {
-		cache = userlistToQuotes(quotes.userlist) // force because list check is above
+		cache = userlistToQuotes(quotes.userlist)
 	}
 
 	// Frequence control, get new quote from controlCacheList
 	if (needsNewQuote) {
-		quotes.last = freqControl.set() // updates last quotes timestamp
+		quotes.last = freqControl.set()
 		quote = controlCacheList(cache, lang, quotes.type)
-		storage.set({ quotes })
+		storage.sync.set({ quotes })
 	} else {
 		quote = cache[isUser ? userSel : 0]
 	}

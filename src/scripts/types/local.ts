@@ -34,11 +34,12 @@ export type UnsplashImage = {
 }
 
 export type Local = {
-	googleFonts?: google.fonts.WebfontList
+	fonts?: { family: string; variants: string[] }[]
 	fontface?: string
 	selectedId: string
 	idsList: string[]
 	userQuoteSelection: number
 	quotesCache: Quote[]
 	unsplashCache: UnsplashCache
+	translations: { [key: string]: string }
 }

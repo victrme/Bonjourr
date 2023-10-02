@@ -119,7 +119,7 @@ export default async function linksImport() {
 	chrome.permissions.request({ permissions: ['bookmarks'] }, async (granted) => {
 		if (!granted) return
 
-		const data = await storage.get()
+		const data = await storage.sync.get()
 		const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
 		extAPI.bookmarks.getTree().then((response) => {
 			document.getElementById('bookmarks_container')?.classList.toggle('shown', true)

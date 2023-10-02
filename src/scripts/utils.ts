@@ -127,21 +127,6 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
-export function handleGeolOption(data: Weather, settingsDom?: HTMLElement) {
-	settingsDom = settingsDom ?? (document.getElementById('settings') as HTMLElement)
-
-	const i_city = settingsDom.querySelector('#i_city') as HTMLInputElement
-	const i_geol = settingsDom.querySelector('#i_geol') as HTMLInputElement
-	const i_ccode = settingsDom.querySelector('#i_ccode') as HTMLInputElement
-	const sett_city = settingsDom.querySelector('#sett_city') as HTMLDivElement
-	const isGeol = data.location.length > 0
-
-	i_geol.checked = isGeol
-	i_ccode.value = data.ccode
-	i_city.setAttribute('placeholder', data.city)
-	sett_city.classList.toggle('shown', isGeol === false)
-}
-
 export function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
 	if (!domedit) return
@@ -168,7 +153,7 @@ for (const [code] of Object.entries(langList)) {
 }
 
 export const syncDefaults: Sync = {
-	about: { browser: PLATFORM, version: '1.17.4' },
+	about: { browser: PLATFORM, version: '1.18.0' },
 	showall: false,
 	lang: defaultLang,
 	dark: 'system',
@@ -275,6 +260,7 @@ export const syncDefaults: Sync = {
 
 export const localDefaults: Local = {
 	userQuoteSelection: 0,
+	translations: {},
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],

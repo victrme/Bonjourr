@@ -1,10 +1,12 @@
-import { SYSTEM_OS, BROWSER, IS_MOBILE, bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
-import { tradThis } from '../utils/translations'
+import { bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
+import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../utils'
+import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errorMessage'
-
-import { canDisplayInterface } from '..'
+import onSettingsLoad from '../utils/onsettingsload'
+import { tradThis } from '../utils/translations'
+import errorMessage from '../utils/errormessage'
 import storage from '../storage'
+
 import { Sync } from '../types/sync'
 
 type LinksUpdate = {
@@ -105,7 +107,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 				// Fetch new icons if matches these urls
 				if (link.icon.includes('loading.svg')) {
 					link.icon = await fetchNewIcon(dom, link.url)
-					storage.set({ [link._id]: link })
+					storage.sync.set({ [link._id]: link })
 				}
 
 				// Apply cached
@@ -312,7 +314,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 			document.body.removeEventListener('mousemove', triggerDragging)
 
 			setTimeout(async () => {
-				const data = await storage.get()
+				const data = await storage.sync.get()
 
 				Object.entries(updatedOrder).forEach(([key, val]) => {
 					const link = data[key] as Link
@@ -451,7 +453,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	const domedit = document.querySelector('#editlink')
 	const opendedSettings = document.getElementById('settings')?.classList.contains('shown') ?? false
 
-	const data = await storage.get(linkId)
+	const data = await storage.sync.get(linkId)
 	const { title, url, icon } = data[linkId] as Link
 
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
@@ -490,7 +492,7 @@ async function updatesEditedLink(linkId: string) {
 		return false
 	}
 
-	const data = await storage.get(linkId)
+	const data = await storage.sync.get(linkId)
 	const domlink = document.getElementById(linkId) as HTMLLIElement
 	const domicon = domlink.querySelector('img') as HTMLImageElement
 	const domurl = domlink.querySelector('a') as HTMLAnchorElement
@@ -508,13 +510,13 @@ async function updatesEditedLink(linkId: string) {
 	domicon.src = link.icon
 
 	// Updates
-	storage.set({ [linkId]: link })
+	storage.sync.set({ [linkId]: link })
 
 	return true
 }
 
 async function removeblock(linkId: string) {
-	const data = await storage.get()
+	const data = await storage.sync.get()
 	const links = bundleLinks(data)
 	const target = data[linkId] as Link
 
@@ -532,8 +534,8 @@ async function removeblock(linkId: string) {
 			}
 		})
 
-	storage.clear()
-	storage.set(data)
+	storage.sync.clear()
+	storage.sync.set(data)
 
 	setTimeout(() => {
 		document.getElementById(linkId)?.remove()
@@ -541,7 +543,7 @@ async function removeblock(linkId: string) {
 }
 
 async function linkSubmission(type: 'add' | 'import', importList?: { title: string; url: string }[]) {
-	const data = await storage.get()
+	const data = await storage.sync.get()
 	const links = bundleLinks(data)
 	let newLinksList = []
 
@@ -595,7 +597,7 @@ async function linkSubmission(type: 'add' | 'import', importList?: { title: stri
 
 	// Saves to storage added links before icon fetch saves again
 	newLinksList.forEach((newlink) => {
-		storage.set({ [newlink._id]: newlink })
+		storage.sync.set({ [newlink._id]: newlink })
 	})
 
 	// Add new link(s) to existing ones
@@ -652,7 +654,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 	}
 
 	if (newtab !== undefined) {
-		storage.set({ linknewtab: newtab })
+		storage.sync.set({ linknewtab: newtab })
 
 		document.querySelectorAll('.block a').forEach((a) => {
 			//
@@ -667,7 +669,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 	}
 
 	if (style) {
-		const data = await storage.get()
+		const data = await storage.sync.get()
 		const links = bundleLinks(data as Sync)
 		const classes = ['large', 'medium', 'small', 'text']
 		const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
@@ -680,7 +682,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 
 		setRows(data.linksrow, chosenClass)
 
-		storage.set({ linkstyle: chosenClass })
+		storage.sync.set({ linkstyle: chosenClass })
 	}
 
 	if (row) {
@@ -706,8 +708,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 	initblocks(bundleLinks(init), init.linknewtab)
 	setRows(init.linksrow, init.linkstyle)
-
-	setTimeout(() => editEvents(), 150) // No need to activate edit events asap
+	onSettingsLoad(editEvents)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		const domeditlink = document.getElementById('editlink')

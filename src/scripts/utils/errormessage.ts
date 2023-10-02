@@ -50,7 +50,7 @@ export default async function errorMessage(error: unknown) {
 		resetButton.textContent = 'Reset Bonjourr'
 		resetButton.addEventListener('click', () => {
 			warning.style.opacity = '0'
-			storage.clear()
+			storage.sync.clear()
 			localStorage.clear()
 		})
 
@@ -87,7 +87,7 @@ export default async function errorMessage(error: unknown) {
 	}
 
 	try {
-		const data = await storage.get()
+		const data = await storage.sync.get()
 		document.querySelector('#error')?.remove()
 		displayMessage(JSON.stringify(data, null, 4))
 	} catch (e) {

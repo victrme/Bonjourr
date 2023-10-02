@@ -1,15 +1,15 @@
-import { canDisplayInterface } from '..'
+import { canDisplayInterface } from '../index'
 import storage from '../storage'
 
-import superinput from '../utils/superinput'
-import errorMessage from '../utils/errorMessage'
-import { eventDebounce } from '../utils/debounce'
 import { PLATFORM, SYSTEM_OS } from '../utils'
+import { eventDebounce } from '../utils/debounce'
+import onSettingsLoad from '../utils/onsettingsload'
+import errorMessage from '../utils/errormessage'
+import { tradThis } from '../utils/translations'
+import superinput from '../utils/superinput'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
-import parse from '../utils/JSONparse'
-import { tradThis } from '../utils/translations'
 
 type FontList = {
 	family: string
@@ -18,7 +18,6 @@ type FontList = {
 
 type FontUpdateEvent = {
 	autocomplete?: HTMLElement
-	initsettings?: HTMLElement
 	size?: string
 	family?: string
 	weight?: string
@@ -74,8 +73,6 @@ function waitForFontLoad(cb: Function) {
 	let interval = setInterval(() => {
 		currwidth = p.getBoundingClientRect().width
 
-		console.log(lastwidth, currwidth)
-
 		if (currwidth !== lastwidth) {
 			clearInterval(interval)
 			p.remove()
@@ -87,7 +84,7 @@ function waitForFontLoad(cb: Function) {
 }
 
 async function fetchFontList() {
-	const fonts = parse(localStorage.fonts) ?? []
+	const fonts = (await storage.local.get('fonts')).fonts ?? []
 
 	if (fonts.length > 0) {
 		return fonts as FontList
@@ -117,7 +114,7 @@ async function fetchFontList() {
 
 		const list = json.items.map((item) => ({ family: item.family, variants: noRegulars(noItalics(item.variants)) }))
 
-		localStorage.fonts = JSON.stringify(list)
+		storage.local.set({ fonts: list })
 
 		return list as FontList
 	}
@@ -220,16 +217,17 @@ async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
 	})
 }
 
-async function initFontSettings(settingsDom: HTMLElement, font: Font | null) {
+async function initFontSettings(font: Font | null) {
+	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.availWeights.length > 0
 	const weights = hasCustomWeights ? font.availWeights : systemfont.weights
 	const family = font?.family || systemfont.placeholder
 
-	settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', family)
-	setWeightSettings(weights, settingsDom)
+	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
+	setWeightSettings(weights, settings)
 
 	if (font?.url) {
-		setAutocompleteSettings(settingsDom)
+		setAutocompleteSettings(settings)
 	}
 }
 
@@ -238,7 +236,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	const isRemovingFamily = typeof family === 'string' && family.length === 0
 	const isChangingFamily = typeof family === 'string' && family.length > 1
 
-	const { font } = await storage.get('font')
+	const { font } = await storage.sync.get('font')
 
 	if (isRemovingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLInputElement
@@ -250,7 +248,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 		document.documentElement.style.setProperty('--font-weight-clock', '200')
 		document.documentElement.style.setProperty('--font-weight', baseWeight)
 
-		localStorage.removeItem('fontface')
+		storage.local.remove('fontface')
 
 		setWeight('', '400')
 		setWeightSettings(systemfont.weights)
@@ -294,7 +292,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			setFamily(family, fontface)
 			setWeight(family, '400')
 			i_weight.value = '400'
-			localStorage.fontface = fontface
+			storage.local.set({ fontface })
 			setWeightSettings(newfont.availWeights)
 			eventDebounce({ font: { size: font.size, ...newfont } })
 		}
@@ -313,11 +311,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	}
 }
 
-export default async function customFont(init: Font | null, event?: FontUpdateEvent) {
-	if (event?.initsettings) {
-		return initFontSettings(event?.initsettings, init)
-	}
-
+export default async function customFont(init: { font: Font; fontface?: string } | null, event?: FontUpdateEvent) {
 	if (event?.autocomplete) {
 		return setAutocompleteSettings(event?.autocomplete)
 	}
@@ -328,20 +322,30 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 
 	if (init) {
 		try {
-			setSize(init.size)
-			setWeight(init.family, init.weight)
+			const { size, family, weight, url } = init.font
+			setSize(size)
+			setWeight(family, weight)
 
-			if (init.family) {
-				let fontface = localStorage.fontface
+			if (family) {
+				let fontface = init.fontface ?? ''
 
-				if (init.url && !fontface?.includes('@font-face')) {
-					fontface = await fetchFontface(init.url)
-					localStorage.fontface = fontface
+				if (url && !fontface?.includes('@font-face')) {
+					const newfontface = await fetchFontface(url)
+
+					if (newfontface) {
+						storage.local.set({ fontface: newfontface })
+						fontface = newfontface
+					}
 				}
 
-				setFamily(init.family, fontface)
-				canDisplayInterface('fonts')
+				setFamily(family, fontface)
 			}
+
+			onSettingsLoad(() => {
+				initFontSettings(init?.font)
+			})
+
+			canDisplayInterface('fonts')
 		} catch (e) {
 			errorMessage(e)
 		}

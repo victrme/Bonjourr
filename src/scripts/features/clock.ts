@@ -2,7 +2,7 @@ import { canDisplayInterface } from '..'
 import { syncDefaults } from '../utils'
 import { Sync, Clock } from '../types/sync'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
 type ClockUpdate = {
@@ -168,7 +168,7 @@ function startClock(clock: Clock, greeting: string, usdate: boolean) {
 }
 
 async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, style, face }: ClockUpdate) {
-	const data = await storage.get(['clock', 'usdate', 'greeting'])
+	const data = await storage.sync.get(['clock', 'usdate', 'greeting'])
 	let clock = data?.clock
 
 	if (!clock || data.usdate === undefined || data.greeting === undefined) {
@@ -177,12 +177,12 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 
 	if (usdate !== undefined) {
 		clockDate(zonedDate(clock.timezone), usdate)
-		storage.set({ usdate })
+		storage.sync.set({ usdate })
 	}
 
 	if (greeting !== undefined) {
 		greetings(zonedDate(clock.timezone), greeting)
-		storage.set({ greeting })
+		storage.sync.set({ greeting })
 	}
 
 	if (timezone !== undefined) {
@@ -200,7 +200,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		timezone: timezone ?? clock.timezone,
 	}
 
-	storage.set({ clock })
+	storage.sync.set({ clock })
 	startClock(clock, data.greeting, data.usdate)
 	changeAnalogFace(clock.face)
 	changeAnalogStyle(clock.style)

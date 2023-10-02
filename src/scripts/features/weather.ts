@@ -1,12 +1,13 @@
-import { stringMaxSize, handleGeolOption, BROWSER } from '../utils'
+import { stringMaxSize, BROWSER } from '../utils'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
 import { OWMCurrent, OWMForecast } from '../types/openweathermap'
+import onSettingsLoad from '../utils/onsettingsload'
 
 type GeolAPI = {
 	city: string
@@ -29,12 +30,6 @@ type WeatherUpdate = {
 const cityInput = superinput('i_city')
 
 // Checks every 5 minutes if weather needs update
-setInterval(async () => {
-	if (navigator.onLine) {
-		const data = await storage.get(['weather', 'hide'])
-		if (data) weather(data as Sync)
-	}
-}, 300000)
 
 export default function weather(init: Sync | null, update?: WeatherUpdate) {
 	if (update) {
@@ -50,10 +45,21 @@ export default function weather(init: Sync | null, update?: WeatherUpdate) {
 			errorMessage(e)
 		}
 	}
+
+	if (init) {
+		onSettingsLoad(() => {
+			handleGeolOption(init.weather)
+			setInterval(async () => {
+				if (!navigator.onLine) {
+					weather(await storage.sync.get(['weather', 'hide']))
+				}
+			}, 300000)
+		})
+	}
 }
 
 async function updatesWeather(update: WeatherUpdate) {
-	let { weather, hide } = (await storage.get(['weather', 'hide'])) as Sync
+	let { weather, hide } = (await storage.sync.get(['weather', 'hide'])) as Sync
 
 	if (!weather || !hide) {
 		return
@@ -143,7 +149,7 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 	}
 
-	storage.set({ weather })
+	storage.sync.set({ weather })
 	displayWeather(weather)
 }
 
@@ -156,6 +162,19 @@ async function getGeolocation(): Promise<[number, number] | undefined> {
 	)
 
 	return location
+}
+
+function handleGeolOption(data: Weather) {
+	const i_city = document.getElementById('i_city') as HTMLInputElement
+	const i_geol = document.getElementById('i_geol') as HTMLInputElement
+	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+	const sett_city = document.getElementById('sett_city') as HTMLDivElement
+	const isGeol = data.location.length > 0
+
+	i_geol.checked = isGeol
+	i_ccode.value = data.ccode
+	i_city.setAttribute('placeholder', data.city)
+	sett_city.classList.toggle('shown', isGeol === false)
 }
 
 function createRequestQueries(data: Weather) {
@@ -266,7 +285,7 @@ async function initWeather(data: Weather) {
 	data = (await request(data)) ?? data
 
 	displayWeather(data)
-	storage.set({ weather: data })
+	storage.sync.set({ weather: data })
 	setTimeout(() => handleGeolOption(data), 400)
 }
 
@@ -394,7 +413,7 @@ async function weatherCacheControl(data: Weather) {
 		}
 
 		data = (await request(data)) ?? data
-		storage.set({ weather: data })
+		storage.sync.set({ weather: data })
 	}
 
 	displayWeather(data)
