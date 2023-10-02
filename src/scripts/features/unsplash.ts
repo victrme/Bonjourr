@@ -2,7 +2,6 @@ import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
-import parse from '../utils/parse'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
 import superinput from '../utils/superinput'
@@ -122,7 +121,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 }
 
 async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
-	let { every, time, lastCollec, collection } = unsplash ?? { ...syncDefaults.unsplash }
+	let { every, time, lastCollec, collection } = { ...syncDefaults.unsplash, ...unsplash }
 	cache = cache ?? (await getCache())
 
 	const needNewImage = freqControl.get(every, time)

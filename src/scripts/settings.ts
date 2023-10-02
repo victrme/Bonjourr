@@ -78,7 +78,7 @@ export async function settingsInit() {
 
 	const initInput = (id: string, val: string | number) => {
 		const input = paramId(id) as HTMLInputElement
-		input.value = typeof val === 'string' ? val : val.toString()
+		input.value = typeof val === 'string' ? val : val?.toString()
 	}
 
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
