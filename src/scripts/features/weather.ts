@@ -204,7 +204,7 @@ function createRequestQueries(data: Weather) {
 	return queries
 }
 
-async function request(data: Weather): Promise<Weather | null> {
+async function request(data: Weather, currentOnly?: boolean): Promise<Weather | null> {
 	if (!navigator.onLine) {
 		return data
 	}
@@ -213,15 +213,12 @@ async function request(data: Weather): Promise<Weather | null> {
 	let forecast: OWMForecast
 	const queries = createRequestQueries(data)
 
-	current = await (await fetch(`https://api.openweathermap.org/data/2.5/weather/${queries}`)).json()
-	if (current?.cod !== 200) return null
-
-	forecast = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast/${queries}`)).json()
-	if (forecast?.cod !== '200') return null
-
 	//
 	// Current API call
 	//
+
+	current = await (await fetch(`https://api.openweathermap.org/data/2.5/weather/${queries}`)).json()
+	if (current?.cod !== 200) return null
 
 	const { temp, feels_like, temp_max } = current.main
 	const { sunrise, sunset } = current.sys
@@ -242,27 +239,37 @@ async function request(data: Weather): Promise<Weather | null> {
 		},
 	}
 
+	if (currentOnly) {
+		return data
+	}
+
 	//
 	// Forecast API call
 	//
 
-	const date = new Date()
-	const todayHour = date.getHours()
-	let forecastDay = date.getDate()
-	let maxTempFromList = -273.15
+	forecast = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast/${queries}&`)).json()
+	if (forecast?.cod !== '200') return null
+
+	let date = new Date()
 
 	// Late evening forecast for tomorrow
-	if (todayHour > 18) {
-		const tomorrow = date.setDate(date.getDate() + 1)
-		forecastDay = new Date(tomorrow).getDate()
+	if (date.getHours() > 21) {
+		date.setDate(date.getDate() + 1)
 	}
 
 	// Get the highest temp for the specified day
-	forecast.list.forEach((elem: any) => {
-		if (new Date(elem.dt * 1000).getDate() === forecastDay)
-			maxTempFromList < elem.main.temp_max ? (maxTempFromList = elem.main.temp_max) : ''
-	})
+	let maxTempFromList = -273.15
+	for (const elem of forecast.list) {
+		if (new Date(elem.dt * 1000).getDate() === date.getDate() && maxTempFromList < elem.main.temp_max) {
+			maxTempFromList = elem.main.temp_max
+		}
+	}
 
+	date.setHours(21)
+	date.setMinutes(0)
+	date.setSeconds(0)
+
+	data.fcLast = Math.floor(date.getTime() / 1000)
 	data.fcHigh = Math.round(maxTempFromList)
 
 	return data
@@ -402,8 +409,10 @@ async function weatherCacheControl(data: Weather) {
 		return
 	}
 
-	const now = Math.floor(new Date().getTime() / 1000)
-	const isThirtyMinutesLater = now > data.lastCall + 1800
+	const now = new Date()
+	const currentTime = Math.floor(now.getTime() / 1000)
+	const isForecastDayOld = currentTime > (data.fcLast ?? 0)
+	const isThirtyMinutesLater = currentTime > data.lastCall + 1800
 	const hasGeol = data.location.length === 2
 	const isNotSafari = BROWSER !== 'safari' // to prevent safari geol popup every day
 
@@ -412,7 +421,7 @@ async function weatherCacheControl(data: Weather) {
 			data.location = (await getGeolocation()) ?? []
 		}
 
-		data = (await request(data)) ?? data
+		data = (await request(data, !isForecastDayOld)) ?? data
 		storage.sync.set({ weather: data })
 	}
 
