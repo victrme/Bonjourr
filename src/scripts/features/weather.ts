@@ -199,7 +199,9 @@ function createRequestQueries(data: Weather) {
 		queries += ',' + data.ccode ?? 'fr'
 	}
 
-	queries += '&appid=' + atob(key)
+	if (key !== apis[0]) {
+		queries += '&appid=' + atob(key)
+	}
 
 	return queries
 }
@@ -217,7 +219,9 @@ async function request(data: Weather, currentOnly?: boolean): Promise<Weather | 
 	// Current API call
 	//
 
-	current = await (await fetch(`https://api.openweathermap.org/data/2.5/weather/${queries}`)).json()
+	const base = queries.indexOf('appid') === -1 ? 'owm-proxy.netlify.app' : 'api.openweathermap.org/data/2.5'
+
+	current = await (await fetch(`https://${base}/weather/${queries}`)).json()
 	if (current?.cod !== 200) return null
 
 	const { temp, feels_like, temp_max } = current.main
@@ -247,7 +251,7 @@ async function request(data: Weather, currentOnly?: boolean): Promise<Weather | 
 	// Forecast API call
 	//
 
-	forecast = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast/${queries}&`)).json()
+	forecast = await (await fetch(`https://${base}/forecast/${queries}`)).json()
 	if (forecast?.cod !== '200') return null
 
 	let date = new Date()
