@@ -32,6 +32,7 @@ export default function filterImports(current: Sync, toImport: Sync) {
 			on: toImport.searchbar as boolean,
 			newtab: (toImport.searchbar_newtab as boolean) || false,
 			engine: (toImport.searchbar_engine as string | undefined)?.replace('s_', '') || 'google',
+			suggestions: true,
 		}
 
 		delete toImport.searchbar_newtab

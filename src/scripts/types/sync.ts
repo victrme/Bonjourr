@@ -15,6 +15,7 @@ export type Searchbar = {
 	newtab: boolean
 	engine: string
 	request: string
+	suggestions: boolean
 	placeholder: string
 }
 

@@ -508,6 +508,11 @@ function startup(data: Sync, local: Local) {
 					sync.unsplash.pausedImage = every === 'pause' ? currentImage : null
 				}
 
+				// new search suggestions toggle
+				if (sync.searchbar) {
+					sync.searchbar.suggestions = true
+				}
+
 				storage.local.set(oldlocal)
 				localStorage.clear()
 			}

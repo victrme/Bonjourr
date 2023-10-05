@@ -10,6 +10,7 @@ type SearchbarUpdate = {
 	engine?: string
 	opacity?: string
 	newtab?: boolean
+	suggestions?: boolean
 	placeholder?: string
 	request?: HTMLInputElement
 }
@@ -35,6 +36,7 @@ const display = (shown = false) => domcontainer?.classList.toggle('hidden', !sho
 const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine', value)
 const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
+const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
 const setOpacity = (value = 0.1) => {
 	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
@@ -53,6 +55,7 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		setRequest(init?.request)
 		setNewtab(init?.newtab)
 		setPlaceholder(init?.placeholder)
+		setSuggestions(init?.suggestions)
 		setOpacity(init?.opacity)
 
 		emptyButton?.addEventListener('click', removeInputText)
@@ -63,7 +66,7 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 	}
 }
 
-async function updateSearchbar({ engine, newtab, opacity, placeholder, request }: SearchbarUpdate) {
+async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions }: SearchbarUpdate) {
 	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
@@ -74,6 +77,11 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request }
 		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
 		searchbar.engine = engine
 		setEngine(engine)
+	}
+
+	if (suggestions !== undefined) {
+		searchbar.suggestions = suggestions
+		setSuggestions(suggestions)
 	}
 
 	if (newtab !== undefined) {
@@ -268,6 +276,10 @@ function initSuggestions() {
 async function suggestions() {
 	const input = domsearchbar as HTMLInputElement
 	let results: Suggestions = []
+
+	if (domcontainer?.dataset.suggestions === 'false') {
+		return
+	}
 
 	// API
 	let engine = domcontainer?.dataset.engine

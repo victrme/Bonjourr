@@ -133,6 +133,7 @@ export async function settingsInit() {
 	initCheckbox('i_sb', data.searchbar?.on ?? false)
 	initCheckbox('i_quotes', data.quotes?.on ?? false)
 	initCheckbox('i_ampm', data.clock?.ampm ?? false)
+	initCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	initCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	initCheckbox('i_qtauthor', data.quotes?.author ?? false)
 	initCheckbox('i_seconds', data.clock?.seconds ?? false)
@@ -567,6 +568,10 @@ export async function settingsInit() {
 
 	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
 		searchbar(null, { newtab: this.checked })
+	})
+
+	paramId('i_sbsuggestions').addEventListener('change', function (this: HTMLInputElement) {
+		searchbar(null, { suggestions: this.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
