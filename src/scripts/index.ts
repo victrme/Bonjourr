@@ -504,7 +504,7 @@ function startup(data: Sync, local: Local) {
 				// new synced unsplash pause
 				if (sync.unsplash) {
 					const { every, lastCollec } = sync.unsplash
-					const currentImage = local.unsplashCache[lastCollec][0]
+					const currentImage = oldlocal.unsplashCache[lastCollec][0]
 					sync.unsplash.pausedImage = every === 'pause' ? currentImage : null
 				}
 
