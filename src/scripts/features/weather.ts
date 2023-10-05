@@ -416,11 +416,11 @@ async function weatherCacheControl(data: Weather) {
 	const now = new Date()
 	const currentTime = Math.floor(now.getTime() / 1000)
 	const isForecastDayOld = currentTime > (data.fcLast ?? 0)
-	const isThirtyMinutesLater = currentTime > data.lastCall + 1800
+	const isAnHourLater = currentTime > data.lastCall + 3600
 	const hasGeol = data.location.length === 2
 	const isNotSafari = BROWSER !== 'safari' // to prevent safari geol popup every day
 
-	if (navigator.onLine && isThirtyMinutesLater) {
+	if (navigator.onLine && isAnHourLater) {
 		if (hasGeol && isNotSafari) {
 			data.location = (await getGeolocation()) ?? []
 		}
