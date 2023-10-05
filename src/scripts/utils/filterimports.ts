@@ -13,6 +13,18 @@ export default function filterImports(current: Sync, toImport: Sync) {
 		toImport.main = !(toImport.hide.weatherdesc && toImport.hide.weathericon && toImport.hide.weathericon) ?? true
 	}
 
+	// <1.17.0 dynamic/custom becomes unsplash/local
+	if ((toImport.background_type as string) === 'dynamic') toImport.background_type = 'unsplash'
+	if ((toImport.background_type as string) === 'custom') toImport.background_type = 'local'
+
+	// <1.17.0 dynamic data renamed to unsplash
+	if (toImport.dynamic as Sync['unsplash']) {
+		toImport.unsplash = {
+			...(toImport.dynamic as Sync['unsplash']),
+			pausedImage: null,
+		}
+	}
+
 	// <1.9.0 searchbar options was boolean
 	if (typeof toImport.searchbar === 'boolean') {
 		toImport.searchbar = {
