@@ -501,6 +501,13 @@ function startup(data: Sync, local: Local) {
 					fontface: localStorage.fontface ?? '',
 				}
 
+				// new synced unsplash pause
+				if (sync.unsplash) {
+					const { every, lastCollec } = sync.unsplash
+					const currentImage = local.unsplashCache[lastCollec][0]
+					sync.unsplash.pausedImage = every === 'pause' ? currentImage : null
+				}
+
 				storage.local.set(oldlocal)
 				localStorage.clear()
 			}

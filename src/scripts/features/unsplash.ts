@@ -71,6 +71,8 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 			return console.log('Not valid "every" value')
 		}
 
+		const currentImage = unsplashCache[unsplash.lastCollec][0]
+		unsplash.pausedImage = every === 'pause' ? currentImage : null
 		unsplash.every = every
 		unsplash.time = freqControl.set()
 		storage.sync.set({ unsplash })
@@ -121,8 +123,11 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 }
 
 async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
-	let { every, time, lastCollec, collection } = { ...syncDefaults.unsplash, ...unsplash }
+	unsplash = { ...syncDefaults.unsplash, ...unsplash }
 	cache = cache ?? (await getCache())
+
+	let { lastCollec } = unsplash
+	const { every, time, collection, pausedImage } = unsplash
 
 	const needNewImage = freqControl.get(every, time)
 	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
@@ -156,7 +161,8 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 	}
 
 	if (!needNewImage) {
-		loadBackground(list[0])
+		const hasPausedImage = every === 'pause' && pausedImage
+		loadBackground(hasPausedImage ? pausedImage : list[0])
 		return
 	}
 
@@ -170,6 +176,10 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 
 	loadBackground(list[0])
 
+	if (every === 'pause') {
+		unsplash.pausedImage = list[0]
+	}
+
 	// If end of cache, get & save new list
 	if (list.length === 1 && navigator.onLine) {
 		const newList = await requestNewList(collectionId)
@@ -177,10 +187,7 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 		if (newList) {
 			cache[unsplash.lastCollec] = list.concat(newList)
 			await preloadImage(newList[0].url)
-			storage.local.set({ unsplashCache: cache })
 		}
-
-		return
 	}
 
 	// Or preload next

@@ -189,6 +189,7 @@ export const syncDefaults: Sync = {
 		every: 'hour',
 		collection: '',
 		lastCollec: 'day',
+		pausedImage: null,
 		time: Date.now(),
 	},
 	weather: {

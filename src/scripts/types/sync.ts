@@ -1,3 +1,5 @@
+import { UnsplashImage } from './local'
+
 export type Clock = {
 	ampm: boolean
 	analog: boolean
@@ -49,10 +51,11 @@ export type Weather = {
 }
 
 export type Unsplash = {
+	time: number
 	every: string
 	collection: string
+	pausedImage: UnsplashImage | null
 	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
-	time: number
 }
 
 export type Font = {
