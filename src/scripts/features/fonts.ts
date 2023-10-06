@@ -13,7 +13,8 @@ import { Font } from '../types/sync'
 
 type FontList = {
 	family: string
-	variants: string[]
+	weights: string[]
+	variable: boolean
 }[]
 
 type FontUpdateEvent = {
@@ -61,26 +62,20 @@ function systemFontChecker(family: string): boolean {
 	return hasLoadedFont
 }
 
-function waitForFontLoad(cb: Function) {
-	const p = document.createElement('p')
-	p.setAttribute('style', 'position: absolute; opacity: 0;')
-	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
-	document.getElementById('interface')?.prepend(p)
-
-	let lastwidth = p.getBoundingClientRect().width
-	let currwidth = lastwidth
-
-	let interval = setInterval(() => {
-		currwidth = p.getBoundingClientRect().width
-
-		if (currwidth !== lastwidth) {
-			clearInterval(interval)
-			p.remove()
-			cb()
-		}
-
-		lastwidth = currwidth
-	}, 100)
+async function waitForFontLoad(family: string): Promise<Boolean> {
+	return new Promise((resolve) => {
+		let limitcounter = 0
+		let hasLoadedFont = systemFontChecker(family)
+		let interval = setInterval(() => {
+			if (hasLoadedFont || limitcounter === 100) {
+				clearInterval(interval)
+				return resolve(true)
+			} else {
+				hasLoadedFont = systemFontChecker(family)
+				limitcounter++
+			}
+		}, 100)
+	})
 }
 
 async function fetchFontList() {
@@ -96,7 +91,7 @@ async function fetchFontList() {
 
 	// Get list from API
 	const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
-	const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
+	const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&capability=VF&key=' + window.atob(a)
 	const resp = await fetch(url)
 
 	// return nothing if smth wrong, will try to fetch next time
@@ -112,7 +107,36 @@ async function fetchFontList() {
 		const noRegulars = (arr: string[]) => arr.map((weight) => weight.replace('regular', '400'))
 		const noItalics = (arr: string[]) => arr.filter((str) => !str.includes('italic'))
 
-		const list = json.items.map((item) => ({ family: item.family, variants: noRegulars(noItalics(item.variants)) }))
+		let weights: string[] = []
+		let list: FontList = []
+
+		for (const item of json.items) {
+			//
+			// If variable, infer weights from axes
+			if (!!item?.axes) {
+				// Some variable fonts doesn't have wght
+				if (item.axes.some((axe) => axe.tag === 'wght')) {
+					const { start, end } = item.axes.filter((axe) => axe.tag === 'wght')[0]
+					for (let ii = start; ii <= end; ii += 100) {
+						weights.push(ii.toString())
+					}
+				} else {
+					weights = ['400']
+				}
+
+				//
+			} else {
+				weights = noRegulars(noItalics(item.variants))
+			}
+
+			list.push({
+				family: item.family,
+				variable: !!item?.axes,
+				weights,
+			})
+
+			weights = []
+		}
 
 		storage.local.set({ fonts: list })
 
@@ -120,7 +144,7 @@ async function fetchFontList() {
 	}
 }
 
-async function fetchFontface(url: string) {
+async function fetchFontface(url: string): Promise<string | null> {
 	if (!url) {
 		return null
 	}
@@ -130,44 +154,48 @@ async function fetchFontface(url: string) {
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
 
+		setFontFace(fontface)
+
 		return fontface
 	} catch (error) {
 		return null
 	}
 }
 
-async function getNewFont(list: FontList, currentFamily: string) {
+async function getNewFont(currentFamily: string): Promise<Partial<Font> | null> {
+	const list = (await fetchFontList()) ?? []
 	const foundFonts = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
 
 	if (foundFonts.length > 0) {
-		let { family, variants } = foundFonts[0]
+		let { family, weights, variable } = foundFonts[0]
 		let url = 'https://fonts.googleapis.com/'
 
-		// All this because google fonts API fails
-		// when fetching variable weights on non variable fonts (smh google)
-		const variableFontList = ((await (await fetch('src/assets/variablefonts.json')).json()) as string[]) ?? []
-		const fontIsVariable = variableFontList.includes(family)
-
 		// no variable fonts on firefox because of aggregious load times (~70ms)
-		if (fontIsVariable && PLATFORM !== 'firefox') {
-			url += encodeURI(`css2?family=${family.replace(/ /g, '+')}:wght@${variants[0]}..${variants.at(-1)}`)
+		if (variable && PLATFORM !== 'firefox') {
+			const wght = weights.length > 1 ? `:wght@${weights[0]}..${weights.at(-1)}` : ''
+			url += encodeURI(`css2?family=${family.replace(/ /g, '+')}${wght}`)
 		} else {
-			url += encodeURI(`css?family=${family.replace(/ /g, '+')}:wght@${variants.join(';')}`)
+			const wght = weights.length > 1 ? `:${weights.join(',')}` : ''
+			url += encodeURI(`css?family=${family.replace(/ /g, '+')}${wght}`)
 		}
 
 		return {
 			url,
 			family,
 			weight: '400',
-			availWeights: variants,
+			availWeights: weights,
 		}
 	}
 
-	return {
-		url: '',
-		family: '',
-		availWeights: [] as string[],
-		weight: SYSTEM_OS === 'windows' ? '400' : '300',
+	return null
+}
+
+function setFontFace(fontface: string | null) {
+	if (typeof fontface === 'string') {
+		const domfontface = document.createElement('style') as HTMLStyleElement
+		domfontface.className = 'fontface'
+		domfontface.textContent = fontface
+		document.querySelector('head')?.appendChild(domfontface)
 	}
 }
 
@@ -182,8 +210,7 @@ function setWeight(family: string, weight: string) {
 	document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight) // Default bonjourr lowers font weight on clock (because we like it)
 }
 
-function setFamily(family: string, fontface: string) {
-	document.getElementById('fontstyle')!.textContent = fontface
+function setFamily(family: string) {
 	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
 }
 
@@ -240,13 +267,15 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 
 	if (isRemovingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLInputElement
-		const domstyle = document.getElementById('fontstyle') as HTMLStyleElement
 		const baseWeight = SYSTEM_OS === 'windows' ? '400' : '300'
 
-		domstyle.textContent = ''
 		document.documentElement.style.setProperty('--font-family', '')
 		document.documentElement.style.setProperty('--font-weight-clock', '200')
 		document.documentElement.style.setProperty('--font-weight', baseWeight)
+
+		for (const el of document.querySelectorAll('.fontface')) {
+			el.remove()
+		}
 
 		storage.local.remove('fontface')
 
@@ -263,7 +292,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	if (isChangingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLSelectElement
 
-		let fontface = ''
+		let fontface: string | null = null
 		let newfont = {
 			url: '',
 			family: '',
@@ -275,27 +304,31 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 			newfont.family = family
 		} else {
 			familyInput.load()
-			const fontlist = (await fetchFontList()) ?? []
-			newfont = await getNewFont(fontlist, family)
-			fontface = (await fetchFontface(newfont.url)) ?? ''
 
-			if (fontface) {
-				waitForFontLoad(() => {
-					familyInput.toggle(false, family)
-				})
-			} else {
-				familyInput.warn(`Cannot load "${family}"`)
+			const googlefont = await getNewFont(family)
+
+			if (googlefont && navigator.onLine) {
+				newfont = { ...newfont, ...googlefont }
+				fontface = await fetchFontface(newfont.url)
+
+				await waitForFontLoad(family)
+				familyInput.toggle(false, family)
+
+				storage.local.set({ fontface })
 			}
 		}
 
-		if (newfont.family) {
-			setFamily(family, fontface)
-			setWeight(family, '400')
-			i_weight.value = '400'
-			storage.local.set({ fontface })
-			setWeightSettings(newfont.availWeights)
-			eventDebounce({ font: { size: font.size, ...newfont } })
+		if (newfont.family === '') {
+			familyInput.warn(`Cannot load "${family}"`)
+			return
 		}
+
+		setFamily(family)
+		setWeight(family, '400')
+		i_weight.value = '400'
+
+		setWeightSettings(newfont.availWeights)
+		eventDebounce({ font: { size: font.size, ...newfont } })
 	}
 
 	if (weight) {
@@ -323,22 +356,20 @@ export default async function customFont(init: { font: Font; fontface?: string }
 	if (init) {
 		try {
 			const { size, family, weight, url } = init.font
+
 			setSize(size)
 			setWeight(family, weight)
+			setFamily(family)
 
-			if (family) {
-				let fontface = init.fontface ?? ''
+			if (url) {
+				let fontface: string | null = init.fontface ?? ''
 
-				if (url && !fontface?.includes('@font-face')) {
-					const newfontface = await fetchFontface(url)
-
-					if (newfontface) {
-						storage.local.set({ fontface: newfontface })
-						fontface = newfontface
-					}
+				if (fontface.includes('@font-face') === false) {
+					fontface = await fetchFontface(url)
+					if (fontface) storage.local.set({ fontface })
 				}
 
-				setFamily(family, fontface)
+				setFontFace(fontface)
 			}
 
 			onSettingsLoad(() => {

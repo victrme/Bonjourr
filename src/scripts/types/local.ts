@@ -34,7 +34,7 @@ export type UnsplashImage = {
 }
 
 export type Local = {
-	fonts?: { family: string; variants: string[] }[]
+	fonts?: { family: string; weights: string[]; variable: boolean }[]
 	fontface?: string
 	selectedId: string
 	idsList: string[]

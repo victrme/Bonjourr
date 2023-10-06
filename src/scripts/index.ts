@@ -497,8 +497,8 @@ function startup(data: Sync, local: Local) {
 				const oldlocal = {
 					unsplashCache: parse(localStorage.unsplashCache) ?? localDefaults.unsplashCache,
 					quotesCache: parse(localStorage.quotesCache) ?? localDefaults.quotesCache,
-					fonts: parse(localStorage.fonts) ?? [],
 					fontface: localStorage.fontface ?? '',
+					fonts: null,
 				}
 
 				// new synced unsplash pause
