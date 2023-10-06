@@ -1,3 +1,26 @@
+## 1.18.0
+
+-   Changes:
+    -   Migrated Firefox and Safari to manifest v3
+    -   Reduced amount of weather and forecast calls
+    -   Removed unlimitedStorage permission
+-   Improvements:
+    -   Faster startup time on extensions
+    -   Unsplash background is now synced when "paused"
+    -   Smoother font change on slow networks
+    -   #239 Added search suggestions toggle option
+-   Fixes:
+    -   Unstable cache storage since 1.17.0
+    -   Font weight on non-variable fonts
+    -   Awkward word-break on links titles
+    -   Move elements selection on Safari
+    -   #216 Custom favicon sometimes not working on Firefox
+-   Translations:
+    -   @UnifeGi updated Romanian translation
+    -   Tiny Swedish translation fix
+
+$~~~~~~~~~~~$
+
 ## 1.17.4
 
 -   Fixed status icon breaking inputs on slower devices
