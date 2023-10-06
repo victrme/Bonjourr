@@ -12,6 +12,7 @@
 -   Fixes:
     -   Unstable cache storage since 1.17.0
     -   Font weight on non-variable fonts
+    -   Font failing to load on synced devices
     -   Awkward word-break on links titles
     -   Move elements selection on Safari
     -   #216 Custom favicon sometimes not working on Firefox
