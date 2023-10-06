@@ -364,7 +364,7 @@ export default async function customFont(init: { font: Font; fontface?: string }
 			if (url) {
 				let fontface: string | null = init.fontface ?? ''
 
-				if (fontface.includes('@font-face') === false) {
+				if (!fontface.includes('@font-face') || !fontface.includes(family)) {
 					fontface = await fetchFontface(url)
 					if (fontface) storage.local.set({ fontface })
 				}
