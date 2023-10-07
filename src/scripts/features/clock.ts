@@ -14,6 +14,7 @@ type ClockUpdate = {
 	timezone?: string
 	style?: string
 	face?: string
+	size?: number
 }
 
 // prettier-ignore
@@ -97,6 +98,10 @@ function changeAnalogStyle(style?: string) {
 	document.getElementById('analogClock')?.setAttribute('class', style || '')
 }
 
+function changeClockSize(size?: number) {
+	document.documentElement.style.setProperty('--clock-size', (size?.toString() ?? '6') + 'em')
+}
+
 function startClock(clock: Clock, greeting: string, usdate: boolean) {
 	//
 	function display() {
@@ -167,7 +172,7 @@ function startClock(clock: Clock, greeting: string, usdate: boolean) {
 	lazyClockInterval = setInterval(clockInterval, 1000)
 }
 
-async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, style, face }: ClockUpdate) {
+async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, style, face, size }: ClockUpdate) {
 	const data = await storage.sync.get(['clock', 'usdate', 'greeting'])
 	let clock = data?.clock
 
@@ -199,6 +204,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		...clock,
 		ampm: ampm ?? clock.ampm,
 		face: face ?? clock.face,
+		size: size ?? clock.size,
 		style: style ?? clock.style,
 		analog: analog ?? clock.analog,
 		seconds: seconds ?? clock.seconds,
@@ -209,6 +215,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	startClock(clock, data.greeting, data.usdate)
 	changeAnalogFace(clock.face)
 	changeAnalogStyle(clock.style)
+	changeClockSize(clock.size)
 }
 
 export default function clock(init: Sync | null, event?: ClockUpdate) {
@@ -225,6 +232,7 @@ export default function clock(init: Sync | null, event?: ClockUpdate) {
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		changeAnalogFace(clock.face)
 		changeAnalogStyle(clock.style)
+		changeClockSize(clock.size)
 		canDisplayInterface('clock')
 	} catch (e) {
 		errorMessage(e)

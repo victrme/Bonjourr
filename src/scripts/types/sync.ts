@@ -7,6 +7,7 @@ export type Clock = {
 	style: string
 	timezone: string
 	face: string
+	size: number
 }
 
 export type Searchbar = {

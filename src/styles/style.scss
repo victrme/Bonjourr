@@ -137,7 +137,7 @@
 			#clock {
 				margin: 0;
 				margin-bottom: 0.1em;
-				font-size: 6em;
+				font-size: var(--clock-size);
 				line-height: 1em;
 				font-weight: 200;
 				font-weight: var(--font-weight-clock);
@@ -146,11 +146,11 @@
 			#analogClock {
 				display: none;
 				position: relative;
-				width: 8em;
-				height: 8em;
+				width: calc(var(--clock-size) * 1.33);
+				height: calc(var(--clock-size) * 1.33);
 				margin: auto;
 				border-radius: 100%;
-				border: 0.2em solid white;
+				border: calc(var(--clock-size) * 0.03) solid white;
 				box-shadow: $textShadow;
 
 				background-color: #fff3;
@@ -159,8 +159,8 @@
 				#center {
 					position: absolute;
 					z-index: 5;
-					width: 0.4em;
-					height: 0.4em;
+					width: calc(var(--clock-size) * 0.06);
+					height: calc(var(--clock-size) * 0.06);
 					top: 50%;
 					left: 50%;
 					transform: translate(-50%, -50%);
@@ -229,10 +229,10 @@
 					background: white;
 					border-radius: 20px;
 					bottom: 50%;
-					display: block;
-					width: 0.2em;
 					left: 50%;
-					margin-left: -0.1em;
+					display: block;
+					width: calc(var(--clock-size) * 0.03);
+					margin-left: calc(var(--clock-size) * -0.015);
 					position: absolute;
 					transform-origin: bottom center;
 					box-shadow: $textShadow;
@@ -247,7 +247,7 @@
 
 					&#analogSeconds {
 						height: 45%;
-						width: 0.1em;
+						width: calc(var(--clock-size) * 0.015);
 						margin-left: -0.05em;
 						opacity: 0.8;
 						background-color: red;

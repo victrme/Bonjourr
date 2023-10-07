@@ -513,6 +513,10 @@ function startup(data: Sync, local: Local) {
 					sync.searchbar.suggestions = true
 				}
 
+				if (sync.clock) {
+					sync.clock.size = 6
+				}
+
 				storage.local.set(oldlocal)
 				localStorage.clear()
 			}

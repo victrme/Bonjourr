@@ -109,6 +109,7 @@ export async function settingsInit() {
 	initInput('i_qtlist', JSON.stringify(userQuotes) ?? '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_clockstyle', data.clock?.style || 'round')
+	initInput('i_clocksize', data.clock?.size ?? 5)
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.unsplash?.collection ?? '')
 	initInput('i_ccode', data.weather?.ccode || 'US')
@@ -455,6 +456,10 @@ export async function settingsInit() {
 
 	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
 		clock(null, { style: this.value })
+	})
+
+	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
+		clock(null, { size: parseFloat(this.value) })
 	})
 
 	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
