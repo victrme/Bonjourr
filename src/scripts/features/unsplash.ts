@@ -8,6 +8,7 @@ import superinput from '../utils/superinput'
 
 import { UnsplashCache, UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
+import { UnsplashAPI } from '../types/unsplash'
 
 type UnsplashInit = {
 	unsplash: Unsplash
@@ -206,7 +207,7 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 	header.append('Accept-Version', 'v1')
 
 	let resp: Response
-	let json: JSON[]
+	let json: UnsplashAPI[]
 
 	resp = await fetch(url, { headers: header })
 
@@ -228,7 +229,9 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
 	const quality = Math.min(100 - dpr * 20, 75)
 
-	json.forEach((img: any) => {
+	const isExifEmpty = (exif: UnsplashAPI['exif']) => Object.values(exif).every((val) => !val)
+
+	for (const img of json) {
 		filteredList.push({
 			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
 			link: img.links.html,
@@ -237,10 +240,9 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 			city: img.location.city,
 			country: img.location.country,
 			color: img.color,
-			exif: img.exif,
-			desc: img.description,
+			exif: isExifEmpty(img.exif) ? undefined : img.exif,
 		})
-	})
+	}
 
 	return filteredList
 }
