@@ -178,7 +178,7 @@ export const syncDefaults: Sync = {
 	css: '',
 	hide: {},
 	clock: {
-		size: 6,
+		size: 1,
 		ampm: false,
 		analog: false,
 		seconds: false,

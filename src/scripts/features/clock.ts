@@ -80,26 +80,27 @@ function greetings(date: Date, name?: string) {
 }
 
 function changeAnalogFace(face = 'none') {
-	//
 	// Clockwise
 	const chars = {
 		none: ['', '', '', ''],
 		number: ['12', '3', '6', '9'],
 		roman: ['XII', 'III', 'VI', 'IX'],
-		marks: ['│', '─', '│', '─'],
+		marks: ['│', '―', '│', '―'],
 	}
 
-	document
-		.querySelectorAll('#analogClock .numbers')
-		.forEach((mark, i) => (mark.textContent = chars[face as keyof typeof chars][i]))
+	document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => {
+		if (face in chars) {
+			mark.textContent = chars[face as keyof typeof chars][i]
+		}
+	})
 }
 
 function changeAnalogStyle(style?: string) {
 	document.getElementById('analogClock')?.setAttribute('class', style || '')
 }
 
-function changeClockSize(size?: number) {
-	document.documentElement.style.setProperty('--clock-size', (size?.toString() ?? '6') + 'em')
+function changeClockSize(size = 1) {
+	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
 function startClock(clock: Clock, greeting: string, usdate: boolean) {
