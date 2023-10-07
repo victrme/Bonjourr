@@ -184,18 +184,20 @@
 		max-height: 160px;
 	}
 
+	#digital_options.shown,
 	#weather_provider.shown,
 	#searchbar_request.shown {
 		max-height: 50px;
 	}
 
+	#analog_options.shown,
 	#unsplash_options.shown,
 	#quotes_userlist.shown {
 		max-height: 100px;
 	}
 
 	#searchbar_options.shown {
-		max-height: 290px;
+		max-height: 350px;
 	}
 
 	#quotes_options.shown {

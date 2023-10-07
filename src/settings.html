@@ -284,14 +284,48 @@
 
 			<div class="analog wrapper">
 				<label for="i_analog" class="trn">Analog clock</label>
-				<input id="i_analog" class="switch" type="checkbox" />
+				<input id="i_analog" class="switch opt-hider" type="checkbox" />
 			</div>
 
 			<hr />
 
-			<div id="w_ampm" class="wrapper">
-				<label for="i_ampm" class="trn">12-Hour Time</label>
-				<input id="i_ampm" class="switch" type="checkbox" />
+			<div id="clocktype_options" class="as as_clocktype dropdown">
+				<div id="analog_options" class="dropdown">
+					<div id="w_clockface" class="wrapper">
+						<label for="i_clockface" class="trn">Clock face</label>
+						<select id="i_clockface" class="">
+							<option value="none" class="trn">None</option>
+							<option value="number" class="trn">Numbers</option>
+							<option value="roman" class="trn">Romans</option>
+							<option value="marks" class="trn">Marks</option>
+						</select>
+					</div>
+
+					<hr />
+
+					<div id="w_clockstyle" class="wrapper">
+						<label for="i_clockstyle" class="trn">Clock style</label>
+						<select id="i_clockstyle" class="">
+							<option value="round" class="trn">Round</option>
+							<option value="square" class="trn">Square</option>
+							<option value="transparent" class="trn">Transparent</option>
+						</select>
+					</div>
+				</div>
+
+				<div id="digital_options" class="dropdown shown">
+					<div id="w_ampm" class="wrapper">
+						<label for="i_ampm" class="trn">12-Hour Time</label>
+						<input id="i_ampm" class="switch" type="checkbox" />
+					</div>
+				</div>
+
+				<hr />
+			</div>
+
+			<div class="seconds wrapper">
+				<label for="i_seconds" class="trn">Show Seconds</label>
+				<input id="i_seconds" class="switch" type="checkbox" />
 			</div>
 
 			<hr />
@@ -302,36 +336,6 @@
 			</div>
 
 			<div class="as as_timedate">
-				<hr />
-
-				<div class="seconds wrapper">
-					<label for="i_seconds" class="trn">Show Seconds</label>
-					<input id="i_seconds" class="switch" type="checkbox" />
-				</div>
-
-				<hr />
-
-				<div id="w_clockface" class="wrapper">
-					<label for="i_clockface" class="trn">Clock face</label>
-					<select id="i_clockface" class="">
-						<option value="none" class="trn">None</option>
-						<option value="number" class="trn">Numbers</option>
-						<option value="roman" class="trn">Romans</option>
-						<option value="marks" class="trn">Marks</option>
-					</select>
-				</div>
-
-				<hr />
-
-				<div id="w_clockstyle" class="wrapper">
-					<label for="i_clockstyle" class="trn">Clock style</label>
-					<select id="i_clockstyle" class="">
-						<option value="round" class="trn">Round</option>
-						<option value="square" class="trn">Square</option>
-						<option value="transparent" class="trn">Transparent</option>
-					</select>
-				</div>
-
 				<hr />
 
 				<div class="wrapper">

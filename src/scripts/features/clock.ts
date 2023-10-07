@@ -175,6 +175,11 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		return
 	}
 
+	if (analog !== undefined) {
+		document.getElementById('analog_options')?.classList.toggle('shown', analog)
+		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
+	}
+
 	if (usdate !== undefined) {
 		clockDate(zonedDate(clock.timezone), usdate)
 		storage.sync.set({ usdate })

@@ -177,6 +177,8 @@ export async function settingsInit() {
 
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
+	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
+	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
@@ -712,6 +714,8 @@ export async function settingsInit() {
 		})
 
 		// Toggle in-widgets hidden options
+		toggleTabindex('#analog_options', paramId('analog_options').classList.contains('shown'))
+		toggleTabindex('#digital_options', paramId('digital_options').classList.contains('shown'))
 		toggleTabindex('#searchbar_request', paramId('searchbar_request').classList.contains('shown'))
 		toggleTabindex('#weather_provider', paramId('weather_provider').classList.contains('shown'))
 		toggleTabindex('#quotes_userlist', paramId('quotes_userlist').classList.contains('shown'))
