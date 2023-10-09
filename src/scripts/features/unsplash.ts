@@ -267,23 +267,20 @@ function imgCredits(image: UnsplashImage) {
 	}
 
 	if (exif) {
-		const orderedExifData = [
-			{ key: 'model', format: `%val% - ` },
-			{ key: 'aperture', format: `f/%val% ` },
-			{ key: 'exposure_time', format: `%val%s ` },
-			{ key: 'iso', format: `ISO %val% ` },
-			{ key: 'focal_length', format: `%val%mm` },
+		const exiflist = [
+			['model', '%val% - '],
+			['aperture', 'f/%val% '],
+			['exposure_time', '%val%s '],
+			['iso', '%val%ISO '],
+			['focal_length', '%val%mm'],
 		]
 
-		orderedExifData.forEach(({ key, format }) => {
-			if (Object.keys(exif).includes(key)) {
-				const exifVal = exif[key as keyof typeof exif]
-
-				if (exifVal) {
-					exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
-				}
+		for (const [key, format] of exiflist) {
+			if (key in exif) {
+				const val = exif[key as keyof typeof exif]
+				exifDescription += val ? format.replace('%val%', val.toString()) : ''
 			}
-		})
+		}
 	}
 
 	// Force Capitalization
