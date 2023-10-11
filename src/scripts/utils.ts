@@ -214,7 +214,7 @@ export const syncDefaults: Sync = {
 		on: false,
 		opacity: 0.1,
 		newtab: false,
-		suggestions: true,
+		suggestions: false,
 		engine: 'google',
 		request: '',
 		placeholder: '',
