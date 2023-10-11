@@ -3,8 +3,10 @@
 -   Changes:
     -   Migrated Firefox and Safari to manifest v3
     -   Reduced amount of weather and forecast calls
+    -   Search suggestions off by default
     -   Removed unlimitedStorage permission
 -   Improvements:
+    -   Added Clock size option
     -   Faster startup time on extensions
     -   Unsplash background is now synced when "paused"
     -   Smoother font change on slow networks
@@ -15,6 +17,7 @@
     -   Font failing to load on synced devices
     -   Awkward word-break on links titles
     -   Move elements selection on Safari
+    -   Buggy ISO string in unplash exif data
     -   #216 Custom favicon sometimes not working on Firefox
 -   Translations:
     -   @UnifeGi updated Romanian translation
