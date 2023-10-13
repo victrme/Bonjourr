@@ -15,6 +15,7 @@
     -   Unstable cache storage since 1.17.0
     -   Font weight on non-variable fonts
     -   Font failing to load on synced devices
+    -   Copy/Paste not working correctly on Notes
     -   Awkward word-break on links titles
     -   Move elements selection on Safari
     -   Buggy ISO string in unplash exif data
