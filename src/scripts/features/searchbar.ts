@@ -24,8 +24,7 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 const requestInput = superinput('i_sbrequest')
-
-let lastSuggestionAbort: AbortController
+let socket: WebSocket
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -267,37 +266,31 @@ function initSuggestions() {
 		domsuggestions?.classList.remove('shown')
 	}
 
+	function createSuggestionSocket() {
+		socket = new WebSocket(atob('d3M6Ly9zdWdnZXN0aW9ucy5mdWdpcXVhZm9zLndvcmtlcnMuZGV2Lw=='))
+
+		socket.onclose = function () {
+			createSuggestionSocket()
+		}
+
+		socket.onmessage = function (event: MessageEvent) {
+			suggestions(JSON.parse(event.data) as Suggestions[])
+		}
+	}
+
 	domcontainer?.addEventListener('keydown', navigateSuggestions)
 	domsearchbar?.addEventListener('focus', toggleSuggestions)
 	domsearchbar?.addEventListener('blur', toggleSuggestions)
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
+
+	createSuggestionSocket()
 }
 
-async function suggestions() {
+async function suggestions(results: Suggestions[]) {
 	const input = domsearchbar as HTMLInputElement
-	let results: Suggestions = []
 
 	if (domcontainer?.dataset.suggestions === 'false') {
 		return
-	}
-
-	// API
-	let engine = domcontainer?.dataset.engine
-	engine = (engine ?? '').replace('ddg', 'duckduckgo')
-	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
-
-	const api = Math.random() > 0.5 ? '@@SUGGESTIONS_API_1' : '@@SUGGESTIONS_API_2'
-	const url = `${window.atob(api)}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
-
-	try {
-		lastSuggestionAbort = new AbortController()
-		const response = await fetch(url, { signal: lastSuggestionAbort.signal })
-		const json = await response.json()
-		results = json as Suggestions
-	} catch (err: any) {
-		if (err?.name === 'AbortError') {
-			return
-		}
 	}
 
 	// ADD TO DOM
@@ -379,8 +372,13 @@ async function handleUserInput(e: Event) {
 		initSuggestions()
 	}
 
-	lastSuggestionAbort?.abort()
-	suggestions()
+	let engine = domcontainer?.dataset.engine
+	engine = (engine ?? '').replace('ddg', 'duckduckgo')
+	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
+
+	if (socket.readyState === socket.OPEN) {
+		socket.send(`http://ok.com?q=${encodeURIComponent(value ?? '')}&with=${engine}`)
+	}
 }
 
 function toggleInputButton(enabled: boolean) {

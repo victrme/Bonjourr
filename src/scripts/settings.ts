@@ -134,7 +134,7 @@ export async function settingsInit() {
 	initCheckbox('i_sb', data.searchbar?.on ?? false)
 	initCheckbox('i_quotes', data.quotes?.on ?? false)
 	initCheckbox('i_ampm', data.clock?.ampm ?? false)
-	initCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? false)
+	initCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	initCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	initCheckbox('i_qtauthor', data.quotes?.author ?? false)
 	initCheckbox('i_seconds', data.clock?.seconds ?? false)
