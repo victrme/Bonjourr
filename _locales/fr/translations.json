@@ -226,7 +226,9 @@
 	"Visit": "Rendez-vous sur",
 	"our website": "notre site Internet",
 	"for infos and donations": "pour en savoir plus ou faire un don",
-	"Bonjourr has been updated to version 1.17 ✨": "Bonjourr vient d'être mis à jour en version 1.17 ✨",
-	"Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more on": "Beaucoup de travail sous le capot. Amélioration du stockage des arrière-plans personnalisés, meilleurs temps de chargement, et plus sur ",
-	"our update post": "le changelog complet"
+
+	"Bonjourr has been updated to version 1.18 ✨": "Bonjourr vient d'être mis à jour en version 1.18 ✨",
+	"Important bug fixes and enhancements! We added suggestions to the search bar and more. Check out": "Nous avons corrigé quelques problèmes, ajouté des suggestions à la barre de recherche et plus. Consultez",
+	"our update post": "le changelog complet",
+	"to learn all about it": "pour en savoir davantage"
 }
