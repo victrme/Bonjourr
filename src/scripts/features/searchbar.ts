@@ -267,14 +267,14 @@ function initSuggestions() {
 	}
 
 	function createSuggestionSocket() {
-		socket = new WebSocket(atob('d3M6Ly9zdWdnZXN0aW9ucy5mdWdpcXVhZm9zLndvcmtlcnMuZGV2Lw=='))
+		socket = new WebSocket(atob('d3M6Ly9zdWdnZXN0aW9ucy5ib25qb3Vyci53b3JrZXJzLmRldi8='))
 
 		socket.onclose = function () {
 			createSuggestionSocket()
 		}
 
 		socket.onmessage = function (event: MessageEvent) {
-			suggestions(JSON.parse(event.data) as Suggestions[])
+			suggestions(JSON.parse(event.data) as Suggestions)
 		}
 	}
 
@@ -286,14 +286,8 @@ function initSuggestions() {
 	createSuggestionSocket()
 }
 
-async function suggestions(results: Suggestions[]) {
+async function suggestions(results: Suggestions) {
 	const input = domsearchbar as HTMLInputElement
-
-	if (domcontainer?.dataset.suggestions === 'false') {
-		return
-	}
-
-	// ADD TO DOM
 	const liList = domsuggestions?.querySelectorAll('li') ?? []
 
 	domsuggestions?.classList.toggle('shown', results.length > 0)
@@ -372,12 +366,12 @@ async function handleUserInput(e: Event) {
 		initSuggestions()
 	}
 
-	let engine = domcontainer?.dataset.engine
-	engine = (engine ?? '').replace('ddg', 'duckduckgo')
-	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
+	// request suggestions
+	if (domcontainer?.dataset.suggestions === 'true' && socket.readyState === socket.OPEN) {
+		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg')
+		const query = encodeURIComponent(value ?? '')
 
-	if (socket.readyState === socket.OPEN) {
-		socket.send(`http://ok.com?q=${encodeURIComponent(value ?? '')}&with=${engine}`)
+		socket.send(JSON.stringify({ q: query, with: engine }))
 	}
 }
 
