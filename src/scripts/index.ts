@@ -514,11 +514,13 @@ function startup(data: Sync, local: Local) {
 				}
 
 				if (sync.clock) {
-					sync.clock.size = 6
+					sync.clock.size = 1
 				}
 
 				storage.local.set(oldlocal)
 				localStorage.clear()
+
+				localStorage.hasUpdated = 'true'
 			}
 
 			storage.sync.set({ ...sync })
