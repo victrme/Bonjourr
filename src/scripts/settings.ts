@@ -1183,7 +1183,7 @@ async function paramsImport(toImport: Sync) {
 function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
 		storage.sync.clear()
-		localStorage.clear()
+		storage.local.clear()
 		fadeOut()
 		return
 	}

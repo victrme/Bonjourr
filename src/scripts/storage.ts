@@ -1,4 +1,4 @@
-import { PLATFORM, syncDefaults } from './utils'
+import { PLATFORM, localDefaults, syncDefaults } from './utils'
 import parse from './utils/parse'
 import { Sync } from './types/sync'
 import { Local } from './types/local'
@@ -29,6 +29,7 @@ type Storage = {
 		get: (key: string | string[]) => Promise<Local>
 		set: (val: Keyval) => void
 		remove: (key: string) => void
+		clear: () => void
 	}
 	init: () => Promise<{ sync: Sync; local: Local }>
 }
@@ -78,6 +79,11 @@ function online(): Storage {
 	}
 
 	const local = {
+		set: (value: Keyval) => {
+			const [key, val] = Object.entries(value)[0]
+			return localStorage.setItem(key, JSON.stringify(val))
+		},
+
 		get: async (keys: string | string[]) => {
 			const res: Keyval = {}
 
@@ -99,9 +105,10 @@ function online(): Storage {
 			return localStorage.removeItem(key)
 		},
 
-		set: (value: Keyval) => {
-			const [key, val] = Object.entries(value)[0]
-			return localStorage.setItem(key, JSON.stringify(val))
+		clear: () => {
+			for (const key of Object.keys(localDefaults)) {
+				localStorage.removeItem(key)
+			}
 		},
 	}
 
@@ -136,6 +143,10 @@ function webext(): Storage {
 	}
 
 	const local = {
+		set: (val: Keyval) => {
+			chrome.storage.local.set(val)
+		},
+
 		get: async (key: string | string[]) => {
 			return (await chrome.storage.local.get(key ?? null)) as Local
 		},
@@ -144,8 +155,8 @@ function webext(): Storage {
 			return chrome.storage.local.remove(key)
 		},
 
-		set: (val: Keyval) => {
-			chrome.storage.local.set(val)
+		clear: () => {
+			chrome.storage.local.clear()
 		},
 	}
 
