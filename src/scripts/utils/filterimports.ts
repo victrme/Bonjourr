@@ -23,6 +23,8 @@ export default function filterImports(current: Sync, toImport: Sync) {
 			...(toImport.dynamic as Sync['unsplash']),
 			pausedImage: null,
 		}
+
+		delete toImport.dynamic
 	}
 
 	// <1.9.0 searchbar options was boolean

@@ -502,10 +502,12 @@ function startup(data: Sync, local: Local) {
 				}
 
 				// new synced unsplash pause
-				if (sync.unsplash) {
+				if (sync.unsplash?.lastCollec) {
 					const { every, lastCollec } = sync.unsplash
 					const currentImage = oldlocal.unsplashCache[lastCollec][0]
 					sync.unsplash.pausedImage = every === 'pause' ? currentImage : null
+				} else {
+					sync.unsplash = { ...syncDefaults.unsplash }
 				}
 
 				// new search suggestions toggle
