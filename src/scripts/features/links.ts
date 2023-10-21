@@ -554,7 +554,7 @@ async function linkSubmission(type: 'add' | 'import', importList?: { title: stri
 
 		const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
 		const noProtocol = !startsWithEither(['https://', 'http://'])
-		const isLocalhost = url.startsWith('localhost')
+		const isLocalhost = url.startsWith('localhost') || url.startsWith('127.0.0.1')
 
 		let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
 
