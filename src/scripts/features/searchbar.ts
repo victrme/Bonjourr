@@ -267,7 +267,7 @@ function initSuggestions() {
 	}
 
 	function createSuggestionSocket() {
-		socket = new WebSocket(atob('d3M6Ly9zdWdnZXN0aW9ucy5ib25qb3Vyci53b3JrZXJzLmRldi8='))
+		socket = new WebSocket('@@SUGGESTIONS')
 
 		socket.onclose = function () {
 			createSuggestionSocket()

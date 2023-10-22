@@ -655,7 +655,11 @@ export async function settingsInit() {
 	})
 
 	setTimeout(() => {
+		let skipFirstResize = true
+
 		const cssResize = new ResizeObserver((e) => {
+			if (skipFirstResize) return (skipFirstResize = false)
+
 			const rect = e[0].contentRect
 			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
 		})

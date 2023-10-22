@@ -30,9 +30,7 @@ async function newQuoteFromAPI(lang: string, type: string) {
 		// Fetch a random quote from the quotes API
 		const query = (type += type === 'classic' ? `/${lang}` : '')
 
-		const API = Math.random() > 0.5 ? '@@QUOTES_API_1' : '@@QUOTES_API_2'
-
-		const response = await fetch(atob(API) + query)
+		const response = await fetch('@@QUOTES' + query)
 		const json = await response.json()
 
 		if (response.ok) {
