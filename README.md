@@ -82,27 +82,26 @@ If you feel like we've earned it and you want to support independant open source
 ## 👨‍💻 Running Bonjourr locally
 
 Clone this repository
+
 ```bash
 git clone https://github.com/victrme/Bonjourr
 cd Bonjourr
 ```
-  
-Create a `.env.json` for your own API keys and endpoints 
+
+Create a `.env.json` for your own API keys and endpoints
+
 ```jsonc
 {
-  "UNSPLASH_API": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "FAVICON_API_1": "https://example-favicon-fetcher-api.com/",
-  "FAVICON_API_2": "https://example-favicon-fetcher-api-fallback.com/",
-  "QUOTES_API_1": "https://example-i18n-quotes-api.com/",
-  "QUOTES_API_2": "https://example-i18n-quotes-api-fallback.com/",
-  "WEATHER_1": "openweathermap_api_xxxxxxxxxxxxx",
-  "WEATHER_2": "openweathermap_api_xxxxxxxxxxxxx",
-  "WEATHER_3": "openweathermap_api_xxxxxxxxxxxxx",
-  "WEATHER_4": "openweathermap_api_xxxxxxxxxxxxx"
+	"UNSPLASH": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"SUGGESTIONS": "ws://suggestions.yourname.worker.dev/",
+	"FAVICON": "https://favicon.yourname.worker.dev/",
+	"QUOTES": "https://quotes.yourname.worker.dev/",
+	"WEATHER": "openweathermap_api_key,openweathermap_api_key,openweathermap_api_key"
 }
 ```
 
 Then [install pnpm](https://pnpm.io/installation) on your system
+
 ```bash
 # In root directory
 pnpm install
@@ -145,8 +144,8 @@ pnpm online
 
 ### Online (web version)
 
-- Open a live server, for example using: `python -m http.server`
-- Go to http://localhost:8000/release/online/
+-   Open a live server, for example using: `python -m http.server`
+-   Go to http://localhost:8000/release/online/
 
 <br>
 

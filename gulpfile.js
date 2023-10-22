@@ -58,17 +58,11 @@ function scripts(platform) {
 		})
 
 		return src('release/online/src/scripts/main.js')
-			.pipe(replace('@@SUGGESTIONS_API_1', btoa(envs?.SUGGESTIONS_API_1) || '/'))
-			.pipe(replace('@@SUGGESTIONS_API_2', btoa(envs?.SUGGESTIONS_API_2) || '/'))
-			.pipe(replace('@@UNSPLASH_API', btoa(envs?.UNSPLASH_API) || '/'))
-			.pipe(replace('@@FAVICON_API_1', btoa(envs?.FAVICON_API_1) || '/'))
-			.pipe(replace('@@FAVICON_API_2', btoa(envs?.FAVICON_API_2) || '/'))
-			.pipe(replace('@@QUOTES_API_1', btoa(envs?.QUOTES_API_1) || '/'))
-			.pipe(replace('@@QUOTES_API_2', btoa(envs?.QUOTES_API_2) || '/'))
-			.pipe(replace('@@WEATHER_1', btoa(envs?.WEATHER_1) || '/'))
-			.pipe(replace('@@WEATHER_2', btoa(envs?.WEATHER_2) || '/'))
-			.pipe(replace('@@WEATHER_3', btoa(envs?.WEATHER_3) || '/'))
-			.pipe(replace('@@WEATHER_4', btoa(envs?.WEATHER_4) || '/'))
+			.pipe(replace('@@SUGGESTIONS', envs?.SUGGESTIONS || '/'))
+			.pipe(replace('@@UNSPLASH', envs?.UNSPLASH || '/'))
+			.pipe(replace('@@FAVICON', envs?.FAVICON || '/'))
+			.pipe(replace('@@QUOTES', envs?.QUOTES || '/'))
+			.pipe(replace('@@WEATHER', envs?.WEATHER || '/'))
 			.pipe(dest(`release/${platform}/src/scripts`))
 	}
 }
