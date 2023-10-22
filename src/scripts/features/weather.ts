@@ -178,8 +178,8 @@ function handleGeolOption(data: Weather) {
 }
 
 function createRequestQueries(data: Weather) {
-	const apis = ['@@WEATHER_1', '@@WEATHER_2', '@@WEATHER_3', '@@WEATHER_4']
-	const key = apis[Math.ceil(Math.random() * 4) - 1]
+	const apis = '@@WEATHER'.split(',')
+	const key = apis[Math.ceil(Math.random() * apis.length) - 1]
 	const isGeolocated = data.location?.length === 2
 	let lang = document.documentElement.getAttribute('lang')
 	let queries = ''
@@ -200,7 +200,7 @@ function createRequestQueries(data: Weather) {
 	}
 
 	if (key !== apis[0]) {
-		queries += '&appid=' + atob(key)
+		queries += '&appid=' + key
 	}
 
 	return queries

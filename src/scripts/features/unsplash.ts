@@ -203,7 +203,7 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
 	const header = new Headers()
 	const url = `https://api.unsplash.com/photos/random?collections=${collection}&count=8`
-	header.append('Authorization', `Client-ID ${atob('@@UNSPLASH_API')}`)
+	header.append('Authorization', `Client-ID ${'@@UNSPLASH'}`)
 	header.append('Accept-Version', 'v1')
 
 	let resp: Response

@@ -72,8 +72,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		} catch (_) {}
 
 		let result = `https://icons.duckduckgo.com/ip3/${hostname}.ico`
-		const API = Math.random() > 0.5 ? '@@FAVICON_API_1' : '@@FAVICON_API_2'
-		const response = await fetch(atob(API) + url)
+		const response = await fetch('@@FAVICON' + url)
 		const apiText = await response.text()
 
 		if (apiText.length > 0) {
