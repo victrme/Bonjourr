@@ -88,18 +88,6 @@ git clone https://github.com/victrme/Bonjourr
 cd Bonjourr
 ```
 
-Create a `.env.json` for your own API keys and endpoints
-
-```jsonc
-{
-	"UNSPLASH": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	"SUGGESTIONS": "ws://suggestions.yourname.worker.dev/",
-	"FAVICON": "https://favicon.yourname.worker.dev/",
-	"QUOTES": "https://quotes.yourname.worker.dev/",
-	"WEATHER": "openweathermap_api_key,openweathermap_api_key,openweathermap_api_key"
-}
-```
-
 Then [install pnpm](https://pnpm.io/installation) on your system
 
 ```bash
@@ -117,6 +105,10 @@ pnpm firefox
 pnpm safari
 pnpm online
 ```
+
+#### Self-host APIs
+
+If you wish to self-host the APIs used by Bonjourr, you can do so by following the steps in [Bonjourr APIs repository](https://github.com/victrme/bonjourr-apis).
 
 ### Chrome
 
@@ -146,6 +138,7 @@ pnpm online
 
 -   Open a live server, for example using: `python -m http.server`
 -   Go to http://localhost:8000/release/online/
+
 
 <br>
 
