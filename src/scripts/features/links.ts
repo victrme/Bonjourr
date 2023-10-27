@@ -72,7 +72,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		} catch (_) {}
 
 		let result = `https://icons.duckduckgo.com/ip3/${hostname}.ico`
-		const response = await fetch('@@FAVICON' + url)
+		const response = await fetch('https://api.bonjourr.lol/favicon/' + url)
 		const apiText = await response.text()
 
 		if (apiText.length > 0) {

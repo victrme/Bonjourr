@@ -2,9 +2,9 @@ import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
+import superinput from '../utils/superinput'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
-import superinput from '../utils/superinput'
 
 import { UnsplashCache, UnsplashImage } from '../types/local'
 import { Unsplash, Sync } from '../types/sync'
@@ -201,15 +201,9 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 }
 
 async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
-	const header = new Headers()
-	const url = `https://api.unsplash.com/photos/random?collections=${collection}&count=8`
-	header.append('Authorization', `Client-ID ${'@@UNSPLASH'}`)
-	header.append('Accept-Version', 'v1')
-
-	let resp: Response
 	let json: UnsplashAPI[]
 
-	resp = await fetch(url, { headers: header })
+	const resp = await fetch(`https://api.bonjourr.lol/unsplash/photos/random?collections=${collection}&count=8`)
 
 	if (resp.status === 404) {
 		return null

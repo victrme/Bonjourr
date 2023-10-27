@@ -1,4 +1,3 @@
-import fs from 'fs'
 import gulp from 'gulp'
 import rename from 'gulp-rename'
 import replace from 'gulp-replace'
@@ -40,13 +39,6 @@ function html(platform) {
 }
 
 function scripts(platform) {
-	let envs = {}
-
-	try {
-		const envFile = fs.readFileSync('.env.json', 'utf-8')
-		envs = JSON.parse(envFile)
-	} catch (e) {}
-
 	return () => {
 		esbuild.buildSync({
 			entryPoints: ['src/scripts/index.ts'],
@@ -57,13 +49,7 @@ function scripts(platform) {
 			minifyWhitespace: true,
 		})
 
-		return src('release/online/src/scripts/main.js')
-			.pipe(replace('@@SUGGESTIONS', envs?.SUGGESTIONS || '/'))
-			.pipe(replace('@@UNSPLASH', envs?.UNSPLASH || '/'))
-			.pipe(replace('@@FAVICON', envs?.FAVICON || '/'))
-			.pipe(replace('@@QUOTES', envs?.QUOTES || '/'))
-			.pipe(replace('@@WEATHER', envs?.WEATHER || '/'))
-			.pipe(dest(`release/${platform}/src/scripts`))
+		return src('release/online/src/scripts/main.js').pipe(dest(`release/${platform}/src/scripts`))
 	}
 }
 

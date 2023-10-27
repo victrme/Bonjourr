@@ -267,7 +267,7 @@ function initSuggestions() {
 	}
 
 	function createSuggestionSocket() {
-		socket = new WebSocket('@@SUGGESTIONS')
+		socket = new WebSocket('ws://api.bonjourr.lol/suggestions')
 
 		socket.onclose = function () {
 			createSuggestionSocket()

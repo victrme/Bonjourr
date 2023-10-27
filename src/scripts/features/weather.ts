@@ -178,8 +178,6 @@ function handleGeolOption(data: Weather) {
 }
 
 function createRequestQueries(data: Weather) {
-	const apis = '@@WEATHER'.split(',')
-	const key = apis[Math.ceil(Math.random() * apis.length) - 1]
 	const isGeolocated = data.location?.length === 2
 	let lang = document.documentElement.getAttribute('lang')
 	let queries = ''
@@ -199,10 +197,6 @@ function createRequestQueries(data: Weather) {
 		queries += ',' + data.ccode ?? 'fr'
 	}
 
-	if (key !== apis[0]) {
-		queries += '&appid=' + key
-	}
-
 	return queries
 }
 
@@ -219,9 +213,7 @@ async function request(data: Weather, currentOnly?: boolean): Promise<Weather | 
 	// Current API call
 	//
 
-	const base = queries.indexOf('appid') === -1 ? 'owm-proxy.netlify.app' : 'api.openweathermap.org/data/2.5'
-
-	current = await (await fetch(`https://${base}/weather/${queries}`)).json()
+	current = await (await fetch('https://api.bonjourr.lol/weather/current/' + queries)).json()
 	if (current?.cod !== 200) return null
 
 	const { temp, feels_like, temp_max } = current.main
@@ -251,7 +243,7 @@ async function request(data: Weather, currentOnly?: boolean): Promise<Weather | 
 	// Forecast API call
 	//
 
-	forecast = await (await fetch(`https://${base}/forecast/${queries}`)).json()
+	forecast = await (await fetch('https://api.bonjourr.lol/weather/forecast/' + queries)).json()
 	if (forecast?.cod !== '200') return null
 
 	let date = new Date()
