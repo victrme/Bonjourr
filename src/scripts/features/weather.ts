@@ -6,7 +6,7 @@ import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
-import { OWMCurrent, OWMForecast } from '../types/openweathermap'
+import { OWMOnecall } from '../types/openweathermap'
 import onSettingsLoad from '../utils/onsettingsload'
 
 type GeolAPI = {
@@ -200,25 +200,29 @@ function createRequestQueries(data: Weather) {
 	return queries
 }
 
-async function request(data: Weather, currentOnly?: boolean): Promise<Weather | null> {
+async function request(data: Weather): Promise<Weather | null> {
 	if (!navigator.onLine) {
 		return data
 	}
 
-	let current: OWMCurrent
-	let forecast: OWMForecast
+	let onecall: OWMOnecall
 	const queries = createRequestQueries(data)
+	const response = await fetch('https://api.bonjourr.lol/weather/' + queries)
 
-	//
-	// Current API call
-	//
+	if (response.status === 200) {
+		try {
+			onecall = await response.json()
+		} catch (error) {
+			console.log(error)
+			return data
+		}
+	} else {
+		return data
+	}
 
-	current = await (await fetch('https://api.bonjourr.lol/weather/current/' + queries)).json()
-	if (current?.cod !== 200) return null
+	const { temp, feels_like, sunrise, sunset } = onecall.current
+	const { description, id } = onecall.current.weather[0]
 
-	const { temp, feels_like, temp_max } = current.main
-	const { sunrise, sunset } = current.sys
-	const { description, id } = current.weather[0]
 	const lastCall = Math.floor(new Date().getTime() / 1000)
 
 	data = {
@@ -227,24 +231,12 @@ async function request(data: Weather, currentOnly?: boolean): Promise<Weather | 
 		lastState: {
 			temp,
 			feels_like,
-			temp_max,
 			sunrise,
 			sunset,
 			description,
 			icon_id: id,
 		},
 	}
-
-	if (currentOnly) {
-		return data
-	}
-
-	//
-	// Forecast API call
-	//
-
-	forecast = await (await fetch('https://api.bonjourr.lol/weather/forecast/' + queries)).json()
-	if (forecast?.cod !== '200') return null
 
 	let date = new Date()
 
@@ -255,9 +247,9 @@ async function request(data: Weather, currentOnly?: boolean): Promise<Weather | 
 
 	// Get the highest temp for the specified day
 	let maxTempFromList = -273.15
-	for (const elem of forecast.list) {
-		if (new Date(elem.dt * 1000).getDate() === date.getDate() && maxTempFromList < elem.main.temp_max) {
-			maxTempFromList = elem.main.temp_max
+	for (const elem of onecall.hourly) {
+		if (new Date(elem.dt * 1000).getDate() === date.getDate() && maxTempFromList < elem.temp) {
+			maxTempFromList = elem.temp
 		}
 	}
 
@@ -407,7 +399,6 @@ async function weatherCacheControl(data: Weather) {
 
 	const now = new Date()
 	const currentTime = Math.floor(now.getTime() / 1000)
-	const isForecastDayOld = currentTime > (data.fcLast ?? 0)
 	const isAnHourLater = currentTime > data.lastCall + 3600
 	const hasGeol = data.location.length === 2
 	const isNotSafari = BROWSER !== 'safari' // to prevent safari geol popup every day
@@ -417,7 +408,7 @@ async function weatherCacheControl(data: Weather) {
 			data.location = (await getGeolocation()) ?? []
 		}
 
-		data = (await request(data, !isForecastDayOld)) ?? data
+		data = (await request(data)) ?? data
 		storage.sync.set({ weather: data })
 	}
 

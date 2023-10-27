@@ -44,7 +44,6 @@ export type Weather = {
 	lastState?: {
 		temp: number
 		feels_like: number
-		temp_max: number
 		sunrise: number
 		sunset: number
 		description: string

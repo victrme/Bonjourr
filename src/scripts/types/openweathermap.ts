@@ -37,3 +37,32 @@ export type OWMForecast = {
 		}
 	]
 }
+
+export type OWMOnecall = {
+	lat: number
+	lon: number
+	current: {
+		dt: number
+		sunrise: number
+		sunset: number
+		temp: number
+		feels_like: number
+		weather: {
+			id: number
+			main: string
+			description: string
+			icon: string
+		}[]
+	}
+	hourly: {
+		dt: number
+		temp: number
+		feels_like: number
+		weather: {
+			id: number
+			main: string
+			description: string
+			icon: string
+		}[]
+	}[]
+}
