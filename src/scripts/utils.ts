@@ -194,8 +194,8 @@ export const syncDefaults: Sync = {
 		time: Date.now(),
 	},
 	weather: {
-		ccode: 'FR',
-		city: 'Paris',
+		ccode: undefined,
+		city: undefined,
 		unit: 'metric',
 		provider: '',
 		moreinfo: 'none',

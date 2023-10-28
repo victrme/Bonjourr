@@ -1,4 +1,4 @@
-import { stringMaxSize, BROWSER } from '../utils'
+import { stringMaxSize } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
@@ -9,13 +9,6 @@ import { Sync, Weather } from '../types/sync'
 import { OWMOnecall } from '../types/openweathermap'
 import onSettingsLoad from '../utils/onsettingsload'
 import parse from '../utils/parse'
-
-type GeolAPI = {
-	city: string
-	latitude: string
-	longitude: string
-	country: { code: string }
-}
 
 type Coords = {
 	lat: number
@@ -40,8 +33,6 @@ type WeatherUpdate = {
 }
 
 const cityInput = superinput('i_city')
-
-// Checks every 5 minutes if weather needs update
 
 export default function weather(init: Sync | null, update?: WeatherUpdate) {
 	if (update) {
@@ -133,7 +124,7 @@ async function updatesWeather(update: WeatherUpdate) {
 
 		if (response) {
 			weather = response
-			i_city.setAttribute('placeholder', weather.city)
+			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
 			cityInput.toggle(false)
 		} else {
 			cityInput.warn('Cannot find city')
@@ -196,8 +187,8 @@ function handleGeolOption(data: Weather) {
 	const sett_city = document.getElementById('sett_city') as HTMLDivElement
 
 	i_geol.value = data.geolocation
-	i_ccode.value = data.ccode
-	i_city.setAttribute('placeholder', data.city)
+	i_ccode.value = data.ccode ?? 'FR'
+	i_city.setAttribute('placeholder', data.city ?? tradThis('City'))
 	sett_city.classList.toggle('shown', data.geolocation === 'off')
 }
 
@@ -250,6 +241,11 @@ async function request(data: Weather): Promise<Weather | null> {
 	const { description, id } = onecall.current.weather[0]
 
 	const lastCall = Math.floor(new Date().getTime() / 1000)
+
+	if (data.geolocation === 'approximate' && !data.ccode && !data.city) {
+		data.city = onecall.city
+		data.ccode = onecall.ccode
+	}
 
 	data = {
 		...data,

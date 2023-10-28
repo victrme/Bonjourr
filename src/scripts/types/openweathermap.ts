@@ -39,6 +39,8 @@ export type OWMForecast = {
 }
 
 export type OWMOnecall = {
+	city?: string
+	ccode?: string
 	lat: number
 	lon: number
 	current: {
