@@ -112,6 +112,7 @@ export async function settingsInit() {
 	initInput('i_clocksize', data.clock?.size ?? 5)
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.unsplash?.collection ?? '')
+	initInput('i_geol', data.weather?.geolocation || 'approximate')
 	initInput('i_ccode', data.weather?.ccode || 'US')
 	initInput('i_forecast', data.weather?.forecast || 'auto')
 	initInput('i_temp', data.weather?.temperature || 'actual')
@@ -127,7 +128,6 @@ export async function settingsInit() {
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_main', data.main)
-	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
 	initCheckbox('i_units', data.weather?.unit === 'imperial' ?? false)
 	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
 	initCheckbox('i_notes', data.notes?.on ?? false)
@@ -491,7 +491,7 @@ export async function settingsInit() {
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { geol: this.checked })
+		weather(null, { geol: this.value })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {

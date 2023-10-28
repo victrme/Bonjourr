@@ -10,7 +10,7 @@
 			<p>
 				<span class="trn"
 					>Important bug fixes and enhancements! We added suggestions to the search bar and more. Check out</span
-				> 
+				>
 				<a
 					id="link"
 					target="_blank"
@@ -414,7 +414,11 @@
 
 			<div class="w_auto wrapper">
 				<label for="i_geol" class="trn">Geolocation</label>
-				<input id="i_geol" class="switch opt-hider" type="checkbox" />
+				<select id="i_geol">
+					<option value="off" class="trn">Off</option>
+					<option value="approximate" class="trn">Approximate</option>
+					<option value="precise" class="trn">Precise</option>
+				</select>
 			</div>
 
 			<div id="sett_city" class="dropdown shown">

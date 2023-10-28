@@ -197,11 +197,11 @@ export const syncDefaults: Sync = {
 		ccode: 'FR',
 		city: 'Paris',
 		unit: 'metric',
-		location: [],
 		provider: '',
 		moreinfo: 'none',
 		forecast: 'auto',
 		temperature: 'actual',
+		geolocation: 'approximate',
 	},
 	notes: {
 		on: false,

@@ -8,6 +8,7 @@ import storage from '../storage'
 import { Sync, Weather } from '../types/sync'
 import { OWMOnecall } from '../types/openweathermap'
 import onSettingsLoad from '../utils/onsettingsload'
+import parse from '../utils/parse'
 
 type GeolAPI = {
 	city: string
@@ -16,12 +17,23 @@ type GeolAPI = {
 	country: { code: string }
 }
 
+type Coords = {
+	lat: number
+	lon: number
+}
+
+type CityGeo = {
+	city: string
+	lat: number
+	lon: number
+}
+
 type WeatherUpdate = {
 	forecast?: string
 	moreinfo?: string
 	provider?: string
 	units?: boolean
-	geol?: boolean
+	geol?: string
 	city?: string
 	temp?: string
 	unhide?: true
@@ -128,24 +140,17 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 	}
 
-	if (update.geol !== undefined) {
-		const i_geol = document.getElementById('i_geol') as HTMLInputElement
+	if (update.geol) {
+		weather.geolocation = update.geol as Weather['geolocation']
 
-		if (!update.geol || !i_geol) {
-			weather.location = []
-			weather = (await request(weather)) ?? weather
+		if (update.geol === 'off') {
+			setTimeout(() => handleGeolOption(weather), 300)
+		}
+
+		if (update.geol === 'precise' || update.geol === 'approximate') {
+			const newdata = await request(weather)
+			if (newdata) weather = newdata
 			handleGeolOption(weather)
-		} else {
-			const location = await getGeolocation()
-
-			if (location) {
-				weather.location = location
-				weather = (await request(weather)) ?? weather
-				handleGeolOption(weather)
-			} else {
-				i_geol.checked = true
-				setTimeout(() => handleGeolOption(weather), 300)
-			}
 		}
 	}
 
@@ -153,15 +158,35 @@ async function updatesWeather(update: WeatherUpdate) {
 	displayWeather(weather)
 }
 
-async function getGeolocation(): Promise<[number, number] | undefined> {
-	const location: [number, number] | undefined = await new Promise((resolve) =>
-		navigator.geolocation.getCurrentPosition(
-			(geo) => resolve([geo.coords.latitude, geo.coords.longitude]),
-			() => resolve(undefined)
-		)
-	)
+async function getGeolocation(type: Weather['geolocation']): Promise<Coords | undefined> {
+	//
+	const location = { lat: 0, lon: 0 }
 
-	return location
+	if (type === 'precise') {
+		await new Promise((resolve) =>
+			navigator.geolocation.getCurrentPosition(
+				(geo) => {
+					location.lat = geo.coords.latitude
+					location.lon = geo.coords.longitude
+					resolve(true)
+				},
+				() => {
+					resolve(false)
+				}
+			)
+		)
+	}
+
+	if (type === 'off') {
+		const cityCoords = parse(localStorage.location) as CityGeo | undefined
+
+		if (cityCoords) {
+			location.lat = cityCoords.lat
+			location.lon = cityCoords.lon
+		}
+	}
+
+	return location.lat !== 0 && location.lon !== 0 ? location : undefined
 }
 
 function handleGeolOption(data: Weather) {
@@ -169,16 +194,14 @@ function handleGeolOption(data: Weather) {
 	const i_geol = document.getElementById('i_geol') as HTMLInputElement
 	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
 	const sett_city = document.getElementById('sett_city') as HTMLDivElement
-	const isGeol = data.location.length > 0
 
-	i_geol.checked = isGeol
+	i_geol.value = data.geolocation
 	i_ccode.value = data.ccode
 	i_city.setAttribute('placeholder', data.city)
-	sett_city.classList.toggle('shown', isGeol === false)
+	sett_city.classList.toggle('shown', data.geolocation === 'off')
 }
 
-function createRequestQueries(data: Weather) {
-	const isGeolocated = data.location?.length === 2
+function createRequestQueries(data: Weather, coords?: Coords) {
 	let lang = document.documentElement.getAttribute('lang')
 	let queries = ''
 
@@ -189,10 +212,12 @@ function createRequestQueries(data: Weather) {
 	queries += '?units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
 
-	if (isGeolocated) {
-		queries += '&lat=' + data.location[0]
-		queries += '&lon=' + data.location[1]
-	} else {
+	if (coords) {
+		queries += '&lat=' + coords.lat
+		queries += '&lon=' + coords.lon
+	}
+
+	if (!coords && data.geolocation === 'off') {
 		queries += '&q=' + encodeURI(data.city ?? 'Paris')
 		queries += ',' + data.ccode ?? 'fr'
 	}
@@ -206,7 +231,8 @@ async function request(data: Weather): Promise<Weather | null> {
 	}
 
 	let onecall: OWMOnecall
-	const queries = createRequestQueries(data)
+	const coords = await getGeolocation(data.geolocation)
+	const queries = createRequestQueries(data, coords)
 	const response = await fetch('https://api.bonjourr.lol/weather/' + queries)
 
 	if (response.status === 200) {
@@ -264,24 +290,13 @@ async function request(data: Weather): Promise<Weather | null> {
 }
 
 async function initWeather(data: Weather) {
-	try {
-		const resp = await fetch('https://geol.bonjourr.fr/')
-		const geol = (await resp.json()) as GeolAPI
-		data.city = geol.city
-		data.ccode = geol.country.code
-		data.location = [parseFloat(geol.latitude), parseFloat(geol.longitude)]
-	} catch (_) {
-		console.warn('Cannot get geol')
-		data.city = 'Paris'
-		data.ccode = 'FR'
+	const newdata = await request(data)
+
+	if (newdata) {
+		displayWeather(newdata)
+		storage.sync.set({ weather: newdata })
+		setTimeout(() => handleGeolOption(newdata), 400)
 	}
-
-	data.location = (await getGeolocation()) ?? []
-	data = (await request(data)) ?? data
-
-	displayWeather(data)
-	storage.sync.set({ weather: data })
-	setTimeout(() => handleGeolOption(data), 400)
 }
 
 function displayWeather(data: Weather) {
@@ -400,16 +415,14 @@ async function weatherCacheControl(data: Weather) {
 	const now = new Date()
 	const currentTime = Math.floor(now.getTime() / 1000)
 	const isAnHourLater = currentTime > data.lastCall + 3600
-	const hasGeol = data.location.length === 2
-	const isNotSafari = BROWSER !== 'safari' // to prevent safari geol popup every day
 
 	if (navigator.onLine && isAnHourLater) {
-		if (hasGeol && isNotSafari) {
-			data.location = (await getGeolocation()) ?? []
-		}
+		const newdata = await request(data)
 
-		data = (await request(data)) ?? data
-		storage.sync.set({ weather: data })
+		if (newdata) {
+			data = newdata
+			storage.sync.set({ weather: newdata })
+		}
 	}
 
 	displayWeather(data)
