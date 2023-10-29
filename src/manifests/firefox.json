@@ -33,7 +33,7 @@
 		"scripts": ["src/scripts/background.js"]
 	},
 
-	"permissions": ["storage", "geolocation"],
+	"permissions": ["storage"],
 	"optional_permissions": ["bookmarks"],
 
 	"browser_specific_settings": {
