@@ -133,19 +133,12 @@ async function updatesWeather(update: WeatherUpdate) {
 
 	if (update.geol) {
 		weather.geolocation = update.geol as Weather['geolocation']
-
-		if (update.geol === 'off') {
-			setTimeout(() => handleGeolOption(weather), 300)
-		}
-
-		if (update.geol === 'precise' || update.geol === 'approximate') {
-			const newdata = await request(weather)
-			if (newdata) weather = newdata
-			handleGeolOption(weather)
-		}
+		const newdata = await request(weather)
+		weather = newdata ?? weather
 	}
 
 	storage.sync.set({ weather })
+	handleGeolOption(weather)
 	displayWeather(weather)
 }
 
@@ -166,15 +159,6 @@ async function getGeolocation(type: Weather['geolocation']): Promise<Coords | un
 				}
 			)
 		)
-	}
-
-	if (type === 'off') {
-		const cityCoords = parse(localStorage.location) as CityGeo | undefined
-
-		if (cityCoords) {
-			location.lat = cityCoords.lat
-			location.lon = cityCoords.lon
-		}
 	}
 
 	return location.lat !== 0 && location.lon !== 0 ? location : undefined
