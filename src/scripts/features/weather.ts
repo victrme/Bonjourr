@@ -1,4 +1,5 @@
 import { stringMaxSize } from '../utils'
+import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
@@ -7,16 +8,8 @@ import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
 import { OWMOnecall } from '../types/openweathermap'
-import onSettingsLoad from '../utils/onsettingsload'
-import parse from '../utils/parse'
 
 type Coords = {
-	lat: number
-	lon: number
-}
-
-type CityGeo = {
-	city: string
 	lat: number
 	lon: number
 }
@@ -132,6 +125,13 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.geol) {
+		// Don't update if precise geolocation fails
+		if (update.geol === 'precise') {
+			if (!(await getGeolocation('precise'))) {
+				return handleGeolOption(weather)
+			}
+		}
+
 		weather.geolocation = update.geol as Weather['geolocation']
 		const newdata = await request(weather)
 		weather = newdata ?? weather
