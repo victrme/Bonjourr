@@ -153,7 +153,7 @@ for (const [code] of Object.entries(langList)) {
 }
 
 export const syncDefaults: Sync = {
-	about: { browser: PLATFORM, version: '1.18.0' },
+	about: { browser: PLATFORM, version: '1.18.1' },
 	showall: false,
 	lang: defaultLang,
 	dark: 'system',

@@ -488,41 +488,16 @@ function startup(data: Sync, local: Local) {
 				version: version_curr,
 			}
 
-			// #229
-			if (sync.lang === 'es') {
-				sync.lang = 'es_ES'
-			}
+			if (sync.weather?.geolocation === undefined) {
+				sync.weather.geolocation = 'approximate'
 
-			if (version_old.includes('1.17') && version_curr.includes('1.18')) {
-				const oldlocal = {
-					unsplashCache: parse(localStorage.unsplashCache) ?? localDefaults.unsplashCache,
-					quotesCache: parse(localStorage.quotesCache) ?? localDefaults.quotesCache,
-					fontface: localStorage.fontface ?? '',
-					fonts: null,
+				if ((sync.weather?.location ?? []).length === 0) {
+					sync.weather.geolocation = 'off'
+				} else if ((sync.weather?.location ?? []).length === 2 && BROWSER !== 'safari') {
+					sync.weather.geolocation = 'precise'
 				}
 
-				// new synced unsplash pause
-				if (sync.unsplash?.lastCollec) {
-					const { every, lastCollec } = sync.unsplash
-					const currentImage = oldlocal.unsplashCache[lastCollec][0]
-					sync.unsplash.pausedImage = every === 'pause' ? currentImage : null
-				} else {
-					sync.unsplash = { ...syncDefaults.unsplash }
-				}
-
-				// new search suggestions toggle
-				if (sync.searchbar) {
-					sync.searchbar.suggestions = true
-				}
-
-				if (sync.clock) {
-					sync.clock.size = 1
-				}
-
-				storage.local.set(oldlocal)
-				localStorage.clear()
-
-				localStorage.hasUpdated = 'true'
+				sync.weather.location = undefined
 			}
 
 			storage.sync.set({ ...sync })
