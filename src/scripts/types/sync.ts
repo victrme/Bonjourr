@@ -32,7 +32,7 @@ export type Quotes = {
 export type Weather = {
 	ccode: string
 	city: string
-	unit: string
+	unit: 'metric' | 'imperial'
 	location: number[]
 	forecast: string
 	temperature: string

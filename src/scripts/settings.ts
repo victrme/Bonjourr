@@ -1,4 +1,4 @@
-import { Sync } from './types/sync'
+import { Sync, Weather } from './types/sync'
 
 import storage from './storage'
 import clock from './features/clock'
@@ -113,6 +113,7 @@ export async function settingsInit() {
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.unsplash?.collection ?? '')
 	initInput('i_ccode', data.weather?.ccode || 'US')
+	initInput('i_units', data.weather?.unit ?? 'metric')
 	initInput('i_forecast', data.weather?.forecast || 'auto')
 	initInput('i_temp', data.weather?.temperature || 'actual')
 	initInput('i_moreinfo', data.weather?.moreinfo || 'none')
@@ -128,7 +129,6 @@ export async function settingsInit() {
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_main', data.main)
 	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
-	initCheckbox('i_units', data.weather?.unit === 'imperial' ?? false)
 	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
 	initCheckbox('i_notes', data.notes?.on ?? false)
 	initCheckbox('i_sb', data.searchbar?.on ?? false)
@@ -496,7 +496,7 @@ export async function settingsInit() {
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { units: this.checked })
+		weather(null, { units: this.value as Weather['unit'] })
 	})
 
 	paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {

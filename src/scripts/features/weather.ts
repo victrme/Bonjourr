@@ -20,7 +20,7 @@ type WeatherUpdate = {
 	forecast?: string
 	moreinfo?: string
 	provider?: string
-	units?: boolean
+	units?: 'metric' | 'imperial'
 	geol?: boolean
 	city?: string
 	temp?: string
@@ -65,8 +65,8 @@ async function updatesWeather(update: WeatherUpdate) {
 		return
 	}
 
-	if (update.units !== undefined) {
-		weather.unit = update.units ? 'imperial' : 'metric'
+	if (update.units) {
+		weather.unit = update.units
 		weather = (await request(weather)) ?? weather
 	}
 
