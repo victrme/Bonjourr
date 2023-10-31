@@ -166,6 +166,10 @@ function submitSearch(e: Event) {
 		url = createSearchURL(val)
 	}
 
+	if (socket) {
+		socket.close()
+	}
+
 	window.open(url, target)
 	e.preventDefault()
 }
@@ -267,14 +271,16 @@ function initSuggestions() {
 	}
 
 	function createSuggestionSocket() {
-		socket = new WebSocket('ws://api.bonjourr.lol/suggestions')
-
-		socket.onclose = function () {
-			createSuggestionSocket()
-		}
+		socket = new WebSocket('wss://suggestions.bonjourr.lol')
 
 		socket.onmessage = function (event: MessageEvent) {
-			suggestions(JSON.parse(event.data) as Suggestions)
+			const data = JSON.parse(event.data)
+
+			if (data?.error) {
+				createSuggestionSocket()
+			} else {
+				suggestions(data as Suggestions)
+			}
 		}
 	}
 
