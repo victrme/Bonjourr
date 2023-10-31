@@ -687,7 +687,8 @@ export async function settingsInit() {
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
-		paramsImport(parse((document.getElementById('i_importtext') as HTMLInputElement).value))
+		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
+		paramsImport(parse<Partial<Sync>>(val) ?? {})
 	})
 
 	//
@@ -995,16 +996,16 @@ function settingsMgmt() {
 	}
 
 	function importAsFile(target: HTMLInputElement) {
-		function decodeExportFile(str: string) {
+		function decodeExportFile(str: string): Partial<Sync> {
 			let result = {}
 
 			try {
 				// Tries to decode base64 from previous versions
-				result = parse(atob(str))
+				result = parse<Partial<Sync>>(atob(str)) ?? {}
 			} catch {
 				try {
 					// If base64 failed, parse raw string
-					result = parse(str)
+					result = parse<Partial<Sync>>(str) ?? {}
 				} catch (error) {
 					// If all failed, return empty object
 					result = {}
@@ -1171,7 +1172,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-async function paramsImport(toImport: Sync) {
+async function paramsImport(toImport: Partial<Sync>) {
 	try {
 		let data = await storage.sync.get()
 		data = filterImports(data, toImport)

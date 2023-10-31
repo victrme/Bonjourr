@@ -3,7 +3,7 @@ import { MoveKeys, Sync, Move } from '../types/sync'
 import { gridWidget } from '../features/move'
 import merge from 'deepmerge'
 
-export default function filterImports(current: Sync, toImport: Sync) {
+export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	//
 	// <1.16.0 hide is now ids object, not number array
 	if (Array.isArray(toImport.hide)) {

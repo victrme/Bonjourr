@@ -3,6 +3,7 @@ import { Searchbar } from '../types/sync'
 import { stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
+import parse from '../utils/parse'
 import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
 
@@ -274,12 +275,12 @@ function initSuggestions() {
 		socket = new WebSocket('wss://suggestions.bonjourr.lol')
 
 		socket.onmessage = function (event: MessageEvent) {
-			const data = JSON.parse(event.data)
+			const data = parse<Suggestions | { error: string }>(event.data)
 
-			if (data?.error) {
-				createSuggestionSocket()
-			} else {
+			if (Array.isArray(data)) {
 				suggestions(data as Suggestions)
+			} else if (data?.error) {
+				createSuggestionSocket()
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-export default function parse(str: string): unknown | undefined {
+export default function parse<T>(str: string): T | undefined {
 	try {
 		return JSON.parse(str)
 	} catch (error) {
