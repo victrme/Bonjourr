@@ -1,4 +1,4 @@
-import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults } from '../utils'
+import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults, apiFetch } from '../utils'
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -203,13 +203,13 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
 	let json: UnsplashAPI[]
 
-	const resp = await fetch(`https://api.bonjourr.lol/unsplash/photos/random?collections=${collection}&count=8`)
+	const resp = await apiFetch(`/unsplash/photos/random?collections=${collection}&count=8`)
 
-	if (resp.status === 404) {
+	if (resp?.status === 404) {
 		return null
 	}
 
-	json = await resp.json()
+	json = await resp?.json()
 
 	if (json.length === 1) {
 		return null

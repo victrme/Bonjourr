@@ -47,9 +47,35 @@ export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
 	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
+const API_URLS = [
+	'https://api.bonjourr.lol',
+	'https://api.victr.me',
+	'https://api.bonjourr.worker.dev',
+	'https://api.victr.worker.dev',
+]
+
+const SUGGEST_URLS = [
+	'wss://suggestions.bonjourr.lol',
+	'wss://suggestions.victr.me',
+	'wss://suggestions.bonjourr.worker.dev',
+	'wss://suggestions.victr.worker.dev',
+]
+
 //
 // FUNCS
 //
+
+export async function apiFetch(path: string): Promise<Response | undefined> {
+	const urls = Object.values(path === 'suggestions' ? SUGGEST_URLS : API_URLS)
+
+	for (const url of urls) {
+		try {
+			return await fetch(url + path)
+		} catch (error) {
+			console.warn(error)
+		}
+	}
+}
 
 export function stringMaxSize(str: string = '', size: number) {
 	return str.length > size ? str.slice(0, size) : str

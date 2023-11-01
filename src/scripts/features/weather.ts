@@ -1,4 +1,4 @@
-import { stringMaxSize } from '../utils'
+import { stringMaxSize, apiFetch } from '../utils'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -115,6 +115,8 @@ async function updatesWeather(update: WeatherUpdate) {
 			city: update.city,
 		})
 
+		console.log(response)
+
 		if (response) {
 			weather = response
 			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
@@ -208,9 +210,9 @@ async function request(data: Weather): Promise<Weather | null> {
 	let onecall: OWMOnecall
 	const coords = await getGeolocation(data.geolocation)
 	const queries = createRequestQueries(data, coords)
-	const response = await fetch('https://api.bonjourr.lol/weather/' + queries)
+	const response = await apiFetch('/weather/' + queries)
 
-	if (response.status === 200) {
+	if (response?.status === 200) {
 		try {
 			onecall = await response.json()
 		} catch (error) {

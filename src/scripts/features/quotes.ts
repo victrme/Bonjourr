@@ -1,4 +1,5 @@
 import { canDisplayInterface, freqControl } from '..'
+import { apiFetch } from '../utils'
 import superinput from '../utils/superinput'
 import parse from '../utils/parse'
 import storage from '../storage'
@@ -32,10 +33,10 @@ async function newQuoteFromAPI(lang: string, type: string) {
 		// Fetch a random quote from the quotes API
 		const query = (type += type === 'classic' ? `/${lang}` : '')
 
-		const response = await fetch('https://api.bonjourr.lol/quotes/' + query)
-		const json = await response.json()
+		const response = await apiFetch('/quotes/' + query)
+		const json = await response?.json()
 
-		if (response.ok) {
+		if (response?.ok) {
 			return json
 		}
 	} catch (error) {
