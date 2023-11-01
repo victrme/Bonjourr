@@ -1,13 +1,13 @@
+import { LastWeather } from '../types/local'
 import { minutator } from '../utils'
-import { Weather } from '../types/sync'
 
 let sunset = 0
 let sunrise = 0
 
-export default function sunTime(weather?: Weather) {
-	if (weather && weather.lastState) {
-		sunrise = weather.lastState.sunrise
-		sunset = weather.lastState.sunset
+export default function sunTime(weather?: LastWeather) {
+	if (weather && weather) {
+		sunrise = weather.sunrise
+		sunset = weather.sunset
 	}
 
 	if (sunset === 0) {

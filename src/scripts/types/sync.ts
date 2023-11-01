@@ -37,19 +37,8 @@ export type Weather = {
 	location?: [number, number]
 	forecast: string
 	temperature: string
-	lastCall?: number
-	fcHigh?: number
-	fcLast?: number
 	moreinfo?: string
 	provider?: string
-	lastState?: {
-		temp: number
-		feels_like: number
-		sunrise: number
-		sunset: number
-		description: string
-		icon_id: number
-	}
 }
 
 export type Unsplash = {

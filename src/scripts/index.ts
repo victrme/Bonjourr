@@ -14,14 +14,14 @@ import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, localDefaults } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE } from './utils'
 import { periodOfDay, syncDefaults, stringMaxSize } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import errorMessage from './utils/errormessage'
 import sunTime from './utils/suntime'
+
 import { Local } from './types/local'
-import parse from './utils/parse'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -381,7 +381,7 @@ function onlineAndMobileHandler() {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
 			const data = await storage.sync.get()
-			const { unsplashCache } = await storage.local.get('unsplashCache')
+			const local = await storage.local.get(['unsplashCache', 'lastWeather'])
 
 			if (!data?.clock || !data?.weather) {
 				return
@@ -391,12 +391,12 @@ function onlineAndMobileHandler() {
 			const needNewImage = data.background_type === 'unsplash' && frequency
 
 			if (needNewImage && data.unsplash) {
-				unsplashBackgrounds({ unsplash: data.unsplash, cache: unsplashCache })
+				unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 			}
 
 			clock(data)
-			weather(data)
-			sunTime(data.weather)
+			weather({ sync: data, lastWeather: local.lastWeather })
+			sunTime(local.lastWeather)
 		})
 	}
 
@@ -450,8 +450,8 @@ function initTimeAndMainBlocks(time: boolean, main: boolean) {
 function startup(data: Sync, local: Local) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
-	sunTime(data.weather)
-	weather(data)
+	sunTime(local.lastWeather)
+	weather({ sync: data, lastWeather: local.lastWeather })
 	customFont({ font: data.font, fontface: local.fontface })
 	textShadow(data.textShadow)
 	favicon(data.favicon)

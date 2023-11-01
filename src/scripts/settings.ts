@@ -1087,11 +1087,10 @@ async function switchLangs(nextLang: Langs) {
 	document.documentElement.setAttribute('lang', nextLang)
 
 	const data = await storage.sync.get()
-	const local = await storage.local.get(['quotesCache', 'userQuoteSelection'])
+	const local = await storage.local.get(['quotesCache', 'userQuoteSelection', 'lastWeather'])
 
 	data.lang = nextLang
-	data.weather.lastCall = 0
-	weather(data)
+	weather({ sync: data })
 	clock(data)
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
@@ -1202,9 +1201,7 @@ export async function updateExportJSON(settingsDom: HTMLElement) {
 
 	settingsDom.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	const data = ((await storage.sync.get()) as Sync) ?? {}
-
-	if (data?.weather?.lastCall) delete data.weather.lastCall
+	const data = await storage.sync.get()
 	data.about.browser = PLATFORM
 
 	input.value = orderedStringify(data)
