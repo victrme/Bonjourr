@@ -153,6 +153,8 @@ async function updatesWeather(update: WeatherUpdate) {
 }
 
 async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
+	handleForecastDisplay(data.forecast)
+
 	if (!lastWeather) {
 		initWeather(data)
 		return
@@ -367,21 +369,14 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		icon.src = iconSrc
 	}
 
-	const handleForecast = () => {
+	const handleForecastData = () => {
 		let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
 		day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
 
-		const forecast = document.createElement('p')
-		forecast.textContent = `${tradThis('with a high of')} ${lastWeather.forecasted_high}°${day}.`
-		forecast.id = 'forecast'
+		const forecastdom = document.getElementById('forecast')
 
-		const isLateDay = date.getHours() < 12 || date.getHours() > 21
-		const isTimeForForecast = data.forecast === 'auto' ? isLateDay : data.forecast === 'always'
-
-		document.querySelector('#forecast')?.remove()
-
-		if (isTimeForForecast) {
-			document.getElementById('description')?.appendChild(forecast)
+		if (forecastdom) {
+			forecastdom.textContent = `${tradThis('with a high of')} ${lastWeather.forecasted_high}°${day}.`
 		}
 	}
 
@@ -406,10 +401,27 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		}
 	}
 
+	handleForecastDisplay(data.forecast)
 	handleWidget()
-	handleDescription()
-	handleForecast()
 	handleMoreInfo()
+	handleDescription()
+	handleForecastData()
 
 	weatherdom?.classList.remove('wait')
+}
+
+function handleForecastDisplay(forecast: string) {
+	const date = new Date()
+	const isLateDay = date.getHours() < 12 || date.getHours() > 21
+	const isTimeForForecast = forecast === 'auto' ? isLateDay : forecast === 'always'
+
+	if (isTimeForForecast && !document.getElementById('forecast')) {
+		const p = document.createElement('p')
+		p.id = 'forecast'
+		document.getElementById('description')?.appendChild(p)
+	}
+
+	if (!isTimeForForecast) {
+		document.querySelector('#forecast')?.remove()
+	}
 }
