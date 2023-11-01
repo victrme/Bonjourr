@@ -72,7 +72,7 @@ async function updatesWeather(update: WeatherUpdate) {
 
 	if (update.units !== undefined) {
 		weather.unit = update.units ? 'imperial' : 'metric'
-		lastWeather = (await request(weather)) ?? lastWeather
+		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
 	if (update.forecast) {
@@ -116,14 +116,13 @@ async function updatesWeather(update: WeatherUpdate) {
 		update.city = stringMaxSize(update.city, 64)
 		cityInput.load()
 
-		const response = await request({
-			...weather,
-			ccode: i_ccode.value,
-			city: update.city,
-		})
+		// don't mutate weather data before confirming that the city exists
+		const newWeather = await request({ ...weather, ccode: i_ccode.value, city: update.city }, lastWeather)
 
-		if (response) {
-			lastWeather = response
+		if (newWeather) {
+			lastWeather = newWeather
+			weather.ccode = lastWeather.approximation?.ccode ?? ''
+			weather.city = lastWeather.approximation?.city ?? ''
 			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
 			cityInput.toggle(false)
 		} else {
@@ -140,7 +139,7 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 
 		weather.geolocation = update.geol as Weather['geolocation']
-		lastWeather = (await request(weather)) ?? lastWeather
+		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
 	storage.sync.set({ weather })
@@ -165,7 +164,7 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	const isAnHourLater = currentTime > lastWeather?.timestamp + 3600
 
 	if (navigator.onLine && isAnHourLater) {
-		const newWeather = await request(data)
+		const newWeather = await request(data, lastWeather)
 
 		if (newWeather) {
 			lastWeather = newWeather
@@ -225,7 +224,14 @@ function handleGeolOption(data: Weather) {
 	sett_city.classList.toggle('shown', data.geolocation === 'off')
 }
 
-function createRequestQueries(data: Weather, coords?: Coords) {
+async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
+	if (!navigator.onLine) return
+
+	//
+	// Create queries
+
+	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
+	let coords = await getGeolocation(data.geolocation)
 	let lang = document.documentElement.getAttribute('lang')
 	let queries = ''
 
@@ -236,28 +242,25 @@ function createRequestQueries(data: Weather, coords?: Coords) {
 	queries += '?units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
 
+	if (data.geolocation === 'off' && isKeepingCity && lastWeather?.approximation) {
+		coords = { lat: lastWeather.approximation.lat, lon: lastWeather.approximation.lon }
+	}
+
 	if (coords) {
 		queries += '&lat=' + coords.lat
 		queries += '&lon=' + coords.lon
 	}
 
-	if (!coords && data.geolocation === 'off') {
+	if (data.geolocation === 'off' && !coords) {
 		queries += '&q=' + encodeURI(data.city ?? 'Paris')
-		queries += ',' + data.ccode ?? 'fr'
+		queries += ',' + data.ccode ?? 'FR'
 	}
 
-	return queries
-}
+	//
+	// Fetch data
 
-async function request(data: Weather): Promise<LastWeather | undefined> {
-	if (!navigator.onLine) {
-		return
-	}
-
-	let onecall: OWMOnecall
-	const coords = await getGeolocation(data.geolocation)
-	const queries = createRequestQueries(data, coords)
 	const response = await apiFetch('/weather/' + queries)
+	let onecall: OWMOnecall
 
 	if (response?.status === 200) {
 		try {
@@ -269,6 +272,9 @@ async function request(data: Weather): Promise<LastWeather | undefined> {
 	} else {
 		return
 	}
+
+	//
+	// Parse result
 
 	const { temp, feels_like, sunrise, sunset } = onecall.current
 	const { description, id } = onecall.current.weather[0]
@@ -297,8 +303,8 @@ async function request(data: Weather): Promise<LastWeather | undefined> {
 		sunset,
 		temp,
 		approximation: {
-			ccode: onecall?.ccode,
-			city: onecall?.city,
+			ccode: isKeepingCity ? lastWeather?.approximation?.ccode : onecall?.ccode,
+			city: isKeepingCity ? lastWeather?.approximation?.city : onecall?.city,
 			lat: onecall.lat,
 			lon: onecall.lon,
 		},
