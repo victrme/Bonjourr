@@ -152,6 +152,43 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 }
 
+async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
+	if (!lastWeather) {
+		initWeather(data)
+		return
+	}
+
+	const now = new Date()
+	const currentTime = Math.floor(now.getTime() / 1000)
+	const isAnHourLater = currentTime > lastWeather?.timestamp + 3600
+
+	if (navigator.onLine && isAnHourLater) {
+		const newWeather = await request(data)
+
+		if (newWeather) {
+			lastWeather = newWeather
+			storage.local.set({ lastWeather })
+		}
+	}
+
+	displayWeather(data, lastWeather)
+}
+
+async function initWeather(data: Weather) {
+	const currentWeather = await request(data)
+
+	if (currentWeather) {
+		data.ccode = currentWeather.approximation?.ccode ?? 'FR'
+		data.city = currentWeather.approximation?.city ?? tradThis('City')
+
+		storage.sync.set({ weather: data })
+		storage.local.set({ lastWeather: currentWeather })
+
+		displayWeather(data, currentWeather)
+		setTimeout(() => handleGeolOption(data), 400)
+	}
+}
+
 async function getGeolocation(type: Weather['geolocation']): Promise<Coords | undefined> {
 	//
 	const location = { lat: 0, lon: 0 }
@@ -266,21 +303,6 @@ async function request(data: Weather): Promise<LastWeather | undefined> {
 	}
 }
 
-async function initWeather(data: Weather) {
-	const currentWeather = await request(data)
-
-	if (currentWeather) {
-		data.ccode = currentWeather.approximation?.ccode ?? 'FR'
-		data.city = currentWeather.approximation?.city ?? tradThis('City')
-
-		storage.sync.set({ weather: data })
-		storage.local.set({ lastWeather: currentWeather })
-
-		displayWeather(data, currentWeather)
-		setTimeout(() => handleGeolOption(data), 400)
-	}
-}
-
 function displayWeather(data: Weather, lastWeather: LastWeather) {
 	const current = document.getElementById('current')
 	const tempContainer = document.getElementById('tempContainer')
@@ -390,26 +412,4 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	handleMoreInfo()
 
 	weatherdom?.classList.remove('wait')
-}
-
-async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
-	if (!lastWeather) {
-		initWeather(data)
-		return
-	}
-
-	const now = new Date()
-	const currentTime = Math.floor(now.getTime() / 1000)
-	const isAnHourLater = currentTime > lastWeather?.timestamp + 3600
-
-	if (navigator.onLine && isAnHourLater) {
-		const newWeather = await request(data)
-
-		if (newWeather) {
-			lastWeather = newWeather
-			storage.local.set({ lastWeather })
-		}
-	}
-
-	displayWeather(data, lastWeather)
 }
