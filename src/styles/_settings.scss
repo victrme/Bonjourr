@@ -53,36 +53,33 @@
 		display: none;
 		width: 80%;
 		margin: auto;
-		padding: 1em;
-		padding-top: 2em;
-		border-radius: 1em;
+		padding: 2em 1em;
 		z-index: 4;
 		cursor: grab;
 
+		& ~ h2:first-of-type {
+			margin-top: 0;
+		}
+
 		hr {
-			width: 60px;
-			height: 3px;
+			width: 80px;
+			height: 0px;
 			margin: auto;
-			border-top: 4px dotted #999;
-			border-bottom: 4px dotted #999;
+			border-radius: 4px;
+			border-top: 2.5px solid var(--color-border);
+			border-bottom: 2.5px solid var(--color-border);
 			transition: all 0.15s $easeOutThree;
 		}
 
 		@media (hover: hover) {
-			&:hover {
-				hr {
-					width: 90px;
-					border-color: #666;
-				}
+			&:hover hr {
+				width: 100px;
 			}
 		}
 
 		@media (hover: none) {
-			&:active {
-				hr {
-					width: 90px;
-					border-color: #666;
-				}
+			&:active hr {
+				width: 100px;
 			}
 		}
 	}
