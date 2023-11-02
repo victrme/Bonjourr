@@ -49,12 +49,8 @@ export const IS_MOBILE = navigator.userAgentData
 
 const MAIN_API = 'https://api.bonjourr.lol'
 const MAIN_SUGGEST = 'wss://suggestions.bonjourr.lol'
-const FALLBACK_API = ['https://api.victr.me', 'https://api.bonjourr.worker.dev', 'https://api.victr.worker.dev']
-const FALLBACK_SUGGEST = [
-	'wss://suggestions.victr.me',
-	'wss://suggestions.bonjourr.worker.dev',
-	'wss://suggestions.victr.worker.dev',
-]
+const FALLBACK_API = ['https://api.victr.me', 'https://api.bonjourr.worker.dev']
+const FALLBACK_SUGGEST = ['wss://suggestions.victr.me', 'wss://suggestions.bonjourr.worker.dev']
 
 //
 // FUNCS
