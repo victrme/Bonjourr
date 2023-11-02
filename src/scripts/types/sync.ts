@@ -33,7 +33,7 @@ export type Weather = {
 	geolocation: 'precise' | 'approximate' | 'off'
 	ccode?: string
 	city?: string
-	unit: string
+	unit: 'metric' | 'imperial'
 	location?: [number, number]
 	forecast: string
 	temperature: string
