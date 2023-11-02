@@ -84,10 +84,13 @@ function online(): Storage {
 			return localStorage.setItem(key, JSON.stringify(val))
 		},
 
-		get: async (keys: string | string[]) => {
+		get: async (keys?: string | string[]) => {
 			const res: Keyval = {}
 
-			if (typeof keys === 'string') {
+			if (keys === undefined) {
+				keys = [...Object.keys(localStorage).filter((k) => k !== 'bonjourr')]
+			} //
+			else if (typeof keys === 'string') {
 				keys = [keys]
 			}
 
@@ -115,7 +118,7 @@ function online(): Storage {
 	const init = async () => {
 		return {
 			sync: await sync.get(),
-			local: await local.get(['quotesCache', 'unsplashCache', 'translations', 'fontface', 'userQuoteSelection']),
+			local: await local.get(),
 		}
 	}
 
