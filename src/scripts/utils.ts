@@ -47,15 +47,10 @@ export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
 	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
-const API_URLS = [
-	'https://api.bonjourr.lol',
-	'https://api.victr.me',
-	'https://api.bonjourr.worker.dev',
-	'https://api.victr.worker.dev',
-]
-
-const SUGGEST_URLS = [
-	'wss://suggestions.bonjourr.lol',
+const MAIN_API = 'https://api.bonjourr.lol'
+const MAIN_SUGGEST = 'wss://suggestions.bonjourr.lol'
+const FALLBACK_API = ['https://api.victr.me', 'https://api.bonjourr.worker.dev', 'https://api.victr.worker.dev']
+const FALLBACK_SUGGEST = [
 	'wss://suggestions.victr.me',
 	'wss://suggestions.bonjourr.worker.dev',
 	'wss://suggestions.victr.worker.dev',
@@ -66,7 +61,16 @@ const SUGGEST_URLS = [
 //
 
 export async function apiFetch(path: string): Promise<Response | undefined> {
-	const urls = Object.values(path === 'suggestions' ? SUGGEST_URLS : API_URLS)
+	function shuffleArray(arr: string[]): string[] {
+		return arr
+			.map((value) => ({ value, sort: Math.random() }))
+			.sort((a, b) => a.sort - b.sort)
+			.map(({ value }) => value) // https://stackoverflow.com/a/46545530
+	}
+
+	const main = path === 'suggestions' ? MAIN_SUGGEST : MAIN_API
+	const fallbacks = path === 'suggestions' ? FALLBACK_SUGGEST : FALLBACK_API
+	const urls = [main, ...shuffleArray(fallbacks)]
 
 	for (const url of urls) {
 		try {
