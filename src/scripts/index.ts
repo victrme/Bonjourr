@@ -22,6 +22,7 @@ import errorMessage from './utils/errormessage'
 import sunTime from './utils/suntime'
 
 import { Local } from './types/local'
+import onSettingsLoad from './utils/onsettingsload'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -438,6 +439,28 @@ function onlineAndMobileHandler() {
 				window.requestAnimationFrame(triggerAnimationFrame)
 				setTimeout(() => cancelAnimationFrame(globalID), 500)
 			}
+		}
+
+		if (BROWSER === 'safari' && SYSTEM_OS === 'ios') {
+			onSettingsLoad(() => {
+				const settingsDom = document.getElementById('settings') as HTMLElement
+
+				document.querySelectorAll('input[type="text"], input[type="url"], textarea')?.forEach((input) => {
+					input.addEventListener('focus', () => {
+						if (dominterface && settingsDom) {
+							dominterface.style.touchAction = 'none'
+							settingsDom.style.touchAction = 'none'
+						}
+					})
+
+					input.addEventListener('blur', () => {
+						if (dominterface && settingsDom) {
+							dominterface.style.removeProperty('touch-action')
+							settingsDom.style.removeProperty('touch-action')
+						}
+					})
+				})
+			})
 		}
 	}
 }

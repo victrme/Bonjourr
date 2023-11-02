@@ -347,39 +347,32 @@ export async function settingsInit() {
 
 	const submitLinkFunc = throttle(() => quickLinks(null, { add: true }), 1200)
 
-	paramId('i_title').onkeyup = (e: KeyboardEvent) => {
-		if (e.code === 'Enter') {
-			submitLinkFunc()
-		}
-	}
+	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
+		if (this.code === 'Enter') paramId('i_url')?.focus()
+	})
 
-	paramId('i_url').onkeyup = (e: KeyboardEvent) => {
-		if (e.code === 'Enter') {
-			submitLinkFunc()
-		}
-	}
+	paramId('i_url').addEventListener('change', function (this: KeyboardEvent) {
+		submitLinkFunc()
+	})
 
 	paramId('submitlink').addEventListener('click', (e) => {
 		submitLinkFunc()
 		inputThrottle(e.target as HTMLInputElement, 1200)
 	})
 
-	paramId('i_linknewtab').onchange = (e) => {
-		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { newtab: input.checked })
-	}
+	paramId('i_linknewtab').addEventListener('change', function (this: KeyboardEvent) {
+		quickLinks(null, { newtab: (this.currentTarget as HTMLInputElement).checked })
+	})
 
-	paramId('i_linkstyle').onchange = (e) => {
-		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { style: input.value })
-	}
+	paramId('i_linkstyle').addEventListener('change', function (this: KeyboardEvent) {
+		quickLinks(null, { style: (this.currentTarget as HTMLInputElement).value })
+	})
 
-	paramId('i_row').oninput = function (e: Event) {
-		const input = e.currentTarget as HTMLInputElement
-		quickLinks(null, { row: input.value })
-	}
+	paramId('i_row').addEventListener('change', function (this: KeyboardEvent) {
+		quickLinks(null, { row: (this.currentTarget as HTMLInputElement).value })
+	})
 
-	paramId('b_importbookmarks').onclick = linksImport
+	paramId('b_importbookmarks').addEventListener('click', linksImport)
 
 	//
 	// Backgrounds
@@ -821,7 +814,7 @@ export async function settingsInit() {
 		}
 	})
 
-	window.addEventListener('click', function (e) {
+	document.body.addEventListener('click', function (e) {
 		const path = e.composedPath() ?? [document.body]
 		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
 
