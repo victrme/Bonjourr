@@ -1,3 +1,5 @@
+import { OWMOnecall } from './openweathermap'
+
 export type Quote = {
 	author: string
 	content: string
@@ -29,6 +31,18 @@ export type UnsplashImage = {
 	}
 }
 
+export type LastWeather = {
+	temp: number
+	forecasted_high: number
+	feels_like: number
+	sunrise: number
+	sunset: number
+	icon_id: number
+	description: string
+	timestamp: number
+	approximation?: Pick<OWMOnecall, 'ccode' | 'city' | 'lat' | 'lon'>
+}
+
 export type Local = {
 	fonts?: { family: string; weights: string[]; variable: boolean }[]
 	fontface?: string
@@ -38,4 +52,5 @@ export type Local = {
 	quotesCache: Quote[]
 	unsplashCache: UnsplashCache
 	translations: { [key: string]: string }
+	lastWeather?: LastWeather
 }

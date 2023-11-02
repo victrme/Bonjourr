@@ -30,26 +30,15 @@ export type Quotes = {
 }
 
 export type Weather = {
-	ccode: string
-	city: string
+	geolocation: 'precise' | 'approximate' | 'off'
+	ccode?: string
+	city?: string
 	unit: 'metric' | 'imperial'
-	location: number[]
+	location?: [number, number]
 	forecast: string
 	temperature: string
-	lastCall?: number
-	fcHigh?: number
-	fcLast?: number
 	moreinfo?: string
 	provider?: string
-	lastState?: {
-		temp: number
-		feels_like: number
-		temp_max: number
-		sunrise: number
-		sunset: number
-		description: string
-		icon_id: number
-	}
 }
 
 export type Unsplash = {

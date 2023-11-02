@@ -112,6 +112,7 @@ export async function settingsInit() {
 	initInput('i_clocksize', data.clock?.size ?? 5)
 	initInput('i_timezone', data.clock?.timezone || 'auto')
 	initInput('i_collection', data.unsplash?.collection ?? '')
+	initInput('i_geol', data.weather?.geolocation || 'approximate')
 	initInput('i_ccode', data.weather?.ccode || 'US')
 	initInput('i_units', data.weather?.unit ?? 'metric')
 	initInput('i_forecast', data.weather?.forecast || 'auto')
@@ -128,7 +129,6 @@ export async function settingsInit() {
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_main', data.main)
-	initCheckbox('i_geol', typeof data.weather?.location !== 'boolean')
 	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
 	initCheckbox('i_notes', data.notes?.on ?? false)
 	initCheckbox('i_sb', data.searchbar?.on ?? false)
@@ -491,7 +491,7 @@ export async function settingsInit() {
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { geol: this.checked })
+		weather(null, { geol: this.value })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
@@ -687,7 +687,8 @@ export async function settingsInit() {
 	paramId('b_resetyes').addEventListener('click', () => paramsReset('yes'))
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
-		paramsImport(parse((document.getElementById('i_importtext') as HTMLInputElement).value))
+		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
+		paramsImport(parse<Partial<Sync>>(val) ?? {})
 	})
 
 	//
@@ -995,16 +996,16 @@ function settingsMgmt() {
 	}
 
 	function importAsFile(target: HTMLInputElement) {
-		function decodeExportFile(str: string) {
+		function decodeExportFile(str: string): Partial<Sync> {
 			let result = {}
 
 			try {
 				// Tries to decode base64 from previous versions
-				result = parse(atob(str))
+				result = parse<Partial<Sync>>(atob(str)) ?? {}
 			} catch {
 				try {
 					// If base64 failed, parse raw string
-					result = parse(str)
+					result = parse<Partial<Sync>>(str) ?? {}
 				} catch (error) {
 					// If all failed, return empty object
 					result = {}
@@ -1086,11 +1087,10 @@ async function switchLangs(nextLang: Langs) {
 	document.documentElement.setAttribute('lang', nextLang)
 
 	const data = await storage.sync.get()
-	const local = await storage.local.get(['quotesCache', 'userQuoteSelection'])
+	const local = await storage.local.get(['quotesCache', 'userQuoteSelection', 'lastWeather'])
 
 	data.lang = nextLang
-	data.weather.lastCall = 0
-	weather(data)
+	weather({ sync: data })
 	clock(data)
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
@@ -1171,7 +1171,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-async function paramsImport(toImport: Sync) {
+async function paramsImport(toImport: Partial<Sync>) {
 	try {
 		let data = await storage.sync.get()
 		data = filterImports(data, toImport)
@@ -1201,9 +1201,7 @@ export async function updateExportJSON(settingsDom: HTMLElement) {
 
 	settingsDom.querySelector('#importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	const data = ((await storage.sync.get()) as Sync) ?? {}
-
-	if (data?.weather?.lastCall) delete data.weather.lastCall
+	const data = await storage.sync.get()
 	data.about.browser = PLATFORM
 
 	input.value = orderedStringify(data)

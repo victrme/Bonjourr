@@ -1,10 +1,13 @@
 import { canDisplayInterface, freqControl } from '..'
+import { apiFetch } from '../utils'
 import superinput from '../utils/superinput'
 import parse from '../utils/parse'
 import storage from '../storage'
 
 import { Local, Quote } from '../types/local'
 import { Sync } from '../types/sync'
+
+type UserQuotesList = [string, string][]
 
 type QuotesUpdate = {
 	toggle?: boolean
@@ -30,10 +33,10 @@ async function newQuoteFromAPI(lang: string, type: string) {
 		// Fetch a random quote from the quotes API
 		const query = (type += type === 'classic' ? `/${lang}` : '')
 
-		const response = await fetch('@@QUOTES' + query)
-		const json = await response.json()
+		const response = await apiFetch('/quotes/' + query)
+		const json = await response?.json()
 
-		if (response.ok) {
+		if (response?.ok) {
 			return json
 		}
 	} catch (error) {
@@ -105,7 +108,7 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 	}
 
 	function handleUserListChange(userlist: string) {
-		function validateUserQuotes(json: JSON) {
+		function validateUserQuotes(json: unknown) {
 			return (
 				Array.isArray(json) &&
 				json.length > 0 &&
@@ -114,11 +117,11 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 			)
 		}
 
-		let array: [string, string][] = []
+		let array: UserQuotesList = []
 		let quote: Quote = { author: '', content: '' }
 
 		if (userlist !== '') {
-			let userJSON = parse(userlist)
+			let userJSON = parse<UserQuotesList>(userlist)
 
 			if (!userJSON) {
 				userQuotesInput.warn('User quotes list is not valid JSON')

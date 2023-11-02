@@ -49,7 +49,7 @@ function verifyDataAsSync(data: Keyval) {
 function online(): Storage {
 	const sync = {
 		set: function (value: Keyval) {
-			const data = verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 
 			if (typeof value !== 'object') {
 				return console.warn('Value is not an object: ', value)
@@ -64,11 +64,11 @@ function online(): Storage {
 		},
 
 		get: async (_?: string | string[]) => {
-			return verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+			return verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 		},
 
 		remove: (key: string) => {
-			const data = verifyDataAsSync(parse(localStorage.bonjourr) ?? {})
+			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 			delete data[key]
 			localStorage.bonjourr = JSON.stringify(data ?? {})
 		},
@@ -92,7 +92,7 @@ function online(): Storage {
 			}
 
 			for (const key of keys) {
-				const val = parse(localStorage.getItem(key) ?? '')
+				const val = parse<Partial<Local>>(localStorage.getItem(key) ?? '')
 				if (val) {
 					res[key] = val
 				}

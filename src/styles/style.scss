@@ -285,7 +285,11 @@
 			text-decoration: none;
 			color: inherit;
 			width: 100%;
-			transition: opacity 0.15s;
+			transition: opacity 0.8s;
+
+			&.wait {
+				opacity: 0;
+			}
 
 			&[href]:hover {
 				opacity: 0.7;
@@ -294,14 +298,6 @@
 			#description {
 				font-size: 1.5em;
 				min-height: 1.5em;
-
-				#forecast {
-					display: none;
-
-					&.shown {
-						display: block;
-					}
-				}
 
 				#current,
 				#forecast {
@@ -325,16 +321,6 @@
 
 				p {
 					font-size: 2.2em;
-				}
-			}
-
-			#tempContainer,
-			#forecast,
-			#current {
-				transition: opacity 0.8s;
-
-				&.wait {
-					opacity: 0;
 				}
 			}
 		}

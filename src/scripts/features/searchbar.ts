@@ -3,6 +3,7 @@ import { Searchbar } from '../types/sync'
 import { stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
+import parse from '../utils/parse'
 import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
 
@@ -166,6 +167,10 @@ function submitSearch(e: Event) {
 		url = createSearchURL(val)
 	}
 
+	if (socket) {
+		socket.close()
+	}
+
 	window.open(url, target)
 	e.preventDefault()
 }
@@ -267,14 +272,16 @@ function initSuggestions() {
 	}
 
 	function createSuggestionSocket() {
-		socket = new WebSocket('@@SUGGESTIONS')
-
-		socket.onclose = function () {
-			createSuggestionSocket()
-		}
+		socket = new WebSocket('wss://suggestions.bonjourr.lol')
 
 		socket.onmessage = function (event: MessageEvent) {
-			suggestions(JSON.parse(event.data) as Suggestions)
+			const data = parse<Suggestions | { error: string }>(event.data)
+
+			if (Array.isArray(data)) {
+				suggestions(data as Suggestions)
+			} else if (data?.error) {
+				createSuggestionSocket()
+			}
 		}
 	}
 

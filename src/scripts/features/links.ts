@@ -1,4 +1,4 @@
-import { bundleLinks, randomString, stringMaxSize, closeEditLink } from '../utils'
+import { bundleLinks, randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
 import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../utils'
 import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
@@ -72,8 +72,8 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		} catch (_) {}
 
 		let result = `https://icons.duckduckgo.com/ip3/${hostname}.ico`
-		const response = await fetch('@@FAVICON' + url)
-		const apiText = await response.text()
+		const response = await apiFetch('/favicon/' + url)
+		const apiText = (await response?.text()) ?? ''
 
 		if (apiText.length > 0) {
 			result = apiText

@@ -1,4 +1,5 @@
-import { stringMaxSize, BROWSER } from '../utils'
+import { stringMaxSize, apiFetch } from '../utils'
+import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
@@ -6,22 +7,25 @@ import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
-import { OWMCurrent, OWMForecast } from '../types/openweathermap'
-import onSettingsLoad from '../utils/onsettingsload'
+import { LastWeather } from '../types/local'
+import { OWMOnecall } from '../types/openweathermap'
 
-type GeolAPI = {
-	city: string
-	latitude: string
-	longitude: string
-	country: { code: string }
+type Coords = {
+	lat: number
+	lon: number
 }
+
+type WeatherInit = {
+	sync: Sync
+	lastWeather?: LastWeather
+} | null
 
 type WeatherUpdate = {
 	forecast?: string
 	moreinfo?: string
 	provider?: string
 	units?: 'metric' | 'imperial'
-	geol?: boolean
+	geol?: string
 	city?: string
 	temp?: string
 	unhide?: true
@@ -29,18 +33,15 @@ type WeatherUpdate = {
 
 const cityInput = superinput('i_city')
 
-// Checks every 5 minutes if weather needs update
-
-export default function weather(init: Sync | null, update?: WeatherUpdate) {
+export default function weather(init: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
 		updatesWeather(update)
 		return
 	}
 
-	if (init && (!init.hide?.weatherdesc || !init.hide?.weathericon)) {
+	if (init && (!init.sync?.weatherdesc || !init.sync?.weathericon)) {
 		try {
-			forecastVisibilityControl(init.weather.forecast)
-			weatherCacheControl(init.weather)
+			weatherCacheControl(init.sync.weather, init.lastWeather)
 		} catch (e) {
 			errorMessage(e)
 		}
@@ -48,10 +49,13 @@ export default function weather(init: Sync | null, update?: WeatherUpdate) {
 
 	if (init) {
 		onSettingsLoad(() => {
-			handleGeolOption(init.weather)
+			handleGeolOption(init.sync.weather)
 			setInterval(async () => {
 				if (!navigator.onLine) {
-					weather(await storage.sync.get(['weather', 'hide']))
+					weather({
+						sync: await storage.sync.get(['weather', 'hide']),
+						lastWeather: (await storage.local.get('lastWeather')).lastWeather,
+					})
 				}
 			}, 300000)
 		})
@@ -60,6 +64,7 @@ export default function weather(init: Sync | null, update?: WeatherUpdate) {
 
 async function updatesWeather(update: WeatherUpdate) {
 	let { weather, hide } = (await storage.sync.get(['weather', 'hide'])) as Sync
+	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
 	if (!weather || !hide) {
 		return
@@ -67,16 +72,15 @@ async function updatesWeather(update: WeatherUpdate) {
 
 	if (update.units) {
 		weather.unit = update.units
-		weather = (await request(weather)) ?? weather
+		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
 	if (update.forecast) {
 		weather.forecast = update.forecast
-		forecastVisibilityControl(update.forecast)
 	}
 
 	if (update.temp) {
-		weather.temperature = update.temp ?? 'actual'
+		weather.temperature = update.temp
 	}
 
 	if (update.provider) {
@@ -92,7 +96,6 @@ async function updatesWeather(update: WeatherUpdate) {
 	if (update.unhide) {
 		const { weatherdesc, weathericon } = hide || {}
 		if (weatherdesc && weathericon) {
-			forecastVisibilityControl(weather.forecast)
 			weatherCacheControl(weather)
 		}
 	}
@@ -113,55 +116,100 @@ async function updatesWeather(update: WeatherUpdate) {
 		update.city = stringMaxSize(update.city, 64)
 		cityInput.load()
 
-		const response = await request({
-			...weather,
-			ccode: i_ccode.value,
-			city: update.city,
-		})
+		// don't mutate weather data before confirming that the city exists
+		const newWeather = await request({ ...weather, ccode: i_ccode.value, city: update.city }, lastWeather)
 
-		if (response) {
-			weather = response
-			i_city.setAttribute('placeholder', weather.city)
+		if (newWeather) {
+			lastWeather = newWeather
+			weather.ccode = lastWeather.approximation?.ccode ?? ''
+			weather.city = lastWeather.approximation?.city ?? ''
+			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
 			cityInput.toggle(false)
 		} else {
 			cityInput.warn('Cannot find city')
 		}
 	}
 
-	if (update.geol !== undefined) {
-		const i_geol = document.getElementById('i_geol') as HTMLInputElement
-
-		if (!update.geol || !i_geol) {
-			weather.location = []
-			weather = (await request(weather)) ?? weather
-			handleGeolOption(weather)
-		} else {
-			const location = await getGeolocation()
-
-			if (location) {
-				weather.location = location
-				weather = (await request(weather)) ?? weather
-				handleGeolOption(weather)
-			} else {
-				i_geol.checked = true
-				setTimeout(() => handleGeolOption(weather), 300)
+	if (update.geol) {
+		// Don't update if precise geolocation fails
+		if (update.geol === 'precise') {
+			if (!(await getGeolocation('precise'))) {
+				return handleGeolOption(weather)
 			}
 		}
+
+		weather.geolocation = update.geol as Weather['geolocation']
+		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
 	storage.sync.set({ weather })
-	displayWeather(weather)
+	handleGeolOption(weather)
+
+	if (lastWeather) {
+		storage.local.set({ lastWeather })
+		displayWeather(weather, lastWeather)
+	}
 }
 
-async function getGeolocation(): Promise<[number, number] | undefined> {
-	const location: [number, number] | undefined = await new Promise((resolve) =>
-		navigator.geolocation.getCurrentPosition(
-			(geo) => resolve([geo.coords.latitude, geo.coords.longitude]),
-			() => resolve(undefined)
-		)
-	)
+async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
+	handleForecastDisplay(data.forecast)
 
-	return location
+	if (!lastWeather) {
+		initWeather(data)
+		return
+	}
+
+	const now = new Date()
+	const currentTime = Math.floor(now.getTime() / 1000)
+	const isAnHourLater = currentTime > lastWeather?.timestamp + 3600
+
+	if (navigator.onLine && isAnHourLater) {
+		const newWeather = await request(data, lastWeather)
+
+		if (newWeather) {
+			lastWeather = newWeather
+			storage.local.set({ lastWeather })
+		}
+	}
+
+	displayWeather(data, lastWeather)
+}
+
+async function initWeather(data: Weather) {
+	const currentWeather = await request(data)
+
+	if (currentWeather) {
+		data.ccode = currentWeather.approximation?.ccode ?? 'FR'
+		data.city = currentWeather.approximation?.city ?? tradThis('City')
+
+		storage.sync.set({ weather: data })
+		storage.local.set({ lastWeather: currentWeather })
+
+		displayWeather(data, currentWeather)
+		setTimeout(() => handleGeolOption(data), 400)
+	}
+}
+
+async function getGeolocation(type: Weather['geolocation']): Promise<Coords | undefined> {
+	//
+	const location = { lat: 0, lon: 0 }
+
+	if (type === 'precise') {
+		await new Promise((resolve) =>
+			navigator.geolocation.getCurrentPosition(
+				(geo) => {
+					location.lat = geo.coords.latitude
+					location.lon = geo.coords.longitude
+					resolve(true)
+				},
+				() => {
+					resolve(false)
+				}
+			)
+		)
+	}
+
+	return location.lat !== 0 && location.lon !== 0 ? location : undefined
 }
 
 function handleGeolOption(data: Weather) {
@@ -169,18 +217,21 @@ function handleGeolOption(data: Weather) {
 	const i_geol = document.getElementById('i_geol') as HTMLInputElement
 	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
 	const sett_city = document.getElementById('sett_city') as HTMLDivElement
-	const isGeol = data.location.length > 0
 
-	i_geol.checked = isGeol
-	i_ccode.value = data.ccode
-	i_city.setAttribute('placeholder', data.city)
-	sett_city.classList.toggle('shown', isGeol === false)
+	i_geol.value = data.geolocation
+	i_ccode.value = data.ccode ?? 'FR'
+	i_city.setAttribute('placeholder', data.city ?? tradThis('City'))
+	sett_city.classList.toggle('shown', data.geolocation === 'off')
 }
 
-function createRequestQueries(data: Weather) {
-	const apis = '@@WEATHER'.split(',')
-	const key = apis[Math.ceil(Math.random() * apis.length) - 1]
-	const isGeolocated = data.location?.length === 2
+async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
+	if (!navigator.onLine) return
+
+	//
+	// Create queries
+
+	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
+	let coords = await getGeolocation(data.geolocation)
 	let lang = document.documentElement.getAttribute('lang')
 	let queries = ''
 
@@ -191,131 +242,85 @@ function createRequestQueries(data: Weather) {
 	queries += '?units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
 
-	if (isGeolocated) {
-		queries += '&lat=' + data.location[0]
-		queries += '&lon=' + data.location[1]
-	} else {
+	if (data.geolocation === 'off' && isKeepingCity && lastWeather?.approximation) {
+		coords = { lat: lastWeather.approximation.lat, lon: lastWeather.approximation.lon }
+	}
+
+	if (coords) {
+		queries += '&lat=' + coords.lat
+		queries += '&lon=' + coords.lon
+	}
+
+	if (data.geolocation === 'off' && !coords) {
 		queries += '&q=' + encodeURI(data.city ?? 'Paris')
-		queries += ',' + data.ccode ?? 'fr'
-	}
-
-	if (key !== apis[0]) {
-		queries += '&appid=' + key
-	}
-
-	return queries
-}
-
-async function request(data: Weather, currentOnly?: boolean): Promise<Weather | null> {
-	if (!navigator.onLine) {
-		return data
-	}
-
-	let current: OWMCurrent
-	let forecast: OWMForecast
-	const queries = createRequestQueries(data)
-
-	//
-	// Current API call
-	//
-
-	const base = queries.indexOf('appid') === -1 ? 'owm-proxy.netlify.app' : 'api.openweathermap.org/data/2.5'
-
-	current = await (await fetch(`https://${base}/weather/${queries}`)).json()
-	if (current?.cod !== 200) return null
-
-	const { temp, feels_like, temp_max } = current.main
-	const { sunrise, sunset } = current.sys
-	const { description, id } = current.weather[0]
-	const lastCall = Math.floor(new Date().getTime() / 1000)
-
-	data = {
-		...data,
-		lastCall,
-		lastState: {
-			temp,
-			feels_like,
-			temp_max,
-			sunrise,
-			sunset,
-			description,
-			icon_id: id,
-		},
-	}
-
-	if (currentOnly) {
-		return data
+		queries += ',' + data.ccode ?? 'FR'
 	}
 
 	//
-	// Forecast API call
+	// Fetch data
+
+	const response = await apiFetch('/weather/' + queries)
+	let onecall: OWMOnecall
+
+	if (response?.status === 200) {
+		try {
+			onecall = await response.json()
+		} catch (error) {
+			console.log(error)
+			return
+		}
+	} else {
+		return
+	}
+
 	//
+	// Parse result
 
-	forecast = await (await fetch(`https://${base}/forecast/${queries}`)).json()
-	if (forecast?.cod !== '200') return null
-
-	let date = new Date()
+	const { temp, feels_like, sunrise, sunset } = onecall.current
+	const { description, id } = onecall.current.weather[0]
 
 	// Late evening forecast for tomorrow
+	let date = new Date()
 	if (date.getHours() > 21) {
 		date.setDate(date.getDate() + 1)
 	}
 
 	// Get the highest temp for the specified day
 	let maxTempFromList = -273.15
-	for (const elem of forecast.list) {
-		if (new Date(elem.dt * 1000).getDate() === date.getDate() && maxTempFromList < elem.main.temp_max) {
-			maxTempFromList = elem.main.temp_max
+	for (const elem of onecall.hourly) {
+		if (new Date(elem.dt * 1000).getDate() === date.getDate() && maxTempFromList < elem.temp) {
+			maxTempFromList = elem.temp
 		}
 	}
 
-	date.setHours(21)
-	date.setMinutes(0)
-	date.setSeconds(0)
-
-	data.fcLast = Math.floor(date.getTime() / 1000)
-	data.fcHigh = Math.round(maxTempFromList)
-
-	return data
-}
-
-async function initWeather(data: Weather) {
-	try {
-		const resp = await fetch('https://geol.bonjourr.fr/')
-		const geol = (await resp.json()) as GeolAPI
-		data.city = geol.city
-		data.ccode = geol.country.code
-		data.location = [parseFloat(geol.latitude), parseFloat(geol.longitude)]
-	} catch (_) {
-		console.warn('Cannot get geol')
-		data.city = 'Paris'
-		data.ccode = 'FR'
+	return {
+		timestamp: Math.floor(new Date().getTime() / 1000),
+		forecasted_high: Math.round(maxTempFromList),
+		description,
+		feels_like,
+		icon_id: id,
+		sunrise,
+		sunset,
+		temp,
+		approximation: {
+			ccode: isKeepingCity ? lastWeather?.approximation?.ccode : onecall?.ccode,
+			city: isKeepingCity ? lastWeather?.approximation?.city : onecall?.city,
+			lat: onecall.lat,
+			lon: onecall.lon,
+		},
 	}
-
-	data.location = (await getGeolocation()) ?? []
-	data = (await request(data)) ?? data
-
-	displayWeather(data)
-	storage.sync.set({ weather: data })
-	setTimeout(() => handleGeolOption(data), 400)
 }
 
-function displayWeather(data: Weather) {
-	const currentState = data.lastState
+function displayWeather(data: Weather, lastWeather: LastWeather) {
 	const current = document.getElementById('current')
-	const forecast = document.getElementById('forecast')
 	const tempContainer = document.getElementById('tempContainer')
 	const weatherdom = document.getElementById('weather')
 	const date = new Date()
 
-	if (!currentState) {
-		return
-	}
-
 	const handleDescription = () => {
-		const desc = currentState.description
-		const feels = Math.floor(currentState.feels_like)
-		const actual = Math.floor(currentState.temp)
+		const desc = lastWeather.description
+		const feels = Math.floor(lastWeather.feels_like)
+		const actual = Math.floor(lastWeather.temp)
 
 		let tempText = `${tradThis('It is currently')} ${actual}°`
 
@@ -323,6 +328,7 @@ function displayWeather(data: Weather) {
 			tempText = `${tradThis('It currently feels like')} ${feels}°`
 		}
 
+		// Todo: wtf ?
 		if (data.temperature === 'both') {
 			tempText = `${tradThis('It currently feels like')} ${feels}°`
 		}
@@ -352,7 +358,9 @@ function displayWeather(data: Weather) {
 		]
 
 		categorieIds.forEach((category) => {
-			if (category[0].includes(currentState.icon_id as never)) filename = category[1]
+			if (category[0].includes(lastWeather.icon_id as never)) {
+				filename = category[1]
+			}
 		})
 
 		if (!tempContainer) {
@@ -367,13 +375,14 @@ function displayWeather(data: Weather) {
 		icon.src = iconSrc
 	}
 
-	const handleForecast = () => {
-		if (forecast) {
-			let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
-			day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
+	const handleForecastData = () => {
+		let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
+		day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
 
-			forecast.textContent = `${tradThis('with a high of')} ${data.fcHigh}°${day}.`
-			forecast.classList.remove('wait')
+		const forecastdom = document.getElementById('forecast')
+
+		if (forecastdom) {
+			forecastdom.textContent = `${tradThis('with a high of')} ${lastWeather.forecasted_high}°${day}.`
 		}
 	}
 
@@ -398,47 +407,27 @@ function displayWeather(data: Weather) {
 		}
 	}
 
+	handleForecastDisplay(data.forecast)
 	handleWidget()
-	handleDescription()
-	handleForecast()
 	handleMoreInfo()
+	handleDescription()
+	handleForecastData()
 
-	current?.classList.remove('wait')
-	tempContainer?.classList.remove('wait')
+	weatherdom?.classList.remove('wait')
 }
 
-async function weatherCacheControl(data: Weather) {
-	if (typeof data.lastCall !== 'number') {
-		initWeather(data)
-		return
-	}
-
-	const now = new Date()
-	const currentTime = Math.floor(now.getTime() / 1000)
-	const isForecastDayOld = currentTime > (data.fcLast ?? 0)
-	const isAnHourLater = currentTime > data.lastCall + 3600
-	const hasGeol = data.location.length === 2
-	const isNotSafari = BROWSER !== 'safari' // to prevent safari geol popup every day
-
-	if (navigator.onLine && isAnHourLater) {
-		if (hasGeol && isNotSafari) {
-			data.location = (await getGeolocation()) ?? []
-		}
-
-		data = (await request(data, !isForecastDayOld)) ?? data
-		storage.sync.set({ weather: data })
-	}
-
-	displayWeather(data)
-}
-
-function forecastVisibilityControl(value: string = 'auto') {
-	const forcastdom = document.getElementById('forecast')
+function handleForecastDisplay(forecast: string) {
 	const date = new Date()
-	let isTimeForForecast = false
+	const isLateDay = date.getHours() < 12 || date.getHours() > 21
+	const isTimeForForecast = forecast === 'auto' ? isLateDay : forecast === 'always'
 
-	if (value === 'auto') isTimeForForecast = date.getHours() < 12 || date.getHours() > 21
-	else isTimeForForecast = value === 'always'
+	if (isTimeForForecast && !document.getElementById('forecast')) {
+		const p = document.createElement('p')
+		p.id = 'forecast'
+		document.getElementById('description')?.appendChild(p)
+	}
 
-	forcastdom?.classList.toggle('shown', isTimeForForecast)
+	if (!isTimeForForecast) {
+		document.querySelector('#forecast')?.remove()
+	}
 }
