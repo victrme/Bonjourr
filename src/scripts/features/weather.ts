@@ -259,17 +259,31 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	//
 	// Fetch data
 
-	const response = await apiFetch('/weather/' + queries)
-	let onecall: OWMOnecall
+	let onecall: OWMOnecall | undefined
 
-	if (response?.status === 200) {
+	if (queries.includes('&lat')) {
 		try {
-			onecall = await response.json()
+			const masterurl = `https://openweathermap.org/data/2.5/onecall${queries}&appid=439d4b804bc8187953eb36d2a8c26a02`
+			const response = await fetch(masterurl, { signal: AbortSignal.timeout(1000) })
+
+			if (response.status === 200) {
+				onecall = await response.json()
+			}
+		} catch (_) {
+			console.log('Default key not available right now')
+		}
+	}
+
+	if (!onecall) {
+		try {
+			onecall = await (await apiFetch('/weather/' + queries))?.json()
 		} catch (error) {
 			console.log(error)
 			return
 		}
-	} else {
+	}
+
+	if (!onecall) {
 		return
 	}
 
