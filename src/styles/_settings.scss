@@ -57,10 +57,6 @@
 		z-index: 4;
 		cursor: grab;
 
-		& ~ h2:first-of-type {
-			margin-top: 0;
-		}
-
 		hr {
 			width: 80px;
 			height: 0px;

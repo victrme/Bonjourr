@@ -14,7 +14,7 @@ export async function setTranslationCache(lang: string, local?: Local) {
 	trns = local?.translations ?? (await storage.local.get('translations'))?.translations
 
 	if (trns?.lang !== lang) {
-		trns = await (await fetch(`../../../_locales/${lang}/translations.json`)).json()
+		trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
 		storage.local.set({ translations: trns })
 	}
 }

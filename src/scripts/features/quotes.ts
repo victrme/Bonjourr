@@ -24,7 +24,7 @@ function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
 	return arr?.map(([author, content]) => ({ author, content }))
 }
 
-async function newQuoteFromAPI(lang: string, type: string) {
+async function newQuoteFromAPI(lang: string, type: string): Promise<Quote[]> {
 	try {
 		if (!navigator.onLine || type === 'user') {
 			return []
@@ -41,8 +41,9 @@ async function newQuoteFromAPI(lang: string, type: string) {
 		}
 	} catch (error) {
 		console.warn(error)
-		return []
 	}
+
+	return []
 }
 
 function insertToDom(values: Quote) {
