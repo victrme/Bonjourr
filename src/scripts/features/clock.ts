@@ -1,9 +1,10 @@
 import { canDisplayInterface } from '..'
-import { syncDefaults } from '../utils'
-import { Sync, Clock } from '../types/sync'
+import { SYNC_DEFAULT } from '../utils'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
+
+import type { Sync, Clock } from '../types/sync'
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -225,7 +226,7 @@ export default function clock(init: Sync | null, event?: ClockUpdate) {
 		return
 	}
 
-	let clock = init?.clock ?? { ...syncDefaults.clock }
+	let clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
 
 	try {
 		startClock(clock, init?.greeting || '', init?.usdate || false)

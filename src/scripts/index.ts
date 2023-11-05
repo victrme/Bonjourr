@@ -1,4 +1,3 @@
-import { Sync, MoveKeys } from './types/sync'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -14,15 +13,16 @@ import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE } from './utils'
-import { periodOfDay, syncDefaults, stringMaxSize } from './utils'
+import { periodOfDay, stringMaxSize } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
+import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import sunTime from './utils/suntime'
 
-import { Local } from './types/local'
-import onSettingsLoad from './utils/onsettingsload'
+import type { Sync, MoveKeys } from './types/sync'
+import type { Local } from './types/local'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -177,12 +177,12 @@ export function tabTitle(val = '', isEvent?: true) {
 
 export function pageControl(val: { width?: number; gap?: number }, isEvent?: true) {
 	if (val.width) {
-		document.documentElement.style.setProperty('--page-width', (val.width ?? syncDefaults.pagewidth) + 'px')
+		document.documentElement.style.setProperty('--page-width', (val.width ?? SYNC_DEFAULT.pagewidth) + 'px')
 		if (isEvent) eventDebounce({ pagewidth: val.width })
 	}
 
 	if (typeof val.gap === 'number') {
-		document.documentElement.style.setProperty('--page-gap', (val.gap ?? syncDefaults.pagegap) + 'em')
+		document.documentElement.style.setProperty('--page-gap', (val.gap ?? SYNC_DEFAULT.pagegap) + 'em')
 		if (isEvent) eventDebounce({ pagegap: val.gap })
 	}
 }
@@ -500,7 +500,7 @@ function startup(data: Sync, local: Local) {
 	try {
 		const { sync, local } = await storage.init()
 		const version_old = sync?.about?.version
-		const version_curr = syncDefaults.about.version
+		const version_curr = SYNC_DEFAULT.about.version
 		const isUpdate = version_old !== version_curr
 
 		if (isUpdate) {

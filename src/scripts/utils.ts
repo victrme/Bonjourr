@@ -1,6 +1,7 @@
-import { Hide, HideOld, Sync, Weather } from './types/sync'
-import { Local } from './types/local'
 import langList from './langs'
+
+import type { Local } from './types/local'
+import type { Hide, HideOld, Sync } from './types/sync'
 
 type LangList = keyof typeof langList
 
@@ -51,6 +52,137 @@ const MAIN_API = 'https://api.bonjourr.lol'
 const MAIN_SUGGEST = 'wss://suggestions.bonjourr.lol'
 const FALLBACK_API = ['https://api.victr.me', 'https://api.bonjourr.worker.dev']
 const FALLBACK_SUGGEST = ['wss://suggestions.victr.me', 'wss://suggestions.bonjourr.worker.dev']
+
+export const SYNC_DEFAULT: Sync = {
+	about: { browser: PLATFORM, version: '1.18.1' },
+	showall: false,
+	dark: 'system',
+	favicon: '',
+	tabtitle: '',
+	greeting: '',
+	pagegap: 1,
+	pagewidth: 1600,
+	time: true,
+	main: true,
+	usdate: false,
+	background_blur: 15,
+	background_bright: 0.8,
+	background_type: 'unsplash',
+	quicklinks: true,
+	linkstyle: 'large',
+	linknewtab: false,
+	linksrow: 6,
+	textShadow: 0.2,
+	reviewPopup: 0,
+	cssHeight: 80,
+	css: '',
+	hide: {},
+	clock: {
+		size: 1,
+		ampm: false,
+		analog: false,
+		seconds: false,
+		face: 'none',
+		style: 'round',
+		timezone: 'auto',
+	},
+	unsplash: {
+		every: 'hour',
+		collection: '',
+		lastCollec: 'day',
+		pausedImage: null,
+		time: Date.now(),
+	},
+	weather: {
+		ccode: undefined,
+		city: undefined,
+		unit: 'metric',
+		provider: '',
+		moreinfo: 'none',
+		forecast: 'auto',
+		temperature: 'actual',
+		geolocation: 'approximate',
+	},
+	notes: {
+		on: false,
+		width: 40,
+		text: null,
+		opacity: 0.1,
+		align: 'left',
+	},
+	searchbar: {
+		on: false,
+		opacity: 0.1,
+		newtab: false,
+		suggestions: true,
+		engine: 'google',
+		request: '',
+		placeholder: '',
+	},
+	quotes: {
+		on: false,
+		author: false,
+		type: 'classic',
+		frequency: 'day',
+		last: 1650516688,
+		userlist: [],
+	},
+	font: {
+		url: '',
+		family: '',
+		size: '14',
+		availWeights: [],
+		weight: SYSTEM_OS === 'windows' ? '400' : '300',
+	},
+	move: {
+		selection: 'single',
+		layouts: {
+			single: {
+				grid: [['time'], ['main'], ['quicklinks']],
+				items: {},
+			},
+			double: {
+				grid: [
+					['time', '.'],
+					['main', '.'],
+					['quicklinks', '.'],
+				],
+				items: {},
+			},
+			triple: {
+				grid: [
+					['.', 'time', '.'],
+					['.', 'main', '.'],
+					['.', 'quicklinks', '.'],
+				],
+				items: {},
+			},
+		},
+	},
+	lang: (() => {
+		for (const code of Object.keys(langList)) {
+			if (navigator.language.replace('-', '_').includes(code)) {
+				return code as LangList
+			}
+		}
+		return 'en'
+	})(),
+}
+
+export const LOCAL_DEFAULT: Local = {
+	userQuoteSelection: 0,
+	translations: {},
+	selectedId: '',
+	idsList: [],
+	quotesCache: [],
+	unsplashCache: {
+		noon: [],
+		day: [],
+		evening: [],
+		night: [],
+		user: [],
+	},
+}
 
 //
 // FUNCS
@@ -162,142 +294,4 @@ export function closeEditLink() {
 	setTimeout(() => {
 		domedit ? domedit.setAttribute('class', '') : ''
 	}, 200)
-}
-
-//
-// DEFAULTS
-//
-
-let defaultLang: LangList = 'en'
-const navLang = navigator.language.replace('-', '_')
-
-// check if exact or similar languages are available
-for (const [code] of Object.entries(langList)) {
-	if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
-		defaultLang = code as LangList
-	}
-}
-
-export const syncDefaults: Sync = {
-	about: { browser: PLATFORM, version: '1.18.1' },
-	showall: false,
-	lang: defaultLang,
-	dark: 'system',
-	favicon: '',
-	tabtitle: '',
-	greeting: '',
-	pagegap: 1,
-	pagewidth: 1600,
-	time: true,
-	main: true,
-	usdate: false,
-	background_blur: 15,
-	background_bright: 0.8,
-	background_type: 'unsplash',
-	quicklinks: true,
-	linkstyle: 'large',
-	linknewtab: false,
-	linksrow: 6,
-	textShadow: 0.2,
-	reviewPopup: 0,
-	cssHeight: 80,
-	css: '',
-	hide: {},
-	clock: {
-		size: 1,
-		ampm: false,
-		analog: false,
-		seconds: false,
-		face: 'none',
-		style: 'round',
-		timezone: 'auto',
-	},
-	unsplash: {
-		every: 'hour',
-		collection: '',
-		lastCollec: 'day',
-		pausedImage: null,
-		time: Date.now(),
-	},
-	weather: {
-		ccode: undefined,
-		city: undefined,
-		unit: 'metric',
-		provider: '',
-		moreinfo: 'none',
-		forecast: 'auto',
-		temperature: 'actual',
-		geolocation: 'approximate',
-	},
-	notes: {
-		on: false,
-		width: 40,
-		text: null,
-		opacity: 0.1,
-		align: 'left',
-	},
-	searchbar: {
-		on: false,
-		opacity: 0.1,
-		newtab: false,
-		suggestions: true,
-		engine: 'google',
-		request: '',
-		placeholder: '',
-	},
-	quotes: {
-		on: false,
-		author: false,
-		type: 'classic',
-		frequency: 'day',
-		last: 1650516688,
-		userlist: [],
-	},
-	font: {
-		url: '',
-		family: '',
-		size: '14',
-		availWeights: [],
-		weight: SYSTEM_OS === 'windows' ? '400' : '300',
-	},
-	move: {
-		selection: 'single',
-		layouts: {
-			single: {
-				grid: [['time'], ['main'], ['quicklinks']],
-				items: {},
-			},
-			double: {
-				grid: [
-					['time', '.'],
-					['main', '.'],
-					['quicklinks', '.'],
-				],
-				items: {},
-			},
-			triple: {
-				grid: [
-					['.', 'time', '.'],
-					['.', 'main', '.'],
-					['.', 'quicklinks', '.'],
-				],
-				items: {},
-			},
-		},
-	},
-}
-
-export const localDefaults: Local = {
-	userQuoteSelection: 0,
-	translations: {},
-	selectedId: '',
-	idsList: [],
-	quotesCache: [],
-	unsplashCache: {
-		noon: [],
-		day: [],
-		evening: [],
-		night: [],
-		user: [],
-	},
 }

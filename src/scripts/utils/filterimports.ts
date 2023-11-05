@@ -1,7 +1,8 @@
-import { syncDefaults, convertHideStorage, randomString, bundleLinks } from '../utils'
-import { MoveKeys, Sync, Move } from '../types/sync'
+import { SYNC_DEFAULT, convertHideStorage, randomString, bundleLinks } from '../utils'
 import { gridWidget } from '../features/move'
 import merge from 'deepmerge'
+
+import type { MoveKeys, Sync, Move } from '../types/sync'
 
 export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	//
@@ -30,7 +31,7 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	// <1.9.0 searchbar options was boolean
 	if (typeof toImport.searchbar === 'boolean') {
 		toImport.searchbar = {
-			...syncDefaults.searchbar,
+			...SYNC_DEFAULT.searchbar,
 			on: toImport.searchbar as boolean,
 			newtab: (toImport.searchbar_newtab as boolean) || false,
 			engine: (toImport.searchbar_engine as string | undefined)?.replace('s_', '') || 'google',
@@ -133,7 +134,7 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	})
 
 	current = merge(current, toImport)
-	current.about = { ...syncDefaults.about }
+	current.about = { ...SYNC_DEFAULT.about }
 
 	return current
 }

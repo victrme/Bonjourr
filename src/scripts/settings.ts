@@ -1,5 +1,3 @@
-import { Sync, Weather } from './types/sync'
-
 import storage from './storage'
 import clock from './features/clock'
 import notes from './features/notes'
@@ -11,8 +9,8 @@ import quickLinks from './features/links'
 import linksImport from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
-import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
+import unsplashBackgrounds from './features/unsplash'
 
 import langList from './langs'
 import parse from './utils/parse'
@@ -21,18 +19,8 @@ import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-
-import {
-	SYSTEM_OS,
-	IS_MOBILE,
-	PLATFORM,
-	syncDefaults,
-	inputThrottle,
-	closeEditLink,
-	stringMaxSize,
-	turnRefreshButton,
-	BROWSER,
-} from './utils'
+import { inputThrottle, closeEditLink, stringMaxSize, turnRefreshButton } from './utils'
+import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './utils'
 
 import {
 	toggleWidgetsDisplay,
@@ -44,6 +32,8 @@ import {
 	textShadow,
 	pageControl,
 } from './index'
+
+import type { Sync, Weather } from './types/sync'
 
 type Langs = keyof typeof langList
 
@@ -1023,7 +1013,7 @@ function settingsMgmt() {
 			const importData = decodeExportFile(reader.result)
 
 			// data has at least one valid key from default sync storage => import
-			if (Object.keys(syncDefaults).filter((key) => key in importData).length > 0) {
+			if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
 				paramsImport(importData as Sync)
 			}
 		}
@@ -1150,7 +1140,7 @@ function signature(dom: HTMLElement) {
 	})
 
 	const version = dom.querySelector('.version a')
-	if (version) version.textContent = syncDefaults.about.version
+	if (version) version.textContent = SYNC_DEFAULT.about.version
 
 	// Remove donate text on safari because apple is evil
 	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') {
@@ -1183,7 +1173,13 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 	if (action === 'yes') {
 		storage.sync.clear()
 		storage.local.clear()
-		fadeOut()
+
+		setTimeout(() => {
+			storage.sync.set({ ...SYNC_DEFAULT })
+			storage.local.set({ ...LOCAL_DEFAULT })
+			fadeOut()
+		}, 50)
+
 		return
 	}
 

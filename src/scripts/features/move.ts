@@ -1,10 +1,10 @@
 import { toggleWidgetsDisplay } from '../index'
-import { BROWSER, syncDefaults } from '../utils'
-import { tradThis } from '../utils/translations'
+import { BROWSER, SYNC_DEFAULT } from '../utils'
 import onSettingsLoad from '../utils/onsettingsload'
+import { tradThis } from '../utils/translations'
 import storage from '../storage'
 
-import { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
+import type { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
 
 type Layout = Move['layouts'][keyof Move['layouts']]
 
@@ -449,7 +449,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 		let move = data.move
 
 		if (!move) {
-			move = structuredClone(syncDefaults.move)
+			move = structuredClone(SYNC_DEFAULT.move)
 		}
 
 		// force single on small width

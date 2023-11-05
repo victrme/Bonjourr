@@ -1,4 +1,4 @@
-import { periodOfDay, turnRefreshButton, localDefaults, syncDefaults, apiFetch } from '../utils'
+import { LOCAL_DEFAULT, SYNC_DEFAULT, periodOfDay, turnRefreshButton, apiFetch } from '../utils'
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -6,9 +6,9 @@ import superinput from '../utils/superinput'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
 
-import { UnsplashCache, UnsplashImage } from '../types/local'
-import { Unsplash, Sync } from '../types/sync'
-import { UnsplashAPI } from '../types/unsplash'
+import type { UnsplashCache, UnsplashImage } from '../types/local'
+import type { Unsplash, Sync } from '../types/sync'
+import type { UnsplashAPI } from '../types/unsplash'
 
 type UnsplashInit = {
 	unsplash: Unsplash
@@ -124,7 +124,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 }
 
 async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
-	unsplash = { ...syncDefaults.unsplash, ...unsplash }
+	unsplash = { ...SYNC_DEFAULT.unsplash, ...unsplash }
 	cache = cache ?? (await getCache())
 
 	let { lastCollec } = unsplash
@@ -310,7 +310,7 @@ function imgCredits(image: UnsplashImage) {
 }
 
 async function getCache(): Promise<UnsplashCache> {
-	const cache = (await storage.local.get('unsplashCache'))?.unsplashCache ?? { ...localDefaults.unsplashCache }
+	const cache = (await storage.local.get('unsplashCache'))?.unsplashCache ?? { ...LOCAL_DEFAULT.unsplashCache }
 	return cache
 }
 

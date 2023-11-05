@@ -1,7 +1,8 @@
-import { PLATFORM, localDefaults, syncDefaults } from './utils'
+import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './utils'
 import parse from './utils/parse'
-import { Sync } from './types/sync'
-import { Local } from './types/local'
+
+import type { Sync } from './types/sync'
+import type { Local } from './types/local'
 
 type Keyval = {
 	[key: string]: unknown
@@ -37,9 +38,9 @@ type Storage = {
 function verifyDataAsSync(data: Keyval) {
 	data = data ?? {}
 
-	for (const key in syncDefaults) {
+	for (const key in SYNC_DEFAULT) {
 		if (!(key in data) && key !== 'move') {
-			data[key] = syncDefaults[key]
+			data[key] = SYNC_DEFAULT[key]
 		}
 	}
 
@@ -109,7 +110,7 @@ function online(): Storage {
 		},
 
 		clear: () => {
-			for (const key of Object.keys(localDefaults)) {
+			for (const key of Object.keys(LOCAL_DEFAULT)) {
 				localStorage.removeItem(key)
 			}
 		},
