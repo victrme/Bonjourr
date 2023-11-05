@@ -1,17 +1,20 @@
 import storage from '../storage'
-import parse from './parse'
 import { Local } from '../types/local'
 
-let trns: { [key: string]: string } = {}
+type Dict = { [key: string]: string }
 
-export async function setTranslationCache(lang: string, local?: Local) {
+let trns: Dict = {}
+
+export async function setTranslationCache(lang: string, local?: Local, isUpdate?: boolean) {
 	if (lang === 'en') {
 		storage.local.remove('translations')
 		trns = {}
 		return
 	}
 
-	trns = local?.translations ?? (await storage.local.get('translations'))?.translations
+	if (!isUpdate) {
+		trns = local?.translations ?? (await storage.local.get('translations'))?.translations
+	}
 
 	if (trns?.lang !== lang) {
 		trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
@@ -36,8 +39,8 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 
 export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
-	let newDict: { [key: string]: string } = {}
-	let toggleDict: { [key: string]: string } = {}
+	let newDict: Dict = {}
+	let toggleDict: Dict = {}
 	let currentDict = { ...trns }
 	let text: string
 

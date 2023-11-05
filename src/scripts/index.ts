@@ -501,9 +501,9 @@ function startup(data: Sync, local: Local) {
 		const { sync, local } = await storage.init()
 		const version_old = sync?.about?.version
 		const version_curr = syncDefaults.about.version
+		const isUpdate = version_old !== version_curr
 
-		// Version change
-		if (version_old !== version_curr) {
+		if (isUpdate) {
 			console.log(`Version change: ${version_old} => ${version_curr}`)
 
 			sync.about = {
@@ -526,7 +526,7 @@ function startup(data: Sync, local: Local) {
 			storage.sync.set({ ...sync })
 		}
 
-		await setTranslationCache(sync.lang, local)
+		await setTranslationCache(sync.lang, local, isUpdate)
 
 		startup(sync, local)
 	} catch (e) {
