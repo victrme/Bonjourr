@@ -130,10 +130,15 @@
 	"Show Seconds": "Afișează secundele",
 	"Automatic": "Automat",
 	"Geolocation": "Geolocalizare",
+	"Off": "Niciuna",
+	"Approximate": "Aproximativă",
+	"Precise": "Precisă",
 	"City not found": "Orașul nu a fost găsit",
 	"Change city": "Schimbă orașul",
 	"There was a problem": "Era o problemă",
-	"Imperial units": "Unități imperiale",
+	"Unit": "Unitate",
+	"Celsius": "Celsius",
+	"Fahrenheit": "Fahrenheit",
 	"Forecast": "Previziuni",
 	"Every mornings": "În fiecare dimineață",
 	"Always show": "Arată întotdeauna",
@@ -229,5 +234,5 @@
 	"Bonjourr has been updated to version 1.18 ✨": "Bonjourr a fost actualizat la versiunea 1.18 ✨",
 	"Important bug fixes and enhancements! We added suggestions to the search bar and more. Check out": "Corecții importante ale bug-urilor și îmbunătățiri! Am adăugat sugestii la bara de căutare și multe altele. Verifică",
 	"our update post": "postarea noastră de actualizare",
-	"to learn all about it": "pentru a afla totul despre asta"						
+	"to learn all about it": "pentru a afla totul despre asta"
 }

@@ -130,10 +130,15 @@
 	"Show Seconds": "Visa sekunder",
 	"Automatic": "Automatiskt",
 	"Geolocation": "Geolokalisering",
+	"Off": "Ingen",
+	"Approximate": "Ungefär",
+	"Precise": "Exakt",
 	"City not found": "Staden hittades inte",
 	"Change city": "Byt stad",
 	"There was a problem": "Ett fel uppstod",
-	"Imperial units": "Imperial enheter",
+	"Unit": "Enhet",
+	"Celsius": "Celsius",
+	"Fahrenheit": "Fahrenheit",
 	"Forecast": "Prognos",
 	"Every mornings": "Varje morgon",
 	"Always show": "Alltid",
@@ -230,6 +235,4 @@
 	"Important bug fixes and enhancements! We added suggestions to the search bar and more. Check out": "Viktiga felrättningar och förbättringar! Vi har lagt till förslag till sökfältet och mer. Kolla in",
 	"our update post": "vårt uppdateringsinlägg",
 	"to learn all about it": "för att lära dig allt om det"
-
-	
 }
