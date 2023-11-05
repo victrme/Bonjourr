@@ -211,23 +211,21 @@
 
 	#interface {
 		#sb_container {
+			#sb-suggestions,
 			#searchbar {
 				font-size: 1.7em;
 				box-sizing: border-box;
-				padding: 0 7em 0 1em;
 			}
 
 			#sb-buttons {
-				#sb_empty {
-					font-size: 2.5em;
-					display: block;
-					width: 39px;
-					padding: 0;
-					box-sizing: border-box;
-				}
+				padding-right: 1em;
 
 				#sb_submit img {
 					height: 1.5em;
+				}
+
+				#sb_empty {
+					font-size: 2em;
 				}
 			}
 		}
