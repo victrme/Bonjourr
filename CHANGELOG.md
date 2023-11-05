@@ -1,3 +1,18 @@
+## 1.18.1
+
+-   Changes:
+    -   Migrated all API providers to a [homemade API](https://github.com/victrme/bonjourr-apis)
+    -   Removed geolocation permission for extensions
+    -   Added "approximate" weather location as the default option
+    -   Improved "imperial units" option
+    -   Weather data only saved to local storage
+    -   Fixed weather conflicts between synced devices
+-   Fixes:
+    -   Use HTTPS for search suggestions
+    -   Safari iOS scroll with active keyboard
+    -   Some styling on mobile
+    -   Tiny German translation fix
+
 ## 1.18.0
 
 -   Changes:
