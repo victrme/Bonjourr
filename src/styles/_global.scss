@@ -225,10 +225,7 @@ body {
 			overflow-y: clip;
 		}
 		.as_visuals {
-			max-height: 420px;
-		}
-		.as_pageelem {
-			max-height: 370px;
+			max-height: 220px;
 		}
 		.as_link {
 			max-height: 120px;
@@ -269,7 +266,7 @@ body {
 	.as {
 		max-height: 0;
 		overflow-y: hidden;
-		transition: max-height 0.4s, padding 0.2s;
+		transition: max-height 0.3s, padding 0.2s;
 	}
 
 	&.init .as {

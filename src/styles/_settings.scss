@@ -42,7 +42,7 @@
 	.dropdown {
 		overflow-y: hidden;
 		max-height: 0;
-		transition: max-height 0.4s;
+		transition: max-height 0.3s;
 
 		&.shown {
 			overflow-y: clip;
@@ -642,15 +642,12 @@
 
 	#sett_city {
 		display: flex;
-		width: calc(100% - 6px);
-		padding: 0 3px;
 		column-gap: 0.4em;
-		transition: max-height 0.4s, margin 0.4s, padding 0.4s;
+		transition: max-height 0.2s, margin 0.2s;
 
 		&.shown {
-			padding: 3px;
 			margin-top: 0.6em;
-			max-height: 50px;
+			max-height: 36px;
 		}
 
 		select,
