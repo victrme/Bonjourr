@@ -194,10 +194,11 @@ export async function settingsInit() {
 		b?.classList.toggle('selected', selectedLayout)
 	})
 
-	// Disables double and triple layouts on mobile
+	// Disables layout change on mobile
 	if (window.innerWidth < 600 && 'ontouchstart' in window) {
-		settingsDom.querySelector('#grid-layout button[data-layout="double"]')?.setAttribute('disabled', '')
-		settingsDom.querySelector('#grid-layout button[data-layout="triple"]')?.setAttribute('disabled', '')
+		for (const button of settingsDom.querySelectorAll('#grid-layout button')) {
+			button?.setAttribute('disabled', '')
+		}
 	}
 
 	// Time & main hide elems
@@ -305,38 +306,9 @@ export async function settingsInit() {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
-	paramId('b_editmove').addEventListener('click', function () {
-		moveElements(null, { toggle: true })
-	})
-
-	paramId('b_resetlayout').addEventListener('click', function () {
-		moveElements(null, { reset: true })
-	})
-
-	paramId('grid-layout')
-		.querySelectorAll<HTMLButtonElement>('button')
-		.forEach((btn) => {
-			btn.addEventListener('click', () => {
-				moveElements(null, { layout: btn.dataset.layout || '' })
-			})
-		})
-
 	paramId('i_settingshide').addEventListener('change', function () {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
-
-	paramId('i_pagewidth').addEventListener('input', function () {
-		pageControl({ width: parseInt(this.value) }, true)
-	})
-
-	paramId('i_pagegap').addEventListener('input', function () {
-		pageControl({ gap: parseFloat(this.value) }, true)
-	})
-
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
-	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
-	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
-	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
 	//
 	// Quick links
@@ -639,6 +611,36 @@ export async function settingsInit() {
 	paramId('i_textshadow').addEventListener('input', function () {
 		textShadow(null, parseFloat(this.value))
 	})
+
+	//
+	// Page layout
+
+	paramId('b_editmove').addEventListener('click', function () {
+		moveElements(null, { toggle: true })
+	})
+
+	paramId('b_resetlayout').addEventListener('click', function () {
+		moveElements(null, { reset: true })
+	})
+
+	for (const button of paramId('grid-layout').querySelectorAll<HTMLButtonElement>('button')) {
+		button.addEventListener('click', () => {
+			moveElements(null, { layout: button.dataset.layout || '' })
+		})
+	}
+
+	paramId('i_pagewidth').addEventListener('input', function () {
+		pageControl({ width: parseInt(this.value) }, true)
+	})
+
+	paramId('i_pagegap').addEventListener('input', function () {
+		pageControl({ gap: parseFloat(this.value) }, true)
+	})
+
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
+	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
+	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
 
 	//
 	// Custom Style

@@ -381,9 +381,9 @@
 			outline: 2px solid var(--color-placeholder);
 		}
 
-		button:hover,
-		button.selected,
-		button:focus-visible {
+		button:not(:disabled):hover,
+		button:not(:disabled).selected,
+		button:not(:disabled):focus-visible {
 			outline-color: var(--color-blue);
 
 			&[data-layout='double'] div:nth-child(1),
@@ -407,9 +407,9 @@
 				width: 100%;
 			}
 
-			&:hover,
-			&:focus-visible,
-			&.selected {
+			&:not(:disabled):hover,
+			&:not(:disabled):focus-visible,
+			&:not(:disabled).selected {
 				opacity: 1;
 				background-color: rgba(0, 114, 238, 0.1333333333);
 			}
