@@ -382,7 +382,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		}
 
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
-		const { now, rise, set } = sunTime()
+		const { now, rise, set } = sunTime(lastWeather)
 		const timeOfDay = now < rise || now > set ? 'night' : 'day'
 		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
