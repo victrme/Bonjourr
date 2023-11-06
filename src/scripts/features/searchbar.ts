@@ -1,11 +1,12 @@
-import storage from '../storage'
-import { Searchbar } from '../types/sync'
-import { apiFetch, stringMaxSize } from '../utils'
+import { apiWebSocket, stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errormessage'
-import parse from '../utils/parse'
-import superinput from '../utils/superinput'
 import { tradThis } from '../utils/translations'
+import errorMessage from '../utils/errormessage'
+import superinput from '../utils/superinput'
+import storage from '../storage'
+import parse from '../utils/parse'
+
+import type { Searchbar } from '../types/sync'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -25,7 +26,7 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 const requestInput = superinput('i_sbrequest')
-let socket: WebSocket
+let socket: WebSocket | undefined
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -272,9 +273,9 @@ function initSuggestions() {
 	}
 
 	async function createSuggestionSocket() {
-		socket = await apiFetch('/suggestions')
+		socket = await apiWebSocket('/suggestions')
 
-		socket.onmessage = function (event: MessageEvent) {
+		socket?.addEventListener('message', function (event: MessageEvent) {
 			const data = parse<Suggestions | { error: string }>(event.data)
 
 			if (Array.isArray(data)) {
@@ -282,7 +283,7 @@ function initSuggestions() {
 			} else if (data?.error) {
 				createSuggestionSocket()
 			}
-		}
+		})
 	}
 
 	domcontainer?.addEventListener('keydown', navigateSuggestions)

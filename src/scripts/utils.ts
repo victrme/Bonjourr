@@ -50,7 +50,7 @@ export const IS_MOBILE = navigator.userAgentData
 
 const MAIN_API = 'https://api.bonjourr.lol'
 
-const FALLBACK_API = ['https://api.victr.worker.dev', 'https://api.victrme.worker.dev']
+const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
 
 export const SYNC_DEFAULT: Sync = {
 	about: { browser: PLATFORM, version: '1.18.1' },
@@ -196,23 +196,29 @@ function shuffledAPIUrls(): string[] {
 	]
 }
 
+export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
+	for (const url of shuffledAPIUrls()) {
+		try {
+			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
+
+			const isOpened = await new Promise((resolve) => {
+				socket.onopen = () => resolve(true)
+				socket.onerror = () => resolve(false)
+				socket.onclose = () => resolve(false)
+			})
+
+			if (isOpened) {
+				return socket
+			}
+		} catch (error) {
+			console.warn(error)
+		}
+	}
+}
+
 export async function apiFetch(path: string): Promise<Response | undefined> {
 	for (const url of shuffledAPIUrls()) {
 		try {
-			if (path.startsWith('/suggestions')) {
-				const socket = new WebSocket(url.replace('https://', 'wss://') + path)
-
-				const isOpened = await new Promise((resolve) => {
-					socket.onopen = () => resolve(true)
-					socket.onerror = () => resolve(false)
-					socket.onclose = () => resolve(false)
-				})
-
-				if (isOpened) {
-					return socket
-				}
-			}
-
 			return await fetch(url + path)
 		} catch (error) {
 			console.warn(error)
