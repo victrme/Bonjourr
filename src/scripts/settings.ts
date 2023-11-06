@@ -1069,17 +1069,20 @@ async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
 	storage.sync.set({ lang: nextLang })
+	storage.local.remove('quotesCache')
+
 	document.documentElement.setAttribute('lang', nextLang)
 
 	const data = await storage.sync.get()
 	const local = await storage.local.get(['quotesCache', 'userQuoteSelection', 'lastWeather'])
 
 	data.lang = nextLang
-	weather({ sync: data })
 	clock(data)
+	weather({ sync: data })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes || null)
+	signature(document.getElementById('settings') as HTMLElement)
 	translatePlaceholders(document.getElementById('settings'))
 }
 
