@@ -49,9 +49,8 @@ export const IS_MOBILE = navigator.userAgentData
 	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
 const MAIN_API = 'https://api.bonjourr.lol'
-const MAIN_SUGGEST = 'wss://suggestions.bonjourr.lol'
-const FALLBACK_API = ['https://api.victr.me', 'https://api.bonjourr.worker.dev']
-const FALLBACK_SUGGEST = ['wss://suggestions.victr.me', 'wss://suggestions.bonjourr.worker.dev']
+
+const FALLBACK_API = ['https://api.victr.worker.dev', 'https://api.victrme.worker.dev']
 
 export const SYNC_DEFAULT: Sync = {
 	about: { browser: PLATFORM, version: '1.18.1' },
@@ -188,20 +187,32 @@ export const LOCAL_DEFAULT: Local = {
 // FUNCS
 //
 
-export async function apiFetch(path: string): Promise<Response | undefined> {
-	function shuffleArray(arr: string[]): string[] {
-		return arr
-			.map((value) => ({ value, sort: Math.random() }))
+function shuffledAPIUrls(): string[] {
+	return [
+		MAIN_API,
+		...FALLBACK_API.map((value) => ({ value, sort: Math.random() }))
 			.sort((a, b) => a.sort - b.sort)
-			.map(({ value }) => value) // https://stackoverflow.com/a/46545530
-	}
+			.map(({ value }) => value), // https://stackoverflow.com/a/46545530]
+	]
+}
 
-	const main = path === 'suggestions' ? MAIN_SUGGEST : MAIN_API
-	const fallbacks = path === 'suggestions' ? FALLBACK_SUGGEST : FALLBACK_API
-	const urls = [main, ...shuffleArray(fallbacks)]
-
-	for (const url of urls) {
+export async function apiFetch(path: string): Promise<Response | undefined> {
+	for (const url of shuffledAPIUrls()) {
 		try {
+			if (path.startsWith('/suggestions')) {
+				const socket = new WebSocket(url.replace('https://', 'wss://') + path)
+
+				const isOpened = await new Promise((resolve) => {
+					socket.onopen = () => resolve(true)
+					socket.onerror = () => resolve(false)
+					socket.onclose = () => resolve(false)
+				})
+
+				if (isOpened) {
+					return socket
+				}
+			}
+
 			return await fetch(url + path)
 		} catch (error) {
 			console.warn(error)

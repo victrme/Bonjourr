@@ -1,6 +1,6 @@
 import storage from '../storage'
 import { Searchbar } from '../types/sync'
-import { stringMaxSize } from '../utils'
+import { apiFetch, stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
 import parse from '../utils/parse'
@@ -271,8 +271,8 @@ function initSuggestions() {
 		domsuggestions?.classList.remove('shown')
 	}
 
-	function createSuggestionSocket() {
-		socket = new WebSocket('wss://suggestions.bonjourr.lol')
+	async function createSuggestionSocket() {
+		socket = await apiFetch('/suggestions')
 
 		socket.onmessage = function (event: MessageEvent) {
 			const data = parse<Suggestions | { error: string }>(event.data)
@@ -374,10 +374,9 @@ async function handleUserInput(e: Event) {
 	}
 
 	// request suggestions
-	if (domcontainer?.dataset.suggestions === 'true' && socket.readyState === socket.OPEN) {
+	if (domcontainer?.dataset.suggestions === 'true' && socket && socket.readyState === socket.OPEN) {
 		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg')
 		const query = encodeURIComponent(value ?? '')
-
 		socket.send(JSON.stringify({ q: query, with: engine }))
 	}
 }
