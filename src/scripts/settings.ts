@@ -322,16 +322,16 @@ export async function settingsInit() {
 		inputThrottle(e.target as HTMLInputElement, 1200)
 	})
 
-	paramId('i_linknewtab').addEventListener('change', function (this: KeyboardEvent) {
-		quickLinks(null, { newtab: (this.currentTarget as HTMLInputElement).checked })
+	paramId('i_linknewtab').addEventListener('change', function (this) {
+		quickLinks(null, { newtab: this.checked })
 	})
 
-	paramId('i_linkstyle').addEventListener('change', function (this: KeyboardEvent) {
-		quickLinks(null, { style: (this.currentTarget as HTMLInputElement).value })
+	paramId('i_linkstyle').addEventListener('change', function (this) {
+		quickLinks(null, { style: this.value })
 	})
 
-	paramId('i_row').addEventListener('change', function (this: KeyboardEvent) {
-		quickLinks(null, { row: (this.currentTarget as HTMLInputElement).value })
+	paramId('i_row').addEventListener('input', function (this) {
+		quickLinks(null, { row: this.value })
 	})
 
 	paramId('b_importbookmarks').addEventListener('click', linksImport)
