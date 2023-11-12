@@ -272,11 +272,18 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	}
 
 	if (!onecall) {
+		const response = await apiFetch('/weather/' + queries)
+
+		// use previous data as result when keys are rate limited
+		if (response?.status === 429 && lastWeather) {
+			lastWeather.timestamp = Date.now() - 1800000 // -30min
+			return lastWeather
+		}
+
 		try {
-			onecall = await (await apiFetch('/weather/' + queries))?.json()
+			onecall = (await response?.json()) as OWMOnecall
 		} catch (error) {
 			console.log(error)
-			return
 		}
 	}
 
