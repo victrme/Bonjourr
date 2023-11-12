@@ -376,11 +376,18 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 }
 
 function onlineAndMobileHandler() {
-	//
-
 	if (IS_MOBILE) {
+		let visibilityHasChanged = false
+
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
+			if (visibilityHasChanged === false) {
+				visibilityHasChanged = true
+				return
+			}
+
+			visibilityHasChanged = false
+
 			const data = await storage.sync.get()
 			const local = await storage.local.get(['unsplashCache', 'lastWeather'])
 
@@ -397,7 +404,6 @@ function onlineAndMobileHandler() {
 
 			clock(data)
 			weather({ sync: data, lastWeather: local.lastWeather })
-			sunTime(local.lastWeather)
 		})
 	}
 
@@ -420,7 +426,7 @@ function onlineAndMobileHandler() {
 		// Firefox cannot -moz-fill-available with height
 		// On desktop, uses fallback 100vh
 		// On mobile, sets height dynamically because vh is bad on mobile
-		if (BROWSER && IS_MOBILE) {
+		if (BROWSER === 'firefox' && IS_MOBILE) {
 			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 			appHeight()
 

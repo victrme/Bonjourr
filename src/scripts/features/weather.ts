@@ -31,6 +31,7 @@ type WeatherUpdate = {
 	unhide?: true
 }
 
+let pollingInterval = setInterval(() => {})
 const cityInput = superinput('i_city')
 
 export default function weather(init: WeatherInit, update?: WeatherUpdate) {
@@ -39,25 +40,21 @@ export default function weather(init: WeatherInit, update?: WeatherUpdate) {
 		return
 	}
 
-	if (init && (!init.sync?.weatherdesc || !init.sync?.weathericon)) {
-		try {
-			weatherCacheControl(init.sync.weather, init.lastWeather)
-		} catch (e) {
-			errorMessage(e)
-		}
+	if (init && !(init.sync?.weatherdesc && init.sync?.weathericon)) {
+		weatherCacheControl(init.sync.weather, init.lastWeather)
 	}
 
 	if (init) {
 		onSettingsLoad(() => {
 			handleGeolOption(init.sync.weather)
-			setInterval(async () => {
-				if (!navigator.onLine) {
-					weather({
-						sync: await storage.sync.get(['weather', 'hide']),
-						lastWeather: (await storage.local.get('lastWeather')).lastWeather,
-					})
-				}
-			}, 300000)
+
+			clearInterval(pollingInterval)
+
+			pollingInterval = setInterval(async () => {
+				const sync = await storage.sync.get(['weather', 'hide'])
+				const local = await storage.local.get('lastWeather')
+				weatherCacheControl(sync.weather, local.lastWeather)
+			}, 1200000) // 20min
 		})
 	}
 }
