@@ -1,4 +1,5 @@
-import { LOCAL_DEFAULT, SYNC_DEFAULT, periodOfDay, turnRefreshButton, apiFetch } from '../utils'
+import { periodOfDay, turnRefreshButton, apiFetch } from '../utils'
+import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../defaults'
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'

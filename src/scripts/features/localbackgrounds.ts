@@ -1,8 +1,9 @@
-import { randomString, IS_MOBILE, turnRefreshButton } from '../utils'
+import { randomString, turnRefreshButton } from '../utils'
 import { imgBackground, freqControl } from '..'
 import { get, set, update, del } from 'idb-keyval'
 import unsplashBackgrounds from './unsplash'
 import onSettingsLoad from '../utils/onsettingsload'
+import { IS_MOBILE } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 

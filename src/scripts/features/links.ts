@@ -1,5 +1,5 @@
 import { bundleLinks, randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
-import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../utils'
+import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../defaults'
 import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'

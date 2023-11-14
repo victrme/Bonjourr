@@ -1,4 +1,4 @@
-import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './utils'
+import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
 import parse from './utils/parse'
 
 import type { Sync } from './types/sync'

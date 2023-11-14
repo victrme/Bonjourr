@@ -1,5 +1,5 @@
+import { BROWSER, SYNC_DEFAULT } from '../defaults'
 import { toggleWidgetsDisplay } from '../index'
-import { BROWSER, SYNC_DEFAULT } from '../utils'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import storage from '../storage'

@@ -1,4 +1,5 @@
-import { SYNC_DEFAULT, randomString, bundleLinks } from '../utils'
+import { randomString, bundleLinks } from '../utils'
+import { SYNC_DEFAULT } from '../defaults'
 import { gridWidget } from '../features/move'
 import merge from 'deepmerge'
 

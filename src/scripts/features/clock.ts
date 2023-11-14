@@ -1,5 +1,5 @@
 import { canDisplayInterface } from '..'
-import { SYNC_DEFAULT } from '../utils'
+import { SYNC_DEFAULT } from '../defaults'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'

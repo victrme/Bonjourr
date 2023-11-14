@@ -13,9 +13,9 @@ import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
 
-import { periodOfDay, stringMaxSize } from './utils'
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
+import { periodOfDay, stringMaxSize } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
@@ -506,16 +506,12 @@ function startup(data: Sync, local: Local) {
 	try {
 		const { sync, local } = await storage.init()
 		const version_old = sync?.about?.version
-		const version_curr = SYNC_DEFAULT.about.version
-		const isUpdate = version_old !== version_curr
+		const isUpdate = version_old !== CURRENT_VERSION
 
 		if (isUpdate) {
-			console.log(`Version change: ${version_old} => ${version_curr}`)
+			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			sync.about = {
-				browser: PLATFORM,
-				version: version_curr,
-			}
+			sync.about = { ...SYNC_DEFAULT.about }
 
 			if (sync.weather?.geolocation === undefined) {
 				sync.weather.geolocation = 'approximate'

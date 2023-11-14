@@ -1,7 +1,7 @@
 import { canDisplayInterface } from '../index'
 import storage from '../storage'
 
-import { PLATFORM, SYSTEM_OS } from '../utils'
+import { PLATFORM, SYSTEM_OS } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import errorMessage from '../utils/errormessage'
