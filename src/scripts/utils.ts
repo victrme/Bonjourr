@@ -60,7 +60,13 @@ export const IS_MOBILE = navigator.userAgentData
 
 const MAIN_API = 'https://api.bonjourr.lol'
 
-const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
+const FALLBACK_API = [
+	'https://bonjourr-apis.victr.me',
+	'https://bonjourr-apis.victr.workers.dev',
+	'https://bonjourr-apis.victrme.workers.dev',
+	'https://api.bonjourr.fr',
+	'https://bonjourr-apis.bonjourr.workers.dev',
+]
 
 export const SYNC_DEFAULT: Sync = {
 	about: { browser: PLATFORM, version: '1.18.1' },
@@ -225,6 +231,7 @@ export async function apiFetch(path: string): Promise<Response | undefined> {
 			return await fetch(url + path)
 		} catch (error) {
 			console.warn(error)
+			await new Promise((r) => setTimeout(() => r(true), 200))
 		}
 	}
 }
