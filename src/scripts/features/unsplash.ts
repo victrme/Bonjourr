@@ -3,7 +3,6 @@ import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
-import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import type { UnsplashCache, UnsplashImage } from '../types/local'
@@ -131,10 +130,10 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 	const { every, time, collection, pausedImage } = unsplash
 
 	const needNewImage = freqControl.get(every, time)
-	const needNewCollec = !every.match(/day|pause/) && periodOfDay(sunTime()) !== lastCollec
+	const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
 
 	if (needNewCollec && lastCollec !== 'user') {
-		lastCollec = periodOfDay(sunTime())
+		lastCollec = periodOfDay()
 	}
 
 	let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]

@@ -2,7 +2,7 @@ import { stringMaxSize, apiFetch } from '../utils'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
-import sunTime from '../utils/suntime'
+import suntime from '../utils/suntime'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
@@ -337,6 +337,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 		forecasted_timestamp = Math.floor(date.getTime() / 1000)
 	}
 
+	suntime.update(sunrise, sunset)
+
 	return {
 		timestamp: Math.floor(new Date().getTime() / 1000),
 		forecasted_timestamp,
@@ -413,8 +415,10 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		}
 
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
-		const { now, rise, set } = sunTime(lastWeather)
-		const timeOfDay = now < rise || now > set ? 'night' : 'day'
+
+		const now = Date.now()
+		const { sunrise, sunset } = suntime
+		const timeOfDay = now < sunrise || now > sunset ? 'night' : 'day'
 		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
 		icon.src = iconSrc

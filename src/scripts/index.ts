@@ -19,7 +19,7 @@ import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
-import sunTime from './utils/suntime'
+import suntime from './utils/suntime'
 
 import type { Sync, MoveKeys } from './types/sync'
 import type { Local } from './types/local'
@@ -63,8 +63,7 @@ export const freqControl = {
 				return last === 0
 
 			case 'period': {
-				const sun = sunTime()
-				return last === 0 || !sun ? true : periodOfDay(sun) !== periodOfDay(sun, +lastDate) || false
+				return last === 0 ? true : periodOfDay() !== periodOfDay(+lastDate) || false
 			}
 
 			default:
@@ -239,8 +238,9 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 	}
 
 	if (value === 'auto') {
-		const { now, rise, set } = sunTime()
-		const choice = now <= rise || now > set ? 'dark' : 'light'
+		const now = Date.now()
+		const { sunrise, sunset } = suntime
+		const choice = now <= sunrise || now > sunset ? 'dark' : 'light'
 		document.documentElement.dataset.theme = choice
 	}
 
@@ -479,7 +479,7 @@ function initTimeAndMainBlocks(time: boolean, main: boolean) {
 function startup(data: Sync, local: Local) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
-	sunTime(local.lastWeather)
+	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: data, lastWeather: local.lastWeather })
 	customFont({ font: data.font, fontface: local.fontface })
 	textShadow(data.textShadow)

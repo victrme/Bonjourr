@@ -1,4 +1,5 @@
 import langList from './langs'
+import suntime from './utils/suntime'
 
 import type { Local } from './types/local'
 import type { Hide, HideOld, Sync } from './types/sync'
@@ -239,19 +240,17 @@ export function randomString(len: number) {
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
 
-export function periodOfDay(sunTime: { rise: number; set: number; now: number }, time?: number) {
-	// Transition day and night with noon & evening collections
-	// if clock is + /- 60 min around sunrise/set
-	const { rise, set, now } = sunTime
+export function periodOfDay(time?: number) {
+	// noon & evening are + /- 60 min around sunrise/set
 
-	if (!time) time = now // no time specified ? get current from sunTime
-	else time = minutator(new Date(time)) // everything is in minutes here
+	const mins = minutator(time ? new Date(time) : new Date())
+	const { sunrise, sunset } = suntime
 
-	if (time >= 0 && time <= rise - 60) return 'night'
-	if (time <= rise + 60) return 'noon'
-	if (time <= set - 60) return 'day'
-	if (time <= set + 60) return 'evening'
-	if (time >= set + 60) return 'night'
+	if (mins >= 0 && mins <= sunrise - 60) return 'night'
+	if (mins <= sunrise + 60) return 'noon'
+	if (mins <= sunset - 60) return 'day'
+	if (mins <= sunset + 60) return 'evening'
+	if (mins >= sunset + 60) return 'night'
 
 	return 'day'
 }
