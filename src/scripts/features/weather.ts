@@ -1,14 +1,13 @@
 import { stringMaxSize, apiFetch } from '../utils'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import sunTime from '../utils/suntime'
 import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
 import { LastWeather } from '../types/local'
-import { OWMOnecall } from '../types/openweathermap'
+import { OWMCurrent, OWMOnecall } from '../types/openweathermap'
 
 type Coords = {
 	lat: number
@@ -158,10 +157,11 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 
 	const now = new Date()
 	const currentTime = Math.floor(now.getTime() / 1000)
-	const isAnHourLater = currentTime > lastWeather?.timestamp + 3600
+	const isCurrentOnly = currentTime < (lastWeather?.forecasted_timestamp ?? 0) + 43200
+	const isAnHourLater = currentTime > (lastWeather?.timestamp ?? 0) + 3600
 
 	if (navigator.onLine && isAnHourLater) {
-		const newWeather = await request(data, lastWeather)
+		const newWeather = await request(data, lastWeather, isCurrentOnly)
 
 		if (newWeather) {
 			lastWeather = newWeather
@@ -221,8 +221,8 @@ function handleGeolOption(data: Weather) {
 	sett_city.classList.toggle('shown', data.geolocation === 'off')
 }
 
-async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
-	if (!navigator.onLine) return
+async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {
+	if (!navigator.onLine) return lastWeather
 
 	//
 	// Create queries
@@ -256,12 +256,14 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	//
 	// Fetch data
 
+	let response: Response | undefined
 	let onecall: OWMOnecall | undefined
+	let current: OWMCurrent | undefined
 
 	if (queries.includes('&lat') && lang === 'en') {
 		try {
 			const masterurl = `https://openweathermap.org/data/2.5/onecall${queries}&appid=439d4b804bc8187953eb36d2a8c26a02`
-			const response = await fetch(masterurl, { signal: AbortSignal.timeout(1000) })
+			response = await fetch(masterurl, { signal: AbortSignal.timeout(2000) })
 
 			if (response.status === 200) {
 				onecall = await response.json()
@@ -272,23 +274,42 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	}
 
 	if (!onecall) {
-		const response = await apiFetch('/weather/' + queries)
-
-		// use previous data as result when keys are rate limited
-		if (response?.status === 429 && lastWeather) {
-			lastWeather.timestamp = Date.now() - 1800000 // -30min
-			return lastWeather
-		}
+		const endpoint = currentOnly ? '/weather/current/' : '/weather/'
+		const response = await apiFetch(endpoint + queries)
 
 		try {
-			onecall = (await response?.json()) as OWMOnecall
+			if (response?.status === 200) {
+				if (!!currentOnly) current = (await response?.json()) as OWMCurrent
+				if (!currentOnly) onecall = (await response?.json()) as OWMOnecall
+			}
 		} catch (error) {
 			console.log(error)
 		}
 	}
 
+	// 429 is rate limited
+	if (response?.status === 429 && lastWeather) {
+		lastWeather.timestamp = Date.now() - 1800000 // -30min
+		return lastWeather
+	}
+
+	if (!onecall && current) {
+		onecall = {
+			lat: current.coord.lat,
+			lon: current.coord.lon,
+			current: {
+				dt: Math.floor(new Date().getTime() / 1000),
+				feels_like: current.main.feels_like,
+				sunrise: current.sys.sunrise,
+				sunset: current.sys.sunset,
+				temp: current.main.temp,
+				weather: current.weather,
+			},
+		}
+	}
+
 	if (!onecall) {
-		return
+		return lastWeather
 	}
 
 	//
@@ -296,24 +317,30 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 
 	const { temp, feels_like, sunrise, sunset } = onecall.current
 	const { description, id } = onecall.current.weather[0]
+	let forecasted_high = lastWeather?.forecasted_high ?? -273.15
+	let forecasted_timestamp = lastWeather?.forecasted_timestamp ?? 0
 
-	// Late evening forecast for tomorrow
-	let date = new Date()
-	if (date.getHours() > 21) {
-		date.setDate(date.getDate() + 1)
-	}
+	if (onecall.hourly) {
+		const date = new Date()
 
-	// Get the highest temp for the specified day
-	let maxTempFromList = -273.15
-	for (const elem of onecall.hourly) {
-		if (new Date(elem.dt * 1000).getDate() === date.getDate() && maxTempFromList < elem.temp) {
-			maxTempFromList = elem.temp
+		if (date.getHours() > 20) {
+			date.setDate(date.getDate() + 1)
 		}
+
+		for (const elem of onecall.hourly) {
+			if (new Date(elem.dt * 1000).getDate() === date.getDate() && forecasted_high < elem.temp) {
+				forecasted_high = Math.round(elem.temp)
+			}
+		}
+
+		date.setHours(6, 0, 0, 0)
+		forecasted_timestamp = Math.floor(date.getTime() / 1000)
 	}
 
 	return {
 		timestamp: Math.floor(new Date().getTime() / 1000),
-		forecasted_high: Math.round(maxTempFromList),
+		forecasted_timestamp,
+		forecasted_high,
 		description,
 		feels_like,
 		icon_id: id,
@@ -436,7 +463,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 
 function handleForecastDisplay(forecast: string) {
 	const date = new Date()
-	const isLateDay = date.getHours() < 12 || date.getHours() > 21
+	const isLateDay = date.getHours() < 12 || date.getHours() > 20
 	const isTimeForForecast = forecast === 'auto' ? isLateDay : forecast === 'always'
 
 	if (isTimeForForecast && !document.getElementById('forecast')) {

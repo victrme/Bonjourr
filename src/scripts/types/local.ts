@@ -33,6 +33,7 @@ export type UnsplashImage = {
 
 export type LastWeather = {
 	temp: number
+	forecasted_timestamp: number
 	forecasted_high: number
 	feels_like: number
 	sunrise: number

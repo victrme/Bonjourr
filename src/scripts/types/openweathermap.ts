@@ -56,7 +56,7 @@ export type OWMOnecall = {
 			icon: string
 		}[]
 	}
-	hourly: {
+	hourly?: {
 		dt: number
 		temp: number
 		feels_like: number
