@@ -1,4 +1,4 @@
-import { stringMaxSize, apiFetch } from '../utils'
+import { stringMaxSize, apiFetch, minutator } from '../utils'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
@@ -155,12 +155,21 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 		return
 	}
 
-	const now = new Date()
-	const currentTime = Math.floor(now.getTime() / 1000)
-	const isCurrentOnly = currentTime < (lastWeather?.forecasted_timestamp ?? 0) + 43200
-	const isAnHourLater = currentTime > (lastWeather?.timestamp ?? 0) + 3600
+	const date = new Date()
+	const now = date.getTime()
 
-	if (navigator.onLine && isAnHourLater) {
+	// forecast is day old or we're above sunset time
+	// [ xxxxxxxxxxx | ------ sunset xxxx | ----------- ]
+	const forecast = new Date((lastWeather?.forecasted_timestamp ?? 0) * 1000)
+	const forecastFromPreviousDay = forecast.getDate() !== date.getDate() && forecast.getTime() < now
+	const forecastFromToday = forecast.getDate() === date.getDate()
+	const aboveSunset = date.getHours() > getSunsetHour()
+	const isForecastOld = forecastFromPreviousDay || (forecastFromToday && aboveSunset)
+
+	const isCurrentOnly = isForecastOld === false
+	const isAnHourLater = Math.floor(now / 1000) > (lastWeather?.timestamp ?? 0) + 3600
+
+	if (navigator.onLine && (isAnHourLater || isForecastOld)) {
 		const newWeather = await request(data, lastWeather, isCurrentOnly)
 
 		if (newWeather) {
@@ -323,7 +332,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	if (onecall.hourly) {
 		const date = new Date()
 
-		if (date.getHours() > 20) {
+		if (date.getHours() > getSunsetHour()) {
 			date.setDate(date.getDate() + 1)
 		}
 
@@ -333,7 +342,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 			}
 		}
 
-		date.setHours(6, 0, 0, 0)
+		date.setHours(0, 0, 0, 0)
 		forecasted_timestamp = Math.floor(date.getTime() / 1000)
 	}
 
@@ -416,7 +425,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
 
-		const now = Date.now()
+		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime
 		const timeOfDay = now < sunrise || now > sunset ? 'night' : 'day'
 		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
@@ -425,7 +434,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleForecastData = () => {
-		let day = tradThis(date.getHours() > 21 ? 'tomorrow' : 'today')
+		let day = tradThis(date.getHours() > getSunsetHour() ? 'tomorrow' : 'today')
 		day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
 
 		const forecastdom = document.getElementById('forecast')
@@ -467,8 +476,8 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 
 function handleForecastDisplay(forecast: string) {
 	const date = new Date()
-	const isLateDay = date.getHours() < 12 || date.getHours() > 20
-	const isTimeForForecast = forecast === 'auto' ? isLateDay : forecast === 'always'
+	const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
+	const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
 
 	if (isTimeForForecast && !document.getElementById('forecast')) {
 		const p = document.createElement('p')
@@ -479,4 +488,10 @@ function handleForecastDisplay(forecast: string) {
 	if (!isTimeForForecast) {
 		document.querySelector('#forecast')?.remove()
 	}
+}
+
+function getSunsetHour(): number {
+	const d = new Date()
+	d.setHours(Math.round(suntime.sunset / 60))
+	return d.getHours()
 }
