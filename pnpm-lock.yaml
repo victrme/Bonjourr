@@ -15,14 +15,14 @@ devDependencies:
     specifier: ^0.0.217
     version: 0.0.217
   '@types/gulp':
-    specifier: ^4.0.16
-    version: 4.0.16
+    specifier: ^4.0.17
+    version: 4.0.17
   '@types/gulp-rename':
-    specifier: ^2.0.4
-    version: 2.0.4
+    specifier: ^2.0.5
+    version: 2.0.5
   '@types/gulp-sass':
-    specifier: ^5.0.3
-    version: 5.0.3
+    specifier: ^5.0.4
+    version: 5.0.4
   deepmerge:
     specifier: ^4.3.1
     version: 4.3.1
@@ -51,8 +51,8 @@ devDependencies:
     specifier: ^1.9.3
     version: 1.9.3
   sass:
-    specifier: ^1.69.4
-    version: 1.69.4
+    specifier: ^1.69.5
+    version: 1.69.5
   typescript:
     specifier: ^5.2.2
     version: 5.2.2
@@ -266,106 +266,106 @@ packages:
   /@types/chrome@0.0.217:
     resolution: {integrity: sha512-q8fLzCCoHiR9gYRoqvrx12+HaJjRTqUom5Ks/wLSR8Ac83qAqWaA4NgUBUcDjM1O1ACczygxIHCEENXs1zmbqQ==}
     dependencies:
-      '@types/filesystem': 0.0.34
-      '@types/har-format': 1.2.14
+      '@types/filesystem': 0.0.35
+      '@types/har-format': 1.2.15
     dev: true
 
   /@types/expect@1.20.4:
     resolution: {integrity: sha512-Q5Vn3yjTDyCMV50TB6VRIbQNxSE4OmZR86VSbGaNpfUolm0iePBB4KdEEHmxoY5sT2+2DIvXW0rvMDP2nHZ4Mg==}
     dev: true
 
-  /@types/filesystem@0.0.34:
-    resolution: {integrity: sha512-La4bGrgck8/rosDUA1DJJP8hrFcKq0BV6JaaVlNnOo1rJdJDcft3//slEbAmsWNUJwXRCc0DXpeO40yuATlexw==}
+  /@types/filesystem@0.0.35:
+    resolution: {integrity: sha512-1eKvCaIBdrD2mmMgy5dwh564rVvfEhZTWVQQGRNn0Nt4ZEnJ0C8oSUCzvMKRA4lGde5oEVo+q2MrTTbV/GHDCQ==}
     dependencies:
-      '@types/filewriter': 0.0.31
+      '@types/filewriter': 0.0.32
     dev: true
 
-  /@types/filewriter@0.0.31:
-    resolution: {integrity: sha512-12df1utOvPC80+UaVoOO1d81X8pa5MefHNS+gWX9R2ucSESpMz9K5QwlTWDGKASrzCpSFwj7NPYh+nTsolgEGA==}
+  /@types/filewriter@0.0.32:
+    resolution: {integrity: sha512-Kpi2GXQyYJdjL8mFclL1eDgihn1SIzorMZjD94kdPZh9E4VxGOeyjPxi5LpsM4Zku7P0reqegZTt2GxhmA9VBg==}
     dev: true
 
-  /@types/glob-stream@8.0.1:
-    resolution: {integrity: sha512-sR8FnsG9sEkjKasMSYbRmzaSVYmY76ui0t+T+9BE2Wr/ansAKfNsu+xT0JvZL+7DDQDO/MPTg6g8hfNdhYWT2g==}
+  /@types/glob-stream@8.0.2:
+    resolution: {integrity: sha512-kyuRfGE+yiSJWzSO3t74rXxdZNdYfLcllO0IUha4eX1fl40pm9L02Q/TEc3mykTLjoWz4STBNwYnUWdFu3I0DA==}
     dependencies:
-      '@types/node': 20.8.7
-      '@types/picomatch': 2.3.2
-      '@types/streamx': 2.9.3
+      '@types/node': 20.9.0
+      '@types/picomatch': 2.3.3
+      '@types/streamx': 2.9.4
     dev: true
 
-  /@types/gulp-rename@2.0.4:
-    resolution: {integrity: sha512-dhhbD+PlIGmxpYiSsLsTgMsyfqmwemlM6gnM2hXzDh68knKocRDBq/CNRhbGlAZkUH/7zCbEvadxQXQJtanMPw==}
+  /@types/gulp-rename@2.0.5:
+    resolution: {integrity: sha512-rD03kpi7CXZ5pTza4AtWqM3Btbte9y5yAPmqWGgHLNSMPbDCJVUGjQ2Ul6P48X7Sw9JDZlPtW6cXHntTmKeywA==}
     dependencies:
-      '@types/node': 20.8.7
-      '@types/vinyl': 2.0.9
+      '@types/node': 20.9.0
+      '@types/vinyl': 2.0.10
     dev: true
 
-  /@types/gulp-sass@5.0.3:
-    resolution: {integrity: sha512-vYpPfcPGe5PV686UNVhiwS1FAM1RRGayN6evx23Zd+4rnpzMYypgfuOY7Z51Jt2NPzvvCu82Vqd/Q0Rxr1EGew==}
+  /@types/gulp-sass@5.0.4:
+    resolution: {integrity: sha512-wDgpyM9fRq/k7kn1ZGcoY69Pj8+AlB50U9TKmBdbmHUduy+4b7WZ1zrDl4df43W+IqJegEgen6XAKO2+/RQILA==}
     dependencies:
-      '@types/node': 20.8.7
-      '@types/node-sass': 4.11.6
+      '@types/node': 20.9.0
+      '@types/node-sass': 4.11.7
     dev: true
 
-  /@types/gulp@4.0.16:
-    resolution: {integrity: sha512-yY3XJjYejEzIQqLt6ZXaOZ/jynVxUe7Km33XA1/sU2zfZ2AeFDragIcT+i53a+j7eoWPgVeikhFvtC0gCteBdA==}
+  /@types/gulp@4.0.17:
+    resolution: {integrity: sha512-+pKQynu2C/HS16kgmDlAicjtFYP8kaa86eE9P0Ae7GB5W29we/E2TIdbOWtEZD5XkpY+jr8fyqfwO6SWZecLpQ==}
     dependencies:
-      '@types/node': 20.8.7
-      '@types/undertaker': 1.2.10
-      '@types/vinyl-fs': 3.0.4
+      '@types/node': 20.9.0
+      '@types/undertaker': 1.2.11
+      '@types/vinyl-fs': 3.0.5
       chokidar: 3.5.3
     dev: true
 
-  /@types/har-format@1.2.14:
-    resolution: {integrity: sha512-pEmBAoccWvO6XbSI8A7KvIDGEoKtlLWtdqVCKoVBcCDSFvR4Ijd7zGLu7MWGEqk2r8D54uWlMRt+VZuSrfFMzQ==}
+  /@types/har-format@1.2.15:
+    resolution: {integrity: sha512-RpQH4rXLuvTXKR0zqHq3go0RVXYv/YVqv4TnPH95VbwUxZdQlK1EtcMvQvMpDngHbt13Csh9Z4qT9AbkiQH5BA==}
     dev: true
 
-  /@types/node-sass@4.11.6:
-    resolution: {integrity: sha512-Qkf5Fs9zzsXchenUY7oVdIHyv8FtPgqIXqOJzhh3FDqpYjqvc/gtZ3hlZVFmKQhl7wyI4+WkRbYufYC5pfY7iw==}
+  /@types/node-sass@4.11.7:
+    resolution: {integrity: sha512-QY0sXZGPRzJ2obo66f9zB6S0Uo9PRdcoPKPbyftSoKXub90s4ut/JK3fYHOqmhYhRRVEB3P5o5rEnq2/bWBdeg==}
     dependencies:
-      '@types/node': 20.8.7
+      '@types/node': 20.9.0
     dev: true
 
-  /@types/node@20.8.7:
-    resolution: {integrity: sha512-21TKHHh3eUHIi2MloeptJWALuCu5H7HQTdTrWIFReA8ad+aggoX+lRes3ex7/FtpC+sVUpFMQ+QTfYr74mruiQ==}
+  /@types/node@20.9.0:
+    resolution: {integrity: sha512-nekiGu2NDb1BcVofVcEKMIwzlx4NjHlcjhoxxKBNLtz15Y1z7MYf549DFvkHSId02Ax6kGwWntIBPC3l/JZcmw==}
     dependencies:
-      undici-types: 5.25.3
+      undici-types: 5.26.5
     dev: true
 
-  /@types/picomatch@2.3.2:
-    resolution: {integrity: sha512-I+BytjxOlNYA285zP/3dVCRcE+OAvgHQZQt26MP7T7JbZ9DM/3W2WfViU1XuLypCzAx8PTC+MlYO3WLqjTyZ3g==}
+  /@types/picomatch@2.3.3:
+    resolution: {integrity: sha512-Yll76ZHikRFCyz/pffKGjrCwe/le2CDwOP5F210KQo27kpRE46U2rDnzikNlVn6/ezH3Mhn46bJMTfeVTtcYMg==}
     dev: true
 
-  /@types/streamx@2.9.3:
-    resolution: {integrity: sha512-D2eONMpz0JX15eA4pxylNVzq4kyqRRGqsMIxIjbfjDGaHMaoCvgFWn2+EkrL8/gODCvbNcPIVp7Eecr/+PX61g==}
+  /@types/streamx@2.9.4:
+    resolution: {integrity: sha512-0M4RKl0MJnST4TtMTg/gcoeQMniMyZW4x+FpI78X2/ksdxC99P9tUgk8K56McWXMrptZ3/A+c39lSIEGrXJ3Rw==}
     dependencies:
-      '@types/node': 20.8.7
+      '@types/node': 20.9.0
     dev: true
 
-  /@types/undertaker-registry@1.0.3:
-    resolution: {integrity: sha512-9wabQxkMB6Nb6FuPxvLQiMLBT2KkJXxgC9RoehnSSCvVzrag5GKxI5pekcgnMcZaGupuJOd0CLT+8ZwHHlG5vQ==}
+  /@types/undertaker-registry@1.0.4:
+    resolution: {integrity: sha512-tW77pHh2TU4uebWXWeEM5laiw8BuJ7pyJYDh6xenOs75nhny2kVgwYbegJ4BoLMYsIrXaBpKYaPdYO3/udG+hg==}
     dev: true
 
-  /@types/undertaker@1.2.10:
-    resolution: {integrity: sha512-UzbgxdP5Zn0UlaLGF8CxXGpP7MCu/Y/b/24Kj3dK0J3+xOSmAGJw4JJKi21avFNuUviG59BMBUdrcL+KX+z7BA==}
+  /@types/undertaker@1.2.11:
+    resolution: {integrity: sha512-j1Z0V2ByRHr8ZK7eOeGq0LGkkdthNFW0uAZGY22iRkNQNL9/vAV0yFPr1QN3FM/peY5bxs9P+1f0PYJTQVa5iA==}
     dependencies:
-      '@types/node': 20.8.7
-      '@types/undertaker-registry': 1.0.3
+      '@types/node': 20.9.0
+      '@types/undertaker-registry': 1.0.4
       async-done: 1.3.2
     dev: true
 
-  /@types/vinyl-fs@3.0.4:
-    resolution: {integrity: sha512-UIdM4bMUcWky41J0glmBx4WnCiF48J7Q2S0LJ8heFmZiB7vHeLOHoLx1ABxu4lY6eD2FswVp47cSIc1GFFJkbw==}
+  /@types/vinyl-fs@3.0.5:
+    resolution: {integrity: sha512-ckYz9giHgV6U10RFuf9WsDQ3X86EFougapxHmmoxLK7e6ICQqO8CE+4V/3lBN148V5N1pb4nQMmMjyScleVsig==}
     dependencies:
-      '@types/glob-stream': 8.0.1
-      '@types/node': 20.8.7
-      '@types/vinyl': 2.0.9
+      '@types/glob-stream': 8.0.2
+      '@types/node': 20.9.0
+      '@types/vinyl': 2.0.10
     dev: true
 
-  /@types/vinyl@2.0.9:
-    resolution: {integrity: sha512-KCr4aTEUkzSF89qw09e2oxsC/RXXT3K5ZPv4gvj3XTiWVrxNoi7WrqNTahNE/Hul5C9z3B8w+yWNTQgua12oag==}
+  /@types/vinyl@2.0.10:
+    resolution: {integrity: sha512-DqN5BjCrmjAtZ1apqzcq2vk2PSW0m1nFfjIafBFkAyddmHxuw3ZAK3omLiSdpuu81+8h07i6U4DtaE38Xsf2xQ==}
     dependencies:
       '@types/expect': 1.20.4
-      '@types/node': 20.8.7
+      '@types/node': 20.9.0
     dev: true
 
   /ansi-colors@1.1.0:
@@ -1115,8 +1115,8 @@ packages:
     resolution: {integrity: sha512-SVSF7ikuWKhpAW4l4wapAqPPSToJoiNKsbDoUnRrSgwZHH7lH8pbPeQj1aOVYQrbZKhfSVBxVW+Py7vtulRktw==}
     engines: {node: '>=10'}
     dependencies:
-      '@types/node': 20.8.7
-      '@types/vinyl': 2.0.9
+      '@types/node': 20.9.0
+      '@types/vinyl': 2.0.10
       istextorbinary: 3.3.0
       replacestream: 4.0.3
       yargs-parser: 21.1.1
@@ -1882,8 +1882,8 @@ packages:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
     dev: true
 
-  /sass@1.69.4:
-    resolution: {integrity: sha512-+qEreVhqAy8o++aQfCJwp0sklr2xyEzkm9Pp/Igu9wNPoe7EZEQ8X/MBvvXggI2ql607cxKg/RKOwDj6pp2XDA==}
+  /sass@1.69.5:
+    resolution: {integrity: sha512-qg2+UCJibLr2LCVOt3OlPhr/dqVHWOa9XtZf2OjbLs/T4VPSJ00udtgJxH3neXZm+QqX8B+3cU7RaLqp1iVfcQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -2119,8 +2119,8 @@ packages:
       undertaker-registry: 1.0.1
     dev: true
 
-  /undici-types@5.25.3:
-    resolution: {integrity: sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==}
+  /undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
 
   /unique-stream@2.3.1:
