@@ -38,15 +38,15 @@ function html(platform) {
 	}
 }
 
-function scripts(platform) {
+function scripts(platform, prod) {
 	return () => {
 		esbuild.buildSync({
 			entryPoints: ['src/scripts/index.ts'],
 			outfile: 'release/online/src/scripts/main.js',
 			format: 'iife',
 			bundle: true,
-			minifySyntax: true,
-			minifyWhitespace: true,
+			minifySyntax: prod,
+			minifyWhitespace: prod,
 		})
 
 		return src('release/online/src/scripts/main.js').pipe(dest(`release/${platform}/src/scripts`))
@@ -106,24 +106,24 @@ function locales(platform) {
 const filesToWatch = ['./_locales/**', './src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
 
 // prettier-ignore
-const taskOnline = () => [
+const taskOnline = (prod) => [
 	html('online'),
 	styles('online'),
 	worker('online'),
-	manifest('online'),
-	scripts('online'),
 	locales('online'),
+	manifest('online'),
+	scripts('online', prod),
 	ressources('online', false),
 ]
 
-const taskExtension = (from) => [
+const taskExtension = (from, prod) => [
 	html(from),
 	worker(from),
 	styles(from),
 	locales(from),
 	manifest(from),
 	ressources(from),
-	scripts(from),
+	scripts(from, prod),
 ]
 
 //
@@ -152,8 +152,8 @@ export const safari = async function () {
 
 export const build = parallel(
 	...taskOnline(),
-	...taskExtension('firefox'),
-	...taskExtension('chrome'),
-	...taskExtension('edge'),
-	...taskExtension('safari')
+	...taskExtension('firefox', true),
+	...taskExtension('chrome', true),
+	...taskExtension('edge', true),
+	...taskExtension('safari', true)
 )
