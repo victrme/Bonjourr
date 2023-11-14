@@ -7,7 +7,7 @@ import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
 import { LastWeather } from '../types/local'
-import { OWMCurrent, OWMOnecall } from '../types/openweathermap'
+import { OWMCurrent, OWMOnecall } from '../types/apis/openweathermap'
 
 type Coords = {
 	lat: number

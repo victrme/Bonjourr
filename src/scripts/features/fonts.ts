@@ -8,7 +8,7 @@ import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
 
-import { google } from '../types/googleFonts'
+import { google } from '../types/apis/googleFonts'
 import { Font } from '../types/sync'
 
 type FontList = {

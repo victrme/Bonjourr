@@ -1,4 +1,12 @@
-import { OWMOnecall } from './openweathermap'
+import { OWMOnecall } from './apis/openweathermap'
+import langs from '../langs'
+
+type Langs = keyof typeof langs
+
+type Translations = {
+	lang: Langs
+	[key: string]: string
+}
 
 export type Quote = {
 	author: string
@@ -52,6 +60,6 @@ export type Local = {
 	userQuoteSelection: number
 	quotesCache: Quote[]
 	unsplashCache: UnsplashCache
-	translations: { [key: string]: string }
+	translations?: Translations
 	lastWeather?: LastWeather
 }

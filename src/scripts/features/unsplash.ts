@@ -7,8 +7,8 @@ import superinput from '../utils/superinput'
 import storage from '../storage'
 
 import type { UnsplashCache, UnsplashImage } from '../types/local'
+import type { UnsplashAPI } from '../types/apis/unsplash'
 import type { Unsplash, Sync } from '../types/sync'
-import type { UnsplashAPI } from '../types/unsplash'
 
 type UnsplashInit = {
 	unsplash: Unsplash
