@@ -2,7 +2,7 @@ import langList from './langs'
 import suntime from './utils/suntime'
 
 import type { Local } from './types/local'
-import type { Hide, HideOld, Sync } from './types/sync'
+import type { Sync } from './types/sync'
 
 type LangList = keyof typeof langList
 
@@ -13,6 +13,15 @@ type LangList = keyof typeof langList
 const protocol = window.location.protocol
 const userAgent = window.navigator.userAgent.toLowerCase()
 const appVersion = window.navigator.appVersion
+
+const defaultlang = (() => {
+	for (const code of Object.keys(langList)) {
+		if (navigator.language.replace('-', '_').includes(code)) {
+			return code as LangList
+		}
+	}
+	return 'en'
+})()
 
 export const SYSTEM_OS = appVersion.includes('Macintosh')
 	? 'mac'
@@ -56,6 +65,7 @@ const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjou
 export const SYNC_DEFAULT: Sync = {
 	about: { browser: PLATFORM, version: '1.18.1' },
 	showall: false,
+	lang: defaultlang,
 	dark: 'system',
 	favicon: '',
 	tabtitle: '',
@@ -159,14 +169,6 @@ export const SYNC_DEFAULT: Sync = {
 			},
 		},
 	},
-	lang: (() => {
-		for (const code of Object.keys(langList)) {
-			if (navigator.language.replace('-', '_').includes(code)) {
-				return code as LangList
-			}
-		}
-		return 'en'
-	})(),
 }
 
 export const LOCAL_DEFAULT: Local = {
@@ -253,20 +255,6 @@ export function periodOfDay(time?: number) {
 	if (mins >= sunset + 60) return 'night'
 
 	return 'day'
-}
-
-export function convertHideStorage(old: Hide | HideOld) {
-	if (!Array.isArray(old)) return old
-	let hide: Hide = {}
-
-	if (old[0][0]) hide.clock = true
-	if (old[0][1]) hide.date = true
-	if (old[1][0]) hide.greetings = true
-	if (old[1][1]) hide.weatherdesc = true
-	if (old[1][2]) hide.weathericon = true
-	if (old[3][0]) hide.settingsicon = true
-
-	return hide
 }
 
 export function bundleLinks(data: Sync): Link[] {

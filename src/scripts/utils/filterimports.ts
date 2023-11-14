@@ -1,4 +1,4 @@
-import { SYNC_DEFAULT, convertHideStorage, randomString, bundleLinks } from '../utils'
+import { SYNC_DEFAULT, randomString, bundleLinks } from '../utils'
 import { gridWidget } from '../features/move'
 import merge from 'deepmerge'
 
@@ -6,9 +6,29 @@ import type { MoveKeys, Sync, Move } from '../types/sync'
 
 export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	//
+
+	// <1.18.1 Improved geolocation, removed lastState in sync
+	if (toImport.weather && toImport.weather?.geolocation === undefined) {
+		const oldLocation = toImport.weather?.location ?? []
+
+		toImport.weather.geolocation = 'approximate'
+		toImport.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
+
+		delete toImport.weather.location
+		//@ts-ignore
+		delete toImport.weather.lastState
+		//@ts-ignore
+		delete toImport.weather.lastCall
+	}
+
 	// <1.16.0 hide is now ids object, not number array
 	if (Array.isArray(toImport.hide)) {
-		toImport.hide = convertHideStorage(toImport.hide)
+		if (toImport.hide[0][0]) toImport.hide.clock = true
+		if (toImport.hide[0][1]) toImport.hide.date = true
+		if (toImport.hide[1][0]) toImport.hide.greetings = true
+		if (toImport.hide[1][1]) toImport.hide.weatherdesc = true
+		if (toImport.hide[1][2]) toImport.hide.weathericon = true
+		if (toImport.hide[3][0]) toImport.hide.settingsicon = true
 
 		toImport.time = !(toImport.hide.clock && toImport.hide.date) ?? true
 		toImport.main = !(toImport.hide.weatherdesc && toImport.hide.weathericon && toImport.hide.weathericon) ?? true
