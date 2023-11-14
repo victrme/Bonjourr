@@ -1,3 +1,10 @@
+## 1.18.2
+
+-   Re-added 1.18.0 forecast optimisations
+-   Requests tomorrow's forecast based on sunset time
+-   Fixed rare case where the page would spam weather calls
+-   #247 Fixed quick links events not working
+
 ## 1.18.1
 
 -   Changes:
