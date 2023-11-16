@@ -1,5 +1,6 @@
 export default {
 	en: 'English',
+	fa: 'فارسی',
 	fr: 'Français',
 	sk: 'Slovenský',
 	sv: 'Svenska',
