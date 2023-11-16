@@ -1106,6 +1106,11 @@
 		transition: opacity 0.2s, left 0.4s;
 	}
 
+	&.folder #e_url,
+	&.folder #e_iconurl {
+		display: none;
+	}
+
 	input[type='text'],
 	input[type='url'] {
 		color: var(--color-dialog-input-text);

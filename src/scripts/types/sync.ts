@@ -1,5 +1,24 @@
 import { UnsplashImage } from './local'
 
+export type LinkFolder = {
+	type: 'folder'
+	_id: string
+	ids: string[]
+	order: number
+	title: string
+}
+
+export type LinkElem = {
+	type: 'elem'
+	_id: string
+	order: number
+	title: string
+	icon: string
+	url: string
+}
+
+export type Link = LinkElem | LinkFolder
+
 export type Clock = {
 	ampm: boolean
 	analog: boolean
@@ -134,5 +153,6 @@ export type Sync = {
 	move: Move
 	textShadow: number
 	about: { browser: string; version: string }
+	tabs?: { name: string; ids: string[] }[]
 	[key: string]: Link | unknown
 }
