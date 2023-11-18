@@ -5,7 +5,12 @@ export default async function hideElements(hide: Hide = {}, options?: { isEvent:
 	//
 	if (options?.isEvent) {
 		const sync = await storage.sync.get('hide')
-		hide = { ...sync.hide, ...hide }
+
+		hide = {
+			...sync.hide, // ⚠️ sync must be first. If not, event doesn't save
+			...hide,
+		}
+
 		storage.sync.set({ hide })
 	}
 
