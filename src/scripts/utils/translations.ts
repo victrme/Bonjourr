@@ -45,10 +45,10 @@ export async function toggleTraduction(lang: string) {
 	let currentDict = { ...trns }
 	let text: string
 
+	setTextDirection(lang)
+
 	await setTranslationCache(lang)
 	newDict = (await storage.local.get('translations')).translations
-
-	setTextDirection(lang)
 
 	// old lang is 'en'
 	if (currentDict?.lang === undefined) {
