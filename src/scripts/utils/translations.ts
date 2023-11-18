@@ -1,19 +1,24 @@
-import parse from './JSONparse'
+import storage from '../storage'
+import { Local } from '../types/local'
 
-let trns: { [key: string]: string } = {}
+type Dict = { [key: string]: string }
 
-export async function setTranslationCache(lang: string) {
+let trns: Dict = {}
+
+export async function setTranslationCache(lang: string, local?: Local, isUpdate?: boolean) {
 	if (lang === 'en') {
-		localStorage.removeItem('translations')
+		storage.local.remove('translations')
 		trns = {}
 		return
 	}
 
-	trns = parse(localStorage.translations) ?? {}
+	if (!isUpdate) {
+		trns = local?.translations ?? (await storage.local.get('translations'))?.translations
+	}
 
 	if (trns?.lang !== lang) {
-		localStorage.translations = await (await fetch(`../../../_locales/${lang}/translations.json`)).text()
-		trns = parse(localStorage.translations) ?? {}
+		trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
+		storage.local.set({ translations: trns })
 	}
 }
 
@@ -29,19 +34,21 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 		tag.textContent = (trns[text] as string) ?? text
 	}
 
+	setTextDirection(lang)
 	document.documentElement.setAttribute('lang', lang)
 }
 
 export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
-	let newDict: { [key: string]: string } = {}
-	let toggleDict: { [key: string]: string } = {}
+	let newDict: Dict = {}
+	let toggleDict: Dict = {}
 	let currentDict = { ...trns }
 	let text: string
 
-	await setTranslationCache(lang)
+	setTextDirection(lang)
 
-	newDict = parse(localStorage.translations) ?? {}
+	await setTranslationCache(lang)
+	newDict = (await storage.local.get('translations')).translations
 
 	// old lang is 'en'
 	if (currentDict?.lang === undefined) {
@@ -61,4 +68,12 @@ export async function toggleTraduction(lang: string) {
 
 export function tradThis(str: string): string {
 	return trns[str] ?? str
+}
+
+function setTextDirection(lang: string) {
+	if (lang === 'fa') {
+		document.body.style.direction = 'rtl'
+	} else {
+		document.body.style.removeProperty('direction')
+	}
 }

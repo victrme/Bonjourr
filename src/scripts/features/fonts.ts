@@ -1,26 +1,30 @@
-import { canDisplayInterface } from '..'
+import { canDisplayInterface } from '../index'
 import storage from '../storage'
 
-import errorMessage from '../utils/errorMessage'
+import { PLATFORM, SYSTEM_OS } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
-import { testOS } from '../utils'
+import onSettingsLoad from '../utils/onsettingsload'
+import errorMessage from '../utils/errormessage'
+import { tradThis } from '../utils/translations'
+import superinput from '../utils/superinput'
 
 import { google } from '../types/googleFonts'
 import { Font } from '../types/sync'
-import parse from '../utils/JSONparse'
 
 type FontList = {
 	family: string
-	variants: string[]
+	weights: string[]
+	variable: boolean
 }[]
 
 type FontUpdateEvent = {
 	autocomplete?: HTMLElement
-	initsettings?: HTMLElement
 	size?: string
 	family?: string
 	weight?: string
 }
+
+const familyInput = superinput('i_customfont')
 
 const systemfont = (function () {
 	const fonts = {
@@ -31,24 +35,20 @@ const systemfont = (function () {
 		apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
 	}
 
-	const { windows, android, mac, ios } = testOS
-	const notAppleOrWindows = !mac && !windows && !ios
-
-	if (windows) return fonts.windows
-	if (android) return fonts.android
-	if (mac || ios) return fonts.apple
-	if (notAppleOrWindows) return fonts.linux
-
-	return fonts.fallback
+	if (SYSTEM_OS === 'windows') return fonts.windows
+	else if (SYSTEM_OS === 'android') return fonts.android
+	else if (SYSTEM_OS === 'mac') return fonts.apple
+	else if (SYSTEM_OS === 'ios') return fonts.apple
+	else return fonts.linux
 })()
 
 // Needs a special method to detect system fonts.
 // Because of fingerprinting concerns,
 // Firefox and safari made fonts.check() useless
-function systemFontChecker(family: string) {
+function systemFontChecker(family: string): boolean {
 	const p = document.createElement('p')
 	p.setAttribute('style', 'position: absolute; opacity: 0; font-family: invalid font;')
-	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890'
+	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
 	document.getElementById('interface')?.prepend(p)
 
 	const first_w = p.getBoundingClientRect().width
@@ -62,8 +62,24 @@ function systemFontChecker(family: string) {
 	return hasLoadedFont
 }
 
+async function waitForFontLoad(family: string): Promise<Boolean> {
+	return new Promise((resolve) => {
+		let limitcounter = 0
+		let hasLoadedFont = systemFontChecker(family)
+		let interval = setInterval(() => {
+			if (hasLoadedFont || limitcounter === 100) {
+				clearInterval(interval)
+				return resolve(true)
+			} else {
+				hasLoadedFont = systemFontChecker(family)
+				limitcounter++
+			}
+		}, 100)
+	})
+}
+
 async function fetchFontList() {
-	const fonts = parse(localStorage.fonts) ?? []
+	const fonts = (await storage.local.get('fonts')).fonts ?? []
 
 	if (fonts.length > 0) {
 		return fonts as FontList
@@ -75,7 +91,7 @@ async function fetchFontList() {
 
 	// Get list from API
 	const a = 'QUl6YVN5QWt5M0pZYzJyQ09MMWpJc3NHQmdMcjFQVDR5VzE1ak9r'
-	const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=' + window.atob(a)
+	const url = 'https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&capability=VF&key=' + window.atob(a)
 	const resp = await fetch(url)
 
 	// return nothing if smth wrong, will try to fetch next time
@@ -91,15 +107,44 @@ async function fetchFontList() {
 		const noRegulars = (arr: string[]) => arr.map((weight) => weight.replace('regular', '400'))
 		const noItalics = (arr: string[]) => arr.filter((str) => !str.includes('italic'))
 
-		const list = json.items.map((item) => ({ family: item.family, variants: noRegulars(noItalics(item.variants)) }))
+		let weights: string[] = []
+		let list: FontList = []
 
-		localStorage.fonts = JSON.stringify(list)
+		for (const item of json.items) {
+			//
+			// If variable, infer weights from axes
+			if (!!item?.axes) {
+				// Some variable fonts doesn't have wght
+				if (item.axes.some((axe) => axe.tag === 'wght')) {
+					const { start, end } = item.axes.filter((axe) => axe.tag === 'wght')[0]
+					for (let ii = start; ii <= end; ii += 100) {
+						weights.push(ii.toString())
+					}
+				} else {
+					weights = ['400']
+				}
+
+				//
+			} else {
+				weights = noRegulars(noItalics(item.variants))
+			}
+
+			list.push({
+				family: item.family,
+				variable: !!item?.axes,
+				weights,
+			})
+
+			weights = []
+		}
+
+		storage.local.set({ fonts: list })
 
 		return list as FontList
 	}
 }
 
-async function fetchFontface(url: string) {
+async function fetchFontface(url: string): Promise<string | null> {
 	if (!url) {
 		return null
 	}
@@ -109,38 +154,48 @@ async function fetchFontface(url: string) {
 		const text = await resp.text()
 		const fontface = text.replace(/(\r\n|\n|\r|  )/gm, '')
 
+		setFontFace(fontface)
+
 		return fontface
 	} catch (error) {
 		return null
 	}
 }
 
-async function getNewFont(list: FontList, currentFamily: string) {
+async function getNewFont(currentFamily: string): Promise<Partial<Font> | null> {
+	const list = (await fetchFontList()) ?? []
 	const foundFonts = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
 
 	if (foundFonts.length > 0) {
-		let { family, variants } = foundFonts[0]
+		let { family, weights, variable } = foundFonts[0]
+		let url = 'https://fonts.googleapis.com/'
 
-		// All this because google fonts API fails
-		// when fetching variable weights on non variable fonts (smh google)
-		const variableFontList = ((await (await fetch('src/assets/variablefonts.json')).json()) as string[]) ?? []
-		const fontIsVariable = variableFontList.includes(family)
-		const weights = fontIsVariable ? `${variants[0]}..${variants.at(-1)}` : variants.join(';')
-		const url = encodeURI(`https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weights}`)
+		// no variable fonts on firefox because of aggregious load times (~70ms)
+		if (variable && PLATFORM !== 'firefox') {
+			const wght = weights.length > 1 ? `:wght@${weights[0]}..${weights.at(-1)}` : ''
+			url += encodeURI(`css2?family=${family.replace(/ /g, '+')}${wght}`)
+		} else {
+			const wght = weights.length > 1 ? `:${weights.join(',')}` : ''
+			url += encodeURI(`css?family=${family.replace(/ /g, '+')}${wght}`)
+		}
 
 		return {
 			url,
 			family,
 			weight: '400',
-			availWeights: variants,
+			availWeights: weights,
 		}
 	}
 
-	return {
-		url: '',
-		family: '',
-		availWeights: [] as string[],
-		weight: testOS.windows ? '400' : '300',
+	return null
+}
+
+function setFontFace(fontface: string | null) {
+	if (typeof fontface === 'string') {
+		const domfontface = document.createElement('style') as HTMLStyleElement
+		domfontface.className = 'fontface'
+		domfontface.textContent = fontface
+		document.querySelector('head')?.appendChild(domfontface)
 	}
 }
 
@@ -155,8 +210,7 @@ function setWeight(family: string, weight: string) {
 	document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight) // Default bonjourr lowers font weight on clock (because we like it)
 }
 
-function setFamily(family: string, fontface: string) {
-	document.getElementById('fontstyle')!.textContent = fontface
+function setFamily(family: string) {
 	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
 }
 
@@ -190,16 +244,17 @@ async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
 	})
 }
 
-async function initFontSettings(settingsDom: HTMLElement, font: Font | null) {
+async function initFontSettings(font: Font | null) {
+	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.availWeights.length > 0
 	const weights = hasCustomWeights ? font.availWeights : systemfont.weights
 	const family = font?.family || systemfont.placeholder
 
-	settingsDom.querySelector('#i_customfont')?.setAttribute('placeholder', family)
-	setWeightSettings(weights, settingsDom)
+	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
+	setWeightSettings(weights, settings)
 
 	if (font?.url) {
-		setAutocompleteSettings(settingsDom)
+		setAutocompleteSettings(settings)
 	}
 }
 
@@ -208,19 +263,21 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	const isRemovingFamily = typeof family === 'string' && family.length === 0
 	const isChangingFamily = typeof family === 'string' && family.length > 1
 
-	const { font } = await storage.get('font')
+	const { font } = await storage.sync.get('font')
 
 	if (isRemovingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLInputElement
-		const domstyle = document.getElementById('fontstyle') as HTMLStyleElement
-		const baseWeight = testOS.windows ? '400' : '300'
+		const baseWeight = SYSTEM_OS === 'windows' ? '400' : '300'
 
-		domstyle.textContent = ''
 		document.documentElement.style.setProperty('--font-family', '')
 		document.documentElement.style.setProperty('--font-weight-clock', '200')
 		document.documentElement.style.setProperty('--font-weight', baseWeight)
 
-		localStorage.removeItem('fontface')
+		for (const el of document.querySelectorAll('.fontface')) {
+			el.remove()
+		}
+
+		storage.local.remove('fontface')
 
 		setWeight('', '400')
 		setWeightSettings(systemfont.weights)
@@ -235,7 +292,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	if (isChangingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLSelectElement
 
-		let fontface = ''
+		let fontface: string | null = null
 		let newfont = {
 			url: '',
 			family: '',
@@ -246,22 +303,32 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 		if (systemFontChecker(family)) {
 			newfont.family = family
 		} else {
-			const fontlist = (await fetchFontList()) ?? []
-			newfont = await getNewFont(fontlist, family)
-			fontface = (await fetchFontface(newfont.url)) ?? ''
+			familyInput.load()
+
+			const googlefont = await getNewFont(family)
+
+			if (googlefont && navigator.onLine) {
+				newfont = { ...newfont, ...googlefont }
+				fontface = await fetchFontface(newfont.url)
+
+				await waitForFontLoad(family)
+				familyInput.toggle(false, family)
+
+				storage.local.set({ fontface })
+			}
 		}
 
-		if (newfont.family) {
-			setFamily(family, fontface)
-			setWeight(family, '400')
-			i_weight.value = '400'
-			localStorage.fontface = fontface
-			setWeightSettings(newfont.availWeights)
-			eventDebounce({ font: { size: font.size, ...newfont } })
-
-			i_customfont.value = ''
-			i_customfont.placeholder = family
+		if (newfont.family === '') {
+			familyInput.warn(`Cannot load "${family}"`)
+			return
 		}
+
+		setFamily(family)
+		setWeight(family, '400')
+		i_weight.value = '400'
+
+		setWeightSettings(newfont.availWeights)
+		eventDebounce({ font: { size: font.size, ...newfont } })
 	}
 
 	if (weight) {
@@ -277,11 +344,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	}
 }
 
-export default async function customFont(init: Font | null, event?: FontUpdateEvent) {
-	if (event?.initsettings) {
-		return initFontSettings(event?.initsettings, init)
-	}
-
+export default async function customFont(init: { font: Font; fontface?: string } | null, event?: FontUpdateEvent) {
 	if (event?.autocomplete) {
 		return setAutocompleteSettings(event?.autocomplete)
 	}
@@ -292,20 +355,28 @@ export default async function customFont(init: Font | null, event?: FontUpdateEv
 
 	if (init) {
 		try {
-			setSize(init.size)
-			setWeight(init.family, init.weight)
+			const { size, family, weight, url } = init.font
 
-			if (init.family) {
-				let fontface = localStorage.fontface
+			setSize(size)
+			setWeight(family, weight)
+			setFamily(family)
 
-				if (init.url && !fontface?.includes('@font-face')) {
-					fontface = await fetchFontface(init.url)
-					localStorage.fontface = fontface
+			if (url) {
+				let fontface: string | null = init.fontface ?? ''
+
+				if (!fontface.includes('@font-face') || !fontface.includes(family)) {
+					fontface = await fetchFontface(url)
+					if (fontface) storage.local.set({ fontface })
 				}
 
-				setFamily(init.family, fontface)
-				canDisplayInterface('fonts')
+				setFontFace(fontface)
 			}
+
+			onSettingsLoad(() => {
+				initFontSettings(init?.font)
+			})
+
+			canDisplayInterface('fonts')
 		} catch (e) {
 			errorMessage(e)
 		}

@@ -1,3 +1,5 @@
+import { UnsplashImage } from './local'
+
 export type Clock = {
 	ampm: boolean
 	analog: boolean
@@ -5,6 +7,7 @@ export type Clock = {
 	style: string
 	timezone: string
 	face: string
+	size: number
 }
 
 export type Searchbar = {
@@ -13,6 +16,7 @@ export type Searchbar = {
 	newtab: boolean
 	engine: string
 	request: string
+	suggestions: boolean
 	placeholder: string
 }
 
@@ -26,32 +30,23 @@ export type Quotes = {
 }
 
 export type Weather = {
-	ccode: string
-	city: string
-	unit: string
-	location: number[]
+	geolocation: 'precise' | 'approximate' | 'off'
+	ccode?: string
+	city?: string
+	unit: 'metric' | 'imperial'
+	location?: [number, number]
 	forecast: string
 	temperature: string
-	lastCall?: number
-	fcHigh?: number
 	moreinfo?: string
 	provider?: string
-	lastState?: {
-		temp: number
-		feels_like: number
-		temp_max: number
-		sunrise: number
-		sunset: number
-		description: string
-		icon_id: number
-	}
 }
 
 export type Unsplash = {
+	time: number
 	every: string
 	collection: string
+	pausedImage: UnsplashImage | null
 	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
-	time: number
 }
 
 export type Font = {

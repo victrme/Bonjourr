@@ -13,16 +13,14 @@
 		/>
 
 		<link rel="preconnect" href="https://images.unsplash.com" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="shortcut icon" href="/src/assets/favicon.ico" type="image/x-icon" id="favicon" />
 
-		<link rel="icon" href="src/assets/favicon.ico" id="head-icon" />
-		<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />
+		<!-- icon -->
 		<!-- manifest -->
+		<!-- webext-storage -->
 
 		<link rel="stylesheet" href="src/styles/style.css" />
 		<style type="text/css" id="styles"></style>
-		<style type="text/css" id="fontstyle"></style>
 
 		<script src="src/scripts/main.js" defer></script>
 	</head>
@@ -188,15 +186,18 @@
 			</div>
 
 			<div id="main" class="hidden">
-				<h2 id="greetings" data-hide="greetings"></h2>
+				<h2 id="greetings" data-hide="greetings">
+					<span id="greeting"></span>
+					<span id="greeting-name"></span>
+				</h2>
 
-				<a id="weather" rel="noreferrer">
+				<a id="weather" class="wait" rel="noreferrer">
 					<div id="description" data-hide="weatherdesc">
-						<p id="current" class="wait">meteo</p>
-						<p id="forecast" class="wait">forecast</p>
+						<p id="current">meteo</p>
+						<p id="forecast">forecast</p>
 					</div>
 
-					<div id="tempContainer" class="wait" data-hide="weathericon">
+					<div id="tempContainer" data-hide="weathericon">
 						<img id="weather-icon" alt="" draggable="false" fetchpriority="high" />
 						<p>00</p>
 					</div>

@@ -1,4 +1,4 @@
-import { google } from './googleFonts'
+import { OWMOnecall } from './openweathermap'
 
 export type Quote = {
 	author: string
@@ -21,25 +21,37 @@ export type UnsplashImage = {
 	city: string
 	country: string
 	color: string
-	exif: {
+	exif?: {
 		make: string
 		model: string
-		name: string
 		exposure_time: string
 		aperture: string
 		focal_length: string
 		iso: number
 	}
-	desc: string
+}
+
+export type LastWeather = {
+	temp: number
+	forecasted_timestamp: number
+	forecasted_high: number
+	feels_like: number
+	sunrise: number
+	sunset: number
+	icon_id: number
+	description: string
+	timestamp: number
+	approximation?: Pick<OWMOnecall, 'ccode' | 'city' | 'lat' | 'lon'>
 }
 
 export type Local = {
-	googleFonts?: google.fonts.WebfontList
+	fonts?: { family: string; weights: string[]; variable: boolean }[]
 	fontface?: string
-	waitingForPreload: false
 	selectedId: string
 	idsList: string[]
 	userQuoteSelection: number
 	quotesCache: Quote[]
 	unsplashCache: UnsplashCache
+	translations: { [key: string]: string }
+	lastWeather?: LastWeather
 }

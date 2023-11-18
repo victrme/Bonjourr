@@ -1,3 +1,93 @@
+## 1.18.3
+
+-   Added support for right-to-left languages
+-   Added Farsi translations, thanks @ar3h1d !
+-   Fixed typo breaking hide elements
+-   Fixed "mock-selection" bug in Notes on Chromium / Safari
+
+## 1.18.2
+
+-   Re-added 1.18.0 forecast optimisations
+-   Requests tomorrow's forecast based on sunset time
+-   Fixed rare case where the page would spam weather calls
+-   #247 Fixed quick links events not working
+
+## 1.18.1
+
+-   Changes:
+    -   Migrated all API providers to a [homemade API](https://github.com/victrme/bonjourr-apis)
+    -   Removed geolocation permission for extensions
+    -   Added "approximate" weather location as the default option
+    -   Improved "imperial units" option
+    -   Weather data only saved to local storage
+    -   Fixed weather conflicts between synced devices
+-   Fixes:
+    -   Use HTTPS for search suggestions
+    -   Safari iOS scroll with active keyboard
+    -   Some styling on mobile
+    -   Tiny German translation fix
+
+## 1.18.0
+
+-   Changes:
+    -   Migrated Firefox and Safari to manifest v3
+    -   Reduced amount of weather and forecast calls
+    -   Search suggestions off by default
+    -   Removed unlimitedStorage permission
+-   Improvements:
+    -   Added Clock size option
+    -   Faster startup time on extensions
+    -   Unsplash background is now synced when "paused"
+    -   Smoother font change on slow networks
+    -   #239 Added search suggestions toggle option
+-   Fixes:
+    -   Unstable cache storage since 1.17.0
+    -   Font weight on non-variable fonts
+    -   Font failing to load on synced devices
+    -   Copy/Paste not working correctly on Notes
+    -   Awkward word-break on links titles
+    -   Move elements selection on Safari
+    -   Buggy ISO string in unplash exif data
+    -   #216 Custom favicon sometimes not working on Firefox
+-   Translations:
+    -   @UnifeGi updated Romanian translation
+    -   Tiny Swedish translation fix
+
+$~~~~~~~~~~~$
+
+## 1.17.4
+
+-   Fixed status icon breaking inputs on slower devices
+-   Fixed text links overlapping search suggestions
+-   Removed favicon option for Safari
+-   No geolocation update on Safari
+-   Romanian translation update by @UnifeGi
+
+## 1.17.3
+
+-   Added warning status icon on custom search provider input
+-   Added search suggestions API key to avoid being rate limited
+-   Fixed Bonjourr failing on Firefox 93 and older
+-   Re-Inverted "At night" dark mode option (oops)
+
+## 1.17.2
+
+-   Added feature:
+    -   Search suggestions !
+-   Improvements:
+    -   Added status icon (loading / error) on data fetching inputs
+    -   Typing a valid URL in searchbar opens website
+    -   Increased blur on Notes for legibility
+-   Fixes:
+    -   Timezone option losing greeting text
+    -   Inverted "At night" dark mode option
+    -   Notes checkboxes fixed size
+    -   Greetings text overflow
+    -   Broken local background frequency option
+    -   Spanish translation breaking page
+-   Translations:
+    -   Added Romanian translation, thanks @UnifeGi !
+
 ## 1.17.1
 
 -   Weather:

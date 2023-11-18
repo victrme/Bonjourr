@@ -1,14 +1,18 @@
-import storage from '../storage'
-import { Searchbar } from '../types/sync'
-import { stringMaxSize, syncDefaults } from '../utils'
+import { apiWebSocket, stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errorMessage'
 import { tradThis } from '../utils/translations'
+import errorMessage from '../utils/errormessage'
+import superinput from '../utils/superinput'
+import storage from '../storage'
+import parse from '../utils/parse'
+
+import type { Searchbar } from '../types/sync'
 
 type SearchbarUpdate = {
 	engine?: string
 	opacity?: string
 	newtab?: boolean
+	suggestions?: boolean
 	placeholder?: string
 	request?: HTMLInputElement
 }
@@ -21,16 +25,20 @@ type Suggestions = {
 
 type UndefinedElement = Element | undefined | null
 
+const requestInput = superinput('i_sbrequest')
+let socket: WebSocket | undefined
+
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
-const display = (shown: boolean) => domcontainer?.classList.toggle('hidden', !shown)
-const setEngine = (value: string) => domcontainer?.setAttribute('data-engine', value)
-const setRequest = (value: string) => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
-const setNewtab = (value: boolean) => domcontainer?.setAttribute('data-newtab', value.toString())
-const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value || '')
+const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
+const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine', value)
+const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
+const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
+const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
+const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
 const setOpacity = (value = 0.1) => {
 	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
@@ -43,13 +51,12 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 	}
 
 	try {
-		const { on, engine, request, newtab } = structuredClone(syncDefaults.searchbar)
-
-		display(init?.on ?? on)
-		setEngine(init?.engine ?? engine)
-		setRequest(init?.request ?? request)
-		setNewtab(init?.newtab ?? newtab)
+		display(init?.on)
+		setEngine(init?.engine)
+		setRequest(init?.request)
+		setNewtab(init?.newtab)
 		setPlaceholder(init?.placeholder)
+		setSuggestions(init?.suggestions)
 		setOpacity(init?.opacity)
 
 		emptyButton?.addEventListener('click', removeInputText)
@@ -60,8 +67,8 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 	}
 }
 
-async function updateSearchbar({ engine, newtab, opacity, placeholder, request }: SearchbarUpdate) {
-	const { searchbar } = await storage.get('searchbar')
+async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions }: SearchbarUpdate) {
+	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
 		return
@@ -71,6 +78,11 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request }
 		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
 		searchbar.engine = engine
 		setEngine(engine)
+	}
+
+	if (suggestions !== undefined) {
+		searchbar.suggestions = suggestions
+		setSuggestions(suggestions)
 	}
 
 	if (newtab !== undefined) {
@@ -89,18 +101,14 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request }
 	}
 
 	if (request) {
-		let val = request.value
-
-		if (val.indexOf('%s') !== -1) {
-			searchbar.request = stringMaxSize(val, 512)
-			request.blur()
-		} else if (val.length > 0) {
-			val = ''
-			request.setAttribute('placeholder', tradThis('%s Not found'))
-			setTimeout(() => request.setAttribute('placeholder', tradThis('Search query: %s')), 2000)
+		if (!request.value.includes('%s')) {
+			requestInput.warn('"%s" not found')
+			return
 		}
 
-		setRequest(val)
+		searchbar.request = stringMaxSize(request.value, 512)
+		setRequest(searchbar.request)
+		request.blur()
 	}
 
 	eventDebounce({ searchbar })
@@ -160,6 +168,10 @@ function submitSearch(e: Event) {
 		url = createSearchURL(val)
 	}
 
+	if (socket) {
+		socket.close()
+	}
+
 	window.open(url, target)
 	e.preventDefault()
 }
@@ -211,11 +223,15 @@ function initSuggestions() {
 		domsuggestions?.appendChild(li)
 	}
 
-	function toggleSuggestions(e: Event) {
+	function toggleSuggestions(e: FocusEvent) {
+		const relatedTarget = e?.relatedTarget as Element
+		const targetIsResult = relatedTarget?.parentElement?.id === 'sb-suggestions'
 		const hasResults = document.querySelectorAll('#sb-suggestions li.shown')?.length > 0
 		const isFocus = e.type === 'focus'
 
-		domsuggestions?.classList.toggle('shown', isFocus && hasResults)
+		if (!targetIsResult) {
+			domsuggestions?.classList.toggle('shown', isFocus && hasResults)
+		}
 	}
 
 	function navigateSuggestions(e: KeyboardEvent) {
@@ -256,35 +272,30 @@ function initSuggestions() {
 		domsuggestions?.classList.remove('shown')
 	}
 
+	async function createSuggestionSocket() {
+		socket = await apiWebSocket('/suggestions')
+
+		socket?.addEventListener('message', function (event: MessageEvent) {
+			const data = parse<Suggestions | { error: string }>(event.data)
+
+			if (Array.isArray(data)) {
+				suggestions(data as Suggestions)
+			} else if (data?.error) {
+				createSuggestionSocket()
+			}
+		})
+	}
+
 	domcontainer?.addEventListener('keydown', navigateSuggestions)
 	domsearchbar?.addEventListener('focus', toggleSuggestions)
 	domsearchbar?.addEventListener('blur', toggleSuggestions)
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
+
+	createSuggestionSocket()
 }
 
-async function suggestions(e: Event) {
-	// INIT
-	if (domsuggestions?.childElementCount === 0) {
-		initSuggestions()
-	}
-
-	const input = (e as InputEvent).target as HTMLInputElement
-	let results: Suggestions = []
-
-	// API
-	let engine = domcontainer?.dataset.engine
-	engine = (engine ?? '').replace('ddg', 'duckduckgo')
-	engine = ['google', 'bing', 'duckduckgo', 'yahoo', 'qwant'].includes(engine) ? engine : 'duckduckgo'
-
-	const url = `${atob('@@SUGGESTIONS_API')}?q=${encodeURIComponent(input.value ?? '')}&with=${engine}`
-
-	try {
-		results = (await (await fetch(url)).json()) as Suggestions
-	} catch (_) {
-		console.warn('Cannot get search suggestions')
-	}
-
-	// ADD TO DOM
+async function suggestions(results: Suggestions) {
+	const input = domsearchbar as HTMLInputElement
 	const liList = domsuggestions?.querySelectorAll('li') ?? []
 
 	domsuggestions?.classList.toggle('shown', results.length > 0)
@@ -359,7 +370,16 @@ async function handleUserInput(e: Event) {
 		return
 	}
 
-	suggestions(e)
+	if (domsuggestions?.childElementCount === 0) {
+		initSuggestions()
+	}
+
+	// request suggestions
+	if (domcontainer?.dataset.suggestions === 'true' && socket && socket.readyState === socket.OPEN) {
+		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg')
+		const query = encodeURIComponent(value ?? '')
+		socket.send(JSON.stringify({ q: query, with: engine }))
+	}
 }
 
 function toggleInputButton(enabled: boolean) {

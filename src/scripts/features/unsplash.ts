@@ -1,16 +1,19 @@
-import { periodOfDay, turnRefreshButton, localDefaults } from '../utils'
+import { periodOfDay, turnRefreshButton, apiFetch } from '../utils'
+import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../defaults'
 import { imgBackground, freqControl } from '..'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
-import parse from '../utils/JSONparse'
-import sunTime from '../utils/suntime'
+import errorMessage from '../utils/errormessage'
+import superinput from '../utils/superinput'
 import storage from '../storage'
 
-import { UnsplashImage } from '../types/local'
-import { Unsplash, Sync } from '../types/sync'
+import type { UnsplashCache, UnsplashImage } from '../types/local'
+import type { Unsplash, Sync } from '../types/sync'
+import type { UnsplashAPI } from '../types/unsplash'
 
-// TODO: Separate Collection type with users string
-type CollectionType = 'night' | 'noon' | 'day' | 'evening' | 'user'
+type UnsplashInit = {
+	unsplash: Unsplash
+	cache: UnsplashCache
+} | null
 
 type UnsplashUpdate = {
 	refresh?: HTMLElement
@@ -18,32 +21,224 @@ type UnsplashUpdate = {
 	every?: string
 }
 
-// collections source: https://unsplash.com/@bonjourr/collections
-const allCollectionType = {
+const collectionInput = superinput('i_collection')
+
+// https://unsplash.com/@bonjourr/collections
+const bonjourrCollections = {
 	noon: 'GD4aOSg4yQE',
 	day: 'o8uX55RbBPs',
 	evening: '3M2rKTckZaQ',
 	night: 'bHDh4Ae7O8o',
-	user: '',
 }
 
-function getCache() {
-	return parse(localStorage.unsplashCache) ?? { ...localDefaults.unsplashCache }
-}
-
-async function preloadImage(src: string) {
-	const img = new Image()
-
-	sessionStorage.setItem('waitingForPreload', 'true')
-
-	try {
-		img.src = src
-		await img.decode()
-		img.remove()
-		sessionStorage.removeItem('waitingForPreload')
-	} catch (error) {
-		console.warn('Could not decode image: ', src)
+export default function unsplashBackgrounds(init: UnsplashInit, event?: UnsplashUpdate) {
+	if (event) {
+		updateUnsplash(event)
 	}
+
+	if (init) {
+		try {
+			cacheControl(init.unsplash, init.cache)
+		} catch (e) {
+			errorMessage(e)
+		}
+	}
+}
+
+async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
+	const { unsplash } = (await storage.sync.get('unsplash')) as Sync
+	const unsplashCache = await getCache()
+
+	if (!unsplash) {
+		return
+	}
+
+	if (refresh) {
+		if (sessionStorage.waitingForPreload) {
+			turnRefreshButton(refresh, false)
+			return
+		}
+
+		unsplash.time = 0
+		storage.sync.set({ unsplash })
+		turnRefreshButton(refresh, true)
+
+		setTimeout(() => cacheControl(unsplash), 400)
+	}
+
+	if (every !== undefined) {
+		// Todo: fix bad manual value check
+		if (!every || !every.match(/tabs|hour|day|period|pause/g)) {
+			return console.log('Not valid "every" value')
+		}
+
+		const currentImage = unsplashCache[unsplash.lastCollec][0]
+		unsplash.pausedImage = every === 'pause' ? currentImage : null
+		unsplash.every = every
+		unsplash.time = freqControl.set()
+		storage.sync.set({ unsplash })
+	}
+
+	if (collection === '') {
+		unsplashCache.user = []
+		unsplash.collection = ''
+		unsplash.lastCollec = 'day'
+
+		storage.sync.set({ unsplash })
+		storage.local.set({ unsplashCache })
+		collectionInput.toggle(false, '2nVzlQADDIE')
+
+		unsplashBackgrounds({ unsplash, cache: unsplashCache })
+		return
+	}
+
+	if (collection !== undefined) {
+		if (!navigator.onLine) {
+			return collectionInput.warn('No internet connection')
+		}
+
+		// add new collec
+		unsplash.collection = collection.replaceAll(` `, '')
+		unsplash.lastCollec = 'user'
+		unsplash.time = freqControl.set()
+
+		collectionInput.load()
+		let list = await requestNewList(unsplash.collection)
+
+		if (!list || list.length === 0) {
+			collectionInput.warn(`Cannot get "${collection}"`)
+			return
+		}
+
+		unsplashCache['user'] = list
+
+		await preloadImage(unsplashCache['user'][0].url)
+		preloadImage(unsplashCache['user'][1].url)
+		loadBackground(unsplashCache['user'][0])
+
+		collectionInput.toggle(false, unsplash.collection)
+
+		storage.sync.set({ unsplash })
+		storage.local.set({ unsplashCache })
+	}
+}
+
+async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
+	unsplash = { ...SYNC_DEFAULT.unsplash, ...unsplash }
+	cache = cache ?? (await getCache())
+
+	let { lastCollec } = unsplash
+	const { every, time, collection, pausedImage } = unsplash
+
+	const needNewImage = freqControl.get(every, time)
+	const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
+
+	if (needNewCollec && lastCollec !== 'user') {
+		lastCollec = periodOfDay()
+	}
+
+	let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]
+	let list = cache[lastCollec]
+
+	if (list.length === 0) {
+		const newlist = await requestNewList(collectionId)
+
+		if (!newlist) {
+			return
+		}
+
+		list = newlist
+		await preloadImage(list[0].url)
+
+		cache[lastCollec] = list
+		storage.local.set({ unsplashCache: cache })
+		sessionStorage.setItem('waitingForPreload', 'true')
+	}
+
+	if (sessionStorage.waitingForPreload === 'true') {
+		loadBackground(list[0])
+		await preloadImage(list[1].url)
+		return
+	}
+
+	if (!needNewImage) {
+		const hasPausedImage = every === 'pause' && pausedImage
+		loadBackground(hasPausedImage ? pausedImage : list[0])
+		return
+	}
+
+	// Needs new image, Update time
+	unsplash.lastCollec = lastCollec
+	unsplash.time = freqControl.set()
+
+	if (list.length > 1) {
+		list.shift()
+	}
+
+	loadBackground(list[0])
+
+	if (every === 'pause') {
+		unsplash.pausedImage = list[0]
+	}
+
+	// If end of cache, get & save new list
+	if (list.length === 1 && navigator.onLine) {
+		const newList = await requestNewList(collectionId)
+
+		if (newList) {
+			cache[unsplash.lastCollec] = list.concat(newList)
+			await preloadImage(newList[0].url)
+		}
+	}
+
+	// Or preload next
+	else if (list.length > 1) {
+		await preloadImage(list[1].url)
+	}
+
+	storage.sync.set({ unsplash })
+	storage.local.set({ unsplashCache: cache })
+}
+
+async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
+	let json: UnsplashAPI[]
+
+	const resp = await apiFetch(`/unsplash/photos/random?collections=${collection}&count=8`)
+
+	if (resp?.status === 404) {
+		return null
+	}
+
+	json = await resp?.json()
+
+	if (json.length === 1) {
+		return null
+	}
+
+	const filteredList: UnsplashImage[] = []
+	const { width, height } = screen
+	const dpr = window.devicePixelRatio
+
+	// Increase compression with pixel density
+	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
+	const quality = Math.min(100 - dpr * 20, 75)
+
+	const isExifEmpty = (exif: UnsplashAPI['exif']) => Object.values(exif).every((val) => !val)
+
+	for (const img of json) {
+		filteredList.push({
+			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
+			link: img.links.html,
+			username: img.user.username,
+			name: img.user.name,
+			city: img.location.city,
+			country: img.location.country,
+			color: img.color,
+			exif: isExifEmpty(img.exif) ? undefined : img.exif,
+		})
+	}
+
+	return filteredList
 }
 
 function imgCredits(image: UnsplashImage) {
@@ -66,23 +261,20 @@ function imgCredits(image: UnsplashImage) {
 	}
 
 	if (exif) {
-		const orderedExifData = [
-			{ key: 'model', format: `%val% - ` },
-			{ key: 'aperture', format: `f/%val% ` },
-			{ key: 'exposure_time', format: `%val%s ` },
-			{ key: 'iso', format: `ISO %val% ` },
-			{ key: 'focal_length', format: `%val%mm` },
+		const exiflist = [
+			['model', '%val% - '],
+			['aperture', 'f/%val% '],
+			['exposure_time', '%val%s '],
+			['iso', '%val%ISO '],
+			['focal_length', '%val%mm'],
 		]
 
-		orderedExifData.forEach(({ key, format }) => {
-			if (Object.keys(exif).includes(key)) {
-				const exifVal = exif[key as keyof typeof exif]
-
-				if (exifVal) {
-					exifDescription += key === 'iso' ? exifVal.toString() : format.replace('%val%', exifVal.toString())
-				}
+		for (const [key, format] of exiflist) {
+			if (key in exif) {
+				const val = exif[key as keyof typeof exif]
+				exifDescription += val ? format.replace('%val%', val.toString()) : ''
 			}
-		})
+		}
 	}
 
 	// Force Capitalization
@@ -117,219 +309,27 @@ function imgCredits(image: UnsplashImage) {
 	}
 }
 
+async function getCache(): Promise<UnsplashCache> {
+	const cache = (await storage.local.get('unsplashCache'))?.unsplashCache ?? { ...LOCAL_DEFAULT.unsplashCache }
+	return cache
+}
+
 function loadBackground(props: UnsplashImage) {
 	imgBackground(props.url, props.color)
 	imgCredits(props)
 }
 
-function chooseCollection(customCollection?: string): CollectionType {
-	if (customCollection) {
-		customCollection = customCollection.replaceAll(` `, '')
-		allCollectionType.user = customCollection
-		return 'user'
-	}
+async function preloadImage(src: string) {
+	const img = new Image()
 
-	return periodOfDay(sunTime())
-}
+	sessionStorage.setItem('waitingForPreload', 'true')
 
-function collectionUpdater(unsplash: Unsplash): CollectionType {
-	const { every, lastCollec, collection } = unsplash
-	const pause = every === 'pause'
-	const day = every === 'day'
-
-	if ((pause || day) && lastCollec) {
-		return lastCollec // Keeps same collection on >day so that user gets same type of backgrounds
-	}
-
-	const collec = chooseCollection(collection) // Or updates collection with sunTime or user collec
-	unsplash.lastCollec = collec
-
-	if (collec !== lastCollec) {
-		storage.set({ unsplash: unsplash }, () => console.warn('bad'))
-	}
-
-	return collec
-}
-
-async function requestNewList(collecType: CollectionType) {
-	const header = new Headers()
-	const collecString = allCollectionType[collecType] || allCollectionType.day
-	const url = `https://api.unsplash.com/photos/random?collections=${collecString}&count=8`
-	header.append('Authorization', `Client-ID ${atob('@@UNSPLASH_API')}`)
-	header.append('Accept-Version', 'v1')
-
-	let resp: Response
-	let json: JSON[]
-
-	resp = await fetch(url, { headers: header })
-
-	if (resp.status === 404) {
-		if (collecType === 'user') {
-			const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
-			return defaultCollectionList
-		} else {
-			return []
-		}
-	}
-
-	json = await resp.json()
-
-	if (json.length === 1) {
-		const defaultCollectionList: UnsplashImage[] = await requestNewList(chooseCollection() || 'day')
-		return defaultCollectionList
-	}
-
-	const filteredList: UnsplashImage[] = []
-	const { width, height } = screen
-	const dpr = window.devicePixelRatio
-
-	// Increase compression with pixel density
-	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
-	const quality = Math.min(100 - dpr * 20, 75)
-
-	json.forEach((img: any) => {
-		filteredList.push({
-			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
-			link: img.links.html,
-			username: img.user.username,
-			name: img.user.name,
-			city: img.location.city,
-			country: img.location.country,
-			color: img.color,
-			exif: img.exif,
-			desc: img.description,
-		})
-	})
-
-	return filteredList
-}
-
-async function cacheControl(unsplash: Unsplash, collecType: CollectionType) {
-	const needNewImage = freqControl.get(unsplash.every, unsplash.time)
-	const cache = getCache()
-	let list = cache[collecType]
-
-	if (cache[collecType].length === 0) {
-		list = await requestNewList(collecType)
-		if (!list) return
-
-		await preloadImage(list[0].url)
-
-		cache[collecType] = list
-		localStorage.setItem('unsplashCache', JSON.stringify(cache))
-		sessionStorage.setItem('waitingForPreload', 'true')
-	}
-
-	if (sessionStorage.waitingForPreload === 'true') {
-		loadBackground(list[0])
-		await preloadImage(list[1].url)
-		return
-	}
-
-	if (!needNewImage) {
-		loadBackground(list[0])
-		return
-	}
-
-	// Needs new image, Update time
-	unsplash.lastCollec = collecType
-	unsplash.time = freqControl.set()
-
-	if (list.length > 1) {
-		list.shift()
-	}
-
-	loadBackground(list[0])
-
-	// If end of cache, get & save new list
-	if (list.length === 1 && navigator.onLine) {
-		const newList = await requestNewList(collecType)
-		if (!newList) return
-
-		cache[collecType] = list.concat(newList)
-		await preloadImage(newList[0].url)
-		localStorage.setItem('unsplashCache', JSON.stringify(cache))
-		return
-	}
-
-	// Or preload next
-	else if (list.length > 1) {
-		await preloadImage(list[1].url)
-	}
-
-	storage.set({ unsplash })
-	localStorage.setItem('unsplashCache', JSON.stringify(cache))
-}
-
-async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
-	const { unsplash } = (await storage.get('unsplash')) as Sync
-	const unsplashCache = getCache()
-
-	if (!unsplash) {
-		return
-	}
-
-	if (refresh) {
-		if (sessionStorage.waitingForPreload) {
-			turnRefreshButton(refresh, false)
-			return
-		}
-
-		unsplash.time = 0
-		storage.set({ unsplash })
-		turnRefreshButton(refresh, true)
-
-		setTimeout(() => cacheControl(unsplash, collectionUpdater(unsplash)), 400)
-	}
-
-	if (every !== undefined) {
-		// Todo: fix bad manual value check
-		if (!every || !every.match(/tabs|hour|day|period|pause/g)) {
-			return console.log('Not valid "every" value')
-		}
-
-		unsplash.every = every
-		unsplash.time = freqControl.set()
-		storage.set({ unsplash })
-	}
-
-	if (collection !== undefined) {
-		if (!navigator.onLine || typeof collection !== 'string') return
-
-		// remove user collec
-		if (collection === '') {
-			const defaultColl = chooseCollection()
-			unsplashCache.user = []
-			unsplash.collection = ''
-			unsplash.lastCollec = defaultColl
-
-			storage.set({ unsplash })
-			localStorage.setItem('unsplashCache', JSON.stringify(unsplashCache))
-
-			unsplashBackgrounds(unsplash)
-			return
-		}
-
-		// add new collec
-		unsplash.collection = collection
-		unsplash.lastCollec = 'user'
-		unsplash.time = freqControl.set()
-		storage.set({ unsplash })
-
-		cacheControl(unsplashCache, chooseCollection(collection))
-	}
-}
-
-export default async function unsplashBackgrounds(init: Unsplash | null, event?: UnsplashUpdate) {
-	if (event) {
-		updateUnsplash(event)
-	}
-
-	if (init) {
-		try {
-			cacheControl(init, collectionUpdater(init))
-		} catch (e) {
-			errorMessage(e)
-		}
+	try {
+		img.src = src
+		await img.decode()
+		img.remove()
+		sessionStorage.removeItem('waitingForPreload')
+	} catch (error) {
+		console.warn('Could not decode image: ', src)
 	}
 }

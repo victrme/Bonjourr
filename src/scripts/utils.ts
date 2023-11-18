@@ -1,75 +1,74 @@
-import { Hide, HideOld, Sync, Weather } from './types/sync'
-import { Local } from './types/local'
-import langList from './langs'
+import { MAIN_API, FALLBACK_API } from './defaults'
+import suntime from './utils/suntime'
 
-type LangList = keyof typeof langList
+import type { Sync } from './types/sync'
 
-export const mobilecheck = () =>
-	navigator.userAgentData
-		? navigator.userAgentData.mobile
-		: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+function shuffledAPIUrls(): string[] {
+	return [
+		MAIN_API,
+		...FALLBACK_API.map((value) => ({ value, sort: Math.random() }))
+			.sort((a, b) => a.sort - b.sort)
+			.map(({ value }) => value), // https://stackoverflow.com/a/46545530]
+	]
+}
 
-export const stringMaxSize = (str: string = '', size: number) => (str.length > size ? str.slice(0, size) : str)
+export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
+	for (const url of shuffledAPIUrls()) {
+		try {
+			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
 
-export const minutator = (date: Date) => date.getHours() * 60 + date.getMinutes()
+			const isOpened = await new Promise((resolve) => {
+				socket.onopen = () => resolve(true)
+				socket.onerror = () => resolve(false)
+				socket.onclose = () => resolve(false)
+			})
 
-export const randomString = (len: number) => {
+			if (isOpened) {
+				return socket
+			}
+		} catch (error) {
+			console.warn(error)
+		}
+	}
+}
+
+export async function apiFetch(path: string): Promise<Response | undefined> {
+	for (const url of shuffledAPIUrls()) {
+		try {
+			return await fetch(url + path)
+		} catch (error) {
+			console.warn(error)
+			await new Promise((r) => setTimeout(() => r(true), 200))
+		}
+	}
+}
+
+export function stringMaxSize(str: string = '', size: number) {
+	return str.length > size ? str.slice(0, size) : str
+}
+
+export function minutator(date: Date) {
+	return date.getHours() * 60 + date.getMinutes()
+}
+
+export function randomString(len: number) {
 	const chars = 'abcdefghijklmnopqr'
 	return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
 
-export function detectPlatform() {
-	const p = window.location.protocol
-	return p === 'moz-extension:'
-		? 'firefox'
-		: p === 'chrome-extension:'
-		? 'chrome'
-		: p === 'safari-web-extension:'
-		? 'safari'
-		: 'online'
-}
+export function periodOfDay(time?: number) {
+	// noon & evening are + /- 60 min around sunrise/set
 
-export const getBrowser = (agent = window.navigator.userAgent.toLowerCase()) => {
-	return agent.indexOf('edg/' || 'edge') > -1
-		? 'edge'
-		: agent.indexOf('chrome') > -1
-		? 'chrome'
-		: agent.indexOf('firefox') > -1
-		? 'firefox'
-		: agent.indexOf('safari') > -1
-		? 'safari'
-		: 'other'
-}
+	const mins = minutator(time ? new Date(time) : new Date())
+	const { sunrise, sunset } = suntime
 
-export function periodOfDay(sunTime: { rise: number; set: number; now: number }, time?: number) {
-	// Transition day and night with noon & evening collections
-	// if clock is + /- 60 min around sunrise/set
-	const { rise, set, now } = sunTime
-
-	if (!time) time = now // no time specified ? get current from sunTime
-	else time = minutator(new Date(time)) // everything is in minutes here
-
-	if (time >= 0 && time <= rise - 60) return 'night'
-	if (time <= rise + 60) return 'noon'
-	if (time <= set - 60) return 'day'
-	if (time <= set + 60) return 'evening'
-	if (time >= set + 60) return 'night'
+	if (mins >= 0 && mins <= sunrise - 60) return 'night'
+	if (mins <= sunrise + 60) return 'noon'
+	if (mins <= sunset - 60) return 'day'
+	if (mins <= sunset + 60) return 'evening'
+	if (mins >= sunset + 60) return 'night'
 
 	return 'day'
-}
-
-export function convertHideStorage(old: Hide | HideOld) {
-	if (!Array.isArray(old)) return old
-	let hide: Hide = {}
-
-	if (old[0][0]) hide.clock = true
-	if (old[0][1]) hide.date = true
-	if (old[1][0]) hide.greetings = true
-	if (old[1][1]) hide.weatherdesc = true
-	if (old[1][2]) hide.weathericon = true
-	if (old[3][0]) hide.settingsicon = true
-
-	return hide
 }
 
 export function bundleLinks(data: Sync): Link[] {
@@ -104,21 +103,6 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
-export function handleGeolOption(data: Weather, settingsDom?: HTMLElement) {
-	settingsDom = settingsDom ?? (document.getElementById('settings') as HTMLElement)
-
-	const i_city = settingsDom.querySelector('#i_city') as HTMLInputElement
-	const i_geol = settingsDom.querySelector('#i_geol') as HTMLInputElement
-	const i_ccode = settingsDom.querySelector('#i_ccode') as HTMLInputElement
-	const sett_city = settingsDom.querySelector('#sett_city') as HTMLDivElement
-	const isGeol = data.location.length > 0
-
-	i_geol.checked = isGeol
-	i_ccode.value = data.ccode
-	i_city.setAttribute('placeholder', data.city)
-	sett_city.classList.toggle('shown', isGeol === false)
-}
-
 export function closeEditLink() {
 	const domedit = document.querySelector('#editlink')
 	if (!domedit) return
@@ -128,144 +112,4 @@ export function closeEditLink() {
 	setTimeout(() => {
 		domedit ? domedit.setAttribute('class', '') : ''
 	}, 200)
-}
-
-export const testOS = {
-	mac: window.navigator.appVersion.includes('Macintosh'),
-	windows: window.navigator.appVersion.includes('Windows'),
-	android: window.navigator.userAgent.includes('Android'),
-	ios:
-		['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-		(navigator.userAgent.includes('Mac') && 'ontouchend' in document),
-}
-
-let defaultLang: LangList = 'en'
-const navLang = navigator.language.replace('-', '_')
-
-// check if exact or similar languages are available
-for (const [code] of Object.entries(langList)) {
-	if (navLang === code || navLang.startsWith(code.substring(0, 2))) {
-		defaultLang = code as LangList
-	}
-}
-
-export const syncDefaults: Sync = {
-	about: { browser: detectPlatform(), version: '1.17.1' },
-	showall: false,
-	lang: defaultLang,
-	dark: 'system',
-	favicon: '',
-	tabtitle: '',
-	greeting: '',
-	pagegap: 1,
-	pagewidth: 1600,
-	time: true,
-	main: true,
-	usdate: false,
-	background_blur: 15,
-	background_bright: 0.8,
-	background_type: 'unsplash',
-	quicklinks: true,
-	linkstyle: 'large',
-	linknewtab: false,
-	linksrow: 6,
-	textShadow: 0.2,
-	reviewPopup: 0,
-	cssHeight: 80,
-	css: '',
-	hide: {},
-	clock: {
-		ampm: false,
-		analog: false,
-		seconds: false,
-		face: 'none',
-		style: 'round',
-		timezone: 'auto',
-	},
-	unsplash: {
-		every: 'hour',
-		collection: '',
-		lastCollec: 'day',
-		time: Date.now(),
-	},
-	weather: {
-		ccode: 'FR',
-		city: 'Paris',
-		unit: 'metric',
-		location: [],
-		provider: '',
-		moreinfo: 'none',
-		forecast: 'auto',
-		temperature: 'actual',
-	},
-	notes: {
-		on: false,
-		width: 40,
-		text: null,
-		opacity: 0.1,
-		align: 'left',
-	},
-	searchbar: {
-		on: false,
-		opacity: 0.1,
-		newtab: false,
-		engine: 'google',
-		request: '',
-		placeholder: '',
-	},
-	quotes: {
-		on: false,
-		author: false,
-		type: 'classic',
-		frequency: 'day',
-		last: 1650516688,
-		userlist: [],
-	},
-	font: {
-		url: '',
-		family: '',
-		size: '14',
-		availWeights: [],
-		weight: testOS.windows ? '400' : '300',
-	},
-	move: {
-		selection: 'single',
-		layouts: {
-			single: {
-				grid: [['time'], ['main'], ['quicklinks']],
-				items: {},
-			},
-			double: {
-				grid: [
-					['time', '.'],
-					['main', '.'],
-					['quicklinks', '.'],
-				],
-				items: {},
-			},
-			triple: {
-				grid: [
-					['.', 'time', '.'],
-					['.', 'main', '.'],
-					['.', 'quicklinks', '.'],
-				],
-				items: {},
-			},
-		},
-	},
-}
-
-export const localDefaults: Local = {
-	waitingForPreload: false,
-	userQuoteSelection: 0,
-	selectedId: '',
-	idsList: [],
-	quotesCache: [],
-	unsplashCache: {
-		noon: [],
-		day: [],
-		evening: [],
-		night: [],
-		user: [],
-	},
 }

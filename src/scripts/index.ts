@@ -1,4 +1,3 @@
-import { Sync, Weather, MoveKeys } from './types/sync'
 import { settingsInit } from './settings'
 
 import storage from './storage'
@@ -11,24 +10,19 @@ import customFont from './features/fonts'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
-import unsplashBackgrounds from './features/unsplash'
 import localBackgrounds from './features/localbackgrounds'
+import unsplashBackgrounds from './features/unsplash'
 
-import {
-	testOS,
-	getBrowser,
-	mobilecheck,
-	periodOfDay,
-	syncDefaults,
-	stringMaxSize,
-	localDefaults,
-	detectPlatform,
-} from './utils'
-
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
+import { periodOfDay, stringMaxSize } from './utils'
 import { eventDebounce } from './utils/debounce'
-import errorMessage from './utils/errorMessage'
-import sunTime from './utils/suntime'
+import onSettingsLoad from './utils/onsettingsload'
+import errorMessage from './utils/errormessage'
+import suntime from './utils/suntime'
+
+import type { Sync, MoveKeys } from './types/sync'
+import type { Local } from './types/local'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
@@ -69,8 +63,7 @@ export const freqControl = {
 				return last === 0
 
 			case 'period': {
-				const sun = sunTime()
-				return last === 0 || !sun ? true : periodOfDay(sun) !== periodOfDay(sun, +lastDate) || false
+				return last === 0 ? true : periodOfDay() !== periodOfDay(+lastDate) || false
 			}
 
 			default:
@@ -154,19 +147,21 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		const defaulticon = '/src/assets/' + (getBrowser() === 'edge' ? 'monochrome.png' : 'favicon.ico')
+		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
+		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
 
-		document.getElementById('head-icon')?.setAttribute('href', emoji ? svg : defaulticon)
+		domfavicon.href = emoji ? svg : defaulticon
 	}
 
 	if (isEvent) {
 		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
-		createFavicon(val)
 		eventDebounce({ favicon: isEmoji ? val : '' })
-		return
+		document.getElementById('head-favicon')?.remove()
 	}
 
-	if (val) {
+	if (BROWSER === 'firefox') {
+		setTimeout(() => createFavicon(val), 0)
+	} else {
 		createFavicon(val)
 	}
 }
@@ -181,24 +176,24 @@ export function tabTitle(val = '', isEvent?: true) {
 
 export function pageControl(val: { width?: number; gap?: number }, isEvent?: true) {
 	if (val.width) {
-		document.documentElement.style.setProperty('--page-width', (val.width ?? syncDefaults.pagewidth) + 'px')
+		document.documentElement.style.setProperty('--page-width', (val.width ?? SYNC_DEFAULT.pagewidth) + 'px')
 		if (isEvent) eventDebounce({ pagewidth: val.width })
 	}
 
 	if (typeof val.gap === 'number') {
-		document.documentElement.style.setProperty('--page-gap', (val.gap ?? syncDefaults.pagegap) + 'em')
+		document.documentElement.style.setProperty('--page-gap', (val.gap ?? SYNC_DEFAULT.pagegap) + 'em')
 		if (isEvent) eventDebounce({ pagegap: val.gap })
 	}
 }
 
-export function initBackground(data: Sync) {
+export function initBackground(data: Sync, local: Local) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
 
 	backgroundFilter({ blur, brightness })
 
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds(data.unsplash)
+	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -216,7 +211,7 @@ export function imgBackground(url: string, color?: string) {
 
 		bgoverlay.style.opacity = '1'
 
-		if (color && testOS.ios) {
+		if (color && BROWSER === 'safari') {
 			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
 		}
@@ -239,12 +234,13 @@ export function backgroundFilter({ blur, brightness, isEvent }: { blur?: number;
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
 	if (isEvent) {
-		storage.set({ dark: value })
+		storage.sync.set({ dark: value })
 	}
 
 	if (value === 'auto') {
-		const { now, rise, set } = sunTime()
-		const choice = now <= rise || now > set ? 'dark' : 'light'
+		const now = Date.now()
+		const { sunrise, sunset } = suntime
+		const choice = now <= sunrise || now > sunset ? 'dark' : 'light'
 		document.documentElement.dataset.theme = choice
 	}
 
@@ -257,7 +253,6 @@ export function showPopup(value: string | number) {
 	//
 	function affiche() {
 		const popup = document.getElementById('popup') as HTMLElement
-		const browser = getBrowser()
 
 		const reviewURLs = {
 			chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
@@ -276,11 +271,11 @@ export function showPopup(value: string | number) {
 				setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
 			}
 
-			storage.set({ reviewPopup: 'removed' })
+			storage.sync.set({ reviewPopup: 'removed' })
 		}
 
 		popup.style.display = 'flex'
-		document.getElementById('popup_review')?.setAttribute('href', reviewURLs[browser])
+		document.getElementById('popup_review')?.setAttribute('href', reviewURLs[BROWSER])
 		document.getElementById('popup_review')?.addEventListener('mousedown', closePopup)
 		document.getElementById('popup_donate')?.addEventListener('mousedown', closePopup)
 		document.getElementById('popup_text')?.addEventListener('click', closePopup, { passive: true })
@@ -293,13 +288,13 @@ export function showPopup(value: string | number) {
 
 	if (typeof value === 'number') {
 		if (value > 30) affiche() // s'affiche après 30 tabs
-		else storage.set({ reviewPopup: value + 1 })
+		else storage.sync.set({ reviewPopup: value + 1 })
 
 		return
 	}
 
 	if (value !== 'removed') {
-		storage.set({ reviewPopup: 0 })
+		storage.sync.set({ reviewPopup: 0 })
 	}
 }
 
@@ -353,10 +348,9 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 		document.body.classList.remove('loading')
 
-		setTimeout(async () => {
-			const data = await storage.get()
-			settingsInit(data)
+		setTimeout(() => {
 			document.body.classList.remove('init')
+			settingsInit()
 		}, loadtime + 100)
 	}
 
@@ -382,12 +376,20 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 }
 
 function onlineAndMobileHandler() {
-	//
+	if (IS_MOBILE) {
+		let visibilityHasChanged = false
 
-	if (mobilecheck()) {
 		// For Mobile that caches pages for days
 		document.addEventListener('visibilitychange', async () => {
-			const data = await storage.get()
+			if (visibilityHasChanged === false) {
+				visibilityHasChanged = true
+				return
+			}
+
+			visibilityHasChanged = false
+
+			const data = await storage.sync.get()
+			const local = await storage.local.get(['unsplashCache', 'lastWeather'])
 
 			if (!data?.clock || !data?.weather) {
 				return
@@ -397,17 +399,16 @@ function onlineAndMobileHandler() {
 			const needNewImage = data.background_type === 'unsplash' && frequency
 
 			if (needNewImage && data.unsplash) {
-				unsplashBackgrounds(data.unsplash)
+				unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 			}
 
 			clock(data)
-			weather(data)
-			sunTime(data.weather)
+			weather({ sync: data, lastWeather: local.lastWeather })
 		})
 	}
 
 	// Only on Online / Safari
-	if (detectPlatform() === 'online') {
+	if (PLATFORM === 'online') {
 		//
 		// Update export code on localStorage changes
 
@@ -425,7 +426,7 @@ function onlineAndMobileHandler() {
 		// Firefox cannot -moz-fill-available with height
 		// On desktop, uses fallback 100vh
 		// On mobile, sets height dynamically because vh is bad on mobile
-		if (getBrowser('firefox') && mobilecheck()) {
+		if (BROWSER === 'firefox' && IS_MOBILE) {
 			const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 			appHeight()
 
@@ -433,7 +434,7 @@ function onlineAndMobileHandler() {
 			// window.addEventListener('resize', appHeight)
 
 			// Fix for opening tabs Firefox iOS
-			if (testOS.ios) {
+			if (SYSTEM_OS === 'ios') {
 				let globalID: number
 
 				function triggerAnimationFrame() {
@@ -445,6 +446,28 @@ function onlineAndMobileHandler() {
 				setTimeout(() => cancelAnimationFrame(globalID), 500)
 			}
 		}
+
+		if (BROWSER === 'safari' && SYSTEM_OS === 'ios') {
+			onSettingsLoad(() => {
+				const settingsDom = document.getElementById('settings') as HTMLElement
+
+				document.querySelectorAll('input[type="text"], input[type="url"], textarea')?.forEach((input) => {
+					input.addEventListener('focus', () => {
+						if (dominterface && settingsDom) {
+							dominterface.style.touchAction = 'none'
+							settingsDom.style.touchAction = 'none'
+						}
+					})
+
+					input.addEventListener('blur', () => {
+						if (dominterface && settingsDom) {
+							dominterface.style.removeProperty('touch-action')
+							settingsDom.style.removeProperty('touch-action')
+						}
+					})
+				})
+			})
+		}
 	}
 }
 
@@ -453,25 +476,25 @@ function initTimeAndMainBlocks(time: boolean, main: boolean) {
 	document.getElementById('main')?.classList.toggle('hidden', !main)
 }
 
-function startup(data: Sync) {
+function startup(data: Sync, local: Local) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
-	sunTime(data.weather)
-	weather(data)
-	customFont(data.font)
+	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
+	weather({ sync: data, lastWeather: local.lastWeather })
+	customFont({ font: data.font, fontface: local.fontface })
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
 	clock(data)
 	darkmode(data.dark)
 	searchbar(data.searchbar)
-	quotes(data)
+	quotes({ sync: data, local })
 	showPopup(data.reviewPopup)
 	notes(data.notes || null)
 	moveElements(data.move)
 	customCss(data.css)
 	hideElements(data.hide)
-	initBackground(data)
+	initBackground(data, local)
 	quickLinks(data)
 	initTimeAndMainBlocks(data.time, data.main)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
@@ -481,62 +504,33 @@ function startup(data: Sync) {
 	onlineAndMobileHandler()
 
 	try {
-		const data = await storage.get()
-		const version_old = data?.about?.version
-		const version_curr = syncDefaults.about.version
+		const { sync, local } = await storage.init()
+		const version_old = sync?.about?.version
+		const isUpdate = version_old !== CURRENT_VERSION
 
-		// Version change
-		if (version_old !== version_curr) {
-			console.log(`Version change: ${version_old} => ${version_curr}`)
+		if (isUpdate) {
+			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			data.about = {
-				browser: detectPlatform(),
-				version: version_curr,
-			}
+			sync.about = { ...SYNC_DEFAULT.about }
 
-			if (!version_old.includes('1.17') && version_curr.includes('1.17')) {
-				localStorage.hasUpdated = 'true'
-				localStorage.removeItem('translations')
+			if (sync.weather?.geolocation === undefined) {
+				sync.weather.geolocation = 'approximate'
 
-				const getOnlineLocal = () => JSON.parse(localStorage.bonjourrBackgrounds ?? '{}')
-				const getChromeLocal = async () => await new Promise((resolve) => chrome?.storage.local.get(null, resolve))
-				const removeOnlineLocal = () => localStorage.removeItem('bonjourrBackgrounds')
-				const removeChromeLocal = () => {
-					chrome?.storage.local.remove('dynamicCache')
-					chrome?.storage.local.remove('quotesCache')
+				if ((sync.weather?.location ?? []).length === 0) {
+					sync.weather.geolocation = 'off'
+				} else if ((sync.weather?.location ?? []).length === 2 && BROWSER !== 'safari') {
+					sync.weather.geolocation = 'precise'
 				}
 
-				const isOnline = data.about.browser === 'online'
-				const local = await (isOnline ? getOnlineLocal() : getChromeLocal())
-				const { unsplashCache, quotesCache } = localDefaults
-
-				localStorage.setItem('unsplashCache', JSON.stringify(local?.unsplashCache ?? { ...unsplashCache }))
-				localStorage.setItem('quotesCache', JSON.stringify(local?.quotesCache ?? quotesCache))
-
-				isOnline ? removeOnlineLocal() : removeChromeLocal()
-
-				data.unsplash = { ...(data.dynamic as Sync['unsplash']) }
-
-				//@ts-ignore
-				if (data.background_type === 'custom') data.background_type = 'local'
-				//@ts-ignore
-				if (data.background_type === 'dynamic') data.background_type = 'unsplash'
-
-				delete data.dynamic
-				delete data.custom_every
-				delete data.custom_time
-
-				storage.remove('dynamic')
-				storage.remove('custom_every')
-				storage.remove('custom_time')
+				sync.weather.location = undefined
 			}
 
-			storage.set({ ...data })
+			storage.sync.set({ ...sync })
 		}
 
-		await setTranslationCache(data.lang)
+		await setTranslationCache(sync.lang, local, isUpdate)
 
-		startup(data)
+		startup(sync, local)
 	} catch (e) {
 		errorMessage(e)
 	}

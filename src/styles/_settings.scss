@@ -1,4 +1,6 @@
 #settings {
+	@import './components/superinput.scss';
+
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -15,7 +17,7 @@
 	font-size: 15px;
 	font-weight: 400;
 	text-shadow: none;
-	text-align: left;
+	text-align: initial;
 
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
@@ -40,7 +42,7 @@
 	.dropdown {
 		overflow-y: hidden;
 		max-height: 0;
-		transition: max-height 0.4s;
+		transition: max-height 0.3s;
 
 		&.shown {
 			overflow-y: clip;
@@ -51,36 +53,29 @@
 		display: none;
 		width: 80%;
 		margin: auto;
-		padding: 1em;
-		padding-top: 2em;
-		border-radius: 1em;
+		padding: 2em 1em;
 		z-index: 4;
 		cursor: grab;
 
 		hr {
-			width: 60px;
-			height: 3px;
+			width: 80px;
+			height: 0px;
 			margin: auto;
-			border-top: 4px dotted #999;
-			border-bottom: 4px dotted #999;
+			border-radius: 4px;
+			border-top: 2.5px solid var(--color-border);
+			border-bottom: 2.5px solid var(--color-border);
 			transition: all 0.15s $easeOutThree;
 		}
 
 		@media (hover: hover) {
-			&:hover {
-				hr {
-					width: 90px;
-					border-color: #666;
-				}
+			&:hover hr {
+				width: 100px;
 			}
 		}
 
 		@media (hover: none) {
-			&:active {
-				hr {
-					width: 90px;
-					border-color: #666;
-				}
+			&:active hr {
+				width: 100px;
 			}
 		}
 	}
@@ -182,18 +177,20 @@
 		max-height: 160px;
 	}
 
+	#digital_options.shown,
 	#weather_provider.shown,
 	#searchbar_request.shown {
 		max-height: 50px;
 	}
 
+	#analog_options.shown,
 	#unsplash_options.shown,
 	#quotes_userlist.shown {
 		max-height: 100px;
 	}
 
 	#searchbar_options.shown {
-		max-height: 290px;
+		max-height: 350px;
 	}
 
 	#quotes_options.shown {
@@ -332,28 +329,27 @@
 		}
 	}
 
-	#tabtitle {
-		div {
-			display: flex;
-			align-items: center;
-			width: 155px;
+	#tabtitle > div,
+	.freq_wrap > div {
+		display: flex;
+		width: 155px;
+		column-gap: 5px;
 
-			#i_favicon {
-				text-align: center;
-				padding-left: 0;
-				padding-right: 0;
-				width: 40px;
-				margin-right: 5px;
+		input,
+		select {
+			width: 100%;
+		}
+	}
 
-				&::placeholder {
-					opacity: 0.7;
-					filter: grayscale(0.35);
-				}
-			}
+	#tabtitle > div #i_favicon {
+		text-align: center;
+		padding-left: 0;
+		padding-right: 0;
+		width: 40px;
 
-			#i_tabtitle {
-				width: 100%;
-			}
+		&::placeholder {
+			opacity: 0.7;
+			filter: grayscale(0.35);
 		}
 	}
 
@@ -384,9 +380,9 @@
 			outline: 2px solid var(--color-placeholder);
 		}
 
-		button:hover,
-		button.selected,
-		button:focus-visible {
+		button:not(:disabled):hover,
+		button:not(:disabled).selected,
+		button:not(:disabled):focus-visible {
 			outline-color: var(--color-blue);
 
 			&[data-layout='double'] div:nth-child(1),
@@ -410,9 +406,9 @@
 				width: 100%;
 			}
 
-			&:hover,
-			&:focus-visible,
-			&.selected {
+			&:not(:disabled):hover,
+			&:not(:disabled):focus-visible,
+			&:not(:disabled).selected {
 				opacity: 1;
 				background-color: rgba(0, 114, 238, 0.1333333333);
 			}
@@ -463,17 +459,7 @@
 	#i_refresh,
 	#i_qtrefresh {
 		padding: 0 10px;
-		margin-left: 5px;
 		text-decoration: none;
-	}
-
-	.freq_wrap > div {
-		display: flex;
-		width: 155px;
-
-		select {
-			width: 100%;
-		}
 	}
 
 	#custom_thumbnail {
@@ -645,19 +631,16 @@
 
 	#sett_city {
 		display: flex;
-		width: calc(100% - 6px);
-		padding: 0 3px;
 		column-gap: 0.4em;
-		transition: max-height 0.4s, margin 0.4s, padding 0.4s;
+		transition: max-height 0.2s, margin 0.2s;
 
 		&.shown {
-			padding: 3px;
 			margin-top: 0.6em;
-			max-height: 50px;
+			max-height: 36px;
 		}
 
 		select,
-		input {
+		.superinput {
 			width: 100%;
 			text-transform: capitalize;
 		}
@@ -713,7 +696,7 @@
 		min-height: 192px;
 		transition: min-height 0.2s;
 
-		.tabs {
+		.importexport-tabs {
 			position: relative;
 			display: flex;
 			width: 220px;
@@ -722,6 +705,7 @@
 			border-radius: 8.5px;
 			background-color: var(--color-areas);
 			align-items: center;
+			direction: ltr;
 
 			.glider {
 				width: calc(50% - 3px);
@@ -881,9 +865,8 @@
 
 	.signature {
 		color: var(--color-light-text);
-		text-align: left;
 		font-size: 14px;
-		padding: 4em;
+		padding: 4em 3em;
 		padding-bottom: 100px; // to always stay above footer
 
 		// Safari iOS only

@@ -1,9 +1,10 @@
-import { Sync } from '../types/sync'
-import { syncDefaults, bundleLinks } from '../utils'
+import { SYNC_DEFAULT } from '../defaults'
+import { bundleLinks } from '../utils'
+import type { Sync } from '../types/sync'
 
 // https://stackoverflow.com/a/53593328
-export default function stringifyOrder(data: { [key in string]: unknown }) {
-	const sync = { ...syncDefaults }
+export default function orderedStringify(data: { [key in string]: unknown }) {
+	const sync = { ...SYNC_DEFAULT }
 	const orderedKeys = Object.keys(sync)
 
 	// Recursively get all keys

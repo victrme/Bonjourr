@@ -69,6 +69,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--font-weight-clock: 200;
 	--font-weight: 400;
 	--font-size: 1em;
+	--clock-size: 6em;
 	--color-red: #fe3b31;
 	--color-green: #2ed058;
 
@@ -224,10 +225,7 @@ body {
 			overflow-y: clip;
 		}
 		.as_visuals {
-			max-height: 420px;
-		}
-		.as_pageelem {
-			max-height: 370px;
+			max-height: 220px;
 		}
 		.as_link {
 			max-height: 120px;
@@ -243,6 +241,9 @@ body {
 		}
 		.as_weather {
 			max-height: 300px;
+		}
+		.as_clocktype {
+			max-height: 130px;
 		}
 		.as_fonts {
 			max-height: 300px;
@@ -265,7 +266,7 @@ body {
 	.as {
 		max-height: 0;
 		overflow-y: hidden;
-		transition: max-height 0.4s, padding 0.2s;
+		transition: max-height 0.3s, padding 0.2s;
 	}
 
 	&.init .as {
@@ -309,7 +310,7 @@ body {
 		height: $inputHeight;
 		color: var(--color-text);
 		font-size: 13px;
-		padding-left: 10px;
+		padding: 0 10px;
 		border-radius: 8.5px;
 		box-sizing: border-box;
 		border: 2px solid transparent;

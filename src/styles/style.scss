@@ -87,6 +87,7 @@
 		#sb_container,
 		#notes_container,
 		#quotes_container {
+			z-index: 3;
 			cursor: pointer;
 			pointer-events: none;
 
@@ -102,7 +103,6 @@
 	#sb_container,
 	#notes_container,
 	#quotes_container {
-		z-index: 3;
 		place-self: center;
 	}
 
@@ -130,14 +130,14 @@
 				}
 
 				#analogClock {
-					display: block;
+					display: inline-block;
 				}
 			}
 
 			#clock {
 				margin: 0;
 				margin-bottom: 0.1em;
-				font-size: 6em;
+				font-size: calc(var(--clock-size) * 6);
 				line-height: 1em;
 				font-weight: 200;
 				font-weight: var(--font-weight-clock);
@@ -146,11 +146,10 @@
 			#analogClock {
 				display: none;
 				position: relative;
-				width: 8em;
-				height: 8em;
-				margin: auto;
+				width: calc(var(--clock-size) * 8);
+				height: calc(var(--clock-size) * 8);
 				border-radius: 100%;
-				border: 0.2em solid white;
+				border: calc(var(--clock-size) * 0.2) solid white;
 				box-shadow: $textShadow;
 
 				background-color: #fff3;
@@ -158,14 +157,14 @@
 
 				#center {
 					position: absolute;
-					z-index: 5;
-					width: 0.4em;
-					height: 0.4em;
 					top: 50%;
 					left: 50%;
+					width: calc(var(--clock-size) * 0.4);
+					height: calc(var(--clock-size) * 0.4);
+					border-radius: calc(var(--clock-size) * 0.4);
 					transform: translate(-50%, -50%);
 					background-color: white;
-					border-radius: 100px;
+					z-index: 5;
 				}
 
 				&.transparent {
@@ -176,23 +175,7 @@
 				}
 
 				&.square {
-					border-radius: 2px;
-
-					.numbers.top {
-						top: 8px;
-					}
-
-					.numbers.right {
-						right: 8px;
-					}
-
-					.numbers.left {
-						left: 8px;
-					}
-
-					.numbers.bottom {
-						bottom: 8px;
-					}
+					border-radius: calc(var(--clock-size) * 0.2);
 				}
 
 				.numbers {
@@ -200,42 +183,43 @@
 					display: block;
 					opacity: 0.6;
 					width: 100%;
+					font-size: calc(var(--clock-size) * 1);
 
 					&.top {
-						top: 10px;
+						top: calc(5px + var(--clock-size) * 0.3);
 						text-align: center;
 					}
 
 					&.right {
-						top: 40%;
-						right: 10px;
+						top: calc(50% - (5px + var(--clock-size) * 0.15));
+						right: calc(5px + var(--clock-size) * 0.3);
 						text-align: right;
 					}
 
 					&.bottom {
-						bottom: 10px;
+						bottom: calc(5px + var(--clock-size) * 0.3);
 						text-align: center;
 					}
 
 					&.left {
-						top: 40%;
-						left: 10px;
+						top: calc(50% - (5px + var(--clock-size) * 0.15));
+						left: calc(5px + var(--clock-size) * 0.3);
 						text-align: left;
 					}
 				}
 
 				// aiguilles
 				span {
-					background: white;
-					border-radius: 20px;
-					bottom: 50%;
-					display: block;
-					width: 0.2em;
-					left: 50%;
-					margin-left: -0.1em;
 					position: absolute;
-					transform-origin: bottom center;
+					display: block;
+					bottom: 50%;
+					left: 50%;
 					box-shadow: $textShadow;
+					width: calc(var(--clock-size) * 0.2);
+					margin-left: calc(var(--clock-size) * -0.1);
+					border-radius: calc(var(--clock-size) * 0.2);
+					transform-origin: bottom center;
+					background-color: white;
 
 					&#hours {
 						height: 30%;
@@ -247,10 +231,10 @@
 
 					&#analogSeconds {
 						height: 45%;
-						width: 0.1em;
-						margin-left: -0.05em;
 						opacity: 0.8;
 						background-color: red;
+						width: calc(var(--clock-size) * 0.1);
+						margin-left: calc(var(--clock-size) * -0.05);
 
 						&.hidden {
 							display: none;
@@ -292,8 +276,6 @@
 			margin: 0;
 			width: 100%;
 			min-width: 300px;
-			max-width: 16em;
-			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
 
@@ -303,7 +285,11 @@
 			text-decoration: none;
 			color: inherit;
 			width: 100%;
-			transition: opacity 0.15s;
+			transition: opacity 0.8s;
+
+			&.wait {
+				opacity: 0;
+			}
 
 			&[href]:hover {
 				opacity: 0.7;
@@ -312,14 +298,6 @@
 			#description {
 				font-size: 1.5em;
 				min-height: 1.5em;
-
-				#forecast {
-					display: none;
-
-					&.shown {
-						display: block;
-					}
-				}
 
 				#current,
 				#forecast {
@@ -343,16 +321,6 @@
 
 				p {
 					font-size: 2.2em;
-				}
-			}
-
-			#tempContainer,
-			#forecast,
-			#current {
-				transition: opacity 0.8s;
-
-				&.wait {
-					opacity: 0;
 				}
 			}
 		}
@@ -384,6 +352,7 @@
 
 		li.block {
 			width: 4.8em;
+			z-index: 1;
 			transition: transform 0.3s cubic-bezier(0.68, -0.2, 0.265, 1.2);
 
 			&.dragging-clone {
@@ -437,7 +406,6 @@
 					box-shadow: $textShadow;
 					box-sizing: border-box;
 					border-radius: 1em;
-					z-index: 1;
 					aspect-ratio: 1;
 					transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
@@ -470,7 +438,6 @@
 					line-height: 1.3em;
 					min-height: 1.3em;
 					max-height: 3.9em;
-					word-break: break-word;
 					overflow: hidden;
 					z-index: 2;
 				}
@@ -702,6 +669,7 @@
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 		border: 1px solid rgba(255, 255, 255, 0.075);
 		background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
+		z-index: 2;
 
 		&.shown {
 			display: block;
@@ -709,7 +677,7 @@
 
 		li {
 			display: none;
-			text-align: left;
+			text-align: initial;
 			align-items: center;
 			margin: 0;
 			padding: 0.4em 1em 0.4em 0.6em;
@@ -976,7 +944,7 @@
 		border-radius: 6px;
 		border: 3px solid transparent;
 		background-color: transparent;
-		text-align: left;
+		text-align: initial;
 		padding: 2px 12px;
 		color: #2a2222;
 		outline: none;
@@ -1016,7 +984,7 @@
 			margin: 10px;
 			padding: 15px;
 			padding-left: 3.5em;
-			text-align: left;
+			text-align: initial;
 			border-radius: 8px;
 			border: 1px solid transparent;
 			transition: background-color 0.05s, border-color 0.05s;
@@ -1164,7 +1132,7 @@
 		width: 100%;
 		border-radius: 6px;
 		border: 3px solid transparent;
-		text-align: left;
+		text-align: initial;
 		padding: 2px 12px;
 		color: var(--color-text);
 		outline: none;
@@ -1237,7 +1205,7 @@
 		position: relative;
 		align-items: center;
 		width: 16em;
-		text-align: left;
+		text-align: initial;
 		padding: 0.6em 2em;
 		margin-right: 0.6em;
 		border-radius: 8px;

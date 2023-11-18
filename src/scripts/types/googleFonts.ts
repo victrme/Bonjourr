@@ -12,6 +12,11 @@ export declare namespace google.fonts {
 		variants: string[]
 		version: string
 		lastModified: string
+		axes?: {
+			tag: 'wght' | 'wdth'
+			start: number
+			end: number
+		}[]
 		files: { [variant: string]: string }
 	}
 }

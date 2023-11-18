@@ -1,9 +1,10 @@
 import { canDisplayInterface } from '..'
-import { syncDefaults } from '../utils'
-import { Sync, Clock } from '../types/sync'
+import { SYNC_DEFAULT } from '../defaults'
 import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errorMessage'
+import errorMessage from '../utils/errormessage'
 import storage from '../storage'
+
+import type { Sync, Clock } from '../types/sync'
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -14,6 +15,7 @@ type ClockUpdate = {
 	timezone?: string
 	style?: string
 	face?: string
+	size?: number
 }
 
 // prettier-ignore
@@ -70,27 +72,36 @@ function greetings(date: Date, name?: string) {
 	}
 
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
+	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
+	const domname = document.getElementById('greeting-name') as HTMLSpanElement
+
 	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
-	domgreetings.textContent = tradThis(greet) + (name ? `, ${name}` : '')
+	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
+	domname.textContent = name ?? ''
 }
 
 function changeAnalogFace(face = 'none') {
-	//
 	// Clockwise
 	const chars = {
 		none: ['', '', '', ''],
 		number: ['12', '3', '6', '9'],
 		roman: ['XII', 'III', 'VI', 'IX'],
-		marks: ['│', '─', '│', '─'],
+		marks: ['│', '―', '│', '―'],
 	}
 
-	document
-		.querySelectorAll('#analogClock .numbers')
-		.forEach((mark, i) => (mark.textContent = chars[face as keyof typeof chars][i]))
+	document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => {
+		if (face in chars) {
+			mark.textContent = chars[face as keyof typeof chars][i]
+		}
+	})
 }
 
 function changeAnalogStyle(style?: string) {
 	document.getElementById('analogClock')?.setAttribute('class', style || '')
+}
+
+function changeClockSize(size = 1) {
+	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
 function startClock(clock: Clock, greeting: string, usdate: boolean) {
@@ -163,43 +174,50 @@ function startClock(clock: Clock, greeting: string, usdate: boolean) {
 	lazyClockInterval = setInterval(clockInterval, 1000)
 }
 
-async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, style, face }: ClockUpdate) {
-	const data = await storage.get(['clock', 'usdate', 'greeting'])
+async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, style, face, size }: ClockUpdate) {
+	const data = await storage.sync.get(['clock', 'usdate', 'greeting'])
 	let clock = data?.clock
 
 	if (!clock || data.usdate === undefined || data.greeting === undefined) {
 		return
 	}
 
+	if (analog !== undefined) {
+		document.getElementById('analog_options')?.classList.toggle('shown', analog)
+		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
+	}
+
 	if (usdate !== undefined) {
 		clockDate(zonedDate(clock.timezone), usdate)
-		storage.set({ usdate })
+		storage.sync.set({ usdate })
 	}
 
 	if (greeting !== undefined) {
 		greetings(zonedDate(clock.timezone), greeting)
-		storage.set({ greeting })
+		storage.sync.set({ greeting })
 	}
 
 	if (timezone !== undefined) {
 		clockDate(zonedDate(timezone), data.usdate)
-		greetings(zonedDate(timezone), greeting)
+		greetings(zonedDate(timezone), data.greeting)
 	}
 
 	clock = {
 		...clock,
 		ampm: ampm ?? clock.ampm,
 		face: face ?? clock.face,
+		size: size ?? clock.size,
 		style: style ?? clock.style,
 		analog: analog ?? clock.analog,
 		seconds: seconds ?? clock.seconds,
 		timezone: timezone ?? clock.timezone,
 	}
 
-	storage.set({ clock })
+	storage.sync.set({ clock })
 	startClock(clock, data.greeting, data.usdate)
 	changeAnalogFace(clock.face)
 	changeAnalogStyle(clock.style)
+	changeClockSize(clock.size)
 }
 
 export default function clock(init: Sync | null, event?: ClockUpdate) {
@@ -208,7 +226,7 @@ export default function clock(init: Sync | null, event?: ClockUpdate) {
 		return
 	}
 
-	let clock = init?.clock ?? { ...syncDefaults.clock }
+	let clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
 
 	try {
 		startClock(clock, init?.greeting || '', init?.usdate || false)
@@ -216,6 +234,7 @@ export default function clock(init: Sync | null, event?: ClockUpdate) {
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		changeAnalogFace(clock.face)
 		changeAnalogStyle(clock.style)
+		changeClockSize(clock.size)
 		canDisplayInterface('clock')
 	} catch (e) {
 		errorMessage(e)

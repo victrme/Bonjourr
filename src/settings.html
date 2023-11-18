@@ -6,21 +6,20 @@
 	<div id="changelogContainer">
 		<button id="log_dismiss" aria-label="Dismiss changelog"><span>✕</span></button>
 		<div id="changelog">
-			<p class="trn">Bonjourr has been updated to version 1.17 ✨</p>
+			<p class="trn">Bonjourr has been updated to version 1.18 ✨</p>
 			<p>
 				<span class="trn"
-					>Lots of work under the hood. Improved custom backgrounds storage, faster overall loading times, and more
-					on</span
+					>Important bug fixes and enhancements! We added suggestions to the search bar and more. Check out</span
 				>
 				<a
 					id="link"
 					target="_blank"
 					rel="noreferrer noopener"
-					href="https://ko-fi.com/Post/Bonjourr-1-17-a-housekeeping-update-E1E1NHQAQ"
+					href="https://ko-fi.com/Post/Bonjourr-1-18-housekeeping-part-2-L4L4Q5EYW"
 				>
-					<span class="trn">our update post</span>.
+					<span class="trn">our update post</span>
 				</a>
-				🗞
+				<span class="trn">to learn all about it</span>. 🗞
 			</p>
 		</div>
 	</div>
@@ -86,15 +85,6 @@
 				<label for="i_settingshide" class="trn">Hide settings icon</label>
 				<input id="i_settingshide" class="switch" type="checkbox" />
 			</div>
-
-			<div id="move-option-moved" style="display: none">
-				<hr />
-
-				<div class="wrapper">
-					<label class="trn">Page layout is now at the bottom 👇</label>
-					<button aria-label="Dismiss update tip"><span class="trn">Understood</span></button>
-				</div>
-			</div>
 		</div>
 	</div>
 
@@ -137,18 +127,21 @@
 						<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
 					</span>
 
-					<input
-						type="text"
-						name="collection"
-						id="i_collection"
-						autocomplete="off"
-						placeholder="2nVzlQADDIE"
-						maxlength="256"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-					/>
+					<div class="superinput">
+						<input
+							type="text"
+							name="collection"
+							id="i_collection"
+							autocomplete="off"
+							placeholder="2nVzlQADDIE"
+							maxlength="256"
+							spellcheck="false"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+						/>
+						<span class="si-status"><i></i></span>
+					</div>
 				</div>
 
 				<p class="tooltiptext ttcoll">
@@ -290,14 +283,48 @@
 
 			<div class="analog wrapper">
 				<label for="i_analog" class="trn">Analog clock</label>
-				<input id="i_analog" class="switch" type="checkbox" />
+				<input id="i_analog" class="switch opt-hider" type="checkbox" />
 			</div>
 
 			<hr />
 
-			<div id="w_ampm" class="wrapper">
-				<label for="i_ampm" class="trn">12-Hour Time</label>
-				<input id="i_ampm" class="switch" type="checkbox" />
+			<div id="clocktype_options" class="as as_clocktype dropdown">
+				<div id="analog_options" class="dropdown">
+					<div id="w_clockface" class="wrapper">
+						<label for="i_clockface" class="trn">Clock face</label>
+						<select id="i_clockface" class="">
+							<option value="none" class="trn">None</option>
+							<option value="number" class="trn">Numbers</option>
+							<option value="roman" class="trn">Romans</option>
+							<option value="marks" class="trn">Marks</option>
+						</select>
+					</div>
+
+					<hr />
+
+					<div id="w_clockstyle" class="wrapper">
+						<label for="i_clockstyle" class="trn">Clock style</label>
+						<select id="i_clockstyle" class="">
+							<option value="round" class="trn">Round</option>
+							<option value="square" class="trn">Square</option>
+							<option value="transparent" class="trn">Transparent</option>
+						</select>
+					</div>
+				</div>
+
+				<div id="digital_options" class="dropdown shown">
+					<div id="w_ampm" class="wrapper">
+						<label for="i_ampm" class="trn">12-Hour Time</label>
+						<input id="i_ampm" class="switch" type="checkbox" />
+					</div>
+				</div>
+
+				<hr />
+			</div>
+
+			<div class="seconds wrapper">
+				<label for="i_seconds" class="trn">Show Seconds</label>
+				<input id="i_seconds" class="switch" type="checkbox" />
 			</div>
 
 			<hr />
@@ -310,32 +337,18 @@
 			<div class="as as_timedate">
 				<hr />
 
-				<div class="seconds wrapper">
-					<label for="i_seconds" class="trn">Show Seconds</label>
-					<input id="i_seconds" class="switch" type="checkbox" />
-				</div>
-
-				<hr />
-
-				<div id="w_clockface" class="wrapper">
-					<label for="i_clockface" class="trn">Clock face</label>
-					<select id="i_clockface" class="">
-						<option value="none" class="trn">None</option>
-						<option value="number" class="trn">Numbers</option>
-						<option value="roman" class="trn">Romans</option>
-						<option value="marks" class="trn">Marks</option>
-					</select>
-				</div>
-
-				<hr />
-
-				<div id="w_clockstyle" class="wrapper">
-					<label for="i_clockstyle" class="trn">Clock style</label>
-					<select id="i_clockstyle" class="">
-						<option value="round" class="trn">Round</option>
-						<option value="square" class="trn">Square</option>
-						<option value="transparent" class="trn">Transparent</option>
-					</select>
+				<div class="wrapper">
+					<label for="i_clocksize" class="trn">Clock size</label>
+					<input
+						id="i_clocksize"
+						name="i_clocksize"
+						type="range"
+						min="0.25"
+						max="2.25"
+						step=".125"
+						value="1"
+						class="range"
+					/>
 				</div>
 
 				<hr />
@@ -401,7 +414,11 @@
 
 			<div class="w_auto wrapper">
 				<label for="i_geol" class="trn">Geolocation</label>
-				<input id="i_geol" class="switch opt-hider" type="checkbox" />
+				<select id="i_geol">
+					<option value="off" class="trn">Off</option>
+					<option value="approximate" class="trn">Approximate</option>
+					<option value="precise" class="trn">Precise</option>
+				</select>
 			</div>
 
 			<div id="sett_city" class="dropdown shown">
@@ -656,23 +673,30 @@
 					<option value="ZM">Zambia</option>
 					<option value="ZW">Zimbabwe</option>
 				</select>
-				<input
-					id="i_city"
-					type="text"
-					name="city"
-					placeholder="City"
-					autocomplete="off"
-					maxlength="64"
-					spellcheck="false"
-					aria-label="City location"
-				/>
+
+				<div class="superinput">
+					<input
+						id="i_city"
+						type="text"
+						name="city"
+						placeholder="City"
+						autocomplete="off"
+						maxlength="64"
+						spellcheck="false"
+						aria-label="City location"
+					/>
+					<span class="si-status"><i></i></span>
+				</div>
 			</div>
 
 			<hr />
 
-			<div class="units wrapper">
-				<label for="i_units" class="trn">Imperial units</label>
-				<input id="i_units" class="switch" type="checkbox" />
+			<div class="wrapper">
+				<label for="i_units" class="trn">Unit</label>
+				<select id="i_units">
+					<option value="metric" class="trn">Celsius</option>
+					<option value="imperial" class="trn">Fahrenheit</option>
+				</select>
 			</div>
 
 			<div class="as as_weather">
@@ -829,6 +853,13 @@
 			<hr />
 
 			<div class="wrapper">
+				<label for="i_sbsuggestions" class="trn">Suggestions</label>
+				<input id="i_sbsuggestions" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
 				<label for="i_sbengine" class="trn">Search engine</label>
 				<select id="i_sbengine" class="choose_search opt-hider">
 					<option value="google">Google</option>
@@ -849,7 +880,11 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
+
+					<div class="superinput">
+						<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
+						<span class="si-status"><i></i></span>
+					</div>
 				</div>
 			</div>
 
@@ -928,13 +963,16 @@
 							<button class="tooltip ttcustomquotes opt-hider" aria-label="Tips on custom quotes">?</button>
 						</span>
 
-						<input
-							id="i_qtlist"
-							name="qtlist"
-							type="text"
-							placeholder='[["author", "text"], ["au...'
-							maxlength="8000"
-						/>
+						<div class="superinput">
+							<input
+								id="i_qtlist"
+								name="qtlist"
+								type="text"
+								placeholder='[["author", "text"], ["au...'
+								maxlength="8000"
+							/>
+							<span class="si-status"><i></i></span>
+						</div>
 					</div>
 
 					<p class="tooltiptext ttcustomquotes">
@@ -975,8 +1013,19 @@
 		<div class="param">
 			<div class="wrapper">
 				<label for="i_customfont" class="trn">Font family</label>
-				<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" placeholder="" />
-				<datalist id="dl_fontfamily"></datalist>
+
+				<div class="superinput">
+					<input
+						list="dl_fontfamily"
+						id="i_customfont"
+						type="text"
+						name="customfont"
+						autocomplete="off"
+						placeholder=""
+					/>
+					<span class="si-status"><i></i></span>
+					<datalist id="dl_fontfamily"></datalist>
+				</div>
 			</div>
 
 			<hr />
@@ -1114,7 +1163,7 @@
 		</p>
 
 		<div class="param">
-			<div class="tabs">
+			<div class="importexport-tabs">
 				<button id="s_export" class="trn opt-hider">Export</button>
 				<button id="s_import" class="trn opt-hider">Import</button>
 				<div class="glider"></div>
