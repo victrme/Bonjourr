@@ -677,7 +677,7 @@
 
 		li {
 			display: none;
-			text-align: left;
+			text-align: initial;
 			align-items: center;
 			margin: 0;
 			padding: 0.4em 1em 0.4em 0.6em;
@@ -944,7 +944,7 @@
 		border-radius: 6px;
 		border: 3px solid transparent;
 		background-color: transparent;
-		text-align: left;
+		text-align: initial;
 		padding: 2px 12px;
 		color: #2a2222;
 		outline: none;
@@ -984,7 +984,7 @@
 			margin: 10px;
 			padding: 15px;
 			padding-left: 3.5em;
-			text-align: left;
+			text-align: initial;
 			border-radius: 8px;
 			border: 1px solid transparent;
 			transition: background-color 0.05s, border-color 0.05s;
@@ -1132,7 +1132,7 @@
 		width: 100%;
 		border-radius: 6px;
 		border: 3px solid transparent;
-		text-align: left;
+		text-align: initial;
 		padding: 2px 12px;
 		color: var(--color-text);
 		outline: none;
@@ -1205,7 +1205,7 @@
 		position: relative;
 		align-items: center;
 		width: 16em;
-		text-align: left;
+		text-align: initial;
 		padding: 0.6em 2em;
 		margin-right: 0.6em;
 		border-radius: 8px;

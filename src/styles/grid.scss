@@ -72,6 +72,7 @@
 	box-shadow: 5px 5px 20px #2224;
 	cursor: grab;
 	z-index: 4;
+	direction: ltr;
 
 	@include frostedGlass($blur: 1em);
 
@@ -201,7 +202,7 @@ button.grid-spanner {
 	border-radius: 6px;
 	border: 3px solid transparent;
 	background-color: transparent;
-	text-align: left;
+	text-align: initial;
 	padding: 2px 12px;
 	outline: none;
 	cursor: pointer;
