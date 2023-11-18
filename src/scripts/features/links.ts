@@ -439,8 +439,8 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 		removeLinkSelection()
 
-		if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
-		if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
+		if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
+		if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
 
 		// Moves edit link to mouse position
 		const domeditlink = document.getElementById('editlink')
@@ -459,9 +459,9 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	const domurl = document.getElementById('e_url') as HTMLInputElement
 	const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
 
-	domtitle.setAttribute('placeholder', tradThis('Title'))
-	domurl.setAttribute('placeholder', tradThis('Link'))
-	domiconurl.setAttribute('placeholder', tradThis('Icon'))
+	domtitle.setAttribute('placeholder', tradThis("My site's title"))
+	domurl.setAttribute('placeholder', tradThis('URL to my site'))
+	domiconurl.setAttribute('placeholder', tradThis('URL to my icon'))
 
 	domtitle.value = title
 	domurl.value = url
