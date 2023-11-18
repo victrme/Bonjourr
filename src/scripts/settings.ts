@@ -441,33 +441,33 @@ export async function settingsInit() {
 	})
 
 	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { city: this.value })
+		weather(undefined, { city: this.value })
 	})
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { geol: this.value })
+		weather(undefined, { geol: this.value })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { units: this.value as Weather['unit'] })
+		weather(undefined, { units: this.value })
 	})
 
 	paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { forecast: this.value })
+		weather(undefined, { forecast: this.value })
 	})
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { temp: this.value })
+		weather(undefined, { temp: this.value })
 	})
 
 	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { moreinfo: this.value })
+		weather(undefined, { moreinfo: this.value })
 	})
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { provider: this.value })
+		weather(undefined, { provider: this.value })
 		this.blur()
 	})
 
@@ -475,7 +475,7 @@ export async function settingsInit() {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
-		weather(null, { unhide: true })
+		weather(undefined, { unhide: true })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
@@ -552,25 +552,25 @@ export async function settingsInit() {
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
-		quotes(null, { frequency: this.value })
+		quotes(undefined, { frequency: this.value })
 	})
 
 	paramId('i_qttype').addEventListener('change', function () {
-		quotes(null, { type: this.value })
+		quotes(undefined, { type: this.value })
 	})
 
 	paramId('i_qtrefresh').addEventListener('click', function () {
 		inputThrottle(this)
 		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
-		quotes(null, { refresh: true })
+		quotes(undefined, { refresh: true })
 	})
 
 	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(null, { author: this.checked })
+		quotes(undefined, { author: this.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
-		quotes(null, { userlist: this.value })
+		quotes(undefined, { userlist: this.value })
 	})
 
 	//

@@ -112,7 +112,6 @@ export const SYNC_DEFAULT: Sync = {
 	notes: {
 		on: false,
 		width: 40,
-		text: null,
 		opacity: 0.1,
 		align: 'left',
 	},

@@ -1,13 +1,13 @@
-import { UnsplashImage } from './local'
+import type { Langs, UnsplashImage } from './shared'
 
 export type Clock = {
 	ampm: boolean
 	analog: boolean
 	seconds: boolean
-	style: string
 	timezone: string
-	face: string
 	size: number
+	style: 'round' | 'square' | 'transparent'
+	face: 'none' | 'number' | 'roman' | 'marks'
 }
 
 export type Searchbar = {
@@ -24,7 +24,7 @@ export type Quotes = {
 	on: boolean
 	author: boolean
 	last: number
-	type: string
+	type: 'classic' | 'kaamelott' | 'inspirobot' | 'user'
 	frequency: string
 	userlist?: [string, string][]
 }
@@ -35,9 +35,9 @@ export type Weather = {
 	city?: string
 	unit: 'metric' | 'imperial'
 	location?: [number, number]
-	forecast: string
-	temperature: string
-	moreinfo?: string
+	forecast: 'auto' | 'always' | 'never'
+	temperature: 'actual' | 'feelslike' | 'both'
+	moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'custom'
 	provider?: string
 }
 
@@ -59,7 +59,7 @@ export type Font = {
 
 export type Notes = {
 	on: boolean
-	text: string | null
+	text?: string
 	width?: number
 	opacity: number
 	align: 'left' | 'center' | 'right'
@@ -110,14 +110,14 @@ export type Sync = {
 	pagegap: number
 	pagewidth: number
 	linksrow: number
-	linkstyle: string
+	linkstyle: 'large' | 'medium' | 'small' | 'text'
 	linknewtab: boolean
 	cssHeight: number
 	reviewPopup: number
 	background_blur: number
 	background_bright: number
 	css: string
-	lang: string
+	lang: Langs
 	favicon: string
 	tabtitle: string
 	greeting: string

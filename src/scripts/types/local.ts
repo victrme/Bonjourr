@@ -1,17 +1,12 @@
-import { OWMOnecall } from './apis/openweathermap'
-import langs from '../langs'
+import type { OWMOnecall } from './apis/openweathermap'
+import type { Langs, Quote, UnsplashImage } from './shared'
 
-type Langs = keyof typeof langs
-
-type Translations = {
-	lang: Langs
-	[key: string]: string
-}
-
-export type Quote = {
-	author: string
-	content: string
-}
+export type Translations =
+	| {
+			lang: Langs
+			[key: string]: string
+	  }
+	| undefined
 
 export type UnsplashCache = {
 	noon: UnsplashImage[]
@@ -19,24 +14,6 @@ export type UnsplashCache = {
 	evening: UnsplashImage[]
 	night: UnsplashImage[]
 	user: UnsplashImage[]
-}
-
-export type UnsplashImage = {
-	url: string
-	link: string
-	username: string
-	name: string
-	city: string
-	country: string
-	color: string
-	exif?: {
-		make: string
-		model: string
-		exposure_time: string
-		aperture: string
-		focal_length: string
-		iso: number
-	}
 }
 
 export type LastWeather = {

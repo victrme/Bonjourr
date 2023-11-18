@@ -4,7 +4,7 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import type { Sync, Clock } from '../types/sync'
+import { Sync, Clock } from '../types/sync'
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -182,6 +182,9 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		return
 	}
 
+	const isFace = (str = ''): str is Clock['face'] => ['none', 'number', 'roman', 'marks'].includes(str)
+	const isStyle = (str = ''): str is Clock['style'] => ['round', 'square', 'transparent'].includes(str)
+
 	if (analog !== undefined) {
 		document.getElementById('analog_options')?.classList.toggle('shown', analog)
 		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
@@ -205,12 +208,12 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	clock = {
 		...clock,
 		ampm: ampm ?? clock.ampm,
-		face: face ?? clock.face,
 		size: size ?? clock.size,
-		style: style ?? clock.style,
 		analog: analog ?? clock.analog,
 		seconds: seconds ?? clock.seconds,
 		timezone: timezone ?? clock.timezone,
+		face: isFace(face) ? face : clock.face,
+		style: isStyle(style) ? style : clock.style,
 	}
 
 	storage.sync.set({ clock })

@@ -17,13 +17,13 @@ type Coords = {
 type WeatherInit = {
 	sync: Sync
 	lastWeather?: LastWeather
-} | null
+}
 
 type WeatherUpdate = {
 	forecast?: string
 	moreinfo?: string
 	provider?: string
-	units?: 'metric' | 'imperial'
+	units?: string
 	geol?: string
 	city?: string
 	temp?: string
@@ -33,7 +33,7 @@ type WeatherUpdate = {
 let pollingInterval = setInterval(() => {})
 const cityInput = superinput('i_city')
 
-export default function weather(init: WeatherInit, update?: WeatherUpdate) {
+export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
 		updatesWeather(update)
 		return
@@ -66,27 +66,32 @@ async function updatesWeather(update: WeatherUpdate) {
 		return
 	}
 
-	if (update.units) {
+	const isUnits = (str = ''): str is Weather['unit'] => ['metric', 'imperial'].includes(str)
+	const isForecast = (str = ''): str is Weather['forecast'] => ['auto', 'always', 'never'].includes(str)
+	const isMoreinfo = (str = ''): str is Weather['moreinfo'] => ['none', 'msnw', 'yhw', 'windy', 'custom'].includes(str)
+	const isTemperature = (str = ''): str is Weather['temperature'] => ['actual', 'feelslike', 'both'].includes(str)
+
+	if (isUnits(update.units)) {
 		weather.unit = update.units
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
-	if (update.forecast) {
+	if (isForecast(update.forecast)) {
 		weather.forecast = update.forecast
 	}
 
-	if (update.temp) {
+	if (isTemperature(update.temp)) {
 		weather.temperature = update.temp
+	}
+
+	if (isMoreinfo(update.moreinfo)) {
+		const providerdom = document.getElementById('weather_provider')
+		providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
+		weather.moreinfo = update.moreinfo
 	}
 
 	if (update.provider) {
 		weather.provider = update.provider
-	}
-
-	if (update.moreinfo) {
-		const providerdom = document.getElementById('weather_provider')
-		providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
-		weather.moreinfo = update.moreinfo
 	}
 
 	if (update.unhide) {
