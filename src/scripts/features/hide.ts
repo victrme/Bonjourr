@@ -1,18 +1,20 @@
 import storage from '../storage'
 import { Hide } from '../types/sync'
 
-export default async function hideElements(hidelist: Hide = {}, options?: { isEvent: true }) {
+export default async function hideElements(hide: Hide = {}, options?: { isEvent: true }) {
 	//
 	if (options?.isEvent) {
-		const { hide } = await storage.sync.get('hide')
-		const isOld = Array.isArray(hide) && hide.length === 4
-		if (isOld) return
+		const sync = await storage.sync.get('hide')
 
-		hidelist = { ...hidelist, ...hide }
-		storage.sync.set({ hide: hidelist })
+		hide = {
+			...sync.hide, // ⚠️ sync must be first. If not, event doesn't save
+			...hide,
+		}
+
+		storage.sync.set({ hide })
 	}
 
-	for (const [key, val] of Object.entries(hidelist)) {
+	for (const [key, val] of Object.entries(hide)) {
 		document.querySelector(`[data-hide="${key}"]`)?.classList.toggle('he_hidden', val)
 	}
 }

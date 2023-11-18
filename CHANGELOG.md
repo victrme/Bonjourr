@@ -1,3 +1,10 @@
+## 1.18.3
+
+-   Added support for right-to-left languages
+-   Added Farsi translations, thanks @ar3h1d !
+-   Fixed typo breaking hide elements
+-   Fixed "mock-selection" bug in Notes on Chromium / Safari
+
 ## 1.18.2
 
 -   Re-added 1.18.0 forecast optimisations

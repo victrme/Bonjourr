@@ -663,7 +663,7 @@ export async function settingsInit() {
 	const toggleSettingsMgmt = (toggled: boolean) => {
 		paramId('export')?.classList.toggle('shown', !toggled)
 		paramId('import')?.classList.toggle('shown', toggled)
-		paramClasses('tabs')[0]?.classList.toggle('toggled', toggled)
+		paramClasses('importexport-tabs')[0]?.classList.toggle('toggled', toggled)
 	}
 
 	paramId('s_export').addEventListener('click', () => toggleSettingsMgmt(false))
