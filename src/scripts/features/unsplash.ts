@@ -6,7 +6,8 @@ import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import storage from '../storage'
 
-import type { UnsplashCache, UnsplashImage } from '../types/local'
+import type { UnsplashImage } from '../types/shared'
+import type { UnsplashCache } from '../types/local'
 import type { UnsplashAPI } from '../types/apis/unsplash'
 import type { Unsplash, Sync } from '../types/sync'
 
@@ -66,12 +67,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		setTimeout(() => cacheControl(unsplash), 400)
 	}
 
-	if (every !== undefined) {
-		// Todo: fix bad manual value check
-		if (!every || !every.match(/tabs|hour|day|period|pause/g)) {
-			return console.log('Not valid "every" value')
-		}
-
+	if (every !== undefined && isEvery(every)) {
 		const currentImage = unsplashCache[unsplash.lastCollec][0]
 		unsplash.pausedImage = every === 'pause' ? currentImage : null
 		unsplash.every = every
@@ -280,7 +276,7 @@ function imgCredits(image: UnsplashImage) {
 	// Force Capitalization
 	artist = name
 		.split(' ')
-		.map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
+		.map((s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
 		.join(' ')
 
 	const locationDOM = document.createElement('a')
@@ -332,4 +328,8 @@ async function preloadImage(src: string) {
 	} catch (error) {
 		console.warn('Could not decode image: ', src)
 	}
+}
+
+function isEvery(s = ''): s is Unsplash['every'] {
+	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(s)
 }

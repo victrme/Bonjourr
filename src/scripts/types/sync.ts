@@ -10,11 +10,24 @@ export type Clock = {
 	face: 'none' | 'number' | 'roman' | 'marks'
 }
 
+export type SearchEngines =
+	| 'google'
+	| 'ddg'
+	| 'startpage'
+	| 'qwant'
+	| 'yahoo'
+	| 'bing'
+	| 'brave'
+	| 'ecosia'
+	| 'lilo'
+	| 'baidu'
+	| 'custom'
+
 export type Searchbar = {
 	on: boolean
 	opacity: number
 	newtab: boolean
-	engine: string
+	engine: SearchEngines
 	request: string
 	suggestions: boolean
 	placeholder: string
@@ -43,7 +56,7 @@ export type Weather = {
 
 export type Unsplash = {
 	time: number
-	every: string
+	every: 'tabs' | 'hour' | 'day' | 'period' | 'pause'
 	collection: string
 	pausedImage: UnsplashImage | null
 	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'

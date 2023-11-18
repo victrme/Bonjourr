@@ -517,27 +517,27 @@ export async function settingsInit() {
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { engine: this.value })
+		searchbar(undefined, { engine: this.value })
 	})
 
 	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(null, { opacity: this.value })
+		searchbar(undefined, { opacity: this.value })
 	})
 
 	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { request: this })
+		searchbar(undefined, { request: this })
 	})
 
 	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { newtab: this.checked })
+		searchbar(undefined, { newtab: this.checked })
 	})
 
 	paramId('i_sbsuggestions').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { suggestions: this.checked })
+		searchbar(undefined, { suggestions: this.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
-		searchbar(null, { placeholder: this.value })
+		searchbar(undefined, { placeholder: this.value })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('change', function () {
