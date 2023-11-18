@@ -17,7 +17,7 @@
 	font-size: 15px;
 	font-weight: 400;
 	text-shadow: none;
-	text-align: left;
+	text-align: initial;
 
 	will-change: transform;
 	-webkit-transform: translate3d(0, 0, 0);
@@ -329,28 +329,27 @@
 		}
 	}
 
-	#tabtitle {
-		div {
-			display: flex;
-			align-items: center;
-			width: 155px;
+	#tabtitle > div,
+	.freq_wrap > div {
+		display: flex;
+		width: 155px;
+		column-gap: 5px;
 
-			#i_favicon {
-				text-align: center;
-				padding-left: 0;
-				padding-right: 0;
-				width: 40px;
-				margin-right: 5px;
+		input,
+		select {
+			width: 100%;
+		}
+	}
 
-				&::placeholder {
-					opacity: 0.7;
-					filter: grayscale(0.35);
-				}
-			}
+	#tabtitle > div #i_favicon {
+		text-align: center;
+		padding-left: 0;
+		padding-right: 0;
+		width: 40px;
 
-			#i_tabtitle {
-				width: 100%;
-			}
+		&::placeholder {
+			opacity: 0.7;
+			filter: grayscale(0.35);
 		}
 	}
 
@@ -460,17 +459,7 @@
 	#i_refresh,
 	#i_qtrefresh {
 		padding: 0 10px;
-		margin-left: 5px;
 		text-decoration: none;
-	}
-
-	.freq_wrap > div {
-		display: flex;
-		width: 155px;
-
-		select {
-			width: 100%;
-		}
 	}
 
 	#custom_thumbnail {
@@ -707,7 +696,7 @@
 		min-height: 192px;
 		transition: min-height 0.2s;
 
-		.tabs {
+		.importexport-tabs {
 			position: relative;
 			display: flex;
 			width: 220px;
@@ -716,6 +705,7 @@
 			border-radius: 8.5px;
 			background-color: var(--color-areas);
 			align-items: center;
+			direction: ltr;
 
 			.glider {
 				width: calc(50% - 3px);
@@ -875,9 +865,8 @@
 
 	.signature {
 		color: var(--color-light-text);
-		text-align: left;
 		font-size: 14px;
-		padding: 4em;
+		padding: 4em 3em;
 		padding-bottom: 100px; // to always stay above footer
 
 		// Safari iOS only
