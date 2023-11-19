@@ -7,7 +7,7 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { Sync, Link, LinkElem, LinkFolder } from '../types/sync'
+import { Sync, Link, LinkElem } from '../types/sync'
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -53,9 +53,9 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 	}
 
 	if (domlinkblocks.children) {
-		for (const child of domlinkblocks.children) {
+		Object.values(domlinkblocks.children).forEach((child) => {
 			child.remove()
-		}
+		})
 	}
 
 	const liList: HTMLLIElement[] = []
@@ -65,8 +65,9 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		const li = document.createElement('li')
 		const span = document.createElement('span')
 		const anchor = document.createElement('a')
-		const title = stringMaxSize(link.title, 64)
+		const div = document.createElement('div')
 		const img = document.createElement('img')
+		const title = stringMaxSize(link.title, 64)
 
 		li.id = link._id
 		li.setAttribute('class', 'block')
@@ -85,6 +86,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 			span.textContent = linkTitle(title, link.url, domlinkblocks.className === 'text')
 
 			anchor.href = url
+			div.appendChild(img)
 
 			if (isnewtab) {
 				BROWSER === 'safari'
@@ -97,7 +99,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 			li.classList.add('links-folder')
 		}
 
-		anchor.appendChild(img)
+		anchor.appendChild(div)
 		anchor.appendChild(span)
 		anchor.setAttribute('draggable', 'false')
 		anchor.setAttribute('rel', 'noreferrer noopener')
@@ -609,7 +611,6 @@ async function linkSubmission(type: 'elem' | 'folder' | 'import', importList?: {
 		}
 	}
 
-	// Default link submission
 	if (type === 'elem') {
 		const titledom = document.getElementById('i_title') as HTMLInputElement
 		const urldom = document.getElementById('i_url') as HTMLInputElement

@@ -376,10 +376,15 @@
 				overflow: hidden;
 				transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
 
-				img {
+				a > div {
 					transition: transform 0.3s $easeOutThree;
 					transform: scale(0.6);
 				}
+			}
+
+			&.links-folder a > div {
+				background: #fff2;
+				border: 1px solid #fff3;
 			}
 
 			a {
@@ -397,7 +402,7 @@
 				flex-direction: column;
 				align-items: center;
 
-				img {
+				> div {
 					position: relative;
 					overflow: hidden;
 					width: 100%;
@@ -428,6 +433,10 @@
 						transform: scale(1.04);
 						transition: border-color 0.1s, filter 0.1s, transform 0.1s;
 					}
+				}
+
+				img {
+					width: 100%;
 				}
 
 				span {
