@@ -7,7 +7,7 @@ import storage from '../storage'
 
 import { Sync, Weather } from '../types/sync'
 import { LastWeather } from '../types/local'
-import { OWMCurrent, OWMOnecall } from '../types/apis/openweathermap'
+import { OpenWeatherMap } from '../types/api'
 
 type Coords = {
 	lat: number
@@ -271,8 +271,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	// Fetch data
 
 	let response: Response | undefined
-	let onecall: OWMOnecall | undefined
-	let current: OWMCurrent | undefined
+	let onecall: OpenWeatherMap.Onecall | undefined
+	let current: OpenWeatherMap.Current | undefined
 
 	if (queries.includes('&lat') && lang === 'en') {
 		try {
@@ -293,8 +293,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 		try {
 			if (response?.status === 200) {
-				if (!!currentOnly) current = (await response?.json()) as OWMCurrent
-				if (!currentOnly) onecall = (await response?.json()) as OWMOnecall
+				if (!!currentOnly) current = (await response?.json()) as OpenWeatherMap.Current
+				if (!currentOnly) onecall = (await response?.json()) as OpenWeatherMap.Onecall
 			}
 		} catch (error) {
 			console.log(error)

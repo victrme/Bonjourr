@@ -96,7 +96,7 @@ export const SYNC_DEFAULT: Sync = {
 		every: 'hour',
 		collection: '',
 		lastCollec: 'day',
-		pausedImage: null,
+		pausedImage: undefined,
 		time: Date.now(),
 	},
 	weather: {

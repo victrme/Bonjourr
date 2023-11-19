@@ -350,7 +350,7 @@ export async function settingsInit() {
 		if (isLocalBg) {
 			localBackgrounds({ freq: this.value })
 		} else {
-			unsplashBackgrounds(null, { every: this.value })
+			unsplashBackgrounds(undefined, { every: this.value })
 		}
 	})
 
@@ -364,7 +364,7 @@ export async function settingsInit() {
 			if (isLocalBg) {
 				localBackgrounds({ refresh: arrow })
 			} else {
-				unsplashBackgrounds(null, { refresh: arrow })
+				unsplashBackgrounds(undefined, { refresh: arrow })
 			}
 		}
 
@@ -372,7 +372,7 @@ export async function settingsInit() {
 	})
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
+		unsplashBackgrounds(undefined, { collection: stringMaxSize(this.value, 256) })
 	})
 
 	//

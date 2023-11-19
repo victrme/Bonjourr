@@ -6,7 +6,7 @@ import superinput from '../utils/superinput'
 import storage from '../storage'
 import parse from '../utils/parse'
 
-import type { Searchbar, SearchEngines } from '../types/sync'
+import { Searchbar, ENGINES } from '../types/sync'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -74,7 +74,7 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 		return
 	}
 
-	if (engine && isValidEngine(engine)) {
+	if (isValidEngine(engine)) {
 		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
 		searchbar.engine = engine
 		setEngine(engine)
@@ -125,7 +125,7 @@ function isValidURL(string: string): boolean {
 }
 
 function createSearchURL(val: string): string {
-	const URLs: { [key in SearchEngines]: string } = {
+	const URLs: { [key in Searchbar['engine']]: string } = {
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
@@ -391,6 +391,6 @@ function removeInputText() {
 	}
 }
 
-function isValidEngine(s = ''): s is SearchEngines {
-	return ['google', 'ddg', 'startpage', 'qwant', 'yahoo', 'bing', 'brave', 'ecosia', 'lilo', 'baidu', 'custom'].includes(s)
+function isValidEngine(s = ''): s is Searchbar['engine'] {
+	return s in ENGINES
 }

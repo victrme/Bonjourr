@@ -3,7 +3,8 @@ import { tradThis } from '../utils/translations'
 import quickLinks from './links'
 import storage from '../storage'
 
-import { Sync } from '../types/sync'
+import type { Link } from '../types/shared'
+import type { Sync } from '../types/sync'
 
 export default async function linksImport() {
 	const container = document.getElementById('bookmarks_container') as HTMLElement

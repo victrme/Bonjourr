@@ -1,7 +1,7 @@
 import storage from '../storage'
 import type { Local, Translations } from '../types/local'
 
-let trns: Translations
+let trns: Translations | undefined
 
 export async function setTranslationCache(lang: string, local?: Local, isUpdate?: boolean) {
 	if (lang === 'en') {
@@ -42,7 +42,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 
 export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
-	let newDict: Translations
+	let newDict: Translations | undefined
 	let toggleDict: { [key: string]: string } = {}
 	let currentDict = { ...trns }
 	let text: string

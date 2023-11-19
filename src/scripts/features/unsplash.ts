@@ -6,15 +6,15 @@ import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import storage from '../storage'
 
-import type { UnsplashImage } from '../types/shared'
-import type { UnsplashCache } from '../types/local'
-import type { UnsplashAPI } from '../types/apis/unsplash'
-import type { Unsplash, Sync } from '../types/sync'
+import { UnsplashImage, isEvery, COLLECTION_TYPES } from '../types/shared'
+import { Unsplash, Sync } from '../types/sync'
+import { UnsplashCache } from '../types/local'
+import { UnsplashAPI } from '../types/api'
 
 type UnsplashInit = {
 	unsplash: Unsplash
 	cache: UnsplashCache
-} | null
+}
 
 type UnsplashUpdate = {
 	refresh?: HTMLElement
@@ -32,7 +32,7 @@ const bonjourrCollections = {
 	night: 'bHDh4Ae7O8o',
 }
 
-export default function unsplashBackgrounds(init: UnsplashInit, event?: UnsplashUpdate) {
+export default function unsplashBackgrounds(init?: UnsplashInit, event?: UnsplashUpdate) {
 	if (event) {
 		updateUnsplash(event)
 	}
@@ -67,9 +67,9 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		setTimeout(() => cacheControl(unsplash), 400)
 	}
 
-	if (every !== undefined && isEvery(every)) {
+	if (isEvery(every)) {
 		const currentImage = unsplashCache[unsplash.lastCollec][0]
-		unsplash.pausedImage = every === 'pause' ? currentImage : null
+		unsplash.pausedImage = every === 'pause' ? currentImage : undefined
 		unsplash.every = every
 		unsplash.time = freqControl.set()
 		storage.sync.set({ unsplash })
@@ -88,7 +88,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		return
 	}
 
-	if (collection !== undefined) {
+	if (isCollection(collection)) {
 		if (!navigator.onLine) {
 			return collectionInput.warn('No internet connection')
 		}
@@ -197,7 +197,7 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 }
 
 async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
-	let json: UnsplashAPI[]
+	let json: UnsplashAPI.Photo[]
 
 	const resp = await apiFetch(`/unsplash/photos/random?collections=${collection}&count=8`)
 
@@ -219,7 +219,7 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
 	const quality = Math.min(100 - dpr * 20, 75)
 
-	const isExifEmpty = (exif: UnsplashAPI['exif']) => Object.values(exif).every((val) => !val)
+	const isExifEmpty = (exif: UnsplashAPI.Photo['exif']) => Object.values(exif).every((val) => !val)
 
 	for (const img of json) {
 		filteredList.push({
@@ -330,6 +330,6 @@ async function preloadImage(src: string) {
 	}
 }
 
-function isEvery(s = ''): s is Unsplash['every'] {
-	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(s)
+function isCollection(s = ''): s is Unsplash['collection'] {
+	return s in COLLECTION_TYPES
 }

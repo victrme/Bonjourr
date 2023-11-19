@@ -1,6 +1,7 @@
 import { MAIN_API, FALLBACK_API } from './defaults'
 import suntime from './utils/suntime'
 
+import type { Link } from './types/shared'
 import type { Sync } from './types/sync'
 
 function shuffledAPIUrls(): string[] {

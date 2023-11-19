@@ -1,19 +1,14 @@
-import type { OWMOnecall } from './apis/openweathermap'
 import type { Langs, Quote, UnsplashImage } from './shared'
+import type { OpenWeatherMap } from './api'
+import type { Unsplash } from './sync'
 
-export type Translations =
-	| {
-			lang: Langs
-			[key: string]: string
-	  }
-	| undefined
+export type Translations = {
+	lang: Langs
+	[key: string]: string
+}
 
 export type UnsplashCache = {
-	noon: UnsplashImage[]
-	day: UnsplashImage[]
-	evening: UnsplashImage[]
-	night: UnsplashImage[]
-	user: UnsplashImage[]
+	[key in Unsplash['lastCollec']]: UnsplashImage[]
 }
 
 export type LastWeather = {
@@ -26,11 +21,17 @@ export type LastWeather = {
 	icon_id: number
 	description: string
 	timestamp: number
-	approximation?: Pick<OWMOnecall, 'ccode' | 'city' | 'lat' | 'lon'>
+	approximation?: Pick<OpenWeatherMap.Onecall, 'ccode' | 'city' | 'lat' | 'lon'>
 }
 
+export type FontList = {
+	family: string
+	weights: string[]
+	variable: boolean
+}[]
+
 export type Local = {
-	fonts?: { family: string; weights: string[]; variable: boolean }[]
+	fonts?: FontList
 	fontface?: string
 	selectedId: string
 	idsList: string[]

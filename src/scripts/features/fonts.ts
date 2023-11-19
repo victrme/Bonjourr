@@ -8,14 +8,9 @@ import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
 
-import { google } from '../types/apis/googleFonts'
+import { GoogleFonts } from '../types/api'
+import { FontList } from '../types/local'
 import { Font } from '../types/sync'
-
-type FontList = {
-	family: string
-	weights: string[]
-	variable: boolean
-}[]
 
 type FontUpdateEvent = {
 	autocomplete?: HTMLElement
@@ -78,11 +73,11 @@ async function waitForFontLoad(family: string): Promise<Boolean> {
 	})
 }
 
-async function fetchFontList() {
+async function fetchFontList(): Promise<FontList | undefined> {
 	const fonts = (await storage.local.get('fonts')).fonts ?? []
 
 	if (fonts.length > 0) {
-		return fonts as FontList
+		return fonts
 	}
 
 	if (!navigator.onLine) {
@@ -100,7 +95,7 @@ async function fetchFontList() {
 		return
 	}
 
-	const json = (await resp.json()) as google.fonts.WebfontList
+	const json = (await resp.json()) as GoogleFonts.WebfontList
 
 	// json has at least one available family
 	if (json.items?.length > 0 && 'family' in json.items[0]) {
@@ -140,13 +135,13 @@ async function fetchFontList() {
 
 		storage.local.set({ fonts: list })
 
-		return list as FontList
+		return list
 	}
 }
 
-async function fetchFontface(url: string): Promise<string | null> {
+async function fetchFontface(url: string): Promise<string | undefined> {
 	if (!url) {
-		return null
+		return
 	}
 
 	try {
@@ -158,11 +153,11 @@ async function fetchFontface(url: string): Promise<string | null> {
 
 		return fontface
 	} catch (error) {
-		return null
+		return
 	}
 }
 
-async function getNewFont(currentFamily: string): Promise<Partial<Font> | null> {
+async function getNewFont(currentFamily: string): Promise<Partial<Font> | undefined> {
 	const list = (await fetchFontList()) ?? []
 	const foundFonts = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
 
@@ -187,10 +182,10 @@ async function getNewFont(currentFamily: string): Promise<Partial<Font> | null> 
 		}
 	}
 
-	return null
+	return
 }
 
-function setFontFace(fontface: string | null) {
+function setFontFace(fontface?: string) {
 	if (typeof fontface === 'string') {
 		const domfontface = document.createElement('style') as HTMLStyleElement
 		domfontface.className = 'fontface'
@@ -244,7 +239,7 @@ async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
 	})
 }
 
-async function initFontSettings(font: Font | null) {
+async function initFontSettings(font?: Font) {
 	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.availWeights.length > 0
 	const weights = hasCustomWeights ? font.availWeights : systemfont.weights
@@ -292,7 +287,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	if (isChangingFamily) {
 		const i_weight = document.getElementById('i_weight') as HTMLSelectElement
 
-		let fontface: string | null = null
+		let fontface: string | undefined
 		let newfont = {
 			url: '',
 			family: '',
@@ -362,7 +357,7 @@ export default async function customFont(init: { font: Font; fontface?: string }
 			setFamily(family)
 
 			if (url) {
-				let fontface: string | null = init.fontface ?? ''
+				let fontface: string | undefined = init.fontface ?? ''
 
 				if (!fontface.includes('@font-face') || !fontface.includes(family)) {
 					fontface = await fetchFontface(url)

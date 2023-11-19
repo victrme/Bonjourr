@@ -7,11 +7,13 @@ import { IS_MOBILE } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
+import { isEvery, type Frequency } from '../types/shared'
+
 type LocalImages = {
 	ids: string[]
-	selected: string
 	last: number
-	freq: string
+	selected: string
+	freq: Frequency
 }
 
 type Blobs = {
@@ -266,7 +268,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
-		if (event?.freq) localImages.update({ freq: event?.freq })
+		if (isEvery(event?.freq)) localImages.update({ freq: event?.freq })
 		return
 	}
 

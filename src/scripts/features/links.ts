@@ -7,6 +7,7 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
+import { Link } from '../types/shared'
 import { Sync } from '../types/sync'
 
 type LinksUpdate = {

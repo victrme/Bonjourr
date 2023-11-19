@@ -1,4 +1,18 @@
-import type { Langs, UnsplashImage } from './shared'
+import { Langs, UnsplashImage, Link, Frequency, CollectionType } from './shared'
+
+export const ENGINES = <const>[
+	'google',
+	'ddg',
+	'startpage',
+	'qwant',
+	'yahoo',
+	'bing',
+	'brave',
+	'ecosia',
+	'lilo',
+	'baidu',
+	'custom',
+]
 
 export type Clock = {
 	ampm: boolean
@@ -10,24 +24,11 @@ export type Clock = {
 	face: 'none' | 'number' | 'roman' | 'marks'
 }
 
-export type SearchEngines =
-	| 'google'
-	| 'ddg'
-	| 'startpage'
-	| 'qwant'
-	| 'yahoo'
-	| 'bing'
-	| 'brave'
-	| 'ecosia'
-	| 'lilo'
-	| 'baidu'
-	| 'custom'
-
 export type Searchbar = {
 	on: boolean
 	opacity: number
 	newtab: boolean
-	engine: SearchEngines
+	engine: (typeof ENGINES)[number]
 	request: string
 	suggestions: boolean
 	placeholder: string
@@ -38,7 +39,7 @@ export type Quotes = {
 	author: boolean
 	last: number
 	type: 'classic' | 'kaamelott' | 'inspirobot' | 'user'
-	frequency: string
+	frequency: Frequency
 	userlist?: [string, string][]
 }
 
@@ -56,10 +57,10 @@ export type Weather = {
 
 export type Unsplash = {
 	time: number
-	every: 'tabs' | 'hour' | 'day' | 'period' | 'pause'
+	every: Frequency
 	collection: string
-	pausedImage: UnsplashImage | null
-	lastCollec: 'night' | 'noon' | 'day' | 'evening' | 'user'
+	pausedImage?: UnsplashImage
+	lastCollec: CollectionType
 }
 
 export type Font = {

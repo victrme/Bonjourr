@@ -22,6 +22,7 @@ import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 
 import type { Sync, MoveKeys } from './types/sync'
+import type { Frequency } from './types/shared'
 import type { Local } from './types/local'
 
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
@@ -41,7 +42,7 @@ export const freqControl = {
 		return new Date().getTime()
 	},
 
-	get: (every: string, last: number) => {
+	get: (every: Frequency, last: number) => {
 		const nowDate = new Date()
 		const lastDate = new Date(last || 0)
 		const changed = {

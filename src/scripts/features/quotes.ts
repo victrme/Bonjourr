@@ -4,9 +4,9 @@ import superinput from '../utils/superinput'
 import parse from '../utils/parse'
 import storage from '../storage'
 
+import { Langs, Quote, isEvery } from '../types/shared'
 import { Local } from '../types/local'
 import { Sync } from '../types/sync'
-import { Langs, Quote } from '../types/shared'
 
 type QuotesType = Sync['quotes']['type']
 
@@ -166,7 +166,7 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 		document.getElementById('author')?.classList.toggle('always-on', author)
 	}
 
-	if (frequency) {
+	if (isEvery(frequency)) {
 		quotes.frequency = frequency
 	}
 
