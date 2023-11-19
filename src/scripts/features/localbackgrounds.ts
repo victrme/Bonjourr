@@ -24,6 +24,7 @@ type UpdateEvent = {
 	refresh?: HTMLSpanElement
 	newfile?: FileList | null
 	freq?: string
+	show_more?: boolean
 }
 
 let localIsLoading = false
@@ -131,7 +132,7 @@ async function addNewImage(filelist: FileList) {
 	selectThumbnail(selected)
 }
 
-async function addThumbnail(blob: Blob, id: string, isSelected: boolean, settingsDom?: HTMLElement) {
+async function addThumbnail(blob: Blob, id: string, isSelected: boolean, settingsDom?: HTMLElement, bottom: boolean = false) {
 	const settings = settingsDom ? settingsDom : document.getElementById('settings')
 
 	const thb = document.createElement('button')
@@ -153,12 +154,15 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	thbimg.setAttribute('alt', '')
 	thbimg.setAttribute('draggable', 'false')
 
-	remspan.textContent = '✕'
+	// remspan.textContent = '✕'
+	remspan.textContent = id
 	rem.appendChild(remspan)
 
 	thb.appendChild(thbimg)
 	thb.appendChild(rem)
-	wrap?.prepend(thb)
+
+	if (!bottom) wrap?.prepend(thb)
+	else wrap?.append(thb)
 
 	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return
@@ -227,7 +231,7 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	rem.addEventListener('click', deleteThisBackground)
 }
 
-async function handleSettingsOptions() {
+async function handleSettingsOptions(showMore: boolean = false) {
 	const fileContainer = document.getElementById('fileContainer') as HTMLElement
 	const settings = document.getElementById('settings') as HTMLElement
 	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
@@ -237,9 +241,14 @@ async function handleSettingsOptions() {
 	const idsAndNotAllThumbs = ids.length > 0 && thumbsAmount < ids.length
 
 	if (idsAndNotAllThumbs) {
-		ids.forEach(async (id) => {
-			const blob = await getBlob(id, 'thumbnail')
-			if (blob) addThumbnail(blob, id, id === selected, settings)
+		console.log(ids)
+		ids.forEach(async (id, index) => {
+			// first condition for init, second for show more
+			if (index < 9 && !showMore || (showMore && index >= thumbsAmount && index <= thumbsAmount + 8)) {
+				console.log(`showing ${index}`)
+				const blob = await getBlob(id, 'thumbnail')
+				if (blob) addThumbnail(blob, id, id === selected, settings, showMore ?? true)
+			}
 		})
 	}
 
@@ -267,6 +276,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
 		if (event?.freq) localImages.update({ freq: event?.freq })
+		if (event?.show_more) handleSettingsOptions(true)
 		return
 	}
 

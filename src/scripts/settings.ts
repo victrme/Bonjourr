@@ -216,7 +216,7 @@ export async function settingsInit() {
 
 	if (fileContainer) {
 		new MutationObserver(() => {
-			const thumbsHeight = fileContainer?.offsetHeight ?? 0
+			const thumbsHeight = fileContainer?.offsetHeight + 40 ?? 0
 			optionsDom?.style.setProperty('--thumbnails-grid-height', thumbsHeight + 'px')
 		}).observe(fileContainer, { childList: true })
 	}
@@ -382,6 +382,10 @@ export async function settingsInit() {
 		localBackgrounds({ newfile: this.files })
 	})
 
+	paramId('show_more').addEventListener('click', function (this: HTMLInputElement) {
+		localBackgrounds({ show_more: true })
+	})
+
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
 		backgroundFilter({ blur: parseFloat(this.value), isEvent: true })
 	})
@@ -389,6 +393,8 @@ export async function settingsInit() {
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
 		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
+
+
 
 	//
 	// Time and date
