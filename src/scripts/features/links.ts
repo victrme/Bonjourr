@@ -459,10 +459,6 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	const domurl = document.getElementById('e_url') as HTMLInputElement
 	const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
 
-	domtitle.setAttribute('placeholder', tradThis("My site's title"))
-	domurl.setAttribute('placeholder', tradThis('URL to my site'))
-	domiconurl.setAttribute('placeholder', tradThis('URL to my icon'))
-
 	domtitle.value = title
 	domurl.value = url
 	domiconurl.value = icon
