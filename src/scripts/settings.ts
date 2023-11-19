@@ -307,8 +307,7 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(null, { add: 'elem' }), 1200)
-	const submitFolderFunc = throttle(() => quickLinks(null, { add: 'folder' }), 1200)
+	const submitLinkFunc = throttle(() => quickLinks(null, { addLink: true }), 1200)
 
 	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
 		if (this.code === 'Enter') paramId('i_url')?.focus()
@@ -320,10 +319,6 @@ export async function settingsInit() {
 
 	paramId('submitlink').addEventListener('click', function () {
 		submitLinkFunc()
-	})
-
-	paramId('b_createfolder').addEventListener('click', function () {
-		submitFolderFunc()
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {

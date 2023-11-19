@@ -7,15 +7,31 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { Sync, Link, LinkElem } from '../types/sync'
+import { Sync, Link, LinkElem, LinkFolder } from '../types/sync'
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
 	newtab?: boolean
 	style?: string
 	row?: string
-	add?: 'elem' | 'folder'
+	addLink?: boolean
+	addFolder?: string[]
 }
+
+type Bookmarks = {
+	title: string
+	url: string
+}[]
+
+type SubmitLink = { type: 'link' }
+type SubmitLinkFolder = { type: 'folder'; ids: string[] }
+type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
+
+type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
+
+//
+//
+//
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
@@ -58,35 +74,39 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		})
 	}
 
+	const linkwrapper = `
+		<li class="block">
+			<div class="folder-wrapper">
+				<a draggable="false" rel="noreferrer noopener">
+					<img alt="" src="" loading="lazy" draggable="false">
+					<span></span>
+				</a>
+			</div>
+			<span class="folder-title"></span>
+		</li>`
+
+	const parser = new DOMParser()
 	const liList: HTMLLIElement[] = []
 	const imgList: { [key: string]: HTMLImageElement } = {}
 
 	for (const link of links) {
-		const li = document.createElement('li')
-		const span = document.createElement('span')
-		const anchor = document.createElement('a')
-		const div = document.createElement('div')
-		const img = document.createElement('img')
+		const doc = parser.parseFromString(linkwrapper, 'text/html')
+		const li = doc.querySelector('li')!
+		const anchorTitle = doc.querySelector('a > span')!
+		const anchor = doc.querySelector('a')!
+		const img = doc.querySelector('img')!
 		const title = stringMaxSize(link.title, 64)
 
 		li.id = link._id
-		li.setAttribute('class', 'block')
-		li.appendChild(anchor)
-
-		img.alt = ''
-		img.loading = 'lazy'
-		img.setAttribute('draggable', 'false')
-
-		span.textContent = title
+		anchorTitle.textContent = title
 
 		if (link.type === 'elem') {
 			const url = stringMaxSize(link.url, 512)
 
 			imgList[link._id] = img
-			span.textContent = linkTitle(title, link.url, domlinkblocks.className === 'text')
+			anchorTitle.textContent = linkTitle(title, link.url, domlinkblocks.className === 'text')
 
 			anchor.href = url
-			div.appendChild(img)
 
 			if (isnewtab) {
 				BROWSER === 'safari'
@@ -94,15 +114,6 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 					: anchor.setAttribute('target', '_blank')
 			}
 		}
-
-		if (link.type === 'folder') {
-			li.classList.add('links-folder')
-		}
-
-		anchor.appendChild(div)
-		anchor.appendChild(span)
-		anchor.setAttribute('draggable', 'false')
-		anchor.setAttribute('rel', 'noreferrer noopener')
 
 		liList.push(li)
 		domlinkblocks.appendChild(li)
@@ -445,6 +456,18 @@ function editEvents() {
 		}
 	})
 
+	document.getElementById('e_folder')?.addEventListener('click', async function () {
+		const editlink = document.getElementById('editlink')
+		const linkid = editlink?.dataset.linkid || ''
+
+		// document.querySelector(`#${linkid}`)?.classList.add('folder', 'closed')
+
+		linksUpdate({ addFolder: [linkid] })
+
+		closeEditLink()
+		removeLinkSelection()
+	})
+
 	document.getElementById('e_title')?.addEventListener('keyup', inputSubmitEvent)
 	document.getElementById('e_url')?.addEventListener('keyup', inputSubmitEvent)
 	document.getElementById('e_iconurl')?.addEventListener('keyup', inputSubmitEvent)
@@ -583,85 +606,82 @@ async function removeblock(linkId: string) {
 	}, 600)
 }
 
-async function linkSubmission(type: 'elem' | 'folder' | 'import', importList?: { title: string; url: string }[]) {
-	const data = await storage.sync.get()
-	const links = bundleLinks(data)
-	let newLinksList: Link[] = []
+function addLink(links: Link[]): LinkElem[] {
+	const titledom = document.getElementById('i_title') as HTMLInputElement
+	const urldom = document.getElementById('i_url') as HTMLInputElement
+	const title = titledom.value
+	const url = urldom.value
 
-	const validator = (title: string, url: string, order: number): LinkElem => {
-		const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
-
-		url = stringMaxSize(url, 512)
-
-		const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
-		const noProtocol = !startsWithEither(['https://', 'http://'])
-		const isLocalhost = url.startsWith('localhost') || url.startsWith('127.0.0.1')
-
-		let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
-
-		url = prefix + url
-
-		return {
-			order: order,
-			type: 'elem',
-			_id: 'links' + randomString(6),
-			title: stringMaxSize(title, 64),
-			icon: 'src/assets/interface/loading.svg',
-			url: url,
-		}
+	if (url.length < 3) {
+		return []
 	}
 
-	if (type === 'elem') {
-		const titledom = document.getElementById('i_title') as HTMLInputElement
-		const urldom = document.getElementById('i_url') as HTMLInputElement
-		const title = titledom.value
-		const url = urldom.value
+	titledom.value = ''
+	urldom.value = ''
 
-		if (url.length < 3) return
+	return [validateLink(title, url, links.length)]
+}
 
-		titledom.value = ''
-		urldom.value = ''
+function addLinkFolder(links: Link[], ids: string[]): LinkFolder[] {
+	const titledom = document.getElementById('i_title') as HTMLInputElement
+	const title = titledom.value
 
-		newLinksList.push(validator(title, url, links.length))
-	}
+	titledom.value = ''
 
-	if (type === 'folder') {
-		const titledom = document.getElementById('i_title') as HTMLInputElement
-		const title = titledom.value
-
-		titledom.value = ''
-
-		newLinksList.push({
+	return [
+		{
 			type: 'folder',
 			_id: 'links' + randomString(6),
-			ids: [],
+			ids: ids,
 			title: title,
 			order: links.length,
-		})
-	}
+		},
+	]
+}
 
-	// When importing bookmarks
-	if (type === 'import' && importList) {
-		if (importList?.length === 0) return
+function importBookmarks(links: Link[], bookmarks?: Bookmarks): LinkElem[] {
+	const newLinks: LinkElem[] = []
 
-		importList.forEach(({ title, url }, i: number) => {
+	if (bookmarks && bookmarks?.length === 0) {
+		bookmarks?.forEach(({ title, url }, i: number) => {
 			if (url !== 'false') {
-				newLinksList.push(validator(title, url, links.length + i))
+				newLinks.push(validateLink(title, url, links.length + i))
 			}
 		})
 	}
 
-	// Saves to storage added links before icon fetch saves again
-	newLinksList.forEach((newlink) => {
-		storage.sync.set({ [newlink._id]: newlink })
-	})
+	return newLinks
+}
 
-	// Add new link(s) to existing ones
-	links.push(...newLinksList)
+async function linkSubmission(arg: LinkSubmission) {
+	const data = await storage.sync.get()
+	const links = bundleLinks(data)
+	let newlinks: Link[] = []
 
-	// Displays and saves before fetching icon
-	initblocks(links, data.linknewtab)
+	switch (arg.type) {
+		case 'link':
+			newlinks = addLink(links)
+			break
+
+		case 'folder':
+			newlinks = addLinkFolder(links, arg.ids)
+			break
+
+		case 'import':
+			newlinks = importBookmarks(links, arg.bookmarks)
+			break
+	}
+
+	for (const link of newlinks) {
+		data[link._id] = link
+		links.push(link)
+	}
+
+	storage.sync.set(data)
+
 	domlinkblocks.style.visibility = 'visible'
+
+	initblocks(links, data.linknewtab)
 }
 
 function linkTitle(title: string, url: string, textOnly: boolean): string {
@@ -689,13 +709,17 @@ function handleSafariNewtab(e: Event) {
 	e.preventDefault()
 }
 
-async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) {
-	if (add) {
-		linkSubmission(add)
+async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder }: LinksUpdate) {
+	if (addLink) {
+		linkSubmission({ type: 'link' })
+	}
+
+	if (addFolder) {
+		linkSubmission({ type: 'folder', ids: addFolder })
 	}
 
 	if (bookmarks) {
-		linkSubmission('import', bookmarks)
+		linkSubmission({ type: 'import', bookmarks: bookmarks })
 	}
 
 	if (newtab !== undefined) {
@@ -737,5 +761,28 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 		let val = parseInt(row ?? '6')
 		setRows(val, domStyle)
 		eventDebounce({ linksrow: row })
+	}
+}
+
+function validateLink(title: string, url: string, order: number): LinkElem {
+	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
+
+	url = stringMaxSize(url, 512)
+
+	const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
+	const noProtocol = !startsWithEither(['https://', 'http://'])
+	const isLocalhost = url.startsWith('localhost') || url.startsWith('127.0.0.1')
+
+	let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
+
+	url = prefix + url
+
+	return {
+		order: order,
+		type: 'elem',
+		_id: 'links' + randomString(6),
+		title: stringMaxSize(title, 64),
+		icon: 'src/assets/interface/loading.svg',
+		url: url,
 	}
 }
