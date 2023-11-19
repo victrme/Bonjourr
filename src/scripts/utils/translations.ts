@@ -34,7 +34,6 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 		tag.textContent = (trns[text] as string) ?? text
 	}
 
-	setTextDirection(lang)
 	document.documentElement.setAttribute('lang', lang)
 }
 
@@ -44,8 +43,6 @@ export async function toggleTraduction(lang: string) {
 	let toggleDict: Dict = {}
 	let currentDict = { ...trns }
 	let text: string
-
-	setTextDirection(lang)
 
 	await setTranslationCache(lang)
 	newDict = (await storage.local.get('translations')).translations
@@ -68,12 +65,4 @@ export async function toggleTraduction(lang: string) {
 
 export function tradThis(str: string): string {
 	return trns[str] ?? str
-}
-
-function setTextDirection(lang: string) {
-	if (lang === 'fa') {
-		document.body.style.direction = 'rtl'
-	} else {
-		document.body.style.removeProperty('direction')
-	}
 }

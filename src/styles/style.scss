@@ -686,6 +686,7 @@
 			border: 1px solid transparent;
 			cursor: pointer;
 			outline: none;
+			overflow-x: hidden;
 
 			&.shown {
 				display: flex;
