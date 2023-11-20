@@ -52,7 +52,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	domlinkblocks.className = init.linkstyle
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
-	initblocks(bundleLinks(init), init.linknewtab)
+	initblocks(bundleLinks(init), init.tabs ?? [], init.linknewtab)
 	// setRows(init.linksrow, init.linkstyle)
 	onSettingsLoad(editEvents)
 
@@ -63,13 +63,12 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	}
 }
 
-async function initblocks(links: Link[], isnewtab: boolean) {
+async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
 	if (links.length === 0) {
 		return canDisplayInterface('links')
 	}
 
 	const tabUList = document.querySelector<HTMLUListElement>('.link-tab ul')
-	const tabTitle = document.querySelector<HTMLInputElement>('#link-tab-title')
 
 	if (tabUList && tabUList?.children) {
 		Object.values(tabUList?.children).forEach((child) => {
@@ -77,49 +76,86 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		})
 	}
 
-	const linkwrapper = `
+	const linkhtml = `
 		<li class="block">
-			<div class="folder-wrapper">
-				<a draggable="false" rel="noreferrer noopener">
-					<img alt="" src="" loading="lazy" draggable="false">
-					<span></span>
-				</a>
-			</div>
-			<span class="folder-title"></span>
+			<a draggable="false" rel="noreferrer noopener">
+				<img alt="" src="" loading="lazy" draggable="false">
+				<span></span>
+			</a>
+		</li>`
+
+	const folderhtml = `
+		<li class="block">
+			<ul class="folder-wrapper"></ul>
+			<span></span>
 		</li>`
 
 	const parser = new DOMParser()
 	const liList: HTMLLIElement[] = []
 	const imgList: { [key: string]: HTMLImageElement } = {}
 
-	for (const link of links) {
-		const doc = parser.parseFromString(linkwrapper, 'text/html')
+	const linkElems = links.filter(({ type }) => type === 'elem') as LinkElem[]
+	const linkFolders = links.filter(({ type }) => type === 'folder') as LinkFolder[]
+
+	//
+	// Create links elements DOM
+	//
+
+	for (const link of linkElems) {
+		const url = stringMaxSize(link.url, 512)
+		const doc = parser.parseFromString(linkhtml, 'text/html')
 		const li = doc.querySelector('li')!
-		const anchorTitle = doc.querySelector('a > span')!
+		const span = doc.querySelector('span')!
 		const anchor = doc.querySelector('a')!
 		const img = doc.querySelector('img')!
-		const title = stringMaxSize(link.title, 64)
+
+		imgList[link._id] = img
+		span.textContent = linkTitle(stringMaxSize(link.title, 64), link.url, domlinkblocks.className === 'text')
 
 		li.id = link._id
-		anchorTitle.textContent = title
+		anchor.href = url
 
-		if (link.type === 'elem') {
-			const url = stringMaxSize(link.url, 512)
-
-			imgList[link._id] = img
-			anchorTitle.textContent = linkTitle(title, link.url, domlinkblocks.className === 'text')
-
-			anchor.href = url
-
-			if (isnewtab) {
-				BROWSER === 'safari'
-					? anchor.addEventListener('click', handleSafariNewtab)
-					: anchor.setAttribute('target', '_blank')
-			}
+		if (isnewtab) {
+			BROWSER === 'safari'
+				? anchor.addEventListener('click', handleSafariNewtab)
+				: anchor.setAttribute('target', '_blank')
 		}
 
+		li.id = link._id
 		liList.push(li)
-		tabUList?.appendChild(li)
+	}
+
+	//
+	// Create links folders DOM
+	//
+
+	for (const link of linkFolders) {
+		const doc = parser.parseFromString(folderhtml, 'text/html')
+		const li = doc.querySelector('li')!
+		const span = doc.querySelector('span')!
+		const folder = doc.querySelector('ul')!
+		const title = stringMaxSize(link.title, 64)
+
+		span.textContent = title
+		li.classList.add('folder')
+
+		for (const id of link.ids) {
+			const elem = liList.filter((li) => li.id === id)[0]
+			folder.appendChild(elem)
+		}
+
+		li.id = link._id
+		liList.push(li)
+	}
+
+	//
+	// Append all links and folders to DOM
+	// and add events
+	//
+
+	for (const id of tabs[0].ids) {
+		const link = liList.filter((li) => li.id === id)[0]
+		tabUList?.appendChild(link)
 	}
 
 	// linksDragging(liList)
@@ -356,7 +392,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 
 				eventDebounce({ ...data }) // saves
 				;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
-				initblocks(bundleLinks(data as Sync), data.linknewtab) // re-init blocks
+				initblocks(bundleLinks(data as Sync), data.tabs, data.linknewtab) // re-init blocks
 			}, 200)
 		}
 	}
@@ -539,12 +575,13 @@ async function updatesEditedLink(linkId: string) {
 	}
 
 	const data = await storage.sync.get(linkId)
+	let link = data[linkId] as Link
+
+	const titleSel = link.type === 'folder' ? 'ul ~ span' : 'span'
 	const domlink = document.getElementById(linkId) as HTMLLIElement
-	const domtitle = domlink.querySelector('span') as HTMLSpanElement
+	const domtitle = domlink.querySelector(titleSel) as HTMLSpanElement
 	const domicon = domlink.querySelector('img') as HTMLImageElement
 	const domurl = domlink.querySelector('a') as HTMLAnchorElement
-
-	let link = data[linkId] as Link
 
 	if (link.type === 'elem') {
 		link = {
@@ -683,7 +720,7 @@ async function linkSubmission(arg: LinkSubmission) {
 
 	domlinkblocks.style.visibility = 'visible'
 
-	initblocks(links, data.linknewtab)
+	initblocks(links, data.tabs, data.linknewtab)
 }
 
 function linkTitle(title: string, url: string, textOnly: boolean): string {

@@ -83,6 +83,12 @@ export const SYNC_DEFAULT: Sync = {
 	cssHeight: 80,
 	css: '',
 	hide: {},
+	tabs: [
+		{
+			title: '',
+			ids: [],
+		},
+	],
 	clock: {
 		size: 1,
 		ampm: false,
@@ -140,12 +146,7 @@ export const SYNC_DEFAULT: Sync = {
 		availWeights: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
-	tabs: [
-		{
-			title: '',
-			ids: [],
-		},
-	],
+
 	move: {
 		selection: 'single',
 		layouts: {
