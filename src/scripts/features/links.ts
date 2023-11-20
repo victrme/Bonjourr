@@ -16,6 +16,7 @@ type LinksUpdate = {
 	row?: string
 	addLink?: boolean
 	addFolder?: string[]
+	tabtitle?: string
 }
 
 type Bookmarks = {
@@ -61,6 +62,11 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
 		})
 	}
+
+	document.getElementById('link-tab-title')?.addEventListener('change', function () {
+		linksUpdate({ tabtitle: (this as HTMLInputElement).value })
+		this.blur()
+	})
 }
 
 async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
@@ -69,6 +75,7 @@ async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
 	}
 
 	const tabUList = document.querySelector<HTMLUListElement>('.link-tab ul')
+	const tabtitle = document.querySelector<HTMLInputElement>('#link-tab-title')
 
 	if (tabUList && tabUList?.children) {
 		Object.values(tabUList?.children).forEach((child) => {
@@ -156,6 +163,11 @@ async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
 	for (const id of tabs[0].ids) {
 		const link = liList.filter((li) => li.id === id)[0]
 		tabUList?.appendChild(link)
+	}
+
+	// Add tab title
+	if (tabtitle) {
+		tabtitle.value = tabs[0].title
 	}
 
 	// linksDragging(liList)
@@ -497,11 +509,19 @@ function editEvents() {
 
 	document.getElementById('e_folder')?.addEventListener('click', async function () {
 		const editlink = document.getElementById('editlink')
-		const linkid = editlink?.dataset.linkid || ''
+		const ids = [editlink?.dataset.linkid || '']
 
-		// document.querySelector(`#${linkid}`)?.classList.add('folder', 'closed')
+		// dev
+		// to replace drag and drop
+		const linksibling = document.getElementById(ids[0])?.nextElementSibling
+		const isNotFolder = !linksibling?.classList.contains('folder')
+		const hasId = linksibling?.id
 
-		linksUpdate({ addFolder: [linkid] })
+		if (hasId && isNotFolder) {
+			ids.push(linksibling.id)
+		}
+
+		linksUpdate({ addFolder: ids })
 
 		closeEditLink()
 		removeLinkSelection()
@@ -748,7 +768,7 @@ function handleSafariNewtab(e: Event) {
 	e.preventDefault()
 }
 
-async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder }: LinksUpdate) {
+async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, tabtitle }: LinksUpdate) {
 	if (addLink) {
 		linkSubmission({ type: 'link' })
 	}
@@ -759,6 +779,13 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder }
 
 	if (bookmarks) {
 		linkSubmission({ type: 'import', bookmarks: bookmarks })
+	}
+
+	if (tabtitle !== undefined) {
+		const data = await storage.sync.get('tabs')
+
+		data.tabs[0].title = tabtitle
+		storage.sync.set({ tabs: data.tabs })
 	}
 
 	if (newtab !== undefined) {
