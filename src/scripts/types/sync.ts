@@ -19,6 +19,11 @@ export type LinkElem = {
 
 export type Link = LinkElem | LinkFolder
 
+export type Tab = {
+	title: string
+	ids: string[]
+}
+
 export type Clock = {
 	ampm: boolean
 	analog: boolean
@@ -153,6 +158,6 @@ export type Sync = {
 	move: Move
 	textShadow: number
 	about: { browser: string; version: string }
-	tabs?: { name: string; ids: string[] }[]
+	tabs: Tab[]
 	[key: string]: Link | unknown
 }

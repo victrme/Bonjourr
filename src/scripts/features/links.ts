@@ -53,7 +53,7 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initblocks(bundleLinks(init), init.linknewtab)
-	setRows(init.linksrow, init.linkstyle)
+	// setRows(init.linksrow, init.linkstyle)
 	onSettingsLoad(editEvents)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
@@ -68,8 +68,11 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		return canDisplayInterface('links')
 	}
 
-	if (domlinkblocks.children) {
-		Object.values(domlinkblocks.children).forEach((child) => {
+	const tabUList = document.querySelector<HTMLUListElement>('#linkblocks .link-tab ul')
+	const tabTitle = document.querySelector<HTMLInputElement>('#linkblocks #link-tab-title')
+
+	if (tabUList && tabUList?.children) {
+		Object.values(tabUList?.children).forEach((child) => {
 			child.remove()
 		})
 	}
@@ -116,10 +119,10 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		}
 
 		liList.push(li)
-		domlinkblocks.appendChild(li)
+		tabUList?.appendChild(li)
 	}
 
-	linksDragging(liList)
+	// linksDragging(liList)
 	createEvents(liList)
 	createIcons(imgList, links)
 	canDisplayInterface('links')
