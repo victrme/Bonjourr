@@ -132,7 +132,7 @@ async function addNewImage(filelist: FileList) {
 	selectThumbnail(selected)
 }
 
-async function addThumbnail(blob: Blob, id: string, isSelected: boolean, settingsDom?: HTMLElement, bottom: boolean = false) {
+async function addThumbnail(blob: Blob, id: string, isSelected: boolean, settingsDom?: HTMLElement) {
 	const settings = settingsDom ? settingsDom : document.getElementById('settings')
 
 	const thb = document.createElement('button')
@@ -161,8 +161,7 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	thb.appendChild(thbimg)
 	thb.appendChild(rem)
 
-	if (!bottom) wrap?.prepend(thb)
-	else wrap?.append(thb)
+	wrap?.append(thb)
 
 	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return
@@ -242,12 +241,12 @@ async function handleSettingsOptions(showMore: boolean = false) {
 
 	if (idsAndNotAllThumbs) {
 		console.log(ids)
-		ids.forEach(async (id, index) => {
+		ids.reverse().forEach(async (id, index) => {
 			// first condition for init, second for show more
 			if (index < 9 && !showMore || (showMore && index >= thumbsAmount && index <= thumbsAmount + 8)) {
 				console.log(`showing ${index}`)
 				const blob = await getBlob(id, 'thumbnail')
-				if (blob) addThumbnail(blob, id, id === selected, settings, showMore ?? true)
+				if (blob) addThumbnail(blob, id, id === selected, settings)
 			}
 		})
 	}
