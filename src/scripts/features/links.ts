@@ -7,7 +7,7 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { Sync, Link, LinkElem, LinkFolder } from '../types/sync'
+import { Sync, Link, LinkElem, LinkFolder, Tab } from '../types/sync'
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -68,8 +68,8 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 		return canDisplayInterface('links')
 	}
 
-	const tabUList = document.querySelector<HTMLUListElement>('#linkblocks .link-tab ul')
-	const tabTitle = document.querySelector<HTMLInputElement>('#linkblocks #link-tab-title')
+	const tabUList = document.querySelector<HTMLUListElement>('.link-tab ul')
+	const tabTitle = document.querySelector<HTMLInputElement>('#link-tab-title')
 
 	if (tabUList && tabUList?.children) {
 		Object.values(tabUList?.children).forEach((child) => {
@@ -584,22 +584,14 @@ function removeLinkSelection() {
 
 async function removeblock(linkId: string) {
 	const data = await storage.sync.get()
-	const links = bundleLinks(data)
-	const target = data[linkId] as Link
+	const tab = data.tabs[0]
 
 	document.getElementById(linkId)?.classList.add('removed')
 
 	delete data[linkId]
 
-	// Updates Order
-	links
-		.filter((l) => l._id !== linkId) // pop deleted first
-		.forEach((l: Link) => {
-			data[l._id] = {
-				...l,
-				order: l.order - (l.order > target.order ? 1 : 0),
-			}
-		})
+	tab.ids = tab.ids.filter((id) => id !== linkId)
+	data.tabs[0] = tab
 
 	storage.sync.clear()
 	storage.sync.set(data)
@@ -609,7 +601,7 @@ async function removeblock(linkId: string) {
 	}, 600)
 }
 
-function addLink(links: Link[]): LinkElem[] {
+function addLink(): LinkElem[] {
 	const titledom = document.getElementById('i_title') as HTMLInputElement
 	const urldom = document.getElementById('i_url') as HTMLInputElement
 	const title = titledom.value
@@ -622,10 +614,10 @@ function addLink(links: Link[]): LinkElem[] {
 	titledom.value = ''
 	urldom.value = ''
 
-	return [validateLink(title, url, links.length)]
+	return [validateLink(title, url)]
 }
 
-function addLinkFolder(links: Link[], ids: string[]): LinkFolder[] {
+function addLinkFolder(ids: string[]): LinkFolder[] {
 	const titledom = document.getElementById('i_title') as HTMLInputElement
 	const title = titledom.value
 
@@ -637,18 +629,17 @@ function addLinkFolder(links: Link[], ids: string[]): LinkFolder[] {
 			_id: 'links' + randomString(6),
 			ids: ids,
 			title: title,
-			order: links.length,
 		},
 	]
 }
 
-function importBookmarks(links: Link[], bookmarks?: Bookmarks): LinkElem[] {
+function importBookmarks(bookmarks?: Bookmarks): LinkElem[] {
 	const newLinks: LinkElem[] = []
 
 	if (bookmarks && bookmarks?.length === 0) {
-		bookmarks?.forEach(({ title, url }, i: number) => {
+		bookmarks?.forEach(({ title, url }) => {
 			if (url !== 'false') {
-				newLinks.push(validateLink(title, url, links.length + i))
+				newLinks.push(validateLink(title, url))
 			}
 		})
 	}
@@ -658,28 +649,36 @@ function importBookmarks(links: Link[], bookmarks?: Bookmarks): LinkElem[] {
 
 async function linkSubmission(arg: LinkSubmission) {
 	const data = await storage.sync.get()
+	const tab = data.tabs[0]
 	const links = bundleLinks(data)
 	let newlinks: Link[] = []
 
 	switch (arg.type) {
 		case 'link':
-			newlinks = addLink(links)
+			newlinks = addLink()
 			break
 
 		case 'folder':
-			newlinks = addLinkFolder(links, arg.ids)
+			newlinks = addLinkFolder(arg.ids)
 			break
 
 		case 'import':
-			newlinks = importBookmarks(links, arg.bookmarks)
+			newlinks = importBookmarks(arg.bookmarks)
 			break
 	}
 
 	for (const link of newlinks) {
 		data[link._id] = link
 		links.push(link)
+		tab.ids.push(link._id)
 	}
 
+	// remove "folderized" links from tab list
+	if (arg.type === 'folder') {
+		tab.ids = tab.ids.filter((tabid) => !arg.ids.includes(tabid))
+	}
+
+	data.tabs[0] = tab
 	storage.sync.set(data)
 
 	domlinkblocks.style.visibility = 'visible'
@@ -767,7 +766,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder }
 	}
 }
 
-function validateLink(title: string, url: string, order: number): LinkElem {
+function validateLink(title: string, url: string): LinkElem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 
 	url = stringMaxSize(url, 512)
@@ -781,7 +780,6 @@ function validateLink(title: string, url: string, order: number): LinkElem {
 	url = prefix + url
 
 	return {
-		order: order,
 		type: 'elem',
 		_id: 'links' + randomString(6),
 		title: stringMaxSize(title, 64),

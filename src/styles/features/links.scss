@@ -59,7 +59,7 @@
 	border: 3px solid transparent;
 	padding: 1em;
 	margin: 0;
-	min-height: 8em;
+	min-height: 7em;
 	column-gap: 2.6em;
 	row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 	transition: max-height 0.5s, max-width 0.18s $easeOutThree, visibility 0s 0s;
@@ -70,13 +70,18 @@
 	}
 }
 
+#linkblocks li.block span.folder-title {
+	display: none;
+}
+
 #linkblocks {
 	overflow: hidden;
-	border: 1px solid transparent;
 
-	&:hover {
-		border-color: red;
-	}
+	// dev
+	// border: 1px solid transparent;
+	// &:hover {
+	// 	border-color: red;
+	// }
 
 	&.hidden {
 		display: none;

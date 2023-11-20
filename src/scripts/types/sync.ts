@@ -4,14 +4,14 @@ export type LinkFolder = {
 	type: 'folder'
 	_id: string
 	ids: string[]
-	order: number
+	order?: number
 	title: string
 }
 
 export type LinkElem = {
 	type: 'elem'
 	_id: string
-	order: number
+	order?: number
 	title: string
 	icon: string
 	url: string
