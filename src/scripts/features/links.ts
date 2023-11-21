@@ -69,11 +69,12 @@ export default async function quickLinks(init: Sync | null, event?: LinksUpdate)
 	})
 }
 
-async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
+async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean, folderId?: string) {
 	if (links.length === 0) {
 		return canDisplayInterface('links')
 	}
 
+	const notInFolder = !folderId
 	const tabUList = document.querySelector<HTMLUListElement>('.link-tab ul')
 	const tabtitle = document.querySelector<HTMLInputElement>('#link-tab-title')
 
@@ -92,8 +93,8 @@ async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
 		</li>`
 
 	const folderhtml = `
-		<li class="block">
-			<ul class="folder-wrapper"></ul>
+		<li class="block folder">
+			<div></div>
 			<span></span>
 		</li>`
 
@@ -136,23 +137,32 @@ async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
 	// Create links folders DOM
 	//
 
-	for (const link of linkFolders) {
-		const doc = parser.parseFromString(folderhtml, 'text/html')
-		const li = doc.querySelector('li')!
-		const span = doc.querySelector('span')!
-		const folder = doc.querySelector('ul')!
-		const title = stringMaxSize(link.title, 64)
+	if (notInFolder) {
+		for (const link of linkFolders) {
+			const doc = parser.parseFromString(folderhtml, 'text/html')
+			const li = doc.querySelector('li')!
+			const span = doc.querySelector('span')!
+			const folder = doc.querySelector('div')!
+			const title = stringMaxSize(link.title, 64)
 
-		span.textContent = title
-		li.classList.add('folder')
+			span.textContent = title
 
-		for (const id of link.ids) {
-			const elem = liList.filter((li) => li.id === id)[0]
-			folder.appendChild(elem)
+			for (const id of link.ids) {
+				const img = document.createElement('img')
+				const elem = links.filter((link) => link._id === id)[0]
+
+				if (elem.type === 'elem') {
+					img.draggable = false
+					img.src = elem?.icon
+					img.alt = ''
+
+					folder.appendChild(img)
+				}
+			}
+
+			li.id = link._id
+			liList.push(li)
 		}
-
-		li.id = link._id
-		liList.push(li)
 	}
 
 	//
@@ -160,14 +170,23 @@ async function initblocks(links: Link[], tabs: Tab[], isnewtab: boolean) {
 	// and add events
 	//
 
-	for (const id of tabs[0].ids) {
-		const link = liList.filter((li) => li.id === id)[0]
-		tabUList?.appendChild(link)
-	}
+	if (folderId) {
+		for (const li of liList) {
+			tabUList?.appendChild(li)
+		}
 
-	// Add tab title
-	if (tabtitle) {
-		tabtitle.value = tabs[0].title
+		if (tabtitle) {
+			tabtitle.value = links.find((link) => link._id === folderId)?.title ?? ''
+		}
+	} else {
+		for (const id of tabs[0].ids) {
+			const link = liList.filter((li) => li.id === id)[0]
+			if (link) tabUList?.appendChild(link)
+		}
+
+		if (tabtitle) {
+			tabtitle.value = tabs[0].title
+		}
 	}
 
 	// linksDragging(liList)
@@ -213,8 +232,9 @@ function createEvents(elems: HTMLLIElement[]) {
 	let timer = 0
 
 	for (const elem of elems) {
-		elem.addEventListener('contextmenu', (ev) => contextMenu(elem, ev))
 		elem.addEventListener('keyup', (ev) => keyUp(elem, ev))
+		elem.addEventListener('contextmenu', (ev) => contextMenu(elem, ev))
+		elem.addEventListener('click', () => clickOpensFolder(elem))
 
 		if (SYSTEM_OS === 'ios') {
 			elem.addEventListener('touchstart', (ev) => longPressDebounce(elem, ev), { passive: false })
@@ -222,6 +242,42 @@ function createEvents(elems: HTMLLIElement[]) {
 			elem.addEventListener('touchend', () => clearTimeout(timer), { passive: false })
 		}
 	}
+
+	function clickOpensFolder(elem: HTMLLIElement) {
+		if (elem.classList.contains('folder')) {
+			domlinkblocks.classList.add('opening-folder')
+			domlinkblocks.classList.remove('in-folder')
+
+			setTimeout(async () => {
+				const data = await storage.sync.get()
+				const folder = data[elem.id] as LinkFolder
+				const links = bundleLinks(data).filter((link) => folder.ids.includes(link._id))
+
+				initblocks(links, data.tabs, false, elem.id)
+
+				domlinkblocks.classList.replace('opening-folder', 'in-folder')
+			}, 300)
+		}
+	}
+
+	function clickClosesFolder() {
+		domlinkblocks.classList.replace('in-folder', 'opening-folder')
+		setTimeout(async () => {
+			const data = await storage.sync.get()
+			const links = bundleLinks(data)
+			initblocks(links, data.tabs, false)
+
+			domlinkblocks.classList.remove('opening-folder')
+		}, 300)
+	}
+
+	document.body.addEventListener('click', function (e) {
+		if (domlinkblocks.classList.contains('in-folder')) {
+			const path = e.composedPath() ?? [document.body]
+			const pathIds = path.map((el) => (el as HTMLElement).id)
+			if (pathIds.indexOf('linkblocks') === -1) clickClosesFolder()
+		}
+	})
 
 	function longPressDebounce(elem: HTMLLIElement, ev: TouchEvent) {
 		timer = setTimeout(() => {
