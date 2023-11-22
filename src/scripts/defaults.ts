@@ -84,12 +84,10 @@ export const SYNC_DEFAULT: Sync = {
 	cssHeight: 80,
 	css: '',
 	hide: {},
-	tabs: [
-		{
-			title: '',
-			ids: [],
-		},
-	],
+	tabs: {
+		selected: 0,
+		list: [{ title: '', ids: [] }],
+	},
 	clock: {
 		size: 1,
 		ampm: false,

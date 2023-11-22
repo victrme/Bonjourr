@@ -19,6 +19,11 @@ export type LinkElem = {
 
 export type Link = LinkElem | LinkFolder
 
+export type LinkTabs = {
+	selected: number
+	list: Tab[]
+}
+
 export type Tab = {
 	title: string
 	ids: string[]
@@ -136,7 +141,6 @@ export type Sync = {
 	linksrow: number
 	linkstyle: string
 	linknewtab: boolean
-	linktab: number
 	cssHeight: number
 	reviewPopup: number
 	background_blur: number
@@ -146,7 +150,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
-	tabs: Tab[]
+	tabs: LinkTabs
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'

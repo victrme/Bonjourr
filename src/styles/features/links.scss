@@ -13,6 +13,11 @@
 		opacity: 0.5;
 		padding: 0;
 
+		&.selected {
+			background-color: #fff1;
+			border-color: #fff4;
+		}
+
 		&:hover {
 			opacity: 1;
 		}
