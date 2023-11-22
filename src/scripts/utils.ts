@@ -1,6 +1,7 @@
 import { MAIN_API, FALLBACK_API } from './defaults'
 import suntime from './utils/suntime'
 
+import type { Link } from './types/sync'
 import type { Sync } from './types/sync'
 
 function shuffledAPIUrls(): string[] {
@@ -72,13 +73,11 @@ export function periodOfDay(time?: number) {
 }
 
 export function bundleLinks(data: Sync): Link[] {
-	// 1.13.0: Returns an array of found links in storage
 	let res: Link[] = []
 	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Link)
 	})
 
-	res.sort((a: Link, b: Link) => a.order - b.order)
 	return res
 }
 
