@@ -16,7 +16,7 @@ type LinksUpdate = {
 	row?: string
 	addLink?: boolean
 	addFolder?: string[]
-	tabtitle?: string
+	groupTitle?: string
 }
 
 type Bookmarks = {
@@ -65,7 +65,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	}
 
 	document.getElementById('link-group-title')?.addEventListener('change', function () {
-		linksUpdate({ tabtitle: (this as HTMLInputElement).value })
+		linksUpdate({ groupTitle: (this as HTMLInputElement).value })
 		this.blur()
 	})
 }
@@ -175,7 +175,7 @@ async function initblocks(links: Link[], groupTitle: string, openInNewtab: boole
 			const img = doc.querySelector('img')!
 
 			imgList[link._id] = img
-			span.textContent = linkTitle(stringMaxSize(link.title, 64), link.url, domlinkblocks.className === 'text')
+			span.textContent = linkElemTitle(stringMaxSize(link.title, 64), link.url, domlinkblocks.className === 'text')
 
 			li.id = link._id
 			anchor.href = url
@@ -192,7 +192,7 @@ async function initblocks(links: Link[], groupTitle: string, openInNewtab: boole
 		}
 	}
 
-	// linksDragging(liList)
+	// createDragging(liList)
 	createEvents(liList)
 	createIcons(imgList, links)
 	canDisplayInterface('links')
@@ -257,7 +257,7 @@ function createEvents(elems: HTMLLIElement[]) {
 				const folder = data[elem.id] as LinkFolder
 				initblocks(getAllLinksInFolder(data, elem.id), folder.title, false)
 				domlinkblocks.classList.replace('opening-folder', 'in-folder')
-			}, 300)
+			}, 200)
 		}
 	}
 
@@ -270,7 +270,7 @@ function createEvents(elems: HTMLLIElement[]) {
 			const tab = data.tabs[0]
 			initblocks(getAllLinksInTab(data, 0), tab.title, false)
 			domlinkblocks.classList.remove('opening-folder')
-		}, 300)
+		}, 200)
 	}
 
 	document.body.addEventListener('click', function (e) {
@@ -303,7 +303,7 @@ function createEvents(elems: HTMLLIElement[]) {
 	}
 }
 
-function linksDragging(LIList: HTMLLIElement[]) {
+function createDragging(LIList: HTMLLIElement[]) {
 	type Coords = {
 		order: number
 		pos: { x: number; y: number }
@@ -655,9 +655,8 @@ async function updatesEditedLink(linkId: string) {
 	const data = await storage.sync.get(linkId)
 	let link = data[linkId] as Link
 
-	const titleSel = link.type === 'folder' ? 'ul ~ span' : 'span'
 	const domlink = document.getElementById(linkId) as HTMLLIElement
-	const domtitle = domlink.querySelector(titleSel) as HTMLSpanElement
+	const domtitle = domlink.querySelector('span') as HTMLSpanElement
 	const domicon = domlink.querySelector('img') as HTMLImageElement
 	const domurl = domlink.querySelector('a') as HTMLAnchorElement
 
@@ -670,7 +669,7 @@ async function updatesEditedLink(linkId: string) {
 			icon: stringMaxSize(e_iconurl.value, 7500),
 		}
 
-		domtitle.textContent = linkTitle(link.title, link.url, domlinkblocks.className === 'text')
+		domtitle.textContent = linkElemTitle(link.title, link.url, domlinkblocks.className === 'text')
 		domurl.href = link.url
 		domicon.src = link.icon
 	}
@@ -796,11 +795,32 @@ async function linkSubmission(arg: LinkSubmission) {
 	initblocks(links, data.tabs[0].title, data.linknewtab)
 }
 
-function linkTitle(title: string, url: string, textOnly: boolean): string {
+function linkElemTitle(title: string, url: string, textOnly: boolean): string {
 	try {
 		url = new URL(url)?.origin
 	} catch (_) {}
 	return textOnly && title === '' ? url : title
+}
+
+async function setGroupTitle(title: string) {
+	const folderID = domlinkblocks.dataset.folder
+
+	if (folderID) {
+		const data = await storage.sync.get()
+		const folder = data[folderID] as LinkFolder | undefined
+
+		if (folder) {
+			folder.title = title
+			data[folderID] = folder
+			storage.sync.set(data)
+			console.log(data[folderID])
+		}
+
+		return
+	}
+	const data = await storage.sync.get('tabs')
+	data.tabs[0].title = title
+	storage.sync.set({ tabs: data.tabs })
 }
 
 function setRows(amount: number, style: string) {
@@ -821,7 +841,7 @@ function handleSafariNewtab(e: Event) {
 	e.preventDefault()
 }
 
-async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, tabtitle }: LinksUpdate) {
+async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, groupTitle }: LinksUpdate) {
 	if (addLink) {
 		linkSubmission({ type: 'link' })
 	}
@@ -834,11 +854,8 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 		linkSubmission({ type: 'import', bookmarks: bookmarks })
 	}
 
-	if (tabtitle !== undefined) {
-		const data = await storage.sync.get('tabs')
-
-		data.tabs[0].title = tabtitle
-		storage.sync.set({ tabs: data.tabs })
+	if (groupTitle !== undefined) {
+		setGroupTitle(groupTitle)
 	}
 
 	if (newtab !== undefined) {
@@ -864,7 +881,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 
 		for (const [_id, title, url] of links) {
 			const span = document.querySelector<HTMLSpanElement>('#links' + _id + ' span')
-			const text = linkTitle(title, url, style === 'text')
+			const text = linkElemTitle(title, url, style === 'text')
 
 			if (span) span.textContent = text
 		}
