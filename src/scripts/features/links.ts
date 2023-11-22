@@ -277,7 +277,10 @@ function createEvents(elems: HTMLLIElement[]) {
 		if (domlinkblocks.classList.contains('in-folder')) {
 			const path = e.composedPath() ?? [document.body]
 			const pathIds = path.map((el) => (el as HTMLElement).id)
-			if (pathIds.indexOf('linkblocks') === -1) clickClosesFolder()
+
+			if (!pathIds.includes('linkblocks') && !pathIds.includes('editlink')) {
+				clickClosesFolder()
+			}
 		}
 	})
 
@@ -696,22 +699,42 @@ function removeLinkSelection() {
 	})
 }
 
-async function removeblock(linkId: string) {
+async function removeblock(linkID: string) {
 	const data = await storage.sync.get()
 	const tab = data.tabs[0]
+	const folderID = domlinkblocks.dataset.folder
 
-	document.getElementById(linkId)?.classList.add('removed')
+	// For folders in this tab
+	// Remove element if found in folder
+	if (folderID) {
+		let folder = data[folderID] as Link
+		if (folder && folder?.type === 'folder') {
+			if (folder.ids.includes(linkID)) {
+				folder.ids = folder.ids.filter((id) => id !== linkID)
+				data[folder._id] = folder
+			}
 
-	delete data[linkId]
+			// Only one left
+			// Delete folder
+			if (folder.ids.length === 1) {
+				delete data[folder._id]
+				tab.ids = tab.ids.filter((id) => id !== folder._id)
+			}
+		}
+	}
 
-	tab.ids = tab.ids.filter((id) => id !== linkId)
+	document.getElementById(linkID)?.classList.add('removed')
+
+	delete data[linkID]
+
+	tab.ids = tab.ids.filter((id) => id !== linkID)
 	data.tabs[0] = tab
 
 	storage.sync.clear()
 	storage.sync.set(data)
 
 	setTimeout(() => {
-		document.getElementById(linkId)?.remove()
+		document.getElementById(linkID)?.remove()
 	}, 600)
 }
 
