@@ -78,6 +78,7 @@ export const SYNC_DEFAULT: Sync = {
 	linkstyle: 'large',
 	linknewtab: false,
 	linksrow: 6,
+	linktab: 0,
 	textShadow: 0.2,
 	reviewPopup: 0,
 	cssHeight: 80,

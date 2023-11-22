@@ -1,100 +1,99 @@
-#link-tab-indicator {
+#link-title {
 	display: flex;
-	column-gap: 0.6em;
-	padding: 0.5em;
 	align-items: center;
 	justify-content: center;
-	opacity: 0.7;
-	transition: opacity 0.4s;
+	column-gap: 1em;
+	padding-top: 1em;
 
-	hr {
-		width: 0;
+	button {
+		color: white;
 		border-radius: 4px;
-		border: 4px solid white;
-		margin: 3px 0 0 0;
+		border: 1px solid transparent;
+		background-color: transparent;
+		opacity: 0.5;
+		padding: 0;
+
+		&:hover {
+			opacity: 1;
+		}
 	}
 
 	span {
-		font-weight: 900;
-	}
-}
-
-#link-group-title {
-	margin-top: 0.5em;
-	padding: 0.3em 1em;
-	background-color: transparent;
-	border: 1px solid transparent;
-	border-radius: 8px;
-	color: white;
-	font: inherit;
-	text-align: center;
-	font-size: 1.3em;
-
-	&:focus-within {
-		background-color: #fff1;
-		border-color: #fff3;
-		backdrop-filter: blur(1em);
-	}
-
-	&::placeholder {
-		color: white;
-		opacity: 0.5;
-	}
-}
-
-#link-group-wrapper {
-	display: flex;
-}
-
-.link-group {
-	width: 100%;
-	padding: 0 1em;
-
-	ul {
-		display: flex;
-		visibility: visible;
-		flex-wrap: wrap;
-		justify-content: center;
-		border-radius: 1em;
+		display: inline-block;
+		padding: 0.3em 1em;
+		font: inherit;
+		font-size: 1.3em;
+		line-height: 1.2em;
+		max-height: 2.4em;
+		max-width: 8em;
+		text-align: center;
+		color: #fff;
+		background-color: transparent;
 		border: 1px solid transparent;
-		padding: 1em;
-		margin: 0;
-		min-height: 7em;
-		column-gap: 2.6em;
-		row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
-		transition-duration: 0.2s;
-		transition-timing-function: linear;
-		transition-property: background-color, border-color, opacity;
+		border-radius: 8px;
+		outline: none;
+		overflow: hidden;
+
+		&:focus-visible {
+			background-color: #fff2;
+			border-color: #fff3;
+			backdrop-filter: blur(1em);
+		}
+
+		&::placeholder {
+			color: white;
+			opacity: 0.5;
+		}
 	}
 }
 
-li.block.folder > div {
-	display: grid;
-	column-gap: 4px;
-	height: 4.8em;
-	grid-template-columns: 1fr 1fr;
+#link-list {
+	display: flex;
+	visibility: visible;
+	flex-wrap: wrap;
+	justify-content: center;
 	border-radius: 1em;
-	background-color: #fff3;
-	border: 1px solid #fff4;
-	backdrop-filter: blur(1em);
-	padding: 0.3em;
-	box-sizing: border-box;
-	transition: transform 0.1s linear;
+	border: 1px solid transparent;
+	padding: 1em;
+	margin: 0;
+	min-height: 6em;
+	column-gap: 2.6em;
+	row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
+	transition-duration: 0.2s;
+	transition-timing-function: linear;
+	transition-property: background-color, border-color, opacity;
+}
+
+li.block.folder {
 	cursor: pointer;
 
-	img {
-		border-radius: 4px;
-		padding: 2px;
-		width: 100%;
+	> div {
+		display: grid;
+		column-gap: 4px;
+		height: 4.8em;
+		grid-template-columns: 1fr 1fr;
+		border-radius: 1em;
+		background-color: #fff3;
+		border: 1px solid #fff4;
+		backdrop-filter: blur(1em);
+		padding: 0.3em;
 		box-sizing: border-box;
-		background-color: white;
+		transition: transform 0.1s linear;
+
+		img {
+			border-radius: 4px;
+			padding: 2px;
+			width: 100%;
+			box-sizing: border-box;
+			background-color: white;
+		}
 	}
 
-	&:hover {
+	&:hover > div {
 		transform: scale(1.1);
 	}
 
-	&:active {
+	&:active > div {
 		transform: scale(1.05);
 	}
 }
@@ -103,7 +102,7 @@ li.block {
 	position: relative;
 	width: 4.8em;
 	z-index: 1;
-	transition-duration: 0.3s;
+	transition-duration: 0.2s;
 	transition-timing-function: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 	transition-property: transform, opacity;
 
@@ -139,26 +138,26 @@ li.block {
 		opacity: 1;
 		color: white;
 		cursor: pointer;
-		border: none;
-		border-radius: 1em; // for outline
 		text-decoration: none;
 		background-color: transparent;
 		transition: width 0.18s $easeOutThree;
 		-webkit-touch-callout: none;
+
+		// these are for outline
+		border-radius: 1em;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
+		flex-direction: column;
 
 		img {
 			position: relative;
 			overflow: hidden;
 			width: 100%;
 			padding: 0.3em;
-			background: white;
+			background-color: white;
 			box-shadow: $textShadow;
 			box-sizing: border-box;
 			border-radius: 1em;
-			aspect-ratio: 1;
 			transition: transform 0.1s linear, box-shadow 0.1s, width 0.3s, border-radius 0.18s $easeOutThree;
 
 			@media (hover: hover) {
@@ -177,6 +176,7 @@ li.block {
 	}
 
 	span {
+		display: block;
 		width: 100%;
 		padding-top: 0.4em;
 		line-height: 1.3em;
@@ -199,7 +199,7 @@ li.block {
 	}
 
 	&.in-folder {
-		.link-group ul {
+		#link-list {
 			background-color: #fff1;
 			border: 1px solid #fff4;
 			backdrop-filter: blur(2em);
@@ -207,19 +207,12 @@ li.block {
 	}
 
 	&.opening-folder {
-		.link-group ul {
+		#link-list {
 			opacity: 0;
 		}
 
 		.block {
 			transform: scale(0.9);
-		}
-	}
-
-	&.opening-folder,
-	&.in-folder {
-		#link-tab-indicator {
-			opacity: 0;
 		}
 	}
 

@@ -136,6 +136,7 @@ export type Sync = {
 	linksrow: number
 	linkstyle: string
 	linknewtab: boolean
+	linktab: number
 	cssHeight: number
 	reviewPopup: number
 	background_blur: number
@@ -145,6 +146,7 @@ export type Sync = {
 	favicon: string
 	tabtitle: string
 	greeting: string
+	tabs: Tab[]
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'
@@ -158,6 +160,5 @@ export type Sync = {
 	move: Move
 	textShadow: number
 	about: { browser: string; version: string }
-	tabs: Tab[]
 	[key: string]: Link | unknown
 }

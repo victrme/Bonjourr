@@ -14,6 +14,7 @@ type LinksUpdate = {
 	newtab?: boolean
 	style?: string
 	row?: string
+	addTab?: boolean
 	addLink?: boolean
 	addFolder?: string[]
 	groupTitle?: string
@@ -29,6 +30,8 @@ type SubmitLinkFolder = { type: 'folder'; ids: string[] }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
 
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
+
+type CreateTitles = { folder?: LinkFolder; tabs?: Tab[] }
 
 //
 //
@@ -52,9 +55,10 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	// set class before appendBlock, cannot be moved
 	domlinkblocks.className = init.linkstyle
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
+	domlinkblocks.dataset.tab = init.linktab.toString()
 
-	initblocks(bundleLinks(init), init.tabs[0].title, init.linknewtab)
-
+	createTitles({ tabs: init.tabs })
+	initblocks(bundleLinks(init), init.linknewtab)
 	// setRows(init.linksrow, init.linkstyle)
 	onSettingsLoad(editEvents)
 
@@ -63,34 +67,20 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
 		})
 	}
-
-	document.getElementById('link-group-title')?.addEventListener('change', function () {
-		linksUpdate({ groupTitle: (this as HTMLInputElement).value })
-		this.blur()
-	})
 }
 
-async function initblocks(links: Link[], groupTitle: string, openInNewtab: boolean) {
-	const tabtitle = document.querySelector<HTMLInputElement>('#link-group-title')
-	const tabUList = document.querySelector<HTMLUListElement>('.link-group ul')
+async function initblocks(links: Link[], openInNewtab: boolean) {
+	const tabUList = document.querySelector<HTMLUListElement>('#link-list')
 	const inFolder = !!domlinkblocks.dataset.folder
-
-	if (tabtitle) {
-		tabtitle.value = groupTitle
-	}
-
-	if (links.length === 0) {
-		return canDisplayInterface('links')
-	}
-
-	//
-	// Vals
-	//
 
 	if (tabUList && tabUList?.children) {
 		Object.values(tabUList?.children).forEach((child) => {
 			child.remove()
 		})
+	}
+
+	if (links.length === 0) {
+		return canDisplayInterface('links')
 	}
 
 	const linkhtml = `
@@ -255,7 +245,8 @@ function createEvents(elems: HTMLLIElement[]) {
 			setTimeout(async () => {
 				const data = await storage.sync.get()
 				const folder = data[elem.id] as LinkFolder
-				initblocks(getAllLinksInFolder(data, elem.id), folder.title, false)
+				createTitles({ folder })
+				initblocks(getAllLinksInFolder(data, elem.id), false)
 				domlinkblocks.classList.replace('opening-folder', 'in-folder')
 			}, 200)
 		}
@@ -267,8 +258,8 @@ function createEvents(elems: HTMLLIElement[]) {
 
 		setTimeout(async () => {
 			const data = await storage.sync.get()
-			const tab = data.tabs[0]
-			initblocks(getAllLinksInTab(data, 0), tab.title, false)
+			createTitles({ tabs: data.tabs })
+			initblocks(getAllLinksInTab(data, 0), false)
 			domlinkblocks.classList.remove('opening-folder')
 		}, 200)
 	}
@@ -303,6 +294,55 @@ function createEvents(elems: HTMLLIElement[]) {
 			const { offsetLeft, offsetTop } = ev.target as HTMLElement
 			displayEditWindow(elem, { x: offsetLeft, y: offsetTop })
 		}
+	}
+}
+
+function createTitles({ folder, tabs }: CreateTitles): void {
+	const linktitle = document.getElementById('link-title')
+	linktitle?.querySelectorAll('button')?.forEach((span) => span.remove())
+
+	const newTitle = (title: string, edit?: boolean): HTMLButtonElement => {
+		const button = document.createElement('button')
+		const span = document.createElement('span')
+
+		span.textContent = title
+		button.appendChild(span)
+
+		if (edit) {
+			span.contentEditable = 'plaintext-only'
+			span.ariaLabel = tradThis('Change link group title')
+		}
+
+		span?.addEventListener('input', function () {
+			linksUpdate({ groupTitle: this.textContent ?? '' })
+		})
+
+		button?.addEventListener('click', async function () {
+			const index = Object.values(linktitle?.children ?? []).indexOf(button)
+			const data = await storage.sync.get()
+			createTitles({ tabs: data.tabs })
+			initblocks(getAllLinksInTab(data, index), false)
+		})
+
+		return button
+	}
+
+	if (folder) {
+		linktitle?.appendChild(newTitle(folder.title))
+	}
+
+	if (tabs) {
+		const index = parseInt(domlinkblocks.dataset.tab ?? '0')
+
+		tabs.forEach((tab, i) => {
+			linktitle?.appendChild(newTitle(tab.title, index === i))
+		})
+
+		const addButton = document.createElement('button')
+		addButton.id = 'b_addlinktab'
+		addButton.textContent = '+'
+		addButton?.addEventListener('click', () => linksUpdate({ addTab: true }))
+		linktitle?.appendChild(addButton)
 	}
 }
 
@@ -465,7 +505,7 @@ function createDragging(LIList: HTMLLIElement[]) {
 
 				eventDebounce({ ...data })
 				Object.values(domlinkblocks.children).forEach((li) => li.remove())
-				initblocks(getAllLinksInTab(data), data.tabs[0].title, data.linknewtab)
+				initblocks(getAllLinksInTab(data, 0), data.linknewtab)
 			}, 200)
 		}
 	}
@@ -815,7 +855,7 @@ async function linkSubmission(arg: LinkSubmission) {
 
 	domlinkblocks.style.visibility = 'visible'
 
-	initblocks(links, data.tabs[0].title, data.linknewtab)
+	initblocks(links, data.linknewtab)
 }
 
 function linkElemTitle(title: string, url: string, textOnly: boolean): string {
@@ -836,14 +876,27 @@ async function setGroupTitle(title: string) {
 			folder.title = title
 			data[folderID] = folder
 			storage.sync.set(data)
-			console.log(data[folderID])
 		}
 
 		return
 	}
+
 	const data = await storage.sync.get('tabs')
 	data.tabs[0].title = title
 	storage.sync.set({ tabs: data.tabs })
+}
+
+async function setTab() {
+	const data = await storage.sync.get()
+	data.tabs.push({ ids: [], title: `tab ${data.tabs.length + 1}` })
+	data.linktab = data.tabs.length - 1
+
+	domlinkblocks.dataset.tab = data.linktab.toString()
+
+	createTitles({ tabs: data.tabs })
+	initblocks([], false)
+
+	storage.sync.set(data)
 }
 
 function setRows(amount: number, style: string) {
@@ -864,7 +917,11 @@ function handleSafariNewtab(e: Event) {
 	e.preventDefault()
 }
 
-async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, groupTitle }: LinksUpdate) {
+async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, addTab, groupTitle }: LinksUpdate) {
+	if (addTab) {
+		setTab()
+	}
+
 	if (addLink) {
 		linkSubmission({ type: 'link' })
 	}
@@ -897,22 +954,18 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 	}
 
 	if (style) {
-		const data = await storage.sync.get()
-		const links = bundleLinks(data as Sync)
-
-		style = style ?? 'large'
-
-		for (const [_id, title, url] of links) {
-			const span = document.querySelector<HTMLSpanElement>('#links' + _id + ' span')
-			const text = linkElemTitle(title, url, style === 'text')
-
-			if (span) span.textContent = text
-		}
-
-		domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
-		domlinkblocks.classList.add(style)
-		setRows(data.linksrow, style)
-		storage.sync.set({ linkstyle: style })
+		// const data = await storage.sync.get()
+		// const links = bundleLinks(data as Sync)
+		// style = style ?? 'large'
+		// for (const [_id, title, url] of links) {
+		// 	const span = document.querySelector<HTMLSpanElement>('#links' + _id + ' span')
+		// 	const text = linkElemTitle(title, url, style === 'text')
+		// 	if (span) span.textContent = text
+		// }
+		// domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
+		// domlinkblocks.classList.add(style)
+		// setRows(data.linksrow, style)
+		// storage.sync.set({ linkstyle: style })
 	}
 
 	if (row) {
@@ -961,7 +1014,7 @@ function getAllLinksInFolder(data: Sync, id: string): LinkElem[] {
 	return links
 }
 
-function getAllLinksInTab(data: Sync, index = 0): Link[] {
+function getAllLinksInTab(data: Sync, index: number): Link[] {
 	const tab = data.tabs[index]
 	const links: Link[] = []
 
