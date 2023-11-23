@@ -28,7 +28,6 @@ type Bookmarks = {
 type SubmitLink = { type: 'link' }
 type SubmitLinkFolder = { type: 'folder'; ids: string[] }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
-
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 
 //
@@ -64,6 +63,18 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
 		})
 	}
+
+	document.body.addEventListener('click', function (e) {
+		if (domlinkblocks.classList.contains('in-folder')) {
+			const path = e.composedPath() ?? [document.body]
+			const node = path[0] as Element | undefined
+			const clicksOnInterface = node?.id === 'interface' || node?.tagName === 'BODY'
+
+			if (clicksOnInterface) {
+				clickClosesFolder()
+			}
+		}
+	})
 }
 
 async function initblocks(links: Link[], openInNewtab: boolean) {
@@ -127,20 +138,24 @@ async function initblocks(links: Link[], openInNewtab: boolean) {
 
 			span.textContent = title
 
-			for (const id of link.ids) {
-				const img = document.createElement('img')
+			link.ids.forEach((id, i) => {
 				const elemIndex = linkElems.findIndex((link) => link._id === id)
-				const elem = linkElems[elemIndex]
 
-				if (elem.type === 'elem') {
-					img.draggable = false
-					img.src = elem?.icon
-					img.alt = ''
-					folder.appendChild(img)
+				// Only add 4 images to folder preview
+				if (i < 4) {
+					const img = document.createElement('img')
+					const elem = linkElems[elemIndex]
+
+					if (elem.type === 'elem') {
+						img.draggable = false
+						img.src = elem?.icon
+						img.alt = ''
+						folder.appendChild(img)
+					}
 				}
 
 				linkElems.splice(elemIndex, 1)
-			}
+			})
 
 			li.id = link._id
 			liList.push(li)
@@ -218,6 +233,37 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 	}
 }
 
+function clickOpensFolder(elem: HTMLLIElement) {
+	if (elem.classList.contains('folder')) {
+		domlinkblocks.dataset.folder = elem.id
+		domlinkblocks.classList.add('opening-folder')
+		domlinkblocks.classList.remove('in-folder')
+
+		setTimeout(async () => {
+			const data = await storage.sync.get()
+			const folder = data[elem.id] as LinkFolder
+
+			toggleTabsTitleType('folder', folder.title)
+			initblocks(getAllLinksInFolder(data, elem.id), false)
+
+			domlinkblocks.classList.replace('opening-folder', 'in-folder')
+		}, 200)
+	}
+}
+
+async function clickClosesFolder() {
+	const data = await storage.sync.get()
+	const { selected, list } = data.tabs
+	delete domlinkblocks.dataset.folder
+	domlinkblocks.classList.replace('in-folder', 'opening-folder')
+	toggleTabsTitleType('tabs', list[selected].title, selected)
+
+	setTimeout(async () => {
+		initblocks(getAllLinksInTab(data, selected), false)
+		domlinkblocks.classList.remove('opening-folder')
+	}, 200)
+}
+
 function createEvents(elems: HTMLLIElement[]) {
 	let timer = 0
 
@@ -232,50 +278,6 @@ function createEvents(elems: HTMLLIElement[]) {
 			elem.addEventListener('touchend', () => clearTimeout(timer), { passive: false })
 		}
 	}
-
-	function clickOpensFolder(elem: HTMLLIElement) {
-		if (elem.classList.contains('folder')) {
-			domlinkblocks.dataset.folder = elem.id
-			domlinkblocks.classList.add('opening-folder')
-			domlinkblocks.classList.remove('in-folder')
-
-			setTimeout(async () => {
-				const data = await storage.sync.get()
-				const folder = data[elem.id] as LinkFolder
-
-				toggleTabsTitleType('folder', folder.title)
-				initblocks(getAllLinksInFolder(data, elem.id), false)
-
-				domlinkblocks.classList.replace('opening-folder', 'in-folder')
-			}, 200)
-		}
-	}
-
-	function clickClosesFolder() {
-		domlinkblocks.classList.replace('in-folder', 'opening-folder')
-		delete domlinkblocks.dataset.folder
-
-		setTimeout(async () => {
-			const data = await storage.sync.get()
-			const { selected, list } = data.tabs
-
-			toggleTabsTitleType('tabs', list[selected].title, selected)
-			initblocks(getAllLinksInTab(data, selected), false)
-
-			domlinkblocks.classList.remove('opening-folder')
-		}, 200)
-	}
-
-	document.body.addEventListener('click', function (e) {
-		if (domlinkblocks.classList.contains('in-folder')) {
-			const path = e.composedPath() ?? [document.body]
-			const pathIds = path.map((el) => (el as HTMLElement).id)
-
-			if (!pathIds.includes('linkblocks') && !pathIds.includes('editlink')) {
-				clickClosesFolder()
-			}
-		}
-	})
 
 	function longPressDebounce(elem: HTMLLIElement, ev: TouchEvent) {
 		timer = setTimeout(() => {
@@ -700,7 +702,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 	domedit?.classList.add('shown')
 	domicon?.classList.add('selected')
-	domedit?.classList.toggle('folder', link.type === 'folder')
+	domedit?.classList.toggle('folder', !(link.type !== 'folder' && !domlinkblocks.dataset.folder))
 	domedit?.classList.toggle('pushed', opendedSettings)
 	domedit?.setAttribute('data-linkid', linkId)
 
@@ -852,6 +854,7 @@ function importBookmarks(bookmarks?: Bookmarks): LinkElem[] {
 }
 
 async function linkSubmission(arg: LinkSubmission) {
+	const folderID = domlinkblocks.dataset.folder
 	const data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
 	let links: Link[] = []
@@ -881,6 +884,14 @@ async function linkSubmission(arg: LinkSubmission) {
 		data[link._id] = link
 		links.push(link)
 		tab.ids.push(link._id)
+
+		if (folderID) {
+			const folder = data[folderID] as Link | undefined
+			if (folder?.type === 'folder') {
+				folder.ids.push(link._id)
+				data[folderID] = folder
+			}
+		}
 	}
 
 	data.tabs.list[data.tabs.selected] = tab
@@ -935,7 +946,7 @@ async function setTab(action: 'add' | 'remove') {
 			ids: [],
 		})
 
-		appendNewTab('', tabs.selected)
+		appendNewTab('', true)
 		initblocks([], false)
 	}
 
