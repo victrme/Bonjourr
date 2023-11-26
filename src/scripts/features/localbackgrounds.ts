@@ -24,7 +24,7 @@ type UpdateEvent = {
 	refresh?: HTMLSpanElement
 	newfile?: FileList | null
 	freq?: string
-	show_more?: boolean
+	showing?: string
 }
 
 let localIsLoading = false
@@ -230,7 +230,7 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	rem.addEventListener('click', deleteThisBackground)
 }
 
-async function handleSettingsOptions(showMore: boolean = false) {
+async function handleSettingsOptions(showing: string = 'default') {
 	const fileContainer = document.getElementById('fileContainer') as HTMLElement
 	const settings = document.getElementById('settings') as HTMLElement
 	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
@@ -239,12 +239,24 @@ async function handleSettingsOptions(showMore: boolean = false) {
 	const thumbsAmount = fileContainer?.childElementCount || 0
 	const idsAndNotAllThumbs = ids.length > 0 && thumbsAmount < ids.length
 
-	if (idsAndNotAllThumbs) {
+	if (fileContainer.parentElement) {
+		fileContainer.parentElement.className = showing
+	}
+
+
+
+	if (showing === 'reset') {
+		document.querySelectorAll('button.thumbnail').forEach(function(thumbnail, index) {
+			fileContainer.classList.remove('showLess')
+			if (index > 8) thumbnail.remove()
+		})
+	} else if (idsAndNotAllThumbs) {
+		console.log(showing)
 		console.log(ids)
 		ids.reverse().forEach(async (id, index) => {
 			// first condition for init, second for show more
-			if (index < 9 && !showMore || (showMore && index >= thumbsAmount && index <= thumbsAmount + 8)) {
-				console.log(`showing ${index}`)
+			if (index < 9 && showing === 'default' || (showing === 'more' && index >= thumbsAmount && index <= thumbsAmount + 8)) {
+				console.log(`showing ${index +1}`)
 				const blob = await getBlob(id, 'thumbnail')
 				if (blob) addThumbnail(blob, id, id === selected, settings)
 			}
@@ -275,7 +287,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
 		if (event?.freq) localImages.update({ freq: event?.freq })
-		if (event?.show_more) handleSettingsOptions(true)
+		if (event?.showing) handleSettingsOptions(event.showing)
 		return
 	}
 

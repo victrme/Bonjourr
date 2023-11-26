@@ -47,6 +47,7 @@ export async function settingsInit() {
 
 	settingsDom.id = 'settings'
 	settingsDom.setAttribute('class', 'init')
+	settingsDom.setAttribute('class', 'shown')
 
 	for (const elem of Object.values(contentList)) {
 		settingsDom.appendChild(elem)
@@ -383,7 +384,12 @@ export async function settingsInit() {
 	})
 
 	paramId('show_more').addEventListener('click', function (this: HTMLInputElement) {
-		localBackgrounds({ show_more: true })
+		localBackgrounds({ showing: 'more' })
+	})
+
+	paramId('show_less').addEventListener('click', function (this: HTMLInputElement) {
+		localBackgrounds({ showing: 'reset' })
+		console.log('aqqq')
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {

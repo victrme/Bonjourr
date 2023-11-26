@@ -609,6 +609,28 @@
 				}
 			}
 		}
+
+		#show_more,
+		#show_less {
+			display: none;
+		}
+
+		&.default,
+		&.reset {
+			#show_more {
+				display: block;
+			}
+		}
+
+		&.more {
+			#show_more {
+				display: block;
+			}
+			
+			#show_less {
+				display: block;
+			}
+		}
 	}
 
 	#clockoptions {
