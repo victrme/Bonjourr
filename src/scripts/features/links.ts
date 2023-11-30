@@ -1,4 +1,4 @@
-import { bundleLinks, randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
+import { randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
 import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../defaults'
 import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
@@ -38,6 +38,9 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
 const domeditlink = document.getElementById('editlink')
 
+let currentFolder: string | undefined
+let currentTab = 0
+
 export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
@@ -55,7 +58,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 
 	initTabs(init.tabs)
 	initblocks(getAllLinksInTab(init, init.tabs.selected), init.linknewtab)
-	// setRows(init.linksrow, init.linkstyle)
+	setRows(init.linksrow, init.linkstyle)
 	onSettingsLoad(editEvents)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
@@ -79,7 +82,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 
 async function initblocks(links: Link[], openInNewtab: boolean) {
 	const tabUList = document.querySelector<HTMLUListElement>('#link-list')
-	const inFolder = !!domlinkblocks.dataset.folder
+	const inFolder = !!currentFolder
 
 	if (tabUList && tabUList?.children) {
 		Object.values(tabUList?.children).forEach((child) => {
@@ -175,9 +178,11 @@ async function initblocks(links: Link[], openInNewtab: boolean) {
 			const span = doc.querySelector('span')!
 			const anchor = doc.querySelector('a')!
 			const img = doc.querySelector('img')!
+			const isText = domlinkblocks.className === 'text'
+			const title = linkElemTitle(stringMaxSize(link.title, 64), link.url, isText)
 
 			imgList[link._id] = img
-			span.textContent = linkElemTitle(stringMaxSize(link.title, 64), link.url, domlinkblocks.className === 'text')
+			span.textContent = title
 
 			li.id = link._id
 			anchor.href = url
@@ -235,7 +240,7 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 
 function clickOpensFolder(elem: HTMLLIElement) {
 	if (elem.classList.contains('folder')) {
-		domlinkblocks.dataset.folder = elem.id
+		currentFolder = elem.id
 		domlinkblocks.classList.add('opening-folder')
 		domlinkblocks.classList.remove('in-folder')
 
@@ -254,7 +259,7 @@ function clickOpensFolder(elem: HTMLLIElement) {
 async function clickClosesFolder() {
 	const data = await storage.sync.get()
 	const { selected, list } = data.tabs
-	delete domlinkblocks.dataset.folder
+	currentFolder = undefined
 	domlinkblocks.classList.replace('in-folder', 'opening-folder')
 	toggleTabsTitleType('tabs', list[selected].title, selected)
 
@@ -325,6 +330,7 @@ function toggleTabsTitleType(type: 'folder' | 'tabs', title: string, i?: number)
 	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
 
 	if (firstinput) {
+		firstinput.style.width = title.length + 'ch'
 		firstinput.value = title
 	}
 }
@@ -349,7 +355,7 @@ function appendNewTab(title: string, selected?: boolean): void {
 	})
 
 	div?.addEventListener('click', async function () {
-		if (domlinkblocks.dataset.folder) {
+		if (!!currentFolder) {
 			return
 		}
 
@@ -702,7 +708,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 	domedit?.classList.add('shown')
 	domicon?.classList.add('selected')
-	domedit?.classList.toggle('folder', !(link.type !== 'folder' && !domlinkblocks.dataset.folder))
+	domedit?.classList.toggle('folder', !(link.type !== 'folder' && !currentFolder))
 	domedit?.classList.toggle('pushed', opendedSettings)
 	domedit?.setAttribute('data-linkid', linkId)
 
@@ -770,14 +776,12 @@ function removeLinkSelection() {
 async function removeblock(linkID: string) {
 	const { tabs, ...data } = await storage.sync.get()
 	const tab = tabs.list[tabs.selected]
-	const folderID = domlinkblocks.dataset.folder
-	const inFolder = typeof folderID === 'string'
 	const link = data[linkID] as Link
 
 	// For folders in this tab
 	// Remove element if found in folder
-	if (inFolder) {
-		const folder = data[folderID] as Link
+	if (currentFolder) {
+		const folder = data[currentFolder] as Link
 		if (folder && folder?.type === 'folder') {
 			if (folder.ids.includes(linkID)) {
 				folder.ids = folder.ids.filter((id) => id !== linkID)
@@ -863,8 +867,6 @@ function importBookmarks(bookmarks?: Bookmarks): LinkElem[] {
 }
 
 async function linkSubmission(arg: LinkSubmission) {
-	const folderID = domlinkblocks.dataset.folder
-	const inFolder = typeof folderID === 'string'
 	const data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
 	let links: Link[] = []
@@ -895,11 +897,11 @@ async function linkSubmission(arg: LinkSubmission) {
 		links.push(link)
 		tab.ids.push(link._id)
 
-		if (inFolder) {
-			const folder = data[folderID] as Link | undefined
+		if (currentFolder) {
+			const folder = data[currentFolder] as Link | undefined
 			if (folder?.type === 'folder') {
 				folder.ids.push(link._id)
-				data[folderID] = folder
+				data[currentFolder] = folder
 			}
 		}
 	}
@@ -909,8 +911,8 @@ async function linkSubmission(arg: LinkSubmission) {
 
 	domlinkblocks.style.visibility = 'visible'
 
-	if (inFolder) {
-		links = getAllLinksInFolder(data, folderID)
+	if (currentFolder) {
+		links = getAllLinksInFolder(data, currentFolder)
 	} else {
 		links = getAllLinksInTab(data, data.tabs.selected)
 	}
@@ -926,15 +928,13 @@ function linkElemTitle(title: string, url: string, textOnly: boolean): string {
 }
 
 async function setGroupTitle(title: string) {
-	const folderID = domlinkblocks.dataset.folder
-
-	if (folderID) {
+	if (currentFolder) {
 		const data = await storage.sync.get()
-		const folder = data[folderID] as LinkFolder | undefined
+		const folder = data[currentFolder] as LinkFolder | undefined
 
 		if (folder) {
 			folder.title = title
-			data[folderID] = folder
+			data[currentFolder] = folder
 			storage.sync.set(data)
 		}
 
@@ -955,14 +955,15 @@ async function setTab(action: 'add' | 'remove') {
 	const { list } = tabs
 
 	if (action === 'add') {
+		const title = `${tradThis('link tab')} ${list.length}`
 		tabs.selected = list.length - 1
 
-		tabs.list.push({
-			title: '',
-			ids: [],
-		})
+		tabs.list.push({ title, ids: [] })
 
-		appendNewTab('', true)
+		const divs = Object.values(document.querySelectorAll('#link-title div'))
+		divs?.forEach((div) => div.classList.remove('selected'))
+
+		appendNewTab(title, true)
 		initblocks([], false)
 	}
 
@@ -978,6 +979,7 @@ async function setTab(action: 'add' | 'remove') {
 }
 
 function setRows(amount: number, style: string) {
+	const linklist = document.getElementById('link-list')
 	const sizes = {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
@@ -985,8 +987,10 @@ function setRows(amount: number, style: string) {
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 
-	const { width, gap } = sizes[style as keyof typeof sizes]
-	domlinkblocks.style.maxWidth = (width + gap) * amount + 'em'
+	if (linklist && style in sizes) {
+		const { width, gap } = sizes[style as keyof typeof sizes]
+		linklist.style.maxWidth = (width + gap) * amount + 'em'
+	}
 }
 
 function handleSafariNewtab(e: Event) {
@@ -1047,7 +1051,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 	}
 
 	if (row) {
-		let domStyle = domlinkblocks.className || 'large'
+		let domStyle = domlinkblocks.classList[0] || 'large'
 		let val = parseInt(row ?? '6')
 		setRows(val, domStyle)
 		eventDebounce({ linksrow: row })
