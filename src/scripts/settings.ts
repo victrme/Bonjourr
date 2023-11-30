@@ -166,6 +166,11 @@ export async function settingsInit() {
 		paramId('i_favicon').setAttribute('style', 'display: none')
 	}
 
+	// Export as file doesn't work on Safari extension
+	if (PLATFORM === 'safari') {
+		paramId('save_wrapper').setAttribute('style', 'display: none')
+	}
+
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
@@ -955,16 +960,17 @@ function settingsMgmt() {
 		const a = document.getElementById('downloadfile')
 		if (!a) return
 
+		const date = new Date()
 		const data = ((await storage.sync.get()) as Sync) ?? {}
 		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
-
-		const bytes = new TextEncoder().encode(orderedStringify(data))
-		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
-		const date = new Date()
 		const YYYYMMDD = date.toISOString().slice(0, 10)
 		const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
-		a.setAttribute('href', URL.createObjectURL(blob))
+		const bytes = new TextEncoder().encode(orderedStringify(data))
+		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+		const href = URL.createObjectURL(blob)
+
+		a.setAttribute('href', href)
 		a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
 		a.click()
 	}
