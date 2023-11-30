@@ -146,7 +146,7 @@ async function initblocks(links: Link[], openInNewtab: boolean) {
 					const img = document.createElement('img')
 					const elem = linkElems[elemIndex]
 
-					if (elem.type === 'elem') {
+					if (elem?.type === 'elem') {
 						img.draggable = false
 						img.src = elem?.icon
 						img.alt = ''
@@ -771,11 +771,13 @@ async function removeblock(linkID: string) {
 	const { tabs, ...data } = await storage.sync.get()
 	const tab = tabs.list[tabs.selected]
 	const folderID = domlinkblocks.dataset.folder
+	const inFolder = typeof folderID === 'string'
+	const link = data[linkID] as Link
 
 	// For folders in this tab
 	// Remove element if found in folder
-	if (folderID) {
-		let folder = data[folderID] as Link
+	if (inFolder) {
+		const folder = data[folderID] as Link
 		if (folder && folder?.type === 'folder') {
 			if (folder.ids.includes(linkID)) {
 				folder.ids = folder.ids.filter((id) => id !== linkID)
@@ -788,6 +790,13 @@ async function removeblock(linkID: string) {
 				delete data[folder._id]
 				tab.ids = tab.ids.filter((id) => id !== folder._id)
 			}
+		}
+	}
+
+	// Delete links in folder
+	if (link?.type === 'folder') {
+		for (const id of link.ids) {
+			delete data[id]
 		}
 	}
 
@@ -855,6 +864,7 @@ function importBookmarks(bookmarks?: Bookmarks): LinkElem[] {
 
 async function linkSubmission(arg: LinkSubmission) {
 	const folderID = domlinkblocks.dataset.folder
+	const inFolder = typeof folderID === 'string'
 	const data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
 	let links: Link[] = []
@@ -885,7 +895,7 @@ async function linkSubmission(arg: LinkSubmission) {
 		links.push(link)
 		tab.ids.push(link._id)
 
-		if (folderID) {
+		if (inFolder) {
 			const folder = data[folderID] as Link | undefined
 			if (folder?.type === 'folder') {
 				folder.ids.push(link._id)
@@ -898,6 +908,12 @@ async function linkSubmission(arg: LinkSubmission) {
 	storage.sync.set(data)
 
 	domlinkblocks.style.visibility = 'visible'
+
+	if (inFolder) {
+		links = getAllLinksInFolder(data, folderID)
+	} else {
+		links = getAllLinksInTab(data, data.tabs.selected)
+	}
 
 	initblocks(links, data.linknewtab)
 }
