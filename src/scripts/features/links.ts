@@ -4,6 +4,7 @@ import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
+import transitioner from '../utils/transitioner'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
@@ -29,10 +30,6 @@ type SubmitLink = { type: 'link' }
 type SubmitLinkFolder = { type: 'folder'; ids: string[] }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
-
-//
-//
-//
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
@@ -80,7 +77,11 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	})
 }
 
-async function initblocks(links: Link[], openInNewtab: boolean) {
+//
+// Initialisation
+//
+
+async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	const tabUList = document.querySelector<HTMLUListElement>('#link-list')
 	const inFolder = !!currentFolder
 
@@ -91,7 +92,8 @@ async function initblocks(links: Link[], openInNewtab: boolean) {
 	}
 
 	if (links.length === 0) {
-		return canDisplayInterface('links')
+		canDisplayInterface('links')
+		return true
 	}
 
 	const linkhtml = `
@@ -203,6 +205,8 @@ async function initblocks(links: Link[], openInNewtab: boolean) {
 	createEvents(liList)
 	createIcons(imgList, links)
 	canDisplayInterface('links')
+
+	return true
 }
 
 async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Link[]) {
@@ -238,35 +242,48 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 	}
 }
 
-function clickOpensFolder(elem: HTMLLIElement) {
+async function clickOpensFolder(elem: HTMLLIElement) {
 	if (elem.classList.contains('folder')) {
-		currentFolder = elem.id
-		domlinkblocks.classList.add('opening-folder')
-		domlinkblocks.classList.remove('in-folder')
+		const data = await storage.sync.get()
+		const folder = data[elem.id] as LinkFolder
 
-		setTimeout(async () => {
-			const data = await storage.sync.get()
-			const folder = data[elem.id] as LinkFolder
-
-			toggleTabsTitleType('folder', folder.title)
-			initblocks(getAllLinksInFolder(data, elem.id), false)
-
-			domlinkblocks.classList.replace('opening-folder', 'in-folder')
-		}, 200)
+		transitioner(
+			function hide() {
+				currentFolder = elem.id
+				domlinkblocks.classList.add('hiding')
+				domlinkblocks.classList.remove('in-folder')
+			},
+			async function changeToFolder() {
+				toggleTabsTitleType(folder.title)
+				await initblocks(getAllLinksInFolder(data, elem.id), false)
+			},
+			function show() {
+				domlinkblocks.classList.replace('hiding', 'in-folder')
+			},
+			200
+		)
 	}
 }
 
 async function clickClosesFolder() {
 	const data = await storage.sync.get()
 	const { selected, list } = data.tabs
-	currentFolder = undefined
-	domlinkblocks.classList.replace('in-folder', 'opening-folder')
-	toggleTabsTitleType('tabs', list[selected].title, selected)
 
-	setTimeout(async () => {
-		initblocks(getAllLinksInTab(data, selected), false)
-		domlinkblocks.classList.remove('opening-folder')
-	}, 200)
+	transitioner(
+		function hide() {
+			currentFolder = undefined
+			domlinkblocks.classList.add('hiding')
+		},
+		async function changeToTab() {
+			toggleTabsTitleType(list[selected].title)
+			await initblocks(getAllLinksInTab(data, selected), false)
+		},
+		function show() {
+			domlinkblocks.classList.remove('in-folder')
+			domlinkblocks.classList.remove('hiding')
+		},
+		200
+	)
 }
 
 function createEvents(elems: HTMLLIElement[]) {
@@ -326,12 +343,17 @@ function initTabs(tabs: LinkTabs) {
 	})
 }
 
-function toggleTabsTitleType(type: 'folder' | 'tabs', title: string, i?: number): void {
+function toggleTabsTitleType(title: string): void {
 	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
 
+	if (!!currentFolder) {
+		document.querySelector<HTMLInputElement>('#link-title')?.click()
+	}
+
 	if (firstinput) {
-		firstinput.style.width = title.length + 'ch'
 		firstinput.value = title
+		firstinput.style.width = title.length + 'ch'
+		firstinput.placeholder = !!currentFolder ? tradThis('folder') : tradThis('tab')
 	}
 }
 
@@ -354,22 +376,8 @@ function appendNewTab(title: string, selected?: boolean): void {
 		this.blur()
 	})
 
-	div?.addEventListener('click', async function () {
-		if (!!currentFolder) {
-			return
-		}
-
-		const divs = Object.values(document.querySelectorAll('#link-title div'))
-		const data = await storage.sync.get()
-
-		domlinkblocks.classList.remove('in-folder')
-		divs?.forEach((div) => div.classList.remove('selected'))
-		div.classList.add('selected')
-
-		data.tabs.selected = divs.indexOf(div)
-		initblocks(getAllLinksInTab(data, data.tabs.selected), false)
-
-		storage.sync.set({ tabs: data.tabs })
+	div?.addEventListener('click', function () {
+		changeTab(div)
 	})
 
 	input.addEventListener('input', function () {
@@ -379,6 +387,38 @@ function appendNewTab(title: string, selected?: boolean): void {
 	div.appendChild(input)
 	linktitle?.appendChild(div)
 }
+
+function changeTab(div: HTMLDivElement) {
+	if (!!currentFolder || div.classList.contains('selected')) {
+		return
+	}
+
+	transitioner(
+		function hideCurrentTab() {
+			domlinkblocks.classList.remove('in-folder')
+			domlinkblocks.classList.add('hiding')
+		},
+		async function recreateLinksFromNewTab() {
+			const divs = Object.values(document.querySelectorAll('#link-title div'))
+			const data = await storage.sync.get()
+
+			divs?.forEach((div) => div.classList.remove('selected'))
+			div.classList.add('selected')
+			data.tabs.selected = divs.indexOf(div)
+			storage.sync.set({ tabs: data.tabs })
+
+			await initblocks(getAllLinksInTab(data, data.tabs.selected), false)
+		},
+		function showNewTab() {
+			domlinkblocks.classList.remove('hiding')
+		},
+		100
+	)
+}
+
+//
+// Drag events
+//
 
 function createDragging(LIList: HTMLLIElement[]) {
 	type Coords = {
@@ -611,6 +651,10 @@ function createDragging(LIList: HTMLLIElement[]) {
 	)
 }
 
+//
+// Edit links
+//
+
 function editEvents() {
 	async function submitEvent() {
 		const linkid = document.getElementById('editlink')?.dataset.linkid || ''
@@ -630,7 +674,7 @@ function editEvents() {
 		const linkid = editlink?.dataset.linkid || ''
 
 		removeLinkSelection()
-		removeblock(linkid)
+		removeLink(linkid)
 		editlink?.classList.remove('shown')
 	})
 
@@ -767,13 +811,11 @@ async function updatesEditedLink(linkId: string) {
 	return true
 }
 
-function removeLinkSelection() {
-	domlinkblocks.querySelectorAll('img').forEach((img) => {
-		img?.classList.remove('selected')
-	})
-}
+//
+// Updates
+//
 
-async function removeblock(linkID: string) {
+async function removeLink(linkID: string) {
 	const { tabs, ...data } = await storage.sync.get()
 	const tab = tabs.list[tabs.selected]
 	const link = data[linkID] as Link
@@ -1056,6 +1098,16 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 		setRows(val, domStyle)
 		eventDebounce({ linksrow: row })
 	}
+}
+
+//
+// Helpers
+//
+
+function removeLinkSelection() {
+	domlinkblocks.querySelectorAll('img').forEach((img) => {
+		img?.classList.remove('selected')
+	})
 }
 
 function validateLink(title: string, url: string): LinkElem {

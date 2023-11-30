@@ -3,7 +3,7 @@
 	align-items: center;
 	justify-content: center;
 	column-gap: 1em;
-	padding-top: 1em;
+	margin-top: 2em;
 
 	div {
 		cursor: pointer;
@@ -18,7 +18,7 @@
 	}
 
 	div.selected input {
-		font-weight: bold;
+		background-color: #fff1;
 		z-index: auto;
 	}
 
@@ -28,7 +28,7 @@
 	}
 
 	input {
-		min-width: 4em;
+		min-width: 3em;
 		max-width: 32ch;
 		padding: 0.3em 1em;
 		font-size: 1.3em;
@@ -221,7 +221,7 @@ li.block {
 		}
 	}
 
-	&.opening-folder {
+	&.hiding {
 		#link-list {
 			opacity: 0;
 		}
