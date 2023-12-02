@@ -6,8 +6,6 @@ import superinput from '../utils/superinput'
 import storage from '../storage'
 import parse from '../utils/parse'
 
-import { Searchbar, ENGINES } from '../types/sync'
-
 type SearchbarUpdate = {
 	engine?: string
 	opacity?: string
@@ -44,7 +42,7 @@ const setOpacity = (value = 0.1) => {
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
 }
 
-export default function searchbar(init?: Searchbar, update?: SearchbarUpdate) {
+export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return
@@ -125,7 +123,7 @@ function isValidURL(string: string): boolean {
 }
 
 function createSearchURL(val: string): string {
-	const URLs: { [key in Searchbar['engine']]: string } = {
+	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
@@ -391,6 +389,6 @@ function removeInputText() {
 	}
 }
 
-function isValidEngine(s = ''): s is Searchbar['engine'] {
+function isValidEngine(s = ''): s is Sync.Searchbar['engine'] {
 	return s in ENGINES
 }

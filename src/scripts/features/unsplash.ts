@@ -6,14 +6,9 @@ import errorMessage from '../utils/errormessage'
 import superinput from '../utils/superinput'
 import storage from '../storage'
 
-import { UnsplashImage, isEvery, COLLECTION_TYPES } from '../types/shared'
-import { Unsplash, Sync } from '../types/sync'
-import { UnsplashCache } from '../types/local'
-import { UnsplashAPI } from '../types/api'
-
 type UnsplashInit = {
-	unsplash: Unsplash
-	cache: UnsplashCache
+	unsplash: Unsplash.Sync
+	cache: Unsplash.Local
 }
 
 type UnsplashUpdate = {
@@ -47,7 +42,7 @@ export default function unsplashBackgrounds(init?: UnsplashInit, event?: Unsplas
 }
 
 async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
-	const { unsplash } = (await storage.sync.get('unsplash')) as Sync
+	const { unsplash } = await storage.sync.get('unsplash')
 	const unsplashCache = await getCache()
 
 	if (!unsplash) {
@@ -119,7 +114,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	}
 }
 
-async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
+async function cacheControl(unsplash: Unsplash.Sync, cache?: Unsplash.Local) {
 	unsplash = { ...SYNC_DEFAULT.unsplash, ...unsplash }
 	cache = cache ?? (await getCache())
 
@@ -196,8 +191,8 @@ async function cacheControl(unsplash: Unsplash, cache?: UnsplashCache) {
 	storage.local.set({ unsplashCache: cache })
 }
 
-async function requestNewList(collection: string): Promise<UnsplashImage[] | null> {
-	let json: UnsplashAPI.Photo[]
+async function requestNewList(collection: string): Promise<Unsplash.Image[] | null> {
+	let json: Unsplash.API[]
 
 	const resp = await apiFetch(`/unsplash/photos/random?collections=${collection}&count=8`)
 
@@ -211,7 +206,7 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 		return null
 	}
 
-	const filteredList: UnsplashImage[] = []
+	const filteredList: Unsplash.Image[] = []
 	const { width, height } = screen
 	const dpr = window.devicePixelRatio
 
@@ -219,7 +214,7 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 	// https://docs.imgix.com/tutorials/responsive-images-srcset-imgix#use-variable-quality
 	const quality = Math.min(100 - dpr * 20, 75)
 
-	const isExifEmpty = (exif: UnsplashAPI.Photo['exif']) => Object.values(exif).every((val) => !val)
+	const isExifEmpty = (exif: Unsplash.API['exif']) => Object.values(exif).every((val) => !val)
 
 	for (const img of json) {
 		filteredList.push({
@@ -237,7 +232,7 @@ async function requestNewList(collection: string): Promise<UnsplashImage[] | nul
 	return filteredList
 }
 
-function imgCredits(image: UnsplashImage) {
+function imgCredits(image: Unsplash.Image) {
 	const domcredit = document.getElementById('credit')
 	let needsSpacer = false
 	let artist = ''
@@ -305,12 +300,12 @@ function imgCredits(image: UnsplashImage) {
 	}
 }
 
-async function getCache(): Promise<UnsplashCache> {
+async function getCache(): Promise<Unsplash.Local> {
 	const cache = (await storage.local.get('unsplashCache'))?.unsplashCache ?? { ...LOCAL_DEFAULT.unsplashCache }
 	return cache
 }
 
-function loadBackground(props: UnsplashImage) {
+function loadBackground(props: Unsplash.Image) {
 	imgBackground(props.url, props.color)
 	imgCredits(props)
 }
@@ -330,6 +325,6 @@ async function preloadImage(src: string) {
 	}
 }
 
-function isCollection(s = ''): s is Unsplash['collection'] {
+function isCollection(s = ''): s is Unsplash.Sync['collection'] {
 	return s in COLLECTION_TYPES
 }

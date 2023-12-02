@@ -7,13 +7,11 @@ import { IS_MOBILE } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { isEvery, type Frequency } from '../types/shared'
-
 type LocalImages = {
 	ids: string[]
 	last: number
 	selected: string
-	freq: Frequency
+	freq: Shared.Frequency
 }
 
 type Blobs = {

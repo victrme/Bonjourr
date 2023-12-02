@@ -7,8 +7,7 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { Link } from '../types/shared'
-import { Sync } from '../types/sync'
+type Link = Links.Link
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -325,7 +324,7 @@ function linksDragging(LIList: HTMLLIElement[]) {
 
 				eventDebounce({ ...data }) // saves
 				;[...domlinkblocks.children].forEach((li) => li.remove()) // remove lis
-				initblocks(bundleLinks(data as Sync), data.linknewtab) // re-init blocks
+				initblocks(bundleLinks(data), data.linknewtab) // re-init blocks
 			}, 200)
 		}
 	}
@@ -666,7 +665,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 
 	if (style) {
 		const data = await storage.sync.get()
-		const links = bundleLinks(data as Sync)
+		const links = bundleLinks(data)
 		const classes = ['large', 'medium', 'small', 'text']
 		const blocks = document.querySelectorAll('#linkblocks .block') as NodeListOf<HTMLLIElement>
 		const chosenClass = style ?? 'large'
@@ -689,7 +688,7 @@ async function linksUpdate({ bookmarks, newtab, style, row, add }: LinksUpdate) 
 	}
 }
 
-export default async function quickLinks(init: Sync | null, event?: LinksUpdate) {
+export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return

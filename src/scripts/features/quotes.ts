@@ -1,20 +1,14 @@
 import { canDisplayInterface, freqControl } from '..'
 import { apiFetch } from '../utils'
 import superinput from '../utils/superinput'
-import parse from '../utils/parse'
 import storage from '../storage'
+import parse from '../utils/parse'
 
-import { Langs, Quote, isEvery } from '../types/shared'
-import { Local } from '../types/local'
-import { Sync } from '../types/sync'
-
-type QuotesType = Sync['quotes']['type']
-
-type UserQuotesList = [string, string][]
+type Quote = Quotes.Item
 
 type QuotesInit = {
-	sync: Sync
-	local: Local
+	sync: Sync.Storage
+	local: Local.Storage
 }
 
 type QuotesUpdate = {
@@ -32,7 +26,7 @@ function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
 	return arr?.map(([author, content]) => ({ author, content }))
 }
 
-async function newQuoteFromAPI(lang: Langs, type: QuotesType): Promise<Quote[]> {
+async function newQuoteFromAPI(lang: string, type: Quotes.Sync['type']): Promise<Quote[]> {
 	try {
 		if (!navigator.onLine || type === 'user') {
 			return []
@@ -64,7 +58,7 @@ function insertToDom(values: Quote) {
 	authorDOM.textContent = values.author
 }
 
-function controlCacheList(list: Quote[], lang: Langs, type: QuotesType) {
+function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type']) {
 	//
 	if (type === 'user') {
 		const randIndex = Math.round(Math.random() * (list.length - 1))
@@ -84,14 +78,14 @@ function controlCacheList(list: Quote[], lang: Langs, type: QuotesType) {
 	return list[0]
 }
 
-async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
+async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync.Storage) {
 	let quotesCache = (await storage.local.get('quotesCache'))?.quotesCache ?? []
 
-	function isQuotesType(s = ''): s is QuotesType {
+	function isQuotesType(s = ''): s is Quotes.Sync['type'] {
 		return ['classic', 'kaamelott', 'inspirobot', 'user'].includes(s)
 	}
 
-	async function handleQuotesType(type: QuotesType) {
+	async function handleQuotesType(type: Quotes.Sync['type']) {
 		let list: Quote[] = []
 		const { userlist } = quotes
 
@@ -113,8 +107,8 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 		insertToDom(list[selection])
 	}
 
-	function handleUserListChange(userlist: string): UserQuotesList | undefined {
-		function isUserQuotesList(json: unknown): json is UserQuotesList {
+	function handleUserListChange(userlist: string): Quotes.UserInput | undefined {
+		function isUserQuotesList(json: unknown): json is Quotes.UserInput {
 			return (
 				Array.isArray(json) &&
 				json.length > 0 &&
@@ -123,11 +117,11 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 			)
 		}
 
-		let array: UserQuotesList = []
+		let array: Quotes.UserInput = []
 		let quote: Quote = { author: '', content: '' }
 
 		if (userlist !== '') {
-			let userJSON = parse<UserQuotesList>(userlist)
+			let userJSON = parse<Quotes.UserInput>(userlist)
 
 			if (!userJSON) {
 				userQuotesInput.warn('User quotes list is not valid JSON')

@@ -5,18 +5,15 @@ import superinput from '../utils/superinput'
 import suntime from '../utils/suntime'
 import storage from '../storage'
 
-import { Sync, Weather } from '../types/sync'
-import { LastWeather } from '../types/local'
-import { OpenWeatherMap } from '../types/api'
+type Weather = Weather.Sync
 
-type Coords = {
-	lat: number
-	lon: number
-}
+type LastWeather = Weather.Local
+
+type Coords = { lat: number; lon: number }
 
 type WeatherInit = {
-	sync: Sync
-	lastWeather?: LastWeather
+	sync: Sync.Storage
+	lastWeather?: Weather.Local
 }
 
 type WeatherUpdate = {
@@ -59,17 +56,18 @@ export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 }
 
 async function updatesWeather(update: WeatherUpdate) {
-	let { weather, hide } = (await storage.sync.get(['weather', 'hide'])) as Sync
+	let { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
 	if (!weather || !hide) {
 		return
 	}
 
-	const isUnits = (str = ''): str is Weather['unit'] => ['metric', 'imperial'].includes(str)
-	const isForecast = (str = ''): str is Weather['forecast'] => ['auto', 'always', 'never'].includes(str)
-	const isMoreinfo = (str = ''): str is Weather['moreinfo'] => ['none', 'msnw', 'yhw', 'windy', 'custom'].includes(str)
-	const isTemperature = (str = ''): str is Weather['temperature'] => ['actual', 'feelslike', 'both'].includes(str)
+	const isUnits = (str = ''): str is Weather.Sync['unit'] => ['metric', 'imperial'].includes(str)
+	const isForecast = (str = ''): str is Weather.Sync['forecast'] => ['auto', 'always', 'never'].includes(str)
+	const isMoreinfo = (str = ''): str is Weather.Sync['moreinfo'] => ['none', 'msnw', 'yhw', 'windy', 'custom'].includes(str)
+	const isTemperature = (str = ''): str is Weather.Sync['temperature'] => ['actual', 'feelslike', 'both'].includes(str)
+	const isGeolocation = (str = ''): str is Weather.Sync['geolocation'] => ['off', 'approximate', 'precise'].includes(str)
 
 	if (isUnits(update.units)) {
 		weather.unit = update.units
@@ -139,7 +137,10 @@ async function updatesWeather(update: WeatherUpdate) {
 			}
 		}
 
-		weather.geolocation = update.geol as Weather['geolocation']
+		if (isGeolocation(update.geol)) {
+			weather.geolocation = update.geol
+		}
+
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
@@ -271,8 +272,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	// Fetch data
 
 	let response: Response | undefined
-	let onecall: OpenWeatherMap.Onecall | undefined
-	let current: OpenWeatherMap.Current | undefined
+	let onecall: Weather.API.Onecall | undefined
+	let current: Weather.API.Current | undefined
 
 	if (queries.includes('&lat') && lang === 'en') {
 		try {
@@ -293,8 +294,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 		try {
 			if (response?.status === 200) {
-				if (!!currentOnly) current = (await response?.json()) as OpenWeatherMap.Current
-				if (!currentOnly) onecall = (await response?.json()) as OpenWeatherMap.Onecall
+				if (!!currentOnly) current = (await response?.json()) as Weather.API.Current
+				if (!currentOnly) onecall = (await response?.json()) as Weather.API.Onecall
 			}
 		} catch (error) {
 			console.log(error)

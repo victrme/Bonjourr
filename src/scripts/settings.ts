@@ -22,6 +22,8 @@ import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { inputThrottle, closeEditLink, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
+import type { Langs } from './types/langs'
+
 import {
 	toggleWidgetsDisplay,
 	backgroundFilter,
@@ -32,10 +34,6 @@ import {
 	textShadow,
 	pageControl,
 } from './index'
-
-import type { Sync, Weather } from './types/sync'
-
-type Langs = keyof typeof langList
 
 export async function settingsInit() {
 	const data = await storage.sync.get()
@@ -312,7 +310,7 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(null, { add: true }), 1200)
+	const submitLinkFunc = throttle(() => quickLinks(undefined, { add: true }), 1200)
 
 	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
 		if (this.code === 'Enter') paramId('i_url')?.focus()
@@ -328,15 +326,15 @@ export async function settingsInit() {
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {
-		quickLinks(null, { newtab: this.checked })
+		quickLinks(undefined, { newtab: this.checked })
 	})
 
 	paramId('i_linkstyle').addEventListener('change', function (this) {
-		quickLinks(null, { style: this.value })
+		quickLinks(undefined, { style: this.value })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
-		quickLinks(null, { row: this.value })
+		quickLinks(undefined, { row: this.value })
 	})
 
 	paramId('b_importbookmarks').addEventListener('click', linksImport)
@@ -403,35 +401,35 @@ export async function settingsInit() {
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { analog: this.checked })
+		clock(undefined, { analog: this.checked })
 	})
 
 	paramId('i_seconds').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { seconds: this.checked })
+		clock(undefined, { seconds: this.checked })
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { face: this.value })
+		clock(undefined, { face: this.value })
 	})
 
 	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { style: this.value })
+		clock(undefined, { style: this.value })
 	})
 
 	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
-		clock(null, { size: parseFloat(this.value) })
+		clock(undefined, { size: parseFloat(this.value) })
 	})
 
 	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { ampm: this.checked })
+		clock(undefined, { ampm: this.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { timezone: this.value })
+		clock(undefined, { timezone: this.value })
 	})
 
 	paramId('i_usdate').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { usdate: this.checked })
+		clock(undefined, { usdate: this.checked })
 	})
 
 	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
@@ -488,7 +486,7 @@ export async function settingsInit() {
 	})
 
 	paramId('i_greeting').addEventListener('keyup', function () {
-		clock(null, { greeting: stringMaxSize(this.value, 32) })
+		clock(undefined, { greeting: stringMaxSize(this.value, 32) })
 	})
 
 	paramId('i_greeting').addEventListener('change', function () {
@@ -503,15 +501,15 @@ export async function settingsInit() {
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
-		notes(null, { is: 'align', value: this.value })
+		notes(undefined, { is: 'align', value: this.value })
 	})
 
 	paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement) {
-		notes(null, { is: 'width', value: this.value })
+		notes(undefined, { is: 'width', value: this.value })
 	})
 
 	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(null, { is: 'opacity', value: this.value })
+		notes(undefined, { is: 'opacity', value: this.value })
 	})
 
 	//
@@ -611,16 +609,16 @@ export async function settingsInit() {
 	// Page layout
 
 	paramId('b_editmove').addEventListener('click', function () {
-		moveElements(null, { toggle: true })
+		moveElements(undefined, { toggle: true })
 	})
 
 	paramId('b_resetlayout').addEventListener('click', function () {
-		moveElements(null, { reset: true })
+		moveElements(undefined, { reset: true })
 	})
 
 	for (const button of paramId('grid-layout').querySelectorAll<HTMLButtonElement>('button')) {
 		button.addEventListener('click', () => {
-			moveElements(null, { layout: button.dataset.layout || '' })
+			moveElements(undefined, { layout: button.dataset.layout || '' })
 		})
 	}
 
@@ -632,10 +630,10 @@ export async function settingsInit() {
 		pageControl({ gap: parseFloat(this.value) }, true)
 	})
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
-	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
-	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
-	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
+	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
+	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
 	//
 	// Custom Style
@@ -678,7 +676,7 @@ export async function settingsInit() {
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
 		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
-		paramsImport(parse<Partial<Sync>>(val) ?? {})
+		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
 	//
@@ -961,7 +959,7 @@ function settingsMgmt() {
 		if (!a) return
 
 		const date = new Date()
-		const data = ((await storage.sync.get()) as Sync) ?? {}
+		const data = ((await storage.sync.get()) as Sync.Storage) ?? {}
 		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
 		const YYYYMMDD = date.toISOString().slice(0, 10)
 		const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
@@ -987,16 +985,16 @@ function settingsMgmt() {
 	}
 
 	function importAsFile(target: HTMLInputElement) {
-		function decodeExportFile(str: string): Partial<Sync> {
+		function decodeExportFile(str: string): Partial<Sync.Storage> {
 			let result = {}
 
 			try {
 				// Tries to decode base64 from previous versions
-				result = parse<Partial<Sync>>(atob(str)) ?? {}
+				result = parse<Partial<Sync.Storage>>(atob(str)) ?? {}
 			} catch {
 				try {
 					// If base64 failed, parse raw string
-					result = parse<Partial<Sync>>(str) ?? {}
+					result = parse<Partial<Sync.Storage>>(str) ?? {}
 				} catch (error) {
 					// If all failed, return empty object
 					result = {}
@@ -1020,7 +1018,7 @@ function settingsMgmt() {
 
 			// data has at least one valid key from default sync storage => import
 			if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
-				paramsImport(importData as Sync)
+				paramsImport(importData as Sync.Storage)
 			}
 		}
 		reader.readAsText(file)
@@ -1087,7 +1085,7 @@ async function switchLangs(nextLang: Langs) {
 	weather({ sync: data })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
-	notes(data.notes || null)
+	notes(data.notes)
 	signature(document.getElementById('settings') as HTMLElement)
 	translatePlaceholders(document.getElementById('settings'))
 }
@@ -1165,7 +1163,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-async function paramsImport(toImport: Partial<Sync>) {
+async function paramsImport(toImport: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
 		data = filterImports(data, toImport)

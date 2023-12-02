@@ -1,16 +1,11 @@
 import { canDisplayInterface } from '../index'
-import storage from '../storage'
-
 import { PLATFORM, SYSTEM_OS } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
-
-import { GoogleFonts } from '../types/api'
-import { FontList } from '../types/local'
-import { Font } from '../types/sync'
+import storage from '../storage'
 
 type FontUpdateEvent = {
 	autocomplete?: HTMLElement
@@ -73,7 +68,7 @@ async function waitForFontLoad(family: string): Promise<Boolean> {
 	})
 }
 
-async function fetchFontList(): Promise<FontList | undefined> {
+async function fetchFontList(): Promise<Local.FontList | undefined> {
 	const fonts = (await storage.local.get('fonts')).fonts ?? []
 
 	if (fonts.length > 0) {
@@ -103,7 +98,7 @@ async function fetchFontList(): Promise<FontList | undefined> {
 		const noItalics = (arr: string[]) => arr.filter((str) => !str.includes('italic'))
 
 		let weights: string[] = []
-		let list: FontList = []
+		let list: Local.FontList = []
 
 		for (const item of json.items) {
 			//
@@ -157,7 +152,7 @@ async function fetchFontface(url: string): Promise<string | undefined> {
 	}
 }
 
-async function getNewFont(currentFamily: string): Promise<Partial<Font> | undefined> {
+async function getNewFont(currentFamily: string): Promise<Partial<Sync.Font> | undefined> {
 	const list = (await fetchFontList()) ?? []
 	const foundFonts = list.filter(({ family }) => family.toUpperCase() === currentFamily.toUpperCase())
 
@@ -239,7 +234,7 @@ async function setWeightSettings(weights: string[], settingsDom?: HTMLElement) {
 	})
 }
 
-async function initFontSettings(font?: Font) {
+async function initFontSettings(font?: Sync.Font) {
 	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.availWeights.length > 0
 	const weights = hasCustomWeights ? font.availWeights : systemfont.weights
@@ -339,7 +334,7 @@ async function updateFont({ family, weight, size }: FontUpdateEvent) {
 	}
 }
 
-export default async function customFont(init: { font: Font; fontface?: string } | null, event?: FontUpdateEvent) {
+export default async function customFont(init: { font: Sync.Font; fontface?: string } | null, event?: FontUpdateEvent) {
 	if (event?.autocomplete) {
 		return setAutocompleteSettings(event?.autocomplete)
 	}

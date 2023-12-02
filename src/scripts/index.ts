@@ -21,10 +21,6 @@ import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 
-import type { Sync, MoveKeys } from './types/sync'
-import type { Frequency } from './types/shared'
-import type { Local } from './types/local'
-
 type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
 
 const dominterface = document.getElementById('interface') as HTMLDivElement
@@ -42,7 +38,7 @@ export const freqControl = {
 		return new Date().getTime()
 	},
 
-	get: (every: Frequency, last: number) => {
+	get: (every: Shared.Frequency, last: number) => {
 		const nowDate = new Date()
 		const lastDate = new Date(last || 0)
 		const changed = {
@@ -97,7 +93,7 @@ const interfaceFade = (function interfaceFadeDebounce() {
 	return { apply }
 })()
 
-export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, fromInput?: true) {
+export async function toggleWidgetsDisplay(list: { [key in Sync.Move.Key]?: boolean }, fromInput?: true) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
@@ -141,7 +137,7 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 	// user is toggling from settings, update grid
 	if (fromInput) {
 		const [id, on] = listEntries[0] // always only one toggle
-		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+		moveElements(undefined, { widget: { id: id as Sync.Move.Key, on: on } })
 	}
 }
 
@@ -187,7 +183,7 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 	}
 }
 
-export function initBackground(data: Sync, local: Local) {
+export function initBackground(data: Sync.Storage, local: Local.Storage) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
@@ -336,7 +332,7 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 	}
 }
 
-export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init?: Sync) {
+export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init?: Sync.Storage) {
 	//
 	// Progressive anim to max of Bonjourr animation time
 	function displayInterface() {
@@ -477,7 +473,7 @@ function initTimeAndMainBlocks(time: boolean, main: boolean) {
 	document.getElementById('main')?.classList.toggle('hidden', !main)
 }
 
-function startup(data: Sync, local: Local) {
+function startup(data: Sync.Storage, local: Local.Storage) {
 	traduction(null, data.lang)
 	canDisplayInterface(null, data)
 	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
@@ -491,7 +487,7 @@ function startup(data: Sync, local: Local) {
 	searchbar(data.searchbar)
 	quotes({ sync: data, local })
 	showPopup(data.reviewPopup)
-	notes(data.notes || null)
+	notes(data.notes)
 	moveElements(data.move)
 	customCss(data.css)
 	hideElements(data.hide)

@@ -4,8 +4,6 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { Sync, Clock } from '../types/sync'
-
 type ClockUpdate = {
 	ampm?: boolean
 	analog?: boolean
@@ -104,7 +102,7 @@ function changeClockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
-function startClock(clock: Clock, greeting: string, usdate: boolean) {
+function startClock(clock: Sync.Clock, greeting: string, usdate: boolean) {
 	//
 	function display() {
 		document.getElementById('time-container')?.classList.toggle('analog', clock.analog)
@@ -182,8 +180,8 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		return
 	}
 
-	const isFace = (str = ''): str is Clock['face'] => ['none', 'number', 'roman', 'marks'].includes(str)
-	const isStyle = (str = ''): str is Clock['style'] => ['round', 'square', 'transparent'].includes(str)
+	const isFace = (str = ''): str is Sync.Clock['face'] => ['none', 'number', 'roman', 'marks'].includes(str)
+	const isStyle = (str = ''): str is Sync.Clock['style'] => ['round', 'square', 'transparent'].includes(str)
 
 	if (analog !== undefined) {
 		document.getElementById('analog_options')?.classList.toggle('shown', analog)
@@ -223,7 +221,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	changeClockSize(clock.size)
 }
 
-export default function clock(init: Sync | null, event?: ClockUpdate) {
+export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 	if (event) {
 		clockUpdate(event)
 		return
