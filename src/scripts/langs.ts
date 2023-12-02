@@ -1,6 +1,5 @@
 export default {
 	en: 'English',
-	fa: 'فارسی',
 	fr: 'Français',
 	sk: 'Slovenský',
 	sv: 'Svenska',
@@ -23,4 +22,5 @@ export default {
 	sr: 'Српски (ћирилица)',
 	sr_YU: 'Srpski (latinica)',
 	gr: 'Ελληνικά',
+	fa: 'فارسی',
 }

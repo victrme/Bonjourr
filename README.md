@@ -179,3 +179,4 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 -   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
 -   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
+-   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)

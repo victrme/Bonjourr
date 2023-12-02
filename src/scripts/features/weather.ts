@@ -336,19 +336,21 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 	if (onecall.hourly) {
 		const date = new Date()
+		const alltemps: number[] = []
 
 		if (date.getHours() > getSunsetHour()) {
 			date.setDate(date.getDate() + 1)
 		}
 
-		for (const elem of onecall.hourly) {
-			if (new Date(elem.dt * 1000).getDate() === date.getDate() && forecasted_high < elem.temp) {
-				forecasted_high = Math.round(elem.temp)
+		for (const item of onecall.hourly) {
+			if (new Date(item.dt * 1000).getDate() === date.getDate()) {
+				alltemps.push(item.temp)
 			}
 		}
 
 		date.setHours(0, 0, 0, 0)
 		forecasted_timestamp = Math.floor(date.getTime() / 1000)
+		forecasted_high = Math.round(Math.max(...alltemps))
 	}
 
 	suntime.update(sunrise, sunset)
