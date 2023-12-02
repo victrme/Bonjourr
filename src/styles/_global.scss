@@ -25,6 +25,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--color-dialog-border: #3334;
 	--color-dialog-highlight: #fff4;
 	--color-dialog-input-text: #716f6d;
+	--color-dialog-input-bg: rgba(106, 104, 111, 0.12);
 
 	@supports not (backdrop-filter: none) {
 		--color-dialog: #f2f2f7ee;
@@ -43,10 +44,11 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--color-areas-text: var(--color-text);
 	--color-placeholder: #a4a5a6;
 	--color-focused: #2c2c2f;
-	--color-dialog: #000a;
+	--color-dialog: #191919aa;
 	--color-dialog-border: #fff4;
 	--color-dialog-highlight: #fff2;
 	--color-dialog-input-text: #a4a7a8;
+	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 
 	@supports not (backdrop-filter: none) {
 		--color-dialog: #1c1c1cee;

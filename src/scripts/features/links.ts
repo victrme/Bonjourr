@@ -718,8 +718,8 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 		removeLinkSelection()
 
-		if (x + 250 > innerWidth) x -= x + 250 - innerWidth // right overflow pushes to left
-		if (y + 200 > innerHeight) y -= 200 // bottom overflow pushes above mouse
+		if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
+		if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
 
 		// Moves edit link to mouse position
 		const domeditlink = document.getElementById('editlink')
