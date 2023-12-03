@@ -555,21 +555,28 @@
 			display: none;
 		}
 
-		#searchbar {
-			height: 2.5em;
+		#searchbar-wrapper {
+			display: flex;
+			align-items: center;
 			width: 100%;
 			max-width: 40em;
 			min-width: 15em;
-			padding: 0 7em 0 1em;
 			border-radius: 10px;
-			color: #fff;
-			font-size: 1.3em;
-			font-family: inherit;
-			font-weight: inherit;
 			background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
 			border: 1px solid rgba(255, 255, 255, 0.075);
 
 			@include frostedGlass();
+		}
+
+		#searchbar {
+			height: 2.5em;
+			color: #fff;
+			padding: 0 1em;
+			font-size: 1.3em;
+			font-family: inherit;
+			font-weight: inherit;
+			border: none;
+			background-color: transparent;
 
 			&::placeholder {
 				transition: opacity 0.2s;
@@ -579,60 +586,65 @@
 		}
 
 		#sb-buttons {
-			position: absolute;
 			display: flex;
-			right: 0;
+			gap: 0.8em;
 			opacity: 0;
-			padding-right: 0.8em;
-			pointer-events: none;
-			transition: opacity 0.2s;
+			cursor: text;
 
 			&.shown {
+				cursor: default;
 				opacity: 1;
-				pointer-events: all;
-			}
 
-			button {
-				border: none;
-				color: #fff;
-				font-size: inherit;
-				border-radius: 0.5em;
-				background-color: transparent;
-				transition: opacity 0.2s, filter 0.1s, transform 0.1s;
-
-				&:hover {
-					filter: brightness(0.9);
-				}
-
-				&:active {
-					filter: brightness(0.8);
+				button {
+					pointer-events: all;
+					touch-action: all;
 				}
 			}
+		}
 
-			hr {
-				margin: 0.4em 1.4em 0.4em 1em;
-				border-right: 1px solid #fff4;
+		button {
+			border: none;
+			color: #fff;
+			font-size: inherit;
+			border: none;
+			border-radius: 0.5em;
+			background-color: transparent;
+			transition: opacity 0.2s, filter 0.1s, transform 0.1s;
+
+			pointer-events: none;
+			touch-action: none;
+			user-select: none;
+
+			&:hover {
+				filter: brightness(0.9);
 			}
 
-			#sb_submit {
-				padding: 0.3em 1em;
-				background-color: #fff4;
+			&:active {
+				filter: brightness(0.8);
+				transform: scale(0.94);
+			}
+		}
 
-				&:active {
-					transform: scale(0.94);
-				}
+		hr {
+			margin: 0.6em 0;
+			border-right: 1px solid #fff4;
+		}
 
-				img {
-					margin-top: 3px;
-					height: 1.2em;
-				}
+		#sb_submit {
+			margin: 0.3em 0.5em;
+			padding: 0.3em 1em;
+			background-color: #fff4;
+
+			img {
+				margin-top: 3px;
+				height: 1.2em;
 			}
 		}
 
 		&.opaque {
 			#searchbar,
 			#sb-suggestions,
-			#sb-buttons button {
+			button {
 				color: #3a3b3c;
 			}
 
@@ -640,7 +652,7 @@
 				color: #3a3b3c55;
 			}
 
-			#sb-buttons hr {
+			hr {
 				border-color: #3a3b3c55;
 			}
 
@@ -649,7 +661,7 @@
 				opacity: 0.7;
 			}
 
-			#sb-buttons #sb_submit {
+			#sb_submit {
 				background-color: #2222221a;
 			}
 		}
