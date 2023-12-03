@@ -511,21 +511,9 @@ function startup(data: Sync, local: Local) {
 		if (isUpdate) {
 			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			sync.about = { ...SYNC_DEFAULT.about }
-
-			if (sync.weather?.geolocation === undefined) {
-				sync.weather.geolocation = 'approximate'
-
-				if ((sync.weather?.location ?? []).length === 0) {
-					sync.weather.geolocation = 'off'
-				} else if ((sync.weather?.location ?? []).length === 2 && BROWSER !== 'safari') {
-					sync.weather.geolocation = 'precise'
-				}
-
-				sync.weather.location = undefined
-			}
-
-			storage.sync.set({ ...sync })
+			storage.sync.set({
+				about: SYNC_DEFAULT.about,
+			})
 		}
 
 		await setTranslationCache(sync.lang, local, isUpdate)
