@@ -134,10 +134,10 @@ export const SYNC_DEFAULT: Sync = {
 		userlist: [],
 	},
 	font: {
-		url: '',
+		id: '',
 		family: '',
 		size: '14',
-		availWeights: [],
+		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	move: {

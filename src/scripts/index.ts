@@ -356,7 +356,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 
 	// More conditions if user is using advanced features
 	if (init || !cat) {
-		if (init?.font?.family && init?.font?.url) functionsLoad.fonts = 'Waiting'
+		if (init?.font?.family) functionsLoad.fonts = 'Waiting'
 		if (init?.quotes?.on) functionsLoad.quotes = 'Waiting'
 		return
 	}
@@ -481,7 +481,7 @@ function startup(data: Sync, local: Local) {
 	canDisplayInterface(null, data)
 	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: data, lastWeather: local.lastWeather })
-	customFont({ font: data.font, fontface: local.fontface })
+	customFont(data.font)
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
