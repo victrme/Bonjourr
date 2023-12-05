@@ -13,17 +13,10 @@ import { Font, Sync } from '../types/sync'
 import { apiFetch } from '../utils'
 
 interface Fontsource {
-	id: string
 	family: string
 	subsets: string[]
 	weights: number[]
-	styles: string[]
-	defSubset: string
 	variable: boolean
-	lastModified: string
-	category: string
-	license: string
-	type: 'google' | 'other'
 }
 
 type CustomFontUpdate = {
@@ -60,6 +53,7 @@ export default async function customFont(init?: Font, event?: CustomFontUpdate) 
 
 	if (init) {
 		try {
+			init = migrateToNewFormat(init)
 			displayFont(init)
 			canDisplayInterface('fonts')
 			onSettingsLoad(() => initFontSettings(init))
@@ -333,4 +327,25 @@ function getRequiredSubset(): string {
 	}
 
 	return subset
+}
+
+// 1.19 migration function
+function migrateToNewFormat(font: Font): Font {
+	if (font?.weightlist) {
+		return font
+	}
+
+	if (font.availWeights) {
+		font.weightlist = font.availWeights
+	}
+
+	delete font.availWeights
+	delete font.url
+
+	storage.local.remove('fontface')
+	storage.local.remove('fonts')
+	storage.sync.remove('font')
+	setTimeout(() => storage.sync.set({ font }))
+
+	return font
 }
