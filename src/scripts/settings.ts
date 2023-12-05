@@ -1088,6 +1088,7 @@ async function switchLangs(nextLang: Langs) {
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes || null)
+	customFont(undefined, { lang: true })
 	signature(document.getElementById('settings') as HTMLElement)
 	translatePlaceholders(document.getElementById('settings'))
 }
