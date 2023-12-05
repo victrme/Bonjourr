@@ -52,149 +52,55 @@ const systemfont = (function () {
 	else return fonts.linux
 })()
 
-// Needs a special method to detect system fonts.
-// Because of fingerprinting concerns,
-// Firefox and safari made fonts.check() useless
-function systemFontChecker(family: string): boolean {
-	const p = document.createElement('p')
-	p.setAttribute('style', 'position: absolute; opacity: 0; font-family: invalid font;')
-	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
-	document.getElementById('interface')?.prepend(p)
+export default async function customFont(init?: Font, event?: CustomFontUpdate) {
+	if (event) {
+		updateCustomFont(event)
+		return
+	}
 
-	const first_w = p.getBoundingClientRect().width
-	p.style.fontFamily = `'${family}'`
-
-	const second_w = p.getBoundingClientRect().width
-	const hasLoadedFont = first_w !== second_w
-
-	p.remove()
-
-	return hasLoadedFont
-}
-
-async function waitForFontLoad(family: string): Promise<Boolean> {
-	return new Promise((resolve) => {
-		let limitcounter = 0
-		let hasLoadedFont = systemFontChecker(family)
-		let interval = setInterval(() => {
-			if (hasLoadedFont || limitcounter === 100) {
-				clearInterval(interval)
-				return resolve(true)
-			} else {
-				hasLoadedFont = systemFontChecker(family)
-				limitcounter++
-			}
-		}, 100)
-	})
-}
-
-async function getNewFont(font: Font, newfamily: string): Promise<Font | undefined> {
-	const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
-	let newfont: Fontsource | undefined
-
-	for (const item of fontlist as Fontsource[]) {
-		const hasCorrectSubset = item.subsets.includes(getRequiredSubset())
-		const isFamily = item.family.toLowerCase() === newfamily.toLowerCase()
-
-		if (hasCorrectSubset && isFamily) {
-			newfont = item
+	if (init) {
+		try {
+			displayFont(init)
+			canDisplayInterface('fonts')
+			onSettingsLoad(() => initFontSettings(init))
+		} catch (e) {
+			errorMessage(e)
 		}
 	}
-
-	if (newfont) {
-		font.weight = '400'
-		font.family = newfamily
-		font.weightlist = newfont.weights.map((w) => w.toString())
-		return font
-	}
-
-	// this undefined return is important
-	// we need to know when no font is found
-	return
 }
 
-function displayFont({ family, size, weight }: Font) {
-	// Weight: default bonjourr lowers font weight on clock (because we like it)
-	const clockWeight = parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
-	const subset = getRequiredSubset()
-	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
+//
+//	Updates
+//
 
-	let fontface = `
-		@font-face {font-family: "${family}";
-			src: url(https://cdn.jsdelivr.net/fontsource/fonts/${id}@latest/latin-${weight}-normal.woff2) format('woff2');
-		}
-	`
-
-	if (subset !== 'latin') {
-		fontface += fontface.replace('latin', subset)
-	}
-
-	document.getElementById('fontface')!.textContent += fontface
-
-	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
-	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
-	document.documentElement.style.setProperty('--font-weight', weight)
-	document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight)
-}
-
-function getRequiredSubset(): string {
-	const lang = document.documentElement.getAttribute('lang') ?? 'en'
-	let subset = 'latin'
-
-	if (lang in subsets) {
-		subset = subsets[lang as keyof typeof subsets]
-	}
-
-	return subset
-}
-
-async function setAutocompleteSettings(isLangSwitch?: boolean) {
-	const dl_fontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
-
-	if (isLangSwitch) {
-		dl_fontfamily?.childNodes.forEach((node) => node.remove())
-	}
-
-	if (dl_fontfamily?.childElementCount === 0) {
-		const resp = await apiFetch('/fonts')
-		const list = (await resp?.json()) as Fontsource[]
-		const fragment = new DocumentFragment()
-		const requiredSubset = getRequiredSubset()
-
-		for (const item of list) {
-			if (item.subsets.includes(requiredSubset)) {
-				const option = document.createElement('option')
-				option.textContent = item.family
-				option.value = item.family
-				fragment.appendChild(option)
-			}
-		}
-
-		dl_fontfamily?.appendChild(fragment)
-	}
-}
-
-async function setWeightSettings(weights: string[]) {
-	const options = document.querySelectorAll<HTMLOptionElement>('#i_weight option')
-
-	for (const option of options) {
-		option.classList.toggle('hidden', weights.includes(option.value) === false)
-	}
-}
-
-async function initFontSettings(font?: Font) {
-	const settings = document.getElementById('settings') as HTMLElement
-	const hasCustomWeights = font && font.weightlist.length > 0
-	const weights = hasCustomWeights ? font.weightlist : systemfont.weights
-	const family = font?.family || systemfont.placeholder
-
-	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
-
-	setWeightSettings(weights)
-
-	if (font?.family) {
+async function updateCustomFont({ family, weight, size, lang, autocomplete }: CustomFontUpdate) {
+	if (autocomplete) {
 		setAutocompleteSettings()
+		return
 	}
+
+	const data = await storage.sync.get('font')
+
+	if (family !== undefined) {
+		data.font = await updateFontFamily(data, family)
+	}
+
+	if (weight) {
+		data.font.weight = weight || '400'
+		displayFont(data.font)
+	}
+
+	if (size) {
+		data.font.size = size
+		displayFont(data.font)
+	}
+
+	if (lang) {
+		handleLangSwitch(data.font)
+		return
+	}
+
+	eventDebounce({ font: data.font })
 }
 
 async function updateFontFamily(data: Sync, family: string): Promise<Font> {
@@ -253,37 +159,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 	return font
 }
 
-async function updateCustomFont({ family, weight, size, lang, autocomplete }: CustomFontUpdate) {
-	if (autocomplete) {
-		setAutocompleteSettings()
-		return
-	}
-
-	const data = await storage.sync.get('font')
-
-	if (family !== undefined) {
-		data.font = await updateFontFamily(data, family)
-	}
-
-	if (weight) {
-		data.font.weight = weight || '400'
-		displayFont(data.font)
-	}
-
-	if (size) {
-		data.font.size = size
-		displayFont(data.font)
-	}
-
-	if (lang) {
-		handleFontSubsetOnLangSwitch(data.font)
-		return
-	}
-
-	eventDebounce({ font: data.font })
-}
-
-async function handleFontSubsetOnLangSwitch(font: Font) {
+async function handleLangSwitch(font: Font) {
 	const noCustomOrSystemFont = !font.family //|| systemFontChecker(font.family) TODODODOODO
 
 	if (noCustomOrSystemFont) {
@@ -306,19 +182,155 @@ async function handleFontSubsetOnLangSwitch(font: Font) {
 	setAutocompleteSettings(true)
 }
 
-export default async function customFont(init?: Font, event?: CustomFontUpdate) {
-	if (event) {
-		updateCustomFont(event)
-		return
-	}
+async function getNewFont(font: Font, newfamily: string): Promise<Font | undefined> {
+	const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
+	let newfont: Fontsource | undefined
 
-	if (init) {
-		try {
-			displayFont(init)
-			canDisplayInterface('fonts')
-			onSettingsLoad(() => initFontSettings(init))
-		} catch (e) {
-			errorMessage(e)
+	for (const item of fontlist as Fontsource[]) {
+		const hasCorrectSubset = item.subsets.includes(getRequiredSubset())
+		const isFamily = item.family.toLowerCase() === newfamily.toLowerCase()
+
+		if (hasCorrectSubset && isFamily) {
+			newfont = item
 		}
 	}
+
+	if (newfont) {
+		font.weight = '400'
+		font.family = newfamily
+		font.weightlist = newfont.weights.map((w) => w.toString())
+		return font
+	}
+
+	// this undefined return is important
+	// we need to know when no font is found
+	return
+}
+
+function displayFont({ family, size, weight }: Font) {
+	// Weight: default bonjourr lowers font weight on clock (because we like it)
+	const clockWeight = parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
+	const subset = getRequiredSubset()
+	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
+
+	let fontface = `
+		@font-face {font-family: "${family}";
+			src: url(https://cdn.jsdelivr.net/fontsource/fonts/${id}@latest/latin-${weight}-normal.woff2) format('woff2');
+		}
+	`
+
+	if (subset !== 'latin') {
+		fontface += fontface.replace('latin', subset)
+	}
+
+	document.getElementById('fontface')!.textContent += fontface
+
+	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
+	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
+	document.documentElement.style.setProperty('--font-weight', weight)
+	document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight)
+}
+
+//
+//	Settings options
+//
+
+async function initFontSettings(font?: Font) {
+	const settings = document.getElementById('settings') as HTMLElement
+	const hasCustomWeights = font && font.weightlist.length > 0
+	const weights = hasCustomWeights ? font.weightlist : systemfont.weights
+	const family = font?.family || systemfont.placeholder
+
+	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
+
+	setWeightSettings(weights)
+
+	if (font?.family) {
+		setAutocompleteSettings()
+	}
+}
+
+async function setAutocompleteSettings(isLangSwitch?: boolean) {
+	const dl_fontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
+
+	if (isLangSwitch) {
+		dl_fontfamily?.childNodes.forEach((node) => node.remove())
+	}
+
+	if (dl_fontfamily?.childElementCount === 0) {
+		const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
+		const fragment = new DocumentFragment()
+		const requiredSubset = getRequiredSubset()
+
+		for (const item of fontlist as Fontsource[]) {
+			if (item.subsets.includes(requiredSubset)) {
+				const option = document.createElement('option')
+				option.textContent = item.family
+				option.value = item.family
+				fragment.appendChild(option)
+			}
+		}
+
+		dl_fontfamily?.appendChild(fragment)
+	}
+}
+
+function setWeightSettings(weights: string[]) {
+	const options = document.querySelectorAll<HTMLOptionElement>('#i_weight option')
+
+	for (const option of options) {
+		option.classList.toggle('hidden', weights.includes(option.value) === false)
+	}
+}
+
+//
+//	Helpers
+//
+
+function systemFontChecker(family: string): boolean {
+	// Needs a special method to detect system fonts.
+	// Because of fingerprinting concerns,
+	// Firefox and safari made fonts.check() useless
+
+	const p = document.createElement('p')
+	p.setAttribute('style', 'position: absolute; opacity: 0; font-family: invalid font;')
+	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
+	document.getElementById('interface')?.prepend(p)
+
+	const first_w = p.getBoundingClientRect().width
+	p.style.fontFamily = `'${family}'`
+
+	const second_w = p.getBoundingClientRect().width
+	const hasLoadedFont = first_w !== second_w
+
+	p.remove()
+
+	return hasLoadedFont
+}
+
+async function waitForFontLoad(family: string): Promise<Boolean> {
+	return new Promise((resolve) => {
+		let limitcounter = 0
+		let hasLoadedFont = systemFontChecker(family)
+		let interval = setInterval(() => {
+			if (hasLoadedFont || limitcounter === 100) {
+				clearInterval(interval)
+				return resolve(true)
+			} else {
+				hasLoadedFont = systemFontChecker(family)
+				limitcounter++
+			}
+		}, 100)
+	})
+}
+
+function getRequiredSubset(): string {
+	const lang = document.documentElement.getAttribute('lang') ?? 'en'
+	let subset = 'latin'
+
+	if (lang in subsets) {
+		subset = subsets[lang as keyof typeof subsets]
+	}
+
+	return subset
 }
