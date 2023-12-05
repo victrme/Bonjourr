@@ -50,11 +50,13 @@ export type Unsplash = {
 }
 
 export type Font = {
-	id: string
 	family: string
 	size: string
 	weight: string
 	weightlist: string[]
+	// <1.19
+	url?: string
+	availWeights?: string[]
 }
 
 export type Notes = {
