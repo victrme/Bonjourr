@@ -25,13 +25,14 @@ export default {
 	fa: 'فارسی',
 }
 
-// is "latin" only if not included
+// is latin only if not included
 export const subsets = {
 	sk: 'latin-ext',
 	pl: 'latin-ext',
 	ro: 'latin-ext',
 	ru: 'cyrillic',
-	zh_HK: 'latin-ext',
+	zh_CN: 'chinese-simplified',
+	zh_HK: 'chinese-traditional',
 	tr: 'latin-ext',
 	uk: 'cyrillic',
 	hu: 'latin-ext',
