@@ -356,7 +356,7 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 
 	// More conditions if user is using advanced features
 	if (init || !cat) {
-		if (init?.font?.family && init?.font?.url) functionsLoad.fonts = 'Waiting'
+		if (init?.font?.family) functionsLoad.fonts = 'Waiting'
 		if (init?.quotes?.on) functionsLoad.quotes = 'Waiting'
 		return
 	}
@@ -481,7 +481,7 @@ function startup(data: Sync, local: Local) {
 	canDisplayInterface(null, data)
 	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: data, lastWeather: local.lastWeather })
-	customFont({ font: data.font, fontface: local.fontface })
+	customFont(data.font)
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
@@ -511,21 +511,9 @@ function startup(data: Sync, local: Local) {
 		if (isUpdate) {
 			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			sync.about = { ...SYNC_DEFAULT.about }
-
-			if (sync.weather?.geolocation === undefined) {
-				sync.weather.geolocation = 'approximate'
-
-				if ((sync.weather?.location ?? []).length === 0) {
-					sync.weather.geolocation = 'off'
-				} else if ((sync.weather?.location ?? []).length === 2 && BROWSER !== 'safari') {
-					sync.weather.geolocation = 'precise'
-				}
-
-				sync.weather.location = undefined
-			}
-
-			storage.sync.set({ ...sync })
+			storage.sync.set({
+				about: SYNC_DEFAULT.about,
+			})
 		}
 
 		await setTranslationCache(sync.lang, local, isUpdate)

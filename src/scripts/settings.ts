@@ -581,25 +581,25 @@ export async function settingsInit() {
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('focus', function () {
-		customFont(null, { autocomplete: settingsDom })
+		customFont(undefined, { autocomplete: true })
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { family: this.value })
+		customFont(undefined, { family: this.value })
 	})
 
 	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
 		if (this.value === '' && e.inputType === 'deleteContentBackward') {
-			customFont(null, { family: '' })
+			customFont(undefined, { family: '' })
 		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { weight: this.value })
+		customFont(undefined, { weight: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { size: this.value })
+		customFont(undefined, { size: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
@@ -1087,6 +1087,7 @@ async function switchLangs(nextLang: Langs) {
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes || null)
+	customFont(undefined, { lang: true })
 	signature(document.getElementById('settings') as HTMLElement)
 	translatePlaceholders(document.getElementById('settings'))
 }

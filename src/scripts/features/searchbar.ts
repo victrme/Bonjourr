@@ -31,6 +31,7 @@ let socket: WebSocket | undefined
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
+const dombuttons = document.getElementById('sb-buttons') as HTMLDivElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
 const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
@@ -59,6 +60,7 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		setSuggestions(init?.suggestions)
 		setOpacity(init?.opacity)
 
+		dombuttons?.addEventListener('click', focusSearchbar)
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
@@ -113,6 +115,10 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 
 	eventDebounce({ searchbar })
 }
+
+//
+//	Search Submission
+//
 
 function isValidURL(string: string): boolean {
 	try {
@@ -175,6 +181,10 @@ function submitSearch(e: Event) {
 	window.open(url, target)
 	e.preventDefault()
 }
+
+//
+//	Suggestions
+//
 
 function initSuggestions() {
 	function selectShownResult(next: UndefinedElement): UndefinedElement {
@@ -350,6 +360,10 @@ async function suggestions(results: Suggestions) {
 	}
 }
 
+//
+//	Searchbar Events
+//
+
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
 	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
@@ -393,5 +407,11 @@ function removeInputText() {
 		domsearchbar.focus()
 		domsearchbar.value = ''
 		toggleInputButton(false)
+	}
+}
+
+function focusSearchbar() {
+	if (dombuttons?.classList.contains('shown') === false) {
+		domsearchbar?.focus()
 	}
 }

@@ -1,3 +1,10 @@
+## 1.18.4
+
+-   #255 Fixed occasional slow startups on Firefox
+-   #256 Fixed forecast not updating on colder days
+-   Correct searchbar submit button position on RTL languages
+-   Farsi translation update by @ar3h1d
+
 ## 1.18.3
 
 -   Added support for right-to-left languages
