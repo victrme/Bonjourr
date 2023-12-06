@@ -105,6 +105,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 
 	let font: Font = {
 		family: '',
+		system: true,
 		size: data.font.size,
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 		weightlist: systemfont.weights,
@@ -134,7 +135,6 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 			if (newfont && navigator.onLine) {
 				font = { ...font, ...newfont }
 				displayFont(font)
-
 				await waitForFontLoad(family)
 				familyInput.toggle(false, family)
 			}
@@ -191,6 +191,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 
 	if (newfont) {
 		font.weight = '400'
+		font.system = false
 		font.family = newfamily
 		font.weightlist = newfont.weights.map((w) => w.toString())
 		return font
@@ -201,23 +202,25 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 	return
 }
 
-function displayFont({ family, size, weight }: Font) {
+function displayFont({ family, size, weight, system }: Font) {
 	// Weight: default bonjourr lowers font weight on clock (because we like it)
 	const clockWeight = parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
 	const subset = getRequiredSubset()
 	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
 
-	let fontface = `
-		@font-face {font-family: "${family}";
-			src: url(https://cdn.jsdelivr.net/fontsource/fonts/${id}@latest/latin-${weight}-normal.woff2) format('woff2');
+	if (!system) {
+		let fontface = `
+			@font-face {font-family: "${family}";
+				src: url(https://cdn.jsdelivr.net/fontsource/fonts/${id}@latest/latin-${weight}-normal.woff2) format('woff2');
+			}
+		`
+
+		if (subset !== 'latin') {
+			fontface += fontface.replace('latin', subset)
 		}
-	`
 
-	if (subset !== 'latin') {
-		fontface += fontface.replace('latin', subset)
+		document.getElementById('fontface')!.textContent += fontface
 	}
-
-	document.getElementById('fontface')!.textContent += fontface
 
 	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
 	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
@@ -338,6 +341,8 @@ function migrateToNewFormat(font: Font): Font {
 	if (font.availWeights) {
 		font.weightlist = font.availWeights
 	}
+
+	font.system = systemFontChecker(font.family)
 
 	delete font.availWeights
 	delete font.url

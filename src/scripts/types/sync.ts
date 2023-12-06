@@ -54,6 +54,7 @@ export type Font = {
 	size: string
 	weight: string
 	weightlist: string[]
+	system?: boolean
 	// <1.19
 	url?: string
 	availWeights?: string[]
