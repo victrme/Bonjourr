@@ -157,7 +157,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 }
 
 async function handleLangSwitch(font: Font) {
-	const noCustomOrSystemFont = !font.family //|| systemFontChecker(font.family) TODODODOODO
+	const noCustomOrSystemFont = !font.family || font?.system
 
 	if (noCustomOrSystemFont) {
 		return
