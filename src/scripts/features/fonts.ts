@@ -1,4 +1,3 @@
-import { canDisplayInterface } from '../index'
 import storage from '../storage'
 
 import { SYSTEM_OS } from '../defaults'
@@ -55,8 +54,12 @@ export default async function customFont(init?: Font, event?: CustomFontUpdate) 
 		try {
 			init = migrateToNewFormat(init)
 			displayFont(init)
-			canDisplayInterface('fonts')
-			onSettingsLoad(() => initFontSettings(init))
+
+			onSettingsLoad(() => {
+				initFontSettings(init)
+			})
+
+			document.dispatchEvent(new CustomEvent('interface', { detail: 'fonts' }))
 		} catch (e) {
 			errorMessage(e)
 		}

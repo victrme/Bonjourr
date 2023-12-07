@@ -1,4 +1,3 @@
-import { canDisplayInterface } from '..'
 import { SYNC_DEFAULT } from '../defaults'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -235,7 +234,8 @@ export default function clock(init: Sync | null, event?: ClockUpdate) {
 		changeAnalogFace(clock.face)
 		changeAnalogStyle(clock.style)
 		changeClockSize(clock.size)
-		canDisplayInterface('clock')
+
+		document.dispatchEvent(new CustomEvent('interface', { detail: 'clock' }))
 	} catch (e) {
 		errorMessage(e)
 	}

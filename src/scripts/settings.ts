@@ -56,7 +56,10 @@ export async function settingsInit() {
 	signature(settingsDom)
 	showall(data.showall, false, settingsDom)
 
-	setTimeout(() => document.body.appendChild(settingsDom))
+	setTimeout(() => {
+		document.body.appendChild(settingsDom)
+		document.dispatchEvent(new Event('settings'))
+	})
 
 	const paramId = (str: string) => settingsDom.querySelector('#' + str) as HTMLInputElement
 	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)!
@@ -604,7 +607,7 @@ export async function settingsInit() {
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
-		textShadow(null, parseFloat(this.value))
+		textShadow(undefined, parseFloat(this.value))
 	})
 
 	//
@@ -641,7 +644,7 @@ export async function settingsInit() {
 	// Custom Style
 
 	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
-		customCss(null, { is: 'styling', val: (ev.target as HTMLInputElement).value })
+		customCss(undefined, { is: 'styling', val: (ev.target as HTMLInputElement).value })
 	})
 
 	setTimeout(() => {
@@ -651,7 +654,7 @@ export async function settingsInit() {
 			if (skipFirstResize) return (skipFirstResize = false)
 
 			const rect = e[0].contentRect
-			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+			customCss(undefined, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(paramId('cssEditor'))
 	}, 400)
