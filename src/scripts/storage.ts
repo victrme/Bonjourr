@@ -162,29 +162,16 @@ function webext(): Storage {
 	const init = async (): Promise<AllStorage> => {
 		// This waits for chrome.storage to be stored in a global variable
 		// that is created in file `webext-storage.js`
-		// if not instantly ready, it polls for global variable
 
 		//@ts-ignore
 		const store = startupStorage
-		const isReady = (): boolean => store.hasOwnProperty('sync') && store.hasOwnProperty('local')
+		const isReady = (): boolean => 'sync' in store && 'local' in store
 
-		if (isReady() === false) {
+		if (!isReady()) {
 			await new Promise((resolve) => {
-				let count = 0
-				let timeout = 0
-
-				;(function polling() {
-					// console.timeEnd()
-					// console.time()
-					if (isReady()) {
-						clearTimeout(timeout)
-						resolve(true)
-						return
-					}
-
-					count++
-					timeout = setTimeout(polling, 9 * count ** 2)
-				})()
+				document.addEventListener('webextstorage', function () {
+					isReady() ? resolve(true) : ''
+				})
 			})
 		}
 
