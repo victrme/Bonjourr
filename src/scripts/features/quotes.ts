@@ -1,5 +1,4 @@
-import { canDisplayInterface, freqControl } from '..'
-import { apiFetch } from '../utils'
+import { apiFetch, freqControl } from '../utils'
 import superinput from '../utils/superinput'
 import parse from '../utils/parse'
 import storage from '../storage'
@@ -235,5 +234,5 @@ export default async function quotes(init: { sync: Sync; local: Local } | null, 
 	insertToDom(quote)
 	document.getElementById('quotes_container')?.classList.toggle('hidden', !quotes.on)
 
-	canDisplayInterface('quotes')
+	document.dispatchEvent(new CustomEvent('interface', { detail: 'quotes' }))
 }

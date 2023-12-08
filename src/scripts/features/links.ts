@@ -1,6 +1,5 @@
 import { randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
 import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../defaults'
-import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
@@ -92,7 +91,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	}
 
 	if (links.length === 0) {
-		canDisplayInterface('links')
+		document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 		return true
 	}
 
@@ -204,7 +203,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	// createDragging(liList)
 	createEvents(liList)
 	createIcons(imgList, links)
-	canDisplayInterface('links')
+	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 
 	return true
 }

@@ -56,7 +56,10 @@ export async function settingsInit() {
 	signature(settingsDom)
 	showall(data.showall, false, settingsDom)
 
-	setTimeout(() => document.body.appendChild(settingsDom))
+	setTimeout(() => {
+		document.body.appendChild(settingsDom)
+		document.dispatchEvent(new Event('settings'))
+	})
 
 	const paramId = (str: string) => settingsDom.querySelector('#' + str) as HTMLInputElement
 	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)!
@@ -312,7 +315,7 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(null, { addLink: true }), 1200)
+	const submitLinkFunc = throttle(() => quickLinks(undefined, { addLink: true }), 1200)
 
 	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
 		if (this.code === 'Enter') paramId('i_url')?.focus()
@@ -327,15 +330,15 @@ export async function settingsInit() {
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {
-		quickLinks(null, { newtab: this.checked })
+		quickLinks(undefined, { newtab: this.checked })
 	})
 
 	paramId('i_linkstyle').addEventListener('change', function (this) {
-		quickLinks(null, { style: this.value })
+		quickLinks(undefined, { style: this.value })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
-		quickLinks(null, { row: this.value })
+		quickLinks(undefined, { row: this.value })
 	})
 
 	paramId('b_importbookmarks').addEventListener('click', linksImport)
@@ -603,7 +606,7 @@ export async function settingsInit() {
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
-		textShadow(null, parseFloat(this.value))
+		textShadow(undefined, parseFloat(this.value))
 	})
 
 	//
@@ -640,7 +643,7 @@ export async function settingsInit() {
 	// Custom Style
 
 	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
-		customCss(null, { is: 'styling', val: (ev.target as HTMLInputElement).value })
+		customCss(undefined, { is: 'styling', val: (ev.target as HTMLInputElement).value })
 	})
 
 	setTimeout(() => {
@@ -650,7 +653,7 @@ export async function settingsInit() {
 			if (skipFirstResize) return (skipFirstResize = false)
 
 			const rect = e[0].contentRect
-			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+			customCss(undefined, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(paramId('cssEditor'))
 	}, 400)

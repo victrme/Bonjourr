@@ -72,6 +72,42 @@ export function periodOfDay(time?: number) {
 	return 'day'
 }
 
+export const freqControl = {
+	set: () => {
+		return new Date().getTime()
+	},
+
+	get: (every: string, last: number) => {
+		const nowDate = new Date()
+		const lastDate = new Date(last || 0)
+		const changed = {
+			date: nowDate.getDate() !== lastDate.getDate(),
+			hour: nowDate.getHours() !== lastDate.getHours(),
+		}
+
+		switch (every) {
+			case 'day':
+				return changed.date
+
+			case 'hour':
+				return changed.date || changed.hour
+
+			case 'tabs':
+				return true
+
+			case 'pause':
+				return last === 0
+
+			case 'period': {
+				return last === 0 ? true : periodOfDay() !== periodOfDay(+lastDate) || false
+			}
+
+			default:
+				return false
+		}
+	},
+}
+
 export function bundleLinks(data: Sync): Link[] {
 	let res: Link[] = []
 	Object.entries(data).map(([key, val]) => {

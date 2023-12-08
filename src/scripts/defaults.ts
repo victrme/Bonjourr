@@ -139,9 +139,9 @@ export const SYNC_DEFAULT: Sync = {
 		userlist: [],
 	},
 	font: {
-		id: '',
 		family: '',
 		size: '14',
+		system: true,
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
