@@ -1,5 +1,5 @@
 import { randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
-import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../defaults'
+import { SYSTEM_OS, BROWSER, IS_MOBILE, MAIN_API } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
@@ -214,30 +214,17 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 
 		if (img && link.type === 'elem') {
 			if (link.icon.includes('loading.svg')) {
-				link.icon = await loadIcon(img, link.url)
+				const iconurl = `${MAIN_API}/favicon/blob/${link.url}`
+
+				await fetch(iconurl)
+				img.src = iconurl
+				link.icon = iconurl
+
 				storage.sync.set({ [link._id]: link })
 			} else {
 				img.src = link.icon
 			}
 		}
-	}
-
-	async function loadIcon(img: HTMLImageElement, url: string): Promise<string> {
-		img.src = 'src/assets/interface/loading.svg'
-
-		const image = new Image()
-		const hostname = new URL(url)?.hostname ?? ''
-		const response = await apiFetch('/favicon/' + url)
-		const result = (await response?.text()) ?? `https://icons.duckduckgo.com/ip3/${hostname}.ico`
-
-		image.addEventListener('load', function () {
-			img.src = result
-		})
-
-		image.src = result
-		image.remove()
-
-		return result
 	}
 }
 
