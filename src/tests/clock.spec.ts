@@ -1,52 +1,99 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
+import openAllSettings from './utils/openallsettings'
 
-test.setTimeout(8000)
-test.describe.configure({ mode: 'serial' })
-
-let page: Page
-
-test.beforeAll(async ({ browser }) => {
-	page = await browser.newPage()
-	await page.goto('http://127.0.0.1:5500/release/online/index.html')
+test.beforeEach(async ({ page }) => {
+	await page.goto('./')
+	await openAllSettings(page)
 })
 
-test.afterAll(async () => {
-	await page.close()
+test('Analog', async ({ page }) => {
+	await page.getByLabel('Analog clock').check()
+	expect(await page.locator('#analogClock').isVisible()).toBe(true)
 })
 
-test.beforeEach(async () => {
-	await page.waitForTimeout(200)
-	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
-	await page.waitForTimeout(5)
-	await page.waitForSelector('#settings')
+test('Analog face', async ({ page }) => {
+	await page.getByLabel('Analog clock').check()
 
-	const classes = (await page.locator('#settings')?.getAttribute('class')) || ''
+	await page.locator('#i_clockface').selectOption('number')
+	expect(await page.locator('#analogClock').textContent()).toContain('12369')
 
-	if (!classes.includes('all')) {
-		await page.getByLabel('Show all settings').click()
+	await page.locator('#i_clockface').selectOption('roman')
+	expect(await page.locator('#analogClock').textContent()).toContain('XIIIIIVIIX')
+
+	await page.locator('#i_clockface').selectOption('marks')
+	expect(await page.locator('#analogClock').textContent()).toContain('│―│―')
+
+	await page.locator('#i_clockface').selectOption('none')
+	expect((await page.locator('#analogClock').textContent())?.trimEnd()).toBe('')
+})
+
+test('Analog style', async ({ page }) => {
+	await page.getByLabel('Analog clock').check()
+
+	await page.getByRole('combobox', { name: 'Clock style' }).selectOption('transparent')
+	await expect(page.locator('#analogClock')).toHaveClass('transparent')
+
+	await page.getByRole('combobox', { name: 'Clock style' }).selectOption('round')
+	await expect(page.locator('#analogClock')).toHaveClass('round')
+
+	await page.getByRole('combobox', { name: 'Clock style' }).selectOption('square')
+	await expect(page.locator('#analogClock')).toHaveClass('square')
+})
+
+test('Show seconds', async ({ page }) => {
+	await page.getByLabel('Show Seconds').check()
+	expect(((await page.locator('#clock').textContent()) ?? '').length).toEqual(8)
+})
+
+test('12 hour time', async ({}) => {
+	test.fixme()
+	// ...
+})
+
+test('Timezones', async ({ page }) => {
+	test.fixme()
+
+	const getClockHour = async () => parseInt(((await page.locator('#clock').textContent()) ?? '').split(':')[0])
+
+	const currentHour = await getClockHour()
+	const select = page.getByRole('combobox', { name: 'Time zone' }) //.selectOption('fr')
+	const options = await page.locator('#i_timezone option').all()
+
+	for (const option of options) {
+		const val = (await option.getAttribute('value')) ?? ''
+		const number = Math.floor(parseFloat(val))
+
+		if (val === 'auto') {
+			continue
+		}
+
+		await select.selectOption(val)
+
+		console.log(currentHour + number, await getClockHour())
+		expect(currentHour + number).toEqual(await getClockHour())
 	}
 })
 
-test.afterEach(async () => {
-	await page.reload()
+test('US date format', async ({ page }) => {
+	await page.getByLabel('US Date Format').check()
+
+	const content = (await page.locator('#date').textContent()) ?? ''
+	const number = content.split(' ')[2]
+
+	expect(content).toContain(',')
+	expect(parseInt(number)).not.toBeNaN()
 })
 
-test('Toggle to analog', async () => {
-	await page.getByLabel('Analog clock').check()
-	expect(await page.locator('#analogClock').isVisible()).toBeTruthy()
-})
+test('Clock size', async ({ page }) => {
+	test.fixme()
 
-test('Toggle show seconds', async () => {
-	await page.getByLabel('Show Seconds').check()
-	expect(await page.locator('#analogSeconds').isVisible()).toBeTruthy()
+	const defaultWidth = (await page.locator('#clock').boundingBox())?.width ?? 0
 
-	// Back to numerical
-	await page.locator('#analogClock').click()
+	const slider = page.getByRole('slider', { name: 'Clock size' })
+	const sliderpos = (await slider.boundingBox())?.width ?? 0
 
-	const clockText = (await page.locator('#clock').textContent()) || ''
-	expect(clockText.length).toEqual(8)
-})
+	await slider.click({ force: true, position: { x: sliderpos / 3, y: 0 } })
+	const newWidth = (await page.locator('#clock').boundingBox())?.width ?? 0
 
-test('12 hour', async () => {
-	// ...
+	expect(defaultWidth > newWidth).toBe(true)
 })

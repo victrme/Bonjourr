@@ -1,12 +1,8 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
+import openAllSettings from './utils/openallsettings'
 
 test.beforeEach(async ({ page }) => {
-	await page.goto('http://127.0.0.1:5500/release/online/index.html')
-})
-
-test.afterAll(async ({ page }) => {
-	await page.close()
-	expect(page.isClosed()).toBe(true)
+	await page.goto('./')
 })
 
 test('Page loads', async ({ page }) => {
@@ -14,16 +10,8 @@ test('Page loads', async ({ page }) => {
 	await page.waitForSelector('#interface')
 })
 
-export async function openAllSettings(page: Page) {
-	await page.waitForTimeout(200)
-	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
-	await page.waitForTimeout(5)
-	await page.waitForSelector('#settings')
-	await page.getByLabel('Show all settings').click()
-}
-
 test.describe('Settings', () => {
-	test.beforeEach(async ({ page }) => openAllSettings(page))
+	test.beforeEach(async ({ page }) => await openAllSettings(page))
 
 	test.describe('Language', () => {
 		test('Is correctly set to english', async ({ page }) => {
@@ -42,33 +30,39 @@ test.describe('Settings', () => {
 	})
 
 	test.describe('Dark mode', () => {
-		test('Switch between all modes', async ({ page }) => {
-			// Dark
+		test('Enabled', async ({ page }) => {
 			await page.getByRole('combobox', { name: 'Dark mode' }).selectOption('enable')
-			await expect(page.locator('body')).toHaveClass('dark')
-
-			// Light
-			await page.getByRole('combobox', { name: 'Dark mode' }).selectOption('disable')
-			await expect(page.locator('body')).toHaveClass('light')
-
-			// System
-			await page.getByRole('combobox', { name: 'Dark mode' }).selectOption('system')
-			await expect(page.locator('body')).toHaveClass('autodark')
-
-			// Auto
-			// ... later, because need to find a way to change browser time
+			expect(await page.locator(':root').getAttribute('data-theme')).toBe('dark')
 		})
+
+		test('Disabled', async ({ page }) => {
+			await page.getByRole('combobox', { name: 'Dark mode' }).selectOption('disable')
+			expect(await page.locator(':root').getAttribute('data-theme')).toBe('light')
+		})
+
+		test('System', async ({ page }) => {
+			await page.getByRole('combobox', { name: 'Dark mode' }).selectOption('system')
+			expect(await page.locator(':root').getAttribute('data-theme')).toBe('')
+		})
+
+		// Auto
+		// ... later, because need to find a way to change browser time
 	})
 
 	test.describe('Tab apearance', () => {
-		test('Title', async ({ page }) => {
-			// Adds text
-			await page.getByRole('textbox', { name: 'Tab title' }).fill('Hello World')
-			expect(page).toHaveTitle('Hello World')
+		test.describe('Title', () => {
+			test('Adds text', async ({ page }) => {
+				// Adds text
+				await page.getByRole('textbox', { name: 'Tab title' }).fill('Hello World')
+				await expect(page).toHaveTitle('Hello World')
+			})
 
-			// Removes text
-			await page.getByRole('textbox', { name: 'Tab title' }).fill('')
-			expect(page).toHaveTitle('New tab')
+			test('Removes text back to default', async ({ page }) => {
+				await page.getByRole('textbox', { name: 'Tab title' }).fill('Hello World')
+				await page.getByRole('textbox', { name: 'Tab title' }).fill('')
+
+				await expect(page).toHaveTitle('New tab')
+			})
 		})
 
 		test('Favicon', async ({ page }) => {
@@ -76,7 +70,7 @@ test.describe('Settings', () => {
 			await page.getByRole('textbox', { name: 'Tab favicon' }).fill('🤱')
 			await page.waitForTimeout(10)
 
-			const link = page.locator('link[rel="icon"]')
+			const link = page.locator('#favicon')
 			expect(await link?.getAttribute('href')).toContain('🤱')
 
 			// Removes

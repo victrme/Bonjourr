@@ -7,7 +7,7 @@ let page: Page
 
 test.beforeAll(async ({ browser }) => {
 	page = await browser.newPage()
-	await page.goto('http://127.0.0.1:5500/release/online/index.html')
+	await page.goto('./')
 
 	await page.waitForTimeout(200)
 	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
