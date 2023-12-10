@@ -15,7 +15,7 @@ import unsplashBackgrounds from './features/unsplash'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { periodOfDay, stringMaxSize } from './utils'
+import { stringMaxSize, freqControl } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
@@ -24,53 +24,9 @@ import suntime from './utils/suntime'
 import type { Sync, MoveKeys } from './types/sync'
 import type { Local } from './types/local'
 
-type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
-
 const dominterface = document.getElementById('interface') as HTMLDivElement
-const functionsLoad: { [key: string]: FunctionsLoadState } = {
-	clock: 'Waiting',
-	links: 'Waiting',
-	fonts: 'Off',
-	quotes: 'Off',
-}
 
 let loadtimeStart = performance.now()
-
-export const freqControl = {
-	set: () => {
-		return new Date().getTime()
-	},
-
-	get: (every: string, last: number) => {
-		const nowDate = new Date()
-		const lastDate = new Date(last || 0)
-		const changed = {
-			date: nowDate.getDate() !== lastDate.getDate(),
-			hour: nowDate.getHours() !== lastDate.getHours(),
-		}
-
-		switch (every) {
-			case 'day':
-				return changed.date
-
-			case 'hour':
-				return changed.date || changed.hour
-
-			case 'tabs':
-				return true
-
-			case 'pause':
-				return last === 0
-
-			case 'period': {
-				return last === 0 ? true : periodOfDay() !== periodOfDay(+lastDate) || false
-			}
-
-			default:
-				return false
-		}
-	},
-}
 
 const interfaceFade = (function interfaceFadeDebounce() {
 	let fadeTimeout: number
@@ -298,7 +254,7 @@ export function showPopup(value: string | number) {
 	}
 }
 
-export function textShadow(init: number | null, event?: number) {
+export function textShadow(init?: number, event?: number) {
 	const val = init ?? event
 	document.documentElement.style.setProperty('--text-shadow-alpha', (val ?? 0.2)?.toString())
 
@@ -307,7 +263,7 @@ export function textShadow(init: number | null, event?: number) {
 	}
 }
 
-export function customCss(init: string | null, event?: { is: 'styling' | 'resize'; val: string | number }) {
+export function customCss(init?: string, event?: { is: 'styling' | 'resize'; val: string | number }) {
 	const styleHead = document.getElementById('styles') as HTMLStyleElement
 
 	if (init) {
@@ -335,15 +291,22 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 	}
 }
 
-export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init?: Sync) {
-	//
-	// Progressive anim to max of Bonjourr animation time
-	function displayInterface() {
-		let loadtime = Math.min(performance.now() - loadtimeStart, 400)
+const features = ['clock', 'links']
 
-		if (loadtime < 33) {
-			loadtime = 0
-		}
+function displayInterface(e: Event) {
+	const ready = (e as CustomEvent)?.detail
+	const index = features.indexOf(ready)
+
+	if (index !== -1) {
+		features.splice(index, 1)
+	}
+
+	// Display
+	if (features.length === 0) {
+		document.removeEventListener('interface', displayInterface)
+
+		let loadtime = Math.min(performance.now() - loadtimeStart, 400)
+		loadtime = loadtime < 33 ? 0 : loadtime
 
 		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 		document.body.classList.remove('loading')
@@ -353,27 +316,9 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 			settingsInit()
 		}, loadtime + 100)
 	}
-
-	// More conditions if user is using advanced features
-	if (init || !cat) {
-		if (init?.font?.family && init?.font?.url) functionsLoad.fonts = 'Waiting'
-		if (init?.quotes?.on) functionsLoad.quotes = 'Waiting'
-		return
-	}
-
-	if (functionsLoad[cat] === 'Off') {
-		return // Function is not activated, don't wait for it
-	}
-
-	functionsLoad[cat] = 'Ready'
-
-	const noSettings = !document.getElementById('settings')
-	const noWait = Object.values(functionsLoad).includes('Waiting') === false
-
-	if (noWait && noSettings) {
-		displayInterface()
-	}
 }
+
+document.addEventListener('interface', displayInterface)
 
 function onlineAndMobileHandler() {
 	if (IS_MOBILE) {
@@ -471,17 +416,11 @@ function onlineAndMobileHandler() {
 	}
 }
 
-function initTimeAndMainBlocks(time: boolean, main: boolean) {
-	document.getElementById('time')?.classList.toggle('hidden', !time)
-	document.getElementById('main')?.classList.toggle('hidden', !main)
-}
-
 function startup(data: Sync, local: Local) {
 	traduction(null, data.lang)
-	canDisplayInterface(null, data)
 	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: data, lastWeather: local.lastWeather })
-	customFont({ font: data.font, fontface: local.fontface })
+	customFont(data.font)
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
@@ -496,8 +435,13 @@ function startup(data: Sync, local: Local) {
 	hideElements(data.hide)
 	initBackground(data, local)
 	quickLinks(data)
-	initTimeAndMainBlocks(data.time, data.main)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
+
+	document.getElementById('time')?.classList.toggle('hidden', !data.time)
+	document.getElementById('main')?.classList.toggle('hidden', !data.main)
+
+	if (data?.font?.family) features.push('fonts')
+	if (data?.quotes?.on) features.push('quotes')
 }
 
 ;(async () => {
@@ -511,21 +455,9 @@ function startup(data: Sync, local: Local) {
 		if (isUpdate) {
 			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			sync.about = { ...SYNC_DEFAULT.about }
-
-			if (sync.weather?.geolocation === undefined) {
-				sync.weather.geolocation = 'approximate'
-
-				if ((sync.weather?.location ?? []).length === 0) {
-					sync.weather.geolocation = 'off'
-				} else if ((sync.weather?.location ?? []).length === 2 && BROWSER !== 'safari') {
-					sync.weather.geolocation = 'precise'
-				}
-
-				sync.weather.location = undefined
-			}
-
-			storage.sync.set({ ...sync })
+			storage.sync.set({
+				about: SYNC_DEFAULT.about,
+			})
 		}
 
 		await setTranslationCache(sync.lang, local, isUpdate)

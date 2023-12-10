@@ -30,7 +30,7 @@ type WeatherUpdate = {
 	unhide?: true
 }
 
-let pollingInterval = setInterval(() => {})
+let pollingInterval = 0
 const cityInput = superinput('i_city')
 
 export default function weather(init: WeatherInit, update?: WeatherUpdate) {

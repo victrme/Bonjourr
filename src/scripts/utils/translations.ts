@@ -7,19 +7,19 @@ let trns: Dict = {}
 
 export async function setTranslationCache(lang: string, local?: Local, isUpdate?: boolean) {
 	if (lang === 'en') {
-		storage.local.remove('translations')
 		trns = {}
 		return
 	}
 
-	if (!isUpdate) {
-		trns = local?.translations ?? (await storage.local.get('translations'))?.translations
-	}
+	const needsTranslations = isUpdate || local?.translations?.lang !== lang || !local?.translations
 
-	if (trns?.lang !== lang) {
+	if (needsTranslations) {
 		trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
 		storage.local.set({ translations: trns })
+		return
 	}
+
+	trns = local.translations
 }
 
 export function traduction(settingsDom: Element | null, lang = 'en') {

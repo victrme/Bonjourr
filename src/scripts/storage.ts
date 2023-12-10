@@ -8,16 +8,7 @@ type Keyval = {
 	[key: string]: unknown
 }
 
-type StartupStorage = {
-	sync: Sync | null
-	local: Local | null
-}
-
-declare global {
-	interface Window {
-		startupStorage?: StartupStorage
-	}
-}
+type AllStorage = { sync: Sync; local: Local }
 
 type Storage = {
 	sync: {
@@ -32,7 +23,7 @@ type Storage = {
 		remove: (key: string) => void
 		clear: () => void
 	}
-	init: () => Promise<{ sync: Sync; local: Local }>
+	init: () => Promise<AllStorage>
 }
 
 function verifyDataAsSync(data: Keyval) {
@@ -123,7 +114,11 @@ function online(): Storage {
 		}
 	}
 
-	return { sync, local, init }
+	return {
+		sync,
+		local,
+		init,
+	}
 }
 
 function webext(): Storage {
@@ -164,26 +159,36 @@ function webext(): Storage {
 		},
 	}
 
-	const init = async (): Promise<{ sync: Sync; local: Local }> => {
-		if (window.startupStorage?.sync && window.startupStorage?.local) {
-			const { sync, local } = window.startupStorage
-			delete window.startupStorage
-			return { sync: verifyDataAsSync(sync), local }
+	const init = async (): Promise<AllStorage> => {
+		// This waits for chrome.storage to be stored in a global variable
+		// that is created in file `webext-storage.js`
+
+		//@ts-ignore
+		const store = startupStorage
+		const isReady = (): boolean => 'sync' in store && 'local' in store
+
+		if (!isReady()) {
+			await new Promise((resolve) => {
+				document.addEventListener('webextstorage', function () {
+					isReady() ? resolve(true) : ''
+				})
+			})
 		}
 
-		await new Promise((resolve) => {
-			;(function cycle() {
-				const { sync, local } = window.startupStorage ?? {}
-				sync && local ? resolve(true) : setTimeout(cycle)
-			})()
-		})
+		const sync = store.sync
+		const local = store.local
 
-		const { sync, local } = window.startupStorage as { sync: Sync; local: Local }
-		delete window.startupStorage
+		//@ts-ignore
+		startupStorage = undefined
+
 		return { sync: verifyDataAsSync(sync), local }
 	}
 
-	return { sync, local, init }
+	return {
+		sync,
+		local,
+		init,
+	}
 }
 
 export default PLATFORM === 'online' ? online() : webext()

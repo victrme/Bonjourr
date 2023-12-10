@@ -56,7 +56,10 @@ export async function settingsInit() {
 	signature(settingsDom)
 	showall(data.showall, false, settingsDom)
 
-	setTimeout(() => document.body.appendChild(settingsDom))
+	setTimeout(() => {
+		document.body.appendChild(settingsDom)
+		document.dispatchEvent(new Event('settings'))
+	})
 
 	const paramId = (str: string) => settingsDom.querySelector('#' + str) as HTMLInputElement
 	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)!
@@ -582,29 +585,29 @@ export async function settingsInit() {
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('focus', function () {
-		customFont(null, { autocomplete: settingsDom })
+		customFont(undefined, { autocomplete: true })
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { family: this.value })
+		customFont(undefined, { family: this.value })
 	})
 
 	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
 		if (this.value === '' && e.inputType === 'deleteContentBackward') {
-			customFont(null, { family: '' })
+			customFont(undefined, { family: '' })
 		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { weight: this.value })
+		customFont(undefined, { weight: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { size: this.value })
+		customFont(undefined, { size: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
-		textShadow(null, parseFloat(this.value))
+		textShadow(undefined, parseFloat(this.value))
 	})
 
 	//
@@ -641,7 +644,7 @@ export async function settingsInit() {
 	// Custom Style
 
 	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
-		customCss(null, { is: 'styling', val: (ev.target as HTMLInputElement).value })
+		customCss(undefined, { is: 'styling', val: (ev.target as HTMLInputElement).value })
 	})
 
 	setTimeout(() => {
@@ -651,7 +654,7 @@ export async function settingsInit() {
 			if (skipFirstResize) return (skipFirstResize = false)
 
 			const rect = e[0].contentRect
-			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+			customCss(undefined, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(paramId('cssEditor'))
 	}, 400)
@@ -1088,6 +1091,7 @@ async function switchLangs(nextLang: Langs) {
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes || null)
+	customFont(undefined, { lang: true })
 	signature(document.getElementById('settings') as HTMLElement)
 	translatePlaceholders(document.getElementById('settings'))
 }

@@ -1,7 +1,7 @@
 import { randomString, bundleLinks } from '../utils'
 import { SYNC_DEFAULT } from '../defaults'
 import { gridWidget } from '../features/move'
-import merge from 'deepmerge'
+import { deepmergeAll } from '@victr/deepmerge'
 
 import type { MoveKeys, Sync, Move } from '../types/sync'
 
@@ -154,8 +154,7 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 		delete current[elem._id]
 	})
 
-	current = merge(current, toImport)
-	current.about = { ...SYNC_DEFAULT.about }
+	current = deepmergeAll(current, toImport, { about: SYNC_DEFAULT.about }) as Sync
 
 	return current
 }
