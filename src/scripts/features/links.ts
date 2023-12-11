@@ -1,6 +1,5 @@
 import { bundleLinks, randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
 import { SYSTEM_OS, BROWSER, IS_MOBILE } from '../defaults'
-import { canDisplayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
@@ -97,7 +96,6 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 			blocklist.forEach(({ block }) => addEvents(block))
 
 			linksDragging(blocklist.map((list) => list.block)) // Pass LIs to create events faster
-			canDisplayInterface('links')
 
 			// Load icons one by one
 			links.map(async (link, index) => {
@@ -118,7 +116,7 @@ async function initblocks(links: Link[], isnewtab: boolean) {
 	}
 
 	// Links is done
-	else canDisplayInterface('links')
+	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 }
 
 function removeLinkSelection() {

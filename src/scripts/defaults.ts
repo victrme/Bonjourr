@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '1.18.3'
+export const CURRENT_VERSION = '1.18.4'
 
 export const MAIN_API = 'https://api.bonjourr.lol'
 
@@ -131,10 +131,10 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		userlist: [],
 	},
 	font: {
-		url: '',
 		family: '',
 		size: '14',
-		availWeights: [],
+		system: true,
+		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	move: {

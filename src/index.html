@@ -21,6 +21,7 @@
 
 		<link rel="stylesheet" href="src/styles/style.css" />
 		<style type="text/css" id="styles"></style>
+		<style type="text/css" id="fontface"></style>
 
 		<script src="src/scripts/main.js" defer></script>
 	</head>
@@ -30,38 +31,34 @@
 
 		<div id="editlink">
 			<div class="edit-inputs">
-				<label for="e_title" class="trn">Title</label>
-				<input
-					id="e_title"
-					type="text"
-					name="e_title"
-					maxlength="64"
-					autocomplete="off"
-					placeholder="Example"
-					aria-label="Update link title"
-				/>
+				<div>
+					<label for="e_title" class="trn">Title</label>
+					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
+				</div>
 
-				<label for="e_url" class="trn">Link</label>
-				<input
-					id="e_url"
-					type="url"
-					name="e_url"
-					maxlength="512"
-					autocomplete="off"
-					aria-label="Update link URL"
-					placeholder="https://example.com"
-				/>
+				<div>
+					<label for="e_url" class="trn">Link</label>
+					<input
+						id="e_url"
+						type="url"
+						name="e_url"
+						maxlength="512"
+						autocomplete="off"
+						placeholder="https://example.com"
+					/>
+				</div>
 
-				<label for="e_iconurl" class="trn">Icon</label>
-				<input
-					id="e_iconurl"
-					type="url"
-					name="e_iconurl"
-					maxlength="7600"
-					autocomplete="off"
-					aria-label="Update link icon URL"
-					placeholder="https://example.com/favicon.ico"
-				/>
+				<div>
+					<label for="e_iconurl" class="trn">Icon</label>
+					<input
+						id="e_iconurl"
+						type="url"
+						name="e_iconurl"
+						maxlength="7600"
+						autocomplete="off"
+						placeholder="https://example.com/favicon.ico"
+					/>
+				</div>
 			</div>
 
 			<hr />
@@ -212,25 +209,30 @@
 			<div id="notes_container" class="hidden"></div>
 
 			<form id="sb_container" class="hidden">
-				<input
-					id="searchbar"
-					type="text"
-					name="searchbar"
-					autocomplete="off"
-					spellcheck="false"
-					aria-label="Search bar"
-				/>
-				<div id="sb-buttons">
-					<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
-					<hr />
-					<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-						<img
-							src="src/assets/interface/magnifying-glass.svg"
-							class="default-search-icon"
-							draggable="false"
-							alt=""
-						/>
-					</button>
+				<div id="searchbar-wrapper">
+					<input
+						id="searchbar"
+						type="text"
+						name="searchbar"
+						autocomplete="off"
+						spellcheck="false"
+						aria-label="Search bar"
+					/>
+
+					<div id="sb-buttons">
+						<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
+
+						<hr />
+
+						<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
+							<img
+								src="src/assets/interface/magnifying-glass.svg"
+								class="default-search-icon"
+								draggable="false"
+								alt=""
+							/>
+						</button>
+					</div>
 				</div>
 
 				<ul id="sb-suggestions"></ul>

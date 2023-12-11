@@ -5,16 +5,7 @@ type Keyval = {
 	[key: string]: unknown
 }
 
-type StartupStorage = {
-	sync: Sync.Storage | null
-	local: Local.Storage | null
-}
-
-declare global {
-	interface Window {
-		startupStorage?: StartupStorage
-	}
-}
+type AllStorage = { sync: Sync.Storage; local: Local.Storage }
 
 type Storage = {
 	sync: {
@@ -29,7 +20,7 @@ type Storage = {
 		remove: (key: string) => void
 		clear: () => void
 	}
-	init: () => Promise<{ sync: Sync.Storage; local: Local.Storage }>
+	init: () => Promise<AllStorage>
 }
 
 function verifyDataAsSync(data: Keyval) {
@@ -120,7 +111,11 @@ function online(): Storage {
 		}
 	}
 
-	return { sync, local, init }
+	return {
+		sync,
+		local,
+		init,
+	}
 }
 
 function webext(): Storage {
@@ -161,26 +156,36 @@ function webext(): Storage {
 		},
 	}
 
-	const init = async (): Promise<{ sync: Sync.Storage; local: Local.Storage }> => {
-		if (window.startupStorage?.sync && window.startupStorage?.local) {
-			const { sync, local } = window.startupStorage
-			delete window.startupStorage
-			return { sync: verifyDataAsSync(sync), local }
+	const init = async (): Promise<AllStorage> => {
+		// This waits for chrome.storage to be stored in a global variable
+		// that is created in file `webext-storage.js`
+
+		//@ts-ignore
+		const store = startupStorage as AllStorage
+		const isReady = (): boolean => 'sync' in store && 'local' in store
+
+		if (!isReady()) {
+			await new Promise((resolve) => {
+				document.addEventListener('webextstorage', function () {
+					isReady() ? resolve(true) : ''
+				})
+			})
 		}
 
-		await new Promise((resolve) => {
-			;(function cycle() {
-				const { sync, local } = window.startupStorage ?? {}
-				sync && local ? resolve(true) : setTimeout(cycle)
-			})()
-		})
+		const sync = store.sync
+		const local = store.local
 
-		const { sync, local } = window.startupStorage as { sync: Sync.Storage; local: Local.Storage }
-		delete window.startupStorage
+		//@ts-ignore
+		startupStorage = undefined
+
 		return { sync: verifyDataAsSync(sync), local }
 	}
 
-	return { sync, local, init }
+	return {
+		sync,
+		local,
+		init,
+	}
 }
 
 export default PLATFORM === 'online' ? online() : webext()
