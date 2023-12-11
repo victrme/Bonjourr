@@ -22,7 +22,7 @@ import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { inputThrottle, closeEditLink, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
-import type { Langs } from './types/langs'
+import type { Langs } from '../types/langs'
 
 import {
 	toggleWidgetsDisplay,
