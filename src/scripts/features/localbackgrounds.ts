@@ -9,9 +9,9 @@ import storage from '../storage'
 
 type LocalImages = {
 	ids: string[]
-	selected: string
 	last: number
-	freq: string
+	selected: string
+	freq: Shared.Frequency
 }
 
 type Blobs = {
@@ -266,7 +266,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
-		if (event?.freq) localImages.update({ freq: event?.freq })
+		if (isEvery(event?.freq)) localImages.update({ freq: event?.freq })
 		return
 	}
 

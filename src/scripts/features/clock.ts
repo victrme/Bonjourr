@@ -3,8 +3,6 @@ import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import type { Sync, Clock } from '../types/sync'
-
 type ClockUpdate = {
 	ampm?: boolean
 	analog?: boolean
@@ -103,7 +101,7 @@ function changeClockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
-function startClock(clock: Clock, greeting: string, usdate: boolean) {
+function startClock(clock: Sync.Clock, greeting: string, usdate: boolean) {
 	//
 	function display() {
 		document.getElementById('time-container')?.classList.toggle('analog', clock.analog)
@@ -181,6 +179,9 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		return
 	}
 
+	const isFace = (str = ''): str is Sync.Clock['face'] => ['none', 'number', 'roman', 'marks'].includes(str)
+	const isStyle = (str = ''): str is Sync.Clock['style'] => ['round', 'square', 'transparent'].includes(str)
+
 	if (analog !== undefined) {
 		document.getElementById('analog_options')?.classList.toggle('shown', analog)
 		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
@@ -204,12 +205,12 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	clock = {
 		...clock,
 		ampm: ampm ?? clock.ampm,
-		face: face ?? clock.face,
 		size: size ?? clock.size,
-		style: style ?? clock.style,
 		analog: analog ?? clock.analog,
 		seconds: seconds ?? clock.seconds,
 		timezone: timezone ?? clock.timezone,
+		face: isFace(face) ? face : clock.face,
+		style: isStyle(style) ? style : clock.style,
 	}
 
 	storage.sync.set({ clock })
@@ -219,7 +220,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	changeClockSize(clock.size)
 }
 
-export default function clock(init: Sync | null, event?: ClockUpdate) {
+export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 	if (event) {
 		clockUpdate(event)
 		return

@@ -1,8 +1,6 @@
 import { MAIN_API, FALLBACK_API } from './defaults'
 import suntime from './utils/suntime'
 
-import type { Sync } from './types/sync'
-
 function shuffledAPIUrls(): string[] {
 	return [
 		MAIN_API,
@@ -107,14 +105,14 @@ export const freqControl = {
 	},
 }
 
-export function bundleLinks(data: Sync): Link[] {
+export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	// 1.13.0: Returns an array of found links in storage
-	let res: Link[] = []
+	let res: Links.Link[] = []
 	Object.entries(data).map(([key, val]) => {
-		if (key.length === 11 && key.startsWith('links')) res.push(val as Link)
+		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
 	})
 
-	res.sort((a: Link, b: Link) => a.order - b.order)
+	res.sort((a: Links.Link, b: Links.Link) => a.order - b.order)
 	return res
 }
 

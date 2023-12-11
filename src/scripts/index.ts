@@ -21,9 +21,6 @@ import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 
-import type { Sync, MoveKeys } from './types/sync'
-import type { Local } from './types/local'
-
 const dominterface = document.getElementById('interface') as HTMLDivElement
 
 let loadtimeStart = performance.now()
@@ -52,7 +49,7 @@ const interfaceFade = (function interfaceFadeDebounce() {
 	return { apply }
 })()
 
-export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, fromInput?: true) {
+export async function toggleWidgetsDisplay(list: { [key in Sync.Move.Key]?: boolean }, fromInput?: true) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
@@ -96,7 +93,7 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 	// user is toggling from settings, update grid
 	if (fromInput) {
 		const [id, on] = listEntries[0] // always only one toggle
-		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+		moveElements(undefined, { widget: { id: id as Sync.Move.Key, on: on } })
 	}
 }
 
@@ -142,7 +139,7 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 	}
 }
 
-export function initBackground(data: Sync, local: Local) {
+export function initBackground(data: Sync.Storage, local: Local.Storage) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
@@ -416,7 +413,7 @@ function onlineAndMobileHandler() {
 	}
 }
 
-function startup(data: Sync, local: Local) {
+function startup(data: Sync.Storage, local: Local.Storage) {
 	traduction(null, data.lang)
 	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: data, lastWeather: local.lastWeather })
@@ -429,7 +426,7 @@ function startup(data: Sync, local: Local) {
 	searchbar(data.searchbar)
 	quotes({ sync: data, local })
 	showPopup(data.reviewPopup)
-	notes(data.notes || null)
+	notes(data.notes)
 	moveElements(data.move)
 	customCss(data.css)
 	hideElements(data.hide)
