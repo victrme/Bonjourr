@@ -3,8 +3,10 @@
 		"target": "ESNext",
 		"types": ["user-agent-data-types", "web-ext-types", "chrome"],
 		"strict": true,
+		"noEmit": true,
 		"esModuleInterop": true,
 		"moduleResolution": "Bundler",
 		"forceConsistentCasingInFileNames": true
-	}
+	},
+	"include": ["src"]
 }
