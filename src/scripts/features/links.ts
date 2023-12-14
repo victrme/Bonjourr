@@ -1064,18 +1064,24 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 	}
 
 	if (style) {
-		// const data = await storage.sync.get()
-		// const links = bundleLinks(data as Sync)
-		// style = style ?? 'large'
-		// for (const [_id, title, url] of links) {
-		// 	const span = document.querySelector<HTMLSpanElement>('#links' + _id + ' span')
-		// 	const text = linkElemTitle(title, url, style === 'text')
-		// 	if (span) span.textContent = text
-		// }
-		// domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
-		// domlinkblocks.classList.add(style)
-		// setRows(data.linksrow, style)
-		// storage.sync.set({ linkstyle: style })
+		const data = await storage.sync.get()
+		const links = getAllLinksInTab(data, data.tabs.selected)
+
+		for (const link of links) {
+			const span = document.querySelector<HTMLSpanElement>(`#links${link._id} span`)
+
+			if (span && link.type === 'elem') {
+				span.textContent = linkElemTitle(link.title, link.url, style === 'text')
+			}
+		}
+
+		style = style ?? 'large'
+		domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
+		domlinkblocks.classList.add(style)
+
+		setRows(data.linksrow, style)
+
+		storage.sync.set({ linkstyle: style })
 	}
 
 	if (row) {
