@@ -1,9 +1,8 @@
 import { stringMaxSize, bundleLinks } from '../utils'
 import { tradThis } from '../utils/translations'
+import { PLATFORM } from '../defaults'
 import quickLinks from './links'
 import storage from '../storage'
-
-import { Sync } from '../types/sync'
 
 export default async function linksImport() {
 	const container = document.getElementById('bookmarks_container') as HTMLElement
@@ -14,7 +13,7 @@ export default async function linksImport() {
 		setTimeout(() => container.removeAttribute('class'), 400)
 	}
 
-	function main(links: Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]): void {
+	function main(links: Links.Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
 		const listdom = document.createElement('ol')
 
 		let bookmarksList: chrome.bookmarks.BookmarkTreeNode[] = []
@@ -107,7 +106,7 @@ export default async function linksImport() {
 
 			if (bookmarkToApply.length > 0) {
 				closeBookmarks()
-				quickLinks(null, { bookmarks: bookmarkToApply })
+				quickLinks(undefined, { bookmarks: bookmarkToApply })
 			}
 		}
 
@@ -120,10 +119,10 @@ export default async function linksImport() {
 		if (!granted) return
 
 		const data = await storage.sync.get()
-		const extAPI = window.location.protocol === 'moz-extension:' ? browser : chrome
+		const extAPI = PLATFORM === 'firefox' ? browser : chrome
 		extAPI.bookmarks.getTree().then((response) => {
 			document.getElementById('bookmarks_container')?.classList.toggle('shown', true)
-			main(bundleLinks(data as Sync), response)
+			main(bundleLinks(data), response)
 		})
 	})
 

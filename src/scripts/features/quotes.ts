@@ -1,12 +1,14 @@
 import { apiFetch, freqControl } from '../utils'
 import superinput from '../utils/superinput'
-import parse from '../utils/parse'
 import storage from '../storage'
+import parse from '../utils/parse'
 
-import { Local, Quote } from '../types/local'
-import { Sync } from '../types/sync'
+type Quote = Quotes.Item
 
-type UserQuotesList = [string, string][]
+type QuotesInit = {
+	sync: Sync.Storage
+	local: Local.Storage
+}
 
 type QuotesUpdate = {
 	toggle?: boolean
@@ -23,15 +25,13 @@ function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
 	return arr?.map(([author, content]) => ({ author, content }))
 }
 
-async function newQuoteFromAPI(lang: string, type: string): Promise<Quote[]> {
+async function newQuoteFromAPI(lang: string, type: Quotes.Sync['type']): Promise<Quote[]> {
 	try {
 		if (!navigator.onLine || type === 'user') {
 			return []
 		}
 
-		// Fetch a random quote from the quotes API
 		const query = (type += type === 'classic' ? `/${lang}` : '')
-
 		const response = await apiFetch('/quotes/' + query)
 		const json = await response?.json()
 
@@ -57,20 +57,15 @@ function insertToDom(values: Quote) {
 	authorDOM.textContent = values.author
 }
 
-function controlCacheList(list: Quote[], lang: string, type: string) {
+function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type']) {
 	//
-	// User
-
 	if (type === 'user') {
 		const randIndex = Math.round(Math.random() * (list.length - 1))
 		storage.local.set({ userQuoteSelection: randIndex })
 		return list[randIndex]
 	}
 
-	//
-	// APIs
-
-	list.shift() // removes used quote
+	list.shift()
 	storage.local.set({ quotesCache: list })
 
 	if (list.length < 2) {
@@ -82,10 +77,14 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 	return list[0]
 }
 
-async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
+async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync.Storage) {
 	let quotesCache = (await storage.local.get('quotesCache'))?.quotesCache ?? []
 
-	async function handleQuotesType(type: string) {
+	function isQuotesType(s = ''): s is Quotes.Sync['type'] {
+		return ['classic', 'kaamelott', 'inspirobot', 'user'].includes(s)
+	}
+
+	async function handleQuotesType(type: Quotes.Sync['type']) {
 		let list: Quote[] = []
 		const { userlist } = quotes
 
@@ -107,8 +106,8 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 		insertToDom(list[selection])
 	}
 
-	function handleUserListChange(userlist: string) {
-		function validateUserQuotes(json: unknown) {
+	function handleUserListChange(userlist: string): Quotes.UserInput | undefined {
+		function isUserQuotesList(json: unknown): json is Quotes.UserInput {
 			return (
 				Array.isArray(json) &&
 				json.length > 0 &&
@@ -117,25 +116,25 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 			)
 		}
 
-		let array: UserQuotesList = []
+		let array: Quotes.UserInput = []
 		let quote: Quote = { author: '', content: '' }
 
 		if (userlist !== '') {
-			let userJSON = parse<UserQuotesList>(userlist)
+			let userJSON = parse<Quotes.UserInput>(userlist)
 
 			if (!userJSON) {
 				userQuotesInput.warn('User quotes list is not valid JSON')
 				return quotes.userlist
 			}
 
-			// if list is not valid, skip
-			if (validateUserQuotes(userJSON) === false) {
+			if (!isUserQuotesList(userJSON)) {
 				userQuotesInput.warn('Should look like: [["author", "quote"], ..., ...]')
 				return quotes.userlist
 			}
 
 			array = userJSON
 			quote = { author: array[0][0], content: array[0][1] }
+			return array
 		}
 
 		insertToDom(quote)
@@ -160,13 +159,8 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 		document.getElementById('author')?.classList.toggle('always-on', author)
 	}
 
-	if (frequency) {
+	if (isEvery(frequency)) {
 		quotes.frequency = frequency
-	}
-
-	if (type) {
-		quotes.type = type
-		handleQuotesType(type)
 	}
 
 	if (userlist) {
@@ -178,13 +172,18 @@ async function UpdateQuotes({ author, frequency, type, userlist, refresh }: Quot
 		handleQuotesRefresh()
 	}
 
+	if (isQuotesType(type)) {
+		quotes.type = type
+		handleQuotesType(type)
+	}
+
 	storage.sync.set({ quotes })
 }
 
-export default async function quotes(init: { sync: Sync; local: Local } | null, update?: QuotesUpdate) {
+export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	if (update) {
 		const data = await storage.sync.get(['lang', 'quotes'])
-		UpdateQuotes(update, data as Sync)
+		UpdateQuotes(update, data)
 	}
 
 	if (!init) {
@@ -192,25 +191,25 @@ export default async function quotes(init: { sync: Sync; local: Local } | null, 
 	}
 
 	const { lang, quotes } = init.sync
-	const isUser = quotes.type === 'user'
 	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
 	let userSel = init.local?.userQuoteSelection ?? 0
 	let cache = init.local?.quotesCache ?? []
+
+	const noCache = !cache || cache?.length === 0
+	const isUser = quotes.type === 'user'
+
 	let quote: Quote
 
-	// First startup, create classic cache
-	if (!cache || cache?.length === 0) {
+	if (noCache) {
 		cache = await newQuoteFromAPI(lang, quotes.type)
 		storage.local.set({ quotesCache: cache })
 	}
 
-	// If user quotes, replace cache
 	if (isUser) {
 		cache = userlistToQuotes(quotes.userlist)
 	}
 
-	// Frequence control, get new quote from controlCacheList
 	if (needsNewQuote) {
 		quotes.last = freqControl.set()
 		quote = controlCacheList(cache, lang, quotes.type)
@@ -219,19 +218,18 @@ export default async function quotes(init: { sync: Sync; local: Local } | null, 
 		quote = cache[isUser ? userSel : 0]
 	}
 
-	// Displays
-
 	if (quotes.author) {
 		document.getElementById('author')?.classList.add('always-on')
 	}
 
 	if (isUser && quotes.userlist) {
-		insertToDom(userlistToQuotes(quotes.userlist!)[userSel])
+		insertToDom(userlistToQuotes(quotes.userlist)[userSel])
 	} else if (!isUser) {
 		insertToDom(cache[0])
 	}
 
 	insertToDom(quote)
+
 	document.getElementById('quotes_container')?.classList.toggle('hidden', !quotes.on)
 
 	document.dispatchEvent(new CustomEvent('interface', { detail: 'quotes' }))

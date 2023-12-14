@@ -7,7 +7,7 @@ import transitioner from '../utils/transitioner'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
-import { Sync, Link, LinkElem, LinkFolder, Tab, LinkTabs } from '../types/sync'
+type Link = Links.Link
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -37,7 +37,7 @@ const domeditlink = document.getElementById('editlink')
 let currentFolder: string | undefined
 let currentTab = 0
 
-export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
+export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return
@@ -113,8 +113,8 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	const liList: HTMLLIElement[] = []
 	const imgList: { [key: string]: HTMLImageElement } = {}
 
-	const linkElems: LinkElem[] = []
-	const linkFolders: LinkFolder[] = []
+	const linkElems: Links.Elem[] = []
+	const linkFolders: Links.Folder[] = []
 
 	for (const link of links) {
 		switch (link?.type) {
@@ -213,6 +213,8 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 		const img = imgs[link._id]
 
 		if (img && link.type === 'elem') {
+			img.src = link.icon
+
 			if (link.icon.includes('loading.svg')) {
 				const iconurl = `${MAIN_API}/favicon/blob/${link.url}`
 
@@ -221,8 +223,6 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 				link.icon = iconurl
 
 				storage.sync.set({ [link._id]: link })
-			} else {
-				img.src = link.icon
 			}
 		}
 	}
@@ -231,7 +231,7 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 async function clickOpensFolder(elem: HTMLLIElement) {
 	if (elem.classList.contains('folder')) {
 		const data = await storage.sync.get()
-		const folder = data[elem.id] as LinkFolder
+		const folder = data[elem.id] as Links.Folder
 
 		transitioner(
 			function hide() {
@@ -313,7 +313,7 @@ function createEvents(elems: HTMLLIElement[]) {
 // Tabs
 //
 
-function initTabs(tabs: LinkTabs) {
+function initTabs(tabs: Links.Tabs) {
 	tabs.list.forEach((tab, i) => {
 		appendNewTab(tab.title, tabs.selected === i)
 	})
@@ -848,7 +848,7 @@ async function removeLink(linkID: string) {
 	}, 600)
 }
 
-function addLink(): LinkElem[] {
+function addLink(): Links.Elem[] {
 	const titledom = document.getElementById('i_title') as HTMLInputElement
 	const urldom = document.getElementById('i_url') as HTMLInputElement
 	const title = titledom.value
@@ -864,7 +864,7 @@ function addLink(): LinkElem[] {
 	return [validateLink(title, url)]
 }
 
-function addLinkFolder(ids: string[]): LinkFolder[] {
+function addLinkFolder(ids: string[]): Links.Folder[] {
 	const titledom = document.getElementById('i_title') as HTMLInputElement
 	const title = titledom.value
 
@@ -880,8 +880,8 @@ function addLinkFolder(ids: string[]): LinkFolder[] {
 	]
 }
 
-function importBookmarks(bookmarks?: Bookmarks): LinkElem[] {
-	const newLinks: LinkElem[] = []
+function importBookmarks(bookmarks?: Bookmarks): Links.Elem[] {
+	const newLinks: Links.Elem[] = []
 
 	if (bookmarks && bookmarks?.length === 0) {
 		bookmarks?.forEach(({ title, url }) => {
@@ -958,7 +958,7 @@ function linkElemTitle(title: string, url: string, textOnly: boolean): string {
 async function setGroupTitle(title: string) {
 	if (currentFolder) {
 		const data = await storage.sync.get()
-		const folder = data[currentFolder] as LinkFolder | undefined
+		const folder = data[currentFolder] as Links.Folder | undefined
 
 		if (folder) {
 			folder.title = title
@@ -1096,7 +1096,7 @@ function removeLinkSelection() {
 	})
 }
 
-function validateLink(title: string, url: string): LinkElem {
+function validateLink(title: string, url: string): Links.Elem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 
 	url = stringMaxSize(url, 512)
@@ -1118,9 +1118,9 @@ function validateLink(title: string, url: string): LinkElem {
 	}
 }
 
-function getAllLinksInFolder(data: Sync, id: string): LinkElem[] {
+function getAllLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 	const folder = data[id] as Link | undefined
-	const links: LinkElem[] = []
+	const links: Links.Elem[] = []
 
 	if (folder && folder.type === 'folder') {
 		for (const id of folder.ids) {
@@ -1134,7 +1134,7 @@ function getAllLinksInFolder(data: Sync, id: string): LinkElem[] {
 	return links
 }
 
-function getAllLinksInTab(data: Sync, index: number): Link[] {
+function getAllLinksInTab(data: Sync.Storage, index: number): Link[] {
 	index = index ?? data.tabs.selected
 
 	const tab = data.tabs.list[index]

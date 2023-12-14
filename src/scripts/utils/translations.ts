@@ -1,13 +1,11 @@
 import storage from '../storage'
-import { Local } from '../types/local'
 
-type Dict = { [key: string]: string }
+let trns: Local.Translations | undefined
 
-let trns: Dict = {}
-
-export async function setTranslationCache(lang: string, local?: Local, isUpdate?: boolean) {
+export async function setTranslationCache(lang: string, local?: Local.Storage, isUpdate?: boolean) {
 	if (lang === 'en') {
-		trns = {}
+		storage.local.remove('translations')
+		trns = undefined
 		return
 	}
 
@@ -23,15 +21,19 @@ export async function setTranslationCache(lang: string, local?: Local, isUpdate?
 }
 
 export function traduction(settingsDom: Element | null, lang = 'en') {
-	if (lang === 'en') return
+	if (lang === 'en') {
+		return
+	}
 
-	const dom = settingsDom ? settingsDom : document.body
-	const tags = dom.querySelectorAll('.trn')
-	let text: string
+	if (trns) {
+		const dom = settingsDom ? settingsDom : document.body
+		const tags = dom.querySelectorAll('.trn')
+		let text: string
 
-	for (const tag of tags) {
-		text = tag.textContent ?? ''
-		tag.textContent = (trns[text] as string) ?? text
+		for (const tag of tags) {
+			text = tag.textContent ?? ''
+			tag.textContent = (trns[text] as string) ?? text
+		}
 	}
 
 	document.documentElement.setAttribute('lang', lang)
@@ -39,8 +41,8 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 
 export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
-	let newDict: Dict = {}
-	let toggleDict: Dict = {}
+	let newDict: Local.Translations | undefined
+	let toggleDict: { [key: string]: string } = {}
 	let currentDict = { ...trns }
 	let text: string
 
@@ -48,13 +50,14 @@ export async function toggleTraduction(lang: string) {
 	newDict = (await storage.local.get('translations')).translations
 
 	// old lang is 'en'
-	if (currentDict?.lang === undefined) {
+	if (newDict && currentDict?.lang === undefined) {
 		Object.keys(newDict).forEach((key) => (currentDict[key] = key))
 	}
 
 	// {en: fr} & {en: sv} ==> {fr: sv}
 	for (const [key, val] of Object.entries(currentDict)) {
-		toggleDict[val] = lang === 'en' ? key : newDict[key]
+		if (lang === 'en') toggleDict[val] = key
+		else if (newDict) toggleDict[val] = newDict[key]
 	}
 
 	for (const tag of tags) {
@@ -64,5 +67,5 @@ export async function toggleTraduction(lang: string) {
 }
 
 export function tradThis(str: string): string {
-	return trns[str] ?? str
+	return trns ? trns[str] ?? str : str
 }

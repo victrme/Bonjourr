@@ -3,9 +3,7 @@ import { SYNC_DEFAULT } from '../defaults'
 import { gridWidget } from '../features/move'
 import { deepmergeAll } from '@victr/deepmerge'
 
-import type { MoveKeys, Sync, Move } from '../types/sync'
-
-export default function filterImports(current: Sync, toImport: Partial<Sync>) {
+export default function filterImports(current: Sync.Storage, toImport: Partial<Sync.Storage>) {
 	//
 
 	// <1.18.1 Improved geolocation, removed lastState in sync
@@ -40,10 +38,10 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	if ((toImport.background_type as string) === 'custom') toImport.background_type = 'local'
 
 	// <1.17.0 dynamic data renamed to unsplash
-	if (toImport.dynamic as Sync['unsplash']) {
+	if (toImport.dynamic as Unsplash.Sync) {
 		toImport.unsplash = {
-			...(toImport.dynamic as Sync['unsplash']),
-			pausedImage: null,
+			...(toImport.dynamic as Unsplash.Sync),
+			pausedImage: undefined,
 		}
 
 		delete toImport.dynamic
@@ -55,7 +53,8 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 			...SYNC_DEFAULT.searchbar,
 			on: toImport.searchbar as boolean,
 			newtab: (toImport.searchbar_newtab as boolean) || false,
-			engine: (toImport.searchbar_engine as string | undefined)?.replace('s_', '') || 'google',
+			engine: ((toImport.searchbar_engine as string | undefined)?.replace('s_', '') ||
+				'google') as Sync.Searchbar['engine'],
 			suggestions: false,
 		}
 
@@ -71,7 +70,7 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 			toImport.quicklinks = true
 		}
 
-		;(toImport.links as Link[])?.forEach(({ title, url, icon }: Link, i: number) => {
+		;(toImport.links as Links.Link[])?.forEach(({ title, url, icon }: Links.Link, i: number) => {
 			const id = 'links' + randomString(6)
 			const filteredIcon = icon?.startsWith('alias:') ? toImport[icon] : icon
 
@@ -127,7 +126,7 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 			layout.grid = gridWidget(
 				layout.grid,
 				current.move.selection,
-				key as MoveKeys,
+				key as Sync.Move.Key,
 				importStates[key as keyof typeof importStates]
 			)
 		})
@@ -141,7 +140,7 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	if (toImport.move && current.move) {
 		Object.entries(toImport.move?.layouts).forEach(([key, layout]) => {
 			const keyIsValidLayout = key in current.move.layouts
-			const layoutKey = key as keyof Move['layouts']
+			const layoutKey = key as Sync.Move.Selection
 
 			if (layout.grid && keyIsValidLayout) {
 				current.move.layouts[layoutKey].grid = []
@@ -150,11 +149,11 @@ export default function filterImports(current: Sync, toImport: Partial<Sync>) {
 	}
 
 	// To avoid link duplicates: delete current links
-	bundleLinks(current).forEach((elem: Link) => {
+	bundleLinks(current).forEach((elem: Links.Link) => {
 		delete current[elem._id]
 	})
 
-	current = deepmergeAll(current, toImport, { about: SYNC_DEFAULT.about }) as Sync
+	current = deepmergeAll(current, toImport, { about: SYNC_DEFAULT.about }) as Sync.Storage
 
 	return current
 }

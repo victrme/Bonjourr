@@ -5,11 +5,11 @@ import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
+import { apiFetch } from '../utils'
 import { subsets } from '../langs'
 import superinput from '../utils/superinput'
 
-import { Font, Sync } from '../types/sync'
-import { apiFetch } from '../utils'
+type Font = Sync.Font
 
 interface Fontsource {
 	family: string
@@ -100,7 +100,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 	eventDebounce({ font: data.font })
 }
 
-async function updateFontFamily(data: Sync, family: string): Promise<Font> {
+async function updateFontFamily(data: Sync.Storage, family: string): Promise<Font> {
 	const i_customfont = document.getElementById('i_customfont') as HTMLInputElement
 	const i_weight = document.getElementById('i_weight') as HTMLInputElement
 

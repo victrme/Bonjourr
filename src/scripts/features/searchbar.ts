@@ -6,8 +6,6 @@ import superinput from '../utils/superinput'
 import storage from '../storage'
 import parse from '../utils/parse'
 
-import type { Searchbar } from '../types/sync'
-
 type SearchbarUpdate = {
 	engine?: string
 	opacity?: string
@@ -45,7 +43,7 @@ const setOpacity = (value = 0.1) => {
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
 }
 
-export default function searchbar(init: Searchbar | null, update?: SearchbarUpdate) {
+export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return
@@ -76,7 +74,7 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 		return
 	}
 
-	if (engine) {
+	if (isValidEngine(engine)) {
 		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
 		searchbar.engine = engine
 		setEngine(engine)
@@ -131,7 +129,7 @@ function isValidURL(string: string): boolean {
 }
 
 function createSearchURL(val: string): string {
-	const URLs = {
+	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
@@ -142,20 +140,15 @@ function createSearchURL(val: string): string {
 		ecosia: 'https://www.ecosia.org/search?q=%s',
 		lilo: 'https://search.lilo.org/?q=%s',
 		baidu: 'https://www.baidu.com/s?wd=%s',
+		custom: domcontainer?.dataset.request || '',
 	}
 
-	let searchURL = 'https://www.google.com/search?q=%s'
+	let searchURL = URLs.google
 	const engine = domcontainer?.dataset.engine || 'google'
-	const request = domcontainer?.dataset.request || ''
 
-	searchURL = tradThis(engine)
-
-	if (!searchURL.includes('%s') && engine in URLs) {
-		searchURL = URLs[engine as keyof typeof URLs]
-	}
-
-	if (engine === 'custom') {
-		searchURL = request
+	if (isValidEngine(engine)) {
+		const trad = tradThis(engine)
+		searchURL = trad.includes('%s') ? trad : URLs[engine]
 	}
 
 	return searchURL.replace('%s', encodeURIComponent(val ?? ''))
@@ -414,4 +407,8 @@ function focusSearchbar() {
 	if (dombuttons?.classList.contains('shown') === false) {
 		domsearchbar?.focus()
 	}
+}
+
+function isValidEngine(s = ''): s is Sync.Searchbar['engine'] {
+	return s in ENGINES
 }

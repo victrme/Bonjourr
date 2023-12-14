@@ -5,8 +5,6 @@ import pocketEditor from 'pocket-editor'
 import storage from '../storage'
 import langList from '../langs'
 
-import { Notes } from '../types/sync'
-
 type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
 
 const container = document.getElementById('notes_container')
@@ -84,7 +82,7 @@ async function updateNotes(event: NotesEvent) {
 	eventDebounce({ notes })
 }
 
-function initNotes(init: Notes) {
+function initNotes(init: Sync.Notes) {
 	editor = pocketEditor('notes_container')
 
 	handleAlign(init.align)
@@ -99,7 +97,7 @@ function initNotes(init: Notes) {
 	})
 }
 
-export default function notes(init: Notes | null, event?: NotesEvent) {
+export default function notes(init?: Sync.Notes, event?: NotesEvent) {
 	if (event) {
 		updateNotes(event)
 		return

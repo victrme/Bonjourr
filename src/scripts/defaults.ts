@@ -1,6 +1,4 @@
 import langList from './langs'
-import type { Local } from './types/local'
-import type { Sync } from './types/sync'
 
 export const CURRENT_VERSION = '1.18.4'
 
@@ -58,7 +56,7 @@ const DEFAULT_LANG = (() => {
 	return 'en'
 })()
 
-export const SYNC_DEFAULT: Sync = {
+export const SYNC_DEFAULT: Sync.Storage = {
 	about: { browser: PLATFORM, version: CURRENT_VERSION },
 	showall: false,
 	lang: DEFAULT_LANG,
@@ -101,7 +99,7 @@ export const SYNC_DEFAULT: Sync = {
 		every: 'hour',
 		collection: '',
 		lastCollec: 'day',
-		pausedImage: null,
+		pausedImage: undefined,
 		time: Date.now(),
 	},
 	weather: {
@@ -117,7 +115,6 @@ export const SYNC_DEFAULT: Sync = {
 	notes: {
 		on: false,
 		width: 40,
-		text: null,
 		opacity: 0.1,
 		align: 'left',
 	},
@@ -173,9 +170,9 @@ export const SYNC_DEFAULT: Sync = {
 	},
 }
 
-export const LOCAL_DEFAULT: Local = {
+export const LOCAL_DEFAULT: Local.Storage = {
 	userQuoteSelection: 0,
-	translations: {},
+	translations: undefined,
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
