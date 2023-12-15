@@ -911,9 +911,26 @@
 		transition: opacity 0.2s, left 0.4s;
 	}
 
-	&.folder #e_folder, /* dev */
+	&.select-all hr,
+	&.select-all #e_delete,
+	&.select-all #e_submit,
+	&.select-all .edit-inputs {
+		display: none;
+	}
+
+	&.folder #e_folder,
 	&.folder #e_url,
 	&.folder #e_iconurl {
+		display: none;
+	}
+
+	&.in-folder #e_folder-sel {
+		display: none;
+	}
+
+	&:not(.select-all) #e_delete-sel,
+	&:not(.select-all) #e_folder-sel,
+	&:not(.select-all) #e_folder-remove-sel {
 		display: none;
 	}
 

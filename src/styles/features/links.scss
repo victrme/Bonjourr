@@ -209,6 +209,24 @@ li.block {
 		}
 	}
 
+	&.select-all {
+		li.block:not(.selected) {
+			filter: grayscale(1) brightness(0.6);
+		}
+
+		li.block:active div,
+		li.block:hover div,
+		li.block:not(.folder):active img,
+		li.block:not(.folder):hover img {
+			transform: none;
+		}
+
+		li.block.selected div,
+		li.block.selected:not(.folder) img {
+			outline: 4px solid var(--color-blue);
+		}
+	}
+
 	&.in-folder {
 		#link-list {
 			background-color: #fff1;

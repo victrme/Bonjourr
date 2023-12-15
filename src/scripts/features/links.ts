@@ -56,24 +56,13 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	initblocks(getAllLinksInTab(init, init.tabs.selected), init.linknewtab)
 	setRows(init.linksrow, init.linkstyle)
 	onSettingsLoad(editEvents)
+	createGlobalEvents()
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		window.addEventListener('resize', () => {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
 		})
 	}
-
-	document.body.addEventListener('click', function (e) {
-		if (domlinkblocks.classList.contains('in-folder')) {
-			const path = e.composedPath() ?? [document.body]
-			const node = path[0] as Element | undefined
-			const clicksOnInterface = node?.id === 'interface' || node?.tagName === 'BODY'
-
-			if (clicksOnInterface) {
-				clickClosesFolder()
-			}
-		}
-	})
 }
 
 //
@@ -200,8 +189,11 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		}
 	}
 
+	for (const elem of liList) {
+		createLinksEvents(elem)
+	}
+
 	// createDragging(liList)
-	createEvents(liList)
 	createIcons(imgList, links)
 	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 
@@ -229,26 +221,29 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 }
 
 async function clickOpensFolder(elem: HTMLLIElement) {
-	if (elem.classList.contains('folder')) {
-		const data = await storage.sync.get()
-		const folder = data[elem.id] as Links.Folder
-
-		transitioner(
-			function hide() {
-				currentFolder = elem.id
-				domlinkblocks.classList.add('hiding')
-				domlinkblocks.classList.remove('in-folder')
-			},
-			async function changeToFolder() {
-				toggleTabsTitleType(folder.title)
-				await initblocks(getAllLinksInFolder(data, elem.id), false)
-			},
-			function show() {
-				domlinkblocks.classList.replace('hiding', 'in-folder')
-			},
-			200
-		)
+	if (elem.classList.contains('folder') === false) {
+		return
 	}
+
+	const data = await storage.sync.get()
+	const folder = data[elem.id] as Links.Folder
+
+	transitioner(
+		function hide() {
+			currentFolder = elem.id
+			domlinkblocks.classList.add('hiding')
+			domlinkblocks.classList.remove('in-folder')
+		},
+		async function changeToFolder() {
+			toggleTabsTitleType(folder.title)
+			await initblocks(getAllLinksInFolder(data, elem.id), false)
+		},
+		function show() {
+			domeditlink?.classList.add('in-folder')
+			domlinkblocks.classList.replace('hiding', 'in-folder')
+		},
+		200
+	)
 }
 
 async function clickClosesFolder() {
@@ -265,6 +260,7 @@ async function clickClosesFolder() {
 			await initblocks(getAllLinksInTab(data, selected), false)
 		},
 		function show() {
+			domeditlink?.classList.remove('in-folder')
 			domlinkblocks.classList.remove('in-folder')
 			domlinkblocks.classList.remove('hiding')
 		},
@@ -272,40 +268,104 @@ async function clickClosesFolder() {
 	)
 }
 
-function createEvents(elems: HTMLLIElement[]) {
-	let timer = 0
+function createGlobalEvents() {
+	document.body.addEventListener('click', function (e) {
+		if (!clicksOnInterface(e)) {
+			return
+		}
 
-	for (const elem of elems) {
-		elem.addEventListener('keyup', (ev) => keyUp(elem, ev))
-		elem.addEventListener('contextmenu', (ev) => contextMenu(elem, ev))
-		elem.addEventListener('click', () => clickOpensFolder(elem))
+		if (domlinkblocks.classList.contains('in-folder')) {
+			clickClosesFolder()
+		}
 
-		if (SYSTEM_OS === 'ios') {
-			elem.addEventListener('touchstart', (ev) => longPressDebounce(elem, ev), { passive: false })
-			elem.addEventListener('touchmove', () => clearTimeout(timer), { passive: false })
-			elem.addEventListener('touchend', () => clearTimeout(timer), { passive: false })
+		if (domlinkblocks.classList.contains('select-all')) {
+			domlinkblocks.classList.remove('select-all')
+			document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
+		}
+	})
+}
+
+function createLinksEvents(elem: HTMLLIElement) {
+	let selectallTimer = 0
+	let mobileLongpressTimer = 0
+
+	elem.addEventListener('keyup', openEditLink)
+	elem.addEventListener('contextmenu', openEditLink)
+	elem.addEventListener('click', openFolder)
+	elem.addEventListener('click', selectAll)
+	elem.addEventListener('mousedown', selectAll)
+	elem.addEventListener('mouseup', selectAll)
+
+	function openFolder() {
+		if (domlinkblocks.className.includes('select-all')) {
+			return
+		}
+
+		clearTimeout(selectallTimer)
+		clickOpensFolder(elem)
+	}
+
+	function openEditLink(e: MouseEvent | KeyboardEvent) {
+		const isContextmenu = e.type === 'contextmenu'
+		const isKeyup = e.type === 'keyup'
+		const pressesE = (e as KeyboardEvent)?.key === 'e'
+
+		if (isKeyup && pressesE) {
+			const { offsetLeft, offsetTop } = e.target as HTMLElement
+			displayEditWindow(elem, { x: offsetLeft, y: offsetTop })
+			e.preventDefault()
+		}
+
+		if (isContextmenu) {
+			const { x, y } = e as MouseEvent
+			removeLinkSelection()
+			displayEditWindow(elem, { x, y })
+			e.preventDefault()
 		}
 	}
 
-	function longPressDebounce(elem: HTMLLIElement, ev: TouchEvent) {
-		timer = setTimeout(() => {
+	function selectAll(event: MouseEvent) {
+		clearTimeout(selectallTimer)
+
+		const selectAllActive = domlinkblocks.className.includes('select-all')
+
+		// toggle selection
+		if (selectAllActive && event.type === 'click') {
+			elem.classList.toggle('selected')
+			event.preventDefault()
+			return
+		}
+
+		// disable link when selecting all
+		if (selectAllActive && event.type.match(/mouseup|click/)) {
+			event.preventDefault()
+			return
+		}
+
+		// start select all debounce
+		if (!selectAllActive && event.type === 'mousedown') {
+			selectallTimer = setTimeout(() => {
+				domeditlink?.classList.add('select-all')
+				domlinkblocks.classList.add('select-all')
+			}, 600)
+		}
+	}
+
+	//	Mobile
+	//
+
+	if (SYSTEM_OS === 'ios') {
+		elem.addEventListener('touchstart', longPressDebounce, { passive: false })
+		elem.addEventListener('touchmove', () => clearTimeout(mobileLongpressTimer), { passive: false })
+		elem.addEventListener('touchend', () => clearTimeout(mobileLongpressTimer), { passive: false })
+	}
+
+	function longPressDebounce(ev: TouchEvent) {
+		mobileLongpressTimer = setTimeout(() => {
 			ev.preventDefault()
 			removeLinkSelection()
 			displayEditWindow(elem, { x: 0, y: 0 }) // edit centered on mobile
 		}, 600)
-	}
-
-	function contextMenu(elem: HTMLLIElement, ev: MouseEvent) {
-		ev.preventDefault()
-		removeLinkSelection()
-		displayEditWindow(elem, { x: ev.x, y: ev.y })
-	}
-
-	function keyUp(elem: HTMLLIElement, ev: KeyboardEvent) {
-		if (ev.key === 'e') {
-			const { offsetLeft, offsetTop } = ev.target as HTMLElement
-			displayEditWindow(elem, { x: offsetLeft, y: offsetTop })
-		}
 	}
 }
 
@@ -672,21 +732,33 @@ function editEvents() {
 		}
 	})
 
-	document.getElementById('e_folder')?.addEventListener('click', async function () {
-		const editlink = document.getElementById('editlink')
-		const ids = [editlink?.dataset.linkid || '']
+	document.getElementById('e_folder-sel')?.addEventListener('click', async function () {
+		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
+		const ids: string[] = []
 
-		// dev
-		// to replace drag and drop
-		const linksibling = document.getElementById(ids[0])?.nextElementSibling
-		const isNotFolder = !linksibling?.classList.contains('folder')
-		const hasId = linksibling?.id
+		for (const id of selectedIds) {
+			const dom = document.getElementById(id)
+			const isFolder = dom?.classList.contains('folder')
 
-		if (hasId && isNotFolder) {
-			ids.push(linksibling.id)
+			if (isFolder === false) {
+				ids.push(id)
+			}
 		}
 
 		linksUpdate({ addFolder: ids })
+
+		domlinkblocks?.classList.remove('select-all')
+
+		closeEditLink()
+		removeLinkSelection()
+	})
+
+	document.getElementById('e_folder-remove-sel')?.addEventListener('click', async function () {
+		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
+
+		removeLinksFromFolder(selectedIds)
+
+		domlinkblocks?.classList.remove('select-all')
 
 		closeEditLink()
 		removeLinkSelection()
@@ -846,6 +918,35 @@ async function removeLink(linkID: string) {
 	setTimeout(() => {
 		document.getElementById(linkID)?.remove()
 	}, 600)
+}
+
+async function removeLinksFromFolder(ids: string[]): Promise<void> {
+	if (!currentFolder) {
+		return
+	}
+
+	const data = await storage.sync.get()
+	const tab = data.tabs.list[data.tabs.selected]
+	const folder = data[currentFolder] as Links.Folder
+	const isFolder = folder?.type === 'folder'
+
+	if (folder && isFolder) {
+		for (const id of ids) {
+			folder.ids = folder.ids.filter((linkid) => linkid !== id)
+		}
+
+		// Delete folder
+		if (folder.ids.length < 2) {
+			delete data[folder._id]
+			tab.ids = tab.ids.filter((id) => id !== folder._id)
+		}
+
+		data[currentFolder] = folder
+		data.tabs.list[data.tabs.selected] = tab
+
+		storage.sync.set(data)
+		initblocks(getAllLinksInFolder(data, folder._id), data.linknewtab)
+	}
 }
 
 function addLink(): Links.Elem[] {
@@ -1095,6 +1196,14 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 //
 // Helpers
 //
+
+function clicksOnInterface(event: Event) {
+	const path = event.composedPath() ?? [document.body]
+	const node = path[0] as Element | undefined
+	const clicksOnInterface = node?.id === 'interface' || node?.tagName === 'BODY'
+
+	return clicksOnInterface
+}
 
 function removeLinkSelection() {
 	domlinkblocks.querySelectorAll('img').forEach((img) => {
