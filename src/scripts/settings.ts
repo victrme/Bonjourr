@@ -313,18 +313,16 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(undefined, { addLink: true }), 1200)
-
 	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
 		if (this.code === 'Enter') paramId('i_url')?.focus()
 	})
 
 	paramId('i_url').addEventListener('change', function (this: KeyboardEvent) {
-		submitLinkFunc()
+		quickLinks(undefined, { addLink: true })
 	})
 
 	paramId('submitlink').addEventListener('click', function () {
-		submitLinkFunc()
+		quickLinks(undefined, { addLink: true })
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {

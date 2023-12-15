@@ -32,10 +32,7 @@ type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
-const domeditlink = document.getElementById('editlink')
-
-let currentFolder: string | undefined
-let currentTab = 0
+const domeditlink = document.getElementById('editlink') as HTMLDivElement
 
 export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
 	if (event) {
@@ -71,7 +68,6 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	const tabUList = document.querySelector<HTMLUListElement>('#link-list')
-	const inFolder = !!currentFolder
 
 	if (tabUList && tabUList?.children) {
 		Object.values(tabUList?.children).forEach((child) => {
@@ -121,7 +117,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	// Create links folders DOM
 	//
 
-	if (!inFolder && linkFolders.length > 0) {
+	if (linkFolders.length > 0) {
 		for (const link of linkFolders) {
 			const doc = parser.parseFromString(folderhtml, 'text/html')
 			const li = doc.querySelector('li')!
@@ -230,7 +226,7 @@ async function clickOpensFolder(elem: HTMLLIElement) {
 
 	transitioner(
 		function hide() {
-			currentFolder = elem.id
+			domlinkblocks.dataset.folderid = elem.id
 			domlinkblocks.classList.add('hiding')
 			domlinkblocks.classList.remove('in-folder')
 		},
@@ -239,7 +235,6 @@ async function clickOpensFolder(elem: HTMLLIElement) {
 			await initblocks(getAllLinksInFolder(data, elem.id), false)
 		},
 		function show() {
-			domeditlink?.classList.add('in-folder')
 			domlinkblocks.classList.replace('hiding', 'in-folder')
 		},
 		200
@@ -252,7 +247,7 @@ async function clickClosesFolder() {
 
 	transitioner(
 		function hide() {
-			currentFolder = undefined
+			domlinkblocks.dataset.folderid = ''
 			domlinkblocks.classList.add('hiding')
 		},
 		async function changeToTab() {
@@ -260,7 +255,6 @@ async function clickClosesFolder() {
 			await initblocks(getAllLinksInTab(data, selected), false)
 		},
 		function show() {
-			domeditlink?.classList.remove('in-folder')
 			domlinkblocks.classList.remove('in-folder')
 			domlinkblocks.classList.remove('hiding')
 		},
@@ -320,7 +314,7 @@ function createLinksEvents(elem: HTMLLIElement) {
 
 		if (isContextmenu) {
 			const { x, y } = e as MouseEvent
-			removeLinkSelection()
+
 			displayEditWindow(elem, { x, y })
 			elem.classList.add('selected')
 			e.preventDefault()
@@ -348,7 +342,6 @@ function createLinksEvents(elem: HTMLLIElement) {
 		// start select all debounce
 		if (!selectAllActive && event.type === 'mousedown') {
 			selectallTimer = setTimeout(() => {
-				domeditlink?.classList.add('select-all')
 				domlinkblocks.classList.add('select-all')
 			}, 600)
 		}
@@ -366,7 +359,7 @@ function createLinksEvents(elem: HTMLLIElement) {
 	function longPressDebounce(ev: TouchEvent) {
 		mobileLongpressTimer = setTimeout(() => {
 			ev.preventDefault()
-			removeLinkSelection()
+
 			displayEditWindow(elem, { x: 0, y: 0 }) // edit centered on mobile
 		}, 600)
 	}
@@ -393,16 +386,17 @@ function initTabs(tabs: Links.Tabs) {
 }
 
 function toggleTabsTitleType(title: string): void {
+	const folderid = domlinkblocks.dataset.folderid
 	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
 
-	if (!!currentFolder) {
+	if (!!folderid) {
 		document.querySelector<HTMLInputElement>('#link-title')?.click()
 	}
 
 	if (firstinput) {
 		firstinput.value = title
 		firstinput.style.width = title.length + 'ch'
-		firstinput.placeholder = !!currentFolder ? tradThis('folder') : tradThis('tab')
+		firstinput.placeholder = !!folderid ? tradThis('folder') : tradThis('tab')
 	}
 }
 
@@ -438,7 +432,7 @@ function appendNewTab(title: string, selected?: boolean): void {
 }
 
 function changeTab(div: HTMLDivElement) {
-	if (!!currentFolder || div.classList.contains('selected')) {
+	if (!!domlinkblocks.dataset.folderid || div.classList.contains('selected')) {
 		return
 	}
 
@@ -720,16 +714,12 @@ function editEvents() {
 
 	document.getElementById('e_delete')?.addEventListener('click', function () {
 		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
-
-		removeLinkSelection()
 		removeLinks(selectedIds)
 		closeEditLink()
 	})
 
 	document.getElementById('e_delete-sel')?.addEventListener('click', function () {
 		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
-
-		removeLinkSelection()
 		removeLinks(selectedIds)
 		closeEditLink()
 	})
@@ -738,7 +728,6 @@ function editEvents() {
 		const noErrorOnEdit = await submitEvent() // returns false if saved icon data too big
 		if (noErrorOnEdit) {
 			closeEditLink() // only auto close on apply changes button
-			removeLinkSelection()
 		}
 	})
 
@@ -760,7 +749,6 @@ function editEvents() {
 		domlinkblocks?.classList.remove('select-all')
 
 		closeEditLink()
-		removeLinkSelection()
 	})
 
 	document.getElementById('e_folder-remove-sel')?.addEventListener('click', async function () {
@@ -771,7 +759,6 @@ function editEvents() {
 		domlinkblocks?.classList.remove('select-all')
 
 		closeEditLink()
-		removeLinkSelection()
 	})
 
 	document.getElementById('e_title')?.addEventListener('keyup', inputSubmitEvent)
@@ -780,20 +767,6 @@ function editEvents() {
 }
 
 async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; y: number }) {
-	//
-	function positionsEditWindow() {
-		const { innerHeight, innerWidth } = window // viewport size
-
-		removeLinkSelection()
-
-		if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
-		if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
-
-		// Moves edit link to mouse position
-		const domeditlink = document.getElementById('editlink')
-		if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
-	}
-
 	const linkId = domlink.id
 	const domicon = domlink.querySelector('img')
 	const domedit = document.querySelector('#editlink')
@@ -801,6 +774,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 	const data = await storage.sync.get(linkId)
 	const link = data[linkId] as Link
+	const isFolder = link.type === 'folder'
 
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
 	domtitle.setAttribute('placeholder', tradThis('Title'))
@@ -816,12 +790,19 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 		domiconurl.value = link.icon
 	}
 
-	positionsEditWindow()
-
 	domedit?.classList.add('shown')
 	domicon?.classList.add('selected')
-	domedit?.classList.toggle('folder', !(link.type !== 'folder' && !currentFolder))
+	domedit?.classList.toggle('folder', isFolder)
 	domedit?.classList.toggle('pushed', opendedSettings)
+
+	const { innerHeight, innerWidth } = window // viewport size
+
+	if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
+	if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
+
+	// Moves edit link to mouse position
+	const domeditlink = document.getElementById('editlink')
+	if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
 
 	if (SYSTEM_OS !== 'ios' && !IS_MOBILE) {
 		domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
@@ -899,13 +880,14 @@ async function updatesEditedLink(linkId: string) {
 async function removeLinks(ids: string[]) {
 	let data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
-	const folder = data[currentFolder ?? ''] as Links.Folder
-	const isFolder = folder?.type === 'folder'
+	const folderid = domlinkblocks.dataset.folderid
 
 	for (const id of ids) {
 		// For folders in this tab
 		// Remove element if found in folder
-		if (folder && isFolder) {
+		if (!!folderid) {
+			const folder = data[folderid] as Links.Folder
+
 			if (folder.ids.includes(id)) {
 				folder.ids = removeFromList(folder.ids, id)
 				data[folder._id] = folder
@@ -929,25 +911,25 @@ async function removeLinks(ids: string[]) {
 }
 
 async function moveLinksOutOfFolder(ids: string[]): Promise<void> {
-	if (!currentFolder) {
+	if (!domlinkblocks.dataset.folderid) {
 		return
 	}
 
 	const data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
-	const folder = data[currentFolder] as Links.Folder
-	const isFolder = folder?.type === 'folder'
+	const folderid = domlinkblocks.dataset.folderid
 
-	if (folder && isFolder) {
+	if (!!folderid) {
+		const folder = data[folderid] as Links.Folder
+
 		for (const id of ids) {
 			folder.ids = folder.ids.filter((linkid) => linkid !== id)
 		}
 
-		data[currentFolder] = folder
+		data[folderid] = folder
 		data.tabs.list[data.tabs.selected] = tab
 
 		storage.sync.set(data)
-		currentFolder = undefined
 		initblocks(getAllLinksInFolder(data, folder._id), data.linknewtab)
 	}
 }
@@ -1001,6 +983,7 @@ function importBookmarks(bookmarks?: Bookmarks): Links.Elem[] {
 async function linkSubmission(arg: LinkSubmission) {
 	const data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
+	const folderid = domlinkblocks.dataset.folderid
 	let links: Link[] = []
 	let newlinks: Link[] = []
 
@@ -1029,11 +1012,12 @@ async function linkSubmission(arg: LinkSubmission) {
 		links.push(link)
 		tab.ids.push(link._id)
 
-		if (currentFolder) {
-			const folder = data[currentFolder] as Link | undefined
+		if (folderid) {
+			const folder = data[folderid] as Link | undefined
+
 			if (folder?.type === 'folder') {
 				folder.ids.push(link._id)
-				data[currentFolder] = folder
+				data[folderid] = folder
 			}
 		}
 	}
@@ -1043,8 +1027,8 @@ async function linkSubmission(arg: LinkSubmission) {
 
 	domlinkblocks.style.visibility = 'visible'
 
-	if (currentFolder) {
-		links = getAllLinksInFolder(data, currentFolder)
+	if (folderid) {
+		links = getAllLinksInFolder(data, folderid)
 	} else {
 		links = getAllLinksInTab(data, data.tabs.selected)
 	}
@@ -1060,13 +1044,15 @@ function linkElemTitle(title: string, url: string, textOnly: boolean): string {
 }
 
 async function setGroupTitle(title: string) {
-	if (currentFolder) {
+	const folderid = domlinkblocks.dataset.folderid
+
+	if (folderid) {
 		const data = await storage.sync.get()
-		const folder = data[currentFolder] as Links.Folder | undefined
+		const folder = data[folderid] as Links.Folder | undefined
 
 		if (folder) {
 			folder.title = title
-			data[currentFolder] = folder
+			data[folderid] = folder
 			storage.sync.set(data)
 		}
 
@@ -1210,12 +1196,6 @@ function clicksOnInterface(event: Event) {
 	const clicksOnInterface = node?.id === 'interface' || node?.tagName === 'BODY'
 
 	return clicksOnInterface
-}
-
-function removeLinkSelection() {
-	domlinkblocks.querySelectorAll('img').forEach((img) => {
-		img?.classList.remove('selected')
-	})
 }
 
 function validateLink(title: string, url: string): Links.Elem {

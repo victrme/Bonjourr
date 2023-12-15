@@ -29,47 +29,6 @@
 	<body class="init loading">
 		<button id="skiptosettings" type="button">Skip to Settings</button>
 
-		<div id="editlink">
-			<div class="edit-inputs">
-				<div>
-					<label for="e_title" class="trn">Title</label>
-					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
-				</div>
-
-				<div>
-					<label for="e_url" class="trn">Link</label>
-					<input
-						id="e_url"
-						type="url"
-						name="e_url"
-						maxlength="512"
-						autocomplete="off"
-						placeholder="https://example.com"
-					/>
-				</div>
-
-				<div>
-					<label for="e_iconurl" class="trn">Icon</label>
-					<input
-						id="e_iconurl"
-						type="url"
-						name="e_iconurl"
-						maxlength="7600"
-						autocomplete="off"
-						placeholder="https://example.com/favicon.ico"
-					/>
-				</div>
-			</div>
-
-			<hr />
-
-			<button id="e_delete" class="trn" aria-label="Delete link">Delete</button>
-			<button id="e_submit" class="trn" aria-label="Apply changes">Apply changes</button>
-			<button id="e_delete-sel" class="trn" aria-label="Delete selection">Delete selected</button>
-			<button id="e_folder-sel" class="trn" aria-label="Create new folder">Create new folder</button>
-			<button id="e_folder-remove-sel" class="trn" aria-label="Remove links from folder">Remove from folder</button>
-		</div>
-
 		<div id="bookmarks_container">
 			<div id="bookmarks">
 				<h3 id="bmk_none" class="trn">No bookmarks found</h3>
@@ -242,6 +201,56 @@
 			</form>
 
 			<div id="linkblocks">
+				<div id="editlink">
+					<div class="edit-inputs">
+						<div>
+							<label for="e_title" class="trn">Title</label>
+							<input
+								id="e_title"
+								type="text"
+								name="e_title"
+								maxlength="64"
+								autocomplete="off"
+								placeholder="Example"
+							/>
+						</div>
+
+						<div>
+							<label for="e_url" class="trn">Link</label>
+							<input
+								id="e_url"
+								type="url"
+								name="e_url"
+								maxlength="512"
+								autocomplete="off"
+								placeholder="https://example.com"
+							/>
+						</div>
+
+						<div>
+							<label for="e_iconurl" class="trn">Icon</label>
+							<input
+								id="e_iconurl"
+								type="url"
+								name="e_iconurl"
+								maxlength="7600"
+								autocomplete="off"
+								placeholder="https://example.com/favicon.ico"
+							/>
+						</div>
+					</div>
+
+					<hr />
+
+					<button id="e_delete" class="trn" aria-label="Delete link">Delete</button>
+					<button id="e_submit" class="trn" aria-label="Apply changes">Apply changes</button>
+					<button id="e_delete-sel" class="trn" aria-label="Delete selection">Delete selected</button>
+					<button id="e_folder-sel" class="trn" aria-label="Create new folder">Create new folder</button>
+					<button id="e_folder-remove-sel" class="trn" aria-label="Remove links from folder">
+						Remove from folder
+					</button>
+				</div>
+
 				<ul id="link-list"></ul>
 				<div id="link-title"></div>
 			</div>
