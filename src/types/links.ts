@@ -12,7 +12,7 @@ declare namespace Links {
 		_id: string
 		order?: number
 		title: string
-		icon: string
+		icon?: string
 		url: string
 	}
 

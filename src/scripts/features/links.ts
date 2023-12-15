@@ -127,7 +127,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 
 			span.textContent = title
 
-			link.ids.forEach((id, i) => {
+			link.ids.forEach(async (id, i) => {
 				const elemIndex = linkElems.findIndex((link) => link._id === id)
 
 				// Only add 4 images to folder preview
@@ -137,7 +137,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 
 					if (elem?.type === 'elem') {
 						img.draggable = false
-						img.src = elem?.icon
+						img.src = elem.icon ?? getDefaultIcon(elem.url)
 						img.alt = ''
 						folder.appendChild(img)
 					}
@@ -200,18 +200,18 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 	for (const link of links) {
 		const img = imgs[link._id]
 
-		if (img && link.type === 'elem') {
-			img.src = link.icon
+		if (!img || link.type === 'folder') {
+			continue
+		}
 
-			if (link.icon.includes('loading.svg')) {
-				const iconurl = `${MAIN_API}/favicon/blob/${link.url}`
+		img.src = link.icon ?? getDefaultIcon(link.url)
 
-				await fetch(iconurl)
-				img.src = iconurl
-				link.icon = iconurl
+		if (img.src.includes('loading.svg')) {
+			await fetch(getDefaultIcon(link.url))
+			img.src = getDefaultIcon(link.url)
 
-				storage.sync.set({ [link._id]: link })
-			}
+			link.icon = undefined
+			storage.sync.set({ [link._id]: link })
 		}
 	}
 }
@@ -787,7 +787,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 		const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
 		domiconurl.setAttribute('placeholder', tradThis('Icon'))
-		domiconurl.value = link.icon
+		domiconurl.value = link.icon ?? ''
 	}
 
 	domedit?.classList.add('shown')
@@ -839,8 +839,8 @@ async function updatesEditedLink(linkId: string) {
 		}
 
 		domtitle.textContent = linkElemTitle(link.title, link.url, domlinkblocks.className === 'text')
+		domicon.src = link.icon ?? getDefaultIcon(link.url)
 		domurl.href = link.url
-		domicon.src = link.icon
 	}
 
 	if (link.type === 'folder') {
@@ -1185,6 +1185,10 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 //
 // Helpers
 //
+
+function getDefaultIcon(url: string) {
+	return `${MAIN_API}/favicon/blob/${url}`
+}
 
 function removeFromList(arr: string[], id: string): string[] {
 	return arr.filter((item) => item !== id)
