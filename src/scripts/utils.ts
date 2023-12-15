@@ -141,7 +141,7 @@ export function closeEditLink() {
 	if (!domedit) return
 
 	domedit?.classList.add('hiding')
-	document.querySelectorAll('#linkblocks img').forEach((img) => img?.classList.remove('selected'))
+	document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
 	setTimeout(() => {
 		domedit ? domedit.setAttribute('class', '') : ''
 	}, 200)

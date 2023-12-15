@@ -274,13 +274,14 @@ function createGlobalEvents() {
 			return
 		}
 
-		if (domlinkblocks.classList.contains('in-folder')) {
-			clickClosesFolder()
-		}
-
+		// Remove first select all
 		if (domlinkblocks.classList.contains('select-all')) {
 			domlinkblocks.classList.remove('select-all')
 			document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
+		}
+		// then close folder
+		else if (domlinkblocks.classList.contains('in-folder')) {
+			clickClosesFolder()
 		}
 	})
 }
@@ -313,6 +314,7 @@ function createLinksEvents(elem: HTMLLIElement) {
 		if (isKeyup && pressesE) {
 			const { offsetLeft, offsetTop } = e.target as HTMLElement
 			displayEditWindow(elem, { x: offsetLeft, y: offsetTop })
+			elem.classList.add('selected')
 			e.preventDefault()
 		}
 
@@ -320,6 +322,7 @@ function createLinksEvents(elem: HTMLLIElement) {
 			const { x, y } = e as MouseEvent
 			removeLinkSelection()
 			displayEditWindow(elem, { x, y })
+			elem.classList.add('selected')
 			e.preventDefault()
 		}
 	}
@@ -716,12 +719,19 @@ function editEvents() {
 	}
 
 	document.getElementById('e_delete')?.addEventListener('click', function () {
-		const editlink = document.getElementById('editlink')
-		const linkid = editlink?.dataset.linkid || ''
+		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
 
 		removeLinkSelection()
-		removeLink(linkid)
-		editlink?.classList.remove('shown')
+		removeLinks(selectedIds)
+		closeEditLink()
+	})
+
+	document.getElementById('e_delete-sel')?.addEventListener('click', function () {
+		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
+
+		removeLinkSelection()
+		removeLinks(selectedIds)
+		closeEditLink()
 	})
 
 	document.getElementById('e_submit')?.addEventListener('click', async function () {
@@ -756,7 +766,7 @@ function editEvents() {
 	document.getElementById('e_folder-remove-sel')?.addEventListener('click', async function () {
 		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
 
-		removeLinksFromFolder(selectedIds)
+		moveLinksOutOfFolder(selectedIds)
 
 		domlinkblocks?.classList.remove('select-all')
 
@@ -812,7 +822,6 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	domicon?.classList.add('selected')
 	domedit?.classList.toggle('folder', !(link.type !== 'folder' && !currentFolder))
 	domedit?.classList.toggle('pushed', opendedSettings)
-	domedit?.setAttribute('data-linkid', linkId)
 
 	if (SYSTEM_OS !== 'ios' && !IS_MOBILE) {
 		domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
@@ -873,54 +882,53 @@ async function updatesEditedLink(linkId: string) {
 // Updates
 //
 
-async function removeLink(linkID: string) {
-	const { tabs, ...data } = await storage.sync.get()
-	const tab = tabs.list[tabs.selected]
-	const link = data[linkID] as Link
+// function deleteFolderIfEmpty(data: Sync.Storage, id: string): Sync.Storage {
+// 	const folder = data[id] as Links.Folder
+// 	const { list, selected } = data.tabs
+// 	const tab = list[selected]
 
-	// For folders in this tab
-	// Remove element if found in folder
-	if (currentFolder) {
-		const folder = data[currentFolder] as Link
-		if (folder && folder?.type === 'folder') {
-			if (folder.ids.includes(linkID)) {
-				folder.ids = folder.ids.filter((id) => id !== linkID)
+// 	if (folder.ids.length < 2) {
+// 		delete data[id]
+// 	}
+
+// 	data.tabs.list[selected].ids = removeFromList(tab.ids, id)
+
+// 	return data
+// }
+
+async function removeLinks(ids: string[]) {
+	let data = await storage.sync.get()
+	const tab = data.tabs.list[data.tabs.selected]
+	const folder = data[currentFolder ?? ''] as Links.Folder
+	const isFolder = folder?.type === 'folder'
+
+	for (const id of ids) {
+		// For folders in this tab
+		// Remove element if found in folder
+		if (folder && isFolder) {
+			if (folder.ids.includes(id)) {
+				folder.ids = removeFromList(folder.ids, id)
 				data[folder._id] = folder
 			}
-
-			// Only one left
-			// Delete folder
-			if (folder.ids.length === 1) {
-				delete data[folder._id]
-				tab.ids = tab.ids.filter((id) => id !== folder._id)
-			}
 		}
+
+		document.getElementById(id)?.classList.add('removed')
+
+		delete data[id]
+
+		tab.ids = removeFromList(tab.ids, id)
+		data.tabs.list[data.tabs.selected] = tab
+
+		setTimeout(() => {
+			document.getElementById(id)?.remove()
+		}, 600)
 	}
-
-	// Delete links in folder
-	if (link?.type === 'folder') {
-		for (const id of link.ids) {
-			delete data[id]
-		}
-	}
-
-	document.getElementById(linkID)?.classList.add('removed')
-
-	delete data[linkID]
-
-	tab.ids = tab.ids.filter((id) => id !== linkID)
-	tabs.list[tabs.selected] = tab
-	data.tabs = tabs
 
 	storage.sync.clear()
 	storage.sync.set(data)
-
-	setTimeout(() => {
-		document.getElementById(linkID)?.remove()
-	}, 600)
 }
 
-async function removeLinksFromFolder(ids: string[]): Promise<void> {
+async function moveLinksOutOfFolder(ids: string[]): Promise<void> {
 	if (!currentFolder) {
 		return
 	}
@@ -935,16 +943,11 @@ async function removeLinksFromFolder(ids: string[]): Promise<void> {
 			folder.ids = folder.ids.filter((linkid) => linkid !== id)
 		}
 
-		// Delete folder
-		if (folder.ids.length < 2) {
-			delete data[folder._id]
-			tab.ids = tab.ids.filter((id) => id !== folder._id)
-		}
-
 		data[currentFolder] = folder
 		data.tabs.list[data.tabs.selected] = tab
 
 		storage.sync.set(data)
+		currentFolder = undefined
 		initblocks(getAllLinksInFolder(data, folder._id), data.linknewtab)
 	}
 }
@@ -1196,6 +1199,10 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 //
 // Helpers
 //
+
+function removeFromList(arr: string[], id: string): string[] {
+	return arr.filter((item) => item !== id)
+}
 
 function clicksOnInterface(event: Event) {
 	const path = event.composedPath() ?? [document.body]
