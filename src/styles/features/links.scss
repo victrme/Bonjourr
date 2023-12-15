@@ -392,7 +392,13 @@ li.block {
 }
 
 //
-//  Editlink states
+//  Editlink states:
+//
+//  - Select single link
+//  - Select single folder
+//  - Select multiple
+//  - In folder: select single link
+//  - In folder: select multiple
 //
 
 #linkblocks.select-all #editlink hr,
@@ -402,12 +408,18 @@ li.block {
 	display: none;
 }
 
-#linkblocks.in-folder #editlink #e_folder-sel {
+#linkblocks:not(.select-all) #editlink #e_folder-sel,
+#linkblocks:not(.select-all) #editlink #e_delete-sel,
+#linkblocks:not(.select-all) #editlink #e_folder-remove-sel {
 	display: none;
 }
 
-#linkblocks:not(.select-all) #editlink #e_delete-sel,
-#linkblocks:not(.select-all) #editlink #e_folder-sel,
-#linkblocks:not(.select-all) #editlink #e_folder-remove-sel {
+#linkblocks.select-all.in-folder #editlink #e_folder-sel,
+#linkblocks.select-all:not(.in-folder) #editlink #e_folder-remove-sel {
+	display: none;
+}
+
+#editlink.folder #e_iconurl,
+#editlink.folder #e_url {
 	display: none;
 }
