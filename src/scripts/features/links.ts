@@ -863,47 +863,38 @@ async function updatesEditedLink(linkId: string) {
 // Updates
 //
 
-// function deleteFolderIfEmpty(data: Sync.Storage, id: string): Sync.Storage {
-// 	const folder = data[id] as Links.Folder
-// 	const { list, selected } = data.tabs
-// 	const tab = list[selected]
-
-// 	if (folder.ids.length < 2) {
-// 		delete data[id]
-// 	}
-
-// 	data.tabs.list[selected].ids = removeFromList(tab.ids, id)
-
-// 	return data
-// }
-
 async function removeLinks(ids: string[]) {
 	let data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
-	const folderid = domlinkblocks.dataset.folderid
+	const folderId = domlinkblocks.dataset.folderid
+	const currentlyInFolder = !!folderId
 
 	for (const id of ids) {
-		// For folders in this tab
-		// Remove element if found in folder
-		if (!!folderid) {
-			const folder = data[folderid] as Links.Folder
+		const toRemove = data[id] as Link | undefined
+		const toRemoveIsFolder = !!toRemove && toRemove.type === 'folder'
 
-			if (folder.ids.includes(id)) {
-				folder.ids = removeFromList(folder.ids, id)
-				data[folder._id] = folder
+		// Also remove link from folder
+		if (currentlyInFolder) {
+			const folder = data[folderId] as Links.Folder
+			folder.ids = folder.ids.filter((id) => !ids.includes(id))
+			data[folder._id] = folder
+		}
+
+		// Also remove folder content from data
+		if (toRemoveIsFolder) {
+			for (const id of toRemove.ids) {
+				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
+				delete data[id]
 			}
 		}
 
-		document.getElementById(id)?.classList.add('removed')
-
-		delete data[id]
-
 		tab.ids = removeFromList(tab.ids, id)
 		data.tabs.list[data.tabs.selected] = tab
+		delete data[id]
 
-		setTimeout(() => {
-			document.getElementById(id)?.remove()
-		}, 600)
+		// Animation
+		document.getElementById(id)?.classList.add('removed')
+		setTimeout(() => document.getElementById(id)?.remove(), 600)
 	}
 
 	storage.sync.clear()
