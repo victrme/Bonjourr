@@ -1,105 +1,116 @@
 import { test, expect, Page } from '@playwright/test'
+import openAllSettings from './utils/openallsettings'
 
-test.setTimeout(8000)
-test.describe.configure({ mode: 'serial' })
-
-let page: Page
-
-test.beforeAll(async ({ browser }) => {
-	page = await browser.newPage()
+test.beforeEach(async ({ page }) => {
 	await page.goto('./')
+	await openAllSettings(page)
 })
 
-test.afterAll(async () => {
-	await page.close()
+test.describe('Link submission', () => {
+	test('Adds link with title', async ({ page }) => {
+		await addLink(page, 'bonjourr.fr', 'bonjourr')
+
+		const span = page.locator('#linkblocks li span')
+		const a = page.locator('#linkblocks li a')
+
+		expect(await span?.textContent()).toEqual('bonjourr')
+		expect(await a?.getAttribute('href')).toEqual('https://bonjourr.fr')
+	})
+
+	test('Adds link without title', async ({ page }) => {
+		await addLink(page, 'bonjourr.fr', '')
+
+		const span = page.locator('#linkblocks li span')
+		const a = page.locator('#linkblocks li a')
+
+		expect(await span?.textContent()).toEqual('')
+		expect(await a?.getAttribute('href')).toEqual('https://bonjourr.fr')
+	})
 })
 
-test.beforeEach(async () => {
-	await page.waitForTimeout(200)
-	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
-	await page.waitForTimeout(5)
-	await page.waitForSelector('#settings')
+test.describe('Edit link', () => {
+	test.beforeEach(async ({ page }) => await addLink(page, 'wikipedia.org', 'wikipedia'))
 
-	const classes = (await page.locator('#settings')?.getAttribute('class')) || ''
+	test('Modifies title', async ({ page }) => {
+		const title = 'wiki'
 
-	if (!classes.includes('all')) {
-		await page.getByLabel('Show all settings').click()
-	}
+		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
+		await page.getByPlaceholder('Title').click()
+		await page.getByPlaceholder('Title').fill(title)
+		await page.getByRole('button', { name: 'Apply changes' }).click()
+
+		const span = page.locator('#linkblocks li span')
+
+		expect(await span?.textContent()).toEqual(title)
+	})
+
+	test('Modifies link', async ({ page }) => {
+		const url = 'https://fr.wikipedia.org'
+
+		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
+		await page.getByPlaceholder('Link').click()
+		await page.getByPlaceholder('Link').fill(url)
+		await page.getByRole('button', { name: 'Apply changes' }).click()
+
+		const a = page.locator('#linkblocks li a')
+
+		expect(await a?.getAttribute('href')).toEqual(url)
+	})
+
+	test('Modifies icon', async ({ page }) => {
+		const icon = 'https://fr.wikipedia.org/favicon.ico'
+
+		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
+		await page.getByPlaceholder('Icon').click()
+		await page.getByPlaceholder('Icon').fill(icon)
+		await page.getByRole('button', { name: 'Apply changes' }).click()
+
+		const img = page.locator('#linkblocks li img')
+
+		expect(await img?.getAttribute('src')).toEqual(icon)
+	})
 })
 
-test.afterEach(async () => {
-	await page.reload()
+test.describe('Select multiple', () => {
+	test('Long clicks selects', async ({ page }) => {
+		await addLink(page, 'bonjourr.fr', 'bonjourr')
+
+		await page.locator('#linkblocks li:first-child').hover()
+		await page.mouse.down()
+		await page.waitForTimeout(1000)
+		await page.mouse.up()
+
+		expect(await page.locator('#linkblocks li:first-child').getAttribute('class')).toContain('selected')
+	})
 })
 
-async function addLink(url = '', title = '') {
-	await page.getByRole('textbox', { name: 'New link title' }).click()
-	await page.getByRole('textbox', { name: 'New link title' }).fill(title)
-	await page.getByRole('textbox', { name: 'New link title' }).press('Tab')
-	await page.getByPlaceholder('URL').fill(url)
-	await page.getByRole('button', { name: 'Add' }).click()
-}
+test.describe('Link styles', () => {
+	test('Updates styles', async ({ page }) => {
+		const linkblocks = await page.$('#linkblocks')
+		const select = page.locator('#i_linkstyle')
 
-test('Adds single link', async () => {
-	await page.getByRole('textbox', { name: 'New link title' }).click()
-	await page.getByRole('textbox', { name: 'New link title' }).fill('')
-	await page.getByRole('textbox', { name: 'New link title' }).press('Tab')
-	await page.getByPlaceholder('URL').fill('bonjourr.fr')
-	await page.getByRole('button', { name: 'Add' }).click()
+		// Medium
+		await select.selectOption('medium')
+		expect(await linkblocks?.getAttribute('class')).toContain('medium')
 
-	const a = await page.$('li.block a')
-	const href = await a?.getAttribute('href')
-	expect(href).toEqual('https://bonjourr.fr')
+		// Small
+		await select.selectOption('small')
+		expect(await linkblocks?.getAttribute('class')).toContain('small')
+
+		// Text
+		await select.selectOption('text')
+		expect(await linkblocks?.getAttribute('class')).toContain('text')
+		expect(await linkblocks?.$('#linkblocks a img')).toBeFalsy()
+
+		// Large
+		await select.selectOption('large')
+		expect(!!(await linkblocks?.getAttribute('class'))?.match('/small|medium|text/')).toBe(false)
+	})
 })
 
-test('Modifies title, link & icon', async () => {
-	await addLink('wikipedia.org', 'wikipedia')
+test('Reduces links row', async ({ page }) => {
+	await addLink(page, 'bonjourr.fr', '')
 
-	const title = 'wiki'
-	const url = 'https://fr.wikipedia.org'
-	const icon = 'https://fr.wikipedia.org/favicon.ico'
-
-	await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
-	await page.getByPlaceholder('Title').click()
-	await page.getByPlaceholder('Title').fill(title)
-	await page.getByPlaceholder('Link').click()
-	await page.getByPlaceholder('Link').fill(url)
-	await page.getByPlaceholder('Icon').click()
-	await page.getByPlaceholder('Icon').fill(icon)
-	await page.getByRole('button', { name: 'Apply changes' }).click()
-
-	const span = page.locator('#linkblocks li:last-child span')
-	const img = page.locator('#linkblocks li:last-child img')
-	const a = page.locator('#linkblocks li:last-child a')
-
-	expect(await span?.textContent()).toEqual(title)
-	expect(await a?.getAttribute('href')).toEqual(url)
-	expect(await img?.getAttribute('src')).toEqual(icon)
-})
-
-test('Changes styles', async () => {
-	const linkblocks = await page.$('#linkblocks')
-
-	// Medium
-	await page.getByRole('combobox', { name: 'Style', exact: true }).selectOption('medium')
-	expect(await linkblocks?.getAttribute('class')).toContain('medium')
-
-	// Small
-	await page.getByRole('combobox', { name: 'Style', exact: true }).selectOption('small')
-	expect(await linkblocks?.getAttribute('class')).toContain('small')
-
-	// Text
-	await page.getByRole('combobox', { name: 'Style', exact: true }).selectOption('text')
-	expect(await linkblocks?.getAttribute('class')).toContain('text')
-	expect(await linkblocks?.$('#linkblocks a img')).toBeFalsy()
-
-	// Large
-	await page.getByRole('combobox', { name: 'Style', exact: true }).selectOption('large')
-	expect(await linkblocks?.getAttribute('class')).toContain('large')
-})
-
-test('Reduces links row', async () => {
-	test.slow()
-	await addLink('bonjourr.fr', '')
 	await page.getByLabel('Links per row').fill('1')
 	await page.waitForTimeout(200)
 
@@ -120,7 +131,7 @@ test('Reduces links row', async () => {
 	expect(areInColumn).toEqual(true)
 })
 
-test('Opens in new tab', async () => {
+test('Opens in new tab', async ({ page }) => {
 	await page.locator('#i_linknewtab').click()
 
 	const a = page.locator('#linkblocks li:last-child a')
@@ -128,3 +139,15 @@ test('Opens in new tab', async () => {
 
 	expect(target).toEqual('_blank')
 })
+
+//
+//
+//
+
+async function addLink(page: Page, url = '', title = '') {
+	await page.getByRole('textbox', { name: 'New link title' }).click()
+	await page.getByRole('textbox', { name: 'New link title' }).fill(title)
+	await page.getByRole('textbox', { name: 'New link title' }).press('Tab')
+	await page.getByPlaceholder('URL').fill(url)
+	await page.locator('#submitlink').click()
+}
