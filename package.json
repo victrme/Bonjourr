@@ -9,10 +9,7 @@
 		"safari": "gulp safari",
 		"online": "gulp online",
 		"build": "gulp build",
-		"test": "npx playwright test --ui",
-		"test:build": "gulp test",
-		"test:server": "python -m http.server 5500",
-		"test:api": "pnpm --filter api-cache dev"
+		"test": "npx playwright test --ui"
 	},
 	"keywords": [],
 	"author": "",

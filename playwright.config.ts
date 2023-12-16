@@ -7,15 +7,12 @@ export default defineConfig({
 	timeout: 3000,
 	use: {
 		baseURL: 'http://127.0.0.1:5500/release/online/index.html',
-		trace: 'on-first-retry',
 	},
 	webServer: [
+		{ command: 'pnpm --filter api-cache dev' },
+		{ command: 'gulp buildtest && gulp test' },
 		{
-			command: 'pnpm test:api',
-			reuseExistingServer: !process.env.CI,
-		},
-		{
-			command: 'pnpm test:server',
+			command: 'python -m http.server 5500',
 			url: 'http://127.0.0.1:5500/release/online/index.html',
 			reuseExistingServer: !process.env.CI,
 		},
