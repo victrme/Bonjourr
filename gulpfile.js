@@ -6,7 +6,7 @@ import gulpsass from 'gulp-sass'
 import esbuild from 'esbuild'
 import * as sasscompiler from 'sass'
 
-const { series, parallel, src, dest, watch } = gulp
+const { parallel, src, dest, watch } = gulp
 const sass = gulpsass(sasscompiler)
 
 function html(platform) {
@@ -137,26 +137,30 @@ const taskExtension = (from, prod) => [
 //
 
 export const online = async function () {
-	watch(filesToWatch, series(parallel(...taskOnline())))
+	watch(filesToWatch, parallel(...taskOnline()))
 }
 
 export const chrome = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('chrome'))))
+	watch(filesToWatch, parallel(...taskExtension('chrome')))
 }
 
 export const edge = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('edge'))))
+	watch(filesToWatch, parallel(...taskExtension('edge')))
 }
 
 export const firefox = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
+	watch(filesToWatch, parallel(...taskExtension('firefox')))
 }
 
 export const safari = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('safari'))))
+	watch(filesToWatch, parallel(...taskExtension('safari')))
 }
 
-export const test = parallel(...taskOnline('test'))
+export const test = async function () {
+	watch(filesToWatch, parallel(...taskOnline('test')))
+}
+
+export const buildtest = parallel(...taskOnline('test'))
 
 export const build = parallel(
 	...taskOnline('prod'),
