@@ -1,22 +1,20 @@
 declare namespace Links {
-	type Folder = {
-		type: 'folder'
+	type Base = {
 		_id: string
-		ids: string[]
 		order?: number
 		title: string
 	}
 
-	type Elem = {
-		type: 'elem'
-		_id: string
-		order?: number
-		title: string
+	interface Folder extends Base {
+		ids: string[]
+	}
+
+	interface Elem extends Base {
 		icon?: string
 		url: string
 	}
 
-	type Link = Elem | Folder
+	type Link = Links.Folder | Links.Elem
 
 	type Tabs = {
 		selected: number

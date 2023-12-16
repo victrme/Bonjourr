@@ -102,14 +102,10 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	const linkFolders: Links.Folder[] = []
 
 	for (const link of links) {
-		switch (link?.type) {
-			case 'elem':
-				linkElems.push(link)
-				break
-
-			case 'folder':
-				linkFolders.push(link)
-				break
+		if (isFolder(link)) {
+			linkFolders.push(link)
+		} else {
+			linkElems.push(link)
 		}
 	}
 
@@ -135,7 +131,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 					const img = document.createElement('img')
 					const elem = linkElems[elemIndex]
 
-					if (elem?.type === 'elem') {
+					if (!isFolder(elem)) {
 						img.draggable = false
 						img.src = elem.icon ?? getDefaultIcon(elem.url)
 						img.alt = ''
@@ -200,7 +196,7 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 	for (const link of links) {
 		const img = imgs[link._id]
 
-		if (!img || link.type === 'folder') {
+		if (!img || isFolder(link)) {
 			continue
 		}
 
@@ -774,13 +770,12 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 	const data = await storage.sync.get(linkId)
 	const link = data[linkId] as Link
-	const isFolder = link.type === 'folder'
 
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
 	domtitle.setAttribute('placeholder', tradThis('Title'))
 	domtitle.value = link.title
 
-	if (link.type === 'elem') {
+	if (isFolder(link) === false) {
 		const domurl = document.getElementById('e_url') as HTMLInputElement
 		domurl.setAttribute('placeholder', tradThis('Link'))
 		domurl.value = link.url
@@ -792,7 +787,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 
 	domedit?.classList.add('shown')
 	domicon?.classList.add('selected')
-	domedit?.classList.toggle('folder', isFolder)
+	domedit?.classList.toggle('folder', isFolder(link))
 	domedit?.classList.toggle('pushed', opendedSettings)
 
 	const { innerHeight, innerWidth } = window // viewport size
@@ -829,10 +824,9 @@ async function updatesEditedLink(linkId: string) {
 	const domicon = domlink.querySelector('img') as HTMLImageElement
 	const domurl = domlink.querySelector('a') as HTMLAnchorElement
 
-	if (link.type === 'elem') {
+	if (isFolder(link) === false) {
 		link = {
 			...link,
-			type: 'elem',
 			title: stringMaxSize(e_title.value, 64),
 			url: stringMaxSize(e_url.value, 512),
 			icon: stringMaxSize(e_iconurl.value, 7500),
@@ -842,11 +836,10 @@ async function updatesEditedLink(linkId: string) {
 		domicon.src = link.icon ?? getDefaultIcon(link.url)
 		domurl.href = link.url
 	}
-
-	if (link.type === 'folder') {
+	//
+	else {
 		link = {
 			...link,
-			type: 'folder',
 			title: stringMaxSize(e_title.value, 64),
 		}
 
@@ -870,8 +863,7 @@ async function removeLinks(ids: string[]) {
 	const currentlyInFolder = !!folderId
 
 	for (const id of ids) {
-		const toRemove = data[id] as Link | undefined
-		const toRemoveIsFolder = !!toRemove && toRemove.type === 'folder'
+		const toRemove = data[id] as Link
 
 		// Also remove link from folder
 		if (currentlyInFolder) {
@@ -881,7 +873,7 @@ async function removeLinks(ids: string[]) {
 		}
 
 		// Also remove folder content from data
-		if (toRemoveIsFolder) {
+		if (isFolder(toRemove)) {
 			for (const id of toRemove.ids) {
 				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
 				delete data[id]
@@ -949,7 +941,6 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 
 	return [
 		{
-			type: 'folder',
 			_id: 'links' + randomString(6),
 			ids: ids,
 			title: title,
@@ -1004,9 +995,9 @@ async function linkSubmission(arg: LinkSubmission) {
 		tab.ids.push(link._id)
 
 		if (folderid) {
-			const folder = data[folderid] as Link | undefined
+			const folder = data[folderid] as Link
 
-			if (folder?.type === 'folder') {
+			if (isFolder(folder)) {
 				folder.ids.push(link._id)
 				data[folderid] = folder
 			}
@@ -1150,8 +1141,9 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 
 		for (const link of links) {
 			const span = document.querySelector<HTMLSpanElement>(`#links${link._id} span`)
+			const isElem = isFolder(link) === false
 
-			if (span && link.type === 'elem') {
+			if (span && isElem) {
 				span.textContent = linkElemTitle(link.title, link.url, style === 'text')
 			}
 		}
@@ -1176,6 +1168,10 @@ async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, 
 //
 // Helpers
 //
+
+function isFolder(link: Link): link is Links.Folder {
+	return (link as Links.Folder).ids !== undefined
+}
 
 function getDefaultIcon(url: string) {
 	return `${MAIN_API}/favicon/blob/${url}`
@@ -1207,7 +1203,6 @@ function validateLink(title: string, url: string): Links.Elem {
 	url = prefix + url
 
 	return {
-		type: 'elem',
 		_id: 'links' + randomString(6),
 		title: stringMaxSize(title, 64),
 		icon: 'src/assets/interface/loading.svg',
@@ -1219,10 +1214,10 @@ function getAllLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 	const folder = data[id] as Link | undefined
 	const links: Links.Elem[] = []
 
-	if (folder && folder.type === 'folder') {
+	if (folder && isFolder(folder)) {
 		for (const id of folder.ids) {
 			const link = data[id] as Link
-			if (link?.type === 'elem') {
+			if (isFolder(link) === false) {
 				links.push(link)
 			}
 		}

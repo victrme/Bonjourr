@@ -45,7 +45,7 @@ declare namespace Sync {
 			browser: string
 			version: string
 		}
-		[key: string]: Links.Link | unknown
+		[key: string]: (Links.Elem | Links.Folder) | unknown
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]
