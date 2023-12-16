@@ -355,7 +355,7 @@ function onlineAndMobileHandler() {
 		// Update export code on localStorage changes
 
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/service-worker.js')
+			navigator.serviceWorker.register('service-worker.js')
 		}
 
 		// PWA install trigger (30s interaction default)

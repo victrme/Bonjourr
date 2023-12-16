@@ -45,7 +45,7 @@ test.describe('Edit link', () => {
 	})
 
 	test('Modifies link', async ({ page }) => {
-		const url = 'https://fr.wikipedia.org'
+		const url = 'https://wikipedia.org'
 
 		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
 		await page.getByPlaceholder('Link').click()
@@ -58,7 +58,7 @@ test.describe('Edit link', () => {
 	})
 
 	test('Modifies icon', async ({ page }) => {
-		const icon = 'https://fr.wikipedia.org/favicon.ico'
+		const icon = 'https://wikipedia.org/favicon.ico'
 
 		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
 		await page.getByPlaceholder('Icon').click()
@@ -140,8 +140,6 @@ test('Opens in new tab', async ({ page }) => {
 	expect(target).toEqual('_blank')
 })
 
-//
-//
 //
 
 async function addLink(page: Page, url = '', title = '') {
