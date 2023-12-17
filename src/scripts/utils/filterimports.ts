@@ -70,7 +70,7 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 			toImport.quicklinks = true
 		}
 
-		;(toImport.links as Links.Link[])?.forEach(({ title, url, icon }: Links.Link, i: number) => {
+		toImport.links?.forEach(({ title, url, icon }: Links.Elem, i: number) => {
 			const id = 'links' + randomString(6)
 			const filteredIcon = icon?.startsWith('alias:') ? toImport[icon] : icon
 

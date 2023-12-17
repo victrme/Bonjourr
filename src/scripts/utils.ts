@@ -115,6 +115,36 @@ export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	return res
 }
 
+export function linksDataMigration(data: Sync.Storage): Sync.Storage {
+	const hasLinks = Object.entries(data).some(([key, val]) => key.startsWith('links') && '_id' in (val as Links.Link))
+	const hasLinksInTab = data?.tabs.list[0].ids.length > 0
+
+	if (hasLinks && hasLinksInTab) {
+		return data
+	}
+
+	// Migration ^1.19.0
+
+	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
+	const list = (bundleLinks(data) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+	data.tabs.list[0].ids = list.map((link) => link._id)
+
+	list.forEach((link) => {
+		if (link.icon?.startsWith(notfoundicon)) {
+			delete link.order
+
+			if (link.icon.startsWith(notfoundicon)) {
+				link.icon = MAIN_API + '/favicon/blob/'
+			}
+
+			data[link._id] = link
+		}
+	})
+
+	return data
+}
+
 export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
 	let isThrottled = true
 

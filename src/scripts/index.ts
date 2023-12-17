@@ -15,7 +15,7 @@ import unsplashBackgrounds from './features/unsplash'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { stringMaxSize, freqControl } from './utils'
+import { stringMaxSize, freqControl, linksDataMigration } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
@@ -445,16 +445,17 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 	onlineAndMobileHandler()
 
 	try {
-		const { sync, local } = await storage.init()
+		let { sync, local } = await storage.init()
 		const version_old = sync?.about?.version
 		const isUpdate = version_old !== CURRENT_VERSION
 
 		if (isUpdate) {
 			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			storage.sync.set({
-				about: SYNC_DEFAULT.about,
-			})
+			sync = linksDataMigration(sync)
+			sync.about = SYNC_DEFAULT.about
+
+			storage.sync.set(sync)
 		}
 
 		await setTranslationCache(sync.lang, local, isUpdate)
