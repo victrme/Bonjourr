@@ -378,7 +378,19 @@ function initTabs(tabs: Links.Tabs) {
 		document.getElementById('b_remlinktab')?.addEventListener('click', function () {
 			linksUpdate({ tab: false })
 		})
+
+		const observer = new MutationObserver(toggleHiddenTab)
+		observer.observe(domlinkblocks, { attributes: true, attributeFilter: ['class'] })
 	})
+
+	toggleHiddenTab()
+}
+
+function toggleHiddenTab() {
+	const tabwrapper = document.getElementById('link-title')
+	const tabs = document?.querySelectorAll('#link-title > div')
+	const notInFolder = !domlinkblocks.classList.contains('in-folder')
+	tabwrapper?.classList.toggle('hidden', notInFolder && (tabs?.length ?? 1) === 1)
 }
 
 function toggleTabsTitleType(title: string): void {
@@ -1068,12 +1080,14 @@ async function setTab(action: 'add' | 'remove') {
 	}
 
 	if (action === 'remove' && tabs.list.length > 1) {
-		tabs.selected = tabs.list.length - 2
+		tabs.selected = tabs.selected === tabs.list.length - 1 ? tabs.selected - 1 : tabs.selected
 		tabs.list.pop()
 		data.tabs = tabs
 		document.querySelector('#link-title div:last-child')?.remove()
 		initblocks(getAllLinksInTab(data, tabs.selected), false)
 	}
+
+	toggleHiddenTab()
 
 	storage.sync.set({ tabs })
 }
