@@ -1,9 +1,20 @@
+//
+// Tabs and folder titles
+//
+
 #link-title {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	column-gap: 1em;
 	margin-top: 2em;
+
+	&.hidden:not(:hover) div {
+		opacity: 0;
+		user-select: none;
+		touch-action: none;
+		pointer-events: none;
+	}
 
 	div {
 		cursor: pointer;
@@ -17,11 +28,6 @@
 		}
 	}
 
-	div.selected input {
-		background-color: #fff1;
-		z-index: auto;
-	}
-
 	div,
 	input {
 		border-radius: 8px;
@@ -32,7 +38,6 @@
 		max-width: 32ch;
 		padding: 0.3em 1em;
 		font-size: 1.3em;
-		font-weight: bolder;
 		color: white;
 		border: none;
 		text-align: center;
@@ -44,7 +49,6 @@
 		z-index: -1;
 
 		&:focus-within {
-			border-color: #fff4;
 			background-color: #fff1;
 			backdrop-filter: blur(1em);
 		}
@@ -55,6 +59,24 @@
 	}
 }
 
+#linkblocks.in-folder #link-title div:first-child,
+#linkblocks #link-title div.selected {
+	// Highlights selected title in tabs and folder title
+	// Needs this because, folder selection is in #linkblocks
+	// and tabs selection is deep in div.selected
+
+	opacity: 1;
+
+	input {
+		border-color: #fff6;
+		z-index: auto;
+	}
+}
+
+//
+// Link list
+//
+
 #link-list {
 	display: inline-flex;
 	visibility: visible;
@@ -62,7 +84,7 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: 1em;
-	border: 1px solid #fff1;
+	border: 1px solid transparent;
 	padding: 1em;
 	margin: 0;
 	min-height: 6em;
@@ -229,7 +251,7 @@ li.block {
 
 	&.in-folder {
 		#link-list {
-			background-color: #fff1;
+			background-color: #fff2;
 			border: 1px solid #fff4;
 			backdrop-filter: blur(2em);
 		}
@@ -394,11 +416,11 @@ li.block {
 //
 //  Editlink states:
 //
-//  - Select single link
-//  - Select single folder
-//  - Select multiple
-//  - In folder: select single link
-//  - In folder: select multiple
+//  - Select link
+//  - Select folder
+//  - Select all
+//  - In folder: select link
+//  - In folder: select all
 //
 
 #linkblocks.select-all #editlink hr,

@@ -247,7 +247,7 @@ async function clickClosesFolder() {
 			domlinkblocks.classList.add('hiding')
 		},
 		async function changeToTab() {
-			toggleTabsTitleType(list[selected].title)
+			toggleTabsTitleType(list[0].title)
 			await initblocks(getAllLinksInTab(data, selected), false)
 		},
 		function show() {
@@ -393,7 +393,7 @@ function toggleHiddenTab() {
 	tabwrapper?.classList.toggle('hidden', notInFolder && (tabs?.length ?? 1) === 1)
 }
 
-function toggleTabsTitleType(title: string): void {
+function toggleTabsTitleType(title: string, selected?: number): void {
 	const folderid = domlinkblocks.dataset.folderid
 	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
 
@@ -414,7 +414,7 @@ function appendNewTab(title: string, selected?: boolean): void {
 	const div = document.createElement('div')
 
 	input.ariaLabel = tradThis('Change link group title')
-	input.placeholder = 'tab'
+	input.placeholder = tradThis('tab')
 	input.maxLength = 32
 	input.value = title
 	input.style.width = input.value.length + 'ch'
@@ -707,40 +707,32 @@ function createDragging(LIList: HTMLLIElement[]) {
 //
 
 function editEvents() {
-	async function submitEvent() {
-		const linkid = document.getElementById('editlink')?.dataset.linkid || ''
-		return await updatesEditedLink(linkid)
-	}
+	const getSelectedIds = (): string[] => [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
 
 	function inputSubmitEvent(e: KeyboardEvent) {
 		if (e.code === 'Enter') {
 			const input = e.target as HTMLInputElement
 			input.blur()
-			submitEvent()
+			updatesEditedLink(getSelectedIds()[0])
 		}
 	}
 
 	document.getElementById('e_delete')?.addEventListener('click', function () {
-		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
-		removeLinks(selectedIds)
+		removeLinks(getSelectedIds())
 		closeEditLink()
 	})
 
 	document.getElementById('e_delete-sel')?.addEventListener('click', function () {
-		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
-		removeLinks(selectedIds)
+		removeLinks(getSelectedIds())
 		closeEditLink()
 	})
 
 	document.getElementById('e_submit')?.addEventListener('click', async function () {
-		const noErrorOnEdit = await submitEvent() // returns false if saved icon data too big
-		if (noErrorOnEdit) {
-			closeEditLink() // only auto close on apply changes button
-		}
+		updatesEditedLink(getSelectedIds()[0])
 	})
 
 	document.getElementById('e_folder-sel')?.addEventListener('click', async function () {
-		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
+		const selectedIds = getSelectedIds()
 		const ids: string[] = []
 
 		for (const id of selectedIds) {
@@ -755,17 +747,12 @@ function editEvents() {
 		linksUpdate({ addFolder: ids })
 
 		domlinkblocks?.classList.remove('select-all')
-
 		closeEditLink()
 	})
 
 	document.getElementById('e_folder-remove-sel')?.addEventListener('click', async function () {
-		const selectedIds = [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
-
-		moveLinksOutOfFolder(selectedIds)
-
+		moveLinksOutOfFolder(getSelectedIds())
 		domlinkblocks?.classList.remove('select-all')
-
 		closeEditLink()
 	})
 
@@ -816,52 +803,44 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	}
 }
 
-async function updatesEditedLink(linkId: string) {
+async function updatesEditedLink(id?: string) {
+	if (!id) {
+		return
+	}
+
 	const e_iconurl = document.getElementById('e_iconurl') as HTMLInputElement
 	const e_title = document.getElementById('e_title') as HTMLInputElement
 	const e_url = document.getElementById('e_url') as HTMLInputElement
+	const domlink = document.getElementById(id) as HTMLLIElement
+	const domtitle = domlink.querySelector('span') as HTMLSpanElement
 
 	if (e_iconurl.value.length === 7500) {
 		e_iconurl.value = ''
 		e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
-
-		return false
+		return
 	}
 
-	const data = await storage.sync.get(linkId)
-	let link = data[linkId] as Link
+	const data = await storage.sync.get(id)
+	const link = data[id] as Link
+	const isElem = isFolder(link) === false
 
-	const domlink = document.getElementById(linkId) as HTMLLIElement
-	const domtitle = domlink.querySelector('span') as HTMLSpanElement
-	const domicon = domlink.querySelector('img') as HTMLImageElement
-	const domurl = domlink.querySelector('a') as HTMLAnchorElement
+	link.title = stringMaxSize(e_title.value, 64)
+	domtitle.textContent = link.title
 
-	if (isFolder(link) === false) {
-		link = {
-			...link,
-			title: stringMaxSize(e_title.value, 64),
-			url: stringMaxSize(e_url.value, 512),
-			icon: stringMaxSize(e_iconurl.value, 7500),
-		}
+	if (isElem) {
+		const domicon = domlink.querySelector('img') as HTMLImageElement
+		const domurl = domlink.querySelector('a') as HTMLAnchorElement
+
+		link.url = stringMaxSize(e_url.value, 512)
+		link.icon = stringMaxSize(e_iconurl.value, 7500)
 
 		domtitle.textContent = linkElemTitle(link.title, link.url, domlinkblocks.className === 'text')
 		domicon.src = link.icon ?? getDefaultIcon(link.url)
 		domurl.href = link.url
 	}
-	//
-	else {
-		link = {
-			...link,
-			title: stringMaxSize(e_title.value, 64),
-		}
-
-		domtitle.textContent = link.title
-	}
 
 	// Updates
-	storage.sync.set({ [linkId]: link })
-
-	return true
+	storage.sync.set({ [id]: link })
 }
 
 //
@@ -1067,29 +1046,28 @@ async function setTab(action: 'add' | 'remove') {
 	const { list } = tabs
 
 	if (action === 'add') {
-		const title = `${tradThis('link tab')} ${list.length}`
 		tabs.selected = list.length - 1
 
-		tabs.list.push({ title, ids: [] })
+		tabs.list.push({ title: '', ids: [] })
 
 		const divs = Object.values(document.querySelectorAll('#link-title div'))
 		divs?.forEach((div) => div.classList.remove('selected'))
 
-		appendNewTab(title, true)
+		appendNewTab('', true)
 		initblocks([], false)
 	}
 
 	if (action === 'remove' && tabs.list.length > 1) {
 		tabs.selected = tabs.selected === tabs.list.length - 1 ? tabs.selected - 1 : tabs.selected
 		tabs.list.pop()
-		data.tabs = tabs
+
 		document.querySelector('#link-title div:last-child')?.remove()
 		initblocks(getAllLinksInTab(data, tabs.selected), false)
 	}
-
 	toggleHiddenTab()
 
-	storage.sync.set({ tabs })
+	data.tabs = tabs
+	storage.sync.set(data)
 }
 
 function setRows(amount: number, style: string) {
