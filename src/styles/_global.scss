@@ -258,7 +258,7 @@ body {
 			padding-top: 4px;
 		}
 		.as_quote_type {
-			max-height: 210px;
+			max-height: 440px;
 		}
 		.as_notes {
 			max-height: 160px;
@@ -306,6 +306,7 @@ body {
 	select,
 	input[type='text'],
 	input[type='url'],
+	#i_qtlist,
 	#i_export,
 	#i_refresh,
 	#i_qtrefresh {

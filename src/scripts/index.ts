@@ -3,7 +3,7 @@ import { settingsInit } from './settings'
 import storage from './storage'
 import clock from './features/clock'
 import notes from './features/notes'
-import quotes from './features/quotes'
+import quotes, { oldJSONToCSV } from './features/quotes'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
@@ -452,9 +452,14 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 		if (isUpdate) {
 			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 
-			storage.sync.set({
-				about: SYNC_DEFAULT.about,
-			})
+			if (Array.isArray(sync?.quotes?.userlist)) {
+				const newuserlist = oldJSONToCSV(sync?.quotes?.userlist as unknown as Quotes.UserInput)
+				sync.quotes.userlist = newuserlist
+			}
+
+			sync.about = SYNC_DEFAULT.about
+
+			storage.sync.set(sync)
 		}
 
 		await setTranslationCache(sync.lang, local, isUpdate)
