@@ -33,13 +33,14 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 
 	let list = init.local?.quotesCache ?? []
 	let selection = init.local?.userQuoteSelection ?? 0
-	let quote: Quote | undefined = undefined
+	let quote: Quote = list[0]
 
 	const noCache = !list || list?.length === 0
 	const isUser = quotes.type === 'user'
 
 	if (noCache) {
 		list = await newQuoteFromAPI(lang, quotes.type)
+		quote = list[0]
 		storage.local.set({ quotesCache: list })
 	}
 
