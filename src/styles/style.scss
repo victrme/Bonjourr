@@ -690,47 +690,6 @@
 	}
 }
 
-#bookmarks_container {
-	position: fixed;
-	display: none;
-	top: 0;
-	left: 0;
-	height: 100vh;
-	width: 100vw;
-	font-size: 16px;
-	opacity: 0;
-	transition: opacity 0.4s;
-	backdrop-filter: blur(40px) brightness(0.9);
-	z-index: 4;
-
-	&.shown {
-		@keyframes animShow {
-			0% {
-				opacity: 0;
-			}
-			100% {
-				opacity: 1;
-			}
-		}
-
-		display: inline-flex;
-		animation: animShow 0.4s forwards;
-	}
-
-	&.hiding {
-		@keyframes animHide {
-			0% {
-				opacity: 1;
-			}
-			100% {
-				opacity: 0;
-			}
-		}
-
-		animation: animHide 0.4s forwards;
-	}
-}
-
 #bookmarks,
 #editlink {
 	color: var(--color-text);
@@ -738,7 +697,7 @@
 	border: 1px solid var(--color-dialog-border);
 	border-radius: 8px;
 
-	@include frostedGlass($blur: 25px);
+	@include frostedGlass($blur: 2em);
 
 	hr {
 		border-color: var(--color-dialog-border);
@@ -750,7 +709,7 @@
 		background-color: transparent;
 		text-align: initial;
 		padding: 2px 12px;
-		color: #2a2222;
+		color: var(--color-text);
 		outline: none;
 		cursor: pointer;
 
@@ -760,132 +719,10 @@
 			background-color: #2c7be5;
 
 			&#e_delete,
-			&#e_delete-sel,
-			&:first-child {
+			&#e_delete-sel {
 				color: white;
 				background-color: #e64b43;
 			}
-		}
-	}
-}
-
-#bookmarks {
-	margin: auto;
-	padding: 1.5em;
-
-	ol {
-		margin: 0;
-		padding: 0;
-		max-height: 50vh;
-		overflow-y: auto;
-		overflow-x: hidden;
-		list-style-type: none;
-
-		li {
-			position: relative;
-			width: 40vw;
-			max-width: 500px;
-			min-width: 300px;
-			margin: 10px;
-			padding: 15px;
-			padding-left: 3.5em;
-			text-align: initial;
-			border-radius: 8px;
-			border: 1px solid transparent;
-			transition: background-color 0.05s, border-color 0.05s;
-			cursor: pointer;
-
-			&:before {
-				content: '';
-				position: absolute;
-				top: 50%;
-				left: 15px;
-				width: 25px;
-				height: 25px;
-				border-radius: 25px;
-				background-color: var(--color-blue);
-				transform: translateY(-50%) scale(0.2);
-				transition: transform 0.05s;
-				filter: grayscale(1);
-			}
-
-			p,
-			pre {
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				overflow: hidden;
-			}
-
-			p {
-				line-height: 1.5em;
-				font-size: 0.9em;
-				font-weight: bold;
-
-				img {
-					width: 1.5em;
-					height: 1.5em;
-					margin-right: 0.5em;
-					vertical-align: bottom;
-				}
-			}
-
-			pre {
-				font-size: 0.8em;
-				margin: 0.4em 0 0 0;
-			}
-
-			&.selected {
-				border-color: var(--color-dialog-highlight);
-				background-color: var(--color-dialog-highlight);
-
-				&:before {
-					filter: none;
-					transform: translateY(-50%) scale(1);
-					background: var(--color-blue) no-repeat center/12px url('/src/assets/interface/checkmark.svg');
-				}
-			}
-		}
-	}
-
-	// no bookmark warning
-	h3 {
-		display: none;
-		color: #222d;
-	}
-
-	> div {
-		display: flex;
-		justify-content: space-between;
-		margin: 2em 1em 0 1em;
-	}
-
-	button {
-		color: #2c7be5;
-		transition: filter 0.4s;
-
-		&:first-child {
-			color: #e64b43;
-		}
-
-		&#bmk_apply.none {
-			pointer-events: none;
-			filter: grayscale(1);
-		}
-	}
-
-	&.noneFound {
-		min-width: 260px;
-
-		h3 {
-			display: block;
-		}
-
-		> div {
-			justify-content: center;
-		}
-
-		#bmk_apply {
-			display: none;
 		}
 	}
 }
@@ -1155,3 +992,5 @@
 @import 'settings';
 @import 'grid';
 @import 'responsive';
+
+@import 'features/bookmarks';

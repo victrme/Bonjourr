@@ -4,87 +4,22 @@ import { PLATFORM } from '../defaults'
 import quickLinks from './links'
 import storage from '../storage'
 
-export default async function linksImport() {
-	const container = document.getElementById('bookmarks_container') as HTMLElement
-	const closeBtn = document.getElementById('bmk_close') as HTMLElement
+type BookmarkFolder = {
+	title: string
+	bookmarks: {
+		title: string
+		url: string
+	}[]
+}
 
-	const closeBookmarks = () => {
-		container.classList.toggle('hiding', true)
-		setTimeout(() => container.removeAttribute('class'), 400)
-	}
+const bookmarkFolders: BookmarkFolder[] = []
+
+export default async function linksImport() {
+	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
+	const closeBtn = document.getElementById('bmk_close') as HTMLElement
 
 	function main(links: Links.Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
 		const listdom = document.createElement('ol')
-
-		let bookmarksList: chrome.bookmarks.BookmarkTreeNode[] = []
-		let selectedList: string[] = []
-
-		bookmarks[0].children?.forEach((cat) => {
-			const list = cat.children
-
-			if (Array.isArray(list)) {
-				bookmarksList.push(...list)
-			}
-		})
-
-		function selectBookmark(elem: HTMLLIElement) {
-			const applyBtn = document.getElementById('bmk_apply') as HTMLElement
-			const isSelected = elem.classList.toggle('selected')
-			const index = elem.getAttribute('data-index')
-			let counter = listdom.querySelectorAll('li.selected').length
-
-			if (!index) return
-
-			// update list to return
-			isSelected ? selectedList.push(index) : selectedList.pop()
-
-			// Change submit button text & class on selections
-			if (counter === 0) applyBtn.textContent = tradThis('Select bookmarks to import')
-			if (counter === 1) applyBtn.textContent = tradThis('Import this bookmark')
-			if (counter > 1) applyBtn.textContent = tradThis('Import these bookmarks')
-
-			applyBtn.classList.toggle('none', counter === 0)
-		}
-
-		bookmarksList.forEach((mark, index) => {
-			const elem = document.createElement('li')
-			const titleWrap = document.createElement('p')
-			const title = document.createElement('span')
-			const favicon = document.createElement('img')
-			const url = document.createElement('pre')
-			let hostname = mark.url
-
-			// only append links if url are not empty
-			// (temp fix to prevent adding bookmarks folder title ?)
-			if (!mark.url || mark.url === '') {
-				return
-			}
-
-			try {
-				hostname = new URL(mark.url).hostname
-			} catch (_) {}
-
-			favicon.src = 'https://icons.duckduckgo.com/ip3/' + hostname + '.ico'
-			favicon.alt = ''
-
-			title.textContent = mark.title
-			url.textContent = mark.url
-
-			titleWrap.appendChild(favicon)
-			titleWrap.appendChild(title)
-
-			elem.setAttribute('data-index', index.toString())
-			elem.setAttribute('tabindex', '0')
-			elem.appendChild(titleWrap)
-			elem.appendChild(url)
-
-			elem.onclick = () => selectBookmark(elem)
-			elem.onkeydown = (e: KeyboardEvent) => (e.code === 'Enter' ? selectBookmark(elem) : '')
-
-			if (links.filter((x) => x.url === stringMaxSize(mark.url, 512)).length === 0) {
-				listdom.appendChild(elem)
-			}
-		})
 
 		// Replace list to filter already added bookmarks
 		const oldList = document.querySelector('#bookmarks ol')
@@ -105,7 +40,7 @@ export default async function linksImport() {
 			}))
 
 			if (bookmarkToApply.length > 0) {
-				closeBookmarks()
+				bookmarksdom.close()
 				quickLinks(undefined, { bookmarks: bookmarkToApply })
 			}
 		}
@@ -121,13 +56,105 @@ export default async function linksImport() {
 		const data = await storage.sync.get()
 		const extAPI = PLATFORM === 'firefox' ? browser : chrome
 		extAPI.bookmarks.getTree().then((response) => {
-			document.getElementById('bookmarks_container')?.classList.toggle('shown', true)
-			main(bundleLinks(data), response)
+			bookmarksdom.showModal()
+			// main(bundleLinks(data), response)
+			parseThroughImport(response[0])
+			addBookmarksFolderToDOM()
 		})
 	})
 
-	closeBtn.addEventListener('click', closeBookmarks)
-	container.addEventListener('click', function (e: MouseEvent) {
-		if ((e.target as HTMLElement).id === 'bookmarks_container') closeBookmarks()
-	})
+	closeBtn.addEventListener('click', () => bookmarksdom.close())
+}
+
+function selectBookmark(elem: HTMLLIElement) {
+	const applyBtn = document.getElementById('bmk_apply') as HTMLElement
+	const isSelected = elem.classList.toggle('selected')
+	const index = elem.getAttribute('data-index')
+	let counter = listdom.querySelectorAll('li.selected').length
+
+	if (!index) return
+
+	// update list to return
+	isSelected ? selectedList.push(index) : selectedList.pop()
+
+	// Change submit button text & class on selections
+	if (counter === 0) applyBtn.textContent = tradThis('Select bookmarks to import')
+	if (counter === 1) applyBtn.textContent = tradThis('Import this bookmark')
+	if (counter > 1) applyBtn.textContent = tradThis('Import these bookmarks')
+
+	applyBtn.classList.toggle('none', counter === 0)
+}
+
+function parseThroughImport(treenode: chrome.bookmarks.BookmarkTreeNode) {
+	const folder: BookmarkFolder = {
+		title: treenode.title,
+		bookmarks: [],
+	}
+
+	for (const child of treenode.children ?? []) {
+		if (child.children) {
+			parseThroughImport(child)
+		}
+		//
+		else if (child.url) {
+			folder.bookmarks?.push({
+				title: child.title,
+				url: child.url,
+			})
+		}
+	}
+
+	if (folder.bookmarks.length > 0) {
+		bookmarkFolders.push(folder)
+	}
+}
+
+function addBookmarksFolderToDOM() {
+	const container = document.getElementById('bookmarks-container') as HTMLDialogElement
+
+	container.childNodes.forEach((node) => node.remove())
+
+	for (const folder of bookmarkFolders) {
+		const listdom = document.createElement('ol')
+		const div = document.createElement('div')
+		const h2 = document.createElement('h2')
+
+		h2.textContent = folder.title
+		div.classList.add('bookmarks-folder')
+
+		for (const bookmark of folder.bookmarks) {
+			const li = document.createElement('li')
+			const button = document.createElement('button')
+			const p_title = document.createElement('p')
+			const p_url = document.createElement('p')
+			const img = document.createElement('img')
+
+			let url: URL | undefined = undefined
+
+			try {
+				url = new URL(bookmark.url)
+			} catch (_) {
+				return
+			}
+
+			img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
+			img.draggable = false
+			img.alt = ''
+
+			p_title.textContent = bookmark.title
+			p_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
+
+			button.addEventListener('click', () => selectBookmark(li))
+			button.appendChild(img)
+			button.appendChild(p_title)
+			button.appendChild(p_url)
+
+			li.appendChild(button)
+			listdom.appendChild(li)
+		}
+
+		div.appendChild(h2)
+		div.appendChild(listdom)
+		container.appendChild(div)
+	}
 }

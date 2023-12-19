@@ -29,16 +29,13 @@
 	<body class="init loading">
 		<button id="skiptosettings" type="button">Skip to Settings</button>
 
-		<div id="bookmarks_container">
-			<div id="bookmarks">
-				<h3 id="bmk_none" class="trn">No bookmarks found</h3>
-
-				<div>
-					<button id="bmk_close" class="trn">Cancel</button>
-					<button id="bmk_apply" class="trn none">Select bookmarks to import</button>
-				</div>
+		<dialog id="bookmarks">
+			<div id="bookmarks-container"></div>
+			<div id="bookmarks-buttons">
+				<button id="bmk_close" class="trn">Cancel</button>
+				<button id="bmk_apply" class="trn none">Select bookmarks</button>
 			</div>
-		</div>
+		</dialog>
 
 		<div id="background_overlay">
 			<div id="background"></div>
