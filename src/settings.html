@@ -969,20 +969,8 @@
 					<div class="wrapper">
 						<span>
 							<label for="i_qtlist" class="trn">Custom quotes</label>
-
 							<button class="tooltip ttcustomquotes opt-hider" aria-label="Tips on custom quotes">?</button>
 						</span>
-
-						<div class="superinput">
-							<input
-								id="i_qtlist"
-								name="qtlist"
-								type="text"
-								placeholder='[["author", "text"], ["au...'
-								maxlength="8000"
-							/>
-							<span class="si-status"><i></i></span>
-						</div>
 					</div>
 
 					<p class="tooltiptext ttcustomquotes">
@@ -995,6 +983,14 @@
 							>Learn more</a
 						>
 					</p>
+
+					<textarea
+						id="i_qtlist"
+						name="qtlist"
+						type="text"
+						placeholder="Author, Your quote."
+						maxlength="8000"
+					></textarea>
 				</div>
 
 				<hr />

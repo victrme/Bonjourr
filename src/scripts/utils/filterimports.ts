@@ -2,6 +2,7 @@ import { randomString, bundleLinks } from '../utils'
 import { SYNC_DEFAULT } from '../defaults'
 import { gridWidget } from '../features/move'
 import { deepmergeAll } from '@victr/deepmerge'
+import { oldJSONToCSV } from '../features/quotes'
 
 export default function filterImports(current: Sync.Storage, toImport: Partial<Sync.Storage>) {
 	//
@@ -89,6 +90,11 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		// removes <1.13.0 aliases
 		const aliasKeyList = Object.keys(toImport).filter((key) => key.match('alias:'))
 		aliasKeyList.forEach((key) => delete toImport[key])
+	}
+
+	// <1.19.0 quotes userlist was json
+	if (Array.isArray(toImport?.quotes?.userlist)) {
+		toImport.quotes.userlist = oldJSONToCSV(toImport.quotes.userlist)
 	}
 
 	// When import doesn't have move, other widgets can still be different

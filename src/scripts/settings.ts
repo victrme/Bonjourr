@@ -97,7 +97,7 @@ export async function settingsInit() {
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
-	initInput('i_qtlist', JSON.stringify(userQuotes) ?? '')
+	initInput('i_qtlist', userQuotes ?? '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_clockstyle', data.clock?.style || 'round')
 	initInput('i_clocksize', data.clock?.size ?? 5)

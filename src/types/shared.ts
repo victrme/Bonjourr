@@ -14,7 +14,7 @@ declare namespace Quotes {
 		last: number
 		type: 'classic' | 'kaamelott' | 'inspirobot' | 'user'
 		frequency: Shared.Frequency
-		userlist?: [string, string][]
+		userlist?: string
 	}
 
 	type UserInput = [string, string][]
