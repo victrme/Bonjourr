@@ -7,6 +7,22 @@
 		background-color: #2224;
 	}
 
+	&.noneFound {
+		min-width: 260px;
+
+		h3 {
+			display: block;
+		}
+
+		> div {
+			justify-content: center;
+		}
+
+		#bmk_apply {
+			display: none;
+		}
+	}
+
 	#bookmarks-container {
 		max-height: 60vh;
 		overflow-y: auto;
@@ -103,23 +119,7 @@
 		}
 	}
 
-	&#bmk_close {
+	#bmk_close {
 		color: #e64b43;
-	}
-
-	&.noneFound {
-		min-width: 260px;
-
-		h3 {
-			display: block;
-		}
-
-		> div {
-			justify-content: center;
-		}
-
-		#bmk_apply {
-			display: none;
-		}
 	}
 }

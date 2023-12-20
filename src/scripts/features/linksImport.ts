@@ -1,4 +1,4 @@
-import { stringMaxSize, bundleLinks } from '../utils'
+import { stringMaxSize, bundleLinks, randomString } from '../utils'
 import { tradThis } from '../utils/translations'
 import { PLATFORM } from '../defaults'
 import quickLinks from './links'
@@ -7,82 +7,65 @@ import storage from '../storage'
 type BookmarkFolder = {
 	title: string
 	bookmarks: {
+		id: string
 		title: string
 		url: string
 	}[]
 }
 
-const bookmarkFolders: BookmarkFolder[] = []
+let bookmarkFolders: BookmarkFolder[] = []
 
 export default async function linksImport() {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
-	const closeBtn = document.getElementById('bmk_close') as HTMLElement
+	const closebutton = document.getElementById('bmk_close') as HTMLButtonElement
+	const applybutton = document.getElementById('bmk_apply') as HTMLButtonElement
 
-	function main(links: Links.Link[], bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
-		const listdom = document.createElement('ol')
+	const permissionGranted = await chrome.permissions.request({ permissions: ['bookmarks'] })
 
-		// Replace list to filter already added bookmarks
-		const oldList = document.querySelector('#bookmarks ol')
-		if (oldList) oldList.remove()
-		document.getElementById('bookmarks')!.prepend(listdom)
+	if (permissionGranted) {
+		const namespace = PLATFORM === 'firefox' ? browser : chrome
+		const treenode = await namespace.bookmarks.getTree()
+		// const data = await storage.sync.get()
 
-		// Just warning if no bookmarks were found
-		if (bookmarksList.length === 0) {
-			document.getElementById('bookmarks')?.classList.toggle('noneFound', true)
-			return
-		}
+		bookmarksdom.showModal()
 
-		// Submit event
-		document.getElementById('bmk_apply')!.onclick = function () {
-			let bookmarkToApply = selectedList.map((i) => ({
-				title: bookmarksList[parseInt(i)].title,
-				url: bookmarksList[parseInt(i)].url || '',
-			}))
+		bookmarkFolders = []
+		document.querySelectorAll('.bookmarks-folder').forEach((node) => node.remove())
 
-			if (bookmarkToApply.length > 0) {
-				bookmarksdom.close()
-				quickLinks(undefined, { bookmarks: bookmarkToApply })
-			}
-		}
+		parseThroughImport(treenode[0])
+		addBookmarksFolderToDOM()
 
-		const lidom = document.querySelector('#bookmarks ol li') as HTMLLIElement
-		lidom.focus()
+		applybutton.addEventListener('click', () => importSelectedBookmarks())
+		closebutton.addEventListener('click', () => bookmarksdom.close())
 	}
-
-	// Ask for bookmarks first
-	chrome.permissions.request({ permissions: ['bookmarks'] }, async (granted) => {
-		if (!granted) return
-
-		const data = await storage.sync.get()
-		const extAPI = PLATFORM === 'firefox' ? browser : chrome
-		extAPI.bookmarks.getTree().then((response) => {
-			bookmarksdom.showModal()
-			// main(bundleLinks(data), response)
-			parseThroughImport(response[0])
-			addBookmarksFolderToDOM()
-		})
-	})
-
-	closeBtn.addEventListener('click', () => bookmarksdom.close())
 }
 
-function selectBookmark(elem: HTMLLIElement) {
-	const applyBtn = document.getElementById('bmk_apply') as HTMLElement
-	const isSelected = elem.classList.toggle('selected')
-	const index = elem.getAttribute('data-index')
-	let counter = listdom.querySelectorAll('li.selected').length
+function importSelectedBookmarks() {
+	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
+	const obj: any = {}
+	const list = bookmarkFolders.map((folder) => folder.bookmarks).flat()
+	const set = new Set()
 
-	if (!index) return
+	list.forEach((bookmark) => {
+		obj[bookmark.id] = bookmark
+	})
 
-	// update list to return
-	isSelected ? selectedList.push(index) : selectedList.pop()
+	console.log()
+}
+
+function selectBookmark(li: HTMLLIElement) {
+	li.classList.toggle('selected')
+
+	const applybutton = document.getElementById('bmk_apply') as HTMLElement
+	const selected = document.querySelectorAll('li.selected')
+	let counter = selected.length
 
 	// Change submit button text & class on selections
-	if (counter === 0) applyBtn.textContent = tradThis('Select bookmarks to import')
-	if (counter === 1) applyBtn.textContent = tradThis('Import this bookmark')
-	if (counter > 1) applyBtn.textContent = tradThis('Import these bookmarks')
+	if (counter === 0) applybutton.textContent = tradThis('Select bookmarks to import')
+	if (counter === 1) applybutton.textContent = tradThis('Import this bookmark')
+	if (counter > 1) applybutton.textContent = tradThis('Import these bookmarks')
 
-	applyBtn.classList.toggle('none', counter === 0)
+	applybutton.classList.toggle('none', counter === 0)
 }
 
 function parseThroughImport(treenode: chrome.bookmarks.BookmarkTreeNode) {
@@ -98,6 +81,7 @@ function parseThroughImport(treenode: chrome.bookmarks.BookmarkTreeNode) {
 		//
 		else if (child.url) {
 			folder.bookmarks?.push({
+				id: randomString(6),
 				title: child.title,
 				url: child.url,
 			})
@@ -111,8 +95,6 @@ function parseThroughImport(treenode: chrome.bookmarks.BookmarkTreeNode) {
 
 function addBookmarksFolderToDOM() {
 	const container = document.getElementById('bookmarks-container') as HTMLDialogElement
-
-	container.childNodes.forEach((node) => node.remove())
 
 	for (const folder of bookmarkFolders) {
 		const listdom = document.createElement('ol')
@@ -149,6 +131,7 @@ function addBookmarksFolderToDOM() {
 			button.appendChild(p_title)
 			button.appendChild(p_url)
 
+			li.id = bookmark.id
 			li.appendChild(button)
 			listdom.appendChild(li)
 		}
