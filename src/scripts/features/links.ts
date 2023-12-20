@@ -203,13 +203,22 @@ async function createIcons(imgs: { [key: string]: HTMLImageElement }, links: Lin
 		img.src = link.icon ?? getDefaultIcon(link.url)
 
 		if (img.src.includes('loading.svg')) {
-			await fetch(getDefaultIcon(link.url))
+			await waitForIconLoad(link.url)
 			img.src = getDefaultIcon(link.url)
 
 			link.icon = undefined
 			storage.sync.set({ [link._id]: link })
 		}
 	}
+}
+
+async function waitForIconLoad(url: string): Promise<true> {
+	const img = document.createElement('img')
+
+	img.src = getDefaultIcon(url)
+	new Promise((r) => img.addEventListener('load', r))
+
+	return true
 }
 
 async function clickOpensFolder(elem: HTMLLIElement) {
@@ -939,20 +948,6 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 	]
 }
 
-function importBookmarks(bookmarks?: Bookmarks): Links.Elem[] {
-	const newLinks: Links.Elem[] = []
-
-	if (bookmarks && bookmarks?.length === 0) {
-		bookmarks?.forEach(({ title, url }) => {
-			if (url !== 'false') {
-				newLinks.push(validateLink(title, url))
-			}
-		})
-	}
-
-	return newLinks
-}
-
 async function linkSubmission(arg: LinkSubmission) {
 	const data = await storage.sync.get()
 	const tab = data.tabs.list[data.tabs.selected]
@@ -974,7 +969,7 @@ async function linkSubmission(arg: LinkSubmission) {
 		}
 
 		case 'import': {
-			newlinks = importBookmarks(arg.bookmarks)
+			newlinks = (arg.bookmarks ?? []).map((b) => validateLink(b.title, b.url))
 			links = getAllLinksInTab(data, data.tabs.selected)
 			break
 		}

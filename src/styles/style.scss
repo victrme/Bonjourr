@@ -718,8 +718,7 @@
 			color: white;
 			background-color: #2c7be5;
 
-			&#e_delete,
-			&#e_delete-sel {
+			&.btn-red {
 				color: white;
 				background-color: #e64b43;
 			}
@@ -992,5 +991,4 @@
 @import 'settings';
 @import 'grid';
 @import 'responsive';
-
 @import 'features/bookmarks';

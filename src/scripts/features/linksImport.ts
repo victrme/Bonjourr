@@ -1,8 +1,8 @@
-import { stringMaxSize, bundleLinks, randomString } from '../utils'
+import { randomString } from '../utils'
 import { tradThis } from '../utils/translations'
 import { PLATFORM } from '../defaults'
 import quickLinks from './links'
-import storage from '../storage'
+import onSettingsLoad from '../utils/onsettingsload'
 
 type BookmarkFolder = {
 	title: string
@@ -15,42 +15,53 @@ type BookmarkFolder = {
 
 let bookmarkFolders: BookmarkFolder[] = []
 
-export default async function linksImport() {
+onSettingsLoad(() => {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const closebutton = document.getElementById('bmk_close') as HTMLButtonElement
 	const applybutton = document.getElementById('bmk_apply') as HTMLButtonElement
 
+	applybutton.addEventListener('click', () => importSelectedBookmarks())
+	closebutton.addEventListener('click', () => bookmarksdom.close())
+	bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
+})
+
+export default async function linksImport() {
+	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
+	const foldersdom = Object.values(document.querySelectorAll<HTMLDivElement>('.bookmarks-folder'))
 	const permissionGranted = await chrome.permissions.request({ permissions: ['bookmarks'] })
 
 	if (permissionGranted) {
 		const namespace = PLATFORM === 'firefox' ? browser : chrome
 		const treenode = await namespace.bookmarks.getTree()
-		// const data = await storage.sync.get()
 
 		bookmarksdom.showModal()
 
 		bookmarkFolders = []
-		document.querySelectorAll('.bookmarks-folder').forEach((node) => node.remove())
+		foldersdom?.forEach((node) => node.remove())
 
 		parseThroughImport(treenode[0])
 		addBookmarksFolderToDOM()
-
-		applybutton.addEventListener('click', () => importSelectedBookmarks())
-		closebutton.addEventListener('click', () => bookmarksdom.close())
 	}
 }
 
 function importSelectedBookmarks() {
+	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
-	const obj: any = {}
-	const list = bookmarkFolders.map((folder) => folder.bookmarks).flat()
-	const set = new Set()
+	const flatList = bookmarkFolders.map((folder) => folder.bookmarks).flat()
+	const ids = Object.values(selected).map((li) => li.id)
+	const list: { [key: string]: { url: string; title: string } } = {}
+	const selectedLinks = []
 
-	list.forEach((bookmark) => {
-		obj[bookmark.id] = bookmark
+	flatList.forEach(({ id, title, url }) => {
+		list[id] = { title, url }
 	})
 
-	console.log()
+	for (const id of ids) {
+		selectedLinks.push(list[id])
+	}
+
+	quickLinks(undefined, { bookmarks: selectedLinks })
+	bookmarksdom.close()
 }
 
 function selectBookmark(li: HTMLLIElement) {
@@ -61,7 +72,7 @@ function selectBookmark(li: HTMLLIElement) {
 	let counter = selected.length
 
 	// Change submit button text & class on selections
-	if (counter === 0) applybutton.textContent = tradThis('Select bookmarks to import')
+	if (counter === 0) applybutton.textContent = tradThis('Select bookmarks')
 	if (counter === 1) applybutton.textContent = tradThis('Import this bookmark')
 	if (counter > 1) applybutton.textContent = tradThis('Import these bookmarks')
 

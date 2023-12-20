@@ -1,4 +1,8 @@
 #bookmarks {
+	width: 70%;
+	max-width: 1000px;
+	min-height: 30vh;
+	padding: 0em;
 	border-radius: 1em;
 	backdrop-filter: blur(5em);
 
@@ -9,14 +13,6 @@
 
 	&.noneFound {
 		min-width: 260px;
-
-		h3 {
-			display: block;
-		}
-
-		> div {
-			justify-content: center;
-		}
 
 		#bmk_apply {
 			display: none;
@@ -30,7 +26,7 @@
 	}
 
 	.bookmarks-folder:not(:last-child) {
-		border-bottom: 1px solid #fff2;
+		border-bottom: 1px solid var(--color-dialog-border);
 		margin-bottom: 2em;
 		padding-bottom: 2em;
 	}
@@ -45,7 +41,7 @@
 		margin: 0;
 		padding: 0;
 		list-style-type: none;
-		grid-template-columns: 160px 160px 160px 160px 160px;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 	}
 
 	li {
@@ -98,8 +94,7 @@
 
 	#bookmarks-buttons {
 		display: flex;
-		margin-top: 1.5em;
-		margin-bottom: 1em;
+		margin: 2em;
 		column-gap: 2em;
 		justify-content: center;
 		z-index: 3;
@@ -107,19 +102,21 @@
 		button {
 			width: fit-content;
 			transition: filter 0.4s;
+			background-color: var(--color-areas);
+
+			&:focus-visible,
+			&:hover {
+				background-color: var(--color-blue);
+
+				&.btn-red {
+					background-color: var(--color-red);
+				}
+			}
 		}
 	}
 
-	#bmk_apply {
-		color: #2c7be5;
-
-		&.none {
-			pointer-events: none;
-			filter: grayscale(1);
-		}
-	}
-
-	#bmk_close {
-		color: #e64b43;
+	#bmk_apply.none {
+		pointer-events: none;
+		opacity: 0.5;
 	}
 }
