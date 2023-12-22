@@ -33,6 +33,7 @@ type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDivElement
+let selectallTimer = 0
 
 export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
 	if (event) {
@@ -185,7 +186,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		createLinksEvents(elem)
 	}
 
-	// createDragging(liList)
+	createDragging(liList)
 	createIcons(imgList, links)
 	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 
@@ -286,7 +287,6 @@ function createGlobalEvents() {
 }
 
 function createLinksEvents(elem: HTMLLIElement) {
-	let selectallTimer = 0
 	let mobileLongpressTimer = 0
 
 	elem.addEventListener('keyup', openEditLink)
@@ -482,22 +482,26 @@ function changeTab(div: HTMLDivElement) {
 
 function createDragging(LIList: HTMLLIElement[]) {
 	type Coords = {
-		order: number
-		pos: { x: number; y: number }
-		triggerbox: { x: [number, number]; y: [number, number] }
+		x: number
+		y: number
+		triggerbox_tl: number
+		triggerbox_tr: number
+		triggerbox_bl: number
+		triggerbox_br: number
 	}
 
 	let draggedId: string = ''
-	let draggedClone: HTMLLIElement
-	let updatedOrder: { [key: string]: number } = {}
-	let coords: { [key: string]: Coords } = {}
-	let coordsEntries: [string, Coords][] = []
+	let clones: Map<string, HTMLLIElement> = new Map()
+	let ids: string[] = []
+	let coords: Coords[] = []
 	let startsDrag = false
 	let [cox, coy] = [0, 0] // (cursor offset x & y)
 	let interfacemargin = 0
 
-	const deplaceElem = (dom: HTMLElement, x: number, y: number) => {
-		dom.style.transform = `translateX(${x}px) translateY(${y}px)`
+	const deplaceElem = (dom?: HTMLElement, x = 0, y = 0) => {
+		if (dom) {
+			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
+		}
 	}
 
 	function initDrag(ex: number, ey: number, path: EventTarget[]) {
@@ -514,132 +518,113 @@ function createDragging(LIList: HTMLLIElement[]) {
 		startsDrag = true
 		draggedId = block.id
 		dominterface.style.cursor = 'grabbing'
+		clearTimeout(selectallTimer)
 
-		document.querySelectorAll('#linkblocks li').forEach((block, i) => {
-			const { x, y, width, height } = block.getBoundingClientRect()
-			const blockid = block.id
+		ids = []
+		coords = []
 
-			updatedOrder[blockid] = i
+		for (const li of document.querySelectorAll('#linkblocks li')) {
+			const { x, y, width, height } = li.getBoundingClientRect()
 
-			coords[blockid] = {
-				order: i,
-				pos: { x, y },
-				triggerbox: {
-					// Creates a box with 10% padding used to trigger
-					// the rearrange if mouse position is in-between these values
-					x: [x + width * 0.1, x + width * 0.9],
-					y: [y + height * 0.1, y + height * 0.9],
-				},
+			const id = li.id
+			const coord: Coords = {
+				x,
+				y,
+				// Creates a box with 10% padding used to trigger
+				// the rearrange if mouse position is in-between these values
+				triggerbox_tl: x + width * 0.1,
+				triggerbox_tr: x + width * 0.9,
+				triggerbox_bl: y + height * 0.1,
+				triggerbox_br: y + height * 0.9,
 			}
-		})
 
-		// Transform coords in array here to improve performance during mouse move
-		coordsEntries = Object.entries(coords)
+			ids.push(id)
+			coords.push(coord)
 
-		const draggedDOM = document.getElementById(draggedId)
-		const draggedCoord = coords[draggedId]
+			// hide real
+			;(li as HTMLLIElement).style.opacity = '0'
 
-		if (draggedDOM) {
-			draggedDOM.style.opacity = '0'
-			draggedClone = draggedDOM.cloneNode(true) as HTMLLIElement // create fixed positionned clone of element
-			draggedClone.id = ''
-			draggedClone.className = 'block dragging-clone on'
+			// create clones
+			const clone = li.cloneNode(true) as HTMLLIElement
+			clone.id = ''
+			clone.classList.add('dragging-clone', 'on')
+			document.querySelector('#link-list')?.appendChild(clone)
+			clones.set(id, clone)
 
-			domlinkblocks.appendChild(draggedClone) // append to linkblocks to get same styling
+			deplaceElem(clone, x, y)
 		}
+
+		const draggedIndex = ids.indexOf(draggedId)
+		const draggedCoord = coords[draggedIndex]
 
 		if (draggedCoord) {
-			cox = ex - draggedCoord.pos.x // offset to cursor position
-			coy = ey - draggedCoord.pos.y // on dragged element
+			// offset to cursor position on dragged element
+			cox = ex - draggedCoord.x
+			coy = ey - draggedCoord.y
 		}
 
-		deplaceElem(draggedClone, ex - cox - interfacemargin, ey - coy)
+		deplaceElem(clones.get(draggedId), ex - cox - interfacemargin, ey - coy)
 
-		domlinkblocks?.classList.add('dragging') // to apply pointer-events: none
+		domlinkblocks?.classList.add('dragging')
 	}
 
 	function applyDrag(ex: number, ey: number) {
 		// Dragged element clone follows cursor
-		deplaceElem(draggedClone, ex - cox - interfacemargin, ey - coy)
+		deplaceElem(clones.get(draggedId), ex - cox - interfacemargin, ey - coy)
 
-		// Element switcher
-		coordsEntries.forEach(function parseThroughCoords([key, val]) {
+		coords.forEach((coord, targetIndex) => {
 			if (
-				// Mouse position is inside a block trigger box
-				// And it is not the dragged block box
-				// Nor the switched block (to trigger switch once)
-				ex > val.triggerbox.x[0] &&
-				ex < val.triggerbox.x[1] &&
-				ey > val.triggerbox.y[0] &&
-				ey < val.triggerbox.y[1]
+				coord && // <- for prettier
+				ex > coord.triggerbox_tl &&
+				ex < coord.triggerbox_tr &&
+				ey > coord.triggerbox_bl &&
+				ey < coord.triggerbox_br
 			) {
-				const drgO = coords[draggedId]?.order || 0 // (dragged order)
-				const keyO = coords[key]?.order || 0 // (key order)
-				let interval = [drgO, keyO] // interval of links to move
-				let direction = 0
+				// move dragged id to target position
+				ids.splice(ids.indexOf(draggedId), 1)
+				ids.splice(targetIndex, 0, draggedId)
 
-				if (drgO < keyO) direction = -1 // which direction to move links
-				if (drgO > keyO) direction = 1
+				// move all clones to new position
+				for (const id of ids) {
+					const coord = coords[ids.indexOf(id)]
 
-				if (direction > 0) interval[0] -= 1 // remove dragged index from interval
-				if (direction < 0) interval[0] += 1
-
-				interval = interval.sort((a, b) => a - b) // sort to always have [small, big]
-
-				coordsEntries.forEach(([keyBis, coord], index) => {
-					const neighboor = document.getElementById(keyBis)
-
-					if (!neighboor) {
-						return
+					if (coord && id !== draggedId) {
+						deplaceElem(clones.get(id), coord.x, coord.y)
 					}
-
-					// Element index between interval
-					if (index >= interval[0] && index <= interval[1]) {
-						const ox = coordsEntries[index + direction][1].pos.x - coord.pos.x
-						const oy = coordsEntries[index + direction][1].pos.y - coord.pos.y
-
-						updatedOrder[keyBis] = index + direction // update order w/ direction
-						deplaceElem(neighboor, ox, oy) // translate it to its neighboors position
-						return
-					}
-
-					updatedOrder[keyBis] = index // keep same order
-					deplaceElem(neighboor, 0, 0) // Not in interval (anymore) ? reset translate
-				})
-
-				updatedOrder[draggedId] = keyO // update dragged element order with triggerbox order
+				}
 			}
 		})
 	}
 
 	function endDrag() {
 		if (draggedId && startsDrag) {
-			const neworder = updatedOrder[draggedId]
-			const { x, y } = coordsEntries[neworder][1].pos // last triggerbox position
+			const newIndex = ids.indexOf(draggedId)
+			const clone = clones.get(draggedId)
+			const coord = coords[newIndex]
+
+			if (clone) {
+				deplaceElem(clone, coord.x - interfacemargin, coord.y)
+				clone.classList.remove('on')
+			}
+
+			dominterface.style.cursor = ''
+			domlinkblocks?.classList.remove('dragging')
+			document.body.removeEventListener('mousemove', triggerDragging)
+
 			startsDrag = false
 			draggedId = ''
-			coords = {}
-			coordsEntries = []
 
-			deplaceElem(draggedClone, x - interfacemargin, y)
-			draggedClone.className = 'block dragging-clone' // enables transition (by removing 'on' class)
-			dominterface.style.cursor = ''
-
-			document.body.removeEventListener('mousemove', triggerDragging)
+			if (newIndex === -1 || ids.length !== coords.length) {
+				return
+			}
 
 			setTimeout(async () => {
 				const data = await storage.sync.get()
 
-				Object.entries(updatedOrder).forEach(([key, val]) => {
-					const link = data[key] as Link
-					link.order = val // Updates orders
-				})
-
-				domlinkblocks?.classList.remove('dragging') // to apply pointer-events: none
+				data.tabs.list[data.tabs.selected].ids = ids
 
 				eventDebounce({ ...data })
-				Object.values(domlinkblocks.children).forEach((li) => li.remove())
-				initblocks(getAllLinksInTab(data, 0), data.linknewtab)
+				initblocks(getAllLinksInTab(data, data.tabs.selected), data.linknewtab)
 			}, 200)
 		}
 	}
