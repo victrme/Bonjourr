@@ -137,20 +137,6 @@ li.block {
 	transition-timing-function: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 	transition-property: transform, opacity;
 
-	&.dragging-clone {
-		position: fixed;
-		top: 0;
-		left: 0;
-		opacity: 1 !important;
-		pointer-events: none;
-		will-change: transform;
-		z-index: 4;
-
-		&.on {
-			transition: none;
-		}
-	}
-
 	&.removed {
 		width: 0 !important;
 		margin: 0 -1.3em;
@@ -222,12 +208,6 @@ li.block {
 #linkblocks {
 	&.hidden {
 		display: none;
-	}
-
-	&.dragging {
-		li {
-			pointer-events: none;
-		}
 	}
 
 	&.select-all {
@@ -409,6 +389,33 @@ li.block {
 		display: block;
 		top: 15%;
 		left: 15%;
+	}
+}
+
+//
+//  Links drag and drop
+//
+
+#linkblocks.dragging {
+	.block {
+		opacity: 0;
+		z-index: 3;
+	}
+
+	.dragging-clone {
+		position: fixed;
+		opacity: 1;
+		z-index: 2;
+		top: 0;
+		left: 0;
+
+		// chrome loses drag focus without this on clones
+		pointer-events: none;
+	}
+
+	.dragging-clone.on {
+		z-index: 4;
+		transition: none;
 	}
 }
 

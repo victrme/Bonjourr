@@ -1,6 +1,6 @@
 import { randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
 import { SYSTEM_OS, BROWSER, IS_MOBILE, MAIN_API } from '../defaults'
-import { eventDebounce } from '../utils/debounce'
+import debounce, { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import transitioner from '../utils/transitioner'
@@ -82,7 +82,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	}
 
 	const linkhtml = `
-		<li class="block">
+		<li class="block" draggable="true">
 			<a draggable="false" rel="noreferrer noopener">
 				<img alt="" src="" loading="lazy" draggable="false">
 				<span></span>
@@ -90,7 +90,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		</li>`
 
 	const folderhtml = `
-		<li class="block folder">
+		<li class="block folder" draggable="true">
 			<div></div>
 			<span></span>
 		</li>`
@@ -186,7 +186,6 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		createLinksEvents(elem)
 	}
 
-	createDragging(liList)
 	createIcons(imgList, links)
 	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 
@@ -295,6 +294,7 @@ function createLinksEvents(elem: HTMLLIElement) {
 	elem.addEventListener('click', selectAll)
 	elem.addEventListener('mousedown', selectAll)
 	elem.addEventListener('mouseup', selectAll)
+	elem.addEventListener('dragstart', startDrag)
 
 	function openFolder() {
 		if (domlinkblocks.className.includes('select-all')) {
@@ -480,220 +480,156 @@ function changeTab(div: HTMLDivElement) {
 // Drag events
 //
 
-function createDragging(LIList: HTMLLIElement[]) {
-	type Coords = {
-		x: number
-		y: number
-		triggerbox_tl: number
-		triggerbox_tr: number
-		triggerbox_bl: number
-		triggerbox_br: number
+type Coords = { x: number; y: number }
+
+const clones: Map<string, HTMLLIElement> = new Map()
+let [cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0]
+let draggedId = ''
+let ids: string[] = []
+let initids: string[] = []
+let coords: Coords[] = []
+
+const deplaceElem = (dom?: HTMLElement, x = 0, y = 0) => {
+	if (dom) {
+		dom.style.transform = `translate3d(${x - interfacemargin}px, ${y}px, 0)`
+	}
+}
+
+function startDrag(event: DragEvent) {
+	const lilist = Object.values(document.querySelectorAll<HTMLLIElement>('#linkblocks li'))
+	const element = lilist.filter((li) => li === event.target)[0]
+
+	//
+	// Reset shared variables by these events
+
+	draggedId = element?.id ?? ''
+	clearTimeout(selectallTimer)
+	dominterface.style.cursor = 'grabbing'
+	interfacemargin = dominterface.getBoundingClientRect().left
+
+	ids = []
+	coords = []
+	initids = []
+	clones.clear()
+
+	//
+	// Create visible links clones
+	// And add all drag & drop events
+
+	const fragment = document.createDocumentFragment()
+
+	for (const li of lilist) {
+		const clone = li.cloneNode(true) as HTMLLIElement
+		const { x, y } = li.getBoundingClientRect()
+		const id = li.id
+
+		ids.push(id)
+		initids.push(id)
+		coords.push({ x, y })
+
+		clone.removeAttribute('id')
+		clone.classList.add('dragging-clone')
+		clones.set(id, clone)
+		deplaceElem(clone, x, y)
+		fragment.appendChild(clone)
+
+		if (id === draggedId) {
+			cox = event.clientX - x
+			coy = event.clientY - y
+			clone.classList.add('on')
+		}
+
+		li.addEventListener('dragenter', () => applyDrag(lilist.indexOf(li)))
+		li.addEventListener('drag', moveDrag)
+		li.addEventListener('drop', endDrag)
 	}
 
-	let draggedId: string = ''
-	let clones: Map<string, HTMLLIElement> = new Map()
-	let ids: string[] = []
-	let coords: Coords[] = []
-	let startsDrag = false
-	let [cox, coy] = [0, 0] // (cursor offset x & y)
-	let interfacemargin = 0
+	domlinkblocks?.classList.add('dragging')
+	document.querySelector('#link-list')?.appendChild(fragment)
 
-	const deplaceElem = (dom?: HTMLElement, x = 0, y = 0) => {
-		if (dom) {
-			dom.style.transform = `translateX(${x}px) translateY(${y}px)`
-		}
-	}
+	//
+	// Firefox keeps clientX/Y ondrag to 0 because of, checks notes, a 15yo bug
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=505521
 
-	function initDrag(ex: number, ey: number, path: EventTarget[]) {
-		let block = path.find((t) => (t as HTMLElement).className === 'block') as HTMLLIElement
-
-		if (!block) {
-			return
-		}
-
-		// Initialise toute les coordonnees
-		// Defini l'ID de l'element qui se deplace
-		// Defini la position de la souris pour pouvoir offset le deplacement de l'elem
-
-		startsDrag = true
-		draggedId = block.id
-		dominterface.style.cursor = 'grabbing'
-		clearTimeout(selectallTimer)
-
-		ids = []
-		coords = []
-
-		for (const li of document.querySelectorAll('#linkblocks li')) {
-			const { x, y, width, height } = li.getBoundingClientRect()
-
-			const id = li.id
-			const coord: Coords = {
-				x,
-				y,
-				// Creates a box with 10% padding used to trigger
-				// the rearrange if mouse position is in-between these values
-				triggerbox_tl: x + width * 0.1,
-				triggerbox_tr: x + width * 0.9,
-				triggerbox_bl: y + height * 0.1,
-				triggerbox_br: y + height * 0.9,
-			}
-
-			ids.push(id)
-			coords.push(coord)
-
-			// hide real
-			;(li as HTMLLIElement).style.opacity = '0'
-
-			// create clones
-			const clone = li.cloneNode(true) as HTMLLIElement
-			clone.id = ''
-			clone.classList.add('dragging-clone', 'on')
-			document.querySelector('#link-list')?.appendChild(clone)
-			clones.set(id, clone)
-
-			deplaceElem(clone, x, y)
-		}
-
-		const draggedIndex = ids.indexOf(draggedId)
-		const draggedCoord = coords[draggedIndex]
-
-		if (draggedCoord) {
-			// offset to cursor position on dragged element
-			cox = ex - draggedCoord.x
-			coy = ey - draggedCoord.y
-		}
-
-		deplaceElem(clones.get(draggedId), ex - cox - interfacemargin, ey - coy)
-
-		domlinkblocks?.classList.add('dragging')
-	}
-
-	function applyDrag(ex: number, ey: number) {
-		// Dragged element clone follows cursor
-		deplaceElem(clones.get(draggedId), ex - cox - interfacemargin, ey - coy)
-
-		coords.forEach((coord, targetIndex) => {
-			if (
-				coord && // <- for prettier
-				ex > coord.triggerbox_tl &&
-				ex < coord.triggerbox_tr &&
-				ey > coord.triggerbox_bl &&
-				ey < coord.triggerbox_br
-			) {
-				// move dragged id to target position
-				ids.splice(ids.indexOf(draggedId), 1)
-				ids.splice(targetIndex, 0, draggedId)
-
-				// move all clones to new position
-				for (const id of ids) {
-					const coord = coords[ids.indexOf(id)]
-
-					if (coord && id !== draggedId) {
-						deplaceElem(clones.get(id), coord.x, coord.y)
-					}
-				}
-			}
-		})
-	}
-
-	function endDrag() {
-		if (draggedId && startsDrag) {
-			const newIndex = ids.indexOf(draggedId)
-			const clone = clones.get(draggedId)
-			const coord = coords[newIndex]
-
-			if (clone) {
-				deplaceElem(clone, coord.x - interfacemargin, coord.y)
-				clone.classList.remove('on')
-			}
-
-			dominterface.style.cursor = ''
-			domlinkblocks?.classList.remove('dragging')
-			document.body.removeEventListener('mousemove', triggerDragging)
-
-			startsDrag = false
-			draggedId = ''
-
-			if (newIndex === -1 || ids.length !== coords.length) {
-				return
-			}
-
-			setTimeout(async () => {
-				const data = await storage.sync.get()
-
-				data.tabs.list[data.tabs.selected].ids = ids
-
-				eventDebounce({ ...data })
-				initblocks(getAllLinksInTab(data, data.tabs.selected), data.linknewtab)
-			}, 200)
-		}
+	if (BROWSER === 'firefox') {
+		document.documentElement.addEventListener('dragover', moveDragFirefox)
+		document.documentElement.addEventListener('dragend', endDrag)
 	}
 
 	//
-	// Event
+	// Hide drag preview
+	// https://stackoverflow.com/questions/27989602/hide-drag-preview-html-drag-and-drop
 
-	let initialpos = [0, 0]
-	let shortPressTimeout: number
+	const elem = element.cloneNode(true) as HTMLLIElement
+	elem.id = 'link-drag-preview'
+	elem.style.position = 'absolute'
+	elem.style.opacity = '0'
+	elem.style.zIndex = '-1'
+	domlinkblocks?.appendChild(elem)
+	event.dataTransfer?.setDragImage(elem, 0, 0)
+}
 
-	function triggerDragging(e: MouseEvent | TouchEvent) {
-		const isMouseEvent = 'buttons' in e
-		const ex = isMouseEvent ? e.x : e.touches[0]?.clientX
-		const ey = isMouseEvent ? e.y : e.touches[0]?.clientY
+function moveDrag(event: DragEvent) {
+	const x = event.clientX - cox
+	const y = event.clientY - coy
 
-		// Offset between current and initial cursor position
-		const thresholdpos = [Math.abs(initialpos[0] - ex), Math.abs(initialpos[1] - ey)]
+	deplaceElem(clones.get(draggedId), x, y)
 
-		// Only apply drag if user moved by 10px, to prevent accidental dragging
-		if (thresholdpos[0] > 10 || thresholdpos[1] > 10) {
-			initialpos = [1e7, 1e7] // so that condition is always true until endDrag
-			!startsDrag ? initDrag(ex, ey, e.composedPath()) : applyDrag(ex, ey)
-		}
+	// this triggers drop event
+	if (BROWSER !== 'firefox' && event.clientX === 0 && event.clientY === 0) {
+		;(event.target as HTMLLIElement).dispatchEvent(new DragEvent('drop'))
+	}
+}
 
-		if (isMouseEvent && e.buttons === 0) {
-			endDrag() // Ends dragging when no buttons on MouseEvent
-		}
+function moveDragFirefox(event: DragEvent) {
+	event.preventDefault()
+	moveDrag(event)
+}
 
-		if (!isMouseEvent) {
-			e.preventDefault() // prevents scroll when dragging on touches
-		}
+function applyDrag(targetIndex: number) {
+	if (lastIndex === targetIndex) {
+		return
 	}
 
-	function activateDragMove(e: MouseEvent | TouchEvent) {
-		interfacemargin = dominterface.getBoundingClientRect().left
+	lastIndex = targetIndex
 
-		if (e.type === 'touchstart') {
-			const { clientX, clientY } = (e as TouchEvent).touches[0]
-			initialpos = [clientX || 0, clientY || 0]
-			document.body.addEventListener('touchmove', triggerDragging)
-		}
+	// move dragged element to target position in array
+	ids.splice(ids.indexOf(draggedId), 1)
+	ids.splice(targetIndex, 0, draggedId)
 
-		if (e.type === 'mousedown' && (e as MouseEvent)?.button === 0) {
-			const { x, y } = e as MouseEvent
-			initialpos = [x, y]
-			document.body.addEventListener('mousemove', triggerDragging)
+	// move all clones to new position
+	for (let i = 0; i < ids.length; i++) {
+		if (ids[i] !== draggedId) {
+			deplaceElem(clones.get(ids[i]), coords[i].x, coords[i].y)
 		}
 	}
+}
 
-	LIList.forEach((li) => {
-		// Mobile need a short press to activate drag, to avoid scroll dragging
-		li.addEventListener('touchmove', () => clearTimeout(shortPressTimeout), { passive: false })
-		li.addEventListener('touchstart', (e) => (shortPressTimeout = setTimeout(() => activateDragMove(e), 220)), {
-			passive: false,
-		})
+async function endDrag() {
+	const newIndex = ids.indexOf(draggedId)
+	const clone = clones.get(draggedId)
+	const coord = coords[newIndex]
 
-		// Desktop
-		li.addEventListener('mousedown', activateDragMove)
-	})
+	deplaceElem(clone, coord.x, coord.y)
 
-	document.body.onmouseleave = endDrag
-	document.body.addEventListener(
-		'touchend',
-		function () {
-			endDrag() // (touch only) removeEventListener doesn't work when it is in endDrag
-			document.body.removeEventListener('touchmove', triggerDragging) // and has to be here
-		},
-		{ passive: false }
-	)
+	clone?.classList.remove('on')
+	dominterface.style.cursor = ''
+	domlinkblocks.querySelector('#link-drag-preview')?.remove()
+	document.documentElement.removeEventListener('dragover', moveDragFirefox)
+	document.documentElement.removeEventListener('dragend', endDrag)
+
+	const data = await storage.sync.get()
+	const tablist = data.tabs.list[data.tabs.selected].ids
+
+	if (ids.length === tablist.length) {
+		data.tabs.list[data.tabs.selected].ids = ids
+		storage.sync.set(data)
+	}
+
+	setTimeout(async () => {
+		initblocks(getAllLinksInTab(data, data.tabs.selected), data.linknewtab)
+		domlinkblocks?.classList.remove('dragging')
+	}, 200)
 }
 
 //
