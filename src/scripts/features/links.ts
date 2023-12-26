@@ -1,6 +1,6 @@
-import { randomString, stringMaxSize, closeEditLink, apiFetch } from '../utils'
+import { randomString, stringMaxSize, closeEditLink } from '../utils'
 import { SYSTEM_OS, BROWSER, IS_MOBILE, MAIN_API } from '../defaults'
-import debounce, { eventDebounce } from '../utils/debounce'
+import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import transitioner from '../utils/transitioner'
@@ -33,6 +33,8 @@ type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDivElement
+
+let mobileLongpressTimer = 0
 let selectallTimer = 0
 
 export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
@@ -51,17 +53,17 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initTabs(init.tabs)
+	initRows(init.linksrow, init.linkstyle)
 	initblocks(getAllLinksInTab(init, init.tabs.selected), init.linknewtab)
-	setRows(init.linksrow, init.linkstyle)
-	onSettingsLoad(editEvents)
-	createGlobalEvents()
+}
 
+onSettingsLoad(() => {
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		window.addEventListener('resize', () => {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
 		})
 	}
-}
+})
 
 //
 // Initialisation
@@ -110,9 +112,7 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		}
 	}
 
-	//
 	// Create links folders DOM
-	//
 
 	if (linkFolders.length > 0) {
 		for (const link of linkFolders) {
@@ -146,12 +146,11 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 			li.id = link._id
 			liList.push(li)
 			tabUList?.appendChild(li)
+			li.addEventListener('click', openFolder)
 		}
 	}
 
-	//
 	// Create links elements DOM
-	//
 
 	if (linkElems.length > 0) {
 		for (const link of linkElems) {
@@ -182,8 +181,16 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		}
 	}
 
-	for (const elem of liList) {
-		createLinksEvents(elem)
+	for (const li of liList) {
+		li.addEventListener('keyup', openEdit)
+		li.addEventListener('contextmenu', openEdit)
+		li.addEventListener('click', selectAll)
+		li.addEventListener('mousedown', selectAll)
+		li.addEventListener('mouseup', selectAll)
+		li.addEventListener('dragstart', startDrag)
+		li.addEventListener('touchstart', openEditMobile, { passive: false })
+		li.addEventListener('touchmove', openEditMobile, { passive: false })
+		li.addEventListener('touchend', openEditMobile, { passive: false })
 	}
 
 	createIcons(imgList, links)
@@ -221,23 +228,53 @@ async function waitForIconLoad(url: string): Promise<true> {
 	return true
 }
 
-async function clickOpensFolder(elem: HTMLLIElement) {
-	if (elem.classList.contains('folder') === false) {
+function initRows(amount: number, style: string) {
+	const linklist = document.getElementById('link-list')
+	const sizes = {
+		large: { width: 4.8, gap: 2.3 },
+		medium: { width: 3.5, gap: 2 },
+		small: { width: 2.5, gap: 2 },
+		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
+	}
+
+	if (linklist && style in sizes) {
+		const { width, gap } = sizes[style as keyof typeof sizes]
+		linklist.style.maxWidth = (width + gap) * amount + 'em'
+	}
+}
+
+//
+//	Events
+//
+
+onSettingsLoad(() => {
+	document.body.addEventListener('click', dismissSelectAllAndFolder)
+})
+
+async function openFolder(event: Event) {
+	if (domlinkblocks.className.includes('select-all')) {
+		return
+	}
+
+	clearTimeout(selectallTimer)
+	const li = getLiFromEvent(event)
+
+	if (!li || li.classList.contains('folder') === false) {
 		return
 	}
 
 	const data = await storage.sync.get()
-	const folder = data[elem.id] as Links.Folder
+	const folder = data[li.id] as Links.Folder
 
 	transitioner(
 		function hide() {
-			domlinkblocks.dataset.folderid = elem.id
+			domlinkblocks.dataset.folderid = li.id
 			domlinkblocks.classList.add('hiding')
 			domlinkblocks.classList.remove('in-folder')
 		},
 		async function changeToFolder() {
 			toggleTabsTitleType(folder.title)
-			await initblocks(getAllLinksInFolder(data, elem.id), false)
+			await initblocks(getAllLinksInFolder(data, li.id), false)
 		},
 		function show() {
 			domlinkblocks.classList.replace('hiding', 'in-folder')
@@ -246,7 +283,7 @@ async function clickOpensFolder(elem: HTMLLIElement) {
 	)
 }
 
-async function clickClosesFolder() {
+async function closeFolder() {
 	const data = await storage.sync.get()
 	const { selected, list } = data.tabs
 
@@ -267,105 +304,84 @@ async function clickClosesFolder() {
 	)
 }
 
-function createGlobalEvents() {
-	document.body.addEventListener('click', function (e) {
-		if (!clicksOnInterface(e)) {
-			return
-		}
+function dismissSelectAllAndFolder(event: Event) {
+	if (!clicksOnInterface(event)) {
+		return
+	}
 
-		// Remove first select all
-		if (domlinkblocks.classList.contains('select-all')) {
-			domlinkblocks.classList.remove('select-all')
-			document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
-		}
-		// then close folder
-		else if (domlinkblocks.classList.contains('in-folder')) {
-			clickClosesFolder()
-		}
-	})
+	// Remove first select all
+	if (domlinkblocks.classList.contains('select-all')) {
+		domlinkblocks.classList.remove('select-all')
+		document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
+	}
+	// then close folder
+	else if (domlinkblocks.classList.contains('in-folder')) {
+		closeFolder()
+	}
 }
 
-function createLinksEvents(elem: HTMLLIElement) {
-	let mobileLongpressTimer = 0
+function openEdit(event: Event) {
+	const li = getLiFromEvent(event)
+	let x = 0
+	let y = 0
 
-	elem.addEventListener('keyup', openEditLink)
-	elem.addEventListener('contextmenu', openEditLink)
-	elem.addEventListener('click', openFolder)
-	elem.addEventListener('click', selectAll)
-	elem.addEventListener('mousedown', selectAll)
-	elem.addEventListener('mouseup', selectAll)
-	elem.addEventListener('dragstart', startDrag)
-
-	function openFolder() {
-		if (domlinkblocks.className.includes('select-all')) {
-			return
-		}
-
-		clearTimeout(selectallTimer)
-		clickOpensFolder(elem)
+	if (event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e') {
+		x = (event.target as HTMLElement).offsetLeft
+		y = (event.target as HTMLElement).offsetTop
 	}
 
-	function openEditLink(e: MouseEvent | KeyboardEvent) {
-		const isContextmenu = e.type === 'contextmenu'
-		const isKeyup = e.type === 'keyup'
-		const pressesE = (e as KeyboardEvent)?.key === 'e'
-
-		if (isKeyup && pressesE) {
-			const { offsetLeft, offsetTop } = e.target as HTMLElement
-			displayEditWindow(elem, { x: offsetLeft, y: offsetTop })
-			elem.classList.add('selected')
-			e.preventDefault()
-		}
-
-		if (isContextmenu) {
-			const { x, y } = e as MouseEvent
-
-			displayEditWindow(elem, { x, y })
-			elem.classList.add('selected')
-			e.preventDefault()
-		}
+	if (event.type === 'contextmenu') {
+		x = (event as PointerEvent).x
+		y = (event as PointerEvent).y
 	}
 
-	function selectAll(event: MouseEvent) {
-		clearTimeout(selectallTimer)
+	if (li && x && y) {
+		displayEditDialog(li, x, y)
+		li?.classList.add('selected')
+		event.preventDefault()
+	}
+}
 
-		const selectAllActive = domlinkblocks.className.includes('select-all')
+function openEditMobile(event: TouchEvent) {
+	if (event.type === 'touchstart') {
+		mobileLongpressTimer = setTimeout(() => open(), 600)
+	} else {
+		clearTimeout(mobileLongpressTimer)
+	}
 
-		// toggle selection
-		if (selectAllActive && event.type === 'click') {
-			elem.classList.toggle('selected')
+	function open() {
+		const li = getLiFromEvent(event)
+
+		if (li) {
+			displayEditDialog(li, 0, 0)
 			event.preventDefault()
-			return
-		}
-
-		// disable link when selecting all
-		if (selectAllActive && event.type.match(/mouseup|click/)) {
-			event.preventDefault()
-			return
-		}
-
-		// start select all debounce
-		if (!selectAllActive && event.type === 'mousedown') {
-			selectallTimer = setTimeout(() => {
-				domlinkblocks.classList.add('select-all')
-			}, 600)
 		}
 	}
+}
 
-	//	Mobile
-	//
+function selectAll(event: MouseEvent) {
+	clearTimeout(selectallTimer)
 
-	if (SYSTEM_OS === 'ios') {
-		elem.addEventListener('touchstart', longPressDebounce, { passive: false })
-		elem.addEventListener('touchmove', () => clearTimeout(mobileLongpressTimer), { passive: false })
-		elem.addEventListener('touchend', () => clearTimeout(mobileLongpressTimer), { passive: false })
+	const selectAllActive = domlinkblocks.className.includes('select-all')
+	const li = getLiFromEvent(event)
+
+	// toggle selection
+	if (selectAllActive && event.type === 'click') {
+		li?.classList.toggle('selected')
+		event.preventDefault()
+		return
 	}
 
-	function longPressDebounce(ev: TouchEvent) {
-		mobileLongpressTimer = setTimeout(() => {
-			ev.preventDefault()
+	// disable link when selecting all
+	if (selectAllActive && event.type.match(/mouseup|click/)) {
+		event.preventDefault()
+		return
+	}
 
-			displayEditWindow(elem, { x: 0, y: 0 }) // edit centered on mobile
+	// start select all debounce
+	if (!selectAllActive && event.type === 'mousedown') {
+		selectallTimer = setTimeout(() => {
+			domlinkblocks.classList.add('select-all')
 		}, 600)
 	}
 }
@@ -477,7 +493,7 @@ function changeTab(div: HTMLDivElement) {
 }
 
 //
-// Drag events
+//	Drag
 //
 
 type Coords = { x: number; y: number }
@@ -605,7 +621,7 @@ function applyDrag(targetIndex: number) {
 	}
 }
 
-async function endDrag() {
+function endDrag() {
 	const newIndex = ids.indexOf(draggedId)
 	const clone = clones.get(draggedId)
 	const coord = coords[newIndex]
@@ -618,82 +634,35 @@ async function endDrag() {
 	document.documentElement.removeEventListener('dragover', moveDragFirefox)
 	document.documentElement.removeEventListener('dragend', endDrag)
 
-	const data = await storage.sync.get()
-	const tablist = data.tabs.list[data.tabs.selected].ids
+	setTimeout(async () => {
+		const data = await storage.sync.get()
 
-	if (ids.length === tablist.length) {
 		data.tabs.list[data.tabs.selected].ids = ids
 		storage.sync.set(data)
-	}
 
-	setTimeout(async () => {
 		initblocks(getAllLinksInTab(data, data.tabs.selected), data.linknewtab)
 		domlinkblocks?.classList.remove('dragging')
 	}, 200)
 }
 
 //
-// Edit links
+// 	Edit links dialog
 //
 
-function editEvents() {
-	const getSelectedIds = (): string[] => [...document.querySelectorAll('.block.selected')]?.map((b) => b.id)
+onSettingsLoad(() => {
+	document.getElementById('e_title')?.addEventListener('change', submitLinksChange)
+	document.getElementById('e_url')?.addEventListener('change', submitLinksChange)
+	document.getElementById('e_iconurl')?.addEventListener('change', submitLinksChange)
+	document.getElementById('e_delete')?.addEventListener('click', deleteSelection)
+	document.getElementById('e_submit')?.addEventListener('click', submitLinksChange)
+	document.getElementById('e_delete-sel')?.addEventListener('click', deleteSelection)
+	document.getElementById('e_folder-sel')?.addEventListener('click', addSelectionToNewFolder)
+	document.getElementById('e_folder-remove-sel')?.addEventListener('click', removeSelectionFromFolder)
+})
 
-	function inputSubmitEvent(e: KeyboardEvent) {
-		if (e.code === 'Enter') {
-			const input = e.target as HTMLInputElement
-			input.blur()
-			updatesEditedLink(getSelectedIds()[0])
-		}
-	}
-
-	document.getElementById('e_delete')?.addEventListener('click', function () {
-		removeLinks(getSelectedIds())
-		closeEditLink()
-	})
-
-	document.getElementById('e_delete-sel')?.addEventListener('click', function () {
-		removeLinks(getSelectedIds())
-		closeEditLink()
-	})
-
-	document.getElementById('e_submit')?.addEventListener('click', async function () {
-		updatesEditedLink(getSelectedIds()[0])
-	})
-
-	document.getElementById('e_folder-sel')?.addEventListener('click', async function () {
-		const selectedIds = getSelectedIds()
-		const ids: string[] = []
-
-		for (const id of selectedIds) {
-			const dom = document.getElementById(id)
-			const isFolder = dom?.classList.contains('folder')
-
-			if (isFolder === false) {
-				ids.push(id)
-			}
-		}
-
-		linksUpdate({ addFolder: ids })
-
-		domlinkblocks?.classList.remove('select-all')
-		closeEditLink()
-	})
-
-	document.getElementById('e_folder-remove-sel')?.addEventListener('click', async function () {
-		moveLinksOutOfFolder(getSelectedIds())
-		domlinkblocks?.classList.remove('select-all')
-		closeEditLink()
-	})
-
-	document.getElementById('e_title')?.addEventListener('keyup', inputSubmitEvent)
-	document.getElementById('e_url')?.addEventListener('keyup', inputSubmitEvent)
-	document.getElementById('e_iconurl')?.addEventListener('keyup', inputSubmitEvent)
-}
-
-async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; y: number }) {
-	const linkId = domlink.id
-	const domicon = domlink.querySelector('img')
+async function displayEditDialog(li: HTMLLIElement, x: number, y: number) {
+	const linkId = li.id
+	const domicon = li.querySelector('img')
 	const domedit = document.querySelector('#editlink')
 	const opendedSettings = document.getElementById('settings')?.classList.contains('shown') ?? false
 
@@ -701,16 +670,16 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	const link = data[linkId] as Link
 
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
+	const domurl = document.getElementById('e_url') as HTMLInputElement
+	const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
+
 	domtitle.setAttribute('placeholder', tradThis('Title'))
+	domurl.setAttribute('placeholder', tradThis('Link'))
+	domiconurl.setAttribute('placeholder', tradThis('Icon'))
 	domtitle.value = link.title
 
 	if (isFolder(link) === false) {
-		const domurl = document.getElementById('e_url') as HTMLInputElement
-		domurl.setAttribute('placeholder', tradThis('Link'))
 		domurl.value = link.url
-
-		const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
-		domiconurl.setAttribute('placeholder', tradThis('Icon'))
 		domiconurl.value = link.icon ?? ''
 	}
 
@@ -719,7 +688,7 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	domedit?.classList.toggle('folder', isFolder(link))
 	domedit?.classList.toggle('pushed', opendedSettings)
 
-	const { innerHeight, innerWidth } = window // viewport size
+	const { innerHeight, innerWidth } = window
 
 	if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
 	if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
@@ -728,145 +697,139 @@ async function displayEditWindow(domlink: HTMLLIElement, { x, y }: { x: number; 
 	const domeditlink = document.getElementById('editlink')
 	if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
 
-	if (SYSTEM_OS !== 'ios' && !IS_MOBILE) {
-		domtitle.focus() // Focusing on touch opens virtual keyboard without user action, not good
+	// Focusing on touch opens virtual keyboard without user action, not good
+	if (IS_MOBILE === false) {
+		domtitle.focus()
 	}
 }
 
-async function updatesEditedLink(id?: string) {
-	if (!id) {
+async function submitLinksChange(event: Event) {
+	const id = getSelectedIds()[0]
+	const target = event.target as HTMLElement
+	const li = document.querySelector<HTMLLIElement>(`#${id}`)
+
+	if (!id || !li) {
 		return
 	}
 
-	const e_iconurl = document.getElementById('e_iconurl') as HTMLInputElement
-	const e_title = document.getElementById('e_title') as HTMLInputElement
-	const e_url = document.getElementById('e_url') as HTMLInputElement
-	const domlink = document.getElementById(id) as HTMLLIElement
-	const domtitle = domlink.querySelector('span') as HTMLSpanElement
-
-	if (e_iconurl.value.length === 7500) {
-		e_iconurl.value = ''
-		e_iconurl.setAttribute('placeholder', tradThis('Icon must be < 8kB'))
-		return
+	if (target.tagName === 'INPUT') {
+		target.blur()
+	} else {
+		closeEditLink()
 	}
 
 	const data = await storage.sync.get(id)
 	const link = data[id] as Link
-	const isElem = isFolder(link) === false
 
-	link.title = stringMaxSize(e_title.value, 64)
-	domtitle.textContent = link.title
-
-	if (isElem) {
-		const domicon = domlink.querySelector('img') as HTMLImageElement
-		const domurl = domlink.querySelector('a') as HTMLAnchorElement
-
-		link.url = stringMaxSize(e_url.value, 512)
-		link.icon = stringMaxSize(e_iconurl.value, 7500)
-
-		domtitle.textContent = linkElemTitle(link.title, link.url, domlinkblocks.className === 'text')
-		domicon.src = link.icon ?? getDefaultIcon(link.url)
-		domurl.href = link.url
+	const title = {
+		val: document.querySelector<HTMLInputElement>('#e_title')?.value,
+		dom: document.querySelector<HTMLSpanElement>(`#${id} span`),
 	}
 
-	// Updates
+	const url = {
+		val: document.querySelector<HTMLInputElement>('#e_url')?.value,
+		dom: document.querySelector<HTMLAnchorElement>(`#${id} a`),
+	}
+
+	const icon = {
+		val: document.querySelector<HTMLInputElement>('#e_iconurl')?.value,
+		dom: document.querySelector<HTMLImageElement>(`#${id} img`),
+	}
+
+	if (title.dom && title.val !== undefined) {
+		link.title = stringMaxSize(title.val, 64)
+		title.dom.textContent = link.title
+	}
+
+	if (isFolder(link) === false) {
+		if (icon.dom) {
+			link.icon = icon.val ? stringMaxSize(icon.val, 7500) : undefined
+			icon.dom.src = link.icon ?? getDefaultIcon(link.url)
+		}
+
+		if (title.dom && url.dom && url.val !== undefined) {
+			link.url = stringMaxSize(url.val, 512)
+			url.dom.href = link.url
+			title.dom.textContent = linkElemTitle(link.title, link.url, domlinkblocks.className === 'text')
+		}
+	}
+
 	storage.sync.set({ [id]: link })
+}
+
+function addSelectionToNewFolder() {
+	let ids: string[] = getSelectedIds()
+
+	for (let i = 0; i < ids.length; i++) {
+		const dom = document.getElementById(ids[i])
+		const isFolder = dom?.classList.contains('folder')
+
+		if (isFolder) {
+			ids.splice(i, 1)
+		}
+	}
+
+	domlinkblocks?.classList.remove('select-all')
+
+	linksUpdate({ addFolder: ids })
+	closeEditLink()
+}
+
+function deleteSelection() {
+	const ids = getSelectedIds()
+
+	deleteLinks(ids)
+	closeEditLink()
+
+	// Animation
+	for (const id of ids) {
+		document.getElementById(id)?.classList.add('removed')
+		setTimeout(() => document.getElementById(id)?.remove(), 600)
+	}
+}
+
+function removeSelectionFromFolder() {
+	removeLinksFromFolder(getSelectedIds())
+	domlinkblocks?.classList.remove('select-all')
+	closeEditLink()
 }
 
 //
 // Updates
 //
 
-async function removeLinks(ids: string[]) {
-	let data = await storage.sync.get()
-	const tab = data.tabs.list[data.tabs.selected]
-	const folderId = domlinkblocks.dataset.folderid
-	const currentlyInFolder = !!folderId
-
-	for (const id of ids) {
-		const toRemove = data[id] as Link
-
-		// Also remove link from folder
-		if (currentlyInFolder) {
-			const folder = data[folderId] as Links.Folder
-			folder.ids = folder.ids.filter((id) => !ids.includes(id))
-			data[folder._id] = folder
-		}
-
-		// Also remove folder content from data
-		if (isFolder(toRemove)) {
-			for (const id of toRemove.ids) {
-				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
-				delete data[id]
-			}
-		}
-
-		tab.ids = removeFromList(tab.ids, id)
-		data.tabs.list[data.tabs.selected] = tab
-		delete data[id]
-
-		// Animation
-		document.getElementById(id)?.classList.add('removed')
-		setTimeout(() => document.getElementById(id)?.remove(), 600)
+async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, tab, groupTitle }: LinksUpdate) {
+	if (addLink) {
+		linkSubmission({ type: 'link' })
 	}
 
-	storage.sync.clear()
-	storage.sync.set(data)
-}
-
-async function moveLinksOutOfFolder(ids: string[]): Promise<void> {
-	if (!domlinkblocks.dataset.folderid) {
-		return
+	if (addFolder) {
+		linkSubmission({ type: 'folder', ids: addFolder })
 	}
 
-	const data = await storage.sync.get()
-	const tab = data.tabs.list[data.tabs.selected]
-	const folderid = domlinkblocks.dataset.folderid
-
-	if (!!folderid) {
-		const folder = data[folderid] as Links.Folder
-
-		for (const id of ids) {
-			folder.ids = folder.ids.filter((linkid) => linkid !== id)
-		}
-
-		data[folderid] = folder
-		data.tabs.list[data.tabs.selected] = tab
-
-		storage.sync.set(data)
-		initblocks(getAllLinksInFolder(data, folder._id), data.linknewtab)
-	}
-}
-
-function addLink(): Links.Elem[] {
-	const titledom = document.getElementById('i_title') as HTMLInputElement
-	const urldom = document.getElementById('i_url') as HTMLInputElement
-	const title = titledom.value
-	const url = urldom.value
-
-	if (url.length < 3) {
-		return []
+	if (bookmarks) {
+		linkSubmission({ type: 'import', bookmarks: bookmarks })
 	}
 
-	titledom.value = ''
-	urldom.value = ''
+	if (typeof tab === 'boolean') {
+		setTab(tab ? 'add' : 'remove')
+	}
 
-	return [validateLink(title, url)]
-}
+	if (groupTitle !== undefined) {
+		setGroupTitle(groupTitle)
+	}
 
-function addLinkFolder(ids: string[]): Links.Folder[] {
-	const titledom = document.getElementById('i_title') as HTMLInputElement
-	const title = titledom.value
+	if (newtab !== undefined) {
+		setOpenInNewTab(newtab)
+	}
 
-	titledom.value = ''
+	if (style) {
+		setLinkStyle(style)
+	}
 
-	return [
-		{
-			_id: 'links' + randomString(6),
-			ids: ids,
-			title: title,
-		},
-	]
+	if (row) {
+		setRows(row)
+	}
 }
 
 async function linkSubmission(arg: LinkSubmission) {
@@ -925,11 +888,92 @@ async function linkSubmission(arg: LinkSubmission) {
 	initblocks(links, data.linknewtab)
 }
 
-function linkElemTitle(title: string, url: string, textOnly: boolean): string {
-	try {
-		url = new URL(url)?.origin
-	} catch (_) {}
-	return textOnly && title === '' ? url : title
+function addLink(): Links.Elem[] {
+	const titledom = document.getElementById('i_title') as HTMLInputElement
+	const urldom = document.getElementById('i_url') as HTMLInputElement
+	const title = titledom.value
+	const url = urldom.value
+
+	if (url.length < 3) {
+		return []
+	}
+
+	titledom.value = ''
+	urldom.value = ''
+
+	return [validateLink(title, url)]
+}
+
+function addLinkFolder(ids: string[]): Links.Folder[] {
+	const titledom = document.getElementById('i_title') as HTMLInputElement
+	const title = titledom.value
+
+	titledom.value = ''
+
+	return [
+		{
+			_id: 'links' + randomString(6),
+			ids: ids,
+			title: title,
+		},
+	]
+}
+
+async function deleteLinks(ids: string[]) {
+	let data = await storage.sync.get()
+	const tab = data.tabs.list[data.tabs.selected]
+	const folderId = domlinkblocks.dataset.folderid
+	const currentlyInFolder = !!folderId
+
+	for (const id of ids) {
+		const toRemove = data[id] as Link
+
+		// Also remove link from folder
+		if (currentlyInFolder) {
+			const folder = data[folderId] as Links.Folder
+			folder.ids = folder.ids.filter((id) => !ids.includes(id))
+			data[folder._id] = folder
+		}
+
+		// Also remove folder content from data
+		if (isFolder(toRemove)) {
+			for (const id of toRemove.ids) {
+				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
+				delete data[id]
+			}
+		}
+
+		tab.ids = removeFromList(tab.ids, id)
+		data.tabs.list[data.tabs.selected] = tab
+		delete data[id]
+	}
+
+	storage.sync.clear()
+	storage.sync.set(data)
+}
+
+async function removeLinksFromFolder(ids: string[]) {
+	if (!domlinkblocks.dataset.folderid) {
+		return
+	}
+
+	const data = await storage.sync.get()
+	const tab = data.tabs.list[data.tabs.selected]
+	const folderid = domlinkblocks.dataset.folderid
+
+	if (!!folderid) {
+		const folder = data[folderid] as Links.Folder
+
+		for (const id of ids) {
+			folder.ids = folder.ids.filter((linkid) => linkid !== id)
+		}
+
+		data[folderid] = folder
+		data.tabs.list[data.tabs.selected] = tab
+
+		storage.sync.set(data)
+		initblocks(getAllLinksInFolder(data, folder._id), data.linknewtab)
+	}
 }
 
 async function setGroupTitle(title: string) {
@@ -986,91 +1030,61 @@ async function setTab(action: 'add' | 'remove') {
 	storage.sync.set(data)
 }
 
-function setRows(amount: number, style: string) {
-	const linklist = document.getElementById('link-list')
-	const sizes = {
-		large: { width: 4.8, gap: 2.3 },
-		medium: { width: 3.5, gap: 2 },
-		small: { width: 2.5, gap: 2 },
-		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
+async function setOpenInNewTab(newtab: boolean) {
+	const anchors = document.querySelectorAll<HTMLAnchorElement>('.block a')
+
+	for (const anchor of anchors) {
+		if (BROWSER === 'safari') {
+			if (newtab) {
+				anchor.addEventListener('click', handleSafariNewtab)
+			} else {
+				anchor.removeEventListener('click', handleSafariNewtab)
+			}
+		} else {
+			if (newtab) {
+				anchor.setAttribute('target', '_blank')
+			} else {
+				anchor.removeAttribute('target')
+			}
+		}
 	}
 
-	if (linklist && style in sizes) {
-		const { width, gap } = sizes[style as keyof typeof sizes]
-		linklist.style.maxWidth = (width + gap) * amount + 'em'
+	storage.sync.set({ linknewtab: newtab })
+}
+
+async function setLinkStyle(style: string) {
+	const data = await storage.sync.get()
+	const links = getAllLinksInTab(data, data.tabs.selected)
+
+	for (const link of links) {
+		const span = document.querySelector<HTMLSpanElement>(`#links${link._id} span`)
+		const isElem = isFolder(link) === false
+
+		if (span && isElem) {
+			span.textContent = linkElemTitle(link.title, link.url, style === 'text')
+		}
 	}
+
+	style = style ?? 'large'
+	domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
+	domlinkblocks.classList.add(style)
+
+	initRows(data.linksrow, style)
+
+	storage.sync.set({ linkstyle: style })
+}
+
+function setRows(row: string) {
+	const style = domlinkblocks.classList[0] || 'large'
+	const val = parseInt(row ?? '6')
+	initRows(val, style)
+	eventDebounce({ linksrow: row })
 }
 
 function handleSafariNewtab(e: Event) {
 	const anchor = e.composedPath().filter((el) => (el as Element).tagName === 'A')[0]
 	window.open((anchor as HTMLAnchorElement)?.href)
 	e.preventDefault()
-}
-
-async function linksUpdate({ bookmarks, newtab, style, row, addLink, addFolder, tab, groupTitle }: LinksUpdate) {
-	if (addLink) {
-		linkSubmission({ type: 'link' })
-	}
-
-	if (addFolder) {
-		linkSubmission({ type: 'folder', ids: addFolder })
-	}
-
-	if (bookmarks) {
-		linkSubmission({ type: 'import', bookmarks: bookmarks })
-	}
-
-	if (typeof tab === 'boolean') {
-		setTab(tab ? 'add' : 'remove')
-	}
-
-	if (groupTitle !== undefined) {
-		setGroupTitle(groupTitle)
-	}
-
-	if (newtab !== undefined) {
-		storage.sync.set({ linknewtab: newtab })
-
-		document.querySelectorAll('.block a').forEach((a) => {
-			//
-			if (BROWSER === 'safari') {
-				if (newtab) a.addEventListener('click', handleSafariNewtab)
-				else a.removeEventListener('click', handleSafariNewtab)
-				return
-			}
-
-			newtab ? a.setAttribute('target', '_blank') : a.removeAttribute('target')
-		})
-	}
-
-	if (style) {
-		const data = await storage.sync.get()
-		const links = getAllLinksInTab(data, data.tabs.selected)
-
-		for (const link of links) {
-			const span = document.querySelector<HTMLSpanElement>(`#links${link._id} span`)
-			const isElem = isFolder(link) === false
-
-			if (span && isElem) {
-				span.textContent = linkElemTitle(link.title, link.url, style === 'text')
-			}
-		}
-
-		style = style ?? 'large'
-		domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
-		domlinkblocks.classList.add(style)
-
-		setRows(data.linksrow, style)
-
-		storage.sync.set({ linkstyle: style })
-	}
-
-	if (row) {
-		let domStyle = domlinkblocks.classList[0] || 'large'
-		let val = parseInt(row ?? '6')
-		setRows(val, domStyle)
-		eventDebounce({ linksrow: row })
-	}
 }
 
 //
@@ -1087,6 +1101,25 @@ function getDefaultIcon(url: string) {
 
 function removeFromList(arr: string[], id: string): string[] {
 	return arr.filter((item) => item !== id)
+}
+
+function getLiFromEvent(event: Event): HTMLLIElement | undefined {
+	const path = event.composedPath() as Element[]
+	const filtered = path.filter((el) => el.tagName === 'LI' && el.className?.includes('block'))
+	const li = !!filtered[0] ? (filtered[0] as HTMLLIElement) : undefined
+	return li
+}
+
+function getSelectedIds(): string[] {
+	const selected = document.querySelectorAll<HTMLLIElement>('#linkblocks li.selected')
+	return Array.from(selected).map((li) => li.id)
+}
+
+function linkElemTitle(title: string, url: string, textOnly: boolean): string {
+	try {
+		url = new URL(url)?.origin
+	} catch (_) {}
+	return textOnly && title === '' ? url : title
 }
 
 function clicksOnInterface(event: Event) {
