@@ -10,7 +10,7 @@ declare namespace Sync {
 		pagegap: number
 		pagewidth: number
 		linksrow: number
-		linkstyle: 'large' | 'medium' | 'small' | 'text'
+		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
 		textShadow: number
 		cssHeight: number

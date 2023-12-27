@@ -51,7 +51,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	}
 
 	// set class before appendBlock, cannot be moved
-	domlinkblocks.className = init.linkstyle
+	domlinkblocks.className = init.linkstyle ?? 'large'
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initTabs(init.tabs)
@@ -1065,7 +1065,7 @@ async function setLinkStyle(style: string) {
 	}
 
 	style = style ?? 'large'
-	domlinkblocks.classList.remove('large', 'medium', 'small', 'text')
+	domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
 	domlinkblocks.classList.add(style)
 
 	initRows(data.linksrow, style)
