@@ -1,15 +1,13 @@
-const COLLECTION_TYPES = <const>['night', 'noon', 'day', 'evening', 'user']
-
 declare namespace Unsplash {
 	type Local = {
 		[key in Unsplash.Sync['lastCollec']]: Unsplash.Image[]
 	}
 
-	type CollectionTypes = (typeof COLLECTION_TYPES)[number]
+	type CollectionTypes = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
 	interface Sync {
 		time: number
-		every: Shared.Frequency
+		every: Frequency
 		collection: string
 		pausedImage?: Unsplash.Image
 		lastCollec: Unsplash.CollectionTypes

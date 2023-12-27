@@ -1,4 +1,4 @@
-import { periodOfDay, turnRefreshButton, apiFetch, freqControl } from '../utils'
+import { periodOfDay, turnRefreshButton, apiFetch, freqControl, isEvery } from '../utils'
 import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../defaults'
 import { imgBackground } from '..'
 import { tradThis } from '../utils/translations'
@@ -325,6 +325,7 @@ async function preloadImage(src: string) {
 	}
 }
 
-function isCollection(s = ''): s is Unsplash.Sync['collection'] {
-	return s in COLLECTION_TYPES
+function isCollection(s = ''): s is Unsplash.CollectionTypes {
+	const collections: Unsplash.CollectionTypes[] = ['noon', 'day', 'evening', 'night']
+	return collections.includes(s as Unsplash.CollectionTypes)
 }

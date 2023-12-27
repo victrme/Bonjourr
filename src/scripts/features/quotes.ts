@@ -1,4 +1,4 @@
-import { apiFetch, freqControl } from '../utils'
+import { apiFetch, freqControl, isEvery } from '../utils'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -84,7 +84,7 @@ async function updateQuotes({ author, frequency, type, userlist, refresh }: Quot
 		refreshQuotes(data, local?.quotesCache)
 	}
 
-	if (isFrequency(frequency)) {
+	if (isEvery(frequency)) {
 		data.quotes.frequency = frequency
 	}
 
@@ -247,10 +247,7 @@ export function oldJSONToCSV(input: Quotes.UserInput): string {
 	return input.map((val) => val.join(',')).join('\n')
 }
 
-function isQuotesType(type = ''): type is Quotes.Sync['type'] {
-	return ['classic', 'kaamelott', 'inspirobot', 'user'].includes(type)
-}
-
-function isFrequency(freq = ''): freq is Shared.Frequency {
-	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(freq)
+function isQuotesType(type = ''): type is Quotes.Types {
+	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'user']
+	return types.includes(type as Quotes.Types)
 }

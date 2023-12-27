@@ -1,4 +1,4 @@
-import { MAIN_API, FALLBACK_API, SYNC_DEFAULT } from './defaults'
+import { MAIN_API, FALLBACK_API } from './defaults'
 import suntime from './utils/suntime'
 
 function shuffledAPIUrls(): string[] {
@@ -146,4 +146,9 @@ export function closeEditLink() {
 	setTimeout(() => {
 		domedit ? domedit.setAttribute('class', '') : ''
 	}, 200)
+}
+
+export function isEvery(freq = ''): freq is Frequency {
+	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
+	return every.includes(freq as Frequency)
 }
