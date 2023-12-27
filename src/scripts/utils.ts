@@ -116,7 +116,7 @@ export function bundleLinks(data: Sync.Storage): Links.Link[] {
 }
 
 export function linksDataMigration(data: Sync.Storage): Sync.Storage {
-	const hasLinks = Object.entries(data).some(([key, val]) => key.startsWith('links') && '_id' in (val as Links.Link))
+	const hasLinks = Object.entries(data).some(([key, val]) => key.startsWith('links') && !!(val as Links.Link)._id)
 	const hasLinksInTab = data?.tabs.list[0].ids.length > 0
 
 	if (hasLinks && hasLinksInTab) {

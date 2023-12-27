@@ -115,9 +115,9 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 		let li: HTMLLIElement
 
 		if (isFolder(link)) {
-			li = createLinkFolder(link, folderIcons[link._id], parser)
+			li = createLinkFolder(link, folderIcons[link._id])
 		} else {
-			li = createLinkElem(link, openInNewtab, parser)
+			li = createLinkElem(link, openInNewtab)
 		}
 
 		li.addEventListener('keyup', openEdit)
@@ -139,19 +139,14 @@ async function initblocks(links: Link[], openInNewtab: boolean): Promise<true> {
 	return true
 }
 
-function createLinkFolder(link: Links.Folder, icons: string[], parser: DOMParser): HTMLLIElement {
-	const folderhtml = `
-		<li class="block folder" draggable="true">
-			<div></div>
-			<span></span
-		</li>`
-
-	const doc = parser.parseFromString(folderhtml, 'text/html')
-	const li = doc.querySelector('li')!
-	const span = doc.querySelector('span')!
-	const folder = doc.querySelector('div')!
+function createLinkFolder(link: Links.Folder, icons: string[]): HTMLLIElement {
+	const li = document.createElement('li')
+	const span = document.createElement('span')!
+	const div = document.createElement('div')!
 	const title = stringMaxSize(link.title, 64)
 
+	li.classList.add('block', 'folder')
+	li.draggable = true
 	span.textContent = title
 
 	for (let i = 0; i < icons.length; i++) {
@@ -159,45 +154,47 @@ function createLinkFolder(link: Links.Folder, icons: string[], parser: DOMParser
 		img.alt = ''
 		img.draggable = false
 		img.src = icons[i]
-		folder.appendChild(img)
+		div.appendChild(img)
 	}
 
+	li.appendChild(div)
+	li.appendChild(span)
 	li.id = link._id
 	li.addEventListener('click', openFolder)
 
 	return li
 }
 
-function createLinkElem(link: Links.Elem, openInNewtab: boolean, parser: DOMParser) {
-	const linkhtml = `
-		<li class="block" draggable="true">
-			<a draggable="false" rel="noreferrer noopener">
-				<img alt="" src="" draggable="false">
-				<span></span>
-			</a>
-		</li>`
-
+function createLinkElem(link: Links.Elem, openInNewtab: boolean) {
 	const url = stringMaxSize(link.url, 512)
-	const doc = parser.parseFromString(linkhtml, 'text/html')
-	const li = doc.querySelector('li')!
-	const span = doc.querySelector('span')!
-	const anchor = doc.querySelector('a')!
-	const img = doc.querySelector('img')!
+	const li = document.createElement('li')
+	const span = document.createElement('span')
+	const anchor = document.createElement('a')
+	const img = document.createElement('img')
 	const isText = domlinkblocks.className === 'text'
 	const title = linkElemTitle(stringMaxSize(link.title, 64), link.url, isText)
 
-	if (openInNewtab) {
-		if (BROWSER === 'safari') {
-			anchor.addEventListener('click', handleSafariNewtab)
-		} else {
-			anchor.setAttribute('target', '_blank')
-		}
-	}
+	li.id = link._id
+	li.classList.add('block')
+	li.draggable = true
+
+	anchor.rel = 'noreferrer noopener'
+	anchor.draggable = false
+	anchor.href = url
 
 	span.textContent = title
-	li.id = link._id
-	anchor.href = url
+
+	img.alt = ''
+	img.draggable = false
 	createIcons(img, link)
+
+	anchor.appendChild(img)
+	anchor.appendChild(span)
+	li.appendChild(anchor)
+
+	if (openInNewtab) {
+		BROWSER === 'safari' ? (anchor.onclick = handleSafariNewtab) : (anchor.target = '_blank')
+	}
 
 	return li
 }
