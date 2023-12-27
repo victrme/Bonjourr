@@ -1,4 +1,4 @@
-import { MAIN_API, FALLBACK_API } from './defaults'
+import { MAIN_API, FALLBACK_API, SYNC_DEFAULT } from './defaults'
 import suntime from './utils/suntime'
 
 function shuffledAPIUrls(): string[] {

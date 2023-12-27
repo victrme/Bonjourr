@@ -1,4 +1,3 @@
-import storage from './storage'
 import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
@@ -11,6 +10,7 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
+import storage, { getSyncDefaults } from './storage'
 
 import langList from './langs'
 import parse from './utils/parse'
@@ -1186,7 +1186,7 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 		storage.local.clear()
 
 		setTimeout(() => {
-			storage.sync.set({ ...SYNC_DEFAULT })
+			storage.sync.set({ ...getSyncDefaults() })
 			storage.local.set({ ...LOCAL_DEFAULT })
 			fadeOut()
 		}, 50)
