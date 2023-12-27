@@ -133,7 +133,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		type: 'classic',
 		frequency: 'day',
 		last: 1650516688,
-		userlist: [],
 	},
 	font: {
 		family: '',

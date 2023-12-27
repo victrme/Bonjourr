@@ -1,14 +1,15 @@
 declare namespace Weather {
 	interface Sync {
-		geolocation: 'precise' | 'approximate' | 'off'
 		ccode?: string
 		city?: string
-		unit: 'metric' | 'imperial'
-		location?: [number, number]
-		forecast: 'auto' | 'always' | 'never'
-		temperature: 'actual' | 'feelslike' | 'both'
-		moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'custom'
+		unit: Unit
+		geolocation: Geolocation
+		forecast: Forecast
+		temperature: Temperature
+		moreinfo: MoreInfo
 		provider?: string
+		// <1.18.x
+		location?: [number, number]
 	}
 
 	interface Local {
@@ -23,6 +24,16 @@ declare namespace Weather {
 		timestamp: number
 		approximation?: Pick<Weather.API.Onecall, 'ccode' | 'city' | 'lat' | 'lon'>
 	}
+
+	type Geolocation = 'precise' | 'approximate' | 'off'
+
+	type Unit = 'metric' | 'imperial'
+
+	type Forecast = 'auto' | 'always' | 'never'
+
+	type Temperature = 'actual' | 'feelslike' | 'both'
+
+	type MoreInfo = 'none' | 'msnw' | 'yhw' | 'windy' | 'custom'
 
 	namespace API {
 		interface Current {

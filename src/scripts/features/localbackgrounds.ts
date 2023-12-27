@@ -1,4 +1,4 @@
-import { randomString, turnRefreshButton, freqControl } from '../utils'
+import { randomString, turnRefreshButton, freqControl, isEvery } from '../utils'
 import { get, set, update, del } from 'idb-keyval'
 import unsplashBackgrounds from './unsplash'
 import { imgBackground } from '..'
@@ -11,7 +11,7 @@ type LocalImages = {
 	ids: string[]
 	last: number
 	selected: string
-	freq: Shared.Frequency
+	freq: Frequency
 }
 
 type Blobs = {

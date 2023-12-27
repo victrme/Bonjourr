@@ -1,9 +1,7 @@
 import { settingsInit } from './settings'
 
-import storage from './storage'
-import clock from './features/clock'
 import notes from './features/notes'
-import quotes, { oldJSONToCSV } from './features/quotes'
+import clock from './features/clock'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
@@ -12,6 +10,8 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
+import quotes, { oldJSONToCSV } from './features/quotes'
+import storage, { getSyncDefaults } from './storage'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
@@ -447,10 +447,15 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 	try {
 		let { sync, local } = await storage.init()
 		const version_old = sync?.about?.version
-		const isUpdate = version_old !== CURRENT_VERSION
+		const hasChanged = version_old !== CURRENT_VERSION
 
-		if (isUpdate) {
-			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
+		if (hasChanged) {
+			if (version_old === undefined && Object.keys(sync).length === 0) {
+				console.log(`First install: ${CURRENT_VERSION}`)
+				sync = await getSyncDefaults()
+			} else {
+				console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
+			}
 
 			if (Array.isArray(sync?.quotes?.userlist)) {
 				const newuserlist = oldJSONToCSV(sync?.quotes?.userlist as unknown as Quotes.UserInput)
@@ -459,11 +464,10 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 
 			sync = linksDataMigration(sync)
 			sync.about = SYNC_DEFAULT.about
-
 			storage.sync.set(sync)
 		}
 
-		await setTranslationCache(sync.lang, local, isUpdate)
+		await setTranslationCache(sync.lang, local, hasChanged)
 
 		startup(sync, local)
 	} catch (e) {

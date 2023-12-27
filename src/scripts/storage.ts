@@ -35,6 +35,17 @@ function verifyDataAsSync(data: Keyval) {
 	return data as Sync.Storage
 }
 
+export async function getSyncDefaults(): Promise<Sync.Storage> {
+	try {
+		const json = await (await fetch('defaults.json')).json()
+		return verifyDataAsSync(json)
+	} catch (error) {
+		console.log('No defaults.json settings found')
+	}
+
+	return SYNC_DEFAULT
+}
+
 function online(): Storage {
 	const sync = {
 		set: function (value: Keyval) {
@@ -178,7 +189,7 @@ function webext(): Storage {
 		//@ts-ignore
 		startupStorage = undefined
 
-		return { sync: verifyDataAsSync(sync), local }
+		return { sync, local }
 	}
 
 	return {

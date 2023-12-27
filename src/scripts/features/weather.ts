@@ -63,12 +63,6 @@ async function updatesWeather(update: WeatherUpdate) {
 		return
 	}
 
-	const isUnits = (str = ''): str is Weather.Sync['unit'] => ['metric', 'imperial'].includes(str)
-	const isForecast = (str = ''): str is Weather.Sync['forecast'] => ['auto', 'always', 'never'].includes(str)
-	const isMoreinfo = (str = ''): str is Weather.Sync['moreinfo'] => ['none', 'msnw', 'yhw', 'windy', 'custom'].includes(str)
-	const isTemperature = (str = ''): str is Weather.Sync['temperature'] => ['actual', 'feelslike', 'both'].includes(str)
-	const isGeolocation = (str = ''): str is Weather.Sync['geolocation'] => ['off', 'approximate', 'precise'].includes(str)
-
 	if (isUnits(update.units)) {
 		weather.unit = update.units
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
@@ -502,4 +496,29 @@ function getSunsetHour(): number {
 	const d = new Date()
 	d.setHours(Math.round(suntime.sunset / 60))
 	return d.getHours()
+}
+
+function isUnits(str = ''): str is Weather.Unit {
+	const units: Weather.Unit[] = ['metric', 'imperial']
+	return units.includes(str as Weather.Unit)
+}
+
+function isForecast(str = ''): str is Weather.Forecast {
+	const forecasts: Weather.Forecast[] = ['auto', 'always', 'never']
+	return forecasts.includes(str as Weather.Forecast)
+}
+
+function isMoreinfo(str = ''): str is Weather.MoreInfo {
+	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'custom']
+	return moreinfos.includes(str as Weather.MoreInfo)
+}
+
+function isTemperature(str = ''): str is Weather.Temperature {
+	const temps: Weather.Temperature[] = ['actual', 'feelslike', 'both']
+	return temps.includes(str as Weather.Temperature)
+}
+
+function isGeolocation(str = ''): str is Weather.Geolocation {
+	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
+	return geol.includes(str as Weather.Geolocation)
 }
