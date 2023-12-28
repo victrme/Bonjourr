@@ -20,6 +20,7 @@ import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
+import { syncNewBookmarks } from './features/linksImport'
 
 const dominterface = document.getElementById('interface') as HTMLDivElement
 
@@ -432,6 +433,7 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 	hideElements(data.hide)
 	initBackground(data, local)
 	quickLinks(data)
+	syncNewBookmarks(data.syncbookmarks)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
 
 	document.getElementById('time')?.classList.toggle('hidden', !data.time)

@@ -5,6 +5,7 @@ declare namespace Sync {
 		usdate: boolean
 		showall: boolean
 		quicklinks: boolean
+		syncbookmarks?: number
 		time: boolean
 		main: boolean
 		pagegap: number

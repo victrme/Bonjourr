@@ -73,6 +73,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	background_bright: 0.8,
 	background_type: 'unsplash',
 	quicklinks: true,
+	syncbookmarks: undefined,
 	linkstyle: 'large',
 	linknewtab: false,
 	linksrow: 6,

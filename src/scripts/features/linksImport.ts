@@ -3,6 +3,7 @@ import { tradThis } from '../utils/translations'
 import { PLATFORM } from '../defaults'
 import quickLinks from './links'
 import onSettingsLoad from '../utils/onsettingsload'
+import storage from '../storage'
 
 type BookmarkFolder = {
 	title: string
@@ -10,6 +11,7 @@ type BookmarkFolder = {
 		id: string
 		title: string
 		url: string
+		dateAdded: number
 	}[]
 }
 
@@ -28,19 +30,59 @@ onSettingsLoad(() => {
 export default async function linksImport() {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const foldersdom = Object.values(document.querySelectorAll<HTMLDivElement>('.bookmarks-folder'))
-	const permissionGranted = await chrome.permissions.request({ permissions: ['bookmarks'] })
+	const treenode = await getBookmarkTree()
 
-	if (permissionGranted) {
-		const namespace = PLATFORM === 'firefox' ? browser : chrome
-		const treenode = await namespace.bookmarks.getTree()
+	if (!treenode) {
+		return
+	}
 
-		bookmarksdom.showModal()
+	bookmarksdom.showModal()
+	bookmarkFolders = []
+	foldersdom?.forEach((node) => node.remove())
 
-		bookmarkFolders = []
-		foldersdom?.forEach((node) => node.remove())
+	parseThroughImport(treenode[0])
+	addBookmarksFolderToDOM()
+}
 
-		parseThroughImport(treenode[0])
-		addBookmarksFolderToDOM()
+export async function syncNewBookmarks(init?: number, update?: boolean) {
+	if (update !== undefined) {
+		updateSyncBookmarks(update)
+		return
+	}
+
+	const treenode = await getBookmarkTree()
+
+	if (!treenode || !init) {
+		return
+	}
+
+	parseThroughImport(treenode[0])
+
+	const lastCheck = init ?? Date.now()
+	const flatList = bookmarkFolders.map((folder) => folder.bookmarks).flat()
+	const newBookmarks = flatList.filter((bookmark) => bookmark.dateAdded > lastCheck)
+
+	console.log(newBookmarks)
+
+	if (newBookmarks.length > 0) {
+		quickLinks(undefined, { bookmarks: newBookmarks })
+		setTimeout(() => storage.sync.set({ syncbookmarks: Date.now() }), 1000)
+	}
+}
+
+async function updateSyncBookmarks(update: boolean) {
+	const i_syncbookmarks = document.getElementById('#i_syncbookmarks') as HTMLInputElement
+	const permission = await getPermissions()
+
+	if (!permission) {
+		i_syncbookmarks.checked = false
+		update = false
+	}
+
+	if (update) {
+		storage.sync.set({ syncbookmarks: Date.now() })
+	} else {
+		storage.sync.remove('syncbookmarks')
 	}
 }
 
@@ -95,6 +137,7 @@ function parseThroughImport(treenode: chrome.bookmarks.BookmarkTreeNode) {
 				id: randomString(6),
 				title: child.title,
 				url: child.url,
+				dateAdded: child.dateAdded ?? 0,
 			})
 		}
 	}
@@ -151,4 +194,16 @@ function addBookmarksFolderToDOM() {
 		div.appendChild(listdom)
 		container.appendChild(div)
 	}
+}
+
+async function getPermissions(): Promise<boolean> {
+	const permission = await chrome.permissions.request({ permissions: ['bookmarks'] })
+	return permission
+}
+
+async function getBookmarkTree(): Promise<chrome.bookmarks.BookmarkTreeNode[] | undefined> {
+	const namespace = PLATFORM === 'firefox' ? browser : chrome
+	const treenode = await namespace.bookmarks.getTree()
+
+	return treenode
 }

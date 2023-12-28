@@ -5,7 +5,7 @@ import weather from './features/weather'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
-import linksImport from './features/linksImport'
+import linksImport, { syncNewBookmarks } from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import localBackgrounds from './features/localbackgrounds'
@@ -116,6 +116,7 @@ export async function settingsInit() {
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	initCheckbox('i_quicklinks', data.quicklinks)
+	initCheckbox('i_syncbookmarks', !!data.syncbookmarks)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
@@ -323,6 +324,10 @@ export async function settingsInit() {
 
 	paramId('submitlink').addEventListener('click', function () {
 		quickLinks(undefined, { addLink: true })
+	})
+
+	paramId('i_syncbookmarks').addEventListener('change', function (this) {
+		syncNewBookmarks(undefined, this.checked)
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {
