@@ -443,6 +443,12 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 	if (data?.quotes?.on) features.push('quotes')
 }
 
+// Unfocus address bar on chromium
+// https://stackoverflow.com/q/64868024
+// if (window.location.search !== '?r=1') {
+// 	window.location.assign('index.html?r=1')
+// }
+
 ;(async () => {
 	onlineAndMobileHandler()
 

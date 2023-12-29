@@ -27,6 +27,11 @@ type Bookmarks = {
 	url: string
 }[]
 
+type Coords = {
+	x: number
+	y: number
+}
+
 type SubmitLink = { type: 'link' }
 type SubmitLinkFolder = { type: 'folder'; ids: string[] }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
@@ -36,6 +41,7 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDivElement
 
+let editmousedown: boolean = false
 let mobileLongpressTimer = 0
 let selectallTimer = 0
 
@@ -60,6 +66,18 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 }
 
 onSettingsLoad(() => {
+	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
+	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
+
+	document.body.addEventListener('click', function () {
+		if (editmousedown) {
+			editmousedown = false
+			return
+		}
+
+		closeEditLink()
+	})
+
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		window.addEventListener('resize', () => {
 			if (domeditlink?.classList.contains('shown')) closeEditLink()
@@ -120,8 +138,7 @@ async function initblocks(data: Sync.Storage): Promise<true> {
 			li = createLinkElem(link, data.linknewtab)
 		}
 
-		li.addEventListener('keyup', openEdit)
-		li.addEventListener('contextmenu', openEdit)
+		li.addEventListener('keyup', displayEditDialog)
 		li.addEventListener('click', selectAll)
 		li.addEventListener('mousedown', selectAll)
 		li.addEventListener('mouseup', selectAll)
@@ -145,6 +162,7 @@ function createLinkFolder(link: Links.Folder, linksInFolder: Links.Elem[]): HTML
 	const div = document.createElement('div')!
 	const title = stringMaxSize(link.title, 64)
 
+	li.id = link._id
 	li.classList.add('block', 'folder')
 	li.draggable = true
 	span.textContent = title
@@ -159,7 +177,6 @@ function createLinkFolder(link: Links.Folder, linksInFolder: Links.Elem[]): HTML
 
 	li.appendChild(div)
 	li.appendChild(span)
-	li.id = link._id
 	li.addEventListener('click', openFolder)
 
 	return li
@@ -231,7 +248,7 @@ function initRows(amount: number, style: string) {
 
 	if (linklist && style in sizes) {
 		const { width, gap } = sizes[style as keyof typeof sizes]
-		linklist.style.maxWidth = (width + gap) * amount + 'em'
+		document.documentElement.style.setProperty('--links-width', (width + gap) * amount + 'em')
 	}
 }
 
@@ -311,28 +328,6 @@ function dismissSelectAllAndFolder(event: Event) {
 	}
 }
 
-function openEdit(event: Event) {
-	const li = getLiFromEvent(event)
-	let x = 0
-	let y = 0
-
-	if (event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e') {
-		x = (event.target as HTMLElement).offsetLeft
-		y = (event.target as HTMLElement).offsetTop
-	}
-
-	if (event.type === 'contextmenu') {
-		x = (event as PointerEvent).x
-		y = (event as PointerEvent).y
-	}
-
-	if (li && x && y) {
-		displayEditDialog(li, x, y)
-		li?.classList.add('selected')
-		event.preventDefault()
-	}
-}
-
 function openEditMobile(event: TouchEvent) {
 	if (event.type === 'touchstart') {
 		mobileLongpressTimer = setTimeout(() => open(), 600)
@@ -341,12 +336,9 @@ function openEditMobile(event: TouchEvent) {
 	}
 
 	function open() {
-		const li = getLiFromEvent(event)
-
-		if (li) {
-			displayEditDialog(li, 0, 0)
-			event.preventDefault()
-		}
+		getLiFromEvent(event)?.classList.add('selected')
+		displayEditDialog(event)
+		event.preventDefault()
 	}
 }
 
@@ -389,7 +381,7 @@ function initTabs(data: Sync.Storage) {
 	document.getElementById('link-title')?.classList.toggle('shown', data.linktabs !== undefined)
 }
 
-function toggleTabsTitleType(title: string, linktabs?: boolean): void {
+function toggleTabsTitleType(title: string, linktabs?: number): void {
 	const folderid = domlinkblocks.dataset.folderid
 	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
 	const showTitles = folderid ? true : linktabs !== undefined
@@ -464,8 +456,6 @@ function changeTab(div: HTMLDivElement) {
 //
 //	Drag
 //
-
-type Coords = { x: number; y: number }
 
 const clones: Map<string, HTMLLIElement> = new Map()
 let [cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0]
@@ -629,27 +619,42 @@ onSettingsLoad(() => {
 	document.getElementById('e_iconurl')?.addEventListener('change', submitLinksChange)
 	document.getElementById('e_delete')?.addEventListener('click', deleteSelection)
 	document.getElementById('e_submit')?.addEventListener('click', submitLinksChange)
+	document.getElementById('e_add-link')?.addEventListener('click', addLinkFromEditDialog)
 	document.getElementById('e_delete-sel')?.addEventListener('click', deleteSelection)
 	document.getElementById('e_folder-sel')?.addEventListener('click', addSelectionToNewFolder)
 	document.getElementById('e_folder-remove-sel')?.addEventListener('click', removeSelectionFromFolder)
 })
 
-async function displayEditDialog(li: HTMLLIElement, x: number, y: number) {
-	const linkId = li.id
-	const domicon = li.querySelector('img')
-	const domedit = document.querySelector('#editlink')
-	const opendedSettings = document.getElementById('settings')?.classList.contains('shown') ?? false
+async function displayEditDialog(event: Event) {
+	event.preventDefault()
 
-	const data = await storage.sync.get(linkId)
-	const link = data[linkId] as Link
+	const path = event.composedPath() as Element[]
+	const liInPath = path.filter((el) => el.tagName === 'LI')
+
+	const li = liInPath[0]
+	const id = li?.id
+	const domicon = li?.querySelector('img')
+	const domedit = document.querySelector('#editlink')
 
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
 	const domurl = document.getElementById('e_url') as HTMLInputElement
 	const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
 
-	domtitle.setAttribute('placeholder', tradThis('Title'))
-	domurl.setAttribute('placeholder', tradThis('Link'))
-	domiconurl.setAttribute('placeholder', tradThis('Icon'))
+	const { x, y } = newEditDialogPosition(event)
+	domeditlink.style.transform = `translate(${x}px, ${y}px)`
+
+	const data = await storage.sync.get(id)
+	const link = getLink(data, id)
+
+	domedit?.classList.toggle('shown', true)
+	domedit?.classList.toggle('addlink', !link)
+
+	if (!link) {
+		domtitle.value = ''
+		domurl.value = ''
+		return
+	}
+
 	domtitle.value = link.title
 
 	if (isFolder(link) === false) {
@@ -660,21 +665,36 @@ async function displayEditDialog(li: HTMLLIElement, x: number, y: number) {
 	domedit?.classList.add('shown')
 	domicon?.classList.add('selected')
 	domedit?.classList.toggle('folder', isFolder(link))
-	domedit?.classList.toggle('pushed', opendedSettings)
-
-	const { innerHeight, innerWidth } = window
-
-	if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
-	if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
-
-	// Moves edit link to mouse position
-	const domeditlink = document.getElementById('editlink')
-	if (domeditlink) domeditlink.style.transform = `translate(${x + 3}px, ${y + 3}px)`
 
 	// Focusing on touch opens virtual keyboard without user action, not good
 	if (IS_MOBILE === false) {
 		domtitle.focus()
 	}
+}
+
+function newEditDialogPosition(event: Event): Coords {
+	const { innerHeight, innerWidth } = window
+	let x = 0
+	let y = 0
+
+	if (event.type === 'touchstart') {
+		return { x, y }
+	}
+	//
+	else if (event.type === 'contextmenu') {
+		x = (event as PointerEvent).x
+		y = (event as PointerEvent).y
+	}
+	//
+	else if (event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e') {
+		x = (event.target as HTMLElement).offsetLeft
+		y = (event.target as HTMLElement).offsetTop
+	}
+
+	if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
+	if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
+
+	return { x, y }
 }
 
 async function submitLinksChange(event: Event) {
@@ -729,6 +749,11 @@ async function submitLinksChange(event: Event) {
 	}
 
 	storage.sync.set({ [id]: link })
+}
+
+function addLinkFromEditDialog() {
+	linksUpdate({ addLink: true })
+	closeEditLink()
 }
 
 function addSelectionToNewFolder() {
@@ -859,8 +884,8 @@ async function linkSubmission(arg: LinkSubmission) {
 }
 
 function addLink(): Links.Elem[] {
-	const titledom = document.getElementById('i_title') as HTMLInputElement
-	const urldom = document.getElementById('i_url') as HTMLInputElement
+	const titledom = document.getElementById('e_title') as HTMLInputElement
+	const urldom = document.getElementById('e_url') as HTMLInputElement
 	const title = titledom.value
 	const url = urldom.value
 
@@ -1064,6 +1089,10 @@ function handleSafariNewtab(e: Event) {
 // Helpers
 //
 
+function isLink(link: unknown): link is Link {
+	return (link as Link)?._id.includes('links')
+}
+
 function isFolder(link: Link): link is Links.Folder {
 	return (link as Links.Folder).ids !== undefined
 }
@@ -1161,12 +1190,10 @@ function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
 	return links
 }
 
-function getLinks(data: Sync.Storage): { [key: string]: Link } {
-	for (const id in data) {
-		if (id.startsWith('links') === false) {
-			delete data[id]
-		}
-	}
+function getLink(data: Sync.Storage, id: string): Link | undefined {
+	const val = data[id]
 
-	return data as { [key: string]: Link }
+	if (isLink(val)) {
+		return val
+	}
 }

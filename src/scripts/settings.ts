@@ -315,18 +315,6 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
-		if (this.code === 'Enter') paramId('i_url')?.focus()
-	})
-
-	paramId('i_url').addEventListener('change', function (this: KeyboardEvent) {
-		quickLinks(undefined, { addLink: true })
-	})
-
-	paramId('submitlink').addEventListener('click', function () {
-		quickLinks(undefined, { addLink: true })
-	})
-
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {
 		syncNewBookmarks(undefined, this.checked)
 	})
@@ -824,18 +812,12 @@ export async function settingsInit() {
 		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
 
 		const areSettingsShown = settingsDom?.classList.contains('shown')
-		const isEditlinkOpen = document.getElementById('editlink')?.classList.contains('shown')
 
 		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
 		const onInterface = pathIds.includes('interface')
-		const onEdit = pathIds.includes('editlink')
 
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
-		}
-
-		if (!onEdit && isEditlinkOpen) {
-			closeEditLink()
 		}
 
 		if ((onBody || onInterface) && areSettingsShown) {

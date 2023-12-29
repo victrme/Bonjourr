@@ -81,10 +81,11 @@
 	justify-content: center;
 	border-radius: 1em;
 	border: 1px solid transparent;
-	padding: 1em;
+	padding: 2em 5em;
 	margin: 0;
 	min-height: 6em;
 	min-width: 6em;
+	max-width: var(--links-width);
 	column-gap: 2.6em;
 	row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
 	transition-duration: 0.2s;
@@ -456,6 +457,7 @@ li.block.folder img {
 		z-index: 2;
 		top: 0;
 		left: 0;
+		will-change: transform;
 
 		// chrome loses drag focus without this on clones
 		pointer-events: none;
@@ -498,4 +500,23 @@ li.block.folder img {
 #editlink.folder #e_iconurl,
 #editlink.folder #e_url {
 	display: none;
+}
+
+#editlink.folder #e_iconurl,
+#editlink.folder #e_url {
+	display: none;
+}
+
+#editlink #e_add-link {
+	display: none;
+}
+
+#editlink.addlink #e_iconurl,
+#editlink.addlink #e_delete,
+#editlink.addlink #e_submit {
+	display: none;
+}
+
+#editlink.addlink #e_add-link {
+	display: initial;
 }
