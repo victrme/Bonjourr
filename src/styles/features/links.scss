@@ -3,17 +3,14 @@
 //
 
 #link-title {
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: center;
 	column-gap: 1em;
-	margin-top: 2em;
+	padding-top: 1em;
 
-	&.hidden:not(:hover) div {
-		opacity: 0;
-		user-select: none;
-		touch-action: none;
-		pointer-events: none;
+	&.shown {
+		display: flex;
 	}
 
 	div {
@@ -36,7 +33,7 @@
 	input {
 		min-width: 3em;
 		max-width: 32ch;
-		padding: 0.3em 1em;
+		padding: 0.1em 0.6em;
 		font-size: 1.3em;
 		color: white;
 		border: none;

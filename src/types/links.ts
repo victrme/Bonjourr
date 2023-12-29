@@ -16,13 +16,8 @@ declare namespace Links {
 
 	type Link = Links.Folder | Links.Elem
 
-	type Tabs = {
-		selected: number
-		list: Tab[]
-	}
-
-	type Tab = {
-		title: string
+	type TabList = {
+		name: string
 		ids: string[]
-	}
+	}[]
 }

@@ -117,6 +117,7 @@ export async function settingsInit() {
 	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	initCheckbox('i_quicklinks', data.quicklinks)
 	initCheckbox('i_syncbookmarks', !!data.syncbookmarks)
+	initCheckbox('i_linktabs', data.linktabs !== undefined)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
@@ -328,6 +329,10 @@ export async function settingsInit() {
 
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {
 		syncNewBookmarks(undefined, this.checked)
+	})
+
+	paramId('i_linktabs').addEventListener('change', function (this) {
+		quickLinks(undefined, { tab: this.checked })
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {

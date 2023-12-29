@@ -13,6 +13,7 @@ declare namespace Sync {
 		linksrow: number
 		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
+		linktabs?: number
 		textShadow: number
 		cssHeight: number
 		reviewPopup: number
@@ -32,8 +33,8 @@ declare namespace Sync {
 		weather: Weather.Sync
 		searchbar: Searchbar
 		quotes: Quotes.Sync
-		tabs: Links.Tabs
 		font: Font
+		tabslist: Links.TabList
 		move: {
 			selection: Move.Selection
 			layouts: {

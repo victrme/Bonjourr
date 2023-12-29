@@ -76,17 +76,13 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	syncbookmarks: undefined,
 	linkstyle: 'large',
 	linknewtab: false,
+	linktabs: undefined,
 	linksrow: 6,
-	linktab: 0,
 	textShadow: 0.2,
 	reviewPopup: 0,
 	cssHeight: 80,
 	css: '',
 	hide: {},
-	tabs: {
-		selected: 0,
-		list: [{ title: '', ids: [] }],
-	},
 	clock: {
 		size: 1,
 		ampm: false,
@@ -142,7 +138,12 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
-
+	tabslist: [
+		{
+			name: '',
+			ids: [],
+		},
+	],
 	move: {
 		selection: 'single',
 		layouts: {
