@@ -445,27 +445,37 @@ li.block.folder img {
 //  Links drag and drop
 //
 
+#linkblocks.dropping li.block div,
+#linkblocks.dropping li.block a {
+	cursor: grab;
+}
+
+#linkblocks.dragging li.block div,
+#linkblocks.dragging li.block a {
+	cursor: grabbing;
+}
+
+#linkblocks.dropping,
 #linkblocks.dragging {
-	.block {
+	.block:not(.dragging-clone) {
 		opacity: 0;
 		z-index: 3;
+		transition: none;
 	}
 
 	.dragging-clone {
 		position: fixed;
-		opacity: 1;
-		z-index: 2;
+		visibility: visible;
+		will-change: transform;
 		top: 0;
 		left: 0;
-		will-change: transform;
-
-		// chrome loses drag focus without this on clones
-		pointer-events: none;
+		z-index: 2;
 	}
 
 	.dragging-clone.on {
 		z-index: 4;
 		transition: none;
+		pointer-events: none;
 	}
 }
 

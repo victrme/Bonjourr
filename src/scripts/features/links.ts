@@ -30,6 +30,8 @@ type Bookmarks = {
 type Coords = {
 	x: number
 	y: number
+	w: number
+	h: number
 }
 
 type SubmitLink = { type: 'link' }
@@ -140,12 +142,9 @@ async function initblocks(data: Sync.Storage): Promise<true> {
 
 		li.addEventListener('keyup', displayEditDialog)
 		li.addEventListener('click', selectAll)
-		li.addEventListener('mousedown', selectAll)
-		li.addEventListener('mouseup', selectAll)
-		li.addEventListener('dragstart', startDrag)
-		li.addEventListener('touchstart', openEditMobile, { passive: false })
-		li.addEventListener('touchmove', openEditMobile, { passive: false })
-		li.addEventListener('touchend', openEditMobile, { passive: false })
+		li.addEventListener('pointerup', selectAll)
+		li.addEventListener('pointerdown', selectAll)
+		li.addEventListener('pointerdown', startDrag)
 
 		fragment.appendChild(li)
 	}
@@ -164,7 +163,6 @@ function createLinkFolder(link: Links.Folder, linksInFolder: Links.Elem[]): HTML
 
 	li.id = link._id
 	li.classList.add('block', 'folder')
-	li.draggable = true
 	span.textContent = title
 
 	for (let i = 0; i < linksInFolder.length; i++) {
@@ -193,7 +191,6 @@ function createLinkElem(link: Links.Elem, openInNewtab: boolean) {
 
 	li.id = link._id
 	li.classList.add('block')
-	li.draggable = true
 
 	anchor.rel = 'noreferrer noopener'
 	anchor.draggable = false
@@ -330,8 +327,10 @@ function dismissSelectAllAndFolder(event: Event) {
 
 function openEditMobile(event: TouchEvent) {
 	if (event.type === 'touchstart') {
+		console.log('start')
 		mobileLongpressTimer = setTimeout(() => open(), 600)
 	} else {
+		console.log('hello')
 		clearTimeout(mobileLongpressTimer)
 	}
 
@@ -356,13 +355,13 @@ function selectAll(event: MouseEvent) {
 	}
 
 	// disable link when selecting all
-	if (selectAllActive && event.type.match(/mouseup|click/)) {
+	if (selectAllActive && event.type.match(/pointerup|click/)) {
 		event.preventDefault()
 		return
 	}
 
 	// start select all debounce
-	if (!selectAllActive && event.type === 'mousedown') {
+	if (!selectAllActive && event.type === 'pointerdown') {
 		selectallTimer = setTimeout(() => {
 			domlinkblocks.classList.add('select-all')
 		}, 600)
@@ -458,110 +457,128 @@ function changeTab(div: HTMLDivElement) {
 //
 
 const clones: Map<string, HTMLLIElement> = new Map()
-let [cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0]
+const dropzones: Set<Coords & { id: string }> = new Set()
+let [dx, dy, cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0, 0, 0]
 let draggedId = ''
 let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
 
-const deplaceElem = (dom?: HTMLElement, x = 0, y = 0) => {
-	if (dom) {
-		dom.style.transform = `translate3d(${x - interfacemargin}px, ${y}px, 0)`
+function beforeStartDrag(event: PointerEvent) {
+	// Prevent drag move event if user slips on click
+	// By only starting drag if pointer moves more than 10px deadzone
+
+	const li = getLiFromEvent(event)
+	cox = event.offsetX
+	coy = event.offsetY
+
+	li?.addEventListener('pointermove', pointerDeadzone)
+	li?.addEventListener('pointerup', pointerDeadzone)
+
+	function pointerDeadzone(event: PointerEvent) {
+		const precision = event.pointerType === 'touch' ? 4 : 10
+		const ox = Math.abs(cox - event.offsetX)
+		const oy = Math.abs(coy - event.offsetY)
+
+		const isEndEvents = event.type.match(/pointerup|touchend/)
+		const isOutside = ox > precision || oy > precision
+
+		if (isOutside) {
+			startDrag(event)
+		}
+
+		if (isOutside || isEndEvents) {
+			li?.removeEventListener('pointermove', pointerDeadzone)
+			li?.removeEventListener('pointerup', pointerDeadzone)
+		}
 	}
 }
 
-function startDrag(event: DragEvent) {
-	const lilist = Object.values(document.querySelectorAll<HTMLLIElement>('#linkblocks li'))
-	const element = lilist.filter((li) => li === event.target)[0]
+function startDrag(event: PointerEvent) {
+	if (event.button > 0) {
+		return
+	}
 
-	//
-	// Reset shared variables by these events
+	if (event.type === 'pointerdown') {
+		beforeStartDrag(event)
+		return
+	}
 
-	draggedId = element?.id ?? ''
+	const path = event.composedPath() as Element[]
+	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
+	const fragment = document.createDocumentFragment()
+	const lis = document.querySelectorAll<HTMLLIElement>('#linkblocks li.block')
+	const pos = getPosFromEvent(event)
+
+	draggedId = target?.id ?? ''
 	clearTimeout(selectallTimer)
-	dominterface.style.cursor = 'grabbing'
 	interfacemargin = dominterface.getBoundingClientRect().left
 
 	ids = []
 	coords = []
 	initids = []
 	clones.clear()
+	dropzones.clear()
 
 	//
 	// Create visible links clones
 	// And add all drag & drop events
 
-	const fragment = document.createDocumentFragment()
-
-	for (const li of lilist) {
+	for (const li of lis) {
 		const clone = li.cloneNode(true) as HTMLLIElement
-		const { x, y } = li.getBoundingClientRect()
+		const { x, y, width, height } = li.getBoundingClientRect()
 		const id = li.id
 
 		ids.push(id)
 		initids.push(id)
-		coords.push({ x, y })
+		coords.push({ x, y, w: width, h: height })
 
 		clone.removeAttribute('id')
 		clone.classList.add('dragging-clone')
 		clones.set(id, clone)
 		deplaceElem(clone, x, y)
 		fragment.appendChild(clone)
+		dropzones.add({ id, x, y, w: width, h: height })
 
 		if (id === draggedId) {
-			cox = event.clientX - x
-			coy = event.clientY - y
+			cox = pos.x - x
+			coy = pos.y - y
+			dx = x
+			dy = y
 			clone.classList.add('on')
 		}
-
-		li.addEventListener('dragenter', () => applyDrag(lilist.indexOf(li)))
-		li.addEventListener('drag', moveDrag)
-		li.addEventListener('drop', endDrag)
 	}
 
+	dominterface.style.cursor = 'grabbing'
 	domlinkblocks?.classList.add('dragging')
 	document.querySelector('#link-list')?.appendChild(fragment)
+	window.requestAnimationFrame(deplaceDraggedElem)
 
-	//
-	// Firefox keeps clientX/Y ondrag to 0 because of, checks notes, a 15yo bug
-	// https://bugzilla.mozilla.org/show_bug.cgi?id=505521
-
-	if (BROWSER === 'firefox') {
-		document.documentElement.addEventListener('dragover', moveDragFirefox)
-		document.documentElement.addEventListener('dragend', endDrag)
-	}
-
-	//
-	// Hide drag preview
-	// https://stackoverflow.com/questions/27989602/hide-drag-preview-html-drag-and-drop
-
-	const elem = element.cloneNode(true) as HTMLLIElement
-	elem.id = 'link-drag-preview'
-	elem.style.position = 'absolute'
-	elem.style.opacity = '0'
-	elem.style.zIndex = '-1'
-	domlinkblocks?.appendChild(elem)
-	event.dataTransfer?.setDragImage(elem, 0, 0)
-}
-
-function moveDrag(event: DragEvent) {
-	const x = event.clientX - cox
-	const y = event.clientY - coy
-
-	deplaceElem(clones.get(draggedId), x, y)
-
-	// this triggers drop event
-	if (BROWSER !== 'firefox' && event.clientX === 0 && event.clientY === 0) {
-		;(event.target as HTMLLIElement).dispatchEvent(new DragEvent('drop'))
+	if (event.pointerType === 'touch') {
+		document.documentElement.addEventListener('touchmove', moveDrag, { passive: false })
+		document.documentElement.addEventListener('touchend', endDrag, { passive: false })
+	} else {
+		document.documentElement.addEventListener('pointermove', moveDrag)
+		document.documentElement.addEventListener('pointerup', endDrag)
+		document.documentElement.addEventListener('pointerleave', endDrag)
 	}
 }
 
-function moveDragFirefox(event: DragEvent) {
-	event.preventDefault()
-	moveDrag(event)
+function moveDrag(event: TouchEvent | PointerEvent) {
+	const { x, y } = getPosFromEvent(event)
+	dx = x - cox
+	dy = y - coy
+
+	const id = isDraggingOver({ x, y })
+
+	if (id) {
+		applyDrag(id)
+	}
 }
 
-function applyDrag(targetIndex: number) {
+function applyDrag(targetId: string) {
+	const targetIndex = initids.indexOf(targetId)
+
 	if (lastIndex === targetIndex) {
 		return
 	}
@@ -580,18 +597,27 @@ function applyDrag(targetIndex: number) {
 	}
 }
 
-function endDrag() {
+function endDrag(event: Event) {
+	event.preventDefault()
+
 	const newIndex = ids.indexOf(draggedId)
 	const clone = clones.get(draggedId)
 	const coord = coords[newIndex]
 
 	deplaceElem(clone, coord.x, coord.y)
 
+	domlinkblocks?.classList.replace('dragging', 'dropping')
 	clone?.classList.remove('on')
-	dominterface.style.cursor = ''
-	domlinkblocks.querySelector('#link-drag-preview')?.remove()
-	document.documentElement.removeEventListener('dragover', moveDragFirefox)
-	document.documentElement.removeEventListener('dragend', endDrag)
+	dominterface.style.cursor = 'grab'
+	draggedId = ''
+	clones.clear()
+	dx = dy = cox = coy = 0
+
+	document.documentElement.removeEventListener('pointermove', moveDrag)
+	document.documentElement.removeEventListener('pointerup', endDrag)
+	document.documentElement.removeEventListener('pointerleave', endDrag)
+	document.documentElement.removeEventListener('touchmove', moveDrag)
+	document.documentElement.removeEventListener('touchend', endDrag)
 
 	setTimeout(async () => {
 		const data = await storage.sync.get()
@@ -605,8 +631,46 @@ function endDrag() {
 		storage.sync.set(data)
 
 		initblocks(data)
-		domlinkblocks?.classList.remove('dragging')
+		domlinkblocks?.classList.remove('dropping')
+		dominterface.style.removeProperty('cursor')
 	}, 200)
+}
+
+function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
+	if (dom) {
+		dom.style.transform = `translate(${x - interfacemargin}px, ${y}px)`
+	}
+}
+
+function deplaceDraggedElem() {
+	if (clones.has(draggedId)) {
+		clones.get(draggedId)!.style.transform = `translate(${dx}px, ${dy}px)`
+		window.requestAnimationFrame(deplaceDraggedElem)
+	}
+}
+
+function isDraggingOver({ x, y }: { x: number; y: number }): string | undefined {
+	for (const zone of dropzones) {
+		if (x > zone.x && x < zone.x + zone.w && y > zone.y && y < zone.y + zone.h) {
+			return zone.id
+		}
+	}
+}
+
+function getPosFromEvent(event: TouchEvent | PointerEvent) {
+	switch (event.type) {
+		case 'touchmove': {
+			const touch = (event as TouchEvent).touches[0]
+			return { x: touch.clientX, y: touch.clientY }
+		}
+
+		case 'pointermove': {
+			const { x, y } = event as PointerEvent
+			return { x, y }
+		}
+	}
+
+	return { x: 0, y: 0 }
 }
 
 //
@@ -627,6 +691,10 @@ onSettingsLoad(() => {
 
 async function displayEditDialog(event: Event) {
 	event.preventDefault()
+
+	if (domlinkblocks.classList.contains('dragging')) {
+		return
+	}
 
 	const path = event.composedPath() as Element[]
 	const liInPath = path.filter((el) => el.tagName === 'LI')
@@ -672,7 +740,7 @@ async function displayEditDialog(event: Event) {
 	}
 }
 
-function newEditDialogPosition(event: Event): Coords {
+function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const { innerHeight, innerWidth } = window
 	let x = 0
 	let y = 0
