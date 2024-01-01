@@ -14,12 +14,11 @@ import storage, { getSyncDefaults } from './storage'
 
 import langList from './langs'
 import parse from './utils/parse'
-import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, closeEditLink, stringMaxSize, turnRefreshButton } from './utils'
+import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
@@ -787,11 +786,6 @@ export async function settingsInit() {
 		}
 
 		if (e.code === 'Escape') {
-			if (domedit?.classList.contains('shown')) {
-				closeEditLink()
-				return
-			}
-
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
 				return

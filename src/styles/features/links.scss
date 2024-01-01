@@ -9,10 +9,6 @@
 	column-gap: 1em;
 	padding-top: 1em;
 
-	&.shown {
-		display: flex;
-	}
-
 	div {
 		cursor: pointer;
 		border-radius: 8px;
@@ -56,6 +52,13 @@
 	}
 }
 
+#linkblocks.in-folder,
+#linkblocks.with-tabs {
+	#link-title {
+		display: flex;
+	}
+}
+
 #linkblocks.in-folder #link-title div:first-child,
 #linkblocks #link-title div.selected {
 	// Highlights selected title in tabs and folder title
@@ -88,6 +91,7 @@
 	max-width: var(--links-width);
 	column-gap: 2.6em;
 	row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
+	will-change: backdrop-filter;
 	transition-duration: 0.2s;
 	transition-timing-function: linear;
 	transition-property: background-color, border-color, opacity;
@@ -445,18 +449,22 @@ li.block.folder img {
 //  Links drag and drop
 //
 
-#linkblocks.dropping li.block div,
-#linkblocks.dropping li.block a {
+#linkblocks.dropping li.block * {
 	cursor: grab;
 }
 
-#linkblocks.dragging li.block div,
-#linkblocks.dragging li.block a {
+#linkblocks.dragging li.block * {
 	cursor: grabbing;
 }
 
 #linkblocks.dropping,
 #linkblocks.dragging {
+	a,
+	div {
+		user-select: none;
+		pointer-events: none;
+	}
+
 	.block:not(.dragging-clone) {
 		opacity: 0;
 		z-index: 3;
@@ -489,44 +497,35 @@ li.block.folder img {
 //  - In folder: select all
 //
 
-#linkblocks.select-all #editlink hr,
-#linkblocks.select-all #editlink #e_delete,
-#linkblocks.select-all #editlink #e_submit,
-#linkblocks.select-all #editlink .edit-inputs {
+#editlink button {
 	display: none;
 }
 
-#linkblocks:not(.select-all) #editlink #e_folder-sel,
-#linkblocks:not(.select-all) #editlink #e_delete-sel,
-#linkblocks:not(.select-all) #editlink #e_folder-remove-sel {
+#editlink.select-all .edit-inputs,
+#editlink.select-all hr {
 	display: none;
 }
 
-#linkblocks.select-all.in-folder #editlink #e_folder-sel,
-#linkblocks.select-all:not(.in-folder) #editlink #e_folder-remove-sel {
+#editlink.folder .edit-inputs > div:nth-child(2),
+#editlink.folder .edit-inputs > div:nth-child(3),
+#editlink.add-link .edit-inputs > div:nth-child(3) {
 	display: none;
 }
 
-#editlink.folder #e_iconurl,
-#editlink.folder #e_url {
-	display: none;
+#editlink.update-link #e_submit,
+#editlink.update-link #e_delete {
+	display: initial;
 }
 
-#editlink.folder #e_iconurl,
-#editlink.folder #e_url {
-	display: none;
+#editlink.select-all #e_delete,
+#editlink.select-all:not(.in-folder) #e_folder-add {
+	display: initial;
 }
 
-#editlink #e_add-link {
-	display: none;
+#editlink.in-folder:not(.add-link) #e_folder-remove {
+	display: initial;
 }
 
-#editlink.addlink #e_iconurl,
-#editlink.addlink #e_delete,
-#editlink.addlink #e_submit {
-	display: none;
-}
-
-#editlink.addlink #e_add-link {
+#editlink.add-link #e_add-link {
 	display: initial;
 }
