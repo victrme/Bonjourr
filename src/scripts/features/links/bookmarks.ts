@@ -1,9 +1,9 @@
-import { getHTMLTemplate, randomString } from '../utils'
-import { tradThis } from '../utils/translations'
-import { PLATFORM } from '../defaults'
-import quickLinks from './links'
-import onSettingsLoad from '../utils/onsettingsload'
-import storage from '../storage'
+import { getHTMLTemplate, randomString } from '../../utils'
+import onSettingsLoad from '../../utils/onsettingsload'
+import { tradThis } from '../../utils/translations'
+import { PLATFORM } from '../../defaults'
+import quickLinks from '.'
+import storage from '../../storage'
 
 type BookmarkFolder = {
 	title: string

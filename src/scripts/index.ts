@@ -10,6 +10,7 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
+import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
 
@@ -20,7 +21,6 @@ import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
-import { syncNewBookmarks } from './features/linksImport'
 
 const dominterface = document.getElementById('interface') as HTMLDivElement
 
