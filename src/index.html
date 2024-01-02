@@ -30,7 +30,23 @@
 		<button id="skiptosettings" type="button">Skip to Settings</button>
 
 		<dialog id="bookmarks">
-			<div id="bookmarks-container"></div>
+			<div id="bookmarks-container">
+				<template id="bookmarks-folder">
+					<div class="bookmarks-folder">
+						<h2></h2>
+						<ol></ol>
+					</div>
+				</template>
+				<template id="bookmarks-item">
+					<li id="oknmol">
+						<button>
+							<img draggable="false" alt="" />
+							<p class="bookmark-title"></p>
+							<p class="bookmark-url"></p>
+						</button>
+					</li>
+				</template>
+			</div>
 			<div id="bookmarks-buttons">
 				<button id="bmk_close" class="trn btn-red">Cancel</button>
 				<button id="bmk_apply" class="trn none">Select bookmarks</button>
@@ -246,7 +262,27 @@
 					<button id="e_add-link" class="trn">Add link</button>
 				</div>
 
-				<ul id="link-list"></ul>
+				<ul id="link-list">
+					<template id="link-elem">
+						<li class="block">
+							<a rel="noreferrer noopener" draggable="false">
+								<img alt="" draggable="false" />
+								<span></span>
+							</a>
+						</li>
+					</template>
+					<template id="link-folder">
+						<li class="block folder">
+							<div>
+								<img alt="" draggable="false" />
+								<img alt="" draggable="false" />
+								<img alt="" draggable="false" />
+								<img alt="" draggable="false" />
+							</div>
+							<span></span>
+						</li>
+					</template>
+				</ul>
 				<div id="link-title"></div>
 			</div>
 

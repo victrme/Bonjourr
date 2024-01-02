@@ -1,5 +1,5 @@
 import { SYSTEM_OS, BROWSER, IS_MOBILE, MAIN_API } from '../defaults'
-import { randomString, stringMaxSize } from '../utils'
+import { getHTMLTemplate, randomString, stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
@@ -93,12 +93,13 @@ onSettingsLoad(() => {
 
 async function initblocks(data: Sync.Storage): Promise<true> {
 	const tabList = document.querySelector<HTMLUListElement>('#link-list')
+	const children = document.querySelectorAll('#link-list > li')
 	const folderid = domlinkblocks.dataset.folderid
 
 	// Remove all links
 
-	if (tabList && tabList?.children) {
-		Object.values(tabList?.children).forEach((child) => {
+	if (tabList && children.length > 0) {
+		children.forEach((child) => {
 			child.remove()
 		})
 	}
@@ -156,57 +157,41 @@ async function initblocks(data: Sync.Storage): Promise<true> {
 
 function createLinkFolder(link: Links.Folder, linksInFolder: Links.Elem[]): HTMLLIElement {
 	const linksInThisFolder = linksInFolder.filter((l) => link.ids.includes(l._id))
-	const li = document.createElement('li')
-	const span = document.createElement('span')!
-	const div = document.createElement('div')!
-	const title = stringMaxSize(link.title, 64)
+	const li = getHTMLTemplate<HTMLLIElement>('link-folder', 'li')
+	const imgs = li.querySelectorAll('img')!
+	const span = li.querySelector('span')!
 
 	li.id = link._id
-	li.classList.add('block', 'folder')
-	span.textContent = title
+	span.textContent = stringMaxSize(link.title, 64)
+	li.addEventListener('click', openFolder)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
-		const img = document.createElement('img')
-		img.alt = ''
-		img.draggable = false
-		img.src = linksInThisFolder[i].icon ?? getDefaultIcon(linksInThisFolder[i].url)
-		div.appendChild(img)
+		const img = imgs[i]
+		if (img) {
+			img.src = linksInThisFolder[i].icon ?? getDefaultIcon(linksInThisFolder[i].url)
+		}
 	}
-
-	li.appendChild(div)
-	li.appendChild(span)
-	li.addEventListener('click', openFolder)
 
 	return li
 }
 
 function createLinkElem(link: Links.Elem, openInNewtab: boolean) {
-	const url = stringMaxSize(link.url, 512)
-	const li = document.createElement('li')
-	const span = document.createElement('span')
-	const anchor = document.createElement('a')
-	const img = document.createElement('img')
-	const title = createTitle(stringMaxSize(link.title, 64), link.url)
+	const li = getHTMLTemplate<HTMLLIElement>('link-elem', 'li')
+	const span = li.querySelector('span')!
+	const anchor = li.querySelector('a')!
+	const img = li.querySelector('img')!
 
 	li.id = link._id
-	li.classList.add('block')
-
-	anchor.rel = 'noreferrer noopener'
-	anchor.draggable = false
-	anchor.href = url
-
-	span.textContent = title
-
-	img.alt = ''
-	img.draggable = false
+	anchor.href = stringMaxSize(link.url, 512)
+	span.textContent = createTitle(stringMaxSize(link.title, 64), link.url)
 	createIcons(img, link)
 
-	anchor.appendChild(img)
-	anchor.appendChild(span)
-	li.appendChild(anchor)
-
 	if (openInNewtab) {
-		BROWSER === 'safari' ? (anchor.onclick = handleSafariNewtab) : (anchor.target = '_blank')
+		if (BROWSER === 'safari') {
+			anchor.onclick = handleSafariNewtab
+		} else {
+			anchor.target = '_blank'
+		}
 	}
 
 	return li

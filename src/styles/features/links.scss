@@ -161,7 +161,12 @@ li.block.folder > div {
 	transition: transform 0.1s linear;
 }
 
+li.block.folder img[src] {
+	display: initial;
+}
+
 li.block.folder img {
+	display: none;
 	border-radius: 4px;
 	padding: 2px;
 	width: 100%;

@@ -170,3 +170,10 @@ export function isEvery(freq = ''): freq is Frequency {
 	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
 	return every.includes(freq as Frequency)
 }
+
+// goodbye typescript, you will be missed
+export function getHTMLTemplate<T>(id: string, selector: string): T {
+	const template = document.getElementById(id) as HTMLTemplateElement
+	const clone = template?.content.cloneNode(true) as Element
+	return clone?.querySelector(selector) as T
+}

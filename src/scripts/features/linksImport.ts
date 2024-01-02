@@ -1,4 +1,4 @@
-import { randomString } from '../utils'
+import { getHTMLTemplate, randomString } from '../utils'
 import { tradThis } from '../utils/translations'
 import { PLATFORM } from '../defaults'
 import quickLinks from './links'
@@ -151,19 +151,19 @@ function addBookmarksFolderToDOM() {
 	const container = document.getElementById('bookmarks-container') as HTMLDialogElement
 
 	for (const folder of bookmarkFolders) {
-		const listdom = document.createElement('ol')
-		const div = document.createElement('div')
-		const h2 = document.createElement('h2')
+		const div = getHTMLTemplate<HTMLDivElement>('bookmarks-folder', 'div')
+		const ol = div.querySelector('ol')!
+		const h2 = div.querySelector('h2')!
 
 		h2.textContent = folder.title
-		div.classList.add('bookmarks-folder')
+		container.appendChild(div)
 
 		for (const bookmark of folder.bookmarks) {
-			const li = document.createElement('li')
-			const button = document.createElement('button')
-			const p_title = document.createElement('p')
-			const p_url = document.createElement('p')
-			const img = document.createElement('img')
+			const li = getHTMLTemplate<HTMLLIElement>('bookmarks-item', 'li')
+			const button = li.querySelector('button')!
+			const p_title = li.querySelector('.bookmark-title')!
+			const p_url = li.querySelector('.bookmark-url')!
+			const img = li.querySelector('img')!
 
 			let url: URL | undefined = undefined
 
@@ -174,25 +174,14 @@ function addBookmarksFolderToDOM() {
 			}
 
 			img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
-			img.draggable = false
-			img.alt = ''
-
 			p_title.textContent = bookmark.title
 			p_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
 
 			button.addEventListener('click', () => selectBookmark(li))
-			button.appendChild(img)
-			button.appendChild(p_title)
-			button.appendChild(p_url)
 
 			li.id = bookmark.id
-			li.appendChild(button)
-			listdom.appendChild(li)
+			ol.appendChild(li)
 		}
-
-		div.appendChild(h2)
-		div.appendChild(listdom)
-		container.appendChild(div)
 	}
 }
 
