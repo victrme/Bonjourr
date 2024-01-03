@@ -1,5 +1,4 @@
 import { getLiFromEvent } from './helpers'
-import { initblocks } from '.'
 import storage from '../../storage'
 
 type Coords = {
@@ -9,14 +8,19 @@ type Coords = {
 	h: number
 }
 
-const clones: Map<string, HTMLLIElement> = new Map()
+type BlockZone = 'left' | 'right' | 'center' | ''
+
+const blocks: Map<string, HTMLLIElement> = new Map()
 const dropzones: Set<Coords & { id: string }> = new Set()
 let [dx, dy, cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0, 0, 0]
+let lastblockzone: BlockZone = ''
 let draggedId = ''
 let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
+let dragFolderTimeout = 0
 
+const domlinklist = document.getElementById('link-list') as HTMLUListElement
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 const dominterface = document.getElementById('interface') as HTMLDivElement
 
@@ -32,9 +36,8 @@ export default function startDrag(event: PointerEvent) {
 
 	const path = event.composedPath() as Element[]
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
-	const fragment = document.createDocumentFragment()
 	const lis = document.querySelectorAll<HTMLLIElement>('#linkblocks li.block')
-	const listRect = document.querySelector('#link-list')?.getBoundingClientRect()
+	const rect = domlinklist?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
 	draggedId = target?.id ?? ''
@@ -43,47 +46,43 @@ export default function startDrag(event: PointerEvent) {
 	ids = []
 	coords = []
 	initids = []
-	clones.clear()
+	blocks.clear()
 	dropzones.clear()
 
-	//
-	// Create visible links clones
-	// And add all drag & drop events
-
 	for (const li of lis) {
-		const clone = li.cloneNode(true) as HTMLLIElement
 		let { x, y, width, height } = li.getBoundingClientRect()
 		const id = li.id
 
 		dropzones.add({ id, x, y, w: width, h: height })
 
-		x = x - listRect!.x
-		y = y - listRect!.y
+		x = x - rect!.x
+		y = y - rect!.y
+
+		console.log(x, rect.x)
 
 		ids.push(id)
 		initids.push(id)
 		coords.push({ x, y, w: width, h: height })
 
-		clone.removeAttribute('id')
-		clone.classList.add('dragging-clone')
-		clones.set(id, clone)
-		deplaceElem(clone, x, y)
-		fragment.appendChild(clone)
+		blocks.set(id, li)
+		deplaceElem(li, x, y)
 
 		if (id === draggedId) {
 			cox = pos.x - x
 			coy = pos.y - y
 			dx = x
 			dy = y
-			clone.classList.add('on')
+			li.classList.add('on')
 		}
 
 		li.setAttribute('disabled', 'true')
 	}
 
+	domlinklist.style.setProperty('--drag-width', rect?.width - 2 + 'px') // 2 = 2*1px border
+	domlinklist.style.setProperty('--drag-height', rect?.height - 2 + 'px')
+
 	dominterface.style.cursor = 'grabbing'
 	domlinkblocks?.classList.add('dragging')
-	document.querySelector('#link-list')?.appendChild(fragment)
 	document.body.dispatchEvent(new Event('stop-select-all'))
 	window.requestAnimationFrame(deplaceDraggedElem)
 
@@ -132,19 +131,38 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	dx = x - cox
 	dy = y - coy
 
-	const id = isDraggingOver({ x, y })
+	const [blockzone, id] = isDraggingOver({ x, y }) ?? ['', '']
 
-	if (id) {
-		applyDrag(id)
+	if (blockzone === '') {
+		clearTimeout(dragFolderTimeout)
+		blocks.forEach((block) => block.classList.remove('almost-folder'))
+		lastblockzone = ''
+		return
 	}
+
+	if (blockzone === lastblockzone && blockzone !== 'center') {
+		return
+	}
+
+	if (lastblockzone === blockzone && blockzone === 'center') {
+		applyDragFolder(id)
+	}
+
+	if (lastblockzone === 'center' && (blockzone === 'left' || blockzone === 'right')) {
+		applyDragMove(id)
+	}
+
+	lastblockzone = blockzone
 }
 
-function applyDrag(targetId: string) {
+function applyDragMove(targetId: string) {
 	const targetIndex = initids.indexOf(targetId)
 
 	if (lastIndex === targetIndex) {
 		return
 	}
+
+	clearTimeout(dragFolderTimeout)
 
 	lastIndex = targetIndex
 
@@ -155,25 +173,39 @@ function applyDrag(targetId: string) {
 	// move all clones to new position
 	for (let i = 0; i < ids.length; i++) {
 		if (ids[i] !== draggedId) {
-			deplaceElem(clones.get(ids[i]), coords[i].x, coords[i].y)
+			deplaceElem(blocks.get(ids[i]), coords[i].x, coords[i].y)
 		}
 	}
+}
+
+function applyDragFolder(targetId: string) {
+	clearTimeout(dragFolderTimeout)
+
+	dragFolderTimeout = setTimeout(() => {
+		if (targetId === draggedId || blocks.get(targetId)?.classList.contains('folder')) {
+			return
+		}
+
+		blocks.forEach((block) => block.classList.remove('almost-folder'))
+		blocks.get(targetId)?.classList.toggle('almost-folder', true)
+		blocks.get(draggedId)?.classList.toggle('almost-folder', true)
+	}, 200)
 }
 
 function endDrag(event: Event) {
 	event.preventDefault()
 
+	const isCreatingFolder = [...blocks.values()].some((block) => block.classList.contains('almost-folder'))
 	const newIndex = ids.indexOf(draggedId)
-	const clone = clones.get(draggedId)
+	const clone = blocks.get(draggedId)
 	const coord = coords[newIndex]
 
 	deplaceElem(clone, coord.x, coord.y)
 
+	blocks.forEach((block) => block.classList.remove('almost-folder'))
 	domlinkblocks?.classList.replace('dragging', 'dropping')
 	clone?.classList.remove('on')
 	dominterface.style.cursor = 'grab'
-	draggedId = ''
-	clones.clear()
 	dx = dy = cox = coy = 0
 
 	document.documentElement.removeEventListener('pointermove', moveDrag)
@@ -199,7 +231,25 @@ function endDrag(event: Event) {
 		}
 
 		storage.sync.set(data)
-		initblocks(data)
+
+		if (isCreatingFolder) {
+			document.body.dispatchEvent(
+				new CustomEvent('create-folder', {
+					detail: {
+						ids: [ids[lastIndex], ids[newIndex]],
+					},
+				})
+			)
+		}
+
+		for (const id of ids) {
+			const elem = document.getElementById(id)
+
+			if (elem) {
+				elem.removeAttribute('style')
+				domlinklist?.appendChild(elem)
+			}
+		}
 
 		domlinkblocks?.classList.remove('dropping')
 		dominterface.style.removeProperty('cursor')
@@ -213,16 +263,43 @@ function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 }
 
 function deplaceDraggedElem() {
-	if (clones.has(draggedId)) {
-		clones.get(draggedId)!.style.transform = `translate(${dx}px, ${dy}px)`
+	if (blocks.has(draggedId)) {
+		blocks.get(draggedId)!.style.transform = `translate(${dx}px, ${dy}px)`
 		window.requestAnimationFrame(deplaceDraggedElem)
 	}
 }
 
-function isDraggingOver({ x, y }: { x: number; y: number }): string | undefined {
+function isDraggingOver({ x, y }: { x: number; y: number }): [BlockZone, string] | undefined {
 	for (const zone of dropzones) {
-		if (x > zone.x && x < zone.x + zone.w && y > zone.y && y < zone.y + zone.h) {
-			return zone.id
+		// Detect 20% left edge of dropzones ( left + corner )
+		const ll = zone.x
+		const lr = zone.x + zone.w * 0.2
+		const lt = zone.y
+		const lb = zone.y + zone.h
+		const isInLeftEdge = x > ll && x < lr && y > lt && y < lb
+
+		// Detect 20% right edge of dropzones ( right + corner )
+		const rl = zone.x + zone.w * 0.8
+		const rr = zone.x + zone.w
+		const rt = zone.y + 0
+		const rb = zone.y + zone.h
+		const isInRightEdge = x > rl && x < rr && y > rt && y < rb
+
+		// Detect 80% center of dropzones ( center + corner )
+		const cl = zone.x + zone.w * 0.2
+		const cr = zone.x + zone.w * 0.8
+		const ct = zone.y
+		const cb = zone.y + zone.h
+		const isInCenter = x > cl && x < cr && y > ct && y < cb
+
+		let side: BlockZone = ''
+
+		if (isInLeftEdge) side = 'left'
+		if (isInRightEdge) side = 'right'
+		if (isInCenter) side = 'center'
+
+		if (side) {
+			return [side, zone.id]
 		}
 	}
 }

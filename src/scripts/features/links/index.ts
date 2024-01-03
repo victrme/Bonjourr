@@ -61,6 +61,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 onSettingsLoad(() => {
 	document.body.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
+	document.body.addEventListener('create-folder', (e) => linksUpdate({ addFolder: e.detail.ids as string[] }))
 	document.body.addEventListener('click', dismissSelectAllAndFolder)
 })
 

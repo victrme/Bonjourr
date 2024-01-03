@@ -116,6 +116,10 @@ li.block {
 		}
 	}
 
+	div {
+		border: 1px solid transparent;
+	}
+
 	a {
 		color: white;
 		cursor: pointer;
@@ -158,7 +162,7 @@ li.block.folder > div {
 	border: 1px solid #fff4;
 	backdrop-filter: blur(1em);
 	box-sizing: border-box;
-	transition: transform 0.1s linear;
+	transition: transform 0.1s linear, border-color 0.1s linear;
 }
 
 li.block.folder img[src] {
@@ -393,6 +397,8 @@ li.block.folder img {
 
 	#link-list {
 		min-height: 3em;
+		width: var(--drag-width);
+		height: var(--drag-height);
 	}
 
 	li {
@@ -464,31 +470,40 @@ li.block.folder img {
 
 #linkblocks.dropping,
 #linkblocks.dragging {
+	#link-list {
+		padding: 0;
+		width: var(--drag-width);
+		height: var(--drag-height);
+	}
+
 	a,
 	div {
 		user-select: none;
 		pointer-events: none;
 	}
 
-	.block:not(.dragging-clone) {
-		opacity: 0;
+	.block {
+		pointer-events: none;
+		position: fixed;
+		top: 0;
+		left: 0;
 		z-index: 3;
 		transition: none;
 	}
 
-	.dragging-clone {
-		position: fixed;
-		visibility: visible;
-		will-change: transform;
-		top: 0;
-		left: 0;
-		z-index: 2;
-	}
-
-	.dragging-clone.on {
+	.on {
 		z-index: 4;
 		transition: none;
 		pointer-events: none;
+	}
+
+	.almost-folder img {
+		transform: scale(0.8);
+	}
+
+	.almost-folder:not(.on) div {
+		border: 1px solid #fff4;
+		border-radius: 1em;
 	}
 }
 
