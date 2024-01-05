@@ -1,4 +1,5 @@
 import { getLiFromEvent } from './helpers'
+import { linksUpdate } from '.'
 import storage from '../../storage'
 
 type Coords = {
@@ -8,6 +9,12 @@ type Coords = {
 	h: number
 }
 
+type AddToFolder = {
+	ids: string[]
+	target: string
+	source?: string
+}
+
 type BlockZone = 'left' | 'right' | 'center' | ''
 
 const blocks: Map<string, HTMLLIElement> = new Map()
@@ -15,6 +22,7 @@ const dropzones: Set<Coords & { id: string }> = new Set()
 let [dx, dy, cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0, 0, 0]
 let lastblockzone: BlockZone = ''
 let draggedId = ''
+let targetId = ''
 let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
@@ -57,8 +65,6 @@ export default function startDrag(event: PointerEvent) {
 
 		x = x - rect!.x
 		y = y - rect!.y
-
-		console.log(x, rect.x)
 
 		ids.push(id)
 		initids.push(id)
@@ -155,8 +161,8 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	lastblockzone = blockzone
 }
 
-function applyDragMove(targetId: string) {
-	const targetIndex = initids.indexOf(targetId)
+function applyDragMove(id: string) {
+	const targetIndex = initids.indexOf(id)
 
 	if (lastIndex === targetIndex) {
 		return
@@ -178,16 +184,17 @@ function applyDragMove(targetId: string) {
 	}
 }
 
-function applyDragFolder(targetId: string) {
+function applyDragFolder(id: string) {
 	clearTimeout(dragFolderTimeout)
 
 	dragFolderTimeout = setTimeout(() => {
-		if (targetId === draggedId || blocks.get(targetId)?.classList.contains('folder')) {
+		if (id === draggedId || domlinkblocks?.classList.contains('in-folder')) {
 			return
 		}
 
+		targetId = id
 		blocks.forEach((block) => block.classList.remove('almost-folder'))
-		blocks.get(targetId)?.classList.toggle('almost-folder', true)
+		blocks.get(id)?.classList.toggle('almost-folder', true)
 		blocks.get(draggedId)?.classList.toggle('almost-folder', true)
 	}, 200)
 }
@@ -195,16 +202,21 @@ function applyDragFolder(targetId: string) {
 function endDrag(event: Event) {
 	event.preventDefault()
 
-	const isCreatingFolder = [...blocks.values()].some((block) => block.classList.contains('almost-folder'))
+	const almostFolders = [...blocks.values()].filter((block) => block.classList.contains('almost-folder'))
+	const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
+	const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
+	const createsFolder = almostFolders.length > 0 && !targetIsFolder && !draggedIsFolder
+	const concatFolders = almostFolders.length > 0 && (targetIsFolder || draggedIsFolder)
+
 	const newIndex = ids.indexOf(draggedId)
-	const clone = blocks.get(draggedId)
+	const block = blocks.get(draggedId)
 	const coord = coords[newIndex]
 
-	deplaceElem(clone, coord.x, coord.y)
+	deplaceElem(block, coord.x, coord.y)
 
 	blocks.forEach((block) => block.classList.remove('almost-folder'))
 	domlinkblocks?.classList.replace('dragging', 'dropping')
-	clone?.classList.remove('on')
+	block?.classList.remove('on')
 	dominterface.style.cursor = 'grab'
 	dx = dy = cox = coy = 0
 
@@ -217,6 +229,52 @@ function endDrag(event: Event) {
 	setTimeout(async () => {
 		const data = await storage.sync.get()
 		const folderid = domlinkblocks.dataset.folderid
+
+		domlinkblocks?.classList.remove('dropping')
+		dominterface.style.removeProperty('cursor')
+
+		//
+		// Create or concat folders
+
+		if (createsFolder) {
+			linksUpdate({ addFolder: [targetId, draggedId] })
+			return
+		}
+
+		if (concatFolders) {
+			const addToFolder: AddToFolder = { target: '', ids: [] }
+
+			if (targetIsFolder && draggedIsFolder) {
+				addToFolder.source = draggedId
+				addToFolder.target = targetId
+				addToFolder.ids = (data[draggedId] as Links.Folder)?.ids ?? []
+			}
+			//
+			else if (targetIsFolder && !draggedIsFolder) {
+				addToFolder.target = targetId
+				addToFolder.ids = [draggedId]
+			}
+			//
+			else if (!targetIsFolder && draggedIsFolder) {
+				addToFolder.target = draggedId
+				addToFolder.ids = [targetId]
+			}
+
+			linksUpdate({ addToFolder })
+			return
+		}
+
+		//
+		// Move elements around
+
+		for (const id of ids) {
+			const elem = document.getElementById(id)
+
+			if (elem) {
+				elem.removeAttribute('style')
+				domlinklist?.appendChild(elem)
+			}
+		}
 
 		if (folderid) {
 			const folder = data[folderid] as Links.Folder
@@ -231,28 +289,6 @@ function endDrag(event: Event) {
 		}
 
 		storage.sync.set(data)
-
-		if (isCreatingFolder) {
-			document.body.dispatchEvent(
-				new CustomEvent('create-folder', {
-					detail: {
-						ids: [ids[lastIndex], ids[newIndex]],
-					},
-				})
-			)
-		}
-
-		for (const id of ids) {
-			const elem = document.getElementById(id)
-
-			if (elem) {
-				elem.removeAttribute('style')
-				domlinklist?.appendChild(elem)
-			}
-		}
-
-		domlinkblocks?.classList.remove('dropping')
-		dominterface.style.removeProperty('cursor')
 	}, 200)
 }
 

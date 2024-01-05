@@ -24,6 +24,13 @@ type LinksUpdate = {
 	addLink?: boolean
 	addFolder?: string[]
 	groupTitle?: string
+	addToFolder?: AddToFolder
+}
+
+type AddToFolder = {
+	ids: string[]
+	target: string
+	source?: string
 }
 
 type Bookmarks = {
@@ -61,7 +68,6 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 onSettingsLoad(() => {
 	document.body.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
-	document.body.addEventListener('create-folder', (e) => linksUpdate({ addFolder: e.detail.ids as string[] }))
 	document.body.addEventListener('click', dismissSelectAllAndFolder)
 })
 
@@ -326,7 +332,7 @@ function selectAll(event: MouseEvent) {
 //
 
 export async function linksUpdate(update: LinksUpdate) {
-	const { bookmarks, newtab, style, row, tab, addLink, addFolder, groupTitle } = update
+	const { bookmarks, newtab, style, row, tab, addLink, addFolder, addToFolder, groupTitle } = update
 
 	if (addLink) {
 		linkSubmission({ type: 'link' })
@@ -338,6 +344,10 @@ export async function linksUpdate(update: LinksUpdate) {
 
 	if (bookmarks) {
 		linkSubmission({ type: 'import', bookmarks: bookmarks })
+	}
+
+	if (addToFolder) {
+		addLinkToFolder(addToFolder)
 	}
 
 	if (tab !== undefined) {
@@ -440,6 +450,27 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 			title: title,
 		},
 	]
+}
+
+async function addLinkToFolder({ ids, target, source }: AddToFolder) {
+	const data = await storage.sync.get()
+	const folder = data[target] as Links.Folder
+
+	if (!folder) {
+		return
+	}
+
+	if (source) {
+		const tab = data.tabslist[data.linktabs ?? 0]
+		data.tabslist[data.linktabs ?? 0].ids = tab.ids.filter((id) => id !== source)
+		storage.sync.remove(source)
+	}
+
+	folder.ids.push(...ids)
+	data[target] = folder
+
+	storage.sync.set(data)
+	initblocks(data)
 }
 
 async function setGroupTitle(title: string) {
