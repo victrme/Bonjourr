@@ -5,6 +5,7 @@ export default {
 	sv: 'Svenska',
 	pl: 'Polski',
 	pt_BR: 'Português (Brasil)',
+	pt_PT: 'Português (Portugal)',
 	nl: 'Nederlandse',
 	ro: 'Română',
 	ru: 'Русский',
