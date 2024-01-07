@@ -208,6 +208,7 @@ function initRows(amount: number, style: string) {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
 		small: { width: 2.5, gap: 2 },
+		inline: { width: 12, gap: 2 }, // arbitrary width because width is auto
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 
@@ -415,8 +416,6 @@ async function linkSubmission(arg: LinkSubmission) {
 
 	data.tabslist[data.linktabs ?? 0] = tab
 	storage.sync.set(data)
-
-	domlinkblocks.style.visibility = 'visible'
 
 	initblocks(data)
 }

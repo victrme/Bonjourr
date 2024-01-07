@@ -19,7 +19,7 @@ type BlockZone = 'left' | 'right' | 'center' | ''
 
 const blocks: Map<string, HTMLLIElement> = new Map()
 const dropzones: Set<Coords & { id: string }> = new Set()
-let [dx, dy, cox, coy, lastIndex, interfacemargin] = [0, 0, 0, 0, 0, 0]
+let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
 let lastblockzone: BlockZone = ''
 let draggedId = ''
 let targetId = ''
@@ -27,10 +27,10 @@ let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
 let dragFolderTimeout = 0
+let dragAnimationFrame = 0
 
 const domlinklist = document.getElementById('link-list') as HTMLUListElement
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-const dominterface = document.getElementById('interface') as HTMLDivElement
 
 export default function startDrag(event: PointerEvent) {
 	if (event.button > 0) {
@@ -49,7 +49,6 @@ export default function startDrag(event: PointerEvent) {
 	const pos = getPosFromEvent(event)
 
 	draggedId = target?.id ?? ''
-	interfacemargin = dominterface.getBoundingClientRect().left
 
 	ids = []
 	coords = []
@@ -70,6 +69,10 @@ export default function startDrag(event: PointerEvent) {
 		initids.push(id)
 		coords.push({ x, y, w: width, h: height })
 
+		// Only disable transitions for a few frames
+		li.style.transition = 'none'
+		setTimeout(() => li.style.removeProperty('transition'), 1)
+
 		blocks.set(id, li)
 		deplaceElem(li, x, y)
 
@@ -80,17 +83,15 @@ export default function startDrag(event: PointerEvent) {
 			dy = y
 			li.classList.add('on')
 		}
-
-		li.setAttribute('disabled', 'true')
 	}
 
-	domlinklist.style.setProperty('--drag-width', rect?.width - 2 + 'px') // 2 = 2*1px border
-	domlinklist.style.setProperty('--drag-height', rect?.height - 2 + 'px')
+	domlinklist.style.setProperty('--drag-width', rect?.width + 'px')
+	domlinklist.style.setProperty('--drag-height', rect?.height + 'px')
 
-	dominterface.style.cursor = 'grabbing'
 	domlinkblocks?.classList.add('dragging')
+	document.body.classList.add('dragging')
 	document.body.dispatchEvent(new Event('stop-select-all'))
-	window.requestAnimationFrame(deplaceDraggedElem)
+	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 
 	if (event.pointerType === 'touch') {
 		document.documentElement.addEventListener('touchmove', moveDrag, { passive: false })
@@ -158,7 +159,9 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 		applyDragMove(id)
 	}
 
-	lastblockzone = blockzone
+	if (lastblockzone !== blockzone) {
+		lastblockzone = blockzone
+	}
 }
 
 function applyDragMove(id: string) {
@@ -202,106 +205,115 @@ function applyDragFolder(id: string) {
 function endDrag(event: Event) {
 	event.preventDefault()
 
-	const almostFolders = [...blocks.values()].filter((block) => block.classList.contains('almost-folder'))
-	const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
-	const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
-	const createsFolder = almostFolders.length > 0 && !targetIsFolder && !draggedIsFolder
-	const concatFolders = almostFolders.length > 0 && (targetIsFolder || draggedIsFolder)
-
-	const newIndex = ids.indexOf(draggedId)
-	const block = blocks.get(draggedId)
-	const coord = coords[newIndex]
-
-	deplaceElem(block, coord.x, coord.y)
-
-	blocks.forEach((block) => block.classList.remove('almost-folder'))
-	domlinkblocks?.classList.replace('dragging', 'dropping')
-	block?.classList.remove('on')
-	dominterface.style.cursor = 'grab'
-	dx = dy = cox = coy = 0
-
 	document.documentElement.removeEventListener('pointermove', moveDrag)
 	document.documentElement.removeEventListener('pointerup', endDrag)
 	document.documentElement.removeEventListener('pointerleave', endDrag)
 	document.documentElement.removeEventListener('touchmove', moveDrag)
 	document.documentElement.removeEventListener('touchend', endDrag)
 
-	setTimeout(async () => {
-		const data = await storage.sync.get()
-		const folderid = domlinkblocks.dataset.folderid
+	const toFolder = !!document.querySelector('.almost-folder')
+	const newIndex = ids.indexOf(draggedId)
+	const block = blocks.get(draggedId)
+	const coord = coords[newIndex]
 
-		domlinkblocks?.classList.remove('dropping')
-		dominterface.style.removeProperty('cursor')
+	window.cancelAnimationFrame(dragAnimationFrame)
+	blocks.get(draggedId)?.classList.remove('on')
+	domlinkblocks?.classList.replace('dragging', 'dropping')
+	document.body?.classList.replace('dragging', 'dropping')
 
-		//
-		// Create or concat folders
+	if (toFolder) {
+		blocks.get(draggedId)?.classList.add('removed')
+	} else {
+		deplaceElem(block, coord.x, coord.y)
+	}
 
-		if (createsFolder) {
-			linksUpdate({ addFolder: [targetId, draggedId] })
-			return
-		}
-
-		if (concatFolders) {
-			const addToFolder: AddToFolder = { target: '', ids: [] }
-
-			if (targetIsFolder && draggedIsFolder) {
-				addToFolder.source = draggedId
-				addToFolder.target = targetId
-				addToFolder.ids = (data[draggedId] as Links.Folder)?.ids ?? []
-			}
-			//
-			else if (targetIsFolder && !draggedIsFolder) {
-				addToFolder.target = targetId
-				addToFolder.ids = [draggedId]
-			}
-			//
-			else if (!targetIsFolder && draggedIsFolder) {
-				addToFolder.target = draggedId
-				addToFolder.ids = [targetId]
-			}
-
-			linksUpdate({ addToFolder })
-			return
-		}
-
-		//
-		// Move elements around
-
-		for (const id of ids) {
-			const elem = document.getElementById(id)
-
-			if (elem) {
-				elem.removeAttribute('style')
-				domlinklist?.appendChild(elem)
-			}
-		}
-
-		if (folderid) {
-			const folder = data[folderid] as Links.Folder
-			folder.ids = ids
-			data[folder._id] = folder
-		} else {
-			// ugly: keep tab links contained in folders with the new order
-			// there is probably a more concise way to do this
-			const currids = data.tabslist[data.linktabs ?? 0].ids
-			const sortedids = ids.filter((id) => currids.includes(id)).concat(currids.filter((id) => !ids.includes(id)))
-			data.tabslist[data.linktabs ?? 0].ids = sortedids
-		}
-
-		storage.sync.set(data)
+	setTimeout(() => {
+		storage.sync.get().then((data) => {
+			toFolder ? dropToFolder(data) : dropToNewPosition(data)
+			domlinkblocks?.classList.remove('dropping')
+			document.body.classList.remove('dropping')
+			domlinklist?.removeAttribute('style')
+		})
 	}, 200)
 }
 
+function dropToFolder(data: Sync.Storage) {
+	const almostFolders = [...document.querySelectorAll<HTMLElement>('.almost-folder')]
+	const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
+	const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
+	const createsFolder = almostFolders.length > 0 && !targetIsFolder && !draggedIsFolder
+	const concatFolders = almostFolders.length > 0 && (targetIsFolder || draggedIsFolder)
+
+	blocks.forEach((block) => block.classList.remove('almost-folder'))
+
+	if (createsFolder) {
+		linksUpdate({ addFolder: [targetId, draggedId] })
+	}
+	//
+	else if (concatFolders) {
+		const addToFolder: AddToFolder = { target: '', ids: [] }
+
+		if (targetIsFolder && draggedIsFolder) {
+			addToFolder.source = draggedId
+			addToFolder.target = targetId
+			addToFolder.ids = (data[draggedId] as Links.Folder)?.ids ?? []
+		}
+		//
+		else if (targetIsFolder && !draggedIsFolder) {
+			addToFolder.target = targetId
+			addToFolder.ids = [draggedId]
+		}
+		//
+		else if (!targetIsFolder && draggedIsFolder) {
+			addToFolder.target = draggedId
+			addToFolder.ids = [targetId]
+		}
+
+		linksUpdate({ addToFolder })
+	}
+}
+
+function dropToNewPosition(data: Sync.Storage) {
+	const folderid = domlinkblocks.dataset.folderid
+
+	for (const id of ids) {
+		const elem = document.getElementById(id)
+
+		if (elem) {
+			domlinklist?.appendChild(elem)
+			elem.removeAttribute('style')
+		}
+	}
+
+	if (folderid) {
+		const folder = data[folderid] as Links.Folder
+		folder.ids = ids
+		data[folder._id] = folder
+	} else {
+		// ugly: keep tab links contained in folders with the new order
+		// there is probably a more concise way to do this
+		const currids = data.tabslist[data.linktabs ?? 0].ids
+		const sortedids = ids.filter((id) => currids.includes(id)).concat(currids.filter((id) => !ids.includes(id)))
+		data.tabslist[data.linktabs ?? 0].ids = sortedids
+	}
+
+	storage.sync.set(data)
+}
+
+//
+//
+//
+
 function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 	if (dom) {
-		dom.style.transform = `translate(${x - interfacemargin}px, ${y}px)`
+		dom.style.transform = `translate(${x}px, ${y}px)`
 	}
 }
 
 function deplaceDraggedElem() {
 	if (blocks.has(draggedId)) {
 		blocks.get(draggedId)!.style.transform = `translate(${dx}px, ${dy}px)`
-		window.requestAnimationFrame(deplaceDraggedElem)
+		dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 	}
 }
 

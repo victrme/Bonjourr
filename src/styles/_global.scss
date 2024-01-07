@@ -165,6 +165,14 @@ body {
 		font-family: inherit;
 	}
 
+	&.dragging * {
+		cursor: grabbing;
+	}
+
+	&.dropping * {
+		cursor: grab;
+	}
+
 	&.tabbing {
 		a:focus,
 		input:focus,
