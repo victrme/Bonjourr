@@ -1,81 +1,59 @@
+// Glossary:
+//  - Link blocks
+//	- Link styles
+//	- Folder styles for medium and small
+//	- Links drag and drop
+// 	- Tabs and folder titles
+//	- Editlink states
+
 //
-// Tabs and folder titles
+// Link blocks
 //
 
-#link-title {
-	display: none;
-	align-items: center;
-	justify-content: center;
-	column-gap: 1em;
-	padding-top: 1em;
+#linkblocks {
+	&.hidden {
+		display: none;
+	}
 
-	div {
-		cursor: pointer;
-		border-radius: 8px;
-		opacity: 0.7;
+	&.select-all {
+		li.block:not(.selected) {
+			filter: grayscale(1) brightness(0.6);
+		}
 
-		&.selected,
-		&:hover,
-		&:hover input {
-			opacity: 1;
+		li.block:active div,
+		li.block:hover div,
+		li.block:not(.folder):active img,
+		li.block:not(.folder):hover img {
+			transform: none;
+		}
+
+		li.block.selected div {
+			outline: 4px solid var(--color-blue);
 		}
 	}
 
-	div,
-	input {
-		border-radius: 8px;
-	}
-
-	input {
-		min-width: 3em;
-		max-width: 32ch;
-		padding: 0.1em 0.6em;
-		font-size: 1.3em;
-		color: white;
-		border: none;
-		text-align: center;
-		border: 1px solid transparent;
-		background-color: transparent;
-
-		// cannot click on div below without this
-		position: relative;
-		z-index: -1;
-
-		&:focus-within {
-			background-color: #fff1;
-			backdrop-filter: blur(1em);
+	&.in-folder {
+		#link-list {
+			background-color: #fff2;
+			border: 1px solid #fff4;
+			backdrop-filter: blur(2em);
 		}
 
-		&::placeholder {
-			color: #fffa;
+		#link-title div:not(:first-child) {
+			display: none;
+		}
+	}
+
+	&.hiding {
+		#link-list {
+			opacity: 0;
+		}
+
+		.block {
+			transform: scale(0.9);
 		}
 	}
 }
-
-#linkblocks.in-folder,
-#linkblocks.with-tabs {
-	#link-title {
-		display: flex;
-	}
-}
-
-#linkblocks.in-folder #link-title div:first-child,
-#linkblocks #link-title div.selected {
-	// Highlights selected title in tabs and folder title
-	// Needs this because, folder selection is in #linkblocks
-	// and tabs selection is deep in div.selected
-
-	opacity: 1;
-
-	input {
-		border-color: #fff6;
-		z-index: auto;
-	}
-}
-
-//
-// Link list
-//
 
 #link-list {
 	display: inline-flex;
@@ -177,53 +155,8 @@ li.block.folder img {
 	padding: 2px;
 }
 
-#linkblocks {
-	&.hidden {
-		display: none;
-	}
-
-	&.select-all {
-		li.block:not(.selected) {
-			filter: grayscale(1) brightness(0.6);
-		}
-
-		li.block:active div,
-		li.block:hover div,
-		li.block:not(.folder):active img,
-		li.block:not(.folder):hover img {
-			transform: none;
-		}
-
-		li.block.selected div {
-			outline: 4px solid var(--color-blue);
-		}
-	}
-
-	&.in-folder {
-		#link-list {
-			background-color: #fff2;
-			border: 1px solid #fff4;
-			backdrop-filter: blur(2em);
-		}
-
-		#link-title div:not(:first-child) {
-			display: none;
-		}
-	}
-
-	&.hiding {
-		#link-list {
-			opacity: 0;
-		}
-
-		.block {
-			transform: scale(0.9);
-		}
-	}
-}
-
 //
-//  Link alternative styles
+//  Link styles
 //
 
 #linkblocks.large {
@@ -446,7 +379,7 @@ li.block.folder img {
 }
 
 //
-//	Stacked folder icons for medium and small styles
+//  Folder styles for medium and small
 //
 
 #linkblocks.medium,
@@ -537,6 +470,81 @@ li.block.folder img {
 		z-index: 4;
 		transition: none;
 		pointer-events: none;
+	}
+}
+
+//
+// Tab and folder titles
+//
+
+#link-title {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	column-gap: 1em;
+	padding-top: 1em;
+
+	div {
+		cursor: pointer;
+		border-radius: 8px;
+		opacity: 0.7;
+
+		&.selected,
+		&:hover,
+		&:hover input {
+			opacity: 1;
+		}
+	}
+
+	div,
+	input {
+		border-radius: 8px;
+	}
+
+	input {
+		min-width: 3em;
+		max-width: 32ch;
+		padding: 0.1em 0.6em;
+		font-size: 1.3em;
+		color: white;
+		border: none;
+		text-align: center;
+		border: 1px solid transparent;
+		background-color: transparent;
+
+		// cannot click on div below without this
+		position: relative;
+		z-index: -1;
+
+		&:focus-within {
+			background-color: #fff1;
+			backdrop-filter: blur(1em);
+		}
+
+		&::placeholder {
+			color: #fffa;
+		}
+	}
+}
+
+#linkblocks.in-folder,
+#linkblocks.with-tabs {
+	#link-title {
+		display: flex;
+	}
+}
+
+#linkblocks.in-folder #link-title div:first-child,
+#linkblocks #link-title div.selected {
+	// Highlights selected title in tabs and folder title
+	// Needs this because, folder selection is in #linkblocks
+	// and tabs selection is deep in div.selected
+
+	opacity: 1;
+
+	input {
+		border-color: #fff6;
+		z-index: auto;
 	}
 }
 
