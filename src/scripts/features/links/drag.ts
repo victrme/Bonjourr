@@ -85,8 +85,8 @@ export default function startDrag(event: PointerEvent) {
 		}
 	}
 
-	domlinklist.style.setProperty('--drag-width', rect?.width + 'px')
-	domlinklist.style.setProperty('--drag-height', rect?.height + 'px')
+	domlinklist.style.setProperty('--drag-width', Math.floor(rect?.width) + 'px')
+	domlinklist.style.setProperty('--drag-height', Math.floor(rect?.height) + 'px')
 
 	domlinkblocks?.classList.add('dragging')
 	document.body.classList.add('dragging')
@@ -306,7 +306,7 @@ function dropToNewPosition(data: Sync.Storage) {
 
 function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 	if (dom) {
-		dom.style.transform = `translate(${x}px, ${y}px)`
+		dom.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 	}
 }
 

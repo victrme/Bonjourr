@@ -13,7 +13,6 @@ export default async function displayEditDialog(event: Event) {
 	document.body.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
 
-	const domedit = document.querySelector('#editlink')
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
 	const domurl = document.getElementById('e_url') as HTMLInputElement
 	const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
@@ -28,9 +27,6 @@ export default async function displayEditDialog(event: Event) {
 		return
 	}
 
-	const { x, y } = newEditDialogPosition(event)
-	domeditlink.style.transform = `translate(${x}px, ${y}px)`
-
 	const path = event.composedPath() as Element[]
 	const pathLis = path.filter((el) => el.tagName === 'LI')
 	const li = pathLis[0]
@@ -39,12 +35,18 @@ export default async function displayEditDialog(event: Event) {
 	const data = await storage.sync.get(id)
 	const link = getLink(data, id)
 
-	domedit?.classList.toggle('shown', true)
-	domedit?.classList.toggle('add-link', !link)
-	domedit?.classList.toggle('select-all', isSelectAll)
-	domedit?.classList.toggle('update-link', !!link && !isSelectAll)
-	domedit?.classList.toggle('folder', link ? isFolder(link) : false)
-	domedit?.classList.toggle('in-folder', domlinkblocks.classList.contains('in-folder'))
+	domeditlink?.classList.toggle('add-link', !link)
+	domeditlink?.classList.toggle('select-all', isSelectAll)
+	domeditlink?.classList.toggle('update-link', !!link && !isSelectAll)
+	domeditlink?.classList.toggle('folder', link ? isFolder(link) : false)
+	domeditlink?.classList.toggle('in-folder', domlinkblocks.classList.contains('in-folder'))
+
+	domeditlink.classList.add('showing')
+	await new Promise((sleep) => setTimeout(sleep))
+
+	const { x, y } = newEditDialogPosition(event)
+	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
+	domeditlink?.classList.replace('showing', 'shown')
 
 	if (!link) {
 		domtitle.value = ''
@@ -95,7 +97,10 @@ onSettingsLoad(() => {
 })
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
+	const editRects = domeditlink.getBoundingClientRect()
+	const linkblocksRects = domlinkblocks.getBoundingClientRect()
 	const { innerHeight, innerWidth } = window
+
 	let x = 0
 	let y = 0
 
@@ -104,17 +109,17 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	}
 	//
 	else if (event.type === 'contextmenu') {
-		x = (event as PointerEvent).x
-		y = (event as PointerEvent).y
+		x = (event as PointerEvent).x + 20 - linkblocksRects.left
+		y = (event as PointerEvent).y + 20 - linkblocksRects.top
 	}
 	//
 	else if (event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e') {
-		x = (event.target as HTMLElement).offsetLeft
-		y = (event.target as HTMLElement).offsetTop
+		x = (event.target as HTMLElement).offsetLeft - linkblocksRects.left
+		y = (event.target as HTMLElement).offsetTop - linkblocksRects.top
 	}
 
-	if (x + 320 > innerWidth) x -= x + 320 - innerWidth // right overflow pushes to left
-	if (y + 270 > innerHeight) y -= 270 // bottom overflow pushes above mouse
+	if (x + editRects.width + 30 > innerWidth) x -= editRects.width // right overflow pushes to left
+	if (y + editRects.height + 30 > innerHeight) y -= editRects.height + 30 // bottom overflow pushes above mouse
 
 	return { x, y }
 }
