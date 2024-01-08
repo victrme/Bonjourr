@@ -98,7 +98,6 @@ onSettingsLoad(() => {
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const editRects = domeditlink.getBoundingClientRect()
-	const linkblocksRects = domlinkblocks.getBoundingClientRect()
 	const { innerHeight, innerWidth } = window
 
 	let x = 0
@@ -109,17 +108,20 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	}
 	//
 	else if (event.type === 'contextmenu') {
-		x = (event as PointerEvent).x + 20 - linkblocksRects.left
-		y = (event as PointerEvent).y + 20 - linkblocksRects.top
+		x = (event as PointerEvent).x + 20
+		y = (event as PointerEvent).y + 20
 	}
 	//
 	else if (event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e') {
-		x = (event.target as HTMLElement).offsetLeft - linkblocksRects.left
-		y = (event.target as HTMLElement).offsetTop - linkblocksRects.top
+		x = (event.target as HTMLElement).offsetLeft
+		y = (event.target as HTMLElement).offsetTop
 	}
 
-	if (x + editRects.width + 30 > innerWidth) x -= editRects.width // right overflow pushes to left
-	if (y + editRects.height + 30 > innerHeight) y -= editRects.height + 30 // bottom overflow pushes above mouse
+	const w = editRects.width + 30
+	const h = editRects.height + 30
+
+	if (x + w > innerWidth) x -= x + w - innerWidth
+	if (y + h > innerHeight) y -= h
 
 	return { x, y }
 }

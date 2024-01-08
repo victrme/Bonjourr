@@ -53,6 +53,47 @@
 			</div>
 		</dialog>
 
+		<div id="editlink">
+			<div class="edit-inputs">
+				<div>
+					<label for="e_title" class="trn">Title</label>
+					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
+				</div>
+
+				<div>
+					<label for="e_url" class="trn">Link</label>
+					<input
+						id="e_url"
+						type="url"
+						name="e_url"
+						maxlength="512"
+						autocomplete="off"
+						placeholder="https://example.com"
+					/>
+				</div>
+
+				<div>
+					<label for="e_iconurl" class="trn">Icon</label>
+					<input
+						id="e_iconurl"
+						type="url"
+						name="e_iconurl"
+						maxlength="7600"
+						autocomplete="off"
+						placeholder="https://example.com/favicon.ico"
+					/>
+				</div>
+			</div>
+
+			<hr />
+
+			<button id="e_folder-remove" class="trn">Remove from folder</button>
+			<button id="e_folder-add" class="trn">Create new folder</button>
+			<button id="e_delete" class="trn btn-red">Delete selected</button>
+			<button id="e_submit" class="trn">Apply changes</button>
+			<button id="e_add-link" class="trn">Add link</button>
+		</div>
+
 		<div id="background_overlay">
 			<div id="background"></div>
 			<div id="background-bis"></div>
@@ -214,54 +255,6 @@
 			</form>
 
 			<div id="linkblocks">
-				<div id="editlink">
-					<div class="edit-inputs">
-						<div>
-							<label for="e_title" class="trn">Title</label>
-							<input
-								id="e_title"
-								type="text"
-								name="e_title"
-								maxlength="64"
-								autocomplete="off"
-								placeholder="Example"
-							/>
-						</div>
-
-						<div>
-							<label for="e_url" class="trn">Link</label>
-							<input
-								id="e_url"
-								type="url"
-								name="e_url"
-								maxlength="512"
-								autocomplete="off"
-								placeholder="https://example.com"
-							/>
-						</div>
-
-						<div>
-							<label for="e_iconurl" class="trn">Icon</label>
-							<input
-								id="e_iconurl"
-								type="url"
-								name="e_iconurl"
-								maxlength="7600"
-								autocomplete="off"
-								placeholder="https://example.com/favicon.ico"
-							/>
-						</div>
-					</div>
-
-					<hr />
-
-					<button id="e_folder-remove" class="trn">Remove from folder</button>
-					<button id="e_folder-add" class="trn">Create new folder</button>
-					<button id="e_delete" class="trn btn-red">Delete selected</button>
-					<button id="e_submit" class="trn">Apply changes</button>
-					<button id="e_add-link" class="trn">Add link</button>
-				</div>
-
 				<ul id="link-list">
 					<template id="link-elem">
 						<li class="block">

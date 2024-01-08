@@ -4,7 +4,6 @@
 //	- Folder styles for medium and small
 //	- Links drag and drop
 // 	- Tabs and folder titles
-//	- Editlink states
 
 //
 // Link blocks
@@ -546,47 +545,4 @@ li.block.folder img {
 		border-color: #fff6;
 		z-index: auto;
 	}
-}
-
-//
-//  Editlink states:
-//
-//  - Select link
-//  - Select folder
-//  - Select all
-//  - In folder: select link
-//  - In folder: select all
-//
-
-#editlink button {
-	display: none;
-}
-
-#editlink.select-all .edit-inputs,
-#editlink.select-all hr {
-	display: none;
-}
-
-#editlink.folder .edit-inputs > div:nth-child(2),
-#editlink.folder .edit-inputs > div:nth-child(3),
-#editlink.add-link .edit-inputs > div:nth-child(3) {
-	display: none;
-}
-
-#editlink.update-link #e_submit,
-#editlink.update-link #e_delete {
-	display: initial;
-}
-
-#editlink.select-all #e_delete,
-#editlink.select-all:not(.in-folder) #e_folder-add {
-	display: initial;
-}
-
-#editlink.in-folder:not(.add-link) #e_folder-remove {
-	display: initial;
-}
-
-#editlink.add-link #e_add-link {
-	display: initial;
 }
