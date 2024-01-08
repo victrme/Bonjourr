@@ -4,7 +4,7 @@ export default defineConfig({
 	testDir: './src/tests',
 	outputDir: './src/tests/test-results',
 	reporter: 'null',
-	timeout: 3000,
+	timeout: 5000,
 	use: {
 		baseURL: 'http://127.0.0.1:5500/release/online/index.html',
 	},
@@ -12,7 +12,7 @@ export default defineConfig({
 		{ command: 'pnpm --filter api-cache dev' },
 		{ command: 'gulp buildtest && gulp test' },
 		{
-			command: 'python -m http.server 5500',
+			command: 'python -m http.server 5500 > NUL 2>&1',
 			url: 'http://127.0.0.1:5500/release/online/index.html',
 			reuseExistingServer: !process.env.CI,
 		},

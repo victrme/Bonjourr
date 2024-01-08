@@ -3,7 +3,7 @@ import openAllSettings from './utils/openallsettings'
 
 test.beforeEach(async ({ page }) => {
 	await page.goto('./')
-	await openAllSettings(page)
+	// await openAllSettings(page)
 })
 
 test.describe('Link submission', () => {
@@ -26,48 +26,164 @@ test.describe('Link submission', () => {
 		expect(await span?.textContent()).toEqual('')
 		expect(await a?.getAttribute('href')).toEqual('https://bonjourr.fr')
 	})
+
+	test('Add multiples', async ({ page }) => {
+		await addLink(page, 'victr.me', '')
+		await addLink(page, 'tahoe.be', '')
+
+		const links = await page.locator('#linkblocks li').all()
+
+		expect(await links[1].locator('span').textContent()).toEqual('')
+		expect(await links[1].locator('a').getAttribute('href')).toEqual('https://tahoe.be')
+		expect(links.length).toEqual(2)
+	})
 })
 
 test.describe('Edit link', () => {
-	test.beforeEach(async ({ page }) => await addLink(page, 'wikipedia.org', 'wikipedia'))
+	test.describe('Inputs and buttons', () => {
+		test.describe('In tab', () => {
+			test('Add new', async ({ page }) => {
+				await page.locator('#linkblocks').click({ button: 'right' })
+				await expect(page.getByPlaceholder('Example', { exact: true })).toBeVisible()
+				await expect(page.getByPlaceholder('https://example.com', { exact: true })).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Add link' })).toBeVisible()
+			})
 
-	test('Modifies title', async ({ page }) => {
-		const title = 'wiki'
+			test('Update', async ({ page }) => {
+				await addLink(page, 'bonjourr.fr', 'bonjourr.fr')
+				await page.locator('#linkblocks li').click({ button: 'right' })
+				await expect(page.getByPlaceholder('Example', { exact: true })).toBeVisible()
+				await expect(page.getByPlaceholder('https://example.com', { exact: true })).toBeVisible()
+				await expect(page.getByPlaceholder('https://example.com/favicon.')).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Delete selected' })).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Apply changes' })).toBeVisible()
+			})
 
-		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
-		await page.getByPlaceholder('Title').click()
-		await page.getByPlaceholder('Title').fill(title)
-		await page.getByRole('button', { name: 'Apply changes' }).click()
+			test('Select multiples', async ({ page }) => {
+				test.slow()
 
-		const span = page.locator('#linkblocks li span')
+				await addLink(page, 'bonjourr.fr', 'bonjourr')
+				await addLink(page, 'victr.me', 'victr')
+				await addLink(page, 'tahoe.be', 'tahoe')
 
-		expect(await span?.textContent()).toEqual(title)
+				const links = await page.locator('#linkblocks li').all()
+
+				await links[0].hover()
+				await page.mouse.down()
+				await page.waitForTimeout(600)
+				await page.mouse.up()
+
+				await links[1].click()
+				await links[2].click()
+				await links[2].click({ button: 'right' })
+
+				await expect(page.getByText('Create new folder')).toBeVisible()
+				await expect(page.getByText('Delete selected')).toBeVisible()
+			})
+		})
+
+		test.describe('In folder', () => {
+			test.beforeEach(async ({ page }) => {
+				await createFolder(page, ['victr.me', 'tahoe.be'])
+
+				await page.locator('#linkblocks li').click()
+				await page.waitForTimeout(200)
+				await page.locator('#linkblocks').click({ button: 'right' })
+			})
+
+			test('Add new', async ({ page }) => {
+				test.slow()
+				await expect(page.getByPlaceholder('Example', { exact: true })).toBeVisible()
+				await expect(page.getByPlaceholder('https://example.com', { exact: true })).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Add link' })).toBeVisible()
+			})
+
+			test('Update', async ({ page }) => {
+				test.slow()
+				await page.locator('#linkblocks li').first().click({ button: 'right' })
+				await expect(page.getByPlaceholder('Example', { exact: true })).toBeVisible()
+				await expect(page.getByPlaceholder('https://example.com', { exact: true })).toBeVisible()
+				await expect(page.getByPlaceholder('https://example.com/favicon.')).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Remove from folder' })).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Delete selected' })).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Apply changes' })).toBeVisible()
+			})
+
+			test('Select multiples', async ({ page }) => {
+				test.slow()
+
+				const links = await page.locator('#linkblocks li').all()
+				await links[0].hover()
+				await page.mouse.down()
+				await page.waitForTimeout(600)
+				await page.mouse.up()
+
+				await links[1].click()
+				await links[1].click({ button: 'right' })
+
+				await expect(page.getByRole('button', { name: 'Remove from folder' })).toBeVisible()
+				await expect(page.getByRole('button', { name: 'Delete selected' })).toBeVisible()
+			})
+		})
 	})
 
-	test('Modifies link', async ({ page }) => {
-		const url = 'https://wikipedia.org'
+	test.describe('Updates', () => {
+		test('Link', async ({ page }) => {
+			await addLink(page, 'wikipedia.org', 'wikipedia')
 
-		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
-		await page.getByPlaceholder('Link').click()
-		await page.getByPlaceholder('Link').fill(url)
-		await page.getByRole('button', { name: 'Apply changes' }).click()
+			const title = 'bonjourr'
+			const url = 'https://bonjourr.fr'
+			const icon = 'https://bonjourr.fr/apple-touch-icon.png'
 
-		const a = page.locator('#linkblocks li a')
+			// Title
+			await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
+			await page.locator('#e_title').click()
+			await page.locator('#e_title').fill(title)
+			await page.getByRole('button', { name: 'Apply changes' }).click()
 
-		expect(await a?.getAttribute('href')).toEqual(url)
+			const span = page.locator('#linkblocks li span')
+			expect(await span?.textContent()).toEqual(title)
+
+			// Link
+			await page.waitForTimeout(200)
+			await page.getByRole('link', { name: title }).click({ button: 'right' })
+			await page.locator('#e_url').click()
+			await page.locator('#e_url').fill(url)
+			await page.getByRole('button', { name: 'Apply changes' }).click()
+
+			const a = page.locator('#linkblocks li a')
+			expect(await a?.getAttribute('href')).toEqual(url)
+
+			// Icon
+			await page.waitForTimeout(200)
+			await page.getByRole('link', { name: title }).click({ button: 'right' })
+			await page.locator('#e_iconurl').click()
+			await page.locator('#e_iconurl').fill(icon)
+			await page.getByRole('button', { name: 'Apply changes' }).click()
+
+			const img = page.locator('#linkblocks li img')
+			expect(await img?.getAttribute('src')).toEqual(icon)
+		})
+
+		test('Folder', async ({ page }) => {
+			test.slow()
+			await createFolder(page, ['victr.me', 'tahoe.be'])
+			await page.locator('#linkblocks li').first().click({ button: 'right' })
+
+			await page.locator('#e_title').click()
+			await page.locator('#e_title').fill('dossier 1')
+			await page.getByRole('button', { name: 'Apply changes' }).click()
+
+			expect(await page.locator('#linkblocks li span')?.textContent()).toEqual('dossier 1')
+		})
 	})
+})
 
-	test('Modifies icon', async ({ page }) => {
-		const icon = 'https://wikipedia.org/favicon.ico'
-
-		await page.getByRole('link', { name: 'wikipedia' }).click({ button: 'right' })
-		await page.getByPlaceholder('Icon').click()
-		await page.getByPlaceholder('Icon').fill(icon)
-		await page.getByRole('button', { name: 'Apply changes' }).click()
-
-		const img = page.locator('#linkblocks li img')
-
-		expect(await img?.getAttribute('src')).toEqual(icon)
+test.describe('Folders', () => {
+	test('Creates folder', async ({ page }) => {
+		await createFolder(page, ['victr.me', 'tahoe.be'])
+		const folder = page.locator('#linkblocks li').first()
+		expect(await folder.getAttribute('class')).toContain('folder')
 	})
 })
 
@@ -143,9 +259,31 @@ test('Opens in new tab', async ({ page }) => {
 //
 
 async function addLink(page: Page, url = '', title = '') {
-	await page.getByRole('textbox', { name: 'New link title' }).click()
-	await page.getByRole('textbox', { name: 'New link title' }).fill(title)
-	await page.getByRole('textbox', { name: 'New link title' }).press('Tab')
-	await page.getByPlaceholder('URL').fill(url)
-	await page.locator('#submitlink').click()
+	await page.locator('#linkblocks').click({ button: 'right', position: { x: 0, y: 0 } })
+	await page.locator('#e_title').click()
+	await page.locator('#e_title').fill(title)
+	await page.keyboard.press('Tab')
+	await page.keyboard.type(url)
+	await page.locator('#e_add-link').click()
+	await page.waitForTimeout(200)
+}
+
+async function createFolder(page: Page, urls: string[] = []) {
+	for (const url of urls) {
+		await addLink(page, url, '')
+	}
+
+	const links = await page.locator('#linkblocks li').all()
+
+	await links[0].hover()
+	await page.mouse.down()
+	await page.waitForTimeout(600)
+	await page.mouse.up()
+
+	for (let i = 1; i < links.length; i++) {
+		await links[i].click()
+	}
+
+	await links[links.length - 1].click({ button: 'right' })
+	await page.getByText('Create new folder').click()
 }
