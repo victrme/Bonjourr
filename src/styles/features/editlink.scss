@@ -99,7 +99,9 @@
 }
 
 #editlink.select-all .edit-inputs,
-#editlink.select-all hr {
+#editlink.select-all hr,
+#editlink.tabs .edit-inputs,
+#editlink.tabs hr {
 	display: none;
 }
 
@@ -124,5 +126,10 @@
 }
 
 #editlink.add-link #e_add-link {
+	display: initial;
+}
+
+#editlink.tabs #e_tab-add,
+#editlink.tabs.tab-item #e_tab-remove {
 	display: initial;
 }

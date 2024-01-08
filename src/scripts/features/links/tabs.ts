@@ -6,6 +6,10 @@ import storage from '../../storage'
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
 export default function initTabs(data: Sync.Storage) {
+	document.querySelectorAll<Element>('#link-title div')?.forEach((node) => {
+		node.remove()
+	})
+
 	data.tabslist.forEach((tab, i) => {
 		appendNewTab(tab.name, i === data.linktabs ?? 0)
 	})

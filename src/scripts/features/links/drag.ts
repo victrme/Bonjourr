@@ -228,16 +228,16 @@ function endDrag(event: Event) {
 		deplaceElem(block, coord.x, coord.y)
 	}
 
-	setTimeout(() => {
-		storage.sync.get().then((data) => {
-			if (toTab) dropToTab()
-			else if (toFolder) dropToFolder(data)
-			else dropToNewPosition(data)
-			domlinkblocks?.classList.remove('dropping')
-			document.body.classList.remove('dropping')
-			domlinklist?.removeAttribute('style')
-		})
-	}, 1000)
+	setTimeout(async () => {
+		const data = await storage.sync.get()
+		if (toTab) dropToTab()
+		else if (toFolder) dropToFolder(data)
+		else dropToNewPosition(data)
+
+		domlinkblocks?.classList.remove('dropping')
+		document.body.classList.remove('dropping')
+		domlinklist?.removeAttribute('style')
+	}, 200)
 }
 
 function dropToTab() {

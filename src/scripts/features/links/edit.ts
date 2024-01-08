@@ -22,28 +22,31 @@ export default async function displayEditDialog(event: Event) {
 	const domiconurl = document.getElementById('e_iconurl') as HTMLInputElement
 	const selected = document.querySelectorAll('#linkblocks li.selected')
 	const isSelectAll = domlinkblocks.classList.contains('select-all')
+	const isInFolder = domlinkblocks.classList.contains('in-folder')
 
-	if (isSelectAll && selected.length === 0) {
-		return
-	}
-
-	if (domlinkblocks.classList.contains('dragging')) {
+	if ((isSelectAll && selected.length === 0) || domlinkblocks.classList.contains('dragging')) {
 		return
 	}
 
 	const path = event.composedPath() as Element[]
 	const pathLis = path.filter((el) => el.tagName === 'LI')
+	const isTab = !isInFolder && path.some((node) => node.id === 'link-title')
+	const isTabOnly = path[0].id === 'link-title'
 	const li = pathLis[0]
 	const id = li?.id
 
 	const data = await storage.sync.get(id)
 	const link = getLink(data, id)
 
-	domeditlink?.classList.toggle('add-link', !link)
+	domeditlink?.classList.toggle('add-link', !isTab && !link)
 	domeditlink?.classList.toggle('select-all', isSelectAll)
 	domeditlink?.classList.toggle('update-link', !!link && !isSelectAll)
 	domeditlink?.classList.toggle('folder', link ? isFolder(link) : false)
-	domeditlink?.classList.toggle('in-folder', domlinkblocks.classList.contains('in-folder'))
+	domeditlink?.classList.toggle('in-folder', isInFolder)
+	domeditlink?.classList.toggle('tab-item', isTab && !isTabOnly)
+	domeditlink?.classList.toggle('tabs', isTab)
+
+	console.log(path, isTab, isTabOnly)
 
 	domeditlink.classList.add('showing')
 	await new Promise((sleep) => setTimeout(sleep))
@@ -51,6 +54,14 @@ export default async function displayEditDialog(event: Event) {
 	const { x, y } = newEditDialogPosition(event)
 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 	domeditlink?.classList.replace('showing', 'shown')
+
+	if (isTab) {
+		// BAD: flaky parentElement, easy to break
+		const div = path[0].tagName === 'INPUT' ? path[0].parentElement : path[0]
+		const divList = [...document.querySelectorAll<HTMLDivElement>('#link-title div')]
+		const index = divList.findIndex((node) => node === div)
+		domeditlink.dataset.tabIndex = index.toString()
+	}
 
 	if (!link) {
 		domtitle.value = ''
@@ -104,13 +115,13 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 }
 
 function closeEditDialog() {
-	const domedit = document.querySelector('#editlink')
-	if (!domedit || !domedit.classList.contains('shown')) return
+	if (!domeditlink || !domeditlink.classList.contains('shown')) return
 
-	domedit?.classList.add('hiding')
+	domeditlink?.classList.add('hiding')
 	document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
 	setTimeout(() => {
-		domedit ? domedit.setAttribute('class', '') : ''
+		domeditlink?.removeAttribute('data-tab-index')
+		domeditlink ? domeditlink.setAttribute('class', '') : ''
 	}, 200)
 }
 
@@ -127,6 +138,8 @@ onSettingsLoad(() => {
 	document.getElementById('e_add-link')?.addEventListener('click', addLinkFromEditDialog)
 	document.getElementById('e_folder-add')?.addEventListener('click', addSelectionToNewFolder)
 	document.getElementById('e_folder-remove')?.addEventListener('click', removeSelectionFromFolder)
+	document.getElementById('e_tab-add')?.addEventListener('click', addTab)
+	document.getElementById('e_tab-remove')?.addEventListener('click', removeTab)
 
 	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
 	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
@@ -202,6 +215,16 @@ async function submitLinksChange(event: Event) {
 	}
 
 	storage.sync.set({ [id]: link })
+}
+
+function addTab() {
+	linksUpdate({ addTab: true })
+	closeEditDialog()
+}
+
+function removeTab() {
+	linksUpdate({ removeTab: parseInt(domeditlink.dataset.tabIndex ?? '0') })
+	closeEditDialog()
 }
 
 function addLinkFromEditDialog() {

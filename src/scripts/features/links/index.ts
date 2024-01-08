@@ -21,6 +21,8 @@ type LinksUpdate = {
 	style?: string
 	row?: string
 	tab?: boolean
+	addTab?: boolean
+	removeTab?: number
 	addLink?: boolean
 	addFolder?: string[]
 	groupTitle?: string
@@ -376,6 +378,14 @@ export async function linksUpdate(update: LinksUpdate) {
 		setTab(update.tab)
 	}
 
+	if (update.addTab !== undefined) {
+		addTab()
+	}
+
+	if (update.removeTab !== undefined) {
+		removeTab(update.removeTab)
+	}
+
 	if (update.groupTitle !== undefined) {
 		setGroupTitle(update.groupTitle)
 	}
@@ -585,38 +595,47 @@ async function setGroupTitle(title: string) {
 	storage.sync.set(data)
 }
 
-function setTab(tab: boolean) {
+async function setTab(tab: boolean) {
 	if (tab) {
 		storage.sync.set({ linktabs: 0 })
 		domlinkblocks?.classList.toggle('with-tabs', true)
-		document.querySelector('#link-title > div')?.classList.toggle('selected', true)
+		document.querySelectorAll<HTMLDivElement>('#link-title > div')?.forEach((div, i) => {
+			div.classList.toggle('selected', i === 0)
+		})
 	} else {
 		storage.sync.remove('linktabs')
 		domlinkblocks?.classList.toggle('with-tabs', false)
 	}
+}
 
-	// if (action === 'add') {
-	// 	data.linktabs = data.tabslist.length - 1
+async function addTab() {
+	const data = await storage.sync.get(['tabslist', 'linktabs'])
+	data.tabslist.push({ name: '', ids: [] })
+	storage.sync.set({ tabslist: data.tabslist })
+	initTabs(data)
+}
 
-	// 	data.tabslist.push({ name: '', ids: [] })
+async function removeTab(index: number) {
+	const data = await storage.sync.get(['tabslist', 'linktabs'])
+	const isRemovingFirst = index === 0 || data.tabslist.length === 1
 
-	// 	const divs = Object.values(document.querySelectorAll('#link-title div'))
-	// 	divs?.forEach((div) => div.classList.remove('selected'))
+	if (isRemovingFirst) {
+		return
+	}
 
-	// 	appendNewTab('', true)
-	// 	initblocks(data)
-	// }
+	data.tabslist = data.tabslist.toSpliced(index, 1)
 
-	// if (action === 'remove' && data.tabslist.length > 1) {
-	// 	if (data.linktabs === data.tabslist.length - 1) {
-	// 		data.linktabs = data.linktabs - 1
-	// 	}
+	if (index === data.linktabs) {
+		data.linktabs -= 1
+		initblocks(data)
+	}
 
-	// 	data.tabslist.pop()
+	initTabs(data)
 
-	// 	document.querySelector('#link-title div:last-child')?.remove()
-	// 	initblocks(data)
-	// }
+	storage.sync.set({
+		tabslist: data.tabslist,
+		linktabs: data.linktabs,
+	})
 }
 
 async function setOpenInNewTab(newtab: boolean) {

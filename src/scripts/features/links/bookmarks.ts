@@ -45,6 +45,10 @@ export default async function linksImport() {
 }
 
 export async function syncNewBookmarks(init?: number, update?: boolean) {
+	if (PLATFORM === 'online' || PLATFORM === 'safari') {
+		return
+	}
+
 	if (update !== undefined) {
 		updateSyncBookmarks(update)
 		return
