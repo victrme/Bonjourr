@@ -25,6 +25,8 @@ type LinksUpdate = {
 	addFolder?: string[]
 	groupTitle?: string
 	addToFolder?: AddToFolder
+	removeFromFolder?: string[]
+	deleteLinks?: string[]
 }
 
 type AddToFolder = {
@@ -275,17 +277,30 @@ async function closeFolder() {
 }
 
 function dismissSelectAllAndFolder(event: Event) {
-	if (!clicksOnInterface(event)) {
+	const path = (event.composedPath() ?? [document.body]) as Element[]
+	const onOpenSettings = path.some((el) => el.id === 'showSettings')
+	const onSettings = path.some((el) => el.id === 'settings')
+	const onEditLink = path.some((el) => el.id === 'editlink')
+	const onLink = path.some((el) => el.tagName === 'LI' && el.classList.contains('block'))
+	const doNothingWhenClicking = onEditLink || onOpenSettings || onSettings || onLink
+
+	if (doNothingWhenClicking) {
 		return
 	}
 
+	const states = [...domlinkblocks.classList.values()]
+
 	// Remove first select all
-	if (domlinkblocks.classList.contains('select-all')) {
+	if (states.includes('select-all')) {
 		domlinkblocks.classList.remove('select-all')
 		document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
 	}
+	//
+	else if (path.some((el) => el === domlinkblocks)) {
+		return
+	}
 	// then close folder
-	else if (domlinkblocks.classList.contains('in-folder')) {
+	else if (!states.includes('dropping') && states.includes('in-folder')) {
 		closeFolder()
 	}
 }
@@ -333,42 +348,48 @@ function selectAll(event: MouseEvent) {
 //
 
 export async function linksUpdate(update: LinksUpdate) {
-	const { bookmarks, newtab, style, row, tab, addLink, addFolder, addToFolder, groupTitle } = update
-
-	if (addLink) {
+	if (update.addLink) {
 		linkSubmission({ type: 'link' })
 	}
 
-	if (addFolder) {
-		linkSubmission({ type: 'folder', ids: addFolder })
+	if (update.addFolder) {
+		linkSubmission({ type: 'folder', ids: update.addFolder })
 	}
 
-	if (bookmarks) {
-		linkSubmission({ type: 'import', bookmarks: bookmarks })
+	if (update.bookmarks) {
+		linkSubmission({ type: 'import', bookmarks: update.bookmarks })
 	}
 
-	if (addToFolder) {
-		addLinkToFolder(addToFolder)
+	if (update.addToFolder) {
+		addLinkToFolder(update.addToFolder)
 	}
 
-	if (tab !== undefined) {
-		setTab(tab)
+	if (update.removeFromFolder) {
+		removeFromFolder(update.removeFromFolder)
 	}
 
-	if (groupTitle !== undefined) {
-		setGroupTitle(groupTitle)
+	if (update.deleteLinks) {
+		deleteLinks(update.deleteLinks)
 	}
 
-	if (newtab !== undefined) {
-		setOpenInNewTab(newtab)
+	if (update.tab !== undefined) {
+		setTab(update.tab)
 	}
 
-	if (style) {
-		setLinkStyle(style)
+	if (update.groupTitle !== undefined) {
+		setGroupTitle(update.groupTitle)
 	}
 
-	if (row) {
-		setRows(row)
+	if (update.newtab !== undefined) {
+		setOpenInNewTab(update.newtab)
+	}
+
+	if (update.style) {
+		setLinkStyle(update.style)
+	}
+
+	if (update.row) {
+		setRows(update.row)
 	}
 }
 
@@ -442,6 +463,15 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 
 	titledom.value = ''
 
+	for (let i = 0; i < ids.length; i++) {
+		const dom = document.getElementById(ids[i])
+		const isFolder = dom?.classList.contains('folder')
+
+		if (isFolder) {
+			ids.splice(i, 1)
+		}
+	}
+
 	return [
 		{
 			_id: 'links' + randomString(6),
@@ -470,6 +500,66 @@ async function addLinkToFolder({ ids, target, source }: AddToFolder) {
 
 	storage.sync.set(data)
 	initblocks(data)
+}
+
+async function removeFromFolder(ids: string[]) {
+	if (!domlinkblocks.dataset.folderid) {
+		return
+	}
+
+	const data = await storage.sync.get()
+	const tab = data.tabslist[data.linktabs ?? 0]
+	const folderid = domlinkblocks.dataset.folderid
+
+	if (folderid) {
+		const folder = data[folderid] as Links.Folder
+
+		for (const id of ids) {
+			folder.ids = folder.ids.filter((linkid) => linkid !== id)
+		}
+
+		data[folderid] = folder
+		data.tabslist[data.linktabs ?? 0] = tab
+
+		storage.sync.set(data)
+
+		animateLinksRemove(ids)
+	}
+}
+
+async function deleteLinks(ids: string[]) {
+	let data = await storage.sync.get()
+	const tab = data.tabslist[data.linktabs ?? 0]
+	const folderId = domlinkblocks.dataset.folderid
+	const currentlyInFolder = !!folderId
+
+	for (const id of ids) {
+		const toRemove = data[id] as Links.Link
+
+		// Also remove link from folder
+		if (currentlyInFolder) {
+			const folder = data[folderId] as Links.Folder
+			folder.ids = folder.ids.filter((id) => !ids.includes(id))
+			data[folder._id] = folder
+		}
+
+		// Also remove folder content from data
+		if (isFolder(toRemove)) {
+			for (const id of toRemove.ids) {
+				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
+				delete data[id]
+			}
+		}
+
+		tab.ids = tab.ids.filter((item) => item !== id)
+		data.tabslist[data.linktabs ?? 0] = tab
+		delete data[id]
+	}
+
+	storage.sync.clear()
+	storage.sync.set(data)
+
+	animateLinksRemove(ids)
 }
 
 async function setGroupTitle(title: string) {
@@ -590,14 +680,6 @@ function handleSafariNewtab(e: Event) {
 // Helpers
 //
 
-function clicksOnInterface(event: Event) {
-	const path = event.composedPath() ?? [document.body]
-	const node = path[0] as Element | undefined
-	const clicksOnInterface = node?.id === 'interface' || node?.tagName === 'BODY'
-
-	return clicksOnInterface
-}
-
 function validateLink(title: string, url: string): Links.Elem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 
@@ -654,4 +736,11 @@ function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
 	}
 
 	return links
+}
+
+function animateLinksRemove(ids: string[]) {
+	for (const id of ids) {
+		document.getElementById(id)?.classList.add('removed')
+		setTimeout(() => document.getElementById(id)?.remove(), 600)
+	}
 }

@@ -71,7 +71,7 @@ export default function startDrag(event: PointerEvent) {
 
 		// Only disable transitions for a few frames
 		li.style.transition = 'none'
-		setTimeout(() => li.style.removeProperty('transition'), 1)
+		setTimeout(() => li.style.removeProperty('transition'), 10)
 
 		blocks.set(id, li)
 		deplaceElem(li, x, y)
@@ -211,6 +211,7 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchmove', moveDrag)
 	document.documentElement.removeEventListener('touchend', endDrag)
 
+	const toTab = domlinkblocks.classList.contains('in-folder') && (event.composedPath() as Element[])[0] !== domlinklist
 	const toFolder = !!document.querySelector('.almost-folder')
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
@@ -221,7 +222,7 @@ function endDrag(event: Event) {
 	domlinkblocks?.classList.replace('dragging', 'dropping')
 	document.body?.classList.replace('dragging', 'dropping')
 
-	if (toFolder) {
+	if (toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
 	} else {
 		deplaceElem(block, coord.x, coord.y)
@@ -229,12 +230,21 @@ function endDrag(event: Event) {
 
 	setTimeout(() => {
 		storage.sync.get().then((data) => {
-			toFolder ? dropToFolder(data) : dropToNewPosition(data)
+			if (toTab) dropToTab()
+			else if (toFolder) dropToFolder(data)
+			else dropToNewPosition(data)
 			domlinkblocks?.classList.remove('dropping')
 			document.body.classList.remove('dropping')
 			domlinklist?.removeAttribute('style')
 		})
-	}, 200)
+	}, 1000)
+}
+
+function dropToTab() {
+	linksUpdate({ removeFromFolder: [draggedId] })
+	document.querySelectorAll<HTMLElement>('#linkblocks li.block').forEach((li) => {
+		li.removeAttribute('style')
+	})
 }
 
 function dropToFolder(data: Sync.Storage) {

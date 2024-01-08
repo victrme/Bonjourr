@@ -9,6 +9,10 @@ let editmousedown: boolean = false
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDivElement
 
+//
+// Display
+//
+
 export default async function displayEditDialog(event: Event) {
 	document.body.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
@@ -69,33 +73,6 @@ export default async function displayEditDialog(event: Event) {
 	}
 }
 
-onSettingsLoad(() => {
-	document.getElementById('e_title')?.addEventListener('change', submitLinksChange)
-	document.getElementById('e_url')?.addEventListener('change', submitLinksChange)
-	document.getElementById('e_iconurl')?.addEventListener('change', submitLinksChange)
-	document.getElementById('e_delete')?.addEventListener('click', deleteSelection)
-	document.getElementById('e_submit')?.addEventListener('click', submitLinksChange)
-	document.getElementById('e_add-link')?.addEventListener('click', addLinkFromEditDialog)
-	document.getElementById('e_folder-add')?.addEventListener('click', addSelectionToNewFolder)
-	document.getElementById('e_folder-remove')?.addEventListener('click', removeSelectionFromFolder)
-
-	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
-	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
-
-	document.body.addEventListener('click', function () {
-		if (editmousedown) {
-			editmousedown = false
-			return
-		}
-
-		closeEditDialog()
-	})
-
-	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
-		window.addEventListener('resize', closeEditDialog)
-	}
-})
-
 function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const editRects = domeditlink.getBoundingClientRect()
 	const { innerHeight, innerWidth } = window
@@ -125,6 +102,48 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 
 	return { x, y }
 }
+
+function closeEditDialog() {
+	const domedit = document.querySelector('#editlink')
+	if (!domedit || !domedit.classList.contains('shown')) return
+
+	domedit?.classList.add('hiding')
+	document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
+	setTimeout(() => {
+		domedit ? domedit.setAttribute('class', '') : ''
+	}, 200)
+}
+
+//
+// Events
+//
+
+onSettingsLoad(() => {
+	document.getElementById('e_title')?.addEventListener('change', submitLinksChange)
+	document.getElementById('e_url')?.addEventListener('change', submitLinksChange)
+	document.getElementById('e_iconurl')?.addEventListener('change', submitLinksChange)
+	document.getElementById('e_delete')?.addEventListener('click', deleteSelection)
+	document.getElementById('e_submit')?.addEventListener('click', submitLinksChange)
+	document.getElementById('e_add-link')?.addEventListener('click', addLinkFromEditDialog)
+	document.getElementById('e_folder-add')?.addEventListener('click', addSelectionToNewFolder)
+	document.getElementById('e_folder-remove')?.addEventListener('click', removeSelectionFromFolder)
+
+	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
+	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
+
+	document.body.addEventListener('click', function () {
+		if (editmousedown) {
+			editmousedown = false
+			return
+		}
+
+		closeEditDialog()
+	})
+
+	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
+		window.addEventListener('resize', closeEditDialog)
+	}
+})
 
 async function submitLinksChange(event: Event) {
 	const id = getSelectedIds()[0]
@@ -191,115 +210,18 @@ function addLinkFromEditDialog() {
 }
 
 function addSelectionToNewFolder() {
-	let ids: string[] = getSelectedIds()
-
-	for (let i = 0; i < ids.length; i++) {
-		const dom = document.getElementById(ids[i])
-		const isFolder = dom?.classList.contains('folder')
-
-		if (isFolder) {
-			ids.splice(i, 1)
-		}
-	}
-
-	domlinkblocks?.classList.remove('select-all')
-
-	linksUpdate({ addFolder: ids })
+	linksUpdate({ addFolder: getSelectedIds() })
 	closeEditDialog()
+	domlinkblocks?.classList.remove('select-all')
 }
 
 function deleteSelection() {
-	const ids = getSelectedIds()
-
-	animateLinksRemove(ids)
-	deleteLinks(ids)
+	linksUpdate({ deleteLinks: getSelectedIds() })
 	closeEditDialog()
 }
 
 function removeSelectionFromFolder() {
-	const ids = getSelectedIds()
-
-	removeLinksFromFolder(ids)
-	animateLinksRemove(ids)
+	linksUpdate({ removeFromFolder: getSelectedIds() })
 	closeEditDialog()
-
 	domlinkblocks?.classList.remove('select-all')
-}
-
-async function deleteLinks(ids: string[]) {
-	let data = await storage.sync.get()
-	const tab = data.tabslist[data.linktabs ?? 0]
-	const folderId = domlinkblocks.dataset.folderid
-	const currentlyInFolder = !!folderId
-
-	for (const id of ids) {
-		const toRemove = data[id] as Links.Link
-
-		// Also remove link from folder
-		if (currentlyInFolder) {
-			const folder = data[folderId] as Links.Folder
-			folder.ids = folder.ids.filter((id) => !ids.includes(id))
-			data[folder._id] = folder
-		}
-
-		// Also remove folder content from data
-		if (isFolder(toRemove)) {
-			for (const id of toRemove.ids) {
-				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
-				delete data[id]
-			}
-		}
-
-		tab.ids = removeFromList(tab.ids, id)
-		data.tabslist[data.linktabs ?? 0] = tab
-		delete data[id]
-	}
-
-	storage.sync.clear()
-	storage.sync.set(data)
-}
-
-async function removeLinksFromFolder(ids: string[]) {
-	if (!domlinkblocks.dataset.folderid) {
-		return
-	}
-
-	const data = await storage.sync.get()
-	const tab = data.tabslist[data.linktabs ?? 0]
-	const folderid = domlinkblocks.dataset.folderid
-
-	if (folderid) {
-		const folder = data[folderid] as Links.Folder
-
-		for (const id of ids) {
-			folder.ids = folder.ids.filter((linkid) => linkid !== id)
-		}
-
-		data[folderid] = folder
-		data.tabslist[data.linktabs ?? 0] = tab
-
-		storage.sync.set(data)
-	}
-}
-
-function closeEditDialog() {
-	const domedit = document.querySelector('#editlink')
-	if (!domedit || !domedit.classList.contains('shown')) return
-
-	domedit?.classList.add('hiding')
-	document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
-	setTimeout(() => {
-		domedit ? domedit.setAttribute('class', '') : ''
-	}, 200)
-}
-
-function animateLinksRemove(ids: string[]) {
-	for (const id of ids) {
-		document.getElementById(id)?.classList.add('removed')
-		setTimeout(() => document.getElementById(id)?.remove(), 600)
-	}
-}
-
-function removeFromList(arr: string[], id: string): string[] {
-	return arr.filter((item) => item !== id)
 }
