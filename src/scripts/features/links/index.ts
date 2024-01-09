@@ -1,4 +1,4 @@
-import { isFolder, getLiFromEvent, getDefaultIcon, createTitle } from './helpers'
+import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink } from './helpers'
 import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import displayEditDialog from './edit'
 import { eventDebounce } from '../../utils/debounce'
@@ -23,6 +23,7 @@ type LinksUpdate = {
 	tab?: boolean
 	addTab?: boolean
 	removeTab?: number
+	moveLinks?: string[]
 	addLink?: boolean
 	addFolder?: string[]
 	groupTitle?: string
@@ -84,48 +85,36 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	const children = document.querySelectorAll('#link-list > li')
 	const folderid = domlinkblocks.dataset.folderid
 
-	// Remove all links
-
 	if (tabList && children.length > 0) {
 		children.forEach((child) => {
 			child.remove()
 		})
 	}
 
-	// Choose links to display
-
-	const linkids = []
-
-	if (!!folderid) {
-		linkids.push(...((data[folderid] as Links.Folder)?.ids ?? []))
-	} else {
-		linkids.push(...data.tabslist[data.linktabs ?? 0].ids)
-	}
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
+	const links = !!folderid ? getLinksInFolder(data, folderid) : getLinksInTab(data)
 
 	// Exit early if no links
-	if (linkids.length === 0) {
+	if (links.length === 0) {
 		document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
 		return true
 	}
 
-	// Create links DOM
-
-	const links = linkids.map((id) => data[id] as Link)
-	const folders = links.filter((link) => isFolder(link))
-	const idsInFolders = folders.map((link) => (link as Folder).ids).flat()
-	const linksInFolders = idsInFolders.map((id) => data[id] as Elem)
+	const folderChildren = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
 	const fragment = document.createDocumentFragment()
 
 	for (const link of links) {
 		let li: HTMLLIElement
 
-		if (idsInFolders.includes(link._id)) {
-			continue
+		if (folderid && isElem(link)) {
+			li = createLinkElem(link, data.linknewtab)
 		}
-
-		if (isFolder(link)) {
-			li = createLinkFolder(link, linksInFolders)
-		} else {
+		//
+		else if (link.folder) {
+			li = createLinkFolder(link, folderChildren)
+		}
+		//
+		else {
 			li = createLinkElem(link, data.linknewtab)
 		}
 
@@ -143,8 +132,8 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	return true
 }
 
-function createLinkFolder(link: Links.Folder, linksInFolder: Links.Elem[]): HTMLLIElement {
-	const linksInThisFolder = linksInFolder.filter((l) => link.ids.includes(l._id))
+function createLinkFolder(link: Links.Folder, folderChildren: Link[]): HTMLLIElement {
+	const linksInThisFolder = folderChildren.filter((l) => !l.folder && l.parent === link._id)
 	const li = getHTMLTemplate<HTMLLIElement>('link-folder', 'li')
 	const imgs = li.querySelectorAll('img')!
 	const span = li.querySelector('span')!
@@ -155,8 +144,10 @@ function createLinkFolder(link: Links.Folder, linksInFolder: Links.Elem[]): HTML
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
-		if (img) {
-			img.src = linksInThisFolder[i].icon ?? getDefaultIcon(linksInThisFolder[i].url)
+		const elem = linksInThisFolder[i]
+
+		if (img && !elem.folder) {
+			img.src = elem.icon ?? getDefaultIcon(elem.url)
 		}
 	}
 
@@ -267,7 +258,7 @@ async function closeFolder() {
 			domlinkblocks.classList.add('hiding')
 		},
 		async function changeToTab() {
-			toggleTabsTitleType(data.tabslist[0].name, data.linktabs)
+			toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.selected)
 			await initblocks(data)
 		},
 		function show() {
@@ -374,6 +365,10 @@ export async function linksUpdate(update: LinksUpdate) {
 		deleteLinks(update.deleteLinks)
 	}
 
+	if (update.moveLinks) {
+		moveLinks(update.moveLinks)
+	}
+
 	if (update.tab !== undefined) {
 		setTab(update.tab)
 	}
@@ -404,50 +399,41 @@ export async function linksUpdate(update: LinksUpdate) {
 }
 
 async function linkSubmission(arg: LinkSubmission) {
-	const data = await storage.sync.get()
-	const tab = data.tabslist[data.linktabs ?? 0]
 	const folderid = domlinkblocks.dataset.folderid
-	let links: Link[] = []
+	const data = await storage.sync.get()
 	let newlinks: Link[] = []
 
-	switch (arg.type) {
-		case 'link': {
-			newlinks = addLink()
-			links = getLinksInTab(data)
-			break
-		}
-
-		case 'folder': {
-			newlinks = addLinkFolder(arg.ids)
-			links = getAllLinksInFolder(data, newlinks[0]._id)
-			break
-		}
-
-		case 'import': {
-			newlinks = (arg.bookmarks ?? []).map((b) => validateLink(b.title, b.url))
-			links = getLinksInTab(data)
-			break
-		}
+	if (arg.type === 'import') {
+		newlinks = (arg.bookmarks ?? []).map((b) => validateLink(b.title, b.url))
 	}
 
-	for (const link of newlinks) {
-		data[link._id] = link
-		links.push(link)
-		tab.ids.push(link._id)
+	if (arg.type === 'link') {
+		newlinks = addLink()
+	}
 
-		if (folderid) {
-			const folder = data[folderid] as Link
+	if (arg.type === 'folder') {
+		newlinks = addLinkFolder(arg.ids)
 
-			if (isFolder(folder)) {
-				folder.ids.push(link._id)
-				data[folderid] = folder
+		for (const id of arg.ids) {
+			const elem = data[id] as Link
+
+			if (!elem.folder) {
+				elem.parent = newlinks[0]._id
 			}
 		}
 	}
 
-	data.tabslist[data.linktabs ?? 0] = tab
-	storage.sync.set(data)
+	for (const link of newlinks) {
+		if (folderid && !link.folder) {
+			link.parent = folderid
+		} else {
+			link.parent = data.linktabs.selected
+		}
 
+		data[link._id] = link
+	}
+
+	storage.sync.set(correctLinksOrder(data))
 	initblocks(data)
 }
 
@@ -485,14 +471,16 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 	return [
 		{
 			_id: 'links' + randomString(6),
-			ids: ids,
+			folder: true,
+			order: Date.now(), // big number
+			parent: 0,
 			title: title,
 		},
 	]
 }
 
 async function addLinkToFolder({ ids, target, source }: AddToFolder) {
-	const data = await storage.sync.get()
+	let data = await storage.sync.get()
 	const folder = data[target] as Links.Folder
 
 	if (!folder) {
@@ -500,76 +488,79 @@ async function addLinkToFolder({ ids, target, source }: AddToFolder) {
 	}
 
 	if (source) {
-		const tab = data.tabslist[data.linktabs ?? 0]
-		data.tabslist[data.linktabs ?? 0].ids = tab.ids.filter((id) => id !== source)
+		const linkElems = Object.values(data).filter((val) => isLink(val) && isElem(val)) as Elem[]
+		const sourceChildren = linkElems.filter((elem) => elem.parent === source)
+		const childrenIds = sourceChildren.map((elem) => elem._id)
+
+		ids.push(...childrenIds)
+
+		delete data[source]
 		storage.sync.remove(source)
 	}
 
-	folder.ids.push(...ids)
-	data[target] = folder
+	for (const [key, val] of Object.entries(data)) {
+		if (isLink(val) === false) {
+			continue
+		}
 
+		if (ids.includes(val._id) && !val.folder) {
+			;(data[key] as Elem).parent = target
+			;(data[key] as Elem).order = Date.now()
+		}
+	}
+
+	data = correctLinksOrder(data)
 	storage.sync.set(data)
 	initblocks(data)
 }
 
 async function removeFromFolder(ids: string[]) {
-	if (!domlinkblocks.dataset.folderid) {
+	const folderid = domlinkblocks.dataset.folderid
+
+	if (!folderid) {
 		return
 	}
 
 	const data = await storage.sync.get()
-	const tab = data.tabslist[data.linktabs ?? 0]
-	const folderid = domlinkblocks.dataset.folderid
 
-	if (folderid) {
-		const folder = data[folderid] as Links.Folder
-
-		for (const id of ids) {
-			folder.ids = folder.ids.filter((linkid) => linkid !== id)
-		}
-
-		data[folderid] = folder
-		data.tabslist[data.linktabs ?? 0] = tab
-
-		storage.sync.set(data)
-
-		animateLinksRemove(ids)
+	for (const id of ids) {
+		;(data[id] as Link).parent = data.linktabs.selected
+		;(data[id] as Link).order = Date.now()
 	}
+
+	storage.sync.set(correctLinksOrder(data))
+	animateLinksRemove(ids)
 }
 
 async function deleteLinks(ids: string[]) {
-	let data = await storage.sync.get()
-	const tab = data.tabslist[data.linktabs ?? 0]
-	const folderId = domlinkblocks.dataset.folderid
-	const currentlyInFolder = !!folderId
+	const data = await storage.sync.get()
 
 	for (const id of ids) {
-		const toRemove = data[id] as Links.Link
+		const link = data[id] as Link
 
-		// Also remove link from folder
-		if (currentlyInFolder) {
-			const folder = data[folderId] as Links.Folder
-			folder.ids = folder.ids.filter((id) => !ids.includes(id))
-			data[folder._id] = folder
+		if (link.folder) {
+			getLinksInFolder(data, link._id).forEach((child) => {
+				delete data[child._id]
+			})
 		}
 
-		// Also remove folder content from data
-		if (isFolder(toRemove)) {
-			for (const id of toRemove.ids) {
-				tab.ids = tab.ids.filter((id) => !toRemove.ids.includes(id))
-				delete data[id]
-			}
-		}
-
-		tab.ids = tab.ids.filter((item) => item !== id)
-		data.tabslist[data.linktabs ?? 0] = tab
 		delete data[id]
 	}
 
 	storage.sync.clear()
-	storage.sync.set(data)
+	storage.sync.set(correctLinksOrder(data))
 
 	animateLinksRemove(ids)
+}
+
+async function moveLinks(ids: string[]) {
+	const data = await storage.sync.get()
+
+	ids.forEach((id, i) => {
+		;(data[id] as Link).order = i
+	})
+
+	storage.sync.set(data)
 }
 
 async function setGroupTitle(title: string) {
@@ -577,65 +568,58 @@ async function setGroupTitle(title: string) {
 
 	if (folderid) {
 		const data = await storage.sync.get()
-		const folder = data[folderid] as Links.Folder | undefined
+		const folder = data[folderid] as Link
 
-		if (folder) {
+		if (folder.folder) {
 			folder.title = title
 			data[folderid] = folder
 			storage.sync.set(data)
 		}
-
-		return
 	}
-
-	const data = await storage.sync.get()
-
-	data.tabslist[data.linktabs ?? 0].name = title
-
-	storage.sync.set(data)
+	//
+	else {
+		const data = await storage.sync.get()
+		data.linktabs.titles[data.linktabs.selected ?? 0] = title
+		storage.sync.set(data)
+	}
 }
 
 async function setTab(tab: boolean) {
-	if (tab) {
-		storage.sync.set({ linktabs: 0 })
-		domlinkblocks?.classList.toggle('with-tabs', true)
-		document.querySelectorAll<HTMLDivElement>('#link-title > div')?.forEach((div, i) => {
-			div.classList.toggle('selected', i === 0)
-		})
-	} else {
-		storage.sync.remove('linktabs')
-		domlinkblocks?.classList.toggle('with-tabs', false)
-	}
+	const data = await storage.sync.get('linktabs')
+
+	data.linktabs.active = tab
+	storage.sync.set({ linktabs: data.linktabs })
+
+	domlinkblocks?.classList.toggle('with-tabs', tab)
 }
 
 async function addTab() {
-	const data = await storage.sync.get(['tabslist', 'linktabs'])
-	data.tabslist.push({ name: '', ids: [] })
-	storage.sync.set({ tabslist: data.tabslist })
+	const data = await storage.sync.get('linktabs')
+	data.linktabs.titles.push('')
+	storage.sync.set({ linktabs: data.linktabs })
 	initTabs(data)
 }
 
 async function removeTab(index: number) {
-	const data = await storage.sync.get(['tabslist', 'linktabs'])
-	const isRemovingFirst = index === 0 || data.tabslist.length === 1
+	const data = await storage.sync.get()
+	const { titles, selected } = data.linktabs
+	const isRemovingFirst = index === 0 || titles.length === 1
 
 	if (isRemovingFirst) {
 		return
 	}
 
-	data.tabslist = data.tabslist.toSpliced(index, 1)
-
-	if (index === data.linktabs) {
-		data.linktabs -= 1
-		initblocks(data)
+	for (const link of getLinksInTab(data, index)) {
+		delete data[link._id]
 	}
 
+	data.linktabs.titles = titles.toSpliced(index, 1)
+	data.linktabs.selected -= index === selected ? 1 : 0
+	initblocks(data)
 	initTabs(data)
 
-	storage.sync.set({
-		tabslist: data.tabslist,
-		linktabs: data.linktabs,
-	})
+	storage.sync.clear()
+	storage.sync.set(data)
 }
 
 async function setOpenInNewTab(newtab: boolean) {
@@ -666,7 +650,7 @@ async function setLinkStyle(style: string) {
 
 	for (const link of links) {
 		const span = document.querySelector<HTMLSpanElement>(`#links${link._id} span`)
-		const isElem = isFolder(link) === false
+		const isElem = !link.folder
 
 		if (span && isElem) {
 			span.textContent = createTitle(link.title, link.url)
@@ -714,47 +698,35 @@ function validateLink(title: string, url: string): Links.Elem {
 
 	return {
 		_id: 'links' + randomString(6),
+		order: Date.now(), // big number
 		title: stringMaxSize(title, 64),
 		icon: 'src/assets/interface/loading.svg',
 		url: url,
 	}
 }
 
-function getAllLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
-	const folder = data[id] as Link | undefined
-	const links: Links.Elem[] = []
+function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
+	const links: Elem[] = []
 
-	if (folder && isFolder(folder)) {
-		for (const id of folder.ids) {
-			const link = data[id] as Link
-			if (isFolder(link) === false) {
-				links.push(link)
-			}
+	for (const value of Object.values(data)) {
+		if (isElem(value) && value?.parent === id) {
+			links.push(value)
 		}
 	}
 
-	return links
+	return links.toSorted((a, b) => a.order - b.order)
 }
 
 function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
-	index = index ?? data.linktabs ?? 0
-
-	const tab = data.tabslist[index]
 	const links: Link[] = []
 
-	if (!tab || (tab && tab.ids.length === 0)) {
-		return []
-	}
-
-	for (const id of tab.ids) {
-		const link = data[id] as Link
-
-		if (link) {
-			links.push(link)
+	for (const value of Object.values(data)) {
+		if (isLink(value) && (value?.parent ?? 0) === (index ?? data.linktabs.selected ?? 0)) {
+			links.push(value)
 		}
 	}
 
-	return links
+	return links.toSorted((a, b) => a.order - b.order)
 }
 
 function animateLinksRemove(ids: string[]) {
@@ -762,4 +734,29 @@ function animateLinksRemove(ids: string[]) {
 		document.getElementById(id)?.classList.add('removed')
 		setTimeout(() => document.getElementById(id)?.remove(), 600)
 	}
+}
+
+function correctLinksOrder(data: Sync.Storage): Sync.Storage {
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
+	const folderIds = allLinks.filter((link) => link.folder).map(({ _id }) => _id)
+
+	for (const folderId of folderIds) {
+		const linksInFolder = getLinksInFolder(data, folderId)
+
+		linksInFolder.forEach((link, i) => {
+			link.order = i
+			data[link._id]
+		})
+	}
+
+	for (let i = 0; i < data.linktabs.titles.length; i++) {
+		const linksInTab = getLinksInTab(data, i)
+
+		linksInTab.forEach((link, i) => {
+			link.order = i
+			data[link._id]
+		})
+	}
+
+	return data
 }

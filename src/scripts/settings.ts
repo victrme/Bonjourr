@@ -116,7 +116,7 @@ export async function settingsInit() {
 	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	initCheckbox('i_quicklinks', data.quicklinks)
 	initCheckbox('i_syncbookmarks', !!data.syncbookmarks)
-	initCheckbox('i_linktabs', data.linktabs !== undefined)
+	initCheckbox('i_linktabs', data.linktabs.active)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)

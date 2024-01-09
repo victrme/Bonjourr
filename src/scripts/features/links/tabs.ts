@@ -10,8 +10,8 @@ export default function initTabs(data: Sync.Storage) {
 		node.remove()
 	})
 
-	data.tabslist.forEach((tab, i) => {
-		appendNewTab(tab.name, i === data.linktabs ?? 0)
+	data.linktabs.titles.forEach((title, i) => {
+		appendNewTab(title, i === data.linktabs.selected ?? 0)
 	})
 
 	domlinkblocks?.classList.toggle('with-tabs', data.linktabs !== undefined)
@@ -64,7 +64,7 @@ function changeTab(div: HTMLDivElement) {
 
 			divs?.forEach((div) => div.classList.remove('selected'))
 			div.classList.add('selected')
-			data.linktabs = divs.indexOf(div)
+			data.linktabs.selected = divs.indexOf(div)
 			storage.sync.set(data)
 			await initblocks(data)
 		},

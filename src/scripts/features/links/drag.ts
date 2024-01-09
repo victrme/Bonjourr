@@ -1,6 +1,5 @@
 import { getLiFromEvent } from './helpers'
 import { linksUpdate } from '.'
-import storage from '../../storage'
 
 type Coords = {
 	x: number
@@ -228,12 +227,8 @@ function endDrag(event: Event) {
 		deplaceElem(block, coord.x, coord.y)
 	}
 
-	setTimeout(async () => {
-		const data = await storage.sync.get()
-		if (toTab) dropToTab()
-		else if (toFolder) dropToFolder(data)
-		else dropToNewPosition(data)
-
+	setTimeout(() => {
+		toTab ? dropToTab() : toFolder ? dropToFolder() : dropToNewPosition()
 		domlinkblocks?.classList.remove('dropping')
 		document.body.classList.remove('dropping')
 		domlinklist?.removeAttribute('style')
@@ -247,7 +242,7 @@ function dropToTab() {
 	})
 }
 
-function dropToFolder(data: Sync.Storage) {
+function dropToFolder() {
 	const almostFolders = [...document.querySelectorAll<HTMLElement>('.almost-folder')]
 	const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
 	const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
@@ -266,7 +261,6 @@ function dropToFolder(data: Sync.Storage) {
 		if (targetIsFolder && draggedIsFolder) {
 			addToFolder.source = draggedId
 			addToFolder.target = targetId
-			addToFolder.ids = (data[draggedId] as Links.Folder)?.ids ?? []
 		}
 		//
 		else if (targetIsFolder && !draggedIsFolder) {
@@ -283,9 +277,7 @@ function dropToFolder(data: Sync.Storage) {
 	}
 }
 
-function dropToNewPosition(data: Sync.Storage) {
-	const folderid = domlinkblocks.dataset.folderid
-
+function dropToNewPosition() {
 	for (const id of ids) {
 		const elem = document.getElementById(id)
 
@@ -295,19 +287,7 @@ function dropToNewPosition(data: Sync.Storage) {
 		}
 	}
 
-	if (folderid) {
-		const folder = data[folderid] as Links.Folder
-		folder.ids = ids
-		data[folder._id] = folder
-	} else {
-		// ugly: keep tab links contained in folders with the new order
-		// there is probably a more concise way to do this
-		const currids = data.tabslist[data.linktabs ?? 0].ids
-		const sortedids = ids.filter((id) => currids.includes(id)).concat(currids.filter((id) => !ids.includes(id)))
-		data.tabslist[data.linktabs ?? 0].ids = sortedids
-	}
-
-	storage.sync.set(data)
+	linksUpdate({ moveLinks: ids })
 }
 
 //

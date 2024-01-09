@@ -13,7 +13,7 @@ declare namespace Sync {
 		linksrow: number
 		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
-		linktabs?: number
+		linktabs: LinkTabs
 		textShadow: number
 		cssHeight: number
 		reviewPopup: number
@@ -34,7 +34,6 @@ declare namespace Sync {
 		searchbar: Searchbar
 		quotes: Quotes.Sync
 		font: Font
-		tabslist: Links.TabList
 		move: {
 			selection: Move.Selection
 			layouts: {
@@ -47,7 +46,13 @@ declare namespace Sync {
 			browser: string
 			version: string
 		}
-		[key: string]: (Links.Elem | Links.Folder) | unknown
+		[key: string]: Links.Link | unknown
+	}
+
+	type LinkTabs = {
+		active: boolean
+		selected: number
+		titles: string[]
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]

@@ -1,4 +1,4 @@
-import { getSelectedIds, isFolder, getLink, getDefaultIcon, createTitle } from './helpers'
+import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
@@ -41,12 +41,10 @@ export default async function displayEditDialog(event: Event) {
 	domeditlink?.classList.toggle('add-link', !isTab && !link)
 	domeditlink?.classList.toggle('select-all', isSelectAll)
 	domeditlink?.classList.toggle('update-link', !!link && !isSelectAll)
-	domeditlink?.classList.toggle('folder', link ? isFolder(link) : false)
+	domeditlink?.classList.toggle('folder', !!link?.folder)
 	domeditlink?.classList.toggle('in-folder', isInFolder)
 	domeditlink?.classList.toggle('tab-item', isTab && !isTabOnly)
 	domeditlink?.classList.toggle('tabs', isTab)
-
-	console.log(path, isTab, isTabOnly)
 
 	domeditlink.classList.add('showing')
 	await new Promise((sleep) => setTimeout(sleep))
@@ -71,7 +69,7 @@ export default async function displayEditDialog(event: Event) {
 
 	domtitle.value = link.title
 
-	if (isFolder(link) === false) {
+	if (!link.folder) {
 		domurl.value = link.url
 		domiconurl.value = link.icon ?? ''
 	}
@@ -201,7 +199,7 @@ async function submitLinksChange(event: Event) {
 		title.dom.textContent = link.title
 	}
 
-	if (isFolder(link) === false) {
+	if (!link.folder) {
 		if (icon.dom) {
 			link.icon = icon.val ? stringMaxSize(icon.val, 7500) : undefined
 			icon.dom.src = link.icon ?? getDefaultIcon(link.url)

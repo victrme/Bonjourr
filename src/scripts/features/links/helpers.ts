@@ -49,9 +49,9 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 //
 
 export function isLink(link: unknown): link is Links.Link {
-	return (link as Links.Link)?._id.includes('links')
+	return ((link as Links.Link)?._id ?? '').startsWith('links')
 }
 
-export function isFolder(link: Links.Link): link is Links.Folder {
-	return (link as Links.Folder).ids !== undefined
+export function isElem(link: unknown): link is Links.Elem {
+	return (link as Links.Link)?.folder !== true
 }

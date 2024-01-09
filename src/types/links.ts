@@ -1,23 +1,21 @@
 declare namespace Links {
-	type Base = {
+	interface Elem {
 		_id: string
-		order?: number
+		parent?: string | number
+		folder?: false
+		order: number
+		title: string
+		url: string
+		icon?: string
+	}
+
+	interface Folder {
+		_id: string
+		parent?: number
+		folder: true
+		order: number
 		title: string
 	}
 
-	interface Folder extends Base {
-		ids: string[]
-	}
-
-	interface Elem extends Base {
-		icon?: string
-		url: string
-	}
-
-	type Link = Links.Folder | Links.Elem
-
-	type TabList = {
-		name: string
-		ids: string[]
-	}[]
+	type Link = Folder | Elem
 }
