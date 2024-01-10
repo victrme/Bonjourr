@@ -289,6 +289,18 @@ export function customCss(init?: string, event?: { is: 'styling' | 'resize'; val
 	}
 }
 
+async function setPotatoComputerMode() {
+	if ((navigator as any).gpu === undefined) {
+		return
+	}
+
+	try {
+		await (await (navigator as any).gpu.requestAdapter()).requestDevice()
+	} catch (error) {
+		document.body.classList.add('potato')
+	}
+}
+
 const features = ['clock', 'links']
 
 function displayInterface(e: Event) {
@@ -441,6 +453,10 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 
 	if (data?.font?.family) features.push('fonts')
 	if (data?.quotes?.on) features.push('quotes')
+
+	onSettingsLoad(() => {
+		setPotatoComputerMode()
+	})
 }
 
 // Unfocus address bar on chromium
