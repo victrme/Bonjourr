@@ -14,18 +14,18 @@ type AddToFolder = {
 	source?: string
 }
 
-type BlockZone = 'left' | 'right' | 'center' | ''
+type DropArea = 'left' | 'right' | 'center' | ''
 
 const blocks: Map<string, HTMLLIElement> = new Map()
 const dropzones: Set<Coords & { id: string }> = new Set()
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
-let lastblockzone: BlockZone = ''
+let lastdropAreas: DropArea[] = ['']
 let draggedId = ''
 let targetId = ''
 let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
-let dragFolderTimeout = 0
+let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
 
 const domlinklist = document.getElementById('link-list') as HTMLUListElement
@@ -52,8 +52,20 @@ export default function startDrag(event: PointerEvent) {
 	ids = []
 	coords = []
 	initids = []
+	lastdropAreas = []
 	blocks.clear()
 	dropzones.clear()
+
+	document.querySelectorAll('#link-title div').forEach((tab, i) => {
+		const rect = tab.getBoundingClientRect()
+		dropzones.add({
+			id: i.toString(),
+			h: rect.height,
+			w: rect.width,
+			x: rect.x,
+			y: rect.y,
+		})
+	})
 
 	for (const li of lis) {
 		let { x, y, width, height } = li.getBoundingClientRect()
@@ -137,40 +149,49 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	dx = x - cox
 	dy = y - coy
 
-	const [blockzone, id] = isDraggingOver({ x, y }) ?? ['', '']
+	const [curr, id] = isDraggingOver({ x, y }) ?? ['', '']
+	const last = lastdropAreas[lastdropAreas.length - 1]
+	const secondlast = lastdropAreas[lastdropAreas.length - 2]
+	const staysOutsideCenter = curr === last && curr !== 'center'
 
-	if (blockzone === '') {
-		clearTimeout(dragFolderTimeout)
+	if (staysOutsideCenter) {
+		return
+	}
+
+	if (curr === '') {
+		lastdropAreas.push('')
+		clearTimeout(dragChangeParentTimeout)
 		blocks.forEach((block) => block.classList.remove('almost-folder'))
-		lastblockzone = ''
 		return
 	}
 
-	if (blockzone === lastblockzone && blockzone !== 'center') {
-		return
+	const movesFromCenter = last === 'center' && (curr === 'left' || curr === 'right')
+	const movesAcrossArea = curr !== secondlast
+	const staysInCenter = last === curr && curr === 'center'
+	const isDroppingToTab = isNaN(parseInt(id)) === false
+	const idAtCurrentArea = ids[initids.indexOf(id)]
+
+	if (staysInCenter) {
+		applyDragChangeParent(isDroppingToTab ? id : idAtCurrentArea)
 	}
 
-	if (lastblockzone === blockzone && blockzone === 'center') {
-		applyDragFolder(id)
+	if (movesFromCenter && movesAcrossArea) {
+		applyDragMoveBlocks(id)
 	}
 
-	if (lastblockzone === 'center' && (blockzone === 'left' || blockzone === 'right')) {
-		applyDragMove(id)
-	}
-
-	if (lastblockzone !== blockzone) {
-		lastblockzone = blockzone
+	if (last !== curr) {
+		lastdropAreas.push(curr)
 	}
 }
 
-function applyDragMove(id: string) {
+function applyDragMoveBlocks(id: string) {
 	const targetIndex = initids.indexOf(id)
 
 	if (lastIndex === targetIndex) {
 		return
 	}
 
-	clearTimeout(dragFolderTimeout)
+	clearTimeout(dragChangeParentTimeout)
 
 	lastIndex = targetIndex
 
@@ -186,10 +207,10 @@ function applyDragMove(id: string) {
 	}
 }
 
-function applyDragFolder(id: string) {
-	clearTimeout(dragFolderTimeout)
+function applyDragChangeParent(id: string) {
+	clearTimeout(dragChangeParentTimeout)
 
-	dragFolderTimeout = setTimeout(() => {
+	dragChangeParentTimeout = setTimeout(() => {
 		if (id === draggedId || domlinkblocks?.classList.contains('in-folder')) {
 			return
 		}
@@ -210,8 +231,10 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchmove', moveDrag)
 	document.documentElement.removeEventListener('touchend', endDrag)
 
-	const toTab = domlinkblocks.classList.contains('in-folder') && (event.composedPath() as Element[])[0] !== domlinklist
+	const path = event.composedPath() as Element[]
+	const outOfFolder = domlinkblocks.classList.contains('in-folder') && path[0] !== domlinklist
 	const toFolder = !!document.querySelector('.almost-folder')
+	const toTab = toFolder && isNaN(parseInt(targetId)) === false
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
 	const coord = coords[newIndex]
@@ -221,21 +244,32 @@ function endDrag(event: Event) {
 	domlinkblocks?.classList.replace('dragging', 'dropping')
 	document.body?.classList.replace('dragging', 'dropping')
 
-	if (toFolder || toTab) {
+	if (toTab || toFolder || outOfFolder) {
 		blocks.get(draggedId)?.classList.add('removed')
 	} else {
 		deplaceElem(block, coord.x, coord.y)
 	}
 
 	setTimeout(() => {
-		toTab ? dropToTab() : toFolder ? dropToFolder() : dropToNewPosition()
+		if (toTab) dropToOtherTab()
+		else if (outOfFolder) dropOutOfFolder()
+		else if (toFolder) dropToFolder()
+		else dropToNewPosition()
+
 		domlinkblocks?.classList.remove('dropping')
 		document.body.classList.remove('dropping')
 		domlinklist?.removeAttribute('style')
 	}, 200)
 }
 
-function dropToTab() {
+function dropToOtherTab() {
+	linksUpdate({ moveToTab: { ids: [draggedId], target: targetId } })
+	document.querySelectorAll<HTMLElement>('#linkblocks li.block').forEach((li) => {
+		li.removeAttribute('style')
+	})
+}
+
+function dropOutOfFolder() {
 	linksUpdate({ removeFromFolder: [draggedId] })
 	document.querySelectorAll<HTMLElement>('#linkblocks li.block').forEach((li) => {
 		li.removeAttribute('style')
@@ -307,7 +341,7 @@ function deplaceDraggedElem() {
 	}
 }
 
-function isDraggingOver({ x, y }: { x: number; y: number }): [BlockZone, string] | undefined {
+function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string] | undefined {
 	for (const zone of dropzones) {
 		// Detect 20% left edge of dropzones ( left + corner )
 		const ll = zone.x
@@ -330,14 +364,14 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [BlockZone, string]
 		const cb = zone.y + zone.h
 		const isInCenter = x > cl && x < cr && y > ct && y < cb
 
-		let side: BlockZone = ''
+		let area: DropArea = ''
 
-		if (isInLeftEdge) side = 'left'
-		if (isInRightEdge) side = 'right'
-		if (isInCenter) side = 'center'
+		if (isInLeftEdge) area = 'left'
+		if (isInRightEdge) area = 'right'
+		if (isInCenter) area = 'center'
 
-		if (side) {
-			return [side, zone.id]
+		if (area) {
+			return [area, zone.id]
 		}
 	}
 }
