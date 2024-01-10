@@ -14,6 +14,10 @@ const domeditlink = document.getElementById('editlink') as HTMLDivElement
 //
 
 export default async function displayEditDialog(event: Event) {
+	if (event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE') {
+		return
+	}
+
 	document.body.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
 
@@ -208,7 +212,7 @@ async function submitLinksChange(event: Event) {
 		if (title.dom && url.dom && url.val !== undefined) {
 			link.url = stringMaxSize(url.val, 512)
 			url.dom.href = link.url
-			title.dom.textContent = createTitle(link.title, link.url)
+			title.dom.textContent = createTitle(link)
 		}
 	}
 

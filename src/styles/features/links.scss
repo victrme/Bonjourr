@@ -74,7 +74,6 @@
 }
 
 li.block {
-	z-index: 1;
 	cursor: pointer;
 	--timing: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 	transition: transform 0.2s var(--timing), opacity 0.2s var(--timing);
@@ -271,6 +270,7 @@ li.block.folder img {
 			background-color: #fff3;
 			border: 1px solid rgba(255, 255, 255, 0.075);
 			transition: opacity 0.2s;
+			z-index: 1;
 
 			@include frostedGlass();
 
@@ -310,6 +310,15 @@ li.block.folder img {
 	}
 
 	li {
+		&:hover span {
+			text-decoration: underline;
+		}
+
+		&:hover div {
+			box-shadow: none;
+			transform: none;
+		}
+
 		a {
 			display: flex;
 			flex-direction: row;
@@ -329,15 +338,11 @@ li.block.folder img {
 		}
 
 		span {
-			max-width: 8em;
-			font-size: 1.5em;
+			max-width: 6em;
+			font-size: 1.2em;
 			text-overflow: ellipsis;
 			white-space: pre;
 			line-height: 2em;
-
-			&:hover {
-				text-decoration: underline;
-			}
 		}
 	}
 }
@@ -356,6 +361,10 @@ li.block.folder img {
 	li {
 		width: auto;
 
+		&:hover span {
+			text-decoration: underline;
+		}
+
 		div,
 		img {
 			display: none;
@@ -369,10 +378,6 @@ li.block.folder img {
 			text-overflow: ellipsis;
 			white-space: pre;
 			border-radius: 8px;
-
-			&:hover {
-				text-decoration: underline;
-			}
 		}
 	}
 }

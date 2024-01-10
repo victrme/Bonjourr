@@ -140,7 +140,7 @@ function createLinkFolder(link: Links.Folder, folderChildren: Link[]): HTMLLIEle
 	const span = li.querySelector('span')!
 
 	li.id = link._id
-	span.textContent = stringMaxSize(link.title, 64)
+	span.textContent = createTitle(link)
 	li.addEventListener('click', openFolder)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
@@ -163,7 +163,7 @@ function createLinkElem(link: Links.Elem, openInNewtab: boolean) {
 
 	li.id = link._id
 	anchor.href = stringMaxSize(link.url, 512)
-	span.textContent = createTitle(stringMaxSize(link.title, 64), link.url)
+	span.textContent = createTitle(link)
 	createIcons(img, link)
 
 	if (openInNewtab) {
@@ -204,7 +204,7 @@ function initRows(amount: number, style: string) {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
 		small: { width: 2.5, gap: 2 },
-		inline: { width: 12, gap: 2 }, // arbitrary width because width is auto
+		inline: { width: 10, gap: 2 }, // arbitrary width because width is auto
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 
@@ -670,7 +670,7 @@ async function setLinkStyle(style: string) {
 		const isElem = !link.folder
 
 		if (span && isElem) {
-			span.textContent = createTitle(link.title, link.url)
+			span.textContent = createTitle(link)
 		}
 	}
 

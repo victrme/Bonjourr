@@ -1,4 +1,6 @@
+import { stringMaxSize } from '../../utils'
 import { MAIN_API } from '../../defaults'
+import { tradThis } from '../../utils/translations'
 
 //
 
@@ -18,22 +20,25 @@ export function getLiFromEvent(event: Event): HTMLLIElement | undefined {
 	return li
 }
 
-export function createTitle(title: string, url: string): string {
+export function createTitle(link: Links.Link): string {
 	const isInline = document.getElementById('linkblocks')?.className.includes('inline')
 	const isText = document.getElementById('linkblocks')?.className.includes('text')
 
+	if ((!isInline && !isText) || link.title !== '') {
+		return stringMaxSize(link.title, 64)
+	}
+
 	try {
-		const objectURL = new URL(url)
-		url = objectURL?.hostname.replace('www.', '')
+		if (isElem(link)) {
+			link.title = new URL(link.url)?.hostname.replace('www.', '')
+		} else {
+			link.title = tradThis('folder')
+		}
 	} catch (_) {
-		// url is not a valid URL
+		//
 	}
 
-	if (title === '' && (isInline || isText)) {
-		return url
-	}
-
-	return title
+	return link.title
 }
 
 //

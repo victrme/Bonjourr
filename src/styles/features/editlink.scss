@@ -1,12 +1,18 @@
 #editlink {
 	position: fixed;
 	display: none;
+	left: 0;
+	top: 0;
 	// width: 240px; wait for 1.19.0
 	width: 220px;
 	padding: 16px 16px 12px 16px;
 	box-shadow: 0px 0px 15px #0004;
 	transition: left 0.4s;
 	z-index: 4;
+
+	&.pushed {
+		left: -100px;
+	}
 
 	&.showing {
 		display: block;

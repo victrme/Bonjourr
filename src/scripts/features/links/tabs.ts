@@ -14,7 +14,7 @@ export default function initTabs(data: Sync.Storage) {
 		appendNewTab(title, i === data.linktabs.selected ?? 0)
 	})
 
-	domlinkblocks?.classList.toggle('with-tabs', data.linktabs !== undefined)
+	domlinkblocks?.classList.toggle('with-tabs', data.linktabs.active)
 }
 
 function appendNewTab(title: string, selected?: boolean): void {
