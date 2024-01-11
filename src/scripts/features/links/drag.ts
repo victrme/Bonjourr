@@ -101,7 +101,7 @@ export default function startDrag(event: PointerEvent) {
 
 	domlinkblocks?.classList.add('dragging')
 	document.body.classList.add('dragging')
-	document.body.dispatchEvent(new Event('stop-select-all'))
+	document.body.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 
 	if (event.pointerType === 'touch') {
@@ -161,7 +161,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	if (curr === '') {
 		lastdropAreas.push('')
 		clearTimeout(dragChangeParentTimeout)
-		blocks.forEach((block) => block.classList.remove('almost-folder'))
+		blocks.forEach((block) => block.classList.remove('droppable'))
 		return
 	}
 
@@ -216,9 +216,9 @@ function applyDragChangeParent(id: string) {
 		}
 
 		targetId = id
-		blocks.forEach((block) => block.classList.remove('almost-folder'))
-		blocks.get(id)?.classList.toggle('almost-folder', true)
-		blocks.get(draggedId)?.classList.toggle('almost-folder', true)
+		blocks.forEach((block) => block.classList.remove('droppable'))
+		blocks.get(id)?.classList.toggle('droppable', true)
+		blocks.get(draggedId)?.classList.toggle('droppable', true)
 	}, 200)
 }
 
@@ -232,12 +232,14 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchend', endDrag)
 
 	const path = event.composedPath() as Element[]
-	const outOfFolder = domlinkblocks.classList.contains('in-folder') && path[0] !== domlinklist
-	const toFolder = !!document.querySelector('.almost-folder')
-	const toTab = toFolder && isNaN(parseInt(targetId)) === false
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
 	const coord = coords[newIndex]
+
+	const outOfFolder = domlinkblocks.classList.contains('in-folder') && path[0] !== domlinklist
+	const isDroppable = !!document.querySelector('.droppable')
+	const toFolder = isNaN(parseInt(targetId)) === true && isDroppable
+	const toTab = isNaN(parseInt(targetId)) === false && isDroppable
 
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
@@ -251,39 +253,40 @@ function endDrag(event: Event) {
 	}
 
 	setTimeout(() => {
-		if (toTab) dropToOtherTab()
-		else if (outOfFolder) dropOutOfFolder()
-		else if (toFolder) dropToFolder()
-		else dropToNewPosition()
+		if (toFolder) {
+			dropToFolder()
+		}
+		//
+		else if (toTab) {
+			linksUpdate({ moveToTab: { ids: [draggedId], target: targetId } })
+		}
+		//
+		else if (outOfFolder) {
+			linksUpdate({ removeFromFolder: [draggedId] })
+		}
+		//
+		else {
+			linksUpdate({ moveLinks: ids })
+		}
 
-		domlinkblocks?.classList.remove('dropping')
-		document.body.classList.remove('dropping')
-		domlinklist?.removeAttribute('style')
+		// Yield to functions above to avoid flickering
+		// Do not remove this setTimeout (or else)
+		setTimeout(() => {
+			domlinkblocks?.classList.remove('dropping')
+			document.body.classList.remove('dropping')
+			domlinklist?.removeAttribute('style')
+		})
 	}, 200)
 }
 
-function dropToOtherTab() {
-	linksUpdate({ moveToTab: { ids: [draggedId], target: targetId } })
-	document.querySelectorAll<HTMLElement>('#linkblocks li.block').forEach((li) => {
-		li.removeAttribute('style')
-	})
-}
-
-function dropOutOfFolder() {
-	linksUpdate({ removeFromFolder: [draggedId] })
-	document.querySelectorAll<HTMLElement>('#linkblocks li.block').forEach((li) => {
-		li.removeAttribute('style')
-	})
-}
-
 function dropToFolder() {
-	const almostFolders = [...document.querySelectorAll<HTMLElement>('.almost-folder')]
+	const droppables = [...document.querySelectorAll<HTMLElement>('.droppable')]
 	const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
 	const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
-	const createsFolder = almostFolders.length > 0 && !targetIsFolder && !draggedIsFolder
-	const concatFolders = almostFolders.length > 0 && (targetIsFolder || draggedIsFolder)
+	const createsFolder = droppables.length > 0 && !targetIsFolder && !draggedIsFolder
+	const concatFolders = droppables.length > 0 && (targetIsFolder || draggedIsFolder)
 
-	blocks.forEach((block) => block.classList.remove('almost-folder'))
+	blocks.forEach((block) => block.classList.remove('droppable'))
 
 	if (createsFolder) {
 		linksUpdate({ addFolder: [targetId, draggedId] })
@@ -309,19 +312,6 @@ function dropToFolder() {
 
 		linksUpdate({ addToFolder })
 	}
-}
-
-function dropToNewPosition() {
-	for (const id of ids) {
-		const elem = document.getElementById(id)
-
-		if (elem) {
-			domlinklist?.appendChild(elem)
-			elem.removeAttribute('style')
-		}
-	}
-
-	linksUpdate({ moveLinks: ids })
 }
 
 //

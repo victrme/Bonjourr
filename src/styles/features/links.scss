@@ -19,15 +19,33 @@
 			filter: grayscale(1) brightness(0.6);
 		}
 
-		li.block:active div,
-		li.block:hover div,
-		li.block:not(.folder):active img,
-		li.block:not(.folder):hover img {
-			transform: none;
+		&.large,
+		&.medium,
+		&.small {
+			li.block:active div,
+			li.block:hover div,
+			li.block:not(.folder):active img,
+			li.block:not(.folder):hover img {
+				transform: none;
+			}
+
+			li.block.selected div {
+				outline: 4px solid var(--color-blue);
+			}
 		}
 
-		li.block.selected div {
-			outline: 4px solid var(--color-blue);
+		&.inline,
+		&.text {
+			.selected.folder span,
+			.selected a {
+				border-radius: 0.5em;
+				outline: 3px solid var(--color-blue);
+				background-color: rgba(0, 114, 238, 0.1333333333);
+			}
+
+			&:hover span {
+				text-decoration: none;
+			}
 		}
 	}
 
@@ -165,11 +183,11 @@ li.block.folder img {
 			width: 4.8em;
 			height: 4.8em;
 			padding: 0.3em;
+			border-radius: 1em;
 		}
 
-		div,
 		img {
-			border-radius: 1em;
+			border-radius: 0.6em;
 		}
 
 		span {
@@ -209,11 +227,11 @@ li.block.folder img {
 			width: 3.5em;
 			height: 3.5em;
 			padding: 0.2em;
+			border-radius: 0.8em;
 		}
 
-		div,
 		img {
-			border-radius: 0.8em;
+			border-radius: 0.5em;
 		}
 
 		span {
@@ -292,11 +310,11 @@ li.block.folder img {
 }
 
 #linkblocks.inline {
-	gap: 2em;
 	min-height: 2em;
 	justify-content: flex-start;
 
 	#link-list {
+		column-gap: 2em;
 		min-height: 3em;
 	}
 
@@ -307,6 +325,12 @@ li.block.folder img {
 
 	li.folder div {
 		display: none;
+	}
+
+	li a,
+	li.folder span {
+		padding: 0 0.2em;
+		outline: 3px solid transparent;
 	}
 
 	li {
@@ -338,6 +362,7 @@ li.block.folder img {
 		}
 
 		span {
+			display: block;
 			max-width: 6em;
 			font-size: 1.2em;
 			text-overflow: ellipsis;
@@ -348,11 +373,10 @@ li.block.folder img {
 }
 
 #linkblocks.text {
-	gap: 2em;
-	min-height: 2em;
 	justify-content: flex-start;
 
 	#link-list {
+		column-gap: 1.8em;
 		min-height: 3em;
 		width: var(--drag-width);
 		height: var(--drag-height);
@@ -370,10 +394,13 @@ li.block.folder img {
 			display: none;
 		}
 
+		a {
+			padding: 0.2em;
+		}
+
 		span {
 			width: 100%;
 			max-width: 20em;
-			margin-left: 0; // because of 140% / -20%, can be removed in the future
 			font-size: 1.5em;
 			text-overflow: ellipsis;
 			white-space: pre;
@@ -423,25 +450,50 @@ li.block.folder img {
 //
 
 #linkblocks.dragging {
-	.almost-folder.on {
-		div {
-			transform: scale(0.8);
+	&.large,
+	&.medium,
+	&.small {
+		.droppable.on {
+			div {
+				transform: scale(0.8);
+			}
+
+			span {
+				opacity: 0;
+				transition: opacity 0.05s;
+			}
 		}
 
-		span {
-			display: none;
+		.droppable:not(.on):not(.folder) {
+			div {
+				border-color: #fff4;
+				background-color: #fff2;
+			}
+
+			img {
+				transform: scale(0.8);
+				background-color: white;
+			}
 		}
 	}
 
-	.almost-folder:not(.on):not(.folder) {
-		div {
-			border-color: #fff4;
-			background-color: #fff2;
+	&.inline,
+	&.text {
+		.droppable.on {
+			div {
+				opacity: 0;
+			}
+
+			span {
+				transform: scale(0.8);
+			}
 		}
 
-		img {
-			transform: scale(0.8);
-			background-color: white;
+		.droppable:not(.on) {
+			span,
+			div {
+				opacity: 0.5;
+			}
 		}
 	}
 }
