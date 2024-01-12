@@ -84,22 +84,20 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	const links = !!folderid ? getLinksInFolder(data, folderid) : getLinksInTab(data)
 	const ids = links.map((link) => link._id)
 
-	// Exit early if no links
-	if (links.length === 0) {
-		document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
-		return true
-	}
-
 	const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
 	const children = document.querySelectorAll<HTMLLIElement>('#link-list > li')
 	const childrenIds = [...children].map((li) => li.id)
 
-	if (tabList && children.length > 0) {
-		for (const child of children) {
-			if (ids.includes(child.id) === false) {
-				child.remove()
-			}
+	for (const child of children) {
+		if (ids.includes(child.id) === false) {
+			child.remove()
 		}
+	}
+
+	// Exit early if no links
+	if (links.length === 0) {
+		document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
+		return true
 	}
 
 	for (const link of links) {
@@ -263,7 +261,7 @@ async function closeFolder() {
 			domlinkblocks.classList.add('hiding')
 		},
 		async function changeToTab() {
-			toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.selected)
+			toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.active)
 			await initblocks(data)
 		},
 		function show() {
@@ -303,10 +301,10 @@ function dismissSelectAllAndFolder(event: Event) {
 	}
 }
 
-function toggleTabsTitleType(title: string, linktabs?: number): void {
+function toggleTabsTitleType(title: string, linktabs?: boolean): void {
 	const folderid = domlinkblocks.dataset.folderid
 	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
-	const showTitles = folderid ? true : linktabs !== undefined
+	const showTitles = folderid ? true : linktabs
 
 	domlinkblocks?.classList.toggle('with-tabs', showTitles)
 
@@ -753,10 +751,11 @@ function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 }
 
 function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
+	const selection = index ?? data.linktabs.selected ?? 0
 	const links: Link[] = []
 
 	for (const value of Object.values(data)) {
-		if (isLink(value) && (value?.parent ?? 0) === (index ?? data.linktabs.selected ?? 0)) {
+		if (isLink(value) && (value?.parent ?? 0) === selection) {
 			links.push(value)
 		}
 	}
