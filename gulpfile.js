@@ -6,7 +6,7 @@ import gulpsass from 'gulp-sass'
 import esbuild from 'esbuild'
 import * as sasscompiler from 'sass'
 
-const { series, parallel, src, dest, watch } = gulp
+const { parallel, src, dest, watch } = gulp
 const sass = gulpsass(sasscompiler)
 
 function html(platform) {
@@ -38,18 +38,24 @@ function html(platform) {
 	}
 }
 
-function scripts(platform, prod) {
+function scripts(platform, env) {
 	return () => {
 		esbuild.buildSync({
 			entryPoints: ['src/scripts/index.ts'],
 			outfile: 'release/online/src/scripts/main.js',
 			format: 'iife',
 			bundle: true,
-			minifySyntax: prod,
-			minifyWhitespace: prod,
+			minifySyntax: env === 'prod',
+			minifyWhitespace: env === 'prod',
 		})
 
-		return src('release/online/src/scripts/main.js').pipe(dest(`release/${platform}/src/scripts`))
+		const stream = src('release/online/src/scripts/main.js')
+
+		if (env === 'test') {
+			stream.pipe(replace(`https://api.bonjourr.lol`, `http://127.0.0.1:8787`))
+		}
+
+		return stream.pipe(dest(`release/${platform}/src/scripts`))
 	}
 }
 
@@ -106,13 +112,13 @@ function locales(platform) {
 const filesToWatch = ['./_locales/**', './src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
 
 // prettier-ignore
-const taskOnline = (prod) => [
+const taskOnline = (env) => [
 	html('online'),
 	styles('online'),
 	worker('online'),
 	locales('online'),
 	manifest('online'),
-	scripts('online', prod),
+	scripts('online', env),
 	ressources('online', false),
 ]
 
@@ -131,27 +137,33 @@ const taskExtension = (from, prod) => [
 //
 
 export const online = async function () {
-	watch(filesToWatch, series(parallel(...taskOnline())))
+	watch(filesToWatch, parallel(...taskOnline()))
 }
 
 export const chrome = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('chrome'))))
+	watch(filesToWatch, parallel(...taskExtension('chrome')))
 }
 
 export const edge = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('edge'))))
+	watch(filesToWatch, parallel(...taskExtension('edge')))
 }
 
 export const firefox = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('firefox'))))
+	watch(filesToWatch, parallel(...taskExtension('firefox')))
 }
 
 export const safari = async function () {
-	watch(filesToWatch, series(parallel(...taskExtension('safari'))))
+	watch(filesToWatch, parallel(...taskExtension('safari')))
 }
 
+export const test = async function () {
+	watch(filesToWatch, parallel(...taskOnline('test')))
+}
+
+export const buildtest = parallel(...taskOnline('test'))
+
 export const build = parallel(
-	...taskOnline(),
+	...taskOnline('prod'),
 	...taskExtension('firefox', true),
 	...taskExtension('chrome', true),
 	...taskExtension('edge', true),

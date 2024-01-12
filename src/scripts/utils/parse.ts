@@ -1,8 +1,9 @@
-export default function parse<T>(str: string): T | undefined {
+export default function parse<T>(str = ''): T | undefined {
 	try {
 		return JSON.parse(str)
 	} catch (error) {
-		console.warn('Issue in parsing: ', error)
-		return
+		if (str !== '') {
+			console.warn('Issue in parsing: ', error)
+		}
 	}
 }

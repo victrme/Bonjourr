@@ -5,13 +5,15 @@ declare namespace Sync {
 		usdate: boolean
 		showall: boolean
 		quicklinks: boolean
+		syncbookmarks?: number
 		time: boolean
 		main: boolean
 		pagegap: number
 		pagewidth: number
 		linksrow: number
-		linkstyle: 'large' | 'medium' | 'small' | 'text'
+		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
+		linktabs: LinkTabs
 		textShadow: number
 		cssHeight: number
 		reviewPopup: number
@@ -45,6 +47,12 @@ declare namespace Sync {
 			version: string
 		}
 		[key: string]: Links.Link | unknown
+	}
+
+	type LinkTabs = {
+		active: boolean
+		selected: number
+		titles: string[]
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]

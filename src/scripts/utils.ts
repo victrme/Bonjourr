@@ -112,8 +112,25 @@ export function bundleLinks(data: Sync.Storage): Links.Link[] {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
 	})
 
-	res.sort((a: Links.Link, b: Links.Link) => a.order - b.order)
 	return res
+}
+
+export function linksDataMigration(data: Sync.Storage): Sync.Storage {
+	if (data?.linktabs) {
+		return data
+	}
+
+	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
+	const list = (bundleLinks(data) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+	list.forEach((link) => {
+		if (link.icon?.startsWith(notfoundicon)) {
+			link.icon = MAIN_API + '/favicon/blob/'
+			data[link._id] = link
+		}
+	})
+
+	return data
 }
 
 export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
@@ -137,18 +154,14 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
-export function closeEditLink() {
-	const domedit = document.querySelector('#editlink')
-	if (!domedit) return
-
-	domedit?.classList.add('hiding')
-	document.querySelectorAll('#linkblocks img').forEach((img) => img?.classList.remove('selected'))
-	setTimeout(() => {
-		domedit ? domedit.setAttribute('class', '') : ''
-	}, 200)
-}
-
 export function isEvery(freq = ''): freq is Frequency {
 	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
 	return every.includes(freq as Frequency)
+}
+
+// goodbye typescript, you will be missed
+export function getHTMLTemplate<T>(id: string, selector: string): T {
+	const template = document.getElementById(id) as HTMLTemplateElement
+	const clone = template?.content.cloneNode(true) as Element
+	return clone?.querySelector(selector) as T
 }

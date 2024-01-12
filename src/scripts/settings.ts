@@ -5,21 +5,20 @@ import weather from './features/weather'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
-import linksImport from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
 import storage, { getSyncDefaults } from './storage'
+import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 
 import langList from './langs'
 import parse from './utils/parse'
-import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, closeEditLink, stringMaxSize, turnRefreshButton } from './utils'
+import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
@@ -116,6 +115,8 @@ export async function settingsInit() {
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	initCheckbox('i_quicklinks', data.quicklinks)
+	initCheckbox('i_syncbookmarks', !!data.syncbookmarks)
+	initCheckbox('i_linktabs', data.linktabs.active)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
 	initCheckbox('i_usdate', data.usdate)
@@ -313,19 +314,12 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(undefined, { add: true }), 1200)
-
-	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
-		if (this.code === 'Enter') paramId('i_url')?.focus()
+	paramId('i_syncbookmarks').addEventListener('change', function (this) {
+		syncNewBookmarks(undefined, this.checked)
 	})
 
-	paramId('i_url').addEventListener('change', function (this: KeyboardEvent) {
-		submitLinkFunc()
-	})
-
-	paramId('submitlink').addEventListener('click', (e) => {
-		submitLinkFunc()
-		inputThrottle(e.target as HTMLInputElement, 1200)
+	paramId('i_linktabs').addEventListener('change', function (this) {
+		quickLinks(undefined, { tab: this.checked })
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {
@@ -792,11 +786,6 @@ export async function settingsInit() {
 		}
 
 		if (e.code === 'Escape') {
-			if (domedit?.classList.contains('shown')) {
-				closeEditLink()
-				return
-			}
-
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
 				return
@@ -817,18 +806,12 @@ export async function settingsInit() {
 		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
 
 		const areSettingsShown = settingsDom?.classList.contains('shown')
-		const isEditlinkOpen = document.getElementById('editlink')?.classList.contains('shown')
 
 		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
 		const onInterface = pathIds.includes('interface')
-		const onEdit = pathIds.includes('editlink')
 
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
-		}
-
-		if (!onEdit && isEditlinkOpen) {
-			closeEditLink()
 		}
 
 		if ((onBody || onInterface) && areSettingsShown) {

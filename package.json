@@ -9,8 +9,7 @@
 		"safari": "gulp safari",
 		"online": "gulp online",
 		"build": "gulp build",
-		"test:install": "npx playwright install",
-		"test": "npx playwright test"
+		"test": "npx playwright test --ui"
 	},
 	"keywords": [],
 	"author": "",

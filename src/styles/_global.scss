@@ -60,6 +60,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--notes-width: 50em;
 	--page-width: 1600px;
 	--page-gap: 1em;
+	--links-width: auto;
 	--background-blur: 15px;
 	--background-brightness: 0.8;
 	--load-time-transition: 0ms;
@@ -164,6 +165,14 @@ body {
 		font-family: inherit;
 	}
 
+	&.dragging * {
+		cursor: grabbing;
+	}
+
+	&.dropping * {
+		cursor: grab;
+	}
+
 	&.tabbing {
 		a:focus,
 		input:focus,
@@ -172,6 +181,7 @@ body {
 		button:focus,
 		button:focus,
 		#bookmarks li:focus-visible,
+		#link-title div:focus-visible,
 		#linkblocks.text a:focus-visible span,
 		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {

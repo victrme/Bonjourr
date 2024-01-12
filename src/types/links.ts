@@ -1,9 +1,21 @@
 declare namespace Links {
-	interface Link {
+	interface Elem {
 		_id: string
+		parent?: string | number
+		folder?: false
 		order: number
 		title: string
-		icon: string
 		url: string
+		icon?: string
 	}
+
+	interface Folder {
+		_id: string
+		parent?: number
+		folder: true
+		order: number
+		title: string
+	}
+
+	type Link = Folder | Elem
 }

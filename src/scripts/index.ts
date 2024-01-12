@@ -10,12 +10,13 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
+import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { stringMaxSize, freqControl } from './utils'
+import { stringMaxSize, freqControl, linksDataMigration } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
@@ -288,6 +289,18 @@ export function customCss(init?: string, event?: { is: 'styling' | 'resize'; val
 	}
 }
 
+async function setPotatoComputerMode() {
+	if ((navigator as any).gpu === undefined) {
+		return
+	}
+
+	try {
+		await (await (navigator as any).gpu.requestAdapter()).requestDevice()
+	} catch (error) {
+		document.body.classList.add('potato')
+	}
+}
+
 const features = ['clock', 'links']
 
 function displayInterface(e: Event) {
@@ -355,7 +368,7 @@ function onlineAndMobileHandler() {
 		// Update export code on localStorage changes
 
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/service-worker.js')
+			navigator.serviceWorker.register('service-worker.js')
 		}
 
 		// PWA install trigger (30s interaction default)
@@ -432,6 +445,7 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 	hideElements(data.hide)
 	initBackground(data, local)
 	quickLinks(data)
+	syncNewBookmarks(data.syncbookmarks)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
 
 	document.getElementById('time')?.classList.toggle('hidden', !data.time)
@@ -439,7 +453,17 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 
 	if (data?.font?.family) features.push('fonts')
 	if (data?.quotes?.on) features.push('quotes')
+
+	onSettingsLoad(() => {
+		setPotatoComputerMode()
+	})
 }
+
+// Unfocus address bar on chromium
+// https://stackoverflow.com/q/64868024
+// if (window.location.search !== '?r=1') {
+// 	window.location.assign('index.html?r=1')
+// }
 
 ;(async () => {
 	onlineAndMobileHandler()
@@ -462,6 +486,7 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 				sync.quotes.userlist = newuserlist
 			}
 
+			sync = linksDataMigration(sync)
 			sync.about = SYNC_DEFAULT.about
 			storage.sync.set(sync)
 		}
