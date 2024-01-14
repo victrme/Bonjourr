@@ -10,6 +10,7 @@ export default {
 	ru: 'Русский',
 	zh_CN: '简体中文',
 	zh_HK: '繁體中文',
+	ja: '日本語',
 	de: 'Deutsch',
 	it: 'Italiano',
 	es_ES: 'Español',
@@ -39,4 +40,5 @@ export const subsets = {
 	sr: 'cyrillic',
 	gr: 'greek',
 	fa: 'arabic',
+	ja: 'japanese'
 }
