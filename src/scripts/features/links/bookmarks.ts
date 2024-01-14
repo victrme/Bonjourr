@@ -67,8 +67,8 @@ export async function syncNewBookmarks(init?: number, update?: boolean) {
 	const newBookmarks = flatList.filter((bookmark) => bookmark.dateAdded > lastCheck)
 
 	if (newBookmarks.length > 0) {
-		quickLinks(undefined, { bookmarks: newBookmarks })
-		setTimeout(() => storage.sync.set({ syncbookmarks: Date.now() }), 1000)
+		storage.sync.set({ syncbookmarks: Date.now() })
+		setTimeout(() => quickLinks(undefined, { bookmarks: newBookmarks }))
 	}
 }
 
