@@ -2,7 +2,7 @@ const ENGINES = <const>['google', 'ddg', 'startpage', 'qwant', 'yahoo', 'bing', 
 
 declare namespace Sync {
 	interface Storage {
-		usdate: boolean
+		dateformat: string
 		showall: boolean
 		quicklinks: boolean
 		syncbookmarks?: number

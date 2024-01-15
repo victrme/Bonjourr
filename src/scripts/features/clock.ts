@@ -7,7 +7,7 @@ type ClockUpdate = {
 	ampm?: boolean
 	analog?: boolean
 	seconds?: boolean
-	usdate?: boolean
+	dateformat?: string
 	greeting?: string
 	timezone?: string
 	style?: string
@@ -45,13 +45,25 @@ function zonedDate(timezone: string = 'auto') {
 	return date
 }
 
-function clockDate(date: Date, usdate: boolean) {
+function clockDate(date: Date, dateformat: string) {
 	const datedom = document.getElementById('date') as HTMLParagraphElement
 	const jour = tradThis(days[date.getDay()])
 	const mois = tradThis(months[date.getMonth()])
 	const chiffre = date.getDate()
 
-	datedom.textContent = usdate ? `${jour}, ${mois} ${chiffre}` : `${jour} ${chiffre} ${mois}`
+	switch (dateformat) {
+		case 'us':
+			datedom.textContent = `${jour}, ${mois} ${chiffre}`
+			break
+		case 'ja':
+			datedom.textContent = `${jour}、${mois}${chiffre}日`
+			break
+		case 'cn':
+			datedom.textContent = `${jour}, ${mois} ${chiffre}日`
+			break
+		default: // eu
+			datedom.textContent = `${jour} ${chiffre} ${mois}`
+	}
 }
 
 function greetings(date: Date, name?: string) {
@@ -101,7 +113,7 @@ function changeClockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
-function startClock(clock: Sync.Clock, greeting: string, usdate: boolean) {
+function startClock(clock: Sync.Clock, greeting: string, dateformat: string) {
 	//
 	function display() {
 		document.getElementById('time-container')?.classList.toggle('analog', clock.analog)
@@ -153,7 +165,7 @@ function startClock(clock: Sync.Clock, greeting: string, usdate: boolean) {
 
 		// Midnight, change date
 		if (date.getHours() === 0 && date.getMinutes() === 0) {
-			clockDate(date, usdate)
+			clockDate(date, dateformat)
 		}
 
 		// Hour change
@@ -171,11 +183,11 @@ function startClock(clock: Sync.Clock, greeting: string, usdate: boolean) {
 	lazyClockInterval = setInterval(clockInterval, 1000)
 }
 
-async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, style, face, size }: ClockUpdate) {
-	const data = await storage.sync.get(['clock', 'usdate', 'greeting'])
+async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, size }: ClockUpdate) {
+	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
 	let clock = data?.clock
 
-	if (!clock || data.usdate === undefined || data.greeting === undefined) {
+	if (!clock || data.dateformat === undefined || data.greeting === undefined) {
 		return
 	}
 
@@ -187,9 +199,9 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
 	}
 
-	if (usdate !== undefined) {
-		clockDate(zonedDate(clock.timezone), usdate)
-		storage.sync.set({ usdate })
+	if (dateformat !== undefined) {
+		clockDate(zonedDate(clock.timezone), dateformat)
+		storage.sync.set({ dateformat })
 	}
 
 	if (greeting !== undefined) {
@@ -198,7 +210,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	}
 
 	if (timezone !== undefined) {
-		clockDate(zonedDate(timezone), data.usdate)
+		clockDate(zonedDate(timezone), data.dateformat)
 		greetings(zonedDate(timezone), data.greeting)
 	}
 
@@ -214,7 +226,7 @@ async function clockUpdate({ ampm, analog, seconds, usdate, greeting, timezone, 
 	}
 
 	storage.sync.set({ clock })
-	startClock(clock, data.greeting, data.usdate)
+	startClock(clock, data.greeting, data.dateformat)
 	changeAnalogFace(clock.face)
 	changeAnalogStyle(clock.style)
 	changeClockSize(clock.size)
@@ -229,8 +241,8 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 	let clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
 
 	try {
-		startClock(clock, init?.greeting || '', init?.usdate || false)
-		clockDate(zonedDate(clock.timezone), init?.usdate || false)
+		startClock(clock, init?.greeting || '', init?.dateformat || 'eu')
+		clockDate(zonedDate(clock.timezone), init?.dateformat || 'eu')
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		changeAnalogFace(clock.face)
 		changeAnalogStyle(clock.style)

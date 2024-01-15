@@ -85,6 +85,7 @@ export async function settingsInit() {
 	initInput('i_tabtitle', data.tabtitle ?? '')
 	initInput('i_pagewidth', data.pagewidth || 1600)
 	initInput('i_pagegap', data.pagegap ?? 1)
+	initInput('i_dateformat', data.dateformat || 'eu')
 	initInput('i_greeting', data.greeting ?? '')
 	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
@@ -119,7 +120,6 @@ export async function settingsInit() {
 	initCheckbox('i_linktabs', data.linktabs.active)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
-	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_main', data.main)
 	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
 	initCheckbox('i_notes', data.notes?.on ?? false)
@@ -425,8 +425,8 @@ export async function settingsInit() {
 		clock(undefined, { timezone: this.value })
 	})
 
-	paramId('i_usdate').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { usdate: this.checked })
+	paramId('i_dateformat').addEventListener('change', function (this) {
+		clock(undefined, { dateformat: this.value })
 	})
 
 	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {

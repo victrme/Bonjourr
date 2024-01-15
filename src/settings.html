@@ -319,8 +319,13 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_usdate" class="trn">US Date Format</label>
-				<input id="i_usdate" class="switch" type="checkbox" />
+				<label for="i_dateformat" class="trn">Date format</label>
+				<select id="i_dateformat" class="">
+					<option value="eu" class="trn">European</option>
+					<option value="us" class="trn">American</option>
+					<option value="ja" class="trn">Japanese</option>
+					<option value="cn" class="trn">Chinese</option>
+				</select>
 			</div>
 
 			<div class="as as_timedate">
@@ -967,7 +972,7 @@
 						id="i_qtlist"
 						name="qtlist"
 						type="text"
-						placeholder="Author, Your quote."
+						placeholder="Author, Your quote.&#10;Author, Your second quote."
 						maxlength="8000"
 					></textarea>
 				</div>

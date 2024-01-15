@@ -485,7 +485,7 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 				const newuserlist = oldJSONToCSV(sync?.quotes?.userlist as unknown as Quotes.UserInput)
 				sync.quotes.userlist = newuserlist
 			}
-
+			
 			sync = linksDataMigration(sync)
 			sync.about = SYNC_DEFAULT.about
 			storage.sync.set(sync)
