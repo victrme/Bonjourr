@@ -10,6 +10,11 @@
 //
 
 #linkblocks {
+	--min-height: 6em;
+	--row-gap: 1em;
+	--column-gap: 2.5em;
+	--block-size: 4.8em;
+
 	&.hidden {
 		display: none;
 	}
@@ -77,31 +82,37 @@
 	visibility: visible;
 	flex-wrap: wrap;
 	justify-content: center;
-	border-radius: 1em;
-	border: 1px solid transparent;
+	row-gap: var(--row-gap);
+	column-gap: var(--column-gap);
+	min-height: var(--min-height);
+	min-width: 6em;
 	padding: 2em 5em;
 	margin: 0;
-	min-height: 6em;
-	min-width: 6em;
 	max-width: var(--links-width);
-	column-gap: 2.6em;
-	row-gap: calc(2.6em - 1.7em); // (min-height + margin-top of title)
-	transition-duration: 0.2s;
-	transition-timing-function: linear;
-	transition-property: background-color, border-color, opacity;
+	background-color: transparent;
+	border: 1px solid transparent;
+	border-radius: 1em;
+	transition: opacity 0.3s $easeOutThree;
 }
 
 li.block {
+	width: var(--block-size);
+	$bouncyTiming: cubic-bezier(0.68, -0.2, 0.265, 1.2);
+	transition: transform 0.2s $bouncyTiming, opacity 0.2s $bouncyTiming;
 	cursor: pointer;
-	--timing: cubic-bezier(0.68, -0.2, 0.265, 1.2);
-	transition: transform 0.2s var(--timing), opacity 0.2s var(--timing);
 
 	&.removed {
+		margin: 0 calc((var(--gap) / 2) - var(--gap)); // minus half of gap
 		width: 0 !important;
-		margin: 0 -1.3em;
 		opacity: 0;
 		overflow: hidden;
 		transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
+
+		span {
+			min-height: 0 !important;
+			max-height: 0 !important;
+			transition: max-height 0.3s 0.3s $easeOutThree;
+		}
 
 		div {
 			transform: scale(0.6);
@@ -114,6 +125,8 @@ li.block {
 	}
 
 	div {
+		width: var(--block-size);
+		height: var(--block-size);
 		border-radius: 1em;
 		border: 1px solid white;
 		background-color: white;
@@ -152,7 +165,7 @@ li.block {
 li.block.folder > div {
 	display: grid;
 	column-gap: 4px;
-	height: 4.8em;
+	height: var(--block-size);
 	grid-template-columns: 1fr 1fr;
 	background-color: #fff3;
 	border: 1px solid #fff4;
@@ -176,12 +189,12 @@ li.block.folder img {
 //
 
 #linkblocks.large {
-	li.block {
-		width: 4.8em;
+	--min-height: 6em;
+	--column-gap: 2.5em;
+	--block-size: 4.8em;
 
+	li.block {
 		div {
-			width: 4.8em;
-			height: 4.8em;
 			padding: 0.3em;
 			border-radius: 1em;
 		}
@@ -215,17 +228,12 @@ li.block.folder img {
 }
 
 #linkblocks.medium {
-	#link-list {
-		min-height: 5em;
-		column-gap: 2em;
-	}
+	--min-height: 5em;
+	--column-gap: 2em;
+	--block-size: 3.5em;
 
 	li {
-		width: 3.5em;
-
 		div {
-			width: 3.5em;
-			height: 3.5em;
 			padding: 0.2em;
 			border-radius: 0.8em;
 		}
@@ -246,6 +254,11 @@ li.block.folder img {
 }
 
 #linkblocks.small {
+	--min-height: 2em;
+	--block-size: 2.5em;
+	--column-gap: 1.5em;
+	--row-gap: 1.5em;
+
 	#link-list {
 		min-height: 2em;
 		gap: 1.5em;
@@ -310,13 +323,11 @@ li.block.folder img {
 }
 
 #linkblocks.inline {
-	min-height: 2em;
-	justify-content: flex-start;
+	--min-height: 3em;
+	--block-size: 2em;
+	--column-gap: 2em;
 
-	#link-list {
-		column-gap: 2em;
-		min-height: 3em;
-	}
+	justify-content: flex-start;
 
 	li.folder span::before {
 		content: '📁';
@@ -334,6 +345,8 @@ li.block.folder img {
 	}
 
 	li {
+		width: auto;
+
 		&:hover span {
 			text-decoration: underline;
 		}
@@ -351,8 +364,6 @@ li.block.folder img {
 		}
 
 		div {
-			height: 2em;
-			width: 2em;
 			padding: 1px;
 		}
 
@@ -373,6 +384,9 @@ li.block.folder img {
 }
 
 #linkblocks.text {
+	--min-height: 3em;
+	--column-gap: 1.8em;
+
 	justify-content: flex-start;
 
 	#link-list {
@@ -400,7 +414,7 @@ li.block.folder img {
 
 		span {
 			width: 100%;
-			max-width: 20em;
+			max-width: 16em;
 			font-size: 1.5em;
 			text-overflow: ellipsis;
 			white-space: pre;
