@@ -45,7 +45,7 @@ function zonedDate(timezone: string = 'auto') {
 	return date
 }
 
-function clockDate(date: Date, dateformat: string) {
+function clockDate(date: Date, dateformat: "eu" | "us" | "ja" | "cn") {
 	const datedom = document.getElementById('date') as HTMLParagraphElement
 	const jour = tradThis(days[date.getDay()])
 	const mois = tradThis(months[date.getMonth()])
@@ -113,7 +113,7 @@ function changeClockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
-function startClock(clock: Sync.Clock, greeting: string, dateformat: string) {
+function startClock(clock: Sync.Clock, greeting: string, dateformat: "eu" | "us" | "ja" | "cn") {
 	//
 	function display() {
 		document.getElementById('time-container')?.classList.toggle('analog', clock.analog)
@@ -193,13 +193,14 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 
 	const isFace = (str = ''): str is Sync.Clock['face'] => ['none', 'number', 'roman', 'marks'].includes(str)
 	const isStyle = (str = ''): str is Sync.Clock['style'] => ['round', 'square', 'transparent'].includes(str)
+	const isDateFormat = (str = ''): str is Sync.Storage['dateformat'] => ['eu', 'us', 'cn', 'ja'].includes(str)
 
 	if (analog !== undefined) {
 		document.getElementById('analog_options')?.classList.toggle('shown', analog)
 		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
 	}
 
-	if (dateformat !== undefined) {
+	if (isDateFormat(dateformat)) {
 		clockDate(zonedDate(clock.timezone), dateformat)
 		storage.sync.set({ dateformat })
 	}
