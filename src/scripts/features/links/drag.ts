@@ -8,12 +8,6 @@ type Coords = {
 	h: number
 }
 
-type AddToFolder = {
-	ids: string[]
-	target: string
-	source?: string
-}
-
 type DropArea = 'left' | 'right' | 'center' | ''
 
 const blocks: Map<string, HTMLLIElement> = new Map()
@@ -208,6 +202,9 @@ function applyDragMoveBlocks(id: string) {
 }
 
 function applyDragChangeParent(id: string) {
+	const propertyValue = getComputedStyle(domlinkblocks).getPropertyValue('--drop-delay')
+	const delay = parseInt(propertyValue || '120')
+
 	clearTimeout(dragChangeParentTimeout)
 
 	dragChangeParentTimeout = setTimeout(() => {
@@ -219,7 +216,7 @@ function applyDragChangeParent(id: string) {
 		blocks.forEach((block) => block.classList.remove('droppable'))
 		blocks.get(id)?.classList.toggle('droppable', true)
 		blocks.get(draggedId)?.classList.toggle('droppable', true)
-	}, 200)
+	}, delay)
 }
 
 function endDrag(event: Event) {
@@ -253,8 +250,18 @@ function endDrag(event: Event) {
 	}
 
 	setTimeout(() => {
-		if (toFolder) {
-			dropToFolder()
+		const droppables = [...document.querySelectorAll<HTMLElement>('.droppable')]
+		const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
+		const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
+		const createsFolder = droppables.length > 0 && !targetIsFolder && !draggedIsFolder
+		const concatFolders = droppables.length > 0 && (targetIsFolder || draggedIsFolder)
+
+		if (createsFolder) {
+			linksUpdate({ addFolder: [targetId, draggedId] })
+		}
+		//
+		else if (concatFolders) {
+			linksUpdate({ addToFolder: { source: draggedId, target: targetId } })
 		}
 		//
 		else if (toTab) {
@@ -269,6 +276,8 @@ function endDrag(event: Event) {
 			linksUpdate({ moveLinks: ids })
 		}
 
+		blocks.forEach((block) => block.classList.remove('droppable'))
+
 		// Yield to functions above to avoid flickering
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
@@ -277,41 +286,6 @@ function endDrag(event: Event) {
 			domlinklist?.removeAttribute('style')
 		})
 	}, 200)
-}
-
-function dropToFolder() {
-	const droppables = [...document.querySelectorAll<HTMLElement>('.droppable')]
-	const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
-	const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
-	const createsFolder = droppables.length > 0 && !targetIsFolder && !draggedIsFolder
-	const concatFolders = droppables.length > 0 && (targetIsFolder || draggedIsFolder)
-
-	blocks.forEach((block) => block.classList.remove('droppable'))
-
-	if (createsFolder) {
-		linksUpdate({ addFolder: [targetId, draggedId] })
-	}
-	//
-	else if (concatFolders) {
-		const addToFolder: AddToFolder = { target: '', ids: [] }
-
-		if (targetIsFolder && draggedIsFolder) {
-			addToFolder.source = draggedId
-			addToFolder.target = targetId
-		}
-		//
-		else if (targetIsFolder && !draggedIsFolder) {
-			addToFolder.target = targetId
-			addToFolder.ids = [draggedId]
-		}
-		//
-		else if (!targetIsFolder && draggedIsFolder) {
-			addToFolder.target = draggedId
-			addToFolder.ids = [targetId]
-		}
-
-		linksUpdate({ addToFolder })
-	}
 }
 
 //

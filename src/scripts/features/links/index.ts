@@ -27,10 +27,15 @@ type LinksUpdate = {
 	addLink?: boolean
 	addFolder?: string[]
 	groupTitle?: string
-	addToFolder?: MoveToTarget
+	addToFolder?: AddToFolder
 	moveToTab?: MoveToTarget
 	removeFromFolder?: string[]
 	deleteLinks?: string[]
+}
+
+type AddToFolder = {
+	source: string
+	target: string
 }
 
 type MoveToTarget = {
@@ -481,32 +486,35 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 		}
 	}
 
+	const target = document.getElementById(ids[0]) as HTMLElement
+	const order = [...document.querySelectorAll('li.block')].indexOf(target)
+
 	return [
 		{
 			_id: 'links' + randomString(6),
 			folder: true,
-			order: Date.now(), // big number
+			order: order,
 			parent: 0,
 			title: title,
 		},
 	]
 }
 
-async function addLinkToFolder({ ids, target, source }: MoveToTarget) {
+async function addLinkToFolder({ target, source }: AddToFolder) {
 	let data = await storage.sync.get()
-	const folder = data[target] as Links.Folder
+	const linktarget = data[target] as Links.Link
+	const linksource = data[source] as Links.Link
+	const ids: string[] = []
 
-	if (!folder) {
+	if (!linktarget || !linksource) {
 		return
 	}
 
-	if (source) {
-		const elems = Object.values(data).filter((val) => isLink(val) && isElem(val)) as Elem[]
-		const sourceElems = elems.filter((elem) => elem.parent === source)
-		const sourceIds = sourceElems.map((elem) => elem._id)
+	const getIdsFrom = (id: string) => getLinksInFolder(data, id).map((l) => l._id)
+	linktarget.folder ? ids.push(...getIdsFrom(target)) : ids.push(target)
+	linksource.folder ? ids.push(...getIdsFrom(source)) : ids.push(source)
 
-		ids.push(...sourceIds)
-
+	if (linksource.folder) {
 		delete data[source]
 		storage.sync.remove(source)
 		document.getElementById(source)?.remove()
