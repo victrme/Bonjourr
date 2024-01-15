@@ -200,7 +200,7 @@ function initRows(row: number, style: string) {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
 		small: { width: 2.5, gap: 2 },
-		inline: { width: 10, gap: 2 }, // arbitrary width because width is auto
+		inline: { width: 10, gap: 2 },
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 
@@ -701,7 +701,7 @@ async function setLinkStyle(style: string = 'large') {
 }
 
 function setRows(row: string) {
-	const style = domlinkblocks.classList[0] || 'large'
+	const style = [...domlinkblocks.classList].filter(isLinkStyle)[0] ?? 'large'
 	const val = parseInt(row ?? '6')
 	initRows(val, style)
 	eventDebounce({ linksrow: row })

@@ -4,11 +4,13 @@ import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
+const b_addtab = document.getElementById('b_add-tab')
 
 export default function initTabs(data: Sync.Storage) {
-	document.querySelectorAll<Element>('#link-title div')?.forEach((node) => {
-		node.remove()
-	})
+	const divs = document.querySelectorAll<HTMLElement>('#link-title div')
+
+	b_addtab?.addEventListener('click', () => linksUpdate({ addTab: true }))
+	divs.forEach((node) => node.remove())
 
 	data.linktabs.titles.forEach((title, i) => {
 		appendNewTab(title, i === data.linktabs.selected ?? 0)
@@ -45,7 +47,7 @@ function appendNewTab(title: string, selected?: boolean): void {
 	})
 
 	div.appendChild(input)
-	linktitle?.appendChild(div)
+	linktitle?.insertBefore(div, b_addtab)
 }
 
 function changeTab(div: HTMLDivElement) {
