@@ -74,18 +74,22 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplashCache.user = []
 		unsplash.collection = ''
 		unsplash.lastCollec = 'day'
-
-		storage.sync.set({ unsplash })
-		storage.local.set({ unsplashCache })
 		collectionInput.toggle(false, '2nVzlQADDIE')
-
 		unsplashBackgrounds({ unsplash, cache: unsplashCache })
-		return
 	}
 
-	if (isCollection(collection)) {
+	if (collection !== undefined && collection.length > 0) {
+		const i_collection = document.querySelector<HTMLInputElement>('#i_collection')
+		const isFullURL = collection.includes('https://unsplash.com/') && collection.includes('/collections/')
+
 		if (!navigator.onLine) {
 			return collectionInput.warn('No internet connection')
+		}
+
+		if (isFullURL) {
+			const start = collection.indexOf('/collections/') + 13
+			const end = collection.indexOf('/', start)
+			collection = collection.slice(start, end)
 		}
 
 		// add new collec
@@ -109,9 +113,13 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		collectionInput.toggle(false, unsplash.collection)
 
-		storage.sync.set({ unsplash })
-		storage.local.set({ unsplashCache })
+		if (isFullURL && i_collection) {
+			i_collection.value = collection
+		}
 	}
+
+	storage.sync.set({ unsplash })
+	storage.local.set({ unsplashCache })
 }
 
 async function cacheControl(unsplash: Unsplash.Sync, cache?: Unsplash.Local) {
@@ -323,9 +331,4 @@ async function preloadImage(src: string) {
 	} catch (error) {
 		console.warn('Could not decode image: ', src)
 	}
-}
-
-function isCollection(s = ''): s is Unsplash.CollectionTypes {
-	const collections: Unsplash.CollectionTypes[] = ['noon', 'day', 'evening', 'night']
-	return collections.includes(s as Unsplash.CollectionTypes)
 }
