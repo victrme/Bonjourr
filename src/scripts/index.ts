@@ -473,7 +473,7 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 		const version_old = sync?.about?.version
 		const hasChanged = version_old !== CURRENT_VERSION
 
-		if (true) {
+		if (hasChanged) {
 			if (version_old === undefined && Object.keys(sync).length === 0) {
 				console.log(`First install: ${CURRENT_VERSION}`)
 				sync = await getSyncDefaults()
@@ -487,7 +487,7 @@ function startup(data: Sync.Storage, local: Local.Storage) {
 			}
 
 			if (!sync.dateformat) {
-				sync.dateformat = sync.usdate ? "us" : "eu"
+				sync.dateformat = sync.usdate ? 'us' : 'eu'
 			}
 
 			sync = linksDataMigration(sync)

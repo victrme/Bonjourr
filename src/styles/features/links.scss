@@ -64,6 +64,10 @@
 		#link-title div:not(:first-child) {
 			display: none;
 		}
+
+		#b_add-tab {
+			display: none;
+		}
 	}
 
 	&.hiding {

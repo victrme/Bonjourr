@@ -510,15 +510,11 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		return
 	}
 
+	//
+
 	const getIdsFrom = (id: string) => getLinksInFolder(data, id).map((l) => l._id)
 	linktarget.folder ? ids.push(...getIdsFrom(target)) : ids.push(target)
 	linksource.folder ? ids.push(...getIdsFrom(source)) : ids.push(source)
-
-	if (linksource.folder) {
-		delete data[source]
-		storage.sync.remove(source)
-		document.getElementById(source)?.remove()
-	}
 
 	for (const [key, val] of Object.entries(data)) {
 		if (isLink(val) === false) {
@@ -531,11 +527,18 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		}
 	}
 
-	document.getElementById(target)?.remove()
-	data = correctLinksOrder(data)
-	storage.sync.set(data)
-	initblocks(data)
+	//
 
+	const removeEverywhere = (id: string) => {
+		delete data[id]
+		storage.sync.remove(id)
+		document.getElementById(id)?.remove()
+	}
+
+	if (linksource.folder) removeEverywhere(source)
+	if (linktarget.folder) removeEverywhere(target)
+
+	linkSubmission({ ids, type: 'folder' })
 	animateLinksRemove(ids)
 }
 
@@ -555,8 +558,6 @@ async function removeFromFolder(ids: string[]) {
 	data = correctLinksOrder(data)
 	storage.sync.set(data)
 	initblocks(data)
-
-	animateLinksRemove(ids)
 }
 
 async function deleteLinks(ids: string[]) {
