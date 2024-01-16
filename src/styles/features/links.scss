@@ -467,51 +467,57 @@ li.block.folder img {
 //  Links drag and drop
 //
 
-#linkblocks.dragging {
-	&.large,
-	&.medium,
-	&.small {
-		.droppable.on {
-			div {
-				transform: scale(0.8);
-			}
-
-			span {
-				opacity: 0;
-				transition: opacity 0.05s;
-			}
+#linkblocks.large,
+#linkblocks.medium,
+#linkblocks.small {
+	.drop-source {
+		div {
+			transform: scale(0.8);
 		}
 
-		.droppable:not(.on):not(.folder) {
-			div {
-				border-color: #fff4;
-				background-color: #fff2;
-			}
-
-			img {
-				transform: scale(0.8);
-				background-color: white;
-			}
+		span {
+			opacity: 0;
+			transition: opacity 0.05s;
 		}
 	}
 
-	&.inline,
-	&.text {
-		.droppable.on {
-			div {
-				opacity: 0;
-			}
-
-			span {
-				transform: scale(0.8);
-			}
+	.drop-target {
+		div {
+			border-color: #fff4;
+			background-color: #fff2;
 		}
 
-		.droppable:not(.on) {
-			span,
-			div {
-				opacity: 0.5;
-			}
+		img {
+			transform: scale(0.8);
+			background-color: white;
+		}
+	}
+
+	.drop-target.folder {
+		img {
+			opacity: 0.5;
+			transform: none;
+			background-color: white;
+		}
+	}
+}
+
+#linkblocks.inline,
+#linkblocks.text {
+	.drop-source {
+		div {
+			opacity: 0;
+		}
+
+		span {
+			transform: scale(0.8);
+		}
+	}
+
+	.drop-target {
+		span,
+		div {
+			opacity: 0.5;
 		}
 	}
 }

@@ -435,7 +435,7 @@ async function linkSubmission(arg: LinkSubmission) {
 		for (const id of arg.ids) {
 			const elem = data[id] as Link
 
-			if (!elem.folder) {
+			if (elem && !elem.folder) {
 				elem.parent = newlinks[0]._id
 			}
 		}
@@ -477,6 +477,10 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 
 	titledom.value = ''
 
+	const blocks = [...document.querySelectorAll<HTMLElement>('li.block')]
+	const idsOnInterface = blocks.map((block) => block.id)
+	const order = idsOnInterface.indexOf(ids[0])
+
 	for (let i = 0; i < ids.length; i++) {
 		const dom = document.getElementById(ids[i])
 		const isFolder = dom?.classList.contains('folder')
@@ -485,9 +489,6 @@ function addLinkFolder(ids: string[]): Links.Folder[] {
 			ids.splice(i, 1)
 		}
 	}
-
-	const target = document.getElementById(ids[0]) as HTMLElement
-	const order = [...document.querySelectorAll('li.block')].indexOf(target)
 
 	return [
 		{
@@ -510,11 +511,9 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		return
 	}
 
-	//
-
 	const getIdsFrom = (id: string) => getLinksInFolder(data, id).map((l) => l._id)
-	linktarget.folder ? ids.push(...getIdsFrom(target)) : ids.push(target)
-	linksource.folder ? ids.push(...getIdsFrom(source)) : ids.push(source)
+	linktarget.folder ? ids.push(target, ...getIdsFrom(target)) : ids.push(target)
+	linksource.folder ? ids.push(source, ...getIdsFrom(source)) : ids.push(source)
 
 	for (const [key, val] of Object.entries(data)) {
 		if (isLink(val) === false) {
@@ -527,16 +526,12 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		}
 	}
 
-	//
-
-	const removeEverywhere = (id: string) => {
-		delete data[id]
-		storage.sync.remove(id)
-		document.getElementById(id)?.remove()
-	}
-
-	if (linksource.folder) removeEverywhere(source)
-	if (linktarget.folder) removeEverywhere(target)
+	;[linksource, linktarget].forEach((link) => {
+		if (link.folder) {
+			delete data[link._id]
+			storage.sync.remove(link._id)
+		}
+	})
 
 	linkSubmission({ ids, type: 'folder' })
 	animateLinksRemove(ids)
@@ -603,8 +598,6 @@ async function moveToOtherTab({ ids, target }: MoveToTarget) {
 	data = correctLinksOrder(data)
 	storage.sync.set(data)
 	initblocks(data)
-
-	animateLinksRemove(ids)
 }
 
 async function setGroupTitle(title: string) {
