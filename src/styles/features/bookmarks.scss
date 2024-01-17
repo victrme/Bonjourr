@@ -1,0 +1,123 @@
+#bookmarks {
+	width: 70%;
+	max-width: 1000px;
+	min-height: 30vh;
+	padding: 0em;
+	border-radius: 1em;
+	backdrop-filter: blur(5em);
+
+	&::backdrop {
+		backdrop-filter: blur(1em);
+		background-color: #2224;
+	}
+
+	&.noneFound {
+		min-width: 260px;
+
+		#bmk_apply {
+			display: none;
+		}
+	}
+
+	#bookmarks-container {
+		max-height: 60vh;
+		overflow-y: auto;
+		padding: 2em;
+		will-change: backdrop-filter;
+	}
+
+	.bookmarks-folder:not(:last-child) {
+		border-bottom: 1px solid var(--color-dialog-border);
+		margin-bottom: 2em;
+		padding-bottom: 2em;
+	}
+
+	h2 {
+		margin-top: 0;
+	}
+
+	ol {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	}
+
+	li {
+		border-radius: 8px;
+		border: 2px solid transparent;
+		transition: background-color 0.05s, border-color 0.05s;
+		user-select: none;
+		cursor: pointer;
+
+		&.selected {
+			border-color: var(--color-blue);
+			background-color: rgba(0, 114, 238, 0.1333333333);
+		}
+
+		button {
+			width: 100%;
+			padding: 0.5em;
+			transition: background-color 0.05s;
+		}
+
+		button:hover {
+			background-color: #fff2;
+		}
+
+		button p:last-child {
+			opacity: 0.6;
+			font-weight: normal;
+		}
+	}
+
+	img {
+		display: block;
+		margin: auto;
+		margin-bottom: 0.5em;
+		width: 4em;
+		height: 4em;
+		border-radius: 8px;
+	}
+
+	p {
+		text-align: center;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		height: 1.5em;
+		line-height: 1.5em;
+		font-size: 0.9em;
+		font-weight: bold;
+	}
+
+	#bookmarks-buttons {
+		display: flex;
+		margin: 2em;
+		column-gap: 2em;
+		justify-content: center;
+		z-index: 3;
+
+		button {
+			width: fit-content;
+			transition: filter 0.4s;
+			background-color: var(--color-areas);
+
+			&:focus-visible,
+			&:hover {
+				background-color: var(--color-blue);
+
+				&.btn-red {
+					background-color: var(--color-red);
+				}
+			}
+		}
+	}
+
+	#bmk_apply.none {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+}

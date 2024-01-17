@@ -1,7 +1,7 @@
-import { randomString, turnRefreshButton } from '../utils'
-import { imgBackground, freqControl } from '..'
+import { randomString, turnRefreshButton, freqControl, isEvery } from '../utils'
 import { get, set, update, del } from 'idb-keyval'
 import unsplashBackgrounds from './unsplash'
+import { imgBackground } from '..'
 import onSettingsLoad from '../utils/onsettingsload'
 import { IS_MOBILE } from '../defaults'
 import errorMessage from '../utils/errormessage'
@@ -9,9 +9,9 @@ import storage from '../storage'
 
 type LocalImages = {
 	ids: string[]
-	selected: string
 	last: number
-	freq: string
+	selected: string
+	freq: Frequency
 }
 
 type Blobs = {
@@ -243,10 +243,8 @@ async function handleSettingsOptions(showing: string = 'default') {
 		fileContainer.parentElement.className = showing
 	}
 
-
-
 	if (showing === 'reset') {
-		document.querySelectorAll('button.thumbnail').forEach(function(thumbnail, index) {
+		document.querySelectorAll('button.thumbnail').forEach(function (thumbnail, index) {
 			fileContainer.classList.remove('showLess')
 			if (index > 8) thumbnail.remove()
 		})
@@ -255,8 +253,11 @@ async function handleSettingsOptions(showing: string = 'default') {
 		console.log(ids)
 		ids.reverse().forEach(async (id, index) => {
 			// first condition for init, second for show more
-			if (index < 9 && showing === 'default' || (showing === 'more' && index >= thumbsAmount && index <= thumbsAmount + 8)) {
-				console.log(`showing ${index +1}`)
+			if (
+				(index < 9 && showing === 'default') ||
+				(showing === 'more' && index >= thumbsAmount && index <= thumbsAmount + 8)
+			) {
+				console.log(`showing ${index + 1}`)
 				const blob = await getBlob(id, 'thumbnail')
 				if (blob) addThumbnail(blob, id, id === selected, settings)
 			}
@@ -286,7 +287,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 	if (event) {
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
-		if (event?.freq) localImages.update({ freq: event?.freq })
+		if (isEvery(event?.freq)) localImages.update({ freq: event?.freq })
 		if (event?.showing) handleSettingsOptions(event.showing)
 		return
 	}

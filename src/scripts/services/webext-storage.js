@@ -1,9 +1,11 @@
-window.startupStorage = {}
+var startupStorage = {}
 
 chrome.storage.sync.get(null, (sync) => {
-	window.startupStorage.sync = sync
+	startupStorage.sync = sync
+	document.dispatchEvent(new Event('webextstorage'))
 })
 
 chrome.storage.local.get(null, (local) => {
-	window.startupStorage.local = local
+	startupStorage.local = local
+	document.dispatchEvent(new Event('webextstorage'))
 })

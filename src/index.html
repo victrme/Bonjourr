@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="auto">
 	<head>
 		<title>New tab</title>
 
@@ -21,6 +21,7 @@
 
 		<link rel="stylesheet" href="src/styles/style.css" />
 		<style type="text/css" id="styles"></style>
+		<style type="text/css" id="fontface"></style>
 
 		<script src="src/scripts/main.js" defer></script>
 	</head>
@@ -28,52 +29,71 @@
 	<body class="init loading">
 		<button id="skiptosettings" type="button">Skip to Settings</button>
 
+		<dialog id="bookmarks">
+			<div id="bookmarks-container">
+				<template id="bookmarks-folder">
+					<div class="bookmarks-folder">
+						<h2></h2>
+						<ol></ol>
+					</div>
+				</template>
+				<template id="bookmarks-item">
+					<li id="oknmol">
+						<button>
+							<img draggable="false" alt="" />
+							<p class="bookmark-title"></p>
+							<p class="bookmark-url"></p>
+						</button>
+					</li>
+				</template>
+			</div>
+			<div id="bookmarks-buttons">
+				<button id="bmk_close" class="trn btn-red">Cancel</button>
+				<button id="bmk_apply" class="trn none">Select bookmarks</button>
+			</div>
+		</dialog>
+
 		<div id="editlink">
-			<input
-				id="e_title"
-				type="text"
-				name="e_title"
-				maxlength="64"
-				autocomplete="off"
-				placeholder="Title"
-				aria-label="Update link title"
-			/>
+			<div class="edit-inputs">
+				<div>
+					<label for="e_title" class="trn">Title</label>
+					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
+				</div>
 
-			<input
-				id="e_url"
-				type="url"
-				name="e_url"
-				maxlength="512"
-				autocomplete="off"
-				placeholder="Link"
-				aria-label="Update link URL"
-			/>
+				<div>
+					<label for="e_url" class="trn">Link</label>
+					<input
+						id="e_url"
+						type="url"
+						name="e_url"
+						maxlength="512"
+						autocomplete="off"
+						placeholder="https://example.com"
+					/>
+				</div>
 
-			<input
-				id="e_iconurl"
-				type="url"
-				name="e_iconurl"
-				maxlength="7600"
-				autocomplete="off"
-				placeholder="Icon"
-				aria-label="Update link icon URL"
-			/>
+				<div>
+					<label for="e_iconurl" class="trn">Icon</label>
+					<input
+						id="e_iconurl"
+						type="url"
+						name="e_iconurl"
+						maxlength="7600"
+						autocomplete="off"
+						placeholder="https://example.com/favicon.ico"
+					/>
+				</div>
+			</div>
 
 			<hr />
 
-			<button id="e_delete" class="trn" aria-label="Remove link">Delete</button>
-			<button id="e_submit" class="trn" aria-label="Apply changes">Apply changes</button>
-		</div>
-
-		<div id="bookmarks_container">
-			<div id="bookmarks">
-				<h3 id="bmk_none" class="trn">No bookmarks found</h3>
-
-				<div>
-					<button id="bmk_close" class="trn">Cancel</button>
-					<button id="bmk_apply" class="trn none">Select bookmarks to import</button>
-				</div>
-			</div>
+			<button id="e_tab-add" class="trn">Add tab</button>
+			<button id="e_tab-remove" class="trn btn-red">Remove tab</button>
+			<button id="e_folder-remove" class="trn">Remove from folder</button>
+			<button id="e_folder-add" class="trn">Create new folder</button>
+			<button id="e_delete" class="trn btn-red">Delete selected</button>
+			<button id="e_submit" class="trn">Apply changes</button>
+			<button id="e_add-link" class="trn">Add link</button>
 		</div>
 
 		<div id="background_overlay">
@@ -207,31 +227,67 @@
 			<div id="notes_container" class="hidden"></div>
 
 			<form id="sb_container" class="hidden">
-				<input
-					id="searchbar"
-					type="text"
-					name="searchbar"
-					autocomplete="off"
-					spellcheck="false"
-					aria-label="Search bar"
-				/>
-				<div id="sb-buttons">
-					<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
-					<hr />
-					<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-						<img
-							src="src/assets/interface/magnifying-glass.svg"
-							class="default-search-icon"
-							draggable="false"
-							alt=""
-						/>
-					</button>
+				<div id="searchbar-wrapper">
+					<input
+						id="searchbar"
+						type="text"
+						name="searchbar"
+						autocomplete="off"
+						spellcheck="false"
+						aria-label="Search bar"
+					/>
+
+					<div id="sb-buttons">
+						<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
+
+						<hr />
+
+						<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
+							<img
+								src="src/assets/interface/magnifying-glass.svg"
+								class="default-search-icon"
+								draggable="false"
+								alt=""
+							/>
+						</button>
+					</div>
 				</div>
 
 				<ul id="sb-suggestions"></ul>
 			</form>
 
-			<ul id="linkblocks"></ul>
+			<div id="linkblocks">
+				<ul id="link-list">
+					<template id="link-elem">
+						<li class="block">
+							<a rel="noreferrer noopener" draggable="false">
+								<div class="block-imgs">
+									<img alt="" draggable="false" />
+								</div>
+								<span></span>
+							</a>
+						</li>
+					</template>
+					<template id="link-folder">
+						<li class="block folder">
+							<div class="block-imgs">
+								<img alt="" draggable="false" />
+								<img alt="" draggable="false" />
+								<img alt="" draggable="false" />
+								<img alt="" draggable="false" />
+							</div>
+							<span></span>
+						</li>
+					</template>
+					<div id="add-link-wrapper">
+						<button id="b_add-link" aria-label="Add new link">+</button>
+					</div>
+				</ul>
+
+				<div id="link-title">
+					<button id="b_add-tab" aria-label="Add new tab">+</button>
+				</div>
+			</div>
 
 			<div id="quotes_container" class="hidden">
 				<p id="quote"></p>

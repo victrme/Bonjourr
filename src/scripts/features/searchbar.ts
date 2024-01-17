@@ -6,8 +6,6 @@ import superinput from '../utils/superinput'
 import storage from '../storage'
 import parse from '../utils/parse'
 
-import type { Searchbar } from '../types/sync'
-
 type SearchbarUpdate = {
 	engine?: string
 	opacity?: string
@@ -31,6 +29,7 @@ let socket: WebSocket | undefined
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
+const dombuttons = document.getElementById('sb-buttons') as HTMLDivElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
 const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
@@ -44,7 +43,7 @@ const setOpacity = (value = 0.1) => {
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
 }
 
-export default function searchbar(init: Searchbar | null, update?: SearchbarUpdate) {
+export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return
@@ -59,6 +58,7 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		setSuggestions(init?.suggestions)
 		setOpacity(init?.opacity)
 
+		dombuttons?.addEventListener('click', focusSearchbar)
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
@@ -74,7 +74,7 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 		return
 	}
 
-	if (engine) {
+	if (isValidEngine(engine)) {
 		document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
 		searchbar.engine = engine
 		setEngine(engine)
@@ -114,6 +114,10 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 	eventDebounce({ searchbar })
 }
 
+//
+//	Search Submission
+//
+
 function isValidURL(string: string): boolean {
 	try {
 		const url = new URL(string.startsWith('http') ? string : 'https://' + string)
@@ -125,7 +129,7 @@ function isValidURL(string: string): boolean {
 }
 
 function createSearchURL(val: string): string {
-	const URLs = {
+	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
@@ -136,20 +140,15 @@ function createSearchURL(val: string): string {
 		ecosia: 'https://www.ecosia.org/search?q=%s',
 		lilo: 'https://search.lilo.org/?q=%s',
 		baidu: 'https://www.baidu.com/s?wd=%s',
+		custom: domcontainer?.dataset.request || '',
 	}
 
-	let searchURL = 'https://www.google.com/search?q=%s'
+	let searchURL = URLs.google
 	const engine = domcontainer?.dataset.engine || 'google'
-	const request = domcontainer?.dataset.request || ''
 
-	searchURL = tradThis(engine)
-
-	if (!searchURL.includes('%s') && engine in URLs) {
-		searchURL = URLs[engine as keyof typeof URLs]
-	}
-
-	if (engine === 'custom') {
-		searchURL = request
+	if (isValidEngine(engine)) {
+		const trad = tradThis(engine)
+		searchURL = trad.includes('%s') ? trad : URLs[engine]
 	}
 
 	return searchURL.replace('%s', encodeURIComponent(val ?? ''))
@@ -175,6 +174,10 @@ function submitSearch(e: Event) {
 	window.open(url, target)
 	e.preventDefault()
 }
+
+//
+//	Suggestions
+//
 
 function initSuggestions() {
 	function selectShownResult(next: UndefinedElement): UndefinedElement {
@@ -350,6 +353,10 @@ async function suggestions(results: Suggestions) {
 	}
 }
 
+//
+//	Searchbar Events
+//
+
 async function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
 	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
@@ -394,4 +401,14 @@ function removeInputText() {
 		domsearchbar.value = ''
 		toggleInputButton(false)
 	}
+}
+
+function focusSearchbar() {
+	if (dombuttons?.classList.contains('shown') === false) {
+		domsearchbar?.focus()
+	}
+}
+
+function isValidEngine(s = ''): s is Sync.Searchbar['engine'] {
+	return s in ENGINES
 }

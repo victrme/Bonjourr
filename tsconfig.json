@@ -3,8 +3,11 @@
 		"target": "ESNext",
 		"types": ["user-agent-data-types", "web-ext-types", "chrome"],
 		"strict": true,
+		"noEmit": true,
+		"allowJs": true,
 		"esModuleInterop": true,
 		"moduleResolution": "Bundler",
 		"forceConsistentCasingInFileNames": true
-	}
+	},
+	"include": ["src"]
 }

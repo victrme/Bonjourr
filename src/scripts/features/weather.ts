@@ -5,35 +5,32 @@ import superinput from '../utils/superinput'
 import suntime from '../utils/suntime'
 import storage from '../storage'
 
-import { Sync, Weather } from '../types/sync'
-import { LastWeather } from '../types/local'
-import { OWMCurrent, OWMOnecall } from '../types/openweathermap'
+type Weather = Weather.Sync
 
-type Coords = {
-	lat: number
-	lon: number
-}
+type LastWeather = Weather.Local
+
+type Coords = { lat: number; lon: number }
 
 type WeatherInit = {
-	sync: Sync
-	lastWeather?: LastWeather
-} | null
+	sync: Sync.Storage
+	lastWeather?: Weather.Local
+}
 
 type WeatherUpdate = {
 	forecast?: string
 	moreinfo?: string
 	provider?: string
-	units?: 'metric' | 'imperial'
+	units?: string
 	geol?: string
 	city?: string
 	temp?: string
 	unhide?: true
 }
 
-let pollingInterval = setInterval(() => {})
+let pollingInterval = 0
 const cityInput = superinput('i_city')
 
-export default function weather(init: WeatherInit, update?: WeatherUpdate) {
+export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
 		updatesWeather(update)
 		return
@@ -59,34 +56,34 @@ export default function weather(init: WeatherInit, update?: WeatherUpdate) {
 }
 
 async function updatesWeather(update: WeatherUpdate) {
-	let { weather, hide } = (await storage.sync.get(['weather', 'hide'])) as Sync
+	let { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
 	if (!weather || !hide) {
 		return
 	}
 
-	if (update.units) {
+	if (isUnits(update.units)) {
 		weather.unit = update.units
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
-	if (update.forecast) {
+	if (isForecast(update.forecast)) {
 		weather.forecast = update.forecast
 	}
 
-	if (update.temp) {
+	if (isTemperature(update.temp)) {
 		weather.temperature = update.temp
+	}
+
+	if (isMoreinfo(update.moreinfo)) {
+		const providerdom = document.getElementById('weather_provider')
+		providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
+		weather.moreinfo = update.moreinfo
 	}
 
 	if (update.provider) {
 		weather.provider = update.provider
-	}
-
-	if (update.moreinfo) {
-		const providerdom = document.getElementById('weather_provider')
-		providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
-		weather.moreinfo = update.moreinfo
 	}
 
 	if (update.unhide) {
@@ -134,7 +131,10 @@ async function updatesWeather(update: WeatherUpdate) {
 			}
 		}
 
-		weather.geolocation = update.geol as Weather['geolocation']
+		if (isGeolocation(update.geol)) {
+			weather.geolocation = update.geol
+		}
+
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 	}
 
@@ -266,8 +266,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	// Fetch data
 
 	let response: Response | undefined
-	let onecall: OWMOnecall | undefined
-	let current: OWMCurrent | undefined
+	let onecall: Weather.API.Onecall | undefined
+	let current: Weather.API.Current | undefined
 
 	if (queries.includes('&lat') && lang === 'en') {
 		try {
@@ -288,8 +288,8 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 		try {
 			if (response?.status === 200) {
-				if (!!currentOnly) current = (await response?.json()) as OWMCurrent
-				if (!currentOnly) onecall = (await response?.json()) as OWMOnecall
+				if (!!currentOnly) current = (await response?.json()) as Weather.API.Current
+				if (!currentOnly) onecall = (await response?.json()) as Weather.API.Onecall
 			}
 		} catch (error) {
 			console.log(error)
@@ -331,19 +331,21 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 	if (onecall.hourly) {
 		const date = new Date()
+		const alltemps: number[] = []
 
 		if (date.getHours() > getSunsetHour()) {
 			date.setDate(date.getDate() + 1)
 		}
 
-		for (const elem of onecall.hourly) {
-			if (new Date(elem.dt * 1000).getDate() === date.getDate() && forecasted_high < elem.temp) {
-				forecasted_high = Math.round(elem.temp)
+		for (const item of onecall.hourly) {
+			if (new Date(item.dt * 1000).getDate() === date.getDate()) {
+				alltemps.push(item.temp)
 			}
 		}
 
 		date.setHours(0, 0, 0, 0)
 		forecasted_timestamp = Math.floor(date.getTime() / 1000)
+		forecasted_high = Math.round(Math.max(...alltemps))
 	}
 
 	suntime.update(sunrise, sunset)
@@ -494,4 +496,29 @@ function getSunsetHour(): number {
 	const d = new Date()
 	d.setHours(Math.round(suntime.sunset / 60))
 	return d.getHours()
+}
+
+function isUnits(str = ''): str is Weather.Unit {
+	const units: Weather.Unit[] = ['metric', 'imperial']
+	return units.includes(str as Weather.Unit)
+}
+
+function isForecast(str = ''): str is Weather.Forecast {
+	const forecasts: Weather.Forecast[] = ['auto', 'always', 'never']
+	return forecasts.includes(str as Weather.Forecast)
+}
+
+function isMoreinfo(str = ''): str is Weather.MoreInfo {
+	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'custom']
+	return moreinfos.includes(str as Weather.MoreInfo)
+}
+
+function isTemperature(str = ''): str is Weather.Temperature {
+	const temps: Weather.Temperature[] = ['actual', 'feelslike', 'both']
+	return temps.includes(str as Weather.Temperature)
+}
+
+function isGeolocation(str = ''): str is Weather.Geolocation {
+	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
+	return geol.includes(str as Weather.Geolocation)
 }

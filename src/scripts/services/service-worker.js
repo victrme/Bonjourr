@@ -1,4 +1,4 @@
-const bonjourrCache = 'bonjourr-v1.18.3'
+const bonjourrCache = 'bonjourr-v1.18.4'
 
 const filesToChache = [
 	'/',
@@ -37,6 +37,7 @@ const filesToChache = [
 	'/_locales/sr/translations.json',
 	'/_locales/sr_YU/translations.json',
 	'/_locales/gr/translations.json',
+	'/_locales/ja/translations.json',
 ]
 
 const weatherList = [

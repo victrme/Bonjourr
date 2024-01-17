@@ -170,7 +170,7 @@
 	}
 
 	#quicklinks_options.shown {
-		max-height: 260px;
+		max-height: 370px;
 	}
 
 	#notes_options.shown {
@@ -184,8 +184,7 @@
 	}
 
 	#analog_options.shown,
-	#unsplash_options.shown,
-	#quotes_userlist.shown {
+	#unsplash_options.shown {
 		max-height: 100px;
 	}
 
@@ -193,8 +192,9 @@
 		max-height: 350px;
 	}
 
+	#quotes_userlist.shown,
 	#quotes_options.shown {
-		max-height: 270px;
+		max-height: 500px;
 	}
 
 	input[type='text'] {
@@ -932,4 +932,13 @@
 			margin-top: 1.5em;
 		}
 	}
+}
+
+#settings textarea#i_qtlist {
+	width: 100%;
+	min-height: 100px;
+	max-height: 200px;
+	margin-top: 0.5em;
+	padding: 0.5em 1em;
+	resize: vertical;
 }

@@ -1,8 +1,6 @@
 import langList from './langs'
-import type { Local } from './types/local'
-import type { Sync } from './types/sync'
 
-export const CURRENT_VERSION = '1.18.3'
+export const CURRENT_VERSION = '1.18.4'
 
 export const MAIN_API = 'https://api.bonjourr.lol'
 
@@ -58,7 +56,7 @@ const DEFAULT_LANG = (() => {
 	return 'en'
 })()
 
-export const SYNC_DEFAULT: Sync = {
+export const SYNC_DEFAULT: Sync.Storage = {
 	about: { browser: PLATFORM, version: CURRENT_VERSION },
 	showall: false,
 	lang: DEFAULT_LANG,
@@ -70,19 +68,25 @@ export const SYNC_DEFAULT: Sync = {
 	pagewidth: 1600,
 	time: true,
 	main: true,
-	usdate: false,
+	dateformat: 'eu',
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',
 	quicklinks: true,
-	linkstyle: 'large',
-	linknewtab: false,
-	linksrow: 6,
+	syncbookmarks: undefined,
 	textShadow: 0.2,
 	reviewPopup: 0,
 	cssHeight: 80,
 	css: '',
 	hide: {},
+	linkstyle: 'large',
+	linknewtab: false,
+	linksrow: 6,
+	linktabs: {
+		active: false,
+		selected: 0,
+		titles: [''],
+	},
 	clock: {
 		size: 1,
 		ampm: false,
@@ -96,7 +100,7 @@ export const SYNC_DEFAULT: Sync = {
 		every: 'hour',
 		collection: '',
 		lastCollec: 'day',
-		pausedImage: null,
+		pausedImage: undefined,
 		time: Date.now(),
 	},
 	weather: {
@@ -112,7 +116,6 @@ export const SYNC_DEFAULT: Sync = {
 	notes: {
 		on: false,
 		width: 40,
-		text: null,
 		opacity: 0.1,
 		align: 'left',
 	},
@@ -131,13 +134,12 @@ export const SYNC_DEFAULT: Sync = {
 		type: 'classic',
 		frequency: 'day',
 		last: 1650516688,
-		userlist: [],
 	},
 	font: {
-		url: '',
 		family: '',
 		size: '14',
-		availWeights: [],
+		system: true,
+		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	move: {
@@ -167,9 +169,9 @@ export const SYNC_DEFAULT: Sync = {
 	},
 }
 
-export const LOCAL_DEFAULT: Local = {
+export const LOCAL_DEFAULT: Local.Storage = {
 	userQuoteSelection: 0,
-	translations: {},
+	translations: undefined,
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],

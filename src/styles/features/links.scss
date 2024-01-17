@@ -1,0 +1,686 @@
+// Glossary:
+//  - Link blocks
+//	- Link styles
+//	- Folder styles for medium and small
+//	- Links drag and drop
+// 	- Tabs and folder titles
+// 	- Add buttons
+
+//
+// Link blocks
+//
+
+#linkblocks {
+	--min-height: 6em;
+	--row-gap: 1em;
+	--column-gap: 2.5em;
+	--block-size: 4.8em;
+
+	&.hidden {
+		display: none;
+	}
+
+	&.select-all {
+		li.block:not(.selected) {
+			filter: grayscale(1) brightness(0.6);
+		}
+
+		&.large,
+		&.medium,
+		&.small {
+			li.block:active div,
+			li.block:hover div,
+			li.block:not(.folder):active img,
+			li.block:not(.folder):hover img {
+				transform: none;
+			}
+
+			li.block.selected div {
+				outline: 4px solid var(--color-blue);
+			}
+		}
+
+		&.inline,
+		&.text {
+			.selected.folder span,
+			.selected a {
+				border-radius: 0.5em;
+				outline: 3px solid var(--color-blue);
+				background-color: rgba(0, 114, 238, 0.1333333333);
+			}
+
+			&:hover span {
+				text-decoration: none;
+			}
+		}
+	}
+
+	&.in-folder {
+		#link-list {
+			background-color: #fff2;
+			border: 1px solid #fff4;
+			backdrop-filter: blur(2em);
+		}
+
+		#link-title div:not(:first-child) {
+			display: none;
+		}
+
+		#b_add-tab {
+			display: none;
+		}
+	}
+
+	&.hiding {
+		#link-list {
+			opacity: 0;
+		}
+
+		.block {
+			transform: scale(0.9);
+		}
+	}
+}
+
+#link-list {
+	position: relative;
+	display: inline-flex;
+	visibility: visible;
+	flex-wrap: wrap;
+	justify-content: center;
+	row-gap: var(--row-gap);
+	column-gap: var(--column-gap);
+	min-height: var(--min-height);
+	min-width: 6em;
+	padding: 2em 5em;
+	margin: 0;
+	max-width: var(--links-width);
+	background-color: transparent;
+	border: 1px solid transparent;
+	border-radius: 1em;
+	transition: opacity 0.3s $easeOutThree;
+}
+
+li.block {
+	width: var(--block-size);
+	$bouncyTiming: cubic-bezier(0.68, -0.2, 0.265, 1.2);
+	transition: transform 0.2s $bouncyTiming, opacity 0.2s $bouncyTiming;
+	cursor: pointer;
+
+	&.removed {
+		margin: 0 calc((var(--gap) / 2) - var(--gap)); // minus half of gap
+		width: 0 !important;
+		opacity: 0;
+		overflow: hidden;
+		transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
+
+		span {
+			min-height: 0 !important;
+			max-height: 0 !important;
+			transition: max-height 0.3s 0.3s $easeOutThree;
+		}
+
+		div {
+			transform: scale(0.6);
+		}
+	}
+
+	div,
+	img {
+		transition: transform 0.2s $easeOutThree;
+	}
+
+	div {
+		width: var(--block-size);
+		height: var(--block-size);
+		border-radius: 1em;
+		border: 1px solid white;
+		background-color: white;
+		box-shadow: $textShadow;
+		box-sizing: border-box;
+	}
+
+	a {
+		color: white;
+		cursor: pointer;
+		text-decoration: none;
+		transition: width 0.2s $easeOutThree;
+		-webkit-touch-callout: none;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+	}
+
+	span {
+		overflow: hidden;
+	}
+
+	&:hover div {
+		box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+		transform: scale(1.1);
+	}
+
+	&:active div {
+		transform: scale(1.05);
+		transition: border-color 0.1s, filter 0.1s, transform 0.1s;
+	}
+}
+
+li.block.folder > div {
+	display: grid;
+	column-gap: 4px;
+	height: var(--block-size);
+	grid-template-columns: 1fr 1fr;
+	background-color: #fff3;
+	border: 1px solid #fff4;
+	backdrop-filter: blur(1em);
+	box-sizing: border-box;
+	transition: transform 0.1s linear, border-color 0.1s linear;
+}
+
+li.block.folder img[src] {
+	display: initial;
+}
+
+li.block.folder img {
+	display: none;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+//
+//  Link styles
+//
+
+#linkblocks.large {
+	--min-height: 6em;
+	--column-gap: 2.5em;
+	--block-size: 4.8em;
+
+	li.block {
+		div {
+			padding: 0.3em;
+			border-radius: 1em;
+		}
+
+		img {
+			border-radius: 0.6em;
+		}
+
+		span {
+			display: block;
+			width: 100%;
+			padding-top: 0.4em;
+			line-height: 1.3em;
+			min-height: 1.3em;
+			max-height: 3.9em;
+		}
+	}
+
+	li.block.folder div {
+		padding: 0.3em;
+
+		img {
+			border-radius: 4px;
+			padding: 2px;
+			width: 100%;
+			height: auto;
+			box-sizing: border-box;
+			background-color: white;
+		}
+	}
+}
+
+#linkblocks.medium {
+	--min-height: 5em;
+	--column-gap: 2em;
+	--block-size: 3.5em;
+
+	li {
+		div {
+			padding: 0.2em;
+			border-radius: 0.8em;
+		}
+
+		img {
+			border-radius: 0.5em;
+		}
+
+		span {
+			display: block;
+			width: 100%;
+			padding-top: 0.4em;
+			line-height: 1.3em;
+			min-height: 1.3em;
+			max-height: 3.9em;
+		}
+	}
+}
+
+#linkblocks.small {
+	--min-height: 2em;
+	--block-size: 2.5em;
+	--column-gap: 1.5em;
+	--row-gap: 1.5em;
+
+	#link-list {
+		min-height: 2em;
+		gap: 1.5em;
+	}
+
+	a,
+	li {
+		position: relative;
+	}
+
+	li {
+		width: 2.5em;
+
+		div {
+			width: 2.5em;
+			height: 2.5em;
+			padding: 0.1em;
+			border-radius: 0.4em;
+		}
+
+		div,
+		img {
+			border-radius: 0.4em;
+		}
+
+		span {
+			position: absolute;
+			visibility: hidden;
+
+			top: 3em;
+			transform: translateX(-50%);
+			padding: 0em 0.6em;
+			opacity: 0;
+			color: white;
+			font-size: 0.9em;
+			line-height: 1.3em;
+			max-height: 3.9em;
+			text-shadow: none;
+			border-radius: 0.3em;
+			background-color: #fff3;
+			border: 1px solid rgba(255, 255, 255, 0.075);
+			transition: opacity 0.2s;
+			z-index: 1;
+
+			@include frostedGlass();
+
+			&:empty {
+				display: none;
+			}
+		}
+
+		&:hover span {
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+
+	&.removed {
+		margin-right: -1em;
+		margin-left: -1em;
+	}
+}
+
+#linkblocks.inline {
+	--min-height: 3em;
+	--block-size: 2em;
+	--column-gap: 2em;
+
+	justify-content: flex-start;
+
+	li.folder span::before {
+		content: '📁';
+		padding-right: 0.5em;
+	}
+
+	li.folder div {
+		display: none;
+	}
+
+	li a,
+	li.folder span {
+		padding: 0 0.2em;
+		outline: 3px solid transparent;
+	}
+
+	li {
+		width: auto;
+
+		&:hover span {
+			text-decoration: underline;
+		}
+
+		&:hover div {
+			box-shadow: none;
+			transform: none;
+		}
+
+		a {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			column-gap: 0.7em;
+		}
+
+		div {
+			padding: 1px;
+		}
+
+		div,
+		img {
+			border-radius: 0.4em;
+		}
+
+		span {
+			display: block;
+			max-width: 6em;
+			font-size: 1.2em;
+			text-overflow: ellipsis;
+			white-space: pre;
+			line-height: 2em;
+		}
+	}
+}
+
+#linkblocks.text {
+	--min-height: 3em;
+	--column-gap: 1.8em;
+
+	justify-content: flex-start;
+
+	#link-list {
+		column-gap: 1.8em;
+		min-height: 3em;
+	}
+
+	li {
+		width: auto;
+
+		&:hover span {
+			text-decoration: underline;
+		}
+
+		div,
+		img {
+			display: none;
+		}
+
+		a {
+			padding: 0.2em;
+		}
+
+		span {
+			width: 100%;
+			max-width: 16em;
+			font-size: 1.5em;
+			text-overflow: ellipsis;
+			white-space: pre;
+			border-radius: 8px;
+		}
+	}
+}
+
+//
+//  Folder styles for medium and small
+//
+
+#linkblocks.medium,
+#linkblocks.small {
+	li.folder div {
+		position: relative;
+		display: block;
+	}
+
+	li.folder img {
+		position: absolute;
+		padding: 1px;
+		transform: scale(0.5) translate(-50%, -50%);
+		background-color: white;
+	}
+
+	li.folder img:nth-child(1) {
+		top: 15%;
+		left: 15%;
+		z-index: 5;
+	}
+
+	li.folder img:nth-child(2) {
+		top: 30%;
+		left: 30%;
+		z-index: 4;
+	}
+
+	li.folder img:nth-child(3),
+	li.folder img:nth-child(4) {
+		display: none;
+	}
+}
+
+//
+//  Links drag and drop
+//
+
+#linkblocks.large,
+#linkblocks.medium,
+#linkblocks.small {
+	.drop-source {
+		div {
+			transform: scale(0.8);
+		}
+
+		span {
+			opacity: 0;
+			transition: opacity 0.05s;
+		}
+	}
+
+	.drop-target {
+		div {
+			border-color: #fff4;
+			background-color: #fff2;
+		}
+
+		img {
+			transform: scale(0.8);
+			background-color: white;
+		}
+	}
+
+	.drop-target.folder {
+		img {
+			opacity: 0.5;
+			transform: none;
+			background-color: white;
+		}
+	}
+}
+
+#linkblocks.inline,
+#linkblocks.text {
+	.drop-source {
+		div {
+			opacity: 0;
+		}
+
+		span {
+			transform: scale(0.8);
+		}
+	}
+
+	.drop-target {
+		span,
+		div {
+			opacity: 0.5;
+		}
+	}
+}
+
+#linkblocks.dropping,
+#linkblocks.dragging {
+	#link-list {
+		padding: 0;
+		max-width: none;
+		will-change: transform;
+		width: calc(var(--drag-width) - 2px);
+		height: calc(var(--drag-height) - 2px);
+	}
+
+	a,
+	div {
+		user-select: none;
+		pointer-events: none;
+	}
+
+	.block {
+		pointer-events: none;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 3;
+	}
+
+	.on {
+		z-index: 4;
+		transition: none;
+		pointer-events: none;
+	}
+}
+
+//
+// Tabs and folder titles
+//
+
+#link-title {
+	position: relative;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	column-gap: 1em;
+	padding: 1em 4em;
+	margin: auto;
+	width: fit-content;
+
+	div {
+		cursor: pointer;
+		border-radius: 8px;
+		opacity: 0.7;
+
+		&.selected,
+		&:hover,
+		&:hover input {
+			opacity: 1;
+		}
+	}
+
+	div,
+	input {
+		border-radius: 8px;
+	}
+
+	input {
+		min-width: 3em;
+		max-width: 32ch;
+		padding: 0.1em 0.6em;
+		font-size: 1.3em;
+		color: white;
+		border: none;
+		text-align: center;
+		border: 1px solid transparent;
+		background-color: transparent;
+
+		// cannot click on div below without this
+		position: relative;
+		z-index: -1;
+
+		&:focus-within {
+			background-color: #fff1;
+			backdrop-filter: blur(1em);
+		}
+
+		&::placeholder {
+			color: #fffa;
+		}
+	}
+}
+
+#linkblocks.in-folder,
+#linkblocks.with-tabs {
+	#link-title {
+		display: flex;
+	}
+}
+
+#linkblocks.in-folder #link-title div:first-child,
+#linkblocks #link-title div.selected {
+	// Highlights selected title in tabs and folder title
+	// Needs this because, folder selection is in #linkblocks
+	// and tabs selection is deep in div.selected
+
+	opacity: 1;
+
+	input {
+		border-color: #fff6;
+		z-index: auto;
+	}
+}
+
+//
+//	Add buttons
+//
+
+#linkblocks button {
+	position: absolute;
+	right: 0;
+	width: 2em;
+	height: 2em;
+	color: white;
+	font-size: 1.1em;
+	font-weight: bold;
+	border-radius: 4px;
+	border: 1px solid transparent;
+	background-color: #fff2;
+	transition: opacity 0.05s;
+
+	@include frostedGlass(1em);
+
+	&:hover {
+		background-color: #fff3;
+	}
+
+	opacity: 0;
+	user-select: none;
+	pointer-events: none;
+	touch-action: none;
+}
+
+#link-title:hover button,
+#link-list:hover button {
+	opacity: 1;
+	user-select: initial;
+	pointer-events: initial;
+	touch-action: initial;
+}
+
+#add-link-wrapper {
+	position: absolute;
+	right: 0;
+	height: var(--block-size);
+	display: flex;
+	align-items: center;
+}
+
+#linkblocks.text #add-link-wrapper {
+	height: 2.2em;
+}
+
+#linkblocks.dragging #add-link-wrapper,
+#linkblocks.dropping #add-link-wrapper {
+	display: none;
+}

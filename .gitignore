@@ -12,3 +12,7 @@ env.json
 
 node_modules/
 release/
+test-results
+playwright-report
+playwright/.cache
+.wrangler

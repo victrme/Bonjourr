@@ -1,38 +1,26 @@
 import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
 import parse from './utils/parse'
 
-import type { Sync } from './types/sync'
-import type { Local } from './types/local'
-
 type Keyval = {
 	[key: string]: unknown
 }
 
-type StartupStorage = {
-	sync: Sync | null
-	local: Local | null
-}
-
-declare global {
-	interface Window {
-		startupStorage?: StartupStorage
-	}
-}
+type AllStorage = { sync: Sync.Storage; local: Local.Storage }
 
 type Storage = {
 	sync: {
-		get: (key?: string | string[]) => Promise<Sync>
+		get: (key?: string | string[]) => Promise<Sync.Storage>
 		set: (val: Keyval) => void
 		remove: (key: string) => void
 		clear: () => void
 	}
 	local: {
-		get: (key: string | string[]) => Promise<Local>
+		get: (key: string | string[]) => Promise<Local.Storage>
 		set: (val: Keyval) => void
 		remove: (key: string) => void
 		clear: () => void
 	}
-	init: () => Promise<{ sync: Sync; local: Local }>
+	init: () => Promise<AllStorage>
 }
 
 function verifyDataAsSync(data: Keyval) {
@@ -44,13 +32,24 @@ function verifyDataAsSync(data: Keyval) {
 		}
 	}
 
-	return data as Sync
+	return data as Sync.Storage
+}
+
+export async function getSyncDefaults(): Promise<Sync.Storage> {
+	try {
+		const json = await (await fetch('defaults.json')).json()
+		return verifyDataAsSync(json)
+	} catch (error) {
+		console.log('No defaults.json settings found')
+	}
+
+	return SYNC_DEFAULT
 }
 
 function online(): Storage {
 	const sync = {
 		set: function (value: Keyval) {
-			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
+			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 
 			if (typeof value !== 'object') {
 				return console.warn('Value is not an object: ', value)
@@ -65,11 +64,11 @@ function online(): Storage {
 		},
 
 		get: async (_?: string | string[]) => {
-			return verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
+			return verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 		},
 
 		remove: (key: string) => {
-			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
+			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 			delete data[key]
 			localStorage.bonjourr = JSON.stringify(data ?? {})
 		},
@@ -96,13 +95,13 @@ function online(): Storage {
 			}
 
 			for (const key of keys) {
-				const val = parse<Partial<Local>>(localStorage.getItem(key) ?? '')
+				const val = parse<Partial<Local.Storage>>(localStorage.getItem(key) ?? '')
 				if (val) {
 					res[key] = val
 				}
 			}
 
-			return res as Local
+			return res as Local.Storage
 		},
 
 		remove: (key: string) => {
@@ -123,7 +122,11 @@ function online(): Storage {
 		}
 	}
 
-	return { sync, local, init }
+	return {
+		sync,
+		local,
+		init,
+	}
 }
 
 function webext(): Storage {
@@ -132,7 +135,7 @@ function webext(): Storage {
 			chrome.storage.sync.set(val, cb)
 		},
 
-		get: async (key?: string | string[]): Promise<Sync> => {
+		get: async (key?: string | string[]): Promise<Sync.Storage> => {
 			const data = await chrome.storage.sync.get(key ?? null)
 			return verifyDataAsSync(data)
 		},
@@ -152,7 +155,7 @@ function webext(): Storage {
 		},
 
 		get: async (key: string | string[]) => {
-			return (await chrome.storage.local.get(key ?? null)) as Local
+			return (await chrome.storage.local.get(key ?? null)) as Local.Storage
 		},
 
 		remove: (key: string) => {
@@ -164,26 +167,36 @@ function webext(): Storage {
 		},
 	}
 
-	const init = async (): Promise<{ sync: Sync; local: Local }> => {
-		if (window.startupStorage?.sync && window.startupStorage?.local) {
-			const { sync, local } = window.startupStorage
-			delete window.startupStorage
-			return { sync: verifyDataAsSync(sync), local }
+	const init = async (): Promise<AllStorage> => {
+		// This waits for chrome.storage to be stored in a global variable
+		// that is created in file `webext-storage.js`
+
+		//@ts-ignore
+		const store = startupStorage as AllStorage
+		const isReady = (): boolean => 'sync' in store && 'local' in store
+
+		if (!isReady()) {
+			await new Promise((resolve) => {
+				document.addEventListener('webextstorage', function () {
+					isReady() ? resolve(true) : ''
+				})
+			})
 		}
 
-		await new Promise((resolve) => {
-			;(function cycle() {
-				const { sync, local } = window.startupStorage ?? {}
-				sync && local ? resolve(true) : setTimeout(cycle)
-			})()
-		})
+		const sync = store.sync
+		const local = store.local
 
-		const { sync, local } = window.startupStorage as { sync: Sync; local: Local }
-		delete window.startupStorage
-		return { sync: verifyDataAsSync(sync), local }
+		//@ts-ignore
+		startupStorage = undefined
+
+		return { sync, local }
 	}
 
-	return { sync, local, init }
+	return {
+		sync,
+		local,
+		init,
+	}
 }
 
 export default PLATFORM === 'online' ? online() : webext()

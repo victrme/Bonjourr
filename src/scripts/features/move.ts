@@ -4,12 +4,21 @@ import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import storage from '../storage'
 
-import type { Move, MoveKeys, MoveItem, Sync } from '../types/sync'
+// -------------------------------------------------|
+// These types and storage design will have to go	|
+// which makes this mess ok :)						|
+// -------------------------------------------------|
 
-type Layout = Move['layouts'][keyof Move['layouts']]
+type Layout = Sync.Move.Layout
+type Grid = Layout['grid']
+type Key = Sync.Move.Key
+type Item = Sync.Move.Item
+type Selection = Sync.Move.Selection
+
+type Move = Sync.Storage['move']
 
 type UpdateMove = {
-	widget?: { id: MoveKeys; on: boolean }
+	widget?: { id: Key; on: boolean }
 	span?: 'col' | 'row'
 	reset?: true
 	toggle?: true
@@ -33,13 +42,13 @@ const elements = {
 	quotes: document.getElementById('quotes_container'),
 }
 
-let activeID: MoveKeys | null
+let activeID: Key | null
 
 // Utils (no dom uses or manipulation)
 
 const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
-function widgetsListToData(list: { [key in MoveKeys]?: boolean }, data: Sync) {
+function widgetsListToData(list: { [key in Key]?: boolean }, data: Sync.Storage) {
 	let states: { [key: string]: unknown } = {}
 
 	if ('time' in list) states.time = list.time
@@ -57,10 +66,10 @@ function areaStringToLayoutGrid(area: string) {
 	let rows = area.split(splitchar).filter((a) => a.length > 1)
 	let grid = rows.map((r) => r.split(' '))
 
-	return grid as Layout['grid']
+	return grid as Grid
 }
 
-function layoutToGridAreas(grid: Layout['grid']) {
+function layoutToGridAreas(grid: Grid) {
 	let areas = ``
 
 	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
@@ -69,7 +78,7 @@ function layoutToGridAreas(grid: Layout['grid']) {
 	return areas
 }
 
-function getEnabledWidgetsFromStorage(data: Sync) {
+function getEnabledWidgetsFromStorage(data: Sync.Storage) {
 	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
 	// Time & main in first place ensures grid size is enough to add quotes & links
 	let displayed = {
@@ -83,17 +92,17 @@ function getEnabledWidgetsFromStorage(data: Sync) {
 
 	return Object.entries(displayed)
 		.filter(([_, val]) => val)
-		.map(([key, _]) => key as MoveKeys)
+		.map(([key, _]) => key as Key)
 }
 
-function getEnabledWidgetsFromGrid(grid: Layout['grid']) {
+function getEnabledWidgetsFromGrid(grid: Grid): Key[] {
 	let flat = [...grid.flat()]
 	flat = flat.filter((str) => str !== '.') // remove empty cells
 	flat = flat.filter((str, i) => flat.indexOf(str) === i) // remove duplicates
-	return flat
+	return flat as Key[]
 }
 
-function findIdPositions(grid: Layout['grid'], id: string) {
+function findIdPositions(grid: Grid, id: string) {
 	const allpos: { posCol: number; posRow: number }[] = []
 
 	grid.flat().forEach((a, i) => {
@@ -107,7 +116,7 @@ function findIdPositions(grid: Layout['grid'], id: string) {
 	return allpos
 }
 
-function getSpanDirection(grid: Layout['grid'], id: string) {
+function getSpanDirection(grid: Grid, id: string) {
 	const poses = findIdPositions(grid, id)
 	const rows = Object.values(poses).map(({ posRow }) => posRow)
 
@@ -120,7 +129,7 @@ function hasDuplicateInArray(arr: string[], id?: string) {
 	return arr.filter((a) => a === (id || activeID)).length > 1
 }
 
-function isRowEmpty(grid: Layout['grid'], index: number) {
+function isRowEmpty(grid: Grid, index: number) {
 	if (grid[index] === undefined) return false
 
 	let row = grid[index]
@@ -135,7 +144,7 @@ function isRowEmpty(grid: Layout['grid'], index: number) {
 	return empty
 }
 
-function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
+function spansInGridArea(grid: Grid, id: Key, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
 	function addSpans(arr: string[]) {
 		let target = arr.indexOf(id)
 		let stopper = [false, false]
@@ -197,12 +206,12 @@ function spansInGridArea(grid: Layout['grid'], id: MoveKeys, { toggle, remove }:
 	return grid
 }
 
-export function gridWidget(grid: Layout['grid'], selection: Move['selection'], id: MoveKeys, add: boolean) {
+export function gridWidget(grid: Grid, selection: Selection, id: Key, add: boolean) {
 	function addWidget() {
 		if (grid.length === 0) {
-			if (selection === 'single') return [[id]] as [string][]
-			if (selection === 'double') return [[id, '.']] as [string, string][]
-			if (selection === 'triple') return [['.', id, '.']] as [string, string, string][]
+			if (selection === 'single') return [[id]]
+			if (selection === 'double') return [[id, '.']]
+			if (selection === 'triple') return [['.', id, '.']]
 		}
 
 		// in triple column, default column is [x, here, x]
@@ -228,7 +237,7 @@ export function gridWidget(grid: Layout['grid'], selection: Move['selection'], i
 
 			// remove spans on targeted cell
 			if (i === targetCol && positions.length > 1) {
-				grid = spansInGridArea(grid, cell as MoveKeys, { remove: true })
+				grid = spansInGridArea(grid, cell as Key, { remove: true })
 				return
 			}
 
@@ -271,11 +280,11 @@ export function gridWidget(grid: Layout['grid'], selection: Move['selection'], i
 
 // Funcs (modifies dom in some ways)
 
-function setGridAreas(layout: Layout) {
-	document.documentElement.style.setProperty('--grid', layoutToGridAreas(layout.grid))
+function setGridAreas(grid: Grid) {
+	document.documentElement.style.setProperty('--grid', layoutToGridAreas(grid))
 }
 
-function setAlign(id: MoveKeys, item?: MoveItem) {
+function setAlign(id: Key, item?: Item) {
 	const elem = elements[id]
 
 	if (elem) {
@@ -293,7 +302,7 @@ function setAlign(id: MoveKeys, item?: MoveItem) {
 
 function setAllAligns(items: Layout['items']) {
 	Object.keys(elements).forEach((key) => {
-		const id = key as MoveKeys
+		const id = key as Key
 		setAlign(id, items[id])
 	})
 }
@@ -305,18 +314,18 @@ function manageGridSpanner(selection: string) {
 }
 
 const gridOverlay = {
-	add: (id: MoveKeys) => {
+	add: (id: Key) => {
 		const button = document.createElement('button')
 		button.id = 'move-overlay-' + id
 		button.className = 'move-overlay'
 		dominterface?.appendChild(button)
 
 		button.addEventListener('click', () => {
-			moveElements(null, { select: id })
+			moveElements(undefined, { select: id })
 		})
 	},
 
-	remove: (id: MoveKeys) => {
+	remove: (id: Key) => {
 		document.querySelector('#move-overlay-' + id)?.remove()
 	},
 
@@ -326,13 +335,13 @@ const gridOverlay = {
 }
 
 const buttonControl = {
-	layout: (selection: Move['selection']) => {
+	layout: (selection: Selection) => {
 		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
 			button.classList.toggle('selected', button.dataset.layout === selection)
 		})
 	},
 
-	grid: (id: MoveKeys) => {
+	grid: (id: Key) => {
 		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '')
 		if (grid.length === 0) return
 
@@ -374,7 +383,7 @@ const buttonControl = {
 		})
 	},
 
-	span: (id: MoveKeys) => {
+	span: (id: Key) => {
 		function applyStates(dir: 'col' | 'row', state: boolean) {
 			const dirButton = document.querySelector(`#grid-span-${dir}s`)
 			const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
@@ -385,7 +394,7 @@ const buttonControl = {
 			dirButton?.classList.toggle('selected', state)
 		}
 
-		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '') as Layout['grid']
+		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '') as Grid
 		if (grid.length === 0) return
 
 		const { posCol, posRow } = findIdPositions(grid, id)[0]
@@ -396,7 +405,7 @@ const buttonControl = {
 		applyStates('row', hasDuplicateInArray(row, id))
 	},
 
-	align: (item?: MoveItem) => {
+	align: (item?: Item) => {
 		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
@@ -404,7 +413,7 @@ const buttonControl = {
 		textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (item?.text || '')))
 	},
 
-	title: (id?: MoveKeys | null) => {
+	title: (id?: Key | null) => {
 		let titlestr = ''
 		const editingNames = {
 			time: tradThis('Time & Date'),
@@ -439,7 +448,7 @@ function removeSelection() {
 	})
 }
 
-export default function moveElements(init: Move | null, events?: UpdateMove) {
+export default function moveElements(init?: Move, events?: UpdateMove) {
 	const moverdom = document.querySelector<HTMLElement>('#element-mover')
 	let firstPos = { x: 0, y: 0 }
 	let moverPos = { x: 0, y: 0 }
@@ -466,16 +475,16 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 			let grid = move.layouts[move.selection].grid
 			const allActivePos = findIdPositions(grid, activeID)
-			const allAffectedIds: MoveKeys[] = []
+			const allAffectedIds: Key[] = []
 
 			// step 0: Adds new line
 			const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
 
 			if (isGridOverflowing) {
-				// fugly typing, that'll do for now
-				if (move.selection === 'single') (grid as Move['layouts']['single']['grid']).push(['.'])
-				if (move.selection === 'double') (grid as Move['layouts']['double']['grid']).push(['.', '.'])
-				if (move.selection === 'triple') (grid as Move['layouts']['triple']['grid']).push(['.', '.', '.'])
+				// dangerous typing /!!!\
+				if (move.selection === 'single') grid.push(['.'])
+				if (move.selection === 'double') grid.push(['.', '.'])
+				if (move.selection === 'triple') grid.push(['.', '.', '.'])
 			}
 
 			// step 1: Find elements affected by grid change
@@ -483,7 +492,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const newposition = grid[posRow + y][posCol + x]
 
 				if (newposition !== '.') {
-					allAffectedIds.push(newposition as MoveKeys)
+					allAffectedIds.push(newposition as Key)
 				}
 			})
 
@@ -512,7 +521,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			})
 
 			// step 5: profit ??????????????
-			setGridAreas(move.layouts[move.selection])
+			setGridAreas(move.layouts[move.selection].grid)
 			move.layouts[move.selection].grid = grid
 
 			buttonControl.grid(activeID)
@@ -538,7 +547,9 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 		function layoutChange() {
 			// Only update selection if coming from user
-			move.selection = (prop.layout || 'single') as Move['selection']
+			if (prop.layout === 'single' || prop.layout === 'double' || prop.layout === 'triple') {
+				move.selection = prop.layout
+			}
 
 			// Assign layout after mutating move
 			const layout = move.layouts[move.selection]
@@ -554,7 +565,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			}
 
 			// Update storage
-			const states = widgetsListToData(list, data as Sync)
+			const states = widgetsListToData(list, data)
 			storage.sync.set({ ...states, move })
 
 			// This triggers interface fade
@@ -562,7 +573,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 			setTimeout(() => {
 				setAllAligns(layout.items)
-				setGridAreas(layout)
+				setGridAreas(layout.grid)
 				buttonControl.layout(move.selection)
 				manageGridSpanner(move.selection)
 				removeSelection()
@@ -570,7 +581,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				// Toggle overlays if we are editing
 				if (dominterface?.classList.contains('move-edit')) {
 					gridOverlay.removeAll()
-					widgetsInGrid.forEach((id) => gridOverlay.add(id as MoveKeys))
+					widgetsInGrid.forEach((id) => gridOverlay.add(id))
 				}
 
 				if (activeID) {
@@ -582,7 +593,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 
 		function layoutReset() {
 			const layout = move.layouts[move.selection]
-			const enabled = getEnabledWidgetsFromStorage(data as Sync)
+			const enabled = getEnabledWidgetsFromStorage(data)
 			let grid: typeof layout.grid = []
 
 			enabled.forEach((id) => {
@@ -593,7 +604,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			move.layouts[move.selection].items = {}
 
 			removeSelection()
-			setGridAreas(layout)
+			setGridAreas(layout.grid)
 			buttonControl.title()
 
 			// Reset aligns
@@ -618,7 +629,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			// Remove selection modifiers and quit if failed to get id
 			if (!isEditing() || !prop.select) return
 
-			const id = prop.select as MoveKeys
+			const id = prop.select as Key
 
 			buttonControl.align(layout.items[id])
 			buttonControl.span(id)
@@ -636,7 +647,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				gridOverlay.removeAll()
 			} else {
 				buttonControl.layout(move.selection)
-				const ids = getEnabledWidgetsFromStorage(data as Sync)
+				const ids = getEnabledWidgetsFromStorage(data)
 				ids.forEach((id) => gridOverlay.add(id))
 			}
 
@@ -653,7 +664,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			const layout = move.layouts[move.selection]
 			layout.grid = spansInGridArea(layout.grid, activeID, { toggle: dir })
 
-			setGridAreas(layout)
+			setGridAreas(layout.grid)
 			buttonControl.grid(activeID)
 			buttonControl.span(activeID)
 
@@ -669,7 +680,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 			move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
 
 			removeSelection()
-			setGridAreas(move.layouts[move.selection])
+			setGridAreas(move.layouts[move.selection].grid)
 			setAllAligns(move.layouts[move.selection].items)
 
 			// add/remove widget overlay only when editing move
@@ -677,10 +688,10 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				on ? gridOverlay.add(id) : gridOverlay.remove(id)
 			}
 
-			let list: { [key in MoveKeys]?: boolean } = {}
+			let list: { [key in Key]?: boolean } = {}
 			list[id] = on
 
-			const states = widgetsListToData(list, data as Sync)
+			const states = widgetsListToData(list, data)
 			storage.sync.set({ ...states, move })
 		}
 
@@ -698,7 +709,7 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 				const widgets = getEnabledWidgetsFromGrid(grid)
 
 				widgets.forEach((id) => {
-					gridOverlay.add(id as MoveKeys)
+					gridOverlay.add(id as Key)
 				})
 			}
 		}
@@ -849,6 +860,6 @@ export default function moveElements(init: Move | null, events?: UpdateMove) {
 		const layout = init.layouts[init.selection]
 		manageGridSpanner(init.selection)
 		setAllAligns(layout.items)
-		setGridAreas(layout)
+		setGridAreas(layout.grid)
 	}
 }

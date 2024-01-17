@@ -79,6 +79,47 @@ If you feel like we've earned it and you want to support independant open source
 
 <br>
 
+
+
+## 🔧 Built with
+
+-   Styled with [Sass](https://sass-lang.com/guide)
+-   Scripts with pure JS
+-   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
+-   Our tiny hands 🙌
+
+<br>
+
+## 👀 Authors
+
+-   **Tahoe Beetschen** · [portfolio](https://tahoe.be) · [GitHub](https://github.com/Tahoooe)
+-   **Victor Azevedo** · [portfolio](https://victr.me) · [GitHub](https://github.com/victrme)
+
+<br>
+
+## 🧑‍💻 Contributors and translations
+
+-   **🇸🇪 Swedish translation** · [Benjamin Horn](https://benjaminhorn.io/) · [GitHub](https://github.com/beije)
+-   **🇳🇱 Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
+-   **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92) & [Jakub Mikuło](https://github.com/jmikulo)
+-   **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
+-   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
+-   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
+-   **🇸🇰 Slovak translation** · Roman Bartík
+-   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
+-   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
+-   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
+-   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
+-   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
+-   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
+-   **🇩🇰 Danish translation** · kar1 · [GitHub](https://github.com/kar1)
+-   **🇫🇮 Finnish translation** · jaajko · [Jaajko](https://jaajko.fi) · [GitHub](https://github.com/jaajko)
+-   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
+-   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
+-   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
+-   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
+-   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
+
 ## 👨‍💻 Running Bonjourr locally
 
 Clone this repository
@@ -138,44 +179,3 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 -   Open a live server, for example using: `python -m http.server`
 -   Go to http://localhost:8000/release/online/
-
-
-<br>
-
-## 🔧 Built with
-
--   Styled with [Sass](https://sass-lang.com/guide)
--   Scripts with pure JS
--   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
--   Our tiny hands 🙌
-
-<br>
-
-## 👀 Authors
-
--   **Tahoe Beetschen** · [portfolio](https://tahoe.be) · [GitHub](https://github.com/Tahoooe)
--   **Victor Azevedo** · [portfolio](https://victr.me) · [GitHub](https://github.com/victrme)
-
-<br>
-
-## 🧑‍💻 Contributors and translations
-
--   **🇸🇪 Swedish translation** · [Benjamin Horn](https://benjaminhorn.io/) · [GitHub](https://github.com/beije)
--   **🇳🇱 Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
--   **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92) & [Jakub Mikuło](https://github.com/jmikulo)
--   **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
--   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
--   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
--   **🇸🇰 Slovak translation** · Roman Bartík
--   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
--   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
--   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
--   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
--   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
--   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
--   **🇩🇰 Danish translation** · kar1 · [GitHub](https://github.com/kar1)
--   **🇫🇮 Finnish translation** · jaajko · [Jaajko](https://jaajko.fi) · [GitHub](https://github.com/jaajko)
--   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
--   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
--   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
--   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)

@@ -1,4 +1,3 @@
-import storage from './storage'
 import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
@@ -6,21 +5,23 @@ import weather from './features/weather'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
-import linksImport from './features/linksImport'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
+import storage, { getSyncDefaults } from './storage'
+import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 
 import langList from './langs'
 import parse from './utils/parse'
-import throttle from './utils/throttle'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, closeEditLink, stringMaxSize, turnRefreshButton } from './utils'
+import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
+
+import type { Langs } from '../types/langs'
 
 import {
 	toggleWidgetsDisplay,
@@ -32,10 +33,6 @@ import {
 	textShadow,
 	pageControl,
 } from './index'
-
-import type { Sync, Weather } from './types/sync'
-
-type Langs = keyof typeof langList
 
 export async function settingsInit() {
 	const data = await storage.sync.get()
@@ -57,7 +54,10 @@ export async function settingsInit() {
 	signature(settingsDom)
 	showall(data.showall, false, settingsDom)
 
-	setTimeout(() => document.body.appendChild(settingsDom))
+	setTimeout(() => {
+		document.body.appendChild(settingsDom)
+		document.dispatchEvent(new Event('settings'))
+	})
 
 	const paramId = (str: string) => settingsDom.querySelector('#' + str) as HTMLInputElement
 	const paramClasses = (str: string) => settingsDom.querySelectorAll('.' + str)!
@@ -86,6 +86,7 @@ export async function settingsInit() {
 	initInput('i_tabtitle', data.tabtitle ?? '')
 	initInput('i_pagewidth', data.pagewidth || 1600)
 	initInput('i_pagegap', data.pagegap ?? 1)
+	initInput('i_dateformat', data.dateformat || 'eu')
 	initInput('i_greeting', data.greeting ?? '')
 	initInput('i_textshadow', data.textShadow ?? 0.2)
 	initInput('i_noteswidth', data.notes?.width || 50)
@@ -97,7 +98,7 @@ export async function settingsInit() {
 	initInput('i_sbrequest', data.searchbar?.request || '')
 	initInput('i_qtfreq', data.quotes?.frequency || 'day')
 	initInput('i_qttype', data.quotes?.type || 'classic')
-	initInput('i_qtlist', JSON.stringify(userQuotes) ?? '')
+	initInput('i_qtlist', userQuotes ?? '')
 	initInput('i_clockface', data.clock?.face || 'none')
 	initInput('i_clockstyle', data.clock?.style || 'round')
 	initInput('i_clocksize', data.clock?.size ?? 5)
@@ -116,9 +117,10 @@ export async function settingsInit() {
 	initCheckbox('i_showall', data.showall)
 	initCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	initCheckbox('i_quicklinks', data.quicklinks)
+	initCheckbox('i_syncbookmarks', !!data.syncbookmarks)
+	initCheckbox('i_linktabs', data.linktabs.active)
 	initCheckbox('i_linknewtab', data.linknewtab)
 	initCheckbox('i_time', data.time)
-	initCheckbox('i_usdate', data.usdate)
 	initCheckbox('i_main', data.main)
 	initCheckbox('i_greethide', !data.hide?.greetings ?? true)
 	initCheckbox('i_notes', data.notes?.on ?? false)
@@ -165,6 +167,11 @@ export async function settingsInit() {
 	// Favicon doesn't work on Safari
 	if (BROWSER === 'safari') {
 		paramId('i_favicon').setAttribute('style', 'display: none')
+	}
+
+	// Export as file doesn't work on Safari extension
+	if (PLATFORM === 'safari') {
+		paramId('save_wrapper').setAttribute('style', 'display: none')
 	}
 
 	// Activate feature options
@@ -308,31 +315,24 @@ export async function settingsInit() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	const submitLinkFunc = throttle(() => quickLinks(null, { add: true }), 1200)
-
-	paramId('i_title').addEventListener('keyup', function (this: KeyboardEvent) {
-		if (this.code === 'Enter') paramId('i_url')?.focus()
+	paramId('i_syncbookmarks').addEventListener('change', function (this) {
+		syncNewBookmarks(undefined, this.checked)
 	})
 
-	paramId('i_url').addEventListener('change', function (this: KeyboardEvent) {
-		submitLinkFunc()
-	})
-
-	paramId('submitlink').addEventListener('click', (e) => {
-		submitLinkFunc()
-		inputThrottle(e.target as HTMLInputElement, 1200)
+	paramId('i_linktabs').addEventListener('change', function (this) {
+		quickLinks(undefined, { tab: this.checked })
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {
-		quickLinks(null, { newtab: this.checked })
+		quickLinks(undefined, { newtab: this.checked })
 	})
 
 	paramId('i_linkstyle').addEventListener('change', function (this) {
-		quickLinks(null, { style: this.value })
+		quickLinks(undefined, { style: this.value })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
-		quickLinks(null, { row: this.value })
+		quickLinks(undefined, { row: this.value })
 	})
 
 	paramId('b_importbookmarks').addEventListener('click', linksImport)
@@ -351,7 +351,7 @@ export async function settingsInit() {
 		if (isLocalBg) {
 			localBackgrounds({ freq: this.value })
 		} else {
-			unsplashBackgrounds(null, { every: this.value })
+			unsplashBackgrounds(undefined, { every: this.value })
 		}
 	})
 
@@ -365,7 +365,7 @@ export async function settingsInit() {
 			if (isLocalBg) {
 				localBackgrounds({ refresh: arrow })
 			} else {
-				unsplashBackgrounds(null, { refresh: arrow })
+				unsplashBackgrounds(undefined, { refresh: arrow })
 			}
 		}
 
@@ -373,7 +373,7 @@ export async function settingsInit() {
 	})
 
 	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplashBackgrounds(null, { collection: stringMaxSize(this.value, 256) })
+		unsplashBackgrounds(undefined, { collection: stringMaxSize(this.value, 256) })
 	})
 
 	//
@@ -410,35 +410,35 @@ export async function settingsInit() {
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { analog: this.checked })
+		clock(undefined, { analog: this.checked })
 	})
 
 	paramId('i_seconds').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { seconds: this.checked })
+		clock(undefined, { seconds: this.checked })
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { face: this.value })
+		clock(undefined, { face: this.value })
 	})
 
 	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { style: this.value })
+		clock(undefined, { style: this.value })
 	})
 
 	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
-		clock(null, { size: parseFloat(this.value) })
+		clock(undefined, { size: parseFloat(this.value) })
 	})
 
 	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { ampm: this.checked })
+		clock(undefined, { ampm: this.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { timezone: this.value })
+		clock(undefined, { timezone: this.value })
 	})
 
-	paramId('i_usdate').addEventListener('change', function (this: HTMLInputElement) {
-		clock(null, { usdate: this.checked })
+	paramId('i_dateformat').addEventListener('change', function (this) {
+		clock(undefined, { dateformat: this.value })
 	})
 
 	paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
@@ -453,33 +453,33 @@ export async function settingsInit() {
 	})
 
 	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { city: this.value })
+		weather(undefined, { city: this.value })
 	})
 
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { geol: this.value })
+		weather(undefined, { geol: this.value })
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
-		weather(null, { units: this.value as Weather['unit'] })
+		weather(undefined, { units: this.value })
 	})
 
 	paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { forecast: this.value })
+		weather(undefined, { forecast: this.value })
 	})
 
 	paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { temp: this.value })
+		weather(undefined, { temp: this.value })
 	})
 
 	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { moreinfo: this.value })
+		weather(undefined, { moreinfo: this.value })
 	})
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
-		weather(null, { provider: this.value })
+		weather(undefined, { provider: this.value })
 		this.blur()
 	})
 
@@ -487,7 +487,7 @@ export async function settingsInit() {
 		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
 		let weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
-		weather(null, { unhide: true })
+		weather(undefined, { unhide: true })
 	})
 
 	paramId('i_greethide').addEventListener('change', function () {
@@ -495,7 +495,7 @@ export async function settingsInit() {
 	})
 
 	paramId('i_greeting').addEventListener('keyup', function () {
-		clock(null, { greeting: stringMaxSize(this.value, 32) })
+		clock(undefined, { greeting: stringMaxSize(this.value, 32) })
 	})
 
 	paramId('i_greeting').addEventListener('change', function () {
@@ -510,15 +510,15 @@ export async function settingsInit() {
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
-		notes(null, { is: 'align', value: this.value })
+		notes(undefined, { is: 'align', value: this.value })
 	})
 
 	paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement) {
-		notes(null, { is: 'width', value: this.value })
+		notes(undefined, { is: 'width', value: this.value })
 	})
 
 	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(null, { is: 'opacity', value: this.value })
+		notes(undefined, { is: 'opacity', value: this.value })
 	})
 
 	//
@@ -529,27 +529,27 @@ export async function settingsInit() {
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { engine: this.value })
+		searchbar(undefined, { engine: this.value })
 	})
 
 	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(null, { opacity: this.value })
+		searchbar(undefined, { opacity: this.value })
 	})
 
 	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { request: this })
+		searchbar(undefined, { request: this })
 	})
 
 	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { newtab: this.checked })
+		searchbar(undefined, { newtab: this.checked })
 	})
 
 	paramId('i_sbsuggestions').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(null, { suggestions: this.checked })
+		searchbar(undefined, { suggestions: this.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
-		searchbar(null, { placeholder: this.value })
+		searchbar(undefined, { placeholder: this.value })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('change', function () {
@@ -564,70 +564,70 @@ export async function settingsInit() {
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
-		quotes(null, { frequency: this.value })
+		quotes(undefined, { frequency: this.value })
 	})
 
 	paramId('i_qttype').addEventListener('change', function () {
-		quotes(null, { type: this.value })
+		quotes(undefined, { type: this.value })
 	})
 
 	paramId('i_qtrefresh').addEventListener('click', function () {
 		inputThrottle(this)
 		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
-		quotes(null, { refresh: true })
+		quotes(undefined, { refresh: true })
 	})
 
 	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(null, { author: this.checked })
+		quotes(undefined, { author: this.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
-		quotes(null, { userlist: this.value })
+		quotes(undefined, { userlist: this.value })
 	})
 
 	//
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('focus', function () {
-		customFont(null, { autocomplete: settingsDom })
+		customFont(undefined, { autocomplete: true })
 	})
 
 	paramId('i_customfont').addEventListener('change', function () {
-		customFont(null, { family: this.value })
+		customFont(undefined, { family: this.value })
 	})
 
 	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
 		if (this.value === '' && e.inputType === 'deleteContentBackward') {
-			customFont(null, { family: '' })
+			customFont(undefined, { family: '' })
 		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
-		customFont(null, { weight: this.value })
+		customFont(undefined, { weight: this.value })
 	})
 
 	paramId('i_size').addEventListener('input', function () {
-		customFont(null, { size: this.value })
+		customFont(undefined, { size: this.value })
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
-		textShadow(null, parseFloat(this.value))
+		textShadow(undefined, parseFloat(this.value))
 	})
 
 	//
 	// Page layout
 
 	paramId('b_editmove').addEventListener('click', function () {
-		moveElements(null, { toggle: true })
+		moveElements(undefined, { toggle: true })
 	})
 
 	paramId('b_resetlayout').addEventListener('click', function () {
-		moveElements(null, { reset: true })
+		moveElements(undefined, { reset: true })
 	})
 
 	for (const button of paramId('grid-layout').querySelectorAll<HTMLButtonElement>('button')) {
 		button.addEventListener('click', () => {
-			moveElements(null, { layout: button.dataset.layout || '' })
+			moveElements(undefined, { layout: button.dataset.layout || '' })
 		})
 	}
 
@@ -639,16 +639,16 @@ export async function settingsInit() {
 		pageControl({ gap: parseFloat(this.value) }, true)
 	})
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(null, { overlay: true }), { passive: true })
-	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(null, { overlay: true }))
-	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(null, { overlay: false }))
-	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(null, { overlay: false }))
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
+	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
+	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
+	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
 	//
 	// Custom Style
 
 	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
-		customCss(null, { is: 'styling', val: (ev.target as HTMLInputElement).value })
+		customCss(undefined, { is: 'styling', val: (ev.target as HTMLInputElement).value })
 	})
 
 	setTimeout(() => {
@@ -658,7 +658,7 @@ export async function settingsInit() {
 			if (skipFirstResize) return (skipFirstResize = false)
 
 			const rect = e[0].contentRect
-			customCss(null, { is: 'resize', val: rect.height + rect.top * 2 })
+			customCss(undefined, { is: 'resize', val: rect.height + rect.top * 2 })
 		})
 		cssResize.observe(paramId('cssEditor'))
 	}, 400)
@@ -685,7 +685,7 @@ export async function settingsInit() {
 	paramId('b_resetno').addEventListener('click', () => paramsReset('no'))
 	paramId('b_importtext').addEventListener('click', function () {
 		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
-		paramsImport(parse<Partial<Sync>>(val) ?? {})
+		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
 	//
@@ -798,11 +798,6 @@ export async function settingsInit() {
 		}
 
 		if (e.code === 'Escape') {
-			if (domedit?.classList.contains('shown')) {
-				closeEditLink()
-				return
-			}
-
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
 				return
@@ -823,18 +818,12 @@ export async function settingsInit() {
 		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
 
 		const areSettingsShown = settingsDom?.classList.contains('shown')
-		const isEditlinkOpen = document.getElementById('editlink')?.classList.contains('shown')
 
 		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
 		const onInterface = pathIds.includes('interface')
-		const onEdit = pathIds.includes('editlink')
 
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
-		}
-
-		if (!onEdit && isEditlinkOpen) {
-			closeEditLink()
 		}
 
 		if ((onBody || onInterface) && areSettingsShown) {
@@ -967,16 +956,17 @@ function settingsMgmt() {
 		const a = document.getElementById('downloadfile')
 		if (!a) return
 
-		const data = ((await storage.sync.get()) as Sync) ?? {}
-		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
-
-		const bytes = new TextEncoder().encode(orderedStringify(data))
-		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
 		const date = new Date()
+		const data = ((await storage.sync.get()) as Sync.Storage) ?? {}
+		const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
 		const YYYYMMDD = date.toISOString().slice(0, 10)
 		const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
-		a.setAttribute('href', URL.createObjectURL(blob))
+		const bytes = new TextEncoder().encode(orderedStringify(data))
+		const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
+		const href = URL.createObjectURL(blob)
+
+		a.setAttribute('href', href)
 		a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
 		a.click()
 	}
@@ -993,16 +983,16 @@ function settingsMgmt() {
 	}
 
 	function importAsFile(target: HTMLInputElement) {
-		function decodeExportFile(str: string): Partial<Sync> {
+		function decodeExportFile(str: string): Partial<Sync.Storage> {
 			let result = {}
 
 			try {
 				// Tries to decode base64 from previous versions
-				result = parse<Partial<Sync>>(atob(str)) ?? {}
+				result = parse<Partial<Sync.Storage>>(atob(str)) ?? {}
 			} catch {
 				try {
 					// If base64 failed, parse raw string
-					result = parse<Partial<Sync>>(str) ?? {}
+					result = parse<Partial<Sync.Storage>>(str) ?? {}
 				} catch (error) {
 					// If all failed, return empty object
 					result = {}
@@ -1026,7 +1016,7 @@ function settingsMgmt() {
 
 			// data has at least one valid key from default sync storage => import
 			if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
-				paramsImport(importData as Sync)
+				paramsImport(importData as Sync.Storage)
 			}
 		}
 		reader.readAsText(file)
@@ -1093,7 +1083,8 @@ async function switchLangs(nextLang: Langs) {
 	weather({ sync: data })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
-	notes(data.notes || null)
+	notes(data.notes)
+	customFont(undefined, { lang: true })
 	signature(document.getElementById('settings') as HTMLElement)
 	translatePlaceholders(document.getElementById('settings'))
 }
@@ -1171,7 +1162,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-async function paramsImport(toImport: Partial<Sync>) {
+async function paramsImport(toImport: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
 		data = filterImports(data, toImport)
@@ -1190,7 +1181,7 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 		storage.local.clear()
 
 		setTimeout(() => {
-			storage.sync.set({ ...SYNC_DEFAULT })
+			storage.sync.set({ ...getSyncDefaults() })
 			storage.local.set({ ...LOCAL_DEFAULT })
 			fadeOut()
 		}, 50)

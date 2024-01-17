@@ -25,6 +25,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--color-dialog-border: #3334;
 	--color-dialog-highlight: #fff4;
 	--color-dialog-input-text: #716f6d;
+	--color-dialog-input-bg: rgba(106, 104, 111, 0.12);
 
 	@supports not (backdrop-filter: none) {
 		--color-dialog: #f2f2f7ee;
@@ -43,10 +44,11 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--color-areas-text: var(--color-text);
 	--color-placeholder: #a4a5a6;
 	--color-focused: #2c2c2f;
-	--color-dialog: #000a;
+	--color-dialog: #191919aa;
 	--color-dialog-border: #fff4;
 	--color-dialog-highlight: #fff2;
 	--color-dialog-input-text: #a4a7a8;
+	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 
 	@supports not (backdrop-filter: none) {
 		--color-dialog: #1c1c1cee;
@@ -58,6 +60,7 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--notes-width: 50em;
 	--page-width: 1600px;
 	--page-gap: 1em;
+	--links-width: auto;
 	--background-blur: 15px;
 	--background-brightness: 0.8;
 	--load-time-transition: 0ms;
@@ -162,6 +165,14 @@ body {
 		font-family: inherit;
 	}
 
+	&.dragging * {
+		cursor: grabbing;
+	}
+
+	&.dropping * {
+		cursor: grab;
+	}
+
 	&.tabbing {
 		a:focus,
 		input:focus,
@@ -170,6 +181,7 @@ body {
 		button:focus,
 		button:focus,
 		#bookmarks li:focus-visible,
+		#link-title div:focus-visible,
 		#linkblocks.text a:focus-visible span,
 		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {
@@ -196,6 +208,30 @@ body {
 
 		#showSettings button {
 			transition: background-color 0s;
+		}
+	}
+
+	&.potato {
+		#bookmarks,
+		#bookmarks::backdrop,
+		#element-mover,
+		.move-overlay {
+			backdrop-filter: none;
+			transition: none;
+		}
+
+		#interface li.block.folder > div,
+		#interface #linkblocks.in-folder #link-list {
+			backdrop-filter: none;
+		}
+
+		#bookmarks::backdrop {
+			background-color: #2228;
+		}
+
+		#bookmarks,
+		#element-mover {
+			background-color: var(--color-settings);
 		}
 	}
 
@@ -256,7 +292,7 @@ body {
 			padding-top: 4px;
 		}
 		.as_quote_type {
-			max-height: 210px;
+			max-height: 440px;
 		}
 		.as_notes {
 			max-height: 160px;
@@ -304,6 +340,7 @@ body {
 	select,
 	input[type='text'],
 	input[type='url'],
+	#i_qtlist,
 	#i_export,
 	#i_refresh,
 	#i_qtrefresh {

@@ -209,38 +209,26 @@
 
 		<div id="quicklinks_options" class="dropdown">
 			<hr />
-			<div id="link-input-wrap">
-				<div>
-					<input
-						id="i_title"
-						type="text"
-						name="title"
-						maxlength="64"
-						placeholder="Name"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-						aria-label="New link title"
-					/>
 
-					<input
-						id="i_url"
-						type="text"
-						name="url"
-						maxlength="512"
-						placeholder="URL"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-						aria-label="New link URL"
-					/>
-				</div>
-				<div id="link-input-buttons">
+			<div class="wrapper">
+				<label for="b_importbookmarks" class="trn">Import bookmarks</label>
+				<div>
 					<button id="b_importbookmarks" class="trn">Import</button>
-					<button id="submitlink" class="trn">Add</button>
 				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_syncbookmarks" class="trn">Sync new bookmarks</label>
+				<input id="i_syncbookmarks" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_linktabs" class="trn">Link tabs</label>
+				<input id="i_linktabs" class="switch" type="checkbox" />
 			</div>
 
 			<hr />
@@ -251,6 +239,7 @@
 					<option value="large" class="trn">Large</option>
 					<option value="medium" class="trn">Medium</option>
 					<option value="small" class="trn">Small</option>
+					<option value="inline" class="trn">Inline</option>
 					<option value="text" class="trn">Text</option>
 				</select>
 			</div>
@@ -333,8 +322,13 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_usdate" class="trn">US Date Format</label>
-				<input id="i_usdate" class="switch" type="checkbox" />
+				<label for="i_dateformat" class="trn">Date format</label>
+				<select id="i_dateformat" class="">
+					<option value="eu" class="trn">European</option>
+					<option value="us" class="trn">American</option>
+					<option value="ja" class="trn">Japanese</option>
+					<option value="cn" class="trn">Chinese</option>
+				</select>
 			</div>
 
 			<div class="as as_timedate">
@@ -962,20 +956,8 @@
 					<div class="wrapper">
 						<span>
 							<label for="i_qtlist" class="trn">Custom quotes</label>
-
 							<button class="tooltip ttcustomquotes opt-hider" aria-label="Tips on custom quotes">?</button>
 						</span>
-
-						<div class="superinput">
-							<input
-								id="i_qtlist"
-								name="qtlist"
-								type="text"
-								placeholder='[["author", "text"], ["au...'
-								maxlength="8000"
-							/>
-							<span class="si-status"><i></i></span>
-						</div>
 					</div>
 
 					<p class="tooltiptext ttcustomquotes">
@@ -988,6 +970,14 @@
 							>Learn more</a
 						>
 					</p>
+
+					<textarea
+						id="i_qtlist"
+						name="qtlist"
+						type="text"
+						placeholder="Author, Your quote.&#10;Author, Your second quote."
+						maxlength="8000"
+					></textarea>
 				</div>
 
 				<hr />

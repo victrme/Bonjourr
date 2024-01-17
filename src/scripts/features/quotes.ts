@@ -1,13 +1,13 @@
-import { canDisplayInterface, freqControl } from '..'
-import { apiFetch } from '../utils'
-import superinput from '../utils/superinput'
-import parse from '../utils/parse'
+import { apiFetch, freqControl, isEvery } from '../utils'
 import storage from '../storage'
+import parse from '../utils/parse'
 
-import { Local, Quote } from '../types/local'
-import { Sync } from '../types/sync'
+type Quote = Quotes.Item
 
-type UserQuotesList = [string, string][]
+type QuotesInit = {
+	sync: Sync.Storage
+	local: Local.Storage
+}
 
 type QuotesUpdate = {
 	toggle?: boolean
@@ -18,21 +18,153 @@ type QuotesUpdate = {
 	frequency?: string
 }
 
-const userQuotesInput = superinput('i_qtlist')
+export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
+	if (update) {
+		updateQuotes(update)
+		return
+	}
 
-function userlistToQuotes(arr: [string, string][] = [['', '']]): Quote[] {
-	return arr?.map(([author, content]) => ({ author, content }))
+	if (!init) {
+		return
+	}
+
+	const { lang, quotes } = init.sync
+	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
+
+	let list = init.local?.quotesCache ?? []
+	let selection = init.local?.userQuoteSelection ?? 0
+	let quote: Quote = list[0]
+
+	const noCache = !list || list?.length === 0
+	const isUser = quotes.type === 'user'
+
+	if (noCache) {
+		list = await newQuoteFromAPI(lang, quotes.type)
+		quote = list[0]
+		storage.local.set({ quotesCache: list })
+	}
+
+	if (isUser) {
+		list = csvUserInputToQuotes(quotes.userlist)
+		quote = list[selection]
+	}
+
+	if (needsNewQuote) {
+		quotes.last = freqControl.set()
+		quote = controlCacheList(list, lang, quotes.type)
+		storage.sync.set({ quotes })
+	}
+
+	insertToDom(quote)
+	toggleAuthorAlwaysOn(quotes.author)
+
+	document.getElementById('quotes_container')?.classList.toggle('hidden', !quotes.on)
+	document.dispatchEvent(new CustomEvent('interface', { detail: 'quotes' }))
 }
 
-async function newQuoteFromAPI(lang: string, type: string): Promise<Quote[]> {
+//
+// ─── UPDATE
+//
+
+async function updateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate) {
+	const data = await storage.sync.get(['lang', 'quotes'])
+	const local = await storage.local.get('quotesCache')
+
+	if (author !== undefined) {
+		data.quotes.author = author
+		toggleAuthorAlwaysOn(author)
+	}
+
+	if (userlist) {
+		data.quotes.userlist = handleUserListChange(userlist)
+	}
+
+	if (refresh) {
+		data.quotes.last = freqControl.set()
+		refreshQuotes(data, local?.quotesCache)
+	}
+
+	if (isEvery(frequency)) {
+		data.quotes.frequency = frequency
+	}
+
+	if (isQuotesType(type)) {
+		data.quotes.type = type
+		updateQuotesType(data, type)
+	}
+
+	storage.sync.set({ quotes: data.quotes })
+}
+
+async function updateQuotesType(data: Sync.Storage, type: Quotes.Sync['type']) {
+	const isUser = type === 'user'
+	let list: Quote[] = []
+	let selection = 0
+
+	if (isUser && data.quotes.userlist) {
+		const local = await storage.local.get('userQuoteSelection')
+		selection = local?.userQuoteSelection ?? 0
+		list = csvUserInputToQuotes(data.quotes.userlist)
+	}
+
+	if (!isUser) {
+		list = await newQuoteFromAPI(data.lang, type)
+		storage.local.set({ quotesCache: list })
+	}
+
+	if (list.length > 0) {
+		insertToDom(list[selection])
+	}
+
+	document.getElementById('quotes_userlist')?.classList.toggle('shown', isUser)
+}
+
+function handleUserListChange(input: string): string | undefined {
+	let array: Quote[] = []
+
+	if (input.length === 0) {
+		return ''
+	}
+
+	// old json format
+	if (input.startsWith('[[')) {
+		input = oldJSONToCSV(parse<Quotes.UserInput>(input) ?? [])
+	}
+
+	array = csvUserInputToQuotes(input)
+
+	if (array.length > 0) {
+		insertToDom({
+			author: array[0].author,
+			content: array[0].content,
+		})
+
+		document.getElementById('i_qtlist')?.blur()
+		storage.local.set({ userQuoteSelection: 0 })
+	}
+
+	return input
+}
+
+function refreshQuotes(data: Sync.Storage, list: Local.Storage['quotesCache'] = []) {
+	if (data.quotes.type === 'user' && data.quotes.userlist) {
+		list = csvUserInputToQuotes(data.quotes.userlist)
+	}
+
+	insertToDom(controlCacheList(list, data.lang, data.quotes.type))
+}
+
+//
+// ─── API / STORAGE
+//
+
+async function newQuoteFromAPI(lang: string, type: Quotes.Sync['type']): Promise<Quote[]> {
 	try {
 		if (!navigator.onLine || type === 'user') {
 			return []
 		}
 
-		// Fetch a random quote from the quotes API
 		const query = (type += type === 'classic' ? `/${lang}` : '')
-
 		const response = await apiFetch('/quotes/' + query)
 		const json = await response?.json()
 
@@ -46,33 +178,18 @@ async function newQuoteFromAPI(lang: string, type: string): Promise<Quote[]> {
 	return []
 }
 
-function insertToDom(values: Quote) {
-	const quoteDOM = document.getElementById('quote')
-	const authorDOM = document.getElementById('author')
-
-	if (!values || !quoteDOM || !authorDOM) {
-		return
-	}
-
-	quoteDOM.textContent = values.content
-	authorDOM.textContent = values.author
-}
-
-function controlCacheList(list: Quote[], lang: string, type: string) {
+function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type']): Quote {
 	//
-	// User
-
 	if (type === 'user') {
 		const randIndex = Math.round(Math.random() * (list.length - 1))
 		storage.local.set({ userQuoteSelection: randIndex })
 		return list[randIndex]
 	}
 
-	//
-	// APIs
-
-	list.shift() // removes used quote
-	storage.local.set({ quotesCache: list })
+	if (list.length > 1) {
+		list.shift()
+		storage.local.set({ quotesCache: list })
+	}
 
 	if (list.length < 2) {
 		newQuoteFromAPI(lang, type).then((list) => {
@@ -83,157 +200,54 @@ function controlCacheList(list: Quote[], lang: string, type: string) {
 	return list[0]
 }
 
-async function UpdateQuotes({ author, frequency, type, userlist, refresh }: QuotesUpdate, { quotes, lang }: Sync) {
-	let quotesCache = (await storage.local.get('quotesCache'))?.quotesCache ?? []
+//
+// ─── DOM
+//
 
-	async function handleQuotesType(type: string) {
-		let list: Quote[] = []
-		const { userlist } = quotes
-
-		document.getElementById('quotes_userlist')?.classList.toggle('shown', type === 'user')
-
-		const isUserAndEmpty = type === 'user' && !userlist
-		if (isUserAndEmpty) return
-
-		// Fetch quotes from API and display
-		if (type !== 'user') {
-			list = await newQuoteFromAPI(lang, type)
-			storage.local.set({ quotesCache: list })
-			insertToDom(list[0])
-			return
-		}
-
-		const selection = (await storage.local.get('userQuoteSelection'))?.userQuoteSelection ?? 0
-		list = userlistToQuotes(userlist!)
-		insertToDom(list[selection])
-	}
-
-	function handleUserListChange(userlist: string) {
-		function validateUserQuotes(json: unknown) {
-			return (
-				Array.isArray(json) &&
-				json.length > 0 &&
-				json.every((val) => val.length === 2) &&
-				json.flat().every((val) => typeof val === 'string')
-			)
-		}
-
-		let array: UserQuotesList = []
-		let quote: Quote = { author: '', content: '' }
-
-		if (userlist !== '') {
-			let userJSON = parse<UserQuotesList>(userlist)
-
-			if (!userJSON) {
-				userQuotesInput.warn('User quotes list is not valid JSON')
-				return quotes.userlist
-			}
-
-			// if list is not valid, skip
-			if (validateUserQuotes(userJSON) === false) {
-				userQuotesInput.warn('Should look like: [["author", "quote"], ..., ...]')
-				return quotes.userlist
-			}
-
-			array = userJSON
-			quote = { author: array[0][0], content: array[0][1] }
-		}
-
-		insertToDom(quote)
-		document.getElementById('i_qtlist')?.blur()
-		storage.local.set({ userQuoteSelection: 0 })
-
-		return array
-	}
-
-	function handleQuotesRefresh() {
-		if (quotes.type === 'user') {
-			if (!quotes.userlist) return
-			quotesCache = userlistToQuotes(quotes.userlist)
-		}
-
-		const quote = controlCacheList(quotesCache, lang, quotes.type)
-		insertToDom(quote)
-	}
-
-	if (author) {
-		quotes.author = author
-		document.getElementById('author')?.classList.toggle('always-on', author)
-	}
-
-	if (frequency) {
-		quotes.frequency = frequency
-	}
-
-	if (type) {
-		quotes.type = type
-		handleQuotesType(type)
-	}
-
-	if (userlist) {
-		quotes.userlist = handleUserListChange(userlist)
-	}
-
-	if (refresh) {
-		quotes.last = freqControl.set()
-		handleQuotesRefresh()
-	}
-
-	storage.sync.set({ quotes })
+function toggleAuthorAlwaysOn(state: boolean) {
+	document.getElementById('author')?.classList.toggle('always-on', state)
 }
 
-export default async function quotes(init: { sync: Sync; local: Local } | null, update?: QuotesUpdate) {
-	if (update) {
-		const data = await storage.sync.get(['lang', 'quotes'])
-		UpdateQuotes(update, data as Sync)
-	}
+function insertToDom(quote?: Quote) {
+	const quoteDOM = document.getElementById('quote')
+	const authorDOM = document.getElementById('author')
 
-	if (!init) {
+	if (!quote || !quoteDOM || !authorDOM) {
 		return
 	}
 
-	const { lang, quotes } = init.sync
-	const isUser = quotes.type === 'user'
-	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
+	quoteDOM.textContent = quote.content
+	authorDOM.textContent = quote.author
+}
 
-	let userSel = init.local?.userQuoteSelection ?? 0
-	let cache = init.local?.quotesCache ?? []
-	let quote: Quote
+//
+// ─── HELPERS
+//
 
-	// First startup, create classic cache
-	if (!cache || cache?.length === 0) {
-		cache = await newQuoteFromAPI(lang, quotes.type)
-		storage.local.set({ quotesCache: cache })
+function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
+	// convert <1.19.0 json format to csv
+	if (Array.isArray(csv)) {
+		csv = oldJSONToCSV(csv)
 	}
 
-	// If user quotes, replace cache
-	if (isUser) {
-		cache = userlistToQuotes(quotes.userlist)
+	const rows = csv?.split('\n') ?? []
+	const arr: Quote[] = []
+
+	for (const row of rows) {
+		const [author, ...rest] = row.split(',')
+		const content = rest.join(',').trimStart()
+
+		arr.push({ author, content })
 	}
 
-	// Frequence control, get new quote from controlCacheList
-	if (needsNewQuote) {
-		quotes.last = freqControl.set()
-		quote = controlCacheList(cache, lang, quotes.type)
-		storage.sync.set({ quotes })
-	} else {
-		quote = cache[isUser ? userSel : 0]
-	}
+	return arr
+}
 
-	// Displays
+export function oldJSONToCSV(input: Quotes.UserInput): string {
+	return input.map((val) => val.join(',')).join('\n')
+}
 
-	if (quotes.author) {
-		document.getElementById('author')?.classList.add('always-on')
-	}
-
-	if (isUser && quotes.userlist) {
-		insertToDom(userlistToQuotes(quotes.userlist!)[userSel])
-	} else if (!isUser) {
-		insertToDom(cache[0])
-	}
-
-	insertToDom(quote)
-	document.getElementById('quotes_container')?.classList.toggle('hidden', !quotes.on)
-
-	canDisplayInterface('quotes')
+function isQuotesType(type = ''): type is Quotes.Types {
+	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'user']
+	return types.includes(type as Quotes.Types)
 }

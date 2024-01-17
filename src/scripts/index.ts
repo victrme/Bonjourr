@@ -1,9 +1,7 @@
 import { settingsInit } from './settings'
 
-import storage from './storage'
-import clock from './features/clock'
 import notes from './features/notes'
-import quotes from './features/quotes'
+import clock from './features/clock'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
@@ -12,65 +10,21 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import localBackgrounds from './features/localbackgrounds'
 import unsplashBackgrounds from './features/unsplash'
+import { syncNewBookmarks } from './features/links/bookmarks'
+import quotes, { oldJSONToCSV } from './features/quotes'
+import storage, { getSyncDefaults } from './storage'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { periodOfDay, stringMaxSize } from './utils'
+import { stringMaxSize, freqControl, linksDataMigration } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 
-import type { Sync, MoveKeys } from './types/sync'
-import type { Local } from './types/local'
-
-type FunctionsLoadState = 'Off' | 'Waiting' | 'Ready'
-
 const dominterface = document.getElementById('interface') as HTMLDivElement
-const functionsLoad: { [key: string]: FunctionsLoadState } = {
-	clock: 'Waiting',
-	links: 'Waiting',
-	fonts: 'Off',
-	quotes: 'Off',
-}
 
 let loadtimeStart = performance.now()
-
-export const freqControl = {
-	set: () => {
-		return new Date().getTime()
-	},
-
-	get: (every: string, last: number) => {
-		const nowDate = new Date()
-		const lastDate = new Date(last || 0)
-		const changed = {
-			date: nowDate.getDate() !== lastDate.getDate(),
-			hour: nowDate.getHours() !== lastDate.getHours(),
-		}
-
-		switch (every) {
-			case 'day':
-				return changed.date
-
-			case 'hour':
-				return changed.date || changed.hour
-
-			case 'tabs':
-				return true
-
-			case 'pause':
-				return last === 0
-
-			case 'period': {
-				return last === 0 ? true : periodOfDay() !== periodOfDay(+lastDate) || false
-			}
-
-			default:
-				return false
-		}
-	},
-}
 
 const interfaceFade = (function interfaceFadeDebounce() {
 	let fadeTimeout: number
@@ -96,7 +50,7 @@ const interfaceFade = (function interfaceFadeDebounce() {
 	return { apply }
 })()
 
-export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }, fromInput?: true) {
+export async function toggleWidgetsDisplay(list: { [key in Sync.Move.Key]?: boolean }, fromInput?: true) {
 	const listEntries = Object.entries(list)
 
 	const widgets = {
@@ -140,7 +94,7 @@ export async function toggleWidgetsDisplay(list: { [key in MoveKeys]?: boolean }
 	// user is toggling from settings, update grid
 	if (fromInput) {
 		const [id, on] = listEntries[0] // always only one toggle
-		moveElements(null, { widget: { id: id as MoveKeys, on: on } })
+		moveElements(undefined, { widget: { id: id as Sync.Move.Key, on: on } })
 	}
 }
 
@@ -186,7 +140,7 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 	}
 }
 
-export function initBackground(data: Sync, local: Local) {
+export function initBackground(data: Sync.Storage, local: Local.Storage) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
@@ -298,7 +252,7 @@ export function showPopup(value: string | number) {
 	}
 }
 
-export function textShadow(init: number | null, event?: number) {
+export function textShadow(init?: number, event?: number) {
 	const val = init ?? event
 	document.documentElement.style.setProperty('--text-shadow-alpha', (val ?? 0.2)?.toString())
 
@@ -307,7 +261,7 @@ export function textShadow(init: number | null, event?: number) {
 	}
 }
 
-export function customCss(init: string | null, event?: { is: 'styling' | 'resize'; val: string | number }) {
+export function customCss(init?: string, event?: { is: 'styling' | 'resize'; val: string | number }) {
 	const styleHead = document.getElementById('styles') as HTMLStyleElement
 
 	if (init) {
@@ -335,15 +289,34 @@ export function customCss(init: string | null, event?: { is: 'styling' | 'resize
 	}
 }
 
-export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init?: Sync) {
-	//
-	// Progressive anim to max of Bonjourr animation time
-	function displayInterface() {
-		let loadtime = Math.min(performance.now() - loadtimeStart, 400)
+async function setPotatoComputerMode() {
+	if ((navigator as any).gpu === undefined) {
+		return
+	}
 
-		if (loadtime < 33) {
-			loadtime = 0
-		}
+	try {
+		await (await (navigator as any).gpu.requestAdapter()).requestDevice()
+	} catch (error) {
+		document.body.classList.add('potato')
+	}
+}
+
+const features = ['clock', 'links']
+
+function displayInterface(e: Event) {
+	const ready = (e as CustomEvent)?.detail
+	const index = features.indexOf(ready)
+
+	if (index !== -1) {
+		features.splice(index, 1)
+	}
+
+	// Display
+	if (features.length === 0) {
+		document.removeEventListener('interface', displayInterface)
+
+		let loadtime = Math.min(performance.now() - loadtimeStart, 400)
+		loadtime = loadtime < 33 ? 0 : loadtime
 
 		document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 		document.body.classList.remove('loading')
@@ -353,27 +326,9 @@ export function canDisplayInterface(cat: keyof typeof functionsLoad | null, init
 			settingsInit()
 		}, loadtime + 100)
 	}
-
-	// More conditions if user is using advanced features
-	if (init || !cat) {
-		if (init?.font?.family && init?.font?.url) functionsLoad.fonts = 'Waiting'
-		if (init?.quotes?.on) functionsLoad.quotes = 'Waiting'
-		return
-	}
-
-	if (functionsLoad[cat] === 'Off') {
-		return // Function is not activated, don't wait for it
-	}
-
-	functionsLoad[cat] = 'Ready'
-
-	const noSettings = !document.getElementById('settings')
-	const noWait = Object.values(functionsLoad).includes('Waiting') === false
-
-	if (noWait && noSettings) {
-		displayInterface()
-	}
 }
+
+document.addEventListener('interface', displayInterface)
 
 function onlineAndMobileHandler() {
 	if (IS_MOBILE) {
@@ -413,7 +368,7 @@ function onlineAndMobileHandler() {
 		// Update export code on localStorage changes
 
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/service-worker.js')
+			navigator.serviceWorker.register('service-worker.js')
 		}
 
 		// PWA install trigger (30s interaction default)
@@ -471,17 +426,11 @@ function onlineAndMobileHandler() {
 	}
 }
 
-function initTimeAndMainBlocks(time: boolean, main: boolean) {
-	document.getElementById('time')?.classList.toggle('hidden', !time)
-	document.getElementById('main')?.classList.toggle('hidden', !main)
-}
-
-function startup(data: Sync, local: Local) {
+function startup(data: Sync.Storage, local: Local.Storage) {
 	traduction(null, data.lang)
-	canDisplayInterface(null, data)
 	suntime.update(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: data, lastWeather: local.lastWeather })
-	customFont({ font: data.font, fontface: local.fontface })
+	customFont(data.font)
 	textShadow(data.textShadow)
 	favicon(data.favicon)
 	tabTitle(data.tabtitle)
@@ -490,45 +439,63 @@ function startup(data: Sync, local: Local) {
 	searchbar(data.searchbar)
 	quotes({ sync: data, local })
 	showPopup(data.reviewPopup)
-	notes(data.notes || null)
+	notes(data.notes)
 	moveElements(data.move)
 	customCss(data.css)
 	hideElements(data.hide)
 	initBackground(data, local)
 	quickLinks(data)
-	initTimeAndMainBlocks(data.time, data.main)
+	syncNewBookmarks(data.syncbookmarks)
 	pageControl({ width: data.pagewidth, gap: data.pagegap })
+
+	document.getElementById('time')?.classList.toggle('hidden', !data.time)
+	document.getElementById('main')?.classList.toggle('hidden', !data.main)
+
+	if (data?.font?.family) features.push('fonts')
+	if (data?.quotes?.on) features.push('quotes')
+
+	onSettingsLoad(() => {
+		setPotatoComputerMode()
+	})
 }
+
+// Unfocus address bar on chromium
+// https://stackoverflow.com/q/64868024
+// if (window.location.search !== '?r=1') {
+// 	window.location.assign('index.html?r=1')
+// }
 
 ;(async () => {
 	onlineAndMobileHandler()
 
 	try {
-		const { sync, local } = await storage.init()
+		let { sync, local } = await storage.init()
 		const version_old = sync?.about?.version
-		const isUpdate = version_old !== CURRENT_VERSION
+		const hasChanged = version_old !== CURRENT_VERSION
 
-		if (isUpdate) {
-			console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
-
-			sync.about = { ...SYNC_DEFAULT.about }
-
-			if (sync.weather?.geolocation === undefined) {
-				sync.weather.geolocation = 'approximate'
-
-				if ((sync.weather?.location ?? []).length === 0) {
-					sync.weather.geolocation = 'off'
-				} else if ((sync.weather?.location ?? []).length === 2 && BROWSER !== 'safari') {
-					sync.weather.geolocation = 'precise'
-				}
-
-				sync.weather.location = undefined
+		if (hasChanged) {
+			if (version_old === undefined && Object.keys(sync).length === 0) {
+				console.log(`First install: ${CURRENT_VERSION}`)
+				sync = await getSyncDefaults()
+			} else {
+				console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
 			}
 
-			storage.sync.set({ ...sync })
+			if (Array.isArray(sync?.quotes?.userlist)) {
+				const newuserlist = oldJSONToCSV(sync?.quotes?.userlist as unknown as Quotes.UserInput)
+				sync.quotes.userlist = newuserlist
+			}
+
+			if (!sync.dateformat) {
+				sync.dateformat = sync.usdate ? 'us' : 'eu'
+			}
+
+			sync = linksDataMigration(sync)
+			sync.about = SYNC_DEFAULT.about
+			storage.sync.set(sync)
 		}
 
-		await setTranslationCache(sync.lang, local, isUpdate)
+		await setTranslationCache(sync.lang, local, hasChanged)
 
 		startup(sync, local)
 	} catch (e) {
