@@ -44,7 +44,6 @@ export async function settingsInit() {
 
 	settingsDom.id = 'settings'
 	settingsDom.setAttribute('class', 'init')
-	settingsDom.setAttribute('class', 'shown')
 
 	for (const elem of Object.values(contentList)) {
 		settingsDom.appendChild(elem)
@@ -383,13 +382,12 @@ export async function settingsInit() {
 		localBackgrounds({ newfile: this.files })
 	})
 
-	paramId('show_more').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('b_thumbnail-more').addEventListener('click', function (this: HTMLInputElement) {
 		localBackgrounds({ showing: 'more' })
 	})
 
-	paramId('show_less').addEventListener('click', function (this: HTMLInputElement) {
-		localBackgrounds({ showing: 'reset' })
-		console.log('aqqq')
+	paramId('b_thumbnail-all').addEventListener('click', function (this: HTMLInputElement) {
+		localBackgrounds({ showing: 'all' })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
@@ -399,8 +397,6 @@ export async function settingsInit() {
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
 		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
-
-
 
 	//
 	// Time and date
