@@ -521,93 +521,97 @@
 		}
 	}
 
-	#bg_tn_wrap {
+	#fileContainer {
+		width: 100%;
+		display: grid;
+		max-height: 249px; // 3 thumbnails high
+		grid-template-columns: repeat(3, 1fr);
+		grid-gap: 10px;
+		margin-top: 10px;
+		padding: 3px;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	.thumbnail {
+		position: relative;
 		display: flex;
-		align-items: flex-start;
-		flex-direction: column;
-		// padding: 10px 0;
-		overflow: visible;
+		align-items: center;
+		justify-content: center;
+		height: 75px;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		border: none;
+		border-radius: 10px;
+		outline: 3px solid transparent;
+		background-color: var(--color-input);
+		transition: opacity 0.1s, filter 0.1s, outline 0.1s;
 
-		#fileContainer {
+		&.hiding {
+			transform: scale(0.9);
+			opacity: 0;
+		}
+
+		&.selected,
+		&:hover {
+			outline-color: var(--color-blue);
+		}
+
+		&:active {
+			opacity: 0.8;
+		}
+
+		&:hover button {
+			pointer-events: all;
+			opacity: 1;
+		}
+	}
+
+	.b_removethumb {
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		width: 25px;
+		height: 25px;
+		padding: 0;
+		opacity: 0;
+		color: #222;
+		background-color: #fff3;
+		border-radius: 100%;
+		text-align: center;
+		text-decoration: none;
+		box-sizing: border-box;
+		box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+		transition: opacity 0.1s, background-color 0.1s;
+
+		@include frostedGlass();
+
+		span {
+			display: block;
 			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			grid-gap: 10px;
-			margin: 0;
-			padding-bottom: 3px;
+		}
 
-			.thumbnail {
-				position: relative;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				height: 75px;
-				margin: 0;
-				padding: 0;
-				overflow: hidden;
-				border: none;
-				border-radius: 10px;
-				background-color: var(--color-input);
-				transition: box-shadow 0.15s, transform 0.15s, opacity 0.15s;
+		&:focus-visible {
+			opacity: 1;
+		}
 
-				&.selected {
-					outline: 3px solid var(--color-blue);
-				}
+		&:hover {
+			color: #000;
+			background-color: #fff5;
+			text-decoration: none;
+		}
+	}
 
-				&.hiding {
-					transform: scale(0.9);
-					opacity: 0;
-				}
+	#thumbnail-show-buttons {
+		display: none;
+		align-items: center;
+		justify-content: center;
+		column-gap: 1em;
+		padding-top: 0.5em;
 
-				.b_removethumb {
-					position: absolute;
-					top: 5px;
-					left: 5px;
-					width: 25px;
-					height: 25px;
-					opacity: 0;
-					color: #222;
-					background-color: #fff3;
-					border-radius: 100%;
-					text-decoration: none;
-					box-sizing: border-box;
-					box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
-					transition: opacity 0.15s, background-color 0.15s;
-
-					@include allCentered();
-					@include frostedGlass();
-
-					&:focus-visible {
-						opacity: 1;
-					}
-
-					&:hover {
-						color: #000;
-						background-color: #fff5;
-					}
-				}
-
-				// instead of adding a populated class in JS
-				&:first-child,
-				&:nth-child(2),
-				&:nth-child(3) {
-					margin-top: 10px;
-				}
-
-				&:hover {
-					box-shadow: rgba(0, 0, 0, 0.25) 0 5px 15px;
-					transform: scale(1.04);
-
-					button {
-						pointer-events: all;
-						opacity: 1;
-					}
-				}
-
-				&:active {
-					transform: scale(1);
-				}
-			}
+		&.shown {
+			display: flex;
 		}
 	}
 

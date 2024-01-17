@@ -24,6 +24,7 @@ type UpdateEvent = {
 	refresh?: HTMLSpanElement
 	newfile?: FileList | null
 	freq?: string
+	showing?: string
 }
 
 let localIsLoading = false
@@ -131,9 +132,12 @@ async function addNewImage(filelist: FileList) {
 	selectThumbnail(selected)
 }
 
-async function addThumbnail(blob: Blob, id: string, isSelected: boolean, settingsDom?: HTMLElement) {
-	const settings = settingsDom ? settingsDom : document.getElementById('settings')
+async function addThumbnail(blob: Blob | undefined, id: string, isSelected: boolean, settingsDom?: HTMLElement) {
+	if (!blob) {
+		return
+	}
 
+	const settings = settingsDom ? settingsDom : document.getElementById('settings')
 	const thb = document.createElement('button')
 	const rem = document.createElement('button')
 	const thbimg = document.createElement('img')
@@ -158,7 +162,8 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 
 	thb.appendChild(thbimg)
 	thb.appendChild(rem)
-	wrap?.prepend(thb)
+
+	wrap?.append(thb)
 
 	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return
@@ -227,24 +232,48 @@ async function addThumbnail(blob: Blob, id: string, isSelected: boolean, setting
 	rem.addEventListener('click', deleteThisBackground)
 }
 
-async function handleSettingsOptions() {
-	const fileContainer = document.getElementById('fileContainer') as HTMLElement
-	const settings = document.getElementById('settings') as HTMLElement
+async function initSettingsOptions() {
 	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
-
-	const { ids, selected, freq } = await localImages.get()
-	const thumbsAmount = fileContainer?.childElementCount || 0
-	const idsAndNotAllThumbs = ids.length > 0 && thumbsAmount < ids.length
-
-	if (idsAndNotAllThumbs) {
-		ids.forEach(async (id) => {
-			const blob = await getBlob(id, 'thumbnail')
-			if (blob) addThumbnail(blob, id, id === selected, settings)
-		})
-	}
+	const images = await localImages.get()
+	let ids = images.ids
 
 	if (i_freq) {
-		i_freq.value = freq
+		i_freq.value = images.freq
+	}
+
+	if (IS_MOBILE) {
+		ids = ids.slice(0, 9)
+		document.getElementById('thumbnail-show-buttons')?.classList.add('shown')
+	}
+
+	for (const id of ids) {
+		const isSelected = id === images.selected
+		const blob = await getBlob(id, 'thumbnail')
+		addThumbnail(blob, id, isSelected)
+	}
+}
+
+async function updateThumbnailAmount(showing?: string) {
+	const fileContainer = document.getElementById('fileContainer') as HTMLElement
+	const thumbsAmount = fileContainer?.childElementCount || 0
+	const images = await localImages.get()
+	const ids: string[] = []
+
+	if (showing === 'all') ids.push(...images.ids)
+	if (showing === 'more') ids.push(...images.ids.filter((_, i) => i < thumbsAmount + 9))
+
+	if (ids.length === images.ids.length) {
+		document.getElementById('thumbnail-show-buttons')?.classList.remove('shown')
+	}
+
+	for (const id of ids) {
+		if (document.getElementById(id)) {
+			continue
+		}
+
+		const isSelected = id === images.selected
+		const blob = await getBlob(id, 'thumbnail')
+		addThumbnail(blob, id, isSelected)
 	}
 }
 
@@ -267,6 +296,7 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		if (event?.refresh) refreshCustom(event.refresh)
 		if (event?.newfile) addNewImage(event.newfile)
 		if (isEvery(event?.freq)) localImages.update({ freq: event?.freq })
+		if (event?.showing) updateThumbnailAmount(event.showing)
 		return
 	}
 
@@ -287,7 +317,10 @@ export default async function localBackgrounds(event?: UpdateEvent) {
 		}
 
 		displayCustomBackground(await getBlob(selected, 'background'))
-		onSettingsLoad(handleSettingsOptions)
+
+		onSettingsLoad(() => {
+			initSettingsOptions()
+		})
 
 		//
 	} catch (e) {

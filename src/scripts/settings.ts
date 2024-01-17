@@ -223,7 +223,7 @@ export async function settingsInit() {
 
 	if (fileContainer) {
 		new MutationObserver(() => {
-			const thumbsHeight = fileContainer?.offsetHeight ?? 0
+			const thumbsHeight = fileContainer?.offsetHeight + 40 ?? 0
 			optionsDom?.style.setProperty('--thumbnails-grid-height', thumbsHeight + 'px')
 		}).observe(fileContainer, { childList: true })
 	}
@@ -380,6 +380,14 @@ export async function settingsInit() {
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
 		localBackgrounds({ newfile: this.files })
+	})
+
+	paramId('b_thumbnail-more').addEventListener('click', function (this: HTMLInputElement) {
+		localBackgrounds({ showing: 'more' })
+	})
+
+	paramId('b_thumbnail-all').addEventListener('click', function (this: HTMLInputElement) {
+		localBackgrounds({ showing: 'all' })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
