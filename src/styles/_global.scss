@@ -211,6 +211,30 @@ body {
 		}
 	}
 
+	&.potato {
+		#bookmarks,
+		#bookmarks::backdrop,
+		#element-mover,
+		.move-overlay {
+			backdrop-filter: none;
+			transition: none;
+		}
+
+		#interface li.block.folder > div,
+		#interface #linkblocks.in-folder #link-list {
+			backdrop-filter: none;
+		}
+
+		#bookmarks::backdrop {
+			background-color: #2228;
+		}
+
+		#bookmarks,
+		#element-mover {
+			background-color: var(--color-settings);
+		}
+	}
+
 	.he_hidden,
 	#interface #main #weather #tempContainer.he_hidden {
 		display: none;

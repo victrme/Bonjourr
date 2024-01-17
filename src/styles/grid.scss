@@ -4,9 +4,9 @@
 	background-color: #fff2;
 	outline: 0.4em solid transparent;
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
-	z-index: 2;
+	z-index: -1;
 
-	@include frostedGlass($blur: 1em);
+	@include frostedGlass($blur: 2em);
 
 	&.selected {
 		background: #fff3;
@@ -74,7 +74,7 @@
 	z-index: 4;
 	direction: ltr;
 
-	@include frostedGlass($blur: 1em);
+	@include frostedGlass($blur: 2em);
 
 	&:not(.active) > div:not(#close-mover-wrapper) {
 		pointer-events: none;
