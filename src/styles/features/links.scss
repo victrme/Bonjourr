@@ -4,6 +4,7 @@
 //	- Folder styles for medium and small
 //	- Links drag and drop
 // 	- Tabs and folder titles
+// 	- Add buttons
 
 //
 // Link blocks
@@ -82,6 +83,7 @@
 }
 
 #link-list {
+	position: relative;
 	display: inline-flex;
 	visibility: visible;
 	flex-wrap: wrap;
@@ -396,8 +398,6 @@ li.block.folder img {
 	#link-list {
 		column-gap: 1.8em;
 		min-height: 3em;
-		width: var(--drag-width);
-		height: var(--drag-height);
 	}
 
 	li {
@@ -563,7 +563,7 @@ li.block.folder img {
 	align-items: center;
 	justify-content: center;
 	column-gap: 1em;
-	padding: 1em 3em;
+	padding: 1em 4em;
 	margin: auto;
 	width: fit-content;
 
@@ -577,37 +577,6 @@ li.block.folder img {
 		&:hover input {
 			opacity: 1;
 		}
-	}
-
-	button#b_add-tab {
-		position: absolute;
-		right: 0;
-		width: 2em;
-		height: 2em;
-		color: white;
-		font-weight: bold;
-		border-radius: 4px;
-		border: 1px solid transparent;
-		background-color: #fff1;
-		transition: opacity 0.05s;
-
-		@include frostedGlass(1em);
-
-		&:hover {
-			background-color: #fff2;
-		}
-
-		opacity: 0;
-		user-select: none;
-		pointer-events: none;
-		touch-action: none;
-	}
-
-	&:hover button#b_add-tab {
-		opacity: 1;
-		user-select: initial;
-		pointer-events: initial;
-		touch-action: initial;
 	}
 
 	div,
@@ -660,4 +629,58 @@ li.block.folder img {
 		border-color: #fff6;
 		z-index: auto;
 	}
+}
+
+//
+//	Add buttons
+//
+
+#linkblocks button {
+	position: absolute;
+	right: 0;
+	width: 2em;
+	height: 2em;
+	color: white;
+	font-size: 1.1em;
+	font-weight: bold;
+	border-radius: 4px;
+	border: 1px solid transparent;
+	background-color: #fff2;
+	transition: opacity 0.05s;
+
+	@include frostedGlass(1em);
+
+	&:hover {
+		background-color: #fff3;
+	}
+
+	opacity: 0;
+	user-select: none;
+	pointer-events: none;
+	touch-action: none;
+}
+
+#link-title:hover button,
+#link-list:hover button {
+	opacity: 1;
+	user-select: initial;
+	pointer-events: initial;
+	touch-action: initial;
+}
+
+#add-link-wrapper {
+	position: absolute;
+	right: 0;
+	height: var(--block-size);
+	display: flex;
+	align-items: center;
+}
+
+#linkblocks.text #add-link-wrapper {
+	height: 2.2em;
+}
+
+#linkblocks.dragging #add-link-wrapper,
+#linkblocks.dropping #add-link-wrapper {
+	display: none;
 }

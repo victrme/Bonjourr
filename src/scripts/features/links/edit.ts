@@ -97,7 +97,7 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 		return { x, y }
 	}
 	//
-	else if (event.type === 'contextmenu') {
+	else if (event.type === 'contextmenu' || event.type === 'click') {
 		x = (event as PointerEvent).x + 20
 		y = (event as PointerEvent).y + 20
 	}
@@ -145,6 +145,7 @@ onSettingsLoad(() => {
 
 	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
 	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
+	document.getElementById('b_add-link')?.addEventListener('click', displayEditDialog)
 
 	document.body.addEventListener('click', function () {
 		if (editmousedown) {
