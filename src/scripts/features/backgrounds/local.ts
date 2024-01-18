@@ -1,10 +1,10 @@
-import { randomString, turnRefreshButton, freqControl, isEvery } from '../utils'
+import { randomString, turnRefreshButton, freqControl, isEvery } from '../../utils'
 import unsplashBackgrounds from './unsplash'
-import { imgBackground } from '..'
-import onSettingsLoad from '../utils/onsettingsload'
-import { IS_MOBILE } from '../defaults'
-import errorMessage from '../utils/errormessage'
-import storage from '../storage'
+import { imgBackground } from '.'
+import onSettingsLoad from '../../utils/onsettingsload'
+import { IS_MOBILE } from '../../defaults'
+import errorMessage from '../../utils/errormessage'
+import storage from '../../storage'
 import * as idb from 'idb-keyval'
 
 type LocalImages = {

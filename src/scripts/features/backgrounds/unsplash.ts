@@ -1,10 +1,10 @@
-import { periodOfDay, turnRefreshButton, apiFetch, freqControl, isEvery } from '../utils'
-import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../defaults'
-import { imgBackground } from '..'
-import { tradThis } from '../utils/translations'
-import errorMessage from '../utils/errormessage'
-import superinput from '../utils/superinput'
-import storage from '../storage'
+import { periodOfDay, turnRefreshButton, apiFetch, freqControl, isEvery } from '../../utils'
+import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../../defaults'
+import { imgBackground } from '.'
+import { tradThis } from '../../utils/translations'
+import errorMessage from '../../utils/errormessage'
+import superinput from '../../utils/superinput'
+import storage from '../../storage'
 
 type UnsplashInit = {
 	unsplash: Unsplash.Sync

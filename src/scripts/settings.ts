@@ -7,10 +7,12 @@ import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
-import localBackgrounds from './features/localbackgrounds'
-import unsplashBackgrounds from './features/unsplash'
+import localBackgrounds from './features/backgrounds/local'
+import unsplashBackgrounds from './features/backgrounds/unsplash'
+import { backgroundFilter } from './features/backgrounds'
 import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
+import { toggleWidgetsDisplay, customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
 
 import langList from './langs'
 import parse from './utils/parse'
@@ -22,17 +24,6 @@ import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
-
-import {
-	toggleWidgetsDisplay,
-	backgroundFilter,
-	customCss,
-	darkmode,
-	favicon,
-	tabTitle,
-	textShadow,
-	pageControl,
-} from './index'
 
 export async function settingsInit() {
 	const data = await storage.sync.get()

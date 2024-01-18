@@ -8,8 +8,7 @@ import customFont from './features/fonts'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
-import localBackgrounds from './features/localbackgrounds'
-import unsplashBackgrounds from './features/unsplash'
+import initBackground from './features/backgrounds'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
@@ -138,52 +137,6 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 		document.documentElement.style.setProperty('--page-gap', (val.gap ?? SYNC_DEFAULT.pagegap) + 'em')
 		if (isEvent) eventDebounce({ pagegap: val.gap })
 	}
-}
-
-export function initBackground(data: Sync.Storage, local: Local.Storage) {
-	const type = data.background_type || 'unsplash'
-	const blur = data.background_blur
-	const brightness = data.background_bright
-
-	backgroundFilter({ blur, brightness })
-
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
-}
-
-export function imgBackground(url: string, color?: string) {
-	let img = new Image()
-
-	img.onload = () => {
-		const bgoverlay = document.getElementById('background_overlay') as HTMLDivElement
-		const bgfirst = document.getElementById('background') as HTMLDivElement
-		const bgsecond = document.getElementById('background-bis') as HTMLDivElement
-		const loadBis = bgfirst.style.opacity === '1'
-		const bgToChange = loadBis ? bgsecond : bgfirst
-
-		bgfirst.style.opacity = loadBis ? '0' : '1'
-		bgToChange.style.backgroundImage = `url(${url})`
-
-		bgoverlay.style.opacity = '1'
-
-		if (color && BROWSER === 'safari') {
-			document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
-			setTimeout(() => document.documentElement.style.setProperty('--average-color', color), 400)
-		}
-	}
-
-	img.src = url
-	img.remove()
-}
-
-export function backgroundFilter({ blur, brightness, isEvent }: { blur?: number; brightness?: number; isEvent?: true }) {
-	const hasbright = typeof brightness === 'number'
-	const hasblur = typeof blur === 'number'
-
-	if (hasblur) document.documentElement.style.setProperty('--background-blur', blur.toString() + 'px')
-	if (hasbright) document.documentElement.style.setProperty('--background-brightness', brightness.toString())
-
-	if (isEvent && hasblur) eventDebounce({ background_blur: blur })
-	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
@@ -354,7 +307,7 @@ function onlineAndMobileHandler() {
 			const needNewImage = data.background_type === 'unsplash' && frequency
 
 			if (needNewImage && data.unsplash) {
-				unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+				initBackground(data, local)
 			}
 
 			clock(data)
