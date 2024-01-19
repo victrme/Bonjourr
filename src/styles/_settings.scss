@@ -39,6 +39,10 @@
 		transition: max-height 0s;
 	}
 
+	&.see-through {
+		opacity: 0.2;
+	}
+
 	.dropdown {
 		overflow-y: hidden;
 		max-height: 0;
@@ -157,8 +161,7 @@
 	}
 
 	#local_options.shown {
-		--thumbnails-grid-height: 0px;
-		max-height: calc(112px + var(--thumbnails-grid-height));
+		max-height: 400px;
 	}
 
 	#time_options.shown {

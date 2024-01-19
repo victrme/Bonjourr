@@ -214,32 +214,37 @@ export function textShadow(init?: number, event?: number) {
 	}
 }
 
-export function customCss(init?: string, event?: { is: 'styling' | 'resize'; val: string | number }) {
+export function customCss(init?: string, event?: { styling: string }) {
 	const styleHead = document.getElementById('styles') as HTMLStyleElement
+	let skipFirstResize = true
+
+	if (event) {
+		if (event?.styling !== undefined) {
+			const val = stringMaxSize(event.styling, 8080)
+			styleHead.textContent = val
+			eventDebounce({ css: val })
+		}
+
+		return
+	}
 
 	if (init) {
 		styleHead.textContent = init
 	}
 
-	if (event) {
-		switch (event.is) {
-			case 'styling': {
-				if (typeof event.val === 'string') {
-					const val = stringMaxSize(event.val, 8080)
-					styleHead.textContent = val
-					eventDebounce({ css: val })
-				}
-				break
+	onSettingsLoad(function saveHeightOnResize() {
+		const observer = new ResizeObserver((entry) => {
+			if (skipFirstResize) {
+				skipFirstResize = false
+				return
 			}
 
-			case 'resize': {
-				if (typeof event.val === 'number') {
-					eventDebounce({ cssHeight: event.val })
-				}
-				break
-			}
-		}
-	}
+			const rect = entry[0].contentRect
+			eventDebounce({ cssHeight: Math.round(rect.height + rect.top * 2) })
+		})
+
+		observer.observe(document.getElementById('cssEditor') as HTMLElement)
+	})
 }
 
 async function setPotatoComputerMode() {

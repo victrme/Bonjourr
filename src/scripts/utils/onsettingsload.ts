@@ -6,8 +6,8 @@ export default function onSettingsLoad(callback: Function) {
 }
 
 function loadCallbacks() {
-	for (const callback of callbackList) {
-		callback()
+	for (let i = 0; i < callbackList.length; i++) {
+		callbackList[i]()
 	}
 
 	areSettingsLoaded = true

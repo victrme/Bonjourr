@@ -9,6 +9,11 @@ type FilterOptions = {
 	isEvent?: true
 }
 
+type UpdateOptions = {
+	freq?: string
+	refresh?: HTMLSpanElement
+}
+
 export default function initBackground(data: Sync.Storage, local: Local.Storage) {
 	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
@@ -57,4 +62,23 @@ export function backgroundFilter({ blur, brightness, isEvent }: FilterOptions) {
 
 	if (isEvent && hasblur) eventDebounce({ background_blur: blur })
 	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
+}
+
+export function updateBackgroundOption({ freq, refresh }: UpdateOptions) {
+	const i_type = document.getElementById('i_type') as HTMLInputElement
+	const isLocal = i_type.value === 'local'
+
+	if (freq !== undefined) {
+		isLocal ? localBackgrounds({ freq }) : unsplashBackgrounds(undefined, { every: freq })
+	}
+
+	if (refresh) {
+		isLocal ? localBackgrounds({ refresh }) : unsplashBackgrounds(undefined, { refresh })
+	}
+}
+
+export function backgroundFreq(value: string) {}
+
+export function refreshBackground() {
+	const i_type = document.getElementById('i_type') as HTMLInputElement
 }
