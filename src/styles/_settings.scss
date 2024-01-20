@@ -173,7 +173,7 @@
 	}
 
 	#quicklinks_options.shown {
-		max-height: 370px;
+		max-height: 400px;
 	}
 
 	#notes_options.shown {
@@ -206,13 +206,14 @@
 
 	@include allSettings();
 
-	a:hover,
-	button:hover {
-		text-decoration: underline;
-	}
-
 	a {
+		color: var(--color-blue);
 		border-radius: 4px;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 
 	hr {
@@ -258,7 +259,6 @@
 
 		&:hover {
 			background-color: var(--color-input);
-			text-decoration: none;
 		}
 
 		@media (hover: hover) {
@@ -276,11 +276,6 @@
 		max-height: 0;
 		overflow: hidden;
 		transition: max-height 0.4s, margin 0.4s, padding 0.2s;
-
-		a {
-			color: var(--color-blue);
-			text-decoration: none;
-		}
 
 		&.ttlinks,
 		&.ttgrid,
@@ -434,33 +429,21 @@
 		}
 	}
 
-	#link-input-wrap {
+	#addlink-inputs {
 		display: flex;
-		align-items: center;
-		column-gap: 1em;
-		width: 100%;
+		column-gap: 4px;
+		max-width: 75%;
 
 		input[type='text'] {
 			width: 100%;
 		}
 
-		#i_title {
-			margin-bottom: 0.5em;
-		}
-
-		#link-input-buttons {
-			text-align: right;
-		}
-
-		#b_importbookmarks,
-		#submitlink {
-			height: 2.2em;
-			transition: filter 0.4s;
+		#i_addlink-title {
+			width: 50%;
 		}
 	}
 
-	#i_refresh,
-	#i_qtrefresh {
+	.refresh-btn {
 		padding: 0 10px;
 		text-decoration: none;
 	}
@@ -741,6 +724,7 @@
 				text-decoration: none;
 				transition: color 0.2s;
 				height: 29px;
+				border: none;
 				border-radius: 8.5px;
 				margin: 3px;
 			}
@@ -879,11 +863,6 @@
 		// Safari iOS only
 		@supports (-webkit-touch-callout: none) {
 			padding-bottom: 150px;
-		}
-
-		a {
-			text-decoration: none;
-			color: var(--color-blue);
 		}
 
 		.firstblock {

@@ -251,6 +251,14 @@ function initOptionsEvents() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
+	paramId('i_addlink-url').addEventListener('change', function (this) {
+		quickLinks(undefined, { addLink: true })
+	})
+
+	paramId('i_addlink').addEventListener('click', function (this) {
+		quickLinks(undefined, { addLink: true })
+	})
+
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {
 		syncNewBookmarks(undefined, this.checked)
 	})

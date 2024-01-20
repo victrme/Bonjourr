@@ -660,27 +660,9 @@ li.block.folder img {
 	touch-action: none;
 }
 
-#link-title:hover button,
-#link-list:hover button {
+#link-title:hover button {
 	opacity: 1;
 	user-select: initial;
 	pointer-events: initial;
 	touch-action: initial;
-}
-
-#add-link-wrapper {
-	position: absolute;
-	right: 0;
-	height: var(--block-size);
-	display: flex;
-	align-items: center;
-}
-
-#linkblocks.text #add-link-wrapper {
-	height: 2.2em;
-}
-
-#linkblocks.dragging #add-link-wrapper,
-#linkblocks.dropping #add-link-wrapper {
-	display: none;
 }

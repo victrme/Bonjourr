@@ -110,7 +110,7 @@
 				<option value="day" class="trn">Every day</option>
 				<option value="pause" class="trn">Pause</option>
 			</select>
-			<button id="i_refresh" aria-label="Choose another background">
+			<button id="i_refresh" class="input-btn refresh-btn" aria-label="Choose another background">
 				<span>↻</span>
 			</button>
 		</div>
@@ -210,9 +210,38 @@
 		<hr />
 
 		<div class="wrapper">
+			<label for="i_addlink">Add link</label>
+			<div id="addlink-inputs">
+				<input
+					type="text"
+					name="addlink-title"
+					id="i_addlink-title"
+					maxlength="64"
+					placeholder="Example"
+					aria-label="Add title to new link"
+				/>
+				<input
+					type="text"
+					name="addlink-title"
+					id="i_addlink-url"
+					maxlength="512"
+					placeholder="example.com"
+					aria-label="Add URL to new link"
+					autocomplete="off"
+					spellcheck="false"
+				/>
+				<button id="i_addlink" class="input-btn">
+					<span>✓</span>
+				</button>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
 			<label for="b_importbookmarks" class="trn">Import bookmarks</label>
 			<div>
-				<button id="b_importbookmarks" class="trn">Import</button>
+				<button id="b_importbookmarks" class="param-btn trn">Import</button>
 			</div>
 		</div>
 
@@ -973,7 +1002,7 @@
 					<option value="day" class="trn">Every day</option>
 					<option value="pause" class="trn">Pause</option>
 				</select>
-				<button id="i_qtrefresh" aria-label="Choose another quote">
+				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Choose another quote">
 					<span>↻</span>
 				</button>
 			</div>
@@ -1059,10 +1088,16 @@
 				</div>
 
 				<div class="grid-btns">
-					<button id="b_editmove" class="trn">Edit layout</button>
-					<button id="b_resetlayout" class="trn">Reset</button>
+					<button id="b_resetlayout" class="param-btn btn-red trn">Reset</button>
 				</div>
 			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_editmove" class="trn">Open edit toolbox</label>
+			<button id="b_editmove" class="param-btn trn">Open</button>
 		</div>
 
 		<hr />
@@ -1127,10 +1162,10 @@
 			<textarea id="area_export" autocorrect="off" spellcheck="false" aria-labelledby="s_export"></textarea>
 
 			<div>
-				<button id="b_exportcopy" class="trn">Copy text</button>
+				<button id="b_exportcopy" class="inline-btn trn">Copy text</button>
 
 				<div id="save_wrapper">
-					<button id="b_exportfile" class="trn">Export as file</button>
+					<button id="b_exportfile" class="inline-btn trn">Export as file</button>
 					<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
 				</div>
 			</div>
@@ -1144,7 +1179,7 @@
 
 			<div>
 				<input id="i_importtext" type="text" placeholder="or paste as text" aria-labelledby="importtext" />
-				<button id="b_importtext" class="trn">Import</button>
+				<button id="b_importtext" class="inline-btn trn">Import</button>
 			</div>
 		</div>
 	</div>
@@ -1153,14 +1188,14 @@
 <div id="resetContainer">
 	<div class="param">
 		<div id="reset_first" class="wrapper shown">
-			<button id="b_resetconf" class="trn">Reset settings</button>
+			<button id="b_resetconf" class="inline-btn trn">Reset settings</button>
 		</div>
 
 		<div id="reset_conf" class="wrapper">
 			<span class="trn">Are you sure ?</span>
 			<div>
-				<button id="b_resetyes" class="trn">I am sure</button>
-				<button id="b_resetno" class="trn">No, go back</button>
+				<button id="b_resetyes" class="inline-btn trn">I am sure</button>
+				<button id="b_resetno" class="inline-btn trn">No, go back</button>
 			</div>
 		</div>
 	</div>

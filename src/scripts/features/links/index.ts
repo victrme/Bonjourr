@@ -456,19 +456,23 @@ async function linkSubmission(arg: LinkSubmission) {
 }
 
 function addLink(): Links.Elem[] {
-	const titledom = document.getElementById('e_title') as HTMLInputElement
-	const urldom = document.getElementById('e_url') as HTMLInputElement
-	const title = titledom.value
-	const url = urldom.value
+	const addsFromInterface = document.getElementById('editlink')?.classList.contains('add-link')
+	const inputTitleId = addsFromInterface ? 'e_title' : 'i_addlink-title'
+	const inputUrlId = addsFromInterface ? 'e_url' : 'i_addlink-url'
+	const inputTitle = document.getElementById(inputTitleId) as HTMLInputElement
+	const inputUrl = document.getElementById(inputUrlId) as HTMLInputElement
 
-	if (url.length < 3) {
+	const title = inputTitle.value
+	const url = inputUrl.value
+
+	inputTitle.value = ''
+	inputUrl.value = ''
+
+	if (url.length > 3) {
+		return [validateLink(title, url)]
+	} else {
 		return []
 	}
-
-	titledom.value = ''
-	urldom.value = ''
-
-	return [validateLink(title, url)]
 }
 
 function addLinkFolder(ids: string[]): Links.Folder[] {

@@ -10,7 +10,8 @@ $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 
 @mixin light-theme {
-	--color-blue: #0072ee;
+	--blue: 41, 144, 255;
+	--color-blue: rgb(var(--blue));
 	--color-text: #222222;
 	--color-param: #ffffff;
 	--color-settings: #f2f2f7;
@@ -33,7 +34,8 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 @mixin dark-theme {
-	--color-blue: #2990ff;
+	--blue: 41, 144, 255;
+	--color-blue: rgb(var(--blue));
 	--color-text: #eeeeee;
 	--color-light-text: #929294;
 	--color-param: #1c1c1e;
@@ -73,7 +75,8 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--font-weight: 400;
 	--font-size: 1em;
 	--clock-size: 6em;
-	--color-red: #fe3b31;
+	--red: 254, 59, 49;
+	--color-red: rgb(var(--red));
 	--color-green: #2ed058;
 
 	&[data-theme='light'] {
@@ -161,6 +164,7 @@ body {
 	textarea,
 	select,
 	button {
+		border: none;
 		outline: none;
 		font-family: inherit;
 	}
@@ -285,7 +289,7 @@ body {
 			max-height: 300px;
 		}
 		.as_page {
-			max-height: 300px;
+			max-height: 340px;
 		}
 		.as_css {
 			max-height: 3100px;
@@ -329,21 +333,44 @@ body {
 		transition-property: background-color, color, border, border-color, transform;
 	}
 
-	button {
+	.param-btn {
+		height: 31px;
+		padding: 0 1em;
 		color: var(--color-blue);
-		font-size: 14px;
-		border-radius: 8.5px;
-		border: 2px solid transparent;
+		border: none;
+		border-radius: 1em;
+		background-color: rgba(var(--blue), 0.15);
+		transition: background-color 0.05s, color 0.05s;
+
+		&:hover {
+			background-color: rgba(var(--blue), 0.25);
+		}
+
+		&:hover.btn-red {
+			color: var(--color-red);
+			background-color: rgba(var(--red), 0.25);
+		}
+	}
+
+	.inline-btn {
+		border-radius: 1em;
+		color: var(--color-blue);
 		background-color: transparent;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.input-btn {
+		text-decoration: none;
 	}
 
 	select,
 	input[type='text'],
 	input[type='url'],
 	#i_qtlist,
-	#i_export,
-	#i_refresh,
-	#i_qtrefresh {
+	.input-btn {
 		height: $inputHeight;
 		color: var(--color-text);
 		font-size: 13px;
