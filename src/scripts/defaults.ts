@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '1.18.4'
+export const CURRENT_VERSION = '1.19.0'
 
 export const MAIN_API = 'https://api.bonjourr.lol'
 

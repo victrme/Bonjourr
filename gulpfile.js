@@ -122,14 +122,14 @@ const taskOnline = (env) => [
 	ressources('online', false),
 ]
 
-const taskExtension = (from, prod) => [
+const taskExtension = (from, env) => [
 	html(from),
 	worker(from),
 	styles(from),
 	locales(from),
 	manifest(from),
 	ressources(from),
-	scripts(from, prod),
+	scripts(from, env),
 ]
 
 //
@@ -164,8 +164,8 @@ export const buildtest = parallel(...taskOnline('test'))
 
 export const build = parallel(
 	...taskOnline('prod'),
-	...taskExtension('firefox', true),
-	...taskExtension('chrome', true),
-	...taskExtension('edge', true),
-	...taskExtension('safari', true)
+	...taskExtension('firefox', 'prod'),
+	...taskExtension('chrome', 'prod'),
+	...taskExtension('edge', 'prod'),
+	...taskExtension('safari', 'prod')
 )
