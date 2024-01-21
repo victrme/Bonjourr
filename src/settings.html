@@ -211,26 +211,28 @@
 
 		<div class="wrapper">
 			<label for="i_addlink">Add link</label>
-			<div id="addlink-inputs">
+			<form id="addlink-inputs">
 				<input
 					type="text"
 					name="addlink-title"
 					id="i_addlink-title"
 					maxlength="64"
-					placeholder="Example"
+					placeholder="Title"
 					aria-label="Add title to new link"
 				/>
 				<input
 					type="text"
-					name="addlink-title"
+					name="addlink-url"
 					id="i_addlink-url"
+					minlength="3"
 					maxlength="512"
 					placeholder="example.com"
 					aria-label="Add URL to new link"
 					autocomplete="off"
 					spellcheck="false"
+					required="true"
 				/>
-				<button id="i_addlink" class="input-btn">
+				<button type="submit" id="i_addlink" class="input-btn">
 					<span>✓</span>
 				</button>
 			</div>

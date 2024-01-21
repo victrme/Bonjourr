@@ -698,7 +698,7 @@
 	border: 1px solid var(--color-dialog-border);
 	border-radius: 8px;
 
-	@include frostedGlass($blur: 2em);
+	@include frostedGlass($blur: 4em);
 
 	hr {
 		border-color: var(--color-dialog-border);

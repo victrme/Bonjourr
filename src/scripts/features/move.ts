@@ -291,12 +291,12 @@ function setAlign(id: Key, item?: Item) {
 	if (elem) {
 		elem.style.placeSelf = item?.box || ''
 
-		if (id !== 'quicklinks') {
-			elem.style.textAlign = item?.text || ''
-		} else {
-			// Special align for quicklinks, bc must be display flex
+		if (id === 'quicklinks') {
 			const flex = item?.text == 'left' ? 'flex-start' : item?.text == 'right' ? 'flex-end' : ''
-			elem.style.justifyContent = flex
+			const linklist = document.getElementById('link-list') as HTMLElement
+			linklist.style.justifyContent = flex
+		} else {
+			elem.style.textAlign = item?.text || ''
 		}
 	}
 }

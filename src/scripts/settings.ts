@@ -251,12 +251,14 @@ function initOptionsEvents() {
 		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
 	})
 
-	paramId('i_addlink-url').addEventListener('change', function (this) {
-		quickLinks(undefined, { addLink: true })
+	paramId('i_addlink-url').addEventListener('input', function (this) {
+		paramId('addlink-inputs').classList.toggle('valid', paramId('addlink-inputs')?.checkValidity())
 	})
 
-	paramId('i_addlink').addEventListener('click', function (this) {
+	paramId('addlink-inputs').addEventListener('submit', function (this, event) {
+		paramId('addlink-inputs').classList.remove('valid')
 		quickLinks(undefined, { addLink: true })
+		event.preventDefault()
 	})
 
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {

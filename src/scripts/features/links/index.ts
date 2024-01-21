@@ -211,7 +211,7 @@ function initRows(row: number, style: string) {
 
 	if (linklist && style in sizes) {
 		const { width, gap } = sizes[style as keyof typeof sizes]
-		document.documentElement.style.setProperty('--links-width', (width + gap) * row + 'em')
+		document.documentElement.style.setProperty('--links-width', Math.ceil((width + gap) * row) + 'em')
 	}
 }
 

@@ -4,11 +4,17 @@
 	min-height: 30vh;
 	padding: 0em;
 	border-radius: 1em;
-	backdrop-filter: blur(5em);
+	opacity: 0;
+	transition: opacity 0.2s;
+
+	&[open] {
+		opacity: 1;
+	}
 
 	&::backdrop {
 		backdrop-filter: blur(1em);
 		background-color: #2224;
+		transition: opacity 0.2s;
 	}
 
 	&.noneFound {

@@ -430,9 +430,10 @@
 	}
 
 	#addlink-inputs {
+		position: relative;
 		display: flex;
 		column-gap: 4px;
-		max-width: 75%;
+		max-width: 66%;
 
 		input[type='text'] {
 			width: 100%;
@@ -440,6 +441,41 @@
 
 		#i_addlink-title {
 			width: 50%;
+		}
+
+		#i_addlink-url {
+			padding-inline-end: 3em;
+		}
+
+		#i_addlink {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			width: 31px;
+			height: 21px;
+			opacity: 0;
+			pointer-events: none;
+			background-color: transparent;
+			transition: opacity 0.1s;
+
+			span {
+				justify-content: center;
+			}
+		}
+
+		&.valid #i_addlink {
+			opacity: 1;
+			pointer-events: all;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--color-blue);
+				background-color: rgba(var(--blue), 0.15);
+			}
+
+			&:active {
+				background-color: rgba(var(--blue), 0.25);
+			}
 		}
 	}
 
