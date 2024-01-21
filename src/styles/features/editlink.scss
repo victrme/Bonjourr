@@ -5,6 +5,7 @@
 	top: 0;
 	// width: 240px; wait for 1.19.0
 	width: 220px;
+	margin: 0;
 	padding: 16px 16px 12px 16px;
 	box-shadow: 0px 0px 15px #0004;
 	transition: left 0.4s;
@@ -84,7 +85,6 @@
 		border: 3px solid transparent;
 		text-align: initial;
 		padding: 4px 12px;
-		color: var(--color-text);
 		outline: none;
 		cursor: pointer;
 	}

@@ -47,13 +47,14 @@
 					</li>
 				</template>
 			</div>
+			<hr />
 			<div id="bookmarks-buttons">
 				<button id="bmk_close" class="trn btn-red">Cancel</button>
 				<button id="bmk_apply" class="trn none">Select bookmarks</button>
 			</div>
 		</dialog>
 
-		<div id="editlink">
+		<dialog id="editlink">
 			<div class="edit-inputs">
 				<div>
 					<label for="e_title" class="trn">Title</label>
@@ -87,22 +88,19 @@
 
 			<hr />
 
-			<button id="e_tab-add" class="trn">Add tab</button>
-			<button id="e_tab-remove" class="trn btn-red">Remove tab</button>
-			<button id="e_folder-remove" class="trn">Remove from folder</button>
-			<button id="e_folder-add" class="trn">Create new folder</button>
-			<button id="e_delete" class="trn btn-red">Delete selected</button>
-			<button id="e_submit" class="trn">Apply changes</button>
-			<button id="e_add-link" class="trn">Add link</button>
-		</div>
+			<div class="dialog-buttons">
+				<button id="e_tab-add" class="trn">Add tab</button>
+				<button id="e_tab-remove" class="trn btn-red">Remove tab</button>
+				<button id="e_folder-remove" class="trn">Remove from folder</button>
+				<button id="e_folder-add" class="trn">Create new folder</button>
+				<button id="e_delete" class="trn btn-red">Delete selected</button>
+				<button id="e_submit" class="trn">Apply changes</button>
+				<button id="e_add-link" class="trn">Add link</button>
+			</div>
+		</dialog>
 
-		<div id="background_overlay">
-			<div id="background"></div>
-			<div id="background-bis"></div>
-		</div>
-
-		<div id="element-mover" class="hidden">
-			<div>
+		<dialog id="element-mover" class="hidden">
+			<div id="grid-selection">
 				<p class="trn">Editing</p>
 				<h3 id="mover-title" class="trn">No selection</h3>
 			</div>
@@ -180,8 +178,14 @@
 			<div id="close-mover-wrapper">
 				<hr />
 
+				<button id="b_resetlayout" class="trn btn-red">Reset layout</button>
 				<button id="close-mover" class="trn">Done</button>
 			</div>
+		</dialog>
+
+		<div id="background_overlay">
+			<div id="background"></div>
+			<div id="background-bis"></div>
 		</div>
 
 		<main id="interface">

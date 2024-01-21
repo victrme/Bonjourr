@@ -1065,12 +1065,20 @@
 
 	<div class="tooltiptext ttgrid">
 		<span class="trn">Customise how and where widgets appear.</span>
-		<span class="trn instructions">Choose a layout, click edit and select a widget to modify.</span>
+		<span class="trn instructions">Open the toolbox and select on the page a widget to modify.</span>
 		<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener">Learn more</a>
 	</div>
 
 	<div class="param">
-		<div>
+		<div class="wrapper">
+			<label for="b_editmove" class="trn">Open layout toolbox</label>
+			<button id="b_editmove" class="param-btn trn">Open</button>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<span class="trn">Layout columns</span>
 			<div class="wrapper">
 				<div id="grid-layout" class="mover">
 					<button data-layout="single" aria-label="Single column layout">
@@ -1086,18 +1094,7 @@
 						<div></div>
 					</button>
 				</div>
-
-				<div class="grid-btns">
-					<button id="b_resetlayout" class="param-btn btn-red trn">Reset</button>
-				</div>
 			</div>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<label for="b_editmove" class="trn">Open edit toolbox</label>
-			<button id="b_editmove" class="param-btn trn">Open</button>
 		</div>
 
 		<hr />

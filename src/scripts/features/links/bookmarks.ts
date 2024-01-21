@@ -105,6 +105,7 @@ function importSelectedBookmarks() {
 	}
 
 	quickLinks(undefined, { bookmarks: selectedLinks })
+	document.getElementById('bmk_apply')?.classList.toggle('none', true)
 	bookmarksdom.close()
 }
 

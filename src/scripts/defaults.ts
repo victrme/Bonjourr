@@ -56,6 +56,20 @@ const DEFAULT_LANG = (() => {
 	return 'en'
 })()
 
+export const SEARCHBAR_ENGINES = <const>[
+	'google',
+	'ddg',
+	'startpage',
+	'qwant',
+	'yahoo',
+	'bing',
+	'brave',
+	'ecosia',
+	'lilo',
+	'baidu',
+	'custom',
+]
+
 export const SYNC_DEFAULT: Sync.Storage = {
 	about: { browser: PLATFORM, version: CURRENT_VERSION },
 	showall: false,

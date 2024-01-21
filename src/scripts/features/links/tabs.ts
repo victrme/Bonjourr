@@ -13,7 +13,7 @@ export default function initTabs(data: Sync.Storage) {
 	divs.forEach((node) => node.remove())
 
 	data.linktabs.titles.forEach((title, i) => {
-		appendNewTab(title, i === data.linktabs.selected ?? 0)
+		appendNewTab(title, i === (data.linktabs.selected ?? 0))
 	})
 
 	domlinkblocks?.classList.toggle('with-tabs', data.linktabs.active)

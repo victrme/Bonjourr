@@ -8,13 +8,13 @@
 
 	@include frostedGlass($blur: 2em);
 
-	&.selected {
-		background: #fff3;
-		outline-color: var(--color-blue);
+	&:hover {
+		background-color: #fff3;
 	}
 
-	&:hover {
-		background-color: #fff5;
+	&.selected {
+		background-color: rgba(var(--blue), 0.15);
+		outline-color: var(--color-blue);
 	}
 }
 
@@ -109,11 +109,6 @@
 		min-width: 2.5em;
 		background-color: transparent;
 
-		&.selected {
-			background-color: #0072ee22;
-			outline: 2px solid var(--color-blue);
-		}
-
 		&:disabled {
 			opacity: 0.3;
 			cursor: default;
@@ -125,6 +120,13 @@
 
 		&:active:not(:disabled) {
 			background-color: #fff5;
+		}
+
+		&.selected,
+		&.selected:hover,
+		&.selected:active {
+			outline: 2px solid var(--color-blue);
+			background-color: rgba(var(--blue), 0.15);
 		}
 	}
 }
@@ -152,6 +154,10 @@ button.grid-spanner {
 		cursor: default;
 		opacity: 0.4;
 	}
+}
+
+#grid-selection {
+	display: none;
 }
 
 #grid-mover {
@@ -196,7 +202,7 @@ button.grid-spanner {
 	}
 }
 
-#close-mover {
+#close-mover-wrapper button {
 	display: block;
 	width: 100%;
 	border-radius: 6px;
@@ -207,12 +213,16 @@ button.grid-spanner {
 	outline: none;
 	cursor: pointer;
 	text-align: center;
-}
 
-#close-mover:focus-visible,
-#close-mover:hover {
-	color: white;
-	background-color: #2c7be5;
+	&:focus-visible,
+	&:hover {
+		color: white;
+		background-color: var(--color-blue);
+
+		&.btn-red {
+			background-color: var(--color-red);
+		}
+	}
 }
 
 /*

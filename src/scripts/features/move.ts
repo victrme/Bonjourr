@@ -31,7 +31,6 @@ type UpdateMove = {
 	grid?: { x?: string; y?: string }
 }
 
-let smallWidth = false
 const dominterface = document.querySelector<HTMLElement>('#interface')
 const elements = {
 	time: document.getElementById('time'),
@@ -42,7 +41,9 @@ const elements = {
 	quotes: document.getElementById('quotes_container'),
 }
 
+let smallWidth = false
 let activeID: Key | null
+let resetTimeout: number
 
 // Utils (no dom uses or manipulation)
 
@@ -448,6 +449,28 @@ function removeSelection() {
 	})
 }
 
+function resetButtonConfirm(): boolean {
+	const b_resetlayout = document.getElementById('b_resetlayout') as HTMLButtonElement
+	const confirm = !!b_resetlayout.dataset.confirm
+
+	clearTimeout(resetTimeout)
+
+	if (confirm === false) {
+		b_resetlayout.textContent = tradThis('Are you sure ?')
+		b_resetlayout.dataset.confirm = 'true'
+
+		resetTimeout = setTimeout(() => {
+			b_resetlayout.textContent = tradThis('Reset')
+			b_resetlayout.dataset.confirm = ''
+		}, 1000)
+	} else {
+		b_resetlayout.textContent = tradThis('Reset')
+		b_resetlayout.dataset.confirm = ''
+	}
+
+	return confirm
+}
+
 export default function moveElements(init?: Move, events?: UpdateMove) {
 	const moverdom = document.querySelector<HTMLElement>('#element-mover')
 	let firstPos = { x: 0, y: 0 }
@@ -592,6 +615,10 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 		}
 
 		function layoutReset() {
+			if (resetButtonConfirm() === false) {
+				return
+			}
+
 			const layout = move.layouts[move.selection]
 			const enabled = getEnabledWidgetsFromStorage(data)
 			let grid: typeof layout.grid = []
@@ -643,9 +670,14 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 		}
 
 		function toggleMoveStatus() {
-			if (dominterface?.classList.contains('move-edit')) {
+			const b_editmove = document.getElementById('b_editmove') as HTMLButtonElement
+			const isEditing = dominterface?.classList.contains('move-edit')
+
+			if (isEditing) {
+				b_editmove.textContent = tradThis('Open')
 				gridOverlay.removeAll()
 			} else {
+				b_editmove.textContent = tradThis('Close')
 				buttonControl.layout(move.selection)
 				const ids = getEnabledWidgetsFromStorage(data)
 				ids.forEach((id) => gridOverlay.add(id))

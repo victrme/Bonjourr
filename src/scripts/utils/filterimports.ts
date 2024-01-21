@@ -30,8 +30,8 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		if (toImport.hide[1][2]) toImport.hide.weathericon = true
 		if (toImport.hide[3][0]) toImport.hide.settingsicon = true
 
-		toImport.time = !(toImport.hide.clock && toImport.hide.date) ?? true
-		toImport.main = !(toImport.hide.weatherdesc && toImport.hide.weathericon && toImport.hide.weathericon) ?? true
+		toImport.time = !(toImport.hide.clock && toImport.hide.date)
+		toImport.main = !(toImport.hide.weatherdesc && toImport.hide.weathericon && toImport.hide.weathericon)
 	}
 
 	// <1.17.0 dynamic/custom becomes unsplash/local
@@ -154,10 +154,18 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		})
 	}
 
-	// To avoid link duplicates: delete current links
-	bundleLinks(current).forEach((elem: Links.Link) => {
-		delete current[elem._id]
-	})
+	// Remove link duplicates
+	const importedLink = bundleLinks(toImport as Sync.Storage)
+	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
+	const currentLinks = bundleLinks(current)
+
+	for (let ii = 0; ii < currentLinks.length; ii++) {
+		const link = currentLinks[ii]
+
+		if (!link.folder && link.url === importedURLs[ii]) {
+			delete current[link._id]
+		}
+	}
 
 	current = deepmergeAll(current, toImport, { about: SYNC_DEFAULT.about }) as Sync.Storage
 

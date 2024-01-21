@@ -66,6 +66,7 @@ async function initLocalBackgrounds() {
 }
 
 async function initSettingsOptions() {
+	const loadedThumbIds = [...document.querySelectorAll<Element>('.thumbnail')].map((el) => el.id)
 	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
 	const images = await localImages.get()
 	let ids = images.ids
@@ -77,6 +78,10 @@ async function initSettingsOptions() {
 	if (IS_MOBILE && ids.length > 9) {
 		ids = ids.slice(0, 9)
 		document.getElementById('thumbnail-show-buttons')?.classList.add('shown')
+	}
+
+	if (loadedThumbIds.length > 0) {
+		ids = ids.filter((id) => loadedThumbIds.includes(id) === false)
 	}
 
 	for (const id of ids) {

@@ -1,8 +1,6 @@
-const ENGINES = <const>['google', 'ddg', 'startpage', 'qwant', 'yahoo', 'bing', 'brave', 'ecosia', 'lilo', 'baidu', 'custom']
-
 declare namespace Sync {
 	interface Storage {
-		dateformat: "eu" | "us" | "ja" | "cn"
+		dateformat: 'eu' | 'us' | 'ja' | 'cn'
 		showall: boolean
 		quicklinks: boolean
 		syncbookmarks?: number
@@ -80,7 +78,7 @@ declare namespace Sync {
 		on: boolean
 		opacity: number
 		newtab: boolean
-		engine: (typeof ENGINES)[number]
+		engine: string
 		request: string
 		suggestions: boolean
 		placeholder: string

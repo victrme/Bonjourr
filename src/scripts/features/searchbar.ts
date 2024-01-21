@@ -1,4 +1,5 @@
 import { apiWebSocket, stringMaxSize } from '../utils'
+import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -410,5 +411,5 @@ function focusSearchbar() {
 }
 
 function isValidEngine(s = ''): s is Sync.Searchbar['engine'] {
-	return s in ENGINES
+	return SEARCHBAR_ENGINES.includes(s as any)
 }

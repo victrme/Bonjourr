@@ -259,7 +259,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 	if (data.geolocation === 'off' && !coords) {
 		queries += '&q=' + encodeURI(data.city ?? 'Paris')
-		queries += ',' + data.ccode ?? 'FR'
+		queries += ',' + (data.ccode ?? 'FR')
 	}
 
 	//

@@ -54,7 +54,11 @@
 
 		&.selected {
 			border-color: var(--color-blue);
-			background-color: rgba(0, 114, 238, 0.1333333333);
+			background-color: rgba(var(--blue), 0.15);
+
+			button:hover {
+				background-color: rgba(var(--blue), 0.15);
+			}
 		}
 
 		button {
@@ -64,6 +68,7 @@
 		}
 
 		button:hover {
+			color: var(--color-text);
 			background-color: #fff2;
 		}
 
@@ -97,27 +102,37 @@
 		display: flex;
 		margin: 2em;
 		column-gap: 2em;
-		justify-content: center;
+		justify-content: space-between;
 		z-index: 3;
 
 		button {
 			width: fit-content;
-			transition: filter 0.4s;
-			background-color: var(--color-areas);
-
-			&:focus-visible,
-			&:hover {
-				background-color: var(--color-blue);
-
-				&.btn-red {
-					background-color: var(--color-red);
-				}
-			}
 		}
 	}
 
-	#bmk_apply.none {
-		pointer-events: none;
-		opacity: 0.5;
+	#bmk_close {
+		background-color: transparent;
+
+		&:focus-visible,
+		&:hover {
+			background-color: var(--color-red);
+		}
+	}
+
+	#bmk_apply {
+		color: white;
+		background-color: var(--color-blue);
+
+		&.none {
+			color: var(--color-text);
+			background-color: transparent;
+			pointer-events: none;
+			opacity: 0.5;
+		}
+
+		&:focus-visible,
+		&:hover {
+			filter: brightness(1.2);
+		}
 	}
 }
