@@ -1,22 +1,53 @@
 type Func = (...args: unknown[]) => void
 type AsyncFunc = (...args: unknown[]) => Promise<void>
 
-export default async function transitioner(start?: Func, middle?: AsyncFunc, end?: Func, timeout = 200): Promise<void> {
-	if (start) {
-		start(...arguments)
+type Transitioner = {
+	first: (cb: Func) => void
+	finally: (cb: Func) => void
+	then: (cb: AsyncFunc) => void
+	cancel: () => void
+	transition: (timeout: number) => Promise<void>
+}
+
+export default function transitioner(): Transitioner {
+	//
+	let waitTimeout: number
+
+	const steps: {
+		first?: Func
+		then?: AsyncFunc
+		finally?: Func
+	} = {}
+
+	return {
+		first: (cb: Func) => (steps.first = cb),
+
+		finally: (cb: Func) => (steps.finally = cb),
+
+		then: (cb: AsyncFunc) => (steps.then = cb),
+
+		cancel: () => clearTimeout(waitTimeout),
+
+		transition: async (timeout: number) => {
+			if (steps.first) {
+				steps.first(...arguments)
+			}
+
+			await new Promise((r) => {
+				waitTimeout = setTimeout(() => r(true), Math.min(timeout, 2000))
+			})
+
+			if (steps.then) {
+				await steps.then(...arguments)
+			}
+
+			if (steps.finally) {
+				steps.finally(...arguments)
+			}
+
+			delete steps.first
+			delete steps.then
+			delete steps.finally
+		},
 	}
-
-	await new Promise((r) => {
-		setTimeout(() => r(true), Math.min(timeout, 2000))
-	})
-
-	if (middle) {
-		await middle(...arguments)
-	}
-
-	if (end) {
-		end(...arguments)
-	}
-
-	return
 }

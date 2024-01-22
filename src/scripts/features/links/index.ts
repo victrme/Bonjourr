@@ -239,42 +239,52 @@ async function openFolder(event: Event) {
 
 	const data = await storage.sync.get()
 	const folder = data[li.id] as Links.Folder
+	const folderOpenTransition = transitioner()
 
-	transitioner(
-		function hide() {
-			domlinkblocks.dataset.folderid = li.id
-			domlinkblocks.classList.add('hiding')
-			domlinkblocks.classList.remove('in-folder')
-		},
-		async function changeToFolder() {
-			toggleTabsTitleType(folder.title)
-			await initblocks(data)
-		},
-		function show() {
-			domlinkblocks.classList.replace('hiding', 'in-folder')
-		},
-		200
-	)
+	folderOpenTransition.first(hide)
+	folderOpenTransition.then(changeToFolder)
+	folderOpenTransition.finally(show)
+	folderOpenTransition.transition(200)
+
+	function hide() {
+		domlinkblocks.dataset.folderid = li?.id
+		domlinkblocks.classList.add('hiding')
+		domlinkblocks.classList.remove('in-folder')
+	}
+
+	async function changeToFolder() {
+		toggleTabsTitleType(folder.title)
+		await initblocks(data)
+	}
+
+	function show() {
+		domlinkblocks.classList.replace('hiding', 'in-folder')
+	}
 }
 
 async function closeFolder() {
 	const data = await storage.sync.get()
+	const folderCloseTransition = transitioner()
 
-	transitioner(
-		function hide() {
-			domlinkblocks.dataset.folderid = ''
-			domlinkblocks.classList.add('hiding')
-		},
-		async function changeToTab() {
-			toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.active)
-			await initblocks(data)
-		},
-		function show() {
-			domlinkblocks.classList.remove('in-folder')
-			domlinkblocks.classList.remove('hiding')
-		},
-		200
-	)
+	folderCloseTransition.first(hide)
+	folderCloseTransition.then(changeToTab)
+	folderCloseTransition.finally(show)
+	folderCloseTransition.transition(200)
+
+	function hide() {
+		domlinkblocks.dataset.folderid = ''
+		domlinkblocks.classList.add('hiding')
+	}
+
+	async function changeToTab() {
+		toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.active)
+		await initblocks(data)
+	}
+
+	function show() {
+		domlinkblocks.classList.remove('in-folder')
+		domlinkblocks.classList.remove('hiding')
+	}
 }
 
 function dismissSelectAllAndFolder(event: Event) {
