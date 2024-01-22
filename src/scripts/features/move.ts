@@ -1,8 +1,8 @@
 import { BROWSER, SYNC_DEFAULT } from '../defaults'
-import { toggleWidgetsDisplay } from '../index'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 import storage from '../storage'
+import transitioner from '../utils/transitioner'
 
 // -------------------------------------------------|
 // These types and storage design will have to go	|
@@ -18,7 +18,7 @@ type Selection = Sync.Move.Selection
 type Move = Sync.Storage['move']
 
 type UpdateMove = {
-	widget?: { id: Key; on: boolean }
+	widget?: [Widgets, boolean]
 	span?: 'col' | 'row'
 	reset?: true
 	toggle?: true
@@ -49,17 +49,35 @@ let resetTimeout: number
 
 const isEditing = () => dominterface?.classList.contains('move-edit') || false
 
-function widgetsListToData(list: { [key in Key]?: boolean }, data: Sync.Storage) {
-	let states: { [key: string]: unknown } = {}
+function widgetsListToData(list: [Widgets, boolean][], data: Sync.Storage): Sync.Storage {
+	const widgets: { [key in Widgets]?: boolean } = {}
+	list.forEach(([id, on]) => (widgets[id] = on))
 
-	if ('time' in list) states.time = list.time
-	if ('main' in list) states.main = list.main
-	if ('quicklinks' in list) states.quicklinks = list.quicklinks
-	if ('notes' in list) states.notes = { ...data.notes, on: list.notes }
-	if ('quotes' in list) states.quotes = { ...data.quotes, on: list.quotes }
-	if ('searchbar' in list) states.searchbar = { ...data.searchbar, on: list.searchbar }
+	if (widgets?.time !== undefined) {
+		data.time = widgets.time
+	}
 
-	return states
+	if (widgets?.main !== undefined) {
+		data.main = widgets.main
+	}
+
+	if (widgets?.quicklinks !== undefined) {
+		data.quicklinks = widgets.quicklinks
+	}
+
+	if (widgets?.searchbar !== undefined) {
+		data.searchbar = { ...data.searchbar, on: widgets.searchbar }
+	}
+
+	if (widgets?.quotes !== undefined) {
+		data.quotes = { ...data.quotes, on: widgets.quotes }
+	}
+
+	if (widgets?.notes !== undefined && data.notes) {
+		data.notes = { ...data.notes, on: widgets.notes }
+	}
+
+	return data
 }
 
 function areaStringToLayoutGrid(area: string) {
@@ -578,23 +596,27 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 			const layout = move.layouts[move.selection]
 			const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
 
-			const list = {
-				time: widgetsInGrid.includes('time'),
-				main: widgetsInGrid.includes('main'),
-				notes: widgetsInGrid.includes('notes'),
-				quotes: widgetsInGrid.includes('quotes'),
-				searchbar: widgetsInGrid.includes('searchbar'),
-				quicklinks: widgetsInGrid.includes('quicklinks'),
-			}
+			const list: [Widgets, boolean][] = [
+				['time', widgetsInGrid.includes('time')],
+				['main', widgetsInGrid.includes('main')],
+				['notes', widgetsInGrid.includes('notes')],
+				['quotes', widgetsInGrid.includes('quotes')],
+				['searchbar', widgetsInGrid.includes('searchbar')],
+				['quicklinks', widgetsInGrid.includes('quicklinks')],
+			]
 
 			// Update storage
 			const states = widgetsListToData(list, data)
 			storage.sync.set({ ...states, move })
 
-			// This triggers interface fade
-			toggleWidgetsDisplay(list)
+			const interfaceTransition = transitioner()
 
-			setTimeout(() => {
+			interfaceTransition.first(() => {
+				interfaceFadeOut()
+				document.dispatchEvent(new CustomEvent('widgets-toggle', { detail: list }))
+			})
+
+			interfaceTransition.then(async () => {
 				setAllAligns(layout.items)
 				setGridAreas(layout.grid)
 				buttonControl.layout(move.selection)
@@ -611,7 +633,10 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 					buttonControl.grid(activeID)
 					buttonControl.align(layout.items[activeID])
 				}
-			}, 200) // same duration as toggleWidgetsDisplay interfaceFade.apply
+			})
+
+			interfaceTransition.finally(interfaceFadeIn)
+			interfaceTransition.transition(200)
 		}
 
 		function layoutReset() {
@@ -703,30 +728,6 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 			storage.sync.set({ move: move })
 		}
 
-		function toggleWidgetOnGrid() {
-			if (!events?.widget) return
-
-			const layout = { ...move.layouts[move.selection] }
-			const { id, on } = events?.widget
-
-			move.layouts[move.selection].grid = gridWidget(layout.grid, move.selection, id, on)
-
-			removeSelection()
-			setGridAreas(move.layouts[move.selection].grid)
-			setAllAligns(move.layouts[move.selection].items)
-
-			// add/remove widget overlay only when editing move
-			if (isEditing()) {
-				on ? gridOverlay.add(id) : gridOverlay.remove(id)
-			}
-
-			let list: { [key in Key]?: boolean } = {}
-			list[id] = on
-
-			const states = widgetsListToData(list, data)
-			storage.sync.set({ ...states, move })
-		}
-
 		function pageWidthOverlay(overlay?: boolean) {
 			const isEditing = document.getElementById('interface')?.classList?.contains('move-edit')
 			const hasOverlays = document.querySelector('.move-overlay')
@@ -779,12 +780,15 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 				layoutReset()
 
 			case 'widget':
-				toggleWidgetOnGrid()
 				break
 
 			case 'overlay':
 				pageWidthOverlay(prop.overlay)
 				break
+		}
+
+		if (events?.widget) {
+			toggleWidget(data, events.widget)
 		}
 	}
 
@@ -894,4 +898,89 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 		setAllAligns(layout.items)
 		setGridAreas(layout.grid)
 	}
+}
+
+//
+//	Interface widget control
+//
+
+async function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
+	if (!widget) return
+
+	const interfaceTransition = transitioner()
+	const [id, on] = widget
+
+	const layout = { ...data.move.layouts[data.move.selection] }
+	const newgrid = gridWidget(layout.grid, data.move.selection, id, on)
+
+	data.move.layouts[data.move.selection].grid = newgrid
+	data = widgetsListToData([[id, on]], data)
+	storage.sync.set(data)
+
+	interfaceTransition.first(() => {
+		toggleWidgetInSettings([[id, on]])
+		interfaceFadeOut()
+	})
+
+	interfaceTransition.then(async () => {
+		setGridAreas(data.move.layouts[data.move.selection].grid)
+		setAllAligns(data.move.layouts[data.move.selection].items)
+		toggleWidgetOnInterface([[id, on]])
+		removeSelection()
+
+		// add/remove widget overlay only when editing move
+		if (isEditing()) {
+			on ? gridOverlay.add(id) : gridOverlay.remove(id)
+		}
+	})
+
+	interfaceTransition.finally(interfaceFadeIn)
+	interfaceTransition.transition(200)
+}
+
+function toggleWidgetInSettings(states: [Widgets, boolean][]) {
+	const inputids: { [key in Widgets]: string } = {
+		time: 'i_time',
+		main: 'i_main',
+		quicklinks: 'i_quicklinks',
+		notes: 'i_notes',
+		quotes: 'i_quotes',
+		searchbar: 'i_sb',
+	}
+
+	for (const [widget, on] of states) {
+		const input = document.getElementById(inputids[widget]) as HTMLInputElement
+		const option = document.getElementById(widget + '_options')
+
+		option?.classList.toggle('shown', on)
+		input.checked = on
+	}
+}
+
+function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
+	const domids: { [key in Widgets]: string } = {
+		time: 'time',
+		main: 'main',
+		quicklinks: 'linkblocks',
+		notes: 'notes_container',
+		quotes: 'quotes_container',
+		searchbar: 'sb_container',
+	}
+
+	for (const [widget, on] of states) {
+		const elem = document.getElementById(domids[widget]) as HTMLElement
+		elem?.classList.toggle('hidden', !on)
+	}
+}
+
+function interfaceFadeOut() {
+	const dominterface = document.getElementById('interface') as HTMLElement
+	dominterface.style.opacity = '0'
+	dominterface.style.transition = `opacity 200ms cubic-bezier(.215,.61,.355,1)`
+}
+
+function interfaceFadeIn() {
+	const dominterface = document.getElementById('interface') as HTMLElement
+	dominterface.style.removeProperty('opacity')
+	setTimeout(() => (dominterface.style.transition = ''), 200)
 }

@@ -12,7 +12,7 @@ import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
-import { toggleWidgetsDisplay, customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
+import { customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
 
 import langList from './langs'
 import parse from './utils/parse'
@@ -248,7 +248,7 @@ function initOptionsEvents() {
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgetsDisplay({ quicklinks: this.checked }, true)
+		moveElements(undefined, { widget: ['quicklinks', this.checked] })
 	})
 
 	paramId('i_addlink-url').addEventListener('input', function (this) {
@@ -329,7 +329,7 @@ function initOptionsEvents() {
 	// Time and date
 
 	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
-		toggleWidgetsDisplay({ time: this.checked }, true)
+		moveElements(undefined, { widget: ['time', this.checked] })
 	})
 
 	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
@@ -372,7 +372,7 @@ function initOptionsEvents() {
 	// Weather
 
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
-		toggleWidgetsDisplay({ main: this.checked }, true)
+		moveElements(undefined, { widget: ['main', this.checked] })
 	})
 
 	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
@@ -429,7 +429,7 @@ function initOptionsEvents() {
 	// Notes
 
 	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgetsDisplay({ notes: this.checked }, true)
+		moveElements(undefined, { widget: ['notes', this.checked] })
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -448,7 +448,7 @@ function initOptionsEvents() {
 	// Searchbar
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgetsDisplay({ searchbar: this.checked }, true)
+		moveElements(undefined, { widget: ['searchbar', this.checked] })
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -483,7 +483,7 @@ function initOptionsEvents() {
 	// Quotes
 
 	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
-		toggleWidgetsDisplay({ quotes: this.checked }, true)
+		moveElements(undefined, { widget: ['quotes', this.checked] })
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
