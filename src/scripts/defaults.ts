@@ -90,6 +90,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	syncbookmarks: undefined,
 	textShadow: 0.2,
 	reviewPopup: 0,
+	announcements: 'major',
 	cssHeight: 80,
 	css: '',
 	hide: {},

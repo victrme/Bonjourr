@@ -1,6 +1,8 @@
 @import '../../node_modules/pocket-editor/dist/style';
 @import 'global';
 @import 'features/editlink';
+@import 'features/bookmarks';
+@import 'components/popup.scss';
 
 #skiptosettings {
 	position: absolute;
@@ -727,111 +729,6 @@
 	}
 }
 
-#popup {
-	display: none;
-	position: fixed;
-	opacity: 0;
-	bottom: 4rem;
-	left: 4rem;
-	z-index: 2;
-	transition: opacity 0.4s;
-	pointer-events: none;
-
-	#popup_buttons a,
-	#popup_text {
-		opacity: 0;
-		pointer-events: all;
-		transition: opacity 0.2s, background-color 0.2s, color 0.2s;
-	}
-
-	&.shown {
-		opacity: 1;
-
-		#popup_buttons a,
-		#popup_text {
-			opacity: 1;
-			cursor: pointer;
-			transition: opacity 2s, background-color 0.2s, color 0.2s, transform 0.2s;
-		}
-	}
-
-	#popup_buttons {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		min-width: 9em;
-
-		a {
-			color: white;
-			text-decoration: none;
-			border-radius: 8px;
-			line-height: 2.4em;
-			background-color: #fff2;
-			border: 1px solid rgba(255, 255, 255, 0.075);
-			transform: scale(1);
-
-			@include frostedGlass();
-
-			&:hover {
-				background-color: #fff1;
-				transform: scale(1.03);
-			}
-
-			&:active {
-				background-color: #fff6;
-			}
-
-			&:first-child {
-				margin-bottom: 0.4em;
-			}
-		}
-	}
-
-	#popup_text {
-		display: flex;
-		position: relative;
-		align-items: center;
-		width: 16em;
-		text-align: initial;
-		padding: 0.6em 2em;
-		margin-right: 0.6em;
-		border-radius: 8px;
-		background-color: #fff2;
-		border: 1px solid rgba(255, 255, 255, 0.075);
-
-		@include frostedGlass();
-
-		&::before {
-			content: '✕';
-			position: absolute;
-			width: calc(100% - 2em);
-			font-size: 1.6em;
-			font-weight: bolder;
-			text-align: center;
-			color: transparent;
-			transition: color 0.4s, filter 0.2s;
-		}
-
-		&:hover {
-			color: transparent;
-			background-color: #fff1;
-
-			&::before {
-				color: #ffff;
-			}
-		}
-
-		&:active {
-			background-color: transparent;
-
-			&::before {
-				opacity: 1;
-				filter: brightness(0.8);
-			}
-		}
-	}
-}
-
 #error {
 	position: absolute;
 	display: flex;
@@ -911,4 +808,3 @@
 @import 'settings';
 @import 'grid';
 @import 'responsive';
-@import 'features/bookmarks';

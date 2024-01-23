@@ -6,6 +6,7 @@ import customFont from './features/fonts'
 import quickLinks from './features/links'
 import moveElements from './features/move'
 import hideElements from './features/hide'
+import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
 import { settingsInit } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
@@ -68,7 +69,6 @@ async function startup() {
 	darkmode(sync.dark)
 	searchbar(sync.searchbar)
 	quotes({ sync: sync, local })
-	showPopup(sync.reviewPopup)
 	notes(sync.notes)
 	moveElements(sync.move)
 	customCss(sync.css)
@@ -82,6 +82,7 @@ async function startup() {
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
 	onSettingsLoad(() => {
+		interfacePopup(sync.reviewPopup)
 		setPotatoComputerMode()
 	})
 }
@@ -310,55 +311,6 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 	if (value === 'disable') document.documentElement.dataset.theme = 'light'
 	if (value === 'enable') document.documentElement.dataset.theme = 'dark'
 	if (value === 'system') document.documentElement.dataset.theme = ''
-}
-
-export function showPopup(value: string | number) {
-	//
-	function affiche() {
-		const popup = document.getElementById('popup') as HTMLElement
-
-		const reviewURLs = {
-			chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
-			firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
-			safari: 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236',
-			edge: 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid',
-			other: 'https://bonjourr.fr/help#%EF%B8%8F-reviews',
-		}
-
-		function closePopup(e: Event) {
-			const isDesc = (e.target as HTMLElement)?.id === 'popup_text'
-
-			if (isDesc) {
-				popup?.classList.remove('shown')
-				setTimeout(() => popup?.remove(), 200)
-				setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
-			}
-
-			storage.sync.set({ reviewPopup: 'removed' })
-		}
-
-		popup.style.display = 'flex'
-		document.getElementById('popup_review')?.setAttribute('href', reviewURLs[BROWSER])
-		document.getElementById('popup_review')?.addEventListener('mousedown', closePopup)
-		document.getElementById('popup_donate')?.addEventListener('mousedown', closePopup)
-		document.getElementById('popup_text')?.addEventListener('click', closePopup, { passive: true })
-
-		setTimeout(() => popup?.classList.add('shown'), 400)
-		setTimeout(() => document.getElementById('creditContainer')?.classList.remove('shown'), 0)
-	}
-
-	// TODO: condition a verifier
-
-	if (typeof value === 'number') {
-		if (value > 30) affiche() // s'affiche après 30 tabs
-		else storage.sync.set({ reviewPopup: value + 1 })
-
-		return
-	}
-
-	if (value !== 'removed') {
-		storage.sync.set({ reviewPopup: 0 })
-	}
 }
 
 export function textShadow(init?: number, event?: number) {

@@ -15,6 +15,7 @@ declare namespace Sync {
 		textShadow: number
 		cssHeight: number
 		reviewPopup: number
+		announcements: 'all' | 'major' | 'off'
 		background_blur: number
 		background_bright: number
 		css: string

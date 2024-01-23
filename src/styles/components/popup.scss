@@ -1,0 +1,96 @@
+#popup {
+	display: flex;
+	position: fixed;
+	opacity: 0;
+	bottom: 4em;
+	left: 4em;
+	z-index: 2;
+	transition: opacity 0.2s;
+
+	&.shown {
+		opacity: 1;
+	}
+}
+
+#popup p,
+#popup a {
+	opacity: 0;
+	cursor: pointer;
+	@include frostedGlass(2em);
+	transition: opacity 2s, background-color 0.1s, color 0.1s;
+}
+
+#popup.shown p,
+#popup.shown a {
+	opacity: 1;
+}
+
+#popup_buttons {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-width: 9em;
+
+	a {
+		color: white;
+		text-decoration: none;
+		border-radius: 8px;
+		line-height: 2.4em;
+		background-color: #fff2;
+		border: 1px solid rgba(255, 255, 255, 0.075);
+
+		&:hover {
+			background-color: #fff4;
+		}
+
+		&:active {
+			opacity: 0.8;
+		}
+
+		&:first-child {
+			margin-bottom: 0.4em;
+		}
+	}
+}
+
+#popup_text {
+	display: flex;
+	position: relative;
+	align-items: center;
+	width: 16em;
+	text-align: initial;
+	padding: 0.6em 2em;
+	margin-right: 0.6em;
+	border-radius: 8px;
+	background-color: #fff2;
+	border: 1px solid rgba(255, 255, 255, 0.075);
+
+	&::before {
+		content: '✕';
+		position: absolute;
+		width: calc(100% - 2em);
+		font-size: 1.6em;
+		font-weight: bolder;
+		text-align: center;
+		color: transparent;
+		transition: color 0.4s, filter 0.2s;
+	}
+
+	&:hover {
+		color: transparent;
+		background-color: #fff1;
+
+		&::before {
+			color: #ffff;
+		}
+	}
+
+	&:active {
+		background-color: transparent;
+
+		&::before {
+			opacity: 1;
+			filter: brightness(0.8);
+		}
+	}
+}

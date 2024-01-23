@@ -7,6 +7,7 @@ import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
+import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
@@ -572,6 +573,13 @@ function initOptionsEvents() {
 
 	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
 		customCss(undefined, { styling: (ev.target as HTMLInputElement).value })
+	})
+
+	//
+	// Updates
+
+	paramId('i_announce').addEventListener('change', function (this) {
+		interfacePopup(undefined, { announce: this.value })
 	})
 
 	//
