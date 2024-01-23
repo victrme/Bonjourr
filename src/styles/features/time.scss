@@ -1,0 +1,149 @@
+#time {
+	position: relative;
+
+	&:before {
+		box-shadow: 0px 0px 100px 40px #2224;
+	}
+
+	&.hidden {
+		display: none;
+	}
+
+	// here because its cleaner to overrite with custom css
+	.zero::before {
+		content: '0';
+	}
+}
+
+.analog {
+	#clock {
+		display: none;
+	}
+
+	#analogClock {
+		display: inline-block;
+	}
+}
+
+#clock {
+	margin: 0;
+	margin-bottom: 0.1em;
+	font-size: calc(var(--clock-size) * 6);
+	line-height: 1em;
+	font-weight: 200;
+	font-weight: var(--font-weight-clock);
+}
+
+#analogClock {
+	display: none;
+	position: relative;
+	width: calc(var(--clock-size) * 8);
+	height: calc(var(--clock-size) * 8);
+	border-radius: 100%;
+	border: calc(var(--clock-size) * 0.2) solid white;
+	box-shadow: $textShadow;
+
+	background-color: #fff3;
+	@include frostedGlass();
+
+	#center {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: calc(var(--clock-size) * 0.4);
+		height: calc(var(--clock-size) * 0.4);
+		border-radius: calc(var(--clock-size) * 0.4);
+		transform: translate(-50%, -50%);
+		background-color: white;
+		z-index: 5;
+	}
+
+	&.transparent {
+		box-shadow: none;
+		backdrop-filter: none;
+		border-color: transparent;
+		background-color: transparent;
+	}
+
+	&.square {
+		border-radius: calc(var(--clock-size) * 0.2);
+	}
+
+	.numbers {
+		position: absolute;
+		display: block;
+		opacity: 0.6;
+		width: 100%;
+		font-size: calc(var(--clock-size) * 1);
+
+		&.top {
+			top: calc(5px + var(--clock-size) * 0.3);
+			text-align: center;
+		}
+
+		&.right {
+			top: calc(50% - (5px + var(--clock-size) * 0.15));
+			right: calc(5px + var(--clock-size) * 0.3);
+			text-align: right;
+		}
+
+		&.bottom {
+			bottom: calc(5px + var(--clock-size) * 0.3);
+			text-align: center;
+		}
+
+		&.left {
+			top: calc(50% - (5px + var(--clock-size) * 0.15));
+			left: calc(5px + var(--clock-size) * 0.3);
+			text-align: left;
+		}
+	}
+
+	// aiguilles
+	span {
+		position: absolute;
+		display: block;
+		bottom: 50%;
+		left: 50%;
+		box-shadow: $textShadow;
+		width: calc(var(--clock-size) * 0.2);
+		margin-left: calc(var(--clock-size) * -0.1);
+		border-radius: calc(var(--clock-size) * 0.2);
+		transform-origin: bottom center;
+		background-color: white;
+
+		&#hours {
+			height: 30%;
+		}
+
+		&#minutes {
+			height: 45%;
+		}
+	}
+
+	#analogSeconds {
+		height: 45%;
+		opacity: 0.8;
+		background-color: red;
+		width: calc(var(--clock-size) * 0.1);
+		margin-left: calc(var(--clock-size) * -0.05);
+		will-change: transform;
+
+		&.hidden {
+			display: none;
+		}
+	}
+}
+
+#date {
+	font-size: 1.5em;
+	margin-top: 0.5em;
+}
+
+#time-container.analog ~ #date {
+	margin-top: 1em;
+}
+
+#time-container.analog.he_hidden ~ #date {
+	margin-top: 0;
+}

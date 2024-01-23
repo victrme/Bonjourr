@@ -48,6 +48,7 @@ async function startup() {
 	if (firstStart) {
 		console.log(`First install: ${CURRENT_VERSION}`)
 		sync = await getSyncDefaults()
+		storage.sync.set(sync)
 	}
 
 	if (versionChanged) {
