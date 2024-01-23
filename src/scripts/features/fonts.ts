@@ -1,13 +1,13 @@
-import storage from '../storage'
-
-import { SYSTEM_OS } from '../defaults'
+import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
+import { SYSTEM_OS } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import { tradThis } from '../utils/translations'
 import { apiFetch } from '../utils'
 import { subsets } from '../langs'
 import superinput from '../utils/superinput'
+import storage from '../storage'
 
 type Font = Sync.Font
 
@@ -54,12 +54,11 @@ export default async function customFont(init?: Font, event?: CustomFontUpdate) 
 		try {
 			init = migrateToNewFormat(init)
 			displayFont(init)
+			displayInterface('fonts')
 
 			onSettingsLoad(() => {
 				initFontSettings(init)
 			})
-
-			document.dispatchEvent(new CustomEvent('interface', { detail: 'fonts' }))
 		} catch (e) {
 			errorMessage(e)
 		}

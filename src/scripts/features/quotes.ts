@@ -1,4 +1,5 @@
 import { apiFetch, freqControl, isEvery } from '../utils'
+import { displayInterface } from '../index'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -59,7 +60,8 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	toggleAuthorAlwaysOn(quotes.author)
 
 	document.getElementById('quotes_container')?.classList.toggle('hidden', !quotes.on)
-	document.dispatchEvent(new CustomEvent('interface', { detail: 'quotes' }))
+
+	displayInterface('quotes')
 }
 
 //

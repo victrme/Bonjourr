@@ -1,3 +1,4 @@
+import { displayInterface } from '../index'
 import { SYNC_DEFAULT } from '../defaults'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -45,7 +46,7 @@ function zonedDate(timezone: string = 'auto') {
 	return date
 }
 
-function clockDate(date: Date, dateformat: "eu" | "us" | "ja" | "cn") {
+function clockDate(date: Date, dateformat: 'eu' | 'us' | 'ja' | 'cn') {
 	const datedom = document.getElementById('date') as HTMLParagraphElement
 	const jour = tradThis(days[date.getDay()])
 	const mois = tradThis(months[date.getMonth()])
@@ -113,7 +114,7 @@ function changeClockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
-function startClock(clock: Sync.Clock, greeting: string, dateformat: "eu" | "us" | "ja" | "cn") {
+function startClock(clock: Sync.Clock, greeting: string, dateformat: 'eu' | 'us' | 'ja' | 'cn') {
 	//
 	function display() {
 		document.getElementById('time-container')?.classList.toggle('analog', clock.analog)
@@ -249,7 +250,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		changeAnalogStyle(clock.style)
 		changeClockSize(clock.size)
 
-		document.dispatchEvent(new CustomEvent('interface', { detail: 'clock' }))
+		displayInterface('clock')
 	} catch (e) {
 		errorMessage(e)
 	}

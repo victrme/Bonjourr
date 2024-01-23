@@ -58,7 +58,7 @@ export function periodOfDay(time?: number) {
 	// noon & evening are + /- 60 min around sunrise/set
 
 	const mins = minutator(time ? new Date(time) : new Date())
-	const { sunrise, sunset } = suntime
+	const { sunrise, sunset } = suntime()
 
 	if (mins >= 0 && mins <= sunrise - 60) return 'night'
 	if (mins <= sunrise + 60) return 'noon'

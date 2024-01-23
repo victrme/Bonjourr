@@ -1,20 +1,21 @@
 import { minutator } from '../utils'
 
-type Suntime = {
+interface Suntime {
 	sunrise: number
 	sunset: number
-	update: (rise?: number, set?: number) => void
 }
 
-const suntime: Suntime = {
-	sunrise: 420,
-	sunset: 1320,
-	update: (rise, set) => {
-		if (rise && set) {
-			suntime.sunrise = minutator(new Date(rise * 1000))
-			suntime.sunset = minutator(new Date(set * 1000))
-		}
-	},
-}
+let sunrise = 420
+let sunset = 1320
 
-export default suntime
+export default function suntime(rise?: number, set?: number): Suntime {
+	if (rise && set) {
+		sunrise = minutator(new Date(rise * 1000))
+		sunset = minutator(new Date(set * 1000))
+	}
+
+	return {
+		sunrise,
+		sunset,
+	}
+}

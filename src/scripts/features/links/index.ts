@@ -1,5 +1,6 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink } from './helpers'
 import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
+import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
 import { eventDebounce } from '../../utils/debounce'
 import onSettingsLoad from '../../utils/onsettingsload'
@@ -101,7 +102,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 
 	// Exit early if no links
 	if (links.length === 0) {
-		document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
+		displayInterface('links')
 		return true
 	}
 
@@ -127,7 +128,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		tabList?.appendChild(li)
 	}
 
-	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
+	displayInterface('links')
 
 	return true
 }

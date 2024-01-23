@@ -348,7 +348,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 		forecasted_high = Math.round(Math.max(...alltemps))
 	}
 
-	suntime.update(sunrise, sunset)
+	suntime(sunrise, sunset)
 
 	return {
 		timestamp: Math.floor(new Date().getTime() / 1000),
@@ -428,7 +428,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
 
 		const now = minutator(new Date())
-		const { sunrise, sunset } = suntime
+		const { sunrise, sunset } = suntime()
 		const timeOfDay = now < sunrise || now > sunset ? 'night' : 'day'
 		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
 
@@ -494,7 +494,7 @@ function handleForecastDisplay(forecast: string) {
 
 function getSunsetHour(): number {
 	const d = new Date()
-	d.setHours(Math.round(suntime.sunset / 60))
+	d.setHours(Math.round(suntime().sunset / 60))
 	return d.getHours()
 }
 
