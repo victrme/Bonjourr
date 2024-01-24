@@ -116,6 +116,10 @@
 		transition-property: background-color, color, border, border-color, transform;
 	}
 
+	label {
+		pointer-events: none;
+	}
+
 	.param-btn {
 		height: 31px;
 		padding: 0 1em;
@@ -146,36 +150,33 @@
 	}
 
 	.input-btn {
+		border-radius: 8px;
 		text-decoration: none;
+		background-color: var(--color-input);
 	}
 
 	select,
-	input[type='text'],
-	input[type='url'],
-	#i_qtlist,
-	.input-btn {
-		height: 31px;
-		color: var(--color-text);
+	input,
+	textarea {
 		font-size: 13px;
-		padding: 0 13px;
-		border: none;
-		border-radius: 8.5px;
-		box-sizing: border-box;
-		background-color: var(--color-input);
+		border-radius: 8px;
+		color: var(--color-text);
 		-webkit-appearance: none;
 	}
 
 	input,
 	select {
+		height: 31px;
 		width: 155px;
+		padding: 0 13px;
+		background-color: var(--color-input);
 	}
 
 	.superinput input {
 		width: 100%;
 	}
 
-	input[type='text']:focus,
-	input[type='url']:focus {
+	input:focus {
 		background-color: var(--color-focused);
 	}
 
@@ -187,10 +188,6 @@
 	input[type='checkbox'] {
 		-webkit-tap-highlight-color: transparent;
 		cursor: pointer;
-	}
-
-	label {
-		pointer-events: none;
 	}
 
 	.switch {
@@ -607,7 +604,7 @@
 	padding-inline-end: 3em;
 }
 
-#i_addlink {
+#settings #i_addlink {
 	position: absolute;
 	top: 5px;
 	right: 5px;
@@ -633,7 +630,6 @@
 
 .refresh-btn {
 	padding: 0 10px;
-	text-decoration: none;
 }
 
 #custom_thumbnail {
@@ -861,6 +857,7 @@
 	padding: 0.5em 1em;
 	line-height: 1.5;
 	resize: vertical;
+	background-color: var(--color-areas);
 }
 
 //

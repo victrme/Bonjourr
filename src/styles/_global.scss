@@ -163,6 +163,7 @@ body {
 		border: none;
 		outline: none;
 		font-family: inherit;
+		box-sizing: border-box;
 	}
 
 	&.dragging * {
@@ -186,6 +187,10 @@ body {
 		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {
 			outline: 2px solid var(--color-blue);
+		}
+
+		button.btn-red:focus-visible {
+			outline: 2px solid var(--color-red);
 		}
 	}
 

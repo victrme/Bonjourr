@@ -54,26 +54,26 @@
 		</dialog>
 
 		<dialog id="editlink">
-			<div class="edit-inputs">
-				<div>
-					<label for="e_title" class="trn">Title</label>
+			<form id="editlink-form">
+				<label autofocus>
+					<span class="trn">Title</span>
 					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
-				</div>
+				</label>
 
-				<div>
-					<label for="e_url" class="trn">Link</label>
+				<label>
+					<span class="trn">Link</span>
 					<input
 						id="e_url"
-						type="url"
+						type="text"
 						name="e_url"
 						maxlength="512"
 						autocomplete="off"
 						placeholder="https://example.com"
 					/>
-				</div>
+				</label>
 
-				<div>
-					<label for="e_iconurl" class="trn">Icon</label>
+				<label>
+					<span class="trn">Icon</span>
 					<input
 						id="e_iconurl"
 						type="url"
@@ -82,20 +82,19 @@
 						autocomplete="off"
 						placeholder="https://example.com/favicon.ico"
 					/>
-				</div>
-			</div>
+				</label>
 
-			<hr />
+				<hr />
 
-			<div class="dialog-buttons">
-				<button id="e_tab-add" class="trn">Add tab</button>
-				<button id="e_tab-remove" class="trn btn-red">Remove tab</button>
-				<button id="e_folder-remove" class="trn">Remove from folder</button>
-				<button id="e_folder-add" class="trn">Create new folder</button>
-				<button id="e_delete" class="trn btn-red">Delete selected</button>
-				<button id="e_submit" class="trn">Apply changes</button>
-				<button id="e_add-link" class="trn">Add link</button>
-			</div>
+				<button type="submit" id="e_inputs" class="trn">Apply changes</button>
+				<button type="submit" id="e_tab-add" class="trn">Add tab</button>
+				<button type="submit" id="e_tab-remove" class="trn btn-red">Remove tab</button>
+				<button type="submit" id="e_folder-remove" class="trn">Remove from folder</button>
+				<button type="submit" id="e_folder-add" class="trn">Create new folder</button>
+				<button type="submit" id="e_delete" class="trn btn-red">Delete selected</button>
+				<button type="submit" id="e_submit" class="trn">Apply changes</button>
+				<button type="submit" id="e_add-link" class="trn">Add link</button>
+			</form>
 		</dialog>
 
 		<dialog id="element-mover" class="hidden">

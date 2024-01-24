@@ -7,7 +7,7 @@ import storage from '../../storage'
 
 let editmousedown: boolean = false
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-const domeditlink = document.getElementById('editlink') as HTMLDivElement
+const domeditlink = document.getElementById('editlink') as HTMLDialogElement
 
 //
 // Display
@@ -50,8 +50,7 @@ export default async function displayEditDialog(event: Event) {
 	domeditlink?.classList.toggle('tab-item', isTab && !isTabOnly)
 	domeditlink?.classList.toggle('tabs', isTab)
 
-	domeditlink.classList.add('showing')
-	await new Promise((sleep) => setTimeout(sleep))
+	domeditlink?.show()
 
 	const { x, y } = newEditDialogPosition(event)
 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
@@ -79,11 +78,6 @@ export default async function displayEditDialog(event: Event) {
 	}
 
 	li?.classList.add('selected')
-
-	// Focusing on touch opens virtual keyboard without user action, not good
-	if (IS_MOBILE === false) {
-		domtitle.focus()
-	}
 }
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
@@ -117,14 +111,11 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 }
 
 function closeEditDialog() {
-	if (!domeditlink || !domeditlink.classList.contains('shown')) return
-
-	domeditlink?.classList.add('hiding')
-	document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
-	setTimeout(() => {
-		domeditlink?.removeAttribute('data-tab-index')
-		domeditlink ? domeditlink.setAttribute('class', '') : ''
-	}, 200)
+	if (domeditlink.open) {
+		document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
+		domeditlink.removeAttribute('data-tab-index')
+		domeditlink.close()
+	}
 }
 
 //
@@ -132,39 +123,58 @@ function closeEditDialog() {
 //
 
 onSettingsLoad(() => {
-	document.getElementById('e_title')?.addEventListener('change', submitLinksChange)
-	document.getElementById('e_url')?.addEventListener('change', submitLinksChange)
-	document.getElementById('e_iconurl')?.addEventListener('change', submitLinksChange)
-	document.getElementById('e_delete')?.addEventListener('click', deleteSelection)
-	document.getElementById('e_submit')?.addEventListener('click', submitLinksChange)
-	document.getElementById('e_add-link')?.addEventListener('click', addLinkFromEditDialog)
-	document.getElementById('e_folder-add')?.addEventListener('click', addSelectionToNewFolder)
-	document.getElementById('e_folder-remove')?.addEventListener('click', removeSelectionFromFolder)
-	document.getElementById('e_tab-add')?.addEventListener('click', addTab)
-	document.getElementById('e_tab-remove')?.addEventListener('click', removeTab)
-
+	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
 	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
 	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
 	document.getElementById('b_add-link')?.addEventListener('click', displayEditDialog)
-
-	document.body.addEventListener('click', function () {
-		if (editmousedown) {
-			editmousedown = false
-			return
-		}
-
-		closeEditDialog()
-	})
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		window.addEventListener('resize', closeEditDialog)
 	}
 })
 
-async function submitLinksChange(event: Event) {
+async function submitChanges(event: SubmitEvent) {
+	switch (event.submitter?.id) {
+		case 'e_inputs':
+			applyLinkChanges('inputs')
+			break
+
+		case 'e_submit':
+			applyLinkChanges('button')
+			break
+
+		case 'e_delete':
+			deleteSelection()
+			break
+
+		case 'e_addlink':
+			addLinkFromEditDialog()
+			break
+
+		case 'e_folder-add':
+			addSelectionToNewFolder()
+			break
+
+		case 'e_folder-remove':
+			removeSelectionFromFolder()
+			break
+
+		case 'e_tab-add':
+			addTab()
+			break
+
+		case 'e_tab-remove':
+			removeTab()
+			break
+	}
+
+	event.preventDefault()
+}
+
+async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const id = getSelectedIds()[0]
-	const target = event.target as HTMLElement
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
+	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (!id && domeditlink.classList.contains('add-link')) {
 		addLinkFromEditDialog()
@@ -175,8 +185,8 @@ async function submitLinksChange(event: Event) {
 		return
 	}
 
-	if (target.tagName === 'INPUT') {
-		target.blur()
+	if (origin === 'inputs') {
+		inputs.forEach((node) => node.blur())
 	} else {
 		closeEditDialog()
 	}
