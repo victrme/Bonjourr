@@ -116,10 +116,6 @@
 		transition-property: background-color, color, border, border-color, transform;
 	}
 
-	label {
-		pointer-events: none;
-	}
-
 	.param-btn {
 		height: 31px;
 		padding: 0 1em;
@@ -152,6 +148,7 @@
 	.input-btn {
 		border-radius: 8px;
 		text-decoration: none;
+		color: var(--color-text);
 		background-color: var(--color-input);
 	}
 
@@ -538,6 +535,10 @@
 	.tooltip {
 		margin: 0 7px;
 	}
+
+	label {
+		pointer-events: none;
+	}
 }
 
 //
@@ -892,11 +893,6 @@
 	}
 }
 
-#b_resetlayout:focus-visible,
-#b_resetlayout:hover {
-	color: #e64b43;
-}
-
 #grid-layout {
 	display: flex;
 	padding: 4px; // to offset outline
@@ -1155,45 +1151,37 @@
 //	Footer
 //
 
-.signature {
+#settings-footer {
 	color: var(--color-light-text);
 	font-size: 14px;
 	padding: 4em 3em;
-	padding-bottom: 100px; // to always stay above footer
+	padding-bottom: 100px;
 
 	// Safari iOS only
 	@supports (-webkit-touch-callout: none) {
 		padding-bottom: 150px;
 	}
 
-	.firstblock {
-		display: flex;
-		justify-content: space-between;
-		margin-bottom: 1.5em;
-	}
-}
-
-.socialIcons {
-	display: flex;
-	justify-content: space-between;
-	gap: 14px;
-
-	a {
+	> div:first-child {
 		display: flex;
 		align-items: center;
-		transition: transform 0.15s;
+		justify-content: space-between;
+	}
 
-		svg {
-			height: 1.25em;
-			fill: var(--color-blue);
-		}
+	> div:nth-child(2) {
+		margin: 1.5em 0;
+	}
 
-		&:hover {
-			transform: scale(1.1);
-		}
+	svg {
+		height: 1.25em;
+		fill: var(--color-blue);
 	}
 }
 
-#rdv_website {
-	margin-top: 1.5em;
+#settings-footer-links a {
+	margin: 0 6px;
+}
+
+#settings-footer-links a:hover {
+	text-decoration: none;
 }

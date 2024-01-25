@@ -38,7 +38,7 @@ export async function settingsInit() {
 	document.body.appendChild(settingsDom)
 
 	traduction(settingsDom, data.lang)
-	signature()
+	settingsFooter()
 	showall(data.showall, false)
 	initOptionsValues(data)
 	initOptionsEvents()
@@ -659,6 +659,7 @@ function initSettingsEvents() {
 	const domsettings = document.getElementById('settings')
 	const domsuggestions = document.getElementById('sb-suggestions')
 	const isOnline = PLATFORM === 'online'
+	let isMousingDownOnInput = false
 
 	// On settings changes, update export code
 	const storageUpdate = () => updateExportJSON()
@@ -671,19 +672,9 @@ function initSettingsEvents() {
 		window.addEventListener('beforeunload', unloadUpdate, { once: true })
 	}
 
-	document.getElementById('skiptosettings')?.addEventListener('click', function () {
-		toggleSettingsMenu()
-		domsettings?.scrollTo({ top: 0 })
-
-		setTimeout(() => {
-			const showall = document.getElementById('i_showall') as HTMLButtonElement
-			showall.focus()
-		}, 10)
-	})
-
-	document.getElementById('showSettings')?.addEventListener('click', function (event) {
-		toggleSettingsMenu()
-	})
+	document.body.addEventListener('mousedown', detectTargetAsInputs)
+	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
+	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
 
 	window.addEventListener('keydown', async function (e) {
 		const linksFolderOpen = document.getElementById('linkblocks')?.classList.contains('in-folder')
@@ -713,18 +704,42 @@ function initSettingsEvents() {
 	})
 
 	document.body.addEventListener('click', function (e) {
+		if (isMousingDownOnInput) {
+			return
+		}
+
 		const path = e.composedPath() ?? [document.body]
-		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
+		const pathIds = path.map((el) => (el as HTMLElement).id)
+		const isContextmenuOpen = document.querySelector<HTMLDialogElement>('#editlink')?.open
 		const areSettingsShown = domsettings?.classList.contains('shown')
+		const isInFolder = document.getElementById('linkblocks')?.dataset.folderid
 		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
 		const onInterface = pathIds.includes('interface')
+
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
 		}
+
 		if ((onBody || onInterface) && areSettingsShown) {
 			toggleSettingsMenu()
 		}
 	})
+
+	function detectTargetAsInputs(event: Event) {
+		const path = event.composedPath() as Element[]
+		const tagName = path[0]?.tagName ?? ''
+		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
+	}
+
+	function skipToSettings() {
+		toggleSettingsMenu()
+		domsettings?.scrollTo({ top: 0 })
+
+		setTimeout(() => {
+			const showall = document.getElementById('i_showall') as HTMLButtonElement
+			showall.focus()
+		}, 10)
+	}
 }
 
 //
@@ -804,7 +819,7 @@ async function switchLangs(nextLang: Langs) {
 	tabTitle(data.tabtitle)
 	notes(data.notes)
 	customFont(undefined, { lang: true })
-	signature()
+	settingsFooter()
 	translatePlaceholders()
 }
 
@@ -846,30 +861,26 @@ async function selectBackgroundType(cat: string) {
 	storage.sync.set({ background_type: cat })
 }
 
-function signature() {
-	const spans = document.querySelectorAll<HTMLSpanElement>('#rand span')
-	const as = document.querySelectorAll<HTMLAnchorElement>('#rand a')
-	const us = [
-		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
-		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
-	]
+function settingsFooter() {
+	const one = document.querySelector<HTMLAnchorElement>('#signature-one')
+	const two = document.querySelector<HTMLAnchorElement>('#signature-two')
+	const donate = document.getElementById('donate')
+	const version = document.getElementById('version')
+	const rand = Math.random() > 0.5
 
-	if (Math.random() > 0.5) us.reverse()
+	if (one && two) {
+		one.href = rand ? 'https://victr.me/' : 'https://tahoe.be/'
+		two.href = rand ? 'https://tahoe.be/' : 'https://victr.me/'
+		one.textContent = rand ? 'Victor Azevedo' : 'Tahoe Beetschen'
+		two.textContent = rand ? 'Tahoe Beetschen' : 'Victor Azevedo'
+	}
 
-	spans[0].textContent = `${tradThis('by')} `
-	spans[1].textContent = ` & `
+	if (version) {
+		version.textContent = SYNC_DEFAULT.about.version
+	}
 
-	as.forEach((a, i) => {
-		a.href = us[i].href
-		a.textContent = us[i].name
-	})
-
-	const version = document.querySelector('.version a')
-	if (version) version.textContent = SYNC_DEFAULT.about.version
-
-	// Remove donate text on safari because apple is evil
 	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') {
-		document.querySelector('#rdv_website')?.remove()
+		donate?.remove()
 	}
 }
 
@@ -934,7 +945,7 @@ function optionsTabIndex(settingsDom: HTMLElement) {
 
 function settingsDrawerBar() {
 	const drawerDragDebounce = debounce(() => {
-		;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
+		;(document.getElementById('settings-footer') as HTMLDivElement).style.removeProperty('padding')
 		drawerDragEvents()
 	}, 600)
 
