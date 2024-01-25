@@ -1,6 +1,8 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '1.19.0'
+export const CURRENT_VERSION = '19.0'
+
+export const ANNOUNCEMENT = 'New update just dropped. Google "Bonjourr folder".'
 
 export const MAIN_API = 'https://api.bonjourr.lol'
 

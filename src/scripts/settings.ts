@@ -1024,8 +1024,8 @@ function drawerDragEvents() {
 		settingsDom.style.removeProperty('overflow')
 
 		// Add bottom padding to see bottom of settings
-		const signaturedom = document.querySelector('.signature') as HTMLDivElement
-		signaturedom.style.paddingBottom = clientY + 60 + 'px'
+		const footer = document.getElementById('settings-footer') as HTMLDivElement
+		footer.style.paddingBottom = clientY + 60 + 'px'
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {

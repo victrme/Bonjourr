@@ -90,14 +90,6 @@
 			}
 		}
 
-		#changelogContainer {
-			#log_dismiss {
-				top: 5em;
-				right: 0.5em;
-			}
-		}
-
-		#changelogContainer,
 		#cssEditor,
 		.param {
 			margin-right: 12px;
@@ -108,7 +100,7 @@
 			width: calc(100% - 24px);
 		}
 
-		.signature {
+		#settings-footer {
 			padding: 3em;
 			padding-bottom: 30vh;
 		}
@@ -139,30 +131,7 @@
 	}
 
 	#popup {
-		flex-wrap: wrap;
-		padding: 10% 20%;
-		bottom: 0;
-		left: 0;
-		gap: 0.5em;
-
-		#popup_text,
-		#popup_buttons {
-			width: 100%;
-			margin: 0;
-		}
-
-		#popup_buttons {
-			flex-direction: row;
-			justify-content: space-evenly;
-			width: 100%;
-			gap: 0.5em;
-
-			a {
-				margin: 0;
-				width: 100%;
-				height: 30px;
-			}
-		}
+		display: none;
 	}
 
 	#bookmarks_container {

@@ -317,11 +317,11 @@
 	}
 }
 
-@import 'settings';
-@import 'responsive';
 @import 'features/grid';
 @import 'features/editlink';
 @import 'features/bookmarks';
 @import 'components/popup';
 @import 'components/dialog';
 @import 'components/superinput';
+@import 'settings';
+@import 'responsive';
