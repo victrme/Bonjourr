@@ -41,19 +41,20 @@ try {
 
 async function startup() {
 	let { sync, local } = await storage.init()
-	const version_old = sync?.about?.version
-	const versionChanged = version_old !== undefined && version_old !== CURRENT_VERSION
-	const firstStart = version_old === undefined && Object.keys(sync).length === 0
-
-	if (firstStart) {
-		console.log(`First install: ${CURRENT_VERSION}`)
-		sync = await getSyncDefaults()
-		storage.sync.set(sync)
-	}
+	const OLD_VERSION = sync?.about?.version ?? '0.0.0'
+	const versionChanged = OLD_VERSION !== CURRENT_VERSION
+	const firstStart = OLD_VERSION === '0.0.0' && Object.keys(sync).length === 0
 
 	if (versionChanged) {
-		console.log(`Version change: ${version_old} => ${CURRENT_VERSION}`)
-		sync = upgradeSyncStorage(sync)
+		if (firstStart) {
+			console.log(`First install: ${CURRENT_VERSION}`)
+			sync = await getSyncDefaults()
+		} else {
+			console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
+			sync = upgradeSyncStorage(sync)
+		}
+
+		storage.sync.set(sync)
 	}
 
 	await setTranslationCache(sync.lang, local, versionChanged)
@@ -83,13 +84,23 @@ async function startup() {
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
 	onSettingsLoad(() => {
-		interfacePopup(sync.reviewPopup)
 		setPotatoComputerMode()
+		interfacePopup({
+			old: OLD_VERSION,
+			new: CURRENT_VERSION,
+			review: sync.review ?? 0,
+			announce: sync.announcements,
+		})
 	})
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	// 19.0.0
+
+	if (data.reviewPopup) {
+		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
+		storage.sync.remove('reviewPopup')
+	}
 
 	if (Array.isArray(data?.quotes?.userlist)) {
 		const newuserlist = oldJSONToCSV(data?.quotes?.userlist as unknown as Quotes.UserInput)
@@ -102,7 +113,6 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 
 	data = linksDataMigration(data)
 	data.about = SYNC_DEFAULT.about
-	storage.sync.set(data)
 
 	return data
 }

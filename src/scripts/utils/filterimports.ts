@@ -6,6 +6,9 @@ import { oldJSONToCSV } from '../features/quotes'
 
 export default function filterImports(current: Sync.Storage, toImport: Partial<Sync.Storage>) {
 	//
+	if (toImport.reviewPopup) {
+		toImport.review = toImport.reviewPopup === 'removed' ? -1 : +toImport.reviewPopup
+	}
 
 	// <1.18.1 Improved geolocation, removed lastState in sync
 	if (toImport.weather && toImport.weather?.geolocation === undefined) {

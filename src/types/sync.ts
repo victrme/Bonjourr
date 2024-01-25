@@ -14,8 +14,9 @@ declare namespace Sync {
 		linktabs: LinkTabs
 		textShadow: number
 		cssHeight: number
-		reviewPopup: number
+		review: number
 		announcements: 'all' | 'major' | 'off'
+		reviewPopup?: number | string
 		background_blur: number
 		background_bright: number
 		css: string

@@ -2,6 +2,17 @@ import { BROWSER, ANNOUNCEMENT } from '../defaults'
 import { tradThis } from '../utils/translations'
 import storage from '../storage'
 
+type PopupInit = {
+	old: string
+	new: string
+	review: number
+	announce: Sync.Storage['announcements']
+}
+
+type PopupUpdate = {
+	announce?: string
+}
+
 const LOVE_BONJOURR = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 
 const REVIEW_URLS = {
@@ -12,23 +23,39 @@ const REVIEW_URLS = {
 	other: 'https://bonjourr.fr/help#%EF%B8%8F-reviews',
 }
 
-export default function interfacePopup(review?: string | number, event?: { announce?: string }) {
+export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	if (event?.announce) {
-		const str = isAnnounce(event.announce) ? event.announce : 'major'
-		storage.sync.set({ announce: str })
+		storage.sync.set({ announce: event?.announce })
 		return
 	}
 
-	if (typeof review === 'number' && review > 30) {
-		displayPopup('love')
+	if (!init) {
+		return
 	}
-	//
-	else if (typeof review == 'number') {
-		storage.sync.set({ reviewPopup: review + 1 })
+
+	if (init?.announce !== 'off') {
+		const major = (s: string) => parseInt(s.split('.')[0])
+		const isMajorUpdate = major(init.new) > major(init.old)
+		const isNewVersion = init.new !== init.old
+
+		const announceMajor = init.announce === 'major' && isMajorUpdate
+		const announceAny = init.announce === 'all' && isNewVersion
+		const canAnnounce = localStorage.hasUpdated === 'true' || announceAny || announceMajor
+
+		if (canAnnounce && ANNOUNCEMENT) {
+			localStorage.hasUpdated = 'true'
+			displayPopup('announce')
+			return
+		}
 	}
-	//
-	else if (review !== 'removed') {
-		storage.sync.set({ reviewPopup: 0 })
+
+	if (init.review > 0) {
+		if (init.review > 30) {
+			displayPopup('love')
+			storage.sync.set({ review: -1 })
+		} else {
+			storage.sync.set({ review: init.review + 1 })
+		}
 	}
 }
 
@@ -44,28 +71,23 @@ function displayPopup(type: 'love' | 'announce') {
 	desc.textContent = tradThis(text)
 
 	document.getElementById('popup_review')?.setAttribute('href', REVIEW_URLS[BROWSER])
-	document.getElementById('popup_')?.addEventListener('click', closePopup)
-
-	anchors.forEach((anchor) =>
-		anchor?.addEventListener('pointerdown', function () {
-			storage.sync.set({ reviewPopup: 'removed' })
-		})
-	)
+	document.getElementById('popup_close')?.addEventListener('click', closePopup)
+	anchors.forEach((anchor) => anchor?.addEventListener('pointerdown', removePopupTrigger))
 
 	setTimeout(() => popup?.classList.add('shown'), 800)
 	setTimeout(() => document.getElementById('creditContainer')?.classList.remove('shown'), 400)
 }
 
+function removePopupTrigger() {
+	storage.sync.set({ review: -1 })
+	localStorage.removeItem('hasUpdated')
+}
+
 function closePopup() {
 	const popup = document.getElementById('popup')
 
+	removePopupTrigger()
 	popup?.classList.remove('shown')
-	setTimeout(() => popup?.remove(), 2000)
+	setTimeout(() => popup?.remove(), 200)
 	setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
-
-	storage.sync.set({ reviewPopup: 'removed' })
-}
-
-function isAnnounce(s: string): s is Sync.Storage['announcements'] {
-	return ['off', 'all', 'major'].includes(s)
 }
