@@ -92,7 +92,7 @@ export default function startDrag(event: PointerEvent) {
 
 	domlinkblocks?.classList.add('dragging')
 	document.body.classList.add('dragging')
-	document.body.dispatchEvent(new Event('remove-select-all'))
+	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 
 	if (event.pointerType === 'touch') {

@@ -676,54 +676,99 @@ function initSettingsEvents() {
 	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
 	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
 
-	window.addEventListener('keydown', async function (e) {
-		const linksFolderOpen = document.getElementById('linkblocks')?.classList.contains('in-folder')
-
-		if (e.altKey && e.code === 'KeyS') {
+	document.addEventListener('keydown', async function (event) {
+		if (event.altKey && event.code === 'KeyS') {
 			console.clear()
 			console.log(localStorage)
 			console.log(await storage.sync.get())
 		}
 
-		if (e.code === 'Escape') {
+		if (event.code === 'Escape') {
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
 				return
 			}
 
-			if (!linksFolderOpen) {
-				toggleSettingsMenu()
-				return
+			const open = isOpen()
+
+			if (open.contextmenu) {
+				document.dispatchEvent(new Event('close-edit'))
 			}
+			//
+			else if (open.settings) {
+				toggleSettingsMenu()
+			}
+			//
+			else if (open.selectall) {
+				document.dispatchEvent(new Event('remove-select-all'))
+			}
+			//
+			else if (open.folder) {
+				document.dispatchEvent(new Event('close-folder'))
+			}
+			//
+			else {
+				toggleSettingsMenu()
+			}
+
+			return
 		}
 
-		if (e.code === 'Tab') {
+		if (event.code === 'Tab') {
 			document.body.classList.toggle('tabbing', true)
 			return
 		}
 	})
 
-	document.body.addEventListener('click', function (e) {
+	document.body.addEventListener('click', function (event) {
 		if (isMousingDownOnInput) {
 			return
 		}
 
-		const path = e.composedPath() ?? [document.body]
+		const open = isOpen()
+		const path = (event.composedPath() as Element[]) ?? [document.body]
 		const pathIds = path.map((el) => (el as HTMLElement).id)
-		const isContextmenuOpen = document.querySelector<HTMLDialogElement>('#editlink')?.open
-		const areSettingsShown = domsettings?.classList.contains('shown')
-		const isInFolder = document.getElementById('linkblocks')?.dataset.folderid
-		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
-		const onInterface = pathIds.includes('interface')
+
+		const on = {
+			link: path.some((el) => el?.classList?.contains('block')),
+			body: (path[0] as HTMLElement).tagName === 'BODY',
+			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			interface: pathIds.includes('interface'),
+		}
 
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
 		}
 
-		if ((onBody || onInterface) && areSettingsShown) {
+		if ((on.body || on.interface) === false) {
+			return
+		}
+
+		if (open.contextmenu) {
+			document.dispatchEvent(new Event('close-edit'))
+		}
+		//
+		else if (open.settings) {
 			toggleSettingsMenu()
 		}
+		//
+		else if (open.selectall && !on.link) {
+			document.dispatchEvent(new Event('remove-select-all'))
+		}
+		//
+		else if (open.folder && !on.folder) {
+			document.dispatchEvent(new Event('close-folder'))
+		}
 	})
+
+	function isOpen() {
+		return {
+			folder: document.getElementById('linkblocks')?.dataset.folderid,
+			settings: domsettings?.classList.contains('shown'),
+			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
+			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
+		}
+	}
 
 	function detectTargetAsInputs(event: Event) {
 		const path = event.composedPath() as Element[]
@@ -761,6 +806,7 @@ function toggleSettingsMenu() {
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
+	document.dispatchEvent(new Event('close-edit'))
 }
 
 function changelogControl(settingsDom: HTMLElement) {

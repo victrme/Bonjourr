@@ -221,9 +221,9 @@ function initRows(row: number, style: string) {
 //
 
 onSettingsLoad(() => {
-	document.body.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
-	document.body.addEventListener('remove-select-all', removeSelectAll)
-	document.body.addEventListener('click', dismissSelectAllAndFolder)
+	document.addEventListener('close-folder', closeFolder)
+	document.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
+	document.addEventListener('remove-select-all', removeSelectAll)
 })
 
 async function openFolder(event: Event) {
@@ -285,35 +285,6 @@ async function closeFolder() {
 	function show() {
 		domlinkblocks.classList.remove('in-folder')
 		domlinkblocks.classList.remove('hiding')
-	}
-}
-
-function dismissSelectAllAndFolder(event: Event) {
-	const path = (event.composedPath() ?? [document.body]) as Element[]
-	const onOpenSettings = path.some((el) => el.id === 'showSettings')
-	const onSettings = path.some((el) => el.id === 'settings')
-	const onEditLink = path.some((el) => el.id === 'editlink')
-	const onLink = path.some((el) => el.tagName === 'LI' && el.classList.contains('block'))
-	const doNothingWhenClicking = onEditLink || onOpenSettings || onSettings || onLink
-
-	if (doNothingWhenClicking) {
-		return
-	}
-
-	const states = [...domlinkblocks.classList.values()]
-
-	// Remove first select all
-	if (states.includes('select-all')) {
-		domlinkblocks.classList.remove('select-all')
-		document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
-	}
-	//
-	else if (path.some((el) => el === domlinkblocks)) {
-		return
-	}
-	// then close folder
-	else if (!states.includes('dropping') && states.includes('in-folder')) {
-		closeFolder()
 	}
 }
 

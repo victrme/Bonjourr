@@ -55,24 +55,30 @@ function changeTab(div: HTMLDivElement) {
 		return
 	}
 
-	transitioner(
-		function hideCurrentTab() {
-			domlinkblocks.classList.remove('in-folder')
-			domlinkblocks.classList.add('hiding')
-		},
-		async function recreateLinksFromNewTab() {
-			const divs = Object.values(document.querySelectorAll('#link-title div'))
-			const data = await storage.sync.get()
+	const tabTransition = transitioner()
 
-			divs?.forEach((div) => div.classList.remove('selected'))
-			div.classList.add('selected')
-			data.linktabs.selected = divs.indexOf(div)
-			storage.sync.set(data)
-			await initblocks(data)
-		},
-		function showNewTab() {
-			domlinkblocks.classList.remove('hiding')
-		},
-		100
-	)
+	tabTransition.first(hideCurrentTab)
+	tabTransition.then(recreateLinksFromNewTab)
+	tabTransition.finally(showNewTab)
+	tabTransition.transition(100)
+
+	async function recreateLinksFromNewTab() {
+		const divs = Object.values(document.querySelectorAll('#link-title div'))
+		const data = await storage.sync.get()
+
+		divs?.forEach((div) => div.classList.remove('selected'))
+		div.classList.add('selected')
+		data.linktabs.selected = divs.indexOf(div)
+		storage.sync.set(data)
+		await initblocks(data)
+	}
+
+	function hideCurrentTab() {
+		domlinkblocks.classList.remove('in-folder')
+		domlinkblocks.classList.add('hiding')
+	}
+
+	function showNewTab() {
+		domlinkblocks.classList.remove('hiding')
+	}
 }

@@ -3,9 +3,9 @@ import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import onSettingsLoad from '../../utils/onsettingsload'
+import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
-let editmousedown: boolean = false
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDialogElement
 
@@ -18,7 +18,7 @@ export default async function displayEditDialog(event: Event) {
 		return
 	}
 
-	document.body.dispatchEvent(new Event('stop-select-all'))
+	document.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
 
 	const domtitle = document.getElementById('e_title') as HTMLInputElement
@@ -50,11 +50,13 @@ export default async function displayEditDialog(event: Event) {
 	domeditlink?.classList.toggle('tab-item', isTab && !isTabOnly)
 	domeditlink?.classList.toggle('tabs', isTab)
 
-	domeditlink?.show()
+	const contextmenuTransition = transitioner()
+	contextmenuTransition.first(() => domeditlink?.show())
+	contextmenuTransition.then(async () => domeditlink?.classList?.add('shown'))
+	contextmenuTransition.transition(10)
 
 	const { x, y } = newEditDialogPosition(event)
 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
-	domeditlink?.classList.replace('showing', 'shown')
 
 	if (isTab) {
 		// BAD: flaky parentElement, easy to break
@@ -110,23 +112,15 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	return { x, y }
 }
 
-function closeEditDialog() {
-	if (domeditlink.open) {
-		document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
-		domeditlink.removeAttribute('data-tab-index')
-		domeditlink.close()
-	}
-}
-
 //
 // Events
 //
 
 onSettingsLoad(() => {
+	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
-	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
-	domeditlink.addEventListener('mousedown', () => (editmousedown = true))
 	document.getElementById('b_add-link')?.addEventListener('click', displayEditDialog)
+	domlinkblocks?.addEventListener('contextmenu', displayEditDialog)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		window.addEventListener('resize', closeEditDialog)
@@ -247,8 +241,8 @@ function addLinkFromEditDialog() {
 
 function addSelectionToNewFolder() {
 	linksUpdate({ addFolder: getSelectedIds() })
+	document.dispatchEvent(new Event('remove-select-all'))
 	closeEditDialog()
-	domlinkblocks?.classList.remove('select-all')
 }
 
 function deleteSelection() {
@@ -258,6 +252,15 @@ function deleteSelection() {
 
 function removeSelectionFromFolder() {
 	linksUpdate({ removeFromFolder: getSelectedIds() })
+	document.dispatchEvent(new Event('remove-select-all'))
 	closeEditDialog()
-	domlinkblocks?.classList.remove('select-all')
+}
+
+function closeEditDialog() {
+	if (domeditlink.open) {
+		document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
+		domeditlink.removeAttribute('data-tab-index')
+		domeditlink.classList.remove('shown')
+		domeditlink.close()
+	}
 }

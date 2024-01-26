@@ -108,7 +108,7 @@ li.block {
 	cursor: pointer;
 
 	&.removed {
-		margin: 0 calc((var(--gap) / 2) - var(--gap)); // minus half of gap
+		margin: 0 calc((var(--column-gap) / 2) * -1); // minus half of gap
 		width: 0 !important;
 		opacity: 0;
 		overflow: hidden;
@@ -585,7 +585,7 @@ li.block.folder img {
 	}
 
 	input {
-		min-width: 3em;
+		min-width: 8ch;
 		max-width: 32ch;
 		padding: 0.1em 0.6em;
 		font-size: 1.3em;
