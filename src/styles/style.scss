@@ -130,7 +130,7 @@
 		opacity: 1;
 		pointer-events: all;
 
-		&:hover #credit .exif {
+		&:hover .exif {
 			opacity: 1;
 		}
 	}
@@ -138,24 +138,23 @@
 
 #credit {
 	text-align: left;
+	font-size: 13px;
+	line-height: 18px;
+	color: #fff9;
 
-	.exif {
-		opacity: 0;
-		transition: opacity 0.4s;
-	}
-
-	a,
-	p,
-	span {
-		font-size: 13px;
+	a {
 		color: #fff9;
 		text-decoration: none;
-		transition: color 0.1s;
 	}
 
 	a:hover {
 		color: #fffe;
 	}
+}
+
+.exif {
+	opacity: 0;
+	transition: opacity 0.4s;
 }
 
 #showSettings {
@@ -217,28 +216,6 @@
 				background-color: #6666;
 			}
 		}
-	}
-
-	&.hasUpdated:before {
-		opacity: 1;
-	}
-
-	&.hasUpdated.shown:before {
-		opacity: 0;
-	}
-
-	&:before {
-		content: '';
-		position: absolute;
-		opacity: 0;
-		width: 10px;
-		height: 10px;
-		left: 2px;
-		top: 2px;
-		background-color: var(--color-green);
-		border-radius: 100%;
-		z-index: 10;
-		transition: opacity 0.3s;
 	}
 }
 

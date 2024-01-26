@@ -37,29 +37,6 @@
 		}
 	}
 
-	button {
-		border: none;
-		color: #fff;
-		font-size: inherit;
-		border: none;
-		border-radius: 0.5em;
-		background-color: transparent;
-		transition: opacity 0.2s, filter 0.1s, transform 0.1s;
-
-		pointer-events: none;
-		touch-action: none;
-		user-select: none;
-
-		&:hover {
-			filter: brightness(0.9);
-		}
-
-		&:active {
-			filter: brightness(0.8);
-			transform: scale(0.94);
-		}
-	}
-
 	hr {
 		margin: 0.6em 0;
 		border-right: 1px solid #fff4;
@@ -100,29 +77,50 @@
 
 #sb-buttons {
 	display: flex;
-	gap: 0.8em;
 	opacity: 0;
+	column-gap: 0.8em;
 	cursor: text;
 
 	&.shown {
-		cursor: default;
 		opacity: 1;
+		cursor: default;
 
 		button {
-			pointer-events: all;
-			touch-action: all;
+			pointer-events: initial;
+			touch-action: initial;
+			user-select: initial;
 		}
 	}
-}
 
-#sb_submit {
-	margin: 0.3em 0.5em;
-	padding: 0.3em 1em;
-	background-color: #fff4;
+	button {
+		color: #fff;
+		font-size: inherit;
+		pointer-events: none;
+		touch-action: none;
+		user-select: none;
+		border-radius: 0.5em;
+		background-color: transparent;
+		transition: opacity 0.2s, filter 0.1s, transform 0.1s;
 
-	img {
-		margin-top: 3px;
-		height: 1.2em;
+		&:hover {
+			filter: brightness(0.9);
+		}
+
+		&:active {
+			filter: brightness(0.8);
+			transform: scale(0.94);
+		}
+	}
+
+	#sb_submit {
+		margin: 0.3em 0.5em;
+		padding: 0.3em 1em;
+		background-color: #fff4;
+
+		img {
+			margin-top: 3px;
+			height: 1.2em;
+		}
 	}
 }
 

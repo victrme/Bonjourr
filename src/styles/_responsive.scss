@@ -1,6 +1,6 @@
 // phones an touch screens
 @media (hover: none) and (pointer: coarse) {
-	#settings #fileContainer .thumbnail button {
+	.b_removethumb {
 		opacity: 1;
 	}
 
@@ -12,12 +12,6 @@
 		&:active {
 			filter: brightness(0.5);
 		}
-	}
-
-	.block_parent .block {
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		user-select: none;
 	}
 }
 
@@ -43,17 +37,17 @@
 		font-size: 12px;
 	}
 
-	body #interface {
+	#interface {
 		padding-bottom: 77px;
 		min-height: 100dvh;
-
-		#quotes_container {
-			width: 90vw;
-		}
 
 		&.pushed {
 			transform: translateX(0);
 		}
+	}
+
+	#quotes_container {
+		width: 90vw;
 	}
 
 	#settings {
@@ -72,58 +66,58 @@
 		&.shown {
 			transform: translateX(0) translateY(-75%);
 		}
+	}
 
-		// Tooltip (?) centered when span wrap
-		&.all .as_collection {
-			max-height: 140px;
+	// Tooltip (?) centered when span wrap
+	.as_collection {
+		max-height: 140px;
 
-			.wrapper span {
-				align-items: center;
-			}
+		.wrapper span {
+			align-items: center;
 		}
+	}
 
-		#mobile-drag-zone {
-			display: block;
+	#mobile-drag-zone {
+		display: block;
 
-			& ~ h2:first-of-type {
-				margin-top: 0;
-			}
+		& ~ h2:first-of-type {
+			margin-top: 0;
 		}
+	}
 
-		#cssEditor,
-		.param {
-			margin-right: 12px;
-			margin-left: 12px;
-		}
+	#cssEditor,
+	.param {
+		margin-right: 12px;
+		margin-left: 12px;
+	}
 
-		#cssEditor {
-			width: calc(100% - 24px);
-		}
+	#cssEditor {
+		width: calc(100% - 24px);
+	}
 
-		#settings-footer {
-			padding: 3em;
-			padding-bottom: 30vh;
-		}
+	#settings-footer {
+		padding: 3em;
+		padding-bottom: 30vh;
 	}
 
 	#creditContainer {
 		width: calc(100% - 7.5em);
 		z-index: 1;
+	}
 
-		#credit {
-			display: block;
-			line-height: 14px;
+	#credit {
+		display: block;
+		line-height: 14px;
 
-			a,
-			p,
-			span {
-				font-size: 11px;
-			}
+		a,
+		p,
+		span {
+			font-size: 11px;
 		}
+	}
 
-		.exif {
-			display: none;
-		}
+	.exif {
+		display: none;
 	}
 
 	#showSettings {
@@ -153,11 +147,11 @@
 	body {
 		padding: env(safe-area-inset);
 		overflow-y: scroll;
+	}
 
-		#interface #main,
-		#interface #time {
-			min-height: unset;
-		}
+	#main,
+	#time {
+		min-height: unset;
 	}
 }
 
@@ -178,29 +172,21 @@
 		transform: translate(-50%, -50%) !important;
 	}
 
-	#interface {
-		#sb_container {
-			#sb-suggestions,
-			#searchbar {
-				font-size: 1.7em;
-				box-sizing: border-box;
-			}
+	#sb-suggestions,
+	#searchbar {
+		font-size: 1.7em;
+		box-sizing: border-box;
+	}
 
-			#sb-buttons {
-				padding-right: 1em;
+	#sb-buttons {
+		padding-right: 1em;
 
-				#sb_submit img {
-					height: 1.5em;
-				}
-
-				#sb_empty {
-					font-size: 2em;
-				}
-			}
+		#sb_submit img {
+			height: 1.5em;
 		}
 
-		#quotes_container #author {
-			opacity: 1;
+		#sb_empty {
+			font-size: 2em;
 		}
 	}
 }
