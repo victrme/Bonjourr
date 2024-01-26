@@ -2,11 +2,11 @@
 	border: none;
 	border-radius: 1em;
 	background-color: #fff2;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	outline: 0.4em solid transparent;
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 	z-index: -1;
-
-	@include frostedGlass($blur: 2em);
 
 	&:hover {
 		background-color: #fff3;
@@ -70,11 +70,11 @@
 	border-radius: 1em;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	cursor: grab;
 	z-index: 4;
 	direction: ltr;
-
-	@include frostedGlass($blur: 2em);
 
 	&:not(.active) > div:not(#close-mover-wrapper) {
 		pointer-events: none;

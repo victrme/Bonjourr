@@ -751,9 +751,9 @@
 	text-decoration: none;
 	box-sizing: border-box;
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
 	transition: opacity 0.1s, background-color 0.1s;
-
-	@include frostedGlass();
 
 	span {
 		display: block;

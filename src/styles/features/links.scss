@@ -60,6 +60,7 @@
 			background-color: #fff2;
 			border: 1px solid #fff4;
 			backdrop-filter: blur(2em);
+			-webkit-backdrop-filter: blur(2em);
 		}
 
 		#link-title div:not(:first-child) {
@@ -176,8 +177,9 @@ li.block.folder > div {
 	grid-template-columns: 1fr 1fr;
 	background-color: #fff3;
 	border: 1px solid #fff4;
-	backdrop-filter: blur(1em);
 	box-sizing: border-box;
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
 }
 
 li.block.folder img[src] {
@@ -306,10 +308,10 @@ li.block.folder img {
 			border-radius: 0.3em;
 			background-color: #fff3;
 			border: 1px solid rgba(255, 255, 255, 0.075);
+			backdrop-filter: blur(1em);
+			-webkit-backdrop-filter: blur(1em);
 			transition: opacity 0.2s;
 			z-index: 1;
-
-			@include frostedGlass();
 
 			&:empty {
 				display: none;
@@ -602,6 +604,7 @@ li.block.folder img {
 		&:focus-within {
 			background-color: #fff1;
 			backdrop-filter: blur(1em);
+			-webkit-backdrop-filter: blur(1em);
 		}
 
 		&::placeholder {
@@ -646,9 +649,9 @@ li.block.folder img {
 	border-radius: 4px;
 	border: 1px solid transparent;
 	background-color: #fff2;
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
 	transition: opacity 0.05s;
-
-	@include frostedGlass(1em);
 
 	&:hover {
 		background-color: #fff3;

@@ -2,10 +2,10 @@ dialog {
 	color: var(--color-text);
 	background-color: var(--color-dialog);
 	border: 1px solid var(--color-dialog-border);
-	box-shadow: 0px 0px 15px #0004;
 	border-radius: 8px;
-
-	@include frostedGlass($blur: 4em);
+	backdrop-filter: blur(4em);
+	-webkit-backdrop-filter: blur(4em);
+	box-shadow: 0px 0px 15px #0004;
 
 	hr {
 		border-color: var(--color-dialog-border);

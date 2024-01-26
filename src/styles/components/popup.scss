@@ -26,7 +26,8 @@
 	border-radius: 8px;
 	opacity: 0;
 	cursor: pointer;
-	@include frostedGlass(2em);
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	transition: opacity 2s, background-color 0.1s, color 0.1s;
 }
 
@@ -163,6 +164,7 @@
 		border: 1px solid #fff2;
 		background-color: #fff2;
 		backdrop-filter: blur(2em);
+		-webkit-backdrop-filter: blur(2em);
 		box-sizing: border-box;
 	}
 

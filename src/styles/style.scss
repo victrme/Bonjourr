@@ -20,9 +20,9 @@
 	border-radius: 4px;
 	padding: 0.5em 1em;
 	background-color: #fff2;
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
 	transition: opacity 0.15s $easeOutThree;
-
-	@include frostedGlass();
 
 	&:focus-visible {
 		opacity: 1;
@@ -205,7 +205,8 @@
 	&.shown {
 		button {
 			background-color: #aaa6;
-			@include frostedGlass();
+			backdrop-filter: blur(1em);
+			-webkit-backdrop-filter: blur(1em);
 
 			img {
 				transform: rotate(60deg);
@@ -257,11 +258,11 @@
 	opacity: 0;
 	color: #fff;
 	border-radius: 20px;
+	background-color: #0002;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	transition: opacity 0.4s;
 	z-index: 1;
-
-	background-color: #0002;
-	@include frostedGlass($blur: 40px);
 
 	pre {
 		width: calc(100% - 32px);

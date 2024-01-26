@@ -76,7 +76,8 @@
 	background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
 	border: 1px solid rgba(255, 255, 255, 0.075);
 
-	@include frostedGlass();
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 }
 
 #searchbar {
@@ -135,7 +136,8 @@
 	text-shadow: none;
 	border-radius: 10px;
 	box-sizing: border-box;
-	backdrop-filter: blur(1em);
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	border: 1px solid rgba(255, 255, 255, 0.075);
 	background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));

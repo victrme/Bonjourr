@@ -23,10 +23,6 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--color-dialog-highlight: #fff4;
 	--color-dialog-input-text: #716f6d;
 	--color-dialog-input-bg: rgba(106, 104, 111, 0.12);
-
-	@supports not (backdrop-filter: none) {
-		--color-dialog: #f2f2f7ee;
-	}
 }
 
 @mixin dark-theme {
@@ -47,10 +43,6 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--color-dialog-highlight: #fff2;
 	--color-dialog-input-text: #a4a7a8;
 	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
-
-	@supports not (backdrop-filter: none) {
-		--color-dialog: #1c1c1cee;
-	}
 }
 
 :root {
@@ -221,12 +213,14 @@ body {
 		#bookmarks::backdrop,
 		#element-mover,
 		.move-overlay {
+			-webkit-backdrop-filter: none;
 			backdrop-filter: none;
 			transition: none;
 		}
 
 		#interface li.block.folder > div,
 		#interface #linkblocks.in-folder #link-list {
+			-webkit-backdrop-filter: none;
 			backdrop-filter: none;
 		}
 
@@ -250,12 +244,4 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-@mixin frostedGlass($blur: 10px) {
-	backdrop-filter: blur($blur);
-
-	@supports not (backdrop-filter: none) {
-		-webkit-backdrop-filter: blur($blur);
-	}
 }

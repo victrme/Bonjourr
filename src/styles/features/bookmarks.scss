@@ -13,6 +13,7 @@
 
 	&::backdrop {
 		backdrop-filter: blur(1em);
+		-webkit-backdrop-filter: blur(1em);
 		background-color: #2224;
 		transition: opacity 0.2s;
 	}
