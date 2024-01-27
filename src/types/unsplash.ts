@@ -6,7 +6,7 @@ declare namespace Unsplash {
 	type CollectionTypes = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
 	interface Sync {
-		time: number
+		time?: number
 		every: Frequency
 		collection: string
 		pausedImage?: Unsplash.Image

@@ -3,14 +3,14 @@ import { tradThis } from '../utils/translations'
 import storage from '../storage'
 
 type PopupInit = {
-	old: string
+	old?: string
 	new: string
 	review: number
 	announce: Sync.Storage['announcements']
 }
 
 type PopupUpdate = {
-	announce?: string
+	announcements?: string
 }
 
 const LOVE_BONJOURR = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
@@ -24,8 +24,8 @@ const REVIEW_URLS = {
 }
 
 export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
-	if (event?.announce) {
-		storage.sync.set({ announce: event?.announce })
+	if (event?.announcements) {
+		storage.sync.set({ announcements: event?.announcements })
 		return
 	}
 
@@ -33,7 +33,7 @@ export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init?.announce !== 'off') {
+	if (init?.announce !== 'off' && init.old) {
 		const major = (s: string) => parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
 		const isNewVersion = init.new !== init.old

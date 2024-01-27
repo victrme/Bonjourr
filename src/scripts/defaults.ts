@@ -118,7 +118,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		collection: '',
 		lastCollec: 'day',
 		pausedImage: undefined,
-		time: Date.now(),
+		time: undefined,
 	},
 	weather: {
 		ccode: undefined,

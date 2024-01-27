@@ -93,6 +93,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_provider', data.weather?.provider ?? '')
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
+	setInput('i_announce', data.announcements ?? 'major')
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -579,7 +580,7 @@ function initOptionsEvents() {
 	// Updates
 
 	paramId('i_announce').addEventListener('change', function (this) {
-		interfacePopup(undefined, { announce: this.value })
+		interfacePopup(undefined, { announcements: this.value })
 	})
 
 	//

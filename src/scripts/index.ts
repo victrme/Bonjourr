@@ -41,9 +41,9 @@ try {
 
 async function startup() {
 	let { sync, local } = await storage.init()
-	const OLD_VERSION = sync?.about?.version ?? '0.0.0'
+	const OLD_VERSION = sync?.about?.version
 	const versionChanged = OLD_VERSION !== CURRENT_VERSION
-	const firstStart = OLD_VERSION === '0.0.0' && Object.keys(sync).length === 0
+	const firstStart = OLD_VERSION === undefined && Object.keys(sync).length === 0
 
 	if (versionChanged) {
 		if (firstStart) {
@@ -167,7 +167,7 @@ function onlineAndMobile() {
 			return
 		}
 
-		const frequency = freqControl.get(data.unsplash.every, data.unsplash.time)
+		const frequency = freqControl.get(data.unsplash.every, data.unsplash.time ?? Date.now())
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {
