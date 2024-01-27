@@ -31,7 +31,7 @@ Vi har handplockat några av de vackraste Unsplash-fotona så att dina nya flika
 Bonjourr är byggd med vanilla JavaScript och optimerad för bästa möjliga prestanda.
 
 🔎 Sökfält
-Bonjourrs integrerade sökfält är kompatibelt med alla sökmotorer. Ja, alla! Det inkluderar de vanliga Google, Bing, DuckDuckGo, Yahoo, Startpage samt andra, som Ecosia, Lilo och Qwant. Om du vill kan du till och med lägga till en egen anpassad sökmotor.
+Bonjourrs integrerade sökfält är kompatibelt med alla sökmotorer. Ja, alla! Om du vill kan du till och med lägga till en egen anpassad sökmotor.
 
 🕰 Analog klocka
 Bonjourrs standardklocka är gjord för att likna den du har på iPhone och andra iOS-enheter. Men om du vill ha något mer exotiskt kan du ersätta den med en mycket cool analog klocka och anpassa den som du vill.
@@ -57,4 +57,4 @@ Har du en specifik idé i åtanke? Bonjourr har dig täckt med sektionen för an
 Vill du ha ett specifikt typsnitt på din hemsida? Du kan enkelt välja det tack vare Bonjourrs integrering med Google Fonts.
 
 🌎 Flera språk
-Tack vare våra fantastiska medarbetare finns Bonjourr på 15 olika språk.
+Tack vare våra fantastiska medarbetare finns Bonjourr på +20 olika språk.

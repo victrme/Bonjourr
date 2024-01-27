@@ -31,7 +31,7 @@ Ne-am ales dintre cele mai frumoase fotografii de pe Unsplash, astfel încât no
 Bonjourr este construit cu JavaScript Vanilla și optimizat pentru cea mai bună performanță posibilă.
 
 🔎 Bara de căutare
-Bara de căutare integrată în Bonjourr este compatibilă cu toate motoarele de căutare. Da, toate! Asta include obișnuitele Google, Bing, DuckDuckGo, Yahoo, Startpage, precum și altele, cum ar fi Ecosia, Lilo și Qwant. Dacă vreți, puteți chiar să adăugați propriul motor de căutare personalizat.
+Bara de căutare integrată în Bonjourr este compatibilă cu toate motoarele de căutare. Da, toate! Dacă vreți, puteți chiar să adăugați propriul motor de căutare personalizat.
 
 🕰 Clock analog
 Ceasul implicit al Bonjourr este făcut să semene cu cel de pe iPhone și alte dispozitive iOS. Dar, dacă vreți ceva mai exotic, îl puteți înlocui cu un ceas analogic foarte cool și îl puteți personaliza după cum doriți.
@@ -57,4 +57,4 @@ Aveți o idee specifică în minte? Bonjourr vă acoperă cu secțiunea de stilu
 Vrei un anumit font pe pagina ta de start? Îl puteți selecta cu ușurință datorită integrării Bonjourr cu Google Fonts.
 
 🌎 Multilanguaj
-Datorită contribuitorilor noștri minunați, Bonjourr este disponibil în 15 limbi diferite.
+Datorită contribuitorilor noștri minunați, Bonjourr este disponibil în +20 limbi diferite.

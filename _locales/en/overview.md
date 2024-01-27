@@ -31,7 +31,7 @@ We handpicked some of the most beautiful Unsplash photos so that your new tabs w
 Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
 🔎 Search bar
-The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! That includes the usual Google, Bing, DuckDuckGo, Yahoo, Startpage as well as others, like Ecosia, Lilo and Qwant. If you want, you can even add you own custom search engine.
+The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you want, you can even add you own custom search engine.
 
 🕰 Analog clock
 Bonjourr's default clock is made to ressemble what you have on the iPhone and other iOS devices. But if you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
@@ -57,4 +57,4 @@ Have a specific idea in mind? Bonjourr has you covered with the custom styles se
 Want a specific font on your homepage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
 
 🌎 Multilanguage
-Thanks to our awesome contributors, Bonjourr is available in 15 different languages.
+Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.

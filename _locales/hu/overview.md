@@ -31,7 +31,7 @@ Kiválogattuk a legszebb Unsplash fotókat, hogy az új lapok mindig frissek leg
 A Bonjourr vanilla JavaScript-el készült és a lehető legjobb teljesítményre lett optimalizálva.
 
 🔎 Keresősáv
-A Bonjourr integrált keresősávja minden keresőmotorral kompatibilis. Igen, mindegyikkel! Ez magában foglalja a szokásos Google-t, a Bing-et, a DuckDuckGo-t, a Yahoo-t, a Startpage-ot és másokat, mint például az Ecosia-t, a Lilo-t és a Qwant-ot. Ha szeretné, akár saját egyéni keresőmotort is hozzáadhat.
+A Bonjourr integrált keresősávja minden keresőmotorral kompatibilis. Igen, mindegyikkel! Ha szeretné, akár saját egyéni keresőmotort is hozzáadhat.
 
 🕰 Analóg óra
 A Bonjourr alapértelmezett órája hasonlít az iPhone-on és más iOS-eszközökön található órához. De ha valami egzotikusabbra vágyik, lecserélheti egy nagyon klassz analóg órára, és tetszés szerint testreszabhatja.
@@ -57,4 +57,4 @@ Van konkrét elképzelése? A Bonjourr lehetőséget biztosít a megvalósítás
 Konkrét betűtípust szeretne a kezdőlapjára? Könnyedén kiválaszthatja a Bonjourr - Google Fonts integrációnak köszönhetően.
 
 🌎 Többnyelvű
-Kiváló közreműködőinknek köszönhetően a Bonjourr 15 különböző nyelven érhető el.
+Kiváló közreműködőinknek köszönhetően a Bonjourr +20 különböző nyelven érhető el.
