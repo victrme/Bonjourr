@@ -308,25 +308,19 @@
 			</button>
 		</div>
 
-		<div id="popup">
-			<div id="popup_text">
-				<div id="popup_close">
-					<p>✕</p>
-				</div>
-				<div id="popup_icon">
-					<div>
-						<span>19</span>
+		<template id="popup-template">
+			<div id="popup">
+				<div id="popup_text">
+					<div id="popup_close">✕</div>
+					<div id="popup_icon">
+						<div>
+							<span>19</span>
+						</div>
 					</div>
+					<p id="popup_desc"></p>
 				</div>
-				<p id="popup_desc"></p>
+				<div id="popup_buttons"></div>
 			</div>
-			<div id="popup_buttons">
-				<a class="trn" id="popup_review" rel="noreferrer">Review</a>
-				<a class="trn" id="popup_donate" href="https://ko-fi.com/bonjourr">Donate</a>
-				<a class="trn" id="popup_release" href="https://ko-fi.com/post/Bonjourr-1-18-housekeeping-part-2-L4L4Q5EYW"
-					>Read more on blog post</a
-				>
-			</div>
-		</div>
+		</template>
 	</body>
 </html>

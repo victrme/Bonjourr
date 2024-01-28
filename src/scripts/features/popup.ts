@@ -1,5 +1,5 @@
-import { BROWSER, ANNOUNCEMENT } from '../defaults'
 import { tradThis } from '../utils/translations'
+import { BROWSER } from '../defaults'
 import storage from '../storage'
 
 type PopupInit = {
@@ -13,8 +13,11 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const LOVE_BONJOURR = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
+const ANNOUNCEMENT_TEXT = 'New update just dropped. Google "Bonjourr folder".'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-1-18-housekeeping-part-2-L4L4Q5EYW'
+const ANNOUNCEMENT_VERSION = '19.0.0'
 
+const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
 	chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
 	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
@@ -29,65 +32,98 @@ export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (!init) {
+	//
+	// Announcements
+
+	if (!init || init?.announce === 'off') {
 		return
 	}
 
-	if (init?.announce !== 'off' && init.old) {
+	if (init.old && (init.review === -1 || init.review > 30)) {
 		const major = (s: string) => parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
-		const isNewVersion = init.new !== init.old
+		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
 
 		const announceMajor = init.announce === 'major' && isMajorUpdate
 		const announceAny = init.announce === 'all' && isNewVersion
 		const canAnnounce = localStorage.hasUpdated === 'true' || announceAny || announceMajor
 
-		if (canAnnounce && ANNOUNCEMENT) {
+		if (canAnnounce) {
 			localStorage.hasUpdated = 'true'
 			displayPopup('announce')
 			return
 		}
 	}
 
-	if (init.review > 0) {
-		if (init.review > 30) {
-			displayPopup('love')
-			storage.sync.set({ review: -1 })
-		} else {
-			storage.sync.set({ review: init.review + 1 })
-		}
+	//
+	// Reviews
+
+	if (init.review === -1) {
+		return
+	}
+
+	if (init.review > 30) {
+		displayPopup('review')
+	} else {
+		storage.sync.set({ review: init.review + 1 })
 	}
 }
 
-function displayPopup(type: 'love' | 'announce') {
-	const popup = document.getElementById('popup')
-	const desc = document.getElementById('popup_desc') as HTMLElement
-	const anchors = document.querySelectorAll<HTMLAnchorElement>('#popup a')
-	const text = type === 'love' ? LOVE_BONJOURR : ANNOUNCEMENT
+function displayPopup(type: 'review' | 'announce') {
+	const template = document.getElementById('popup-template') as HTMLTemplateElement
+	const doc = document.importNode(template.content, true)
+	const popup = doc.getElementById('popup')
+	const desc = doc.getElementById('popup_desc') as HTMLElement
+	const close = doc.getElementById('popup_close') as HTMLElement
+	const buttons = doc.getElementById('popup_buttons') as HTMLElement
 
-	popup?.classList.remove('love', 'announce')
-	popup?.classList.add(type)
+	if (!popup) {
+		return
+	}
 
-	desc.textContent = tradThis(text)
+	if (type === 'review') {
+		desc.textContent = tradThis(REVIEW_TEXT)
+		buttons.appendChild(createPopupButton(REVIEW_URLS[BROWSER], tradThis('Review')))
+		buttons.appendChild(createPopupButton('https://ko-fi.com/bonjourr', tradThis('Donate')))
+	}
 
-	document.getElementById('popup_review')?.setAttribute('href', REVIEW_URLS[BROWSER])
-	document.getElementById('popup_close')?.addEventListener('click', closePopup)
-	anchors.forEach((anchor) => anchor?.addEventListener('pointerdown', removePopupTrigger))
+	if (type === 'announce') {
+		desc.textContent = tradThis(ANNOUNCEMENT_TEXT)
+		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, tradThis('Read more on blog post')))
+	}
 
-	setTimeout(() => popup?.classList.add('shown'), 800)
-	setTimeout(() => document.getElementById('creditContainer')?.classList.remove('shown'), 400)
+	close?.addEventListener('click', closePopup)
+	document.body.appendChild(popup)
+	popup.classList.add(type)
+	openPopup()
 }
+
+function createPopupButton(href: string, text: string): HTMLAnchorElement {
+	const anchor = document.createElement('a')
+
+	anchor.href = href
+	anchor.rel = 'noreferrer'
+	anchor.textContent = text
+	anchor.addEventListener('pointerdown', removePopupTrigger)
+
+	return anchor
+}
+
+//
 
 function removePopupTrigger() {
 	storage.sync.set({ review: -1 })
 	localStorage.removeItem('hasUpdated')
 }
 
-function closePopup() {
-	const popup = document.getElementById('popup')
+function openPopup() {
+	setTimeout(() => document.getElementById('popup')?.classList.add('shown'), 800)
+	setTimeout(() => document.getElementById('creditContainer')?.setAttribute('style', 'opacity: 0'), 400)
+}
 
+function closePopup() {
+	setTimeout(() => document.getElementById('popup')?.remove(), 200)
+	setTimeout(() => document.getElementById('creditContainer')?.removeAttribute('style'), 600)
+	document.getElementById('popup')?.classList.remove('shown')
 	removePopupTrigger()
-	popup?.classList.remove('shown')
-	setTimeout(() => popup?.remove(), 200)
-	setTimeout(() => document.getElementById('creditContainer')?.classList.add('shown'), 600)
 }

@@ -7,8 +7,9 @@
 	display: flex;
 	position: fixed;
 	box-sizing: border-box;
-	bottom: 4em;
-	left: 4em;
+	font-size: 15px;
+	bottom: 4vw;
+	left: 4vw;
 	gap: 0.6em;
 	opacity: 0;
 	z-index: 2;
@@ -111,15 +112,15 @@
 }
 
 //
-//	Love
+//	Review
 //
 
-#popup.love #popup_release,
-#popup.love #popup_icon {
+#popup.review #popup_release,
+#popup.review #popup_icon {
 	display: none;
 }
 
-#popup.love #popup_desc {
+#popup.review #popup_desc {
 	width: 16em;
 }
 
