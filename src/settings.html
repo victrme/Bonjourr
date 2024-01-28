@@ -231,34 +231,38 @@
 			</div>
 		</div>
 
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_syncbookmarks" class="trn">Sync new bookmarks</label>
-			<input id="i_syncbookmarks" class="switch" type="checkbox" />
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_linktabs" class="trn">Link tabs</label>
-			<input id="i_linktabs" class="switch" type="checkbox" />
-		</div>
-
-		<hr />
-
-		<div class="linkstyle wrapper">
-			<label for="i_linkstyle" class="trn">Style</label>
-			<select id="i_linkstyle">
-				<option value="large" class="trn">Large</option>
-				<option value="medium" class="trn">Medium</option>
-				<option value="small" class="trn">Small</option>
-				<option value="inline" class="trn">Inline</option>
-				<option value="text" class="trn">Text</option>
-			</select>
-		</div>
-
 		<div class="as as_link">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_syncbookmarks" class="trn">Sync new bookmarks</label>
+				<input id="i_syncbookmarks" class="switch" type="checkbox" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<span>
+					<label for="i_linktabs" class="trn">Link pages</label>
+					<button class="tooltip ttpages opt-hider" aria-label="Tips on Links pages">?</button>
+				</span>
+				<input id="i_linktabs" class="switch" type="checkbox" />
+			</div>
+
+			<p class="tooltiptext ttpages">
+				<span class="trn">Organize your links in categories with pages. Right click on a page title to remove.</span>
+				<!-- <a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
+					>Learn more</a
+				> -->
+			</p>
+
+			<hr />
+
+			<div class="linknewtab wrapper">
+				<label for="i_linknewtab" class="trn">Open in new tab</label>
+				<input id="i_linknewtab" class="switch" type="checkbox" />
+			</div>
+
 			<hr />
 
 			<div class="wrapper">
@@ -268,9 +272,15 @@
 
 			<hr />
 
-			<div class="linknewtab wrapper">
-				<label for="i_linknewtab" class="trn">Open in new tab</label>
-				<input id="i_linknewtab" class="switch" type="checkbox" />
+			<div class="linkstyle wrapper">
+				<label for="i_linkstyle" class="trn">Style</label>
+				<select id="i_linkstyle">
+					<option value="large" class="trn">Large</option>
+					<option value="medium" class="trn">Medium</option>
+					<option value="small" class="trn">Small</option>
+					<option value="inline" class="trn">Inline</option>
+					<option value="text" class="trn">Text</option>
+				</select>
 			</div>
 		</div>
 	</div>
