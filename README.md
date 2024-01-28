@@ -119,7 +119,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
 -   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
--   **🇵🇹 European Portuguese translation** · [harkadya](http://harkadya.com)
+-   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 
 ## 👨‍💻 Running Bonjourr locally
 
