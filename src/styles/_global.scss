@@ -104,14 +104,8 @@ html {
 
 body {
 	margin: 0;
-	cursor: default;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
-	touch-action: pan-y;
 	opacity: 1;
 	color: white;
-	background-color: var(--average-color);
 	font-size: 1em;
 	font-family: $fonts;
 	min-height: var(--app-height);
@@ -120,9 +114,7 @@ body {
 	overflow-x: hidden;
 	overflow-y: overlay;
 	touch-action: manipulation;
-	position: relative;
-	display: flex;
-	flex-direction: column;
+	background-color: var(--average-color);
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
 	p,
@@ -217,8 +209,7 @@ body {
 			transition: none;
 		}
 
-		#interface li.block.folder > div,
-		#interface #linkblocks.in-folder #link-list {
+		#linkblocks.in-folder #link-list {
 			-webkit-backdrop-filter: none;
 			backdrop-filter: none;
 		}

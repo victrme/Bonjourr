@@ -71,6 +71,8 @@ async function initSettingsOptions() {
 	const images = await localImages.get()
 	let ids = images.ids
 
+	addThumbnailsToDom(ids, images.selected)
+
 	if (i_freq) {
 		i_freq.value = images.freq
 	}
@@ -82,12 +84,6 @@ async function initSettingsOptions() {
 
 	if (loadedThumbIds.length > 0) {
 		ids = ids.filter((id) => loadedThumbIds.includes(id) === false)
-	}
-
-	for (const id of ids) {
-		const isSelected = id === images.selected
-		const blob = await getBlob(id, 'thumbnail')
-		createThumbnail(blob, id, isSelected)
 	}
 }
 
@@ -137,7 +133,7 @@ async function addNewImage(filelist: FileList) {
 			background: file,
 		}
 
-		createThumbnail(thumbnail, id, false)
+		addThumbnailsToDom(ids, id)
 		await idb.set(id, blobs[id])
 	}
 
@@ -167,15 +163,7 @@ async function updateThumbnailAmount(showing?: string) {
 		document.getElementById('thumbnail-show-buttons')?.classList.remove('shown')
 	}
 
-	for (const id of ids) {
-		if (document.getElementById(id)) {
-			continue
-		}
-
-		const isSelected = id === images.selected
-		const blob = await getBlob(id, 'thumbnail')
-		createThumbnail(blob, id, isSelected)
-	}
+	addThumbnailsToDom(ids, images.selected)
 }
 
 //
@@ -229,17 +217,15 @@ async function compressThumbnail(blob: Blob) {
 	return newBlob as Blob
 }
 
-async function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean) {
-	if (!blob) {
-		return
-	}
-
-	const settings = document.getElementById('settings')
+function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean): HTMLButtonElement {
 	const thb = document.createElement('button')
 	const rem = document.createElement('button')
 	const thbimg = document.createElement('img')
 	const remspan = document.createElement('span')
-	const wrap = settings?.querySelector('#fileContainer')
+
+	if (!blob) {
+		return thb
+	}
 
 	thb.id = id
 	thbimg.src = URL.createObjectURL(blob)
@@ -260,7 +246,8 @@ async function createThumbnail(blob: Blob | undefined, id: string, isSelected: b
 	thb.appendChild(thbimg)
 	thb.appendChild(rem)
 
-	wrap?.append(thb)
+	thbimg.addEventListener('click', applyThisBackground)
+	rem.addEventListener('click', deleteThisBackground)
 
 	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return
@@ -325,8 +312,21 @@ async function createThumbnail(blob: Blob | undefined, id: string, isSelected: b
 		}, 100)
 	}
 
-	thbimg.addEventListener('click', applyThisBackground)
-	rem.addEventListener('click', deleteThisBackground)
+	return thb
+}
+
+async function addThumbnailsToDom(ids: string[], selected?: string) {
+	const fileContainer = document.getElementById('fileContainer') as HTMLElement
+	const fragment = document.createDocumentFragment()
+	const idsToAdd = ids.filter((id) => !document.getElementById(id))
+
+	for (const id of idsToAdd) {
+		const isSelected = id === selected
+		const blob = await getBlob(id, 'thumbnail')
+		fragment.appendChild(createThumbnail(blob, id, isSelected))
+	}
+
+	fileContainer.appendChild(fragment)
 }
 
 //

@@ -25,6 +25,7 @@ import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
+import { loadCallbacks } from './utils/onsettingsload'
 
 export async function settingsInit() {
 	const data = await storage.sync.get()
@@ -40,12 +41,13 @@ export async function settingsInit() {
 	traduction(settingsDom, data.lang)
 	settingsFooter()
 	showall(data.showall, false)
+	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
 	initSettingsEvents()
 	settingsDrawerBar()
-	updateExportJSON()
 	controlOptionsTabFocus(settingsDom)
+	loadCallbacks()
 
 	setTimeout(() => document.dispatchEvent(new Event('settings')))
 }
@@ -1221,15 +1223,19 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
 }
 
-export async function updateExportJSON() {
-	const input = document.getElementById('area_export') as HTMLInputElement
+export function updateExportJSON(data?: Sync.Storage) {
+	// document.getElementById('importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	document.getElementById('importtext')?.setAttribute('disabled', '') // because cannot export same settings
+	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
-	const data = await storage.sync.get()
-	data.about.browser = PLATFORM
+	function updateTextArea(data: Sync.Storage) {
+		const input = document.querySelector<HTMLTextAreaElement>('#area_export')
 
-	input.value = orderedStringify(data)
+		if (input) {
+			data.about.browser = PLATFORM
+			input.value = orderedStringify(data)
+		}
+	}
 }
 
 function fadeOut() {

@@ -19,13 +19,13 @@
 	border: none;
 	border-radius: 4px;
 	padding: 0.5em 1em;
-	background-color: #fff2;
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
+	background-color: #222;
 	transition: opacity 0.15s $easeOutThree;
+	z-index: -1;
 
 	&:focus-visible {
 		opacity: 1;
+		z-index: initial;
 	}
 }
 
@@ -99,6 +99,11 @@
 }
 
 #main,
+#time {
+	user-select: none;
+}
+
+#main,
 #time,
 #linkblocks,
 #sb_container,
@@ -115,10 +120,12 @@
 }
 
 #creditContainer {
+	position: fixed;
 	bottom: 0;
 	left: 0;
 	opacity: 0;
-	padding: 0 0 36px 24px;
+	padding-left: 2.2em;
+	padding-bottom: 2.2em;
 	max-width: 50%;
 	display: flex;
 	align-items: center;
@@ -158,28 +165,31 @@
 }
 
 #showSettings {
-	padding: 0 24px 24px 0;
+	position: fixed;
 	bottom: 0;
 	right: 0;
+	padding-right: 1.5em;
+	padding-bottom: 1.5em;
 	z-index: 3;
 
 	button {
-		position: relative;
-		height: 53px;
-		width: 53px;
-		border: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 4em;
+		width: 4em;
+		padding: 0;
 		border-radius: 8px;
-		cursor: pointer;
-		padding: unset;
 		background-color: transparent;
+		backdrop-filter: blur(0);
+		-webkit-backdrop-filter: blur(0);
+		cursor: pointer;
 		transition: background-color 0.6s $easeOutThree;
-		@include allCentered();
+	}
 
-		img {
-			width: 65%;
-			transition: transform 0.6s $easeOutThree;
-			will-change: transform;
-		}
+	img {
+		width: 2.6em;
+		transition: transform 0.6s $easeOutThree;
 	}
 
 	&.he_hidden {
@@ -207,14 +217,14 @@
 			backdrop-filter: blur(1em);
 			-webkit-backdrop-filter: blur(1em);
 
-			img {
-				transform: rotate(60deg);
-			}
-
 			&:hover {
 				opacity: 1;
 				background-color: #6666;
 			}
+		}
+
+		img {
+			transform: rotate(60deg);
 		}
 	}
 }

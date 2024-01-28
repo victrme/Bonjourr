@@ -24,18 +24,15 @@
 	width: calc(450px - (21px * 2));
 	padding: 0 21px;
 	visibility: hidden;
-
 	background-color: var(--color-settings);
 	color: var(--color-text);
 	font-size: 15px;
 	font-weight: 400;
 	text-shadow: none;
 	text-align: initial;
-
-	touch-action: pan-y;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	will-change: transform;
+	touch-action: pan-y;
 	transition: transform 0.4s, background-color 0.4s $easeOutThree, opacity 0.4s, visibility 0.4s;
 
 	&.shown {
@@ -167,7 +164,6 @@
 
 	input::placeholder {
 		color: var(--color-placeholder);
-		opacity: 1;
 	}
 
 	input[type='checkbox'] {
@@ -1064,6 +1060,7 @@
 	overflow-y: hidden;
 	resize: vertical;
 	border: none;
+	will-change: transform;
 	color: var(--color-text);
 	background-color: var(--color-areas);
 	box-sizing: border-box;

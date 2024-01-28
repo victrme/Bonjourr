@@ -84,7 +84,7 @@ async function startup() {
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
 	onSettingsLoad(() => {
-		setPotatoComputerMode()
+		setTimeout(() => setPotatoComputerMode())
 		interfacePopup({
 			old: OLD_VERSION,
 			new: CURRENT_VERSION,
@@ -258,7 +258,7 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	setTimeout(() => {
 		document.body.classList.remove('init')
 		settingsInit()
-	}, loadtime + 100)
+	}, loadtime + 400)
 }
 
 //
