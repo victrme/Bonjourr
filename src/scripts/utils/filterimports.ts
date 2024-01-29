@@ -10,6 +10,18 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		toImport.review = toImport.reviewPopup === 'removed' ? -1 : +toImport.reviewPopup
 	}
 
+	// 19.0.0 To new font system
+	if (toImport.font) {
+		toImport.font.weightlist = toImport.font?.availWeights ?? []
+		delete toImport.font.url
+		delete toImport.font.availWeights
+
+		// Always assume it is NOT a system font, unless specified
+		if (toImport.font.system === undefined) {
+			toImport.font.system = false
+		}
+	}
+
 	// <1.18.1 Improved geolocation, removed lastState in sync
 	if (toImport.weather && toImport.weather?.geolocation === undefined) {
 		const oldLocation = toImport.weather?.location ?? []

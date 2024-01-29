@@ -183,7 +183,7 @@ function webext(): Storage {
 			})
 		}
 
-		const sync = store.sync
+		const sync = verifyDataAsSync(store.sync)
 		const local = store.local
 
 		//@ts-ignore

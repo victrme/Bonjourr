@@ -41,6 +41,20 @@ try {
 
 async function startup() {
 	let { sync, local } = await storage.init()
+
+	// -------- TEMPORAIRE
+	// To remove for next version, or it could show 19.0 popup twice !!
+	const isNotNewUser = sync.reviewPopup === 'removed' || parseInt(sync?.reviewPopup + '') > 30
+	const aboutNotSaved = sync?.about?.version === undefined
+
+	if (isNotNewUser && aboutNotSaved) {
+		sync.about = {
+			browser: SYNC_DEFAULT.about.browser,
+			version: '1.18.4',
+		}
+	}
+	// -------- TEMPORAIRE END
+
 	const OLD_VERSION = sync?.about?.version
 	const versionChanged = OLD_VERSION !== CURRENT_VERSION
 	const firstStart = OLD_VERSION === undefined && Object.keys(sync).length === 0
@@ -99,7 +113,6 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 
 	if (data.reviewPopup) {
 		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
-		storage.sync.remove('reviewPopup')
 	}
 
 	if (Array.isArray(data?.quotes?.userlist)) {
@@ -110,6 +123,15 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	if (!data.dateformat) {
 		data.dateformat = data.usdate ? 'us' : 'eu'
 	}
+
+	if (!data.linktabs) {
+		data.linktabs = { ...SYNC_DEFAULT.linktabs }
+	}
+
+	storage.sync.remove('reviewPopup')
+	storage.sync.remove('usdate')
+	delete data.reviewPopup
+	delete data.usdate
 
 	data = linksDataMigration(data)
 	data.about = SYNC_DEFAULT.about
