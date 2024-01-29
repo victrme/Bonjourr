@@ -91,7 +91,6 @@ export default function startDrag(event: PointerEvent) {
 	domlinklist.style.setProperty('--drag-height', Math.floor(listRect?.height) + 'px')
 
 	domlinkblocks?.classList.add('dragging')
-	document.body.classList.add('dragging')
 	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 
@@ -205,8 +204,22 @@ function applyDragChangeParent(id: string) {
 	clearTimeout(dragChangeParentTimeout)
 
 	dragChangeParentTimeout = setTimeout(() => {
-		if (id === draggedId || domlinkblocks?.classList.contains('in-folder')) {
+		const isDraggedId = id === draggedId
+		const inFolder = domlinkblocks?.classList.contains('in-folder')
+		const parentIsTab = parseInt(id) > -1
+
+		if (isDraggedId || inFolder) {
 			return
+		}
+
+		if (parentIsTab) {
+			const divs = [...document.querySelectorAll<HTMLElement>('#link-title > div')]
+			const selectedIndex = divs.findIndex((div) => div?.classList?.contains('selected'))
+			const parentIsSelectedTab = parseInt(id) === selectedIndex
+
+			if (parentIsSelectedTab) {
+				return
+			}
 		}
 
 		targetId = id

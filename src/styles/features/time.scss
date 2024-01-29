@@ -113,6 +113,7 @@
 		border-radius: calc(var(--clock-size) * 0.2);
 		transform-origin: bottom center;
 		background-color: white;
+		will-change: transform;
 
 		&#hours {
 			height: 30%;
@@ -129,7 +130,6 @@
 		background-color: red;
 		width: calc(var(--clock-size) * 0.1);
 		margin-left: calc(var(--clock-size) * -0.05);
-		will-change: transform;
 
 		&.hidden {
 			display: none;

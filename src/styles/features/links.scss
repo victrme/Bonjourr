@@ -99,6 +99,7 @@
 	background-color: transparent;
 	border: 1px solid transparent;
 	border-radius: 1em;
+	z-index: 2;
 	transition: opacity 0.3s $easeOutThree;
 }
 
@@ -568,6 +569,7 @@ li.block.folder img {
 	padding: 1em 4em;
 	margin: auto;
 	width: fit-content;
+	z-index: 1;
 
 	div {
 		cursor: pointer;

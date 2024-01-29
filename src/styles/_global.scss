@@ -120,6 +120,8 @@ body {
 	overflow-x: hidden;
 	overflow-y: overlay;
 	touch-action: manipulation;
+	user-select: none;
+	-webkit-user-select: none;
 	background-color: var(--average-color);
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
@@ -153,14 +155,6 @@ body {
 		outline: none;
 		font-family: inherit;
 		box-sizing: border-box;
-	}
-
-	&.dragging * {
-		cursor: grabbing;
-	}
-
-	&.dropping * {
-		cursor: grab;
 	}
 
 	&.tabbing {

@@ -84,7 +84,7 @@ async function startup() {
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
 	onSettingsLoad(() => {
-		setTimeout(() => setPotatoComputerMode())
+		setPotatoComputerMode()
 		interfacePopup({
 			old: OLD_VERSION,
 			new: CURRENT_VERSION,
@@ -220,13 +220,25 @@ function serviceWorker() {
 }
 
 async function setPotatoComputerMode() {
-	if ((navigator as any).gpu === undefined) {
+	if (BROWSER === 'firefox' || BROWSER === 'safari') {
+		// firefox fingerprinting protection disables webgl info, smh
+		// safari always have hardware acceleration, no need for potato
 		return
 	}
 
-	try {
-		await (await (navigator as any).gpu.requestAdapter()).requestDevice()
-	} catch (error) {
+	const canvas = document.createElement('canvas')
+	const gl = canvas?.getContext('webgl')
+	const debugInfo = gl?.getExtension('WEBGL_debug_renderer_info')
+
+	if (BROWSER === 'chrome' && !gl) {
+		document.body.classList.add('potato')
+		return
+	}
+
+	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0) + ''
+	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0) + ''
+
+	if (vendor.includes('Google') && renderer.includes('SwiftShader')) {
 		document.body.classList.add('potato')
 	}
 }
