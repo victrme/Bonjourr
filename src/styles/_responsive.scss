@@ -95,14 +95,10 @@
 		width: calc(100% - 24px);
 	}
 
-	#settings-footer {
-		padding: 3em;
-		padding-bottom: 30vh;
-	}
-
 	#creditContainer {
-		width: calc(100% - 7.5em);
-		z-index: 1;
+		width: 100%;
+		padding-right: 7em;
+		padding-left: 1.5em;
 	}
 
 	#credit {
@@ -114,14 +110,6 @@
 		span {
 			font-size: 11px;
 		}
-	}
-
-	.exif {
-		display: none;
-	}
-
-	#showSettings {
-		z-index: 1;
 	}
 
 	#popup {
