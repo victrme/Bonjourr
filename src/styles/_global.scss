@@ -166,6 +166,8 @@ body {
 		button:focus,
 		#bookmarks li:focus-visible,
 		#link-title div:focus-visible,
+		#linkblocks li.block a:focus-visible,
+		#linkblocks li.block.folder:focus-visible,
 		#linkblocks.text a:focus-visible span,
 		#notes_toolbar:focus-visible,
 		input:focus-visible + .slider {
@@ -218,9 +220,10 @@ body {
 			background-color: #2228;
 		}
 
+		#editlink,
 		#bookmarks,
 		#element-mover {
-			background-color: var(--color-settings);
+			background-color: var(--color-param);
 		}
 	}
 

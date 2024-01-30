@@ -110,6 +110,7 @@ async function updateLocalBackgrounds(event: UpdateLocal) {
 }
 
 async function addNewImage(filelist: FileList) {
+	const fileContainer = document.getElementById('fileContainer')
 	let { ids, selected } = await localImages.get()
 	let blobs: { [key: string]: Blobs } = {}
 	let newIds: string[] = []
@@ -133,7 +134,8 @@ async function addNewImage(filelist: FileList) {
 			background: file,
 		}
 
-		addThumbnailsToDom(ids, id)
+		fileContainer?.appendChild(createThumbnail(thumbnail, id, false))
+
 		await idb.set(id, blobs[id])
 	}
 

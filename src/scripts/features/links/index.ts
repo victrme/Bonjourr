@@ -264,6 +264,10 @@ async function openFolder(event: Event) {
 }
 
 async function closeFolder() {
+	if (domlinkblocks.classList.contains('dropping')) {
+		return
+	}
+
 	const data = await storage.sync.get()
 	const folderCloseTransition = transitioner()
 
