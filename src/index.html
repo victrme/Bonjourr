@@ -187,24 +187,33 @@
 		</div>
 
 		<main id="interface">
-			<div id="time" class="hidden">
+			<div id="time">
 				<div id="time-container" data-hide="clock">
-					<h1 id="clock" class="hidden"></h1>
+					<h1 id="digital">
+						<span id="digital-hh-leading-zero">0</span><span id="digital-hh"></span
+						><span id="digital-hh-separator">:</span><span id="digital-mm"></span
+						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span>
+					</h1>
 
-					<div id="analogClock" class="hidden">
-						<div class="numbers top">12</div>
-						<div class="numbers right">3</div>
-						<div class="numbers bottom">6</div>
-						<div class="numbers left">9</div>
+					<div id="analog">
+						<div id="analog-face">
+							<span>12</span>
+							<span>3</span>
+							<span>6</span>
+							<span>9</span>
+						</div>
 
-						<div id="center"></div>
-						<span id="hours"></span>
-						<span id="minutes"></span>
-						<span id="analogSeconds"></span>
+						<div id="analog-center"></div>
+						<span id="analog-hours"></span>
+						<span id="analog-minutes"></span>
+						<span id="analog-seconds"></span>
 					</div>
 				</div>
 
-				<p id="date" data-hide="date"></p>
+				<p id="date" data-hide="date">
+					<span id="date-aa"></span><span id="date-aa-separator"></span><span id="date-bb"></span
+					><span id="date-bb-separator"></span><span id="date-cc"></span>
+				</p>
 			</div>
 
 			<div id="main" class="hidden">

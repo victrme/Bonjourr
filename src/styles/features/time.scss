@@ -9,23 +9,31 @@
 		display: none;
 	}
 
-	// here because its cleaner to overrite with custom css
-	.zero::before {
-		content: '0';
+	&.seconds {
+		#digital-mm-separator,
+		#digital-ss {
+			display: inline;
+		}
+
+		#analog-seconds {
+			display: block;
+		}
+	}
+
+	&.analog {
+		#digital {
+			display: none;
+		}
+
+		#analog {
+			display: inline-block;
+		}
 	}
 }
 
-.analog {
-	#clock {
-		display: none;
-	}
+// Digital clock
 
-	#analogClock {
-		display: inline-block;
-	}
-}
-
-#clock {
+#digital {
 	margin: 0;
 	margin-bottom: 0.1em;
 	font-size: calc(var(--clock-size) * 6);
@@ -34,7 +42,19 @@
 	font-weight: var(--font-weight-clock);
 }
 
-#analogClock {
+#digital.zero #digital-hh-leading-zero {
+	display: inline;
+}
+
+#digital-hh-leading-zero,
+#digital-mm-separator,
+#digital-ss {
+	display: none;
+}
+
+// Analog clock
+
+#analog {
 	display: none;
 	position: relative;
 	width: calc(var(--clock-size) * 8);
@@ -47,18 +67,6 @@
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
 
-	#center {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: calc(var(--clock-size) * 0.4);
-		height: calc(var(--clock-size) * 0.4);
-		border-radius: calc(var(--clock-size) * 0.4);
-		transform: translate(-50%, -50%);
-		background-color: white;
-		z-index: 5;
-	}
-
 	&.transparent {
 		box-shadow: none;
 		backdrop-filter: none;
@@ -70,82 +78,105 @@
 	&.square {
 		border-radius: calc(var(--clock-size) * 0.2);
 	}
+}
 
-	.numbers {
-		position: absolute;
-		display: block;
-		opacity: 0.6;
-		width: 100%;
-		font-size: calc(var(--clock-size) * 1);
+#analog-center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: calc(var(--clock-size) * 0.4);
+	height: calc(var(--clock-size) * 0.4);
+	border-radius: calc(var(--clock-size) * 0.4);
+	transform: translate(-50%, -50%);
+	background-color: white;
+	z-index: 5;
+}
 
-		&.top {
-			top: calc(5px + var(--clock-size) * 0.3);
-			text-align: center;
-		}
+#analog-minutes,
+#analog-hours,
+#analog-seconds {
+	transform: rotate(var(--deg));
+	position: absolute;
+	display: block;
+	bottom: 50%;
+	left: 50%;
+	box-shadow: $textShadow;
+	width: calc(var(--clock-size) * 0.2);
+	margin-left: calc(var(--clock-size) * -0.1);
+	border-radius: calc(var(--clock-size) * 0.2);
+	transform-origin: bottom center;
+	background-color: white;
+	will-change: transform;
+}
 
-		&.right {
-			top: calc(50% - (5px + var(--clock-size) * 0.15));
-			right: calc(5px + var(--clock-size) * 0.3);
-			text-align: right;
-		}
+#analog-hours {
+	height: 30%;
+}
 
-		&.bottom {
-			bottom: calc(5px + var(--clock-size) * 0.3);
-			text-align: center;
-		}
+#analog-minutes {
+	height: 45%;
+}
 
-		&.left {
-			top: calc(50% - (5px + var(--clock-size) * 0.15));
-			left: calc(5px + var(--clock-size) * 0.3);
-			text-align: left;
-		}
-	}
+#analog-seconds {
+	display: none;
+	height: 45%;
+	opacity: 0.8;
+	background-color: red;
+	width: calc(var(--clock-size) * 0.1);
+	margin-left: calc(var(--clock-size) * -0.05);
+}
 
-	// aiguilles
+#analog-face {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	font-size: var(--clock-size);
+
+	--center: calc(50% - 0.5em);
+	--padding: 0.75em;
+
 	span {
 		position: absolute;
 		display: block;
-		bottom: 50%;
-		left: 50%;
-		box-shadow: $textShadow;
-		width: calc(var(--clock-size) * 0.2);
-		margin-left: calc(var(--clock-size) * -0.1);
-		border-radius: calc(var(--clock-size) * 0.2);
-		transform-origin: bottom center;
-		background-color: white;
-		will-change: transform;
-
-		&#hours {
-			height: 30%;
-		}
-
-		&#minutes {
-			height: 45%;
-		}
+		opacity: 0.6;
+		width: 1em;
+		height: 1em;
+		line-height: 1em;
+		text-align: center;
 	}
 
-	#analogSeconds {
-		height: 45%;
-		opacity: 0.8;
-		background-color: red;
-		width: calc(var(--clock-size) * 0.1);
-		margin-left: calc(var(--clock-size) * -0.05);
+	span:nth-child(1) {
+		left: var(--center);
+		top: var(--padding);
+	}
 
-		&.hidden {
-			display: none;
-		}
+	span:nth-child(2) {
+		top: var(--center);
+		right: var(--padding);
+	}
+
+	span:nth-child(3) {
+		left: var(--center);
+		bottom: var(--padding);
+	}
+
+	span:nth-child(4) {
+		top: var(--center);
+		left: var(--padding);
 	}
 }
+
+// Date
 
 #date {
 	font-size: 1.5em;
 	margin-top: 0.5em;
 }
 
-#time-container.analog ~ #date {
+#time.analog #date {
 	margin-top: 1em;
 }
 
-#time-container.analog.he_hidden ~ #date {
+#time-container.he_hidden ~ #date {
 	margin-top: 0;
 }

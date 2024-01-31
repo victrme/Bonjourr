@@ -16,173 +16,35 @@ type ClockUpdate = {
 	size?: number
 }
 
-// prettier-ignore
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-const rand = Math.random() > 0.8 ? 1 : 0
+type DateFormat = Sync.Storage['dateformat']
 
-let lazyClockInterval: number
+const oneInFiveRandom = Math.random() > 0.8 ? 1 : 0
+let clockInterval: number
 
-function zonedDate(timezone: string = 'auto') {
-	const date = new Date()
+export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
+	if (event) {
+		clockUpdate(event)
+		return
+	}
 
-	if (timezone === 'auto') return date
+	let clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
 
-	const offset = date.getTimezoneOffset() / 60 // hour
-	let utcHour = date.getHours() + offset
-
-	const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
-	// const minutes = timezone.split('.')[1] ? utcMinutes + parseInt(timezone.split('.')[1]) : date.getMinutes()
-
-	let minutes
-	if (timezone.split('.')[1]) {
-		minutes = utcMinutes + parseInt(timezone.split('.')[1])
-
-		if (minutes > -30) utcHour++
-	} else minutes = date.getMinutes()
-
-	date.setHours(utcHour + parseInt(timezone), minutes)
-
-	return date
-}
-
-function clockDate(date: Date, dateformat: 'eu' | 'us' | 'ja' | 'cn') {
-	const datedom = document.getElementById('date') as HTMLParagraphElement
-	const jour = tradThis(days[date.getDay()])
-	const mois = tradThis(months[date.getMonth()])
-	const chiffre = date.getDate()
-
-	switch (dateformat) {
-		case 'us':
-			datedom.textContent = `${jour}, ${mois} ${chiffre}`
-			break
-		case 'ja':
-			datedom.textContent = `${jour}、${mois}${chiffre}日`
-			break
-		case 'cn':
-			datedom.textContent = `${jour}, ${mois} ${chiffre}日`
-			break
-		default: // eu
-			datedom.textContent = `${jour} ${chiffre} ${mois}`
+	try {
+		startClock(clock, init?.greeting || '', init?.dateformat || 'eu')
+		clockDate(zonedDate(clock.timezone), init?.dateformat || 'eu')
+		greetings(zonedDate(clock.timezone), init?.greeting || '')
+		analogFace(clock.face)
+		analogStyle(clock.style)
+		clockSize(clock.size)
+		displayInterface('clock')
+	} catch (e) {
+		errorMessage(e)
 	}
 }
 
-function greetings(date: Date, name?: string) {
-	const hour = date.getHours()
-	let greet = 'Good evening'
-
-	if (hour < 3) {
-		greet = 'Good evening'
-	} else if (hour < 5) {
-		greet = ['Good night', 'Sweet dreams'][rand]
-	} else if (hour < 12) {
-		greet = 'Good morning'
-	} else if (hour < 18) {
-		greet = 'Good afternoon'
-	}
-
-	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
-	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
-	const domname = document.getElementById('greeting-name') as HTMLSpanElement
-
-	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
-	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
-	domname.textContent = name ?? ''
-}
-
-function changeAnalogFace(face = 'none') {
-	// Clockwise
-	const chars = {
-		none: ['', '', '', ''],
-		number: ['12', '3', '6', '9'],
-		roman: ['XII', 'III', 'VI', 'IX'],
-		marks: ['│', '―', '│', '―'],
-	}
-
-	document.querySelectorAll('#analogClock .numbers').forEach((mark, i) => {
-		if (face in chars) {
-			mark.textContent = chars[face as keyof typeof chars][i]
-		}
-	})
-}
-
-function changeAnalogStyle(style?: string) {
-	document.getElementById('analogClock')?.setAttribute('class', style || '')
-}
-
-function changeClockSize(size = 1) {
-	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
-}
-
-function startClock(clock: Sync.Clock, greeting: string, dateformat: 'eu' | 'us' | 'ja' | 'cn') {
-	//
-	function display() {
-		document.getElementById('time-container')?.classList.toggle('analog', clock.analog)
-		document.getElementById('analogSeconds')?.classList.toggle('hidden', !clock.seconds)
-	}
-
-	function clockInterval() {
-		function numerical(date: Date) {
-			const fixunits = (val: number) => (val < 10 ? '0' : '') + val.toString()
-
-			let h = clock.ampm ? date.getHours() % 12 : date.getHours(),
-				m = fixunits(date.getMinutes()),
-				s = fixunits(date.getSeconds())
-
-			if (clock.ampm && h === 0) {
-				h = 12
-			}
-
-			const domclock = document.getElementById('clock')
-
-			if (domclock) {
-				domclock?.classList.toggle('zero', !clock.ampm && h < 10) // Double zero on 24h
-				domclock.textContent = `${h}:${m}${clock.seconds ? ':' + s : ''}`
-			}
-		}
-
-		function analog(date: Date) {
-			const rotation = (elem: HTMLElement | null, val: number) => {
-				if (elem) {
-					elem.style.transform = `rotate(${val}deg)`
-				}
-			}
-
-			let s = date.getSeconds() * 6,
-				m = (date.getMinutes() + date.getSeconds() / 60) * 6,
-				h = ((date.getHours() % 12) + date.getMinutes() / 60) * 30
-
-			rotation(document.getElementById('hours'), h)
-			rotation(document.getElementById('minutes'), m)
-
-			if (clock.seconds) {
-				rotation(document.getElementById('analogSeconds'), s)
-			}
-		}
-
-		// Control
-		const date = zonedDate(clock.timezone)
-		clock.analog ? analog(date) : numerical(date)
-
-		// Midnight, change date
-		if (date.getHours() === 0 && date.getMinutes() === 0) {
-			clockDate(date, dateformat)
-		}
-
-		// Hour change
-		if (date.getMinutes() === 0) {
-			greetings(date, greeting)
-		}
-	}
-
-	if (lazyClockInterval) {
-		clearInterval(lazyClockInterval)
-	}
-
-	display()
-	clockInterval()
-	lazyClockInterval = setInterval(clockInterval, 1000)
-}
+//
+//	Update
+//
 
 async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, size }: ClockUpdate) {
 	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
@@ -191,10 +53,6 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 	if (!clock || data.dateformat === undefined || data.greeting === undefined) {
 		return
 	}
-
-	const isFace = (str = ''): str is Sync.Clock['face'] => ['none', 'number', 'roman', 'marks'].includes(str)
-	const isStyle = (str = ''): str is Sync.Clock['style'] => ['round', 'square', 'transparent'].includes(str)
-	const isDateFormat = (str = ''): str is Sync.Storage['dateformat'] => ['eu', 'us', 'cn', 'ja'].includes(str)
 
 	if (analog !== undefined) {
 		document.getElementById('analog_options')?.classList.toggle('shown', analog)
@@ -229,29 +87,210 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 
 	storage.sync.set({ clock })
 	startClock(clock, data.greeting, data.dateformat)
-	changeAnalogFace(clock.face)
-	changeAnalogStyle(clock.style)
-	changeClockSize(clock.size)
+	analogFace(clock.face)
+	analogStyle(clock.style)
+	clockSize(clock.size)
 }
 
-export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
-	if (event) {
-		clockUpdate(event)
+function analogFace(face = 'none') {
+	const spans = document.querySelectorAll<HTMLSpanElement>('#analog span')
+
+	spans.forEach((span, i) => {
+		if (face === 'none') span.textContent = ['', '', '', ''][i]
+		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i]
+		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
+		if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
+	})
+}
+
+function analogStyle(style?: string) {
+	document.getElementById('analog')?.setAttribute('class', style || '')
+}
+
+function clockSize(size = 1) {
+	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
+}
+
+//
+//	Clock
+//
+
+function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat) {
+	document.getElementById('time')?.classList.toggle('analog', clock.analog)
+	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
+
+	clearInterval(clockInterval)
+	start()
+
+	clockInterval = setInterval(start, 1000)
+
+	function start() {
+		const date = zonedDate(clock.timezone)
+		const isNextHour = date.getMinutes() === 0
+
+		if (clock.analog) {
+			analog(date, clock.seconds)
+		} else {
+			digital(date, clock.ampm)
+		}
+
+		if (isNextHour) {
+			clockDate(date, dateformat)
+			greetings(date, greeting)
+		}
+	}
+}
+
+function digital(date: Date, ampm: boolean) {
+	const domclock = document.getElementById('digital')
+	const hh = document.getElementById('digital-hh') as HTMLElement
+	const mm = document.getElementById('digital-mm') as HTMLElement
+	const ss = document.getElementById('digital-ss') as HTMLElement
+
+	const m = fixunits(date.getMinutes())
+	const s = fixunits(date.getSeconds())
+	let h = ampm ? date.getHours() % 12 : date.getHours()
+
+	if (ampm && h === 0) {
+		h = 12
+	}
+
+	domclock?.classList.toggle('zero', !ampm && h < 10)
+
+	hh.textContent = h.toString()
+	mm.textContent = m.toString()
+	ss.textContent = s.toString()
+}
+
+function analog(date: Date, seconds: boolean) {
+	const m = ((date.getMinutes() + date.getSeconds() / 60) * 6).toFixed(1)
+	const h = (((date.getHours() % 12) + date.getMinutes() / 60) * 30).toFixed(1)
+	const s = (date.getSeconds() * 6).toFixed(1)
+
+	document.getElementById('analog-hours')?.style.setProperty('--deg', `${h}deg`)
+	document.getElementById('analog-minutes')?.style.setProperty('--deg', `${m}deg`)
+
+	if (!seconds) {
 		return
 	}
 
-	let clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
+	document.getElementById('analog-seconds')?.style.setProperty('--deg', `${s}deg`)
+}
 
-	try {
-		startClock(clock, init?.greeting || '', init?.dateformat || 'eu')
-		clockDate(zonedDate(clock.timezone), init?.dateformat || 'eu')
-		greetings(zonedDate(clock.timezone), init?.greeting || '')
-		changeAnalogFace(clock.face)
-		changeAnalogStyle(clock.style)
-		changeClockSize(clock.size)
+//
+//	Date
+//
 
-		displayInterface('clock')
-	} catch (e) {
-		errorMessage(e)
+// prettier-ignore
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+function clockDate(date: Date, dateformat: DateFormat) {
+	const aaseparator = document.getElementById('date-aa-separator') as HTMLElement
+	const bbseparator = document.getElementById('date-bb-separator') as HTMLElement
+	const aa = document.getElementById('date-aa') as HTMLElement
+	const bb = document.getElementById('date-bb') as HTMLElement
+	const cc = document.getElementById('date-cc') as HTMLElement
+
+	const weekday = tradThis(days[date.getDay()])
+	const month = tradThis(months[date.getMonth()])
+	const day = date.getDate().toString()
+
+	aaseparator.textContent = ` `
+	bbseparator.textContent = ` `
+
+	if (dateformat === 'eu') {
+		aa.textContent = weekday
+		bb.textContent = day
+		cc.textContent = month
 	}
+
+	if (dateformat === 'us') {
+		aa.textContent = weekday
+		bb.textContent = month
+		cc.textContent = day
+		aaseparator.textContent = `, `
+	}
+
+	if (dateformat === 'cn') {
+		aa.textContent = month
+		bb.textContent = day
+		cc.textContent = weekday
+		aaseparator.textContent = `月 `
+		bbseparator.textContent = `日 `
+	}
+}
+
+//
+//	Greetings
+//
+
+function greetings(date: Date, name?: string) {
+	const hour = date.getHours()
+	let greet = 'Good evening'
+
+	if (hour < 3) {
+		greet = 'Good evening'
+	} else if (hour < 5) {
+		greet = ['Good night', 'Sweet dreams'][oneInFiveRandom]
+	} else if (hour < 12) {
+		greet = 'Good morning'
+	} else if (hour < 18) {
+		greet = 'Good afternoon'
+	}
+
+	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
+	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
+	const domname = document.getElementById('greeting-name') as HTMLSpanElement
+
+	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
+	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
+	domname.textContent = name ?? ''
+}
+
+//
+// Helpers
+//
+
+function zonedDate(timezone: string = 'auto') {
+	const date = new Date()
+
+	if (timezone === 'auto') {
+		return date
+	}
+
+	const offset = date.getTimezoneOffset() / 60 // hour
+	let utcHour = date.getHours() + offset
+	const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
+	let minutes
+
+	if (timezone.split('.')[1]) {
+		minutes = utcMinutes + parseInt(timezone.split('.')[1])
+
+		if (minutes > -30) {
+			utcHour++
+		}
+	} else {
+		minutes = date.getMinutes()
+	}
+
+	date.setHours(utcHour + parseInt(timezone), minutes)
+
+	return date
+}
+
+function fixunits(val: number) {
+	return (val < 10 ? '0' : '') + val.toString()
+}
+
+function isFace(str = ''): str is Sync.Clock['face'] {
+	return ['none', 'number', 'roman', 'marks'].includes(str)
+}
+
+function isStyle(str = ''): str is Sync.Clock['style'] {
+	return ['round', 'square', 'transparent'].includes(str)
+}
+
+function isDateFormat(str = ''): str is DateFormat {
+	return ['eu', 'us', 'cn'].includes(str)
 }
