@@ -1,9 +1,11 @@
 {
 	"lang": "en",
 	"New tab": "New tab",
+
 	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇",
 	"Review": "Review",
 	"Donate": "Donate",
+
 	"Monday": "Monday",
 	"Tuesday": "Tuesday",
 	"Wednesday": "Wednesday",
@@ -36,6 +38,7 @@
 	"tomorrow": "tomorrow",
 	"on Unsplash": "on Unsplash",
 	"Photo by ": "Photo by ",
+
 	"Editing": "Editing",
 	"No selection": "No selection",
 	"Grid position": "Grid position",
@@ -46,16 +49,18 @@
 	"Text alignment": "Text alignment",
 	"Reset layout": "Reset layout",
 	"Done": "Done",
-	"Cancel": "Cancel",
+
 	"Delete": "Delete",
 	"Title": "Title",
 	"Link": "Link",
 	"Icon": "Icon",
 	"Apply changes": "Apply changes",
+
 	"No bookmarks found": "No bookmarks found",
 	"Select bookmarks": "Select bookmarks",
 	"Import this bookmark": "Import this bookmark",
 	"Import these bookmarks": "Import these bookmarks",
+	"Cancel": "Cancel",
 
 	"General": "General",
 	"Show all settings": "Show all settings",
