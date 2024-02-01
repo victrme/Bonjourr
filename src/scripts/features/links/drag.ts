@@ -38,7 +38,7 @@ export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as Element[]
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
 	const lis = document.querySelectorAll<HTMLLIElement>('#linkblocks li.block')
-	const tabs = document.querySelectorAll<HTMLDivElement>('#link-title div')
+	const tabs = document.querySelectorAll<HTMLElement>('#tab-title button')
 	const listRect = domlinklist?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
@@ -213,8 +213,8 @@ function applyDragChangeParent(id: string) {
 		}
 
 		if (parentIsTab) {
-			const divs = [...document.querySelectorAll<HTMLElement>('#link-title > div')]
-			const selectedIndex = divs.findIndex((div) => div?.classList?.contains('selected'))
+			const buttons = [...document.querySelectorAll<HTMLElement>('#tab-title button')]
+			const selectedIndex = buttons.findIndex((btn) => btn?.classList?.contains('selected'))
 			const parentIsSelectedTab = parseInt(id) === selectedIndex
 
 			if (parentIsSelectedTab) {

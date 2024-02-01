@@ -56,6 +56,7 @@
 	}
 
 	button {
+		display: none;
 		width: 100%;
 		padding: 4px 12px;
 	}
@@ -71,42 +72,47 @@
 //  - In folder: select all
 //
 
-#editlink button {
-	display: none;
-}
-
 #editlink.select-all label,
 #editlink.select-all hr,
-#editlink.tabs label,
-#editlink.tabs hr {
+#editlink.add-link label:nth-child(3),
+#editlink.on-tabtitle label:nth-child(2),
+#editlink.on-tabtitle label:nth-child(3),
+#editlink.on-link-folder label:nth-child(2),
+#editlink.on-link-folder label:nth-child(3),
+#editlink.on-tabtitle.on-tab #eb_add-tab,
+#editlink.on-tabtitle.on-tab.on-tab-default #eb_delete-tab,
+#editlink.on-linklist:not(.on-link) #ei_icon,
+#editlink.select-all.in-folder #eb_add-folder,
+#editlink.on-link.on-linklist #eb_add-link,
+#editlink.on-link.select-all #eb_delete-link,
+#editlink.on-link.on-link-folder #eb_delete-link,
+#editlink.on-link.on-link-folder.select-all #eb_delete-folder {
 	display: none;
 }
 
-#editlink.folder label:nth-child(2),
-#editlink.folder label:nth-child(3),
-#editlink.add-link label:nth-child(3) {
-	display: none;
-}
-
-#editlink.update-link #e_submit,
-#editlink.update-link #e_delete {
+#editlink.on-linklist:not(.on-link) #eb_add-link {
 	display: initial;
 }
 
-#editlink.select-all #e_delete,
-#editlink.select-all:not(.in-folder) #e_folder-add {
+#editlink.on-link #eb_delete-link,
+#editlink.on-link #eb_submit-changes,
+#editlink.on-link.in-folder #eb_remove-folder,
+#editlink.on-link.on-link-folder #eb_delete-folder {
 	display: initial;
 }
 
-#editlink.in-folder:not(.add-link) #e_folder-remove {
+#editlink.select-all #eb_add-folder,
+#editlink.select-all #eb_delete-selected,
+#editlink.select-all.in-folder #eb_remove-folder {
 	display: initial;
 }
 
-#editlink.add-link #e_add-link {
+#editlink.in-folder:not(.add-link) #eb_remove {
 	display: initial;
 }
 
-#editlink.tabs #e_tab-add,
-#editlink.tabs.tab-item #e_tab-remove {
+#editlink.on-tab #eb_delete-tab,
+#editlink.on-tab #eb_submit-changes,
+#editlink.on-tabtitle #eb_add-tab {
 	display: initial;
 }

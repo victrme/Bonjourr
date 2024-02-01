@@ -4,58 +4,47 @@ import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-const b_addtab = document.getElementById('b_add-tab')
+const getTitleButtons = () => document.querySelectorAll<HTMLElement>('#tab-title button')
 
 export default function initTabs(data: Sync.Storage) {
-	const divs = document.querySelectorAll<HTMLElement>('#link-title div')
+	const defaultTabTitle = document.getElementById('default-tab-title') as HTMLElement
+	const buttons = [...getTitleButtons()]
 
-	b_addtab?.addEventListener('click', () => linksUpdate({ addTab: true }))
-	divs.forEach((node) => node.remove())
+	for (let ii = 1; ii < buttons.length; ii++) {
+		buttons[ii].remove()
+	}
 
-	data.linktabs.titles.forEach((title, i) => {
-		appendNewTab(title, i === (data.linktabs.selected ?? 0))
-	})
+	for (let ii = 1; ii < data.linktabs.titles.length; ii++) {
+		appendNewTab(data.linktabs.titles[ii], ii === (data.linktabs.selected ?? 0))
+	}
+
+	defaultTabTitle.textContent = data.linktabs.titles[0] || tradThis('Default page')
+	defaultTabTitle.classList.toggle('selected', data.linktabs.selected === 0)
+	defaultTabTitle?.addEventListener('click', changeTab)
 
 	domlinkblocks?.classList.toggle('with-tabs', data.linktabs.active)
+	defaultTabTitle.textContent = tradThis('Default page')
 }
 
 function appendNewTab(title: string, selected?: boolean): void {
-	const linktitle = document.getElementById('link-title')
-	const input = document.createElement('input')
-	const div = document.createElement('div')
+	const tabtitle = document.getElementById('tab-title')
+	const button = document.createElement('button')
+	const defaultTabName = `${tradThis('Page')} ${tabtitle?.childElementCount}`
 
-	input.ariaLabel = tradThis('Change link group title')
-	input.placeholder = tradThis('tab')
-	input.maxLength = 32
-	input.value = title
-	input.style.width = input.value.length + 'ch'
+	button.textContent = title || defaultTabName
+	button.classList.toggle('selected', selected)
+	button?.addEventListener('click', changeTab)
 
-	div.tabIndex = 0
-	div.classList.toggle('selected', selected)
-
-	input?.addEventListener('change', function () {
-		linksUpdate({ groupTitle: this.value })
-		this.blur()
-	})
-
-	div?.addEventListener('click', function () {
-		changeTab(div)
-	})
-
-	input.addEventListener('input', function () {
-		this.style.width = this.value.length + 'ch'
-	})
-
-	div.appendChild(input)
-	linktitle?.insertBefore(div, b_addtab)
+	tabtitle?.appendChild(button)
 }
 
-function changeTab(div: HTMLDivElement) {
-	if (!!domlinkblocks.dataset.folderid || div.classList.contains('selected')) {
+function changeTab(event: Event) {
+	const button = event.currentTarget as HTMLButtonElement
+	const tabTransition = transitioner()
+
+	if (!!domlinkblocks.dataset.folderid || button.classList.contains('selected')) {
 		return
 	}
-
-	const tabTransition = transitioner()
 
 	tabTransition.first(hideCurrentTab)
 	tabTransition.then(recreateLinksFromNewTab)
@@ -63,12 +52,12 @@ function changeTab(div: HTMLDivElement) {
 	tabTransition.transition(100)
 
 	async function recreateLinksFromNewTab() {
-		const divs = Object.values(document.querySelectorAll('#link-title div'))
+		const buttons = [...getTitleButtons()]
 		const data = await storage.sync.get()
 
-		divs?.forEach((div) => div.classList.remove('selected'))
-		div.classList.add('selected')
-		data.linktabs.selected = divs.indexOf(div)
+		buttons?.forEach((div) => div.classList.remove('selected'))
+		button.classList.add('selected')
+		data.linktabs.selected = buttons.indexOf(button)
 		storage.sync.set(data)
 		await initblocks(data)
 	}

@@ -22,16 +22,26 @@ type LinksUpdate = {
 	style?: string
 	row?: string
 	tab?: boolean
-	addTab?: boolean
-	removeTab?: number
+	addTab?: string
+	deleteTab?: number
 	moveLinks?: string[]
-	addLink?: boolean
+	addLink?: AddLink
 	addFolder?: string[]
-	groupTitle?: string
+	tabTitle?: TabTitle
 	addToFolder?: AddToFolder
 	moveToTab?: MoveToTarget
 	removeFromFolder?: string[]
 	deleteLinks?: string[]
+}
+
+type TabTitle = {
+	title: string
+	index: number
+}
+
+type AddLink = {
+	title: string
+	url: string
 }
 
 type AddToFolder = {
@@ -50,7 +60,7 @@ type Bookmarks = {
 	url: string
 }[]
 
-type SubmitLink = { type: 'link' }
+type SubmitLink = { type: 'link'; title: string; url: string }
 type SubmitLinkFolder = { type: 'folder'; ids: string[] }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
@@ -342,7 +352,7 @@ function removeSelectAll() {
 
 export async function linksUpdate(update: LinksUpdate) {
 	if (update.addLink) {
-		linkSubmission({ type: 'link' })
+		linkSubmission({ type: 'link', title: update.addLink.title, url: update.addLink.url })
 	}
 
 	if (update.addFolder) {
@@ -378,15 +388,15 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.addTab !== undefined) {
-		addTab()
+		addTab(update.addTab)
 	}
 
-	if (update.removeTab !== undefined) {
-		removeTab(update.removeTab)
+	if (update.deleteTab !== undefined) {
+		deleteTab(update.deleteTab)
 	}
 
-	if (update.groupTitle !== undefined) {
-		setGroupTitle(update.groupTitle)
+	if (update.tabTitle !== undefined) {
+		setTabTitle(update.tabTitle.title, update.tabTitle.index)
 	}
 
 	if (update.newtab !== undefined) {
@@ -412,7 +422,11 @@ async function linkSubmission(arg: LinkSubmission) {
 	}
 
 	if (arg.type === 'link') {
-		newlinks = addLink()
+		if (arg.url.length <= 3) {
+			return
+		}
+
+		newlinks.push(validateLink(arg.title, arg.url))
 	}
 
 	if (arg.type === 'folder') {
@@ -441,28 +455,8 @@ async function linkSubmission(arg: LinkSubmission) {
 	initblocks(data)
 }
 
-function addLink(): Links.Elem[] {
-	const addsFromInterface = document.getElementById('editlink')?.classList.contains('add-link')
-	const inputTitleId = addsFromInterface ? 'e_title' : 'i_addlink-title'
-	const inputUrlId = addsFromInterface ? 'e_url' : 'i_addlink-url'
-	const inputTitle = document.getElementById(inputTitleId) as HTMLInputElement
-	const inputUrl = document.getElementById(inputUrlId) as HTMLInputElement
-
-	const title = inputTitle.value
-	const url = inputUrl.value
-
-	inputTitle.value = ''
-	inputUrl.value = ''
-
-	if (url.length > 3) {
-		return [validateLink(title, url)]
-	} else {
-		return []
-	}
-}
-
 function addLinkFolder(ids: string[]): Links.Folder[] {
-	const titledom = document.getElementById('e_title') as HTMLInputElement
+	const titledom = document.getElementById('ei_title') as HTMLInputElement
 	const title = titledom.value
 
 	titledom.value = ''
@@ -590,27 +584,6 @@ async function moveToOtherTab({ ids, target }: MoveToTarget) {
 	initblocks(data)
 }
 
-async function setGroupTitle(title: string) {
-	const folderid = domlinkblocks.dataset.folderid
-
-	if (folderid) {
-		const data = await storage.sync.get()
-		const folder = data[folderid] as Link
-
-		if (folder.folder) {
-			folder.title = title
-			data[folderid] = folder
-			storage.sync.set(data)
-		}
-	}
-	//
-	else {
-		const data = await storage.sync.get()
-		data.linktabs.titles[data.linktabs.selected ?? 0] = title
-		storage.sync.set(data)
-	}
-}
-
 async function setTab(tab: boolean) {
 	const data = await storage.sync.get('linktabs')
 
@@ -620,14 +593,25 @@ async function setTab(tab: boolean) {
 	domlinkblocks?.classList.toggle('with-tabs', tab)
 }
 
-async function addTab() {
+async function setTabTitle(title: string, index: number) {
 	const data = await storage.sync.get('linktabs')
-	data.linktabs.titles.push('')
+	const tab = data.linktabs.titles[index]
+
+	if (tab) {
+		data.linktabs.titles[index] = title
+		storage.sync.set({ linktabs: data.linktabs })
+		initTabs(data)
+	}
+}
+
+async function addTab(title: string) {
+	const data = await storage.sync.get('linktabs')
+	data.linktabs.titles.push(title)
 	storage.sync.set({ linktabs: data.linktabs })
 	initTabs(data)
 }
 
-async function removeTab(index: number) {
+async function deleteTab(index: number) {
 	const data = await storage.sync.get()
 	const { titles, selected } = data.linktabs
 	const isRemovingFirst = index === 0 || titles.length === 1

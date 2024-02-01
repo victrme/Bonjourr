@@ -398,15 +398,10 @@ li.block.folder img {
 }
 
 #linkblocks.text {
-	--min-height: 3em;
+	--min-height: 1.5em;
 	--column-gap: 1.8em;
 
 	justify-content: flex-start;
-
-	#link-list {
-		column-gap: 1.8em;
-		min-height: 3em;
-	}
 
 	li {
 		width: auto;
@@ -571,113 +566,53 @@ li.block.folder img {
 //
 
 #link-title {
-	position: relative;
 	display: none;
-	align-items: center;
-	justify-content: center;
-	column-gap: 1em;
-	padding: 1em 4em;
 	margin: auto;
-	width: fit-content;
-	z-index: 1;
+	width: 100%;
+	box-sizing: border-box;
 
-	div {
-		cursor: pointer;
-		border-radius: 8px;
-		opacity: 0.7;
-
-		&.selected,
-		&:hover,
-		&:hover input {
-			opacity: 1;
-		}
-	}
-
-	div,
-	input {
-		border-radius: 8px;
-	}
-
-	input {
-		min-width: 8ch;
+	button {
 		max-width: 32ch;
-		padding: 0.1em 0.6em;
-		font-size: 1.3em;
+		padding: 0.3em 1em;
+		font-size: 1.2em;
+		opacity: 0.7;
 		color: white;
-		border: none;
 		text-align: center;
+		border-radius: 8px;
 		border: 1px solid transparent;
 		background-color: transparent;
+		cursor: pointer;
 
-		// cannot click on div below without this
-		position: relative;
-		z-index: -1;
+		&:hover {
+			opacity: 1;
+		}
 
-		&:focus-within {
+		&.selected {
+			opacity: 1;
+			cursor: initial;
+			border-color: #fff4;
 			background-color: #fff1;
-			backdrop-filter: blur(1em);
-			-webkit-backdrop-filter: blur(1em);
-		}
-
-		&::placeholder {
-			color: #fffa;
+			backdrop-filter: blur(2em);
+			-webkit-backdrop-filter: blur(2em);
 		}
 	}
 }
 
-#linkblocks.in-folder,
-#linkblocks.with-tabs {
-	#link-title {
-		display: flex;
-	}
+#tab-title,
+#folder-title {
+	display: none;
+	column-gap: 1em;
+	align-items: center;
+	justify-content: center;
+	padding: 1em 4em;
 }
 
-#linkblocks.in-folder #link-title div:first-child,
-#linkblocks #link-title div.selected {
-	// Highlights selected title in tabs and folder title
-	// Needs this because, folder selection is in #linkblocks
-	// and tabs selection is deep in div.selected
-
-	opacity: 1;
-
-	input {
-		border-color: #fff6;
-		z-index: auto;
-	}
+#linkblocks.with-tabs #link-title,
+#linkblocks.in-folder #link-title {
+	display: block;
 }
 
-//
-//	Add buttons
-//
-
-#linkblocks button {
-	position: absolute;
-	right: 0;
-	width: 2em;
-	height: 2em;
-	color: white;
-	font-size: 1.1em;
-	font-weight: bold;
-	border-radius: 4px;
-	border: 1px solid transparent;
-	background-color: #fff2;
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
-	transition: opacity 0.05s;
-
-	&:hover {
-		background-color: #fff3;
-	}
-
-	opacity: 0;
-	user-select: none;
-	pointer-events: none;
-	touch-action: none;
-}
-
-#link-title:hover button {
-	opacity: 1;
-	user-select: initial;
-	pointer-events: initial;
-	touch-action: initial;
+#linkblocks.with-tabs #tab-title,
+#linkblocks.in-folder #folder-title {
+	display: flex;
 }
