@@ -79,8 +79,6 @@ If you feel like we've earned it and you want to support independant open source
 
 <br>
 
-
-
 ## 🔧 Built with
 
 -   Styled with [Sass](https://sass-lang.com/guide)
@@ -120,6 +118,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
+-   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
 
 ## 👨‍💻 Running Bonjourr locally
 
