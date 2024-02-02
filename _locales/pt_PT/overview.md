@@ -16,7 +16,7 @@ Algumas características principais:
 🧑💻 CSS personalizado
 📝 Tipos de letra personalizados
 🔒 Foco na privacidade
-🌎 Multilinguagem
+🌎 Multilingue
 
 O Bonjourr tem o objetivo de parecer e ser minimalista, enquanto ainda traz muitas opções para personalizá-lo ao teu gosto. Define os teus próprios fundos (ou uma coleção do Unsplash!), ativa o belo relógio analógico, personaliza o teu tipo de letra e links rápidos... Podes consultar a nossa documentação onde compilámos alguns blocos de estilo para fazeres ainda mais.
 
@@ -56,5 +56,5 @@ Tens uma ideia específica em mente? O Bonjourr ajuda-te com a secção de estil
 📝 Tipos de letra personalizados
 Queres um tipos de letra específico na tua página inicial? Podes adicioná-lo facilmente graças à integração do Bonjourr com o Google Fonts.
 
-🌎 Multilinguagem
-Graças aos nossos incríveis colaboradores, o Bonjourr está disponível em 15 idiomas diferentes.
+🌎 Multilingue
+Graças aos nossos incríveis colaboradores, o Bonjourr está disponível em 25 idiomas diferentes.
