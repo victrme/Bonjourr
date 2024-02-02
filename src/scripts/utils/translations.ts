@@ -14,6 +14,7 @@ export async function setTranslationCache(lang: string, local?: Local.Storage, i
 	if (needsTranslations) {
 		trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
 		storage.local.set({ translations: trns })
+		// updateTranslationFile(trns)
 		return
 	}
 
@@ -68,4 +69,33 @@ export async function toggleTraduction(lang: string) {
 
 export function tradThis(str: string): string {
 	return trns ? trns[str] ?? str : str
+}
+
+//
+//	Dev only
+//
+
+async function updateTranslationFile(trns?: Local.Translations) {
+	if (!trns) return
+
+	const en = await (await fetch('../../_locales/en/translations.json')).json()
+	const orderedKeys = [...Object.keys(en)]
+	const filteredTrns: Local.Translations = {
+		lang: trns.lang,
+	}
+
+	// Filter to only keys in "english" translation file
+	for (const key of orderedKeys) {
+		filteredTrns[key] = key in trns ? trns[key] : en[key]
+	}
+
+	// Order translation file
+	const keylist = new Set<string>()
+	JSON.stringify(filteredTrns, (key, value) => (keylist.add(key), value))
+
+	const sortOrder = (a: string, b: string) => orderedKeys.indexOf(a) - orderedKeys.indexOf(b)
+	const result = JSON.stringify(filteredTrns, Array.from(keylist).sort(sortOrder), 2)
+
+	console.clear()
+	console.log(result)
 }

@@ -21,7 +21,10 @@
 	}
 
 	&.select-all {
-		li.block:not(.selected) {
+		li.block:not(.selected) div,
+		li.block:not(.selected) span {
+			// split div and span instead of just "li.block:not(.selected)"
+			// to keep folder blur with filter
 			filter: grayscale(1) brightness(0.6);
 		}
 
@@ -163,16 +166,14 @@ li.block {
 	&.selected div,
 	&:hover div {
 		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-		transform: scale(1.1);
 	}
 
-	&:active div {
-		transform: scale(1.05);
-		transition: border-color 0.1s, filter 0.1s, transform 0.1s;
+	&:hover:not(.selected) div {
+		transform: scale(0.95);
 	}
 
 	&.selected div {
-		outline: 2px solid var(--color-blue);
+		outline: 0.3em solid var(--color-blue);
 	}
 }
 
@@ -231,7 +232,7 @@ li.block.folder img {
 		padding: 5px;
 
 		img {
-			border-radius: 0.4em;
+			border-radius: 5px;
 			padding: 2px;
 			width: 100%;
 			height: auto;
