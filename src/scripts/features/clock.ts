@@ -213,7 +213,7 @@ function clockDate(date: Date, dateformat: DateFormat) {
 	}
 
 	if (dateformat === 'cn') {
-		aa.textContent = month
+		aa.textContent = month.replace('月', '')
 		bb.textContent = day
 		cc.textContent = weekday
 		aaseparator.textContent = `月 `
