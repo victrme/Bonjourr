@@ -25,6 +25,8 @@
 
 	label span {
 		font-size: 12px;
+		justify-self: start;
+		padding-left: 5px;
 	}
 
 	label:focus-within {
