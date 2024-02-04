@@ -749,7 +749,11 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_moreinfo" class="trn">Detailed weather</label>
+				<span>
+					<label for="i_moreinfo" class="trn">Detailed weather</label>
+					<button class="tooltip ttdetailledweather opt-hider" aria-label="What is detailed weather?">?</button>
+				</span>
+
 				<select id="i_moreinfo" class="opt-hider">
 					<option value="none" class="trn">None</option>
 					<option value="msnw">MSN Weather</option>
@@ -758,6 +762,10 @@
 					<option value="custom" class="trn">Custom provider</option>
 				</select>
 			</div>
+
+			<p class="tooltiptext ttdetailledweather">
+				<span class="trn">Click on the weather widget to get detailed weather reports.</span>
+			</p>
 
 			<div id="weather_provider" class="dropdown">
 				<hr />
