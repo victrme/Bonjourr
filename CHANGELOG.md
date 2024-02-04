@@ -1,3 +1,31 @@
+## 19.0.0
+
+-   Quick links:
+    -   #130 Folders !
+    -   Create pages to organize even more your links
+    -   Select multiple by long pressing on links
+    -   Automatically add bookmarked pages to Bonjourr
+    -   New “inline” style like the bookmark bar
+-   Privacy:
+    -   Custom font now use Fontsource instead of Google services
+    -   Icons are now served by Bonjourr’s API instead of pinging every websites
+-   Changes:
+    -   #270 Added Chinese date format
+    -   Simpler way to add custom quotes
+    -   #248 “Show more” button for local backgrounds on mobile
+    -   Added announcement popup for major or notable updates
+-   Improvements & Fixes:
+    -   Disables heavy styling on Chromium for no-GPU computers
+    -   Font autocomplete only shows fonts available for your language
+    -   Pasting full Unsplash collection URL automatically extracts ID
+    -   Slimmer CSS classes for easier custom styling
+    -   Improved accessibility when editing links
+    -   Fixed visibility issues with Chromium auto dark mode
+-   Translations:
+    -   Greek updated by @trlef19
+    -   Added Portuguese, thanks @harkadya & @TSCondeco !
+    -   Added Japanese, thanks @Kou365 & IshiharaErika !
+
 ## 1.18.4
 
 -   #255 Fixed occasional slow startups on Firefox
