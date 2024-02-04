@@ -204,7 +204,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 		return
 	}
 	//
-	else if (!id && domeditlink.classList.contains('add-link')) {
+	else if (!id && domeditlink.classList.contains('on-linklist')) {
 		addLinkFromEditDialog()
 		closeEditDialog()
 		return

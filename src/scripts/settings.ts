@@ -259,9 +259,19 @@ function initOptionsEvents() {
 		paramId('addlink-inputs').classList.toggle('valid', paramId('addlink-inputs')?.checkValidity())
 	})
 
-	paramId('addlink-inputs').addEventListener('submit', function (this, event) {
+	paramId('addlink-inputs').addEventListener('submit', function (this, event: SubmitEvent) {
+		const formData = new FormData(this as unknown as HTMLFormElement)
+
+		quickLinks(undefined, {
+			addLink: {
+				title: formData.get('addlink-title') + '',
+				url: formData.get('addlink-url') + '',
+			},
+		})
+
+		paramId('i_addlink-url').value = ''
+		paramId('i_addlink-title').value = ''
 		paramId('addlink-inputs').classList.remove('valid')
-		quickLinks(undefined, { addLink: true })
 		event.preventDefault()
 	})
 
