@@ -853,6 +853,8 @@ function translatePlaceholders() {
 		['i_sbplaceholder', 'Search'],
 		['cssEditor', 'Type in your custom CSS'],
 		['i_importtext', 'or paste as text'],
+		['i_addlink-title', 'Title'],
+		['i_addlink-url', 'example.com'],
 	]
 
 	for (const [id, text] of cases) {
