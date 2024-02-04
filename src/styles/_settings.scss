@@ -104,7 +104,7 @@
 		border: none;
 		border-radius: 1em;
 		background-color: rgba(var(--blue), 0.15);
-		transition: background-color 0.05s, color 0.05s;
+		transition: background-color 0.1s, color 0.1s;
 
 		&:hover {
 			background-color: rgba(var(--blue), 0.25);
@@ -1162,8 +1162,10 @@
 
 #settings-footer-links a {
 	margin: 0 6px;
+	transition: opacity ease-in .1s;
 }
 
 #settings-footer-links a:hover {
 	text-decoration: none;
+	opacity: .8;
 }
