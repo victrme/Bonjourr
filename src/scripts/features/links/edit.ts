@@ -3,6 +3,7 @@ import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import onSettingsLoad from '../../utils/onsettingsload'
+import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
@@ -35,6 +36,7 @@ export default async function openEditDialog(event: Event) {
 
 	const isSelectAll = domlinkblocks.classList.contains('select-all')
 	const isInFolder = domlinkblocks.classList.contains('in-folder')
+	const isSelectingFolder = !!document.querySelector('.block.selected.folder')
 	const path = event.composedPath() as Element[]
 	const isTab = path.some((el) => el?.id === 'link-title')
 	const isTabItem = path[0]?.tagName === 'BUTTON' && path[1]?.id === 'tab-title'
@@ -48,6 +50,7 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	domeditlink?.classList.toggle('select-all', isSelectAll)
+	domeditlink?.classList.toggle('select-folder', isSelectingFolder)
 	domeditlink?.classList.toggle('in-folder', isInFolder)
 	domeditlink?.classList.toggle('on-linklist', isOnLinklist)
 	domeditlink?.classList.toggle('on-link', isOnLink)
@@ -65,9 +68,10 @@ export default async function openEditDialog(event: Event) {
 		const button = path[0]
 		const buttons = [...document.querySelectorAll<HTMLDivElement>('#tab-title button')]
 		const index = buttons.findIndex((node) => node === button)
+		const title = data.linktabs.titles[index] || isTabDefault ? tradThis('Default page') : ''
 
 		domeditlink.dataset.tabIndex = index.toString()
-		domtitle.value = data.linktabs.titles[index] ?? ''
+		domtitle.value = title
 	}
 
 	if (isOnLink) {
@@ -76,13 +80,16 @@ export default async function openEditDialog(event: Event) {
 		const id = li?.id
 		const link = getLink(data, id)
 
-		li?.classList.add('selected')
-
 		domtitle.value = link?.title ?? ''
 
 		if (!link?.folder) {
 			domurl.value = link?.url ?? ''
 			domicon.value = link?.icon ?? ''
+		}
+
+		if (isSelectAll === false) {
+			document.querySelector('.block.selected')?.classList.remove('selected')
+			li?.classList.add('selected')
 		}
 	}
 

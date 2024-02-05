@@ -139,6 +139,7 @@
 
 	select,
 	input,
+	button,
 	textarea {
 		font-size: 13px;
 		border-radius: 8px;
@@ -1162,10 +1163,10 @@
 
 #settings-footer-links a {
 	margin: 0 6px;
-	transition: opacity ease-in .1s;
+	transition: opacity ease-in 0.1s;
 }
 
 #settings-footer-links a:hover {
 	text-decoration: none;
-	opacity: .8;
+	opacity: 0.8;
 }
