@@ -1,6 +1,7 @@
 import storage from '../storage'
 
 let trns: Local.Translations | undefined
+let currentTrnsLang = 'en'
 
 export async function setTranslationCache(lang: string, local?: Local.Storage, isUpdate?: boolean) {
 	if (lang === 'en') {
@@ -9,16 +10,18 @@ export async function setTranslationCache(lang: string, local?: Local.Storage, i
 		return
 	}
 
-	const needsTranslations = isUpdate || local?.translations?.lang !== lang || !local?.translations
+	const cachedLang = local?.translations?.lang
+	const useCache = !isUpdate && local && cachedLang === lang
 
-	if (needsTranslations) {
+	if (useCache) {
+		trns = local.translations
+	} else {
 		trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
 		storage.local.set({ translations: trns })
-		// updateTranslationFile(trns)
-		return
 	}
 
-	trns = local.translations
+	// updateTranslationFile(trns)
+	currentTrnsLang = lang
 }
 
 export function traduction(settingsDom: Element | null, lang = 'en') {
@@ -38,6 +41,7 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 	}
 
 	document.documentElement.setAttribute('lang', lang)
+	currentTrnsLang = lang
 }
 
 export async function toggleTraduction(lang: string) {
@@ -65,6 +69,12 @@ export async function toggleTraduction(lang: string) {
 		text = tag.textContent ?? ''
 		tag.textContent = toggleDict[text] ?? text
 	}
+
+	currentTrnsLang = lang
+}
+
+export function getLang(): string {
+	return currentTrnsLang
 }
 
 export function tradThis(str: string): string {

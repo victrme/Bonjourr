@@ -1,9 +1,9 @@
+import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { SYSTEM_OS } from '../defaults'
 import errorMessage from '../utils/errormessage'
-import { tradThis } from '../utils/translations'
 import { apiFetch } from '../utils'
 import { subsets } from '../langs'
 import superinput from '../utils/superinput'
@@ -324,7 +324,7 @@ async function waitForFontLoad(family: string): Promise<Boolean> {
 }
 
 function getRequiredSubset(): string {
-	const lang = document.documentElement.getAttribute('lang') ?? 'en'
+	const lang = getLang()
 	let subset = 'latin'
 
 	if (lang in subsets) {

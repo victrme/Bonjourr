@@ -128,6 +128,16 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 		data.linktabs = { ...SYNC_DEFAULT.linktabs }
 	}
 
+	if (data?.css) {
+		data.css = data.css
+			.replaceAll('#clock', '#digital')
+			.replaceAll('#analogClock', '#analog')
+			.replaceAll('#center', '#analog-center')
+			.replaceAll('#hours', '#analog-hours')
+			.replaceAll('#minutes', '#analog-minutes')
+			.replaceAll('#analogSeconds', '#analog-seconds')
+	}
+
 	storage.sync.remove('reviewPopup')
 	storage.sync.remove('usdate')
 	delete data.reviewPopup

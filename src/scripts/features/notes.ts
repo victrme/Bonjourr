@@ -1,9 +1,9 @@
-import onSettingsLoad from '../utils/onsettingsload'
+import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
-import { tradThis } from '../utils/translations'
+import onSettingsLoad from '../utils/onsettingsload'
 import pocketEditor from 'pocket-editor'
-import storage from '../storage'
 import langList from '../langs'
+import storage from '../storage'
 
 type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
 
@@ -11,7 +11,7 @@ const container = document.getElementById('notes_container')
 let editor: any
 
 function translateNotesText() {
-	let lang = document.documentElement.getAttribute('lang')
+	let lang = getLang()
 
 	if (!(lang && lang in langList)) lang = 'en'
 

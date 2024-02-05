@@ -1,6 +1,6 @@
 import { stringMaxSize, apiFetch, minutator } from '../utils'
+import { tradThis, getLang } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
-import { tradThis } from '../utils/translations'
 import superinput from '../utils/superinput'
 import suntime from '../utils/suntime'
 import storage from '../storage'
@@ -238,7 +238,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 
 	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
 	let coords = await getGeolocation(data.geolocation)
-	let lang = document.documentElement.getAttribute('lang')
+	let lang = getLang()
 	let queries = ''
 
 	// Openweathermap country code for traditional chinese is tw, greek is el
@@ -371,9 +371,11 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 }
 
 function displayWeather(data: Weather, lastWeather: LastWeather) {
+	const chinese = getLang().toLocaleLowerCase().includes('cn') || getLang() === 'jp'
 	const current = document.getElementById('current')
 	const tempContainer = document.getElementById('tempContainer')
 	const weatherdom = document.getElementById('weather')
+	const dot = chinese ? '。' : '. '
 	const date = new Date()
 
 	const handleDescription = () => {
@@ -395,7 +397,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const iconText = tempContainer?.querySelector('p')
 
 		if (current && iconText) {
-			current.textContent = `${desc[0].toUpperCase() + desc.slice(1)}. ${tempText}`
+			current.textContent = desc[0].toUpperCase() + desc.slice(1) + dot + tempText
 			iconText.textContent = actual + '°'
 		}
 	}
@@ -443,7 +445,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const forecastdom = document.getElementById('forecast')
 
 		if (forecastdom) {
-			forecastdom.textContent = `${tradThis('with a high of')} ${lastWeather.forecasted_high}°${day}.`
+			forecastdom.textContent = `${tradThis('with a high of')} ${lastWeather.forecasted_high}°${day}${dot}`
 		}
 	}
 
