@@ -145,7 +145,8 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// No bookmarks import on safari || online
 	if (BROWSER === 'safari' || PLATFORM === 'online') {
-		paramId('b_importbookmarks').setAttribute('style', 'display: none')
+		paramId('importbookmarks')?.setAttribute('style', 'display: none')
+		paramId('syncbookmarks')?.setAttribute('style', 'display: none')
 	}
 
 	// Favicon doesn't work on Safari
@@ -819,6 +820,7 @@ function toggleSettingsMenu() {
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
+	domsettings?.style.removeProperty('--translate-y')
 	document.dispatchEvent(new Event('close-edit'))
 }
 
@@ -873,9 +875,14 @@ async function switchLangs(nextLang: Langs) {
 	const data = await storage.sync.get()
 	const local = await storage.local.get(['quotesCache', 'userQuoteSelection', 'lastWeather'])
 
+	if (local?.lastWeather) {
+		local.lastWeather.timestamp = 0
+		local.lastWeather.forecasted_timestamp = 0
+	}
+
 	data.lang = nextLang
 	clock(data)
-	weather({ sync: data })
+	weather({ sync: data, lastWeather: local.lastWeather })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes)
@@ -1025,8 +1032,21 @@ function settingsDrawerBar() {
 
 function drawerDragEvents() {
 	const settingsDom = document.getElementById('settings') as HTMLElement
+	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
+
+	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
+	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
+	dragzone?.addEventListener('mousedown', dragStart)
+	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
+	dragzone?.addEventListener('mouseup', dragEnd)
+
+	document.body?.addEventListener('mouseleave', (e) => {
+		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
+			dragEnd(e)
+		}
+	})
 
 	function dragStart(e: Event) {
 		e.preventDefault()
@@ -1061,7 +1081,8 @@ function drawerDragEvents() {
 
 		// element is below max height: move
 		if (clientY > 60) {
-			settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
+			settingsVh = +(100 - (clientY / window.innerHeight) * 100).toFixed(2)
+			settingsDom.style.transform = `translateY(-${settingsVh}vh)`
 			settingsDom.style.transition = `transform .0s`
 		}
 	}
@@ -1080,31 +1101,18 @@ function drawerDragEvents() {
 		// reset mouse / touch pos
 		startTouchY = 0
 
+		const footer = document.getElementById('settings-footer') as HTMLDivElement
+		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'vh'
+
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
 		settingsDom.style.removeProperty('overflow')
-
-		// Add bottom padding to see bottom of settings
-		const footer = document.getElementById('settings-footer') as HTMLDivElement
-		footer.style.paddingBottom = clientY + 60 + 'px'
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {
 			toggleSettingsMenu()
 		}
 	}
-
-	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
-	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
-	dragzone?.addEventListener('mousedown', dragStart)
-	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
-	dragzone?.addEventListener('mouseup', dragEnd)
-
-	document.body?.addEventListener('mouseleave', (e) => {
-		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
-			dragEnd(e)
-		}
-	})
 }
 
 //

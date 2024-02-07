@@ -1137,12 +1137,12 @@
 #settings-footer {
 	color: var(--color-light-text);
 	font-size: 14px;
-	padding: 4em 3em;
-	padding-bottom: 100px;
+	padding: 4em 3em 0 4em;
+	margin-bottom: 100px;
 
 	// Safari iOS only
 	@supports (-webkit-touch-callout: none) {
-		padding-bottom: 150px;
+		margin-bottom: 150px;
 	}
 
 	> div:first-child {

@@ -42,7 +42,7 @@
 		min-height: 100dvh;
 
 		&.pushed {
-			transform: translateX(0);
+			transform: none;
 		}
 	}
 
@@ -63,8 +63,12 @@
 		-webkit-overflow-scrolling: touch;
 
 		&.shown {
-			transform: translateX(0) translateY(-75%);
+			transform: translateX(0) translateY(-75vh);
 		}
+	}
+
+	#settings-footer {
+		padding-bottom: 25vh;
 	}
 
 	// Tooltip (?) centered when span wrap

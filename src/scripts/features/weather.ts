@@ -111,15 +111,25 @@ async function updatesWeather(update: WeatherUpdate) {
 
 		// don't mutate weather data before confirming that the city exists
 		const newWeather = await request({ ...weather, ccode: i_ccode.value, city: update.city }, lastWeather)
+		const newCity = newWeather?.approximation?.city
+		const foundCityIsDifferent = newCity !== '' && newCity !== update.city
+
+		if (!newWeather) {
+			cityInput.warn('Cannot reach weather service')
+			return
+		}
+
+		if (foundCityIsDifferent) {
+			cityInput.warn('Cannot find correct city')
+			return
+		}
 
 		if (newWeather) {
 			lastWeather = newWeather
-			weather.ccode = lastWeather.approximation?.ccode ?? ''
-			weather.city = lastWeather.approximation?.city ?? ''
+			weather.ccode = (lastWeather.approximation?.ccode || i_ccode.value) ?? 'FR'
+			weather.city = (lastWeather.approximation?.city || update.city) ?? 'Paris'
 			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
 			cityInput.toggle(false)
-		} else {
-			cityInput.warn('Cannot find city')
 		}
 	}
 

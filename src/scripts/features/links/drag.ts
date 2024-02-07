@@ -116,12 +116,17 @@ function beforeStartDrag(event: PointerEvent) {
 	li?.addEventListener('pointerup', pointerDeadzone)
 
 	function pointerDeadzone(event: PointerEvent) {
-		const precision = event.pointerType === 'touch' ? 4 : 10
+		const precision = event.pointerType === 'touch' ? 7 : 14
 		const ox = Math.abs(cox - event.offsetX)
 		const oy = Math.abs(coy - event.offsetY)
 
 		const isEndEvents = event.type.match(/pointerup|touchend/)
+		const isHalfOutside = ox > precision / 2 || oy > precision / 2
 		const isOutside = ox > precision || oy > precision
+
+		if (isHalfOutside) {
+			document.dispatchEvent(new Event('stop-select-all'))
+		}
 
 		if (isOutside) {
 			startDrag(event)
