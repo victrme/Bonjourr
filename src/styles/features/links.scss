@@ -163,17 +163,22 @@ li.block {
 		overflow: hidden;
 	}
 
-	&.selected div,
-	&:hover div {
+	&.selected div {
 		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-	}
-
-	&:hover:not(.selected) div {
-		transform: scale(0.95);
 	}
 
 	&.selected div {
 		outline: 0.3em solid var(--color-blue);
+	}
+}
+
+@media only screen and (hover: hover) {
+	li.block:hover div {
+		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+	}
+
+	li.block:hover:not(.selected) div {
+		transform: scale(0.95);
 	}
 }
 
