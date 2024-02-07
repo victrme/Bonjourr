@@ -1,3 +1,4 @@
+import { Langs } from '../../types/langs'
 import storage from '../storage'
 
 let trns: Local.Translations | undefined
@@ -85,18 +86,46 @@ export function tradThis(str: string): string {
 //	Dev only
 //
 
+// To add new translated keys:
+//
+// 0. Add correct "en": "en" keys to /_locales/en/translations.json
+// 1. Translate using your prefered tool
+// 1. Add translations to "newkeys" in this format: {fr: {a: x, b: y, c: z}, pt_BR: {...}, ...}
+// 2. uncomment the updateTranslationFile function above
+// 3. Open console and change language
+// 4. Replace .json file with console output
+
+const newkeys: NewKeys = <const>{
+	// ...
+}
+
+//
+//
+//
+
+type NewKeys = {
+	[key in Langs]?: {
+		[key: string]: string
+	}
+}
+
 async function updateTranslationFile(trns?: Local.Translations) {
 	if (!trns) return
 
 	const en = await (await fetch('../../_locales/en/translations.json')).json()
 	const orderedKeys = [...Object.keys(en)]
-	const filteredTrns: Local.Translations = {
+	let filteredTrns: Local.Translations = {
 		lang: trns.lang,
 	}
 
 	// Filter to only keys in "english" translation file
 	for (const key of orderedKeys) {
 		filteredTrns[key] = key in trns ? trns[key] : en[key]
+	}
+
+	// Add new keys if they exist
+	if (newkeys) {
+		filteredTrns = addNewKeys(filteredTrns, newkeys[trns.lang as Langs])
 	}
 
 	// Order translation file
@@ -108,4 +137,16 @@ async function updateTranslationFile(trns?: Local.Translations) {
 
 	console.clear()
 	console.log(result)
+}
+
+function addNewKeys(old: Local.Translations, trns: NewKeys[Langs]): Local.Translations {
+	for (const key of Object.keys(old)) {
+		console.log(key)
+
+		if (key === old[key] && trns && trns[key]) {
+			old[key] = trns[key]
+		}
+	}
+
+	return old
 }

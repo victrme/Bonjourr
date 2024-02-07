@@ -74,7 +74,7 @@
 
 	"General": "General",
 	"Show all settings": "Show all settings",
-	"Enabled": "Enabled",
+	"Enable": "Enable",
 	"Disabled": "Disabled",
 	"Language": "Language",
 	"Dark mode": "Dark mode",
@@ -231,9 +231,9 @@
 	"Type in your custom CSS": "Type in your custom CSS",
 
 	"Updates": "Updates",
-	"Announcement popup": "Announcement popup",
-	"On major updates": "On major updates",
-	"When available": "When available",
+	"Announcements": "Announcements",
+	"Major changes": "Major changes",
+	"All": "All",
 
 	"Settings management": "Settings management",
 	"Transfer your settings between multiple instances of Bonjourr.": "Transfer your settings between multiple instances of Bonjourr.",
