@@ -61,7 +61,7 @@ type Bookmarks = {
 }[]
 
 type SubmitLink = { type: 'link'; title: string; url: string }
-type SubmitLinkFolder = { type: 'folder'; ids: string[] }
+type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 
@@ -422,7 +422,7 @@ async function linkSubmission(arg: LinkSubmission) {
 	}
 
 	if (arg.type === 'folder') {
-		newlinks = addLinkFolder(arg.ids)
+		newlinks = addLinkFolder(arg.ids, arg.title)
 
 		for (const id of arg.ids) {
 			const elem = data[id] as Link
@@ -447,10 +447,10 @@ async function linkSubmission(arg: LinkSubmission) {
 	initblocks(data)
 }
 
-function addLinkFolder(ids: string[]): Links.Folder[] {
+function addLinkFolder(ids: string[], title?: string): Links.Folder[] {
 	const titledom = document.getElementById('ei_title') as HTMLInputElement
-	const title = titledom.value
 
+	title = title ?? titledom.value
 	titledom.value = ''
 
 	const blocks = [...document.querySelectorAll<HTMLElement>('li.block')]
@@ -481,6 +481,7 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 	let data = await storage.sync.get()
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
+	const title = linktarget.title
 	const ids: string[] = []
 
 	if (!linktarget || !linksource) {
@@ -509,7 +510,7 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		}
 	})
 
-	linkSubmission({ ids, type: 'folder' })
+	linkSubmission({ ids, type: 'folder', title })
 	animateLinksRemove(ids)
 }
 
@@ -588,8 +589,6 @@ async function setTab(tab: boolean) {
 async function setTabTitle(title: string, index: number) {
 	const data = await storage.sync.get('linktabs')
 	const hasTab = data.linktabs.titles.length >= index
-
-	console.log('hasTab', hasTab)
 
 	if (hasTab) {
 		data.linktabs.titles[index] = title

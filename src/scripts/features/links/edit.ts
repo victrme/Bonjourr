@@ -163,6 +163,7 @@ async function submitChanges(event: SubmitEvent) {
 		}
 
 		case 'eb_delete-selected':
+		case 'eb_delete-folder':
 		case 'eb_delete-link':
 			deleteSelection()
 			break
