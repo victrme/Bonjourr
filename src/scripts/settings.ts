@@ -105,7 +105,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
 	setCheckbox('i_main', data.main)
-	setCheckbox('i_greethide', data.hide?.greetings === true)
+	setCheckbox('i_greethide', !data.hide?.greetings)
 	setCheckbox('i_notes', data.notes?.on ?? false)
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)

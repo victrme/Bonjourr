@@ -613,10 +613,11 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 
 			interfaceTransition.first(() => {
 				interfaceFadeOut()
-				document.dispatchEvent(new CustomEvent('widgets-toggle', { detail: list }))
 			})
 
 			interfaceTransition.then(async () => {
+				toggleWidgetInSettings(list)
+				toggleWidgetOnInterface(list)
 				setAllAligns(layout.items)
 				setGridAreas(layout.grid)
 				buttonControl.layout(move.selection)
