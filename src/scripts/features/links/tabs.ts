@@ -23,7 +23,6 @@ export default function initTabs(data: Sync.Storage) {
 	defaultTabTitle?.addEventListener('click', changeTab)
 
 	domlinkblocks?.classList.toggle('with-tabs', data.linktabs.active)
-	defaultTabTitle.textContent = tradThis('Default page')
 }
 
 function appendNewTab(title: string, selected?: boolean): void {

@@ -152,7 +152,12 @@ function webext(): Storage {
 
 		get: async (key?: string | string[]): Promise<Sync.Storage> => {
 			const data = await chrome.storage.sync.get(key ?? null)
-			return verifyDataAsSync(data)
+
+			if (!key) {
+				return verifyDataAsSync(data)
+			} else {
+				return data as Sync.Storage
+			}
 		},
 
 		remove: (key: string) => {

@@ -251,6 +251,12 @@ async function openFolder(event: Event) {
 	const data = await storage.sync.get()
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
+	const folderTitle = folder.title || tradThis('Folder')
+	const folderTitleBtn = document.querySelector<HTMLButtonElement>('#folder-title button')
+
+	if (folderTitleBtn) {
+		folderTitleBtn.textContent = folderTitle
+	}
 
 	folderOpenTransition.first(hide)
 	folderOpenTransition.then(changeToFolder)
@@ -264,7 +270,7 @@ async function openFolder(event: Event) {
 	}
 
 	async function changeToFolder() {
-		toggleTabsTitleType(folder.title)
+		domlinkblocks.classList.toggle('with-tabs', true)
 		await initblocks(data)
 	}
 
@@ -292,27 +298,13 @@ async function closeFolder() {
 	}
 
 	async function changeToTab() {
-		toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.active)
+		domlinkblocks.classList.toggle('with-tabs', data.linktabs.active)
 		await initblocks(data)
 	}
 
 	function show() {
 		domlinkblocks.classList.remove('in-folder')
 		domlinkblocks.classList.remove('hiding')
-	}
-}
-
-function toggleTabsTitleType(title: string, linktabs?: boolean): void {
-	const folderid = domlinkblocks.dataset.folderid
-	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
-	const showTitles = folderid ? true : linktabs
-
-	domlinkblocks?.classList.toggle('with-tabs', showTitles)
-
-	if (firstinput) {
-		firstinput.value = title
-		firstinput.style.width = title.length + 'ch'
-		firstinput.placeholder = !!folderid ? tradThis('folder') : tradThis('tab')
 	}
 }
 
@@ -595,9 +587,11 @@ async function setTab(tab: boolean) {
 
 async function setTabTitle(title: string, index: number) {
 	const data = await storage.sync.get('linktabs')
-	const tab = data.linktabs.titles[index]
+	const hasTab = data.linktabs.titles.length >= index
 
-	if (tab) {
+	console.log('hasTab', hasTab)
+
+	if (hasTab) {
 		data.linktabs.titles[index] = title
 		storage.sync.set({ linktabs: data.linktabs })
 		initTabs(data)

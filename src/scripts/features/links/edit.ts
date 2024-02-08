@@ -68,7 +68,11 @@ export default async function openEditDialog(event: Event) {
 		const button = path[0]
 		const buttons = [...document.querySelectorAll<HTMLDivElement>('#tab-title button')]
 		const index = buttons.findIndex((node) => node === button)
-		const title = data.linktabs.titles[index] || isTabDefault ? tradThis('Default page') : ''
+		let title = data.linktabs.titles[index] ?? ''
+
+		if (isTabDefault) {
+			title = data.linktabs.titles[index] || tradThis('Default page')
+		}
 
 		domeditlink.dataset.tabIndex = index.toString()
 		domtitle.value = title
