@@ -1,6 +1,6 @@
+import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { SYNC_DEFAULT } from '../defaults'
-import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
@@ -186,18 +186,18 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 function clockDate(date: Date, dateformat: DateFormat) {
-	const aaseparator = document.getElementById('date-aa-separator') as HTMLElement
-	const bbseparator = document.getElementById('date-bb-separator') as HTMLElement
+	const datedom = document.getElementById('date') as HTMLElement
 	const aa = document.getElementById('date-aa') as HTMLElement
 	const bb = document.getElementById('date-bb') as HTMLElement
 	const cc = document.getElementById('date-cc') as HTMLElement
 
+	const lang = getLang()
+	const useSinograms = lang.includes('zh') || lang.includes('jp')
+	const day = date.getDate().toString() + (useSinograms ? '日' : '')
 	const weekday = tradThis(days[date.getDay()])
 	const month = tradThis(months[date.getMonth()])
-	const day = date.getDate().toString()
 
-	aaseparator.textContent = ` `
-	bbseparator.textContent = ` `
+	datedom.className = dateformat
 
 	if (dateformat === 'eu') {
 		aa.textContent = weekday
@@ -209,15 +209,12 @@ function clockDate(date: Date, dateformat: DateFormat) {
 		aa.textContent = weekday
 		bb.textContent = month
 		cc.textContent = day
-		aaseparator.textContent = `, `
 	}
 
 	if (dateformat === 'cn') {
-		aa.textContent = month.replace('月', '')
+		aa.textContent = month
 		bb.textContent = day
 		cc.textContent = weekday
-		aaseparator.textContent = `月 `
-		bbseparator.textContent = `日 `
 	}
 }
 

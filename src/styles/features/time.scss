@@ -180,3 +180,12 @@
 #time-container.he_hidden ~ #date {
 	margin-top: 0;
 }
+
+#date-aa-separator::after,
+#date-bb-separator::after {
+	content: ' ';
+}
+
+#date.us #date-aa-separator::after {
+	content: ', ';
+}

@@ -381,11 +381,11 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 }
 
 function displayWeather(data: Weather, lastWeather: LastWeather) {
-	const chinese = getLang().toLocaleLowerCase().includes('cn') || getLang() === 'jp'
+	const useSinograms = getLang().includes('zh') || getLang().includes('jp')
 	const current = document.getElementById('current')
 	const tempContainer = document.getElementById('tempContainer')
 	const weatherdom = document.getElementById('weather')
-	const dot = chinese ? '。' : '. '
+	const dot = useSinograms ? '。' : '. '
 	const date = new Date()
 
 	const handleDescription = () => {
