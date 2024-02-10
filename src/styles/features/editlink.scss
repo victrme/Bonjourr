@@ -19,7 +19,7 @@
 		column-gap: 6px;
 		margin-bottom: 6px;
 		place-items: center;
-		grid-template-columns: 40px 1fr;
+		grid-template-columns: 50px 1fr;
 		opacity: 0.7;
 	}
 
@@ -27,6 +27,11 @@
 		font-size: 12px;
 		justify-self: start;
 		padding-left: 5px;
+		max-width: 45px;
+		overflow: hidden;
+		display: inline-block;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	label:focus-within {

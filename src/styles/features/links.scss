@@ -21,40 +21,21 @@
 	}
 
 	&.select-all {
-		li.block:not(.selected) div,
-		li.block:not(.selected) span {
-			// split div and span instead of just "li.block:not(.selected)"
+		li div,
+		li span {
+			// split div and span instead of just "li.block"
 			// to keep folder blur with filter
 			filter: grayscale(1) brightness(0.6);
 		}
 
-		&.large,
-		&.medium,
-		&.small {
-			li.block:active div,
-			li.block:hover div,
-			li.block:not(.folder):active img,
-			li.block:not(.folder):hover img {
-				transform: none;
-			}
-
-			li.block.selected div {
-				outline: 4px solid var(--color-blue);
-			}
+		li.selected div,
+		li.selected span {
+			filter: none;
 		}
 
-		&.inline,
-		&.text {
-			.selected.folder span,
-			.selected a {
-				border-radius: 0.5em;
-				outline: 3px solid var(--color-blue);
-				background-color: rgba(0, 114, 238, 0.1333333333);
-			}
-
-			&:hover span {
-				text-decoration: none;
-			}
+		&.inline li:hover span,
+		&.text li:hover span {
+			text-decoration: none;
 		}
 	}
 
@@ -112,24 +93,6 @@ li.block {
 	transition: transform 0.2s $bouncyTiming, opacity 0.2s $bouncyTiming;
 	cursor: pointer;
 
-	&.removed {
-		margin: 0 calc((var(--column-gap) / 2) * -1); // minus half of gap
-		width: 0 !important;
-		opacity: 0;
-		overflow: hidden;
-		transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
-
-		span {
-			min-height: 0 !important;
-			max-height: 0 !important;
-			transition: max-height 0.3s 0.3s $easeOutThree;
-		}
-
-		div {
-			transform: scale(0.6);
-		}
-	}
-
 	div,
 	img {
 		transition-duration: 0.1s;
@@ -162,13 +125,46 @@ li.block {
 	span {
 		overflow: hidden;
 	}
+}
 
-	&.selected div {
-		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+li.block.removed {
+	margin: 0 calc((var(--column-gap) / 2) * -1); // minus half of gap
+	width: 0 !important;
+	opacity: 0;
+	overflow: hidden;
+	transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
+
+	span {
+		min-height: 0 !important;
+		max-height: 0 !important;
+		transition: max-height 0.3s 0.3s $easeOutThree;
 	}
 
-	&.selected div {
+	div {
+		transform: scale(0.6);
+	}
+}
+
+#linkblocks.large li.block.selected,
+#linkblocks.medium li.block.selected,
+#linkblocks.small li.block.selected {
+	div {
+		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 		outline: 0.3em solid var(--color-blue);
+	}
+}
+
+#linkblocks.inline li.block.selected,
+#linkblocks.text li.block.selected {
+	&.folder span,
+	a {
+		border-radius: 0.5em;
+		outline: 0.2em solid var(--color-blue);
+		background-color: rgba(0, 114, 238, 0.1333333333);
+	}
+
+	&:hover span {
+		text-decoration: none;
 	}
 }
 
