@@ -65,6 +65,19 @@
 		&.shown {
 			transform: translateX(0) translateY(-75vh);
 		}
+
+		#addlink-inputs {
+			flex-direction: column;
+			gap: 4px;
+			
+			input[type="text"] {
+				width: 100%;
+			}
+
+			#i_addlink {
+				top: 40px
+			}
+		}
 	}
 
 	#settings-footer {
@@ -149,7 +162,7 @@
 // touch screens!
 @media only screen and (hover: none) and (pointer: coarse) {
 	#background_overlay {
-		position: absolute;
+		position: fixed;
 	}
 
 	#editlink {

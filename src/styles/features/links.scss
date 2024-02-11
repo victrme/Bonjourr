@@ -92,6 +92,7 @@ li.block {
 	$bouncyTiming: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 	transition: transform 0.2s $bouncyTiming, opacity 0.2s $bouncyTiming;
 	cursor: pointer;
+	touch-action: none;
 
 	div,
 	img {
