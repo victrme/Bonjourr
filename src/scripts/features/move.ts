@@ -478,11 +478,11 @@ function resetButtonConfirm(): boolean {
 		b_resetlayout.dataset.confirm = 'true'
 
 		resetTimeout = setTimeout(() => {
-			b_resetlayout.textContent = tradThis('Reset')
+			b_resetlayout.textContent = tradThis('Reset layout')
 			b_resetlayout.dataset.confirm = ''
 		}, 1000)
 	} else {
-		b_resetlayout.textContent = tradThis('Reset')
+		b_resetlayout.textContent = tradThis('Reset layout')
 		b_resetlayout.dataset.confirm = ''
 	}
 
@@ -779,9 +779,6 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 
 			case 'reset':
 				layoutReset()
-
-			case 'widget':
-				break
 
 			case 'overlay':
 				pageWidthOverlay(prop.overlay)

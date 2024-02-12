@@ -177,13 +177,6 @@ function initOptionsValues(data: Sync.Storage) {
 		b?.classList.toggle('selected', selectedLayout)
 	})
 
-	// Disables layout change on mobile
-	if (window.innerWidth < 600 && 'ontouchstart' in window) {
-		for (const button of domsettings.querySelectorAll('#grid-layout button')) {
-			button?.setAttribute('disabled', '')
-		}
-	}
-
 	// Time & main hide elems
 	;(function initHideInputs() {
 		const { clock, date, weatherdesc, weathericon } = data.hide || {}
@@ -689,6 +682,7 @@ function initSettingsEvents() {
 	document.body.addEventListener('mousedown', detectTargetAsInputs)
 	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
 	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
+	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
 	document.addEventListener('keydown', async function (event) {
 		if (event.altKey && event.code === 'KeyS') {
@@ -777,8 +771,8 @@ function initSettingsEvents() {
 
 	function isOpen() {
 		return {
-			folder: document.getElementById('linkblocks')?.dataset.folderid,
 			settings: domsettings?.classList.contains('shown'),
+			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
 			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
 			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
 		}
@@ -798,6 +792,17 @@ function initSettingsEvents() {
 			const showall = document.getElementById('i_showall') as HTMLButtonElement
 			showall.focus()
 		}, 10)
+	}
+
+	function closeSettingsOnMoveOpen() {
+		setTimeout(() => {
+			const elementmover = document.getElementById('element-mover')
+			const moverHasOpened = elementmover?.classList.contains('hidden') === false
+
+			if (moverHasOpened) {
+				toggleSettingsMenu()
+			}
+		}, 20)
 	}
 }
 

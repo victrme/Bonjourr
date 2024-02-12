@@ -233,6 +233,13 @@ body {
 	}
 }
 
+button,
+select,
+option,
+input {
+	font-size: 13px;
+}
+
 @mixin allCentered {
 	display: flex;
 	align-items: center;

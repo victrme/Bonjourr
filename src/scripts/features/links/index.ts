@@ -7,7 +7,7 @@ import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
 import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
-import { BROWSER } from '../../defaults'
+import { BROWSER, IS_MOBILE } from '../../defaults'
 import startDrag from './drag'
 import initTabs from './tabs'
 import storage from '../../storage'
@@ -251,7 +251,7 @@ async function openFolder(event: Event) {
 	const data = await storage.sync.get()
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
-	const folderTitle = folder.title || tradThis('Folder')
+	const folderTitle = folder?.title || tradThis('Folder')
 	const folderTitleBtn = document.querySelector<HTMLButtonElement>('#folder-title button')
 
 	if (folderTitleBtn) {
@@ -326,6 +326,11 @@ function selectAll(event: MouseEvent) {
 
 	// start select all debounce
 	if (!selectAllActive && event.type === 'pointerdown') {
+		//
+		if ((event as PointerEvent)?.pointerType === 'touch') {
+			return
+		}
+
 		selectallTimer = setTimeout(() => {
 			domlinkblocks.classList.add('select-all')
 		}, 600)

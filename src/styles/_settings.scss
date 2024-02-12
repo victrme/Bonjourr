@@ -139,7 +139,6 @@
 	input,
 	button,
 	textarea {
-		font-size: 13px;
 		border-radius: 8px;
 		color: var(--color-text);
 		-webkit-appearance: none;
@@ -913,13 +912,6 @@
 			height: 2em;
 			width: 2px;
 			background-color: var(--color-placeholder);
-		}
-
-		&:disabled {
-			opacity: .15;
-			user-select: none;
-			touch-action: none;
-			pointer-events: none;
 		}
 
 		&.selected {

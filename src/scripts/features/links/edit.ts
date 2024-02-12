@@ -25,6 +25,7 @@ export default async function openEditDialog(event: Event) {
 	document.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
 
+	// const pointerType = (event as PointerEvent)?.pointerType === 'touch' ? 'touch' : 'mouse'
 	const selected = document.querySelectorAll('#linkblocks li.selected')
 
 	domurl.value = ''
@@ -112,21 +113,25 @@ export default async function openEditDialog(event: Event) {
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const editRects = domeditlink.getBoundingClientRect()
+	const withPointer = event.type === 'contextmenu' || event.type === 'click'
+	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
 	const { innerHeight, innerWidth } = window
+	const isMobileSized = innerWidth < 600
 
 	let x = 0
 	let y = 0
 
-	if (event.type === 'touchstart') {
-		return { x, y }
+	if (withPointer && isMobileSized) {
+		x = (innerWidth - editRects.width) / 2
+		y = (event as PointerEvent).y - 60 - editRects.height
 	}
 	//
-	else if (event.type === 'contextmenu' || event.type === 'click') {
+	else if (withPointer) {
 		x = (event as PointerEvent).x + 20
 		y = (event as PointerEvent).y + 20
 	}
 	//
-	else if (event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e') {
+	else if (withKeyboard) {
 		x = (event.target as HTMLElement).offsetLeft
 		y = (event.target as HTMLElement).offsetTop
 	}

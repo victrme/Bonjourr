@@ -33,6 +33,14 @@
 		display: none;
 	}
 
+	#editlink {
+		max-width: 80%;
+	}
+
+	#link-list {
+		padding: 2em;
+	}
+
 	#element-mover {
 		font-size: 12px;
 	}
@@ -69,15 +77,19 @@
 		#addlink-inputs {
 			flex-direction: column;
 			gap: 4px;
-			
-			input[type="text"] {
+
+			input[type='text'] {
 				width: 100%;
 			}
 
 			#i_addlink {
-				top: 40px
+				top: 40px;
 			}
 		}
+	}
+
+	#grid-layout-wrapper {
+		display: none;
 	}
 
 	#settings-footer {
@@ -163,17 +175,6 @@
 @media only screen and (hover: none) and (pointer: coarse) {
 	#background_overlay {
 		position: fixed;
-	}
-
-	#editlink {
-		width: 60%;
-		max-width: 275px;
-		transform: unset;
-		top: unset;
-		left: unset;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%) !important;
 	}
 
 	#sb-suggestions,
