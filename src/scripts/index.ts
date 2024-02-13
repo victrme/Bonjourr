@@ -243,8 +243,7 @@ function serviceWorker() {
 
 	navigator.serviceWorker.register('service-worker.js')
 
-	// PWA install trigger (30s interaction default)
-	let promptEvent
+	let promptEvent // PWA install trigger (30s interaction default)
 	window.addEventListener('beforeinstallprompt', function (e) {
 		promptEvent = e
 		return promptEvent

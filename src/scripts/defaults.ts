@@ -2,15 +2,9 @@ import langList from './langs'
 
 export const CURRENT_VERSION = '19.0.0'
 
-export const MAIN_API = 'https://api.bonjourr.lol'
+export const MAIN_API = 'https://api.bonjourr.fr'
 
-export const FALLBACK_API = [
-	'https://bonjourr-apis.victr.me',
-	'https://bonjourr-apis.victr.workers.dev',
-	'https://bonjourr-apis.victrme.workers.dev',
-	'https://api.bonjourr.fr',
-	'https://bonjourr-apis.bonjourr.workers.dev',
-]
+export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
 
 export const SYSTEM_OS = window.navigator.appVersion.includes('Macintosh')
 	? 'mac'
@@ -71,7 +65,10 @@ export const SEARCHBAR_ENGINES = <const>[
 ]
 
 export const SYNC_DEFAULT: Sync.Storage = {
-	about: { browser: PLATFORM, version: CURRENT_VERSION },
+	about: {
+		browser: PLATFORM,
+		version: CURRENT_VERSION,
+	},
 	showall: false,
 	lang: DEFAULT_LANG,
 	dark: 'system',
