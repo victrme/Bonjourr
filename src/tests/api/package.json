@@ -1,7 +1,10 @@
 {
-	"name": "api-cache",
+	"name": "api",
 	"private": true,
 	"scripts": {
 		"dev": "wrangler dev --ip=127.0.0.1"
+	},
+	"devDependencies": {
+		"wrangler": "^3.28.2"
 	}
 }

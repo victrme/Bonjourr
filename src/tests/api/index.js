@@ -1,7 +1,7 @@
 export default {
 	async fetch(request, _, ctx) {
 		const url = new URL(request.url)
-		const cacheUrl = url.href.replace(url.origin, 'https://api.bonjourr.lol')
+		const cacheUrl = url.href.replace(url.origin, 'https://api.bonjourr.fr')
 		const cacheKey = new Request(cacheUrl)
 		const cache = caches.default
 
