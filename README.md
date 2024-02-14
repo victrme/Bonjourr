@@ -82,8 +82,9 @@ If you feel like we've earned it and you want to support independant open source
 ## 🔧 Built with
 
 -   Styled with [Sass](https://sass-lang.com/guide)
--   Scripts with pure JS
--   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
+-   No frameworks, only pure Typescript
+-   No production dependencies (except [idb-keyval](https://github.com/jakearchibald/idb-keyval) 🙈)
+-   Releases bundled with esbuild and Gulp
 -   Our tiny hands 🙌
 
 <br>
@@ -177,5 +178,6 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 ### Online (web version)
 
--   Open a live server, for example using: `python -m http.server`
--   Go to http://localhost:8000/release/online/
+-   Use your prefered live server, serve from `release/online`
+-   Or use `pnpm online:dev` which uses http-server
+-   Go to http://localhost:8080/
