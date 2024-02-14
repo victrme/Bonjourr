@@ -421,7 +421,7 @@ const searchBar = document.getElementById("searchbar") as HTMLInputElement;
 
 // shortcut to active searchbar
 document.addEventListener("keydown", (event) => {
-  if (event.keyCode === 191) {
+  if (event.key === '/') {
     searchBar.focus();
     event.preventDefault();
   }
