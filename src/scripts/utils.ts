@@ -1,5 +1,7 @@
-import { MAIN_API, FALLBACK_API } from './defaults'
+import { MAIN_API, FALLBACK_API, ENVIRONNEMENT } from './defaults'
 import suntime from './utils/suntime'
+
+const apiList = ENVIRONNEMENT === 'TEST' ? ['http://localhost:8787'] : shuffledAPIUrls()
 
 function shuffledAPIUrls(): string[] {
 	return [
@@ -11,7 +13,7 @@ function shuffledAPIUrls(): string[] {
 }
 
 export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
-	for (const url of shuffledAPIUrls()) {
+	for (const url of apiList) {
 		try {
 			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
 
@@ -31,7 +33,7 @@ export async function apiWebSocket(path: string): Promise<WebSocket | undefined>
 }
 
 export async function apiFetch(path: string): Promise<Response | undefined> {
-	for (const url of shuffledAPIUrls()) {
+	for (const url of apiList) {
 		try {
 			return await fetch(url + path)
 		} catch (error) {

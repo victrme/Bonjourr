@@ -13,7 +13,7 @@ import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION } from './defaults'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
 import { stringMaxSize, freqControl, linksDataMigration } from './utils'
 import { eventDebounce } from './utils/debounce'
@@ -237,7 +237,7 @@ function onlineAndMobile() {
 }
 
 function serviceWorker() {
-	if (PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
+	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
 		return
 	}
 
