@@ -65,6 +65,13 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
+		document.addEventListener('keydown', function(event) {
+		if (event.key === '/') {
+		  domsearchbar?.focus();
+		  domsearchbar?.select();
+		  event.preventDefault();
+			}
+		  });
 	} catch (e) {
 		errorMessage(e)
 	}
@@ -417,12 +424,3 @@ function focusSearchbar() {
 		domsearchbar?.focus()
 	}
 }
-const searchBarElement = document.getElementById("searchbar") as HTMLInputElement;
-
-// shortcut to active searchbar
-document.addEventListener("keydown", (event) => {
-  if (event.key === '/') {
-    searchBarElement.focus();
-    event.preventDefault();
-  }
-});
