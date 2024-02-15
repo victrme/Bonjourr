@@ -45,6 +45,7 @@ const setOpacity = (value = 0.1) => {
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
 }
 
+
 export default function searchbar(init: Searchbar | null, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
@@ -64,10 +65,12 @@ export default function searchbar(init: Searchbar | null, update?: SearchbarUpda
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
+		document.addEventListener('keydown', searchbarShortcut);
 	} catch (e) {
 		errorMessage(e)
 	}
 }
+
 
 async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions }: SearchbarUpdate) {
 	const { searchbar } = await storage.sync.get('searchbar')
@@ -115,6 +118,14 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 
 	eventDebounce({ searchbar })
 }
+
+function searchbarShortcut(event: KeyboardEvent) {
+	if (event.key === '/') {
+	  domsearchbar?.focus();
+	  domsearchbar?.select();
+	  event.preventDefault();
+		}
+	  }
 
 //
 //	Search Submission
