@@ -417,12 +417,12 @@ function focusSearchbar() {
 		domsearchbar?.focus()
 	}
 }
-const searchBar = document.getElementById("searchbar") as HTMLInputElement;
+const searchBarElement = document.getElementById("searchbar") as HTMLInputElement;
 
 // shortcut to active searchbar
 document.addEventListener("keydown", (event) => {
   if (event.keyCode === 191) {
-    searchBar.focus();
+    searchBarElement.focus();
     event.preventDefault();
   }
 });
