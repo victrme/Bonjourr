@@ -175,3 +175,9 @@
 		font-weight: bold;
 	}
 }
+
+@supports (-moz-appearance: none) {
+	#popup_icon > div {
+		backdrop-filter: none;
+	}
+}
