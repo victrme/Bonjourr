@@ -301,10 +301,17 @@
 }
 
 #opera-explainer {
+	opacity: 0;
 	outline: none;
+	color: #ddd;
 	max-width: 30em;
 	padding: 1em 2em;
 	line-height: 1.5em;
+	transition: opacity 0.4s 1s;
+
+	&::backdrop {
+		transition: background-color 6s;
+	}
 
 	li {
 		list-style-type: circle;
@@ -313,6 +320,23 @@
 	div {
 		padding: 1em 0;
 		text-align: initial;
+	}
+
+	a {
+		color: var(--color-blue);
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+}
+
+#opera-explainer.shown {
+	opacity: 1;
+
+	&::backdrop {
+		background-color: #0009;
 	}
 }
 

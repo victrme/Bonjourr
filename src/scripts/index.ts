@@ -106,6 +106,12 @@ async function startup() {
 			announce: sync.announcements,
 		})
 	})
+
+	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
+		if (!local?.operaExplained) {
+			return operaExtensionExplainer()
+		}
+	}
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
@@ -293,10 +299,6 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 		return
 	}
 
-	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
-		return operaExtensionExplainer()
-	}
-
 	loadtime = Math.min(performance.now() - loadtime, 400)
 	loadtime = loadtime > 33 ? loadtime : 0
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
@@ -413,18 +415,22 @@ export function customCss(init?: string, event?: { styling: string }) {
 	})
 }
 
-function operaExtensionExplainer(): boolean {
-	dominterface.style.opacity = '0'
-
+function operaExtensionExplainer() {
 	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
 	const doc = template.content.cloneNode(true) as Document
 	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
+	const button = doc.getElementById('b_opera-explained')
 
+	document.body.classList.add('loading')
 	document.body.appendChild(dialog)
 	dialog.showModal()
-	console.log(dialog)
+	setTimeout(() => dialog.classList.add('shown'))
 
-	return false
+	button?.addEventListener('click', () => {
+		storage.local.set({ operaExplained: true })
+		document.body.classList.remove('loading')
+		dialog.close()
+	})
 }
 
 // Unfocus address bar on chromium

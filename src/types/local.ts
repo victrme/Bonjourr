@@ -9,6 +9,7 @@ declare namespace Local {
 		unsplashCache: Unsplash.Local
 		translations?: Translations
 		lastWeather?: Weather.Local
+		operaExplained?: true
 	}
 
 	type Translations = {
