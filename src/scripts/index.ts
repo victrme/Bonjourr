@@ -293,6 +293,10 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 		return
 	}
 
+	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
+		return operaExtensionExplainer()
+	}
+
 	loadtime = Math.min(performance.now() - loadtime, 400)
 	loadtime = loadtime > 33 ? loadtime : 0
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
@@ -407,6 +411,20 @@ export function customCss(init?: string, event?: { styling: string }) {
 
 		observer.observe(document.getElementById('cssEditor') as HTMLElement)
 	})
+}
+
+function operaExtensionExplainer(): boolean {
+	dominterface.style.opacity = '0'
+
+	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
+	const doc = template.content.cloneNode(true) as Document
+	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
+
+	document.body.appendChild(dialog)
+	dialog.showModal()
+	console.log(dialog)
+
+	return false
 }
 
 // Unfocus address bar on chromium

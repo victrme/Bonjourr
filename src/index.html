@@ -196,7 +196,7 @@
 						><span id="digital-hh-separator">:</span><span id="digital-mm"></span
 						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span>
 					</h1>
-					
+
 					<div id="analog">
 						<div id="analog-face">
 							<span>12</span>
@@ -325,19 +325,46 @@
 			</button>
 		</div>
 
-		<template id="popup-template">
-			<div id="popup">
-				<div id="popup_text">
-					<div id="popup_close">✕</div>
-					<div id="popup_icon">
-						<div>
-							<span>19</span>
+		<div id="templates">
+			<template id="popup-template">
+				<div id="popup">
+					<div id="popup_text">
+						<div id="popup_close">✕</div>
+						<div id="popup_icon">
+							<div>
+								<span>19</span>
+							</div>
 						</div>
+						<p id="popup_desc"></p>
 					</div>
-					<p id="popup_desc"></p>
+					<div id="popup_buttons"></div>
 				</div>
-				<div id="popup_buttons"></div>
-			</div>
-		</template>
+			</template>
+
+			<template id="opera-explainer-template">
+				<dialog id="opera-explainer">
+					<div>
+						<h1>Ok so... this is embarassing</h1>
+
+						<p>
+							Opera does not allow extensions to modify its new tab. We believe this is because ads on their new
+							tab is a good revenue source for them.
+						</p>
+
+						<h2>What to do from here ?</h2>
+
+						<ul>
+							<li>Remove Bonjourr, its ok :')</li>
+							<li>You can configure Opera to show Bonjourr once when opening the browser</li>
+							<li>Use a similar browser like Brave or Vivaldi</li>
+						</ul>
+					</div>
+
+					<hr />
+
+					<button id="b_opera-accept">Close and access Bonjourr</button>
+				</dialog>
+			</template>
+		</div>
 	</body>
 </html>

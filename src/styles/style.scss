@@ -300,6 +300,22 @@
 	}
 }
 
+#opera-explainer {
+	outline: none;
+	max-width: 30em;
+	padding: 1em 2em;
+	line-height: 1.5em;
+
+	li {
+		list-style-type: circle;
+	}
+
+	div {
+		padding: 1em 0;
+		text-align: initial;
+	}
+}
+
 @import 'features/grid';
 @import 'features/editlink';
 @import 'features/bookmarks';
