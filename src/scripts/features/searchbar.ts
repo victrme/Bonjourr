@@ -63,6 +63,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
+		document.addEventListener('keydown', searchbarShortcut)
 	} catch (e) {
 		errorMessage(e)
 	}
@@ -113,6 +114,14 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 	}
 
 	eventDebounce({ searchbar })
+}
+
+function searchbarShortcut(event: KeyboardEvent) {
+	if (event.key === '/') {
+		domsearchbar?.focus()
+		domsearchbar?.select()
+		event.preventDefault()
+	}
 }
 
 //
