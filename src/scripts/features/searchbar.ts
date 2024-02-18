@@ -116,14 +116,6 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 	eventDebounce({ searchbar })
 }
 
-function searchbarShortcut(event: KeyboardEvent) {
-	if (event.key === '/') {
-		domsearchbar?.focus()
-		domsearchbar?.select()
-		event.preventDefault()
-	}
-}
-
 //
 //	Search Submission
 //
@@ -416,6 +408,17 @@ function removeInputText() {
 function focusSearchbar() {
 	if (dombuttons?.classList.contains('shown') === false) {
 		domsearchbar?.focus()
+	}
+}
+
+function searchbarShortcut(event: KeyboardEvent) {
+	const target = event.target as Element
+	const fromBody = target.tagName === 'BODY'
+
+	if (fromBody && event.key === '/') {
+		domsearchbar?.focus()
+		domsearchbar?.select()
+		event.preventDefault()
 	}
 }
 
