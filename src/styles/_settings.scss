@@ -635,7 +635,7 @@
 	height: 100px;
 }
 
-.uploadContainer {
+#settings .uploadContainer {
 	overflow: hidden;
 	position: relative;
 	display: block;
@@ -655,14 +655,14 @@
 	border-radius: 10px;
 	pointer-events: all;
 
-	input[type='file'] {
+	input[type='file']#i_bgfile {
 		position: absolute;
 		display: block;
 		overflow: hidden;
 		top: 0;
 		left: 0;
 		opacity: 0;
-		height: 75px;
+		height: 100px;
 		width: 100%;
 		cursor: pointer;
 	}
