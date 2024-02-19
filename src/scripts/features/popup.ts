@@ -13,8 +13,8 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_TEXT = 'New update just dropped. Google "Bonjourr folder".'
-const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-1-18-housekeeping-part-2-L4L4Q5EYW'
+const ANNOUNCEMENT_TEXT = 'Bonjourr just got a major update! Learn more about the new quick links features and more in our update post. ✨'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-19-A0A6UMTY1'
 const ANNOUNCEMENT_VERSION = '19.0.0'
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
@@ -89,7 +89,7 @@ function displayPopup(type: 'review' | 'announce') {
 
 	if (type === 'announce') {
 		desc.textContent = tradThis(ANNOUNCEMENT_TEXT)
-		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, tradThis('Read more on blog post')))
+		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, tradThis('Read the blog post')))
 	}
 
 	close?.addEventListener('click', closePopup)
