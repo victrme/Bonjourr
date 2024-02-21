@@ -35,7 +35,7 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 
 
 
-You can also [or try it online 🌎](https://online.bonjourr.fr) before installing.
+You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
 
 
 <br>
