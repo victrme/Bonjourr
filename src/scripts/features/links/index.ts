@@ -312,11 +312,12 @@ function selectAll(event: MouseEvent) {
 	clearTimeout(selectallTimer)
 
 	const selectAllActive = domlinkblocks.className.includes('select-all')
+	const primaryButton = !event.button || event.button === 0
 	const li = getLiFromEvent(event)
 
 	// toggle selection
 	if (selectAllActive && event.type.match(/pointerup|click/)) {
-		if (!event.button || event.button === 0) {
+		if (primaryButton) {
 			li?.classList.toggle('selected')
 		}
 
@@ -325,7 +326,7 @@ function selectAll(event: MouseEvent) {
 	}
 
 	// start select all debounce
-	if (!selectAllActive && event.type === 'pointerdown') {
+	if (!selectAllActive && primaryButton && event.type === 'pointerdown') {
 		//
 		if ((event as PointerEvent)?.pointerType === 'touch') {
 			return
