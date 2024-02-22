@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · Trang bắt đầu tối giản",
+		"description": "tên tiện ích mở rộng"
+	},
+	"extensionDesc": {
+		"message": "Cải thiện trải nghiệm duyệt web của bạn với Bonjourr, một trang chủ đẹp, có thể tùy chỉnh và nhẹ.",
+		"description": "mô tả tiện ích"
+	}
+}
