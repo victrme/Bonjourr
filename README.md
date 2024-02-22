@@ -108,6 +108,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
 -   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
+-   **🇷🇴 Romanian translation** · UnifeGi · [GitHub](https://github.com/UnifeGi)
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
