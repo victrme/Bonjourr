@@ -721,7 +721,9 @@ function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 		}
 	}
 
-	return links.toSorted((a, b) => a.order - b.order)
+	links.sort((a, b) => a.order - b.order)
+
+	return links
 }
 
 function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
@@ -734,7 +736,9 @@ function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
 		}
 	}
 
-	return links.toSorted((a, b) => a.order - b.order)
+	links.sort((a, b) => a.order - b.order)
+
+	return links
 }
 
 function animateLinksRemove(ids: string[]) {
