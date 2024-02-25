@@ -3,7 +3,6 @@ import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
-import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
@@ -12,6 +11,7 @@ import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
+import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import { customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
 
@@ -21,7 +21,7 @@ import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { apiFetch, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
@@ -1220,6 +1220,18 @@ function importAsFile(target: HTMLInputElement) {
 async function paramsImport(toImport: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
+
+		// #308 - verify font subset before importing
+		if (toImport?.font?.system === false) {
+			const family = toImport?.font?.family
+			const lang = toImport?.lang
+			const correctSubset = await fontIsAvailableInSubset(lang, family)
+
+			if (correctSubset === false) {
+				toImport.font.family = ''
+			}
+		}
+
 		data = filterImports(data, toImport)
 
 		storage.sync.clear()
