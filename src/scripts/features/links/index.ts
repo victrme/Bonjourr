@@ -7,14 +7,13 @@ import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
 import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
-import { BROWSER, IS_MOBILE } from '../../defaults'
+import { BROWSER } from '../../defaults'
 import startDrag from './drag'
 import initTabs from './tabs'
 import storage from '../../storage'
 
 type Link = Links.Link
 type Elem = Links.Elem
-type Folder = Links.Folder
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -64,6 +63,8 @@ type SubmitLink = { type: 'link'; title: string; url: string }
 type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
+
+type Style = Sync.Storage['linkstyle']
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 let selectallTimer = 0
@@ -128,7 +129,10 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		}
 		//
 		else {
-			li = isElem(link) ? createElem(link, data.linknewtab) : createFolder(link, linksInFolders)
+			li = isElem(link)
+				? createElem(link, data.linknewtab, data.linkstyle)
+				: createFolder(link, linksInFolders, data.linkstyle)
+
 			li.addEventListener('keyup', displayEditDialog)
 			li.addEventListener('click', selectAll)
 			li.addEventListener('pointerdown', selectAll)
@@ -143,7 +147,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	return true
 }
 
-function createFolder(link: Links.Folder, folderChildren: Link[]): HTMLLIElement {
+function createFolder(link: Links.Folder, folderChildren: Link[], style: Style): HTMLLIElement {
 	const linksInThisFolder = folderChildren.filter((l) => !l.folder && l.parent === link._id)
 	const li = getHTMLTemplate<HTMLLIElement>('link-folder', 'li')
 	const imgs = li.querySelectorAll('img')!
@@ -158,14 +162,14 @@ function createFolder(link: Links.Folder, folderChildren: Link[]): HTMLLIElement
 		const elem = linksInThisFolder[i]
 
 		if (img && isElem(elem)) {
-			createIcons(img, elem)
+			createIcons(img, elem, style)
 		}
 	}
 
 	return li
 }
 
-function createElem(link: Links.Elem, openInNewtab: boolean) {
+function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	const li = getHTMLTemplate<HTMLLIElement>('link-elem', 'li')
 	const span = li.querySelector('span')!
 	const anchor = li.querySelector('a')!
@@ -174,7 +178,7 @@ function createElem(link: Links.Elem, openInNewtab: boolean) {
 	li.id = link._id
 	anchor.href = stringMaxSize(link.url, 512)
 	span.textContent = createTitle(link)
-	createIcons(img, link)
+	createIcons(img, link, style)
 
 	if (openInNewtab) {
 		if (BROWSER === 'safari') {
@@ -187,7 +191,11 @@ function createElem(link: Links.Elem, openInNewtab: boolean) {
 	return li
 }
 
-function createIcons(currimg: HTMLImageElement, link: Links.Elem) {
+function createIcons(currimg: HTMLImageElement, link: Links.Elem, style: Style) {
+	if (style === 'text') {
+		return
+	}
+
 	let hasloaded = false
 
 	currimg.src = link.icon ?? getDefaultIcon(link.url)
@@ -659,6 +667,7 @@ async function setLinkStyle(style: string = 'large') {
 		return
 	}
 
+	const wasText = domlinkblocks?.className.includes('text')
 	const data = await storage.sync.get()
 	const links = getLinksInTab(data)
 
@@ -671,8 +680,18 @@ async function setLinkStyle(style: string = 'large') {
 		span.textContent = createTitle(link)
 	}
 
+	data.linkstyle = style
+	storage.sync.set(data)
+
+	if (wasText) {
+		// remove from DOM to re-draw icons
+		document.querySelectorAll('#link-list li')?.forEach((el) => el.remove())
+	}
+
+	console.log(wasText)
+
 	initRows(data.linksrow, style)
-	storage.sync.set({ linkstyle: style })
+	initblocks(data)
 }
 
 function setRows(row: string) {
