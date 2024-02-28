@@ -13,8 +13,8 @@
 #linkblocks {
 	--min-height: 6em;
 	--row-gap: 1em;
-	--column-gap: 2.5em;
-	--block-size: 4.8em;
+	--icon-size: 4.8em;
+	--block-size: 6.3em;
 
 	&.hidden {
 		display: none;
@@ -102,8 +102,9 @@ li.block {
 	}
 
 	div {
-		width: var(--block-size);
-		height: var(--block-size);
+		margin: auto;
+		width: var(--icon-size);
+		height: var(--icon-size);
 		border: 1px solid white;
 		background-color: white;
 		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
@@ -157,7 +158,7 @@ li.block.removed {
 
 #linkblocks.inline li.block.selected,
 #linkblocks.text li.block.selected {
-	&.folder span,
+	&.folder,
 	a {
 		border-radius: 0.5em;
 		outline: 0.2em solid var(--color-blue);
@@ -182,7 +183,7 @@ li.block.removed {
 li.block.folder > div {
 	display: grid;
 	column-gap: 4px;
-	height: var(--block-size);
+	height: var(--icon-size);
 	grid-template-columns: 1fr 1fr;
 	background-color: #fff3;
 	border: 1px solid #fff4;
@@ -207,8 +208,9 @@ li.block.folder img {
 
 #linkblocks.large {
 	--min-height: 6em;
-	--column-gap: 2.5em;
-	--block-size: 4.8em;
+	--column-gap: 1em;
+	--icon-size: 4.8em;
+	--block-size: 6.3em;
 
 	li.block {
 		div {
@@ -246,8 +248,9 @@ li.block.folder img {
 
 #linkblocks.medium {
 	--min-height: 5em;
-	--column-gap: 2em;
-	--block-size: 3.5em;
+	--column-gap: 1em;
+	--icon-size: 3.5em;
+	--block-size: 4.5em;
 
 	li {
 		div {
@@ -287,11 +290,11 @@ li.block.folder img {
 	}
 
 	li {
-		width: 2.5em;
+		width: var(--block-size);
 
 		div {
-			width: 2.5em;
-			height: 2.5em;
+			width: var(--block-size);
+			height: var(--block-size);
 			padding: 0.1em;
 			border-radius: 0.4em;
 		}
@@ -340,23 +343,27 @@ li.block.folder img {
 }
 
 #linkblocks.inline {
-	--min-height: 3em;
+	--min-height: 2em;
 	--block-size: 2em;
-	--column-gap: 2em;
+	--column-gap: 1em;
+	--icon-size: 2em;
 
 	justify-content: flex-start;
 
-	li.folder span::before {
-		content: '📁';
-		padding-right: 0.5em;
+	li.folder div {
+		display: block;
+		padding: 4px;
 	}
 
-	li.folder div {
+	li.folder img {
+		box-sizing: border-box;
+	}
+
+	li.folder img:not(:first-child) {
 		display: none;
 	}
 
-	li a,
-	li.folder span {
+	li span {
 		padding: 0 0.2em;
 		outline: 3px solid transparent;
 	}
@@ -364,7 +371,7 @@ li.block.folder img {
 	li {
 		width: auto;
 
-		&:hover span {
+		&:hover {
 			text-decoration: underline;
 		}
 
@@ -373,11 +380,13 @@ li.block.folder img {
 			transform: none;
 		}
 
+		&.folder,
 		a {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			column-gap: 0.7em;
+			padding: 0 0.25em;
 		}
 
 		div {
