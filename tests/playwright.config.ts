@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-	testDir: './src/tests',
-	outputDir: './src/tests/test-results',
+	testDir: './',
+	preserveOutput: 'never',
 	reporter: 'null',
 	timeout: 10000,
 	use: {
@@ -10,11 +10,11 @@ export default defineConfig({
 	},
 	webServer: [
 		{
-			command: 'http-server release/online',
+			command: 'http-server ../release/online',
 			reuseExistingServer: !process.env.CI,
 		},
 		{
-			command: 'pnpm --filter api dev',
+			command: 'wrangler dev --ip=127.0.0.1',
 			reuseExistingServer: !process.env.CI,
 		},
 	],

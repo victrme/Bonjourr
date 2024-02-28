@@ -9,19 +9,14 @@
 		"safari": "gulp safari",
 		"online": "gulp online",
 		"build": "gulp build",
-		"test": "gulp buildtest && npx playwright test",
-		"test:ui": "gulp buildtest && npx playwright test --ui",
-		"test:api": "pnpm --filter api dev",
-		"test:init": "npx playwright install && pnpm --filter api install",
-		"test:build": "gulp buildtest",
-		"online:dev": "concurrently \"http-server release/online\" \"gulp online\""
+		"test": "pnpm --filter tests test",
+		"online:dev": "concurrently \"http-server release/online -c-1\" \"gulp online\""
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"type": "module",
 	"devDependencies": {
-		"@playwright/test": "^1.41.2",
 		"@types/chrome": "^0.0.260",
 		"@types/gulp": "^4.0.17",
 		"@types/gulp-rename": "^2.0.6",
