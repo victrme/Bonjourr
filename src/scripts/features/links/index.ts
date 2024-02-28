@@ -244,7 +244,7 @@ onSettingsLoad(() => {
 	document.addEventListener('remove-select-all', removeSelectAll)
 })
 
-async function openFolder(event: Event) {
+async function openFolder(event: MouseEvent) {
 	if (domlinkblocks.className.includes('select-all')) {
 		return
 	}
@@ -252,11 +252,22 @@ async function openFolder(event: Event) {
 	clearTimeout(selectallTimer)
 	const li = getLiFromEvent(event)
 
-	if (!li || li.classList.contains('folder') === false) {
+	if (!li || !li?.classList.contains('folder')) {
 		return
 	}
 
 	const data = await storage.sync.get()
+
+	if (event.button === 1) {
+		const links = getLinksInFolder(data, li.id)
+
+		links.forEach((link) => window.open(link.url, '_blank')?.focus())
+		window.open(window.location.href, '_blank')?.focus()
+		window.close()
+
+		return
+	}
+
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
 	const folderTitle = folder?.title || tradThis('Folder')
