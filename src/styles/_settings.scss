@@ -84,7 +84,6 @@
 	.uploadContainer,
 	#submitSave,
 	#i_refresh,
-	#cssEditor,
 	.tooltip,
 	.param,
 	select,
@@ -131,14 +130,13 @@
 		background-color: var(--color-input);
 	}
 
-	textarea {
-		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
-	}
+	// textarea {
+	// 	font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
+	// }
 
 	select,
 	input,
-	button,
-	textarea {
+	button {
 		border-radius: 8px;
 		color: var(--color-text);
 		-webkit-appearance: none;
@@ -936,18 +934,14 @@
 //	CSS Editor
 //
 
-#cssEditor {
+.prism-code-editor {
 	width: 100%;
-	min-height: 100px;
-	max-height: 3000px;
-	resize: vertical;
 	padding: 1.3em;
 	font-size: 13px;
 	tab-size: 1.5em;
 	border: none;
 	border-radius: 10px;
 	box-sizing: border-box;
-	color: var(--color-text);
 	background-color: var(--color-param);
 }
 

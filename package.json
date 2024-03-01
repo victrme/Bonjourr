@@ -16,6 +16,9 @@
 	"author": "",
 	"license": "ISC",
 	"type": "module",
+	"dependencies": {
+		"prism-code-editor": "^3.0.1"
+	},
 	"devDependencies": {
 		"@types/chrome": "^0.0.260",
 		"@types/gulp": "^4.0.17",

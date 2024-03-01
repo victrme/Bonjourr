@@ -1,6 +1,7 @@
 import notes from './features/notes'
 import clock from './features/clock'
 import weather from './features/weather'
+import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
@@ -374,39 +375,6 @@ export function textShadow(init?: number, event?: number) {
 	if (typeof event === 'number') {
 		eventDebounce({ textShadow: val })
 	}
-}
-
-export function customCss(init?: string, event?: { styling: string }) {
-	const styleHead = document.getElementById('styles') as HTMLStyleElement
-	let skipFirstResize = true
-
-	if (event) {
-		if (event?.styling !== undefined) {
-			const val = stringMaxSize(event.styling, 8080)
-			styleHead.textContent = val
-			eventDebounce({ css: val })
-		}
-
-		return
-	}
-
-	if (init) {
-		styleHead.textContent = init
-	}
-
-	onSettingsLoad(function saveHeightOnResize() {
-		const observer = new ResizeObserver((entry) => {
-			if (skipFirstResize) {
-				skipFirstResize = false
-				return
-			}
-
-			const rect = entry[0].contentRect
-			eventDebounce({ cssHeight: Math.round(rect.height + rect.top * 2) })
-		})
-
-		observer.observe(document.getElementById('cssEditor') as HTMLElement)
-	})
 }
 
 // Unfocus address bar on chromium

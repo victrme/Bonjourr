@@ -1,0 +1,96 @@
+.prism-code-editor {
+	overflow: auto;
+	display: grid;
+	background: var(--editor__bg);
+	line-height: 1.4;
+	--_pse: var(--padding-inline, 0.75em);
+	--_ns: var(--number-spacing, 0.75em);
+	--padding-left: var(--_pse);
+	scroll-padding-left: var(--padding-left);
+	-webkit-user-select: none;
+	user-select: none;
+	isolation: isolate;
+	white-space: pre;
+}
+.show-line-numbers {
+	--padding-left: calc(var(--_pse) + var(--number-width) + var(--_ns));
+	grid: 1fr / 0 1fr;
+}
+.pce-wrapper {
+	margin: 0.5em 0;
+	position: relative;
+	pointer-events: none;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
+}
+.prism-code-editor textarea {
+	all: unset;
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
+	color: #0000;
+	-webkit-user-select: auto;
+	user-select: auto;
+	overflow: hidden;
+	pointer-events: auto;
+	padding: 0 var(--_pse) 0 var(--padding-left);
+}
+.pce-no-selection textarea:focus {
+	z-index: 1;
+}
+.pce-line {
+	padding: 0 var(--_pse) 0 0;
+	margin: 0 0 0 var(--padding-left);
+	position: relative;
+}
+.show-line-numbers .pce-line:before {
+	content: attr(data-line);
+	display: inline-block;
+	margin: 0 0 0 calc(-1 * var(--padding-left));
+	padding: 0 var(--_ns) 0 0;
+	box-sizing: border-box;
+	color: var(--editor__line-number);
+	text-align: end;
+}
+.show-line-numbers:before {
+	content: '';
+	background: inherit;
+	pointer-events: none;
+}
+.show-line-numbers:before,
+.pce-line:before {
+	position: sticky;
+	height: 100%;
+	z-index: 2;
+	left: 0;
+	width: var(--padding-left);
+}
+.pce-wrap .pce-line:before {
+	position: absolute;
+}
+.pce-overlays,
+div.pce-overlays > *,
+.pce-no-selection .active-line:after,
+.active-line.match-highlight:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+.active-line:after {
+	border: var(--editor__border-highlight);
+	background: var(--editor__bg-highlight);
+	z-index: -2;
+}
+.pce-wrap {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+.selection-matches span {
+	background: var(--editor__bg-selection-match);
+}
+.pce-nowrap .active-bracket {
+	display: inline-block;
+}
