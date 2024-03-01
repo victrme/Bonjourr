@@ -2,7 +2,6 @@ import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
-import customCss from './features/css'
 import searchbar from './features/searchbar'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
@@ -14,7 +13,7 @@ import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
-import { darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
+import { customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
 
 import langList from './langs'
 import parse from './utils/parse'
@@ -59,6 +58,7 @@ function initOptionsValues(data: Sync.Storage) {
 
 	setInput('i_blur', data.background_blur ?? 15)
 	setInput('i_bright', data.background_bright ?? 0.8)
+	setInput('cssEditor', data.css || '')
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.background_type || 'unsplash')
@@ -194,6 +194,11 @@ function initOptionsValues(data: Sync.Storage) {
 	if (data?.unsplash?.collection) {
 		const coll = data?.unsplash?.collection
 		paramId('i_collection')?.setAttribute('placeholder', coll ? coll : '2nVzlQADDIE')
+	}
+
+	// CSS height control
+	if (data.cssHeight) {
+		paramId('cssEditor').setAttribute('style', 'height: ' + data.cssHeight + 'px')
 	}
 
 	// Quotes option display
@@ -569,6 +574,13 @@ function initOptionsEvents() {
 	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
+
+	//
+	// Custom Style
+
+	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
+		customCss(undefined, { styling: (ev.target as HTMLInputElement).value })
+	})
 
 	//
 	// Updates
