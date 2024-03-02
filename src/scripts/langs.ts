@@ -43,7 +43,7 @@ export const subsets = {
 	hu: 'latin-ext',
 	sr: 'cyrillic',
 	gr: 'greek',
-	fa: 'farsi',
+	fa: 'arabic',
 	jp: 'japanese',
 	vi: 'latin-ext',
 }
