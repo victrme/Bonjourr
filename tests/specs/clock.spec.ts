@@ -8,36 +8,36 @@ test.beforeEach(async ({ page }) => {
 
 test('Analog', async ({ page }) => {
 	await page.getByLabel('Analog clock').check()
-	expect(await page.locator('#analogClock').isVisible()).toBe(true)
+	expect(await page.locator('#analog').isVisible()).toBe(true)
 })
 
 test('Analog face', async ({ page }) => {
 	await page.getByLabel('Analog clock').check()
 
 	await page.locator('#i_clockface').selectOption('number')
-	expect(await page.locator('#analogClock').textContent()).toContain('12369')
+	expect(await page.locator('#analog').textContent()).toContain('12369')
 
 	await page.locator('#i_clockface').selectOption('roman')
-	expect(await page.locator('#analogClock').textContent()).toContain('XIIIIIVIIX')
+	expect(await page.locator('#analog').textContent()).toContain('XIIIIIVIIX')
 
 	await page.locator('#i_clockface').selectOption('marks')
-	expect(await page.locator('#analogClock').textContent()).toContain('│―│―')
+	expect(await page.locator('#analog').textContent()).toContain('│―│―')
 
 	await page.locator('#i_clockface').selectOption('none')
-	expect((await page.locator('#analogClock').textContent())?.trimEnd()).toBe('')
+	expect((await page.locator('#analog').textContent())?.trimEnd()).toBe('')
 })
 
 test('Analog style', async ({ page }) => {
 	await page.getByLabel('Analog clock').check()
 
 	await page.getByRole('combobox', { name: 'Clock style' }).selectOption('transparent')
-	await expect(page.locator('#analogClock')).toHaveClass('transparent')
+	await expect(page.locator('#analog')).toHaveClass('transparent')
 
 	await page.getByRole('combobox', { name: 'Clock style' }).selectOption('round')
-	await expect(page.locator('#analogClock')).toHaveClass('round')
+	await expect(page.locator('#analog')).toHaveClass('round')
 
 	await page.getByRole('combobox', { name: 'Clock style' }).selectOption('square')
-	await expect(page.locator('#analogClock')).toHaveClass('square')
+	await expect(page.locator('#analog')).toHaveClass('square')
 })
 
 test('Show seconds', async ({ page }) => {

@@ -244,7 +244,7 @@ onSettingsLoad(() => {
 	document.addEventListener('remove-select-all', removeSelectAll)
 })
 
-async function openFolder(event: Event) {
+async function openFolder(event: MouseEvent) {
 	if (domlinkblocks.className.includes('select-all')) {
 		return
 	}
@@ -252,11 +252,22 @@ async function openFolder(event: Event) {
 	clearTimeout(selectallTimer)
 	const li = getLiFromEvent(event)
 
-	if (!li || li.classList.contains('folder') === false) {
+	if (!li || !li?.classList.contains('folder')) {
 		return
 	}
 
 	const data = await storage.sync.get()
+
+	if (event.button === 1) {
+		const links = getLinksInFolder(data, li.id)
+
+		links.forEach((link) => window.open(link.url, '_blank')?.focus())
+		window.open(window.location.href, '_blank')?.focus()
+		window.close()
+
+		return
+	}
+
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
 	const folderTitle = folder?.title || tradThis('Folder')
@@ -320,11 +331,12 @@ function selectAll(event: MouseEvent) {
 	clearTimeout(selectallTimer)
 
 	const selectAllActive = domlinkblocks.className.includes('select-all')
+	const primaryButton = !event.button || event.button === 0
 	const li = getLiFromEvent(event)
 
 	// toggle selection
 	if (selectAllActive && event.type.match(/pointerup|click/)) {
-		if (!event.button || event.button === 0) {
+		if (primaryButton) {
 			li?.classList.toggle('selected')
 		}
 
@@ -333,7 +345,7 @@ function selectAll(event: MouseEvent) {
 	}
 
 	// start select all debounce
-	if (!selectAllActive && event.type === 'pointerdown') {
+	if (!selectAllActive && primaryButton && event.type === 'pointerdown') {
 		//
 		if ((event as PointerEvent)?.pointerType === 'touch') {
 			return
@@ -740,7 +752,9 @@ function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 		}
 	}
 
-	return links.toSorted((a, b) => a.order - b.order)
+	links.sort((a, b) => a.order - b.order)
+
+	return links
 }
 
 function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
@@ -753,7 +767,9 @@ function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
 		}
 	}
 
-	return links.toSorted((a, b) => a.order - b.order)
+	links.sort((a, b) => a.order - b.order)
+
+	return links
 }
 
 function animateLinksRemove(ids: string[]) {
