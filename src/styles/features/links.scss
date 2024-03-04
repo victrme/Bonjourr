@@ -12,9 +12,9 @@
 
 #linkblocks {
 	--min-height: 6em;
-	--row-gap: 1em;
+	--row-gap: 0.6em;
 	--icon-size: 4.8em;
-	--block-size: 6.3em;
+	--block-size: 6.5em;
 
 	&.hidden {
 		display: none;
@@ -208,9 +208,9 @@ li.block.folder img {
 
 #linkblocks.large {
 	--min-height: 6em;
-	--column-gap: 1em;
+	--column-gap: 0.6em;
 	--icon-size: 4.8em;
-	--block-size: 6.3em;
+	--block-size: 6.5em;
 
 	li.block {
 		div {
@@ -248,9 +248,9 @@ li.block.folder img {
 
 #linkblocks.medium {
 	--min-height: 5em;
-	--column-gap: 1em;
+	--column-gap: 0.6em;
 	--icon-size: 3.5em;
-	--block-size: 4.5em;
+	--block-size: 4.7em;
 
 	li {
 		div {
@@ -385,8 +385,7 @@ li.block.folder img {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			column-gap: 0.7em;
-			padding: 0 0.25em;
+			column-gap: 0.6em;
 		}
 
 		div {
@@ -400,11 +399,12 @@ li.block.folder img {
 
 		span {
 			display: block;
-			max-width: 6em;
+			max-width: 8.4em;
 			font-size: 1.2em;
 			text-overflow: ellipsis;
 			white-space: pre;
 			line-height: 2em;
+			padding: 0;
 		}
 	}
 }
