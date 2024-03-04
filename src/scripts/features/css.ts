@@ -26,7 +26,8 @@ export default function customCss(init?: string, event?: { styling: string }) {
 		const editor = createEditor('#css-editor', {
 			lineNumbers: false,
 			language: 'css',
-			value: init ?? '/* Type in your custom CSS */',
+			wordWrap: true,
+			value: init || '/* Type in your custom CSS */',
 		})
 
 		editor.addListener('update', (value) => {

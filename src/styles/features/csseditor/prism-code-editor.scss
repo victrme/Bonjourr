@@ -1,4 +1,6 @@
 .prism-code-editor {
+	font-size: 14px;
+	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
 	overflow: auto;
 	display: grid;
 	background: var(--editor__bg);
@@ -11,10 +13,6 @@
 	user-select: none;
 	isolation: isolate;
 	white-space: pre;
-}
-.show-line-numbers {
-	--padding-left: calc(var(--_pse) + var(--number-width) + var(--_ns));
-	grid: 1fr / 0 1fr;
 }
 .pce-wrapper {
 	margin: 0.5em 0;
@@ -43,21 +41,6 @@
 	margin: 0 0 0 var(--padding-left);
 	position: relative;
 }
-.show-line-numbers .pce-line:before {
-	content: attr(data-line);
-	display: inline-block;
-	margin: 0 0 0 calc(-1 * var(--padding-left));
-	padding: 0 var(--_ns) 0 0;
-	box-sizing: border-box;
-	color: var(--editor__line-number);
-	text-align: end;
-}
-.show-line-numbers:before {
-	content: '';
-	background: inherit;
-	pointer-events: none;
-}
-.show-line-numbers:before,
 .pce-line:before {
 	position: sticky;
 	height: 100%;
@@ -69,9 +52,7 @@
 	position: absolute;
 }
 .pce-overlays,
-div.pce-overlays > *,
-.pce-no-selection .active-line:after,
-.active-line.match-highlight:after {
+div.pce-overlays > * {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -79,18 +60,7 @@ div.pce-overlays > *,
 	bottom: 0;
 	left: 0;
 }
-.active-line:after {
-	border: var(--editor__border-highlight);
-	background: var(--editor__bg-highlight);
-	z-index: -2;
-}
 .pce-wrap {
 	white-space: pre-wrap;
 	word-break: break-word;
-}
-.selection-matches span {
-	background: var(--editor__bg-selection-match);
-}
-.pce-nowrap .active-bracket {
-	display: inline-block;
 }
