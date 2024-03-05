@@ -83,7 +83,7 @@ function manifest(platform) {
 function styles(platform) {
 	return () =>
 		src('src/styles/style.scss')
-			.pipe(sass.sync({ outputStyle: 'compressed' }).on('error', sass.logError))
+			.pipe(sass.sync().on('error', sass.logError))
 			.pipe(dest(`release/${platform}/src/styles/`))
 }
 

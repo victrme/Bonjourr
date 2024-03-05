@@ -10,6 +10,11 @@ overrides:
   chokidar: ^3.5.3
   glob-parent: ^6.0.2
 
+dependencies:
+  prism-code-editor:
+    specifier: ^3.0.1
+    version: 3.0.1
+
 devDependencies:
   '@types/chrome':
     specifier: ^0.0.262
@@ -2002,6 +2007,10 @@ packages:
     resolution: {integrity: sha512-66hKPCr+72mlfiSjlEB1+45IjXSqvVAIy6mocupoww4tBFE9R9IhwwUGoI4G++Tc9Aq+2rxOt0RFU6gPcrte0A==}
     engines: {node: '>= 0.8'}
     dev: true
+
+  /prism-code-editor@3.0.1:
+    resolution: {integrity: sha512-EJFKs2TEcaeHdelrFONiB60nPuETRzD+uQRc8axJdPXdq0dSWn/cjIfW7OhIjyhIV2MLL+qsZJnq6ZXh1Z6viQ==}
+    dev: false
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}

@@ -1,6 +1,7 @@
 import notes from './features/notes'
 import clock from './features/clock'
 import weather from './features/weather'
+import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
@@ -14,8 +15,8 @@ import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
+import { stringMaxSize, freqControl, linksDataMigration, minutator } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { stringMaxSize, freqControl, linksDataMigration } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
@@ -338,20 +339,39 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
+	let theme = 'light'
+
+	switch (value) {
+		case 'disable':
+			theme = 'light'
+			break
+
+		case 'enable':
+			theme = 'dark'
+			break
+
+		case 'system':
+			theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+			break
+
+		case 'auto': {
+			const now = minutator(new Date())
+			const { sunrise, sunset } = suntime()
+			theme = now <= sunrise || now > sunset ? 'dark' : 'light'
+			break
+		}
+	}
+
+	document.documentElement.dataset.theme = theme
+
 	if (isEvent) {
 		storage.sync.set({ dark: value })
+		return
 	}
 
-	if (value === 'auto') {
-		const now = Date.now()
-		const { sunrise, sunset } = suntime()
-		const choice = now <= sunrise || now > sunset ? 'dark' : 'light'
-		document.documentElement.dataset.theme = choice
-	}
-
-	if (value === 'disable') document.documentElement.dataset.theme = 'light'
-	if (value === 'enable') document.documentElement.dataset.theme = 'dark'
-	if (value === 'system') document.documentElement.dataset.theme = ''
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
+	})
 }
 
 export function textShadow(init?: number, event?: number) {
@@ -361,39 +381,6 @@ export function textShadow(init?: number, event?: number) {
 	if (typeof event === 'number') {
 		eventDebounce({ textShadow: val })
 	}
-}
-
-export function customCss(init?: string, event?: { styling: string }) {
-	const styleHead = document.getElementById('styles') as HTMLStyleElement
-	let skipFirstResize = true
-
-	if (event) {
-		if (event?.styling !== undefined) {
-			const val = stringMaxSize(event.styling, 8080)
-			styleHead.textContent = val
-			eventDebounce({ css: val })
-		}
-
-		return
-	}
-
-	if (init) {
-		styleHead.textContent = init
-	}
-
-	onSettingsLoad(function saveHeightOnResize() {
-		const observer = new ResizeObserver((entry) => {
-			if (skipFirstResize) {
-				skipFirstResize = false
-				return
-			}
-
-			const rect = entry[0].contentRect
-			eventDebounce({ cssHeight: Math.round(rect.height + rect.top * 2) })
-		})
-
-		observer.observe(document.getElementById('cssEditor') as HTMLElement)
-	})
 }
 
 // Unfocus address bar on chromium

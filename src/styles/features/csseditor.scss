@@ -1,0 +1,194 @@
+//
+//	CSS Editor
+//
+
+.prism-code-editor {
+	font-size: 14px;
+	font-family: $monospace;
+	overflow: auto;
+	display: grid;
+	width: 100%;
+	line-height: 1.4;
+	--_pse: var(--padding-inline, 0.75em);
+	--_ns: var(--number-spacing, 0.75em);
+	padding: 1.3em;
+	tab-size: 1.5em;
+	border: none;
+	border-radius: 10px;
+	box-sizing: border-box;
+	background: var(--color-param);
+	-webkit-user-select: none;
+	user-select: none;
+	isolation: isolate;
+	white-space: pre;
+}
+.pce-wrapper {
+	margin: 0.5em 0;
+	position: relative;
+	pointer-events: none;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
+}
+.prism-code-editor textarea {
+	all: unset;
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
+	color: #0000;
+	-webkit-user-select: auto;
+	user-select: auto;
+	overflow: hidden;
+	pointer-events: auto;
+	padding: 0 var(--_pse) 0 var(--padding-left);
+}
+.pce-no-selection textarea:focus {
+	z-index: 1;
+}
+.pce-line {
+	padding: 0 var(--_pse) 0 0;
+	margin: 0 0 0 var(--padding-left);
+	position: relative;
+}
+.pce-line:before {
+	position: sticky;
+	height: 100%;
+	z-index: 2;
+	left: 0;
+	width: var(--padding-left);
+}
+.pce-wrap .pce-line:before {
+	position: absolute;
+}
+.pce-overlays,
+div.pce-overlays > * {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+.pce-wrap {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.token.italic {
+	font-style: italic;
+}
+.token.bold,
+.token.important {
+	font-weight: 700;
+}
+
+/*
+	DARK / LIGHT THEMES
+	using github style (i think)
+*/
+
+[data-theme='dark'] .prism-code-editor {
+	color-scheme: dark;
+	caret-color: #aeafad;
+	--selection-bg: #264f78;
+	--comment: #6a9955;
+	--plaintext: #d4d4d4;
+	--number: #b5cea8;
+	--string: #ce9178;
+	--important: #569cd6;
+	--atrule: #c586c0;
+	--class: #4ec9b0;
+	--variable: #9cdcfe;
+	--selector: #d7ba7d;
+	--color: #ce9178;
+	--css: #d4d4d4;
+	/* useless ? */
+	--constant: #4fc1ff;
+	--function: #dcdcaa;
+}
+
+[data-theme='light'] .prism-code-editor {
+	color-scheme: light;
+	caret-color: #000;
+	--selection-bg: #add6ff;
+	--comment: green;
+	--plaintext: #111;
+	--number: #098658;
+	--string: #a31515;
+	--important: #00f;
+	--atrule: #af00db;
+	--class: #267f99;
+	--variable: #001080;
+	--selector: maroon;
+	--color: #0451a5;
+	--css: #111;
+	/* useless ? */
+	--constant: #001080;
+	--function: #795e26;
+}
+
+.prism-code-editor textarea::selection {
+	color: transparent;
+	background: var(--selection-bg);
+}
+.token.comment {
+	color: var(--comment);
+}
+.token.punctuation,
+.token.attr-equals,
+.token.operator,
+.token.combinator,
+.token.plain-text {
+	color: var(--plaintext);
+}
+.token.number,
+.token.symbol,
+.token.inserted,
+.token.unit {
+	color: var(--number);
+}
+.token.group,
+.token.string,
+.token.char,
+.token.deleted {
+	color: var(--string);
+}
+
+.token.keyword,
+.token.important,
+.token.token.interpolation-punctuation,
+.token.boolean,
+.token.tag,
+.token.entity {
+	color: var(--important);
+}
+.token.atrule .token.rule {
+	color: var(--atrule);
+}
+.token.function,
+.token.alternation {
+	color: var(--function);
+}
+.token.class {
+	color: var(--class);
+}
+.token.atrule,
+.token.atrule .url,
+.token.property,
+.token.variable,
+.token.parameter,
+.token.interpolation {
+	color: var(--variable);
+}
+.token.selector,
+.token.escape {
+	color: var(--selector);
+}
+.token.color {
+	color: var(--color);
+}
+.token.constant {
+	color: var(--constant);
+}
+.language-css {
+	color: var(--css);
+}
