@@ -1,9 +1,7 @@
 import { stringMaxSize } from '../utils'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
-
-import { createEditor } from 'prism-code-editor'
-import 'prism-code-editor/prism/languages/css-extras'
+import { tradThis } from '../utils/translations'
 
 export default function customCss(init?: string, event?: { styling: string }) {
 	const stylelink = document.getElementById('styles') as HTMLStyleElement
@@ -22,12 +20,15 @@ export default function customCss(init?: string, event?: { styling: string }) {
 		stylelink.textContent = init
 	}
 
-	onSettingsLoad(() => {
+	onSettingsLoad(async () => {
+		const { createEditor } = await import('prism-code-editor')
+		await import('prism-code-editor/prism/languages/css-extras')
+
 		const editor = createEditor('#css-editor', {
 			lineNumbers: false,
 			language: 'css',
 			wordWrap: true,
-			value: init || '/* Type in your custom CSS */',
+			value: init || `/* ${tradThis('Type in your custom CSS')} */`,
 		})
 
 		editor.addListener('update', (value) => {
