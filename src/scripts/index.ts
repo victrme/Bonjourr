@@ -15,8 +15,8 @@ import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
+import { stringMaxSize, freqControl, linksDataMigration, minutator } from './utils'
 import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { stringMaxSize, freqControl, linksDataMigration } from './utils'
 import { eventDebounce } from './utils/debounce'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
@@ -352,20 +352,39 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
+	let theme = 'light'
+
+	switch (value) {
+		case 'disable':
+			theme = 'light'
+			break
+
+		case 'enable':
+			theme = 'dark'
+			break
+
+		case 'system':
+			theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+			break
+
+		case 'auto': {
+			const now = minutator(new Date())
+			const { sunrise, sunset } = suntime()
+			theme = now <= sunrise || now > sunset ? 'dark' : 'light'
+			break
+		}
+	}
+
+	document.documentElement.dataset.theme = theme
+
 	if (isEvent) {
 		storage.sync.set({ dark: value })
+		return
 	}
 
-	if (value === 'auto') {
-		const now = Date.now()
-		const { sunrise, sunset } = suntime()
-		const choice = now <= sunrise || now > sunset ? 'dark' : 'light'
-		document.documentElement.dataset.theme = choice
-	}
-
-	if (value === 'disable') document.documentElement.dataset.theme = 'light'
-	if (value === 'enable') document.documentElement.dataset.theme = 'dark'
-	if (value === 'system') document.documentElement.dataset.theme = ''
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
+	})
 }
 
 export function textShadow(init?: number, event?: number) {
