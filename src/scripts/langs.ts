@@ -26,10 +26,12 @@ export default {
 	gr: 'Ελληνικά',
 	fa: 'فارسی',
 	vi: 'Tiếng Việt',
+	ar: 'العربية',
 }
 
 // is latin only if not included
 export const subsets = {
+	ar: 'arabic',
 	sk: 'latin-ext',
 	pl: 'latin-ext',
 	ro: 'latin-ext',

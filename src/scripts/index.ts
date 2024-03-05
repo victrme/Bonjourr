@@ -43,19 +43,6 @@ try {
 async function startup() {
 	let { sync, local } = await storage.init()
 
-	// -------- TEMPORAIRE
-	// To remove for next version, or it could show 19.0 popup twice !!
-	const isNotNewUser = sync.reviewPopup === 'removed' || parseInt(sync?.reviewPopup + '') > 30
-	const aboutNotSaved = sync?.about?.version === undefined
-
-	if (isNotNewUser && aboutNotSaved) {
-		sync.about = {
-			browser: SYNC_DEFAULT.about.browser,
-			version: '1.18.4',
-		}
-	}
-	// -------- TEMPORAIRE END
-
 	const OLD_VERSION = sync?.about?.version
 	const versionChanged = OLD_VERSION !== CURRENT_VERSION
 	const firstStart = OLD_VERSION === undefined && Object.keys(sync).length === 0

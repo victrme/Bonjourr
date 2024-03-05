@@ -84,6 +84,7 @@
 	.uploadContainer,
 	#submitSave,
 	#i_refresh,
+	#cssEditor,
 	.tooltip,
 	.param,
 	select,
@@ -136,7 +137,8 @@
 
 	select,
 	input,
-	button {
+	button,
+	textarea {
 		border-radius: 8px;
 		color: var(--color-text);
 		-webkit-appearance: none;

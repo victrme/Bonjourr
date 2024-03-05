@@ -1,3 +1,20 @@
+## 19.1.0
+
+-   Changes:
+    -   Added middle click to open all links in folder
+-   Fixes:
+    -   Only primary click can select multiple links (#303)
+    -   Only import link pages with different titles (#311)
+    -   Verify font subset before importing (#308)
+    -   Longer link titles (#301)
+-   Translations:
+    -   Added Vietnamese translation, thank you @chuanghiten !
+    -   Added Arabic translation, thanks @aldoyh !
+    -   Updated Russian - @nvlveu
+    -   Updated Simplified Chinese - @baozidai
+    -   Updated Ukrainian - @wandersher
+    -   Updated Romanian - @UnifeGi
+
 ## 19.0.0
 
 -   Quick links:
@@ -27,6 +44,8 @@
     -   Traditional Chinese updated by @unknownnumbers
     -   Added Portuguese, thanks @harkadya & @TSCondeco !
     -   Added Japanese, thanks @Kou365 & IshiharaErika !
+
+$~~~~~~~~~~~$
 
 ## 1.18.4
 

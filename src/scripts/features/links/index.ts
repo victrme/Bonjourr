@@ -224,7 +224,7 @@ function initRows(row: number, style: string) {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
 		small: { width: 2.5, gap: 2 },
-		inline: { width: 10, gap: 2 },
+		inline: { width: 11, gap: 2 },
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 

@@ -443,7 +443,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
 		const timeOfDay = now < sunrise || now > sunset ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.svg`
 
 		icon.src = iconSrc
 	}
