@@ -130,9 +130,9 @@
 		background-color: var(--color-input);
 	}
 
-	// textarea {
-	// 	font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
-	// }
+	textarea {
+		font-family: $monospace;
+	}
 
 	select,
 	input,
@@ -928,21 +928,6 @@
 			}
 		}
 	}
-}
-
-//
-//	CSS Editor
-//
-
-.prism-code-editor {
-	width: 100%;
-	padding: 1.3em;
-	font-size: 13px;
-	tab-size: 1.5em;
-	border: none;
-	border-radius: 10px;
-	box-sizing: border-box;
-	background-color: var(--color-param);
 }
 
 //

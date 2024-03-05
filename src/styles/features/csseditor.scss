@@ -1,14 +1,22 @@
+//
+//	CSS Editor
+//
+
 .prism-code-editor {
 	font-size: 14px;
-	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+	font-family: $monospace;
 	overflow: auto;
 	display: grid;
-	background: var(--editor__bg);
+	width: 100%;
 	line-height: 1.4;
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
-	--padding-left: var(--_pse);
-	scroll-padding-left: var(--padding-left);
+	padding: 1.3em;
+	tab-size: 1.5em;
+	border: none;
+	border-radius: 10px;
+	box-sizing: border-box;
+	background: var(--color-param);
 	-webkit-user-select: none;
 	user-select: none;
 	isolation: isolate;
