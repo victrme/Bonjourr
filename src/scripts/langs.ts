@@ -1,5 +1,4 @@
 export default {
-	ar: 'العربية',
 	en: 'English',
 	fr: 'Français',
 	sk: 'Slovenský',
@@ -27,6 +26,7 @@ export default {
 	gr: 'Ελληνικά',
 	fa: 'فارسی',
 	vi: 'Tiếng Việt',
+	ar: 'العربية',
 }
 
 // is latin only if not included
