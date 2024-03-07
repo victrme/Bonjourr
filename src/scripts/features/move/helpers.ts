@@ -1,11 +1,6 @@
 import { BROWSER } from '../../defaults'
 import { activeID } from '.'
 
-type Layout = Sync.Move.Layout
-type Grid = Layout['grid']
-type Key = Sync.Move.Key
-type Selection = Sync.Move.Selection
-
 export const elements = <const>{
 	time: document.getElementById('time'),
 	main: document.getElementById('main'),
@@ -50,15 +45,15 @@ export function widgetStatesToData(states: [Widgets, boolean][], data: Sync.Stor
 	return data
 }
 
-export function areaStringToLayoutGrid(area: string) {
+export function areaStringToLayoutGrid(area: string): string[][] {
 	let splitchar = BROWSER === 'safari' ? `\"` : "'"
 	let rows = area.split(splitchar).filter((a) => a.length > 1)
 	let grid = rows.map((r) => r.split(' '))
 
-	return grid as Grid
+	return grid
 }
 
-export function layoutToGridAreas(grid: Grid) {
+export function layoutToGridAreas(grid: string[][]) {
 	let areas = ``
 
 	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
@@ -67,7 +62,7 @@ export function layoutToGridAreas(grid: Grid) {
 	return areas
 }
 
-export function getEnabledWidgetsFromStorage(data: Sync.Storage): Sync.Move.Key[] {
+export function getEnabledWidgetsFromStorage(data: Sync.Storage): Widgets[] {
 	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
 	// Time & main in first place ensures grid size is enough to add quotes & links
 	let displayed = {
@@ -81,14 +76,14 @@ export function getEnabledWidgetsFromStorage(data: Sync.Storage): Sync.Move.Key[
 
 	return Object.entries(displayed)
 		.filter(([_, val]) => val)
-		.map(([key, _]) => key as Key)
+		.map(([key, _]) => key as Widgets)
 }
 
-export function getEnabledWidgetsFromGrid(grid: Grid): Key[] {
-	let flat = [...grid.flat()]
-	flat = flat.filter((str) => str !== '.') // remove empty cells
-	flat = flat.filter((str, i) => flat.indexOf(str) === i) // remove duplicates
-	return flat as Key[]
+export function getEnabledWidgetsFromGrid(area: string): Widgets[] {
+	const list = area.replaceAll("'", '').replaceAll('.', '').split(' ')
+	const widgets = list.filter((str, i) => list.indexOf(str) === i) // remove duplicates
+
+	return widgets as Widgets[]
 }
 
 export function findIdPositions(
@@ -139,7 +134,7 @@ export function isRowEmpty(grid: Grid, index: number) {
 	return empty
 }
 
-export function spansInGridArea(grid: Grid, id: Key, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
+export function spansInGridArea(grid: string[][], id: Widgets, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
 	function addSpans(arr: string[]) {
 		let target = arr.indexOf(id)
 		let stopper = [false, false]
@@ -195,13 +190,13 @@ export function spansInGridArea(grid: Grid, id: Key, { toggle, remove }: { toggl
 		if (toggle === 'row') row = hasDuplicateInArray(row) ? removeSpans(row) : addSpans(row)
 	}
 
-	grid.forEach((r, i) => (grid[i][posCol] = col[i])) // Row changes
-	grid[posRow].forEach((r, i) => (grid[posRow][i] = row[i])) // Column changes
+	grid.forEach((_, i) => (grid[i][posCol] = col[i])) // Row changes
+	grid[posRow].forEach((_, i) => (grid[posRow][i] = row[i])) // Column changes
 
 	return grid
 }
 
-export function gridWidget(grid: Grid, selection: Selection, id: Key, add: boolean) {
+export function gridWidget(grid: Grid, selection: Sync.Move['column'], id: Key, add: boolean) {
 	function addWidget() {
 		if (grid.length === 0) {
 			if (selection === 'single') return [[id]]

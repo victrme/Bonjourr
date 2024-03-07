@@ -9,40 +9,37 @@ import {
 	getEnabledWidgetsFromGrid,
 } from './helpers'
 
-type Layout = Sync.Move.Layout
-type Grid = Layout['grid']
-type Key = Sync.Move.Key
-type Item = Sync.Move.Item
-type Selection = Sync.Move.Selection
-
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let resetTimeout: number
 
-export function setGridAreas(grid: Grid) {
-	document.documentElement.style.setProperty('--grid', layoutToGridAreas(grid))
+export function setGridAreas(grid?: string) {
+	document.documentElement.style.setProperty('--grid', grid ?? "'time' 'main' 'quicklinks'")
 }
 
-export function setAlign(id: Key, item?: Item) {
+export function setAlign(id: Widgets, align?: string) {
 	const elem = elements[id]
 
 	if (elem) {
-		elem.style.placeSelf = item?.box || ''
+		elem.style.placeSelf = align?.box || ''
 
 		if (id === 'quicklinks') {
-			const flex = item?.text == 'left' ? 'flex-start' : item?.text == 'right' ? 'flex-end' : ''
+			const flex = align?.text == 'left' ? 'flex-start' : align?.text == 'right' ? 'flex-end' : ''
 			const linklist = document.getElementById('link-list') as HTMLElement
 			linklist.style.justifyContent = flex
 		} else {
-			elem.style.textAlign = item?.text || ''
+			elem.style.textAlign = align?.text || ''
 		}
 	}
 }
 
-export function setAllAligns(items: Layout['items']) {
-	Object.keys(elements).forEach((key) => {
-		const id = key as Key
-		setAlign(id, items[id])
-	})
+export function setAllAligns(layout?: Partial<Sync.MoveLayout>) {
+	if (!layout) return
+
+	const aligns = Object.entries(layout).filter(([key, _]) => key !== 'grid')
+
+	for (const [widget, align] of aligns) {
+		setAlign(widget, align)
+	}
 }
 
 export function manageGridSpanner(selection: string) {
@@ -79,8 +76,10 @@ export const buttonControl = {
 		})
 	},
 
-	grid: (id: Key) => {
-		const grid = areaStringToLayoutGrid(document.documentElement?.style.getPropertyValue('--grid') || '')
+	grid: (id: Widgets | 'none') => {
+		const property = document.documentElement?.style.getPropertyValue('--grid') || ''
+		const grid = areaStringToLayoutGrid(property)
+
 		if (grid.length === 0) return
 
 		let top = false
@@ -121,7 +120,7 @@ export const buttonControl = {
 		})
 	},
 
-	span: (id: Key) => {
+	span: (id: Widgets) => {
 		function applyStates(dir: 'col' | 'row', state: boolean) {
 			const dirButton = document.querySelector(`#grid-span-${dir}s`)
 			const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
