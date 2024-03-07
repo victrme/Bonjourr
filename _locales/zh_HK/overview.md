@@ -31,7 +31,7 @@ Bonjourr 致力於追求外觀和感受上的極簡, 同時仍能為您帶來許
 Bonjourr 是用 vanilla JavaScript 構建的, 並儘可能地優化至了最佳性能.
 
 🔎 搜索欄
-Bonjourr 的集成搜索欄兼容所有搜索引擎. 沒錯, 是全部! 這包括通常的 Google、Bing、DuckDuckGo、Yahoo、Startpage 以及其他公司, 如 Ecosia、Lilo 和 Qwant. 如果您願意, 您甚至可以添加您自己的自定義搜索引擎.
+Bonjourr 的集成搜索欄兼容所有搜索引擎. 沒錯, 是全部! 如果您願意, 您甚至可以添加您自己的自定義搜索引擎.
 
 🕰 模擬時鐘
 Bonjourr 的默認時鐘與在 iPhone 和其他 iOS 設備上的時鐘相似. 但是, 如果您想要更具異國情調的東西, 您可以用一個非常 coooooool 的模擬時鐘替換它, 並且可以根據您的喜好對其進行自定義.
@@ -57,4 +57,4 @@ Bonjourr 的默認時鐘與在 iPhone 和其他 iOS 設備上的時鐘相似. �
 想要在您的主頁上使用特定字體嗎? 借助 Bonjourr 與 Google 字體的集成, 您可以輕鬆選擇它.
 
 🌎 多語言
-感謝我們出色的志願者, Bonjourr 具有 15 種不同的語言版本.
+感謝我們出色的志願者, Bonjourr 具有 +20 種不同的語言版本.

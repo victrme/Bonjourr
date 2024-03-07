@@ -1,19 +1,20 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-	testDir: './src/tests',
-	outputDir: './src/tests/test-results',
+	testDir: './',
+	preserveOutput: 'never',
 	reporter: 'null',
-	timeout: 5000,
+	timeout: 10000,
 	use: {
-		baseURL: 'http://127.0.0.1:5500/release/online/index.html',
+		baseURL: 'http://127.0.0.1:8080/index.html',
 	},
 	webServer: [
-		{ command: 'pnpm --filter api-cache dev' },
-		{ command: 'gulp buildtest && gulp test' },
 		{
-			command: 'python -m http.server 5500 > NUL 2>&1',
-			url: 'http://127.0.0.1:5500/release/online/index.html',
+			command: 'http-server ../release/online',
+			reuseExistingServer: !process.env.CI,
+		},
+		{
+			command: 'wrangler dev --ip=127.0.0.1',
 			reuseExistingServer: !process.env.CI,
 		},
 	],

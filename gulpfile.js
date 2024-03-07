@@ -1,7 +1,6 @@
 import gulp from 'gulp'
 import rename from 'gulp-rename'
 import replace from 'gulp-replace'
-import htmlmin from 'gulp-htmlmin'
 import gulpsass from 'gulp-sass'
 import esbuild from 'esbuild'
 import * as sasscompiler from 'sass'
@@ -10,17 +9,8 @@ const { parallel, src, dest, watch } = gulp
 const sass = gulpsass(sasscompiler)
 
 function html(platform) {
-	//
-	// Index & settings minified
-	// Multiple scripts tags => only main.js
-	//
-
 	return () => {
 		const assets = ['src/*.html']
-
-		// no background.html on chrome because manifest v3
-		if (/edge|chrome|online/.test(platform)) assets.push('!src/background.html')
-
 		const stream = src(assets)
 
 		if (platform === 'edge') {
@@ -34,7 +24,7 @@ function html(platform) {
 			stream.pipe(replace(`<!-- webext-storage -->`, `<script src="src/scripts/webext-storage.js"></script>`))
 		}
 
-		return stream.pipe(htmlmin({ collapseWhitespace: true })).pipe(dest(`release/${platform}`))
+		return stream.pipe(dest(`release/${platform}`))
 	}
 }
 
@@ -45,17 +35,15 @@ function scripts(platform, env) {
 			outfile: 'release/online/src/scripts/main.js',
 			format: 'iife',
 			bundle: true,
-			minifySyntax: env === 'prod',
-			minifyWhitespace: env === 'prod',
+			minifySyntax: env === 'PROD',
+			minifyWhitespace: env === 'PROD',
 		})
 
-		const stream = src('release/online/src/scripts/main.js')
+		console.log('[13:37:00] Created build for', env, 'environnement')
 
-		if (env === 'test') {
-			stream.pipe(replace(`https://api.bonjourr.lol`, `http://127.0.0.1:8787`))
-		}
-
-		return stream.pipe(dest(`release/${platform}/src/scripts`))
+		return src('release/online/src/scripts/main.js')
+			.pipe(replace('ENVIRONNEMENT = "PROD"', `ENVIRONNEMENT = "${env}"`))
+			.pipe(dest(`release/${platform}/src/scripts`))
 	}
 }
 
@@ -137,35 +125,35 @@ const taskExtension = (from, env) => [
 //
 
 export const online = async function () {
-	watch(filesToWatch, parallel(...taskOnline()))
+	watch(filesToWatch, parallel(...taskOnline('DEV')))
 }
 
 export const chrome = async function () {
-	watch(filesToWatch, parallel(...taskExtension('chrome')))
+	watch(filesToWatch, parallel(...taskExtension('chrome', 'DEV')))
 }
 
 export const edge = async function () {
-	watch(filesToWatch, parallel(...taskExtension('edge')))
+	watch(filesToWatch, parallel(...taskExtension('edge', 'DEV')))
 }
 
 export const firefox = async function () {
-	watch(filesToWatch, parallel(...taskExtension('firefox')))
+	watch(filesToWatch, parallel(...taskExtension('firefox', 'DEV')))
 }
 
 export const safari = async function () {
-	watch(filesToWatch, parallel(...taskExtension('safari')))
+	watch(filesToWatch, parallel(...taskExtension('safari', 'DEV')))
 }
 
 export const test = async function () {
-	watch(filesToWatch, parallel(...taskOnline('test')))
+	watch(filesToWatch, parallel(...taskOnline('TEST')))
 }
 
-export const buildtest = parallel(...taskOnline('test'))
+export const buildtest = parallel(...taskOnline('TEST'))
 
 export const build = parallel(
-	...taskOnline('prod'),
-	...taskExtension('firefox', 'prod'),
-	...taskExtension('chrome', 'prod'),
-	...taskExtension('edge', 'prod'),
-	...taskExtension('safari', 'prod')
+	...taskOnline('PROD'),
+	...taskExtension('firefox', 'PROD'),
+	...taskExtension('chrome', 'PROD'),
+	...taskExtension('edge', 'PROD'),
+	...taskExtension('safari', 'PROD')
 )

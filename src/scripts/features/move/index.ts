@@ -250,11 +250,11 @@ function resetButtonConfirm(): boolean {
 		b_resetlayout.dataset.confirm = 'true'
 
 		resetTimeout = setTimeout(() => {
-			b_resetlayout.textContent = tradThis('Reset')
+			b_resetlayout.textContent = tradThis('Reset layout')
 			b_resetlayout.dataset.confirm = ''
 		}, 1000)
 	} else {
-		b_resetlayout.textContent = tradThis('Reset')
+		b_resetlayout.textContent = tradThis('Reset layout')
 		b_resetlayout.dataset.confirm = ''
 	}
 
@@ -423,10 +423,11 @@ function layoutChange() {
 
 	interfaceTransition.first(() => {
 		interfaceFadeOut()
-		document.dispatchEvent(new CustomEvent('widgets-toggle', { detail: list }))
 	})
 
 	interfaceTransition.then(async () => {
+		toggleWidgetInSettings(list)
+		toggleWidgetOnInterface(list)
 		setAllAligns(layout.items)
 		setGridAreas(layout.grid)
 		buttonControl.layout(move.selection)

@@ -31,7 +31,7 @@ Yeni sekmelerinizin her zaman taze hissetmesi için en güzel Unsplash fotoğraf
 Bonjourr vanilla JavaScript ile oluşturulmuştur ve mümkün olan en iyi performans için optimize edilmiştir.
 
 🔎 Arama çubuğu
-Bonjourr'un entegre arama çubuğu tüm arama motorlarıyla uyumludur. Evet, hepsiyle! Buna Google, Bing, DuckDuckGo, Yahoo, Startpage'in yanı sıra Ecosia, Lilo ve Qwant gibi diğerleri de dahildir. İsterseniz, kendi özel arama motorunuzu bile ekleyebilirsiniz.
+Bonjourr'un entegre arama çubuğu tüm arama motorlarıyla uyumludur. Evet, hepsiyle! İsterseniz, kendi özel arama motorunuzu bile ekleyebilirsiniz.
 
 🕰 Analog saat
 Bonjourr'un varsayılan saati, iPhone ve diğer iOS cihazlarınızdakine benzeyecek şekilde tasarlanmıştır. Ancak daha egzotik bir şey isterseniz, onu çok havalı bir analog saatle değiştirebilir ve istediğiniz gibi özelleştirebilirsiniz.
@@ -57,4 +57,4 @@ Aklınızda belirli bir fikir mi var? Bonjourr, özel stiller bölümüyle sizi 
 Ana sayfanızda belirli bir yazı tipi mi istiyorsunuz? Bonjourr'un Google Fonts ile entegrasyonu sayesinde kolayca seçebilirsiniz.
 
 🌎 Çoklu Dil
-Müthiş katılımcılarımız sayesinde Bonjourr 15 farklı dilde mevcuttur.
+Müthiş katılımcılarımız sayesinde Bonjourr +20 farklı dilde mevcuttur.

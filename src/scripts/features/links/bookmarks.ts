@@ -30,7 +30,13 @@ onSettingsLoad(() => {
 export default async function linksImport() {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const foldersdom = Object.values(document.querySelectorAll<HTMLDivElement>('.bookmarks-folder'))
-	const treenode = await getBookmarkTree()
+	let treenode = await getBookmarkTree()
+
+	if (!treenode) {
+		if (await getPermissions()) {
+			treenode = await getBookmarkTree()
+		}
+	}
 
 	if (!treenode) {
 		return
@@ -189,13 +195,15 @@ function addBookmarksFolderToDOM() {
 }
 
 async function getPermissions(): Promise<boolean> {
-	const permission = await chrome.permissions.request({ permissions: ['bookmarks'] })
+	const namespace = PLATFORM === 'firefox' ? browser : chrome
+	const permission = await namespace.permissions.request({ permissions: ['bookmarks'] })
 	return permission
 }
 
 async function getBookmarkTree(): Promise<chrome.bookmarks.BookmarkTreeNode[] | undefined> {
 	const namespace = PLATFORM === 'firefox' ? browser : chrome
-	const treenode = await namespace.bookmarks.getTree()
 
-	return treenode
+	if (namespace?.bookmarks) {
+		return await namespace.bookmarks.getTree()
+	}
 }

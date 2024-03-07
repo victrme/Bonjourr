@@ -1,0 +1,46 @@
+dialog {
+	color: var(--color-text);
+	background-color: var(--color-dialog);
+	border: 1px solid var(--color-dialog-border);
+	border-radius: 8px;
+	backdrop-filter: blur(4em);
+	-webkit-backdrop-filter: blur(4em);
+	box-shadow: 0px 0px 15px #0004;
+
+	hr {
+		border-color: var(--color-dialog-border);
+	}
+
+	button {
+		border-radius: 6px;
+		border: 3px solid transparent;
+		background-color: transparent;
+		text-align: initial;
+		padding: 2px 12px;
+		color: var(--color-text);
+		outline: none;
+		cursor: pointer;
+
+		&:disabled {
+			opacity: 0.3;
+			cursor: default;
+			background-color: transparent;
+
+			&:hover {
+				color: inherit;
+				background-color: inherit;
+			}
+		}
+
+		&:focus-visible,
+		&:hover {
+			color: white;
+			background-color: #2c7be5;
+
+			&.btn-red {
+				color: white;
+				background-color: #e64b43;
+			}
+		}
+	}
+}

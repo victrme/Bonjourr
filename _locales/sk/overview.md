@@ -31,7 +31,7 @@ Ručne sme vybrali niektoré z najkrajších fotografií Unsplash, takže vaše 
 Bonjourr je vytvorený pomocou vanilla JavaScriptu a optimalizovaný pre čo najlepší výkon.
 
 🔎 Vyhľadávací panel
-Integrovaný vyhľadávací panel Bonjourr je kompatibilný so všetkými vyhľadávačmi. Áno, so všetkými! To zahŕňa obvyklé Google, Bing, DuckDuckGo, Yahoo, Startpage, ako aj ďalšie, napríklad Ecosia, Lilo a Qwant. Ak chcete, môžete dokonca pridať vlastný vyhľadávač.
+Integrovaný vyhľadávací panel Bonjourr je kompatibilný so všetkými vyhľadávačmi. Áno, so všetkými! Ak chcete, môžete dokonca pridať vlastný vyhľadávač.
 
 🕰 Analógové hodiny
 Predvolené hodiny Bonjourr sú vytvorené tak, aby sa podobali tým, ktoré máte na iPhone a iných zariadeniach so systémom iOS. Ak by ste však chceli niečo exotickejšie, môžete ich nahradiť veľmi podarenými analógovými hodinami a prispôsobiť si ich podľa svojich predstáv.
@@ -57,4 +57,4 @@ Máte na mysli konkrétnu predstavu? Bonjourr vám ponúka sekciu vlastných št
 Chcete na svojej domovskej stránke špecifické písmo ? Môžete si ho jednoducho vybrať vďaka integrácii Bonjourr s Google Fonts.
 
 🌎 Viacjazyčné
-Vďaka našim úžasným prispievateľom je Bonjourr k dispozícii v 15 rôznych jazykoch.
+Vďaka našim úžasným prispievateľom je Bonjourr k dispozícii v +20 rôznych jazykoch.

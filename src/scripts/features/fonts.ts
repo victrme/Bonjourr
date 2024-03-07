@@ -1,13 +1,13 @@
-import storage from '../storage'
-
-import { SYSTEM_OS } from '../defaults'
+import { getLang, tradThis } from '../utils/translations'
+import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
+import { SYSTEM_OS } from '../defaults'
 import errorMessage from '../utils/errormessage'
-import { tradThis } from '../utils/translations'
 import { apiFetch } from '../utils'
 import { subsets } from '../langs'
 import superinput from '../utils/superinput'
+import storage from '../storage'
 
 type Font = Sync.Font
 
@@ -54,12 +54,11 @@ export default async function customFont(init?: Font, event?: CustomFontUpdate) 
 		try {
 			init = migrateToNewFormat(init)
 			displayFont(init)
+			displayInterface('fonts')
 
 			onSettingsLoad(() => {
 				initFontSettings(init)
 			})
-
-			document.dispatchEvent(new CustomEvent('interface', { detail: 'fonts' }))
 		} catch (e) {
 			errorMessage(e)
 		}
@@ -287,6 +286,14 @@ function setWeightSettings(weights: string[]) {
 //	Helpers
 //
 
+export async function fontIsAvailableInSubset(lang?: string, family?: string) {
+	const fontlist = (await (await apiFetch('/fonts'))?.json()) as Fontsource[]
+	const font = fontlist?.find((item) => item.family === family)
+	const subset = getRequiredSubset(lang)
+
+	return font && font.subsets.includes(subset)
+}
+
 function systemFontChecker(family: string): boolean {
 	// Needs a special method to detect system fonts.
 	// Because of fingerprinting concerns,
@@ -324,9 +331,9 @@ async function waitForFontLoad(family: string): Promise<Boolean> {
 	})
 }
 
-function getRequiredSubset(): string {
-	const lang = document.documentElement.getAttribute('lang') ?? 'en'
+function getRequiredSubset(lang?: string): string {
 	let subset = 'latin'
+	lang = lang ?? getLang()
 
 	if (lang in subsets) {
 		subset = subsets[lang as keyof typeof subsets]

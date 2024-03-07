@@ -31,7 +31,7 @@ We hebben een aantal van de mooiste Unsplash-foto's uitgekozen, zodat uw nieuwe 
 Bonjourr is gebouwd met vanilla JavaScript en geoptimaliseerd voor de best mogelijke prestaties.
 
 🔎 Zoekbalk
-De geïntegreerde zoekbalk van Bonjourr is compatibel met alle zoekmachines. Ja, allemaal! Dat omvat de gebruikelijke Google, Bing, DuckDuckGo, Yahoo, Startpage, maar ook anderen, zoals Ecosia, Lilo en Qwant. Als u wilt, kunt u zelfs uw eigen zoekmachine toevoegen.
+De geïntegreerde zoekbalk van Bonjourr is compatibel met alle zoekmachines. Ja, allemaal! Als u wilt, kunt u zelfs uw eigen zoekmachine toevoegen.
 
 Analoge klok
 Bonjourr's standaard klok is gemaakt om te lijken op wat je hebt op de iPhone en andere iOS-apparaten. Maar als u iets exotischer wilt, kunt u de klok vervangen door een zeer coole analoge klok, die u naar eigen wens kunt aanpassen.
@@ -57,4 +57,4 @@ Heeft u een specifiek idee in gedachten? Bonjourr heeft u gedekt met de aangepas
 Wilt u een specifiek lettertype op uw homepage? U kunt het gemakkelijk selecteren dankzij Bonjourr integreert met Google Fonts.
 
 🌎 Meertalig
-Dankzij onze geweldige medewerkers, is Bonjourr beschikbaar in 15 verschillende talen.
+Dankzij onze geweldige medewerkers, is Bonjourr beschikbaar in +20 verschillende talen.

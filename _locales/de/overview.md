@@ -31,7 +31,7 @@ Wir haben einige der schönsten Unsplash-Fotos handverlesen, damit Ihre neuen Ta
 Bonjourr wurde mit Vanilla JavaScript entwickelt und für die bestmögliche Leistung optimiert.
 
 🔎 Suchleiste
-Die integrierte Suchleiste von Bonjourr ist mit allen Suchmaschinen kompatibel. Ja, mit allen! Dazu gehören die üblichen Google, Bing, DuckDuckGo, Yahoo, Startpage sowie andere, wie Ecosia, Lilo und Qwant. Wenn Sie möchten, können Sie sogar Ihre eigene benutzerdefinierte Suchmaschine hinzufügen.
+Die integrierte Suchleiste von Bonjourr ist mit allen Suchmaschinen kompatibel. Ja, mit allen! Wenn Sie möchten, können Sie sogar Ihre eigene benutzerdefinierte Suchmaschine hinzufügen.
 
 🕰 Analoge Uhr
 Die Standarduhr von Bonjourr ist so gestaltet, dass sie der Uhr auf dem iPhone und anderen iOS-Geräten ähnelt. Wenn du aber etwas Exotischeres haben möchtest, kannst du sie durch eine sehr coole analoge Uhr ersetzen und sie nach deinen Wünschen anpassen.
@@ -57,4 +57,4 @@ Haben Sie eine bestimmte Idee im Kopf? Bonjourr bietet Ihnen mit dem Abschnitt f
 Möchten Sie eine bestimmte Schriftart für Ihre Homepage? Dank der Bonjourr-Integration mit Google Fonts können Sie diese ganz einfach auswählen.
 
 🌎 Mehrsprachig
-Dank unserer großartigen Mitwirkenden ist Bonjourr in 15 verschiedenen Sprachen verfügbar.
+Dank unserer großartigen Mitwirkenden ist Bonjourr in 20+ verschiedenen Sprachen verfügbar.

@@ -63,6 +63,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 		emptyButton?.addEventListener('click', removeInputText)
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
+		document.addEventListener('keydown', searchbarShortcut)
 	} catch (e) {
 		errorMessage(e)
 	}
@@ -407,6 +408,17 @@ function removeInputText() {
 function focusSearchbar() {
 	if (dombuttons?.classList.contains('shown') === false) {
 		domsearchbar?.focus()
+	}
+}
+
+function searchbarShortcut(event: KeyboardEvent) {
+	const target = event.target as Element
+	const fromBody = target.tagName === 'BODY'
+
+	if (fromBody && event.key === '/') {
+		domsearchbar?.focus()
+		domsearchbar?.select()
+		event.preventDefault()
 	}
 }
 

@@ -1,5 +1,7 @@
 <h1 align="center">
-  <a href="https://bonjourr.fr"><img src="https://raw.githubusercontent.com/victrme/Bonjourr/master/src/assets/bonjourr.png" width="50%" alt="Bonjourr's website"></a>
+  <a href="https://bonjourr.fr">
+    <img src="https://raw.githubusercontent.com/victrme/Bonjourr/master/src/assets/bonjourr.png" width="50%" alt="Bonjourr's website">
+  </a>
 </h1>
 
 Bonjourr is a home page for your Internet browser inspired by the looks of iOS.<br>
@@ -22,17 +24,19 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 
 <br>
 
+
+
 ## 🚀 Install Bonjourr!
+[<img src="https://labels.tahoe.be/chrome_download_dark.svg" height="53" alt="Download Bonjourr for Chrome">](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
+[<img src="https://labels.tahoe.be/firefox_download_dark.svg" height="53" alt="Download Bonjourr for Firefox">](https://addons.mozilla.org/firefox/addon/bonjourr-startpage/)
+[<img src="https://labels.tahoe.be/edge_download_dark.svg" height="53" alt="Download Bonjourr for Edge">](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
+[<img src="https://labels.tahoe.be/safari_download_dark.svg" height="53" alt="Download Bonjourr for Safari">](https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236)
 
-<div>
 
-[Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0) •
-[Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) •
-[Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid) •
-[Safari](https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236) •
-[or try it online](https://online.bonjourr.fr)
 
-</div>
+
+You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
+
 
 <br>
 
@@ -79,13 +83,12 @@ If you feel like we've earned it and you want to support independant open source
 
 <br>
 
-
-
 ## 🔧 Built with
 
 -   Styled with [Sass](https://sass-lang.com/guide)
--   Scripts with pure JS
--   Releases bundled with Gulp, [see dependencies](https://github.com/victrme/Bonjourr/network/dependencies)
+-   No frameworks, only pure Typescript
+-   No production dependencies (except [idb-keyval](https://github.com/jakearchibald/idb-keyval) 🙈)
+-   Releases bundled with esbuild and Gulp
 -   Our tiny hands 🙌
 
 <br>
@@ -109,6 +112,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
 -   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
+-   **🇷🇴 Romanian translation** · UnifeGi · [GitHub](https://github.com/UnifeGi)
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
@@ -119,6 +123,8 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
 -   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
+-   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
+-   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
 
 ## 👨‍💻 Running Bonjourr locally
 
@@ -177,5 +183,6 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 ### Online (web version)
 
--   Open a live server, for example using: `python -m http.server`
--   Go to http://localhost:8000/release/online/
+-   Use your prefered live server, serve from `release/online`
+-   Or use `pnpm online:dev` which uses http-server
+-   Go to http://localhost:8080/

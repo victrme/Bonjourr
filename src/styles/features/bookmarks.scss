@@ -13,6 +13,7 @@
 
 	&::backdrop {
 		backdrop-filter: blur(1em);
+		-webkit-backdrop-filter: blur(1em);
 		background-color: #2224;
 		transition: opacity 0.2s;
 	}
@@ -115,30 +116,28 @@
 			width: fit-content;
 		}
 	}
+}
 
-	#bmk_close {
+#bmk_close {
+	&:focus-visible,
+	&:hover {
+		background-color: var(--color-red);
+	}
+}
+
+#bmk_apply {
+	color: white;
+	background-color: var(--color-blue);
+
+	&.none {
+		color: var(--color-text);
 		background-color: transparent;
-
-		&:focus-visible,
-		&:hover {
-			background-color: var(--color-red);
-		}
+		pointer-events: none;
+		opacity: 0.5;
 	}
 
-	#bmk_apply {
-		color: white;
-		background-color: var(--color-blue);
-
-		&.none {
-			color: var(--color-text);
-			background-color: transparent;
-			pointer-events: none;
-			opacity: 0.5;
-		}
-
-		&:focus-visible,
-		&:hover {
-			filter: brightness(1.2);
-		}
+	&:focus-visible,
+	&:hover {
+		filter: brightness(1.2);
 	}
 }

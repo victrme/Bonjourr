@@ -1,6 +1,5 @@
 declare namespace Sync {
 	interface Storage {
-		dateformat: 'eu' | 'us' | 'ja' | 'cn'
 		showall: boolean
 		quicklinks: boolean
 		syncbookmarks?: number
@@ -14,7 +13,9 @@ declare namespace Sync {
 		linktabs: LinkTabs
 		textShadow: number
 		cssHeight: number
-		reviewPopup: number
+		review: number
+		announcements: 'all' | 'major' | 'off'
+		reviewPopup?: number | string
 		background_blur: number
 		background_bright: number
 		css: string
@@ -26,6 +27,7 @@ declare namespace Sync {
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
 		background_type: 'local' | 'unsplash'
+		dateformat: 'eu' | 'us' | 'cn'
 		clock: Clock
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync

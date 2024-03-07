@@ -31,7 +31,7 @@ Wybraliśmy ręcznie jedne z najpiękniejszych zdjęć Unsplash, aby Twoje nowe 
 Bonjourr jest zbudowany w oparciu o waniliowy JavaScript i zoptymalizowany pod kątem jak najlepszej wydajności.
 
 🔎 Pasek wyszukiwania
-Zintegrowany pasek wyszukiwania Bonjourr jest kompatybilny z wszystkimi wyszukiwarkami. Tak, wszystkimi! Należą do nich zwykłe Google, Bing, DuckDuckGo, Yahoo, Startpage, a także inne, takie jak Ecosia, Lilo i Qwant. Jeśli chcesz, możesz nawet dodać własną, niestandardową wyszukiwarkę.
+Zintegrowany pasek wyszukiwania Bonjourr jest kompatybilny z wszystkimi wyszukiwarkami. Tak, wszystkimi! Jeśli chcesz, możesz nawet dodać własną, niestandardową wyszukiwarkę.
 
 🕰 Zegar analogowy
 Domyślny zegar w Bonjourr jest tak skonstruowany, aby przypominał ten z iPhone'a i innych urządzeń z systemem iOS. Ale jeśli chcesz czegoś bardziej egzotycznego, możesz zastąpić go bardzo fajnym zegarem analogowym i dostosować go do swoich potrzeb.
@@ -57,4 +57,4 @@ Masz w głowie konkretny pomysł? Bonjourr ma dla Ciebie rozwiązanie w postaci 
 Chcesz mieć konkretną czcionkę na swojej stronie głównej? Możesz ją łatwo wybrać dzięki integracji Bonjourr z Google Fonts.
 
 🌎 Wielojęzyczność
-Dzięki naszym wspaniałym współpracownikom, Bonjourr jest dostępny w 15 różnych językach.
+Dzięki naszym wspaniałym współpracownikom, Bonjourr jest dostępny w +20 różnych językach.

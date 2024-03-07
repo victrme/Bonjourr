@@ -34,7 +34,11 @@ export default function unsplashBackgrounds(init?: UnsplashInit, event?: Unsplas
 
 	if (init) {
 		try {
-			cacheControl(init.unsplash, init.cache)
+			if (init.unsplash.time === undefined) {
+				initUnsplashBackgrounds(init.unsplash, init.cache)
+			} else {
+				cacheControl(init.unsplash, init.cache)
+			}
 		} catch (e) {
 			errorMessage(e)
 		}
@@ -129,7 +133,7 @@ async function cacheControl(unsplash: Unsplash.Sync, cache?: Unsplash.Local) {
 	let { lastCollec } = unsplash
 	const { every, time, collection, pausedImage } = unsplash
 
-	const needNewImage = freqControl.get(every, time)
+	const needNewImage = freqControl.get(every, time ?? Date.now())
 	const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
 
 	if (needNewCollec && lastCollec !== 'user') {
@@ -197,6 +201,40 @@ async function cacheControl(unsplash: Unsplash.Sync, cache?: Unsplash.Local) {
 
 	storage.sync.set({ unsplash })
 	storage.local.set({ unsplashCache: cache })
+}
+
+async function initUnsplashBackgrounds(unsplash: Unsplash.Sync, cache: Unsplash.Local) {
+	const lastCollec = periodOfDay()
+	let list = await requestNewList(bonjourrCollections[lastCollec])
+
+	if (!list) {
+		return
+	}
+
+	cache[lastCollec] = list
+	unsplash.lastCollec = lastCollec
+	unsplash.time = new Date().getTime()
+	preloadImage(list[0].url)
+
+	// With weather loaded and different suntime
+	// maybe use another collection ?
+
+	await new Promise((sleep) => setTimeout(sleep, 200))
+
+	const lastCollecAgain = periodOfDay()
+
+	if (lastCollec !== lastCollecAgain) {
+		list = (await requestNewList(bonjourrCollections[lastCollecAgain])) ?? []
+		unsplash.lastCollec = lastCollecAgain
+		cache[lastCollecAgain] = list
+	}
+
+	storage.sync.set({ unsplash })
+	storage.local.set({ unsplashCache: cache })
+	sessionStorage.setItem('waitingForPreload', 'true')
+
+	loadBackground(list[0])
+	await preloadImage(list[1].url)
 }
 
 async function requestNewList(collection: string): Promise<Unsplash.Image[] | null> {

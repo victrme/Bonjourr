@@ -2,11 +2,11 @@
 	border: none;
 	border-radius: 1em;
 	background-color: #fff2;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	outline: 0.4em solid transparent;
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 	z-index: -1;
-
-	@include frostedGlass($blur: 2em);
 
 	&:hover {
 		background-color: #fff3;
@@ -70,11 +70,11 @@
 	border-radius: 1em;
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
 	cursor: grab;
 	z-index: 4;
 	direction: ltr;
-
-	@include frostedGlass($blur: 2em);
 
 	&:not(.active) > div:not(#close-mover-wrapper) {
 		pointer-events: none;
@@ -88,7 +88,7 @@
 	}
 
 	button {
-		color: var(--color-text);
+		text-align: center;
 	}
 
 	hr {
@@ -100,6 +100,12 @@
 	}
 }
 
+#grid-mover button,
+#box-alignment-mover button,
+#text-alignment-mover button {
+	padding: 0;
+}
+
 .mover {
 	display: grid;
 
@@ -108,11 +114,6 @@
 		border-radius: 0.2em;
 		min-width: 2.5em;
 		background-color: transparent;
-
-		&:disabled {
-			opacity: 0.3;
-			cursor: default;
-		}
 
 		&:hover:not(:disabled) {
 			background-color: #fff4;
@@ -135,24 +136,18 @@ button.grid-spanner {
 	display: block;
 	width: 60%;
 	margin: 0.3em auto;
-	padding: 0.3em 1.2em;
-	border: none;
-	border-radius: 8px;
-	outline: 2px solid transparent;
-	background-color: #fff4;
+	border-width: 2px;
+	background-color: var(--color-dialog-highlight);
 
 	&:hover:not(:disabled) {
-		background-color: #fff6;
+		color: var(--color-blue);
+		background-color: rgba(var(--blue), 0.15);
 	}
 
 	&.selected:not(:disabled) {
-		background-color: #0072ee22;
-		outline-color: var(--color-blue);
-	}
-
-	&:disabled {
-		cursor: default;
-		opacity: 0.4;
+		color: var(--color-blue);
+		border-color: var(--color-blue);
+		background-color: rgba(var(--blue), 0.25);
 	}
 }
 
@@ -194,35 +189,12 @@ button.grid-spanner {
 	button {
 		padding: 0.5em;
 		@include allCentered();
-
-		img {
-			padding: 5px;
-			height: 15px;
-		}
 	}
 }
 
 #close-mover-wrapper button {
 	display: block;
 	width: 100%;
-	border-radius: 6px;
-	border: 3px solid transparent;
-	background-color: transparent;
-	text-align: initial;
-	padding: 2px 12px;
-	outline: none;
-	cursor: pointer;
-	text-align: center;
-
-	&:focus-visible,
-	&:hover {
-		color: white;
-		background-color: var(--color-blue);
-
-		&.btn-red {
-			background-color: var(--color-red);
-		}
-	}
 }
 
 /*

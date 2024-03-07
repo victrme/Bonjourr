@@ -31,7 +31,7 @@ Kami memilih sendiri beberapa foto Unsplash yang paling indah sehingga tab baru 
 Bonjourr dibangun dengan vanilla JavaScript dan dioptimalkan untuk kinerja terbaik.
 
 🔎 Bilah pencarian
-Bilah pencarian terintegrasi Bonjourr kompatibel dengan semua mesin pencari. Ya, semuanya! Itu termasuk Google, Bing, DuckDuckGo, Yahoo, Startpage serta yang lainnya, seperti Ecosia, Lilo dan Qwant. Jika Anda mau, Anda bahkan bisa menambahkan mesin pencari kustom Anda sendiri.
+Bilah pencarian terintegrasi Bonjourr kompatibel dengan semua mesin pencari. Ya, semuanya! Jika Anda mau, Anda bahkan bisa menambahkan mesin pencari kustom Anda sendiri.
 
 🕰 Jam analog
 Jam bawaan Bonjourr dibuat menyerupai apa yang Anda miliki di iPhone dan perangkat iOS lainnya. Tetapi jika Anda ingin sesuatu yang lebih eksotis, Anda bisa menggantinya dengan jam analog yang sangat keren, dan menyesuaikannya sesuai keinginan Anda.
@@ -57,4 +57,4 @@ Punya ide spesifik dalam pikiran Anda? Bonjourr telah Anda liput dengan bagian g
 Ingin font tertentu di beranda Anda? Anda dapat dengan mudah memilihnya berkat integrasi Bonjourr dengan Google Fonts.
 
 🌎 Multibahasa
-Berkat kontributor kami yang luar biasa, Bonjourr tersedia dalam 15 bahasa yang berbeda.
+Berkat kontributor kami yang luar biasa, Bonjourr tersedia dalam +20 bahasa yang berbeda.

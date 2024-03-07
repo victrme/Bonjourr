@@ -38,7 +38,7 @@ export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as Element[]
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
 	const lis = document.querySelectorAll<HTMLLIElement>('#linkblocks li.block')
-	const tabs = document.querySelectorAll<HTMLDivElement>('#link-title div')
+	const tabs = document.querySelectorAll<HTMLElement>('#tab-title button')
 	const listRect = domlinklist?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
@@ -91,8 +91,7 @@ export default function startDrag(event: PointerEvent) {
 	domlinklist.style.setProperty('--drag-height', Math.floor(listRect?.height) + 'px')
 
 	domlinkblocks?.classList.add('dragging')
-	document.body.classList.add('dragging')
-	document.body.dispatchEvent(new Event('remove-select-all'))
+	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 
 	if (event.pointerType === 'touch') {
@@ -117,12 +116,17 @@ function beforeStartDrag(event: PointerEvent) {
 	li?.addEventListener('pointerup', pointerDeadzone)
 
 	function pointerDeadzone(event: PointerEvent) {
-		const precision = event.pointerType === 'touch' ? 4 : 10
+		const precision = event.pointerType === 'touch' ? 7 : 14
 		const ox = Math.abs(cox - event.offsetX)
 		const oy = Math.abs(coy - event.offsetY)
 
 		const isEndEvents = event.type.match(/pointerup|touchend/)
+		const isHalfOutside = ox > precision / 2 || oy > precision / 2
 		const isOutside = ox > precision || oy > precision
+
+		if (isHalfOutside) {
+			document.dispatchEvent(new Event('stop-select-all'))
+		}
 
 		if (isOutside) {
 			startDrag(event)
@@ -205,8 +209,22 @@ function applyDragChangeParent(id: string) {
 	clearTimeout(dragChangeParentTimeout)
 
 	dragChangeParentTimeout = setTimeout(() => {
-		if (id === draggedId || domlinkblocks?.classList.contains('in-folder')) {
+		const isDraggedId = id === draggedId
+		const inFolder = domlinkblocks?.classList.contains('in-folder')
+		const parentIsTab = parseInt(id) > -1
+
+		if (isDraggedId || inFolder) {
 			return
+		}
+
+		if (parentIsTab) {
+			const buttons = [...document.querySelectorAll<HTMLElement>('#tab-title button')]
+			const selectedIndex = buttons.findIndex((btn) => btn?.classList?.contains('selected'))
+			const parentIsSelectedTab = parseInt(id) === selectedIndex
+
+			if (parentIsSelectedTab) {
+				return
+			}
 		}
 
 		targetId = id

@@ -6,6 +6,21 @@ import { oldJSONToCSV } from '../features/quotes'
 
 export default function filterImports(current: Sync.Storage, toImport: Partial<Sync.Storage>) {
 	//
+	if (toImport.reviewPopup) {
+		toImport.review = toImport.reviewPopup === 'removed' ? -1 : +toImport.reviewPopup
+	}
+
+	// 19.0.0 To new font system
+	if (toImport.font) {
+		toImport.font.weightlist = toImport.font?.availWeights ?? []
+		delete toImport.font.url
+		delete toImport.font.availWeights
+
+		// Always assume it is NOT a system font, unless specified
+		if (toImport.font.system === undefined) {
+			toImport.font.system = false
+		}
+	}
 
 	// <1.18.1 Improved geolocation, removed lastState in sync
 	if (toImport.weather && toImport.weather?.geolocation === undefined) {
@@ -165,6 +180,15 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		if (!link.folder && link.url === importedURLs[ii]) {
 			delete current[link._id]
 		}
+	}
+
+	// Link tabs
+	if (toImport.linktabs) {
+		const importTitles = toImport.linktabs.titles
+		const currentTitles = current.linktabs.titles
+		toImport.linktabs.titles = importTitles.filter((title, i) => {
+			return title != currentTitles[i]
+		})
 	}
 
 	current = deepmergeAll(current, toImport, { about: SYNC_DEFAULT.about }) as Sync.Storage

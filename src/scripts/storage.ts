@@ -5,7 +5,10 @@ type Keyval = {
 	[key: string]: unknown
 }
 
-type AllStorage = { sync: Sync.Storage; local: Local.Storage }
+type AllStorage = {
+	sync: Sync.Storage
+	local: Local.Storage
+}
 
 type Storage = {
 	sync: {
@@ -27,12 +30,24 @@ function verifyDataAsSync(data: Keyval) {
 	data = data ?? {}
 
 	for (const key in SYNC_DEFAULT) {
-		if (!(key in data) && key !== 'move') {
+		if (!(key in data)) {
 			data[key] = SYNC_DEFAULT[key]
 		}
 	}
 
 	return data as Sync.Storage
+}
+
+function verifyDataAsLocal(data: Keyval) {
+	data = data ?? {}
+
+	for (const key in LOCAL_DEFAULT) {
+		if (!(key in data)) {
+			data[key] = LOCAL_DEFAULT[key as keyof typeof LOCAL_DEFAULT]
+		}
+	}
+
+	return data as Local.Storage
 }
 
 export async function getSyncDefaults(): Promise<Sync.Storage> {
@@ -117,8 +132,8 @@ function online(): Storage {
 
 	const init = async () => {
 		return {
-			sync: await sync.get(),
-			local: await local.get(),
+			sync: verifyDataAsSync(await sync.get()),
+			local: verifyDataAsLocal(await local.get()),
 		}
 	}
 
@@ -183,8 +198,8 @@ function webext(): Storage {
 			})
 		}
 
-		const sync = store.sync
-		const local = store.local
+		const sync = verifyDataAsSync(store.sync)
+		const local = verifyDataAsLocal(store.local)
 
 		//@ts-ignore
 		startupStorage = undefined

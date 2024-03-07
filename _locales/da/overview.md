@@ -31,7 +31,7 @@ Vi har håndplukket nogle af de smukkeste Unsplash-fotos, så dine nye faner alt
 Bonjourr er bygget med ren JavaScript og optimeret til den bedst mulige ydeevne.
 
 🔎 Søgebjælke
-Den integrerede søgelinje i Bonjourr er kompatibel med alle søgemaskiner. Ja, dem alle! Den omfatter de sædvanlige Google, Bing, DuckDuckGo, Yahoo, Startpage samt andre, som Ecosia, Lilo og Qwant. Hvis du ønsker det, kan du endda tilføje din egen brugerdefinerede søgemaskine.
+Den integrerede søgelinje i Bonjourr er kompatibel med alle søgemaskiner. Ja, dem alle! Hvis du ønsker det, kan du endda tilføje din egen brugerdefinerede søgemaskine.
 
 🕰 Analogt ur
 Bonjourrs standardur er lavet til at ligne det, du har på iPhone og andre iOS-enheder. Men hvis du gerne vil have noget mere eksotisk, kan du erstatte det med et meget cool analogt ur og tilpasse det, som du vil.
@@ -57,4 +57,4 @@ Har du en specifik idé i tankerne? Bonjourr har dig dækket med afsnittet for b
 Vil du have en bestemt skrifttype på din hjemmeside ? Du kan nemt vælge den takket være Bonjourrs integrering med Google Fonts.
 
 🌎 Flersproget
-Takket være vores fantastiske bidragydere er Bonjourr tilgængelig på 15 forskellige sprog.
+Takket være vores fantastiske bidragydere er Bonjourr tilgængelig på +20 forskellige sprog.

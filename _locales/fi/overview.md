@@ -31,7 +31,7 @@ Valitsimme käsin joitakin kauneimmista Unsplash-kuvista jotta sinun uudet väli
 Bonjourr on rakennettu Vanilla JavaScriptillä ja optimoitu parhaan mahdollisen suorituskyvyn saavuttamiseksi.
 
 🔎 Hakupalkki
-Bonjourrin integroitu hakupalkki on yhteensopiva kaikkien hakukoneiden kanssa. Kyllä, niiden kaikkien! Se sisältää tavalliset Google, Bing, DuckDuckGo, Yahoo, Startpage sekä muut, kuten Ecosia, Lilo ja Qwant. Jos haluat, voit jopa lisätä oman mukautetun hakukoneen.
+Bonjourrin integroitu hakupalkki on yhteensopiva kaikkien hakukoneiden kanssa. Kyllä, niiden kaikkien! Jos haluat, voit jopa lisätä oman mukautetun hakukoneen.
 
 🕰 Analoginen kello
 Bonjourrin oletuskello on tehty muistuttamaan iPhonen ja muiden iOS-laitteiden kelloa. Mutta jos haluat jotain eksoottisempaa, voit korvata sen erittäin siistillä analogisella kellolla ja muokata sitä haluamallasi tavalla.
@@ -57,4 +57,4 @@ Onko sinulla jokin tietty idea mielessä? Bonjourr tarjoaa sinulle mukautettuja 
 Haluatko tietyn fontin kotisivullesi? Voit valita sen helposti Bonjourrin ja Google Fontsin integroinnin ansiosta.
 
 🌎 Monikielinen
-Mahtavien avustajiemme ansiosta, Bonjourr on saatavilla 16 eri kielellä.
+Mahtavien avustajiemme ansiosta, Bonjourr on saatavilla 20+ eri kielellä.

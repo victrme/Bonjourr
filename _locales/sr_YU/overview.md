@@ -18,7 +18,7 @@ Ovo su neke od mogućnosti:
 🔒 Fokus na privatnosti
 🌎 Višejezična podrška
 
-Bonjourr teži da deluje minimalistički, a da vam u isto vreme i dalje nudi mnogo opcija da ga prilagodite psvom ukusu. Podesite sopstvenu pozadinu (ili Unsplash kolekcije!), omogućite prelep analogni sat, podesite sopstveni font i brze veze... Možete čak da pogledate našu dokumentaciju gde smo sastavili neke predloge za prilagođavanje stilova. 
+Bonjourr teži da deluje minimalistički, a da vam u isto vreme i dalje nudi mnogo opcija da ga prilagodite psvom ukusu. Podesite sopstvenu pozadinu (ili Unsplash kolekcije!), omogućite prelep analogni sat, podesite sopstveni font i brze veze... Možete čak da pogledate našu dokumentaciju gde smo sastavili neke predloge za prilagođavanje stilova.
 
 Projekat je u potpunosti otvorenog koda, prilagođen programerima i zapravo poštuje vašu privatnost. Ne prikupljamo nikakve podatke, niti morate da kreirate nalog da biste ih koristili.
 
@@ -31,7 +31,7 @@ Ručno smo odabrali neke od najlepših Unsplash fotografija kako bi se vaše nov
 Bonjourr je napravljen sa vanilla JavaScript-om i optimizovan za najbolje moguće performanse.
 
 🔎 Traka za pretragu
-Integrisana traka za pretragu Bonjourr je kompatibilna sa svim pretraživačima. Da, svi oni! To uključuje uobičajene Google, Bing, DuckDuckGo, Yahoo, Startpage kao i druge, poput EEcosia, Lilo and Qwant-a. Ako želite, možete čak dodati i sopstveni prilagođeni pretraživač.
+Integrisana traka za pretragu Bonjourr je kompatibilna sa svim pretraživačima. Da, svi oni! Ako želite, možete čak dodati i sopstveni prilagođeni pretraživač.
 
 🕰 Analogni sat
 Bonjourr-ov podrazumevani sat je napravljen da liči na ono što imate na iPhone-u i drugim iOS uređajima. Ali ako želite nešto egzotičnije, možete ga zameniti veoma kul analognim satom i prilagoditi ga kako želite.
@@ -43,7 +43,7 @@ U jednoj rečenici dobijate rezime vašeg trenutne temperature i prognozu.
 To ne bi bila prava početna stranica bez omiljenih sajtova/obeleživača! Bonjourr vam omogućava da dodate sopstvene omiljene sajtove/obeleživače, promenite njihove ikone i uvezete svoje trenutne obeleživače iz vašeg pretraživača.
 
 🌘 Tamni režim
-Baš kao i na iOS-u, Bonjourr ima prelep automatski tamni režim. 
+Baš kao i na iOS-u, Bonjourr ima prelep automatski tamni režim.
 
 🥖 Emotikoni kao ikona kartice
 
@@ -57,4 +57,4 @@ Imate na umu konkretnu ideju? Bonjourr poseduje i odeljak za prilagođavanje sti
 Želite određeni font na svojoj početnoj stranici? Možete ga lako izabrati zahvaljujući Bonjourr integraciji sa Google Fonts servisom.
 
 🌎 Višejezičnost
-Zahvaljujući našim sjajnim saradnicima, Bonjourr je dostupan na 19 različitih jezika.
+Zahvaljujući našim sjajnim saradnicima, Bonjourr je dostupan na +20 različitih jezika.

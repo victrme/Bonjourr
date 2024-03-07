@@ -3,14 +3,15 @@ import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
-import customFont from './features/fonts'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
 import moveElements from './features/move'
+import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
+import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import { customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
 
@@ -20,10 +21,11 @@ import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { apiFetch, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
+import { loadCallbacks } from './utils/onsettingsload'
 
 export async function settingsInit() {
 	const data = await storage.sync.get()
@@ -37,14 +39,15 @@ export async function settingsInit() {
 	document.body.appendChild(settingsDom)
 
 	traduction(settingsDom, data.lang)
-	signature()
+	settingsFooter()
 	showall(data.showall, false)
+	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
 	initSettingsEvents()
 	settingsDrawerBar()
-	updateExportJSON()
 	controlOptionsTabFocus(settingsDom)
+	loadCallbacks()
 
 	setTimeout(() => document.dispatchEvent(new Event('settings')))
 }
@@ -92,6 +95,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_provider', data.weather?.provider ?? '')
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
+	setInput('i_announce', data.announcements ?? 'major')
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -101,7 +105,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
 	setCheckbox('i_main', data.main)
-	setCheckbox('i_greethide', data.hide?.greetings === true)
+	setCheckbox('i_greethide', !data.hide?.greetings)
 	setCheckbox('i_notes', data.notes?.on ?? false)
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
@@ -141,7 +145,8 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// No bookmarks import on safari || online
 	if (BROWSER === 'safari' || PLATFORM === 'online') {
-		paramId('b_importbookmarks').setAttribute('style', 'display: none')
+		paramId('importbookmarks')?.setAttribute('style', 'display: none')
+		paramId('syncbookmarks')?.setAttribute('style', 'display: none')
 	}
 
 	// Favicon doesn't work on Safari
@@ -171,13 +176,6 @@ function initOptionsValues(data: Sync.Storage) {
 		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
 		b?.classList.toggle('selected', selectedLayout)
 	})
-
-	// Disables layout change on mobile
-	if (window.innerWidth < 600 && 'ontouchstart' in window) {
-		for (const button of domsettings.querySelectorAll('#grid-layout button')) {
-			button?.setAttribute('disabled', '')
-		}
-	}
 
 	// Time & main hide elems
 	;(function initHideInputs() {
@@ -255,9 +253,19 @@ function initOptionsEvents() {
 		paramId('addlink-inputs').classList.toggle('valid', paramId('addlink-inputs')?.checkValidity())
 	})
 
-	paramId('addlink-inputs').addEventListener('submit', function (this, event) {
+	paramId('addlink-inputs').addEventListener('submit', function (this, event: SubmitEvent) {
+		const formData = new FormData(this as unknown as HTMLFormElement)
+
+		quickLinks(undefined, {
+			addLink: {
+				title: formData.get('addlink-title') + '',
+				url: formData.get('addlink-url') + '',
+			},
+		})
+
+		paramId('i_addlink-url').value = ''
+		paramId('i_addlink-title').value = ''
 		paramId('addlink-inputs').classList.remove('valid')
-		quickLinks(undefined, { addLink: true })
 		event.preventDefault()
 	})
 
@@ -575,6 +583,13 @@ function initOptionsEvents() {
 	})
 
 	//
+	// Updates
+
+	paramId('i_announce').addEventListener('change', function (this) {
+		interfacePopup(undefined, { announcements: this.value })
+	})
+
+	//
 	// Settings managment
 
 	paramId('s_export').addEventListener('click', function () {
@@ -651,6 +666,7 @@ function initSettingsEvents() {
 	const domsettings = document.getElementById('settings')
 	const domsuggestions = document.getElementById('sb-suggestions')
 	const isOnline = PLATFORM === 'online'
+	let isMousingDownOnInput = false
 
 	// On settings changes, update export code
 	const storageUpdate = () => updateExportJSON()
@@ -663,7 +679,112 @@ function initSettingsEvents() {
 		window.addEventListener('beforeunload', unloadUpdate, { once: true })
 	}
 
-	document.getElementById('skiptosettings')?.addEventListener('click', function () {
+	document.body.addEventListener('mousedown', detectTargetAsInputs)
+	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
+	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
+	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
+
+	document.addEventListener('keydown', async function (event) {
+		if (event.altKey && event.code === 'KeyS') {
+			console.clear()
+			console.log(localStorage)
+			console.log(await storage.sync.get())
+		}
+
+		if (event.code === 'Escape') {
+			if (domsuggestions?.classList.contains('shown')) {
+				domsuggestions?.classList.remove('shown')
+				return
+			}
+
+			const open = isOpen()
+
+			if (open.contextmenu) {
+				document.dispatchEvent(new Event('close-edit'))
+			}
+			//
+			else if (open.settings) {
+				toggleSettingsMenu()
+			}
+			//
+			else if (open.selectall) {
+				document.dispatchEvent(new Event('remove-select-all'))
+			}
+			//
+			else if (open.folder) {
+				document.dispatchEvent(new Event('close-folder'))
+			}
+			//
+			else {
+				toggleSettingsMenu()
+			}
+
+			return
+		}
+
+		if (event.code === 'Tab') {
+			document.body.classList.toggle('tabbing', true)
+			return
+		}
+	})
+
+	document.body.addEventListener('click', function (event) {
+		if (isMousingDownOnInput) {
+			return
+		}
+
+		const open = isOpen()
+		const path = (event.composedPath() as Element[]) ?? [document.body]
+		const pathIds = path.map((el) => (el as HTMLElement).id)
+
+		const on = {
+			link: path.some((el) => el?.classList?.contains('block')),
+			body: (path[0] as HTMLElement).tagName === 'BODY',
+			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			interface: pathIds.includes('interface'),
+		}
+
+		if (document.body.classList.contains('tabbing')) {
+			document.body?.classList.toggle('tabbing', false)
+		}
+
+		if ((on.body || on.interface) === false) {
+			return
+		}
+
+		if (open.contextmenu) {
+			document.dispatchEvent(new Event('close-edit'))
+		}
+		//
+		else if (open.settings) {
+			toggleSettingsMenu()
+		}
+		//
+		else if (open.selectall && !on.link) {
+			document.dispatchEvent(new Event('remove-select-all'))
+		}
+		//
+		else if (open.folder && !on.folder) {
+			document.dispatchEvent(new Event('close-folder'))
+		}
+	})
+
+	function isOpen() {
+		return {
+			settings: domsettings?.classList.contains('shown'),
+			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
+			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
+			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
+		}
+	}
+
+	function detectTargetAsInputs(event: Event) {
+		const path = event.composedPath() as Element[]
+		const tagName = path[0]?.tagName ?? ''
+		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
+	}
+
+	function skipToSettings() {
 		toggleSettingsMenu()
 		domsettings?.scrollTo({ top: 0 })
 
@@ -671,52 +792,18 @@ function initSettingsEvents() {
 			const showall = document.getElementById('i_showall') as HTMLButtonElement
 			showall.focus()
 		}, 10)
-	})
+	}
 
-	document.getElementById('showSettings')?.addEventListener('click', function (event) {
-		toggleSettingsMenu()
-	})
+	function closeSettingsOnMoveOpen() {
+		setTimeout(() => {
+			const elementmover = document.getElementById('element-mover')
+			const moverHasOpened = elementmover?.classList.contains('hidden') === false
 
-	window.addEventListener('keydown', async function (e) {
-		const linksFolderOpen = document.getElementById('linkblocks')?.classList.contains('in-folder')
-
-		if (e.altKey && e.code === 'KeyS') {
-			console.clear()
-			console.log(localStorage)
-			console.log(await storage.sync.get())
-		}
-
-		if (e.code === 'Escape') {
-			if (domsuggestions?.classList.contains('shown')) {
-				domsuggestions?.classList.remove('shown')
-				return
-			}
-
-			if (!linksFolderOpen) {
+			if (moverHasOpened) {
 				toggleSettingsMenu()
-				return
 			}
-		}
-
-		if (e.code === 'Tab') {
-			document.body.classList.toggle('tabbing', true)
-			return
-		}
-	})
-
-	document.body.addEventListener('click', function (e) {
-		const path = e.composedPath() ?? [document.body]
-		const pathIds = e.composedPath().map((el) => (el as HTMLElement).id)
-		const areSettingsShown = domsettings?.classList.contains('shown')
-		const onBody = (path[0] as HTMLElement).tagName === 'BODY'
-		const onInterface = pathIds.includes('interface')
-		if (document.body.classList.contains('tabbing')) {
-			document.body?.classList.toggle('tabbing', false)
-		}
-		if ((onBody || onInterface) && areSettingsShown) {
-			toggleSettingsMenu()
-		}
-	})
+		}, 20)
+	}
 }
 
 //
@@ -738,6 +825,8 @@ function toggleSettingsMenu() {
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
+	domsettings?.style.removeProperty('--translate-y')
+	document.dispatchEvent(new Event('close-edit'))
 }
 
 function changelogControl(settingsDom: HTMLElement) {
@@ -771,6 +860,8 @@ function translatePlaceholders() {
 		['i_sbplaceholder', 'Search'],
 		['cssEditor', 'Type in your custom CSS'],
 		['i_importtext', 'or paste as text'],
+		['i_addlink-title', 'Title'],
+		['i_addlink-url', 'example.com'],
 	]
 
 	for (const [id, text] of cases) {
@@ -789,14 +880,19 @@ async function switchLangs(nextLang: Langs) {
 	const data = await storage.sync.get()
 	const local = await storage.local.get(['quotesCache', 'userQuoteSelection', 'lastWeather'])
 
+	if (local?.lastWeather) {
+		local.lastWeather.timestamp = 0
+		local.lastWeather.forecasted_timestamp = 0
+	}
+
 	data.lang = nextLang
 	clock(data)
-	weather({ sync: data })
+	weather({ sync: data, lastWeather: local.lastWeather })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
 	notes(data.notes)
 	customFont(undefined, { lang: true })
-	signature()
+	settingsFooter()
 	translatePlaceholders()
 }
 
@@ -838,30 +934,26 @@ async function selectBackgroundType(cat: string) {
 	storage.sync.set({ background_type: cat })
 }
 
-function signature() {
-	const spans = document.querySelectorAll<HTMLSpanElement>('#rand span')
-	const as = document.querySelectorAll<HTMLAnchorElement>('#rand a')
-	const us = [
-		{ href: 'https://victr.me/', name: 'Victor Azevedo' },
-		{ href: 'https://tahoe.be/', name: 'Tahoe Beetschen' },
-	]
+function settingsFooter() {
+	const one = document.querySelector<HTMLAnchorElement>('#signature-one')
+	const two = document.querySelector<HTMLAnchorElement>('#signature-two')
+	const donate = document.getElementById('donate')
+	const version = document.getElementById('version')
+	const rand = Math.random() > 0.5
 
-	if (Math.random() > 0.5) us.reverse()
+	if (one && two) {
+		one.href = rand ? 'https://victr.me/' : 'https://tahoe.be/'
+		two.href = rand ? 'https://tahoe.be/' : 'https://victr.me/'
+		one.textContent = rand ? 'Victor Azevedo' : 'Tahoe Beetschen'
+		two.textContent = rand ? 'Tahoe Beetschen' : 'Victor Azevedo'
+	}
 
-	spans[0].textContent = `${tradThis('by')} `
-	spans[1].textContent = ` & `
+	if (version) {
+		version.textContent = SYNC_DEFAULT.about.version
+	}
 
-	as.forEach((a, i) => {
-		a.href = us[i].href
-		a.textContent = us[i].name
-	})
-
-	const version = document.querySelector('.version a')
-	if (version) version.textContent = SYNC_DEFAULT.about.version
-
-	// Remove donate text on safari because apple is evil
 	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') {
-		document.querySelector('#rdv_website')?.remove()
+		donate?.remove()
 	}
 }
 
@@ -926,7 +1018,7 @@ function optionsTabIndex(settingsDom: HTMLElement) {
 
 function settingsDrawerBar() {
 	const drawerDragDebounce = debounce(() => {
-		;(document.querySelector('.signature') as HTMLDivElement).style.removeProperty('padding')
+		;(document.getElementById('settings-footer') as HTMLDivElement).style.removeProperty('padding')
 		drawerDragEvents()
 	}, 600)
 
@@ -945,8 +1037,21 @@ function settingsDrawerBar() {
 
 function drawerDragEvents() {
 	const settingsDom = document.getElementById('settings') as HTMLElement
+	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
+
+	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
+	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
+	dragzone?.addEventListener('mousedown', dragStart)
+	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
+	dragzone?.addEventListener('mouseup', dragEnd)
+
+	document.body?.addEventListener('mouseleave', (e) => {
+		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
+			dragEnd(e)
+		}
+	})
 
 	function dragStart(e: Event) {
 		e.preventDefault()
@@ -981,7 +1086,8 @@ function drawerDragEvents() {
 
 		// element is below max height: move
 		if (clientY > 60) {
-			settingsDom.style.transform = `translateY(-${window.innerHeight + 30 - clientY}px)`
+			settingsVh = +(100 - (clientY / window.innerHeight) * 100).toFixed(2)
+			settingsDom.style.transform = `translateY(-${settingsVh}vh)`
 			settingsDom.style.transition = `transform .0s`
 		}
 	}
@@ -1000,31 +1106,18 @@ function drawerDragEvents() {
 		// reset mouse / touch pos
 		startTouchY = 0
 
+		const footer = document.getElementById('settings-footer') as HTMLDivElement
+		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'vh'
+
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
 		settingsDom.style.removeProperty('overflow')
-
-		// Add bottom padding to see bottom of settings
-		const signaturedom = document.querySelector('.signature') as HTMLDivElement
-		signaturedom.style.paddingBottom = clientY + 60 + 'px'
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {
 			toggleSettingsMenu()
 		}
 	}
-
-	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
-	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
-	dragzone?.addEventListener('mousedown', dragStart)
-	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
-	dragzone?.addEventListener('mouseup', dragEnd)
-
-	document.body?.addEventListener('mouseleave', (e) => {
-		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
-			dragEnd(e)
-		}
-	})
 }
 
 //
@@ -1127,6 +1220,18 @@ function importAsFile(target: HTMLInputElement) {
 async function paramsImport(toImport: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
+
+		// #308 - verify font subset before importing
+		if (toImport?.font?.system === false) {
+			const family = toImport?.font?.family
+			const lang = toImport?.lang
+			const correctSubset = await fontIsAvailableInSubset(lang, family)
+
+			if (correctSubset === false) {
+				toImport.font.family = ''
+			}
+		}
+
 		data = filterImports(data, toImport)
 
 		storage.sync.clear()
@@ -1155,15 +1260,19 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
 }
 
-export async function updateExportJSON() {
-	const input = document.getElementById('area_export') as HTMLInputElement
+export function updateExportJSON(data?: Sync.Storage) {
+	// document.getElementById('importtext')?.setAttribute('disabled', '') // because cannot export same settings
 
-	document.getElementById('importtext')?.setAttribute('disabled', '') // because cannot export same settings
+	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
-	const data = await storage.sync.get()
-	data.about.browser = PLATFORM
+	function updateTextArea(data: Sync.Storage) {
+		const input = document.querySelector<HTMLTextAreaElement>('#area_export')
 
-	input.value = orderedStringify(data)
+		if (input) {
+			data.about.browser = PLATFORM
+			input.value = orderedStringify(data)
+		}
+	}
 }
 
 function fadeOut() {

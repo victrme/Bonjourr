@@ -12,46 +12,30 @@
 
 #linkblocks {
 	--min-height: 6em;
-	--row-gap: 1em;
-	--column-gap: 2.5em;
-	--block-size: 4.8em;
+	--row-gap: 0.6em;
+	--icon-size: 4.8em;
+	--block-size: 6.5em;
 
 	&.hidden {
 		display: none;
 	}
 
 	&.select-all {
-		li.block:not(.selected) {
+		li div,
+		li span {
+			// split div and span instead of just "li.block"
+			// to keep folder blur with filter
 			filter: grayscale(1) brightness(0.6);
 		}
 
-		&.large,
-		&.medium,
-		&.small {
-			li.block:active div,
-			li.block:hover div,
-			li.block:not(.folder):active img,
-			li.block:not(.folder):hover img {
-				transform: none;
-			}
-
-			li.block.selected div {
-				outline: 4px solid var(--color-blue);
-			}
+		li.selected div,
+		li.selected span {
+			filter: none;
 		}
 
-		&.inline,
-		&.text {
-			.selected.folder span,
-			.selected a {
-				border-radius: 0.5em;
-				outline: 3px solid var(--color-blue);
-				background-color: rgba(0, 114, 238, 0.1333333333);
-			}
-
-			&:hover span {
-				text-decoration: none;
-			}
+		&.inline li:hover span,
+		&.text li:hover span {
+			text-decoration: none;
 		}
 	}
 
@@ -60,6 +44,7 @@
 			background-color: #fff2;
 			border: 1px solid #fff4;
 			backdrop-filter: blur(2em);
+			-webkit-backdrop-filter: blur(2em);
 		}
 
 		#link-title div:not(:first-child) {
@@ -98,6 +83,7 @@
 	background-color: transparent;
 	border: 1px solid transparent;
 	border-radius: 1em;
+	z-index: 2;
 	transition: opacity 0.3s $easeOutThree;
 }
 
@@ -106,37 +92,22 @@ li.block {
 	$bouncyTiming: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 	transition: transform 0.2s $bouncyTiming, opacity 0.2s $bouncyTiming;
 	cursor: pointer;
-
-	&.removed {
-		margin: 0 calc((var(--gap) / 2) - var(--gap)); // minus half of gap
-		width: 0 !important;
-		opacity: 0;
-		overflow: hidden;
-		transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
-
-		span {
-			min-height: 0 !important;
-			max-height: 0 !important;
-			transition: max-height 0.3s 0.3s $easeOutThree;
-		}
-
-		div {
-			transform: scale(0.6);
-		}
-	}
+	touch-action: none;
 
 	div,
 	img {
-		transition: transform 0.2s $easeOutThree;
+		transition-duration: 0.1s;
+		transition-timing-function: $easeOutThree;
+		transition-property: transform, box-shadow, border-color;
 	}
 
 	div {
-		width: var(--block-size);
-		height: var(--block-size);
-		border-radius: 1em;
+		margin: auto;
+		width: var(--icon-size);
+		height: var(--icon-size);
 		border: 1px solid white;
 		background-color: white;
-		box-shadow: $textShadow;
+		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 		box-sizing: border-box;
 	}
 
@@ -156,28 +127,69 @@ li.block {
 	span {
 		overflow: hidden;
 	}
+}
 
-	&:hover div {
-		box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
-		transform: scale(1.1);
+li.block.removed {
+	margin: 0 calc((var(--column-gap) / 2) * -1); // minus half of gap
+	width: 0 !important;
+	opacity: 0;
+	overflow: hidden;
+	transition: width 0.3s $easeOutThree 0.3s, margin 0.3s $easeOutThree 0.3s, opacity 0.3s $easeOutThree;
+
+	span {
+		min-height: 0 !important;
+		max-height: 0 !important;
+		transition: max-height 0.3s 0.3s $easeOutThree;
 	}
 
-	&:active div {
-		transform: scale(1.05);
-		transition: border-color 0.1s, filter 0.1s, transform 0.1s;
+	div {
+		transform: scale(0.6);
+	}
+}
+
+#linkblocks.large li.block.selected,
+#linkblocks.medium li.block.selected,
+#linkblocks.small li.block.selected {
+	div {
+		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+		outline: 0.3em solid var(--color-blue);
+	}
+}
+
+#linkblocks.inline li.block.selected,
+#linkblocks.text li.block.selected {
+	&.folder,
+	a {
+		border-radius: 0.5em;
+		outline: 0.2em solid var(--color-blue);
+		background-color: rgba(0, 114, 238, 0.1333333333);
+	}
+
+	&:hover span {
+		text-decoration: none;
+	}
+}
+
+@media only screen and (hover: hover) {
+	li.block:hover div {
+		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+	}
+
+	li.block:hover:not(.selected) div {
+		transform: scale(0.95);
 	}
 }
 
 li.block.folder > div {
 	display: grid;
 	column-gap: 4px;
-	height: var(--block-size);
+	height: var(--icon-size);
 	grid-template-columns: 1fr 1fr;
 	background-color: #fff3;
 	border: 1px solid #fff4;
-	backdrop-filter: blur(1em);
 	box-sizing: border-box;
-	transition: transform 0.1s linear, border-color 0.1s linear;
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
 }
 
 li.block.folder img[src] {
@@ -196,8 +208,9 @@ li.block.folder img {
 
 #linkblocks.large {
 	--min-height: 6em;
-	--column-gap: 2.5em;
-	--block-size: 4.8em;
+	--column-gap: 0.6em;
+	--icon-size: 4.8em;
+	--block-size: 6.5em;
 
 	li.block {
 		div {
@@ -220,10 +233,10 @@ li.block.folder img {
 	}
 
 	li.block.folder div {
-		padding: 0.3em;
+		padding: 5px;
 
 		img {
-			border-radius: 4px;
+			border-radius: 5px;
 			padding: 2px;
 			width: 100%;
 			height: auto;
@@ -235,8 +248,9 @@ li.block.folder img {
 
 #linkblocks.medium {
 	--min-height: 5em;
-	--column-gap: 2em;
-	--block-size: 3.5em;
+	--column-gap: 0.6em;
+	--icon-size: 3.5em;
+	--block-size: 4.7em;
 
 	li {
 		div {
@@ -276,11 +290,11 @@ li.block.folder img {
 	}
 
 	li {
-		width: 2.5em;
+		width: var(--block-size);
 
 		div {
-			width: 2.5em;
-			height: 2.5em;
+			width: var(--block-size);
+			height: var(--block-size);
 			padding: 0.1em;
 			border-radius: 0.4em;
 		}
@@ -306,10 +320,10 @@ li.block.folder img {
 			border-radius: 0.3em;
 			background-color: #fff3;
 			border: 1px solid rgba(255, 255, 255, 0.075);
+			backdrop-filter: blur(1em);
+			-webkit-backdrop-filter: blur(1em);
 			transition: opacity 0.2s;
 			z-index: 1;
-
-			@include frostedGlass();
 
 			&:empty {
 				display: none;
@@ -329,23 +343,27 @@ li.block.folder img {
 }
 
 #linkblocks.inline {
-	--min-height: 3em;
+	--min-height: 2em;
 	--block-size: 2em;
-	--column-gap: 2em;
+	--column-gap: 1em;
+	--icon-size: 2em;
 
 	justify-content: flex-start;
 
-	li.folder span::before {
-		content: '📁';
-		padding-right: 0.5em;
+	li.folder div {
+		display: block;
+		padding: 4px;
 	}
 
-	li.folder div {
+	li.folder img {
+		box-sizing: border-box;
+	}
+
+	li.folder img:not(:first-child) {
 		display: none;
 	}
 
-	li a,
-	li.folder span {
+	li span {
 		padding: 0 0.2em;
 		outline: 3px solid transparent;
 	}
@@ -353,7 +371,7 @@ li.block.folder img {
 	li {
 		width: auto;
 
-		&:hover span {
+		&:hover {
 			text-decoration: underline;
 		}
 
@@ -362,11 +380,12 @@ li.block.folder img {
 			transform: none;
 		}
 
+		&.folder,
 		a {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			column-gap: 0.7em;
+			column-gap: 0.6em;
 		}
 
 		div {
@@ -380,25 +399,21 @@ li.block.folder img {
 
 		span {
 			display: block;
-			max-width: 6em;
+			max-width: 8.4em;
 			font-size: 1.2em;
 			text-overflow: ellipsis;
 			white-space: pre;
 			line-height: 2em;
+			padding: 0;
 		}
 	}
 }
 
 #linkblocks.text {
-	--min-height: 3em;
+	--min-height: 1.5em;
 	--column-gap: 1.8em;
 
 	justify-content: flex-start;
-
-	#link-list {
-		column-gap: 1.8em;
-		min-height: 3em;
-	}
 
 	li {
 		width: auto;
@@ -467,6 +482,12 @@ li.block.folder img {
 //  Links drag and drop
 //
 
+#linkblocks.large {
+	.drop-target.folder img {
+		transform: none;
+	}
+}
+
 #linkblocks.large,
 #linkblocks.medium,
 #linkblocks.small {
@@ -496,7 +517,6 @@ li.block.folder img {
 	.drop-target.folder {
 		img {
 			opacity: 0.5;
-			transform: none;
 			background-color: white;
 		}
 	}
@@ -558,111 +578,53 @@ li.block.folder img {
 //
 
 #link-title {
-	position: relative;
 	display: none;
-	align-items: center;
-	justify-content: center;
-	column-gap: 1em;
-	padding: 1em 4em;
 	margin: auto;
-	width: fit-content;
+	width: 100%;
+	box-sizing: border-box;
 
-	div {
-		cursor: pointer;
-		border-radius: 8px;
-		opacity: 0.7;
-
-		&.selected,
-		&:hover,
-		&:hover input {
-			opacity: 1;
-		}
-	}
-
-	div,
-	input {
-		border-radius: 8px;
-	}
-
-	input {
-		min-width: 3em;
+	button {
 		max-width: 32ch;
-		padding: 0.1em 0.6em;
-		font-size: 1.3em;
+		padding: 0.3em 1em;
+		font-size: 1.2em;
+		opacity: 0.7;
 		color: white;
-		border: none;
 		text-align: center;
+		border-radius: 8px;
 		border: 1px solid transparent;
 		background-color: transparent;
+		cursor: pointer;
 
-		// cannot click on div below without this
-		position: relative;
-		z-index: -1;
+		&:hover {
+			opacity: 1;
+		}
 
-		&:focus-within {
+		&.selected {
+			opacity: 1;
+			cursor: initial;
+			border-color: #fff4;
 			background-color: #fff1;
-			backdrop-filter: blur(1em);
-		}
-
-		&::placeholder {
-			color: #fffa;
+			backdrop-filter: blur(2em);
+			-webkit-backdrop-filter: blur(2em);
 		}
 	}
 }
 
-#linkblocks.in-folder,
-#linkblocks.with-tabs {
-	#link-title {
-		display: flex;
-	}
+#tab-title,
+#folder-title {
+	display: none;
+	column-gap: 1em;
+	align-items: center;
+	justify-content: center;
+	padding: 1em 4em;
 }
 
-#linkblocks.in-folder #link-title div:first-child,
-#linkblocks #link-title div.selected {
-	// Highlights selected title in tabs and folder title
-	// Needs this because, folder selection is in #linkblocks
-	// and tabs selection is deep in div.selected
-
-	opacity: 1;
-
-	input {
-		border-color: #fff6;
-		z-index: auto;
-	}
+#linkblocks.with-tabs #link-title,
+#linkblocks.in-folder #link-title {
+	display: block;
 }
 
-//
-//	Add buttons
-//
-
-#linkblocks button {
-	position: absolute;
-	right: 0;
-	width: 2em;
-	height: 2em;
-	color: white;
-	font-size: 1.1em;
-	font-weight: bold;
-	border-radius: 4px;
-	border: 1px solid transparent;
-	background-color: #fff2;
-	transition: opacity 0.05s;
-
-	@include frostedGlass(1em);
-
-	&:hover {
-		background-color: #fff3;
-	}
-
-	opacity: 0;
-	user-select: none;
-	pointer-events: none;
-	touch-action: none;
-}
-
-#link-title:hover button {
-	opacity: 1;
-	user-select: initial;
-	pointer-events: initial;
-	touch-action: initial;
+#linkblocks.with-tabs #tab-title,
+#linkblocks.in-folder #folder-title {
+	display: flex;
 }

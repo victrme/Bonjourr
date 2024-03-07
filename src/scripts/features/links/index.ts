@@ -1,5 +1,6 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink } from './helpers'
 import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
+import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
 import { eventDebounce } from '../../utils/debounce'
 import onSettingsLoad from '../../utils/onsettingsload'
@@ -13,7 +14,6 @@ import storage from '../../storage'
 
 type Link = Links.Link
 type Elem = Links.Elem
-type Folder = Links.Folder
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
@@ -21,16 +21,26 @@ type LinksUpdate = {
 	style?: string
 	row?: string
 	tab?: boolean
-	addTab?: boolean
-	removeTab?: number
+	addTab?: string
+	deleteTab?: number
 	moveLinks?: string[]
-	addLink?: boolean
+	addLink?: AddLink
 	addFolder?: string[]
-	groupTitle?: string
+	tabTitle?: TabTitle
 	addToFolder?: AddToFolder
 	moveToTab?: MoveToTarget
 	removeFromFolder?: string[]
 	deleteLinks?: string[]
+}
+
+type TabTitle = {
+	title: string
+	index: number
+}
+
+type AddLink = {
+	title: string
+	url: string
 }
 
 type AddToFolder = {
@@ -49,10 +59,12 @@ type Bookmarks = {
 	url: string
 }[]
 
-type SubmitLink = { type: 'link' }
-type SubmitLinkFolder = { type: 'folder'; ids: string[] }
+type SubmitLink = { type: 'link'; title: string; url: string }
+type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
+
+type Style = Sync.Storage['linkstyle']
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 let selectallTimer = 0
@@ -101,7 +113,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 
 	// Exit early if no links
 	if (links.length === 0) {
-		document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
+		displayInterface('links')
 		return true
 	}
 
@@ -117,7 +129,10 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		}
 		//
 		else {
-			li = isElem(link) ? createElem(link, data.linknewtab) : createFolder(link, linksInFolders)
+			li = isElem(link)
+				? createElem(link, data.linknewtab, data.linkstyle)
+				: createFolder(link, linksInFolders, data.linkstyle)
+
 			li.addEventListener('keyup', displayEditDialog)
 			li.addEventListener('click', selectAll)
 			li.addEventListener('pointerdown', selectAll)
@@ -127,12 +142,12 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		tabList?.appendChild(li)
 	}
 
-	document.dispatchEvent(new CustomEvent('interface', { detail: 'links' }))
+	displayInterface('links')
 
 	return true
 }
 
-function createFolder(link: Links.Folder, folderChildren: Link[]): HTMLLIElement {
+function createFolder(link: Links.Folder, folderChildren: Link[], style: Style): HTMLLIElement {
 	const linksInThisFolder = folderChildren.filter((l) => !l.folder && l.parent === link._id)
 	const li = getHTMLTemplate<HTMLLIElement>('link-folder', 'li')
 	const imgs = li.querySelectorAll('img')!
@@ -147,14 +162,14 @@ function createFolder(link: Links.Folder, folderChildren: Link[]): HTMLLIElement
 		const elem = linksInThisFolder[i]
 
 		if (img && isElem(elem)) {
-			createIcons(img, elem)
+			createIcons(img, elem, style)
 		}
 	}
 
 	return li
 }
 
-function createElem(link: Links.Elem, openInNewtab: boolean) {
+function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	const li = getHTMLTemplate<HTMLLIElement>('link-elem', 'li')
 	const span = li.querySelector('span')!
 	const anchor = li.querySelector('a')!
@@ -163,7 +178,7 @@ function createElem(link: Links.Elem, openInNewtab: boolean) {
 	li.id = link._id
 	anchor.href = stringMaxSize(link.url, 512)
 	span.textContent = createTitle(link)
-	createIcons(img, link)
+	createIcons(img, link, style)
 
 	if (openInNewtab) {
 		if (BROWSER === 'safari') {
@@ -176,7 +191,11 @@ function createElem(link: Links.Elem, openInNewtab: boolean) {
 	return li
 }
 
-function createIcons(currimg: HTMLImageElement, link: Links.Elem) {
+function createIcons(currimg: HTMLImageElement, link: Links.Elem, style: Style) {
+	if (style === 'text') {
+		return
+	}
+
 	let hasloaded = false
 
 	currimg.src = link.icon ?? getDefaultIcon(link.url)
@@ -205,7 +224,7 @@ function initRows(row: number, style: string) {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
 		small: { width: 2.5, gap: 2 },
-		inline: { width: 10, gap: 2 },
+		inline: { width: 11, gap: 2 },
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 
@@ -220,12 +239,12 @@ function initRows(row: number, style: string) {
 //
 
 onSettingsLoad(() => {
-	document.body.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
-	document.body.addEventListener('remove-select-all', removeSelectAll)
-	document.body.addEventListener('click', dismissSelectAllAndFolder)
+	document.addEventListener('close-folder', closeFolder)
+	document.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
+	document.addEventListener('remove-select-all', removeSelectAll)
 })
 
-async function openFolder(event: Event) {
+async function openFolder(event: MouseEvent) {
 	if (domlinkblocks.className.includes('select-all')) {
 		return
 	}
@@ -233,13 +252,30 @@ async function openFolder(event: Event) {
 	clearTimeout(selectallTimer)
 	const li = getLiFromEvent(event)
 
-	if (!li || li.classList.contains('folder') === false) {
+	if (!li || !li?.classList.contains('folder')) {
 		return
 	}
 
 	const data = await storage.sync.get()
+
+	if (event.button === 1) {
+		const links = getLinksInFolder(data, li.id)
+
+		links.forEach((link) => window.open(link.url, '_blank')?.focus())
+		window.open(window.location.href, '_blank')?.focus()
+		window.close()
+
+		return
+	}
+
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
+	const folderTitle = folder?.title || tradThis('Folder')
+	const folderTitleBtn = document.querySelector<HTMLButtonElement>('#folder-title button')
+
+	if (folderTitleBtn) {
+		folderTitleBtn.textContent = folderTitle
+	}
 
 	folderOpenTransition.first(hide)
 	folderOpenTransition.then(changeToFolder)
@@ -253,7 +289,7 @@ async function openFolder(event: Event) {
 	}
 
 	async function changeToFolder() {
-		toggleTabsTitleType(folder.title)
+		domlinkblocks.classList.toggle('with-tabs', true)
 		await initblocks(data)
 	}
 
@@ -263,6 +299,10 @@ async function openFolder(event: Event) {
 }
 
 async function closeFolder() {
+	if (domlinkblocks.classList.contains('dropping')) {
+		return
+	}
+
 	const data = await storage.sync.get()
 	const folderCloseTransition = transitioner()
 
@@ -277,7 +317,7 @@ async function closeFolder() {
 	}
 
 	async function changeToTab() {
-		toggleTabsTitleType(data.linktabs.titles[0], data.linktabs.active)
+		domlinkblocks.classList.toggle('with-tabs', data.linktabs.active)
 		await initblocks(data)
 	}
 
@@ -287,58 +327,16 @@ async function closeFolder() {
 	}
 }
 
-function dismissSelectAllAndFolder(event: Event) {
-	const path = (event.composedPath() ?? [document.body]) as Element[]
-	const onOpenSettings = path.some((el) => el.id === 'showSettings')
-	const onSettings = path.some((el) => el.id === 'settings')
-	const onEditLink = path.some((el) => el.id === 'editlink')
-	const onLink = path.some((el) => el.tagName === 'LI' && el.classList.contains('block'))
-	const doNothingWhenClicking = onEditLink || onOpenSettings || onSettings || onLink
-
-	if (doNothingWhenClicking) {
-		return
-	}
-
-	const states = [...domlinkblocks.classList.values()]
-
-	// Remove first select all
-	if (states.includes('select-all')) {
-		domlinkblocks.classList.remove('select-all')
-		document.querySelectorAll('.block').forEach((b) => b.classList.remove('selected'))
-	}
-	//
-	else if (path.some((el) => el === domlinkblocks)) {
-		return
-	}
-	// then close folder
-	else if (!states.includes('dropping') && states.includes('in-folder')) {
-		closeFolder()
-	}
-}
-
-function toggleTabsTitleType(title: string, linktabs?: boolean): void {
-	const folderid = domlinkblocks.dataset.folderid
-	const firstinput = document.querySelector<HTMLInputElement>('#link-title input')
-	const showTitles = folderid ? true : linktabs
-
-	domlinkblocks?.classList.toggle('with-tabs', showTitles)
-
-	if (firstinput) {
-		firstinput.value = title
-		firstinput.style.width = title.length + 'ch'
-		firstinput.placeholder = !!folderid ? tradThis('folder') : tradThis('tab')
-	}
-}
-
 function selectAll(event: MouseEvent) {
 	clearTimeout(selectallTimer)
 
 	const selectAllActive = domlinkblocks.className.includes('select-all')
+	const primaryButton = !event.button || event.button === 0
 	const li = getLiFromEvent(event)
 
 	// toggle selection
 	if (selectAllActive && event.type.match(/pointerup|click/)) {
-		if (!event.button || event.button === 0) {
+		if (primaryButton) {
 			li?.classList.toggle('selected')
 		}
 
@@ -347,7 +345,12 @@ function selectAll(event: MouseEvent) {
 	}
 
 	// start select all debounce
-	if (!selectAllActive && event.type === 'pointerdown') {
+	if (!selectAllActive && primaryButton && event.type === 'pointerdown') {
+		//
+		if ((event as PointerEvent)?.pointerType === 'touch') {
+			return
+		}
+
 		selectallTimer = setTimeout(() => {
 			domlinkblocks.classList.add('select-all')
 		}, 600)
@@ -366,7 +369,7 @@ function removeSelectAll() {
 
 export async function linksUpdate(update: LinksUpdate) {
 	if (update.addLink) {
-		linkSubmission({ type: 'link' })
+		linkSubmission({ type: 'link', title: update.addLink.title, url: update.addLink.url })
 	}
 
 	if (update.addFolder) {
@@ -402,15 +405,15 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.addTab !== undefined) {
-		addTab()
+		addTab(update.addTab)
 	}
 
-	if (update.removeTab !== undefined) {
-		removeTab(update.removeTab)
+	if (update.deleteTab !== undefined) {
+		deleteTab(update.deleteTab)
 	}
 
-	if (update.groupTitle !== undefined) {
-		setGroupTitle(update.groupTitle)
+	if (update.tabTitle !== undefined) {
+		setTabTitle(update.tabTitle.title, update.tabTitle.index)
 	}
 
 	if (update.newtab !== undefined) {
@@ -436,11 +439,15 @@ async function linkSubmission(arg: LinkSubmission) {
 	}
 
 	if (arg.type === 'link') {
-		newlinks = addLink()
+		if (arg.url.length <= 3) {
+			return
+		}
+
+		newlinks.push(validateLink(arg.title, arg.url))
 	}
 
 	if (arg.type === 'folder') {
-		newlinks = addLinkFolder(arg.ids)
+		newlinks = addLinkFolder(arg.ids, arg.title)
 
 		for (const id of arg.ids) {
 			const elem = data[id] as Link
@@ -465,30 +472,10 @@ async function linkSubmission(arg: LinkSubmission) {
 	initblocks(data)
 }
 
-function addLink(): Links.Elem[] {
-	const addsFromInterface = document.getElementById('editlink')?.classList.contains('add-link')
-	const inputTitleId = addsFromInterface ? 'e_title' : 'i_addlink-title'
-	const inputUrlId = addsFromInterface ? 'e_url' : 'i_addlink-url'
-	const inputTitle = document.getElementById(inputTitleId) as HTMLInputElement
-	const inputUrl = document.getElementById(inputUrlId) as HTMLInputElement
+function addLinkFolder(ids: string[], title?: string): Links.Folder[] {
+	const titledom = document.getElementById('ei_title') as HTMLInputElement
 
-	const title = inputTitle.value
-	const url = inputUrl.value
-
-	inputTitle.value = ''
-	inputUrl.value = ''
-
-	if (url.length > 3) {
-		return [validateLink(title, url)]
-	} else {
-		return []
-	}
-}
-
-function addLinkFolder(ids: string[]): Links.Folder[] {
-	const titledom = document.getElementById('e_title') as HTMLInputElement
-	const title = titledom.value
-
+	title = title ?? titledom.value
 	titledom.value = ''
 
 	const blocks = [...document.querySelectorAll<HTMLElement>('li.block')]
@@ -519,6 +506,7 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 	let data = await storage.sync.get()
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
+	const title = linktarget.title
 	const ids: string[] = []
 
 	if (!linktarget || !linksource) {
@@ -547,7 +535,7 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		}
 	})
 
-	linkSubmission({ ids, type: 'folder' })
+	linkSubmission({ ids, type: 'folder', title })
 	animateLinksRemove(ids)
 }
 
@@ -614,27 +602,6 @@ async function moveToOtherTab({ ids, target }: MoveToTarget) {
 	initblocks(data)
 }
 
-async function setGroupTitle(title: string) {
-	const folderid = domlinkblocks.dataset.folderid
-
-	if (folderid) {
-		const data = await storage.sync.get()
-		const folder = data[folderid] as Link
-
-		if (folder.folder) {
-			folder.title = title
-			data[folderid] = folder
-			storage.sync.set(data)
-		}
-	}
-	//
-	else {
-		const data = await storage.sync.get()
-		data.linktabs.titles[data.linktabs.selected ?? 0] = title
-		storage.sync.set(data)
-	}
-}
-
 async function setTab(tab: boolean) {
 	const data = await storage.sync.get('linktabs')
 
@@ -644,14 +611,25 @@ async function setTab(tab: boolean) {
 	domlinkblocks?.classList.toggle('with-tabs', tab)
 }
 
-async function addTab() {
+async function setTabTitle(title: string, index: number) {
 	const data = await storage.sync.get('linktabs')
-	data.linktabs.titles.push('')
+	const hasTab = data.linktabs.titles.length >= index
+
+	if (hasTab) {
+		data.linktabs.titles[index] = title
+		storage.sync.set({ linktabs: data.linktabs })
+		initTabs(data)
+	}
+}
+
+async function addTab(title: string) {
+	const data = await storage.sync.get('linktabs')
+	data.linktabs.titles.push(title)
 	storage.sync.set({ linktabs: data.linktabs })
 	initTabs(data)
 }
 
-async function removeTab(index: number) {
+async function deleteTab(index: number) {
 	const data = await storage.sync.get()
 	const { titles, selected } = data.linktabs
 	const isRemovingFirst = index === 0 || titles.length === 1
@@ -700,6 +678,7 @@ async function setLinkStyle(style: string = 'large') {
 		return
 	}
 
+	const wasText = domlinkblocks?.className.includes('text')
 	const data = await storage.sync.get()
 	const links = getLinksInTab(data)
 
@@ -712,8 +691,18 @@ async function setLinkStyle(style: string = 'large') {
 		span.textContent = createTitle(link)
 	}
 
+	data.linkstyle = style
+	storage.sync.set(data)
+
+	if (wasText) {
+		// remove from DOM to re-draw icons
+		document.querySelectorAll('#link-list li')?.forEach((el) => el.remove())
+	}
+
+	console.log(wasText)
+
 	initRows(data.linksrow, style)
-	storage.sync.set({ linkstyle: style })
+	initblocks(data)
 }
 
 function setRows(row: string) {
@@ -763,7 +752,9 @@ function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 		}
 	}
 
-	return links.toSorted((a, b) => a.order - b.order)
+	links.sort((a, b) => a.order - b.order)
+
+	return links
 }
 
 function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
@@ -776,7 +767,9 @@ function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
 		}
 	}
 
-	return links.toSorted((a, b) => a.order - b.order)
+	links.sort((a, b) => a.order - b.order)
+
+	return links
 }
 
 function animateLinksRemove(ids: string[]) {

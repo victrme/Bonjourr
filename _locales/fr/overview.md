@@ -31,7 +31,7 @@ Nous avons sélectionnés les plus belles photos d'Unsplash pour que vous ne vou
 Bonjourr a été développé en JavaScript vanilla et est optimisé pour des performances optimales.
 
 🔎 Barre de recherche
-La barre de recherche de Bonjourr est compatible avec tous les moteurs de recherche. Cela inclut les classiques comme Google, Bing, DuckDuckGo, Startpage, mais aussi Ecosia, Lilo et Qwant. Si vous voulez, vous pouvez même ajouter votre propre moteur de recherche.
+La barre de recherche de Bonjourr est compatible avec tous les moteurs de recherche. Si vous voulez, vous pouvez même ajouter votre propre moteur de recherche.
 
 🕰 Horloge analogue
 L'horloge par défaut de Bonjourr est faite pour ressembler à celle de l'iPhone et autres appareils iOS. Mais si vous vous sentez une âme d'aventurier, vous pouvez activer l'horloge analogue et la personnaliser.
@@ -57,4 +57,4 @@ Une idée spécifique en tête ? Grâce à la section CSS personnalisé, vous po
 Bonjourr vous propose une liste de nombreuses polices qui vous permettront de donner un style plus ou moins marqué à votre page d'accueil.
 
 🌎 Multilingue
-Grâce à nos super contributeurs, Bonjourr est disponible dans 15 langues différentes.
+Grâce à nos super contributeurs, Bonjourr est disponible dans plus de 20 langues différentes.
