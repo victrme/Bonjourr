@@ -1,9 +1,7 @@
+import { interfaceFadeIn, interfaceFadeOut, setAllAligns, setGridAreas, removeSelection, gridOverlay } from './dom'
+import { widgetStatesToData, isEditing, gridWidget } from './helpers'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
-
-//
-//	Interface widget control
-//
 
 export default async function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
 	if (!widget) return
@@ -15,7 +13,7 @@ export default async function toggleWidget(data: Sync.Storage, widget: [Widgets,
 	const newgrid = gridWidget(layout.grid, data.move.selection, id, on)
 
 	data.move.layouts[data.move.selection].grid = newgrid
-	data = widgetsListToData([[id, on]], data)
+	data = widgetStatesToData([[id, on]], data)
 	storage.sync.set(data)
 
 	interfaceTransition.first(() => {
@@ -72,16 +70,4 @@ function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
 		const elem = document.getElementById(domids[widget]) as HTMLElement
 		elem?.classList.toggle('hidden', !on)
 	}
-}
-
-function interfaceFadeOut() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.style.opacity = '0'
-	dominterface.style.transition = `opacity 200ms cubic-bezier(.215,.61,.355,1)`
-}
-
-function interfaceFadeIn() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.style.removeProperty('opacity')
-	setTimeout(() => (dominterface.style.transition = ''), 200)
 }
