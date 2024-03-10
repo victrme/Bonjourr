@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
 	testDir: './',
 	preserveOutput: 'never',
-	reporter: 'null',
+	reporter: 'list',
 	timeout: 10000,
 	use: {
 		baseURL: 'http://127.0.0.1:8080/index.html',

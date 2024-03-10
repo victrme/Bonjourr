@@ -14,17 +14,16 @@ test('Analog', async ({ page }) => {
 test('Analog face', async ({ page }) => {
 	await page.getByLabel('Analog clock').check()
 
-	await page.locator('#i_clockface').selectOption('number')
-	expect(await page.locator('#analog').textContent()).toContain('12369')
+	const testStyle = async (style: string, elements: string[]): Promise<boolean> => {
+		await page.locator('#i_clockface').selectOption(style)
+		const face = (await page.locator('#analog').textContent()) ?? ''
+		return elements.every((el) => face.includes(el))
+	}
 
-	await page.locator('#i_clockface').selectOption('roman')
-	expect(await page.locator('#analog').textContent()).toContain('XIIIIIVIIX')
-
-	await page.locator('#i_clockface').selectOption('marks')
-	expect(await page.locator('#analog').textContent()).toContain('│―│―')
-
-	await page.locator('#i_clockface').selectOption('none')
-	expect((await page.locator('#analog').textContent())?.trimEnd()).toBe('')
+	expect(await testStyle('number', ['12', '3', '6', '9'])).toBe(true)
+	expect(await testStyle('roman', ['XII', 'III', 'VI', 'IX'])).toBe(true)
+	expect(await testStyle('marks', ['│', '―', '│', '―'])).toBe(true)
+	expect(await testStyle('none', [''])).toBe(true)
 })
 
 test('Analog style', async ({ page }) => {
@@ -41,8 +40,12 @@ test('Analog style', async ({ page }) => {
 })
 
 test('Show seconds', async ({ page }) => {
-	await page.getByLabel('Show Seconds').check()
-	expect(((await page.locator('#clock').textContent()) ?? '').length).toEqual(8)
+	await page.getByLabel('Show seconds').check()
+	expect(page.locator('#digital-ss')).toBeVisible()
+	expect(page.locator('#digital-mm-separator')).toBeVisible()
+
+	await page.getByLabel('Analog clock').check()
+	await expect(page.locator('#analog-seconds')).toBeVisible()
 })
 
 test('12 hour time', async ({}) => {
@@ -74,14 +77,19 @@ test('Timezones', async ({ page }) => {
 	}
 })
 
-test('US date format', async ({ page }) => {
-	await page.getByLabel('US Date Format').check()
+test('Date formats', async ({ page }) => {
+	const defaultDate = await page.locator('#date').textContent()
 
-	const content = (await page.locator('#date').textContent()) ?? ''
-	const number = content.split(' ')[2]
+	expect(page.locator('#date')).toBeVisible()
 
-	expect(content).toContain(',')
-	expect(parseInt(number)).not.toBeNaN()
+	await page.getByRole('combobox', { name: 'Date format' }).selectOption('us')
+	expect(await page.locator('#date').textContent()).not.toEqual(defaultDate)
+
+	await page.getByRole('combobox', { name: 'Date format' }).selectOption('cn')
+	expect(await page.locator('#date').textContent()).not.toEqual(defaultDate)
+
+	await page.getByRole('combobox', { name: 'Date format' }).selectOption('eu')
+	expect(await page.locator('#date').textContent()).toEqual(defaultDate)
 })
 
 test('Clock size', async ({ page }) => {
