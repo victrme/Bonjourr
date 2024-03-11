@@ -131,6 +131,11 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	delete data.reviewPopup
 	delete data.usdate
 
+	// 19.2.0
+
+	delete data.cssHeight
+	storage.sync.remove('cssHeight')
+
 	data = linksDataMigration(data)
 	data.about = SYNC_DEFAULT.about
 

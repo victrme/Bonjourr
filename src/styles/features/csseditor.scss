@@ -3,11 +3,12 @@
 //
 
 .prism-code-editor {
-	font-size: 14px;
+	font-size: 13px;
 	font-family: $monospace;
 	overflow: auto;
 	display: grid;
 	width: 100%;
+	max-height: 80vh;
 	line-height: 1.4;
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);

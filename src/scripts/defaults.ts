@@ -90,7 +90,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	textShadow: 0.2,
 	announcements: 'major',
 	review: 0,
-	cssHeight: 80,
 	css: '',
 	hide: {},
 	linkstyle: 'large',
