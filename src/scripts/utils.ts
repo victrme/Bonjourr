@@ -13,10 +13,13 @@ function shuffledAPIUrls(): string[] {
 }
 
 export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
-	for (const url of apiList) {
+	for (let url of apiList) {
 		try {
-			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
+			if (ENVIRONNEMENT === 'TEST') {
+				url = 'wss://bonjourr-apis.victr.workers.dev'
+			}
 
+			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
 			const isOpened = await new Promise((resolve) => {
 				socket.onopen = () => resolve(true)
 				socket.onerror = () => resolve(false)

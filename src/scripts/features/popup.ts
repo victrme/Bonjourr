@@ -14,7 +14,7 @@ type PopupUpdate = {
 }
 
 const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.1.0'
-const ANNOUNCEMENT_VERSION = '19.1.0'
+const ANNOUNCEMENT_VERSION = ''
 
 const ANNOUNCEMENT_TRNS = {
 	en: 'Links related bug fixes. Middle click opens folder links. Added Arabic and Vietnamese translations !',
