@@ -88,57 +88,53 @@ div.pce-overlays > * {
 
 [data-theme='dark'] .prism-code-editor {
 	color-scheme: dark;
-	caret-color: #aeafad;
-	--selection-bg: #264f78;
-	--comment: #6a9955;
-	--plaintext: #d4d4d4;
-	--number: #b5cea8;
-	--string: #ce9178;
-	--important: #569cd6;
-	--atrule: #c586c0;
-	--class: #4ec9b0;
-	--variable: #9cdcfe;
-	--selector: #d7ba7d;
-	--color: #ce9178;
-	--css: #d4d4d4;
-	/* useless ? */
-	--constant: #4fc1ff;
-	--function: #dcdcaa;
+	/* ayu */
+	--caret: #ffaa33;
+	--selection-bg: #036dd626;
+	--comment: #787b8099;
+	--plaintext: #bfbdb6;
+	--number: #ffaa33;
+	--string: #86b300;
+	--keyword: #fa8d3e;
+	--variable: #bfbdb6;
+	--operators: #ed9366;
+	--property: #55b4d4;
+	--selector: #22a4e6;
+	--color: #bfbdb6;
 }
 
 [data-theme='light'] .prism-code-editor {
 	color-scheme: light;
-	caret-color: #000;
-	--selection-bg: #add6ff;
-	--comment: green;
-	--plaintext: #111;
-	--number: #098658;
-	--string: #a31515;
-	--important: #00f;
-	--atrule: #af00db;
-	--class: #267f99;
-	--variable: #001080;
-	--selector: maroon;
-	--color: #0451a5;
-	--css: #111;
-	/* useless ? */
-	--constant: #001080;
-	--function: #795e26;
+	/* ayu */
+	--caret: #ffaa33;
+	--selection-bg: #036dd626;
+	--comment: #787b8099;
+	--plaintext: #5c6166;
+	--number: #ffaa33;
+	--string: #86b300;
+	--keyword: #fa8d3e;
+	--variable: #5c6166;
+	--operators: #ed9366;
+	--property: #55b4d4;
+	--selector: #22a4e6;
+	--color: #5c6166;
 }
-
+.prism-code-editor textarea {
+	caret-color: var(--caret);
+}
 .prism-code-editor textarea::selection {
 	color: transparent;
 	background: var(--selection-bg);
+	-webkit-animation: alternate 1s 0s;
 }
-.token.comment {
-	color: var(--comment);
-}
+.prism-code-editor,
 .token.punctuation,
-.token.attr-equals,
-.token.operator,
 .token.combinator,
 .token.plain-text {
 	color: var(--plaintext);
+}
+.token.comment {
+	color: var(--comment);
 }
 .token.number,
 .token.symbol,
@@ -149,35 +145,27 @@ div.pce-overlays > * {
 .token.group,
 .token.string,
 .token.char,
-.token.deleted {
+.token.attr-value {
 	color: var(--string);
 }
-
 .token.keyword,
 .token.important,
-.token.token.interpolation-punctuation,
+.token.operator,
 .token.boolean,
 .token.tag,
-.token.entity {
-	color: var(--important);
-}
-.token.atrule .token.rule {
-	color: var(--atrule);
-}
+.token.atrule .token.rule,
 .token.function,
-.token.alternation {
-	color: var(--function);
+.token.pseudo-class,
+.token.alternation .token.entity {
+	color: var(--keyword);
 }
-.token.class {
-	color: var(--class);
-}
-.token.atrule,
-.token.atrule .url,
-.token.property,
 .token.variable,
 .token.parameter,
 .token.interpolation {
 	color: var(--variable);
+}
+.token.property {
+	color: var(--property);
 }
 .token.selector,
 .token.escape {
@@ -188,7 +176,4 @@ div.pce-overlays > * {
 }
 .token.constant {
 	color: var(--constant);
-}
-.language-css {
-	color: var(--css);
 }
