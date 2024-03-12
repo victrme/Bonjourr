@@ -21,15 +21,18 @@ export default function customCss(init?: string, event?: { styling: string }) {
 	}
 
 	onSettingsLoad(async () => {
+		const { defaultCommands } = await import('prism-code-editor/commands')
 		const { createEditor } = await import('prism-code-editor')
 		await import('prism-code-editor/prism/languages/css-extras')
 
-		const editor = createEditor('#css-editor', {
-			lineNumbers: false,
+		const options = {
 			language: 'css',
+			lineNumbers: false,
 			wordWrap: true,
 			value: init || `/* ${tradThis('Type in your custom CSS')} */`,
-		})
+		}
+
+		const editor = createEditor('#css-editor', options, defaultCommands())
 
 		editor.addListener('update', (value) => {
 			value = stringMaxSize(value, 8080)

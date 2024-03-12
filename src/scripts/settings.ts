@@ -2,7 +2,6 @@ import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
 import weather from './features/weather'
-import customCss from './features/css'
 import searchbar from './features/searchbar'
 import quickLinks from './features/links'
 import hideElements from './features/hide'
@@ -21,12 +20,12 @@ import parse from './utils/parse'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
+import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { apiFetch, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
-import { loadCallbacks } from './utils/onsettingsload'
 
 export async function settingsInit() {
 	const data = await storage.sync.get()
