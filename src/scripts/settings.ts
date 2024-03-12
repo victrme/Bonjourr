@@ -49,7 +49,7 @@ export async function settingsInit() {
 	controlOptionsTabFocus(settingsDom)
 	loadCallbacks()
 
-	setTimeout(() => document.dispatchEvent(new Event('settings')))
+	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
 }
 
 function initOptionsValues(data: Sync.Storage) {

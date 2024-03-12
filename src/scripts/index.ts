@@ -280,7 +280,9 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 
 	if (index !== -1) {
 		features.splice(index, 1)
-	} else return
+	} else {
+		return
+	}
 
 	if (features.length > 0) {
 		return
@@ -291,10 +293,32 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
 
-	setTimeout(() => {
-		document.body.classList.remove('init')
-		settingsInit()
-	}, loadtime + 400)
+	setTimeout(() => document.body.classList.remove('init'), loadtime)
+
+	//
+
+	const domshowsettings = document.querySelector('#showSettings')
+	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
+	document.body.addEventListener('keydown', settingsFirstLoad)
+
+	function settingsFirstLoad(event?: Event) {
+		if (document.getElementById('settings')) {
+			return
+		}
+
+		const type = event?.type
+		const code = (event as KeyboardEvent)?.code
+
+		if (code === 'Escape' || type === 'pointerdown') {
+			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
+			document.body.removeEventListener('keydown', settingsFirstLoad)
+			settingsInit()
+		}
+
+		if (code === 'Escape') {
+			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
+		}
+	}
 }
 
 //
