@@ -298,6 +298,7 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	//
 
 	const domshowsettings = document.querySelector('#showSettings')
+	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
 	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
 	document.body.addEventListener('keydown', settingsFirstLoad)
 
@@ -309,7 +310,8 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 		const type = event?.type
 		const code = (event as KeyboardEvent)?.code
 
-		if (code === 'Escape' || type === 'pointerdown') {
+		if (code === 'Escape' || type === 'mouseenter' || type === 'pointerdown') {
+			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
 			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
 			document.body.removeEventListener('keydown', settingsFirstLoad)
 			settingsInit()
