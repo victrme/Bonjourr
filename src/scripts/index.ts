@@ -26,6 +26,7 @@ type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
 const dominterface = document.getElementById('interface') as HTMLDivElement
 const features: FeaturesToWait[] = ['clock', 'links']
+let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
 //
@@ -85,7 +86,10 @@ async function startup() {
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
-	onSettingsLoad(() => {
+	onInterfaceDisplay(() => {
+		document.body.classList.remove('init')
+
+		userActionsEvents()
 		setPotatoComputerMode()
 		interfacePopup({
 			old: OLD_VERSION,
@@ -243,30 +247,6 @@ function serviceWorker() {
 	})
 }
 
-async function setPotatoComputerMode() {
-	if (BROWSER === 'firefox' || BROWSER === 'safari') {
-		// firefox fingerprinting protection disables webgl info, smh
-		// safari always have hardware acceleration, no need for potato
-		return
-	}
-
-	const canvas = document.createElement('canvas')
-	const gl = canvas?.getContext('webgl')
-	const debugInfo = gl?.getExtension('WEBGL_debug_renderer_info')
-
-	if (BROWSER === 'chrome' && !gl) {
-		document.body.classList.add('potato')
-		return
-	}
-
-	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0) + ''
-	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0) + ''
-
-	if (vendor.includes('Google') && renderer.includes('SwiftShader')) {
-		document.body.classList.add('potato')
-	}
-}
-
 export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	if (data) {
 		if (data?.font?.family) features.push('fonts')
@@ -293,14 +273,146 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
 
-	setTimeout(() => document.body.classList.remove('init'), loadtime)
+	setTimeout(() => {
+		onInterfaceDisplay()
+	}, Math.max(333, loadtime))
+}
 
-	//
+function onInterfaceDisplay(callback?: () => undefined): void {
+	if (callback) {
+		interfaceDisplayCallback = callback
+	} else {
+		interfaceDisplayCallback()
+	}
+}
 
+function userActionsEvents() {
+	const toggleSettingsMenu = () => document.dispatchEvent(new Event('toggle-settings'))
+	const domsuggestions = document.getElementById('sb-suggestions')
 	const domshowsettings = document.querySelector('#showSettings')
+	let isMousingDownOnInput = false
+
+	document.body.addEventListener('mousedown', detectTargetAsInputs)
+	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
+	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
+
 	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
 	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
 	document.body.addEventListener('keydown', settingsFirstLoad)
+
+	document.addEventListener('click', clickUserActions)
+	document.addEventListener('keydown', keydownUserActions)
+
+	async function keydownUserActions(event: KeyboardEvent) {
+		if (event.altKey && event.code === 'KeyS') {
+			console.clear()
+			console.log(localStorage)
+			console.log(await storage.sync.get())
+		}
+
+		if (event.code === 'Escape') {
+			if (domsuggestions?.classList.contains('shown')) {
+				domsuggestions?.classList.remove('shown')
+				return
+			}
+
+			const open = isOpen()
+
+			if (open.contextmenu) {
+				document.dispatchEvent(new Event('close-edit'))
+			}
+			//
+			else if (open.settings) {
+				toggleSettingsMenu()
+			}
+			//
+			else if (open.selectall) {
+				document.dispatchEvent(new Event('remove-select-all'))
+			}
+			//
+			else if (open.folder) {
+				document.dispatchEvent(new Event('close-folder'))
+			}
+			//
+			else {
+				toggleSettingsMenu()
+			}
+
+			return
+		}
+
+		if (event.code === 'Tab') {
+			document.body.classList.toggle('tabbing', true)
+			return
+		}
+	}
+
+	async function clickUserActions(event: MouseEvent) {
+		if (isMousingDownOnInput) {
+			return
+		}
+
+		const open = isOpen()
+		const path = (event.composedPath() as Element[]) ?? [document.body]
+		const pathIds = path.map((el) => (el as HTMLElement).id)
+
+		const on = {
+			link: path.some((el) => el?.classList?.contains('block')),
+			body: (path[0] as HTMLElement).tagName === 'BODY',
+			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			interface: pathIds.includes('interface'),
+		}
+
+		if (document.body.classList.contains('tabbing')) {
+			document.body?.classList.toggle('tabbing', false)
+		}
+
+		if ((on.body || on.interface) === false) {
+			return
+		}
+
+		if (open.contextmenu) {
+			document.dispatchEvent(new Event('close-edit'))
+		}
+		//
+		else if (open.settings) {
+			toggleSettingsMenu()
+		}
+		//
+		else if (open.selectall && !on.link) {
+			document.dispatchEvent(new Event('remove-select-all'))
+		}
+		//
+		else if (open.folder && !on.folder) {
+			document.dispatchEvent(new Event('close-folder'))
+		}
+	}
+
+	function isOpen() {
+		return {
+			settings: !!document.getElementById('settings')?.classList.contains('shown'),
+			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
+			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
+			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
+		}
+	}
+
+	function detectTargetAsInputs(event: Event) {
+		const path = event.composedPath() as Element[]
+		const tagName = path[0]?.tagName ?? ''
+		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
+	}
+
+	function closeSettingsOnMoveOpen() {
+		setTimeout(() => {
+			const elementmover = document.getElementById('element-mover')
+			const moverHasOpened = elementmover?.classList.contains('hidden') === false
+
+			if (moverHasOpened) {
+				toggleSettingsMenu()
+			}
+		}, 20)
+	}
 
 	function settingsFirstLoad(event?: Event) {
 		if (document.getElementById('settings')) {
@@ -321,6 +433,40 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
 		}
 	}
+}
+
+async function setPotatoComputerMode() {
+	if (BROWSER === 'firefox' || BROWSER === 'safari') {
+		// firefox fingerprinting protection disables webgl info, smh
+		// safari always have hardware acceleration, no need for potato
+		return
+	}
+
+	const fourHours = 1000 * 60 * 60 * 4
+	const isPotato = localStorage.potato === 'yes'
+	const expirationTime = Date.now() - parseInt(localStorage.lastPotatoCheck)
+
+	if (expirationTime < fourHours) {
+		document.body.classList.toggle('potato', isPotato)
+		return
+	}
+
+	const canvas = document.createElement('canvas')
+	const gl = canvas?.getContext('webgl')
+	const debugInfo = gl?.getExtension('WEBGL_debug_renderer_info')
+
+	if (BROWSER === 'chrome' && !gl) {
+		document.body.classList.add('potato')
+		return
+	}
+
+	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0) + ''
+	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0) + ''
+	const detectedPotato = vendor.includes('Google') && renderer.includes('SwiftShader')
+
+	localStorage.potato = detectedPotato ? 'yes' : 'no'
+	localStorage.lastPotatoCheck = Date.now()
+	document.body.classList.toggle('potato', detectedPotato)
 }
 
 //

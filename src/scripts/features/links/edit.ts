@@ -2,7 +2,6 @@ import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
-import onSettingsLoad from '../../utils/onsettingsload'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
@@ -149,7 +148,7 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 // Events
 //
 
-onSettingsLoad(() => {
+queueMicrotask(() => {
 	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
 	domlinkblocks?.addEventListener('contextmenu', openEditDialog)

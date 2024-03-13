@@ -3,7 +3,6 @@ import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
 import { eventDebounce } from '../../utils/debounce'
-import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
 import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
@@ -238,7 +237,7 @@ function initRows(row: number, style: string) {
 //	Events
 //
 
-onSettingsLoad(() => {
+queueMicrotask(() => {
 	document.addEventListener('close-folder', closeFolder)
 	document.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
 	document.addEventListener('remove-select-all', removeSelectAll)

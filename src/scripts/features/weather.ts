@@ -43,7 +43,9 @@ export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (init) {
 		onSettingsLoad(() => {
 			handleGeolOption(init.sync.weather)
+		})
 
+		queueMicrotask(() => {
 			clearInterval(pollingInterval)
 
 			pollingInterval = setInterval(async () => {

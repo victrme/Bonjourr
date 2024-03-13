@@ -28,6 +28,10 @@ import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } 
 import type { Langs } from '../types/langs'
 
 export async function settingsInit() {
+	if (!!document.getElementById('settings')) {
+		return
+	}
+
 	const data = await storage.sync.get()
 	const innerHtml = await (await fetch('settings.html')).text()
 	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
@@ -44,12 +48,22 @@ export async function settingsInit() {
 	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
-	initSettingsEvents()
 	settingsDrawerBar()
 	controlOptionsTabFocus(settingsDom)
 	loadCallbacks()
 
 	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
+
+	// On settings changes, update export code
+	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
+	const storageUpdate = () => updateExportJSON()
+	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (PLATFORM === 'online') window.addEventListener('storage', storageUpdate)
+	if (PLATFORM !== 'online') chrome.storage.onChanged.addListener(storageUpdate)
+
+	window.addEventListener('beforeunload', removeListener, { once: true })
+	document.addEventListener('toggle-settings', toggleSettingsMenu)
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -647,150 +661,6 @@ function initOptionsEvents() {
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
-}
-
-function initSettingsEvents() {
-	const domsettings = document.getElementById('settings')
-	const domsuggestions = document.getElementById('sb-suggestions')
-	const isOnline = PLATFORM === 'online'
-	let isMousingDownOnInput = false
-
-	// On settings changes, update export code
-	const storageUpdate = () => updateExportJSON()
-	const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
-
-	if (isOnline) {
-		window.addEventListener('storage', storageUpdate)
-	} else {
-		chrome.storage.onChanged.addListener(storageUpdate)
-		window.addEventListener('beforeunload', unloadUpdate, { once: true })
-	}
-
-	document.body.addEventListener('mousedown', detectTargetAsInputs)
-	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
-	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
-	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
-
-	document.addEventListener('keydown', async function (event) {
-		if (event.altKey && event.code === 'KeyS') {
-			console.clear()
-			console.log(localStorage)
-			console.log(await storage.sync.get())
-		}
-
-		if (event.code === 'Escape') {
-			if (domsuggestions?.classList.contains('shown')) {
-				domsuggestions?.classList.remove('shown')
-				return
-			}
-
-			const open = isOpen()
-
-			if (open.contextmenu) {
-				document.dispatchEvent(new Event('close-edit'))
-			}
-			//
-			else if (open.settings) {
-				toggleSettingsMenu()
-			}
-			//
-			else if (open.selectall) {
-				document.dispatchEvent(new Event('remove-select-all'))
-			}
-			//
-			else if (open.folder) {
-				document.dispatchEvent(new Event('close-folder'))
-			}
-			//
-			else {
-				toggleSettingsMenu()
-			}
-
-			return
-		}
-
-		if (event.code === 'Tab') {
-			document.body.classList.toggle('tabbing', true)
-			return
-		}
-	})
-
-	document.body.addEventListener('click', function (event) {
-		if (isMousingDownOnInput) {
-			return
-		}
-
-		const open = isOpen()
-		const path = (event.composedPath() as Element[]) ?? [document.body]
-		const pathIds = path.map((el) => (el as HTMLElement).id)
-
-		const on = {
-			link: path.some((el) => el?.classList?.contains('block')),
-			body: (path[0] as HTMLElement).tagName === 'BODY',
-			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
-			interface: pathIds.includes('interface'),
-		}
-
-		if (document.body.classList.contains('tabbing')) {
-			document.body?.classList.toggle('tabbing', false)
-		}
-
-		if ((on.body || on.interface) === false) {
-			return
-		}
-
-		if (open.contextmenu) {
-			document.dispatchEvent(new Event('close-edit'))
-		}
-		//
-		else if (open.settings) {
-			toggleSettingsMenu()
-		}
-		//
-		else if (open.selectall && !on.link) {
-			document.dispatchEvent(new Event('remove-select-all'))
-		}
-		//
-		else if (open.folder && !on.folder) {
-			document.dispatchEvent(new Event('close-folder'))
-		}
-	})
-
-	function isOpen() {
-		return {
-			settings: domsettings?.classList.contains('shown'),
-			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
-			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
-			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
-		}
-	}
-
-	function detectTargetAsInputs(event: Event) {
-		const path = event.composedPath() as Element[]
-		const tagName = path[0]?.tagName ?? ''
-		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
-	}
-
-	function skipToSettings() {
-		toggleSettingsMenu()
-		domsettings?.scrollTo({ top: 0 })
-
-		setTimeout(() => {
-			const showall = document.getElementById('i_showall') as HTMLButtonElement
-			showall.focus()
-		}, 10)
-	}
-
-	function closeSettingsOnMoveOpen() {
-		setTimeout(() => {
-			const elementmover = document.getElementById('element-mover')
-			const moverHasOpened = elementmover?.classList.contains('hidden') === false
-
-			if (moverHasOpened) {
-				toggleSettingsMenu()
-			}
-		}, 20)
-	}
 }
 
 //
