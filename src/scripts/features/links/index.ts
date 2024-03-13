@@ -155,7 +155,7 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 
 	li.id = link._id
 	span.textContent = createTitle(link)
-	li.addEventListener('click', openFolder)
+	li.addEventListener('mouseup', folderClickAction)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
@@ -244,30 +244,38 @@ onSettingsLoad(() => {
 	document.addEventListener('remove-select-all', removeSelectAll)
 })
 
-async function openFolder(event: MouseEvent) {
-	if (domlinkblocks.className.includes('select-all')) {
+async function folderClickAction(event: MouseEvent) {
+	const li = getLiFromEvent(event)
+	const rightClick = event.button === 2
+	const inFolder = li?.classList.contains('folder')
+	const isSelectAll = domlinkblocks.className.includes('select-all')
+
+	if (!li || !inFolder || rightClick || isSelectAll) {
 		return
 	}
 
 	clearTimeout(selectallTimer)
-	const li = getLiFromEvent(event)
-
-	if (!li || !li?.classList.contains('folder')) {
-		return
-	}
 
 	const data = await storage.sync.get()
+	const ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
+	const middleClick = event.button === 1
 
-	if (event.button === 1) {
-		const links = getLinksInFolder(data, li.id)
-
-		links.forEach((link) => window.open(link.url, '_blank')?.focus())
-		window.open(window.location.href, '_blank')?.focus()
-		window.close()
-
-		return
+	if (ctrlClick || middleClick) {
+		openAllLinks(data, li)
+	} else {
+		openFolder(data, li)
 	}
+}
 
+function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
+	const links = getLinksInFolder(data, li.id)
+
+	links.forEach((link) => window.open(link.url, '_blank')?.focus())
+	window.open(window.location.href, '_blank')?.focus()
+	window.close()
+}
+
+async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
 	const folderTitle = folder?.title || tradThis('Folder')

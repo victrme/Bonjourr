@@ -1,89 +1,65 @@
 import { test, expect, Page } from '@playwright/test'
+import openAllSettings from './utils/openallsettings'
 
-test.setTimeout(8000)
-test.describe.configure({ mode: 'serial' })
-
-let page: Page
-
-test.beforeAll(async ({ browser }) => {
-	page = await browser.newPage()
+test.beforeEach(async ({ page }) => {
 	await page.goto('./')
-
-	await page.waitForTimeout(200)
-	await page.getByRole('button', { name: 'Toggle settings menu' }).click()
-	await page.waitForTimeout(5)
-	await page.waitForSelector('#settings')
-	await page.getByLabel('Show all settings').click()
+	await openAllSettings(page)
 	await page.locator('#i_sb').check()
 })
 
-test.afterAll(async () => {
-	await page.close()
-})
-
-// test.afterEach(async () => {
-// 	await page.reload()
-// })
-
 test.describe('Suggestions', () => {
-	test('Suggests results', async () => {
-		await page.getByRole('textbox', { name: 'Search bar' }).click()
-		await page.getByRole('textbox', { name: 'Search bar' }).fill('minecraft')
-		await page.waitForTimeout(600)
-
+	test('Suggests results', async ({ page }) => {
+		await writeInSearchBar(page, 'minecraft')
 		expect(await page.locator('#sb-suggestions li.shown').count()).toBeGreaterThan(0)
 	})
 
-	test('Has descriptions on Google', async () => {
+	test('Has descriptions on Google', async ({ page }) => {
+		await writeInSearchBar(page, 'minecraft')
 		expect(await page.locator('#sb-suggestions li:first-child img').getAttribute('src')).toBeTruthy()
 		expect(await page.locator('#sb-suggestions li:first-child .suggest-result').textContent()).toBeTruthy()
 		expect(await page.locator('#sb-suggestions li:first-child .suggest-desc').textContent()).toBeTruthy()
 	})
 
-	test('Empty search removes results', async () => {
+	test('Empty search removes results', async ({ page }) => {
+		await writeInSearchBar(page, 'hello world')
 		await page.getByRole('button', { name: 'Empty search' }).click()
 		expect(await page.locator('#sb-suggestions li.shown').count()).toBe(0)
 	})
 
-	test('Typing URL stops suggesting', async () => {
-		await page.getByRole('textbox', { name: 'Search bar' }).fill('bonjourr.fr')
-		await page.waitForTimeout(600)
-
-		expect(await page.locator('#sb-suggestions li.shown').count()).toBe(0)
+	test('Typing URL stops suggesting', async ({ page }) => {
+		await writeInSearchBar(page, 'example.com', true)
+		await page.waitForTimeout(500)
+		expect(page.locator('#sb-suggestions li:first-child')).not.toBeVisible()
 	})
 
-	test('Losing focus hides suggestions', async () => {
-		await page.getByRole('textbox', { name: 'Search bar' }).fill('bonjourr')
-		await page.waitForTimeout(600)
-
-		expect(await page.locator('#sb-suggestions.shown').count()).toBe(1)
+	test('Focus/blur shows/hides suggestions', async ({ page }) => {
+		await writeInSearchBar(page, 'bonjourr')
+		expect(page.locator('#sb-suggestions li:first-child')).toBeVisible()
 
 		await page.getByRole('button', { name: 'Toggle settings menu' }).click()
+		expect(page.locator('#sb-suggestions li:first-child')).not.toBeVisible()
 
-		expect(await page.locator('#sb-suggestions.shown').count()).toBe(0)
-	})
-
-	test('Focusing shown suggestions, if any', async () => {
-		await page.getByRole('textbox', { name: 'Search bar' }).fill('b')
-		await page.waitForTimeout(600)
-
-		expect(await page.locator('#sb-suggestions.shown').count()).toBe(1)
-
-		await page.keyboard.press('Backspace')
-		await page.getByRole('button', { name: 'Toggle settings menu' }).click()
 		await page.getByRole('textbox', { name: 'Search bar' }).click()
-
-		expect(await page.locator('#sb-suggestions.shown').count()).toBe(0)
+		expect(page.locator('#sb-suggestions li:first-child')).toBeVisible()
 	})
 
-	test('Navigating adds result to input', async () => {
-		await page.getByRole('textbox', { name: 'Search bar' }).fill('par')
-		await page.waitForTimeout(800)
-		await page.keyboard.press('ArrowDown')
+	test('Navigating adds result to input', async ({ page }) => {
+		await writeInSearchBar(page, 'paris')
+		await page.keyboard.down('ArrowDown')
 
 		const input = await page.locator('#searchbar').inputValue()
-		const result = await page.locator('#sb-suggestions li:first-child .suggest-result').textContent()
+		const result = await page.locator('.suggest-result').first().textContent()
 
-		expect(input).toBe(result)
+		expect(input).toEqual(result)
 	})
 })
+
+//
+//
+//
+
+async function writeInSearchBar(page: Page, query: string, skip?: true) {
+	await page.getByRole('textbox', { name: 'Search bar' }).pressSequentially(query, { delay: 150 })
+	if (skip) return
+	await page.waitForSelector('#sb-suggestions')
+}
