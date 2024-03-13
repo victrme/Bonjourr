@@ -13,7 +13,7 @@ import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
-import { darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
+import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
 import langList from './langs'
 import parse from './utils/parse'

@@ -13,11 +13,11 @@ import { settingsInit } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
+import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { stringMaxSize, freqControl, linksDataMigration, minutator } from './utils'
-import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { eventDebounce } from './utils/debounce'
+import { freqControl, linksDataMigration } from './utils'
+import { traduction, setTranslationCache } from './utils/translations'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
@@ -144,107 +144,6 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	data.about = SYNC_DEFAULT.about
 
 	return data
-}
-
-function onlineAndMobile() {
-	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
-	const onlineSafariIOS = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
-	let visibilityHasChanged = false
-	let firefoxRAFTimeout: number
-
-	if (IS_MOBILE) {
-		document.addEventListener('visibilitychange', updateOnVisibilityChange)
-	}
-
-	if (onlineFirefoxMobile) {
-		// Firefox cannot -moz-fill-available with height
-		// On desktop, uses fallback 100vh
-		// On mobile, sets height dynamically because vh is bad on mobile
-
-		updateAppHeight()
-
-		// Fix for opening tabs Firefox iOS
-		if (SYSTEM_OS === 'ios') {
-			window.requestAnimationFrame(triggerAnimationFrame)
-			setTimeout(() => cancelAnimationFrame(firefoxRAFTimeout), 500)
-		}
-	}
-
-	if (onlineSafariIOS) {
-		onSettingsLoad(() => {
-			const inputs = document.querySelectorAll('input[type="text"], input[type="url"], textarea')
-
-			for (const input of inputs) {
-				input.addEventListener('focus', disableTouchAction)
-				input.addEventListener('blur', enableTouchAction)
-			}
-		})
-	}
-
-	async function updateOnVisibilityChange() {
-		if (visibilityHasChanged === false) {
-			visibilityHasChanged = true
-			return
-		}
-
-		visibilityHasChanged = false
-
-		const data = await storage.sync.get()
-		const local = await storage.local.get(['unsplashCache', 'lastWeather'])
-
-		if (!data?.clock || !data?.weather) {
-			return
-		}
-
-		const frequency = freqControl.get(data.unsplash.every, data.unsplash.time ?? Date.now())
-		const needNewImage = data.background_type === 'unsplash' && frequency
-
-		if (needNewImage && data.unsplash) {
-			initBackground(data, local)
-		}
-
-		clock(data)
-		weather({ sync: data, lastWeather: local.lastWeather })
-	}
-
-	function triggerAnimationFrame() {
-		updateAppHeight()
-		firefoxRAFTimeout = requestAnimationFrame(triggerAnimationFrame)
-	}
-
-	function updateAppHeight() {
-		document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
-	}
-
-	function disableTouchAction() {
-		const settingsDom = document.getElementById('settings') as HTMLElement
-		if (dominterface && settingsDom) {
-			dominterface.style.touchAction = 'none'
-			settingsDom.style.touchAction = 'none'
-		}
-	}
-
-	function enableTouchAction() {
-		const settingsDom = document.getElementById('settings') as HTMLElement
-		if (dominterface && settingsDom) {
-			dominterface.style.removeProperty('touch-action')
-			settingsDom.style.removeProperty('touch-action')
-		}
-	}
-}
-
-function serviceWorker() {
-	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
-		return
-	}
-
-	navigator.serviceWorker.register('service-worker.js')
-
-	let promptEvent // PWA install trigger (30s interaction default)
-	window.addEventListener('beforeinstallprompt', function (e) {
-		promptEvent = e
-		return promptEvent
-	})
 }
 
 export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
@@ -435,6 +334,107 @@ function userActionsEvents() {
 	}
 }
 
+function onlineAndMobile() {
+	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
+	const onlineSafariIOS = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
+	let visibilityHasChanged = false
+	let firefoxRAFTimeout: number
+
+	if (IS_MOBILE) {
+		document.addEventListener('visibilitychange', updateOnVisibilityChange)
+	}
+
+	if (onlineFirefoxMobile) {
+		// Firefox cannot -moz-fill-available with height
+		// On desktop, uses fallback 100vh
+		// On mobile, sets height dynamically because vh is bad on mobile
+
+		updateAppHeight()
+
+		// Fix for opening tabs Firefox iOS
+		if (SYSTEM_OS === 'ios') {
+			window.requestAnimationFrame(triggerAnimationFrame)
+			setTimeout(() => cancelAnimationFrame(firefoxRAFTimeout), 500)
+		}
+	}
+
+	if (onlineSafariIOS) {
+		onSettingsLoad(() => {
+			const inputs = document.querySelectorAll('input[type="text"], input[type="url"], textarea')
+
+			for (const input of inputs) {
+				input.addEventListener('focus', disableTouchAction)
+				input.addEventListener('blur', enableTouchAction)
+			}
+		})
+	}
+
+	async function updateOnVisibilityChange() {
+		if (visibilityHasChanged === false) {
+			visibilityHasChanged = true
+			return
+		}
+
+		visibilityHasChanged = false
+
+		const data = await storage.sync.get()
+		const local = await storage.local.get(['unsplashCache', 'lastWeather'])
+
+		if (!data?.clock || !data?.weather) {
+			return
+		}
+
+		const frequency = freqControl.get(data.unsplash.every, data.unsplash.time ?? Date.now())
+		const needNewImage = data.background_type === 'unsplash' && frequency
+
+		if (needNewImage && data.unsplash) {
+			initBackground(data, local)
+		}
+
+		clock(data)
+		weather({ sync: data, lastWeather: local.lastWeather })
+	}
+
+	function triggerAnimationFrame() {
+		updateAppHeight()
+		firefoxRAFTimeout = requestAnimationFrame(triggerAnimationFrame)
+	}
+
+	function updateAppHeight() {
+		document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+	}
+
+	function disableTouchAction() {
+		const settingsDom = document.getElementById('settings') as HTMLElement
+		if (dominterface && settingsDom) {
+			dominterface.style.touchAction = 'none'
+			settingsDom.style.touchAction = 'none'
+		}
+	}
+
+	function enableTouchAction() {
+		const settingsDom = document.getElementById('settings') as HTMLElement
+		if (dominterface && settingsDom) {
+			dominterface.style.removeProperty('touch-action')
+			settingsDom.style.removeProperty('touch-action')
+		}
+	}
+}
+
+function serviceWorker() {
+	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
+		return
+	}
+
+	navigator.serviceWorker.register('service-worker.js')
+
+	let promptEvent // PWA install trigger (30s interaction default)
+	window.addEventListener('beforeinstallprompt', function (e) {
+		promptEvent = e
+		return promptEvent
+	})
+}
+
 async function setPotatoComputerMode() {
 	if (BROWSER === 'firefox' || BROWSER === 'safari') {
 		// firefox fingerprinting protection disables webgl info, smh
@@ -468,100 +468,3 @@ async function setPotatoComputerMode() {
 	localStorage.lastPotatoCheck = Date.now()
 	document.body.classList.toggle('potato', detectedPotato)
 }
-
-//
-//
-//
-
-export function favicon(val?: string, isEvent?: true) {
-	function createFavicon(emoji?: string) {
-		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
-		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
-
-		domfavicon.href = emoji ? svg : defaulticon
-	}
-
-	if (isEvent) {
-		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
-		eventDebounce({ favicon: isEmoji ? val : '' })
-		document.getElementById('head-favicon')?.remove()
-	}
-
-	if (BROWSER === 'firefox') {
-		setTimeout(() => createFavicon(val), 0)
-	} else {
-		createFavicon(val)
-	}
-}
-
-export function tabTitle(val = '', isEvent?: true) {
-	document.title = stringMaxSize(val, 80) || tradThis('New tab')
-
-	if (isEvent) {
-		eventDebounce({ tabtitle: stringMaxSize(val, 80) })
-	}
-}
-
-export function pageControl(val: { width?: number; gap?: number }, isEvent?: true) {
-	if (val.width) {
-		document.documentElement.style.setProperty('--page-width', (val.width ?? SYNC_DEFAULT.pagewidth) + 'px')
-		if (isEvent) eventDebounce({ pagewidth: val.width })
-	}
-
-	if (typeof val.gap === 'number') {
-		document.documentElement.style.setProperty('--page-gap', (val.gap ?? SYNC_DEFAULT.pagegap) + 'em')
-		if (isEvent) eventDebounce({ pagegap: val.gap })
-	}
-}
-
-export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
-	let theme = 'light'
-
-	switch (value) {
-		case 'disable':
-			theme = 'light'
-			break
-
-		case 'enable':
-			theme = 'dark'
-			break
-
-		case 'system':
-			theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-			break
-
-		case 'auto': {
-			const now = minutator(new Date())
-			const { sunrise, sunset } = suntime()
-			theme = now <= sunrise || now > sunset ? 'dark' : 'light'
-			break
-		}
-	}
-
-	document.documentElement.dataset.theme = theme
-
-	if (isEvent) {
-		storage.sync.set({ dark: value })
-		return
-	}
-
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
-	})
-}
-
-export function textShadow(init?: number, event?: number) {
-	const val = init ?? event
-	document.documentElement.style.setProperty('--text-shadow-alpha', (val ?? 0.2)?.toString())
-
-	if (typeof event === 'number') {
-		eventDebounce({ textShadow: val })
-	}
-}
-
-// Unfocus address bar on chromium
-// https://stackoverflow.com/q/64868024
-// if (window.location.search !== '?r=1') {
-// 	window.location.assign('index.html?r=1')
-// }
