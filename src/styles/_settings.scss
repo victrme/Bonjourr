@@ -147,7 +147,9 @@
 	select {
 		height: 31px;
 		width: 155px;
-		padding: 0 13px;
+		padding-inline: 13px;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		background-color: var(--color-input);
 	}
 
@@ -221,6 +223,7 @@
 		margin: 0;
 		padding: 0;
 		cursor: grab;
+		overflow: unset;
 		border-radius: 1.5rem;
 		background-color: #c8c7cc;
 		-webkit-appearance: none;
@@ -330,8 +333,9 @@
 }
 
 #analog_options.shown,
+#location_options.shown,
 #unsplash_options.shown {
-	max-height: 100px;
+	max-height: 110px;
 }
 
 #searchbar_options.shown {
@@ -538,6 +542,48 @@
 	}
 }
 
+#settings form {
+	position: relative;
+	display: flex;
+	column-gap: 4px;
+	max-width: 66%;
+}
+
+#settings form button {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 31px;
+	height: 21px;
+	opacity: 0;
+	pointer-events: none;
+	background-color: transparent;
+	transition: opacity 0.1s;
+}
+
+#settings form button span {
+	justify-content: center;
+}
+
+#settings form.valid button {
+	opacity: 1;
+	pointer-events: all;
+}
+
+#settings form.valid button:hover,
+#settings form.valid button:focus-visible {
+	color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
+#settings form.valid button:active {
+	background-color: rgba(var(--blue), 0.25);
+}
+
+#settings form.valid input:last-of-type {
+	padding-inline-end: 40px;
+}
+
 //
 //	General
 //
@@ -568,54 +614,12 @@
 //	Links
 //
 
-#addlink-inputs {
-	position: relative;
-	display: flex;
-	column-gap: 4px;
-	max-width: 66%;
-
-	input[type='text'] {
-		width: 100%;
-	}
-
-	#i_addlink-title {
-		width: 50%;
-	}
-
-	&.valid #i_addlink {
-		opacity: 1;
-		pointer-events: all;
-
-		&:hover,
-		&:focus-visible {
-			color: var(--color-blue);
-			background-color: rgba(var(--blue), 0.15);
-		}
-
-		&:active {
-			background-color: rgba(var(--blue), 0.25);
-		}
-	}
+#settings #i_addlink-url {
+	width: 100%;
 }
 
-#i_addlink-url {
-	padding-inline-end: 3em;
-}
-
-#settings #i_addlink {
-	position: absolute;
-	top: 5px;
-	right: 5px;
-	width: 31px;
-	height: 21px;
-	opacity: 0;
-	pointer-events: none;
-	background-color: transparent;
-	transition: opacity 0.1s;
-
-	span {
-		justify-content: center;
-	}
+#settings #i_addlink-title {
+	width: 140px;
 }
 
 //
@@ -809,38 +813,17 @@
 //	Weather
 //
 
-@keyframes loadsResponse {
-	0% {
-		opacity: 1;
-	}
-	100% {
-		opacity: 0.6;
-	}
+#location_options .superinput {
+	width: 66%;
 }
 
-#sett_city {
-	display: flex;
-	column-gap: 0.4em;
-	transition: max-height 0.2s, margin 0.2s;
-
-	&.shown {
-		margin-top: 0.6em;
-		max-height: 36px;
-	}
-
-	select,
-	.superinput {
-		width: 100%;
-		text-transform: capitalize;
-	}
+#location_options .superinput form {
+	max-width: 100%;
+	width: 100%;
 }
 
-#i_city.loads {
-	animation: loadsResponse 800ms linear infinite alternate;
-}
-
-#i_city.warn {
-	outline: 2px solid #ff7400;
+#settings #i_ccode {
+	width: 95px;
 }
 
 //

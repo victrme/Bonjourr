@@ -391,13 +391,18 @@ function initOptionsEvents() {
 		moveElements(undefined, { widget: ['main', this.checked] })
 	})
 
-	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
-		weather(undefined, { city: this.value })
-	})
-
 	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		inputThrottle(this, 1200)
 		weather(undefined, { geol: this.value })
+	})
+
+	paramId('i_city').addEventListener('input', function (this: HTMLInputElement) {
+		document.getElementById('f_location')?.classList.toggle('valid', this.value.length > 2)
+	})
+
+	paramId('f_location').addEventListener('submit', function (this, event: SubmitEvent) {
+		weather(undefined, { city: true })
+		event.preventDefault()
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {

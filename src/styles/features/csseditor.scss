@@ -92,16 +92,16 @@ div.pce-overlays > * {
 	/* ayu */
 	--caret: #ffaa33;
 	--selection-bg: #036dd626;
-	--comment: #787b8099;
-	--plaintext: #bfbdb6;
+	--comment: #787b80bb;
+	--variable: #eee;
+	--plaintext: #eee;
+	--color: #eee;
 	--number: #ffaa33;
 	--string: #86b300;
 	--keyword: #fa8d3e;
-	--variable: #bfbdb6;
 	--operators: #ed9366;
 	--property: #55b4d4;
 	--selector: #22a4e6;
-	--color: #bfbdb6;
 }
 
 [data-theme='light'] .prism-code-editor {

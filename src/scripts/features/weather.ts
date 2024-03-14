@@ -22,7 +22,7 @@ type WeatherUpdate = {
 	provider?: string
 	units?: string
 	geol?: string
-	city?: string
+	city?: true
 	temp?: string
 	unhide?: true
 }
@@ -96,42 +96,50 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.city) {
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+		let ccode = i_ccode.value
+		let city = i_city.value
+
+		console.log(ccode, city)
+
 		if (!navigator.onLine) {
-			cityInput.warn('No internet connection')
+			// cityInput.warn('No internet connection')
 			return false
 		}
 
-		if (update.city === weather.city) {
+		if (city === weather.city) {
 			return
 		}
 
-		const i_city = document.getElementById('i_city') as HTMLInputElement
-		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-
-		update.city = stringMaxSize(update.city, 64)
-		cityInput.load()
+		city = stringMaxSize(city, 64)
+		// cityInput.load()
 
 		// don't mutate weather data before confirming that the city exists
-		const newWeather = await request({ ...weather, ccode: i_ccode.value, city: update.city }, lastWeather)
+		const currentWeather = { ...weather, ccode, city }
+		const newWeather = await request(currentWeather, lastWeather)
 		const newCity = newWeather?.approximation?.city
-		const foundCityIsDifferent = newCity !== '' && newCity !== update.city
+		const foundCityIsDifferent = newCity !== '' && newCity !== city
 
 		if (!newWeather) {
-			cityInput.warn('Cannot reach weather service')
+			// cityInput.warn('Cannot reach weather service')
 			return
 		}
 
 		if (foundCityIsDifferent) {
-			cityInput.warn('Cannot find correct city')
+			// cityInput.warn('Cannot find correct city')
 			return
 		}
 
 		if (newWeather) {
 			lastWeather = newWeather
 			weather.ccode = (lastWeather.approximation?.ccode || i_ccode.value) ?? 'FR'
-			weather.city = (lastWeather.approximation?.city || update.city) ?? 'Paris'
+			weather.city = (lastWeather.approximation?.city || city) ?? 'Paris'
 			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
-			cityInput.toggle(false)
+			// cityInput.toggle(false)
+			i_city.value = ''
+			i_city.blur()
+			i_city.dispatchEvent(new KeyboardEvent('input'))
 		}
 	}
 
@@ -151,7 +159,7 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	storage.sync.set({ weather })
-	handleGeolOption(weather)
+	onSettingsLoad(() => handleGeolOption(weather))
 
 	if (lastWeather) {
 		storage.local.set({ lastWeather })
@@ -234,12 +242,10 @@ function handleGeolOption(data: Weather) {
 	const i_city = document.getElementById('i_city') as HTMLInputElement
 	const i_geol = document.getElementById('i_geol') as HTMLInputElement
 	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-	const sett_city = document.getElementById('sett_city') as HTMLDivElement
-
 	i_geol.value = data.geolocation
 	i_ccode.value = data.ccode ?? 'FR'
-	i_city.setAttribute('placeholder', data.city ?? tradThis('City'))
-	sett_city.classList.toggle('shown', data.geolocation === 'off')
+	i_city.setAttribute('placeholder', data.city ?? 'Paris')
+	document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
 }
 
 async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {
