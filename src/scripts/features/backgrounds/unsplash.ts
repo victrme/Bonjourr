@@ -3,7 +3,7 @@ import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../../defaults'
 import { imgBackground } from '.'
 import { tradThis } from '../../utils/translations'
 import errorMessage from '../../utils/errormessage'
-import superinput from '../../utils/superinput'
+import networkForm from '../../utils/superinput'
 import storage from '../../storage'
 
 type UnsplashInit = {
@@ -17,7 +17,7 @@ type UnsplashUpdate = {
 	every?: string
 }
 
-const collectionInput = superinput('i_collection')
+const collectionForm = networkForm('f_collection')
 
 // https://unsplash.com/@bonjourr/collections
 const bonjourrCollections = {
@@ -48,6 +48,7 @@ export default function unsplashBackgrounds(init?: UnsplashInit, event?: Unsplas
 async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	const { unsplash } = await storage.sync.get('unsplash')
 	const unsplashCache = await getCache()
+	const i_collection = document.querySelector<HTMLInputElement>('#i_collection')
 
 	if (!unsplash) {
 		return
@@ -78,16 +79,21 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplashCache.user = []
 		unsplash.collection = ''
 		unsplash.lastCollec = 'day'
-		collectionInput.toggle(false, '2nVzlQADDIE')
+
 		unsplashBackgrounds({ unsplash, cache: unsplashCache })
+
+		if (i_collection) {
+			collectionForm.toggle(false)
+			i_collection.placeholder = '2nVzlQADDIE'
+			i_collection.value = ''
+		}
 	}
 
 	if (collection !== undefined && collection.length > 0) {
-		const i_collection = document.querySelector<HTMLInputElement>('#i_collection')
 		const isFullURL = collection.includes('https://unsplash.com/') && collection.includes('/collections/')
 
 		if (!navigator.onLine) {
-			return collectionInput.warn('No internet connection')
+			return collectionForm.warn('No internet connection')
 		}
 
 		if (isFullURL) {
@@ -101,12 +107,18 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.lastCollec = 'user'
 		unsplash.time = freqControl.set()
 
-		collectionInput.load()
+		collectionForm.load()
 		let list = await requestNewList(unsplash.collection)
 
 		if (!list || list.length === 0) {
-			collectionInput.warn(`Cannot get "${collection}"`)
+			collectionForm.warn(`Cannot get "${collection}"`)
 			return
+		}
+		//
+		else if (i_collection) {
+			i_collection.placeholder = collection
+			i_collection.value = ''
+			collectionForm.toggle(false)
 		}
 
 		unsplashCache['user'] = list
@@ -114,12 +126,6 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		await preloadImage(unsplashCache['user'][0].url)
 		preloadImage(unsplashCache['user'][1].url)
 		loadBackground(unsplashCache['user'][0])
-
-		collectionInput.toggle(false, unsplash.collection)
-
-		if (isFullURL && i_collection) {
-			i_collection.value = collection
-		}
 	}
 
 	storage.sync.set({ unsplash })

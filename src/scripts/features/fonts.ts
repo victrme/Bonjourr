@@ -6,7 +6,7 @@ import { SYSTEM_OS } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import { apiFetch } from '../utils'
 import { subsets } from '../langs'
-import superinput from '../utils/superinput'
+import networkForm from '../utils/superinput'
 import storage from '../storage'
 
 type Font = Sync.Font
@@ -26,7 +26,7 @@ type CustomFontUpdate = {
 	weight?: string
 }
 
-const familyInput = superinput('i_customfont')
+const familyForm = networkForm('f_customfont')
 
 const systemfont = (function () {
 	const fonts = {
@@ -118,19 +118,22 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 			displayFont(font)
 			i_customfont.value = ''
 			i_customfont.placeholder = systemfont.placeholder
+			familyForm.toggle(false)
 			break
 		}
 
 		case 'system': {
-			familyInput.load()
+			familyForm.toggle(true)
+			familyForm.load()
 			font.family = family
 			displayFont(font)
-			familyInput.toggle(false, family)
+			familyForm.toggle(false) //, family)
 			break
 		}
 
 		case 'fontsource': {
-			familyInput.load()
+			familyForm.toggle(true)
+			familyForm.load()
 
 			const newfont = await getNewFont(font, family)
 
@@ -138,11 +141,11 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 				font = { ...font, ...newfont }
 				displayFont(font)
 				await waitForFontLoad(family)
-				familyInput.toggle(false, family)
+				familyForm.toggle(false) //, family)
 			}
 
 			if (font.family === '') {
-				familyInput.warn(`Cannot load "${family}"`)
+				familyForm.warn(`Cannot load "${family}"`)
 				return data.font
 			}
 			break

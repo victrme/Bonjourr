@@ -1,40 +1,44 @@
 import onSettingsLoad from './onsettingsload'
 
-export default function superinput(inputtarget: string) {
-	let input: HTMLInputElement
-	let wrapper: HTMLDivElement
-	let statusicon: HTMLElement
+// <form class="network-form">
+//	...
+// 	<button type="submit">
+// 		<span>✓</span>
+//		<i></i>
+// 	</button>
+// </form>
+
+export default function networkForm(targetId: string) {
+	let form: HTMLFormElement
+	let button: HTMLButtonElement
 
 	onSettingsLoad(() => {
-		input = document.getElementById(inputtarget) as HTMLInputElement
-		wrapper = input?.parentElement as HTMLDivElement
-		statusicon = wrapper?.querySelector('i') as HTMLElement
+		form = document.getElementById(targetId) as HTMLFormElement
+		button = form?.querySelector('button:last-of-type') as HTMLButtonElement
 
-		input?.addEventListener('blur', () => toggle(false))
-		input?.addEventListener('input', () => {
-			if (wrapper?.classList.contains('warn')) toggle(false)
-		})
+		form?.addEventListener('blur', () => toggle(false))
+		form?.addEventListener('input', () => (form?.classList.contains('warn') ? toggle(true) : ''))
 	})
 
-	function toggle(force?: boolean, value?: string) {
-		wrapper.classList.toggle('active', force)
-		wrapper.title = ''
-
-		if (value !== undefined) {
-			input.setAttribute('placeholder', value)
-		}
+	function toggle(force?: boolean) {
+		form.classList.remove('load', 'warn', 'offline')
+		form.classList.toggle('valid', force)
+		button.removeAttribute('disabled')
+		button.title = ''
 	}
 
 	function load() {
-		wrapper.className = 'superinput active load'
-		wrapper.title = 'loading'
-		statusicon.className = 'gg-spinner'
+		form.classList.add('load')
+		form.classList.remove('warn', 'offline')
+		button.setAttribute('disabled', 'disabled')
+		button.title = 'loading'
 	}
 
 	function warn(err: string) {
-		wrapper.className = 'superinput active warn'
-		wrapper.title = err
-		statusicon.className = 'gg-danger'
+		form.classList.add('warn')
+		form.classList.remove('load', 'offline')
+		button.setAttribute('disabled', 'disabled')
+		button.title = err
 	}
 
 	return {

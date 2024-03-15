@@ -1,7 +1,7 @@
 import { stringMaxSize, apiFetch, minutator } from '../utils'
 import { tradThis, getLang } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
-import superinput from '../utils/superinput'
+import networkForm from '../utils/superinput'
 import suntime from '../utils/suntime'
 import storage from '../storage'
 
@@ -28,7 +28,9 @@ type WeatherUpdate = {
 }
 
 let pollingInterval = 0
-const cityInput = superinput('i_city')
+const locationForm = networkForm('f_location')
+const unitForm = networkForm('f_units')
+const geolForm = networkForm('f_geol')
 
 export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
@@ -66,8 +68,13 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (isUnits(update.units)) {
+		unitForm.toggle(true)
+		unitForm.load()
+
 		weather.unit = update.units
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
+
+		unitForm.toggle(false)
 	}
 
 	if (isForecast(update.forecast)) {
@@ -101,10 +108,8 @@ async function updatesWeather(update: WeatherUpdate) {
 		let ccode = i_ccode.value
 		let city = i_city.value
 
-		console.log(ccode, city)
-
 		if (!navigator.onLine) {
-			// cityInput.warn('No internet connection')
+			locationForm.warn('No internet connection')
 			return false
 		}
 
@@ -113,7 +118,7 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 
 		city = stringMaxSize(city, 64)
-		// cityInput.load()
+		locationForm.load()
 
 		// don't mutate weather data before confirming that the city exists
 		const currentWeather = { ...weather, ccode, city }
@@ -122,12 +127,12 @@ async function updatesWeather(update: WeatherUpdate) {
 		const foundCityIsDifferent = newCity !== '' && newCity !== city
 
 		if (!newWeather) {
-			// cityInput.warn('Cannot reach weather service')
+			locationForm.warn('Cannot reach weather service')
 			return
 		}
 
 		if (foundCityIsDifferent) {
-			// cityInput.warn('Cannot find correct city')
+			locationForm.warn('Cannot find correct city')
 			return
 		}
 
@@ -135,18 +140,23 @@ async function updatesWeather(update: WeatherUpdate) {
 			lastWeather = newWeather
 			weather.ccode = (lastWeather.approximation?.ccode || i_ccode.value) ?? 'FR'
 			weather.city = (lastWeather.approximation?.city || city) ?? 'Paris'
-			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
-			// cityInput.toggle(false)
+
+			locationForm.toggle(false)
+			i_city.placeholder = weather.city ?? tradThis('City')
 			i_city.value = ''
-			i_city.blur()
+
 			i_city.dispatchEvent(new KeyboardEvent('input'))
 		}
 	}
 
 	if (update.geol) {
+		geolForm.toggle(true)
+		geolForm.load()
+
 		// Don't update if precise geolocation fails
 		if (update.geol === 'precise') {
 			if (!(await getGeolocation('precise'))) {
+				geolForm.warn('Cannot get precise location')
 				return handleGeolOption(weather)
 			}
 		}
@@ -156,6 +166,8 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
+
+		geolForm.toggle(false)
 	}
 
 	storage.sync.set({ weather })

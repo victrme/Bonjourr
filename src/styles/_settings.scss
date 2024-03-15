@@ -157,9 +157,9 @@
 		width: 100%;
 	}
 
-	input:focus {
-		background-color: var(--color-focused);
-	}
+	// input:focus {
+	// 	background-color: var(--color-focused);
+	// }
 
 	input::placeholder {
 		color: var(--color-placeholder);
@@ -326,6 +326,7 @@
 	max-height: 160px;
 }
 
+#location_options.shown,
 #digital_options.shown,
 #weather_provider.shown,
 #searchbar_request.shown {
@@ -333,7 +334,6 @@
 }
 
 #analog_options.shown,
-#location_options.shown,
 #unsplash_options.shown {
 	max-height: 110px;
 }
@@ -545,20 +545,26 @@
 #settings form {
 	position: relative;
 	display: flex;
+	align-items: center;
 	column-gap: 4px;
 	max-width: 66%;
 }
 
 #settings form button {
-	position: absolute;
 	top: 5px;
 	right: 5px;
-	width: 31px;
-	height: 21px;
+	height: 31px;
+	width: 100%;
+	padding: 0;
 	opacity: 0;
+	max-width: 0;
 	pointer-events: none;
 	background-color: transparent;
-	transition: opacity 0.1s;
+	transition: opacity 0.1s, max-width 0.2s;
+}
+
+#settings form button:disabled {
+	cursor: default;
 }
 
 #settings form button span {
@@ -568,20 +574,17 @@
 #settings form.valid button {
 	opacity: 1;
 	pointer-events: all;
+	max-width: 26px;
 }
 
-#settings form.valid button:hover,
-#settings form.valid button:focus-visible {
+#settings form.valid button:not(:disabled):hover,
+#settings form.valid button:not(:disabled):focus-visible {
 	color: var(--color-blue);
 	background-color: rgba(var(--blue), 0.15);
 }
 
-#settings form.valid button:active {
+#settings form.valid button:not(:disabled):active {
 	background-color: rgba(var(--blue), 0.25);
-}
-
-#settings form.valid input:last-of-type {
-	padding-inline-end: 40px;
 }
 
 //
@@ -614,17 +617,21 @@
 //	Links
 //
 
-#settings #i_addlink-url {
+#settings #i_addlink-title {
+	width: 40%;
+}
+
+//
+//	Backgrounds
+//
+
+#settings #f_collection {
+	width: 155px;
+}
+
+#settings #i_collection {
 	width: 100%;
 }
-
-#settings #i_addlink-title {
-	width: 140px;
-}
-
-//
-//	Local backgrounds
-//
 
 #settings #i_freq {
 	width: 100%;
@@ -813,17 +820,8 @@
 //	Weather
 //
 
-#location_options .superinput {
-	width: 66%;
-}
-
-#location_options .superinput form {
-	max-width: 100%;
-	width: 100%;
-}
-
 #settings #i_ccode {
-	width: 95px;
+	width: 45%;
 }
 
 //

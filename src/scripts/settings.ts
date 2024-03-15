@@ -212,6 +212,11 @@ function initOptionsValues(data: Sync.Storage) {
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
+
+	document.querySelectorAll<HTMLFormElement>('#settings form input').forEach((input) => {
+		const form = input.parentElement as HTMLFormElement
+		input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
+	})
 }
 
 function initOptionsEvents() {
@@ -257,10 +262,6 @@ function initOptionsEvents() {
 		moveElements(undefined, { widget: ['quicklinks', this.checked] })
 	})
 
-	paramId('i_addlink-url').addEventListener('input', function (this) {
-		paramId('addlink-inputs').classList.toggle('valid', paramId('addlink-inputs')?.checkValidity())
-	})
-
 	paramId('addlink-inputs').addEventListener('submit', function (this, event: SubmitEvent) {
 		const formData = new FormData(this as unknown as HTMLFormElement)
 
@@ -273,7 +274,6 @@ function initOptionsEvents() {
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
-		paramId('addlink-inputs').classList.remove('valid')
 		event.preventDefault()
 	})
 
@@ -314,8 +314,11 @@ function initOptionsEvents() {
 		updateBackgroundOption({ refresh: this.children[0] as HTMLSpanElement })
 	})
 
-	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplashBackgrounds(undefined, { collection: stringMaxSize(this.value, 256) })
+	paramId('f_collection').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		unsplashBackgrounds(undefined, {
+			collection: stringMaxSize(paramId('i_collection').value, 256),
+		})
 	})
 
 	//
@@ -391,9 +394,8 @@ function initOptionsEvents() {
 		moveElements(undefined, { widget: ['main', this.checked] })
 	})
 
-	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
-		inputThrottle(this, 1200)
-		weather(undefined, { geol: this.value })
+	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement, event) {
+		weather(undefined, { geol: this?.value })
 	})
 
 	paramId('i_city').addEventListener('input', function (this: HTMLInputElement) {
@@ -406,7 +408,6 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
-		inputThrottle(this, 1200)
 		weather(undefined, { units: this.value })
 	})
 
@@ -536,8 +537,9 @@ function initOptionsEvents() {
 		customFont(undefined, { autocomplete: true })
 	})
 
-	paramId('i_customfont').addEventListener('change', function () {
-		customFont(undefined, { family: this.value })
+	paramId('f_customfont').addEventListener('submit', function (event) {
+		customFont(undefined, { family: paramId('i_customfont').value })
+		event.preventDefault()
 	})
 
 	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
