@@ -213,9 +213,10 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
 
-	document.querySelectorAll<HTMLFormElement>('#settings form input').forEach((input) => {
-		const form = input.parentElement as HTMLFormElement
-		input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
+	document.querySelectorAll<HTMLFormElement>('#settings form').forEach((form) => {
+		form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
+		})
 	})
 }
 
@@ -262,7 +263,7 @@ function initOptionsEvents() {
 		moveElements(undefined, { widget: ['quicklinks', this.checked] })
 	})
 
-	paramId('addlink-inputs').addEventListener('submit', function (this, event: SubmitEvent) {
+	paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent) {
 		const formData = new FormData(this as unknown as HTMLFormElement)
 
 		quickLinks(undefined, {

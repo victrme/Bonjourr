@@ -73,19 +73,25 @@
 		&.shown {
 			transform: translateX(0) translateY(-75vh);
 		}
+	}
 
-		#addlink-inputs {
-			flex-direction: column;
-			gap: 4px;
+	aside form > div {
+		flex-direction: column;
 
-			input[type='text'] {
-				width: 100%;
-			}
-
-			#i_addlink {
-				top: 40px;
-			}
+		#i_addlink-title,
+		#i_addlink-url,
+		#i_ccode,
+		#i_city {
+			width: 100%;
 		}
+	}
+
+	#f_location {
+		width: 155px;
+	}
+
+	#location_options.shown {
+		max-height: 100px;
 	}
 
 	#grid-layout-wrapper {
