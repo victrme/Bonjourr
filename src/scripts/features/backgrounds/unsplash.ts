@@ -110,13 +110,13 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 			return
 		}
 
-		collectionForm.accept('i_collection', collection)
-
 		unsplashCache['user'] = list
 
 		await preloadImage(unsplashCache['user'][0].url)
 		preloadImage(unsplashCache['user'][1].url)
 		loadBackground(unsplashCache['user'][0])
+
+		collectionForm.accept('i_collection', collection)
 	}
 
 	storage.sync.set({ unsplash })

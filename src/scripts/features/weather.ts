@@ -150,7 +150,7 @@ async function updatesWeather(update: WeatherUpdate) {
 		if (update.geol === 'precise') {
 			if (!(await getGeolocation('precise'))) {
 				geolForm.warn('Cannot get precise location')
-				return handleGeolOption(weather)
+				return
 			}
 		}
 
