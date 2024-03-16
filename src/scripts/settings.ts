@@ -264,18 +264,17 @@ function initOptionsEvents() {
 	})
 
 	paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent) {
-		const formData = new FormData(this as unknown as HTMLFormElement)
+		event.preventDefault()
 
 		quickLinks(undefined, {
 			addLink: {
-				title: formData.get('addlink-title') + '',
-				url: formData.get('addlink-url') + '',
+				title: paramId('i_addlink-title').value,
+				url: paramId('i_addlink-url').value,
 			},
 		})
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
-		event.preventDefault()
 	})
 
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {
@@ -541,12 +540,6 @@ function initOptionsEvents() {
 	paramId('f_customfont').addEventListener('submit', function (event) {
 		customFont(undefined, { family: paramId('i_customfont').value })
 		event.preventDefault()
-	})
-
-	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
-		if (this.value === '' && e.inputType === 'deleteContentBackward') {
-			customFont(undefined, { family: '' })
-		}
 	})
 
 	paramId('i_weight').addEventListener('input', function () {

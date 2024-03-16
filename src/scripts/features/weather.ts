@@ -1,7 +1,7 @@
 import { stringMaxSize, apiFetch, minutator } from '../utils'
 import { tradThis, getLang } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
-import networkForm from '../utils/superinput'
+import networkForm from '../utils/networkform'
 import suntime from '../utils/suntime'
 import storage from '../storage'
 
@@ -68,13 +68,10 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (isUnits(update.units)) {
-		unitForm.toggle(true)
 		unitForm.load()
-
 		weather.unit = update.units
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
-
-		unitForm.toggle(false)
+		unitForm.accept()
 	}
 
 	if (isForecast(update.forecast)) {
@@ -141,16 +138,12 @@ async function updatesWeather(update: WeatherUpdate) {
 			weather.ccode = (lastWeather.approximation?.ccode || i_ccode.value) ?? 'FR'
 			weather.city = (lastWeather.approximation?.city || city) ?? 'Paris'
 
-			locationForm.toggle(false)
-			i_city.placeholder = weather.city ?? tradThis('City')
-			i_city.value = ''
-
+			locationForm.accept('i_city', weather.city ?? tradThis('City'))
 			i_city.dispatchEvent(new KeyboardEvent('input'))
 		}
 	}
 
 	if (update.geol) {
-		geolForm.toggle(true)
 		geolForm.load()
 
 		// Don't update if precise geolocation fails
@@ -167,7 +160,7 @@ async function updatesWeather(update: WeatherUpdate) {
 
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 
-		geolForm.toggle(false)
+		geolForm.accept()
 	}
 
 	storage.sync.set({ weather })

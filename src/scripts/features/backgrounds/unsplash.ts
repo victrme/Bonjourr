@@ -3,7 +3,7 @@ import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../../defaults'
 import { imgBackground } from '.'
 import { tradThis } from '../../utils/translations'
 import errorMessage from '../../utils/errormessage'
-import networkForm from '../../utils/superinput'
+import networkForm from '../../utils/networkform'
 import storage from '../../storage'
 
 type UnsplashInit = {
@@ -48,7 +48,6 @@ export default function unsplashBackgrounds(init?: UnsplashInit, event?: Unsplas
 async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 	const { unsplash } = await storage.sync.get('unsplash')
 	const unsplashCache = await getCache()
-	const i_collection = document.querySelector<HTMLInputElement>('#i_collection')
 
 	if (!unsplash) {
 		return
@@ -81,12 +80,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.lastCollec = 'day'
 
 		unsplashBackgrounds({ unsplash, cache: unsplashCache })
-
-		if (i_collection) {
-			collectionForm.toggle(false)
-			i_collection.placeholder = '2nVzlQADDIE'
-			i_collection.value = ''
-		}
+		collectionForm.accept('i_collection', '2nVzlQADDIE')
 	}
 
 	if (collection !== undefined && collection.length > 0) {
@@ -108,18 +102,15 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.time = freqControl.set()
 
 		collectionForm.load()
+
 		let list = await requestNewList(unsplash.collection)
 
 		if (!list || list.length === 0) {
 			collectionForm.warn(`Cannot get "${collection}"`)
 			return
 		}
-		//
-		else if (i_collection) {
-			i_collection.placeholder = collection
-			i_collection.value = ''
-			collectionForm.toggle(false)
-		}
+
+		collectionForm.accept('i_collection', collection)
 
 		unsplashCache['user'] = list
 

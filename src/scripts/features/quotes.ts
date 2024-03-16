@@ -1,6 +1,6 @@
 import { apiFetch, freqControl, isEvery } from '../utils'
 import { displayInterface } from '../index'
-import networkForm from '../utils/superinput'
+import networkForm from '../utils/networkform'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -113,7 +113,6 @@ async function updateQuotesType(data: Sync.Storage, type: Quotes.Sync['type']) {
 	}
 
 	if (!isUser) {
-		quotesTypeForm.toggle(true)
 		quotesTypeForm.load()
 
 		list = await newQuoteFromAPI(data.lang, type)
@@ -125,7 +124,7 @@ async function updateQuotesType(data: Sync.Storage, type: Quotes.Sync['type']) {
 	}
 
 	document.getElementById('quotes_userlist')?.classList.toggle('shown', isUser)
-	quotesTypeForm.toggle(false)
+	quotesTypeForm.accept()
 }
 
 function handleUserListChange(input: string): string | undefined {
