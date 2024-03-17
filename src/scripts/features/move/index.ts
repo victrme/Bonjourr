@@ -28,6 +28,8 @@ import {
 	getEnabledWidgetsFromStorage,
 	areaStringToLayoutGrid,
 	layoutToGridAreas,
+	alignParse,
+	alignStringify,
 } from './helpers'
 
 type UpdateMove = {
@@ -215,18 +217,24 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 }
 
 function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
-	if (!selectedWidget) return
+	const column = move[move.column]
+	const widget = activeID()
 
-	const layout = move.layouts[move.selection]
-	const item = layout.items[selectedWidget] || { box: '', text: '' }
+	if (!column || widget === 'none') {
+		return
+	}
 
-	item[type] = value || ''
+	const align = alignParse(column[widget])
 
-	setAlign(selectedWidget, item)
-	buttonControl.align(item)
+	if (type === 'box') align.box = value
+	if (type === 'text') align.text = value
 
-	move.layouts[move.selection].items[selectedWidget] = item
+	column[widget] = alignStringify(align)
+	move[move.column] = column
 	storage.sync.set({ move: move })
+
+	buttonControl.align(column[widget])
+	setAlign(widget, align)
 }
 
 function layoutChange(data: Sync.Storage, column: string) {
@@ -237,7 +245,12 @@ function layoutChange(data: Sync.Storage, column: string) {
 
 	// Assign layout after mutating move
 	const layout = data.move[data.move.column]
-	const
+	const widget = activeID()
+
+	if (!layout || widget === 'none') {
+		return
+	}
+
 	const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
 
 	const list: [Widgets, boolean][] = [
@@ -260,10 +273,10 @@ function layoutChange(data: Sync.Storage, column: string) {
 	})
 
 	interfaceTransition.then(async () => {
-		setAllAligns(layout.items)
+		setAllAligns(layout)
 		setGridAreas(layout.grid)
-		buttonControl.layout(data.move.selection)
-		manageGridSpanner(data.move.selection)
+		buttonControl.layout(data.move.column)
+		manageGridSpanner(data.move.column)
 		removeSelection()
 
 		// Toggle overlays if we are editing
@@ -272,9 +285,9 @@ function layoutChange(data: Sync.Storage, column: string) {
 			widgetsInGrid.forEach((id) => gridOverlay.add(id))
 		}
 
-		if (selectedWidget) {
-			buttonControl.grid(selectedWidget)
-			buttonControl.align(layout.items[selectedWidget])
+		if (widget) {
+			buttonControl.grid(widget)
+			buttonControl.align(layout[widget])
 		}
 	})
 
@@ -283,26 +296,24 @@ function layoutChange(data: Sync.Storage, column: string) {
 }
 
 function layoutReset(data: Sync.Storage) {
-	if (resetButtonConfirm() === false) {
+	const layout = data.move[data.move.column]
+	const enabledWidgets = getEnabledWidgetsFromStorage(data)
+	let grid: string[][] = []
+
+	if (resetButtonConfirm() === false || !layout) {
 		return
 	}
 
-	const layout = data.move.layouts[data.move.selection]
-	const enabled = getEnabledWidgetsFromStorage(data)
-	let grid: typeof layout.grid = []
-
-	enabled.forEach((id) => {
-		grid = gridWidget(grid, data.move.selection, id, true)
+	enabledWidgets.forEach((id) => {
+		grid = gridWidget(grid, data.move.column, id, true)
 	})
 
-	data.move.layouts[data.move.selection].grid = grid
-	data.move.layouts[data.move.selection].items = {}
+	data.move[data.move.column] = { grid: layoutToGridAreas(grid) }
+	storage.sync.set(data)
 
 	removeSelection()
 	setGridAreas(layout.grid)
 	buttonControl.title()
-
-	// Reset aligns
 	setAllAligns({
 		quicklinks: '',
 		main: '',
@@ -311,30 +322,27 @@ function layoutReset(data: Sync.Storage) {
 		searchbar: '',
 		quotes: '',
 	})
-
-	// Save
-	storage.sync.set(data)
 }
 
 function elementSelection(move: Sync.Move, select: string) {
-	const layout = move[move.column]
+	const column = move[move.column]
 
 	removeSelection()
 
 	// Remove selection modifiers and quit if failed to get id
-	if (!isEditing() || !select) return
+	if (!isEditing() || !select || !column) return
 
-	const id = select as Widgets
+	const widget = select as Widgets
 
-	buttonControl.align(layout.items[id])
-	buttonControl.span(id)
-	buttonControl.grid(id)
-	buttonControl.title(id)
+	buttonControl.align(column[widget])
+	buttonControl.span(widget)
+	buttonControl.grid(widget)
+	buttonControl.title(widget)
 
-	document.getElementById('move-overlay-' + id)!.classList.add('selected')
+	document.getElementById('move-overlay-' + widget)!.classList.add('selected')
 	document.getElementById('element-mover')?.classList.add('active')
 
-	activeID(id)
+	activeID(widget)
 }
 
 function toggleMoveStatus(data: Sync.Storage) {
@@ -346,7 +354,7 @@ function toggleMoveStatus(data: Sync.Storage) {
 		gridOverlay.removeAll()
 	} else {
 		b_editmove.textContent = tradThis('Close')
-		buttonControl.layout(data.move.selection)
+		buttonControl.layout(data.move.column)
 		const ids = getEnabledWidgetsFromStorage(data)
 		ids.forEach((id) => gridOverlay.add(id))
 	}
@@ -358,39 +366,46 @@ function toggleMoveStatus(data: Sync.Storage) {
 	removeSelection()
 }
 
-function toggleGridSpans(move: Move, dir: 'col' | 'row') {
-	if (!selectedWidget) return
+function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
+	const widget = activeID()
+	const layout = move[move.column]
 
-	const layout = move.layouts[move.selection]
-	layout.grid = spansInGridArea(layout.grid, selectedWidget, { toggle: dir })
+	if (widget === 'none' || !layout) {
+		return
+	}
+
+	const grid = areaStringToLayoutGrid(layout?.grid)
+	const gridWithSpan = spansInGridArea(grid, widget, { toggle: dir })
+
+	layout.grid = layoutToGridAreas(gridWithSpan)
+	move[move.column] = layout
+	storage.sync.set({ move: move })
 
 	setGridAreas(layout.grid)
-	buttonControl.grid(selectedWidget)
-	buttonControl.span(selectedWidget)
-
-	storage.sync.set({ move: move })
+	buttonControl.grid(widget)
+	buttonControl.span(widget)
 }
 
-function pageWidthOverlay(move: Move, overlay?: boolean) {
+function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
 	const isEditing = document.getElementById('interface')?.classList?.contains('move-edit')
 	const hasOverlays = document.querySelector('.move-overlay')
+	const layout = move[move.column]
 
-	if (!isEditing && overlay === false) {
+	if (!layout || (!isEditing && overlay === false)) {
 		gridOverlay.removeAll()
 		return
 	}
 
 	if (!hasOverlays) {
-		const grid = move.layouts[move.selection].grid
-		const widgets = getEnabledWidgetsFromGrid(grid)
+		const widgets = getEnabledWidgetsFromGrid(layout.grid)
 
 		widgets.forEach((id) => {
-			gridOverlay.add(id as Key)
+			gridOverlay.add(id as Widgets)
 		})
 	}
 }
 
-export function activeID(id?: Key | null): Key | null {
+export function activeID(id?: Widgets | 'none'): Widgets | 'none' {
 	if (id !== undefined) {
 		selectedWidget = id
 	}

@@ -1,13 +1,18 @@
-import { tradThis } from '../../utils/translations'
-import moveElements, { activeID } from '.'
 import {
 	elements,
 	findIdPositions,
-	layoutToGridAreas,
 	hasDuplicateInArray,
 	areaStringToLayoutGrid,
 	getEnabledWidgetsFromGrid,
+	alignParse,
 } from './helpers'
+import { tradThis } from '../../utils/translations'
+import moveElements, { activeID } from '.'
+
+type Align = {
+	box: string
+	text: string
+}
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let resetTimeout: number
@@ -16,18 +21,22 @@ export function setGridAreas(grid?: string) {
 	document.documentElement.style.setProperty('--grid', grid ?? "'time' 'main' 'quicklinks'")
 }
 
-export function setAlign(id: Widgets, align?: string) {
+export function setAlign(id: Widgets | 'none', align: Align) {
+	if (id === 'none') {
+		return
+	}
+
 	const elem = elements[id]
 
 	if (elem) {
-		elem.style.placeSelf = align?.box || ''
+		elem.style.placeSelf = align.box
 
 		if (id === 'quicklinks') {
-			const flex = align?.text == 'left' ? 'flex-start' : align?.text == 'right' ? 'flex-end' : ''
+			const flex = align.text == 'left' ? 'flex-start' : align.text == 'right' ? 'flex-end' : ''
 			const linklist = document.getElementById('link-list') as HTMLElement
 			linklist.style.justifyContent = flex
 		} else {
-			elem.style.textAlign = align?.text || ''
+			elem.style.textAlign = align.text
 		}
 	}
 }
@@ -42,8 +51,8 @@ export function setAllAligns(layout?: Partial<Sync.MoveLayout>) {
 	}
 }
 
-export function manageGridSpanner(selection: string) {
-	selection !== 'single'
+export function manageGridSpanner(column: string) {
+	column !== 'single'
 		? document.getElementById('grid-spanner-container')?.classList.add('active')
 		: document.getElementById('grid-spanner-container')?.classList.remove('active')
 }
@@ -70,9 +79,9 @@ export const gridOverlay = {
 }
 
 export const buttonControl = {
-	layout: (selection: Selection) => {
+	layout: (column: Sync.Move['column']) => {
 		document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
-			button.classList.toggle('selected', button.dataset.layout === selection)
+			button.classList.toggle('selected', button.dataset.layout === column)
 		})
 	},
 
@@ -142,15 +151,16 @@ export const buttonControl = {
 		applyStates('row', hasDuplicateInArray(row, id))
 	},
 
-	align: (item?: Item) => {
+	align: (str?: string) => {
+		const { box, text } = alignParse(str ?? '')
 		const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 		const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-		boxBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (item?.box || '')))
-		textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (item?.text || '')))
+		boxBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === box))
+		textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === text))
 	},
 
-	title: (id?: Key | null) => {
+	title: (id?: Widgets | null) => {
 		let titlestr = ''
 		const editingNames = {
 			time: tradThis('Time & Date'),
@@ -167,7 +177,7 @@ export const buttonControl = {
 }
 
 export function removeSelection() {
-	activeID(null)
+	activeID('none')
 	buttonControl.align() // without params, selects 0 align
 	buttonControl.title()
 

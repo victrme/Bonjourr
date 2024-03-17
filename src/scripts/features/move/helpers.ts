@@ -45,7 +45,7 @@ export function widgetStatesToData(states: [Widgets, boolean][], data: Sync.Stor
 	return data
 }
 
-export function areaStringToLayoutGrid(area: string): string[][] {
+export function areaStringToLayoutGrid(area = ''): string[][] {
 	let splitchar = BROWSER === 'safari' ? `\"` : "'"
 	let rows = area.split(splitchar).filter((a) => a.length > 1)
 	let grid = rows.map((r) => r.split(' '))
@@ -266,4 +266,19 @@ export function gridWidget(grid: Grid, selection: Sync.Move['column'], id: Key, 
 	}
 
 	return add ? addWidget() : removeWidget()
+}
+
+export function alignStringify(align: { box: string; text: string }): string {
+	return `${align.box}, text-${align.text}`
+}
+
+export function alignParse(string = ''): {
+	box: string
+	text: string
+} {
+	const arr = string.split(', ')
+	return {
+		box: arr[0] ?? '',
+		text: arr[1] ?? '',
+	}
 }
