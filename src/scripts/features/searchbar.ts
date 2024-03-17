@@ -3,7 +3,6 @@ import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
-import superinput from '../utils/superinput'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -24,7 +23,6 @@ type Suggestions = {
 
 type UndefinedElement = Element | undefined | null
 
-const requestInput = superinput('i_sbrequest')
 let socket: WebSocket | undefined
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
@@ -104,7 +102,6 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 
 	if (request) {
 		if (!request.value.includes('%s')) {
-			requestInput.warn('"%s" not found')
 			return
 		}
 

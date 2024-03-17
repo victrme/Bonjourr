@@ -13,21 +13,25 @@ import storage, { getSyncDefaults } from './storage'
 import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
-import { customCss, darkmode, favicon, tabTitle, textShadow, pageControl } from './index'
+import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
 import langList from './langs'
 import parse from './utils/parse'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
+import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { apiFetch, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 import type { Langs } from '../types/langs'
-import { loadCallbacks } from './utils/onsettingsload'
 
 export async function settingsInit() {
+	if (!!document.getElementById('settings')) {
+		return
+	}
+
 	const data = await storage.sync.get()
 	const innerHtml = await (await fetch('settings.html')).text()
 	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
@@ -44,12 +48,22 @@ export async function settingsInit() {
 	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
-	initSettingsEvents()
 	settingsDrawerBar()
 	controlOptionsTabFocus(settingsDom)
 	loadCallbacks()
 
-	setTimeout(() => document.dispatchEvent(new Event('settings')))
+	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
+
+	// On settings changes, update export code
+	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
+	const storageUpdate = () => updateExportJSON()
+	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (PLATFORM === 'online') window.addEventListener('storage', storageUpdate)
+	if (PLATFORM !== 'online') chrome.storage.onChanged.addListener(storageUpdate)
+
+	window.addEventListener('beforeunload', removeListener, { once: true })
+	document.addEventListener('toggle-settings', toggleSettingsMenu)
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -58,7 +72,6 @@ function initOptionsValues(data: Sync.Storage) {
 
 	setInput('i_blur', data.background_blur ?? 15)
 	setInput('i_bright', data.background_bright ?? 0.8)
-	setInput('cssEditor', data.css || '')
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.background_type || 'unsplash')
@@ -196,14 +209,15 @@ function initOptionsValues(data: Sync.Storage) {
 		paramId('i_collection')?.setAttribute('placeholder', coll ? coll : '2nVzlQADDIE')
 	}
 
-	// CSS height control
-	if (data.cssHeight) {
-		paramId('cssEditor').setAttribute('style', 'height: ' + data.cssHeight + 'px')
-	}
-
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
+
+	document.querySelectorAll<HTMLFormElement>('#settings form').forEach((form) => {
+		form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
+		})
+	})
 }
 
 function initOptionsEvents() {
@@ -249,24 +263,18 @@ function initOptionsEvents() {
 		moveElements(undefined, { widget: ['quicklinks', this.checked] })
 	})
 
-	paramId('i_addlink-url').addEventListener('input', function (this) {
-		paramId('addlink-inputs').classList.toggle('valid', paramId('addlink-inputs')?.checkValidity())
-	})
-
-	paramId('addlink-inputs').addEventListener('submit', function (this, event: SubmitEvent) {
-		const formData = new FormData(this as unknown as HTMLFormElement)
+	paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent) {
+		event.preventDefault()
 
 		quickLinks(undefined, {
 			addLink: {
-				title: formData.get('addlink-title') + '',
-				url: formData.get('addlink-url') + '',
+				title: paramId('i_addlink-title').value,
+				url: paramId('i_addlink-url').value,
 			},
 		})
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
-		paramId('addlink-inputs').classList.remove('valid')
-		event.preventDefault()
 	})
 
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {
@@ -306,8 +314,11 @@ function initOptionsEvents() {
 		updateBackgroundOption({ refresh: this.children[0] as HTMLSpanElement })
 	})
 
-	paramId('i_collection').addEventListener('change', function (this: HTMLInputElement) {
-		unsplashBackgrounds(undefined, { collection: stringMaxSize(this.value, 256) })
+	paramId('f_collection').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		unsplashBackgrounds(undefined, {
+			collection: stringMaxSize(paramId('i_collection').value, 256),
+		})
 	})
 
 	//
@@ -383,17 +394,20 @@ function initOptionsEvents() {
 		moveElements(undefined, { widget: ['main', this.checked] })
 	})
 
-	paramId('i_city').addEventListener('change', function (this: HTMLInputElement) {
-		weather(undefined, { city: this.value })
+	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement, event) {
+		weather(undefined, { geol: this?.value })
 	})
 
-	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
-		inputThrottle(this, 1200)
-		weather(undefined, { geol: this.value })
+	paramId('i_city').addEventListener('input', function (this: HTMLInputElement) {
+		document.getElementById('f_location')?.classList.toggle('valid', this.value.length > 2)
+	})
+
+	paramId('f_location').addEventListener('submit', function (this, event: SubmitEvent) {
+		weather(undefined, { city: true })
+		event.preventDefault()
 	})
 
 	paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
-		inputThrottle(this, 1200)
 		weather(undefined, { units: this.value })
 	})
 
@@ -523,14 +537,9 @@ function initOptionsEvents() {
 		customFont(undefined, { autocomplete: true })
 	})
 
-	paramId('i_customfont').addEventListener('change', function () {
-		customFont(undefined, { family: this.value })
-	})
-
-	paramId('i_customfont').addEventListener('beforeinput', function (this, e) {
-		if (this.value === '' && e.inputType === 'deleteContentBackward') {
-			customFont(undefined, { family: '' })
-		}
+	paramId('f_customfont').addEventListener('submit', function (event) {
+		customFont(undefined, { family: paramId('i_customfont').value })
+		event.preventDefault()
 	})
 
 	paramId('i_weight').addEventListener('input', function () {
@@ -574,13 +583,6 @@ function initOptionsEvents() {
 	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
-
-	//
-	// Custom Style
-
-	paramId('cssEditor').addEventListener('keyup', function (this: Element, ev: Event) {
-		customCss(undefined, { styling: (ev.target as HTMLInputElement).value })
-	})
 
 	//
 	// Updates
@@ -660,150 +662,6 @@ function initOptionsEvents() {
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
-}
-
-function initSettingsEvents() {
-	const domsettings = document.getElementById('settings')
-	const domsuggestions = document.getElementById('sb-suggestions')
-	const isOnline = PLATFORM === 'online'
-	let isMousingDownOnInput = false
-
-	// On settings changes, update export code
-	const storageUpdate = () => updateExportJSON()
-	const unloadUpdate = () => chrome.storage.onChanged.removeListener(storageUpdate)
-
-	if (isOnline) {
-		window.addEventListener('storage', storageUpdate)
-	} else {
-		chrome.storage.onChanged.addListener(storageUpdate)
-		window.addEventListener('beforeunload', unloadUpdate, { once: true })
-	}
-
-	document.body.addEventListener('mousedown', detectTargetAsInputs)
-	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
-	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
-	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
-
-	document.addEventListener('keydown', async function (event) {
-		if (event.altKey && event.code === 'KeyS') {
-			console.clear()
-			console.log(localStorage)
-			console.log(await storage.sync.get())
-		}
-
-		if (event.code === 'Escape') {
-			if (domsuggestions?.classList.contains('shown')) {
-				domsuggestions?.classList.remove('shown')
-				return
-			}
-
-			const open = isOpen()
-
-			if (open.contextmenu) {
-				document.dispatchEvent(new Event('close-edit'))
-			}
-			//
-			else if (open.settings) {
-				toggleSettingsMenu()
-			}
-			//
-			else if (open.selectall) {
-				document.dispatchEvent(new Event('remove-select-all'))
-			}
-			//
-			else if (open.folder) {
-				document.dispatchEvent(new Event('close-folder'))
-			}
-			//
-			else {
-				toggleSettingsMenu()
-			}
-
-			return
-		}
-
-		if (event.code === 'Tab') {
-			document.body.classList.toggle('tabbing', true)
-			return
-		}
-	})
-
-	document.body.addEventListener('click', function (event) {
-		if (isMousingDownOnInput) {
-			return
-		}
-
-		const open = isOpen()
-		const path = (event.composedPath() as Element[]) ?? [document.body]
-		const pathIds = path.map((el) => (el as HTMLElement).id)
-
-		const on = {
-			link: path.some((el) => el?.classList?.contains('block')),
-			body: (path[0] as HTMLElement).tagName === 'BODY',
-			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
-			interface: pathIds.includes('interface'),
-		}
-
-		if (document.body.classList.contains('tabbing')) {
-			document.body?.classList.toggle('tabbing', false)
-		}
-
-		if ((on.body || on.interface) === false) {
-			return
-		}
-
-		if (open.contextmenu) {
-			document.dispatchEvent(new Event('close-edit'))
-		}
-		//
-		else if (open.settings) {
-			toggleSettingsMenu()
-		}
-		//
-		else if (open.selectall && !on.link) {
-			document.dispatchEvent(new Event('remove-select-all'))
-		}
-		//
-		else if (open.folder && !on.folder) {
-			document.dispatchEvent(new Event('close-folder'))
-		}
-	})
-
-	function isOpen() {
-		return {
-			settings: domsettings?.classList.contains('shown'),
-			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
-			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
-			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
-		}
-	}
-
-	function detectTargetAsInputs(event: Event) {
-		const path = event.composedPath() as Element[]
-		const tagName = path[0]?.tagName ?? ''
-		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
-	}
-
-	function skipToSettings() {
-		toggleSettingsMenu()
-		domsettings?.scrollTo({ top: 0 })
-
-		setTimeout(() => {
-			const showall = document.getElementById('i_showall') as HTMLButtonElement
-			showall.focus()
-		}, 10)
-	}
-
-	function closeSettingsOnMoveOpen() {
-		setTimeout(() => {
-			const elementmover = document.getElementById('element-mover')
-			const moverHasOpened = elementmover?.classList.contains('hidden') === false
-
-			if (moverHasOpened) {
-				toggleSettingsMenu()
-			}
-		}, 20)
-	}
 }
 
 //

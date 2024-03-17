@@ -8,27 +8,6 @@
 @import 'features/links';
 @import 'features/quotes';
 
-#skiptosettings {
-	position: absolute;
-	top: 1em;
-	left: 1em;
-	opacity: 0;
-	user-select: none;
-	touch-action: none;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	padding: 0.5em 1em;
-	background-color: #222;
-	transition: opacity 0.15s $easeOutThree;
-	z-index: -1;
-
-	&:focus-visible {
-		opacity: 1;
-		z-index: initial;
-	}
-}
-
 #background_overlay {
 	z-index: -1;
 	position: fixed;
@@ -305,6 +284,7 @@
 @import 'features/bookmarks';
 @import 'components/popup';
 @import 'components/dialog';
-@import 'components/superinput';
+@import 'components/networkform.scss';
+@import 'features/csseditor.scss';
 @import 'settings';
 @import 'responsive';

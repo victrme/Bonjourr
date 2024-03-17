@@ -1,7 +1,7 @@
 import { stringMaxSize, apiFetch, minutator } from '../utils'
 import { tradThis, getLang } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
-import superinput from '../utils/superinput'
+import networkForm from '../utils/networkform'
 import suntime from '../utils/suntime'
 import storage from '../storage'
 
@@ -22,13 +22,15 @@ type WeatherUpdate = {
 	provider?: string
 	units?: string
 	geol?: string
-	city?: string
+	city?: true
 	temp?: string
 	unhide?: true
 }
 
 let pollingInterval = 0
-const cityInput = superinput('i_city')
+const locationForm = networkForm('f_location')
+const unitForm = networkForm('f_units')
+const geolForm = networkForm('f_geol')
 
 export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
@@ -43,7 +45,9 @@ export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (init) {
 		onSettingsLoad(() => {
 			handleGeolOption(init.sync.weather)
+		})
 
+		queueMicrotask(() => {
 			clearInterval(pollingInterval)
 
 			pollingInterval = setInterval(async () => {
@@ -64,8 +68,10 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (isUnits(update.units)) {
+		unitForm.load()
 		weather.unit = update.units
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
+		unitForm.accept()
 	}
 
 	if (isForecast(update.forecast)) {
@@ -94,50 +100,57 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.city) {
+		const i_city = document.getElementById('i_city') as HTMLInputElement
+		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
+		let ccode = i_ccode.value
+		let city = i_city.value
+
 		if (!navigator.onLine) {
-			cityInput.warn('No internet connection')
+			locationForm.warn('No internet connection')
 			return false
 		}
 
-		if (update.city === weather.city) {
+		if (city === weather.city) {
 			return
 		}
 
-		const i_city = document.getElementById('i_city') as HTMLInputElement
-		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-
-		update.city = stringMaxSize(update.city, 64)
-		cityInput.load()
+		city = stringMaxSize(city, 64)
+		locationForm.load()
 
 		// don't mutate weather data before confirming that the city exists
-		const newWeather = await request({ ...weather, ccode: i_ccode.value, city: update.city }, lastWeather)
+		const currentWeather = { ...weather, ccode, city }
+		const newWeather = await request(currentWeather, lastWeather)
 		const newCity = newWeather?.approximation?.city
-		const foundCityIsDifferent = newCity !== '' && newCity !== update.city
+		const foundCityIsDifferent = newCity !== '' && newCity !== city
 
 		if (!newWeather) {
-			cityInput.warn('Cannot reach weather service')
+			locationForm.warn('Cannot reach weather service')
 			return
 		}
 
 		if (foundCityIsDifferent) {
-			cityInput.warn('Cannot find correct city')
+			locationForm.warn('Cannot find correct city')
 			return
 		}
 
 		if (newWeather) {
 			lastWeather = newWeather
 			weather.ccode = (lastWeather.approximation?.ccode || i_ccode.value) ?? 'FR'
-			weather.city = (lastWeather.approximation?.city || update.city) ?? 'Paris'
-			i_city.setAttribute('placeholder', weather.city ?? tradThis('City'))
-			cityInput.toggle(false)
+			weather.city = (lastWeather.approximation?.city || city) ?? 'Paris'
+
+			locationForm.accept('i_city', weather.city ?? tradThis('City'))
+			i_city.dispatchEvent(new KeyboardEvent('input'))
 		}
 	}
 
 	if (update.geol) {
+		geolForm.load()
+
 		// Don't update if precise geolocation fails
 		if (update.geol === 'precise') {
 			if (!(await getGeolocation('precise'))) {
-				return handleGeolOption(weather)
+				geolForm.warn('Cannot get precise location')
+				return
 			}
 		}
 
@@ -146,10 +159,12 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
+
+		geolForm.accept()
 	}
 
 	storage.sync.set({ weather })
-	handleGeolOption(weather)
+	onSettingsLoad(() => handleGeolOption(weather))
 
 	if (lastWeather) {
 		storage.local.set({ lastWeather })
@@ -232,12 +247,10 @@ function handleGeolOption(data: Weather) {
 	const i_city = document.getElementById('i_city') as HTMLInputElement
 	const i_geol = document.getElementById('i_geol') as HTMLInputElement
 	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-	const sett_city = document.getElementById('sett_city') as HTMLDivElement
-
 	i_geol.value = data.geolocation
 	i_ccode.value = data.ccode ?? 'FR'
-	i_city.setAttribute('placeholder', data.city ?? tradThis('City'))
-	sett_city.classList.toggle('shown', data.geolocation === 'off')
+	i_city.setAttribute('placeholder', data.city ?? 'Paris')
+	document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
 }
 
 async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {
@@ -444,7 +457,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
 		const timeOfDay = now < sunrise || now > sunset ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.png`
+		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.svg`
 
 		icon.src = iconSrc
 	}

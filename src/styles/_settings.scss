@@ -13,7 +13,7 @@
 //	- Settings management
 //	- Footer
 
-#settings {
+aside {
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -132,13 +132,12 @@
 	}
 
 	textarea {
-		font-family: 'SF Mono', 'Consolas', 'Courier New', Courier, monospace;
+		font-family: $monospace;
 	}
 
 	select,
 	input,
-	button,
-	textarea {
+	button {
 		border-radius: 8px;
 		color: var(--color-text);
 		-webkit-appearance: none;
@@ -148,17 +147,15 @@
 	select {
 		height: 31px;
 		width: 155px;
-		padding: 0 13px;
+		padding-inline: 13px;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		background-color: var(--color-input);
 	}
 
-	.superinput input {
-		width: 100%;
-	}
-
-	input:focus {
-		background-color: var(--color-focused);
-	}
+	// input:focus {
+	// 	background-color: var(--color-focused);
+	// }
 
 	input::placeholder {
 		color: var(--color-placeholder);
@@ -215,6 +212,10 @@
 		}
 	}
 
+	input::-webkit-calendar-picker-indicator {
+		display: none !important;
+	}
+
 	input[type='range'] {
 		position: relative;
 		height: 2px;
@@ -222,6 +223,7 @@
 		margin: 0;
 		padding: 0;
 		cursor: grab;
+		overflow: unset;
 		border-radius: 1.5rem;
 		background-color: #c8c7cc;
 		-webkit-appearance: none;
@@ -298,6 +300,54 @@
 			display: none;
 		}
 	}
+
+	form {
+		display: flex;
+		position: relative;
+		align-items: center;
+		width: 155px;
+	}
+
+	form > div {
+		display: flex;
+		gap: 4px;
+		width: 100%;
+	}
+
+	form button {
+		height: 31px;
+		width: 100%;
+		padding: 0;
+		opacity: 0;
+		max-width: 0;
+		background-color: transparent;
+		transition: opacity 0.1s, max-width 0.2s;
+	}
+
+	form button:disabled {
+		cursor: default;
+	}
+
+	form button span {
+		justify-content: center;
+	}
+
+	form.valid button {
+		opacity: 1;
+		pointer-events: all;
+		max-width: 26px;
+		margin-left: 4px;
+	}
+
+	form.valid button:not(:disabled):hover,
+	form.valid button:not(:disabled):focus-visible {
+		color: var(--color-blue);
+		background-color: rgba(var(--blue), 0.15);
+	}
+
+	form.valid button:not(:disabled):active {
+		background-color: rgba(var(--blue), 0.25);
+	}
 }
 
 //
@@ -324,6 +374,7 @@
 	max-height: 160px;
 }
 
+#location_options.shown,
 #digital_options.shown,
 #weather_provider.shown,
 #searchbar_request.shown {
@@ -332,7 +383,7 @@
 
 #analog_options.shown,
 #unsplash_options.shown {
-	max-height: 100px;
+	max-height: 110px;
 }
 
 #searchbar_options.shown {
@@ -547,15 +598,11 @@
 .freq_wrap > div {
 	display: flex;
 	width: 155px;
-	column-gap: 5px;
+	column-gap: 4px;
 }
 
-#settings #i_tabtitle {
-	width: 100%;
-}
-
-#settings #i_favicon {
-	width: 40px;
+#i_favicon {
+	width: 33%;
 	padding: 0;
 	text-align: center;
 
@@ -569,63 +616,17 @@
 //	Links
 //
 
-#addlink-inputs {
-	position: relative;
-	display: flex;
-	column-gap: 4px;
-	max-width: 66%;
-
-	input[type='text'] {
-		width: 100%;
-	}
-
-	#i_addlink-title {
-		width: 50%;
-	}
-
-	&.valid #i_addlink {
-		opacity: 1;
-		pointer-events: all;
-
-		&:hover,
-		&:focus-visible {
-			color: var(--color-blue);
-			background-color: rgba(var(--blue), 0.15);
-		}
-
-		&:active {
-			background-color: rgba(var(--blue), 0.25);
-		}
-	}
+#f_addlink {
+	width: 66%;
 }
 
-#i_addlink-url {
-	padding-inline-end: 3em;
-}
-
-#settings #i_addlink {
-	position: absolute;
-	top: 5px;
-	right: 5px;
-	width: 31px;
-	height: 21px;
-	opacity: 0;
-	pointer-events: none;
-	background-color: transparent;
-	transition: opacity 0.1s;
-
-	span {
-		justify-content: center;
-	}
+#i_addlink-title {
+	width: 40%;
 }
 
 //
-//	Local backgrounds
+//	Backgrounds
 //
-
-#settings #i_freq {
-	width: 100%;
-}
 
 .refresh-btn {
 	padding: 0 10px;
@@ -810,45 +811,19 @@
 //	Weather
 //
 
-@keyframes loadsResponse {
-	0% {
-		opacity: 1;
-	}
-	100% {
-		opacity: 0.6;
-	}
+#f_location {
+	width: 66%;
 }
 
-#sett_city {
-	display: flex;
-	column-gap: 0.4em;
-	transition: max-height 0.2s, margin 0.2s;
-
-	&.shown {
-		margin-top: 0.6em;
-		max-height: 36px;
-	}
-
-	select,
-	.superinput {
-		width: 100%;
-		text-transform: capitalize;
-	}
-}
-
-#i_city.loads {
-	animation: loadsResponse 800ms linear infinite alternate;
-}
-
-#i_city.warn {
-	outline: 2px solid #ff7400;
+#i_ccode {
+	width: 45%;
 }
 
 //
 //	Quotes
 //
 
-#settings #i_qtlist {
+#i_qtlist {
 	width: 100%;
 	min-height: 100px;
 	max-height: 200px;
@@ -856,6 +831,8 @@
 	padding: 0.5em 1em;
 	line-height: 1.5;
 	resize: vertical;
+	border-radius: 8px;
+	color: var(--color-text);
 	background-color: var(--color-areas);
 }
 
@@ -930,25 +907,6 @@
 			}
 		}
 	}
-}
-
-//
-//	CSS Editor
-//
-
-#cssEditor {
-	width: 100%;
-	min-height: 100px;
-	max-height: 3000px;
-	resize: vertical;
-	padding: 1.3em;
-	font-size: 13px;
-	tab-size: 1.5em;
-	border: none;
-	border-radius: 10px;
-	box-sizing: border-box;
-	color: var(--color-text);
-	background-color: var(--color-param);
 }
 
 //

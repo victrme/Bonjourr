@@ -1,48 +1,9 @@
 $fonts: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
+$monospace: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
 $settingsMargin: 0.65em;
 $thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
 $textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
-
-@mixin light-theme {
-	--blue: 41, 144, 255;
-	--color-blue: rgb(var(--blue));
-	--color-text: #222222;
-	--color-param: #ffffff;
-	--color-settings: #f2f2f7;
-	--color-areas: #f2f2f7;
-	--color-areas-text: var(--color-blue);
-	--color-input: #eaeaee;
-	--color-focused: #dadade;
-	--color-border: #c8c7cc;
-	--color-placeholder: #7c7d7e;
-	--color-light-text: #5a5858;
-	--color-dialog: #fffb;
-	--color-dialog-border: #3334;
-	--color-dialog-highlight: #fff4;
-	--color-dialog-input-text: #716f6d;
-	--color-dialog-input-bg: rgba(106, 104, 111, 0.12);
-}
-
-@mixin dark-theme {
-	--blue: 41, 144, 255;
-	--color-blue: rgb(var(--blue));
-	--color-text: #eeeeee;
-	--color-light-text: #929294;
-	--color-param: #1c1c1e;
-	--color-settings: #000000;
-	--color-input: #39383d;
-	--color-border: var(--color-input);
-	--color-areas: var(--color-input);
-	--color-areas-text: var(--color-text);
-	--color-placeholder: #a4a5a6;
-	--color-focused: #2c2c2f;
-	--color-dialog: #191919aa;
-	--color-dialog-border: #fff4;
-	--color-dialog-highlight: #fff2;
-	--color-dialog-input-text: #a4a7a8;
-	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
-}
 
 :root {
 	--app-height: 100vh;
@@ -65,22 +26,46 @@ $easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--red: 254, 59, 49;
 	--color-red: rgb(var(--red));
 	--color-green: #2ed058;
+}
 
-	&[data-theme='light'] {
-		@include light-theme();
-	}
+[data-theme='light'] {
+	--blue: 41, 144, 255;
+	--color-blue: rgb(var(--blue));
+	--color-text: #222222;
+	--color-param: #ffffff;
+	--color-settings: #f2f2f7;
+	--color-areas: #f2f2f7;
+	--color-areas-text: var(--color-blue);
+	--color-input: #eaeaee;
+	--color-focused: #dadade;
+	--color-border: #c8c7cc;
+	--color-placeholder: #7c7d7e;
+	--color-light-text: #5a5858;
+	--color-dialog: #fffb;
+	--color-dialog-border: #3334;
+	--color-dialog-highlight: #fff4;
+	--color-dialog-input-text: #716f6d;
+	--color-dialog-input-bg: rgba(106, 104, 111, 0.12);
+}
 
-	&[data-theme='dark'] {
-		@include dark-theme();
-	}
-
-	@media (prefers-color-scheme: dark) {
-		@include dark-theme();
-	}
-
-	@media (prefers-color-scheme: light) {
-		@include light-theme();
-	}
+[data-theme='dark'] {
+	--blue: 41, 144, 255;
+	--color-blue: rgb(var(--blue));
+	--color-text: #eeeeee;
+	--color-light-text: #929294;
+	--color-param: #1c1c1e;
+	--color-settings: #000000;
+	--color-input: #39383d;
+	--color-border: var(--color-input);
+	--color-areas: var(--color-input);
+	--color-areas-text: var(--color-text);
+	--color-placeholder: #a4a5a6;
+	--color-focused: #2c2c2f;
+	--color-dialog: #191919aa;
+	--color-dialog-border: #fff4;
+	--color-dialog-highlight: #fff2;
+	--color-dialog-input-text: #a4a7a8;
+	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 }
 
 #interface,

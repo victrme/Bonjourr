@@ -12,7 +12,7 @@ declare namespace Sync {
 		linknewtab: boolean
 		linktabs: LinkTabs
 		textShadow: number
-		cssHeight: number
+		cssHeight?: number
 		review: number
 		announcements: 'all' | 'major' | 'off'
 		reviewPopup?: number | string

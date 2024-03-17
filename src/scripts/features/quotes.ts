@@ -1,5 +1,6 @@
 import { apiFetch, freqControl, isEvery } from '../utils'
 import { displayInterface } from '../index'
+import networkForm from '../utils/networkform'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -18,6 +19,8 @@ type QuotesUpdate = {
 	userlist?: string
 	frequency?: string
 }
+
+const quotesTypeForm = networkForm('f_qttype')
 
 export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	if (update) {
@@ -110,6 +113,8 @@ async function updateQuotesType(data: Sync.Storage, type: Quotes.Sync['type']) {
 	}
 
 	if (!isUser) {
+		quotesTypeForm.load()
+
 		list = await newQuoteFromAPI(data.lang, type)
 		storage.local.set({ quotesCache: list })
 	}
@@ -119,6 +124,7 @@ async function updateQuotesType(data: Sync.Storage, type: Quotes.Sync['type']) {
 	}
 
 	document.getElementById('quotes_userlist')?.classList.toggle('shown', isUser)
+	quotesTypeForm.accept()
 }
 
 function handleUserListChange(input: string): string | undefined {
