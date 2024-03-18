@@ -101,8 +101,8 @@ declare namespace Sync {
 	type Move = {
 		column: 'single' | 'double' | 'triple'
 		single: MoveLayout
-		double?: MoveLayout
-		triple?: MoveLayout
+		double: MoveLayout
+		triple: MoveLayout
 	}
 
 	type MoveLayout = {

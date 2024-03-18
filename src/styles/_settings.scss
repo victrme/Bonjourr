@@ -1007,8 +1007,7 @@ aside {
 	max-height: 3000px;
 	padding: 0.65em 1.3em;
 	font-size: 13px;
-	line-break: anywhere;
-	overflow-x: hidden;
+	white-space: nowrap;
 	overflow-y: hidden;
 	resize: vertical;
 	border: none;

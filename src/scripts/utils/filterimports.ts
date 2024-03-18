@@ -1,6 +1,5 @@
 import { randomString, bundleLinks } from '../utils'
 import { SYNC_DEFAULT } from '../defaults'
-import { gridWidget } from '../features/move/helpers'
 import { deepmergeAll } from '@victr/deepmerge'
 import { oldJSONToCSV } from '../features/quotes'
 

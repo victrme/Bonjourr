@@ -1,4 +1,4 @@
-import moverToolboxEvents from './toolbox'
+import { toolboxEvents, alignButtons, gridButtons, layoutButtons, resetButton, spanButtons } from './toolbox'
 import { SYNC_DEFAULT } from '../../defaults'
 import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
@@ -10,26 +10,25 @@ import {
 	gridOverlay,
 	setGridAreas,
 	setAllAligns,
-	buttonControl,
 	removeSelection,
 	interfaceFadeIn,
 	interfaceFadeOut,
 	manageGridSpanner,
-	resetButtonConfirm,
 } from './dom'
+
 import {
-	gridWidget,
 	isEditing,
 	isRowEmpty,
-	findIdPositions,
-	spansInGridArea,
-	widgetStatesToData,
-	getEnabledWidgetsFromGrid,
-	getEnabledWidgetsFromStorage,
-	areaStringToLayoutGrid,
-	layoutToGridAreas,
+	gridFind,
+	gridParse,
 	alignParse,
+	gridStringify,
 	alignStringify,
+	spansInGridArea,
+	addGridWidget,
+	updateWidgetsStorage,
+	getGridWidgets,
+	getWidgetsStorage,
 } from './helpers'
 
 type UpdateMove = {
@@ -46,26 +45,10 @@ type UpdateMove = {
 	grid?: { x?: string; y?: string }
 }
 
-// {
-// 	"move": {
-// 		"single": {
-// 			"grid": "'time' 'main' 'quicklinks'",
-// 			"time": "bottom text-left",
-// 			"main": "top text-left"
-// 		},
-// 		"double": {
-// 			"grid": "'. time' 'quotes main' '. quicklinks'",
-// 			"time": "bottom-left left",
-// 			"main": "top-left left"
-// 		},
-// 		"column": "single"
-// 	}
-// }
-
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
 let smallWidth = false
-let selectedWidget: Widgets | 'none'
+let selectedWidget: Widgets | undefined
 
 export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 	if (!init && !events) {
@@ -73,23 +56,15 @@ export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 		return
 	}
 
-	// Events coming from settings menu
 	if (events) {
-		if (typeof events.overlay === 'boolean') updateMoveElement({ overlay: events.overlay })
-		if (events?.widget) updateMoveElement({ widget: events.widget })
-		if (events?.select) updateMoveElement({ select: events.select })
-		if (events?.layout) updateMoveElement({ layout: events.layout })
-		if (events?.toggle) updateMoveElement({ toggle: true })
-		if (events?.reset) updateMoveElement({ reset: true })
+		updateMoveElement(events)
 		return
 	}
-
-	// Init events coming from mover toolbox
-	onSettingsLoad(moverToolboxEvents)
 
 	if (init) {
 		setAllAligns(init[init.column])
 		setGridAreas(init[init.column]?.grid)
+		onSettingsLoad(toolboxEvents)
 	}
 }
 
@@ -152,8 +127,8 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	const y = parseInt(gridpos?.y || '0')
 	const x = parseInt(gridpos?.x || '0')
 
-	let grid = areaStringToLayoutGrid(move[move.column]?.grid ?? '')
-	const allActivePos = findIdPositions(grid, selectedWidget)
+	let grid = gridParse(move[move.column]?.grid ?? '')
+	const allActivePos = gridFind(grid, selectedWidget)
 	const allAffectedIds: Widgets[] = []
 
 	// step 0: Adds new line
@@ -176,7 +151,7 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 
 	// step 2: remove conflicting fillings on affected elements
 	allAffectedIds.forEach((id) => {
-		if (findIdPositions(grid, id).length > 1) {
+		if (gridFind(grid, id).length > 1) {
 			grid = spansInGridArea(grid, id, { remove: true })
 		}
 	})
@@ -199,32 +174,23 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	})
 
 	// step 5: profit ??????????????
-	const areas = layoutToGridAreas(grid)
-	const column = move.column
+	const areas = gridStringify(grid)
 
-	buttonControl.grid(selectedWidget)
+	move[move.column].grid = areas
+	storage.sync.set({ move: move })
+
+	gridButtons(selectedWidget)
 	setGridAreas(areas)
-
-	storage.sync.set({
-		move: {
-			...move,
-			[column]: {
-				...move[column],
-				grid: areas,
-			},
-		},
-	})
 }
 
 function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
-	const column = move[move.column]
-	const widget = activeID()
-
-	if (!column || widget === 'none') {
+	if (!selectedWidget) {
 		return
 	}
 
-	const align = alignParse(column[widget])
+	const widget = selectedWidget
+	const column = move[move.column]
+	const align = alignParse(column[selectedWidget])
 
 	if (type === 'box') align.box = value
 	if (type === 'text') align.text = value
@@ -233,7 +199,7 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 	move[move.column] = column
 	storage.sync.set({ move: move })
 
-	buttonControl.align(column[widget])
+	alignButtons(column[widget])
 	setAlign(widget, align)
 }
 
@@ -245,13 +211,13 @@ function layoutChange(data: Sync.Storage, column: string) {
 
 	// Assign layout after mutating move
 	const layout = data.move[data.move.column]
-	const widget = activeID()
+	const widget = selectedWidget
 
-	if (!layout || widget === 'none') {
+	if (!layout || !widget) {
 		return
 	}
 
-	const widgetsInGrid = getEnabledWidgetsFromGrid(layout.grid)
+	const widgetsInGrid = getGridWidgets(layout.grid)
 
 	const list: [Widgets, boolean][] = [
 		['time', widgetsInGrid.includes('time')],
@@ -262,9 +228,8 @@ function layoutChange(data: Sync.Storage, column: string) {
 		['quicklinks', widgetsInGrid.includes('quicklinks')],
 	]
 
-	// Update storage
-	const states = widgetStatesToData(list, data)
-	storage.sync.set({ ...states, move: data.move })
+	data = updateWidgetsStorage(list, data)
+	storage.sync.set({ ...data })
 
 	const interfaceTransition = transitioner()
 
@@ -275,7 +240,7 @@ function layoutChange(data: Sync.Storage, column: string) {
 	interfaceTransition.then(async () => {
 		setAllAligns(layout)
 		setGridAreas(layout.grid)
-		buttonControl.layout(data.move.column)
+		layoutButtons(data.move.column)
 		manageGridSpanner(data.move.column)
 		removeSelection()
 
@@ -286,8 +251,8 @@ function layoutChange(data: Sync.Storage, column: string) {
 		}
 
 		if (widget) {
-			buttonControl.grid(widget)
-			buttonControl.align(layout[widget])
+			gridButtons(widget)
+			alignButtons(layout[widget])
 		}
 	})
 
@@ -296,24 +261,22 @@ function layoutChange(data: Sync.Storage, column: string) {
 }
 
 function layoutReset(data: Sync.Storage) {
-	const layout = data.move[data.move.column]
-	const enabledWidgets = getEnabledWidgetsFromStorage(data)
-	let grid: string[][] = []
+	const enabledWidgets = getWidgetsStorage(data)
+	let grid: string = ''
 
-	if (resetButtonConfirm() === false || !layout) {
+	if (resetButton() === false) {
 		return
 	}
 
 	enabledWidgets.forEach((id) => {
-		grid = gridWidget(grid, data.move.column, id, true)
+		grid = addGridWidget(grid, id, data.move.column)
 	})
 
-	data.move[data.move.column] = { grid: layoutToGridAreas(grid) }
+	data.move[data.move.column] = { grid }
 	storage.sync.set(data)
 
 	removeSelection()
-	setGridAreas(layout.grid)
-	buttonControl.title()
+	setGridAreas(data.move[data.move.column].grid)
 	setAllAligns({
 		quicklinks: '',
 		main: '',
@@ -325,24 +288,23 @@ function layoutReset(data: Sync.Storage) {
 }
 
 function elementSelection(move: Sync.Move, select: string) {
-	const column = move[move.column]
-
 	removeSelection()
 
 	// Remove selection modifiers and quit if failed to get id
-	if (!isEditing() || !select || !column) return
+	if (!isEditing() || !select) {
+		return
+	}
 
 	const widget = select as Widgets
 
-	buttonControl.align(column[widget])
-	buttonControl.span(widget)
-	buttonControl.grid(widget)
-	buttonControl.title(widget)
+	alignButtons(move[move.column][widget])
+	spanButtons(widget)
+	gridButtons(widget)
 
 	document.getElementById('move-overlay-' + widget)!.classList.add('selected')
 	document.getElementById('element-mover')?.classList.add('active')
 
-	activeID(widget)
+	selectedWidget = widget
 }
 
 function toggleMoveStatus(data: Sync.Storage) {
@@ -354,9 +316,7 @@ function toggleMoveStatus(data: Sync.Storage) {
 		gridOverlay.removeAll()
 	} else {
 		b_editmove.textContent = tradThis('Close')
-		buttonControl.layout(data.move.column)
-		const ids = getEnabledWidgetsFromStorage(data)
-		ids.forEach((id) => gridOverlay.add(id))
+		getWidgetsStorage(data).forEach((id) => gridOverlay.add(id))
 	}
 
 	const mover = document.getElementById('element-mover')
@@ -367,23 +327,20 @@ function toggleMoveStatus(data: Sync.Storage) {
 }
 
 function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
-	const widget = activeID()
-	const layout = move[move.column]
-
-	if (widget === 'none' || !layout) {
+	if (!selectedWidget) {
 		return
 	}
 
-	const grid = areaStringToLayoutGrid(layout?.grid)
+	const widget = selectedWidget
+	const grid = gridParse(move[move.column].grid)
 	const gridWithSpan = spansInGridArea(grid, widget, { toggle: dir })
 
-	layout.grid = layoutToGridAreas(gridWithSpan)
-	move[move.column] = layout
+	move[move.column].grid = gridStringify(gridWithSpan)
 	storage.sync.set({ move: move })
 
-	setGridAreas(layout.grid)
-	buttonControl.grid(widget)
-	buttonControl.span(widget)
+	setGridAreas(move[move.column].grid)
+	gridButtons(widget)
+	spanButtons(widget)
 }
 
 function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
@@ -397,18 +354,8 @@ function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
 	}
 
 	if (!hasOverlays) {
-		const widgets = getEnabledWidgetsFromGrid(layout.grid)
-
-		widgets.forEach((id) => {
+		for (const id of getGridWidgets(layout.grid)) {
 			gridOverlay.add(id as Widgets)
-		})
+		}
 	}
-}
-
-export function activeID(id?: Widgets | 'none'): Widgets | 'none' {
-	if (id !== undefined) {
-		selectedWidget = id
-	}
-
-	return selectedWidget
 }
