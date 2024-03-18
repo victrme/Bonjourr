@@ -71,53 +71,20 @@ export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 export async function updateMoveElement(event: UpdateMove) {
 	const data = await storage.sync.get()
 
-	if (!data.move) {
-		data.move = structuredClone(SYNC_DEFAULT.move)
-	}
+	if (!data.move) data.move = structuredClone(SYNC_DEFAULT.move)
 
-	if (smallWidth) {
-		data.move.column = 'single'
-	}
+	if (smallWidth) data.move.column = 'single'
 
-	if (event.grid) {
-		gridChange(data.move, event.grid)
-	}
-
-	if (event.span) {
-		toggleGridSpans(data.move, event.span)
-	}
-
-	if (event.box !== undefined) {
-		alignChange(data.move, event.box, 'box')
-	}
-
-	if (event.text !== undefined) {
-		alignChange(data.move, event.text, 'text')
-	}
-
-	if (event.layout) {
-		layoutChange(data, event.layout)
-	}
-
-	if (event.reset) {
-		layoutReset(data)
-	}
-
-	if (event.overlay) {
-		pageWidthOverlay(data.move, event.overlay)
-	}
-
-	if (event?.toggle) {
-		toggleMoveStatus(data)
-	}
-
-	if (event?.select) {
-		elementSelection(data.move, event.select)
-	}
-
-	if (event?.widget) {
-		toggleWidget(data, event.widget)
-	}
+	if (event.grid) gridChange(data.move, event.grid)
+	if (event.span) toggleGridSpans(data.move, event.span)
+	if (event.layout) layoutChange(data, event.layout)
+	if (event.reset) layoutReset(data)
+	if (event.toggle) toggleMoveStatus(data)
+	if (event.widget) toggleWidget(data, event.widget)
+	if (event.overlay) pageWidthOverlay(data.move, event.overlay)
+	if (event.select) elementSelection(data.move, event.select)
+	if (event.box !== undefined) alignChange(data.move, event.box, 'box')
+	if (event.text !== undefined) alignChange(data.move, event.text, 'text')
 }
 
 function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
@@ -346,15 +313,14 @@ function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
 function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
 	const isEditing = document.getElementById('interface')?.classList?.contains('move-edit')
 	const hasOverlays = document.querySelector('.move-overlay')
-	const layout = move[move.column]
 
-	if (!layout || (!isEditing && overlay === false)) {
+	if (!isEditing && overlay === false) {
 		gridOverlay.removeAll()
 		return
 	}
 
 	if (!hasOverlays) {
-		for (const id of getGridWidgets(layout.grid)) {
+		for (const id of getGridWidgets(move[move.column].grid)) {
 			gridOverlay.add(id as Widgets)
 		}
 	}
