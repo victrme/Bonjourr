@@ -156,7 +156,7 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 	storage.sync.set({ move: move })
 
 	alignButtons(column[widget])
-	setAlign(widget, align)
+	setAlign(widget, column[widget])
 }
 
 function layoutChange(data: Sync.Storage, column: string) {

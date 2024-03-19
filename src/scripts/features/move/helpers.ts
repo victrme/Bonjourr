@@ -64,15 +64,12 @@ export function gridFind(grid: Grid, id: string): { posCol: number; posRow: numb
 //
 
 export function alignStringify(align: { box: string; text: string }): string {
-	return `${align.box} text-${align.text.replace('text-', '')}`
+	return align.box + (align.box && align.text ? ' & ' : '') + align.text
 }
 
 export function alignParse(string = ''): { box: string; text: string } {
-	const arr = string.split(' ')
-	return {
-		box: arr[0] ?? '',
-		text: arr[1] ?? '',
-	}
+	const arr = string.split(' & ')
+	return { box: arr[0] ?? '', text: arr[1] ?? '' }
 }
 
 //

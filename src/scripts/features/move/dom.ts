@@ -1,44 +1,34 @@
 import { elements, alignParse } from './helpers'
 import moveElements from '.'
 
-type Align = {
-	box: string
-	text: string
-}
-
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
 export function setGridAreas(grid = '') {
 	document.documentElement.style.setProperty('--grid', grid)
 }
 
-export function setAlign(id: Widgets | 'none', align: Align) {
-	if (id === 'none') {
-		return
-	}
-
+export function setAlign(id: Widgets, align = '') {
+	const { box, text } = alignParse(align)
 	const elem = elements[id]
 
 	if (elem) {
-		elem.style.placeSelf = align.box
+		elem.style.placeSelf = box
 
 		if (id === 'quicklinks') {
-			const flex = align.text == 'left' ? 'flex-start' : align.text == 'right' ? 'flex-end' : ''
+			const flex = text == 'left' ? 'flex-start' : text == 'right' ? 'flex-end' : ''
 			const linklist = document.getElementById('link-list') as HTMLElement
 			linklist.style.justifyContent = flex
 		} else {
-			elem.style.textAlign = align.text
+			elem.style.textAlign = text
 		}
 	}
 }
 
-export function setAllAligns(layout?: Partial<Sync.MoveLayout>) {
-	if (!layout) return
-
+export function setAllAligns(layout: Partial<Sync.MoveLayout>) {
 	const entries = Object.entries(layout).filter(([key, _]) => key !== 'grid')
 
 	for (const [widget, align] of entries) {
-		setAlign(widget as Widgets, alignParse(align))
+		setAlign(widget as Widgets, align)
 	}
 }
 
