@@ -45,13 +45,7 @@ export function gridStringify(grid: Grid) {
 	return areas
 }
 
-export function gridFind(
-	grid: Grid,
-	id: string
-): {
-	posCol: number
-	posRow: number
-}[] {
+export function gridFind(grid: Grid, id: string): { posCol: number; posRow: number }[] {
 	const allpos: { posCol: number; posRow: number }[] = []
 
 	grid.flat().forEach((a, i) => {
@@ -70,13 +64,10 @@ export function gridFind(
 //
 
 export function alignStringify(align: { box: string; text: string }): string {
-	return `${align.box} text-${align.text}`
+	return `${align.box} text-${align.text.replace('text-', '')}`
 }
 
-export function alignParse(string = ''): {
-	box: string
-	text: string
-} {
+export function alignParse(string = ''): { box: string; text: string } {
 	const arr = string.split(' ')
 	return {
 		box: arr[0] ?? '',
@@ -215,78 +206,45 @@ export function getGridWidgets(area: string): Widgets[] {
 	return widgets as Widgets[]
 }
 
-export function addGridWidget(grid: Grid | string, id: Widgets, column: Column): string {
-	if (typeof grid === 'string') {
-		grid = gridParse(grid)
+export function addGridWidget(grid: string, id: Widgets, column: Column): string {
+	const newrow = addGridRow(column, id)
+	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
+	let position = 0
+
+	if (grid === '') {
+		return `'${newrow}'`
 	}
 
-	if (grid.length === 0) {
-		if (column === 'single') return `"${id}"`
-		if (column === 'double') return `"${id} ."`
-		if (column === 'triple') return `". ${id} ."`
-	}
+	const isFirstWidgetTime = rows[0].includes('time')
+	const isLastWidgetQuotes = rows.at(-1)?.includes('quotes')
 
-	// in triple column, default column is [x, here, x]
-	const targetCol = grid[0].length === 3 ? 1 : 0
-	let index = grid.length === 1 ? 1 : 2
+	if (id === 'time') position = 0
+	if (id === 'main') position = isFirstWidgetTime ? 1 : 0
+	if (id === 'notes') position = rows.length === 1 ? 1 : 2
+	if (id === 'searchbar') position = rows.length === 1 ? 1 : 2
+	if (id === 'quicklinks') position = rows.length - (isLastWidgetQuotes ? 1 : 0)
+	if (id === 'quotes') position = rows.length
 
-	if (id === 'time') index = 0
-	if (id === 'main') index = grid[0][targetCol] === 'time' ? 1 : 0
-	if (id === 'quotes') index = grid.length
-	if (id === 'quicklinks') {
-		const isLastQuotes = grid[grid.length - 1][targetCol] === 'quotes'
-		index = isLastQuotes ? grid.length - 1 : grid.length
-	}
+	rows.splice(position, 0, newrow)
+	rows = rows.map((row) => `'${row}'`)
+	grid = rows.join(' ')
 
-	//
-	// Apply
-	//
-
-	function fillNewRow(grid: Grid, cell: string, i: number) {
-		if (!cell || cell === '.') return
-
-		const positions = gridFind(grid, cell)
-
-		// remove spans on targeted cell
-		if (i === targetCol && positions.length > 1) {
-			grid = spansInGridArea(grid, cell as Widgets, { remove: true })
-			return
-		}
-
-		// keep column spans on adjacent columns
-		if (getSpanDirection(grid, cell) === 'columns') {
-			newrow[i] = cell
-		}
-	}
-
-	// Adding last row, duplicates above and replace middle id
-	let newrow = grid[0].map(() => '.')
-	const isLastRow = grid[index] === undefined
-
-	grid[index - (isLastRow ? 1 : 0)].forEach((cell, i) => fillNewRow(grid, cell, i))
-	grid.splice(index, 0, newrow as any) // Todo: typeof JeComprendPasLa
-	grid[index][targetCol] = id
-
-	return gridStringify(grid)
+	return grid
 }
 
-export function removeGridWidget(grid: Grid | string, id: Widgets, _: Column): string {
-	if (typeof grid === 'string') {
-		grid = gridParse(grid)
-	}
+export function removeGridWidget(grid: string, id: Widgets, _: Column): string {
+	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
 
-	// remove id from grid
-	for (const i in grid) {
-		for (const k in grid[i]) {
-			if (grid[i][k] === id) grid[i][k] = '.'
-		}
-	}
+	rows = rows.filter((row) => !row.includes(id))
+	rows = rows.map((row) => `'${row}'`)
+	grid = rows.join(' ')
 
-	grid.forEach((_, i) => {
-		if (isRowEmpty(grid, i)) {
-			grid.splice(i, 1)
-		}
-	})
+	return grid
+}
 
-	return gridStringify(grid)
+function addGridRow(column: Column, id: Widgets): string {
+	const firstcolumn = column === 'triple' ? '. ' : ''
+	const lastcolumn = column === 'triple' || column === 'double' ? ' .' : ''
+
+	return `${firstcolumn}${id}${lastcolumn}`
 }

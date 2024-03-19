@@ -189,3 +189,9 @@ export function resetButton(): boolean {
 
 	return confirm
 }
+
+export function showSpanButtons(column: string) {
+	column !== 'single'
+		? document.getElementById('grid-spanner-container')?.classList.add('active')
+		: document.getElementById('grid-spanner-container')?.classList.remove('active')
+}

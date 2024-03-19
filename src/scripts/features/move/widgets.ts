@@ -1,4 +1,4 @@
-import { interfaceFadeIn, interfaceFadeOut, setAllAligns, setGridAreas, removeSelection, gridOverlay } from './dom'
+import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
 import { isEditing, addGridWidget, removeGridWidget, updateWidgetsStorage } from './helpers'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
@@ -18,7 +18,7 @@ export default async function toggleWidget(data: Sync.Storage, widget: [Widgets,
 
 	interfaceTransition.first(() => {
 		toggleWidgetInSettings([[id, on]])
-		interfaceFadeOut()
+		interfaceFade('out')
 	})
 
 	interfaceTransition.then(async () => {
@@ -29,11 +29,14 @@ export default async function toggleWidget(data: Sync.Storage, widget: [Widgets,
 
 		// add/remove widget overlay only when editing move
 		if (isEditing()) {
-			on ? gridOverlay.add(id) : gridOverlay.remove(id)
+			on ? addOverlay(id) : removeOverlay(id)
 		}
 	})
 
-	interfaceTransition.finally(interfaceFadeIn)
+	interfaceTransition.finally(() => {
+		interfaceFade('in')
+	})
+
 	interfaceTransition.transition(200)
 }
 

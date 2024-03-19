@@ -42,31 +42,21 @@ export function setAllAligns(layout?: Partial<Sync.MoveLayout>) {
 	}
 }
 
-export function manageGridSpanner(column: string) {
-	column !== 'single'
-		? document.getElementById('grid-spanner-container')?.classList.add('active')
-		: document.getElementById('grid-spanner-container')?.classList.remove('active')
+export function addOverlay(id: Widgets) {
+	const button = document.createElement('button')
+	button.id = 'move-overlay-' + id
+	button.className = 'move-overlay'
+	dominterface?.appendChild(button)
+
+	button.addEventListener('click', () => {
+		moveElements(undefined, { select: id })
+	})
 }
 
-export const gridOverlay = {
-	add: (id: Widgets) => {
-		const button = document.createElement('button')
-		button.id = 'move-overlay-' + id
-		button.className = 'move-overlay'
-		dominterface?.appendChild(button)
-
-		button.addEventListener('click', () => {
-			moveElements(undefined, { select: id })
-		})
-	},
-
-	remove: (id: Widgets) => {
-		document.querySelector('#move-overlay-' + id)?.remove()
-	},
-
-	removeAll: () => {
-		document.querySelectorAll('.move-overlay').forEach((d) => d.remove())
-	},
+export function removeOverlay(id?: Widgets) {
+	id
+		? document.querySelector('#move-overlay-' + id)?.remove()
+		: document.querySelectorAll('.move-overlay').forEach((d) => d.remove())
 }
 
 export function removeSelection() {
@@ -84,14 +74,16 @@ export function removeSelection() {
 	})
 }
 
-export function interfaceFadeOut() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.style.opacity = '0'
-	dominterface.style.transition = `opacity 200ms cubic-bezier(.215,.61,.355,1)`
-}
+export function interfaceFade(fade: 'in' | 'out') {
+	if (fade === 'in') {
+		const dominterface = document.getElementById('interface') as HTMLElement
+		dominterface.style.removeProperty('opacity')
+		setTimeout(() => (dominterface.style.transition = ''), 200)
+	}
 
-export function interfaceFadeIn() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.style.removeProperty('opacity')
-	setTimeout(() => (dominterface.style.transition = ''), 200)
+	if (fade == 'out') {
+		const dominterface = document.getElementById('interface') as HTMLElement
+		dominterface.style.opacity = '0'
+		dominterface.style.transition = `opacity 200ms cubic-bezier(.215,.61,.355,1)`
+	}
 }
