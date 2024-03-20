@@ -78,6 +78,7 @@ declare namespace Sync {
 
 	type Searchbar = {
 		on: boolean
+		width?: number
 		opacity: number
 		newtab: boolean
 		engine: string

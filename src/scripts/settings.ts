@@ -90,6 +90,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_sbengine', data.searchbar?.engine || 'google')
 	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
 	setInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
+	setInput('i_sbwidth', data.searchbar?.width ?? 30)
 	setInput('i_sbrequest', data.searchbar?.request || '')
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
 	setInput('i_qttype', data.quotes?.type || 'classic')
@@ -479,6 +480,10 @@ function initOptionsEvents() {
 
 	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
 		searchbar(undefined, { opacity: this.value })
+	})
+
+	paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement) {
+		searchbar(undefined, { width: this.value })
 	})
 
 	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {

@@ -4,7 +4,9 @@
 	visibility: visible;
 	align-items: center;
 	padding: 0;
-	width: fit-content;
+	width: 100%;
+	min-width: 15em;
+	max-width: var(--searchbar-width, 30em);
 	border-radius: 10px;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
@@ -47,8 +49,6 @@
 	display: flex;
 	align-items: center;
 	width: 100%;
-	max-width: 40em;
-	min-width: 15em;
 	border-radius: 10px;
 	background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
 	border: 1px solid rgba(255, 255, 255, 0.075);
