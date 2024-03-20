@@ -157,3 +157,70 @@ export const build = parallel(
 	...taskExtension('edge', 'PROD'),
 	...taskExtension('safari', 'PROD')
 )
+
+//
+//	Auto translator tool
+//
+
+import * as deepl from 'deepl-node'
+import fs from 'node:fs'
+
+async function updateTranslations() {
+	const path = (l) => `./_locales/${l}/translations.json`
+	const langs = fs.readdirSync('./_locales/')
+	const dict = JSON.parse(fs.readFileSync(path('en'), 'utf8'))
+
+	const auth = await (await fetch('https://deepl.bonjourr.workers.dev/')).text()
+	const translator = new deepl.Translator(auth)
+	const supportedLangs = (await translator.getSourceLanguages()).map((sl) => sl.code)
+
+	for (const lang of langs) {
+		if (lang === 'en' || !supportedLangs.includes(lang)) {
+			continue
+		}
+
+		const langDict = JSON.parse(fs.readFileSync(path(lang), 'utf8'))
+		let modified = 0
+		let removed = 0
+		let added = 0
+
+		for (const key of Object.keys(dict)) {
+			const trn = langDict[key]
+
+			// add & translate new stuff
+			if (!trn) {
+				added++
+				try {
+					const result = await translator.translateText(key, null, lang)
+					langDict[key] = result.text
+				} catch (error) {
+					console.log(error)
+				}
+			}
+
+			// /!\ modify untranslated stuff
+			// /!\ will translate things that shouldn't be translated
+			// if (trn && trn === key) {
+			//     modified++
+			// }
+		}
+
+		// remove old stuff
+		for (const key of Object.keys(lang)) {
+			if (dict[key] === undefined) {
+				delete langDict[key]
+				removed++
+			}
+		}
+
+		fs.writeFileSync(`./_locales/${lang}/translations.json`, JSON.stringify(langDict))
+
+		if (modified > 0) console.log(modified, 'modified translations in', lang)
+		if (removed > 0) console.log(removed, 'removed translations in', lang)
+		if (added > 0) console.log(added, 'added translations in', lang)
+	}
+}
+
+export const translate = async function () {
+	updateTranslations()
+}

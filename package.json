@@ -26,6 +26,7 @@
 		"@types/gulp-sass": "^5.0.4",
 		"@victr/deepmerge": "^1.3.2",
 		"concurrently": "^8.2.2",
+		"deepl-node": "^1.12.0",
 		"esbuild": "^0.20.1",
 		"gulp": "^4.0.2",
 		"gulp-htmlmin": "^5.0.1",
