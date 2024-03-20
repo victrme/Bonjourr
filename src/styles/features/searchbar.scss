@@ -61,10 +61,11 @@
 	width: 100%;
 	height: 2.5em;
 	color: #fff;
-	padding: 0 1em;
+	padding-inline: 1em;
 	font-size: 1.3em;
 	font-family: inherit;
 	font-weight: inherit;
+	text-overflow: ellipsis;
 	border: none;
 	background-color: transparent;
 
@@ -76,28 +77,16 @@
 }
 
 #sb-buttons {
-	display: flex;
-	opacity: 0;
+	display: none;
 	column-gap: 0.8em;
-	cursor: text;
 
 	&.shown {
-		opacity: 1;
-		cursor: default;
-
-		button {
-			pointer-events: initial;
-			touch-action: initial;
-			user-select: initial;
-		}
+		display: flex;
 	}
 
 	button {
 		color: #fff;
 		font-size: inherit;
-		pointer-events: none;
-		touch-action: none;
-		user-select: none;
 		border-radius: 0.5em;
 		background-color: transparent;
 		transition: opacity 0.2s, filter 0.1s, transform 0.1s;
