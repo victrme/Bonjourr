@@ -165,62 +165,85 @@ export const build = parallel(
 import * as deepl from 'deepl-node'
 import fs from 'node:fs'
 
-async function updateTranslations() {
-	const path = (l) => `./_locales/${l}/translations.json`
-	const langs = fs.readdirSync('./_locales/')
-	const dict = JSON.parse(fs.readFileSync(path('en'), 'utf8'))
+export const translate = async function () {
+	updateTranslations()
+}
 
-	const auth = await (await fetch('https://deepl.bonjourr.workers.dev/')).text()
-	const translator = new deepl.Translator(auth)
-	const supportedLangs = (await translator.getSourceLanguages()).map((sl) => sl.code)
+async function updateTranslations() {
+	const translator = new deepl.Translator(await (await fetch('https://deepl.bonjourr.workers.dev/')).text())
+	const supportedLangs = (await translator.getSourceLanguages()).map((source) => source.code)
+	const translations = []
+
+	const enDict = JSON.parse(fs.readFileSync(`./_locales/en/translations.json`, 'utf8'))
+	const langs = fs.readdirSync('./_locales/')
 
 	for (const lang of langs) {
-		if (lang === 'en' || !supportedLangs.includes(lang)) {
+		if (lang === 'en') {
 			continue
 		}
 
-		const langDict = JSON.parse(fs.readFileSync(path(lang), 'utf8'))
-		let modified = 0
-		let removed = 0
-		let added = 0
-
-		for (const key of Object.keys(dict)) {
-			const trn = langDict[key]
-
-			// add & translate new stuff
-			if (!trn) {
-				added++
-				try {
-					const result = await translator.translateText(key, null, lang)
-					langDict[key] = result.text
-				} catch (error) {
-					console.log(error)
-				}
-			}
-
-			// /!\ modify untranslated stuff
-			// /!\ will translate things that shouldn't be translated
-			// if (trn && trn === key) {
-			//     modified++
-			// }
-		}
-
-		// remove old stuff
-		for (const key of Object.keys(lang)) {
-			if (dict[key] === undefined) {
-				delete langDict[key]
-				removed++
-			}
-		}
-
-		fs.writeFileSync(`./_locales/${lang}/translations.json`, JSON.stringify(langDict))
-
-		if (modified > 0) console.log(modified, 'modified translations in', lang)
-		if (removed > 0) console.log(removed, 'removed translations in', lang)
-		if (added > 0) console.log(added, 'added translations in', lang)
+		translations.push(translateFile(lang, enDict, translator, supportedLangs))
 	}
+
+	await Promise.all(translations)
 }
 
-export const translate = async function () {
-	updateTranslations()
+async function translateFile(lang, enDict, translator, supportedLangs) {
+	let sanitizedLang = lang
+
+	if (lang === 'gr') sanitizedLang = 'el'
+	if (lang === 'zh_CN') sanitizedLang = 'zh'
+	if (lang === 'zh_HK') sanitizedLang = 'zh'
+	if (lang === 'es_ES') sanitizedLang = 'es'
+	if (lang === 'pt_BR') sanitizedLang = 'pt-BR'
+	if (lang === 'pt_PT') sanitizedLang = 'pt-PT'
+
+	const supported = supportedLangs.includes(sanitizedLang)
+	const langDict = JSON.parse(fs.readFileSync(`./_locales/${lang}/translations.json`, 'utf8'))
+	const newDict = {}
+	let removed = 0
+	let added = 0
+
+	// Remove keys not found in "english" translation file
+	for (const key of Object.keys(langDict)) {
+		if (enDict[key]) {
+			newDict[key] = langDict[key]
+			continue
+		}
+
+		removed++
+	}
+
+	// Add keys & translate new stuff
+	for (const key of Object.keys(enDict)) {
+		const trn = newDict[key]
+
+		if (!trn) {
+			if (supported) {
+				const result = await translator.translateText(key, null, sanitizedLang)
+				newDict[key] = result.text
+			} else {
+				newDict[key] = key
+			}
+
+			added++
+		}
+	}
+
+	// Order translations
+	const keylist = new Set()
+	const enKeys = [...Object.keys(enDict)]
+	const sortOrder = (a, b) => enKeys.indexOf(a) - enKeys.indexOf(b)
+
+	JSON.stringify(newDict, (key, value) => {
+		return keylist.add(key), value
+	})
+
+	const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
+
+	// Write to file
+	fs.writeFileSync(`./_locales/${lang}/translations.json`, stringified)
+
+	// Log
+	console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}, translated: ${supported ? 'yes' : 'no'}]`)
 }
