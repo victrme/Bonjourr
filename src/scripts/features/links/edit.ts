@@ -259,8 +259,14 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 
 	if (!link.folder) {
 		if (icon.dom) {
-			link.icon = icon.val ? stringMaxSize(icon.val, 7500) : undefined
-			icon.dom.src = link.icon ?? getDefaultIcon(link.url)
+			const url = icon.val ? stringMaxSize(icon.val, 7500) : undefined ?? getDefaultIcon(link.url)
+			const img = document.createElement('img')
+
+			link.icon = url ? url : undefined
+
+			icon.dom.src = 'src/assets/interface/loading.svg'
+			img.onload = () => (icon.dom!.src = url)
+			img.src = url
 		}
 
 		if (title.dom && url.dom && url.val !== undefined) {
