@@ -235,8 +235,8 @@ async function getGeolocation(type: Weather['geolocation']): Promise<Coords | un
 				},
 				() => {
 					resolve(false)
-				},
-			),
+				}
+			)
 		)
 	}
 
@@ -415,8 +415,8 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const iconText = tempContainer?.querySelector('p')
 		const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
 
-		tempReport.replace('<temp1>', actual.toString())
-		tempReport.replace('<temp2>', feels.toString())
+		tempReport = tempReport.replace('<temp1>', actual.toString())
+		tempReport = tempReport.replace('<temp2>', feels.toString())
 
 		if (current && iconText) {
 			current.textContent = weatherReport + dot + tempReport
@@ -468,8 +468,8 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		if (day === 'today') string = tradThis('with a high of <temp1>° today')
 		if (day === 'tomorrow') string = tradThis('with a high of <temp1>° tomorrow')
 
-		string.replace('<temp1>', lastWeather.forecasted_high.toString())
-		string += dot
+		string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
+		string = string + dot
 
 		if (forecastdom) {
 			forecastdom.textContent = string
