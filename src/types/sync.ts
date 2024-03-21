@@ -103,7 +103,7 @@ declare namespace Sync {
 		text?: string
 		width?: number
 		opacity: number
-		align: 'left' | 'center' | 'right'
+		align: string
 	}
 
 	namespace Move {

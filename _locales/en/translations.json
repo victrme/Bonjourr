@@ -176,9 +176,8 @@
 
 	"Notes": "Notes",
 	"Edit this note": "Edit this note",
-	"or": "or",
-	"to create titles": "to create titles",
-	"to add a list or checkbox": "to add a list or checkbox",
+	"With markdown titles, lists, and checkboxes": "With markdown titles, lists, and checkboxes",
+	"Learn more on <url>": "Learn more on <url>",
 	"Left": "Left",
 	"Center": "Center",
 	"Right": "Right",

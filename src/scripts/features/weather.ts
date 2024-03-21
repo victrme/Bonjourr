@@ -244,13 +244,16 @@ async function getGeolocation(type: Weather['geolocation']): Promise<Coords | un
 }
 
 function handleGeolOption(data: Weather) {
-	const i_city = document.getElementById('i_city') as HTMLInputElement
-	const i_geol = document.getElementById('i_geol') as HTMLInputElement
-	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-	i_geol.value = data.geolocation
-	i_ccode.value = data.ccode ?? 'FR'
-	i_city.setAttribute('placeholder', data.city ?? 'Paris')
-	document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
+	const i_city = document.querySelector<HTMLInputElement>('#i_city')
+	const i_geol = document.querySelector<HTMLInputElement>('#i_geol')
+	const i_ccode = document.querySelector<HTMLInputElement>('#i_ccode')
+
+	if (i_ccode && i_city && i_geol) {
+		i_geol.value = data?.geolocation ?? false
+		i_ccode.value = data.ccode ?? 'FR'
+		i_city.setAttribute('placeholder', data.city ?? 'Paris')
+		document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
+	}
 }
 
 async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {

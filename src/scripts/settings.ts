@@ -456,15 +456,15 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
-		notes(undefined, { is: 'align', value: this.value })
+		notes(undefined, { align: this.value })
 	})
 
 	paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { is: 'width', value: this.value })
+		notes(undefined, { width: this.value })
 	})
 
 	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { is: 'opacity', value: this.value })
+		notes(undefined, { opacity: this.value })
 	})
 
 	//
