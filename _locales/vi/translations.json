@@ -1,11 +1,9 @@
 {
 	"lang": "vi",
 	"New tab": "Tab mới",
-
 	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Bạn thích sử dụng Bonjourr? Hãy cân nhắc việc cho chúng tôi đánh giá hoặc quyên góp, điều đó sẽ giúp ích rất nhiều! 😇",
 	"Review": "Đánh giá",
 	"Donate": "Quyên góp",
-
 	"Monday": "Thứ Hai",
 	"Tuesday": "Thứ Ba",
 	"Wednesday": "Thứ Tư",
@@ -30,18 +28,15 @@
 	"Good evening": "Chào buổi tối",
 	"Good night": "Chúc ngủ ngon",
 	"Sweet dreams": "Mơ đẹp nhé!",
-	"It is currently": "Hiện tại là",
-	"It currently feels like": "Hiện tại cảm giác như",
-	"feels like": "cảm giác như",
-	"with a high of": "với nhiệt độ cao nhất là",
-	"today": "hôm nay",
-	"tomorrow": "ngày mai",
+	"It is currently <temp1>°": "It is currently <temp1>°",
+	"It is currently <temp1>° and feels like <temp2>°": "It is currently <temp1>° and feels like <temp2>°",
+	"It currently feels like <temp2>°": "It currently feels like <temp2>°",
+	"with a high of <temp1>° today": "with a high of <temp1>° today",
+	"with a high of <temp1>° tomorrow": "with a high of <temp1>° tomorrow",
 	"Default page": "Trang mặc định",
 	"Folder": "Thư mục",
 	"Page": "Trang",
-	"on Unsplash": "trên Unsplash",
-	"Photo by ": "Ảnh tạo bởi ",
-
+	"Photo by <name>": "Photo by <name>",
 	"Editing": "Đang sửa",
 	"No selection": "Không chọn",
 	"Grid position": "Vị trí",
@@ -52,7 +47,6 @@
 	"Text alignment": "Căn chữ",
 	"Reset layout": "Đặt lại",
 	"Done": "Xong",
-
 	"Title": "Tiêu đề",
 	"Link": "Liên kết",
 	"Icon": "Biểu tượng",
@@ -65,13 +59,11 @@
 	"Delete selection": "Xóa vùng chọn",
 	"Remove from folder": "Xóa khỏi thư mục",
 	"Apply changes": "Áp dụng thay đổi",
-
 	"No bookmarks found": "Không thấy dấu trang",
 	"Select bookmarks": "Chọn dấu trang",
 	"Import this bookmark": "Thêm dấu trang này",
 	"Import these bookmarks": "Thêm các dấu trang này",
 	"Cancel": "Hủy",
-
 	"General": "Cài đặt chung",
 	"Show all settings": "Hiện mọi cài đặt",
 	"Enable": "Bật",
@@ -84,7 +76,6 @@
 	"New tab title": "Tiêu đề tab mới",
 	"The icon and title that appear on your tab. You can put any emoji.": "Biểu tượng và tiêu đề xuất hiện trên tab của bạn. Bạn có thể đặt bất kỳ biểu tượng cảm xúc nào.",
 	"Hide settings icon": "Ẩn biểu tượng cài đặt",
-
 	"Background": "Hình nền",
 	"Background type": "Kiểu hình nền",
 	"Default": "Mặc định",
@@ -100,7 +91,6 @@
 	"Type the collection ID from its URL, add more by separating them with a comma.": "Nhập ID bộ sưu tập từ URL của nó, thêm nhiều ID bằng cách phân tách chúng bằng dấu phẩy.",
 	"Blur intensity": "Làm mờ",
 	"Brightness": "Độ sáng",
-
 	"Quick Links": "Liên kết nhanh",
 	"These are Bonjourr's bookmarks. ": "Đây là dấu trang của Bonjourr. ",
 	"Edit your Quick Links by right clicking the icon.": "Chỉnh sửa Liên kết nhanh của bạn bằng cách nhấp chuột phải vào biểu tượng.",
@@ -119,7 +109,6 @@
 	"Small": "Nhỏ",
 	"Inline": "Trên một dòng",
 	"Text": "Chỉ chữ",
-
 	"Time & Date": "Thời gian và ngày tháng",
 	"Analog clock": "Đồng hồ kim",
 	"Clock face": "Mặt đồng hồ",
@@ -142,7 +131,6 @@
 	"Clock and date": "Đồng hồ và ngày tháng",
 	"Clock only": "Chỉ đồng hồ",
 	"Date only": "Chỉ ngày tháng",
-
 	"Weather & Greetings": "Thời tiết và lời chào",
 	"Greeting": "Lời chào",
 	"Clock size": "Kích thước đồng hồ",
@@ -174,17 +162,14 @@
 	"Description and icon": "Mô tả và biểu tượng",
 	"Description only": "Chỉ mô tả",
 	"Icon only": "Chỉ biểu tượng",
-
 	"Notes": "Ghi chú",
 	"Edit this note": "Sửa ghi chú",
-	"or": "hoặc",
-	"to create titles": "tạo tiêu đề",
-	"to add a list or checkbox": "thêm danh sách hoặc hộp đánh dấu",
+	"With markdown titles, lists, and checkboxes": "With markdown titles, lists, and checkboxes",
+	"Learn more on <url>": "Learn more on <url>",
 	"Left": "Trái",
 	"Center": "Giữa",
 	"Right": "Phải",
 	"Width": "Rộng",
-
 	"Search bar": "Thanh tìm kiếm",
 	"Suggestions": "Gợi ý",
 	"Search engine": "Công cụ tìm kiếm",
@@ -200,20 +185,17 @@
 	"Placeholder text": "Văn bản giữ chỗ",
 	"Search": "Tìm kiếm",
 	"Opacity": "Độ mờ",
-
 	"Quotes": "Trích dẫn",
 	"Always show author": "Luôn hiện tác giả",
 	"Quote type": "Kiểu trích dẫn",
 	"Classic": "Cổ điển",
 	"Custom": "Tùy chỉnh",
 	"Custom quotes": "Trích dẫn tùy chỉnh",
-
 	"Fonts": "Phông chữ",
 	"Font family": "Phông chữ",
 	"Weight": "Nét",
 	"Size": "Kích thước",
 	"Shadow": "Đổ bóng",
-
 	"Page layout": "Bố trí trang",
 	"Customise how and where widgets appear.": "Tùy chỉnh cách thức và vị trí các tiện ích xuất hiện.",
 	"Open the toolbox and select a widget to modify on the page.": "Mở hộp công cụ và chọn một tiện ích để sửa đổi trên trang.",
@@ -223,18 +205,15 @@
 	"Layout columns": "Cột bố cục",
 	"Page width": "Chiều rộng trang",
 	"Page gap": "Khoảng cách trang",
-
 	"Custom Style": "CSS tùy chỉnh",
 	"Make cool things happen with CSS. ": "Tạo những điều thú vị với CSS. ",
 	"Check out our ": "Truy cập ",
 	"CSS snippets.": "phong cách CSS.",
 	"Type in your custom CSS": "Nhập CSS tùy chỉnh của bạn:",
-
 	"Updates": "Cập nhật",
 	"Announcements": "Thông báo",
 	"Major changes": "Những thay đổi chính",
 	"All": "Tất cả",
-
 	"Settings management": "Quản lý cài đặt",
 	"Transfer your settings between multiple instances of Bonjourr.": "Chuyển cài đặt của bạn giữa nhiều phiên bản Bonjourr.",
 	"Export": "Xuất",
@@ -248,7 +227,6 @@
 	"Are you sure ?": "Bạn chắc chưa?",
 	"I am sure": "Tôi chắc chắn!",
 	"No, go back": "Chưa, đưa tôi trở lại",
-
 	"Made in France with ❤️": "Được tạo ra tại Pháp với ❤️",
 	"by": "bởi",
 	"Consider": "Cân nhắc việc",
