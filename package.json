@@ -3,12 +3,12 @@
 	"version": "19.1.1",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
 	"scripts": {
-		"edge": "",
-		"chrome": "node ./gulpfile.js",
-		"firefox": "",
-		"safari": "",
-		"online": "",
-		"build": "",
+		"edge": "node build.config.js edge dev",
+		"chrome": "node build.config.js chrome dev",
+		"firefox": "node build.config.js firefox dev",
+		"safari": "node build.config.js safari dev",
+		"online": "node build.config.js online dev",
+		"build": "node build.config.js chrome prod",
 		"test": "pnpm --filter tests test",
 		"translate": "",
 		"online:dev": ""
