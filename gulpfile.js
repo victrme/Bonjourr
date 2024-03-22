@@ -1,169 +1,176 @@
-import gulp from 'gulp'
-import rename from 'gulp-rename'
-import replace from 'gulp-replace'
-import gulpsass from 'gulp-sass'
+import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import esbuild from 'esbuild'
-import * as sasscompiler from 'sass'
+import * as sass from 'sass'
+import * as deepl from 'deepl-node'
+import fs from 'node:fs'
 
-const { parallel, src, dest, watch } = gulp
-const sass = gulpsass(sasscompiler)
+//
+//
+//
 
-function html(platform) {
-	return () => {
-		const assets = ['src/*.html']
-		const stream = src(assets)
+console.time()
 
-		if (platform === 'edge') {
-			stream.pipe(replace(`favicon.ico`, `monochrome.png`))
-		}
+const platform = 'chrome'
+const env = 'DEV'
 
-		if (platform === 'online') {
-			stream.pipe(replace(`<!-- icon -->`, `<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />`))
-			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
-		} else {
-			stream.pipe(replace(`<!-- webext-storage -->`, `<script src="src/scripts/webext-storage.js"></script>`))
-		}
+esbuild.build({
+	entryPoints: ['src/scripts/index.ts'],
+	outfile: `release/${platform}/src/scripts/main.js`,
+	format: 'iife',
+	bundle: true,
+	minifySyntax: env === 'PROD',
+	minifyWhitespace: env === 'PROD',
+})
 
-		return stream.pipe(dest(`release/${platform}`))
-	}
-}
+fs.mkdirSync(`release/${platform}/src/scripts`, { recursive: true })
 
-function scripts(platform, env) {
-	return () => {
-		esbuild.buildSync({
-			entryPoints: ['src/scripts/index.ts'],
-			outfile: 'release/online/src/scripts/main.js',
-			format: 'iife',
-			bundle: true,
-			minifySyntax: env === 'PROD',
-			minifyWhitespace: env === 'PROD',
-		})
+cp('src/assets', `release/${platform}/src/assets`, { recursive: true })
+cp('_locales', `release/${platform}/_locales`, { recursive: true })
+copyFile('src/index.html', `release/${platform}/index.html`)
+copyFile('src/settings.html', `release/${platform}/settings.html`)
+copyFile('src/manifests/chrome.json', `release/${platform}/manifest.json`)
 
-		console.log('[13:37:00] Created build for', env, 'environnement')
+const { css } = sass.compile('src/styles/style.scss')
+const path = `release/${platform}/src/styles/style.css`
 
-		return src('release/online/src/scripts/main.js')
-			.pipe(replace('ENVIRONNEMENT = "PROD"', `ENVIRONNEMENT = "${env}"`))
-			.pipe(dest(`release/${platform}/src/scripts`))
-	}
-}
+writeFile(path, css)
 
-function ressources(platform) {
-	return () => {
-		const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
+console.timeEnd()
 
-		if (platform !== 'online') {
-			assetPath.push('!src/assets/screenshots/**')
-		}
+function scripts() {
+	const ms = timer()
 
-		return src(assetPath).pipe(dest(`release/${platform}/src/assets`))
-	}
-}
+	cp('src/scripts/services', `release/${platform}/src/scripts`, { recursive: true })
 
-function worker(platform) {
-	return () => {
-		if (platform === 'online') {
-			return src('src/scripts/services/service-worker.js').pipe(dest('release/online'))
-		} else {
-			const services = ['src/scripts/services/background.js', 'src/scripts/services/webext-storage.js']
-			return src(services).pipe(dest('release/' + platform + '/src/scripts'))
-		}
-	}
-}
+	esbuild.buildSync({
+		entryPoints: ['src/scripts/index.ts'],
+		outfile: `release/${platform}/src/scripts/main.js`,
+		format: 'iife',
+		bundle: true,
+		minifySyntax: env === 'PROD',
+		minifyWhitespace: env === 'PROD',
+	})
 
-function manifest(platform) {
-	return () => {
-		return platform === 'online'
-			? src(`src/manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
-			: src(`src/manifests/${platform}.json`)
-					.pipe(rename('manifest.json'))
-					.pipe(dest(`release/${platform}`))
-	}
-}
-
-function styles(platform) {
-	return () =>
-		src('src/styles/style.scss')
-			.pipe(sass.sync().on('error', sass.logError))
-			.pipe(dest(`release/${platform}/src/styles/`))
-}
-
-function locales(platform) {
-	const filenames = platform === 'online' ? 'translations' : '*'
-	return () => src(`_locales/**/${filenames}.json`).pipe(dest(`release/${platform}/_locales/`))
+	console.log('Build scripts in', ms())
 }
 
 //
-// Tasks
-//
+;(async function watchfiles() {
+	let debounce = 0
 
-// Watches style map to make sure everything is compiled
-const filesToWatch = ['./_locales/**', './src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
+	for await (const event of watch('src', { recursive: true })) {
+		clearInterval(debounce)
 
-// prettier-ignore
-const taskOnline = (env) => [
-	html('online'),
-	styles('online'),
-	worker('online'),
-	locales('online'),
-	manifest('online'),
-	scripts('online', env),
-	ressources('online', false),
-]
+		debounce = setTimeout(() => {
+			const { eventType, filename } = event
 
-const taskExtension = (from, env) => [
-	html(from),
-	worker(from),
-	styles(from),
-	locales(from),
-	manifest(from),
-	ressources(from),
-	scripts(from, env),
-]
+			if (filename.includes('scripts\\')) scripts()
+			else if (filename.includes('styles\\')) console.log('styles')
+			else if (filename.includes('assets\\')) console.log('assets')
+			else if (filename.includes('manifests\\')) console.log('manifest')
+		}, 10)
 
-//
-// All Exports
-//
+		// try {
+		// 	}
+		// } catch (err) {
+		// 	if (err.name === 'AbortError') return
+		// 	throw err
+	}
+})()
 
-export const online = async function () {
-	watch(filesToWatch, parallel(...taskOnline('DEV')))
+function timer() {
+	let t0 = performance.now()
+	return () => `${parseInt(performance.now() - t0)}ms`
 }
 
-export const chrome = async function () {
-	watch(filesToWatch, parallel(...taskExtension('chrome', 'DEV')))
-}
+// function html(platform) {
+// 	return () => {
+// 		const assets = ['src/*.html']
+// 		const stream = src(assets)
 
-export const edge = async function () {
-	watch(filesToWatch, parallel(...taskExtension('edge', 'DEV')))
-}
+// 		if (platform === 'edge') {
+// 			stream.pipe(replace(`favicon.ico`, `monochrome.png`))
+// 		}
 
-export const firefox = async function () {
-	watch(filesToWatch, parallel(...taskExtension('firefox', 'DEV')))
-}
+// 		if (platform === 'online') {
+// 			stream.pipe(replace(`<!-- icon -->`, `<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />`))
+// 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
+// 		} else {
+// 			stream.pipe(replace(`<!-- webext-storage -->`, `<script src="src/scripts/webext-storage.js"></script>`))
+// 		}
 
-export const safari = async function () {
-	watch(filesToWatch, parallel(...taskExtension('safari', 'DEV')))
-}
+// 		return stream.pipe(dest(`release/${platform}`))
+// 	}
+// }
 
-export const test = async function () {
-	watch(filesToWatch, parallel(...taskOnline('TEST')))
-}
+// function scripts(platform, env) {
+// 	return () => {
+// 		esbuild.buildSync({
+// 			entryPoints: ['src/scripts/index.ts'],
+// 			outfile: 'release/online/src/scripts/main.js',
+// 			format: 'iife',
+// 			bundle: true,
+// 			minifySyntax: env === 'PROD',
+// 			minifyWhitespace: env === 'PROD',
+// 		})
 
-export const buildtest = parallel(...taskOnline('TEST'))
+// 		console.log('[13:37:00] Created build for', env, 'environnement')
 
-export const build = parallel(
-	...taskOnline('PROD'),
-	...taskExtension('firefox', 'PROD'),
-	...taskExtension('chrome', 'PROD'),
-	...taskExtension('edge', 'PROD'),
-	...taskExtension('safari', 'PROD')
-)
+// 		return src('release/online/src/scripts/main.js')
+// 			.pipe(replace('ENVIRONNEMENT = "PROD"', `ENVIRONNEMENT = "${env}"`))
+// 			.pipe(dest(`release/${platform}/src/scripts`))
+// 	}
+// }
+
+// function ressources(platform) {
+// return () => {
+// 	const assetPath = ['src/assets/**', '!src/assets/bonjourr.png']
+// 	if (platform !== 'online') {
+// 		assetPath.push('!src/assets/screenshots/**')
+// 	}
+// 	return src(assetPath).pipe(dest(`release/${platform}/src/assets`))
+// }
+// }
+
+// function worker(platform) {
+// 	return () => {
+// 		if (platform === 'online') {
+// 			return src('src/scripts/services/service-worker.js').pipe(dest('release/online'))
+// 		} else {
+// 			const services = ['src/scripts/services/background.js', 'src/scripts/services/webext-storage.js']
+// 			return src(services).pipe(dest('release/' + platform + '/src/scripts'))
+// 		}
+// 	}
+// }
+
+// function manifest(platform) {
+// 	return () => {
+// 		return platform === 'online'
+// 			? src(`src/manifests/manifest.webmanifest`).pipe(dest(`release/${platform}`))
+// 			: src(`src/manifests/${platform}.json`)
+// 					.pipe(rename('manifest.json'))
+// 					.pipe(dest(`release/${platform}`))
+// 	}
+// }
+
+// function styles(platform) {
+// 	return () =>
+// 		src('src/styles/style.scss')
+// 			.pipe(sass.sync().on('error', sass.logError))
+// 			.pipe(dest(`release/${platform}/src/styles/`))
+// }
+
+// function locales(platform) {
+// 	const filenames = platform === 'online' ? 'translations' : '*'
+// 	return () => src(`_locales/**/${filenames}.json`).pipe(dest(`release/${platform}/_locales/`))
+// }
+
+// // Watches style map to make sure everything is compiled
+// const filesToWatch = ['./_locales/**', './src/*.html', './src/scripts/**', './src/styles/**', './src/manifests/*.json']
 
 //
 //	Auto translator tool
 //
-
-import * as deepl from 'deepl-node'
-import fs from 'node:fs'
 
 export const translate = async function () {
 	updateTranslations()
