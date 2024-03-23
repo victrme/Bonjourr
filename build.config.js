@@ -1,18 +1,21 @@
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
-import esbuild from 'esbuild'
-import * as sass from 'sass'
-import * as deepl from 'deepl-node'
+import { exec } from 'node:child_process'
 import process from 'node:process'
 import fs from 'node:fs'
 
+import esbuild from 'esbuild'
+import * as sass from 'sass'
+import * as deepl from 'deepl-node'
+
 const args = process.argv.slice(2)
-const platform = args[0] ?? 'all'
+const platform = args[0]
+const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
 const PLATFORM_FIREFOX = platform === 'firefox'
 const PLATFORM_CHROME = platform === 'chrome'
 const PLATFORM_SAFARI = platform === 'safari'
-const PLATFORM_ONLINE = platform === 'online'
 const PLATFORM_EDGE = platform === 'edge'
-const PLATFORM_ALL = platform === 'prod'
+const PLATFORM_ONLINE = platform === 'online'
+const PLATFORM_EXT = !PLATFORM_ONLINE
 const env = args[1] ?? 'prod'
 const ENV_DEV = env === 'dev'
 const ENV_PROD = env === 'prod'
@@ -55,12 +58,32 @@ const paths = {
 	},
 }
 
-buildall()
-watchall()
+// Main
+
+if (args.includes('translate')) {
+	updateTranslations()
+}
+
+if (ENV_DEV && PLATFORMS.includes(platform)) {
+	builder()
+	watcher()
+}
+
+if (ENV_PROD && PLATFORMS.includes(platform)) {
+	builder()
+}
+
+if (ENV_PROD && platform === undefined) {
+	for (const platform of PLATFORMS) {
+		exec(`node ./build.config.js ${platform} prod`).once('close', () => {
+			console.log('Built', platform)
+		})
+	}
+}
 
 // Build or Watch
 
-function buildall() {
+function builder() {
 	console.time('Built in')
 	addDirectories()
 	html()
@@ -72,41 +95,18 @@ function buildall() {
 	console.timeEnd('Built in')
 }
 
-async function watchall() {
-	if (ENV_PROD) {
-		return
-	}
-
-	watcher('_locales', (filename) => {
+async function watcher() {
+	watchTasks('_locales', (filename) => {
 		locales()
 	})
 
-	watcher('src', (filename) => {
+	watchTasks('src', (filename) => {
 		if (filename.includes('.html')) html()
-		else if (filename.includes('styles/')) styles()
-		else if (filename.includes('assets/')) assets()
-		else if (filename.includes('scripts/')) scripts()
-		else if (filename.includes('manifests/')) manifests()
+		if (filename.includes('styles/')) styles()
+		if (filename.includes('assets/')) assets()
+		if (filename.includes('scripts/')) scripts()
+		if (filename.includes('manifests/')) manifests()
 	})
-
-	async function watcher(path, callback) {
-		// debounce because IDEs do multiple fast saves which triggers watcher
-		let debounce = 0
-
-		for await (const event of watch(path, { recursive: true })) {
-			clearInterval(debounce)
-
-			debounce = setTimeout(() => {
-				console.time('Built in')
-
-				// windows back slashes :(
-				const filename = event.filename.replaceAll('\\', '/')
-				callback(filename)
-
-				console.timeEnd('Built in')
-			}, 30)
-		}
-	}
 }
 
 function addDirectories() {
@@ -115,7 +115,7 @@ function addDirectories() {
 			return
 		}
 	} catch (error) {
-		console.error('First')
+		console.error('First build')
 	}
 
 	fs.mkdirSync(`release/${platform}/src/assets`, { recursive: true })
@@ -123,7 +123,7 @@ function addDirectories() {
 	fs.mkdirSync(`release/${platform}/src/styles`, { recursive: true })
 }
 
-// Builders
+// Tasks
 
 function html() {
 	// TODO change html head
@@ -135,7 +135,7 @@ function html() {
 	// 			stream.pipe(replace(`favicon.ico`, `monochrome.png`))
 	// 		}
 
-	// 		if (platform === 'online') {
+	// 		if (PLATFORM_ONLINE) {
 	// 			stream.pipe(replace(`<!-- icon -->`, `<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />`))
 	// 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
 	// 		} else {
@@ -161,9 +161,9 @@ function scripts() {
 		minifyWhitespace: ENV_PROD,
 	})
 
-	if (platform === 'online') copyFile(...paths.online.serviceworker)
-	if (platform !== 'online') copyFile(...paths.extension.scripts.background)
-	if (platform !== 'online') copyFile(...paths.extension.scripts.storage)
+	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)
+	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.background)
+	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.storage)
 }
 
 function assets() {
@@ -171,19 +171,19 @@ function assets() {
 	copyDir(...paths.shared.assets.weather)
 	copyFile(...paths.shared.assets.favicon)
 
-	if (platform === 'online') copyDir(...paths.online.screenshots)
-	if (platform !== 'online') copyFile(...paths.extension.favicons[128])
-	if (platform !== 'online') copyFile(...paths.extension.favicons[512])
+	if (PLATFORM_ONLINE) copyDir(...paths.online.screenshots)
+	if (PLATFORM_EXT) copyFile(...paths.extension.favicons[128])
+	if (PLATFORM_EXT) copyFile(...paths.extension.favicons[512])
 
 	// TODO favicons
 
-	if (platform === 'edge') copyFile(...paths.edge.favicon)
-	if (platform !== 'edge') copyFile(...paths.shared.assets.favicon)
+	if (PLATFORM_EDGE) copyFile(...paths.edge.favicon)
+	if (!PLATFORM_EDGE) copyFile(...paths.shared.assets.favicon)
 }
 
 function manifests() {
-	if (platform === 'online') copyFile(...paths.online.manifest)
-	if (platform !== 'online') copyFile(...paths.extension.manifest)
+	if (PLATFORM_ONLINE) copyFile(...paths.online.manifest)
+	if (PLATFORM_EXT) copyFile(...paths.extension.manifest)
 }
 
 function locales() {
@@ -191,8 +191,29 @@ function locales() {
 	copyDir(...paths.shared.locales)
 }
 
+// Node stuff
+
+async function watchTasks(path, callback) {
+	// debounce because IDEs do multiple fast saves which triggers watcher
+
+	const events = watch(path, { recursive: true })
+	let debounce = 0
+
+	for await (const event of events) {
+		clearInterval(debounce)
+		debounce = setTimeout(() => debounceCallback(event.filename), 30)
+	}
+
+	function debounceCallback(filename) {
+		console.time('Built in')
+		callback(filename.replaceAll('\\', '/')) // windows back slashes :(
+		console.timeEnd('Built in')
+	}
+}
+
 function copyDir(...args) {
-	cp(...args, { recursive: true }) // cosmetic abstraction, i'm sure its fine
+	// cosmetic abstraction, i'm sure its fine
+	cp(...args, { recursive: true })
 }
 
 //	Auto translator tool
