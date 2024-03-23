@@ -1,7 +1,7 @@
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import process from 'node:process'
-import fs from 'node:fs'
+import fs, { readdir, readdirSync } from 'node:fs'
 
 import esbuild from 'esbuild'
 import * as sass from 'sass'
@@ -25,7 +25,7 @@ const paths = {
 	shared: {
 		scripts: ['src/scripts/index.ts', `release/${platform}/src/scripts/main.js`],
 		styles: ['src/styles/style.scss', `release/${platform}/src/styles/style.css`],
-		locales: ['./_locales', `release/${platform}/_locales`],
+		locales: ['_locales/', `release/${platform}/_locales/`],
 		htmls: {
 			index: ['src/index.html', `release/${platform}/index.html`],
 			settings: ['src/settings.html', `release/${platform}/settings.html`],
@@ -33,7 +33,11 @@ const paths = {
 		assets: {
 			interface: ['src/assets/interface', `release/${platform}/src/assets/interface`],
 			weather: ['src/assets/weather', `release/${platform}/src/assets/weather`],
-			favicon: ['src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`],
+			favicons: {
+				ico: ['src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`],
+				128: ['src/assets/favicon-128x128.png', `release/${platform}/src/assets/favicon-128x128.png`],
+				512: ['src/assets/favicon-512x512.png', `release/${platform}/src/assets/favicon-512x512.png`],
+			},
 		},
 	},
 	extension: {
@@ -41,10 +45,6 @@ const paths = {
 		scripts: {
 			background: ['src/scripts/services/background.js', `release/${platform}/src/scripts/background.js`],
 			storage: ['src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`],
-		},
-		favicons: {
-			128: ['src/assets/favicon-128x128.png', `release/${platform}/src/assets/favicon-128x128.png`],
-			512: ['src/assets/favicon-512x512.png', `release/${platform}/src/assets/favicon-512x512.png`],
 		},
 	},
 	online: {
@@ -75,8 +75,8 @@ if (ENV_PROD && PLATFORMS.includes(platform)) {
 
 if (ENV_PROD && platform === undefined) {
 	for (const platform of PLATFORMS) {
-		exec(`node ./build.config.js ${platform} prod`).once('close', () => {
-			console.log('Built', platform)
+		exec(`node ./build.config.js ${platform} prod`, (error, stdout, _) => {
+			error ? console.error(error) : console.log(`${stdout.replace('\n', '')} <- ${platform}`)
 		})
 	}
 }
@@ -126,21 +126,19 @@ function addDirectories() {
 // Tasks
 
 function html() {
-	// TODO change html head
+	let data = fs.readFileSync(paths.shared.htmls.index[0], 'utf8')
 
-	copyFile(...paths.shared.htmls.index)
+	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
+	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
+	const storage = '<script src="src/scripts/webext-storage.js"></script>'
+
+	if (PLATFORM_ONLINE) data = data.replace('<!-- icon -->', icon)
+	if (PLATFORM_ONLINE) data = data.replace('<!-- manifest -->', manifest)
+	if (PLATFORM_EXT) data = data.replace('<!-- webext-storage -->', storage)
+	if (PLATFORM_EDGE) data = data.replace('favicon.ico', 'monochrome.png')
+
+	writeFile(paths.shared.htmls.index[1], data)
 	copyFile(...paths.shared.htmls.settings)
-
-	// 		if (platform === 'edge') {
-	// 			stream.pipe(replace(`favicon.ico`, `monochrome.png`))
-	// 		}
-
-	// 		if (PLATFORM_ONLINE) {
-	// 			stream.pipe(replace(`<!-- icon -->`, `<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />`))
-	// 			stream.pipe(replace(`<!-- manifest -->`, `<link rel="manifest" href="manifest.webmanifest">`))
-	// 		} else {
-	// 			stream.pipe(replace(`<!-- webext-storage -->`, `<script src="src/scripts/webext-storage.js"></script>`))
-	// 		}
 }
 
 function styles() {
@@ -169,16 +167,13 @@ function scripts() {
 function assets() {
 	copyDir(...paths.shared.assets.interface)
 	copyDir(...paths.shared.assets.weather)
-	copyFile(...paths.shared.assets.favicon)
+	copyFile(...paths.shared.assets.favicons.ico)
+	copyFile(...paths.shared.assets.favicons[128])
+	copyFile(...paths.shared.assets.favicons[512])
 
 	if (PLATFORM_ONLINE) copyDir(...paths.online.screenshots)
-	if (PLATFORM_EXT) copyFile(...paths.extension.favicons[128])
-	if (PLATFORM_EXT) copyFile(...paths.extension.favicons[512])
-
-	// TODO favicons
-
 	if (PLATFORM_EDGE) copyFile(...paths.edge.favicon)
-	if (!PLATFORM_EDGE) copyFile(...paths.shared.assets.favicon)
+	if (!PLATFORM_EDGE) copyFile(...paths.shared.assets.favicons.ico)
 }
 
 function manifests() {
@@ -187,8 +182,14 @@ function manifests() {
 }
 
 function locales() {
-	// TODO no overview
-	copyDir(...paths.shared.locales)
+	const langs = readdirSync('./_locales')
+	const [input, output] = paths.shared.locales
+
+	for (const lang of langs) {
+		fs.mkdirSync(output + lang, { recursive: true })
+		copyFile(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
+		copyFile(`${input}${lang}/translations.json`, `${output}${lang}/translations.json`)
+	}
 }
 
 // Node stuff
