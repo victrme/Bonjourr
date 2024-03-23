@@ -1,13 +1,12 @@
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { exec } from 'node:child_process'
-import process from 'node:process'
-import fs, { readdir, readdirSync } from 'node:fs'
+import { argv } from 'node:process'
 
 import esbuild from 'esbuild'
 import * as sass from 'sass'
-import * as deepl from 'deepl-node'
 
-const args = process.argv.slice(2)
+const args = argv.slice(2)
 const platform = args[0]
 const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
 const PLATFORM_FIREFOX = platform === 'firefox'
@@ -111,22 +110,22 @@ async function watcher() {
 
 function addDirectories() {
 	try {
-		if (fs.readdirSync('release')?.includes(platform)) {
+		if (readdirSync('release')?.includes(platform)) {
 			return
 		}
 	} catch (error) {
 		console.error('First build')
 	}
 
-	fs.mkdirSync(`release/${platform}/src/assets`, { recursive: true })
-	fs.mkdirSync(`release/${platform}/src/scripts`, { recursive: true })
-	fs.mkdirSync(`release/${platform}/src/styles`, { recursive: true })
+	mkdirSync(`release/${platform}/src/assets`, { recursive: true })
+	mkdirSync(`release/${platform}/src/scripts`, { recursive: true })
+	mkdirSync(`release/${platform}/src/styles`, { recursive: true })
 }
 
 // Tasks
 
 function html() {
-	let data = fs.readFileSync(paths.shared.htmls.index[0], 'utf8')
+	let data = readFileSync(paths.shared.htmls.index[0], 'utf8')
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
@@ -186,7 +185,7 @@ function locales() {
 	const [input, output] = paths.shared.locales
 
 	for (const lang of langs) {
-		fs.mkdirSync(output + lang, { recursive: true })
+		mkdirSync(output + lang, { recursive: true })
 		copyFile(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
 		copyFile(`${input}${lang}/translations.json`, `${output}${lang}/translations.json`)
 	}
@@ -220,28 +219,27 @@ function copyDir(...args) {
 //	Auto translator tool
 
 async function updateTranslations() {
-	const translator = new deepl.Translator(await (await fetch('https://deepl.bonjourr.workers.dev/')).text())
-	const supportedLangs = (await translator.getSourceLanguages()).map((source) => source.code)
+	const supportedLangs = await fetchDeeplSupportedLangs()
+	const enDict = JSON.parse(readFileSync(`./_locales/en/translations.json`, 'utf8'))
+	const langs = readdirSync('./_locales/')
 	const translations = []
-
-	const enDict = JSON.parse(fs.readFileSync(`./_locales/en/translations.json`, 'utf8'))
-	const langs = fs.readdirSync('./_locales/')
 
 	for (const lang of langs) {
 		if (lang === 'en') {
 			continue
 		}
 
-		translations.push(translateFile(lang, enDict, translator, supportedLangs))
+		translations.push(translateFile(lang, enDict, supportedLangs))
 	}
 
 	await Promise.all(translations)
 }
 
-async function translateFile(lang, enDict, translator, supportedLangs) {
+async function translateFile(lang, enDict, supportedLangs) {
 	let sanitizedLang = lang
 
 	if (lang === 'gr') sanitizedLang = 'el'
+	if (lang === 'jp') sanitizedLang = 'ja'
 	if (lang === 'zh_CN') sanitizedLang = 'zh'
 	if (lang === 'zh_HK') sanitizedLang = 'zh'
 	if (lang === 'es_ES') sanitizedLang = 'es'
@@ -249,7 +247,7 @@ async function translateFile(lang, enDict, translator, supportedLangs) {
 	if (lang === 'pt_PT') sanitizedLang = 'pt-PT'
 
 	const supported = supportedLangs.includes(sanitizedLang)
-	const langDict = JSON.parse(fs.readFileSync(`./_locales/${lang}/translations.json`, 'utf8'))
+	const langDict = JSON.parse(readFileSync(`./_locales/${lang}/translations.json`, 'utf8'))
 	const newDict = {}
 	let removed = 0
 	let added = 0
@@ -270,8 +268,7 @@ async function translateFile(lang, enDict, translator, supportedLangs) {
 
 		if (!trn) {
 			if (supported) {
-				const result = await translator.translateText(key, null, sanitizedLang)
-				newDict[key] = result.text
+				newDict[key] = await fetchDeeplTranslation(key, sanitizedLang)
 			} else {
 				newDict[key] = key
 			}
@@ -292,8 +289,38 @@ async function translateFile(lang, enDict, translator, supportedLangs) {
 	const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
 
 	// Write to file
-	fs.writeFileSync(`./_locales/${lang}/translations.json`, stringified)
+	writeFileSync(`./_locales/${lang}/translations.json`, stringified)
 
 	// Log
 	console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}, translated: ${supported ? 'yes' : 'no'}]`)
+}
+
+async function fetchDeeplSupportedLangs() {
+	const auth = await getDeeplAuth()
+	const headers = { Authorization: auth, 'User-Agent': 'Bonjourr/19.2.0' }
+	const resp = await fetch('https://api-free.deepl.com/v2/languages?type=target', { headers })
+	const json = await resp.json()
+	return Object.values(json).map((val) => val.language.toLowerCase())
+}
+
+async function fetchDeeplTranslation(text, lang) {
+	const formData = new FormData()
+	formData.append('source_lang', 'en')
+	formData.append('target_lang', lang)
+	formData.append('text', text)
+
+	const options = {
+		method: 'POST',
+		body: formData,
+		headers: { 'User-Agent': 'Bonjourr/19.2.0', Authorization: await getDeeplAuth() },
+	}
+
+	const resp = await fetch('https://api-free.deepl.com/v2/translate', options)
+	const json = await resp.json()
+
+	return json.translations[0]?.text
+}
+
+async function getDeeplAuth() {
+	return `DeepL-Auth-Key ${await (await fetch('https://deepl.bonjourr.workers.dev/')).text()}`
 }
