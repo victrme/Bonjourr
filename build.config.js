@@ -18,6 +18,43 @@ const ENV_DEV = env === 'dev'
 const ENV_PROD = env === 'prod'
 const ENV_TEST = env === 'test'
 
+const paths = {
+	shared: {
+		scripts: ['src/scripts/index.ts', `release/${platform}/src/scripts/main.js`],
+		styles: ['src/styles/style.scss', `release/${platform}/src/styles/style.css`],
+		locales: ['./_locales', `release/${platform}/_locales`],
+		htmls: {
+			index: ['src/index.html', `release/${platform}/index.html`],
+			settings: ['src/settings.html', `release/${platform}/settings.html`],
+		},
+		assets: {
+			interface: ['src/assets/interface', `release/${platform}/src/assets/interface`],
+			weather: ['src/assets/weather', `release/${platform}/src/assets/weather`],
+			favicon: ['src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`],
+		},
+	},
+	extension: {
+		manifest: [`src/manifests/${platform}.json`, `release/${platform}/manifest.json`],
+		scripts: {
+			background: ['src/scripts/services/background.js', `release/${platform}/src/scripts/background.js`],
+			storage: ['src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`],
+		},
+		favicons: {
+			128: ['src/assets/favicon-128x128.png', `release/${platform}/src/assets/favicon-128x128.png`],
+			512: ['src/assets/favicon-512x512.png', `release/${platform}/src/assets/favicon-512x512.png`],
+		},
+	},
+	online: {
+		icon: ['src/assets/apple-touch-icon.png', 'release/online/src/assets/apple-touch-icon.png'],
+		manifest: ['src/manifests/manifest.webmanifest', 'release/online/manifest.webmanifest'],
+		screenshots: ['src/assets/screenshots', 'release/online/src/assets/screenshots'],
+		serviceworker: ['src/scripts/services/service-worker.js', 'release/online/src/scripts/service-worker.js'],
+	},
+	edge: {
+		favicon: ['src/assets/monochrome.png', 'release/edge/src/assets/monochrome.png'],
+	},
+}
+
 buildall()
 watchall()
 
@@ -40,6 +77,10 @@ async function watchall() {
 		return
 	}
 
+	watcher('_locales', (filename) => {
+		locales()
+	})
+
 	watcher('src', (filename) => {
 		if (filename.includes('.html')) html()
 		else if (filename.includes('styles/')) styles()
@@ -48,11 +89,8 @@ async function watchall() {
 		else if (filename.includes('manifests/')) manifests()
 	})
 
-	watcher('_locales', (filename) => {
-		locales(filename)
-	})
-
 	async function watcher(path, callback) {
+		// debounce because IDEs do multiple fast saves which triggers watcher
 		let debounce = 0
 
 		for await (const event of watch(path, { recursive: true })) {
@@ -60,7 +98,11 @@ async function watchall() {
 
 			debounce = setTimeout(() => {
 				console.time('Built in')
-				callback(event.filename.replaceAll('\\', '/'))
+
+				// windows back slashes :(
+				const filename = event.filename.replaceAll('\\', '/')
+				callback(filename)
+
 				console.timeEnd('Built in')
 			}, 30)
 		}
@@ -86,8 +128,8 @@ function addDirectories() {
 function html() {
 	// TODO change html head
 
-	copyFile('src/index.html', `release/${platform}/index.html`)
-	copyFile('src/settings.html', `release/${platform}/settings.html`)
+	copyFile(...paths.shared.htmls.index)
+	copyFile(...paths.shared.htmls.settings)
 
 	// 		if (platform === 'edge') {
 	// 			stream.pipe(replace(`favicon.ico`, `monochrome.png`))
@@ -102,59 +144,55 @@ function html() {
 }
 
 function styles() {
-	const { css } = sass.compile('src/styles/style.scss')
-	const path = `release/${platform}/src/styles/style.css`
-	writeFile(path, css)
+	const [input, output] = paths.shared.styles
+	const { css } = sass.compile(input)
+	writeFile(output, css)
 }
 
 function scripts() {
+	const [input, output] = paths.shared.scripts
+
 	esbuild.buildSync({
-		entryPoints: ['src/scripts/index.ts'],
-		outfile: `release/${platform}/src/scripts/main.js`,
+		entryPoints: [input],
+		outfile: output,
 		format: 'iife',
 		bundle: true,
 		minifySyntax: ENV_PROD,
 		minifyWhitespace: ENV_PROD,
 	})
 
-	if (PLATFORM_ONLINE) {
-		copyFile('src/scripts/services/service-worker.js', `release/online/src/scripts/service-worker.js`)
-	} else {
-		copyFile('src/scripts/services/background.js', `release/${platform}/src/scripts/background.js`)
-		copyFile('src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`)
-	}
+	if (platform === 'online') copyFile(...paths.online.serviceworker)
+	if (platform !== 'online') copyFile(...paths.extension.scripts.background)
+	if (platform !== 'online') copyFile(...paths.extension.scripts.storage)
 }
 
 function assets() {
-	cp('src/assets/interface', `release/${platform}/src/assets/interface`, { recursive: true })
-	cp('src/assets/weather', `release/${platform}/src/assets/weather`, { recursive: true })
-	copyFile('src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`)
+	copyDir(...paths.shared.assets.interface)
+	copyDir(...paths.shared.assets.weather)
+	copyFile(...paths.shared.assets.favicon)
 
-	if (PLATFORM_ONLINE) {
-		cp('src/assets/screenshots', `release/${platform}/src/assets/screenshots`, { recursive: true })
-	}
+	if (platform === 'online') copyDir(...paths.online.screenshots)
+	if (platform !== 'online') copyFile(...paths.extension.favicons[128])
+	if (platform !== 'online') copyFile(...paths.extension.favicons[512])
 
 	// TODO favicons
 
-	if (PLATFORM_EDGE) {
-		copyFile('src/assets/monochrome.png', `release/${platform}/src/assets/monochrome.png`)
-	} else {
-		copyFile('src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`)
-	}
+	if (platform === 'edge') copyFile(...paths.edge.favicon)
+	if (platform !== 'edge') copyFile(...paths.shared.assets.favicon)
 }
 
 function manifests() {
-	// TODO no overview
-	if (PLATFORM_ONLINE) {
-		copyFile('src/manifests/manifest.webmanifest', `release/online/manifest.webmanifest`)
-	} else {
-		copyFile('src/manifests/chrome.json', `release/${platform}/manifest.json`)
-	}
+	if (platform === 'online') copyFile(...paths.online.manifest)
+	if (platform !== 'online') copyFile(...paths.extension.manifest)
 }
 
-function locales(filename) {
+function locales() {
 	// TODO no overview
-	cp('./_locales', `release/${platform}/_locales`, { recursive: true })
+	copyDir(...paths.shared.locales)
+}
+
+function copyDir(...args) {
+	cp(...args, { recursive: true }) // cosmetic abstraction, i'm sure its fine
 }
 
 //	Auto translator tool
