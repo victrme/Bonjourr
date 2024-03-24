@@ -1,10 +1,9 @@
-//
-//	CSS Editor
-//
+/*
+ *	CSS Editor
+ */
 
 .prism-code-editor {
 	font-size: 13px;
-	font-family: $monospace;
 	overflow: auto;
 	display: grid;
 	width: 100%;
@@ -23,6 +22,7 @@
 	isolation: isolate;
 	white-space: pre;
 }
+
 .pce-wrapper {
 	margin: 0.5em 0;
 	position: relative;

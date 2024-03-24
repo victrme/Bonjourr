@@ -7,15 +7,15 @@
 	outline: 0.4em solid transparent;
 	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 	z-index: -1;
+}
 
-	&:hover {
-		background-color: #fff3;
-	}
+.move-overlay:hover {
+	background-color: #fff3;
+}
 
-	&.selected {
-		background-color: rgba(var(--blue), 0.15);
-		outline-color: var(--color-blue);
-	}
+.move-overlay.selected {
+	background-color: rgba(var(--blue), 0.15);
+	outline-color: var(--color-blue);
 }
 
 #move-overlay-time,
@@ -58,7 +58,7 @@
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	left: 2em; // because of .pushed interface
+	left: 2em; /* because of .pushed interface */
 	top: 2em;
 	gap: 2em;
 	padding: 1em;
@@ -75,29 +75,29 @@
 	cursor: grab;
 	z-index: 4;
 	direction: ltr;
+}
 
-	&:not(.active) > div:not(#close-mover-wrapper) {
-		pointer-events: none;
-		filter: grayscale(1);
-		opacity: 0.4;
-		cursor: auto;
-	}
+#element-mover:not(.active) > div:not(#close-mover-wrapper) {
+	pointer-events: none;
+	filter: grayscale(1);
+	opacity: 0.4;
+	cursor: auto;
+}
 
-	&.hidden {
-		display: none;
-	}
+#element-mover.hidden {
+	display: none;
+}
 
-	button {
-		text-align: center;
-	}
+#element-mover button {
+	text-align: center;
+}
 
-	hr {
-		border-color: var(--color-dialog-border);
-	}
+#element-mover hr {
+	border-color: var(--color-dialog-border);
+}
 
-	p {
-		margin-bottom: 1em;
-	}
+#element-mover p {
+	margin-bottom: 1em;
 }
 
 #grid-mover button,
@@ -108,28 +108,28 @@
 
 .mover {
 	display: grid;
+}
 
-	button {
-		border: none;
-		border-radius: 0.2em;
-		min-width: 2.5em;
-		background-color: transparent;
+.mover button {
+	border: none;
+	border-radius: 0.2em;
+	min-width: 2.5em;
+	background-color: transparent;
+}
 
-		&:hover:not(:disabled) {
-			background-color: #fff4;
-		}
+.mover button:hover:not(:disabled) {
+	background-color: #fff4;
+}
 
-		&:active:not(:disabled) {
-			background-color: #fff5;
-		}
+.mover button:active:not(:disabled) {
+	background-color: #fff5;
+}
 
-		&.selected,
-		&.selected:hover,
-		&.selected:active {
-			outline: 2px solid var(--color-blue);
-			background-color: rgba(var(--blue), 0.15);
-		}
-	}
+.mover button.selected,
+.mover button.selected:hover,
+.mover button.selected:active {
+	outline: 2px solid var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
 }
 
 button.grid-spanner {
@@ -138,17 +138,17 @@ button.grid-spanner {
 	margin: 0.3em auto;
 	border-width: 2px;
 	background-color: var(--color-dialog-highlight);
+}
 
-	&:hover:not(:disabled) {
-		color: var(--color-blue);
-		background-color: rgba(var(--blue), 0.15);
-	}
+button.grid-spanner:hover:not(:disabled) {
+	color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
 
-	&.selected:not(:disabled) {
-		color: var(--color-blue);
-		border-color: var(--color-blue);
-		background-color: rgba(var(--blue), 0.25);
-	}
+button.grid-spanner.selected:not(:disabled) {
+	color: var(--color-blue);
+	border-color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.25);
 }
 
 #grid-selection {
@@ -160,20 +160,20 @@ button.grid-spanner {
 	flex-direction: column;
 	max-width: 85px;
 	margin: auto;
+}
 
-	button {
-		min-width: 3em;
-		margin: 0;
-		padding: 0;
-	}
+#grid-mover button {
+	min-width: 3em;
+	margin: 0;
+	padding: 0;
 }
 
 #grid-spanner-container {
 	display: none;
+}
 
-	&.active {
-		display: block;
-	}
+#grid-spanner-container.active {
+	display: block;
 }
 
 #box-alignment-mover {
@@ -185,11 +185,13 @@ button.grid-spanner {
 #text-alignment-mover {
 	place-content: center;
 	grid-template-columns: repeat(3, 40px);
+}
 
-	button {
-		padding: 0.5em;
-		@include allCentered();
-	}
+#text-alignment-mover button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5em;
 }
 
 #close-mover-wrapper button {
@@ -208,14 +210,14 @@ button i {
 	position: relative;
 	display: block;
 	margin: auto;
+}
 
-	&::before,
-	&::after {
-		content: '';
-		box-sizing: border-box;
-		position: absolute;
-		display: block;
-	}
+button i::before,
+button i::after {
+	content: '';
+	box-sizing: border-box;
+	position: absolute;
+	display: block;
 }
 
 .rotate-half {
@@ -235,14 +237,14 @@ button i {
 	width: 2.4em;
 	height: 2.4em;
 	font-size: 10px;
+}
 
-	&::after {
-		border-bottom: 0.2em solid;
-		border-right: 0.2em solid;
-		width: 1em;
-		height: 1em;
-		transform: rotate(45deg) translateX(100%);
-	}
+.chevron::after {
+	border-bottom: 0.2em solid;
+	border-right: 0.2em solid;
+	width: 1em;
+	height: 1em;
+	transform: rotate(45deg) translateX(100%);
 }
 
 /* Box align icons */
@@ -259,32 +261,30 @@ i.box-side {
 	font-size: 10px;
 }
 
-i.box-center {
-	&::after {
-		top: 0.2em;
-		left: 0.1em;
-		height: 0.6em;
-		width: 1.2em;
-		border-bottom: 0.2em solid;
-	}
+i.box-center::after {
+	top: 0.2em;
+	left: 0.1em;
+	height: 0.6em;
+	width: 1.2em;
+	border-bottom: 0.2em solid;
+}
 
-	&::before {
-		top: 0.1em;
-		left: 0.6em;
-		height: 1.2em;
-		border-left: 0.2em solid;
-	}
+i.box-center::before {
+	top: 0.1em;
+	left: 0.6em;
+	height: 1.2em;
+	border-left: 0.2em solid;
 }
 
 i.box-side {
 	border-bottom: 0.2em solid;
+}
 
-	&::before {
-		bottom: 0;
-		left: 0.6em;
-		height: 0.6em;
-		border-left: 0.2em solid;
-	}
+i.box-side::before {
+	bottom: 0;
+	left: 0.6em;
+	height: 0.6em;
+	border-left: 0.2em solid;
 }
 
 i.box-corner::before {
@@ -298,26 +298,30 @@ i.box-corner::before {
 
 /* Text align icons */
 
-i.text-left,
-i.text-center,
-i.text-right {
-	&::before,
-	&::after {
-		border-bottom: 0.2em solid;
-		border-top: 0.2em solid;
-	}
+i.text-left::before,
+i.text-center::before,
+i.text-right::before,
+i.text-left::after,
+i.text-center::after,
+i.text-right::after {
+	border-bottom: 0.2em solid;
+	border-top: 0.2em solid;
+}
 
-	&::before {
-		top: 0;
-		width: 0.8em;
-		height: 1em;
-	}
+i.text-left::before,
+i.text-center::before,
+i.text-right::before {
+	top: 0;
+	width: 0.8em;
+	height: 1em;
+}
 
-	&::after {
-		top: 0.4em;
-		width: 1.4em;
-		height: 1em;
-	}
+i.text-left::after,
+i.text-center::after,
+i.text-right::after {
+	top: 0.4em;
+	width: 1.4em;
+	height: 1em;
 }
 
 i.text-left::after,

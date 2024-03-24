@@ -8,20 +8,20 @@
 	-moz-user-select: text;
 	user-select: text;
 	cursor: initial;
+}
 
-	&.hidden {
-		display: none;
-	}
+#quotes_container.hidden {
+	display: none;
+}
 
-	&:hover #author {
-		opacity: 1;
-	}
+#quotes_container:hover #author {
+	opacity: 1;
 }
 
 #quote {
 	font-size: 1.5em;
 	line-height: 1.5em;
-	max-height: calc(1.5em * 6);
+	max-height: 9em;
 	margin-bottom: 0.75em;
 	overflow-y: clip;
 }
@@ -30,8 +30,8 @@
 	opacity: 0;
 	font-size: 1.2em;
 	transition: opacity 0.4s;
+}
 
-	&.always-on {
-		opacity: 1;
-	}
+#author.always-on {
+	opacity: 1;
 }

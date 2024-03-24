@@ -2,9 +2,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { argv } from 'node:process'
-
 import esbuild from 'esbuild'
-import * as sass from 'sass'
 
 const args = argv.slice(2)
 const platform = args[0]
@@ -23,7 +21,7 @@ const ENV_TEST = env === 'test'
 const paths = {
 	shared: {
 		scripts: ['src/scripts/index.ts', `release/${platform}/src/scripts/main.js`],
-		styles: ['src/styles/style.scss', `release/${platform}/src/styles/style.css`],
+		styles: ['src/styles/style.css', `release/${platform}/src/styles/style.css`],
 		locales: ['_locales/', `release/${platform}/_locales/`],
 		htmls: {
 			index: ['src/index.html', `release/${platform}/index.html`],
@@ -142,8 +140,13 @@ function html() {
 
 function styles() {
 	const [input, output] = paths.shared.styles
-	const { css } = sass.compile(input)
-	writeFile(output, css)
+
+	esbuild.buildSync({
+		entryPoints: [input],
+		outfile: output,
+		bundle: true,
+		minify: ENV_PROD,
+	})
 }
 
 function scripts() {
