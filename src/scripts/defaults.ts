@@ -31,7 +31,9 @@ export const PLATFORM =
 export const BROWSER =
 	window.navigator.userAgent.toLowerCase().indexOf('edg/' || 'edge') > -1
 		? 'edge'
-		: window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1
+		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+		? 'opera'
+		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
 		? 'chrome'
 		: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
 		? 'firefox'
