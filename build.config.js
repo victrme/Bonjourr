@@ -181,7 +181,7 @@ function manifests() {
 }
 
 function locales() {
-	const langs = readdirSync('./_locales')
+	const langs = readdirSync('_locales').filter((dir) => dir !== '.DS_Store')
 	const [input, output] = paths.shared.locales
 
 	for (const lang of langs) {
