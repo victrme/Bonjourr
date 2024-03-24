@@ -1,0 +1,47 @@
+dialog {
+	color: var(--color-text);
+	background-color: var(--color-dialog);
+	border: 1px solid var(--color-dialog-border);
+	border-radius: 8px;
+	backdrop-filter: blur(4em);
+	-webkit-backdrop-filter: blur(4em);
+	box-shadow: 0px 0px 15px #0004;
+}
+
+dialog hr {
+	border-color: var(--color-dialog-border);
+}
+
+dialog button {
+	border-radius: 6px;
+	border: 3px solid transparent;
+	background-color: transparent;
+	text-align: initial;
+	padding: 2px 12px;
+	color: var(--color-text);
+	outline: none;
+	cursor: pointer;
+}
+
+dialog button:disabled {
+	opacity: 0.3;
+	cursor: default;
+	background-color: transparent;
+}
+
+dialog button:disabled:hover {
+	color: inherit;
+	background-color: inherit;
+}
+
+dialog button:focus-visible,
+dialog button:hover {
+	color: white;
+	background-color: #2c7be5;
+}
+
+dialog button:focus-visible.btn-red,
+dialog button:hover.btn-red {
+	color: white;
+	background-color: #e64b43;
+}
