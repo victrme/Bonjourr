@@ -2,9 +2,7 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { exec } from 'node:child_process'
 import { argv } from 'node:process'
-
 import esbuild from 'esbuild'
-import * as sass from 'sass'
 
 const args = argv.slice(2)
 const platform = args[0]

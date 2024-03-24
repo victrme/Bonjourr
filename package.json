@@ -26,7 +26,6 @@
 	"devDependencies": {
 		"@types/chrome": "^0.0.262",
 		"esbuild": "^0.20.1",
-		"sass": "^1.71.1",
 		"web-ext-types": "^3.2.1",
 		"user-agent-data-types": "^0.4.2"
 	},
