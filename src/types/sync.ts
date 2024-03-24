@@ -12,7 +12,7 @@ declare namespace Sync {
 		linknewtab: boolean
 		linktabs: LinkTabs
 		textShadow: number
-		cssHeight: number
+		cssHeight?: number
 		review: number
 		announcements: 'all' | 'major' | 'off'
 		reviewPopup?: number | string
@@ -78,6 +78,7 @@ declare namespace Sync {
 
 	type Searchbar = {
 		on: boolean
+		width?: number
 		opacity: number
 		newtab: boolean
 		engine: string
@@ -102,7 +103,7 @@ declare namespace Sync {
 		text?: string
 		width?: number
 		opacity: number
-		align: 'left' | 'center' | 'right'
+		align: string
 	}
 
 	namespace Move {

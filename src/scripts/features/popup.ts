@@ -1,4 +1,4 @@
-import { tradThis } from '../utils/translations'
+import { getLang, tradThis } from '../utils/translations'
 import { BROWSER } from '../defaults'
 import storage from '../storage'
 
@@ -13,9 +13,16 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_TEXT = 'New update just dropped. Google "Bonjourr folder".'
-const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-1-18-housekeeping-part-2-L4L4Q5EYW'
-const ANNOUNCEMENT_VERSION = '19.0.0'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.1.0'
+const ANNOUNCEMENT_VERSION = ''
+
+const ANNOUNCEMENT_TRNS = {
+	en: 'Links related bug fixes. Middle click opens folder links. Added Arabic and Vietnamese translations !',
+}
+
+const ANNOUNCEMENT_BTN_TRNS = {
+	en: 'Read the release notes',
+}
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
@@ -32,7 +39,6 @@ export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	//
 	// Announcements
 
 	if (!init || init?.announce === 'off') {
@@ -55,7 +61,6 @@ export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		}
 	}
 
-	//
 	// Reviews
 
 	if (init.review === -1) {
@@ -88,8 +93,11 @@ function displayPopup(type: 'review' | 'announce') {
 	}
 
 	if (type === 'announce') {
-		desc.textContent = tradThis(ANNOUNCEMENT_TEXT)
-		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, tradThis('Read more on blog post')))
+		const lang = getLang() as keyof typeof ANNOUNCEMENT_TRNS
+		const description = ANNOUNCEMENT_TRNS[lang] ?? ANNOUNCEMENT_TRNS.en
+		const buttontext = ANNOUNCEMENT_BTN_TRNS[lang] ?? ANNOUNCEMENT_BTN_TRNS.en
+		desc.textContent = description
+		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, buttontext))
 	}
 
 	close?.addEventListener('click', closePopup)

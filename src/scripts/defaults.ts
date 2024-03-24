@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '19.0.0'
+export const CURRENT_VERSION = '19.1.1'
 
 export const MAIN_API = 'https://api.bonjourr.fr'
 
@@ -92,7 +92,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	textShadow: 0.2,
 	announcements: 'major',
 	review: 0,
-	cssHeight: 80,
 	css: '',
 	hide: {},
 	linkstyle: 'large',

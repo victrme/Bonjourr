@@ -25,10 +25,13 @@ export default {
 	sr_YU: 'Srpski (latinica)',
 	gr: 'Ελληνικά',
 	fa: 'فارسی',
+	vi: 'Tiếng Việt',
+	ar: 'العربية',
 }
 
 // is latin only if not included
 export const subsets = {
+	ar: 'arabic',
 	sk: 'latin-ext',
 	pl: 'latin-ext',
 	ro: 'latin-ext',
@@ -42,4 +45,5 @@ export const subsets = {
 	gr: 'greek',
 	fa: 'arabic',
 	jp: 'japanese',
+	vi: 'latin-ext',
 }

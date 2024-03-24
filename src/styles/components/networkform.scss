@@ -1,0 +1,78 @@
+.network-form.warn span,
+.network-form.offline span,
+.network-form.load span {
+	display: none;
+}
+
+/*
+	ICONS 
+*/
+
+.network-form.load i {
+	transform: scale(0.8);
+}
+.network-form.load i,
+.network-form.load i::after,
+.network-form.load i::before {
+	box-sizing: border-box;
+	position: relative;
+	display: block;
+	width: 20px;
+	height: 20px;
+}
+.network-form.load i::after,
+.network-form.load i::before {
+	content: '';
+	position: absolute;
+	border-radius: 100px;
+}
+.network-form.load i::before {
+	animation: spinner 0.6s linear infinite;
+	border: 3px solid transparent;
+	border-top-color: var(--color-blue);
+}
+.network-form.load i::after {
+	border: 3px solid;
+	opacity: 0.2;
+}
+
+@keyframes spinner {
+	0% {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+
+.network-form.warn i {
+	cursor: help;
+	color: orange;
+	box-sizing: border-box;
+	position: relative;
+	display: block;
+	transform: scale(0.8);
+	width: 20px;
+	height: 20px;
+	border: 2px solid;
+	border-radius: 40px;
+}
+.network-form.warn i::after,
+.network-form.warn i::before {
+	content: '';
+	display: block;
+	box-sizing: border-box;
+	position: absolute;
+	border-radius: 3px;
+	width: 2px;
+	background: currentColor;
+	left: 7px;
+}
+.network-form.warn i::after {
+	top: 2px;
+	height: 8px;
+}
+.network-form.warn i::before {
+	height: 2px;
+	bottom: 2px;
+}

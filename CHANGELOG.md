@@ -1,3 +1,20 @@
+## 19.1.0
+
+-   Changes:
+    -   Added middle click to open all links in folder
+-   Fixes:
+    -   Only primary click can select multiple links (#303)
+    -   Only import link pages with different titles (#311)
+    -   Verify font subset before importing (#308)
+    -   Longer link titles (#301)
+-   Translations:
+    -   Added Vietnamese translation, thank you @chuanghiten !
+    -   Added Arabic translation, thanks @aldoyh !
+    -   Updated Russian - @nvlveu
+    -   Updated Simplified Chinese - @baozidai
+    -   Updated Ukrainian - @wandersher
+    -   Updated Romanian - @UnifeGi
+
 ## 19.0.0
 
 -   Quick links:
@@ -5,15 +22,16 @@
     -   Create pages to organize even more your links
     -   Select multiple by long pressing on links
     -   Automatically add bookmarked pages to Bonjourr
-    -   New “inline” style like the bookmark bar
+    -   New "inline" style like the bookmark bar
 -   Privacy:
     -   Custom font now use Fontsource instead of Google services
     -   Icons are now served by Bonjourr’s API instead of pinging every websites
 -   Changes:
     -   #270 Added Chinese date format
     -   Simpler way to add custom quotes
-    -   #248 “Show more” button for local backgrounds on mobile
+    -   #248 "Show more" button for local backgrounds on mobile
     -   Added announcement popup for major or notable updates
+    -   Focus the search bar with the "/" shortcut, thanks @KParthSingh !
 -   Improvements & Fixes:
     -   Disables heavy styling on Chromium for no-GPU computers
     -   Font autocomplete only shows fonts available for your language
@@ -23,8 +41,11 @@
     -   Fixed visibility issues with Chromium auto dark mode
 -   Translations:
     -   Greek updated by @trlef19
+    -   Traditional Chinese updated by @unknownnumbers
     -   Added Portuguese, thanks @harkadya & @TSCondeco !
     -   Added Japanese, thanks @Kou365 & IshiharaErika !
+
+$~~~~~~~~~~~$
 
 ## 1.18.4
 
@@ -305,9 +326,9 @@ $~~~~~~~~~~~$
     -   Settings import, export and reset
     -   Quick links rearrange
 -   Improved Accessibility;
-    -   “Skip to settings” button when tabbing on page
+    -   "Skip to settings" button when tabbing on page
     -   Quick links now behaves like native browser links
-    -   Press “e” when focused to edit Link, “Esc” to close
+    -   Press "e" when focused to edit Link, "Esc" to close
     -   Settings are now usable keyboard only
     -   Improved input ARIA and focus outline when tabbing
 -   Added draggable settings panel on mobile
@@ -342,7 +363,7 @@ $~~~~~~~~~~~$
     -   Link style option ( Icon sizes & text only )
     -   Custom new tab titles
     -   Text shadow slider
-    -   “Daylight” background frequency control
+    -   "Daylight" background frequency control
     -   Integrated changelog to inform you of new features
     -   Danish translation ( thanks @kar1 )
     -   Added Search bar submit button

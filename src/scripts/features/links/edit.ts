@@ -2,7 +2,6 @@ import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
-import onSettingsLoad from '../../utils/onsettingsload'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
@@ -149,7 +148,7 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 // Events
 //
 
-onSettingsLoad(() => {
+queueMicrotask(() => {
 	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
 	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
@@ -260,8 +259,14 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 
 	if (!link.folder) {
 		if (icon.dom) {
-			link.icon = icon.val ? stringMaxSize(icon.val, 7500) : undefined
-			icon.dom.src = link.icon ?? getDefaultIcon(link.url)
+			const url = icon.val ? stringMaxSize(icon.val, 7500) : undefined ?? getDefaultIcon(link.url)
+			const img = document.createElement('img')
+
+			link.icon = url ? url : undefined
+
+			icon.dom.src = 'src/assets/interface/loading.svg'
+			img.onload = () => (icon.dom!.src = url)
+			img.src = url
 		}
 
 		if (title.dom && url.dom && url.val !== undefined) {
