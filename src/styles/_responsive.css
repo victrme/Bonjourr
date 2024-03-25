@@ -44,7 +44,7 @@
 		min-height: 100dvh;
 	}
 
-	#interface.pushed {
+	body #interface.pushed {
 		transform: none;
 	}
 
@@ -121,6 +121,10 @@
 
 	#cssEditor {
 		width: calc(100% - 24px);
+	}
+
+	body .prism-code-editor {
+		padding: unset;
 	}
 
 	#creditContainer {

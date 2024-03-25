@@ -85,7 +85,7 @@ input[type='checkbox'] {
 }
 
 html {
-	height: 100lvh;
+	/* height: 100lvh; */
 }
 
 body {
@@ -94,8 +94,8 @@ body {
 	color: white;
 	font-size: 1em;
 	font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
-	min-height: var(--app-height);
-	min-height: 100lvh;
+	/* min-height: var(--app-height);
+	min-height: 100lvh; */
 	text-align: center;
 	overflow-x: hidden;
 	overflow-y: overlay;

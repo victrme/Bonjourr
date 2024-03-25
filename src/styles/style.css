@@ -52,7 +52,7 @@
 	width: 100%;
 	gap: var(--page-gap);
 	max-width: var(--page-width);
-	min-height: 100vh;
+	min-height: 100dvh;
 	padding: 4em 1em 6em 1em;
 	margin: 0 auto;
 	box-sizing: border-box;
