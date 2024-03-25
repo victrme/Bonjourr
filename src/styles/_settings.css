@@ -945,6 +945,7 @@ aside form.valid button:not(:disabled):active {
 	padding: 0.65em 1.3em;
 	tab-size: 1.5em;
 	font-size: 13px;
+	user-select: all;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	resize: vertical;

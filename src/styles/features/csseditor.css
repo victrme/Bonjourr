@@ -87,7 +87,7 @@ div.pce-overlays > * {
 	using github style (i think)
 */
 
-[data-theme='dark'] .prism-code-editor {
+[data-theme='dark'] aside {
 	color-scheme: dark;
 	/* ayu */
 	--caret: #ffaa33;
@@ -104,7 +104,7 @@ div.pce-overlays > * {
 	--selector: #22a4e6;
 }
 
-[data-theme='light'] .prism-code-editor {
+[data-theme='light'] aside {
 	color-scheme: light;
 	/* ayu */
 	--caret: #ffaa33;

@@ -25,6 +25,9 @@ import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
+import { highlightText } from 'prism-code-editor/prism'
+import 'prism-code-editor/prism/languages/json5'
+
 import type { Langs } from '../types/langs'
 
 export async function settingsInit() {
@@ -1124,16 +1127,18 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 }
 
 export function updateExportJSON(data?: Sync.Storage) {
-	// document.getElementById('importtext')?.setAttribute('disabled', '') // because cannot export same settings
-
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		const pre = document.getElementById('export-data')
+		data.about.browser = PLATFORM
 
-		if (pre) {
-			data.about.browser = PLATFORM
-			pre.textContent = orderedStringify(data)
+		const parser = new DOMParser()
+		const highlight = highlightText(orderedStringify(data), 'json5')
+		const doc = parser.parseFromString(highlight, 'text/html')
+		const nodes = Object.values(doc.body.childNodes)
+
+		for (const node of nodes) {
+			document.getElementById('export-data')?.appendChild(node)
 		}
 	}
 }
