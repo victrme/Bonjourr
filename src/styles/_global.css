@@ -30,6 +30,7 @@
 	--color-areas: #f2f2f7;
 	--color-areas-text: var(--color-blue);
 	--color-input: #eaeaee;
+	--color-input-outside: #e3e3ea;
 	--color-focused: #dadade;
 	--color-border: #c8c7cc;
 	--color-placeholder: #7c7d7e;
@@ -49,6 +50,7 @@
 	--color-param: #1c1c1e;
 	--color-settings: #000000;
 	--color-input: #39383d;
+	--color-input-outside: #39383d;
 	--color-border: var(--color-input);
 	--color-areas: var(--color-input);
 	--color-areas-text: var(--color-text);
