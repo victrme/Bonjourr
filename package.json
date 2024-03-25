@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "19.1.1",
+	"version": "19.2.0",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
 	"scripts": {
 		"build": "node build.config.js",
