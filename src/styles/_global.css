@@ -160,7 +160,10 @@ body.loading > * {
 	opacity: 0;
 }
 
-body.init > * {
+body.init #interface,
+body.init #showSettings,
+body.init #creditContainer,
+body.init #skiptosettings {
 	transition: opacity var(--load-time-transition);
 }
 

@@ -1,3 +1,5 @@
+@import 'pocket-editor/style.css';
+
 #notes_container {
 	width: 100%;
 	max-width: var(--notes-width);

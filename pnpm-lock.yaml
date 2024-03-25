@@ -12,8 +12,8 @@ dependencies:
     specifier: ^6.2.1
     version: 6.2.1
   pocket-editor:
-    specifier: ^1.10.0
-    version: 1.10.0
+    specifier: ^1.10.1
+    version: 1.10.1
   prism-code-editor:
     specifier: ^3.1.2
     version: 3.1.2
@@ -301,8 +301,8 @@ packages:
     resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
     dev: false
 
-  /pocket-editor@1.10.0:
-    resolution: {integrity: sha512-hVektmDSd0E+fAILmxC926z0ZgiPLL/xD/+fLeqp78V4037RiRs4g5JeWnVKFIVrQVzg4Kvlkqo2/oWhMlRN3w==}
+  /pocket-editor@1.10.1:
+    resolution: {integrity: sha512-LxXiztUGc25W+qow3E9O+0a2nJuoS0IwCO0tXzYz9ipSzU3x4Z7jhmYxUXjgmMorAFnlS2LV10gk8uAAC98WzA==}
     dev: false
 
   /prism-code-editor@3.1.2:
