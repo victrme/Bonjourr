@@ -1,8 +1,3 @@
-/* $settingsMargin: 0.65em;
-$thumbShadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
-$textShadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-$easeOutThree: cubic-bezier(0.215, 0.61, 0.355, 1); */
-
 :root {
 	--app-height: 100vh;
 	--notes-width: 50em;
@@ -161,18 +156,11 @@ body.tabbing button.btn-red:focus-visible {
 	outline: 2px solid var(--color-red);
 }
 
-body.loading #popup,
-body.loading #interface,
-body.loading #showSettings,
-body.loading #creditContainer,
-body.loading #skiptosettings {
+body.loading > * {
 	opacity: 0;
 }
 
-body.init #interface,
-body.init #showSettings,
-body.init #creditContainer,
-body.init #skiptosettings {
+body.init > * {
 	transition: opacity var(--load-time-transition);
 }
 

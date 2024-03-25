@@ -995,8 +995,8 @@ function toggleSettingsManagement(toggled: boolean) {
 
 async function copyImportText(target: HTMLElement) {
 	try {
-		const area = document.getElementById('area_export') as HTMLInputElement
-		await navigator.clipboard.writeText(area.value)
+		const pre = document.getElementById('export-data')
+		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
 		target.textContent = tradThis('Copied')
 		setTimeout(() => {
 			const domimport = document.getElementById('b_exportcopy')
@@ -1129,11 +1129,11 @@ export function updateExportJSON(data?: Sync.Storage) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		const input = document.querySelector<HTMLTextAreaElement>('#area_export')
+		const pre = document.getElementById('export-data')
 
-		if (input) {
+		if (pre) {
 			data.about.browser = PLATFORM
-			input.value = orderedStringify(data)
+			pre.textContent = orderedStringify(data)
 		}
 	}
 }

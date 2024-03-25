@@ -27,10 +27,6 @@
 		overflow-y: auto;
 	}
 
-	#skiptosettings {
-		display: none;
-	}
-
 	#editlink {
 		max-width: 80%;
 	}

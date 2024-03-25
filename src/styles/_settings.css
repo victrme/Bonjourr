@@ -596,7 +596,7 @@ aside form.valid button:not(:disabled):active {
 	height: 100px;
 }
 
-#settings .uploadContainer {
+.uploadContainer {
 	overflow: hidden;
 	position: relative;
 	display: block;
@@ -616,7 +616,7 @@ aside form.valid button:not(:disabled):active {
 	pointer-events: all;
 }
 
-#settings .uploadContainer input[type='file']#i_bgfile {
+.uploadContainer input[type='file']#i_bgfile {
 	position: absolute;
 	display: block;
 	overflow: hidden;
@@ -628,25 +628,25 @@ aside form.valid button:not(:disabled):active {
 	cursor: pointer;
 }
 
-#settings .uploadContainer:hover,
-#settings .uploadContainer:focus,
-#settings .uploadContainer.dragover,
-#settings .uploadContainer:active {
+.uploadContainer:hover,
+.uploadContainer:focus,
+.uploadContainer.dragover,
+.uploadContainer:active {
 	transition: all 0.2s;
 }
 
-#settings .uploadContainer:hover {
+.uploadContainer:hover {
 	background-color: var(--color-focused);
 }
 
-#settings .uploadContainer.dragover {
+.uploadContainer.dragover {
 	background-color: var(--color-blue);
 	color: white;
 	opacity: 1;
 	transform: scale(1.03);
 }
 
-#settings .uploadContainer:active {
+.uploadContainer:active {
 	background-color: var(--color-input);
 }
 
@@ -937,27 +937,24 @@ aside form.valid button:not(:disabled):active {
 	margin-top: 12px;
 }
 
-#area_export {
+#export-data {
 	width: 100%;
+	height: 160px;
 	min-height: 100px;
 	max-height: 3000px;
 	padding: 0.65em 1.3em;
-	font-size: 13px;
-	line-break: anywhere;
-	overflow-x: hidden;
-	overflow-y: hidden;
-	resize: vertical;
-	border: none;
-	will-change: transform;
-	color: var(--color-text);
-	background-color: var(--color-areas);
-	box-sizing: border-box;
 	tab-size: 1.5em;
+	font-size: 13px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	resize: vertical;
+	box-sizing: border-box;
 	border-radius: 10px;
+	background-color: var(--color-areas);
 }
 
-#area_export:hover,
-#area_export:focus {
+#export-data:hover,
+#export-data:focus {
 	overflow-y: auto;
 }
 
@@ -1000,21 +997,21 @@ aside form.valid button:not(:disabled):active {
 	padding: 0.65em 1.3em;
 }
 
-#resetContainer #reset_conf,
-#resetContainer #reset_first {
+#reset_conf,
+#reset_first {
 	display: none;
 }
 
-#resetContainer #reset_conf.shown,
-#resetContainer #reset_first.shown {
+#reset_conf.shown,
+#reset_first.shown {
 	display: flex;
 }
 
-#resetContainer #reset_first {
+#reset_first {
 	justify-content: center;
 }
 
-#resetContainer #b_resetno {
+#b_resetno {
 	color: var(--color-red);
 }
 
