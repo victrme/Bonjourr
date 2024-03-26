@@ -40,6 +40,7 @@
 }
 
 #linkblocks.in-folder #link-list {
+	display: flex; /* do not remove, fixes backdrop filter on Safari */
 	background-color: #fff2;
 	border: 1px solid #fff4;
 	backdrop-filter: blur(2em);
@@ -552,6 +553,10 @@ li.block.folder img {
 	top: 0;
 	left: 0;
 	z-index: 3;
+}
+
+li.block:active {
+	filter: brightness(.5);
 }
 
 #linkblocks.dropping .on,
