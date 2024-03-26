@@ -159,6 +159,9 @@ function scripts() {
 		bundle: true,
 		minifySyntax: ENV_PROD,
 		minifyWhitespace: ENV_PROD,
+		define: {
+			ENV: `"${env.toUpperCase()}"`,
+		},
 	})
 
 	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)

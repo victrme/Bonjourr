@@ -6,7 +6,8 @@ export const MAIN_API = 'https://api.bonjourr.fr'
 
 export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
 
-export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = 'PROD'
+//@ts-expect-error
+export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
 
 export const SYSTEM_OS = window.navigator.appVersion.includes('Macintosh')
 	? 'mac'
