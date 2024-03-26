@@ -25,6 +25,9 @@ import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
+import { highlightText } from 'prism-code-editor/prism'
+import 'prism-code-editor/prism/languages/json'
+
 import type { Langs } from '../types/langs'
 
 export async function settingsInit() {
@@ -90,6 +93,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_sbengine', data.searchbar?.engine || 'google')
 	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
 	setInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
+	setInput('i_sbwidth', data.searchbar?.width ?? 30)
 	setInput('i_sbrequest', data.searchbar?.request || '')
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
 	setInput('i_qttype', data.quotes?.type || 'classic')
@@ -455,15 +459,15 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
-		notes(undefined, { is: 'align', value: this.value })
+		notes(undefined, { align: this.value })
 	})
 
 	paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { is: 'width', value: this.value })
+		notes(undefined, { width: this.value })
 	})
 
 	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { is: 'opacity', value: this.value })
+		notes(undefined, { opacity: this.value })
 	})
 
 	//
@@ -479,6 +483,10 @@ function initOptionsEvents() {
 
 	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
 		searchbar(undefined, { opacity: this.value })
+	})
+
+	paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement) {
+		searchbar(undefined, { width: this.value })
 	})
 
 	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
@@ -990,8 +998,8 @@ function toggleSettingsManagement(toggled: boolean) {
 
 async function copyImportText(target: HTMLElement) {
 	try {
-		const area = document.getElementById('area_export') as HTMLInputElement
-		await navigator.clipboard.writeText(area.value)
+		const pre = document.getElementById('export-data')
+		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
 		target.textContent = tradThis('Copied')
 		setTimeout(() => {
 			const domimport = document.getElementById('b_exportcopy')
@@ -1119,16 +1127,18 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 }
 
 export function updateExportJSON(data?: Sync.Storage) {
-	// document.getElementById('importtext')?.setAttribute('disabled', '') // because cannot export same settings
-
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		const input = document.querySelector<HTMLTextAreaElement>('#area_export')
+		data.about.browser = PLATFORM
 
-		if (input) {
-			data.about.browser = PLATFORM
-			input.value = orderedStringify(data)
+		const parser = new DOMParser()
+		const highlight = highlightText(orderedStringify(data), 'json')
+		const doc = parser.parseFromString(highlight, 'text/html')
+		const nodes = Object.values(doc.body.childNodes)
+
+		for (const node of nodes) {
+			document.getElementById('export-data')?.appendChild(node)
 		}
 	}
 }

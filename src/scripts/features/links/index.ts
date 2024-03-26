@@ -66,6 +66,7 @@ type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 type Style = Sync.Storage['linkstyle']
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
+let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
 export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
@@ -116,6 +117,8 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		return true
 	}
 
+	const fragment = document.createDocumentFragment()
+
 	for (const link of links) {
 		const liIndex = childrenIds.indexOf(link._id)
 		const liExistsOnInterface = liIndex !== -1
@@ -138,9 +141,11 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 			li.addEventListener('pointerdown', startDrag)
 		}
 
-		tabList?.appendChild(li)
+		fragment.appendChild(li)
 	}
 
+	tabList?.appendChild(fragment)
+	queueMicrotask(createIcons)
 	displayInterface('links')
 
 	return true
@@ -159,9 +164,10 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
 		const elem = linksInThisFolder[i]
+		const isIconShown = img && isElem(elem) && style !== 'text'
 
-		if (img && isElem(elem)) {
-			createIcons(img, elem, style)
+		if (isIconShown) {
+			initIconList.push([img, elem.icon ?? getDefaultIcon(elem.url)])
 		}
 	}
 
@@ -177,7 +183,10 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	li.id = link._id
 	anchor.href = stringMaxSize(link.url, 512)
 	span.textContent = createTitle(link)
-	createIcons(img, link, style)
+
+	if (style !== 'text') {
+		initIconList.push([img, link.icon ?? getDefaultIcon(link.url)])
+	}
 
 	if (openInNewtab) {
 		if (BROWSER === 'safari') {
@@ -190,31 +199,24 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	return li
 }
 
-function createIcons(currimg: HTMLImageElement, link: Links.Elem, style: Style) {
-	if (style === 'text') {
-		return
+function createIcons() {
+	for (const [img, url] of initIconList) {
+		img.src = url
 	}
 
-	let hasloaded = false
-
-	currimg.src = link.icon ?? getDefaultIcon(link.url)
-	currimg.addEventListener('load', () => (hasloaded = true))
-
 	setTimeout(() => {
-		if (hasloaded) {
-			return
+		const incomplete = initIconList.filter(([img]) => !img.complete)
+
+		for (const [img, url] of incomplete) {
+			img.src = 'src/assets/interface/loading.svg'
+
+			const newimg = document.createElement('img')
+			newimg.addEventListener('load', () => (img.src = url))
+			newimg.src = url
 		}
 
-		const newimg = document.createElement('img')
-
-		currimg.src = 'src/assets/interface/loading.svg'
-		newimg.src = link.icon ?? getDefaultIcon(link.url)
-
-		newimg.addEventListener('load', () => {
-			currimg.src = newimg.src
-			storage.sync.set({ [link._id]: link })
-		})
-	}, 50)
+		initIconList = []
+	}, 100)
 }
 
 function initRows(row: number, style: string) {

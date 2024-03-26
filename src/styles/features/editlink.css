@@ -8,76 +8,76 @@
 	margin: 0;
 	z-index: 4;
 	transition: opacity 0.1s;
-
-	&.shown {
-		opacity: 1;
-	}
-
-	label {
-		display: grid;
-		width: 100%;
-		column-gap: 6px;
-		margin-bottom: 6px;
-		place-items: center;
-		grid-template-columns: 50px 1fr;
-		opacity: 0.7;
-	}
-
-	label span {
-		font-size: 12px;
-		justify-self: start;
-		padding-left: 5px;
-		max-width: 45px;
-		overflow: hidden;
-		display: inline-block;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-
-	label:focus-within {
-		opacity: 1;
-	}
-
-	input {
-		color: var(--color-text);
-		width: 100%;
-		height: 2.3em;
-		padding: 0 1em;
-		border: none;
-		border-radius: 8px;
-		box-sizing: border-box;
-		background-color: transparent;
-		transition: background-color 0.1s, opacity 0.1s;
-
-		&::placeholder {
-			color: var(--color-dialog-input-text);
-		}
-
-		&:focus {
-			opacity: 1;
-			color: var(--color-text);
-			background-color: var(--color-dialog-input-bg);
-			outline: 3px solid #007aff66;
-			transition: background-color 0.1s;
-		}
-	}
-
-	button {
-		display: none;
-		width: 100%;
-		padding: 4px 12px;
-	}
 }
 
-//
-//  Editlink states:
-//
-//  - Select link
-//  - Select folder
-//  - Select all
-//  - In folder: select link
-//  - In folder: select all
-//
+#editlink.shown {
+	opacity: 1;
+}
+
+#editlink label {
+	display: grid;
+	width: 100%;
+	column-gap: 6px;
+	margin-bottom: 6px;
+	place-items: center;
+	grid-template-columns: 50px 1fr;
+	opacity: 0.7;
+}
+
+#editlink label span {
+	font-size: 12px;
+	justify-self: start;
+	padding-left: 5px;
+	max-width: 45px;
+	overflow: hidden;
+	display: inline-block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#editlink label:focus-within {
+	opacity: 1;
+}
+
+#editlink input {
+	color: var(--color-text);
+	width: 100%;
+	height: 2.3em;
+	padding: 0 1em;
+	border: none;
+	border-radius: 8px;
+	box-sizing: border-box;
+	background-color: transparent;
+	transition: background-color 0.1s, opacity 0.1s;
+}
+
+#editlink input::placeholder {
+	color: var(--color-dialog-input-text);
+}
+
+#editlink input:focus {
+	opacity: 1;
+	color: var(--color-text);
+	background-color: var(--color-dialog-input-bg);
+	outline: 3px solid #007aff66;
+	transition: background-color 0.1s;
+}
+
+#editlink button {
+	display: none;
+	width: 100%;
+	padding: 4px 12px;
+}
+
+/*
+ *  Editlink states:
+ *
+ *  - Select link
+ *  - Select folder
+ *  - Select all
+ *  - In folder: select link
+ *  - In folder: select all
+ */
 
 #editlink.select-all label,
 #editlink.select-all hr,

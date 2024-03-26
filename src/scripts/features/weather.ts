@@ -244,13 +244,16 @@ async function getGeolocation(type: Weather['geolocation']): Promise<Coords | un
 }
 
 function handleGeolOption(data: Weather) {
-	const i_city = document.getElementById('i_city') as HTMLInputElement
-	const i_geol = document.getElementById('i_geol') as HTMLInputElement
-	const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-	i_geol.value = data.geolocation
-	i_ccode.value = data.ccode ?? 'FR'
-	i_city.setAttribute('placeholder', data.city ?? 'Paris')
-	document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
+	const i_city = document.querySelector<HTMLInputElement>('#i_city')
+	const i_geol = document.querySelector<HTMLInputElement>('#i_geol')
+	const i_ccode = document.querySelector<HTMLInputElement>('#i_ccode')
+
+	if (i_ccode && i_city && i_geol) {
+		i_geol.value = data?.geolocation ?? false
+		i_ccode.value = data.ccode ?? 'FR'
+		i_city.setAttribute('placeholder', data.city ?? 'Paris')
+		document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
+	}
 }
 
 async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {
@@ -403,26 +406,24 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	const date = new Date()
 
 	const handleDescription = () => {
-		const desc = lastWeather.description
 		const feels = Math.floor(lastWeather.feels_like)
 		const actual = Math.floor(lastWeather.temp)
+		const maintemp = data.temperature === 'feelslike' ? feels : actual
+		let tempReport = ''
 
-		let tempText = `${tradThis('It is currently')} ${actual}°`
-
-		if (data.temperature === 'feelslike') {
-			tempText = `${tradThis('It currently feels like')} ${feels}°`
-		}
-
-		// Todo: wtf ?
-		if (data.temperature === 'both') {
-			tempText = `${tradThis('It currently feels like')} ${feels}°`
-		}
+		if (data.temperature === 'actual') tempReport = tradThis('It is currently <temp1>°')
+		if (data.temperature === 'feelslike') tempReport = tradThis('It currently feels like <temp2>°')
+		if (data.temperature === 'both') tempReport = tradThis('It is currently <temp1>° and feels like <temp2>°')
 
 		const iconText = tempContainer?.querySelector('p')
+		const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
+
+		tempReport = tempReport.replace('<temp1>', actual.toString())
+		tempReport = tempReport.replace('<temp2>', feels.toString())
 
 		if (current && iconText) {
-			current.textContent = desc[0].toUpperCase() + desc.slice(1) + dot + tempText
-			iconText.textContent = actual + '°'
+			current.textContent = weatherReport + dot + tempReport
+			iconText.textContent = `${maintemp}°`
 		}
 	}
 
@@ -456,20 +457,25 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
-		const timeOfDay = now < sunrise || now > sunset ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${timeOfDay}/${filename}.svg`
+		const daytime = now < sunrise || now > sunset ? 'night' : 'day'
+		const iconSrc = `src/assets/weather/${daytime}/${filename}.svg`
 
 		icon.src = iconSrc
 	}
 
 	const handleForecastData = () => {
-		let day = tradThis(date.getHours() > getSunsetHour() ? 'tomorrow' : 'today')
-		day = day !== '' ? ' ' + day : '' // Only day change on translations that support it
-
 		const forecastdom = document.getElementById('forecast')
+		const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
+		let string = ''
+
+		if (day === 'today') string = tradThis('with a high of <temp1>° today')
+		if (day === 'tomorrow') string = tradThis('with a high of <temp1>° tomorrow')
+
+		string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
+		string = string + dot
 
 		if (forecastdom) {
-			forecastdom.textContent = `${tradThis('with a high of')} ${lastWeather.forecasted_high}°${day}${dot}`
+			forecastdom.textContent = string
 		}
 	}
 

@@ -1,12 +1,13 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '19.1.1'
+export const CURRENT_VERSION = '19.2.0'
 
 export const MAIN_API = 'https://api.bonjourr.fr'
 
 export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
 
-export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = 'PROD'
+//@ts-expect-error
+export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
 
 export const SYSTEM_OS = window.navigator.appVersion.includes('Macintosh')
 	? 'mac'
@@ -31,7 +32,9 @@ export const PLATFORM =
 export const BROWSER =
 	window.navigator.userAgent.toLowerCase().indexOf('edg/' || 'edge') > -1
 		? 'edge'
-		: window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1
+		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+		? 'opera'
+		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
 		? 'chrome'
 		: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
 		? 'firefox'

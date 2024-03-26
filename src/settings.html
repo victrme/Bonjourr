@@ -905,6 +905,13 @@
 			<hr />
 
 			<div class="wrapper">
+				<label for="i_sbwidth" class="trn">Width</label>
+				<input id="i_sbwidth" type="range" name="i_sbwidth" min="10" max="60" step="2" value="30" class="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
 				<label for="i_sbopacity" class="trn">Opacity</label>
 				<input id="i_sbopacity" type="range" name="i_sbopacity" min="0" max="1" step=".1" value=".1" class="range" />
 			</div>
@@ -1106,7 +1113,7 @@
 		</p>
 	</div>
 
-	<div id="css-editor"></div>
+	<div class="param" id="css-editor"></div>
 </div>
 
 <div class="as as_updates">
@@ -1152,7 +1159,7 @@
 		</div>
 
 		<div id="export" class="shown">
-			<textarea id="area_export" autocorrect="off" spellcheck="false" aria-labelledby="s_export"></textarea>
+			<pre id="export-data"></pre>
 
 			<div>
 				<button id="b_exportcopy" class="inline-btn trn">Copy text</button>
