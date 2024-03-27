@@ -64,11 +64,11 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 function online(): Storage {
 	const sync = {
 		set: function (value: Keyval) {
-			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
-
 			if (typeof value !== 'object') {
 				return console.warn('Value is not an object: ', value)
 			}
+
+			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 
 			for (const [key, val] of Object.entries(value)) {
 				data[key] = val
@@ -110,7 +110,10 @@ function online(): Storage {
 			}
 
 			for (const key of keys) {
-				const val = parse<Partial<Local.Storage>>(localStorage.getItem(key) ?? '')
+				const item = localStorage.getItem(key) ?? ''
+				const isJson = item.startsWith('{') || item.startsWith('[')
+				const val = isJson ? parse<Partial<Local.Storage>>(item) : item
+
 				if (val) {
 					res[key] = val
 				}
