@@ -62,10 +62,13 @@ export async function settingsInit() {
 	const storageUpdate = () => updateExportJSON()
 	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
 
-	if (PLATFORM === 'online') window.addEventListener('storage', storageUpdate)
-	if (PLATFORM !== 'online') chrome.storage.onChanged.addListener(storageUpdate)
+	if (PLATFORM === 'online') {
+		window.addEventListener('storage', storageUpdate)
+	} else {
+		chrome.storage.onChanged.addListener(storageUpdate)
+		window.addEventListener('beforeunload', removeListener, { once: true })
+	}
 
-	window.addEventListener('beforeunload', removeListener, { once: true })
 	document.addEventListener('toggle-settings', toggleSettingsMenu)
 }
 
@@ -541,7 +544,7 @@ function initOptionsEvents() {
 	//
 	// Custom fonts
 
-	paramId('i_customfont').addEventListener('focus', function () {
+	paramId('i_customfont').addEventListener('pointerenter', function () {
 		customFont(undefined, { autocomplete: true })
 	})
 

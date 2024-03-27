@@ -239,10 +239,6 @@ async function initFontSettings(font?: Font) {
 	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
 
 	setWeightSettings(weights)
-
-	if (font?.family) {
-		setAutocompleteSettings()
-	}
 }
 
 async function setAutocompleteSettings(isLangSwitch?: boolean) {

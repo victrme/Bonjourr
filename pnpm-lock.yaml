@@ -15,8 +15,8 @@ dependencies:
     specifier: ^1.10.1
     version: 1.10.1
   prism-code-editor:
-    specifier: ^3.1.2
-    version: 3.1.2
+    specifier: ^3.2.0
+    version: 3.2.0
 
 devDependencies:
   '@types/chrome':
@@ -305,8 +305,8 @@ packages:
     resolution: {integrity: sha512-LxXiztUGc25W+qow3E9O+0a2nJuoS0IwCO0tXzYz9ipSzU3x4Z7jhmYxUXjgmMorAFnlS2LV10gk8uAAC98WzA==}
     dev: false
 
-  /prism-code-editor@3.1.2:
-    resolution: {integrity: sha512-yt+wj7drh6InhiMUDSPUZLAwp7OIbSDJdb6RPG+UYIbrefyfH3EWr3SFBKbVO9vfQ+ze8eFHgcnbg8bJDn02FA==}
+  /prism-code-editor@3.2.0:
+    resolution: {integrity: sha512-/xr703VeqgiGnDjppy4CNgwDF1ofN6ubxfwHFeNMzwlK6p/TbZRgoki8dlWlrAVPDVf48L8P9oA26+ynj89yRw==}
     dev: false
 
   /user-agent-data-types@0.4.2:

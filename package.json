@@ -2,6 +2,16 @@
 	"name": "bonjourr",
 	"version": "19.2.0",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+	"author": "Victor Azevedo (https://victr.me)",
+	"license": "ISC",
+	"keywords": [
+		"minimalist",
+		"lightweight",
+		"startpage",
+		"homepage",
+		"newtab"
+	],
+	"type": "module",
 	"scripts": {
 		"build": "node build.config.js",
 		"edge": "node build.config.js edge dev",
@@ -9,19 +19,17 @@
 		"firefox": "node build.config.js firefox dev",
 		"safari": "node build.config.js safari dev",
 		"online": "node build.config.js online dev",
-		"translate": "node build.config.js translate && npx prettier ./_locales/**/translations.json --write --log-level silent",
+		"lint": "npx prettier --check .",
+		"format": "npx prettier ./_locales/**/translations.json --write --log-level silent",
+		"translate": "node build.config.js translate && pnpm format",
 		"test": "pnpm --filter tests test",
 		"online:dev": ""
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"type": "module",
 	"dependencies": {
 		"@victr/deepmerge": "^1.3.2",
 		"idb-keyval": "^6.2.1",
 		"pocket-editor": "^1.10.1",
-		"prism-code-editor": "^3.1.2"
+		"prism-code-editor": "^3.2.0"
 	},
 	"devDependencies": {
 		"@types/chrome": "^0.0.263",

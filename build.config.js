@@ -1,7 +1,9 @@
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import fs, { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
+import { extname } from 'node:path'
 import { exec } from 'node:child_process'
 import { argv } from 'node:process'
+import http from 'node:http'
 import esbuild from 'esbuild'
 
 const args = argv.slice(2)
@@ -57,8 +59,14 @@ const paths = {
 
 // Main
 
+console.clear()
+
 if (args.includes('translate')) {
 	updateTranslations()
+}
+
+if ((ENV_DEV || ENV_TEST) && PLATFORM_ONLINE) {
+	liveServer()
 }
 
 if (ENV_DEV && PLATFORMS.includes(platform)) {
@@ -92,7 +100,7 @@ function builder() {
 	console.timeEnd('Built in')
 }
 
-async function watcher() {
+function watcher() {
 	watchTasks('_locales', (filename) => {
 		locales()
 	})
@@ -157,6 +165,7 @@ function scripts() {
 		outfile: output,
 		format: 'iife',
 		bundle: true,
+		sourcemap: ENV_DEV,
 		minifySyntax: ENV_PROD,
 		minifyWhitespace: ENV_PROD,
 		define: {
@@ -177,6 +186,7 @@ function assets() {
 	copyFile(...paths.shared.assets.favicons[512])
 
 	if (PLATFORM_ONLINE) copyDir(...paths.online.screenshots)
+	if (PLATFORM_ONLINE) copyFile(...paths.online.icon)
 	if (PLATFORM_EDGE) copyFile(...paths.edge.favicon)
 	if (!PLATFORM_EDGE) copyFile(...paths.shared.assets.favicons.ico)
 }
@@ -215,6 +225,54 @@ async function watchTasks(path, callback) {
 		callback(filename.replaceAll('\\', '/')) // windows back slashes :(
 		console.timeEnd('Built in')
 	}
+}
+
+function liveServer() {
+	const server = http.createServer()
+	const PORT = 8080
+
+	const contentTypeList = {
+		'.html': 'text/html',
+		'.css': 'text/css',
+		'.js': 'text/javascript',
+		'.ico': 'image/x-icon',
+		'.svg': 'image/svg+xml',
+		'.png': 'image/png',
+	}
+
+	server.listen(PORT, () => {
+		console.log(`Live server: http://127.0.0.1:${PORT}`)
+	})
+
+	server.on('request', (req, res) => {
+		const path = `release/online/${req.url === '/' ? 'index.html' : req.url}`
+		const filePath = new URL(path, import.meta.url)
+
+		fs.access(filePath, fs.constants.F_OK, (err) => {
+			if (err) {
+				res.writeHead(404, { 'Content-Type': 'text/plain' })
+				res.end('Not Found')
+				return
+			}
+
+			fs.readFile(filePath, (err, data) => {
+				if (err) {
+					res.writeHead(500, { 'Content-Type': 'text/html' })
+					res.end('<h1>500 Internal Server Error</h1>')
+					return
+				}
+
+				const contentType = contentTypeList[extname(filePath.toString())]
+
+				res.writeHead(200, {
+					'Content-Type': contentType || 'application/octet-stream',
+					'cache-control': 'no-cache',
+				})
+
+				res.end(data)
+			})
+		})
+	})
 }
 
 function copyDir(...args) {
