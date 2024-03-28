@@ -326,6 +326,7 @@ function userActionsEvents() {
 
 		const type = event?.type
 		const code = (event as KeyboardEvent)?.code
+		const iosClickStart = SYSTEM_OS === 'ios' && event?.type === 'pointerdown'
 
 		if (code === 'Escape' || type === 'mouseenter' || type === 'pointerdown') {
 			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
@@ -334,7 +335,7 @@ function userActionsEvents() {
 			settingsInit()
 		}
 
-		if (code === 'Escape') {
+		if (code === 'Escape' || iosClickStart) {
 			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
 		}
 	}
