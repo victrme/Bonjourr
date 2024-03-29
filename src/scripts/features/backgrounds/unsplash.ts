@@ -313,7 +313,7 @@ function imgCredits(image: Unsplash.Image) {
 	domexif.textContent = exif
 	domlocation.textContent = location
 	domartist.textContent = image.name.slice(0, 1).toUpperCase() + image.name.slice(1)
-	domspacer.textContent = hasLocation ? ' -' : ' '
+	domspacer.textContent = hasLocation ? ' - ' : ' '
 	domrest.textContent = rest
 
 	domlocation.href = `${image.link}?utm_source=Bonjourr&utm_medium=referral`

@@ -25,8 +25,8 @@ import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
-import { highlightText } from 'prism-code-editor/prism'
-import 'prism-code-editor/prism/languages/json'
+// import { highlightText } from 'prism-code-editor/prism'
+// import 'prism-code-editor/prism/languages/json'
 
 import type { Langs } from '../types/langs'
 
@@ -1133,15 +1133,20 @@ export function updateExportJSON(data?: Sync.Storage) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		data.about.browser = PLATFORM
+		const pre = document.getElementById('export-data')
 
-		const parser = new DOMParser()
-		const highlight = highlightText(orderedStringify(data), 'json')
-		const doc = parser.parseFromString(highlight, 'text/html')
-		const nodes = Object.values(doc.body.childNodes)
+		if (pre) {
+			data.about.browser = PLATFORM
+			pre.textContent = orderedStringify(data)
 
-		for (const node of nodes) {
-			document.getElementById('export-data')?.appendChild(node)
+			// const parser = new DOMParser()
+			// const highlight = highlightText(orderedStringify(data), 'json')
+			// const doc = parser.parseFromString(highlight, 'text/html')
+			// const nodes = Object.values(doc.body.childNodes)
+
+			// for (const node of nodes) {
+			// 	pre.appendChild(node)
+			// }
 		}
 	}
 }

@@ -14,10 +14,10 @@ type PopupUpdate = {
 }
 
 const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.2.0'
-const ANNOUNCEMENT_VERSION = ''
+const ANNOUNCEMENT_VERSION = '19.2.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'Syntax highlighted CSS editor, new search bar width option, and improved some options UI !',
+	en: 'New this update: Syntax highlighted CSS editor, search bar width option, and improved some options UI !',
 }
 
 const ANNOUNCEMENT_BTN_TRNS = {
