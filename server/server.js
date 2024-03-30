@@ -11,7 +11,7 @@ let sessions = []
 
 const ARGON2ID_SECRET = Buffer.from(process.env.HASH_SECRET ?? 'Y2hhbmdlbWU=' /*-> changme*/, 'base64')
 const ARGON2ID_CONFIG = {
-	type: argon2.argon2d,
+	type: argon2.argon2id,
 	memoryCost: 2 ** 16,
 	hashLength: 64,
 	secret: ARGON2ID_SECRET,
