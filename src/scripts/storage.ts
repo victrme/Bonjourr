@@ -214,4 +214,99 @@ function webext(): Storage {
 	}
 }
 
-export default PLATFORM === 'online' ? online() : webext()
+function remoteConfig(configUrl: string): Storage {
+	let inMemoryStorage: any
+
+	const sync = {
+		set: (value: Keyval) => {
+			const data = verifyDataAsSync(inMemoryStorage ?? {})
+
+			if (typeof value !== 'object') {
+				return console.warn('Value is not an object: ', value)
+			}
+
+			for (const [key, val] of Object.entries(value)) {
+				data[key] = val
+			}
+
+			inMemoryStorage = data ?? {}
+			window.dispatchEvent(new Event('storage'))
+		},
+
+		get: async (_?: string | string[]) => {
+			if (inMemoryStorage) return inMemoryStorage
+			const req = await fetch(configUrl, { headers: { Accept: 'application/json' } })
+			const json = await req.json()
+			const config = verifyDataAsSync((json as Sync.Storage) ?? {})
+			inMemoryStorage = config
+			return config
+		},
+
+		remove: (key: string) => {
+			const data = verifyDataAsSync(inMemoryStorage ?? {})
+			delete data[key]
+			inMemoryStorage = data ?? {}
+		},
+
+		clear: () => {
+			inMemoryStorage = {}
+		},
+	}
+
+	const local = {
+		set: (value: Keyval) => {
+			const [key, val] = Object.entries(value)[0]
+
+			return localStorage.setItem(key, JSON.stringify(val))
+		},
+
+		get: async (keys?: string | string[]) => {
+			const res: Keyval = {}
+
+			if (keys === undefined) {
+				keys = [...Object.keys(localStorage).filter((k) => k !== 'bonjourr')]
+			} //
+			else if (typeof keys === 'string') {
+				keys = [keys]
+			}
+
+			for (const key of keys) {
+				const val = parse<Partial<Local.Storage>>(localStorage.getItem(key) ?? '')
+				if (val) {
+					res[key] = val
+				}
+			}
+
+			return res as Local.Storage
+		},
+
+		remove: (key: string) => {
+			return localStorage.removeItem(key)
+		},
+
+		clear: () => {
+			for (const key of Object.keys(LOCAL_DEFAULT)) {
+				localStorage.removeItem(key)
+			}
+		},
+	}
+
+	const init = async () => {
+		return {
+			sync: verifyDataAsSync(await sync.get()),
+			local: verifyDataAsLocal(await local.get()),
+		}
+	}
+
+	return {
+		sync,
+		local,
+		init,
+	}
+}
+
+export default PLATFORM === 'online'
+	? document.getElementById('login-to-settings')
+		? remoteConfig('/api/config')
+		: online()
+	: webext()

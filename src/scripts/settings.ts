@@ -26,6 +26,7 @@ import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } 
 
 import type { Langs } from '../types/langs'
 import { loadCallbacks } from './utils/onsettingsload'
+import errorMessage from './utils/errormessage'
 
 export async function settingsInit() {
 	const data = await storage.sync.get()
@@ -662,10 +663,52 @@ function initOptionsEvents() {
 	})
 }
 
+async function handleUpdateToServer() {
+	const storageSession = localStorage.getItem('session')
+	if (!storageSession) return closeSettingsMenu()
+	const session = JSON.parse(storageSession)
+
+	const domUpdateMessage = document.getElementById('update-to-server-message')!
+	domUpdateMessage.style.color = 'var(--color-light-text)'
+	domUpdateMessage.innerText = 'Loading...'
+
+	const res = await fetch('/api/config', {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${session.token}`,
+		},
+		body: JSON.stringify(await storage.sync.get()),
+	})
+
+	domUpdateMessage.innerText = await res.text()
+	domUpdateMessage.style.color = `var(--color-${res.status === 200 ? 'blue' : 'red'})`
+}
+
+function handleLogout() {
+	toggleSettingsMenu()
+	localStorage.removeItem('session')
+	document.location.hash = ''
+}
+
 function initSettingsEvents() {
 	const domsettings = document.getElementById('settings')
 	const domsuggestions = document.getElementById('sb-suggestions')
+
+	const domLoginToSettings = document.getElementById('login-to-settings') as HTMLDialogElement
+	const domLoginForm = document.getElementById('login-form')
+	const domLoginUsername = document.getElementById('login-username') as HTMLInputElement
+	const domLoginPassword = document.getElementById('login-password') as HTMLInputElement
+	const domLoginMessage = document.getElementById('login-form-message')!
+
+	const domUpdateToServer = document.getElementById('update-to-server')
+	const domLogout = document.getElementById('logout')
+
+	const domShowSettings = document.getElementById('showSettings')
 	const isOnline = PLATFORM === 'online'
+
+	const onlineRemoteConfigFeatureEnabled = !!domLoginToSettings
+
 	let isMousingDownOnInput = false
 
 	// On settings changes, update export code
@@ -681,9 +724,70 @@ function initSettingsEvents() {
 
 	document.body.addEventListener('mousedown', detectTargetAsInputs)
 	document.getElementById('skiptosettings')?.addEventListener('click', skipToSettings)
-	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
 	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
+	domUpdateToServer?.addEventListener('click', handleUpdateToServer)
+	domLogout?.addEventListener('click', handleLogout)
+
+	if (domShowSettings && onlineRemoteConfigFeatureEnabled) {
+		const handleLocationHash = () => {
+			if (document.location.hash === '#admin') {
+				const session = localStorage.getItem('session')
+				if (session) {
+					const sessionParsed = JSON.parse(session)
+					if (sessionParsed.expires <= Date.now()) {
+						closeSettingsMenu()
+						domLoginToSettings.show()
+						return
+					}
+					openSettingsMenu()
+				} else {
+					closeSettingsMenu()
+					domLoginToSettings.show()
+				}
+			} else {
+				closeSettingsMenu()
+				domLoginToSettings.close()
+			}
+		}
+
+		domShowSettings.hidden = true
+
+		handleLocationHash()
+
+		window.addEventListener('hashchange', handleLocationHash)
+
+		domLoginForm!.addEventListener('submit', async (ev) => {
+			ev.preventDefault()
+			const password = domLoginPassword.value
+			domLoginPassword.value = ''
+			try {
+				const res = await fetch('/api/login', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ username: domLoginUsername.value, password: password }),
+				})
+				const resJson = await res.json()
+
+				if (res.status !== 200) {
+					console.error(resJson.error)
+					domLoginMessage.innerText = resJson.error
+					return
+				}
+				domLoginMessage.innerText = ''
+
+				domLoginToSettings.close()
+				localStorage.setItem('session', JSON.stringify(resJson))
+				openSettingsMenu()
+			} catch (err) {
+				console.error(err)
+			}
+		})
+	} else {
+		domShowSettings?.addEventListener('click', toggleSettingsMenu)
+	}
 	document.addEventListener('keydown', async function (event) {
 		if (event.altKey && event.code === 'KeyS') {
 			console.clear()
@@ -691,7 +795,18 @@ function initSettingsEvents() {
 			console.log(await storage.sync.get())
 		}
 
+		if (event.code === 'F2' && onlineRemoteConfigFeatureEnabled) {
+			event.stopImmediatePropagation()
+			event.preventDefault()
+
+			document.location.hash = document.location.hash === '#admin' ? '' : '#admin'
+		}
+
 		if (event.code === 'Escape') {
+			if (onlineRemoteConfigFeatureEnabled) {
+				if (document.location.hash === '#admin') document.location.hash = ''
+				return
+			}
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
 				return
@@ -729,7 +844,7 @@ function initSettingsEvents() {
 	})
 
 	document.body.addEventListener('click', function (event) {
-		if (isMousingDownOnInput) {
+		if (isMousingDownOnInput || document.location.hash === '#admin') {
 			return
 		}
 
@@ -809,6 +924,20 @@ function initSettingsEvents() {
 //
 //
 //
+
+function openSettingsMenu() {
+	const isOpen = document.getElementById('settings')?.classList.contains('shown')
+	if (isOpen) return
+
+	toggleSettingsMenu()
+}
+
+function closeSettingsMenu() {
+	const isOpen = document.getElementById('settings')?.classList.contains('shown')
+	if (!isOpen) return
+
+	toggleSettingsMenu()
+}
 
 function toggleSettingsMenu() {
 	const domsettings = document.getElementById('settings')

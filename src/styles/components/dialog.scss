@@ -43,4 +43,28 @@ dialog {
 			}
 		}
 	}
+
+	input {
+		color: var(--color-text);
+		width: 100%;
+		height: 2.3em;
+		padding: 0 1em;
+		border: none;
+		border-radius: 8px;
+		box-sizing: border-box;
+		background-color: transparent;
+		transition: background-color 0.1s, opacity 0.1s;
+
+		&::placeholder {
+			color: var(--color-dialog-input-text);
+		}
+
+		&:focus {
+			opacity: 1;
+			color: var(--color-text);
+			background-color: var(--color-dialog-input-bg);
+			outline: 3px solid #007aff66;
+			transition: background-color 0.1s;
+		}
+	}
 }

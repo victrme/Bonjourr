@@ -10,7 +10,8 @@
 		"online": "gulp online",
 		"build": "gulp build",
 		"test": "pnpm --filter tests test",
-		"online:dev": "concurrently \"http-server release/online -c-1\" \"gulp online\""
+		"online:dev": "concurrently \"http-server release/online -c-1\" \"gulp online\"",
+		"online-server": "gulp onlineServer"
 	},
 	"keywords": [],
 	"author": "",

@@ -1,0 +1,20 @@
+#login-to-settings {
+	z-index: 10;
+
+	form {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5em;
+	}
+}
+
+#login-form-message {
+	color: var(--color-red);
+}
+
+#update-to-server-message {
+	padding: 0.25em;
+	border-radius: 8px;
+	background-color: var(--color-settings);
+}

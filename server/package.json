@@ -1,0 +1,12 @@
+{
+	"name": "server",
+	"version": "1.0.0",
+	"description": "",
+	"private": true,
+	"dependencies": {
+		"argon2": "^0.40.1",
+		"better-sqlite3": "^9.4.3",
+		"body-parser": "^1.20.2",
+		"express": "^4.19.2"
+	}
+}
