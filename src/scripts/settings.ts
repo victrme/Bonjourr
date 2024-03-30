@@ -844,7 +844,7 @@ function initSettingsEvents() {
 	})
 
 	document.body.addEventListener('click', function (event) {
-		if (isMousingDownOnInput || document.location.hash === '#admin') {
+		if (isMousingDownOnInput || (document.location.hash === '#admin' && onlineRemoteConfigFeatureEnabled)) {
 			return
 		}
 
