@@ -221,7 +221,7 @@ app.use(express.static('./client'))
 app.use(bodyParser.json({ type: 'application/json' }))
 
 app.get('/api/config', (_, res) => {
-	res.sendFile(path.resolve(__dirname, './config.json'))
+	res.sendFile(CONFIG_PATH)
 })
 
 app.post('/api/login', async (req, res) => {
@@ -247,7 +247,7 @@ app.put('/api/config', async (req, res) => {
 		return
 	}
 	try {
-		await fs.writeFile(path.resolve(__dirname, './config.json'), JSON.stringify(verifyConfig(req.body)))
+		await fs.writeFile(CONFIG_PATH, JSON.stringify(verifyConfig(req.body)))
 		res.send('Configuration updated.')
 	} catch (err) {
 		console.error(err)
