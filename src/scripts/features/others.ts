@@ -15,8 +15,8 @@ export function favicon(val?: string, isEvent?: true) {
 	}
 
 	if (isEvent) {
-		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
-		eventDebounce({ favicon: isEmoji ? val : '' })
+		const isEmojiOrShape = val?.match(/[\p{Emoji}\u25A0-\u25FF]/gu) && !val?.match(/[0-9a-z]/g)
+		eventDebounce({ favicon: isEmojiOrShape ? val : '' })
 		document.getElementById('head-favicon')?.remove()
 	}
 
