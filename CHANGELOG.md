@@ -7,6 +7,7 @@
     -   Weather icon to SVG
     -   Only load settings menu on user action
     -   Never load links icons when using text style (#327)
+    -   GPU acceleration on background for better Safari performance
 -   Changes:
     -   Simplified Notes default text
     -   Weather & credit can be translated as a full sentence (#317)
