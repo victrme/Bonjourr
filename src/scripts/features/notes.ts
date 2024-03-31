@@ -13,7 +13,6 @@ type NotesEvent = {
 }
 
 const container = document.getElementById('notes_container')
-let editor: any
 
 export default function notes(init?: Sync.Notes, event?: NotesEvent) {
 	if (event) {
@@ -61,17 +60,16 @@ async function updateNotes(event: NotesEvent) {
 
 function initNotes(init: Sync.Notes) {
 	document.getElementById('pocket-editor')?.remove()
-	editor = pocketEditor('notes_container')
 
 	handleAlign(init.align)
 	handleWidth(init.width)
 	handleOpacity(init.opacity)
 	handleToggle(init.on)
 
-	editor.set(typeof init.text === 'string' ? init.text : translateNotesText())
+	init.text = init.text ?? translateNotesText()
 
-	editor.oninput(() => {
-		updateNotes({ text: editor.get() })
+	pocketEditor('notes_container', init.text).oninput((content) => {
+		updateNotes({ text: content })
 	})
 }
 
