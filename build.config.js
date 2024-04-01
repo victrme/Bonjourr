@@ -50,7 +50,7 @@ const paths = {
 		icon: ['src/assets/apple-touch-icon.png', 'release/online/src/assets/apple-touch-icon.png'],
 		manifest: ['src/manifests/manifest.webmanifest', 'release/online/manifest.webmanifest'],
 		screenshots: ['src/assets/screenshots', 'release/online/src/assets/screenshots'],
-		serviceworker: ['src/scripts/services/service-worker.js', 'release/online/src/scripts/service-worker.js'],
+		serviceworker: ['src/scripts/services/service-worker.js', 'release/online/service-worker.js'],
 	},
 	edge: {
 		favicon: ['src/assets/monochrome.png', 'release/edge/src/assets/monochrome.png'],
@@ -202,8 +202,11 @@ function locales() {
 
 	for (const lang of langs) {
 		mkdirSync(output + lang, { recursive: true })
-		copyFile(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
 		copyFile(`${input}${lang}/translations.json`, `${output}${lang}/translations.json`)
+
+		if (PLATFORM_EXT) {
+			copyFile(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
+		}
 	}
 }
 
