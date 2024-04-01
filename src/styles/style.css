@@ -65,6 +65,13 @@
 	grid-template-areas: var(--grid);
 }
 
+@supports not (min-height: 100dvh) {
+	#background_overlay,
+	#interface {
+		min-height: 100vh;
+	}
+}
+
 #interface.pushed {
 	transform: translateX(-100px);
 }
