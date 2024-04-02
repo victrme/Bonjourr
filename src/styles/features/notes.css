@@ -1,0 +1,94 @@
+@import 'pocket-editor/style.css';
+
+#notes_container {
+	width: 100%;
+	max-width: var(--notes-width);
+}
+
+#notes_container.hidden {
+	display: none;
+}
+
+#notes_container.opaque #pocket-editor {
+	color: #222;
+}
+
+#notes_container.opaque #pocket-editor .line.sel {
+	color: #222;
+	background-color: rgba(34, 34, 34, 0.1333333333);
+}
+
+#notes_container.center-align #pocket-editor {
+	text-align: center;
+}
+
+#notes_container.right-align #pocket-editor {
+	text-align: right;
+}
+
+#pocket-editor {
+	color: #fff;
+	font-size: 1.3em;
+	padding: 1.2em;
+	min-width: 0;
+	text-align: initial;
+	text-shadow: none;
+	border-radius: 0.7em;
+	line-height: 1.5em;
+	letter-spacing: initial;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	border: 1px solid rgba(255, 255, 255, 0.075);
+	background-color: rgba(255, 255, 255, var(--notes-background-alpha));
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+}
+
+#pocket-editor .line.sel {
+	color: #fff;
+	background-color: rgba(255, 255, 255, 0.1333333333);
+}
+
+#pocket-editor:empty:after {
+	content: attr(placeholder);
+	opacity: 0.5;
+}
+
+#pocket-editor .line:first-child h1,
+#pocket-editor .line:first-child h2,
+#pocket-editor .line:first-child h3 {
+	margin-top: 0;
+}
+
+#pocket-editor h1,
+#pocket-editor h2,
+#pocket-editor h3,
+#pocket-editor h4,
+#pocket-editor h5,
+#pocket-editor h6 {
+	line-height: initial;
+	margin: 0.5em 0;
+}
+
+#pocket-editor input[type='checkbox'] {
+	width: calc(var(--font-size) * 1.3);
+	height: calc(var(--font-size) * 1.3);
+	margin: 0.25em 0.1em;
+}
+
+#pocket-editor ul {
+	margin: 0;
+	padding-left: 1.6em;
+}
+
+#pocket-editor li {
+	list-style: inherit;
+}
+
+#pocket-editor a {
+	color: inherit;
+}
+
+#pocket-editor a.hidden {
+	resize: none;
+	display: none;
+}

@@ -18,8 +18,8 @@ declare namespace Unsplash {
 		link: string
 		username: string
 		name: string
-		city: string
-		country: string
+		city: string | null
+		country: string | null
 		color: string
 		exif?: {
 			make: string

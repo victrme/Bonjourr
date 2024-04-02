@@ -1,6 +1,7 @@
 import notes from './features/notes'
 import clock from './features/clock'
 import weather from './features/weather'
+import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
@@ -12,11 +13,11 @@ import { settingsInit } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import storage, { getSyncDefaults } from './storage'
+import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { traduction, tradThis, setTranslationCache } from './utils/translations'
-import { stringMaxSize, freqControl, linksDataMigration } from './utils'
-import { eventDebounce } from './utils/debounce'
+import { freqControl, linksDataMigration } from './utils'
+import { traduction, setTranslationCache } from './utils/translations'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
@@ -25,6 +26,7 @@ type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
 const dominterface = document.getElementById('interface') as HTMLDivElement
 const features: FeaturesToWait[] = ['clock', 'links']
+let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
 //
@@ -84,7 +86,10 @@ async function startup() {
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
-	onSettingsLoad(() => {
+	onInterfaceDisplay(() => {
+		document.body.classList.remove('init')
+
+		userActionsEvents()
 		setPotatoComputerMode()
 		interfacePopup({
 			old: OLD_VERSION,
@@ -93,6 +98,12 @@ async function startup() {
 			announce: sync.announcements,
 		})
 	})
+
+	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
+		if (!local?.operaExplained) {
+			return operaExtensionExplainer()
+		}
+	}
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
@@ -130,10 +141,204 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	delete data.reviewPopup
 	delete data.usdate
 
+	// 19.2.0
+
+	delete data.cssHeight
+	storage.sync.remove('cssHeight')
+
 	data = linksDataMigration(data)
 	data.about = SYNC_DEFAULT.about
 
 	return data
+}
+
+export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
+	if (data) {
+		if (data?.font?.family) features.push('fonts')
+		if (data?.quotes?.on) features.push('quotes')
+		return
+	} else if (!ready) {
+		return
+	}
+
+	const index = features.indexOf(ready)
+
+	if (index !== -1) {
+		features.splice(index, 1)
+	} else {
+		return
+	}
+
+	if (features.length > 0) {
+		return
+	}
+
+	loadtime = Math.min(performance.now() - loadtime, 400)
+	loadtime = loadtime > 33 ? loadtime : 0
+	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
+	document.body.classList.remove('loading')
+
+	setTimeout(() => {
+		onInterfaceDisplay()
+	}, Math.max(333, loadtime))
+}
+
+function onInterfaceDisplay(callback?: () => undefined): void {
+	if (callback) {
+		interfaceDisplayCallback = callback
+	} else {
+		interfaceDisplayCallback()
+	}
+}
+
+function userActionsEvents() {
+	const toggleSettingsMenu = () => document.dispatchEvent(new Event('toggle-settings'))
+	const domsuggestions = document.getElementById('sb-suggestions')
+	const domshowsettings = document.querySelector('#showSettings')
+	let isMousingDownOnInput = false
+
+	document.body.addEventListener('mousedown', detectTargetAsInputs)
+	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
+	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
+
+	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
+	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
+	document.body.addEventListener('keydown', settingsFirstLoad)
+
+	document.addEventListener('click', clickUserActions)
+	document.addEventListener('keydown', keydownUserActions)
+
+	async function keydownUserActions(event: KeyboardEvent) {
+		if (event.altKey && event.code === 'KeyS') {
+			console.clear()
+			console.log(localStorage)
+			console.log(await storage.sync.get())
+		}
+
+		if (event.code === 'Escape') {
+			if (domsuggestions?.classList.contains('shown')) {
+				domsuggestions?.classList.remove('shown')
+				return
+			}
+
+			const open = isOpen()
+
+			if (open.contextmenu) {
+				document.dispatchEvent(new Event('close-edit'))
+			}
+			//
+			else if (open.settings) {
+				toggleSettingsMenu()
+			}
+			//
+			else if (open.selectall) {
+				document.dispatchEvent(new Event('remove-select-all'))
+			}
+			//
+			else if (open.folder) {
+				document.dispatchEvent(new Event('close-folder'))
+			}
+			//
+			else {
+				toggleSettingsMenu()
+			}
+
+			return
+		}
+
+		if (event.code === 'Tab') {
+			document.body.classList.toggle('tabbing', true)
+			return
+		}
+	}
+
+	async function clickUserActions(event: MouseEvent) {
+		if (isMousingDownOnInput) {
+			return
+		}
+
+		const open = isOpen()
+		const path = (event.composedPath() as Element[]) ?? [document.body]
+		const pathIds = path.map((el) => (el as HTMLElement).id)
+
+		const on = {
+			link: path.some((el) => el?.classList?.contains('block')),
+			body: (path[0] as HTMLElement).tagName === 'BODY',
+			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			interface: pathIds.includes('interface'),
+		}
+
+		if (document.body.classList.contains('tabbing')) {
+			document.body?.classList.toggle('tabbing', false)
+		}
+
+		if ((on.body || on.interface) === false) {
+			return
+		}
+
+		if (open.contextmenu) {
+			document.dispatchEvent(new Event('close-edit'))
+		}
+		//
+		else if (open.settings) {
+			toggleSettingsMenu()
+		}
+		//
+		else if (open.selectall && !on.link) {
+			document.dispatchEvent(new Event('remove-select-all'))
+		}
+		//
+		else if (open.folder && !on.folder) {
+			document.dispatchEvent(new Event('close-folder'))
+		}
+	}
+
+	function isOpen() {
+		return {
+			settings: !!document.getElementById('settings')?.classList.contains('shown'),
+			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
+			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
+			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
+		}
+	}
+
+	function detectTargetAsInputs(event: Event) {
+		const path = event.composedPath() as Element[]
+		const tagName = path[0]?.tagName ?? ''
+		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
+	}
+
+	function closeSettingsOnMoveOpen() {
+		setTimeout(() => {
+			const elementmover = document.getElementById('element-mover')
+			const moverHasOpened = elementmover?.classList.contains('hidden') === false
+
+			if (moverHasOpened) {
+				toggleSettingsMenu()
+			}
+		}, 20)
+	}
+
+	function settingsFirstLoad(event?: Event) {
+		if (document.getElementById('settings')) {
+			return
+		}
+
+		const type = event?.type
+		const code = (event as KeyboardEvent)?.code
+		const iosClickStart = SYSTEM_OS === 'ios' && event?.type === 'pointerdown'
+
+		if (code === 'Escape' || type === 'mouseenter' || type === 'pointerdown') {
+			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
+			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
+			document.body.removeEventListener('keydown', settingsFirstLoad)
+			settingsInit()
+		}
+
+		if (code === 'Escape' || iosClickStart) {
+			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
+		}
+	}
 }
 
 function onlineAndMobile() {
@@ -244,6 +449,15 @@ async function setPotatoComputerMode() {
 		return
 	}
 
+	const fourHours = 1000 * 60 * 60 * 4
+	const isPotato = localStorage.potato === 'yes'
+	const expirationTime = Date.now() - parseInt(localStorage.lastPotatoCheck ?? '0')
+
+	if (expirationTime < fourHours) {
+		document.body.classList.toggle('potato', isPotato)
+		return
+	}
+
 	const canvas = document.createElement('canvas')
 	const gl = canvas?.getContext('webgl')
 	const debugInfo = gl?.getExtension('WEBGL_debug_renderer_info')
@@ -255,149 +469,27 @@ async function setPotatoComputerMode() {
 
 	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0) + ''
 	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0) + ''
+	const detectedPotato = vendor.includes('Google') && renderer.includes('SwiftShader')
 
-	if (vendor.includes('Google') && renderer.includes('SwiftShader')) {
-		document.body.classList.add('potato')
-	}
+	localStorage.potato = detectedPotato ? 'yes' : 'no'
+	localStorage.lastPotatoCheck = Date.now()
+	document.body.classList.toggle('potato', detectedPotato)
 }
 
-export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
-	if (data) {
-		if (data?.font?.family) features.push('fonts')
-		if (data?.quotes?.on) features.push('quotes')
-		return
-	} else if (!ready) {
-		return
-	}
+function operaExtensionExplainer() {
+	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
+	const doc = template.content.cloneNode(true) as Document
+	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
+	const button = doc.getElementById('b_opera-explained')
 
-	const index = features.indexOf(ready)
+	document.body.classList.add('loading')
+	document.body.appendChild(dialog)
+	dialog.showModal()
+	setTimeout(() => dialog.classList.add('shown'))
 
-	if (index !== -1) {
-		features.splice(index, 1)
-	} else return
-
-	if (features.length > 0) {
-		return
-	}
-
-	loadtime = Math.min(performance.now() - loadtime, 400)
-	loadtime = loadtime > 33 ? loadtime : 0
-	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
-	document.body.classList.remove('loading')
-
-	setTimeout(() => {
-		document.body.classList.remove('init')
-		settingsInit()
-	}, loadtime + 400)
-}
-
-//
-//
-//
-
-export function favicon(val?: string, isEvent?: true) {
-	function createFavicon(emoji?: string) {
-		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
-		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
-
-		domfavicon.href = emoji ? svg : defaulticon
-	}
-
-	if (isEvent) {
-		const isEmoji = val?.match(/\p{Emoji}/gu) && !val?.match(/[0-9a-z]/g)
-		eventDebounce({ favicon: isEmoji ? val : '' })
-		document.getElementById('head-favicon')?.remove()
-	}
-
-	if (BROWSER === 'firefox') {
-		setTimeout(() => createFavicon(val), 0)
-	} else {
-		createFavicon(val)
-	}
-}
-
-export function tabTitle(val = '', isEvent?: true) {
-	document.title = stringMaxSize(val, 80) || tradThis('New tab')
-
-	if (isEvent) {
-		eventDebounce({ tabtitle: stringMaxSize(val, 80) })
-	}
-}
-
-export function pageControl(val: { width?: number; gap?: number }, isEvent?: true) {
-	if (val.width) {
-		document.documentElement.style.setProperty('--page-width', (val.width ?? SYNC_DEFAULT.pagewidth) + 'px')
-		if (isEvent) eventDebounce({ pagewidth: val.width })
-	}
-
-	if (typeof val.gap === 'number') {
-		document.documentElement.style.setProperty('--page-gap', (val.gap ?? SYNC_DEFAULT.pagegap) + 'em')
-		if (isEvent) eventDebounce({ pagegap: val.gap })
-	}
-}
-
-export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
-	if (isEvent) {
-		storage.sync.set({ dark: value })
-	}
-
-	if (value === 'auto') {
-		const now = Date.now()
-		const { sunrise, sunset } = suntime()
-		const choice = now <= sunrise || now > sunset ? 'dark' : 'light'
-		document.documentElement.dataset.theme = choice
-	}
-
-	if (value === 'disable') document.documentElement.dataset.theme = 'light'
-	if (value === 'enable') document.documentElement.dataset.theme = 'dark'
-	if (value === 'system') document.documentElement.dataset.theme = ''
-}
-
-export function textShadow(init?: number, event?: number) {
-	const val = init ?? event
-	document.documentElement.style.setProperty('--text-shadow-alpha', (val ?? 0.2)?.toString())
-
-	if (typeof event === 'number') {
-		eventDebounce({ textShadow: val })
-	}
-}
-
-export function customCss(init?: string, event?: { styling: string }) {
-	const styleHead = document.getElementById('styles') as HTMLStyleElement
-	let skipFirstResize = true
-
-	if (event) {
-		if (event?.styling !== undefined) {
-			const val = stringMaxSize(event.styling, 8080)
-			styleHead.textContent = val
-			eventDebounce({ css: val })
-		}
-
-		return
-	}
-
-	if (init) {
-		styleHead.textContent = init
-	}
-
-	onSettingsLoad(function saveHeightOnResize() {
-		const observer = new ResizeObserver((entry) => {
-			if (skipFirstResize) {
-				skipFirstResize = false
-				return
-			}
-
-			const rect = entry[0].contentRect
-			eventDebounce({ cssHeight: Math.round(rect.height + rect.top * 2) })
-		})
-
-		observer.observe(document.getElementById('cssEditor') as HTMLElement)
+	button?.addEventListener('click', () => {
+		storage.local.set({ operaExplained: true })
+		document.body.classList.remove('loading')
+		dialog.close()
 	})
 }
-
-// Unfocus address bar on chromium
-// https://stackoverflow.com/q/64868024
-// if (window.location.search !== '?r=1') {
-// 	window.location.assign('index.html?r=1')
-// }

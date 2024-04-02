@@ -5,28 +5,76 @@ import pocketEditor from 'pocket-editor'
 import langList from '../langs'
 import storage from '../storage'
 
-type NotesEvent = { is: 'align' | 'width' | 'opacity' | 'change'; value: string }
+type NotesEvent = {
+	text?: string
+	align?: string
+	width?: string
+	opacity?: string
+}
 
 const container = document.getElementById('notes_container')
-let editor: any
 
-function translateNotesText() {
-	let lang = getLang()
+export default function notes(init?: Sync.Notes, event?: NotesEvent) {
+	if (event) {
+		updateNotes(event)
+		return
+	}
 
-	if (!(lang && lang in langList)) lang = 'en'
+	if (init) {
+		init.on ? initNotes(init) : onSettingsLoad(() => initNotes(init))
+	}
+}
 
-	const or = tradThis('or')
-	const edit = tradThis('Edit this note')
-	const titles = tradThis('to create titles')
-	const lists = tradThis('to add a list or checkbox')
+async function updateNotes(event: NotesEvent) {
+	const notes = (await storage.sync.get('notes'))?.notes
 
-	const lines = [`## ${edit} !\n\n`, `[ ] "# ", "## " ${or} "### " ${titles}\n`, `[ ] "- " ${or} "[ ] " ${lists}`]
+	if (!notes) {
+		return
+	}
 
-	return lines.join('')
+	if (event?.text !== undefined) {
+		notes.text = event.text
+	}
+
+	if (event?.align !== undefined) {
+		notes.align = event.align
+		handleAlign(notes.align)
+	}
+
+	if (event?.width !== undefined) {
+		notes.width = parseInt(event.width)
+		handleWidth(notes.width)
+	}
+
+	if (event?.opacity !== undefined) {
+		notes.opacity = parseFloat(event.opacity)
+		handleOpacity(notes.opacity)
+	}
+
+	eventDebounce({ notes })
+}
+
+//
+//	Funcs
+//
+
+function initNotes(init: Sync.Notes) {
+	document.getElementById('pocket-editor')?.remove()
+
+	handleAlign(init.align)
+	handleWidth(init.width)
+	handleOpacity(init.opacity)
+	handleToggle(init.on)
+
+	init.text = init.text ?? translateNotesText()
+
+	pocketEditor('notes_container', init.text).oninput((content) => {
+		updateNotes({ text: content })
+	})
 }
 
 function handleToggle(state: boolean) {
-	if (container) container?.classList.toggle('hidden', !state)
+	container?.classList.toggle('hidden', !state)
 }
 
 function handleAlign(value: string) {
@@ -47,64 +95,16 @@ function handleOpacity(value: number) {
 	}
 }
 
-async function updateNotes(event: NotesEvent) {
-	const notes = (await storage.sync.get('notes'))?.notes
+function translateNotesText() {
+	let lang = getLang()
 
-	if (!notes) {
-		return
+	if (!(lang && lang in langList)) {
+		lang = 'en'
 	}
 
-	switch (event?.is) {
-		case 'change': {
-			notes.text = event.value
-			break
-		}
+	const line1 = tradThis('Edit this note')
+	const line2 = tradThis('With markdown titles, lists, and checkboxes')
+	const line3 = tradThis('Learn more on <url>')
 
-		case 'align': {
-			handleAlign(event.value)
-			notes.align = event.value as typeof notes.align
-			break
-		}
-
-		case 'width': {
-			notes.width = parseInt(event.value)
-			handleWidth(notes.width)
-			break
-		}
-
-		case 'opacity': {
-			handleOpacity(parseFloat(event.value))
-			notes.opacity = parseFloat(event.value)
-			break
-		}
-	}
-
-	eventDebounce({ notes })
-}
-
-function initNotes(init: Sync.Notes) {
-	editor = pocketEditor('notes_container')
-
-	handleAlign(init.align)
-	handleWidth(init.width)
-	handleOpacity(init.opacity)
-	handleToggle(init.on)
-
-	editor.set(typeof init.text === 'string' ? init.text : translateNotesText())
-
-	editor.oninput(() => {
-		updateNotes({ is: 'change', value: editor.get() })
-	})
-}
-
-export default function notes(init?: Sync.Notes, event?: NotesEvent) {
-	if (event) {
-		updateNotes(event)
-		return
-	}
-
-	if (init) {
-		document.getElementById('pocket-editor')?.remove()
-		init.on ? initNotes(init) : onSettingsLoad(() => initNotes(init))
-	}
+	return `## ${line1} !\n\n[ ] ${line2}\n\n[ ] ${line3.replace('<url>', 'https://bonjourr.fr/docs/overview')}`
 }

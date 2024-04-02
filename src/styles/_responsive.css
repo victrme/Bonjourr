@@ -1,0 +1,208 @@
+@media (hover: none) and (pointer: coarse) {
+	.b_removethumb {
+		opacity: 1;
+	}
+
+	#showSettings {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
+	}
+
+	#showSettings:active {
+		filter: brightness(0.5);
+	}
+}
+
+@media screen and (max-height: 900px) {
+	body {
+		font-size: 13px;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	html,
+	body {
+		font-size: 12px;
+		overflow-y: auto;
+	}
+
+	#editlink {
+		max-width: 80%;
+	}
+
+	#link-list {
+		padding: 2em;
+	}
+
+	#element-mover {
+		font-size: 12px;
+	}
+
+	#interface {
+		padding-bottom: 77px;
+	}
+
+	body #interface.pushed {
+		transform: none;
+	}
+
+	#quotes_container {
+		width: 90vw;
+	}
+
+	aside {
+		top: 100lvh; /* kiwi browser fix as dvh doesn't work (?) */
+		right: auto;
+		left: 0%;
+		bottom: -100dvh;
+		height: 100dvh;
+		width: 100%;
+		font-size: 1.2em;
+		padding: 0px;
+		border-radius: 1em;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	@supports not (min-height: 100dvh) {
+		aside {
+			top: 100vh;
+			bottom: -100vh;
+			height: 100dvh;
+		}
+	}
+
+	aside.shown {
+		transform: translateX(0) translateY(-75vh);
+	}
+
+	aside form > div {
+		flex-direction: column;
+	}
+
+	#i_addlink-title,
+	#i_addlink-url,
+	#i_ccode,
+	#i_city {
+		width: 100%;
+	}
+
+	#f_location {
+		width: 155px;
+	}
+
+	#location_options.shown {
+		max-height: 100px;
+	}
+
+	#grid-layout-wrapper {
+		display: none;
+	}
+
+	#settings-footer {
+		padding-bottom: 25vh;
+	}
+
+	/* Tooltip (?) centered when span wrap */
+	.as_collection {
+		max-height: 140px;
+	}
+
+	.as_collection .wrapper span {
+		align-items: center;
+	}
+
+	#mobile-drag-zone {
+		display: block;
+	}
+
+	#mobile-drag-zone ~ h2:first-of-type {
+		margin-top: 0;
+	}
+
+	#cssEditor,
+	.param {
+		margin-right: 12px;
+		margin-left: 12px;
+	}
+
+	#cssEditor {
+		width: calc(100% - 24px);
+	}
+
+	body .prism-code-editor {
+		padding: unset;
+	}
+
+	#creditContainer {
+		width: 100%;
+		padding-right: 7em;
+		padding-left: 1.5em;
+	}
+
+	#credit {
+		display: block;
+		line-height: 14px;
+	}
+
+	#credit a,
+	#credit p,
+	#credit span {
+		font-size: 11px;
+	}
+
+	#popup {
+		display: none;
+	}
+
+	#bookmarks_container {
+		font-size: 14px;
+	}
+
+	#bookmarks_container #bookmarks {
+		width: 90%;
+		min-width: 0;
+	}
+
+	#bookmarks_container #bookmarks form div {
+		width: auto;
+	}
+}
+
+/* fix iPhone notch in landscape */
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+	body {
+		padding: env(safe-area-inset);
+		overflow-y: scroll;
+	}
+
+	#main,
+	#time {
+		min-height: unset;
+	}
+}
+
+/* touch screens! */
+@media only screen and (hover: none) and (pointer: coarse) {
+	#background_overlay {
+		position: fixed;
+	}
+
+	#sb-suggestions,
+	#searchbar {
+		font-size: 1.7em;
+		box-sizing: border-box;
+	}
+
+	#sb-buttons {
+		padding-right: 1em;
+	}
+
+	#sb-buttons #sb_submit img {
+		height: 1.5em;
+	}
+
+	#sb-buttons #sb_empty {
+		font-size: 2em;
+	}
+}

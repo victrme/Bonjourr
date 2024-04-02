@@ -13,11 +13,11 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.1.0'
-const ANNOUNCEMENT_VERSION = '19.1.0'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.2.0'
+const ANNOUNCEMENT_VERSION = '19.2.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'Links related bug fixes. Middle click opens folder links. Added Arabic and Vietnamese translations !',
+	en: 'New this update: syntax highlighted CSS editor, search bar width option and made some settings more user friendldy!',
 }
 
 const ANNOUNCEMENT_BTN_TRNS = {
@@ -27,6 +27,7 @@ const ANNOUNCEMENT_BTN_TRNS = {
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
 	chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	opera: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
 	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
 	safari: 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236',
 	edge: 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid',

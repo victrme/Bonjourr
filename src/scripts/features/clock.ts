@@ -197,7 +197,8 @@ function clockDate(date: Date, dateformat: DateFormat) {
 	const weekday = tradThis(days[date.getDay()])
 	const month = tradThis(months[date.getMonth()])
 
-	datedom.className = dateformat
+	datedom.classList.remove('eu', 'us', 'cn')
+	datedom.classList.add(dateformat)
 
 	if (dateformat === 'eu') {
 		aa.textContent = weekday

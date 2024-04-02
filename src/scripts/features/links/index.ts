@@ -3,7 +3,6 @@ import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
 import { eventDebounce } from '../../utils/debounce'
-import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
 import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
@@ -67,6 +66,7 @@ type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 type Style = Sync.Storage['linkstyle']
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
+let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
 export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
@@ -117,6 +117,8 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		return true
 	}
 
+	const fragment = document.createDocumentFragment()
+
 	for (const link of links) {
 		const liIndex = childrenIds.indexOf(link._id)
 		const liExistsOnInterface = liIndex !== -1
@@ -139,9 +141,11 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 			li.addEventListener('pointerdown', startDrag)
 		}
 
-		tabList?.appendChild(li)
+		fragment.appendChild(li)
 	}
 
+	tabList?.appendChild(fragment)
+	queueMicrotask(createIcons)
 	displayInterface('links')
 
 	return true
@@ -155,14 +159,15 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 
 	li.id = link._id
 	span.textContent = createTitle(link)
-	li.addEventListener('click', openFolder)
+	li.addEventListener('mouseup', folderClickAction)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
 		const elem = linksInThisFolder[i]
+		const isIconShown = img && isElem(elem) && style !== 'text'
 
-		if (img && isElem(elem)) {
-			createIcons(img, elem, style)
+		if (isIconShown) {
+			initIconList.push([img, elem.icon ?? getDefaultIcon(elem.url)])
 		}
 	}
 
@@ -178,7 +183,10 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	li.id = link._id
 	anchor.href = stringMaxSize(link.url, 512)
 	span.textContent = createTitle(link)
-	createIcons(img, link, style)
+
+	if (style !== 'text') {
+		initIconList.push([img, link.icon ?? getDefaultIcon(link.url)])
+	}
 
 	if (openInNewtab) {
 		if (BROWSER === 'safari') {
@@ -191,31 +199,24 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	return li
 }
 
-function createIcons(currimg: HTMLImageElement, link: Links.Elem, style: Style) {
-	if (style === 'text') {
-		return
+function createIcons() {
+	for (const [img, url] of initIconList) {
+		img.src = url
 	}
 
-	let hasloaded = false
-
-	currimg.src = link.icon ?? getDefaultIcon(link.url)
-	currimg.addEventListener('load', () => (hasloaded = true))
-
 	setTimeout(() => {
-		if (hasloaded) {
-			return
+		const incomplete = initIconList.filter(([img]) => !img.complete)
+
+		for (const [img, url] of incomplete) {
+			img.src = 'src/assets/interface/loading.svg'
+
+			const newimg = document.createElement('img')
+			newimg.addEventListener('load', () => (img.src = url))
+			newimg.src = url
 		}
 
-		const newimg = document.createElement('img')
-
-		currimg.src = 'src/assets/interface/loading.svg'
-		newimg.src = link.icon ?? getDefaultIcon(link.url)
-
-		newimg.addEventListener('load', () => {
-			currimg.src = newimg.src
-			storage.sync.set({ [link._id]: link })
-		})
-	}, 50)
+		initIconList = []
+	}, 100)
 }
 
 function initRows(row: number, style: string) {
@@ -238,36 +239,44 @@ function initRows(row: number, style: string) {
 //	Events
 //
 
-onSettingsLoad(() => {
+queueMicrotask(() => {
 	document.addEventListener('close-folder', closeFolder)
 	document.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
 	document.addEventListener('remove-select-all', removeSelectAll)
 })
 
-async function openFolder(event: MouseEvent) {
-	if (domlinkblocks.className.includes('select-all')) {
+async function folderClickAction(event: MouseEvent) {
+	const li = getLiFromEvent(event)
+	const rightClick = event.button === 2
+	const inFolder = li?.classList.contains('folder')
+	const isSelectAll = domlinkblocks.className.includes('select-all')
+
+	if (!li || !inFolder || rightClick || isSelectAll) {
 		return
 	}
 
 	clearTimeout(selectallTimer)
-	const li = getLiFromEvent(event)
-
-	if (!li || !li?.classList.contains('folder')) {
-		return
-	}
 
 	const data = await storage.sync.get()
+	const ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
+	const middleClick = event.button === 1
 
-	if (event.button === 1) {
-		const links = getLinksInFolder(data, li.id)
-
-		links.forEach((link) => window.open(link.url, '_blank')?.focus())
-		window.open(window.location.href, '_blank')?.focus()
-		window.close()
-
-		return
+	if (ctrlClick || middleClick) {
+		openAllLinks(data, li)
+	} else {
+		openFolder(data, li)
 	}
+}
 
+function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
+	const links = getLinksInFolder(data, li.id)
+
+	links.forEach((link) => window.open(link.url, '_blank')?.focus())
+	window.open(window.location.href, '_blank')?.focus()
+	window.close()
+}
+
+async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
 	const folderTitle = folder?.title || tradThis('Folder')

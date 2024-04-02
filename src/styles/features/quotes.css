@@ -1,0 +1,37 @@
+#quotes_container {
+	display: block;
+	row-gap: 1em;
+	width: 50vw;
+	max-width: 45em;
+	min-width: 20em;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	user-select: text;
+	cursor: initial;
+}
+
+#quotes_container.hidden {
+	display: none;
+}
+
+#quotes_container:hover #author {
+	opacity: 1;
+}
+
+#quote {
+	font-size: 1.5em;
+	line-height: 1.5em;
+	max-height: 9em;
+	margin-bottom: 0.75em;
+	overflow-y: clip;
+}
+
+#author {
+	opacity: 0;
+	font-size: 1.2em;
+	transition: opacity 0.4s;
+}
+
+#author.always-on {
+	opacity: 1;
+}

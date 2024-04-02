@@ -10,6 +10,24 @@ test('Page loads', async ({ page }) => {
 	await page.waitForSelector('#interface')
 })
 
+test('All widgets work', async ({ page }) => {
+	await page.waitForSelector('#settings')
+	await page.locator('body #showSettings').click()
+
+	await page.locator('#i_sb').click()
+	await page.locator('#i_notes').click()
+	await page.locator('#i_quotes').click()
+
+	await page.waitForSelector('#quote')
+
+	expect(page.locator('#time')).toBeVisible()
+	expect(page.locator('#main')).toBeVisible()
+	expect(page.locator('#pocket-editor')).toBeVisible()
+	expect(page.locator('#searchbar')).toBeVisible()
+	expect(page.locator('#linkblocks')).toBeVisible()
+	expect(page.locator('#quote')).toBeVisible()
+})
+
 test.describe('Settings', () => {
 	test.beforeEach(async ({ page }) => await openAllSettings(page))
 

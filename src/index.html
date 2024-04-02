@@ -12,7 +12,7 @@
 			content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
 		/>
 
-		<link rel="shortcut icon" href="/src/assets/favicon.ico" type="image/x-icon" id="favicon" />
+		<link rel="icon" href="/src/assets/favicon.ico" type="image/x-icon" id="favicon" />
 
 		<!-- icon -->
 		<!-- manifest -->
@@ -26,8 +26,6 @@
 	</head>
 
 	<body class="init loading">
-		<button id="skiptosettings" type="button">Skip to Settings</button>
-
 		<dialog id="bookmarks">
 			<div id="bookmarks-container">
 				<template id="bookmarks-folder">
@@ -196,7 +194,7 @@
 						><span id="digital-hh-separator">:</span><span id="digital-mm"></span
 						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span>
 					</h1>
-					
+
 					<div id="analog">
 						<div id="analog-face">
 							<span>12</span>
@@ -325,19 +323,50 @@
 			</button>
 		</div>
 
-		<template id="popup-template">
-			<div id="popup">
-				<div id="popup_text">
-					<div id="popup_close">✕</div>
-					<div id="popup_icon">
-						<div>
-							<span>19</span>
+		<div id="templates">
+			<template id="popup-template">
+				<div id="popup">
+					<div id="popup_text">
+						<div id="popup_close">✕</div>
+						<div id="popup_icon">
+							<div>
+								<span>19</span>
+							</div>
 						</div>
+						<p id="popup_desc"></p>
 					</div>
-					<p id="popup_desc"></p>
+					<div id="popup_buttons"></div>
 				</div>
-				<div id="popup_buttons"></div>
-			</div>
-		</template>
+			</template>
+
+			<template id="opera-explainer-template">
+				<dialog id="opera-explainer">
+					<div>
+						<h1 class="trn">Ok so... this is embarassing 😅</h1>
+
+						<p class="trn">
+							Opera does not allow extensions to modify its new tab. While there is no official statement, we
+							believe this is because ads on their speed dial is a good revenue source for them.
+						</p>
+
+						<h2 class="trn">What to do from here ?</h2>
+
+						<ul>
+							<li class="trn">Remove Bonjourr and use Opera speed dial</li>
+							<li class="trn">Use a similar browser like Brave or Vivaldi</li>
+							<li>
+								<span class="trn">Follow </span
+								><a href="https://bonjourr.fr/docs#opera" class="trn">this tutorial on our documentation</a
+								><span class="trn">. Bonjourr, or any homepage, should somewhat work !</span>
+							</li>
+						</ul>
+					</div>
+
+					<hr />
+
+					<button id="b_opera-explained" class="trn">Close and access Bonjourr</button>
+				</dialog>
+			</template>
+		</div>
 	</body>
 </html>

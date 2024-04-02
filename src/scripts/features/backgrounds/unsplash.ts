@@ -3,7 +3,7 @@ import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../../defaults'
 import { imgBackground } from '.'
 import { tradThis } from '../../utils/translations'
 import errorMessage from '../../utils/errormessage'
-import superinput from '../../utils/superinput'
+import networkForm from '../../utils/networkform'
 import storage from '../../storage'
 
 type UnsplashInit = {
@@ -17,7 +17,7 @@ type UnsplashUpdate = {
 	every?: string
 }
 
-const collectionInput = superinput('i_collection')
+const collectionForm = networkForm('f_collection')
 
 // https://unsplash.com/@bonjourr/collections
 const bonjourrCollections = {
@@ -78,16 +78,16 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplashCache.user = []
 		unsplash.collection = ''
 		unsplash.lastCollec = 'day'
-		collectionInput.toggle(false, '2nVzlQADDIE')
+
 		unsplashBackgrounds({ unsplash, cache: unsplashCache })
+		collectionForm.accept('i_collection', '2nVzlQADDIE')
 	}
 
 	if (collection !== undefined && collection.length > 0) {
-		const i_collection = document.querySelector<HTMLInputElement>('#i_collection')
 		const isFullURL = collection.includes('https://unsplash.com/') && collection.includes('/collections/')
 
 		if (!navigator.onLine) {
-			return collectionInput.warn('No internet connection')
+			return collectionForm.warn('No internet connection')
 		}
 
 		if (isFullURL) {
@@ -101,11 +101,12 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.lastCollec = 'user'
 		unsplash.time = freqControl.set()
 
-		collectionInput.load()
+		collectionForm.load()
+
 		let list = await requestNewList(unsplash.collection)
 
 		if (!list || list.length === 0) {
-			collectionInput.warn(`Cannot get "${collection}"`)
+			collectionForm.warn(`Cannot get "${collection}"`)
 			return
 		}
 
@@ -115,11 +116,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		preloadImage(unsplashCache['user'][1].url)
 		loadBackground(unsplashCache['user'][0])
 
-		collectionInput.toggle(false, unsplash.collection)
-
-		if (isFullURL && i_collection) {
-			i_collection.value = collection
-		}
+		collectionForm.accept('i_collection', collection)
 	}
 
 	storage.sync.set({ unsplash })
@@ -279,71 +276,59 @@ async function requestNewList(collection: string): Promise<Unsplash.Image[] | nu
 }
 
 function imgCredits(image: Unsplash.Image) {
+	const domcontainer = document.getElementById('creditContainer')
 	const domcredit = document.getElementById('credit')
-	let needsSpacer = false
-	let artist = ''
-	let photoLocation = ''
-	let exifDescription = ''
-	const referral = '?utm_source=Bonjourr&utm_medium=referral'
-	const { city, country, name, username, link, exif } = image
+	const hasLocation = image.city || image.country
+	let exif = ''
+	let credits = ''
 
-	if (!city && !country) {
-		photoLocation = tradThis('Photo by ')
+	if (image.exif) {
+		const { iso, model, aperture, exposure_time, focal_length } = image.exif
+
+		// ⚠️ In this order !
+		if (model) exif += `${model} - `
+		if (aperture) exif += `f/${aperture} `
+		if (exposure_time) exif += `${aperture}s `
+		if (iso) exif += `${iso}ISO `
+		if (focal_length) exif += `${focal_length}mm`
+	}
+
+	if (hasLocation) {
+		const city = image.city || ''
+		const country = image.country || ''
+		const comma = city && country ? ', ' : ''
+		credits = `${city}${comma}${country} <name>`
 	} else {
-		if (city) photoLocation = city + ', '
-		if (country) {
-			photoLocation += country
-			needsSpacer = true
-		}
+		credits = tradThis('Photo by <name>')
 	}
 
-	if (exif) {
-		const exiflist = [
-			['model', '%val% - '],
-			['aperture', 'f/%val% '],
-			['exposure_time', '%val%s '],
-			['iso', '%val%ISO '],
-			['focal_length', '%val%mm'],
-		]
+	const [location, rest] = credits.split(' <name>')
+	const domlocation = document.createElement('a')
+	const domspacer = document.createElement('span')
+	const domrest = document.createElement('span')
+	const domartist = document.createElement('a')
+	const domexif = document.createElement('p')
 
-		for (const [key, format] of exiflist) {
-			if (key in exif) {
-				const val = exif[key as keyof typeof exif]
-				exifDescription += val ? format.replace('%val%', val.toString()) : ''
-			}
-		}
-	}
+	domexif.className = 'exif'
+	domexif.textContent = exif
+	domlocation.textContent = location
+	domartist.textContent = image.name.slice(0, 1).toUpperCase() + image.name.slice(1)
+	domspacer.textContent = hasLocation ? ' - ' : ' '
+	domrest.textContent = rest
 
-	// Force Capitalization
-	artist = name
-		.split(' ')
-		.map((s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLocaleLowerCase())
-		.join(' ')
-
-	const locationDOM = document.createElement('a')
-	const spacerDOM = document.createElement('span')
-	const artistDOM = document.createElement('a')
-	const exifDOM = document.createElement('p')
-
-	exifDOM.className = 'exif'
-	exifDOM.textContent = exifDescription
-	locationDOM.textContent = photoLocation
-	artistDOM.textContent = artist
-	spacerDOM.textContent = ` - `
-
-	locationDOM.href = link + referral
-	artistDOM.href = 'https://unsplash.com/@' + username + referral
+	domlocation.href = `${image.link}?utm_source=Bonjourr&utm_medium=referral`
+	domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
 
 	if (domcredit) {
 		domcredit.textContent = ''
-
-		domcredit.appendChild(exifDOM)
-		domcredit.appendChild(locationDOM)
-		if (needsSpacer) domcredit.appendChild(spacerDOM)
-		domcredit.appendChild(artistDOM)
-
-		document.getElementById('creditContainer')?.classList.toggle('shown', true)
 	}
+
+	domcredit?.appendChild(domexif)
+	domcredit?.appendChild(domlocation)
+	domcredit?.appendChild(domspacer)
+	domcredit?.appendChild(domartist)
+	domcredit?.appendChild(domrest)
+	domcontainer?.classList.toggle('shown', true)
 }
 
 async function getCache(): Promise<Unsplash.Local> {

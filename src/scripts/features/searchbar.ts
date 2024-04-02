@@ -3,7 +3,6 @@ import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
-import superinput from '../utils/superinput'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -11,6 +10,7 @@ type SearchbarUpdate = {
 	engine?: string
 	opacity?: string
 	newtab?: boolean
+	width?: string
 	suggestions?: boolean
 	placeholder?: string
 	request?: HTMLInputElement
@@ -24,7 +24,6 @@ type Suggestions = {
 
 type UndefinedElement = Element | undefined | null
 
-const requestInput = superinput('i_sbrequest')
 let socket: WebSocket | undefined
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
@@ -39,6 +38,7 @@ const setRequest = (value = '') => domcontainer?.setAttribute('data-request', st
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
+const setWidth = (value = 30) => document.documentElement.style.setProperty('--searchbar-width', value.toString() + 'em')
 const setOpacity = (value = 0.1) => {
 	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
 	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
@@ -52,6 +52,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 
 	try {
 		display(init?.on)
+		setWidth(init?.width)
 		setEngine(init?.engine)
 		setRequest(init?.request)
 		setNewtab(init?.newtab)
@@ -69,7 +70,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 	}
 }
 
-async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions }: SearchbarUpdate) {
+async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions, width }: SearchbarUpdate) {
 	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
@@ -94,7 +95,12 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 
 	if (opacity !== undefined) {
 		searchbar.opacity = parseFloat(opacity)
-		setOpacity(parseFloat(opacity))
+		setOpacity(searchbar.opacity)
+	}
+
+	if (width !== undefined) {
+		searchbar.width = parseInt(width)
+		setWidth(searchbar.width)
 	}
 
 	if (placeholder !== undefined) {
@@ -104,7 +110,6 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 
 	if (request) {
 		if (!request.value.includes('%s')) {
-			requestInput.warn('"%s" not found')
 			return
 		}
 

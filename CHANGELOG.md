@@ -1,3 +1,28 @@
+## 19.2.0
+
+-   Added:
+    -   Search bar width option
+    -   Syntax highlighted CSS editor
+-   Performance:
+    -   Weather icon to SVG
+    -   Only load settings menu on user action
+    -   Never load links icons when using text style (#327)
+    -   GPU acceleration on background for better Safari performance
+-   Changes:
+    -   Simplified Notes default text
+    -   Weather & credit can be translated as a full sentence (#317)
+    -   More user-friendly manual weather location inputs
+    -   All options waiting for servers show loading state
+    -   Added instruction dialog for Opera users
+-   Development:
+    -   Replaced Sass by classic CSS
+    -   Removed Gulp & Sass from build tasks
+    -   Reduced by 40 times development dependencies amount
+-   Translations:
+    -   Updated Romanian - @UnifeGi
+    -   Updated Simplified Chinese - @baozidai
+    -   Updated Traditional Chinese - @unknownnumbers
+
 ## 19.1.0
 
 -   Changes:

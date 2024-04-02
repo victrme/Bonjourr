@@ -1,0 +1,126 @@
+#editlink {
+	position: fixed;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	width: 240px;
+	padding: 16px 16px 12px 16px;
+	margin: 0;
+	z-index: 4;
+	transition: opacity 0.1s;
+}
+
+#editlink.shown {
+	opacity: 1;
+}
+
+#editlink label {
+	display: grid;
+	width: 100%;
+	column-gap: 6px;
+	margin-bottom: 6px;
+	place-items: center;
+	grid-template-columns: 50px 1fr;
+	opacity: 0.7;
+}
+
+#editlink label span {
+	font-size: 12px;
+	justify-self: start;
+	padding-left: 5px;
+	max-width: 45px;
+	overflow: hidden;
+	display: inline-block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#editlink label:focus-within {
+	opacity: 1;
+}
+
+#editlink input {
+	color: var(--color-text);
+	width: 100%;
+	height: 2.3em;
+	padding: 0 1em;
+	border: none;
+	border-radius: 8px;
+	box-sizing: border-box;
+	background-color: transparent;
+	transition: background-color 0.1s, opacity 0.1s;
+}
+
+#editlink input::placeholder {
+	color: var(--color-dialog-input-text);
+}
+
+#editlink input:focus {
+	opacity: 1;
+	color: var(--color-text);
+	background-color: var(--color-dialog-input-bg);
+	outline: 3px solid #007aff66;
+	transition: background-color 0.1s;
+}
+
+#editlink button {
+	display: none;
+	width: 100%;
+	padding: 4px 12px;
+}
+
+/*
+ *  Editlink states:
+ *
+ *  - Select link
+ *  - Select folder
+ *  - Select all
+ *  - In folder: select link
+ *  - In folder: select all
+ */
+
+#editlink.select-all label,
+#editlink.select-all hr,
+#editlink.add-link label:nth-child(3),
+#editlink.on-tabtitle label:nth-child(2),
+#editlink.on-tabtitle label:nth-child(3),
+#editlink.on-link-folder label:nth-child(2),
+#editlink.on-link-folder label:nth-child(3),
+#editlink.on-tabtitle.on-tab #eb_add-tab,
+#editlink.on-tabtitle.on-tab.on-tab-default #eb_delete-tab,
+#editlink.on-linklist:not(.on-link) #ei_icon,
+#editlink.select-all.select-folder #eb_add-folder,
+#editlink.select-all.in-folder #eb_add-folder,
+#editlink.on-link.on-linklist #eb_add-link,
+#editlink.on-link.select-all #eb_delete-link,
+#editlink.on-link.on-link-folder #eb_delete-link,
+#editlink.on-link.on-link-folder.select-all #eb_delete-folder {
+	display: none;
+}
+
+#editlink.on-linklist:not(.on-link) #eb_add-link {
+	display: initial;
+}
+
+#editlink.on-link #eb_delete-link,
+#editlink.on-link #eb_submit-changes,
+#editlink.on-link.in-folder #eb_remove-folder,
+#editlink.on-link.on-link-folder #eb_delete-folder {
+	display: initial;
+}
+
+#editlink.select-all #eb_add-folder,
+#editlink.select-all #eb_delete-selected,
+#editlink.select-all.in-folder #eb_remove-folder {
+	display: initial;
+}
+
+#editlink.in-folder:not(.add-link) #eb_remove {
+	display: initial;
+}
+
+#editlink.on-tab #eb_delete-tab,
+#editlink.on-tab #eb_submit-changes,
+#editlink.on-tabtitle #eb_add-tab {
+	display: initial;
+}

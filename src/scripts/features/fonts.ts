@@ -6,7 +6,7 @@ import { SYSTEM_OS } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import { apiFetch } from '../utils'
 import { subsets } from '../langs'
-import superinput from '../utils/superinput'
+import networkForm from '../utils/networkform'
 import storage from '../storage'
 
 type Font = Sync.Font
@@ -26,7 +26,7 @@ type CustomFontUpdate = {
 	weight?: string
 }
 
-const familyInput = superinput('i_customfont')
+const familyForm = networkForm('f_customfont')
 
 const systemfont = (function () {
 	const fonts = {
@@ -100,9 +100,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 }
 
 async function updateFontFamily(data: Sync.Storage, family: string): Promise<Font> {
-	const i_customfont = document.getElementById('i_customfont') as HTMLInputElement
 	const i_weight = document.getElementById('i_weight') as HTMLInputElement
-
 	const familyType = family.length == 0 ? 'none' : systemFontChecker(family) ? 'system' : 'fontsource'
 
 	let font: Font = {
@@ -116,21 +114,19 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 	switch (familyType) {
 		case 'none': {
 			displayFont(font)
-			i_customfont.value = ''
-			i_customfont.placeholder = systemfont.placeholder
+			familyForm.accept('i_customfont', systemfont.placeholder)
 			break
 		}
 
 		case 'system': {
-			familyInput.load()
 			font.family = family
 			displayFont(font)
-			familyInput.toggle(false, family)
+			familyForm.accept('i_customfont', family)
 			break
 		}
 
 		case 'fontsource': {
-			familyInput.load()
+			familyForm.load()
 
 			const newfont = await getNewFont(font, family)
 
@@ -138,11 +134,11 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 				font = { ...font, ...newfont }
 				displayFont(font)
 				await waitForFontLoad(family)
-				familyInput.toggle(false, family)
+				familyForm.accept('i_customfont', family)
 			}
 
 			if (font.family === '') {
-				familyInput.warn(`Cannot load "${family}"`)
+				familyForm.warn(`Cannot load "${family}"`)
 				return data.font
 			}
 			break
@@ -243,10 +239,6 @@ async function initFontSettings(font?: Font) {
 	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
 
 	setWeightSettings(weights)
-
-	if (font?.family) {
-		setAutocompleteSettings()
-	}
 }
 
 async function setAutocompleteSettings(isLangSwitch?: boolean) {

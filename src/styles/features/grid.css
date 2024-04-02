@@ -1,0 +1,340 @@
+.move-overlay {
+	border: none;
+	border-radius: 1em;
+	background-color: #fff2;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+	outline: 0.4em solid transparent;
+	transition: background-color 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+	z-index: -1;
+}
+
+.move-overlay:hover {
+	background-color: #fff3;
+}
+
+.move-overlay.selected {
+	background-color: rgba(var(--blue), 0.15);
+	outline-color: var(--color-blue);
+}
+
+#move-overlay-time,
+#time {
+	grid-area: time;
+}
+
+#move-overlay-main,
+#main {
+	grid-area: main;
+}
+
+#move-overlay-searchbar,
+#sb_container {
+	grid-area: searchbar;
+}
+
+#move-overlay-notes,
+#notes_container {
+	grid-area: notes;
+}
+
+#move-overlay-quicklinks,
+#linkblocks {
+	grid-area: quicklinks;
+}
+
+#move-overlay-quotes,
+#quotes_container {
+	grid-area: quotes;
+}
+
+:root[data-theme='light'] #text-alignment-mover button,
+:root[data-theme='light'] #box-alignment-mover button,
+:root[data-theme='light'] #grid-mover button {
+	color: var(--color-light-text);
+}
+
+#element-mover {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	left: 2em; /* because of .pushed interface */
+	top: 2em;
+	gap: 2em;
+	padding: 1em;
+	padding-top: 2em;
+	min-width: 12em;
+	font-size: 14px;
+	color: var(--color-text);
+	background-color: var(--color-dialog);
+	border-radius: 1em;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 5px 5px 20px #2224;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+	cursor: grab;
+	z-index: 4;
+	direction: ltr;
+}
+
+#element-mover:not(.active) > div:not(#close-mover-wrapper) {
+	pointer-events: none;
+	filter: grayscale(1);
+	opacity: 0.4;
+	cursor: auto;
+}
+
+#element-mover.hidden {
+	display: none;
+}
+
+#element-mover button {
+	text-align: center;
+}
+
+#element-mover hr {
+	border-color: var(--color-dialog-border);
+}
+
+#element-mover p {
+	margin-bottom: 1em;
+}
+
+#grid-mover button,
+#box-alignment-mover button,
+#text-alignment-mover button {
+	padding: 0;
+}
+
+.mover {
+	display: grid;
+}
+
+.mover button {
+	border: none;
+	border-radius: 0.2em;
+	min-width: 2.5em;
+	background-color: transparent;
+}
+
+.mover button:hover:not(:disabled) {
+	background-color: #fff4;
+}
+
+.mover button:active:not(:disabled) {
+	background-color: #fff5;
+}
+
+.mover button.selected,
+.mover button.selected:hover,
+.mover button.selected:active {
+	outline: 2px solid var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
+button.grid-spanner {
+	display: block;
+	width: 60%;
+	margin: 0.3em auto;
+	border-width: 2px;
+	background-color: var(--color-dialog-highlight);
+}
+
+button.grid-spanner:hover:not(:disabled) {
+	color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
+button.grid-spanner.selected:not(:disabled) {
+	color: var(--color-blue);
+	border-color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.25);
+}
+
+#grid-selection {
+	display: none;
+}
+
+#grid-mover {
+	display: flex;
+	flex-direction: column;
+	max-width: 85px;
+	margin: auto;
+}
+
+#grid-mover button {
+	min-width: 3em;
+	margin: 0;
+	padding: 0;
+}
+
+#grid-spanner-container {
+	display: none;
+}
+
+#grid-spanner-container.active {
+	display: block;
+}
+
+#box-alignment-mover {
+	place-content: center;
+	grid-template-columns: repeat(3, 32px);
+	grid-template-rows: repeat(3, 24px);
+}
+
+#text-alignment-mover {
+	place-content: center;
+	grid-template-columns: repeat(3, 40px);
+}
+
+#text-alignment-mover button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5em;
+}
+
+#close-mover-wrapper button {
+	display: block;
+	width: 100%;
+}
+
+/*
+ *
+ *	Grid Toolbox Icons
+ *
+ */
+
+button i {
+	box-sizing: border-box;
+	position: relative;
+	display: block;
+	margin: auto;
+}
+
+button i::before,
+button i::after {
+	content: '';
+	box-sizing: border-box;
+	position: absolute;
+	display: block;
+}
+
+.rotate-half {
+	transform: rotate(180deg);
+}
+.rotate-quart {
+	transform: rotate(90deg);
+}
+.rotate-quart-r {
+	transform: rotate(-90deg);
+}
+
+/* Grid mover icons */
+
+.chevron {
+	display: inline-block;
+	width: 2.4em;
+	height: 2.4em;
+	font-size: 10px;
+}
+
+.chevron::after {
+	border-bottom: 0.2em solid;
+	border-right: 0.2em solid;
+	width: 1em;
+	height: 1em;
+	transform: rotate(45deg) translateX(100%);
+}
+
+/* Box align icons */
+
+i.text-left,
+i.text-center,
+i.text-right,
+i.box-center,
+i.box-corner,
+i.box-side {
+	margin: auto;
+	width: 1.4em;
+	height: 1.4em;
+	font-size: 10px;
+}
+
+i.box-center::after {
+	top: 0.2em;
+	left: 0.1em;
+	height: 0.6em;
+	width: 1.2em;
+	border-bottom: 0.2em solid;
+}
+
+i.box-center::before {
+	top: 0.1em;
+	left: 0.6em;
+	height: 1.2em;
+	border-left: 0.2em solid;
+}
+
+i.box-side {
+	border-bottom: 0.2em solid;
+}
+
+i.box-side::before {
+	bottom: 0;
+	left: 0.6em;
+	height: 0.6em;
+	border-left: 0.2em solid;
+}
+
+i.box-corner::before {
+	left: 0;
+	top: 0;
+	height: 1em;
+	width: 1em;
+	border-left: 0.2em solid;
+	border-top: 0.2em solid;
+}
+
+/* Text align icons */
+
+i.text-left::before,
+i.text-center::before,
+i.text-right::before,
+i.text-left::after,
+i.text-center::after,
+i.text-right::after {
+	border-bottom: 0.2em solid;
+	border-top: 0.2em solid;
+}
+
+i.text-left::before,
+i.text-center::before,
+i.text-right::before {
+	top: 0;
+	width: 0.8em;
+	height: 1em;
+}
+
+i.text-left::after,
+i.text-center::after,
+i.text-right::after {
+	top: 0.4em;
+	width: 1.4em;
+	height: 1em;
+}
+
+i.text-left::after,
+i.text-left::before,
+i.text-center::after {
+	left: 0;
+}
+
+i.text-right::before,
+i.text-right::after {
+	right: 0;
+}
+
+i.text-center::before {
+	left: 0.3em;
+}
