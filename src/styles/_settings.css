@@ -160,7 +160,7 @@ aside .switch {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	overflow: visible
+	overflow: visible;
 }
 
 aside .switch:hover {
