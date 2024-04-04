@@ -658,16 +658,18 @@ function initOptionsEvents() {
 		})
 	}
 
-	paramClasses('uploadContainer').forEach(function (uploadContainer: Element) {
-		const toggleDrag = () => uploadContainer.classList.toggle('dragover')
-		const input = uploadContainer.querySelector('input[type="file"')
+	// TODO: drag event not working ?
+	document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach((input) => {
+		const toggleDrag = (_: DragEvent) => {
+			input.classList.toggle('dragover')
+		}
 
 		input?.addEventListener('dragenter', toggleDrag)
 		input?.addEventListener('dragleave', toggleDrag)
 		input?.addEventListener('drop', toggleDrag)
 	})
 
-	document.querySelectorAll('.tooltip').forEach((elem: Element) => {
+	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
 		elem.addEventListener('click', function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
@@ -1165,10 +1167,6 @@ function fadeOut() {
 
 function paramId(str: string) {
 	return document.getElementById(str) as HTMLInputElement
-}
-
-function paramClasses(str: string) {
-	return document.querySelectorAll(`.${str}`)!
 }
 
 function setCheckbox(id: string, cat: boolean) {

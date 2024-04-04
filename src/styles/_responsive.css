@@ -61,14 +61,13 @@
 		font-size: 1.2em;
 		padding: 0px;
 		border-radius: 1em;
-		-webkit-overflow-scrolling: touch;
 	}
 
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;
 			bottom: -100vh;
-			height: 100dvh;
+			height: 100vh;
 		}
 	}
 
@@ -78,6 +77,10 @@
 
 	aside form > div {
 		flex-direction: column;
+	}
+
+	aside::-webkit-scrollbar {
+		display: none;
 	}
 
 	#i_addlink-title,
