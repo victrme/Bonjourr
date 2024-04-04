@@ -21,6 +21,14 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 
 	backgroundFilter({ blur, brightness })
 
+	if (BROWSER === 'safari') {
+		const bgfirst = document.getElementById('background') as HTMLDivElement
+		const bgsecond = document.getElementById('background-bis') as HTMLDivElement
+
+		bgfirst.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
+		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
+	}
+
 	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
 
@@ -77,8 +85,10 @@ export function updateBackgroundOption({ freq, refresh }: UpdateOptions) {
 	}
 }
 
-export function backgroundFreq(value: string) {}
+function backgroundFreq() {
+	//
+}
 
-export function refreshBackground() {
-	const i_type = document.getElementById('i_type') as HTMLInputElement
+function refreshBackground() {
+	//
 }
