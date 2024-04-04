@@ -934,12 +934,6 @@ function drawerDragEvents() {
 		// First time dragging, sets maximum y pos at which to block
 		if (firstPos === 0) firstPos = startTouchY
 
-		// Scrollbar padding control on windows & android
-		if (SYSTEM_OS.match(/windows|android/)) {
-			settingsDom.style.width = `calc(100% - 10px)`
-			settingsDom.style.paddingRight = `10px`
-		}
-
 		// prevent scroll when dragging
 		settingsDom.style.overflow = `clip`
 

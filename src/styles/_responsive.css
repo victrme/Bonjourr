@@ -58,8 +58,8 @@
 		bottom: -100dvh;
 		height: 100dvh;
 		width: 100%;
-		font-size: 1.2em;
-		padding: 0px;
+		padding: 0 12px;
+		font-size: 14px;
 		border-radius: 1em;
 	}
 
@@ -106,31 +106,12 @@
 		padding-bottom: 25vh;
 	}
 
-	/* Tooltip (?) centered when span wrap */
-	.as_collection {
-		max-height: 140px;
-	}
-
-	.as_collection .wrapper span {
-		align-items: center;
-	}
-
 	#mobile-drag-zone {
 		display: block;
 	}
 
-	#mobile-drag-zone ~ h2:first-of-type {
-		margin-top: 0;
-	}
-
-	#cssEditor,
-	.param {
-		margin-right: 12px;
-		margin-left: 12px;
-	}
-
-	#cssEditor {
-		width: calc(100% - 24px);
+	#mobile-drag-zone + .settings-title {
+		margin-top: 1em;
 	}
 
 	body .prism-code-editor {

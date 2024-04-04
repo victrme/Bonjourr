@@ -6,7 +6,7 @@ aside {
 	right: -450px;
 	height: 100vh;
 	min-width: 333px;
-	width: 408px;
+	width: 450px;
 	padding: 0 21px;
 	background-color: var(--color-settings);
 	color: var(--color-text);
@@ -17,6 +17,7 @@ aside {
 	overflow-y: scroll;
 	overflow-x: hidden;
 	touch-action: pan-y;
+	box-sizing: border-box;
 	transition: transform 0.4s, background-color 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
@@ -46,9 +47,10 @@ aside a:hover {
 }
 
 aside hr {
+	width: 100%;
+	margin: 14px 0;
 	border: none;
 	border-bottom: 1px solid var(--color-input);
-	width: 100%;
 }
 
 aside h1,
@@ -560,7 +562,7 @@ aside form.valid button:not(:disabled):active {
 .tooltiptext {
 	color: var(--color-light-text);
 	font-size: 13px;
-	line-height: 1.4em;
+	line-height: 1.5em;
 	max-height: 0;
 	overflow: hidden;
 	transition: max-height 0.4s, margin 0.4s, padding 0.3s;
@@ -579,9 +581,9 @@ aside form.valid button:not(:disabled):active {
 }
 
 .param {
-	background-color: var(--color-param);
-	padding: 0.65em 1.3em;
+	padding: 14px 20px;
 	border-radius: 10px;
+	background-color: var(--color-param);
 }
 
 .wrapper {
@@ -589,8 +591,6 @@ aside form.valid button:not(:disabled):active {
 	align-items: center;
 	justify-content: space-between;
 	min-height: 26px;
-	padding: 4px 0;
-	overflow-x: hidden;
 }
 
 .wrapper span {
@@ -803,7 +803,6 @@ aside form.valid button:not(:disabled):active {
 }
 
 #grid-layout button {
-	overflow: hidden;
 	display: flex;
 	align-items: center;
 	justify-content: space-evenly;
@@ -912,14 +911,14 @@ aside form.valid button:not(:disabled):active {
 
 #import,
 #export {
-	overflow: hidden;
+	display: none;
 	height: 0px;
 }
 
 #import.shown,
 #export.shown {
 	height: auto;
-	overflow: visible;
+	display: initial;
 }
 
 #export > div {
@@ -1008,10 +1007,10 @@ aside form.valid button:not(:disabled):active {
 }
 
 #settings-footer {
-	color: var(--color-light-text);
+	width: 75%;
 	font-size: 14px;
-	padding: 4em 3em 0 4em;
-	margin-bottom: 100px;
+	margin: 50px auto 100px;
+	color: var(--color-light-text);
 }
 
 @supports (-webkit-touch-callout: none) {
