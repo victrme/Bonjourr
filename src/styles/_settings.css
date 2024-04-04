@@ -48,7 +48,7 @@ aside a:hover {
 
 aside hr {
 	width: 100%;
-	margin: 14px 0;
+	margin: 10px 0;
 	border: none;
 	border-bottom: 1px solid var(--color-input);
 }
@@ -591,6 +591,7 @@ aside form.valid button:not(:disabled):active {
 	align-items: center;
 	justify-content: space-between;
 	min-height: 26px;
+	padding: 4px 0; /* for tabbing outline */
 }
 
 .wrapper span {
@@ -741,16 +742,6 @@ aside form.valid button:not(:disabled):active {
 	opacity: 0;
 }
 
-#w_clockface,
-#w_ampm {
-	opacity: 1;
-	min-height: 0;
-	height: 34px;
-	max-height: 3em;
-	overflow: hidden;
-	transition: max-height 0s 0.2s, opacity 0.2s;
-}
-
 #f_location {
 	width: 66%;
 }
@@ -765,6 +756,7 @@ aside form.valid button:not(:disabled):active {
 	max-height: 200px;
 	margin-top: 0.5em;
 	padding: 0.5em 1em;
+	font-size: 13px;
 	line-height: 1.5;
 	resize: vertical;
 	border-radius: 8px;
