@@ -12,7 +12,6 @@ import initBackground from './features/backgrounds'
 import { settingsInit } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
-import storage, { getSyncDefaults } from './storage'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
@@ -21,6 +20,7 @@ import { traduction, setTranslationCache } from './utils/translations'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
+import storage from './storage'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
