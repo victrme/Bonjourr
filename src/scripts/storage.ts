@@ -134,6 +134,12 @@ function online(): Storage {
 	}
 
 	const init = async () => {
+		const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
+
+		if (!about) {
+			online().sync.set({ about: SYNC_DEFAULT.about })
+		}
+
 		return {
 			sync: verifyDataAsSync(await sync.get()),
 			local: verifyDataAsLocal(await local.get()),
@@ -201,10 +207,17 @@ function webext(): Storage {
 			})
 		}
 
+		// ⚠️ before mutating data with verifyData
+		if (!store?.sync?.about) {
+			queueMicrotask(() => {
+				chrome.storage.sync.set({ about: SYNC_DEFAULT.about })
+			})
+		}
+
 		const sync = verifyDataAsSync(store.sync)
 		const local = verifyDataAsLocal(store.local)
 
-		//@ts-ignore
+		//@ts-expect-error
 		startupStorage = undefined
 
 		return { sync, local }

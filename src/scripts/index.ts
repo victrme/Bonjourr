@@ -43,24 +43,21 @@ try {
 
 async function startup() {
 	let { sync, local } = await storage.init()
-
 	const OLD_VERSION = sync?.about?.version
-	const versionChanged = OLD_VERSION !== CURRENT_VERSION
-	const firstStart = OLD_VERSION === undefined && Object.keys(sync).length === 0
 
-	if (versionChanged) {
-		if (firstStart) {
-			console.log(`First install: ${CURRENT_VERSION}`)
-			sync = await getSyncDefaults()
-		} else {
-			console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
-			sync = upgradeSyncStorage(sync)
-		}
+	// Force trns refresh for everyone this version
+	if (CURRENT_VERSION === '19.2.2') {
+		delete local.translations
+	}
 
+	if (OLD_VERSION !== CURRENT_VERSION) {
+		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
+		sync = upgradeSyncStorage(sync)
+		delete local.translations
 		storage.sync.set(sync)
 	}
 
-	await setTranslationCache(sync.lang, local, versionChanged)
+	await setTranslationCache(sync.lang, local)
 
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
@@ -82,6 +79,7 @@ async function startup() {
 	quickLinks(sync)
 	syncNewBookmarks(sync.syncbookmarks)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
+	operaExtensionExplainer(local.operaExplained)
 
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
@@ -98,12 +96,6 @@ async function startup() {
 			announce: sync.announcements,
 		})
 	})
-
-	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
-		if (!local?.operaExplained) {
-			return operaExtensionExplainer()
-		}
-	}
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
@@ -476,7 +468,11 @@ async function setPotatoComputerMode() {
 	document.body.classList.toggle('potato', detectedPotato)
 }
 
-function operaExtensionExplainer() {
+function operaExtensionExplainer(explained?: true) {
+	if (explained || BROWSER !== 'opera' || PLATFORM !== 'chrome') {
+		return
+	}
+
 	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
 	const doc = template.content.cloneNode(true) as Document
 	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
