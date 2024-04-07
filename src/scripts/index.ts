@@ -45,15 +45,10 @@ async function startup() {
 	let { sync, local } = await storage.init()
 	const OLD_VERSION = sync?.about?.version
 
-	// Force trns refresh for everyone this version
-	if (CURRENT_VERSION === '19.2.2') {
-		delete local.translations
-	}
-
 	if (OLD_VERSION !== CURRENT_VERSION) {
 		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
 		sync = upgradeSyncStorage(sync)
-		delete local.translations
+		local = upgradeLocalStorage(local)
 		storage.sync.set(sync)
 	}
 
@@ -99,6 +94,8 @@ async function startup() {
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
+	data.about = SYNC_DEFAULT.about
+
 	// 19.0.0
 
 	if (data.reviewPopup) {
@@ -139,7 +136,13 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	storage.sync.remove('cssHeight')
 
 	data = linksDataMigration(data)
-	data.about = SYNC_DEFAULT.about
+
+	return data
+}
+
+function upgradeLocalStorage(data: Local.Storage): Local.Storage {
+	data.translations = undefined
+	storage.local.remove('translations')
 
 	return data
 }

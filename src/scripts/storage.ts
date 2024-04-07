@@ -30,7 +30,10 @@ function verifyDataAsSync(data: Keyval) {
 	data = data ?? {}
 
 	for (const key in SYNC_DEFAULT) {
-		if (!(key in data)) {
+		const notAbout = key !== 'about'
+		const missingKey = !(key in data)
+
+		if (notAbout && missingKey) {
 			data[key] = SYNC_DEFAULT[key]
 		}
 	}
@@ -195,8 +198,8 @@ function webext(): Storage {
 		// This waits for chrome.storage to be stored in a global variable
 		// that is created in file `webext-storage.js`
 
-		//@ts-ignore
-		const store = startupStorage as AllStorage
+		//@ts-expect-error
+		const store: AllStorage = startupStorage
 		const isReady = (): boolean => 'sync' in store && 'local' in store
 
 		if (!isReady()) {
@@ -204,13 +207,6 @@ function webext(): Storage {
 				document.addEventListener('webextstorage', function () {
 					isReady() ? resolve(true) : ''
 				})
-			})
-		}
-
-		// ⚠️ before mutating data with verifyData
-		if (!store?.sync?.about) {
-			queueMicrotask(() => {
-				chrome.storage.sync.set({ about: SYNC_DEFAULT.about })
 			})
 		}
 
