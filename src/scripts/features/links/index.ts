@@ -1,7 +1,7 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink } from './helpers'
 import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { displayInterface } from '../../index'
-import displayEditDialog from './edit'
+import openEditDialog from './edit'
 import { eventDebounce } from '../../utils/debounce'
 import transitioner from '../../utils/transitioner'
 import errorMessage from '../../utils/errormessage'
@@ -135,7 +135,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 				? createElem(link, data.linknewtab, data.linkstyle)
 				: createFolder(link, linksInFolders, data.linkstyle)
 
-			li.addEventListener('keyup', displayEditDialog)
+			li.addEventListener('keyup', openEditDialog)
 			li.addEventListener('click', selectAll)
 			li.addEventListener('pointerdown', selectAll)
 			li.addEventListener('pointerdown', startDrag)
