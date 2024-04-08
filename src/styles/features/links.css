@@ -196,6 +196,8 @@ li.block.folder img {
 	display: none;
 	border-radius: 4px;
 	padding: 2px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 }
 
 /*
