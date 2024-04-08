@@ -9,15 +9,15 @@ export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https:/
 //@ts-expect-error
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
 
-export const SYSTEM_OS = window.navigator.appVersion.includes('Macintosh')
+export const SYSTEM_OS = 
+	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+	? 'ios'
+	: window.navigator.appVersion.includes('Macintosh')
 	? 'mac'
 	: window.navigator.appVersion.includes('Windows')
 	? 'windows'
 	: window.navigator.userAgent.toLowerCase().includes('Android')
 	? 'android'
-	: ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-	  (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
-	? 'ios'
 	: 'unknown'
 
 export const PLATFORM =
