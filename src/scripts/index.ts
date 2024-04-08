@@ -9,7 +9,7 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
-import { settingsInit } from './settings'
+import { settingsInit, settingsPreload } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
@@ -82,6 +82,7 @@ async function startup() {
 	onInterfaceDisplay(() => {
 		document.body.classList.remove('init')
 
+		settingsPreload()
 		userActionsEvents()
 		setPotatoComputerMode()
 		interfacePopup({
@@ -193,12 +194,14 @@ function userActionsEvents() {
 	let isMousingDownOnInput = false
 
 	document.body.addEventListener('mousedown', detectTargetAsInputs)
-	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
 	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
 	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
 	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
 	document.body.addEventListener('keydown', settingsFirstLoad)
+
+	domshowsettings?.addEventListener('pointerup', settingsFirstLoad)
+	document.body.addEventListener('keyup', settingsFirstLoad)
 
 	document.addEventListener('click', clickUserActions)
 	document.addEventListener('keydown', keydownUserActions)
@@ -315,23 +318,26 @@ function userActionsEvents() {
 	}
 
 	function settingsFirstLoad(event?: Event) {
-		if (document.getElementById('settings')) {
-			return
-		}
-
-		const type = event?.type
 		const code = (event as KeyboardEvent)?.code
-		const iosClickStart = SYSTEM_OS === 'ios' && event?.type === 'pointerdown'
+		const type = event?.type
+		const initEvents = code === 'Escape' || type === 'mouseenter' || type === 'pointerdown'
+		const dispatchEvents = (code === 'Escape' && type === 'keyup') || type === 'pointerup'
 
-		if (code === 'Escape' || type === 'mouseenter' || type === 'pointerdown') {
+		if (initEvents) {
 			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
 			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
 			document.body.removeEventListener('keydown', settingsFirstLoad)
 			settingsInit()
 		}
 
-		if (code === 'Escape' || iosClickStart) {
-			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
+		if (dispatchEvents) {
+			domshowsettings?.removeEventListener('pointerup', settingsFirstLoad)
+			document.body?.removeEventListener('keyup', settingsFirstLoad)
+			document.dispatchEvent(new Event('toggle-settings'))
+
+			setTimeout(() => {
+				domshowsettings?.addEventListener('click', toggleSettingsMenu)
+			})
 		}
 	}
 }
