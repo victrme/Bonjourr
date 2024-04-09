@@ -79,6 +79,10 @@ if (ENV_PROD && PLATFORMS.includes(platform)) {
 }
 
 if (ENV_PROD && platform === undefined) {
+	if (fs.existsSync('./release')) {
+		fs.rmSync('./release/', { recursive: true })
+	}
+
 	for (const platform of PLATFORMS) {
 		exec(`node ./build.config.js ${platform} prod`, (error, stdout, _) => {
 			error ? console.error(error) : console.log(`${stdout.replace('\n', '')} <- ${platform}`)

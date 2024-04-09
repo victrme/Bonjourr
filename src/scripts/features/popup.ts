@@ -17,7 +17,7 @@ const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.2
 const ANNOUNCEMENT_VERSION = '19.2.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'New this update: syntax highlighted CSS editor, search bar width option and made some settings more user friendldy!',
+	en: 'New this update: syntax highlighted CSS editor, search bar width option and made some settings more user friendly!',
 }
 
 const ANNOUNCEMENT_BTN_TRNS = {

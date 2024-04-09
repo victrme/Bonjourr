@@ -22,7 +22,7 @@ import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 
 // import { highlightText } from 'prism-code-editor/prism'
@@ -30,29 +30,34 @@ import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } 
 
 import type { Langs } from '../types/langs'
 
+export async function settingsPreload() {
+	const innerHtml = await (await fetch('settings.html')).text()
+	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
+	const template = document.querySelector<HTMLTemplateElement>('#settings-template')
+
+	if (template) {
+		template.innerHTML = outerHtml
+	}
+}
+
 export async function settingsInit() {
 	if (!!document.getElementById('settings')) {
 		return
 	}
 
 	const data = await storage.sync.get()
-	const innerHtml = await (await fetch('settings.html')).text()
-	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
-
-	const parser = new DOMParser()
-	const doc = parser.parseFromString(outerHtml, 'text/html')
-	const settingsDom = doc.getElementById('settings') as HTMLElement
+	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
 
 	document.body.appendChild(settingsDom)
 
 	traduction(settingsDom, data.lang)
-	settingsFooter()
 	showall(data.showall, false)
 	updateExportJSON(data)
 	initOptionsValues(data)
+	controlOptionsTabFocus()
 	initOptionsEvents()
 	settingsDrawerBar()
-	controlOptionsTabFocus(settingsDom)
+	settingsFooter()
 	loadCallbacks()
 
 	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
@@ -70,6 +75,9 @@ export async function settingsInit() {
 	}
 
 	document.addEventListener('toggle-settings', toggleSettingsMenu)
+	// document.getElementById('showSettings')?.addEventListener('click', console.log)
+
+	console.log('load')
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -157,11 +165,6 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// must be init after children appening
 	setInput('i_lang', data.lang || 'en')
-
-	// Activate changelog
-	if (localStorage.hasUpdated === 'true') {
-		changelogControl(domsettings)
-	}
 
 	// No bookmarks import on safari || online
 	if (BROWSER === 'safari' || PLATFORM === 'online') {
@@ -658,16 +661,18 @@ function initOptionsEvents() {
 		})
 	}
 
-	paramClasses('uploadContainer').forEach(function (uploadContainer: Element) {
-		const toggleDrag = () => uploadContainer.classList.toggle('dragover')
-		const input = uploadContainer.querySelector('input[type="file"')
+	// TODO: drag event not working ?
+	document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach((input) => {
+		const toggleDrag = (_: DragEvent) => {
+			input.classList.toggle('dragover')
+		}
 
 		input?.addEventListener('dragenter', toggleDrag)
 		input?.addEventListener('dragleave', toggleDrag)
 		input?.addEventListener('drop', toggleDrag)
 	})
 
-	document.querySelectorAll('.tooltip').forEach((elem: Element) => {
+	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
 		elem.addEventListener('click', function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
@@ -696,28 +701,6 @@ function toggleSettingsMenu() {
 	domsettings?.style.removeProperty('transition')
 	domsettings?.style.removeProperty('--translate-y')
 	document.dispatchEvent(new Event('close-edit'))
-}
-
-function changelogControl(settingsDom: HTMLElement) {
-	const domshowsettings = document.querySelector('#showSettings')
-	const domchangelog = settingsDom.querySelector('#changelogContainer')
-
-	if (!domchangelog) return
-
-	domchangelog.classList.toggle('shown', true)
-	domshowsettings?.classList.toggle('hasUpdated', true)
-
-	const dismiss = () => {
-		domshowsettings?.classList.toggle('hasUpdated', false)
-		domchangelog.className = 'dismissed'
-		localStorage.removeItem('hasUpdated')
-	}
-
-	const loglink = settingsDom.querySelector('#link') as HTMLAnchorElement
-	const logdismiss = settingsDom.querySelector('#log_dismiss') as HTMLButtonElement
-
-	loglink.onclick = () => dismiss()
-	logdismiss.onclick = () => dismiss()
 }
 
 function translatePlaceholders() {
@@ -830,22 +813,22 @@ function settingsFooter() {
 //	Inputs tab accessibility
 //
 
-function controlOptionsTabFocus(settingsDom: HTMLElement) {
-	optionsTabIndex(settingsDom)
+function controlOptionsTabFocus() {
+	optionsTabIndex()
 
-	for (const option of settingsDom.querySelectorAll('.opt-hider')) {
+	for (const option of document.querySelectorAll('#settings .opt-hider')) {
 		option.addEventListener('input', function () {
-			setTimeout(() => optionsTabIndex(settingsDom), 10)
+			setTimeout(() => optionsTabIndex(), 10)
 		})
 	}
 }
 
-function optionsTabIndex(settingsDom: HTMLElement) {
-	const id = <T>(s: string): T | null => settingsDom.querySelector(`#${s}`) as T | null
+function optionsTabIndex() {
+	const id = <T>(s: string): T | null => document.querySelector(`#${s}`) as T | null
 	const isAllSettings = id<HTMLInputElement>('i_showall')?.checked
 
 	const toggleTabindex = (parent: string, on: boolean = true) => {
-		settingsDom?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
+		document?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
 			on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
 		})
 	}
@@ -856,7 +839,7 @@ function optionsTabIndex(settingsDom: HTMLElement) {
 	}
 
 	// Then control if widgets are on or off
-	settingsDom.querySelectorAll('.dropdown').forEach((dom) => {
+	document.querySelectorAll('.dropdown').forEach((dom) => {
 		toggleTabindex('#' + dom.id, dom?.classList.contains('shown'))
 	})
 
@@ -866,7 +849,7 @@ function optionsTabIndex(settingsDom: HTMLElement) {
 	}
 
 	// Toggle tooltips
-	settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
+	document.querySelectorAll('.tooltiptext').forEach((dom) => {
 		toggleTabindex('.' + dom.classList[1], dom?.classList.contains('shown'))
 	})
 
@@ -931,12 +914,6 @@ function drawerDragEvents() {
 
 		// First time dragging, sets maximum y pos at which to block
 		if (firstPos === 0) firstPos = startTouchY
-
-		// Scrollbar padding control on windows & android
-		if (SYSTEM_OS.match(/windows|android/)) {
-			settingsDom.style.width = `calc(100% - 10px)`
-			settingsDom.style.paddingRight = `10px`
-		}
 
 		// prevent scroll when dragging
 		settingsDom.style.overflow = `clip`
@@ -1165,10 +1142,6 @@ function fadeOut() {
 
 function paramId(str: string) {
 	return document.getElementById(str) as HTMLInputElement
-}
-
-function paramClasses(str: string) {
-	return document.querySelectorAll(`.${str}`)!
 }
 
 function setCheckbox(id: string, cat: boolean) {

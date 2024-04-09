@@ -1,3 +1,15 @@
+## 19.2.2
+
+-   Invisible interface scrollbar on Chromium
+-   Only apply background optimization on Safari (hopefully #345)
+-   Fixed settings scrolling repaints causing slowdowns
+-   Fixed page not saving version number
+-   Small settings styling changes
+
+## 19.2.1
+
+-   Hotfix: Added fallback for interface breaking styling on older browsers
+
 ## 19.2.0
 
 -   Added:

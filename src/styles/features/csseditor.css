@@ -11,7 +11,7 @@
 	line-height: 1.4;
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
-	padding: 1.3em;
+	padding: 0.6em;
 	tab-size: 1.5em;
 	border: none;
 	border-radius: 10px;
@@ -40,14 +40,14 @@
 	user-select: auto;
 	overflow: hidden;
 	pointer-events: auto;
-	padding: 0 var(--_pse) 0 var(--padding-left);
+	padding: 0;
 }
 .pce-no-selection textarea:focus {
 	z-index: 1;
 }
 .pce-line {
-	padding: 0 var(--_pse) 0 0;
-	margin: 0 0 0 var(--padding-left);
+	padding: 0;
+	margin: 0;
 	position: relative;
 }
 .pce-line:before {
@@ -87,7 +87,7 @@ div.pce-overlays > * {
 	using github style (i think)
 */
 
-[data-theme='dark'] aside {
+[data-theme='dark'] aside .pce-wrapper {
 	color-scheme: dark;
 	/* ayu */
 	--caret: #ffaa33;
@@ -104,7 +104,7 @@ div.pce-overlays > * {
 	--selector: #22a4e6;
 }
 
-[data-theme='light'] aside {
+[data-theme='light'] aside .pce-wrapper {
 	color-scheme: light;
 	/* ayu */
 	--caret: #ffaa33;

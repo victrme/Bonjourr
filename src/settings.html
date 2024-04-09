@@ -145,9 +145,9 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<label class="uploadContainer">
-			<p class="trn">Upload background here</p>
-			<input id="i_bgfile" type="file" name="background_file" multiple tabindex="0" />
+		<label for="i_bgfile" class="input-file">
+			<span class="trn">Upload background here</span>
+			<input id="i_bgfile" type="file" name="background_file" multiple accept="image/*" />
 		</label>
 
 		<div id="fileContainer"></div>
@@ -1172,9 +1172,9 @@
 		</div>
 
 		<div id="import">
-			<label id="importFile" class="uploadContainer">
-				<p class="trn">Drop file to import settings</p>
-				<input id="i_importfile" type="file" name="import_file" tabindex="0" />
+			<label for="i_importfile" class="input-file">
+				<span class="trn">Drop file to import settings</span>
+				<input id="i_importfile" type="file" name="import_file" accept="application/json, text/plain" />
 			</label>
 
 			<div>

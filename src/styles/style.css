@@ -31,7 +31,7 @@
 
 #background-bis,
 #background {
-	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0); /* do not remove translate3d, safari fix */
+	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
 	position: absolute;
 	width: 100%;
 	height: 100%;

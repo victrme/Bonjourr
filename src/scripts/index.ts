@@ -9,10 +9,9 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
-import { settingsInit } from './settings'
+import { settingsInit, settingsPreload } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
-import storage, { getSyncDefaults } from './storage'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
@@ -21,6 +20,7 @@ import { traduction, setTranslationCache } from './utils/translations'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
+import storage from './storage'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -43,24 +43,16 @@ try {
 
 async function startup() {
 	let { sync, local } = await storage.init()
-
 	const OLD_VERSION = sync?.about?.version
-	const versionChanged = OLD_VERSION !== CURRENT_VERSION
-	const firstStart = OLD_VERSION === undefined && Object.keys(sync).length === 0
 
-	if (versionChanged) {
-		if (firstStart) {
-			console.log(`First install: ${CURRENT_VERSION}`)
-			sync = await getSyncDefaults()
-		} else {
-			console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
-			sync = upgradeSyncStorage(sync)
-		}
-
+	if (OLD_VERSION !== CURRENT_VERSION) {
+		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
+		sync = upgradeSyncStorage(sync)
+		local = upgradeLocalStorage(local)
 		storage.sync.set(sync)
 	}
 
-	await setTranslationCache(sync.lang, local, versionChanged)
+	await setTranslationCache(sync.lang, local)
 
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
@@ -82,6 +74,7 @@ async function startup() {
 	quickLinks(sync)
 	syncNewBookmarks(sync.syncbookmarks)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
+	operaExtensionExplainer(local.operaExplained)
 
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
@@ -89,6 +82,7 @@ async function startup() {
 	onInterfaceDisplay(() => {
 		document.body.classList.remove('init')
 
+		settingsPreload()
 		userActionsEvents()
 		setPotatoComputerMode()
 		interfacePopup({
@@ -98,15 +92,11 @@ async function startup() {
 			announce: sync.announcements,
 		})
 	})
-
-	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
-		if (!local?.operaExplained) {
-			return operaExtensionExplainer()
-		}
-	}
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
+	data.about = SYNC_DEFAULT.about
+
 	// 19.0.0
 
 	if (data.reviewPopup) {
@@ -147,7 +137,13 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	storage.sync.remove('cssHeight')
 
 	data = linksDataMigration(data)
-	data.about = SYNC_DEFAULT.about
+
+	return data
+}
+
+function upgradeLocalStorage(data: Local.Storage): Local.Storage {
+	data.translations = undefined
+	storage.local.remove('translations')
 
 	return data
 }
@@ -198,12 +194,14 @@ function userActionsEvents() {
 	let isMousingDownOnInput = false
 
 	document.body.addEventListener('mousedown', detectTargetAsInputs)
-	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
 	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
 	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
 	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
 	document.body.addEventListener('keydown', settingsFirstLoad)
+
+	domshowsettings?.addEventListener('pointerup', settingsFirstLoad)
+	document.body.addEventListener('keyup', settingsFirstLoad)
 
 	document.addEventListener('click', clickUserActions)
 	document.addEventListener('keydown', keydownUserActions)
@@ -320,23 +318,26 @@ function userActionsEvents() {
 	}
 
 	function settingsFirstLoad(event?: Event) {
-		if (document.getElementById('settings')) {
-			return
-		}
-
-		const type = event?.type
 		const code = (event as KeyboardEvent)?.code
-		const iosClickStart = SYSTEM_OS === 'ios' && event?.type === 'pointerdown'
+		const type = event?.type
+		const initEvents = code === 'Escape' || type === 'mouseenter' || type === 'pointerdown'
+		const dispatchEvents = (code === 'Escape' && type === 'keyup') || type === 'pointerup'
 
-		if (code === 'Escape' || type === 'mouseenter' || type === 'pointerdown') {
+		if (initEvents) {
 			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
 			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
 			document.body.removeEventListener('keydown', settingsFirstLoad)
 			settingsInit()
 		}
 
-		if (code === 'Escape' || iosClickStart) {
-			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
+		if (dispatchEvents) {
+			domshowsettings?.removeEventListener('pointerup', settingsFirstLoad)
+			document.body?.removeEventListener('keyup', settingsFirstLoad)
+			document.dispatchEvent(new Event('toggle-settings'))
+
+			setTimeout(() => {
+				domshowsettings?.addEventListener('click', toggleSettingsMenu)
+			})
 		}
 	}
 }
@@ -476,7 +477,11 @@ async function setPotatoComputerMode() {
 	document.body.classList.toggle('potato', detectedPotato)
 }
 
-function operaExtensionExplainer() {
+function operaExtensionExplainer(explained?: true) {
+	if (explained || BROWSER !== 'opera' || PLATFORM !== 'chrome') {
+		return
+	}
+
 	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
 	const doc = template.content.cloneNode(true) as Document
 	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
