@@ -2,6 +2,7 @@ export default {
 	en: 'English',
 	fr: 'Français',
 	sk: 'Slovenský',
+	cz: 'Čeština',
 	sv: 'Svenska',
 	pl: 'Polski',
 	pt_BR: 'Português (Brasil)',
@@ -33,6 +34,7 @@ export default {
 export const subsets = {
 	ar: 'arabic',
 	sk: 'latin-ext',
+	cz: 'latin-ext',
 	pl: 'latin-ext',
 	ro: 'latin-ext',
 	ru: 'cyrillic',
