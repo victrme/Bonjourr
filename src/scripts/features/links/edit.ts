@@ -1,9 +1,11 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { IS_MOBILE, SYSTEM_OS, PLATFORM } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
+import debounce from '../../utils/debounce'
+import { getComposedPath } from '../../utils'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
@@ -33,11 +35,10 @@ export default async function openEditDialog(event: Event) {
 
 	//
 	// Set correct state
-
 	const isSelectAll = domlinkblocks.classList.contains('select-all')
 	const isInFolder = domlinkblocks.classList.contains('in-folder')
 	const isSelectingFolder = !!document.querySelector('.block.selected.folder')
-	const path = event.composedPath() as Element[]
+	const path = event.type === 'touchstart' ? getComposedPath(event.target!) : event.composedPath() as Element[]
 	const isTab = path.some((el) => el?.id === 'link-title')
 	const isTabItem = path[0]?.tagName === 'BUTTON' && path[1]?.id === 'tab-title'
 	const isTabDefault = isTabItem && path[0]?.id === 'default-tab-title'
@@ -112,7 +113,7 @@ export default async function openEditDialog(event: Event) {
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const editRects = domeditlink.getBoundingClientRect()
-	const withPointer = event.type === 'contextmenu' || event.type === 'click'
+	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
 	const { innerHeight, innerWidth } = window
 	const isMobileSized = innerWidth < 600
@@ -154,6 +155,19 @@ queueMicrotask(() => {
 	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
+		const handleLongPress = debounce(function (event: TouchEvent) {
+			openEditDialog(event)
+		}, 500)
+
+		domlinkblocks?.addEventListener('touchstart', function (event) {
+			handleLongPress(event)
+			event.preventDefault()
+		})
+
+		domlinkblocks?.addEventListener('touchend', function (event) {
+			handleLongPress.cancel()
+		})
+
 		window.addEventListener('resize', closeEditDialog)
 	}
 })
