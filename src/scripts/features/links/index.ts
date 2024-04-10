@@ -152,10 +152,12 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 }
 
 function createFolder(link: Links.Folder, folderChildren: Link[], style: Style): HTMLLIElement {
-	const linksInThisFolder = folderChildren.filter((l) => !l.folder && l.parent === link._id)
 	const li = getHTMLTemplate<HTMLLIElement>('link-folder', 'li')
 	const imgs = li.querySelectorAll('img')!
 	const span = li.querySelector('span')!
+	const linksInThisFolder = folderChildren
+		.filter((l) => !l.folder && l.parent === link._id)
+		.toSorted((a, b) => a.order - b.order)
 
 	li.id = link._id
 	span.textContent = createTitle(link)
