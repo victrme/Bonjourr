@@ -135,8 +135,12 @@
 		font-size: 11px;
 	}
 
-	#popup {
+	body #popup {
 		display: none;
+		width: 100%;
+		left: unset;
+		right: unset;
+		padding-inline: 4vw;
 	}
 
 	#bookmarks_container {
@@ -188,5 +192,42 @@
 
 	#sb-buttons #sb_empty {
 		font-size: 2em;
+	}
+
+	aside {
+		font-size: 15px;
+	}
+
+	button, select, option, input, .importexport-tabs button {
+		font-size: 15px;
+	}
+
+	aside input[type='range']::-webkit-slider-thumb {
+		height: 25px;
+		width: 25px;
+		border-radius: 50px;
+	}
+
+	aside .wrapper {
+		padding: unset;
+		min-height: 38px;
+	}
+
+	aside input:not(.range, .switch),
+	aside select {
+		min-height: 36px;
+		border-radius: 13px;
+	}
+
+	#settings .tooltip {
+		width: 25px;
+		height: 25px;
+		min-width: 25px;
+		font-size: 15px;
+	}
+
+	.importexport-tabs button {
+		height: 36px;
+		border-radius: 13px;
 	}
 }

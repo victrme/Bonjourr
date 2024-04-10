@@ -804,7 +804,7 @@ function settingsFooter() {
 		version.textContent = SYNC_DEFAULT.about.version
 	}
 
-	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') {
+	if (PLATFORM === 'safari') {
 		donate?.remove()
 	}
 }
