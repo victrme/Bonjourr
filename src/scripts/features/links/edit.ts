@@ -123,12 +123,19 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 
 	if (withPointer && isMobileSized) {
 		x = (innerWidth - editRects.width) / 2
-		y = (event as PointerEvent).y - 60 - editRects.height
+		y = (event.type === 'touchstart' ?
+			(event as TouchEvent).touches[0].clientY :
+			(event as PointerEvent).y) - 60 - editRects.height
 	}
 	//
-	else if (withPointer) {
-		x = (event as PointerEvent).x + 20
-		y = (event as PointerEvent).y + 20
+	else if (withPointer) { // gets coordinates differently from touchstart or contextmenu
+		x = (event.type === 'touchstart' ?
+			(event as TouchEvent).touches[0].clientX :
+			(event as PointerEvent).x) + 20
+
+		y = (event.type === 'touchstart' ?
+			(event as TouchEvent).touches[0].clientY :
+			(event as PointerEvent).y) + 20
 	}
 	//
 	else if (withKeyboard) {
@@ -161,7 +168,6 @@ queueMicrotask(() => {
 
 		domlinkblocks?.addEventListener('touchstart', function (event) {
 			handleLongPress(event)
-			event.preventDefault()
 		})
 
 		domlinkblocks?.addEventListener('touchend', function (event) {
