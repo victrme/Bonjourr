@@ -226,11 +226,12 @@ function clockDate(date: Date, dateformat: DateFormat) {
 function greetings(date: Date, name?: string) {
 	const hour = date.getHours()
 	let greet = 'Good evening'
+	const rare = oneInFiveRandom
 
 	if (hour < 3) {
 		greet = 'Good evening'
 	} else if (hour < 5) {
-		greet = ['Good night', 'Sweet dreams'][oneInFiveRandom]
+		greet = ['Good night', 'Sweet dreams'][rare]
 	} else if (hour < 12) {
 		greet = 'Good morning'
 	} else if (hour < 18) {
@@ -241,7 +242,7 @@ function greetings(date: Date, name?: string) {
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
 
-	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
+	domgreetings.style.textTransform = name || rare ? 'none' : 'capitalize'
 	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
 	domname.textContent = name ?? ''
 }
