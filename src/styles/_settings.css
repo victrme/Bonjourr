@@ -343,6 +343,7 @@ aside form button {
 	padding: 0;
 	opacity: 0;
 	max-width: 0;
+	visibility: hidden;
 	background-color: transparent;
 	transition: opacity 0.1s, max-width 0.2s;
 }
@@ -360,6 +361,7 @@ aside form.valid button {
 	pointer-events: all;
 	max-width: 26px;
 	margin-left: 4px;
+	visibility: visible;
 }
 
 aside form.valid button:not(:disabled):hover,
@@ -742,12 +744,15 @@ aside form.valid button:not(:disabled):active {
 	width: 45%;
 }
 
+#quotes_userlist .wrapper {
+	flex-wrap: wrap;
+}
+
 #i_qtlist {
 	width: 100%;
-	min-height: 100px;
-	max-height: 200px;
-	margin-top: 0.5em;
-	padding: 0.5em 1em;
+	height: 200px;
+	margin-top: 20px;
+	padding: 12px;
 	font-size: 13px;
 	line-height: 1.5;
 	resize: vertical;

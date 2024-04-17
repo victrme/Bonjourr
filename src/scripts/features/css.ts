@@ -21,7 +21,7 @@ export default function customCss(init?: string, event?: { styling: string }) {
 	}
 
 	onSettingsLoad(async () => {
-		const { defaultCommands } = await import('prism-code-editor/commands')
+		const { defaultCommands, setIgnoreTab } = await import('prism-code-editor/commands')
 		const { createEditor } = await import('prism-code-editor')
 		await import('prism-code-editor/prism/languages/css-extras')
 
@@ -39,5 +39,7 @@ export default function customCss(init?: string, event?: { styling: string }) {
 			eventDebounce({ css: value })
 			stylelink.textContent = value
 		})
+
+		setIgnoreTab(true)
 	})
 }
