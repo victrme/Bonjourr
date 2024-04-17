@@ -9,7 +9,7 @@
 <div class="param">
 	<div class="showall wrapper">
 		<label for="i_showall" class="trn">Show all settings</label>
-		<input id="i_showall" class="switch opt-hider" type="checkbox" />
+		<input id="i_showall" class="switch" type="checkbox" />
 	</div>
 
 	<hr />
@@ -19,7 +19,7 @@
 		<select id="i_lang" class="lang"></select>
 	</div>
 
-	<div class="as as_visuals">
+	<div class="as as_visuals dropdown">
 		<hr />
 
 		<div class="darkmode wrapper">
@@ -37,7 +37,7 @@
 		<div class="wrapper" id="tabtitle">
 			<span>
 				<span class="trn">Tab appearance</span>
-				<button class="tooltip tttab opt-hider" aria-label="Tips on tab appearance">?</button>
+				<button class="tooltip tttab" aria-label="Tips on tab appearance">?</button>
 			</span>
 
 			<div>
@@ -55,7 +55,7 @@
 			</div>
 		</div>
 
-		<div class="tooltiptext tttab">
+		<div class="tooltiptext dropdown tttab">
 			<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
 		</div>
 
@@ -100,13 +100,13 @@
 	</div>
 
 	<div id="unsplash_options" class="dropdown shown">
-		<div class="as as_collection">
+		<div class="as as_collection dropdown">
 			<hr />
 
 			<div class="wrapper">
 				<span>
 					<label for="i_collection" class="trn">Unsplash collection</label>
-					<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
+					<button class="tooltip ttcoll" aria-label="Tips on Unsplash collections">?</button>
 				</span>
 
 				<form id="f_collection" class="network-form">
@@ -129,7 +129,7 @@
 				</form>
 			</div>
 
-			<p class="tooltiptext ttcoll">
+			<p class="tooltiptext dropdown ttcoll">
 				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
 				<a
 					class="trn"
@@ -176,9 +176,9 @@
 <div class="settings-title">
 	<h2 class="trn">Quick Links</h2>
 
-	<button class="tooltip ttlinks opt-hider" aria-label="Tips on Quick Links">?</button>
+	<button class="tooltip ttlinks" aria-label="Tips on Quick Links">?</button>
 
-	<p class="tooltiptext ttlinks">
+	<p class="tooltiptext dropdown ttlinks">
 		<span class="trn">These are Bonjourr's bookmarks. </span>
 		<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
 		<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
@@ -190,7 +190,7 @@
 <div class="param">
 	<div class="activate_quicklinks wrapper">
 		<label for="i_quicklinks" class="trn">Enable</label>
-		<input id="i_quicklinks" class="switch opt-hider" type="checkbox" />
+		<input id="i_quicklinks" class="switch" type="checkbox" />
 	</div>
 
 	<div id="quicklinks_options" class="dropdown">
@@ -240,7 +240,7 @@
 			</div>
 		</div>
 
-		<div class="as as_link">
+		<div class="as as_link dropdown">
 			<div id="syncbookmarks">
 				<hr />
 
@@ -255,12 +255,12 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_linktabs" class="trn">Link pages</label>
-					<button class="tooltip ttpages opt-hider" aria-label="Tips on Links pages">?</button>
+					<button class="tooltip ttpages" aria-label="Tips on Links pages">?</button>
 				</span>
 				<input id="i_linktabs" class="switch" type="checkbox" />
 			</div>
 
-			<p class="tooltiptext ttpages">
+			<p class="tooltiptext dropdown ttpages">
 				<span class="trn">Organize your links even more with pages. Right click next to a page to add another.</span>
 				<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
 					>Learn more</a
@@ -304,7 +304,7 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_time" class="trn">Enable</label>
-		<input id="i_time" class="switch opt-hider" type="checkbox" />
+		<input id="i_time" class="switch" type="checkbox" />
 	</div>
 
 	<div id="time_options" class="dropdown">
@@ -312,7 +312,7 @@
 
 		<div class="analog wrapper">
 			<label for="i_analog" class="trn">Analog clock</label>
-			<input id="i_analog" class="switch opt-hider" type="checkbox" />
+			<input id="i_analog" class="switch" type="checkbox" />
 		</div>
 
 		<hr />
@@ -441,7 +441,7 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_main" class="trn">Enable</label>
-		<input id="i_main" class="switch opt-hider" type="checkbox" />
+		<input id="i_main" class="switch" type="checkbox" />
 	</div>
 
 	<div id="main_options" class="dropdown">
@@ -699,7 +699,7 @@
 			</form>
 		</div>
 
-		<div class="as as_weather">
+		<div class="as as_weather dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -727,10 +727,10 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_moreinfo" class="trn">Detailed weather</label>
-					<button class="tooltip ttdetailledweather opt-hider" aria-label="What is detailed weather?">?</button>
+					<button class="tooltip ttdetailledweather" aria-label="What is detailed weather?">?</button>
 				</span>
 
-				<select id="i_moreinfo" class="opt-hider">
+				<select id="i_moreinfo" class="">
 					<option value="none" class="trn">None</option>
 					<option value="msnw">MSN Weather</option>
 					<option value="yhw">Yahoo Weather</option>
@@ -739,7 +739,7 @@
 				</select>
 			</div>
 
-			<p class="tooltiptext ttdetailledweather">
+			<p class="tooltiptext dropdown ttdetailledweather">
 				<span class="trn">Click on the weather widget to get detailed weather reports.</span>
 			</p>
 
@@ -793,11 +793,11 @@
 <div class="param">
 	<div class="activate_notes wrapper">
 		<label for="i_notes" class="trn">Enable</label>
-		<input id="i_notes" class="switch opt-hider" type="checkbox" />
+		<input id="i_notes" class="switch" type="checkbox" />
 	</div>
 
 	<div id="notes_options" class="dropdown">
-		<div class="as as_notes">
+		<div class="as as_notes dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -842,7 +842,7 @@
 <div class="param">
 	<div class="activate_searchbar wrapper">
 		<label for="i_sb" class="trn">Enable</label>
-		<input id="i_sb" class="switch opt-hider" type="checkbox" />
+		<input id="i_sb" class="switch" type="checkbox" />
 	</div>
 
 	<div id="searchbar_options" class="dropdown">
@@ -864,7 +864,7 @@
 
 		<div class="wrapper">
 			<label for="i_sbengine" class="trn">Search engine</label>
-			<select id="i_sbengine" class="choose_search opt-hider">
+			<select id="i_sbengine" class="choose_search">
 				<option value="google">Google</option>
 				<option value="ddg">DuckDuckGo</option>
 				<option value="bing">Bing</option>
@@ -887,7 +887,7 @@
 			</div>
 		</div>
 
-		<div class="as as_searchbar">
+		<div class="as as_searchbar dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -926,7 +926,7 @@
 <div class="param">
 	<div class="activate_quotes wrapper">
 		<label for="i_quotes" class="trn">Enable</label>
-		<input id="i_quotes" class="switch opt-hider" type="checkbox" />
+		<input id="i_quotes" class="switch" type="checkbox" />
 	</div>
 
 	<div id="quotes_options" class="dropdown">
@@ -961,15 +961,14 @@
 
 				<div class="wrapper">
 					<label for="i_qtlist" class="trn">Custom quotes</label>
+					<textarea
+						id="i_qtlist"
+						name="qtlist"
+						type="text"
+						placeholder="Author, Your quote.&#10;Author, Your second quote."
+						maxlength="8000"
+					></textarea>
 				</div>
-
-				<textarea
-					id="i_qtlist"
-					name="qtlist"
-					type="text"
-					placeholder="Author, Your quote.&#10;Author, Your second quote."
-					maxlength="8000"
-				></textarea>
 			</div>
 
 			<hr />
@@ -992,7 +991,7 @@
 	</div>
 </div>
 
-<div class="as as_fonts">
+<div class="as as_fonts dropdown">
 	<div class="settings-title">
 		<h2 class="trn">Fonts</h2>
 	</div>
@@ -1045,13 +1044,13 @@
 	</div>
 </div>
 
-<div class="as as_page">
+<div class="as as_page dropdown">
 	<div class="settings-title">
 		<h2 class="trn">Page layout</h2>
 
-		<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
+		<button class="tooltip ttgrid" aria-label="Tips on page grid layout">?</button>
 
-		<p class="tooltiptext ttgrid">
+		<p class="tooltiptext dropdown ttgrid">
 			<span class="trn">Customise how and where widgets appear.</span>
 			<span class="trn instructions">Open the toolbox and select a widget to modify on the page.</span>
 			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener">Learn more</a>
@@ -1100,13 +1099,13 @@
 	</div>
 </div>
 
-<div class="as as_css cssEditor">
+<div class="as as_css dropdown cssEditor">
 	<div class="settings-title">
 		<h2 id="lbl-css" class="trn">Custom Style</h2>
 
-		<button class="tooltip ttcss opt-hider" aria-label="Tips on Custom styles">?</button>
+		<button class="tooltip ttcss" aria-label="Tips on Custom styles">?</button>
 
-		<p class="tooltiptext ttcss">
+		<p class="tooltiptext dropdown ttcss">
 			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank">CSS snippets.</a>
@@ -1139,7 +1138,7 @@
 
 		<button class="tooltip ttexport" aria-label="Tips on imports & exports">?</button>
 
-		<p class="tooltiptext ttexport">
+		<p class="tooltiptext dropdown ttexport">
 			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
 			<a
 				class="trn"
@@ -1153,8 +1152,8 @@
 
 	<div class="param">
 		<div class="importexport-tabs">
-			<button id="s_export" class="trn opt-hider">Export</button>
-			<button id="s_import" class="trn opt-hider">Import</button>
+			<button id="s_export" class="trn">Export</button>
+			<button id="s_import" class="trn">Import</button>
 			<div class="glider"></div>
 		</div>
 

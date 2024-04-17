@@ -2,6 +2,10 @@
  *	CSS Editor
  */
 
+#css-editor {
+	padding: 0;
+}
+
 .prism-code-editor {
 	font-size: 13px;
 	overflow: auto;
@@ -11,7 +15,7 @@
 	line-height: 1.4;
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
-	padding: 0.6em;
+	padding: 16px;
 	tab-size: 1.5em;
 	border: none;
 	border-radius: 10px;
@@ -32,15 +36,16 @@
 }
 .prism-code-editor textarea {
 	all: unset;
-	box-sizing: border-box;
 	height: 100%;
 	width: 100%;
 	color: #0000;
-	-webkit-user-select: auto;
-	user-select: auto;
-	overflow: hidden;
-	pointer-events: auto;
 	padding: 0;
+	overflow: hidden;
+	border-radius: 8px;
+	box-sizing: border-box;
+	pointer-events: auto;
+	user-select: auto;
+	-webkit-user-select: auto;
 }
 .pce-no-selection textarea:focus {
 	z-index: 1;
