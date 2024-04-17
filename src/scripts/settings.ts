@@ -54,7 +54,6 @@ export async function settingsInit() {
 	showall(data.showall, false)
 	updateExportJSON(data)
 	initOptionsValues(data)
-	controlOptionsTabFocus()
 	initOptionsEvents()
 	settingsDrawerBar()
 	settingsFooter()
@@ -75,9 +74,6 @@ export async function settingsInit() {
 	}
 
 	document.addEventListener('toggle-settings', toggleSettingsMenu)
-	// document.getElementById('showSettings')?.addEventListener('click', console.log)
-
-	console.log('load')
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -807,61 +803,6 @@ function settingsFooter() {
 	if (PLATFORM === 'safari') {
 		donate?.remove()
 	}
-}
-
-//
-//	Inputs tab accessibility
-//
-
-function controlOptionsTabFocus() {
-	optionsTabIndex()
-
-	for (const option of document.querySelectorAll('#settings .opt-hider')) {
-		option.addEventListener('input', function () {
-			setTimeout(() => optionsTabIndex(), 10)
-		})
-	}
-}
-
-function optionsTabIndex() {
-	const id = <T>(s: string): T | null => document.querySelector(`#${s}`) as T | null
-	const isAllSettings = id<HTMLInputElement>('i_showall')?.checked
-
-	const toggleTabindex = (parent: string, on: boolean = true) => {
-		document?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
-			on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
-		})
-	}
-
-	// If showall, start by enabling .as fields
-	if (isAllSettings) {
-		toggleTabindex('.as', true)
-	}
-
-	// Then control if widgets are on or off
-	document.querySelectorAll('.dropdown').forEach((dom) => {
-		toggleTabindex('#' + dom.id, dom?.classList.contains('shown'))
-	})
-
-	// Disable all "all" settings if off
-	if (isAllSettings === false) {
-		toggleTabindex('.as', false)
-	}
-
-	// Toggle tooltips
-	document.querySelectorAll('.tooltiptext').forEach((dom) => {
-		toggleTabindex('.' + dom.classList[1], dom?.classList.contains('shown'))
-	})
-
-	// Toggle in-widgets hidden options
-	toggleTabindex('#analog_options', id<Element>('analog_options')?.classList.contains('shown'))
-	toggleTabindex('#digital_options', id<Element>('digital_options')?.classList.contains('shown'))
-	toggleTabindex('#searchbar_request', id<Element>('searchbar_request')?.classList.contains('shown'))
-	toggleTabindex('#weather_provider', id<Element>('weather_provider')?.classList.contains('shown'))
-	toggleTabindex('#quotes_userlist', id<Element>('quotes_userlist')?.classList.contains('shown'))
-	toggleTabindex('#import', id<Element>('import')?.classList.contains('shown'))
-	toggleTabindex('#export', id<Element>('export')?.classList.contains('shown'))
-	toggleTabindex('#sett_city', id<HTMLInputElement>('i_geol')?.checked === false)
 }
 
 //

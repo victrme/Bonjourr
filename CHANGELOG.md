@@ -1,3 +1,13 @@
+## 19.2.3
+
+-   Fixes:
+    -   Icons in folder preview in correct order (#326)
+    -   Settings not opening on first touch on mobile
+    -   Removed last update version number fix
+-   Translations:
+    -   Added Czech translation, thank you @ZimaDaniel
+    -   Updated Brazilian, thanks @adilsonfsantos
+
 ## 19.2.2
 
 -   Invisible interface scrollbar on Chromium
