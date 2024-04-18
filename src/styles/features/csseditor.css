@@ -7,7 +7,7 @@
 }
 
 .prism-code-editor {
-	font-size: 13px;
+	font-size: 14px;
 	overflow: auto;
 	display: grid;
 	width: 100%;
@@ -15,7 +15,7 @@
 	line-height: 1.4;
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
-	padding: 16px;
+	padding: 16px 20px;
 	tab-size: 1.5em;
 	border: none;
 	border-radius: 10px;
@@ -27,8 +27,11 @@
 	white-space: pre;
 }
 
+[data-system='mac'] .prism-code-editor {
+	font-size: 12px;
+}
+
 .pce-wrapper {
-	margin: 0.5em 0;
 	position: relative;
 	pointer-events: none;
 	-webkit-text-size-adjust: none;
@@ -88,49 +91,49 @@ div.pce-overlays > * {
 }
 
 /*
-	DARK / LIGHT THEMES
-	using github style (i think)
-*/
+ *	DARK / LIGHT THEMES
+ *	using Ayu VSCode: https://github.com/ayu-theme/vscode-ayu
+ */
 
-[data-theme='dark'] aside .pce-wrapper {
-	color-scheme: dark;
-	/* ayu */
-	--caret: #ffaa33;
+aside .pce-wrapper {
 	--selection-bg: #036dd626;
-	--comment: #888b90bb;
-	--variable: #ddd;
-	--plaintext: #ddd;
-	--color: #ddd;
-	--number: #ffaa33;
+	--caret: #ffaa33;
+	--selector: #22a4e6;
+	--property: #55b4d4;
 	--string: #86b300;
 	--keyword: #fa8d3e;
 	--operators: #ed9366;
-	--property: #55b4d4;
-	--selector: #22a4e6;
+}
+
+[data-theme='dark'] aside .pce-wrapper {
+	color-scheme: dark;
+	--comment: #888b90bb;
+	--variable: #ddd;
+	--plaintext: #ddd;
+	--number: #d2a6ff;
+	--color: #98e7cc;
+	--class: #ffc35c;
+	--symbol: #ffaa33;
 }
 
 [data-theme='light'] aside .pce-wrapper {
 	color-scheme: light;
-	/* ayu */
-	--caret: #ffaa33;
-	--selection-bg: #036dd626;
 	--comment: #787b8099;
 	--plaintext: #5c6166;
-	--number: #ffaa33;
-	--string: #86b300;
-	--keyword: #fa8d3e;
 	--variable: #5c6166;
-	--operators: #ed9366;
-	--property: #55b4d4;
-	--selector: #22a4e6;
-	--color: #5c6166;
+	--number: #a37acc;
+	--color: #4cbf99;
+	--class: #f2ae49;
+	--symbol: #fa8d3e;
 }
+
 .prism-code-editor textarea {
 	caret-color: var(--caret);
 }
 .prism-code-editor textarea::selection {
 	color: transparent;
 	background: var(--selection-bg);
+	animation: alternate 1s 0s;
 	-webkit-animation: alternate 1s 0s;
 }
 .prism-code-editor,
@@ -142,10 +145,12 @@ div.pce-overlays > * {
 .token.comment {
 	color: var(--comment);
 }
-.token.number,
 .token.symbol,
 .token.inserted,
 .token.unit {
+	color: var(--symbol);
+}
+.token.number {
 	color: var(--number);
 }
 .token.group,
@@ -176,6 +181,10 @@ div.pce-overlays > * {
 .token.selector,
 .token.escape {
 	color: var(--selector);
+}
+.token.selector .token.id,
+.token.selector .token.class {
+	color: var(--class);
 }
 .token.color {
 	color: var(--color);
