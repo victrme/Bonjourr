@@ -16,8 +16,7 @@
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
 	padding: 16px 20px;
-	tab-size: 1.5em;
-	border: none;
+	outline-offset: -2px;
 	border-radius: 10px;
 	box-sizing: border-box;
 	background: var(--color-param);
@@ -42,31 +41,14 @@
 	height: 100%;
 	width: 100%;
 	color: #0000;
-	padding: 0;
 	overflow: hidden;
-	border-radius: 8px;
-	box-sizing: border-box;
+	outline: none !important;
 	pointer-events: auto;
 	user-select: auto;
 	-webkit-user-select: auto;
 }
 .pce-no-selection textarea:focus {
 	z-index: 1;
-}
-.pce-line {
-	padding: 0;
-	margin: 0;
-	position: relative;
-}
-.pce-line:before {
-	position: sticky;
-	height: 100%;
-	z-index: 2;
-	left: 0;
-	width: var(--padding-left);
-}
-.pce-wrap .pce-line:before {
-	position: absolute;
 }
 .pce-overlays,
 div.pce-overlays > * {

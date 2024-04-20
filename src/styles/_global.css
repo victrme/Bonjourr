@@ -145,6 +145,7 @@ body button {
 body.tabbing a:focus,
 body.tabbing input:focus,
 body.tabbing textarea:focus,
+body.tabbing .pce-focus,
 body.tabbing select:focus,
 body.tabbing button:focus,
 body.tabbing button:focus,
