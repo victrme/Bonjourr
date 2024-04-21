@@ -50,9 +50,11 @@
 .pce-no-selection textarea:focus {
 	z-index: 1;
 }
+.pce-line {
+	position: relative;
+}
 .pce-overlays,
 div.pce-overlays > * {
-	content: '';
 	position: absolute;
 	top: 0;
 	right: 0;
