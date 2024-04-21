@@ -178,7 +178,7 @@
 	"duckduckgo": "DuckDuckGo",
 	"startpage": "Startpage",
 	"qwant": "Qwant",
-	"yahoo": "https://www.yahoo.co.jp/search?q=%s",
+	"yahoo": "https://search.yahoo.co.jp/search?p=%s",
 	"bing": "Microsoft Bing",
 	"URL request": "URLリクエスト",
 	"%s Not found": "%s が見つかりません",
