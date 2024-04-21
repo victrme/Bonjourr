@@ -28,10 +28,15 @@ export default function customCss(init?: string, event?: { styling: string }) {
 			lineNumbers: false,
 			wordWrap: true,
 			insertSpaces: false,
-			value: init || `/* ${tradThis('Type in your custom CSS')} */`,
+			value: init || '',
 		}
 
 		const editor = create(options)
+
+		editor.textarea.id = 'css-editor-textarea'
+		editor.textarea.setAttribute('maxlength', '8080')
+		editor.textarea.setAttribute('aria-labelledby', 'lbl-css')
+		editor.textarea.setAttribute('placeholder', tradThis('Type in your custom CSS'))
 
 		editor.addListener('update', (value) => {
 			value = stringMaxSize(value, 8080)
