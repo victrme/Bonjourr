@@ -78,10 +78,8 @@ div.pce-overlays > * {
  */
 
 aside .pce-wrapper {
-	--selection-bg: #036dd626;
 	--caret: #ffaa33;
 	--selector: #22a4e6;
-	--property: #55b4d4;
 	--string: #86b300;
 	--keyword: #fa8d3e;
 	--operators: #ed9366;
@@ -89,23 +87,27 @@ aside .pce-wrapper {
 
 [data-theme='dark'] aside .pce-wrapper {
 	color-scheme: dark;
+	--selection-bg: #3198ff26;
 	--comment: #888b90bb;
-	--variable: #ddd;
-	--plaintext: #ddd;
+	--variable: #dddddd;
+	--plaintext: #dddddd;
+	--propery: #3ba9ce;
 	--number: #d2a6ff;
 	--color: #98e7cc;
-	--class: #ffc35c;
+	--class: #ee9611;
 	--symbol: #ffaa33;
 }
 
 [data-theme='light'] aside .pce-wrapper {
 	color-scheme: light;
+	--selection-bg: #036dd626;
 	--comment: #787b8099;
 	--plaintext: #5c6166;
 	--variable: #5c6166;
+	--property: #2fafda;
 	--number: #a37acc;
-	--color: #4cbf99;
-	--class: #f2ae49;
+	--color: #41b48e;
+	--class: #e6900f;
 	--symbol: #fa8d3e;
 }
 
