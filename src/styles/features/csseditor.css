@@ -16,8 +16,7 @@
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
 	padding: 16px 20px;
-	tab-size: 1.5em;
-	border: none;
+	outline-offset: -2px;
 	border-radius: 10px;
 	box-sizing: border-box;
 	background: var(--color-param);
@@ -42,10 +41,8 @@
 	height: 100%;
 	width: 100%;
 	color: #0000;
-	padding: 0;
 	overflow: hidden;
-	border-radius: 8px;
-	box-sizing: border-box;
+	outline: none !important;
 	pointer-events: auto;
 	user-select: auto;
 	-webkit-user-select: auto;
@@ -54,23 +51,10 @@
 	z-index: 1;
 }
 .pce-line {
-	padding: 0;
-	margin: 0;
 	position: relative;
-}
-.pce-line:before {
-	position: sticky;
-	height: 100%;
-	z-index: 2;
-	left: 0;
-	width: var(--padding-left);
-}
-.pce-wrap .pce-line:before {
-	position: absolute;
 }
 .pce-overlays,
 div.pce-overlays > * {
-	content: '';
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -96,10 +80,8 @@ div.pce-overlays > * {
  */
 
 aside .pce-wrapper {
-	--selection-bg: #036dd626;
 	--caret: #ffaa33;
 	--selector: #22a4e6;
-	--property: #55b4d4;
 	--string: #86b300;
 	--keyword: #fa8d3e;
 	--operators: #ed9366;
@@ -107,9 +89,11 @@ aside .pce-wrapper {
 
 [data-theme='dark'] aside .pce-wrapper {
 	color-scheme: dark;
+	--selection-bg: #3198ff26;
 	--comment: #888b90bb;
-	--variable: #ddd;
-	--plaintext: #ddd;
+	--variable: #dddddd;
+	--plaintext: #dddddd;
+	--propery: #3ba9ce;
 	--number: #d2a6ff;
 	--color: #98e7cc;
 	--class: #ffc35c;
@@ -118,12 +102,14 @@ aside .pce-wrapper {
 
 [data-theme='light'] aside .pce-wrapper {
 	color-scheme: light;
+	--selection-bg: #036dd626;
 	--comment: #787b8099;
 	--plaintext: #5c6166;
 	--variable: #5c6166;
+	--property: #2fafda;
 	--number: #a37acc;
-	--color: #4cbf99;
-	--class: #f2ae49;
+	--color: #41b48e;
+	--class: #e6900f;
 	--symbol: #fa8d3e;
 }
 
