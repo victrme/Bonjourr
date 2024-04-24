@@ -9,6 +9,7 @@ export default {
 	nl: 'Nederlandse',
 	da: 'Dansk',
 	sv: 'Svenska',
+	nb: 'Norsk',
 	fi: 'Suomi',
 	pl: 'Polski',
 	cz: 'Čeština',
