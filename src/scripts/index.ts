@@ -76,6 +76,9 @@ async function startup() {
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
+	document.documentElement.dataset.system = SYSTEM_OS as string
+	document.documentElement.dataset.browser = BROWSER as string
+
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 

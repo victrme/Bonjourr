@@ -24,19 +24,14 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 
 <br>
 
-
-
 ## 🚀 Install Bonjourr!
+
 [<img src="https://labels.tahoe.be/chrome_download_dark.svg" height="53" alt="Download Bonjourr for Chrome">](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
 [<img src="https://labels.tahoe.be/firefox_download_dark.svg" height="53" alt="Download Bonjourr for Firefox">](https://addons.mozilla.org/firefox/addon/bonjourr-startpage/)
 [<img src="https://labels.tahoe.be/edge_download_dark.svg" height="53" alt="Download Bonjourr for Edge">](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
 [<img src="https://labels.tahoe.be/safari_download_dark.svg" height="53" alt="Download Bonjourr for Safari">](https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236)
 
-
-
-
 You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
-
 
 <br>
 
@@ -127,6 +122,11 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 Running Bonjourr locally
 
+Prerequisites:
+
+-   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
+-   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
+
 Clone this repository
 
 ```bash
@@ -134,7 +134,7 @@ git clone https://github.com/victrme/Bonjourr
 cd Bonjourr
 ```
 
-[Install pnpm](https://pnpm.io/installation) on your system, or replace `pnpm ` by `npm run `
+You can replace `pnpm` by `npm run`
 
 ```bash
 # In root directory
@@ -144,7 +144,6 @@ pnpm install
 pnpm build
 
 # These commands watch changes for each platforms
-# You need to save a .ts or .css file to trigger a change
 pnpm chrome
 pnpm edge
 pnpm firefox
