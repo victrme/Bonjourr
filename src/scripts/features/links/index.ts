@@ -99,9 +99,17 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	const folderid = domlinkblocks.dataset.folderid
 
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
-	const links = !!folderid ? getLinksInFolder(data, folderid) : getLinksInTab(data)
-	const ids = links.map((link) => link._id)
+	let links: Links.Link[] = []
 
+	if (data.topsites) {
+		links = topSitesToLinks(await chrome.topSites.get())
+	} else if (folderid) {
+		links = getLinksInFolder(data, folderid)
+	} else {
+		links = getLinksInTab(data)
+	}
+
+	const ids = links.map((link) => link._id)
 	const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
 	const children = document.querySelectorAll<HTMLLIElement>('#link-list > li')
 	const childrenIds = [...children].map((li) => li.id)
@@ -109,22 +117,6 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	for (const child of children) {
 		if (ids.includes(child.id) === false) {
 			child.remove()
-		}
-	}
-
-	if (data.topsites) {
-		const sites = await chrome.topSites.get()
-
-		for (let i = 0; i < sites.length; i++) {
-			const site = sites[i]
-
-			console.log(site)
-			links.push({
-				_id: 'topsite-' + i,
-				order: i,
-				title: site.title,
-				url: site.url,
-			})
 		}
 	}
 
@@ -856,4 +848,21 @@ function correctLinksOrder(data: Sync.Storage): Sync.Storage {
 
 function isLinkStyle(s: string): s is Sync.Storage['linkstyle'] {
 	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+}
+
+function topSitesToLinks(sites: chrome.topSites.MostVisitedURL[]): Links.Elem[] {
+	const links = []
+
+	for (let i = 0; i < sites.length; i++) {
+		const site = sites[i]
+
+		links.push({
+			_id: 'topsite-' + i,
+			order: i,
+			title: site.title,
+			url: site.url,
+		})
+	}
+
+	return links
 }
