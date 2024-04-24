@@ -30,6 +30,7 @@ type LinksUpdate = {
 	moveToTab?: MoveToTarget
 	removeFromFolder?: string[]
 	deleteLinks?: string[]
+	topsites?: boolean
 }
 
 type TabTitle = {
@@ -111,6 +112,22 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		}
 	}
 
+	if (data.topsites) {
+		const sites = await chrome.topSites.get()
+
+		for (let i = 0; i < sites.length; i++) {
+			const site = sites[i]
+
+			console.log(site)
+			links.push({
+				_id: 'topsite-' + i,
+				order: i,
+				title: site.title,
+				url: site.url,
+			})
+		}
+	}
+
 	// Exit early if no links
 	if (links.length === 0) {
 		displayInterface('links')
@@ -135,10 +152,12 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 				? createElem(link, data.linknewtab, data.linkstyle)
 				: createFolder(link, linksInFolders, data.linkstyle)
 
-			li.addEventListener('keyup', displayEditDialog)
-			li.addEventListener('click', selectAll)
-			li.addEventListener('pointerdown', selectAll)
-			li.addEventListener('pointerdown', startDrag)
+			if (li.id.includes('topsite') === false) {
+				li.addEventListener('keyup', displayEditDialog)
+				li.addEventListener('click', selectAll)
+				li.addEventListener('pointerdown', selectAll)
+				li.addEventListener('pointerdown', startDrag)
+			}
 		}
 
 		fragment.appendChild(li)
@@ -431,6 +450,10 @@ export async function linksUpdate(update: LinksUpdate) {
 		setOpenInNewTab(update.newtab)
 	}
 
+	if (update.topsites !== undefined) {
+		setTopSites(update.topsites)
+	}
+
 	if (update.style) {
 		setLinkStyle(update.style)
 	}
@@ -714,6 +737,22 @@ async function setLinkStyle(style: string = 'large') {
 
 	initRows(data.linksrow, style)
 	initblocks(data)
+}
+
+async function setTopSites(toggle: boolean) {
+	const permitted = await chrome.permissions.request({ permissions: ['topSites'] })
+	const i_topsites = document.querySelector<HTMLInputElement>('#i_topsites')!
+
+	if (!permitted) {
+		i_topsites.checked = false
+	}
+
+	const data = await storage.sync.get()
+	data.topsites = toggle
+	storage.sync.set(data)
+	initblocks(data)
+
+	console.log('Top sites: ', toggle)
 }
 
 function setRows(row: string) {

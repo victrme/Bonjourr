@@ -11,6 +11,7 @@ declare namespace Sync {
 		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
 		linktabs: LinkTabs
+		topsites: boolean
 		textShadow: number
 		cssHeight?: number
 		review: number

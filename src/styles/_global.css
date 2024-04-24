@@ -63,6 +63,11 @@
 	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 }
 
+[data-platform='safari'] .not-safari,
+[data-platform='online'] .not-online {
+	display: none;
+}
+
 #interface,
 input[type='range'],
 input[type='checkbox'] {

@@ -127,6 +127,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_syncbookmarks', !!data.syncbookmarks)
 	setCheckbox('i_linktabs', data.linktabs.active)
 	setCheckbox('i_linknewtab', data.linknewtab)
+	setCheckbox('i_topsites', data.topsites)
 	setCheckbox('i_time', data.time)
 	setCheckbox('i_main', data.main)
 	setCheckbox('i_greethide', !data.hide?.greetings)
@@ -161,22 +162,6 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// must be init after children appening
 	setInput('i_lang', data.lang || 'en')
-
-	// No bookmarks import on safari || online
-	if (BROWSER === 'safari' || PLATFORM === 'online') {
-		paramId('importbookmarks')?.setAttribute('style', 'display: none')
-		paramId('syncbookmarks')?.setAttribute('style', 'display: none')
-	}
-
-	// Favicon doesn't work on Safari
-	if (BROWSER === 'safari') {
-		paramId('i_favicon').setAttribute('style', 'display: none')
-	}
-
-	// Export as file doesn't work on Safari extension
-	if (PLATFORM === 'safari') {
-		paramId('save_wrapper').setAttribute('style', 'display: none')
-	}
 
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
@@ -281,6 +266,10 @@ function initOptionsEvents() {
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
+	})
+
+	paramId('i_topsites').addEventListener('change', async function (this) {
+		quickLinks(undefined, { topsites: this.checked })
 	})
 
 	paramId('i_syncbookmarks').addEventListener('change', function (this) {

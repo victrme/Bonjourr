@@ -41,7 +41,15 @@
 			</span>
 
 			<div>
-				<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" aria-label="Tab favicon" />
+				<input
+					type="text"
+					name="favicon"
+					id="i_favicon"
+					maxlength="2"
+					placeholder="🌤"
+					aria-label="Tab favicon"
+					class="not-safari"
+				/>
 				<input
 					type="text"
 					name="tabtitle"
@@ -229,7 +237,7 @@
 			</form>
 		</div>
 
-		<div id="importbookmarks">
+		<div class="not-safari not-online">
 			<hr />
 
 			<div class="wrapper">
@@ -237,6 +245,13 @@
 				<div>
 					<button id="b_importbookmarks" class="param-btn trn">Import</button>
 				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_topsites" class="trn">Most visited</label>
+				<input id="i_topsites" class="switch" type="checkbox" />
 			</div>
 		</div>
 
@@ -1163,7 +1178,7 @@
 			<div>
 				<button id="b_exportcopy" class="inline-btn trn">Copy text</button>
 
-				<div id="save_wrapper">
+				<div id="save_wrapper" class="not-safari">
 					<button id="b_exportfile" class="inline-btn trn">Export as file</button>
 					<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
 				</div>
@@ -1257,7 +1272,7 @@
 		</p>
 	</div>
 
-	<div id="donate">
+	<div id="donate" class="not-safari">
 		<p>
 			<span class="trn">Consider</span>
 			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>

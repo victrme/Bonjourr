@@ -44,8 +44,14 @@ export default async function openEditDialog(event: Event) {
 	const isOnLink = path.some((el) => el?.className?.includes('block') && el?.tagName === 'LI')
 	const isOnLinkFolder = isOnLink && path.some((el) => el?.classList?.contains('folder'))
 	const isOnLinklist = path[0]?.id === 'link-list'
+	const isTopSite = path.some((el) => el?.id.includes('topsite'))
 
-	if ((isInFolder && isTab) || (isSelectAll && selected.length === 0) || domlinkblocks.classList.contains('dragging')) {
+	if (
+		isTopSite ||
+		(isInFolder && isTab) ||
+		(isSelectAll && selected.length === 0) ||
+		domlinkblocks.classList.contains('dragging')
+	) {
 		return
 	}
 
