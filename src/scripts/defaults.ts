@@ -103,6 +103,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		active: false,
 		selected: 0,
 		titles: [''],
+		pinned: [],
 	},
 	clock: {
 		size: 1,

@@ -54,6 +54,7 @@ declare namespace Sync {
 		active: boolean
 		selected: number
 		titles: string[]
+		pinned: number[]
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]

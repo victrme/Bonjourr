@@ -91,40 +91,51 @@
 	display: none;
 }
 
-#editlink.on-linklist:not(.on-link) #eb_add-link {
+.on-linklist:not(.on-link) #eb_add-link {
 	display: initial;
 }
 
-#editlink.on-link #eb_delete-link,
-#editlink.on-link #eb_submit-changes,
-#editlink.on-link.in-folder #eb_remove-folder,
-#editlink.on-link.on-link-folder #eb_delete-folder {
+.on-link #eb_delete-link,
+.on-link #eb_submit-changes,
+.on-link.in-folder #eb_remove-folder,
+.on-link.on-link-folder #eb_delete-folder {
 	display: initial;
 }
 
-#editlink.select-all #eb_add-folder,
-#editlink.select-all #eb_delete-selected,
-#editlink.select-all.in-folder #eb_remove-folder {
+.select-all #eb_add-folder,
+.select-all #eb_delete-selected,
+.select-all.in-folder #eb_remove-folder {
 	display: initial;
 }
 
-#editlink.in-folder:not(.add-link) #eb_remove {
+.in-folder:not(.add-link) #eb_remove {
 	display: initial;
 }
 
-#editlink.on-tab #eb_delete-tab,
-#editlink.on-tab #eb_submit-changes,
-#editlink.on-tabtitle #eb_add-tab {
+.on-tab #eb_delete-tab,
+.on-tab #eb_submit-changes,
+.on-tabtitle #eb_add-tab {
 	display: initial;
 }
 
 /* Update group from links mini */
-#editlink.on-group-title #eb_submit-changes,
-#editlink.on-group-title #eb_delete-group {
+.on-group-title #eb_pin-group,
+.on-group-title #eb_submit-changes,
+.on-group-title #eb_delete-group {
 	display: initial;
 }
 
+/* Update group from links group */
+.in-link-group.on-group-title #eb_unpin-group,
+.in-link-group.on-group-title #eb_submit-changes,
+.in-link-group.on-group-title #eb_delete-group {
+	display: initial;
+}
+.in-link-group.on-group-title #eb_pin-group {
+	display: none;
+}
+
 /* Add group from links mini */
-#editlink.on-add-group #eb_add-group {
+.on-add-group #eb_add-group {
 	display: initial;
 }

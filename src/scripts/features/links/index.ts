@@ -97,8 +97,9 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 export async function initblocks(data: Sync.Storage): Promise<true> {
 	const folderid = domlinkblocks.dataset.folderid
 
-	const linktabstitle = data.linktabs.titles[data.linktabs.selected]
-	const inTopSites = linktabstitle === 'topsites'
+	const linktabsTitle = data.linktabs.titles[data.linktabs.selected]
+	const linktabsPinned = data.linktabs.pinned.includes(data.linktabs.selected)
+	const inTopSites = linktabsTitle === 'topsites'
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	let links: Links.Link[] = []
 
@@ -166,7 +167,8 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		fragment.appendChild(li)
 	}
 
-	linktitle.textContent = linktabstitle
+	linkgroup.classList.toggle('pinned', linktabsPinned)
+	linktitle.textContent = linktabsTitle
 	linklist.appendChild(fragment)
 	domlinkblocks.prepend(linkgroup)
 

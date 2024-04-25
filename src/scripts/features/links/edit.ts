@@ -1,6 +1,6 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
-import { deleteTab, addTab, changeTabTitle } from './tabs'
+import { deleteTab, addTab, changeTabTitle, togglePinTab } from './tabs'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
@@ -40,6 +40,7 @@ export default async function openEditDialog(event: Event) {
 	const isSelectingFolder = !!document.querySelector('.block.selected.folder')
 	const path = event.composedPath() as Element[]
 	const isTab = path.some((el) => el?.className?.includes('link-title'))
+	const isLinkGroup = path.some((el) => el?.className?.includes('link-group'))
 	const isOnGroupTitle = path[0]?.tagName === 'BUTTON' && path[0]?.className.includes('link-title')
 	const isOnAddGroup = path[0]?.tagName === 'BUTTON' && path[0]?.className.includes('add-group')
 	const isOnLink = path.some((el) => el?.className?.includes('block') && el?.tagName === 'LI')
@@ -60,6 +61,7 @@ export default async function openEditDialog(event: Event) {
 	domeditlink?.classList.toggle('select-folder', isSelectingFolder)
 	domeditlink?.classList.toggle('in-folder', isInFolder)
 	domeditlink?.classList.toggle('on-linklist', isOnLinklist)
+	domeditlink?.classList.toggle('in-link-group', isLinkGroup)
 	domeditlink?.classList.toggle('on-link', isOnLink)
 	domeditlink?.classList.toggle('on-link-folder', isOnLinkFolder)
 	domeditlink?.classList.toggle('on-group-title', isOnGroupTitle && !isOnAddGroup)
@@ -72,7 +74,7 @@ export default async function openEditDialog(event: Event) {
 
 	if (isOnGroupTitle) {
 		const button = path[0]
-		const buttons = [...document.querySelectorAll<HTMLDivElement>('.link-title')]
+		const buttons = [...document.querySelectorAll<HTMLDivElement>('#link-mini .link-title')]
 		const index = buttons.findIndex((node) => node === button)
 		let title = data.linktabs.titles[index] ?? ''
 
@@ -197,6 +199,14 @@ async function submitChanges(event: SubmitEvent) {
 		case 'eb_delete-group':
 			deleteTab(parseInt(domeditlink.dataset.tabIndex ?? '0'))
 			break
+
+		case 'eb_pin-group':
+		case 'eb_unpin-group': {
+			const index = parseInt(domeditlink.dataset.tabIndex ?? '0')
+			const action = event.submitter.id === 'eb_pin-group' ? 'pin' : 'unpin'
+			togglePinTab(index, action)
+			break
+		}
 	}
 
 	event.preventDefault()

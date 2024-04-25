@@ -19,6 +19,10 @@ export function initTabs(data: Sync.Storage) {
 		const isDefault = title === ''
 		const isMore = title === '+'
 
+		// if (data.linktabs.pinned.includes(i)) {
+		// 	return
+		// }
+
 		button.textContent = title
 		button.className = `link-title${i === selected ? ' selected' : ''}`
 		button.addEventListener('click', changeTab)
@@ -97,26 +101,27 @@ export async function changeTabTitle(title: string, index: number) {
 }
 
 export async function addTab(title = '', isFromTopSites?: true) {
-	const isReserved = title === '' || title === '+' || title === 'topsites'
+	const data = await storage.sync.get('linktabs')
 
-	if (!isFromTopSites && isReserved) {
+	const isReserved = title === '' || title === '+' || title === 'topsites'
+	const isAlreadyUsed = data.linktabs.titles.includes(title)
+
+	if (!isFromTopSites && (isReserved || isAlreadyUsed)) {
 		return
 	}
 
 	if (isFromTopSites) {
 		title = 'topsites'
+		setTimeout(() => document.querySelector<HTMLElement>('.topsites-title')?.click())
 	}
-
-	const data = await storage.sync.get('linktabs')
 
 	data.linktabs.titles.push(title)
 	storage.sync.set({ linktabs: data.linktabs })
 
 	initTabs(data)
-	queueMicrotask(() => document.querySelector<HTMLElement>('.topsites-title')?.click())
 }
 
-export async function deleteTab(tab?: number | string, isFromTopSites?: true) {
+export async function deleteTab(tab: number | string, isFromTopSites?: true) {
 	const data = await storage.sync.get()
 	const { titles, selected } = data.linktabs
 	let target = -1
@@ -125,7 +130,7 @@ export async function deleteTab(tab?: number | string, isFromTopSites?: true) {
 	if (typeof tab === 'string') target = titles.indexOf(tab)
 
 	const isBroken = target === -1
-	const isMinimum = titles.filter((t) => t !== 'topsites').length === 1
+	const isMinimum = titles.length === (titles.includes('topsites') ? 2 : 1)
 
 	if (!isFromTopSites && (isMinimum || isBroken)) {
 		return
@@ -144,4 +149,25 @@ export async function deleteTab(tab?: number | string, isFromTopSites?: true) {
 
 	storage.sync.clear()
 	storage.sync.set(data)
+}
+
+export async function togglePinTab(tab: number | string, action: 'pin' | 'unpin') {
+	const data = await storage.sync.get()
+	const titles = data.linktabs.titles
+	let target = -1
+
+	if (Array.isArray(data.linktabs.pinned) === false) {
+		data.linktabs.pinned = []
+	}
+
+	if (typeof tab === 'number') target = tab
+	if (typeof tab === 'string') target = titles.indexOf(tab)
+
+	if (action === 'pin') data.linktabs.pinned.push(target)
+	if (action === 'unpin') data.linktabs.pinned.splice(target, 1)
+
+	storage.sync.set(data)
+
+	initblocks(data)
+	initTabs(data)
 }
