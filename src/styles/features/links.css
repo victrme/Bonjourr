@@ -573,14 +573,29 @@ li.block:active {
  */
 
 #link-mini {
+	position: relative;
 	display: none;
 	justify-content: center;
 	align-items: center;
 	column-gap: 1em;
 	width: 100%;
 	margin: auto;
-	padding: 1em 4em;
+	padding: 1em;
 	box-sizing: border-box;
+}
+
+#link-mini:hover {
+	/* To offset add-more-titles: 3 width + 1 gap + 1 padding */
+	padding-left: 5em;
+}
+
+#link-mini .add-more-titles {
+	display: none;
+	width: 3em;
+}
+
+#link-mini:hover .add-more-titles {
+	display: initial;
 }
 
 #linkblocks.with-tabs #link-mini,

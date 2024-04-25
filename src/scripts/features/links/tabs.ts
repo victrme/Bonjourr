@@ -11,10 +11,13 @@ export default function initTabs(data: Sync.Storage) {
 
 	const { titles, selected } = data.linktabs
 
+	titles.push('+')
+
 	titles.forEach((title, i) => {
 		const button = document.createElement('button')
-		const isDefault = title === ''
 		const isTopSite = title === 'topsites'
+		const isDefault = title === ''
+		const isMore = title === '+'
 
 		button.textContent = title
 		button.className = `link-title${i === selected ? ' selected' : ''}`
@@ -27,6 +30,10 @@ export default function initTabs(data: Sync.Storage) {
 
 		if (isDefault) {
 			button.textContent = tradThis('Default page')
+		}
+
+		if (isMore) {
+			button.classList.add('add-more-titles')
 		}
 
 		document.querySelector('#link-mini')?.appendChild(button)
