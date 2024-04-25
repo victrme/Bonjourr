@@ -268,30 +268,6 @@
 			</form>
 
 			<div id="linkblocks">
-				<ul id="link-list">
-					<template id="link-elem">
-						<li class="block">
-							<a rel="noreferrer noopener" draggable="false">
-								<div class="block-imgs">
-									<img alt="" draggable="false" />
-								</div>
-								<span></span>
-							</a>
-						</li>
-					</template>
-					<template id="link-folder">
-						<li class="block folder" tabindex="0">
-							<div class="block-imgs">
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-							</div>
-							<span></span>
-						</li>
-					</template>
-				</ul>
-
 				<div id="link-mini"></div>
 			</div>
 
@@ -316,6 +292,36 @@
 		</div>
 
 		<div id="templates">
+			<template id="link-group-template">
+				<div class="link-group">
+					<ul class="link-list"></ul>
+					<button class="link-title"></button>
+				</div>
+			</template>
+
+			<template id="link-elem-template">
+				<li class="block">
+					<a rel="noreferrer noopener" draggable="false">
+						<div class="block-imgs">
+							<img alt="" draggable="false" />
+						</div>
+						<span></span>
+					</a>
+				</li>
+			</template>
+
+			<template id="link-folder-template">
+				<li class="block folder" tabindex="0">
+					<div class="block-imgs">
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+					</div>
+					<span></span>
+				</li>
+			</template>
+
 			<template id="popup-template">
 				<div id="popup">
 					<div id="popup_text">

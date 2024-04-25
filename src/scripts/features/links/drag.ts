@@ -22,10 +22,11 @@ let coords: Coords[] = []
 let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
 
-const domlinklist = document.getElementById('link-list') as HTMLUListElement
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
 export default function startDrag(event: PointerEvent) {
+	const domlinklist = document.querySelector<HTMLUListElement>('.link-list')
+
 	if (event.button > 0) {
 		return
 	}
@@ -38,8 +39,8 @@ export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as Element[]
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
 	const lis = document.querySelectorAll<HTMLLIElement>('#linkblocks li.block')
-	const tabs = document.querySelectorAll<HTMLElement>('#tab-title button')
-	const listRect = domlinklist?.getBoundingClientRect()
+	const tabs = document.querySelectorAll<HTMLElement>('#link-mini button')
+	const listRect = document.querySelector<HTMLUListElement>('.link-list')?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
 	draggedId = target?.id ?? ''
@@ -87,8 +88,8 @@ export default function startDrag(event: PointerEvent) {
 		}
 	}
 
-	domlinklist.style.setProperty('--drag-width', Math.floor(listRect?.width) + 'px')
-	domlinklist.style.setProperty('--drag-height', Math.floor(listRect?.height) + 'px')
+	domlinklist?.style.setProperty('--drag-width', Math.floor(listRect?.width ?? 0) + 'px')
+	domlinklist?.style.setProperty('--drag-height', Math.floor(listRect?.height ?? 0) + 'px')
 
 	domlinkblocks?.classList.add('dragging')
 	document.dispatchEvent(new Event('remove-select-all'))
@@ -218,7 +219,7 @@ function applyDragChangeParent(id: string) {
 		}
 
 		if (parentIsTab) {
-			const buttons = [...document.querySelectorAll<HTMLElement>('#tab-title button')]
+			const buttons = [...document.querySelectorAll<HTMLElement>('#link-mini button')]
 			const selectedIndex = buttons.findIndex((btn) => btn?.classList?.contains('selected'))
 			const parentIsSelectedTab = parseInt(id) === selectedIndex
 
@@ -244,6 +245,7 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchmove', moveDrag)
 	document.documentElement.removeEventListener('touchend', endDrag)
 
+	const domlinklist = document.querySelector<HTMLUListElement>('.link-list')
 	const path = event.composedPath() as Element[]
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)

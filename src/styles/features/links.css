@@ -1,15 +1,4 @@
-/* Glossary:
- *  - Link blocks
- *	- Link styles
- *	- Folder styles for medium and small
- *	- Links drag and drop
- * 	- Tabs and folder titles
- * 	- Add buttons
- */
-
-/*
- * Link blocks
- */
+/* Link blocks */
 
 #linkblocks {
 	--min-height: 6em;
@@ -65,7 +54,12 @@
 	transform: scale(0.9);
 }
 
-#link-list {
+.link-group {
+	display: flex;
+	flex-direction: column;
+}
+
+.link-list {
 	position: relative;
 	display: inline-flex;
 	visibility: visible;
@@ -84,6 +78,37 @@
 	z-index: 2;
 	transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
+
+/* Link titles */
+
+.link-title {
+	display: none;
+	max-width: 32ch;
+	padding: 0.3em 1em;
+	font-size: 1em;
+	opacity: 0.7;
+	color: white;
+	text-align: center;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.link-title:hover {
+	opacity: 1;
+}
+
+.link-title.selected {
+	opacity: 1;
+	cursor: initial;
+	border-color: rgba(255, 255, 255, 0.2666666667);
+	background-color: rgba(255, 255, 255, 0.0666666667);
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+}
+
+/* Link list items */
 
 li.block {
 	width: var(--block-size);
@@ -531,8 +556,8 @@ li.block.folder img {
 	opacity: 0.5;
 }
 
-#linkblocks.dropping #link-list,
-#linkblocks.dragging #link-list {
+#linkblocks.dropping .link-list,
+#linkblocks.dragging .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -568,9 +593,7 @@ li.block:active {
 	pointer-events: none;
 }
 
-/*
- * Link mini (at the bottom)
- */
+/* Link mini (at the bottom) */
 
 #link-mini {
 	position: relative;
@@ -589,6 +612,10 @@ li.block:active {
 	padding-left: 5em;
 }
 
+#link-mini .link-title {
+	display: initial;
+}
+
 #link-mini .add-group {
 	display: none;
 	width: 3em;
@@ -602,32 +629,4 @@ li.block:active {
 #linkblocks.with-tabs #link-mini,
 #linkblocks.in-folder #link-mini {
 	display: flex;
-}
-
-/* Link titles */
-
-.link-title {
-	max-width: 32ch;
-	padding: 0.3em 1em;
-	font-size: 1em;
-	opacity: 0.7;
-	color: white;
-	text-align: center;
-	border-radius: 8px;
-	border: 1px solid transparent;
-	background-color: transparent;
-	cursor: pointer;
-}
-
-.link-title:hover {
-	opacity: 1;
-}
-
-.link-title.selected {
-	opacity: 1;
-	cursor: initial;
-	border-color: rgba(255, 255, 255, 0.2666666667);
-	background-color: rgba(255, 255, 255, 0.0666666667);
-	backdrop-filter: blur(2em);
-	-webkit-backdrop-filter: blur(2em);
 }

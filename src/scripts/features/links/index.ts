@@ -95,10 +95,10 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 //
 
 export async function initblocks(data: Sync.Storage): Promise<true> {
-	const tabList = document.querySelector<HTMLUListElement>('#link-list')
 	const folderid = domlinkblocks.dataset.folderid
 
-	const inTopSites = data.linktabs.titles[data.linktabs.selected] === 'topsites'
+	const linktabstitle = data.linktabs.titles[data.linktabs.selected]
+	const inTopSites = linktabstitle === 'topsites'
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	let links: Links.Link[] = []
 
@@ -110,53 +110,66 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		links = getLinksInTab(data)
 	}
 
-	const ids = links.map((link) => link._id)
+	/*
+	 * Commented out is links rendering optimization
+	 * Gone for now because of link-group changes
+	 */
+
+	// const ids = links.map((link) => link._id)
+	// const children = document.querySelectorAll<HTMLLIElement>('.link-list > li')
+	// const childrenIds = [...children].map((li) => li.id)
+
+	// for (const child of children) {
+	// 	if (ids.includes(child.id) === false) {
+	// 		child.remove()
+	// 	}
+	// }
+
+	// // Exit early if no links
+	// if (links.length === 0) {
+	// 	displayInterface('links')
+	// 	return true
+	// }
+
+	document.querySelectorAll('.link-group')?.forEach((node) => node.remove())
+
 	const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
-	const children = document.querySelectorAll<HTMLLIElement>('#link-list > li')
-	const childrenIds = [...children].map((li) => li.id)
-
-	for (const child of children) {
-		if (ids.includes(child.id) === false) {
-			child.remove()
-		}
-	}
-
-	// Exit early if no links
-	if (links.length === 0) {
-		displayInterface('links')
-		return true
-	}
-
 	const fragment = document.createDocumentFragment()
+	const linkgroup = getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
+	const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
+	const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
 
 	for (const link of links) {
-		const liIndex = childrenIds.indexOf(link._id)
-		const liExistsOnInterface = liIndex !== -1
+		// const liIndex = childrenIds.indexOf(link._id)
+		// const liExistsOnInterface = liIndex !== -1
 		let li: HTMLLIElement
 
-		if (liExistsOnInterface) {
-			li = children[childrenIds.indexOf(link._id)]
-			li.removeAttribute('style')
-			tabList?.appendChild(li)
-		}
-		//
-		else {
-			li = isElem(link)
-				? createElem(link, data.linknewtab, data.linkstyle)
-				: createFolder(link, linksInFolders, data.linkstyle)
+		// if (liExistsOnInterface) {
+		// 	li = children[childrenIds.indexOf(link._id)]
+		// 	li.removeAttribute('style')
+		// 	linklist?.appendChild(li)
+		// }
+		// //
+		// else {
+		li = isElem(link)
+			? createElem(link, data.linknewtab, data.linkstyle)
+			: createFolder(link, linksInFolders, data.linkstyle)
 
-			if (li.id.includes('topsite') === false) {
-				li.addEventListener('keyup', displayEditDialog)
-				li.addEventListener('click', selectAll)
-				li.addEventListener('pointerdown', selectAll)
-				li.addEventListener('pointerdown', startDrag)
-			}
+		if (li.id.includes('topsite') === false) {
+			li.addEventListener('keyup', displayEditDialog)
+			li.addEventListener('click', selectAll)
+			li.addEventListener('pointerdown', selectAll)
+			li.addEventListener('pointerdown', startDrag)
 		}
+		// }
 
 		fragment.appendChild(li)
 	}
 
-	tabList?.appendChild(fragment)
+	linktitle.textContent = linktabstitle
+	linklist.appendChild(fragment)
+	domlinkblocks.prepend(linkgroup)
+
 	queueMicrotask(createIcons)
 	displayInterface('links')
 
@@ -164,7 +177,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 }
 
 function createFolder(link: Links.Folder, folderChildren: Link[], style: Style): HTMLLIElement {
-	const li = getHTMLTemplate<HTMLLIElement>('link-folder', 'li')
+	const li = getHTMLTemplate<HTMLLIElement>('link-folder-template', 'li')
 	const imgs = li.querySelectorAll('img')!
 	const span = li.querySelector('span')!
 	const linksInThisFolder = folderChildren
@@ -189,7 +202,7 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 }
 
 function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
-	const li = getHTMLTemplate<HTMLLIElement>('link-elem', 'li')
+	const li = getHTMLTemplate<HTMLLIElement>('link-elem-template', 'li')
 	const span = li.querySelector('span')!
 	const anchor = li.querySelector('a')!
 	const img = li.querySelector('img')!
