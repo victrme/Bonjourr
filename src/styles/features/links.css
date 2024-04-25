@@ -569,17 +569,28 @@ li.block:active {
 }
 
 /*
- * Tabs and folder titles
+ * Link mini (at the bottom)
  */
 
-#link-title {
+#link-mini {
 	display: none;
-	margin: auto;
+	justify-content: center;
+	align-items: center;
+	column-gap: 1em;
 	width: 100%;
+	margin: auto;
+	padding: 1em 4em;
 	box-sizing: border-box;
 }
 
-#link-title button {
+#linkblocks.with-tabs #link-mini,
+#linkblocks.in-folder #link-mini {
+	display: flex;
+}
+
+/* Link titles */
+
+.link-title {
 	max-width: 32ch;
 	padding: 0.3em 1em;
 	font-size: 1em;
@@ -592,34 +603,15 @@ li.block:active {
 	cursor: pointer;
 }
 
-#link-title button:hover {
+.link-title:hover {
 	opacity: 1;
 }
 
-#link-title button.selected {
+.link-title.selected {
 	opacity: 1;
 	cursor: initial;
 	border-color: rgba(255, 255, 255, 0.2666666667);
 	background-color: rgba(255, 255, 255, 0.0666666667);
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
-}
-
-#tab-title,
-#folder-title {
-	display: none;
-	column-gap: 1em;
-	align-items: center;
-	justify-content: center;
-	padding: 1em 4em;
-}
-
-#linkblocks.with-tabs #link-title,
-#linkblocks.in-folder #link-title {
-	display: block;
-}
-
-#linkblocks.with-tabs #tab-title,
-#linkblocks.in-folder #folder-title {
-	display: flex;
 }

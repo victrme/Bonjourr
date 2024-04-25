@@ -4,37 +4,33 @@ import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-const getTitleButtons = () => document.querySelectorAll<HTMLElement>('#tab-title button')
 
 export default function initTabs(data: Sync.Storage) {
-	const defaultTabTitle = document.getElementById('default-tab-title') as HTMLElement
-	const buttons = [...getTitleButtons()]
-
-	for (let ii = 1; ii < buttons.length; ii++) {
-		buttons[ii].remove()
-	}
-
-	for (let ii = 1; ii < data.linktabs.titles.length; ii++) {
-		appendNewTab(data.linktabs.titles[ii], ii === (data.linktabs.selected ?? 0))
-	}
-
-	defaultTabTitle.textContent = data.linktabs.titles[0] || tradThis('Default page')
-	defaultTabTitle.classList.toggle('selected', data.linktabs.selected === 0)
-	defaultTabTitle?.addEventListener('click', changeTab)
-
+	document.querySelectorAll('#link-mini button')?.forEach((node) => node.remove())
 	domlinkblocks?.classList.toggle('with-tabs', data.linktabs.active)
-}
 
-function appendNewTab(title: string, selected?: boolean): void {
-	const tabtitle = document.getElementById('tab-title')
-	const button = document.createElement('button')
-	const defaultTabName = `${tradThis('Page')} ${tabtitle?.childElementCount}`
+	const { titles, selected } = data.linktabs
 
-	button.textContent = title || defaultTabName
-	button.classList.toggle('selected', selected)
-	button?.addEventListener('click', changeTab)
+	titles.forEach((title, i) => {
+		const button = document.createElement('button')
+		const isDefault = title === ''
+		const isTopSite = title === 'topsites'
 
-	tabtitle?.appendChild(button)
+		button.textContent = title
+		button.className = `link-title${i === selected ? ' selected' : ''}`
+		button.addEventListener('click', changeTab)
+
+		if (isTopSite) {
+			button.textContent = tradThis('Most visited')
+			button.classList.add('topsites-title')
+		}
+
+		if (isDefault) {
+			button.textContent = tradThis('Default page')
+		}
+
+		document.querySelector('#link-mini')?.appendChild(button)
+	})
 }
 
 function changeTab(event: Event) {
@@ -51,7 +47,7 @@ function changeTab(event: Event) {
 	tabTransition.transition(100)
 
 	async function recreateLinksFromNewTab() {
-		const buttons = [...getTitleButtons()]
+		const buttons = [...document.querySelectorAll<HTMLElement>('#link-mini button')]
 		const data = await storage.sync.get()
 
 		buttons?.forEach((div) => div.classList.remove('selected'))

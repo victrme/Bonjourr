@@ -98,10 +98,11 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	const tabList = document.querySelector<HTMLUListElement>('#link-list')
 	const folderid = domlinkblocks.dataset.folderid
 
+	const inTopSites = data.linktabs.titles[data.linktabs.selected] === 'topsites'
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	let links: Links.Link[] = []
 
-	if (data.topsites) {
+	if (inTopSites) {
 		links = topSitesToLinks(await chrome.topSites.get())
 	} else if (folderid) {
 		links = getLinksInFolder(data, folderid)
@@ -740,11 +741,17 @@ async function setTopSites(toggle: boolean) {
 	}
 
 	const data = await storage.sync.get()
+
 	data.topsites = toggle
-	storage.sync.set(data)
+	storage.sync.set({ topsites: toggle })
+
 	initblocks(data)
 
-	console.log('Top sites: ', toggle)
+	if (toggle) {
+		addTab('topsites')
+	} else {
+		deleteTab(data.linktabs.titles.indexOf('topsites'))
+	}
 }
 
 function setRows(row: string) {
