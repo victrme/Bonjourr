@@ -1,4 +1,5 @@
-import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink } from './helpers'
+import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInTab } from './helpers'
+import { initTabs, toggleTabs, addTab, changeTabTitle, deleteTab } from './tabs'
 import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
@@ -8,7 +9,6 @@ import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
 import { BROWSER } from '../../defaults'
 import startDrag from './drag'
-import initTabs from './tabs'
 import storage from '../../storage'
 
 type Link = Links.Link
@@ -424,7 +424,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.tab !== undefined) {
-		setTab(update.tab)
+		toggleTabs(update.tab)
 	}
 
 	if (update.addTab !== undefined) {
@@ -436,7 +436,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.tabTitle !== undefined) {
-		setTabTitle(update.tabTitle.title, update.tabTitle.index)
+		changeTabTitle(update.tabTitle.title, update.tabTitle.index)
 	}
 
 	if (update.newtab !== undefined) {
@@ -629,55 +629,6 @@ async function moveToOtherTab({ ids, target }: MoveToTarget) {
 	initblocks(data)
 }
 
-async function setTab(tab: boolean) {
-	const data = await storage.sync.get('linktabs')
-
-	data.linktabs.active = tab
-	storage.sync.set({ linktabs: data.linktabs })
-
-	domlinkblocks?.classList.toggle('with-tabs', tab)
-}
-
-async function setTabTitle(title: string, index: number) {
-	const data = await storage.sync.get('linktabs')
-	const hasTab = data.linktabs.titles.length >= index
-
-	if (hasTab) {
-		data.linktabs.titles[index] = title
-		storage.sync.set({ linktabs: data.linktabs })
-		initTabs(data)
-	}
-}
-
-async function addTab(title: string) {
-	const data = await storage.sync.get('linktabs')
-	data.linktabs.titles.push(title)
-	storage.sync.set({ linktabs: data.linktabs })
-	initTabs(data)
-}
-
-async function deleteTab(index: number) {
-	const data = await storage.sync.get()
-	const { titles, selected } = data.linktabs
-	const isRemovingFirst = index === 0 || titles.length === 1
-
-	if (isRemovingFirst) {
-		return
-	}
-
-	for (const link of getLinksInTab(data, index)) {
-		delete data[link._id]
-	}
-
-	data.linktabs.titles = titles.toSpliced(index, 1)
-	data.linktabs.selected -= index === selected ? 1 : 0
-	initblocks(data)
-	initTabs(data)
-
-	storage.sync.clear()
-	storage.sync.set(data)
-}
-
 async function setOpenInNewTab(newtab: boolean) {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.block a')
 
@@ -745,12 +696,10 @@ async function setTopSites(toggle: boolean) {
 	data.topsites = toggle
 	storage.sync.set({ topsites: toggle })
 
-	initblocks(data)
-
 	if (toggle) {
-		addTab('topsites')
+		addTab('topsites', true)
 	} else {
-		deleteTab(data.linktabs.titles.indexOf('topsites'))
+		deleteTab('topsites', true)
 	}
 }
 
@@ -797,21 +746,6 @@ function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 
 	for (const value of Object.values(data)) {
 		if (isElem(value) && value?.parent === id) {
-			links.push(value)
-		}
-	}
-
-	links.sort((a, b) => a.order - b.order)
-
-	return links
-}
-
-function getLinksInTab(data: Sync.Storage, index?: number): Link[] {
-	const selection = index ?? data.linktabs.selected ?? 0
-	const links: Link[] = []
-
-	for (const value of Object.values(data)) {
-		if (isLink(value) && (value?.parent ?? 0) === selection) {
 			links.push(value)
 		}
 	}

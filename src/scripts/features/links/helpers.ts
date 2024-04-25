@@ -51,6 +51,21 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 	}
 }
 
+export function getLinksInTab(data: Sync.Storage, index?: number): Links.Link[] {
+	const selection = index ?? data.linktabs.selected ?? 0
+	const links: Links.Link[] = []
+
+	for (const value of Object.values(data)) {
+		if (isLink(value) && (value?.parent ?? 0) === selection) {
+			links.push(value)
+		}
+	}
+
+	links.sort((a, b) => a.order - b.order)
+
+	return links
+}
+
 //
 
 export function isLink(link: unknown): link is Links.Link {

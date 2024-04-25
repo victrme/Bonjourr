@@ -585,16 +585,17 @@ li.block:active {
 }
 
 #link-mini:hover {
-	/* To offset add-more-titles: 3 width + 1 gap + 1 padding */
+	/* To offset add-group: 3 width + 1 gap + 1 padding */
 	padding-left: 5em;
 }
 
-#link-mini .add-more-titles {
+#link-mini .add-group {
 	display: none;
 	width: 3em;
+	font-weight: bold;
 }
 
-#link-mini:hover .add-more-titles {
+#link-mini:hover .add-group {
 	display: initial;
 }
 

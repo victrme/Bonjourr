@@ -1,5 +1,6 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { deleteTab, addTab, changeTabTitle } from './tabs'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
@@ -38,13 +39,13 @@ export default async function openEditDialog(event: Event) {
 	const isInFolder = domlinkblocks.classList.contains('in-folder')
 	const isSelectingFolder = !!document.querySelector('.block.selected.folder')
 	const path = event.composedPath() as Element[]
-	const isTab = path.some((el) => el?.id === 'link-title')
-	const isTabItem = path[0]?.tagName === 'BUTTON' && path[1]?.id === 'tab-title'
-	const isTabDefault = isTabItem && path[0]?.id === 'default-tab-title'
+	const isTab = path.some((el) => el?.className?.includes('link-title'))
+	const isOnGroupTitle = path[0]?.tagName === 'BUTTON' && path[0]?.className.includes('link-title')
+	const isOnAddGroup = path[0]?.tagName === 'BUTTON' && path[0]?.className.includes('add-group')
 	const isOnLink = path.some((el) => el?.className?.includes('block') && el?.tagName === 'LI')
 	const isOnLinkFolder = isOnLink && path.some((el) => el?.classList?.contains('folder'))
 	const isOnLinklist = path[0]?.id === 'link-list'
-	const isTopSite = path.some((el) => el?.id?.includes('topsite'))
+	const isTopSite = path.some((el) => el?.className?.includes('topsites-title'))
 
 	if (
 		isTopSite ||
@@ -61,24 +62,19 @@ export default async function openEditDialog(event: Event) {
 	domeditlink?.classList.toggle('on-linklist', isOnLinklist)
 	domeditlink?.classList.toggle('on-link', isOnLink)
 	domeditlink?.classList.toggle('on-link-folder', isOnLinkFolder)
-	domeditlink?.classList.toggle('on-tabtitle', isTab)
-	domeditlink?.classList.toggle('on-tab', isTabItem)
-	domeditlink?.classList.toggle('on-tab-default', isTabDefault)
+	domeditlink?.classList.toggle('on-group-title', isOnGroupTitle && !isOnAddGroup)
+	domeditlink?.classList.toggle('on-add-group', isOnAddGroup)
 
 	//
 	// Init inputs and side effects (lol)
 
 	const data = await storage.sync.get()
 
-	if (isTabItem) {
+	if (isOnGroupTitle) {
 		const button = path[0]
-		const buttons = [...document.querySelectorAll<HTMLDivElement>('#tab-title button')]
+		const buttons = [...document.querySelectorAll<HTMLDivElement>('.link-title')]
 		const index = buttons.findIndex((node) => node === button)
 		let title = data.linktabs.titles[index] ?? ''
-
-		if (isTabDefault) {
-			title = data.linktabs.titles[index] || tradThis('Default page')
-		}
 
 		domeditlink.dataset.tabIndex = index.toString()
 		domtitle.value = title
@@ -194,12 +190,12 @@ async function submitChanges(event: SubmitEvent) {
 			removeSelectionFromFolder()
 			break
 
-		case 'eb_add-tab':
-			addTab()
+		case 'eb_add-group':
+			addTab(domtitle.value)
 			break
 
-		case 'eb_delete-tab':
-			deleteTab()
+		case 'eb_delete-group':
+			deleteTab(parseInt(domeditlink.dataset.tabIndex ?? '0'))
 			break
 	}
 
@@ -210,18 +206,18 @@ async function submitChanges(event: SubmitEvent) {
 async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const id = getSelectedIds()[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
-	const isOnTab = domeditlink.classList.contains('on-tabtitle')
-	const isOnTabItem = domeditlink.classList.contains('on-tab')
+	const isOnAddGroup = domeditlink.classList.contains('on-add-group')
+	const isOnGroupTitle = domeditlink.classList.contains('on-group-title')
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
-	if (isOnTabItem) {
-		changeTabTitle()
+	if (isOnGroupTitle) {
+		changeTabTitle(domtitle.value, parseInt(domeditlink.dataset.tabIndex ?? '0'))
 		closeEditDialog()
 		return
 	}
 	//
-	else if (isOnTab) {
-		addTab()
+	else if (isOnAddGroup) {
+		addTab(domtitle.value)
 		closeEditDialog()
 		return
 	}
@@ -283,23 +279,6 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 
 	storage.sync.set({ [id]: link })
-}
-
-function changeTabTitle() {
-	linksUpdate({
-		tabTitle: {
-			title: domtitle.value,
-			index: parseInt(domeditlink.dataset.tabIndex ?? '0'),
-		},
-	})
-}
-
-function addTab() {
-	linksUpdate({ addTab: domtitle.value })
-}
-
-function deleteTab() {
-	linksUpdate({ deleteTab: parseInt(domeditlink.dataset.tabIndex ?? '0') })
 }
 
 function addLinkFromEditDialog() {
