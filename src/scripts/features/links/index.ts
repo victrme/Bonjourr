@@ -64,6 +64,8 @@ type LinkGroups = {
 	title: string
 	index: number
 	pinned: boolean
+	lis: HTMLLIElement[]
+	div: HTMLDivElement | null
 }[]
 
 type SubmitLink = { type: 'link'; title: string; url: string }
@@ -107,15 +109,19 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	const groups: LinkGroups = []
 
 	for (const index of [...pinned, selected]) {
-		const folderid = domlinkblocks.dataset.folderid
+		const div = document.querySelector<HTMLDivElement>(`.link-group[data-index="${index}"]`)
+		const folder = div?.dataset.folder
+		const lis: HTMLLIElement[] = []
 		const inTopSites = titles[index] === 'topsites'
 		const links = inTopSites
 			? topSitesToLinks(await chrome.topSites.get())
-			: folderid
-			? getLinksInFolder(data, folderid)
+			: folder
+			? getLinksInFolder(data, folder)
 			: getLinksInTab(data, index)
 
 		groups.push({
+			lis,
+			div,
 			links,
 			index,
 			pinned: index !== selected,
@@ -125,48 +131,38 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 
 	groups.reverse()
 
-	/*
-	 * Commented out is links rendering optimization
-	 * Gone for now because of link-group changes
-	 */
+	// Remove links that didn't make the cut
+	const divs = groups.map((g) => g.div)
+	const usedLis = groups.map((group) => group.lis).flat()
 
-	// const ids = links.map((link) => link._id)
-	// const children = document.querySelectorAll<HTMLLIElement>('.link-list > li')
-	// const childrenIds = [...children].map((li) => li.id)
+	document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group').forEach((div) => {
+		div.querySelectorAll<HTMLLIElement>('li').forEach((li) => {
+			if (usedLis.includes(li) === false) {
+				li.remove()
+			}
+		})
 
-	// for (const child of children) {
-	// 	if (ids.includes(child.id) === false) {
-	// 		child.remove()
-	// 	}
-	// }
-
-	// // Exit early if no links
-	// if (links.length === 0) {
-	// 	displayInterface('links')
-	// 	return true
-	// }
-
-	document.querySelectorAll('.link-group')?.forEach((node) => node.remove())
+		if (divs.includes(div) === false) {
+			div.remove()
+		}
+	})
 
 	for (const group of groups) {
+		const linkgroup = group.div ?? getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
 		const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
-		const linkgroup = getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
 		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
 		const fragment = document.createDocumentFragment()
 
 		for (const link of group.links) {
-			// const liIndex = childrenIds.indexOf(link._id)
-			// const liExistsOnInterface = liIndex !== -1
-			let li: HTMLLIElement
+			let li = group.lis.find((li) => li.id === link._id)
 
-			// if (liExistsOnInterface) {
-			// 	li = children[childrenIds.indexOf(link._id)]
-			// 	li.removeAttribute('style')
-			// 	linklist?.appendChild(li)
-			// }
-			// //
-			// else {
+			if (li) {
+				li.removeAttribute('style')
+				linklist?.appendChild(li)
+				continue
+			}
+
 			li = isElem(link)
 				? createElem(link, data.linknewtab, data.linkstyle)
 				: createFolder(link, linksInFolders, data.linkstyle)
@@ -179,7 +175,6 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 				li.addEventListener('pointerdown', selectAll)
 				li.addEventListener('pointerdown', startDrag)
 			}
-			// }
 		}
 
 		linkgroup.dataset.index = group.index.toString()
@@ -350,12 +345,12 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	function show() {
-		domlinkblocks.classList.replace('hiding', 'in-folder')
+		linkgroup.classList.replace('hiding', 'in-folder')
 	}
 }
 
 async function closeFolder() {
-	if (domlinkblocks.classList.contains('dropping')) {
+	if (document.querySelector('.link-group.dropping')) {
 		return
 	}
 

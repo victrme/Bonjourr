@@ -29,30 +29,7 @@
 	text-decoration: none;
 }
 
-#linkblocks.in-folder #link-list {
-	display: flex; /* do not remove, fixes backdrop filter on Safari */
-	background-color: #fff2;
-	border: 1px solid #fff4;
-	padding: 2em 5em;
-	backdrop-filter: blur(2em);
-	-webkit-backdrop-filter: blur(2em);
-}
-
-#linkblocks.in-folder #link-title div:not(:first-child) {
-	display: none;
-}
-
-#linkblocks.in-folder #b_add-tab {
-	display: none;
-}
-
-#linkblocks.hiding #link-list {
-	opacity: 0;
-}
-
-#linkblocks.hiding .block {
-	transform: scale(0.9);
-}
+/* Link Group */
 
 .link-group {
 	display: flex;
@@ -63,6 +40,23 @@
 
 .link-group.pinned {
 	margin-bottom: 3em;
+}
+
+.link-group.in-folder .link-list {
+	display: flex; /* do not remove, fixes backdrop filter on Safari */
+	background-color: #fff2;
+	border: 1px solid #fff4;
+	padding: 2em 5em;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+}
+
+.link-group.hiding .link-list {
+	opacity: 0;
+}
+
+.link-group.hiding .block {
+	transform: scale(0.9);
 }
 
 .link-list {
@@ -240,9 +234,7 @@ li.block.folder img {
 	padding: 2px;
 }
 
-/*
- *  Link styles
- */
+/* Link styles */
 
 #linkblocks.large {
 	--min-height: 6em;
@@ -473,9 +465,7 @@ li.block.folder img {
 	border-radius: 8px;
 }
 
-/*
- *  Folder styles for medium and small
- */
+/* Folder styles for medium and small */
 
 #linkblocks.medium li.folder div,
 #linkblocks.small li.folder div {
@@ -512,9 +502,7 @@ li.block.folder img {
 	display: none;
 }
 
-/*
- *  Links drag and drop
- */
+/* Links drag and drop */
 
 #linkblocks.large .drop-target.folder img {
 	transform: none;
