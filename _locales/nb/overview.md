@@ -27,7 +27,7 @@ Prosjektet har helt åpen kildekode, er utviklervennlig og respekterer ditt pers
 🏞 Dynamiske 4K-bakgrunner
 Vi håndplukket noen av de vakreste Unsplash-bildene slik at dine nye faner alltid vil føles ferske. Utforsk høykvalitetsbilder av utrolig landskap, dyr og natur.
 
-⚡️Rask og lett!
+⚡️ Rask og lett!
 Bonjourr er bygget med ren JavaScript og optimalisert for best mulig ytelse.
 
 🔎 Søkefelt
