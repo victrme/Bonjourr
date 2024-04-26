@@ -59,6 +59,13 @@ type Bookmarks = {
 	url: string
 }[]
 
+type LinkGroups = {
+	links: Links.Link[]
+	title: string
+	index: number
+	pinned: boolean
+}[]
+
 type SubmitLink = { type: 'link'; title: string; url: string }
 type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string }
 type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
@@ -95,21 +102,28 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 //
 
 export async function initblocks(data: Sync.Storage): Promise<true> {
-	const folderid = domlinkblocks.dataset.folderid
-
-	const linktabsTitle = data.linktabs.titles[data.linktabs.selected]
-	const linktabsPinned = data.linktabs.pinned.includes(data.linktabs.selected)
-	const inTopSites = linktabsTitle === 'topsites'
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
-	let links: Links.Link[] = []
+	const { titles, pinned, selected } = data.linktabs
+	const groups: LinkGroups = []
 
-	if (inTopSites) {
-		links = topSitesToLinks(await chrome.topSites.get())
-	} else if (folderid) {
-		links = getLinksInFolder(data, folderid)
-	} else {
-		links = getLinksInTab(data)
+	for (const index of [...pinned, selected]) {
+		const folderid = domlinkblocks.dataset.folderid
+		const inTopSites = titles[index] === 'topsites'
+		const links = inTopSites
+			? topSitesToLinks(await chrome.topSites.get())
+			: folderid
+			? getLinksInFolder(data, folderid)
+			: getLinksInTab(data, index)
+
+		groups.push({
+			links,
+			index,
+			pinned: index !== selected,
+			title: titles[index],
+		})
 	}
+
+	groups.reverse()
 
 	/*
 	 * Commented out is links rendering optimization
@@ -134,43 +148,46 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 
 	document.querySelectorAll('.link-group')?.forEach((node) => node.remove())
 
-	const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
-	const fragment = document.createDocumentFragment()
-	const linkgroup = getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
-	const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
-	const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
+	for (const group of groups) {
+		const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
+		const linkgroup = getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
+		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
+		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
+		const fragment = document.createDocumentFragment()
 
-	for (const link of links) {
-		// const liIndex = childrenIds.indexOf(link._id)
-		// const liExistsOnInterface = liIndex !== -1
-		let li: HTMLLIElement
+		for (const link of group.links) {
+			// const liIndex = childrenIds.indexOf(link._id)
+			// const liExistsOnInterface = liIndex !== -1
+			let li: HTMLLIElement
 
-		// if (liExistsOnInterface) {
-		// 	li = children[childrenIds.indexOf(link._id)]
-		// 	li.removeAttribute('style')
-		// 	linklist?.appendChild(li)
-		// }
-		// //
-		// else {
-		li = isElem(link)
-			? createElem(link, data.linknewtab, data.linkstyle)
-			: createFolder(link, linksInFolders, data.linkstyle)
+			// if (liExistsOnInterface) {
+			// 	li = children[childrenIds.indexOf(link._id)]
+			// 	li.removeAttribute('style')
+			// 	linklist?.appendChild(li)
+			// }
+			// //
+			// else {
+			li = isElem(link)
+				? createElem(link, data.linknewtab, data.linkstyle)
+				: createFolder(link, linksInFolders, data.linkstyle)
 
-		if (li.id.includes('topsite') === false) {
-			li.addEventListener('keyup', displayEditDialog)
-			li.addEventListener('click', selectAll)
-			li.addEventListener('pointerdown', selectAll)
-			li.addEventListener('pointerdown', startDrag)
+			fragment.appendChild(li)
+
+			if (li.id.includes('topsite') === false) {
+				li.addEventListener('keyup', displayEditDialog)
+				li.addEventListener('click', selectAll)
+				li.addEventListener('pointerdown', selectAll)
+				li.addEventListener('pointerdown', startDrag)
+			}
+			// }
 		}
-		// }
 
-		fragment.appendChild(li)
+		linkgroup.dataset.index = group.index.toString()
+		linkgroup.classList.toggle('pinned', group.pinned)
+		linktitle.textContent = group.title
+		linklist.appendChild(fragment)
+		domlinkblocks.prepend(linkgroup)
 	}
-
-	linkgroup.classList.toggle('pinned', linktabsPinned)
-	linktitle.textContent = linktabsTitle
-	linklist.appendChild(fragment)
-	domlinkblocks.prepend(linkgroup)
 
 	queueMicrotask(createIcons)
 	displayInterface('links')
@@ -249,7 +266,6 @@ function createIcons() {
 }
 
 function initRows(row: number, style: string) {
-	const linklist = document.getElementById('link-list')
 	const sizes = {
 		large: { width: 4.8, gap: 2.3 },
 		medium: { width: 3.5, gap: 2 },
@@ -258,7 +274,7 @@ function initRows(row: number, style: string) {
 		text: { width: 5, gap: 2 }, // arbitrary width because width is auto
 	}
 
-	if (linklist && style in sizes) {
+	if (style in sizes) {
 		const { width, gap } = sizes[style as keyof typeof sizes]
 		document.documentElement.style.setProperty('--links-width', Math.ceil((width + gap) * row) + 'em')
 	}
@@ -306,14 +322,16 @@ function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
 }
 
 async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
-	const folder = data[li.id] as Links.Folder
 	const folderOpenTransition = transitioner()
-	const folderTitle = folder?.title || tradThis('Folder')
-	const folderTitleBtn = document.querySelector<HTMLButtonElement>('#folder-title button')
+	const linkgroup = li.parentNode!.parentNode as HTMLElement
 
-	if (folderTitleBtn) {
-		folderTitleBtn.textContent = folderTitle
-	}
+	// const folder = data[li.id] as Links.Folder
+	// const folderTitle = folder?.title || tradThis('Folder')
+	// const folderTitleBtn = document.querySelector<HTMLButtonElement>('#folder-title button')
+
+	// if (folderTitleBtn) {
+	// 	folderTitleBtn.textContent = folderTitle
+	// }
 
 	folderOpenTransition.first(hide)
 	folderOpenTransition.then(changeToFolder)
@@ -321,9 +339,9 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	folderOpenTransition.transition(200)
 
 	function hide() {
-		domlinkblocks.dataset.folderid = li?.id
-		domlinkblocks.classList.add('hiding')
-		domlinkblocks.classList.remove('in-folder')
+		linkgroup.dataset.folder = li?.id
+		linkgroup.classList.add('hiding')
+		linkgroup.classList.remove('in-folder')
 	}
 
 	async function changeToFolder() {
@@ -350,8 +368,10 @@ async function closeFolder() {
 	folderCloseTransition.transition(200)
 
 	function hide() {
-		domlinkblocks.dataset.folderid = ''
-		domlinkblocks.classList.add('hiding')
+		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
+			group.classList.add('hiding')
+			group.dataset.folder = ''
+		})
 	}
 
 	async function changeToTab() {
@@ -360,8 +380,10 @@ async function closeFolder() {
 	}
 
 	function show() {
-		domlinkblocks.classList.remove('in-folder')
-		domlinkblocks.classList.remove('hiding')
+		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
+			group.classList.remove('in-folder')
+			group.classList.remove('hiding')
+		})
 	}
 }
 

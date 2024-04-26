@@ -73,12 +73,14 @@ export default async function openEditDialog(event: Event) {
 	const data = await storage.sync.get()
 
 	if (isOnGroupTitle) {
-		const button = path[0]
-		const buttons = [...document.querySelectorAll<HTMLDivElement>('#link-mini .link-title')]
-		const index = buttons.findIndex((node) => node === button)
-		let title = data.linktabs.titles[index] ?? ''
+		const element = isLinkGroup
+			? (path.find((el) => el.className.includes('link-group')) as HTMLElement)
+			: (path[0] as HTMLElement)
 
-		domeditlink.dataset.tabIndex = index.toString()
+		const index = parseInt(element?.dataset.index ?? '-1')
+		const title = data.linktabs.titles[index] ?? ''
+
+		domeditlink.dataset.tab = index.toString()
 		domtitle.value = title
 	}
 
@@ -197,12 +199,12 @@ async function submitChanges(event: SubmitEvent) {
 			break
 
 		case 'eb_delete-group':
-			deleteTab(parseInt(domeditlink.dataset.tabIndex ?? '0'))
+			deleteTab(parseInt(domeditlink.dataset.tab ?? '0'))
 			break
 
 		case 'eb_pin-group':
 		case 'eb_unpin-group': {
-			const index = parseInt(domeditlink.dataset.tabIndex ?? '0')
+			const index = parseInt(domeditlink.dataset.tab ?? '0')
 			const action = event.submitter.id === 'eb_pin-group' ? 'pin' : 'unpin'
 			togglePinTab(index, action)
 			break
@@ -221,7 +223,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (isOnGroupTitle) {
-		changeTabTitle(domtitle.value, parseInt(domeditlink.dataset.tabIndex ?? '0'))
+		changeTabTitle(domtitle.value, parseInt(domeditlink.dataset.tab ?? '0'))
 		closeEditDialog()
 		return
 	}

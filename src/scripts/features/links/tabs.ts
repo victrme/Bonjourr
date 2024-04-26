@@ -19,11 +19,12 @@ export function initTabs(data: Sync.Storage) {
 		const isDefault = title === ''
 		const isMore = title === '+'
 
-		// if (data.linktabs.pinned.includes(i)) {
-		// 	return
-		// }
+		if (data.linktabs.pinned.includes(i)) {
+			return
+		}
 
 		button.textContent = title
+		button.dataset.index = i.toString()
 		button.className = `link-title${i === selected ? ' selected' : ''}`
 		button.addEventListener('click', changeTab)
 
@@ -58,12 +59,13 @@ function changeTab(event: Event) {
 	tabTransition.transition(100)
 
 	async function recreateLinksFromNewTab() {
-		const buttons = [...document.querySelectorAll<HTMLElement>('#link-mini button')]
+		const buttons = document.querySelectorAll<HTMLElement>('#link-mini button')
 		const data = await storage.sync.get()
+		const index = parseInt(button.dataset.index ?? '-1')
 
 		buttons?.forEach((div) => div.classList.remove('selected'))
 		button.classList.add('selected')
-		data.linktabs.selected = buttons.indexOf(button)
+		data.linktabs.selected = index
 		storage.sync.set(data)
 		await initblocks(data)
 	}
@@ -164,7 +166,11 @@ export async function togglePinTab(tab: number | string, action: 'pin' | 'unpin'
 	if (typeof tab === 'string') target = titles.indexOf(tab)
 
 	if (action === 'pin') data.linktabs.pinned.push(target)
-	if (action === 'unpin') data.linktabs.pinned.splice(target, 1)
+	if (action === 'unpin') data.linktabs.pinned.splice(data.linktabs.pinned.indexOf(target), 1)
+
+	if (target === data.linktabs.selected) {
+		data.linktabs.selected = -1
+	}
 
 	storage.sync.set(data)
 
