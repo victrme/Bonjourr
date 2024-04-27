@@ -16,7 +16,7 @@ Here's some key features:
 🧑‍💻 Custom CSS styling
 📝 Custom fonts
 🔒 Privacy focused
-🌎 Multilanguage
+🌎 Multilingual
 
 Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links... You can even check out our documentation where we compiled some style snippets to do even more.
 
@@ -54,7 +54,7 @@ Some homepages like Momentum encourage you to create an account, give them some 
 Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can customise and do anything when you add your own CSS.
 
 📝 Custom fonts
-Want a specific font on your homepage ? You can easily select it thanks to Bonjourr integreation with Google Fonts.
+Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with Google Fonts.
 
 🌎 Multilanguage
 Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
