@@ -250,7 +250,14 @@ async function requestNewList(collection: string): Promise<Unsplash.Image[] | nu
 	}
 
 	const filteredList: Unsplash.Image[] = []
-	const { width, height } = screen
+	let { width, height } = screen
+	
+	// Swap values if wrong orientation
+	if ((screen.orientation.type === 'landscape-primary' && height > width) ||
+		(screen.orientation.type === 'portrait-primary' && width > height)) {
+		[width, height] = [height, width]
+	}
+
 	const dpr = window.devicePixelRatio
 
 	// Increase compression with pixel density
