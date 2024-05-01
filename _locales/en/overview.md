@@ -34,7 +34,7 @@ Bonjourr is built with vanilla JavaScript and optimised for the best possible pe
 The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you want, you can even add you own custom search engine.
 
 🕰 Analog clock
-Bonjourr's default clock is made to ressemble what you have on the iPhone and other iOS devices. But if you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
+Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
 🌤 Weather
 In a simple sentence, get a summary of you local current weather and forecast.
