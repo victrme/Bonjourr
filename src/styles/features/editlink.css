@@ -91,17 +91,23 @@
 	display: none;
 }
 
-.on-linklist:not(.on-link) #eb_add-link {
+/* Outside of links or groups */
+.on-linklist #eb_add-link {
 	display: initial;
 }
 
-.on-link #eb_delete-link,
+/* Update a single link */
+.on-link #eb_delete,
 .on-link #eb_submit-changes,
 .on-link.in-folder #eb_remove-folder,
 .on-link.on-link-folder #eb_delete-folder {
 	display: initial;
 }
+.onlinklist.on-link #e_add-link {
+	display: none;
+}
 
+/* Update multiple links */
 .select-all #eb_add-folder,
 .select-all #eb_delete-selected,
 .select-all.in-folder #eb_remove-folder {
@@ -112,7 +118,7 @@
 	display: initial;
 }
 
-.on-tab #eb_delete-tab,
+.on-tab #eb_delete,
 .on-tab #eb_submit-changes,
 .on-tabtitle #eb_add-tab {
 	display: initial;
@@ -121,14 +127,14 @@
 /* Update group from links mini */
 .on-group-title #eb_pin-group,
 .on-group-title #eb_submit-changes,
-.on-group-title #eb_delete-group {
+.on-group-title #eb_delete {
 	display: initial;
 }
 
 /* Update group from links group */
 .in-link-group.on-group-title #eb_unpin-group,
 .in-link-group.on-group-title #eb_submit-changes,
-.in-link-group.on-group-title #eb_delete-group {
+.in-link-group.on-group-title #eb_delete {
 	display: initial;
 }
 .in-link-group.on-group-title #eb_pin-group {

@@ -99,9 +99,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	initRows(init.linksrow, init.linkstyle)
 }
 
-//
 // Initialisation
-//
 
 export async function initblocks(data: Sync.Storage): Promise<true> {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
@@ -646,9 +644,7 @@ function handleSafariNewtab(e: Event) {
 	e.preventDefault()
 }
 
-//
 // Helpers
-//
 
 function validateLink(title: string, url: string): Links.Elem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))

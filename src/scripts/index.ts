@@ -266,6 +266,7 @@ function userActionsEvents() {
 		const on = {
 			link: path.some((el) => el?.classList?.contains('block')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
+			linkfolder: path.some((el) => el?.className?.includes('folder')),
 			folder: path.some((el) => el?.className?.includes('in-folder')),
 			interface: pathIds.includes('interface'),
 		}
@@ -290,7 +291,7 @@ function userActionsEvents() {
 			document.dispatchEvent(new Event('remove-select-all'))
 		}
 		//
-		else if (open.folder && !on.folder) {
+		else if (open.folder && !on.folder && !on.linkfolder) {
 			document.dispatchEvent(new Event('close-folder'))
 		}
 	}

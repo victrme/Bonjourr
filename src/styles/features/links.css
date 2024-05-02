@@ -109,8 +109,8 @@ li.block:active {
 .link-title.selected {
 	opacity: 1;
 	cursor: initial;
-	border-color: rgba(255, 255, 255, 0.2666666667);
-	background-color: rgba(255, 255, 255, 0.0666666667);
+	border-color: #fff1;
+	background-color: #fff2;
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
 }

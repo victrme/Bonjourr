@@ -34,16 +34,15 @@ export async function folderClick(event: MouseEvent) {
 }
 
 async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
-	const folderOpenTransition = transitioner()
 	const linkgroup = li.parentNode!.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
 	const folder = data[li.id] as Links.Folder
-	const isLastGroup = linkgroup.nextElementSibling?.id === 'link-mini'
 
-	folderOpenTransition.first(hide)
-	folderOpenTransition.then(changeToFolder)
-	folderOpenTransition.finally(show)
-	folderOpenTransition.transition(200)
+	const transition = transitioner()
+	transition.first(hide)
+	transition.then(changeToFolder)
+	transition.finally(show)
+	transition.transition(200)
 
 	function hide() {
 		linkgroup.dataset.folder = li?.id
@@ -52,6 +51,9 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
+		const sibling = linkgroup.nextElementSibling
+		const isLastGroup = sibling?.classList.contains('-group') === false
+
 		await initblocks(data)
 
 		if (linktitle) {
@@ -74,15 +76,14 @@ async function closeFolder() {
 	}
 
 	const data = await storage.sync.get()
-	const folderCloseTransition = transitioner()
-
-	folderCloseTransition.first(hide)
-	folderCloseTransition.then(changeToTab)
-	folderCloseTransition.finally(show)
-	folderCloseTransition.transition(200)
+	const transition = transitioner()
+	transition.first(hide)
+	transition.then(changeToTab)
+	transition.finally(show)
+	transition.transition(200)
 
 	function hide() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
+		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach((group) => {
 			group.classList.add('hiding')
 			group.dataset.folder = ''
 		})
