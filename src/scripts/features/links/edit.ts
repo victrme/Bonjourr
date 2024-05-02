@@ -77,11 +77,19 @@ export default async function openEditDialog(event: Event) {
 			? (path.find((el) => el.className.includes('link-group')) as HTMLElement)
 			: (path[0] as HTMLElement)
 
+		const { titles, pinned } = data.linktabs
 		const index = parseInt(element?.dataset.index ?? '-1')
-		const title = data.linktabs.titles[index] ?? ''
+		const title = titles[index] ?? ''
+		const onlyOneTitleLeft = titles.length - pinned.length < 2
 
 		domeditlink.dataset.tab = index.toString()
 		domtitle.value = title
+
+		if (onlyOneTitleLeft) {
+			document.querySelector('#eb_pin-group')?.setAttribute('disabled', '')
+		} else {
+			document.querySelector('#eb_pin-group')?.removeAttribute('disabled')
+		}
 	}
 
 	if (isOnLink) {

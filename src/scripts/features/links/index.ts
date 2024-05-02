@@ -95,7 +95,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initblocks(init)
-	initTabs(init)
+	initTabs(init, !!init)
 	initRows(init.linksrow, init.linkstyle)
 }
 
@@ -319,14 +319,8 @@ function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
 async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	const folderOpenTransition = transitioner()
 	const linkgroup = li.parentNode!.parentNode as HTMLElement
-
-	// const folder = data[li.id] as Links.Folder
-	// const folderTitle = folder?.title || tradThis('Folder')
-	// const folderTitleBtn = document.querySelector<HTMLButtonElement>('#folder-title button')
-
-	// if (folderTitleBtn) {
-	// 	folderTitleBtn.textContent = folderTitle
-	// }
+	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
+	const folder = data[li.id] as Links.Folder
 
 	folderOpenTransition.first(hide)
 	folderOpenTransition.then(changeToFolder)
@@ -340,8 +334,11 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
-		domlinkblocks.classList.toggle('with-tabs', true)
 		await initblocks(data)
+
+		if (linktitle) {
+			linktitle.textContent = folder?.title || tradThis('Folder')
+		}
 	}
 
 	function show() {

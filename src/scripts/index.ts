@@ -266,7 +266,7 @@ function userActionsEvents() {
 		const on = {
 			link: path.some((el) => el?.classList?.contains('block')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
-			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			folder: path.some((el) => el?.className?.includes('in-folder')),
 			interface: pathIds.includes('interface'),
 		}
 
@@ -298,7 +298,7 @@ function userActionsEvents() {
 	function isOpen() {
 		return {
 			settings: !!document.getElementById('settings')?.classList.contains('shown'),
-			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
+			folder: !!document.querySelector('.in-folder'),
 			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
 			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
 		}

@@ -1,17 +1,24 @@
-import { initblocks } from '.'
 import { getLinksInTab } from './helpers'
+import { initblocks } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
-export function initTabs(data: Sync.Storage) {
-	document.querySelectorAll('#link-mini button')?.forEach((node) => node.remove())
-	domlinkblocks?.classList.toggle('with-tabs', data.linktabs.active)
+export function initTabs(data: Sync.Storage, init?: true) {
+	if (!init) {
+		document.querySelectorAll('#link-mini button')?.forEach((node) => {
+			node.remove()
+		})
+	}
 
-	const titles = [...data.linktabs.titles, '+']
-	const selected = data.linktabs.selected
+	createTabs(data.linktabs)
+}
+
+function createTabs(linktabs: Sync.LinkTabs) {
+	const titles = [...linktabs.titles, '+']
+	const selected = linktabs.selected
 
 	titles.forEach((title, i) => {
 		const button = document.createElement('button')
@@ -19,7 +26,7 @@ export function initTabs(data: Sync.Storage) {
 		const isDefault = title === ''
 		const isMore = title === '+'
 
-		if (data.linktabs.pinned.includes(i)) {
+		if (linktabs.pinned.includes(i)) {
 			return
 		}
 
@@ -43,6 +50,8 @@ export function initTabs(data: Sync.Storage) {
 
 		document.querySelector('#link-mini')?.appendChild(button)
 	})
+
+	domlinkblocks?.classList.toggle('with-tabs', linktabs.active)
 }
 
 function changeTab(event: Event) {
