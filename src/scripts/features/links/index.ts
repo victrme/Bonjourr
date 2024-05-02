@@ -1,14 +1,14 @@
-import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInTab } from './helpers'
+import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInTab, getLinksInFolder } from './helpers'
 import { initTabs, toggleTabs, addTab, changeTabTitle, deleteTab } from './tabs'
-import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
-import { eventDebounce } from '../../utils/debounce'
-import transitioner from '../../utils/transitioner'
-import errorMessage from '../../utils/errormessage'
-import { tradThis } from '../../utils/translations'
-import { BROWSER } from '../../defaults'
+import { folderClick } from './folders'
 import startDrag from './drag'
+
+import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
+import { eventDebounce } from '../../utils/debounce'
+import errorMessage from '../../utils/errormessage'
+import { BROWSER } from '../../defaults'
 import storage from '../../storage'
 
 type Link = Links.Link
@@ -200,7 +200,7 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 
 	li.id = link._id
 	span.textContent = createTitle(link)
-	li.addEventListener('mouseup', folderClickAction)
+	li.addEventListener('mouseup', folderClick)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
@@ -275,109 +275,12 @@ function initRows(row: number, style: string) {
 	}
 }
 
-//
-//	Events
-//
+//	Select All
 
 queueMicrotask(() => {
-	document.addEventListener('close-folder', closeFolder)
 	document.addEventListener('stop-select-all', () => clearTimeout(selectallTimer))
 	document.addEventListener('remove-select-all', removeSelectAll)
 })
-
-async function folderClickAction(event: MouseEvent) {
-	const li = getLiFromEvent(event)
-	const rightClick = event.button === 2
-	const inFolder = li?.classList.contains('folder')
-	const isSelectAll = domlinkblocks.className.includes('select-all')
-
-	if (!li || !inFolder || rightClick || isSelectAll) {
-		return
-	}
-
-	clearTimeout(selectallTimer)
-
-	const data = await storage.sync.get()
-	const ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
-	const middleClick = event.button === 1
-
-	if (ctrlClick || middleClick) {
-		openAllLinks(data, li)
-	} else {
-		openFolder(data, li)
-	}
-}
-
-function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
-	const links = getLinksInFolder(data, li.id)
-
-	links.forEach((link) => window.open(link.url, '_blank')?.focus())
-	window.open(window.location.href, '_blank')?.focus()
-	window.close()
-}
-
-async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
-	const folderOpenTransition = transitioner()
-	const linkgroup = li.parentNode!.parentNode as HTMLElement
-	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
-	const folder = data[li.id] as Links.Folder
-
-	folderOpenTransition.first(hide)
-	folderOpenTransition.then(changeToFolder)
-	folderOpenTransition.finally(show)
-	folderOpenTransition.transition(200)
-
-	function hide() {
-		linkgroup.dataset.folder = li?.id
-		linkgroup.classList.add('hiding')
-		linkgroup.classList.remove('in-folder')
-	}
-
-	async function changeToFolder() {
-		await initblocks(data)
-
-		if (linktitle) {
-			linktitle.textContent = folder?.title || tradThis('Folder')
-		}
-	}
-
-	function show() {
-		linkgroup.classList.replace('hiding', 'in-folder')
-	}
-}
-
-async function closeFolder() {
-	if (document.querySelector('.link-group.dropping')) {
-		return
-	}
-
-	const data = await storage.sync.get()
-	const folderCloseTransition = transitioner()
-
-	folderCloseTransition.first(hide)
-	folderCloseTransition.then(changeToTab)
-	folderCloseTransition.finally(show)
-	folderCloseTransition.transition(200)
-
-	function hide() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
-			group.classList.add('hiding')
-			group.dataset.folder = ''
-		})
-	}
-
-	async function changeToTab() {
-		domlinkblocks.classList.toggle('with-tabs', data.linktabs.active)
-		await initblocks(data)
-	}
-
-	function show() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
-			group.classList.remove('in-folder')
-			group.classList.remove('hiding')
-		})
-	}
-}
 
 function selectAll(event: MouseEvent) {
 	clearTimeout(selectallTimer)
@@ -415,9 +318,7 @@ function removeSelectAll() {
 	domlinkblocks.querySelectorAll('.block').forEach((li) => li.classList.remove('selected'))
 }
 
-//
 // Updates
-//
 
 export async function linksUpdate(update: LinksUpdate) {
 	if (update.addLink) {
@@ -768,20 +669,6 @@ function validateLink(title: string, url: string): Links.Elem {
 		title: stringMaxSize(title, 64),
 		url: url,
 	}
-}
-
-function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
-	const links: Elem[] = []
-
-	for (const value of Object.values(data)) {
-		if (isElem(value) && value?.parent === id) {
-			links.push(value)
-		}
-	}
-
-	links.sort((a, b) => a.order - b.order)
-
-	return links
 }
 
 function animateLinksRemove(ids: string[]) {

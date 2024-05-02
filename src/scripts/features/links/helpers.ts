@@ -2,8 +2,6 @@ import { stringMaxSize } from '../../utils'
 import { MAIN_API } from '../../defaults'
 import { tradThis } from '../../utils/translations'
 
-//
-
 export function getDefaultIcon(url: string) {
 	return `${MAIN_API}/favicon/blob/${url}`
 }
@@ -41,7 +39,7 @@ export function createTitle(link: Links.Link): string {
 	return link.title
 }
 
-//
+// Get Links
 
 export function getLink(data: Sync.Storage, id: string): Links.Link | undefined {
 	const val = data[id]
@@ -66,7 +64,21 @@ export function getLinksInTab(data: Sync.Storage, index?: number): Links.Link[] 
 	return links
 }
 
-//
+export function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
+	const links: Links.Elem[] = []
+
+	for (const value of Object.values(data)) {
+		if (isElem(value) && value?.parent === id) {
+			links.push(value)
+		}
+	}
+
+	links.sort((a, b) => a.order - b.order)
+
+	return links
+}
+
+// Links typing validation
 
 export function isLink(link: unknown): link is Links.Link {
 	return ((link as Links.Link)?._id ?? '').startsWith('links')
