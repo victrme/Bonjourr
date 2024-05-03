@@ -180,9 +180,7 @@ async function submitChanges(event: SubmitEvent) {
 			return
 		}
 
-		case 'eb_delete-selected':
-		case 'eb_delete-folder':
-		case 'eb_delete-link':
+		case 'eb_delete':
 			deleteSelection()
 			break
 
@@ -204,10 +202,6 @@ async function submitChanges(event: SubmitEvent) {
 
 		case 'eb_add-group':
 			addTab(domtitle.value)
-			break
-
-		case 'eb_delete-group':
-			deleteTab(parseInt(domeditlink.dataset.tab ?? '0'))
 			break
 
 		case 'eb_pin-group':
@@ -316,18 +310,29 @@ function addSelectionToNewFolder() {
 }
 
 function deleteSelection() {
-	linksUpdate({ deleteLinks: getSelectedIds() })
+	if (domeditlink.dataset.tab) {
+		deleteTab(parseInt(domeditlink.dataset.tab ?? '0'))
+	} else {
+		linksUpdate({
+			deleteLinks: getSelectedIds(),
+		})
+	}
 }
 
 function removeSelectionFromFolder() {
-	linksUpdate({ removeFromFolder: getSelectedIds() })
-	document.dispatchEvent(new Event('remove-select-all'))
+	const index = parseInt(domeditlink.dataset.tab ?? '0')
+	const group = document.querySelector<HTMLDivElement>(`.link-group[data-index="${index}"]`)
+
+	if (group) {
+		linksUpdate({ removeFromFolder: { ids: getSelectedIds(), group } })
+		document.dispatchEvent(new Event('remove-select-all'))
+	}
 }
 
 function closeEditDialog() {
 	if (domeditlink.open) {
 		document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
-		domeditlink.removeAttribute('data-tab-index')
+		domeditlink.removeAttribute('data-tab')
 		domeditlink.classList.remove('shown')
 		domeditlink.close()
 	}
