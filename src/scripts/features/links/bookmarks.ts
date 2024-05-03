@@ -203,7 +203,31 @@ async function getPermissions(): Promise<boolean> {
 async function getBookmarkTree(): Promise<chrome.bookmarks.BookmarkTreeNode[] | undefined> {
 	const namespace = PLATFORM === 'firefox' ? browser : chrome
 
-	if (namespace?.bookmarks) {
-		return await namespace.bookmarks.getTree()
+	if (!namespace.bookmarks) {
+		return
 	}
+
+	const treenode = await namespace.bookmarks.getTree()
+
+	if (PLATFORM === 'chrome') {
+		treenode[0].children?.push({
+			id: '',
+			title: 'Google Apps',
+			children: [
+				{ id: '', title: 'Account', url: 'https://myaccount.google.com' },
+				{ id: '', title: 'Search', url: 'https://www.google.com' },
+				{ id: '', title: 'Youtube', url: 'https://youtube.com' },
+				{ id: '', title: 'Gmail', url: 'https://mail.google.com' },
+				{ id: '', title: 'Meet', url: 'https://meet.google.com' },
+				{ id: '', title: 'Maps', url: 'https://maps.google.com' },
+				{ id: '', title: 'Drive', url: 'https://drive.google.com' },
+				{ id: '', title: 'Photos', url: 'https://photos.google.com' },
+				{ id: '', title: 'Calendar', url: 'https://calendar.google.com' },
+				{ id: '', title: 'Translate', url: 'https://translate.google.com' },
+				{ id: '', title: 'News', url: 'https://news.google.com' },
+			],
+		})
+	}
+
+	return treenode
 }
