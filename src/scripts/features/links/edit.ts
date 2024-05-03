@@ -18,62 +18,67 @@ const domicon = document.getElementById('e_iconurl') as HTMLInputElement
 //
 
 export default async function openEditDialog(event: Event) {
+	const path = event.composedPath() as HTMLElement[]
+	const classNames = path.map((element) => element.className ?? '')
+	const selected = document.querySelectorAll('#linkblocks li.selected')
+	const deleteButton = document.querySelector<HTMLButtonElement>('#eb_delete')
+
 	if (event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE') {
 		return
 	}
 
+	const container = {
+		mini: path.some((element) => element?.id?.includes('link-mini')),
+		group: classNames.some((cl) => cl.includes('link-group')),
+		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
+	}
+
+	const target = {
+		link: classNames.some((cl) => cl.includes('block') && !cl.includes('folder')),
+		folder: classNames.some((cl) => cl.includes('block') && cl.includes('folder')),
+		title: classNames.some((cl) => cl.includes('link-title')),
+		topsites: classNames.some((cl) => cl.includes('topsites-title')),
+		addgroup: classNames.some((cl) => cl.includes('add-group')),
+	}
+
+	const state = {
+		selectall: classNames.some((cl) => cl.includes('select-all')),
+		dragging: classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping')),
+	}
+
+	const folderTitle = container.folder && target.title
+	const noSelection = state.selectall && !selected[0]
+
+	if (folderTitle || noSelection || state.dragging) {
+		return
+	}
+
+	// targets
+	domeditlink?.classList.toggle('on-link', target.link)
+	domeditlink?.classList.toggle('on-title', target.title)
+	domeditlink?.classList.toggle('on-folder', target.folder)
+	domeditlink?.classList.toggle('on-addgroup', target.addgroup)
+	domeditlink?.classList.toggle('on-topsites', target.topsites)
+
+	// containers
+	domeditlink?.classList.toggle('in-mini', container.mini)
+	domeditlink?.classList.toggle('in-group', container.group)
+	domeditlink?.classList.toggle('in-folder', container.folder)
+
+	// states
+	domeditlink?.classList.toggle('is-selectall', state.selectall)
+
 	document.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
-
-	// const pointerType = (event as PointerEvent)?.pointerType === 'touch' ? 'touch' : 'mouse'
-	const selected = document.querySelectorAll('#linkblocks li.selected')
 
 	domurl.value = ''
 	domicon.value = ''
 	domtitle.value = ''
 
-	//
-	// Set correct state
-
-	const isSelectAll = domlinkblocks.classList.contains('select-all')
-	const isInFolder = domlinkblocks.classList.contains('in-folder')
-	const isSelectingFolder = !!document.querySelector('.block.selected.folder')
-	const path = event.composedPath() as Element[]
-	const isTab = path.some((el) => el?.className?.includes('link-title'))
-	const isLinkGroup = path.some((el) => el?.className?.includes('link-group'))
-	const isOnGroupTitle = path[0]?.tagName === 'BUTTON' && path[0]?.className.includes('link-title')
-	const isOnAddGroup = path[0]?.tagName === 'BUTTON' && path[0]?.className.includes('add-group')
-	const isOnLink = path.some((el) => el?.className?.includes('block') && el?.tagName === 'LI')
-	const isOnLinkFolder = isOnLink && path.some((el) => el?.classList?.contains('folder'))
-	const isOnLinklist = path[0]?.id === 'link-list'
-	const isTopSite = path.some((el) => el?.className?.includes('topsites-title'))
-
-	if (
-		isTopSite ||
-		(isInFolder && isTab) ||
-		(isSelectAll && selected.length === 0) ||
-		domlinkblocks.classList.contains('dragging')
-	) {
-		return
-	}
-
-	domeditlink?.classList.toggle('select-all', isSelectAll)
-	domeditlink?.classList.toggle('select-folder', isSelectingFolder)
-	domeditlink?.classList.toggle('in-folder', isInFolder)
-	domeditlink?.classList.toggle('on-linklist', isOnLinklist)
-	domeditlink?.classList.toggle('in-link-group', isLinkGroup)
-	domeditlink?.classList.toggle('on-link', isOnLink)
-	domeditlink?.classList.toggle('on-link-folder', isOnLinkFolder)
-	domeditlink?.classList.toggle('on-group-title', isOnGroupTitle && !isOnAddGroup)
-	domeditlink?.classList.toggle('on-add-group', isOnAddGroup)
-
-	//
-	// Init inputs and side effects (lol)
-
 	const data = await storage.sync.get()
 
-	if (isOnGroupTitle) {
-		const element = isLinkGroup
+	if (target.title) {
+		const element = container.group
 			? (path.find((el) => el.className.includes('link-group')) as HTMLElement)
 			: (path[0] as HTMLElement)
 
@@ -92,7 +97,7 @@ export default async function openEditDialog(event: Event) {
 		}
 	}
 
-	if (isOnLink) {
+	if (target.link) {
 		const pathLis = path.filter((el) => el.tagName === 'LI')
 		const li = pathLis[0]
 		const id = li?.id
@@ -105,14 +110,18 @@ export default async function openEditDialog(event: Event) {
 			domicon.value = link?.icon ?? ''
 		}
 
-		if (isSelectAll === false) {
+		if (!state.selectall) {
 			document.querySelector('.block.selected')?.classList.remove('selected')
 			li?.classList.add('selected')
 		}
 	}
 
-	//
-	// Display
+	if (deleteButton) {
+		if (state.selectall) deleteButton.textContent = tradThis('Delete selected')
+		else if (target.folder) deleteButton.textContent = tradThis('Delete folder')
+		else if (target.link) deleteButton.textContent = tradThis('Delete link')
+		else if (target.title) deleteButton.textContent = tradThis('Delete group')
+	}
 
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())

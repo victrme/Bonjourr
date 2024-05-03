@@ -69,21 +69,15 @@
 	padding: 4px 12px;
 }
 
-/*
- *  Editlink states:
- *
- *  - Select link
- *  - Select folder
- *  - Select all
- *  - In folder: select link
- *  - In folder: select all
- */
+/* States */
 
-#editlink.select-all label,
 #editlink.select-all hr,
+#editlink.on-topsites hr,
+#editlink.select-all label,
+#editlink.on-topsites label,
 #editlink.add-link label:nth-child(3),
-#editlink.on-group-title label:nth-child(2),
-#editlink.on-group-title label:nth-child(3),
+#editlink.in-mini label:nth-child(2),
+#editlink.in-mini label:nth-child(3),
 #editlink.on-add-group label:nth-child(2),
 #editlink.on-add-group label:nth-child(3),
 #editlink.on-link-folder label:nth-child(2),
@@ -118,30 +112,38 @@
 	display: initial;
 }
 
-.on-tab #eb_delete,
-.on-tab #eb_submit-changes,
+.on-title #eb_submit-changes,
+.on-title #eb_delete {
+	display: initial;
+}
+
 .on-tabtitle #eb_add-tab {
 	display: initial;
 }
 
-/* Update group from links mini */
-.on-group-title #eb_pin-group,
-.on-group-title #eb_submit-changes,
-.on-group-title #eb_delete {
-	display: initial;
-}
-
 /* Update group from links group */
-.in-link-group.on-group-title #eb_unpin-group,
-.in-link-group.on-group-title #eb_submit-changes,
-.in-link-group.on-group-title #eb_delete {
+.in-group.on-group-title #eb_unpin-group,
+.in-group.on-group-title #eb_submit-changes,
+.in-group.on-group-title #eb_delete {
 	display: initial;
 }
-.in-link-group.on-group-title #eb_pin-group {
+.in-group.on-group-title #eb_pin-group {
 	display: none;
 }
 
 /* Add group from links mini */
-.on-add-group #eb_add-group {
+.on-addgroup #eb_add-group {
+	display: initial;
+}
+.on-addgroup #eb_delete,
+.on-addgroup #eb_pin-group,
+.on-addgroup #eb_unpin-group,
+.on-addgroup #eb_submit-changes {
+	display: none;
+}
+
+/* Top sites auto group */
+.in-group.on-topsites #eb_unpin-group,
+.in-mini.on-topsites #eb_pin-group {
 	display: initial;
 }

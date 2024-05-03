@@ -627,6 +627,7 @@ li.block.folder img {
 	box-sizing: border-box;
 }
 
+#link-mini:has(.add-group.selected),
 #link-mini:hover {
 	/* To offset add-group: 3 width + 1 gap + 1 padding */
 	padding-left: 5em;
@@ -642,6 +643,7 @@ li.block.folder img {
 	font-weight: bold;
 }
 
+#link-mini .add-group.selected,
 #link-mini:hover .add-group {
 	display: initial;
 }
