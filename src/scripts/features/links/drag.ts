@@ -23,10 +23,10 @@ let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
+let domlinkgroup: HTMLDivElement
+let domlinklist: HTMLUListElement
 
 export default function startDrag(event: PointerEvent) {
-	const domlinklist = document.querySelector<HTMLUListElement>('.link-list')
-
 	if (event.button > 0) {
 		return
 	}
@@ -37,10 +37,14 @@ export default function startDrag(event: PointerEvent) {
 	}
 
 	const path = event.composedPath() as Element[]
+
+	domlinkgroup = path.find((el) => el.classList.contains('link-group')) as HTMLDivElement
+	domlinklist = path.find((el) => el.classList.contains('link-list')) as HTMLUListElement
+
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
-	const lis = document.querySelectorAll<HTMLLIElement>('#linkblocks li.block')
+	const lis = domlinklist.querySelectorAll<HTMLLIElement>('li.block')
 	const tabs = document.querySelectorAll<HTMLElement>('#link-mini button')
-	const listRect = document.querySelector<HTMLUListElement>('.link-list')?.getBoundingClientRect()
+	const listRect = domlinklist?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
 	draggedId = target?.id ?? ''
@@ -88,10 +92,10 @@ export default function startDrag(event: PointerEvent) {
 		}
 	}
 
-	domlinklist?.style.setProperty('--drag-width', Math.floor(listRect?.width ?? 0) + 'px')
-	domlinklist?.style.setProperty('--drag-height', Math.floor(listRect?.height ?? 0) + 'px')
+	domlinkgroup.style.setProperty('--drag-width', Math.floor(listRect?.width ?? 0) + 'px')
+	domlinkgroup.style.setProperty('--drag-height', Math.floor(listRect?.height ?? 0) + 'px')
+	domlinkgroup.classList.add('dragging')
 
-	domlinkblocks?.classList.add('dragging')
 	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 
@@ -211,7 +215,7 @@ function applyDragChangeParent(id: string) {
 
 	dragChangeParentTimeout = setTimeout(() => {
 		const isDraggedId = id === draggedId
-		const inFolder = domlinkblocks?.classList.contains('in-folder')
+		const inFolder = domlinkgroup?.classList.contains('in-folder')
 		const parentIsTab = parseInt(id) > -1
 
 		if (isDraggedId || inFolder) {
@@ -245,20 +249,20 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchmove', moveDrag)
 	document.documentElement.removeEventListener('touchend', endDrag)
 
-	const domlinklist = document.querySelector<HTMLUListElement>('.link-list')
+	const domlinklist = document.querySelector<HTMLDivElement>('.link-list')
 	const path = event.composedPath() as Element[]
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
 	const coord = coords[newIndex]
 
 	const isDroppable = !!document.querySelector('.drop-source')
-	const outOfFolder = path[0] !== domlinklist && domlinkblocks.classList.contains('in-folder')
+	const outOfFolder = path[0] !== domlinklist && domlinkgroup.classList.contains('in-folder')
 	const toFolder = isDroppable && isNaN(parseInt(targetId)) === true
 	const toTab = isDroppable && isNaN(parseInt(targetId)) === false
 
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
-	domlinkblocks?.classList.replace('dragging', 'dropping')
+	domlinkgroup?.classList.replace('dragging', 'dropping')
 	document.body?.classList.replace('dragging', 'dropping')
 
 	if (outOfFolder || toFolder || toTab) {
@@ -286,7 +290,7 @@ function endDrag(event: Event) {
 		}
 		//
 		else if (outOfFolder) {
-			linksUpdate({ removeFromFolder: [draggedId] })
+			linksUpdate({ removeFromFolder: { ids: [draggedId], group: domlinkgroup } })
 		}
 		//
 		else {
@@ -296,9 +300,9 @@ function endDrag(event: Event) {
 		// Yield to functions above to avoid flickering
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
-			domlinkblocks?.classList.remove('dropping')
+			domlinkgroup?.removeAttribute('style')
+			domlinkgroup?.classList.remove('dropping')
 			document.body.classList.remove('dropping')
-			domlinklist?.removeAttribute('style')
 		}, 1)
 	}, 200)
 }

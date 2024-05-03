@@ -28,7 +28,7 @@ type LinksUpdate = {
 	tabTitle?: TabTitle
 	addToFolder?: AddToFolder
 	moveToTab?: MoveToTarget
-	removeFromFolder?: string[]
+	removeFromFolder?: { ids: string[]; group: HTMLDivElement }
 	deleteLinks?: string[]
 	topsites?: boolean
 }
@@ -494,8 +494,9 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 	animateLinksRemove(ids)
 }
 
-async function removeFromFolder(ids: string[]) {
-	const folderid = domlinkblocks.dataset.folderid
+async function removeFromFolder({ ids, group }: { ids: string[]; group: HTMLDivElement }) {
+	const folderid = group.dataset.folder
+	const index = parseInt(group.dataset.index ?? '-1')
 	let data = await storage.sync.get()
 
 	if (!folderid) {
@@ -503,7 +504,7 @@ async function removeFromFolder(ids: string[]) {
 	}
 
 	for (const id of ids) {
-		;(data[id] as Link).parent = data.linktabs.selected
+		;(data[id] as Link).parent = index
 		;(data[id] as Link).order = Date.now()
 	}
 
