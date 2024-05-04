@@ -53,12 +53,12 @@
 
 		<dialog id="editlink">
 			<form id="editlink-form">
-				<label id="ei_title" autofocus>
+				<label id="el_title" autofocus>
 					<span class="trn">Title</span>
 					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
 				</label>
 
-				<label id="ei_url">
+				<label id="el_url">
 					<span class="trn">Link</span>
 					<input
 						id="e_url"
@@ -70,12 +70,12 @@
 					/>
 				</label>
 
-				<label id="ei_icon">
+				<label id="el_icon">
 					<span class="trn">Icon</span>
 					<input
-						id="e_iconurl"
+						id="e_icon"
 						type="url"
-						name="e_iconurl"
+						name="e_icon"
 						maxlength="7600"
 						autocomplete="off"
 						placeholder="https://example.com/favicon.ico"
@@ -86,13 +86,11 @@
 
 				<button type="submit" class="trn" id="eb_inputs">Submit from inputs</button>
 				<button type="submit" class="btn-red" id="eb_delete">Delete something</button>
-				<button type="submit" class="trn" id="eb_add-group">Add new group</button>
-				<button type="submit" class="trn" id="eb_add-link">Add new link</button>
-				<button type="submit" class="trn" id="eb_add-folder">Create new folder</button>
-				<button type="submit" class="trn" id="eb_pin-group">Pin group</button>
-				<button type="submit" class="trn" id="eb_unpin-group">Unpin group</button>
-				<button type="submit" class="trn" id="eb_remove-folder">Remove from folder</button>
-				<button type="submit" class="trn" id="eb_submit-changes">Apply changes</button>
+				<button type="submit" class="trn" id="eb_add">Add something</button>
+				<button type="submit" class="trn" id="eb_pin">Pin group</button>
+				<button type="submit" class="trn" id="eb_unpin">Unpin group</button>
+				<button type="submit" class="trn" id="eb_unfolder">Remove from folder</button>
+				<button type="submit" class="trn" id="eb_apply">Apply changes</button>
 			</form>
 		</dialog>
 

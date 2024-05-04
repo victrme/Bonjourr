@@ -8,6 +8,7 @@ import startDrag from './drag'
 import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 import errorMessage from '../../utils/errormessage'
+import { tradThis } from '../../utils/translations'
 import { BROWSER } from '../../defaults'
 import storage from '../../storage'
 
@@ -180,6 +181,11 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		linktitle.textContent = group.title
 		linklist.appendChild(fragment)
 		domlinkblocks.prepend(linkgroup)
+
+		if (group.title === 'topsites') {
+			linktitle.textContent = tradThis('Most visited')
+			linktitle.classList.add('topsites-title')
+		}
 	}
 
 	queueMicrotask(createIcons)

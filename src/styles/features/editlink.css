@@ -15,7 +15,7 @@
 }
 
 #editlink label {
-	display: grid;
+	display: none;
 	width: 100%;
 	column-gap: 6px;
 	margin-bottom: 6px;
@@ -67,83 +67,4 @@
 	display: none;
 	width: 100%;
 	padding: 4px 12px;
-}
-
-/* States */
-
-#editlink.select-all hr,
-#editlink.on-topsites hr,
-#editlink.select-all label,
-#editlink.on-topsites label,
-#editlink.add-link label:nth-child(3),
-#editlink.in-mini label:nth-child(2),
-#editlink.in-mini label:nth-child(3),
-#editlink.on-add-group label:nth-child(2),
-#editlink.on-add-group label:nth-child(3),
-#editlink.on-link-folder label:nth-child(2),
-#editlink.on-link-folder label:nth-child(3) {
-	display: none;
-}
-
-/* Outside of links or groups */
-.on-linklist #eb_add-link {
-	display: initial;
-}
-
-/* Update a single link */
-.on-link #eb_delete,
-.on-link #eb_submit-changes,
-.on-link.in-folder #eb_remove-folder,
-.on-link.on-link-folder #eb_delete-folder {
-	display: initial;
-}
-.onlinklist.on-link #e_add-link {
-	display: none;
-}
-
-/* Update multiple links */
-.select-all #eb_add-folder,
-.select-all #eb_delete-selected,
-.select-all.in-folder #eb_remove-folder {
-	display: initial;
-}
-
-.in-folder:not(.add-link) #eb_remove {
-	display: initial;
-}
-
-.on-title #eb_submit-changes,
-.on-title #eb_delete {
-	display: initial;
-}
-
-.on-tabtitle #eb_add-tab {
-	display: initial;
-}
-
-/* Update group from links group */
-.in-group.on-group-title #eb_unpin-group,
-.in-group.on-group-title #eb_submit-changes,
-.in-group.on-group-title #eb_delete {
-	display: initial;
-}
-.in-group.on-group-title #eb_pin-group {
-	display: none;
-}
-
-/* Add group from links mini */
-.on-addgroup #eb_add-group {
-	display: initial;
-}
-.on-addgroup #eb_delete,
-.on-addgroup #eb_pin-group,
-.on-addgroup #eb_unpin-group,
-.on-addgroup #eb_submit-changes {
-	display: none;
-}
-
-/* Top sites auto group */
-.in-group.on-topsites #eb_unpin-group,
-.in-mini.on-topsites #eb_pin-group {
-	display: initial;
 }

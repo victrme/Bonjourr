@@ -1,17 +1,36 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { deleteTab, addTab, changeTabTitle, togglePinTab } from './tabs'
+import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
+interface EditStates {
+	container: {
+		mini: boolean
+		group: boolean
+		folder: boolean
+	}
+	target: {
+		link: boolean
+		folder: boolean
+		title: boolean
+		topsites: boolean
+		addgroup: boolean
+	}
+	state: {
+		selectall: boolean
+		dragging: boolean
+	}
+}
+
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDialogElement
 const domtitle = document.getElementById('e_title') as HTMLInputElement
 const domurl = document.getElementById('e_url') as HTMLInputElement
-const domicon = document.getElementById('e_iconurl') as HTMLInputElement
+const domicon = document.getElementById('e_icon') as HTMLInputElement
 
 //
 // Display
@@ -21,19 +40,18 @@ export default async function openEditDialog(event: Event) {
 	const path = event.composedPath() as HTMLElement[]
 	const classNames = path.map((element) => element.className ?? '')
 	const selected = document.querySelectorAll('#linkblocks li.selected')
-	const deleteButton = document.querySelector<HTMLButtonElement>('#eb_delete')
 
 	if (event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE') {
 		return
 	}
 
-	const container = {
+	const container: EditStates['container'] = {
 		mini: path.some((element) => element?.id?.includes('link-mini')),
-		group: classNames.some((cl) => cl.includes('link-group')),
+		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
 		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
 	}
 
-	const target = {
+	const target: EditStates['target'] = {
 		link: classNames.some((cl) => cl.includes('block') && !cl.includes('folder')),
 		folder: classNames.some((cl) => cl.includes('block') && cl.includes('folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
@@ -41,7 +59,7 @@ export default async function openEditDialog(event: Event) {
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
 	}
 
-	const state = {
+	const state: EditStates['state'] = {
 		selectall: classNames.some((cl) => cl.includes('select-all')),
 		dragging: classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping')),
 	}
@@ -53,27 +71,14 @@ export default async function openEditDialog(event: Event) {
 		return
 	}
 
-	// targets
-	domeditlink?.classList.toggle('on-link', target.link)
-	domeditlink?.classList.toggle('on-title', target.title)
-	domeditlink?.classList.toggle('on-folder', target.folder)
-	domeditlink?.classList.toggle('on-addgroup', target.addgroup)
-	domeditlink?.classList.toggle('on-topsites', target.topsites)
-
-	// containers
-	domeditlink?.classList.toggle('in-mini', container.mini)
-	domeditlink?.classList.toggle('in-group', container.group)
-	domeditlink?.classList.toggle('in-folder', container.folder)
-
-	// states
-	domeditlink?.classList.toggle('is-selectall', state.selectall)
-
 	document.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
 
-	domurl.value = ''
-	domicon.value = ''
-	domtitle.value = ''
+	toggleEditInputs({
+		container,
+		target,
+		state,
+	})
 
 	const data = await storage.sync.get()
 
@@ -116,13 +121,6 @@ export default async function openEditDialog(event: Event) {
 		}
 	}
 
-	if (deleteButton) {
-		if (state.selectall) deleteButton.textContent = tradThis('Delete selected')
-		else if (target.folder) deleteButton.textContent = tradThis('Delete folder')
-		else if (target.link) deleteButton.textContent = tradThis('Delete link')
-		else if (target.title) deleteButton.textContent = tradThis('Delete group')
-	}
-
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())
 	contextmenuTransition.then(async () => domeditlink?.classList?.add('shown'))
@@ -131,6 +129,69 @@ export default async function openEditDialog(event: Event) {
 	const { x, y } = newEditDialogPosition(event)
 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 	domtitle?.focus()
+}
+
+function toggleEditInputs(states: EditStates) {
+	const deleteButton = document.querySelector<HTMLButtonElement>('#eb_delete')
+	const addButton = document.querySelector<HTMLButtonElement>('#eb_add')
+	const { container, target, state } = states
+	let inputs: string[] = []
+
+	document.querySelectorAll('#editlink label, #editlink button').forEach((node) => {
+		node.removeAttribute('style')
+	})
+
+	domurl.value = ''
+	domicon.value = ''
+	domtitle.value = ''
+
+	if (container.mini) {
+		if (target.topsites) inputs = ['pin']
+		else if (target.addgroup) inputs = ['title', 'add']
+		else if (target.title) inputs = ['title', 'delete', 'pin', 'apply']
+	}
+
+	if (container.group) {
+		if (target.topsites) inputs = ['unpin']
+		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
+
+		if (target.folder) inputs = ['title', 'delete', 'apply']
+		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply']
+	}
+
+	if (container.folder) {
+		if (target.title) inputs = []
+		if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+	}
+
+	for (const id of inputs) {
+		const isLabel = !!id.match(/title|url|icon/)
+		const selector = isLabel ? `#el_${id}` : `#eb_${id}`
+		const input = domeditlink.querySelector<HTMLElement>(selector)
+
+		if (input) {
+			input.style.display = isLabel ? 'grid' : 'initial'
+		}
+	}
+
+	if (inputs.some((id) => !!id.match(/title|url|icon/)) === false) {
+		domeditlink.querySelector('hr')?.setAttribute('style', 'display: none')
+	} else {
+		domeditlink.querySelector('hr')?.removeAttribute('style')
+	}
+
+	if (deleteButton) {
+		if (state.selectall) deleteButton.textContent = tradThis('Delete selected')
+		else if (target.folder) deleteButton.textContent = tradThis('Delete folder')
+		else if (target.link) deleteButton.textContent = tradThis('Delete link')
+		else if (target.title) deleteButton.textContent = tradThis('Delete group')
+	}
+
+	if (addButton) {
+		if (target.folder) addButton.textContent = tradThis('Create new folder')
+		else if (target.link) addButton.textContent = tradThis('Add new link')
+		else if (target.title) addButton.textContent = tradThis('Add new group')
+	}
 }
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
@@ -213,10 +274,10 @@ async function submitChanges(event: SubmitEvent) {
 			addTab(domtitle.value)
 			break
 
-		case 'eb_pin-group':
-		case 'eb_unpin-group': {
+		case 'eb_pin':
+		case 'eb_unpin': {
 			const index = parseInt(domeditlink.dataset.tab ?? '0')
-			const action = event.submitter.id === 'eb_pin-group' ? 'pin' : 'unpin'
+			const action = event.submitter.id === 'eb_pin' ? 'pin' : 'unpin'
 			togglePinTab(index, action)
 			break
 		}
