@@ -185,6 +185,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		if (group.title === 'topsites') {
 			linktitle.textContent = tradThis('Most visited')
 			linktitle.classList.add('topsites-title')
+			linkgroup.classList.add('topsites-group')
 		}
 	}
 

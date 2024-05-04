@@ -17,6 +17,7 @@ interface EditStates {
 		link: boolean
 		folder: boolean
 		title: boolean
+		topsite: boolean
 		topsites: boolean
 		addgroup: boolean
 	}
@@ -31,6 +32,7 @@ const domeditlink = document.getElementById('editlink') as HTMLDialogElement
 const domtitle = document.getElementById('e_title') as HTMLInputElement
 const domurl = document.getElementById('e_url') as HTMLInputElement
 const domicon = document.getElementById('e_icon') as HTMLInputElement
+let editStates: EditStates
 
 //
 // Display
@@ -55,6 +57,7 @@ export default async function openEditDialog(event: Event) {
 		link: classNames.some((cl) => cl.includes('block') && !cl.includes('folder')),
 		folder: classNames.some((cl) => cl.includes('block') && cl.includes('folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
+		topsite: classNames.some((cl) => cl?.includes('topsites-group')),
 		topsites: classNames.some((cl) => cl.includes('topsites-title')),
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
 	}
@@ -64,21 +67,25 @@ export default async function openEditDialog(event: Event) {
 		dragging: classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping')),
 	}
 
+	editStates = { container, target, state }
+
+	const inputs = toggleEditInputs({
+		container,
+		target,
+		state,
+	})
+
 	const folderTitle = container.folder && target.title
 	const noSelection = state.selectall && !selected[0]
+	const noInputs = inputs.length === 0
 
-	if (folderTitle || noSelection || state.dragging) {
+	if (noInputs || folderTitle || noSelection || state.dragging) {
+		closeEditDialog()
 		return
 	}
 
 	document.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
-
-	toggleEditInputs({
-		container,
-		target,
-		state,
-	})
 
 	const data = await storage.sync.get()
 
@@ -90,16 +97,15 @@ export default async function openEditDialog(event: Event) {
 		const { titles, pinned } = data.linktabs
 		const index = parseInt(element?.dataset.index ?? '-1')
 		const title = titles[index] ?? ''
-		const onlyOneTitleLeft = titles.length - pinned.length < 2
 
 		domeditlink.dataset.tab = index.toString()
 		domtitle.value = title
 
-		if (onlyOneTitleLeft) {
-			document.querySelector('#eb_pin-group')?.setAttribute('disabled', '')
-		} else {
-			document.querySelector('#eb_pin-group')?.removeAttribute('disabled')
-		}
+		const onlyOneTitleUnpinned = titles.length - pinned.length < 2
+		const onlyOneTitleLeft = titles.length < 2
+
+		if (onlyOneTitleUnpinned) document.querySelector('#eb_pin')?.setAttribute('disabled', '')
+		if (onlyOneTitleLeft) document.querySelector('#eb_delete')?.setAttribute('disabled', '')
 	}
 
 	if (target.link) {
@@ -131,7 +137,7 @@ export default async function openEditDialog(event: Event) {
 	domtitle?.focus()
 }
 
-function toggleEditInputs(states: EditStates) {
+function toggleEditInputs(states: EditStates): string[] {
 	const deleteButton = document.querySelector<HTMLButtonElement>('#eb_delete')
 	const addButton = document.querySelector<HTMLButtonElement>('#eb_add')
 	const { container, target, state } = states
@@ -140,6 +146,9 @@ function toggleEditInputs(states: EditStates) {
 	document.querySelectorAll('#editlink label, #editlink button').forEach((node) => {
 		node.removeAttribute('style')
 	})
+
+	document.querySelector('#eb_delete')?.removeAttribute('disabled')
+	document.querySelector('#eb_pin')?.removeAttribute('disabled')
 
 	domurl.value = ''
 	domicon.value = ''
@@ -154,15 +163,18 @@ function toggleEditInputs(states: EditStates) {
 	if (container.group) {
 		if (target.topsites) inputs = ['unpin']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
-
-		if (target.folder) inputs = ['title', 'delete', 'apply']
+		else if (target.topsite) inputs = []
+		else if (target.folder) inputs = ['title', 'delete', 'apply']
 		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply']
+		else inputs = ['title', 'url', 'icon', 'add']
 	}
 
 	if (container.folder) {
 		if (target.title) inputs = []
 		if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
 	}
+
+	console.log(inputs)
 
 	for (const id of inputs) {
 		const isLabel = !!id.match(/title|url|icon/)
@@ -188,10 +200,12 @@ function toggleEditInputs(states: EditStates) {
 	}
 
 	if (addButton) {
-		if (target.folder) addButton.textContent = tradThis('Create new folder')
-		else if (target.link) addButton.textContent = tradThis('Add new link')
+		if (state.selectall) addButton.textContent = tradThis('Create new folder')
 		else if (target.title) addButton.textContent = tradThis('Add new group')
+		else addButton.textContent = tradThis('Add new link')
 	}
+
+	return inputs
 }
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
@@ -244,35 +258,27 @@ queueMicrotask(() => {
 
 async function submitChanges(event: SubmitEvent) {
 	switch (event.submitter?.id) {
-		case 'eb_inputs': {
-			applyLinkChanges('inputs')
-			event.preventDefault()
-			return
-		}
-
 		case 'eb_delete':
 			deleteSelection()
+			break
+
+		case 'eb_add':
+			addSelection(editStates)
 			break
 
 		case 'eb_submit-changes':
 			applyLinkChanges('button')
 			break
 
-		case 'eb_add-link':
-			addLinkFromEditDialog()
-			break
-
-		case 'eb_add-folder':
-			addSelectionToNewFolder()
-			break
-
-		case 'eb_remove-folder':
+		case 'eb_unfolder':
 			removeSelectionFromFolder()
 			break
 
-		case 'eb_add-group':
-			addTab(domtitle.value)
-			break
+		case 'eb_inputs': {
+			applyLinkChanges('inputs')
+			event.preventDefault()
+			return
+		}
 
 		case 'eb_pin':
 		case 'eb_unpin': {
@@ -285,6 +291,12 @@ async function submitChanges(event: SubmitEvent) {
 
 	event.preventDefault()
 	setTimeout(closeEditDialog)
+}
+
+async function addSelection(state: EditStates) {
+	if (state.target.title) addTab(domtitle.value)
+	if (state.target.folder) addSelectionToNewFolder()
+	if (state.container.group) addLinkFromEditDialog()
 }
 
 async function applyLinkChanges(origin: 'inputs' | 'button') {
