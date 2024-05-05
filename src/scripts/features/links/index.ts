@@ -42,6 +42,7 @@ type TabTitle = {
 type AddLink = {
 	title: string
 	url: string
+	group?: number
 }
 
 type AddToFolder = {
@@ -69,9 +70,9 @@ type LinkGroups = {
 	div: HTMLDivElement | null
 }[]
 
-type SubmitLink = { type: 'link'; title: string; url: string }
-type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string }
-type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks }
+type SubmitLink = { type: 'link'; title: string; url: string; group?: number }
+type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string; group?: number }
+type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks; group?: number }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 
 type Style = Sync.Storage['linkstyle']
@@ -327,7 +328,7 @@ function removeSelectAll() {
 
 export async function linksUpdate(update: LinksUpdate) {
 	if (update.addLink) {
-		linkSubmission({ type: 'link', title: update.addLink.title, url: update.addLink.url })
+		linkSubmission({ type: 'link', ...update.addLink })
 	}
 
 	if (update.addFolder) {
@@ -424,7 +425,7 @@ async function linkSubmission(arg: LinkSubmission) {
 		if (folderid && !link.folder) {
 			link.parent = folderid
 		} else {
-			link.parent = data.linktabs.selected
+			link.parent = arg.group ?? data.linktabs.selected
 		}
 
 		data[link._id] = link
@@ -435,7 +436,7 @@ async function linkSubmission(arg: LinkSubmission) {
 }
 
 function addLinkFolder(ids: string[], title?: string): Links.Folder[] {
-	const titledom = document.getElementById('ei_title') as HTMLInputElement
+	const titledom = document.getElementById('e-title') as HTMLInputElement
 
 	title = title ?? titledom.value
 	titledom.value = ''

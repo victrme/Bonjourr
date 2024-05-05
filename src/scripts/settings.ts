@@ -124,7 +124,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_quicklinks', data.quicklinks)
-	setCheckbox('i_syncbookmarks', !!data.syncbookmarks)
+	// setCheckbox('i_syncbookmarks', !!data.syncbookmarks)
 	setCheckbox('i_linktabs', data.linktabs.active)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_topsites', data.topsites)
@@ -272,9 +272,9 @@ function initOptionsEvents() {
 		quickLinks(undefined, { topsites: this.checked })
 	})
 
-	paramId('i_syncbookmarks').addEventListener('change', function (this) {
-		syncNewBookmarks(undefined, this.checked)
-	})
+	// paramId('i_syncbookmarks').addEventListener('change', function (this) {
+	// 	syncNewBookmarks(undefined, this.checked)
+	// })
 
 	paramId('i_linktabs').addEventListener('change', function (this) {
 		quickLinks(undefined, { tab: this.checked })

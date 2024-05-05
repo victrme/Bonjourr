@@ -8,6 +8,9 @@ import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
 interface EditStates {
+	group: number
+	selectall: boolean
+	dragging: boolean
 	container: {
 		mini: boolean
 		group: boolean
@@ -21,17 +24,14 @@ interface EditStates {
 		topsites: boolean
 		addgroup: boolean
 	}
-	state: {
-		selectall: boolean
-		dragging: boolean
-	}
 }
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 const domeditlink = document.getElementById('editlink') as HTMLDialogElement
-const domtitle = document.getElementById('e_title') as HTMLInputElement
-const domurl = document.getElementById('e_url') as HTMLInputElement
-const domicon = document.getElementById('e_icon') as HTMLInputElement
+const domtitle = document.getElementById('e-title') as HTMLInputElement
+const domurl = document.getElementById('e-url') as HTMLInputElement
+const domicon = document.getElementById('e-icon') as HTMLInputElement
+
 let editStates: EditStates
 
 //
@@ -42,6 +42,8 @@ export default async function openEditDialog(event: Event) {
 	const path = event.composedPath() as HTMLElement[]
 	const classNames = path.map((element) => element.className ?? '')
 	const selected = document.querySelectorAll('#linkblocks li.selected')
+	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
+	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
 	if (event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE') {
 		return
@@ -62,24 +64,19 @@ export default async function openEditDialog(event: Event) {
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
 	}
 
-	const state: EditStates['state'] = {
-		selectall: classNames.some((cl) => cl.includes('select-all')),
-		dragging: classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping')),
-	}
+	const selectall = classNames.some((cl) => cl.includes('select-all'))
+	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
+	const group = parseInt((container.mini ? linktitle : linkgroup)?.dataset.index ?? '-1')
 
-	editStates = { container, target, state }
+	editStates = { group, selectall, container, dragging, target }
 
-	const inputs = toggleEditInputs({
-		container,
-		target,
-		state,
-	})
+	const inputs = toggleEditInputs()
 
 	const folderTitle = container.folder && target.title
-	const noSelection = state.selectall && !selected[0]
+	const noSelection = selectall && !selected[0]
 	const noInputs = inputs.length === 0
 
-	if (noInputs || folderTitle || noSelection || state.dragging) {
+	if (noInputs || folderTitle || noSelection || dragging) {
 		closeEditDialog()
 		return
 	}
@@ -90,12 +87,8 @@ export default async function openEditDialog(event: Event) {
 	const data = await storage.sync.get()
 
 	if (target.title) {
-		const element = container.group
-			? (path.find((el) => el.className.includes('link-group')) as HTMLElement)
-			: (path[0] as HTMLElement)
-
 		const { titles, pinned } = data.linktabs
-		const index = parseInt(element?.dataset.index ?? '-1')
+		const index = editStates.group
 		const title = titles[index] ?? ''
 
 		domeditlink.dataset.tab = index.toString()
@@ -104,8 +97,8 @@ export default async function openEditDialog(event: Event) {
 		const onlyOneTitleUnpinned = titles.length - pinned.length < 2
 		const onlyOneTitleLeft = titles.length < 2
 
-		if (onlyOneTitleUnpinned) document.querySelector('#eb_pin')?.setAttribute('disabled', '')
-		if (onlyOneTitleLeft) document.querySelector('#eb_delete')?.setAttribute('disabled', '')
+		if (onlyOneTitleUnpinned) document.getElementById('edit-pin')?.setAttribute('disabled', '')
+		if (onlyOneTitleLeft) document.getElementById('edit-delete')?.setAttribute('disabled', '')
 	}
 
 	if (target.link) {
@@ -121,7 +114,7 @@ export default async function openEditDialog(event: Event) {
 			domicon.value = link?.icon ?? ''
 		}
 
-		if (!state.selectall) {
+		if (!selectall) {
 			document.querySelector('.block.selected')?.classList.remove('selected')
 			li?.classList.add('selected')
 		}
@@ -137,18 +130,18 @@ export default async function openEditDialog(event: Event) {
 	domtitle?.focus()
 }
 
-function toggleEditInputs(states: EditStates): string[] {
-	const deleteButton = document.querySelector<HTMLButtonElement>('#eb_delete')
-	const addButton = document.querySelector<HTMLButtonElement>('#eb_add')
-	const { container, target, state } = states
+function toggleEditInputs(): string[] {
+	const deleteButton = document.querySelector<HTMLButtonElement>('#edit-delete')
+	const addButton = document.querySelector<HTMLButtonElement>('#edit-add')
+	const { container, target, selectall } = editStates
 	let inputs: string[] = []
 
-	document.querySelectorAll('#editlink label, #editlink button').forEach((node) => {
-		node.removeAttribute('style')
+	domeditlink.querySelectorAll('label, button, hr').forEach((node) => {
+		node.classList.remove('on')
 	})
 
-	document.querySelector('#eb_delete')?.removeAttribute('disabled')
-	document.querySelector('#eb_pin')?.removeAttribute('disabled')
+	document.querySelector('#edit-delete')?.removeAttribute('disabled')
+	document.querySelector('#edit-pin')?.removeAttribute('disabled')
 
 	domurl.value = ''
 	domicon.value = ''
@@ -174,33 +167,22 @@ function toggleEditInputs(states: EditStates): string[] {
 		if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
 	}
 
-	console.log(inputs)
-
 	for (const id of inputs) {
-		const isLabel = !!id.match(/title|url|icon/)
-		const selector = isLabel ? `#el_${id}` : `#eb_${id}`
-		const input = domeditlink.querySelector<HTMLElement>(selector)
-
-		if (input) {
-			input.style.display = isLabel ? 'grid' : 'initial'
-		}
+		domeditlink.querySelector(`#edit-${id}`)?.classList.add('on')
 	}
 
-	if (inputs.some((id) => !!id.match(/title|url|icon/)) === false) {
-		domeditlink.querySelector('hr')?.setAttribute('style', 'display: none')
-	} else {
-		domeditlink.querySelector('hr')?.removeAttribute('style')
-	}
+	const hasLabels = inputs.includes('title') || inputs.includes('url') || inputs.includes('icon')
+	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
 	if (deleteButton) {
-		if (state.selectall) deleteButton.textContent = tradThis('Delete selected')
+		if (selectall) deleteButton.textContent = tradThis('Delete selected')
 		else if (target.folder) deleteButton.textContent = tradThis('Delete folder')
 		else if (target.link) deleteButton.textContent = tradThis('Delete link')
 		else if (target.title) deleteButton.textContent = tradThis('Delete group')
 	}
 
 	if (addButton) {
-		if (state.selectall) addButton.textContent = tradThis('Create new folder')
+		if (selectall) addButton.textContent = tradThis('Create new folder')
 		else if (target.title) addButton.textContent = tradThis('Add new group')
 		else addButton.textContent = tradThis('Add new link')
 	}
@@ -258,32 +240,32 @@ queueMicrotask(() => {
 
 async function submitChanges(event: SubmitEvent) {
 	switch (event.submitter?.id) {
-		case 'eb_delete':
+		case 'edit-delete':
 			deleteSelection()
 			break
 
-		case 'eb_add':
-			addSelection(editStates)
+		case 'edit-add':
+			addSelection()
 			break
 
-		case 'eb_submit-changes':
+		case 'edit-apply':
 			applyLinkChanges('button')
 			break
 
-		case 'eb_unfolder':
+		case 'edit-unfolder':
 			removeSelectionFromFolder()
 			break
 
-		case 'eb_inputs': {
+		case 'edit-inputs': {
 			applyLinkChanges('inputs')
 			event.preventDefault()
 			return
 		}
 
-		case 'eb_pin':
-		case 'eb_unpin': {
+		case 'edit-pin':
+		case 'edit-unpin': {
 			const index = parseInt(domeditlink.dataset.tab ?? '0')
-			const action = event.submitter.id === 'eb_pin' ? 'pin' : 'unpin'
+			const action = event.submitter.id === 'edit-pin' ? 'pin' : 'unpin'
 			togglePinTab(index, action)
 			break
 		}
@@ -293,32 +275,30 @@ async function submitChanges(event: SubmitEvent) {
 	setTimeout(closeEditDialog)
 }
 
-async function addSelection(state: EditStates) {
-	if (state.target.title) addTab(domtitle.value)
-	if (state.target.folder) addSelectionToNewFolder()
-	if (state.container.group) addLinkFromEditDialog()
+async function addSelection() {
+	if (editStates.target.title) addTab(domtitle.value)
+	if (editStates.target.folder) addSelectionToNewFolder()
+	if (editStates.container.group) addLinkFromEditDialog()
 }
 
 async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const id = getSelectedIds()[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
-	const isOnAddGroup = domeditlink.classList.contains('on-add-group')
-	const isOnGroupTitle = domeditlink.classList.contains('on-group-title')
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
-	if (isOnGroupTitle) {
-		changeTabTitle(domtitle.value, parseInt(domeditlink.dataset.tab ?? '0'))
-		closeEditDialog()
-		return
-	}
-	//
-	else if (isOnAddGroup) {
+	if (editStates.target.addgroup) {
 		addTab(domtitle.value)
 		closeEditDialog()
 		return
 	}
 	//
-	else if (!id && domeditlink.classList.contains('on-linklist')) {
+	else if (editStates.target.title) {
+		changeTabTitle(domtitle.value, parseInt(domeditlink.dataset.tab ?? '0'))
+		closeEditDialog()
+		return
+	}
+	//
+	else if (editStates.container.group && !editStates.target.link) {
 		addLinkFromEditDialog()
 		closeEditDialog()
 		return
@@ -336,17 +316,17 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const link = data[id] as Links.Link
 
 	const title = {
-		val: document.querySelector<HTMLInputElement>('#e_title')?.value,
+		val: document.querySelector<HTMLInputElement>('#e-title')?.value,
 		dom: document.querySelector<HTMLSpanElement>(`#${id} span`),
 	}
 
 	const url = {
-		val: document.querySelector<HTMLInputElement>('#e_url')?.value,
+		val: document.querySelector<HTMLInputElement>('#e-url')?.value,
 		dom: document.querySelector<HTMLAnchorElement>(`#${id} a`),
 	}
 
 	const icon = {
-		val: document.querySelector<HTMLInputElement>('#e_iconurl')?.value,
+		val: document.querySelector<HTMLInputElement>('#e-icon')?.value,
 		dom: document.querySelector<HTMLImageElement>(`#${id} img`),
 	}
 
@@ -380,6 +360,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 function addLinkFromEditDialog() {
 	linksUpdate({
 		addLink: {
+			group: editStates.group,
 			title: domtitle.value,
 			url: domurl.value,
 		},
