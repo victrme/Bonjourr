@@ -123,7 +123,7 @@ body h3 {
 body hr {
 	border: none;
 	border-bottom: 1px solid var(--color-border);
-	margin: 0.65em 0;
+	margin: 10px auto;
 	display: block;
 }
 

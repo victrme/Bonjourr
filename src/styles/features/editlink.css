@@ -4,7 +4,7 @@
 	top: 0;
 	opacity: 0;
 	width: 240px;
-	padding: 16px 16px 12px 16px;
+	padding: 6px;
 	margin: 0;
 	z-index: 4;
 	transition: opacity 0.1s;
@@ -16,17 +16,18 @@
 
 #editlink label {
 	width: 100%;
-	column-gap: 6px;
-	margin-bottom: 6px;
-	place-items: center;
-	grid-template-columns: 50px 1fr;
 	opacity: 0.7;
+	column-gap: 4px;
+	margin-top: 6px;
+	padding-inline: 12px 8px;
+	place-items: center;
+	grid-template-columns: 42px 1fr;
+	box-sizing: border-box;
 }
 
 #editlink label span {
 	font-size: 12px;
 	justify-self: start;
-	padding-left: 5px;
 	max-width: 45px;
 	overflow: hidden;
 	display: inline-block;
@@ -38,11 +39,16 @@
 	opacity: 1;
 }
 
+#editlink hr {
+	margin: 10px;
+	box-sizing: border-box;
+}
+
 #editlink input {
 	color: var(--color-text);
 	width: 100%;
 	height: 2.3em;
-	padding: 0 1em;
+	padding: 0 10px;
 	border: none;
 	border-radius: 8px;
 	box-sizing: border-box;
@@ -59,6 +65,7 @@
 	color: var(--color-text);
 	background-color: var(--color-dialog-input-bg);
 	outline: 3px solid #007aff66;
+	outline-offset: -2px;
 	transition: background-color 0.1s;
 }
 
