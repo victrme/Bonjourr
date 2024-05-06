@@ -1,4 +1,4 @@
-import { getLinksInTab } from './helpers'
+import { getLinksInGroup } from './helpers'
 import { initblocks } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
@@ -6,17 +6,17 @@ import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
-export function initTabs(data: Sync.Storage, init?: true) {
+export function initGroups(data: Sync.Storage, init?: true) {
 	if (!init) {
 		document.querySelectorAll('#link-mini button')?.forEach((node) => {
 			node.remove()
 		})
 	}
 
-	createTabs(data.linkgroups)
+	createGroups(data.linkgroups)
 }
 
-function createTabs(linkgroups: Sync.LinkGroups) {
+function createGroups(linkgroups: Sync.LinkGroups) {
 	const { groups, pinned, selected } = linkgroups
 
 	for (const group of [...groups, '+']) {
@@ -33,7 +33,7 @@ function createTabs(linkgroups: Sync.LinkGroups) {
 		button.dataset.group = group
 		button.classList.add('link-title')
 		button.classList.toggle('selected', group === selected)
-		button.addEventListener('click', changeTab)
+		button.addEventListener('click', changeGroup)
 
 		if (isTopSite) {
 			button.textContent = tradThis('Most visited')
@@ -54,20 +54,20 @@ function createTabs(linkgroups: Sync.LinkGroups) {
 	domlinkblocks?.classList.toggle('with-groups', linkgroups.on)
 }
 
-function changeTab(event: Event) {
+function changeGroup(event: Event) {
 	const button = event.currentTarget as HTMLButtonElement
-	const tabTransition = transitioner()
+	const transition = transitioner()
 
 	if (!!domlinkblocks.dataset.folderid || button.classList.contains('selected')) {
 		return
 	}
 
-	tabTransition.first(hideCurrentTab)
-	tabTransition.then(recreateLinksFromNewTab)
-	tabTransition.finally(showNewTab)
-	tabTransition.transition(100)
+	transition.first(hideCurrentGroup)
+	transition.then(recreateLinksFromNewGroup)
+	transition.finally(showNewGroup)
+	transition.transition(100)
 
-	async function recreateLinksFromNewTab() {
+	async function recreateLinksFromNewGroup() {
 		const buttons = document.querySelectorAll<HTMLElement>('#link-mini button')
 		const data = await storage.sync.get()
 		const group = button.dataset.group ?? data.linkgroups.groups[0]
@@ -79,19 +79,19 @@ function changeTab(event: Event) {
 		await initblocks(data)
 	}
 
-	function hideCurrentTab() {
+	function hideCurrentGroup() {
 		domlinkblocks.classList.remove('in-folder')
 		domlinkblocks.classList.add('hiding')
 	}
 
-	function showNewTab() {
+	function showNewGroup() {
 		domlinkblocks.classList.remove('hiding')
 	}
 }
 
 // Updates
 
-export async function toggleTabs(on: boolean) {
+export async function toggleGroups(on: boolean) {
 	const data = await storage.sync.get('linkgroups')
 
 	data.linkgroups.on = on
@@ -100,16 +100,16 @@ export async function toggleTabs(on: boolean) {
 	domlinkblocks?.classList.toggle('with-groups', on)
 }
 
-export async function changeTabTitle(title: { old: string; new: string }) {
+export async function changeGroupTitle(title: { old: string; new: string }) {
 	const data = await storage.sync.get('linkgroups')
 	const index = data.linkgroups.groups.indexOf(title.old)
 
 	data.linkgroups.groups[index] = title.new
 	storage.sync.set({ linkgroups: data.linkgroups })
-	initTabs(data)
+	initGroups(data)
 }
 
-export async function addTab(title = '', isFromTopSites?: true) {
+export async function addGroup(title = '', isFromTopSites?: true) {
 	const data = await storage.sync.get('linkgroups')
 
 	const isReserved = title === '' || title === '+' || title === 'topsites'
@@ -127,10 +127,10 @@ export async function addTab(title = '', isFromTopSites?: true) {
 	data.linkgroups.groups.push(title)
 	storage.sync.set({ linkgroups: data.linkgroups })
 
-	initTabs(data)
+	initGroups(data)
 }
 
-export async function deleteTab(group: string, isFromTopSites?: true) {
+export async function deleteGroup(group: string, isFromTopSites?: true) {
 	const data = await storage.sync.get()
 	const { groups, selected, pinned } = data.linkgroups
 
@@ -143,7 +143,7 @@ export async function deleteTab(group: string, isFromTopSites?: true) {
 
 	//
 
-	for (const link of getLinksInTab(data, group)) {
+	for (const link of getLinksInGroup(data, group)) {
 		delete data[link._id]
 	}
 
@@ -152,13 +152,13 @@ export async function deleteTab(group: string, isFromTopSites?: true) {
 	data.linkgroups.selected = group === selected ? groups[0] : group
 
 	initblocks(data)
-	initTabs(data)
+	initGroups(data)
 
 	storage.sync.clear()
 	storage.sync.set(data)
 }
 
-export async function togglePinTab(group: string, action: 'pin' | 'unpin') {
+export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {
 	const data = await storage.sync.get()
 	const { groups, pinned } = data.linkgroups
 
@@ -172,5 +172,5 @@ export async function togglePinTab(group: string, action: 'pin' | 'unpin') {
 	storage.sync.set(data)
 
 	initblocks(data)
-	initTabs(data)
+	initGroups(data)
 }

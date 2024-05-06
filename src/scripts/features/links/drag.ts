@@ -43,7 +43,7 @@ export default function startDrag(event: PointerEvent) {
 
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
 	const lis = domlinklist.querySelectorAll<HTMLLIElement>('li.block')
-	const tabs = document.querySelectorAll<HTMLElement>('#link-mini button')
+	const titles = document.querySelectorAll<HTMLElement>('#link-mini button')
 	const listRect = domlinklist?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
@@ -56,8 +56,8 @@ export default function startDrag(event: PointerEvent) {
 	blocks.clear()
 	dropzones.clear()
 
-	for (let i = 0; i < tabs.length; i++) {
-		const { x, y, height, width } = tabs[i].getBoundingClientRect()
+	for (let i = 0; i < titles.length; i++) {
+		const { x, y, height, width } = titles[i].getBoundingClientRect()
 		const id = i.toString()
 
 		dropzones.add({ id, x, y, h: height, w: width })
@@ -286,7 +286,7 @@ function endDrag(event: Event) {
 		}
 		//
 		else if (toTab) {
-			linksUpdate({ moveToTab: { ids: [draggedId], target: targetId } })
+			linksUpdate({ moveToGroup: { ids: [draggedId], target: targetId } })
 		}
 		//
 		else if (outOfFolder) {

@@ -1,5 +1,5 @@
-import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInTab, getLinksInFolder } from './helpers'
-import { initTabs, toggleTabs, addTab, changeTabTitle, deleteTab } from './tabs'
+import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInGroup, getLinksInFolder } from './helpers'
+import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle } from './groups'
 import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
 import { folderClick } from './folders'
@@ -91,7 +91,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initblocks(init)
-	initTabs(init, !!init)
+	initGroups(init, !!init)
 	initRows(init.linksrow, init.linkstyle)
 }
 
@@ -111,7 +111,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 			? topSitesToLinks(await chrome.topSites.get())
 			: folder
 			? getLinksInFolder(data, folder)
-			: getLinksInTab(data, group)
+			: getLinksInGroup(data, group)
 
 		activeGroups.push({
 			lis,
@@ -357,19 +357,19 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.groups !== undefined) {
-		toggleTabs(update.groups)
+		toggleGroups(update.groups)
 	}
 
 	if (update.addGroup !== undefined) {
-		addTab(update.addGroup)
+		addGroup(update.addGroup)
 	}
 
 	if (update.deleteGroup !== undefined) {
-		deleteTab(update.deleteGroup)
+		deleteGroup(update.deleteGroup)
 	}
 
 	if (update.groupTitle !== undefined) {
-		changeTabTitle(update.groupTitle)
+		changeGroupTitle(update.groupTitle)
 	}
 
 	if (update.newtab !== undefined) {
@@ -592,7 +592,7 @@ async function setLinkStyle(style: string = 'large') {
 
 	const wasText = domlinkblocks?.className.includes('text')
 	const data = await storage.sync.get()
-	const links = getLinksInTab(data)
+	const links = getLinksInGroup(data)
 
 	domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
 	domlinkblocks.classList.add(style)
@@ -629,7 +629,7 @@ async function setTopSites(toggle: boolean) {
 
 	data.topsites = toggle
 	storage.sync.set({ topsites: toggle })
-	;(toggle ? addTab : deleteTab)('topsites', true)
+	;(toggle ? addGroup : deleteGroup)('topsites', true)
 }
 
 function setRows(row: string) {
@@ -689,7 +689,7 @@ function correctLinksOrder(data: Sync.Storage): Sync.Storage {
 	}
 
 	for (const group of data.linkgroups.groups) {
-		const linksInGroup = getLinksInTab(data, group)
+		const linksInGroup = getLinksInGroup(data, group)
 
 		linksInGroup.forEach((link, i) => {
 			link.order = i

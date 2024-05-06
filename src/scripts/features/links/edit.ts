@@ -1,5 +1,5 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { deleteTab, addTab, changeTabTitle, togglePinTab } from './tabs'
+import { deleteGroup, addGroup, changeGroupTitle, togglePinGroup } from './groups'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
@@ -265,7 +265,7 @@ async function submitChanges(event: SubmitEvent) {
 		case 'edit-unpin': {
 			const group = editStates.group
 			const action = event.submitter.id === 'edit-pin' ? 'pin' : 'unpin'
-			togglePinTab(group, action)
+			togglePinGroup(group, action)
 			break
 		}
 	}
@@ -275,7 +275,7 @@ async function submitChanges(event: SubmitEvent) {
 }
 
 async function addSelection() {
-	if (editStates.target.title) addTab(domtitle.value)
+	if (editStates.target.title) addGroup(domtitle.value)
 	if (editStates.target.folder) addSelectionToNewFolder()
 	if (editStates.container.group) addLinkFromEditDialog()
 }
@@ -286,14 +286,14 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
-		addTab(domtitle.value)
+		addGroup(domtitle.value)
 		closeEditDialog()
 		return
 	}
 	//
 	else if (editStates.target.title) {
 		closeEditDialog()
-		changeTabTitle({
+		changeGroupTitle({
 			old: domeditlink.dataset.group ?? '',
 			new: domtitle.value,
 		})
@@ -376,7 +376,7 @@ function addSelectionToNewFolder() {
 
 function deleteSelection() {
 	if (editStates.target.title) {
-		deleteTab(editStates.group)
+		deleteGroup(editStates.group)
 	} else {
 		linksUpdate({
 			deleteLinks: getSelectedIds(),

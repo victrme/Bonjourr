@@ -49,7 +49,7 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 	}
 }
 
-export function getLinksInTab(data: Sync.Storage, group?: string): Links.Link[] {
+export function getLinksInGroup(data: Sync.Storage, group?: string): Links.Link[] {
 	const links: Links.Link[] = []
 
 	group = group ?? data.linkgroups.selected
