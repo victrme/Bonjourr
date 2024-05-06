@@ -116,10 +116,6 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 		data.dateformat = data.usdate ? 'us' : 'eu'
 	}
 
-	if (!data.linktabs) {
-		data.linktabs = { ...SYNC_DEFAULT.linktabs }
-	}
-
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('#clock', '#digital')
@@ -141,6 +137,19 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	storage.sync.remove('cssHeight')
 
 	data = linksDataMigration(data)
+
+	// 20.0.0
+
+	if (data.linktabs) {
+		data.linkgroups = {
+			on: data.linktabs.active,
+			selected: data.linktabs.titles[data.linktabs.selected],
+			groups: [...data.linktabs.titles],
+			pinned: [],
+		}
+
+		delete data.linktabs
+	}
 
 	return data
 }

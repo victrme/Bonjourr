@@ -20,29 +20,24 @@ type LinksUpdate = {
 	newtab?: boolean
 	style?: string
 	row?: string
-	tab?: boolean
-	addTab?: string
-	deleteTab?: number
+	groups?: boolean
+	addGroup?: string
+	deleteGroup?: string
+	groupTitle?: { old: string; new: string }
 	moveLinks?: string[]
 	addLink?: AddLink
 	addFolder?: string[]
-	tabTitle?: TabTitle
 	addToFolder?: AddToFolder
-	moveToTab?: MoveToTarget
-	removeFromFolder?: { ids: string[]; group: HTMLDivElement }
+	moveToGroup?: MoveToTarget
+	unfolder?: { ids: string[]; group: HTMLDivElement }
 	deleteLinks?: string[]
 	topsites?: boolean
-}
-
-type TabTitle = {
-	title: string
-	index: number
 }
 
 type AddLink = {
 	title: string
 	url: string
-	group?: number
+	group?: string
 }
 
 type AddToFolder = {
@@ -64,15 +59,14 @@ type Bookmarks = {
 type LinkGroups = {
 	links: Links.Link[]
 	title: string
-	index: number
 	pinned: boolean
 	lis: HTMLLIElement[]
 	div: HTMLDivElement | null
 }[]
 
-type SubmitLink = { type: 'link'; title: string; url: string; group?: number }
-type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string; group?: number }
-type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks; group?: number }
+type SubmitLink = { type: 'link'; title: string; url: string; group?: string }
+type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string; group?: string }
+type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks; group?: string }
 type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
 
 type Style = Sync.Storage['linkstyle']
@@ -105,35 +99,34 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 export async function initblocks(data: Sync.Storage): Promise<true> {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
-	const { titles, pinned, selected } = data.linktabs
-	const groups: LinkGroups = []
+	const { pinned, selected } = data.linkgroups
+	const activeGroups: LinkGroups = []
 
-	for (const index of [...pinned, selected]) {
-		const div = document.querySelector<HTMLDivElement>(`.link-group[data-index="${index}"]`)
+	for (const group of [...pinned, selected]) {
+		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
 		const folder = div?.dataset.folder
 		const lis: HTMLLIElement[] = []
-		const inTopSites = titles[index] === 'topsites'
+		const inTopSites = group === 'topsites'
 		const links = inTopSites
 			? topSitesToLinks(await chrome.topSites.get())
 			: folder
 			? getLinksInFolder(data, folder)
-			: getLinksInTab(data, index)
+			: getLinksInTab(data, group)
 
-		groups.push({
+		activeGroups.push({
 			lis,
 			div,
 			links,
-			index,
-			pinned: index !== selected,
-			title: titles[index],
+			title: group,
+			pinned: group !== selected,
 		})
 	}
 
-	groups.reverse()
+	activeGroups.reverse()
 
 	// Remove links that didn't make the cut
-	const divs = groups.map((g) => g.div)
-	const usedLis = groups.map((group) => group.lis).flat()
+	const divs = activeGroups.map((g) => g.div)
+	const usedLis = activeGroups.map((group) => group.lis).flat()
 
 	document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group').forEach((div) => {
 		div.querySelectorAll<HTMLLIElement>('li').forEach((li) => {
@@ -147,7 +140,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		}
 	})
 
-	for (const group of groups) {
+	for (const group of activeGroups) {
 		const linkgroup = group.div ?? getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
 		const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
@@ -177,9 +170,9 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 			}
 		}
 
-		linkgroup.dataset.index = group.index.toString()
-		linkgroup.classList.toggle('pinned', group.pinned)
 		linktitle.textContent = group.title
+		linkgroup.dataset.group = group.title
+		linkgroup.classList.toggle('pinned', group.pinned)
 		linklist.appendChild(fragment)
 		domlinkblocks.prepend(linkgroup)
 
@@ -187,6 +180,10 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 			linktitle.textContent = tradThis('Most visited')
 			linktitle.classList.add('topsites-title')
 			linkgroup.classList.add('topsites-group')
+		}
+
+		if (group.title === '') {
+			linktitle.textContent = tradThis('Default group')
 		}
 	}
 
@@ -343,36 +340,36 @@ export async function linksUpdate(update: LinksUpdate) {
 		addLinkToFolder(update.addToFolder)
 	}
 
-	if (update.removeFromFolder) {
-		removeFromFolder(update.removeFromFolder)
+	if (update.unfolder) {
+		unfolder(update.unfolder)
 	}
 
 	if (update.deleteLinks) {
 		deleteLinks(update.deleteLinks)
 	}
 
-	if (update.moveToTab) {
-		moveToOtherTab(update.moveToTab)
+	if (update.moveToGroup) {
+		moveToOtherTab(update.moveToGroup)
 	}
 
 	if (update.moveLinks) {
 		moveLinks(update.moveLinks)
 	}
 
-	if (update.tab !== undefined) {
-		toggleTabs(update.tab)
+	if (update.groups !== undefined) {
+		toggleTabs(update.groups)
 	}
 
-	if (update.addTab !== undefined) {
-		addTab(update.addTab)
+	if (update.addGroup !== undefined) {
+		addTab(update.addGroup)
 	}
 
-	if (update.deleteTab !== undefined) {
-		deleteTab(update.deleteTab)
+	if (update.deleteGroup !== undefined) {
+		deleteTab(update.deleteGroup)
 	}
 
-	if (update.tabTitle !== undefined) {
-		changeTabTitle(update.tabTitle.title, update.tabTitle.index)
+	if (update.groupTitle !== undefined) {
+		changeTabTitle(update.groupTitle)
 	}
 
 	if (update.newtab !== undefined) {
@@ -425,7 +422,7 @@ async function linkSubmission(arg: LinkSubmission) {
 		if (folderid && !link.folder) {
 			link.parent = folderid
 		} else {
-			link.parent = arg.group ?? data.linktabs.selected
+			link.parent = arg.group ?? data.linkgroups.selected
 		}
 
 		data[link._id] = link
@@ -502,7 +499,7 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 	animateLinksRemove(ids)
 }
 
-async function removeFromFolder({ ids, group }: { ids: string[]; group: HTMLDivElement }) {
+async function unfolder({ ids, group }: { ids: string[]; group: HTMLDivElement }) {
 	const folderid = group.dataset.folder
 	const index = parseInt(group.dataset.index ?? '-1')
 	let data = await storage.sync.get()
@@ -632,12 +629,7 @@ async function setTopSites(toggle: boolean) {
 
 	data.topsites = toggle
 	storage.sync.set({ topsites: toggle })
-
-	if (toggle) {
-		addTab('topsites', true)
-	} else {
-		deleteTab('topsites', true)
-	}
+	;(toggle ? addTab : deleteTab)('topsites', true)
 }
 
 function setRows(row: string) {
@@ -696,10 +688,10 @@ function correctLinksOrder(data: Sync.Storage): Sync.Storage {
 		})
 	}
 
-	for (let i = 0; i < data.linktabs.titles.length; i++) {
-		const linksInTab = getLinksInTab(data, i)
+	for (const group of data.linkgroups.groups) {
+		const linksInGroup = getLinksInTab(data, group)
 
-		linksInTab.forEach((link, i) => {
+		linksInGroup.forEach((link, i) => {
 			link.order = i
 			data[link._id]
 		})

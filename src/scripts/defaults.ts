@@ -99,10 +99,10 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	linkstyle: 'large',
 	linknewtab: false,
 	linksrow: 6,
-	linktabs: {
-		active: false,
-		selected: 0,
-		titles: [''],
+	linkgroups: {
+		on: false,
+		selected: '',
+		groups: [''],
 		pinned: [],
 	},
 	clock: {

@@ -22,11 +22,8 @@ import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
+import { SYSTEM_OS, IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
-import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-
-// import { highlightText } from 'prism-code-editor/prism'
-// import 'prism-code-editor/prism/languages/json'
 
 import type { Langs } from '../types/langs'
 
@@ -124,8 +121,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_quicklinks', data.quicklinks)
-	// setCheckbox('i_syncbookmarks', !!data.syncbookmarks)
-	setCheckbox('i_linktabs', data.linktabs.active)
+	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_topsites', data.topsites)
 	setCheckbox('i_time', data.time)
@@ -276,8 +272,8 @@ function initOptionsEvents() {
 	// 	syncNewBookmarks(undefined, this.checked)
 	// })
 
-	paramId('i_linktabs').addEventListener('change', function (this) {
-		quickLinks(undefined, { tab: this.checked })
+	paramId('i_linkgroups').addEventListener('change', function (this) {
+		quickLinks(undefined, { groups: this.checked })
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {

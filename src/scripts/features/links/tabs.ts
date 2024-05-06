@@ -13,26 +13,26 @@ export function initTabs(data: Sync.Storage, init?: true) {
 		})
 	}
 
-	createTabs(data.linktabs)
+	createTabs(data.linkgroups)
 }
 
-function createTabs(linktabs: Sync.LinkTabs) {
-	const titles = [...linktabs.titles, '+']
-	const selected = linktabs.selected
+function createTabs(linkgroups: Sync.LinkGroups) {
+	const { groups, pinned, selected } = linkgroups
 
-	titles.forEach((title, i) => {
+	for (const group of [...groups, '+']) {
 		const button = document.createElement('button')
-		const isTopSite = title === 'topsites'
-		const isDefault = title === ''
-		const isMore = title === '+'
+		const isTopSite = group === 'topsites'
+		const isDefault = group === ''
+		const isAddMore = group === '+'
 
-		if (linktabs.pinned.includes(i)) {
-			return
+		if (pinned.includes(group)) {
+			continue
 		}
 
-		button.textContent = title
-		button.dataset.index = i.toString()
-		button.className = `link-title${i === selected ? ' selected' : ''}`
+		button.textContent = group
+		button.dataset.group = group
+		button.classList.add('link-title')
+		button.classList.toggle('selected', group === selected)
 		button.addEventListener('click', changeTab)
 
 		if (isTopSite) {
@@ -44,14 +44,14 @@ function createTabs(linktabs: Sync.LinkTabs) {
 			button.textContent = tradThis('Default group')
 		}
 
-		if (isMore) {
+		if (isAddMore) {
 			button.classList.add('add-group')
 		}
 
 		document.querySelector('#link-mini')?.appendChild(button)
-	})
+	}
 
-	domlinkblocks?.classList.toggle('with-tabs', linktabs.active)
+	domlinkblocks?.classList.toggle('with-groups', linkgroups.on)
 }
 
 function changeTab(event: Event) {
@@ -70,11 +70,11 @@ function changeTab(event: Event) {
 	async function recreateLinksFromNewTab() {
 		const buttons = document.querySelectorAll<HTMLElement>('#link-mini button')
 		const data = await storage.sync.get()
-		const index = parseInt(button.dataset.index ?? '-1')
+		const group = button.dataset.group ?? data.linkgroups.groups[0]
 
 		buttons?.forEach((div) => div.classList.remove('selected'))
 		button.classList.add('selected')
-		data.linktabs.selected = index
+		data.linkgroups.selected = group
 		storage.sync.set(data)
 		await initblocks(data)
 	}
@@ -91,31 +91,29 @@ function changeTab(event: Event) {
 
 // Updates
 
-export async function toggleTabs(tab: boolean) {
-	const data = await storage.sync.get('linktabs')
+export async function toggleTabs(on: boolean) {
+	const data = await storage.sync.get('linkgroups')
 
-	data.linktabs.active = tab
-	storage.sync.set({ linktabs: data.linktabs })
+	data.linkgroups.on = on
+	storage.sync.set({ linkgroups: data.linkgroups })
 
-	domlinkblocks?.classList.toggle('with-tabs', tab)
+	domlinkblocks?.classList.toggle('with-groups', on)
 }
 
-export async function changeTabTitle(title: string, index: number) {
-	const data = await storage.sync.get('linktabs')
-	const hasTab = data.linktabs.titles.length >= index
+export async function changeTabTitle(title: { old: string; new: string }) {
+	const data = await storage.sync.get('linkgroups')
+	const index = data.linkgroups.groups.indexOf(title.old)
 
-	if (hasTab) {
-		data.linktabs.titles[index] = title
-		storage.sync.set({ linktabs: data.linktabs })
-		initTabs(data)
-	}
+	data.linkgroups.groups[index] = title.new
+	storage.sync.set({ linkgroups: data.linkgroups })
+	initTabs(data)
 }
 
 export async function addTab(title = '', isFromTopSites?: true) {
-	const data = await storage.sync.get('linktabs')
+	const data = await storage.sync.get('linkgroups')
 
 	const isReserved = title === '' || title === '+' || title === 'topsites'
-	const isAlreadyUsed = data.linktabs.titles.includes(title)
+	const isAlreadyUsed = data.linkgroups.groups.includes(title)
 
 	if (!isFromTopSites && (isReserved || isAlreadyUsed)) {
 		return
@@ -126,35 +124,33 @@ export async function addTab(title = '', isFromTopSites?: true) {
 		setTimeout(() => document.querySelector<HTMLElement>('.topsites-title')?.click())
 	}
 
-	data.linktabs.titles.push(title)
-	storage.sync.set({ linktabs: data.linktabs })
+	data.linkgroups.groups.push(title)
+	storage.sync.set({ linkgroups: data.linkgroups })
 
 	initTabs(data)
 }
 
-export async function deleteTab(tab: number | string, isFromTopSites?: true) {
+export async function deleteTab(group: string, isFromTopSites?: true) {
 	const data = await storage.sync.get()
-	const { titles, selected } = data.linktabs
-	let target = -1
+	const { groups, selected, pinned } = data.linkgroups
 
-	if (typeof tab === 'number') target = tab
-	if (typeof tab === 'string') target = titles.indexOf(tab)
+	const isBroken = groups.indexOf(group) === -1
+	const isMinimum = groups.length === (groups.includes('topsites') ? 2 : 1)
 
-	const isBroken = target === -1
-	const isMinimum = titles.length === (titles.includes('topsites') ? 2 : 1)
-
-	if (!isFromTopSites && (isMinimum || isBroken)) {
+	if (isMinimum || isBroken || isFromTopSites) {
 		return
 	}
 
 	//
 
-	for (const link of getLinksInTab(data, target)) {
+	for (const link of getLinksInTab(data, group)) {
 		delete data[link._id]
 	}
 
-	data.linktabs.titles = titles.toSpliced(target, 1)
-	data.linktabs.selected -= target === selected ? 1 : 0
+	data.linkgroups.pinned = pinned.filter((p) => p !== group)
+	data.linkgroups.groups = groups.filter((g) => g !== group)
+	data.linkgroups.selected = group === selected ? groups[0] : group
+
 	initblocks(data)
 	initTabs(data)
 
@@ -162,23 +158,15 @@ export async function deleteTab(tab: number | string, isFromTopSites?: true) {
 	storage.sync.set(data)
 }
 
-export async function togglePinTab(tab: number | string, action: 'pin' | 'unpin') {
+export async function togglePinTab(group: string, action: 'pin' | 'unpin') {
 	const data = await storage.sync.get()
-	const titles = data.linktabs.titles
-	let target = -1
+	const { groups, pinned } = data.linkgroups
 
-	if (Array.isArray(data.linktabs.pinned) === false) {
-		data.linktabs.pinned = []
-	}
+	if (action === 'pin') data.linkgroups.pinned.push(group)
+	if (action === 'unpin') data.linkgroups.pinned = pinned.filter((pinned) => pinned !== group)
 
-	if (typeof tab === 'number') target = tab
-	if (typeof tab === 'string') target = titles.indexOf(tab)
-
-	if (action === 'pin') data.linktabs.pinned.push(target)
-	if (action === 'unpin') data.linktabs.pinned.splice(data.linktabs.pinned.indexOf(target), 1)
-
-	if (target === data.linktabs.selected) {
-		data.linktabs.selected = -1
+	if (group === data.linkgroups.selected) {
+		data.linkgroups.selected = groups[0]
 	}
 
 	storage.sync.set(data)

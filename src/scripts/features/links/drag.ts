@@ -290,7 +290,7 @@ function endDrag(event: Event) {
 		}
 		//
 		else if (outOfFolder) {
-			linksUpdate({ removeFromFolder: { ids: [draggedId], group: domlinkgroup } })
+			linksUpdate({ unfolder: { ids: [draggedId], group: domlinkgroup } })
 		}
 		//
 		else {

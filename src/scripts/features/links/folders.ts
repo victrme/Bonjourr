@@ -61,7 +61,7 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 		}
 
 		if (isLastGroup) {
-			domlinkblocks.classList.remove('with-tabs')
+			domlinkblocks.classList.remove('with-groups')
 		}
 	}
 
@@ -90,7 +90,7 @@ async function closeFolder() {
 	}
 
 	async function changeToTab() {
-		domlinkblocks.classList.toggle('with-tabs', data.linktabs.active)
+		domlinkblocks.classList.toggle('with-groups', data.linkgroups.on)
 		await initblocks(data)
 	}
 

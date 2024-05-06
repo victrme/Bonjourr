@@ -648,7 +648,7 @@ li.block.folder img {
 	display: initial;
 }
 
-#linkblocks.with-tabs #link-mini,
+#linkblocks.with-groups #link-mini,
 #linkblocks.in-folder #link-mini {
 	display: flex;
 }

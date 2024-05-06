@@ -49,12 +49,13 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 	}
 }
 
-export function getLinksInTab(data: Sync.Storage, index?: number): Links.Link[] {
-	const selection = index ?? data.linktabs.selected ?? 0
+export function getLinksInTab(data: Sync.Storage, group?: string): Links.Link[] {
 	const links: Links.Link[] = []
 
+	group = group ?? data.linkgroups.selected
+
 	for (const value of Object.values(data)) {
-		if (isLink(value) && (value?.parent ?? 0) === selection) {
+		if (isLink(value) && (value?.parent ?? 0) === group) {
 			links.push(value)
 		}
 	}

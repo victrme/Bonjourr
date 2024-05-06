@@ -8,7 +8,7 @@ import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
 interface EditStates {
-	group: number
+	group: string
 	selectall: boolean
 	dragging: boolean
 	container: {
@@ -66,7 +66,7 @@ export default async function openEditDialog(event: Event) {
 
 	const selectall = classNames.some((cl) => cl.includes('select-all'))
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
-	const group = parseInt((container.mini ? linktitle : linkgroup)?.dataset.index ?? '-1')
+	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
 	editStates = { group, selectall, container, dragging, target }
 
@@ -87,15 +87,14 @@ export default async function openEditDialog(event: Event) {
 	const data = await storage.sync.get()
 
 	if (target.title) {
-		const { titles, pinned } = data.linktabs
-		const index = editStates.group
-		const title = titles[index] ?? ''
+		const { groups, pinned } = data.linkgroups
+		const title = editStates.group
 
-		domeditlink.dataset.tab = index.toString()
+		domeditlink.dataset.group = title
 		domtitle.value = title
 
-		const onlyOneTitleUnpinned = titles.length - pinned.length < 2
-		const onlyOneTitleLeft = titles.length < 2
+		const onlyOneTitleUnpinned = groups.length - pinned.length < 2
+		const onlyOneTitleLeft = groups.length < 2
 
 		if (onlyOneTitleUnpinned) document.getElementById('edit-pin')?.setAttribute('disabled', '')
 		if (onlyOneTitleLeft) document.getElementById('edit-delete')?.setAttribute('disabled', '')
@@ -264,9 +263,9 @@ async function submitChanges(event: SubmitEvent) {
 
 		case 'edit-pin':
 		case 'edit-unpin': {
-			const index = parseInt(domeditlink.dataset.tab ?? '0')
+			const group = editStates.group
 			const action = event.submitter.id === 'edit-pin' ? 'pin' : 'unpin'
-			togglePinTab(index, action)
+			togglePinTab(group, action)
 			break
 		}
 	}
@@ -293,8 +292,11 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 	//
 	else if (editStates.target.title) {
-		changeTabTitle(domtitle.value, parseInt(domeditlink.dataset.tab ?? '0'))
 		closeEditDialog()
+		changeTabTitle({
+			old: domeditlink.dataset.group ?? '',
+			new: domtitle.value,
+		})
 		return
 	}
 	//
@@ -373,8 +375,8 @@ function addSelectionToNewFolder() {
 }
 
 function deleteSelection() {
-	if (domeditlink.dataset.tab) {
-		deleteTab(parseInt(domeditlink.dataset.tab ?? '0'))
+	if (editStates.target.title) {
+		deleteTab(editStates.group)
 	} else {
 		linksUpdate({
 			deleteLinks: getSelectedIds(),
@@ -383,11 +385,10 @@ function deleteSelection() {
 }
 
 function removeSelectionFromFolder() {
-	const index = parseInt(domeditlink.dataset.tab ?? '0')
-	const group = document.querySelector<HTMLDivElement>(`.link-group[data-index="${index}"]`)
+	const group = document.querySelector<HTMLDivElement>(`.link-group[data-index="${editStates.group}"]`)
 
 	if (group) {
-		linksUpdate({ removeFromFolder: { ids: getSelectedIds(), group } })
+		linksUpdate({ unfolder: { ids: getSelectedIds(), group } })
 		document.dispatchEvent(new Event('remove-select-all'))
 	}
 }
