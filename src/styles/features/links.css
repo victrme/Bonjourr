@@ -166,6 +166,11 @@ li.block img {
 }
 
 li.block span {
+	display: block;
+	width: 100%;
+	padding-top: 0.4em;
+	line-height: 1.2em;
+	max-height: 3.8em;
 	overflow: hidden;
 }
 
@@ -262,14 +267,6 @@ li.block.folder img {
 	border-radius: 0.6em;
 }
 
-#linkblocks.large li.block span {
-	display: block;
-	width: 100%;
-	padding-top: 0.4em;
-	line-height: 1.3em;
-	max-height: 3.9em;
-}
-
 #linkblocks.large li.block.folder div {
 	padding: 5px;
 }
@@ -301,14 +298,6 @@ li.block.folder img {
 
 #linkblocks.medium li img {
 	border-radius: 0.5em;
-}
-
-#linkblocks.medium li span {
-	display: block;
-	width: 100%;
-	padding-top: 0.4em;
-	line-height: 1.3em;
-	max-height: 3.9em;
 }
 
 /* Small */

@@ -623,12 +623,8 @@ async function setTopSites(toggle: boolean) {
 
 	if (!permitted) {
 		i_topsites.checked = false
+		return
 	}
-
-	const data = await storage.sync.get()
-
-	data.topsites = toggle
-	storage.sync.set({ topsites: toggle })
 
 	if (toggle) {
 		addGroup('topsites', true)

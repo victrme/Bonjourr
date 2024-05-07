@@ -131,11 +131,13 @@ export async function addGroup(title = '', isFromTopSites?: true) {
 		for (const link of getLinksInGroup(data, '+')) {
 			data[link._id] = { ...link, parent: title }
 		}
+
+		data.linkgroups.selected = title
 	} else {
 		title = 'topsites'
+		data.linkgroups.pinned.push('topsites')
 	}
 
-	data.linkgroups.selected = title
 	data.linkgroups.groups.push(title)
 	storage.sync.set(data)
 
@@ -158,7 +160,7 @@ export async function deleteGroup(group: string) {
 		delete data[link._id]
 	}
 
-	data.linkgroups.selected = group === selected || pinned.includes(group) ? groups[0] : group
+	data.linkgroups.selected = group === selected || pinned.includes(group) ? groups[0] : selected
 	data.linkgroups.pinned = pinned.filter((p) => p !== group)
 	data.linkgroups.groups = groups.filter((g) => g !== group)
 

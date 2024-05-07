@@ -12,7 +12,6 @@ declare namespace Sync {
 		linknewtab: boolean
 		linktabs?: LinkTabsOld
 		linkgroups: LinkGroups
-		topsites: boolean
 		textShadow: number
 		cssHeight?: number
 		review: number
