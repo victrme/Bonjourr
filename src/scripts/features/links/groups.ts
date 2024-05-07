@@ -101,17 +101,25 @@ export async function toggleGroups(on: boolean) {
 }
 
 export async function changeGroupTitle(title: { old: string; new: string }) {
-	const data = await storage.sync.get('linkgroups')
+	const data = await storage.sync.get()
 	const index = data.linkgroups.groups.indexOf(title.old)
 
+	for (const link of getLinksInGroup(data, title.old)) {
+		data[link._id] = {
+			...link,
+			parent: title.new,
+		}
+	}
+
 	data.linkgroups.groups[index] = title.new
-	storage.sync.set({ linkgroups: data.linkgroups })
+	data.linkgroups.selected = title.new
+	storage.sync.set(data)
+
 	initGroups(data)
 }
 
 export async function addGroup(title = '', isFromTopSites?: true) {
-	const data = await storage.sync.get('linkgroups')
-
+	const data = await storage.sync.get()
 	const isReserved = title === '' || title === '+' || title === 'topsites'
 	const isAlreadyUsed = data.linkgroups.groups.includes(title)
 
@@ -119,37 +127,40 @@ export async function addGroup(title = '', isFromTopSites?: true) {
 		return
 	}
 
-	if (isFromTopSites) {
+	if (!isFromTopSites) {
+		for (const link of getLinksInGroup(data, '+')) {
+			data[link._id] = { ...link, parent: title }
+		}
+	} else {
 		title = 'topsites'
-		setTimeout(() => document.querySelector<HTMLElement>('.topsites-title')?.click())
 	}
 
+	data.linkgroups.selected = title
 	data.linkgroups.groups.push(title)
-	storage.sync.set({ linkgroups: data.linkgroups })
+	storage.sync.set(data)
 
 	initGroups(data)
+	initblocks(data)
 }
 
-export async function deleteGroup(group: string, isFromTopSites?: true) {
+export async function deleteGroup(group: string) {
 	const data = await storage.sync.get()
 	const { groups, selected, pinned } = data.linkgroups
 
 	const isBroken = groups.indexOf(group) === -1
-	const isMinimum = groups.length === (groups.includes('topsites') ? 2 : 1)
+	const isMinimum = groups.length === 1
 
-	if (isMinimum || isBroken || isFromTopSites) {
+	if (isMinimum || isBroken) {
 		return
 	}
-
-	//
 
 	for (const link of getLinksInGroup(data, group)) {
 		delete data[link._id]
 	}
 
+	data.linkgroups.selected = group === selected || pinned.includes(group) ? groups[0] : group
 	data.linkgroups.pinned = pinned.filter((p) => p !== group)
 	data.linkgroups.groups = groups.filter((g) => g !== group)
-	data.linkgroups.selected = group === selected ? groups[0] : group
 
 	initblocks(data)
 	initGroups(data)

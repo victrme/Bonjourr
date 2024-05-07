@@ -629,7 +629,12 @@ async function setTopSites(toggle: boolean) {
 
 	data.topsites = toggle
 	storage.sync.set({ topsites: toggle })
-	;(toggle ? addGroup : deleteGroup)('topsites', true)
+
+	if (toggle) {
+		addGroup('topsites', true)
+	} else {
+		deleteGroup('topsites')
+	}
 }
 
 function setRows(row: string) {

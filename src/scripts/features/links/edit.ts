@@ -88,7 +88,7 @@ export default async function openEditDialog(event: Event) {
 
 	if (target.title) {
 		const { groups, pinned } = data.linkgroups
-		const title = editStates.group
+		const title = editStates.target.addgroup ? '' : editStates.group
 
 		domeditlink.dataset.group = title
 		domtitle.value = title
