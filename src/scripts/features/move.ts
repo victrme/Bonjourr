@@ -310,9 +310,9 @@ function setAlign(id: Key, item?: Item) {
 		elem.style.placeSelf = item?.box || ''
 
 		if (id === 'quicklinks') {
-			const flex = item?.text == 'left' ? 'flex-start' : item?.text == 'right' ? 'flex-end' : ''
-			const linklist = document.getElementById('link-list') as HTMLElement
-			linklist.style.justifyContent = flex
+			document.getElementById('linkblocks')?.classList.remove('align-start', 'align-end')
+			if (item?.text == 'left') document.getElementById('linkblocks')?.classList.add('align-start')
+			if (item?.text == 'right') document.getElementById('linkblocks')?.classList.add('align-end')
 		} else {
 			elem.style.textAlign = item?.text || ''
 		}

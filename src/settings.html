@@ -40,8 +40,16 @@
 				<button class="tooltip tttab" aria-label="Tips on tab appearance">?</button>
 			</span>
 
-			<div>
-				<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" aria-label="Tab favicon" />
+			<div class="split-inputs">
+				<input
+					type="text"
+					name="favicon"
+					id="i_favicon"
+					maxlength="2"
+					placeholder="🌤"
+					aria-label="Tab favicon"
+					class="not-safari"
+				/>
 				<input
 					type="text"
 					name="tabtitle"
@@ -85,7 +93,7 @@
 
 	<div class="wrapper freq_wrap">
 		<label for="i_freq" class="trn">Frequency</label>
-		<div>
+		<div class="split-inputs">
 			<select id="i_freq">
 				<option value="tabs" class="trn">Every tab</option>
 				<option value="hour" class="trn">Every hour</option>
@@ -229,7 +237,7 @@
 			</form>
 		</div>
 
-		<div id="importbookmarks">
+		<div class="not-safari not-online">
 			<hr />
 
 			<div class="wrapper">
@@ -238,29 +246,27 @@
 					<button id="b_importbookmarks" class="param-btn trn">Import</button>
 				</div>
 			</div>
-		</div>
-
-		<div class="as as_link dropdown">
-			<div id="syncbookmarks">
-				<hr />
-
-				<div class="wrapper">
-					<label for="i_syncbookmarks" class="trn">Sync new bookmarks</label>
-					<input id="i_syncbookmarks" class="switch" type="checkbox" />
-				</div>
-			</div>
 
 			<hr />
 
 			<div class="wrapper">
+				<label for="i_topsites" class="trn">Most visited</label>
+				<input id="i_topsites" class="switch" type="checkbox" />
+			</div>
+		</div>
+
+		<div class="as as_link dropdown">
+			<hr />
+
+			<div class="wrapper">
 				<span>
-					<label for="i_linktabs" class="trn">Link pages</label>
-					<button class="tooltip ttpages" aria-label="Tips on Links pages">?</button>
+					<label for="i_linkgroups" class="trn">Show groups</label>
+					<button class="tooltip" aria-label="Tips on Links groups">?</button>
 				</span>
-				<input id="i_linktabs" class="switch" type="checkbox" />
+				<input id="i_linkgroups" class="switch" type="checkbox" />
 			</div>
 
-			<p class="tooltiptext dropdown ttpages">
+			<p class="tooltiptext dropdown">
 				<span class="trn">Organize your links even more with pages. Right click next to a page to add another.</span>
 				<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
 					>Learn more</a
@@ -285,13 +291,19 @@
 
 			<div class="linkstyle wrapper">
 				<label for="i_linkstyle" class="trn">Style</label>
-				<select id="i_linkstyle">
-					<option value="large" class="trn">Large</option>
-					<option value="medium" class="trn">Medium</option>
-					<option value="small" class="trn">Small</option>
-					<option value="inline" class="trn">Inline</option>
-					<option value="text" class="trn">Text</option>
-				</select>
+
+				<div class="split-inputs">
+					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles">
+						<span>T</span>
+					</button>
+					<select id="i_linkstyle">
+						<option value="large" class="trn">Large</option>
+						<option value="medium" class="trn">Medium</option>
+						<option value="small" class="trn">Small</option>
+						<option value="inline" class="trn">Inline</option>
+						<option value="text" class="trn">Text</option>
+					</select>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -976,7 +988,7 @@
 
 		<div class="wrapper freq_wrap">
 			<label for="i_qtfreq" class="trn">Frequency</label>
-			<div>
+			<div class="split-inputs">
 				<select id="i_qtfreq">
 					<option value="tabs" class="trn">Every tab</option>
 					<option value="hour" class="trn">Every hour</option>
@@ -1163,7 +1175,7 @@
 			<div>
 				<button id="b_exportcopy" class="inline-btn trn">Copy text</button>
 
-				<div id="save_wrapper">
+				<div id="save_wrapper" class="not-safari">
 					<button id="b_exportfile" class="inline-btn trn">Export as file</button>
 					<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
 				</div>
@@ -1257,7 +1269,7 @@
 		</p>
 	</div>
 
-	<div id="donate">
+	<div id="donate" class="not-safari">
 		<p>
 			<span class="trn">Consider</span>
 			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>

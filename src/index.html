@@ -53,29 +53,29 @@
 
 		<dialog id="editlink">
 			<form id="editlink-form">
-				<label id="ei_title" autofocus>
+				<label id="edit-title" autofocus>
 					<span class="trn">Title</span>
-					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
+					<input id="e-title" type="text" name="e-title" maxlength="64" autocomplete="off" placeholder="Example" />
 				</label>
 
-				<label id="ei_url">
+				<label id="edit-url">
 					<span class="trn">Link</span>
 					<input
-						id="e_url"
+						id="e-url"
 						type="text"
-						name="e_url"
+						name="e-url"
 						maxlength="512"
 						autocomplete="off"
 						placeholder="https://example.com"
 					/>
 				</label>
 
-				<label id="ei_icon">
+				<label id="edit-icon">
 					<span class="trn">Icon</span>
 					<input
-						id="e_iconurl"
+						id="e-icon"
 						type="url"
-						name="e_iconurl"
+						name="e-icon"
 						maxlength="7600"
 						autocomplete="off"
 						placeholder="https://example.com/favicon.ico"
@@ -84,16 +84,13 @@
 
 				<hr />
 
-				<button type="submit" class="trn" id="eb_inputs">Submit from inputs</button>
-				<button type="submit" class="trn" id="eb_add-tab">Add new page</button>
-				<button type="submit" class="trn" id="eb_add-link">Add new link</button>
-				<button type="submit" class="trn" id="eb_add-folder">Create new folder</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-tab">Delete page</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-selected">Delete selection</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-folder">Delete folder</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-link">Delete link</button>
-				<button type="submit" class="trn" id="eb_remove-folder">Remove from folder</button>
-				<button type="submit" class="trn" id="eb_submit-changes">Apply changes</button>
+				<button type="submit" class="trn" id="edit-inputs">Submit from inputs</button>
+				<button type="submit" class="btn-red" id="edit-delete">Delete something</button>
+				<button type="submit" class="trn" id="edit-add">Add something</button>
+				<button type="submit" class="trn" id="edit-pin">Pin group</button>
+				<button type="submit" class="trn" id="edit-unpin">Unpin group</button>
+				<button type="submit" class="trn" id="edit-unfolder">Remove from folder</button>
+				<button type="submit" class="trn" id="edit-apply">Apply changes</button>
 			</form>
 		</dialog>
 
@@ -268,39 +265,7 @@
 			</form>
 
 			<div id="linkblocks">
-				<ul id="link-list">
-					<template id="link-elem">
-						<li class="block">
-							<a rel="noreferrer noopener" draggable="false">
-								<div class="block-imgs">
-									<img alt="" draggable="false" />
-								</div>
-								<span></span>
-							</a>
-						</li>
-					</template>
-					<template id="link-folder">
-						<li class="block folder" tabindex="0">
-							<div class="block-imgs">
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-							</div>
-							<span></span>
-						</li>
-					</template>
-				</ul>
-
-				<div id="link-title">
-					<div id="folder-title">
-						<button class="selected">Folder</button>
-					</div>
-
-					<div id="tab-title">
-						<button id="default-tab-title" class="trn">Default page</button>
-					</div>
-				</div>
+				<div id="link-mini"></div>
 			</div>
 
 			<div id="quotes_container" class="hidden">
@@ -324,6 +289,36 @@
 		</div>
 
 		<div id="templates">
+			<template id="link-group-template">
+				<div class="link-group">
+					<ul class="link-list"></ul>
+					<button class="link-title"></button>
+				</div>
+			</template>
+
+			<template id="link-elem-template">
+				<li class="block">
+					<a rel="noreferrer noopener" draggable="false">
+						<div class="block-imgs">
+							<img alt="" draggable="false" />
+						</div>
+						<span></span>
+					</a>
+				</li>
+			</template>
+
+			<template id="link-folder-template">
+				<li class="block folder" tabindex="0">
+					<div class="block-imgs">
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+					</div>
+					<span></span>
+				</li>
+			</template>
+
 			<template id="popup-template">
 				<div id="popup">
 					<div id="popup_text">

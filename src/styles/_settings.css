@@ -596,8 +596,7 @@ aside .settings-title .tooltip {
 	pointer-events: none;
 }
 
-#tabtitle > div,
-.freq_wrap > div {
+.split-inputs {
 	display: flex;
 	width: 155px;
 	column-gap: 4px;
@@ -624,6 +623,24 @@ aside .settings-title .tooltip {
 
 #i_addlink-title {
 	width: 40%;
+}
+
+#b_showtitles {
+	opacity: 0.7;
+	padding: 0 4px;
+	min-width: 30px;
+	font-family: serif;
+	text-align: center;
+	background-color: transparent;
+}
+
+#b_showtitles span {
+	justify-content: center;
+}
+
+#b_showtitles.on {
+	opacity: 1;
+	background-color: var(--color-input);
 }
 
 .refresh-btn {
