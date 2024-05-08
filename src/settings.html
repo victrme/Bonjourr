@@ -40,7 +40,7 @@
 				<button class="tooltip tttab" aria-label="Tips on tab appearance">?</button>
 			</span>
 
-			<div>
+			<div class="split-inputs">
 				<input
 					type="text"
 					name="favicon"
@@ -93,7 +93,7 @@
 
 	<div class="wrapper freq_wrap">
 		<label for="i_freq" class="trn">Frequency</label>
-		<div>
+		<div class="split-inputs">
 			<select id="i_freq">
 				<option value="tabs" class="trn">Every tab</option>
 				<option value="hour" class="trn">Every hour</option>
@@ -291,13 +291,19 @@
 
 			<div class="linkstyle wrapper">
 				<label for="i_linkstyle" class="trn">Style</label>
-				<select id="i_linkstyle">
-					<option value="large" class="trn">Large</option>
-					<option value="medium" class="trn">Medium</option>
-					<option value="small" class="trn">Small</option>
-					<option value="inline" class="trn">Inline</option>
-					<option value="text" class="trn">Text</option>
-				</select>
+
+				<div class="split-inputs">
+					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles">
+						<span>T</span>
+					</button>
+					<select id="i_linkstyle">
+						<option value="large" class="trn">Large</option>
+						<option value="medium" class="trn">Medium</option>
+						<option value="small" class="trn">Small</option>
+						<option value="inline" class="trn">Inline</option>
+						<option value="text" class="trn">Text</option>
+					</select>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -982,7 +988,7 @@
 
 		<div class="wrapper freq_wrap">
 			<label for="i_qtfreq" class="trn">Frequency</label>
-			<div>
+			<div class="split-inputs">
 				<select id="i_qtfreq">
 					<option value="tabs" class="trn">Every tab</option>
 					<option value="hour" class="trn">Every hour</option>

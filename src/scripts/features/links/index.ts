@@ -17,8 +17,8 @@ type Elem = Links.Elem
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
+	styles?: { style?: string; titles?: boolean }
 	newtab?: boolean
-	style?: string
 	row?: string
 	groups?: boolean
 	addGroup?: string
@@ -88,6 +88,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 	// set class before appendBlock, cannot be moved
 	domlinkblocks.className = init.linkstyle ?? 'large'
+	domlinkblocks.classList.toggle('titles', init.linktitles)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initblocks(init)
@@ -380,8 +381,8 @@ export async function linksUpdate(update: LinksUpdate) {
 		setTopSites(update.topsites)
 	}
 
-	if (update.style) {
-		setLinkStyle(update.style)
+	if (update.styles) {
+		setLinkStyle(update.styles)
 	}
 
 	if (update.row) {
@@ -585,36 +586,45 @@ async function setOpenInNewTab(newtab: boolean) {
 	storage.sync.set({ linknewtab: newtab })
 }
 
-async function setLinkStyle(style: string = 'large') {
-	if (!isLinkStyle(style)) {
-		return
-	}
-
-	const wasText = domlinkblocks?.className.includes('text')
+async function setLinkStyle(styles: { style?: string; titles?: boolean }) {
 	const data = await storage.sync.get()
-	const links = getLinksInGroup(data)
+	const style = styles.style ?? 'large'
+	const { titles } = styles
 
-	domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
-	domlinkblocks.classList.add(style)
+	if (styles.style && isLinkStyle(style)) {
+		const wasText = domlinkblocks?.className.includes('text')
+		const links = getLinksInGroup(data)
 
-	for (const link of links) {
-		const block = document.getElementById(link._id) as HTMLLIElement
-		const span = block.querySelector(`span`) as HTMLElement
-		span.textContent = createTitle(link)
+		domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
+		domlinkblocks.classList.add(style)
+
+		for (const link of links) {
+			const block = document.getElementById(link._id) as HTMLLIElement
+			const span = block.querySelector(`span`) as HTMLElement
+			span.textContent = createTitle(link)
+		}
+
+		data.linkstyle = style
+		storage.sync.set({ linkstyle: style })
+
+		if (wasText) {
+			// remove from DOM to re-draw icons
+			document.querySelectorAll('#link-list li')?.forEach((el) => {
+				el.remove()
+			})
+		}
+
+		initRows(data.linksrow, style)
+		initblocks(data)
 	}
 
-	data.linkstyle = style
-	storage.sync.set(data)
+	if (typeof titles === 'boolean') {
+		data.linktitles = titles
+		storage.sync.set({ linktitles: titles })
 
-	if (wasText) {
-		// remove from DOM to re-draw icons
-		document.querySelectorAll('#link-list li')?.forEach((el) => el.remove())
+		document.getElementById('b_showtitles')?.classList?.toggle('on', titles)
+		domlinkblocks.classList.toggle('titles', titles)
 	}
-
-	console.log(wasText)
-
-	initRows(data.linksrow, style)
-	initblocks(data)
 }
 
 async function setTopSites(toggle: boolean) {

@@ -96,6 +96,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	css: '',
 	hide: {},
 	linkstyle: 'medium',
+	linktitles: true,
 	linknewtab: false,
 	linksrow: 6,
 	linkgroups: {

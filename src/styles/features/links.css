@@ -101,8 +101,8 @@ li.block:active {
 	max-width: 100%;
 }
 
-.link-group.in-folder .link-title,
-.link-group.pinned .link-title {
+.with-groups .link-group.pinned .link-title,
+.link-group.in-folder .link-title {
 	display: initial;
 }
 
@@ -166,12 +166,16 @@ li.block img {
 }
 
 li.block span {
-	display: block;
+	display: none;
 	width: 100%;
 	padding-top: 0.4em;
 	line-height: 1.2em;
 	max-height: 3.8em;
 	overflow: hidden;
+}
+
+#linkblocks.titles li.block span {
+	display: block;
 }
 
 li.block.removed {

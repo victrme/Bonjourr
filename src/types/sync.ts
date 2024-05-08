@@ -10,6 +10,7 @@ declare namespace Sync {
 		linksrow: number
 		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
+		linktitles: boolean
 		linktabs?: LinkTabsOld
 		linkgroups: LinkGroups
 		textShadow: number
