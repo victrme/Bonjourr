@@ -1,12 +1,11 @@
-import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { deleteGroup, addGroup, changeGroupTitle, togglePinGroup } from './groups'
+import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import debounce from '../../utils/debounce'
-import { getComposedPath } from '../../utils'
 import storage from '../../storage'
 
 interface EditStates {

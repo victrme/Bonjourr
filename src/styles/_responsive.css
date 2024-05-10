@@ -106,6 +106,10 @@
 		padding-bottom: 25vh;
 	}
 
+	#mobile-drag-zone {
+		display: block;
+	}
+
 	#mobile-drag-zone + .settings-title {
 		margin-top: 1em;
 	}

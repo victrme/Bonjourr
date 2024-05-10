@@ -480,7 +480,7 @@ aside form.valid button:not(:disabled):active {
 #mobile-drag-zone {
 	visibility: hidden;
 	position: absolute;
-	display: block;
+	display: none;
 	bottom: 0;
 	width: 100%;
 	padding: 12px;
