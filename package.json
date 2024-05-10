@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "19.2.3",
+	"version": "19.2.4",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
 	"author": "Victor Azevedo (https://victr.me)",
 	"license": "ISC",
@@ -45,7 +45,7 @@
 		"printWidth": 128
 	},
 	"engines": {
-		"node": ">=18.20.2"
-	},
-	"packageManager": "pnpm@8.15.7"
+		"node": ">=18.20.2",
+		"pnpm": ">=7"
+	}
 }

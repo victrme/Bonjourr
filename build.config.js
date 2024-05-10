@@ -153,29 +153,45 @@ function html() {
 function styles() {
 	const [input, output] = paths.shared.styles
 
-	esbuild.buildSync({
-		entryPoints: [input],
-		outfile: output,
-		bundle: true,
-		minify: ENV_PROD,
-	})
+	try {
+		esbuild.buildSync({
+			entryPoints: [input],
+			outfile: output,
+			bundle: true,
+			minify: ENV_PROD,
+		})
+	} catch (_) {
+		if (ENV_PROD) {
+			throw ''
+		}
+
+		return
+	}
 }
 
 function scripts() {
 	const [input, output] = paths.shared.scripts
 
-	esbuild.buildSync({
-		entryPoints: [input],
-		outfile: output,
-		format: 'iife',
-		bundle: true,
-		sourcemap: ENV_DEV,
-		minifySyntax: ENV_PROD,
-		minifyWhitespace: ENV_PROD,
-		define: {
-			ENV: `"${env.toUpperCase()}"`,
-		},
-	})
+	try {
+		esbuild.buildSync({
+			entryPoints: [input],
+			outfile: output,
+			format: 'iife',
+			bundle: true,
+			sourcemap: ENV_DEV,
+			minifySyntax: ENV_PROD,
+			minifyWhitespace: ENV_PROD,
+			define: {
+				ENV: `"${env.toUpperCase()}"`,
+			},
+		})
+	} catch (_) {
+		if (ENV_PROD) {
+			throw ''
+		}
+
+		return
+	}
 
 	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)
 	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.background)

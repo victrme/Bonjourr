@@ -77,6 +77,10 @@ async function startup() {
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
+	document.documentElement.dataset.system = SYSTEM_OS as string
+	document.documentElement.dataset.browser = BROWSER as string
+	document.documentElement.dataset.platform = PLATFORM as string
+
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
@@ -113,10 +117,6 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 		data.dateformat = data.usdate ? 'us' : 'eu'
 	}
 
-	if (!data.linktabs) {
-		data.linktabs = { ...SYNC_DEFAULT.linktabs }
-	}
-
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('#clock', '#digital')
@@ -138,6 +138,19 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	storage.sync.remove('cssHeight')
 
 	data = linksDataMigration(data)
+
+	// 20.0.0
+
+	if (data.linktabs) {
+		data.linkgroups = {
+			on: data.linktabs.active,
+			selected: data.linktabs.titles[data.linktabs.selected],
+			groups: [...data.linktabs.titles],
+			pinned: [],
+		}
+
+		delete data.linktabs
+	}
 
 	return data
 }
@@ -263,7 +276,8 @@ function userActionsEvents() {
 		const on = {
 			link: path.some((el) => el?.classList?.contains('block')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
-			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			linkfolder: path.some((el) => el?.className?.includes('folder')),
+			folder: path.some((el) => el?.className?.includes('in-folder')),
 			interface: pathIds.includes('interface'),
 		}
 
@@ -287,7 +301,7 @@ function userActionsEvents() {
 			document.dispatchEvent(new Event('remove-select-all'))
 		}
 		//
-		else if (open.folder && !on.folder) {
+		else if (open.folder && !on.folder && !on.linkfolder) {
 			document.dispatchEvent(new Event('close-folder'))
 		}
 	}
@@ -295,7 +309,7 @@ function userActionsEvents() {
 	function isOpen() {
 		return {
 			settings: !!document.getElementById('settings')?.classList.contains('shown'),
-			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
+			folder: !!document.querySelector('.in-folder'),
 			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
 			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
 		}

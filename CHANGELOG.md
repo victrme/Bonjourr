@@ -1,3 +1,14 @@
+## 19.2.4
+
+-   Improvements:
+    -   More colors in CSS Editor
+    -   Better accessibility with hidden options in settings
+    -   Tiny settings styling changes
+-   Translations:
+    -   Small Simplified Chinese fix (#352), thanks @angine04
+    -   Fixed forecast issues in Japanese & Arabic, thanks IshiharaErika & @aldoyh
+    -   Update Czech translation, thanks @ZimaDaniel
+
 ## 19.2.3
 
 -   Fixes:

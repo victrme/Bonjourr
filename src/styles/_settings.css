@@ -117,9 +117,8 @@ aside .input-btn {
 }
 
 aside textarea,
-aside .prism-code-editor,
-#export-data {
-	font-family: SF Mono, Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+aside .prism-code-editor {
+	font-family: Consolas, Monaco, Ubuntu Mono, monospace;
 }
 
 aside select,
@@ -517,7 +516,7 @@ aside form.valid button:not(:disabled):active {
 	grid-column: 1/3;
 }
 
-#settings .tooltip {
+aside .tooltip {
 	width: 20px;
 	min-width: 20px;
 	height: 20px;
@@ -534,17 +533,17 @@ aside form.valid button:not(:disabled):active {
 	justify-content: center;
 }
 
-#settings .tooltip:hover {
+aside .tooltip:hover {
 	background-color: var(--color-input);
 }
 
-#settings .settings-title .tooltip {
+aside .settings-title .tooltip {
 	background-color: var(--color-input-outside);
 	border-color: var(--color-focused);
 }
 
 @media (hover: hover) {
-	#settings .tooltip:active {
+	aside .tooltip:active {
 		transform: scale(1.2);
 	}
 }
@@ -594,8 +593,7 @@ aside form.valid button:not(:disabled):active {
 	pointer-events: none;
 }
 
-#tabtitle > div,
-.freq_wrap > div {
+.split-inputs {
 	display: flex;
 	width: 155px;
 	column-gap: 4px;
@@ -624,12 +622,30 @@ aside form.valid button:not(:disabled):active {
 	width: 40%;
 }
 
+#b_showtitles {
+	opacity: 0.7;
+	padding: 0 4px;
+	min-width: 30px;
+	font-family: serif;
+	text-align: center;
+	background-color: transparent;
+}
+
+#b_showtitles span {
+	justify-content: center;
+}
+
+#b_showtitles.on {
+	opacity: 1;
+	background-color: var(--color-input);
+}
+
 .refresh-btn {
 	padding: 0 10px;
 }
 
-#custom_thumbnail {
-	height: 100px;
+#local_options label {
+	padding: 0 4px;
 }
 
 #fileContainer {
@@ -647,15 +663,11 @@ aside form.valid button:not(:disabled):active {
 
 .thumbnail {
 	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	height: 75px;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	border-radius: 10px;
 	outline: 3px solid transparent;
 	background-color: var(--color-input);
 	transition: opacity 0.1s, filter 0.1s, outline 0.1s;
@@ -680,6 +692,12 @@ aside form.valid button:not(:disabled):active {
 	opacity: 1;
 }
 
+.thumbnail img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
 .b_removethumb {
 	position: absolute;
 	top: 5px;
@@ -689,7 +707,7 @@ aside form.valid button:not(:disabled):active {
 	padding: 0;
 	opacity: 0;
 	color: #222;
-	background-color: rgba(255, 255, 255, 0.2);
+	background-color: #fff4;
 	border-radius: 100%;
 	text-align: center;
 	text-decoration: none;
@@ -711,7 +729,7 @@ aside form.valid button:not(:disabled):active {
 
 .b_removethumb:hover {
 	color: #000;
-	background-color: rgba(255, 255, 255, 0.3333333333);
+	background-color: #fff8;
 	text-decoration: none;
 }
 
@@ -752,7 +770,7 @@ aside form.valid button:not(:disabled):active {
 	padding: 12px;
 	font-size: 13px;
 	line-height: 1.5;
-	resize: vertical;
+	resize: none;
 	border-radius: 8px;
 	color: var(--color-text);
 	background-color: var(--color-areas);
@@ -914,13 +932,13 @@ aside form.valid button:not(:disabled):active {
 }
 
 #export-data {
+	font-size: 13px;
 	width: 100%;
 	height: 160px;
 	min-height: 100px;
 	max-height: 3000px;
 	padding: 0.65em 1.3em;
 	tab-size: 1.5em;
-	font-size: 13px;
 	user-select: all;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -928,6 +946,10 @@ aside form.valid button:not(:disabled):active {
 	box-sizing: border-box;
 	border-radius: 10px;
 	background-color: var(--color-areas);
+}
+
+[data-system='mac'] #export-data {
+	font-size: 12px;
 }
 
 #export-data:hover,

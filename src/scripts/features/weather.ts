@@ -273,6 +273,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	if (lang === 'es_ES') lang = 'es'
 	if (lang === 'gr') lang = 'el'
 	if (lang === 'jp') lang = 'ja'
+	if (lang === 'nb') lang = 'no'
 
 	queries += '?units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
