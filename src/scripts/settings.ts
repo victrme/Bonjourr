@@ -685,6 +685,7 @@ function toggleSettingsMenu() {
 	const domshowsettings = document.getElementById('showSettings')
 	const dominterface = document.getElementById('interface')
 	const domedit = document.getElementById('editlink')
+	const mobileDragZone = document.getElementById('mobile-drag-zone')
 	const isClosed = domsettings?.classList.contains('shown') === false
 
 	domsettings?.classList.toggle('init', false)
@@ -692,10 +693,12 @@ function toggleSettingsMenu() {
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
+	mobileDragZone?.classList.toggle('shown', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
-	domsettings?.style.removeProperty('--translate-y')
+	mobileDragZone?.style.removeProperty('transform')
+	mobileDragZone?.style.removeProperty('transition')
 	document.dispatchEvent(new Event('close-edit'))
 }
 
@@ -785,7 +788,6 @@ async function selectBackgroundType(cat: string) {
 function settingsFooter() {
 	const one = document.querySelector<HTMLAnchorElement>('#signature-one')
 	const two = document.querySelector<HTMLAnchorElement>('#signature-two')
-	const donate = document.getElementById('donate')
 	const version = document.getElementById('version')
 	const rand = Math.random() > 0.5
 
@@ -798,10 +800,6 @@ function settingsFooter() {
 
 	if (version) {
 		version.textContent = SYNC_DEFAULT.about.version
-	}
-
-	if (PLATFORM === 'safari') {
-		donate?.remove()
 	}
 }
 
@@ -829,53 +827,50 @@ function settingsDrawerBar() {
 }
 
 function drawerDragEvents() {
+	const mobileDragZone = document.getElementById('mobile-drag-zone') as HTMLElement
 	const settingsDom = document.getElementById('settings') as HTMLElement
 	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
 
-	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
-	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
-	dragzone?.addEventListener('mousedown', dragStart)
-	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
-	dragzone?.addEventListener('mouseup', dragEnd)
-
-	document.body?.addEventListener('mouseleave', (e) => {
-		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
-			dragEnd(e)
-		}
-	})
+	mobileDragZone?.addEventListener('touchstart', dragStart, { passive: false })
+	mobileDragZone?.addEventListener('pointerdown', dragStart, { passive: false })
 
 	function dragStart(e: Event) {
 		e.preventDefault()
 
 		// Get mouse / touch y position
-		if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
+		if (e.type === 'pointerdown') startTouchY = (e as MouseEvent).clientY
 		if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
 
 		// First time dragging, sets maximum y pos at which to block
 		if (firstPos === 0) firstPos = startTouchY
 
-		// prevent scroll when dragging
-		settingsDom.style.overflow = `clip`
-
 		// Add mouse / touch moves events
 		window.addEventListener('touchmove', dragMove)
-		window.addEventListener('mousemove', dragMove)
+		window.addEventListener('pointermove', dragMove)
+		document.body.addEventListener('touchend', dragEnd, { passive: false })
+		document.body.addEventListener('pointerup', dragEnd, { passive: false })
 	}
 
 	function dragMove(e: Event) {
 		let clientY: number = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
+		if (e.type === 'pointermove') clientY = (e as MouseEvent).clientY
 		if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
 
 		// element is below max height: move
 		if (clientY > 60) {
-			settingsVh = +(100 - (clientY / window.innerHeight) * 100).toFixed(2)
+			const dragZoneHeight = 20 + 8
+			const touchPosition = clientY + dragZoneHeight / 2
+			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
+
+			settingsVh = +inverseHeight.toFixed(2)
 			settingsDom.style.transform = `translateY(-${settingsVh}vh)`
 			settingsDom.style.transition = `transform .0s`
+			mobileDragZone.style.transform = `translateY(-${settingsVh}vh)`
+			mobileDragZone.style.transition = `transform .0s`
 		}
 	}
 
@@ -883,14 +878,14 @@ function drawerDragEvents() {
 		let clientY: number = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
+		if (e.type === 'pointerup') clientY = (e as MouseEvent).clientY
 		if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
 
-		// Remove move events
 		window.removeEventListener('touchmove', dragMove)
-		window.removeEventListener('mousemove', dragMove)
+		window.removeEventListener('pointermove', dragMove)
+		document.body.removeEventListener('touchend', dragEnd)
+		document.body.removeEventListener('pointerup', dragEnd)
 
-		// reset mouse / touch pos
 		startTouchY = 0
 
 		const footer = document.getElementById('settings-footer') as HTMLDivElement

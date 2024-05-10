@@ -106,10 +106,6 @@
 		padding-bottom: 25vh;
 	}
 
-	#mobile-drag-zone {
-		display: block;
-	}
-
 	#mobile-drag-zone + .settings-title {
 		margin-top: 1em;
 	}
@@ -133,14 +129,6 @@
 	#credit p,
 	#credit span {
 		font-size: 11px;
-	}
-
-	body #popup {
-		display: none;
-		width: 100%;
-		left: unset;
-		right: unset;
-		padding-inline: 4vw;
 	}
 
 	#bookmarks_container {
@@ -198,7 +186,11 @@
 		font-size: 15px;
 	}
 
-	button, select, option, input, .importexport-tabs button {
+	button,
+	select,
+	option,
+	input,
+	.importexport-tabs button {
 		font-size: 15px;
 	}
 

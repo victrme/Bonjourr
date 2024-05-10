@@ -182,3 +182,30 @@
 		backdrop-filter: none;
 	}
 }
+
+/* Resposive */
+
+@media screen and (max-width: 600px) {
+	body #popup {
+		width: 70%;
+		max-width: 28em;
+		left: unset;
+		right: unset;
+		padding-inline: 4vw;
+		flex-direction: column;
+		font-size: 12px;
+	}
+
+	body #popup.review #popup_desc {
+		width: 100%;
+	}
+
+	body #popup_buttons {
+		flex-direction: row;
+		height: 2.5em;
+	}
+
+	body #popup_buttons a {
+		width: 100%;
+	}
+}
