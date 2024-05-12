@@ -859,9 +859,9 @@ function drawerDragEvents() {
 			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
 
 			settingsVh = +inverseHeight.toFixed(2)
-			settingsDom.style.transform = `translateY(-${settingsVh}vh)`
+			settingsDom.style.transform = `translateY(-${settingsVh}dvh)`
 			settingsDom.style.transition = `transform .0s`
-			mobileDragZone.style.transform = `translateY(-${settingsVh}vh)`
+			mobileDragZone.style.transform = `translateY(-${settingsVh}dvh)`
 			mobileDragZone.style.transition = `transform .0s`
 		}
 	}
@@ -881,7 +881,7 @@ function drawerDragEvents() {
 		startTouchY = 0
 
 		const footer = document.getElementById('settings-footer') as HTMLDivElement
-		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'vh'
+		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'dvh'
 
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')

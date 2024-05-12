@@ -52,7 +52,7 @@
 	}
 
 	aside {
-		top: 100lvh; /* kiwi browser fix as dvh doesn't work (?) */
+		top: 100dvh;
 		right: auto;
 		left: 0%;
 		bottom: -100dvh;
@@ -63,16 +63,29 @@
 		border-radius: 1em;
 	}
 
+	aside.shown {
+		transform: translateX(0) translateY(-75dvh);
+	}
+
+	#mobile-drag-zone {
+		display: block;
+	}
+
+	#mobile-drag-zone.shown {
+		transform: translateY(-75dvh);
+		visibility: visible;
+	}
+
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;
 			bottom: -100vh;
 			height: 100vh;
 		}
-	}
 
-	aside.shown {
-		transform: translateX(0) translateY(-75vh);
+		#mobile-drag-zone.shown {
+			transform: translateY(-75vh);
+		}
 	}
 
 	aside form > div {
@@ -104,14 +117,6 @@
 
 	#settings-footer {
 		padding-bottom: 25vh;
-	}
-
-	#mobile-drag-zone {
-		display: block;
-	}
-
-	#mobile-drag-zone + .settings-title {
-		margin-top: 1em;
 	}
 
 	#creditContainer {
@@ -182,15 +187,13 @@
 		font-size: 2em;
 	}
 
-	aside {
-		font-size: 15px;
-	}
-
+	aside,
 	button,
 	select,
 	option,
 	input,
-	.importexport-tabs button {
+	.importexport-tabs button,
+	#settings-footer {
 		font-size: 15px;
 	}
 
@@ -206,6 +209,9 @@
 	}
 
 	aside input:not(.range, .switch),
+	aside .importexport-tabs .glider,
+	aside .importexport-tabs,
+	aside .input-btn,
 	aside select {
 		min-height: 36px;
 		border-radius: 13px;

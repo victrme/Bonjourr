@@ -484,15 +484,9 @@ aside form.valid button:not(:disabled):active {
 	bottom: 0;
 	width: 100%;
 	padding: 12px;
-	z-index: 4;
 	cursor: grab;
 	box-sizing: border-box;
 	transition: transform 0.4s;
-}
-
-#mobile-drag-zone.shown {
-	transform: translateY(-75vh);
-	visibility: visible;
 }
 
 #mobile-drag-zone div {
