@@ -18,7 +18,7 @@ aside {
 	overflow-x: hidden;
 	touch-action: pan-y;
 	box-sizing: border-box;
-	transition: transform 0.4s, background-color 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: transform 0.4s, background-color 0.4s var(--out-cubic);
 }
 
 aside.shown {
@@ -76,7 +76,7 @@ aside select,
 aside input,
 aside hr {
 	transition-duration: 0.4s;
-	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition-timing-function: var(--out-cubic);
 	transition-property: background-color, color, border, border-color, transform;
 }
 
@@ -478,34 +478,24 @@ aside form.valid button:not(:disabled):active {
 }
 
 #mobile-drag-zone {
+	visibility: hidden;
+	position: absolute;
 	display: none;
-	width: 80%;
-	margin: auto;
-	padding: 2em 1em;
-	z-index: 4;
+	bottom: 0;
+	width: 100%;
+	padding: 12px;
 	cursor: grab;
+	box-sizing: border-box;
+	transition: transform 0.4s;
 }
 
-#mobile-drag-zone hr {
-	width: 80px;
-	height: 0px;
+#mobile-drag-zone div {
+	width: 50px;
+	height: 8px;
 	margin: auto;
 	border-radius: 4px;
-	border-top: 2.5px solid var(--color-border);
-	border-bottom: 2.5px solid var(--color-border);
-	transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-@media (hover: hover) {
-	#mobile-drag-zone:hover hr {
-		width: 100px;
-	}
-}
-
-@media (hover: none) {
-	#mobile-drag-zone:active hr {
-		width: 100px;
-	}
+	background-color: var(--color-settings);
+	box-shadow: 2px 0px 6px #0004;
 }
 
 .settings-title {
@@ -522,6 +512,7 @@ aside form.valid button:not(:disabled):active {
 
 aside .tooltip {
 	width: 20px;
+	min-width: 20px;
 	height: 20px;
 	padding: 0;
 	border-radius: 100%;
@@ -1011,6 +1002,10 @@ aside .settings-title .tooltip {
 
 #reset_first {
 	justify-content: center;
+}
+
+#reset_conf div {
+	text-align: right;
 }
 
 #b_resetno {

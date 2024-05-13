@@ -1,10 +1,11 @@
-import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { deleteGroup, addGroup, changeGroupTitle, togglePinGroup } from './groups'
+import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
+import debounce from '../../utils/debounce'
 import storage from '../../storage'
 
 interface EditStates {
@@ -191,7 +192,7 @@ function toggleEditInputs(): string[] {
 
 function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const editRects = domeditlink.getBoundingClientRect()
-	const withPointer = event.type === 'contextmenu' || event.type === 'click'
+	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
 	const { innerHeight, innerWidth } = window
 	const isMobileSized = innerWidth < 600
@@ -201,12 +202,17 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 
 	if (withPointer && isMobileSized) {
 		x = (innerWidth - editRects.width) / 2
-		y = (event as PointerEvent).y - 60 - editRects.height
+		y =
+			(event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) -
+			60 -
+			editRects.height
 	}
 	//
 	else if (withPointer) {
-		x = (event as PointerEvent).x + 20
-		y = (event as PointerEvent).y + 20
+		// gets coordinates differently from touchstart or contextmenu
+		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 20
+
+		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
 	}
 	//
 	else if (withKeyboard) {
@@ -233,6 +239,18 @@ queueMicrotask(() => {
 	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
+		const handleLongPress = debounce(function (event: TouchEvent) {
+			openEditDialog(event)
+		}, 500)
+
+		domlinkblocks?.addEventListener('touchstart', function (event) {
+			handleLongPress(event)
+		})
+
+		domlinkblocks?.addEventListener('touchend', function (event) {
+			handleLongPress.cancel()
+		})
+
 		window.addEventListener('resize', closeEditDialog)
 	}
 })

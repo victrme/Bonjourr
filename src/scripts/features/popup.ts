@@ -127,12 +127,12 @@ function removePopupTrigger() {
 
 function openPopup() {
 	setTimeout(() => document.getElementById('popup')?.classList.add('shown'), 800)
-	setTimeout(() => document.getElementById('creditContainer')?.setAttribute('style', 'opacity: 0'), 400)
+	setTimeout(() => document.getElementById('credit-container')?.setAttribute('style', 'opacity: 0'), 400)
 }
 
 function closePopup() {
 	setTimeout(() => document.getElementById('popup')?.remove(), 200)
-	setTimeout(() => document.getElementById('creditContainer')?.removeAttribute('style'), 600)
+	setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
 	document.getElementById('popup')?.classList.remove('shown')
 	removePopupTrigger()
 }

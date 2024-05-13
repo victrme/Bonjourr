@@ -3,13 +3,13 @@
 		opacity: 1;
 	}
 
-	#showSettings {
+	#show-settings {
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		user-select: none;
 	}
 
-	#showSettings:active {
+	#show-settings:active {
 		filter: brightness(0.5);
 	}
 }
@@ -51,8 +51,17 @@
 		width: 90vw;
 	}
 
+	#show-settings button {
+		height: 48px;
+		width: 48px;
+	}
+
+	#show-settings img {
+		width: 32px;
+	}
+
 	aside {
-		top: 100lvh; /* kiwi browser fix as dvh doesn't work (?) */
+		top: 100dvh;
 		right: auto;
 		left: 0%;
 		bottom: -100dvh;
@@ -63,16 +72,29 @@
 		border-radius: 1em;
 	}
 
+	aside.shown {
+		transform: translateX(0) translateY(-75dvh);
+	}
+
+	#mobile-drag-zone {
+		display: block;
+	}
+
+	#mobile-drag-zone.shown {
+		transform: translateY(-75dvh);
+		visibility: visible;
+	}
+
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;
 			bottom: -100vh;
 			height: 100vh;
 		}
-	}
 
-	aside.shown {
-		transform: translateX(0) translateY(-75vh);
+		#mobile-drag-zone.shown {
+			transform: translateY(-75vh);
+		}
 	}
 
 	aside form > div {
@@ -106,15 +128,7 @@
 		padding-bottom: 25vh;
 	}
 
-	#mobile-drag-zone {
-		display: block;
-	}
-
-	#mobile-drag-zone + .settings-title {
-		margin-top: 1em;
-	}
-
-	#creditContainer {
+	#credit-container {
 		width: 100%;
 		padding-right: 7em;
 		padding-left: 1.5em;
@@ -129,10 +143,6 @@
 	#credit p,
 	#credit span {
 		font-size: 11px;
-	}
-
-	#popup {
-		display: none;
 	}
 
 	#bookmarks_container {
@@ -184,5 +194,47 @@
 
 	#sb-buttons #sb_empty {
 		font-size: 2em;
+	}
+
+	aside,
+	button,
+	select,
+	option,
+	input,
+	.importexport-tabs button,
+	#settings-footer {
+		font-size: 15px;
+	}
+
+	aside input[type='range']::-webkit-slider-thumb {
+		height: 25px;
+		width: 25px;
+		border-radius: 50px;
+	}
+
+	aside .wrapper {
+		padding: unset;
+		min-height: 38px;
+	}
+
+	aside input:not(.range, .switch),
+	aside .importexport-tabs .glider,
+	aside .importexport-tabs,
+	aside .input-btn,
+	aside select {
+		min-height: 36px;
+		border-radius: 13px;
+	}
+
+	#settings .tooltip {
+		width: 25px;
+		height: 25px;
+		min-width: 25px;
+		font-size: 15px;
+	}
+
+	.importexport-tabs button {
+		height: 36px;
+		border-radius: 13px;
 	}
 }

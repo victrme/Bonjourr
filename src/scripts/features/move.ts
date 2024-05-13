@@ -809,6 +809,7 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 			}
 
 			if (moverdom) {
+				document.documentElement.style.overscrollBehavior = 'none'
 				moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
 				moverdom.style.cursor = `grabbing`
 			}
@@ -859,8 +860,10 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 		)
 
 		const removeDrag = () => {
-			firstPos = { x: 0, y: 0 }
-			;(moverdom as HTMLElement).style.removeProperty('cursor')
+			firstPos = { x: 0, y: 0 };
+			(moverdom as HTMLElement).style.removeProperty('cursor');
+			document.documentElement.style.removeProperty('overscroll-behavior')
+			
 			moverdom?.removeEventListener('mousemove', moverDrag)
 			moverdom?.removeEventListener('touchmove', moverDrag)
 		}

@@ -1,7 +1,6 @@
 /* Link blocks */
 
 #linkblocks {
-	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
 	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 }
 
@@ -247,6 +246,8 @@ li.block.folder img {
 	display: none;
 	border-radius: 4px;
 	padding: 2px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 }
 
 /* Link styles */

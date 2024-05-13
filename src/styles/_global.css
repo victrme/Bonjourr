@@ -19,6 +19,7 @@
 	--red: 254, 59, 49;
 	--color-red: rgb(var(--red));
 	--color-green: #2ed058;
+	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 [data-theme='light'] {
@@ -74,37 +75,12 @@ input[type='checkbox'] {
 	color-scheme: only light;
 }
 
-::-webkit-scrollbar {
-	width: 10px;
-}
-
-::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 10px 10px transparent;
-	border: solid 3px transparent;
-}
-
-::-webkit-scrollbar-thumb {
-	box-shadow: inset 0 0 10px 10px var(--color-border);
-	border: solid 3px transparent;
-	border-radius: 10px;
-}
-
-body::-webkit-scrollbar {
-	display: none;
-}
-
-html {
-	/* height: 100lvh; */
-}
-
 body {
 	margin: 0;
 	opacity: 1;
 	color: white;
 	font-size: 1em;
 	font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
-	/* min-height: var(--app-height);
-	min-height: 100lvh; */
 	text-align: center;
 	overflow-x: hidden;
 	overflow-y: overlay;
@@ -173,13 +149,13 @@ body.loading > * {
 }
 
 body.init #interface,
-body.init #showSettings,
-body.init #creditContainer,
+body.init #show-settings,
+body.init #credit-container,
 body.init #skiptosettings {
 	transition: opacity var(--load-time-transition);
 }
 
-body.init #showSettings button {
+body.init #show-settings button {
 	transition: background-color 0s;
 }
 
@@ -217,4 +193,25 @@ select,
 option,
 input {
 	font-size: 13px;
+}
+
+/* Chromium scrollbar */
+
+body::-webkit-scrollbar {
+	display: none;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	box-shadow: inset 0 0 10px 10px transparent;
+	border: solid 3px transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	box-shadow: inset 0 0 10px 10px var(--color-border);
+	border: solid 3px transparent;
+	border-radius: 10px;
 }

@@ -72,6 +72,7 @@
 #editlink button {
 	width: 100%;
 	padding: 4px 12px;
+	font-weight: 400;
 }
 
 /* Active buttons and inputs */

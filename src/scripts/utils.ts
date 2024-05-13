@@ -170,3 +170,15 @@ export function getHTMLTemplate<T>(id: string, selector: string): T {
 	const clone = template?.content.cloneNode(true) as Element
 	return clone?.querySelector(selector) as T
 }
+
+// getting .composedPath equivalent of touch events
+export function getComposedPath(target: EventTarget) {
+	const path = []
+	let node = target as HTMLElement | null
+	while (node) {
+		path.push(node)
+		node = node.parentElement
+	}
+	return path
+}
+
