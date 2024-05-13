@@ -50,7 +50,7 @@
 	height: 100%;
 	background-size: cover;
 	background-position: center center;
-	transition: opacity 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: opacity 1s var(--out-cubic);
 	filter: blur(var(--background-blur)) brightness(var(--background-brightness));
 	z-index: 1;
 }
@@ -61,14 +61,14 @@
 
 /* Credits + Show settings */
 
-#creditContainer,
-#showSettings {
+#credit-container,
+#show-settings {
 	position: fixed;
 	pointer-events: all;
 	transition: opacity 0.4s;
 }
 
-#creditContainer {
+#credit-container {
 	position: fixed;
 	bottom: 0;
 	left: 0;
@@ -83,12 +83,12 @@
 	font-weight: var(--font-weight);
 }
 
-#creditContainer.shown {
+#credit-container.shown {
 	opacity: 1;
 	pointer-events: all;
 }
 
-#creditContainer.shown:hover .exif {
+#credit-container.shown:hover .exif {
 	opacity: 1;
 }
 
@@ -113,7 +113,9 @@
 	transition: opacity 0.4s;
 }
 
-#showSettings {
+/* Show Settings */
+
+#show-settings {
 	position: fixed;
 	bottom: 0;
 	right: 0;
@@ -122,7 +124,7 @@
 	z-index: 3;
 }
 
-#showSettings button {
+#show-settings button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -134,43 +136,43 @@
 	backdrop-filter: blur(0);
 	-webkit-backdrop-filter: blur(0);
 	cursor: pointer;
-	transition: background-color 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: background-color 0.6s var(--out-cubic);
 }
 
-#showSettings img {
+#show-settings img {
 	width: 2.6em;
-	transition: transform 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: transform 0.6s var(--out-cubic);
 }
 
-#showSettings.he_hidden {
+#show-settings.he_hidden {
 	display: flex;
 	opacity: 0;
 }
 
-#showSettings.he_hidden.shown {
+#show-settings.he_hidden.shown {
 	opacity: 0.5;
 }
 
-#showSettings.he_hidden:hover {
+#show-settings.he_hidden:hover {
 	opacity: 1;
 }
 
-#showSettings:hover img {
+#show-settings:hover img {
 	transform: rotate(15deg);
 }
 
-#showSettings.shown button {
+#show-settings.shown button {
 	background-color: rgba(170, 170, 170, 0.4);
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
 }
 
-#showSettings.shown button:hover {
+#show-settings.shown button:hover {
 	opacity: 1;
 	background-color: rgba(102, 102, 102, 0.4);
 }
 
-#showSettings.shown img {
+#show-settings.shown img {
 	transform: rotate(60deg);
 }
 

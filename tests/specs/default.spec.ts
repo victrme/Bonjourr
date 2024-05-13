@@ -12,7 +12,7 @@ test('Page loads', async ({ page }) => {
 
 test('All widgets work', async ({ page }) => {
 	await page.waitForSelector('#settings')
-	await page.locator('body #showSettings').click()
+	await page.locator('body #show-settings').click()
 
 	await page.locator('#i_sb').click()
 	await page.locator('#i_notes').click()

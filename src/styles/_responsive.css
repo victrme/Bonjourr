@@ -3,13 +3,13 @@
 		opacity: 1;
 	}
 
-	#showSettings {
+	#show-settings {
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		user-select: none;
 	}
 
-	#showSettings:active {
+	#show-settings:active {
 		filter: brightness(0.5);
 	}
 }
@@ -49,6 +49,15 @@
 
 	#quotes_container {
 		width: 90vw;
+	}
+
+	#show-settings button {
+		height: 46px;
+		width: 46px;
+	}
+
+	#show-settings img {
+		width: 30px;
 	}
 
 	aside {
@@ -119,7 +128,7 @@
 		padding-bottom: 25vh;
 	}
 
-	#creditContainer {
+	#credit-container {
 		width: 100%;
 		padding-right: 7em;
 		padding-left: 1.5em;

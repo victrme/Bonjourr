@@ -18,7 +18,7 @@ aside {
 	overflow-x: hidden;
 	touch-action: pan-y;
 	box-sizing: border-box;
-	transition: transform 0.4s, background-color 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: transform 0.4s, background-color 0.4s var(--out-cubic);
 }
 
 aside.shown {
@@ -76,7 +76,7 @@ aside select,
 aside input,
 aside hr {
 	transition-duration: 0.4s;
-	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition-timing-function: var(--out-cubic);
 	transition-property: background-color, color, border, border-color, transform;
 }
 

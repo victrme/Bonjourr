@@ -204,7 +204,7 @@ function onInterfaceDisplay(callback?: () => undefined): void {
 function userActionsEvents() {
 	const toggleSettingsMenu = () => document.dispatchEvent(new Event('toggle-settings'))
 	const domsuggestions = document.getElementById('sb-suggestions')
-	const domshowsettings = document.querySelector('#showSettings')
+	const domshowsettings = document.querySelector('#show-settings')
 	let isMousingDownOnInput = false
 
 	document.body.addEventListener('mousedown', detectTargetAsInputs)

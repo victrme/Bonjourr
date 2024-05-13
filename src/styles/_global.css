@@ -19,6 +19,7 @@
 	--red: 254, 59, 49;
 	--color-red: rgb(var(--red));
 	--color-green: #2ed058;
+	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 [data-theme='light'] {
@@ -148,13 +149,13 @@ body.loading > * {
 }
 
 body.init #interface,
-body.init #showSettings,
-body.init #creditContainer,
+body.init #show-settings,
+body.init #credit-container,
 body.init #skiptosettings {
 	transition: opacity var(--load-time-transition);
 }
 
-body.init #showSettings button {
+body.init #show-settings button {
 	transition: background-color 0s;
 }
 
@@ -194,7 +195,11 @@ input {
 	font-size: 13px;
 }
 
-/* Scrollbar */
+/* Chromium scrollbar */
+
+body::-webkit-scrollbar {
+	display: none;
+}
 
 ::-webkit-scrollbar {
 	width: 10px;
@@ -209,8 +214,4 @@ input {
 	box-shadow: inset 0 0 10px 10px var(--color-border);
 	border: solid 3px transparent;
 	border-radius: 10px;
-}
-
-body::-webkit-scrollbar {
-	display: none;
 }

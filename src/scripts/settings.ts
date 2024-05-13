@@ -674,7 +674,7 @@ function initOptionsEvents() {
 
 function toggleSettingsMenu() {
 	const domsettings = document.getElementById('settings')
-	const domshowsettings = document.getElementById('showSettings')
+	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domedit = document.getElementById('editlink')
 	const mobileDragZone = document.getElementById('mobile-drag-zone')
@@ -763,7 +763,7 @@ async function selectBackgroundType(cat: string) {
 		if (!data.unsplash) return
 
 		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
-		document.getElementById('creditContainer')?.classList.toggle('shown', true)
+		document.getElementById('credit-container')?.classList.toggle('shown', true)
 		setTimeout(
 			() =>
 				unsplashBackgrounds({
