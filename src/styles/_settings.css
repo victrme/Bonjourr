@@ -1004,6 +1004,10 @@ aside .settings-title .tooltip {
 	justify-content: center;
 }
 
+#reset_conf div {
+	text-align: right;
+}
+
 #b_resetno {
 	color: var(--color-red);
 }

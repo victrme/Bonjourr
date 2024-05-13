@@ -156,16 +156,20 @@ button.grid-spanner.selected:not(:disabled) {
 }
 
 #grid-mover {
-	display: flex;
-	flex-direction: column;
 	max-width: 85px;
 	margin: auto;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
 }
 
 #grid-mover button {
 	min-width: 3em;
 	margin: 0;
 	padding: 0;
+}
+#grid-mover button:first-of-type,
+#grid-mover button:last-of-type {
+	grid-column: 1/3;
 }
 
 #grid-spanner-container {
