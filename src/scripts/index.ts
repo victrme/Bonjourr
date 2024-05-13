@@ -13,7 +13,6 @@ import { settingsInit, settingsPreload } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
-import safari from './safari'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { freqControl, linksDataMigration } from './utils'
