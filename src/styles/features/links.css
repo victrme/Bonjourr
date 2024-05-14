@@ -177,6 +177,16 @@ li.block span {
 	display: block;
 }
 
+#linkblocks.backgrounds li.block div {
+	border-color: transparent;
+	background: transparent;
+	box-shadow: unset;
+}
+
+#linkblocks.backgrounds li.block div:hover {
+	box-shadow: unset;
+}
+
 li.block.removed {
 	margin: 0 calc((var(--column-gap) / 2) * -1); /* minus half of gap */
 	width: 0 !important;

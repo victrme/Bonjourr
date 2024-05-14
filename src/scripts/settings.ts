@@ -180,6 +180,8 @@ function initOptionsValues(data: Sync.Storage) {
 	// Link show title
 	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
 
+	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
+
 	// Time & main hide elems
 	;(function initHideInputs() {
 		const { clock, date, weatherdesc, weathericon } = data.hide || {}
@@ -289,6 +291,10 @@ function initOptionsEvents() {
 
 	paramId('b_showtitles').addEventListener('click', function (this) {
 		quickLinks(undefined, { styles: { titles: !this.classList.contains('on') } })
+	})
+
+	paramId('b_showbackgrounds').addEventListener('click', function (this) {
+		quickLinks(undefined, { styles: { backgrounds: !this.classList.contains('on') } })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {

@@ -17,7 +17,7 @@ type Elem = Links.Elem
 
 type LinksUpdate = {
 	bookmarks?: { title: string; url: string }[]
-	styles?: { style?: string; titles?: boolean }
+	styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
 	newtab?: boolean
 	row?: string
 	groups?: boolean
@@ -89,6 +89,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	// set class before appendBlock, cannot be moved
 	domlinkblocks.className = init.linkstyle ?? 'large'
 	domlinkblocks.classList.toggle('titles', init.linktitles)
+	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initblocks(init)
@@ -586,10 +587,11 @@ async function setOpenInNewTab(newtab: boolean) {
 	storage.sync.set({ linknewtab: newtab })
 }
 
-async function setLinkStyle(styles: { style?: string; titles?: boolean }) {
+async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }) {
 	const data = await storage.sync.get()
 	const style = styles.style ?? 'large'
 	const { titles } = styles
+	const { backgrounds } = styles
 
 	if (styles.style && isLinkStyle(style)) {
 		const wasText = domlinkblocks?.className.includes('text')
@@ -624,6 +626,14 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean }) {
 
 		document.getElementById('b_showtitles')?.classList?.toggle('on', titles)
 		domlinkblocks.classList.toggle('titles', titles)
+	}
+
+	if (typeof backgrounds === 'boolean') {
+		data.linkbackgrounds = backgrounds
+		storage.sync.set({ linkbackgrounds: backgrounds })
+
+		document.getElementById('b_showbackgrounds')?.classList?.toggle('on', backgrounds)
+		domlinkblocks.classList.toggle('backgrounds', backgrounds)
 	}
 }
 

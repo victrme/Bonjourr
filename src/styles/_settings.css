@@ -616,7 +616,7 @@ aside .settings-title .tooltip {
 	width: 40%;
 }
 
-#b_showtitles {
+#b_showtitles, #b_showbackgrounds {
 	opacity: 0.7;
 	padding: 0 4px;
 	min-width: 30px;
@@ -625,11 +625,11 @@ aside .settings-title .tooltip {
 	background-color: transparent;
 }
 
-#b_showtitles span {
+#b_showtitles span, #b_showbackgrounds span {
 	justify-content: center;
 }
 
-#b_showtitles.on {
+#b_showtitles.on, #b_showbackgrounds.on {
 	opacity: 1;
 	background-color: var(--color-input);
 }
