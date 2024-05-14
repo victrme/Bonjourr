@@ -672,6 +672,12 @@ function initOptionsEvents() {
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
+
+	// listens for clicks on settings panel to close editlink
+	document.getElementById('settings')?.addEventListener('click', function() {
+		// small issue: triggers even if editlink isn't open
+		document.dispatchEvent(new Event('close-edit'))
+	})
 }
 
 //
