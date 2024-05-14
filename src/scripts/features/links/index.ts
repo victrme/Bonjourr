@@ -89,7 +89,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	// set class before appendBlock, cannot be moved
 	domlinkblocks.className = init.linkstyle ?? 'large'
 	domlinkblocks.classList.toggle('titles', init.linktitles)
-	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
+	domlinkblocks.classList.toggle('rmBackground', !init.linkbackgrounds)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
 	initblocks(init)
@@ -633,7 +633,7 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 		storage.sync.set({ linkbackgrounds: backgrounds })
 
 		document.getElementById('b_showbackgrounds')?.classList?.toggle('on', backgrounds)
-		domlinkblocks.classList.toggle('backgrounds', backgrounds)
+		domlinkblocks.classList.toggle('rmBackground', !backgrounds)
 	}
 }
 

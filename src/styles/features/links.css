@@ -177,13 +177,13 @@ li.block span {
 	display: block;
 }
 
-#linkblocks.backgrounds li.block div {
+#linkblocks.rmBackground li.block div {
 	border-color: transparent;
 	background: transparent;
 	box-shadow: unset;
 }
 
-#linkblocks.backgrounds li.block div:hover {
+#linkblocks.rmBackground li.block div:hover {
 	box-shadow: unset;
 }
 
