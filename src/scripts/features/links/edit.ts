@@ -1,7 +1,7 @@
 import { deleteGroup, addGroup, changeGroupTitle, togglePinGroup } from './groups'
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
+import { getComposedPath, stringMaxSize } from '../../utils'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
-import { stringMaxSize } from '../../utils'
 import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
@@ -40,7 +40,7 @@ let editStates: EditStates
 //
 
 export default async function openEditDialog(event: Event) {
-	const path = event.composedPath() as HTMLElement[]
+	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
 	const selected = document.querySelectorAll('#linkblocks li.selected')
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
@@ -196,6 +196,7 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
 	const { innerHeight, innerWidth } = window
 	const isMobileSized = innerWidth < 600
+	const rightToLeft = document.documentElement.lang.match(/ar|fa/)
 
 	let x = 0
 	let y = 0
@@ -211,7 +212,6 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	else if (withPointer) {
 		// gets coordinates differently from touchstart or contextmenu
 		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 20
-
 		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
 	}
 	//
@@ -225,6 +225,10 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 
 	if (x + w > innerWidth) x -= x + w - innerWidth
 	if (y + h > innerHeight) y -= h
+
+	if (rightToLeft) {
+		x *= -1
+	}
 
 	return { x, y }
 }

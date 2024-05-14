@@ -172,13 +172,18 @@ export function getHTMLTemplate<T>(id: string, selector: string): T {
 }
 
 // getting .composedPath equivalent of touch events
-export function getComposedPath(target: EventTarget) {
-	const path = []
+export function getComposedPath(target: EventTarget | null): HTMLElement[] {
+	if (!target) {
+		return []
+	}
+
+	const path: HTMLElement[] = []
 	let node = target as HTMLElement | null
+
 	while (node) {
 		path.push(node)
 		node = node.parentElement
 	}
+
 	return path
 }
-
