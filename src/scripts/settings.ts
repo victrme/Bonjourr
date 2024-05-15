@@ -614,12 +614,21 @@ function initOptionsEvents() {
 
 	// Settings managment
 
-	paramId('s_export').addEventListener('click', function () {
-		toggleSettingsManagement(false)
+	paramId('export-data').addEventListener('input', async function (e) {
+		const current = orderedStringify(await storage.sync.get())
+		const user = orderedStringify(JSON.parse(this.value) ?? {})
+
+		if (user.length > 2 && current !== user) {
+			paramId('import-changes')?.classList.toggle('changes', true)
+			paramId('b_importtext')?.removeAttribute('disabled')
+		} else {
+			paramId('import-changes')?.classList.remove('changes')
+			paramId('b_importtext')?.setAttribute('disabled', '')
+		}
 	})
 
-	paramId('s_import').addEventListener('click', function () {
-		toggleSettingsManagement(true)
+	paramId('export-data').addEventListener('dragenter', async function (e) {
+		console.log(e)
 	})
 
 	paramId('b_exportfile').addEventListener('click', function () {
@@ -630,12 +639,12 @@ function initOptionsEvents() {
 		copyImportText(this)
 	})
 
-	paramId('i_importfile').addEventListener('change', function (this) {
-		importAsFile(this)
+	paramId('b_importfile').addEventListener('click', function (this) {
+		paramId('i_importfile')?.click()
 	})
 
-	paramId('i_importtext').addEventListener('keyup', function (this) {
-		importAsText(this.value)
+	paramId('i_importfile').addEventListener('change', function (this) {
+		importAsFile(this)
 	})
 
 	paramId('b_resetconf').addEventListener('click', function () {
@@ -1030,15 +1039,6 @@ export function updateExportJSON(data?: Sync.Storage) {
 		if (pre) {
 			data.about.browser = PLATFORM
 			pre.textContent = orderedStringify(data)
-
-			// const parser = new DOMParser()
-			// const highlight = highlightText(orderedStringify(data), 'json')
-			// const doc = parser.parseFromString(highlight, 'text/html')
-			// const nodes = Object.values(doc.body.childNodes)
-
-			// for (const node of nodes) {
-			// 	pre.appendChild(node)
-			// }
 		}
 	}
 }
