@@ -143,6 +143,7 @@ li.block img {
 
 li.block div {
 	margin: auto;
+	flex-shrink: 0;
 	width: var(--icon-size);
 	height: var(--icon-size);
 	border: 1px solid white;
@@ -171,10 +172,17 @@ li.block span {
 	line-height: 1.2em;
 	max-height: 3.8em;
 	overflow: hidden;
+	word-wrap: break-word;
 }
 
 #linkblocks.titles li.block span {
 	display: block;
+}
+
+#linkblocks.titles.small li.block span {
+	display: inline;
+	width: unset;
+	top: 4.5em;
 }
 
 #linkblocks.rmBackground li.block div {
