@@ -616,7 +616,8 @@ aside .settings-title .tooltip {
 	width: 40%;
 }
 
-#b_showtitles, #b_showbackgrounds {
+#b_showtitles,
+#b_showbackgrounds {
 	opacity: 0.7;
 	padding: 0 4px;
 	min-width: 30px;
@@ -631,7 +632,8 @@ aside .settings-title .tooltip {
 	align-items: center;
 }
 
-#b_showtitles span, #b_showbackgrounds span {
+#b_showtitles span,
+#b_showbackgrounds span {
 	justify-content: center;
 	align-items: center;
 }
@@ -644,7 +646,8 @@ aside .settings-title .tooltip {
 	border-radius: 3px;
 }
 
-#b_showtitles.on, #b_showbackgrounds.on {
+#b_showtitles.on,
+#b_showbackgrounds.on {
 	opacity: 1;
 	background-color: var(--color-input);
 }

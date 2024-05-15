@@ -28,6 +28,7 @@ import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from
 import type { Langs } from '../types/langs'
 
 export async function settingsPreload() {
+	const domshowsettings = document.getElementById('show-settings')
 	const innerHtml = await (await fetch('settings.html')).text()
 	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
 	const template = document.querySelector<HTMLTemplateElement>('#settings-template')
@@ -35,12 +36,26 @@ export async function settingsPreload() {
 	if (template) {
 		template.innerHTML = outerHtml
 	}
+
+	domshowsettings?.addEventListener('mouseenter', triggerSettingsInit)
+	domshowsettings?.addEventListener('pointerdown', triggerSettingsInit)
+	document.body.addEventListener('keydown', triggerSettingsInit)
+
+	function triggerSettingsInit(event: Event) {
+		const keyboard = (event as KeyboardEvent)?.code === 'Escape'
+		const pointer = event?.type.includes('key') === false
+
+		if (keyboard || pointer) {
+			domshowsettings?.removeEventListener('mouseenter', triggerSettingsInit)
+			domshowsettings?.removeEventListener('pointerdown', triggerSettingsInit)
+			document.body.removeEventListener('keydown', triggerSettingsInit)
+			settingsInit()
+		}
+	}
 }
 
 export async function settingsInit() {
-	if (!!document.getElementById('settings')) {
-		return
-	}
+	if (document.getElementById('settings')) return
 
 	const data = await storage.sync.get()
 	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
@@ -49,28 +64,38 @@ export async function settingsInit() {
 
 	traduction(settingsDom, data.lang)
 	showall(data.showall, false)
-	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
+	updateExportJSON(data)
+	updateExportEvent()
 	settingsDrawerBar()
 	settingsFooter()
 	loadCallbacks()
 
-	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
+	document.dispatchEvent(new Event('settings'))
+	document.addEventListener('toggle-settings', settingsToggle)
+}
 
-	// On settings changes, update export code
-	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
-	const storageUpdate = () => updateExportJSON()
-	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+function settingsToggle() {
+	const domsettings = document.getElementById('settings')
+	const domshowsettings = document.getElementById('show-settings')
+	const dominterface = document.getElementById('interface')
+	const domedit = document.getElementById('editlink')
+	const mobileDragZone = document.getElementById('mobile-drag-zone')
+	const isClosed = domsettings?.classList.contains('shown') === false
 
-	if (PLATFORM === 'online') {
-		window.addEventListener('storage', storageUpdate)
-	} else {
-		chrome.storage.onChanged.addListener(storageUpdate)
-		window.addEventListener('beforeunload', removeListener, { once: true })
-	}
+	domsettings?.classList.toggle('init', false)
+	domsettings?.classList.toggle('shown', isClosed)
+	domedit?.classList.toggle('pushed', isClosed)
+	dominterface?.classList.toggle('pushed', isClosed)
+	domshowsettings?.classList.toggle('shown', isClosed)
+	mobileDragZone?.classList.toggle('shown', isClosed)
 
-	document.addEventListener('toggle-settings', toggleSettingsMenu)
+	domsettings?.style.removeProperty('transform')
+	domsettings?.style.removeProperty('transition')
+	mobileDragZone?.style.removeProperty('transform')
+	mobileDragZone?.style.removeProperty('transition')
+	document.dispatchEvent(new Event('close-edit'))
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -213,7 +238,6 @@ function initOptionsValues(data: Sync.Storage) {
 }
 
 function initOptionsEvents() {
-	//
 	// General
 
 	paramId('i_showall').addEventListener('change', function () {
@@ -248,7 +272,6 @@ function initOptionsEvents() {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
-	//
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
@@ -303,7 +326,6 @@ function initOptionsEvents() {
 
 	paramId('b_importbookmarks').addEventListener('click', linksImport)
 
-	//
 	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
@@ -325,7 +347,6 @@ function initOptionsEvents() {
 		})
 	})
 
-	//
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
@@ -348,7 +369,6 @@ function initOptionsEvents() {
 		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
 
-	//
 	// Time and date
 
 	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
@@ -391,7 +411,6 @@ function initOptionsEvents() {
 		hideElements({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
 	})
 
-	//
 	// Weather
 
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
@@ -451,7 +470,6 @@ function initOptionsEvents() {
 		paramId('i_greeting').blur()
 	})
 
-	//
 	// Notes
 
 	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
@@ -470,7 +488,6 @@ function initOptionsEvents() {
 		notes(undefined, { opacity: this.value })
 	})
 
-	//
 	// Searchbar
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
@@ -509,7 +526,6 @@ function initOptionsEvents() {
 		paramId('i_sbplaceholder').blur()
 	})
 
-	//
 	// Quotes
 
 	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
@@ -538,7 +554,6 @@ function initOptionsEvents() {
 		quotes(undefined, { userlist: this.value })
 	})
 
-	//
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('pointerenter', function () {
@@ -562,7 +577,6 @@ function initOptionsEvents() {
 		textShadow(undefined, parseFloat(this.value))
 	})
 
-	//
 	// Page layout
 
 	paramId('b_editmove').addEventListener('click', function () {
@@ -592,14 +606,12 @@ function initOptionsEvents() {
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
-	//
 	// Updates
 
 	paramId('i_announce').addEventListener('change', function (this) {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
-	//
 	// Settings managment
 
 	paramId('s_export').addEventListener('click', function () {
@@ -643,7 +655,6 @@ function initOptionsEvents() {
 		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
-	//
 	// Other
 
 	// Reduces opacity to better see interface appearance changes
@@ -672,38 +683,6 @@ function initOptionsEvents() {
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
-
-	// listens for clicks on settings panel to close editlink
-	document.getElementById('settings')?.addEventListener('click', function() {
-		// small issue: triggers even if editlink isn't open
-		document.dispatchEvent(new Event('close-edit'))
-	})
-}
-
-//
-//
-//
-
-function toggleSettingsMenu() {
-	const domsettings = document.getElementById('settings')
-	const domshowsettings = document.getElementById('show-settings')
-	const dominterface = document.getElementById('interface')
-	const domedit = document.getElementById('editlink')
-	const mobileDragZone = document.getElementById('mobile-drag-zone')
-	const isClosed = domsettings?.classList.contains('shown') === false
-
-	domsettings?.classList.toggle('init', false)
-	domsettings?.classList.toggle('shown', isClosed)
-	domedit?.classList.toggle('pushed', isClosed)
-	dominterface?.classList.toggle('pushed', isClosed)
-	domshowsettings?.classList.toggle('shown', isClosed)
-	mobileDragZone?.classList.toggle('shown', isClosed)
-
-	domsettings?.style.removeProperty('transform')
-	domsettings?.style.removeProperty('transition')
-	mobileDragZone?.style.removeProperty('transform')
-	mobileDragZone?.style.removeProperty('transition')
-	document.dispatchEvent(new Event('close-edit'))
 }
 
 function translatePlaceholders() {
@@ -807,9 +786,7 @@ function settingsFooter() {
 	}
 }
 
-//
 // 	Mobile settings drawer bar
-//
 
 function settingsDrawerBar() {
 	const drawerDragDebounce = debounce(() => {
@@ -821,7 +798,7 @@ function settingsDrawerBar() {
 		drawerDragDebounce()
 
 		// removes transition to prevent weird movement when changing to mobile styling
-		// /!\ this is dependent on toggleSettingsMenu() to remove inline styling /!\
+		// /!\ this is dependent on settingsToggle() to remove inline styling /!\
 		if (!document.getElementById('settings')?.style.transition) {
 			document.getElementById('settings')?.setAttribute('style', 'transition: none')
 		}
@@ -901,14 +878,12 @@ function drawerDragEvents() {
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {
-			toggleSettingsMenu()
+			settingsToggle()
 		}
 	}
 }
 
-//
 //	Settings management
-//
 
 function toggleSettingsManagement(toggled: boolean) {
 	document.getElementById('export')?.classList.toggle('shown', !toggled)
@@ -1068,6 +1043,20 @@ export function updateExportJSON(data?: Sync.Storage) {
 	}
 }
 
+function updateExportEvent() {
+	// On settings changes, update export code
+	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
+	const storageUpdate = () => updateExportJSON()
+	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (PLATFORM === 'online') {
+		window.addEventListener('storage', storageUpdate)
+	} else {
+		chrome.storage.onChanged.addListener(storageUpdate)
+		window.addEventListener('beforeunload', removeListener, { once: true })
+	}
+}
+
 function fadeOut() {
 	const dominterface = document.getElementById('interface') as HTMLElement
 	dominterface.click()
@@ -1076,9 +1065,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-//
 //	Helpers
-//
 
 function paramId(str: string) {
 	return document.getElementById(str) as HTMLInputElement

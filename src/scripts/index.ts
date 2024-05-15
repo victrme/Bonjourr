@@ -9,9 +9,9 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
-import { settingsInit, settingsPreload } from './settings'
 import { syncNewBookmarks } from './features/links/bookmarks'
 import quotes, { oldJSONToCSV } from './features/quotes'
+import { settingsInit, settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
@@ -201,31 +201,17 @@ function onInterfaceDisplay(callback?: () => undefined): void {
 }
 
 function userActionsEvents() {
-	const toggleSettingsMenu = () => document.dispatchEvent(new Event('toggle-settings'))
 	const domsuggestions = document.getElementById('sb-suggestions')
-	const domshowsettings = document.querySelector('#show-settings')
 	let isMousingDownOnInput = false
 
 	document.body.addEventListener('mousedown', detectTargetAsInputs)
 	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
-	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
-	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
-	document.body.addEventListener('keydown', settingsFirstLoad)
-
-	domshowsettings?.addEventListener('pointerup', settingsFirstLoad)
-	document.body.addEventListener('keyup', settingsFirstLoad)
-
 	document.addEventListener('click', clickUserActions)
 	document.addEventListener('keydown', keydownUserActions)
+	document.addEventListener('keyup', keydownUserActions)
 
 	async function keydownUserActions(event: KeyboardEvent) {
-		if (event.altKey && event.code === 'KeyS') {
-			console.clear()
-			console.log(localStorage)
-			console.log(await storage.sync.get())
-		}
-
 		if (event.code === 'Escape') {
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
@@ -233,13 +219,14 @@ function userActionsEvents() {
 			}
 
 			const open = isOpen()
+			const keyup = event.type === 'keyup'
 
 			if (open.contextmenu) {
 				document.dispatchEvent(new Event('close-edit'))
 			}
 			//
-			else if (open.settings) {
-				toggleSettingsMenu()
+			else if (open.settings && keyup) {
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 			//
 			else if (open.selectall) {
@@ -250,8 +237,8 @@ function userActionsEvents() {
 				document.dispatchEvent(new Event('close-folder'))
 			}
 			//
-			else {
-				toggleSettingsMenu()
+			else if (keyup) {
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 
 			return
@@ -278,22 +265,28 @@ function userActionsEvents() {
 			linkfolder: path.some((el) => el?.className?.includes('folder')),
 			folder: path.some((el) => el?.className?.includes('in-folder')),
 			interface: pathIds.includes('interface'),
+			settings: path.some((el) => el?.id === 'settings'),
+			showsettings: path.some((el) => el?.id === 'show-settings'),
 		}
 
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
 		}
 
+		if (on.showsettings) {
+			document.dispatchEvent(new Event('toggle-settings'))
+		}
+
+		if (open.contextmenu && on.settings) {
+			document.dispatchEvent(new Event('close-edit'))
+		}
+
 		if ((on.body || on.interface) === false) {
 			return
 		}
 
-		if (open.contextmenu) {
-			document.dispatchEvent(new Event('close-edit'))
-		}
-		//
-		else if (open.settings) {
-			toggleSettingsMenu()
+		if (open.settings) {
+			document.dispatchEvent(new Event('toggle-settings'))
 		}
 		//
 		else if (open.selectall && !on.link) {
@@ -326,33 +319,9 @@ function userActionsEvents() {
 			const moverHasOpened = elementmover?.classList.contains('hidden') === false
 
 			if (moverHasOpened) {
-				toggleSettingsMenu()
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 		}, 20)
-	}
-
-	function settingsFirstLoad(event?: Event) {
-		const code = (event as KeyboardEvent)?.code
-		const type = event?.type
-		const initEvents = code === 'Escape' || type === 'mouseenter' || type === 'pointerdown'
-		const dispatchEvents = (code === 'Escape' && type === 'keyup') || type === 'pointerup'
-
-		if (initEvents) {
-			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
-			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
-			document.body.removeEventListener('keydown', settingsFirstLoad)
-			settingsInit()
-		}
-
-		if (dispatchEvents) {
-			domshowsettings?.removeEventListener('pointerup', settingsFirstLoad)
-			document.body?.removeEventListener('keyup', settingsFirstLoad)
-			document.dispatchEvent(new Event('toggle-settings'))
-
-			setTimeout(() => {
-				domshowsettings?.addEventListener('click', toggleSettingsMenu)
-			})
-		}
 	}
 }
 
