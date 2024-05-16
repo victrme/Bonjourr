@@ -642,7 +642,7 @@ aside .settings-title .tooltip {
 	width: 14px;
 	height: 14px;
 	display: block;
-	background-color: #ffffff;
+	background-color: var(--color-text);
 	border-radius: 3px;
 }
 
