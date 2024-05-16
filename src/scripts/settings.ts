@@ -614,21 +614,29 @@ function initOptionsEvents() {
 
 	// Settings managment
 
-	paramId('export-data').addEventListener('input', async function (e) {
-		const current = orderedStringify(await storage.sync.get())
-		const user = orderedStringify(JSON.parse(this.value) ?? {})
-
-		if (user.length > 2 && current !== user) {
+	function toggleImportChangesButtons(hasChanges: boolean) {
+		if (hasChanges) {
 			paramId('import-changes')?.classList.toggle('changes', true)
 			paramId('b_importtext')?.removeAttribute('disabled')
 		} else {
 			paramId('import-changes')?.classList.remove('changes')
 			paramId('b_importtext')?.setAttribute('disabled', '')
 		}
+	}
+
+	paramId('export-data').addEventListener('input', async function (e) {
+		const current = orderedStringify(await storage.sync.get())
+		const user = orderedStringify(JSON.parse(this.value) ?? {})
+
+		toggleImportChangesButtons(user.length > 2 && current !== user)
 	})
 
-	paramId('export-data').addEventListener('dragenter', async function (e) {
-		console.log(e)
+	paramId('settings-managment').addEventListener('dragenter', function (e) {
+		paramId('settings-managment').classList.add('dragging-file')
+	})
+
+	paramId('i_importfile').addEventListener('dragleave', function (e) {
+		paramId('settings-managment').classList.remove('dragging-file')
 	})
 
 	paramId('b_exportfile').addEventListener('click', function () {
@@ -659,8 +667,13 @@ function initOptionsEvents() {
 		paramsReset('no')
 	})
 
+	paramId('b_importcancel').addEventListener('click', async function () {
+		paramId('export-data').value = orderedStringify(await storage.sync.get())
+		toggleImportChangesButtons(false)
+	})
+
 	paramId('b_importtext').addEventListener('click', function () {
-		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
+		const val = paramId('export-data').value
 		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
@@ -908,7 +921,7 @@ async function copyImportText(target: HTMLElement) {
 		setTimeout(() => {
 			const domimport = document.getElementById('b_exportcopy')
 			if (domimport) {
-				domimport.textContent = tradThis('Copy text')
+				domimport.textContent = tradThis('Copy')
 			}
 		}, 1000)
 	} catch (err) {

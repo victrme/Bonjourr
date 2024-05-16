@@ -862,6 +862,24 @@ aside .settings-title .tooltip {
 
 /* Settings managment */
 
+#settings-managment {
+	position: relative;
+}
+
+#settings-managment.dragging-file {
+	opacity: 0.5;
+}
+#settings-managment.dragging-file #i_importfile {
+	position: absolute;
+	display: initial;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	background-color: transparent;
+}
+
 #export-data {
 	font-size: 13px;
 	width: 100%;
@@ -928,10 +946,6 @@ aside .settings-title .tooltip {
 #reset_conf.shown,
 #reset_first.shown {
 	display: flex;
-}
-
-#reset_conf div {
-	text-align: right;
 }
 
 #settings-footer {
