@@ -614,12 +614,29 @@ function initOptionsEvents() {
 
 	// Settings managment
 
-	paramId('s_export').addEventListener('click', function () {
-		toggleSettingsManagement(false)
+	function toggleImportChangesButtons(hasChanges: boolean) {
+		if (hasChanges) {
+			paramId('import-changes')?.classList.toggle('changes', true)
+			paramId('b_importtext')?.removeAttribute('disabled')
+		} else {
+			paramId('import-changes')?.classList.remove('changes')
+			paramId('b_importtext')?.setAttribute('disabled', '')
+		}
+	}
+
+	paramId('export-data').addEventListener('input', async function (e) {
+		const current = orderedStringify(await storage.sync.get())
+		const user = orderedStringify(JSON.parse(this.value) ?? {})
+
+		toggleImportChangesButtons(user.length > 2 && current !== user)
 	})
 
-	paramId('s_import').addEventListener('click', function () {
-		toggleSettingsManagement(true)
+	paramId('settings-managment').addEventListener('dragenter', function (e) {
+		paramId('settings-managment').classList.add('dragging-file')
+	})
+
+	paramId('i_importfile').addEventListener('dragleave', function (e) {
+		paramId('settings-managment').classList.remove('dragging-file')
 	})
 
 	paramId('b_exportfile').addEventListener('click', function () {
@@ -630,12 +647,12 @@ function initOptionsEvents() {
 		copyImportText(this)
 	})
 
-	paramId('i_importfile').addEventListener('change', function (this) {
-		importAsFile(this)
+	paramId('b_importfile').addEventListener('click', function (this) {
+		paramId('i_importfile')?.click()
 	})
 
-	paramId('i_importtext').addEventListener('keyup', function (this) {
-		importAsText(this.value)
+	paramId('i_importfile').addEventListener('change', function (this) {
+		importAsFile(this)
 	})
 
 	paramId('b_resetconf').addEventListener('click', function () {
@@ -650,8 +667,13 @@ function initOptionsEvents() {
 		paramsReset('no')
 	})
 
+	paramId('b_importcancel').addEventListener('click', async function () {
+		paramId('export-data').value = orderedStringify(await storage.sync.get())
+		toggleImportChangesButtons(false)
+	})
+
 	paramId('b_importtext').addEventListener('click', function () {
-		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
+		const val = paramId('export-data').value
 		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
@@ -899,7 +921,7 @@ async function copyImportText(target: HTMLElement) {
 		setTimeout(() => {
 			const domimport = document.getElementById('b_exportcopy')
 			if (domimport) {
-				domimport.textContent = tradThis('Copy text')
+				domimport.textContent = tradThis('Copy')
 			}
 		}, 1000)
 	} catch (err) {
@@ -1030,15 +1052,6 @@ export function updateExportJSON(data?: Sync.Storage) {
 		if (pre) {
 			data.about.browser = PLATFORM
 			pre.textContent = orderedStringify(data)
-
-			// const parser = new DOMParser()
-			// const highlight = highlightText(orderedStringify(data), 'json')
-			// const doc = parser.parseFromString(highlight, 'text/html')
-			// const nodes = Object.values(doc.body.childNodes)
-
-			// for (const node of nodes) {
-			// 	pre.appendChild(node)
-			// }
 		}
 	}
 }

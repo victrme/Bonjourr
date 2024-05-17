@@ -99,6 +99,12 @@ aside .param-btn:hover.btn-red {
 	background-color: rgba(var(--red), 0.25);
 }
 
+aside .param-btn:disabled {
+	opacity: 0.66;
+	filter: grayscale(1);
+	pointer-events: none;
+}
+
 aside .inline-btn {
 	border-radius: 1em;
 	color: var(--color-blue);
@@ -854,102 +860,34 @@ aside .settings-title .tooltip {
 	background-color: var(--color-blue);
 }
 
-#importexport .param {
-	min-height: 192px;
-	transition: min-height 0.2s;
-}
+/* Settings managment */
 
-.importexport-tabs {
+#settings-managment {
 	position: relative;
-	display: flex;
-	width: 220px;
-	margin: auto;
-	margin-bottom: 15px;
-	border-radius: 8.5px;
-	background-color: var(--color-areas);
-	align-items: center;
-	direction: ltr;
 }
 
-.importexport-tabs .glider {
-	width: calc(50% - 3px);
-	background-color: var(--color-blue);
+#settings-managment.dragging-file {
+	opacity: 0.5;
+}
+#settings-managment.dragging-file #i_importfile {
 	position: absolute;
-	border-radius: 8.5px;
-	z-index: 3;
-	top: 3px;
-	bottom: 3px;
-	left: 3px;
-	transition: transform 0.3s;
-	transform: translateX(0%);
-}
-
-.importexport-tabs.toggled .glider {
-	transform: translateX(100%);
-}
-
-.importexport-tabs button {
-	display: block;
-	width: 50%;
-	padding: unset;
-	font-size: 13px;
-	background-color: transparent;
-	position: relative;
-	text-decoration: none;
-	transition: color 0.2s;
-	height: 29px;
-	border: none;
-	border-radius: 8.5px;
-	margin: 3px;
-}
-
-.importexport-tabs.toggled #s_import,
-.importexport-tabs #s_export {
-	color: white;
-	z-index: 4;
-}
-
-.importexport-tabs.toggled #s_import:hover,
-.importexport-tabs #s_export:hover {
-	background-color: unset;
-}
-
-.importexport-tabs.toggled #s_export,
-.importexport-tabs #s_import {
-	color: var(--color-blue);
-	z-index: 2;
-}
-
-.importexport-tabs.toggled #s_export:hover,
-.importexport-tabs #s_import:hover {
-	background-color: var(--color-focused);
-}
-
-#import,
-#export {
-	display: none;
-	height: 0px;
-}
-
-#import.shown,
-#export.shown {
-	height: auto;
 	display: initial;
-}
-
-#export > div {
-	display: flex;
-	justify-content: space-around;
-	margin-top: 12px;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	background-color: transparent;
 }
 
 #export-data {
 	font-size: 13px;
 	width: 100%;
-	height: 160px;
-	min-height: 100px;
+	height: 110px;
+	min-height: 110px;
 	max-height: 3000px;
-	padding: 0.65em 1.3em;
+	margin: 6px 0;
+	padding: 10px 16px;
 	tab-size: 1.5em;
 	user-select: all;
 	text-overflow: ellipsis;
@@ -957,6 +895,7 @@ aside .settings-title .tooltip {
 	resize: vertical;
 	box-sizing: border-box;
 	border-radius: 10px;
+	color: var(--color-text);
 	background-color: var(--color-areas);
 }
 
@@ -969,24 +908,23 @@ aside .settings-title .tooltip {
 	overflow-y: auto;
 }
 
+#i_importfile,
 #downloadfile {
 	display: none;
 }
 
-#exportSettings {
-	position: absolute;
+#import-changes {
+	text-align: center;
 }
 
-#import > div {
-	display: flex;
-	margin-top: 15px;
+#import-changes.changes #b_importcancel,
+#import-changes #b_exportcopy {
+	display: initial;
 }
 
-#import button:disabled {
-	filter: grayscale(1) opacity(0.7);
-	text-decoration: none;
-	cursor: default;
-	transition: filter 0.1s;
+#import-changes #b_importcancel,
+#import-changes.changes #b_exportcopy {
+	display: none;
 }
 
 #i_importtext {
@@ -1000,14 +938,6 @@ aside .settings-title .tooltip {
 	background-color: var(--color-focused);
 }
 
-#resetContainer {
-	margin-top: 1rem;
-}
-
-#resetContainer .param {
-	padding: 0.65em 1.3em;
-}
-
 #reset_conf,
 #reset_first {
 	display: none;
@@ -1016,18 +946,6 @@ aside .settings-title .tooltip {
 #reset_conf.shown,
 #reset_first.shown {
 	display: flex;
-}
-
-#reset_first {
-	justify-content: center;
-}
-
-#reset_conf div {
-	text-align: right;
-}
-
-#b_resetno {
-	color: var(--color-red);
 }
 
 #settings-footer {

@@ -110,7 +110,13 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_collection" class="trn">Unsplash collection</label>
-					<button class="tooltip ttcoll" title="Tips on Unsplash collections" aria-label="Tips on Unsplash collections">?</button>
+					<button
+						class="tooltip ttcoll"
+						title="Tips on Unsplash collections"
+						aria-label="Tips on Unsplash collections"
+					>
+						?
+					</button>
 				</span>
 
 				<form id="f_collection" class="network-form">
@@ -291,7 +297,12 @@
 				<label for="i_linkstyle" class="trn">Style</label>
 
 				<div class="split-inputs">
-					<button id="b_showbackgrounds" class="input-btn on" aria-label="Toggle link backgrounds" title="Toggle link backgrounds">
+					<button
+						id="b_showbackgrounds"
+						class="input-btn on"
+						aria-label="Toggle link backgrounds"
+						title="Toggle link backgrounds"
+					>
 						<span></span>
 					</button>
 
@@ -742,7 +753,13 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_moreinfo" class="trn">Detailed weather</label>
-					<button class="tooltip ttdetailledweather" title="What is detailed weather?" aria-label="What is detailed weather?">?</button>
+					<button
+						class="tooltip ttdetailledweather"
+						title="What is detailed weather?"
+						aria-label="What is detailed weather?"
+					>
+						?
+					</button>
 				</span>
 
 				<select id="i_moreinfo" class="">
@@ -1147,71 +1164,58 @@
 	</div>
 </div>
 
-<div id="importexport">
-	<div class="settings-title">
-		<h2 class="trn">Settings management</h2>
+<div class="settings-title">
+	<h2 class="trn">Settings management</h2>
 
-		<button class="tooltip ttexport" title="Tips on imports & exports" aria-label="Tips on imports & exports">?</button>
+	<button class="tooltip ttexport" title="Tips on imports & exports" aria-label="Tips on imports & exports">?</button>
 
-		<p class="tooltiptext dropdown ttexport">
-			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-			<a
-				class="trn"
-				href="https://bonjourr.fr/docs/overview/#settings-management"
-				rel="noreferrer noopener"
-				target="_blank"
-				>Learn more</a
-			>
-		</p>
-	</div>
-
-	<div class="param">
-		<div class="importexport-tabs">
-			<button id="s_export" class="trn">Export</button>
-			<button id="s_import" class="trn">Import</button>
-			<div class="glider"></div>
-		</div>
-
-		<div id="export" class="shown">
-			<pre id="export-data"></pre>
-
-			<div>
-				<button id="b_exportcopy" class="inline-btn trn">Copy text</button>
-
-				<div id="save_wrapper" class="not-safari">
-					<button id="b_exportfile" class="inline-btn trn">Export as file</button>
-					<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
-				</div>
-			</div>
-		</div>
-
-		<div id="import">
-			<label for="i_importfile" class="input-file">
-				<span class="trn">Drop file to import settings</span>
-				<input id="i_importfile" type="file" name="import_file" accept="application/json, text/plain" />
-			</label>
-
-			<div>
-				<input id="i_importtext" type="text" placeholder="or paste as text" aria-labelledby="importtext" />
-				<button id="b_importtext" class="inline-btn trn">Import</button>
-			</div>
-		</div>
-	</div>
+	<p class="tooltiptext dropdown ttexport">
+		<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#settings-management" rel="noreferrer noopener" target="_blank"
+			>Learn more</a
+		>
+	</p>
 </div>
 
-<div id="resetContainer">
-	<div class="param">
-		<div id="reset_first" class="wrapper shown">
-			<button id="b_resetconf" class="inline-btn trn">Reset settings</button>
-		</div>
+<div class="param" id="settings-managment">
+	<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
+	<input id="i_importfile" type="file" name="import_file" accept="application/json, text/plain" />
 
-		<div id="reset_conf" class="wrapper">
-			<span class="trn">Are you sure ?</span>
-			<div>
-				<button id="b_resetyes" class="inline-btn trn">I am sure</button>
-				<button id="b_resetno" class="inline-btn trn">No, go back</button>
-			</div>
+	<div class="wrapper">
+		<span class="trn">Import file</span>
+		<div>
+			<button id="b_importfile" class="param-btn trn">Load file</button>
+			<button id="b_exportfile" class="param-btn trn">Save to device</button>
 		</div>
+	</div>
+
+	<hr />
+
+	<div id="reset_first" class="wrapper shown">
+		<label for="b_resetconf" class="trn">Reset to default</label>
+
+		<div>
+			<button id="b_resetconf" class="param-btn trn">Reset</button>
+		</div>
+	</div>
+
+	<div id="reset_conf" class="wrapper">
+		<span class="trn">Are you sure ?</span>
+
+		<div>
+			<button id="b_resetyes" class="param-btn trn">I am sure</button>
+			<button id="b_resetno" class="param-btn btn-red trn">No, go back</button>
+		</div>
+	</div>
+
+	<hr />
+
+	<textarea id="export-data"></textarea>
+
+	<div id="import-changes">
+		<button id="b_exportcopy" class="param-btn trn">Copy</button>
+		<button id="b_importcancel" class="param-btn btn-red trn">Cancel</button>
+		<button id="b_importtext" class="param-btn trn" disabled>Apply changes</button>
 	</div>
 </div>
 
