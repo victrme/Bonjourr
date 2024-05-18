@@ -66,8 +66,8 @@ export async function settingsInit() {
 	showall(data.showall, false)
 	initOptionsValues(data)
 	initOptionsEvents()
-	updateExportJSON(data)
-	updateExportEvent()
+	updateSettingsJSON(data)
+	updateSettingsEvent()
 	settingsDrawerBar()
 	settingsFooter()
 	loadCallbacks()
@@ -614,73 +614,59 @@ function initOptionsEvents() {
 
 	// Settings managment
 
-	function toggleImportChangesButtons(hasChanges: boolean) {
-		if (hasChanges) {
-			paramId('import-changes')?.classList.toggle('changes', true)
-			paramId('b_importtext')?.removeAttribute('disabled')
-		} else {
-			paramId('import-changes')?.classList.remove('changes')
-			paramId('b_importtext')?.setAttribute('disabled', '')
-		}
-	}
-
-	paramId('export-data').addEventListener('input', async function (e) {
-		const current = orderedStringify(await storage.sync.get())
-		const user = orderedStringify(JSON.parse(this.value) ?? {})
-
-		toggleImportChangesButtons(user.length > 2 && current !== user)
-	})
-
-	paramId('settings-managment').addEventListener('dragenter', function (e) {
+	paramId('settings-managment').addEventListener('dragenter', function () {
 		paramId('settings-managment').classList.add('dragging-file')
 	})
 
-	paramId('i_importfile').addEventListener('dragleave', function (e) {
+	paramId('file-import').addEventListener('dragleave', function () {
 		paramId('settings-managment').classList.remove('dragging-file')
 	})
 
-	paramId('b_exportfile').addEventListener('click', function () {
-		exportAsFile()
+	paramId('b_file-load').addEventListener('click', function (this) {
+		paramId('file-import')?.click()
 	})
 
-	paramId('b_exportcopy').addEventListener('click', function (this) {
-		copyImportText(this)
+	paramId('b_file-save').addEventListener('click', function () {
+		saveImportFile()
 	})
 
-	paramId('b_importfile').addEventListener('click', function (this) {
-		paramId('i_importfile')?.click()
+	paramId('file-import').addEventListener('change', function (this) {
+		loadImportFile(this)
 	})
 
-	paramId('i_importfile').addEventListener('change', function (this) {
-		importAsFile(this)
+	paramId('b_settings-copy').addEventListener('click', function (this) {
+		copySettings(this)
 	})
 
-	paramId('b_resetconf').addEventListener('click', function () {
-		paramsReset('conf')
+	paramId('settings-data').addEventListener('input', function () {
+		toggleSettingsChangesButtons('input')
 	})
 
-	paramId('b_resetyes').addEventListener('click', function () {
-		paramsReset('yes')
+	paramId('b_settings-cancel').addEventListener('click', function () {
+		toggleSettingsChangesButtons('cancel')
 	})
 
-	paramId('b_resetno').addEventListener('click', function () {
-		paramsReset('no')
+	paramId('b_settings-apply').addEventListener('click', function () {
+		const val = paramId('settings-data').value
+		importSettings(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
-	paramId('b_importcancel').addEventListener('click', async function () {
-		paramId('export-data').value = orderedStringify(await storage.sync.get())
-		toggleImportChangesButtons(false)
+	paramId('b_reset-first').addEventListener('click', function () {
+		resetSettings('first')
 	})
 
-	paramId('b_importtext').addEventListener('click', function () {
-		const val = paramId('export-data').value
-		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
+	paramId('b_reset-apply').addEventListener('click', function () {
+		resetSettings('yes')
+	})
+
+	paramId('b_reset-cancel').addEventListener('click', function () {
+		resetSettings('no')
 	})
 
 	// Other
 
-	// Reduces opacity to better see interface appearance changes
 	if (IS_MOBILE) {
+		// Reduces opacity to better see interface appearance changes
 		const touchHandler = (touch: boolean) => document.getElementById('settings')?.classList.toggle('see-through', touch)
 		document.querySelectorAll("input[type='range'").forEach((input: Element) => {
 			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
@@ -907,19 +893,13 @@ function drawerDragEvents() {
 
 //	Settings management
 
-function toggleSettingsManagement(toggled: boolean) {
-	document.getElementById('export')?.classList.toggle('shown', !toggled)
-	document.getElementById('import')?.classList.toggle('shown', toggled)
-	document.querySelector('.importexport-tabs')?.classList.toggle('toggled', toggled)
-}
-
-async function copyImportText(target: HTMLElement) {
+async function copySettings(target: HTMLElement) {
 	try {
-		const pre = document.getElementById('export-data')
+		const pre = document.getElementById('settings-data')
 		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
 		target.textContent = tradThis('Copied')
 		setTimeout(() => {
-			const domimport = document.getElementById('b_exportcopy')
+			const domimport = document.getElementById('b_settings-copy')
 			if (domimport) {
 				domimport.textContent = tradThis('Copy')
 			}
@@ -929,8 +909,8 @@ async function copyImportText(target: HTMLElement) {
 	}
 }
 
-async function exportAsFile() {
-	const a = document.getElementById('downloadfile')
+async function saveImportFile() {
+	const a = document.getElementById('file-download')
 	if (!a) return
 
 	const date = new Date()
@@ -949,18 +929,7 @@ async function exportAsFile() {
 	a.click()
 }
 
-function importAsText(string: string) {
-	const importtext = document.getElementById('b_importtext')
-
-	try {
-		parse(string)
-		importtext?.removeAttribute('disabled')
-	} catch (error) {
-		importtext?.setAttribute('disabled', '')
-	}
-}
-
-function importAsFile(target: HTMLInputElement) {
+function loadImportFile(target: HTMLInputElement) {
 	function decodeExportFile(str: string): Partial<Sync.Storage> {
 		let result = {}
 
@@ -994,13 +963,13 @@ function importAsFile(target: HTMLInputElement) {
 
 		// data has at least one valid key from default sync storage => import
 		if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
-			paramsImport(importData as Sync.Storage)
+			importSettings(importData as Sync.Storage)
 		}
 	}
 	reader.readAsText(file)
 }
 
-async function paramsImport(toImport: Partial<Sync.Storage>) {
+async function importSettings(toImport: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
 
@@ -1025,7 +994,7 @@ async function paramsImport(toImport: Partial<Sync.Storage>) {
 	}
 }
 
-function paramsReset(action: 'yes' | 'no' | 'conf') {
+function resetSettings(action: 'yes' | 'no' | 'first') {
 	if (action === 'yes') {
 		storage.sync.clear()
 		storage.local.clear()
@@ -1039,15 +1008,15 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 		return
 	}
 
-	document.getElementById('reset_first')?.classList.toggle('shown', action === 'no')
-	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
+	document.getElementById('reset-first')?.classList.toggle('shown', action === 'no')
+	document.getElementById('reset-conf')?.classList.toggle('shown', action === 'first')
 }
 
-export function updateExportJSON(data?: Sync.Storage) {
+export function updateSettingsJSON(data?: Sync.Storage) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		const pre = document.getElementById('export-data')
+		const pre = document.getElementById('settings-data')
 
 		if (pre) {
 			data.about.browser = PLATFORM
@@ -1056,10 +1025,10 @@ export function updateExportJSON(data?: Sync.Storage) {
 	}
 }
 
-function updateExportEvent() {
+function updateSettingsEvent() {
 	// On settings changes, update export code
 	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
-	const storageUpdate = () => updateExportJSON()
+	const storageUpdate = () => updateSettingsJSON()
 	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
 
 	if (PLATFORM === 'online') {
@@ -1067,6 +1036,31 @@ function updateExportEvent() {
 	} else {
 		chrome.storage.onChanged.addListener(storageUpdate)
 		window.addEventListener('beforeunload', removeListener, { once: true })
+	}
+}
+
+async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
+	const textarea = paramId('settings-data')
+	const data = await storage.sync.get()
+	let hasChanges = false
+
+	if (action === 'input') {
+		const current = orderedStringify(data)
+		const user = orderedStringify(JSON.parse(textarea.value) ?? {})
+		hasChanges = user.length > 2 && current !== user
+	}
+
+	if (action === 'cancel') {
+		textarea.value = orderedStringify(data)
+		hasChanges = false
+	}
+
+	if (hasChanges) {
+		paramId('settings-changes')?.classList.toggle('changes', true)
+		paramId('b_settings-apply')?.removeAttribute('disabled')
+	} else {
+		paramId('settings-changes')?.classList.remove('changes')
+		paramId('b_settings-apply')?.setAttribute('disabled', '')
 	}
 }
 

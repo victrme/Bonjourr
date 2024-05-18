@@ -1178,44 +1178,44 @@
 </div>
 
 <div class="param" id="settings-managment">
-	<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
-	<input id="i_importfile" type="file" name="import_file" accept="application/json, text/plain" />
+	<a id="file-download" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
+	<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
 
 	<div class="wrapper">
 		<span class="trn">Import file</span>
 		<div>
-			<button id="b_importfile" class="param-btn trn">Load file</button>
-			<button id="b_exportfile" class="param-btn trn">Save to device</button>
+			<button id="b_file-load" class="param-btn trn">Load file</button>
+			<button id="b_file-save" class="param-btn trn">Save to device</button>
 		</div>
 	</div>
 
 	<hr />
 
-	<div id="reset_first" class="wrapper shown">
-		<label for="b_resetconf" class="trn">Reset to default</label>
+	<textarea id="settings-data"></textarea>
+
+	<div id="settings-changes">
+		<button id="b_settings-copy" class="param-btn trn">Copy</button>
+		<button id="b_settings-cancel" class="param-btn btn-red trn">Cancel</button>
+		<button id="b_settings-apply" class="param-btn trn" disabled>Apply changes</button>
+	</div>
+</div>
+
+<div class="param" id="reset-settings">
+	<div id="reset-first" class="wrapper shown">
+		<label for="b_reset-first" class="trn">Reset to default</label>
 
 		<div>
-			<button id="b_resetconf" class="param-btn trn">Reset</button>
+			<button id="b_reset-first" class="param-btn trn">Reset</button>
 		</div>
 	</div>
 
-	<div id="reset_conf" class="wrapper">
+	<div id="reset-conf" class="wrapper">
 		<span class="trn">Are you sure ?</span>
 
 		<div>
-			<button id="b_resetyes" class="param-btn trn">I am sure</button>
-			<button id="b_resetno" class="param-btn btn-red trn">No, go back</button>
+			<button id="b_reset-apply" class="param-btn trn">I am sure</button>
+			<button id="b_reset-cancel" class="param-btn btn-red trn">No, go back</button>
 		</div>
-	</div>
-
-	<hr />
-
-	<textarea id="export-data"></textarea>
-
-	<div id="import-changes">
-		<button id="b_exportcopy" class="param-btn trn">Copy</button>
-		<button id="b_importcancel" class="param-btn btn-red trn">Cancel</button>
-		<button id="b_importtext" class="param-btn trn" disabled>Apply changes</button>
 	</div>
 </div>
 
