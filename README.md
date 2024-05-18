@@ -12,7 +12,7 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 -   ⚡️ Fast & lightweight!
 -   🔎 Search bar (compatible with all search engines)
 -   🕰 Analog clock with multiple clock faces
--   🌤 Weather
+-   🌤 Weather & Icon Packs
 -   🔗 Quick Links
 -   👋 Greets you by your name
 -   🌘 Dark mode
@@ -106,7 +106,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
 -   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
--   **🇷🇴 Romanian translation** · UnifeGi · [GitHub](https://github.com/UnifeGi)
+-   **🇷🇴 Romanian translation** · [UnifeGi](https://github.com/UnifeGi) & [Astra](https://dry.nl.eu.org/links)
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)

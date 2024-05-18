@@ -128,6 +128,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		forecast: 'auto',
 		temperature: 'actual',
 		geolocation: 'approximate',
+		iconpack: 'default',
 	},
 	notes: {
 		on: false,

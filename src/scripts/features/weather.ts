@@ -25,6 +25,7 @@ type WeatherUpdate = {
 	city?: true
 	temp?: string
 	unhide?: true
+	iconpack?: string
 }
 
 let pollingInterval = 0
@@ -161,6 +162,10 @@ async function updatesWeather(update: WeatherUpdate) {
 		lastWeather = (await request(weather, lastWeather)) ?? lastWeather
 
 		geolForm.accept()
+	}
+
+	if (isIconPack(update.iconpack)) {
+		weather.iconpack = update.iconpack;
 	}
 
 	storage.sync.set({ weather })
@@ -381,6 +386,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	suntime(sunrise, sunset)
 
 	return {
+		iconpack: data.iconpack ?? 'default',
 		timestamp: Math.floor(new Date().getTime() / 1000),
 		forecasted_timestamp,
 		forecasted_high,
@@ -406,6 +412,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	const weatherdom = document.getElementById('weather')
 	const dot = useSinograms ? '。' : '. '
 	const date = new Date()
+	const iconpack = data.iconpack ?? 'default'
 
 	const handleDescription = () => {
 		const feels = Math.floor(lastWeather.feels_like)
@@ -460,7 +467,7 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
 		const daytime = now < sunrise || now > sunset ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${daytime}/${filename}.svg`
+		const iconSrc = `src/assets/weather/${iconpack}/${daytime}/${filename}.svg`
 
 		icon.src = iconSrc
 	}
@@ -556,4 +563,9 @@ function isTemperature(str = ''): str is Weather.Temperature {
 function isGeolocation(str = ''): str is Weather.Geolocation {
 	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
 	return geol.includes(str as Weather.Geolocation)
+}
+
+function isIconPack(str = ''): str is Weather.IconPack {
+	const temps: Weather.IconPack[] = ['default']
+	return temps.includes(str as Weather.IconPack)
 }

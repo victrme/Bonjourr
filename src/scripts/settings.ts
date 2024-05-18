@@ -117,6 +117,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_temp', data.weather?.temperature || 'actual')
 	setInput('i_moreinfo', data.weather?.moreinfo || 'none')
 	setInput('i_provider', data.weather?.provider ?? '')
+	setInput('i_iconpack', data.weather?.iconpack || 'default')
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
@@ -427,6 +428,10 @@ function initOptionsEvents() {
 
 	paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
 		weather(undefined, { moreinfo: this.value })
+	})
+
+	paramId('i_iconpack').addEventListener('change', function (this: HTMLInputElement) {
+		weather(undefined, { iconpack: this.value })
 	})
 
 	paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {

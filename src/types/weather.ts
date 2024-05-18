@@ -1,5 +1,6 @@
 declare namespace Weather {
 	interface Sync {
+		iconpack?: IconPack
 		ccode?: string
 		city?: string
 		unit: Unit
@@ -13,6 +14,7 @@ declare namespace Weather {
 	}
 
 	interface Local {
+		iconpack: string
 		temp: number
 		forecasted_timestamp: number
 		forecasted_high: number
@@ -34,6 +36,8 @@ declare namespace Weather {
 	type Temperature = 'actual' | 'feelslike' | 'both'
 
 	type MoreInfo = 'none' | 'msnw' | 'yhw' | 'windy' | 'custom'
+
+	type IconPack = 'default'
 
 	namespace API {
 		interface Current {
