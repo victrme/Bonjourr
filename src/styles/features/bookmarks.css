@@ -1,6 +1,6 @@
 #bookmarks {
 	width: 70%;
-	max-width: 1000px;
+	max-width: 900px;
 	min-height: 30vh;
 	padding: 0em;
 	border-radius: 1em;
@@ -34,23 +34,53 @@
 	will-change: backdrop-filter;
 }
 
+#bookmarks-intro {
+	max-width: 600px;
+	margin: 2em auto 1em;
+}
+
 .bookmarks-folder:not(:last-child) {
-	border-bottom: 1px solid var(--color-dialog-border);
-	margin-bottom: 2em;
-	padding-bottom: 2em;
+	background-color: #fff1;
+	border: 2px solid #fff1;
+	border-radius: 8px;
+	margin-bottom: 16px;
+	padding: 16px;
+}
+
+.bookmarks-folder.selected {
+	border-color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
+.bookmarks-folder.selected li {
+	user-select: none;
+	pointer-events: none;
+}
+
+.bookmarks-folder.synced .b_bookmarks-folder-sync,
+.bookmarks-folder.selected .b_bookmarks-folder-select {
+	color: white;
+	background-color: var(--color-blue);
+}
+
+.bookmarks-folder-title {
+	display: flex;
+	justify-content: space-between;
+	margin: 0 16px 24px 16px;
 }
 
 #bookmarks h2 {
-	margin-top: 0;
+	text-transform: capitalize;
+	margin: 0;
 }
 
 #bookmarks ol {
 	display: grid;
-	gap: 8px;
+	gap: 4px;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
-	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
 
 #bookmarks li {
@@ -72,7 +102,7 @@
 
 #bookmarks li button {
 	width: 100%;
-	padding: 0.5em;
+	padding: 4px;
 	transition: background-color 0.05s;
 }
 
@@ -90,8 +120,8 @@
 	display: block;
 	margin: auto;
 	margin-bottom: 0.5em;
-	width: 4em;
-	height: 4em;
+	width: 40px;
+	height: 40px;
 	border-radius: 8px;
 }
 

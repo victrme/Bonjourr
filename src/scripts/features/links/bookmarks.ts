@@ -192,6 +192,46 @@ function addBookmarksFolderToDOM() {
 			ol.appendChild(li)
 		}
 	}
+
+	setTimeout(() => {
+		const folders = document.querySelectorAll<HTMLElement>('.bookmarks-folder')
+		const selectButtons = document.querySelectorAll('.b_bookmarks-folder-select')
+		const syncButtons = document.querySelectorAll('.b_bookmarks-folder-sync')
+
+		selectButtons?.forEach((button, i) => {
+			const folder = folders[i]
+			const bookmarks = folder.querySelectorAll('li')
+			const syncbutton = folder.querySelector('.b_bookmarks-folder-sync')
+
+			button.addEventListener('click', function () {
+				if (!folder || !syncbutton) return
+
+				if (folder.classList.contains('selected')) {
+					folder.classList.remove('selected', 'synced')
+					syncbutton.classList.remove('selected')
+					syncbutton.setAttribute('disabled', '')
+				} else {
+					folder.classList.add('selected')
+					syncbutton.removeAttribute('disabled')
+					bookmarks.forEach((li) => li?.classList.remove('selected'))
+				}
+			})
+		})
+
+		syncButtons?.forEach((button, i) => {
+			const folder = folders[i]
+
+			button.addEventListener('click', function () {
+				if (!folder) return
+
+				if (folder.classList.contains('synced')) {
+					folder.classList.remove('synced')
+				} else {
+					folder.classList.add('synced')
+				}
+			})
+		})
+	})
 }
 
 async function getPermissions(): Promise<boolean> {

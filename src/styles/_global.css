@@ -192,6 +192,7 @@ button,
 select,
 option,
 input {
+	user-select: none;
 	font-size: 13px;
 }
 
