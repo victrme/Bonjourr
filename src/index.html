@@ -26,43 +26,6 @@
 	</head>
 
 	<body class="init loading">
-		<dialog id="bookmarks">
-			<div id="bookmarks-intro">
-				Here you can select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group.
-				"Syncing" a folder ties its changes to your browser bookmarks. Learn more on
-				<a href="https://bonjourr.fr/docs/overview">our documentation</a>.
-			</div>
-
-			<div id="bookmarks-container">
-				<template id="bookmarks-folder">
-					<div class="bookmarks-folder">
-						<div class="bookmarks-folder-title">
-							<h2></h2>
-							<div>
-								<button class="trn b_bookmarks-folder-select">Add folder as group</button>
-								<button class="trn b_bookmarks-folder-sync" disabled>Synchronize folder</button>
-							</div>
-						</div>
-						<ol></ol>
-					</div>
-				</template>
-				<template id="bookmarks-item">
-					<li>
-						<button>
-							<img draggable="false" loading="lazy" alt="" />
-							<p class="bookmark-title"></p>
-							<p class="bookmark-url"></p>
-						</button>
-					</li>
-				</template>
-			</div>
-			<hr />
-			<div id="bookmarks-buttons">
-				<button id="bmk_close" class="trn btn-red">Cancel</button>
-				<button id="bmk_apply" class="trn none">Select bookmarks</button>
-			</div>
-		</dialog>
-
 		<dialog id="editlink">
 			<form id="editlink-form">
 				<label id="edit-title" autofocus>
@@ -305,6 +268,48 @@
 		</div>
 
 		<div id="templates">
+			<template id="bookmarks-dialog-template">
+				<dialog id="bookmarks">
+					<div id="bookmarks-intro">
+						Here you can select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a
+						group. "Syncing" a folder ties its changes to your browser bookmarks. Learn more on
+						<a href="https://bonjourr.fr/docs/overview">our documentation</a>.
+					</div>
+
+					<div id="bookmarks-container"></div>
+
+					<hr />
+
+					<div id="bookmarks-buttons">
+						<button id="bmk_close" class="trn btn-red">Cancel</button>
+						<button id="bmk_apply" class="trn none">Select bookmarks</button>
+					</div>
+				</dialog>
+			</template>
+
+			<template id="bookmarks-folder-template">
+				<div class="bookmarks-folder">
+					<div class="bookmarks-folder-title">
+						<h2></h2>
+						<div>
+							<button class="trn b_bookmarks-folder-select">Add folder as group</button>
+							<button class="trn b_bookmarks-folder-sync" disabled>Synchronize folder</button>
+						</div>
+					</div>
+					<ol></ol>
+				</div>
+			</template>
+
+			<template id="bookmarks-item-template">
+				<li>
+					<button>
+						<img draggable="false" loading="lazy" alt="" />
+						<p class="bookmark-title"></p>
+						<p class="bookmark-url"></p>
+					</button>
+				</li>
+			</template>
+
 			<template id="link-group-template">
 				<div class="link-group">
 					<ul class="link-list"></ul>

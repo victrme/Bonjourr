@@ -1,9 +1,10 @@
 import { getHTMLTemplate, randomString } from '../../utils'
-import onSettingsLoad from '../../utils/onsettingsload'
 import { tradThis } from '../../utils/translations'
 import { PLATFORM } from '../../defaults'
 import quickLinks from '.'
 import storage from '../../storage'
+
+type Treenode = chrome.bookmarks.BookmarkTreeNode
 
 type BookmarkFolder = {
 	title: string
@@ -15,48 +16,25 @@ type BookmarkFolder = {
 	}[]
 }
 
-let bookmarkFolders: BookmarkFolder[] = []
-
-onSettingsLoad(() => {
-	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
-	const closebutton = document.getElementById('bmk_close') as HTMLButtonElement
-	const applybutton = document.getElementById('bmk_apply') as HTMLButtonElement
-
-	applybutton.addEventListener('click', () => importSelectedBookmarks())
-	closebutton.addEventListener('click', () => bookmarksdom.close())
-	bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
-})
-
 export default async function linksImport() {
-	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const foldersdom = Object.values(document.querySelectorAll<HTMLDivElement>('.bookmarks-folder'))
 	let treenode = await getBookmarkTree()
 
-	if (!treenode) {
-		if (await getPermissions()) {
-			treenode = await getBookmarkTree()
-		}
+	if (!treenode && (await getPermissions())) {
+		treenode = await getBookmarkTree()
 	}
 
 	if (!treenode) {
 		return
 	}
 
-	bookmarksdom.showModal()
-	bookmarkFolders = []
 	foldersdom?.forEach((node) => node.remove())
 
-	parseThroughImport(treenode[0])
-	addBookmarksFolderToDOM()
+	createBookmarksDialog(treenode[0])
 }
 
-export async function syncNewBookmarks(init?: number, update?: boolean) {
+export async function syncNewBookmarks(init?: number) {
 	if (PLATFORM === 'online' || PLATFORM === 'safari') {
-		return
-	}
-
-	if (update !== undefined) {
-		updateSyncBookmarks(update)
 		return
 	}
 
@@ -66,10 +44,9 @@ export async function syncNewBookmarks(init?: number, update?: boolean) {
 		return
 	}
 
-	parseThroughImport(treenode[0])
-
 	const lastCheck = init ?? Date.now()
-	const flatList = bookmarkFolders.map((folder) => folder.bookmarks).flat()
+	const folders = bookmarkTreeToFolderList(treenode[0])
+	const flatList = folders.map((folder) => folder.bookmarks).flat()
 	const newBookmarks = flatList.filter((bookmark) => bookmark.dateAdded > lastCheck)
 
 	if (newBookmarks.length > 0) {
@@ -78,26 +55,117 @@ export async function syncNewBookmarks(init?: number, update?: boolean) {
 	}
 }
 
-async function updateSyncBookmarks(update: boolean) {
-	const i_syncbookmarks = document.getElementById('#i_syncbookmarks') as HTMLInputElement
-	const permission = await getPermissions()
+function bookmarkTreeToFolderList(treenode: Treenode) {
+	function createListFromTree(treenode: Treenode) {
+		const folder: BookmarkFolder = {
+			title: treenode.title,
+			bookmarks: [],
+		}
 
-	if (!permission) {
-		i_syncbookmarks.checked = false
-		update = false
+		if (!treenode.children) {
+			return
+		}
+
+		for (const child of treenode.children) {
+			if (child.children) {
+				createListFromTree(child)
+			}
+
+			if (!child.url) {
+				continue
+			}
+
+			folder.bookmarks?.push({
+				id: randomString(6),
+				title: child.title,
+				url: child.url,
+				dateAdded: child.dateAdded ?? 0,
+			})
+		}
+
+		if (folder.bookmarks.length > 0) {
+			folderList.push(folder)
+		}
 	}
 
-	if (update) {
-		storage.sync.set({ syncbookmarks: Date.now() })
-	} else {
-		storage.sync.remove('syncbookmarks')
-	}
+	const folderList: BookmarkFolder[] = []
+	createListFromTree(treenode)
+
+	// todo:
+	// merge duplicates
+	// tag already used
+
+	return folderList
 }
 
-function importSelectedBookmarks() {
+// Bookmarks Dialog
+
+function createBookmarksDialog(treenode: Treenode) {
+	let bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')
+	let container = document.querySelector<HTMLElement>('#bookmarks-container')
+
+	if (!bookmarksdom) {
+		bookmarksdom = getHTMLTemplate<HTMLDialogElement>('bookmarks-dialog-template', 'dialog')
+		container = bookmarksdom.querySelector('#bookmarks-container')
+
+		const closebutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_close')
+		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
+
+		applybutton?.addEventListener('click', () => importSelectedBookmarks(treenode))
+		closebutton?.addEventListener('click', () => bookmarksdom?.close())
+		bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
+
+		document.body.appendChild(bookmarksdom)
+	}
+
+	for (const bookmarkList of bookmarkTreeToFolderList(treenode)) {
+		const folder = getHTMLTemplate<HTMLDivElement>('bookmarks-folder-template', 'div')
+		const selectButton = folder.querySelector('.b_bookmarks-folder-select')
+		const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
+		const ol = folder.querySelector('ol')
+		const h2 = folder.querySelector('h2')
+
+		if (!ol || !h2) {
+			continue
+		}
+
+		h2.textContent = bookmarkList.title
+		selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
+		syncButton?.addEventListener('click', () => toggleFolderSync(folder))
+		container?.appendChild(folder)
+
+		for (const bookmark of bookmarkList.bookmarks) {
+			const li = getHTMLTemplate<HTMLLIElement>('bookmarks-item-template', 'li')
+			const li_button = li.querySelector<HTMLButtonElement>('button')
+			const li_title = li.querySelector('.bookmark-title')
+			const li_url = li.querySelector('.bookmark-url')
+			const li_img = li.querySelector('img')
+
+			if (!li_title || !li_button || !li_url || !li_img || !bookmark.url.startsWith('http')) {
+				continue
+			}
+
+			const url = new URL(bookmark.url)
+
+			li_img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
+			li_title.textContent = bookmark.title
+			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
+			li_button?.addEventListener('click', () => selectBookmark(li))
+
+			li.id = bookmark.id
+			ol?.appendChild(li)
+		}
+	}
+
+	bookmarksdom.showModal()
+}
+
+function importSelectedBookmarks(treenode: Treenode) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
-	const flatList = bookmarkFolders.map((folder) => folder.bookmarks).flat()
+
+	const folders = bookmarkTreeToFolderList(treenode)
+	const flatList = folders.map((folder) => folder.bookmarks).flat()
 	const ids = Object.values(selected).map((li) => li.id)
 	const list: { [key: string]: { url: string; title: string } } = {}
 	const selectedLinks = []
@@ -130,109 +198,29 @@ function selectBookmark(li: HTMLLIElement) {
 	applybutton.classList.toggle('none', counter === 0)
 }
 
-function parseThroughImport(treenode: chrome.bookmarks.BookmarkTreeNode) {
-	const folder: BookmarkFolder = {
-		title: treenode.title,
-		bookmarks: [],
-	}
+function toggleFolderSelect(folder: HTMLElement) {
+	const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
 
-	for (const child of treenode.children ?? []) {
-		if (child.children) {
-			parseThroughImport(child)
-		}
-		//
-		else if (child.url) {
-			folder.bookmarks?.push({
-				id: randomString(6),
-				title: child.title,
-				url: child.url,
-				dateAdded: child.dateAdded ?? 0,
-			})
-		}
-	}
-
-	if (folder.bookmarks.length > 0) {
-		bookmarkFolders.push(folder)
+	if (folder.classList.contains('selected')) {
+		folder.classList.remove('selected', 'synced')
+		syncButton?.classList.remove('selected')
+		syncButton?.setAttribute('disabled', '')
+	} else {
+		folder.classList.add('selected')
+		syncButton?.removeAttribute('disabled')
+		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
 	}
 }
 
-function addBookmarksFolderToDOM() {
-	const container = document.getElementById('bookmarks-container') as HTMLDialogElement
-
-	for (const folder of bookmarkFolders) {
-		const div = getHTMLTemplate<HTMLDivElement>('bookmarks-folder', 'div')
-		const ol = div.querySelector('ol')!
-		const h2 = div.querySelector('h2')!
-
-		h2.textContent = folder.title
-		container.appendChild(div)
-
-		for (const bookmark of folder.bookmarks) {
-			const li = getHTMLTemplate<HTMLLIElement>('bookmarks-item', 'li')
-			const button = li.querySelector('button')!
-			const p_title = li.querySelector('.bookmark-title')!
-			const p_url = li.querySelector('.bookmark-url')!
-			const img = li.querySelector('img')!
-
-			let url: URL | undefined = undefined
-
-			try {
-				url = new URL(bookmark.url)
-			} catch (_) {
-				return
-			}
-
-			img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
-			p_title.textContent = bookmark.title
-			p_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
-
-			button.addEventListener('click', () => selectBookmark(li))
-
-			li.id = bookmark.id
-			ol.appendChild(li)
-		}
+function toggleFolderSync(folder: HTMLElement) {
+	if (folder.classList.contains('synced')) {
+		folder.classList.remove('synced')
+	} else {
+		folder.classList.add('synced')
 	}
-
-	setTimeout(() => {
-		const folders = document.querySelectorAll<HTMLElement>('.bookmarks-folder')
-		const selectButtons = document.querySelectorAll('.b_bookmarks-folder-select')
-		const syncButtons = document.querySelectorAll('.b_bookmarks-folder-sync')
-
-		selectButtons?.forEach((button, i) => {
-			const folder = folders[i]
-			const bookmarks = folder.querySelectorAll('li')
-			const syncbutton = folder.querySelector('.b_bookmarks-folder-sync')
-
-			button.addEventListener('click', function () {
-				if (!folder || !syncbutton) return
-
-				if (folder.classList.contains('selected')) {
-					folder.classList.remove('selected', 'synced')
-					syncbutton.classList.remove('selected')
-					syncbutton.setAttribute('disabled', '')
-				} else {
-					folder.classList.add('selected')
-					syncbutton.removeAttribute('disabled')
-					bookmarks.forEach((li) => li?.classList.remove('selected'))
-				}
-			})
-		})
-
-		syncButtons?.forEach((button, i) => {
-			const folder = folders[i]
-
-			button.addEventListener('click', function () {
-				if (!folder) return
-
-				if (folder.classList.contains('synced')) {
-					folder.classList.remove('synced')
-				} else {
-					folder.classList.add('synced')
-				}
-			})
-		})
-	})
 }
+
+// webext stuff
 
 async function getPermissions(): Promise<boolean> {
 	const namespace = PLATFORM === 'firefox' ? browser : chrome
@@ -240,7 +228,7 @@ async function getPermissions(): Promise<boolean> {
 	return permission
 }
 
-async function getBookmarkTree(): Promise<chrome.bookmarks.BookmarkTreeNode[] | undefined> {
+async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 	const namespace = PLATFORM === 'firefox' ? browser : chrome
 
 	if (!namespace.bookmarks) {
