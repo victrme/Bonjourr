@@ -474,7 +474,7 @@ function resetButtonConfirm(): boolean {
 	clearTimeout(resetTimeout)
 
 	if (confirm === false) {
-		b_resetlayout.textContent = tradThis('Are you sure ?')
+		b_resetlayout.textContent = tradThis('Are you sure?')
 		b_resetlayout.dataset.confirm = 'true'
 
 		resetTimeout = setTimeout(() => {

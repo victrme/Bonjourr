@@ -914,6 +914,7 @@ aside .settings-title .tooltip {
 }
 
 #settings-changes {
+	margin-top: 5px;
 	text-align: center;
 }
 
