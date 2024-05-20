@@ -367,12 +367,14 @@ aside form.valid button {
 	max-width: 26px;
 	margin-left: 4px;
 	visibility: visible;
+	color: var(--color-blue);
 }
 
-aside form.valid button:not(:disabled):hover,
-aside form.valid button:not(:disabled):focus-visible {
-	color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
+@media (hover: hover) {
+	aside form.valid button:not(:disabled):hover,
+	aside form.valid button:not(:disabled):focus-visible {
+		background-color: rgba(var(--blue), 0.15);
+	}
 }
 
 aside form.valid button:not(:disabled):active {
