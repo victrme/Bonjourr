@@ -892,7 +892,7 @@ aside .settings-title .tooltip {
 	margin: 6px 0;
 	padding: 10px 16px;
 	tab-size: 1.5em;
-	user-select: all;
+	/* user-select: all; */
 	text-overflow: ellipsis;
 	overflow: hidden;
 	resize: vertical;
