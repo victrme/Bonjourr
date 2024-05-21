@@ -451,7 +451,7 @@
 			<div class="wrapper">
 				<label for="i_timehide" class="trn">Show</label>
 				<select id="i_timehide">
-					<option value="all" class="trn">Clock and date</option>
+					<option value="All updates" class="trn">Clock and date</option>
 					<option value="date" class="trn">Clock only</option>
 					<option value="clock" class="trn">Date only</option>
 				</select>
@@ -794,7 +794,7 @@
 			<div class="wrapper">
 				<label for="i_weatherhide" class="trn">Show</label>
 				<select id="i_weatherhide">
-					<option value="all" class="trn">Description and icon</option>
+					<option value="All updates" class="trn">Description and icon</option>
 					<option value="icon" class="trn">Description only</option>
 					<option value="desc" class="trn">Icon only</option>
 					<option value="disabled" class="trn">Disabled</option>
@@ -1154,13 +1154,24 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="i_announce" class="trn">Announcements</label>
+			<span>
+				<label for="i_announce" class="trn">Announcements</label>
+				<button class="tooltip ttannouncements" title="What are announcements?" aria-label="What are announcements?">
+					?
+				</button>
+			</span>
+
+
 			<select id="i_announce">
-				<option class="trn" value="all">All</option>
-				<option class="trn" value="major">Major changes</option>
+				<option class="trn" value="all">All updates</option>
+				<option class="trn" value="major">Major updates</option>
 				<option class="trn" value="off">Disabled</option>
 			</select>
 		</div>
+
+		<p class="tooltiptext dropdown ttannouncements">
+			<span class="trn">Decide when to get notified about Bonjourr updates.</span>
+		</p>
 	</div>
 </div>
 

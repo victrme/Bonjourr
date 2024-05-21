@@ -554,6 +554,7 @@ aside .settings-title .tooltip {
 	color: var(--color-light-text);
 	font-size: 13px;
 	line-height: 1.5em;
+	padding-left: 4px;
 }
 
 .tooltiptext.shown {
