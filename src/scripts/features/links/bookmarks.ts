@@ -6,14 +6,16 @@ import storage from '../../storage'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode
 
-type BookmarkFolder = {
+type BookmarksFolders = {
 	title: string
-	bookmarks: {
-		id: string
-		title: string
-		url: string
-		dateAdded: number
-	}[]
+	bookmarks: BookmarksFolderItem[]
+}[]
+
+type BookmarksFolderItem = {
+	id: string
+	title: string
+	url: string
+	dateAdded: number
 }
 
 export default async function linksImport() {
@@ -55,47 +57,52 @@ export async function syncNewBookmarks(init?: number) {
 	}
 }
 
-function bookmarkTreeToFolderList(treenode: Treenode) {
-	function createListFromTree(treenode: Treenode) {
-		const folder: BookmarkFolder = {
-			title: treenode.title,
-			bookmarks: [],
-		}
-
+function bookmarkTreeToFolderList(treenode: Treenode): BookmarksFolders {
+	function createMapFromTree(treenode: Treenode) {
 		if (!treenode.children) {
 			return
 		}
 
 		for (const child of treenode.children) {
-			if (child.children) {
-				createListFromTree(child)
-			}
+			//
+			if (child.children) createMapFromTree(child)
+			if (!child.url) continue
 
-			if (!child.url) {
-				continue
-			}
+			const map = new Map<string, BookmarksFolderItem>()
+			const bookmarks = foldersMap.get(treenode.title) ?? map
 
-			folder.bookmarks?.push({
+			bookmarks.set(child.url, {
 				id: randomString(6),
 				title: child.title,
 				url: child.url,
 				dateAdded: child.dateAdded ?? 0,
 			})
-		}
 
-		if (folder.bookmarks.length > 0) {
-			folderList.push(folder)
+			foldersMap.set(treenode.title, bookmarks)
 		}
 	}
 
-	const folderList: BookmarkFolder[] = []
-	createListFromTree(treenode)
+	const foldersMap: Map<string, Map<string, BookmarksFolderItem>> = new Map()
+	const result: BookmarksFolders = []
+
+	// (must be before "Map to Array")
+	createMapFromTree(treenode)
+
+	// Map to Array
+	for (const [title, bookmarksMap] of foldersMap) {
+		const bookmarks: BookmarksFolderItem[] = []
+
+		for (const [_, bookmark] of bookmarksMap) {
+			bookmarks.push(bookmark)
+		}
+
+		result.push({ title, bookmarks })
+	}
 
 	// todo:
-	// merge duplicates
 	// tag already used
 
-	return folderList
+	return result
 }
 
 // Bookmarks Dialog
