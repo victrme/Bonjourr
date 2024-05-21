@@ -1,3 +1,7 @@
+<div id="mobile-drag-zone">
+	<div></div>
+</div>
+
 <div class="settings-title">
 	<h2 class="trn">General</h2>
 </div>
@@ -1161,7 +1165,6 @@
 				</button>
 			</span>
 
-
 			<select id="i_announce">
 				<option class="trn" value="all">All updates</option>
 				<option class="trn" value="major">Major updates</option>
@@ -1195,8 +1198,22 @@
 	<div class="wrapper">
 		<span class="trn">Settings file</span>
 		<div>
-			<button id="b_file-load" class="param-btn trn" title="Import an existing settings file" aria-label="Import an existing settings file">Import</button>
-			<button id="b_file-save" class="param-btn trn" title="Export a new settings file" aria-label="Export a new settings file">Export</button>
+			<button
+				id="b_file-load"
+				class="param-btn trn"
+				title="Import an existing settings file"
+				aria-label="Import an existing settings file"
+			>
+				Import
+			</button>
+			<button
+				id="b_file-save"
+				class="param-btn trn"
+				title="Export a new settings file"
+				aria-label="Export a new settings file"
+			>
+				Export
+			</button>
 		</div>
 	</div>
 
@@ -1205,9 +1222,26 @@
 	<textarea id="settings-data"></textarea>
 
 	<div id="settings-changes">
-		<button id="b_settings-copy" class="param-btn trn" title="Copy settings data to clipboard" aria-label="Copy settings data to clipboard">Copy</button>
-		<button id="b_settings-cancel" class="param-btn btn-red trn" title="Cancel changes" aria-label="Cancel changes" >Cancel</button>
-		<button id="b_settings-apply" class="param-btn trn" title="Load Bonjourr with these settings" aria-label="Load Bonjourr with these settings" disabled>Apply changes</button>
+		<button
+			id="b_settings-copy"
+			class="param-btn trn"
+			title="Copy settings data to clipboard"
+			aria-label="Copy settings data to clipboard"
+		>
+			Copy
+		</button>
+		<button id="b_settings-cancel" class="param-btn btn-red trn" title="Cancel changes" aria-label="Cancel changes">
+			Cancel
+		</button>
+		<button
+			id="b_settings-apply"
+			class="param-btn trn"
+			title="Load Bonjourr with these settings"
+			aria-label="Load Bonjourr with these settings"
+			disabled
+		>
+			Apply changes
+		</button>
 	</div>
 </div>
 
@@ -1216,7 +1250,9 @@
 		<label for="b_reset-first" class="trn">Reset all settings</label>
 
 		<div>
-			<button id="b_reset-first" class="param-btn trn" title="Reset all settings" aria-label="Reset all settings">Reset</button>
+			<button id="b_reset-first" class="param-btn trn" title="Reset all settings" aria-label="Reset all settings">
+				Reset
+			</button>
 		</div>
 	</div>
 

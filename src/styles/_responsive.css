@@ -81,11 +81,6 @@
 		display: block;
 	}
 
-	#mobile-drag-zone.shown {
-		transform: translateY(-75dvh);
-		visibility: visible;
-	}
-
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;

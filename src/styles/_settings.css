@@ -486,13 +486,13 @@ aside form.valid button:not(:disabled):active {
 }
 
 #mobile-drag-zone {
-	visibility: hidden;
-	position: absolute;
+	position: sticky;
 	display: none;
-	bottom: 0;
+	top: 0;
 	width: 100%;
-	padding: 12px;
+	padding: 20px 12px 12px;
 	cursor: grab;
+	z-index: 4;
 	box-sizing: border-box;
 	transition: transform 0.4s;
 }
@@ -502,8 +502,11 @@ aside form.valid button:not(:disabled):active {
 	height: 8px;
 	margin: auto;
 	border-radius: 4px;
-	background-color: var(--color-settings);
-	box-shadow: 2px 0px 6px #0004;
+	background-color: var(--color-focused);
+}
+
+#mobile-drag-zone + .settings-title {
+	margin-top: 0;
 }
 
 .settings-title {

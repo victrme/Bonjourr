@@ -81,7 +81,6 @@ function settingsToggle() {
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domedit = document.getElementById('editlink')
-	const mobileDragZone = document.getElementById('mobile-drag-zone')
 	const isClosed = domsettings?.classList.contains('shown') === false
 
 	domsettings?.classList.toggle('init', false)
@@ -89,12 +88,9 @@ function settingsToggle() {
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
-	mobileDragZone?.classList.toggle('shown', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
-	mobileDragZone?.style.removeProperty('transform')
-	mobileDragZone?.style.removeProperty('transition')
 	document.dispatchEvent(new Event('close-edit'))
 }
 
@@ -818,6 +814,7 @@ function settingsDrawerBar() {
 function drawerDragEvents() {
 	const mobileDragZone = document.getElementById('mobile-drag-zone') as HTMLElement
 	const settingsDom = document.getElementById('settings') as HTMLElement
+	const dragZoneHeight = mobileDragZone.getBoundingClientRect().height
 	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
@@ -838,8 +835,8 @@ function drawerDragEvents() {
 		// Add mouse / touch moves events
 		window.addEventListener('touchmove', dragMove)
 		window.addEventListener('pointermove', dragMove)
-		document.body.addEventListener('touchend', dragEnd, { passive: false })
-		document.body.addEventListener('pointerup', dragEnd, { passive: false })
+		document.body.addEventListener('touchend', dragEnd)
+		document.body.addEventListener('pointerup', dragEnd)
 	}
 
 	function dragMove(e: Event) {
@@ -851,15 +848,12 @@ function drawerDragEvents() {
 
 		// element is below max height: move
 		if (clientY > 60) {
-			const dragZoneHeight = 20 + 8
-			const touchPosition = clientY + dragZoneHeight / 2
+			const touchPosition = clientY - dragZoneHeight / 2
 			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
 
 			settingsVh = +inverseHeight.toFixed(2)
 			settingsDom.style.transform = `translateY(-${settingsVh}dvh)`
 			settingsDom.style.transition = `transform .0s`
-			mobileDragZone.style.transform = `translateY(-${settingsVh}dvh)`
-			mobileDragZone.style.transition = `transform .0s`
 		}
 	}
 
