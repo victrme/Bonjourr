@@ -505,10 +505,6 @@ aside form.valid button:not(:disabled):active {
 	background-color: var(--color-focused);
 }
 
-#mobile-drag-zone + .settings-title {
-	margin-top: 0;
-}
-
 .settings-title {
 	display: grid;
 	place-items: baseline;

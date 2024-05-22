@@ -81,6 +81,10 @@
 		display: block;
 	}
 
+	#mobile-drag-zone+.settings-title {
+		margin-top: 0;
+	}
+
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;
