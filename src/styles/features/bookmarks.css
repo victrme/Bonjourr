@@ -39,7 +39,7 @@
 	margin: 2em auto 1em;
 }
 
-.bookmarks-folder:not(:last-child) {
+.bookmarks-folder {
 	background-color: #fff1;
 	border: 2px solid #fff1;
 	border-radius: 8px;
@@ -88,7 +88,6 @@
 	border: 2px solid transparent;
 	transition: background-color 0.05s, border-color 0.05s;
 	user-select: none;
-	cursor: pointer;
 }
 
 #bookmarks li.selected {

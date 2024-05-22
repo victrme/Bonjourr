@@ -1,4 +1,4 @@
-import { getHTMLTemplate, randomString } from '../../utils'
+import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
 import { tradThis } from '../../utils/translations'
 import { PLATFORM } from '../../defaults'
 import quickLinks from '.'
@@ -15,24 +15,24 @@ type BookmarksFolderItem = {
 	id: string
 	title: string
 	url: string
+	used: boolean
 	dateAdded: number
 }
 
 export default async function linksImport() {
-	const foldersdom = Object.values(document.querySelectorAll<HTMLDivElement>('.bookmarks-folder'))
 	let treenode = await getBookmarkTree()
 
-	if (!treenode && (await getPermissions())) {
-		treenode = await getBookmarkTree()
-	}
+	const permission = treenode ? true : await getPermissions()
+	const data = await storage.sync.get()
 
-	if (!treenode) {
-		return
-	}
+	if (!permission) treenode = await getBookmarkTree()
+	if (!treenode) return
 
-	foldersdom?.forEach((node) => node.remove())
+	document.querySelectorAll('.bookmarks-folder')?.forEach((node) => {
+		node.remove()
+	})
 
-	createBookmarksDialog(treenode[0])
+	createBookmarksDialog(treenode[0], data)
 }
 
 export async function syncNewBookmarks(init?: number) {
@@ -41,13 +41,14 @@ export async function syncNewBookmarks(init?: number) {
 	}
 
 	const treenode = await getBookmarkTree()
+	const data = await storage.sync.get()
 
 	if (!treenode || !init) {
 		return
 	}
 
 	const lastCheck = init ?? Date.now()
-	const folders = bookmarkTreeToFolderList(treenode[0])
+	const folders = bookmarkTreeToFolderList(treenode[0], data)
 	const flatList = folders.map((folder) => folder.bookmarks).flat()
 	const newBookmarks = flatList.filter((bookmark) => bookmark.dateAdded > lastCheck)
 
@@ -57,7 +58,7 @@ export async function syncNewBookmarks(init?: number) {
 	}
 }
 
-function bookmarkTreeToFolderList(treenode: Treenode): BookmarksFolders {
+function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolders {
 	function createMapFromTree(treenode: Treenode) {
 		if (!treenode.children) {
 			return
@@ -75,6 +76,7 @@ function bookmarkTreeToFolderList(treenode: Treenode): BookmarksFolders {
 				id: randomString(6),
 				title: child.title,
 				url: child.url,
+				used: linksURLs.includes(child.url),
 				dateAdded: child.dateAdded ?? 0,
 			})
 
@@ -82,6 +84,7 @@ function bookmarkTreeToFolderList(treenode: Treenode): BookmarksFolders {
 		}
 	}
 
+	const linksURLs = bundleLinks(data).map((link) => !link.folder && (link as Links.Elem).url)
 	const foldersMap: Map<string, Map<string, BookmarksFolderItem>> = new Map()
 	const result: BookmarksFolders = []
 
@@ -107,7 +110,9 @@ function bookmarkTreeToFolderList(treenode: Treenode): BookmarksFolders {
 
 // Bookmarks Dialog
 
-function createBookmarksDialog(treenode: Treenode) {
+async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
+	const bookmarkFolders = bookmarkTreeToFolderList(treenode, data)
+
 	let bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')
 	let container = document.querySelector<HTMLElement>('#bookmarks-container')
 
@@ -118,14 +123,14 @@ function createBookmarksDialog(treenode: Treenode) {
 		const closebutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_close')
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
-		applybutton?.addEventListener('click', () => importSelectedBookmarks(treenode))
+		applybutton?.addEventListener('click', () => importSelectedBookmarks(bookmarkFolders))
 		closebutton?.addEventListener('click', () => bookmarksdom?.close())
 		bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
 
 		document.body.appendChild(bookmarksdom)
 	}
 
-	for (const bookmarkList of bookmarkTreeToFolderList(treenode)) {
+	for (const bookmarkList of bookmarkFolders) {
 		const folder = getHTMLTemplate<HTMLDivElement>('bookmarks-folder-template', 'div')
 		const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 		const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
@@ -157,7 +162,11 @@ function createBookmarksDialog(treenode: Treenode) {
 			li_img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
 			li_title.textContent = bookmark.title
 			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
-			li_button?.addEventListener('click', () => selectBookmark(li))
+			li_button.addEventListener('click', () => selectBookmark(li))
+
+			if (bookmark.used) {
+				li_button.setAttribute('disabled', '')
+			}
 
 			li.id = bookmark.id
 			ol?.appendChild(li)
@@ -167,25 +176,25 @@ function createBookmarksDialog(treenode: Treenode) {
 	bookmarksdom.showModal()
 }
 
-function importSelectedBookmarks(treenode: Treenode) {
+function importSelectedBookmarks(folders: BookmarksFolders) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
-	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
-
-	const folders = bookmarkTreeToFolderList(treenode)
+	const selectedLinks = document.querySelectorAll<HTMLLIElement>('li.selected')
+	const selectedFolder = document.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
 	const flatList = folders.map((folder) => folder.bookmarks).flat()
-	const ids = Object.values(selected).map((li) => li.id)
+	const ids = Object.values(selectedLinks).map((li) => li.id)
+
 	const list: { [key: string]: { url: string; title: string } } = {}
-	const selectedLinks = []
+	const arr = []
 
 	flatList.forEach(({ id, title, url }) => {
 		list[id] = { title, url }
 	})
 
 	for (const id of ids) {
-		selectedLinks.push(list[id])
+		arr.push(list[id])
 	}
 
-	quickLinks(undefined, { bookmarks: selectedLinks })
+	quickLinks(undefined, { bookmarks: arr })
 	document.getElementById('bmk_apply')?.classList.toggle('none', true)
 	bookmarksdom.close()
 }

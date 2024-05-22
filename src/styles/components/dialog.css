@@ -26,7 +26,9 @@ dialog button {
 dialog button:disabled {
 	opacity: 0.3;
 	cursor: default;
+	pointer-events: none;
 	background-color: transparent;
+	filter: grayscale(1);
 }
 
 dialog button.btn-red:disabled:hover,
