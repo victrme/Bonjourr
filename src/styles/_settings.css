@@ -616,6 +616,10 @@ aside .settings-title .tooltip {
 	filter: grayscale(0.35);
 }
 
+#i_tabtitle {
+	width: 100%;
+}
+
 #f_addlink {
 	width: 66%;
 }
