@@ -54,7 +54,7 @@ export async function syncNewBookmarks(init?: number) {
 
 	if (newBookmarks.length > 0) {
 		storage.sync.set({ syncbookmarks: Date.now() })
-		setTimeout(() => quickLinks(undefined, { bookmarks: newBookmarks }))
+		setTimeout(() => quickLinks(undefined, { addLinks: newBookmarks }))
 	}
 }
 
@@ -125,7 +125,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 
 		applybutton?.addEventListener('click', () => importSelectedBookmarks(bookmarkFolders))
 		closebutton?.addEventListener('click', () => bookmarksdom?.close())
-		bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
+		// bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
 
 		document.body.appendChild(bookmarksdom)
 	}
@@ -173,30 +173,47 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		}
 	}
 
-	bookmarksdom.showModal()
+	document.dispatchEvent(new Event('toggle-settings'))
+	setTimeout(() => bookmarksdom.showModal(), 200)
 }
 
 function importSelectedBookmarks(folders: BookmarksFolders) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const selectedLinks = document.querySelectorAll<HTMLLIElement>('li.selected')
 	const selectedFolder = document.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
-	const flatList = folders.map((folder) => folder.bookmarks).flat()
-	const ids = Object.values(selectedLinks).map((li) => li.id)
+	const linksIds = Object.values(selectedLinks).map((element) => element.id)
+	const folderIds = Object.values(selectedFolder).map((element) => element.querySelector('h2')?.textContent)
 
-	const list: { [key: string]: { url: string; title: string } } = {}
-	const arr = []
+	const links: { title: string; url: string; group?: string }[] = []
+	const groups: string[] = []
 
-	flatList.forEach(({ id, title, url }) => {
-		list[id] = { title, url }
+	folders.forEach((folder) => {
+		const isFolderSelected = folderIds.includes(folder.title)
+
+		if (isFolderSelected) {
+			groups.push(folder.title)
+		}
+
+		folder.bookmarks.forEach((bookmark) => {
+			const isBookmarkSelected = linksIds.includes(bookmark.id)
+			const group = isFolderSelected ? folder.title : undefined
+			const title = bookmark.title
+			const url = bookmark.url
+
+			if (isFolderSelected || isBookmarkSelected) {
+				links.push({ title, url, group })
+			}
+		})
 	})
 
-	for (const id of ids) {
-		arr.push(list[id])
+	if (groups.length > 0) {
+		quickLinks(undefined, { addGroups: groups })
 	}
 
-	quickLinks(undefined, { bookmarks: arr })
-	document.getElementById('bmk_apply')?.classList.toggle('none', true)
-	bookmarksdom.close()
+	setTimeout(() => {
+		quickLinks(undefined, { addLinks: links })
+		bookmarksdom.close()
+	}, 10)
 }
 
 function selectBookmark(li: HTMLLIElement) {
@@ -211,7 +228,7 @@ function selectBookmark(li: HTMLLIElement) {
 	if (counter === 1) applybutton.textContent = tradThis('Import this bookmark')
 	if (counter > 1) applybutton.textContent = tradThis('Import these bookmarks')
 
-	applybutton.classList.toggle('none', counter === 0)
+	applybutton.classList.toggle('none', false)
 }
 
 function toggleFolderSelect(folder: HTMLElement) {

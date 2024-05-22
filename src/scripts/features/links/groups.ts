@@ -118,29 +118,32 @@ export async function changeGroupTitle(title: { old: string; new: string }) {
 	initGroups(data)
 }
 
-export async function addGroup(title = '', isFromTopSites?: true) {
+export async function addGroup(titles: string[], isFromTopSites?: true) {
 	const data = await storage.sync.get()
-	const isReserved = title === '' || title === '+' || title === 'topsites'
-	const isAlreadyUsed = data.linkgroups.groups.includes(title)
 
-	if (!isFromTopSites && (isReserved || isAlreadyUsed)) {
-		return
-	}
+	for (let title of titles) {
+		const isReserved = title === '' || title === '+' || title === 'topsites'
+		const isAlreadyUsed = data.linkgroups.groups.includes(title)
 
-	if (!isFromTopSites) {
-		for (const link of getLinksInGroup(data, '+')) {
-			data[link._id] = { ...link, parent: title }
+		if (!isFromTopSites && (isReserved || isAlreadyUsed)) {
+			return
 		}
 
-		data.linkgroups.selected = title
-	} else {
-		title = 'topsites'
-		data.linkgroups.pinned.push('topsites')
+		if (!isFromTopSites) {
+			for (const link of getLinksInGroup(data, '+')) {
+				data[link._id] = { ...link, parent: title }
+			}
+
+			data.linkgroups.selected = title
+		} else {
+			title = 'topsites'
+			data.linkgroups.pinned.push('topsites')
+		}
+
+		data.linkgroups.groups.push(title)
 	}
 
-	data.linkgroups.groups.push(title)
 	storage.sync.set(data)
-
 	initGroups(data)
 	initblocks(data)
 }

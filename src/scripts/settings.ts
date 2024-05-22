@@ -282,10 +282,12 @@ function initOptionsEvents() {
 		event.preventDefault()
 
 		quickLinks(undefined, {
-			addLink: {
-				title: paramId('i_addlink-title').value,
-				url: paramId('i_addlink-url').value,
-			},
+			addLinks: [
+				{
+					title: paramId('i_addlink-title').value,
+					url: paramId('i_addlink-url').value,
+				},
+			],
 		})
 
 		paramId('i_addlink-url').value = ''

@@ -16,16 +16,15 @@ type Link = Links.Link
 type Elem = Links.Elem
 
 type LinksUpdate = {
-	bookmarks?: { title: string; url: string }[]
 	styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
 	newtab?: boolean
 	row?: string
 	groups?: boolean
-	addGroup?: string
+	addGroups?: string[]
 	deleteGroup?: string
 	groupTitle?: { old: string; new: string }
 	moveLinks?: string[]
-	addLink?: AddLink
+	addLinks?: AddLinks
 	addFolder?: string[]
 	addToFolder?: AddToFolder
 	moveToGroup?: MoveToTarget
@@ -34,11 +33,11 @@ type LinksUpdate = {
 	topsites?: boolean
 }
 
-type AddLink = {
+type AddLinks = {
 	title: string
 	url: string
 	group?: string
-}
+}[]
 
 type AddToFolder = {
 	source: string
@@ -51,11 +50,6 @@ type MoveToTarget = {
 	source?: string
 }
 
-type Bookmarks = {
-	title: string
-	url: string
-}[]
-
 type LinkGroups = {
 	links: Links.Link[]
 	title: string
@@ -64,10 +58,8 @@ type LinkGroups = {
 	div: HTMLDivElement | null
 }[]
 
-type SubmitLink = { type: 'link'; title: string; url: string; group?: string }
-type SubmitLinkFolder = { type: 'folder'; ids: string[]; title?: string; group?: string }
-type ImportBookmarks = { type: 'import'; bookmarks: Bookmarks; group?: string }
-type LinkSubmission = SubmitLink | SubmitLinkFolder | ImportBookmarks
+type SubmitLink = { type: 'link'; links: AddLinks }
+type SubmitFolder = { type: 'folder'; ids: string[]; title?: string; group?: string }
 
 type Style = Sync.Storage['linkstyle']
 
@@ -326,16 +318,12 @@ function removeSelectAll() {
 // Updates
 
 export async function linksUpdate(update: LinksUpdate) {
-	if (update.addLink) {
-		linkSubmission({ type: 'link', ...update.addLink })
+	if (update.addLinks) {
+		linkSubmission({ type: 'link', links: update.addLinks })
 	}
 
 	if (update.addFolder) {
 		linkSubmission({ type: 'folder', ids: update.addFolder })
-	}
-
-	if (update.bookmarks) {
-		linkSubmission({ type: 'import', bookmarks: update.bookmarks })
 	}
 
 	if (update.addToFolder) {
@@ -362,8 +350,8 @@ export async function linksUpdate(update: LinksUpdate) {
 		toggleGroups(update.groups)
 	}
 
-	if (update.addGroup !== undefined) {
-		addGroup(update.addGroup)
+	if (update.addGroups !== undefined) {
+		addGroup(update.addGroups)
 	}
 
 	if (update.deleteGroup !== undefined) {
@@ -391,27 +379,23 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 }
 
-async function linkSubmission(arg: LinkSubmission) {
+async function linkSubmission(args: SubmitLink | SubmitFolder) {
 	const folderid = domlinkblocks.dataset.folderid
 	const data = await storage.sync.get()
+	const type = args.type
 	let newlinks: Link[] = []
 
-	if (arg.type === 'import') {
-		newlinks = (arg.bookmarks ?? []).map((b) => validateLink(b.title, b.url))
+	if (type === 'link') {
+		args.links.forEach((link) => {
+			newlinks.push(validateLink(link.title, link.url, link.group))
+		})
 	}
 
-	if (arg.type === 'link') {
-		if (arg.url.length <= 3) {
-			return
-		}
+	if (type === 'folder') {
+		const { ids, title } = args
+		newlinks = addLinkFolder(ids, title)
 
-		newlinks.push(validateLink(arg.title, arg.url))
-	}
-
-	if (arg.type === 'folder') {
-		newlinks = addLinkFolder(arg.ids, arg.title)
-
-		for (const id of arg.ids) {
+		for (const id of ids) {
 			const elem = data[id] as Link
 
 			if (elem && !elem.folder) {
@@ -420,12 +404,13 @@ async function linkSubmission(arg: LinkSubmission) {
 		}
 	}
 
+	// Adds parent if missing from link validation
 	for (const link of newlinks) {
-		if (folderid && !link.folder) {
-			link.parent = folderid
-		} else {
-			link.parent = arg.group ?? data.linkgroups.selected
-		}
+		const addsFromFolder = folderid && !link.folder
+		const noParents = link.parent === undefined
+
+		if (addsFromFolder) link.parent = folderid
+		else if (noParents) link.parent = data.linkgroups.selected
 
 		data[link._id] = link
 	}
@@ -647,7 +632,7 @@ async function setTopSites(toggle: boolean) {
 	}
 
 	if (toggle) {
-		addGroup('topsites', true)
+		addGroup(['topsites'], true)
 	} else {
 		deleteGroup('topsites')
 	}
@@ -668,7 +653,7 @@ function handleSafariNewtab(e: Event) {
 
 // Helpers
 
-function validateLink(title: string, url: string): Links.Elem {
+function validateLink(title: string, url: string, parent?: string): Links.Elem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 
 	url = stringMaxSize(url, 512)
@@ -683,6 +668,7 @@ function validateLink(title: string, url: string): Links.Elem {
 
 	return {
 		_id: 'links' + randomString(6),
+		parent,
 		order: Date.now(), // big number
 		title: stringMaxSize(title, 64),
 		url: url,

@@ -297,7 +297,7 @@ async function submitChanges(event: SubmitEvent) {
 }
 
 async function addSelection() {
-	if (editStates.target.title) addGroup(domtitle.value)
+	if (editStates.target.title) addGroup([domtitle.value])
 	if (editStates.target.folder) addSelectionToNewFolder()
 	if (editStates.container.group) addLinkFromEditDialog()
 }
@@ -308,7 +308,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
-		addGroup(domtitle.value)
+		addGroup([domtitle.value])
 		closeEditDialog()
 		return
 	}
@@ -383,11 +383,13 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 
 function addLinkFromEditDialog() {
 	linksUpdate({
-		addLink: {
-			group: editStates.group,
-			title: domtitle.value,
-			url: domurl.value,
-		},
+		addLinks: [
+			{
+				group: editStates.group,
+				title: domtitle.value,
+				url: domurl.value,
+			},
+		],
 	})
 }
 
