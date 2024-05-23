@@ -36,20 +36,30 @@
 
 #bookmarks-intro {
 	max-width: 600px;
-	padding-top: 2em;
+	padding: 2em 2em 0;
 	margin: auto;
 }
 
 #bookmarks-buttons {
-	display: flex;
-	column-gap: 1em;
-	padding-top: 2em;
-	padding-bottom: 1em;
+	padding: 2em 0 1em;
 	justify-content: center;
 }
 
 #bookmarks-buttons button {
 	width: fit-content;
+}
+
+#bmk_apply {
+	background-color: var(--color-blue);
+}
+
+#bmk_apply:disabled {
+	background-color: transparent;
+}
+
+#bmk_apply:focus-visible,
+#bmk_apply:hover {
+	filter: brightness(1.2);
 }
 
 .bookmarks-folder {
@@ -146,26 +156,4 @@
 	line-height: 1.5em;
 	font-size: 0.9em;
 	font-weight: bold;
-}
-
-#bmk_close:focus-visible,
-#bmk_close:hover {
-	background-color: var(--color-red);
-}
-
-#bmk_apply {
-	color: white;
-	background-color: var(--color-blue);
-}
-
-#bmk_apply.none {
-	color: var(--color-text);
-	background-color: transparent;
-	pointer-events: none;
-	opacity: 0.5;
-}
-
-#bmk_apply:focus-visible,
-#bmk_apply:hover {
-	filter: brightness(1.2);
 }

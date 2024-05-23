@@ -172,7 +172,8 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 			li_img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
 			li_title.textContent = bookmark.title
 			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
-			li_button.addEventListener('click', () => selectBookmark(li))
+			li_button.addEventListener('click', () => li.classList.toggle('selected'))
+			li_button.addEventListener('click', handleApplyButtonText)
 
 			if (bookmark.used) {
 				li_button.setAttribute('disabled', '')
@@ -226,19 +227,16 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 	}, 10)
 }
 
-function selectBookmark(li: HTMLLIElement) {
-	li.classList.toggle('selected')
-
+function handleApplyButtonText() {
 	const applybutton = document.getElementById('bmk_apply') as HTMLElement
-	const selected = document.querySelectorAll('li.selected')
-	let counter = selected.length
+	const links = document.querySelectorAll('#bookmarks li.selected')
+	const folders = document.querySelectorAll('#bookmarks .bookmarks-folder.selected')
 
-	// Change submit button text & class on selections
-	if (counter === 0) applybutton.textContent = tradThis('Select bookmarks')
-	if (counter === 1) applybutton.textContent = tradThis('Import this bookmark')
-	if (counter > 1) applybutton.textContent = tradThis('Import these bookmarks')
-
-	applybutton.classList.toggle('none', false)
+	if (links.length === 0 && folders.length === 0) {
+		applybutton.setAttribute('disabled', '')
+	} else {
+		applybutton.removeAttribute('disabled')
+	}
 }
 
 function closeDialog(event: PointerEvent) {
@@ -269,6 +267,8 @@ function toggleFolderSelect(folder: HTMLElement) {
 		// syncButton?.removeAttribute('disabled')
 		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
 	}
+
+	handleApplyButtonText()
 }
 
 function toggleFolderSync(folder: HTMLElement) {
