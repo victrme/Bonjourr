@@ -189,8 +189,8 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 
 function importSelectedBookmarks(folders: BookmarksFolder[]) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
-	const selectedLinks = document.querySelectorAll<HTMLLIElement>('li.selected')
-	const selectedFolder = document.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
+	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('li.selected')
+	const selectedFolder = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
 	const linksIds = Object.values(selectedLinks).map((element) => element.id)
 	const folderIds = Object.values(selectedFolder).map((element) => element.querySelector('h2')?.textContent)
 
