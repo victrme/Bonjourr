@@ -1,5 +1,5 @@
 #bookmarks {
-	width: 70%;
+	width: calc(100% - 4em);
 	max-width: 900px;
 	min-height: 30vh;
 	padding: 0em;
@@ -15,7 +15,7 @@
 #bookmarks::backdrop {
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	background-color: #2224;
+	background-color: #2226;
 	transition: opacity 0.2s;
 }
 
@@ -30,13 +30,26 @@
 #bookmarks-container {
 	max-height: 60vh;
 	overflow-y: auto;
-	padding: 2em;
+	padding: 1em 2em;
 	will-change: backdrop-filter;
 }
 
 #bookmarks-intro {
 	max-width: 600px;
-	margin: 2em auto 1em;
+	padding-top: 2em;
+	margin: auto;
+}
+
+#bookmarks-buttons {
+	display: flex;
+	column-gap: 1em;
+	padding-top: 2em;
+	padding-bottom: 1em;
+	justify-content: center;
+}
+
+#bookmarks-buttons button {
+	width: fit-content;
 }
 
 .bookmarks-folder {
@@ -57,10 +70,10 @@
 	pointer-events: none;
 }
 
-.bookmarks-folder.synced .b_bookmarks-folder-sync,
-.bookmarks-folder.selected .b_bookmarks-folder-select {
-	color: white;
-	background-color: var(--color-blue);
+.bookmarks-folder.used {
+	user-select: none;
+	pointer-events: none;
+	opacity: 0.3;
 }
 
 .bookmarks-folder-title {
@@ -133,18 +146,6 @@
 	line-height: 1.5em;
 	font-size: 0.9em;
 	font-weight: bold;
-}
-
-#bookmarks-buttons {
-	display: flex;
-	margin: 2em;
-	column-gap: 2em;
-	justify-content: space-between;
-	z-index: 3;
-}
-
-#bookmarks-buttons button {
-	width: fit-content;
 }
 
 #bmk_close:focus-visible,

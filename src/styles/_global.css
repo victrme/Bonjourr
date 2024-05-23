@@ -196,6 +196,18 @@ input {
 	font-size: 13px;
 }
 
+dialog a,
+aside a {
+	color: var(--color-blue);
+	border-radius: 4px;
+	text-decoration: none;
+}
+
+dialog a:hover,
+aside a:hover {
+	text-decoration: underline;
+}
+
 /* Chromium scrollbar */
 
 body::-webkit-scrollbar {

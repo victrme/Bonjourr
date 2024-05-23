@@ -3,13 +3,15 @@ import { tradThis } from '../../utils/translations'
 import { PLATFORM } from '../../defaults'
 import quickLinks from '.'
 import storage from '../../storage'
+import { isLink } from './helpers'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode
 
-type BookmarksFolders = {
+type BookmarksFolder = {
 	title: string
+	used: boolean
 	bookmarks: BookmarksFolderItem[]
-}[]
+}
 
 type BookmarksFolderItem = {
 	id: string
@@ -58,54 +60,61 @@ export async function syncNewBookmarks(init?: number) {
 	}
 }
 
-function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolders {
+function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolder[] {
 	function createMapFromTree(treenode: Treenode) {
 		if (!treenode.children) {
 			return
 		}
 
 		for (const child of treenode.children) {
-			//
-			if (child.children) createMapFromTree(child)
-			if (!child.url) continue
+			if (child.children) {
+				createMapFromTree(child)
+			}
 
-			const map = new Map<string, BookmarksFolderItem>()
-			const bookmarks = foldersMap.get(treenode.title) ?? map
+			if (!child.url) {
+				continue
+			}
 
-			bookmarks.set(child.url, {
+			if (!folders[treenode.title]) {
+				folders[treenode.title] = {
+					title: treenode.title,
+					used: false,
+					bookmarks: [],
+				}
+			}
+
+			const current = folders[treenode.title].bookmarks
+			const urls = current.map((b) => b.url)
+
+			if (urls.includes(child.url)) {
+				continue
+			}
+
+			folders[treenode.title].bookmarks.push({
 				id: randomString(6),
 				title: child.title,
 				url: child.url,
 				used: linksURLs.includes(child.url),
 				dateAdded: child.dateAdded ?? 0,
 			})
-
-			foldersMap.set(treenode.title, bookmarks)
 		}
 	}
 
-	const linksURLs = bundleLinks(data).map((link) => !link.folder && (link as Links.Elem).url)
-	const foldersMap: Map<string, Map<string, BookmarksFolderItem>> = new Map()
-	const result: BookmarksFolders = []
+	const linksURLs = bundleLinks(data).map((link) => isLink(link) && (link as Links.Elem).url)
+	const folders: Record<string, BookmarksFolder> = {}
 
-	// (must be before "Map to Array")
 	createMapFromTree(treenode)
 
-	// Map to Array
-	for (const [title, bookmarksMap] of foldersMap) {
-		const bookmarks: BookmarksFolderItem[] = []
+	for (const [folder, { bookmarks }] of Object.entries(folders)) {
+		const allUsed = bookmarks.every((b) => b.used)
+		const isGroup = data.linkgroups.groups.includes(folder)
 
-		for (const [_, bookmark] of bookmarksMap) {
-			bookmarks.push(bookmark)
+		if (isGroup && allUsed) {
+			folders[folder].used = true
 		}
-
-		result.push({ title, bookmarks })
 	}
 
-	// todo:
-	// tag already used
-
-	return result
+	return Object.values(folders)
 }
 
 // Bookmarks Dialog
@@ -125,7 +134,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 
 		applybutton?.addEventListener('click', () => importSelectedBookmarks(bookmarkFolders))
 		closebutton?.addEventListener('click', () => bookmarksdom?.close())
-		// bookmarksdom.addEventListener('click', (e) => (e.composedPath()[0] === bookmarksdom ? bookmarksdom.close() : null))
+		bookmarksdom.addEventListener('pointerdown', closeDialog)
 
 		document.body.appendChild(bookmarksdom)
 	}
@@ -144,6 +153,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		h2.textContent = bookmarkList.title
 		selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
 		syncButton?.addEventListener('click', () => toggleFolderSync(folder))
+		folder?.classList?.toggle('used', bookmarkList.used)
 		container?.appendChild(folder)
 
 		for (const bookmark of bookmarkList.bookmarks) {
@@ -177,7 +187,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 	setTimeout(() => bookmarksdom.showModal(), 200)
 }
 
-function importSelectedBookmarks(folders: BookmarksFolders) {
+function importSelectedBookmarks(folders: BookmarksFolder[]) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const selectedLinks = document.querySelectorAll<HTMLLIElement>('li.selected')
 	const selectedFolder = document.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
@@ -231,16 +241,32 @@ function selectBookmark(li: HTMLLIElement) {
 	applybutton.classList.toggle('none', false)
 }
 
+function closeDialog(event: PointerEvent) {
+	const path = event.composedPath() as Element[]
+	const id = path[0]?.id ?? ''
+
+	if (id === 'bookmarks') {
+		document.querySelector<HTMLDialogElement>('#bookmarks')?.close()
+	}
+}
+
 function toggleFolderSelect(folder: HTMLElement) {
+	const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 	const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
 
+	if (!selectButton || !syncButton) {
+		return
+	}
+
 	if (folder.classList.contains('selected')) {
+		selectButton.textContent = tradThis('Select group')
 		folder.classList.remove('selected', 'synced')
 		syncButton?.classList.remove('selected')
 		syncButton?.setAttribute('disabled', '')
 	} else {
+		selectButton.textContent = tradThis('Unselect group')
 		folder.classList.add('selected')
-		syncButton?.removeAttribute('disabled')
+		// syncButton?.removeAttribute('disabled')
 		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
 	}
 }
