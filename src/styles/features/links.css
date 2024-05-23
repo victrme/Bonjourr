@@ -146,9 +146,7 @@ li.block div {
 	flex-shrink: 0;
 	width: var(--icon-size);
 	height: var(--icon-size);
-	border: 1px solid white;
-	background-color: white;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+	border: 1px solid transparent;
 	box-sizing: border-box;
 }
 
@@ -185,13 +183,13 @@ li.block span {
 	top: 3.5em;
 }
 
-#linkblocks.rmBackground li.block div {
-	border-color: transparent;
-	background: transparent;
-	box-shadow: unset;
+#linkblocks.backgrounds li.block div {
+	background-color: white;
+	border-color: white;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
-#linkblocks.rmBackground li.block div:hover {
+#linkblocks.backgrounds li.block div:hover {
 	box-shadow: unset;
 }
 
@@ -235,7 +233,7 @@ li.block.removed div {
 }
 
 @media only screen and (hover: hover) {
-	li.block:hover div {
+	#linkblocks.backgrounds li.block:hover div {
 		box-shadow: 0px 0.2em 1em #0003;
 	}
 
@@ -264,6 +262,7 @@ li.block.folder img {
 	display: none;
 	border-radius: 4px;
 	padding: 2px;
+	user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 }

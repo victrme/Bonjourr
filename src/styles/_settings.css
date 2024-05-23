@@ -357,12 +357,14 @@ aside form.valid button {
 	max-width: 26px;
 	margin-left: 4px;
 	visibility: visible;
+	color: var(--color-blue);
 }
 
-aside form.valid button:not(:disabled):hover,
-aside form.valid button:not(:disabled):focus-visible {
-	color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
+@media (hover: hover) {
+	aside form.valid button:not(:disabled):hover,
+	aside form.valid button:not(:disabled):focus-visible {
+		background-color: rgba(var(--blue), 0.15);
+	}
 }
 
 aside form.valid button:not(:disabled):active {
@@ -474,13 +476,13 @@ aside form.valid button:not(:disabled):active {
 }
 
 #mobile-drag-zone {
-	visibility: hidden;
-	position: absolute;
+	position: sticky;
 	display: none;
-	bottom: 0;
+	top: 0;
 	width: 100%;
-	padding: 12px;
+	padding: 20px 12px 12px;
 	cursor: grab;
+	z-index: 4;
 	box-sizing: border-box;
 	transition: transform 0.4s;
 }
@@ -490,8 +492,7 @@ aside form.valid button:not(:disabled):active {
 	height: 8px;
 	margin: auto;
 	border-radius: 4px;
-	background-color: var(--color-settings);
-	box-shadow: 2px 0px 6px #0004;
+	background-color: var(--color-focused);
 }
 
 .settings-title {
@@ -542,6 +543,7 @@ aside .settings-title .tooltip {
 	color: var(--color-light-text);
 	font-size: 13px;
 	line-height: 1.5em;
+	padding-left: 4px;
 }
 
 .tooltiptext.shown {
@@ -604,6 +606,10 @@ aside .settings-title .tooltip {
 	filter: grayscale(0.35);
 }
 
+#i_tabtitle {
+	width: 100%;
+}
+
 #f_addlink {
 	width: 66%;
 }
@@ -638,8 +644,9 @@ aside .settings-title .tooltip {
 	width: 14px;
 	height: 14px;
 	display: block;
-	background-color: var(--color-text);
-	border-radius: 3px;
+	border-radius: 4px;
+	border: 3px solid var(--color-text);
+	box-sizing: border-box;
 }
 
 #b_showtitles.on,
@@ -879,7 +886,7 @@ aside .settings-title .tooltip {
 	margin: 6px 0;
 	padding: 10px 16px;
 	tab-size: 1.5em;
-	user-select: all;
+	/* user-select: all; */
 	text-overflow: ellipsis;
 	overflow: hidden;
 	resize: vertical;
@@ -904,6 +911,7 @@ aside .settings-title .tooltip {
 }
 
 #settings-changes {
+	margin-top: 5px;
 	text-align: center;
 }
 

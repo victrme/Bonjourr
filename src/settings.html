@@ -1,3 +1,7 @@
+<div id="mobile-drag-zone">
+	<div></div>
+</div>
+
 <div class="settings-title">
 	<h2 class="trn">General</h2>
 </div>
@@ -297,6 +301,10 @@
 				<label for="i_linkstyle" class="trn">Style</label>
 
 				<div class="split-inputs">
+					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles" title="Toggle link titles">
+						<span>T</span>
+					</button>
+
 					<button
 						id="b_showbackgrounds"
 						class="input-btn on"
@@ -304,10 +312,6 @@
 						title="Toggle link backgrounds"
 					>
 						<span></span>
-					</button>
-
-					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles" title="Toggle link titles">
-						<span>T</span>
 					</button>
 
 					<select id="i_linkstyle">
@@ -451,7 +455,7 @@
 			<div class="wrapper">
 				<label for="i_timehide" class="trn">Show</label>
 				<select id="i_timehide">
-					<option value="all" class="trn">Clock and date</option>
+					<option value="All updates" class="trn">Clock and date</option>
 					<option value="date" class="trn">Clock only</option>
 					<option value="clock" class="trn">Date only</option>
 				</select>
@@ -794,7 +798,7 @@
 			<div class="wrapper">
 				<label for="i_weatherhide" class="trn">Show</label>
 				<select id="i_weatherhide">
-					<option value="all" class="trn">Description and icon</option>
+					<option value="All updates" class="trn">Description and icon</option>
 					<option value="icon" class="trn">Description only</option>
 					<option value="desc" class="trn">Icon only</option>
 					<option value="disabled" class="trn">Disabled</option>
@@ -1154,13 +1158,23 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="i_announce" class="trn">Announcements</label>
+			<span>
+				<label for="i_announce" class="trn">Announcements</label>
+				<button class="tooltip ttannouncements" title="What are announcements?" aria-label="What are announcements?">
+					?
+				</button>
+			</span>
+
 			<select id="i_announce">
-				<option class="trn" value="all">All</option>
-				<option class="trn" value="major">Major changes</option>
+				<option class="trn" value="all">All updates</option>
+				<option class="trn" value="major">Major updates</option>
 				<option class="trn" value="off">Disabled</option>
 			</select>
 		</div>
+
+		<p class="tooltiptext dropdown ttannouncements">
+			<span class="trn">Decide when to get notified about Bonjourr updates.</span>
+		</p>
 	</div>
 </div>
 
@@ -1182,10 +1196,24 @@
 	<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
 
 	<div class="wrapper">
-		<span class="trn">Import file</span>
+		<span class="trn">Settings file</span>
 		<div>
-			<button id="b_file-load" class="param-btn trn">Load file</button>
-			<button id="b_file-save" class="param-btn trn">Save to device</button>
+			<button
+				id="b_file-load"
+				class="param-btn trn"
+				title="Import an existing settings file"
+				aria-label="Import an existing settings file"
+			>
+				Import
+			</button>
+			<button
+				id="b_file-save"
+				class="param-btn trn"
+				title="Export a new settings file"
+				aria-label="Export a new settings file"
+			>
+				Export
+			</button>
 		</div>
 	</div>
 
@@ -1194,23 +1222,42 @@
 	<textarea id="settings-data"></textarea>
 
 	<div id="settings-changes">
-		<button id="b_settings-copy" class="param-btn trn">Copy</button>
-		<button id="b_settings-cancel" class="param-btn btn-red trn">Cancel</button>
-		<button id="b_settings-apply" class="param-btn trn" disabled>Apply changes</button>
+		<button
+			id="b_settings-copy"
+			class="param-btn trn"
+			title="Copy settings data to clipboard"
+			aria-label="Copy settings data to clipboard"
+		>
+			Copy
+		</button>
+		<button id="b_settings-cancel" class="param-btn btn-red trn" title="Cancel changes" aria-label="Cancel changes">
+			Cancel
+		</button>
+		<button
+			id="b_settings-apply"
+			class="param-btn trn"
+			title="Load Bonjourr with these settings"
+			aria-label="Load Bonjourr with these settings"
+			disabled
+		>
+			Apply changes
+		</button>
 	</div>
 </div>
 
 <div class="param" id="reset-settings">
 	<div id="reset-first" class="wrapper shown">
-		<label for="b_reset-first" class="trn">Reset to default</label>
+		<label for="b_reset-first" class="trn">Reset all settings</label>
 
 		<div>
-			<button id="b_reset-first" class="param-btn trn">Reset</button>
+			<button id="b_reset-first" class="param-btn trn" title="Reset all settings" aria-label="Reset all settings">
+				Reset
+			</button>
 		</div>
 	</div>
 
 	<div id="reset-conf" class="wrapper">
-		<span class="trn">Are you sure ?</span>
+		<span class="trn">Are you sure?</span>
 
 		<div>
 			<button id="b_reset-apply" class="param-btn trn">I am sure</button>

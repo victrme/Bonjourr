@@ -52,12 +52,13 @@
 	}
 
 	#show-settings button {
-		height: 48px;
-		width: 48px;
+		height: 44px;
+		width: 44px;
+		border-radius: 10px;
 	}
 
 	#show-settings img {
-		width: 32px;
+		width: 30px;
 	}
 
 	aside {
@@ -80,9 +81,8 @@
 		display: block;
 	}
 
-	#mobile-drag-zone.shown {
-		transform: translateY(-75dvh);
-		visibility: visible;
+	#mobile-drag-zone+.settings-title {
+		margin-top: 0;
 	}
 
 	@supports not (min-height: 100dvh) {

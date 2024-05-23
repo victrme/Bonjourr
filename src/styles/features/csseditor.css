@@ -47,6 +47,11 @@
 	user-select: auto;
 	-webkit-user-select: auto;
 }
+
+.prism-code-editor textarea::placeholder {
+	color: var(--color-text);
+}
+
 .pce-no-selection textarea:focus {
 	z-index: 1;
 }
