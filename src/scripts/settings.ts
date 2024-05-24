@@ -214,6 +214,7 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
+	paramId('solid_options')?.classList.toggle('shown', data.background_type === 'solid')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
 	// Unsplash collection placeholder
@@ -744,6 +745,7 @@ function showall(val: boolean, event: boolean) {
 
 async function selectBackgroundType(cat: string) {
 	document.getElementById('local_options')?.classList.toggle('shown', cat === 'local')
+	document.getElementById('solid_options')?.classList.toggle('shown', cat === 'solid')
 	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
 
 	if (cat === 'local') {
@@ -767,6 +769,10 @@ async function selectBackgroundType(cat: string) {
 				}),
 			100
 		)
+	}
+
+	if (cat === 'solid') {
+		console.log('bjr')
 	}
 
 	storage.sync.set({ background_type: cat })

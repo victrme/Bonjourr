@@ -16,7 +16,6 @@ type UpdateOptions = {
 }
 
 export default function initBackground(data: Sync.Storage, local: Local.Storage) {
-	const type = data.background_type || 'unsplash'
 	const blur = data.background_blur
 	const brightness = data.background_bright
 
@@ -30,7 +29,29 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 	}
 
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	switch (data.background_type || 'unsplash') {
+		case 'local':
+			localBackgrounds()
+			break
+		case 'solid':
+			solidBackground(data.background_colors ?? [])
+			break
+		default:
+			unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	}
+}
+
+function solidBackground(colors: string[]) {
+	const bgoverlay = document.getElementById('background_overlay') as HTMLDivElement
+	const bgfirst = document.getElementById('background') as HTMLDivElement
+	const bgsecond = document.getElementById('background-bis') as HTMLDivElement
+	const loadBis = bgfirst.style.opacity === '1'
+	const bgToChange = loadBis ? bgsecond : bgfirst
+
+	bgfirst.style.opacity = loadBis ? '0' : '1'
+	bgToChange.style.backgroundColor = colors[0]
+
+	bgoverlay.style.opacity = '1'
 }
 
 //

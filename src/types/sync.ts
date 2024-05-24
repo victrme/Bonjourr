@@ -21,6 +21,7 @@ declare namespace Sync {
 		reviewPopup?: number | string
 		background_blur: number
 		background_bright: number
+		background_colors?: string[]
 		css: string
 		lang: string
 		favicon: string
@@ -29,7 +30,7 @@ declare namespace Sync {
 		notes?: Notes
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
-		background_type: 'local' | 'unsplash'
+		background_type: 'local' | 'unsplash' | 'solid'
 		dateformat: 'eu' | 'us' | 'cn'
 		clock: Clock
 		unsplash: Unsplash.Sync
