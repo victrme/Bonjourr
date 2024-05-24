@@ -303,6 +303,7 @@ label.input-file span {
 	width: 80%;
 	margin: auto;
 	transform: translateY(-50%);
+	pointer-events: none;
 }
 
 input[type='file'] {
@@ -310,7 +311,7 @@ input[type='file'] {
 	width: 100%;
 	color: transparent;
 	cursor: pointer;
-	transition: background-color 0.2s;
+	transition: background-color 0.2s, transform 0.2s;
 }
 
 input[type='file']::-webkit-file-selector-button,
@@ -323,10 +324,13 @@ label.input-file:focus input[type='file'] {
 	background-color: var(--color-focused);
 }
 
-label.input-file.dragover input[type='file'] {
+label.input-file input[type='file'].dragover {
 	background-color: var(--color-blue);
-	opacity: 1;
-	transform: scale(1.03);
+	transform: scale(1.02);
+}
+
+label.input-file input[type='file'].dragover ~ span {
+	color: white;
 }
 
 aside form {

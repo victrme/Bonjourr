@@ -49,7 +49,7 @@
 }
 
 .prism-code-editor textarea::placeholder {
-	color: var(--color-text);
+	color: var(--color-placeholder);
 }
 
 .pce-no-selection textarea:focus {
