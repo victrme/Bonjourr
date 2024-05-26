@@ -76,8 +76,8 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
 		applybutton?.addEventListener('click', () => importSelectedBookmarks(bookmarkFolders))
-		closebutton?.addEventListener('click', () => bookmarksdom?.close())
-		bookmarksdom.addEventListener('pointerdown', closeDialog)
+		closebutton?.addEventListener('click', closeDialog)
+		bookmarksdom.addEventListener('click', closeDialog)
 
 		document.body.appendChild(bookmarksdom)
 	}
@@ -100,8 +100,9 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		h3.textContent = list.title
 		selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
 		syncButton?.addEventListener('click', () => toggleFolderSync(folder))
-		folder?.classList?.toggle('reserved', list.title === 'topsites' || list.title === 'googleapps')
-		folder?.classList?.toggle('used', list.used)
+		folder.classList.toggle('reserved', list.title === 'topsites' || list.title === 'googleapps')
+		folder.classList.toggle('used', list.used)
+		folder.dataset.title = list.title
 		container?.appendChild(folder)
 
 		if (list.title === 'topsites') h3.textContent = tradThis('Most visited')
@@ -142,7 +143,8 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 	}
 
 	document.dispatchEvent(new Event('toggle-settings'))
-	setTimeout(() => bookmarksdom.showModal(), 200)
+	bookmarksdom.showModal()
+	setTimeout(() => bookmarksdom.classList.add('shown'))
 }
 
 function importSelectedBookmarks(folders: BookmarksFolder[]) {
@@ -150,7 +152,7 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('li.selected')
 	const selectedFolder = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
 	const linksIds = Object.values(selectedLinks).map((element) => element.id)
-	const folderIds = Object.values(selectedFolder).map((element) => element.querySelector('h2')?.textContent)
+	const folderIds = Object.values(selectedFolder).map((element) => element.dataset.title)
 
 	const links: { title: string; url: string; group?: string }[] = []
 	const groups: string[] = []
@@ -180,7 +182,8 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 
 	setTimeout(() => {
 		quickLinks(undefined, { addLinks: links })
-		bookmarksdom.close()
+		bookmarksdom?.classList.remove('shown')
+		bookmarksdom?.close()
 	}, 10)
 }
 
@@ -196,12 +199,15 @@ function handleApplyButtonText() {
 	}
 }
 
-function closeDialog(event: PointerEvent) {
+function closeDialog(event: Event) {
 	const path = event.composedPath() as Element[]
 	const id = path[0]?.id ?? ''
 
-	if (id === 'bookmarks') {
-		document.querySelector<HTMLDialogElement>('#bookmarks')?.close()
+	if (id === 'bookmarks' || id === 'bmk_close') {
+		const bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')
+
+		bookmarksdom?.close()
+		bookmarksdom?.classList.remove('shown')
 	}
 }
 
@@ -260,7 +266,6 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 			title: 'googleapps',
 			children: [
 				{ id: '', title: 'Account', url: 'https://myaccount.google.com' },
-				{ id: '', title: 'Search', url: 'https://www.google.com' },
 				{ id: '', title: 'Youtube', url: 'https://youtube.com' },
 				{ id: '', title: 'Gmail', url: 'https://mail.google.com' },
 				{ id: '', title: 'Meet', url: 'https://meet.google.com' },

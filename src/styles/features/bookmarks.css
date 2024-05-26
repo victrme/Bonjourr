@@ -5,26 +5,24 @@
 	padding: 0em;
 	border-radius: 1em;
 	opacity: 0;
-	transition: opacity 0.2s;
-}
-
-#bookmarks[open] {
-	opacity: 1;
+	transition: opacity 0.1s 0.3s;
 }
 
 #bookmarks::backdrop {
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	background-color: transparent;
+	transition: background-color 0.3s, backdrop-filter 0.1s 0.3s;
+}
+
+#bookmarks.shown {
+	opacity: 1;
+}
+
+#bookmarks.shown::backdrop {
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	background-color: #2226;
-	transition: opacity 0.2s;
-}
-
-#bookmarks.noneFound {
-	min-width: 260px;
-}
-
-#bookmarks.noneFound #bmk_apply {
-	display: none;
+	background-color: #0006;
 }
 
 #bookmarks-container {
@@ -98,7 +96,8 @@
 
 #bookmarks h2 {
 	text-align: left;
-	margin: 2em 1em 1em;
+	margin: 0 1em 1em;
+	padding-top: 2em;
 }
 
 #bookmarks h3 {

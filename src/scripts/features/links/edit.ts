@@ -148,13 +148,13 @@ function toggleEditInputs(): string[] {
 	domtitle.value = ''
 
 	if (container.mini) {
-		if (target.topsites) inputs = ['pin']
+		if (target.topsites) inputs = ['pin', 'delete']
 		else if (target.addgroup) inputs = ['title', 'add']
 		else if (target.title) inputs = ['title', 'delete', 'pin', 'apply']
 	}
 
 	if (container.group) {
-		if (target.topsites) inputs = ['unpin']
+		if (target.topsites) inputs = ['unpin', 'delete']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
 		else if (target.topsite) inputs = []
 		else if (target.folder) inputs = ['title', 'delete', 'apply']
