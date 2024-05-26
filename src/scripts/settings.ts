@@ -144,7 +144,6 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_quicklinks', data.quicklinks)
 	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
 	setCheckbox('i_linknewtab', data.linknewtab)
-	setCheckbox('i_topsites', data.linkgroups?.groups?.includes('topsites'))
 	setCheckbox('i_time', data.time)
 	setCheckbox('i_main', data.main)
 	setCheckbox('i_greethide', !data.hide?.greetings)
@@ -289,14 +288,6 @@ function initOptionsEvents() {
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
 	})
-
-	paramId('i_topsites').addEventListener('change', async function (this) {
-		quickLinks(undefined, { topsites: this.checked })
-	})
-
-	// paramId('i_syncbookmarks').addEventListener('change', function (this) {
-	// 	syncNewBookmarks(undefined, this.checked)
-	// })
 
 	paramId('i_linkgroups').addEventListener('change', function (this) {
 		quickLinks(undefined, { groups: this.checked })

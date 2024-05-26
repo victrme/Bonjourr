@@ -1,9 +1,9 @@
 import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
+import { MAIN_API, PLATFORM } from '../../defaults'
 import { tradThis } from '../../utils/translations'
-import { PLATFORM } from '../../defaults'
+import { isLink } from './helpers'
 import quickLinks from '.'
 import storage from '../../storage'
-import { isLink } from './helpers'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode
 
@@ -30,7 +30,7 @@ export default async function linksImport() {
 	if (!permission) treenode = await getBookmarkTree()
 	if (!treenode) return
 
-	document.querySelectorAll('.bookmarks-folder')?.forEach((node) => {
+	document.querySelectorAll('#bookmarks-container > *')?.forEach((node) => {
 		node.remove()
 	})
 
@@ -60,63 +60,6 @@ export async function syncNewBookmarks(init?: number) {
 	}
 }
 
-function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolder[] {
-	function createMapFromTree(treenode: Treenode) {
-		if (!treenode.children) {
-			return
-		}
-
-		for (const child of treenode.children) {
-			if (child.children) {
-				createMapFromTree(child)
-			}
-
-			if (!child.url) {
-				continue
-			}
-
-			if (!folders[treenode.title]) {
-				folders[treenode.title] = {
-					title: treenode.title,
-					used: false,
-					bookmarks: [],
-				}
-			}
-
-			const current = folders[treenode.title].bookmarks
-			const urls = current.map((b) => b.url)
-
-			if (urls.includes(child.url)) {
-				continue
-			}
-
-			folders[treenode.title].bookmarks.push({
-				id: randomString(6),
-				title: child.title,
-				url: child.url,
-				used: linksURLs.includes(child.url),
-				dateAdded: child.dateAdded ?? 0,
-			})
-		}
-	}
-
-	const linksURLs = bundleLinks(data).map((link) => isLink(link) && (link as Links.Elem).url)
-	const folders: Record<string, BookmarksFolder> = {}
-
-	createMapFromTree(treenode)
-
-	for (const [folder, { bookmarks }] of Object.entries(folders)) {
-		const allUsed = bookmarks.every((b) => b.used)
-		const isGroup = data.linkgroups.groups.includes(folder)
-
-		if (isGroup && allUsed) {
-			folders[folder].used = true
-		}
-	}
-
-	return Object.values(folders)
-}
-
 // Bookmarks Dialog
 
 async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
@@ -139,24 +82,32 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		document.body.appendChild(bookmarksdom)
 	}
 
-	for (const bookmarkList of bookmarkFolders) {
+	const h2 = document.createElement('h2')
+	h2.textContent = tradThis('From your browser')
+	container?.appendChild(h2)
+
+	for (const list of bookmarkFolders) {
 		const folder = getHTMLTemplate<HTMLDivElement>('bookmarks-folder-template', 'div')
 		const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 		const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
 		const ol = folder.querySelector('ol')
-		const h2 = folder.querySelector('h2')
+		const h3 = folder.querySelector('h3')
 
-		if (!ol || !h2) {
+		if (!ol || !h3) {
 			continue
 		}
 
-		h2.textContent = bookmarkList.title
+		h3.textContent = list.title
 		selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
 		syncButton?.addEventListener('click', () => toggleFolderSync(folder))
-		folder?.classList?.toggle('used', bookmarkList.used)
+		folder?.classList?.toggle('reserved', list.title === 'topsites' || list.title === 'googleapps')
+		folder?.classList?.toggle('used', list.used)
 		container?.appendChild(folder)
 
-		for (const bookmark of bookmarkList.bookmarks) {
+		if (list.title === 'topsites') h3.textContent = tradThis('Most visited')
+		if (list.title === 'googleapps') h3.textContent = tradThis('Google Apps')
+
+		for (const bookmark of list.bookmarks) {
 			const li = getHTMLTemplate<HTMLLIElement>('bookmarks-item-template', 'li')
 			const li_button = li.querySelector<HTMLButtonElement>('button')
 			const li_title = li.querySelector('.bookmark-title')
@@ -169,7 +120,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 
 			const url = new URL(bookmark.url)
 
-			li_img.src = 'https://api.bonjourr.lol/favicon/blob/' + url.origin
+			li_img.src = `${MAIN_API}/favicon/blob/${url.origin}`
 			li_title.textContent = bookmark.title
 			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
 			li_button.addEventListener('click', () => li.classList.toggle('selected'))
@@ -181,6 +132,12 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 
 			li.id = bookmark.id
 			ol?.appendChild(li)
+		}
+
+		if (list.title === 'googleapps') {
+			const h2 = document.createElement('h2')
+			h2.textContent = tradThis('Your bookmarks')
+			container?.appendChild(h2)
 		}
 	}
 
@@ -283,7 +240,7 @@ function toggleFolderSync(folder: HTMLElement) {
 
 async function getPermissions(): Promise<boolean> {
 	const namespace = PLATFORM === 'firefox' ? browser : chrome
-	const permission = await namespace.permissions.request({ permissions: ['bookmarks'] })
+	const permission = await namespace.permissions.request({ permissions: ['bookmarks', 'topSites'] })
 	return permission
 }
 
@@ -295,11 +252,12 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 	}
 
 	const treenode = await namespace.bookmarks.getTree()
+	const topsites = await chrome.topSites.get()
 
 	if (PLATFORM === 'chrome') {
-		treenode[0].children?.push({
+		treenode[0].children?.unshift({
 			id: '',
-			title: 'Google Apps',
+			title: 'googleapps',
 			children: [
 				{ id: '', title: 'Account', url: 'https://myaccount.google.com' },
 				{ id: '', title: 'Search', url: 'https://www.google.com' },
@@ -316,5 +274,72 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 		})
 	}
 
+	treenode[0].children?.unshift({
+		id: '',
+		title: 'topsites',
+		children: topsites.map((site) => ({
+			id: '',
+			title: site.title,
+			url: site.url,
+		})),
+	})
+
 	return treenode
+}
+
+function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolder[] {
+	function createMapFromTree(treenode: Treenode) {
+		if (!treenode.children) {
+			return
+		}
+
+		for (const child of treenode.children) {
+			if (child.children) {
+				createMapFromTree(child)
+			}
+
+			if (!child.url) {
+				continue
+			}
+
+			if (!folders[treenode.title]) {
+				folders[treenode.title] = {
+					title: treenode.title,
+					used: false,
+					bookmarks: [],
+				}
+			}
+
+			const current = folders[treenode.title].bookmarks
+			const urls = current.map((b) => b.url)
+
+			if (urls.includes(child.url)) {
+				continue
+			}
+
+			folders[treenode.title].bookmarks.push({
+				id: randomString(6),
+				title: child.title,
+				url: child.url,
+				used: linksURLs.includes(child.url),
+				dateAdded: child.dateAdded ?? 0,
+			})
+		}
+	}
+
+	const linksURLs = bundleLinks(data).map((link) => isLink(link) && (link as Links.Elem).url)
+	const folders: Record<string, BookmarksFolder> = {}
+
+	createMapFromTree(treenode)
+
+	for (const [folder, { bookmarks }] of Object.entries(folders)) {
+		const allUsed = bookmarks.every((b) => b.used)
+		const isGroup = data.linkgroups.groups.includes(folder)
+
+		if (isGroup && allUsed) {
+			folders[folder].used = true
+		}
+	}
+
+	return Object.values(folders)
 }

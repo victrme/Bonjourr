@@ -30,7 +30,6 @@ type LinksUpdate = {
 	moveToGroup?: MoveToTarget
 	unfolder?: { ids: string[]; group: HTMLDivElement }
 	deleteLinks?: string[]
-	topsites?: boolean
 }
 
 type AddLinks = {
@@ -100,12 +99,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
 		const folder = div?.dataset.folder
 		const lis: HTMLLIElement[] = []
-		const inTopSites = group === 'topsites'
-		const links = inTopSites
-			? topSitesToLinks(await chrome.topSites.get())
-			: folder
-			? getLinksInFolder(data, folder)
-			: getLinksInGroup(data, group)
+		const links = folder ? getLinksInFolder(data, folder) : getLinksInGroup(data, group)
 
 		activeGroups.push({
 			lis,
@@ -366,10 +360,6 @@ export async function linksUpdate(update: LinksUpdate) {
 		setOpenInNewTab(update.newtab)
 	}
 
-	if (update.topsites !== undefined) {
-		setTopSites(update.topsites)
-	}
-
 	if (update.styles) {
 		setLinkStyle(update.styles)
 	}
@@ -622,22 +612,6 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 	}
 }
 
-async function setTopSites(toggle: boolean) {
-	const permitted = await chrome.permissions.request({ permissions: ['topSites'] })
-	const i_topsites = document.querySelector<HTMLInputElement>('#i_topsites')!
-
-	if (!permitted) {
-		i_topsites.checked = false
-		return
-	}
-
-	if (toggle) {
-		addGroup(['topsites'], true)
-	} else {
-		deleteGroup('topsites')
-	}
-}
-
 function setRows(row: string) {
 	const style = [...domlinkblocks.classList].filter(isLinkStyle)[0] ?? 'large'
 	const val = parseInt(row ?? '6')
@@ -709,21 +683,4 @@ function correctLinksOrder(data: Sync.Storage): Sync.Storage {
 
 function isLinkStyle(s: string): s is Sync.Storage['linkstyle'] {
 	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
-}
-
-function topSitesToLinks(sites: chrome.topSites.MostVisitedURL[]): Links.Elem[] {
-	const links = []
-
-	for (let i = 0; i < sites.length; i++) {
-		const site = sites[i]
-
-		links.push({
-			_id: 'topsite-' + i,
-			order: i,
-			title: site.title,
-			url: site.url,
-		})
-	}
-
-	return links
 }
