@@ -28,7 +28,7 @@
 #bookmarks-container {
 	max-height: 60vh;
 	overflow-y: auto;
-	padding: 0 2em 1em;
+	padding: 1em 2em 1em;
 	will-change: backdrop-filter;
 }
 
@@ -84,6 +84,10 @@
 	opacity: 0.3;
 }
 
+.bookmarks-folder[data-title='topsites'] {
+	margin-bottom: 3em;
+}
+
 .bookmarks-folder.reserved .b_bookmarks-folder-sync {
 	display: none;
 }
@@ -95,12 +99,7 @@
 }
 
 #bookmarks h2 {
-	text-align: left;
-	margin: 0 1em 1em;
-	padding-top: 2em;
-}
-
-#bookmarks h3 {
+	font-size: 20px;
 	text-transform: capitalize;
 	margin: 0;
 }

@@ -38,10 +38,6 @@ export default async function linksImport() {
 }
 
 export async function syncNewBookmarks(init?: number) {
-	if (PLATFORM === 'online' || PLATFORM === 'safari') {
-		return
-	}
-
 	const treenode = await getBookmarkTree()
 	const data = await storage.sync.get()
 
@@ -82,31 +78,25 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		document.body.appendChild(bookmarksdom)
 	}
 
-	const h2 = document.createElement('h2')
-	h2.textContent = tradThis('From your browser')
-	container?.appendChild(h2)
-
 	for (const list of bookmarkFolders) {
 		const folder = getHTMLTemplate<HTMLDivElement>('bookmarks-folder-template', 'div')
 		const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 		const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
 		const ol = folder.querySelector('ol')
-		const h3 = folder.querySelector('h3')
+		const h2 = folder.querySelector('h2')
 
-		if (!ol || !h3) {
+		if (!ol || !h2) {
 			continue
 		}
 
-		h3.textContent = list.title
+		h2.textContent = list.title
 		selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
 		syncButton?.addEventListener('click', () => toggleFolderSync(folder))
-		folder.classList.toggle('reserved', list.title === 'topsites' || list.title === 'googleapps')
 		folder.classList.toggle('used', list.used)
 		folder.dataset.title = list.title
 		container?.appendChild(folder)
 
-		if (list.title === 'topsites') h3.textContent = tradThis('Most visited')
-		if (list.title === 'googleapps') h3.textContent = tradThis('Google Apps')
+		if (list.title === 'topsites') h2.textContent = tradThis('Most visited')
 
 		for (const bookmark of list.bookmarks) {
 			const li = getHTMLTemplate<HTMLLIElement>('bookmarks-item-template', 'li')
@@ -134,12 +124,6 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 			li.id = bookmark.id
 			ol?.appendChild(li)
 		}
-
-		if (list.title === 'googleapps') {
-			const h2 = document.createElement('h2')
-			h2.textContent = tradThis('Your bookmarks')
-			container?.appendChild(h2)
-		}
 	}
 
 	document.dispatchEvent(new Event('toggle-settings'))
@@ -149,7 +133,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 
 function importSelectedBookmarks(folders: BookmarksFolder[]) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
-	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('li.selected')
+	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder li.selected')
 	const selectedFolder = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
 	const linksIds = Object.values(selectedLinks).map((element) => element.id)
 	const folderIds = Object.values(selectedFolder).map((element) => element.dataset.title)
@@ -261,12 +245,12 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 	const topsites = await chrome.topSites.get()
 
 	if (PLATFORM === 'chrome') {
-		treenode[0].children?.unshift({
+		treenode[0].children?.push({
 			id: '',
-			title: 'googleapps',
+			title: 'Google Apps',
 			children: [
-				{ id: '', title: 'Account', url: 'https://myaccount.google.com' },
 				{ id: '', title: 'Youtube', url: 'https://youtube.com' },
+				{ id: '', title: 'Account', url: 'https://myaccount.google.com' },
 				{ id: '', title: 'Gmail', url: 'https://mail.google.com' },
 				{ id: '', title: 'Meet', url: 'https://meet.google.com' },
 				{ id: '', title: 'Maps', url: 'https://maps.google.com' },
@@ -340,8 +324,9 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): Bookm
 	for (const [folder, { bookmarks }] of Object.entries(folders)) {
 		const allUsed = bookmarks.every((b) => b.used)
 		const isGroup = data.linkgroups.groups.includes(folder)
+		const isTopSites = isGroup && folder === 'topsites'
 
-		if (isGroup && allUsed) {
+		if (isTopSites || (isGroup && allUsed)) {
 			folders[folder].used = true
 		}
 	}
