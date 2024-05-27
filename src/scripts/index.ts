@@ -9,9 +9,8 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
-import { syncNewBookmarks } from './features/links/bookmarks'
+import { settingsPreload } from './settings'
 import quotes, { oldJSONToCSV } from './features/quotes'
-import { settingsInit, settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
@@ -72,7 +71,6 @@ async function startup() {
 	hideElements(sync.hide)
 	initBackground(sync, local)
 	quickLinks(sync)
-	syncNewBookmarks(sync.syncbookmarks)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
@@ -145,6 +143,7 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 			on: data.linktabs.active,
 			selected: data.linktabs.titles[data.linktabs.selected],
 			groups: [...data.linktabs.titles],
+			synced: [],
 			pinned: [],
 		}
 
@@ -277,7 +276,7 @@ function userActionsEvents() {
 			document.dispatchEvent(new Event('toggle-settings'))
 		}
 
-		if (open.contextmenu && on.settings) {
+		if (open.contextmenu) {
 			document.dispatchEvent(new Event('close-edit'))
 		}
 

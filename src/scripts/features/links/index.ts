@@ -1,6 +1,7 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInGroup, getLinksInFolder } from './helpers'
 import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle } from './groups'
 import { displayInterface } from '../../index'
+import { syncBookmarks } from './bookmarks'
 import displayEditDialog from './edit'
 import { folderClick } from './folders'
 import startDrag from './drag'
@@ -20,7 +21,7 @@ type LinksUpdate = {
 	newtab?: boolean
 	row?: string
 	groups?: boolean
-	addGroups?: string[]
+	addGroups?: { title: string; sync?: boolean }[]
 	deleteGroup?: string
 	groupTitle?: { old: string; new: string }
 	moveLinks?: string[]
@@ -53,6 +54,7 @@ type LinkGroups = {
 	links: Links.Link[]
 	title: string
 	pinned: boolean
+	synced: boolean
 	lis: HTMLLIElement[]
 	div: HTMLDivElement | null
 }[]
@@ -92,8 +94,10 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 export async function initblocks(data: Sync.Storage): Promise<true> {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
-	const { pinned, selected } = data.linkgroups
+	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
+
+	syncBookmarks(data)
 
 	for (const group of [...pinned, selected]) {
 		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
@@ -107,6 +111,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 			links,
 			title: group,
 			pinned: group !== selected,
+			synced: synced?.includes(group),
 		})
 	}
 
@@ -161,6 +166,7 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		linktitle.textContent = group.title
 		linkgroup.dataset.group = group.title
 		linkgroup.classList.toggle('pinned', group.pinned)
+		linkgroup.classList.toggle('synced', group.synced)
 		linklist.appendChild(fragment)
 		domlinkblocks.prepend(linkgroup)
 

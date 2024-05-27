@@ -9,16 +9,17 @@ export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https:/
 //@ts-expect-error
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
 
-export const SYSTEM_OS = 
-	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
-	? 'ios'
-	: window.navigator.appVersion.includes('Macintosh')
-	? 'mac'
-	: window.navigator.appVersion.includes('Windows')
-	? 'windows'
-	: window.navigator.userAgent.toLowerCase().includes('Android')
-	? 'android'
-	: 'unknown'
+export const SYSTEM_OS =
+	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+		? 'ios'
+		: window.navigator.appVersion.includes('Macintosh')
+		? 'mac'
+		: window.navigator.appVersion.includes('Windows')
+		? 'windows'
+		: window.navigator.userAgent.toLowerCase().includes('Android')
+		? 'android'
+		: 'unknown'
 
 export const PLATFORM =
 	window.location.protocol === 'moz-extension:'
@@ -105,6 +106,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		selected: '',
 		groups: [''],
 		pinned: [],
+		synced: [],
 	},
 	clock: {
 		size: 1,

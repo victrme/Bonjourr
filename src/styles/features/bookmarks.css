@@ -88,10 +88,6 @@
 	margin-bottom: 3em;
 }
 
-.bookmarks-folder.reserved .b_bookmarks-folder-sync {
-	display: none;
-}
-
 .bookmarks-folder-title {
 	display: flex;
 	justify-content: space-between;

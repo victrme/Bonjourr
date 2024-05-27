@@ -37,22 +37,21 @@ export default async function linksImport() {
 	createBookmarksDialog(treenode[0], data)
 }
 
-export async function syncNewBookmarks(init?: number) {
+export async function syncBookmarks(data?: Sync.Storage) {
 	const treenode = await getBookmarkTree()
-	const data = await storage.sync.get()
+	data = data ?? (await storage.sync.get())
 
-	if (!treenode || !init) {
+	if (!treenode) {
 		return
 	}
 
-	const lastCheck = init ?? Date.now()
+	const synced = data.linkgroups.synced
 	const folders = bookmarkTreeToFolderList(treenode[0], data)
-	const flatList = folders.map((folder) => folder.bookmarks).flat()
-	const newBookmarks = flatList.filter((bookmark) => bookmark.dateAdded > lastCheck)
 
-	if (newBookmarks.length > 0) {
-		storage.sync.set({ syncbookmarks: Date.now() })
-		setTimeout(() => quickLinks(undefined, { addLinks: newBookmarks }))
+	for (const { title, bookmarks } of folders) {
+		if (synced.includes(title)) {
+			console.log(bookmarks)
+		}
 	}
 }
 
@@ -96,7 +95,12 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		folder.dataset.title = list.title
 		container?.appendChild(folder)
 
-		if (list.title === 'topsites') h2.textContent = tradThis('Most visited')
+		if (list.title === 'topsites' && syncButton) {
+			h2.textContent = tradThis('Most visited')
+			folder.classList.add('synced')
+			syncButton.setAttribute('disabled', '')
+			syncButton.textContent = tradThis('Always synced')
+		}
 
 		for (const bookmark of list.bookmarks) {
 			const li = getHTMLTemplate<HTMLLIElement>('bookmarks-item-template', 'li')
@@ -134,18 +138,24 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 function importSelectedBookmarks(folders: BookmarksFolder[]) {
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder li.selected')
-	const selectedFolder = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
+	const selectedFolders = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
+	const syncedFolders = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.synced')
 	const linksIds = Object.values(selectedLinks).map((element) => element.id)
-	const folderIds = Object.values(selectedFolder).map((element) => element.dataset.title)
+	const folderIds = Object.values(selectedFolders).map((element) => element.dataset.title)
+	const syncedIds = Object.values(syncedFolders).map((element) => element.dataset.title)
 
 	const links: { title: string; url: string; group?: string }[] = []
-	const groups: string[] = []
+	const groups: { title: string; sync: boolean }[] = []
 
 	folders.forEach((folder) => {
 		const isFolderSelected = folderIds.includes(folder.title)
+		const isFolderSynced = syncedIds.includes(folder.title)
 
 		if (isFolderSelected) {
-			groups.push(folder.title)
+			groups.push({
+				title: folder.title,
+				sync: isFolderSynced,
+			})
 		}
 
 		folder.bookmarks.forEach((bookmark) => {
@@ -211,7 +221,7 @@ function toggleFolderSelect(folder: HTMLElement) {
 	} else {
 		selectButton.textContent = tradThis('Unselect group')
 		folder.classList.add('selected')
-		// syncButton?.removeAttribute('disabled')
+		syncButton?.removeAttribute('disabled')
 		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
 	}
 
@@ -219,9 +229,17 @@ function toggleFolderSelect(folder: HTMLElement) {
 }
 
 function toggleFolderSync(folder: HTMLElement) {
+	const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
+
+	if (!syncButton) {
+		return
+	}
+
 	if (folder.classList.contains('synced')) {
+		syncButton.textContent = tradThis('Sync with browser')
 		folder.classList.remove('synced')
 	} else {
+		syncButton.textContent = tradThis('Back to classic links')
 		folder.classList.add('synced')
 	}
 }

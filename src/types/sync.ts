@@ -64,6 +64,7 @@ declare namespace Sync {
 		selected: string
 		groups: string[]
 		pinned: string[]
+		synced: string[]
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]
