@@ -35,16 +35,6 @@ aside.see-through {
 	opacity: 0.2;
 }
 
-aside a {
-	color: var(--color-blue);
-	border-radius: 4px;
-	text-decoration: none;
-}
-
-aside a:hover {
-	text-decoration: underline;
-}
-
 aside hr {
 	width: 100%;
 	margin: 10px 0;

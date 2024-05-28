@@ -26,7 +26,9 @@ dialog button {
 dialog button:disabled {
 	opacity: 0.3;
 	cursor: default;
+	pointer-events: none;
 	background-color: transparent;
+	filter: grayscale(1);
 }
 
 dialog button.btn-red:disabled:hover,
@@ -38,7 +40,8 @@ dialog button:disabled:hover {
 dialog button:focus-visible,
 dialog button:hover {
 	color: white;
-	background-color: #2c7be5;
+	background-color: var(--color-blue);
+	/* background-color: #2c7be5; */
 }
 
 dialog button.btn-red:focus-visible,

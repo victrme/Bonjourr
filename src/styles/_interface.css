@@ -136,7 +136,7 @@
 	backdrop-filter: blur(0);
 	-webkit-backdrop-filter: blur(0);
 	cursor: pointer;
-	transition: background-color 0.6s var(--out-cubic);
+	transition: background-color 0.1s var(--out-cubic);
 }
 
 #show-settings img {
@@ -165,7 +165,7 @@
 	background-color: rgba(170, 170, 170, 0.4);
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	border: 1px solid rgba(255, 255, 255, 0.075)
+	border: 1px solid rgba(255, 255, 255, 0.075);
 }
 
 #show-settings.shown button:hover {

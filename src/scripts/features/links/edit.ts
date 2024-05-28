@@ -21,8 +21,7 @@ interface EditStates {
 		link: boolean
 		folder: boolean
 		title: boolean
-		topsite: boolean
-		topsites: boolean
+		synced: boolean
 		addgroup: boolean
 	}
 }
@@ -60,8 +59,7 @@ export default async function openEditDialog(event: Event) {
 		link: classNames.some((cl) => cl.includes('block') && !cl.includes('folder')),
 		folder: classNames.some((cl) => cl.includes('block') && cl.includes('folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
-		topsite: classNames.some((cl) => cl?.includes('topsites-group')),
-		topsites: classNames.some((cl) => cl.includes('topsites-title')),
+		synced: classNames.some((cl) => cl.includes('synced')),
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
 	}
 
@@ -148,15 +146,15 @@ function toggleEditInputs(): string[] {
 	domtitle.value = ''
 
 	if (container.mini) {
-		if (target.topsites) inputs = ['pin']
+		if (target.synced) inputs = ['pin', 'delete']
 		else if (target.addgroup) inputs = ['title', 'add']
 		else if (target.title) inputs = ['title', 'delete', 'pin', 'apply']
 	}
 
 	if (container.group) {
-		if (target.topsites) inputs = ['unpin']
+		if (target.link && target.synced) inputs = []
+		else if (target.synced) inputs = ['unpin', 'delete']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
-		else if (target.topsite) inputs = []
 		else if (target.folder) inputs = ['title', 'delete', 'apply']
 		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply']
 		else inputs = ['title', 'url', 'icon', 'add']
@@ -297,7 +295,7 @@ async function submitChanges(event: SubmitEvent) {
 }
 
 async function addSelection() {
-	if (editStates.target.title) addGroup(domtitle.value)
+	if (editStates.target.title) addGroup([{ title: domtitle.value }])
 	if (editStates.target.folder) addSelectionToNewFolder()
 	if (editStates.container.group) addLinkFromEditDialog()
 }
@@ -308,7 +306,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
-		addGroup(domtitle.value)
+		addGroup([{ title: domtitle.value }])
 		closeEditDialog()
 		return
 	}
@@ -383,11 +381,13 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 
 function addLinkFromEditDialog() {
 	linksUpdate({
-		addLink: {
-			group: editStates.group,
-			title: domtitle.value,
-			url: domurl.value,
-		},
+		addLinks: [
+			{
+				group: editStates.group,
+				title: domtitle.value,
+				url: domurl.value,
+			},
+		],
 	})
 }
 
