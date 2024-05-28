@@ -80,7 +80,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	}
 
 	// set class before appendBlock, cannot be moved
-	domlinkblocks.className = init.linkstyle ?? 'large'
+	domlinkblocks.classList.add(init.linkstyle ?? 'large')
 	domlinkblocks.classList.toggle('titles', init.linktitles)
 	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)

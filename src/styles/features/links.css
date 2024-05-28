@@ -2,6 +2,7 @@
 
 #linkblocks {
 	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
+	max-width: var(--links-width);
 }
 
 #linkblocks.hidden {
@@ -23,6 +24,24 @@
 #linkblocks.select-all.inline li:hover span,
 #linkblocks.select-all.text li:hover span {
 	text-decoration: none;
+}
+
+#linkblocks.text-left #link-mini,
+#linkblocks.text-left .link-list {
+	justify-content: start;
+}
+
+#linkblocks.text-left .link-group {
+	align-items: start;
+}
+
+#linkblocks.text-right #link-mini,
+#linkblocks.text-right .link-list {
+	justify-content: end;
+}
+
+#linkblocks.text-right .link-group {
+	align-items: end;
 }
 
 /* Link Group */
@@ -70,6 +89,7 @@ li.block:active {
 	column-gap: var(--column-gap);
 	min-height: var(--min-height);
 	min-width: 6em;
+	width: 100%;
 	padding: 0;
 	margin: 0;
 	max-width: var(--links-width);
@@ -634,14 +654,18 @@ li.block.folder img {
 	column-gap: 1em;
 	width: 100%;
 	margin: auto;
-	padding: 1em;
+	padding-top: 1em;
 	box-sizing: border-box;
 }
 
 #link-mini:has(.add-group.selected),
 #link-mini:hover {
-	/* To offset add-group: 3 width + 1 gap + 1 padding */
-	padding-left: 5em;
+	/* To offset add-group: 3 width + 1 gap */
+	padding-left: 4em;
+}
+#linkblocks.text-left #link-mini:has(.add-group.selected),
+#linkblocks.text-left #link-mini:hover {
+	padding-left: 0;
 }
 
 #link-mini .link-title {

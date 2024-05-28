@@ -310,9 +310,9 @@ function setAlign(id: Key, item?: Item) {
 		elem.style.placeSelf = item?.box || ''
 
 		if (id === 'quicklinks') {
-			document.getElementById('linkblocks')?.classList.remove('align-start', 'align-end')
-			if (item?.text == 'left') document.getElementById('linkblocks')?.classList.add('align-start')
-			if (item?.text == 'right') document.getElementById('linkblocks')?.classList.add('align-end')
+			document.getElementById('linkblocks')?.classList.remove('text-left', 'text-right')
+			if (item?.text == 'left') document.getElementById('linkblocks')?.classList.add('text-left')
+			if (item?.text == 'right') document.getElementById('linkblocks')?.classList.add('text-right')
 		} else {
 			elem.style.textAlign = item?.text || ''
 		}
@@ -860,10 +860,10 @@ export default function moveElements(init?: Move, events?: UpdateMove) {
 		)
 
 		const removeDrag = () => {
-			firstPos = { x: 0, y: 0 };
-			(moverdom as HTMLElement).style.removeProperty('cursor');
+			firstPos = { x: 0, y: 0 }
+			;(moverdom as HTMLElement).style.removeProperty('cursor')
 			document.documentElement.style.removeProperty('overscroll-behavior')
-			
+
 			moverdom?.removeEventListener('mousemove', moverDrag)
 			moverdom?.removeEventListener('touchmove', moverDrag)
 		}
