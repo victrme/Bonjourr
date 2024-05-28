@@ -1,7 +1,7 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInGroup, getLinksInFolder } from './helpers'
 import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle } from './groups'
 import { displayInterface } from '../../index'
-import { syncBookmarks } from './bookmarks'
+import { initBookmarkSync, syncBookmarks } from './bookmarks'
 import displayEditDialog from './edit'
 import { folderClick } from './folders'
 import startDrag from './drag'
@@ -85,9 +85,13 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
 	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
-	initblocks(init)
+	if (init.linkgroups.synced.length > 0) {
+		await initBookmarkSync(init)
+	}
+
 	initGroups(init, !!init)
 	initRows(init.linksrow, init.linkstyle)
+	initblocks(init)
 }
 
 // Initialisation
@@ -96,8 +100,6 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
-
-	syncBookmarks(data)
 
 	for (const group of [...pinned, selected]) {
 		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
@@ -139,6 +141,10 @@ export async function initblocks(data: Sync.Storage): Promise<true> {
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
 		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
 		const fragment = document.createDocumentFragment()
+
+		if (group.synced) {
+			group.links = syncBookmarks(group.title)
+		}
 
 		for (const link of group.links) {
 			let li = group.lis.find((li) => li.id === link._id)
@@ -633,7 +639,7 @@ function handleSafariNewtab(e: Event) {
 
 // Helpers
 
-function validateLink(title: string, url: string, parent?: string): Links.Elem {
+export function validateLink(title: string, url: string, parent?: string): Links.Elem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 
 	url = stringMaxSize(url, 512)

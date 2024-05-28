@@ -1,8 +1,8 @@
 import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
+import quickLinks, { validateLink } from '.'
 import { MAIN_API, PLATFORM } from '../../defaults'
 import { tradThis } from '../../utils/translations'
 import { isLink } from './helpers'
-import quickLinks from '.'
 import storage from '../../storage'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode
@@ -21,44 +21,48 @@ type BookmarksFolderItem = {
 	dateAdded: number
 }
 
+let browserBookmarkFolders: BookmarksFolder[] = []
+
 export default async function linksImport() {
-	let treenode = await getBookmarkTree()
-
-	const permission = treenode ? true : await getPermissions()
 	const data = await storage.sync.get()
-
-	if (!permission) treenode = await getBookmarkTree()
-	if (!treenode) return
 
 	document.querySelectorAll('#bookmarks-container > *')?.forEach((node) => {
 		node.remove()
 	})
 
-	createBookmarksDialog(treenode[0], data)
+	await initBookmarkSync(data)
+	createBookmarksDialog()
 }
 
-export async function syncBookmarks(data?: Sync.Storage) {
-	const treenode = await getBookmarkTree()
-	data = data ?? (await storage.sync.get())
+export async function initBookmarkSync(data: Sync.Storage) {
+	let treenode = await getBookmarkTree()
+	const permission = treenode ? true : await getPermissions()
 
-	if (!treenode) {
-		return
+	if (!permission) treenode = await getBookmarkTree()
+	if (!treenode) return
+
+	if (treenode) {
+		browserBookmarkFolders = bookmarkTreeToFolderList(treenode[0], data)
 	}
+}
 
-	const synced = data.linkgroups.synced
-	const folders = bookmarkTreeToFolderList(treenode[0], data)
+export function syncBookmarks(group: string): Links.Link[] {
+	const folder = browserBookmarkFolders.find((folder) => folder.title === group)
+	const syncedLinks: Links.Link[] = []
 
-	for (const { title, bookmarks } of folders) {
-		if (synced.includes(title)) {
-			console.log(bookmarks)
+	if (folder) {
+		for (const bookmark of folder.bookmarks) {
+			syncedLinks.push(validateLink(bookmark.title, bookmark.url, folder.title))
 		}
 	}
+
+	return syncedLinks
 }
 
 // Bookmarks Dialog
 
-async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
-	const bookmarkFolders = bookmarkTreeToFolderList(treenode, data)
+async function createBookmarksDialog() {
+	const bookmarkFolders = browserBookmarkFolders
 
 	let bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')
 	let container = document.querySelector<HTMLElement>('#bookmarks-container')
@@ -130,6 +134,7 @@ async function createBookmarksDialog(treenode: Treenode, data: Sync.Storage) {
 		}
 	}
 
+	document.getElementById('bmk_apply')?.setAttribute('disabled', '')
 	document.dispatchEvent(new Event('toggle-settings'))
 	bookmarksdom.showModal()
 	setTimeout(() => bookmarksdom.classList.add('shown'))
@@ -156,6 +161,11 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 				title: folder.title,
 				sync: isFolderSynced,
 			})
+		}
+
+		if (isFolderSynced) {
+			quickLinks(undefined, { addLinks: [] })
+			return
 		}
 
 		folder.bookmarks.forEach((bookmark) => {
@@ -208,6 +218,7 @@ function closeDialog(event: Event) {
 function toggleFolderSelect(folder: HTMLElement) {
 	const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 	const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
+	const isTopSites = folder.querySelector('h2')?.textContent === tradThis('Most visited')
 
 	if (!selectButton || !syncButton) {
 		return
@@ -221,8 +232,11 @@ function toggleFolderSelect(folder: HTMLElement) {
 	} else {
 		selectButton.textContent = tradThis('Unselect group')
 		folder.classList.add('selected')
-		syncButton?.removeAttribute('disabled')
 		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
+
+		if (!isTopSites) {
+			syncButton?.removeAttribute('disabled')
+		}
 	}
 
 	handleApplyButtonText()
@@ -342,9 +356,9 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): Bookm
 	for (const [folder, { bookmarks }] of Object.entries(folders)) {
 		const allUsed = bookmarks.every((b) => b.used)
 		const isGroup = data.linkgroups.groups.includes(folder)
-		const isTopSites = isGroup && folder === 'topsites'
+		const isSynced = data.linkgroups.synced.includes(folder)
 
-		if (isTopSites || (isGroup && allUsed)) {
+		if (isSynced || (isGroup && allUsed)) {
 			folders[folder].used = true
 		}
 	}
