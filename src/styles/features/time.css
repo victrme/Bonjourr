@@ -30,6 +30,7 @@
 #digital {
 	margin: 0;
 	margin-bottom: 0.1em;
+	margin-inline-start: var(--seconds-margin-offset);
 	font-size: calc(var(--clock-size) * 6);
 	line-height: 1em;
 	font-weight: 200;
@@ -64,6 +65,7 @@
 
 #time.seconds #digital-ss {
 	display: inline-block;
+	width: var(--seconds-width);
 }
 
 #analog {

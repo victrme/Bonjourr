@@ -19,6 +19,7 @@ type ClockUpdate = {
 type DateFormat = Sync.Storage['dateformat']
 
 const oneInFive = Math.random() > 0.8 ? 1 : 0
+let numberWidths = [1]
 let clockInterval: number
 
 export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
@@ -119,6 +120,10 @@ function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat)
 	document.getElementById('time')?.classList.toggle('analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
+	if (clock.seconds) {
+		setSecondsWidthInCh()
+	}
+
 	clearInterval(clockInterval)
 	start()
 
@@ -156,8 +161,13 @@ function digital(date: Date, ampm: boolean, seconds: boolean) {
 	}
 
 	if (seconds) {
-		// Avoid layout shifts by keeping same width based on the average width
-		ss.style.width = secondsWidthInCh(date)
+		// Avoid layout shifts by rounding width
+		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
+		const width = getSecondsWidthInCh(second)
+		const offset = (-2 + width).toFixed(1)
+
+		domclock?.style.setProperty('--seconds-width', `${width}ch`)
+		domclock?.style.setProperty('--seconds-margin-offset', `${offset}ch`)
 	}
 
 	domclock?.classList.toggle('zero', !ampm && h < 10)
@@ -257,24 +267,21 @@ function greetings(date: Date, name?: string) {
 	domname.textContent = name ?? ''
 }
 
-//
 // Helpers
-//
 
-function secondsWidthInCh(date: Date): string {
+function setSecondsWidthInCh() {
 	const span = document.getElementById('digital-number-width')!
-	const ratios = [1]
-	let zero = span.offsetWidth
+	const zero = span.offsetWidth
+	numberWidths = [1]
 
-	for (let i = 1; i < 10; i++) {
+	for (let i = 1; i < 6; i++) {
 		span.textContent = i.toString()
-		ratios.push(span.offsetWidth / zero)
+		numberWidths.push(Math.round((span.offsetWidth / zero) * 10) / 10)
 	}
+}
 
-	const ten = date.getSeconds() < 10 ? 0 : Math.round(date.getSeconds() / 10)
-	const width = Math.min(...ratios) + ratios[ten]
-
-	return width + 'ch'
+function getSecondsWidthInCh(second: number): number {
+	return Math.min(...numberWidths) + numberWidths[second]
 }
 
 function zonedDate(timezone: string = 'auto') {
