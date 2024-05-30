@@ -36,14 +36,34 @@
 	font-weight: var(--font-weight-clock);
 }
 
-#digital.zero #digital-hh-leading-zero {
-	display: inline;
+#digital span {
+	text-align: left;
+}
+
+#digital-hh,
+#digital-mm,
+#digital-hh-separator {
+	display: inline-block;
 }
 
 #digital-hh-leading-zero,
 #digital-mm-separator,
 #digital-ss {
 	display: none;
+}
+
+#digital.zero #digital-hh-leading-zero {
+	display: inline-block;
+}
+
+#digital-number-width {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+}
+
+#time.seconds #digital-ss {
+	display: inline-block;
 }
 
 #analog {

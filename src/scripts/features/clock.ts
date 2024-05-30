@@ -131,7 +131,7 @@ function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat)
 		if (clock.analog) {
 			analog(date, clock.seconds)
 		} else {
-			digital(date, clock.ampm)
+			digital(date, clock.ampm, clock.seconds)
 		}
 
 		if (isNextHour) {
@@ -141,7 +141,7 @@ function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat)
 	}
 }
 
-function digital(date: Date, ampm: boolean) {
+function digital(date: Date, ampm: boolean, seconds: boolean) {
 	const domclock = document.getElementById('digital')
 	const hh = document.getElementById('digital-hh') as HTMLElement
 	const mm = document.getElementById('digital-mm') as HTMLElement
@@ -153,6 +153,11 @@ function digital(date: Date, ampm: boolean) {
 
 	if (ampm && h === 0) {
 		h = 12
+	}
+
+	if (seconds) {
+		// Avoid layout shifts by keeping same width based on the average width
+		ss.style.width = secondsWidthInCh(date)
 	}
 
 	domclock?.classList.toggle('zero', !ampm && h < 10)
@@ -255,6 +260,22 @@ function greetings(date: Date, name?: string) {
 //
 // Helpers
 //
+
+function secondsWidthInCh(date: Date): string {
+	const span = document.getElementById('digital-number-width')!
+	const ratios = [1]
+	let zero = span.offsetWidth
+
+	for (let i = 1; i < 10; i++) {
+		span.textContent = i.toString()
+		ratios.push(span.offsetWidth / zero)
+	}
+
+	const ten = date.getSeconds() < 10 ? 0 : Math.round(date.getSeconds() / 10)
+	const width = Math.min(...ratios) + ratios[ten]
+
+	return width + 'ch'
+}
 
 function zonedDate(timezone: string = 'auto') {
 	const date = new Date()
