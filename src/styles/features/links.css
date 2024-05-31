@@ -89,7 +89,6 @@ li.block:active {
 	column-gap: var(--column-gap);
 	min-height: var(--min-height);
 	min-width: 6em;
-	width: 100%;
 	padding: 0;
 	margin: 0;
 	max-width: var(--links-width);
@@ -204,7 +203,7 @@ li.block span {
 	top: 3.5em;
 }
 
-#linkblocks.backgrounds li.block div {
+#linkblocks.backgrounds li div {
 	background-color: white;
 	border-color: white;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
@@ -268,8 +267,7 @@ li.block.folder > div {
 	column-gap: 4px;
 	height: var(--icon-size);
 	grid-template-columns: 1fr 1fr;
-	background-color: #fff3;
-	border: 1px solid #fff4;
+	border: 1px solid transparent;
 	box-sizing: border-box;
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
@@ -286,6 +284,16 @@ li.block.folder img {
 	user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
+}
+
+#linkblocks li.block.folder > div,
+#linkblocks.backgrounds li.block.folder > div {
+	background-color: #fff3;
+	border-color: #fff4;
+}
+
+#linkblocks.backgrounds li.block.folder img {
+	background-color: white;
 }
 
 /* Link styles */
@@ -320,7 +328,6 @@ li.block.folder img {
 	width: 100%;
 	height: auto;
 	box-sizing: border-box;
-	background-color: white;
 }
 
 /* Medium */
@@ -531,7 +538,6 @@ li.block.folder img {
 	position: absolute;
 	padding: 1px;
 	transform: scale(0.5) translate(-50%, -50%);
-	background-color: white;
 }
 
 #linkblocks.medium li.folder img:nth-child(1),

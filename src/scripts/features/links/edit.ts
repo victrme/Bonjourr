@@ -67,13 +67,14 @@ export default async function openEditDialog(event: Event) {
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
-	editStates = { group, selectall, container, dragging, target, selected: [] }
+	editStates = { group, selectall, container, dragging, target, selected: getSelectedIds() }
 
 	const inputs = toggleEditInputs()
-
 	const folderTitle = container.folder && target.title
-	const noSelection = selectall && getSelectedIds().length === 0
+	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
+
+	console.log(noInputs, folderTitle, noSelection, dragging)
 
 	if (noInputs || folderTitle || noSelection || dragging) {
 		closeEditDialog()
@@ -155,17 +156,20 @@ function toggleEditInputs(): string[] {
 	}
 
 	if (container.group) {
-		if (target.link && target.synced) inputs = []
+		if (target.synced) inputs = []
+		else if (selectall) inputs = ['delete', 'add']
 		else if (target.synced) inputs = ['unpin', 'delete']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
 		else if (target.folder) inputs = ['title', 'delete', 'apply']
 		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply']
-		else inputs = ['title', 'url', 'icon', 'add']
+		else inputs = ['title', 'url', 'add']
 	}
 
 	if (container.folder) {
 		if (target.title) inputs = []
-		if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+		else if (selectall) inputs = ['delete', 'unfolder']
+		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+		else inputs = ['title', 'url', 'add']
 	}
 
 	for (const id of inputs) {
