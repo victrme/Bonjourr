@@ -7,8 +7,8 @@ export function getDefaultIcon(url: string) {
 }
 
 export function getSelectedIds(): string[] {
-	const selected = document.querySelectorAll<HTMLLIElement>('#linkblocks li.selected')
-	return Array.from(selected).map((li) => li.id)
+	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
+	return Object.values(selected).map((li) => li.id)
 }
 
 export function getLiFromEvent(event: Event): HTMLLIElement | undefined {

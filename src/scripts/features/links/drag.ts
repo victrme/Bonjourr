@@ -27,7 +27,10 @@ let domlinkgroup: HTMLDivElement
 let domlinklist: HTMLUListElement
 
 export default function startDrag(event: PointerEvent) {
-	if (event.button > 0) {
+	const path = event.composedPath() as Element[]
+	const isSynced = path.some((node) => node?.className?.includes('synced'))
+
+	if (isSynced || event.button > 0) {
 		return
 	}
 
@@ -35,8 +38,6 @@ export default function startDrag(event: PointerEvent) {
 		beforeStartDrag(event)
 		return
 	}
-
-	const path = event.composedPath() as Element[]
 
 	domlinkgroup = path.find((el) => el.classList.contains('link-group')) as HTMLDivElement
 	domlinklist = path.find((el) => el.classList.contains('link-list')) as HTMLUListElement
@@ -58,7 +59,7 @@ export default function startDrag(event: PointerEvent) {
 
 	for (let i = 0; i < titles.length; i++) {
 		const { x, y, height, width } = titles[i].getBoundingClientRect()
-		const id = i.toString()
+		const id = titles[i]?.dataset.group ?? ''
 
 		dropzones.add({ id, x, y, h: height, w: width })
 	}
@@ -232,6 +233,8 @@ function applyDragChangeParent(id: string) {
 			}
 		}
 
+		console.log(id)
+
 		targetId = id
 
 		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
@@ -249,8 +252,9 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchmove', moveDrag)
 	document.documentElement.removeEventListener('touchend', endDrag)
 
-	const domlinklist = document.querySelector<HTMLDivElement>('.link-list')
 	const path = event.composedPath() as Element[]
+	const domlinklist = document.querySelector<HTMLDivElement>('.link-list')
+	const group = domlinkgroup?.dataset.group ?? ''
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
 	const coord = coords[newIndex]
@@ -274,15 +278,15 @@ function endDrag(event: Event) {
 	setTimeout(() => {
 		const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
 		const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
-		const createsFolder = toFolder && !targetIsFolder && !draggedIsFolder
+		const createFolder = toFolder && !targetIsFolder && !draggedIsFolder
 		const concatFolders = toFolder && (targetIsFolder || draggedIsFolder)
 
-		if (createsFolder) {
-			linksUpdate({ addFolder: [targetId, draggedId] })
+		if (createFolder) {
+			linksUpdate({ addFolder: { ids: [targetId, draggedId], group } })
 		}
 		//
 		else if (concatFolders) {
-			linksUpdate({ addToFolder: { source: draggedId, target: targetId } })
+			linksUpdate({ addToFolder: { source: draggedId, target: targetId, group } })
 		}
 		//
 		else if (toTab) {
@@ -290,7 +294,7 @@ function endDrag(event: Event) {
 		}
 		//
 		else if (outOfFolder) {
-			linksUpdate({ unfolder: { ids: [draggedId], group: domlinkgroup } })
+			linksUpdate({ unfolder: { ids: [draggedId], group } })
 		}
 		//
 		else {

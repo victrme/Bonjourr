@@ -30,7 +30,7 @@
 #digital {
 	margin: 0;
 	margin-bottom: 0.1em;
-	margin-inline-start: var(--seconds-margin-offset);
+	margin-inline-start: calc(var(--seconds-margin-offset) / 2);
 	font-size: calc(var(--clock-size) * 6);
 	line-height: 1em;
 	font-weight: 200;

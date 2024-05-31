@@ -26,10 +26,10 @@ type LinksUpdate = {
 	groupTitle?: { old: string; new: string }
 	moveLinks?: string[]
 	addLinks?: AddLinks
-	addFolder?: string[]
+	addFolder?: { ids: string[]; group?: string }
 	addToFolder?: AddToFolder
 	moveToGroup?: MoveToTarget
-	unfolder?: { ids: string[]; group: HTMLDivElement }
+	unfolder?: { ids: string[]; group: string }
 	deleteLinks?: string[]
 }
 
@@ -42,6 +42,7 @@ type AddLinks = {
 type AddToFolder = {
 	source: string
 	target: string
+	group: string
 }
 
 type MoveToTarget = {
@@ -64,7 +65,7 @@ type SubmitFolder = { type: 'folder'; ids: string[]; title?: string; group?: str
 
 type Style = Sync.Storage['linkstyle']
 
-const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
+const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
@@ -329,7 +330,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.addFolder) {
-		linkSubmission({ type: 'folder', ids: update.addFolder })
+		linkSubmission({ type: 'folder', ...update.addFolder })
 	}
 
 	if (update.addToFolder) {
@@ -394,8 +395,8 @@ async function linkSubmission(args: SubmitLink | SubmitFolder) {
 	}
 
 	if (type === 'folder') {
-		const { ids, title } = args
-		newlinks = addLinkFolder(ids, title)
+		const { ids, title, group } = args
+		newlinks = addLinkFolder(ids, title, group)
 
 		for (const id of ids) {
 			const elem = data[id] as Link
@@ -421,7 +422,7 @@ async function linkSubmission(args: SubmitLink | SubmitFolder) {
 	initblocks(data)
 }
 
-function addLinkFolder(ids: string[], title?: string): Links.Folder[] {
+function addLinkFolder(ids: string[], title?: string, group?: string): Links.Folder[] {
 	const titledom = document.getElementById('e-title') as HTMLInputElement
 
 	title = title ?? titledom.value
@@ -445,13 +446,13 @@ function addLinkFolder(ids: string[], title?: string): Links.Folder[] {
 			_id: 'links' + randomString(6),
 			folder: true,
 			order: order,
-			parent: 0,
+			parent: group ?? '',
 			title: title,
 		},
 	]
 }
 
-async function addLinkToFolder({ target, source }: AddToFolder) {
+async function addLinkToFolder({ target, source, group }: AddToFolder) {
 	let data = await storage.sync.get()
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
@@ -484,21 +485,15 @@ async function addLinkToFolder({ target, source }: AddToFolder) {
 		}
 	})
 
-	linkSubmission({ ids, type: 'folder', title })
+	linkSubmission({ ids, type: 'folder', title, group })
 	animateLinksRemove(ids)
 }
 
-async function unfolder({ ids, group }: { ids: string[]; group: HTMLDivElement }) {
-	const folderid = group.dataset.folder
-	const index = parseInt(group.dataset.index ?? '-1')
+async function unfolder({ ids, group }: { ids: string[]; group: string }) {
 	let data = await storage.sync.get()
 
-	if (!folderid) {
-		return
-	}
-
 	for (const id of ids) {
-		;(data[id] as Link).parent = index
+		;(data[id] as Link).parent = group
 		;(data[id] as Link).order = Date.now()
 	}
 

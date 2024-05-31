@@ -182,6 +182,12 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		}
 	}
 
+	if (current?.linkgroups?.groups && toImport?.linkgroups?.groups) {
+		current.linkgroups.groups = []
+		current.linkgroups.pinned = []
+		current.linkgroups.synced = []
+	}
+
 	// Link tabs
 	// if (toImport.linktabs) {
 	// 	const importTitles = toImport.linktabs.titles

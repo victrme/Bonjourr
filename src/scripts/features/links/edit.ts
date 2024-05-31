@@ -10,6 +10,7 @@ import storage from '../../storage'
 
 interface EditStates {
 	group: string
+	selected: string[]
 	selectall: boolean
 	dragging: boolean
 	container: {
@@ -41,7 +42,6 @@ let editStates: EditStates
 export default async function openEditDialog(event: Event) {
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
-	const selected = document.querySelectorAll('#linkblocks li.selected')
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
@@ -67,12 +67,12 @@ export default async function openEditDialog(event: Event) {
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
-	editStates = { group, selectall, container, dragging, target }
+	editStates = { group, selectall, container, dragging, target, selected: [] }
 
 	const inputs = toggleEditInputs()
 
 	const folderTitle = container.folder && target.title
-	const noSelection = selectall && !selected[0]
+	const noSelection = selectall && getSelectedIds().length === 0
 	const noInputs = inputs.length === 0
 
 	if (noInputs || folderTitle || noSelection || dragging) {
@@ -117,6 +117,9 @@ export default async function openEditDialog(event: Event) {
 			li?.classList.add('selected')
 		}
 	}
+
+	// Must be placed after "li?.classList.add('selected')"
+	editStates.selected = getSelectedIds()
 
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())
@@ -301,7 +304,7 @@ async function addSelection() {
 }
 
 async function applyLinkChanges(origin: 'inputs' | 'button') {
-	const id = getSelectedIds()[0]
+	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
@@ -392,7 +395,7 @@ function addLinkFromEditDialog() {
 }
 
 function addSelectionToNewFolder() {
-	linksUpdate({ addFolder: getSelectedIds() })
+	linksUpdate({ addFolder: { ids: editStates.selected, group: editStates.group } })
 	document.dispatchEvent(new Event('remove-select-all'))
 }
 
@@ -401,18 +404,14 @@ function deleteSelection() {
 		deleteGroup(editStates.group)
 	} else {
 		linksUpdate({
-			deleteLinks: getSelectedIds(),
+			deleteLinks: editStates.selected,
 		})
 	}
 }
 
 function removeSelectionFromFolder() {
-	const group = document.querySelector<HTMLDivElement>(`.link-group[data-index="${editStates.group}"]`)
-
-	if (group) {
-		linksUpdate({ unfolder: { ids: getSelectedIds(), group } })
-		document.dispatchEvent(new Event('remove-select-all'))
-	}
+	linksUpdate({ unfolder: { ids: editStates.selected, group: editStates.group } })
+	document.dispatchEvent(new Event('remove-select-all'))
 }
 
 function closeEditDialog() {
