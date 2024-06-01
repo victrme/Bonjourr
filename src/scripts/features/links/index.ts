@@ -28,7 +28,7 @@ type LinksUpdate = {
 	addLinks?: AddLinks
 	addFolder?: { ids: string[]; group?: string }
 	addToFolder?: AddToFolder
-	moveToGroup?: MoveToTarget
+	moveToGroup?: MoveToGroup
 	unfolder?: { ids: string[]; group: string }
 	deleteLinks?: string[]
 }
@@ -45,7 +45,7 @@ type AddToFolder = {
 	group: string
 }
 
-type MoveToTarget = {
+type MoveToGroup = {
 	ids: string[]
 	target: string
 	source?: string
@@ -346,7 +346,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 
 	if (update.moveToGroup) {
-		moveToOtherTab(update.moveToGroup)
+		moveToGroup(update.moveToGroup)
 	}
 
 	if (update.moveLinks) {
@@ -456,7 +456,7 @@ async function addLinkToFolder({ target, source, group }: AddToFolder) {
 	let data = await storage.sync.get()
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
-	const title = linktarget.title
+	const title = linktarget?.title
 	const ids: string[] = []
 
 	if (!linktarget || !linksource) {
@@ -534,11 +534,11 @@ async function moveLinks(ids: string[]) {
 	initblocks(data)
 }
 
-async function moveToOtherTab({ ids, target }: MoveToTarget) {
+async function moveToGroup({ ids, target }: MoveToGroup) {
 	let data = await storage.sync.get()
 
 	for (const id of ids) {
-		;(data[id] as Link).parent = parseInt(target)
+		;(data[id] as Link).parent = target
 		;(data[id] as Link).order = Date.now()
 	}
 

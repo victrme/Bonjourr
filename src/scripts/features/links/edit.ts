@@ -303,8 +303,8 @@ async function submitChanges(event: SubmitEvent) {
 
 async function addSelection() {
 	if (editStates.target.title) addGroup([{ title: domtitle.value }])
-	if (editStates.target.folder) addSelectionToNewFolder()
-	if (editStates.container.group) addLinkFromEditDialog()
+	else if (editStates.selectall) addSelectionToNewFolder()
+	else if (editStates.container.group) addLinkFromEditDialog()
 }
 
 async function applyLinkChanges(origin: 'inputs' | 'button') {

@@ -264,6 +264,7 @@ function userActionsEvents() {
 			linkfolder: path.some((el) => el?.className?.includes('folder')),
 			folder: path.some((el) => el?.className?.includes('in-folder')),
 			interface: pathIds.includes('interface'),
+			editlink: pathIds.includes('editlink'),
 			settings: path.some((el) => el?.id === 'settings'),
 			showsettings: path.some((el) => el?.id === 'show-settings'),
 		}
@@ -276,8 +277,9 @@ function userActionsEvents() {
 			document.dispatchEvent(new Event('toggle-settings'))
 		}
 
-		if (open.contextmenu) {
+		if (open.contextmenu && !on.editlink) {
 			document.dispatchEvent(new Event('close-edit'))
+			return
 		}
 
 		if ((on.body || on.interface) === false) {

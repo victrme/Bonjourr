@@ -11,7 +11,7 @@ type Coords = {
 type DropArea = 'left' | 'right' | 'center' | ''
 
 const blocks: Map<string, HTMLLIElement> = new Map()
-const dropzones: Set<Coords & { id: string }> = new Set()
+const dropzones: Set<Coords & { id: string; type: 'group' | 'link' }> = new Set()
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
 let lastdropAreas: DropArea[] = ['']
 let draggedId = ''
@@ -61,14 +61,14 @@ export default function startDrag(event: PointerEvent) {
 		const { x, y, height, width } = titles[i].getBoundingClientRect()
 		const id = titles[i]?.dataset.group ?? ''
 
-		dropzones.add({ id, x, y, h: height, w: width })
+		dropzones.add({ id, x, y, h: height, w: width, type: 'group' })
 	}
 
 	for (const li of lis) {
 		let { x, y, width, height } = li.getBoundingClientRect()
 		const id = li.id
 
-		dropzones.add({ id, x, y, w: width, h: height })
+		dropzones.add({ id, x, y, w: width, h: height, type: 'link' })
 
 		x = x - listRect!.x
 		y = y - listRect!.y
@@ -150,7 +150,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	dx = x - cox
 	dy = y - coy
 
-	const [curr, id] = isDraggingOver({ x, y }) ?? ['', '']
+	const [curr, id, type] = isDraggingOver({ x, y }) ?? ['', '']
 	const last = lastdropAreas[lastdropAreas.length - 1]
 	const secondlast = lastdropAreas[lastdropAreas.length - 2]
 	const staysOutsideCenter = curr === last && curr !== 'center'
@@ -169,11 +169,10 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	const movesFromCenter = last === 'center' && (curr === 'left' || curr === 'right')
 	const movesAcrossArea = curr !== secondlast
 	const staysInCenter = last === curr && curr === 'center'
-	const isDroppingToTab = isNaN(parseInt(id)) === false
 	const idAtCurrentArea = ids[initids.indexOf(id)]
 
 	if (staysInCenter) {
-		applyDragChangeParent(isDroppingToTab ? id : idAtCurrentArea)
+		applyDragChangeParent(type === 'group' ? id : idAtCurrentArea, type)
 	}
 
 	if (movesFromCenter && movesAcrossArea) {
@@ -208,7 +207,7 @@ function applyDragMoveBlocks(id: string) {
 	}
 }
 
-function applyDragChangeParent(id: string) {
+function applyDragChangeParent(id: string, type: 'group' | 'link') {
 	const propertyValue = getComputedStyle(domlinkblocks).getPropertyValue('--drop-delay')
 	const dropDelay = parseInt(propertyValue || '120')
 
@@ -217,23 +216,19 @@ function applyDragChangeParent(id: string) {
 	dragChangeParentTimeout = setTimeout(() => {
 		const isDraggedId = id === draggedId
 		const inFolder = domlinkgroup?.classList.contains('in-folder')
-		const parentIsTab = parseInt(id) > -1
 
 		if (isDraggedId || inFolder) {
 			return
 		}
 
-		if (parentIsTab) {
-			const buttons = [...document.querySelectorAll<HTMLElement>('#link-mini button')]
-			const selectedIndex = buttons.findIndex((btn) => btn?.classList?.contains('selected'))
-			const parentIsSelectedTab = parseInt(id) === selectedIndex
+		if (type === 'group') {
+			const selectedGroup = document.querySelector<HTMLElement>('#link-mini .link-title.selected')
+			const selection = selectedGroup?.dataset.group ?? id
 
-			if (parentIsSelectedTab) {
+			if (selection === id) {
 				return
 			}
 		}
-
-		console.log(id)
 
 		targetId = id
 
@@ -261,8 +256,9 @@ function endDrag(event: Event) {
 
 	const isDroppable = !!document.querySelector('.drop-source')
 	const outOfFolder = path[0] !== domlinklist && domlinkgroup.classList.contains('in-folder')
-	const toFolder = isDroppable && isNaN(parseInt(targetId)) === true
-	const toTab = isDroppable && isNaN(parseInt(targetId)) === false
+	const targetIdIsLink = targetId.startsWith('links') && targetId.length === 11
+	const toFolder = isDroppable && targetIdIsLink
+	const toTab = isDroppable && !targetIdIsLink
 
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
@@ -328,7 +324,7 @@ function deplaceDraggedElem() {
 	}
 }
 
-function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string] | undefined {
+function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 'group' | 'link'] | undefined {
 	for (const zone of dropzones) {
 		// Detect 20% left edge of dropzones ( left + corner )
 		const ll = zone.x
@@ -358,7 +354,7 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string] 
 		if (isInCenter) area = 'center'
 
 		if (area) {
-			return [area, zone.id]
+			return [area, zone.id, zone.type]
 		}
 	}
 }
