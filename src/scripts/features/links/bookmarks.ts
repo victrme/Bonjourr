@@ -121,7 +121,7 @@ async function createBookmarksDialog() {
 
 			li_img.src = `${MAIN_API}/favicon/blob/${url.origin}`
 			li_title.textContent = bookmark.title
-			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '')
+			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '').slice(0, -1).replace('/', '')
 			li_button.addEventListener('click', () => li.classList.toggle('selected'))
 			li_button.addEventListener('click', handleApplyButtonText)
 
@@ -225,12 +225,12 @@ function toggleFolderSelect(folder: HTMLElement) {
 	}
 
 	if (folder.classList.contains('selected')) {
-		selectButton.textContent = tradThis('Select group')
+		selectButton.textContent = tradThis('Select this group')
 		folder.classList.remove('selected', 'synced')
 		syncButton?.classList.remove('selected')
 		syncButton?.setAttribute('disabled', '')
 	} else {
-		selectButton.textContent = tradThis('Unselect group')
+		selectButton.textContent = tradThis('Unselect this group')
 		folder.classList.add('selected')
 		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
 
@@ -253,7 +253,7 @@ function toggleFolderSync(folder: HTMLElement) {
 		syncButton.textContent = tradThis('Sync with browser')
 		folder.classList.remove('synced')
 	} else {
-		syncButton.textContent = tradThis('Back to classic links')
+		syncButton.textContent = tradThis('Go back to regular links')
 		folder.classList.add('synced')
 	}
 }
