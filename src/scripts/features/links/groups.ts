@@ -92,17 +92,13 @@ function changeGroup(event: Event) {
 
 // Updates
 
-export async function toggleGroups(on: boolean) {
-	const data = await storage.sync.get('linkgroups')
-
-	data.linkgroups.on = on
-	storage.sync.set({ linkgroups: data.linkgroups })
-
+export function toggleGroups(on: boolean, data: Sync.Storage): Sync.Storage {
 	domlinkblocks?.classList.toggle('with-groups', on)
+	data.linkgroups.on = on
+	return data
 }
 
-export async function changeGroupTitle(title: { old: string; new: string }) {
-	const data = await storage.sync.get()
+export function changeGroupTitle(title: { old: string; new: string }, data: Sync.Storage): Sync.Storage {
 	const index = data.linkgroups.groups.indexOf(title.old)
 
 	for (const link of getLinksInGroup(data, title.old)) {
@@ -114,9 +110,8 @@ export async function changeGroupTitle(title: { old: string; new: string }) {
 
 	data.linkgroups.groups[index] = title.new
 	data.linkgroups.selected = title.new
-	storage.sync.set(data)
-
 	initGroups(data)
+	return data
 }
 
 export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync.Storage): Sync.Storage {

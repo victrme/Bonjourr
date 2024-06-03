@@ -74,8 +74,6 @@ export default async function openEditDialog(event: Event) {
 	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
 
-	console.log(noInputs, folderTitle, noSelection, dragging)
-
 	if (noInputs || folderTitle || noSelection || dragging) {
 		closeEditDialog()
 		return
@@ -156,7 +154,7 @@ function toggleEditInputs(): string[] {
 	}
 
 	if (container.group) {
-		if (target.synced) inputs = []
+		if (target.synced && target.link) inputs = ['synced']
 		else if (selectall) inputs = ['delete', 'add']
 		else if (target.synced) inputs = ['unpin', 'delete']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
@@ -342,24 +340,13 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 	//
 	else if (editStates.target.title) {
-		changeGroupTitle({
-			old: domeditlink.dataset.group ?? '',
-			new: domtitle.value,
-		})
+		quickLinks(undefined, { groupTitle: { old: domeditlink.dataset.group ?? '', new: domtitle.value } })
 		closeEditDialog()
 		return
 	}
 	//
 	else if (editStates.container.group && !editStates.target.link) {
-		quickLinks(undefined, {
-			addLinks: [
-				{
-					group: editStates.group,
-					title: domtitle.value,
-					url: domurl.value,
-				},
-			],
-		})
+		quickLinks(undefined, { addLinks: [{ group: editStates.group, title: domtitle.value, url: domurl.value }] })
 		closeEditDialog()
 		return
 	}

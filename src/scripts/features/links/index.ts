@@ -1,7 +1,7 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInGroup, getLinksInFolder } from './helpers'
 import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle } from './groups'
-import { displayInterface } from '../../index'
 import { initBookmarkSync, syncBookmarks } from './bookmarks'
+import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
 import { folderClick } from './folders'
 import startDrag from './drag'
@@ -15,7 +15,8 @@ import storage from '../../storage'
 
 type Link = Links.Link
 type Elem = Links.Elem
-type Style = Sync.Storage['linkstyle']
+type Style = Sync['linkstyle']
+type Sync = Sync.Storage
 
 type AddLinks = {
 	title: string
@@ -82,7 +83,7 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
-export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdate) {
+export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return
@@ -110,7 +111,7 @@ export default async function quickLinks(init?: Sync.Storage, event?: LinksUpdat
 
 // Initialisation
 
-export async function initblocks(data: Sync.Storage): Promise<true> {
+export async function initblocks(data: Sync): Promise<true> {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
@@ -318,7 +319,6 @@ function selectAll(event: MouseEvent) {
 
 	// start select all debounce
 	if (!selectAllActive && primaryButton && event.type === 'pointerdown') {
-		//
 		if ((event as PointerEvent)?.pointerType === 'touch') {
 			return
 		}
@@ -340,67 +340,29 @@ function removeSelectAll() {
 export async function linksUpdate(update: LinksUpdate) {
 	let data = await storage.sync.get()
 
-	if (update.addLinks) {
-		data = linkSubmission({ type: 'link', links: update.addLinks }, data)
-	}
+	if (update.addLinks) data = linkSubmission({ type: 'link', links: update.addLinks }, data)
+	if (update.addFolder) data = linkSubmission({ type: 'folder', ...update.addFolder }, data)
+	if (update.addGroups) data = addGroup(update.addGroups, data)
+	if (update.moveLinks) data = moveLinks(update.moveLinks, data)
+	if (update.moveToGroup) data = moveToGroup(update.moveToGroup, data)
+	if (update.moveToFolder) data = moveToFolder(update.moveToFolder, data)
+	if (update.moveOutFolder) data = moveOutFolder(update.moveOutFolder, data)
+	if (update.deleteLinks) data = deleteLinks(update.deleteLinks, data)
+	if (update.deleteGroup) data = deleteGroup(update.deleteGroup, data)
+	if (update.groupTitle) data = changeGroupTitle(update.groupTitle, data)
+	if (update.groups !== undefined) data = toggleGroups(update.groups, data)
+	if (update.newtab !== undefined) setOpenInNewTab(update.newtab)
+	if (update.styles) setLinkStyle(update.styles)
+	if (update.row) setRows(update.row)
 
-	if (update.addFolder) {
-		data = linkSubmission({ type: 'folder', ...update.addFolder }, data)
-	}
-
-	if (update.addGroups) {
-		data = addGroup(update.addGroups, data)
-	}
-
-	if (update.moveLinks) {
-		data = moveLinks(update.moveLinks, data)
-	}
-
-	if (update.moveToGroup) {
-		data = moveToGroup(update.moveToGroup, data)
-	}
-
-	if (update.moveToFolder) {
-		data = moveToFolder(update.moveToFolder, data)
-	}
-
-	if (update.moveOutFolder) {
-		data = moveOutFolder(update.moveOutFolder, data)
-	}
-
-	if (update.deleteLinks) {
-		data = deleteLinks(update.deleteLinks, data)
-	}
-
-	if (update.deleteGroup) {
-		data = deleteGroup(update.deleteGroup, data)
-	}
-
-	if (update.groupTitle) {
-		changeGroupTitle(update.groupTitle)
-	}
-
-	if (update.groups !== undefined) {
-		toggleGroups(update.groups)
-	}
-
-	if (update.newtab !== undefined) {
-		setOpenInNewTab(update.newtab)
-	}
-
-	if (update.styles) {
-		setLinkStyle(update.styles)
-	}
-
-	if (update.row) {
-		setRows(update.row)
+	if (update.styles || update.row || update.newtab) {
 		return
 	}
 
 	storage.sync.set(data)
 }
 
-function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync.Storage): Sync.Storage {
+function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	const folderid = domlinkblocks.dataset.folderid
 	const type = args.type
 	let newlinks: Link[] = []
@@ -482,7 +444,7 @@ function addLinkFolder(ids: string[], title?: string, group?: string): Links.Fol
 	]
 }
 
-function moveToFolder({ target, source, group }: MoveToFolder, data: Sync.Storage): Sync.Storage {
+function moveToFolder({ target, source, group }: MoveToFolder, data: Sync): Sync {
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
 	const title = linktarget?.title
@@ -519,7 +481,7 @@ function moveToFolder({ target, source, group }: MoveToFolder, data: Sync.Storag
 	return data
 }
 
-function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync.Storage): Sync.Storage {
+function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync): Sync {
 	for (const id of ids) {
 		;(data[id] as Link).parent = group
 		;(data[id] as Link).order = Date.now()
@@ -530,7 +492,7 @@ function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: S
 	return data
 }
 
-function deleteLinks(ids: string[], data: Sync.Storage): Sync.Storage {
+function deleteLinks(ids: string[], data: Sync): Sync {
 	for (const id of ids) {
 		const link = data[id] as Link
 
@@ -549,7 +511,7 @@ function deleteLinks(ids: string[], data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-function moveLinks(ids: string[], data: Sync.Storage): Sync.Storage {
+function moveLinks(ids: string[], data: Sync): Sync {
 	ids.forEach((id, i) => {
 		;(data[id] as Link).order = i
 	})
@@ -558,7 +520,7 @@ function moveLinks(ids: string[], data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-function moveToGroup({ ids, target }: MoveToGroup, data: Sync.Storage): Sync.Storage {
+function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 	for (const id of ids) {
 		;(data[id] as Link).parent = target
 		;(data[id] as Link).order = Date.now()
@@ -588,9 +550,7 @@ function setOpenInNewTab(newtab: boolean) {
 		}
 	}
 
-	storage.sync.set({
-		linknewtab: newtab,
-	})
+	storage.sync.set({ linknewtab: newtab })
 }
 
 async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }) {
@@ -687,7 +647,7 @@ function animateLinksRemove(ids: string[]) {
 	}
 }
 
-function correctLinksOrder(data: Sync.Storage): Sync.Storage {
+function correctLinksOrder(data: Sync): Sync {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const folderIds = allLinks.filter((link) => link.folder).map(({ _id }) => _id)
 
@@ -712,6 +672,6 @@ function correctLinksOrder(data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-function isLinkStyle(s: string): s is Sync.Storage['linkstyle'] {
+function isLinkStyle(s: string): s is Sync['linkstyle'] {
 	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
