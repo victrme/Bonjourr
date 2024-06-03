@@ -282,7 +282,7 @@ function endDrag(event: Event) {
 		}
 		//
 		else if (concatFolders) {
-			linksUpdate({ addToFolder: { source: draggedId, target: targetId, group } })
+			linksUpdate({ moveToFolder: { source: draggedId, target: targetId, group } })
 		}
 		//
 		else if (toTab) {
@@ -290,7 +290,7 @@ function endDrag(event: Event) {
 		}
 		//
 		else if (outOfFolder) {
-			linksUpdate({ unfolder: { ids: [draggedId], group } })
+			linksUpdate({ moveOutFolder: { ids: [draggedId], group } })
 		}
 		//
 		else {

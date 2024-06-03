@@ -1,10 +1,10 @@
-import { deleteGroup, addGroup, changeGroupTitle, togglePinGroup } from './groups'
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
+import { changeGroupTitle, togglePinGroup } from './groups'
 import { getComposedPath, stringMaxSize } from '../../utils'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
-import { linksUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
+import quickLinks from '.'
 import debounce from '../../utils/debounce'
 import storage from '../../storage'
 
@@ -265,70 +265,101 @@ queueMicrotask(() => {
 })
 
 async function submitChanges(event: SubmitEvent) {
-	switch (event.submitter?.id) {
-		case 'edit-delete':
-			deleteSelection()
-			break
+	const change = event.submitter?.id
+	const { container, target, group, selected, selectall } = editStates
 
-		case 'edit-add':
-			addSelection()
-			break
+	if (change === 'edit-apply') {
+		applyLinkChanges('button')
+	}
 
-		case 'edit-apply':
-			applyLinkChanges('button')
-			break
+	if (change === 'edit-inputs') {
+		applyLinkChanges('inputs')
+		event.preventDefault()
+		return
+	}
 
-		case 'edit-unfolder':
-			removeSelectionFromFolder()
-			break
-
-		case 'edit-inputs': {
-			applyLinkChanges('inputs')
-			event.preventDefault()
-			return
+	if (change === 'edit-delete') {
+		if (target.title) {
+			quickLinks(undefined, { deleteGroup: group })
+		} else {
+			quickLinks(undefined, { deleteLinks: selected })
 		}
+	}
 
-		case 'edit-pin':
-		case 'edit-unpin': {
-			const group = editStates.group
-			const action = event.submitter.id === 'edit-pin' ? 'pin' : 'unpin'
-			togglePinGroup(group, action)
-			break
+	if (change === 'edit-add') {
+		if (target.title) {
+			quickLinks(undefined, {
+				addGroups: [{ title: domtitle.value }],
+			})
 		}
+		//
+		else if (selectall) {
+			quickLinks(undefined, {
+				addFolder: { ids: selected, group: group },
+			})
+			document.dispatchEvent(new Event('remove-select-all'))
+		}
+		//
+		else if (container.group) {
+			quickLinks(undefined, {
+				addLinks: [{ group, title: domtitle.value, url: domurl.value }],
+			})
+		}
+	}
+
+	if (change === 'edit-unfolder') {
+		quickLinks(undefined, {
+			moveOutFolder: {
+				ids: editStates.selected,
+				group: editStates.group,
+			},
+		})
+		document.dispatchEvent(new Event('remove-select-all'))
+	}
+
+	if (change === 'edit-pin') {
+		togglePinGroup(group, 'pin')
+	}
+
+	if (change === 'edit-unpin') {
+		togglePinGroup(group, 'unpin')
 	}
 
 	event.preventDefault()
 	setTimeout(closeEditDialog)
 }
 
-async function addSelection() {
-	if (editStates.target.title) addGroup([{ title: domtitle.value }])
-	else if (editStates.selectall) addSelectionToNewFolder()
-	else if (editStates.container.group) addLinkFromEditDialog()
-}
-
 async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
+	let data = await storage.sync.get()
 
 	if (editStates.target.addgroup) {
-		addGroup([{ title: domtitle.value }])
+		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
 		closeEditDialog()
 		return
 	}
 	//
 	else if (editStates.target.title) {
-		closeEditDialog()
 		changeGroupTitle({
 			old: domeditlink.dataset.group ?? '',
 			new: domtitle.value,
 		})
+		closeEditDialog()
 		return
 	}
 	//
 	else if (editStates.container.group && !editStates.target.link) {
-		addLinkFromEditDialog()
+		quickLinks(undefined, {
+			addLinks: [
+				{
+					group: editStates.group,
+					title: domtitle.value,
+					url: domurl.value,
+				},
+			],
+		})
 		closeEditDialog()
 		return
 	}
@@ -341,7 +372,6 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 		inputs.forEach((node) => node.blur())
 	}
 
-	const data = await storage.sync.get(id)
 	const link = data[id] as Links.Link
 
 	const title = {
@@ -384,38 +414,6 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 
 	storage.sync.set({ [id]: link })
-}
-
-function addLinkFromEditDialog() {
-	linksUpdate({
-		addLinks: [
-			{
-				group: editStates.group,
-				title: domtitle.value,
-				url: domurl.value,
-			},
-		],
-	})
-}
-
-function addSelectionToNewFolder() {
-	linksUpdate({ addFolder: { ids: editStates.selected, group: editStates.group } })
-	document.dispatchEvent(new Event('remove-select-all'))
-}
-
-function deleteSelection() {
-	if (editStates.target.title) {
-		deleteGroup(editStates.group)
-	} else {
-		linksUpdate({
-			deleteLinks: editStates.selected,
-		})
-	}
-}
-
-function removeSelectionFromFolder() {
-	linksUpdate({ unfolder: { ids: editStates.selected, group: editStates.group } })
-	document.dispatchEvent(new Event('remove-select-all'))
 }
 
 function closeEditDialog() {

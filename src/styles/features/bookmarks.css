@@ -31,11 +31,11 @@
 	flex-direction: column;
 }
 
-[data-theme="dark"] #bookmarks-header {
+[data-theme='dark'] #bookmarks-header {
 	box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 15px;
 }
 
-[data-theme="light"] #bookmarks-header {
+[data-theme='light'] #bookmarks-header {
 	box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
 }
 
@@ -79,11 +79,11 @@
 	padding: 16px;
 }
 
-[data-theme="dark"] .bookmarks-folder {
+[data-theme='dark'] .bookmarks-folder {
 	background-color: #fff1;
 }
 
-[data-theme="light"] .bookmarks-folder {
+[data-theme='light'] .bookmarks-folder {
 	background-color: #fff3;
 }
 
@@ -101,10 +101,6 @@
 	user-select: none;
 	pointer-events: none;
 	opacity: 0.3;
-}
-
-.bookmarks-folder[data-title='topsites'] {
-	margin-bottom: 3em;
 }
 
 .bookmarks-folder-title {
@@ -129,10 +125,11 @@
 }
 
 #bookmarks li {
-	border-radius: 8px;
+	border-radius: 1em;
 	border: 2px solid transparent;
 	transition: background-color 0.05s, border-color 0.05s;
 	user-select: none;
+	overflow: hidden;
 }
 
 #bookmarks li.selected {
@@ -147,7 +144,6 @@
 #bookmarks li button {
 	width: 100%;
 	padding: 5px;
-	border-radius: 14px;
 	transition: background-color 0.05s;
 }
 
@@ -155,11 +151,11 @@
 	color: var(--color-text);
 }
 
-[data-theme="light"] #bookmarks li button:hover {
+[data-theme='light'] #bookmarks li button:hover {
 	background-color: #fff6;
 }
 
-[data-theme="dark"] #bookmarks li button:hover {
+[data-theme='dark'] #bookmarks li button:hover {
 	background-color: #fff2;
 }
 

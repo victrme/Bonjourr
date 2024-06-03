@@ -15,23 +15,7 @@ import storage from '../../storage'
 
 type Link = Links.Link
 type Elem = Links.Elem
-
-type LinksUpdate = {
-	styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
-	newtab?: boolean
-	row?: string
-	groups?: boolean
-	addGroups?: { title: string; sync?: boolean }[]
-	deleteGroup?: string
-	groupTitle?: { old: string; new: string }
-	moveLinks?: string[]
-	addLinks?: AddLinks
-	addFolder?: { ids: string[]; group?: string }
-	addToFolder?: AddToFolder
-	moveToGroup?: MoveToGroup
-	unfolder?: { ids: string[]; group: string }
-	deleteLinks?: string[]
-}
+type Style = Sync.Storage['linkstyle']
 
 type AddLinks = {
 	title: string
@@ -39,16 +23,50 @@ type AddLinks = {
 	group?: string
 }[]
 
-type AddToFolder = {
+type AddGroups = {
+	title: string
+	sync?: boolean
+}[]
+
+type MoveToFolder = {
 	source: string
 	target: string
 	group: string
 }
 
 type MoveToGroup = {
-	ids: string[]
-	target: string
 	source?: string
+	target: string
+	ids: string[]
+}
+
+type SubmitLink = {
+	type: 'link'
+	links: AddLinks
+}
+
+type SubmitFolder = {
+	type: 'folder'
+	ids: string[]
+	title?: string
+	group?: string
+}
+
+type LinksUpdate = {
+	row?: string
+	newtab?: boolean
+	groups?: boolean
+	addLinks?: AddLinks
+	addGroups?: AddGroups
+	addFolder?: { ids: string[]; group?: string }
+	moveLinks?: string[]
+	moveToFolder?: MoveToFolder
+	moveToGroup?: MoveToGroup
+	moveOutFolder?: { ids: string[]; group: string }
+	deleteGroup?: string
+	deleteLinks?: string[]
+	groupTitle?: { old: string; new: string }
+	styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
 }
 
 type LinkGroups = {
@@ -59,11 +77,6 @@ type LinkGroups = {
 	lis: HTMLLIElement[]
 	div: HTMLDivElement | null
 }[]
-
-type SubmitLink = { type: 'link'; links: AddLinks }
-type SubmitFolder = { type: 'folder'; ids: string[]; title?: string; group?: string }
-
-type Style = Sync.Storage['linkstyle']
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
@@ -325,48 +338,50 @@ function removeSelectAll() {
 // Updates
 
 export async function linksUpdate(update: LinksUpdate) {
+	let data = await storage.sync.get()
+
 	if (update.addLinks) {
-		linkSubmission({ type: 'link', links: update.addLinks })
+		data = linkSubmission({ type: 'link', links: update.addLinks }, data)
 	}
 
 	if (update.addFolder) {
-		linkSubmission({ type: 'folder', ...update.addFolder })
+		data = linkSubmission({ type: 'folder', ...update.addFolder }, data)
 	}
 
-	if (update.addToFolder) {
-		addLinkToFolder(update.addToFolder)
-	}
-
-	if (update.unfolder) {
-		unfolder(update.unfolder)
-	}
-
-	if (update.deleteLinks) {
-		deleteLinks(update.deleteLinks)
-	}
-
-	if (update.moveToGroup) {
-		moveToGroup(update.moveToGroup)
+	if (update.addGroups) {
+		data = addGroup(update.addGroups, data)
 	}
 
 	if (update.moveLinks) {
-		moveLinks(update.moveLinks)
+		data = moveLinks(update.moveLinks, data)
+	}
+
+	if (update.moveToGroup) {
+		data = moveToGroup(update.moveToGroup, data)
+	}
+
+	if (update.moveToFolder) {
+		data = moveToFolder(update.moveToFolder, data)
+	}
+
+	if (update.moveOutFolder) {
+		data = moveOutFolder(update.moveOutFolder, data)
+	}
+
+	if (update.deleteLinks) {
+		data = deleteLinks(update.deleteLinks, data)
+	}
+
+	if (update.deleteGroup) {
+		data = deleteGroup(update.deleteGroup, data)
+	}
+
+	if (update.groupTitle) {
+		changeGroupTitle(update.groupTitle)
 	}
 
 	if (update.groups !== undefined) {
 		toggleGroups(update.groups)
-	}
-
-	if (update.addGroups !== undefined) {
-		addGroup(update.addGroups)
-	}
-
-	if (update.deleteGroup !== undefined) {
-		deleteGroup(update.deleteGroup)
-	}
-
-	if (update.groupTitle !== undefined) {
-		changeGroupTitle(update.groupTitle)
 	}
 
 	if (update.newtab !== undefined) {
@@ -379,12 +394,14 @@ export async function linksUpdate(update: LinksUpdate) {
 
 	if (update.row) {
 		setRows(update.row)
+		return
 	}
+
+	storage.sync.set(data)
 }
 
-async function linkSubmission(args: SubmitLink | SubmitFolder) {
+function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync.Storage): Sync.Storage {
 	const folderid = domlinkblocks.dataset.folderid
-	const data = await storage.sync.get()
 	const type = args.type
 	let newlinks: Link[] = []
 
@@ -411,15 +428,28 @@ async function linkSubmission(args: SubmitLink | SubmitFolder) {
 	for (const link of newlinks) {
 		const addsFromFolder = folderid && !link.folder
 		const noParents = link.parent === undefined
+		const { selected, synced } = data.linkgroups
 
-		if (addsFromFolder) link.parent = folderid
-		else if (noParents) link.parent = data.linkgroups.selected
+		if (addsFromFolder) {
+			link.parent = folderid
+		}
+		//
+		else if (noParents && synced.includes(selected)) {
+			link.parent = ''
+			data.linkgroups.selected = ''
+			initGroups(data)
+		}
+		//
+		else if (noParents) {
+			link.parent = selected
+		}
 
 		data[link._id] = link
 	}
 
-	storage.sync.set(correctLinksOrder(data))
+	data = correctLinksOrder(data)
 	initblocks(data)
+	return data
 }
 
 function addLinkFolder(ids: string[], title?: string, group?: string): Links.Folder[] {
@@ -452,15 +482,14 @@ function addLinkFolder(ids: string[], title?: string, group?: string): Links.Fol
 	]
 }
 
-async function addLinkToFolder({ target, source, group }: AddToFolder) {
-	let data = await storage.sync.get()
+function moveToFolder({ target, source, group }: MoveToFolder, data: Sync.Storage): Sync.Storage {
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
 	const title = linktarget?.title
 	const ids: string[] = []
 
 	if (!linktarget || !linksource) {
-		return
+		return data
 	}
 
 	const getIdsFrom = (id: string) => getLinksInFolder(data, id).map((l) => l._id)
@@ -485,26 +514,23 @@ async function addLinkToFolder({ target, source, group }: AddToFolder) {
 		}
 	})
 
-	linkSubmission({ ids, type: 'folder', title, group })
+	data = linkSubmission({ ids, type: 'folder', title, group }, data)
 	animateLinksRemove(ids)
+	return data
 }
 
-async function unfolder({ ids, group }: { ids: string[]; group: string }) {
-	let data = await storage.sync.get()
-
+function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync.Storage): Sync.Storage {
 	for (const id of ids) {
 		;(data[id] as Link).parent = group
 		;(data[id] as Link).order = Date.now()
 	}
 
 	data = correctLinksOrder(data)
-	storage.sync.set(data)
 	initblocks(data)
+	return data
 }
 
-async function deleteLinks(ids: string[]) {
-	const data = await storage.sync.get()
-
+function deleteLinks(ids: string[], data: Sync.Storage): Sync.Storage {
 	for (const id of ids) {
 		const link = data[id] as Link
 
@@ -518,36 +544,32 @@ async function deleteLinks(ids: string[]) {
 	}
 
 	storage.sync.clear()
-	storage.sync.set(correctLinksOrder(data))
-
+	data = correctLinksOrder(data)
 	animateLinksRemove(ids)
+	return data
 }
 
-async function moveLinks(ids: string[]) {
-	const data = await storage.sync.get()
-
+function moveLinks(ids: string[], data: Sync.Storage): Sync.Storage {
 	ids.forEach((id, i) => {
 		;(data[id] as Link).order = i
 	})
 
-	storage.sync.set(data)
 	initblocks(data)
+	return data
 }
 
-async function moveToGroup({ ids, target }: MoveToGroup) {
-	let data = await storage.sync.get()
-
+function moveToGroup({ ids, target }: MoveToGroup, data: Sync.Storage): Sync.Storage {
 	for (const id of ids) {
 		;(data[id] as Link).parent = target
 		;(data[id] as Link).order = Date.now()
 	}
 
 	data = correctLinksOrder(data)
-	storage.sync.set(data)
 	initblocks(data)
+	return data
 }
 
-async function setOpenInNewTab(newtab: boolean) {
+function setOpenInNewTab(newtab: boolean) {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.block a')
 
 	for (const anchor of anchors) {
@@ -566,7 +588,9 @@ async function setOpenInNewTab(newtab: boolean) {
 		}
 	}
 
-	storage.sync.set({ linknewtab: newtab })
+	storage.sync.set({
+		linknewtab: newtab,
+	})
 }
 
 async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }) {

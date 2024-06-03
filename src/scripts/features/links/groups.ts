@@ -119,19 +119,20 @@ export async function changeGroupTitle(title: { old: string; new: string }) {
 	initGroups(data)
 }
 
-export async function addGroup(groups: { title: string; sync?: boolean }[]) {
-	const data = await storage.sync.get()
-
+export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync.Storage): Sync.Storage {
 	for (let { title, sync } of groups) {
 		const isReserved = title === '' || title === '+'
 		const isAlreadyUsed = data.linkgroups.groups.includes(title)
 
 		if (isReserved || isAlreadyUsed) {
-			return
+			return data
 		}
 
 		for (const link of getLinksInGroup(data, '+')) {
-			data[link._id] = { ...link, parent: title }
+			data[link._id] = {
+				...link,
+				parent: title,
+			}
 		}
 
 		data.linkgroups.selected = title
@@ -142,20 +143,19 @@ export async function addGroup(groups: { title: string; sync?: boolean }[]) {
 		}
 	}
 
-	storage.sync.set(data)
 	initGroups(data)
 	initblocks(data)
+	return data
 }
 
-export async function deleteGroup(group: string) {
-	const data = await storage.sync.get()
+export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 	const { groups, pinned, synced, selected } = data.linkgroups
 
 	const isBroken = groups.indexOf(group) === -1
 	const isMinimum = groups.length === 1
 
 	if (isMinimum || isBroken) {
-		return
+		return data
 	}
 
 	for (const link of getLinksInGroup(data, group)) {
@@ -167,11 +167,10 @@ export async function deleteGroup(group: string) {
 	data.linkgroups.synced = synced.filter((g) => g !== group)
 	data.linkgroups.groups = groups.filter((g) => g !== group)
 
+	storage.sync.clear()
 	initblocks(data)
 	initGroups(data)
-
-	storage.sync.clear()
-	storage.sync.set(data)
+	return data
 }
 
 export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {

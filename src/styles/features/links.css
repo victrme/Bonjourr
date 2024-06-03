@@ -662,14 +662,10 @@ li.block.folder img {
 	width: 100%;
 	margin: auto;
 	padding-top: 1em;
+	padding-inline-start: 4em;
 	box-sizing: border-box;
 }
 
-#link-mini:has(.add-group.selected),
-#link-mini:hover {
-	/* To offset add-group: 3 width + 1 gap */
-	padding-left: 4em;
-}
 #linkblocks.text-left #link-mini:has(.add-group.selected),
 #linkblocks.text-left #link-mini:hover {
 	padding-left: 0;
@@ -680,14 +676,14 @@ li.block.folder img {
 }
 
 #link-mini .add-group {
-	display: none;
-	width: 3em;
+	visibility: hidden;
 	font-weight: bold;
+	width: 3em;
 }
 
 #link-mini .add-group.selected,
 #link-mini:hover .add-group {
-	display: initial;
+	visibility: visible;
 }
 
 #linkblocks.with-groups #link-mini,

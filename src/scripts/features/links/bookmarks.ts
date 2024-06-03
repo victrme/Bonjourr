@@ -38,8 +38,11 @@ export async function initBookmarkSync(data: Sync.Storage) {
 	let treenode = await getBookmarkTree()
 	const permission = treenode ? true : await getPermissions()
 
-	if (!permission) treenode = await getBookmarkTree()
-	if (!treenode) return
+	if (!permission) {
+		return
+	}
+
+	treenode = await getBookmarkTree()
 
 	if (treenode) {
 		browserBookmarkFolders = bookmarkTreeToFolderList(treenode[0], data)
@@ -121,7 +124,12 @@ async function createBookmarksDialog() {
 
 			li_img.src = `${MAIN_API}/favicon/blob/${url.origin}`
 			li_title.textContent = bookmark.title
-			li_url.textContent = url.href.replace(url.protocol, '').replace('//', '').replace('www.', '').slice(0, -1).replace('/', '')
+			li_url.textContent = url.href
+				.replace(url.protocol, '')
+				.replace('//', '')
+				.replace('www.', '')
+				.slice(0, -1)
+				.replace('/', '')
 			li_button.addEventListener('click', () => li.classList.toggle('selected'))
 			li_button.addEventListener('click', handleApplyButtonText)
 
@@ -164,7 +172,6 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 		}
 
 		if (isFolderSynced) {
-			quickLinks(undefined, { addLinks: [] })
 			return
 		}
 
@@ -180,15 +187,14 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 		})
 	})
 
-	if (groups.length > 0) {
-		quickLinks(undefined, { addGroups: groups })
-	}
+	quickLinks(undefined, {
+		groups: groups.length > 1 ? true : undefined,
+		addLinks: links,
+		addGroups: groups,
+	})
 
-	setTimeout(() => {
-		quickLinks(undefined, { addLinks: links })
-		bookmarksdom?.classList.remove('shown')
-		bookmarksdom?.close()
-	}, 10)
+	bookmarksdom?.classList.remove('shown')
+	bookmarksdom?.close()
 }
 
 function handleApplyButtonText() {
