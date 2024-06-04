@@ -975,6 +975,7 @@
 						<option value="inspirobot">Inspirobot</option>
 						<option value="kaamelott">Kaamelott</option>
 						<option value="user" class="trn">Custom</option>
+						<option value="url">URL</option>
 					</select>
 					<button type="submit">
 						<i></i>
@@ -994,6 +995,33 @@
 						placeholder="Author, Your quote.&#10;Author, Your second quote."
 						maxlength="8000"
 					></textarea>
+				</div>
+			</div>
+
+			<div id="quotes_url" class="dropdown">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_qturl">URL</label>
+
+					<form id="f_qturl" class="network-form">
+						<input
+							id="i_qturl"
+							type="url"
+							name="qturl"
+							minlength="3"
+							maxlength="512"
+							placeholder="https://example.com/quotes.csv"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+							spellcheck="false"
+						/>
+						<button type="submit">
+							<i></i>
+							<span>✓</span>
+						</button>
+					</form>
 				</div>
 			</div>
 

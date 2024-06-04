@@ -179,3 +179,7 @@ function componentToHex(c: number): string {
 	let hex = c.toString(16)
 	return hex.length == 1 ? '0' + hex : hex
 }
+
+export function equalsCaseInsensitive(a: string, b: string) {
+	return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
+}

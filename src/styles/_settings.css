@@ -416,7 +416,8 @@ aside form.valid button:not(:disabled):active {
 }
 
 #analog_options.shown,
-#unsplash_options.shown {
+#unsplash_options.shown,
+#quotes_url.shown {
 	max-height: 110px;
 }
 
