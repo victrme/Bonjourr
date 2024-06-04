@@ -124,6 +124,12 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 			.replaceAll('#analogSeconds', '#analog-seconds')
 	}
 
+	// 20.0.0
+
+	if (data?.css) {
+		data.css = data.css.replaceAll('.block', '.link')
+	}
+
 	storage.sync.remove('reviewPopup')
 	storage.sync.remove('usdate')
 	delete data.reviewPopup
@@ -259,7 +265,7 @@ function userActionsEvents() {
 		const pathIds = path.map((el) => (el as HTMLElement).id)
 
 		const on = {
-			link: path.some((el) => el?.classList?.contains('block')),
+			link: path.some((el) => el?.classList?.contains('link')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
 			linkfolder: path.some((el) => el?.className?.includes('folder')),
 			folder: path.some((el) => el?.className?.includes('in-folder')),

@@ -43,7 +43,7 @@ export default function startDrag(event: PointerEvent) {
 	domlinklist = path.find((el) => el.classList.contains('link-list')) as HTMLUListElement
 
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
-	const lis = domlinklist.querySelectorAll<HTMLLIElement>('li.block')
+	const lis = domlinklist.querySelectorAll<HTMLLIElement>('.link')
 	const titles = document.querySelectorAll<HTMLElement>('#link-mini button')
 	const listRect = domlinklist?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)

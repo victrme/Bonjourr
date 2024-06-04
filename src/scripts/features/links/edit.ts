@@ -56,8 +56,8 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	const target: EditStates['target'] = {
-		link: classNames.some((cl) => cl.includes('block') && !cl.includes('folder')),
-		folder: classNames.some((cl) => cl.includes('block') && cl.includes('folder')),
+		link: classNames.some((cl) => cl.includes('link') && !cl.includes('folder')),
+		folder: classNames.some((cl) => cl.includes('link') && cl.includes('folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
 		synced: classNames.some((cl) => cl.includes('synced')),
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
@@ -112,7 +112,7 @@ export default async function openEditDialog(event: Event) {
 		}
 
 		if (!selectall) {
-			document.querySelector('.block.selected')?.classList.remove('selected')
+			document.querySelector('.link.selected')?.classList.remove('selected')
 			li?.classList.add('selected')
 		}
 	}
@@ -405,7 +405,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 
 function closeEditDialog() {
 	if (domeditlink.open) {
-		document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
+		document.querySelectorAll('.link.selected').forEach((block) => block?.classList.remove('selected'))
 		domeditlink.removeAttribute('data-tab')
 		domeditlink.classList.remove('shown')
 		domeditlink.close()

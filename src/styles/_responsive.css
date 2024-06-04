@@ -81,7 +81,7 @@
 		display: block;
 	}
 
-	#mobile-drag-zone+.settings-title {
+	#mobile-drag-zone + .settings-title {
 		margin-top: 0;
 	}
 
@@ -201,7 +201,6 @@
 	select,
 	option,
 	input,
-	.importexport-tabs button,
 	#settings-footer {
 		font-size: 15px;
 	}
@@ -218,8 +217,6 @@
 	}
 
 	aside input:not(.range, .switch),
-	aside .importexport-tabs .glider,
-	aside .importexport-tabs,
 	aside .input-btn,
 	aside select {
 		min-height: 36px;
@@ -231,10 +228,5 @@
 		height: 25px;
 		min-width: 25px;
 		font-size: 15px;
-	}
-
-	.importexport-tabs button {
-		height: 36px;
-		border-radius: 13px;
 	}
 }

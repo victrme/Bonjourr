@@ -332,7 +332,7 @@ function selectAll(event: MouseEvent) {
 function removeSelectAll() {
 	clearTimeout(selectallTimer)
 	domlinkblocks.classList.remove('select-all')
-	domlinkblocks.querySelectorAll('.block').forEach((li) => li.classList.remove('selected'))
+	domlinkblocks.querySelectorAll('.link').forEach((li) => li.classList.remove('selected'))
 }
 
 // Updates
@@ -420,7 +420,7 @@ function addLinkFolder(ids: string[], title?: string, group?: string): Links.Fol
 	title = title ?? titledom.value
 	titledom.value = ''
 
-	const blocks = [...document.querySelectorAll<HTMLElement>('li.block')]
+	const blocks = [...document.querySelectorAll<HTMLElement>('.link')]
 	const idsOnInterface = blocks.map((block) => block.id)
 	const order = idsOnInterface.indexOf(ids[0])
 
@@ -532,7 +532,7 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 }
 
 function setOpenInNewTab(newtab: boolean) {
-	const anchors = document.querySelectorAll<HTMLAnchorElement>('.block a')
+	const anchors = document.querySelectorAll<HTMLAnchorElement>('.link a')
 
 	for (const anchor of anchors) {
 		if (BROWSER === 'safari') {

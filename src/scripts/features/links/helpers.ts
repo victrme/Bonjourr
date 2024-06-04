@@ -13,7 +13,7 @@ export function getSelectedIds(): string[] {
 
 export function getLiFromEvent(event: Event): HTMLLIElement | undefined {
 	const path = event.composedPath() as Element[]
-	const filtered = path.filter((el) => el.tagName === 'LI' && el.className?.includes('block'))
+	const filtered = path.filter((el) => el.tagName === 'LI' && el.className?.includes('link'))
 	const li = !!filtered[0] ? (filtered[0] as HTMLLIElement) : undefined
 	return li
 }
