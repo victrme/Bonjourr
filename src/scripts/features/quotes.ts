@@ -39,18 +39,18 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	let selection = init.local?.userQuoteSelection ?? 0
 	let quote: Quote = list[0]
 
-	const noCache = !list || list?.length === 0
-	const isUser = quotes.type === 'user'
-
-	if (noCache) {
-		list = await newQuoteFromAPI(lang, quotes.type)
-		quote = list[0]
-		storage.local.set({ quotesCache: list })
-	}
-
-	if (isUser) {
+	if (quotes.type === 'user') {
 		list = csvUserInputToQuotes(quotes.userlist)
 		quote = list[selection]
+	}
+	else {
+		const noCache = !list || list?.length === 0
+
+		if (noCache) {
+			list = await newQuoteFromAPI(lang, quotes.type)
+			quote = list[0]
+			storage.local.set({ quotesCache: list })
+		}
 	}
 
 	if (needsNewQuote) {
