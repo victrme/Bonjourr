@@ -36,28 +36,25 @@ export function toolboxEvents() {
 		updateMoveElement({ span: 'row' })
 	})
 
-	moverdom?.addEventListener('mousedown', function (event) {
-		if (validDragTarget(event)) {
-			moverdom?.addEventListener('mousemove', moverDrag)
-		}
-	})
-
-	moverdom?.addEventListener(
-		'touchstart',
-		function (event) {
-			if (validDragTarget(event)) {
-				moverdom?.addEventListener('touchmove', moverDrag)
-			}
-		},
-		{ passive: false }
-	)
-
+	moverdom?.addEventListener('mousedown', startDrag)
 	moverdom?.addEventListener('mouseup', removeDrag)
 	moverdom?.addEventListener('mouseleave', removeDrag)
+
+	moverdom?.addEventListener('touchstart', startDrag, { passive: false })
 	moverdom?.addEventListener('touchend', removeDrag)
 
-	function moverDrag(e: MouseEvent | TouchEvent) {
-		let pos = (e as TouchEvent).touches ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+	function startDrag(event: Event) {
+		const target = event.target as HTMLElement
+		const validTags = target?.tagName === 'HR' || target?.tagName === 'P'
+		const validIds = target?.id === 'element-mover' || target?.id === 'close-mover-wrapper'
+
+		if (validTags || validIds) {
+			moverdom?.addEventListener(event.type.includes('touch') ? 'touchmove' : 'mousemove', moverDrag)
+		}
+	}
+
+	function moverDrag(event: MouseEvent | TouchEvent) {
+		let pos = (event as TouchEvent).touches ? (event as TouchEvent).touches[0] : (event as MouseEvent)
 
 		let x = pos.clientX
 		let y = pos.clientY
@@ -86,18 +83,11 @@ export function toolboxEvents() {
 		moverdom?.removeEventListener('mousemove', moverDrag)
 		moverdom?.removeEventListener('touchmove', moverDrag)
 	}
-
-	function validDragTarget(event: Event): boolean {
-		const target = event.target as HTMLElement
-		const validTags = target?.tagName === 'HR' || target?.tagName === 'P'
-		const validIds = target?.id === 'element-mover' || target?.id === 'close-mover-wrapper'
-		return validIds || validTags
-	}
 }
 
-export function layoutButtons(column: Sync.MoveSelection) {
+export function layoutButtons(selection: Sync.MoveSelection) {
 	document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
-		button.classList.toggle('selected', button.dataset.layout === column)
+		button.classList.toggle('selected', button.dataset.layout === selection)
 	})
 }
 
@@ -172,8 +162,8 @@ export function alignButtons(align?: Sync.MoveAlign) {
 	const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 	const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-	boxBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === box))
-	textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === text))
+	boxBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (box || 'center')))
+	textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (text || 'center')))
 }
 
 export function resetButton(): boolean {

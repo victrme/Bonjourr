@@ -224,6 +224,7 @@ function layoutReset(data: Sync.Storage) {
 		grid = addGridWidget(grid, id, data.move.selection)
 	})
 
+	data.move.layouts[data.move.selection].items = {}
 	data.move.layouts[data.move.selection].grid = gridParse(grid)
 	storage.sync.set(data)
 
