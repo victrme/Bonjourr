@@ -40,7 +40,7 @@ export default async function toggleWidget(data: Sync.Storage, widget: [Widgets,
 	interfaceTransition.transition(200)
 }
 
-function toggleWidgetInSettings(states: [Widgets, boolean][]) {
+export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 	const inputids: { [key in Widgets]: string } = {
 		time: 'i_time',
 		main: 'i_main',
@@ -59,7 +59,7 @@ function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 	}
 }
 
-function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
+export function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
 	const domids: { [key in Widgets]: string } = {
 		time: 'time',
 		main: 'main',

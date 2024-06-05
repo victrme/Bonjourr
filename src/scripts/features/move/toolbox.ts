@@ -36,29 +36,21 @@ export function toolboxEvents() {
 		updateMoveElement({ span: 'row' })
 	})
 
-	moverdom?.addEventListener('mousedown', (e) => {
-		if ((e.target as HTMLElement)?.id === 'element-mover') {
+	moverdom?.addEventListener('mousedown', function (event) {
+		if (validDragTarget(event)) {
 			moverdom?.addEventListener('mousemove', moverDrag)
 		}
 	})
 
 	moverdom?.addEventListener(
 		'touchstart',
-		(e) => {
-			if ((e.target as HTMLElement)?.id === 'element-mover') {
+		function (event) {
+			if (validDragTarget(event)) {
 				moverdom?.addEventListener('touchmove', moverDrag)
 			}
 		},
 		{ passive: false }
 	)
-
-	const removeDrag = () => {
-		firstPos = { x: 0, y: 0 }
-		;(moverdom as HTMLElement).style.removeProperty('cursor')
-		document.documentElement.style.removeProperty('overscroll-behavior')
-		moverdom?.removeEventListener('mousemove', moverDrag)
-		moverdom?.removeEventListener('touchmove', moverDrag)
-	}
 
 	moverdom?.addEventListener('mouseup', removeDrag)
 	moverdom?.addEventListener('mouseleave', removeDrag)
@@ -85,6 +77,21 @@ export function toolboxEvents() {
 			document.documentElement.style.overscrollBehavior = 'none'
 			moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
 		}
+	}
+
+	function removeDrag() {
+		firstPos = { x: 0, y: 0 }
+		;(moverdom as HTMLElement).style.removeProperty('cursor')
+		document.documentElement.style.removeProperty('overscroll-behavior')
+		moverdom?.removeEventListener('mousemove', moverDrag)
+		moverdom?.removeEventListener('touchmove', moverDrag)
+	}
+
+	function validDragTarget(event: Event): boolean {
+		const target = event.target as HTMLElement
+		const validTags = target?.tagName === 'HR' || target?.tagName === 'P'
+		const validIds = target?.id === 'element-mover' || target?.id === 'close-mover-wrapper'
+		return validIds || validTags
 	}
 }
 

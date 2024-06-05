@@ -58,23 +58,17 @@
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	left: 2em; /* because of .pushed interface */
+	left: 2em;
 	top: 2em;
-	gap: 2em;
-	padding: 1em;
-	padding-top: 2em;
-	min-width: 12em;
+	gap: 24px;
+	padding: 16px 6px 8px;
+	min-width: 170px;
 	font-size: 14px;
-	color: var(--color-text);
-	background-color: var(--color-dialog);
 	border-radius: 1em;
-	border: 1px solid rgba(255, 255, 255, 0.3);
 	box-shadow: 5px 5px 20px #2224;
-	backdrop-filter: blur(2em);
-	-webkit-backdrop-filter: blur(2em);
 	cursor: grab;
-	z-index: 4;
 	direction: ltr;
+	z-index: 4;
 }
 
 #element-mover:not(.active) > div:not(#close-mover-wrapper) {
@@ -90,10 +84,6 @@
 
 #element-mover button {
 	text-align: center;
-}
-
-#element-mover hr {
-	border-color: var(--color-dialog-border);
 }
 
 #element-mover p {

@@ -4,7 +4,7 @@ import { SYNC_DEFAULT } from '../../defaults'
 import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
-import toggleWidget from './widgets'
+import toggleWidget, { toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets'
 import storage from '../../storage'
 
 import {
@@ -175,7 +175,7 @@ function layoutChange(data: Sync.Storage, column: string) {
 	]
 
 	data = updateWidgetsStorage(list, data)
-	storage.sync.set({ ...data })
+	storage.sync.set(data)
 
 	const interfaceTransition = transitioner()
 
@@ -184,11 +184,14 @@ function layoutChange(data: Sync.Storage, column: string) {
 	})
 
 	interfaceTransition.then(async () => {
-		setAllAligns(layout.items)
-		setGridAreas(layout.grid)
+		setAllAligns(data.move.layouts[data.move.selection].items)
+		setGridAreas(data.move.layouts[data.move.selection].grid)
 		layoutButtons(data.move.selection)
 		showSpanButtons(data.move.selection)
 		removeSelection()
+
+		toggleWidgetInSettings(list)
+		toggleWidgetOnInterface(list)
 
 		// Toggle overlays if we are editing
 		if (dominterface?.classList.contains('move-edit')) {

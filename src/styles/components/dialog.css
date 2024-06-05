@@ -9,6 +9,8 @@ dialog {
 }
 
 dialog hr {
+	margin: 10px;
+	box-sizing: border-box;
 	border-color: var(--color-dialog-border);
 }
 
