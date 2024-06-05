@@ -165,28 +165,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	},
 	move: {
 		selection: 'single',
-		layouts: {
-			single: {
-				grid: [['time'], ['main'], ['quicklinks']],
-				items: {},
-			},
-			double: {
-				grid: [
-					['time', '.'],
-					['main', '.'],
-					['quicklinks', '.'],
-				],
-				items: {},
-			},
-			triple: {
-				grid: [
-					['.', 'time', '.'],
-					['.', 'main', '.'],
-					['.', 'quicklinks', '.'],
-				],
-				items: {},
-			},
-		},
+		layouts: {},
 	},
 }
 

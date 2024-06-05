@@ -2,6 +2,12 @@ import { BROWSER } from '../../defaults'
 
 type Grid = string[][]
 
+type Defaults = {
+	single: Sync.MoveLayout
+	double: Sync.MoveLayout
+	triple: Sync.MoveLayout
+}
+
 export const elements = <const>{
 	time: document.getElementById('time'),
 	main: document.getElementById('main'),
@@ -11,12 +17,42 @@ export const elements = <const>{
 	quotes: document.getElementById('quotes_container'),
 }
 
+export const defaultLayouts: Defaults = {
+	single: {
+		grid: [['time'], ['main'], ['quicklinks']],
+		items: {},
+	},
+	double: {
+		grid: [
+			['time', '.'],
+			['main', '.'],
+			['quicklinks', '.'],
+		],
+		items: {},
+	},
+	triple: {
+		grid: [
+			['.', 'time', '.'],
+			['.', 'main', '.'],
+			['.', 'quicklinks', '.'],
+		],
+		items: {},
+	},
+}
+
 export function isEditing(): boolean {
 	return document.getElementById('interface')?.classList.contains('move-edit') || false
 }
 
 export function hasDuplicateInArray(arr: string[], id?: string): boolean {
 	return arr.filter((a) => a === id).length > 1
+}
+
+export function getLayout(move: Sync.Move | Sync.Storage, selection?: Sync.MoveSelection): Sync.MoveLayout {
+	move = (move as Sync.Storage)?.move ? (move as Sync.Storage).move : (move as Sync.Move)
+	selection = selection ?? move.selection
+
+	return move.layouts?.[selection] ?? defaultLayouts[selection]
 }
 
 //	Grid

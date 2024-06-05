@@ -114,16 +114,15 @@ declare namespace Sync {
 	type Move = {
 		selection: MoveSelection
 		layouts: {
-			single: MoveLayout
-			double: MoveLayout
-			triple: MoveLayout
+			single?: MoveLayout
+			double?: MoveLayout
+			triple?: MoveLayout
 		}
 	}
 
 	type MoveSelection = 'single' | 'double' | 'triple'
 
 	interface MoveLayout {
-		selected?: boolean
 		grid: string[][]
 		items: {
 			[key in Widgets]?: MoveAlign

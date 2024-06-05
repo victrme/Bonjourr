@@ -1,10 +1,10 @@
 import { toolboxEvents, alignButtons, gridButtons, layoutButtons, resetButton, spanButtons, showSpanButtons } from './toolbox'
 import { setAlign, addOverlay, removeOverlay, setGridAreas, setAllAligns, removeSelection, interfaceFade } from './dom'
+import toggleWidget, { toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets'
 import { SYNC_DEFAULT } from '../../defaults'
 import onSettingsLoad from '../../utils/onsettingsload'
 import transitioner from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
-import toggleWidget, { toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets'
 import storage from '../../storage'
 
 import {
@@ -13,12 +13,12 @@ import {
 	gridFind,
 	gridParse,
 	gridStringify,
-	alignStringify,
 	spansInGridArea,
 	addGridWidget,
 	updateWidgetsStorage,
 	getGridWidgets,
 	getWidgetsStorage,
+	getLayout,
 } from './helpers'
 
 type UpdateMove = {
@@ -32,7 +32,10 @@ type UpdateMove = {
 	select?: string
 	responsive?: true
 	overlay?: boolean
-	grid?: { x?: string; y?: string }
+	grid?: {
+		x?: string
+		y?: string
+	}
 }
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
@@ -51,8 +54,10 @@ export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 	}
 
 	if (init) {
-		setAllAligns(init.layouts[init.selection].items)
-		setGridAreas(gridStringify(init.layouts[init.selection].grid))
+		const { grid, items } = getLayout(init)
+
+		setAllAligns(items)
+		setGridAreas(gridStringify(grid))
 		onSettingsLoad(toolboxEvents)
 	}
 }
@@ -83,9 +88,10 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	const y = parseInt(gridpos?.y || '0')
 	const x = parseInt(gridpos?.x || '0')
 
-	let grid = move.layouts[move.selection]?.grid
-	const allActivePos = gridFind(grid, widget)
+	const layout = getLayout(move)
+	const allActivePos = gridFind(layout.grid, widget)
 	const allAffectedIds: Widgets[] = []
+	let grid = layout.grid
 
 	// step 0: Adds new line
 	const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
@@ -130,7 +136,8 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	})
 
 	// step 5: profit ??????????????
-	move.layouts[move.selection].grid = grid
+	layout.grid = grid
+	move.layouts[move.selection] = layout
 	storage.sync.set({ move: move })
 
 	gridButtons(widget)
@@ -142,7 +149,7 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 		return
 	}
 
-	const layout = move.layouts[move.selection]
+	const layout = getLayout(move)
 	const align = layout.items[widget] ?? { box: '', text: '' }
 
 	if (type === 'box') align.box = value
@@ -162,7 +169,7 @@ function layoutChange(data: Sync.Storage, column: string) {
 		data.move.selection = column
 	}
 
-	const layout = data.move.layouts[data.move.selection]
+	const layout = getLayout(data)
 	const widgetsInGrid = getGridWidgets(gridStringify(layout.grid))
 
 	const list: [Widgets, boolean][] = [
@@ -184,8 +191,9 @@ function layoutChange(data: Sync.Storage, column: string) {
 	})
 
 	interfaceTransition.then(async () => {
-		setAllAligns(data.move.layouts[data.move.selection].items)
-		setGridAreas(data.move.layouts[data.move.selection].grid)
+		const layout = getLayout(data)
+		setAllAligns(layout.items)
+		setGridAreas(layout.grid)
 		layoutButtons(data.move.selection)
 		showSpanButtons(data.move.selection)
 		removeSelection()
@@ -224,8 +232,11 @@ function layoutReset(data: Sync.Storage) {
 		grid = addGridWidget(grid, id, data.move.selection)
 	})
 
-	data.move.layouts[data.move.selection].items = {}
-	data.move.layouts[data.move.selection].grid = gridParse(grid)
+	data.move.layouts[data.move.selection] = {
+		grid: gridParse(grid),
+		items: {},
+	}
+
 	storage.sync.set(data)
 
 	removeSelection()
@@ -250,7 +261,7 @@ function elementSelection(move: Sync.Move, select: string) {
 
 	widget = select as Widgets
 
-	alignButtons(move.layouts[move.selection].items[widget])
+	alignButtons(getLayout(move).items[widget])
 	spanButtons(widget)
 	gridButtons(widget)
 
@@ -282,10 +293,10 @@ function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
 		return
 	}
 
-	const grid = move.layouts[move.selection].grid
-	const gridWithSpan = spansInGridArea(grid, widget, { toggle: dir })
+	const layout = getLayout(move)
+	const gridWithSpan = spansInGridArea(layout.grid, widget, { toggle: dir })
 
-	move.layouts[move.selection].grid = gridWithSpan
+	move.layouts[move.selection] = { items: layout.items, grid: gridWithSpan }
 	storage.sync.set({ move: move })
 
 	setGridAreas(gridWithSpan)
@@ -303,7 +314,8 @@ function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
 	}
 
 	if (!hasOverlays) {
-		const grid = gridStringify(move.layouts[move.selection].grid)
+		const layout = getLayout(move)
+		const grid = gridStringify(layout.grid)
 		const ids = getGridWidgets(grid)
 
 		for (const id of ids) {
