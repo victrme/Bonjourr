@@ -13,3 +13,6 @@ test-results
 playwright-report
 playwright/.cache
 .wrangler
+
+yarn.lock
+package-lock.json

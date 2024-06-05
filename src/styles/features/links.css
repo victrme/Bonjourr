@@ -1,68 +1,85 @@
-/* Glossary:
- *  - Link blocks
- *	- Link styles
- *	- Folder styles for medium and small
- *	- Links drag and drop
- * 	- Tabs and folder titles
- * 	- Add buttons
- */
-
-/*
- * Link blocks
- */
+/* Link blocks */
 
 #linkblocks {
-	--min-height: 6em;
-	--row-gap: 0.6em;
-	--icon-size: 4.8em;
-	--block-size: 6.5em;
+	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
+	max-width: var(--links-width);
 }
 
 #linkblocks.hidden {
 	display: none;
 }
 
-#linkblocks.select-all li div,
-#linkblocks.select-all li span {
-	/* split div and span instead of just "li.block" */
+.select-all .link div,
+.select-all .link span {
+	/* split div and span instead of just ".link" */
 	/* to keep folder blur with filter */
 	filter: grayscale(1) brightness(0.6);
 }
 
-#linkblocks.select-all li.selected div,
-#linkblocks.select-all li.selected span {
+.select-all .selected div,
+.select-all .selected span {
 	filter: none;
 }
 
-#linkblocks.select-all.inline li:hover span,
-#linkblocks.select-all.text li:hover span {
+.select-all.inline .link:hover span,
+.select-all.text .link:hover span {
 	text-decoration: none;
 }
 
-#linkblocks.in-folder #link-list {
+.text-left #link-mini,
+.text-left .link-list {
+	justify-content: start;
+}
+
+.text-left .link-group {
+	align-items: start;
+}
+
+.text-right #link-mini,
+.text-right .link-list {
+	justify-content: end;
+}
+
+.text-right .link-group {
+	align-items: end;
+}
+
+/* Link Group */
+
+.link-group {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 1em;
+}
+
+.link-group.pinned {
+	margin-bottom: 3em;
+}
+
+.link-group.hiding .link-list {
+	opacity: 0;
+}
+
+.link-group.hiding .link {
+	transform: scale(0.9);
+	filter: brightness(0.7);
+}
+
+.link:active {
+	filter: brightness(0.7);
+}
+
+.link-group.in-folder .link-list {
+	display: flex; /* do not remove, fixes backdrop filter on Safari */
+	padding: var(--folder-padding);
 	background-color: #fff2;
 	border: 1px solid #fff4;
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
 }
 
-#linkblocks.in-folder #link-title div:not(:first-child) {
-	display: none;
-}
-
-#linkblocks.in-folder #b_add-tab {
-	display: none;
-}
-
-#linkblocks.hiding #link-list {
-	opacity: 0;
-}
-
-#linkblocks.hiding .block {
-	transform: scale(0.9);
-}
-
-#link-list {
+.link-list {
 	position: relative;
 	display: inline-flex;
 	visibility: visible;
@@ -72,232 +89,304 @@
 	column-gap: var(--column-gap);
 	min-height: var(--min-height);
 	min-width: 6em;
-	padding: 2em 5em;
+	padding: 0;
 	margin: 0;
 	max-width: var(--links-width);
 	background-color: transparent;
 	border: 1px solid transparent;
 	border-radius: 1em;
 	z-index: 2;
-	transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: opacity 0.3s var(--out-cubic);
 }
 
-li.block {
+/* Link titles */
+
+.link-title {
+	display: none;
+	max-width: 32ch;
+	padding: 0.2em 1em;
+	font-size: 1em;
+	opacity: 0.7;
+	color: white;
+	text-align: center;
+	white-space: nowrap;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.link-group .link-title {
+	max-width: 100%;
+}
+
+.with-groups .link-group.pinned .link-title,
+.link-group.in-folder .link-title {
+	display: initial;
+}
+
+.link-title:hover {
+	opacity: 1;
+}
+
+.link-group.pinned .link-title,
+.link-title.selected {
+	opacity: 1;
+	cursor: initial;
+	border-color: #fff1;
+	background-color: #fff2;
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+}
+
+.link-group.in-folder .link-title {
+	user-select: none;
+	pointer-events: none;
+	-webkit-user-select: none;
+}
+
+/* Link list items */
+
+.link {
 	width: var(--block-size);
 	cursor: pointer;
 	touch-action: none;
-	transition-timing-function: cubic-bezier(0.68, -0.2, 0.265, 1.2);
-	transition-property: transform, opacity;
-	transition-duration: 0.2s;
+	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
 }
 
-li.block div,
-li.block img {
+.link div,
+.link img {
 	transition-duration: 0.1s;
-	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition-timing-function: var(--out-cubic);
 	transition-property: transform, box-shadow, border-color;
 }
 
-li.block div {
+.link div {
 	margin: auto;
+	flex-shrink: 0;
 	width: var(--icon-size);
 	height: var(--icon-size);
-	border: 1px solid white;
-	background-color: white;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+	border: 1px solid transparent;
 	box-sizing: border-box;
 }
 
-li.block a {
+.link a {
 	color: white;
 	cursor: pointer;
 	text-decoration: none;
-	transition: width 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: width 0.2s var(--out-cubic);
 	-webkit-touch-callout: none;
 }
 
-li.block img {
+.link img {
 	width: 100%;
 	height: 100%;
 }
 
-li.block span {
+.link span {
+	display: none;
+	width: 100%;
+	padding-top: 0.4em;
+	line-height: 1.2em;
+	max-height: 3.8em;
 	overflow: hidden;
+	word-wrap: break-word;
 }
 
-li.block.removed {
+.titles .link span {
+	display: block;
+}
+
+.titles.small .link span {
+	display: inline;
+	width: unset;
+	top: 3.5em;
+}
+
+.backgrounds .link div {
+	background-color: white;
+	border-color: white;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.backgrounds .link div:hover {
+	box-shadow: unset;
+}
+
+.link.removed {
 	margin: 0 calc((var(--column-gap) / 2) * -1); /* minus half of gap */
 	width: 0 !important;
 	opacity: 0;
 	overflow: hidden;
-	transition: width 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s, margin 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s,
-		opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: width 0.3s 0.3s var(--out-cubic), margin 0.3s 0.3s var(--out-cubic), opacity 0.3s var(--out-cubic);
 }
 
-li.block.removed span {
+.link.removed span {
 	min-height: 0 !important;
 	max-height: 0 !important;
-	transition: max-height 0.3s 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: max-height 0.3s 0.3s var(--out-cubic);
 }
 
-li.block.removed div {
+.link.removed div {
 	transform: scale(0.6);
 }
 
-#linkblocks.large li.block.selected div,
-#linkblocks.medium li.block.selected div,
-#linkblocks.small li.block.selected div {
+#linkblocks.large .link.selected div,
+#linkblocks.medium .link.selected div,
+#linkblocks.small .link.selected div {
 	box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 	outline: 0.3em solid var(--color-blue);
 }
 
-#linkblocks.inline li.block.selected.folder,
-#linkblocks.inline li.block.selected a,
-#linkblocks.text li.block.selected.folder,
-#linkblocks.text li.block.selected a {
+#linkblocks.inline .link.selected.folder,
+#linkblocks.inline .link.selected a,
+#linkblocks.text .link.selected.folder,
+#linkblocks.text .link.selected a {
 	border-radius: 0.5em;
 	outline: 0.2em solid var(--color-blue);
 	background-color: rgba(0, 114, 238, 0.1333333333);
 }
 
-#linkblocks.inline li.block.selected:hover span,
-#linkblocks.text li.block.selected:hover span {
+#linkblocks.inline .link.selected:hover span,
+#linkblocks.text .link.selected:hover span {
 	text-decoration: none;
 }
 
 @media only screen and (hover: hover) {
-	li.block:hover div {
-		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+	#linkblocks.backgrounds .link:hover div {
+		box-shadow: 0px 0.2em 1em #0003;
 	}
 
-	li.block:hover:not(.selected) div {
+	.link:hover:not(.selected) div {
 		transform: scale(0.95);
 	}
 }
 
-li.block.folder > div {
+.folder > div {
 	display: grid;
 	column-gap: 4px;
 	height: var(--icon-size);
 	grid-template-columns: 1fr 1fr;
-	background-color: #fff3;
-	border: 1px solid #fff4;
+	border: 1px solid transparent;
 	box-sizing: border-box;
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
 }
 
-li.block.folder img[src] {
+.folder img[src] {
 	display: initial;
 }
 
-li.block.folder img {
+.folder img {
 	display: none;
 	border-radius: 4px;
 	padding: 2px;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 }
 
-/*
- *  Link styles
- */
+#linkblocks .folder > div,
+#linkblocks.backgrounds .folder > div {
+	background-color: #fff3;
+	border-color: #fff4;
+}
+
+#linkblocks.backgrounds .folder img {
+	background-color: white;
+}
+
+/* Link styles */
+
+/* Large */
 
 #linkblocks.large {
-	--min-height: 6em;
+	--min-height: 5.2em;
 	--column-gap: 0.6em;
+	--row-gap: 1em;
 	--icon-size: 4.8em;
 	--block-size: 6.5em;
+	--folder-padding: 2em 5em;
 }
 
-#linkblocks.large li.block div {
+.large .link div {
 	padding: 0.3em;
 	border-radius: 1em;
 }
 
-#linkblocks.large li.block img {
+.large .link img {
 	border-radius: 0.6em;
 }
 
-#linkblocks.large li.block span {
-	display: block;
-	width: 100%;
-	padding-top: 0.4em;
-	line-height: 1.3em;
-	min-height: 1.3em;
-	max-height: 3.9em;
-}
-
-#linkblocks.large li.block.folder div {
+.large .folder div {
 	padding: 5px;
 }
 
-#linkblocks.large li.block.folder img {
+.large .folder img {
 	border-radius: 5px;
 	padding: 2px;
 	width: 100%;
 	height: auto;
 	box-sizing: border-box;
-	background-color: white;
 }
+
+/* Medium */
 
 #linkblocks.medium {
-	--min-height: 5em;
+	--min-height: 3.9em;
 	--column-gap: 0.6em;
+	--row-gap: 1em;
 	--icon-size: 3.5em;
 	--block-size: 4.7em;
+	--folder-padding: 1.6em 4em;
 }
 
-#linkblocks.medium li div {
+.medium .link div {
 	padding: 0.2em;
 	border-radius: 0.8em;
 }
 
-#linkblocks.medium li img {
+.medium .link img {
 	border-radius: 0.5em;
 }
 
-#linkblocks.medium li span {
-	display: block;
-	width: 100%;
-	padding-top: 0.4em;
-	line-height: 1.3em;
-	min-height: 1.3em;
-	max-height: 3.9em;
-}
+/* Small */
 
 #linkblocks.small {
-	--min-height: 2em;
+	--min-height: 2.5em;
 	--block-size: 2.5em;
 	--column-gap: 1.5em;
 	--row-gap: 1.5em;
+	--folder-padding: 1.2em 3em;
 }
 
-#linkblocks.small #link-list {
+.small #link-list {
 	min-height: 2em;
 	gap: 1.5em;
 }
 
-#linkblocks.small a,
-#linkblocks.small li {
+.small a,
+.small .link {
 	position: relative;
 }
 
-#linkblocks.small li {
+.small .link {
 	width: var(--block-size);
 }
 
-#linkblocks.small li div {
+.small .link div {
 	width: var(--block-size);
 	height: var(--block-size);
 	padding: 0.1em;
 	border-radius: 0.4em;
 }
 
-#linkblocks.small li div,
-#linkblocks.small li img {
+.small .link div,
+.small .link img {
 	border-radius: 0.4em;
 }
 
-#linkblocks.small li span {
+.small .link span {
 	position: absolute;
 	visibility: hidden;
 	top: 3em;
@@ -318,77 +407,81 @@ li.block.folder img {
 	z-index: 1;
 }
 
-#linkblocks.small li span:empty {
+.small .link span:empty {
 	display: none;
 }
 
-#linkblocks.small li:hover span {
+.small .link:hover span {
 	opacity: 1;
 	visibility: visible;
 }
 
-#linkblocks.small.removed {
+.small.removed {
 	margin-right: -1em;
 	margin-left: -1em;
 }
 
+/* Inline */
+
 #linkblocks.inline {
-	--min-height: 2em;
+	--min-height: 2.4em;
 	--block-size: 2em;
 	--column-gap: 1em;
+	--row-gap: 1em;
 	--icon-size: 2em;
+	--folder-padding: 1.2em 3em;
 	justify-content: flex-start;
 }
 
-#linkblocks.inline li.folder div {
+.inline .folder div {
 	display: block;
 	padding: 4px;
 }
 
-#linkblocks.inline li.folder img {
+.inline .folder img {
 	box-sizing: border-box;
 }
 
-#linkblocks.inline li.folder img:not(:first-child) {
+.inline .folder img:not(:first-child) {
 	display: none;
 }
 
-#linkblocks.inline li span {
+.inline .link span {
 	padding: 0 0.2em;
 	outline: 3px solid transparent;
 }
 
-#linkblocks.inline li {
+.inline .link {
 	width: auto;
 }
 
-#linkblocks.inline li:hover {
+.inline .link:hover {
 	text-decoration: underline;
 }
 
-#linkblocks.inline li:hover div {
+.inline .link:hover div {
 	box-shadow: none;
 	transform: none;
 }
 
-#linkblocks.inline li.folder,
-#linkblocks.inline li a {
+.inline .folder,
+.inline .link a {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	column-gap: 0.6em;
 }
 
-#linkblocks.inline li div {
+.inline .link div {
 	padding: 1px;
 }
 
-#linkblocks.inline li div,
-#linkblocks.inline li img {
+.inline .link div,
+.inline .link img {
 	border-radius: 0.4em;
 }
 
-#linkblocks.inline li span {
+.inline .link span {
 	display: block;
 	max-width: 8.4em;
 	font-size: 1.2em;
@@ -398,138 +491,120 @@ li.block.folder img {
 	padding: 0;
 }
 
-#linkblocks.text {
-	--min-height: 1.5em;
+/* Text */
+
+.text {
+	--min-height: 2em;
 	--column-gap: 1.8em;
+	--row-gap: 1em;
+	--folder-padding: 1em 2em;
 	justify-content: flex-start;
 }
 
-#linkblocks.text li {
+.text .link {
 	width: auto;
 }
 
-#linkblocks.text li:hover span {
+.text .link:hover span {
 	text-decoration: underline;
 }
 
-#linkblocks.text li div,
-#linkblocks.text li img {
+.text .link div,
+.text .link img {
 	display: none;
 }
 
-#linkblocks.text li a {
-	padding: 0.2em;
-}
-
-#linkblocks.text li span {
+.text .link span {
+	display: inline-block;
 	width: 100%;
 	max-width: 16em;
 	font-size: 1.5em;
 	text-overflow: ellipsis;
+	overflow: hidden;
 	white-space: pre;
 	border-radius: 8px;
 }
 
-/*
- *  Folder styles for medium and small
- */
+/* Folder styles for medium and small */
 
-#linkblocks.medium li.folder div,
-#linkblocks.small li.folder div {
+.medium .folder div,
+.small .folder div {
 	position: relative;
 	display: block;
 }
 
-#linkblocks.medium li.folder img,
-#linkblocks.small li.folder img {
+.medium .folder img,
+.small .folder img {
 	position: absolute;
 	padding: 1px;
 	transform: scale(0.5) translate(-50%, -50%);
-	background-color: white;
 }
 
-#linkblocks.medium li.folder img:nth-child(1),
-#linkblocks.small li.folder img:nth-child(1) {
+.medium .folder img:nth-child(1),
+.small .folder img:nth-child(1) {
 	top: 15%;
 	left: 15%;
 	z-index: 5;
 }
 
-#linkblocks.medium li.folder img:nth-child(2),
-#linkblocks.small li.folder img:nth-child(2) {
+.medium .folder img:nth-child(2),
+.small .folder img:nth-child(2) {
 	top: 30%;
 	left: 30%;
 	z-index: 4;
 }
 
-#linkblocks.medium li.folder img:nth-child(3),
-#linkblocks.medium li.folder img:nth-child(4),
-#linkblocks.small li.folder img:nth-child(3),
-#linkblocks.small li.folder img:nth-child(4) {
+.medium .folder img:nth-child(3),
+.medium .folder img:nth-child(4),
+.small .folder img:nth-child(3),
+.small .folder img:nth-child(4) {
 	display: none;
 }
 
-/*
- *  Links drag and drop
- */
+/* Links drag and drop */
 
-#linkblocks.large .drop-target.folder img {
-	transform: none;
-}
-
-#linkblocks.large .drop-source div,
-#linkblocks.medium .drop-source div,
-#linkblocks.small .drop-source div {
+.link.drop-target img,
+.link.drop-source div {
 	transform: scale(0.8);
 }
 
-#linkblocks.large .drop-source span,
-#linkblocks.medium .drop-source span,
-#linkblocks.small .drop-source span {
+.link.drop-source span {
 	opacity: 0;
 	transition: opacity 0.05s;
 }
 
-#linkblocks.large .drop-target div,
-#linkblocks.medium .drop-target div,
-#linkblocks.small .drop-target div {
-	border-color: rgba(255, 255, 255, 0.2666666667);
-	background-color: rgba(255, 255, 255, 0.1333333333);
+.link.drop-target div {
+	border-color: #fff4;
+	background-color: #fff3;
 }
 
-#linkblocks.large .drop-target img,
-#linkblocks.medium .drop-target img,
-#linkblocks.small .drop-target img {
-	transform: scale(0.8);
-	background-color: white;
-}
-
-#linkblocks.large .drop-target.folder img,
-#linkblocks.medium .drop-target.folder img,
-#linkblocks.small .drop-target.folder img {
+.link.drop-target.folder img {
 	opacity: 0.5;
-	background-color: white;
 }
 
-#linkblocks.inline .drop-source div,
-#linkblocks.text .drop-source div {
+.large .link.drop-target.folder img {
+	transform: none;
+}
+
+.inline .link.drop-source div,
+.text .link.drop-source div {
 	opacity: 0;
 }
 
-#linkblocks.inline .drop-source span,
-#linkblocks.text .drop-source span {
+.inline .drop-source span,
+.text .drop-source span {
 	transform: scale(0.8);
 }
 
-#linkblocks.inline .drop-target span,
-#linkblocks.inline .drop-target div,
-#linkblocks.text .drop-target span,
-#linkblocks.text .drop-target div {
+.inline .drop-target span,
+.inline .drop-target div,
+.text .drop-target span,
+.text .drop-target div {
 	opacity: 0.5;
 }
 
-#linkblocks.dropping #link-list,
-#linkblocks.dragging #link-list {
+.link-group.dropping .link-list,
+.link-group.dragging .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -537,16 +612,16 @@ li.block.folder img {
 	height: calc(var(--drag-height) - 2px);
 }
 
-#linkblocks.dropping a,
-#linkblocks.dropping div,
-#linkblocks.dragging a,
-#linkblocks.dragging div {
+.link-group.dropping a,
+.link-group.dragging a,
+.link-group.dropping div,
+.link-group.dragging div {
 	user-select: none;
 	pointer-events: none;
 }
 
-#linkblocks.dropping .block,
-#linkblocks.dragging .block {
+.link-group.dropping .link,
+.link-group.dragging .link {
 	pointer-events: none;
 	position: fixed;
 	top: 0;
@@ -554,65 +629,49 @@ li.block.folder img {
 	z-index: 3;
 }
 
-#linkblocks.dropping .on,
-#linkblocks.dragging .on {
+.link-group.dropping .on,
+.link-group.dragging .on {
 	z-index: 4;
 	transition: none;
 	pointer-events: none;
 }
 
-/*
- * Tabs and folder titles
- */
+/* Link mini (at the bottom) */
 
-#link-title {
+#link-mini {
+	position: relative;
 	display: none;
-	margin: auto;
+	justify-content: center;
+	align-items: center;
+	column-gap: 1em;
 	width: 100%;
+	margin: auto;
+	padding-top: 1em;
+	padding-inline-start: 4em;
 	box-sizing: border-box;
 }
 
-#link-title button {
-	max-width: 32ch;
-	padding: 0.3em 1em;
-	font-size: 1.2em;
-	opacity: 0.7;
-	color: white;
-	text-align: center;
-	border-radius: 8px;
-	border: 1px solid transparent;
-	background-color: transparent;
-	cursor: pointer;
+.text-left #link-mini:has(.add-group.selected),
+.text-left #link-mini:hover {
+	padding-left: 0;
 }
 
-#link-title button:hover {
-	opacity: 1;
+#link-mini .link-title {
+	display: initial;
 }
 
-#link-title button.selected {
-	opacity: 1;
-	cursor: initial;
-	border-color: rgba(255, 255, 255, 0.2666666667);
-	background-color: rgba(255, 255, 255, 0.0666666667);
-	backdrop-filter: blur(2em);
-	-webkit-backdrop-filter: blur(2em);
+#link-mini .add-group {
+	visibility: hidden;
+	font-weight: bold;
+	width: 3em;
 }
 
-#tab-title,
-#folder-title {
-	display: none;
-	column-gap: 1em;
-	align-items: center;
-	justify-content: center;
-	padding: 1em 4em;
+#link-mini .add-group.selected,
+#link-mini:hover .add-group {
+	visibility: visible;
 }
 
-#linkblocks.with-tabs #link-title,
-#linkblocks.in-folder #link-title {
-	display: block;
-}
-
-#linkblocks.with-tabs #tab-title,
-#linkblocks.in-folder #folder-title {
+.with-groups #link-mini,
+.in-folder #link-mini {
 	display: flex;
 }

@@ -19,6 +19,7 @@
 	--red: 254, 59, 49;
 	--color-red: rgb(var(--red));
 	--color-green: #2ed058;
+	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 [data-theme='light'] {
@@ -63,29 +64,15 @@
 	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 }
 
+[data-platform='safari'] .not-safari,
+[data-platform='online'] .not-online {
+	display: none;
+}
+
 #interface,
 input[type='range'],
 input[type='checkbox'] {
 	color-scheme: only light;
-}
-
-::-webkit-scrollbar {
-	width: 10px;
-}
-
-::-webkit-scrollbar-track {
-	box-shadow: inset 0 0 10px 10px transparent;
-	border: solid 3px transparent;
-}
-
-::-webkit-scrollbar-thumb {
-	box-shadow: inset 0 0 10px 10px var(--color-border);
-	border: solid 3px transparent;
-	border-radius: 10px;
-}
-
-html {
-	/* height: 100lvh; */
 }
 
 body {
@@ -94,8 +81,6 @@ body {
 	color: white;
 	font-size: 1em;
 	font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
-	/* min-height: var(--app-height);
-	min-height: 100lvh; */
 	text-align: center;
 	overflow-x: hidden;
 	overflow-y: overlay;
@@ -114,7 +99,7 @@ body h3 {
 body hr {
 	border: none;
 	border-bottom: 1px solid var(--color-border);
-	margin: 0.65em 0;
+	margin: 10px auto;
 	display: block;
 }
 
@@ -141,13 +126,14 @@ body button {
 body.tabbing a:focus,
 body.tabbing input:focus,
 body.tabbing textarea:focus,
+body.tabbing .pce-focus,
 body.tabbing select:focus,
 body.tabbing button:focus,
 body.tabbing button:focus,
 body.tabbing #bookmarks li:focus-visible,
 body.tabbing #link-title div:focus-visible,
-body.tabbing #linkblocks li.block a:focus-visible,
-body.tabbing #linkblocks li.block.folder:focus-visible,
+body.tabbing #linkblocks .link a:focus-visible,
+body.tabbing #linkblocks .link.folder:focus-visible,
 body.tabbing #linkblocks.text a:focus-visible span,
 body.tabbing #notes_toolbar:focus-visible,
 body.tabbing input:focus-visible + .slider {
@@ -163,13 +149,13 @@ body.loading > * {
 }
 
 body.init #interface,
-body.init #showSettings,
-body.init #creditContainer,
+body.init #show-settings,
+body.init #credit-container,
 body.init #skiptosettings {
 	transition: opacity var(--load-time-transition);
 }
 
-body.init #showSettings button {
+body.init #show-settings button {
 	transition: background-color 0s;
 }
 
@@ -206,5 +192,39 @@ button,
 select,
 option,
 input {
+	user-select: none;
 	font-size: 13px;
+}
+
+dialog a,
+aside a {
+	color: var(--color-blue);
+	border-radius: 4px;
+	text-decoration: none;
+}
+
+dialog a:hover,
+aside a:hover {
+	text-decoration: underline;
+}
+
+/* Chromium scrollbar */
+
+body::-webkit-scrollbar {
+	display: none;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	box-shadow: inset 0 0 10px 10px transparent;
+	border: solid 3px transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	box-shadow: inset 0 0 10px 10px var(--color-border);
+	border: solid 3px transparent;
+	border-radius: 10px;
 }

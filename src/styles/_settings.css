@@ -6,7 +6,7 @@ aside {
 	right: -450px;
 	height: 100vh;
 	min-width: 333px;
-	width: 408px;
+	width: 450px;
 	padding: 0 21px;
 	background-color: var(--color-settings);
 	color: var(--color-text);
@@ -17,7 +17,8 @@ aside {
 	overflow-y: scroll;
 	overflow-x: hidden;
 	touch-action: pan-y;
-	transition: transform 0.4s, background-color 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+	box-sizing: border-box;
+	transition: transform 0.4s, background-color 0.4s var(--out-cubic);
 }
 
 aside.shown {
@@ -26,7 +27,6 @@ aside.shown {
 	box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
 }
 
-aside.init .as,
 aside.init .dropdown {
 	transition: max-height 0s;
 }
@@ -35,20 +35,11 @@ aside.see-through {
 	opacity: 0.2;
 }
 
-aside a {
-	color: var(--color-blue);
-	border-radius: 4px;
-	text-decoration: none;
-}
-
-aside a:hover {
-	text-decoration: underline;
-}
-
 aside hr {
+	width: 100%;
+	margin: 10px 0;
 	border: none;
 	border-bottom: 1px solid var(--color-input);
-	width: 100%;
 }
 
 aside h1,
@@ -75,7 +66,7 @@ aside select,
 aside input,
 aside hr {
 	transition-duration: 0.4s;
-	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition-timing-function: var(--out-cubic);
 	transition-property: background-color, color, border, border-color, transform;
 }
 
@@ -98,6 +89,12 @@ aside .param-btn:hover.btn-red {
 	background-color: rgba(var(--red), 0.25);
 }
 
+aside .param-btn:disabled {
+	opacity: 0.66;
+	filter: grayscale(1);
+	pointer-events: none;
+}
+
 aside .inline-btn {
 	border-radius: 1em;
 	color: var(--color-blue);
@@ -116,9 +113,8 @@ aside .input-btn {
 }
 
 aside textarea,
-aside .prism-code-editor,
-#export-data {
-	font-family: SF Mono, Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+aside .prism-code-editor {
+	font-family: Consolas, Monaco, Ubuntu Mono, monospace;
 }
 
 aside select,
@@ -127,6 +123,7 @@ aside button {
 	border-radius: 8px;
 	color: var(--color-text);
 	-webkit-appearance: none;
+	appearance: none;
 }
 
 aside input,
@@ -160,7 +157,7 @@ aside .switch {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	overflow: visible
+	overflow: visible;
 }
 
 aside .switch:hover {
@@ -209,9 +206,7 @@ aside input[type='range'] {
 	border-radius: 1.5rem;
 	background-color: #c8c7cc;
 	-webkit-appearance: none;
-	/* Firefox */
-	/* Chrome, Opera & Safari */
-	/*Edge*/
+	appearance: none;
 }
 
 aside input[type='range']:active {
@@ -283,6 +278,51 @@ aside input[type='range']::-ms-tooltip {
 	display: none;
 }
 
+label.input-file {
+	position: relative;
+	display: block;
+	cursor: pointer;
+	text-align: center;
+	font-size: 13px;
+}
+
+label.input-file span {
+	position: absolute;
+	top: 50%;
+	left: 10%;
+	width: 80%;
+	margin: auto;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+input[type='file'] {
+	height: 100px;
+	width: 100%;
+	color: transparent;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.2s;
+}
+
+input[type='file']::-webkit-file-selector-button,
+input[type='file']::file-selector-button {
+	display: none;
+}
+
+label.input-file:hover input[type='file'],
+label.input-file:focus input[type='file'] {
+	background-color: var(--color-focused);
+}
+
+label.input-file input[type='file'].dragover {
+	background-color: var(--color-blue);
+	transform: scale(1.02);
+}
+
+label.input-file input[type='file'].dragover ~ span {
+	color: white;
+}
+
 aside form {
 	display: flex;
 	position: relative;
@@ -302,6 +342,7 @@ aside form button {
 	padding: 0;
 	opacity: 0;
 	max-width: 0;
+	visibility: hidden;
 	background-color: transparent;
 	transition: opacity 0.1s, max-width 0.2s;
 }
@@ -319,16 +360,32 @@ aside form.valid button {
 	pointer-events: all;
 	max-width: 26px;
 	margin-left: 4px;
+	visibility: visible;
+	color: var(--color-blue);
 }
 
-aside form.valid button:not(:disabled):hover,
-aside form.valid button:not(:disabled):focus-visible {
-	color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
+@media (hover: hover) {
+	aside form.valid button:not(:disabled):hover,
+	aside form.valid button:not(:disabled):focus-visible {
+		background-color: rgba(var(--blue), 0.15);
+	}
 }
 
 aside form.valid button:not(:disabled):active {
 	background-color: rgba(var(--blue), 0.25);
+}
+
+.dropdown {
+	max-height: 0;
+	overflow: hidden;
+	visibility: hidden;
+	transition: max-height 0.3s, padding 0.2s, visibility 0s 0.3s;
+}
+
+.all .as,
+.dropdown.shown {
+	visibility: visible;
+	transition: max-height 0.3s, padding 0.2s, visibility 0s 0s;
 }
 
 #local_options.shown {
@@ -340,7 +397,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 #main_options.shown {
-	max-height: 580px;
+	max-height: 630px;
 }
 
 #quicklinks_options.shown {
@@ -348,14 +405,14 @@ aside form.valid button:not(:disabled):active {
 }
 
 #notes_options.shown {
-	max-height: 160px;
+	max-height: 180px;
 }
 
 #location_options.shown,
 #digital_options.shown,
 #weather_provider.shown,
 #searchbar_request.shown {
-	max-height: 50px;
+	max-height: 60px;
 }
 
 #analog_options.shown,
@@ -364,22 +421,12 @@ aside form.valid button:not(:disabled):active {
 }
 
 #searchbar_options.shown {
-	max-height: 350px;
+	max-height: 420px;
 }
 
 #quotes_userlist.shown,
 #quotes_options.shown {
-	max-height: 500px;
-}
-
-.as {
-	max-height: 0;
-	overflow-y: hidden;
-	transition: max-height 0.3s, padding 0.2s;
-}
-
-.all .as {
-	overflow-y: clip;
+	max-height: 450px;
 }
 
 .all .as_visuals {
@@ -399,7 +446,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_searchbar {
-	max-height: 160px;
+	max-height: 180px;
 }
 
 .all .as_weather {
@@ -415,7 +462,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_page {
-	max-height: 340px;
+	max-height: 380px;
 }
 
 .all .as_css {
@@ -424,53 +471,32 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_quote_type {
-	max-height: 440px;
+	max-height: 380px;
 }
 
 .all .as_updates,
 .all .as_notes {
-	max-height: 160px;
-}
-
-.dropdown {
-	overflow-y: hidden;
-	max-height: 0;
-	transition: max-height 0.3s;
-}
-
-.dropdown.shown {
-	overflow-y: clip;
+	max-height: 180px;
 }
 
 #mobile-drag-zone {
+	position: sticky;
 	display: none;
-	width: 80%;
-	margin: auto;
-	padding: 2em 1em;
-	z-index: 4;
+	top: 0;
+	width: 100%;
+	padding: 20px 12px 12px;
 	cursor: grab;
+	z-index: 4;
+	box-sizing: border-box;
+	transition: transform 0.4s;
 }
 
-#mobile-drag-zone hr {
-	width: 80px;
-	height: 0px;
+#mobile-drag-zone div {
+	width: 50px;
+	height: 8px;
 	margin: auto;
 	border-radius: 4px;
-	border-top: 2.5px solid var(--color-border);
-	border-bottom: 2.5px solid var(--color-border);
-	transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-@media (hover: hover) {
-	#mobile-drag-zone:hover hr {
-		width: 100px;
-	}
-}
-
-@media (hover: none) {
-	#mobile-drag-zone:active hr {
-		width: 100px;
-	}
+	background-color: var(--color-focused);
 }
 
 .settings-title {
@@ -485,8 +511,9 @@ aside form.valid button:not(:disabled):active {
 	grid-column: 1/3;
 }
 
-#settings .tooltip {
+aside .tooltip {
 	width: 20px;
+	min-width: 20px;
 	height: 20px;
 	padding: 0;
 	border-radius: 100%;
@@ -501,17 +528,17 @@ aside form.valid button:not(:disabled):active {
 	justify-content: center;
 }
 
-#settings .tooltip:hover {
+aside .tooltip:hover {
 	background-color: var(--color-input);
 }
 
-#settings .settings-title .tooltip {
+aside .settings-title .tooltip {
 	background-color: var(--color-input-outside);
 	border-color: var(--color-focused);
 }
 
 @media (hover: hover) {
-	#settings .tooltip:active {
+	aside .tooltip:active {
 		transform: scale(1.2);
 	}
 }
@@ -519,10 +546,8 @@ aside form.valid button:not(:disabled):active {
 .tooltiptext {
 	color: var(--color-light-text);
 	font-size: 13px;
-	line-height: 1.4em;
-	max-height: 0;
-	overflow: hidden;
-	transition: max-height 0.4s, margin 0.4s, padding 0.3s;
+	line-height: 1.5em;
+	padding-left: 4px;
 }
 
 .tooltiptext.shown {
@@ -538,9 +563,9 @@ aside form.valid button:not(:disabled):active {
 }
 
 .param {
-	background-color: var(--color-param);
-	padding: 0.65em 1.3em;
+	padding: 10px 16px;
 	border-radius: 10px;
+	background-color: var(--color-param);
 }
 
 .wrapper {
@@ -548,8 +573,7 @@ aside form.valid button:not(:disabled):active {
 	align-items: center;
 	justify-content: space-between;
 	min-height: 26px;
-	padding: 4px 0;
-	overflow-x: hidden;
+	padding: 4px; /* for tabbing outline */
 }
 
 .wrapper span {
@@ -565,11 +589,14 @@ aside form.valid button:not(:disabled):active {
 	pointer-events: none;
 }
 
-#tabtitle > div,
-.freq_wrap > div {
+.split-inputs {
 	display: flex;
 	width: 155px;
 	column-gap: 4px;
+}
+
+.freq_wrap select {
+	width: 100%;
 }
 
 #i_favicon {
@@ -583,6 +610,10 @@ aside form.valid button:not(:disabled):active {
 	filter: grayscale(0.35);
 }
 
+#i_tabtitle {
+	width: 100%;
+}
+
 #f_addlink {
 	width: 66%;
 }
@@ -591,66 +622,49 @@ aside form.valid button:not(:disabled):active {
 	width: 40%;
 }
 
+#b_showtitles,
+#b_showbackgrounds {
+	opacity: 0.7;
+	padding: 0 4px;
+	min-width: 30px;
+	font-family: serif;
+	text-align: center;
+	background-color: transparent;
+}
+
+#b_showbackgrounds {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#b_showtitles span,
+#b_showbackgrounds span {
+	justify-content: center;
+	align-items: center;
+}
+
+#b_showbackgrounds span {
+	width: 14px;
+	height: 14px;
+	display: block;
+	border-radius: 4px;
+	border: 3px solid var(--color-text);
+	box-sizing: border-box;
+}
+
+#b_showtitles.on,
+#b_showbackgrounds.on {
+	opacity: 1;
+	background-color: var(--color-input);
+}
+
 .refresh-btn {
 	padding: 0 10px;
 }
 
-#custom_thumbnail {
-	height: 100px;
-}
-
-.uploadContainer {
-	overflow: hidden;
-	position: relative;
-	display: block;
-	width: 100%;
-	height: 100px;
-	min-width: 200px;
-	line-height: 100px;
-	font-size: 14px;
-	text-align: center;
-	cursor: pointer;
-	color: var(--color-areas-text);
-	background-color: var(--color-areas);
-	border: 1px dashed transparent;
-	transform: scale(1);
-	box-sizing: border-box;
-	border-radius: 10px;
-	pointer-events: all;
-}
-
-.uploadContainer input[type='file']#i_bgfile {
-	position: absolute;
-	display: block;
-	overflow: hidden;
-	top: 0;
-	left: 0;
-	opacity: 0;
-	height: 100px;
-	width: 100%;
-	cursor: pointer;
-}
-
-.uploadContainer:hover,
-.uploadContainer:focus,
-.uploadContainer.dragover,
-.uploadContainer:active {
-	transition: all 0.2s;
-}
-
-.uploadContainer:hover {
-	background-color: var(--color-focused);
-}
-
-.uploadContainer.dragover {
-	background-color: var(--color-blue);
-	color: white;
-	opacity: 1;
-	transform: scale(1.03);
-}
-
-.uploadContainer:active {
-	background-color: var(--color-input);
+#local_options label {
+	padding: 0 4px;
 }
 
 #fileContainer {
@@ -663,19 +677,16 @@ aside form.valid button:not(:disabled):active {
 	padding: 3px;
 	overflow-y: auto;
 	overflow-x: hidden;
+	box-sizing: border-box;
 }
 
 .thumbnail {
 	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	height: 75px;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	border-radius: 10px;
 	outline: 3px solid transparent;
 	background-color: var(--color-input);
 	transition: opacity 0.1s, filter 0.1s, outline 0.1s;
@@ -700,6 +711,12 @@ aside form.valid button:not(:disabled):active {
 	opacity: 1;
 }
 
+.thumbnail img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
 .b_removethumb {
 	position: absolute;
 	top: 5px;
@@ -709,7 +726,7 @@ aside form.valid button:not(:disabled):active {
 	padding: 0;
 	opacity: 0;
 	color: #222;
-	background-color: rgba(255, 255, 255, 0.2);
+	background-color: #fff4;
 	border-radius: 100%;
 	text-align: center;
 	text-decoration: none;
@@ -731,7 +748,7 @@ aside form.valid button:not(:disabled):active {
 
 .b_removethumb:hover {
 	color: #000;
-	background-color: rgba(255, 255, 255, 0.3333333333);
+	background-color: #fff8;
 	text-decoration: none;
 }
 
@@ -753,16 +770,6 @@ aside form.valid button:not(:disabled):active {
 	opacity: 0;
 }
 
-#w_clockface,
-#w_ampm {
-	opacity: 1;
-	min-height: 0;
-	height: 34px;
-	max-height: 3em;
-	overflow: hidden;
-	transition: max-height 0s 0.2s, opacity 0.2s;
-}
-
 #f_location {
 	width: 66%;
 }
@@ -771,14 +778,18 @@ aside form.valid button:not(:disabled):active {
 	width: 45%;
 }
 
+#quotes_userlist .wrapper {
+	flex-wrap: wrap;
+}
+
 #i_qtlist {
 	width: 100%;
-	min-height: 100px;
-	max-height: 200px;
-	margin-top: 0.5em;
-	padding: 0.5em 1em;
+	height: 200px;
+	margin-top: 20px;
+	padding: 12px;
+	font-size: 13px;
 	line-height: 1.5;
-	resize: vertical;
+	resize: none;
 	border-radius: 8px;
 	color: var(--color-text);
 	background-color: var(--color-areas);
@@ -815,7 +826,6 @@ aside form.valid button:not(:disabled):active {
 }
 
 #grid-layout button {
-	overflow: hidden;
 	display: flex;
 	align-items: center;
 	justify-content: space-evenly;
@@ -851,179 +861,95 @@ aside form.valid button:not(:disabled):active {
 	background-color: var(--color-blue);
 }
 
-#importexport .param {
-	min-height: 192px;
-	transition: min-height 0.2s;
-}
+/* Settings managment */
 
-.importexport-tabs {
+#settings-managment {
 	position: relative;
-	display: flex;
-	width: 220px;
-	margin: auto;
-	margin-bottom: 15px;
-	border-radius: 8.5px;
-	background-color: var(--color-areas);
-	align-items: center;
-	direction: ltr;
 }
 
-.importexport-tabs .glider {
-	width: calc(50% - 3px);
-	background-color: var(--color-blue);
+#settings-managment.dragging-file {
+	opacity: 0.5;
+}
+#settings-managment.dragging-file #file-import {
 	position: absolute;
-	border-radius: 8.5px;
-	z-index: 3;
-	top: 3px;
-	bottom: 3px;
-	left: 3px;
-	transition: transform 0.3s;
-	transform: translateX(0%);
-}
-
-.importexport-tabs.toggled .glider {
-	transform: translateX(100%);
-}
-
-.importexport-tabs button {
-	display: block;
-	width: 50%;
-	padding: unset;
-	font-size: 13px;
-	background-color: transparent;
-	position: relative;
-	text-decoration: none;
-	transition: color 0.2s;
-	height: 29px;
-	border: none;
-	border-radius: 8.5px;
-	margin: 3px;
-}
-
-.importexport-tabs.toggled #s_import,
-.importexport-tabs #s_export {
-	color: white;
-	z-index: 4;
-}
-
-.importexport-tabs.toggled #s_import:hover,
-.importexport-tabs #s_export:hover {
-	background-color: unset;
-}
-
-.importexport-tabs.toggled #s_export,
-.importexport-tabs #s_import {
-	color: var(--color-blue);
-	z-index: 2;
-}
-
-.importexport-tabs.toggled #s_export:hover,
-.importexport-tabs #s_import:hover {
-	background-color: var(--color-focused);
-}
-
-#import,
-#export {
-	overflow: hidden;
-	height: 0px;
-}
-
-#import.shown,
-#export.shown {
-	height: auto;
-	overflow: visible;
-}
-
-#export > div {
-	display: flex;
-	justify-content: space-around;
-	margin-top: 12px;
-}
-
-#export-data {
+	display: initial;
+	top: 0;
+	left: 0;
 	width: 100%;
-	height: 160px;
-	min-height: 100px;
-	max-height: 3000px;
-	padding: 0.65em 1.3em;
-	tab-size: 1.5em;
+	height: 100%;
+	z-index: 1;
+	background-color: transparent;
+}
+
+#settings-data {
 	font-size: 13px;
-	user-select: all;
+	width: 100%;
+	height: 110px;
+	min-height: 110px;
+	max-height: 3000px;
+	margin: 6px 0;
+	padding: 10px 16px;
+	tab-size: 1.5em;
+	/* user-select: all; */
 	text-overflow: ellipsis;
 	overflow: hidden;
 	resize: vertical;
 	box-sizing: border-box;
 	border-radius: 10px;
+	color: var(--color-text);
 	background-color: var(--color-areas);
 }
 
-#export-data:hover,
-#export-data:focus {
+[data-system='mac'] #settings-data {
+	font-size: 12px;
+}
+
+#settings-data:hover,
+#settings-data:focus {
 	overflow-y: auto;
 }
 
-#downloadfile {
+#file-import,
+#file-download {
 	display: none;
 }
 
-#exportSettings {
-	position: absolute;
+#settings-changes {
+	margin-top: 5px;
+	text-align: center;
 }
 
-#import > div {
-	display: flex;
-	margin-top: 15px;
+#settings-changes.changes #b_settings-cancel,
+#settings-changes #b_settings-copy {
+	display: initial;
 }
 
-#import button:disabled {
-	filter: grayscale(1) opacity(0.7);
-	text-decoration: none;
-	cursor: default;
-	transition: filter 0.1s;
-}
-
-#i_importtext {
-	flex: 1;
-	margin-right: 1em;
-	tab-size: 0.05em;
-	background-color: var(--color-areas);
-}
-
-#i_importtext:focus {
-	background-color: var(--color-focused);
-}
-
-#resetContainer {
-	margin-top: 1rem;
-}
-
-#resetContainer .param {
-	padding: 0.65em 1.3em;
-}
-
-#reset_conf,
-#reset_first {
+#settings-changes #b_settings-cancel,
+#settings-changes.changes #b_settings-copy {
 	display: none;
 }
 
-#reset_conf.shown,
-#reset_first.shown {
+#reset-settings {
+	margin-top: 1em;
+}
+
+#reset-conf,
+#reset-first {
+	display: none;
+}
+
+#reset-conf.shown,
+#reset-first.shown {
 	display: flex;
 }
 
-#reset_first {
-	justify-content: center;
-}
-
-#b_resetno {
-	color: var(--color-red);
-}
+/* Footer */
 
 #settings-footer {
-	color: var(--color-light-text);
+	width: 75%;
 	font-size: 14px;
-	padding: 4em 3em 0 4em;
-	margin-bottom: 100px;
+	margin: 50px auto 100px;
+	color: var(--color-light-text);
 }
 
 @supports (-webkit-touch-callout: none) {

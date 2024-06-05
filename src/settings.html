@@ -1,5 +1,5 @@
 <div id="mobile-drag-zone">
-	<hr />
+	<div></div>
 </div>
 
 <div class="settings-title">
@@ -9,7 +9,7 @@
 <div class="param">
 	<div class="showall wrapper">
 		<label for="i_showall" class="trn">Show all settings</label>
-		<input id="i_showall" class="switch opt-hider" type="checkbox" />
+		<input id="i_showall" class="switch" type="checkbox" />
 	</div>
 
 	<hr />
@@ -19,7 +19,7 @@
 		<select id="i_lang" class="lang"></select>
 	</div>
 
-	<div class="as as_visuals">
+	<div class="as as_visuals dropdown">
 		<hr />
 
 		<div class="darkmode wrapper">
@@ -37,11 +37,19 @@
 		<div class="wrapper" id="tabtitle">
 			<span>
 				<span class="trn">Tab appearance</span>
-				<button class="tooltip tttab opt-hider" aria-label="Tips on tab appearance">?</button>
+				<button class="tooltip tttab" title="Tips on tab appearance" aria-label="Tips on tab appearance">?</button>
 			</span>
 
-			<div>
-				<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" aria-label="Tab favicon" />
+			<div class="split-inputs">
+				<input
+					type="text"
+					name="favicon"
+					id="i_favicon"
+					maxlength="2"
+					placeholder="🌤"
+					aria-label="Tab favicon"
+					class="not-safari"
+				/>
 				<input
 					type="text"
 					name="tabtitle"
@@ -55,7 +63,7 @@
 			</div>
 		</div>
 
-		<div class="tooltiptext tttab">
+		<div class="tooltiptext dropdown tttab">
 			<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
 		</div>
 
@@ -85,7 +93,7 @@
 
 	<div class="wrapper freq_wrap">
 		<label for="i_freq" class="trn">Frequency</label>
-		<div>
+		<div class="split-inputs">
 			<select id="i_freq">
 				<option value="tabs" class="trn">Every tab</option>
 				<option value="hour" class="trn">Every hour</option>
@@ -93,20 +101,26 @@
 				<option value="day" class="trn">Every day</option>
 				<option value="pause" class="trn">Pause</option>
 			</select>
-			<button id="i_refresh" class="input-btn refresh-btn" aria-label="Choose another background">
+			<button id="i_refresh" class="input-btn refresh-btn" title="Next background" aria-label="Next background">
 				<span>↻</span>
 			</button>
 		</div>
 	</div>
 
 	<div id="unsplash_options" class="dropdown shown">
-		<div class="as as_collection">
+		<div class="as as_collection dropdown">
 			<hr />
 
 			<div class="wrapper">
 				<span>
 					<label for="i_collection" class="trn">Unsplash collection</label>
-					<button class="tooltip ttcoll opt-hider" aria-label="Tips on Unsplash collections">?</button>
+					<button
+						class="tooltip ttcoll"
+						title="Tips on Unsplash collections"
+						aria-label="Tips on Unsplash collections"
+					>
+						?
+					</button>
 				</span>
 
 				<form id="f_collection" class="network-form">
@@ -129,7 +143,7 @@
 				</form>
 			</div>
 
-			<p class="tooltiptext ttcoll">
+			<p class="tooltiptext dropdown ttcoll">
 				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
 				<a
 					class="trn"
@@ -145,9 +159,9 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<label class="uploadContainer">
-			<p class="trn">Upload background here</p>
-			<input id="i_bgfile" type="file" name="background_file" multiple tabindex="0" />
+		<label for="i_bgfile" class="input-file">
+			<input id="i_bgfile" type="file" name="background_file" multiple accept="image/*" />
+			<span class="trn">Upload background here</span>
 		</label>
 
 		<div id="fileContainer"></div>
@@ -176,9 +190,9 @@
 <div class="settings-title">
 	<h2 class="trn">Quick Links</h2>
 
-	<button class="tooltip ttlinks opt-hider" aria-label="Tips on Quick Links">?</button>
+	<button class="tooltip ttlinks" title="Tips on Quick Links" aria-label="Tips on Quick Links">?</button>
 
-	<p class="tooltiptext ttlinks">
+	<p class="tooltiptext dropdown ttlinks">
 		<span class="trn">These are Bonjourr's bookmarks. </span>
 		<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
 		<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
@@ -190,7 +204,7 @@
 <div class="param">
 	<div class="activate_quicklinks wrapper">
 		<label for="i_quicklinks" class="trn">Enable</label>
-		<input id="i_quicklinks" class="switch opt-hider" type="checkbox" />
+		<input id="i_quicklinks" class="switch" type="checkbox" />
 	</div>
 
 	<div id="quicklinks_options" class="dropdown">
@@ -218,6 +232,8 @@
 						placeholder="example.com"
 						aria-label="Add URL to new link"
 						autocomplete="off"
+						autocorrect="off"
+						autocapitalize="off"
 						spellcheck="false"
 						required="true"
 					/>
@@ -229,7 +245,7 @@
 			</form>
 		</div>
 
-		<div id="importbookmarks">
+		<div class="not-safari not-online">
 			<hr />
 
 			<div class="wrapper">
@@ -240,27 +256,18 @@
 			</div>
 		</div>
 
-		<div class="as as_link">
-			<div id="syncbookmarks">
-				<hr />
+		<hr />
 
-				<div class="wrapper">
-					<label for="i_syncbookmarks" class="trn">Sync new bookmarks</label>
-					<input id="i_syncbookmarks" class="switch" type="checkbox" />
-				</div>
-			</div>
+		<div class="wrapper">
+			<span>
+				<label for="i_linkgroups" class="trn">Show groups</label>
+				<button class="tooltip" title="Tips on Links groups" aria-label="Tips on Links groups">?</button>
+			</span>
+			<input id="i_linkgroups" class="switch" type="checkbox" />
+		</div>
 
-			<hr />
-
-			<div class="wrapper">
-				<span>
-					<label for="i_linktabs" class="trn">Link pages</label>
-					<button class="tooltip ttpages opt-hider" aria-label="Tips on Links pages">?</button>
-				</span>
-				<input id="i_linktabs" class="switch" type="checkbox" />
-			</div>
-
-			<p class="tooltiptext ttpages">
+		<div class="as as_link dropdown">
+			<p class="tooltiptext dropdown">
 				<span class="trn">Organize your links even more with pages. Right click next to a page to add another.</span>
 				<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
 					>Learn more</a
@@ -285,13 +292,29 @@
 
 			<div class="linkstyle wrapper">
 				<label for="i_linkstyle" class="trn">Style</label>
-				<select id="i_linkstyle">
-					<option value="large" class="trn">Large</option>
-					<option value="medium" class="trn">Medium</option>
-					<option value="small" class="trn">Small</option>
-					<option value="inline" class="trn">Inline</option>
-					<option value="text" class="trn">Text</option>
-				</select>
+
+				<div class="split-inputs">
+					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles" title="Toggle link titles">
+						<span>T</span>
+					</button>
+
+					<button
+						id="b_showbackgrounds"
+						class="input-btn on"
+						aria-label="Toggle link backgrounds"
+						title="Toggle link backgrounds"
+					>
+						<span></span>
+					</button>
+
+					<select id="i_linkstyle">
+						<option value="large" class="trn">Large</option>
+						<option value="medium" class="trn">Medium</option>
+						<option value="small" class="trn">Small</option>
+						<option value="inline" class="trn">Inline</option>
+						<option value="text" class="trn">Text</option>
+					</select>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -304,7 +327,7 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_time" class="trn">Enable</label>
-		<input id="i_time" class="switch opt-hider" type="checkbox" />
+		<input id="i_time" class="switch" type="checkbox" />
 	</div>
 
 	<div id="time_options" class="dropdown">
@@ -312,7 +335,7 @@
 
 		<div class="analog wrapper">
 			<label for="i_analog" class="trn">Analog clock</label>
-			<input id="i_analog" class="switch opt-hider" type="checkbox" />
+			<input id="i_analog" class="switch" type="checkbox" />
 		</div>
 
 		<hr />
@@ -441,7 +464,7 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_main" class="trn">Enable</label>
-		<input id="i_main" class="switch opt-hider" type="checkbox" />
+		<input id="i_main" class="switch" type="checkbox" />
 	</div>
 
 	<div id="main_options" class="dropdown">
@@ -699,7 +722,7 @@
 			</form>
 		</div>
 
-		<div class="as as_weather">
+		<div class="as as_weather dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -727,10 +750,16 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_moreinfo" class="trn">Detailed weather</label>
-					<button class="tooltip ttdetailledweather opt-hider" aria-label="What is detailed weather?">?</button>
+					<button
+						class="tooltip ttdetailledweather"
+						title="What is detailed weather?"
+						aria-label="What is detailed weather?"
+					>
+						?
+					</button>
 				</span>
 
-				<select id="i_moreinfo" class="opt-hider">
+				<select id="i_moreinfo" class="">
 					<option value="none" class="trn">None</option>
 					<option value="msnw">MSN Weather</option>
 					<option value="yhw">Yahoo Weather</option>
@@ -739,7 +768,7 @@
 				</select>
 			</div>
 
-			<p class="tooltiptext ttdetailledweather">
+			<p class="tooltiptext dropdown ttdetailledweather">
 				<span class="trn">Click on the weather widget to get detailed weather reports.</span>
 			</p>
 
@@ -793,11 +822,11 @@
 <div class="param">
 	<div class="activate_notes wrapper">
 		<label for="i_notes" class="trn">Enable</label>
-		<input id="i_notes" class="switch opt-hider" type="checkbox" />
+		<input id="i_notes" class="switch" type="checkbox" />
 	</div>
 
 	<div id="notes_options" class="dropdown">
-		<div class="as as_notes">
+		<div class="as as_notes dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -826,7 +855,7 @@
 					name="i_notesopacity"
 					min="0"
 					max="1"
-					step=".1"
+					step=".05"
 					value=".1"
 					class="range"
 				/>
@@ -842,7 +871,7 @@
 <div class="param">
 	<div class="activate_searchbar wrapper">
 		<label for="i_sb" class="trn">Enable</label>
-		<input id="i_sb" class="switch opt-hider" type="checkbox" />
+		<input id="i_sb" class="switch" type="checkbox" />
 	</div>
 
 	<div id="searchbar_options" class="dropdown">
@@ -864,7 +893,7 @@
 
 		<div class="wrapper">
 			<label for="i_sbengine" class="trn">Search engine</label>
-			<select id="i_sbengine" class="choose_search opt-hider">
+			<select id="i_sbengine" class="choose_search">
 				<option value="google">Google</option>
 				<option value="ddg">DuckDuckGo</option>
 				<option value="bing">Bing</option>
@@ -887,7 +916,7 @@
 			</div>
 		</div>
 
-		<div class="as as_searchbar">
+		<div class="as as_searchbar dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -913,7 +942,7 @@
 
 			<div class="wrapper">
 				<label for="i_sbopacity" class="trn">Opacity</label>
-				<input id="i_sbopacity" type="range" name="i_sbopacity" min="0" max="1" step=".1" value=".1" class="range" />
+				<input id="i_sbopacity" type="range" name="i_sbopacity" min="0" max="1" step=".05" value=".1" class="range" />
 			</div>
 		</div>
 	</div>
@@ -926,7 +955,7 @@
 <div class="param">
 	<div class="activate_quotes wrapper">
 		<label for="i_quotes" class="trn">Enable</label>
-		<input id="i_quotes" class="switch opt-hider" type="checkbox" />
+		<input id="i_quotes" class="switch" type="checkbox" />
 	</div>
 
 	<div id="quotes_options" class="dropdown">
@@ -961,15 +990,14 @@
 
 				<div class="wrapper">
 					<label for="i_qtlist" class="trn">Custom quotes</label>
+					<textarea
+						id="i_qtlist"
+						name="qtlist"
+						type="text"
+						placeholder="Author, Your quote.&#10;Author, Your second quote."
+						maxlength="8000"
+					></textarea>
 				</div>
-
-				<textarea
-					id="i_qtlist"
-					name="qtlist"
-					type="text"
-					placeholder="Author, Your quote.&#10;Author, Your second quote."
-					maxlength="8000"
-				></textarea>
 			</div>
 
 			<hr />
@@ -977,14 +1005,14 @@
 
 		<div class="wrapper freq_wrap">
 			<label for="i_qtfreq" class="trn">Frequency</label>
-			<div>
+			<div class="split-inputs">
 				<select id="i_qtfreq">
 					<option value="tabs" class="trn">Every tab</option>
 					<option value="hour" class="trn">Every hour</option>
 					<option value="day" class="trn">Every day</option>
 					<option value="pause" class="trn">Pause</option>
 				</select>
-				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Choose another quote">
+				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Next quote" title="Next quote">
 					<span>↻</span>
 				</button>
 			</div>
@@ -992,7 +1020,7 @@
 	</div>
 </div>
 
-<div class="as as_fonts">
+<div class="as as_fonts dropdown">
 	<div class="settings-title">
 		<h2 class="trn">Fonts</h2>
 	</div>
@@ -1045,13 +1073,13 @@
 	</div>
 </div>
 
-<div class="as as_page">
+<div class="as as_page dropdown">
 	<div class="settings-title">
 		<h2 class="trn">Page layout</h2>
 
-		<button class="tooltip ttgrid opt-hider" aria-label="Tips on page grid layout">?</button>
+		<button class="tooltip ttgrid" title="Tips on page grid layout" aria-label="Tips on page grid layout">?</button>
 
-		<p class="tooltiptext ttgrid">
+		<p class="tooltiptext dropdown ttgrid">
 			<span class="trn">Customise how and where widgets appear.</span>
 			<span class="trn instructions">Open the toolbox and select a widget to modify on the page.</span>
 			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener">Learn more</a>
@@ -1071,11 +1099,11 @@
 				<span class="trn">Layout columns</span>
 				<div class="wrapper">
 					<div id="grid-layout" class="mover">
-						<button data-layout="single" aria-label="Single column layout"></button>
-						<button data-layout="double" aria-label="Double column layout">
+						<button data-layout="single" aria-label="Single column layout" title="Single column layout"></button>
+						<button data-layout="double" aria-label="Double column layout" title="Double column layout">
 							<span></span>
 						</button>
-						<button data-layout="triple" aria-label="Triple column layout">
+						<button data-layout="triple" aria-label="Triple column layout" title="Triple column layout">
 							<span></span>
 							<span></span>
 						</button>
@@ -1100,13 +1128,13 @@
 	</div>
 </div>
 
-<div class="as as_css cssEditor">
+<div class="as as_css dropdown cssEditor">
 	<div class="settings-title">
 		<h2 id="lbl-css" class="trn">Custom Style</h2>
 
-		<button class="tooltip ttcss opt-hider" aria-label="Tips on Custom styles">?</button>
+		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
 
-		<p class="tooltiptext ttcss">
+		<p class="tooltiptext dropdown ttcss">
 			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank">CSS snippets.</a>
@@ -1123,80 +1151,110 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="i_announce" class="trn">Announcements</label>
+			<span>
+				<label for="i_announce" class="trn">Announcements</label>
+				<button class="tooltip ttannouncements" title="What are announcements?" aria-label="What are announcements?">
+					?
+				</button>
+			</span>
+
 			<select id="i_announce">
-				<option class="trn" value="all">All</option>
-				<option class="trn" value="major">Major changes</option>
+				<option class="trn" value="all">All updates</option>
+				<option class="trn" value="major">Major updates</option>
 				<option class="trn" value="off">Disabled</option>
 			</select>
 		</div>
-	</div>
-</div>
 
-<div id="importexport">
-	<div class="settings-title">
-		<h2 class="trn">Settings management</h2>
-
-		<button class="tooltip ttexport" aria-label="Tips on imports & exports">?</button>
-
-		<p class="tooltiptext ttexport">
-			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-			<a
-				class="trn"
-				href="https://bonjourr.fr/docs/overview/#settings-management"
-				rel="noreferrer noopener"
-				target="_blank"
-				>Learn more</a
-			>
+		<p class="tooltiptext dropdown ttannouncements">
+			<span class="trn">Decide when to get notified about Bonjourr updates.</span>
 		</p>
 	</div>
+</div>
 
-	<div class="param">
-		<div class="importexport-tabs">
-			<button id="s_export" class="trn opt-hider">Export</button>
-			<button id="s_import" class="trn opt-hider">Import</button>
-			<div class="glider"></div>
+<div class="settings-title">
+	<h2 class="trn">Settings management</h2>
+
+	<button class="tooltip ttexport" title="Tips on imports & exports" aria-label="Tips on imports & exports">?</button>
+
+	<p class="tooltiptext dropdown ttexport">
+		<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#settings-management" rel="noreferrer noopener" target="_blank"
+			>Learn more</a
+		>
+	</p>
+</div>
+
+<div class="param" id="settings-managment">
+	<a id="file-download" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
+	<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
+
+	<div class="wrapper">
+		<span class="trn">Settings file</span>
+		<div>
+			<button
+				id="b_file-load"
+				class="param-btn trn"
+				title="Import an existing settings file"
+				aria-label="Import an existing settings file"
+			>
+				Import
+			</button>
+			<button
+				id="b_file-save"
+				class="param-btn trn"
+				title="Export a new settings file"
+				aria-label="Export a new settings file"
+			>
+				Export
+			</button>
 		</div>
+	</div>
 
-		<div id="export" class="shown">
-			<pre id="export-data"></pre>
+	<hr />
 
-			<div>
-				<button id="b_exportcopy" class="inline-btn trn">Copy text</button>
+	<textarea id="settings-data"></textarea>
 
-				<div id="save_wrapper">
-					<button id="b_exportfile" class="inline-btn trn">Export as file</button>
-					<a id="downloadfile" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
-				</div>
-			</div>
-		</div>
-
-		<div id="import">
-			<label id="importFile" class="uploadContainer">
-				<p class="trn">Drop file to import settings</p>
-				<input id="i_importfile" type="file" name="import_file" tabindex="0" />
-			</label>
-
-			<div>
-				<input id="i_importtext" type="text" placeholder="or paste as text" aria-labelledby="importtext" />
-				<button id="b_importtext" class="inline-btn trn">Import</button>
-			</div>
-		</div>
+	<div id="settings-changes">
+		<button
+			id="b_settings-copy"
+			class="param-btn trn"
+			title="Copy settings data to clipboard"
+			aria-label="Copy settings data to clipboard"
+		>
+			Copy
+		</button>
+		<button id="b_settings-cancel" class="param-btn btn-red trn" title="Cancel changes" aria-label="Cancel changes">
+			Cancel
+		</button>
+		<button
+			id="b_settings-apply"
+			class="param-btn trn"
+			title="Load Bonjourr with these settings"
+			aria-label="Load Bonjourr with these settings"
+			disabled
+		>
+			Apply changes
+		</button>
 	</div>
 </div>
 
-<div id="resetContainer">
-	<div class="param">
-		<div id="reset_first" class="wrapper shown">
-			<button id="b_resetconf" class="inline-btn trn">Reset settings</button>
-		</div>
+<div class="param" id="reset-settings">
+	<div id="reset-first" class="wrapper shown">
+		<label for="b_reset-first" class="trn">Reset all settings</label>
 
-		<div id="reset_conf" class="wrapper">
-			<span class="trn">Are you sure ?</span>
-			<div>
-				<button id="b_resetyes" class="inline-btn trn">I am sure</button>
-				<button id="b_resetno" class="inline-btn trn">No, go back</button>
-			</div>
+		<div>
+			<button id="b_reset-first" class="param-btn trn" title="Reset all settings" aria-label="Reset all settings">
+				Reset
+			</button>
+		</div>
+	</div>
+
+	<div id="reset-conf" class="wrapper">
+		<span class="trn">Are you sure?</span>
+
+		<div>
+			<button id="b_reset-apply" class="param-btn trn">I am sure</button>
+			<button id="b_reset-cancel" class="param-btn btn-red trn">No, go back</button>
 		</div>
 	</div>
 </div>
@@ -1258,7 +1316,7 @@
 		</p>
 	</div>
 
-	<div id="donate">
+	<div id="donate" class="not-safari">
 		<p>
 			<span class="trn">Consider</span>
 			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>

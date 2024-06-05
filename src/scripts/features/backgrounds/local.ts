@@ -175,7 +175,7 @@ async function updateThumbnailAmount(showing?: string) {
 async function displayCustomBackground(blob?: Blob) {
 	if (blob) {
 		imgBackground(URL.createObjectURL(blob))
-		document.getElementById('creditContainer')?.classList.remove('shown')
+		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}
 }
@@ -307,7 +307,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 		localImages.update({ ids: [], selected: '' })
 
 		setTimeout(async () => {
-			document.getElementById('creditContainer')?.classList.toggle('shown', true)
+			document.getElementById('credit-container')?.classList.toggle('shown', true)
 			const data = await storage.sync.get('unsplash')
 			const local = await storage.local.get('unsplashCache')
 			unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })

@@ -14,10 +14,10 @@ type PopupUpdate = {
 }
 
 const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.2.0'
-const ANNOUNCEMENT_VERSION = ''
+const ANNOUNCEMENT_VERSION = '19.2.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'Syntax highlighted CSS editor, new search bar width option, and improved some options UI !',
+	en: 'New this update: syntax highlighted CSS editor, search bar width option and made some settings more user friendly!',
 }
 
 const ANNOUNCEMENT_BTN_TRNS = {
@@ -127,12 +127,12 @@ function removePopupTrigger() {
 
 function openPopup() {
 	setTimeout(() => document.getElementById('popup')?.classList.add('shown'), 800)
-	setTimeout(() => document.getElementById('creditContainer')?.setAttribute('style', 'opacity: 0'), 400)
+	setTimeout(() => document.getElementById('credit-container')?.setAttribute('style', 'opacity: 0'), 400)
 }
 
 function closePopup() {
 	setTimeout(() => document.getElementById('popup')?.remove(), 200)
-	setTimeout(() => document.getElementById('creditContainer')?.removeAttribute('style'), 600)
+	setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
 	document.getElementById('popup')?.classList.remove('shown')
 	removePopupTrigger()
 }

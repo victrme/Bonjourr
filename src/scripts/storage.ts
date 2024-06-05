@@ -30,7 +30,10 @@ function verifyDataAsSync(data: Keyval) {
 	data = data ?? {}
 
 	for (const key in SYNC_DEFAULT) {
-		if (!(key in data)) {
+		const notAbout = key !== 'about'
+		const missingKey = !(key in data)
+
+		if (notAbout && missingKey) {
 			data[key] = SYNC_DEFAULT[key]
 		}
 	}
@@ -64,11 +67,11 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 function online(): Storage {
 	const sync = {
 		set: function (value: Keyval) {
-			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
-
 			if (typeof value !== 'object') {
 				return console.warn('Value is not an object: ', value)
 			}
+
+			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 
 			for (const [key, val] of Object.entries(value)) {
 				data[key] = val
@@ -110,7 +113,10 @@ function online(): Storage {
 			}
 
 			for (const key of keys) {
-				const val = parse<Partial<Local.Storage>>(localStorage.getItem(key) ?? '')
+				const item = localStorage.getItem(key) ?? ''
+				const isJson = item.startsWith('{') || item.startsWith('[')
+				const val = isJson ? parse<Partial<Local.Storage>>(item) : item
+
 				if (val) {
 					res[key] = val
 				}
@@ -131,6 +137,12 @@ function online(): Storage {
 	}
 
 	const init = async () => {
+		const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
+
+		if (!about) {
+			online().sync.set({ about: SYNC_DEFAULT.about })
+		}
+
 		return {
 			sync: verifyDataAsSync(await sync.get()),
 			local: verifyDataAsLocal(await local.get()),
@@ -186,8 +198,8 @@ function webext(): Storage {
 		// This waits for chrome.storage to be stored in a global variable
 		// that is created in file `webext-storage.js`
 
-		//@ts-ignore
-		const store = startupStorage as AllStorage
+		//@ts-expect-error
+		const store: AllStorage = startupStorage
 		const isReady = (): boolean => 'sync' in store && 'local' in store
 
 		if (!isReady()) {
@@ -201,7 +213,7 @@ function webext(): Storage {
 		const sync = verifyDataAsSync(store.sync)
 		const local = verifyDataAsLocal(store.local)
 
-		//@ts-ignore
+		//@ts-expect-error
 		startupStorage = undefined
 
 		return { sync, local }

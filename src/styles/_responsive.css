@@ -3,13 +3,13 @@
 		opacity: 1;
 	}
 
-	#showSettings {
+	#show-settings {
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		user-select: none;
 	}
 
-	#showSettings:active {
+	#show-settings:active {
 		filter: brightness(0.5);
 	}
 }
@@ -41,7 +41,6 @@
 
 	#interface {
 		padding-bottom: 77px;
-		min-height: 100dvh;
 	}
 
 	body #interface.pushed {
@@ -52,25 +51,58 @@
 		width: 90vw;
 	}
 
+	#show-settings button {
+		height: 44px;
+		width: 44px;
+		border-radius: 10px;
+	}
+
+	#show-settings img {
+		width: 30px;
+	}
+
 	aside {
-		top: 100lvh; /* kiwi browser fix as dvh doesn't work (?) */
+		top: 100dvh;
 		right: auto;
 		left: 0%;
 		bottom: -100dvh;
 		height: 100dvh;
 		width: 100%;
-		font-size: 1.2em;
-		padding: 0px;
+		padding: 0 12px;
+		font-size: 14px;
 		border-radius: 1em;
-		-webkit-overflow-scrolling: touch;
 	}
 
 	aside.shown {
-		transform: translateX(0) translateY(-75vh);
+		transform: translateX(0) translateY(-75dvh);
+	}
+
+	#mobile-drag-zone {
+		display: block;
+	}
+
+	#mobile-drag-zone + .settings-title {
+		margin-top: 0;
+	}
+
+	@supports not (min-height: 100dvh) {
+		aside {
+			top: 100vh;
+			bottom: -100vh;
+			height: 100vh;
+		}
+
+		#mobile-drag-zone.shown {
+			transform: translateY(-75vh);
+		}
 	}
 
 	aside form > div {
 		flex-direction: column;
+	}
+
+	aside::-webkit-scrollbar {
+		display: none;
 	}
 
 	#i_addlink-title,
@@ -96,38 +128,7 @@
 		padding-bottom: 25vh;
 	}
 
-	/* Tooltip (?) centered when span wrap */
-	.as_collection {
-		max-height: 140px;
-	}
-
-	.as_collection .wrapper span {
-		align-items: center;
-	}
-
-	#mobile-drag-zone {
-		display: block;
-	}
-
-	#mobile-drag-zone ~ h2:first-of-type {
-		margin-top: 0;
-	}
-
-	#cssEditor,
-	.param {
-		margin-right: 12px;
-		margin-left: 12px;
-	}
-
-	#cssEditor {
-		width: calc(100% - 24px);
-	}
-
-	body .prism-code-editor {
-		padding: unset;
-	}
-
-	#creditContainer {
+	#credit-container {
 		width: 100%;
 		padding-right: 7em;
 		padding-left: 1.5em;
@@ -142,10 +143,6 @@
 	#credit p,
 	#credit span {
 		font-size: 11px;
-	}
-
-	#popup {
-		display: none;
 	}
 
 	#bookmarks_container {
@@ -197,5 +194,39 @@
 
 	#sb-buttons #sb_empty {
 		font-size: 2em;
+	}
+
+	aside,
+	button,
+	select,
+	option,
+	input,
+	#settings-footer {
+		font-size: 15px;
+	}
+
+	aside input[type='range']::-webkit-slider-thumb {
+		height: 25px;
+		width: 25px;
+		border-radius: 50px;
+	}
+
+	aside .wrapper {
+		padding: unset;
+		min-height: 38px;
+	}
+
+	aside input:not(.range, .switch),
+	aside .input-btn,
+	aside select {
+		min-height: 36px;
+		border-radius: 13px;
+	}
+
+	#settings .tooltip {
+		width: 25px;
+		height: 25px;
+		min-width: 25px;
+		font-size: 15px;
 	}
 }

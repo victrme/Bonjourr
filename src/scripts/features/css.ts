@@ -21,23 +21,33 @@ export default function customCss(init?: string, event?: { styling: string }) {
 	}
 
 	onSettingsLoad(async () => {
-		const { defaultCommands } = await import('prism-code-editor/commands')
-		const { createEditor } = await import('prism-code-editor')
-		await import('prism-code-editor/prism/languages/css-extras')
+		const { create } = await import('./csseditor')
 
 		const options = {
 			language: 'css',
 			lineNumbers: false,
 			wordWrap: true,
-			value: init || `/* ${tradThis('Type in your custom CSS')} */`,
+			insertSpaces: false,
+			value: init || '',
 		}
 
-		const editor = createEditor('#css-editor', options, defaultCommands())
+		const editor = create(options)
+		const tabCommand = editor.keyCommandMap.Tab
+
+		editor.textarea.id = 'css-editor-textarea'
+		editor.textarea.maxLength = 8080
+		editor.textarea.setAttribute('aria-labelledby', 'lbl-css')
+		editor.textarea.placeholder = tradThis('Type in your custom CSS')
 
 		editor.addListener('update', (value) => {
 			value = stringMaxSize(value, 8080)
 			eventDebounce({ css: value })
 			stylelink.textContent = value
 		})
+
+		editor.keyCommandMap.Tab = (e, selection, value) => {
+			if (document.body.matches('.tabbing')) return false
+			return tabCommand?.(e, selection, value)
+		}
 	})
 }

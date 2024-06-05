@@ -1,3 +1,36 @@
+## 19.2.4
+
+-   Improvements:
+    -   More colors in CSS Editor
+    -   Better accessibility with hidden options in settings
+    -   Tiny settings styling changes
+-   Translations:
+    -   Small Simplified Chinese fix (#352), thanks @angine04
+    -   Fixed forecast issues in Japanese & Arabic, thanks IshiharaErika & @aldoyh
+    -   Update Czech translation, thanks @ZimaDaniel
+
+## 19.2.3
+
+-   Fixes:
+    -   Icons in folder preview in correct order (#326)
+    -   Settings not opening on first touch on mobile
+    -   Removed last update version number fix
+-   Translations:
+    -   Added Czech translation, thank you @ZimaDaniel
+    -   Updated Brazilian, thanks @adilsonfsantos
+
+## 19.2.2
+
+-   Invisible interface scrollbar on Chromium
+-   Only apply background optimization on Safari (hopefully #345)
+-   Fixed settings scrolling repaints causing slowdowns
+-   Fixed page not saving version number
+-   Small settings styling changes
+
+## 19.2.1
+
+-   Hotfix: Added fallback for interface breaking styling on older browsers
+
 ## 19.2.0
 
 -   Added:
@@ -7,6 +40,7 @@
     -   Weather icon to SVG
     -   Only load settings menu on user action
     -   Never load links icons when using text style (#327)
+    -   GPU acceleration on background for better Safari performance
 -   Changes:
     -   Simplified Notes default text
     -   Weather & credit can be translated as a full sentence (#317)

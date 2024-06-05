@@ -113,6 +113,7 @@ export const freqControl = {
 export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	// 1.13.0: Returns an array of found links in storage
 	let res: Links.Link[] = []
+
 	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
 	})
@@ -169,4 +170,30 @@ export function getHTMLTemplate<T>(id: string, selector: string): T {
 	const template = document.getElementById(id) as HTMLTemplateElement
 	const clone = template?.content.cloneNode(true) as Element
 	return clone?.querySelector(selector) as T
+}
+
+// getting .composedPath equivalent of touch events
+export function getComposedPath(target: EventTarget | null): HTMLElement[] {
+	if (!target) {
+		return []
+	}
+
+	const path: HTMLElement[] = []
+	let node = target as HTMLElement | null
+
+	while (node) {
+		path.push(node)
+		node = node.parentElement
+	}
+
+	return path
+}
+
+export function rgbToHex(r: number, g: number, b: number): string {
+    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function componentToHex(c: number): string {
+    let hex = c.toString(16);
+    return hex.length == 1 ? '0' + hex : hex;
 }

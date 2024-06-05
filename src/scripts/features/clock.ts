@@ -18,7 +18,8 @@ type ClockUpdate = {
 
 type DateFormat = Sync.Storage['dateformat']
 
-const oneInFiveRandom = Math.random() > 0.8 ? 1 : 0
+const oneInFive = Math.random() > 0.8 ? 1 : 0
+let numberWidths = [1]
 let clockInterval: number
 
 export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
@@ -119,6 +120,10 @@ function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat)
 	document.getElementById('time')?.classList.toggle('analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
+	if (clock.seconds) {
+		setSecondsWidthInCh()
+	}
+
 	clearInterval(clockInterval)
 	start()
 
@@ -131,7 +136,7 @@ function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat)
 		if (clock.analog) {
 			analog(date, clock.seconds)
 		} else {
-			digital(date, clock.ampm)
+			digital(date, clock.ampm, clock.seconds)
 		}
 
 		if (isNextHour) {
@@ -141,7 +146,7 @@ function startClock(clock: Sync.Clock, greeting: string, dateformat: DateFormat)
 	}
 }
 
-function digital(date: Date, ampm: boolean) {
+function digital(date: Date, ampm: boolean, seconds: boolean) {
 	const domclock = document.getElementById('digital')
 	const hh = document.getElementById('digital-hh') as HTMLElement
 	const mm = document.getElementById('digital-mm') as HTMLElement
@@ -153,6 +158,16 @@ function digital(date: Date, ampm: boolean) {
 
 	if (ampm && h === 0) {
 		h = 12
+	}
+
+	if (seconds) {
+		// Avoid layout shifts by rounding width
+		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
+		const width = getSecondsWidthInCh(second)
+		const offset = (-2 + width).toFixed(1)
+
+		domclock?.style.setProperty('--seconds-width', `${width}ch`)
+		domclock?.style.setProperty('--seconds-margin-offset', `${offset}ch`)
 	}
 
 	domclock?.classList.toggle('zero', !ampm && h < 10)
@@ -224,31 +239,50 @@ function clockDate(date: Date, dateformat: DateFormat) {
 //
 
 function greetings(date: Date, name?: string) {
-	const hour = date.getHours()
-	let greet = 'Good evening'
-
-	if (hour < 3) {
-		greet = 'Good evening'
-	} else if (hour < 5) {
-		greet = ['Good night', 'Sweet dreams'][oneInFiveRandom]
-	} else if (hour < 12) {
-		greet = 'Good morning'
-	} else if (hour < 18) {
-		greet = 'Good afternoon'
-	}
-
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
 
-	domgreetings.style.textTransform = name ? 'none' : 'capitalize'
+	const rare = oneInFive
+	const hour = date.getHours()
+	let period: 'night' | 'morning' | 'afternoon' | 'evening'
+
+	if (hour < 3) period = 'evening'
+	else if (hour < 5) period = 'night'
+	else if (hour < 12) period = 'morning'
+	else if (hour < 18) period = 'afternoon'
+	else period = 'evening'
+
+	const greetings = {
+		morning: 'Good morning',
+		afternoon: 'Good afternoon',
+		evening: 'Good evening',
+		night: ['Good night', 'Sweet dreams'][rare],
+	}
+
+	const greet = greetings[period]
+
+	domgreetings.style.textTransform = name || (rare && period === 'night') ? 'none' : 'capitalize'
 	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
 	domname.textContent = name ?? ''
 }
 
-//
 // Helpers
-//
+
+function setSecondsWidthInCh() {
+	const span = document.getElementById('digital-number-width')!
+	const zero = span.offsetWidth
+	numberWidths = [1]
+
+	for (let i = 1; i < 6; i++) {
+		span.textContent = i.toString()
+		numberWidths.push(Math.round((span.offsetWidth / zero) * 10) / 10)
+	}
+}
+
+function getSecondsWidthInCh(second: number): number {
+	return Math.min(...numberWidths) + numberWidths[second]
+}
 
 function zonedDate(timezone: string = 'auto') {
 	const date = new Date()

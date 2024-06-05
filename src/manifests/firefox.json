@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "19.2.0",
+	"version": "19.2.4",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"homepage_url": "https://bonjourr.fr",
@@ -34,7 +34,7 @@
 	},
 
 	"permissions": ["storage"],
-	"optional_permissions": ["bookmarks"],
+	"optional_permissions": ["bookmarks", "topSites"],
 
 	"browser_specific_settings": {
 		"gecko": {

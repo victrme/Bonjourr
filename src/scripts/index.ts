@@ -9,10 +9,8 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
-import { settingsInit } from './settings'
-import { syncNewBookmarks } from './features/links/bookmarks'
+import { settingsPreload } from './settings'
 import quotes, { oldJSONToCSV } from './features/quotes'
-import storage, { getSyncDefaults } from './storage'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
@@ -21,6 +19,7 @@ import { traduction, setTranslationCache } from './utils/translations'
 import onSettingsLoad from './utils/onsettingsload'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
+import storage from './storage'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -43,24 +42,16 @@ try {
 
 async function startup() {
 	let { sync, local } = await storage.init()
-
 	const OLD_VERSION = sync?.about?.version
-	const versionChanged = OLD_VERSION !== CURRENT_VERSION
-	const firstStart = OLD_VERSION === undefined && Object.keys(sync).length === 0
 
-	if (versionChanged) {
-		if (firstStart) {
-			console.log(`First install: ${CURRENT_VERSION}`)
-			sync = await getSyncDefaults()
-		} else {
-			console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
-			sync = upgradeSyncStorage(sync)
-		}
-
+	if (OLD_VERSION !== CURRENT_VERSION) {
+		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
+		sync = upgradeSyncStorage(sync)
+		local = upgradeLocalStorage(local)
 		storage.sync.set(sync)
 	}
 
-	await setTranslationCache(sync.lang, local, versionChanged)
+	await setTranslationCache(sync.lang, local)
 
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
@@ -80,8 +71,12 @@ async function startup() {
 	hideElements(sync.hide)
 	initBackground(sync, local)
 	quickLinks(sync)
-	syncNewBookmarks(sync.syncbookmarks)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
+	operaExtensionExplainer(local.operaExplained)
+
+	document.documentElement.dataset.system = SYSTEM_OS as string
+	document.documentElement.dataset.browser = BROWSER as string
+	document.documentElement.dataset.platform = PLATFORM as string
 
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
@@ -89,6 +84,7 @@ async function startup() {
 	onInterfaceDisplay(() => {
 		document.body.classList.remove('init')
 
+		settingsPreload()
 		userActionsEvents()
 		setPotatoComputerMode()
 		interfacePopup({
@@ -98,15 +94,11 @@ async function startup() {
 			announce: sync.announcements,
 		})
 	})
-
-	if (BROWSER === 'opera' && PLATFORM === 'chrome') {
-		if (!local?.operaExplained) {
-			return operaExtensionExplainer()
-		}
-	}
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
+	data.about = SYNC_DEFAULT.about
+
 	// 19.0.0
 
 	if (data.reviewPopup) {
@@ -122,10 +114,6 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 		data.dateformat = data.usdate ? 'us' : 'eu'
 	}
 
-	if (!data.linktabs) {
-		data.linktabs = { ...SYNC_DEFAULT.linktabs }
-	}
-
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('#clock', '#digital')
@@ -134,6 +122,12 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 			.replaceAll('#hours', '#analog-hours')
 			.replaceAll('#minutes', '#analog-minutes')
 			.replaceAll('#analogSeconds', '#analog-seconds')
+	}
+
+	// 20.0.0
+
+	if (data?.css) {
+		data.css = data.css.replaceAll('.block', '.link')
 	}
 
 	storage.sync.remove('reviewPopup')
@@ -147,7 +141,27 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 	storage.sync.remove('cssHeight')
 
 	data = linksDataMigration(data)
-	data.about = SYNC_DEFAULT.about
+
+	// 20.0.0
+
+	if (data.linktabs) {
+		data.linkgroups = {
+			on: data.linktabs.active,
+			selected: data.linktabs.titles[data.linktabs.selected],
+			groups: [...data.linktabs.titles],
+			synced: [],
+			pinned: [],
+		}
+
+		delete data.linktabs
+	}
+
+	return data
+}
+
+function upgradeLocalStorage(data: Local.Storage): Local.Storage {
+	data.translations = undefined
+	storage.local.remove('translations')
 
 	return data
 }
@@ -192,29 +206,17 @@ function onInterfaceDisplay(callback?: () => undefined): void {
 }
 
 function userActionsEvents() {
-	const toggleSettingsMenu = () => document.dispatchEvent(new Event('toggle-settings'))
 	const domsuggestions = document.getElementById('sb-suggestions')
-	const domshowsettings = document.querySelector('#showSettings')
 	let isMousingDownOnInput = false
 
 	document.body.addEventListener('mousedown', detectTargetAsInputs)
-	document.getElementById('showSettings')?.addEventListener('click', toggleSettingsMenu)
 	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
-
-	domshowsettings?.addEventListener('mouseenter', settingsFirstLoad)
-	domshowsettings?.addEventListener('pointerdown', settingsFirstLoad)
-	document.body.addEventListener('keydown', settingsFirstLoad)
 
 	document.addEventListener('click', clickUserActions)
 	document.addEventListener('keydown', keydownUserActions)
+	document.addEventListener('keyup', keydownUserActions)
 
 	async function keydownUserActions(event: KeyboardEvent) {
-		if (event.altKey && event.code === 'KeyS') {
-			console.clear()
-			console.log(localStorage)
-			console.log(await storage.sync.get())
-		}
-
 		if (event.code === 'Escape') {
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
@@ -222,13 +224,14 @@ function userActionsEvents() {
 			}
 
 			const open = isOpen()
+			const keyup = event.type === 'keyup'
 
 			if (open.contextmenu) {
 				document.dispatchEvent(new Event('close-edit'))
 			}
 			//
-			else if (open.settings) {
-				toggleSettingsMenu()
+			else if (open.settings && keyup) {
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 			//
 			else if (open.selectall) {
@@ -239,8 +242,8 @@ function userActionsEvents() {
 				document.dispatchEvent(new Event('close-folder'))
 			}
 			//
-			else {
-				toggleSettingsMenu()
+			else if (keyup) {
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 
 			return
@@ -262,33 +265,42 @@ function userActionsEvents() {
 		const pathIds = path.map((el) => (el as HTMLElement).id)
 
 		const on = {
-			link: path.some((el) => el?.classList?.contains('block')),
+			link: path.some((el) => el?.classList?.contains('link')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
-			folder: path.some((el) => el?.id === 'linkblocks' && el?.classList?.contains('in-folder')),
+			linkfolder: path.some((el) => el?.className?.includes('folder')),
+			folder: path.some((el) => el?.className?.includes('in-folder')),
 			interface: pathIds.includes('interface'),
+			editlink: pathIds.includes('editlink'),
+			settings: path.some((el) => el?.id === 'settings'),
+			showsettings: path.some((el) => el?.id === 'show-settings'),
 		}
 
 		if (document.body.classList.contains('tabbing')) {
 			document.body?.classList.toggle('tabbing', false)
 		}
 
+		if (on.showsettings) {
+			document.dispatchEvent(new Event('toggle-settings'))
+		}
+
+		if (open.contextmenu && !on.editlink) {
+			document.dispatchEvent(new Event('close-edit'))
+			return
+		}
+
 		if ((on.body || on.interface) === false) {
 			return
 		}
 
-		if (open.contextmenu) {
-			document.dispatchEvent(new Event('close-edit'))
-		}
-		//
-		else if (open.settings) {
-			toggleSettingsMenu()
+		if (open.settings) {
+			document.dispatchEvent(new Event('toggle-settings'))
 		}
 		//
 		else if (open.selectall && !on.link) {
 			document.dispatchEvent(new Event('remove-select-all'))
 		}
 		//
-		else if (open.folder && !on.folder) {
+		else if (open.folder && !on.folder && !on.linkfolder) {
 			document.dispatchEvent(new Event('close-folder'))
 		}
 	}
@@ -296,7 +308,7 @@ function userActionsEvents() {
 	function isOpen() {
 		return {
 			settings: !!document.getElementById('settings')?.classList.contains('shown'),
-			folder: document.getElementById('linkblocks')?.classList.contains('in-folder'),
+			folder: !!document.querySelector('.in-folder'),
 			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
 			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
 		}
@@ -314,29 +326,9 @@ function userActionsEvents() {
 			const moverHasOpened = elementmover?.classList.contains('hidden') === false
 
 			if (moverHasOpened) {
-				toggleSettingsMenu()
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 		}, 20)
-	}
-
-	function settingsFirstLoad(event?: Event) {
-		if (document.getElementById('settings')) {
-			return
-		}
-
-		const type = event?.type
-		const code = (event as KeyboardEvent)?.code
-
-		if (code === 'Escape' || type === 'mouseenter' || type === 'pointerdown') {
-			domshowsettings?.removeEventListener('mouseenter', settingsFirstLoad)
-			domshowsettings?.removeEventListener('pointerdown', settingsFirstLoad)
-			document.body.removeEventListener('keydown', settingsFirstLoad)
-			settingsInit()
-		}
-
-		if (code === 'Escape') {
-			setTimeout(() => domshowsettings?.dispatchEvent(new MouseEvent('click')), 20)
-		}
 	}
 }
 
@@ -475,7 +467,11 @@ async function setPotatoComputerMode() {
 	document.body.classList.toggle('potato', detectedPotato)
 }
 
-function operaExtensionExplainer() {
+function operaExtensionExplainer(explained?: true) {
+	if (explained || BROWSER !== 'opera' || PLATFORM !== 'chrome') {
+		return
+	}
+
 	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
 	const doc = template.content.cloneNode(true) as Document
 	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement

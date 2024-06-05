@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '19.2.0'
+export const CURRENT_VERSION = '19.2.4'
 
 export const MAIN_API = 'https://api.bonjourr.fr'
 
@@ -9,16 +9,17 @@ export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https:/
 //@ts-expect-error
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
 
-export const SYSTEM_OS = window.navigator.appVersion.includes('Macintosh')
-	? 'mac'
-	: window.navigator.appVersion.includes('Windows')
-	? 'windows'
-	: window.navigator.userAgent.toLowerCase().includes('Android')
-	? 'android'
-	: ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-	  (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
-	? 'ios'
-	: 'unknown'
+export const SYSTEM_OS =
+	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+		? 'ios'
+		: window.navigator.appVersion.includes('Macintosh')
+		? 'mac'
+		: window.navigator.appVersion.includes('Windows')
+		? 'windows'
+		: window.navigator.userAgent.toLowerCase().includes('Android')
+		? 'android'
+		: 'unknown'
 
 export const PLATFORM =
 	window.location.protocol === 'moz-extension:'
@@ -95,13 +96,17 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	review: 0,
 	css: '',
 	hide: {},
-	linkstyle: 'large',
+	linkstyle: 'medium',
+	linktitles: true,
+	linkbackgrounds: true,
 	linknewtab: false,
 	linksrow: 6,
-	linktabs: {
-		active: false,
-		selected: 0,
-		titles: [''],
+	linkgroups: {
+		on: false,
+		selected: '',
+		groups: [''],
+		pinned: [],
+		synced: [],
 	},
 	clock: {
 		size: 1,

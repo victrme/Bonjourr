@@ -2,8 +2,12 @@
  *	CSS Editor
  */
 
+#css-editor {
+	padding: 0;
+}
+
 .prism-code-editor {
-	font-size: 13px;
+	font-size: 14px;
 	overflow: auto;
 	display: grid;
 	width: 100%;
@@ -11,9 +15,8 @@
 	line-height: 1.4;
 	--_pse: var(--padding-inline, 0.75em);
 	--_ns: var(--number-spacing, 0.75em);
-	padding: 1.3em;
-	tab-size: 1.5em;
-	border: none;
+	padding: 16px 20px;
+	outline-offset: -2px;
 	border-radius: 10px;
 	box-sizing: border-box;
 	background: var(--color-param);
@@ -23,8 +26,11 @@
 	white-space: pre;
 }
 
+[data-system='mac'] .prism-code-editor {
+	font-size: 12px;
+}
+
 .pce-wrapper {
-	margin: 0.5em 0;
 	position: relative;
 	pointer-events: none;
 	-webkit-text-size-adjust: none;
@@ -32,37 +38,28 @@
 }
 .prism-code-editor textarea {
 	all: unset;
-	box-sizing: border-box;
 	height: 100%;
 	width: 100%;
 	color: #0000;
-	-webkit-user-select: auto;
-	user-select: auto;
 	overflow: hidden;
+	outline: none !important;
 	pointer-events: auto;
-	padding: 0 var(--_pse) 0 var(--padding-left);
+	user-select: auto;
+	-webkit-user-select: auto;
 }
+
+.prism-code-editor textarea::placeholder {
+	color: var(--color-placeholder);
+}
+
 .pce-no-selection textarea:focus {
 	z-index: 1;
 }
 .pce-line {
-	padding: 0 var(--_pse) 0 0;
-	margin: 0 0 0 var(--padding-left);
 	position: relative;
-}
-.pce-line:before {
-	position: sticky;
-	height: 100%;
-	z-index: 2;
-	left: 0;
-	width: var(--padding-left);
-}
-.pce-wrap .pce-line:before {
-	position: absolute;
 }
 .pce-overlays,
 div.pce-overlays > * {
-	content: '';
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -83,49 +80,51 @@ div.pce-overlays > * {
 }
 
 /*
-	DARK / LIGHT THEMES
-	using github style (i think)
-*/
+ *	DARK / LIGHT THEMES
+ *	using Ayu VSCode: https://github.com/ayu-theme/vscode-ayu
+ */
 
-[data-theme='dark'] aside {
-	color-scheme: dark;
-	/* ayu */
+aside .pce-wrapper {
 	--caret: #ffaa33;
-	--selection-bg: #036dd626;
-	--comment: #888b90bb;
-	--variable: #ddd;
-	--plaintext: #ddd;
-	--color: #ddd;
-	--number: #ffaa33;
+	--selector: #22a4e6;
 	--string: #86b300;
 	--keyword: #fa8d3e;
 	--operators: #ed9366;
-	--property: #55b4d4;
-	--selector: #22a4e6;
 }
 
-[data-theme='light'] aside {
+[data-theme='dark'] aside .pce-wrapper {
+	color-scheme: dark;
+	--selection-bg: #3198ff26;
+	--comment: #888b90bb;
+	--variable: #dddddd;
+	--plaintext: #dddddd;
+	--propery: #3ba9ce;
+	--number: #d2a6ff;
+	--color: #98e7cc;
+	--class: #ffc35c;
+	--symbol: #ffaa33;
+}
+
+[data-theme='light'] aside .pce-wrapper {
 	color-scheme: light;
-	/* ayu */
-	--caret: #ffaa33;
 	--selection-bg: #036dd626;
 	--comment: #787b8099;
 	--plaintext: #5c6166;
-	--number: #ffaa33;
-	--string: #86b300;
-	--keyword: #fa8d3e;
 	--variable: #5c6166;
-	--operators: #ed9366;
-	--property: #55b4d4;
-	--selector: #22a4e6;
-	--color: #5c6166;
+	--property: #2fafda;
+	--number: #a37acc;
+	--color: #41b48e;
+	--class: #e6900f;
+	--symbol: #fa8d3e;
 }
+
 .prism-code-editor textarea {
 	caret-color: var(--caret);
 }
 .prism-code-editor textarea::selection {
 	color: transparent;
 	background: var(--selection-bg);
+	animation: alternate 1s 0s;
 	-webkit-animation: alternate 1s 0s;
 }
 .prism-code-editor,
@@ -137,10 +136,12 @@ div.pce-overlays > * {
 .token.comment {
 	color: var(--comment);
 }
-.token.number,
 .token.symbol,
 .token.inserted,
 .token.unit {
+	color: var(--symbol);
+}
+.token.number {
 	color: var(--number);
 }
 .token.group,
@@ -171,6 +172,10 @@ div.pce-overlays > * {
 .token.selector,
 .token.escape {
 	color: var(--selector);
+}
+.token.selector .token.id,
+.token.selector .token.class {
+	color: var(--class);
 }
 .token.color {
 	color: var(--color);

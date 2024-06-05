@@ -10,7 +10,10 @@ declare namespace Sync {
 		linksrow: number
 		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
-		linktabs: LinkTabs
+		linktitles: boolean
+		linkbackgrounds: boolean
+		linktabs?: LinkTabsOld
+		linkgroups: LinkGroups
 		textShadow: number
 		cssHeight?: number
 		review: number
@@ -42,10 +45,19 @@ declare namespace Sync {
 		[key: string]: Links.Link | unknown
 	}
 
-	type LinkTabs = {
+	type LinkTabsOld = {
 		active: boolean
 		selected: number
 		titles: string[]
+		pinned: number[]
+	}
+
+	type LinkGroups = {
+		on: boolean
+		selected: string
+		groups: string[]
+		pinned: string[]
+		synced: string[]
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]

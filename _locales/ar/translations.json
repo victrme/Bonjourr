@@ -1,7 +1,7 @@
 {
 	"lang": "ar",
-	"New tab": "علامة تبويب جديدة",
-	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "هل تستمتع باستخدام Bonjourr؟ فكر في إعطائنا مراجعة أو التبرع، سيساعد ذلك كثيرا! 😇",
+	"New tab": "صفحة جديدة",
+	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "عجبك إستخدامك لـ بونجورر؟ إذاً قم المساعدة بتقييم ونشر رأيك، سيسعدنا ذلك كثيراً! 😇",
 	"Review": "مراجعة",
 	"Donate": "تبرع",
 	"Monday": "الاثنين",
@@ -28,15 +28,15 @@
 	"Good evening": "مساء الطيب",
 	"Good night": "تصبح على خير",
 	"Sweet dreams": "أحلام سعيدة",
-	"It is currently <temp1>°": "It is currently <temp1>°",
-	"It is currently <temp1>° and feels like <temp2>°": "It is currently <temp1>° and feels like <temp2>°",
-	"It currently feels like <temp2>°": "It currently feels like <temp2>°",
-	"with a high of <temp1>° today": "with a high of <temp1>° today",
-	"with a high of <temp1>° tomorrow": "with a high of <temp1>° tomorrow",
+	"It is currently <temp1>°": "درجة الحرارة حاليًا <temp1>°",
+	"It is currently <temp1>° and feels like <temp2>°": "درجة الحرارة حاليًا <temp1>° وتبدو وكأنها <temp2>°",
+	"It currently feels like <temp2>°": "يبدو الأمر حاليًا وكأنه <temp2>°",
+	"with a high of <temp1>° today": "مع درجة حرارة قصوى <temp1>° اليوم",
+	"with a high of <temp1>° tomorrow": "مع درجة حرارة عظمى <temp1>° غدًا",
 	"Default page": "الصفحة الافتراضية",
 	"Folder": "مجلد",
 	"Page": "صفحة",
-	"Photo by <name>": "Photo by <name>",
+	"Photo by <name>": "<name> الصورة بواسطة",
 	"Editing": "تحرير",
 	"No selection": "لا توجد تحديد",
 	"Grid position": "موضع الشبكة",
@@ -165,8 +165,8 @@
 	"Icon only": "الأيقونة فقط",
 	"Notes": "الملاحظات",
 	"Edit this note": "تحرير هذه الملاحظة",
-	"With markdown titles, lists, and checkboxes": "With markdown titles, lists, and checkboxes",
-	"Learn more on <url>": "Learn more on <url>",
+	"With markdown titles, lists, and checkboxes": "مع عناوين تخفيض السعر والقوائم ومربعات الاختيار",
+	"Learn more on <url>": "تعرف على المزيد على <url>",
 	"Left": "اليسار",
 	"Center": "المركز",
 	"Right": "اليمين",
@@ -213,8 +213,8 @@
 	"Type in your custom CSS": "اكتب CSS المخصص الخاص بك",
 	"Updates": "التحديثات",
 	"Announcements": "الإعلانات",
-	"Major changes": "التغييرات الرئيسية",
-	"All": "الكل",
+	"Major updates": "التغييرات الرئيسية",
+	"All updates": "الكل",
 	"Settings management": "إدارة الإعدادات",
 	"Transfer your settings between multiple instances of Bonjourr.": "نقل إعداداتك بين العديد من نسخ Bonjourr.",
 	"Export": "تصدير",
@@ -225,12 +225,12 @@
 	"Drop file to import settings": "اسحب الملف لاستيراد الإعدادات",
 	"or paste as text": "أو الصق كنص",
 	"Reset settings": "إعادة تعيين الإعدادات",
-	"Are you sure ?": "هل أنت متأكد ؟",
+	"Are you sure?": "هل أنت متأكد ؟",
 	"I am sure": "أنا متأكد",
 	"No, go back": "لا، عد للوراء",
 	"Made in France with ❤️": "صنع في فرنسا من القلب ❤️ | تُرجمت في البحرين أيضاً من القلب ❤️",
 	"by": "بواسطة",
-	"Consider": "افكر في",
+	"Consider": "النظر",
 	"donating": "التبرع",
 	"if you love Bonjourr": "إذا كنت تحب Bonjourr"
 }

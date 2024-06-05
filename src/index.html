@@ -26,56 +26,33 @@
 	</head>
 
 	<body class="init loading">
-		<dialog id="bookmarks">
-			<div id="bookmarks-container">
-				<template id="bookmarks-folder">
-					<div class="bookmarks-folder">
-						<h2></h2>
-						<ol></ol>
-					</div>
-				</template>
-				<template id="bookmarks-item">
-					<li>
-						<button>
-							<img draggable="false" loading="lazy" alt="" />
-							<p class="bookmark-title"></p>
-							<p class="bookmark-url"></p>
-						</button>
-					</li>
-				</template>
-			</div>
-			<hr />
-			<div id="bookmarks-buttons">
-				<button id="bmk_close" class="trn btn-red">Cancel</button>
-				<button id="bmk_apply" class="trn none">Select bookmarks</button>
-			</div>
-		</dialog>
-
 		<dialog id="editlink">
 			<form id="editlink-form">
-				<label id="ei_title" autofocus>
+				<label id="edit-title" autofocus>
 					<span class="trn">Title</span>
-					<input id="e_title" type="text" name="e_title" maxlength="64" autocomplete="off" placeholder="Example" />
+					<input id="e-title" type="text" name="e-title" maxlength="64" autocomplete="off" placeholder="Example" />
 				</label>
 
-				<label id="ei_url">
+				<label id="edit-url">
 					<span class="trn">Link</span>
 					<input
-						id="e_url"
+						id="e-url"
 						type="text"
-						name="e_url"
+						name="e-url"
 						maxlength="512"
 						autocomplete="off"
+						autocorrect="off"
+						autocapitalize="off"
 						placeholder="https://example.com"
 					/>
 				</label>
 
-				<label id="ei_icon">
+				<label id="edit-icon">
 					<span class="trn">Icon</span>
 					<input
-						id="e_iconurl"
+						id="e-icon"
 						type="url"
-						name="e_iconurl"
+						name="e-icon"
 						maxlength="7600"
 						autocomplete="off"
 						placeholder="https://example.com/favicon.ico"
@@ -84,16 +61,14 @@
 
 				<hr />
 
-				<button type="submit" class="trn" id="eb_inputs">Submit from inputs</button>
-				<button type="submit" class="trn" id="eb_add-tab">Add new page</button>
-				<button type="submit" class="trn" id="eb_add-link">Add new link</button>
-				<button type="submit" class="trn" id="eb_add-folder">Create new folder</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-tab">Delete page</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-selected">Delete selection</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-folder">Delete folder</button>
-				<button type="submit" class="trn btn-red" id="eb_delete-link">Delete link</button>
-				<button type="submit" class="trn" id="eb_remove-folder">Remove from folder</button>
-				<button type="submit" class="trn" id="eb_submit-changes">Apply changes</button>
+				<button type="submit" class="trn" id="edit-inputs">Submit from inputs</button>
+				<button type="submit" class="btn-red" id="edit-delete">Delete something</button>
+				<button type="submit" class="trn" id="edit-add">Add something</button>
+				<button type="submit" class="trn" id="edit-pin">Pin group</button>
+				<button type="submit" class="trn" id="edit-unpin">Unpin group</button>
+				<button type="submit" class="trn" id="edit-unfolder">Remove from folder</button>
+				<button type="submit" class="trn" id="edit-apply">Apply changes</button>
+				<button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
 			</form>
 		</dialog>
 
@@ -109,14 +84,12 @@
 					<button type="button" data-row="-1">
 						<i class="chevron rotate-half"></i>
 					</button>
-					<div>
-						<button type="button" data-col="-1">
-							<i class="chevron rotate-quart"></i>
-						</button>
-						<button type="button" data-col="1">
-							<i class="chevron rotate-quart-r"></i>
-						</button>
-					</div>
+					<button type="button" data-col="-1">
+						<i class="chevron rotate-quart"></i>
+					</button>
+					<button type="button" data-col="1">
+						<i class="chevron rotate-quart-r"></i>
+					</button>
 					<button type="button" data-row="1">
 						<i class="chevron"></i>
 					</button>
@@ -192,7 +165,8 @@
 					<h1 id="digital">
 						<span id="digital-hh-leading-zero">0</span><span id="digital-hh"></span
 						><span id="digital-hh-separator">:</span><span id="digital-mm"></span
-						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span>
+						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span
+						><span id="digital-number-width">0</span>
 					</h1>
 
 					<div id="analog">
@@ -268,39 +242,7 @@
 			</form>
 
 			<div id="linkblocks">
-				<ul id="link-list">
-					<template id="link-elem">
-						<li class="block">
-							<a rel="noreferrer noopener" draggable="false">
-								<div class="block-imgs">
-									<img alt="" draggable="false" />
-								</div>
-								<span></span>
-							</a>
-						</li>
-					</template>
-					<template id="link-folder">
-						<li class="block folder" tabindex="0">
-							<div class="block-imgs">
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-								<img alt="" draggable="false" />
-							</div>
-							<span></span>
-						</li>
-					</template>
-				</ul>
-
-				<div id="link-title">
-					<div id="folder-title">
-						<button class="selected">Folder</button>
-					</div>
-
-					<div id="tab-title">
-						<button id="default-tab-title" class="trn">Default page</button>
-					</div>
-				</div>
+				<div id="link-mini"></div>
 			</div>
 
 			<div id="quotes_container" class="hidden">
@@ -309,11 +251,11 @@
 			</div>
 		</main>
 
-		<div id="creditContainer">
+		<div id="credit-container">
 			<div id="credit"></div>
 		</div>
 
-		<div id="showSettings" data-hide="settingsicon">
+		<div id="show-settings" data-hide="settingsicon">
 			<button aria-label="Toggle settings menu">
 				<img
 					src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTkuNjYiIGhlaWdodD0iMTk5LjkzIiB2aWV3Qm94PSIwIDAgNTIuODMgNTIuOSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5LjczIDUyLjU3Yy0uMjYtLjItLjkzLTEuNDEtMS40OC0yLjcxLTEuMS0yLjU3LTEuNDItMi45My0yLjQyLTIuNjgtLjUxLjEzLS44OS42Ni0xLjY3IDIuMzYtMS4yIDIuNTktMS42IDMuMTEtMi40IDMuMTEtMS4xIDAtMS4zNS0uNTgtMS41MS0zLjQ4LS4xMy0yLjM4LS4yMy0yLjc4LS43My0zLjItLjMyLS4yNS0uNy0uNDYtLjg0LS40NnMtMS4yNS45NS0yLjQ2IDIuMTJjLTEuMjIgMS4xNi0yLjM4IDIuMTEtMi41OSAyLjExLS41MiAwLTEuMjUtLjg2LTEuMjUtMS40OSAwLS4yOC4zLTEuNTYuNjctMi44NCAxLjEyLTMuODQuNDYtNC4zMS0zLjQ3LTIuNTQtMi4xNS45OC0yLjYgMS4xLTMuMTYuODMtMS4wOC0uNDktLjg1LTEuNDUuOTMtMy45IDEuNzItMi4zNyAxLjkxLTMuMDcgMS0zLjY2LS41LS4zLTEuMDYtLjMzLTMuMi0uMTEtMi45LjI5LTMuMjcuMjItMy42LS42NC0uMzMtLjg5LjA1LTEuMzcgMi4yLTIuODMgMS4wNy0uNzIgMi4xNC0xLjUgMi4zOC0xLjc0IDEuMS0xLjEuMTYtMS45Ny0yLjk3LTIuNzhDLjM4IDI3LjMzLS4yOCAyNi44Mi4xIDI1LjcyYy4yMy0uNjQuNTMtLjc5IDIuOTctMS40MiAxLjUtLjQgMi45LS44NSAzLjEtMS4wMy43Ny0uNjMuNDYtMS41NC0uODQtMi40NC0yLjM1LTEuNjItMy44LTIuODUtMy44LTMuMjEgMC0uMi4yMi0uNjQuNS0uOTcuNDgtLjYuNS0uNiAzLjM1LS4zIDIuNTYuMjkgMi45LjI3IDMuMzQtLjEyLjI3LS4yNC40OC0uNjQuNDgtLjg5IDAtLjI0LS43LTEuNS0xLjU4LTIuOC0uODgtMS4yOS0xLjU5LTIuNTMtMS41OS0yLjc3IDAtLjQ4LjgtMS4zIDEuMjctMS4zLjE3IDAgMS40My41NiAyLjggMS4yNCAyLjIyIDEuMSAyLjU5IDEuMiAzLjE5LjkzLjg0LS4zOC44Ni0uOTYuMTMtMy44Mi0uNjgtMi42OC0uNjEtMy40Mi4zNi0zLjc2LjY4LS4yNC44Ny0uMTIgMi45MSAxLjkxIDEuMiAxLjIgMi4zNyAyLjE3IDIuNiAyLjE3Ljg4IDAgMS4yNi0uODkgMS41NC0zLjdDMjEuMTMuNTkgMjEuNCAwIDIyLjQ0IDBjLjY3IDAgMS4xNy43MSAyLjI0IDMuMjMgMS40OCAzLjQ2IDIuMzggMy41IDMuOTguMTRDMjkuOTUuNjUgMzAuMjYuMjcgMzEuMi4yN2MxIDAgMS4xOS40NiAxLjM4IDMuNTMuMDkgMS40NC4zIDIuNzguNDYgMi45OC42OC44MiAxLjYxLjQgMy43LTEuNjIgMS4xMi0xLjEgMi4xOC0xLjk4IDIuMzUtMS45OC4xNyAwIC41NC4xMi44Mi4yNy43LjM4LjY2IDEuMzktLjIgNC4yMy0uNjggMi4zLS42OCAyLjM4LS4yMSAyLjkuNjYuNzQgMS4wNi42OCAzLjY3LS41MyAyLjQzLTEuMTIgMy4wNC0xLjI1IDMuNTUtLjc0LjY0LjY0LjMgMS42NC0xLjMgMy44NC0xLjI4IDEuNzgtMS41NyAyLjM1LTEuNDQgMi44OC4yMy45LjkgMS4wOSAzLjE0Ljg2IDMuMjUtLjMyIDMuNTctLjI5IDQuMDUuNDQuMzguNi4zOS43Mi4wMyAxLjI3LS4yMi4zNC0xLjM1IDEuMjQtMi41MiAyLTEuMTYuNzctMi4xNyAxLjYtMi4yMyAxLjg1LS4yNS45Mi4yNiAxLjU5IDEuNDQgMS45IDMuOTMgMS4wMiA0LjcgMS4zMyA0Ljg2IDEuOTYuMyAxLjI0LS4yMiAxLjYzLTMuMDUgMi4yOC00LjEuOTItNC40OCAxLjkzLTEuNTQgMy45NSAzLjE1IDIuMTcgMy42MyAyLjg5IDIuNTkgMy44NC0uNDguNDMtLjc0LjQ1LTMuMzQuMTUtMi41NS0uMjgtMi44NS0uMjctMy4zLjE0LS4yOC4yNS0uNS42NS0uNS44OCAwIC4yNC43IDEuNDkgMS41OCAyLjc4Ljg3IDEuMjkgMS41OSAyLjU2IDEuNTkgMi44M3MtLjMxLjY5LS42OS45M2MtLjY3LjQ0LS43NC40Mi0zLjMtLjgzLTIuMy0xLjE0LTIuNjgtMS4yNS0zLjI4LS45OC0uODQuMzgtLjg3IDEuMDktLjEzIDMuNzQuNzEgMi41Ni42MiAzLjUtLjM2IDMuODQtLjcuMjUtLjg2LjE0LTIuODgtMS45MS0zLjEtMy4xNi0zLjctMi45My00LjE0IDEuNTItLjIxIDIuMS0uMzkgMi44NS0uNzQgMy4xMS0uNTguNDMtLjkzLjQyLTEuNTMtLjAxem0uNzUtMTAuMjNjMS4xMi0uMjkgMi43OC0uOTEgMy42OC0xLjM5YTIwLjE2IDIwLjE2IDAgMCAwIDYuMjMtNS44N2MxLjE2LTIuMzcgMi4yNC00LjMzIDIuMDItNi45bC03LjQzLS4wN2MtNi44Mi0uMDctNy40Ni0uMDMtNy44NS40LS43Ny44Ni03LjA4IDEyLjAxLTcuMDggMTIuNTEgMCAxLjU3IDYuMzQgMi4zNyAxMC40MyAxLjMyem0tOS43My05LjEzYzEuOTYtMy40IDMuNTMtNi4zOCAzLjUzLTYuNzUgMC0xLjAzLTYuOTEtMTIuODItNy41Ny0xMi45MS0uNzQtLjExLTMuNjggMy4wNS00LjggNS4xNmExNi45OCAxNi45OCAwIDAgMC0uMDIgMTUuNDZjMS4xMiAyLjEgNC4wOCA1LjMgNC44IDUuMi4zOS0uMDYgMS41LTEuNzYgNC4wNi02LjE2em0yMS4xOC0xMi4xM0ExNyAxNyAwIDAgMCAzMC4xIDEwLjQyYy0zLjUzLS44OS05LjgtLjAyLTEwIDEuMzgtLjA4LjUgNi4wNSAxMS40OCA3LjAzIDEyLjYxLjM4LjQzIDEuMDIuNDYgNy44NC40bDcuNDMtLjA3Yy4xOS0xLjI3LS4xLTIuNi0uNDgtMy42NnoiLz48L3N2Zz4="
@@ -324,6 +266,80 @@
 		</div>
 
 		<div id="templates">
+			<template id="bookmarks-dialog-template">
+				<dialog id="bookmarks">
+					<div id="bookmarks-header">
+						<div id="bookmarks-intro">
+							Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group.
+							"Syncing" a folder ties its changes to your browser bookmarks. Learn more on
+							<a target="_blank" href="https://bonjourr.fr/docs/overview">our documentation</a>.
+						</div>
+
+						<div id="bookmarks-buttons">
+							<div>
+								<button id="bmk_close" class="trn btn-red">Close</button>
+								<button id="bmk_apply" class="trn" disabled>Import selection</button>
+							</div>
+						</div>
+					</div>
+
+					<div id="bookmarks-container"></div>
+				</dialog>
+			</template>
+
+			<template id="bookmarks-folder-template">
+				<div class="bookmarks-folder">
+					<div class="bookmarks-folder-title">
+						<h2></h2>
+						<div>
+							<button class="trn b_bookmarks-folder-select">Select this group</button>
+							<button class="trn b_bookmarks-folder-sync" disabled>Sync with browser</button>
+						</div>
+					</div>
+					<ol></ol>
+				</div>
+			</template>
+
+			<template id="bookmarks-item-template">
+				<li>
+					<button>
+						<img draggable="false" loading="lazy" alt="" />
+						<p class="bookmark-title"></p>
+						<p class="bookmark-url"></p>
+					</button>
+				</li>
+			</template>
+
+			<template id="link-group-template">
+				<div class="link-group">
+					<ul class="link-list"></ul>
+					<button class="link-title"></button>
+				</div>
+			</template>
+
+			<template id="link-elem-template">
+				<li class="link">
+					<a rel="noreferrer noopener" draggable="false">
+						<div>
+							<img alt="" draggable="false" />
+						</div>
+						<span></span>
+					</a>
+				</li>
+			</template>
+
+			<template id="link-folder-template">
+				<li class="link folder" tabindex="0">
+					<div>
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+					</div>
+					<span></span>
+				</li>
+			</template>
+
 			<template id="popup-template">
 				<div id="popup">
 					<div id="popup_text">
@@ -367,6 +383,8 @@
 					<button id="b_opera-explained" class="trn">Close and access Bonjourr</button>
 				</dialog>
 			</template>
+
+			<template id="settings-template"></template>
 		</div>
 	</body>
 </html>

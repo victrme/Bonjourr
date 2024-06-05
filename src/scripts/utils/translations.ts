@@ -1,10 +1,9 @@
-import { Langs } from '../../types/langs'
 import storage from '../storage'
 
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'
 
-export async function setTranslationCache(lang: string, local?: Local.Storage, isUpdate?: boolean) {
+export async function setTranslationCache(lang: string, local?: Local.Storage) {
 	if (lang === 'en') {
 		storage.local.remove('translations')
 		trns = undefined
@@ -12,7 +11,7 @@ export async function setTranslationCache(lang: string, local?: Local.Storage, i
 	}
 
 	const cachedLang = local?.translations?.lang
-	const useCache = !isUpdate && local && cachedLang === lang
+	const useCache = local && cachedLang === lang
 
 	if (useCache) {
 		trns = local.translations

@@ -1,64 +1,135 @@
 #bookmarks {
-	width: 70%;
-	max-width: 1000px;
+	width: calc(100% - 4em);
+	max-width: 900px;
 	min-height: 30vh;
 	padding: 0em;
-	border-radius: 1em;
+	border-radius: 1.5em;
 	opacity: 0;
-	transition: opacity 0.2s;
-}
-
-#bookmarks[open] {
-	opacity: 1;
+	transition: opacity 0.1s 0.3s;
 }
 
 #bookmarks::backdrop {
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	background-color: transparent;
+	transition: background-color 0.3s, backdrop-filter 0.1s 0.3s;
+}
+
+#bookmarks.shown {
+	opacity: 1;
+}
+
+#bookmarks.shown::backdrop {
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	background-color: #2224;
-	transition: opacity 0.2s;
+	background-color: #0006;
+}
+#bookmarks-header {
+	padding: 2em;
+	display: flex;
+	gap: 1em;
+	flex-direction: column;
 }
 
-#bookmarks.noneFound {
-	min-width: 260px;
+[data-theme='dark'] #bookmarks-header {
+	box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 15px;
 }
 
-#bookmarks.noneFound #bmk_apply {
-	display: none;
+[data-theme='light'] #bookmarks-header {
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
+}
+
+#bookmarks-intro {
+	max-width: 600px;
+	margin: auto;
+}
+
+#bookmarks-buttons {
+	justify-content: center;
+}
+
+#bookmarks-buttons button {
+	width: fit-content;
+}
+
+#bmk_apply {
+	background-color: var(--color-blue);
+}
+
+#bmk_apply:disabled {
+	background-color: transparent;
+}
+
+#bmk_apply:focus-visible,
+#bmk_apply:hover {
+	filter: brightness(1.2);
 }
 
 #bookmarks-container {
 	max-height: 60vh;
 	overflow-y: auto;
-	padding: 2em;
+	padding: 2em 2em 1em;
 	will-change: backdrop-filter;
 }
 
-.bookmarks-folder:not(:last-child) {
-	border-bottom: 1px solid var(--color-dialog-border);
-	margin-bottom: 2em;
-	padding-bottom: 2em;
+.bookmarks-folder {
+	border: 2px solid #fff1;
+	border-radius: 1em;
+	margin-bottom: 20px;
+	padding: 16px;
+}
+
+[data-theme='dark'] .bookmarks-folder {
+	background-color: #fff1;
+}
+
+[data-theme='light'] .bookmarks-folder {
+	background-color: #fff3;
+}
+
+.bookmarks-folder.selected {
+	border-color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
+.bookmarks-folder.selected li {
+	user-select: none;
+	pointer-events: none;
+}
+
+.bookmarks-folder.used {
+	user-select: none;
+	pointer-events: none;
+	opacity: 0.3;
+}
+
+.bookmarks-folder-title {
+	display: flex;
+	justify-content: space-between;
+	margin: 0 16px 24px 16px;
 }
 
 #bookmarks h2 {
-	margin-top: 0;
+	font-size: 20px;
+	text-transform: capitalize;
+	margin: 0;
 }
 
 #bookmarks ol {
 	display: grid;
-	gap: 8px;
+	gap: 4px;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
-	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
 
 #bookmarks li {
-	border-radius: 8px;
+	border-radius: 1em;
 	border: 2px solid transparent;
 	transition: background-color 0.05s, border-color 0.05s;
 	user-select: none;
-	cursor: pointer;
+	overflow: hidden;
 }
 
 #bookmarks li.selected {
@@ -72,12 +143,19 @@
 
 #bookmarks li button {
 	width: 100%;
-	padding: 0.5em;
+	padding: 5px;
 	transition: background-color 0.05s;
 }
 
 #bookmarks li button:hover {
 	color: var(--color-text);
+}
+
+[data-theme='light'] #bookmarks li button:hover {
+	background-color: #fff6;
+}
+
+[data-theme='dark'] #bookmarks li button:hover {
 	background-color: #fff2;
 }
 
@@ -90,8 +168,8 @@
 	display: block;
 	margin: auto;
 	margin-bottom: 0.5em;
-	width: 4em;
-	height: 4em;
+	width: 40px;
+	height: 40px;
 	border-radius: 8px;
 }
 
@@ -104,38 +182,4 @@
 	line-height: 1.5em;
 	font-size: 0.9em;
 	font-weight: bold;
-}
-
-#bookmarks-buttons {
-	display: flex;
-	margin: 2em;
-	column-gap: 2em;
-	justify-content: space-between;
-	z-index: 3;
-}
-
-#bookmarks-buttons button {
-	width: fit-content;
-}
-
-#bmk_close:focus-visible,
-#bmk_close:hover {
-	background-color: var(--color-red);
-}
-
-#bmk_apply {
-	color: white;
-	background-color: var(--color-blue);
-}
-
-#bmk_apply.none {
-	color: var(--color-text);
-	background-color: transparent;
-	pointer-events: none;
-	opacity: 0.5;
-}
-
-#bmk_apply:focus-visible,
-#bmk_apply:hover {
-	filter: brightness(1.2);
 }

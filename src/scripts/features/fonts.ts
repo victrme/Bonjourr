@@ -8,6 +8,7 @@ import { apiFetch } from '../utils'
 import { subsets } from '../langs'
 import networkForm from '../utils/networkform'
 import storage from '../storage'
+import clock from './clock'
 
 type Font = Sync.Font
 
@@ -139,12 +140,14 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 
 			if (font.family === '') {
 				familyForm.warn(`Cannot load "${family}"`)
+				clock(undefined, {})
 				return data.font
 			}
 			break
 		}
 	}
 
+	clock(undefined, {})
 	setWeightSettings(font.weightlist)
 	i_weight.value = font.weight
 
@@ -239,10 +242,6 @@ async function initFontSettings(font?: Font) {
 	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
 
 	setWeightSettings(weights)
-
-	if (font?.family) {
-		setAutocompleteSettings()
-	}
 }
 
 async function setAutocompleteSettings(isLangSwitch?: boolean) {

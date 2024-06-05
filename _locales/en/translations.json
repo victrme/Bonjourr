@@ -230,8 +230,8 @@
 
 	"Updates": "Updates",
 	"Announcements": "Announcements",
-	"Major changes": "Major changes",
-	"All": "All",
+	"Major updates": "Major updates",
+	"All updates": "All updates",
 
 	"Settings management": "Settings management",
 	"Transfer your settings between multiple instances of Bonjourr.": "Transfer your settings between multiple instances of Bonjourr.",
@@ -243,7 +243,7 @@
 	"Drop file to import settings": "Drop file to import settings",
 	"or paste as text": "or paste as text",
 	"Reset settings": "Reset settings",
-	"Are you sure ?": "Are you sure ?",
+	"Are you sure?": "Are you sure?",
 	"I am sure": "I am sure",
 	"No, go back": "No, go back",
 

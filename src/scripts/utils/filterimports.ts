@@ -168,14 +168,20 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		}
 	}
 
-	// Link tabs
-	if (toImport.linktabs) {
-		const importTitles = toImport.linktabs.titles
-		const currentTitles = current.linktabs.titles
-		toImport.linktabs.titles = importTitles.filter((title, i) => {
-			return title != currentTitles[i]
-		})
+	if (current?.linkgroups?.groups && toImport?.linkgroups?.groups) {
+		current.linkgroups.groups = []
+		current.linkgroups.pinned = []
+		current.linkgroups.synced = []
 	}
+
+	// Link tabs
+	// if (toImport.linktabs) {
+	// 	const importTitles = toImport.linktabs.titles
+	// 	const currentTitles = current.linktabs.titles
+	// 	toImport.linktabs.titles = importTitles.filter((title, i) => {
+	// 		return title != currentTitles[i]
+	// 	})
+	// }
 
 	current = deepmergeAll(current, toImport, { about: SYNC_DEFAULT.about }) as Sync.Storage
 

@@ -2,20 +2,18 @@ import { stringMaxSize } from '../../utils'
 import { MAIN_API } from '../../defaults'
 import { tradThis } from '../../utils/translations'
 
-//
-
 export function getDefaultIcon(url: string) {
 	return `${MAIN_API}/favicon/blob/${url}`
 }
 
 export function getSelectedIds(): string[] {
-	const selected = document.querySelectorAll<HTMLLIElement>('#linkblocks li.selected')
-	return Array.from(selected).map((li) => li.id)
+	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
+	return Object.values(selected).map((li) => li.id)
 }
 
 export function getLiFromEvent(event: Event): HTMLLIElement | undefined {
 	const path = event.composedPath() as Element[]
-	const filtered = path.filter((el) => el.tagName === 'LI' && el.className?.includes('block'))
+	const filtered = path.filter((el) => el.tagName === 'LI' && el.className?.includes('link'))
 	const li = !!filtered[0] ? (filtered[0] as HTMLLIElement) : undefined
 	return li
 }
@@ -41,7 +39,7 @@ export function createTitle(link: Links.Link): string {
 	return link.title
 }
 
-//
+// Get Links
 
 export function getLink(data: Sync.Storage, id: string): Links.Link | undefined {
 	const val = data[id]
@@ -51,7 +49,37 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 	}
 }
 
-//
+export function getLinksInGroup(data: Sync.Storage, group?: string): Links.Link[] {
+	const links: Links.Link[] = []
+
+	group = group ?? data.linkgroups.selected
+
+	for (const value of Object.values(data)) {
+		if (isLink(value) && (value?.parent ?? 0) === group) {
+			links.push(value)
+		}
+	}
+
+	links.sort((a, b) => a.order - b.order)
+
+	return links
+}
+
+export function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
+	const links: Links.Elem[] = []
+
+	for (const value of Object.values(data)) {
+		if (isElem(value) && value?.parent === id) {
+			links.push(value)
+		}
+	}
+
+	links.sort((a, b) => a.order - b.order)
+
+	return links
+}
+
+// Links typing validation
 
 export function isLink(link: unknown): link is Links.Link {
 	return ((link as Links.Link)?._id ?? '').startsWith('links')

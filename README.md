@@ -24,19 +24,14 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 
 <br>
 
-
-
 ## 🚀 Install Bonjourr!
+
 [<img src="https://labels.tahoe.be/chrome_download_dark.svg" height="53" alt="Download Bonjourr for Chrome">](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd)
 [<img src="https://labels.tahoe.be/firefox_download_dark.svg" height="53" alt="Download Bonjourr for Firefox">](https://addons.mozilla.org/firefox/addon/bonjourr-startpage/)
 [<img src="https://labels.tahoe.be/edge_download_dark.svg" height="53" alt="Download Bonjourr for Edge">](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
 [<img src="https://labels.tahoe.be/safari_download_dark.svg" height="53" alt="Download Bonjourr for Safari">](https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236)
 
-
-
-
 You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
-
 
 <br>
 
@@ -85,17 +80,15 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 🔧 Built with
 
--   Styled with [Sass](https://sass-lang.com/guide)
--   No frameworks, only pure Typescript
--   No production dependencies (except [idb-keyval](https://github.com/jakearchibald/idb-keyval) 🙈)
--   Releases bundled with esbuild and Gulp
+-   No frameworks, plain Typescript & CSS
+-   Only small dependencies, [more on npmgraph](https://npmgraph.js.org/?q=https://raw.githubusercontent.com/victrme/Bonjourr/master/package.json#color=outdated)
 -   Our tiny hands 🙌
 
 <br>
 
 ## 👀 Authors
 
--   **Tahoe Beetschen** · [portfolio](https://tahoe.be) · [GitHub](https://github.com/Tahoooe)
+-   **Tahoe Beetschen** · [portfolio](https://tahoe.be) · [GitHub](https://github.com/morceaudebois)
 -   **Victor Azevedo** · [portfolio](https://victr.me) · [GitHub](https://github.com/victrme)
 
 <br>
@@ -109,6 +102,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 -   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
 -   **🇸🇰 Slovak translation** · Roman Bartík
+-   **🇨🇿 Czech translation** · Daniel Zima · [Github](https://github.com/ZimaDaniel)
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
 -   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
@@ -128,6 +122,11 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 Running Bonjourr locally
 
+Prerequisites:
+
+-   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
+-   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
+
 Clone this repository
 
 ```bash
@@ -135,7 +134,7 @@ git clone https://github.com/victrme/Bonjourr
 cd Bonjourr
 ```
 
-Then [install pnpm](https://pnpm.io/installation) on your system
+You can replace `pnpm` by `npm run`
 
 ```bash
 # In root directory
@@ -145,7 +144,6 @@ pnpm install
 pnpm build
 
 # These commands watch changes for each platforms
-# You need to save a .ts or .scss file to trigger a change
 pnpm chrome
 pnpm edge
 pnpm firefox
@@ -183,6 +181,5 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 ### Online (web version)
 
--   Use your prefered live server, serve from `release/online`
--   Or use `pnpm online:dev` which uses http-server
--   Go to http://localhost:8080/
+-   A live server opens with `pnpm online`
+-   Go to http://127.0.0.1:8080/

@@ -4,13 +4,13 @@ import quotes from './features/quotes'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
 import quickLinks from './features/links'
+import linksImport from './features/links/bookmarks'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
-import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
@@ -22,51 +22,76 @@ import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
-import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-
-import { highlightText } from 'prism-code-editor/prism'
-import 'prism-code-editor/prism/languages/json'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
+import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 
-export async function settingsInit() {
-	if (!!document.getElementById('settings')) {
-		return
-	}
-
-	const data = await storage.sync.get()
+export async function settingsPreload() {
+	const domshowsettings = document.getElementById('show-settings')
 	const innerHtml = await (await fetch('settings.html')).text()
 	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
+	const template = document.querySelector<HTMLTemplateElement>('#settings-template')
 
-	const parser = new DOMParser()
-	const doc = parser.parseFromString(outerHtml, 'text/html')
-	const settingsDom = doc.getElementById('settings') as HTMLElement
+	if (template) {
+		template.innerHTML = outerHtml
+	}
+
+	domshowsettings?.addEventListener('mouseenter', triggerSettingsInit)
+	domshowsettings?.addEventListener('pointerdown', triggerSettingsInit)
+	document.body.addEventListener('keydown', triggerSettingsInit)
+
+	function triggerSettingsInit(event: Event) {
+		const keyboard = (event as KeyboardEvent)?.code === 'Escape'
+		const pointer = event?.type.includes('key') === false
+
+		if (keyboard || pointer) {
+			domshowsettings?.removeEventListener('mouseenter', triggerSettingsInit)
+			domshowsettings?.removeEventListener('pointerdown', triggerSettingsInit)
+			document.body.removeEventListener('keydown', triggerSettingsInit)
+			settingsInit()
+		}
+	}
+}
+
+export async function settingsInit() {
+	if (document.getElementById('settings')) return
+
+	const data = await storage.sync.get()
+	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
 
 	document.body.appendChild(settingsDom)
 
 	traduction(settingsDom, data.lang)
-	settingsFooter()
 	showall(data.showall, false)
-	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
+	updateSettingsJSON(data)
+	updateSettingsEvent()
 	settingsDrawerBar()
-	controlOptionsTabFocus(settingsDom)
+	settingsFooter()
 	loadCallbacks()
 
-	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
+	document.dispatchEvent(new Event('settings'))
+	document.addEventListener('toggle-settings', settingsToggle)
+}
 
-	// On settings changes, update export code
-	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
-	const storageUpdate = () => updateExportJSON()
-	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+function settingsToggle() {
+	const domsettings = document.getElementById('settings')
+	const domshowsettings = document.getElementById('show-settings')
+	const dominterface = document.getElementById('interface')
+	const domedit = document.getElementById('editlink')
+	const isClosed = domsettings?.classList.contains('shown') === false
 
-	if (PLATFORM === 'online') window.addEventListener('storage', storageUpdate)
-	if (PLATFORM !== 'online') chrome.storage.onChanged.addListener(storageUpdate)
+	domsettings?.classList.toggle('init', false)
+	domsettings?.classList.toggle('shown', isClosed)
+	domedit?.classList.toggle('pushed', isClosed)
+	dominterface?.classList.toggle('pushed', isClosed)
+	domshowsettings?.classList.toggle('shown', isClosed)
 
-	window.addEventListener('beforeunload', removeListener, { once: true })
-	document.addEventListener('toggle-settings', toggleSettingsMenu)
+	domsettings?.style.removeProperty('transform')
+	domsettings?.style.removeProperty('transition')
+	document.dispatchEvent(new Event('close-edit'))
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -117,8 +142,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_quicklinks', data.quicklinks)
-	setCheckbox('i_syncbookmarks', !!data.syncbookmarks)
-	setCheckbox('i_linktabs', data.linktabs.active)
+	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
 	setCheckbox('i_main', data.main)
@@ -155,27 +179,6 @@ function initOptionsValues(data: Sync.Storage) {
 	// must be init after children appening
 	setInput('i_lang', data.lang || 'en')
 
-	// Activate changelog
-	if (localStorage.hasUpdated === 'true') {
-		changelogControl(domsettings)
-	}
-
-	// No bookmarks import on safari || online
-	if (BROWSER === 'safari' || PLATFORM === 'online') {
-		paramId('importbookmarks')?.setAttribute('style', 'display: none')
-		paramId('syncbookmarks')?.setAttribute('style', 'display: none')
-	}
-
-	// Favicon doesn't work on Safari
-	if (BROWSER === 'safari') {
-		paramId('i_favicon').setAttribute('style', 'display: none')
-	}
-
-	// Export as file doesn't work on Safari extension
-	if (PLATFORM === 'safari') {
-		paramId('save_wrapper').setAttribute('style', 'display: none')
-	}
-
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
@@ -193,6 +196,11 @@ function initOptionsValues(data: Sync.Storage) {
 		const selectedLayout = b.dataset.layout === (data.move?.column || 'single')
 		b?.classList.toggle('selected', selectedLayout)
 	})
+
+	// Link show title
+	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
+
+	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
 
 	// Time & main hide elems
 	;(function initHideInputs() {
@@ -225,7 +233,6 @@ function initOptionsValues(data: Sync.Storage) {
 }
 
 function initOptionsEvents() {
-	//
 	// General
 
 	paramId('i_showall').addEventListener('change', function () {
@@ -260,7 +267,6 @@ function initOptionsEvents() {
 		hideElements({ settingsicon: this.checked }, { isEvent: true })
 	})
 
-	//
 	// Quick links
 
 	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
@@ -271,22 +277,20 @@ function initOptionsEvents() {
 		event.preventDefault()
 
 		quickLinks(undefined, {
-			addLink: {
-				title: paramId('i_addlink-title').value,
-				url: paramId('i_addlink-url').value,
-			},
+			addLinks: [
+				{
+					title: paramId('i_addlink-title').value,
+					url: paramId('i_addlink-url').value,
+				},
+			],
 		})
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
 	})
 
-	paramId('i_syncbookmarks').addEventListener('change', function (this) {
-		syncNewBookmarks(undefined, this.checked)
-	})
-
-	paramId('i_linktabs').addEventListener('change', function (this) {
-		quickLinks(undefined, { tab: this.checked })
+	paramId('i_linkgroups').addEventListener('change', function (this) {
+		quickLinks(undefined, { groups: this.checked })
 	})
 
 	paramId('i_linknewtab').addEventListener('change', function (this) {
@@ -294,7 +298,15 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_linkstyle').addEventListener('change', function (this) {
-		quickLinks(undefined, { style: this.value })
+		quickLinks(undefined, { styles: { style: this.value } })
+	})
+
+	paramId('b_showtitles').addEventListener('click', function (this) {
+		quickLinks(undefined, { styles: { titles: !this.classList.contains('on') } })
+	})
+
+	paramId('b_showbackgrounds').addEventListener('click', function (this) {
+		quickLinks(undefined, { styles: { backgrounds: !this.classList.contains('on') } })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
@@ -303,7 +315,6 @@ function initOptionsEvents() {
 
 	paramId('b_importbookmarks').addEventListener('click', linksImport)
 
-	//
 	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
@@ -325,7 +336,6 @@ function initOptionsEvents() {
 		})
 	})
 
-	//
 	// Custom backgrounds
 
 	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
@@ -348,7 +358,6 @@ function initOptionsEvents() {
 		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
 
-	//
 	// Time and date
 
 	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
@@ -391,7 +400,6 @@ function initOptionsEvents() {
 		hideElements({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
 	})
 
-	//
 	// Weather
 
 	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
@@ -451,7 +459,6 @@ function initOptionsEvents() {
 		paramId('i_greeting').blur()
 	})
 
-	//
 	// Notes
 
 	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
@@ -470,7 +477,6 @@ function initOptionsEvents() {
 		notes(undefined, { opacity: this.value })
 	})
 
-	//
 	// Searchbar
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
@@ -509,7 +515,6 @@ function initOptionsEvents() {
 		paramId('i_sbplaceholder').blur()
 	})
 
-	//
 	// Quotes
 
 	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
@@ -538,10 +543,9 @@ function initOptionsEvents() {
 		quotes(undefined, { userlist: this.value })
 	})
 
-	//
 	// Custom fonts
 
-	paramId('i_customfont').addEventListener('focus', function () {
+	paramId('i_customfont').addEventListener('pointerenter', function () {
 		customFont(undefined, { autocomplete: true })
 	})
 
@@ -562,7 +566,6 @@ function initOptionsEvents() {
 		textShadow(undefined, parseFloat(this.value))
 	})
 
-	//
 	// Page layout
 
 	paramId('b_editmove').addEventListener('click', function () {
@@ -592,62 +595,67 @@ function initOptionsEvents() {
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
-	//
 	// Updates
 
 	paramId('i_announce').addEventListener('change', function (this) {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
-	//
 	// Settings managment
 
-	paramId('s_export').addEventListener('click', function () {
-		toggleSettingsManagement(false)
+	paramId('settings-managment').addEventListener('dragenter', function () {
+		paramId('settings-managment').classList.add('dragging-file')
 	})
 
-	paramId('s_import').addEventListener('click', function () {
-		toggleSettingsManagement(true)
+	paramId('file-import').addEventListener('dragleave', function () {
+		paramId('settings-managment').classList.remove('dragging-file')
 	})
 
-	paramId('b_exportfile').addEventListener('click', function () {
-		exportAsFile()
+	paramId('b_file-load').addEventListener('click', function (this) {
+		paramId('file-import')?.click()
 	})
 
-	paramId('b_exportcopy').addEventListener('click', function (this) {
-		copyImportText(this)
+	paramId('b_file-save').addEventListener('click', function () {
+		saveImportFile()
 	})
 
-	paramId('i_importfile').addEventListener('change', function (this) {
-		importAsFile(this)
+	paramId('file-import').addEventListener('change', function (this) {
+		loadImportFile(this)
 	})
 
-	paramId('i_importtext').addEventListener('keyup', function (this) {
-		importAsText(this.value)
+	paramId('b_settings-copy').addEventListener('click', function (this) {
+		copySettings(this)
 	})
 
-	paramId('b_resetconf').addEventListener('click', function () {
-		paramsReset('conf')
+	paramId('settings-data').addEventListener('input', function () {
+		toggleSettingsChangesButtons('input')
 	})
 
-	paramId('b_resetyes').addEventListener('click', function () {
-		paramsReset('yes')
+	paramId('b_settings-cancel').addEventListener('click', function () {
+		toggleSettingsChangesButtons('cancel')
 	})
 
-	paramId('b_resetno').addEventListener('click', function () {
-		paramsReset('no')
+	paramId('b_settings-apply').addEventListener('click', function () {
+		const val = paramId('settings-data').value
+		importSettings(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
-	paramId('b_importtext').addEventListener('click', function () {
-		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
-		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
+	paramId('b_reset-first').addEventListener('click', function () {
+		resetSettings('first')
 	})
 
-	//
+	paramId('b_reset-apply').addEventListener('click', function () {
+		resetSettings('yes')
+	})
+
+	paramId('b_reset-cancel').addEventListener('click', function () {
+		resetSettings('no')
+	})
+
 	// Other
 
-	// Reduces opacity to better see interface appearance changes
 	if (IS_MOBILE) {
+		// Reduces opacity to better see interface appearance changes
 		const touchHandler = (touch: boolean) => document.getElementById('settings')?.classList.toggle('see-through', touch)
 		document.querySelectorAll("input[type='range'").forEach((input: Element) => {
 			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
@@ -655,66 +663,23 @@ function initOptionsEvents() {
 		})
 	}
 
-	paramClasses('uploadContainer').forEach(function (uploadContainer: Element) {
-		const toggleDrag = () => uploadContainer.classList.toggle('dragover')
-		const input = uploadContainer.querySelector('input[type="file"')
+	// TODO: drag event not working ?
+	document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach((input) => {
+		const toggleDrag = (_: DragEvent) => {
+			input.classList.toggle('dragover')
+		}
 
 		input?.addEventListener('dragenter', toggleDrag)
 		input?.addEventListener('dragleave', toggleDrag)
 		input?.addEventListener('drop', toggleDrag)
 	})
 
-	document.querySelectorAll('.tooltip').forEach((elem: Element) => {
+	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
 		elem.addEventListener('click', function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
-}
-
-//
-//
-//
-
-function toggleSettingsMenu() {
-	const domsettings = document.getElementById('settings')
-	const domshowsettings = document.getElementById('showSettings')
-	const dominterface = document.getElementById('interface')
-	const domedit = document.getElementById('editlink')
-	const isClosed = domsettings?.classList.contains('shown') === false
-
-	domsettings?.classList.toggle('init', false)
-	domsettings?.classList.toggle('shown', isClosed)
-	domedit?.classList.toggle('pushed', isClosed)
-	dominterface?.classList.toggle('pushed', isClosed)
-	domshowsettings?.classList.toggle('shown', isClosed)
-
-	domsettings?.style.removeProperty('transform')
-	domsettings?.style.removeProperty('transition')
-	domsettings?.style.removeProperty('--translate-y')
-	document.dispatchEvent(new Event('close-edit'))
-}
-
-function changelogControl(settingsDom: HTMLElement) {
-	const domshowsettings = document.querySelector('#showSettings')
-	const domchangelog = settingsDom.querySelector('#changelogContainer')
-
-	if (!domchangelog) return
-
-	domchangelog.classList.toggle('shown', true)
-	domshowsettings?.classList.toggle('hasUpdated', true)
-
-	const dismiss = () => {
-		domshowsettings?.classList.toggle('hasUpdated', false)
-		domchangelog.className = 'dismissed'
-		localStorage.removeItem('hasUpdated')
-	}
-
-	const loglink = settingsDom.querySelector('#link') as HTMLAnchorElement
-	const logdismiss = settingsDom.querySelector('#log_dismiss') as HTMLButtonElement
-
-	loglink.onclick = () => dismiss()
-	logdismiss.onclick = () => dismiss()
 }
 
 function translatePlaceholders() {
@@ -724,7 +689,7 @@ function translatePlaceholders() {
 		['i_tabtitle', 'New tab'],
 		['i_sbrequest', 'Search query: %s'],
 		['i_sbplaceholder', 'Search'],
-		['cssEditor', 'Type in your custom CSS'],
+		['css-editor-textarea', 'Type in your custom CSS'],
 		['i_importtext', 'or paste as text'],
 		['i_addlink-title', 'Title'],
 		['i_addlink-url', 'example.com'],
@@ -786,7 +751,7 @@ async function selectBackgroundType(cat: string) {
 		if (!data.unsplash) return
 
 		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
-		document.getElementById('creditContainer')?.classList.toggle('shown', true)
+		document.getElementById('credit-container')?.classList.toggle('shown', true)
 		setTimeout(
 			() =>
 				unsplashBackgrounds({
@@ -803,7 +768,6 @@ async function selectBackgroundType(cat: string) {
 function settingsFooter() {
 	const one = document.querySelector<HTMLAnchorElement>('#signature-one')
 	const two = document.querySelector<HTMLAnchorElement>('#signature-two')
-	const donate = document.getElementById('donate')
 	const version = document.getElementById('version')
 	const rand = Math.random() > 0.5
 
@@ -817,70 +781,9 @@ function settingsFooter() {
 	if (version) {
 		version.textContent = SYNC_DEFAULT.about.version
 	}
-
-	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') {
-		donate?.remove()
-	}
 }
 
-//
-//	Inputs tab accessibility
-//
-
-function controlOptionsTabFocus(settingsDom: HTMLElement) {
-	optionsTabIndex(settingsDom)
-
-	for (const option of settingsDom.querySelectorAll('.opt-hider')) {
-		option.addEventListener('input', function () {
-			setTimeout(() => optionsTabIndex(settingsDom), 10)
-		})
-	}
-}
-
-function optionsTabIndex(settingsDom: HTMLElement) {
-	const id = <T>(s: string): T | null => settingsDom.querySelector(`#${s}`) as T | null
-	const isAllSettings = id<HTMLInputElement>('i_showall')?.checked
-
-	const toggleTabindex = (parent: string, on: boolean = true) => {
-		settingsDom?.querySelectorAll(`${parent} :is(input,  select,  button,  a, textarea)`).forEach((dom) => {
-			on ? dom.removeAttribute('tabindex') : dom.setAttribute('tabindex', '-1')
-		})
-	}
-
-	// If showall, start by enabling .as fields
-	if (isAllSettings) {
-		toggleTabindex('.as', true)
-	}
-
-	// Then control if widgets are on or off
-	settingsDom.querySelectorAll('.dropdown').forEach((dom) => {
-		toggleTabindex('#' + dom.id, dom?.classList.contains('shown'))
-	})
-
-	// Disable all "all" settings if off
-	if (isAllSettings === false) {
-		toggleTabindex('.as', false)
-	}
-
-	// Toggle tooltips
-	settingsDom.querySelectorAll('.tooltiptext').forEach((dom) => {
-		toggleTabindex('.' + dom.classList[1], dom?.classList.contains('shown'))
-	})
-
-	// Toggle in-widgets hidden options
-	toggleTabindex('#analog_options', id<Element>('analog_options')?.classList.contains('shown'))
-	toggleTabindex('#digital_options', id<Element>('digital_options')?.classList.contains('shown'))
-	toggleTabindex('#searchbar_request', id<Element>('searchbar_request')?.classList.contains('shown'))
-	toggleTabindex('#weather_provider', id<Element>('weather_provider')?.classList.contains('shown'))
-	toggleTabindex('#quotes_userlist', id<Element>('quotes_userlist')?.classList.contains('shown'))
-	toggleTabindex('#import', id<Element>('import')?.classList.contains('shown'))
-	toggleTabindex('#export', id<Element>('export')?.classList.contains('shown'))
-	toggleTabindex('#sett_city', id<HTMLInputElement>('i_geol')?.checked === false)
-}
-
-//
 // 	Mobile settings drawer bar
-//
 
 function settingsDrawerBar() {
 	const drawerDragDebounce = debounce(() => {
@@ -892,7 +795,7 @@ function settingsDrawerBar() {
 		drawerDragDebounce()
 
 		// removes transition to prevent weird movement when changing to mobile styling
-		// /!\ this is dependent on toggleSettingsMenu() to remove inline styling /!\
+		// /!\ this is dependent on settingsToggle() to remove inline styling /!\
 		if (!document.getElementById('settings')?.style.transition) {
 			document.getElementById('settings')?.setAttribute('style', 'transition: none')
 		}
@@ -902,58 +805,47 @@ function settingsDrawerBar() {
 }
 
 function drawerDragEvents() {
+	const mobileDragZone = document.getElementById('mobile-drag-zone') as HTMLElement
 	const settingsDom = document.getElementById('settings') as HTMLElement
+	const dragZoneHeight = mobileDragZone.getBoundingClientRect().height
 	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
 
-	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
-	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
-	dragzone?.addEventListener('mousedown', dragStart)
-	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
-	dragzone?.addEventListener('mouseup', dragEnd)
-
-	document.body?.addEventListener('mouseleave', (e) => {
-		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
-			dragEnd(e)
-		}
-	})
+	mobileDragZone?.addEventListener('touchstart', dragStart, { passive: false })
+	mobileDragZone?.addEventListener('pointerdown', dragStart, { passive: false })
 
 	function dragStart(e: Event) {
 		e.preventDefault()
 
 		// Get mouse / touch y position
-		if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
+		if (e.type === 'pointerdown') startTouchY = (e as MouseEvent).clientY
 		if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
 
 		// First time dragging, sets maximum y pos at which to block
 		if (firstPos === 0) firstPos = startTouchY
 
-		// Scrollbar padding control on windows & android
-		if (SYSTEM_OS.match(/windows|android/)) {
-			settingsDom.style.width = `calc(100% - 10px)`
-			settingsDom.style.paddingRight = `10px`
-		}
-
-		// prevent scroll when dragging
-		settingsDom.style.overflow = `clip`
-
 		// Add mouse / touch moves events
 		window.addEventListener('touchmove', dragMove)
-		window.addEventListener('mousemove', dragMove)
+		window.addEventListener('pointermove', dragMove)
+		document.body.addEventListener('touchend', dragEnd)
+		document.body.addEventListener('pointerup', dragEnd)
 	}
 
 	function dragMove(e: Event) {
 		let clientY: number = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
+		if (e.type === 'pointermove') clientY = (e as MouseEvent).clientY
 		if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
 
 		// element is below max height: move
 		if (clientY > 60) {
-			settingsVh = +(100 - (clientY / window.innerHeight) * 100).toFixed(2)
-			settingsDom.style.transform = `translateY(-${settingsVh}vh)`
+			const touchPosition = clientY - dragZoneHeight / 2
+			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
+
+			settingsVh = +inverseHeight.toFixed(2)
+			settingsDom.style.transform = `translateY(-${settingsVh}dvh)`
 			settingsDom.style.transition = `transform .0s`
 		}
 	}
@@ -962,18 +854,18 @@ function drawerDragEvents() {
 		let clientY: number = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
+		if (e.type === 'pointerup') clientY = (e as MouseEvent).clientY
 		if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
 
-		// Remove move events
 		window.removeEventListener('touchmove', dragMove)
-		window.removeEventListener('mousemove', dragMove)
+		window.removeEventListener('pointermove', dragMove)
+		document.body.removeEventListener('touchend', dragEnd)
+		document.body.removeEventListener('pointerup', dragEnd)
 
-		// reset mouse / touch pos
 		startTouchY = 0
 
 		const footer = document.getElementById('settings-footer') as HTMLDivElement
-		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'vh'
+		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'dvh'
 
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
@@ -981,30 +873,22 @@ function drawerDragEvents() {
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {
-			toggleSettingsMenu()
+			settingsToggle()
 		}
 	}
 }
 
-//
 //	Settings management
-//
 
-function toggleSettingsManagement(toggled: boolean) {
-	document.getElementById('export')?.classList.toggle('shown', !toggled)
-	document.getElementById('import')?.classList.toggle('shown', toggled)
-	document.querySelector('.importexport-tabs')?.classList.toggle('toggled', toggled)
-}
-
-async function copyImportText(target: HTMLElement) {
+async function copySettings(target: HTMLElement) {
 	try {
-		const pre = document.getElementById('export-data')
+		const pre = document.getElementById('settings-data')
 		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
 		target.textContent = tradThis('Copied')
 		setTimeout(() => {
-			const domimport = document.getElementById('b_exportcopy')
+			const domimport = document.getElementById('b_settings-copy')
 			if (domimport) {
-				domimport.textContent = tradThis('Copy text')
+				domimport.textContent = tradThis('Copy')
 			}
 		}, 1000)
 	} catch (err) {
@@ -1012,8 +896,8 @@ async function copyImportText(target: HTMLElement) {
 	}
 }
 
-async function exportAsFile() {
-	const a = document.getElementById('downloadfile')
+async function saveImportFile() {
+	const a = document.getElementById('file-download')
 	if (!a) return
 
 	const date = new Date()
@@ -1032,18 +916,7 @@ async function exportAsFile() {
 	a.click()
 }
 
-function importAsText(string: string) {
-	const importtext = document.getElementById('b_importtext')
-
-	try {
-		parse(string)
-		importtext?.removeAttribute('disabled')
-	} catch (error) {
-		importtext?.setAttribute('disabled', '')
-	}
-}
-
-function importAsFile(target: HTMLInputElement) {
+function loadImportFile(target: HTMLInputElement) {
 	function decodeExportFile(str: string): Partial<Sync.Storage> {
 		let result = {}
 
@@ -1077,13 +950,13 @@ function importAsFile(target: HTMLInputElement) {
 
 		// data has at least one valid key from default sync storage => import
 		if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
-			paramsImport(importData as Sync.Storage)
+			importSettings(importData as Sync.Storage)
 		}
 	}
 	reader.readAsText(file)
 }
 
-async function paramsImport(toImport: Partial<Sync.Storage>) {
+async function importSettings(toImport: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
 
@@ -1108,7 +981,7 @@ async function paramsImport(toImport: Partial<Sync.Storage>) {
 	}
 }
 
-function paramsReset(action: 'yes' | 'no' | 'conf') {
+function resetSettings(action: 'yes' | 'no' | 'first') {
 	if (action === 'yes') {
 		storage.sync.clear()
 		storage.local.clear()
@@ -1122,24 +995,59 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 		return
 	}
 
-	document.getElementById('reset_first')?.classList.toggle('shown', action === 'no')
-	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
+	document.getElementById('reset-first')?.classList.toggle('shown', action === 'no')
+	document.getElementById('reset-conf')?.classList.toggle('shown', action === 'first')
 }
 
-export function updateExportJSON(data?: Sync.Storage) {
+export function updateSettingsJSON(data?: Sync.Storage) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		data.about.browser = PLATFORM
+		const pre = document.getElementById('settings-data')
 
-		const parser = new DOMParser()
-		const highlight = highlightText(orderedStringify(data), 'json')
-		const doc = parser.parseFromString(highlight, 'text/html')
-		const nodes = Object.values(doc.body.childNodes)
-
-		for (const node of nodes) {
-			document.getElementById('export-data')?.appendChild(node)
+		if (pre) {
+			data.about.browser = PLATFORM
+			pre.textContent = orderedStringify(data)
 		}
+	}
+}
+
+function updateSettingsEvent() {
+	// On settings changes, update export code
+	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
+	const storageUpdate = () => updateSettingsJSON()
+	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (PLATFORM === 'online') {
+		window.addEventListener('storage', storageUpdate)
+	} else {
+		chrome.storage.onChanged.addListener(storageUpdate)
+		window.addEventListener('beforeunload', removeListener, { once: true })
+	}
+}
+
+async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
+	const textarea = paramId('settings-data')
+	const data = await storage.sync.get()
+	let hasChanges = false
+
+	if (action === 'input') {
+		const current = orderedStringify(data)
+		const user = orderedStringify(JSON.parse(textarea.value) ?? {})
+		hasChanges = user.length > 2 && current !== user
+	}
+
+	if (action === 'cancel') {
+		textarea.value = orderedStringify(data)
+		hasChanges = false
+	}
+
+	if (hasChanges) {
+		paramId('settings-changes')?.classList.toggle('changes', true)
+		paramId('b_settings-apply')?.removeAttribute('disabled')
+	} else {
+		paramId('settings-changes')?.classList.remove('changes')
+		paramId('b_settings-apply')?.setAttribute('disabled', '')
 	}
 }
 
@@ -1151,16 +1059,10 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-//
 //	Helpers
-//
 
 function paramId(str: string) {
 	return document.getElementById(str) as HTMLInputElement
-}
-
-function paramClasses(str: string) {
-	return document.querySelectorAll(`.${str}`)!
 }
 
 function setCheckbox(id: string, cat: boolean) {

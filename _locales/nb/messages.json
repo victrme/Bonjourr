@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · Minimalistisk startside",
+		"description": "utvidelsens navn"
+	},
+	"extensionDesc": {
+		"message": "Forbedre nettleseropplevelsen din med Bonjourr, en lett og vakker startside som kan tilpasses.",
+		"description": "utvidelsens beskrivelse"
+	}
+}

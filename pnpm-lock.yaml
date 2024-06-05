@@ -12,16 +12,16 @@ dependencies:
     specifier: ^6.2.1
     version: 6.2.1
   pocket-editor:
-    specifier: ^1.10.1
-    version: 1.10.1
+    specifier: ^1.11.2
+    version: 1.11.2
   prism-code-editor:
-    specifier: ^3.1.2
-    version: 3.1.2
+    specifier: ^3.2.1
+    version: 3.2.1
 
 devDependencies:
   '@types/chrome':
-    specifier: ^0.0.263
-    version: 0.0.263
+    specifier: ^0.0.266
+    version: 0.0.266
   esbuild:
     specifier: ^0.20.2
     version: 0.20.2
@@ -241,8 +241,8 @@ packages:
     dev: true
     optional: true
 
-  /@types/chrome@0.0.263:
-    resolution: {integrity: sha512-As0vzv99ov3M6ZR7R6VzhMWFZXkPMrFrCEXXVrMN576Cm70fTkj7Df2CF+qEo170JepX50pd11cX6O4DSAtl2Q==}
+  /@types/chrome@0.0.266:
+    resolution: {integrity: sha512-QSQWJTL7NjZElvq/6/E5C1+pHgEP8UAJzwoz7M4vSJ7AECt6NNehJ+tU6snnvuTqZOBjFCivvitYo5+8tNPmhg==}
     dependencies:
       '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.15
@@ -301,12 +301,12 @@ packages:
     resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
     dev: false
 
-  /pocket-editor@1.10.1:
-    resolution: {integrity: sha512-LxXiztUGc25W+qow3E9O+0a2nJuoS0IwCO0tXzYz9ipSzU3x4Z7jhmYxUXjgmMorAFnlS2LV10gk8uAAC98WzA==}
+  /pocket-editor@1.11.2:
+    resolution: {integrity: sha512-jlu7M21SrryzksZw+SQhbRJyBqZTmfxx3HRDFvAHRBtd1JO3WwL7EhJ96pkLZiChGZ+yaCPgH23p35tyayNJ0g==}
     dev: false
 
-  /prism-code-editor@3.1.2:
-    resolution: {integrity: sha512-yt+wj7drh6InhiMUDSPUZLAwp7OIbSDJdb6RPG+UYIbrefyfH3EWr3SFBKbVO9vfQ+ze8eFHgcnbg8bJDn02FA==}
+  /prism-code-editor@3.2.1:
+    resolution: {integrity: sha512-6IxKeCWPogFX7J5gNHQPheiWjA4PMUxHoSZBpUca3fsNJynUkSSAdSXYH+KuzkIdxNIrM9p9NKNwK8Dc5Tzmew==}
     dev: false
 
   /user-agent-data-types@0.4.2:

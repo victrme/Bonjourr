@@ -1,0 +1,329 @@
+#interface {
+	position: relative;
+	display: grid;
+	width: 100%;
+	gap: var(--page-gap);
+	max-width: var(--page-width);
+	min-height: 100dvh;
+	padding: 4em 1em 6em 1em;
+	margin: 0 auto;
+	box-sizing: border-box;
+	will-change: transform;
+	font-size: var(--font-size);
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
+	transition: opacity var(--load-time-transition), transform 0.4s;
+	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
+	grid-template-areas: var(--grid);
+}
+
+@supports not (min-height: 100dvh) {
+	#background_overlay,
+	#interface {
+		min-height: 100vh;
+	}
+}
+
+#interface.pushed {
+	transform: translateX(-100px);
+}
+
+/* Background */
+
+#background_overlay {
+	z-index: -1;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	min-height: var(--app-height);
+	min-height: 100lvh;
+	overflow: hidden;
+	opacity: 0;
+	transition: transform 0.4s, opacity 0.4s;
+}
+
+#background-bis,
+#background {
+	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center center;
+	transition: opacity 1s var(--out-cubic);
+	filter: blur(var(--background-blur)) brightness(var(--background-brightness));
+	z-index: 1;
+}
+
+#background-bis {
+	z-index: 0;
+}
+
+/* Credits + Show settings */
+
+#credit-container,
+#show-settings {
+	position: fixed;
+	pointer-events: all;
+	transition: opacity 0.4s;
+}
+
+#credit-container {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	opacity: 0;
+	padding-left: 2.2em;
+	padding-bottom: 2.2em;
+	max-width: 50%;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
+}
+
+#credit-container.shown {
+	opacity: 1;
+	pointer-events: all;
+}
+
+#credit-container.shown:hover .exif {
+	opacity: 1;
+}
+
+#credit {
+	text-align: left;
+	font-size: 13px;
+	line-height: 18px;
+	color: rgba(255, 255, 255, 0.6);
+}
+
+#credit a {
+	color: rgba(255, 255, 255, 0.6);
+	text-decoration: none;
+}
+
+#credit a:hover {
+	color: rgba(255, 255, 255, 0.9333333333);
+}
+
+.exif {
+	opacity: 0;
+	transition: opacity 0.4s;
+}
+
+/* Show Settings */
+
+#show-settings {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding-right: 1.5em;
+	padding-bottom: 1.5em;
+	z-index: 3;
+}
+
+#show-settings button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 4em;
+	width: 4em;
+	padding: 0;
+	border-radius: 13px;
+	background-color: transparent;
+	backdrop-filter: blur(0);
+	-webkit-backdrop-filter: blur(0);
+	cursor: pointer;
+	transition: background-color 0.1s var(--out-cubic);
+}
+
+#show-settings img {
+	width: 2.6em;
+	transition: transform 0.6s var(--out-cubic);
+}
+
+#show-settings.he_hidden {
+	display: flex;
+	opacity: 0;
+}
+
+#show-settings.he_hidden.shown {
+	opacity: 0.5;
+}
+
+#show-settings.he_hidden:hover {
+	opacity: 1;
+}
+
+#show-settings:hover img {
+	transform: rotate(15deg);
+}
+
+#show-settings.shown button {
+	background-color: rgba(170, 170, 170, 0.4);
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
+	border: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+#show-settings.shown button:hover {
+	opacity: 1;
+	background-color: rgba(102, 102, 102, 0.4);
+}
+
+#show-settings.shown img {
+	transform: rotate(60deg);
+}
+
+/* Layout move */
+
+.move-edit #main,
+.move-edit #time,
+.move-edit #linkblocks,
+.move-edit #sb_container,
+.move-edit #notes_container,
+.move-edit #quotes_container {
+	z-index: 3;
+	cursor: pointer;
+	pointer-events: none;
+}
+
+.move-edit #main > *,
+.move-edit #time > *,
+.move-edit #linkblocks > *,
+.move-edit #sb_container > *,
+.move-edit #notes_container > *,
+.move-edit #quotes_container > * {
+	user-select: none;
+}
+
+#main,
+#time,
+#linkblocks,
+#sb_container,
+#notes_container,
+#quotes_container {
+	place-self: center;
+}
+
+/* Error dialog */
+
+#error {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	user-select: auto;
+	pointer-events: all;
+	top: 5%;
+	left: 5%;
+	width: calc(90% - 100px);
+	max-width: 500px;
+	padding: 50px;
+	opacity: 0;
+	color: #fff;
+	border-radius: 20px;
+	background-color: rgba(0, 0, 0, 0.1333333333);
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+	transition: opacity 0.4s;
+	z-index: 1;
+}
+
+#error pre {
+	width: calc(100% - 32px);
+	overflow: hidden;
+	user-select: all;
+	pointer-events: all;
+	padding: 8px 16px;
+	text-align: left;
+	background-color: rgba(17, 17, 17, 0.2666666667);
+	margin-top: 3em;
+}
+
+#error textarea {
+	width: calc(100% - 32px);
+	height: 100px;
+	padding: 8px 16px;
+	color: #fff;
+	font-size: 13px;
+	white-space: pre;
+	resize: vertical;
+	overflow-x: hidden;
+	border: none;
+	font-family: monospace;
+	background-color: rgba(17, 17, 17, 0.2666666667);
+}
+
+#error a {
+	color: #fff;
+}
+
+#error button {
+	cursor: pointer;
+	padding: 5px 10px;
+	border-radius: 5px;
+	border: none;
+	background-color: var(--color-red);
+	color: #fff;
+}
+
+#error .error-explain {
+	margin-top: 2em;
+	margin-bottom: 3em;
+}
+
+#error .error-buttons {
+	display: flex;
+	justify-content: space-around;
+	width: 300px;
+}
+
+#error .error-buttons-close {
+	background-color: var(--color-blue);
+}
+
+/* Platform not available dialog */
+
+#opera-explainer {
+	opacity: 0;
+	outline: none;
+	color: #ddd;
+	max-width: 30em;
+	padding: 1em 2em;
+	line-height: 1.5em;
+	transition: opacity 0.4s 1s;
+}
+
+#opera-explainer::backdrop {
+	transition: background-color 6s;
+}
+
+#opera-explainer li {
+	list-style-type: circle;
+}
+
+#opera-explainer div {
+	padding: 1em 0;
+	text-align: initial;
+}
+
+#opera-explainer a {
+	color: var(--color-blue);
+	text-decoration: none;
+}
+
+#opera-explainer a:hover {
+	text-decoration: underline;
+}
+
+#opera-explainer.shown {
+	opacity: 1;
+}
+
+#opera-explainer.shown::backdrop {
+	background-color: rgba(0, 0, 0, 0.6);
+}
