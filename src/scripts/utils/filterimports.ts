@@ -1,6 +1,6 @@
+import { addGridWidget, removeGridWidget } from '../features/move/helpers'
 import { randomString, bundleLinks } from '../utils'
 import { SYNC_DEFAULT } from '../defaults'
-import { gridWidget } from '../features/move'
 import { deepmergeAll } from '@victr/deepmerge'
 import { oldJSONToCSV } from '../features/quotes'
 
@@ -110,63 +110,6 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 	// <1.19.0 quotes userlist was json
 	if (Array.isArray(toImport?.quotes?.userlist)) {
 		toImport.quotes.userlist = oldJSONToCSV(toImport.quotes.userlist)
-	}
-
-	// When import doesn't have move, other widgets can still be different
-	// This updates current grid with the widgets states from import
-	if (!toImport.move) {
-		let importStates = {
-			time: toImport.time ?? current.time,
-			main: toImport.main ?? current.main,
-			notes: toImport.notes?.on ?? (current.notes?.on || false),
-			quotes: toImport.quotes?.on ?? current.quotes?.on,
-			searchbar: toImport.searchbar?.on ?? current.searchbar?.on,
-			quicklinks: toImport.quicklinks ?? current.quicklinks,
-		}
-
-		let diffWidgets = {
-			time: current.time !== importStates.time,
-			main: current.main !== importStates.main,
-			notes: current.notes?.on !== importStates.notes,
-			quotes: current.quotes?.on !== importStates.quotes,
-			searchbar: current.searchbar?.on !== importStates.searchbar,
-			quicklinks: current.quicklinks !== importStates.quicklinks,
-		}
-
-		// Force single layout with old imports
-		// Partial imports, for example links list only, will not force single
-		if (Object.keys(toImport).some((key) => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
-			current.move.selection = 'single'
-		}
-
-		let layout = structuredClone(current.move.layouts[current.move.selection])
-		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
-
-		// mutate grid: add or remove widgets that are different from current data
-		diffEntries.forEach(([key, _]) => {
-			layout.grid = gridWidget(
-				layout.grid,
-				current.move.selection,
-				key as Sync.Move.Key,
-				importStates[key as keyof typeof importStates]
-			)
-		})
-
-		current.move.layouts[current.move.selection].grid = layout.grid
-		current.move.layouts[current.move.selection].items = layout.items
-	}
-
-	// Remove current layouts grid if import has grids
-	// because deepmerge of arrays concats them
-	if (toImport.move && current.move) {
-		Object.entries(toImport.move?.layouts).forEach(([key, layout]) => {
-			const keyIsValidLayout = key in current.move.layouts
-			const layoutKey = key as Sync.Move.Selection
-
-			if (layout.grid && keyIsValidLayout) {
-				current.move.layouts[layoutKey].grid = []
-			}
-		})
 	}
 
 	// Remove link duplicates

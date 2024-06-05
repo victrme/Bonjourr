@@ -37,14 +37,7 @@ declare namespace Sync {
 		searchbar: Searchbar
 		quotes: Quotes.Sync
 		font: Font
-		move: {
-			selection: Move.Selection
-			layouts: {
-				single: Move.Layout
-				double: Move.Layout
-				triple: Move.Layout
-			}
-		}
+		move: Move
 		about: {
 			browser: string
 			version: string
@@ -118,20 +111,27 @@ declare namespace Sync {
 		align: string
 	}
 
-	namespace Move {
-		interface Layout {
-			selected?: boolean
-			grid: string[][]
-			items: { [key in Key]?: Item }
+	type Move = {
+		selection: MoveSelection
+		layouts: {
+			single: MoveLayout
+			double: MoveLayout
+			triple: MoveLayout
 		}
+	}
 
-		interface Item {
-			box: string
-			text: string
+	type MoveSelection = 'single' | 'double' | 'triple'
+
+	interface MoveLayout {
+		selected?: boolean
+		grid: string[][]
+		items: {
+			[key in Widgets]?: MoveAlign
 		}
+	}
 
-		type Selection = 'single' | 'double' | 'triple'
-
-		type Key = 'time' | 'main' | 'notes' | 'searchbar' | 'quicklinks' | 'quotes'
+	interface MoveAlign {
+		box: string
+		text: string
 	}
 }

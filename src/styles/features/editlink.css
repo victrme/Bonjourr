@@ -39,11 +39,6 @@
 	opacity: 1;
 }
 
-#editlink hr {
-	margin: 10px;
-	box-sizing: border-box;
-}
-
 #editlink input {
 	color: var(--color-text);
 	width: 100%;
