@@ -1,11 +1,6 @@
 import { BROWSER } from '../../defaults'
 
 type Grid = string[][]
-type Column = Sync.Move['column']
-
-//
-//	Yes
-//
 
 export const elements = <const>{
 	time: document.getElementById('time'),
@@ -24,9 +19,7 @@ export function hasDuplicateInArray(arr: string[], id?: string): boolean {
 	return arr.filter((a) => a === id).length > 1
 }
 
-//
 //	Grid
-//
 
 export function gridParse(area = ''): Grid {
 	let splitchar = BROWSER === 'safari' ? `\"` : "'"
@@ -59,9 +52,7 @@ export function gridFind(grid: Grid, id: string): { posCol: number; posRow: numb
 	return allpos
 }
 
-//
 //	Alignment
-//
 
 export function alignStringify(align: { box: string; text: string }): string {
 	return align.box + (align.box && align.text ? ' & ' : '') + align.text
@@ -72,9 +63,7 @@ export function alignParse(string = ''): { box: string; text: string } {
 	return { box: arr[0] ?? '', text: arr[1] ?? '' }
 }
 
-//
 //	Span
-//
 
 function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
 	const poses = gridFind(grid, id)
@@ -162,9 +151,7 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 	return grid
 }
 
-//
 //	Widgets
-//
 
 export function getWidgetsStorage(data: Sync.Storage): Widgets[] {
 	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
@@ -203,8 +190,8 @@ export function getGridWidgets(area: string): Widgets[] {
 	return widgets as Widgets[]
 }
 
-export function addGridWidget(grid: string, id: Widgets, column: Column): string {
-	const newrow = addGridRow(column, id)
+export function addGridWidget(grid: string, id: Widgets, selection: Sync.MoveSelection): string {
+	const newrow = addGridRow(selection, id)
 	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
 	let position = 0
 
@@ -229,7 +216,7 @@ export function addGridWidget(grid: string, id: Widgets, column: Column): string
 	return grid
 }
 
-export function removeGridWidget(grid: string, id: Widgets, _: Column): string {
+export function removeGridWidget(grid: string, id: Widgets, _: Sync.MoveSelection): string {
 	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
 
 	rows = rows.filter((row) => !row.includes(id))
@@ -239,9 +226,9 @@ export function removeGridWidget(grid: string, id: Widgets, _: Column): string {
 	return grid
 }
 
-function addGridRow(column: Column, id: Widgets): string {
-	const firstcolumn = column === 'triple' ? '. ' : ''
-	const lastcolumn = column === 'triple' || column === 'double' ? ' .' : ''
+function addGridRow(selection: Sync.MoveSelection, id: Widgets): string {
+	const firstcolumn = selection === 'triple' ? '. ' : ''
+	const lastcolumn = selection === 'triple' || selection === 'double' ? ' .' : ''
 
 	return `${firstcolumn}${id}${lastcolumn}`
 }

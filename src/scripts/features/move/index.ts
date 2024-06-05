@@ -12,7 +12,6 @@ import {
 	isRowEmpty,
 	gridFind,
 	gridParse,
-	alignParse,
 	gridStringify,
 	alignStringify,
 	spansInGridArea,
@@ -52,8 +51,8 @@ export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 	}
 
 	if (init) {
-		setAllAligns(init[init.column])
-		setGridAreas(init[init.column]?.grid)
+		setAllAligns(init.layouts[init.selection].items)
+		setGridAreas(gridStringify(init.layouts[init.selection].grid))
 		onSettingsLoad(toolboxEvents)
 	}
 }
@@ -63,7 +62,7 @@ export async function updateMoveElement(event: UpdateMove) {
 
 	if (!data.move) data.move = structuredClone(SYNC_DEFAULT.move)
 
-	if (smallWidth) data.move.column = 'single'
+	if (smallWidth) data.move.selection = 'single'
 
 	if (event.grid) gridChange(data.move, event.grid)
 	if (event.span) toggleGridSpans(data.move, event.span)
@@ -84,7 +83,7 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	const y = parseInt(gridpos?.y || '0')
 	const x = parseInt(gridpos?.x || '0')
 
-	let grid = gridParse(move[move.column]?.grid ?? '')
+	let grid = move.layouts[move.selection]?.grid
 	const allActivePos = gridFind(grid, widget)
 	const allAffectedIds: Widgets[] = []
 
@@ -92,9 +91,9 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
 
 	if (isGridOverflowing) {
-		if (move.column === 'single') grid.push(['.'])
-		if (move.column === 'double') grid.push(['.', '.'])
-		if (move.column === 'triple') grid.push(['.', '.', '.'])
+		if (move.selection === 'single') grid.push(['.'])
+		if (move.selection === 'double') grid.push(['.', '.'])
+		if (move.selection === 'triple') grid.push(['.', '.', '.'])
 	}
 
 	// step 1: Find elements affected by grid change
@@ -131,13 +130,11 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	})
 
 	// step 5: profit ??????????????
-	const areas = gridStringify(grid)
-
-	move[move.column].grid = areas
+	move.layouts[move.selection].grid = grid
 	storage.sync.set({ move: move })
 
 	gridButtons(widget)
-	setGridAreas(areas)
+	setGridAreas(grid)
 }
 
 function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
@@ -145,28 +142,28 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 		return
 	}
 
-	const column = move[move.column]
-	const align = alignParse(column[widget])
+	const layout = move.layouts[move.selection]
+	const align = layout.items[widget] ?? { box: '', text: '' }
 
 	if (type === 'box') align.box = value
 	if (type === 'text') align.text = value
 
-	column[widget] = alignStringify(align)
-	move[move.column] = column
+	layout.items[widget] = align
+	move.layouts[move.selection] = layout
 	storage.sync.set({ move: move })
 
-	alignButtons(column[widget])
-	setAlign(widget, column[widget])
+	alignButtons(align)
+	setAlign(widget, align)
 }
 
 function layoutChange(data: Sync.Storage, column: string) {
 	// Only update selection if coming from user
 	if (column === 'single' || column === 'double' || column === 'triple') {
-		data.move.column = column
+		data.move.selection = column
 	}
 
-	const layout = data.move[data.move.column]
-	const widgetsInGrid = getGridWidgets(layout.grid)
+	const layout = data.move.layouts[data.move.selection]
+	const widgetsInGrid = getGridWidgets(gridStringify(layout.grid))
 
 	const list: [Widgets, boolean][] = [
 		['time', widgetsInGrid.includes('time')],
@@ -187,10 +184,10 @@ function layoutChange(data: Sync.Storage, column: string) {
 	})
 
 	interfaceTransition.then(async () => {
-		setAllAligns(layout)
+		setAllAligns(layout.items)
 		setGridAreas(layout.grid)
-		layoutButtons(data.move.column)
-		showSpanButtons(data.move.column)
+		layoutButtons(data.move.selection)
+		showSpanButtons(data.move.selection)
 		removeSelection()
 
 		// Toggle overlays if we are editing
@@ -201,7 +198,7 @@ function layoutChange(data: Sync.Storage, column: string) {
 
 		if (widget) {
 			gridButtons(widget)
-			alignButtons(layout[widget])
+			alignButtons(layout.items[widget])
 		}
 	})
 
@@ -214,28 +211,28 @@ function layoutChange(data: Sync.Storage, column: string) {
 
 function layoutReset(data: Sync.Storage) {
 	const enabledWidgets = getWidgetsStorage(data)
-	let grid: string = ''
+	let grid = ''
 
 	if (resetButton() === false) {
 		return
 	}
 
 	enabledWidgets.forEach((id) => {
-		grid = addGridWidget(grid, id, data.move.column)
+		grid = addGridWidget(grid, id, data.move.selection)
 	})
 
-	data.move[data.move.column] = { grid }
+	data.move.layouts[data.move.selection].grid = gridParse(grid)
 	storage.sync.set(data)
 
 	removeSelection()
-	setGridAreas(data.move[data.move.column].grid)
+	setGridAreas(grid)
 	setAllAligns({
-		quicklinks: '',
-		main: '',
-		time: '',
-		notes: '',
-		searchbar: '',
-		quotes: '',
+		quicklinks: undefined,
+		main: undefined,
+		time: undefined,
+		notes: undefined,
+		searchbar: undefined,
+		quotes: undefined,
 	})
 }
 
@@ -249,7 +246,7 @@ function elementSelection(move: Sync.Move, select: string) {
 
 	widget = select as Widgets
 
-	alignButtons(move[move.column][widget])
+	alignButtons(move.layouts[move.selection].items[widget])
 	spanButtons(widget)
 	gridButtons(widget)
 
@@ -281,13 +278,13 @@ function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
 		return
 	}
 
-	const grid = gridParse(move[move.column].grid)
+	const grid = move.layouts[move.selection].grid
 	const gridWithSpan = spansInGridArea(grid, widget, { toggle: dir })
 
-	move[move.column].grid = gridStringify(gridWithSpan)
+	move.layouts[move.selection].grid = gridWithSpan
 	storage.sync.set({ move: move })
 
-	setGridAreas(move[move.column].grid)
+	setGridAreas(gridWithSpan)
 	gridButtons(widget)
 	spanButtons(widget)
 }
@@ -302,7 +299,10 @@ function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
 	}
 
 	if (!hasOverlays) {
-		for (const id of getGridWidgets(move[move.column].grid)) {
+		const grid = gridStringify(move.layouts[move.selection].grid)
+		const ids = getGridWidgets(grid)
+
+		for (const id of ids) {
 			addOverlay(id as Widgets)
 		}
 	}

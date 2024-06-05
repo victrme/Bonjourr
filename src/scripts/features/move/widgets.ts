@@ -1,5 +1,5 @@
 import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
-import { isEditing, addGridWidget, removeGridWidget, updateWidgetsStorage } from './helpers'
+import { isEditing, addGridWidget, removeGridWidget, updateWidgetsStorage, gridStringify, gridParse } from './helpers'
 import transitioner from '../../utils/transitioner'
 import storage from '../../storage'
 
@@ -9,10 +9,10 @@ export default async function toggleWidget(data: Sync.Storage, widget: [Widgets,
 	const [id, on] = widget
 	const gridToggle = on ? addGridWidget : removeGridWidget
 	const interfaceTransition = transitioner()
-	const column = data.move.column
-	const grid = data.move[column].grid
+	const selection = data.move.selection
+	const grid = gridStringify(data.move.layouts[selection].grid)
 
-	data.move[column].grid = gridToggle(grid, id, column)
+	data.move.layouts[selection].grid = gridParse(gridToggle(grid, id, selection))
 	data = updateWidgetsStorage([widget], data)
 	storage.sync.set(data)
 
@@ -22,8 +22,8 @@ export default async function toggleWidget(data: Sync.Storage, widget: [Widgets,
 	})
 
 	interfaceTransition.then(async () => {
-		setGridAreas(data.move[data.move.column]?.grid)
-		setAllAligns(data.move[data.move.column])
+		setGridAreas(data.move.layouts[selection].grid)
+		setAllAligns(data.move.layouts[data.move.selection].items)
 		toggleWidgetOnInterface([[id, on]])
 		removeSelection()
 

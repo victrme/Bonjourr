@@ -1,14 +1,15 @@
-import { elements, alignParse } from './helpers'
+import { elements, gridStringify } from './helpers'
 import moveElements from '.'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
-export function setGridAreas(grid = '') {
-	document.documentElement.style.setProperty('--grid', grid)
+export function setGridAreas(grid: Sync.MoveLayout['grid'] | string) {
+	const property = typeof grid === 'string' ? grid : gridStringify(grid)
+	document.documentElement.style.setProperty('--grid', property)
 }
 
-export function setAlign(id: Widgets, align = '') {
-	const { box, text } = alignParse(align)
+export function setAlign(id: Widgets, align?: Sync.MoveAlign) {
+	const { box, text } = align ?? { box: '', text: '' }
 	const elem = elements[id]
 
 	if (elem) {
@@ -24,10 +25,8 @@ export function setAlign(id: Widgets, align = '') {
 	}
 }
 
-export function setAllAligns(layout: Partial<Sync.MoveLayout>) {
-	const entries = Object.entries(layout).filter(([key, _]) => key !== 'grid')
-
-	for (const [widget, align] of entries) {
+export function setAllAligns(items: Sync.MoveLayout['items']) {
+	for (const [widget, align] of Object.entries(items)) {
 		setAlign(widget as Widgets, align)
 	}
 }

@@ -1,4 +1,4 @@
-import { alignParse, elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
+import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
 import { updateMoveElement } from '.'
 import { tradThis } from '../../utils/translations'
 
@@ -88,7 +88,7 @@ export function toolboxEvents() {
 	}
 }
 
-export function layoutButtons(column: Sync.Move['column']) {
+export function layoutButtons(column: Sync.MoveSelection) {
 	document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
 		button.classList.toggle('selected', button.dataset.layout === column)
 	})
@@ -160,8 +160,8 @@ export function spanButtons(id: Widgets) {
 	}
 }
 
-export function alignButtons(str?: string) {
-	const { box, text } = alignParse(str ?? '')
+export function alignButtons(align?: Sync.MoveAlign) {
+	const { box, text } = align ?? { box: '', text: '' }
 	const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 	const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 

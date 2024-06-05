@@ -112,49 +112,6 @@ export default function filterImports(current: Sync.Storage, toImport: Partial<S
 		toImport.quotes.userlist = oldJSONToCSV(toImport.quotes.userlist)
 	}
 
-	// When import doesn't have move, other widgets can still be different
-	// This updates current grid with the widgets states from import
-	if (!toImport.move) {
-		let importStates = {
-			time: toImport.time ?? current.time,
-			main: toImport.main ?? current.main,
-			notes: toImport.notes?.on ?? (current.notes?.on || false),
-			quotes: toImport.quotes?.on ?? current.quotes?.on,
-			searchbar: toImport.searchbar?.on ?? current.searchbar?.on,
-			quicklinks: toImport.quicklinks ?? current.quicklinks,
-		}
-
-		let diffWidgets = {
-			time: current.time !== importStates.time,
-			main: current.main !== importStates.main,
-			notes: current.notes?.on !== importStates.notes,
-			quotes: current.quotes?.on !== importStates.quotes,
-			searchbar: current.searchbar?.on !== importStates.searchbar,
-			quicklinks: current.quicklinks !== importStates.quicklinks,
-		}
-
-		// Force single layout with old imports
-		// Partial imports, for example links list only, will not force single
-		if (Object.keys(toImport).some((key) => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
-			current.move.column = 'single'
-		}
-
-		const column = current.move.column
-		const layout = structuredClone(current.move[column])
-		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
-
-		// mutate grid: add or remove widgets that are different from current data
-		diffEntries.forEach(([key, _]) => {
-			const id = key as Widgets
-			const state = importStates[id]
-			const gridToggle = state ? addGridWidget : removeGridWidget
-
-			layout.grid = gridToggle(layout.grid, id, column)
-		})
-
-		current.move[column] = layout
-	}
-
 	// Remove link duplicates
 	const importedLink = bundleLinks(toImport as Sync.Storage)
 	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))

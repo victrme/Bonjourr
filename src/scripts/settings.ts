@@ -193,7 +193,7 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Page layout
 	domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
-		const selectedLayout = b.dataset.layout === (data.move?.column || 'single')
+		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
 		b?.classList.toggle('selected', selectedLayout)
 	})
 

@@ -112,42 +112,25 @@ declare namespace Sync {
 	}
 
 	type Move = {
-		column: 'single' | 'double' | 'triple'
-		single: MoveLayout
-		double: MoveLayout
-		triple: MoveLayout
-	}
-
-	type MoveLayout = {
-		grid: string
-		time?: string
-		main?: string
-		notes?: string
-		quotes?: string
-		searchbar?: string
-		quicklinks?: string
-	}
-
-	// <19.2
-
-	type OldMove = {
-		selection: 'single' | 'double' | 'triple'
+		selection: MoveSelection
 		layouts: {
-			single: OldMoveLayout
-			double: OldMoveLayout
-			triple: OldMoveLayout
+			single: MoveLayout
+			double: MoveLayout
+			triple: MoveLayout
 		}
 	}
 
-	interface OldMoveLayout {
+	type MoveSelection = 'single' | 'double' | 'triple'
+
+	interface MoveLayout {
 		selected?: boolean
 		grid: string[][]
 		items: {
-			[key in Widgets]?: OldMoveItem
+			[key in Widgets]?: MoveAlign
 		}
 	}
 
-	interface OldMoveItem {
+	interface MoveAlign {
 		box: string
 		text: string
 	}

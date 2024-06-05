@@ -164,10 +164,29 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	move: {
-		column: 'single',
-		single: { grid: "'time' 'main' 'quicklinks'" },
-		double: { grid: "'time .' 'main .' 'quicklinks .'" },
-		triple: { grid: "'. time .' '. main .' '. quicklinks .'" },
+		selection: 'single',
+		layouts: {
+			single: {
+				grid: [['time'], ['main'], ['quicklinks']],
+				items: {},
+			},
+			double: {
+				grid: [
+					['time', '.'],
+					['main', '.'],
+					['quicklinks', '.'],
+				],
+				items: {},
+			},
+			triple: {
+				grid: [
+					['.', 'time', '.'],
+					['.', 'main', '.'],
+					['.', 'quicklinks', '.'],
+				],
+				items: {},
+			},
+		},
 	},
 }
 
