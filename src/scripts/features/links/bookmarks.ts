@@ -279,8 +279,10 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 		return
 	}
 
-	const treenode = await namespace.bookmarks.getTree()
-	const topsites = await chrome.topSites.get()
+	//@ts-expect-error
+	const treenode = (startupBookmarks as Treenode[]) ?? (await namespace.bookmarks.getTree())
+	//@ts-expect-error
+	const topsites = (startupTopsites as chrome.topSites.MostVisitedURL[]) ?? (await namespace.topSites.get())
 
 	if (PLATFORM === 'chrome') {
 		treenode[0].children?.push({
