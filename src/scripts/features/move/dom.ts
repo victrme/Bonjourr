@@ -15,11 +15,11 @@ export function setAlign(id: Widgets, align = '') {
 		elem.style.placeSelf = box
 
 		if (id === 'quicklinks') {
-			const flex = text == 'left' ? 'flex-start' : text == 'right' ? 'flex-end' : ''
-			const linklist = document.getElementById('link-list') as HTMLElement
-			linklist.style.justifyContent = flex
+			document.getElementById('linkblocks')?.classList.remove('text-left', 'text-right')
+			if (text == 'left') document.getElementById('linkblocks')?.classList.add('text-left')
+			if (text == 'right') document.getElementById('linkblocks')?.classList.add('text-right')
 		} else {
-			elem.style.textAlign = text
+			elem.style.textAlign = text || ''
 		}
 	}
 }

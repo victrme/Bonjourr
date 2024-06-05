@@ -55,6 +55,7 @@ export function toolboxEvents() {
 	const removeDrag = () => {
 		firstPos = { x: 0, y: 0 }
 		;(moverdom as HTMLElement).style.removeProperty('cursor')
+		document.documentElement.style.removeProperty('overscroll-behavior')
 		moverdom?.removeEventListener('mousemove', moverDrag)
 		moverdom?.removeEventListener('touchmove', moverDrag)
 	}
@@ -81,8 +82,8 @@ export function toolboxEvents() {
 		}
 
 		if (moverdom) {
+			document.documentElement.style.overscrollBehavior = 'none'
 			moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
-			moverdom.style.cursor = `grabbing`
 		}
 	}
 }
@@ -175,7 +176,7 @@ export function resetButton(): boolean {
 	clearTimeout(resetTimeout)
 
 	if (confirm === false) {
-		b_resetlayout.textContent = tradThis('Are you sure ?')
+		b_resetlayout.textContent = tradThis('Are you sure?')
 		b_resetlayout.dataset.confirm = 'true'
 
 		resetTimeout = setTimeout(() => {
