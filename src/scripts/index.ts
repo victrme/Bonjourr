@@ -124,23 +124,23 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 			.replaceAll('#analogSeconds', '#analog-seconds')
 	}
 
-	// 20.0.0
-
-	if (data?.css) {
-		data.css = data.css.replaceAll('.block', '.link')
+	if (data.reviewPopup && data.usdate) {
+		storage.sync.remove('reviewPopup')
+		storage.sync.remove('usdate')
+		delete data.reviewPopup
+		delete data.usdate
 	}
-
-	storage.sync.remove('reviewPopup')
-	storage.sync.remove('usdate')
-	delete data.reviewPopup
-	delete data.usdate
 
 	// 19.2.0
 
-	delete data.cssHeight
-	storage.sync.remove('cssHeight')
+	if (data.cssHeight) {
+		delete data.cssHeight
+		storage.sync.remove('cssHeight')
+	}
 
-	data = linksDataMigration(data)
+	if (!data.linktabs && !data.linkgroups) {
+		data = linksDataMigration(data)
+	}
 
 	// 20.0.0
 
@@ -153,7 +153,12 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 			pinned: [],
 		}
 
+		storage.sync.remove('linktabs')
 		delete data.linktabs
+	}
+
+	if (data?.css) {
+		data.css = data.css.replaceAll('.block', '.link')
 	}
 
 	return data
