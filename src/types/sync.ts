@@ -77,11 +77,11 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
-		style: 'round' | 'square' | 'transparent'
+		style: 'round' | 'square' 
 		background: 'light' | 'dark' | 'white' | 'black' | 'none'
-		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss'
+		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
 		border: 'white' | 'black' | 'none'
-		hands: 'modern' | 'swiss-hands' | 'classic'
+		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun'
 	}
 
 	type Searchbar = {

@@ -109,13 +109,13 @@ function analogFace(face = 'none') {
 	const spans = document.querySelectorAll<HTMLSpanElement>('#analog span')
 
 	spans.forEach((span, i) => {
-		if (face === 'none' || face === 'swiss') span.textContent = ['', '', '', ''][i]
+		if (face === 'none' || face === 'swiss' || face === 'braun') span.textContent = ['', '', '', ''][i]
 		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i]
 		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
 		if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
 	})
 
-	document.getElementById('analog')?.setAttribute('data-clock-face', face === 'swiss' ? face : '')
+	document.getElementById('analog')?.setAttribute('data-clock-face', (face === 'swiss' || face === 'braun') ? face : '')
 }
 
 function analogStyle(style?: string) {
@@ -342,11 +342,11 @@ function fixunits(val: number) {
 }
 
 function isFace(str = ''): str is Sync.Clock['face'] {
-	return ['none', 'number', 'roman', 'marks', 'swiss'].includes(str)
+	return ['none', 'number', 'roman', 'marks', 'swiss', 'braun'].includes(str)
 }
 
 function isHands(str = ''): str is Sync.Clock['hands'] {
-	return ['modern', 'swiss-hands', 'classic'].includes(str)
+	return ['modern', 'swiss-hands', 'classic', 'braun'].includes(str)
 }
 
 function isBorder(str = ''): str is Sync.Clock['border'] {

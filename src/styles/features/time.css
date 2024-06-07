@@ -93,6 +93,10 @@
 	border: calc(var(--clock-size) * 0.2) solid black;
 }
 
+#analog[data-clock-background="none"] {
+	box-shadow: unset;
+}
+
 #analog[data-clock-background="light"] {
 	background-color: rgba(255, 255, 255, 0.2);
 	backdrop-filter: blur(1em);
@@ -246,6 +250,42 @@
 	border-radius: 100%;
 }
 
+#analog[data-clock-hands="braun"] #analog-center {
+	background-color: #f9b603;
+	width: calc(var(--clock-size) * 0.5);
+	height: calc(var(--clock-size) * 0.5);
+}
+
+#analog[data-clock-hands="braun"] #analog-seconds {
+	background-color: #f9b603;
+	opacity: 1;
+	height: 37%;
+}
+
+/* bit that pokes out */
+#analog[data-clock-hands="braun"] #analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	border-radius:0 0 10px 10px;
+	background-color: #f9b603;
+	width: calc(var(--clock-size) * 0.3);
+	height: calc(var(--clock-size) * 1);
+	bottom: calc(var(--clock-size) * -1);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#analog[data-clock-hands="braun"] #analog-hours {
+	width: calc(var(--clock-size) * 0.25);
+	height: 27%;
+}
+
+#analog[data-clock-hands="braun"] #analog-minutes {
+	height: 35%;
+}
+
+
 #analog-face {
 	position: absolute;
 	width: 100%;
@@ -265,23 +305,36 @@
 	text-align: center;
 }
 
-#analog[data-clock-face="swiss"] #analog-face {
+#analog[data-clock-face="swiss"] #analog-face,
+#analog[data-clock-face="braun"] #analog-face {
 	background-size: 95%;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+
+#analog[data-clock-face="swiss"] #analog-face {
 	background-image: url('../../assets/interface/swiss-railway-white.svg');
-	/* opacity: .6; */
+}
+
+#analog[data-clock-face="braun"] #analog-face {
+	background-image: url('../../assets/interface/braun-white.svg');
 }
 
 #analog[data-clock-face="swiss"][data-clock-background="white"] #analog-face {
 	background-image: url('../../assets/interface/swiss-railway-black.svg');
 }
 
-#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-minutes,
-#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-hours,
-#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-minutes:after,
-#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-hours:after {
-	background-color: black;
+#analog[data-clock-background="white"] #analog-minutes,
+#analog[data-clock-background="white"] #analog-hours,
+#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]) #analog-center,
+#analog[data-clock-background="white"] #analog-minutes:after,
+#analog[data-clock-background="white"] #analog-hours:after {
+	background-color: rgba(0, 0, 0, .9);
+}
+
+#analog[data-clock-background="white"] #analog-face span {
+	color: black;
+	opacity: .9;
 }
 
 #analog-face span:nth-child(1) {
