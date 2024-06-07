@@ -30,7 +30,7 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	current = linkParentsToString(current) // ..
 
 	// current = removeLinkDuplicates(current, target) // all
-	// current = toggleMoveWidgets(current, target) // all
+	current = toggleMoveWidgets(current, target) // all
 
 	delete current.searchbar_newtab
 	delete current.searchbar_engine
@@ -239,6 +239,11 @@ function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storag
 function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storage {
 	// When import doesn't have move, other widgets can still be different
 	// This updates current grid with the widgets states from import
+
+	if (imported.move) {
+		current.move = imported.move
+		return current
+	}
 
 	if (!imported.move) {
 		let importStates = {
