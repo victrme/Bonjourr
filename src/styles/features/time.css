@@ -76,9 +76,6 @@
 	border-radius: 100%;
 	border: calc(var(--clock-size) * 0.2) solid white;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-	background-color: rgba(255, 255, 255, 0.2);
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
 }
 
 #analog.transparent {
@@ -88,6 +85,31 @@
 	border-color: transparent;
 	background-color: transparent;
 }
+
+#analog[data-clock-background="light"] {
+	background-color: rgba(255, 255, 255, 0.2);
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
+}
+
+#analog[data-clock-background="dark"] {
+	background-color: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
+}
+
+#analog[data-clock-background="black"] {
+	background-color: black;
+}
+
+#analog[data-clock-background="white"] {
+	background-color: white;
+}
+
+#analog[data-clock-background="none"] {
+	background-color: unset;
+}
+
 
 #analog.square {
 	border-radius: calc(var(--clock-size) * 0.2);
@@ -157,6 +179,11 @@
 	line-height: 1em;
 	text-align: center;
 }
+
+/* #analog-face {
+	background-image: url('https://svgshare.com/i/16xA.svg');
+	opacity: .6;
+} */
 
 #analog-face span:nth-child(1) {
 	left: var(--center);

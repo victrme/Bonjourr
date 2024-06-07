@@ -13,6 +13,7 @@ type ClockUpdate = {
 	timezone?: string
 	style?: string
 	face?: string
+	background?: string
 	size?: number
 }
 
@@ -36,6 +37,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		analogFace(clock.face)
 		analogStyle(clock.style)
+		analogBackground(clock.background)
 		clockSize(clock.size)
 		displayInterface('clock')
 	} catch (e) {
@@ -47,7 +49,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 //	Update
 //
 
-async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, size }: ClockUpdate) {
+async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, background, size }: ClockUpdate) {
 	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
 	let clock = data?.clock
 
@@ -83,12 +85,14 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 		seconds: seconds ?? clock.seconds,
 		timezone: timezone ?? clock.timezone,
 		face: isFace(face) ? face : clock.face,
+		background: isBackground(background) ? background : clock.background,
 		style: isStyle(style) ? style : clock.style,
 	}
 
 	storage.sync.set({ clock })
 	startClock(clock, data.greeting, data.dateformat)
 	analogFace(clock.face)
+	analogBackground(clock.background)
 	analogStyle(clock.style)
 	clockSize(clock.size)
 }
@@ -106,6 +110,10 @@ function analogFace(face = 'none') {
 
 function analogStyle(style?: string) {
 	document.getElementById('analog')?.setAttribute('class', style || '')
+}
+
+function analogBackground(background?: string) {
+	document.getElementById('analog')?.setAttribute('data-clock-background', background || '')
 }
 
 function clockSize(size = 1) {
@@ -321,6 +329,10 @@ function isFace(str = ''): str is Sync.Clock['face'] {
 
 function isStyle(str = ''): str is Sync.Clock['style'] {
 	return ['round', 'square', 'transparent'].includes(str)
+}
+
+function isBackground(str = ''): str is Sync.Clock['background'] {
+	return ['light', 'dark', 'white', 'black', 'none'].includes(str)
 }
 
 function isDateFormat(str = ''): str is DateFormat {
