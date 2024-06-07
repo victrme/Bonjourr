@@ -159,6 +159,9 @@ function styles() {
 			outfile: output,
 			bundle: true,
 			minify: ENV_PROD,
+			loader: {
+				'.svg': 'dataurl',
+			},
 		})
 	} catch (_) {
 		if (ENV_PROD) {
