@@ -101,11 +101,13 @@ function analogFace(face = 'none') {
 	const spans = document.querySelectorAll<HTMLSpanElement>('#analog span')
 
 	spans.forEach((span, i) => {
-		if (face === 'none') span.textContent = ['', '', '', ''][i]
+		if (face === 'none' || face === 'swiss') span.textContent = ['', '', '', ''][i]
 		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i]
 		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
 		if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
 	})
+
+	document.getElementById('analog')?.setAttribute('data-clock-face', face === 'swiss' ? face : '')
 }
 
 function analogStyle(style?: string) {
@@ -324,7 +326,7 @@ function fixunits(val: number) {
 }
 
 function isFace(str = ''): str is Sync.Clock['face'] {
-	return ['none', 'number', 'roman', 'marks'].includes(str)
+	return ['none', 'number', 'roman', 'marks', 'swiss'].includes(str)
 }
 
 function isStyle(str = ''): str is Sync.Clock['style'] {

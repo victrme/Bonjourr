@@ -110,7 +110,6 @@
 	background-color: unset;
 }
 
-
 #analog.square {
 	border-radius: calc(var(--clock-size) * 0.2);
 }
@@ -142,6 +141,10 @@
 	transform-origin: bottom center;
 	background-color: white;
 	will-change: transform;
+	left: 0;
+	right: 0;
+	margin: auto;
+
 }
 
 #analog-hours {
@@ -158,7 +161,7 @@
 	opacity: 0.8;
 	background-color: red;
 	width: calc(var(--clock-size) * 0.1);
-	margin-left: calc(var(--clock-size) * -0.05);
+	/* margin-left: calc(var(--clock-size) * -0.05); */
 }
 
 #analog-face {
@@ -180,10 +183,14 @@
 	text-align: center;
 }
 
-/* #analog-face {
-	background-image: url('https://svgshare.com/i/16xA.svg');
-	opacity: .6;
-} */
+#analog[data-clock-face="swiss"] #analog-face {
+	background-size: 95%;
+	background-position: center;
+	background-repeat: no-repeat;
+	/* background-image: url('https://svgshare.com/i/16xA.svg'); */
+	background-image: url('https://svgshare.com/i/16xU.svg');
+	/* opacity: .6; */
+}
 
 #analog-face span:nth-child(1) {
 	left: var(--center);
