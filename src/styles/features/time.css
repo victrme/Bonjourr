@@ -144,7 +144,6 @@
 	left: 0;
 	right: 0;
 	margin: auto;
-
 }
 
 #analog-hours {
@@ -162,6 +161,82 @@
 	background-color: red;
 	width: calc(var(--clock-size) * 0.1);
 	/* margin-left: calc(var(--clock-size) * -0.05); */
+}
+
+#analog[data-clock-hands="swiss-hands"] #analog-center {
+	background-color: red;
+	width: calc(var(--clock-size) * 0.3);
+	height: calc(var(--clock-size) * 0.3);
+}
+
+#analog[data-clock-hands="swiss-hands"] #analog-hours {
+	height: 30%;
+	width: calc(var(--clock-size) * 0.35);
+	border-radius: 0;
+}
+
+/* bit that pokes out */
+#analog[data-clock-hands="swiss-hands"] #analog-hours:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: white;
+	width: calc(var(--clock-size) * 0.35);
+	height: calc(var(--clock-size) * 1.2);
+	bottom: calc(var(--clock-size) * -1.2);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#analog[data-clock-hands="swiss-hands"] #analog-minutes {
+	height: 46%;
+	width: calc(var(--clock-size) * 0.25);
+	border-radius: 0;
+}
+
+/* bit that pokes out */
+#analog[data-clock-hands="swiss-hands"] #analog-minutes:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: white;
+	width: calc(var(--clock-size) * 0.25);
+	height: calc(var(--clock-size) * 1.2);
+	bottom: calc(var(--clock-size) * -1.2);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#analog[data-clock-hands="swiss-hands"] #analog-seconds {
+	height: 35%;
+	border-radius: 0;
+	opacity: 1;
+}
+
+/* bit that pokes out */
+#analog[data-clock-hands="swiss-hands"] #analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: red;
+	width: calc(var(--clock-size) * 0.1);
+	height: calc(var(--clock-size) * 1.2);
+	bottom: calc(var(--clock-size) * -1.2);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+/* circle at the end */
+#analog[data-clock-hands="swiss-hands"] #analog-seconds:before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: calc(var(--clock-size) * 0.65);
+	height: calc(var(--clock-size) * 0.65);
+	background-color: red;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 100%;
 }
 
 #analog-face {
@@ -188,7 +263,8 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	/* background-image: url('https://svgshare.com/i/16xA.svg'); */
-	background-image: url('https://svgshare.com/i/16xU.svg');
+	/* background-image: url('https://svgshare.com/i/16xU.svg'); */
+	background-image: url('../../assets/interface/swiss-railway-white.svg');
 	/* opacity: .6; */
 }
 

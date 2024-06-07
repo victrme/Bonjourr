@@ -454,7 +454,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_clocktype {
-	max-height: 230px;
+	max-height: 250px;
 }
 
 .all .as_fonts {
