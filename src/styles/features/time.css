@@ -262,10 +262,19 @@
 	background-size: 95%;
 	background-position: center;
 	background-repeat: no-repeat;
-	/* background-image: url('https://svgshare.com/i/16xA.svg'); */
-	/* background-image: url('https://svgshare.com/i/16xU.svg'); */
 	background-image: url('../../assets/interface/swiss-railway-white.svg');
 	/* opacity: .6; */
+}
+
+#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-face {
+	background-image: url('../../assets/interface/swiss-railway-black.svg');
+}
+
+#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-minutes,
+#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-hours,
+#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-minutes:after,
+#analog[data-clock-face="swiss"][data-clock-background="white"] #analog-hours:after {
+	background-color: black;
 }
 
 #analog-face span:nth-child(1) {
