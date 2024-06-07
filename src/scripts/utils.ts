@@ -121,24 +121,6 @@ export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	return res
 }
 
-export function linksDataMigration(data: Sync.Storage): Sync.Storage {
-	if (data?.linktabs) {
-		return data
-	}
-
-	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
-	const list = (bundleLinks(data) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-
-	list.forEach((link) => {
-		if (link.icon?.startsWith(notfoundicon)) {
-			link.icon = MAIN_API + '/favicon/blob/'
-			data[link._id] = link
-		}
-	})
-
-	return data
-}
-
 export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
 	let isThrottled = true
 
@@ -190,10 +172,10 @@ export function getComposedPath(target: EventTarget | null): HTMLElement[] {
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+	return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
 }
 
 function componentToHex(c: number): string {
-    let hex = c.toString(16);
-    return hex.length == 1 ? '0' + hex : hex;
+	let hex = c.toString(16)
+	return hex.length == 1 ? '0' + hex : hex
 }

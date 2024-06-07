@@ -1,5 +1,6 @@
 import notes from './features/notes'
 import clock from './features/clock'
+import quotes from './features/quotes'
 import weather from './features/weather'
 import customCss from './features/css'
 import searchbar from './features/searchbar'
@@ -10,13 +11,13 @@ import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
 import { settingsPreload } from './settings'
-import quotes, { oldJSONToCSV } from './features/quotes'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { freqControl, linksDataMigration } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
+import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
+import filterImports from './utils/filterimports'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 import storage from './storage'
@@ -97,77 +98,12 @@ async function startup() {
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
-	data.about = SYNC_DEFAULT.about
-
-	// 19.0.0
-
-	if (data.reviewPopup) {
-		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
-	}
-
-	if (Array.isArray(data?.quotes?.userlist)) {
-		const newuserlist = oldJSONToCSV(data?.quotes?.userlist as unknown as Quotes.UserInput)
-		data.quotes.userlist = newuserlist
-	}
-
-	if (!data.dateformat) {
-		data.dateformat = data.usdate ? 'us' : 'eu'
-	}
-
-	if (data?.css) {
-		data.css = data.css
-			.replaceAll('#clock', '#digital')
-			.replaceAll('#analogClock', '#analog')
-			.replaceAll('#center', '#analog-center')
-			.replaceAll('#hours', '#analog-hours')
-			.replaceAll('#minutes', '#analog-minutes')
-			.replaceAll('#analogSeconds', '#analog-seconds')
-	}
-
-	if (data.reviewPopup && data.usdate) {
-		storage.sync.remove('reviewPopup')
-		storage.sync.remove('usdate')
-		delete data.reviewPopup
-		delete data.usdate
-	}
-
-	// 19.2.0
-
-	if (data.cssHeight) {
-		delete data.cssHeight
-		storage.sync.remove('cssHeight')
-	}
-
-	if (!data.linktabs && !data.linkgroups) {
-		data = linksDataMigration(data)
-	}
-
-	// 20.0.0
-
-	if (data.linktabs) {
-		data.linkgroups = {
-			on: data.linktabs.active,
-			selected: data.linktabs.titles[data.linktabs.selected],
-			groups: [...data.linktabs.titles],
-			synced: [],
-			pinned: [],
-		}
-
-		storage.sync.remove('linktabs')
-		delete data.linktabs
-	}
-
-	if (data?.css) {
-		data.css = data.css.replaceAll('.block', '.link')
-	}
-
-	return data
+	return filterImports(data, data)
 }
 
 function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	data.translations = undefined
 	storage.local.remove('translations')
-
 	return data
 }
 

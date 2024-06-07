@@ -1,40 +1,43 @@
 import { addGridWidget, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers'
 import { randomString, bundleLinks } from '../utils'
-import { SYNC_DEFAULT } from '../defaults'
+import { MAIN_API, SYNC_DEFAULT } from '../defaults'
 import { deepmergeAll } from '@victr/deepmerge'
 import { oldJSONToCSV } from '../features/quotes'
 
 type Import = Partial<Sync.Storage>
 
 export default function filterImports(current: Sync.Storage, target: Partial<Sync.Storage>) {
-	// 9.0
-	target = booleanSearchbarToObject(target)
+	// Prepare imported data compatibility
 
-	// 13.0
-	target = linkListToFlatObjects(target)
+	target = booleanSearchbarToObject(target) // 9.0
+	target = linkListToFlatObjects(target) // 13.0
+	target = hideArrayToObject(target) // 16.0
+	target = dynamicToUnsplash(target) // 17.0
+	target = improvedWeather(target) // 18.1
+	target = newFontSystem(target) // 19.0
+	target = newReviewData(target) // ..
+	target = quotesJsonToCSV(target) // ..
+	target = linksDataMigration(target) // 19.2
 
-	// 16.0
-	target = hideArrayToObject(target)
+	// Merge both settings
 
-	// 17.0
-	target = dynamicToUnsplash(current, target)
+	current = deepmergeAll(current, target, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync.Storage
 
-	// 18.1
-	target = improvedWeather(target)
+	// Lastest version transform
 
-	// 19.0
-	target = newFontSystem(target)
-	target = newReviewData(target)
-	target = quotesJsonToCSV(target)
+	current = linkTabsToGroups(current, target) // 20.0
+	current = convertOldCSSSelectors(current) // ..
+	current = linkParentsToString(current) // ..
 
-	// 20.0
-	target = linkTabsToGroups(current, target)
+	// current = removeLinkDuplicates(current, target) // all
+	// current = toggleMoveWidgets(current, target) // all
 
-	// latest version
-	current = removeLinkDuplicates(current, target)
-	current = toggleMoveWidgets(current, target)
-	current = deepmergeAll(current, target) as Sync.Storage
-	current = { ...current, about: structuredClone(SYNC_DEFAULT.about) }
+	delete current.searchbar_newtab
+	delete current.searchbar_engine
+	delete current.cssHeight
+	delete current.linktabs
+	delete current.links
+	delete current.dynamic
 
 	return current
 }
@@ -66,9 +69,6 @@ function booleanSearchbarToObject(data: Import): Import {
 			engine: ((data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google') as Sync.Searchbar['engine'],
 			suggestions: false,
 		}
-
-		delete data.searchbar_newtab
-		delete data.searchbar_engine
 	}
 
 	return data
@@ -92,8 +92,6 @@ function linkListToFlatObjects(data: Import): Import {
 				icon: filteredIcon,
 			}
 		})
-
-		delete data.links
 
 		const aliasKeyList = Object.keys(data).filter((key) => key.match('alias:'))
 		aliasKeyList.forEach((key) => delete data[key])
@@ -121,7 +119,6 @@ function newReviewData(data: Import): Import {
 	if (data.reviewPopup) {
 		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
 	}
-
 	return data
 }
 
@@ -129,7 +126,6 @@ function quotesJsonToCSV(data: Import): Import {
 	if (Array.isArray(data?.quotes?.userlist)) {
 		data.quotes.userlist = oldJSONToCSV(data.quotes.userlist)
 	}
-
 	return data
 }
 
@@ -148,29 +144,61 @@ function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage
 			synced: [],
 			pinned: [],
 		}
-
-		delete imported.linktabs
 	}
 
 	return current
 }
 
-function dynamicToUnsplash(current: Sync.Storage, imported: Import): Sync.Storage {
-	// Dynamic/Custom becomes unsplash/local
-	if ((imported.background_type as string) === 'dynamic') current.background_type = 'unsplash'
-	if ((imported.background_type as string) === 'custom') current.background_type = 'local'
+function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Data {
+	const links = bundleLinks(data as Sync.Storage)
+	const groups = data?.linkgroups?.groups ?? []
 
-	// dynamic data renamed to unsplash
-	if (imported.dynamic as Unsplash.Sync) {
-		current.unsplash = {
-			...(current.dynamic as Unsplash.Sync),
-			pausedImage: undefined,
+	for (const link of links) {
+		if (link.parent === undefined || typeof link.parent !== 'number') {
+			continue
 		}
 
-		delete imported.dynamic
+		link.parent = groups[link.parent]
+		data[link._id] = link
+
+		console.log(data[link._id])
 	}
 
-	return current
+	return data
+}
+
+function linksDataMigration(data: Import): Import {
+	if (data?.linktabs || data?.linkgroups) {
+		return data
+	}
+
+	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
+	const list = (bundleLinks(data as Sync.Storage) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+	list.forEach((link) => {
+		if (link.icon?.startsWith(notfoundicon)) {
+			link.icon = MAIN_API + '/favicon/blob/'
+			data[link._id] = link
+		}
+	})
+
+	return data
+}
+
+function dynamicToUnsplash(data: Import): Import {
+	// Dynamic/Custom becomes unsplash/local
+	if ((data.background_type as string) === 'dynamic') data.background_type = 'unsplash'
+	if ((data.background_type as string) === 'custom') data.background_type = 'local'
+
+	// dynamic data renamed to unsplash
+	if (data.dynamic as Unsplash.Sync) {
+		data.unsplash = {
+			...(data.dynamic as Unsplash.Sync),
+			pausedImage: undefined,
+		}
+	}
+
+	return data
 }
 
 function improvedWeather(data: Import): Import {
@@ -258,4 +286,19 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 	}
 
 	return current
+}
+
+function convertOldCSSSelectors<Data extends Sync.Storage | Import>(data: Data): Data {
+	if (data?.css) {
+		data.css = data.css
+			.replaceAll('.block', '.link')
+			.replaceAll('#clock', '#digital')
+			.replaceAll('#analogClock', '#analog')
+			.replaceAll('#center', '#analog-center')
+			.replaceAll('#hours', '#analog-hours')
+			.replaceAll('#minutes', '#analog-minutes')
+			.replaceAll('#analogSeconds', '#analog-seconds')
+	}
+
+	return data
 }

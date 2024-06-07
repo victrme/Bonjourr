@@ -956,22 +956,22 @@ function loadImportFile(target: HTMLInputElement) {
 	reader.readAsText(file)
 }
 
-async function importSettings(toImport: Partial<Sync.Storage>) {
+async function importSettings(imported: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
 
 		// #308 - verify font subset before importing
-		if (toImport?.font?.system === false) {
-			const family = toImport?.font?.family
-			const lang = toImport?.lang
+		if (imported?.font?.system === false) {
+			const family = imported?.font?.family
+			const lang = imported?.lang
 			const correctSubset = await fontIsAvailableInSubset(lang, family)
 
 			if (correctSubset === false) {
-				toImport.font.family = ''
+				imported.font.family = ''
 			}
 		}
 
-		data = filterImports(data, toImport)
+		data = filterImports(data, imported)
 
 		storage.sync.clear()
 		storage.sync.set(data)
