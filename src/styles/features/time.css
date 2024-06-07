@@ -74,7 +74,6 @@
 	width: calc(var(--clock-size) * 8);
 	height: calc(var(--clock-size) * 8);
 	border-radius: 100%;
-	border: calc(var(--clock-size) * 0.2) solid white;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -84,6 +83,14 @@
 	-webkit-backdrop-filter: none;
 	border-color: transparent;
 	background-color: transparent;
+}
+
+#analog[data-clock-border="white"] {
+	border: calc(var(--clock-size) * 0.2) solid white;
+}
+
+#analog[data-clock-border="black"] {
+	border: calc(var(--clock-size) * 0.2) solid black;
 }
 
 #analog[data-clock-background="light"] {

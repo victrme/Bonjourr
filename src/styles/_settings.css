@@ -417,7 +417,7 @@ aside form.valid button:not(:disabled):active {
 
 #analog_options.shown,
 #unsplash_options.shown {
-	max-height: 250px;
+	max-height: 290px;
 }
 
 #searchbar_options.shown {
@@ -454,7 +454,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_clocktype {
-	max-height: 250px;
+	max-height: 300px;
 }
 
 .all .as_fonts {

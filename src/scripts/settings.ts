@@ -125,6 +125,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_qtlist', userQuotes ?? '')
 	setInput('i_clockface', data.clock?.face || 'none')
 	setInput('i_clockhands', data.clock?.hands || 'none')
+	setInput('i_clockborder', data.clock?.border || 'white')
 	setInput('i_clockbackground', data.clock?.background || 'light')
 	setInput('i_clockstyle', data.clock?.style || 'round')
 	setInput('i_clocksize', data.clock?.size ?? 5)
@@ -380,6 +381,10 @@ function initOptionsEvents() {
 
 	paramId('i_clockhands').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { hands: this.value })
+	})
+
+	paramId('i_clockborder').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { border: this.value })
 	})
 
 	paramId('i_clockbackground').addEventListener('change', function (this: HTMLInputElement) {

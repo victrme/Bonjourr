@@ -80,6 +80,7 @@ declare namespace Sync {
 		style: 'round' | 'square' | 'transparent'
 		background: 'light' | 'dark' | 'white' | 'black' | 'none'
 		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss'
+		border: 'white' | 'black' | 'none'
 		hands: 'modern' | 'swiss-hands' | 'classic'
 	}
 

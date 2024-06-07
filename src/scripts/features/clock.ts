@@ -14,6 +14,7 @@ type ClockUpdate = {
 	style?: string
 	face?: string
 	hands?: string
+	border?: string
 	background?: string
 	size?: number
 }
@@ -38,6 +39,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		analogFace(clock.face)
 		analogHands(clock.hands)
+		analogBorder(clock.border)
 		analogStyle(clock.style)
 		analogBackground(clock.background)
 		clockSize(clock.size)
@@ -51,7 +53,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 //	Update
 //
 
-async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, background, hands, size }: ClockUpdate) {
+async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, background, hands, border, size }: ClockUpdate) {
 	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
 	let clock = data?.clock
 
@@ -88,6 +90,7 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 		timezone: timezone ?? clock.timezone,
 		face: isFace(face) ? face : clock.face,
 		hands: isHands(hands) ? hands : clock.hands,
+		border: isBorder(border) ? border : clock.border,
 		background: isBackground(background) ? background : clock.background,
 		style: isStyle(style) ? style : clock.style,
 	}
@@ -96,6 +99,7 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 	startClock(clock, data.greeting, data.dateformat)
 	analogFace(clock.face)
 	analogHands(clock.hands)
+	analogBorder(clock.border)
 	analogBackground(clock.background)
 	analogStyle(clock.style)
 	clockSize(clock.size)
@@ -124,6 +128,10 @@ function analogBackground(background?: string) {
 
 function analogHands(hands?: string) {
 	document.getElementById('analog')?.setAttribute('data-clock-hands', hands || '')
+}
+
+function analogBorder(border?: string) {
+	document.getElementById('analog')?.setAttribute('data-clock-border', border || '')
 }
 
 function clockSize(size = 1) {
@@ -339,6 +347,10 @@ function isFace(str = ''): str is Sync.Clock['face'] {
 
 function isHands(str = ''): str is Sync.Clock['hands'] {
 	return ['modern', 'swiss-hands', 'classic'].includes(str)
+}
+
+function isBorder(str = ''): str is Sync.Clock['border'] {
+	return ['white', 'black', 'none'].includes(str)
 }
 
 function isStyle(str = ''): str is Sync.Clock['style'] {
