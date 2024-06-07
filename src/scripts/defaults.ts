@@ -114,6 +114,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		analog: false,
 		seconds: false,
 		background: 'light',
+		hands: 'modern',
 		face: 'none',
 		style: 'round',
 		timezone: 'auto',
