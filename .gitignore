@@ -16,3 +16,4 @@ playwright/.cache
 
 yarn.lock
 package-lock.json
+bun.lockb
