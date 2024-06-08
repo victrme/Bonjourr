@@ -120,12 +120,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
 
-## 👨‍💻 Running Bonjourr locally
-
-Prerequisites:
-
--   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
--   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
+## 👨‍💻 Running Bonjourr
 
 Clone this repository
 
@@ -133,6 +128,17 @@ Clone this repository
 git clone https://github.com/victrme/Bonjourr
 cd Bonjourr
 ```
+
+### Self-host APIs
+
+If you wish to self-host the APIs used by Bonjourr, you can do so by following the steps in [Bonjourr APIs repository](https://github.com/victrme/bonjourr-apis).
+
+### Run locally
+
+Prerequisites:
+
+-   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
+-   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
 
 You can replace `pnpm` by `npm run`
 
@@ -151,23 +157,19 @@ pnpm safari
 pnpm online
 ```
 
-#### Self-host APIs
-
-If you wish to self-host the APIs used by Bonjourr, you can do so by following the steps in [Bonjourr APIs repository](https://github.com/victrme/bonjourr-apis).
-
-### Chrome
+#### Chrome
 
 -   Go to `chrome://extensions`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
 
-### Firefox
+#### Firefox
 
 -   Go to `about:debugging#/runtime/this-firefox`
 -   Select "Load temporary Add-on"
 -   Select `manifest.json` in `/release/firefox` folder
 
-### Edge
+#### Edge
 
 -   Go to `edge://extensions`
 -   Enable Developer mode
@@ -175,11 +177,29 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 -   Replace manifest with `/src/manifests/edge.json`
 -   And rename `edge.json` to `manifest.json`
 
-### Safari
+#### Safari
 
 -   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
 
-### Online (web version)
+#### Online (web version)
 
 -   A live server opens with `pnpm online`
+-   Go to http://127.0.0.1:8080/
+
+### Using Docker
+
+Prerequisites:
+
+-   [Docker](https://docs.docker.com/get-started)
+
+Build and run the container
+
+```bash
+# Build the container image
+docker build -t bonjourr .
+
+# Run the container on local port 8080
+docker run --rm -p "8080:80/tcp" -it bonjourr
+```
+
 -   Go to http://127.0.0.1:8080/

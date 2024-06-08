@@ -19,6 +19,7 @@
 		"firefox": "node build.config.js firefox dev",
 		"safari": "node build.config.js safari dev",
 		"online": "node build.config.js online dev",
+		"online:docker": "node build.config.js online prod",
 		"lint": "npx prettier --check .",
 		"format": "npx prettier ./_locales/**/translations.json --write --log-level silent",
 		"translate": "node build.config.js translate && pnpm format",
