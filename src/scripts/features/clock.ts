@@ -40,7 +40,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		analogFace(clock.face)
 		analogHands(clock.hands)
 		analogBorder(clock.border)
-		analogStyle(clock.style)
+		analogShape(clock.style)
 		analogBackground(clock.background)
 		clockSize(clock.size)
 		displayInterface('clock')
@@ -101,7 +101,7 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 	analogHands(clock.hands)
 	analogBorder(clock.border)
 	analogBackground(clock.background)
-	analogStyle(clock.style)
+	analogShape(clock.style)
 	clockSize(clock.size)
 }
 
@@ -118,8 +118,8 @@ function analogFace(face = 'none') {
 	document.getElementById('analog')?.setAttribute('data-clock-face', (face === 'swiss' || face === 'braun') ? face : '')
 }
 
-function analogStyle(style?: string) {
-	document.getElementById('analog')?.setAttribute('class', style || '')
+function analogShape(style?: string) {
+	document.getElementById('analog')?.setAttribute('data-clock-shape', style || '')
 }
 
 function analogBackground(background?: string) {
@@ -346,7 +346,7 @@ function isFace(str = ''): str is Sync.Clock['face'] {
 }
 
 function isHands(str = ''): str is Sync.Clock['hands'] {
-	return ['modern', 'swiss-hands', 'classic', 'braun'].includes(str)
+	return ['modern', 'swiss-hands', 'classic', 'braun', 'apple'].includes(str)
 }
 
 function isBorder(str = ''): str is Sync.Clock['border'] {

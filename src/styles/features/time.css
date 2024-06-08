@@ -67,24 +67,16 @@
 	display: inline-block;
 	width: var(--seconds-width);
 }
-
+	
 #analog {
 	display: none;
 	position: relative;
 	width: calc(var(--clock-size) * 8);
 	height: calc(var(--clock-size) * 8);
-	border-radius: 100%;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
-#analog.transparent {
-	box-shadow: none;
-	backdrop-filter: none;
-	-webkit-backdrop-filter: none;
-	border-color: transparent;
-	background-color: transparent;
-}
-
+/* borders */
 #analog[data-clock-border="white"] {
 	border: calc(var(--clock-size) * 0.2) solid white;
 }
@@ -93,6 +85,7 @@
 	border: calc(var(--clock-size) * 0.2) solid black;
 }
 
+/* background */
 #analog[data-clock-background="none"] {
 	box-shadow: unset;
 }
@@ -121,10 +114,16 @@
 	background-color: unset;
 }
 
-#analog.square {
+/* shape */
+#analog[data-clock-shape="round"] {
+	border-radius: 100%;
+}
+
+#analog[data-clock-shape="square"] {
 	border-radius: calc(var(--clock-size) * 0.2);
 }
 
+/* center */
 #analog-center {
 	position: absolute;
 	top: 50%;
@@ -137,6 +136,7 @@
 	z-index: 5;
 }
 
+/* hands */
 #analog-minutes,
 #analog-hours,
 #analog-seconds {
@@ -171,9 +171,9 @@
 	opacity: 0.8;
 	background-color: red;
 	width: calc(var(--clock-size) * 0.1);
-	/* margin-left: calc(var(--clock-size) * -0.05); */
 }
 
+/* swiss hands */
 #analog[data-clock-hands="swiss-hands"] #analog-center {
 	background-color: red;
 	width: calc(var(--clock-size) * 0.3);
@@ -250,6 +250,7 @@
 	border-radius: 100%;
 }
 
+/* braun hands */
 #analog[data-clock-hands="braun"] #analog-center {
 	background-color: #f9b603;
 	width: calc(var(--clock-size) * 0.5);
@@ -285,7 +286,94 @@
 	height: 35%;
 }
 
+/* classic hands */
+#analog[data-clock-hands="classic"] #analog-hours {
+	width: calc(var(--clock-size) * 0.25);
+	height: 27%;
+}
 
+/* Apple Watch hands */
+#analog[data-clock-hands="apple"] #analog-hours,
+#analog[data-clock-hands="apple"] #analog-minutes {
+	height: calc(var(--clock-size) * .7);
+	width: calc(var(--clock-size) * 0.1);
+	border-radius: 0;
+}
+
+#analog[data-clock-hands="apple"] #analog-hours:before,
+#analog[data-clock-hands="apple"] #analog-minutes:before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: calc(var(--clock-size) * 0.3);
+	background-color: white;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 8px;
+}
+
+#analog[data-clock-hands="apple"] #analog-hours:before {
+	height: calc(var(--clock-size) * 1.4);
+	top: calc(var(--clock-size) * -1.35);
+}
+
+#analog[data-clock-hands="apple"] #analog-minutes:before {
+	height: calc(var(--clock-size) * 2.5);
+	top: calc(var(--clock-size) * -2.48);
+}
+
+#analog[data-clock-hands="apple"] #analog-seconds {
+	background-color: #f06142;
+	width: calc(var(--clock-size) * 0.07);
+	opacity: 1;
+	z-index: 1;
+}
+
+/* bit that pokes out */
+#analog[data-clock-hands="apple"] #analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: #f06142;
+	width: calc(var(--clock-size) * 0.07);
+	height: calc(var(--clock-size) * .9);
+	bottom: calc(var(--clock-size) * -.9);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#analog[data-clock-hands="apple"] #analog-center {
+	background-color: #f06142;
+}
+
+#analog[data-clock-hands="apple"] #analog-center:before {
+	content: '';
+	width: calc(var(--clock-size) * .13);
+	height: calc(var(--clock-size) * .13);
+	background-color: black;
+	position: absolute;
+	display: block;
+	border-radius: 100%;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+/* white circle at the base of the hands */
+#analog[data-clock-hands="apple"]:after {
+	content: '';
+	width: calc(var(--clock-size) * .45);
+	height: calc(var(--clock-size) * .45);
+	background-color: white;
+	position: absolute;
+	display: block;
+	border-radius: 100%;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+/* faces */
 #analog-face {
 	position: absolute;
 	width: 100%;
@@ -322,6 +410,10 @@
 
 #analog[data-clock-face="swiss"][data-clock-background="white"] #analog-face {
 	background-image: url('../../assets/interface/swiss-railway-black.svg');
+}
+
+#analog[data-clock-face="braun"][data-clock-background="white"] #analog-face {
+	background-image: url('../../assets/interface/braun-black.svg');
 }
 
 #analog[data-clock-background="white"] #analog-minutes,
