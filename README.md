@@ -188,18 +188,27 @@ pnpm online
 
 ### Using Docker
 
+
+
 Prerequisites:
 
 -   [Docker](https://docs.docker.com/get-started)
 
-Build and run the container
+#### Docker CLI
 
 ```bash
 # Build the container image
-docker build -t bonjourr .
+docker build -t bonjourr/bonjourr .
 
 # Run the container on local port 8080
-docker run --rm -p "8080:80/tcp" -it bonjourr
+docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
+
+# Go to http://127.0.0.1:8080/
 ```
 
--   Go to http://127.0.0.1:8080/
+#### Docker Desktop
+
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Search for `bonjourr/bonjourr` Hub image
+- Run a new container with `8080` as host port
+- Go to http://127.0.0.1:8080/
