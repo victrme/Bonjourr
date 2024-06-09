@@ -71,7 +71,7 @@ export function gridStringify(grid: Grid) {
 	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
 	grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
 
-	return areas
+	return areas.trimEnd()
 }
 
 export function gridFind(grid: Grid, id: string): { posCol: number; posRow: number }[] {
@@ -222,7 +222,7 @@ export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync.St
 
 export function getGridWidgets(area: string): Widgets[] {
 	const list = area.replaceAll("'", '').replaceAll('.', '').split(' ')
-	const widgets = list.filter((str, i) => list.indexOf(str) === i) // remove duplicates
+	const widgets = list.filter((str, i) => str && list.indexOf(str) === i) // remove duplicates
 	return widgets as Widgets[]
 }
 

@@ -30,7 +30,6 @@ type UpdateMove = {
 	text?: string
 	layout?: string
 	select?: string
-	responsive?: true
 	overlay?: boolean
 	grid?: {
 		x?: string
@@ -75,10 +74,10 @@ export async function updateMoveElement(event: UpdateMove) {
 	if (event.reset) layoutReset(data)
 	if (event.toggle) toggleMoveStatus(data)
 	if (event.widget) toggleWidget(data, event.widget)
-	if (event.overlay) pageWidthOverlay(data.move, event.overlay)
 	if (event.select) elementSelection(data.move, event.select)
 	if (event.box !== undefined) alignChange(data.move, event.box, 'box')
 	if (event.text !== undefined) alignChange(data.move, event.text, 'text')
+	if (event.overlay !== undefined) pageWidthOverlay(data.move, event.overlay)
 }
 
 function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
@@ -140,8 +139,8 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	move.layouts[move.selection] = layout
 	storage.sync.set({ move: move })
 
-	gridButtons(widget)
 	setGridAreas(grid)
+	gridButtons(widget)
 }
 
 function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {

@@ -163,11 +163,12 @@ function digital(date: Date, ampm: boolean, seconds: boolean) {
 	if (seconds) {
 		// Avoid layout shifts by rounding width
 		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
-		const width = getSecondsWidthInCh(second)
-		const offset = (-2 + width).toFixed(1)
+		const width = getSecondsWidthInCh(second).toFixed(1)
 
 		domclock?.style.setProperty('--seconds-width', `${width}ch`)
-		domclock?.style.setProperty('--seconds-margin-offset', `${offset}ch`)
+
+		// const offset = (-2 + width).toFixed(1)
+		// domclock?.style.setProperty('--seconds-margin-offset', `${offset}ch`)
 	}
 
 	domclock?.classList.toggle('zero', !ampm && h < 10)
