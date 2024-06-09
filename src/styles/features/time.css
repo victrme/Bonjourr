@@ -123,6 +123,11 @@
 	border-radius: calc(var(--clock-size) * 0.2);
 }
 
+#analog[data-clock-shape="rectangle"] {
+	border-radius: calc(var(--clock-size) * 1.5);
+	height: calc(var(--clock-size)* 9);
+}
+
 /* center */
 #analog-center {
 	position: absolute;
@@ -158,16 +163,16 @@
 }
 
 #analog-hours {
-	height: 30%;
+	height: calc(var(--clock-size) * 2.4);
 }
 
 #analog-minutes {
-	height: 45%;
+	height: calc(var(--clock-size) * 3.6);
 }
 
 #analog-seconds {
 	display: none;
-	height: 45%;
+	height: calc(var(--clock-size) * 3.6);
 	opacity: 0.8;
 	background-color: red;
 	width: calc(var(--clock-size) * 0.1);
@@ -271,8 +276,8 @@
 	border-radius:0 0 10px 10px;
 	background-color: #f9b603;
 	width: calc(var(--clock-size) * 0.3);
-	height: calc(var(--clock-size) * 1);
-	bottom: calc(var(--clock-size) * -1);
+	height: calc(var(--clock-size) * 0.75);
+	bottom: calc(var(--clock-size) * -0.75);
 	left: 50%;
 	transform: translateX(-50%);
 }
@@ -324,7 +329,7 @@
 
 #analog[data-clock-hands="apple"] #analog-seconds {
 	background-color: #f06142;
-	width: calc(var(--clock-size) * 0.07);
+	width: calc(var(--clock-size) * 0.08);
 	opacity: 1;
 	z-index: 1;
 }
@@ -335,7 +340,7 @@
 	display: block;
 	position: absolute;
 	background-color: #f06142;
-	width: calc(var(--clock-size) * 0.07);
+	width: calc(var(--clock-size) * 0.08);
 	height: calc(var(--clock-size) * .9);
 	bottom: calc(var(--clock-size) * -.9);
 	left: 50%;

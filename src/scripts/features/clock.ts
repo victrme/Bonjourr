@@ -354,7 +354,7 @@ function isBorder(str = ''): str is Sync.Clock['border'] {
 }
 
 function isStyle(str = ''): str is Sync.Clock['style'] {
-	return ['round', 'square', 'transparent'].includes(str)
+	return ['round', 'square', 'rectangle'].includes(str)
 }
 
 function isBackground(str = ''): str is Sync.Clock['background'] {
