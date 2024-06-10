@@ -88,12 +88,12 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	const x = parseInt(gridpos?.x || '0')
 
 	const layout = getLayout(move)
-	const allActivePos = gridFind(layout.grid, widget)
-	const allAffectedIds: Widgets[] = []
+	const positions = gridFind(layout.grid, widget)
+	const affectedIds: Widgets[] = []
 	let grid = layout.grid
 
 	// step 0: Adds new line
-	const isGridOverflowing = allActivePos.some(({ posRow }) => grid[posRow + y] === undefined)
+	const isGridOverflowing = positions.some(([col]) => grid[col + y] === undefined)
 
 	if (isGridOverflowing) {
 		if (move.selection === 'single') grid.push(['.'])
@@ -102,28 +102,28 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	}
 
 	// step 1: Find elements affected by grid change
-	allActivePos.forEach(({ posRow, posCol }) => {
-		const newposition = grid[posRow + y][posCol + x]
+	positions.forEach(([col, row]) => {
+		const newposition = grid[row + y][col + x]
 
 		if (newposition !== '.') {
-			allAffectedIds.push(newposition as Widgets)
+			affectedIds.push(newposition as Widgets)
 		}
 	})
 
 	// step 2: remove conflicting fillings on affected elements
-	allAffectedIds.forEach((id) => {
+	affectedIds.forEach((id) => {
 		if (gridFind(grid, id).length > 1) {
 			grid = spansInGridArea(grid, id, { remove: true })
 		}
 	})
 
 	// step 3: replace all active position with affected
-	allActivePos.forEach(({ posRow, posCol }) => {
-		const newRow = Math.min(Math.max(posRow + y, 0), grid.length - 1)
-		const newCol = Math.min(Math.max(posCol + x, 0), grid[0].length - 1)
+	positions.forEach(([col, row]) => {
+		const newRow = Math.min(Math.max(row + y, 0), grid.length - 1)
+		const newCol = Math.min(Math.max(col + x, 0), grid[0].length - 1)
 
-		let tempItem = grid[posRow][posCol]
-		grid[posRow][posCol] = grid[newRow][newCol]
+		let tempItem = grid[row][col]
+		grid[row][col] = grid[newRow][newCol]
 		grid[newRow][newCol] = tempItem
 	})
 

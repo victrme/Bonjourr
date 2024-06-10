@@ -28,9 +28,8 @@ let domlinklist: HTMLUListElement
 
 export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as Element[]
-	const isSynced = path.some((node) => node?.className?.includes('synced'))
 
-	if (isSynced || event.button > 0) {
+	if (event.button > 0) {
 		return
 	}
 
@@ -222,7 +221,7 @@ function applyDragChangeParent(id: string, type: 'group' | 'link') {
 		}
 
 		if (type === 'group') {
-			const selectedGroup = document.querySelector<HTMLElement>('#link-mini .link-title.selected')
+			const selectedGroup = document.querySelector<HTMLElement>('#link-mini .link-title.selected-group')
 			const selection = selectedGroup?.dataset.group ?? id
 
 			if (selection === id) {

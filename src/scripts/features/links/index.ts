@@ -175,9 +175,9 @@ export async function initblocks(data: Sync): Promise<true> {
 				: createFolder(link, linksInFolders, data.linkstyle)
 
 			fragment.appendChild(li)
+			li.addEventListener('keyup', displayEditDialog)
 
-			if (li.id.includes('topsite') === false) {
-				li.addEventListener('keyup', displayEditDialog)
+			if (!group.synced) {
 				li.addEventListener('click', selectAll)
 				li.addEventListener('pointerdown', selectAll)
 				li.addEventListener('pointerdown', startDrag)
