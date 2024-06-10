@@ -343,12 +343,13 @@ aside form button {
 	opacity: 0;
 	max-width: 0;
 	visibility: hidden;
-	background-color: transparent;
+	background-color: var(--color-input);
 	transition: opacity 0.1s, max-width 0.2s;
 }
 
 aside form button:disabled {
 	cursor: default;
+	background-color: transparent;
 }
 
 aside form button span {
@@ -361,18 +362,14 @@ aside form.valid button {
 	max-width: 26px;
 	margin-left: 4px;
 	visibility: visible;
-	color: var(--color-blue);
 }
 
 @media (hover: hover) {
 	aside form.valid button:not(:disabled):hover,
 	aside form.valid button:not(:disabled):focus-visible {
+		color: var(--color-blue);
 		background-color: rgba(var(--blue), 0.15);
 	}
-}
-
-aside form.valid button:not(:disabled):active {
-	background-color: rgba(var(--blue), 0.25);
 }
 
 .dropdown {
@@ -883,6 +880,7 @@ aside .settings-title .tooltip {
 }
 
 #settings-data {
+	opacity: 0.8;
 	font-size: 13px;
 	width: 100%;
 	height: 110px;
@@ -891,10 +889,10 @@ aside .settings-title .tooltip {
 	margin: 6px 0;
 	padding: 10px 16px;
 	tab-size: 1.5em;
-	/* user-select: all; */
 	text-overflow: ellipsis;
 	overflow: hidden;
 	resize: vertical;
+	cursor: pointer;
 	box-sizing: border-box;
 	border-radius: 10px;
 	color: var(--color-text);
@@ -905,9 +903,11 @@ aside .settings-title .tooltip {
 	font-size: 12px;
 }
 
-#settings-data:hover,
-#settings-data:focus {
+#settings-data:focus-within {
 	overflow-y: auto;
+	opacity: unset;
+	cursor: inherit;
+	min-height: 200px;
 }
 
 #file-import,

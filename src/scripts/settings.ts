@@ -289,6 +289,7 @@ function initOptionsEvents() {
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
+		this.classList.remove('valid')
 	})
 
 	paramId('i_linkgroups').addEventListener('change', function (this) {

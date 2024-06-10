@@ -107,15 +107,15 @@ export function gridButtons(id: Widgets) {
 	const rightLimit = grid[0].length - 1
 
 	// Detect if element is on array limits
-	positions.forEach((pos) => {
-		if (pos.posRow === 0) top = true
-		if (pos.posCol === 0) left = true
-		if (pos.posCol === rightLimit) right = true
-		if (pos.posRow === widgetBottomLimit) bottom = true
+	positions.forEach(([col, row]) => {
+		if (row === 0) top = true
+		if (col === 0) left = true
+		if (col === rightLimit) right = true
+		if (row === widgetBottomLimit) bottom = true
 
 		// Bottom limit when last elem on last line
-		if (pos.posRow === grid.length - 1) {
-			const idOnlyRow = grid.at(pos.posRow)?.filter((id) => id !== '.')
+		if (row === grid.length - 1) {
+			const idOnlyRow = grid.at(row)?.filter((id) => id !== '.')
 			if (new Set(idOnlyRow).size === 1) bottom = true
 		}
 	})
@@ -139,7 +139,7 @@ export function spanButtons(id: Widgets) {
 	const grid = gridParse(document.documentElement?.style.getPropertyValue('--grid') || '')
 	if (grid.length === 0) return
 
-	const { posCol, posRow } = gridFind(grid, id)[0]
+	const [posCol, posRow] = gridFind(grid, id)[0]
 	let col = grid.map((g) => g[posCol])
 	let row = [...grid[posRow]]
 

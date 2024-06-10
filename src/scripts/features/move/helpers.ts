@@ -71,21 +71,22 @@ export function gridStringify(grid: Grid) {
 	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
 	grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
 
-	return areas
+	return areas.trimEnd()
 }
 
-export function gridFind(grid: Grid, id: string): { posCol: number; posRow: number }[] {
-	const allpos: { posCol: number; posRow: number }[] = []
+export function gridFind(grid: Grid, id: string): [number, number][] {
+	const positions: [number, number][] = []
 
 	grid.flat().forEach((a, i) => {
 		if (a !== id) return
-		allpos.push({
-			posCol: i % grid[0].length,
-			posRow: Math.floor(i / grid[0].length),
-		})
+
+		const column = i % grid[0].length
+		const row = Math.floor(i / grid[0].length)
+
+		positions.push([column, row])
 	})
 
-	return allpos
+	return positions
 }
 
 //	Alignment
@@ -103,7 +104,7 @@ export function alignParse(string = ''): { box: string; text: string } {
 
 function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
 	const poses = gridFind(grid, id)
-	const rows = Object.values(poses).map(({ posRow }) => posRow)
+	const rows = Object.values(poses).map(([_, row]) => row)
 
 	if (poses.length < 2) return 'none'
 	if (rows[0] !== rows[1]) return 'columns'
@@ -167,9 +168,9 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 		update buttons with recheck duplication (don't assume duped work everytime) 
 	*/
 
-	const { posCol, posRow } = gridFind(grid, id)[0]
-	let col = grid.map((g) => g[posCol])
-	let row = [...grid[posRow]]
+	const [x, y] = gridFind(grid, id)[0]
+	let col = grid.map((g) => g[x])
+	let row = [...grid[y]]
 
 	if (remove) {
 		col = removeSpans(col)
@@ -181,8 +182,8 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 		if (toggle === 'row') row = hasDuplicateInArray(row) ? removeSpans(row) : addSpans(row)
 	}
 
-	grid.forEach((_, i) => (grid[i][posCol] = col[i])) // Row changes
-	grid[posRow].forEach((_, i) => (grid[posRow][i] = row[i])) // Column changes
+	grid.forEach((_, i) => (grid[i][x] = col[i])) // Row changes
+	grid[y].forEach((_, i) => (grid[y][i] = row[i])) // Column changes
 
 	return grid
 }
@@ -222,7 +223,7 @@ export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync.St
 
 export function getGridWidgets(area: string): Widgets[] {
 	const list = area.replaceAll("'", '').replaceAll('.', '').split(' ')
-	const widgets = list.filter((str, i) => list.indexOf(str) === i) // remove duplicates
+	const widgets = list.filter((str, i) => str && list.indexOf(str) === i) // remove duplicates
 	return widgets as Widgets[]
 }
 

@@ -63,11 +63,20 @@
 
 .link-group.hiding .link {
 	transform: scale(0.9);
-	filter: brightness(0.7);
 }
 
-.link:active {
-	filter: brightness(0.7);
+/* Overengineered brightness because filter disables backdrop with .folder */
+.link.elem:active,
+.link.folder:active img,
+.link-group.hiding .link.elem,
+.link-group.hiding .link.folder img {
+	filter: brightness(0.8);
+}
+
+.link.folder:active div,
+.link-group.hiding .link.folder div {
+	backdrop-filter: blur(1em) brightness(0.8);
+	-webkit-backdrop-filter: blur(1em) brightness(0.8);
 }
 
 .link-group.in-folder .link-list {
@@ -129,8 +138,21 @@
 	opacity: 1;
 }
 
+/* 	
+ * Annoying class naming overlap between edits and link groups "selected"
+ * Edit: selected
+ * Group: selected-group
+*/
+
+.link-title.selected,
+.link-title.selected.selected-group {
+	opacity: 1;
+	outline: 2px solid var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
 .link-group.pinned .link-title,
-.link-title.selected {
+.link-title.selected-group {
 	opacity: 1;
 	cursor: initial;
 	border-color: #fff1;
@@ -188,7 +210,7 @@
 	width: 100%;
 	padding-top: 0.4em;
 	line-height: 1.2em;
-	max-height: 3.8em;
+	max-height: 3.6em;
 	overflow: hidden;
 	word-wrap: break-word;
 }
@@ -537,7 +559,8 @@
 .small .folder img {
 	position: absolute;
 	padding: 1px;
-	transform: scale(0.5) translate(-50%, -50%);
+	width: 50%;
+	height: 50%;
 }
 
 .medium .folder img:nth-child(1),
