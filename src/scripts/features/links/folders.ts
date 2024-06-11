@@ -13,7 +13,7 @@ queueMicrotask(() => {
 export async function folderClick(event: MouseEvent) {
 	const li = getLiFromEvent(event)
 	const rightClick = event.button === 2
-	const inFolder = li?.classList.contains('folder')
+	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
 	if (!li || !inFolder || rightClick || isSelectAll) {

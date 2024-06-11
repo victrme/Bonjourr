@@ -426,7 +426,7 @@ function addLinkFolder(ids: string[], title?: string, group?: string): Links.Fol
 
 	for (let i = 0; i < ids.length; i++) {
 		const dom = document.getElementById(ids[i])
-		const isFolder = dom?.classList.contains('folder')
+		const isFolder = dom?.classList.contains('link-folder')
 
 		if (isFolder) {
 			ids.splice(i, 1)

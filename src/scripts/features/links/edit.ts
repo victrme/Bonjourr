@@ -57,8 +57,8 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	const target: EditStates['target'] = {
-		link: classNames.some((cl) => cl.includes('link') && !cl.includes('folder')),
-		folder: classNames.some((cl) => cl.includes('link') && cl.includes('folder')),
+		link: classNames.some((cl) => cl.includes('link-elem')),
+		folder: classNames.some((cl) => cl.includes('link-folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
 		synced: classNames.some((cl) => cl.includes('synced')),
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
@@ -68,7 +68,14 @@ export default async function openEditDialog(event: Event) {
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
-	editStates = { group, selectall, container, dragging, target, selected: getSelectedIds() }
+	editStates = {
+		group,
+		selectall,
+		container,
+		dragging,
+		target,
+		selected: getSelectedIds(),
+	}
 
 	const inputs = toggleEditInputs()
 	const folderTitle = container.folder && target.title

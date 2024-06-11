@@ -35,7 +35,6 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 		button.classList.add('link-title')
 		button.classList.toggle('selected-group', group === selected)
 		button.classList.toggle('synced', synced.includes(group))
-		button.addEventListener('click', changeGroup)
 
 		if (isTopSite) {
 			button.textContent = tradThis('Most visited')
@@ -49,6 +48,8 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 		if (isAddMore) {
 			button.classList.add('add-group')
 			button.addEventListener('click', openEditDialog)
+		} else {
+			button.addEventListener('click', changeGroup)
 		}
 
 		document.querySelector('#link-mini')?.appendChild(button)
