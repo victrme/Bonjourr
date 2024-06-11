@@ -11,7 +11,8 @@ type Coords = {
 type DropArea = 'left' | 'right' | 'center' | ''
 
 const blocks: Map<string, HTMLLIElement> = new Map()
-const dropzones: Set<Coords & { id: string; type: 'group' | 'link' }> = new Set()
+const buttons: Map<string, HTMLElement> = new Map()
+const dropzones: Map<string, Coords & { type: 'group' | 'link' }> = new Map()
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
 let lastdropAreas: DropArea[] = ['']
 let draggedId = ''
@@ -23,6 +24,7 @@ let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
+const domlinkmini = document.getElementById('link-mini') as HTMLDivElement
 let domlinkgroup: HTMLDivElement
 let domlinklist: HTMLUListElement
 
@@ -43,31 +45,42 @@ export default function startDrag(event: PointerEvent) {
 
 	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
 	const lis = domlinklist.querySelectorAll<HTMLLIElement>('.link')
-	const titles = document.querySelectorAll<HTMLElement>('#link-mini button')
+	const titles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
 	const listRect = domlinklist?.getBoundingClientRect()
+	const miniRect = domlinkmini?.getBoundingClientRect()
 	const pos = getPosFromEvent(event)
 
 	draggedId = target?.id ?? ''
+
+	console.log(draggedId)
 
 	ids = []
 	coords = []
 	initids = []
 	lastdropAreas = []
 	blocks.clear()
+	buttons.clear()
 	dropzones.clear()
 
-	for (let i = 0; i < titles.length; i++) {
-		const { x, y, height, width } = titles[i].getBoundingClientRect()
-		const id = titles[i]?.dataset.group ?? ''
+	for (const button of titles) {
+		let { x, y, height, width } = button.getBoundingClientRect()
+		const id = button?.dataset.group ?? ''
 
-		dropzones.add({ id, x, y, h: height, w: width, type: 'group' })
+		buttons.set(id, button)
+
+		x = x - miniRect!.x
+		y = y - miniRect!.y
+
+		deplaceElem(button, x, y)
+
+		dropzones.set(id, { x, y, h: height, w: width, type: 'group' })
 	}
 
 	for (const li of lis) {
 		let { x, y, width, height } = li.getBoundingClientRect()
 		const id = li.id
 
-		dropzones.add({ id, x, y, w: width, h: height, type: 'link' })
+		dropzones.set(id, { x, y, w: width, h: height, type: 'link' })
 
 		x = x - listRect!.x
 		y = y - listRect!.y
@@ -94,7 +107,11 @@ export default function startDrag(event: PointerEvent) {
 
 	domlinkgroup.style.setProperty('--drag-width', Math.floor(listRect?.width ?? 0) + 'px')
 	domlinkgroup.style.setProperty('--drag-height', Math.floor(listRect?.height ?? 0) + 'px')
-	domlinkgroup.classList.add('dragging')
+
+	domlinkmini.style.setProperty('--drag-width', Math.floor(miniRect.width ?? 0) + 'px')
+	domlinkmini.style.setProperty('--drag-height', Math.floor(miniRect.height ?? 0) + 'px')
+
+	domlinkblocks.classList.add('dragging')
 
 	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
@@ -261,8 +278,7 @@ function endDrag(event: Event) {
 
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
-	domlinkgroup?.classList.replace('dragging', 'dropping')
-	document.body?.classList.replace('dragging', 'dropping')
+	domlinkblocks?.classList.replace('dragging', 'dropping')
 
 	if (outOfFolder || toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
@@ -271,8 +287,8 @@ function endDrag(event: Event) {
 	}
 
 	setTimeout(() => {
-		const targetIsFolder = blocks.get(targetId)?.classList.contains('folder')
-		const draggedIsFolder = blocks.get(draggedId)?.classList.contains('folder')
+		const targetIsFolder = blocks.get(targetId)?.classList.contains('link-folder')
+		const draggedIsFolder = blocks.get(draggedId)?.classList.contains('link-folder')
 		const createFolder = toFolder && !targetIsFolder && !draggedIsFolder
 		const concatFolders = toFolder && (targetIsFolder || draggedIsFolder)
 
@@ -300,8 +316,10 @@ function endDrag(event: Event) {
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
 			domlinkgroup?.removeAttribute('style')
-			domlinkgroup?.classList.remove('dropping')
-			document.body.classList.remove('dropping')
+			domlinkmini?.removeAttribute('style')
+			domlinkblocks?.classList.remove('dropping')
+
+			document.querySelectorAll('.link-title')?.forEach((node) => node.removeAttribute('style'))
 		}, 1)
 	}, 200)
 }
@@ -324,7 +342,7 @@ function deplaceDraggedElem() {
 }
 
 function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 'group' | 'link'] | undefined {
-	for (const zone of dropzones) {
+	for (const [id, zone] of dropzones) {
 		// Detect 20% left edge of dropzones ( left + corner )
 		const ll = zone.x
 		const lr = zone.x + zone.w * 0.2
@@ -353,7 +371,7 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 
 		if (isInCenter) area = 'center'
 
 		if (area) {
-			return [area, zone.id, zone.type]
+			return [area, id, zone.type]
 		}
 	}
 }

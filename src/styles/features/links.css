@@ -626,8 +626,10 @@
 	opacity: 0.5;
 }
 
-.link-group.dropping .link-list,
-.link-group.dragging .link-list {
+#linkblocks.dropping #link-mini,
+#linkblocks.dragging #link-mini,
+#linkblocks.dropping .link-list,
+#linkblocks.dragging .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -635,16 +637,18 @@
 	height: calc(var(--drag-height) - 2px);
 }
 
-.link-group.dropping a,
-.link-group.dragging a,
-.link-group.dropping div,
-.link-group.dragging div {
+#linkblocks.dropping a,
+#linkblocks.dragging a,
+#linkblocks.dropping div,
+#linkblocks.dragging div {
 	user-select: none;
 	pointer-events: none;
 }
 
-.link-group.dropping .link,
-.link-group.dragging .link {
+#linkblocks.dropping #link-mini .link-title,
+#linkblocks.dragging #link-mini .link-title,
+#linkblocks.dropping .link,
+#linkblocks.dragging .link {
 	pointer-events: none;
 	position: fixed;
 	top: 0;
@@ -652,8 +656,8 @@
 	z-index: 3;
 }
 
-.link-group.dropping .on,
-.link-group.dragging .on {
+#linkblocks.dropping .on,
+#linkblocks.dragging .on {
 	z-index: 4;
 	transition: none;
 	pointer-events: none;

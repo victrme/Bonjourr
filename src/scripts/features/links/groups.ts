@@ -3,6 +3,7 @@ import { initblocks } from '.'
 import openEditDialog from './edit'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
+import startDrag from './drag'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
@@ -50,6 +51,7 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 			button.addEventListener('click', openEditDialog)
 		} else {
 			button.addEventListener('click', changeGroup)
+			button.addEventListener('pointerdown', startDrag)
 		}
 
 		document.querySelector('#link-mini')?.appendChild(button)
