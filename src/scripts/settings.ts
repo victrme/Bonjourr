@@ -123,6 +123,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
 	setInput('i_qttype', data.quotes?.type || 'classic')
 	setInput('i_qtlist', userQuotes ?? '')
+	setInput('i_qturl', data.quotes?.url ?? '')
 	setInput('i_clockface', data.clock?.face || 'none')
 	setInput('i_clockstyle', data.clock?.style || 'round')
 	setInput('i_clocksize', data.clock?.size ?? 5)
@@ -224,6 +225,7 @@ function initOptionsValues(data: Sync.Storage) {
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
+	paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
 	document.querySelectorAll<HTMLFormElement>('#settings form').forEach((form) => {
 		form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
@@ -542,6 +544,12 @@ function initOptionsEvents() {
 
 	paramId('i_qtlist').addEventListener('change', function () {
 		quotes(undefined, { userlist: this.value })
+	})
+
+	paramId('f_qturl').addEventListener('submit', function (this, event: SubmitEvent) {
+		event.preventDefault()
+
+		quotes(undefined, { url: paramId('i_qturl').value })
 	})
 
 	// Custom fonts

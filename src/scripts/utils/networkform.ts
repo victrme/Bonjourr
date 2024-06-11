@@ -28,6 +28,7 @@ export default function networkForm(targetId: string) {
 			if (form.classList.contains('warn')) {
 				form.classList.remove('warn')
 				button.removeAttribute('disabled')
+				button.title = ''
 			}
 		})
 	})

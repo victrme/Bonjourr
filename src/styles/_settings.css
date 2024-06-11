@@ -413,7 +413,8 @@ aside form.valid button {
 }
 
 #analog_options.shown,
-#unsplash_options.shown {
+#unsplash_options.shown,
+#quotes_url.shown {
 	max-height: 110px;
 }
 
