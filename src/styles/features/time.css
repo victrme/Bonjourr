@@ -125,7 +125,7 @@
 
 #analog[data-clock-shape="rectangle"] {
 	border-radius: calc(var(--clock-size) * 1.5);
-	height: calc(var(--clock-size)* 9);
+	height: calc(var(--clock-size)* 9.5);
 }
 
 /* center */
@@ -205,7 +205,7 @@
 }
 
 #analog[data-clock-hands="swiss-hands"] #analog-minutes {
-	height: 46%;
+	height: calc(var(--clock-size) * 3.69);
 	width: calc(var(--clock-size) * 0.25);
 	border-radius: 0;
 }
@@ -224,7 +224,7 @@
 }
 
 #analog[data-clock-hands="swiss-hands"] #analog-seconds {
-	height: 35%;
+	height: calc(var(--clock-size) * 2.8);
 	border-radius: 0;
 	opacity: 1;
 }
@@ -265,7 +265,7 @@
 #analog[data-clock-hands="braun"] #analog-seconds {
 	background-color: #f9b603;
 	opacity: 1;
-	height: 37%;
+	height: calc(var(--clock-size) * 3.5);
 }
 
 /* bit that pokes out */
@@ -284,11 +284,11 @@
 
 #analog[data-clock-hands="braun"] #analog-hours {
 	width: calc(var(--clock-size) * 0.25);
-	height: 27%;
+	height: calc(var(--clock-size) * 2.58);
 }
 
 #analog[data-clock-hands="braun"] #analog-minutes {
-	height: 35%;
+	height: calc(var(--clock-size) * 3.33);
 }
 
 /* classic hands */
@@ -327,6 +327,11 @@
 	top: calc(var(--clock-size) * -2.48);
 }
 
+#analog[data-clock-hands="apple"][data-clock-background="white"] #analog-hours:before,
+#analog[data-clock-hands="apple"][data-clock-background="white"] #analog-minutes:before {
+	background-color: black;
+}
+
 #analog[data-clock-hands="apple"] #analog-seconds {
 	background-color: #f06142;
 	width: calc(var(--clock-size) * 0.08);
@@ -353,8 +358,8 @@
 
 #analog[data-clock-hands="apple"] #analog-center:before {
 	content: '';
-	width: calc(var(--clock-size) * .13);
-	height: calc(var(--clock-size) * .13);
+	width: calc(var(--clock-size) * .17);
+	height: calc(var(--clock-size) * .17);
 	background-color: black;
 	position: absolute;
 	display: block;
@@ -423,7 +428,7 @@
 
 #analog[data-clock-background="white"] #analog-minutes,
 #analog[data-clock-background="white"] #analog-hours,
-#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]) #analog-center,
+#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]):not([data-clock-hands="braun"]) #analog-center,
 #analog[data-clock-background="white"] #analog-minutes:after,
 #analog[data-clock-background="white"] #analog-hours:after {
 	background-color: rgba(0, 0, 0, .9);
