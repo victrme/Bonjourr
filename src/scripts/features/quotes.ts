@@ -16,12 +16,10 @@ type QuotesUpdate = {
 	author?: boolean
 	refresh?: true
 	type?: string
-	userlist?: string
 	url?: string
+	userlist?: string
 	frequency?: string
 }
-
-type UrlApiResponseType = 'json' | 'csv'
 
 const quotesTypeForm = networkForm('f_qttype')
 const quotesUrlForm = networkForm('f_qturl')
@@ -46,8 +44,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	if (quotes.type === 'user') {
 		list = csvUserInputToQuotes(quotes.userlist)
 		quote = list[selection]
-	}
-	else {
+	} else {
 		const noCache = !list || list?.length === 0
 
 		if (noCache) {
@@ -71,9 +68,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	displayInterface('quotes')
 }
 
-//
 // ─── UPDATE
-//
 
 async function updateQuotes({ author, frequency, type, userlist, url, refresh }: QuotesUpdate) {
 	const data = await storage.sync.get(['lang', 'quotes'])
@@ -88,7 +83,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
 		data.quotes.userlist = handleUserListChange(userlist)
 	}
 
-	let updateData = false;
+	let updateData = false
 
 	if (canStoreUrl(url)) {
 		data.quotes.url = url
@@ -134,9 +129,8 @@ async function updateQuotesData(data: Sync.Storage) {
 			form.load()
 			list = await fetchQuotes(data.lang, data.quotes.type, data.quotes.url)
 			form.accept()
-		}
-		catch (error) {
-			form.warn("Fetch failed, please check console for further information")
+		} catch (error) {
+			form.warn('Fetch failed, please check console for further information')
 			console.warn(error)
 		}
 
@@ -186,50 +180,47 @@ function refreshQuotes(data: Sync.Storage, list: Local.Storage['quotesCache'] = 
 	insertToDom(controlCacheList(list, data.lang, data.quotes.type, data.quotes.url))
 }
 
-//
-// ─── API / STORAGE
-//
+// ─── API & STORAGE
 
 async function fetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
 	if (!navigator.onLine || type === 'user') {
 		return []
 	}
 
-	let response: Response | undefined;
+	let response: Response | undefined
 
 	if (type === 'url') {
 		if (!url) {
 			return []
 		}
 
-		response = await fetch(url);
-		validateResponse(response);
+		response = await fetch(url)
+		validateResponse(response)
 
-		const responseType = determineUrlApiResponseType(response);
+		const responseType = determineUrlApiResponseType(response)
 
-		switch (responseType) {
-			case 'json':
-				return await response.json()
-			case 'csv':
-				const csv = await response.text()
-				return csvToQuotes(csv);
-			default:
-				return []
+		if (responseType === 'json') {
+			return await response.json()
 		}
-	}
-	else {
-		const query = `/quotes/${type}` + (type === 'classic' ? `/${lang}` : '')
 
-		response = await apiFetch(query)
-		validateResponse(response);
+		if (responseType === 'csv') {
+			return csvToQuotes(await response.text())
+		}
 
-		return await response.json()
+		return []
 	}
+
+	const query = `/quotes/${type}` + (type === 'classic' ? `/${lang}` : '')
+
+	response = await apiFetch(query)
+	validateResponse(response)
+
+	return await response.json()
 }
 
 function validateResponse(response: Response | undefined): asserts response is Response {
 	if (!response) {
-		throw new Error("No response")
+		throw new Error('No response')
 	}
 
 	if (!response.ok) {
@@ -239,9 +230,8 @@ function validateResponse(response: Response | undefined): asserts response is R
 
 async function tryFetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
 	try {
-		return await fetchQuotes(lang, type, url);
-	}
-	catch (error) {
+		return await fetchQuotes(lang, type, url)
+	} catch (error) {
 		console.warn(error)
 	}
 
@@ -270,9 +260,7 @@ function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type']
 	return list[0]
 }
 
-//
 // ─── DOM
-//
 
 function toggleAuthorAlwaysOn(state: boolean) {
 	document.getElementById('author')?.classList.toggle('always-on', state)
@@ -290,13 +278,11 @@ function insertToDom(quote?: Quote) {
 	authorDOM.textContent = quote.author
 }
 
-//
 // ─── HELPERS
-//
 
 function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
 	if (!csv) {
-		return [];
+		return []
 	}
 
 	// convert <1.19.0 json format to csv
@@ -304,7 +290,7 @@ function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
 		csv = oldJSONToCSV(csv)
 	}
 
-	return csvToQuotes(csv);
+	return csvToQuotes(csv)
 }
 
 export function oldJSONToCSV(input: Quotes.UserInput): string {
@@ -329,32 +315,27 @@ function isQuotesType(type = ''): type is Quotes.Types {
 	return types.includes(type as Quotes.Types)
 }
 
-const urlRegEx = /^https?:\/\//i;
+const urlRegEx = /^https?:\/\//i
 
 function canStoreUrl(url: string | undefined) {
-	if (url === undefined)
-		return false;
+	if (url === undefined) return false
 
-	return url === "" || urlRegEx.test(url);
+	return url === '' || urlRegEx.test(url)
 }
 
-function determineUrlApiResponseType(response: Response): UrlApiResponseType {
-	const contentType = response.headers.get('content-type')?.split(';', 2)[0];
+function determineUrlApiResponseType(response: Response): 'json' | 'csv' {
+	const contentType = response.headers.get('content-type')?.split(';', 2)[0]
 
-	switch (contentType) {
-		case 'application/json':
-			return 'json';
-		case 'text/csv':
-			return 'csv';
-	}
+	if (contentType === 'application/json') return 'json'
+	if (contentType === 'text/csv') return 'csv'
 
-	const url = new URL(response.url);
+	const url = new URL(response.url)
 	const parts = url.pathname.split('.')
-	const extension = parts[parts.length - 1];
+	const extension = parts[parts.length - 1]
 
 	if (equalsCaseInsensitive(extension, 'json')) {
-		return 'json';
+		return 'json'
 	}
 
-	return 'csv';
+	return 'csv'
 }
