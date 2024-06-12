@@ -51,15 +51,14 @@ export default function startDrag(event: PointerEvent) {
 
 	//
 
-	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
-	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
 	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
 	domlinklist = path.find((node) => node?.classList?.contains('link-list')) as HTMLUListElement
-
-	const getId = (element?: HTMLElement) => (type === 'group' ? element?.dataset.group : element?.id) ?? ''
-
+	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
+	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
 	const listRect = domlinklist?.getBoundingClientRect()
 	const miniRect = domlinkmini?.getBoundingClientRect()
+
+	const getId = (element?: HTMLElement) => (type === 'group' ? element?.dataset.group : element?.id) ?? ''
 
 	const container = type === 'group' ? domlinkmini : domlinkgroup
 	const tagName = type === 'group' ? 'BUTTON' : 'LI'
@@ -69,6 +68,28 @@ export default function startDrag(event: PointerEvent) {
 	const pos = getPosFromEvent(event)
 
 	draggedId = getId(target)
+
+	// START RANT
+	// HOW DO I CENTER THE DRAGGED GROUP ON THE CURSOR
+	// AFTER UPDATING THEIR WIDTH ????????????????????
+	let groupSizeOffsets: Map<string, number> = new Map()
+	if (type === 'group') {
+		const beforeMap: Map<string, number> = new Map()
+
+		for (const group of domlinktitles) {
+			beforeMap.set(group.dataset.group ?? '', group.getBoundingClientRect().x)
+			group.style.width = '12ch'
+		}
+
+		for (const group of domlinktitles) {
+			const id = group.dataset.group ?? ''
+			const before = beforeMap.get(id) ?? 0
+			const after = group.getBoundingClientRect().x
+
+			groupSizeOffsets.set(id, after - before)
+		}
+	}
+	// END RANT
 
 	for (const element of [...domlinktitles, ...domlinklinks]) {
 		const isGroup = element.tagName === 'BUTTON'
@@ -104,17 +125,17 @@ export default function startDrag(event: PointerEvent) {
 		deplaceElem(element, x, y)
 
 		if (id === draggedId) {
-			cox = pos.x - x
+			cox = pos.x - x + (groupSizeOffsets.get(id) ?? 0)
 			coy = pos.y - y
-			dx = x
-			dy = y
+			dx = pos.x
+			dy = pos.y
 			element.classList.add('on')
 		}
 	}
 
 	container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
 	container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
-	container.classList.add('dragging')
+	container.classList.add('in-drag', 'dragging')
 
 	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
@@ -170,6 +191,7 @@ function beforeStartDrag(event: PointerEvent, type: 'group' | 'link') {
 
 function moveDrag(event: TouchEvent | PointerEvent) {
 	const { x, y } = getPosFromEvent(event)
+
 	dx = x - cox
 	dy = y - coy
 
@@ -286,6 +308,7 @@ function endDrag(event: Event) {
 
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
+
 	domlinkmini?.classList.replace('dragging', 'dropping')
 	domlinkgroup?.classList.replace('dragging', 'dropping')
 
@@ -330,6 +353,8 @@ function endDrag(event: Event) {
 		setTimeout(() => {
 			domlinkgroup?.removeAttribute('style')
 			domlinkmini?.removeAttribute('style')
+			domlinkgroup?.classList.remove('in-drag')
+			domlinkmini?.classList.remove('in-drag')
 			domlinkgroup?.classList.remove('dropping')
 			domlinkmini?.classList.remove('dropping')
 
@@ -347,8 +372,10 @@ function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 }
 
 function deplaceDraggedElem() {
-	if (blocks.has(draggedId)) {
-		blocks.get(draggedId)!.style.transform = `translate(${dx}px, ${dy}px)`
+	const block = blocks.get(draggedId)
+
+	if (block) {
+		block.style.transform = `translate(${dx}px, ${dy}px)`
 		dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
 	}
 }
