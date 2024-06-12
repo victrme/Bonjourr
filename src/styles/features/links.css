@@ -167,13 +167,17 @@
 	-webkit-user-select: none;
 }
 
-/* Link list items */
+/* Link */
+
+.link,
+.link-title {
+	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
+}
 
 .link {
 	width: var(--block-size);
 	cursor: pointer;
 	touch-action: none;
-	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
 }
 
 .link div,
@@ -626,10 +630,10 @@
 	opacity: 0.5;
 }
 
-#linkblocks.dropping #link-mini,
-#linkblocks.dragging #link-mini,
-#linkblocks.dropping .link-list,
-#linkblocks.dragging .link-list {
+#link-mini.dropping,
+#link-mini.dragging,
+.dropping .link-list,
+.dragging .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -637,18 +641,18 @@
 	height: calc(var(--drag-height) - 2px);
 }
 
-#linkblocks.dropping a,
-#linkblocks.dragging a,
-#linkblocks.dropping div,
-#linkblocks.dragging div {
+.dropping a,
+.dragging a,
+.dropping div,
+.dragging div {
 	user-select: none;
 	pointer-events: none;
 }
 
-#linkblocks.dropping #link-mini .link-title,
-#linkblocks.dragging #link-mini .link-title,
-#linkblocks.dropping .link,
-#linkblocks.dragging .link {
+.dropping .link-title,
+.dragging .link-title,
+.dropping .link,
+.dragging .link {
 	pointer-events: none;
 	position: fixed;
 	top: 0;
@@ -656,8 +660,8 @@
 	z-index: 3;
 }
 
-#linkblocks.dropping .on,
-#linkblocks.dragging .on {
+.dropping .on,
+.dragging .on {
 	z-index: 4;
 	transition: none;
 	pointer-events: none;

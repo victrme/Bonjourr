@@ -1,4 +1,4 @@
-import { getLiFromEvent } from './helpers'
+import { getLiFromEvent, getTitleFromEvent } from './helpers'
 import { linksUpdate } from '.'
 
 type Coords = {
@@ -10,8 +10,7 @@ type Coords = {
 
 type DropArea = 'left' | 'right' | 'center' | ''
 
-const blocks: Map<string, HTMLLIElement> = new Map()
-const buttons: Map<string, HTMLElement> = new Map()
+const blocks: Map<string, HTMLElement> = new Map()
 const dropzones: Map<string, Coords & { type: 'group' | 'link' }> = new Map()
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
 let lastdropAreas: DropArea[] = ['']
@@ -25,93 +24,97 @@ let dragAnimationFrame = 0
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 const domlinkmini = document.getElementById('link-mini') as HTMLDivElement
+let domlinklinks: NodeListOf<HTMLLIElement>
+let domlinktitles: NodeListOf<HTMLButtonElement>
 let domlinkgroup: HTMLDivElement
 let domlinklist: HTMLUListElement
 
 export default function startDrag(event: PointerEvent) {
-	const path = event.composedPath() as Element[]
+	const path = event.composedPath() as HTMLElement[]
+	const type = path.some((element) => element?.className?.includes('link-title')) ? 'group' : 'link'
 
 	if (event.button > 0) {
 		return
 	}
 
 	if (event.type === 'pointerdown') {
-		beforeStartDrag(event)
+		beforeStartDrag(event, type)
 		return
 	}
-
-	domlinkgroup = path.find((el) => el.classList.contains('link-group')) as HTMLDivElement
-	domlinklist = path.find((el) => el.classList.contains('link-list')) as HTMLUListElement
-
-	const target = path.find((el) => el.tagName === 'LI') as HTMLLIElement
-	const lis = domlinklist.querySelectorAll<HTMLLIElement>('.link')
-	const titles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
-	const listRect = domlinklist?.getBoundingClientRect()
-	const miniRect = domlinkmini?.getBoundingClientRect()
-	const pos = getPosFromEvent(event)
-
-	draggedId = target?.id ?? ''
-
-	console.log(draggedId)
 
 	ids = []
 	coords = []
 	initids = []
 	lastdropAreas = []
 	blocks.clear()
-	buttons.clear()
 	dropzones.clear()
 
-	for (const button of titles) {
-		let { x, y, height, width } = button.getBoundingClientRect()
-		const id = button?.dataset.group ?? ''
+	//
 
-		buttons.set(id, button)
+	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
+	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
+	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
+	domlinklist = path.find((node) => node?.classList?.contains('link-list')) as HTMLUListElement
 
-		x = x - miniRect!.x
-		y = y - miniRect!.y
+	const getId = (element?: HTMLElement) => (type === 'group' ? element?.dataset.group : element?.id) ?? ''
 
-		deplaceElem(button, x, y)
+	const listRect = domlinklist?.getBoundingClientRect()
+	const miniRect = domlinkmini?.getBoundingClientRect()
 
-		dropzones.set(id, { x, y, h: height, w: width, type: 'group' })
+	const container = type === 'group' ? domlinkmini : domlinkgroup
+	const tagName = type === 'group' ? 'BUTTON' : 'LI'
+	const rect = type === 'group' ? miniRect : listRect
+
+	const target = path.find((node) => node.tagName === tagName)
+	const pos = getPosFromEvent(event)
+
+	draggedId = getId(target)
+
+	for (const element of [...domlinktitles, ...domlinklinks]) {
+		const isGroup = element.tagName === 'BUTTON'
+		const rect = element.getBoundingClientRect()
+		const id = getId(element)
+
+		blocks.set(id, element)
+
+		dropzones.set(id, {
+			x: rect.x,
+			y: rect.y,
+			h: rect.height,
+			w: rect.width,
+			type: isGroup ? 'group' : 'link',
+		})
 	}
 
-	for (const li of lis) {
-		let { x, y, width, height } = li.getBoundingClientRect()
-		const id = li.id
+	for (const element of type === 'group' ? domlinktitles : domlinklinks) {
+		const id = getId(element)
+		let { x, y, w, h } = dropzones.get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
 
-		dropzones.set(id, { x, y, w: width, h: height, type: 'link' })
-
-		x = x - listRect!.x
-		y = y - listRect!.y
+		x = x - rect?.x
+		y = y - rect?.y
 
 		ids.push(id)
 		initids.push(id)
-		coords.push({ x, y, w: width, h: height })
+		coords.push({ x, y, w, h })
 
 		// Only disable transitions for a few frames
-		li.style.transition = 'none'
-		setTimeout(() => li.style.removeProperty('transition'), 10)
+		element.style.transition = 'none'
+		setTimeout(() => element.style.removeProperty('transition'), 10)
 
-		blocks.set(id, li)
-		deplaceElem(li, x, y)
+		deplaceElem(element, x, y)
 
 		if (id === draggedId) {
 			cox = pos.x - x
 			coy = pos.y - y
 			dx = x
 			dy = y
-			li.classList.add('on')
+			element.classList.add('on')
 		}
 	}
 
-	domlinkgroup.style.setProperty('--drag-width', Math.floor(listRect?.width ?? 0) + 'px')
-	domlinkgroup.style.setProperty('--drag-height', Math.floor(listRect?.height ?? 0) + 'px')
-
-	domlinkmini.style.setProperty('--drag-width', Math.floor(miniRect.width ?? 0) + 'px')
-	domlinkmini.style.setProperty('--drag-height', Math.floor(miniRect.height ?? 0) + 'px')
-
-	domlinkblocks.classList.add('dragging')
+	container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
+	container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
+	container.classList.add('dragging')
 
 	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
@@ -126,16 +129,20 @@ export default function startDrag(event: PointerEvent) {
 	}
 }
 
-function beforeStartDrag(event: PointerEvent) {
+function beforeStartDrag(event: PointerEvent, type: 'group' | 'link') {
 	// Prevent drag move event if user slips on click
 	// By only starting drag if pointer moves more than 10px deadzone
 
-	const li = getLiFromEvent(event)
+	const target = type === 'group' ? getTitleFromEvent(event) : getLiFromEvent(event)
 	cox = event.offsetX
 	coy = event.offsetY
 
-	li?.addEventListener('pointermove', pointerDeadzone)
-	li?.addEventListener('pointerup', pointerDeadzone)
+	if (!target) {
+		return
+	}
+
+	target?.addEventListener('pointermove', pointerDeadzone)
+	target?.addEventListener('pointerup', pointerDeadzone)
 
 	function pointerDeadzone(event: PointerEvent) {
 		const precision = event.pointerType === 'touch' ? 7 : 14
@@ -155,8 +162,8 @@ function beforeStartDrag(event: PointerEvent) {
 		}
 
 		if (isOutside || isEndEvents) {
-			li?.removeEventListener('pointermove', pointerDeadzone)
-			li?.removeEventListener('pointerup', pointerDeadzone)
+			target?.removeEventListener('pointermove', pointerDeadzone)
+			target?.removeEventListener('pointerup', pointerDeadzone)
 		}
 	}
 }
@@ -264,6 +271,7 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchend', endDrag)
 
 	const path = event.composedPath() as Element[]
+	const type = dropzones.get(draggedId)?.type
 	const domlinklist = document.querySelector<HTMLDivElement>('.link-list')
 	const group = domlinkgroup?.dataset.group ?? ''
 	const newIndex = ids.indexOf(draggedId)
@@ -271,14 +279,15 @@ function endDrag(event: Event) {
 	const coord = coords[newIndex]
 
 	const isDroppable = !!document.querySelector('.drop-source')
-	const outOfFolder = path[0] !== domlinklist && domlinkgroup.classList.contains('in-folder')
+	const outOfFolder = false //path[0] !== domlinklist && domlinkgroup.classList.contains('in-folder')
 	const targetIdIsLink = targetId.startsWith('links') && targetId.length === 11
 	const toFolder = isDroppable && targetIdIsLink
 	const toTab = isDroppable && !targetIdIsLink
 
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
-	domlinkblocks?.classList.replace('dragging', 'dropping')
+	domlinkmini?.classList.replace('dragging', 'dropping')
+	domlinkgroup?.classList.replace('dragging', 'dropping')
 
 	if (outOfFolder || toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
@@ -292,7 +301,11 @@ function endDrag(event: Event) {
 		const createFolder = toFolder && !targetIsFolder && !draggedIsFolder
 		const concatFolders = toFolder && (targetIsFolder || draggedIsFolder)
 
-		if (createFolder) {
+		if (type === 'group') {
+			linksUpdate({ moveGroups: ids })
+		}
+		//
+		else if (createFolder) {
 			linksUpdate({ addFolder: { ids: [targetId, draggedId], group } })
 		}
 		//
@@ -317,16 +330,15 @@ function endDrag(event: Event) {
 		setTimeout(() => {
 			domlinkgroup?.removeAttribute('style')
 			domlinkmini?.removeAttribute('style')
-			domlinkblocks?.classList.remove('dropping')
+			domlinkgroup?.classList.remove('dropping')
+			domlinkmini?.classList.remove('dropping')
 
 			document.querySelectorAll('.link-title')?.forEach((node) => node.removeAttribute('style'))
 		}, 1)
 	}, 200)
 }
 
-//
-//
-//
+//	Small stuff
 
 function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 	if (dom) {
