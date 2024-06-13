@@ -2,7 +2,6 @@
 
 #linkblocks {
 	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
-	max-width: var(--links-width);
 }
 
 #linkblocks.hidden {
@@ -632,8 +631,9 @@
 	opacity: 0.5;
 }
 
-#link-mini.in-drag,
-.in-drag .link-list {
+.in-drag#link-mini,
+.in-drag.link-group .link-list,
+.in-drag.link-group.in-folder .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -647,7 +647,7 @@
 	pointer-events: none;
 }
 
-.in-drag .link-title,
+.in-drag#link-mini .link-title,
 .in-drag .link {
 	pointer-events: none;
 	position: fixed;
@@ -656,7 +656,7 @@
 	z-index: 3;
 }
 
-.in-drag .link-title {
+.in-drag#link-mini .link-title {
 	border-color: #fff2;
 }
 

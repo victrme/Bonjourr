@@ -19,6 +19,7 @@ let targetId = ''
 let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
+let dragContainers: NodeListOf<HTMLElement>
 let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
 
@@ -52,18 +53,13 @@ export default function startDrag(event: PointerEvent) {
 	//
 
 	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
-	domlinklist = path.find((node) => node?.classList?.contains('link-list')) as HTMLUListElement
 	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
 	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
-	const listRect = domlinklist?.getBoundingClientRect()
-	const miniRect = domlinkmini?.getBoundingClientRect()
+	dragContainers = document.querySelectorAll<HTMLElement>(type === 'group' ? '#link-mini' : '.link-group')
 
 	const getId = (element?: HTMLElement) => (type === 'group' ? element?.dataset.group : element?.id) ?? ''
 
-	const container = type === 'group' ? domlinkmini : domlinkgroup
 	const tagName = type === 'group' ? 'BUTTON' : 'LI'
-	const rect = type === 'group' ? miniRect : listRect
-
 	const target = path.find((node) => node.tagName === tagName)
 	const pos = getPosFromEvent(event)
 
@@ -107,35 +103,40 @@ export default function startDrag(event: PointerEvent) {
 		})
 	}
 
-	for (const element of type === 'group' ? domlinktitles : domlinklinks) {
-		const id = getId(element)
-		let { x, y, w, h } = dropzones.get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
+	for (const container of Object.values(dragContainers)) {
+		const elements = container.querySelectorAll<HTMLElement>(tagName)
+		const rect = container.getBoundingClientRect()
 
-		x = x - rect?.x
-		y = y - rect?.y
+		for (const element of elements) {
+			const id = getId(element)
+			let { x, y, w, h } = dropzones.get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
 
-		ids.push(id)
-		initids.push(id)
-		coords.push({ x, y, w, h })
+			x = x - rect?.x
+			y = y - rect?.y
 
-		// Only disable transitions for a few frames
-		element.style.transition = 'none'
-		setTimeout(() => element.style.removeProperty('transition'), 10)
+			ids.push(id)
+			initids.push(id)
+			coords.push({ x, y, w, h })
 
-		deplaceElem(element, x, y)
+			// Only disable transitions for a few frames
+			element.style.transition = 'none'
+			setTimeout(() => element.style.removeProperty('transition'), 10)
 
-		if (id === draggedId) {
-			cox = pos.x - x + (groupSizeOffsets.get(id) ?? 0)
-			coy = pos.y - y
-			dx = pos.x
-			dy = pos.y
-			element.classList.add('on')
+			deplaceElem(element, x, y)
+
+			if (id === draggedId) {
+				cox = pos.x - x + (groupSizeOffsets.get(id) ?? 0)
+				coy = pos.y - y
+				dx = pos.x
+				dy = pos.y
+				element.classList.add('on')
+			}
 		}
-	}
 
-	container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
-	container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
-	container.classList.add('in-drag', 'dragging')
+		container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
+		container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
+		container.classList.add('in-drag', 'dragging')
+	}
 
 	document.dispatchEvent(new Event('remove-select-all'))
 	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
@@ -294,14 +295,13 @@ function endDrag(event: Event) {
 
 	const path = event.composedPath() as Element[]
 	const type = dropzones.get(draggedId)?.type
-	const domlinklist = document.querySelector<HTMLDivElement>('.link-list')
 	const group = domlinkgroup?.dataset.group ?? ''
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
 	const coord = coords[newIndex]
 
 	const isDroppable = !!document.querySelector('.drop-source')
-	const outOfFolder = false //path[0] !== domlinklist && domlinkgroup.classList.contains('in-folder')
+	const outOfFolder = !path[0]?.classList.contains('link-list') && domlinkgroup?.classList.contains('in-folder')
 	const targetIdIsLink = targetId.startsWith('links') && targetId.length === 11
 	const toFolder = isDroppable && targetIdIsLink
 	const toTab = isDroppable && !targetIdIsLink
@@ -309,8 +309,9 @@ function endDrag(event: Event) {
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
 
-	domlinkmini?.classList.replace('dragging', 'dropping')
-	domlinkgroup?.classList.replace('dragging', 'dropping')
+	dragContainers.forEach((container) => {
+		container?.classList.replace('dragging', 'dropping')
+	})
 
 	if (outOfFolder || toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
@@ -351,14 +352,14 @@ function endDrag(event: Event) {
 		// Yield to functions above to avoid flickering
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
-			domlinkgroup?.removeAttribute('style')
-			domlinkmini?.removeAttribute('style')
-			domlinkgroup?.classList.remove('in-drag')
-			domlinkmini?.classList.remove('in-drag')
-			domlinkgroup?.classList.remove('dropping')
-			domlinkmini?.classList.remove('dropping')
+			dragContainers.forEach((container) => {
+				container?.removeAttribute('style')
+				container?.classList.remove('in-drag', 'dropping')
 
-			document.querySelectorAll('.link-title')?.forEach((node) => node.removeAttribute('style'))
+				container.querySelectorAll('li, button').forEach((element) => {
+					element.removeAttribute('style')
+				})
+			})
 		}, 1)
 	}, 200)
 }
