@@ -2,7 +2,6 @@
 
 #linkblocks {
 	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
-	max-width: var(--links-width);
 }
 
 #linkblocks.hidden {
@@ -112,13 +111,15 @@
 
 .link-title {
 	display: none;
-	max-width: 32ch;
+	max-width: 26ch;
 	padding: 0.2em 1em;
-	font-size: 1em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+	text-overflow: ellipsis;
 	opacity: 0.7;
 	color: white;
-	text-align: center;
-	white-space: nowrap;
+	font-size: 1em;
 	border-radius: 8px;
 	border: 1px solid transparent;
 	background-color: transparent;
@@ -167,13 +168,17 @@
 	-webkit-user-select: none;
 }
 
-/* Link list items */
+/* Link */
+
+.link,
+.link-title {
+	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
+}
 
 .link {
 	width: var(--block-size);
 	cursor: pointer;
 	touch-action: none;
-	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
 }
 
 .link div,
@@ -626,8 +631,9 @@
 	opacity: 0.5;
 }
 
-.link-group.dropping .link-list,
-.link-group.dragging .link-list {
+.in-drag#link-mini,
+.in-drag.link-group .link-list,
+.in-drag.link-group.in-folder .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -635,16 +641,14 @@
 	height: calc(var(--drag-height) - 2px);
 }
 
-.link-group.dropping a,
-.link-group.dragging a,
-.link-group.dropping div,
-.link-group.dragging div {
+.in-drag a,
+.in-drag div {
 	user-select: none;
 	pointer-events: none;
 }
 
-.link-group.dropping .link,
-.link-group.dragging .link {
+.in-drag#link-mini .link-title,
+.in-drag .link {
 	pointer-events: none;
 	position: fixed;
 	top: 0;
@@ -652,8 +656,11 @@
 	z-index: 3;
 }
 
-.link-group.dropping .on,
-.link-group.dragging .on {
+.in-drag#link-mini .link-title {
+	border-color: #fff2;
+}
+
+.in-drag .on {
 	z-index: 4;
 	transition: none;
 	pointer-events: none;
@@ -664,19 +671,15 @@
 #link-mini {
 	position: relative;
 	display: none;
+	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	column-gap: 1em;
-	width: 100%;
+	width: max-content;
 	margin: auto;
-	padding-top: 1em;
-	padding-inline-start: 4em;
+	padding: 1em 1em 0em;
+	column-gap: 1em;
+	row-gap: 0.5em;
 	box-sizing: border-box;
-}
-
-.text-left #link-mini:has(.add-group.selected),
-.text-left #link-mini:hover {
-	padding-left: 0;
 }
 
 #link-mini .link-title {
@@ -684,14 +687,26 @@
 }
 
 #link-mini .add-group {
+	position: absolute;
 	visibility: hidden;
 	font-weight: bold;
 	width: 3em;
+	right: -3em;
 }
 
+#link-mini .add-group:hover,
 #link-mini .add-group.selected,
 #link-mini:hover .add-group {
 	visibility: visible;
+}
+
+#link-mini.in-drag .add-group {
+	visibility: hidden;
+}
+
+.link-group.in-folder + #link-mini {
+	/* hides link-mini when opening folder in bottom group */
+	display: none;
 }
 
 .with-groups #link-mini,

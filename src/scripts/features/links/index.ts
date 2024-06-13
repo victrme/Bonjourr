@@ -1,5 +1,5 @@
 import { isElem, getLiFromEvent, getDefaultIcon, createTitle, isLink, getLinksInGroup, getLinksInFolder } from './helpers'
-import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle } from './groups'
+import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups'
 import { initBookmarkSync, syncBookmarks } from './bookmarks'
 import { displayInterface } from '../../index'
 import displayEditDialog from './edit'
@@ -61,6 +61,7 @@ type LinksUpdate = {
 	addGroups?: AddGroups
 	addFolder?: { ids: string[]; group?: string }
 	moveLinks?: string[]
+	moveGroups?: string[]
 	moveToFolder?: MoveToFolder
 	moveToGroup?: MoveToGroup
 	moveOutFolder?: { ids: string[]; group: string }
@@ -156,6 +157,7 @@ export async function initblocks(data: Sync): Promise<true> {
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
 		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
 		const fragment = document.createDocumentFragment()
+		const folderid = linkgroup.dataset.folder
 
 		if (group.synced) {
 			group.links = syncBookmarks(group.title)
@@ -184,7 +186,12 @@ export async function initblocks(data: Sync): Promise<true> {
 			}
 		}
 
-		linktitle.textContent = group.title
+		if (folderid) {
+			linktitle.textContent = (data[folderid] as Links.Folder).title
+		} else {
+			linktitle.textContent = group.title
+		}
+
 		linkgroup.dataset.group = group.title
 		linkgroup.classList.toggle('pinned', group.pinned)
 		linkgroup.classList.toggle('synced', group.synced)
@@ -344,6 +351,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.addFolder) data = linkSubmission({ type: 'folder', ...update.addFolder }, data)
 	if (update.addGroups) data = addGroup(update.addGroups, data)
 	if (update.moveLinks) data = moveLinks(update.moveLinks, data)
+	if (update.moveGroups) data = moveGroups(update.moveGroups, data)
 	if (update.moveToGroup) data = moveToGroup(update.moveToGroup, data)
 	if (update.moveToFolder) data = moveToFolder(update.moveToFolder, data)
 	if (update.moveOutFolder) data = moveOutFolder(update.moveOutFolder, data)
