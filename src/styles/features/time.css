@@ -179,7 +179,12 @@
 }
 
 /* swiss hands */
+#analog[data-clock-hands="swiss-hands"] #analog-center {
+	display: none;
+}
+
 .seconds #analog[data-clock-hands="swiss-hands"] #analog-center {
+	display: block;
 	background-color: #e30713;
 	width: calc(var(--clock-size) * 0.3);
 	height: calc(var(--clock-size) * 0.3);
