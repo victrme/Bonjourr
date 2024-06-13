@@ -411,6 +411,10 @@
 	transform: translateX(-50%) translateY(-50%);
 }
 
+.seconds #analog[data-clock-hands="apple"][data-clock-background="white"] #analog-center:before {
+	background-color: white;
+}
+
 /* white circle at the base of the hands */
 #analog[data-clock-hands="apple"]:after {
 	content: '';
@@ -423,6 +427,10 @@
 	left: 50%;
 	top: 50%;
 	transform: translateX(-50%) translateY(-50%);
+}
+
+#analog[data-clock-hands="apple"][data-clock-background="white"]:after {
+	background-color: black;
 }
 
 /* faces */
@@ -470,7 +478,7 @@
 
 #analog[data-clock-background="white"]:not([data-clock-hands="classic"]) #analog-minutes,
 #analog[data-clock-background="white"]:not([data-clock-hands="classic"]) #analog-hours,
-#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]):not([data-clock-hands="braun"]):not([data-clock-hands="classic"]) #analog-center,
+#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]):not([data-clock-hands="braun"]):not([data-clock-hands="classic"]):not([data-clock-hands="apple"]) #analog-center,
 #analog[data-clock-background="white"] #analog-minutes:after,
 #analog[data-clock-background="white"] #analog-hours:after {
 	background-color: rgba(0, 0, 0, .9);
