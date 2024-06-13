@@ -674,18 +674,12 @@
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
+	width: max-content;
+	margin: auto;
+	padding: 1em 1em 0em;
 	column-gap: 1em;
 	row-gap: 0.5em;
-	width: 100%;
-	margin: auto;
-	padding-top: 1em;
-	padding-inline-start: 4em;
 	box-sizing: border-box;
-}
-
-.text-left #link-mini:has(.add-group.selected),
-.text-left #link-mini:hover {
-	padding-left: 0;
 }
 
 #link-mini .link-title {
@@ -693,11 +687,14 @@
 }
 
 #link-mini .add-group {
+	position: absolute;
 	visibility: hidden;
 	font-weight: bold;
 	width: 3em;
+	right: -3em;
 }
 
+#link-mini .add-group:hover,
 #link-mini .add-group.selected,
 #link-mini:hover .add-group {
 	visibility: visible;
@@ -705,6 +702,11 @@
 
 #link-mini.in-drag .add-group {
 	visibility: hidden;
+}
+
+.link-group.in-folder + #link-mini {
+	/* hides link-mini when opening folder in bottom group */
+	display: none;
 }
 
 .with-groups #link-mini,

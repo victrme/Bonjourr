@@ -24,15 +24,14 @@ let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-const domlinkmini = document.getElementById('link-mini') as HTMLDivElement
 let domlinklinks: NodeListOf<HTMLLIElement>
 let domlinktitles: NodeListOf<HTMLButtonElement>
 let domlinkgroup: HTMLDivElement
-let domlinklist: HTMLUListElement
 
 export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as HTMLElement[]
 	const type = path.some((element) => element?.className?.includes('link-title')) ? 'group' : 'link'
+	const isGroup = type === 'group'
 
 	if (event.button > 0) {
 		return
@@ -55,21 +54,23 @@ export default function startDrag(event: PointerEvent) {
 	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
 	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
 	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
-	dragContainers = document.querySelectorAll<HTMLElement>(type === 'group' ? '#link-mini' : '.link-group')
+	dragContainers = document.querySelectorAll<HTMLElement>(isGroup ? '#link-mini' : '.link-group')
 
-	const getId = (element?: HTMLElement) => (type === 'group' ? element?.dataset.group : element?.id) ?? ''
+	const getId = (element?: HTMLElement, isGroup?: boolean) => {
+		return (isGroup ? element?.dataset.group : element?.id) ?? ''
+	}
 
-	const tagName = type === 'group' ? 'BUTTON' : 'LI'
+	const tagName = isGroup ? 'BUTTON' : 'LI'
 	const target = path.find((node) => node.tagName === tagName)
 	const pos = getPosFromEvent(event)
 
-	draggedId = getId(target)
+	draggedId = getId(target, isGroup)
 
 	// START RANT
 	// HOW DO I CENTER THE DRAGGED GROUP ON THE CURSOR
 	// AFTER UPDATING THEIR WIDTH ????????????????????
 	let groupSizeOffsets: Map<string, number> = new Map()
-	if (type === 'group') {
+	if (isGroup) {
 		const beforeMap: Map<string, number> = new Map()
 
 		for (const group of domlinktitles) {
@@ -90,7 +91,7 @@ export default function startDrag(event: PointerEvent) {
 	for (const element of [...domlinktitles, ...domlinklinks]) {
 		const isGroup = element.tagName === 'BUTTON'
 		const rect = element.getBoundingClientRect()
-		const id = getId(element)
+		const id = getId(element, isGroup)
 
 		blocks.set(id, element)
 
@@ -105,10 +106,11 @@ export default function startDrag(event: PointerEvent) {
 
 	for (const container of Object.values(dragContainers)) {
 		const elements = container.querySelectorAll<HTMLElement>(tagName)
-		const rect = container.getBoundingClientRect()
+		const wrapper = isGroup ? container : container.querySelector('.link-list')!
+		const rect = wrapper?.getBoundingClientRect()
 
 		for (const element of elements) {
-			const id = getId(element)
+			const id = getId(element, isGroup)
 			let { x, y, w, h } = dropzones.get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
 
 			x = x - rect?.x

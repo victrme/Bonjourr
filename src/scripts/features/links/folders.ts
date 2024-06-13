@@ -51,17 +51,10 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
-		const sibling = linkgroup.nextElementSibling
-		const isLastGroup = sibling?.classList.contains('-group') === false
-
 		await initblocks(data)
 
 		if (linktitle) {
 			linktitle.textContent = folder?.title || tradThis('Folder')
-		}
-
-		if (isLastGroup) {
-			domlinkblocks.classList.remove('with-groups')
 		}
 	}
 

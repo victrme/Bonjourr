@@ -157,6 +157,7 @@ export async function initblocks(data: Sync): Promise<true> {
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')!
 		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')!
 		const fragment = document.createDocumentFragment()
+		const folderid = linkgroup.dataset.folder
 
 		if (group.synced) {
 			group.links = syncBookmarks(group.title)
@@ -185,7 +186,12 @@ export async function initblocks(data: Sync): Promise<true> {
 			}
 		}
 
-		linktitle.textContent = group.title
+		if (folderid) {
+			linktitle.textContent = (data[folderid] as Links.Folder).title
+		} else {
+			linktitle.textContent = group.title
+		}
+
 		linkgroup.dataset.group = group.title
 		linkgroup.classList.toggle('pinned', group.pinned)
 		linkgroup.classList.toggle('synced', group.synced)
