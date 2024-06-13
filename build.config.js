@@ -337,10 +337,18 @@ async function translateFile(lang, enDict, supportedLangs) {
 	if (lang === 'pt_PT') sanitizedLang = 'pt-PT'
 
 	const supported = supportedLangs.includes(sanitizedLang)
-	const langDict = JSON.parse(readFileSync(`./_locales/${lang}/translations.json`, 'utf8'))
+	const translations = readFileSync(`./_locales/${lang}/translations.json`, 'utf8')
 	const newDict = {}
 	let removed = 0
 	let added = 0
+	let langDict
+
+	try {
+		langDict = JSON.parse(translations)
+	} catch (error) {
+		console.log(error)
+		return
+	}
 
 	// Remove keys not found in "english" translation file
 	for (const key of Object.keys(langDict)) {

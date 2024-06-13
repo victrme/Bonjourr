@@ -259,7 +259,7 @@ function toggleFolderSync(folder: HTMLElement) {
 		syncButton.textContent = tradThis('Sync with browser')
 		folder.classList.remove('synced')
 	} else {
-		syncButton.textContent = tradThis('Go back to regular links')
+		syncButton.textContent = tradThis('Back to regular links')
 		folder.classList.add('synced')
 	}
 }
