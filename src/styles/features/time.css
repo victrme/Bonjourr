@@ -120,7 +120,7 @@
 }
 
 #analog[data-clock-shape="square"] {
-	border-radius: calc(var(--clock-size) * 0.2);
+	border-radius: calc(var(--clock-size) * 0.4);
 }
 
 #analog[data-clock-shape="rectangle"] {
@@ -174,13 +174,13 @@
 	display: none;
 	height: calc(var(--clock-size) * 3.6);
 	opacity: 0.8;
-	background-color: red;
+	background-color: #e30713;
 	width: calc(var(--clock-size) * 0.1);
 }
 
 /* swiss hands */
-#analog[data-clock-hands="swiss-hands"] #analog-center {
-	background-color: red;
+.seconds #analog[data-clock-hands="swiss-hands"] #analog-center {
+	background-color: #e30713;
 	width: calc(var(--clock-size) * 0.3);
 	height: calc(var(--clock-size) * 0.3);
 }
@@ -234,7 +234,7 @@
 	content: '';
 	display: block;
 	position: absolute;
-	background-color: red;
+	background-color: #e30713;
 	width: calc(var(--clock-size) * 0.1);
 	height: calc(var(--clock-size) * 1.2);
 	bottom: calc(var(--clock-size) * -1.2);
@@ -249,20 +249,20 @@
 	position: absolute;
 	width: calc(var(--clock-size) * 0.65);
 	height: calc(var(--clock-size) * 0.65);
-	background-color: red;
+	background-color: #e30713;
 	left: 50%;
 	transform: translateX(-50%);
 	border-radius: 100%;
 }
 
 /* braun hands */
-#analog[data-clock-hands="braun"] #analog-center {
+.seconds #analog[data-clock-hands="braun"] #analog-center {
 	background-color: #f9b603;
 	width: calc(var(--clock-size) * 0.5);
 	height: calc(var(--clock-size) * 0.5);
 }
 
-#analog[data-clock-hands="braun"] #analog-seconds {
+.seconds #analog[data-clock-hands="braun"] #analog-seconds {
 	background-color: #f9b603;
 	opacity: 1;
 	height: calc(var(--clock-size) * 3.5);
@@ -280,10 +280,11 @@
 	bottom: calc(var(--clock-size) * -0.75);
 	left: 50%;
 	transform: translateX(-50%);
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
 #analog[data-clock-hands="braun"] #analog-hours {
-	width: calc(var(--clock-size) * 0.25);
+	width: calc(var(--clock-size) * 0.3);
 	height: calc(var(--clock-size) * 2.58);
 }
 
@@ -292,9 +293,50 @@
 }
 
 /* classic hands */
+#analog[data-clock-hands="classic"] #analog-hours,
+#analog[data-clock-hands="classic"] #analog-minutes {
+	background-color: transparent;
+	position: absolute;
+	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow: unset;
+	filter: invert(1);
+	opacity: 1;
+}
+
+#analog[data-clock-hands="classic"][data-clock-background="white"] #analog-hours,
+#analog[data-clock-hands="classic"][data-clock-background="white"] #analog-minutes {
+	filter: unset;
+}
+
 #analog[data-clock-hands="classic"] #analog-hours {
-	width: calc(var(--clock-size) * 0.25);
-	height: 27%;
+	background-image: url('../../assets/interface/classic_hours.svg');
+	height: calc(var(--clock-size) * 2.35);
+	width: calc(var(--clock-size) * 1.5);
+}
+
+#analog[data-clock-hands="classic"] #analog-minutes {
+	background-image: url('../../assets/interface/classic_minutes.svg');
+	height: calc(var(--clock-size) * 3.4);
+	width: calc(var(--clock-size) * 1.2);
+}
+
+#analog[data-clock-hands="classic"] #analog-seconds,
+.seconds #analog[data-clock-hands="classic"] #analog-center {
+	background-color: #cdaa35;
+	opacity: 1;
+}
+
+#analog[data-clock-hands="classic"] #analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: #cdaa35;
+	width: calc(var(--clock-size) * 0.08);
+	height: calc(var(--clock-size) * .9);
+	bottom: calc(var(--clock-size) * -.9);
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 /* Apple Watch hands */
@@ -332,7 +374,7 @@
 	background-color: black;
 }
 
-#analog[data-clock-hands="apple"] #analog-seconds {
+.seconds #analog[data-clock-hands="apple"] #analog-seconds {
 	background-color: #f06142;
 	width: calc(var(--clock-size) * 0.08);
 	opacity: 1;
@@ -352,11 +394,11 @@
 	transform: translateX(-50%);
 }
 
-#analog[data-clock-hands="apple"] #analog-center {
+.seconds #analog[data-clock-hands="apple"] #analog-center {
 	background-color: #f06142;
 }
 
-#analog[data-clock-hands="apple"] #analog-center:before {
+.seconds #analog[data-clock-hands="apple"] #analog-center:before {
 	content: '';
 	width: calc(var(--clock-size) * .17);
 	height: calc(var(--clock-size) * .17);
@@ -426,9 +468,9 @@
 	background-image: url('../../assets/interface/braun-black.svg');
 }
 
-#analog[data-clock-background="white"] #analog-minutes,
-#analog[data-clock-background="white"] #analog-hours,
-#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]):not([data-clock-hands="braun"]) #analog-center,
+#analog[data-clock-background="white"]:not([data-clock-hands="classic"]) #analog-minutes,
+#analog[data-clock-background="white"]:not([data-clock-hands="classic"]) #analog-hours,
+#analog[data-clock-background="white"]:not([data-clock-hands="swiss-hands"]):not([data-clock-hands="braun"]):not([data-clock-hands="classic"]) #analog-center,
 #analog[data-clock-background="white"] #analog-minutes:after,
 #analog[data-clock-background="white"] #analog-hours:after {
 	background-color: rgba(0, 0, 0, .9);
