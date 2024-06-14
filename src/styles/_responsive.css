@@ -120,6 +120,7 @@
 		max-height: 100px;
 	}
 
+	#pagewidth,
 	#grid-layout-wrapper {
 		display: none;
 	}
@@ -221,6 +222,10 @@
 	aside select {
 		min-height: 36px;
 		border-radius: 13px;
+	}
+
+	aside .switch:checked:hover {
+		background-color: var(--color-green);
 	}
 
 	#settings .tooltip {

@@ -18,7 +18,7 @@ aside {
 	overflow-x: hidden;
 	touch-action: pan-y;
 	box-sizing: border-box;
-	transition: transform 0.4s, background-color 0.4s var(--out-cubic);
+	transition: transform 0.33s, background-color 0.33s;
 }
 
 aside.shown {
@@ -33,6 +33,16 @@ aside.init .dropdown {
 
 aside.see-through {
 	opacity: 0.2;
+}
+
+aside.change-theme .tooltip,
+aside.change-theme .param,
+aside.change-theme select,
+aside.change-theme button,
+aside.change-theme input,
+aside.change-theme hr {
+	transition-duration: 0.33s;
+	transition-property: background-color, border-color, color;
 }
 
 aside hr {
@@ -55,21 +65,6 @@ aside h2 {
 	letter-spacing: 1px;
 }
 
-aside #hideelem button,
-aside .uploadContainer,
-aside #submitSave,
-aside #i_refresh,
-aside #cssEditor,
-aside .tooltip,
-aside .param,
-aside select,
-aside input,
-aside hr {
-	transition-duration: 0.4s;
-	transition-timing-function: var(--out-cubic);
-	transition-property: background-color, color, border, border-color, transform;
-}
-
 aside .param-btn {
 	height: 31px;
 	padding: 0 1em;
@@ -77,7 +72,6 @@ aside .param-btn {
 	border: none;
 	border-radius: 1em;
 	background-color: rgba(var(--blue), 0.15);
-	transition: background-color 0.1s, color 0.1s;
 }
 
 aside .param-btn:hover {
@@ -136,6 +130,15 @@ aside select {
 	background-color: var(--color-input);
 }
 
+@media only screen and (hover: hover) {
+	aside input:focus-visible,
+	aside .input-btn:active,
+	aside .tooltip:active,
+	aside .switch:hover {
+		background-color: var(--color-focused);
+	}
+}
+
 aside input::placeholder {
 	color: var(--color-placeholder);
 }
@@ -160,11 +163,6 @@ aside .switch {
 	overflow: visible;
 }
 
-aside .switch:hover {
-	background-color: var(--color-focused);
-	transition: background-color 0.15s;
-}
-
 aside .switch:after {
 	content: '';
 	position: absolute;
@@ -175,20 +173,22 @@ aside .switch:after {
 	border-radius: 50%;
 	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
 	background-color: white;
-	transition: background-color 0.3s, transform 0.3s;
+	transition: background-color 0.15s, transform 0.15s;
 }
 
 aside .switch:checked {
 	background-color: var(--color-green);
-	transition: background-color 0.15s;
-}
-
-aside .switch:checked:hover {
-	background-color: #40b354;
+	/* transition: background-color 0.1s; */
 }
 
 aside .switch:checked:after {
 	transform: translateX(20px);
+}
+
+@media only screen and (hover: hover) {
+	aside .switch:checked:hover {
+		background-color: #22c34d;
+	}
 }
 
 aside input::-webkit-calendar-picker-indicator {
@@ -301,7 +301,6 @@ input[type='file'] {
 	width: 100%;
 	color: transparent;
 	cursor: pointer;
-	transition: background-color 0.2s, transform 0.2s;
 }
 
 input[type='file']::-webkit-file-selector-button,
@@ -309,8 +308,7 @@ input[type='file']::file-selector-button {
 	display: none;
 }
 
-label.input-file:hover input[type='file'],
-label.input-file:focus input[type='file'] {
+label.input-file:active input[type='file'] {
 	background-color: var(--color-focused);
 }
 
@@ -520,14 +518,9 @@ aside .tooltip {
 	color: var(--color-light-text);
 	border-color: var(--color-input);
 	background-color: var(--color-areas);
-	transition: background-color 0.1s, transform 0.1s;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-aside .tooltip:hover {
-	background-color: var(--color-input);
 }
 
 aside .settings-title .tooltip {
@@ -535,9 +528,9 @@ aside .settings-title .tooltip {
 	border-color: var(--color-focused);
 }
 
-@media (hover: hover) {
+@media screen and (hover: hover) {
 	aside .tooltip:active {
-		transform: scale(1.2);
+		background-color: var(--color-input);
 	}
 }
 
@@ -625,6 +618,8 @@ aside .settings-title .tooltip {
 	opacity: 0.7;
 	padding: 0 4px;
 	min-width: 30px;
+	font-size: 14px;
+	font-weight: bold;
 	font-family: serif;
 	text-align: center;
 	background-color: transparent;
@@ -647,8 +642,14 @@ aside .settings-title .tooltip {
 	height: 14px;
 	display: block;
 	border-radius: 4px;
-	border: 3px solid var(--color-text);
+	border: 2px solid var(--color-text);
 	box-sizing: border-box;
+}
+
+[data-theme='light'] #b_showtitles,
+[data-theme='light'] #b_showbackgrounds span {
+	color: var(--color-light-text);
+	border-color: var(--color-light-text);
 }
 
 #b_showtitles.on,
@@ -976,7 +977,6 @@ aside .settings-title .tooltip {
 
 #settings-footer-links a {
 	margin: 0 6px;
-	transition: opacity ease-in 0.1s;
 }
 
 #settings-footer-links a:hover {

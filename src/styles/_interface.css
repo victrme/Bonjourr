@@ -12,7 +12,7 @@
 	font-size: var(--font-size);
 	font-family: var(--font-family);
 	font-weight: var(--font-weight);
-	transition: opacity var(--load-time-transition), transform 0.4s;
+	transition: opacity var(--load-time-transition), transform 0.33s;
 	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
 	grid-template-areas: var(--grid);
 }
@@ -122,6 +122,7 @@
 	padding-right: 1.5em;
 	padding-bottom: 1.5em;
 	z-index: 3;
+	transition: opacity 0.15s var(--out-cubic);
 }
 
 #show-settings button {
@@ -136,12 +137,12 @@
 	backdrop-filter: blur(0);
 	-webkit-backdrop-filter: blur(0);
 	cursor: pointer;
-	transition: background-color 0.1s var(--out-cubic);
+	transition: background-color 0.15s var(--out-cubic);
 }
 
 #show-settings img {
 	width: 2.6em;
-	transition: transform 0.6s var(--out-cubic);
+	transition: transform 0.3s var(--out-cubic);
 }
 
 #show-settings.he_hidden {

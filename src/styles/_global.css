@@ -32,7 +32,7 @@
 	--color-areas-text: var(--color-blue);
 	--color-input: #eaeaee;
 	--color-input-outside: #e3e3ea;
-	--color-focused: #dadade;
+	--color-focused: #dddde4;
 	--color-border: #c8c7cc;
 	--color-placeholder: #7c7d7e;
 	--color-light-text: #5a5858;
@@ -56,7 +56,7 @@
 	--color-areas: var(--color-input);
 	--color-areas-text: var(--color-text);
 	--color-placeholder: #a4a5a6;
-	--color-focused: #2c2c2f;
+	--color-focused: #323135;
 	--color-dialog: #191919aa;
 	--color-dialog-border: #fff4;
 	--color-dialog-highlight: #fff2;
