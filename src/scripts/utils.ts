@@ -142,6 +142,20 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
+export function addEventListenerFastClick<T extends Element>(element: T | null, callback: (e: Event) => void) {
+	let isPointerDown = false
+
+	element?.addEventListener('pointerdown', function (event) {
+		isPointerDown = true
+		callback(event)
+	})
+
+	element?.addEventListener('click', function (event) {
+		if (isPointerDown === false) callback(event)
+		isPointerDown = false
+	})
+}
+
 export function isEvery(freq = ''): freq is Frequency {
 	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
 	return every.includes(freq as Frequency)

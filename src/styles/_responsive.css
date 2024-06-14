@@ -145,19 +145,6 @@
 	#credit span {
 		font-size: 11px;
 	}
-
-	#bookmarks_container {
-		font-size: 14px;
-	}
-
-	#bookmarks_container #bookmarks {
-		width: 90%;
-		min-width: 0;
-	}
-
-	#bookmarks_container #bookmarks form div {
-		width: auto;
-	}
 }
 
 /* fix iPhone notch in landscape */
