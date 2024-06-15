@@ -115,7 +115,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
 -   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
--   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
+-   **🇬🇷 Modern Greek translation** · [tseli0s](https://github.com/tseli0s) · [trlef19](https://github.com/trlef19)
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
