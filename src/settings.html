@@ -379,6 +379,47 @@
 		<hr />
 
 		<div class="wrapper">
+			<label for="i_worldclocks" class="trn">World clocks</label>
+			<input id="i_worldclocks" class="switch" type="checkbox" />
+		</div>
+
+		<div id="worldclocks_options" class="dropdown">
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Clock list</span>
+
+				<div id="worldclocks-list">
+					<div class="split-inputs dropdown shown">
+						<input type="text" name="worldclock-city" maxlength="24" placeholder="New York" aria-label="Add city" />
+						<select name="worldclock-timezone">
+							<option value="0">UTC</option>
+							<option value="1">+1</option>
+						</select>
+					</div>
+
+					<div class="split-inputs dropdown">
+						<input type="text" name="worldclock-city" maxlength="24" placeholder="Paris" aria-label="Add city" />
+						<select name="worldclock-timezone">
+							<option value="0">UTC</option>
+							<option value="1">+1</option>
+						</select>
+					</div>
+
+					<div class="split-inputs dropdown">
+						<input type="text" name="worldclock-city" maxlength="24" placeholder="Tokyo" aria-label="Add city" />
+						<select name="worldclock-timezone">
+							<option value="0">UTC</option>
+							<option value="1">+1</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
 			<label for="i_dateformat" class="trn">Date format</label>
 			<select id="i_dateformat">
 				<option value="eu" class="trn">Day date month</option>

@@ -375,6 +375,20 @@ function initOptionsEvents() {
 		clock(undefined, { seconds: this.checked })
 	})
 
+	paramId('i_worldclocks').addEventListener('change', function (this: HTMLInputElement) {
+		paramId('worldclocks_options')?.classList.toggle('shown', this.checked)
+	})
+
+	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input) => {
+		input.addEventListener('input', function () {
+			const nextClock = this.parentElement?.nextElementSibling
+
+			if (nextClock?.classList.contains('split-inputs')) {
+				nextClock.classList.toggle('shown', input.value.length > 0)
+			}
+		})
+	})
+
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { face: this.value })
 	})
