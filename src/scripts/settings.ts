@@ -1087,6 +1087,5 @@ function setCheckbox(id: string, cat: boolean) {
 
 function setInput(id: string, val: string | number) {
 	const input = paramId(id) as HTMLInputElement
-	console.log(input)
 	input.value = typeof val === 'string' ? val : val?.toString()
 }

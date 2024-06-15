@@ -82,6 +82,7 @@ declare namespace Sync {
 		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
 		border: 'white' | 'black' | 'none'
 		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'
+		style?: 'round' | 'square' | 'transparent' // legacy value
 	}
 
 	type Searchbar = {

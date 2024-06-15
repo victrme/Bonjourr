@@ -25,6 +25,7 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 
 	// Lastest version transform
 
+	current = analogClockOptions(current) // 20.0
 	current = linkTabsToGroups(current, target) // 20.0
 	current = convertOldCSSSelectors(current) // ..
 	current = linkParentsToString(current) // ..
@@ -160,8 +161,6 @@ function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Da
 
 		link.parent = groups[link.parent]
 		data[link._id] = link
-
-		console.log(data[link._id])
 	}
 
 	return data
@@ -213,6 +212,25 @@ function improvedWeather(data: Import): Import {
 		delete data.weather.lastState
 		//@ts-expect-error
 		delete data.weather.lastCall
+	}
+
+	return data
+}
+
+// 
+
+function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Data {
+	if (data?.clock) {
+		if (data.clock.style === 'round' || data.clock.style === 'square') {
+			data.clock.shape = data.clock.style
+			data.clock.background = 'light'
+			data.clock.border = 'white'
+		}
+
+		if (data.clock.style === 'transparent') {
+			data.clock.background = 'none'
+			data.clock.border = 'none'
+		}
 	}
 
 	return data
