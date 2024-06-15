@@ -127,7 +127,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_clockhands', data.clock?.hands || 'none')
 	setInput('i_clockborder', data.clock?.border || 'white')
 	setInput('i_clockbackground', data.clock?.background || 'light')
-	setInput('i_clockstyle', data.clock?.style || 'round')
+	setInput('i_clockshape', data.clock?.shape || 'round')
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -391,8 +391,8 @@ function initOptionsEvents() {
 		clock(undefined, { background: this.value })
 	})
 
-	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { style: this.value })
+	paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { shape: this.value })
 	})
 
 	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
@@ -1087,5 +1087,6 @@ function setCheckbox(id: string, cat: boolean) {
 
 function setInput(id: string, val: string | number) {
 	const input = paramId(id) as HTMLInputElement
+	console.log(input)
 	input.value = typeof val === 'string' ? val : val?.toString()
 }

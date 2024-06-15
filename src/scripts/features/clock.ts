@@ -11,7 +11,7 @@ type ClockUpdate = {
 	dateformat?: string
 	greeting?: string
 	timezone?: string
-	style?: string
+	shape?: string
 	face?: string
 	hands?: string
 	border?: string
@@ -40,7 +40,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		analogFace(clock.face)
 		analogHands(clock.hands)
 		analogBorder(clock.border)
-		analogShape(clock.style)
+		analogShape(clock.shape)
 		analogBackground(clock.background)
 		clockSize(clock.size)
 		displayInterface('clock')
@@ -53,7 +53,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 //	Update
 //
 
-async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, background, hands, border, size }: ClockUpdate) {
+async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, shape, face, background, hands, border, size }: ClockUpdate) {
 	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
 	let clock = data?.clock
 
@@ -92,7 +92,7 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 		hands: isHands(hands) ? hands : clock.hands,
 		border: isBorder(border) ? border : clock.border,
 		background: isBackground(background) ? background : clock.background,
-		style: isStyle(style) ? style : clock.style,
+		shape: isShape(shape) ? shape : clock.shape,
 	}
 
 	storage.sync.set({ clock })
@@ -101,7 +101,7 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 	analogHands(clock.hands)
 	analogBorder(clock.border)
 	analogBackground(clock.background)
-	analogShape(clock.style)
+	analogShape(clock.shape)
 	clockSize(clock.size)
 }
 
@@ -118,8 +118,8 @@ function analogFace(face = 'none') {
 	document.getElementById('analog')?.setAttribute('data-clock-face', (face === 'swiss' || face === 'braun') ? face : '')
 }
 
-function analogShape(style?: string) {
-	document.getElementById('analog')?.setAttribute('data-clock-shape', style || '')
+function analogShape(shape?: string) {
+	document.getElementById('analog')?.setAttribute('data-clock-shape', shape || '')
 }
 
 function analogBackground(background?: string) {
@@ -353,7 +353,7 @@ function isBorder(str = ''): str is Sync.Clock['border'] {
 	return ['white', 'black', 'none'].includes(str)
 }
 
-function isStyle(str = ''): str is Sync.Clock['style'] {
+function isShape(str = ''): str is Sync.Clock['shape'] {
 	return ['round', 'square', 'rectangle'].includes(str)
 }
 

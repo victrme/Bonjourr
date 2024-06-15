@@ -117,7 +117,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		hands: 'modern',
 		face: 'none',
 		border: 'white',
-		style: 'round',
+		shape: 'round',
 		timezone: 'auto',
 	},
 	unsplash: {

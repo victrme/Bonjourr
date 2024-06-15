@@ -77,7 +77,7 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
-		style: 'round' | 'square' | 'rectangle'
+		shape: 'round' | 'square' | 'rectangle'
 		background: 'light' | 'dark' | 'white' | 'black' | 'none'
 		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
 		border: 'white' | 'black' | 'none'
