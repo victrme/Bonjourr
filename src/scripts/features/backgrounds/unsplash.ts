@@ -272,6 +272,7 @@ async function requestNewList(collection: string): Promise<Unsplash.Image[] | nu
 		filteredList.push({
 			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
 			link: img.links.html,
+			download_link: img.links.download,
 			username: img.user.username,
 			name: img.user.name,
 			city: img.location.city,
@@ -337,8 +338,13 @@ function imgCredits(image: Unsplash.Image) {
 	domcredit.appendChild(domspacer)
 	domcredit.appendChild(domartist)
 	domcredit.appendChild(domrest)
-	domcontainer.classList.toggle('shown', true)
 
+	// cached data may not contain download link
+	if (image.download_link) {
+		appendSaveLink(domcredit, image)
+	}
+
+	domcontainer.classList.toggle('shown', true)
 }
 
 async function getCache(): Promise<Unsplash.Local> {
@@ -363,5 +369,39 @@ async function preloadImage(src: string) {
 		sessionStorage.removeItem('waitingForPreload')
 	} catch (error) {
 		console.warn('Could not decode image: ', src)
+	}
+}
+
+function appendSaveLink(domcredit: HTMLElement, image: Unsplash.Image) {
+	const domsave = document.createElement('a')
+	domsave.className = 'save'
+	domsave.onclick = () => saveImage(domsave, image)
+
+	domcredit.appendChild(domsave)
+}
+
+async function saveImage(domsave: HTMLAnchorElement, image: Unsplash.Image) {
+	domsave.classList.add('loading')
+	try {
+		const downloadUrl = new URL(image.download_link)
+		const apiDownloadUrl = '/unsplash' + downloadUrl.pathname + downloadUrl.search
+		const downloadResponse = await apiFetch(apiDownloadUrl)
+
+		if (!downloadResponse) return
+
+		const data: { url: string } = await downloadResponse.json()
+		const imageResponse = await fetch(data.url)
+
+		if (!imageResponse.ok) return
+
+		const blob = await imageResponse.blob()
+
+		domsave.onclick = null
+		domsave.href = URL.createObjectURL(blob)
+		domsave.download = downloadUrl.pathname.split('/')[2]
+
+		domsave.click()
+	} finally {
+		domsave.classList.remove('loading')
 	}
 }

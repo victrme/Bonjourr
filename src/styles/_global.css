@@ -20,6 +20,8 @@
 	--color-red: rgb(var(--red));
 	--color-green: #2ed058;
 	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+	--credits-text-color: rgba(255, 255, 255, 0.6);
+	--credits-hover-color: rgba(255, 255, 255, 0.9333333333);
 }
 
 [data-theme='light'] {
