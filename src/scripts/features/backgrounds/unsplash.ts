@@ -287,6 +287,9 @@ async function requestNewList(collection: string): Promise<Unsplash.Image[] | nu
 function imgCredits(image: Unsplash.Image) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
+
+	if (!domcontainer || !domcredit) return
+
 	const hasLocation = image.city || image.country
 	let exif = ''
 	let credits = ''
@@ -328,16 +331,14 @@ function imgCredits(image: Unsplash.Image) {
 	domlocation.href = `${image.link}?utm_source=Bonjourr&utm_medium=referral`
 	domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
 
-	if (domcredit) {
-		domcredit.textContent = ''
-	}
+	domcredit.textContent = ''
+	domcredit.appendChild(domexif)
+	domcredit.appendChild(domlocation)
+	domcredit.appendChild(domspacer)
+	domcredit.appendChild(domartist)
+	domcredit.appendChild(domrest)
+	domcontainer.classList.toggle('shown', true)
 
-	domcredit?.appendChild(domexif)
-	domcredit?.appendChild(domlocation)
-	domcredit?.appendChild(domspacer)
-	domcredit?.appendChild(domartist)
-	domcredit?.appendChild(domrest)
-	domcontainer?.classList.toggle('shown', true)
 }
 
 async function getCache(): Promise<Unsplash.Local> {
