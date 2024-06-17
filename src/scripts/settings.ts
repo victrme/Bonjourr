@@ -232,6 +232,17 @@ function initOptionsValues(data: Sync.Storage) {
 			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
 		})
 	})
+
+	// Add massive timezones to <select>
+
+	document.querySelectorAll('select[name="worldclock-timezone"], #i_timezone').forEach((select) => {
+		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
+		const optgroups = template.querySelectorAll('optgroup')
+
+		optgroups.forEach((group) => {
+			select.appendChild(group)
+		})
+	})
 }
 
 function initOptionsEvents() {

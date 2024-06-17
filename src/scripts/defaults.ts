@@ -85,7 +85,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	pagewidth: 1600,
 	time: true,
 	main: true,
-	dateformat: 'eu',
+	dateformat: 'auto',
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',

@@ -193,13 +193,7 @@ function analog(date: Date, seconds: boolean) {
 	document.getElementById('analog-seconds')?.style.setProperty('--deg', `${s}deg`)
 }
 
-//
 //	Date
-//
-
-// prettier-ignore
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 function clockDate(date: Date, dateformat: DateFormat) {
 	const datedom = document.getElementById('date') as HTMLElement
@@ -207,14 +201,29 @@ function clockDate(date: Date, dateformat: DateFormat) {
 	const bb = document.getElementById('date-bb') as HTMLElement
 	const cc = document.getElementById('date-cc') as HTMLElement
 
-	const lang = getLang()
-	const useSinograms = lang.includes('zh') || lang.includes('jp')
-	const day = date.getDate().toString() + (useSinograms ? '日' : '')
-	const weekday = tradThis(days[date.getDay()])
-	const month = tradThis(months[date.getMonth()])
+	let lang = getLang().replaceAll('_', '-')
+
+	if (lang === 'jp') lang = 'ja-JP'
+	if (lang === 'gr') lang = 'el'
+	if (lang === 'cz') lang = 'cs-CZ'
+
+	// temp
+	date = new Date()
+
+	const day = new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date)
+	const month = new Intl.DateTimeFormat(lang, { month: 'long' }).format(date)
+	const weekday = new Intl.DateTimeFormat(lang, { weekday: 'long' }).format(date)
 
 	datedom.classList.remove('eu', 'us', 'cn')
 	datedom.classList.add(dateformat)
+
+	if (dateformat === 'auto') {
+		aa.textContent = new Intl.DateTimeFormat(lang, {
+			weekday: 'long',
+			month: 'long',
+			day: 'numeric',
+		}).format(date)
+	}
 
 	if (dateformat === 'eu') {
 		aa.textContent = weekday
@@ -235,9 +244,7 @@ function clockDate(date: Date, dateformat: DateFormat) {
 	}
 }
 
-//
 //	Greetings
-//
 
 function greetings(date: Date, name?: string) {
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
@@ -285,12 +292,19 @@ function getSecondsWidthInCh(second: number): number {
 	return Math.min(...numberWidths) + numberWidths[second]
 }
 
-function zonedDate(timezone: string = 'auto') {
+function zonedDate(timezone: string = 'auto'): Date {
+	const isUTC = timezone.includes('+') || timezone.includes('-') // temp
 	const date = new Date()
 
-	if (timezone === 'auto') {
+	if (timezone === 'auto' || isUTC) {
 		return date
 	}
+
+	// const intlSecond = new Intl.DateTimeFormat(getLang(), { timeZone: timezone, second: '2-digit', hour12: false }).format(date)
+	// const intlMinute = new Intl.DateTimeFormat(getLang(), { timeZone: timezone, minute: '2-digit', hour12: false }).format(date)
+	// const intlHour = new Intl.DateTimeFormat(getLang(), { timeZone: timezone, hour: '2-digit', hour12: false }).format(date)
+
+	// console.log(intlHour, intlMinute, intlSecond)
 
 	const offset = date.getTimezoneOffset() / 60 // hour
 	let utcHour = date.getHours() + offset
@@ -325,5 +339,5 @@ function isStyle(str = ''): str is Sync.Clock['style'] {
 }
 
 function isDateFormat(str = ''): str is DateFormat {
-	return ['eu', 'us', 'cn'].includes(str)
+	return ['auto', 'eu', 'us', 'cn'].includes(str)
 }

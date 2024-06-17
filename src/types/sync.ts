@@ -30,7 +30,7 @@ declare namespace Sync {
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
 		background_type: 'local' | 'unsplash'
-		dateformat: 'eu' | 'us' | 'cn'
+		dateformat: 'auto' | 'eu' | 'us' | 'cn'
 		clock: Clock
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync
