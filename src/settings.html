@@ -416,7 +416,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<span class="trn">Clock list</span>
+					<span class="trn">Regions</span>
 
 					<div id="worldclocks-list">
 						<div class="split-inputs dropdown shown">
@@ -426,8 +426,9 @@
 								maxlength="24"
 								placeholder="New York"
 								aria-label="Add city"
+								data-index="0"
 							/>
-							<select name="worldclock-timezone">
+							<select name="worldclock-timezone" data-index="0">
 								<!-- timezone template -->
 							</select>
 						</div>
@@ -439,8 +440,9 @@
 								maxlength="24"
 								placeholder="Paris"
 								aria-label="Add city"
+								data-index="1"
 							/>
-							<select name="worldclock-timezone">
+							<select name="worldclock-timezone" data-index="1">
 								<!-- timezone template -->
 							</select>
 						</div>
@@ -452,8 +454,9 @@
 								maxlength="24"
 								placeholder="Tokyo"
 								aria-label="Add city"
+								data-index="2"
 							/>
-							<select name="worldclock-timezone">
+							<select name="worldclock-timezone" data-index="2">
 								<!-- timezone template -->
 							</select>
 						</div>
@@ -1398,7 +1401,7 @@
 <template id="timezones-select-template">
 	<select>
 		<optgroup label="Coordinated Universal Time">
-			<option value="-10">HST -1</option>
+			<option value="-10">HST -10</option>
 			<option value="-9">AKST -9</option>
 			<option value="-8">PST -8</option>
 			<option value="-7">MST -7</option>
@@ -1468,6 +1471,8 @@
 			<option value="Asia/Damascus">Asia/Damascus</option>
 			<option value="Asia/Dushanbe">Asia/Dushanbe</option>
 			<option value="Asia/Gaza">Asia/Gaza</option>
+			<option value="Asia/Hebron">Asia/Hebron</option>
+			<option value="Asia/Jerusalem">Asia/Jerusalem</option>
 			<option value="Asia/Kabul">Asia/Kabul</option>
 			<option value="Asia/Karachi">Asia/Karachi</option>
 			<option value="Asia/Qatar">Asia/Qatar</option>
@@ -1486,13 +1491,11 @@
 			<option value="Asia/Dili">Asia/Dili</option>
 			<option value="Asia/Dubai">Asia/Dubai</option>
 			<option value="Asia/Famagusta">Asia/Famagusta</option>
-			<option value="Asia/Hebron">Asia/Hebron</option>
 			<option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
 			<option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
 			<option value="Asia/Hovd">Asia/Hovd</option>
 			<option value="Asia/Jakarta">Asia/Jakarta</option>
 			<option value="Asia/Jayapura">Asia/Jayapura</option>
-			<option value="Asia/Jerusalem">Asia/Jerusalem</option>
 			<option value="Asia/Kathmandu">Asia/Kathmandu</option>
 			<option value="Asia/Kolkata">Asia/Kolkata</option>
 			<option value="Asia/Kuching">Asia/Kuching</option>
@@ -1513,7 +1516,7 @@
 			<option value="Asia/Urumqi">Asia/Urumqi</option>
 			<option value="Asia/Yangon">Asia/Yangon</option>
 		</optgroup>
-		<optgroup label="Central and south America">
+		<optgroup label="America">
 			<option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</option>
 			<option value="America/Argentina/Cordoba">America/Argentina/Cordoba</option>
 			<option value="America/Asuncion">America/Asuncion</option>

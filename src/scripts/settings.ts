@@ -146,6 +146,9 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
+	setCheckbox('i_analog', data.clock?.analog ?? false)
+	setCheckbox('i_seconds', data.clock?.seconds ?? false)
+	setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
 	setCheckbox('i_main', data.main)
 	setCheckbox('i_greethide', !data.hide?.greetings)
 	setCheckbox('i_notes', data.notes?.on ?? false)
@@ -155,8 +158,6 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
-	setCheckbox('i_seconds', data.clock?.seconds ?? false)
-	setCheckbox('i_analog', data.clock?.analog ?? false)
 
 	// Input translation
 	translatePlaceholders()
@@ -184,6 +185,7 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
@@ -243,6 +245,8 @@ function initOptionsValues(data: Sync.Storage) {
 			select.appendChild(group)
 		})
 	})
+
+	paramId('i_timezone').value = data.clock.timezone
 }
 
 function initOptionsEvents() {
@@ -388,16 +392,29 @@ function initOptionsEvents() {
 
 	paramId('i_worldclocks').addEventListener('change', function (this: HTMLInputElement) {
 		paramId('worldclocks_options')?.classList.toggle('shown', this.checked)
+		clock(undefined, { worldclocks: this.checked })
 	})
 
 	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input) => {
-		input.addEventListener('input', function () {
-			const nextClock = this.parentElement?.nextElementSibling
+		input.addEventListener('input', () =>
+			clock(undefined, {
+				world: {
+					index: parseInt(input.dataset.index ?? '0'),
+					region: input.value,
+				},
+			})
+		)
+	})
 
-			if (nextClock?.classList.contains('split-inputs')) {
-				nextClock.classList.toggle('shown', input.value.length > 0)
-			}
-		})
+	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select) => {
+		select.addEventListener('change', () =>
+			clock(undefined, {
+				world: {
+					index: parseInt(select.dataset.index ?? '0'),
+					timezone: select.value,
+				},
+			})
+		)
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {

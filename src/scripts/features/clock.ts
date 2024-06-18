@@ -14,6 +14,12 @@ type ClockUpdate = {
 	style?: string
 	face?: string
 	size?: number
+	worldclocks?: boolean
+	world?: {
+		index: number
+		region?: string
+		timezone?: string
+	}
 }
 
 type DateFormat = Sync.Storage['dateformat']
@@ -47,50 +53,82 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 //	Update
 //
 
-async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, style, face, size }: ClockUpdate) {
-	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
-	let clock = data?.clock
+async function clockUpdate(update: ClockUpdate) {
+	const data = await storage.sync.get(['clock', 'dateformat', 'greeting', 'worldclocks'])
 
-	if (!clock || data.dateformat === undefined || data.greeting === undefined) {
+	if (!data.clock || data.dateformat === undefined || data.greeting === undefined) {
 		return
 	}
 
 	if (analog !== undefined) {
-		document.getElementById('analog_options')?.classList.toggle('shown', analog)
+		document.getElementById('analog_options')?.classList.toggle('shown', update.analog)
 		document.getElementById('digital_options')?.classList.toggle('shown', !analog)
 	}
 
-	if (isDateFormat(dateformat)) {
-		clockDate(zonedDate(clock.timezone), dateformat)
-		storage.sync.set({ dateformat })
+	if (isDateFormat(update.dateformat)) {
+		clockDate(zonedDate(data.clock.timezone), update.dateformat)
+		storage.sync.set({ dateformat: update.dateformat })
 	}
 
-	if (greeting !== undefined) {
-		greetings(zonedDate(clock.timezone), greeting)
-		storage.sync.set({ greeting })
+	if (update.greeting !== undefined) {
+		greetings(zonedDate(data.clock.timezone), update.greeting)
+		storage.sync.set({ greeting: update.greeting })
 	}
 
-	if (timezone !== undefined) {
-		clockDate(zonedDate(timezone), data.dateformat)
-		greetings(zonedDate(timezone), data.greeting)
+	if (update.timezone !== undefined) {
+		clockDate(zonedDate(update.timezone), data.dateformat)
+		greetings(zonedDate(update.timezone), data.greeting)
 	}
 
-	clock = {
+	if (update.world !== undefined) {
+		const index = update.world.index
+		const worldclock = data.worldclocks?.[index] ?? { region: 'Paris', timezone: 'Europe/Paris' }
+		const { region, timezone } = update.world
+
+		if (region !== undefined) {
+			const dom = document.getElementById('clock-region') as HTMLParagraphElement
+			dom.textContent = region
+			worldclock.region = region
+
+			const nextClock = document.querySelector(`input[name="worldclock-city"][data-index="${index + 1}"]`)
+			const nextClockParent = nextClock?.parentElement
+
+			console.log(nextClockParent)
+
+			if (nextClockParent) {
+				nextClockParent.classList.toggle('shown', true)
+			}
+		}
+
+		if (timezone !== undefined) {
+			console.log('timezone: ', timezone)
+			worldclock.timezone = timezone
+		}
+
+		data.worldclocks[index] = worldclock
+	}
+
+	data.clock = {
 		...clock,
-		ampm: ampm ?? clock.ampm,
-		size: size ?? clock.size,
-		analog: analog ?? clock.analog,
-		seconds: seconds ?? clock.seconds,
-		timezone: timezone ?? clock.timezone,
-		face: isFace(face) ? face : clock.face,
-		style: isStyle(style) ? style : clock.style,
+		ampm: update.ampm ?? data.clock.ampm,
+		size: update.size ?? data.clock.size,
+		analog: update.analog ?? data.clock.analog,
+		seconds: update.seconds ?? data.clock.seconds,
+		timezone: update.timezone ?? data.clock.timezone,
+		worldclocks: update.worldclocks ?? data.clock.worldclocks,
+		face: isFace(update.face) ? update.face : data.clock.face,
+		style: isStyle(update.style) ? update.style : data.clock.style,
 	}
 
-	storage.sync.set({ clock })
-	startClock(clock, data.greeting, data.dateformat)
-	analogFace(clock.face)
-	analogStyle(clock.style)
-	clockSize(clock.size)
+	storage.sync.set({
+		clock: data.clock,
+		worldclocks: data.worldclocks,
+	})
+
+	startClock(data.clock, data.greeting, data.dateformat)
+	analogFace(data.clock.face)
+	analogStyle(data.clock.style)
+	clockSize(data.clock.size)
 }
 
 function analogFace(face = 'none') {
@@ -218,11 +256,10 @@ function clockDate(date: Date, dateformat: DateFormat) {
 	datedom.classList.add(dateformat)
 
 	if (dateformat === 'auto') {
-		aa.textContent = new Intl.DateTimeFormat(lang, {
-			weekday: 'long',
-			month: 'long',
-			day: 'numeric',
-		}).format(date)
+		const intl = new Intl.DateTimeFormat(lang, { weekday: 'long', month: 'long', day: 'numeric' })
+		aa.textContent = intl.format(date)
+		bb.textContent = ''
+		cc.textContent = ''
 	}
 
 	if (dateformat === 'eu') {
@@ -296,34 +333,35 @@ function zonedDate(timezone: string = 'auto'): Date {
 	const isUTC = timezone.includes('+') || timezone.includes('-') // temp
 	const date = new Date()
 
-	if (timezone === 'auto' || isUTC) {
+	if (timezone === 'auto') {
 		return date
 	}
 
-	// const intlSecond = new Intl.DateTimeFormat(getLang(), { timeZone: timezone, second: '2-digit', hour12: false }).format(date)
-	// const intlMinute = new Intl.DateTimeFormat(getLang(), { timeZone: timezone, minute: '2-digit', hour12: false }).format(date)
-	// const intlHour = new Intl.DateTimeFormat(getLang(), { timeZone: timezone, hour: '2-digit', hour12: false }).format(date)
+	if (isUTC) {
+		const offset = date.getTimezoneOffset() / 60 // hour
+		let utcHour = date.getHours() + offset
+		const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
+		let minutes
 
-	// console.log(intlHour, intlMinute, intlSecond)
+		if (timezone.split('.')[1]) {
+			minutes = utcMinutes + parseInt(timezone.split('.')[1])
 
-	const offset = date.getTimezoneOffset() / 60 // hour
-	let utcHour = date.getHours() + offset
-	const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
-	let minutes
-
-	if (timezone.split('.')[1]) {
-		minutes = utcMinutes + parseInt(timezone.split('.')[1])
-
-		if (minutes > -30) {
-			utcHour++
+			if (minutes > -30) {
+				utcHour++
+			}
+		} else {
+			minutes = date.getMinutes()
 		}
-	} else {
-		minutes = date.getMinutes()
+
+		date.setHours(utcHour + parseInt(timezone), minutes)
+
+		return date
 	}
 
-	date.setHours(utcHour + parseInt(timezone), minutes)
+	const intl = new Intl.DateTimeFormat('en-UK', { timeZone: timezone, dateStyle: 'medium', timeStyle: 'medium' })
+	const zonedDate = new Date(intl.format(date))
 
-	return date
+	return zonedDate
 }
 
 function fixunits(val: number) {

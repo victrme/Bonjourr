@@ -113,6 +113,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		ampm: false,
 		analog: false,
 		seconds: false,
+		worldclocks: false,
 		face: 'none',
 		style: 'round',
 		timezone: 'auto',
@@ -167,6 +168,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		selection: 'single',
 		layouts: {},
 	},
+	worldclocks: [],
 }
 
 export const LOCAL_DEFAULT: Local.Storage = {

@@ -32,6 +32,7 @@ declare namespace Sync {
 		background_type: 'local' | 'unsplash'
 		dateformat: 'auto' | 'eu' | 'us' | 'cn'
 		clock: Clock
+		worldclocks: WorldClocks
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync
 		searchbar: Searchbar
@@ -77,9 +78,15 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
+		worldclocks: boolean
 		style: 'round' | 'square' | 'transparent'
 		face: 'none' | 'number' | 'roman' | 'marks'
 	}
+
+	type WorldClocks = {
+		region: string
+		timezone: string
+	}[]
 
 	type Searchbar = {
 		on: boolean

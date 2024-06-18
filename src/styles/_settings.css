@@ -780,7 +780,8 @@ aside .settings-title .tooltip {
 	width: 100%;
 }
 
-#worldclocks-list input {
+#worldclocks-list input,
+#worldclocks-list select {
 	width: 100%;
 	margin-bottom: 4px;
 }
