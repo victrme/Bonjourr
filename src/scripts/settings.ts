@@ -237,13 +237,21 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Add massive timezones to <select>
 
-	document.querySelectorAll('select[name="worldclock-timezone"], #i_timezone').forEach((select) => {
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select, i) => {
 		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
 		const optgroups = template.querySelectorAll('optgroup')
 
 		optgroups.forEach((group) => {
 			select.appendChild(group)
 		})
+	})
+
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
+		select.value = data?.worldclocks?.[i]?.timezone ?? 'Europe/Paris'
+	})
+
+	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
+		input.value = data?.worldclocks?.[i]?.region ?? ''
 	})
 
 	paramId('i_timezone').value = data.clock.timezone

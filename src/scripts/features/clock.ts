@@ -95,8 +95,6 @@ async function clockUpdate(update: ClockUpdate) {
 			const nextClock = document.querySelector(`input[name="worldclock-city"][data-index="${index + 1}"]`)
 			const nextClockParent = nextClock?.parentElement
 
-			console.log(nextClockParent)
-
 			if (nextClockParent) {
 				nextClockParent.classList.toggle('shown', true)
 			}
@@ -134,19 +132,19 @@ async function clockUpdate(update: ClockUpdate) {
 }
 
 function analogFace(face = 'none') {
-	const spans = document.querySelectorAll<HTMLSpanElement>('.analog span')
+	const spans = document.querySelectorAll<HTMLSpanElement>('.analog-face span')
 
 	spans.forEach((span, i) => {
-		if (face === 'none') span.textContent = ['', '', '', ''][i]
-		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i]
-		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
-		if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
+		if (face === 'none') span.textContent = ['', '', '', ''][i % 4]
+		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i % 4]
+		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i % 4]
+		if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i % 4]
 	})
 }
 
 function analogStyle(style?: string) {
 	document.getElementById('time')?.classList.remove('round', 'square', 'transparent')
-	document.getElementById('time')?.classList.add(style || '')
+	document.getElementById('time')?.classList.add(style ?? '')
 }
 
 function clockSize(size = 1) {
@@ -161,6 +159,8 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
+	document.querySelectorAll('.clock-wrapper').forEach((node) => node.remove())
+
 	if (clock.seconds) {
 		setSecondsWidthInCh()
 	}
@@ -171,8 +171,10 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 	clockInterval = setInterval(start, 1000)
 
 	function start() {
-		for (let ii = 0; ii < world.length; ii++) {
-			const { region, timezone } = world[ii]
+		const clocks = clock.worldclocks ? world : [{ region: '', timezone: clock.timezone }]
+
+		for (let ii = 0; ii < clocks.length; ii++) {
+			const { region, timezone } = clocks[ii]
 
 			const domclock = getClock(ii)
 			const date = zonedDate(timezone)
@@ -199,7 +201,7 @@ function getClock(index: number): HTMLDivElement {
 	if (!wrapper) {
 		wrapper = getHTMLTemplate<HTMLDivElement>('clock-template', 'div')
 		wrapper.dataset.index = index.toString()
-		container?.prepend(wrapper)
+		container?.appendChild(wrapper)
 	}
 
 	return wrapper
@@ -356,7 +358,7 @@ function getSecondsWidthInCh(second: number): number {
 }
 
 function zonedDate(timezone: string = 'auto'): Date {
-	const isUTC = timezone.includes('+') || timezone.includes('-') // temp
+	const isUTC = (timezone.includes('+') || timezone.includes('-')) && timezone.length < 6
 	const date = new Date()
 
 	if (timezone === 'auto') {
@@ -384,7 +386,7 @@ function zonedDate(timezone: string = 'auto'): Date {
 		return date
 	}
 
-	const intl = new Intl.DateTimeFormat('en-UK', { timeZone: timezone, dateStyle: 'medium', timeStyle: 'medium' })
+	const intl = new Intl.DateTimeFormat('en', { timeZone: timezone, dateStyle: 'medium', timeStyle: 'medium' })
 	const zonedDate = new Date(intl.format(date))
 
 	return zonedDate
