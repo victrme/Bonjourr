@@ -765,12 +765,6 @@ aside .settings-title .tooltip {
 	display: flex;
 }
 
-#clockoptions.digital #w_clockface,
-#clockoptions.analog #w_ampm {
-	max-height: 0;
-	opacity: 0;
-}
-
 #worldclocks-list,
 #f_location {
 	width: 66%;

@@ -10,24 +10,32 @@
 	display: none;
 }
 
-#time.seconds #digital-mm-separator,
-#time.seconds #digital-ss {
+#time.seconds .digital-mm-separator,
+#time.seconds .digital-ss {
 	display: inline;
 }
 
-#time.seconds #analog-seconds {
+#time.seconds .analog-seconds {
 	display: block;
 }
 
-#time.analog #digital {
+#time.is-analog .digital {
 	display: none;
 }
 
-#time.analog #analog {
+#time.is-analog .analog {
 	display: inline-block;
 }
 
-#digital {
+#time-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 4em;
+}
+
+.digital {
 	margin: 0;
 	margin-bottom: 0.1em;
 	margin-inline-start: calc(var(--seconds-margin-offset) / 2);
@@ -37,38 +45,38 @@
 	font-weight: var(--font-weight-clock);
 }
 
-#digital span {
+.digital span {
 	text-align: left;
 }
 
-#digital-hh,
-#digital-mm,
-#digital-hh-separator {
+.digital-hh,
+.digital-mm,
+.digital-hh-separator {
 	display: inline-block;
 }
 
-#digital-hh-leading-zero,
-#digital-mm-separator,
-#digital-ss {
+.digital-hh-leading-zero,
+.digital-mm-separator,
+.digital-ss {
 	display: none;
 }
 
-#digital.zero #digital-hh-leading-zero {
+.digital.zero .digital-hh-leading-zero {
 	display: inline-block;
 }
 
-#digital-number-width {
+.digital-number-width {
 	position: absolute;
 	z-index: -1;
 	opacity: 0;
 }
 
-#time.seconds #digital-ss {
+#time.seconds .digital-ss {
 	display: inline-block;
 	width: var(--seconds-width);
 }
 
-#analog {
+.analog {
 	display: none;
 	position: relative;
 	width: calc(var(--clock-size) * 8);
@@ -81,7 +89,7 @@
 	-webkit-backdrop-filter: blur(1em);
 }
 
-#analog.transparent {
+#time.transparent .analog {
 	box-shadow: none;
 	backdrop-filter: none;
 	-webkit-backdrop-filter: none;
@@ -89,11 +97,11 @@
 	background-color: transparent;
 }
 
-#analog.square {
+#time.square .analog {
 	border-radius: calc(var(--clock-size) * 0.2);
 }
 
-#analog-center {
+.analog-center {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -105,9 +113,9 @@
 	z-index: 5;
 }
 
-#analog-minutes,
-#analog-hours,
-#analog-seconds {
+.analog-minutes,
+.analog-hours,
+.analog-seconds {
 	transform: rotate(var(--deg));
 	position: absolute;
 	display: block;
@@ -122,15 +130,15 @@
 	will-change: transform;
 }
 
-#analog-hours {
+.analog-hours {
 	height: 30%;
 }
 
-#analog-minutes {
+.analog-minutes {
 	height: 45%;
 }
 
-#analog-seconds {
+.analog-seconds {
 	display: none;
 	height: 45%;
 	opacity: 0.8;
@@ -139,7 +147,7 @@
 	margin-left: calc(var(--clock-size) * -0.05);
 }
 
-#analog-face {
+.analog-face {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -148,7 +156,7 @@
 	--padding: 0.75em;
 }
 
-#analog-face span {
+.analog-face span {
 	position: absolute;
 	display: block;
 	opacity: 0.6;
@@ -158,22 +166,22 @@
 	text-align: center;
 }
 
-#analog-face span:nth-child(1) {
+.analog-face span:nth-child(1) {
 	left: var(--center);
 	top: var(--padding);
 }
 
-#analog-face span:nth-child(2) {
+.analog-face span:nth-child(2) {
 	top: var(--center);
 	right: var(--padding);
 }
 
-#analog-face span:nth-child(3) {
+.analog-face span:nth-child(3) {
 	left: var(--center);
 	bottom: var(--padding);
 }
 
-#analog-face span:nth-child(4) {
+.analog-face span:nth-child(4) {
 	top: var(--center);
 	left: var(--padding);
 }
