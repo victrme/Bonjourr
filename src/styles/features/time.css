@@ -186,24 +186,23 @@
 	left: var(--padding);
 }
 
-#date {
+#time p {
 	font-size: 1.5em;
-	margin-top: 0.5em;
 }
 
-#time.analog #date {
+#time.analog .clock-date {
 	margin-top: 1em;
 }
 
-#time-container.he_hidden ~ #date {
+#time-container.he_hidden ~ .clock-date {
 	margin-top: 0;
 }
 
-#date-aa-separator::after,
-#date-bb-separator::after {
+.clock-date-aa-separator::after,
+.clock-date-bb-separator::after {
 	content: ' ';
 }
 
-#date.us #date-aa-separator::after {
+.clock-date.us .clock-date-aa-separator::after {
 	content: ', ';
 }

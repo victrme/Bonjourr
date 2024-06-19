@@ -3,7 +3,6 @@ import { displayInterface } from '../index'
 import { SYNC_DEFAULT } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
-import { getHTMLTemplate } from '../utils'
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -40,8 +39,6 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 
 	try {
 		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu')
-		clockDate(zonedDate(clock.timezone), init?.dateformat || 'eu')
-		greetings(zonedDate(clock.timezone), init?.greeting || '')
 		analogFace(clock.face)
 		analogStyle(clock.style)
 		clockSize(clock.size)
@@ -51,9 +48,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 	}
 }
 
-//
 //	Update
-//
 
 async function clockUpdate(update: ClockUpdate) {
 	const data = await storage.sync.get(['clock', 'dateformat', 'greeting', 'worldclocks'])
@@ -68,7 +63,6 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (isDateFormat(update.dateformat)) {
-		clockDate(zonedDate(data.clock.timezone), update.dateformat)
 		storage.sync.set({ dateformat: update.dateformat })
 	}
 
@@ -78,7 +72,6 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.timezone !== undefined) {
-		clockDate(zonedDate(update.timezone), data.dateformat)
 		greetings(zonedDate(update.timezone), data.greeting)
 	}
 
@@ -151,60 +144,72 @@ function clockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
 }
 
-//
 //	Clock
-//
 
 function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string, dateformat: DateFormat) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
-	document.querySelectorAll('.clock-wrapper').forEach((node) => node.remove())
+	document.querySelectorAll('.clock-wrapper').forEach((node, index) => {
+		if (index > 0) {
+			node.remove()
+		}
+	})
 
 	if (clock.seconds) {
 		setSecondsWidthInCh()
 	}
 
+	const clocks = clock.worldclocks ? world : [{ region: '', timezone: clock.timezone }]
+
 	clearInterval(clockInterval)
-	start()
+
+	start(true)
 
 	clockInterval = setInterval(start, 1000)
 
-	function start() {
-		const clocks = clock.worldclocks ? world : [{ region: '', timezone: clock.timezone }]
-
-		for (let ii = 0; ii < clocks.length; ii++) {
-			const { region, timezone } = clocks[ii]
-
-			const domclock = getClock(ii)
+	function start(firstStart?: true) {
+		for (let index = 0; index < clocks.length; index++) {
+			const { region, timezone } = clocks[index]
+			const domclock = getClock(index)
+			const domregion = domclock.querySelector<HTMLElement>('.clock-region')
 			const date = zonedDate(timezone)
 			const isNextHour = date.getMinutes() === 0
 
-			if (clock.analog) analog(domclock, date, clock)
-			if (!clock.analog) digital(domclock, date, clock)
+			if (clock.analog) {
+				analog(domclock, date, clock)
+			} else {
+				digital(domclock, date, clock)
+			}
 
-			if (isNextHour) {
-				clockDate(date, dateformat)
+			if (isNextHour || firstStart) {
+				clockDate(domclock, date, dateformat)
 				greetings(date, greeting)
 			}
 
-			const dom = domclock.querySelector('.clock-region') as HTMLParagraphElement
-			dom.textContent = region
+			if (domregion) {
+				domregion.textContent = region
+			}
 		}
 	}
 }
 
 function getClock(index: number): HTMLDivElement {
 	const container = document.getElementById('time-container')
-	let wrapper = document.querySelector<HTMLDivElement>(`.clock-wrapper[data-index="${index}"]`)
+	const wrapper = document.querySelector<HTMLDivElement>(`.clock-wrapper[data-index="${index}"]`)
 
-	if (!wrapper) {
-		wrapper = getHTMLTemplate<HTMLDivElement>('clock-template', 'div')
-		wrapper.dataset.index = index.toString()
-		container?.appendChild(wrapper)
+	if (wrapper) {
+		return wrapper
 	}
 
-	return wrapper
+	const first = document.getElementById('clock-wrapper')
+	const clone = first?.cloneNode(true) as HTMLDivElement
+
+	clone.removeAttribute('id')
+	clone.dataset.index = index.toString()
+	container?.appendChild(clone)
+
+	return clone
 }
 
 function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
@@ -225,11 +230,7 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 		// Avoid layout shifts by rounding width
 		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
 		const width = getSecondsWidthInCh(second).toFixed(1)
-
 		domclock?.style.setProperty('--seconds-width', `${width}ch`)
-
-		// const offset = (-2 + width).toFixed(1)
-		// domclock?.style.setProperty('--seconds-margin-offset', `${offset}ch`)
 	}
 
 	domclock?.classList.toggle('zero', !clock.ampm && h < 10)
@@ -256,20 +257,17 @@ function analog(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 
 //	Date
 
-function clockDate(date: Date, dateformat: DateFormat) {
-	const datedom = document.getElementById('date') as HTMLElement
-	const aa = document.getElementById('date-aa') as HTMLElement
-	const bb = document.getElementById('date-bb') as HTMLElement
-	const cc = document.getElementById('date-cc') as HTMLElement
+function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat) {
+	const datedom = wrapper.querySelector('.clock-date') as HTMLElement
+	const aa = wrapper.querySelector('.clock-date-aa') as HTMLElement
+	const bb = wrapper.querySelector('.clock-date-bb') as HTMLElement
+	const cc = wrapper.querySelector('.clock-date-cc') as HTMLElement
 
 	let lang = getLang().replaceAll('_', '-')
 
 	if (lang === 'jp') lang = 'ja-JP'
 	if (lang === 'gr') lang = 'el'
 	if (lang === 'cz') lang = 'cs-CZ'
-
-	// temp
-	date = new Date()
 
 	const day = new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date)
 	const month = new Intl.DateTimeFormat(lang, { month: 'long' }).format(date)

@@ -388,7 +388,7 @@ aside form.valid button {
 }
 
 #time_options.shown {
-	max-height: 610px;
+	max-height: 680px;
 }
 
 #main_options.shown {
@@ -440,7 +440,7 @@ aside form.valid button {
 }
 
 .all .as_timedate {
-	max-height: 300px;
+	max-height: 360px;
 }
 
 .all .as_searchbar {

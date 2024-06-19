@@ -161,12 +161,38 @@
 
 		<main id="interface">
 			<div id="time">
-				<div id="time-container" data-hide="clock"></div>
+				<div id="time-container" data-hide="clock">
+					<div id="clock-wrapper" class="clock-wrapper" data-index="0">
+						<h1 class="digital" data-hide="clock">
+							<span class="digital-hh-leading-zero">0</span><span class="digital-hh"></span
+							><span class="digital-hh-separator">:</span><span class="digital-mm"></span
+							><span class="digital-mm-separator">:</span><span class="digital-ss"></span
+							><span class="digital-am-pm"></span><span class="digital-number-width">0</span>
+						</h1>
 
-				<p id="date" data-hide="date">
-					<span id="date-aa"></span><span id="date-aa-separator"></span><span id="date-bb"></span
-					><span id="date-bb-separator"></span><span id="date-cc"></span>
-				</p>
+						<div class="analog" data-hide="clock">
+							<div class="analog-face">
+								<span>12</span>
+								<span>3</span>
+								<span>6</span>
+								<span>9</span>
+							</div>
+
+							<div class="analog-center"></div>
+							<span class="analog-hours"></span>
+							<span class="analog-minutes"></span>
+							<span class="analog-seconds"></span>
+						</div>
+
+						<p class="clock-region">Paris</p>
+
+						<p class="clock-date" data-hide="date">
+							<span class="clock-date-aa"></span><span class="clock-date-aa-separator"></span
+							><span class="clock-date-bb"></span><span class="clock-date-bb-separator"></span
+							><span class="clock-date-cc"></span>
+						</p>
+					</div>
+				</div>
 			</div>
 
 			<div id="main" class="hidden">
@@ -245,33 +271,6 @@
 		</div>
 
 		<div id="templates">
-			<template id="clock-template">
-				<div class="clock-wrapper">
-					<h1 class="digital">
-						<span class="digital-hh-leading-zero">0</span><span class="digital-hh"></span
-						><span class="digital-hh-separator">:</span><span class="digital-mm"></span
-						><span class="digital-mm-separator">:</span><span class="digital-ss"></span
-						><span class="digital-am-pm"></span><span class="digital-number-width">0</span>
-					</h1>
-
-					<div class="analog">
-						<div class="analog-face">
-							<span>12</span>
-							<span>3</span>
-							<span>6</span>
-							<span>9</span>
-						</div>
-
-						<div class="analog-center"></div>
-						<span class="analog-hours"></span>
-						<span class="analog-minutes"></span>
-						<span class="analog-seconds"></span>
-					</div>
-
-					<p class="clock-region">Paris</p>
-				</div>
-			</template>
-
 			<template id="bookmarks-dialog-template">
 				<dialog id="bookmarks">
 					<div id="bookmarks-header">
