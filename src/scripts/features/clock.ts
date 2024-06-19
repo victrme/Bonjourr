@@ -1,6 +1,7 @@
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { SYNC_DEFAULT } from '../defaults'
+import onSettingsLoad from '../utils/onsettingsload'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
@@ -24,6 +25,8 @@ type ClockUpdate = {
 
 type DateFormat = Sync.Storage['dateformat']
 
+const defaultTimezones = ['Europe/Paris', 'America/New_York', 'Asia/Tokyo']
+const defaultRegions = ['Paris', 'New York', 'Tokyo']
 const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
 let clockInterval: number
@@ -43,6 +46,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		analogStyle(clock.style)
 		clockSize(clock.size)
 		displayInterface('clock')
+		onSettingsLoad(toggleWorldClocksOptions)
 	} catch (e) {
 		errorMessage(e)
 	}
@@ -77,28 +81,16 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.world !== undefined) {
 		const index = update.world.index
-		const worldclock = data.worldclocks?.[index] ?? { region: 'Paris', timezone: 'Europe/Paris' }
+		const baseclock = { region: defaultRegions[index], timezone: defaultTimezones[index] }
+		const worldclock = data.worldclocks?.[index] ?? baseclock
 		const { region, timezone } = update.world
 
-		if (region !== undefined) {
-			// const dom = document.getElementById('clock-region') as HTMLParagraphElement
-			// dom.textContent = region
-			worldclock.region = region
-
-			const nextClock = document.querySelector(`input[name="worldclock-city"][data-index="${index + 1}"]`)
-			const nextClockParent = nextClock?.parentElement
-
-			if (nextClockParent) {
-				nextClockParent.classList.toggle('shown', true)
-			}
-		}
-
-		if (timezone !== undefined) {
-			console.log('timezone: ', timezone)
-			worldclock.timezone = timezone
-		}
+		if (region !== undefined) worldclock.region = region
+		if (timezone !== undefined) worldclock.timezone = timezone
 
 		data.worldclocks[index] = worldclock
+
+		toggleWorldClocksOptions()
 	}
 
 	data.clock = {
@@ -160,7 +152,15 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 		setSecondsWidthInCh()
 	}
 
-	const clocks = clock.worldclocks ? world : [{ region: '', timezone: clock.timezone }]
+	const clocks: Sync.WorldClocks = []
+
+	if (clock.worldclocks) {
+		clocks.push(...world.filter(({ region }) => region))
+	}
+
+	if (clocks.length === 0) {
+		clocks.push({ region: '', timezone: clock.timezone })
+	}
 
 	clearInterval(clockInterval)
 
@@ -331,6 +331,19 @@ function greetings(date: Date, name?: string) {
 	domgreetings.style.textTransform = name || (rare && period === 'night') ? 'none' : 'capitalize'
 	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
 	domname.textContent = name ?? ''
+}
+
+// World clocks
+
+function toggleWorldClocksOptions() {
+	const parents = document.querySelectorAll<HTMLElement>(`.worldclocks-item`)
+	const inputs = document.querySelectorAll<HTMLInputElement>(`.worldclocks-item [name="worldclock-city"]`)
+
+	parents.forEach((parent, i) => {
+		const currHasText = !!inputs[i]?.value
+		const nextHasText = !!inputs[i - 1]?.value
+		parent?.classList.toggle('shown', i === 0 || currHasText || nextHasText)
+	})
 }
 
 // Helpers

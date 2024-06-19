@@ -247,7 +247,7 @@ function initOptionsValues(data: Sync.Storage) {
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
-		select.value = data?.worldclocks?.[i]?.timezone ?? 'Europe/Paris'
+		select.value = data?.worldclocks?.[i]?.timezone ?? ['Europe/Paris', 'America/New_York', 'Asia/Tokyo'][i]
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
@@ -403,26 +403,12 @@ function initOptionsEvents() {
 		clock(undefined, { worldclocks: this.checked })
 	})
 
-	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input) => {
-		input.addEventListener('input', () =>
-			clock(undefined, {
-				world: {
-					index: parseInt(input.dataset.index ?? '0'),
-					region: input.value,
-				},
-			})
-		)
+	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input, i) => {
+		input.addEventListener('input', () => clock(undefined, { world: { index: i, region: input.value } }))
 	})
 
-	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select) => {
-		select.addEventListener('change', () =>
-			clock(undefined, {
-				world: {
-					index: parseInt(select.dataset.index ?? '0'),
-					timezone: select.value,
-				},
-			})
-		)
+	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select, i) => {
+		select.addEventListener('change', () => clock(undefined, { world: { index: i, timezone: select.value } }))
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
